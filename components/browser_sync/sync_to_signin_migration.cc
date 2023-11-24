@@ -10,10 +10,12 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/service/sync_feature_status_for_migrations_recorder.h"
+#include "components/sync/service/sync_prefs.h"
 
 namespace browser_sync {
 
@@ -214,8 +216,11 @@ void MaybeMigrateSyncingUserToSignedIn(PrefService* pref_service) {
   pref_service->ClearPref(prefs::kGoogleServicesLastSyncingGaiaId);
   pref_service->ClearPref(prefs::kGoogleServicesLastSyncingUsername);
 
-  // TODO(crbug.com/1486420): Migrate the global data type prefs (used for
-  // Sync-the-feature) over to the account-specific ones.
+  // Migrate the global data type prefs (used for Sync-the-feature) over to the
+  // account-specific ones.
+  signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(gaia_id);
+  syncer::SyncPrefs::MigrateGlobalDataTypePrefsToAccount(pref_service,
+                                                         gaia_id_hash);
 
   // Ensure the prefs changes are persisted as soon as possible. (They get
   // persisted on shutdown anyway, but better make sure.)

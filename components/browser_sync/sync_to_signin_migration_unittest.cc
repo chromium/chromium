@@ -104,6 +104,11 @@ TEST_F(SyncToSigninMigrationTest, SyncActive) {
   // Save the above state to prefs.
   RecordStateToPrefs();
 
+  // Before the migration, there are no per-account selected types.
+  ASSERT_TRUE(
+      pref_service_.GetDict(syncer::prefs::internal::kSelectedTypesPerAccount)
+          .empty());
+
   // Run the migration. This should change the user to be non-syncing.
   MaybeMigrateSyncingUserToSignedIn(&pref_service_);
 
@@ -120,6 +125,12 @@ TEST_F(SyncToSigninMigrationTest, SyncActive) {
   EXPECT_EQ(pref_service_.GetString(
                 prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn),
             email);
+
+  // There should be per-account selected types now. The details of this are
+  // covered in SyncPrefs unit tests.
+  EXPECT_FALSE(
+      pref_service_.GetDict(syncer::prefs::internal::kSelectedTypesPerAccount)
+          .empty());
 }
 
 TEST_F(SyncToSigninMigrationTest, SyncStatusPrefsUnset) {
@@ -186,6 +197,11 @@ TEST_F(SyncToSigninMigrationTest, SyncDisabledByPolicy) {
   // Save the above state to prefs.
   RecordStateToPrefs();
 
+  // Before the migration, there are no per-account selected types.
+  ASSERT_TRUE(
+      pref_service_.GetDict(syncer::prefs::internal::kSelectedTypesPerAccount)
+          .empty());
+
   // Run the migration. This should change the user to be non-syncing (even
   // though Sync wasn't actually active).
   MaybeMigrateSyncingUserToSignedIn(&pref_service_);
@@ -203,6 +219,12 @@ TEST_F(SyncToSigninMigrationTest, SyncDisabledByPolicy) {
   EXPECT_EQ(pref_service_.GetString(
                 prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn),
             email);
+
+  // There should be per-account selected types now. The details of this are
+  // covered in SyncPrefs unit tests.
+  EXPECT_FALSE(
+      pref_service_.GetDict(syncer::prefs::internal::kSelectedTypesPerAccount)
+          .empty());
 }
 
 TEST_F(SyncToSigninMigrationTest, SyncPaused) {
@@ -220,6 +242,11 @@ TEST_F(SyncToSigninMigrationTest, SyncPaused) {
   // Save the above state to prefs.
   RecordStateToPrefs();
 
+  // Before the migration, there are no per-account selected types.
+  ASSERT_TRUE(
+      pref_service_.GetDict(syncer::prefs::internal::kSelectedTypesPerAccount)
+          .empty());
+
   // Run the migration. This should change the user to be non-syncing (even
   // though Sync wasn't actually active).
   MaybeMigrateSyncingUserToSignedIn(&pref_service_);
@@ -237,6 +264,12 @@ TEST_F(SyncToSigninMigrationTest, SyncPaused) {
   EXPECT_EQ(pref_service_.GetString(
                 prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn),
             email);
+
+  // There should be per-account selected types now. The details of this are
+  // covered in SyncPrefs unit tests.
+  EXPECT_FALSE(
+      pref_service_.GetDict(syncer::prefs::internal::kSelectedTypesPerAccount)
+          .empty());
 }
 
 TEST_F(SyncToSigninMigrationTest, SyncInitializing) {
