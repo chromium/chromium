@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 typedef (USVString or URLPatternInit) URLPatternInput;
+typedef (USVString or URLPatternInit or URLPattern) URLPatternCompatible;
 
 enum URLPatternComponent { "protocol", "username", "password", "hostname",
                            "port", "pathname", "search", "hash" };

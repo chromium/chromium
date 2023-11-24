@@ -17,6 +17,7 @@
 namespace blink {
 
 class ExceptionState;
+class KURL;
 class URLPatternInit;
 class URLPatternOptions;
 class URLPatternResult;
@@ -29,6 +30,13 @@ class CORE_EXPORT URLPattern : public ScriptWrappable {
                                      Component::Type::kHash>;
 
  public:
+  // Used to convert the convenience types that may be passed to WebIDL APIs in
+  // place of a URLPattern into a URLPattern object. `base_url` will usually be
+  // the result of calling `ExecutionContext::BaseURL`.
+  static URLPattern* From(const V8URLPatternCompatible* compatible,
+                          const KURL& base_url,
+                          ExceptionState& exception_state);
+
   static URLPattern* Create(const V8URLPatternInput* input,
                             const String& base_url,
                             const URLPatternOptions* options,

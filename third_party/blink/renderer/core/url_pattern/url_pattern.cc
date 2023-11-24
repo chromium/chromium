@@ -7,6 +7,7 @@
 #include "base/strings/string_util.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_regexp.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_urlpattern_urlpatterninit_usvstring.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_urlpatterninit_usvstring.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_url_pattern_component_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_url_pattern_init.h"
@@ -293,6 +294,56 @@ URLPatternComponentResult* MakeURLPatternComponentResult(
 }
 
 }  // namespace
+
+URLPattern* URLPattern::From(const V8URLPatternCompatible* compatible,
+                             const KURL& base_url,
+                             ExceptionState& exception_state) {
+  switch (compatible->GetContentType()) {
+    case V8URLPatternCompatible::ContentType::kURLPattern:
+      return compatible->GetAsURLPattern();
+    case V8URLPatternCompatible::ContentType::kURLPatternInit: {
+      URLPatternInit* original_init = compatible->GetAsURLPatternInit();
+      URLPatternInit* init;
+      if (original_init->hasBaseURL()) {
+        init = original_init;
+      } else {
+        init = URLPatternInit::Create();
+        if (original_init->hasProtocol()) {
+          init->setProtocol(original_init->protocol());
+        }
+        if (original_init->hasUsername()) {
+          init->setUsername(original_init->username());
+        }
+        if (original_init->hasPassword()) {
+          init->setPassword(original_init->password());
+        }
+        if (original_init->hasHostname()) {
+          init->setHostname(original_init->hostname());
+        }
+        if (original_init->hasPort()) {
+          init->setPort(original_init->port());
+        }
+        if (original_init->hasPathname()) {
+          init->setPathname(original_init->pathname());
+        }
+        if (original_init->hasSearch()) {
+          init->setSearch(original_init->search());
+        }
+        if (original_init->hasHash()) {
+          init->setHash(original_init->hash());
+        }
+        init->setBaseURL(base_url.GetString());
+      }
+      return Create(init, /*precomputed_protocol_component=*/nullptr,
+                    MakeGarbageCollected<URLPatternOptions>(), exception_state);
+    }
+    case V8URLPatternCompatible::ContentType::kUSVString:
+      return Create(
+          MakeGarbageCollected<V8URLPatternInput>(compatible->GetAsUSVString()),
+          base_url.GetString(), MakeGarbageCollected<URLPatternOptions>(),
+          exception_state);
+  }
+}
 
 URLPattern* URLPattern::Create(const V8URLPatternInput* input,
                                const String& base_url,
