@@ -793,7 +793,7 @@ export class FileManager extends EventTarget {
         // @ts-ignore: error TS2345: Argument of type 'FileManagerUI | null' is
         // not assignable to parameter of type 'FileManagerUI'.
         this.dialogType, this.ui_, this.volumeManager_, this.directoryModel_,
-        this.fileFilter_, this.selectionHandler_, this.namingController_,
+        this.selectionHandler_, this.namingController_,
         this.appStateController_, this.taskController_);
 
     this.initDataTransferOperations_();

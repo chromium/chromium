@@ -54,6 +54,9 @@ declare global {
         isChromeVoxActive: () => boolean,
       },
     };
+
+    // Defined in the main_window_component.ts
+    isFocused?: () => boolean;
   }
 }
 

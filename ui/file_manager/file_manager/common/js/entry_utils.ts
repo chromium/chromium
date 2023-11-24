@@ -15,6 +15,7 @@ import {createDOMError} from './dom_utils.js';
 import {EntryList, FakeEntryImpl, VolumeEntry} from './files_app_entry_types.js';
 import {isArcVmEnabled, isPluginVmEnabled} from './flags.js';
 import {collator, getEntryLabel} from './translations.js';
+import {TrashEntry} from './trash.js';
 import {FileErrorToDomError} from './util.js';
 import {VolumeManagerCommon} from './volume_manager_types.js';
 
@@ -313,7 +314,7 @@ export function isTrashRoot(entry: Entry|FilesAppEntry) {
 /**
  * Returns true if the given entry is a descendent of Trash.
  */
-export function isTrashEntry(entry: Entry|FilesAppEntry) {
+export function isTrashEntry(entry: Entry|FilesAppEntry): entry is TrashEntry {
   return isTrashRootType(getRootType(entry));
 }
 

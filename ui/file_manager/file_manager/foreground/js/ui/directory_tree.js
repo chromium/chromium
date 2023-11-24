@@ -348,7 +348,7 @@ export class DirectoryItem extends FilesTreeItem {
   /**
    * The DirectoryEntry corresponding to this DirectoryItem. This may be
    * a dummy DirectoryEntry.
-   * @type {DirectoryEntry|Object}
+   * @type {DirectoryEntry|null}
    */
   get entry() {
     // @ts-ignore: error TS2322: Type 'null' is not assignable to type 'Object |
@@ -744,7 +744,7 @@ export class DirectoryItem extends FilesTreeItem {
         }
         for (let i = 0; i < results.length; i++) {
           const entry = results[i];
-          if (entry.isDirectory) {
+          if (entry && entry.isDirectory) {
             entries.push(entry);
           }
         }
@@ -784,7 +784,7 @@ export class DirectoryItem extends FilesTreeItem {
           const entry = results[i];
           // If the entry is a directory and is not filtered, the parent
           // directory should be marked as having children
-          if (entry.isDirectory && this.fileFilter_.filter(entry)) {
+          if (entry && entry.isDirectory && this.fileFilter_.filter(entry)) {
             this.hasChildren = true;
             return;
           }
