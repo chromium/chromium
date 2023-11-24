@@ -36,12 +36,6 @@ class ASH_EXPORT LoginScreenController : public LoginScreen,
                                          public KioskAppMenu,
                                          public SystemTrayObserver {
  public:
-  // The current authentication stage. Used to get more verbose logging.
-  enum class AuthenticationStage {
-    kIdle,
-    kDoAuthenticate,
-    kUserCallback,
-  };
 
   using OnShownCallback = base::OnceCallback<void(bool did_show)>;
   // Callback for authentication checks. |success| is nullopt if an
@@ -139,6 +133,9 @@ class ASH_EXPORT LoginScreenController : public LoginScreen,
     return authentication_stage_;
   }
 
+  // Set authentication stage. Also notifies the observers.
+  void SetAuthenticationStage(AuthenticationStage authentication_stage);
+
   // Called when Login or Lock screen is destroyed.
   void OnLockScreenDestroyed();
 
@@ -172,9 +169,6 @@ class ASH_EXPORT LoginScreenController : public LoginScreen,
 
   base::WeakPtrFactory<LoginScreenController> weak_factory_{this};
 };
-
-std::ostream& operator<<(std::ostream&,
-                         LoginScreenController::AuthenticationStage);
 
 }  // namespace ash
 

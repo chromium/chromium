@@ -995,6 +995,13 @@ void LockContentsView::OnAuthDisabledForUser(
   }
 }
 
+void LockContentsView::OnAuthenticationStageChanged(
+    const AuthenticationStage auth_stage) {
+  if (auth_stage != AuthenticationStage::kIdle && auth_error_bubble_) {
+    HideAuthErrorMessage();
+  }
+}
+
 void LockContentsView::OnSetTpmLockedState(const AccountId& user,
                                            bool is_locked,
                                            base::TimeDelta time_left) {

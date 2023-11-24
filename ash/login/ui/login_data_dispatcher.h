@@ -89,6 +89,9 @@ class ASH_EXPORT LoginDataDispatcher : public LoginScreenModel {
         const AccountId& user,
         const AuthDisabledData& auth_disabled_data);
 
+    // Called when authentication stage changed.
+    virtual void OnAuthenticationStageChanged(AuthenticationStage auth_stage);
+
     // Called when TPM is locked.
     virtual void OnSetTpmLockedState(const AccountId& user,
                                      bool is_locked,
@@ -194,6 +197,7 @@ class ASH_EXPORT LoginDataDispatcher : public LoginScreenModel {
   void EnableAuthForUser(const AccountId& account_id) override;
   void DisableAuthForUser(const AccountId& account_id,
                           const AuthDisabledData& auth_disabled_data) override;
+  void AuthenticationStageChange(const AuthenticationStage auth_stage) override;
   void SetTpmLockedState(const AccountId& user,
                          bool is_locked,
                          base::TimeDelta time_left) override;
