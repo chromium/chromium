@@ -32,8 +32,7 @@ class CONTENT_EXPORT FederatedAuthDisconnectRequest {
       FederatedIdentityPermissionContextDelegate* permission_delegate,
       RenderFrameHost* render_frame_host,
       FedCmMetrics* metrics,
-      blink::mojom::IdentityCredentialDisconnectOptionsPtr options,
-      bool should_complete_request_immediately);
+      blink::mojom::IdentityCredentialDisconnectOptionsPtr options);
 
   FederatedAuthDisconnectRequest(const FederatedAuthDisconnectRequest&) =
       delete;
@@ -54,8 +53,7 @@ class CONTENT_EXPORT FederatedAuthDisconnectRequest {
       FederatedIdentityPermissionContextDelegate* permission_delegate,
       RenderFrameHost* render_frame_host,
       FedCmMetrics* metrics,
-      blink::mojom::IdentityCredentialDisconnectOptionsPtr options,
-      bool should_complete_request_immediately);
+      blink::mojom::IdentityCredentialDisconnectOptionsPtr options);
 
   void OnAllConfigAndWellKnownFetched(
       std::vector<FederatedProviderFetcher::FetchResult> fetch_results);
@@ -69,8 +67,7 @@ class CONTENT_EXPORT FederatedAuthDisconnectRequest {
   // non-nullopt if metrics have not yet been recorded for this request.
   void Complete(blink::mojom::DisconnectStatus status,
                 absl::optional<content::FedCmDisconnectStatus>
-                    disconnect_status_for_metrics,
-                bool should_delay_callback);
+                    disconnect_status_for_metrics);
 
   std::unique_ptr<IdpNetworkRequestManager> network_manager_;
   // Owned by |BrowserContext|
@@ -82,7 +79,6 @@ class CONTENT_EXPORT FederatedAuthDisconnectRequest {
 
   std::unique_ptr<FederatedProviderFetcher> provider_fetcher_;
   blink::mojom::IdentityCredentialDisconnectOptionsPtr options_;
-  bool should_complete_request_immediately_{false};
 
   url::Origin origin_;
   url::Origin embedding_origin_;

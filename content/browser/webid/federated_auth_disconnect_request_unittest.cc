@@ -268,8 +268,7 @@ class FederatedAuthDisconnectRequestTest
     DisconnectRequestCallbackHelper callback_helper;
     request_ = FederatedAuthDisconnectRequest::Create(
         std::move(network_manager), permission_delegate_.get(), main_rfh(),
-        metrics_.get(), std::move(options),
-        /*should_complete_request_immediately=*/true);
+        metrics_.get(), std::move(options));
     request_->SetCallbackAndStart(callback_helper.callback(),
                                   api_permission_delegate_.get());
     callback_helper.WaitForCallback();

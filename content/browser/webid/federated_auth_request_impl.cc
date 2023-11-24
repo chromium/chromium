@@ -2703,16 +2703,12 @@ void FederatedAuthRequestImpl::Disconnect(
   bool should_complete_request_immediately = false;
   devtools_instrumentation::WillSendFedCmRequest(
       &render_frame_host(), &intercept, &should_complete_request_immediately);
-  should_complete_request_immediately_ =
-      (intercept && should_complete_request_immediately) ||
-      api_permission_delegate_->ShouldCompleteRequestImmediately();
 
   auto network_manager = CreateNetworkManager();
 
   disconnect_request_ = FederatedAuthDisconnectRequest::Create(
       std::move(network_manager), permission_delegate_, &render_frame_host(),
-      fedcm_metrics_.get(), std::move(options),
-      should_complete_request_immediately_);
+      fedcm_metrics_.get(), std::move(options));
   FederatedAuthDisconnectRequest* disconnect_request_ptr =
       disconnect_request_.get();
 

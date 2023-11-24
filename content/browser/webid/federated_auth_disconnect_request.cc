@@ -13,15 +13,6 @@
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 
 namespace content {
-namespace {
-
-base::TimeDelta GetRandomRejectionTime() {
-  // TODO(crbug.com/1473134): add some reasonable delay in cases where it is
-  // needed.
-  return base::TimeDelta();
-}
-
-}  // namespace
 
 using FederatedApiPermissionStatus =
     FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
@@ -37,20 +28,17 @@ FederatedAuthDisconnectRequest::Create(
     FederatedIdentityPermissionContextDelegate* permission_delegate,
     RenderFrameHost* render_frame_host,
     FedCmMetrics* metrics,
-    blink::mojom::IdentityCredentialDisconnectOptionsPtr options,
-    bool should_complete_request_immediately) {
+    blink::mojom::IdentityCredentialDisconnectOptionsPtr options) {
   std::unique_ptr<FederatedAuthDisconnectRequest> request =
       base::WrapUnique<FederatedAuthDisconnectRequest>(
           new FederatedAuthDisconnectRequest(
               std::move(network_manager), permission_delegate,
-              render_frame_host, metrics, std::move(options),
-              should_complete_request_immediately));
+              render_frame_host, metrics, std::move(options)));
   return request;
 }
 
 FederatedAuthDisconnectRequest::~FederatedAuthDisconnectRequest() {
-  Complete(DisconnectStatus::kError, FedCmDisconnectStatus::kUnhandledRequest,
-           /*should_delay_callback=*/false);
+  Complete(DisconnectStatus::kError, FedCmDisconnectStatus::kUnhandledRequest);
 }
 
 FederatedAuthDisconnectRequest::FederatedAuthDisconnectRequest(
@@ -58,14 +46,12 @@ FederatedAuthDisconnectRequest::FederatedAuthDisconnectRequest(
     FederatedIdentityPermissionContextDelegate* permission_delegate,
     RenderFrameHost* render_frame_host,
     FedCmMetrics* metrics,
-    blink::mojom::IdentityCredentialDisconnectOptionsPtr options,
-    bool should_complete_request_immediately)
+    blink::mojom::IdentityCredentialDisconnectOptionsPtr options)
     : network_manager_(std::move(network_manager)),
       permission_delegate_(permission_delegate),
       metrics_(metrics),
       render_frame_host_(render_frame_host),
       options_(std::move(options)),
-      should_complete_request_immediately_(should_complete_request_immediately),
       origin_(render_frame_host->GetLastCommittedOrigin()) {
   RenderFrameHost* main_frame = render_frame_host->GetMainFrame();
   DCHECK(main_frame->IsInPrimaryMainFrame());
@@ -80,8 +66,7 @@ void FederatedAuthDisconnectRequest::SetCallbackAndStart(
   url::Origin config_origin = url::Origin::Create(options_->config->config_url);
   if (!network::IsOriginPotentiallyTrustworthy(config_origin)) {
     Complete(DisconnectStatus::kError,
-             DisconnectStatusForMetrics::kIdpNotPotentiallyTrustworthy,
-             /*should_delay_callback=*/false);
+             DisconnectStatusForMetrics::kIdpNotPotentiallyTrustworthy);
     return;
   }
 
@@ -106,8 +91,7 @@ void FederatedAuthDisconnectRequest::SetCallbackAndStart(
       break;
   }
   if (error_disconnect_status) {
-    Complete(DisconnectStatus::kError, *error_disconnect_status,
-             /*should_delay_callback=*/true);
+    Complete(DisconnectStatus::kError, *error_disconnect_status);
     return;
   }
   // Reject if we know that there are no sharing permissions with the given IdP
@@ -117,8 +101,7 @@ void FederatedAuthDisconnectRequest::SetCallbackAndStart(
           origin_, /*account_id=*/absl::nullopt, permission_delegate_,
           api_permission_delegate)) {
     Complete(DisconnectStatus::kError,
-             DisconnectStatusForMetrics::kNoAccountToDisconnect,
-             /*should_delay_callback=*/true);
+             DisconnectStatusForMetrics::kNoAccountToDisconnect);
     return;
   }
 
@@ -204,8 +187,7 @@ void FederatedAuthDisconnectRequest::OnAllConfigAndWellKnownFetched(
         break;
       }
     }
-    Complete(DisconnectStatus::kError, status,
-             /*should_delay_callback=*/false);
+    Complete(DisconnectStatus::kError, status);
     return;
   }
 
@@ -216,8 +198,7 @@ void FederatedAuthDisconnectRequest::OnAllConfigAndWellKnownFetched(
         "Config is missing or has an invalid or cross-origin  "
         "\"disconnect_endpoint\" URL.");
     Complete(DisconnectStatus::kError,
-             DisconnectStatusForMetrics::kDisconnectUrlIsCrossOrigin,
-             /*should_delay_callback=*/false);
+             DisconnectStatusForMetrics::kDisconnectUrlIsCrossOrigin);
     return;
   }
   network_manager_->SendDisconnectRequest(
@@ -244,21 +225,18 @@ void FederatedAuthDisconnectRequest::OnDisconnectResponse(
     permission_delegate_->RevokeSharingPermission(
         origin_, embedding_origin_, idp_origin, /*account_id=*/"");
     Complete(DisconnectStatus::kError,
-             DisconnectStatusForMetrics::kDisconnectFailedOnServer,
-             /*should_delay_callback=*/false);
+             DisconnectStatusForMetrics::kDisconnectFailedOnServer);
     return;
   }
   permission_delegate_->RevokeSharingPermission(origin_, embedding_origin_,
                                                 idp_origin, account_id);
-  Complete(DisconnectStatus::kSuccess, DisconnectStatusForMetrics::kSuccess,
-           /*should_delay_callback=*/false);
+  Complete(DisconnectStatus::kSuccess, DisconnectStatusForMetrics::kSuccess);
 }
 
 void FederatedAuthDisconnectRequest::Complete(
     blink::mojom::DisconnectStatus status,
     absl::optional<content::FedCmDisconnectStatus>
-        disconnect_status_for_metrics,
-    bool should_delay_callback) {
+        disconnect_status_for_metrics) {
   if (!callback_) {
     return;
   }
@@ -267,16 +245,7 @@ void FederatedAuthDisconnectRequest::Complete(
     metrics_->RecordDisconnectStatus(*disconnect_status_for_metrics);
   }
 
-  if (!should_delay_callback || should_complete_request_immediately_) {
-    std::move(callback_).Run(status);
-    return;
-  }
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&FederatedAuthDisconnectRequest::Complete,
-                     weak_ptr_factory_.GetWeakPtr(), status, absl::nullopt,
-                     /*should_delay_callback=*/false),
-      GetRandomRejectionTime());
+  std::move(callback_).Run(status);
 }
 
 }  // namespace content
