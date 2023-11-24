@@ -16,8 +16,8 @@
 
 namespace blink {
 
+class BoxFragmentBuilder;
 class InlineBreakToken;
-class NGBoxFragmentBuilder;
 
 // Represents a break token for a block node.
 class CORE_EXPORT BlockBreakToken final : public BreakToken {
@@ -27,7 +27,7 @@ class CORE_EXPORT BlockBreakToken final : public BreakToken {
   //
   // The node is BlockNode, or any other LayoutInputNode that produces
   // anonymous box.
-  static BlockBreakToken* Create(NGBoxFragmentBuilder*);
+  static BlockBreakToken* Create(BoxFragmentBuilder*);
 
   // Creates a break token for a node that needs to produce its first fragment
   // in the next fragmentainer. In this case we create a break token for a node
@@ -223,7 +223,7 @@ class CORE_EXPORT BlockBreakToken final : public BreakToken {
 
   // Must only be called from Create(), because it assumes that enough space
   // has been allocated in the flexible array to store the children.
-  BlockBreakToken(PassKey, NGBoxFragmentBuilder*);
+  BlockBreakToken(PassKey, BoxFragmentBuilder*);
 
   explicit BlockBreakToken(PassKey, LayoutInputNode node);
 

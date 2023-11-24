@@ -16,7 +16,7 @@ class BlockNode;
 
 // This algorithm handles msub, msup and msubsup elements.
 class CORE_EXPORT MathScriptsLayoutAlgorithm
-    : public LayoutAlgorithm<BlockNode, NGBoxFragmentBuilder, BlockBreakToken> {
+    : public LayoutAlgorithm<BlockNode, BoxFragmentBuilder, BlockBreakToken> {
  public:
   explicit MathScriptsLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
@@ -56,7 +56,7 @@ class CORE_EXPORT MathScriptsLayoutAlgorithm
                       HeapVector<SubSupPair>*,
                       BlockNode* prescripts,
                       unsigned* first_prescript_index,
-                      NGBoxFragmentBuilder* = nullptr) const;
+                      BoxFragmentBuilder* = nullptr) const;
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) final;
 

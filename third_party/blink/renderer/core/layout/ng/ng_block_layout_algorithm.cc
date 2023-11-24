@@ -564,7 +564,7 @@ BlockLayoutAlgorithm::RelayoutIgnoringLineClamp() {
                                GetConstraintSpace(), GetBreakToken(), nullptr);
   BlockLayoutAlgorithm algorithm_ignoring_line_clamp(params);
   algorithm_ignoring_line_clamp.ignore_line_clamp_ = true;
-  NGBoxFragmentBuilder& new_builder =
+  BoxFragmentBuilder& new_builder =
       algorithm_ignoring_line_clamp.container_builder_;
   new_builder.SetBoxType(container_builder_.BoxType());
   return algorithm_ignoring_line_clamp.Layout();

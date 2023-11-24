@@ -20,7 +20,7 @@ struct DevtoolsFlexInfo;
 struct NGFlexItem;
 
 class CORE_EXPORT FlexLayoutAlgorithm
-    : public LayoutAlgorithm<BlockNode, NGBoxFragmentBuilder, BlockBreakToken> {
+    : public LayoutAlgorithm<BlockNode, BoxFragmentBuilder, BlockBreakToken> {
  public:
   explicit FlexLayoutAlgorithm(
       const LayoutAlgorithmParams& params,

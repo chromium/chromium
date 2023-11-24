@@ -305,7 +305,7 @@ const NGLayoutResult* GridLayoutAlgorithm::LayoutInternal() {
   container_builder_.SetHasDescendantThatDependsOnPercentageBlockSize(false);
 
   if (constraint_space.HasKnownFragmentainerBlockSize()) {
-    // |FinishFragmentation| uses |NGBoxFragmentBuilder::IntrinsicBlockSize| to
+    // |FinishFragmentation| uses |BoxFragmentBuilder::IntrinsicBlockSize| to
     // determine the final size of this fragment.
     container_builder_.SetIntrinsicBlockSize(
         consumed_grid_block_size - previously_consumed_grid_block_size +

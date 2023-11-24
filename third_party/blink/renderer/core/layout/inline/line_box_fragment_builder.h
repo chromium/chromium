@@ -23,7 +23,7 @@ class ComputedStyle;
 class InlineBreakToken;
 class LogicalLineItems;
 
-class CORE_EXPORT LineBoxFragmentBuilder final : public NGFragmentBuilder {
+class CORE_EXPORT LineBoxFragmentBuilder final : public FragmentBuilder {
   STACK_ALLOCATED();
 
  public:
@@ -31,7 +31,7 @@ class CORE_EXPORT LineBoxFragmentBuilder final : public NGFragmentBuilder {
                          const ComputedStyle* style,
                          const ConstraintSpace& space,
                          WritingDirectionMode writing_direction)
-      : NGFragmentBuilder(
+      : FragmentBuilder(
             node,
             style,
             space,

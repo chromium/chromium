@@ -1603,7 +1603,7 @@ void ComputeSectionMinimumRowBlockSizes(
 }
 
 void FinalizeTableCellLayout(LayoutUnit unconstrained_intrinsic_block_size,
-                             NGBoxFragmentBuilder* builder) {
+                             BoxFragmentBuilder* builder) {
   const BlockNode& node = builder->Node();
   const auto& space = builder->GetConstraintSpace();
   const bool has_inflow_children = !builder->Children().empty();

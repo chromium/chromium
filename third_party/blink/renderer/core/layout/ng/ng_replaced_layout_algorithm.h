@@ -16,7 +16,7 @@ class BlockBreakToken;
 class BlockNode;
 
 class CORE_EXPORT ReplacedLayoutAlgorithm
-    : public LayoutAlgorithm<BlockNode, NGBoxFragmentBuilder, BlockBreakToken> {
+    : public LayoutAlgorithm<BlockNode, BoxFragmentBuilder, BlockBreakToken> {
  public:
   explicit ReplacedLayoutAlgorithm(const LayoutAlgorithmParams& params);
 

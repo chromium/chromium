@@ -60,7 +60,7 @@ LogicalAnchorQuery::SetOptions AnchorQuerySetOptions(
 
 }  // namespace
 
-NGPhysicalFragment::NGBoxType NGFragmentBuilder::BoxType() const {
+NGPhysicalFragment::NGBoxType FragmentBuilder::BoxType() const {
   if (box_type_ != NGPhysicalFragment::NGBoxType::kNormalBox) {
     return box_type_;
   }
@@ -93,15 +93,15 @@ NGPhysicalFragment::NGBoxType NGFragmentBuilder::BoxType() const {
   return NGPhysicalFragment::NGBoxType::kNormalBox;
 }
 
-void NGFragmentBuilder::ReplaceChild(wtf_size_t index,
-                                     const NGPhysicalFragment& new_child,
-                                     const LogicalOffset offset) {
+void FragmentBuilder::ReplaceChild(wtf_size_t index,
+                                   const NGPhysicalFragment& new_child,
+                                   const LogicalOffset offset) {
   DCHECK_LT(index, children_.size());
   children_[index] = LogicalFragmentLink{std::move(&new_child), offset};
 }
 
 HeapVector<Member<LayoutBoxModelObject>>&
-NGFragmentBuilder::EnsureStickyDescendants() {
+FragmentBuilder::EnsureStickyDescendants() {
   if (!sticky_descendants_) {
     sticky_descendants_ =
         MakeGarbageCollected<HeapVector<Member<LayoutBoxModelObject>>>();
@@ -109,7 +109,7 @@ NGFragmentBuilder::EnsureStickyDescendants() {
   return *sticky_descendants_;
 }
 
-void NGFragmentBuilder::PropagateStickyDescendants(
+void FragmentBuilder::PropagateStickyDescendants(
     const NGPhysicalFragment& child) {
   if (child.HasStickyConstrainedPosition()) {
     EnsureStickyDescendants().push_front(
@@ -122,14 +122,14 @@ void NGFragmentBuilder::PropagateStickyDescendants(
   }
 }
 
-HeapHashSet<Member<LayoutBox>>& NGFragmentBuilder::EnsureSnapAreas() {
+HeapHashSet<Member<LayoutBox>>& FragmentBuilder::EnsureSnapAreas() {
   if (!snap_areas_) {
     snap_areas_ = MakeGarbageCollected<HeapHashSet<Member<LayoutBox>>>();
   }
   return *snap_areas_;
 }
 
-void NGFragmentBuilder::PropagateSnapAreas(const NGPhysicalFragment& child) {
+void FragmentBuilder::PropagateSnapAreas(const NGPhysicalFragment& child) {
   if (child.IsSnapArea()) {
     EnsureSnapAreas().insert(To<LayoutBox>(child.GetMutableLayoutObject()));
   }
@@ -146,15 +146,14 @@ void NGFragmentBuilder::PropagateSnapAreas(const NGPhysicalFragment& child) {
   }
 }
 
-LogicalAnchorQuery& NGFragmentBuilder::EnsureAnchorQuery() {
+LogicalAnchorQuery& FragmentBuilder::EnsureAnchorQuery() {
   if (!anchor_query_)
     anchor_query_ = MakeGarbageCollected<LogicalAnchorQuery>();
   return *anchor_query_;
 }
 
-void NGFragmentBuilder::PropagateChildAnchors(
-    const NGPhysicalFragment& child,
-    const LogicalOffset& child_offset) {
+void FragmentBuilder::PropagateChildAnchors(const NGPhysicalFragment& child,
+                                            const LogicalOffset& child_offset) {
   absl::optional<LogicalAnchorQuery::SetOptions> options;
   if (child.IsBox() &&
       (child.Style().AnchorName() || child.IsImplicitAnchor())) {
@@ -188,7 +187,7 @@ void NGFragmentBuilder::PropagateChildAnchors(
   }
 }
 
-void NGFragmentBuilder::PropagateFromLayoutResultAndFragment(
+void FragmentBuilder::PropagateFromLayoutResultAndFragment(
     const NGLayoutResult& child_result,
     LogicalOffset child_offset,
     LogicalOffset relative_offset,
@@ -198,21 +197,21 @@ void NGFragmentBuilder::PropagateFromLayoutResultAndFragment(
                         relative_offset, inline_container);
 }
 
-void NGFragmentBuilder::PropagateFromLayoutResult(
+void FragmentBuilder::PropagateFromLayoutResult(
     const NGLayoutResult& child_result) {
   has_orthogonal_fallback_size_descendant_ |=
       child_result.HasOrthogonalFallbackInlineSize() ||
       child_result.HasOrthogonalFallbackSizeDescendant();
 }
 
-ScrollStartTargetCandidates& NGFragmentBuilder::EnsureScrollStartTargets() {
+ScrollStartTargetCandidates& FragmentBuilder::EnsureScrollStartTargets() {
   if (!scroll_start_targets_) {
     scroll_start_targets_ = MakeGarbageCollected<ScrollStartTargetCandidates>();
   }
   return *scroll_start_targets_;
 }
 
-void NGFragmentBuilder::PropagateScrollStartTarget(
+void FragmentBuilder::PropagateScrollStartTarget(
     const NGPhysicalFragment& child) {
   auto UpdateScrollStartTarget = [](Member<const LayoutBox>& old_target,
                                     const LayoutBox* new_target) {
@@ -238,7 +237,7 @@ void NGFragmentBuilder::PropagateScrollStartTarget(
 
 // Propagate data in |child| to this fragment. The |child| will then be added as
 // a child fragment or a child fragment item.
-void NGFragmentBuilder::PropagateFromFragment(
+void FragmentBuilder::PropagateFromFragment(
     const NGPhysicalFragment& child,
     LogicalOffset child_offset,
     LogicalOffset relative_offset,
@@ -346,8 +345,8 @@ void NGFragmentBuilder::PropagateFromFragment(
   }
 }
 
-void NGFragmentBuilder::AddChildInternal(const NGPhysicalFragment* child,
-                                         const LogicalOffset& child_offset) {
+void FragmentBuilder::AddChildInternal(const NGPhysicalFragment* child,
+                                       const LogicalOffset& child_offset) {
   // In order to know where list-markers are within the children list (for the
   // |SimplifiedLayoutAlgorithm|) we always place them as the first child.
   if (child->IsListMarker()) {
@@ -369,7 +368,7 @@ void NGFragmentBuilder::AddChildInternal(const NGPhysicalFragment* child,
   children_.push_back(LogicalFragmentLink{std::move(child), child_offset});
 }
 
-void NGFragmentBuilder::AddOutOfFlowChildCandidate(
+void FragmentBuilder::AddOutOfFlowChildCandidate(
     BlockNode child,
     const LogicalOffset& child_offset,
     LogicalStaticPosition::InlineEdge inline_edge,
@@ -380,12 +379,12 @@ void NGFragmentBuilder::AddOutOfFlowChildCandidate(
       RequiresContentBeforeBreaking(), OofInlineContainer<LogicalOffset>());
 }
 
-void NGFragmentBuilder::AddOutOfFlowChildCandidate(
+void FragmentBuilder::AddOutOfFlowChildCandidate(
     const LogicalOofPositionedNode& candidate) {
   oof_positioned_candidates_.emplace_back(candidate);
 }
 
-void NGFragmentBuilder::AddOutOfFlowInlineChildCandidate(
+void FragmentBuilder::AddOutOfFlowInlineChildCandidate(
     BlockNode child,
     const LogicalOffset& child_offset,
     TextDirection inline_container_direction) {
@@ -401,30 +400,30 @@ void NGFragmentBuilder::AddOutOfFlowInlineChildCandidate(
                              LogicalStaticPosition::kBlockStart);
 }
 
-void NGFragmentBuilder::AddOutOfFlowFragmentainerDescendant(
+void FragmentBuilder::AddOutOfFlowFragmentainerDescendant(
     const LogicalOofNodeForFragmentation& descendant) {
   oof_positioned_fragmentainer_descendants_.push_back(descendant);
 }
 
-void NGFragmentBuilder::AddOutOfFlowFragmentainerDescendant(
+void FragmentBuilder::AddOutOfFlowFragmentainerDescendant(
     const LogicalOofPositionedNode& descendant) {
   DCHECK(!descendant.is_for_fragmentation);
   LogicalOofNodeForFragmentation fragmentainer_descendant(descendant);
   AddOutOfFlowFragmentainerDescendant(fragmentainer_descendant);
 }
 
-void NGFragmentBuilder::AddOutOfFlowDescendant(
+void FragmentBuilder::AddOutOfFlowDescendant(
     const LogicalOofPositionedNode& descendant) {
   oof_positioned_descendants_.push_back(descendant);
 }
 
-void NGFragmentBuilder::SwapOutOfFlowPositionedCandidates(
+void FragmentBuilder::SwapOutOfFlowPositionedCandidates(
     HeapVector<LogicalOofPositionedNode>* candidates) {
   DCHECK(candidates->empty());
   std::swap(oof_positioned_candidates_, *candidates);
 }
 
-void NGFragmentBuilder::AddMulticolWithPendingOOFs(
+void FragmentBuilder::AddMulticolWithPendingOOFs(
     const BlockNode& multicol,
     MulticolWithPendingOofs<LogicalOffset>* multicol_info) {
   DCHECK(To<LayoutBlockFlow>(multicol.GetLayoutBox())->MultiColumnFlowThread());
@@ -434,20 +433,20 @@ void NGFragmentBuilder::AddMulticolWithPendingOOFs(
   multicols_with_pending_oofs_.insert(multicol.GetLayoutBox(), multicol_info);
 }
 
-void NGFragmentBuilder::SwapMulticolsWithPendingOOFs(
+void FragmentBuilder::SwapMulticolsWithPendingOOFs(
     MulticolCollection* multicols_with_pending_oofs) {
   DCHECK(multicols_with_pending_oofs->empty());
   std::swap(multicols_with_pending_oofs_, *multicols_with_pending_oofs);
 }
 
-void NGFragmentBuilder::SwapOutOfFlowFragmentainerDescendants(
+void FragmentBuilder::SwapOutOfFlowFragmentainerDescendants(
     HeapVector<LogicalOofNodeForFragmentation>* descendants) {
   DCHECK(descendants->empty());
   std::swap(oof_positioned_fragmentainer_descendants_, *descendants);
 }
 
-void NGFragmentBuilder::TransferOutOfFlowCandidates(
-    NGFragmentBuilder* destination_builder,
+void FragmentBuilder::TransferOutOfFlowCandidates(
+    FragmentBuilder* destination_builder,
     LogicalOffset additional_offset,
     const MulticolWithPendingOofs<LogicalOffset>* multicol) {
   for (auto& candidate : oof_positioned_candidates_) {
@@ -472,7 +471,7 @@ void NGFragmentBuilder::TransferOutOfFlowCandidates(
   oof_positioned_candidates_.clear();
 }
 
-void NGFragmentBuilder::MoveOutOfFlowDescendantCandidatesToDescendants() {
+void FragmentBuilder::MoveOutOfFlowDescendantCandidatesToDescendants() {
   DCHECK(oof_positioned_descendants_.empty());
   std::swap(oof_positioned_candidates_, oof_positioned_descendants_);
 
@@ -495,7 +494,7 @@ void NGFragmentBuilder::MoveOutOfFlowDescendantCandidatesToDescendants() {
   }
 }
 
-LayoutUnit NGFragmentBuilder::BlockOffsetAdjustmentForFragmentainer(
+LayoutUnit FragmentBuilder::BlockOffsetAdjustmentForFragmentainer(
     LayoutUnit fragmentainer_consumed_block_size) const {
   if (IsFragmentainerBoxType() && PreviousBreakToken()) {
     return PreviousBreakToken()->ConsumedBlockSize();
@@ -503,7 +502,7 @@ LayoutUnit NGFragmentBuilder::BlockOffsetAdjustmentForFragmentainer(
   return fragmentainer_consumed_block_size;
 }
 
-void NGFragmentBuilder::PropagateOOFPositionedInfo(
+void FragmentBuilder::PropagateOOFPositionedInfo(
     const NGPhysicalFragment& fragment,
     LogicalOffset offset,
     LogicalOffset relative_offset,
@@ -681,7 +680,7 @@ void NGFragmentBuilder::PropagateOOFPositionedInfo(
       containing_block, fixedpos_containing_block);
 }
 
-void NGFragmentBuilder::PropagateOOFFragmentainerDescendants(
+void FragmentBuilder::PropagateOOFFragmentainerDescendants(
     const NGPhysicalFragment& fragment,
     LogicalOffset offset,
     LogicalOffset relative_offset,
@@ -877,7 +876,7 @@ void NGFragmentBuilder::PropagateOOFFragmentainerDescendants(
   }
 }
 
-void NGFragmentBuilder::AdjustFixedposContainerInfo(
+void FragmentBuilder::AdjustFixedposContainerInfo(
     const NGPhysicalFragment* box_fragment,
     LogicalOffset relative_offset,
     OofInlineContainer<LogicalOffset>* fixedpos_inline_container,
@@ -912,7 +911,7 @@ void NGFragmentBuilder::AdjustFixedposContainerInfo(
   }
 }
 
-void NGFragmentBuilder::PropagateSpaceShortage(
+void FragmentBuilder::PropagateSpaceShortage(
     absl::optional<LayoutUnit> space_shortage) {
   // Space shortage should only be reported when we already have a tentative
   // fragmentainer block-size. It's meaningless to talk about space shortage
@@ -923,16 +922,16 @@ void NGFragmentBuilder::PropagateSpaceShortage(
   UpdateMinimalSpaceShortage(space_shortage, &minimal_space_shortage_);
 }
 
-const NGLayoutResult* NGFragmentBuilder::Abort(NGLayoutResult::EStatus status) {
+const NGLayoutResult* FragmentBuilder::Abort(NGLayoutResult::EStatus status) {
   return MakeGarbageCollected<NGLayoutResult>(
-      NGLayoutResult::NGFragmentBuilderPassKey(), status, this);
+      NGLayoutResult::FragmentBuilderPassKey(), status, this);
 }
 
 #if DCHECK_IS_ON()
 
-String NGFragmentBuilder::ToString() const {
+String FragmentBuilder::ToString() const {
   StringBuilder builder;
-  builder.AppendFormat("NGFragmentBuilder %.2fx%.2f, Children %u\n",
+  builder.AppendFormat("FragmentBuilder %.2fx%.2f, Children %u\n",
                        InlineSize().ToFloat(), BlockSize().ToFloat(),
                        children_.size());
   for (auto& child : children_) {

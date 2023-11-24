@@ -35,8 +35,8 @@ template <typename OffsetType>
 struct MulticolWithPendingOofs;
 
 // Helper class for positioning of out-of-flow blocks.
-// It should be used together with NGBoxFragmentBuilder.
-// See NGBoxFragmentBuilder::AddOutOfFlowChildCandidate documentation
+// It should be used together with BoxFragmentBuilder.
+// See BoxFragmentBuilder::AddOutOfFlowChildCandidate documentation
 // for example of using these classes together.
 class CORE_EXPORT OutOfFlowLayoutPart {
   STACK_ALLOCATED();
@@ -44,7 +44,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
  public:
   OutOfFlowLayoutPart(const BlockNode& container_node,
                       const ConstraintSpace& container_space,
-                      NGBoxFragmentBuilder* container_builder);
+                      BoxFragmentBuilder* container_builder);
   void Run();
 
   struct ColumnBalancingInfo {
@@ -65,7 +65,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
     void PropagateSpaceShortage(LayoutUnit space_shortage);
 
     // The list of columns to balance.
-    NGFragmentBuilder::ChildrenVector columns;
+    FragmentBuilder::ChildrenVector columns;
     // The list of OOF fragmentainer descendants of |columns|.
     HeapVector<LogicalOofNodeForFragmentation>
         out_of_flow_fragmentainer_descendants;
@@ -289,7 +289,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
 
   void LayoutCandidates(HeapVector<LogicalOofPositionedNode>* candidates);
 
-  void HandleMulticolsWithPendingOOFs(NGBoxFragmentBuilder* container_builder);
+  void HandleMulticolsWithPendingOOFs(BoxFragmentBuilder* container_builder);
   void LayoutOOFsInMulticol(
       const BlockNode& multicol,
       const MulticolWithPendingOofs<LogicalOffset>* multicol_info);
@@ -394,17 +394,16 @@ class CORE_EXPORT OutOfFlowLayoutPart {
   LogicalStaticPosition ToStaticPositionForLegacy(
       LogicalStaticPosition position) const;
 
-  const NGFragmentBuilder::ChildrenVector& FragmentationContextChildren()
-      const {
+  const FragmentBuilder::ChildrenVector& FragmentationContextChildren() const {
     DCHECK(container_builder_->IsBlockFragmentationContextRoot());
     return column_balancing_info_ ? column_balancing_info_->columns
                                   : container_builder_->Children();
   }
 
-  NGBoxFragmentBuilder* container_builder_;
+  BoxFragmentBuilder* container_builder_;
   // The builder for the outer block fragmentation context when this is an inner
   // layout of nested block fragmentation.
-  NGBoxFragmentBuilder* outer_container_builder_ = nullptr;
+  BoxFragmentBuilder* outer_container_builder_ = nullptr;
   ContainingBlockInfo default_containing_block_info_for_absolute_;
   ContainingBlockInfo default_containing_block_info_for_fixed_;
   HeapHashMap<Member<const LayoutObject>, ContainingBlockInfo>

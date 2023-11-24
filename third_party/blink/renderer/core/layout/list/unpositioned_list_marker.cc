@@ -86,7 +86,7 @@ void UnpositionedListMarker::AddToBox(
     const NGLayoutResult& marker_layout_result,
     LayoutUnit content_baseline,
     LayoutUnit* block_offset,
-    NGBoxFragmentBuilder* container_builder) const {
+    BoxFragmentBuilder* container_builder) const {
   const NGPhysicalBoxFragment& marker_physical_fragment =
       To<NGPhysicalBoxFragment>(marker_layout_result.PhysicalFragment());
 
@@ -126,7 +126,7 @@ void UnpositionedListMarker::AddToBoxWithoutLineBoxes(
     const ConstraintSpace& space,
     FontBaseline baseline_type,
     const NGLayoutResult& marker_layout_result,
-    NGBoxFragmentBuilder* container_builder,
+    BoxFragmentBuilder* container_builder,
     LayoutUnit* intrinsic_block_size) const {
   const NGPhysicalBoxFragment& marker_physical_fragment =
       To<NGPhysicalBoxFragment>(marker_layout_result.PhysicalFragment());
@@ -160,7 +160,7 @@ void UnpositionedListMarker::AddToBoxWithoutLineBoxes(
 // diff as intruded offset.
 LayoutUnit UnpositionedListMarker::ComputeIntrudedFloatOffset(
     const ConstraintSpace& space,
-    const NGBoxFragmentBuilder* container_builder,
+    const BoxFragmentBuilder* container_builder,
     const BoxStrut& border_scrollbar_padding,
     LayoutUnit marker_block_offset) const {
   DCHECK(container_builder);

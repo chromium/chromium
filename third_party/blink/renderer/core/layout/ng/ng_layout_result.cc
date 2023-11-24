@@ -52,11 +52,11 @@ const NGLayoutResult* NGLayoutResult::CloneWithPostLayoutFragments(
                  To<NGPhysicalBoxFragment>(other.PhysicalFragment())));
 }
 
-NGLayoutResult::NGLayoutResult(NGBoxFragmentBuilderPassKey passkey,
+NGLayoutResult::NGLayoutResult(BoxFragmentBuilderPassKey passkey,
                                const NGPhysicalFragment* physical_fragment,
-                               NGBoxFragmentBuilder* builder)
+                               BoxFragmentBuilder* builder)
     : NGLayoutResult(std::move(physical_fragment),
-                     static_cast<NGFragmentBuilder*>(builder)) {
+                     static_cast<FragmentBuilder*>(builder)) {
   bitfields_.is_initial_block_size_indefinite =
       builder->is_initial_block_size_indefinite_;
   intrinsic_block_size_ = builder->intrinsic_block_size_;
@@ -115,7 +115,7 @@ NGLayoutResult::NGLayoutResult(LineBoxFragmentBuilderPassKey passkey,
                                const NGPhysicalFragment* physical_fragment,
                                LineBoxFragmentBuilder* builder)
     : NGLayoutResult(std::move(physical_fragment),
-                     static_cast<NGFragmentBuilder*>(builder)) {
+                     static_cast<FragmentBuilder*>(builder)) {
   DCHECK_EQ(builder->bfc_block_offset_.has_value(),
             builder->line_box_bfc_block_offset_.has_value());
   if (builder->bfc_block_offset_ != builder->line_box_bfc_block_offset_) {
@@ -132,9 +132,9 @@ NGLayoutResult::NGLayoutResult(LineBoxFragmentBuilderPassKey passkey,
   }
 }
 
-NGLayoutResult::NGLayoutResult(NGFragmentBuilderPassKey key,
+NGLayoutResult::NGLayoutResult(FragmentBuilderPassKey key,
                                EStatus status,
-                               NGFragmentBuilder* builder)
+                               FragmentBuilder* builder)
     : NGLayoutResult(/* physical_fragment */ nullptr, builder) {
   bitfields_.status = status;
   DCHECK_NE(status, kSuccess)
@@ -201,7 +201,7 @@ NGLayoutResult::NGLayoutResult(const NGLayoutResult& other,
 }
 
 NGLayoutResult::NGLayoutResult(const NGPhysicalFragment* physical_fragment,
-                               NGFragmentBuilder* builder)
+                               FragmentBuilder* builder)
     : space_(builder->space_),
       physical_fragment_(std::move(physical_fragment)),
       rare_data_(nullptr),

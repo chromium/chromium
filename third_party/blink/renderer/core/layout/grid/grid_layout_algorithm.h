@@ -34,7 +34,7 @@ using GridItemDataPtrVector = Vector<GridItemData*, 16>;
 using GridSetPtrVector = Vector<GridSet*, 16>;
 
 class CORE_EXPORT GridLayoutAlgorithm
-    : public LayoutAlgorithm<GridNode, NGBoxFragmentBuilder, BlockBreakToken> {
+    : public LayoutAlgorithm<GridNode, BoxFragmentBuilder, BlockBreakToken> {
  public:
   explicit GridLayoutAlgorithm(const LayoutAlgorithmParams& params);
 

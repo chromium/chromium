@@ -13,7 +13,7 @@
 
 namespace blink {
 
-class NGBoxFragmentBuilder;
+class BoxFragmentBuilder;
 class TableBorders;
 struct FrameSetLayoutData;
 struct MathMLPaintInfo;
@@ -39,7 +39,7 @@ class PhysicalFragmentRareData
                            const PhysicalBoxStrut* borders,
                            const PhysicalBoxStrut* padding,
                            absl::optional<PhysicalRect> inflow_bounds,
-                           NGBoxFragmentBuilder& builder,
+                           BoxFragmentBuilder& builder,
                            wtf_size_t num_fields);
   PhysicalFragmentRareData(const PhysicalFragmentRareData& other);
   ~PhysicalFragmentRareData();

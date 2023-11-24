@@ -13,9 +13,9 @@
 namespace blink {
 
 class BlockNode;
+class BoxFragmentBuilder;
 class ConstraintSpaceBuilder;
 class LogicalBoxFragment;
-class NGBoxFragmentBuilder;
 class TableBorders;
 class TableNode;
 enum class LayoutResultCacheSlot;
@@ -80,7 +80,7 @@ void ComputeSectionMinimumRowBlockSizes(
 
 // Performs any final adjustments for table-cells at the end of layout.
 void FinalizeTableCellLayout(LayoutUnit unconstrained_intrinsic_block_size,
-                             NGBoxFragmentBuilder*);
+                             BoxFragmentBuilder*);
 
 // ColspanCellTabulator keeps track of columns occupied by colspanned cells
 // when traversing rows in a section. It is used to compute cell's actual

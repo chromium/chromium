@@ -18,11 +18,11 @@
 namespace blink {
 
 class BlockNode;
+class BoxFragmentBuilder;
 class ComputedStyle;
 class ConstraintSpace;
 class LayoutOutsideListMarker;
 class LayoutUnit;
-class NGBoxFragmentBuilder;
 class NGLayoutResult;
 class NGPhysicalFragment;
 
@@ -75,7 +75,7 @@ class CORE_EXPORT UnpositionedListMarker final {
                 const NGLayoutResult& marker_layout_result,
                 LayoutUnit content_baseline,
                 LayoutUnit* block_offset,
-                NGBoxFragmentBuilder*) const;
+                BoxFragmentBuilder*) const;
 
   // Add a fragment for an outside list marker when the list item has no line
   // boxes. Also adjust |intrinsic_block_size| if it was smaller than the list
@@ -83,7 +83,7 @@ class CORE_EXPORT UnpositionedListMarker final {
   void AddToBoxWithoutLineBoxes(const ConstraintSpace&,
                                 FontBaseline,
                                 const NGLayoutResult& marker_layout_result,
-                                NGBoxFragmentBuilder*,
+                                BoxFragmentBuilder*,
                                 LayoutUnit* intrinsic_block_size) const;
   LayoutUnit InlineOffset(const LayoutUnit marker_inline_size) const;
 
@@ -103,7 +103,7 @@ class CORE_EXPORT UnpositionedListMarker final {
 
  private:
   LayoutUnit ComputeIntrudedFloatOffset(const ConstraintSpace&,
-                                        const NGBoxFragmentBuilder*,
+                                        const BoxFragmentBuilder*,
                                         const BoxStrut&,
                                         LayoutUnit) const;
 

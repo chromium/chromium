@@ -1589,13 +1589,13 @@ void BlockNode::UpdateMarginPaddingInfoIfNeeded(
 
   if (Style().MayHaveMargin()) {
     // We set the initial margin data here because RebuildFragmentTreeSpine()
-    // and atomic inline layout don't use NGBoxFragmentBuilder::AddResult().
+    // and atomic inline layout don't use BoxFragmentBuilder::AddResult().
     // TODO(crbug.com/1353190): Try to move margin computation to them.
     To<NGPhysicalBoxFragment>(fragment)
         .GetMutableForContainerLayout()
         .SetMargins(ComputePhysicalMargins(space, Style()));
 
-    // This margin data may be overwritten by NGBoxFragmentBuilder::AddResult().
+    // This margin data may be overwritten by BoxFragmentBuilder::AddResult().
   }
 
   if (Style().MayHaveMargin() || Style().MayHavePadding()) {

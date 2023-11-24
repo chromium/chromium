@@ -34,27 +34,27 @@ namespace blink {
 
 class NGPhysicalFragment;
 
-class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
+class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   STACK_ALLOCATED();
 
  public:
-  NGBoxFragmentBuilder(LayoutInputNode node,
-                       const ComputedStyle* style,
-                       const ConstraintSpace& space,
-                       WritingDirectionMode writing_direction)
-      : NGFragmentBuilder(node, style, space, writing_direction),
+  BoxFragmentBuilder(LayoutInputNode node,
+                     const ComputedStyle* style,
+                     const ConstraintSpace& space,
+                     WritingDirectionMode writing_direction)
+      : FragmentBuilder(node, style, space, writing_direction),
         is_inline_formatting_context_(node.IsInline()) {}
 
   // Build a fragment for LayoutObject without LayoutInputNode. LayoutInline
   // has InlineItem but does not have corresponding LayoutInputNode.
-  NGBoxFragmentBuilder(LayoutObject* layout_object,
-                       const ComputedStyle* style,
-                       const ConstraintSpace& space,
-                       WritingDirectionMode writing_direction)
-      : NGFragmentBuilder(/* node */ nullptr,
-                          std::move(style),
-                          space,
-                          writing_direction),
+  BoxFragmentBuilder(LayoutObject* layout_object,
+                     const ComputedStyle* style,
+                     const ConstraintSpace& space,
+                     WritingDirectionMode writing_direction)
+      : FragmentBuilder(/* node */ nullptr,
+                        std::move(style),
+                        space,
+                        writing_direction),
         is_inline_formatting_context_(true) {
     layout_object_ = layout_object;
   }

@@ -26,14 +26,14 @@
 
 namespace blink {
 
-class NGBoxFragmentBuilder;
+class BoxFragmentBuilder;
 enum class NGOutlineType;
 struct FrameSetLayoutData;
 
 class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
  public:
   static const NGPhysicalBoxFragment* Create(
-      NGBoxFragmentBuilder* builder,
+      BoxFragmentBuilder* builder,
       WritingMode block_or_line_writing_mode);
 
   // Creates a shallow copy of |other|.
@@ -46,7 +46,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
 
   using PassKey = base::PassKey<NGPhysicalBoxFragment>;
   NGPhysicalBoxFragment(PassKey,
-                        NGBoxFragmentBuilder* builder,
+                        BoxFragmentBuilder* builder,
                         bool has_scrollable_overflow,
                         const PhysicalRect& scrollable_overflow,
                         bool has_borders,

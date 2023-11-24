@@ -12,7 +12,7 @@
 namespace blink {
 
 class CORE_EXPORT MathSpaceLayoutAlgorithm
-    : public LayoutAlgorithm<BlockNode, NGBoxFragmentBuilder, BlockBreakToken> {
+    : public LayoutAlgorithm<BlockNode, BoxFragmentBuilder, BlockBreakToken> {
  public:
   explicit MathSpaceLayoutAlgorithm(const LayoutAlgorithmParams& params);
 

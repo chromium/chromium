@@ -625,7 +625,7 @@ const NGLayoutResult* ComputeOofBlockDimensions(
 }
 
 void AdjustOffsetForSplitInline(const BlockNode& node,
-                                const NGBoxFragmentBuilder* container_builder,
+                                const BoxFragmentBuilder* container_builder,
                                 LogicalOffset& offset) {
   DCHECK(!RuntimeEnabledFeatures::LayoutNewContainingBlockEnabled());
   // Special case: oof css container is a split inline.

@@ -212,7 +212,7 @@ void FragmentItemsBuilder::AddListMarker(
 FragmentItemsBuilder::AddPreviousItemsResult
 FragmentItemsBuilder::AddPreviousItems(const NGPhysicalBoxFragment& container,
                                        const FragmentItems& items,
-                                       NGBoxFragmentBuilder* container_builder,
+                                       BoxFragmentBuilder* container_builder,
                                        const FragmentItem* end_item,
                                        wtf_size_t max_lines) {
   if (end_item) {

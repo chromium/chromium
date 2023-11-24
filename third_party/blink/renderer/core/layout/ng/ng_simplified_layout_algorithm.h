@@ -29,7 +29,7 @@ struct PhysicalFragmentLink;
 // This algorithm effectively performs a (convoluted) "copy" of the previous
 // layout result. It will:
 //  1. Copy data from the previous |NGLayoutResult| into the
-//     |NGBoxFragmentBuilder|, (e.g. flags, end margin strut, etc).
+//     |BoxFragmentBuilder|, (e.g. flags, end margin strut, etc).
 //  2. Iterate through all the children and:
 //    a. If OOF-positioned determine the static-position and add it as an
 //       OOF-positioned candidate.
@@ -37,7 +37,7 @@ struct PhysicalFragmentLink;
 //       "simplified" layout on its children).
 //  3. Run the |OutOfFlowLayoutPart|.
 class CORE_EXPORT SimplifiedLayoutAlgorithm
-    : public LayoutAlgorithm<BlockNode, NGBoxFragmentBuilder, BlockBreakToken> {
+    : public LayoutAlgorithm<BlockNode, BoxFragmentBuilder, BlockBreakToken> {
  public:
   SimplifiedLayoutAlgorithm(const LayoutAlgorithmParams&,
                             const NGLayoutResult&,

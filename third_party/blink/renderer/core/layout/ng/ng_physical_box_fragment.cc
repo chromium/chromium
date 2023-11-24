@@ -94,7 +94,7 @@ void ApplyOverflowClip(OverflowClipAxes overflow_clip_axes,
 }
 
 OofContainingBlock<PhysicalOffset> PhysicalContainingBlock(
-    NGFragmentBuilder* builder,
+    FragmentBuilder* builder,
     PhysicalSize outer_size,
     PhysicalSize inner_size,
     const OofContainingBlock<LogicalOffset>& containing_block) {
@@ -109,7 +109,7 @@ OofContainingBlock<PhysicalOffset> PhysicalContainingBlock(
 }
 
 OofContainingBlock<PhysicalOffset> PhysicalContainingBlock(
-    NGFragmentBuilder* builder,
+    FragmentBuilder* builder,
     PhysicalSize size,
     const OofContainingBlock<LogicalOffset>& containing_block) {
   PhysicalSize containing_block_size =
@@ -122,7 +122,7 @@ OofContainingBlock<PhysicalOffset> PhysicalContainingBlock(
 
 // static
 const NGPhysicalBoxFragment* NGPhysicalBoxFragment::Create(
-    NGBoxFragmentBuilder* builder,
+    BoxFragmentBuilder* builder,
     WritingMode block_or_line_writing_mode) {
   const auto writing_direction = builder->GetWritingDirection();
   const PhysicalBoxStrut borders =
@@ -294,7 +294,7 @@ size_t NGPhysicalBoxFragment::AdditionalByteSize(bool has_fragment_items) {
 
 NGPhysicalBoxFragment::NGPhysicalBoxFragment(
     PassKey key,
-    NGBoxFragmentBuilder* builder,
+    BoxFragmentBuilder* builder,
     bool has_scrollable_overflow,
     const PhysicalRect& scrollable_overflow,
     bool has_borders,
@@ -439,7 +439,7 @@ void NGPhysicalBoxFragment::Dispose() {
 
 // TODO(kojii): Move to ng_physical_fragment.cc
 NGPhysicalFragment::OofData* NGPhysicalFragment::FragmentedOofDataFromBuilder(
-    NGFragmentBuilder* builder) {
+    FragmentBuilder* builder) {
   DCHECK(has_fragmented_out_of_flow_data_);
   DCHECK_EQ(has_fragmented_out_of_flow_data_,
             !builder->oof_positioned_fragmentainer_descendants_.empty() ||

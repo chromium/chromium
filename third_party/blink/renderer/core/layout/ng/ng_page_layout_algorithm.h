@@ -18,7 +18,7 @@ class ConstraintSpace;
 struct LogicalSize;
 
 class CORE_EXPORT PageLayoutAlgorithm
-    : public LayoutAlgorithm<BlockNode, NGBoxFragmentBuilder, BlockBreakToken> {
+    : public LayoutAlgorithm<BlockNode, BoxFragmentBuilder, BlockBreakToken> {
  public:
   explicit PageLayoutAlgorithm(const LayoutAlgorithmParams& params);
 

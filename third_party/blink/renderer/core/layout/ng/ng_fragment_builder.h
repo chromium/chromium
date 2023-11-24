@@ -31,11 +31,11 @@ class FragmentItemsBuilder;
 class InlineBreakToken;
 class LayoutObject;
 
-class CORE_EXPORT NGFragmentBuilder {
+class CORE_EXPORT FragmentBuilder {
   STACK_ALLOCATED();
 
  public:
-  ~NGFragmentBuilder() {
+  ~FragmentBuilder() {
     // Clear collections so the backing gets promptly freed, and reused.
     oof_positioned_candidates_.clear();
     oof_positioned_fragmentainer_descendants_.clear();
@@ -252,7 +252,7 @@ class CORE_EXPORT NGFragmentBuilder {
   // (i.e. in the case where the |multicol| has found a fixedpos containing
   // block in its ancestor path).
   void TransferOutOfFlowCandidates(
-      NGFragmentBuilder* destination_builder,
+      FragmentBuilder* destination_builder,
       LogicalOffset additional_offset,
       const MulticolWithPendingOofs<LogicalOffset>* multicol = nullptr);
 
@@ -505,10 +505,10 @@ class CORE_EXPORT NGFragmentBuilder {
 #endif
 
  protected:
-  NGFragmentBuilder(const LayoutInputNode& node,
-                    const ComputedStyle* style,
-                    const ConstraintSpace& space,
-                    WritingDirectionMode writing_direction)
+  FragmentBuilder(const LayoutInputNode& node,
+                  const ComputedStyle* style,
+                  const ConstraintSpace& space,
+                  WritingDirectionMode writing_direction)
       : node_(node),
         space_(space),
         style_(style),
@@ -581,7 +581,7 @@ class CORE_EXPORT NGFragmentBuilder {
 
   FragmentItemsBuilder* items_builder_ = nullptr;
 
-  // Only used by the NGBoxFragmentBuilder subclass, but defined here to avoid
+  // Only used by the BoxFragmentBuilder subclass, but defined here to avoid
   // a virtual function call.
   BreakTokenVector child_break_tokens_;
   const InlineBreakToken* last_inline_break_token_ = nullptr;

@@ -17,7 +17,7 @@ class BlockBreakToken;
 class BlockNode;
 
 class CORE_EXPORT TableSectionLayoutAlgorithm
-    : public LayoutAlgorithm<BlockNode, NGBoxFragmentBuilder, BlockBreakToken> {
+    : public LayoutAlgorithm<BlockNode, BoxFragmentBuilder, BlockBreakToken> {
  public:
   explicit TableSectionLayoutAlgorithm(const LayoutAlgorithmParams& params);
 

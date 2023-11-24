@@ -31,10 +31,10 @@
 namespace blink {
 
 class ComputedStyle;
+class FragmentBuilder;
 class FragmentData;
 class FragmentItem;
 class Node;
-class NGFragmentBuilder;
 class PaintLayer;
 struct FragmentedOofData;
 struct LogicalRect;
@@ -103,7 +103,7 @@ class CORE_EXPORT NGPhysicalFragment
     Member<const ScrollStartTargetCandidates> scroll_start_targets;
   };
 
-  NGPhysicalFragment(NGFragmentBuilder* builder,
+  NGPhysicalFragment(FragmentBuilder* builder,
                      WritingMode block_or_line_writing_mode,
                      NGFragmentType type,
                      unsigned sub_type);
@@ -753,10 +753,10 @@ class CORE_EXPORT NGPhysicalFragment
       NGOutlineType outline_type,
       const LayoutBoxModelObject* containing_block) const;
 
-  static bool DependsOnPercentageBlockSize(const NGFragmentBuilder&);
+  static bool DependsOnPercentageBlockSize(const FragmentBuilder&);
 
-  OofData* OofDataFromBuilder(NGFragmentBuilder*);
-  OofData* FragmentedOofDataFromBuilder(NGFragmentBuilder*);
+  OofData* OofDataFromBuilder(FragmentBuilder*);
+  OofData* FragmentedOofDataFromBuilder(FragmentBuilder*);
   void ClearOofData();
   OofData* CloneOofData() const;
 

@@ -31,11 +31,11 @@
 
 namespace blink {
 
+class BoxFragmentBuilder;
 class ColumnSpannerPath;
 class ExclusionSpace;
+class FragmentBuilder;
 class LineBoxFragmentBuilder;
-class NGBoxFragmentBuilder;
-class NGFragmentBuilder;
 
 // The NGLayoutResult stores the resulting data from layout. This includes
 // geometry information in form of a NGPhysicalFragment, which is kept around
@@ -88,7 +88,7 @@ class CORE_EXPORT NGLayoutResult final
 
   // Delegate constructor that sets up what it can, based on the builder.
   NGLayoutResult(const NGPhysicalFragment* physical_fragment,
-                 NGFragmentBuilder* builder);
+                 FragmentBuilder* builder);
 
   // We don't need the copy constructor, move constructor, copy
   // assigmnment-operator, or move assignment-operator today.
@@ -581,15 +581,15 @@ class CORE_EXPORT NGLayoutResult final
                                     bool check_no_fragmentation = true) const;
 #endif
 
-  using NGFragmentBuilderPassKey = base::PassKey<NGFragmentBuilder>;
+  using FragmentBuilderPassKey = base::PassKey<FragmentBuilder>;
   // This constructor is for a non-success status.
-  NGLayoutResult(NGFragmentBuilderPassKey, EStatus, NGFragmentBuilder*);
+  NGLayoutResult(FragmentBuilderPassKey, EStatus, FragmentBuilder*);
 
   // This constructor requires a non-null fragment and sets a success status.
-  using NGBoxFragmentBuilderPassKey = base::PassKey<NGBoxFragmentBuilder>;
-  NGLayoutResult(NGBoxFragmentBuilderPassKey,
+  using BoxFragmentBuilderPassKey = base::PassKey<BoxFragmentBuilder>;
+  NGLayoutResult(BoxFragmentBuilderPassKey,
                  const NGPhysicalFragment* physical_fragment,
-                 NGBoxFragmentBuilder*);
+                 BoxFragmentBuilder*);
 
   using LineBoxFragmentBuilderPassKey = base::PassKey<LineBoxFragmentBuilder>;
   // This constructor requires a non-null fragment and sets a success status.

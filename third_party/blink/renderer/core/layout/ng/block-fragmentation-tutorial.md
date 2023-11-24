@@ -12,10 +12,10 @@ Main spec: https://www.w3.org/TR/css-break-3/
 ## Overview ##
 
 Any layout algorithm for block nodes takes ConstraintSpace, BlockNode and
-BlockBreakToken as input, and writes output to NGBoxFragmentBuilder, which
+BlockBreakToken as input, and writes output to BoxFragmentBuilder, which
 will eventually generate an NGPhysicalBoxFragment wrapped inside an
 NGLayoutResult. This will serve as input to the parent algorithm, which will
-eventually add the child fragment to their output, i.e. NGBoxFragmentBuilder (or
+eventually add the child fragment to their output, i.e. BoxFragmentBuilder (or
 abort / finish without doing so). Rather than having each layout algorithm
 implement block fragmentation on its own, we have a shared fragmentation
 machinery, which mainly consists of utility functions in
@@ -194,7 +194,7 @@ What BreakBeforeChildIfNeeded() returns determines how to proceed. We'll either:
 If (and only if) BreakBeforeChildIfNeeded() returns kContinue, should the
 algorithm add the child to the fragment builder. After the child has been added
 to the builder, check the return value of
-[NGBoxFragmentBuilder::HasInflowChildBreakInside()](ng_box_fragment_builder.h)
+[BoxFragmentBuilder::HasInflowChildBreakInside()](ng_box_fragment_builder.h)
 to determine if there was a same-flow break inside the builder. If there is no
 same-flow break, the next child can be laid out. Otherwise, the algorithm should
 finish. In this case, a break token has already been created, so the node will

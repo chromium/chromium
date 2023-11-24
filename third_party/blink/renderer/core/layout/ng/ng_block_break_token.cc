@@ -24,7 +24,7 @@ ASSERT_SIZE(BlockBreakToken, SameSizeAsBlockBreakToken);
 
 }  // namespace
 
-BlockBreakToken* BlockBreakToken::Create(NGBoxFragmentBuilder* builder) {
+BlockBreakToken* BlockBreakToken::Create(BoxFragmentBuilder* builder) {
   // We store the children list inline in the break token as a flexible
   // array. Therefore, we need to make sure to allocate enough space for that
   // array here, which requires a manual allocation + placement new.
@@ -59,7 +59,7 @@ BlockBreakToken* BlockBreakToken::CreateForBreakInRepeatedFragment(
   return token;
 }
 
-BlockBreakToken::BlockBreakToken(PassKey key, NGBoxFragmentBuilder* builder)
+BlockBreakToken::BlockBreakToken(PassKey key, BoxFragmentBuilder* builder)
     : BreakToken(kBlockBreakToken, builder->node_),
       const_num_children_(builder->child_break_tokens_.size()) {
   has_seen_all_children_ = builder->has_seen_all_children_;

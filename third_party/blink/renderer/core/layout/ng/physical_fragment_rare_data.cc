@@ -19,7 +19,7 @@ PhysicalFragmentRareData::PhysicalFragmentRareData(
     const PhysicalBoxStrut* borders,
     const PhysicalBoxStrut* padding,
     absl::optional<PhysicalRect> inflow_bounds,
-    NGBoxFragmentBuilder& builder,
+    BoxFragmentBuilder& builder,
     wtf_size_t num_fields) {
   field_list_.ReserveInitialCapacity(num_fields);
 

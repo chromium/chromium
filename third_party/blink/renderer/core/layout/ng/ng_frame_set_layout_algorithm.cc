@@ -39,8 +39,7 @@ LayoutUnit AdjustSizeToRemainingSize(LayoutUnit current,
 
 FrameSetLayoutAlgorithm::FrameSetLayoutAlgorithm(
     const LayoutAlgorithmParams& params)
-    : LayoutAlgorithm<BlockNode, NGBoxFragmentBuilder, BlockBreakToken>(
-          params) {}
+    : LayoutAlgorithm<BlockNode, BoxFragmentBuilder, BlockBreakToken>(params) {}
 
 const NGLayoutResult* FrameSetLayoutAlgorithm::Layout() {
   auto& frame_set = *To<HTMLFrameSetElement>(Node().GetDOMNode());

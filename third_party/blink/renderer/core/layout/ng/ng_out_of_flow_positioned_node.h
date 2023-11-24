@@ -195,7 +195,7 @@ struct CORE_EXPORT PhysicalOofPositionedNode {
 };
 
 // The logical version of above. It is used within a an algorithm pass (within
-// an |NGFragmentBuilder|), and its logical coordinate system is wrt.
+// an |FragmentBuilder|), and its logical coordinate system is wrt.
 // the container builder's writing-mode.
 //
 // It is *only* used within an algorithm pass, (it is temporary, and should not
@@ -279,7 +279,7 @@ struct CORE_EXPORT PhysicalOofNodeForFragmentation final
 };
 
 // The logical version of the above. It is used within a an algorithm pass
-// (within an |NGFragmentBuilder|), and its logical coordinate system
+// (within an |FragmentBuilder|), and its logical coordinate system
 // is wrt. the container builder's writing-mode.
 //
 // It is *only* used within an algorithm pass, (it is temporary, and should not

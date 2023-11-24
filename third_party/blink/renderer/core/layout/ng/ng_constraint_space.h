@@ -87,7 +87,7 @@ enum class LayoutResultCacheSlot { kLayout, kMeasure };
 // The ConstraintSpace represents a set of constraints and available space
 // which a layout algorithm may produce a LogicalFragment within.
 class CORE_EXPORT ConstraintSpace final {
-  // Though some STACK_ALLOCATED classes, |NGFragmentBuilder| and
+  // Though some STACK_ALLOCATED classes, |FragmentBuilder| and
   // |NGLineBreaker|, have reference to it, DISALLOW_NEW is applied here for
   // performance reason.
   DISALLOW_NEW();

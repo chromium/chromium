@@ -34,7 +34,7 @@ static_assert(
 // block-size would be unconstrained). This information will be used to
 // determine whether it's reasonable to pre-allocate a buffer for all the
 // estimated fragment items inside the node.
-bool IsBlockFragmented(const NGBoxFragmentBuilder& fragment_builder) {
+bool IsBlockFragmented(const BoxFragmentBuilder& fragment_builder) {
   const ConstraintSpace& space = fragment_builder.GetConstraintSpace();
   return space.HasBlockFragmentation() &&
          space.HasKnownFragmentainerBlockSize();
@@ -44,7 +44,7 @@ bool IsBlockFragmented(const NGBoxFragmentBuilder& fragment_builder) {
 
 InlineChildLayoutContext::InlineChildLayoutContext(
     const InlineNode& node,
-    NGBoxFragmentBuilder* container_builder,
+    BoxFragmentBuilder* container_builder,
     LineInfo* line_info)
     : container_builder_(container_builder),
       items_builder_(node,
@@ -56,7 +56,7 @@ InlineChildLayoutContext::InlineChildLayoutContext(
 
 InlineChildLayoutContext::InlineChildLayoutContext(
     const InlineNode& node,
-    NGBoxFragmentBuilder* container_builder,
+    BoxFragmentBuilder* container_builder,
     ScoreLineBreakContext* score_line_break_context)
     : container_builder_(container_builder),
       items_builder_(node,

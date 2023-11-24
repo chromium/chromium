@@ -32,7 +32,7 @@ MathRadicalLayoutAlgorithm::MathRadicalLayoutAlgorithm(
 void MathRadicalLayoutAlgorithm::GatherChildren(
     BlockNode* base,
     BlockNode* index,
-    NGBoxFragmentBuilder* container_builder) const {
+    BoxFragmentBuilder* container_builder) const {
   for (LayoutInputNode child = Node().FirstChild(); child;
        child = child.NextSibling()) {
     BlockNode block_child = To<BlockNode>(child);

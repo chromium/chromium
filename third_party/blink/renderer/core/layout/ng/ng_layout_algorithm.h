@@ -67,7 +67,7 @@ struct LayoutAlgorithmParams {
 
 // Base class for all LayoutNG algorithms.
 template <typename NGInputNodeType,
-          typename NGBoxFragmentBuilderType,
+          typename BoxFragmentBuilderType,
           typename BreakTokenType>
 class CORE_EXPORT LayoutAlgorithm : public LayoutAlgorithmOperations {
   STACK_ALLOCATED();
@@ -84,7 +84,7 @@ class CORE_EXPORT LayoutAlgorithm : public LayoutAlgorithmOperations {
                            space,
                            {space.GetWritingMode(), direction}) {}
 
-  // Constructor for algorithms that use NGBoxFragmentBuilder and
+  // Constructor for algorithms that use BoxFragmentBuilder and
   // BlockBreakToken.
   explicit LayoutAlgorithm(const LayoutAlgorithmParams& params)
       : node_(To<NGInputNodeType>(params.node)),
@@ -212,7 +212,7 @@ class CORE_EXPORT LayoutAlgorithm : public LayoutAlgorithmOperations {
   // The break token from which we are currently resuming layout.
   const BreakTokenType* break_token_;
 
-  NGBoxFragmentBuilderType container_builder_;
+  BoxFragmentBuilderType container_builder_;
 
   // There are cases where we may need more than one early break per fragment.
   // For example, there may be an early break within multiple flex columns. This

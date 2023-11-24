@@ -20,7 +20,7 @@ struct LogicalSize;
 struct MarginStrut;
 
 class CORE_EXPORT ColumnLayoutAlgorithm
-    : public LayoutAlgorithm<BlockNode, NGBoxFragmentBuilder, BlockBreakToken> {
+    : public LayoutAlgorithm<BlockNode, BoxFragmentBuilder, BlockBreakToken> {
  public:
   explicit ColumnLayoutAlgorithm(const LayoutAlgorithmParams& params);
 

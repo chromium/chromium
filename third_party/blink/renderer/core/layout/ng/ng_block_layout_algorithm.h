@@ -60,7 +60,7 @@ struct InflowChildData {
 // A class for general block layout (e.g. a <div> with no special style).
 // Lays out the children in sequence.
 class CORE_EXPORT BlockLayoutAlgorithm
-    : public LayoutAlgorithm<BlockNode, NGBoxFragmentBuilder, BlockBreakToken> {
+    : public LayoutAlgorithm<BlockNode, BoxFragmentBuilder, BlockBreakToken> {
  public:
   // Default constructor.
   explicit BlockLayoutAlgorithm(const LayoutAlgorithmParams& params);

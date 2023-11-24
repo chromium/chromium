@@ -128,7 +128,7 @@ BoxStrut ComputeCaptionMargins(
 }
 
 void ComputeCaptionFragments(
-    const NGBoxFragmentBuilder& table_builder,
+    const BoxFragmentBuilder& table_builder,
     const ComputedStyle& table_style,
     const TableGroupedChildren& grouped_children,
     HeapVector<TableLayoutAlgorithm::CaptionResult>* captions,

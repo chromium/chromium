@@ -364,10 +364,9 @@ OutOfFlowLayoutPart::InitialContainingBlockFixedSize(BlockNode container) {
   return size.ConvertToLogical(container.Style().GetWritingMode());
 }
 
-OutOfFlowLayoutPart::OutOfFlowLayoutPart(
-    const BlockNode& container_node,
-    const ConstraintSpace& container_space,
-    NGBoxFragmentBuilder* container_builder)
+OutOfFlowLayoutPart::OutOfFlowLayoutPart(const BlockNode& container_node,
+                                         const ConstraintSpace& container_space,
+                                         BoxFragmentBuilder* container_builder)
     : container_builder_(container_builder),
       is_absolute_container_(container_node.IsAbsoluteContainer()),
       is_fixed_container_(container_node.IsFixedContainer()),
@@ -963,11 +962,11 @@ void OutOfFlowLayoutPart::LayoutCandidates(
 }
 
 void OutOfFlowLayoutPart::HandleMulticolsWithPendingOOFs(
-    NGBoxFragmentBuilder* container_builder) {
+    BoxFragmentBuilder* container_builder) {
   if (!container_builder->HasMulticolsWithPendingOOFs())
     return;
 
-  NGFragmentBuilder::MulticolCollection multicols_with_pending_oofs;
+  FragmentBuilder::MulticolCollection multicols_with_pending_oofs;
   container_builder->SwapMulticolsWithPendingOOFs(&multicols_with_pending_oofs);
   DCHECK(!multicols_with_pending_oofs.empty());
 
@@ -1003,7 +1002,7 @@ void OutOfFlowLayoutPart::LayoutOOFsInMulticol(
       CreateConstraintSpaceForMulticol(multicol);
   FragmentGeometry limited_fragment_geometry = CalculateInitialFragmentGeometry(
       limited_multicol_constraint_space, multicol, /* break_token */ nullptr);
-  NGBoxFragmentBuilder limited_multicol_container_builder =
+  BoxFragmentBuilder limited_multicol_container_builder =
       CreateContainerBuilderForMulticol(multicol,
                                         limited_multicol_constraint_space,
                                         limited_fragment_geometry);
@@ -1289,7 +1288,7 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
                         container_builder_->BorderScrollbarPadding())
           .block_size;
 
-  NGBoxFragmentBuilder* builder_for_anchor_query = container_builder_;
+  BoxFragmentBuilder* builder_for_anchor_query = container_builder_;
   if (outer_container_builder_) {
     // If this is an inner layout of the nested block fragmentation, and if this
     // block fragmentation context is block fragmented, |multicol_children|

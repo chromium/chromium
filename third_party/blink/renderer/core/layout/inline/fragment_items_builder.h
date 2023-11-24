@@ -96,7 +96,7 @@ class CORE_EXPORT FragmentItemsBuilder {
   AddPreviousItemsResult AddPreviousItems(
       const NGPhysicalBoxFragment& container,
       const FragmentItems& items,
-      NGBoxFragmentBuilder* container_builder = nullptr,
+      BoxFragmentBuilder* container_builder = nullptr,
       const FragmentItem* end_item = nullptr,
       wtf_size_t max_lines = 0);
 

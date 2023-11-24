@@ -98,7 +98,7 @@ void MathScriptsLayoutAlgorithm::GatherChildren(
     HeapVector<SubSupPair>* sub_sup_pairs,
     BlockNode* prescripts,
     unsigned* first_prescript_index,
-    NGBoxFragmentBuilder* container_builder) const {
+    BoxFragmentBuilder* container_builder) const {
   auto script_type = Node().ScriptType();
   bool number_of_scripts_is_even = true;
   sub_sup_pairs->resize(1);

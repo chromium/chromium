@@ -23,7 +23,7 @@
 
 namespace blink {
 
-const NGLayoutResult& NGBoxFragmentBuilder::LayoutResultForPropagation(
+const NGLayoutResult& BoxFragmentBuilder::LayoutResultForPropagation(
     const NGLayoutResult& layout_result) const {
   if (layout_result.Status() != NGLayoutResult::kSuccess) {
     return layout_result;
@@ -43,10 +43,9 @@ const NGLayoutResult& NGBoxFragmentBuilder::LayoutResultForPropagation(
   return *line_items.BlockInInlineLayoutResult();
 }
 
-void NGBoxFragmentBuilder::AddBreakBeforeChild(
-    LayoutInputNode child,
-    absl::optional<BreakAppeal> appeal,
-    bool is_forced_break) {
+void BoxFragmentBuilder::AddBreakBeforeChild(LayoutInputNode child,
+                                             absl::optional<BreakAppeal> appeal,
+                                             bool is_forced_break) {
   // If there's a pre-set break token, we shouldn't be here.
   DCHECK(!break_token_);
 
@@ -101,7 +100,7 @@ void NGBoxFragmentBuilder::AddBreakBeforeChild(
   child_break_tokens_.push_back(token);
 }
 
-void NGBoxFragmentBuilder::AddResult(
+void BoxFragmentBuilder::AddResult(
     const NGLayoutResult& child_layout_result,
     const LogicalOffset offset,
     absl::optional<const BoxStrut> margins,
@@ -156,12 +155,12 @@ void NGBoxFragmentBuilder::AddResult(
   PropagateFromLayoutResult(*result_for_propagation);
 }
 
-void NGBoxFragmentBuilder::AddResult(const NGLayoutResult& child_layout_result,
-                                     const LogicalOffset offset) {
+void BoxFragmentBuilder::AddResult(const NGLayoutResult& child_layout_result,
+                                   const LogicalOffset offset) {
   AddResult(child_layout_result, offset, absl::nullopt, absl::nullopt, nullptr);
 }
 
-void NGBoxFragmentBuilder::AddChild(
+void BoxFragmentBuilder::AddChild(
     const NGPhysicalFragment& child,
     const LogicalOffset& child_offset,
     const MarginStrut* margin_strut,
@@ -299,8 +298,8 @@ void NGBoxFragmentBuilder::AddChild(
   SetRequiresContentBeforeBreaking(false);
 }
 
-void NGBoxFragmentBuilder::AddBreakToken(const BreakToken* token,
-                                         bool is_in_parallel_flow) {
+void BoxFragmentBuilder::AddBreakToken(const BreakToken* token,
+                                       bool is_in_parallel_flow) {
   // If there's a pre-set break token, we shouldn't be here.
   DCHECK(!break_token_);
 
@@ -309,12 +308,12 @@ void NGBoxFragmentBuilder::AddBreakToken(const BreakToken* token,
   has_inflow_child_break_inside_ |= !is_in_parallel_flow;
 }
 
-EBreakBetween NGBoxFragmentBuilder::JoinedBreakBetweenValue(
+EBreakBetween BoxFragmentBuilder::JoinedBreakBetweenValue(
     EBreakBetween break_before) const {
   return JoinFragmentainerBreakValues(previous_break_after_, break_before);
 }
 
-void NGBoxFragmentBuilder::MoveChildrenInBlockDirection(LayoutUnit delta) {
+void BoxFragmentBuilder::MoveChildrenInBlockDirection(LayoutUnit delta) {
   DCHECK(is_new_fc_);
   DCHECK_NE(FragmentBlockSize(), kIndefiniteSize);
   DCHECK(oof_positioned_descendants_.empty());
@@ -349,7 +348,7 @@ void NGBoxFragmentBuilder::MoveChildrenInBlockDirection(LayoutUnit delta) {
   }
 }
 
-void NGBoxFragmentBuilder::PropagateBreakInfo(
+void BoxFragmentBuilder::PropagateBreakInfo(
     const NGLayoutResult& child_layout_result,
     LogicalOffset offset) {
   DCHECK(has_block_fragmentation_);
@@ -467,7 +466,7 @@ void NGBoxFragmentBuilder::PropagateBreakInfo(
   }
 }
 
-void NGBoxFragmentBuilder::PropagateChildBreakValues(
+void BoxFragmentBuilder::PropagateChildBreakValues(
     const NGLayoutResult& child_layout_result) {
   if (child_layout_result.Status() != NGLayoutResult::kSuccess)
     return;
@@ -504,7 +503,7 @@ void NGBoxFragmentBuilder::PropagateChildBreakValues(
   }
 }
 
-const NGLayoutResult* NGBoxFragmentBuilder::ToBoxFragment(
+const NGLayoutResult* BoxFragmentBuilder::ToBoxFragment(
     WritingMode block_or_line_writing_mode) {
 #if DCHECK_IS_ON()
   if (ItemsBuilder()) {
@@ -574,10 +573,10 @@ const NGLayoutResult* NGBoxFragmentBuilder::ToBoxFragment(
   fragment->CheckType();
 
   return MakeGarbageCollected<NGLayoutResult>(
-      NGLayoutResult::NGBoxFragmentBuilderPassKey(), std::move(fragment), this);
+      NGLayoutResult::BoxFragmentBuilderPassKey(), std::move(fragment), this);
 }
 
-LogicalOffset NGBoxFragmentBuilder::GetChildOffset(
+LogicalOffset BoxFragmentBuilder::GetChildOffset(
     const LayoutObject* object) const {
   DCHECK(!RuntimeEnabledFeatures::LayoutNewContainingBlockEnabled());
   DCHECK(object);
@@ -613,7 +612,7 @@ LogicalOffset NGBoxFragmentBuilder::GetChildOffset(
   return LogicalOffset();
 }
 
-void NGBoxFragmentBuilder::AdjustFragmentainerDescendant(
+void BoxFragmentBuilder::AdjustFragmentainerDescendant(
     LogicalOofNodeForFragmentation& descendant,
     bool only_fixedpos_containing_block) {
   LayoutUnit previous_consumed_block_size;
@@ -642,7 +641,7 @@ void NGBoxFragmentBuilder::AdjustFragmentainerDescendant(
   }
 }
 
-void NGBoxFragmentBuilder::
+void BoxFragmentBuilder::
     AdjustFixedposContainingBlockForFragmentainerDescendants() {
   if (!HasOutOfFlowFragmentainerDescendants())
     return;
@@ -653,7 +652,7 @@ void NGBoxFragmentBuilder::
   }
 }
 
-void NGBoxFragmentBuilder::AdjustFixedposContainingBlockForInnerMulticols() {
+void BoxFragmentBuilder::AdjustFixedposContainingBlockForInnerMulticols() {
   if (!HasMulticolsWithPendingOOFs() || !PreviousBreakToken())
     return;
 
@@ -677,7 +676,7 @@ void NGBoxFragmentBuilder::AdjustFixedposContainingBlockForInnerMulticols() {
 
 #if DCHECK_IS_ON()
 
-void NGBoxFragmentBuilder::CheckNoBlockFragmentation() const {
+void BoxFragmentBuilder::CheckNoBlockFragmentation() const {
   DCHECK(!ShouldBreakInside());
   DCHECK(!HasInflowChildBreakInside());
   DCHECK(!DidBreakSelf());

@@ -31,8 +31,8 @@ class LineWidthsTest : public RenderingTest {
     const LayoutUnit width = FragmentWidth(node);
     ConstraintSpace space = ConstraintSpaceForAvailableSize(width);
     const ComputedStyle& style = node.Style();
-    NGBoxFragmentBuilder container_builder(node, &style, space,
-                                           style.GetWritingDirection());
+    BoxFragmentBuilder container_builder(node, &style, space,
+                                         style.GetWritingDirection());
     SimpleInlineChildLayoutContext context(node, &container_builder);
     InlineLayoutAlgorithm algorithm(node, space, /*break_token*/ nullptr,
                                     /*column_spanner_path*/ nullptr, &context);

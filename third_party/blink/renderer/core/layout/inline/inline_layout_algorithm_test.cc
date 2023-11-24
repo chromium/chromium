@@ -185,7 +185,7 @@ TEST_F(InlineLayoutAlgorithmTest, BreakToken) {
   builder.SetAvailableSize(size);
   ConstraintSpace constraint_space = builder.ToConstraintSpace();
 
-  NGBoxFragmentBuilder container_builder(
+  BoxFragmentBuilder container_builder(
       block_flow, block_flow->Style(), constraint_space,
       block_flow->Style()->GetWritingDirection());
   SimpleInlineChildLayoutContext context(inline_node, &container_builder);

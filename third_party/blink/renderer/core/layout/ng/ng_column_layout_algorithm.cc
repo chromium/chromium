@@ -85,7 +85,7 @@ class MulticolPartWalker {
   // If a column was added for an OOF before a spanner, we need to update the
   // column break token so that the content is resumed at the correct spot.
   void UpdateNextColumnBreakToken(
-      const NGFragmentBuilder::ChildrenVector& children);
+      const FragmentBuilder::ChildrenVector& children);
 
  private:
   void MoveToNext();
@@ -130,7 +130,7 @@ void MulticolPartWalker::AddNextColumnBreakToken(
 }
 
 void MulticolPartWalker::UpdateNextColumnBreakToken(
-    const NGFragmentBuilder::ChildrenVector& children) {
+    const FragmentBuilder::ChildrenVector& children) {
   if (children.empty())
     return;
   const blink::NGPhysicalFragment* last_child =

@@ -14,7 +14,7 @@ class BlockBreakToken;
 class HTMLDimension;
 
 class CORE_EXPORT FrameSetLayoutAlgorithm
-    : public LayoutAlgorithm<BlockNode, NGBoxFragmentBuilder, BlockBreakToken> {
+    : public LayoutAlgorithm<BlockNode, BoxFragmentBuilder, BlockBreakToken> {
  public:
   explicit FrameSetLayoutAlgorithm(const LayoutAlgorithmParams& params);
 

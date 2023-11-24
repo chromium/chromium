@@ -105,7 +105,7 @@ void GatherInlineContainerFragmentsFromItems(
 
 void InlineContainingBlockUtils::ComputeInlineContainerGeometry(
     InlineContainingBlockMap* inline_containing_block_map,
-    NGBoxFragmentBuilder* container_builder) {
+    BoxFragmentBuilder* container_builder) {
   if (inline_containing_block_map->empty())
     return;
 

@@ -17,7 +17,7 @@ class ConstraintSpace;
 enum class BreakStatus;
 
 class CORE_EXPORT FieldsetLayoutAlgorithm
-    : public LayoutAlgorithm<BlockNode, NGBoxFragmentBuilder, BlockBreakToken> {
+    : public LayoutAlgorithm<BlockNode, BoxFragmentBuilder, BlockBreakToken> {
  public:
   explicit FieldsetLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
