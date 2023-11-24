@@ -5679,6 +5679,7 @@ interface MLGraphBuilder
     method tan
     method tanh
     method transpose
+    method where
 interface MLModelLoader
     attribute @@toStringTag
     method constructor

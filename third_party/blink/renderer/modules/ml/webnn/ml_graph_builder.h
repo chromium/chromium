@@ -261,6 +261,11 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                        const MLTransposeOptions* options,
                        ExceptionState& exception_state);
 
+  MLOperand* where(const MLOperand* condition,
+                   const MLOperand* true_value,
+                   const MLOperand* false_value,
+                   ExceptionState& exception_state);
+
   ScriptPromise build(ScriptState* script_state,
                       const MLNamedOperands& outputs,
                       ExceptionState& exception_state);

@@ -124,6 +124,8 @@ String MLOperator::OperatorKindToString(MLOperator::OperatorKind kind) {
       return "tanh";
     case MLOperator::OperatorKind::kTranspose:
       return "transpose";
+    case MLOperator::OperatorKind::kWhere:
+      return "where";
   }
 }
 

@@ -1433,6 +1433,35 @@ MLOperand* MLGraphBuilder::transpose(const MLOperand* input,
   return output.value();
 }
 
+MLOperand* MLGraphBuilder::where(const MLOperand* condition,
+                                 const MLOperand* true_value,
+                                 const MLOperand* false_value,
+                                 ExceptionState& exception_state) {
+  const auto validated_output = webnn::ValidateWhereAndInferOutput(
+      ConvertToComponentOperand(condition),
+      ConvertToComponentOperand(true_value),
+      ConvertToComponentOperand(false_value));
+  if (!validated_output.has_value()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        String::FromUTF8(validated_output.error()));
+    return nullptr;
+  }
+
+  auto* where =
+      MakeGarbageCollected<MLOperator>(this, MLOperator::OperatorKind::kWhere);
+  const auto output = MLOperand::ValidateAndCreateOutput(
+      this, ComponentOperandTypeToBlink(validated_output->data_type),
+      Vector<uint32_t>(validated_output->dimensions), where);
+  if (!output.has_value()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      output.error());
+    return nullptr;
+  }
+  where->Connect({condition, true_value, false_value}, {output.value()});
+  return output.value();
+}
+
 ScriptPromise MLGraphBuilder::build(ScriptState* script_state,
                                     const MLNamedOperands& named_outputs,
                                     ExceptionState& exception_state) {

@@ -5512,7 +5512,6 @@ TEST_F(MLGraphBuilderTest, MatmulTest) {
         BuildInput(builder, "b", {2, 4}, V8MLOperandDataType::Enum::kFloat32,
                    scope.GetExceptionState());
     auto* output = builder->matmul(a, b, scope.GetExceptionState());
-    ;
     EXPECT_EQ(output, nullptr);
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
@@ -5534,6 +5533,174 @@ TEST_F(MLGraphBuilderTest, MatmulTest) {
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
               "The matmul input shapes are not broadcastable.");
+  }
+}
+
+MLOperand* BuildWhere(V8TestingScope& scope,
+                      MLGraphBuilder* builder,
+                      const MLOperand* condition,
+                      const MLOperand* true_value,
+                      const MLOperand* false_value) {
+  auto* output = builder->where(condition, true_value, false_value,
+                                scope.GetExceptionState());
+  EXPECT_NE(output, nullptr);
+  EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+  EXPECT_EQ(output->DataType(), true_value->DataType());
+  auto* where = output->Operator();
+  EXPECT_NE(where, nullptr);
+  EXPECT_EQ(where->Kind(), MLOperator::OperatorKind::kWhere);
+  EXPECT_EQ(where->IsConnected(), true);
+  EXPECT_EQ(where->Options(), nullptr);
+  return output;
+}
+
+TEST_F(MLGraphBuilderTest, WhereTest) {
+  V8TestingScope scope;
+  auto* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
+  {
+    // Test throwing exception when the condition data type is not uint8.
+    auto* condition = BuildInput(builder, "condition", {2, 4},
+                                 V8MLOperandDataType::Enum::kFloat32,
+                                 scope.GetExceptionState());
+    auto* true_value = BuildInput(builder, "true_value", {2, 4},
+                                  V8MLOperandDataType::Enum::kFloat32,
+                                  scope.GetExceptionState());
+    auto* false_value = BuildInput(builder, "false_value", {2, 4},
+                                   V8MLOperandDataType::Enum::kFloat32,
+                                   scope.GetExceptionState());
+    auto* output = builder->where(condition, true_value, false_value,
+                                  scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The condition data type must be uint8.");
+  }
+  {
+    // Test throwing exception when the the data types of true_value and
+    // false_value don't match.
+    auto* condition = BuildInput(builder, "condition", {2, 4},
+                                 V8MLOperandDataType::Enum::kUint8,
+                                 scope.GetExceptionState());
+    auto* true_value = BuildInput(builder, "true_value", {2, 4},
+                                  V8MLOperandDataType::Enum::kFloat16,
+                                  scope.GetExceptionState());
+    auto* false_value = BuildInput(builder, "false_value", {2, 4},
+                                   V8MLOperandDataType::Enum::kFloat32,
+                                   scope.GetExceptionState());
+    auto* output = builder->where(condition, true_value, false_value,
+                                  scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The data types of true_value and false_value don't match.");
+  }
+  {
+    // Test throwing exception when the shapes of true_value and false_value are
+    // not broadcastable.
+    auto* condition = BuildInput(builder, "condition", {2, 4},
+                                 V8MLOperandDataType::Enum::kUint8,
+                                 scope.GetExceptionState());
+    auto* true_value = BuildInput(builder, "true_value", {2, 4},
+                                  V8MLOperandDataType::Enum::kFloat32,
+                                  scope.GetExceptionState());
+    auto* false_value = BuildInput(builder, "false_value", {2, 3},
+                                   V8MLOperandDataType::Enum::kFloat32,
+                                   scope.GetExceptionState());
+    auto* output = builder->where(condition, true_value, false_value,
+                                  scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(
+        scope.GetExceptionState().Message(),
+        "The shapes of true_value and false_value are not broadcastable.");
+  }
+  {
+    // Test throwing exception when the condition shape is not broadcastable.
+    auto* condition = BuildInput(builder, "condition", {2, 4},
+                                 V8MLOperandDataType::Enum::kUint8,
+                                 scope.GetExceptionState());
+    auto* true_value = BuildInput(builder, "true_value", {2, 3},
+                                  V8MLOperandDataType::Enum::kFloat32,
+                                  scope.GetExceptionState());
+    auto* false_value = BuildInput(builder, "false_value", {2, 1},
+                                   V8MLOperandDataType::Enum::kFloat32,
+                                   scope.GetExceptionState());
+    auto* output = builder->where(condition, true_value, false_value,
+                                  scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The condition shape is not broadcastable to the shape "
+              "broadcasted from true_value and false_value.");
+  }
+  {
+    // Test building where with 2-D condition and 2-D input using broadcast.
+    auto* condition = BuildInput(builder, "condition", {2, 1},
+                                 V8MLOperandDataType::Enum::kUint8,
+                                 scope.GetExceptionState());
+    auto* true_value = BuildInput(builder, "true_value", {2, 4},
+                                  V8MLOperandDataType::Enum::kFloat32,
+                                  scope.GetExceptionState());
+    auto* false_value = BuildInput(builder, "false_value", {2, 4},
+                                   V8MLOperandDataType::Enum::kFloat32,
+                                   scope.GetExceptionState());
+    auto* output =
+        BuildWhere(scope, builder, condition, true_value, false_value);
+    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({2, 4}));
+  }
+  {
+    // Test building where with 2-D condition, 2-D input and 3-D other using
+    // broadcast.
+    auto* condition = BuildInput(builder, "condition", {1, 4},
+                                 V8MLOperandDataType::Enum::kUint8,
+                                 scope.GetExceptionState());
+    auto* true_value = BuildInput(builder, "true_value", {3, 4},
+                                  V8MLOperandDataType::Enum::kFloat32,
+                                  scope.GetExceptionState());
+    auto* false_value = BuildInput(builder, "false_value", {2, 3, 4},
+                                   V8MLOperandDataType::Enum::kFloat32,
+                                   scope.GetExceptionState());
+    auto* output =
+        BuildWhere(scope, builder, condition, true_value, false_value);
+    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({2, 3, 4}));
+  }
+  {
+    // Test building where with 3-D condition, 3-D input and 2-D other using
+    // broadcast.
+    auto* condition = BuildInput(builder, "condition", {2, 1, 4},
+                                 V8MLOperandDataType::Enum::kUint8,
+                                 scope.GetExceptionState());
+    auto* true_value = BuildInput(builder, "true_value", {2, 3, 4},
+                                  V8MLOperandDataType::Enum::kFloat32,
+                                  scope.GetExceptionState());
+    auto* false_value = BuildInput(builder, "false_value", {1, 4},
+                                   V8MLOperandDataType::Enum::kFloat32,
+                                   scope.GetExceptionState());
+    auto* output =
+        BuildWhere(scope, builder, condition, true_value, false_value);
+    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({2, 3, 4}));
+  }
+  {
+    // Test building where with 4-D condition, 3-D input and 2-D other using
+    // broadcast.
+    auto* condition = BuildInput(builder, "condition", {2, 3, 4, 5},
+                                 V8MLOperandDataType::Enum::kUint8,
+                                 scope.GetExceptionState());
+    auto* true_value = BuildInput(builder, "true_value", {3, 4, 5},
+                                  V8MLOperandDataType::Enum::kFloat32,
+                                  scope.GetExceptionState());
+    auto* false_value = BuildInput(builder, "false_value", {4, 5},
+                                   V8MLOperandDataType::Enum::kFloat32,
+                                   scope.GetExceptionState());
+    auto* output =
+        BuildWhere(scope, builder, condition, true_value, false_value);
+    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({2, 3, 4, 5}));
   }
 }
 

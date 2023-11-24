@@ -215,8 +215,6 @@ dictionary MLSplitOptions {
 
   [RaisesException] MLOperand slice(MLOperand input, sequence<[EnforceRange] unsigned long> starts, sequence<[EnforceRange] unsigned long> sizes);
 
-  [RaisesException] MLOperand transpose(MLOperand input, optional MLTransposeOptions options = {});
-
   [RaisesException] MLOperand softmax(MLOperand input);
 
   [RaisesException] MLOperand softsign(MLOperand input);
@@ -227,6 +225,11 @@ dictionary MLSplitOptions {
 
   [RaisesException] MLOperand tanh(MLOperand input);
   [RaisesException] MLActivation tanh();
+
+  [RaisesException] MLOperand transpose(
+      MLOperand input, optional MLTransposeOptions options = {});
+
+  [RaisesException] MLOperand where(MLOperand condition, MLOperand input, MLOperand other);
 
   [
     CallWith=ScriptState,

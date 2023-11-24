@@ -1234,6 +1234,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method tan
 [Worker]     method tanh
 [Worker]     method transpose
+[Worker]     method where
 [Worker] interface MLOperand
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor

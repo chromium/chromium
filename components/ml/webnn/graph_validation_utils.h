@@ -389,6 +389,14 @@ base::expected<Operand, std::string> ValidateReduceAndInferOutput(
     base::span<const uint32_t> axes,
     bool keepDimensions = false);
 
+// TODO(crbug.com/1273291): Add the link of the where operator definition in
+// WebIDL.
+// Validate where operator.
+base::expected<Operand, std::string> ValidateWhereAndInferOutput(
+    const Operand& condition,
+    const Operand& true_value,
+    const Operand& false_value);
+
 base::expected<size_t, std::string> ValidateAndCalculateElementsNumber(
     base::span<const uint32_t> dimensions);
 

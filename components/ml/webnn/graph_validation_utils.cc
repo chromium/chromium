@@ -1333,6 +1333,36 @@ base::expected<Operand, std::string> ValidateReduceAndInferOutput(
   return Operand(input.data_type, std::move(output_shape));
 }
 
+base::expected<Operand, std::string> ValidateWhereAndInferOutput(
+    const Operand& condition,
+    const Operand& true_value,
+    const Operand& false_value) {
+  if (condition.data_type != Operand::DataType::kUint8) {
+    return base::unexpected("The condition data type must be uint8.");
+  }
+
+  if (true_value.data_type != false_value.data_type) {
+    return base::unexpected(
+        "The data types of true_value and false_value don't match.");
+  }
+
+  const auto value_shape =
+      BroadcastShapes(true_value.dimensions, false_value.dimensions, true);
+  if (!value_shape) {
+    return base::unexpected(
+        "The shapes of true_value and false_value are not broadcastable.");
+  }
+
+  const auto output_shape =
+      BroadcastShapes(condition.dimensions, value_shape.value(), true);
+  if (!output_shape) {
+    return base::unexpected(
+        "The condition shape is not broadcastable to the shape broadcasted "
+        "from true_value and false_value.");
+  }
+  return Operand(true_value.data_type, std::move(output_shape.value()));
+}
+
 base::expected<size_t, std::string> ValidateAndCalculateElementsNumber(
     base::span<const uint32_t> dimensions) {
   // Empty dimensions represents a scalar whose number of elements is 1.
