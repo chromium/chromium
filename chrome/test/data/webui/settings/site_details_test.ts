@@ -553,36 +553,3 @@ suite('SiteDetails', function() {
             '#confirmClearStorage #adPersonalization')));
       });
 });
-
-// TODO(crbug.com/1378703): Remove once PrivacySandboxSettings4 has been rolled
-// out.
-suite('SiteDetailsPrivacySandboxSettings4Disabled', function() {
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      isPrivacySandboxSettings4: false,
-    });
-  });
-
-  /** A site list element created before each test. */
-  let testElement: SiteDetailsElement;
-
-  function createSiteDetails(origin: string) {
-    const siteDetailsElement = document.createElement('site-details');
-    document.body.appendChild(siteDetailsElement);
-    Router.getInstance().navigateTo(
-        routes.SITE_SETTINGS_SITE_DETAILS,
-        new URLSearchParams('site=' + origin));
-    return siteDetailsElement;
-  }
-
-  test(
-      'clear data dialog does not warn about ad personalization data removal',
-      function() {
-        const origin = 'https://foo.com:443';
-        testElement = createSiteDetails(origin);
-
-        flush();
-        assertFalse(Boolean(testElement.shadowRoot!.querySelector<HTMLElement>(
-            '#confirmClearStorage #adPersonalization')));
-      });
-});

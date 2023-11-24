@@ -133,13 +133,6 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
         value: () => loadTimeData.getBoolean('autoPictureInPictureEnabled'),
       },
 
-      isPrivacySandboxSettings4_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('isPrivacySandboxSettings4');
-        },
-      },
-
       blockMidiByDefault_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('blockMidiByDefault'),
