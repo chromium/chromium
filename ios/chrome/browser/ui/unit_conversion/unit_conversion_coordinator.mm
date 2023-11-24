@@ -19,6 +19,9 @@ const CGFloat kPopOverSourceRectHeight = 1;
 // The height offset to add to the half sheet detent's height.
 const CGFloat kHalfSheetDetentHeightOffset = 40;
 
+// Sets a custom radius for the half sheet.
+CGFloat const kHalfSheetCornerRadius = 13;
+
 }  // namespace
 
 @interface UnitConversionCoordinator () <
@@ -116,6 +119,7 @@ const CGFloat kHalfSheetDetentHeightOffset = 40;
       popover.adaptiveSheetPresentationController;
   sheetPresentationController.delegate = _viewController;
   sheetPresentationController.prefersEdgeAttachedInCompactHeight = YES;
+  sheetPresentationController.preferredCornerRadius = kHalfSheetCornerRadius;
 
   if (@available(iOS 16, *)) {
     __weak UnitConversionCoordinator* weakSelf = self;
