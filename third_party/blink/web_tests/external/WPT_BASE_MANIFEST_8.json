@@ -235261,7 +235261,7 @@
       ]
      ],
      "break-inside-avoid-child.html": [
-      "7791f7ab4f6012daa6612c4b14f4a26415103f98",
+      "7b2a83c77691acbae4af3651f637f7d1fa59eb86",
       [
        null,
        [
@@ -235294,7 +235294,7 @@
       ]
      ],
      "capture-with-offscreen-child-translated.html": [
-      "1aa994762eff3143a453adf724dd79c001b5f75e",
+      "925bb8dbc456e8968d099eedf9632e2857e383d8",
       [
        null,
        [
@@ -235307,7 +235307,7 @@
       ]
      ],
      "capture-with-offscreen-child.html": [
-      "9701524a29512212cdb4d3d54c8338acb9de8132",
+      "8588968d8afba2be185d20422073d43a79a276a1",
       [
        null,
        [
@@ -235340,7 +235340,7 @@
       ]
      ],
      "capture-with-opacity-zero-child.html": [
-      "d76d6a00dfae272c49d27c05e483ed414d8b2c42",
+      "888d0d17208fb6252df62e5b67a78186541f35e5",
       [
        null,
        [
@@ -235373,7 +235373,7 @@
       ]
      ],
      "capture-with-visibility-hidden-child.html": [
-      "5f4e73e6a60e21b936dc8b32442cc1cd53bca5fb",
+      "2d1761249964f667017bd385954c6aef4b2a2da7",
       [
        null,
        [
@@ -235386,7 +235386,7 @@
       ]
      ],
      "capture-with-visibility-mixed-descendants.html": [
-      "fa9a40bf07748f6de782cc567981a24ce1d7c0e7",
+      "462d267b94546313eb1605dccac320ab349871dc",
       [
        null,
        [
@@ -235636,7 +235636,7 @@
       ]
      ],
      "dialog-in-rtl-iframe.html": [
-      "7a4d200e034840c2f4ff32a8d2e867ae58251b0f",
+      "b9c0f7e25c07a6afcd0335322bdd57c895a4028e",
       [
        null,
        [
@@ -235695,7 +235695,7 @@
       ]
      ],
      "element-is-grouping-during-animation.html": [
-      "87a35ae9a22188bd0ece9446854c30d1b1021388",
+      "b1ef745e0dba3e60022921cdf60deea4116791be",
       [
        null,
        [
@@ -235708,7 +235708,7 @@
       ]
      ],
      "element-stops-grouping-after-animation.html": [
-      "8793313d6dc703a37faebc91f0aabcf80c5224a1",
+      "df7965215e708af37930e7cdaeef5c2a8b74c92c",
       [
        null,
        [
@@ -235940,7 +235940,7 @@
       ]
      ],
      "fragmented-at-start-ignored.html": [
-      "3b8628cef45a4bc6c8c3a8faf2c6d04b50db2b68",
+      "bab52f156762afbf26dc84e3d1360e301870d0cc",
       [
        null,
        [
@@ -235953,7 +235953,7 @@
       ]
      ],
      "fragmented-during-transition-skips.html": [
-      "e872aa6124592c6b067cf7301f017a429f9b9c88",
+      "dc4164dae5e3697ae55116311243b1620b981464",
       [
        null,
        [
@@ -235992,7 +235992,7 @@
       ]
      ],
      "iframe-new-has-scrollbar.html": [
-      "bed16754f6b163b6bb55c2d2504c733113764c00",
+      "37a300902a2147632355a58dc60c37cbedf015ee",
       [
        null,
        [
@@ -236025,7 +236025,7 @@
       ]
      ],
      "iframe-old-has-scrollbar.html": [
-      "9dfa4adf7ac34ff85bfd19951060152a9a3da962",
+      "014a4299945ac7fd7278f9850d57f308d3004116",
       [
        null,
        [
@@ -236092,7 +236092,7 @@
       ]
      ],
      "inline-child-with-filter.html": [
-      "8790756eac0cb0f490ec6f6fc66e48ca9f8f24b5",
+      "2c4a8b85ec175ef0e611f92019481b76658ef387",
       [
        null,
        [
@@ -238028,7 +238028,7 @@
       ]
      ],
      "rotated-cat-off-top-edge.html": [
-      "5e909594fa063cd7a0c26758037ae07028db1346",
+      "c7179b7a011ee31e1121df2149de89bc451a89aa",
       [
        null,
        [
@@ -238074,7 +238074,7 @@
       ]
      ],
      "scroller-child-abspos.html": [
-      "9b2ac35eef07b33dc1ba75179b18ca9c7fbe0066",
+      "3b94ffa7bb99b88ee1f8a052e19feab147e577f4",
       [
        null,
        [
@@ -238107,7 +238107,7 @@
       ]
      ],
      "scroller-child.html": [
-      "b18187ca6eba039d576b809b9b4723641d4d4f48",
+      "5cb2f03e704334dad70745a9221a035bd169502a",
       [
        null,
        [
@@ -238140,7 +238140,7 @@
       ]
      ],
      "scroller.html": [
-      "6e2a6e465073a93f532942032e2d364727c0c4f8",
+      "e61d13b3166e7ebab7fb18f6180f9b6efab027b8",
       [
        null,
        [
@@ -238173,7 +238173,7 @@
       ]
      ],
      "set-current-time-transform.html": [
-      "41e3d3f89dae0e710e81bc55d2ada31ed164b6ae",
+      "0c7ac64f1cf504599ec7eba0bc27ddf9bca649df",
       [
        null,
        [
@@ -238186,7 +238186,7 @@
       ]
      ],
      "set-current-time.html": [
-      "2e37626a9e07be92b36cb02ee923577c8d866a1b",
+      "f7e802d79b4f1a6ede216cc8cb8a9879b67f2a70",
       [
        null,
        [
@@ -238423,7 +238423,7 @@
       ]
      ],
      "transition-in-empty-iframe.html": [
-      "99e9f24176ea8985263e3e645cb201485c5abec0",
+      "869967a57ef7a7337c4250fe5227c8860a1905bd",
       [
        null,
        [
@@ -238541,7 +238541,7 @@
       ]
      ],
      "writing-mode-container-resize.html": [
-      "359baaf5e855e67926ea55c214924dd747acad32",
+      "d440cf6eeb713d99aa143bdfbc6e69c7c0f6c2f8",
       [
        null,
        [
@@ -348345,7 +348345,7 @@
       []
      ],
      "event-timing-test-utils.js": [
-      "ddbaafbefb6cd3bd96c6e119ee36996a10cd284e",
+      "859bc0f7bf501de2767bb5dc6db6f61fcaefa85e",
       []
      ],
      "slow-image.py": [
@@ -466059,7 +466059,7 @@
       ]
      ],
      "group-animation-for-root-transition.html": [
-      "6379ffaaabb43885170d8368b794fda61d151051",
+      "9c702663e62fb5d1adb156630da1cdeb3b6c9868",
       [
        null,
        {}
@@ -466114,21 +466114,21 @@
       ]
      ],
      "only-child-group.html": [
-      "665befee122a5a4e232c29cf34f70bdd60bab9d3",
+      "05275a344882732bebdc4cc28db2dc947f238e69",
       [
        null,
        {}
       ]
      ],
      "only-child-image-pair.html": [
-      "93fcc0a5ea8bcfce67c6f375ecd19602337949ef",
+      "288d496346e3b55585dbb8cffaff826c2f9c2351",
       [
        null,
        {}
       ]
      ],
      "only-child-new.html": [
-      "a03e0454f55abbd5bf56beeb3d9f9544c0be50a0",
+      "9f365282194c3992304d3b2aa2e59cc202ee3e61",
       [
        null,
        {}
@@ -466142,21 +466142,21 @@
       ]
      ],
      "only-child-old.html": [
-      "79fb26c6d3943b3ea8ba127274cee91518001970",
+      "7a55af7397ddad2cf1e54aea1df49a5a998ec173",
       [
        null,
        {}
       ]
      ],
      "only-child-on-root-element-with-view-transition.html": [
-      "0bf6d8b84b397f6818b133374b4ba0446af70842",
+      "dc0d7009d45d82ff6090b6eae390a23c6ee313c1",
       [
        null,
        {}
       ]
      ],
      "only-child-view-transition.html": [
-      "d338a042caf994c7086d23ff6e629a70c6ebd951",
+      "ab3935a2b0d7d4b3e28ec45f9e86a53db5286343",
       [
        null,
        {}
@@ -493970,7 +493970,7 @@
      ]
     ],
     "event-click-visibilitychange.html": [
-     "988be3623eea127ff7221ceca85281581c596ca3",
+     "3e1c41ea7ac4eef20c350a1be90240f8a4c60bd4",
      [
       null,
       {
@@ -494123,6 +494123,33 @@
     ],
     "interaction-count-tap.html": [
      "561bf5f917b6f0dadb247b670cc3152c2a30f934",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "interactionid-aux-pointerdown-and-pointerdown.html": [
+     "a46ca6727790d5a87fa9fc4f4a65e827f38ef972",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "interactionid-aux-pointerdown.html": [
+     "3b5b7d5fd05c47ad8e2905c57319b52cff100c0d",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "interactionid-auxclick.html": [
+     "e10d29e9a6017663ccc65921bdbbdd8b8e962ac8",
      [
       null,
       {
