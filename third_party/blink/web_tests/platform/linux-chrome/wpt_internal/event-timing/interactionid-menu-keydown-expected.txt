@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Event Timing: verify keydown reporting for menu keydown only triggered contextmenu.
+  assert_own_property: This test requires eventSender. expected property "eventSender" missing
+Harness: the test ran to completion.

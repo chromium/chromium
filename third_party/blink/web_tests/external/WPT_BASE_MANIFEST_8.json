@@ -305281,6 +305281,14 @@
        "589fbd2681dfaa150912b0d74bafcc3c228d45c5",
        []
       ],
+      "color-valid-hsl-expected.txt": [
+       "607b2b04c529331988435dd48e100ed9b1a5e7cf",
+       []
+      ],
+      "color-valid-hwb-expected.txt": [
+       "1f9ee24cf769615ee88228f9b9403863764c34cc",
+       []
+      ],
       "opacity-valid-expected.txt": [
        "cebbfe06674f27ea2b4de8661fcbd6775b6472f9",
        []
@@ -433461,6 +433469,15 @@
       {}
      ]
     ],
+    "fedcm-disconnect-errors.https.html": [
+     "7168d3b8fc88ae270253b849a3b92831b83d55ba",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "fedcm-disconnect-iframe.sub.https.html": [
      "3d31be60b18b095889354ef4c916221633ad7ad3",
      [
@@ -439143,14 +439160,14 @@
        ]
       ],
       "color-invalid-hsl.html": [
-       "9ac84c82ea73477f8899c3cfddbf9622f2cea45f",
+       "10967588bdbcd02850a52e24aaa9eb14f1eeaf2e",
        [
         null,
         {}
        ]
       ],
       "color-invalid-hwb.html": [
-       "2b5e49e4edfd9b639f59dfa8e4b7e686230bf44a",
+       "8c15419d60a28e21e70d684b14ea5bef7f452a96",
        [
         null,
         {}
@@ -439220,14 +439237,14 @@
        ]
       ],
       "color-valid-hsl.html": [
-       "cc40c3b27f687efe416a0c588f9f391a663373a2",
+       "7ab1274176fd9fbbaed10d1644d18c2eb05b41e3",
        [
         null,
         {}
        ]
       ],
       "color-valid-hwb.html": [
-       "a827c1f761bb4360b79696e3934402939c927a53",
+       "374634c084353e6d608eac31329ae7c99b6952a7",
        [
         null,
         {}

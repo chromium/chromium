@@ -507,5 +507,6 @@ crbug.com/1499775 wpt_internal/prerender/navigator-subapp.https.html [ Skip Time
 crbug.com/1499775 wpt_internal/prerender/restriction-pointer-lock.html [ Skip Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/credential-management/fedcm-disconnect-errors.https.html [ Timeout ]
 crbug.com/626703 external/wpt/css/selectors/selectors-4/lang-023.html [ Failure ]
 crbug.com/626703 external/wpt/css/selectors/selectors-4/lang-024.html [ Failure ]
