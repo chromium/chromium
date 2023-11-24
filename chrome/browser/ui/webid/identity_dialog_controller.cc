@@ -31,10 +31,10 @@ void IdentityDialogController::ShowAccountsDialog(
     content::IdentityRequestAccount::SignInMode sign_in_mode,
     bool show_auto_reauthn_checkbox,
     AccountSelectionCallback on_selected,
-    SigninToIdPCallback on_add_account,
+    LoginToIdPCallback on_add_account,
     DismissCallback dismiss_callback) {
   on_account_selection_ = std::move(on_selected);
-  on_signin_ = std::move(on_add_account);
+  on_login_ = std::move(on_add_account);
   on_dismiss_ = std::move(dismiss_callback);
   if (!account_view_)
     account_view_ = AccountSelectionView::Create(this);
@@ -50,10 +50,10 @@ void IdentityDialogController::ShowFailureDialog(
     const blink::mojom::RpContext& rp_context,
     const content::IdentityProviderMetadata& idp_metadata,
     DismissCallback dismiss_callback,
-    SigninToIdPCallback signin_callback) {
+    LoginToIdPCallback login_callback) {
   const GURL rp_url = rp_web_contents_->GetLastCommittedURL();
   on_dismiss_ = std::move(dismiss_callback);
-  on_signin_ = std::move(signin_callback);
+  on_login_ = std::move(login_callback);
   if (!account_view_)
     account_view_ = AccountSelectionView::Create(this);
   // Else:
@@ -84,8 +84,8 @@ void IdentityDialogController::ShowErrorDialog(
                                  error);
 }
 
-void IdentityDialogController::OnSigninToIdP(const GURL& idp_login_url) {
-  std::move(on_signin_).Run(idp_login_url);
+void IdentityDialogController::OnLoginToIdP(const GURL& idp_login_url) {
+  std::move(on_login_).Run(idp_login_url);
 }
 
 void IdentityDialogController::OnMoreDetails() {

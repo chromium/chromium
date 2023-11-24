@@ -684,7 +684,7 @@ void AccountSelectionBubbleView::ShowFailureDialog(
 
   // Add continue button.
   auto button = std::make_unique<ContinueButton>(
-      base::BindRepeating(&Observer::OnSigninToIdP, base::Unretained(observer_),
+      base::BindRepeating(&Observer::OnLoginToIdP, base::Unretained(observer_),
                           idp_metadata.idp_login_url),
       l10n_util::GetStringUTF16(IDS_IDP_SIGNIN_STATUS_MISMATCH_DIALOG_CONTINUE),
       this, idp_metadata);
@@ -1024,7 +1024,7 @@ AccountSelectionBubbleView::CreateMultipleAccountChooser(
       idp_display_data_list[0].idp_metadata;
   if (idp_metadata.supports_add_account) {
     auto button = std::make_unique<ContinueButton>(
-        base::BindRepeating(&Observer::OnSigninToIdP,
+        base::BindRepeating(&Observer::OnLoginToIdP,
                             base::Unretained(observer_),
                             idp_metadata.idp_login_url),
         l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_ADD_ACCOUNT), this,

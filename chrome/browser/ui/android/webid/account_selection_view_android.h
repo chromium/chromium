@@ -52,9 +52,8 @@ class AccountSelectionViewAndroid : public AccountSelectionView {
       const base::android::JavaParamRef<jobject>& account_picture_url,
       bool is_sign_in);
   void OnDismiss(JNIEnv* env, jint dismiss_reason);
-  void OnSignInToIdp(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& idp_config_url);
+  void OnLoginToIdP(JNIEnv* env,
+                    const base::android::JavaParamRef<jobject>& idp_login_url);
   void OnMoreDetails(JNIEnv* env);
 
  private:

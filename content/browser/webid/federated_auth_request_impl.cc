@@ -417,6 +417,39 @@ bool IsFrameVisible(RenderFrameHost* frame) {
          frame->GetVisibilityState() == content::PageVisibilityState::kVisible;
 }
 
+void MaybeAppendQueryParameters(
+    const FederatedAuthRequestImpl::IdentityProviderLoginUrlInfo&
+        idp_login_info,
+    GURL* login_url) {
+  if (!IsFedCmDomainHintEnabled()) {
+    return;
+  }
+  if (idp_login_info.login_hint.empty() && idp_login_info.domain_hint.empty()) {
+    return;
+  }
+  std::string old_query = login_url->query();
+  if (!old_query.empty()) {
+    old_query += "&";
+  }
+  std::string new_query_string = old_query;
+  if (!idp_login_info.login_hint.empty()) {
+    new_query_string +=
+        "login_hint=" + base::EscapeUrlEncodedData(idp_login_info.login_hint,
+                                                   /*use_plus=*/false);
+  }
+  if (!idp_login_info.domain_hint.empty()) {
+    if (!new_query_string.empty()) {
+      new_query_string += "&";
+    }
+    new_query_string +=
+        "domain_hint=" + base::EscapeUrlEncodedData(idp_login_info.domain_hint,
+                                                    /*use_plus=*/false);
+  }
+  GURL::Replacements replacements;
+  replacements.SetQueryStr(new_query_string);
+  *login_url = login_url->ReplaceComponents(replacements);
+}
+
 }  // namespace
 
 FederatedAuthRequestImpl::FetchData::FetchData() = default;
@@ -1139,6 +1172,11 @@ void FederatedAuthRequestImpl::OnAllConfigAndWellKnownFetched(
                               /*should_delay_callback=*/true);
       continue;
     }
+    // The login url should be valid unless IdP login status API is disabled.
+    if (idp_info->metadata.idp_login_url.is_valid()) {
+      idp_login_infos_[idp_info->metadata.idp_login_url] = {
+          idp_info->provider->login_hint, idp_info->provider->domain_hint};
+    }
 
     // Make sure that we don't fetch accounts if the IDP sign-in bit is reset to
     // false during the API call. e.g. by the login/logout HEADER.
@@ -1161,9 +1199,10 @@ void FederatedAuthRequestImpl::OnAllConfigAndWellKnownFetched(
         // We fail sooner before, but just to double check, we assert that
         // we are inside a user gesture here again.
         CHECK(render_frame_host().HasTransientUserActivation());
-        // TODO(crbug.com/1487270): we should probably make idp_signin_url
+        // TODO(crbug.com/1487270): we should probably make idp_login_url
         // optional instead of empty.
-        SignInToIdP(idp_info->metadata.idp_login_url);
+        LoginToIdP(/*can_append_hints=*/false,
+                   idp_info->metadata.idp_login_url);
         // TODO(https://crbug.com/1487268): handle the button flow and the
         // Multi IdP API (what should happen if you are logged in to some
         // IdPs but not to others).
@@ -1463,8 +1502,9 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
       show_auto_reauthn_checkbox,
       base::BindOnce(&FederatedAuthRequestImpl::OnAccountSelected,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::BindOnce(&FederatedAuthRequestImpl::SignInToIdP,
-                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&FederatedAuthRequestImpl::LoginToIdP,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     /*can_append_hints=*/false),
       base::BindOnce(&FederatedAuthRequestImpl::OnDialogDismissed,
                      weak_ptr_factory_.GetWeakPtr()));
   devtools_instrumentation::OnFedCmDialogShown(&render_frame_host());
@@ -1562,8 +1602,9 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
       idp_info->metadata,
       base::BindOnce(&FederatedAuthRequestImpl::OnDismissFailureDialog,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::BindOnce(&FederatedAuthRequestImpl::SignInToIdP,
-                     weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&FederatedAuthRequestImpl::LoginToIdP,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     /*can_append_hints=*/true));
   fedcm_metrics_->RecordMismatchDialogShown();
   mismatch_dialog_shown_time_ = base::TimeTicks::Now();
   devtools_instrumentation::OnFedCmDialogShown(&render_frame_host());
@@ -2267,6 +2308,7 @@ void FederatedAuthRequestImpl::CleanUp() {
   token_response_time_ = base::TimeTicks();
   accounts_dialog_shown_time_ = absl::nullopt;
   mismatch_dialog_shown_time_ = absl::nullopt;
+  idp_login_infos_.clear();
   idp_infos_.clear();
   idp_data_for_display_.clear();
   fetch_data_ = FetchData();
@@ -2467,7 +2509,7 @@ void FederatedAuthRequestImpl::DismissAccountsDialogForDevtools(
 
 void FederatedAuthRequestImpl::AcceptConfirmIdpLoginDialogForDevtools() {
   DCHECK(login_url_.is_valid());
-  SignInToIdP(login_url_);
+  LoginToIdP(/*can_append_hints=*/true, login_url_);
 }
 
 void FederatedAuthRequestImpl::DismissConfirmIdpLoginDialogForDevtools() {
@@ -2591,9 +2633,17 @@ void FederatedAuthRequestImpl::SetRequiresUserMediation(
       GURL(site), requires_user_mediation);
 }
 
-void FederatedAuthRequestImpl::SignInToIdP(GURL signin_url) {
+void FederatedAuthRequestImpl::LoginToIdP(bool can_append_hints,
+                                          GURL login_url) {
+  const auto& it = idp_login_infos_.find(login_url);
+  CHECK(it != idp_login_infos_.end());
+  if (can_append_hints) {
+    // Before invoking UI, append the query parameters to the `idp_login_url` if
+    // needed.
+    MaybeAppendQueryParameters(it->second, &login_url);
+  }
   permission_delegate_->AddIdpSigninStatusObserver(this);
-  ShowModalDialog(signin_url);
+  ShowModalDialog(login_url);
 }
 
 void FederatedAuthRequestImpl::PreventSilentAccess(

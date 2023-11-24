@@ -98,7 +98,7 @@ class CONTENT_EXPORT IdentityRequestDialogController {
 
   using DismissCallback =
       base::OnceCallback<void(DismissReason dismiss_reason)>;
-  using SigninToIdPCallback = base::OnceCallback<void(GURL /*idp_login_url*/)>;
+  using LoginToIdPCallback = base::OnceCallback<void(GURL /*idp_login_url*/)>;
   using MoreDetailsCallback = base::OnceCallback<void()>;
 
   IdentityRequestDialogController() = default;
@@ -131,7 +131,7 @@ class CONTENT_EXPORT IdentityRequestDialogController {
       IdentityRequestAccount::SignInMode sign_in_mode,
       bool show_auto_reauthn_checkbox,
       AccountSelectionCallback on_selected,
-      SigninToIdPCallback on_add_account,
+      LoginToIdPCallback on_add_account,
       DismissCallback dismiss_callback);
 
   // Shows a failure UI when the accounts fetch is failed such that it is
@@ -144,7 +144,7 @@ class CONTENT_EXPORT IdentityRequestDialogController {
       const blink::mojom::RpContext& rp_context,
       const IdentityProviderMetadata& idp_metadata,
       DismissCallback dismiss_callback,
-      SigninToIdPCallback signin_callback);
+      LoginToIdPCallback login_callback);
 
   // Shows an error UI when the user's sign-in attempt failed.
   virtual void ShowErrorDialog(

@@ -191,7 +191,7 @@ class StubAccountSelectionViewDelegate : public AccountSelectionView::Delegate {
   void OnDismiss(DismissReason dismiss_reason) override {
     dismiss_reason_ = dismiss_reason;
   }
-  void OnSigninToIdP(const GURL& idp_login_url) override {}
+  void OnLoginToIdP(const GURL& idp_login_url) override {}
   void OnMoreDetails() override {}
   gfx::NativeView GetNativeView() override { return gfx::NativeView(); }
 
@@ -648,7 +648,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
       "Blink.FedCm.IdpSigninStatus.MismatchDialogResult", 0);
 
   // Emulate user clicking on "Continue" button in the mismatch dialog.
-  observer->OnSigninToIdP(GURL(kLoginUrl), CreateMouseEvent());
+  observer->OnLoginToIdP(GURL(kLoginUrl), CreateMouseEvent());
   CreateAndShowPopupWindow(*controller);
 
   histogram_tester_.ExpectUniqueSample(
@@ -672,7 +672,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
         "Blink.FedCm.IdpSigninStatus.MismatchDialogResult", 0);
 
     // Emulate user clicking on "Continue" button in the mismatch dialog.
-    observer->OnSigninToIdP(GURL(kLoginUrl), CreateMouseEvent());
+    observer->OnLoginToIdP(GURL(kLoginUrl), CreateMouseEvent());
     CreateAndShowPopupWindow(*controller);
   }
 
@@ -697,7 +697,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
         static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
 
     // Emulate user clicking on "Continue" button in the mismatch dialog.
-    observer->OnSigninToIdP(GURL(kLoginUrl), CreateMouseEvent());
+    observer->OnLoginToIdP(GURL(kLoginUrl), CreateMouseEvent());
     CreateAndShowPopupWindow(*controller);
 
     // When pop-up window is shown, mismatch dialog should be hidden.
@@ -754,7 +754,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
         static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
 
     // Emulate user clicking on "Continue" button in the mismatch dialog.
-    observer->OnSigninToIdP(GURL(kLoginUrl), CreateMouseEvent());
+    observer->OnLoginToIdP(GURL(kLoginUrl), CreateMouseEvent());
     CreateAndShowPopupWindow(*controller);
 
     // When pop-up window is shown, mismatch dialog should be hidden.
@@ -810,7 +810,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
         static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
 
     // Emulate user clicking on "Continue" button in the mismatch dialog.
-    observer->OnSigninToIdP(GURL(kLoginUrl), CreateMouseEvent());
+    observer->OnLoginToIdP(GURL(kLoginUrl), CreateMouseEvent());
     CreateAndShowPopupWindow(*controller);
 
     // Emulate IdP sending the IdP sign-in status header which updates the
@@ -845,7 +845,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
         static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
 
     // Emulate user clicking on "Continue" button in the mismatch dialog.
-    observer->OnSigninToIdP(GURL(kLoginUrl), CreateMouseEvent());
+    observer->OnLoginToIdP(GURL(kLoginUrl), CreateMouseEvent());
     CreateAndShowPopupWindow(*controller);
 
     // Emulate IdentityProvider.close() being called in the pop-up window.
@@ -875,7 +875,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
         static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
 
     // Emulate user clicking on "Continue" button in the mismatch dialog.
-    observer->OnSigninToIdP(GURL(kLoginUrl), CreateMouseEvent());
+    observer->OnLoginToIdP(GURL(kLoginUrl), CreateMouseEvent());
     CreateAndShowPopupWindow(*controller);
 
     histogram_tester_.ExpectTotalCount(
@@ -994,7 +994,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   // Emulate user clicking on "Continue" button in the mismatch dialog.
   AccountSelectionBubbleView::Observer* observer =
       static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
-  observer->OnSigninToIdP(GURL(kLoginUrl), CreateMouseEvent());
+  observer->OnLoginToIdP(GURL(kLoginUrl), CreateMouseEvent());
   CreateAndShowPopupWindow(*controller);
 
   // Emulate IdP closing the pop-up window.
@@ -1032,7 +1032,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   // Emulate user clicking on "Continue" button in the mismatch dialog.
   AccountSelectionBubbleView::Observer* observer =
       static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
-  observer->OnSigninToIdP(GURL(kLoginUrl), CreateMouseEvent());
+  observer->OnLoginToIdP(GURL(kLoginUrl), CreateMouseEvent());
   CreateAndShowPopupWindow(*controller);
 
   // Emulate IdP closing the pop-up window.

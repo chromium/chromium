@@ -145,6 +145,11 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
     absl::optional<IdentityProviderData> data;
   };
 
+  struct IdentityProviderLoginUrlInfo {
+    std::string login_hint;
+    std::string domain_hint;
+  };
+
   // For use by the devtools protocol for browser automation.
   IdentityRequestDialogController* GetDialogController() {
     return request_dialog_controller_.get();
@@ -346,7 +351,10 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   bool RequiresUserMediation();
   void SetRequiresUserMediation(bool requires_user_mediation);
 
-  void SignInToIdP(GURL signin_url);
+  // Trigger a dialog to prompt the user to login to the IdP. `can_append_hints`
+  // is true if the caller allows the login url to be augmented with login and
+  // domain hints.
+  void LoginToIdP(bool can_append_hints, GURL login_url);
 
   void CompleteDisconnectRequest(DisconnectCallback callback,
                                  blink::mojom::DisconnectStatus status);
@@ -376,6 +384,10 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // Populated by MaybeShowAccountsDialog().
   base::flat_map<GURL, std::unique_ptr<IdentityProviderInfo>> idp_infos_;
   std::vector<IdentityProviderData> idp_data_for_display_;
+
+  // Maps the login URL to the info that may be added as query parameters to
+  // that URL. Populated by OnAllConfigAndWellKnownFetched().
+  base::flat_map<GURL, IdentityProviderLoginUrlInfo> idp_login_infos_;
 
   raw_ptr<FederatedIdentityApiPermissionContextDelegate>
       api_permission_delegate_ = nullptr;

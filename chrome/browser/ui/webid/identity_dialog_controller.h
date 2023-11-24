@@ -46,7 +46,7 @@ class IdentityDialogController
       content::IdentityRequestAccount::SignInMode sign_in_mode,
       bool show_auto_reauthn_checkbox,
       AccountSelectionCallback on_selected,
-      SigninToIdPCallback on_add_account,
+      LoginToIdPCallback on_add_account,
       DismissCallback dismiss_callback) override;
   void ShowFailureDialog(const std::string& top_frame_for_display,
                          const absl::optional<std::string>& iframe_for_display,
@@ -54,7 +54,7 @@ class IdentityDialogController
                          const blink::mojom::RpContext& rp_context,
                          const content::IdentityProviderMetadata& idp_metadata,
                          DismissCallback dismiss_callback,
-                         SigninToIdPCallback signin_callback) override;
+                         LoginToIdPCallback login_callback) override;
   void ShowErrorDialog(const std::string& top_frame_for_display,
                        const absl::optional<std::string>& iframe_for_display,
                        const std::string& idp_for_display,
@@ -78,7 +78,7 @@ class IdentityDialogController
   void OnAccountSelected(const GURL& idp_config_url,
                          const Account& account) override;
   void OnDismiss(DismissReason dismiss_reason) override;
-  void OnSigninToIdP(const GURL& idp_login_url) override;
+  void OnLoginToIdP(const GURL& idp_login_url) override;
   void OnMoreDetails() override;
   gfx::NativeView GetNativeView() override;
   content::WebContents* GetWebContents() override;
@@ -87,7 +87,7 @@ class IdentityDialogController
   std::unique_ptr<AccountSelectionView> account_view_{nullptr};
   AccountSelectionCallback on_account_selection_;
   DismissCallback on_dismiss_;
-  SigninToIdPCallback on_signin_;
+  LoginToIdPCallback on_login_;
   MoreDetailsCallback on_more_details_;
   raw_ptr<content::WebContents> rp_web_contents_;
 };

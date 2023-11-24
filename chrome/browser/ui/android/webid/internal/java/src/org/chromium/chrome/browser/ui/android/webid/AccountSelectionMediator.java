@@ -459,7 +459,7 @@ class AccountSelectionMediator {
         if (mHeaderType == HeaderType.SIGN_IN_TO_IDP_STATIC) {
             assert !isDataSharingConsentVisible;
             assert mSelectedAccount == null;
-            continueButtonCallback = this::onSignInToIdp;
+            continueButtonCallback = this::onLoginToIdP;
         }
 
         if (mHeaderType == HeaderType.SIGN_IN_ERROR) {
@@ -558,11 +558,11 @@ class AccountSelectionMediator {
      * Event listener for when the user taps on an account or the continue button of the
      * bottomsheet, when it is an IdP sign-in sheet.
      */
-    void onSignInToIdp(Account account) {
+    void onLoginToIdP(Account account) {
         // This method only has an Account to match the type of the event listener.
         assert account == null;
         if (!shouldInputBeProcessed()) return;
-        mDelegate.onSignInToIdp(mIdpMetadata.getLoginUrl());
+        mDelegate.onLoginToIdP(mIdpMetadata.getLoginUrl());
     }
 
     /**

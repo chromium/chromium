@@ -65,8 +65,8 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
 
     // Called when the user clicks the "continue" button on the sign-in
     // failure dialog or wants to sign in to another account.
-    virtual void OnSigninToIdP(const GURL& idp_login_url,
-                               const ui::Event& event) = 0;
+    virtual void OnLoginToIdP(const GURL& idp_login_url,
+                              const ui::Event& event) = 0;
 
     // Called when the user clicks "got it" button.
     virtual void OnGotIt(const ui::Event& event) = 0;

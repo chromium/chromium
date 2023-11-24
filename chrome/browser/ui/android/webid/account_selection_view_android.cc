@@ -293,11 +293,11 @@ void AccountSelectionViewAndroid::OnDismiss(JNIEnv* env, jint dismiss_reason) {
   delegate_->OnDismiss(static_cast<DismissReason>(dismiss_reason));
 }
 
-void AccountSelectionViewAndroid::OnSignInToIdp(
+void AccountSelectionViewAndroid::OnLoginToIdP(
     JNIEnv* env,
     const JavaParamRef<jobject>& idp_login_url) {
   GURL login_url = *url::GURLAndroid::ToNativeGURL(env, idp_login_url);
-  delegate_->OnSigninToIdP(login_url);
+  delegate_->OnLoginToIdP(login_url);
 }
 
 void AccountSelectionViewAndroid::OnMoreDetails(JNIEnv* env) {
