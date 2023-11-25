@@ -98,7 +98,7 @@ void HTMLDocument::AddNamedItem(const AtomicString& name) {
   named_item_counts_.insert(name);
   if (LocalDOMWindow* window = domWindow()) {
     window->GetScriptController()
-        .WindowProxy(DOMWrapperWorld::MainWorld())
+        .WindowProxy(DOMWrapperWorld::MainWorld(window->GetIsolate()))
         ->NamedItemAdded(this, name);
   }
 }
@@ -109,7 +109,7 @@ void HTMLDocument::RemoveNamedItem(const AtomicString& name) {
   named_item_counts_.erase(name);
   if (LocalDOMWindow* window = domWindow()) {
     window->GetScriptController()
-        .WindowProxy(DOMWrapperWorld::MainWorld())
+        .WindowProxy(DOMWrapperWorld::MainWorld(window->GetIsolate()))
         ->NamedItemRemoved(this, name);
   }
 }
