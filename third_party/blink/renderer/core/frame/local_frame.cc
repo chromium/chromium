@@ -2886,9 +2886,10 @@ void LocalFrame::LoadJavaScriptURL(const KURL& url) {
   // into the omnibox.  See https://crbug.com/1082900
   NotifyUserActivation(
       mojom::blink::UserActivationNotificationType::kInteraction, false);
-  DomWindow()->GetScriptController().ExecuteJavaScriptURL(
+  auto* window = DomWindow();
+  window->GetScriptController().ExecuteJavaScriptURL(
       url, network::mojom::CSPDisposition::DO_NOT_CHECK,
-      &DOMWrapperWorld::MainWorld());
+      &DOMWrapperWorld::MainWorld(window->GetIsolate()));
 }
 
 void LocalFrame::RequestExecuteScript(
@@ -2905,7 +2906,7 @@ void LocalFrame::RequestExecuteScript(
   ExecuteScriptPolicy execute_script_policy;
   CHECK(!IsProvisional());
   if (world_id == DOMWrapperWorld::kMainWorldId) {
-    world = &DOMWrapperWorld::MainWorld();
+    world = &DOMWrapperWorld::MainWorld(ToIsolate(this));
     execute_script_policy =
         ExecuteScriptPolicy::kDoNotExecuteScriptWhenScriptsDisabled;
   } else {
