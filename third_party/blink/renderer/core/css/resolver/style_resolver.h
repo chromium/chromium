@@ -195,6 +195,12 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   static const CSSValue* ComputeValue(Element* element,
                                       const CSSPropertyName&,
                                       const CSSValue&);
+  // Resolves a single CSSValue in the context of some element's computed style.
+  //
+  // This is intended for use by the Inspector Agent.
+  static const CSSValue* ResolveValue(Element& element,
+                                      const CSSPropertyName&,
+                                      const CSSValue&);
 
   // Compute FilterOperations from the specified CSSValue, using the provided
   // Font to resolve any font-relative units.

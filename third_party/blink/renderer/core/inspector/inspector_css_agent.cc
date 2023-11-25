@@ -280,7 +280,8 @@ class InspectorCSSAgent::StyleSheetAction : public InspectorHistory::Action {
   StyleSheetAction(const StyleSheetAction&) = delete;
   StyleSheetAction& operator=(const StyleSheetAction&) = delete;
 
-  virtual std::unique_ptr<protocol::CSS::CSSStyle> TakeSerializedStyle() {
+  virtual std::unique_ptr<protocol::CSS::CSSStyle> TakeSerializedStyle(
+      Element* element) {
     return nullptr;
   }
 };
@@ -443,24 +444,25 @@ class InspectorCSSAgent::ModifyRuleAction final
     return result;
   }
 
-  std::unique_ptr<protocol::CSS::CSSStyle> TakeSerializedStyle() override {
+  std::unique_ptr<protocol::CSS::CSSStyle> TakeSerializedStyle(
+      Element* element) override {
     if (type_ != kSetStyleText)
       return nullptr;
     CSSRule* rule = TakeRule();
     if (auto* style_rule = DynamicTo<CSSStyleRule>(rule))
-      return style_sheet_->BuildObjectForStyle(style_rule->style());
+      return style_sheet_->BuildObjectForStyle(style_rule->style(), element);
     if (auto* keyframe_rule = DynamicTo<CSSKeyframeRule>(rule))
-      return style_sheet_->BuildObjectForStyle(keyframe_rule->style());
+      return style_sheet_->BuildObjectForStyle(keyframe_rule->style(), element);
     if (auto* try_rule = DynamicTo<CSSTryRule>(rule)) {
-      return style_sheet_->BuildObjectForStyle(try_rule->style());
+      return style_sheet_->BuildObjectForStyle(try_rule->style(), nullptr);
     }
     if (auto* property_rule = DynamicTo<CSSPropertyRule>(rule)) {
-      return style_sheet_->BuildObjectForStyle(property_rule->Style());
+      return style_sheet_->BuildObjectForStyle(property_rule->Style(), nullptr);
     }
     if (auto* font_palette_values_rule =
             DynamicTo<CSSFontPaletteValuesRule>(rule)) {
       return style_sheet_->BuildObjectForStyle(
-          font_palette_values_rule->Style());
+          font_palette_values_rule->Style(), nullptr);
     }
     return nullptr;
   }
@@ -531,8 +533,10 @@ class InspectorCSSAgent::SetElementStyleAction final
                           style_sheet_->Id().Utf8().c_str());
   }
 
-  std::unique_ptr<protocol::CSS::CSSStyle> TakeSerializedStyle() override {
-    return style_sheet_->BuildObjectForStyle(style_sheet_->InlineStyle());
+  std::unique_ptr<protocol::CSS::CSSStyle> TakeSerializedStyle(
+      Element* element) override {
+    return style_sheet_->BuildObjectForStyle(style_sheet_->InlineStyle(),
+                                             element);
   }
 
   void Merge(Action* action) override {
@@ -1068,7 +1072,8 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
                                   view_transition_name);
 
   // Matched rules.
-  *matched_css_rules = BuildArrayForMatchedRuleList(resolver.MatchedRules());
+  *matched_css_rules =
+      BuildArrayForMatchedRuleList(resolver.MatchedRules(), element);
 
   // Inherited styles.
   *inherited_entries =
@@ -1077,14 +1082,14 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
     std::unique_ptr<protocol::CSS::InheritedStyleEntry> entry =
         protocol::CSS::InheritedStyleEntry::create()
             .setMatchedCSSRules(
-                BuildArrayForMatchedRuleList(match->matched_rules))
+                BuildArrayForMatchedRuleList(match->matched_rules, element))
             .build();
     if (match->element->style() && match->element->style()->length()) {
       InspectorStyleSheetForInlineStyle* style_sheet =
           AsInspectorStyleSheet(match->element);
       if (style_sheet) {
-        entry->setInlineStyle(
-            style_sheet->BuildObjectForStyle(style_sheet->InlineStyle()));
+        entry->setInlineStyle(style_sheet->BuildObjectForStyle(
+            style_sheet->InlineStyle(), element));
       }
     }
     inherited_entries->value().emplace_back(std::move(entry));
@@ -1099,7 +1104,8 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
   InspectorStyleSheetForInlineStyle* inline_style_sheet =
       AsInspectorStyleSheet(element);
   if (inline_style_sheet) {
-    *inline_style = inline_style_sheet->BuildObjectForStyle(element->style());
+    *inline_style =
+        inline_style_sheet->BuildObjectForStyle(element->style(), element);
     *attributes_style = BuildObjectForAttributesStyle(element);
   }
 
@@ -1111,7 +1117,8 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
         protocol::CSS::PseudoElementMatches::create()
             .setPseudoType(
                 InspectorDOMAgent::ProtocolPseudoElementType(match->pseudo_id))
-            .setMatches(BuildArrayForMatchedRuleList(match->matched_rules))
+            .setMatches(
+                BuildArrayForMatchedRuleList(match->matched_rules, element))
             .build());
     if (match->view_transition_name) {
       pseudo_id_matches->value().back()->setPseudoIdentifier(
@@ -1131,8 +1138,8 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
           protocol::CSS::PseudoElementMatches::create()
               .setPseudoType(InspectorDOMAgent::ProtocolPseudoElementType(
                   pseudo_match->pseudo_id))
-              .setMatches(
-                  BuildArrayForMatchedRuleList(pseudo_match->matched_rules))
+              .setMatches(BuildArrayForMatchedRuleList(
+                  pseudo_match->matched_rules, element))
               .build());
       if (pseudo_match->view_transition_name) {
         parent_pseudo_element_matches->back()->setPseudoIdentifier(
@@ -1549,7 +1556,7 @@ InspectorCSSAgent::AnimationsForNode(Element* element,
       InspectorStyleSheet* inspector_style_sheet =
           BindStyleSheet(css_keyframes_rule->parentStyleSheet());
       keyframes->emplace_back(inspector_style_sheet->BuildObjectForKeyframeRule(
-          css_keyframes_rule->Item(j)));
+          css_keyframes_rule->Item(j), element));
     }
 
     InspectorStyleSheet* inspector_style_sheet =
@@ -1588,7 +1595,7 @@ protocol::Response InspectorCSSAgent::getInlineStylesForNode(
   if (!style_sheet)
     return protocol::Response::ServerError("Element is not a style sheet");
 
-  *inline_style = style_sheet->BuildObjectForStyle(element->style());
+  *inline_style = style_sheet->BuildObjectForStyle(element->style(), element);
   *attributes_style = BuildObjectForAttributesStyle(element);
   return protocol::Response::Success();
 }
@@ -1998,7 +2005,10 @@ protocol::Response InspectorCSSAgent::setStyleTexts(
           String::Format("Failed applying edit #%d: ", i).Utf8() +
           InspectorDOMAgent::ToResponse(exception_state).Message());
     }
-    serialized_styles->emplace_back(action->TakeSerializedStyle());
+    serialized_styles->emplace_back(
+        // TODO (crbug/1498877) We also need to re-validate registered
+        // properties on edits
+        action->TakeSerializedStyle(nullptr));
   }
 
   for (int i = 0; i < n; ++i) {
@@ -2215,7 +2225,9 @@ protocol::Response InspectorCSSAgent::addRule(
     return InspectorDOMAgent::ToResponse(exception_state);
 
   CSSStyleRule* rule = action->TakeRule();
-  *result = BuildObjectForRule(rule);
+  // TODO (crbug/1498877) We also need to re-validate registered
+  // properties on edits
+  *result = BuildObjectForRule(rule, nullptr);
   return protocol::Response::Success();
 }
 
@@ -2893,19 +2905,22 @@ protocol::CSS::StyleSheetOrigin InspectorCSSAgent::DetectOrigin(
 }
 
 std::unique_ptr<protocol::CSS::CSSRule> InspectorCSSAgent::BuildObjectForRule(
-    CSSStyleRule* rule) {
+    CSSStyleRule* rule,
+    Element* element) {
   InspectorStyleSheet* inspector_style_sheet = InspectorStyleSheetForRule(rule);
   if (!inspector_style_sheet)
     return nullptr;
 
   std::unique_ptr<protocol::CSS::CSSRule> result =
-      inspector_style_sheet->BuildObjectForRuleWithoutAncestorData(rule);
+      inspector_style_sheet->BuildObjectForRuleWithoutAncestorData(rule,
+                                                                   element);
   FillAncestorData(rule, result.get());
   return result;
 }
 
 std::unique_ptr<protocol::Array<protocol::CSS::RuleMatch>>
-InspectorCSSAgent::BuildArrayForMatchedRuleList(RuleIndexList* rule_list) {
+InspectorCSSAgent::BuildArrayForMatchedRuleList(RuleIndexList* rule_list,
+                                                Element* element) {
   auto result = std::make_unique<protocol::Array<protocol::CSS::RuleMatch>>();
   if (!rule_list)
     return result;
@@ -2931,7 +2946,7 @@ InspectorCSSAgent::BuildArrayForMatchedRuleList(RuleIndexList* rule_list) {
   for (auto it = uniq_rules.rbegin(); it != uniq_rules.rend(); ++it) {
     CSSStyleRule* rule = it->Get();
     std::unique_ptr<protocol::CSS::CSSRule> rule_object =
-        BuildObjectForRule(rule);
+        BuildObjectForRule(rule, element);
     if (!rule_object)
       continue;
 

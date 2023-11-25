@@ -378,11 +378,12 @@ class CORE_EXPORT InspectorCSSAgent final
   String DetectOrigin(CSSStyleSheet* page_style_sheet,
                       Document* owner_document);
 
-  std::unique_ptr<protocol::CSS::CSSRule> BuildObjectForRule(CSSStyleRule*);
+  std::unique_ptr<protocol::CSS::CSSRule> BuildObjectForRule(CSSStyleRule*,
+                                                             Element* element);
   std::unique_ptr<protocol::CSS::RuleUsage> BuildCoverageInfo(CSSStyleRule*,
                                                               bool);
   std::unique_ptr<protocol::Array<protocol::CSS::RuleMatch>>
-  BuildArrayForMatchedRuleList(RuleIndexList*);
+  BuildArrayForMatchedRuleList(RuleIndexList*, Element*);
   std::unique_ptr<protocol::CSS::CSSStyle> BuildObjectForAttributesStyle(
       Element*);
   std::unique_ptr<protocol::Array<int>>

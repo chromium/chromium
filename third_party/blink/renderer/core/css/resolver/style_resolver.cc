@@ -2397,6 +2397,19 @@ const CSSValue* StyleResolver::ComputeValue(
                                                    *style);
 }
 
+const CSSValue* StyleResolver::ResolveValue(
+    Element& element,
+    const CSSPropertyName& property_name,
+    const CSSValue& value) {
+  const ComputedStyle* style = element.GetComputedStyle();
+  if (!style) {
+    return nullptr;
+  }
+  StyleResolverState state(element.GetDocument(), element);
+  state.SetStyle(*style);
+  return StyleCascade::Resolve(state, property_name, value);
+}
+
 FilterOperations StyleResolver::ComputeFilterOperations(
     Element* element,
     const Font& font,
