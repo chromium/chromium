@@ -7,6 +7,9 @@
 
 #include <stdint.h>
 
+#include <concepts>
+#include <memory>
+#include <type_traits>
 // TODO(dcheng): remove this.
 #include <vector>
 
@@ -83,8 +86,31 @@ namespace mojo {
 template <typename T, typename U>
 struct TypeConverter;
 
+// The following helper functions are useful shorthand. The compiler can infer
+// the input type, so you can write:
+//   OutputType out = ConvertTo<OutputType>(input);
 template <typename T, typename U>
-inline T ConvertTo(const U& obj);
+  requires requires(U* obj) {
+    { TypeConverter<T, std::remove_cv_t<U>*>::Convert(obj) } -> std::same_as<T>;
+  }
+inline T ConvertTo(U* obj) {
+  return TypeConverter<T, std::remove_cv_t<U>*>::Convert(obj);
+}
+
+template <typename T, typename U>
+  requires(!std::is_pointer_v<U>)
+inline T ConvertTo(const U& obj) {
+  if constexpr (requires {
+                  {
+                    mojo::ConvertTo<T>(std::to_address(obj))
+
+                  } -> std::same_as<T>;
+                }) {
+    return mojo::ConvertTo<T>(std::to_address(obj));
+  } else {
+    return TypeConverter<T, U>::Convert(obj);
+  }
+}
 
 template <typename T>
 struct TypeConverter<T, T> {
@@ -108,19 +134,6 @@ struct TypeConverter<OutVec, InVec> {
     return out;
   }
 };
-
-// The following helper functions are useful shorthand. The compiler can infer
-// the input type, so you can write:
-//   OutputType out = ConvertTo<OutputType>(input);
-template <typename T, typename U>
-inline T ConvertTo(const U& obj) {
-  return TypeConverter<T, U>::Convert(obj);
-}
-
-template <typename T, typename U>
-inline T ConvertTo(const U* obj) {
-  return TypeConverter<T, U*>::Convert(obj);
-}
 
 }  // namespace mojo
 
