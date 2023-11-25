@@ -788,7 +788,7 @@ void X11Window::Activate() {
   // https://code.google.com/p/wmii/issues/detail?id=266
   static bool wm_supports_active_window =
       GuessWindowManager() != WM_WMII &&
-      WmSupportsHint(x11::GetAtom("_NET_ACTIVE_WINDOW"));
+      connection_->WmSupportsHint(x11::GetAtom("_NET_ACTIVE_WINDOW"));
 
   x11::Time timestamp = X11EventSource::GetInstance()->GetTimestamp();
 
@@ -1112,7 +1112,7 @@ bool X11Window::CanSetDecorationInsets() const {
       return false;
     }
   }
-  return ui::WmSupportsHint(x11::GetAtom("_GTK_FRAME_EXTENTS"));
+  return connection_->WmSupportsHint(x11::GetAtom("_GTK_FRAME_EXTENTS"));
 }
 
 void X11Window::SetDecorationInsets(const gfx::Insets* insets_px) {

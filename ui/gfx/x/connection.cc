@@ -25,6 +25,7 @@
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/glx.h"
 #include "ui/gfx/x/keyboard_state.h"
+#include "ui/gfx/x/property_cache.h"
 #include "ui/gfx/x/randr.h"
 #include "ui/gfx/x/render.h"
 #include "ui/gfx/x/screensaver.h"
@@ -84,6 +85,13 @@ class UnknownError : public Error {
  private:
   RawError error_bytes_;
 };
+
+Window GetWindowPropertyAsWindow(const GetPropertyResponse& value) {
+  if (const Window* wm_window = PropertyCache::GetAs<Window>(value)) {
+    return *wm_window;
+  }
+  return Window::None;
+}
 
 }  // namespace
 
@@ -163,6 +171,13 @@ Connection::Connection(const std::string& address)
   InitErrorParsers();
 
   atom_cache_ = std::make_unique<AtomCache>(this);
+
+  root_props_ = std::make_unique<PropertyCache>(
+      this, default_root(),
+      std::vector<Atom>{GetAtom("_NET_SUPPORTING_WM_CHECK"),
+                        GetAtom("_NET_SUPPORTED")},
+      base::BindRepeating(&Connection::OnRootPropertyChanged,
+                          base::Unretained(this)));
 }
 
 Connection::~Connection() {
@@ -289,8 +304,33 @@ ScopedEventSelector Connection::ScopedSelectEvent(Window window,
   return ScopedEventSelector(this, window, event_mask);
 }
 
-Atom Connection::GetAtom(const char* name) {
+Atom Connection::GetAtom(const char* name) const {
   return atom_cache_->GetAtom(name);
+}
+
+std::string Connection::GetWmName() const {
+  if (WmSupportsEwmh()) {
+    size_t size;
+    if (const char* name =
+            wm_props_->GetAs<char>(GetAtom("_NET_WM_NAME"), &size)) {
+      std::string wm_name;
+      wm_name.assign(name, size);
+      return wm_name;
+    }
+  }
+  return std::string();
+}
+
+bool Connection::WmSupportsHint(Atom atom) const {
+  if (WmSupportsEwmh()) {
+    size_t size;
+    if (const Atom* supported =
+            root_props_->GetAs<Atom>(GetAtom("_NET_SUPPORTED"), &size)) {
+      const Atom* end = supported + size;
+      return std::find(supported, end, atom) != end;
+    }
+  }
+  return false;
 }
 
 Connection::Request::Request(ResponseCallback callback)
@@ -849,6 +889,33 @@ std::unique_ptr<Error> Connection::ParseError(RawError error_bytes) {
 
 uint32_t Connection::GenerateIdImpl() {
   return xcb_generate_id(connection_.get());
+}
+
+void Connection::OnRootPropertyChanged(Atom property,
+                                       const GetPropertyResponse& value) {
+  Atom check_atom = GetAtom("_NET_SUPPORTING_WM_CHECK");
+  if (property == check_atom) {
+    wm_props_.reset();
+    Window wm_window = GetWindowPropertyAsWindow(value);
+    if (wm_window != Window::None) {
+      wm_props_ = std::make_unique<PropertyCache>(
+          this, wm_window,
+          std::vector<Atom>{check_atom, GetAtom("_NET_WM_NAME")});
+    }
+  }
+}
+
+bool Connection::WmSupportsEwmh() const {
+  Atom check_atom = GetAtom("_NET_SUPPORTING_WM_CHECK");
+  Window wm_window = GetWindowPropertyAsWindow(root_props_->Get(check_atom));
+
+  if (!wm_props_) {
+    return false;
+  }
+  if (const x11::Window* wm_check = wm_props_->GetAs<Window>(check_atom)) {
+    return *wm_check == wm_window;
+  }
+  return false;
 }
 
 }  // namespace x11

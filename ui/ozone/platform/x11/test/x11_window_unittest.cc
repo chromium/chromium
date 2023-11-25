@@ -324,7 +324,8 @@ TEST_F(X11WindowTest, DISABLED_Shape) {
     EXPECT_FALSE(ShapeRectContainsPoint(shape_rects, 205, 15));
   }
 
-  if (WmSupportsHint(x11::GetAtom("_NET_WM_STATE_MAXIMIZED_VERT"))) {
+  if (connection->WmSupportsHint(
+          x11::GetAtom("_NET_WM_STATE_MAXIMIZED_VERT"))) {
     // The shape should be changed to a rectangle which fills the entire screen
     // when |widget1| is maximized.
     {
@@ -405,10 +406,10 @@ TEST_F(X11WindowTest, DISABLED_Shape) {
 // Test that the widget reacts on changes in fullscreen state initiated by the
 // window manager (e.g. via a window manager accelerator key).
 TEST_F(X11WindowTest, MAYBE_WindowManagerTogglesFullscreen) {
-  if (!WmSupportsHint(x11::GetAtom("_NET_WM_STATE_FULLSCREEN")))
-    return;
-
   auto* connection = x11::Connection::Get();
+  if (!connection->WmSupportsHint(x11::GetAtom("_NET_WM_STATE_FULLSCREEN"))) {
+    return;
+  }
 
   TestPlatformWindowDelegate delegate;
   ShapedX11ExtensionDelegate x11_extension_delegate;

@@ -61,61 +61,6 @@ namespace {
 constexpr int kNetWMStateAdd = 1;
 constexpr int kNetWMStateRemove = 0;
 
-bool SupportsEWMH() {
-  static bool supports_ewmh = false;
-  static bool supports_ewmh_cached = false;
-  if (!supports_ewmh_cached) {
-    supports_ewmh_cached = true;
-
-    x11::Window wm_window = x11::Window::None;
-    if (!x11::Connection::Get()->GetPropertyAs(
-            GetX11RootWindow(), x11::GetAtom("_NET_SUPPORTING_WM_CHECK"),
-            &wm_window)) {
-      supports_ewmh = false;
-      return false;
-    }
-
-    // It's possible that a window manager started earlier in this X session
-    // left a stale _NET_SUPPORTING_WM_CHECK property when it was replaced by a
-    // non-EWMH window manager, so we trap errors in the following requests to
-    // avoid crashes (issue 23860).
-
-    // EWMH requires the supporting-WM window to also have a
-    // _NET_SUPPORTING_WM_CHECK property pointing to itself (to avoid a stale
-    // property referencing an ID that's been recycled for another window), so
-    // we check that too.
-    x11::Window wm_window_property = x11::Window::None;
-    supports_ewmh = x11::Connection::Get()->GetPropertyAs(
-                        wm_window, x11::GetAtom("_NET_SUPPORTING_WM_CHECK"),
-                        &wm_window_property) &&
-                    wm_window_property == wm_window;
-  }
-
-  return supports_ewmh;
-}
-
-bool GetWindowManagerName(std::string* wm_name) {
-  DCHECK(wm_name);
-  if (!SupportsEWMH()) {
-    return false;
-  }
-
-  x11::Window wm_window = x11::Window::None;
-  if (!x11::Connection::Get()->GetPropertyAs(
-          GetX11RootWindow(), x11::GetAtom("_NET_SUPPORTING_WM_CHECK"),
-          &wm_window)) {
-    return false;
-  }
-
-  std::vector<char> str;
-  if (!x11::Connection::Get()->GetArrayProperty(
-          wm_window, x11::GetAtom("_NET_WM_NAME"), &str)) {
-    return false;
-  }
-  wm_name->assign(str.data(), str.size());
-  return true;
-}
-
 // Returns whether the X11 Screen Saver Extension can be used to disable the
 // screen saver.
 bool IsX11ScreenSaverAvailable() {
@@ -412,7 +357,8 @@ bool HasWMSpecProperty(const base::flat_set<x11::Atom>& properties,
 
 bool GetCustomFramePrefDefault() {
   // _NET_WM_MOVERESIZE is needed for frame-drag-initiated window movement.
-  if (!WmSupportsHint(x11::GetAtom("_NET_WM_MOVERESIZE"))) {
+  if (!x11::Connection::Get()->WmSupportsHint(
+          x11::GetAtom("_NET_WM_MOVERESIZE"))) {
     return false;
   }
 
@@ -471,8 +417,8 @@ bool GetWindowDesktop(x11::Window window, int32_t* desktop) {
 }
 
 WindowManagerName GuessWindowManager() {
-  std::string name;
-  if (!GetWindowManagerName(&name)) {
+  std::string name = x11::Connection::Get()->GetWmName();
+  if (name.empty()) {
     return WM_UNNAMED;
   }
   // These names are taken from the WMs' source code.
@@ -546,11 +492,8 @@ WindowManagerName GuessWindowManager() {
 }
 
 std::string GuessWindowManagerName() {
-  std::string name;
-  if (GetWindowManagerName(&name)) {
-    return name;
-  }
-  return "Unknown";
+  std::string name = x11::Connection::Get()->GetWmName();
+  return name.empty() ? "Unknown" : name;
 }
 
 UMALinuxWindowManager GetWindowManagerUMA() {
@@ -611,7 +554,7 @@ bool IsX11WindowFullScreen(x11::Window window) {
   // absence of _NET_WM_STATE_FULLSCREEN in _NET_WM_STATE to determine
   // whether we're fullscreen.
   x11::Atom fullscreen_atom = x11::GetAtom("_NET_WM_STATE_FULLSCREEN");
-  if (WmSupportsHint(fullscreen_atom)) {
+  if (x11::Connection::Get()->WmSupportsHint(fullscreen_atom)) {
     std::vector<x11::Atom> atom_properties;
     if (x11::Connection::Get()->GetArrayProperty(
             window, x11::GetAtom("_NET_WM_STATE"), &atom_properties)) {
@@ -644,21 +587,6 @@ bool SuspendX11ScreenSaver(bool suspend) {
 
   x11::Connection::Get()->screensaver().Suspend({suspend});
   return true;
-}
-
-bool WmSupportsHint(x11::Atom atom) {
-  if (!SupportsEWMH()) {
-    return false;
-  }
-
-  std::vector<x11::Atom> supported_atoms;
-  if (!x11::Connection::Get()->GetArrayProperty(GetX11RootWindow(),
-                                                x11::GetAtom("_NET_SUPPORTED"),
-                                                &supported_atoms)) {
-    return false;
-  }
-
-  return base::Contains(supported_atoms, atom);
 }
 
 gfx::ICCProfile GetICCProfileForMonitor(int monitor) {
