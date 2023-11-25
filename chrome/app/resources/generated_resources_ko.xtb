@@ -4022,7 +4022,7 @@
 <translation id="4146785383423576110">재설정 및 정리하기</translation>
 <translation id="4147099377280085053">점자표 선택</translation>
 <translation id="4147911968024186208">다시 시도해 주세요. 이 오류가 다시 표시되면 지원 담당자에게 문의하시기 바랍니다.</translation>
-<translation id="414800391140809654">인터넷을 사용하는 동안 내 정보를 사용할 수 있습니다.</translation>
+<translation id="414800391140809654">의 경우 인터넷을 사용하는 동안 내 정보를 사용할 수 있음</translation>
 <translation id="4148195018520464922">특정 사용자만 로그인할 수 있도록 제한할 수 있습니다. 이렇게 하면 로그인 화면에서 '사용자 추가' 옵션이 삭제됩니다. 현재 사용자를 삭제할 수도 있습니다.</translation>
 <translation id="4150201353443180367">디스플레이</translation>
 <translation id="4150569944729499860">화면 컨텍스트</translation>
@@ -8204,7 +8204,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7617263010641145920">Play 스토어 사용 설정</translation>
 <translation id="7617648809369507487">조용한 메시지 전송 사용</translation>
 <translation id="7621382409404463535">시스템에서 기기 설정을 저장하지 못했습니다.</translation>
-<translation id="7621480263311228380">다른 사람이 나에 관해 저장한 정보를 사용하도록 허용하지 않음</translation>
+<translation id="7621480263311228380">나에 관해 저장한 정보를 사용하도록 허용되지 않음</translation>
 <translation id="7621595347123595643">비밀번호 또는 PIN을 잊어버린 경우 로컬 데이터를 복구할 수 없습니다.</translation>
 <translation id="7622114377921274169">충전 중</translation>
 <translation id="7622768823216805500">사이트에서는 일반적으로 간편 결제와 같은 쇼핑 기능을 사용하기 위해 결제 핸들러를 설치합니다.</translation>

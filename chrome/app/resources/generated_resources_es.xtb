@@ -4700,7 +4700,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4728558894243024398">Plataforma</translation>
 <translation id="4730492586225682674">Última nota tomada con lápiz óptico en la pantalla de bloqueo</translation>
 <translation id="4730888769809690665"><ph name="SITE" /> tiene permiso para enviar notificaciones</translation>
-<translation id="4731306954230393087">Tiene permiso para usar la información que ha guardado sobre ti</translation>
+<translation id="4731306954230393087">Tienen permiso para usar la información que han guardado sobre ti</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (izquierdo)</translation>
 <translation id="4733793249294335256">Ubicación</translation>
 <translation id="473546211690256853">Esta cuenta está administrada por <ph name="DOMAIN" /></translation>
@@ -5469,7 +5469,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5383740867328871413">Grupo sin nombre - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="538822246583124912">La política de Enterprise ha cambiado. Se ha añadido el botón Experimentos a la barra de herramientas. Haz clic en el botón para abrir un cuadro de diálogo donde habilitar los experimentos.</translation>
 <translation id="5388885445722491159">Sincronizado</translation>
-<translation id="5389626883706033615">Los sitios no pueden pedirte permiso para usar información que hayan guardado sobre ti</translation>
+<translation id="5389626883706033615">Los sitios no pueden solicitarte permiso para usar la información que hayan guardado sobre ti</translation>
 <translation id="5390112241331447203">Incluye el archivo system_logs.txt enviado en los informes de comentarios.</translation>
 <translation id="5390677308841849479">Rojo oscuro y naranja</translation>
 <translation id="5390743329570580756">Enviar para</translation>
@@ -8395,7 +8395,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7766838926148951335">Aceptar permisos</translation>
 <translation id="7767554953520855281">Los detalles se ocultan mientras compartes tu pantalla</translation>
 <translation id="7767972280546034736">Crea una clave de acceso para <ph name="APP_NAME" /></translation>
-<translation id="7768507955883790804">Los sitios usan esta opción automáticamente cuando los visitas.</translation>
+<translation id="7768507955883790804">Los sitios usan esta opción automáticamente cuando los visitas</translation>
 <translation id="7768526219335215384"><ph name="ORIGIN" /> podrá ver los archivos de <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Cambiar</translation>
 <translation id="7768784765476638775">Enunciar selección</translation>

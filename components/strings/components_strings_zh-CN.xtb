@@ -3706,7 +3706,7 @@
 <translation id="8553387990086529628">旅游目的地</translation>
 <translation id="8554010658308662631">加载更多</translation>
 <translation id="8554181323880688938">奢侈品</translation>
-<translation id="8554802735558319842">为了提高共用设备的安全性，请开启此设置让系统在您每次使用自动填充功能付款时都进行验证。</translation>
+<translation id="8554802735558319842">为了提高共享设备的安全性，请开启此设置让系统在您每次使用自动填充功能付款时都进行验证。</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{重置这项权限}other{重置这些权限}}</translation>
 <translation id="8555010941760982128">结账时请使用此促销代码</translation>
 <translation id="8556297087315686325">网络监控与管理</translation>
