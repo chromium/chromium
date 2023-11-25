@@ -10,8 +10,6 @@
 #include <concepts>
 #include <memory>
 #include <type_traits>
-// TODO(dcheng): remove this.
-#include <vector>
 
 namespace mojo {
 
