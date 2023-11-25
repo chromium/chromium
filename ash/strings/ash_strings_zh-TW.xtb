@@ -228,7 +228,7 @@
 <translation id="1864454756846565995">USB-C 裝置 (背面連接埠)</translation>
 <translation id="1869497990620230175">快速檔案</translation>
 <translation id="1871023081802165724">播放媒體</translation>
-<translation id="1879018240766558464">目前不支援無痕式視窗。系統將儲存其他應用程式。</translation>
+<translation id="1879018240766558464">目前不支援無痕視窗。系統將儲存其他應用程式。</translation>
 <translation id="1882814835921407042">沒有行動網路</translation>
 <translation id="1882897271359938046">正在建立 <ph name="DISPLAY_NAME" /> 鏡像</translation>
 <translation id="1885785240814121742">使用指紋解鎖</translation>
@@ -1077,7 +1077,7 @@
 <translation id="5414198321558177633">正在重新整理設定檔清單。請稍候片刻。</translation>
 <translation id="5426063383988017631">已關閉設定選單</translation>
 <translation id="5428899915242071344">開始選取</translation>
-<translation id="5429993543155113935">目前不支援無痕式視窗</translation>
+<translation id="5429993543155113935">目前不支援無痕視窗</translation>
 <translation id="5430931332414098647">即時網路共用</translation>
 <translation id="5431318178759467895">彩色</translation>
 <translation id="5433020815079095860">音訊輸入</translation>
@@ -1109,7 +1109,7 @@
 <translation id="5551974246223970793">搜尋網頁時，前往下一個符合搜尋的項目</translation>
 <translation id="5558091555391176027">將鄰近分享功能切換為向附近的所有裝置顯示</translation>
 <translation id="556042886152191864">按鈕</translation>
-<translation id="5570122939431135380">在新的無痕式視窗中開啟新分頁</translation>
+<translation id="5570122939431135380">在新的無痕視窗中開啟新分頁</translation>
 <translation id="5571066253365925590">藍牙已啟用</translation>
 <translation id="557563299383177668">下一段</translation>
 <translation id="5577082622442191756">切換藍牙。<ph name="STATE_TEXT" />。</translation>
@@ -1320,7 +1320,7 @@
 <translation id="6445835306623867477">正在透過<ph name="RECEIVER_NAME" />投放「<ph name="ROUTE_TITLE" />」</translation>
 <translation id="6445915701151710649">CPU</translation>
 <translation id="6447111710783417522"><ph name="DATE" />，<ph name="NUMBER" /> 個活動</translation>
-<translation id="6449483711453944360">目前不支援 Linux 應用程式和無痕式視窗</translation>
+<translation id="6449483711453944360">目前不支援 Linux 應用程式和無痕視窗</translation>
 <translation id="6450245544201845082">右鍵快速鍵目前已關閉</translation>
 <translation id="6452181791372256707">拒絕</translation>
 <translation id="6453179446719226835">語言已變更</translation>
@@ -1573,7 +1573,7 @@
 <translation id="7526573455193969409">網路可能會受到監控</translation>
 <translation id="7536035074519304529">IP 位址：<ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">更新左側視窗</translation>
-<translation id="7543399541175347147">目前不支援 Linux 應用程式和無痕式視窗。系統將儲存其他應用程式。</translation>
+<translation id="7543399541175347147">目前不支援 Linux 應用程式和無痕視窗。系統將儲存其他應用程式。</translation>
 <translation id="7544300628205093162">鍵盤背光功能已開啟</translation>
 <translation id="7548434653388805669">就寢時間到了</translation>
 <translation id="7551643184018910560">固定至檔案櫃</translation>

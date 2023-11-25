@@ -616,7 +616,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1485015260175968628">Tiện ích/ứng dụng giờ đây có thể:</translation>
 <translation id="1485141095922496924">Phiên bản <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1485197926103629489">Microsoft 365 yêu cầu lưu trữ các tệp trong OneDrive. Các tệp trên thiết bị sẽ di chuyển sang OneDrive, còn các tệp từ vị trí khác sẽ được sao chép vào đó. Bạn có thể tìm thấy các tệp của mình ở thư mục Microsoft OneDrive trong ứng dụng Files.</translation>
-<translation id="1486096554574027028">Tìm kiếm mật khẩu</translation>
+<translation id="1486096554574027028">Tìm mật khẩu</translation>
 <translation id="1486486872607808064">Quét mã QR này bằng máy ảnh trên thiết bị mà bạn muốn tạo khoá đăng nhập cho <ph name="APP_NAME" /></translation>
 <translation id="1487335504823219454">Bật - cài đặt tùy chỉnh</translation>
 <translation id="1493892686965953381">Đang đợi <ph name="LOAD_STATE_PARAMETER" />...</translation>
