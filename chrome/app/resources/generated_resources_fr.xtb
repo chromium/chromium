@@ -1239,7 +1239,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1944535645109964458">Aucune clé d'accès disponible</translation>
 <translation id="1944921356641260203">Mise à jour trouvée</translation>
 <translation id="1947136734041527201">Permet de vous connecter à des sites Web avec votre compte enregistré auprès d'un service d'identité</translation>
-<translation id="1948632501103125383">Enregistrer le cadre de la &amp;vidéo sous...</translation>
+<translation id="1948632501103125383">Enregistrer l'image &amp;vidéo sous...</translation>
 <translation id="1949332606889020901">Identifiants de plantage</translation>
 <translation id="1949584741547056205">Réponses rapides</translation>
 <translation id="1949849604471335579">Personnalisez le fond d'écran, l'économiseur d'écran, les couleurs d'accentuation et plus</translation>
@@ -2743,7 +2743,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3088325635286126843">&amp;Renommer...</translation>
 <translation id="3089137131053189723">Recherche effacée</translation>
 <translation id="3089941350495701096">Liste de lecture</translation>
-<translation id="3089948625237571254">C&amp;opier le cadre de la vidéo</translation>
+<translation id="3089948625237571254">C&amp;opier l'image vidéo</translation>
 <translation id="3090227230165225418">Annoncer les notifications de téléchargement</translation>
 <translation id="3090819949319990166">Impossible de copier le fichier crx externe dans <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" associé.</translation>
@@ -5314,7 +5314,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5173668317844998239">Ajouter et supprimer les empreintes enregistrées sur votre clé de sécurité</translation>
 <translation id="5174169235862638850">Mot de passe copié dans le presse-papiers</translation>
 <translation id="5175379009094579629">Le nom de l'appareil n'est pas valide. Saisissez-en un qui le soit.</translation>
-<translation id="5176787661653201403">C&amp;opier le cadre de la vidéo</translation>
+<translation id="5176787661653201403">C&amp;opier l'image vidéo</translation>
 <translation id="5177479852722101802">Continuer à bloquer l'accès à la caméra et au micro</translation>
 <translation id="5177549709747445269">Vous utilisez des données mobiles</translation>
 <translation id="5178667623289523808">Rechercher le précédent</translation>
@@ -8834,7 +8834,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7974936243149753750">Surbalayage</translation>
 <translation id="7975504106303186033">Vous devez enregistrer cet appareil Chrome Education dans un compte G Suite for Education. Pour créer un compte, rendez-vous sur g.co/workspace/edusignup.</translation>
 <translation id="7977451675950311423">Vous avertit si vous utilisez un mot de passe compromis par une violation des données.</translation>
-<translation id="7978053509627908242">Enregistrer le cadre de la &amp;vidéo sous...</translation>
+<translation id="7978053509627908242">Enregistrer l'image &amp;vidéo sous...</translation>
 <translation id="7978412674231730200">Clé privée</translation>
 <translation id="7978450511781612192">Vous serez déconnecté de vos comptes Google. Vos favoris, votre historique et vos mots de passe ne seront plus synchronisés.</translation>
 <translation id="7980084013673500153">ID d'élément : <ph name="ASSET_ID" /></translation>

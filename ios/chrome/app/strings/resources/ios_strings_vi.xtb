@@ -938,7 +938,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="5963939892571022323">Không thể tạo một đường liên kết đến văn bản được làm nổi bật.</translation>
 <translation id="5965679971710331625">Bạn đã đăng nhập</translation>
 <translation id="5971872012779224351">{count,plural, =1{Đã xoá 1 dấu trang}other{Đã xoá {count} dấu trang}}</translation>
-<translation id="5979837087407522202">Tìm kiếm mật khẩu</translation>
+<translation id="5979837087407522202">Tìm mật khẩu</translation>
 <translation id="5981230843984570095">Đóng tất cả các thẻ không hoạt động</translation>
 <translation id="5982717868370722439">Thêm dữ liệu hiện có vào <ph name="USER_EMAIL" />.</translation>
 <translation id="5984222099446776634">Truy cập gần đây</translation>
