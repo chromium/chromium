@@ -361,8 +361,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 new LayoutStateProvider.LayoutStateObserver() {
                     @Override
                     public void onStartedShowing(int layoutType) {
-                        if (layoutType == LayoutType.TAB_SWITCHER)
+                        if (layoutType == LayoutType.TAB_SWITCHER) {
                             mHistoryNavigationCoordinator.reset();
+                        }
                     }
                 };
     }
@@ -1112,7 +1113,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         // is most effective when shown shortly after the first-run experience. It is therefore
         // at the front of the list of promotions.
         if (PwaRestorePromoUtils.launchPromoIfNeeded(
-                mActivity, mWindowAndroid, R.drawable.ic_arrow_back_24dp)) {
+                profile, mWindowAndroid, R.drawable.ic_arrow_back_24dp)) {
             return true;
         }
         if (FullScreenSyncPromoUtil.launchPromoIfNeeded(

@@ -7,12 +7,18 @@ package org.chromium.chrome.browser.webapps;
 import android.app.Activity;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.webapps.pwa_restore_ui.PwaRestoreBottomSheetCoordinator;
@@ -26,6 +32,7 @@ import java.lang.annotation.RetentionPolicy;
  * remind users that they had PWAs installed on their old device, and can restore them on their new
  * device.
  */
+@JNINamespace("webapps")
 public class PwaRestorePromoUtils {
     private static final String TAG = "PwaRestore";
 
@@ -34,14 +41,18 @@ public class PwaRestorePromoUtils {
         DisplayStage.UNKNOWN_STATUS,
         DisplayStage.SHOW_PROMO,
         DisplayStage.ALREADY_LAUNCHED,
-        DisplayStage.PRE_EXISTING_PROFILE
+        DisplayStage.NO_APPS_AVAILABLE,
+        DisplayStage.PRE_EXISTING_PROFILE,
+        DisplayStage.ERROR_LAUNCHING_PROMO,
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface DisplayStage {
         int UNKNOWN_STATUS = 0;
         int SHOW_PROMO = 1;
         int ALREADY_LAUNCHED = 2;
-        int PRE_EXISTING_PROFILE = 3;
+        int NO_APPS_AVAILABLE = 3;
+        int PRE_EXISTING_PROFILE = 4;
+        int ERROR_LAUNCHING_PROMO = 5;
     }
 
     public static void notifyFirstRunPromoTriggered() {
@@ -66,18 +77,26 @@ public class PwaRestorePromoUtils {
      * @return Whether the PWA Restore promo was shown.
      */
     public static boolean launchPromoIfNeeded(
-            Activity activity, WindowAndroid windowAndroid, int arrowResourceId) {
+            Profile profile, WindowAndroid windowAndroid, int arrowResourceId) {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PWA_RESTORE_UI)) {
-            Log.i(TAG, "Not showing PWA Restore promo, feature flag is disabled");
+            Log.i(TAG, "Not showing PWA Restore promo, feature flag is disabled.");
             return false;
         }
 
         SharedPreferencesManager preferenceManager = ChromeSharedPreferences.getInstance();
+        // TODO(finnur): Change the default to be false when the backend writes this pref.
+        if (!preferenceManager.readBoolean(ChromePreferenceKeys.PWA_RESTORE_APPS_AVAILABLE, true)) {
+            Log.i(TAG, "Not showing PWA Restore promo, no apps available for restoring.");
+            preferenceManager.writeInt(
+                    ChromePreferenceKeys.PWA_RESTORE_PROMO_STAGE, DisplayStage.NO_APPS_AVAILABLE);
+            return false;
+        }
+
         @DisplayStage
         int promoStage =
                 preferenceManager.readInt(
                         ChromePreferenceKeys.PWA_RESTORE_PROMO_STAGE, DisplayStage.UNKNOWN_STATUS);
-        Log.i(TAG, "Currently saved promo stage: " + promoStage);
+        Log.i(TAG, "Currently saved promo stage: " + promoStage + ".");
 
         switch (promoStage) {
             case DisplayStage.UNKNOWN_STATUS:
@@ -86,7 +105,7 @@ public class PwaRestorePromoUtils {
                 // `notifyFirstRunPromoTriggered` has not been called). The promo will therefore
                 // write PRE_EXISTING_PROFILE to the DisplayStage to prevent the promo from showing
                 // now and in the future.
-                Log.i(TAG, "Promo stage is unknown - marking as existing profile");
+                Log.i(TAG, "Promo stage is unknown - marking as existing profile.");
                 preferenceManager.writeInt(
                         ChromePreferenceKeys.PWA_RESTORE_PROMO_STAGE,
                         DisplayStage.PRE_EXISTING_PROFILE);
@@ -99,33 +118,65 @@ public class PwaRestorePromoUtils {
                 // If the promo has already launched, our work is done.
                 Log.i(TAG, "Not showing promo - promo has already launched.");
                 return false;
+            case DisplayStage.NO_APPS_AVAILABLE:
+                // If the promo has already launched, our work is done.
+                Log.i(TAG, "Not showing promo - no apps available.");
+                return false;
+            case DisplayStage.ERROR_LAUNCHING_PROMO:
+                // Last time we launched there was an error. For now, don't launch again.
+                Log.i(TAG, "Not showing promo - prior error.");
+                return false;
             case DisplayStage.SHOW_PROMO:
                 // We've determined that the promo should show. If successfully shown, we'll mark
                 // it as such, to prevent the promo from appearing in the future.
-                boolean success = launchPromo(activity, windowAndroid, arrowResourceId);
-                Log.i(TAG, "Attempting to show promo. Success: " + success);
-                if (success) {
-                    preferenceManager.writeInt(
-                            ChromePreferenceKeys.PWA_RESTORE_PROMO_STAGE,
-                            DisplayStage.ALREADY_LAUNCHED);
-                }
-                return success;
+                launchPromo(profile, windowAndroid, arrowResourceId);
+                return true;
             default:
                 assert false;
                 return false;
         }
     }
 
-    private static boolean launchPromo(
-            Activity activity, WindowAndroid windowAndroid, int arrowResourceId) {
-        // TODO(finnur): Check whether sync knows about any PWAs installed on previous devices that
-        // are not installed on this device, and try showing the promotion. If this launch does not
-        // meet the criteria, return false.
+    private static void launchPromo(
+            Profile profile, WindowAndroid windowAndroid, int arrowResourceId) {
+        PwaRestorePromoUtilsJni.get().fetchRestorableApps(profile, windowAndroid, arrowResourceId);
+        // Flow continues in onRestorableAppsAvailable.
+    }
+
+    @CalledByNative
+    private static void onRestorableAppsAvailable(
+            boolean success,
+            @NonNull String[][] appList,
+            WindowAndroid windowAndroid,
+            int arrowResourceId) {
 
         BottomSheetController controller = BottomSheetControllerProvider.from(windowAndroid);
-        if (controller == null) return false;
-        PwaRestoreBottomSheetCoordinator pwaRestoreBottomSheetCoordinator =
-                new PwaRestoreBottomSheetCoordinator(activity, controller, arrowResourceId);
-        return pwaRestoreBottomSheetCoordinator != null && pwaRestoreBottomSheetCoordinator.show();
+        if (controller == null) {
+            success = false;
+        } else {
+            Activity activity = windowAndroid.getActivity().get();
+            PwaRestoreBottomSheetCoordinator pwaRestoreBottomSheetCoordinator =
+                    new PwaRestoreBottomSheetCoordinator(
+                            appList, activity, controller, arrowResourceId);
+            if (pwaRestoreBottomSheetCoordinator == null
+                    || !pwaRestoreBottomSheetCoordinator.show()) {
+                success = false;
+            }
+        }
+
+        SharedPreferencesManager preferenceManager = ChromeSharedPreferences.getInstance();
+        if (success) {
+            preferenceManager.writeInt(
+                    ChromePreferenceKeys.PWA_RESTORE_PROMO_STAGE, DisplayStage.ALREADY_LAUNCHED);
+        } else {
+            preferenceManager.writeInt(
+                    ChromePreferenceKeys.PWA_RESTORE_PROMO_STAGE,
+                    DisplayStage.ERROR_LAUNCHING_PROMO);
+        }
+    }
+
+    @NativeMethods
+    interface Natives {
+        void fetchRestorableApps(Profile profile, WindowAndroid windowAndroid, int arrowResourceId);
     }
 }

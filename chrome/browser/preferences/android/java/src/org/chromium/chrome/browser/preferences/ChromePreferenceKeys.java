@@ -649,6 +649,12 @@ public final class ChromePreferenceKeys {
     public static final String PROMOS_SKIPPED_ON_FIRST_START = "promos_skipped_on_first_start";
 
     /**
+     * Key for the PWA Restore feature. Used to indicate to the promo code that the PWA Restore
+     * backend has determined that apps are available for restoring (boolean flag).
+     */
+    public static final String PWA_RESTORE_APPS_AVAILABLE = "Chrome.PwaRestore.AppsAvailable";
+
+    /**
      * Key for the PWA Restore feature. Used in {@link
      * org.chromium.chrome.browser.webapps.PwaRestorePromoUtils} to figure out when to show the
      * promo.
@@ -1045,6 +1051,7 @@ public final class ChromePreferenceKeys {
                 PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY,
                 PROMO_IS_DISMISSED.pattern(),
                 PROMO_TIMES_SEEN.pattern(),
+                PWA_RESTORE_APPS_AVAILABLE,
                 PWA_RESTORE_PROMO_STAGE,
                 QUERY_TILES_NEXT_DISPLAY_DECISION_TIME_MS,
                 QUERY_TILES_SHOW_ON_NTP,

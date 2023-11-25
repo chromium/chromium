@@ -12,6 +12,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 
@@ -107,8 +109,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
         // This test makes sure that on the subsequent launch -- after getting notified about the
         // first run experience having triggered already -- the promo dialog is showing and the
         // right pref has been written (`ALREADY_LAUNCHED`) to make sure we don't show again.
-        mPreferences.writeInt(
-                ChromePreferenceKeys.PWA_RESTORE_PROMO_STAGE, DisplayStage.SHOW_PROMO);
+        setAppsAvailableAndPromoStage(true, DisplayStage.SHOW_PROMO);
 
         assertCurrentFlag(DisplayStage.SHOW_PROMO);
         mActivityTestRule.startMainActivityFromLauncher();
@@ -119,11 +120,25 @@ public class PwaRestoreBottomSheetIntegrationTest {
     @Test
     @SmallTest
     @Feature({"PwaRestrore"})
+    public void testSecondLaunchAfterBeingNotifiedButNoApps() {
+        // This test makes sure that if we get notified to show, but no apps are available to
+        // restore,
+        // that we don't show the promo and suppress it from showing in the future.
+        setAppsAvailableAndPromoStage(false, DisplayStage.SHOW_PROMO);
+
+        assertCurrentFlag(DisplayStage.SHOW_PROMO);
+        mActivityTestRule.startMainActivityFromLauncher();
+        assertDialogShown(false);
+        assertCurrentFlag(DisplayStage.NO_APPS_AVAILABLE);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"PwaRestrore"})
     public void testEveryLaunchAfterShowing() {
         // This test makes sure that after showing the dialog once, the flag remains set and the
         // dialog is not shown again.
-        mPreferences.writeInt(
-                ChromePreferenceKeys.PWA_RESTORE_PROMO_STAGE, DisplayStage.ALREADY_LAUNCHED);
+        setAppsAvailableAndPromoStage(true, DisplayStage.ALREADY_LAUNCHED);
 
         assertCurrentFlag(DisplayStage.ALREADY_LAUNCHED);
         mActivityTestRule.startMainActivityFromLauncher();
@@ -139,6 +154,8 @@ public class PwaRestoreBottomSheetIntegrationTest {
         // (simulated by not calling `setFirstRunTriggeredForTesting(true)`), that it is treated
         // as if the profile is pre-existing, and we don't show the promo (ever).
 
+        mPreferences.writeBoolean(ChromePreferenceKeys.PWA_RESTORE_APPS_AVAILABLE, true);
+
         assertCurrentFlag(sFlagValueMissing);
         mActivityTestRule.startMainActivityFromLauncher();
         assertDialogShown(false);
@@ -151,8 +168,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
     public void testEveryLaunchAfterDetectingNoShow() {
         // This test makes sure that after determining the profile is too old to show the promo, the
         // flag remains set and the dialog is not shown.
-        mPreferences.writeInt(
-                ChromePreferenceKeys.PWA_RESTORE_PROMO_STAGE, DisplayStage.PRE_EXISTING_PROFILE);
+        setAppsAvailableAndPromoStage(true, DisplayStage.PRE_EXISTING_PROFILE);
 
         assertCurrentFlag(DisplayStage.PRE_EXISTING_PROFILE);
         mActivityTestRule.startMainActivityFromLauncher();
@@ -165,8 +181,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
     @Feature({"PwaRestrore"})
     public void testClickForwarding() {
         // Ensure the promo dialog shows.
-        mPreferences.writeInt(
-                ChromePreferenceKeys.PWA_RESTORE_PROMO_STAGE, DisplayStage.SHOW_PROMO);
+        setAppsAvailableAndPromoStage(true, DisplayStage.SHOW_PROMO);
 
         mActivityTestRule.startMainActivityFromLauncher();
         assertDialogShown(true);
@@ -183,8 +198,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
     @Feature({"PwaRestrore"})
     public void testDeselectAll() {
         // Ensure the promo dialog shows.
-        mPreferences.writeInt(
-                ChromePreferenceKeys.PWA_RESTORE_PROMO_STAGE, DisplayStage.SHOW_PROMO);
+        setAppsAvailableAndPromoStage(true, DisplayStage.SHOW_PROMO);
 
         mActivityTestRule.startMainActivityFromLauncher();
         assertDialogShown(true);
@@ -205,6 +219,11 @@ public class PwaRestoreBottomSheetIntegrationTest {
         assertIsComboCheckedAtIndex(0, false);
         assertIsComboCheckedAtIndex(1, false);
         assertIsComboCheckedAtIndex(2, false);
+    }
+
+    private void setAppsAvailableAndPromoStage(boolean appsAvailable, @DisplayStage int value) {
+        mPreferences.writeInt(ChromePreferenceKeys.PWA_RESTORE_PROMO_STAGE, value);
+        mPreferences.writeBoolean(ChromePreferenceKeys.PWA_RESTORE_APPS_AVAILABLE, appsAvailable);
     }
 
     // A helper function to check whether a particular combo box in the PWA list ScrollView is
@@ -243,8 +262,11 @@ public class PwaRestoreBottomSheetIntegrationTest {
 
     private void assertDialogShown(boolean expectShowing) {
         if (expectShowing) {
-            onView(withText("Restore your web apps")).check(matches(isDisplayed()));
+            onViewWaiting(withText("Restore your web apps")).check(matches(isDisplayed()));
         } else {
+            // Since the dialog is shown asynchronously, this check might miss when the dialog is
+            // showing (when it shouldn't), since the check fires before the dialog is shown. But,
+            // the flipside is that it might catch it some of the time, if not deterministicly.
             onView(withText("Restore your web apps")).check(doesNotExist());
         }
     }

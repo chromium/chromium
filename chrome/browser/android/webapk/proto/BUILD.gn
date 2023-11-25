@@ -9,3 +9,13 @@ proto_library("proto") {
   sources = [ "webapk_database.proto" ]
   link_deps = [ "//components/sync/protocol" ]
 }
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+
+  proto_java_library("proto_java") {
+    proto_path = "//"
+    sources = [ "webapk_database.proto" ]
+    deps = [ "//components/sync/protocol:protocol_java" ]
+  }
+}

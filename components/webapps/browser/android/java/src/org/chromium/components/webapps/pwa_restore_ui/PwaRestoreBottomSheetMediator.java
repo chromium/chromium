@@ -24,7 +24,10 @@ class PwaRestoreBottomSheetMediator {
     private final PropertyModel mModel;
 
     PwaRestoreBottomSheetMediator(
-            Activity activity, Runnable onReviewButtonClicked, Runnable onBackButtonClicked) {
+            ArrayList apps,
+            Activity activity,
+            Runnable onReviewButtonClicked,
+            Runnable onBackButtonClicked) {
         mActivity = activity;
         mModel =
                 PwaRestoreProperties.createModel(
@@ -34,11 +37,11 @@ class PwaRestoreBottomSheetMediator {
                         this::onRestoreButtonClicked,
                         this::onSelectionToggled);
 
-        initializeState();
+        initializeState(apps);
         setPeekingState();
     }
 
-    private void initializeState() {
+    private void initializeState(ArrayList apps) {
         mModel.set(
                 PwaRestoreProperties.PEEK_TITLE,
                 mActivity.getString(R.string.pwa_restore_title_peeking));
@@ -68,11 +71,6 @@ class PwaRestoreBottomSheetMediator {
                 PwaRestoreProperties.DESELECT_BUTTON_LABEL,
                 mActivity.getString(R.string.pwa_restore_button_deselect));
 
-        // TODO(finnur): Replace with actual apps, queried from profile.
-        ArrayList apps = new ArrayList();
-        apps.add(new PwaRestoreProperties.AppInfo("foo", "Bar"));
-        apps.add(new PwaRestoreProperties.AppInfo("bar", "Foo"));
-        apps.add(new PwaRestoreProperties.AppInfo("foobar", "Barfoo"));
         mModel.set(PwaRestoreProperties.APPS, apps);
     }
 

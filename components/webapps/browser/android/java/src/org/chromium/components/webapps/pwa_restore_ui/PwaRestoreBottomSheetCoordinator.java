@@ -8,10 +8,13 @@ import android.app.Activity;
 import android.view.View;
 
 import androidx.annotation.MainThread;
+import androidx.annotation.NonNull;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+
+import java.util.ArrayList;
 
 /** The Coordinator for managing the Pwa Restore bottom sheet experience. */
 public class PwaRestoreBottomSheetCoordinator {
@@ -23,15 +26,23 @@ public class PwaRestoreBottomSheetCoordinator {
     /** Constructs the PwaRestoreBottomSheetCoordinator. */
     @MainThread
     public PwaRestoreBottomSheetCoordinator(
-            Activity activity, BottomSheetController bottomSheetController, int backArrowId) {
+            @NonNull String[][] appList,
+            Activity activity,
+            BottomSheetController bottomSheetController,
+            int backArrowId) {
         mController = bottomSheetController;
+
+        ArrayList<PwaRestoreProperties.AppInfo> apps = new ArrayList();
+        for (String[] app : appList) {
+            apps.add(new PwaRestoreProperties.AppInfo(app[0], app[1]));
+        }
 
         mView = new PwaRestoreBottomSheetView(activity);
         mView.initialize(backArrowId);
         mContent = new PwaRestoreBottomSheetContent(mView);
         mMediator =
                 new PwaRestoreBottomSheetMediator(
-                        activity, this::onReviewButtonClicked, this::onBackButtonClicked);
+                        apps, activity, this::onReviewButtonClicked, this::onBackButtonClicked);
 
         PropertyModelChangeProcessor.create(
                 mMediator.getModel(), mView, PwaRestoreBottomSheetViewBinder::bind);
