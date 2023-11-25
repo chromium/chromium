@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 46 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 45 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Parsing: <file:c:\\foo\\bar.html> against <file:///tmp/mock/path>
   assert_equals: href expected "file:///c:/foo/bar.html" but got "file:///tmp/mock/c:/foo/bar.html"
 [FAIL] Parsing: <  File:c|////foo\\bar.html> against <file:///tmp/mock/path>
@@ -90,7 +90,5 @@ Found 46 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "function() {\n          new URL(expected.input, base);\n        }" did not throw
 [FAIL] Parsing: </\\//\\/a/../> against <file:///>
   assert_equals: href expected "file://////" but got "file:///"
-[FAIL] Parsing: <//a/../> against <file:///>
-  assert_equals: host expected "" but got "a"
 Harness: the test ran to completion.
 

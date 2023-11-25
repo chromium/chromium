@@ -7116,5 +7116,5 @@ crbug.com/1504244 [ Linux ] virtual/automatic-lazy-frame-loading-ads/http/tests/
 crbug.com/1495671 [ Win ] external/wpt/webmessaging/with-ports/020.html [ Failure Pass ]
 
 # Gardener 2023-11-24
-crbug.com/1504652 [ Mac ] external/wpt/long-animation-frame/tentative/loaf-iframe.html [ Timeout Pass ]
+crbug.com/1504652 [ Mac ] external/wpt/long-animation-frame/tentative/loaf-iframe.html [ Pass Timeout ]
 crbug.com/1503086 external/wpt/html/semantics/invokers/invoketarget-on-audio-behavior.tentative.html [ Failure Pass Timeout ]

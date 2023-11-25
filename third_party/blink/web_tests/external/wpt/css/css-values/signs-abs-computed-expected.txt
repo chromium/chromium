@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] calc((1em + 1px) * (sign(1em - 10px - 10%) + 1)) should be used-value-equivalent to 21px
+  assert_equals: calc((1em + 1px) * (sign(1em - 10px - 10%) + 1)) and 21px serialize to the same thing in used values. expected "21px" but got "42px"
+Harness: the test ran to completion.
+

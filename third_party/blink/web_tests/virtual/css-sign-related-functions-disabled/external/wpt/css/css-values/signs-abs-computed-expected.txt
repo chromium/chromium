@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 204 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 205 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] abs(1) should be used-value-equivalent to 1
   assert_not_equals: abs(1) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
 [FAIL] sign(1) should be used-value-equivalent to 1
@@ -40,6 +40,8 @@ Found 204 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_not_equals: abs(-10px) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
 [FAIL] abs(-10%) should be used-value-equivalent to 10px
   assert_not_equals: abs(-10%) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+[FAIL] calc((1em + 1px) * (sign(1em - 10px - 10%) + 1)) should be used-value-equivalent to 21px
+  assert_not_equals: calc((1em + 1px) * (sign(1em - 10px - 10%) + 1)) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
 [FAIL] calc(calc(sign(-0))) should be used-value-equivalent to 0
   assert_not_equals: calc(calc(sign(-0))) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
 [FAIL] clamp(-1, calc( 1 / sign(calc(sign(-0)))), 1) should be used-value-equivalent to -1

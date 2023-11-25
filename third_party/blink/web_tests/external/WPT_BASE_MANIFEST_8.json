@@ -103593,7 +103593,7 @@
       ]
      ],
      "xyz-003.html": [
-      "5b99771d1c0a9ee0baec61c514969af80d7350cf",
+      "d9f3326c582343b6ebaf181ba57f4eb2e706bc33",
       [
        null,
        [
@@ -103602,7 +103602,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            18432
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "xyz-004.html": [
@@ -103723,7 +103739,7 @@
       ]
      ],
      "xyz-d65-003.html": [
-      "4dc5e127ef20915e8d28cfc4f4d54935ff886b68",
+      "d5e5cda1f16809b1d8c0a22572ae2a316d3a30cb",
       [
        null,
        [
@@ -103732,7 +103748,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            18432
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "xyz-d65-004.html": [
@@ -337602,6 +337634,14 @@
        []
       ]
      },
+     "signs-abs-computed-expected.txt": [
+      "3421b47828cce80bffbd8a465bba7d6b5c5e2822",
+      []
+     ],
+     "signs-abs-invalid-expected.txt": [
+      "8c83fbb9da613079bf2a2e0aa3085b68eba8d993",
+      []
+     ],
      "support": {
       "1x1-green.png": [
        "b98ca0ba0a03c580ac339e4a3653539cfa8edc71",
@@ -389405,7 +389445,7 @@
       []
      ],
      "urltestdata.json": [
-      "46248d132331c1d67a04f6992711ae8ab2d3f717",
+      "69767a20db90bf4d6b37fb6ade5cf2ea5d6686be",
       []
      ]
     },
@@ -389496,6 +389536,10 @@
      ],
      "urlpattern-compare-tests.js": [
       "b92b53ee45cd98933a3c2fbcf404478eb8f66a06",
+      []
+     ],
+     "urlpattern-hasregexpgroups-tests.js": [
+      "4be886e4a5390d7d43356d853cc00c7bbb23d361",
       []
      ],
      "urlpatterntestdata.json": [
@@ -391756,7 +391800,7 @@
      ],
      "bidi": {
       "__init__.py": [
-       "fd2f704d3e5c4e4e26bb8107306012c59085e39a",
+       "9c976d4a674cc2912909695a62014a317cced331",
        []
       ],
       "browsing_context": {
@@ -391772,7 +391816,7 @@
        },
        "capture_screenshot": {
         "__init__.py": [
-         "18f64fb518917f6a5054089338fc4a53967d1fa0",
+         "32d44104d510de8221d43d9c3262cc6b31ae2238",
          []
         ]
        },
@@ -391893,6 +391937,12 @@
         ],
         "red_dot.png": [
          "c5916f289705642eec4975cf51458b9afeefe46c",
+         []
+        ]
+       },
+       "traverse_history": {
+        "__init__.py": [
+         "1227831549182075b71ed81d80161ff639b54f49",
          []
         ]
        },
@@ -399366,7 +399416,7 @@
       ]
      ],
      "Blob-stream.any.js": [
-      "87710a171a9752416f47596f59d2dc6313d9bd34",
+      "453144cac964a627bb2a004d435887b15ddc96d3",
       [
        "FileAPI/blob/Blob-stream.any.html",
        {
@@ -446809,21 +446859,21 @@
        ]
       ],
       "grid-self-baseline-not-applied-if-sizing-cyclic-dependency-001.html": [
-       "723f3d3090299573b4598b44c8d2a83a25947bb4",
+       "d6526d7995cf80c63af5f2f9fc21da502bbd4264",
        [
         null,
         {}
        ]
       ],
       "grid-self-baseline-not-applied-if-sizing-cyclic-dependency-002.html": [
-       "462daece10b8b3541ef29acf39bc6afc9dfd289d",
+       "ad989b98a63ea57419565f1587e4b3f12f97b376",
        [
         null,
         {}
        ]
       ],
       "grid-self-baseline-not-applied-if-sizing-cyclic-dependency-003.html": [
-       "d50263320ce2fd7e5448648c08e7d0a044978488",
+       "3d688ad15f903bbc96c30cf7a58f232029570905",
        [
         null,
         {}
@@ -465573,14 +465623,14 @@
       ]
      ],
      "signs-abs-computed.html": [
-      "9b8ec89e2a98729deadcbb3e07f700c4eaca6372",
+      "73b1e0d1c326673d9e2628efed4f2e716ddf2202",
       [
        null,
        {}
       ]
      ],
      "signs-abs-invalid.html": [
-      "15b058d0c42bade38f083838eaaabadc64410627",
+      "ccb94c21c232ebdc547f818bbbb5c4cd8935ace4",
       [
        null,
        {}
@@ -637488,6 +637538,69 @@
       }
      ]
     ],
+    "urlpattern-hasregexpgroups.any.js": [
+     "33133d2511b065ca94cc5e793066cc8111b4d6e6",
+     [
+      "urlpattern/urlpattern-hasregexpgroups.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/urlpattern-hasregexpgroups-tests.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "urlpattern/urlpattern-hasregexpgroups.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/urlpattern-hasregexpgroups-tests.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "urlpattern/urlpattern-hasregexpgroups.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/urlpattern-hasregexpgroups-tests.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "urlpattern/urlpattern-hasregexpgroups.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/urlpattern-hasregexpgroups-tests.js"
+        ]
+       ]
+      }
+     ]
+    ],
     "urlpattern.any.js": [
      "7d47d22609bf8eb14386b0363e36b86f77b2780d",
      [
@@ -669559,6 +669672,21 @@
        "websockets/opening-handshake/005.html?wss",
        {}
       ]
+     ],
+     "006.html": [
+      "304069037cce7e4d6906843484a0257337862488",
+      [
+       "websockets/opening-handshake/006.html?default",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "websockets/opening-handshake/006.html?wss",
+       {
+        "timeout": "long"
+       }
+      ]
      ]
     },
     "referrer.any.js": [
@@ -695306,7 +695434,14 @@
          ]
         ],
         "clip.py": [
-         "1916cb9b7fa0a555a977129f041b49227148cb58",
+         "4e37c4714c3ae27e4bb1bfe968cf2d81618b654e",
+         [
+          null,
+          {}
+         ]
+        ],
+        "format.py": [
+         "7401d94a3ecccd23659274243d2dbd1eb0dcdf7c",
          [
           null,
           {}
@@ -695320,7 +695455,14 @@
          ]
         ],
         "invalid.py": [
-         "9eb459afb5d4295f39938c92915f75caf8ef210a",
+         "58481c4e7ad4464f107dc8bb11ad2def93e7c67d",
+         [
+          null,
+          {}
+         ]
+        ],
+        "origin.py": [
+         "7161d3633630caff7a946cf9c2bdb78b9b21ac5d",
          [
           null,
           {}
@@ -695674,6 +695816,29 @@
         ],
         "set_viewport.py": [
          "51203db1d61c159399c7574c2aaecfc79f8a3c85",
+         [
+          null,
+          {}
+         ]
+        ]
+       },
+       "traverse_history": {
+        "context.py": [
+         "7635c0e9ddd8a4413cc5aeb8af4ff4bbe5ae574a",
+         [
+          null,
+          {}
+         ]
+        ],
+        "delta.py": [
+         "05f4d99544fc850d8a9a325fe2e0eed49dbdf768",
+         [
+          null,
+          {}
+         ]
+        ],
+        "invalid.py": [
+         "abb0d69c937d0a052f95431a674a3cfc45914a29",
          [
           null,
           {}
