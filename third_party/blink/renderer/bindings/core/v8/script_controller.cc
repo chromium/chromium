@@ -122,12 +122,12 @@ TextPosition ScriptController::EventHandlerPosition() const {
 }
 
 void ScriptController::DisableEval(const String& error_message) {
-  SetEvalForWorld(DOMWrapperWorld::MainWorld(), false /* allow_eval */,
-                  error_message);
+  SetEvalForWorld(DOMWrapperWorld::MainWorld(GetIsolate()),
+                  false /* allow_eval */, error_message);
 }
 
 void ScriptController::SetWasmEvalErrorMessage(const String& error_message) {
-  SetWasmEvalErrorMessageForWorld(DOMWrapperWorld::MainWorld(),
+  SetWasmEvalErrorMessageForWorld(DOMWrapperWorld::MainWorld(GetIsolate()),
                                   /*allow_eval=*/false, error_message);
 }
 
