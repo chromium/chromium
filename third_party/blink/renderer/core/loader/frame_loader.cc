@@ -1607,9 +1607,10 @@ void FrameLoader::DidDropNavigation() {
   // and relying on the number of created window proxies.
   Settings* settings = frame_->GetSettings();
   if (settings && settings->GetForceMainWorldInitialization()) {
+    auto* window = frame_->DomWindow();
     // Forcibly instantiate WindowProxy.
-    frame_->DomWindow()->GetScriptController().WindowProxy(
-        DOMWrapperWorld::MainWorld());
+    window->GetScriptController().WindowProxy(
+        DOMWrapperWorld::MainWorld(window->GetIsolate()));
   }
   frame_->GetIdlenessDetector()->DidDropNavigation();
 }
@@ -1684,7 +1685,8 @@ void FrameLoader::DispatchDidClearDocumentOfWindowObject() {
   LocalDOMWindow* window = frame_->DomWindow();
   if (settings && settings->GetForceMainWorldInitialization()) {
     // Forcibly instantiate WindowProxy, even if script is disabled.
-    window->GetScriptController().WindowProxy(DOMWrapperWorld::MainWorld());
+    window->GetScriptController().WindowProxy(
+        DOMWrapperWorld::MainWorld(window->GetIsolate()));
   }
   probe::DidClearDocumentOfWindowObject(frame_.Get());
   if (!window->CanExecuteScripts(kNotAboutToExecuteScript))

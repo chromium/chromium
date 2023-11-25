@@ -851,7 +851,7 @@ void Page::SettingsChanged(ChangeType change_type) {
         if (auto* window = DynamicTo<LocalDOMWindow>(frame->DomWindow())) {
           // Forcibly instantiate WindowProxy.
           window->GetScriptController().WindowProxy(
-              DOMWrapperWorld::MainWorld());
+              DOMWrapperWorld::MainWorld(window->GetIsolate()));
         }
       }
       break;

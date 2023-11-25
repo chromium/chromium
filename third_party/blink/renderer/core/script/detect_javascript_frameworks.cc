@@ -341,7 +341,8 @@ void TraverseTreeForFrameworks(Document& document,
   AtomicString detected_ng_version;
   if (!document.documentElement())
     return;
-  DOMDataStore& dom_data_store = DOMWrapperWorld::MainWorld().DomDataStore();
+  DOMDataStore& dom_data_store =
+      DOMWrapperWorld::MainWorld(isolate).DomDataStore();
   for (Element& element :
        ElementTraversal::InclusiveDescendantsOf(*document.documentElement())) {
     CheckAttributeMatches(element, result, detected_ng_version);

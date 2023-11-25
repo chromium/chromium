@@ -962,7 +962,7 @@ void NavigationApi::DidFailOngoingNavigation(ScriptValue value) {
       blink::CaptureSourceLocation(isolate, message, window_);
   ErrorEvent* event = ErrorEvent::Create(
       ToCoreStringWithNullCheck(isolate, message->Get()), std::move(location),
-      value, &DOMWrapperWorld::MainWorld());
+      value, &DOMWrapperWorld::MainWorld(isolate));
   event->SetType(event_type_names::kNavigateerror);
   DispatchEvent(*event);
 
