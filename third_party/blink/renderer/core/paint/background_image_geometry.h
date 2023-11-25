@@ -23,7 +23,7 @@ class LayoutView;
 class NGPhysicalBoxFragment;
 struct PaintInfo;
 
-struct SnappedAndUnsnappedBorderOutsets {
+struct SnappedAndUnsnappedOutsets {
   PhysicalBoxStrut snapped;
   PhysicalBoxStrut unsnapped;
 };
@@ -144,20 +144,18 @@ class BackgroundImageGeometry {
   // both optimize painting when the background is obscured by a
   // border, and snap the dest rect to the border. They also
   // account for the background-clip property.
-  void ComputeDestRectAdjustments(const FillLayer&,
-                                  const PhysicalRect&,
-                                  bool,
-                                  PhysicalBoxStrut&,
-                                  PhysicalBoxStrut&) const;
+  SnappedAndUnsnappedOutsets ComputeDestRectAdjustments(
+      const FillLayer&,
+      const PhysicalRect& unsnapped_positioning_area,
+      bool disallow_border_derived_adjustment) const;
 
   // Positioning area adjustments modify the size of the
   // positioning area to snap values and apply the
   // background-origin property.
-  void ComputePositioningAreaAdjustments(const FillLayer&,
-                                         const PhysicalRect&,
-                                         bool,
-                                         PhysicalBoxStrut&,
-                                         PhysicalBoxStrut&) const;
+  SnappedAndUnsnappedOutsets ComputePositioningAreaAdjustments(
+      const FillLayer&,
+      const PhysicalRect& unsnapped_positioning_area,
+      bool disallow_border_derived_adjustment) const;
 
   void AdjustPositioningArea(const PaintInfo&,
                              const FillLayer&,
@@ -174,7 +172,7 @@ class BackgroundImageGeometry {
   PhysicalBoxStrut InnerBorderOutsets(
       const PhysicalRect& dest_rect,
       const PhysicalRect& positioning_area) const;
-  SnappedAndUnsnappedBorderOutsets ObscuredBorderOutsets(
+  SnappedAndUnsnappedOutsets ObscuredBorderOutsets(
       const PhysicalRect& dest_rect,
       const PhysicalRect& positioning_area) const;
 

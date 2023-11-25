@@ -408,7 +408,7 @@ PhysicalBoxStrut BackgroundImageGeometry::InnerBorderOutsets(
   return outset;
 }
 
-SnappedAndUnsnappedBorderOutsets BackgroundImageGeometry::ObscuredBorderOutsets(
+SnappedAndUnsnappedOutsets BackgroundImageGeometry::ObscuredBorderOutsets(
     const PhysicalRect& dest_rect,
     const PhysicalRect& positioning_area) const {
   const ComputedStyle& style = positioning_box_->StyleRef();
@@ -420,7 +420,7 @@ SnappedAndUnsnappedBorderOutsets BackgroundImageGeometry::ObscuredBorderOutsets(
   BorderEdge edges[4];
   style.GetBorderEdgeInfo(edges);
   const PhysicalBoxStrut box_outsets = positioning_box_->BorderOutsets();
-  SnappedAndUnsnappedBorderOutsets adjust;
+  SnappedAndUnsnappedOutsets adjust;
   if (edges[static_cast<unsigned>(BoxSide::kTop)].ObscuresBackground()) {
     adjust.snapped.top = LayoutUnit(inner_border_rect.y()) - dest_rect.Y();
     adjust.unsnapped.top = box_outsets.top;
@@ -466,17 +466,16 @@ bool BackgroundImageGeometry::HasBackgroundFixedToViewport(
   return true;
 }
 
-void BackgroundImageGeometry::ComputeDestRectAdjustments(
+SnappedAndUnsnappedOutsets BackgroundImageGeometry::ComputeDestRectAdjustments(
     const FillLayer& fill_layer,
     const PhysicalRect& unsnapped_positioning_area,
-    bool disallow_border_derived_adjustment,
-    PhysicalBoxStrut& unsnapped_dest_adjust,
-    PhysicalBoxStrut& snapped_dest_adjust) const {
+    bool disallow_border_derived_adjustment) const {
+  SnappedAndUnsnappedOutsets dest_adjust;
   switch (fill_layer.Clip()) {
     case EFillBox::kNoClip:
-      unsnapped_dest_adjust = VisualOverflowOutsets();
-      snapped_dest_adjust = unsnapped_dest_adjust;
-      return;
+      dest_adjust.unsnapped = VisualOverflowOutsets();
+      dest_adjust.snapped = dest_adjust.unsnapped;
+      break;
     case EFillBox::kFillBox:
     // Spec: For elements with associated CSS layout box, the used values for
     // fill-box compute to content-box.
@@ -484,27 +483,26 @@ void BackgroundImageGeometry::ComputeDestRectAdjustments(
     case EFillBox::kContent:
       // If the PaddingOutsets are zero then this is equivalent to
       // kPadding and we should apply the snapping logic.
-      unsnapped_dest_adjust = positioning_box_->PaddingOutsets();
-      if (!unsnapped_dest_adjust.IsZero()) {
-        unsnapped_dest_adjust += positioning_box_->BorderOutsets();
-
+      dest_adjust.unsnapped = positioning_box_->PaddingOutsets();
+      if (!dest_adjust.unsnapped.IsZero()) {
+        dest_adjust.unsnapped += positioning_box_->BorderOutsets();
         // We're not trying to match a border position, so don't snap.
-        snapped_dest_adjust = unsnapped_dest_adjust;
-        return;
+        dest_adjust.snapped = dest_adjust.unsnapped;
+        break;
       }
       [[fallthrough]];
     case EFillBox::kPadding:
-      unsnapped_dest_adjust = positioning_box_->BorderOutsets();
+      dest_adjust.unsnapped = positioning_box_->BorderOutsets();
       if (disallow_border_derived_adjustment) {
         // Nothing to drive snapping behavior, so don't snap.
-        snapped_dest_adjust = unsnapped_dest_adjust;
+        dest_adjust.snapped = dest_adjust.unsnapped;
       } else {
         // Force the snapped dest rect to match the inner border to
         // avoid gaps between the background and border.
-        snapped_dest_adjust = InnerBorderOutsets(unsnapped_dest_rect_,
+        dest_adjust.snapped = InnerBorderOutsets(unsnapped_dest_rect_,
                                                  unsnapped_positioning_area);
       }
-      return;
+      break;
     case EFillBox::kStrokeBox:
     case EFillBox::kViewBox:
     // Spec: For elements with associated CSS layout box, ... stroke-box and
@@ -513,7 +511,7 @@ void BackgroundImageGeometry::ComputeDestRectAdjustments(
     case EFillBox::kBorder: {
       if (disallow_border_derived_adjustment) {
         // All adjustments remain 0.
-        return;
+        break;
       }
 
       // The dest rects can be adjusted. The snapped dest rect is forced
@@ -528,23 +526,22 @@ void BackgroundImageGeometry::ComputeDestRectAdjustments(
       // the size and position of the borders, sometimes adjusting the inner
       // border by more than a pixel when done (particularly under magnifying
       // zoom).
-      SnappedAndUnsnappedBorderOutsets outsets = ObscuredBorderOutsets(
-          unsnapped_dest_rect_, unsnapped_positioning_area);
-      snapped_dest_adjust = outsets.snapped;
-      unsnapped_dest_adjust = outsets.unsnapped;
+      dest_adjust = ObscuredBorderOutsets(unsnapped_dest_rect_,
+                                          unsnapped_positioning_area);
+      break;
     }
-      return;
     case EFillBox::kText:
-      return;
+      break;
   }
+  return dest_adjust;
 }
 
-void BackgroundImageGeometry::ComputePositioningAreaAdjustments(
+SnappedAndUnsnappedOutsets
+BackgroundImageGeometry::ComputePositioningAreaAdjustments(
     const FillLayer& fill_layer,
     const PhysicalRect& unsnapped_positioning_area,
-    bool disallow_border_derived_adjustment,
-    PhysicalBoxStrut& unsnapped_box_outset,
-    PhysicalBoxStrut& snapped_box_outset) const {
+    bool disallow_border_derived_adjustment) const {
+  SnappedAndUnsnappedOutsets box_outset;
   switch (fill_layer.Origin()) {
     case EFillBox::kFillBox:
     // Spec: For elements with associated CSS layout box, the used values for
@@ -553,19 +550,18 @@ void BackgroundImageGeometry::ComputePositioningAreaAdjustments(
     case EFillBox::kContent:
       // If the PaddingOutsets are zero then this is equivalent to
       // kPadding and we should apply the snapping logic.
-      unsnapped_box_outset = positioning_box_->PaddingOutsets();
-      if (!unsnapped_box_outset.IsZero()) {
-        unsnapped_box_outset += positioning_box_->BorderOutsets();
-
+      box_outset.unsnapped = positioning_box_->PaddingOutsets();
+      if (!box_outset.unsnapped.IsZero()) {
+        box_outset.unsnapped += positioning_box_->BorderOutsets();
         // We're not trying to match a border position, so don't snap.
-        snapped_box_outset = unsnapped_box_outset;
-        return;
+        box_outset.snapped = box_outset.unsnapped;
+        break;
       }
       [[fallthrough]];
     case EFillBox::kPadding:
-      unsnapped_box_outset = positioning_box_->BorderOutsets();
+      box_outset.unsnapped = positioning_box_->BorderOutsets();
       if (disallow_border_derived_adjustment) {
-        snapped_box_outset = unsnapped_box_outset;
+        box_outset.snapped = box_outset.unsnapped;
       } else {
         // Force the snapped positioning area to fill to the borders.
         // Note that the snapped adjustments do not have the same effect as
@@ -573,10 +569,10 @@ void BackgroundImageGeometry::ComputePositioningAreaAdjustments(
         // the size and position of the borders, sometimes adjusting the inner
         // border by more than a pixel when done (particularly under magnifying
         // zoom).
-        snapped_box_outset = InnerBorderOutsets(unsnapped_positioning_area,
+        box_outset.snapped = InnerBorderOutsets(unsnapped_positioning_area,
                                                 unsnapped_positioning_area);
       }
-      return;
+      break;
     case EFillBox::kStrokeBox:
     case EFillBox::kViewBox:
     // Spec: For elements with associated CSS layout box, ... stroke-box and
@@ -584,13 +580,13 @@ void BackgroundImageGeometry::ComputePositioningAreaAdjustments(
     // https://drafts.fxtf.org/css-masking/#the-mask-clip
     case EFillBox::kBorder:
       // All adjustments remain 0.
-      snapped_box_outset = unsnapped_box_outset = PhysicalBoxStrut();
-      return;
+      break;
     case EFillBox::kNoClip:
     case EFillBox::kText:
       // These are not supported mask-origin values.
       NOTREACHED();
   }
+  return box_outset;
 }
 
 PhysicalRect BackgroundImageGeometry::ComputePositioningArea(
@@ -653,39 +649,34 @@ void BackgroundImageGeometry::AdjustPositioningArea(
 
     // Compute all the outsets we need to apply to the rectangles. These
     // outsets also include the snapping behavior.
-    PhysicalBoxStrut unsnapped_dest_adjust;
-    PhysicalBoxStrut snapped_dest_adjust;
-    ComputeDestRectAdjustments(fill_layer, unsnapped_positioning_area,
-                               disallow_border_derived_adjustment,
-                               unsnapped_dest_adjust, snapped_dest_adjust);
-    PhysicalBoxStrut unsnapped_box_outset;
-    PhysicalBoxStrut snapped_box_outset;
-    ComputePositioningAreaAdjustments(fill_layer, unsnapped_positioning_area,
-                                      disallow_border_derived_adjustment,
-                                      unsnapped_box_outset, snapped_box_outset);
-
-    // Apply the adjustments.
-    snapped_dest_rect_ = unsnapped_dest_rect_;
-    snapped_dest_rect_.Contract(snapped_dest_adjust);
-    snapped_dest_rect_ = PhysicalRect(ToPixelSnappedRect(snapped_dest_rect_));
-    snapped_dest_rect_.size.ClampNegativeToZero();
-    unsnapped_dest_rect_.Contract(unsnapped_dest_adjust);
-    unsnapped_dest_rect_.size.ClampNegativeToZero();
-    snapped_positioning_area = unsnapped_positioning_area;
-    snapped_positioning_area.Contract(snapped_box_outset);
-    snapped_positioning_area =
-        PhysicalRect(ToPixelSnappedRect(snapped_positioning_area));
-    snapped_positioning_area.size.ClampNegativeToZero();
-    unsnapped_positioning_area.Contract(unsnapped_box_outset);
-    unsnapped_positioning_area.size.ClampNegativeToZero();
+    const SnappedAndUnsnappedOutsets dest_adjust =
+        ComputeDestRectAdjustments(fill_layer, unsnapped_positioning_area,
+                                   disallow_border_derived_adjustment);
+    const SnappedAndUnsnappedOutsets box_outset =
+        ComputePositioningAreaAdjustments(fill_layer,
+                                          unsnapped_positioning_area,
+                                          disallow_border_derived_adjustment);
 
     // Offset of the positioning area from the corner of positioning_box_.
     unsnapped_box_offset =
-        PhysicalOffset(unsnapped_box_outset.left - unsnapped_dest_adjust.left,
-                       unsnapped_box_outset.top - unsnapped_dest_adjust.top);
+        box_outset.unsnapped.Offset() - dest_adjust.unsnapped.Offset();
     snapped_box_offset =
-        PhysicalOffset(snapped_box_outset.left - snapped_dest_adjust.left,
-                       snapped_box_outset.top - snapped_dest_adjust.top);
+        box_outset.snapped.Offset() - dest_adjust.snapped.Offset();
+
+    // Apply the adjustments.
+    snapped_dest_rect_ = unsnapped_dest_rect_;
+    snapped_dest_rect_.Contract(dest_adjust.snapped);
+    snapped_dest_rect_ = PhysicalRect(ToPixelSnappedRect(snapped_dest_rect_));
+    snapped_dest_rect_.size.ClampNegativeToZero();
+    unsnapped_dest_rect_.Contract(dest_adjust.unsnapped);
+    unsnapped_dest_rect_.size.ClampNegativeToZero();
+    snapped_positioning_area = unsnapped_positioning_area;
+    snapped_positioning_area.Contract(box_outset.snapped);
+    snapped_positioning_area =
+        PhysicalRect(ToPixelSnappedRect(snapped_positioning_area));
+    snapped_positioning_area.size.ClampNegativeToZero();
+    unsnapped_positioning_area.Contract(box_outset.unsnapped);
+    unsnapped_positioning_area.size.ClampNegativeToZero();
   }
 }
 
