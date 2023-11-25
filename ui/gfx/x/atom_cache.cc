@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/future.h"
@@ -36,8 +37,12 @@ constexpr const char* kAtomsToCache[] = {
     "Abs MT Touch Minor",
     "Abs MT Tracking ID",
     "Abs Metrics Type",
+    "Abs Pressure",
+    "Abs Tilt X",
+    "Abs Tilt Y",
+    "Abs X",
+    "Abs Y",
     "CHECK",
-    "CHOME_SELECTION",
     "CHROME_SELECTION",
     "CHROMIUM_COMPOSITE_WINDOW",
     "CHROMIUM_TIMESTAMP",
@@ -213,9 +218,10 @@ Atom AtomCache::GetAtom(const char* name) {
   if (auto response =
           connection_->InternAtom(InternAtomRequest{.name = name}).Sync()) {
     atom = response->atom;
-    DUMP_WILL_BE_CHECK_GT(atom, x11::Atom::kLastPredefinedAtom)
+    CHECK_GT(atom, x11::Atom::kLastPredefinedAtom)
         << " Use x11::Atom::" << name << " instead of x11::GetAtom(\"" << name
         << "\")";
+    LOG(ERROR) << "Add " << name << " to kAtomsToCache";
     cached_atoms_.emplace(
         owned_strings_.emplace_back(std::make_unique<std::string>(name))
             ->c_str(),
