@@ -26,6 +26,7 @@ typedef struct xcb_connection_t xcb_connection_t;
 
 namespace x11 {
 
+class AtomCache;
 class Event;
 class KeyboardState;
 class VisualManager;
@@ -424,6 +425,8 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
 
   ScopedEventSelector ScopedSelectEvent(Window window, EventMask event_mask);
 
+  Atom GetAtom(const char* name);
+
   // The viz compositor thread hangs a PlatformEventSource off the connection so
   // that it gets destroyed at the appropriate time.
   // TODO(thomasanderson): This is a layering violation and this should be moved
@@ -550,6 +553,8 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
 
   // Must be after `sequence_checker_`.
   std::unique_ptr<VisualManager> visual_manager_;
+
+  std::unique_ptr<AtomCache> atom_cache_;
 };
 
 }  // namespace x11

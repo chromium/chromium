@@ -5,7 +5,7 @@
 #include "ui/events/test/x11_event_waiter.h"
 
 #include "base/task/single_thread_task_runner.h"
-#include "ui/gfx/x/x11_atom_cache.h"
+#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/xproto.h"
 
 namespace ui {

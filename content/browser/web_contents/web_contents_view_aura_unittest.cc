@@ -45,8 +45,8 @@
 #if BUILDFLAG(OZONE_PLATFORM_X11)
 #include "ui/base/x/selection_utils.h"
 #include "ui/base/x/x11_os_exchange_data_provider.h"
+#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
-#include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/ozone/public/ozone_platform.h"
 #endif  // BUILDFLAG(OZONE_PLATFORM_X11)
 #endif  // BUILDFLAG(IS_LINUX)

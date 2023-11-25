@@ -19,6 +19,7 @@
 #include "base/threading/thread_local.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/switches.h"
+#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/bigreq.h"
 #include "ui/gfx/x/dri3.h"
 #include "ui/gfx/x/event.h"
@@ -160,6 +161,8 @@ Connection::Connection(const std::string& address)
   keyboard_state_ = CreateKeyboardState(this);
 
   InitErrorParsers();
+
+  atom_cache_ = std::make_unique<AtomCache>(this);
 }
 
 Connection::~Connection() {
@@ -284,6 +287,10 @@ void Connection::DefineCursor(Window window, Cursor cursor) {
 ScopedEventSelector Connection::ScopedSelectEvent(Window window,
                                                   EventMask event_mask) {
   return ScopedEventSelector(this, window, event_mask);
+}
+
+Atom Connection::GetAtom(const char* name) {
+  return atom_cache_->GetAtom(name);
 }
 
 Connection::Request::Request(ResponseCallback callback)

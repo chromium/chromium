@@ -19,8 +19,8 @@
 #include "ui/base/x/selection_utils.h"
 #include "ui/base/x/x11_drag_drop_client.h"
 #include "ui/base/x/x11_util.h"
+#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
-#include "ui/gfx/x/x11_atom_cache.h"
 
 // Note: the GetBlah() methods are used immediately by the
 // web_contents_view_aura.cc:PrepareDropData(), while the omnibox is a

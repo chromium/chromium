@@ -11,8 +11,8 @@
 #include "ui/base/x/selection_utils.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/events/platform/x11/x11_event_source.h"
+#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/window_event_manager.h"
-#include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"
 
 namespace ui {

@@ -154,6 +154,8 @@ component("x") {
   output_name = "gfx_x11"
 
   sources = [
+    "atom_cache.cc",
+    "atom_cache.h",
     "connection.cc",
     "connection.h",
     "error.cc",
@@ -177,8 +179,6 @@ component("x") {
     "window_cache.h",
     "window_event_manager.cc",
     "window_event_manager.h",
-    "x11_atom_cache.cc",
-    "x11_atom_cache.h",
     "x11_path.cc",
     "x11_path.h",
     "xlib_support.cc",

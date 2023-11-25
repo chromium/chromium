@@ -23,8 +23,8 @@
 #include "ui/base/x/x11_shm_image_pool.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
-#include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_types.h"
 

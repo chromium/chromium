@@ -27,8 +27,8 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "ui/base/x/x11_util.h"
+#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
-#include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"
 
 #if BUILDFLAG(IS_LINUX)

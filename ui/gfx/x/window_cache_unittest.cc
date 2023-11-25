@@ -7,9 +7,9 @@
 #include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/future.h"
-#include "ui/gfx/x/x11_atom_cache.h"
 
 namespace x11 {
 

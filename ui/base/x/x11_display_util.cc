@@ -24,9 +24,9 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/randr.h"
-#include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/strings/grit/ui_strings.h"
 
 namespace ui {

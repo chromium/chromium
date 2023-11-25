@@ -13,12 +13,12 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "ui/base/x/x11_display_util.h"
 #include "ui/base/x/x11_util.h"
+#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/future.h"
 #include "ui/gfx/x/randr.h"
 #include "ui/gfx/x/window_event_manager.h"
-#include "ui/gfx/x/x11_atom_cache.h"
 
 namespace remoting {
 

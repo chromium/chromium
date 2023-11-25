@@ -42,11 +42,11 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/switches.h"
+#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/screensaver.h"
 #include "ui/gfx/x/shm.h"
 #include "ui/gfx/x/visual_manager.h"
-#include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"
 
 #if BUILDFLAG(IS_FREEBSD)
@@ -670,8 +670,8 @@ gfx::ICCProfile GetICCProfileForMonitor(int monitor) {
                               ? "_ICC_PROFILE"
                               : base::StringPrintf("_ICC_PROFILE_%d", monitor);
   scoped_refptr<base::RefCountedMemory> data;
-  if (GetRawBytesOfProperty(GetX11RootWindow(), x11::GetAtom(atom_name), &data,
-                            nullptr)) {
+  if (GetRawBytesOfProperty(GetX11RootWindow(), x11::GetAtom(atom_name.c_str()),
+                            &data, nullptr)) {
     icc_profile = gfx::ICCProfile::FromData(data->data(), data->size());
   }
   return icc_profile;

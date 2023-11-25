@@ -6,8 +6,8 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "ui/base/x/x11_util.h"
+#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/window_event_manager.h"
-#include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"
 
 namespace ui {

@@ -10,9 +10,9 @@
 #include "base/task/single_thread_task_runner.h"
 #include "components/device_event_log/device_event_log.h"
 #include "ui/base/x/x11_display_util.h"
+#include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/future.h"
 #include "ui/gfx/x/randr.h"
-#include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"
 
 #if BUILDFLAG(IS_LINUX)

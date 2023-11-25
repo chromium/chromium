@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/gfx/x/x11_atom_cache.h"
+#include "ui/gfx/x/atom_cache.h"
 
 #include <utility>
 #include <vector>
@@ -51,7 +51,6 @@ constexpr const char* kAtomsToCache[] = {
     "Enabled",
     "FAKE_SELECTION",
     "Full aspect",
-    "_GTK_FRAME_EXTENTS",
     "INCR",
     "KEYBOARD",
     "LOCK",
@@ -61,6 +60,7 @@ constexpr const char* kAtomsToCache[] = {
     "Rel Vert Wheel",
     "SAVE_TARGETS",
     "SELECTION_STRING",
+    "STRING",
     "TARGET1",
     "TARGET2",
     "TARGETS",
@@ -97,6 +97,7 @@ constexpr const char* kAtomsToCache[] = {
     "_CHROME_DISPLAY_ROTATION",
     "_CHROME_DISPLAY_SCALE_FACTOR",
     "_CHROMIUM_DRAG_RECEIVER",
+    "_GTK_FRAME_EXTENTS",
     "_GTK_HIDE_TITLEBAR_WHEN_MAXIMIZED",
     "_GTK_THEME_VARIANT",
     "_ICC_PROFILE",
@@ -165,8 +166,8 @@ constexpr const char* kAtomsToCache[] = {
     "text/rtf",
     "text/uri-list",
     "text/x-moz-url",
-    "xwayland-pointer",
     "xwayland-keyboard",
+    "xwayland-pointer",
     "xwayland-touch",
 };
 
@@ -174,40 +175,39 @@ constexpr int kCacheCount = std::size(kAtomsToCache);
 
 }  // namespace
 
-Atom GetAtom(const std::string& name) {
-  return X11AtomCache::GetInstance()->GetAtom(name);
+Atom GetAtom(const char* name) {
+  return Connection::Get()->GetAtom(name);
 }
 
-X11AtomCache* X11AtomCache::GetInstance() {
-  return base::Singleton<X11AtomCache>::get();
-}
-
-X11AtomCache::X11AtomCache() : connection_(Connection::Get()) {
-  // Clipboard formats are keyed on their format string (eg. "STRING",
-  // "UTF8_STRING", "image/png").  Plumbing through x11::Atoms instead would be
-  // tricky, so set "STRING" here to prevent hitting the DUMP_WILL_BE_CHECK_GT()
-  // in GetAtom().
-  cached_atoms_["STRING"] = x11::Atom::STRING;
-
+AtomCache::AtomCache(Connection* connection) : connection_(connection) {
   std::vector<Future<InternAtomReply>> requests;
   requests.reserve(kCacheCount);
-  for (const char* name : kAtomsToCache)
+  for (const char* name : kAtomsToCache) {
     requests.push_back(
         connection_->InternAtom(InternAtomRequest{.name = name}));
+  }
   // Flush so all requests are sent before waiting on any replies.
   connection_->Flush();
+
+  std::vector<std::pair<const char*, Atom>> atoms;
+  // Reserve a little extra space in case unexpected atoms are cached,
+  // to prevent reallocating the buffer.
+  atoms.reserve(kCacheCount + 3);
   for (size_t i = 0; i < kCacheCount; ++i) {
-    if (auto response = requests[i].Sync())
-      cached_atoms_[kAtomsToCache[i]] = static_cast<Atom>(response->atom);
+    if (auto response = requests[i].Sync()) {
+      atoms.emplace_back(kAtomsToCache[i], static_cast<Atom>(response->atom));
+    }
   }
+  cached_atoms_ = base::flat_map<const char*, Atom, Compare>(std::move(atoms));
 }
 
-X11AtomCache::~X11AtomCache() = default;
+AtomCache::~AtomCache() = default;
 
-Atom X11AtomCache::GetAtom(const std::string& name) const {
+Atom AtomCache::GetAtom(const char* name) {
   const auto it = cached_atoms_.find(name);
-  if (it != cached_atoms_.end())
+  if (it != cached_atoms_.end()) {
     return it->second;
+  }
 
   Atom atom = Atom::None;
   if (auto response =
@@ -216,7 +216,10 @@ Atom X11AtomCache::GetAtom(const std::string& name) const {
     DUMP_WILL_BE_CHECK_GT(atom, x11::Atom::kLastPredefinedAtom)
         << " Use x11::Atom::" << name << " instead of x11::GetAtom(\"" << name
         << "\")";
-    cached_atoms_.emplace(name, atom);
+    cached_atoms_.emplace(
+        owned_strings_.emplace_back(std::make_unique<std::string>(name))
+            ->c_str(),
+        atom);
   }
   return atom;
 }
