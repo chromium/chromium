@@ -877,20 +877,7 @@ crbug.com/1500045 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/r
 
 crbug.com/angleproject/7904 [ chromeos lacros-chrome chromeos-board-octopus passthrough ] WebglExtension_WEBGL_clip_cull_distance [ Failure ]
 
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance/glsl/bugs/constant-precision-qualifier.html [ Failure ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance/limits/gl-max-texture-dimensions.html [ Failure ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance/misc/shader-precision-format.html [ Failure ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/buffers/uniform-buffers.html [ Failure ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/glsl3/array-as-return-value.html [ Failure ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/glsl3/matrix-row-major.html [ Failure ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/glsl3/tricky-loop-conditions.html [ Failure ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/glsl3/uninitialized-local-global-variables.html [ Failure ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/reading/read-pixels-pack-parameters.html [ Failure ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/transform_feedback/transform_feedback.html [ Failure ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/glsl3/texture-bias.html [ Failure ]
 
-crbug.com/1464417 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/extensions/webgl-shader-pixel-local-storage.html [ Failure ]
-crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/extensions/oes-sample-variables.html [ Failure ]
 crbug.com/1488581 [ chromeos lacros-chrome chromeos-board-octopus passthrough ] conformance/rendering/out-of-bounds-array-buffers.html [ RetryOnFailure ]
 
 ##############################
