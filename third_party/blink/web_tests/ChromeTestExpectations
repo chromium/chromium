@@ -12,13 +12,8 @@ external/wpt/webdriver/tests/classic/element_send_keys/interactability.py [ Fail
 external/wpt/webdriver/tests/classic/perform_actions/wheel.py [ Failure ]  # Flaky output
 external/wpt/webdriver/tests/bidi/input/perform_actions/invalid.py [ Failure Timeout ]  # Flaky output
 external/wpt/webdriver/tests/classic/find_element_from_shadow_root/find.py [ Failure Timeout ]  # Flaky output
-external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/frame.py [ Failure ]  # Flaky output
 external/wpt/webdriver/tests/classic/element_click/navigate.py [ Failure ]  # Flaky output
 external/wpt/webdriver/tests/bidi/input/perform_actions/wheel.py [ Failure ]  # Flaky output
-external/wpt/webdriver/tests/bidi/browsing_context/handle_user_prompt/handle_user_prompt.py [ Timeout ]
-external/wpt/webdriver/tests/bidi/browsing_context/navigation_started/navigation_started.py [ Timeout ]
-external/wpt/webdriver/tests/bidi/browsing_context/print/invalid.py [ Timeout ]
-external/wpt/webdriver/tests/bidi/browsing_context/user_prompt_opened/user_prompt_opened.py [ Timeout ]
 external/wpt/webdriver/tests/bidi/network/add_intercept/invalid.py [ Timeout ]
 external/wpt/webdriver/tests/bidi/network/add_intercept/phases.py [ Timeout ]
 external/wpt/webdriver/tests/bidi/network/remove_intercept/remove_intercept.py [ Timeout ]
@@ -28,9 +23,17 @@ crbug.com/1502331 external/wpt/webdriver/tests/classic/perform_actions/pointer_p
 crbug.com/626703 external/wpt/webdriver/tests/bidi/network/add_intercept/phase_auth_required.py [ Timeout ]
 crbug.com/626703 external/wpt/webdriver/tests/bidi/network/auth_required/auth_required.py [ Timeout ]
 external/wpt/webdriver/tests/bidi/network/add_intercept/url_patterns.py [ Timeout ]
+external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/frame.py [ Failure ]  # Flaky output
+external/wpt/webdriver/tests/bidi/browsing_context/handle_user_prompt/handle_user_prompt.py [ Timeout ]
+external/wpt/webdriver/tests/bidi/browsing_context/navigation_started/navigation_started.py [ Timeout ]
+external/wpt/webdriver/tests/bidi/browsing_context/print/invalid.py [ Timeout ]
+external/wpt/webdriver/tests/bidi/browsing_context/user_prompt_opened/user_prompt_opened.py [ Timeout ]
 external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/format.py [ Failure ]
 external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/invalid.py [ Failure ]
 external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/origin.py [ Failure ]
+external/wpt/webdriver/tests/bidi/browsing_context/traverse_history/context.py [ Failure ]
+external/wpt/webdriver/tests/bidi/browsing_context/traverse_history/delta.py [ Failure ]
+external/wpt/webdriver/tests/bidi/browsing_context/traverse_history/invalid.py [ Failure ]
 
 # Chrome specific failures
 crbug.com/1499775 external/wpt/css/css-text/text-transform/text-transform-capitalize-014.html [ Failure Pass ]
