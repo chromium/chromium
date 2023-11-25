@@ -268,8 +268,7 @@ String GetStringFromScriptHelper(
   //   we are not executing a source String, but an already compiled callback
   //   function.
   v8::HandleScope handle_scope(context->GetIsolate());
-  ScriptState::Scope script_state_scope(
-      ToScriptState(context, DOMWrapperWorld::MainWorld()));
+  ScriptState::Scope script_state_scope(ToScriptStateForMainWorld(context));
   ExceptionState exception_state(
       context->GetIsolate(), ExceptionContextType::kUnknown,
       element_name_for_exception, attribute_name_for_exception);

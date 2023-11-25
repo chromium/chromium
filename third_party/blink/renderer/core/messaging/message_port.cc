@@ -361,8 +361,7 @@ bool MessagePort::Accept(mojo::Message* mojo_message) {
     // We cannot check `content->GetCurrentWorld()->IsMainWorld()` here, as the
     // v8::Context may still be empty (and hence
     // ExecutionContext::GetCurrentWorld returns null).
-    if (ScriptState* script_state =
-            ToScriptState(context, DOMWrapperWorld::MainWorld())) {
+    if (ScriptState* script_state = ToScriptStateForMainWorld(context)) {
       CHECK(ThreadScheduler::Current());
       if (auto* tracker =
               ThreadScheduler::Current()->GetTaskAttributionTracker()) {

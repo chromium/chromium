@@ -551,8 +551,7 @@ v8::Local<v8::Object> WebPluginContainerImpl::V8ObjectForElement() {
   if (!context || !context->CanExecuteScripts(kNotAboutToExecuteScript))
     return v8::Local<v8::Object>();
 
-  ScriptState* script_state =
-      ToScriptState(context, DOMWrapperWorld::MainWorld());
+  ScriptState* script_state = ToScriptStateForMainWorld(context);
   if (!script_state)
     return v8::Local<v8::Object>();
 
