@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="el">
 <translation id="1000498691615767391">Επιλέξτε φάκελο για άνοιγμα</translation>
+<translation id="1014208178561091457">Δεν ήταν δυνατή η αντιγραφή του αρχείου <ph name="FILE_NAME" /> επειδή είναι κρυπτογραφημένο.</translation>
 <translation id="1047956942837015229">Διαγραφή <ph name="COUNT" /> στοιχείων…</translation>
 <translation id="1049926623896334335">Έγγραφο του Word</translation>
 <translation id="1056775291175587022">Κανένα δίκτυο</translation>
@@ -56,6 +57,7 @@
 <translation id="1435838927755162558">Κοινή χρήση φακέλου με το Parallels Desktop</translation>
 <translation id="1439919885608649279">Άτομο με λουλούδια</translation>
 <translation id="1458457385801829801">Αποσύνδεση <ph name="TARGET_NAME" /></translation>
+<translation id="146691674290220697">Δεν ήταν δυνατή η αντιγραφή <ph name="NUMBER_OF_FILES" /> αρχείων επειδή είναι κρυπτογραφημένα.</translation>
 <translation id="1471718551822868769">Σλοβακικά</translation>
 <translation id="1482884275703521657">Φινλανδικά</translation>
 <translation id="148466539719134488">Ελβετικά</translation>
@@ -281,6 +283,7 @@
 <translation id="3253225298092156258">Μη διαθέσιμο</translation>
 <translation id="3254434849914415189">Επιλέξτε την προεπιλεγμένη εφαρμογή για τα αρχεία <ph name="FILE_TYPE" />:</translation>
 <translation id="3255159654094949700">Αραβικά</translation>
+<translation id="326396468955264502">Δεν ήταν δυνατή η μετακίνηση <ph name="NUMBER_OF_FILES" /> αρχείων επειδή είναι κρυπτογραφημένα.</translation>
 <translation id="3264582393905923483">Περιβάλλον</translation>
 <translation id="3272909651715601089">Δεν ήταν δυνατό το άνοιγμα του "<ph name="PATH" />".</translation>
 <translation id="3280431534455935878">Προετοιμασία</translation>
@@ -319,6 +322,7 @@
 <translation id="3523225005467146490">1 φάκελος σε κοινή χρήση με το <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Προσοχή: Αυτά τα αρχεία είναι προσωρινά και ενδέχεται να διαγραφούν αυτόματα για να απελευθερωθεί χώρος στη μονάδα δίσκου.  <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Φάκελος</translation>
+<translation id="3529424493985988200">Επικοινωνήστε με τον διαχειριστή για λεπτομέρειες.</translation>
 <translation id="3548125359243647069">Έγινε εισαγωγή εσφαλμένου PIN πάρα πολλές φορές.</translation>
 <translation id="3549797760399244642">Μετάβαση στη διεύθυνση drive.google.com…</translation>
 <translation id="3553048479571901246">Για να ανοίξετε αρχεία με την εφαρμογή <ph name="APP_NAME" />, αρχικά, αντιγράψτε τα στον φάκελο Αρχεία Windows.</translation>
@@ -714,6 +718,7 @@
 <translation id="637062427944097960">Αυτό το αρχείο άνοιξε σε διαφορετικό προφίλ. Μεταβείτε στο προφίλ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) για να το δείτε.</translation>
 <translation id="6394388407447716302">Μόνο για ανάγνωση</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> στοιχεία</translation>
+<translation id="6407769893376380348">Δεν ήταν δυνατή η μετακίνηση του αρχείου <ph name="FILE_NAME" /> επειδή είναι κρυπτογραφημένο.</translation>
 <translation id="642282551015776456">Αυτό το όνομα δεν μπορεί να χρησιμοποιηθεί ως όνομα αρχείου ή φακέλου</translation>
 <translation id="6423031066725912715">Βιετναμικά με πληκτρολόγιο TCVN</translation>
 <translation id="6430271654280079150">Απομένει 1 ακόμη προσπάθεια.</translation>

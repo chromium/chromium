@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="th">
 <translation id="1000498691615767391">เลือกโฟลเดอร์เพื่อเปิด</translation>
+<translation id="1014208178561091457">คัดลอก <ph name="FILE_NAME" /> ไม่ได้เนื่องจากมีการเข้ารหัส</translation>
 <translation id="1047956942837015229">กำลังลบ <ph name="COUNT" /> รายการ...</translation>
 <translation id="1049926623896334335">เอกสาร Word</translation>
 <translation id="1056775291175587022">ไม่พบเครือข่าย</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">แชร์โฟลเดอร์กับ Parallels Desktop</translation>
 <translation id="1439919885608649279">คนกับดอกไม้</translation>
 <translation id="1458457385801829801">ยกเลิกการต่อเชื่อม <ph name="TARGET_NAME" /></translation>
+<translation id="146691674290220697">คัดลอกไม่ได้ <ph name="NUMBER_OF_FILES" /> ไฟล์เนื่องจากมีการเข้ารหัส</translation>
 <translation id="1471718551822868769">สโลวัก</translation>
 <translation id="1482884275703521657">ฟินแลนด์</translation>
 <translation id="148466539719134488">สวิส</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">ไม่มีข้อมูล</translation>
 <translation id="3254434849914415189">เลือกแอปพลิเคชันค่าเริ่มต้นสำหรับไฟล์ <ph name="FILE_TYPE" />:</translation>
 <translation id="3255159654094949700">อาหรับ</translation>
+<translation id="326396468955264502">ย้ายไม่ได้ <ph name="NUMBER_OF_FILES" /> ไฟล์เนื่องจากมีการเข้ารหัส</translation>
 <translation id="3264582393905923483">บริบท</translation>
 <translation id="3272909651715601089">เปิด "<ph name="PATH" />" ไม่ได้</translation>
 <translation id="3280431534455935878">กำลังเตรียม</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490">แชร์ 1 โฟลเดอร์กับ <ph name="VM_NAME" /> แล้ว</translation>
 <translation id="3524311639100184459">ข้อควรระวัง: ไฟล์เหล่านี้ใช้ชั่วคราวและอาจถูกลบโดยอัตโนมัติเพื่อเพิ่มพื้นที่ว่างในดิสก์  <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">โฟลเดอร์</translation>
+<translation id="3529424493985988200">โปรดติดต่อผู้ดูแลระบบเพื่อขอรายละเอียด</translation>
 <translation id="3548125359243647069">ป้อน PIN ไม่ถูกต้องหลายครั้งเกินไป</translation>
 <translation id="3549797760399244642">ไปยัง drive.google.com...</translation>
 <translation id="3553048479571901246">หากต้องการเปิดไฟล์ด้วย <ph name="APP_NAME" /> ให้คัดลอกไปที่โฟลเดอร์ไฟล์ของ Windows ก่อน</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">ไฟล์นี้เปิดอยู่บนเดสก์ท็อปเครื่องอื่น โปรดย้ายมายัง <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) เพื่อดู</translation>
 <translation id="6394388407447716302">อ่านอย่างเดียว</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> รายการ</translation>
+<translation id="6407769893376380348">ย้าย <ph name="FILE_NAME" /> ไม่ได้เนื่องจากมีการเข้ารหัส</translation>
 <translation id="642282551015776456">ชื่อนี้ไม่สามารถใช้เป็นชื่อไฟล์ของโฟลเดอร์</translation>
 <translation id="6423031066725912715">เวียดนามด้วยแป้นพิมพ์ TCVN</translation>
 <translation id="6430271654280079150">คุณลองได้อีก 1 ครั้ง</translation>

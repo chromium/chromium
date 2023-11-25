@@ -18,6 +18,7 @@
 <translation id="5591247451101092906">Kayıtlı şifre veya geçiş anahtarı kullanılsın mı?</translation>
 <translation id="5624120631404540903">Şifreleri yönet</translation>
 <translation id="6560306912274274630"><ph name="USERNAME" /> için geçiş anahtarı, ekran kilidinizi kullanın</translation>
+<translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Bu site için yeni şifre mevcut}other{Bu site için yeni şifreler mevcut}}</translation>
 <translation id="7286867818472074330">Geçiş anahtarı seç</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" />/<ph name="ITEMS_TOTAL" />.</translation>
 <translation id="8891372124884726271">Kimlik bilgisi listesi kapatıldı.</translation>

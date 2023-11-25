@@ -240,7 +240,6 @@
 <translation id="549669000822060376">Сачекајте да Chromium инсталира најновија ажурирања система.</translation>
 <translation id="5496810170689441661">Chromium покушава да измени лозинке. Унесите лозинку за Windows да бисте то омогућили.</translation>
 <translation id="5527463683072221100">Отварајте PDF-ове у Chromium-у</translation>
-<translation id="5614091477838198795">Када је ово укључено, бићете и одјављени из Chromium-а</translation>
 <translation id="5623402015214259806">{0,plural, =0{Ажурирање за Chromium је доступно}=1{Ажурирање за Chromium је доступно}one{Ажурирање за Chromium је доступно већ # дан}few{Ажурирање за Chromium је доступно већ # дана}other{Ажурирање за Chromium је доступно већ # дана}}</translation>
 <translation id="5643865575100044307">Увек избришите податке о сајтовима са уређаја када затворите Chromium</translation>
 <translation id="5653831366781983928">Рестартујте Chromium</translation>

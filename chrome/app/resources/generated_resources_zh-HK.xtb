@@ -916,7 +916,6 @@
 <translation id="1697150536837697295">藝術</translation>
 <translation id="1697686431566694143">編輯檔案</translation>
 <translation id="1698796500103229697">付款方法(&amp;P)</translation>
-<translation id="1700079447639026019">網站一律無法使用 Cookie</translation>
 <translation id="1700201317341192482">移除虛擬卡</translation>
 <translation id="1700517974991662022">己經去過</translation>
 <translation id="1703331064825191675">不用再擔心密碼問題</translation>
@@ -1782,7 +1781,6 @@
 <translation id="233471714539944337">敏感內容</translation>
 <translation id="2335111415680198280">{0,plural, =1{關閉 # 個視窗}other{關閉 # 個視窗}}</translation>
 <translation id="2336228925368920074">將所有分頁加入書籤…</translation>
-<translation id="2336376423977300504">一律在視窗關閉時清除 Cookie</translation>
 <translation id="2336381494582898602">執行 Powerwash</translation>
 <translation id="2337236196941929873">預先載入 Chrome 認為您可能會瀏覽的頁面。為此，Chrome 可能會使用 Cookie (如果您允許的話)，亦可能加密網頁並透過 Google 傳送，以便向網站隱藏您的身分。</translation>
 <translation id="2340239562261172947">無法安全下載「<ph name="FILE_NAME" />」</translation>
@@ -2234,7 +2232,6 @@
 <translation id="2683638487103917598">資料夾已排序</translation>
 <translation id="2684004000387153598">如要繼續操作，請按一下 [確定]，然後按一下 [新增使用者]，即可為您的電郵地址建立新的設定檔。</translation>
 <translation id="2685193395980129388">已允許 – <ph name="PERMISSION_DETAILS" /></translation>
-<translation id="2687403674020088961">封鎖所有 Cookie (不建議)</translation>
 <translation id="2687407218262674387">Google 服務條款</translation>
 <translation id="2687621393791886981">稍後再詢問我</translation>
 <translation id="2688196195245426394">向伺服器註冊裝置時發生錯誤：<ph name="CLIENT_ERROR" />。</translation>
@@ -2490,7 +2487,6 @@
 <translation id="287286579981869940">新增「<ph name="PROVIDER_NAME" />」…</translation>
 <translation id="2872961005593481000">關閉</translation>
 <translation id="2873744479411987024">較高的更新率可讓畫面顯示更流暢，細節更清晰。提高更新率可能會影響電池壽命。</translation>
-<translation id="2873995907777332853">顯示封鎖所有 Cookie 嘅詳情</translation>
 <translation id="2874939134665556319">上一首曲目</translation>
 <translation id="2875698561019555027">(Chrome 錯誤頁面)</translation>
 <translation id="2876336351874743617">手指 2</translation>
@@ -2870,7 +2866,6 @@
 <translation id="3192586965067888278">請詳細描述問題。意見將會傳送到 Google 以作人手審查，並可能用於改善或開發 Google 產品和服務。</translation>
 <translation id="3192947282887913208">音效檔案</translation>
 <translation id="3193695589337931419">系統訊號實用程式</translation>
-<translation id="3194786596445804250">顯示封鎖第三方 Cookie 嘅詳情</translation>
 <translation id="3196912927885212665">Chromebook 需要開啟藍牙功能，才能使用 Android 手機進行設定</translation>
 <translation id="3197453258332670132">按一下右鍵或長按畫面，即可查看所選文字的相關資料</translation>
 <translation id="3198487209506801480"><ph name="BEGIN_PARAGRAPH1" />允許 ChromeOS 裝置自動傳送報告，可協助我們為 ChromeOS 規劃要優先修正及改善的項目。這類報告可能包括 ChromeOS 當機時間、曾使用的功能，以及記憶體一般使用量。部分彙整資料亦會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。如果同時開啟應用程式同步功能，系統亦會收集其他應用程式診斷和使用資料 (包括 Android 和網絡應用程式)。<ph name="END_PARAGRAPH1" />
@@ -4201,7 +4196,7 @@
 <translation id="4259388776256904261">請稍候片刻</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> 可能不安全。要傳送到「Google 進階保護」進行掃瞄嗎？按住 Shift+F6 鍵即可切換至下載內容列的位置。</translation>
 <translation id="4260699894265914672">按下鍵盤按鍵即可自訂</translation>
-<translation id="4260722247480053581">在無痕式視窗中開啟</translation>
+<translation id="4260722247480053581">在無痕視窗中開啟</translation>
 <translation id="4261429981378979799">擴充程式權限</translation>
 <translation id="4262004481148703251">關閉警告</translation>
 <translation id="4263223596040212967">請檢查您的鍵盤版面配置，然後再試一次。</translation>
@@ -4549,7 +4544,6 @@
 <translation id="4533985347672295764">中央處理器時間</translation>
 <translation id="4534661889221639075">請再試一次。</translation>
 <translation id="4535127706710932914">預設個人檔案</translation>
-<translation id="4536140153723794651">一律可以使用 Cookie 的網站</translation>
 <translation id="4536769240747010177">網絡共享功能：</translation>
 <translation id="4538417792467843292">刪除文字</translation>
 <translation id="4538792345715658285">由公司政策安裝</translation>
@@ -5465,7 +5459,6 @@
 <translation id="5278823018825269962">狀態 ID</translation>
 <translation id="5279600392753459966">全部封鎖</translation>
 <translation id="5280064835262749532">更新 <ph name="SHARE_PATH" /> 的憑證</translation>
-<translation id="5280243692621919988">當您關閉所有視窗時，清除 Cookie 和網站資料</translation>
 <translation id="5280335021886535443">㩒一下 |<ph name="ACCELERATOR" />| 就可以突顯呢個對話氣泡。</translation>
 <translation id="5280426389926346830">要建立捷徑嗎？</translation>
 <translation id="5281013262333731149">在 <ph name="OPEN_BROWSER" /> 中開啟</translation>
@@ -5792,7 +5785,6 @@
 <translation id="5544482392629385159">第 <ph name="DEVICE_INDEX" /> 部裝置 (共 <ph name="DEVICE_COUNT" /> 部)，<ph name="DEVICE_NAME" /></translation>
 <translation id="554517701842997186">轉譯器</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{在群組中加入分頁}other{在群組中加入分頁}}</translation>
-<translation id="5545693483061321551">網站不能使用 Cookie 查看您在其他網站的瀏覽活動，例如放送個人化廣告。部分網站的功能可能會無法正常運作。</translation>
 <translation id="5546865291508181392">搜尋</translation>
 <translation id="5548075230008247516">取消晒所有揀咗嘅項目，同埋結束選取模式。</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{「<ph name="TAB_TITLE" />」}=1{「<ph name="TAB_TITLE" />」和另外 1 個標籤}other{「<ph name="TAB_TITLE" />」和另外 # 個標籤}}</translation>
@@ -5928,7 +5920,6 @@
 <translation id="5655296450510165335">裝置註冊</translation>
 <translation id="5655823808357523308">調整畫面顏色顯示方式</translation>
 <translation id="5656845498778518563">傳送意見給 Google</translation>
-<translation id="5657156137487675418">允許所有 Cookie</translation>
 <translation id="5657667036353380798">這個外部擴充功能需要安裝 <ph name="MINIMUM_CHROME_VERSION" /> 版本以上的 Chrome 瀏覽器。</translation>
 <translation id="565899488479822148">正在安裝最新的更新版本</translation>
 <translation id="5659593005791499971">電郵</translation>
@@ -6910,7 +6901,6 @@
 <translation id="6455521402703088376">已關閉 • 開發人員已取消發佈此擴充程式</translation>
 <translation id="6455894534188563617">新增資料夾(&amp;N)</translation>
 <translation id="645705751491738698">繼續封鎖 JavaScript</translation>
-<translation id="6458347417133445570">顯示允許所有 Cookie 嘅詳情</translation>
 <translation id="6458701200018867744">上載失敗 (<ph name="WEBRTC_LOG_UPLOAD_TIME" />)。</translation>
 <translation id="6459488832681039634">使用所選範圍尋找</translation>
 <translation id="6459799433792303855">使用中的視窗已移至其他顯示屏。</translation>
@@ -7326,7 +7316,6 @@
 <translation id="6798780071646309401">大寫鎖定已開啟</translation>
 <translation id="6798954102094737107">外掛程式：<ph name="PLUGIN_NAME" /></translation>
 <translation id="679905836499387150">隱藏的工具列按鈕</translation>
-<translation id="6801129617625983991">一般設定</translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{選擇此擴充程式可否讀取或變更此網站}other{選擇這些擴充程式可否讀取或變更此網站}}</translation>
 <translation id="6801435275744557998">校正觸控螢幕</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
@@ -7551,7 +7540,6 @@
 <translation id="6966370001499648704">控制要使用哪些手機作為安全密鑰</translation>
 <translation id="6967112302799758487">系統將會移除此裝置上所有透過 Chromebook 版 Steam (Beta 版本) 安裝的應用程式和遊戲。系統亦會移除與這些應用程式和遊戲關聯的資料。在解除安裝之前，請確保您已備份已儲存的應用程式和遊戲。</translation>
 <translation id="6967430741871315905">無法檢查裝置是否已獲准</translation>
-<translation id="696780070563539690">網站不可使用 Cookie 查看您在各網站的瀏覽活動，例如放送個人化廣告</translation>
 <translation id="6968288415730398122">如要設定螢幕鎖定功能，請輸入您的密碼</translation>
 <translation id="6969047215179982698">關閉「咫尺共享」功能</translation>
 <translation id="6969216690072714773">請輸入此裝置的相關資訊或更新現有資訊。</translation>
@@ -8253,7 +8241,6 @@
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> 沒有回應。選取「強制關閉」即可關閉應用程式。</translation>
 <translation id="7535730537657706072">如要清除裝置上的無痕瀏覽記錄，請關閉所有無痕式分頁</translation>
 <translation id="7536815228183532290">已使用 <ph name="EMAIL" /> 的身分登入</translation>
-<translation id="7537451260744431038">網站不可使用 Cookie 來改善瀏覽體驗，例如讓您保持登入狀態或記住購物車中的商品</translation>
 <translation id="7538013435257102593">此檔案類型不是常見的下載項目，可能含有危險內容</translation>
 <translation id="7540972813190816353">檢查更新時發生錯誤：<ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> 已將此裝置回復為先前的版本，請儲存重要檔案後再重新啟動。裝置上的所有資料將被刪除。</translation>
@@ -8761,7 +8748,6 @@
 <translation id="7921347341284348270">您無法在此受管帳戶上查看手機的通知。請改用其他帳戶重試。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="7921901223958867679">此擴充程式可讀取和變更 <ph name="HOST" /></translation>
 <translation id="7922606348470480702">1 個擴充程式</translation>
-<translation id="7922935920104868876">顯示喺無痕模式入面封鎖第三方 Cookie 嘅詳情</translation>
 <translation id="7923564237306226146">Linux 升級已完成</translation>
 <translation id="7924075559900107275">長期支援候選裝置</translation>
 <translation id="7924358170328001543">轉送連接埠時發生錯誤</translation>
@@ -9069,7 +9055,6 @@
 <translation id="815114315010033526">改用 QR 碼</translation>
 <translation id="8151638057146502721">設定</translation>
 <translation id="8154790740888707867">沒有檔案</translation>
-<translation id="8154912474061769055">很多網站的功能可能會無法正常運作</translation>
 <translation id="815491593104042026">糟糕！由於設定使用的網址 (<ph name="BLOCKED_URL" />) 不安全，導致驗證失敗。請與您的管理員聯絡。</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{找不到被盜用的密碼}=1{{COUNT} 個被盜用的密碼}other{{COUNT} 個被盜用的密碼}}</translation>
 <translation id="8157248655669507702">啟用流動數據以安裝 eSIM 卡設定檔</translation>
@@ -9311,7 +9296,6 @@
 <translation id="8342861492835240085">選取相片集</translation>
 <translation id="8345848587667658367">您現可查看手機最近的相片、媒體、通知和應用程式</translation>
 <translation id="8347227221149377169">列印工作</translation>
-<translation id="834785183489258869">在無痕模式中，網站不能使用 Cookie 查看您在各網站的瀏覽活動，例如放送個人化廣告。部分網站的功能可能會無法正常運作。</translation>
 <translation id="8348430946834215779">盡量使用 HTTPS，並在系統載入不支援 HTTPS 的網站前先接收提醒</translation>
 <translation id="8348896480272971199">請檢查互聯網連線，然後再試一次。</translation>
 <translation id="8349325309815489209">已允許在此網站執行擴充程式</translation>

@@ -908,7 +908,6 @@
 <translation id="1697150536837697295">艺术</translation>
 <translation id="1697686431566694143">修改文件</translation>
 <translation id="1698796500103229697">付款方式(&amp;P)</translation>
-<translation id="1700079447639026019">始终无法使用 Cookie 的网站</translation>
 <translation id="1700201317341192482">移除您的虚拟卡</translation>
 <translation id="1700517974991662022">访问过</translation>
 <translation id="1703331064825191675">再也不必费心记住您的密码</translation>
@@ -1760,7 +1759,6 @@
 <translation id="233471714539944337">敏感内容</translation>
 <translation id="2335111415680198280">{0,plural, =1{关闭 # 个窗口}other{关闭 # 个窗口}}</translation>
 <translation id="2336228925368920074">为所有标签页添加书签...</translation>
-<translation id="2336376423977300504">始终在关闭窗口时清除 Cookie 的网站</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2337236196941929873">预加载 Chrome 认为您可能会访问的网页。为此，Chrome 可能会使用 Cookie（如果您允许使用 Cookie 的话），并通过 Google 加密和发送网页以向网站隐藏您的身份。</translation>
 <translation id="2340239562261172947">无法安全地下载“<ph name="FILE_NAME" />”</translation>
@@ -2211,7 +2209,6 @@
 <translation id="2683638487103917598">文件夹内容已排序</translation>
 <translation id="2684004000387153598">要想继续，请点击“确定”，然后点击“添加用户”为您的电子邮件地址创建一份新个人资料。</translation>
 <translation id="2685193395980129388">已授权 - <ph name="PERMISSION_DETAILS" /></translation>
-<translation id="2687403674020088961">阻止所有 Cookie（不建议）</translation>
 <translation id="2687407218262674387">Google 服务条款</translation>
 <translation id="2687621393791886981">以后再说</translation>
 <translation id="2688196195245426394">向服务器注册设备时出错：<ph name="CLIENT_ERROR" />。</translation>
@@ -2467,7 +2464,6 @@
 <translation id="287286579981869940">添加“<ph name="PROVIDER_NAME" />”…</translation>
 <translation id="2872961005593481000">关机</translation>
 <translation id="2873744479411987024">使用更高的刷新率时，显示的画面会更加流畅并会展现更多细节。提高刷新率可能会影响电池续航时间。</translation>
-<translation id="2873995907777332853">显示屏蔽所有 Cookie 的有关详情</translation>
 <translation id="2874939134665556319">上一首</translation>
 <translation id="2875698561019555027">（Chrome 错误页面）</translation>
 <translation id="2876336351874743617">手指 2</translation>
@@ -2847,7 +2843,6 @@
 <translation id="3192586965067888278">详细描述问题。反馈将发送给 Google 进行人工审核，并可能会用于改进或开发 Google 产品和服务。</translation>
 <translation id="3192947282887913208">音频文件</translation>
 <translation id="3193695589337931419">系统信号实用程序</translation>
-<translation id="3194786596445804250">显示屏蔽第三方 Cookie 的有关详情</translation>
 <translation id="3196912927885212665">您需要开启 Chromebook 的蓝牙，才能使用 Android 手机进行设置</translation>
 <translation id="3197453258332670132">只要您右键点击或长按所选文字，系统就会显示与其相关的信息</translation>
 <translation id="3198487209506801480"><ph name="BEGIN_PARAGRAPH1" />如果您允许 ChromeOS 设备自动发送报告，则可帮助我们确定 ChromeOS 中需要优先解决的问题和优先改进的方面。这些报告可能包含的内容有：ChromeOS 的崩溃时间、使用的功能、通常占用的内存量，等等。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。如果同时启用了应用同步，系统还会收集其他应用（包括 Android 应用和 Web 应用）的诊断数据和使用情况数据。<ph name="END_PARAGRAPH1" />
@@ -4528,7 +4523,6 @@
 <translation id="4533985347672295764">CPU 时间</translation>
 <translation id="4534661889221639075">请重试。</translation>
 <translation id="4535127706710932914">默认个人资料</translation>
-<translation id="4536140153723794651">始终能使用 Cookie 的网站</translation>
 <translation id="4536769240747010177">网络共享功能：</translation>
 <translation id="4538417792467843292">删除字词</translation>
 <translation id="4538792345715658285">按企业政策安装。</translation>
@@ -5444,7 +5438,6 @@
 <translation id="5278823018825269962">状态 ID</translation>
 <translation id="5279600392753459966">全部屏蔽</translation>
 <translation id="5280064835262749532">更新 <ph name="SHARE_PATH" /> 的访问凭据</translation>
-<translation id="5280243692621919988">关闭所有窗口时清除 Cookie 及网站数据</translation>
 <translation id="5280335021886535443">按 |<ph name="ACCELERATOR" />| 可聚焦于此气泡。</translation>
 <translation id="5280426389926346830">创建快捷方式？</translation>
 <translation id="5281013262333731149">会在<ph name="OPEN_BROWSER" />中打开</translation>
@@ -5771,7 +5764,6 @@
 <translation id="5544482392629385159">第 <ph name="DEVICE_INDEX" /> 部设备（共 <ph name="DEVICE_COUNT" /> 部），设备名称为“<ph name="DEVICE_NAME" />”</translation>
 <translation id="554517701842997186">渲染程序</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{向群组中添加标签页}other{向群组中添加标签页}}</translation>
-<translation id="5545693483061321551">网站无法使用 Cookie 查看您在各个不同网站上的浏览活动，因而无法实现某些功能或目的（例如为您展示个性化广告）。某些网站上的功能可能无法正常运行。</translation>
 <translation id="5546865291508181392">查找</translation>
 <translation id="5548075230008247516">已取消选择所有内容，已退出选择模式。</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{“<ph name="TAB_TITLE" />”}=1{“<ph name="TAB_TITLE" />”和另外 1 个标签页}other{“<ph name="TAB_TITLE" />”和另外 # 个标签页}}</translation>
@@ -5907,7 +5899,6 @@
 <translation id="5655296450510165335">设备注册</translation>
 <translation id="5655823808357523308">调整屏幕显示颜色的方式</translation>
 <translation id="5656845498778518563">向 Google 发送反馈</translation>
-<translation id="5657156137487675418">允许所有 Cookie</translation>
 <translation id="5657667036353380798">该外部扩展程序需要安装 <ph name="MINIMUM_CHROME_VERSION" /> 或更高版本的 Chrome。</translation>
 <translation id="565899488479822148">正在安装最新更新</translation>
 <translation id="5659593005791499971">电子邮件</translation>
@@ -6888,7 +6879,6 @@
 <translation id="6455521402703088376">已关闭 • 此扩展程序已被其开发者取消发布</translation>
 <translation id="6455894534188563617">新建文件夹(&amp;N)</translation>
 <translation id="645705751491738698">继续拦截 JavaScript</translation>
-<translation id="6458347417133445570">显示允许所有 Cookie 的有关详情</translation>
 <translation id="6458701200018867744">上传失败（<ph name="WEBRTC_LOG_UPLOAD_TIME" />）。</translation>
 <translation id="6459488832681039634">使用所选内容查找</translation>
 <translation id="6459799433792303855">活动窗口已移至另一显示屏。</translation>
@@ -7304,7 +7294,6 @@
 <translation id="6798780071646309401">已开启大写锁定模式</translation>
 <translation id="6798954102094737107">插件：<ph name="PLUGIN_NAME" /></translation>
 <translation id="679905836499387150">隐藏的工具栏按钮</translation>
-<translation id="6801129617625983991">常规设置</translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{选择是否允许这款扩展程序读取或更改该网站的数据}other{选择是否允许这些扩展程序读取或更改该网站的数据}}</translation>
 <translation id="6801435275744557998">校准触摸屏</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
@@ -7529,7 +7518,6 @@
 <translation id="6966370001499648704">控制您使用哪些手机作为安全密钥</translation>
 <translation id="6967112302799758487">系统将从此设备中移除使用 Steam for Chromebook（Beta 版）安装的所有应用和游戏。与这些应用和游戏关联的数据也将被移除。请务必先备份已保存的应用和游戏，然后再卸载。</translation>
 <translation id="6967430741871315905">无法检查是否已允许此设备运行虚拟机</translation>
-<translation id="696780070563539690">网站无法使用您的 Cookie 查看您在各个不同网站上的浏览活动，因而无法实现某些功能或目的（例如为您展示个性化广告）</translation>
 <translation id="6968288415730398122">需输入您的密码，才能配置屏幕锁定</translation>
 <translation id="6969047215179982698">关闭“附近分享”功能</translation>
 <translation id="6969216690072714773">输入要与此设备关联的新信息，或者更新要与此设备关联的现有信息。</translation>
@@ -8232,7 +8220,6 @@
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> 无响应。请选择“强制关闭”以关闭此应用。</translation>
 <translation id="7535730537657706072">若要清除您设备中的无痕浏览记录，请关闭所有无痕式标签页</translation>
 <translation id="7536815228183532290">目前登录的账号是 <ph name="EMAIL" /></translation>
-<translation id="7537451260744431038">网站无法使用 Cookie 来提升您的浏览体验，例如让您保持登录状态或记住您购物车中的商品</translation>
 <translation id="7538013435257102593">此文件类型不常被下载，可能具有危险性</translation>
 <translation id="7540972813190816353">检查更新时出错：<ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> 已将此设备回滚到上一个版本。请保存重要文件，然后重启。此设备上的所有数据都将被删除。</translation>
@@ -8740,7 +8727,6 @@
 <translation id="7921347341284348270">您无法通过这个受管理的账号查看手机上的通知。请换个账号重试。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="7921901223958867679">此扩展程序可读取和更改 <ph name="HOST" /> 数据</translation>
 <translation id="7922606348470480702">1 个扩展程序</translation>
-<translation id="7922935920104868876">显示在无痕模式下屏蔽第三方 Cookie 的有关详情</translation>
 <translation id="7923564237306226146">Linux 升级完毕</translation>
 <translation id="7924075559900107275">长期支持候选渠道</translation>
 <translation id="7924358170328001543">转发端口时出错</translation>
@@ -9048,7 +9034,6 @@
 <translation id="815114315010033526">改用二维码</translation>
 <translation id="8151638057146502721">配置</translation>
 <translation id="8154790740888707867">未发现文件</translation>
-<translation id="8154912474061769055">很多网站上的功能可能无法正常运行</translation>
 <translation id="815491593104042026">糟糕！身份验证失败，因为它被配置为使用不安全的网址(<ph name="BLOCKED_URL" />)。请联系您的管理员。</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{未发现任何已泄露的密码}=1{有 {COUNT} 个密码已遭泄露}other{有 {COUNT} 个密码已遭泄露}}</translation>
 <translation id="8157248655669507702">请启用移动数据以安装 eSIM 卡配置文件</translation>
@@ -9290,7 +9275,6 @@
 <translation id="8342861492835240085">选择一个集合</translation>
 <translation id="8345848587667658367">您现在可以查看手机中近期的照片、媒体、通知和应用</translation>
 <translation id="8347227221149377169">打印任务</translation>
-<translation id="834785183489258869">不过，在无痕模式下，网站无法使用 Cookie 查看您在各个不同网站上的浏览活动，因而无法实现某些功能或目的（例如为您展示个性化广告）。某些网站上的功能可能无法正常运行。</translation>
 <translation id="8348430946834215779">尽可能使用 HTTPS，并在加载不支持 HTTPS 的网站前收到警告</translation>
 <translation id="8348896480272971199">请检查您的互联网连接，然后重试。</translation>
 <translation id="8349325309815489209">已允许在此网站上使用扩展程序</translation>

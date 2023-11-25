@@ -253,7 +253,7 @@
 <translation id="5335288049665977812">Permitir que los sitios utilicen JavaScript (recomendado)</translation>
 <translation id="534295439873310000">Dispositivos NFC</translation>
 <translation id="5344522958567249764">Gestionar la privacidad en la publicidad</translation>
-<translation id="5389626883706033615">Los sitios no pueden pedirte permiso para usar información que hayan guardado sobre ti</translation>
+<translation id="5389626883706033615">Los sitios no pueden solicitarte permiso para usar la información que hayan guardado sobre ti</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(y 1 más)}other{(y # más)}}</translation>
 <translation id="5403592356182871684">Nombres</translation>
 <translation id="5438097262470833822">Se restablecerán los permisos de <ph name="WEBSITE" />.</translation>

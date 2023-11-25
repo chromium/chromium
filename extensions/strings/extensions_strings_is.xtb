@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Jæks! Það mistókst að útbúa RSA-einkalykil af handahófi.</translation>
 <translation id="1445572445564823378">Þessi viðbót hægir á <ph name="PRODUCT_NAME" />. Þú ættir að slökkva á henni til að <ph name="PRODUCT_NAME" /> starfi betur.</translation>
 <translation id="1468038450257740950">WebGL er ekki stutt.</translation>
+<translation id="1610570795592207282">Ekki tókst að hlaða CSS-stílsniðið" „<ph name="RELATIVE_PATH" />“ fyrir skriftu.</translation>
 <translation id="1803557475693955505">Ekki var hægt að hlaða bakgrunnssíðuna „<ph name="BACKGROUND_PAGE" />“.</translation>
 <translation id="2159915644201199628">Ekki var hægt að afkóða mynd: „<ph name="IMAGE_NAME" />“</translation>
 <translation id="2350172092385603347">Staðfærsla notuð en default_locale var ekki tilgreint í upplýsingaskránni.</translation>
@@ -31,6 +32,7 @@
 <translation id="4988792151665380515">Mistókst að flytja út opinberan lykil.</translation>
 <translation id="5026754133087629784">Vefgluggi: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Nákvæm slóð að möppunni sem á að pakka fannst ekki.</translation>
+<translation id="5160071981665899014">Ekki tókst að hlaða JavaScript-skriftuna „<ph name="RELATIVE_PATH" />“ fyrir skriftu.</translation>
 <translation id="5356315618422219272">Forritsgluggi: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Aðlagaðir gluggar eru ekki studdir.</translation>
 <translation id="5456409301717116725">Þessi viðbót inniheldur lykilskrána „<ph name="KEY_PATH" />“. Þetta er líklega eitthvað sem þú vilt ekki.</translation>

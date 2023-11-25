@@ -915,7 +915,6 @@ Povolenia, ktoré ste už udelili aplikáciám, sa môžu vzťahovať na tento �
 <translation id="1697150536837697295">Umenie</translation>
 <translation id="1697686431566694143">Upraviť súbor</translation>
 <translation id="1698796500103229697">&amp;Spôsoby platby</translation>
-<translation id="1700079447639026019">Weby, ktoré nemôžu nikdy používať súbory cookie</translation>
 <translation id="1700201317341192482">Odstránenie virtuálnej karty</translation>
 <translation id="1700517974991662022">Navštívené</translation>
 <translation id="1703331064825191675">Už si nemusíte robiť starosti o heslá</translation>
@@ -1769,7 +1768,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="233471714539944337">Citlivý obsah</translation>
 <translation id="2335111415680198280">{0,plural, =1{Zavrieť # okno}few{Zavrieť # okná}many{Close # windows}other{Zavrieť # okien}}</translation>
 <translation id="2336228925368920074">Uložiť všetky karty ako záložky...</translation>
-<translation id="2336376423977300504">Vždy vymazať súbory cookie pri zavretí okien</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2337236196941929873">Prednačíta stránky, ktoré by ste podľa Chromu mohli navštíviť. Chrome môže na tento účel použiť súbory cookie (ak ich máte povolené) a môže šifrovať aj odoslať stránky prostredníctvom Googlu s cieľom skryť vašu totožnosť pred webmi.</translation>
 <translation id="2340239562261172947">Súbor <ph name="FILE_NAME" /> nie je možné bezpečne stiahnuť</translation>
@@ -2221,7 +2219,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2683638487103917598">Priečinok je zoradený</translation>
 <translation id="2684004000387153598">Ak chcete pokračovať, kliknite na OK a potom kliknutím na možnosť Pridať osobu vytvorte nový profil pre svoju e-mailovú adresu.</translation>
 <translation id="2685193395980129388">Povolené – <ph name="PERMISSION_DETAILS" /></translation>
-<translation id="2687403674020088961">Blokovať všetky súbory cookie (neodporúča sa)</translation>
 <translation id="2687407218262674387">Zmluvné podmienky spoločnosti Google</translation>
 <translation id="2687621393791886981">Spýtať sa neskôr</translation>
 <translation id="2688196195245426394">Pri registrácii zariadenia na serveri <ph name="CLIENT_ERROR" /> sa vyskytla chyba.</translation>
@@ -2477,7 +2474,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="287286579981869940">Pridať poskytovateľa <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">Vypnúť</translation>
 <translation id="2873744479411987024">Vďaka vyššej frekvencii obnovenia bude zobrazenie plynulejšie a detailnejšie. Vyššia frekvencia obnovenia môže mať vplyv na výdrž batérie.</translation>
-<translation id="2873995907777332853">Zobraziť podrobnosti o blokovaní všetkých súborov cookie</translation>
 <translation id="2874939134665556319">Predchádzajúca skladba</translation>
 <translation id="2875698561019555027">(Chybové stránky prehliadača Chrome)</translation>
 <translation id="2876336351874743617">2. prst</translation>
@@ -2857,7 +2853,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3192586965067888278">Podrobne opíšte problém. Spätná väzba bude odoslaná Googlu na kontrolu, ktorý bude môcť pomocou nej zlepšovať svoje výrobky a služby.</translation>
 <translation id="3192947282887913208">Zvukové súbory</translation>
 <translation id="3193695589337931419">Utility na zhromažďovanie signálov systému</translation>
-<translation id="3194786596445804250">Zobraziť podrobnosti o blokovaní súborov cookie tretích strán</translation>
 <translation id="3196912927885212665">Ak chcete vykonať nastavenie pomocou telefónu s Androidom, v Chromebooku musí byť zapnuté rozhranie Bluetooth</translation>
 <translation id="3197453258332670132">Kliknutím pravým tlačidlom alebo dlhým stlačením zobrazíte súvisiace informácie pre daný výber textu</translation>
 <translation id="3198487209506801480"><ph name="BEGIN_PARAGRAPH1" />Ak povolíte zariadeniam ChromeOS odosielať automatické hlásenia, pomôžete nám tým určiť, čo treba v systéme ChromeOS prioritne opraviť a zlepšiť. Tieto hlásenia môžu obsahovať informácie, napríklad kedy Chrome OS padá, aké používate funkcie a koľko pamäte zvyčajne využívate. Niektoré súhrnné dáta pomôžu aj aplikáciám a partnerom Googlu, napríklad vývojárom pre Android. Ak bude povolená synchronizácia aplikácie, budú zhromažďované ďalšie údaje o diagnostike a využití aplikácie vrátane informácií pre Android a webové aplikácie.<ph name="END_PARAGRAPH1" />
@@ -4539,7 +4534,6 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="4533985347672295764">Čas využitia procesora</translation>
 <translation id="4534661889221639075">Skúste to znova.</translation>
 <translation id="4535127706710932914">Predvolený profil</translation>
-<translation id="4536140153723794651">Weby, ktoré môžu vždy používať súbory cookie</translation>
 <translation id="4536769240747010177">Možnosti zdieľania dátového pripojenia:</translation>
 <translation id="4538417792467843292">Odstrániť slovo</translation>
 <translation id="4538792345715658285">Nainštalované na základe podnikových pravidiel.</translation>
@@ -5455,7 +5449,6 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="5278823018825269962">Identifikátor stavu</translation>
 <translation id="5279600392753459966">Blokovať všetky</translation>
 <translation id="5280064835262749532">Aktualizujte prihlasovacie údaje pre <ph name="SHARE_PATH" /></translation>
-<translation id="5280243692621919988">Vymazať súbory cookie a údaje webov pri zavretí všetkých okien</translation>
 <translation id="5280335021886535443">Stlačením klávesa |<ph name="ACCELERATOR" />| označte túto bublinu.</translation>
 <translation id="5280426389926346830">Vytvoriť odkaz?</translation>
 <translation id="5281013262333731149">Otvára sa v prehliadači <ph name="OPEN_BROWSER" /></translation>
@@ -5782,7 +5775,6 @@ Na tento účet sa môžu vzťahovať povolenia, ktoré ste už udelili webom a�
 <translation id="5544482392629385159"><ph name="DEVICE_INDEX" />. zariadenie z <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" /></translation>
 <translation id="554517701842997186">Vykresľovací modul</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Pridanie karty do skupiny}few{Pridanie kariet do skupiny}many{Pridanie kariet do skupiny}other{Pridanie kariet do skupiny}}</translation>
-<translation id="5545693483061321551">Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliadania v rámci rôznych webov (napríklad na prispôsobenie reklám). Funkcie na niektorých weboch nemusia fungovať.</translation>
 <translation id="5546865291508181392">Nájsť</translation>
 <translation id="5548075230008247516">Bol zrušený výber všetkých položiek a ukončený režim výberu.</translation>
 <translation id="5548159762883465903">{NUM_OTHER_TABS,plural, =0{„<ph name="TAB_TITLE" />“}=1{„<ph name="TAB_TITLE" />“ a jedna ďalšia karta}few{„<ph name="TAB_TITLE" />“ a # ďalšie karty}many{"<ph name="TAB_TITLE" />" and # Other Tabs}other{„<ph name="TAB_TITLE" />“ a # ďalších kariet}}</translation>
@@ -5920,7 +5912,6 @@ Na tento účet sa môžu vzťahovať povolenia, ktoré ste už udelili webom a�
 <translation id="5655296450510165335">Registrácia zariadenia</translation>
 <translation id="5655823808357523308">Upravovať zobrazovanie farieb na obrazovke</translation>
 <translation id="5656845498778518563">Odoslanie spätnej väzby Googlu</translation>
-<translation id="5657156137487675418">Povoliť všetky súbory cookie</translation>
 <translation id="5657667036353380798">Inštalácia externého rozšírenia vyžaduje prehliadač Chrome verzie <ph name="MINIMUM_CHROME_VERSION" /> alebo vyšší</translation>
 <translation id="565899488479822148">Inštaluje sa najnovšia aktualizácia</translation>
 <translation id="5659593005791499971">E-mail</translation>
@@ -6902,7 +6893,6 @@ Na tento účet sa môžu vzťahovať povolenia, ktoré ste už udelili webom a�
 <translation id="6455521402703088376">Vypnuté • Zverejnenie tohto rozšírenia zrušil vývojár</translation>
 <translation id="6455894534188563617">&amp;Nový priečinok</translation>
 <translation id="645705751491738698">Pokračovať v blokovaní jazyka JavaScript</translation>
-<translation id="6458347417133445570">Zobraziť podrobnosti o povolení všetkých súborov cookie</translation>
 <translation id="6458701200018867744">Nepodarilo sa nahrať (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Použiť výber na hľadanie</translation>
 <translation id="6459799433792303855">Aktívne okno bolo presunuté na inú obrazovku.</translation>
@@ -7322,7 +7312,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6798780071646309401">Funkcia Caps Lock je zapnutá</translation>
 <translation id="6798954102094737107">Doplnok: <ph name="PLUGIN_NAME" /></translation>
 <translation id="679905836499387150">Skryté tlačidlá panela s nástrojmi</translation>
-<translation id="6801129617625983991">Všeobecné nastavenia</translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{Vyberte, či môže toto rozšírenie čítať alebo meniť tento web}few{Vyberte, či môžu tieto rozšírenia čítať alebo meniť tento web}many{Choose if these extensions can read or change this site}other{Vyberte, či môžu tieto rozšírenia čítať alebo meniť tento web}}</translation>
 <translation id="6801435275744557998">Kalibrovať dotykovú obrazovku</translation>
 <translation id="6802031077390104172"><ph name="USAGE" /> (<ph name="OID" />)</translation>
@@ -7547,7 +7536,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6966370001499648704">Ovládajte, ktoré telefóny používate ako bezpečnostné kľúče</translation>
 <translation id="6967112302799758487">Všetky aplikácie a hry nainštalované pomocou aplikácie Steam pre Chromebook (beta) budú z tohto zariadenia odstránené. Odstránia sa aj údaje, ktoré sú s týmito aplikáciami a hrami spojené. Pred odinštalovaním nezabudnite uložené aplikácie a hry zálohovať.</translation>
 <translation id="6967430741871315905">Nedá sa overiť, či je zariadenie povolené</translation>
-<translation id="696780070563539690">Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliadania v rámci rôznych webov (napríklad na prispôsobenie reklám)</translation>
 <translation id="6968288415730398122">Ak chcete konfigurovať zámku obrazovky, zadajte heslo</translation>
 <translation id="6969047215179982698">Vypnúť Zdieľanie nablízku</translation>
 <translation id="6969216690072714773">Zadajte nové alebo aktualizujte existujúce informácie, ktoré majú byť spojené s týmto zariadením.</translation>
@@ -8249,7 +8237,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7532009420053991888">Aplikácia <ph name="LINUX_APP_NAME" /> nereaguje. Zavrite ju výberom možnosti Vynútiť zavretie.</translation>
 <translation id="7535730537657706072">Ak chcete zo svojho zariadenia vymazať históriu prehliadania v režime inkognito, zavrite všetky karty inkognito</translation>
 <translation id="7536815228183532290">Prihlásený účet: <ph name="EMAIL" /></translation>
-<translation id="7537451260744431038">Weby nemôžu pomocou súborov cookie zlepšovať vaše prostredie prehliadania, napríklad zabrániť odhláseniu alebo zapamätať si položky vo vašom nákupnom košíku</translation>
 <translation id="7538013435257102593">Tento typ súboru sa bežne nesťahuje a môže byť nebezpečný</translation>
 <translation id="7540972813190816353">Pri kontrole aktualizácií sa vyskytla chyba: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232">Správca <ph name="MANAGER" /> obnovil v tomto zariadení predchádzajúcu verziu. Uložte dôležité súbory a potom ho reštartujte. Zo zariadenia budú odstránené všetky údaje.</translation>
@@ -8757,7 +8744,6 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7921347341284348270">V tomto spravovanom účte si nemôžete zobrazovať upozornenia zo svojho telefónu. Vyskúšajte to znova s iným účtom. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="7921901223958867679">Toto rozšírenie môže čítať a meniť web <ph name="HOST" /></translation>
 <translation id="7922606348470480702">1 rozšírenie</translation>
-<translation id="7922935920104868876">Zobraziť podrobnosti o blokovaní súborov cookie tretích strán v režime inkognito</translation>
 <translation id="7923564237306226146">Inovácia systému Linux bola dokončená</translation>
 <translation id="7924075559900107275">kandidát na dlhodobú podporu</translation>
 <translation id="7924358170328001543">Chyba presmerovania portu</translation>
@@ -9065,7 +9051,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="815114315010033526">Použiť radšej QR kód</translation>
 <translation id="8151638057146502721">Konfigurovať</translation>
 <translation id="8154790740888707867">Žiadny súbor</translation>
-<translation id="8154912474061769055">Funkcie na mnohých weboch nemusia fungovať</translation>
 <translation id="815491593104042026">Ojoj! Overenie zlyhalo, pretože bolo nakonfigurované tak, aby použilo nezabezpečenú webovú adresu (<ph name="BLOCKED_URL" />). Kontaktuje svojho správcu.</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{Nenašli sa žiadne odhalené heslá}=1{{COUNT} odhalené heslo}few{{COUNT} odhalené heslá}many{{COUNT} compromised passwords}other{{COUNT} odhalených hesiel}}</translation>
 <translation id="8157248655669507702">Ak chcete nainštalovať profil eSIM, zapnite mobilné dáta</translation>
@@ -9307,7 +9292,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8342861492835240085">Vybrať zbierku</translation>
 <translation id="8345848587667658367">Teraz si môžete zobraziť najnovšie fotky, médiá, upozornenia a aplikácie svojho telefónu</translation>
 <translation id="8347227221149377169">Tlačové úlohy</translation>
-<translation id="834785183489258869">Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktivitu prehliadania v rámci rôznych webov (napríklad na prispôsobenie reklám). Funkcie na niektorých weboch nemusia fungovať.</translation>
 <translation id="8348430946834215779">Používajte protokol HTTPS vždy, keď je to možné, a dostávajte upozornenia pred načítaním webov, ktoré ho nepodporujú</translation>
 <translation id="8348896480272971199">Skontrolujte pripojenie k internetu a skúste to znova.</translation>
 <translation id="8349325309815489209">Rozšírenia sú na tomto webe povolené</translation>
