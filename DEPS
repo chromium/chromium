@@ -397,7 +397,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '63df284aff8ed9e7e4645b916c4e27e40f941d98',
+  'devtools_frontend_revision': '189c44f9a96357461a594e16e6bf1d187174a3c4',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -983,7 +983,7 @@ deps = {
     'packages': [
       {
           'package': 'chromium/third_party/androidx',
-          'version': 'lFEjlPlkRn1yuyBrNvkZ2YaqZnGLoGo4sJNNAzvqOsUC',
+          'version': 'Xr4J-XLus6N-zKMMnaKX7aOjmgOHxFd5lLQFVsn7F30C',
       },
     ],
     'condition': 'checkout_android',
@@ -1221,7 +1221,7 @@ deps = {
     Var('chromium_git') + '/devtools/devtools-frontend' + '@' + Var('devtools_frontend_revision'),
 
   'src/third_party/devtools-frontend-internal': {
-      'url': Var('chrome_git') + '/devtools/devtools-internal.git' + '@' + '7ec2e5c44101af28b91e98e85e10078f34b99dda',
+      'url': Var('chrome_git') + '/devtools/devtools-internal.git' + '@' + '5884a35e7f4cccefa590f690f1021d013b8bb06e',
     'condition': 'checkout_src_internal',
   },
 
