@@ -40,10 +40,13 @@ constexpr int kLabelMinEdgeLength = 20;
 }  // namespace
 
 SearchResultInlineIconView::SearchResultInlineIconView(
-    bool use_modified_styling)
+    bool use_modified_styling,
+    bool is_first_key)
     : use_modified_styling_(use_modified_styling) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
-  SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 6, 0, 6));
+  SetProperty(views::kMarginsKey,
+              gfx::Insets::TLBR(0, is_first_key ? 0 : kLeftRightMargin, 0,
+                                kLeftRightMargin));
 }
 
 SearchResultInlineIconView::~SearchResultInlineIconView() = default;

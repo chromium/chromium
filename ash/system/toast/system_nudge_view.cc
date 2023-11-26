@@ -14,6 +14,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/keyboard_shortcut_view.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/system_shadow.h"
 #include "ash/style/typography.h"
@@ -104,7 +105,8 @@ SystemNudgeView::SystemNudgeView(AnchoredNudgeData& nudge_data) {
 
   const bool nudge_is_text_only = nudge_data.image_model.IsEmpty() &&
                                   nudge_data.title_text.empty() &&
-                                  nudge_data.primary_button_text.empty();
+                                  nudge_data.primary_button_text.empty() &&
+                                  nudge_data.keyboard_codes.empty();
 
   // Nudges without an anchor view that are not text-only will have a close
   // button that is visible on view hovered.
@@ -215,6 +217,15 @@ SystemNudgeView::SystemNudgeView(AnchoredNudgeData& nudge_data) {
 
   // TODO(b/302368860): Add support for a view to display keyboard shortcuts in
   // the same style as the launcher and the new keyboard shortcut app.
+  if (!nudge_data.keyboard_codes.empty()) {
+    AddPaddingView(text_container, image_and_text_container->width(),
+                   kTitleBottomPadding);
+
+    text_container
+        ->AddChildView(
+            std::make_unique<KeyboardShortcutView>(nudge_data.keyboard_codes))
+        ->SetID(VIEW_ID_SYSTEM_NUDGE_SHORTCUT_VIEW);
+  }
 
   // Return early if there are no buttons.
   if (nudge_data.primary_button_text.empty()) {

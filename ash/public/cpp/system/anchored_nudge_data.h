@@ -13,6 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/view_tracker.h"
@@ -73,10 +74,11 @@ struct ASH_PUBLIC_EXPORT AnchoredNudgeData {
   NudgeCatalogName catalog_name;
   std::u16string body_text;
 
-  // Optional system nudge view elements. If not empty, a leading image or nudge
-  // title will be created.
+  // Optional system nudge view elements. If not empty, a leading image, nudge
+  // title, or keyboard shortcut view will be created.
   ui::ImageModel image_model;
   std::u16string title_text;
+  std::vector<ui::KeyboardCode> keyboard_codes;
 
   // Callback for close button pressed.
   base::RepeatingClosure close_button_callback;

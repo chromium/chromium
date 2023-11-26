@@ -15,6 +15,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace ash {
 
@@ -27,11 +28,11 @@ constexpr base::TimeDelta kNudgeTimeBetweenShown = base::Hours(24);
 
 constexpr char kCaptureModeNudgeId[] = "kCaptureModeNudge";
 
-// Clock that can be overridden for testing.
-base::Clock* g_clock_override = nullptr;
-
 // Nudge styling values.
 constexpr int kShortcutIconSize = 60;
+
+// Clock that can be overridden for testing.
+base::Clock* g_clock_override = nullptr;
 
 PrefService* GetPrefService() {
   return Shell::Get()->session_controller()->GetActivePrefService();
@@ -129,6 +130,8 @@ void CaptureModeEducationController::ShowShortcutNudge() {
 
   nudge_data.image_model = ui::ImageModel::FromVectorIcon(
       kCaptureModeIcon, kColorAshIconColorPrimary, kShortcutIconSize);
+  nudge_data.keyboard_codes = {ui::VKEY_CONTROL, ui::VKEY_SHIFT,
+                               ui::VKEY_MEDIA_LAUNCH_APP1};
 
   // TODO(b/302368860): Add a new view to display keyboard shortcuts in the same
   // style as the launcher and the new keyboard shortcut app.

@@ -1236,6 +1236,8 @@ component("ash") {
     "style/harmonized_colors.h",
     "style/icon_button.cc",
     "style/icon_button.h",
+    "style/keyboard_shortcut_view.cc",
+    "style/keyboard_shortcut_view.h",
     "style/option_button_base.cc",
     "style/option_button_base.h",
     "style/option_button_group.cc",

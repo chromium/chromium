@@ -9,7 +9,9 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
+#include "ash/public/cpp/ash_view_ids.h"
 #include "ash/shell.h"
+#include "ash/style/keyboard_shortcut_view.h"
 #include "ash/system/toast/anchored_nudge.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/test/ash_test_base.h"
@@ -130,6 +132,34 @@ class CaptureModeEducationShortcutNudgeTest
       const CaptureModeEducationShortcutNudgeTest&) = delete;
   ~CaptureModeEducationShortcutNudgeTest() override = default;
 };
+
+TEST_F(CaptureModeEducationShortcutNudgeTest, CorrectStyling) {
+  base::SimpleTestClock test_clock;
+  CaptureModeEducationControllerTest::SetOverrideClock(&test_clock);
+
+  // Advance clock so we aren't at zero time.
+  test_clock.Advance(base::Hours(25));
+
+  // Attempt to use the Windows Snipping Tool (capture bar) shortcut.
+  PressAndReleaseKey(ui::VKEY_S, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN);
+
+  // Get the list of visible nudges from the nudge manager and make sure our
+  // education nudge is in the list and visible.
+  AnchoredNudge* nudge =
+      Shell::Get()->anchored_nudge_manager()->GetNudgeIfShown(
+          kCaptureModeNudgeId);
+  ASSERT_TRUE(nudge);
+  EXPECT_TRUE(nudge->GetVisible());
+
+  // The keyboard shortcut view should be visible.
+  auto* shortcut_view = views::AsViewClass<KeyboardShortcutView>(
+      nudge->GetContentsView()->GetViewByID(
+          VIEW_ID_SYSTEM_NUDGE_SHORTCUT_VIEW));
+  ASSERT_TRUE(shortcut_view);
+  EXPECT_TRUE(shortcut_view->GetVisible());
+
+  CaptureModeEducationControllerTest::SetOverrideClock(nullptr);
+}
 
 TEST_F(CaptureModeEducationShortcutNudgeTest, EducationPreferencesShowLimit) {
   base::SimpleTestClock test_clock;
