@@ -708,10 +708,6 @@ crbug.com/1492241 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance/re
 #####################
 
 
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi arm angle-opengles passthrough ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance/glsl/bugs/constant-precision-qualifier.html [ Failure ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance/limits/gl-max-texture-dimensions.html [ Failure ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance/misc/shader-precision-format.html [ Failure ]
 crbug.com/1481267 [ chromeos lacros-chrome chromeos-board-octopus passthrough ] conformance/textures/misc/texture-size-limit.html [ Failure ]
 
 ###########################
