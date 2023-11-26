@@ -62,12 +62,11 @@ class DownloadBubbleInteractiveUiTest : public DownloadTestBase,
  public:
   DownloadBubbleInteractiveUiTest() {
     test_features_.InitAndEnableFeatures(
-        {
-          feature_engagement::kIPHDownloadToolbarButtonFeature,
-              safe_browsing::kDownloadBubble, safe_browsing::kDownloadBubbleV2
+        {feature_engagement::kIPHDownloadToolbarButtonFeature,
+         safe_browsing::kDownloadBubble
 #if BUILDFLAG(IS_MAC)
-              ,
-              features::kImmersiveFullscreen
+         ,
+         features::kImmersiveFullscreen
 #endif  // BUILDFLAG(IS_MAC)
         },
         {});

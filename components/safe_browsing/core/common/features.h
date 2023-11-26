@@ -60,11 +60,6 @@ extern const base::FeatureParam<bool> kDelayedWarningsEnableMouseClicks;
 // Whether to use download bubble instead of download shelf.
 BASE_DECLARE_FEATURE(kDownloadBubble);
 
-// The V2 of the download bubble, consisting of features that were not available
-// on the download shelf. This is only eligible to be enabled when
-// kDownloadBubble is already enabled.
-BASE_DECLARE_FEATURE(kDownloadBubbleV2);
-
 // The kill switch for download tailored warnings. The main control is on the
 // server-side.
 BASE_DECLARE_FEATURE(kDownloadTailoredWarnings);

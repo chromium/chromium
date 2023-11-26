@@ -295,8 +295,7 @@ void WaitForDownloadNotificationForDisplayService(
 class DownloadNotificationTestBase : public InProcessBrowserTest {
  public:
   DownloadNotificationTestBase() {
-    scoped_feature_list_.InitWithFeatures(
-        {}, {safe_browsing::kDownloadBubble, safe_browsing::kDownloadBubbleV2});
+    scoped_feature_list_.InitAndDisableFeature(safe_browsing::kDownloadBubble);
   }
 
   void SetUpOnMainThread() override {

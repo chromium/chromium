@@ -136,8 +136,7 @@ class DownloadBubbleUIControllerDelegate
   // |profile| is required to outlive DownloadBubbleUIControllerDelegate.
   explicit DownloadBubbleUIControllerDelegate(Profile* profile)
       : profile_(profile) {
-    if (download::IsDownloadBubbleV2Enabled(profile_) &&
-        profile_->IsOffTheRecord()) {
+    if (profile_->IsOffTheRecord()) {
       profile_->GetPrefs()->SetBoolean(prefs::kPromptForDownload, true);
     }
   }

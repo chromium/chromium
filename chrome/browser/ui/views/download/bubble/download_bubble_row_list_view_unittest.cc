@@ -33,8 +33,7 @@ using ::testing::ReturnRefOfCopy;
 class DownloadBubbleRowListViewTest : public TestWithBrowserView {
  public:
   DownloadBubbleRowListViewTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {safe_browsing::kDownloadBubble, safe_browsing::kDownloadBubbleV2}, {});
+    scoped_feature_list_.InitAndEnableFeature(safe_browsing::kDownloadBubble);
   }
   ~DownloadBubbleRowListViewTest() override = default;
 

@@ -333,56 +333,46 @@ void DownloadBubbleRowViewInfo::PopulateForInProgressOrComplete() {
   if (has_progress_bar) {
     has_progress_bar_ = true;
     if (model_->IsPaused()) {
-      if (download::IsDownloadBubbleV2Enabled(model_->profile())) {
-        quick_actions_.emplace_back(
-            DownloadCommands::Command::RESUME,
-            l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_RESUME_QUICK_ACTION),
-            features::IsChromeRefresh2023()
-                ? &vector_icons::kPlayArrowChromeRefreshIcon
-                : &vector_icons::kPlayArrowIcon);
-        quick_actions_.emplace_back(
-            DownloadCommands::Command::CANCEL,
-            l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_CANCEL_QUICK_ACTION),
-            features::IsChromeRefresh2023()
-                ? &vector_icons::kCancelChromeRefreshIcon
-                : &vector_icons::kCancelIcon);
-      } else {
-        primary_button_command_ = DownloadCommands::Command::RESUME;
-      }
+      quick_actions_.emplace_back(
+          DownloadCommands::Command::RESUME,
+          l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_RESUME_QUICK_ACTION),
+          features::IsChromeRefresh2023()
+              ? &vector_icons::kPlayArrowChromeRefreshIcon
+              : &vector_icons::kPlayArrowIcon);
+      quick_actions_.emplace_back(
+          DownloadCommands::Command::CANCEL,
+          l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_CANCEL_QUICK_ACTION),
+          features::IsChromeRefresh2023()
+              ? &vector_icons::kCancelChromeRefreshIcon
+              : &vector_icons::kCancelIcon);
     } else {
-      if (download::IsDownloadBubbleV2Enabled(model_->profile())) {
-        quick_actions_.emplace_back(
-            DownloadCommands::Command::PAUSE,
-            l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_PAUSE_QUICK_ACTION),
-            features::IsChromeRefresh2023()
-                ? &vector_icons::kPauseChromeRefreshIcon
-                : &vector_icons::kPauseIcon);
-        quick_actions_.emplace_back(
-            DownloadCommands::Command::CANCEL,
-            l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_CANCEL_QUICK_ACTION),
-            features::IsChromeRefresh2023()
-                ? &vector_icons::kCancelChromeRefreshIcon
-                : &vector_icons::kCancelIcon);
-      } else {
-        primary_button_command_ = DownloadCommands::Command::CANCEL;
-      }
+      quick_actions_.emplace_back(
+          DownloadCommands::Command::PAUSE,
+          l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_PAUSE_QUICK_ACTION),
+          features::IsChromeRefresh2023()
+              ? &vector_icons::kPauseChromeRefreshIcon
+              : &vector_icons::kPauseIcon);
+      quick_actions_.emplace_back(
+          DownloadCommands::Command::CANCEL,
+          l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_CANCEL_QUICK_ACTION),
+          features::IsChromeRefresh2023()
+              ? &vector_icons::kCancelChromeRefreshIcon
+              : &vector_icons::kCancelIcon);
     }
   } else {
-    if (download::IsDownloadBubbleV2Enabled(model_->profile())) {
-      quick_actions_.emplace_back(
-          DownloadCommands::Command::SHOW_IN_FOLDER,
-          l10n_util::GetStringUTF16(
-              IDS_DOWNLOAD_BUBBLE_SHOW_IN_FOLDER_QUICK_ACTION),
-          features::IsChromeRefresh2023()
-              ? &vector_icons::kFolderChromeRefreshIcon
-              : &vector_icons::kFolderIcon);
-      quick_actions_.emplace_back(
-          DownloadCommands::Command::OPEN_WHEN_COMPLETE,
-          l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_OPEN_QUICK_ACTION),
-          features::IsChromeRefresh2023()
-              ? &vector_icons::kLaunchChromeRefreshIcon
-              : &kOpenInNewIcon);
-    }
+    quick_actions_.emplace_back(
+        DownloadCommands::Command::SHOW_IN_FOLDER,
+        l10n_util::GetStringUTF16(
+            IDS_DOWNLOAD_BUBBLE_SHOW_IN_FOLDER_QUICK_ACTION),
+        features::IsChromeRefresh2023()
+            ? &vector_icons::kFolderChromeRefreshIcon
+            : &vector_icons::kFolderIcon);
+    quick_actions_.emplace_back(
+        DownloadCommands::Command::OPEN_WHEN_COMPLETE,
+        l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_OPEN_QUICK_ACTION),
+        features::IsChromeRefresh2023()
+            ? &vector_icons::kLaunchChromeRefreshIcon
+            : &kOpenInNewIcon);
   }
 }
 
@@ -518,11 +508,9 @@ void DownloadBubbleRowViewInfo::PopulateForInterrupted(
                        ? &vector_icons::kFileDownloadOffChromeRefreshIcon
                        : &vector_icons::kFileDownloadOffIcon;
   secondary_color_ = kColorDownloadItemIconDangerous;
-  if (download::IsDownloadBubbleV2Enabled(model_->profile())) {
-    primary_button_command_ = model_->CanResume()
-                                  ? DownloadCommands::Command::RESUME
-                                  : DownloadCommands::Command::RETRY;
-  }
+  primary_button_command_ = model_->CanResume()
+                                ? DownloadCommands::Command::RESUME
+                                : DownloadCommands::Command::RETRY;
 }
 
 void DownloadBubbleRowViewInfo::PopulateForCancelled() {

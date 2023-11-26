@@ -72,8 +72,7 @@ class DownloadBubbleUpdateServiceTest : public testing::Test {
  public:
   DownloadBubbleUpdateServiceTest()
       : testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {
-    feature_list_.InitWithFeatures(
-        {safe_browsing::kDownloadBubble, safe_browsing::kDownloadBubbleV2}, {});
+    feature_list_.InitAndEnableFeature(safe_browsing::kDownloadBubble);
   }
   DownloadBubbleUpdateServiceTest(const DownloadBubbleUpdateServiceTest&) =
       delete;

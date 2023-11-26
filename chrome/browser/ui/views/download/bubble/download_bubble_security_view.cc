@@ -32,7 +32,6 @@
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -48,7 +47,6 @@
 namespace {
 using offline_items_collection::ContentId;
 
-constexpr int kCheckboxHeight = 32;
 constexpr int kProgressBarHeight = 3;
 // Num of columns in the table layout, the width of which progress bar will
 // span. The 5 columns are Download Icon, Padding, Status text,
@@ -60,12 +58,12 @@ constexpr int kAfterParagraphSpacing = 8;
 // numeric values should never be reused.
 enum class DownloadBubbleSubpageAction {
   kShown = 0,
-  kShownCheckbox = 1,
+  // Reserved (obsolete): kShownCheckbox = 1,
   kShownSecondaryButton = 2,
   kShownPrimaryButton = 3,
   kPressedBackButton = 4,
   kClosedSubpage = 5,
-  kClickedCheckbox = 6,
+  // Reserved (obsolete): kClickedCheckbox = 6,
   kPressedSecondaryButton = 7,
   kPressedPrimaryButton = 8,
   kMaxValue = kPressedPrimaryButton
@@ -301,13 +299,6 @@ void DownloadBubbleSecurityView::CloseBubble() {
                                 DownloadBubbleSubpageAction::kClosedSubpage);
 }
 
-void DownloadBubbleSecurityView::OnCheckboxClicked() {
-  DCHECK(secondary_button_);
-  secondary_button_->SetEnabled(checkbox_->GetChecked());
-  base::UmaHistogramEnumeration(kSubpageActionHistogram,
-                                DownloadBubbleSubpageAction::kClickedCheckbox);
-}
-
 void DownloadBubbleSecurityView::UpdateIconAndText() {
   icon_->SetImage(ui::ImageModel::FromVectorIcon(
       *(ui_info_.icon_model_override), ui_info_.secondary_color,
@@ -319,14 +310,6 @@ void DownloadBubbleSecurityView::UpdateIconAndText() {
   // instead give it a width that's the minimum we want it to have. Then the
   // Layout will stretch it back out into any additional space available.
   paragraphs_->SizeToFit(GetMinimumLabelWidth());
-
-  checkbox_->SetVisible(ui_info_.HasCheckbox());
-  if (ui_info_.HasCheckbox()) {
-    base::UmaHistogramEnumeration(kSubpageActionHistogram,
-                                  DownloadBubbleSubpageAction::kShownCheckbox);
-    checkbox_->SetChecked(false);
-    checkbox_->SetText(ui_info_.checkbox_label);
-  }
 
   // TODO(chlily): Implement deep_scanning_link_ as a learn_more_link_.
   if (danger_type_ == download::DownloadDangerType::
@@ -459,28 +442,6 @@ void DownloadBubbleSecurityView::AddIconAndContents() {
                               GetLayoutInsets(DOWNLOAD_ICON).top() -
                               paragraphs_->GetLineHeight() / 2));
   }
-
-  checkbox_ = wrapper->AddChildView(std::make_unique<views::Checkbox>(
-      std::u16string(),
-      base::BindRepeating(&DownloadBubbleSecurityView::OnCheckboxClicked,
-                          base::Unretained(this))));
-  checkbox_->SetMultiLine(true);
-  checkbox_->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
-                          views::DISTANCE_RELATED_CONTROL_VERTICAL),
-                      0));
-  checkbox_->SetProperty(views::kCrossAxisAlignmentKey,
-                         views::LayoutAlignment::kStretch);
-  checkbox_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
-                               views::MaximumFlexSizeRule::kUnbounded,
-                               /*adjust_height_for_width=*/true));
-  // Set min height for checkbox, so that it can layout label accordingly.
-  checkbox_->SetMinSize(gfx::Size(0, kCheckboxHeight));
-  // Will be updated later if checkbox should exist.
-  checkbox_->SetVisible(false);
 
   // TODO(chlily): Implement deep_scanning_link_ as a learn_more_link_.
   deep_scanning_link_ =
@@ -648,8 +609,7 @@ bool DownloadBubbleSecurityView::ProcessButtonClick(
 
 void DownloadBubbleSecurityView::UpdateButton(
     DownloadUIModel::BubbleUIInfo::SubpageButton button_info,
-    bool is_secondary_button,
-    bool has_checkbox) {
+    bool is_secondary_button) {
   ui::DialogButton button_type =
       is_secondary_button ? ui::DIALOG_BUTTON_CANCEL : ui::DIALOG_BUTTON_OK;
 
@@ -659,7 +619,7 @@ void DownloadBubbleSecurityView::UpdateButton(
 
   if (button_type == ui::DIALOG_BUTTON_CANCEL) {
     bubble_delegate_->SetCancelCallbackWithClose(callback);
-    bubble_delegate_->SetButtonEnabled(button_type, !has_checkbox);
+    bubble_delegate_->SetButtonEnabled(button_type, true);
     views::LabelButton* button = bubble_delegate_->GetCancelButton();
     if (button_info.color) {
       button->SetEnabledTextColorIds(*button_info.color);
@@ -687,15 +647,13 @@ void DownloadBubbleSecurityView::UpdateButtons() {
 
   if (ui_info_.subpage_buttons.size() > 0) {
     bubble_delegate_->SetButtons(ui::DIALOG_BUTTON_OK);
-    UpdateButton(ui_info_.subpage_buttons[0], /*is_secondary_button=*/false,
-                 ui_info_.HasCheckbox());
+    UpdateButton(ui_info_.subpage_buttons[0], /*is_secondary_button=*/false);
   }
 
   if (ui_info_.subpage_buttons.size() > 1) {
     bubble_delegate_->SetButtons(ui::DIALOG_BUTTON_OK |
                                  ui::DIALOG_BUTTON_CANCEL);
-    UpdateButton(ui_info_.subpage_buttons[1], /*is_secondary_button=*/true,
-                 ui_info_.HasCheckbox());
+    UpdateButton(ui_info_.subpage_buttons[1], /*is_secondary_button=*/true);
   }
   // After we have updated the buttons, set the minimum width to avoid the rest
   // of the contents stretching out the dialog unnecessarily.
@@ -811,7 +769,7 @@ void DownloadBubbleSecurityView::OnDownloadUpdated(
   }
   if (is_different_download || danger_type_changed) {
     warning_time_ = base::Time::Now();
-    ui_info_ = DownloadItemModel(download).GetBubbleUIInfo(is_bubble_v2_);
+    ui_info_ = DownloadItemModel(download).GetBubbleUIInfo();
     download::DownloadDangerType old_danger_type = danger_type_;
     danger_type_ = download->GetDangerType();
     // If this represents a "terminal" state of a deep scan, or if the download
@@ -886,10 +844,8 @@ void DownloadBubbleSecurityView::UpdateAccessibilityTextAndFocus() {
 DownloadBubbleSecurityView::DownloadBubbleSecurityView(
     Delegate* delegate,
     base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
-    views::BubbleDialogDelegate* bubble_delegate,
-    bool is_bubble_v2)
+    views::BubbleDialogDelegate* bubble_delegate)
     : delegate_(delegate),
-      is_bubble_v2_(is_bubble_v2),
       navigation_handler_(std::move(navigation_handler)),
       bubble_delegate_(bubble_delegate) {
   CHECK(delegate_);

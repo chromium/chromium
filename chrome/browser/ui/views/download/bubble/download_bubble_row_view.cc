@@ -276,8 +276,8 @@ void DownloadBubbleRowView::SetIcon() {
   }
 
   // For downloads in incognito mode.
-  if (bubble_controller_ &&
-      bubble_controller_->ShouldShowIncognitoIcon(info_->model())) {
+  if (info_->model()->profile() &&
+      info_->model()->profile()->IsIncognitoProfile()) {
     if (last_overridden_icon_ == &kIncognitoIcon) {
       return;
     }
@@ -289,8 +289,8 @@ void DownloadBubbleRowView::SetIcon() {
   }
 
   // For downloads in guest sessions.
-  if (bubble_controller_ &&
-      bubble_controller_->ShouldShowGuestIcon(info_->model())) {
+  if (info_->model()->profile() &&
+      info_->model()->profile()->IsGuestSession()) {
     if (last_overridden_icon_ == &kUserAccountAvatarIcon) {
       return;
     }

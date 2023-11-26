@@ -702,11 +702,12 @@ void DownloadPrefs::UpdateAllowedURLsForOpenByPolicy() {
   auto_open_allowed_by_urls_.swap(allowed_urls);
 }
 
+// TODO(chlily): Clean this up as this feature is no longer being pursued.
 bool DownloadPrefs::PromptForDuplicateFile() const {
 #if BUILDFLAG(IS_ANDROID)
   return false;
 #else
-  return download::IsDownloadBubbleV2Enabled(profile_) &&
+  return download::IsDownloadBubbleEnabled(profile_) &&
          prompt_for_duplicate_file_.GetValue();
 #endif
 }

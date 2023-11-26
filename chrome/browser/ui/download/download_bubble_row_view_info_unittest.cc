@@ -47,8 +47,7 @@ class DownloadBubbleRowViewInfoTest : public testing::Test,
                                       public DownloadBubbleRowViewInfoObserver {
  public:
   DownloadBubbleRowViewInfoTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {safe_browsing::kDownloadBubble, safe_browsing::kDownloadBubbleV2}, {});
+    scoped_feature_list_.InitAndEnableFeature(safe_browsing::kDownloadBubble);
   }
 
   void SetUp() override {

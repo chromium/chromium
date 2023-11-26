@@ -1816,8 +1816,7 @@ TEST_F(ChromeDownloadManagerDelegateTest,
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ChromeDownloadManagerDelegateTest, ScheduleCancelForEphemeralWarning) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {safe_browsing::kDownloadBubble, safe_browsing::kDownloadBubbleV2}, {});
+  feature_list.InitAndEnableFeature(safe_browsing::kDownloadBubble);
 
   std::unique_ptr<download::MockDownloadItem> download_item =
       CreateActiveDownloadItem(0);
@@ -1838,8 +1837,7 @@ TEST_F(ChromeDownloadManagerDelegateTest, ScheduleCancelForEphemeralWarning) {
 TEST_F(ChromeDownloadManagerDelegateTest,
        ScheduleCancelForEphemeralWarning_DownloadKept) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {safe_browsing::kDownloadBubble, safe_browsing::kDownloadBubbleV2}, {});
+  feature_list.InitAndEnableFeature(safe_browsing::kDownloadBubble);
   std::unique_ptr<download::MockDownloadItem> download_item =
       CreateActiveDownloadItem(0);
   EXPECT_CALL(*download_item, GetDangerType())
@@ -1856,8 +1854,7 @@ TEST_F(ChromeDownloadManagerDelegateTest,
 
 TEST_F(ChromeDownloadManagerDelegateTest, CancelAllEphemeralWarnings) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {safe_browsing::kDownloadBubble, safe_browsing::kDownloadBubbleV2}, {});
+  feature_list.InitAndEnableFeature(safe_browsing::kDownloadBubble);
   std::vector<download::DownloadItem*> items;
   auto safe_item = CreateActiveDownloadItem(0);
   EXPECT_CALL(*safe_item, GetDangerType())

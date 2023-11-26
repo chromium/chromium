@@ -63,8 +63,7 @@ DownloadBubbleContentsView::DownloadBubbleContentsView(
 
   primary_view_ = AddChildView(std::move(primary_view));
   security_view_ = AddChildView(std::make_unique<DownloadBubbleSecurityView>(
-      /*delegate=*/this, navigation_handler, bubble_delegate,
-      download::IsDownloadBubbleV2Enabled(browser->profile())));
+      /*delegate=*/this, navigation_handler, bubble_delegate));
 
   // Starts on the primary page.
   ShowPrimaryPage();

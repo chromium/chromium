@@ -37,12 +37,10 @@ namespace {
 constexpr int kMaxHeightForRowList = 450;
 
 bool IsOtrInfoRowEnabled(Browser* browser) {
-  if (!browser) {
+  if (!browser || !browser->profile()) {
     return false;
   }
-  Profile* profile = browser->profile();
-  return download::IsDownloadBubbleV2Enabled(profile) &&
-         profile->IsOffTheRecord();
+  return browser->profile()->IsOffTheRecord();
 }
 
 }  // namespace

@@ -38,8 +38,7 @@ class DownloadBubbleRowViewTest : public TestWithBrowserView {
   DownloadBubbleRowViewTest()
       : TestWithBrowserView(
             content::BrowserTaskEnvironment::TimeSource::MOCK_TIME) {
-    scoped_feature_list_.InitWithFeatures(
-        {safe_browsing::kDownloadBubble, safe_browsing::kDownloadBubbleV2}, {});
+    scoped_feature_list_.InitAndEnableFeature(safe_browsing::kDownloadBubble);
   }
 
   DownloadBubbleRowViewTest(const DownloadBubbleRowViewTest&) = delete;

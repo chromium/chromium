@@ -19,7 +19,6 @@
 #include "ui/views/view.h"
 
 namespace views {
-class Checkbox;
 class ImageView;
 class StyledLabel;
 class ImageButton;
@@ -79,8 +78,7 @@ class DownloadBubbleSecurityView : public views::View,
   DownloadBubbleSecurityView(
       Delegate* delegate,
       base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
-      views::BubbleDialogDelegate* bubble_delegate,
-      bool is_bubble_v2);
+      views::BubbleDialogDelegate* bubble_delegate);
   DownloadBubbleSecurityView(const DownloadBubbleSecurityView&) = delete;
   DownloadBubbleSecurityView& operator=(const DownloadBubbleSecurityView&) =
       delete;
@@ -130,7 +128,6 @@ class DownloadBubbleSecurityView : public views::View,
   void BackButtonPressed();
   void AddHeader();
   void CloseBubble();
-  void OnCheckboxClicked();
   void AddIconAndContents();
   void AddSecondaryIconAndText();
   void AddProgressBar();
@@ -147,8 +144,7 @@ class DownloadBubbleSecurityView : public views::View,
   // Updates the subpage button. Setting initial state and color for enabled
   // state, if it is a secondary button.
   void UpdateButton(DownloadUIModel::BubbleUIInfo::SubpageButton button,
-                    bool is_secondary_button,
-                    bool has_checkbox);
+                    bool is_secondary_button);
   void UpdateButtons();
   void UpdateProgressBar();
   void UpdatePasswordPrompt();
@@ -189,15 +185,11 @@ class DownloadBubbleSecurityView : public views::View,
   download::DownloadDangerType danger_type_ =
       download::DOWNLOAD_DANGER_TYPE_MAX;
 
-  // Whether V2 of the download bubble is enabled.
-  const bool is_bubble_v2_;
   base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler_ = nullptr;
   raw_ptr<views::BubbleDialogDelegate, DanglingUntriaged> bubble_delegate_ =
       nullptr;
 
-  // The secondary button is the one that may be protected by the checkbox.
   raw_ptr<views::LabelButton, DanglingUntriaged> secondary_button_ = nullptr;
-  raw_ptr<views::Checkbox> checkbox_ = nullptr;
   raw_ptr<views::StyledLabel> title_ = nullptr;
   raw_ptr<views::ImageView> icon_ = nullptr;
   raw_ptr<ParagraphsView> paragraphs_ = nullptr;

@@ -91,12 +91,6 @@ class DownloadBubbleUIController {
   bool OpenMostSpecificDialog(
       const offline_items_collection::ContentId& content_id);
 
-  // Returns whether the incognito icon should be shown for the download.
-  bool ShouldShowIncognitoIcon(const DownloadUIModel* model) const;
-
-  // Returns whether the guest account icon should be shown for the download.
-  bool ShouldShowGuestIcon(const DownloadUIModel* model) const;
-
   // Schedules the ephemeral warning download to be hidden from the bubble, and
   // subsequently canceled. It will only be canceled if it continues to be an
   // ephemeral warning that hasn't been acted on when the scheduled time
