@@ -441,8 +441,18 @@ void SkiaOutputDeviceBufferQueue::ScheduleOverlays(
       // number of fences at the end of each raster task at the ShareImage
       // level is costly. Thus, at this point, the gpu tasks have been
       // dispatched and it's safe to create just a single fence.
-      if (!current_frame_fence)
+      if (!current_frame_fence) {
+        // The GL fence below needs context to be current.
+        //
+        // SkiaOutputSurfaceImpl::SwapBuffers() - one of the methods in the call
+        // stack of to SkiaOutputDeviceBufferQueue::ScheduleOverlays() - used to
+        // schedule a MakeCurrent call. For power consumption and performance
+        // reasons, we delay the call to MakeCurrent 'till it is known to
+        // be needed.
+        context_state_->MakeCurrent(nullptr);
+
         current_frame_fence = gl::GLFence::CreateForGpuFence()->GetGpuFence();
+      }
 
       // Dup the fence - it must be inserted into each shared image before
       // ScopedReadAccess is created.
