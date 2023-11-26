@@ -2527,7 +2527,8 @@ void AutofillMetrics::FormInteractionsUkmLogger::
           AutofillMetrics::FieldGlobalIdToHash64Bit(field.global_id()))
       .SetFieldSignature(HashFieldSignature(field.GetFieldSignature()))
       .SetFormControlType2(base::to_underlying(field.form_control_type))
-      .SetAutocompleteState(base::to_underlying(autocomplete_state));
+      .SetAutocompleteState(base::to_underlying(autocomplete_state))
+      .SetFieldLogEventCount(field_log_events.size());
 
   SetStatusVector(AutofillStatus::kIsFocusable, field.IsFocusable());
   SetStatusVector(AutofillStatus::kUserTypedIntoField,

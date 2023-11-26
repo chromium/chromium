@@ -3648,6 +3648,11 @@ be describing additional metrics about the same event.
       queries.
     </summary>
   </metric>
+  <metric name="FieldLogEventCount">
+    <summary>
+      The total number of all the field log events created for this field.
+    </summary>
+  </metric>
   <metric name="FieldSessionIdentifier">
     <summary>
       A random variable assigned to a specific instance of a form control (e.g.

@@ -8278,6 +8278,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, TestShowSuggestionAutofillStatus) {
           {UFIT::kAutocompleteStateName,
            base::to_underlying(AutofillMetrics::AutocompleteState::kNone)},
           {UFIT::kAutofillStatusVectorName, autofill_status_vector.data()[0]},
+          {UFIT::kFieldLogEventCountName, 1},
       };
 
       EXPECT_EQ(expected.size(), entry->metrics.size());
@@ -8358,6 +8359,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
           i == 2 ? FieldFillingSkipReason::kNoFillableGroup
                  : FieldFillingSkipReason::kNotSkipped;
       DenseSet<AutofillStatus> autofill_status_vector;
+      int field_log_events_count = 0;
       if (i == 0) {
         autofill_status_vector = {
             AutofillStatus::kIsFocusable,
@@ -8370,14 +8372,17 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
             AutofillStatus::kUserTypedIntoField,
             AutofillStatus::kFilledValueWasModified,
             AutofillStatus::kHadTypedOrFilledValueAtSubmission};
+        field_log_events_count = 4;
       } else if (i == 1) {
         autofill_status_vector = {
             AutofillStatus::kIsFocusable, AutofillStatus::kWasAutofillTriggered,
             AutofillStatus::kWasAutofilled,
             AutofillStatus::kHadTypedOrFilledValueAtSubmission};
+        field_log_events_count = 1;
       } else if (i == 2) {
         autofill_status_vector = {AutofillStatus::kIsFocusable,
                                   AutofillStatus::kWasAutofillTriggered};
+        field_log_events_count = 1;
       }
       std::map<std::string, int64_t> expected = {
           {UFIT::kFormSessionIdentifierName,
@@ -8394,6 +8399,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
           {UFIT::kAutocompleteStateName,
            base::to_underlying(AutofillMetrics::AutocompleteState::kNone)},
           {UFIT::kAutofillStatusVectorName, autofill_status_vector.data()[0]},
+          {UFIT::kFieldLogEventCountName, field_log_events_count},
       };
       EXPECT_EQ(expected.size(), entry->metrics.size());
       for (const auto& [metric, value] : expected) {
@@ -8601,7 +8607,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
       AutofillMetrics::AutocompleteState::kOff,
       AutofillMetrics::AutocompleteState::kValid,
       AutofillMetrics::AutocompleteState::kGarbage};
-
+  int field_log_events_count = 0;
   // Verify FieldInfo UKM event for every field.
   for (size_t i = 0; i < entries.size(); ++i) {
     SCOPED_TRACE(testing::Message() << i);
@@ -8613,6 +8619,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
             : FieldPrediction::SOURCE_UNSPECIFIED;
     DenseSet<AutofillStatus> autofill_status_vector = {
         AutofillStatus::kIsFocusable};
+    field_log_events_count = 2;
     std::map<std::string, int64_t> expected = {
         {UFIT::kFormSessionIdentifierName,
          AutofillMetrics::FormGlobalIdToHash64Bit(form.global_id())},
@@ -8644,19 +8651,28 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
           {UFIT::kHeuristicTypeDefaultName, heuristic_types[i]},
           {UFIT::kHeuristicTypeExperimentalName, heuristic_types[i]},
           {UFIT::kHeuristicTypeNextGenName, heuristic_types[i]},
+      }));
+      field_log_events_count += 5;
 #else
           {UFIT::kHeuristicTypeDefaultName, UNKNOWN_TYPE},
           {UFIT::kHeuristicTypeExperimentalName, UNKNOWN_TYPE},
           {UFIT::kHeuristicTypeNextGenName, UNKNOWN_TYPE},
-#endif
       }));
+      field_log_events_count += 2;
+#endif
+    } else {
+      ++field_log_events_count;
     }
     if (autocomplete_states[i] != AutofillMetrics::AutocompleteState::kOff) {
       expected.merge(std::map<std::string, int64_t>({
           {UFIT::kHtmlFieldTypeName, base::to_underlying(html_field_types[i])},
           {UFIT::kHtmlFieldModeName, base::to_underlying(HtmlFieldMode::kNone)},
       }));
+      ++field_log_events_count;
     }
+    expected.merge(std::map<std::string, int64_t>({
+        {UFIT::kFieldLogEventCountName, field_log_events_count},
+    }));
     EXPECT_EQ(expected.size(), entry->metrics.size());
     for (const auto& [metric, value] : expected) {
       test_ukm_recorder().ExpectEntryMetric(entry, metric, value);
@@ -8795,6 +8811,7 @@ TEST_F(AutofillMetricsFromLogEventsTest,
         {UFIT::kAutocompleteStateName,
          base::to_underlying(AutofillMetrics::AutocompleteState::kNone)},
         {UFIT::kAutofillStatusVectorName, autofill_status_vector.data()[0]},
+        {UFIT::kFieldLogEventCountName, 1},
     };
 
     EXPECT_EQ(expected.size(), entry->metrics.size());
@@ -9095,6 +9112,7 @@ TEST_F(AutofillMetricsFromLogEventsTest,
         {UFIT::kAutocompleteStateName,
          base::to_underlying(AutofillMetrics::AutocompleteState::kNone)},
         {UFIT::kAutofillStatusVectorName, autofill_status_vector.data()[0]},
+        {UFIT::kFieldLogEventCountName, 1},
     };
 
     EXPECT_EQ(expected.size(), entry->metrics.size());
@@ -9271,31 +9289,34 @@ TEST_F(AutofillMetricsFromLogEventsTest,
     using UFIT = UkmFieldInfoType;
     const auto* const entry = entries[i];
     std::map<std::string, int64_t> expected = {
-      {UFIT::kFormSessionIdentifierName,
-       AutofillMetrics::FormGlobalIdToHash64Bit(form.global_id())},
-      {UFIT::kFieldSessionIdentifierName,
-       AutofillMetrics::FieldGlobalIdToHash64Bit(form.fields[i].global_id())},
-      {UFIT::kFieldSignatureName,
-       Collapse(CalculateFieldSignatureForField(form.fields[i])).value()},
-      {UFIT::kOverallTypeName, field_types[i]},
-      {UFIT::kSectionIdName, 1},
-      {UFIT::kTypeChangedByRationalizationName, false},
-      {UFIT::kFormControlType2Name, base::to_underlying(form_control_types[i])},
-      {UFIT::kAutocompleteStateName,
-       base::to_underlying(AutofillMetrics::AutocompleteState::kNone)},
-      {UFIT::kAutofillStatusVectorName, autofill_status_vector.data()[0]},
-      {UFIT::kHeuristicTypeName, field_types[i]},
-      {UFIT::kHeuristicTypeLegacyName, field_types[i]},
+        {UFIT::kFormSessionIdentifierName,
+         AutofillMetrics::FormGlobalIdToHash64Bit(form.global_id())},
+        {UFIT::kFieldSessionIdentifierName,
+         AutofillMetrics::FieldGlobalIdToHash64Bit(form.fields[i].global_id())},
+        {UFIT::kFieldSignatureName,
+         Collapse(CalculateFieldSignatureForField(form.fields[i])).value()},
+        {UFIT::kOverallTypeName, field_types[i]},
+        {UFIT::kSectionIdName, 1},
+        {UFIT::kTypeChangedByRationalizationName, false},
+        {UFIT::kFormControlType2Name,
+         base::to_underlying(form_control_types[i])},
+        {UFIT::kAutocompleteStateName,
+         base::to_underlying(AutofillMetrics::AutocompleteState::kNone)},
+        {UFIT::kAutofillStatusVectorName, autofill_status_vector.data()[0]},
+        {UFIT::kHeuristicTypeName, field_types[i]},
+        {UFIT::kHeuristicTypeLegacyName, field_types[i]},
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-      {UFIT::kHeuristicTypeDefaultName, field_types[i]},
-      {UFIT::kHeuristicTypeExperimentalName, field_types[i]},
-      {UFIT::kHeuristicTypeNextGenName, field_types[i]},
+        {UFIT::kHeuristicTypeDefaultName, field_types[i]},
+        {UFIT::kHeuristicTypeExperimentalName, field_types[i]},
+        {UFIT::kHeuristicTypeNextGenName, field_types[i]},
+        {UFIT::kFieldLogEventCountName, 5},
 #else
-      {UFIT::kHeuristicTypeDefaultName, UNKNOWN_TYPE},
-      {UFIT::kHeuristicTypeExperimentalName, UNKNOWN_TYPE},
-      {UFIT::kHeuristicTypeNextGenName, UNKNOWN_TYPE},
+        {UFIT::kHeuristicTypeDefaultName, UNKNOWN_TYPE},
+        {UFIT::kHeuristicTypeExperimentalName, UNKNOWN_TYPE},
+        {UFIT::kHeuristicTypeNextGenName, UNKNOWN_TYPE},
+        {UFIT::kFieldLogEventCountName, 2},
 #endif
-      {UFIT::kRankInFieldSignatureGroupName, 1},
+        {UFIT::kRankInFieldSignatureGroupName, 1},
     };
 
     EXPECT_EQ(expected.size(), entry->metrics.size());
