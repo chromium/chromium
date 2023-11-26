@@ -1,1 +1,1 @@
-chromeos-chrome-amd64-atom-120-6099.25-1700478669-benchmark-120.0.6099.39-r1-redacted.afdo.xz
+chromeos-chrome-amd64-atom-120-6099.25-1700478669-benchmark-120.0.6099.40-r1-redacted.afdo.xz
