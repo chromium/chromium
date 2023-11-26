@@ -283423,6 +283423,32 @@
         {}
        ]
       ],
+      "use-data-url-set-attributeName.tentative.svg": [
+       "248f218bd792e1ffd07711095b3612c45ecb7a6c",
+       [
+        null,
+        [
+         [
+          "/svg/struct/reftests/reference/green-100x100.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "use-data-url-setAttribute.tentative.html": [
+       "b28dd0ecf5b9e798ad8af8c5d6e2c01aea07b7e6",
+       [
+        null,
+        [
+         [
+          "/svg/struct/reftests/reference/green-100x100.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "use-data-url.tentative.svg": [
        "04414030a3e65ee05314386e90e75184e8c80042",
        [
@@ -283495,6 +283521,19 @@
         [
          [
           "/svg/struct/reftests/reference/green-100x100.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "use-ref-inside-data-url.tentative.html": [
+       "d6ac2e3654a6f1ae2591c47415b38f8c279b3b37",
+       [
+        null,
+        [
+         [
+          "/svg/struct/reftests/reference/green-100x100.html",
           "=="
          ]
         ],
@@ -460865,6 +460904,13 @@
         {}
        ]
       ],
+      "rotate-parsing-computed.html": [
+       "ae1cade666c7f218caaa29a37251aa7f0911da25",
+       [
+        null,
+        {}
+       ]
+      ],
       "rotate-parsing-invalid.html": [
        "4b6d7cf2ad5f21091e3bd8d47388d28ae964d73a",
        [
@@ -460874,6 +460920,13 @@
       ],
       "rotate-parsing-valid.html": [
        "82544b094fc954add9061283eec5f424b01293bd",
+       [
+        null,
+        {}
+       ]
+      ],
+      "scale-parsing-computed.html": [
+       "e01550b396f49771726761e66da2432e09878fb7",
        [
         null,
         {}
@@ -460951,6 +461004,13 @@
       ],
       "transform-valid.html": [
        "89a8b519b1b9c702d7bdedd3895e90c057a34dcb",
+       [
+        null,
+        {}
+       ]
+      ],
+      "translate-parsing-computed.html": [
+       "a88cc652fa4a9d5e59b128a97c81c1a1df5388e7",
        [
         null,
         {}
@@ -695799,14 +695859,14 @@
        },
        "set_viewport": {
         "device_pixel_ratio.py": [
-         "604c96685567fb60d3233d7646db4459ead68e03",
+         "e4db779bd5dd5492af4997531fdc9c397718795b",
          [
           null,
           {}
          ]
         ],
         "invalid.py": [
-         "b918deb668c7f299095a08046f607c1f30780c6a",
+         "2a90af4da0b1b6e63b5cb01d4e9f013e287a8fe1",
          [
           null,
           {
@@ -695814,8 +695874,8 @@
           }
          ]
         ],
-        "set_viewport.py": [
-         "51203db1d61c159399c7574c2aaecfc79f8a3c85",
+        "viewport.py": [
+         "60f9e47040fc23f5f741ddd87128103227b3cb11",
          [
           null,
           {}
