@@ -1,6 +1,6 @@
 {
-  "version": "26.56",
-  "log_list_timestamp": "2023-11-25T13:10:44Z",
+  "version": "27.1",
+  "log_list_timestamp": "2023-11-26T12:54:39Z",
   "operators": [
     {
       "name": "Google",
@@ -47,8 +47,8 @@
           "url": "https://ct.googleapis.com/logs/us1/argon2025h1/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2023-09-15T23:09:45Z"
+            "usable": {
+              "timestamp": "2023-11-26T12:00:00Z"
             }
           },
           "temporal_interval": {
@@ -63,8 +63,8 @@
           "url": "https://ct.googleapis.com/logs/us1/argon2025h2/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2023-09-15T23:09:45Z"
+            "usable": {
+              "timestamp": "2023-11-26T12:00:00Z"
             }
           },
           "temporal_interval": {
@@ -111,8 +111,8 @@
           "url": "https://ct.googleapis.com/logs/eu1/xenon2025h1/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2023-09-15T23:09:45Z"
+            "usable": {
+              "timestamp": "2023-11-26T12:00:00Z"
             }
           },
           "temporal_interval": {
@@ -127,8 +127,8 @@
           "url": "https://ct.googleapis.com/logs/eu1/xenon2025h2/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2023-09-15T23:09:45Z"
+            "usable": {
+              "timestamp": "2023-11-26T12:00:00Z"
             }
           },
           "temporal_interval": {
@@ -326,8 +326,8 @@
           "url": "https://sabre2024h1.ct.sectigo.com/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2023-09-15T23:09:45Z"
+            "usable": {
+              "timestamp": "2023-11-26T12:00:00Z"
             }
           },
           "temporal_interval": {
@@ -342,8 +342,8 @@
           "url": "https://sabre2024h2.ct.sectigo.com/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2023-09-15T23:09:45Z"
+            "usable": {
+              "timestamp": "2023-11-26T12:00:00Z"
             }
           },
           "temporal_interval": {
@@ -358,8 +358,8 @@
           "url": "https://sabre2025h1.ct.sectigo.com/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2023-09-15T23:09:45Z"
+            "usable": {
+              "timestamp": "2023-11-26T12:00:00Z"
             }
           },
           "temporal_interval": {
@@ -374,8 +374,8 @@
           "url": "https://sabre2025h2.ct.sectigo.com/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2023-09-15T23:09:45Z"
+            "usable": {
+              "timestamp": "2023-11-26T12:00:00Z"
             }
           },
           "temporal_interval": {
@@ -402,8 +402,8 @@
           "url": "https://mammoth2024h1.ct.sectigo.com/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2023-09-15T23:09:45Z"
+            "usable": {
+              "timestamp": "2023-11-26T12:00:00Z"
             }
           },
           "temporal_interval": {
@@ -418,8 +418,8 @@
           "url": "https://mammoth2024h2.ct.sectigo.com/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2023-09-15T23:09:45Z"
+            "usable": {
+              "timestamp": "2023-11-26T12:00:00Z"
             }
           },
           "temporal_interval": {
@@ -434,8 +434,8 @@
           "url": "https://mammoth2025h1.ct.sectigo.com/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2023-09-15T23:09:45Z"
+            "usable": {
+              "timestamp": "2023-11-26T12:00:00Z"
             }
           },
           "temporal_interval": {
@@ -450,8 +450,8 @@
           "url": "https://mammoth2025h2.ct.sectigo.com/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2023-09-15T23:09:45Z"
+            "usable": {
+              "timestamp": "2023-11-26T12:00:00Z"
             }
           },
           "temporal_interval": {
@@ -522,8 +522,8 @@
           "url": "https://oak.ct.letsencrypt.org/2025h1/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2023-09-15T23:09:45Z"
+            "usable": {
+              "timestamp": "2023-11-26T12:00:00Z"
             }
           },
           "temporal_interval": {
@@ -538,8 +538,8 @@
           "url": "https://oak.ct.letsencrypt.org/2025h2/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2023-09-15T23:09:45Z"
+            "usable": {
+              "timestamp": "2023-11-26T12:00:00Z"
             }
           },
           "temporal_interval": {
@@ -594,8 +594,8 @@
           "url": "https://ct2025-a.trustasia.com/log2025a/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2023-09-15T23:09:45Z"
+            "usable": {
+              "timestamp": "2023-11-26T12:00:00Z"
             }
           },
           "temporal_interval": {
@@ -610,8 +610,8 @@
           "url": "https://ct2025-b.trustasia.com/log2025b/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2023-09-15T23:09:45Z"
+            "usable": {
+              "timestamp": "2023-11-26T12:00:00Z"
             }
           },
           "temporal_interval": {
