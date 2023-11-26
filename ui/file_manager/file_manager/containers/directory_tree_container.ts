@@ -12,7 +12,7 @@ import {vmTypeToIconName} from '../common/js/icon_util.js';
 import {recordEnum, recordUserAction} from '../common/js/metrics.js';
 import {str, strf} from '../common/js/translations.js';
 import {VolumeManagerCommon} from '../common/js/volume_manager_types.js';
-import {AndroidApp, CurrentDirectory, FileData, FileKey, NavigationKey, NavigationRoot, NavigationType, PropStatus, State} from '../externs/ts/state.js';
+import {AndroidApp, CurrentDirectory, FileData, FileKey, NavigationKey, NavigationRoot, NavigationType, PropStatus, SearchLocation, State} from '../externs/ts/state.js';
 import type {VolumeManager} from '../externs/volume_manager.js';
 import {constants} from '../foreground/js/constants.js';
 import {DirectoryModel} from '../foreground/js/directory_model.js';
@@ -22,6 +22,7 @@ import {Menu} from '../foreground/js/ui/menu.js';
 import {convertEntryToFileData, readSubDirectories, traverseAndExpandPathEntries} from '../state/ducks/all_entries.js';
 import {changeDirectory} from '../state/ducks/current_directory.js';
 import {refreshNavigationRoots, updateNavigationEntry} from '../state/ducks/navigation.js';
+import {clearSearch} from '../state/ducks/search.js';
 import {driveRootEntryListKey} from '../state/ducks/volumes.js';
 import {getEntry, getFileData, getStore, getVolume, getVolumeType, type Store} from '../state/store.js';
 import {type TreeSelectedChangedEvent, XfTree} from '../widgets/xf_tree.js';
@@ -178,13 +179,18 @@ export class DirectoryTreeContainer {
 
     const {navigation: {roots}, androidApps, currentDirectory} = state;
 
-    // When current directory changes in the store, and the selected item in the
-    // tree is different from that, select the corresponding navigation item.
-    const selectedItemKey = this.tree.selectedItem?.dataset['navigationKey'];
-    if (currentDirectory?.key &&
-        currentDirectory.status === PropStatus.SUCCESS &&
-        currentDirectory.key !== selectedItemKey) {
-      await this.selectCurrentDirectoryItem_(currentDirectory);
+    if (this.shouldUnselectCurrentDirectoryItem_()) {
+      this.tree.selectedItem = null;
+    } else {
+      // When current directory changes in the store, and the selected item in
+      // the tree is different from that, select the corresponding navigation
+      // item.
+      const selectedItemKey = this.tree.selectedItem?.dataset['navigationKey'];
+      if (currentDirectory?.key &&
+          currentDirectory.status === PropStatus.SUCCESS &&
+          currentDirectory.key !== selectedItemKey) {
+        await this.selectCurrentDirectoryItem_(currentDirectory);
+      }
     }
 
     // When navigation roots data changes in the store, re-render all navigation
@@ -801,6 +807,15 @@ export class DirectoryTreeContainer {
     // by other parts of the UI), we don't want to activate the directory again
     // because it's already activated.
     if (this.isCurrentDirectoryActive_(navigationKey)) {
+      // An unselected current directory item can be selected by:
+      //  1. either change search location back from others to THIS_FOLDER.
+      //  2. or users manually click the unselected current directory item to
+      //  select it.
+      // For 1, we don't need to clear the search, but for 2, we need to clear
+      // the search, hence the check here.
+      if (this.shouldUnselectCurrentDirectoryItem_()) {
+        this.store_.dispatch(clearSearch());
+      }
       return;
     }
     const navigationData = this.getNavigationDataFromKey_(navigationKey);
@@ -1202,5 +1217,28 @@ export class DirectoryTreeContainer {
     const pathEntryKeys =
         currentDirectory.pathComponents.map(pathComponent => pathComponent.key);
     this.store_.dispatch(traverseAndExpandPathEntries(pathEntryKeys));
+  }
+
+  /**
+   * Check if we need to unselect the current directory item in the tree.
+   * When searching is active and we are not searching current folder, we
+   * shouldn't have any tree item selected.
+   */
+  private shouldUnselectCurrentDirectoryItem_(): boolean {
+    const state = this.store_.getState();
+    const {search, currentDirectory} = state;
+    const isSearchActive = search?.status !== undefined && !!(search?.query);
+    let isCurrentDIrectoryInsideDrive = false;
+    if (currentDirectory?.key) {
+      const currentDirectoryEntry = getFileData(state, currentDirectory.key)!;
+      isCurrentDIrectoryInsideDrive = isEntryInsideDrive(currentDirectoryEntry);
+    }
+    const isSearchInCurrentFolder =
+        // When searching in Drive, the search location option will only include
+        // ROOT_FOLDER ("Google Drive"), not include THIS_FOLDER.
+        (isCurrentDIrectoryInsideDrive &&
+         search?.options?.location === SearchLocation.ROOT_FOLDER) ||
+        search?.options?.location === SearchLocation.THIS_FOLDER;
+    return isSearchActive && !isSearchInCurrentFolder;
   }
 }

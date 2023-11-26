@@ -2013,6 +2013,11 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .NewDirectoryTree(),
         TestCase("searchFileSystemProvider").NewDirectoryTree(),
         TestCase("changingDirectoryClosesSearch").NewDirectoryTree(),
+        TestCase("verifyDriveLocationOption").NewDirectoryTree(),
+        TestCase("unselectCurrentDirectoryInTreeOnSearchInDownloads")
+            .NewDirectoryTree(),
+        TestCase("unselectCurrentDirectoryInTreeOnSearchInDrive")
+            .NewDirectoryTree(),
         // Section end - browser tests for new directory tree
         TestCase("searchDownloadsWithResults"),
         TestCase("searchDownloadsWithNoResults"),
@@ -2051,7 +2056,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("searchImageByContent").EnableLocalImageSearch(),
         TestCase("changingDirectoryClosesSearch"),
         TestCase("searchQueryLaunchParam"),
-        TestCase("verifyDriveLocationOption")));
+        TestCase("verifyDriveLocationOption"),
+        TestCase("unselectCurrentDirectoryInTreeOnSearchInDownloads"),
+        TestCase("unselectCurrentDirectoryInTreeOnSearchInDrive")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Metrics, /* metrics.js */

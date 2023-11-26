@@ -103,6 +103,18 @@ export class DirectoryTreePageObject {
   }
 
   /**
+   * Wait for the selected(aka "active" in the old tree implementation) tree
+   * item with the label to be lost.
+   *
+   * @param {string} label Label of the tree item.
+   * @return {!Promise<void>}
+   */
+  async waitForSelectedItemLostByLabel(label) {
+    await this.remoteCall_.waitForElementLost(
+        this.appId_, this.selectors_.itemByLabel(label, {selected: true}));
+  }
+
+  /**
    * Wait for the tree item with the label to have focused (aka "selected" in
    * the old tree implementation) state.
    *

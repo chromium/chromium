@@ -40,7 +40,7 @@ import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
 import {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfaces.js';
 import {ForegroundWindow} from '../../externs/foreground_window.js';
-import {DialogType, PropStatus} from '../../externs/ts/state.js';
+import {DialogType, PropStatus, SearchLocation} from '../../externs/ts/state.js';
 import {Store} from '../../externs/ts/store.js';
 import {getMyFiles} from '../../state/ducks/all_entries.js';
 import {updateBulkPinProgress} from '../../state/ducks/bulk_pinning.js';
@@ -1648,11 +1648,13 @@ export class FileManager extends EventTarget {
     const searchQuery = this.launchParams_.searchQuery;
     if (searchQuery) {
       startInterval('Load.ProcessInitialSearchQuery');
-      this.store_.dispatch(updateSearch({
-        query: searchQuery,
-        status: PropStatus.STARTED,
-        options: getDefaultSearchOptions(),
-      }));
+      if (!isNewDirectoryTreeEnabled()) {
+        this.store_.dispatch(updateSearch({
+          query: searchQuery,
+          status: PropStatus.STARTED,
+          options: getDefaultSearchOptions(),
+        }));
+      }
       // Show a spinner, as the crossover search function call could be slow.
       // @ts-ignore: error TS2531: Object is possibly 'null'.
       const hideSpinnerCallback = this.spinnerController_.show();
@@ -1847,11 +1849,19 @@ export class FileManager extends EventTarget {
           // @ts-ignore: error TS2531: Object is possibly 'null'.
           this.directoryModel_.selectEntry(opt_selectionEntry);
         }
-        // @ts-ignore: error TS2531: Object is possibly 'null'.
-        if (this.launchParams_.searchQuery) {
-          this.store_.dispatch(
-              // @ts-ignore: error TS2531: Object is possibly 'null'.
-              updateSearch({query: this.launchParams_.searchQuery}));
+        if (this.launchParams_?.searchQuery) {
+          const searchState = this.store_.getState().search;
+          this.store_.dispatch(updateSearch({
+            query: this.launchParams_.searchQuery,
+            status: undefined,
+            // Make sure the current directory can be highlighted in the
+            // directory tree.
+            options: {
+              ...getDefaultSearchOptions(),
+              ...searchState?.options,
+              location: SearchLocation.THIS_FOLDER,
+            },
+          }));
         }
       } else {
         console.warn('No entry for finishSetupCurrentDirectory_');

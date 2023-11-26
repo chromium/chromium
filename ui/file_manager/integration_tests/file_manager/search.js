@@ -8,7 +8,7 @@ import {testcase} from '../testcase.js';
 
 import {mountCrostini, remoteCall, setupAndWaitUntilReady} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
-import {BASIC_ANDROID_ENTRY_SET, BASIC_DRIVE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, COMPLEX_DOCUMENTS_PROVIDER_ENTRY_SET, NESTED_ENTRY_SET} from './test_data.js';
+import {BASIC_ANDROID_ENTRY_SET, BASIC_DRIVE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, COMPLEX_DOCUMENTS_PROVIDER_ENTRY_SET, COMPUTERS_ENTRY_SET, NESTED_ENTRY_SET} from './test_data.js';
 
 /**
  * @param {string} appId The ID that identifies the files app.
@@ -326,10 +326,10 @@ testcase.searchWithLocationOptions = async () => {
     nestedHello,
   ]));
 
-  // Click the second button, which is This Chromebook.
+  // Click the second button, which is My files.
   chrome.test.assertTrue(
       !!await remoteCall.selectSearchOption(appId, 'location', 2),
-      'Failed to click "This Chromebook" location selector');
+      'Failed to click "My files" location selector');
 
   // Expect all hello files to be found.
   await remoteCall.waitForFiles(appId, TestEntryInfo.getExpectedRows([
@@ -1173,4 +1173,102 @@ testcase.verifyDriveLocationOption = async () => {
   ]));
   chrome.test.assertEq(
       'Google Drive', await getSelectedOptionText(appId, 'location'));
+};
+
+/*
+ * Checks that search with non-current folder in Downloads should unselect the
+ * current directory item in the tree.
+ */
+testcase.unselectCurrentDirectoryInTreeOnSearchInDownloads = async () => {
+  // Setup default file set within Downloads.
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.waitForSelectedItemByLabel('Downloads');
+
+  // Search "hello".
+  await remoteCall.typeSearchText(appId, 'hello');
+  await remoteCall.waitForFiles(
+      appId, TestEntryInfo.getExpectedRows([ENTRIES.hello]));
+  chrome.test.assertEq(
+      'Downloads', await getSelectedOptionText(appId, 'location'));
+  // Expect the Downloads folder is still selected.
+  await directoryTree.waitForSelectedItemByLabel('Downloads');
+
+  // Change location to "My files".
+  chrome.test.assertTrue(
+      !!await remoteCall.selectSearchOption(appId, 'location', 2),
+      'Failed to click "My files" location selector');
+  // Expect the Downloads folder to be unselected.
+  await directoryTree.waitForSelectedItemLostByLabel('Downloads');
+
+  // Change location back to "Downloads".
+  chrome.test.assertTrue(
+      !!await remoteCall.selectSearchOption(appId, 'location', 3),
+      'Failed to click "Downloads" location selector');
+  // Expect the Downloads folder to be selected again.
+  await directoryTree.waitForSelectedItemByLabel('Downloads');
+
+  if (directoryTree.isNewTree) {
+    // Change location to "My files" and click the Downloads.
+    chrome.test.assertTrue(
+        !!await remoteCall.selectSearchOption(appId, 'location', 2),
+        'Failed to click "My files" location selector');
+    await directoryTree.waitForSelectedItemLostByLabel('Downloads');
+    await directoryTree.selectItemByLabel('Downloads');
+    // Expect the search will be cleared.
+    await remoteCall.waitForElement(appId, '#search-wrapper[collapsed]');
+  }
+};
+
+/**
+ * Checks that search with non-root folder in Drive should unselect the current
+ * directory item in the tree.
+ */
+testcase.unselectCurrentDirectoryInTreeOnSearchInDrive = async () => {
+  // Setup Drive with Computers files.
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DRIVE, [], COMPUTERS_ENTRY_SET);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.waitForSelectedItemByLabel('My Drive');
+
+  // Search "txt", both My Drive and Computers folder will be searched.
+  await remoteCall.typeSearchText(appId, 'txt');
+  await remoteCall.waitForFiles(appId, TestEntryInfo.getExpectedRows([
+    ENTRIES.hello,
+    ENTRIES.computerAFile,
+  ]));
+  chrome.test.assertEq(
+      'Google Drive', await getSelectedOptionText(appId, 'location'));
+  if (directoryTree.isNewTree) {
+    // Expect the My Drive folder is still selected.
+    await directoryTree.waitForSelectedItemByLabel('My Drive');
+  }
+
+  // Change location to "Everywhere".
+  chrome.test.assertTrue(
+      !!await remoteCall.selectSearchOption(appId, 'location', 1),
+      'Failed to click "Everywhere" location selector');
+  // Expect the My Drive folder to be unselected.
+  await directoryTree.waitForSelectedItemLostByLabel('My Drive');
+
+  // Change location back to "Google Drive".
+  chrome.test.assertTrue(
+      !!await remoteCall.selectSearchOption(appId, 'location', 2),
+      'Failed to click "Google Drive" location selector');
+  if (directoryTree.isNewTree) {
+    // Expect the My Drive folder to be selected again.
+    await directoryTree.waitForSelectedItemByLabel('My Drive');
+  }
+
+  if (directoryTree.isNewTree) {
+    // Change location to "Everywhere" and click the My Drive.
+    chrome.test.assertTrue(
+        !!await remoteCall.selectSearchOption(appId, 'location', 1),
+        'Failed to click "Everywhere" location selector');
+    await directoryTree.waitForSelectedItemLostByLabel('My Drive');
+    await directoryTree.selectItemByLabel('My Drive');
+
+    // Expect the search will be cleared.
+    await remoteCall.waitForElement(appId, '#search-wrapper[collapsed]');
+  }
 };
