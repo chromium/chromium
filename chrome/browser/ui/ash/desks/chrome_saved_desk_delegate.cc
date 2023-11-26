@@ -255,7 +255,10 @@ void ChromeSavedDeskDelegate::GetAppLaunchDataForSavedDesk(
   const app_restore::RestoreData* full_restore_data =
       full_restore::FullRestoreSaveHandler::GetInstance()->GetRestoreData(
           user_profile->GetPath());
-  DCHECK(full_restore_data);
+  if (!full_restore_data) {
+    std::move(callback).Run({});
+    return;
+  }
 
   const std::string app_id = full_restore::GetAppId(window);
   // TODO: b/296445956 - Implement a long term fix for saving the arc ghost

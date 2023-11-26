@@ -59,7 +59,6 @@ class MockBrowserManager : public crosapi::BrowserManager {
  public:
   MockBrowserManager()
       : BrowserManager(std::unique_ptr<crosapi::BrowserLoader>(), nullptr) {}
-  MOCK_METHOD(bool, IsRunning, (), (const, override));
   MOCK_METHOD(void,
               GetBrowserInformation,
               (const std::string&,
@@ -67,12 +66,6 @@ class MockBrowserManager : public crosapi::BrowserManager {
               (override));
 };
 
-void ReturnEmptyGetBrowserInformation(
-    const std::string& window_unique_id,
-    crosapi::BrowserManager::GetBrowserInformationCallback callback) {
-  // Returns empty lacros browser information.
-  std::move(callback).Run({});
-}
 }  // namespace
 
 class ChromeSavedDeskDelegateTest : public testing::Test {
@@ -132,10 +125,6 @@ class ChromeSavedDeskDelegateTest : public testing::Test {
     return chrome_saved_desk_delegate_.get();
   }
 
-  content::BrowserTaskEnvironment& task_environment() {
-    return task_environment_;
-  }
-
   MockBrowserManager& mock_browser_manager() { return *mock_browser_manager_; }
 
   full_restore::FullRestoreSaveHandler* GetSaveHandler(
@@ -186,12 +175,6 @@ TEST_F(ChromeSavedDeskDelegateTest,
   // Saves window info so that `GetAppLaunchDataForSavedDesk` will attempt to
   // get lacros window information.
   SaveWindowInfo(window.get(), kActivationIndex1);
-
-  EXPECT_CALL(mock_browser_manager(), IsRunning()).WillOnce(Return(true));
-  EXPECT_CALL(mock_browser_manager(), GetBrowserInformation(_, _))
-      .WillOnce(Invoke(ReturnEmptyGetBrowserInformation));
-
-  task_environment().RunUntilIdle();
 
   base::test::TestFuture<std::unique_ptr<app_restore::AppLaunchInfo>> future;
   chrome_saved_desk_delegate()->GetAppLaunchDataForSavedDesk(
