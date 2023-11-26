@@ -1041,6 +1041,7 @@
 <translation id="8949925099261528566">Csatlakozva, nincs internet-hozzáférés</translation>
 <translation id="8965697826696209160">Nincs elég tárhely.</translation>
 <translation id="8970887620466824814">Hiba történt.</translation>
+<translation id="8971742885766657349">Szinkronizálás – <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">kínai (hagyományos) pinjin</translation>
 <translation id="8998871447376656508">Nincs elég szabad tárhelye a Google Drive-on a feltöltés befejezéséhez.</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_INDEX" />. hálózat (összesen <ph name="NETWORK_COUNT" />), <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />%, a rendszergazdája kezeli, részletek</translation>

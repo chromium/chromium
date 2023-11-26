@@ -1041,6 +1041,7 @@
 <translation id="8949925099261528566">Connected, no Internet</translation>
 <translation id="8965697826696209160">There is not enough space.</translation>
 <translation id="8970887620466824814">Something went wrong.</translation>
+<translation id="8971742885766657349">Syncing – <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">Chinese (Traditional) Pinyin</translation>
 <translation id="8998871447376656508">There is not enough free space in your Google Drive to complete the upload.</translation>
 <translation id="9003940392834790328">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, managed by your administrator, details</translation>

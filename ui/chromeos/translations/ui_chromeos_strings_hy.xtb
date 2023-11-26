@@ -1041,6 +1041,7 @@
 <translation id="8949925099261528566">Միացած է, սակայն ինտերնետ կապ չկա</translation>
 <translation id="8965697826696209160">Բավարար տարածք չկա:</translation>
 <translation id="8970887620466824814">Սխալ առաջացավ:</translation>
+<translation id="8971742885766657349">Համաժամացում – <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">չինարեն փինյին (ավանդական)</translation>
 <translation id="8998871447376656508">Վերբեռնումն ավարտելու համար ձեր Google Drive-ում բավարար ազատ տարածք չկա։</translation>
 <translation id="9003940392834790328">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, կառավարվում է ձեր ադմինիստրատորի կողմից, մանրամասներ</translation>

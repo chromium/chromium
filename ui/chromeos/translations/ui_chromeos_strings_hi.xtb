@@ -1041,6 +1041,7 @@
 <translation id="8949925099261528566">कनेक्ट हो गया, लेकिन इंटरनेट नहीं है</translation>
 <translation id="8965697826696209160">काफ़ी स्थान नहीं है.</translation>
 <translation id="8970887620466824814">कुछ गड़बड़ी हुई.</translation>
+<translation id="8971742885766657349">सिंक हो रहा है - <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">चाइनीज़ (परंपरागत) पिनयिन</translation>
 <translation id="8998871447376656508">अपलोड को पूरा करने के लिए, आपके Google Drive में ज़रूरत के मुताबिक खाली जगह नहीं है.</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_COUNT" /> में से <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />%, आपका एडमिन प्रबंधित करता है, जानकारी</translation>

@@ -1036,6 +1036,7 @@
 <translation id="8949925099261528566">已连接，但无法访问互联网</translation>
 <translation id="8965697826696209160">空间不足。</translation>
 <translation id="8970887620466824814">出了点问题。</translation>
+<translation id="8971742885766657349">正在同步 - 已完成 <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">中文（繁体）拼音</translation>
 <translation id="8998871447376656508">您的 Google 云端硬盘中的可用空间不足，无法完成上传。</translation>
 <translation id="9003940392834790328">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，由您的管理员管理，详细信息</translation>

@@ -1041,6 +1041,7 @@
 <translation id="8949925099261528566">Установена е връзка – няма достъп до интернет</translation>
 <translation id="8965697826696209160">Няма достатъчно място.</translation>
 <translation id="8970887620466824814">Нещо се обърка.</translation>
+<translation id="8971742885766657349">Синхронизиране – <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">Китайски (традиционен, пинин)</translation>
 <translation id="8998871447376656508">Няма достатъчно свободно място в Google Диск за завършване на качването.</translation>
 <translation id="9003940392834790328">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, управлява се от администратора ви, подробности</translation>

@@ -1041,6 +1041,7 @@
 <translation id="8949925099261528566">Verbunden, kein Internet</translation>
 <translation id="8965697826696209160">Nicht genügend Speicherplatz.</translation>
 <translation id="8970887620466824814">Es gab ein Problem.</translation>
+<translation id="8971742885766657349">Wird synchronisiert – <ph name="PERCENT" /> %</translation>
 <translation id="8997962250644902079">Chinesisch (traditionell) (Pinyin)</translation>
 <translation id="8998871447376656508">In deinem Google Drive ist nicht genügend freier Speicherplatz vorhanden, um den Upload abzuschließen.</translation>
 <translation id="9003940392834790328">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, von deinem Administrator verwaltet, Details</translation>

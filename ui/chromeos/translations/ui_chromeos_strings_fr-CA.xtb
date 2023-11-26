@@ -1043,6 +1043,7 @@
 <translation id="8949925099261528566">Connecté, aucun accès Internet</translation>
 <translation id="8965697826696209160">Il n'y a pas suffisamment d'espace.</translation>
 <translation id="8970887620466824814">Une erreur s'est produite.</translation>
+<translation id="8971742885766657349">Synchronisation en cours… – <ph name="PERCENT" /> %</translation>
 <translation id="8997962250644902079">Chinois (traditionnel, Pinyin)</translation>
 <translation id="8998871447376656508">Il n'y a pas assez d'espace libre dans votre Google Disque pour terminer le téléversement.</translation>
 <translation id="9003940392834790328">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, géré par votre administrateur, détails</translation>
