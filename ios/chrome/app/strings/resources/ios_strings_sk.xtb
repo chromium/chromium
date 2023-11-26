@@ -819,6 +819,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="5300589172476337783">Zobraziť</translation>
 <translation id="5317780077021120954">Uložiť</translation>
 <translation id="5318298563956633672">Tento výrobok už sledujete.</translation>
+<translation id="5329451663851195956">Obnovíte potiahnutím nadol.</translation>
 <translation id="5339316356165661760">Zapnúť synchronizáciu</translation>
 <translation id="5345598430982201510">Nikdy nezisťovať zásielky automaticky</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Chcete sledovať túto zásielku?}few{Chcete sledovať {COUNT} zásielky?}many{Track {COUNT} Packages?}other{Chcete sledovať {COUNT} zásielok?}}</translation>

@@ -1041,6 +1041,7 @@
 <translation id="8949925099261528566">Подключено, без доступа к интернету</translation>
 <translation id="8965697826696209160">Недостаточно свободного места.</translation>
 <translation id="8970887620466824814">Произошла ошибка</translation>
+<translation id="8971742885766657349">Синхронизация: <ph name="PERCENT" /> %</translation>
 <translation id="8997962250644902079">Китайский (традиционный), пиньинь</translation>
 <translation id="8998871447376656508">Не удалось завершить загрузку. На Google Диске недостаточно свободного места.</translation>
 <translation id="9003940392834790328">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, под управлением администратора, подробная информация</translation>

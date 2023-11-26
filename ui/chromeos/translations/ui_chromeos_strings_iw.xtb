@@ -1042,6 +1042,7 @@
 <translation id="8949925099261528566">יש חיבור, אין אינטרנט</translation>
 <translation id="8965697826696209160">אין מספיק שטח.</translation>
 <translation id="8970887620466824814">משהו השתבש.</translation>
+<translation id="8971742885766657349">מתבצע סנכרון – <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">‏סינית (מסורתית) Pinyin</translation>
 <translation id="8998871447376656508">‏אין מספיק מקום פנוי ב-Google Drive כדי להשלים את ההעלאה.</translation>
 <translation id="9003940392834790328">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="CONNECTION_STATUS" />, עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, הרשת מנוהלת על ידי מנהל המערכת שלך, פרטים</translation>

@@ -1041,6 +1041,7 @@
 <translation id="8949925099261528566">Падключана, доступу да інтэрнэту няма</translation>
 <translation id="8965697826696209160">Недастаткова месца.</translation>
 <translation id="8970887620466824814">Нешта пайшло не так.</translation>
+<translation id="8971742885766657349">Сінхранізацыя: <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">Кітайская (традыцыйная, піньінь)</translation>
 <translation id="8998871447376656508">Не ўдалося завяршыць запампоўванне: на Google Дыску недастаткова свабоднага месца.</translation>
 <translation id="9003940392834790328">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, знаходзіцца пад кіраваннем адміністратара, падрабязныя звесткі</translation>

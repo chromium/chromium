@@ -1041,6 +1041,7 @@
 <translation id="8949925099261528566">დაკავშირებულია, ინტერნეტის გარეშე</translation>
 <translation id="8965697826696209160">საკმარისი ადგილი არ არის.</translation>
 <translation id="8970887620466824814">წარმოიქმნა შეფერხება.</translation>
+<translation id="8971742885766657349">მიმდინარეობს სინქრონიზაცია — <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">ჩინური (ტრადიციული) პინ-ინი</translation>
 <translation id="8998871447376656508">თქვენს Google Drive-ზე არ არის საკმარისი თავისუფალი მეხსიერება ატვირთვის შესასრულებლად.</translation>
 <translation id="9003940392834790328">ქსელი <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />%, მართავს თქვენი ადმინისტრატორი, დეტალები</translation>

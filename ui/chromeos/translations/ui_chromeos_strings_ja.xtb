@@ -1041,6 +1041,7 @@
 <translation id="8949925099261528566">接続済み、インターネット接続なし</translation>
 <translation id="8965697826696209160">空き容量が不足しています。</translation>
 <translation id="8970887620466824814">エラーが発生しました。</translation>
+<translation id="8971742885766657349">同期しています - <ph name="PERCENT" />%</translation>
 <translation id="8997962250644902079">中国語（繁体）（ピンイン）</translation>
 <translation id="8998871447376656508">Google ドライブに十分な空き容量がないため、アップロードを完了できません。</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、管理者によって管理、詳細</translation>

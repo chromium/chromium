@@ -1046,6 +1046,7 @@
 <translation id="8949925099261528566">Conectada, sem Internet</translation>
 <translation id="8965697826696209160">Não há espaço suficiente.</translation>
 <translation id="8970887620466824814">Algo deu errado.</translation>
+<translation id="8971742885766657349">Sincronizando (<ph name="PERCENT" />%)</translation>
 <translation id="8997962250644902079">Chinês (tradicional, pinyin)</translation>
 <translation id="8998871447376656508">Não há espaço livre suficiente no seu Google Drive para concluir o upload.</translation>
 <translation id="9003940392834790328">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />%, gerenciada pelo seu administrador, detalhes</translation>
