@@ -304,6 +304,8 @@
 #include "chrome/browser/speech/cros_speech_recognition_service_factory.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision.mojom.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_ui.h"
+#include "chrome/browser/ui/webui/ash/app_install/app_install.mojom.h"
+#include "chrome/browser/ui/webui/ash/app_install/app_install_ui.h"
 #include "chrome/browser/ui/webui/ash/audio/audio.mojom.h"
 #include "chrome/browser/ui/webui/ash/audio/audio_ui.h"
 #include "chrome/browser/ui/webui/ash/bluetooth_pairing_dialog.h"
@@ -354,8 +356,6 @@
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_share_dialog.h"
 #include "chrome/browser/ui/webui/ash/vm/vm.mojom.h"
 #include "chrome/browser/ui/webui/ash/vm/vm_ui.h"
-#include "chrome/browser/ui/webui/ash/web_app_install/web_app_install.mojom.h"
-#include "chrome/browser/ui/webui/ash/web_app_install/web_app_install_ui.h"
 #include "chrome/browser/ui/webui/feedback/feedback_ui.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share.mojom.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
@@ -1654,8 +1654,8 @@ void PopulateChromeWebUIFrameBinders(
   if (base::FeatureList::IsEnabled(
           chromeos::features::kCrosWebAppInstallDialog)) {
     RegisterWebUIControllerInterfaceBinder<
-        ash::web_app_install::mojom::PageHandlerFactory,
-        ash::web_app_install::WebAppInstallDialogUI>(map);
+        ash::app_install::mojom::PageHandlerFactory,
+        ash::app_install::AppInstallDialogUI>(map);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

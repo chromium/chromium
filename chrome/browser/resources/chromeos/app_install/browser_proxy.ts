@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PageHandlerFactory, PageHandlerRemote} from './web_app_install.mojom-webui.js';
+import {PageHandlerFactory, PageHandlerRemote} from './app_install.mojom-webui.js';
 
 export class BrowserProxy {
   handler: PageHandlerRemote = new PageHandlerRemote();

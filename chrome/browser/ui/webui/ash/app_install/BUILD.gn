@@ -8,7 +8,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 assert(is_chromeos_ash, "The install dialog is ash-chrome only")
 
 mojom("mojo_bindings") {
-  sources = [ "web_app_install.mojom" ]
+  sources = [ "app_install.mojom" ]
 
   public_deps = [
     "//mojo/public/mojom/base",

@@ -2,24 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_ASH_WEB_APP_INSTALL_WEB_APP_INSTALL_UI_H_
-#define CHROME_BROWSER_UI_WEBUI_ASH_WEB_APP_INSTALL_WEB_APP_INSTALL_UI_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_APP_INSTALL_APP_INSTALL_UI_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_APP_INSTALL_APP_INSTALL_UI_H_
 
-#include "chrome/browser/ui/webui/ash/web_app_install//web_app_install_page_handler.h"
+#include "chrome/browser/ui/webui/ash/app_install/app_install_page_handler.h"
 #include "content/public/browser/webui_config.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
-namespace ash::web_app_install {
+namespace ash::app_install {
 
-// The WebUI for chrome://web-app-install-dialog, used for confirming web app
+// The WebUI for chrome://app-install-dialog, used for confirming app
 // installation.
-class WebAppInstallDialogUI : public ui::MojoWebDialogUI,
+class AppInstallDialogUI : public ui::MojoWebDialogUI,
                               public mojom::PageHandlerFactory {
  public:
-  explicit WebAppInstallDialogUI(content::WebUI* web_ui);
-  WebAppInstallDialogUI(const WebAppInstallDialogUI&) = delete;
-  WebAppInstallDialogUI& operator=(const WebAppInstallDialogUI&) = delete;
-  ~WebAppInstallDialogUI() override;
+  explicit AppInstallDialogUI(content::WebUI* web_ui);
+  AppInstallDialogUI(const AppInstallDialogUI&) = delete;
+  AppInstallDialogUI& operator=(const AppInstallDialogUI&) = delete;
+  ~AppInstallDialogUI() override;
 
   void SetDialogArgs(mojom::DialogArgsPtr args);
 
@@ -35,21 +35,21 @@ class WebAppInstallDialogUI : public ui::MojoWebDialogUI,
   void CloseDialog();
 
   mojom::DialogArgsPtr dialog_args_;
-  std::unique_ptr<WebAppInstallPageHandler> page_handler_;
+  std::unique_ptr<AppInstallPageHandler> page_handler_;
   mojo::Receiver<mojom::PageHandlerFactory> factory_receiver_{this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
-// WebUIConfig for chrome://web-app-install-dialog
-class WebAppInstallDialogUIConfig
-    : public content::DefaultWebUIConfig<WebAppInstallDialogUI> {
+// WebUIConfig for chrome://app-install-dialog
+class AppInstallDialogUIConfig
+    : public content::DefaultWebUIConfig<AppInstallDialogUI> {
  public:
-  WebAppInstallDialogUIConfig();
+  AppInstallDialogUIConfig();
 
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };
 
-}  // namespace ash::web_app_install
+}  // namespace ash::app_install
 
-#endif  // CHROME_BROWSER_UI_WEBUI_ASH_WEB_APP_INSTALL_WEB_APP_INSTALL_UI_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_APP_INSTALL_APP_INSTALL_UI_H_

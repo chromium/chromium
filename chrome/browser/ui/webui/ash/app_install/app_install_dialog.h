@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_ASH_WEB_APP_INSTALL_WEB_APP_INSTALL_DIALOG_H_
-#define CHROME_BROWSER_UI_WEBUI_ASH_WEB_APP_INSTALL_WEB_APP_INSTALL_DIALOG_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_APP_INSTALL_APP_INSTALL_DIALOG_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_APP_INSTALL_APP_INSTALL_DIALOG_H_
 
+#include "chrome/browser/ui/webui/ash/app_install/app_install.mojom.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
-#include "chrome/browser/ui/webui/ash/web_app_install/web_app_install.mojom.h"
 // TODO(b/308717267): Remove this dependency when moving to mojom struct
 // definition for Lacros support.
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/webapps/browser/installable/installable_data.h"
 
-namespace ash::web_app_install {
+namespace ash::app_install {
 
 struct ChromeOsAppInstallDialogParams {
   std::optional<SkBitmap> icon_bitmap;
@@ -27,13 +27,13 @@ struct ChromeOsAppInstallDialogParams {
   ~ChromeOsAppInstallDialogParams();
 };
 
-// Defines the web dialog used for installing a web app.
-class WebAppInstallDialog : public SystemWebDialogDelegate {
+// Defines the web dialog used for installing an app.
+class AppInstallDialog : public SystemWebDialogDelegate {
  public:
-  WebAppInstallDialog(const WebAppInstallDialog&) = delete;
-  WebAppInstallDialog& operator=(const WebAppInstallDialog&) = delete;
+  AppInstallDialog(const AppInstallDialog&) = delete;
+  AppInstallDialog& operator=(const AppInstallDialog&) = delete;
 
-  // Creates and shows a new dialog for installing a web app. Returns true
+  // Creates and shows a new dialog for installing an app. Returns true
   // if a new dialog has been effectively created.
   static bool Show(gfx::NativeWindow parent,
                    ChromeOsAppInstallDialogParams params);
@@ -41,14 +41,14 @@ class WebAppInstallDialog : public SystemWebDialogDelegate {
   void OnDialogShown(content::WebUI* webui) override;
 
  protected:
-  explicit WebAppInstallDialog(mojom::DialogArgsPtr args);
-  ~WebAppInstallDialog() override;
+  explicit AppInstallDialog(mojom::DialogArgsPtr args);
+  ~AppInstallDialog() override;
   bool ShouldShowCloseButton() const override;
 
  private:
   mojom::DialogArgsPtr dialog_args_;
 };
 
-}  // namespace ash::web_app_install
+}  // namespace ash::app_install
 
-#endif  // CHROME_BROWSER_UI_WEBUI_ASH_WEB_APP_INSTALL_WEB_APP_INSTALL_DIALOG_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_APP_INSTALL_APP_INSTALL_DIALOG_H_

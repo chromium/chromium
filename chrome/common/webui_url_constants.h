@@ -291,6 +291,8 @@ extern const char kChromeUIAccountMigrationWelcomeHost[];
 extern const char kChromeUIAccountMigrationWelcomeURL[];
 extern const char kChromeUIAddSupervisionHost[];
 extern const char kChromeUIAddSupervisionURL[];
+extern const char kChromeUIAppInstallDialogHost[];
+extern const char kChromeUIAppInstallDialogURL[];
 extern const char kChromeUIArcOverviewTracingHost[];
 extern const char kChromeUIArcOverviewTracingURL[];
 extern const char kChromeUIArcPowerControlHost[];
@@ -389,8 +391,6 @@ extern const char kChromeUIVcTrayTesterURL[];
 extern const char kChromeUIVcTrayTesterHost[];
 extern const char kChromeUIVmHost[];
 extern const char kChromeUIVmUrl[];
-extern const char kChromeUIWebAppInstallDialogHost[];
-extern const char kChromeUIWebAppInstallDialogURL[];
 
 // Returns true if this web UI is part of the "system UI". Generally this is
 // UI that opens in a window (not a browser tab) and that on other operating

@@ -10,17 +10,16 @@ import {assert, assertInstanceof} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {BrowserProxy} from './browser_proxy.js';
-import {getTemplate} from './web_app_install_dialog.html.js';
+import {getTemplate} from './app_install_dialog.html.js';
 
 /**
  * @fileoverview
- * 'web-app-install-dialog' defines the UI for the ChromeOS web app install
- * dialog.
+ * 'app-install-dialog' defines the UI for the ChromeOS app install dialog.
  */
 
-class WebAppInstallDialogElement extends HTMLElement {
+class AppInstallDialogElement extends HTMLElement {
   static get is() {
-    return 'web-app-install-dialog';
+    return 'app-install-dialog';
   }
 
   static get template() {
@@ -32,7 +31,7 @@ class WebAppInstallDialogElement extends HTMLElement {
   constructor() {
     super();
     const template = document.createElement('template');
-    template.innerHTML = WebAppInstallDialogElement.template as string;
+    template.innerHTML = AppInstallDialogElement.template as string;
     const fragment = template.content.cloneNode(true);
     this.attachShadow({mode: 'open'}).appendChild(fragment);
 
@@ -100,5 +99,4 @@ class WebAppInstallDialogElement extends HTMLElement {
   }
 }
 
-customElements.define(
-    WebAppInstallDialogElement.is, WebAppInstallDialogElement);
+customElements.define(AppInstallDialogElement.is, AppInstallDialogElement);

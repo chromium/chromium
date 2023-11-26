@@ -15,6 +15,7 @@ group("resources") {
     ":multidevice_setup_resources",
     "accessibility:build",
     "add_supervision:resources",
+    "app_install:resources",
     "arc_account_picker:resources",
     "assistant_optin:resources",
     "audio:resources",
@@ -45,7 +46,6 @@ group("resources") {
     "sensor_info:resources",
     "supervision:resources",
     "vc_tray_tester:resources",
-    "web_app_install:resources",
   ]
 }
 

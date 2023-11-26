@@ -42,7 +42,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/webui/ash/web_app_install/web_app_install_dialog.h"
+#include "chrome/browser/ui/webui/ash/app_install/app_install_dialog.h"
 #include "chromeos/constants/chromeos_features.h"
 #endif
 
@@ -82,9 +82,9 @@ void OnWebAppInstallShowInstallDialog(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       if (base::FeatureList::IsEnabled(
               chromeos::features::kCrosWebAppInstallDialog)) {
-        ash::web_app_install::WebAppInstallDialog::Show(
+        ash::app_install::AppInstallDialog::Show(
             initiator_web_contents->GetNativeView(),
-            ash::web_app_install::ChromeOsAppInstallDialogParams(
+            ash::app_install::ChromeOsAppInstallDialogParams(
                 std::move(web_app_info),
                 webapps::AppBannerManager::FromWebContents(
                     initiator_web_contents)
