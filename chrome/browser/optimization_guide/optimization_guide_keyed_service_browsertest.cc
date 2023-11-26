@@ -160,6 +160,7 @@ class OptimizationGuideKeyedServiceBrowserTest
     // Enable visibility of tab organization feature.
     scoped_feature_list_.InitWithFeatures(
         {optimization_guide::features::kOptimizationHints,
+         optimization_guide::features::kOptimizationGuideModelExecution,
          optimization_guide::features::internal::
              kTabOrganizationSettingsVisibility},
         {});
@@ -319,6 +320,9 @@ class OptimizationGuideKeyedServiceBrowserTest
         ->IsSettingVisible(feature);
   }
 
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
  private:
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
@@ -345,7 +349,6 @@ class OptimizationGuideKeyedServiceBrowserTest
   std::unique_ptr<network::TestNetworkConnectionTracker>
       network_connection_tracker_;
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   optimization_guide::testing::TestHintsComponentCreator
       test_hints_component_creator_;
   std::unique_ptr<OptimizationGuideConsumerWebContentsObserver> consumer_;
@@ -1192,6 +1195,57 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
           MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
 }
 #endif
+
+// Test the visibility of features with `kOptimizationGuideModelExecution`
+// enabled or disabled.
+class OptimizationGuideKeyedServiceBrowserWithModelExecutionFeatureDisabledTest
+    : public testing::WithParamInterface<bool>,
+      public OptimizationGuideKeyedServiceBrowserTest {
+ public:
+  OptimizationGuideKeyedServiceBrowserWithModelExecutionFeatureDisabledTest()
+      : OptimizationGuideKeyedServiceBrowserTest() {
+    // Enable visibility of tab organization feature.
+    scoped_feature_list_.Reset();
+
+    if (ShouldFeatureBeEnabled()) {
+      scoped_feature_list_.InitWithFeatures(
+          {optimization_guide::features::kOptimizationHints,
+           // Enabled.
+           optimization_guide::features::kOptimizationGuideModelExecution,
+           optimization_guide::features::internal::
+               kTabOrganizationSettingsVisibility},
+          {});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          {optimization_guide::features::kOptimizationHints,
+           optimization_guide::features::internal::
+               kTabOrganizationSettingsVisibility},
+          // Disabled.
+          {optimization_guide::features::kOptimizationGuideModelExecution});
+    }
+  }
+
+  bool ShouldFeatureBeEnabled() const { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    OptimizationGuideKeyedServiceBrowserWithModelExecutionFeatureDisabledTest,
+    testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(
+    OptimizationGuideKeyedServiceBrowserWithModelExecutionFeatureDisabledTest,
+    SettingsNotVisible) {
+  EnableSignIn();
+
+  EXPECT_FALSE(
+      IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
+                           MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH));
+
+  EXPECT_EQ(ShouldFeatureBeEnabled(),
+            IsSettingVisible(optimization_guide::proto::ModelExecutionFeature::
+                                 MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+}
 
 class OptimizationGuideKeyedServicePermissionsCheckDisabledTest
     : public OptimizationGuideKeyedServiceBrowserTest {

@@ -311,7 +311,9 @@ void OptimizationGuideKeyedService::Initialize() {
                                           profile->IsOffTheRecord(),
                                           profile->GetPrefs());
 
-  if (browser_context_ && !browser_context_->IsOffTheRecord() &&
+  if (base::FeatureList::IsEnabled(
+          optimization_guide::features::kOptimizationGuideModelExecution) &&
+      browser_context_ && !browser_context_->IsOffTheRecord() &&
       !profile->IsGuestSession()) {
     model_execution_features_controller_ =
         std::make_unique<optimization_guide::ModelExecutionFeaturesController>(
