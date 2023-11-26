@@ -34,6 +34,7 @@ external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/origin.py 
 external/wpt/webdriver/tests/bidi/browsing_context/traverse_history/context.py [ Failure ]
 external/wpt/webdriver/tests/bidi/browsing_context/traverse_history/delta.py [ Failure ]
 external/wpt/webdriver/tests/bidi/browsing_context/traverse_history/invalid.py [ Failure ]
+external/wpt/webdriver/tests/bidi/browsing_context/set_viewport/viewport.py [ Failure ]
 
 # Chrome specific failures
 crbug.com/1499775 external/wpt/css/css-text/text-transform/text-transform-capitalize-014.html [ Failure Pass ]
