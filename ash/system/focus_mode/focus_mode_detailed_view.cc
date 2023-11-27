@@ -327,12 +327,13 @@ void FocusModeDetailedView::OnTimerTick() {
 }
 
 void FocusModeDetailedView::OnSessionDurationChanged() {
+  if (!FocusModeController::Get()->in_focus_session()) {
+    return;
+  }
+
   toggle_view_->SetSubText(focus_mode_util::GetFormattedEndTimeString(
       FocusModeController::Get()->end_time()));
-
-  if (FocusModeController::Get()->in_focus_session()) {
-    timer_countdown_view_->UpdateUI();
-  }
+  timer_countdown_view_->UpdateUI();
 }
 
 void FocusModeDetailedView::CreateToggleView() {

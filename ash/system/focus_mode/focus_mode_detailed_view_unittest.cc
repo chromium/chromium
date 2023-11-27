@@ -561,4 +561,26 @@ TEST_F(FocusModeDetailedViewTest,
             pod->sub_label()->GetText());
 }
 
+// Tests that the toggle row sub label is only visible outside of a focus
+// session.
+TEST_F(FocusModeDetailedViewTest, SubLabelVisibility) {
+  // Adjusting the focus duration should not make the sub label appear outside
+  // of a focus session.
+  EXPECT_FALSE(IsToggleRowSubLabelVisible());
+  LeftClickOn(GetTimerSettingDecrementButton());
+  EXPECT_FALSE(IsToggleRowSubLabelVisible());
+  LeftClickOn(GetTimerSettingIncrementButton());
+  EXPECT_FALSE(IsToggleRowSubLabelVisible());
+
+  // The label should be visible inside of a focus session.
+  auto* focus_mode_controller = FocusModeController::Get();
+  focus_mode_controller->ToggleFocusMode();
+  EXPECT_TRUE(focus_mode_controller->in_focus_session());
+  CreateFakeFocusModeDetailedView();
+  EXPECT_TRUE(IsToggleRowSubLabelVisible());
+
+  focus_mode_controller->ToggleFocusMode();
+  EXPECT_FALSE(IsToggleRowSubLabelVisible());
+}
+
 }  // namespace ash
