@@ -26,7 +26,13 @@ const char kCanvasOopRasterizationDescription[] =
     "The rasterization of 2d canvas contents is performed in the GPU process. "
     "Requires that out-of-process rasterization be enabled.";
 
-const char kAcceleratedVideoDecodeName[] = "Hardware-accelerated video decode";
+const char kCapturedSurfaceControlName[] = "Captured Surface Control";
+const char kCapturedSurfaceControlDescription[] =
+    "Enables an API that allows an application to control scroll and zoom on "
+    "the tab which it is capturing.";
+
+    const char kAcceleratedVideoDecodeName[] =
+        "Hardware-accelerated video decode";
 const char kAcceleratedVideoDecodeDescription[] =
     "Hardware-accelerated video decode where available.";
 

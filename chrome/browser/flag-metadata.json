@@ -1012,6 +1012,14 @@
     "expiry_milestone": 140
   },
   {
+    "name": "captured-surface-control",
+    "owners": [
+      "eladalon@chromium.org",
+      "tovep@chromium.org"
+    ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "cast-mirroring-target-playout-delay",
     "owners": [ "gbj@google.com", "cros-edu-eng@google.com" ],
     "expiry_milestone": 125

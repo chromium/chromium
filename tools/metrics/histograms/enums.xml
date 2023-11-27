@@ -38078,6 +38078,7 @@ from previous Chrome versions.
   <int value="249465446" label="UseRealColorSpaceForAndroidVideo:enabled"/>
   <int value="250855010" label="WebAssemblyBaseline:disabled"/>
   <int value="251262596" label="CCTMinimized:disabled"/>
+  <int value="251266195" label="CapturedSurfaceControl:disabled"/>
   <int value="251367892" label="PersistentQuotaIsTemporaryQuota:disabled"/>
   <int value="251764234" label="AccessibilityPerformanceFiltering:disabled"/>
   <int value="254497185" label="VideoPlayerJsModules:enabled"/>
@@ -41095,6 +41096,7 @@ from previous Chrome versions.
   <int value="1689001971" label="ProjectorLocalPlayback:enabled"/>
   <int value="1689123607" label="enable-app-link"/>
   <int value="1689183477" label="enable-merge-key-char-events"/>
+  <int value="1690002671" label="CapturedSurfaceControl:enabled"/>
   <int value="1690248203" label="HelpAppV2:enabled"/>
   <int value="1690415951" label="PrivacySandboxSettings4:disabled"/>
   <int value="1690837904" label="save-previous-document-resources"/>

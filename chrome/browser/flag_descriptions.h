@@ -440,6 +440,9 @@ extern const char kCameraMicPreviewDescription[];
 extern const char kCanvasOopRasterizationName[];
 extern const char kCanvasOopRasterizationDescription[];
 
+extern const char kCapturedSurfaceControlName[];
+extern const char kCapturedSurfaceControlDescription[];
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 extern const char kCcoTest1Name[];
 extern const char kCcoTest1Description[];
