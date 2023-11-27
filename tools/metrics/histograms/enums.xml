@@ -10336,6 +10336,11 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Processed"/>
 </enum>
 
+<enum name="ConversionNavigationUnexpectedRegistration">
+  <int value="0" label="Registration already exists"/>
+  <int value="1" label="Registration missing upon receiving data"/>
+</enum>
+
 <enum name="ConversionOsRegistrationResult">
   <int value="0" label="Passed to OS"/>
   <int value="1" label="Unsupported"/>

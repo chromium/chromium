@@ -3048,6 +3048,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.NavigationUnexpectedRegistration"
+    enum="ConversionNavigationUnexpectedRegistration" expires_after="M124">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Used to further investigate the root cause of https://crbug.com/1500667.
+
+    Upon starting a foreground navigation registration for a given token, if the
+    registration already exists, records `kRegistrationAlreadyExists`.
+
+    Upon trying to register foreground navigation data, if the registration
+    isn't available and prevents the data from being processed, records
+    `kRegistrationMissingUponReceivingData`.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.OsRegistrationResult.{Type}"
     enum="ConversionOsRegistrationResult" expires_after="2024-05-12">
   <owner>linnan@chromium.org</owner>

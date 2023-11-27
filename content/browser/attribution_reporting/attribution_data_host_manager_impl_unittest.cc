@@ -103,6 +103,9 @@ constexpr char kRegisterDataHostOutcomeHistogram[] =
 constexpr char kProcessRegisterDataHostDelayHistogram[] =
     "Conversions.ProcessRegisterDataHostDelay";
 
+constexpr char kNavigationUnexpectedRegistrationHistogram[] =
+    "Conversions.NavigationUnexpectedRegistration";
+
 const GlobalRenderFrameHostId kFrameId = {0, 1};
 
 constexpr BeaconId kBeaconId(123);
@@ -540,6 +543,68 @@ TEST_F(AttributionDataHostManagerImplTest,
   // kRegistered = 0, kProcessed = 3.
   histograms.ExpectBucketCount(kNavigationDataHostStatusHistogram, 0, 1);
   histograms.ExpectBucketCount(kNavigationDataHostStatusHistogram, 3, 1);
+}
+
+TEST_F(AttributionDataHostManagerImplTest,
+       UnexpectedNavigationRegistrationsPatterns) {
+  base::HistogramTester histograms;
+
+  auto reporting_url = GURL("https://report.test");
+  auto source_origin = *SuitableOrigin::Deserialize("https://source.test");
+
+  const blink::AttributionSrcToken attribution_src_token;
+
+  // 1 - An initial navigation registration starts.
+  data_host_manager_.NotifyNavigationRegistrationStarted(
+      attribution_src_token, AttributionInputEvent(), source_origin,
+      /*is_within_fenced_frame=*/false, kFrameId,
+      /*navigation_id=*/kNavigationId, kDevtoolsRequestId);
+
+  // 2 - A second navigation registrations, with the same attribution_src_token,
+  //     starts. It should be ignored.
+  const int64_t second_navigation_id(878);  // different nav-id, the identity
+                                            // is based only on the token.
+  data_host_manager_.NotifyNavigationRegistrationStarted(
+      attribution_src_token, AttributionInputEvent(), source_origin,
+      /*is_within_fenced_frame=*/false, kFrameId,
+      /*navigation_id=*/second_navigation_id, kDevtoolsRequestId);
+  // kRegistrationAlreadyExists = 0
+  histograms.ExpectBucketCount(kNavigationUnexpectedRegistrationHistogram,
+                               /*sample=*/0, /*expected_count=*/1);
+
+  // 3 - We register some data, the foreground navigation is still active, it
+  //     should be successful.
+  {
+    auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+    headers->SetHeader(kAttributionReportingRegisterSourceHeader,
+                       kRegisterSourceJson);
+    EXPECT_CALL(mock_manager_, HandleSource).Times(1);
+    EXPECT_TRUE(data_host_manager_.NotifyNavigationRegistrationData(
+        attribution_src_token, headers.get(), reporting_url,
+        network::AttributionReportingRuntimeFeatures()));
+    task_environment_.FastForwardBy(base::TimeDelta());
+  }
+
+  // 4 - The first navigation finishes.
+  data_host_manager_.NotifyNavigationRegistrationCompleted(
+      attribution_src_token);
+
+  // 5 - The second navigation tries to register data, it should be ignored.
+  {
+    auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+    headers->SetHeader(kAttributionReportingRegisterSourceHeader,
+                       kRegisterSourceJson);
+    EXPECT_FALSE(data_host_manager_.NotifyNavigationRegistrationData(
+        attribution_src_token, headers.get(), reporting_url,
+        network::AttributionReportingRuntimeFeatures()));
+    // kRegistrationMissingUponReceivingData = 1
+    histograms.ExpectBucketCount(kNavigationUnexpectedRegistrationHistogram,
+                                 /*sample=*/1, /*expected_count=*/1);
+  }
+
+  // 6 - The second navigation completes, it should be ignored.
+  data_host_manager_.NotifyNavigationRegistrationCompleted(
+      attribution_src_token);
 }
 
 TEST_F(AttributionDataHostManagerImplTest,

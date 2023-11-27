@@ -107,6 +107,24 @@ void RecordRegisterDataHostHostOutcome(RegisterDataHostOutcome status) {
   base::UmaHistogramEnumeration("Conversions.RegisterDataHostOutcome", status);
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class NavigationUnexpectedRegistration {
+  kRegistrationAlreadyExists = 0,
+  kRegistrationMissingUponReceivingData = 1,
+  kMaxValue = kRegistrationMissingUponReceivingData,
+};
+
+// See https://crbug.com/1500667 for details. There are assumptions that a
+// navigation registration can only be registered once and that it must be
+// registered and will be available when receiving data. Crashes challenges
+// these assumptions.
+void RecordNavigationUnexpectedRegistration(
+    NavigationUnexpectedRegistration status) {
+  base::UmaHistogramEnumeration("Conversions.NavigationUnexpectedRegistration",
+                                status);
+}
+
 const base::TimeDelta kDeferredReceiversTimeout = base::Seconds(10);
 
 constexpr size_t kMaxDeferredReceiversPerNavigation = 30;
@@ -600,7 +618,12 @@ void AttributionDataHostManagerImpl::NotifyNavigationRegistrationStarted(
           is_within_fenced_frame, render_frame_id,
           std::move(devtools_request_id),
           RegistrationNavigationContext(navigation_id, input_event)));
-  DCHECK(registration_inserted);
+  if (!registration_inserted) {
+    RecordNavigationUnexpectedRegistration(
+        NavigationUnexpectedRegistration::kRegistrationAlreadyExists);
+    return;
+  }
+
   MaybeSetupDeferredReceivers(navigation_id);
 
   // A navigation-associated interface is used for
@@ -648,7 +671,12 @@ bool AttributionDataHostManagerImpl::NotifyNavigationRegistrationData(
   }
 
   auto it = registrations_.find(attribution_src_token);
-  CHECK(it != registrations_.end());
+  if (it == registrations_.end()) {
+    RecordNavigationUnexpectedRegistration(
+        NavigationUnexpectedRegistration::
+            kRegistrationMissingUponReceivingData);
+    return false;
+  }
   CHECK(!it->registrations_complete());
 
   if (!header.value().has_value()) {
