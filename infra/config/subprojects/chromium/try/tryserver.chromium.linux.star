@@ -232,6 +232,9 @@ try_.builder(
     branch_selector = branches.selector.LINUX_BRANCHES,
     executable = "recipe:chromium/fuzz",
     builderless = not settings.is_main,
+    experiments = {
+        "chromium.skip_successful_tests": 50,
+    },
     main_list_view = "try",
     tryjob = try_.job(),
 )
@@ -411,6 +414,9 @@ try_.builder(
         "ci/Cast Linux",
     ],
     builderless = not settings.is_main,
+    experiments = {
+        "chromium.skip_successful_tests": 50,
+    },
     gn_args = gn_args.config(
         configs = [
             "ci/Cast Linux",
@@ -477,6 +483,7 @@ try_.orchestrator_builder(
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
         "chromium.compilator_can_outlive_parent": 100,
+        "chromium.skip_successful_tests": 50,
     },
     main_list_view = "try",
     tryjob = try_.job(),
@@ -597,6 +604,9 @@ try_.builder(
             path = "linux_debug",
         ),
     ],
+    experiments = {
+        "chromium.skip_successful_tests": 50,
+    },
     gn_args = gn_args.config(
         configs = [
             "debug_try_builder",
@@ -701,6 +711,7 @@ try_.orchestrator_builder(
     experiments = {
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
+        "chromium.skip_successful_tests": 50,
     },
     main_list_view = "try",
     tryjob = try_.job(),
