@@ -1,2 +1,0 @@
-# TODO(crbug.com/1505084): This test consistently fails on the platform.
--ShapeResultTest/CaretPositionForOffsetText.CaretPositionForOffsets/*
