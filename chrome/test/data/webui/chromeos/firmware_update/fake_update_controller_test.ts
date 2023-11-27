@@ -43,7 +43,7 @@ suite('FakeUpdateController', () => {
       },
     } as UpdateProgressObserverRemote;
 
-    controller.addObserver(updateProgressObserverRemote);
+    controller.addUpdateProgressObserver(updateProgressObserverRemote);
     const filePath: FilePath = {path: 'test1.cab'};
     controller.beginUpdate(deviceId, filePath);
     // Allow firmware update to complete.

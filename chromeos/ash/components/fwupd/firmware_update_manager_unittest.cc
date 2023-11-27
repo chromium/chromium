@@ -522,7 +522,8 @@ class FirmwareUpdateManagerTest : public testing::Test {
   }
 
   void SetupProgressObserver(FakeUpdateProgressObserver* observer) {
-    install_controller_remote_->AddObserver(observer->pending_remote());
+    install_controller_remote_->AddUpdateProgressObserver(
+        observer->pending_remote());
     base::RunLoop().RunUntilIdle();
   }
 

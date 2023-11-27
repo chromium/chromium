@@ -157,7 +157,7 @@ export class FirmwareUpdateDialogElement extends FirmwareUpdateDialogElementBase
     this.updateProgressObserverReceiver =
         new UpdateProgressObserverReceiver(this);
     assert(this.installController);
-    this.installController.addObserver(
+    this.installController.addUpdateProgressObserver(
         this.updateProgressObserverReceiver.$.bindNewPipeAndPassRemote());
 
     // Only start new updates, inflight updates will be observed instead.

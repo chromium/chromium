@@ -725,7 +725,7 @@ void FirmwareUpdateManager::BeginUpdate(const std::string& device_id,
   StartInstall(device_id, filepath, /**callback=*/base::DoNothing());
 }
 
-void FirmwareUpdateManager::AddObserver(
+void FirmwareUpdateManager::AddUpdateProgressObserver(
     mojo::PendingRemote<firmware_update::mojom::UpdateProgressObserver>
         observer) {
   update_progress_observer_.reset();
