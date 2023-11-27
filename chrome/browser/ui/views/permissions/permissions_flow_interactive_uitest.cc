@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsFlowInteractiveUITest,
       PressButton(kLocationIconElementId),
       WaitForShow(PageInfoMainView::kPermissionsElementId),
       NameChildView(PageInfoMainView::kPermissionsElementId,
-                    kFirstPermissionRow, 0),
+                    kFirstPermissionRow, 0u),
       CheckViewProperty(
           kFirstPermissionRow, &PermissionToggleRowView::GetRowTitleForTesting,
           l10n_util::GetStringUTF16(IDS_SITE_SETTINGS_TYPE_NOTIFICATIONS)));
@@ -172,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsFlowInteractiveUITest,
       PressButton(kLocationIconElementId),
       WaitForShow(PageInfoMainView::kPermissionsElementId),
       NameChildView(PageInfoMainView::kPermissionsElementId,
-                    kFirstPermissionRow, 0),
+                    kFirstPermissionRow, 0u),
       CheckViewProperty(
           kFirstPermissionRow, &PermissionToggleRowView::GetRowTitleForTesting,
           l10n_util::GetStringUTF16(IDS_SITE_SETTINGS_TYPE_CAMERA)));

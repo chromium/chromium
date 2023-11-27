@@ -283,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
                             &observer),
       // Name the third-party cookies row.
       InAnyContext(NameChildView(kPageSpecificSiteDataDialogThirdPartySection,
-                                 kThirdPartyBlockedRow, 2)),
+                                 kThirdPartyBlockedRow, 2u)),
       CheckRowLabel(kThirdPartyBlockedRow,
                     IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_BLOCKED_STATE_SUBTITLE),
       OpenRowMenu(kThirdPartyBlockedRow),
@@ -329,7 +329,7 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
       // Find the third party section and name the row with partitioned only
       // access (b.test).
       InAnyContext(NameChildView(kPageSpecificSiteDataDialogThirdPartySection,
-                                 kOnlyPartitionedRow, 0)),
+                                 kOnlyPartitionedRow, 0u)),
       CheckRowLabel(
           kOnlyPartitionedRow,
           IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_PARTITIONED_STATE_SUBTITLE),
@@ -369,7 +369,7 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
       // Find the third party section and name the row with mixed storage
       // access (c.test).
       InAnyContext(NameChildView(kPageSpecificSiteDataDialogThirdPartySection,
-                                 kMixedPartitionedRow, 1)),
+                                 kMixedPartitionedRow, 1u)),
       CheckRowLabel(
           kMixedPartitionedRow,
           IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_PARTITIONED_STATE_SUBTITLE),
@@ -465,7 +465,7 @@ IN_PROC_BROWSER_TEST_F(
                             kPageSpecificSiteDataDialogFirstPartySection),
       // Name the first row in the first-party section.
       InAnyContext(NameChildView(kPageSpecificSiteDataDialogFirstPartySection,
-                                 kFirstPartyAllowedRow, 0)),
+                                 kFirstPartyAllowedRow, 0u)),
       // Verify no empty state label is present.
       InAnyContext(
           EnsureNotPresent(kPageSpecificSiteDataDialogEmptyStateLabel)),
@@ -515,7 +515,7 @@ IN_PROC_BROWSER_TEST_F(
       NavigateAndOpenDialog(kPageSpecificSiteDataDialogFirstPartySection),
       // Name the first row in the first-party section.
       InAnyContext(NameChildView(kPageSpecificSiteDataDialogFirstPartySection,
-                                 kFirstPartyAllowedRow, 0)),
+                                 kFirstPartyAllowedRow, 0u)),
       // Verify no empty state label is present.
       InAnyContext(
           EnsureNotPresent(kPageSpecificSiteDataDialogEmptyStateLabel)),
