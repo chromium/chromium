@@ -45,6 +45,9 @@ DefinitionResult::~DefinitionResult() = default;
 TranslationResult::TranslationResult() = default;
 TranslationResult::~TranslationResult() = default;
 
+UnitConversionResult::UnitConversionResult() = default;
+UnitConversionResult::~UnitConversionResult() = default;
+
 StructuredResult::StructuredResult() = default;
 StructuredResult::~StructuredResult() = default;
 

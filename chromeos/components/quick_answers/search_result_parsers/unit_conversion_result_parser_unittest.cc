@@ -98,6 +98,14 @@ class UnitConversionResultParserTest : public testing::Test {
     return parser_.Parse(result_, quick_answer);
   }
 
+  std::unique_ptr<StructuredResult> ParseInStructuredResult() {
+    return parser_.ParseInStructuredResult(result_);
+  }
+
+  std::string GetAmountString(double amount) {
+    return base::StringPrintf(kResultValueTemplate, amount);
+  }
+
  protected:
   Value::Dict result_;
 
@@ -145,6 +153,21 @@ TEST_F(UnitConversionResultParserTest,
   EXPECT_EQ(kDestRawTextPound,
             GetQuickAnswerTextForTesting(quick_answer.first_answer_row));
   EXPECT_EQ(ui::kColorLabelForegroundSecondary, answer->color_id);
+
+  // Expectations for `StructuredResult`.
+  std::unique_ptr<StructuredResult> structured_result =
+      ParseInStructuredResult();
+  ASSERT_TRUE(structured_result);
+  ASSERT_TRUE(structured_result->unit_conversion_result);
+
+  UnitConversionResult* unit_conversion_result =
+      structured_result->unit_conversion_result.get();
+  EXPECT_EQ(unit_conversion_result->result_text,
+            base::UTF16ToASCII(answer->text));
+  EXPECT_EQ(unit_conversion_result->source_amount,
+            GetAmountString(kSourceAmountKilogram));
+  EXPECT_EQ(unit_conversion_result->destination_amount,
+            GetAmountString(kDestAmountPound));
 }
 
 TEST_F(UnitConversionResultParserTest, ParseWithNoRuleSetShouldReturnRawText) {
@@ -165,6 +188,21 @@ TEST_F(UnitConversionResultParserTest, ParseWithNoRuleSetShouldReturnRawText) {
   EXPECT_EQ(kDestRawTextPound,
             GetQuickAnswerTextForTesting(quick_answer.first_answer_row));
   EXPECT_EQ(ui::kColorLabelForegroundSecondary, answer->color_id);
+
+  // Expectations for `StructuredResult`.
+  std::unique_ptr<StructuredResult> structured_result =
+      ParseInStructuredResult();
+  ASSERT_TRUE(structured_result);
+  ASSERT_TRUE(structured_result->unit_conversion_result);
+
+  UnitConversionResult* unit_conversion_result =
+      structured_result->unit_conversion_result.get();
+  EXPECT_EQ(unit_conversion_result->result_text,
+            base::UTF16ToASCII(answer->text));
+  EXPECT_EQ(unit_conversion_result->source_amount,
+            GetAmountString(kSourceAmountKilogram));
+  EXPECT_EQ(unit_conversion_result->destination_amount,
+            GetAmountString(kDestAmountPound));
 }
 
 TEST_F(UnitConversionResultParserTest,
@@ -187,6 +225,21 @@ TEST_F(UnitConversionResultParserTest,
   EXPECT_EQ(kDestRawTextPound,
             GetQuickAnswerTextForTesting(quick_answer.first_answer_row));
   EXPECT_EQ(ui::kColorLabelForegroundSecondary, answer->color_id);
+
+  // Expectations for `StructuredResult`.
+  std::unique_ptr<StructuredResult> structured_result =
+      ParseInStructuredResult();
+  ASSERT_TRUE(structured_result);
+  ASSERT_TRUE(structured_result->unit_conversion_result);
+
+  UnitConversionResult* unit_conversion_result =
+      structured_result->unit_conversion_result.get();
+  EXPECT_EQ(unit_conversion_result->result_text,
+            base::UTF16ToASCII(answer->text));
+  EXPECT_EQ(unit_conversion_result->source_amount,
+            GetAmountString(kSourceAmountKilogram));
+  EXPECT_EQ(unit_conversion_result->destination_amount,
+            GetAmountString(kDestAmountPound));
 }
 
 TEST_F(UnitConversionResultParserTest,
@@ -214,6 +267,22 @@ TEST_F(UnitConversionResultParserTest,
   EXPECT_EQ(expected_result,
             GetQuickAnswerTextForTesting(quick_answer.first_answer_row));
   EXPECT_EQ(ui::kColorLabelForegroundSecondary, answer->color_id);
+
+  // Expectations for `StructuredResult`.
+  std::unique_ptr<StructuredResult> structured_result =
+      ParseInStructuredResult();
+  ASSERT_TRUE(structured_result);
+  ASSERT_TRUE(structured_result->unit_conversion_result);
+
+  UnitConversionResult* unit_conversion_result =
+      structured_result->unit_conversion_result.get();
+  EXPECT_EQ(unit_conversion_result->result_text,
+            base::UTF16ToASCII(answer->text));
+  EXPECT_EQ(unit_conversion_result->source_amount,
+            GetAmountString(kSourceAmountKilogram));
+  EXPECT_EQ(unit_conversion_result->destination_amount,
+            GetAmountString(kDestAmountGram));
+  EXPECT_EQ(unit_conversion_result->source_unit, kKilogramName);
 }
 
 }  // namespace quick_answers

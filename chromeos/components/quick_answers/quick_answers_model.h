@@ -262,6 +262,21 @@ struct TranslationResult {
   std::string target_locale;
 };
 
+// `UnitConversionResult` holds result for unit conversion intent.
+// `UnitConversionResult` must be copyable.
+struct UnitConversionResult {
+ public:
+  UnitConversionResult();
+  ~UnitConversionResult();
+
+  std::string result_text;
+  std::string category;
+  std::string source_amount;
+  std::string destination_amount;
+  std::string source_unit;
+  std::string destination_unit;
+};
+
 // `StructuredResult` is NOT copyable as it's not trivial to make a class with
 // unique_ptr to copyable.
 class StructuredResult {
@@ -274,6 +289,7 @@ class StructuredResult {
   // Result type specific structs must be copyable.
   std::unique_ptr<TranslationResult> translation_result;
   std::unique_ptr<DefinitionResult> definition_result;
+  std::unique_ptr<UnitConversionResult> unit_conversion_result;
 };
 
 // `QuickAnswersSession` holds states related to a single Quick Answer session.

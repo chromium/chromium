@@ -18,7 +18,7 @@ inline constexpr char kDestTextPath[] =
 
 inline constexpr char kCategoryPath[] = "category";
 inline constexpr char kConversionRateAPath[] = "conversionToSiA";
-inline constexpr char kResultValueTemplate[] = "%.3f";
+inline constexpr char kResultValueTemplate[] = "%.3g";
 inline constexpr char kNamePath[] = "name";
 inline constexpr char kUnitsPath[] = "units";
 
