@@ -507,6 +507,17 @@ chromium-metrics-reviews@google.com.
   <token key="PermissionType" variants="AllPermissionTypes"/>
 </histogram>
 
+<histogram name="Permissions.GetLastCommittedOriginAsURL.IsFileURL"
+    enum="Boolean" expires_after="2024-10-30">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Recorded whenever a RenderFrameHost is used to fetch an origin for
+    permission verification on Android. This histogram is needed to verify if
+    the file url override rule is still needed.
+  </summary>
+</histogram>
+
 <histogram name="Permissions.MissingOSLevelPermission.Action"
     enum="PermissionAction" expires_after="2024-05-19">
   <owner>andypaicu@chromium.org</owner>

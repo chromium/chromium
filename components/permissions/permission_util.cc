@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -60,6 +61,11 @@ PermissionDelegationMode GetPermissionDelegationMode(
   }
   return PermissionDelegationMode::kDelegated;
 }
+
+#if BUILDFLAG(IS_ANDROID)
+constexpr const char* kIsFileURLHistogram =
+    "Permissions.GetLastCommittedOriginAsURL.IsFileURL";
+#endif
 }  // namespace
 
 // The returned strings must match any Field Trial configs for the Permissions
@@ -238,7 +244,10 @@ GURL PermissionUtil::GetLastCommittedOriginAsURL(
   if (web_contents->GetOrCreateWebPreferences()
           .allow_universal_access_from_file_urls &&
       render_frame_host->GetLastCommittedOrigin().GetURL().SchemeIsFile()) {
+    base::UmaHistogramBoolean(kIsFileURLHistogram, true);
     return render_frame_host->GetLastCommittedURL().DeprecatedGetOriginAsURL();
+  } else {
+    base::UmaHistogramBoolean(kIsFileURLHistogram, false);
   }
 #endif
 

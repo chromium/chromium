@@ -5,6 +5,7 @@
 #include "content/browser/permissions/permission_util.h"
 
 #include "base/check.h"
+#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -16,6 +17,13 @@
 using blink::mojom::PermissionDescriptorPtr;
 
 namespace content {
+
+#if BUILDFLAG(IS_ANDROID)
+namespace {
+constexpr const char* kIsFileURLHistogram =
+    "Permissions.GetLastCommittedOriginAsURL.IsFileURL";
+}
+#endif
 
 // Due to dependency issues, this method is duplicated from
 // components/permissions/permission_util.cc.
@@ -33,7 +41,10 @@ GURL PermissionUtil::GetLastCommittedOriginAsURL(
   if (web_contents->GetOrCreateWebPreferences()
           .allow_universal_access_from_file_urls &&
       render_frame_host->GetLastCommittedOrigin().GetURL().SchemeIsFile()) {
+    base::UmaHistogramBoolean(kIsFileURLHistogram, true);
     return render_frame_host->GetLastCommittedURL().DeprecatedGetOriginAsURL();
+  } else {
+    base::UmaHistogramBoolean(kIsFileURLHistogram, false);
   }
 #endif
 
