@@ -111,6 +111,9 @@ def validateJavaScriptAllowed(source_dir, out_dir, is_ios):
       'ash/webui/diagnostics_ui/',
       'ash/webui/face_ml_app_ui/',
       'ash/webui/file_manager/resources/labs/',
+      # TODO(b/310963279): Migrate os_feedback_ui to TypeScript and remove
+      # exception.
+      'ash/webui/os_feedback_ui/',
       'ash/webui/shortcut_customization_ui/',
       'ash/webui/sample_system_web_app_ui/',
       'ui/file_manager/',

@@ -10,7 +10,7 @@
 
 /**
  * Type alias for an array of HelpContent.
- * @typedef !Array<!HelpContent>
+ * typedef !Array<!HelpContent>
  */
 export let HelpContentList;
 
@@ -20,7 +20,7 @@ export let HelpContentList;
  * empty. The isQueryEmpty is true when the current query is empty. The
  * isPopularContent is true when the current query is not empty and no matches
  * are found.
- * @typedef {{
+ * typedef {{
  *   contentList: HelpContentList,
  *   isQueryEmpty: boolean,
  *   isPopularContent: boolean

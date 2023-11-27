@@ -3,19 +3,12 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
-import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/grit/grit_rule.gni")
-import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/html_to_js.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
 
 assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 
-generate_grd("build_grd") {
-  grd_prefix = "ash_os_feedback_untrusted"
-  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
-
-  input_files = [
+build_webui("build") {
+  static_files = [
     "illustrations/illo_load_content_error.svg",
     "illustrations/illo_network_unavailable.svg",
     "illustrations/load_content_error_darkmode.svg",
@@ -23,14 +16,15 @@ generate_grd("build_grd") {
     "illustrations/network_unavailable_darkmode.svg",
     "illustrations/network_unavailable_lightmode.svg",
     "untrusted_index.html",
-    "untrusted_index.js",
   ]
-  input_files_base_dir = rebase_path(".", "//")
 
-  manifest_files = []
+  non_web_component_files = [ "untrusted_index.js" ]
 
-  deps = [
+  ts_deps = [
     "//ash/webui/common/resources:build_ts",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
   ]
+
+  grd_prefix = "ash_os_feedback_untrusted"
+  grit_output_dir = "$root_gen_dir/ash/webui"
 }

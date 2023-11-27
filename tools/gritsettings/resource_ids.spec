@@ -1082,11 +1082,11 @@
     "META": {"align": 100},
     "messages": [7400],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/os_feedback_ui/resources/ash_os_feedback_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/os_feedback_ui/resources/resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [7420],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/os_feedback_ui/untrusted_resources/ash_os_feedback_untrusted_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/os_feedback_ui/untrusted_resources/resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [7440],
   },
