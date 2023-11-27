@@ -2,7 +2,5 @@ nicolaso@chromium.org
 rhalavati@chromium.org  # emeritus
 
 per-file safe_list.txt=crmullins@chromium.org
-# TODO(b/304802311): Remove jorgelo@ once other folks become committers.
-per-file safe_list.txt=jorgelo@chromium.org
 per-file safe_list.txt=nicolaso@chromium.org
 per-file safe_list.txt=ramyagopalan@google.com
