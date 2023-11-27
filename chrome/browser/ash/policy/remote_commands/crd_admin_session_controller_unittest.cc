@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/remote_commands/crd_admin_session_controller.h"
 
+#include <optional>
 #include <string>
 #include <tuple>
 
@@ -28,6 +29,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
+#include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "remoting/host/chromeos/features.h"
@@ -35,7 +37,6 @@
 #include "remoting/protocol/errors.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #define EXPECT_NO_CALLS(args...) EXPECT_CALL(args).Times(0);
 
@@ -193,10 +194,18 @@ class Response {
            const std::string& error_message)
       : result_code_(result_code), error_message_(error_message) {}
 
-  absl::optional<std::string> access_code_;
-  absl::optional<ExtendedStartCrdSessionResultCode> result_code_;
-  absl::optional<std::string> error_message_;
+  std::optional<std::string> access_code_;
+  std::optional<ExtendedStartCrdSessionResultCode> result_code_;
+  std::optional<std::string> error_message_;
 };
+
+// Wrapper to return the `BrowserTaskEnvironment` as its base class
+// `TaskEnvironment`. Without this the compiler takes the wrong constructor
+// of `AshTestBase` and compilation fails.
+std::unique_ptr<base::test::TaskEnvironment> CreateTaskEnvironment(
+    base::test::TaskEnvironment::TimeSource time_source) {
+  return std::make_unique<content::BrowserTaskEnvironment>(time_source);
+}
 
 }  // namespace
 
@@ -206,7 +215,8 @@ class Response {
 class CrdAdminSessionControllerTest : public ash::AshTestBase {
  public:
   CrdAdminSessionControllerTest()
-      : ash::AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+      : ash::AshTestBase(CreateTaskEnvironment(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME)),
         local_state_(TestingBrowserProcess::GetGlobal()) {}
   CrdAdminSessionControllerTest(const CrdAdminSessionControllerTest&) = delete;
   CrdAdminSessionControllerTest& operator=(
@@ -354,6 +364,11 @@ class CrdAdminSessionControllerTest : public ash::AshTestBase {
   }
 
  private:
+  void TearDown() override {
+    session_controller_.Shutdown();
+    AshTestBase::TearDown();
+  }
+
   ScopedTestingLocalState local_state_;
   testing::StrictMock<ash::MockLoginDisplayHost> mock_login_display_host_;
   TestFuture<Response> result_;
@@ -682,6 +697,9 @@ TEST_F(CrdAdminSessionControllerTest,
   EnableFeature(kEnableCrdAdminRemoteAccessV2);
 
   const remoting::SessionId kSessionId{123};
+  const std::string kOAuthToken = "oauth-token-for-reconnect";
+
+  session_controller().SetOAuthTokenForTesting(kOAuthToken);
 
   // First we should query for the reconnectable session id.
   EXPECT_CALL(remoting_service(), GetReconnectableSessionId)
@@ -690,10 +708,11 @@ TEST_F(CrdAdminSessionControllerTest,
   // And next we should use this session id to reconnect.
   EXPECT_CALL(remoting_service(),
               ReconnectToSession(kSessionId, testing::_, testing::_))
-      .WillOnce([&](remoting::SessionId, const std::string&,
+      .WillOnce([&](remoting::SessionId, const std::string& oauth_token,
                     StartSupportSessionCallback callback) {
         std::move(callback).Run(
             StartSupportSessionResponse::NewObserver(BindObserver()));
+        EXPECT_EQ(oauth_token, kOAuthToken);
       });
 
   TestFuture<void> done_signal;
@@ -701,6 +720,28 @@ TEST_F(CrdAdminSessionControllerTest,
   ASSERT_TRUE(done_signal.Wait());
 
   EXPECT_TRUE(delegate().HasActiveSession());
+}
+
+TEST_F(CrdAdminSessionControllerTest,
+       ShouldHandleOauthTokenFailureWhileReconnecting) {
+  EnableFeature(kEnableCrdAdminRemoteAccessV2);
+
+  session_controller().ClearOAuthTokenForTesting();
+
+  // First we should query for the reconnectable session id.
+  EXPECT_CALL(remoting_service(), GetReconnectableSessionId)
+      .WillOnce([&](auto callback) {
+        std::move(callback).Run(remoting::SessionId{1});
+      });
+
+  // But since there is no oauth token we should never actually reconnect.
+  EXPECT_NO_CALLS(remoting_service(), ReconnectToSession);
+
+  TestFuture<void> done_signal;
+  session_controller().Init(&local_state(), done_signal.GetCallback());
+  ASSERT_TRUE(done_signal.Wait());
+
+  EXPECT_FALSE(delegate().HasActiveSession());
 }
 
 TEST_F(CrdAdminSessionControllerTest,

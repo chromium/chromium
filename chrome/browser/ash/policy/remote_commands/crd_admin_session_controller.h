@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_ADMIN_SESSION_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
+#include <string_view>
 
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
@@ -35,7 +37,7 @@ class CrdAdminSessionController : private StartCrdSessionJobDelegate {
     using StartSessionCallback = base::OnceCallback<void(
         remoting::mojom::StartSupportSessionResponsePtr response)>;
     using SessionIdCallback =
-        base::OnceCallback<void(absl::optional<remoting::SessionId>)>;
+        base::OnceCallback<void(std::optional<remoting::SessionId>)>;
 
     // Starts a new remote support session. `callback` is
     // called with the result.
@@ -46,7 +48,7 @@ class CrdAdminSessionController : private StartCrdSessionJobDelegate {
 
     // Checks if session information for a reconnectable session is stored,
     // and invokes `callback` with the id of the reconnectable session (or
-    // absl::nullopt if there is none).
+    // std::nullopt if there is none).
     virtual void GetReconnectableSessionId(SessionIdCallback callback) = 0;
 
     // Starts a new remote support session, which will resume the reconnectable
@@ -72,8 +74,15 @@ class CrdAdminSessionController : private StartCrdSessionJobDelegate {
 
   StartCrdSessionJobDelegate& GetDelegate();
 
+  void SetOAuthTokenForTesting(std::string_view token);
+  void ClearOAuthTokenForTesting();
+
  private:
   class CrdHostSession;
+
+  class SessionLauncher;
+  class ReconnectedSessionLauncher;
+  class NewSessionLauncher;
 
   // Checks if there is a reconnectable session, and if so this will reconnect
   // to it. A session is reconnectable when it was created with
@@ -95,8 +104,14 @@ class CrdAdminSessionController : private StartCrdSessionJobDelegate {
 
   std::unique_ptr<RemotingServiceProxy> remoting_service_;
   std::unique_ptr<CrdHostSession> active_session_;
+  std::unique_ptr<SessionLauncher> session_launcher_;
+
   std::unique_ptr<RemoteActivityNotificationController>
       notification_controller_;
+
+  // During unittests the `DeviceOAuth2TokenService` will be null and the code
+  // will instead use this OAuth token to restart a reconnectable session.
+  std::optional<std::string> oauth_token_for_test_;
 };
 
 }  // namespace policy

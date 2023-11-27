@@ -6,26 +6,32 @@
 
 #include <iomanip>
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "ash/shell.h"
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_logging.h"
+#include "chrome/browser/ash/policy/remote_commands/crd_oauth_token_fetcher.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_remote_command_utils.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_session_observer.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_support_host_observer_proxy.h"
 #include "chrome/browser/ash/policy/remote_commands/remote_activity_notification_controller.h"
+#include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -35,7 +41,6 @@
 #include "remoting/host/chromeos/remoting_service.h"
 #include "remoting/host/chromeos/session_id.h"
 #include "remoting/host/mojom/remote_support.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -165,7 +170,7 @@ class SessionDurationObserver : public CrdSessionObserver {
 
  private:
   SessionEndCallback callback_;
-  absl::optional<base::Time> session_connected_time_;
+  std::optional<base::Time> session_connected_time_;
 };
 
 // Rejects incoming sessions when there is more than 15 minutes between
@@ -197,7 +202,7 @@ class AccessCodeTtlChecker : public CrdSessionObserver {
 
  private:
   base::OnceClosure terminate_session_;
-  absl::optional<base::OneShotTimer> terminate_timer_;
+  std::optional<base::OneShotTimer> terminate_timer_;
 };
 
 remoting::mojom::SupportSessionParamsPtr GetSessionParameters(
@@ -224,20 +229,35 @@ remoting::ChromeOsEnterpriseParams GetEnterpriseParameters(
   };
 }
 
+DeviceOAuth2TokenService* GetOAuthService() {
+  return DeviceOAuth2TokenServiceFactory::Get();
+}
+
+std::unique_ptr<CrdOAuthTokenFetcher> CreateOAuthTokenFetcher(
+    DeviceOAuth2TokenService* service,
+    std::optional<std::string> oauth_token_for_test) {
+  if (service) {
+    return std::make_unique<RealCrdOAuthTokenFetcher>(CHECK_DEREF(service));
+  } else {
+    CHECK_IS_TEST();
+    return std::make_unique<FakeCrdOAuthTokenFetcher>(oauth_token_for_test);
+  }
+}
+
 }  // namespace
+
+// Empty base class implemented by all session launchers so
+// `CrdAdminSessionController` can keep ownership through a unique_ptr.
+class CrdAdminSessionController::SessionLauncher {
+ public:
+  virtual ~SessionLauncher() = default;
+};
 
 class CrdAdminSessionController::CrdHostSession : private CrdSessionObserver {
  public:
-  explicit CrdHostSession(RemotingServiceProxy& remoting_service)
-      : CrdHostSession(remoting_service,
-                       base::DoNothing(),
-                       base::DoNothing(),
-                       base::DoNothing()) {}
-  CrdHostSession(RemotingServiceProxy& remoting_service,
-                 AccessCodeCallback success_callback,
+  CrdHostSession(AccessCodeCallback success_callback,
                  ErrorCallback error_callback,
-                 SessionEndCallback session_finished_callback)
-      : remoting_service_(remoting_service) {
+                 SessionEndCallback session_finished_callback) {
     AddOwnedObserver(std::make_unique<HostStartObserver>(
         std::move(success_callback), std::move(error_callback)));
     AddOwnedObserver(std::make_unique<SessionDurationObserver>(
@@ -250,56 +270,28 @@ class CrdAdminSessionController::CrdHostSession : private CrdSessionObserver {
   CrdHostSession& operator=(const CrdHostSession&) = delete;
   ~CrdHostSession() override = default;
 
-  void Start(const SessionParameters& parameters) {
-    CRD_DVLOG(3) << "Starting CRD session with parameters " << parameters;
-    session_parameters_ = parameters;
-
-    remoting_service_->StartSession(
-        GetSessionParameters(parameters), GetEnterpriseParameters(parameters),
-        base::BindOnce(&CrdHostSession::OnStartSupportSessionResponse,
-                       weak_factory_.GetWeakPtr()));
-  }
-
-  void TryToReconnect(base::OnceClosure done_callback) {
-    CRD_DVLOG(3) << "Checking for reconnectable session";
-    remoting_service_->GetReconnectableSessionId(
-        base::BindOnce(&CrdHostSession::ReconnectToSession,
-                       weak_factory_.GetWeakPtr())
-            .Then(std::move(done_callback)));
-  }
-
   void AddObserver(CrdSessionObserver* observer) {
     observer_proxy_.AddObserver(observer);
   }
 
-  bool IsSessionCurtained() const {
-    return session_parameters_.has_value() &&
-           session_parameters_->curtain_local_user_session;
+  void SetIsSessionCurtained(bool is_curtained) {
+    is_curtained_ = is_curtained;
   }
+
+  bool IsSessionCurtained() const { return is_curtained_; }
 
   // We only have a valid, active CRD session (to which the remote admin
   // can connect/is connected) as long as the CRD host is bound.
   bool IsHostBound() const { return observer_proxy_.IsBound(); }
 
+  // Returns a callback that can be passed to the various
+  // start session methods of `RemotingServiceProxy`.
+  auto GetStartSessionCallback() {
+    return base::BindOnce(&CrdHostSession::OnStartSupportSessionResponse,
+                          weak_factory_.GetWeakPtr());
+  }
+
  private:
-  void ReconnectToSession(absl::optional<remoting::SessionId> id) {
-    if (id.has_value()) {
-      CRD_LOG(INFO) << "Attempting to resume reconnectable session";
-
-      remoting_service_->ReconnectToSession(
-          id.value(), "TODO(joedow): Provide real oauth access token",
-          base::BindOnce(&CrdHostSession::OnStartSupportSessionResponse,
-                         weak_factory_.GetWeakPtr()));
-    } else {
-      CRD_DVLOG(3) << "No reconnectable CRD session found.";
-    }
-  }
-
-  void AddOwnedObserver(std::unique_ptr<CrdSessionObserver> observer) {
-    observer_proxy_.AddObserver(observer.get());
-    owned_session_observers_.push_back(std::move(observer));
-  }
-
   void OnStartSupportSessionResponse(
       remoting::mojom::StartSupportSessionResponsePtr response) {
     if (response->is_support_session_error()) {
@@ -311,6 +303,11 @@ class CrdAdminSessionController::CrdHostSession : private CrdSessionObserver {
     }
 
     observer_proxy_.Bind(std::move(response->get_observer()));
+  }
+
+  void AddOwnedObserver(std::unique_ptr<CrdSessionObserver> observer) {
+    observer_proxy_.AddObserver(observer.get());
+    owned_session_observers_.push_back(std::move(observer));
   }
 
   void TerminateSession() {
@@ -330,13 +327,107 @@ class CrdAdminSessionController::CrdHostSession : private CrdSessionObserver {
     observer_proxy_.Unbind();
   }
 
-  raw_ref<RemotingServiceProxy> remoting_service_;
-
   SupportHostObserverProxy observer_proxy_;
   std::vector<std::unique_ptr<CrdSessionObserver>> owned_session_observers_;
-  absl::optional<SessionParameters> session_parameters_;
+
+  bool is_curtained_ = false;
 
   base::WeakPtrFactory<CrdHostSession> weak_factory_{this};
+};
+
+// Launcher that starts a new CRD session.
+class CrdAdminSessionController::NewSessionLauncher : public SessionLauncher {
+ public:
+  NewSessionLauncher(RemotingServiceProxy& remoting_service,
+                     CrdHostSession& session,
+                     const SessionParameters& parameters)
+      : remoting_service_(remoting_service), session_(session) {
+    Start(parameters);
+  }
+
+ private:
+  void Start(const SessionParameters& parameters) {
+    CRD_DVLOG(3) << "Starting CRD session with parameters " << parameters;
+    session_->SetIsSessionCurtained(parameters.curtain_local_user_session);
+    remoting_service_->StartSession(GetSessionParameters(parameters),
+                                    GetEnterpriseParameters(parameters),
+                                    session_->GetStartSessionCallback());
+  }
+
+  raw_ref<RemotingServiceProxy> remoting_service_;
+  raw_ref<CrdHostSession> session_;
+};
+
+// Launcher that checks if a reconnectable CRD session is available, and if so
+// connects to it.
+class CrdAdminSessionController::ReconnectedSessionLauncher
+    : public SessionLauncher {
+ public:
+  ReconnectedSessionLauncher(
+      RemotingServiceProxy& remoting_service,
+      CrdHostSession& session,
+      std::unique_ptr<CrdOAuthTokenFetcher> oauth_token_fetcher,
+      base::OnceClosure on_reconnect_done_callback)
+      : remoting_service_(remoting_service),
+        session_(session),
+        on_reconnect_done_(std::move(on_reconnect_done_callback)),
+        oauth_token_fetcher_(std::move(oauth_token_fetcher)) {
+    TryToReconnect();
+  }
+
+ private:
+  void TryToReconnect() {
+    CRD_DVLOG(3) << "Checking for reconnectable session";
+
+    // First fetch the id of the reconnectable session.
+    remoting_service_->GetReconnectableSessionId(base::BindOnce(
+        // Then fetch a new OAuth token.
+        &ReconnectedSessionLauncher::FetchOAuthToken,
+        weak_factory_.GetWeakPtr(),
+        base::BindOnce(
+            // And finally reconnect to the session.
+            &ReconnectedSessionLauncher::ReconnectToSession,
+            weak_factory_.GetWeakPtr())));
+  }
+
+  void FetchOAuthToken(
+      base::OnceCallback<void(remoting::SessionId, std::optional<std::string>)>
+          on_done,
+      std::optional<remoting::SessionId> id) {
+    if (!id.has_value()) {
+      CRD_DVLOG(3) << "No reconnectable CRD session found.";
+      return SignalReconnectDone();
+    }
+
+    session_->SetIsSessionCurtained(true);
+
+    CHECK_DEREF(oauth_token_fetcher_.get())
+        .Start(base::BindOnce(std::move(on_done), id.value()));
+  }
+
+  void ReconnectToSession(remoting::SessionId id,
+                          std::optional<std::string> oauth_token) {
+    CRD_LOG(INFO) << "Attempting to resume reconnectable session";
+
+    if (!oauth_token.has_value()) {
+      CRD_LOG(WARNING)
+          << "Failed to fetch OAuth token for reconnectable session";
+      return SignalReconnectDone();
+    }
+
+    remoting_service_->ReconnectToSession(id, oauth_token.value(),
+                                          session_->GetStartSessionCallback());
+    return SignalReconnectDone();
+  }
+
+  void SignalReconnectDone() { std::move(on_reconnect_done_).Run(); }
+
+  raw_ref<RemotingServiceProxy> remoting_service_;
+  raw_ref<CrdHostSession> session_;
+  base::OnceClosure on_reconnect_done_;
+  std::unique_ptr<CrdOAuthTokenFetcher> oauth_token_fetcher_;
+
+  base::WeakPtrFactory<ReconnectedSessionLauncher> weak_factory_{this};
 };
 
 CrdAdminSessionController::CrdAdminSessionController()
@@ -367,6 +458,18 @@ void CrdAdminSessionController::Init(PrefService* local_state,
 
 void CrdAdminSessionController::Shutdown() {
   notification_controller_ = nullptr;
+  TerminateSession();
+}
+
+void CrdAdminSessionController::SetOAuthTokenForTesting(
+    std::string_view token) {
+  CHECK_IS_TEST();
+  oauth_token_for_test_ = token;
+}
+
+void CrdAdminSessionController::ClearOAuthTokenForTesting() {
+  CHECK_IS_TEST();
+  oauth_token_for_test_.reset();
 }
 
 StartCrdSessionJobDelegate& CrdAdminSessionController::GetDelegate() {
@@ -379,6 +482,7 @@ bool CrdAdminSessionController::HasActiveSession() const {
 
 void CrdAdminSessionController::TerminateSession() {
   CRD_DVLOG(3) << "Terminating CRD session";
+  session_launcher_ = nullptr;
   active_session_ = nullptr;
 }
 
@@ -386,8 +490,14 @@ void CrdAdminSessionController::TryToReconnect(
     base::OnceClosure done_callback) {
   CHECK(!HasActiveSession());
 
-  active_session_ = std::make_unique<CrdHostSession>(*remoting_service_);
-  active_session_->TryToReconnect(std::move(done_callback));
+  TerminateSession();
+
+  active_session_ = std::make_unique<CrdHostSession>(
+      base::DoNothing(), base::DoNothing(), base::DoNothing());
+  session_launcher_ = std::make_unique<ReconnectedSessionLauncher>(
+      *remoting_service_, *active_session_,
+      CreateOAuthTokenFetcher(GetOAuthService(), oauth_token_for_test_),
+      std::move(done_callback));
 }
 
 void CrdAdminSessionController::StartCrdHostAndGetCode(
@@ -396,16 +506,20 @@ void CrdAdminSessionController::StartCrdHostAndGetCode(
     ErrorCallback error_callback,
     SessionEndCallback session_finished_callback) {
   CHECK(!HasActiveSession());
+
+  TerminateSession();
+
   active_session_ = std::make_unique<CrdHostSession>(
-      *remoting_service_, std::move(success_callback),
-      std::move(error_callback), std::move(session_finished_callback));
+      std::move(success_callback), std::move(error_callback),
+      std::move(session_finished_callback));
 
   if (base::FeatureList::IsEnabled(kEnableCrdAdminRemoteAccessV2)) {
     CHECK(notification_controller_);
     active_session_->AddObserver(notification_controller_.get());
   }
 
-  active_session_->Start(parameters);
+  session_launcher_ = std::make_unique<NewSessionLauncher>(
+      *remoting_service_, *active_session_, parameters);
 }
 
 bool CrdAdminSessionController::IsCurrentSessionCurtained() const {

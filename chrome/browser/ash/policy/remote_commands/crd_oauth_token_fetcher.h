@@ -54,7 +54,7 @@ class RealCrdOAuthTokenFetcher : public CrdOAuthTokenFetcher,
   void OnGetTokenFailure(const OAuth2AccessTokenManager::Request* request,
                          const GoogleServiceAuthError& error) override;
 
-  const raw_ref<DeviceOAuth2TokenService, ExperimentalAsh> oauth_service_;
+  const raw_ref<DeviceOAuth2TokenService> oauth_service_;
   OAuthTokenCallback done_callback_;
   // Handle for the OAuth access token request.
   std::unique_ptr<OAuth2AccessTokenManager::Request> oauth_request_;
