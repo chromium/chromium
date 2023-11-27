@@ -2978,7 +2978,12 @@ if (!is_android) {
         sources += [
           "../browser/accessibility/live_caption/live_caption_controller_browsertest.cc",
           "../browser/accessibility/live_caption/live_caption_speech_recognition_host_browsertest.cc",
+          "../browser/accessibility/live_caption/live_caption_speech_recognition_host_browsertest.h",
         ]
+
+        if (is_win || is_mac || is_linux) {
+          sources += [ "../browser/accessibility/live_caption/live_caption_automatic_language_download_browsertest.cc" ]
+        }
       }
 
       if (enterprise_cloud_content_analysis) {
