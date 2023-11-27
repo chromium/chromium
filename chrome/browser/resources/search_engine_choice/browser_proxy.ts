@@ -14,6 +14,7 @@ export interface SearchEngineChoice {
   name: string;
   icon_path: string;
   url: string;
+  show_marketing_snippet: boolean;
 }
 
 export class SearchEngineChoiceBrowserProxy {

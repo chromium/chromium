@@ -116,6 +116,7 @@
     /* We add horizontal padding to put the scollbar on the right and keep
     the content centered. */
     padding: 0 8px 50px;
+    text-align: start;
     width: 100%;
   }
 
@@ -126,10 +127,16 @@
     gap: 16px;
   }
 
+  .choice-text {
+    display: flex;
+    flex-direction: column;
+  }
+
   .choice-icon {
     --choice-icon-height: 24px;
     background-size: var(--choice-icon-height);
     border-radius: 4px;
+    flex: none;
     height: var(--choice-icon-height);
     width: var(--choice-icon-height);
   }
@@ -229,6 +236,12 @@
   .custom-scrollbar::-webkit-scrollbar-thumb {
     background: var(--google-grey-100);
     border-radius: calc(var(--scrollbar-height) /2);
+  }
+
+  cr-expand-button {
+    --cr-expand-button-size: 24px;
+    --cr-section-vertical-padding: 0px;
+    width: fit-content;
   }
 
   @keyframes fade-in-animation {
@@ -404,13 +417,26 @@
   </p>
   <cr-radio-group class="custom-scrollbar" selected="{{selectedChoice_}}">
     <template is="dom-repeat" items="[[choiceList_]]">
-      <cr-radio-button class="label-first" name="[[item.prepopulate_id]]">
-        <div class="choice">
-          <div class="choice-icon"
-              style$="background-image: [[item.icon_path]];"></div>
-          <div class="choice-title">[[item.name]]</div>
-        </div>
-      </cr-radio-button>
+        <cr-radio-button class="label-first" name="[[item.prepopulate_id]]">
+          <div class="choice">
+            <div class="choice-icon"
+                style$="background-image: [[item.icon_path]];"></div>
+            <template is="dom-if" if="[[!withMarketingSnippets_]]">
+              <div class="choice-title">[[item.name]]</div>
+            </template>
+            <template is="dom-if" if="[[withMarketingSnippets_]]">
+              <div class="choice-text">
+                <cr-expand-button expanded="{{item.show_marketing_snippet}}"
+                    no-hover>
+                  <div class="choice-title">[[item.name]]</div>
+                </cr-expand-button>
+                <iron-collapse opened="[[item.show_marketing_snippet]]">
+                  $i18n{fallbackMarketingSnippet}
+                </iron-collapse>
+              </div>
+            </template>
+          </div>
+        </cr-radio-button>
     </template>
   </cr-radio-group>
 </div>

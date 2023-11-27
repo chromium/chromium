@@ -72,5 +72,8 @@
     Change
   </message>
 
+  <message name="IDS_SEARCH_ENGINE_FALLBACK_MARKETING_SNIPPET" translateable="false" desc="The fallback marketing snippet used when a search engine doesn't provide its own.">
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  </message>
 </if>
 </grit-part>

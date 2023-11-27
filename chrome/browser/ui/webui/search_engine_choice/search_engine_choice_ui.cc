@@ -21,6 +21,7 @@
 #include "chrome/grit/signin_resources.h"
 #include "components/search_engines/search_engine_choice_utils.h"
 #include "components/search_engines/template_url.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_branded_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -87,6 +88,8 @@ SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
                              IDS_SHORT_PRODUCT_LOGO_ALT_TEXT);
   source->AddLocalizedString("fakeOmniboxText",
                              IDS_SEARCH_ENGINE_CHOICE_FAKE_OMNIBOX_TEXT);
+  source->AddLocalizedString("fallbackMarketingSnippet",
+                             IDS_SEARCH_ENGINE_FALLBACK_MARKETING_SNIPPET);
 
   AddGeneratedIconResources(source, /*directory=*/"images/");
   source->AddResourcePath("images/left_illustration.svg",
@@ -103,6 +106,8 @@ SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
   source->AddResourcePath("signin_vars.css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS);
 
   source->AddString("choiceList", GetChoiceListJSON(profile_.get()));
+  source->AddBoolean("withMarketingSnippets",
+                     switches::kWithSearchEngineMarketingSnippets.Get());
 
   webui::SetupChromeRefresh2023(source);
 

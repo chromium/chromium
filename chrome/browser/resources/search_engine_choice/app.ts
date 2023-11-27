@@ -10,8 +10,10 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
+import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import './strings.m.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
@@ -83,6 +85,13 @@ export class SearchEngineChoiceAppElement extends
         type: String,
         value: '',
       },
+
+      withMarketingSnippets_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('withMarketingSnippets');
+        },
+      },
     };
   }
 
@@ -91,6 +100,7 @@ export class SearchEngineChoiceAppElement extends
   private fakeOmniboxText_: string;
   private fakeOmniboxIconPath_: string;
   private pageHandler_: PageHandlerRemote;
+  private withMarketingSnippets_: boolean;
 
   constructor() {
     super();
