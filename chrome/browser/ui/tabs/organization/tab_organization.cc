@@ -156,6 +156,24 @@ void TabOrganization::Accept() {
       GetDisplayName(), tab_group->visual_data()->color());
   tab_group->SetVisualData(std::move(new_visual_data),
                            tab_group->IsCustomized());
+
+  // Move the entire group to the start left of the tabstrip.
+  // Iterate through the tabstrip model looking for the first non pinned, non
+  // grouped tab. If this group is already in the leftmost position then leave
+  // it there. Else move the group at the index of that tab.
+  int move_index = tab_strip_model->IndexOfFirstNonPinnedTab();
+  while (move_index < tab_strip_model->GetTabCount() &&
+         (tab_strip_model->GetTabGroupForTab(move_index).has_value() &&
+          tab_strip_model->GetTabGroupForTab(move_index).value() !=
+              tab_group->id())) {
+    move_index++;
+  }
+  CHECK(move_index < tab_strip_model->GetTabCount());
+
+  if (tab_strip_model->GetTabGroupForTab(move_index) != tab_group->id()) {
+    tab_strip_model->MoveGroupTo(tab_group->id(), move_index);
+  }
+
   NotifyObserversOfUpdate();
 }
 
