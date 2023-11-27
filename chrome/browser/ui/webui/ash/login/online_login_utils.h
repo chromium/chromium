@@ -84,6 +84,7 @@ struct OnlineSigninArtifacts {
   absl::optional<::login::StringList> services_list;
   absl::optional<SamlPasswordAttributes> saml_password_attributes;
   absl::optional<SyncTrustedVaultKeys> sync_trusted_vault_keys;
+  // Client certificate data for SmartCard flows. Only for SAML.
   absl::optional<ChallengeResponseKey> challenge_response_key;
   absl::optional<GaiaCookiesData> cookies;
 };

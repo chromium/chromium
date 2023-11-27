@@ -741,20 +741,16 @@ void GaiaScreenHandler::HandleCompleteAuthenticationEvent(
   signin_artifacts.sync_trusted_vault_keys =
       GetSyncTrustedVaultKeysForUserContext(sync_trusted_vault_keys, gaia_id);
 
-  // Clear collected passwords if a client certificate was used.
-  if (IsSamlUserPasswordless()) {
-    // In the passwordless case, the user data will be protected by non password
-    // based mechanisms. Clear anything that got collected into passwords.
+  // Special case when client certificates are used (SmartCard flow)
+  if (using_saml && ClientCertificatesWereUsed()) {
+    // Clear anything that got collected into passwords since the user data will
+    // be protected via the certificates instead.
     signin_artifacts.scraped_saml_passwords.reset();
     signin_artifacts.password.reset();
-  }
 
-  // Retrieve ChallengeResponseKey from client certificates. Show signin fatal
-  // error if there is an issue retrieving.
-  if (using_saml && IsSamlUserPasswordless()) {
+    // Try to extract the certificate. Failure to do so is fatal at this point.
     auto challenge_response_key_or_error = login::ExtractClientCertificates(
         *extension_provided_client_cert_usage_observer_);
-    // Signin Fatal Error
     if (!challenge_response_key_or_error.has_value()) {
       LoginDisplayHost::default_host()->GetSigninUI()->ShowSigninError(
           challenge_response_key_or_error.error(), /*details=*/std::string());
@@ -804,7 +800,7 @@ void GaiaScreenHandler::RecordCompleteAuthenticationMetrics(
   }
 
   if (signin_artifacts.using_saml && !using_saml_api_ &&
-      !IsSamlUserPasswordless()) {
+      !signin_artifacts.challenge_response_key.has_value()) {
     RecordScrapedPasswordCount(
         signin_artifacts.scraped_saml_passwords.has_value()
             ? signin_artifacts.scraped_saml_passwords.value().size()
@@ -869,9 +865,10 @@ void GaiaScreenHandler::CompleteAuthentication(
   signin_artifacts.cookies->TransferCookiesToUserContext(*user_context);
 
   // Finish the authentication
-  bool confirm_saml_password = signin_artifacts.using_saml &&
-                               !signin_artifacts.password.has_value() &&
-                               !IsSamlUserPasswordless();
+  bool confirm_saml_password =
+      signin_artifacts.using_saml && !signin_artifacts.password.has_value() &&
+      !signin_artifacts.challenge_response_key.has_value();
+
   bool need_password_gaia =
       !signin_artifacts.using_saml &&
       signin_artifacts.password.value_or(std::string()).empty() &&
@@ -1078,7 +1075,7 @@ void GaiaScreenHandler::DoCompleteLogin(const std::string& gaia_id,
   // Retrieve ChallengeResponseKey from client certificates. Show signin fatal
   // error if there is an issue retrieving.
   absl::optional<ChallengeResponseKey> challenge_response_key;
-  if (using_saml && IsSamlUserPasswordless()) {
+  if (using_saml && ClientCertificatesWereUsed()) {
     auto challenge_response_key_or_error = login::ExtractClientCertificates(
         *extension_provided_client_cert_usage_observer_);
     // Signin Fatal Error
@@ -1334,7 +1331,7 @@ void GaiaScreenHandler::RecordScrapedPasswordCount(int password_count) {
                                 password_count, 11);
 }
 
-bool GaiaScreenHandler::IsSamlUserPasswordless() {
+bool GaiaScreenHandler::ClientCertificatesWereUsed() {
   return extension_provided_client_cert_usage_observer_ &&
          extension_provided_client_cert_usage_observer_->ClientCertsWereUsed();
 }

@@ -330,7 +330,10 @@ class GaiaScreenHandler
   void SetSAMLPrincipalsAPIUsed(bool is_third_party_idp, bool is_api_used);
 
   void RecordScrapedPasswordCount(int password_count);
-  bool IsSamlUserPasswordless();
+
+  // True when client certificates were used during authentication. This is only
+  // used for SmartCards and only when using SAML.
+  bool ClientCertificatesWereUsed();
 
   // Shows signin screen after dns cache and cookie cleanup operations finish.
   void ShowGaiaScreenIfReady();
