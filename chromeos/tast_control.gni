@@ -109,11 +109,6 @@ tast_disabled_tests_from_chrome_all = [
   # https://crbug.com/1402224
   "audio.PlaybackAudioControls",
 
-  # https://crbug.com/1415861, b/302636099
-  "crostini.ResizeRestart.bullseye_stable",
-  "crostini.ResizeRestart.buster_stable",
-  "crostini.ResizeRestart.bookworm_stable",
-
   # b/287525851
   "arc.AudioValidity.playback",
   "arc.AudioValidity.record",
