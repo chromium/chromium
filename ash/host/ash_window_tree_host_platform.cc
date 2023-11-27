@@ -200,6 +200,13 @@ AshWindowTreeHostPlatform::RequestUnadjustedMovement() {
       input_controller_);
 }
 
+void AshWindowTreeHostPlatform::OnDamageRect(const gfx::Rect& damage_rect) {
+  if (ignore_platform_damage_rect_for_test_) {
+    return;
+  }
+  return aura::WindowTreeHostPlatform::OnDamageRect(damage_rect);
+}
+
 void AshWindowTreeHostPlatform::DispatchEvent(ui::Event* event) {
   TRACE_EVENT0("input", "AshWindowTreeHostPlatform::DispatchEvent");
   if (event->IsLocatedEvent())
