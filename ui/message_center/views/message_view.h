@@ -92,6 +92,14 @@ class MESSAGE_CENTER_EXPORT MessageView
 
   ~MessageView() override;
 
+  // Animates the grouped child notification when switching between expand and
+  // collapse state.
+  virtual void AnimateGroupedChildExpandedCollapse(bool expanded) {}
+
+  // Animations when converting from single to group notification.
+  virtual void AnimateSingleToGroup(const std::string& notification_id,
+                                    std::string parent_id) {}
+
   // Updates this view with an additional grouped notification. If the view
   // wasn't previously grouped it also takes care of converting the view to
   // the grouped notification state.
@@ -108,7 +116,12 @@ class MESSAGE_CENTER_EXPORT MessageView
   virtual void PopulateGroupNotifications(
       const std::vector<const Notification*>& notifications) {}
 
+  // Removes the grouped notification view associated with the provided
+  // `notification_id`.
   virtual void RemoveGroupNotification(const std::string& notification_id) {}
+
+  // Updates the expanded state for grouped child notification.
+  virtual void SetGroupedChildExpanded(bool expanded) {}
 
   // Creates text for spoken feedback from the data contained in the
   // notification.
