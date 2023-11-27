@@ -498,44 +498,16 @@ export const getKeyDisplayFromKeyboardEvent = (e: KeyboardEvent): string => {
   }
 };
 
-/**
- * Converts a keystroke event to an Accelerator Object.
- */
-export const keystrokeToAccelerator = (e: KeyboardEvent): Accelerator => {
+export const keyEventToAccelerator = (keyEvent: KeyEvent): Accelerator => {
   const output: Accelerator = {
     modifiers: 0,
     keyCode: 0,
     keyState: AcceleratorKeyState.PRESSED,
   };
-  output.modifiers = getModifiersFromKeyboardEvent(e);
-
-  // Only add non-modifier or function keys as the pending key.
-  if (!isModifierKey(e.keyCode) || isFunctionKey(e.keyCode)) {
-    output.keyCode = e.keyCode;
+  output.modifiers = keyEvent.modifiers;
+  if (!isModifierKey(keyEvent.vkey) || isFunctionKey(keyEvent.vkey)) {
+    output.keyCode = keyEvent.vkey;
   }
 
-  return output;
-};
-
-/**
- * Converts a keystroke event to an KeyEvent Object.
- */
-export const keystrokeToKeyEvent = (e: KeyboardEvent): KeyEvent => {
-  const output: KeyEvent = {
-    vkey: ash_mojom_VKey.MIN_VALUE,
-    domCode: 0,
-    domKey: 0,
-    modifiers: 0,
-    keyDisplay: '',
-  };
-  output.modifiers = getModifiersFromKeyboardEvent(e);
-
-  // Only add non-modifier or function keys as the pending key.
-  if (!isModifierKey(e.keyCode) || isFunctionKey(e.keyCode)) {
-    output.vkey = e.keyCode as ash_mojom_VKey;
-  }
-
-  output.keyDisplay =
-      isModifierKey(e.keyCode) ? '' : getKeyDisplayFromKeyboardEvent(e);
   return output;
 };

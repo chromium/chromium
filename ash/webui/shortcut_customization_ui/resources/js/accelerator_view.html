@@ -60,9 +60,16 @@
       </cr-icon-button>
     </div>
   </template>
-  <template is="dom-if" if="[[showEditView(viewState)]]">
-    <shortcut-input id="shortcut-input" pending-key-event="[[pendingKeyEvent]]"
-        has-launcher-button="[[hasLauncherButton]]" update-on-key-press="true">
+  <template is="dom-if" if="[[showEditView(viewState)]]"
+      on-dom-change="onShortcutInputDomChange" restamp>
+    <shortcut-input id="shortcutInput"
+        pending-prerewritten-key-event="{{pendingKeyEvent}}"
+        has-launcher-button="[[hasLauncherButton]]"
+        shortcut-input-provider="[[getShortcutInputProvider()]]"
+        should-ignore-key-release="[[hasError]]"
+        update-on-key-press
+        display-prerewritten-key-events
+        ignore-blur>
     </shortcut-input>
   </template>
 </div>

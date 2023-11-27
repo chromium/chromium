@@ -13,6 +13,11 @@ import {ShortcutInputProvider, ShortcutInputProviderInterface} from '../mojom-we
 
 let shortcutInputProvider: ShortcutInputProviderInterface|null;
 
+export function setShortcutInputProviderForTesting(
+    testProvider: ShortcutInputProviderInterface): void {
+  shortcutInputProvider = testProvider;
+}
+
 export function getShortcutInputProvider(): ShortcutInputProviderInterface {
   if (!shortcutInputProvider) {
     shortcutInputProvider = ShortcutInputProvider.getRemote();

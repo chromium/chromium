@@ -52,6 +52,7 @@ IN_PROC_BROWSER_TEST_F(AddCustomAcceleratorToUnlockedActionInteractiveUiTest,
           Log("Verify that the custom shortcut does not open the calendar "
               "before it's added as a shortcut"),
           OpenCalendarShortcutDialog(), AddCustomCalendarShortcut(new_accel),
+          FocusWebContents(webcontents_id_), EnsureAcceleratorsAreProcessed(),
           Log("Adding Search + Ctrl + n as a custom open/close calendar "
               "shortcut"),
           EnsurePresent(webcontents_id_, kCustomAcceleratorViewQuery),

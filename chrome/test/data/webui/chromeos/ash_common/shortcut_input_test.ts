@@ -256,6 +256,27 @@ suite('ShortcutInput', function() {
     assertEquals(1, numShortcutInputEvents);
   });
 
+  test('EventEmittedOnKeyPressWithUpdateOnPress', async () => {
+    shortcutInputElement!.updateOnKeyPress = true;
+    shortcutInputElement!.startObserving();
+    const keyEvent = {
+      vkey: VKey.kKeyA,
+      domCode: 0,
+      domKey: 0,
+      modifiers: 0,
+      keyDisplay: 'a',
+    };
+    shortcutInputProvider.sendKeyPressEvent(keyEvent, keyEvent);
+    await flushTasks();
+    // Expect only one event to be sent.
+    assertEquals(1, numShortcutInputEvents);
+
+    // Still only expect one event to be sent.
+    shortcutInputProvider.sendKeyReleaseEvent(keyEvent, keyEvent);
+    await flushTasks();
+    assertEquals(1, numShortcutInputEvents);
+  });
+
   test('EventNotEmittedOnModifierKeyRelease', async () => {
     shortcutInputElement!.startObserving();
     const keyEventPressed = {
@@ -316,6 +337,15 @@ suite('ShortcutInput', function() {
 
     assertEquals(2, numCaptureStateEvents);
     assertFalse(lastCaptureState);
+  });
+
+  test('EventNotEmittedOnFocusLostWhileIgnoringBlur', async () => {
+    shortcutInputElement!.ignoreBlur = true;
+    shortcutInputElement!.startObserving();
+    shortcutInputElement!.blur();
+    await flushTasks();
+
+    assertEquals(1, numCaptureStateEvents);
   });
 
   test('ConfirmViewShownWhenNotCapturing', async () => {

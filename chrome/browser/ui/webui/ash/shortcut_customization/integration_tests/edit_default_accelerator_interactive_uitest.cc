@@ -34,13 +34,14 @@ IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTestBase,
           OpenCalendarShortcutDialog(), EditDefaultShortcut(new_accel),
           Log("Setting Search + Ctrl + n as the default open/close calendar "
               "shortcut"),
-          SendShortcutAccelerator(new_accel),
+          FocusWebContents(webcontents_id_), EnsureAcceleratorsAreProcessed(),
+          SendAccelerator(webcontents_id_, new_accel), FlushEvents(),
           WaitForShow(kCalendarViewElementId),
           Log("New accelerator opens calendar"),
-          SendShortcutAccelerator(new_accel),
+          SendShortcutAccelerator(new_accel), FlushEvents(),
           WaitForHide(kCalendarViewElementId),
           Log("New accelerator closes calendar"),
-          SendShortcutAccelerator(default_accel),
+          SendShortcutAccelerator(default_accel), FlushEvents(),
           EnsureNotPresent(kCalendarViewElementId),
           Log("Default accelerator no longer opens the calendar"))));
 }

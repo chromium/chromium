@@ -6,8 +6,8 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input_key.js';
 import 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input.js';
 
-import {VKey as ash_mojom_VKey} from 'chrome://resources/ash/common/shortcut_input_ui/accelerator_keys.mojom-webui.js';
 import {KeyEvent} from 'chrome://resources/ash/common/shortcut_input_ui/input_device_settings.mojom-webui.js';
+import {ShortcutInputElement} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -19,16 +19,19 @@ import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AcceleratorResultData, Subactions, UserAction} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
+import {ShortcutInputProviderInterface} from '../mojom-webui/shortcut_input_provider.mojom-webui.js';
 
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {getTemplate} from './accelerator_view.html.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
+import {getShortcutInputProvider} from './shortcut_input_mojo_interface_provider.js';
 import {Accelerator, AcceleratorConfigResult, AcceleratorSource, AcceleratorState, EditAction, Modifier, ShortcutProviderInterface, StandardAcceleratorInfo} from './shortcut_types.js';
-import {areAcceleratorsEqual, canBypassErrorWithRetry, getAccelerator, getKeyDisplay, getModifiersForAcceleratorInfo, isCustomizationAllowed, isModifierKey, isStandardAcceleratorInfo, isValidDefaultAccelerator, keyCodeToModifier, keystrokeToAccelerator, keystrokeToKeyEvent, LWIN_KEY, META_KEY, resetKeyEvent} from './shortcut_utils.js';
+import {areAcceleratorsEqual, canBypassErrorWithRetry, getAccelerator, getKeyDisplay, getModifiersForAcceleratorInfo, isCustomizationAllowed, isStandardAcceleratorInfo, isValidDefaultAccelerator, keyEventToAccelerator, LWIN_KEY, META_KEY, resetKeyEvent} from './shortcut_utils.js';
 
 export interface AcceleratorViewElement {
   $: {
     container: HTMLDivElement,
+    shortcutInput: ShortcutInputElement,
   };
 }
 
@@ -160,10 +163,11 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   isDisabled: boolean;
   hasLauncherButton: boolean;
   pendingKeyEvent: KeyEvent|null = null;
+  shortcutInput: ShortcutInputElement|null;
   protected isCapturing: boolean;
   protected lastAccelerator: Accelerator;
   protected lastResult: AcceleratorConfigResult;
-  private modifiers: string[];
+  protected lastPendingKeyEvent: KeyEvent|null = null;
   private shortcutProvider: ShortcutProviderInterface = getShortcutProvider();
   private lookupManager: AcceleratorLookupManager =
       AcceleratorLookupManager.getInstance();
@@ -183,6 +187,10 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
     this.eventTracker.removeAll();
   }
 
+  getShortcutInputProvider(): ShortcutInputProviderInterface {
+    return getShortcutInputProvider();
+  }
+
   private getModifiers(): string[] {
     return getModifiersForAcceleratorInfo(this.acceleratorInfo);
   }
@@ -195,46 +203,47 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
     this.unregisterKeyEventListeners();
   }
 
+  protected onShortcutInputDomChange(): void {
+    // `shortcutInput` will always be restamped when `viewState` is Edit.
+    // Start observing for input events the moment `shortcutInput` is available.
+    this.shortcutInput =
+        this.shadowRoot!.querySelector<ShortcutInputElement>('#shortcutInput');
+    if (this.shortcutInput) {
+      this.shortcutInput.startObserving();
+    }
+  }
+
   private registerKeyEventListeners(): void {
     this.eventTracker.add(
-        this, 'keydown', (e: KeyboardEvent) => this.onKeyDown(e));
-    this.eventTracker.add(this, 'keyup', (e: KeyboardEvent) => this.onKeyUp(e));
-    this.eventTracker.add(this, 'focus', () => this.startCapture());
-    this.eventTracker.add(this, 'mouseup', () => this.startCapture());
-    this.$.container.focus();
+        this, 'shortcut-input-capture-state',
+        (e: CustomEvent) => this.onShortcutInputCaptureStateUpdate(e));
+    this.eventTracker.add(
+        this, 'shortcut-input-event',
+        (e: CustomEvent) => this.handleKeyDown(e));
   }
 
   private unregisterKeyEventListeners(): void {
     this.eventTracker.removeAll();
   }
 
-  private async startCapture(): Promise<void> {
+  private startCapture(): void {
     if (this.isCapturing) {
       return;
     }
-    // Disable ChromeOS accelerator handler when starting input capture.
+
     this.pendingKeyEvent = resetKeyEvent();
-    this.isCapturing = true;
 
-    this.dispatchEvent(new CustomEvent('accelerator-capturing-started', {
-      bubbles: true,
-      composed: true,
-    }));
-
-    // Block processing accelerators.
-    await this.shortcutProvider.preventProcessingAccelerators(true);
     // Announce hint message when focus and start capture.
     this.makeA11yAnnouncement(this.i18n('editViewStatusMessage'));
   }
 
   async endCapture(shouldDelay: boolean): Promise<void> {
-    if (!this.isCapturing) {
-      return;
-    }
-    await this.shortcutProvider.preventProcessingAccelerators(false);
-
-    this.isCapturing = false;
     this.editAction = EditAction.NONE;
+
+    if (this.shortcutInput) {
+      this.shortcutInput.stopObserving();
+    }
+
     this.dispatchEvent(new CustomEvent('accelerator-capturing-ended', {
       bubbles: true,
       composed: true,
@@ -259,28 +268,25 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
     this.pendingKeyEvent = resetKeyEvent();
   }
 
-  private onKeyDown(e: KeyboardEvent): void {
-    if (!this.isCapturing) {
+  private onShortcutInputCaptureStateUpdate(e: CustomEvent): void {
+    if (this.isCapturing === e.detail.capturing) {
+      // Ignore repeated events.
       return;
     }
-    e.preventDefault();
-    e.stopPropagation();
-    // Announce pressed key.
-    this.makeA11yAnnouncement(e.key);
-    this.handleKeyDown(e);
-  }
 
-  private onKeyUp(e: KeyboardEvent): void {
-    if (!this.isCapturing || this.hasError) {
-      return;
+    this.isCapturing = e.detail.capturing;
+    if (this.isCapturing) {
+      this.dispatchEvent(new CustomEvent('accelerator-capturing-started', {
+        bubbles: true,
+        composed: true,
+      }));
+      this.startCapture();
     }
-    e.preventDefault();
-    e.stopPropagation();
-    this.handleKeyUp(e);
   }
 
-  private handleKeyDown(e: KeyboardEvent): void {
-    const pendingAccelerator = keystrokeToAccelerator(e);
+  private handleKeyDown(e: CustomEvent): void {
+    const rewrittenKeyEvent = e.detail.keyEvent;
+    const pendingAccelerator = keyEventToAccelerator(rewrittenKeyEvent);
     if (this.hasError) {
       // If an error occurred, check if the pending accelerator matches the
       // last. If they match and a retry on the same accelerator
@@ -303,35 +309,12 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
       return;
     }
 
-    // Add the key pressed to pendingKeyEvent.
-    this.pendingKeyEvent = keystrokeToKeyEvent(e);
-
     // Only process valid accelerators.
     if (isValidDefaultAccelerator(pendingAccelerator)) {
+      // Store the pending key event.
+      this.lastPendingKeyEvent = rewrittenKeyEvent;
       this.processPendingAccelerator(pendingAccelerator);
     }
-  }
-
-  private handleKeyUp(e: KeyboardEvent): void {
-    const updatedKeyEvent = {...this.pendingKeyEvent};
-
-    // Remove the modifier that was just released.
-    if (isModifierKey(e.keyCode)) {
-      const modifier = keyCodeToModifier[e.keyCode];
-      const pendingModifiers = this.pendingKeyEvent!.modifiers;
-      // Assert that the released modifier is present in the pending
-      // accelerator.
-      assert(pendingModifiers & modifier);
-      // Remove the released modifier.
-      updatedKeyEvent.modifiers = pendingModifiers - modifier;
-    } else {
-      // Remove the key that was just released.
-      updatedKeyEvent.vkey = ash_mojom_VKey.MIN_VALUE;
-      updatedKeyEvent.keyDisplay = '';
-    }
-
-    // Update pendingKeyEvent.
-    this.set('pendingKeyEvent', updatedKeyEvent);
   }
 
   private async processPendingAccelerator(pendingAccelerator: Accelerator):
@@ -442,7 +425,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
       case AcceleratorConfigResult.kReservedKeyNotAllowed: {
         this.statusMessage = this.i18n(
             'reservedKeyNotAllowedStatusMessage',
-            this.pendingKeyEvent!.keyDisplay);
+            this.lastPendingKeyEvent!.keyDisplay);
         this.hasError = true;
         this.makeA11yAnnouncement(this.statusMessage);
         return;

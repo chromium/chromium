@@ -115,8 +115,8 @@
         </accelerator-edit-view>
       </template>
       <template id="newAccelerator" is="dom-if"
-          if="[[showNewAccelerator(pendingNewAcceleratorState, acceleratorInfos)]]"
-          restamp>
+          if="[[showNewAccelerator(pendingNewAcceleratorState,
+                                   acceleratorInfos)]]">
         <accelerator-edit-view id="pendingAccelerator"
             view-state="{{pendingNewAcceleratorState}}"
             action="[[action]]"
