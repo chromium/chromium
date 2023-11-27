@@ -112,7 +112,7 @@ TEST_F(FrameCapturingMediaStreamVoterTest, CapturingMediaStreamChanged) {
   EXPECT_EQ(observer().GetVoteCount(), 1u);
   EXPECT_TRUE(observer().HasVote(
       voter_id(), GetExecutionContext(frame_node.get()),
-      base::TaskPriority::USER_VISIBLE,
+      base::TaskPriority::USER_BLOCKING,
       FrameCapturingMediaStreamVoter::kFrameCapturingMediaStreamReason));
 
   // Deleting the frame should invalidate the vote.
