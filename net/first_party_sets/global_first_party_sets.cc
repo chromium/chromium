@@ -105,16 +105,11 @@ GlobalFirstPartySets& GlobalFirstPartySets::operator=(GlobalFirstPartySets&&) =
 
 GlobalFirstPartySets::~GlobalFirstPartySets() = default;
 
-bool GlobalFirstPartySets::operator==(const GlobalFirstPartySets& other) const {
-  return std::tie(public_sets_version_, entries_, aliases_, manual_config_,
-                  manual_aliases_) ==
-         std::tie(other.public_sets_version_, other.entries_, other.aliases_,
-                  other.manual_config_, other.manual_aliases_);
-}
+bool GlobalFirstPartySets::operator==(const GlobalFirstPartySets& other) const =
+    default;
 
-bool GlobalFirstPartySets::operator!=(const GlobalFirstPartySets& other) const {
-  return !(*this == other);
-}
+bool GlobalFirstPartySets::operator!=(const GlobalFirstPartySets& other) const =
+    default;
 
 GlobalFirstPartySets GlobalFirstPartySets::Clone() const {
   return GlobalFirstPartySets(public_sets_version_, entries_, aliases_,
