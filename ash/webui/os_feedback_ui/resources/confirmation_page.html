@@ -83,17 +83,18 @@
 </style>
 <div id="container">
   <div id="header">
-    <h1 id="pageTitle" class="page-title" tabindex="-1">[[getTitle_(sendReportStatus)]]</h1>
+    <h1 id="pageTitle" class="page-title" tabindex="-1">
+      [[getTitle(sendReportStatus)]]</h1>
   </div>
   <div id="shadowElevation"></div>
-  <div id="content" on-scroll="onContainerScroll_">
-    <div id="message" class="sub-label">[[getMessage_(sendReportStatus)]]</div>
+  <div id="content" on-scroll="onContainerScroll">
+    <div id="message" class="sub-label">[[getMessage(sendReportStatus)]]</div>
     <div id="helpResources" hidden$="[[!isUserLoggedIn]]">
       <h2 id="helpResourcesLabel">[[i18n('helpResourcesLabel')]]</h2>
       <cr-link-row id="explore" start-icon="help-resources:explore"
           external using-slotted-label
           button-aria-description=""
-          on-click="handleLinkClicked_">
+          on-click="handleLinkClicked">
           <span slot="label" class="label">[[i18n('exploreAppLabel')]]</span>
           <span slot="sub-label"
               class="sub-label">[[i18n('exploreAppDescription')]]
@@ -102,7 +103,7 @@
       <cr-link-row id="diagnostics" start-icon="help-resources:diagnostics"
           external using-slotted-label
           button-aria-description=""
-          on-click="handleLinkClicked_">
+          on-click="handleLinkClicked">
           <span slot="label" class="label">[[i18n('diagnosticsAppLabel')]]</span>
           <span slot="sub-label"
               class="sub-label">[[i18n('diagnosticsAppDescription')]]
@@ -110,9 +111,9 @@
       </cr-link-row>
       <cr-link-row id="chromebookCommunity"
           start-icon="help-resources2:chromebook-community"
-          hidden="[[isOffline_(sendReportStatus)]]" external using-slotted-label
+          hidden="[[isOffline(sendReportStatus)]]" external using-slotted-label
           button-aria-description=""
-          on-click="handleLinkClicked_">
+          on-click="handleLinkClicked">
           <span slot="label" class="label">[[i18n('askCommunityLabel')]]</span>
           <span slot="sub-label"
               class="sub-label">[[i18n('askCommunityDescription')]]
@@ -124,10 +125,10 @@
   <div id="separator"></div>
   <div id="navButtons">
     <cr-button id="buttonNewReport" class="cancel-button"
-        on-click="handleBackButtonClicked_">
+        on-click="handleBackButtonClicked">
       <span>[[i18n('buttonNewReport')]]</span>
     </cr-button>
     <cr-button id="buttonDone" class="action-button"
-      on-click="handleDoneButtonClicked_">[[i18n('buttonDone')]]</cr-button>
+      on-click="handleDoneButtonClicked">[[i18n('buttonDone')]]</cr-button>
   </div>
 </div>

@@ -20,7 +20,7 @@ build_webui("build") {
   icons_html_files = [ "help_resources_icons.html" ]
 
   web_component_files = [
-    "confirmation_page.js",
+    "confirmation_page.ts",
     "feedback_flow.js",
     "file_attachment.js",
     "help_content.js",
