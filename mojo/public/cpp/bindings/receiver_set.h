@@ -27,6 +27,10 @@
 
 namespace mojo {
 
+namespace test {
+class ReceiverSetStaticAssertTests;
+}
+
 using ReceiverId = uint64_t;
 
 template <typename ReceiverType>
@@ -48,10 +52,9 @@ struct ReceiverSetContextTraits {
 
 template <>
 struct ReceiverSetContextTraits<void> {
-  // NOTE: This choice of Type only matters insofar as it affects the size of
-  // the |context_| field of a ReceiverSetBase::Entry with void context. The
-  // context value is never used in this case.
-  using Type = bool;
+  struct Empty {};
+
+  using Type = Empty;
 
   static constexpr bool SupportsContext() { return false; }
 };
@@ -224,7 +227,7 @@ class ReceiverSetBase {
       scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr) {
     static_assert(!ContextTraits::SupportsContext(),
                   "Context value required for non-void context type.");
-    return AddImpl(std::move(impl), std::move(receiver), false,
+    return AddImpl(std::move(impl), std::move(receiver), {},
                    std::move(task_runner), /*filter=*/nullptr);
   }
 
@@ -387,7 +390,7 @@ class ReceiverSetBase {
   }
 
  private:
-  friend class ReceiverEntry;
+  friend test::ReceiverSetStaticAssertTests;
 
   class ReceiverEntry : public ReceiverSetState::ReceiverState {
    public:
@@ -430,7 +433,7 @@ class ReceiverSetBase {
 
    private:
     ReceiverType receiver_;
-    Context context_;
+    NO_UNIQUE_ADDRESS Context context_;
   };
 
   ReceiverId AddImpl(ImplPointerType impl,

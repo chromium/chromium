@@ -20,6 +20,14 @@
 
 namespace mojo {
 namespace test {
+
+class ReceiverSetStaticAssertTests {
+  // The receiver entry in a receiver set with no context should be the same
+  // size as a regular receiver + one machine word for the vtable.
+  static_assert(sizeof(Receiver<PingService>) + sizeof(void*) ==
+                sizeof(ReceiverSet<PingService>::ReceiverEntry));
+};
+
 namespace {
 
 using ReceiverSetTest = BindingsTestBase;
