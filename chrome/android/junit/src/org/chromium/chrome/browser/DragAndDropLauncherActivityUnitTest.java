@@ -7,14 +7,9 @@ package org.chromium.chrome.browser;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 
 import org.junit.Assert;
@@ -23,14 +18,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
 import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link DragAndDropLauncherActivity}. */
@@ -40,19 +34,13 @@ public class DragAndDropLauncherActivityUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public ExpectedException exception = ExpectedException.none();
 
-    @Mock private ActivityInfo mActivityInfo;
-    @Mock private PackageManager mPackageManager;
-
     private Context mContext;
     private String mLinkUrl;
 
     @Before
     public void setup() throws NameNotFoundException {
-        mContext = Mockito.spy(ContextUtils.getApplicationContext());
-        when(mContext.getPackageManager()).thenReturn(mPackageManager);
-        when(mPackageManager.getActivityInfo(any(), anyInt())).thenReturn(mActivityInfo);
-        ContextUtils.initApplicationContextForTests(mContext);
-        mActivityInfo.launchMode = ActivityInfo.LAUNCH_SINGLE_INSTANCE_PER_TASK;
+        MultiWindowTestUtils.enableMultiInstance();
+        mContext = ContextUtils.getApplicationContext();
         mLinkUrl = JUnitTestGURLs.HTTP_URL.getSpec();
     }
 

@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 
 /** A class to handle the state of flags for tab_management. */
@@ -148,6 +149,9 @@ public class TabUiFeatureUtilities {
      * TODO(crbug.com/1485628) - merge both flags and use device property instead to differentiate.
      */
     public static boolean isTabDragEnabled() {
+        if (!MultiWindowUtils.isMultiInstanceApi31Enabled()) {
+            return false;
+        }
         // Both flags should not be enabled together.
         assert !(ChromeFeatureList.sTabLinkDragDropAndroid.isEnabled()
                 && isTabDragAsWindowEnabled());

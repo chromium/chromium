@@ -9,16 +9,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils.enableMultiInstance;
+
 import android.content.Context;
-import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.RectF;
 import android.os.Build.VERSION_CODES;
@@ -37,11 +34,9 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -675,15 +670,5 @@ public class StripLayoutHelperManagerTest {
         enableMultiInstance();
         initializeTest();
         assertNotNull("DragListener should be set.", mStripLayoutHelperManager.getDragListener());
-    }
-
-    private void enableMultiInstance() throws NameNotFoundException {
-        Context mApplicationContext = Mockito.spy(ContextUtils.getApplicationContext());
-        PackageManager packageManager = mock(PackageManager.class);
-        when(mApplicationContext.getPackageManager()).thenReturn(packageManager);
-        ActivityInfo activityInfo = mock(ActivityInfo.class);
-        when(packageManager.getActivityInfo(any(), anyInt())).thenReturn(activityInfo);
-        ContextUtils.initApplicationContextForTests(mApplicationContext);
-        activityInfo.launchMode = ActivityInfo.LAUNCH_SINGLE_INSTANCE_PER_TASK;
     }
 }

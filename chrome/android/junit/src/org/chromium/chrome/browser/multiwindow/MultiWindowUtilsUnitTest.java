@@ -5,33 +5,34 @@
 package org.chromium.chrome.browser.multiwindow;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyInt;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.Build.VERSION_CODES;
 import android.util.SparseIntArray;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtilsUnitTest.ShadowMultiInstanceManagerApi31;
+import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 
 /** Unit tests for {@link MultiWindowUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -65,6 +66,10 @@ public class MultiWindowUtilsUnitTest {
         }
     }
 
+    @Rule
+    public AutomotiveContextWrapperTestRule mAutomotiveContextWrapperTestRule =
+            new AutomotiveContextWrapperTestRule();
+
     private static final int INSTANCE_ID_0 = 0;
     private static final int INSTANCE_ID_1 = 1;
     private static final int INSTANCE_ID_2 = 2;
@@ -81,13 +86,11 @@ public class MultiWindowUtilsUnitTest {
     private boolean mIsMultipleInstanceRunning;
     private boolean mIsAutosplitSupported;
     private boolean mCustomMultiWindowSupported;
-    private Context mContext;
+    private Boolean mOverrideOpenInNewWindowSupported;
 
     @Mock TabModelSelector mTabModelSelector;
     @Mock TabModel mNormalTabModel;
     @Mock TabModel mIncognitoTabModel;
-    @Mock private ActivityInfo mActivityInfo;
-    @Mock private PackageManager mPackageManager;
 
     @Before
     public void setUp() {
@@ -123,6 +126,14 @@ public class MultiWindowUtilsUnitTest {
                     public Class<? extends Activity> getOpenInOtherWindowActivity(
                             Activity current) {
                         return Activity.class;
+                    }
+
+                    @Override
+                    public boolean isOpenInOtherWindowSupported(Activity activity) {
+                        if (mOverrideOpenInNewWindowSupported != null) {
+                            return mOverrideOpenInNewWindowSupported;
+                        }
+                        return super.isOpenInOtherWindowSupported(activity);
                     }
                 };
     }
@@ -172,6 +183,69 @@ public class MultiWindowUtilsUnitTest {
                     openInOtherWindow,
                     mUtils.isOpenInOtherWindowSupported(null));
         }
+    }
+
+    @Test
+    @Config(sdk = VERSION_CODES.S)
+    public void testIsMoveOtherWindowSupported_InstanceSwitcherEnabled_ReturnsTrue() {
+        when(mTabModelSelector.getModel(false)).thenReturn(mNormalTabModel);
+        when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
+        when(mTabModelSelector.getTotalTabCount()).thenReturn(2);
+
+        // Instance with no tabs (ID_1) still counts as long as it is alive.
+        writeInstanceInfo(
+                INSTANCE_ID_0, URL_1, /* tabCount= */ 3, /* incognitoTabCount= */ 2, TASK_ID_5);
+        writeInstanceInfo(
+                INSTANCE_ID_1, URL_2, /* tabCount= */ 0, /* incognitoTabCount= */ 0, TASK_ID_6);
+
+        assertTrue(
+                "Should return true on Android R+ with multiple tabs.",
+                mUtils.isMoveToOtherWindowSupported(null, mTabModelSelector));
+    }
+
+    @Test
+    @Config(sdk = VERSION_CODES.Q)
+    public void
+            testIsMoveOtherWindowSupported_InstanceSwitcherDisabledAndOpenInOtherWindowAllowed_ReturnsTrue() {
+        mOverrideOpenInNewWindowSupported = true;
+        when(mTabModelSelector.getTotalTabCount()).thenReturn(2);
+        assertTrue(
+                "Should return true on Android Q with multiple tabs.",
+                mUtils.isMoveToOtherWindowSupported(null, mTabModelSelector));
+    }
+
+    @Test
+    public void testIsMoveOtherWindowSupported_HasOneTabWithPartnerHomePageDisabled_ReturnsTrue() {
+        PartnerBrowserCustomizations partnerBrowserCustomizations =
+                mock(PartnerBrowserCustomizations.class);
+        when(partnerBrowserCustomizations.isHomepageProviderAvailableAndEnabled())
+                .thenReturn(false);
+        PartnerBrowserCustomizations.setInstanceForTesting(partnerBrowserCustomizations);
+        when(mTabModelSelector.getTotalTabCount()).thenReturn(1);
+        assertFalse(
+                "Should return true when called for last tab with no partner customization.",
+                mUtils.isMoveToOtherWindowSupported(null, mTabModelSelector));
+    }
+
+    @Test
+    public void testIsMoveOtherWindowSupported_HasOneTabWithPartnerHomePage_ReturnsFalse() {
+        PartnerBrowserCustomizations partnerBrowserCustomizations =
+                mock(PartnerBrowserCustomizations.class);
+        when(partnerBrowserCustomizations.isHomepageProviderAvailableAndEnabled()).thenReturn(true);
+        PartnerBrowserCustomizations.setInstanceForTesting(partnerBrowserCustomizations);
+        when(mTabModelSelector.getTotalTabCount()).thenReturn(1);
+        assertFalse(
+                "Should return false when called for last tab with partner customization.",
+                mUtils.isMoveToOtherWindowSupported(null, mTabModelSelector));
+    }
+
+    @Test
+    public void testIsMoveOtherWindowSupported_OnAutomotive_ReturnsFalse() {
+        mAutomotiveContextWrapperTestRule.setIsAutomotive(true);
+        when(mTabModelSelector.getTotalTabCount()).thenReturn(2);
+        assertFalse(
+                "Should return false for automotive.",
+                mUtils.isMoveToOtherWindowSupported(null, mTabModelSelector));
     }
 
     @Test
@@ -293,10 +367,6 @@ public class MultiWindowUtilsUnitTest {
     }
 
     private void initializeForMultiInstanceApi31() throws NameNotFoundException {
-        mContext = Mockito.spy(ContextUtils.getApplicationContext());
-        when(mContext.getPackageManager()).thenReturn(mPackageManager);
-        when(mPackageManager.getActivityInfo(any(), anyInt())).thenReturn(mActivityInfo);
-        ContextUtils.initApplicationContextForTests(mContext);
-        mActivityInfo.launchMode = ActivityInfo.LAUNCH_SINGLE_INSTANCE_PER_TASK;
+        MultiWindowTestUtils.enableMultiInstance();
     }
 }

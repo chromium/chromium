@@ -4,6 +4,19 @@
 
 package org.chromium.chrome.browser.multiwindow;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import android.content.Context;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+
+import org.mockito.Mockito;
+
+import org.chromium.base.ContextUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -32,5 +45,16 @@ public class MultiWindowTestUtils {
         prefs.removeKeysWithPrefix(ChromePreferenceKeys.MULTI_INSTANCE_LAST_ACCESSED_TIME);
         prefs.removeKeysWithPrefix(ChromePreferenceKeys.MULTI_INSTANCE_TAB_COUNT);
         prefs.removeKeysWithPrefix(ChromePreferenceKeys.MULTI_INSTANCE_TASK_MAP);
+    }
+
+    /** Enabled multi instance. */
+    public static void enableMultiInstance() throws NameNotFoundException {
+        Context applicationContext = Mockito.spy(ContextUtils.getApplicationContext());
+        PackageManager packageManager = mock(PackageManager.class);
+        when(applicationContext.getPackageManager()).thenReturn(packageManager);
+        ActivityInfo activityInfo = mock(ActivityInfo.class);
+        when(packageManager.getActivityInfo(any(), anyInt())).thenReturn(activityInfo);
+        ContextUtils.initApplicationContextForTests(applicationContext);
+        activityInfo.launchMode = ActivityInfo.LAUNCH_SINGLE_INSTANCE_PER_TASK;
     }
 }

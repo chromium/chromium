@@ -54,7 +54,6 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
-import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
@@ -749,19 +748,8 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
      * @return Whether the "Move to other window" menu item should be displayed.
      */
     protected boolean shouldShowMoveToOtherWindow() {
-        // Hide the menu on automotive devices.
-        if (BuildInfo.getInstance().isAutomotive) return false;
-
         if (!instanceSwitcherEnabled() && shouldShowNewWindow()) return false;
-        boolean hasMoreThanOneTab = mTabModelSelector.getTotalTabCount() > 1;
-        boolean showAlsoForSingleTab = !isPartnerHomepageEnabled();
-        if (!hasMoreThanOneTab && !showAlsoForSingleTab) return false;
-        if (instanceSwitcherEnabled()) {
-            // Moving tabs should be possible to any other instance.
-            return getInstanceCount() > 1;
-        } else {
-            return mMultiWindowModeStateDispatcher.isOpenInOtherWindowSupported();
-        }
+        return mMultiWindowModeStateDispatcher.isMoveToOtherWindowSupported(mTabModelSelector);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -773,11 +761,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public boolean isTabletSizeScreen() {
         return mIsTablet;
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public boolean isPartnerHomepageEnabled() {
-        return PartnerBrowserCustomizations.getInstance().isHomepageProviderAvailableAndEnabled();
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)

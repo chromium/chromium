@@ -119,6 +119,10 @@ public class TabDragSource implements View.OnDragListener {
                         != MultiWindowUtils.INVALID_INSTANCE_ID) {
             return false;
         }
+        if (!MultiWindowUtils.getInstance()
+                .isMoveToOtherWindowSupported(getActivity(), mTabModelSelector)) {
+            return false;
+        }
 
         setGlobalState(tabBeingDragged);
 

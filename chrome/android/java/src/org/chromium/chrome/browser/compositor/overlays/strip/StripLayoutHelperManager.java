@@ -48,7 +48,6 @@ import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
-import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -454,8 +453,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         mBrowserScrimShowing = false;
 
         mTabHoverCardViewStub = tabHoverCardViewStub;
-        if (MultiWindowUtils.isMultiInstanceApi31Enabled()
-                && TabUiFeatureUtilities.isTabDragEnabled()) {
+        if (TabUiFeatureUtilities.isTabDragEnabled()) {
             mTabDragSource =
                     new TabDragSource(
                             context,

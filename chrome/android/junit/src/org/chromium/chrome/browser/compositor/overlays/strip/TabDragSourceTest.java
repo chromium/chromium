@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -21,8 +22,10 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipData.Item;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Point;
 import android.graphics.PointF;
+import android.os.Build.VERSION_CODES;
 import android.view.DragEvent;
 import android.view.View;
 import android.view.View.DragShadowBuilder;
@@ -46,6 +49,8 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.dragdrop.DragDropGlobalState;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -64,7 +69,7 @@ import java.lang.ref.WeakReference;
 /** Tests for {@link TabDragSource}. */
 @EnableFeatures(ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID)
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(qualifiers = "sw600dp")
+@Config(qualifiers = "sw600dp", sdk = VERSION_CODES.S)
 public class TabDragSourceTest {
 
     public static final int CURR_INSTANCE_ID = 100;
@@ -84,6 +89,7 @@ public class TabDragSourceTest {
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TestTabModel mTabModel;
     @Mock private WindowAndroid mWindowAndroid;
+    @Mock private MultiWindowUtils mMultiWindowUtils;
 
     private Activity mActivity;
     private TabDragSource mTabDragSource;
@@ -96,7 +102,7 @@ public class TabDragSourceTest {
 
     /** Resets the environment before each test. */
     @Before
-    public void beforeTest() {
+    public void beforeTest() throws NameNotFoundException {
         mActivity = Robolectric.setupActivity(Activity.class);
         mActivity.setTheme(org.chromium.chrome.R.style.Theme_BrowserUI);
         mTabStripHeight = mActivity.getResources().getDimensionPixelSize(R.dimen.tab_strip_height);
@@ -110,6 +116,10 @@ public class TabDragSourceTest {
         mTabBeingDragged = MockTab.createAndInitialize(TAB_ID, mProfile);
         when(mMultiInstanceManager.getCurrentInstanceId()).thenReturn(CURR_INSTANCE_ID);
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
+
+        when(mMultiWindowUtils.isMoveToOtherWindowSupported(any(), any())).thenReturn(true);
+        MultiWindowUtils.setInstanceForTesting(mMultiWindowUtils);
+        MultiWindowTestUtils.enableMultiInstance();
 
         mTabDragSource =
                 new TabDragSource(
@@ -191,6 +201,17 @@ public class TabDragSourceTest {
         assertThrows(
                 NullPointerException.class,
                 () -> mTabDragSource.startTabDragAction(mTabsToolbarView, null, DRAG_START_POINT));
+    }
+
+    @EnableFeatures({ChromeFeatureList.TAB_DRAG_DROP_ANDROID})
+    @DisableFeatures(ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID)
+    @Test
+    public void test_startTabDragAction_withMoveToOtherWindowNotSupported_ReturnsFalse() {
+        when(mMultiWindowUtils.isMoveToOtherWindowSupported(any(), any())).thenReturn(false);
+        assertFalse(
+                "Should not startTabDragAction when move to other window is not supported",
+                mTabDragSource.startTabDragAction(
+                        mTabsToolbarView, mTabBeingDragged, DRAG_START_POINT));
     }
 
     @Test

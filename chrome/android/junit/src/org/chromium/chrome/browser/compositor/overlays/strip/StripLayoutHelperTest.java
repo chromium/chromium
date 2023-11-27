@@ -59,7 +59,6 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
@@ -74,6 +73,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabL
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
+import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
@@ -123,7 +123,6 @@ public class StripLayoutHelperTest {
 
     private Activity mActivity;
     private Context mContext;
-    private Context mContextForDragDrop;
     private TestTabModel mModel = new TestTabModel();
     private StripLayoutHelper mStripLayoutHelper;
     private boolean mIncognito;
@@ -182,7 +181,6 @@ public class StripLayoutHelperTest {
             mStripLayoutHelper.setRunningAnimatorForTesting(null);
         }
         mTabDragSource = null;
-        mContextForDragDrop = null;
     }
 
     /**
@@ -2864,11 +2862,7 @@ public class StripLayoutHelperTest {
         when(mTabDragSource.startTabDragAction(any(), any(), any())).thenReturn(true);
 
         try {
-            mContextForDragDrop = Mockito.spy(ContextUtils.getApplicationContext());
-            when(mContextForDragDrop.getPackageManager()).thenReturn(mPackageManager);
-            when(mPackageManager.getActivityInfo(any(), anyInt())).thenReturn(mActivityInfo);
-            ContextUtils.initApplicationContextForTests(mContextForDragDrop);
-            mActivityInfo.launchMode = ActivityInfo.LAUNCH_SINGLE_INSTANCE_PER_TASK;
+            MultiWindowTestUtils.enableMultiInstance();
         } catch (NameNotFoundException nameNotFoundException) {
             assertTrue("setTabDragSourceMock failed - NameNotFoundException thrown .", false);
         }

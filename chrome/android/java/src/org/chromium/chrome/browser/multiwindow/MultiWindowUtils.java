@@ -39,9 +39,11 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.components.ukm.UkmRecorder;
@@ -178,16 +180,36 @@ public class MultiWindowUtils implements ActivityStateListener {
         ResettersForTesting.register(() -> mIsInMultiWindowModeForTesting = false);
     }
 
-    /**
-     * Returns whether the given activity currently supports opening tabs in or moving tabs to the
-     * other window.
-     */
+    /** Returns whether the given activity currently supports opening tabs to the other window. */
     public boolean isOpenInOtherWindowSupported(Activity activity) {
         if (!isInMultiWindowMode(activity) && !isInMultiDisplayMode(activity)) return false;
         // Automotive is currently restricted to a single window.
         if (BuildInfo.getInstance().isAutomotive) return false;
 
         return getOpenInOtherWindowActivity(activity) != null;
+    }
+
+    /**
+     * @param activity that is initiating tab move.
+     * @param tabModelSelector {@link TabModelSelector} to get total tab count. Returns whether the
+     *     given activity currently supports moving tabs to the other window.
+     */
+    public boolean isMoveToOtherWindowSupported(
+            Activity activity, TabModelSelector tabModelSelector) {
+        // Not supported on automotive devices.
+        if (BuildInfo.getInstance().isAutomotive) return false;
+
+        boolean hasAtMostOneTab = tabModelSelector.getTotalTabCount() <= 1;
+        boolean partnerHomepageEnabled =
+                PartnerBrowserCustomizations.getInstance().isHomepageProviderAvailableAndEnabled();
+        // Do not allow move for last tab when partner homepage enabled.
+        if (hasAtMostOneTab && partnerHomepageEnabled) return false;
+        if (instanceSwitcherEnabled()) {
+            // Moving tabs should be possible to any other instance.
+            return getInstanceCount() > 1;
+        } else {
+            return isOpenInOtherWindowSupported(activity);
+        }
     }
 
     /**
@@ -765,5 +787,11 @@ public class MultiWindowUtils implements ActivityStateListener {
      */
     public static void launchIntentInInstance(Intent intent, int instanceId) {
         MultiInstanceManagerApi31.launchIntentInInstance(intent, instanceId);
+    }
+
+    public static void setInstanceForTesting(MultiWindowUtils instance) {
+        var oldValue = sInstance;
+        sInstance = instance;
+        ResettersForTesting.register(() -> sInstance = oldValue);
     }
 }

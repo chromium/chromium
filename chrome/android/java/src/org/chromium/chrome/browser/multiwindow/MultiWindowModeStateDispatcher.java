@@ -8,6 +8,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+
 /**
  * Monitors multi-window mode state changes in the associated activity and dispatches changes
  * to registered observers.
@@ -64,6 +66,14 @@ public interface MultiWindowModeStateDispatcher {
      *         state dispatcher.
      */
     boolean isOpenInOtherWindowSupported();
+
+    /**
+     * See {@link MultiWindowUtils#isMoveToOtherWindowSupported(Activity, TabModelSelector)}.
+     *
+     * @return Whether move to other window is supported for the activity associated with this state
+     *     dispatcher.
+     */
+    boolean isMoveToOtherWindowSupported(TabModelSelector totalTabCountSupplier);
 
     /**
      * See {@link MultiWindowUtils#canEnterMultiWindowMode(Activity)}.

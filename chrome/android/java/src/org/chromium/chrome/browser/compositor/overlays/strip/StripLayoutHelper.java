@@ -51,7 +51,6 @@ import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabL
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
-import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -3665,25 +3664,19 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     }
 
     @VisibleForTesting
-    void allowMovingTabOutOfStripLayout(StripLayoutTab clickedTab, PointF dragStartPointF) {
-        if (mTabDragSource == null) return;
+    void allowMovingTabOutOfStripLayout(
+            @NonNull StripLayoutTab clickedTab, @NonNull PointF dragStartPointF) {
         if (!TabUiFeatureUtilities.isTabDragEnabled()) return;
         // In addition to reordering, one can drag and drop the tab beyond the strip layout view.
-        // Also start the tab drag only if there are more than one tabs and a tab has been selected
-        // with the long press.
-        if (clickedTab != null && mStripTabsVisuallyOrdered.length > 1) {
-            Tab tabBeingDragged = getTabById(clickedTab.getId());
-            if (tabBeingDragged != null) {
-                // TODO(b/285624813): Verify if setting onDragListener on toolbar container view
-                // causes any conflict with images drop work.
-                boolean dragStarted =
-                        mTabDragSource.startTabDragAction(
-                                mToolbarContainerView, tabBeingDragged, dragStartPointF);
-                if (dragStarted) {
-                    mActiveClickedTab = clickedTab;
-                    mDraggedTabOffStrip = false;
-                    mLastOffsetX = 0.f;
-                }
+        Tab tabBeingDragged = getTabById(clickedTab.getId());
+        if (tabBeingDragged != null) {
+            boolean dragStarted =
+                    mTabDragSource.startTabDragAction(
+                            mToolbarContainerView, tabBeingDragged, dragStartPointF);
+            if (dragStarted) {
+                mActiveClickedTab = clickedTab;
+                mDraggedTabOffStrip = false;
+                mLastOffsetX = 0.f;
             }
         }
     }
@@ -3738,7 +3731,6 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     }
 
     void sendMoveWindowBroadcast(View view, float startXInView, float startYInView) {
-        if (!MultiWindowUtils.isMultiInstanceApi31Enabled()) return;
         if (!TabUiFeatureUtilities.isTabDragEnabled()) return;
         if (mWindowAndroid.getActivity().get() == null) return;
 
