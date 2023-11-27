@@ -4000,8 +4000,6 @@ static_library("browser") {
       "media_galleries/media_file_system_registry.h",
       "media_galleries/media_galleries_dialog_controller.cc",
       "media_galleries/media_galleries_dialog_controller.h",
-      "media_galleries/media_galleries_histograms.cc",
-      "media_galleries/media_galleries_histograms.h",
       "media_galleries/media_galleries_permission_controller.cc",
       "media_galleries/media_galleries_permission_controller.h",
       "media_galleries/media_galleries_preferences.cc",

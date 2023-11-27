@@ -31,7 +31,6 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/media_galleries/gallery_watch_manager.h"
 #include "chrome/browser/media_galleries/media_file_system_registry.h"
-#include "chrome/browser/media_galleries/media_galleries_histograms.h"
 #include "chrome/browser/media_galleries/media_galleries_permission_controller.h"
 #include "chrome/browser/media_galleries/media_galleries_preferences.h"
 #include "chrome/browser/platform_util.h"
@@ -393,8 +392,6 @@ MediaGalleriesGetMediaFileSystemsFunction::
 
 ExtensionFunction::ResponseAction
 MediaGalleriesGetMediaFileSystemsFunction::Run() {
-  ::media_galleries::UsageCount(::media_galleries::GET_MEDIA_FILE_SYSTEMS);
-
   if (base::FeatureList::IsEnabled(features::kDeprecateMediaGalleriesApis))
     return RespondNow(Error(kDeprecatedError));
 
@@ -481,7 +478,6 @@ void MediaGalleriesGetMediaFileSystemsFunction::ReturnGalleries(
 }
 
 void MediaGalleriesGetMediaFileSystemsFunction::ShowDialog() {
-  ::media_galleries::UsageCount(::media_galleries::SHOW_DIALOG);
   WebContents* contents = GetWebContentsForPrompt(
       GetSenderWebContents(), browser_context(), extension()->id());
   if (!contents) {
@@ -516,8 +512,6 @@ MediaGalleriesAddUserSelectedFolderFunction::
 
 ExtensionFunction::ResponseAction
 MediaGalleriesAddUserSelectedFolderFunction::Run() {
-  ::media_galleries::UsageCount(::media_galleries::ADD_USER_SELECTED_FOLDER);
-
   if (base::FeatureList::IsEnabled(features::kDeprecateMediaGalleriesApis))
     return RespondNow(Error(kDeprecatedError));
 
@@ -628,8 +622,6 @@ void MediaGalleriesAddUserSelectedFolderFunction::
 MediaGalleriesGetMetadataFunction::~MediaGalleriesGetMetadataFunction() {}
 
 ExtensionFunction::ResponseAction MediaGalleriesGetMetadataFunction::Run() {
-  ::media_galleries::UsageCount(::media_galleries::GET_METADATA);
-
   if (base::FeatureList::IsEnabled(features::kDeprecateMediaGalleriesApis))
     return RespondNow(Error(kDeprecatedError));
 

@@ -6308,50 +6308,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="MediaGalleries.ScanCancelTime" units="ms" expires_after="M85">
-  <owner>vandebo@chromium.org</owner>
-  <summary>If a media scan was cancelled, the duration (in ms) it ran.</summary>
-</histogram>
-
-<histogram name="MediaGalleries.ScanDirectoriesFound" units="units"
-    expires_after="M85">
-  <owner>vandebo@chromium.org</owner>
-  <summary>
-    The number of directories with media files found during a scan.
-  </summary>
-</histogram>
-
-<histogram name="MediaGalleries.ScanFinishedTime" units="ms"
-    expires_after="M85">
-  <owner>vandebo@chromium.org</owner>
-  <summary>
-    Duration in milliseconds taken to do a media scan that ran to completion.
-  </summary>
-</histogram>
-
-<histogram name="MediaGalleries.ScanGalleriesGranted" units="%"
-    expires_after="M85">
-  <owner>vandebo@chromium.org</owner>
-  <summary>
-    The percentage of galleries accepted (not deselected) from the scan result
-    dialog.
-  </summary>
-</histogram>
-
-<histogram name="MediaGalleries.ScanGalleriesPopulated" units="units"
-    expires_after="M85">
-  <owner>vandebo@chromium.org</owner>
-  <summary>
-    The number of galleries added or updated in preferences after a scan.
-  </summary>
-</histogram>
-
-<histogram name="MediaGalleries.Usage" enum="MediaGalleriesUsageType"
-    expires_after="M77">
-  <owner>vandebo@chromium.org</owner>
-  <summary>Various usage counts for media galleries.</summary>
-</histogram>
-
 <histogram name="MediaLauncherActivity.LaunchResult" enum="BooleanSuccess"
     expires_after="2021-06-19">
   <owner>steimel@chromium.org</owner>
