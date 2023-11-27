@@ -808,7 +808,7 @@ LayoutBlock* LayoutBlock::CreateAnonymousWithParentAndDisplay(
 
 RecalcScrollableOverflowResult LayoutBlock::RecalcScrollableOverflow() {
   NOT_DESTROYED();
-  DCHECK(!NGDisableSideEffectsScope::IsDisabled());
+  DCHECK(!DisableLayoutSideEffectsScope::IsDisabled());
   return RecalcScrollableOverflowNG();
 }
 

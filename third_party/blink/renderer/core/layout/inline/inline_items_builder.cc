@@ -622,7 +622,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendCollapseWhitespace(
   // loop through the rest of runs.
 
   unsigned start_offset;
-  InlineItem::NGCollapseType end_collapse = InlineItem::kNotCollapsible;
+  InlineItem::CollapseType end_collapse = InlineItem::kNotCollapsible;
   unsigned i = 0;
   UChar c = string[i];
   bool space_run_has_newline = false;

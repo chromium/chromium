@@ -290,8 +290,9 @@ InlineBoxState* InlineLayoutAlgorithm::HandleCloseTag(
   // Just clear |NeedsLayout| flags. Culled inline boxes do not need paint
   // invalidations. If this object produces box fragments,
   // |InlineBoxStateStack| takes care of invalidations.
-  if (!NGDisableSideEffectsScope::IsDisabled())
+  if (!DisableLayoutSideEffectsScope::IsDisabled()) {
     item.GetLayoutObject()->ClearNeedsLayoutWithoutPaintInvalidation();
+  }
   return box;
 }
 
@@ -756,8 +757,9 @@ void InlineLayoutAlgorithm::PlaceControlItem(const InlineItem& item,
 
   DCHECK(item.GetLayoutObject());
   DCHECK(item.GetLayoutObject()->IsText());
-  if (!NGDisableSideEffectsScope::IsDisabled())
+  if (!DisableLayoutSideEffectsScope::IsDisabled()) {
     item.GetLayoutObject()->ClearNeedsLayoutWithFullPaintInvalidation();
+  }
 
   if (UNLIKELY(!item_result->Length())) {
     // Empty or fully collapsed text isn't needed for layout, but needs

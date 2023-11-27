@@ -43,7 +43,7 @@ class CORE_EXPORT InlineItem {
     kBidiControl
   };
 
-  enum NGCollapseType {
+  enum CollapseType {
     // No collapsible spaces.
     kNotCollapsible,
     // This item is opaque to whitespace collapsing.
@@ -192,10 +192,10 @@ class CORE_EXPORT InlineItem {
   const Font& FontWithSvgScaling() const;
 
   // Get or set the whitespace collapse type at the end of this item.
-  NGCollapseType EndCollapseType() const {
-    return static_cast<NGCollapseType>(end_collapse_type_);
+  CollapseType EndCollapseType() const {
+    return static_cast<CollapseType>(end_collapse_type_);
   }
-  void SetEndCollapseType(NGCollapseType type) {
+  void SetEndCollapseType(CollapseType type) {
     // |kText| can set any types.
     DCHECK(Type() == InlineItem::kText ||
            // |kControl| and |kBlockInInline| are always |kCollapsible|.
@@ -222,7 +222,7 @@ class CORE_EXPORT InlineItem {
   // Whether the end collapsible space run contains a newline.
   // Valid only when kCollapsible or kCollapsed.
   bool IsEndCollapsibleNewline() const { return is_end_collapsible_newline_; }
-  void SetEndCollapseType(NGCollapseType type, bool is_newline) {
+  void SetEndCollapseType(CollapseType type, bool is_newline) {
     SetEndCollapseType(type);
     is_end_collapsible_newline_ = is_newline;
   }
@@ -276,7 +276,7 @@ class CORE_EXPORT InlineItem {
   InlineItemType type_;
   unsigned text_type_ : 3;          // TextItemType
   unsigned style_variant_ : 2;      // StyleVariant
-  unsigned end_collapse_type_ : 2;  // NGCollapseType
+  unsigned end_collapse_type_ : 2;  // CollapseType
   unsigned bidi_level_ : 8;         // UBiDiLevel is defined as uint8_t.
   // |segment_data_| is valid only for |type_ == InlineItem::kText|.
   unsigned segment_data_ : InlineItemSegment::kSegmentDataBits;

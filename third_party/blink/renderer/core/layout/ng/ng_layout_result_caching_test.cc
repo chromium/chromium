@@ -26,7 +26,7 @@ class LayoutResultCachingTest : public RenderingTest {
       const ConstraintSpace& constraint_space,
       const BlockBreakToken* break_token) {
     absl::optional<FragmentGeometry> fragment_geometry;
-    NGLayoutCacheStatus cache_status;
+    LayoutCacheStatus cache_status;
     return box->CachedLayoutResult(constraint_space, break_token, nullptr,
                                    nullptr, &fragment_geometry, &cache_status);
   }
@@ -34,9 +34,9 @@ class LayoutResultCachingTest : public RenderingTest {
   const LayoutResult* TestCachedLayoutResult(
       LayoutBox* box,
       const ConstraintSpace& constraint_space,
-      NGLayoutCacheStatus* out_cache_status = nullptr) {
+      LayoutCacheStatus* out_cache_status = nullptr) {
     absl::optional<FragmentGeometry> fragment_geometry;
-    NGLayoutCacheStatus cache_status;
+    LayoutCacheStatus cache_status;
     const LayoutResult* result =
         box->CachedLayoutResult(constraint_space, nullptr, nullptr, nullptr,
                                 &fragment_geometry, &cache_status);
@@ -71,13 +71,13 @@ TEST_F(LayoutResultCachingTest, HitDifferentExclusionSpace) {
   auto* test = To<LayoutBlockFlow>(GetLayoutObjectByElementId("test"));
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
   const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const LayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
 
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kHit);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kHit);
   EXPECT_NE(result, nullptr);
   EXPECT_EQ(result->BfcBlockOffset().value(), LayoutUnit(50));
   EXPECT_EQ(result->BfcLineOffset(), LayoutUnit());
@@ -111,13 +111,13 @@ TEST_F(LayoutResultCachingTest, HitDifferentBFCOffset) {
   auto* test = To<LayoutBlockFlow>(GetLayoutObjectByElementId("test"));
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
   const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const LayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
 
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kHit);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kHit);
   EXPECT_NE(result, nullptr);
   EXPECT_EQ(result->BfcBlockOffset().value(), LayoutUnit(40));
   EXPECT_EQ(result->BfcLineOffset(), LayoutUnit());
@@ -165,13 +165,13 @@ TEST_F(LayoutResultCachingTest, HitDifferentBFCOffsetSameMarginStrut) {
   auto* test = To<LayoutBlockFlow>(GetLayoutObjectByElementId("test"));
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
   const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const LayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
 
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kHit);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kHit);
   EXPECT_NE(result, nullptr);
 }
 
@@ -202,13 +202,13 @@ TEST_F(LayoutResultCachingTest, MissDescendantAboveBlockStart1) {
   auto* test = To<LayoutBlockFlow>(GetLayoutObjectByElementId("test"));
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
   const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const LayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
 
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kNeedsLayout);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kNeedsLayout);
   EXPECT_EQ(result, nullptr);
 }
 
@@ -239,13 +239,13 @@ TEST_F(LayoutResultCachingTest, MissDescendantAboveBlockStart2) {
   auto* test = To<LayoutBlockFlow>(GetLayoutObjectByElementId("test"));
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
   const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const LayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
 
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kNeedsLayout);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kNeedsLayout);
   EXPECT_EQ(result, nullptr);
 }
 
@@ -276,13 +276,13 @@ TEST_F(LayoutResultCachingTest, HitOOFDescendantAboveBlockStart) {
   auto* test = To<LayoutBlockFlow>(GetLayoutObjectByElementId("test"));
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
   const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const LayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
 
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kHit);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kHit);
   EXPECT_NE(result, nullptr);
 }
 
@@ -318,13 +318,13 @@ TEST_F(LayoutResultCachingTest, HitLineBoxDescendantAboveBlockStart) {
   auto* test = To<LayoutBlockFlow>(GetLayoutObjectByElementId("test"));
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
   const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const LayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
 
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kHit);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kHit);
   EXPECT_NE(result, nullptr);
 }
 
@@ -353,13 +353,13 @@ TEST_F(LayoutResultCachingTest, MissFloatInitiallyIntruding1) {
   auto* test = To<LayoutBlockFlow>(GetLayoutObjectByElementId("test"));
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
   const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const LayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
 
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kNeedsLayout);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kNeedsLayout);
   EXPECT_EQ(result, nullptr);
 }
 
@@ -388,13 +388,13 @@ TEST_F(LayoutResultCachingTest, MissFloatInitiallyIntruding2) {
   auto* test = To<LayoutBlockFlow>(GetLayoutObjectByElementId("test"));
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
   const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const LayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
 
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kNeedsLayout);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kNeedsLayout);
   EXPECT_EQ(result, nullptr);
 }
 
@@ -422,13 +422,13 @@ TEST_F(LayoutResultCachingTest, MissFloatWillIntrude1) {
   auto* test = To<LayoutBlockFlow>(GetLayoutObjectByElementId("test"));
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
   const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const LayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
 
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kNeedsLayout);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kNeedsLayout);
   EXPECT_EQ(result, nullptr);
 }
 
@@ -456,13 +456,13 @@ TEST_F(LayoutResultCachingTest, MissFloatWillIntrude2) {
   auto* test = To<LayoutBlockFlow>(GetLayoutObjectByElementId("test"));
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
   const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const LayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
 
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kNeedsLayout);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kNeedsLayout);
   EXPECT_EQ(result, nullptr);
 }
 
@@ -490,13 +490,13 @@ TEST_F(LayoutResultCachingTest, HitPushedByFloats1) {
   auto* test = To<LayoutBlockFlow>(GetLayoutObjectByElementId("test"));
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
   const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const LayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
 
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kHit);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kHit);
   EXPECT_NE(result, nullptr);
 }
 
@@ -524,13 +524,13 @@ TEST_F(LayoutResultCachingTest, HitPushedByFloats2) {
   auto* test = To<LayoutBlockFlow>(GetLayoutObjectByElementId("test"));
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
   const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const LayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
 
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kHit);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kHit);
   EXPECT_NE(result, nullptr);
 }
 
@@ -559,13 +559,13 @@ TEST_F(LayoutResultCachingTest, MissPushedByFloats1) {
   auto* test = To<LayoutBlockFlow>(GetLayoutObjectByElementId("test"));
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
   const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const LayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
 
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kNeedsLayout);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kNeedsLayout);
   EXPECT_EQ(result, nullptr);
 }
 
@@ -594,13 +594,13 @@ TEST_F(LayoutResultCachingTest, MissPushedByFloats2) {
   auto* test = To<LayoutBlockFlow>(GetLayoutObjectByElementId("test"));
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
   const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const LayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
 
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kNeedsLayout);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kNeedsLayout);
   EXPECT_EQ(result, nullptr);
 }
 
@@ -622,13 +622,13 @@ TEST_F(LayoutResultCachingTest, HitDifferentRareData) {
   auto* test = To<LayoutBlockFlow>(GetLayoutObjectByElementId("test"));
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
   const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const LayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
 
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kHit);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kHit);
   EXPECT_NE(result, nullptr);
 }
 
@@ -650,13 +650,13 @@ TEST_F(LayoutResultCachingTest, HitPercentageMinWidth) {
   auto* test = To<LayoutBlockFlow>(GetLayoutObjectByElementId("test"));
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
   const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const LayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
 
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kHit);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kHit);
   EXPECT_NE(result, nullptr);
 }
 
@@ -678,13 +678,13 @@ TEST_F(LayoutResultCachingTest, HitFixedMinWidth) {
   auto* test = To<LayoutBlockFlow>(GetLayoutObjectByElementId("test"));
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
   const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const LayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
 
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kHit);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kHit);
   EXPECT_NE(result, nullptr);
 }
 
@@ -719,21 +719,21 @@ TEST_F(LayoutResultCachingTest, HitShrinkToFit) {
   auto* src1 = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src1"));
   auto* src2 = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src2"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
   ConstraintSpace space =
       src1->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const LayoutResult* result =
       TestCachedLayoutResult(test1, space, &cache_status);
   // test1 was sized to its max-content size, passing an available size larger
   // than the fragment should hit the cache.
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kHit);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kHit);
   EXPECT_NE(result, nullptr);
 
   space = src2->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   result = TestCachedLayoutResult(test2, space, &cache_status);
   // test2 was sized to its min-content size in, passing an available size
   // smaller than the fragment should hit the cache.
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kHit);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kHit);
   EXPECT_NE(result, nullptr);
 }
 
@@ -790,35 +790,35 @@ TEST_F(LayoutResultCachingTest, MissShrinkToFit) {
   auto* src3 = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src3"));
   auto* src4 = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src4"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
   ConstraintSpace space =
       src1->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const LayoutResult* result =
       TestCachedLayoutResult(test1, space, &cache_status);
   // test1 was sized to its max-content size, passing an available size smaller
   // than the fragment should miss the cache.
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kNeedsLayout);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kNeedsLayout);
   EXPECT_EQ(result, nullptr);
 
   space = src2->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   result = TestCachedLayoutResult(test2, space, &cache_status);
   // test2 was sized to its min-content size, passing an available size
   // larger than the fragment should miss the cache.
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kNeedsLayout);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kNeedsLayout);
   EXPECT_EQ(result, nullptr);
 
   space = src3->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   result = TestCachedLayoutResult(test3, space, &cache_status);
   // test3 was sized to its min-content size, however it should miss the cache
   // as it has a %-min-size.
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kNeedsLayout);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kNeedsLayout);
   EXPECT_EQ(result, nullptr);
 
   space = src4->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   result = TestCachedLayoutResult(test4, space, &cache_status);
   // test4 was sized to its max-content size, however it should miss the cache
   // due to its margin.
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kNeedsLayout);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kNeedsLayout);
   EXPECT_EQ(result, nullptr);
 }
 
@@ -846,13 +846,13 @@ TEST_F(LayoutResultCachingTest, HitShrinkToFitSameIntrinsicSizes) {
   auto* test = To<LayoutBlockFlow>(GetLayoutObjectByElementId("test"));
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
   const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const LayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
 
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kHit);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kHit);
   EXPECT_NE(result, nullptr);
 }
 
@@ -879,13 +879,13 @@ TEST_F(LayoutResultCachingTest, HitShrinkToFitDifferentParent) {
   auto* test = To<LayoutBlockFlow>(GetLayoutObjectByElementId("test"));
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
   const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const LayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
 
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kHit);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kHit);
   EXPECT_NE(result, nullptr);
 }
 
@@ -912,13 +912,13 @@ TEST_F(LayoutResultCachingTest, MissQuirksModePercentageBasedChild) {
   auto* test = To<LayoutBlockFlow>(GetLayoutObjectByElementId("test"));
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
   const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const LayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
 
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kNeedsLayout);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kNeedsLayout);
   EXPECT_EQ(result, nullptr);
 }
 
@@ -950,13 +950,13 @@ TEST_F(LayoutResultCachingTest, HitQuirksModePercentageBasedParentAndChild) {
   auto* test = To<LayoutBlockFlow>(GetLayoutObjectByElementId("test"));
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
   const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const LayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
 
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kHit);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kHit);
   EXPECT_NE(result, nullptr);
 }
 
@@ -982,13 +982,13 @@ TEST_F(LayoutResultCachingTest, HitStandardsModePercentageBasedChild) {
   auto* test = To<LayoutBlockFlow>(GetLayoutObjectByElementId("test"));
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
   const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const LayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
 
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kHit);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kHit);
   EXPECT_NE(result, nullptr);
 }
 
@@ -1027,14 +1027,14 @@ TEST_F(LayoutResultCachingTest, ChangeTableCellBlockSizeConstrainedness) {
   auto* src2 = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src2"));
   auto* src3 = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src3"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
   ConstraintSpace space =
       src1->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const LayoutResult* result =
       TestCachedLayoutResult(test1, space, &cache_status);
   // The first child has a fixed height, and shouldn't be affected by the cell
   // height.
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kHit);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kHit);
   EXPECT_NE(result, nullptr);
 
   space = src2->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
@@ -1042,7 +1042,7 @@ TEST_F(LayoutResultCachingTest, ChangeTableCellBlockSizeConstrainedness) {
   // The second child has overflow:auto and a percentage height, but its
   // intrinsic height is identical to its extrinsic height (when the cell has a
   // height). So it won't need layout, either.
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kHit);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kHit);
   EXPECT_NE(result, nullptr);
 
   space = src3->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
@@ -1051,7 +1051,7 @@ TEST_F(LayoutResultCachingTest, ChangeTableCellBlockSizeConstrainedness) {
   // intrinsic height is 0 (no children), so it matters whether the cell has a
   // height or not. We're only going to need simplified layout, though, since no
   // children will be affected by its height change.
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kNeedsSimplifiedLayout);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kNeedsSimplifiedLayout);
 }
 
 TEST_F(LayoutResultCachingTest, OptimisticFloatPlacementNoRelayout) {
@@ -1128,7 +1128,7 @@ TEST_F(LayoutResultCachingTest, SelfCollapsingShifting) {
   auto* src2 = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src2"));
   auto* src3 = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src3"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
 
   ConstraintSpace space =
       src1->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
@@ -1137,7 +1137,7 @@ TEST_F(LayoutResultCachingTest, SelfCollapsingShifting) {
 
   // Case 1: We have a different set of constraints, but as the child has no
   // adjoining descendants it can be shifted anywhere.
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kHit);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kHit);
   EXPECT_NE(result, nullptr);
 
   space = src2->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
@@ -1145,7 +1145,7 @@ TEST_F(LayoutResultCachingTest, SelfCollapsingShifting) {
 
   // Case 2: We have a different set of constraints, but the child has an
   // adjoining object and isn't "past" the floats - it can't be reused.
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kNeedsLayout);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kNeedsLayout);
   EXPECT_EQ(result, nullptr);
 
   space = src3->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
@@ -1153,7 +1153,7 @@ TEST_F(LayoutResultCachingTest, SelfCollapsingShifting) {
 
   // Case 3: We have a different set of constraints, and adjoining descendants,
   // but have a position past where they might affect us.
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kHit);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kHit);
   EXPECT_NE(result, nullptr);
 }
 
@@ -1199,7 +1199,7 @@ TEST_F(LayoutResultCachingTest, ClearancePastAdjoiningFloatsMovement) {
   auto* src1 = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src1"));
   auto* src2 = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src2"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
 
   ConstraintSpace space =
       src1->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
@@ -1207,14 +1207,14 @@ TEST_F(LayoutResultCachingTest, ClearancePastAdjoiningFloatsMovement) {
       TestCachedLayoutResult(test1, space, &cache_status);
 
   // Case 1: We have forced clearance, but floats won't impact our children.
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kHit);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kHit);
   EXPECT_NE(result, nullptr);
 
   space = src2->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   result = TestCachedLayoutResult(test2, space, &cache_status);
 
   // Case 2: We have forced clearance, and floats will impact our children.
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kNeedsLayout);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kNeedsLayout);
   EXPECT_EQ(result, nullptr);
 }
 
@@ -1258,7 +1258,7 @@ TEST_F(LayoutResultCachingTest, MarginStrutMovementSelfCollapsing) {
   auto* src1 = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src1"));
   auto* src2 = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src2"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
 
   ConstraintSpace space =
       src1->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
@@ -1267,7 +1267,7 @@ TEST_F(LayoutResultCachingTest, MarginStrutMovementSelfCollapsing) {
 
   // Case 1: We can safely re-use this fragment as it doesn't append anything
   // to the margin-strut within the sub-tree.
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kHit);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kHit);
   EXPECT_NE(result, nullptr);
 
   // The "end" margin-strut should be updated.
@@ -1280,7 +1280,7 @@ TEST_F(LayoutResultCachingTest, MarginStrutMovementSelfCollapsing) {
 
   // Case 2: We can't re-use this fragment as it appended a non-zero value to
   // the margin-strut within the sub-tree.
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kNeedsLayout);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kNeedsLayout);
   EXPECT_EQ(result, nullptr);
 }
 
@@ -1346,7 +1346,7 @@ TEST_F(LayoutResultCachingTest, MarginStrutMovementInFlow) {
   auto* src2 = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src2"));
   auto* src3 = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src3"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
 
   ConstraintSpace space =
       src1->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
@@ -1355,7 +1355,7 @@ TEST_F(LayoutResultCachingTest, MarginStrutMovementInFlow) {
 
   // Case 1: We can safely re-use this fragment as it doesn't append anything
   // to the margin-strut within the sub-tree.
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kHit);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kHit);
   EXPECT_NE(result, nullptr);
 
   space = src2->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
@@ -1363,7 +1363,7 @@ TEST_F(LayoutResultCachingTest, MarginStrutMovementInFlow) {
 
   // Case 2: We can't re-use this fragment as it appended a non-zero value to
   // the margin-strut within the sub-tree.
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kNeedsLayout);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kNeedsLayout);
   EXPECT_EQ(result, nullptr);
 
   space = src3->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
@@ -1371,7 +1371,7 @@ TEST_F(LayoutResultCachingTest, MarginStrutMovementInFlow) {
 
   // Case 3: We can't re-use this fragment as a (inner) self-collapsing block
   // appended a non-zero value to the margin-strut within the sub-tree.
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kNeedsLayout);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kNeedsLayout);
   EXPECT_EQ(result, nullptr);
 }
 
@@ -1399,7 +1399,7 @@ TEST_F(LayoutResultCachingTest, MarginStrutMovementPercentage) {
   auto* test1 = To<LayoutBlockFlow>(GetLayoutObjectByElementId("test1"));
   auto* src1 = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src1"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
 
   ConstraintSpace space =
       src1->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
@@ -1408,7 +1408,7 @@ TEST_F(LayoutResultCachingTest, MarginStrutMovementPercentage) {
 
   // We can't re-use this fragment as it appended a non-zero value (50%) to the
   // margin-strut within the sub-tree.
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kNeedsLayout);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kNeedsLayout);
   EXPECT_EQ(result, nullptr);
 }
 
@@ -1429,7 +1429,7 @@ TEST_F(LayoutResultCachingTest, HitIsFixedBlockSizeIndefinite) {
   auto* test1 = To<LayoutBlockFlow>(GetLayoutObjectByElementId("test1"));
   auto* src1 = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src1"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
 
   ConstraintSpace space =
       src1->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
@@ -1439,7 +1439,7 @@ TEST_F(LayoutResultCachingTest, HitIsFixedBlockSizeIndefinite) {
   // Even though the "align-items: stretch" will make the final fixed
   // block-size indefinite, we don't have any %-block-size children, so we can
   // hit the cache.
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kHit);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kHit);
   EXPECT_NE(result, nullptr);
 }
 
@@ -1461,7 +1461,7 @@ TEST_F(LayoutResultCachingTest, MissIsFixedBlockSizeIndefinite) {
   auto* test1 = To<LayoutBlockFlow>(GetLayoutObjectByElementId("test1"));
   auto* src1 = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src1"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
 
   ConstraintSpace space =
       src1->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
@@ -1471,7 +1471,7 @@ TEST_F(LayoutResultCachingTest, MissIsFixedBlockSizeIndefinite) {
   // The "align-items: stretch" will make the final fixed block-size
   // indefinite, and we have a %-block-size child, so we need to miss the
   // cache.
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kNeedsLayout);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kNeedsLayout);
   EXPECT_EQ(result, nullptr);
 }
 
@@ -1502,7 +1502,7 @@ TEST_F(LayoutResultCachingTest, HitColumnFlexBoxMeasureAndLayout) {
   auto* src1 = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src1"));
   auto* src2 = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src2"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
 
   // "src1" only had one "measure" pass performed, and should hit the "measure"
   // cache-slot for "test1".
@@ -1512,7 +1512,7 @@ TEST_F(LayoutResultCachingTest, HitColumnFlexBoxMeasureAndLayout) {
       TestCachedLayoutResult(test1, space, &cache_status);
 
   EXPECT_EQ(space.CacheSlot(), LayoutResultCacheSlot::kMeasure);
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kHit);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kHit);
   EXPECT_NE(result, nullptr);
 
   // "src2" had both a "measure" and "layout" pass performed, and should hit
@@ -1521,7 +1521,7 @@ TEST_F(LayoutResultCachingTest, HitColumnFlexBoxMeasureAndLayout) {
   result = TestCachedLayoutResult(test1, space, &cache_status);
 
   EXPECT_EQ(space.CacheSlot(), LayoutResultCacheSlot::kLayout);
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kHit);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kHit);
   EXPECT_NE(result, nullptr);
 }
 
@@ -1554,7 +1554,7 @@ TEST_F(LayoutResultCachingTest, HitRowFlexBoxMeasureAndLayout) {
   auto* src1 = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src1"));
   auto* src2 = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src2"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
 
   // "src1" only had one "measure" pass performed, and should hit the "measure"
   // cache-slot for "test1".
@@ -1564,7 +1564,7 @@ TEST_F(LayoutResultCachingTest, HitRowFlexBoxMeasureAndLayout) {
       TestCachedLayoutResult(test1, space, &cache_status);
 
   EXPECT_EQ(space.CacheSlot(), LayoutResultCacheSlot::kMeasure);
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kHit);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kHit);
   EXPECT_NE(result, nullptr);
 
   // "src2" had both a "measure" and "layout" pass performed, and should hit
@@ -1573,7 +1573,7 @@ TEST_F(LayoutResultCachingTest, HitRowFlexBoxMeasureAndLayout) {
   result = TestCachedLayoutResult(test1, space, &cache_status);
 
   EXPECT_EQ(space.CacheSlot(), LayoutResultCacheSlot::kLayout);
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kHit);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kHit);
   EXPECT_NE(result, nullptr);
 }
 
@@ -1598,13 +1598,13 @@ TEST_F(LayoutResultCachingTest, HitFlexLegacyImg) {
   auto* test = To<LayoutBlock>(GetLayoutObjectByElementId("test"));
   auto* src = To<LayoutBlock>(GetLayoutObjectByElementId("src"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
   const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const LayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
 
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kHit);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kHit);
   EXPECT_NE(result, nullptr);
 }
 
@@ -1630,13 +1630,13 @@ TEST_F(LayoutResultCachingTest, HitFlexLegacyGrid) {
   auto* test = To<LayoutBlock>(GetLayoutObjectByElementId("test"));
   auto* src = To<LayoutBlock>(GetLayoutObjectByElementId("src"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
   const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const LayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
 
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kHit);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kHit);
   EXPECT_NE(result, nullptr);
 }
 
@@ -1675,14 +1675,14 @@ TEST_F(LayoutResultCachingTest, HitOrthogonalRoot) {
 
   auto* target = To<LayoutBlock>(GetLayoutObjectByElementId("target"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
   const ConstraintSpace& space =
       target->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const LayoutResult* result =
       TestCachedLayoutResult(target, space, &cache_status);
 
   // We should hit the cache using the same constraint space.
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kHit);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kHit);
   EXPECT_NE(result, nullptr);
 }
 
@@ -1829,13 +1829,13 @@ TEST_F(LayoutResultCachingTest, MissTablePercent) {
   auto* test = To<LayoutBlock>(GetLayoutObjectByElementId("test"));
   auto* src = To<LayoutBlock>(GetLayoutObjectByElementId("src"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
   const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const LayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
 
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kNeedsLayout);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kNeedsLayout);
   EXPECT_EQ(result, nullptr);
 }
 
@@ -1853,13 +1853,13 @@ TEST_F(LayoutResultCachingTest, HitTableRowAdd) {
   auto* test = To<LayoutBlock>(GetLayoutObjectByElementId("test"));
   auto* src = To<LayoutBlock>(GetLayoutObjectByElementId("src"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
   const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const LayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
 
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kHit);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kHit);
   EXPECT_NE(result, nullptr);
 }
 
@@ -1877,13 +1877,13 @@ TEST_F(LayoutResultCachingTest, MissTableRowAdd) {
   auto* test = To<LayoutBlock>(GetLayoutObjectByElementId("test"));
   auto* src = To<LayoutBlock>(GetLayoutObjectByElementId("src"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
   const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const LayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
 
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kNeedsLayout);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kNeedsLayout);
   EXPECT_EQ(result, nullptr);
 }
 
@@ -1901,13 +1901,13 @@ TEST_F(LayoutResultCachingTest, HitTableRowRemove) {
   auto* test = To<LayoutBlock>(GetLayoutObjectByElementId("test"));
   auto* src = To<LayoutBlock>(GetLayoutObjectByElementId("src"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
   const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const LayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
 
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kHit);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kHit);
   EXPECT_NE(result, nullptr);
 }
 
@@ -1925,13 +1925,13 @@ TEST_F(LayoutResultCachingTest, MissTableRowRemove) {
   auto* test = To<LayoutBlock>(GetLayoutObjectByElementId("test"));
   auto* src = To<LayoutBlock>(GetLayoutObjectByElementId("src"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
   const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const LayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
 
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kNeedsLayout);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kNeedsLayout);
   EXPECT_EQ(result, nullptr);
 }
 
@@ -1949,13 +1949,13 @@ TEST_F(LayoutResultCachingTest, HitTableSectionAdd) {
   auto* test = To<LayoutBlock>(GetLayoutObjectByElementId("test"));
   auto* src = To<LayoutBlock>(GetLayoutObjectByElementId("src"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
   const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const LayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
 
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kHit);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kHit);
   EXPECT_NE(result, nullptr);
 }
 
@@ -1973,13 +1973,13 @@ TEST_F(LayoutResultCachingTest, HitTableSectionRemove) {
   auto* test = To<LayoutBlock>(GetLayoutObjectByElementId("test"));
   auto* src = To<LayoutBlock>(GetLayoutObjectByElementId("src"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
   const ConstraintSpace& space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const LayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
 
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kHit);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kHit);
   EXPECT_NE(result, nullptr);
 }
 
@@ -2179,7 +2179,7 @@ TEST_F(LayoutResultCachingTest, HitBlockOffsetUnchangedInFragmentainer) {
   auto* test = To<LayoutBlockFlow>(GetLayoutObjectByElementId("test"));
   auto* src = To<LayoutBlockFlow>(GetLayoutObjectByElementId("src"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
   ASSERT_NE(src->GetSingleCachedLayoutResult(), nullptr);
   ASSERT_NE(test->GetSingleCachedLayoutResult(), nullptr);
   const ConstraintSpace& space =
@@ -2187,7 +2187,7 @@ TEST_F(LayoutResultCachingTest, HitBlockOffsetUnchangedInFragmentainer) {
   const LayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
 
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kHit);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kHit);
   EXPECT_NE(result, nullptr);
 }
 
@@ -2210,7 +2210,7 @@ TEST_F(LayoutResultCachingTest, HitNewFormattingContextInFragmentainer) {
   auto* test = To<LayoutBlock>(GetLayoutObjectByElementId("test"));
   auto* src = To<LayoutBlock>(GetLayoutObjectByElementId("src"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
   ASSERT_NE(src->GetSingleCachedLayoutResult(), nullptr);
   ASSERT_NE(test->GetSingleCachedLayoutResult(), nullptr);
   const ConstraintSpace& space =
@@ -2219,7 +2219,7 @@ TEST_F(LayoutResultCachingTest, HitNewFormattingContextInFragmentainer) {
   const LayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
 
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kHit);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kHit);
   EXPECT_NE(result, nullptr);
 }
 
@@ -2271,13 +2271,13 @@ TEST_F(LayoutResultCachingTest, MissGridIncorrectIntrinsicSize) {
   auto* test = To<LayoutBlock>(GetLayoutObjectByElementId("test"));
   auto* src = To<LayoutBlock>(GetLayoutObjectByElementId("src"));
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
   ConstraintSpace space =
       src->GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
   const LayoutResult* result =
       TestCachedLayoutResult(test, space, &cache_status);
 
-  EXPECT_EQ(cache_status, NGLayoutCacheStatus::kNeedsLayout);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kNeedsLayout);
   EXPECT_EQ(result, nullptr);
 }
 

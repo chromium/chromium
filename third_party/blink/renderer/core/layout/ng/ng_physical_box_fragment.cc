@@ -572,8 +572,9 @@ PhysicalOffset NGPhysicalBoxFragment::OffsetFromOwnerLayoutBox() const {
 const NGPhysicalBoxFragment* NGPhysicalBoxFragment::PostLayout() const {
   // While side effects are disabled, new fragments are not copied to
   // |LayoutBox|. Just return the given fragment.
-  if (NGDisableSideEffectsScope::IsDisabled())
+  if (DisableLayoutSideEffectsScope::IsDisabled()) {
     return this;
+  }
 
   const auto* layout_object = GetSelfOrContainerLayoutObject();
   if (UNLIKELY(!layout_object)) {

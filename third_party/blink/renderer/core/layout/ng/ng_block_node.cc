@@ -331,7 +331,7 @@ const LayoutResult* BlockNode::Layout(
         previous_result->GetConstraintSpaceForCaching().GetExclusionSpace());
   }
 
-  NGLayoutCacheStatus cache_status;
+  LayoutCacheStatus cache_status;
 
   // We may be able to hit the cache without calculating fragment geometry
   // (calculating that isn't necessarily very cheap). So, start off without it.
@@ -347,8 +347,8 @@ const LayoutResult* BlockNode::Layout(
       constraint_space, break_token, early_break, column_spanner_path,
       &fragment_geometry, &cache_status);
 
-  if ((cache_status == NGLayoutCacheStatus::kHit ||
-       cache_status == NGLayoutCacheStatus::kNeedsSimplifiedLayout) &&
+  if ((cache_status == LayoutCacheStatus::kHit ||
+       cache_status == LayoutCacheStatus::kNeedsSimplifiedLayout) &&
       needed_layout &&
       constraint_space.CacheSlot() == LayoutResultCacheSlot::kLayout &&
       box_->HasBrokenSpine() && !ChildLayoutBlockedByDisplayLock()) {
@@ -370,7 +370,7 @@ const LayoutResult* BlockNode::Layout(
     box_->ClearHasBrokenSpine();
   }
 
-  if (cache_status == NGLayoutCacheStatus::kHit) {
+  if (cache_status == LayoutCacheStatus::kHit) {
     DCHECK(layout_result);
 
     // We may have to update the margins on box_; we reuse the layout result
@@ -426,7 +426,7 @@ const LayoutResult* BlockNode::Layout(
 
   // Try to perform "simplified" layout, unless it's a fragmentation context
   // root (the simplified layout algorithm doesn't support fragmentainers).
-  if (cache_status == NGLayoutCacheStatus::kNeedsSimplifiedLayout &&
+  if (cache_status == LayoutCacheStatus::kNeedsSimplifiedLayout &&
       (!block_flow || !block_flow->IsFragmentationContextRoot())) {
     DCHECK(layout_result);
 #if DCHECK_IS_ON()
@@ -445,7 +445,7 @@ const LayoutResult* BlockNode::Layout(
           *previous_result, /* check_same_block_size */ !block_flow);
     }
 #endif
-  } else if (cache_status == NGLayoutCacheStatus::kCanReuseLines) {
+  } else if (cache_status == LayoutCacheStatus::kCanReuseLines) {
     params.previous_result = layout_result;
     layout_result = nullptr;
   } else {
@@ -497,7 +497,8 @@ const LayoutResult* BlockNode::Layout(
   BoxStrut scrollbars_after = ComputeScrollbars(constraint_space, *this);
   if ((scrollbars_before != scrollbars_after ||
        inline_size_before != fragment_geometry->border_box_size.inline_size) &&
-      !NGDisableSideEffectsScope::IsDisabled() && !IsBreakInside(break_token)) {
+      !DisableLayoutSideEffectsScope::IsDisabled() &&
+      !IsBreakInside(break_token)) {
     bool freeze_horizontal = false, freeze_vertical = false;
     // If we're in a measure pass, freeze both scrollbars right away, to avoid
     // quadratic time complexity for deeply nested flexboxes.
@@ -628,7 +629,7 @@ const LayoutResult* BlockNode::LayoutRepeatableRoot(
   // We read and write the physical fragments vector in LayoutBox here, which
   // isn't allowed if side-effects are disabled. Call-sites must make sure that
   // we don't attempt to repeat content if side-effects are disabled.
-  DCHECK(!NGDisableSideEffectsScope::IsDisabled());
+  DCHECK(!DisableLayoutSideEffectsScope::IsDisabled());
 
   // When laying out repeatable content, we cannot at the same time allow it to
   // break inside.
@@ -678,7 +679,7 @@ const LayoutResult* BlockNode::LayoutRepeatableRoot(
 }
 
 void BlockNode::FinishRepeatableRoot() const {
-  DCHECK(!NGDisableSideEffectsScope::IsDisabled());
+  DCHECK(!DisableLayoutSideEffectsScope::IsDisabled());
 
   // This is the last fragment. It won't be repeated again. We have already
   // created fragments for the repeated nodes, but the cloning was shallow.
@@ -702,7 +703,7 @@ void BlockNode::FinishRepeatableRoot() const {
         *box_->GetPhysicalFragment(i);
     bool is_first = i == 1;
     bool is_last = i + 1 == fragment_count;
-    NGFragmentRepeater repeater(is_first, is_last);
+    FragmentRepeater repeater(is_first, is_last);
     repeater.CloneChildFragments(physical_fragment);
   }
 }
@@ -776,8 +777,9 @@ void BlockNode::FinishLayout(
     const absl::optional<PhysicalSize>& old_box_size) const {
   // Computing MinMax after layout. Do not modify the |LayoutObject| tree, paint
   // properties, and other global states.
-  if (NGDisableSideEffectsScope::IsDisabled())
+  if (DisableLayoutSideEffectsScope::IsDisabled()) {
     return;
+  }
 
   if (layout_result->Status() != LayoutResult::kSuccess) {
     // Layout aborted, but there may be results from a previous layout lying
@@ -927,7 +929,7 @@ MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
     // If we're computing MinMax after layout, we need to disable side effects
     // so that |Layout| does not update the |LayoutObject| tree and other global
     // states.
-    absl::optional<NGDisableSideEffectsScope> disable_side_effects;
+    absl::optional<DisableLayoutSideEffectsScope> disable_side_effects;
     if (!GetLayoutBox()->NeedsLayout())
       disable_side_effects.emplace();
 
@@ -1559,7 +1561,7 @@ const LayoutResult* BlockNode::LayoutAtomicInline(
       parent_constraint_space.ReplacedPercentageResolutionSize());
   ConstraintSpace constraint_space = builder.ToConstraintSpace();
   const LayoutResult* result = Layout(constraint_space);
-  if (!NGDisableSideEffectsScope::IsDisabled()) {
+  if (!DisableLayoutSideEffectsScope::IsDisabled()) {
     // TODO(kojii): Investigate why ClearNeedsLayout() isn't called
     // automatically when it's being laid out.
     GetLayoutBox()->ClearNeedsLayout();

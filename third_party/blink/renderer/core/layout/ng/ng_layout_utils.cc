@@ -168,15 +168,15 @@ bool SizeMayChange(const BlockNode& node,
 }
 
 // Given the pre-computed |fragment_geometry| calcuates the
-// |NGLayoutCacheStatus| based on this sizing information. Returns:
-//  - |NGLayoutCacheStatus::kNeedsLayout| if the |new_space| will produce a
+// |LayoutCacheStatus| based on this sizing information. Returns:
+//  - |LayoutCacheStatus::kNeedsLayout| if the |new_space| will produce a
 //    different sized fragment, or if any %-block-size children will change
 //    size.
-//  - |NGLayoutCacheStatus::kNeedsSimplifiedLayout| if the block-size of the
+//  - |LayoutCacheStatus::kNeedsSimplifiedLayout| if the block-size of the
 //    fragment will change, *without* affecting any descendants (no descendants
 //    have %-block-sizes).
-//  - |NGLayoutCacheStatus::kHit| otherwise.
-NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
+//  - |LayoutCacheStatus::kHit| otherwise.
+LayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
     const BlockNode& node,
     const FragmentGeometry& fragment_geometry,
     const LayoutResult& layout_result,
@@ -188,10 +188,10 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
   LogicalBoxFragment fragment(style.GetWritingDirection(), physical_fragment);
 
   if (fragment_geometry.border_box_size.inline_size != fragment.InlineSize())
-    return NGLayoutCacheStatus::kNeedsLayout;
+    return LayoutCacheStatus::kNeedsLayout;
 
   if (style.MayHavePadding() && fragment_geometry.padding != fragment.Padding())
-    return NGLayoutCacheStatus::kNeedsLayout;
+    return LayoutCacheStatus::kNeedsLayout;
 
   // Tables are special - we can't determine the final block-size ahead of time
   // (or based on the previous intrinsic size).
@@ -203,8 +203,8 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
   if (node.IsTable()) {
     if (!new_space.AreBlockSizeConstraintsEqual(old_space) ||
         BlockSizeMayChange(node, new_space, old_space, layout_result))
-      return NGLayoutCacheStatus::kNeedsLayout;
-    return NGLayoutCacheStatus::kHit;
+      return LayoutCacheStatus::kNeedsLayout;
+    return LayoutCacheStatus::kHit;
   }
 
   LayoutUnit block_size = fragment_geometry.border_box_size.block_size;
@@ -276,7 +276,7 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
         intrinsic_block_size, fragment_geometry.border_box_size.inline_size);
 
     if (block_size == kIndefiniteSize)
-      return NGLayoutCacheStatus::kNeedsLayout;
+      return LayoutCacheStatus::kNeedsLayout;
   }
 
   bool is_block_size_equal = block_size == fragment.BlockSize();
@@ -284,29 +284,29 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
   if (!is_block_size_equal) {
     // Only block-flow supports changing the block-size for simplified layout.
     if (!node.IsBlockFlow() || node.IsCustom()) {
-      return NGLayoutCacheStatus::kNeedsLayout;
+      return LayoutCacheStatus::kNeedsLayout;
     }
 
     // Fieldsets stretch their content to the final block-size, which might
     // affect scrollbars.
     if (node.IsFieldsetContainer())
-      return NGLayoutCacheStatus::kNeedsLayout;
+      return LayoutCacheStatus::kNeedsLayout;
 
     if (node.IsBlockFlow() && style.AlignContentBlockCenter()) {
-      return NGLayoutCacheStatus::kNeedsLayout;
+      return LayoutCacheStatus::kNeedsLayout;
     }
 
     // If we are the document or body element in quirks mode, changing our size
     // means that a scrollbar was added/removed. Require full layout.
     if (node.IsQuirkyAndFillsViewport())
-      return NGLayoutCacheStatus::kNeedsLayout;
+      return LayoutCacheStatus::kNeedsLayout;
 
     // If a block (within a formatting-context) changes to/from an empty-block,
     // margins may collapse through this node, requiring full layout. We
     // approximate this check by checking if the block-size is/was zero.
     if (!physical_fragment.IsFormattingContextRoot() &&
         !block_size != !fragment.BlockSize())
-      return NGLayoutCacheStatus::kNeedsLayout;
+      return LayoutCacheStatus::kNeedsLayout;
   }
 
   const bool has_descendant_that_depends_on_percentage_block_size =
@@ -325,7 +325,7 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
   if (is_old_initial_block_size_indefinite !=
       is_initial_block_size_indefinite) {
     if (node.IsGrid() || has_descendant_that_depends_on_percentage_block_size)
-      return NGLayoutCacheStatus::kNeedsLayout;
+      return LayoutCacheStatus::kNeedsLayout;
   }
 
   if (has_descendant_that_depends_on_percentage_block_size) {
@@ -333,7 +333,7 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
     // block-size we'll affect any descendant that depends on the resulting
     // percentage block-size.
     if (!is_block_size_equal && !is_initial_block_size_indefinite)
-      return NGLayoutCacheStatus::kNeedsLayout;
+      return LayoutCacheStatus::kNeedsLayout;
 
     DCHECK(is_block_size_equal || is_initial_block_size_indefinite);
 
@@ -353,10 +353,10 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
       DCHECK(is_old_initial_block_size_indefinite);
       if (new_space.PercentageResolutionBlockSize() !=
           old_space.PercentageResolutionBlockSize())
-        return NGLayoutCacheStatus::kNeedsLayout;
+        return LayoutCacheStatus::kNeedsLayout;
       if (new_space.ReplacedPercentageResolutionBlockSize() !=
           old_space.ReplacedPercentageResolutionBlockSize())
-        return NGLayoutCacheStatus::kNeedsLayout;
+        return LayoutCacheStatus::kNeedsLayout;
     }
   }
 
@@ -388,26 +388,26 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
         // If we only have an old alignment baseline set, we need layout, as we
         // can't determine where the un-adjusted baseline is.
         if (!new_alignment_baseline && old_alignment_baseline)
-          return NGLayoutCacheStatus::kNeedsLayout;
+          return LayoutCacheStatus::kNeedsLayout;
 
         // We've been provided a new alignment baseline, just check that it
         // matches the previously generated baseline.
         if (!old_alignment_baseline) {
           if (*new_alignment_baseline != physical_fragment.FirstBaseline())
-            return NGLayoutCacheStatus::kNeedsLayout;
+            return LayoutCacheStatus::kNeedsLayout;
           break;
         }
 
         // If the alignment baselines differ at this stage, we need layout.
         if (*new_alignment_baseline != *old_alignment_baseline)
-          return NGLayoutCacheStatus::kNeedsLayout;
+          return LayoutCacheStatus::kNeedsLayout;
         break;
       }
       case EVerticalAlign::kMiddle:
       case EVerticalAlign::kBottom:
         // 'middle', and 'bottom' vertical alignment depend on the block-size.
         if (!is_block_size_equal)
-          return NGLayoutCacheStatus::kNeedsLayout;
+          return LayoutCacheStatus::kNeedsLayout;
         break;
     }
   } else {
@@ -421,7 +421,7 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
       case BlockContentAlignment::kUnsafeEnd:
       case BlockContentAlignment::kSafeEnd:
         if (!is_block_size_equal) {
-          return NGLayoutCacheStatus::kNeedsLayout;
+          return LayoutCacheStatus::kNeedsLayout;
         }
         break;
     }
@@ -431,8 +431,8 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
   // ourselves without affecting any of our children.
   // In that case we may be able to perform "simplified" layout.
   DCHECK(!node.IsTable());
-  return is_block_size_equal ? NGLayoutCacheStatus::kHit
-                             : NGLayoutCacheStatus::kNeedsSimplifiedLayout;
+  return is_block_size_equal ? LayoutCacheStatus::kHit
+                             : LayoutCacheStatus::kNeedsSimplifiedLayout;
 }
 
 bool IntrinsicSizeWillChange(
@@ -463,7 +463,7 @@ bool IntrinsicSizeWillChange(
 
 }  // namespace
 
-NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatus(
+LayoutCacheStatus CalculateSizeBasedLayoutCacheStatus(
     const BlockNode& node,
     const BlockBreakToken* break_token,
     const LayoutResult& cached_layout_result,
@@ -475,24 +475,24 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatus(
       cached_layout_result.GetConstraintSpaceForCaching();
 
   if (!new_space.MaySkipLayout(old_space))
-    return NGLayoutCacheStatus::kNeedsLayout;
+    return LayoutCacheStatus::kNeedsLayout;
 
   if (new_space.AreInlineSizeConstraintsEqual(old_space) &&
       new_space.AreBlockSizeConstraintsEqual(old_space)) {
     // It is possible that our intrinsic size has changed, check for that here.
     if (IntrinsicSizeWillChange(node, break_token, cached_layout_result,
                                 new_space, fragment_geometry))
-      return NGLayoutCacheStatus::kNeedsLayout;
+      return LayoutCacheStatus::kNeedsLayout;
 
     // We don't have to check our style if we know the constraint space sizes
     // will remain the same.
     if (new_space.AreSizesEqual(old_space))
-      return NGLayoutCacheStatus::kHit;
+      return LayoutCacheStatus::kHit;
 
     // TODO(ikilpatrick): Always miss the cache for tables whose block
     // size-constraints change.
     if (!SizeMayChange(node, new_space, old_space, cached_layout_result))
-      return NGLayoutCacheStatus::kHit;
+      return LayoutCacheStatus::kHit;
   }
 
   if (!*fragment_geometry) {

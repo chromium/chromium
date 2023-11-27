@@ -114,7 +114,7 @@ void UpdateBreakTokens(LayoutBox& layout_box) {
 
 }  // anonymous namespace
 
-void NGFragmentRepeater::CloneChildFragments(
+void FragmentRepeater::CloneChildFragments(
     const NGPhysicalBoxFragment& cloned_fragment) {
   if (cloned_fragment.HasItems()) {
     // Fragment items have already been cloned, but any atomic inlines were
@@ -164,7 +164,7 @@ void NGFragmentRepeater::CloneChildFragments(
   }
 }
 
-const LayoutResult* NGFragmentRepeater::Repeat(const LayoutResult& other) {
+const LayoutResult* FragmentRepeater::Repeat(const LayoutResult& other) {
   const LayoutResult* cloned_result = LayoutResult::Clone(other);
   const auto& cloned_fragment =
       To<NGPhysicalBoxFragment>(cloned_result->PhysicalFragment());
@@ -194,7 +194,7 @@ const LayoutResult* NGFragmentRepeater::Repeat(const LayoutResult& other) {
   return cloned_result;
 }
 
-const LayoutResult* NGFragmentRepeater::GetClonableLayoutResult(
+const LayoutResult* FragmentRepeater::GetClonableLayoutResult(
     const LayoutBox& layout_box,
     const NGPhysicalBoxFragment& fragment) const {
   if (const BlockBreakToken* break_token = fragment.GetBreakToken()) {

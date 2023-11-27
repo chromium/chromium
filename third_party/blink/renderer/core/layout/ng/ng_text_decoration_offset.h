@@ -18,13 +18,13 @@ enum class FontVerticalPositionType;
 enum class ResolvedUnderlinePosition;
 
 // Class for computing the decoration offset for text fragments in LayoutNG.
-class CORE_EXPORT NGTextDecorationOffset {
+class CORE_EXPORT TextDecorationOffset {
   STACK_ALLOCATED();
 
  public:
-  explicit NGTextDecorationOffset(const ComputedStyle& text_style)
+  explicit TextDecorationOffset(const ComputedStyle& text_style)
       : text_style_(text_style) {}
-  ~NGTextDecorationOffset() = default;
+  ~TextDecorationOffset() = default;
 
   int ComputeUnderlineOffsetForUnder(const Length& style_underline_offset,
                                      float computed_font_size,

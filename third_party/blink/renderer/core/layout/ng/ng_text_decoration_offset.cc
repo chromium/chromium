@@ -44,7 +44,7 @@ absl::optional<int> ComputeUnderlineOffsetFromFont(
 
 }  // namespace
 
-int NGTextDecorationOffset::ComputeUnderlineOffsetForUnder(
+int TextDecorationOffset::ComputeUnderlineOffsetForUnder(
     const Length& style_underline_offset,
     float computed_font_size,
     const SimpleFontData* font_data,
@@ -80,7 +80,7 @@ int NGTextDecorationOffset::ComputeUnderlineOffsetForUnder(
              : offset_int - 1 - floorf(text_decoration_thickness);
 }
 
-int NGTextDecorationOffset::ComputeUnderlineOffset(
+int TextDecorationOffset::ComputeUnderlineOffset(
     ResolvedUnderlinePosition underline_position,
     float computed_font_size,
     const SimpleFontData* font_data,
@@ -116,7 +116,7 @@ int NGTextDecorationOffset::ComputeUnderlineOffset(
 }
 
 /* static */
-float NGTextDecorationOffset::StyleUnderlineOffsetToPixels(
+float TextDecorationOffset::StyleUnderlineOffsetToPixels(
     const Length& style_underline_offset,
     float font_size) {
   if (style_underline_offset.IsAuto()) {

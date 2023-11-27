@@ -48,8 +48,8 @@ const LayoutResult* TableSectionLayoutAlgorithm::Layout() {
   Vector<LayoutUnit> row_offsets = {LayoutUnit()};
   wtf_size_t actual_start_row_index = 0u;
 
-  NGBlockChildIterator child_iterator(Node().FirstChild(), GetBreakToken(),
-                                      /* calculate_child_idx */ true);
+  BlockChildIterator child_iterator(Node().FirstChild(), GetBreakToken(),
+                                    /* calculate_child_idx */ true);
   for (auto entry = child_iterator.NextChild();
        BlockNode row = To<BlockNode>(entry.node);
        entry = child_iterator.NextChild()) {

@@ -14,28 +14,28 @@ class ConstraintSpace;
 class LayoutResult;
 struct MarginStrut;
 
-// NGLayoutCacheStatus indicates what type of cache hit/miss occurred. For
+// LayoutCacheStatus indicates what type of cache hit/miss occurred. For
 // various types of misses we may be able to perform less work than a full
 // layout.
 //
 // See |SimplifiedLayoutAlgorithm| for details about the
 // |kNeedsSimplifiedLayout| cache miss type.
-enum class NGLayoutCacheStatus {
+enum class LayoutCacheStatus {
   kHit,                    // Cache hit, no additional work required.
   kNeedsLayout,            // Cache miss, full layout required.
   kNeedsSimplifiedLayout,  // Cache miss, simplified layout required.
   kCanReuseLines           // Cache miss, may be possible to reuse lines.
 };
 
-// Calculates the |NGLayoutCacheStatus| based on sizing information. Returns:
-//  - |NGLayoutCacheStatus::kHit| if the size will be the same as
+// Calculates the |LayoutCacheStatus| based on sizing information. Returns:
+//  - |LayoutCacheStatus::kHit| if the size will be the same as
 //    |cached_layout_result|, and therefore might be able to skip layout.
-//  - |NGLayoutCacheStatus::kNeedsSimplifiedLayout| if a simplified layout may
+//  - |LayoutCacheStatus::kNeedsSimplifiedLayout| if a simplified layout may
 //    be possible (just based on the sizing information at this point).
-//  - |NGLayoutCacheStatus::kNeedsLayout| if a full layout is required.
+//  - |LayoutCacheStatus::kNeedsLayout| if a full layout is required.
 //
 // May pre-compute the |fragment_geometry| while calculating this status.
-NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatus(
+LayoutCacheStatus CalculateSizeBasedLayoutCacheStatus(
     const BlockNode& node,
     const BlockBreakToken* break_token,
     const LayoutResult& cached_layout_result,

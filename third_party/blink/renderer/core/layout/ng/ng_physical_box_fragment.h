@@ -489,7 +489,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
 
   class MutableForCloning {
     STACK_ALLOCATED();
-    friend class NGFragmentRepeater;
+    friend class FragmentRepeater;
     friend class NGPhysicalBoxFragment;
 
    public:

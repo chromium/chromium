@@ -1012,7 +1012,7 @@ const LayoutResult* LayoutGridItemForMeasure(
   // TODO(ikilpatrick): For subgrid, ideally we don't want to disable side
   // effects as it may impact performance significantly; this issue can be
   // avoided by introducing additional cache slots (see crbug.com/1272533).
-  absl::optional<NGDisableSideEffectsScope> disable_side_effects;
+  absl::optional<DisableLayoutSideEffectsScope> disable_side_effects;
   if (!node.GetLayoutBox()->NeedsLayout() &&
       (sizing_constraint != SizingConstraint::kLayout ||
        grid_item.is_subgridded_to_parent_grid)) {
@@ -3864,7 +3864,7 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
           // Although we know that this item isn't going to fit here, we're
           // inside balanced multicol, so we need to figure out how much more
           // fragmentainer space we'd need to fit more content.
-          NGDisableSideEffectsScope disable_side_effects;
+          DisableLayoutSideEffectsScope disable_side_effects;
           auto* result = grid_item.node.Layout(space, break_token);
           PropagateSpaceShortage(constraint_space, result,
                                  fragment_relative_block_offset,

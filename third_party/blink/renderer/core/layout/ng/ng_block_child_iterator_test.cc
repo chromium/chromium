@@ -34,15 +34,14 @@ const BlockBreakToken* CreateBreakToken(
   return BlockBreakToken::Create(&builder);
 }
 
-using NGBlockChildIteratorTest = RenderingTest;
+using BlockChildIteratorTest = RenderingTest;
 
-TEST_F(NGBlockChildIteratorTest, NullFirstChild) {
-  NGBlockChildIterator iterator(nullptr, nullptr);
-  ASSERT_EQ(NGBlockChildIterator::Entry(nullptr, nullptr),
-            iterator.NextChild());
+TEST_F(BlockChildIteratorTest, NullFirstChild) {
+  BlockChildIterator iterator(nullptr, nullptr);
+  ASSERT_EQ(BlockChildIterator::Entry(nullptr, nullptr), iterator.NextChild());
 }
 
-TEST_F(NGBlockChildIteratorTest, NoBreakToken) {
+TEST_F(BlockChildIteratorTest, NoBreakToken) {
   SetBodyInnerHTML(R"HTML(
       <div id='child1'></div>
       <div id='child2'></div>
@@ -53,15 +52,14 @@ TEST_F(NGBlockChildIteratorTest, NoBreakToken) {
   LayoutInputNode node3 = node2.NextSibling();
 
   // The iterator should loop through three children.
-  NGBlockChildIterator iterator(node1, nullptr);
-  ASSERT_EQ(NGBlockChildIterator::Entry(node1, nullptr), iterator.NextChild());
-  ASSERT_EQ(NGBlockChildIterator::Entry(node2, nullptr), iterator.NextChild());
-  ASSERT_EQ(NGBlockChildIterator::Entry(node3, nullptr), iterator.NextChild());
-  ASSERT_EQ(NGBlockChildIterator::Entry(nullptr, nullptr),
-            iterator.NextChild());
+  BlockChildIterator iterator(node1, nullptr);
+  ASSERT_EQ(BlockChildIterator::Entry(node1, nullptr), iterator.NextChild());
+  ASSERT_EQ(BlockChildIterator::Entry(node2, nullptr), iterator.NextChild());
+  ASSERT_EQ(BlockChildIterator::Entry(node3, nullptr), iterator.NextChild());
+  ASSERT_EQ(BlockChildIterator::Entry(nullptr, nullptr), iterator.NextChild());
 }
 
-TEST_F(NGBlockChildIteratorTest, BreakTokens) {
+TEST_F(BlockChildIteratorTest, BreakTokens) {
   SetBodyInnerHTML(R"HTML(
       <div id='container'>
         <div id='child1'></div>
@@ -86,60 +84,56 @@ TEST_F(NGBlockChildIteratorTest, BreakTokens) {
   const BlockBreakToken* parent_token =
       CreateBreakToken(container, &child_break_tokens);
 
-  NGBlockChildIterator iterator(node1, parent_token);
-  ASSERT_EQ(NGBlockChildIterator::Entry(node1, child_token1),
+  BlockChildIterator iterator(node1, parent_token);
+  ASSERT_EQ(BlockChildIterator::Entry(node1, child_token1),
             iterator.NextChild());
-  ASSERT_EQ(NGBlockChildIterator::Entry(node2, nullptr), iterator.NextChild());
-  ASSERT_EQ(NGBlockChildIterator::Entry(node3, nullptr), iterator.NextChild());
-  ASSERT_EQ(NGBlockChildIterator::Entry(node4, nullptr), iterator.NextChild());
-  ASSERT_EQ(NGBlockChildIterator::Entry(nullptr, nullptr),
-            iterator.NextChild());
+  ASSERT_EQ(BlockChildIterator::Entry(node2, nullptr), iterator.NextChild());
+  ASSERT_EQ(BlockChildIterator::Entry(node3, nullptr), iterator.NextChild());
+  ASSERT_EQ(BlockChildIterator::Entry(node4, nullptr), iterator.NextChild());
+  ASSERT_EQ(BlockChildIterator::Entry(nullptr, nullptr), iterator.NextChild());
 
   child_break_tokens.clear();
   child_break_tokens.push_back(child_token1);
   child_break_tokens.push_back(child_token2);
   parent_token = CreateBreakToken(container, &child_break_tokens);
 
-  iterator = NGBlockChildIterator(node1, parent_token);
-  ASSERT_EQ(NGBlockChildIterator::Entry(node1, child_token1),
+  iterator = BlockChildIterator(node1, parent_token);
+  ASSERT_EQ(BlockChildIterator::Entry(node1, child_token1),
             iterator.NextChild());
-  ASSERT_EQ(NGBlockChildIterator::Entry(node2, child_token2),
+  ASSERT_EQ(BlockChildIterator::Entry(node2, child_token2),
             iterator.NextChild());
-  ASSERT_EQ(NGBlockChildIterator::Entry(node3, nullptr), iterator.NextChild());
-  ASSERT_EQ(NGBlockChildIterator::Entry(node4, nullptr), iterator.NextChild());
-  ASSERT_EQ(NGBlockChildIterator::Entry(nullptr, nullptr),
-            iterator.NextChild());
+  ASSERT_EQ(BlockChildIterator::Entry(node3, nullptr), iterator.NextChild());
+  ASSERT_EQ(BlockChildIterator::Entry(node4, nullptr), iterator.NextChild());
+  ASSERT_EQ(BlockChildIterator::Entry(nullptr, nullptr), iterator.NextChild());
 
   child_break_tokens.clear();
   child_break_tokens.push_back(child_token2);
   child_break_tokens.push_back(child_token3);
   parent_token = CreateBreakToken(container, &child_break_tokens);
 
-  iterator = NGBlockChildIterator(node1, parent_token);
-  ASSERT_EQ(NGBlockChildIterator::Entry(node2, child_token2),
+  iterator = BlockChildIterator(node1, parent_token);
+  ASSERT_EQ(BlockChildIterator::Entry(node2, child_token2),
             iterator.NextChild());
-  ASSERT_EQ(NGBlockChildIterator::Entry(node3, child_token3),
+  ASSERT_EQ(BlockChildIterator::Entry(node3, child_token3),
             iterator.NextChild());
-  ASSERT_EQ(NGBlockChildIterator::Entry(node4, nullptr), iterator.NextChild());
-  ASSERT_EQ(NGBlockChildIterator::Entry(nullptr, nullptr),
-            iterator.NextChild());
+  ASSERT_EQ(BlockChildIterator::Entry(node4, nullptr), iterator.NextChild());
+  ASSERT_EQ(BlockChildIterator::Entry(nullptr, nullptr), iterator.NextChild());
 
   child_break_tokens.clear();
   child_break_tokens.push_back(child_token1);
   child_break_tokens.push_back(child_token3);
   parent_token = CreateBreakToken(container, &child_break_tokens);
 
-  iterator = NGBlockChildIterator(node1, parent_token);
-  ASSERT_EQ(NGBlockChildIterator::Entry(node1, child_token1),
+  iterator = BlockChildIterator(node1, parent_token);
+  ASSERT_EQ(BlockChildIterator::Entry(node1, child_token1),
             iterator.NextChild());
-  ASSERT_EQ(NGBlockChildIterator::Entry(node3, child_token3),
+  ASSERT_EQ(BlockChildIterator::Entry(node3, child_token3),
             iterator.NextChild());
-  ASSERT_EQ(NGBlockChildIterator::Entry(node4, nullptr), iterator.NextChild());
-  ASSERT_EQ(NGBlockChildIterator::Entry(nullptr, nullptr),
-            iterator.NextChild());
+  ASSERT_EQ(BlockChildIterator::Entry(node4, nullptr), iterator.NextChild());
+  ASSERT_EQ(BlockChildIterator::Entry(nullptr, nullptr), iterator.NextChild());
 }
 
-TEST_F(NGBlockChildIteratorTest, SeenAllChildren) {
+TEST_F(BlockChildIteratorTest, SeenAllChildren) {
   SetBodyInnerHTML(R"HTML(
       <div id='container'>
         <div id='child1'></div>
@@ -160,11 +154,10 @@ TEST_F(NGBlockChildIteratorTest, SeenAllChildren) {
   // e.g. when #child1 has overflow into a new fragmentainer, while #child2 was
   // finished in an earlier fragmentainer.
 
-  NGBlockChildIterator iterator(node1, parent_token);
-  ASSERT_EQ(NGBlockChildIterator::Entry(node1, child_token1),
+  BlockChildIterator iterator(node1, parent_token);
+  ASSERT_EQ(BlockChildIterator::Entry(node1, child_token1),
             iterator.NextChild());
-  ASSERT_EQ(NGBlockChildIterator::Entry(nullptr, nullptr),
-            iterator.NextChild());
+  ASSERT_EQ(BlockChildIterator::Entry(nullptr, nullptr), iterator.NextChild());
 
   parent_token = CreateBreakToken(container, /* child_break_tokens */ nullptr,
                                   /* has_seen_all_children*/ true);
@@ -173,12 +166,11 @@ TEST_F(NGBlockChildIteratorTest, SeenAllChildren) {
   // we have a large container with fixed block-size, with empty space at the
   // end, not occupied by any children.
 
-  iterator = NGBlockChildIterator(node1, parent_token);
-  ASSERT_EQ(NGBlockChildIterator::Entry(nullptr, nullptr),
-            iterator.NextChild());
+  iterator = BlockChildIterator(node1, parent_token);
+  ASSERT_EQ(BlockChildIterator::Entry(nullptr, nullptr), iterator.NextChild());
 }
 
-TEST_F(NGBlockChildIteratorTest, DeleteNodeWhileIteration) {
+TEST_F(BlockChildIteratorTest, DeleteNodeWhileIteration) {
   SetBodyInnerHTML(R"HTML(
       <div id='child1'></div>
       <div id='child2'></div>
@@ -188,8 +180,8 @@ TEST_F(NGBlockChildIteratorTest, DeleteNodeWhileIteration) {
   LayoutInputNode node2 = node1.NextSibling();
   LayoutInputNode node3 = node2.NextSibling();
 
-  using Entry = NGBlockChildIterator::Entry;
-  NGBlockChildIterator iterator(node1, nullptr);
+  using Entry = BlockChildIterator::Entry;
+  BlockChildIterator iterator(node1, nullptr);
   EXPECT_EQ(Entry(node1, nullptr), iterator.NextChild());
   {
     // Set the container query flag to pass LayoutObject::

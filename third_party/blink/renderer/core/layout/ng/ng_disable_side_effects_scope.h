@@ -14,12 +14,12 @@ namespace blink {
 // just return fragments without updating the |LayoutObject| tree, paint
 // properties, and other global objects. This is used e.g., when computing
 // MinMax after layout.
-class CORE_EXPORT NGDisableSideEffectsScope {
+class CORE_EXPORT DisableLayoutSideEffectsScope {
   STACK_ALLOCATED();
 
  public:
-  NGDisableSideEffectsScope() { ++count_; }
-  ~NGDisableSideEffectsScope() {
+  DisableLayoutSideEffectsScope() { ++count_; }
+  ~DisableLayoutSideEffectsScope() {
     DCHECK(count_);
     --count_;
   }

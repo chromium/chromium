@@ -137,7 +137,7 @@ class CORE_EXPORT NGTextPainter : public TextPainterBase {
                             const AutoDarkMode& auto_dark_mode);
   void PaintSvgDecorationsExceptLineThrough(
       const NGTextFragmentPaintInfo&,
-      const NGTextDecorationOffset& decoration_offset,
+      const TextDecorationOffset& decoration_offset,
       TextDecorationInfo& decoration_info,
       TextDecorationLine lines_to_paint,
       const PaintInfo& paint_info,

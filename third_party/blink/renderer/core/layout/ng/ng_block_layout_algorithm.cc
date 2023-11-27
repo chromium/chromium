@@ -705,17 +705,17 @@ inline const LayoutResult* BlockLayoutAlgorithm::Layout(
   // |previous_inflow_position| and |BreakToken()|.
   const InlineBreakToken* previous_inline_break_token = nullptr;
 
-  NGBlockChildIterator child_iterator(Node().FirstChild(), GetBreakToken());
+  BlockChildIterator child_iterator(Node().FirstChild(), GetBreakToken());
 
   // If this layout is blocked by a display-lock, then we pretend this node has
   // no children and that there are no break tokens. Due to this, we skip layout
   // on these children.
   if (Node().ChildLayoutBlockedByDisplayLock())
-    child_iterator = NGBlockChildIterator(BlockNode(nullptr), nullptr);
+    child_iterator = BlockChildIterator(BlockNode(nullptr), nullptr);
 
   BlockNode ruby_text_child(nullptr);
   BlockNode placeholder_child(nullptr);
-  NGBlockChildIterator::Entry entry;
+  BlockChildIterator::Entry entry;
   for (entry = child_iterator.NextChild(); LayoutInputNode child = entry.node;
        entry = child_iterator.NextChild(previous_inline_break_token)) {
     const BreakToken* child_break_token = entry.token;

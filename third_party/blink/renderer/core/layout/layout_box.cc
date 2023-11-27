@@ -2661,7 +2661,7 @@ void LayoutBox::SetLayoutResult(const LayoutResult* result, wtf_size_t index) {
 void LayoutBox::AppendLayoutResult(const LayoutResult* result) {
   const auto& fragment = To<NGPhysicalBoxFragment>(result->PhysicalFragment());
   // |layout_results_| is particularly critical when side effects are disabled.
-  DCHECK(!NGDisableSideEffectsScope::IsDisabled());
+  DCHECK(!DisableLayoutSideEffectsScope::IsDisabled());
   layout_results_.push_back(std::move(result));
   InvalidateCachedGeometry();
   CheckDidAddFragment(*this, fragment);
@@ -2692,7 +2692,7 @@ void LayoutBox::ReplaceLayoutResult(const LayoutResult* result,
     }
   }
   // |layout_results_| is particularly critical when side effects are disabled.
-  DCHECK(!NGDisableSideEffectsScope::IsDisabled());
+  DCHECK(!DisableLayoutSideEffectsScope::IsDisabled());
   layout_results_[index] = std::move(result);
   InvalidateCachedGeometry();
   CheckDidAddFragment(*this, fragment, index);
@@ -2751,7 +2751,7 @@ void LayoutBox::ShrinkLayoutResults(wtf_size_t results_to_keep) {
   for (wtf_size_t i = results_to_keep; i < layout_results_.size(); i++)
     InvalidateItems(*layout_results_[i]);
   // |layout_results_| is particularly critical when side effects are disabled.
-  DCHECK(!NGDisableSideEffectsScope::IsDisabled());
+  DCHECK(!DisableLayoutSideEffectsScope::IsDisabled());
   if (layout_results_.size() > 1)
     FragmentCountOrSizeDidChange();
   layout_results_.Shrink(results_to_keep);

@@ -151,7 +151,7 @@ void ComputeCaptionFragments(
     //
     // TODO(mstensho): We can remove this if we only perform this operation once
     // per table node (and e.g. store the table data in the break tokens).
-    absl::optional<NGDisableSideEffectsScope> disable_side_effects;
+    absl::optional<DisableLayoutSideEffectsScope> disable_side_effects;
     if ((!captions && !caption.GetLayoutBox()->NeedsLayout()) ||
         InvolvedInBlockFragmentation(table_builder)) {
       disable_side_effects.emplace();
@@ -1070,7 +1070,7 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
   // if side-effects are disabled, as that machinery depends on updating and
   // reading the physical fragments vector of the LayoutBox.
   if (!GetConstraintSpace().IsInsideRepeatableContent() &&
-      !NGDisableSideEffectsScope::IsDisabled() &&
+      !DisableLayoutSideEffectsScope::IsDisabled() &&
       (grouped_children.header || grouped_children.footer)) {
     LayoutUnit max_section_block_size =
         GetConstraintSpace().FragmentainerBlockSize() / 4;

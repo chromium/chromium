@@ -630,7 +630,7 @@ LogicalRect InkOverflow::ComputeAppliedDecorationOverflow(
       ink_overflow.size.inline_size, style, inline_context,
       /* selection_text_decoration */ absl::nullopt, decoration_override,
       &scaled_font, kMinimumThicknessIsOne);
-  NGTextDecorationOffset decoration_offset(style);
+  TextDecorationOffset decoration_offset(style);
   gfx::RectF accumulated_bound;
   for (wtf_size_t i = 0; i < decoration_info.AppliedDecorationCount(); i++) {
     decoration_info.SetDecorationIndex(i);

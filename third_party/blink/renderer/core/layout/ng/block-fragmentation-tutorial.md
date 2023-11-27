@@ -263,7 +263,7 @@ When we break before or inside a node, we attach a [break
 token](ng_block_break_token.h) to the resulting fragment. The break tokens form
 a tree structure for each parent we need to break and resume inside of, which
 we'll traverse when resuming layout in the next fragmentainer. See for instance
-[NGBlockChildIterator](ng_block_child_iterator.h), and how it makes use of the
+[BlockChildIterator](ng_block_child_iterator.h), and how it makes use of the
 break token tree structure during child layout in
 [BlockLayoutAlgorithm::Layout()](ng_block_layout_algorithm.cc).
 

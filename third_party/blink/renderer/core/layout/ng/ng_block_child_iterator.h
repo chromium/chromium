@@ -28,13 +28,13 @@ class BlockBreakToken;
 //
 // This class does not handle modifications to its arguments after it has been
 // constructed.
-class CORE_EXPORT NGBlockChildIterator {
+class CORE_EXPORT BlockChildIterator {
   STACK_ALLOCATED();
 
  public:
-  NGBlockChildIterator(LayoutInputNode first_child,
-                       const BlockBreakToken* break_token,
-                       bool calculate_child_idx = false);
+  BlockChildIterator(LayoutInputNode first_child,
+                     const BlockBreakToken* break_token,
+                     bool calculate_child_idx = false);
 
   // Returns the next input node which should be laid out, along with its
   // respective break token.
@@ -61,7 +61,7 @@ class CORE_EXPORT NGBlockChildIterator {
   bool did_handle_first_child_ = false;
 };
 
-struct NGBlockChildIterator::Entry {
+struct BlockChildIterator::Entry {
   STACK_ALLOCATED();
 
  public:
@@ -75,7 +75,7 @@ struct NGBlockChildIterator::Entry {
   const BreakToken* token;
   absl::optional<wtf_size_t> index;
 
-  bool operator==(const NGBlockChildIterator::Entry& other) const {
+  bool operator==(const BlockChildIterator::Entry& other) const {
     return node == other.node && token == other.token;
   }
 };

@@ -475,8 +475,9 @@ void OutOfFlowLayoutPart::HandleFragmentation(
   // OOF fragmentation depends on LayoutBox data being up-to-date, which isn't
   // the case if side-effects are disabled. So we cannot safely do anything
   // here.
-  if (NGDisableSideEffectsScope::IsDisabled())
+  if (DisableLayoutSideEffectsScope::IsDisabled()) {
     return;
+  }
 
   if (!column_balancing_info &&
       (!container_builder_->IsBlockFragmentationContextRoot() ||

@@ -458,7 +458,7 @@ LayoutUnit TextDecorationInfo::OffsetFromDecoratingBox() const {
 }
 
 void TextDecorationInfo::SetUnderlineLineData(
-    const NGTextDecorationOffset& decoration_offset) {
+    const TextDecorationOffset& decoration_offset) {
   DCHECK(HasUnderline());
   // Don't apply text-underline-offset to overlines. |line_offset| is zero.
   const Length line_offset = UNLIKELY(flip_underline_and_overline_)
@@ -475,7 +475,7 @@ void TextDecorationInfo::SetUnderlineLineData(
 }
 
 void TextDecorationInfo::SetOverlineLineData(
-    const NGTextDecorationOffset& decoration_offset) {
+    const TextDecorationOffset& decoration_offset) {
   DCHECK(HasOverline());
   // Don't apply text-underline-offset to overline.
   const Length line_offset = UNLIKELY(flip_underline_and_overline_)
@@ -502,7 +502,7 @@ void TextDecorationInfo::SetLineThroughLineData() {
 }
 
 void TextDecorationInfo::SetSpellingOrGrammarErrorLineData(
-    const NGTextDecorationOffset& decoration_offset) {
+    const TextDecorationOffset& decoration_offset) {
   DCHECK(HasSpellingOrGrammerError());
   DCHECK(!HasUnderline());
   DCHECK(!HasOverline());

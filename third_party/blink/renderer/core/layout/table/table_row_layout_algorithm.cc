@@ -138,8 +138,8 @@ const LayoutResult* TableRowLayoutAlgorithm::Layout() {
     results.clear();
     has_inflow_break_inside = false;
 
-    NGBlockChildIterator child_iterator(Node().FirstChild(), GetBreakToken(),
-                                        /* calculate_child_idx */ true);
+    BlockChildIterator child_iterator(Node().FirstChild(), GetBreakToken(),
+                                      /* calculate_child_idx */ true);
     for (auto entry = child_iterator.NextChild();
          BlockNode cell = To<BlockNode>(entry.node);
          entry = child_iterator.NextChild()) {

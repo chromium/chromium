@@ -110,7 +110,7 @@ class CORE_EXPORT TextPainterBase {
   //   3. Paint line through text decoration
   void PaintUnderOrOverLineDecorations(
       const NGTextFragmentPaintInfo& fragment_paint_info,
-      const NGTextDecorationOffset& decoration_offset,
+      const TextDecorationOffset& decoration_offset,
       TextDecorationInfo& decoration_info,
       TextDecorationLine lines_to_paint,
       const PaintInfo& paint_info,
@@ -142,7 +142,7 @@ class CORE_EXPORT TextPainterBase {
 
   void PaintUnderOrOverLineDecorationShadows(
       const NGTextFragmentPaintInfo& fragment_paint_info,
-      const NGTextDecorationOffset& decoration_offset,
+      const TextDecorationOffset& decoration_offset,
       TextDecorationInfo& decoration_info,
       TextDecorationLine lines_to_paint,
       const cc::PaintFlags* flags,
@@ -151,7 +151,7 @@ class CORE_EXPORT TextPainterBase {
 
   void PaintUnderOrOverLineDecorations(
       const NGTextFragmentPaintInfo& fragment_paint_info,
-      const NGTextDecorationOffset& decoration_offset,
+      const TextDecorationOffset& decoration_offset,
       TextDecorationInfo& decoration_info,
       TextDecorationLine lines_to_paint,
       const cc::PaintFlags* flags,

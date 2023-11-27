@@ -1031,7 +1031,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   friend class WhitespaceAttacherTest;
   friend class StyleCascadeTest;
   friend class StyleImageCacheTest;
-  FRIEND_TEST_ALL_PREFIXES(NGBlockChildIteratorTest, DeleteNodeWhileIteration);
+  FRIEND_TEST_ALL_PREFIXES(BlockChildIteratorTest, DeleteNodeWhileIteration);
 
   HeapHashSet<Member<TextTrack>> text_tracks_;
   Member<Element> vtt_originating_element_;

@@ -6,6 +6,6 @@
 
 namespace blink {
 
-unsigned NGDisableSideEffectsScope::count_ = 0;
+unsigned DisableLayoutSideEffectsScope::count_ = 0;
 
 }  // namespace blink
