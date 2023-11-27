@@ -64,7 +64,8 @@ PinnedToolbarActionsContainer::PinnedActionToolbarButton::
           base::BindRepeating(&PinnedActionToolbarButton::ButtonPressed,
                               base::Unretained(this)),
           CreateMenuModel(),
-          nullptr),
+          nullptr,
+          false),
       browser_(browser),
       action_item_(actions::ActionManager::Get().FindAction(
           action_id,
