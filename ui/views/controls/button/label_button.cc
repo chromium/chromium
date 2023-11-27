@@ -487,7 +487,7 @@ ui::NativeTheme::State LabelButton::GetForegroundThemeState(
 
 void LabelButton::UpdateImage() {
   if (GetWidget())
-    image_->SetImage(GetImage(GetVisualState()));
+    image_->SetImage(ui::ImageModel::FromImageSkia(GetImage(GetVisualState())));
 }
 
 void LabelButton::AddLayerToRegion(ui::Layer* new_layer,

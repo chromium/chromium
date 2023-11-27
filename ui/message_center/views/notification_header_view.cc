@@ -254,7 +254,7 @@ void NotificationHeaderView::ConfigureLabelsStyle(
 }
 
 void NotificationHeaderView::SetAppIcon(const gfx::ImageSkia& img) {
-  app_icon_view_->SetImage(img);
+  app_icon_view_->SetImage(ui::ImageModel::FromImageSkia(img));
   using_default_app_icon_ = false;
 }
 

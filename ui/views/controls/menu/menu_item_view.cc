@@ -1418,17 +1418,17 @@ void MenuItemView::UpdateSelectionBasedState(bool paint_as_selected) {
   last_paint_as_selected_ = paint_as_selected;
   const Colors colors = CalculateColors(paint_as_selected);
   if (submenu_arrow_image_view_) {
-    submenu_arrow_image_view_->SetImage(
-        gfx::CreateVectorIcon(features::IsChromeRefresh2023()
-                                  ? vector_icons::kSubmenuArrowChromeRefreshIcon
-                                  : vector_icons::kSubmenuArrowIcon,
-                              colors.icon_color));
+    submenu_arrow_image_view_->SetImage(ui::ImageModel::FromVectorIcon(
+        features::IsChromeRefresh2023()
+            ? vector_icons::kSubmenuArrowChromeRefreshIcon
+            : vector_icons::kSubmenuArrowIcon,
+        colors.icon_color));
   }
   MenuDelegate* delegate = GetDelegate();
   if (type_ == Type::kCheckbox && delegate &&
       delegate->IsItemChecked(GetCommand())) {
     radio_check_image_view_->SetImage(
-        gfx::CreateVectorIcon(kMenuCheckIcon, colors.icon_color));
+        ui::ImageModel::FromVectorIcon(kMenuCheckIcon, colors.icon_color));
   } else if (type_ == Type::kRadio) {
     const bool toggled = delegate && delegate->IsItemChecked(GetCommand());
     const gfx::VectorIcon& radio_icon =

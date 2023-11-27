@@ -73,7 +73,7 @@ std::unique_ptr<views::Widget> CreateDragWidget(
 
   std::unique_ptr<views::ImageView> image_view =
       std::make_unique<views::ImageView>();
-  image_view->SetImage(image);
+  image_view->SetImage(ui::ImageModel::FromImageSkia(image));
   widget->SetContentsView(std::move(image_view));
   widget->Show();
   widget->GetNativeWindow()->layer()->SetFillsBoundsOpaquely(false);

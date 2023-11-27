@@ -319,12 +319,11 @@ void BubbleFrameView::ResetWindowControls() {
 
 void BubbleFrameView::UpdateWindowIcon() {
   DCHECK(GetWidget());
-  gfx::ImageSkia image;
+  ui::ImageModel image;
   if (GetWidget()->widget_delegate()->ShouldShowWindowIcon()) {
-    image = GetWidget()->widget_delegate()->GetWindowIcon().Rasterize(
-        GetColorProvider());
+    image = GetWidget()->widget_delegate()->GetWindowIcon();
   }
-  title_icon_->SetImage(&image);
+  title_icon_->SetImage(image);
 }
 
 void BubbleFrameView::UpdateWindowTitle() {
@@ -422,11 +421,11 @@ void BubbleFrameView::UpdateMainImage() {
 
     const int border_radius = LayoutProvider::Get()->GetCornerRadiusMetric(
         Emphasis::kHigh, gfx::Size());
-    main_image_->SetImage(
+    main_image_->SetImage(ui::ImageModel::FromImageSkia(
         gfx::ImageSkiaOperations::CreateCroppedCenteredRoundRectImage(
             gfx::Size(main_image_dimension, main_image_dimension),
             border_radius - 2 * kBorderStrokeThickness,
-            model.GetImage().AsImageSkia()));
+            model.GetImage().AsImageSkia())));
     main_image_->SetBorder(views::CreateRoundedRectBorder(
         kBorderStrokeThickness, border_radius, image_insets,
         GetColorProvider()

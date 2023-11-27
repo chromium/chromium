@@ -224,8 +224,9 @@ class VectorIconGallery : public View, public TextfieldController {
 
         ImageView* icon_view =
             image_view_container_->AddChildView(std::make_unique<ImageView>());
-        icon_view->SetImage(gfx::CreateVectorIconFromSource(
-            CleanUpContents(file_content), size_, color_));
+        icon_view->SetImage(
+            ui::ImageModel::FromImageSkia(gfx::CreateVectorIconFromSource(
+                CleanUpContents(file_content), size_, color_)));
         icon_view->SetTooltipText(file.BaseName().AsUTF16Unsafe());
         file = file_iter.Next();
       }
@@ -235,8 +236,8 @@ class VectorIconGallery : public View, public TextfieldController {
 
   void Update() {
     if (!contents_.empty() && image_view_ != nullptr) {
-      image_view_->SetImage(
-          gfx::CreateVectorIconFromSource(contents_, size_, color_));
+      image_view_->SetImage(ui::ImageModel::FromImageSkia(
+          gfx::CreateVectorIconFromSource(contents_, size_, color_)));
     }
     InvalidateLayout();
   }
