@@ -111,11 +111,13 @@ void NearbyShareTransferProfiler::OnIntroductionFrameSent(
     const std::string& endpoint_id) {
   // The endpoint must have been discovered, decoded, selected, and connected
   // before an introduction frame can be sent.
-  CHECK(sender_data_.contains(endpoint_id));
-  CHECK(sender_data_[endpoint_id].discovered_time.has_value());
-  CHECK(sender_data_[endpoint_id].endpoint_decoded_time.has_value());
-  CHECK(sender_data_[endpoint_id].share_target_selected_time.has_value());
-  CHECK(sender_data_[endpoint_id].connection_established_time.has_value());
+  if (!sender_data_.contains(endpoint_id) ||
+      !sender_data_[endpoint_id].discovered_time.has_value() ||
+      !sender_data_[endpoint_id].endpoint_decoded_time.has_value() ||
+      !sender_data_[endpoint_id].share_target_selected_time.has_value() ||
+      !sender_data_[endpoint_id].connection_established_time.has_value()) {
+    return;
+  }
 
   // Note: the same receiver can be reused for subsequent shares without
   // triggering the discovery logic.
@@ -156,15 +158,19 @@ void NearbyShareTransferProfiler::OnIntroductionFrameSent(
 void NearbyShareTransferProfiler::OnSendStart(const std::string& endpoint_id) {
   // The endpoint must have been discovered, decoded, selected, connected, and
   // introduced before transfers can be started.
-  CHECK(sender_data_.contains(endpoint_id));
-  CHECK(sender_data_[endpoint_id].discovered_time.has_value());
-  CHECK(sender_data_[endpoint_id].endpoint_decoded_time.has_value());
-  CHECK(sender_data_[endpoint_id].share_target_selected_time.has_value());
-  CHECK(sender_data_[endpoint_id].connection_established_time.has_value());
-  CHECK(sender_data_[endpoint_id].introduction_sent_time.has_value());
+  if (!sender_data_.contains(endpoint_id) ||
+      !sender_data_[endpoint_id].discovered_time.has_value() ||
+      !sender_data_[endpoint_id].endpoint_decoded_time.has_value() ||
+      !sender_data_[endpoint_id].share_target_selected_time.has_value() ||
+      !sender_data_[endpoint_id].connection_established_time.has_value() ||
+      !sender_data_[endpoint_id].introduction_sent_time.has_value()) {
+    return;
+  }
 
   // Transfers should only be started once.
-  CHECK(!sender_data_[endpoint_id].send_start_time.has_value());
+  if (sender_data_[endpoint_id].send_start_time.has_value()) {
+    return;
+  }
   sender_data_[endpoint_id].send_start_time = base::TimeTicks::Now();
 }
 
@@ -247,7 +253,9 @@ void NearbyShareTransferProfiler::OnIncomingEndpointDecoded(
     const std::string& endpoint_id,
     bool is_high_visibility) {
   // An endpoint should only be decoded once.
-  CHECK(!receiver_data_.contains(endpoint_id));
+  if (receiver_data_.contains(endpoint_id)) {
+    return;
+  }
   receiver_data_[endpoint_id].endpoint_decoded_time = base::TimeTicks::Now();
 
   // High-visibility endpoints emit different metrics, so save this for later
@@ -301,12 +309,16 @@ void NearbyShareTransferProfiler::OnTransferAccepted(
     const std::string& endpoint_id) {
   // The endpoint must have been decoded and introduced before a transfer can be
   // accepted.
-  CHECK(receiver_data_.contains(endpoint_id));
-  CHECK(receiver_data_[endpoint_id].endpoint_decoded_time.has_value());
-  CHECK(receiver_data_[endpoint_id].introduction_received_time.has_value());
+  if (!receiver_data_.contains(endpoint_id) ||
+      !receiver_data_[endpoint_id].endpoint_decoded_time.has_value() ||
+      !receiver_data_[endpoint_id].introduction_received_time.has_value()) {
+    return;
+  }
 
   // A transfer can only be accepted once.
-  CHECK(!receiver_data_[endpoint_id].accept_transfer_time.has_value());
+  if (receiver_data_[endpoint_id].accept_transfer_time.has_value()) {
+    return;
+  }
   receiver_data_[endpoint_id].accept_transfer_time = base::TimeTicks::Now();
 }
 
@@ -382,17 +394,21 @@ void NearbyShareTransferProfiler::OnBandwidthUpgrade(
 
   if (!is_sender && !is_receiver) {
     // It is possible for the |endpoint_id| to be in neither |sender_data_| nor
-    // |receiver_data_| if, e.g. the transfer is canceled just before the
+    // |receiver_data_| if, e.g. the transfer is cancelled just before the
     // bandwidth upgrade completes.
     return;
   }
 
   // An endpoint cannot be both a sender and a receiver.
-  CHECK(!(is_sender && is_receiver));
+  if (is_sender && is_receiver) {
+    return;
+  }
 
   if (is_sender) {
     // A connection must have been established at this point.
-    CHECK(sender_data_[endpoint_id].connection_established_time.has_value());
+    if (!sender_data_[endpoint_id].connection_established_time.has_value()) {
+      return;
+    }
 
     // Bandwidth upgrades are requested a number of times, so it is possible for
     // more than one upgrade to complete successfully.
@@ -440,7 +456,9 @@ void NearbyShareTransferProfiler::OnBandwidthUpgrade(
       // Different upgrade metrics should be logged in high visibility mode.
       if (receiver_data_[endpoint_id].is_high_visibility) {
         // The endpoint must have been decoded at this point.
-        CHECK(receiver_data_[endpoint_id].endpoint_decoded_time.has_value());
+        if (!receiver_data_[endpoint_id].endpoint_decoded_time.has_value()) {
+          return;
+        }
 
         // Compute and log the time delta between when the receiver decodes the
         // incoming endpoint and when the first bandwidth upgrade occurs. This
@@ -457,8 +475,10 @@ void NearbyShareTransferProfiler::OnBandwidthUpgrade(
             << medium << "): " << upgrade_delta;
       } else {
         // The handshake must have occurred at this point.
-        CHECK(
-            receiver_data_[endpoint_id].paired_key_handshake_time.has_value());
+        if (!receiver_data_[endpoint_id]
+                 .paired_key_handshake_time.has_value()) {
+          return;
+        }
 
         // Compute and log the time delta between when the paired key handshake
         // completes and when the first bandwidth upgrade occurs. This provides
