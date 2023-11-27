@@ -92,12 +92,20 @@ bool SyncUserSettingsImpl::IsSyncEverythingEnabled() const {
 UserSelectableTypeSet SyncUserSettingsImpl::GetSelectedTypes() const {
   UserSelectableTypeSet types;
 
-  if (ShouldUsePerAccountPrefs()) {
-    signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(
-        delegate_->GetSyncAccountInfoForPrefs().gaia);
-    types = prefs_->GetSelectedTypesForAccount(gaia_id_hash);
-  } else {
-    types = prefs_->GetSelectedTypes(delegate_->GetSyncAccountStateForPrefs());
+  switch (delegate_->GetSyncAccountStateForPrefs()) {
+    case SyncPrefs::SyncAccountState::kNotSignedIn: {
+      return UserSelectableTypeSet();
+    }
+    case SyncPrefs::SyncAccountState::kSignedInNotSyncing: {
+      signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(
+          delegate_->GetSyncAccountInfoForPrefs().gaia);
+      types = prefs_->GetSelectedTypesForAccount(gaia_id_hash);
+      break;
+    }
+    case SyncPrefs::SyncAccountState::kSyncing: {
+      types = prefs_->GetSelectedTypes(SyncPrefs::SyncAccountState::kSyncing);
+      break;
+    }
   }
   types.RetainAll(GetRegisteredSelectableTypes());
 
@@ -139,13 +147,21 @@ void SyncUserSettingsImpl::SetSelectedTypes(bool sync_everything,
       << "\n registered: " << UserSelectableTypeSetToString(registered_types)
       << "\n setting to: " << UserSelectableTypeSetToString(types);
 
-  if (ShouldUsePerAccountPrefs()) {
-    for (UserSelectableType type : registered_types) {
-      SetSelectedType(type, types.Has(type) || sync_everything);
-    }
-    return;
+  switch (delegate_->GetSyncAccountStateForPrefs()) {
+    case SyncPrefs::SyncAccountState::kNotSignedIn:
+      // TODO(crbug.com/1505100): Convert to NOTREACHED_NORETURN.
+      DUMP_WILL_BE_NOTREACHED_NORETURN()
+          << "Must not set selected types while signed out";
+      break;
+    case SyncPrefs::SyncAccountState::kSignedInNotSyncing:
+      for (UserSelectableType type : registered_types) {
+        SetSelectedType(type, types.Has(type) || sync_everything);
+      }
+      break;
+    case SyncPrefs::SyncAccountState::kSyncing:
+      prefs_->SetSelectedTypes(sync_everything, registered_types, types);
+      break;
   }
-  prefs_->SetSelectedTypes(sync_everything, registered_types, types);
 }
 
 void SyncUserSettingsImpl::SetSelectedType(UserSelectableType type,
@@ -153,19 +169,27 @@ void SyncUserSettingsImpl::SetSelectedType(UserSelectableType type,
   UserSelectableTypeSet registered_types = GetRegisteredSelectableTypes();
   CHECK(registered_types.Has(type));
 
-  if (ShouldUsePerAccountPrefs()) {
-    signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(
-        delegate_->GetSyncAccountInfoForPrefs().gaia);
-    prefs_->SetSelectedTypeForAccount(type, is_type_on, gaia_id_hash);
-  } else {
-    DUMP_WILL_BE_CHECK(!IsSyncEverythingEnabled());
-    syncer::UserSelectableTypeSet selected_types = GetSelectedTypes();
-    if (is_type_on) {
-      selected_types.Put(type);
-    } else {
-      selected_types.Remove(type);
+  switch (delegate_->GetSyncAccountStateForPrefs()) {
+    case SyncPrefs::SyncAccountState::kNotSignedIn: {
+      // TODO(crbug.com/1505100): Convert to NOTREACHED_NORETURN.
+      DUMP_WILL_BE_NOTREACHED_NORETURN()
+          << "Must not set selected types while signed out";
+      break;
     }
-    SetSelectedTypes(IsSyncEverythingEnabled(), selected_types);
+    case SyncPrefs::SyncAccountState::kSignedInNotSyncing: {
+      signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(
+          delegate_->GetSyncAccountInfoForPrefs().gaia);
+      prefs_->SetSelectedTypeForAccount(type, is_type_on, gaia_id_hash);
+      break;
+    }
+    case SyncPrefs::SyncAccountState::kSyncing: {
+      DUMP_WILL_BE_CHECK(!IsSyncEverythingEnabled());
+      syncer::UserSelectableTypeSet selected_types =
+          is_type_on ? base::Union(GetSelectedTypes(), {type})
+                     : base::Difference(GetSelectedTypes(), {type});
+      SetSelectedTypes(IsSyncEverythingEnabled(), selected_types);
+      break;
+    }
   }
 }
 
@@ -381,15 +405,6 @@ bool SyncUserSettingsImpl::IsEncryptedDatatypeEnabled() const {
   const ModelTypeSet encrypted_types = GetEncryptedDataTypes();
   DCHECK(encrypted_types.HasAll(AlwaysEncryptedUserTypes()));
   return !Intersection(preferred_types, encrypted_types).Empty();
-}
-
-// TODO(crbug.com/1485015): Inline.
-bool SyncUserSettingsImpl::ShouldUsePerAccountPrefs() const {
-  // Note: If Sync-the-feature users are ever migrated to use the account-scoped
-  // prefs, also update the migration code in sync_to_signin_migration.cc
-  // accordingly!
-  return delegate_->GetSyncAccountStateForPrefs() ==
-         SyncPrefs::SyncAccountState::kSignedInNotSyncing;
 }
 
 }  // namespace syncer

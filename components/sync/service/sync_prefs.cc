@@ -254,7 +254,7 @@ UserSelectableTypeSet SyncPrefs::GetSelectedTypes(
 
   switch (account_state) {
     case SyncAccountState::kNotSignedIn: {
-      break;
+      NOTREACHED_NORETURN();
     }
     case SyncAccountState::kSignedInNotSyncing: {
       NOTREACHED_NORETURN() << "Call GetSelectedTypesForAccount() instead";
