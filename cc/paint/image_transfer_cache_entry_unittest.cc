@@ -103,8 +103,8 @@ class ImageTransferCacheEntryTest
     //  The surface will be stored by the gl::GLContext.
     ASSERT_TRUE(gl_context_->default_surface());
     ASSERT_TRUE(gl_context_->MakeCurrentDefault());
-    sk_sp<GrGLInterface> gl_interface(gl::init::CreateGrGLInterface(
-        *gl_context_->GetVersionInfo(), false /* use_version_es2 */));
+    sk_sp<GrGLInterface> gl_interface(
+        gl::init::CreateGrGLInterface(*gl_context_->GetVersionInfo()));
     gr_context_ = GrDirectContexts::MakeGL(std::move(gl_interface));
     ASSERT_TRUE(gr_context_);
   }

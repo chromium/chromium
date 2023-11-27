@@ -243,11 +243,7 @@ const char* kBlocklistExtensions[] = {
 
 sk_sp<GrGLInterface> CreateGrGLInterface(
     const gl::GLVersionInfo& version_info,
-    bool use_version_es2,
     gl::ProgressReporter* progress_reporter) {
-  // Can't fake ES with desktop GL.
-  use_version_es2 &= version_info.is_es;
-
   gl::ProcsGL* gl = &gl::g_current_gl_driver->fn;
   gl::GLApi* api = gl::g_current_gl_context;
 
@@ -261,9 +257,8 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
   // handles but bindings don't.
   // TODO(piman): add bindings for missing entrypoints.
   GrGLFunction<GrGLGetStringFn> get_string;
-  const bool apply_version_override = use_version_es2 ||
-                                      version_info.IsAtLeastGL(4, 2) ||
-                                      version_info.IsAtLeastGLES(3, 1);
+  const bool apply_version_override =
+      version_info.IsAtLeastGL(4, 2) || version_info.IsAtLeastGLES(3, 1);
 
   if (apply_version_override || version_info.IsVersionSubstituted()) {
     GLVersionInfo::VersionStrings version;
@@ -271,10 +266,7 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
       version = version_info.GetFakeVersionStrings(version_info.major_version,
                                                    version_info.minor_version);
     } else if (version_info.is_es) {
-      if (use_version_es2)
-        version = version_info.GetFakeVersionStrings(2, 0);
-      else
-        version = version_info.GetFakeVersionStrings(3, 0);
+      version = version_info.GetFakeVersionStrings(3, 0);
     } else {
       version = version_info.GetFakeVersionStrings(4, 1);
     }
@@ -741,11 +733,6 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
       functions->fDeleteSync = glDeleteSyncEmulateEGL;
     }
 #endif  // USE_EGL
-  } else if (use_version_es2) {
-    // We have gl sync, but want to Skia use ES2 that doesn't have fences.
-    // To provide Skia with ways of sync to prevent it calling glFinish we set
-    // GL_APPLE_sync support.
-    extensions.add("GL_APPLE_sync");
   }
 
   // Skia can fall back to GL_NV_fence if GLsync objects are not available.

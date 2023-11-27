@@ -348,9 +348,8 @@ bool SharedContextState::InitializeGanesh(
 
   if (gr_context_type_ == GrContextType::kGL) {
     DCHECK(context_->IsCurrent(nullptr));
-    constexpr bool use_version_es2 = false;
     sk_sp<GrGLInterface> gr_gl_interface(gl::init::CreateGrGLInterface(
-        *context_->GetVersionInfo(), use_version_es2, progress_reporter));
+        *context_->GetVersionInfo(), progress_reporter));
     if (!gr_gl_interface) {
       LOG(ERROR) << "OOP raster support disabled: GrGLInterface creation "
                     "failed.";

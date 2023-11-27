@@ -154,11 +154,6 @@ GLuint GetGrGLBackendTextureFormat(
   GLuint internal_format =
       gl::GetInternalFormat(version_info, gl_storage_format);
 
-  bool use_version_es2 = false;
-#if BUILDFLAG(IS_ANDROID)
-  use_version_es2 = base::FeatureList::IsEnabled(features::kUseGles2ForOopR);
-#endif
-
   // Use R8 and R16F when using later GLs where ALPHA8, LUMINANCE8, ALPHA16F and
   // LUMINANCE16F are deprecated
   if (feature_info->gl_version_info().NeedsLuminanceAlphaEmulation()) {
@@ -184,12 +179,6 @@ GLuint GetGrGLBackendTextureFormat(
     } else if (gr_gl_format == GrGLFormat::kCOMPRESSED_RGB8_ETC2) {
       internal_format = GL_COMPRESSED_RGB8_ETC2;
     }
-  }
-
-  // We tell Skia to use es2 which does not have GL_R8_EXT
-  if (feature_info->gl_version_info().is_es3 && use_version_es2) {
-    if (internal_format == GL_R8_EXT)
-      internal_format = GL_LUMINANCE8;
   }
 
   return internal_format;
