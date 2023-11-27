@@ -12,6 +12,26 @@ import {MetadataItem} from './metadata_item.js';
 import {MetadataRequest} from './metadata_request.js';
 
 /**
+ * Custom event dispatched by the metadata cache set when results from metadata
+ * provider are set on it.
+ */
+export class MetadataSetEvent extends Event {
+  /**
+   * @param {string} name
+   * @param {!Array<!FileEntry>} entries
+   * @param {!Map<string, !FileEntry>} entriesMap
+   * @param {!Set<string>} names
+   */
+  constructor(name, entries, entriesMap, names) {
+    super(name);
+    this.entries = entries;
+    this.entriesMap = entriesMap;
+    this.names = names;
+  }
+}
+
+
+/**
  * A collection of MetadataCacheItem objects. This class acts as a map from file
  * entry URLs to metadata items. You can store metadata for entries, you can
  * retrieve metadata for entries, clear the entire cache, or just selected
@@ -86,6 +106,7 @@ export class MetadataCacheSet extends EventTarget {
    * @return {boolean} Whether at least one result is stored or not.
    */
   storeProperties(requestId, entries, results, names) {
+    /** @type {!Array<!FileEntry>} */
     const changedEntries = [];
     const urls = entriesToURLs(entries);
     const entriesMap = new Map();
@@ -94,7 +115,7 @@ export class MetadataCacheSet extends EventTarget {
       const url = urls[i];
       const item = this.items_.get(url);
       if (item && item.storeProperties(requestId, results[i])) {
-        changedEntries.push(entries[i]);
+        changedEntries.push(/** @type{!FileEntry} */ (entries[i]));
         entriesMap.set(url, entries[i]);
       }
     }
@@ -103,16 +124,8 @@ export class MetadataCacheSet extends EventTarget {
       return false;
     }
 
-    const event = new Event('update');
-    // @ts-ignore: error TS2339: Property 'entries' does not exist on type
-    // 'Event'.
-    event.entries = changedEntries;
-    // @ts-ignore: error TS2339: Property 'entriesMap' does not exist on type
-    // 'Event'.
-    event.entriesMap = entriesMap;
-    // @ts-ignore: error TS2339: Property 'names' does not exist on type
-    // 'Event'.
-    event.names = new Set(names);
+    const event = new MetadataSetEvent(
+        'update', changedEntries, entriesMap, new Set(names));
     this.dispatchEvent(event);
     return true;
   }
