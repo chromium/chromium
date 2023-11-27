@@ -733,6 +733,7 @@ try_.gpu.optional_tests_builder(
         ),
         build_gs_bucket = "chromium-gpu-fyi-archive",
     ),
+    cpu = cpu.ARM64,
     ssd = None,
     main_list_view = "try",
     tryjob = try_.job(
