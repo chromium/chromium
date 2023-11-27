@@ -1570,7 +1570,6 @@ crbug.com/1488371 virtual/deprecate-unload/external/wpt/navigation-api/navigatio
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/navigation-api/navigation-methods/return-value/navigate-unload.html [ Failure Skip Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/navigation-api/navigation-methods/return-value/reload-rejection-order-unload-unserializablestate.html [ Failure Skip Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/navigation-api/navigation-methods/return-value/reload-unload.html [ Failure Skip Timeout ]
-crbug.com/1488371 virtual/deprecate-unload/external/wpt/navigation-timing/nested-unload-timing.html [ Failure Skip Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/permissions-policy/experimental-features/unload-allowed-by-default.tentative.window.html [ Failure Skip Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/permissions-policy/experimental-features/unload-disallowed-subframe.tentative.window.html [ Failure Skip Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/screen-details/getScreenDetails.tentative.https.window.html [ Timeout ]
@@ -1586,6 +1585,8 @@ crbug.com/1488371 virtual/deprecate-unload/external/wpt/fetch/api/basic/keepaliv
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/fetch/api/cors/cors-keepalive.any.html [ Skip Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/fetch/api/redirect/redirect-keepalive.any.html [ Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/fetch/metadata/unload.https.sub.html [ Timeout ]
+# Also tests timing, so cannot be moved to pagehide.
+crbug.com/1488371 virtual/deprecate-unload/external/wpt/navigation-timing/nested-unload-timing.html [ Failure ]
 crbug.com/1488371 virtual/deprecate-unload/http/tests/navigation/targeted-navigation-in-unload-handler.html [ Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/http/tests/devtools/sources/debugger/skip-pause-during-navigation.js [ Skip Timeout ]
 
