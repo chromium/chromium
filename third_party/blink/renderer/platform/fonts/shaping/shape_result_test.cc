@@ -402,7 +402,7 @@ struct CaretPositionForOffsetTextData {
     {u"012345678901234567890123456789",
      TextDirection::kLtr,
      {0, 1, 4, 5, 12, 18, 30, 32},
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
      {0, 6.738, 26.953, 33.691, 80.859, 121.289, 202.148, 0},
 #else
      {0, 7, 28, 35, 84, 126, 210, 0},
@@ -414,7 +414,7 @@ struct CaretPositionForOffsetTextData {
     {u"012345678901234567890123456789",  // 1
      TextDirection::kRtl,
      {0, 1, 4, 5, 12, 18, 30, 32},
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
      {202.148, 195.410, 175.195, 168.457, 121.289, 80.859, 0, 0},
 #else
      {210, 203, 182, 175, 126, 84, 0, 0},
@@ -426,7 +426,7 @@ struct CaretPositionForOffsetTextData {
     {u"0ff1ff23fff456ffff7890fffff12345ffffff6789",
      TextDirection::kLtr,
      {0, 1, 4, 5, 12, 18, 42, 43},
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
      {0, 6.738, 21.809, 25.975, 62.85, 92.994, 226.418, 0},
 #else
      {0, 7, 22, 26, 63, 93, 228, 0},
@@ -438,7 +438,7 @@ struct CaretPositionForOffsetTextData {
     {u"0ff1ff23fff456ffff7890fffff12345ffffff6789",
      TextDirection::kRtl,
      {0, 1, 4, 5, 12, 18, 42, 43},
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
      {226.418, 219.680, 204.609, 200.443, 163.564, 133.424, 0, 0},
 #else
      {228, 221, 206, 202, 165, 135, 0, 0},
@@ -450,7 +450,7 @@ struct CaretPositionForOffsetTextData {
     {u"مَ1مَمَ2مَمَمَ3مَمَمَمَ4مَمَمَمَمَ5مَمَمَمَمَمَ",
      TextDirection::kLtr,
      {0, 1, 2, 3, 4, 5, 10, 15, 20, 30, 47},
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
      {0, 0, 5.865, 12.727, 12.727, 19.061, 37.723, 55.008, 66.299, 99.832,
       148.746},
 #elif BUILDFLAG(IS_WIN)
@@ -465,7 +465,7 @@ struct CaretPositionForOffsetTextData {
     {u"مَ1مَمَ2مَمَمَ3مَمَمَمَ4مَمَمَمَمَ5مَمَمَمَمَمَ",
      TextDirection::kLtr,
      {0, 1, 2, 3, 4, 5, 10, 15, 20, 30, 47},
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
      {0, 5.865, 5.865, 12.727, 19.061, 19.061, 37.723, 55.008, 71.256, 99.832,
       148.746},
 #elif BUILDFLAG(IS_WIN)
@@ -480,7 +480,7 @@ struct CaretPositionForOffsetTextData {
     {u"مَ1مَمَ2مَمَمَ3مَمَمَمَ4مَمَمَمَمَ5مَمَمَمَمَمَ",
      TextDirection::kRtl,
      {0, 1, 2, 3, 4, 5, 10, 15, 20, 30, 47},
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
      {148.746, 148.746, 142.881, 136.02, 136.02, 130.553, 111.891, 93.738,
       83.315, 49.781, 0},
 #elif BUILDFLAG(IS_WIN)
@@ -495,7 +495,7 @@ struct CaretPositionForOffsetTextData {
     {u"مَ1مَمَ2مَمَمَ3مَمَمَمَ4مَمَمَمَمَ5مَمَمَمَمَمَ",
      TextDirection::kRtl,
      {0, 1, 2, 3, 4, 5, 10, 15, 20, 30, 47},
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
      {148.746, 142.881, 142.881, 136.02, 130.553, 130.553, 111.891, 93.738,
       78.357, 49.781, 0},
 #elif BUILDFLAG(IS_WIN)
