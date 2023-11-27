@@ -3704,11 +3704,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "enable-vertical-automotive-back-button-toolbar",
-    "owners": [ "geoffhuang@google.com", "twellington@chromium.org" ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "enable-virtual-keyboard",
     "owners": [ "//ash/keyboard/OWNERS" ],
     // Useful for debugging the virtual keyboard on non-tablet devices.

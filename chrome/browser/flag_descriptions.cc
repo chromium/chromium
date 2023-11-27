@@ -4642,13 +4642,6 @@ const char kOmahaMinSdkVersionAndroidMinSdk1Description[] = "Minimum SDK = 1";
 const char kOmahaMinSdkVersionAndroidMinSdk1000Description[] =
     "Minimum SDK = 1000";
 
-const char kVerticalAutomotiveBackButtonToolbarName[] =
-    "Enable vertical automotive back button toolbar.";
-const char kVerticalAutomotiveBackButtonToolbarDescription[] =
-    "Switches the user from a horizontal automotive back button toolbar above "
-    "Chrome to a vertical automotive back button toolbar to the left of Chrome "
-    "if the screen is wide enough.";
-
 const char kVideoTutorialsName[] = "Enable video tutorials";
 const char kVideoTutorialsDescription[] = "Show video tutorials in Chrome";
 

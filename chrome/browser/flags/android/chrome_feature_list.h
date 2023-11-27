@@ -212,7 +212,6 @@ BASE_DECLARE_FEATURE(kUmaBackgroundSessions);
 BASE_DECLARE_FEATURE(kUpdateNotificationScheduleServiceImmediateShowOption);
 BASE_DECLARE_FEATURE(kUseLibunwindstackNativeUnwinderAndroid);
 BASE_DECLARE_FEATURE(kUserMediaScreenCapturing);
-BASE_DECLARE_FEATURE(kVerticalAutomotiveBackButtonToolbar);
 BASE_DECLARE_FEATURE(kVoiceSearchAudioCapturePolicy);
 BASE_DECLARE_FEATURE(kVoiceButtonInTopToolbar);
 BASE_DECLARE_FEATURE(kWebOtpCrossDeviceSimpleString);
