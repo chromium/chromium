@@ -69,8 +69,8 @@ public class ExportErrorDialogFragment extends DialogFragment {
         } else {
             detailedDescription.setVisibility(View.GONE);
         }
-        return new AlertDialog.Builder(
-                        getActivity(), R.style.ThemeOverlay_BrowserUI_AlertDialog_NoActionBar)
+        return new AlertDialog
+                .Builder(getActivity(), R.style.ThemeOverlay_BrowserUI_AlertDialog_NoActionBar)
                 .setView(dialog)
                 .setTitle(R.string.password_settings_export_error_title)
                 .setPositiveButton(mParams.positiveButtonLabelId, mHandler)
