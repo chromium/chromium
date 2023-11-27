@@ -606,8 +606,12 @@ def BuildLLVMLibraries(skip_build, build_mac_arm):
     return (x86_64_llvm_config, aarch64_llvm_config, target_llvm_install_dir)
 
 
-def GitCherryPick(git_repository, commit):
-    print(f'Cherry-picking {commit} in {git_repository}')
+def GitCherryPick(git_repository, git_remote, commit):
+    print(f'Cherry-picking {commit} in {git_repository} from {git_remote}')
+    RunCommand(
+        ['git', '-C', git_repository, 'remote', 'add', 'github', git_remote],
+        fail_hard=False)
+    RunCommand(['git', '-C', git_repository, 'fetch', 'github', commit])
     if RunCommand([
             'git', '-C', git_repository, 'merge-base', '--is-ancestor', commit,
             'HEAD'
@@ -748,16 +752,8 @@ def main():
         CheckoutGitRepo('Rust', RUST_GIT_URL, checkout_revision, RUST_SRC_DIR)
         # TODO(crbug.com/1493085): remove once
         # https://github.com/rust-lang/rust/pull/116672 has been merged.
-        RunCommand([
-            'git', '-C', RUST_SRC_DIR, 'remote', 'add', 'github',
-            'https://github.com/rust-lang/rust.git'
-        ],
-                   fail_hard=False)
-        RunCommand([
-            'git', '-C', RUST_SRC_DIR, 'fetch', 'github',
-            '046503e6f4318aaba649e51becc38b1db9c87ee7'
-        ])
-        GitCherryPick(RUST_SRC_DIR, '046503e6f4318aaba649e51becc38b1db9c87ee7')
+        GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
+                      '751f7b9431b41418e2035c2c155a39fefd5d318f')
 
         path = FetchBetaPackage('cargo', checkout_revision)
         if sys.platform == 'win32':
@@ -837,6 +833,16 @@ def main():
     if args.build_mac_arm:
         for a in DISTRIBUTION_ARTIFACTS_SKIPPED_CROSS_COMPILE:
             artifacts.remove(a)
+    # TODO(crbug.com/1504532): remove once
+    # https://github.com/rust-lang/rust/blob/master/.gitmodules#L33-L37 has
+    # been updated to include
+    # https://github.com/llvm/llvm-project/commit/7939ce39dac0078fef7183d6198598b99c652c88
+    rust_llvm_dir = os.path.join(RUST_SRC_DIR, 'src', 'llvm-project')
+    GitCherryPick(rust_llvm_dir, 'https://github.com/llvm/llvm-project.git',
+                  '7939ce39dac0078fef7183d6198598b99c652c88')
+    # Remove .git in llvm so x.py install will not sync it.
+    if (os.path.exists(os.path.join(rust_llvm_dir, '.git'))):
+        os.remove(os.path.join(rust_llvm_dir, '.git'))
     xpy.run('install', xpy_args + artifacts)
 
     # Copy additional vendored crates required for building stdlib.
