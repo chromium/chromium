@@ -13,12 +13,8 @@
 #include "chrome/browser/ash/secure_channel/secure_channel_client_provider.h"
 #include "chrome/browser/ash/tether/fake_tether_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
-#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/network/network_handler.h"
-#include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
-#include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/session_manager/core/session_manager.h"
 
@@ -84,7 +80,6 @@ TetherServiceFactory::BuildServiceInstanceForBrowserContext(
                 ->GetClient(),
             multidevice_setup::MultiDeviceSetupClientFactory::GetForProfile(
                 Profile::FromBrowserContext(context)),
-            NetworkHandler::Get()->network_state_handler(),
             session_manager::SessionManager::Get());
 
     int num_tether_networks = 0;
@@ -102,7 +97,6 @@ TetherServiceFactory::BuildServiceInstanceForBrowserContext(
       secure_channel::SecureChannelClientProvider::GetInstance()->GetClient(),
       multidevice_setup::MultiDeviceSetupClientFactory::GetForProfile(
           Profile::FromBrowserContext(context)),
-      NetworkHandler::Get()->network_state_handler(),
       session_manager::SessionManager::Get());
 }
 

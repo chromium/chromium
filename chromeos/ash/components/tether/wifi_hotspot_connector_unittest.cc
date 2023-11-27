@@ -19,6 +19,7 @@
 #include "base/timer/mock_timer.h"
 #include "base/values.h"
 #include "chromeos/ash/components/network/network_connect.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
@@ -162,7 +163,7 @@ class WifiHotspotConnectorTest : public testing::Test {
  public:
   class TestNetworkConnect : public NetworkConnect {
    public:
-    explicit TestNetworkConnect(NetworkStateTestHelper* helper)
+    explicit TestNetworkConnect(NetworkHandlerTestHelper* helper)
         : helper_(helper) {}
     ~TestNetworkConnect() override = default;
 
@@ -240,7 +241,7 @@ class WifiHotspotConnectorTest : public testing::Test {
     }
 
    private:
-    raw_ptr<NetworkStateTestHelper, ExperimentalAsh> helper_;
+    raw_ptr<NetworkHandlerTestHelper, ExperimentalAsh> helper_;
     // Has type base::Value::Type::NONE if no configuration has been passed to
     // TestNetworkConnect yet.
     base::Value::Dict last_configuration_;
@@ -278,9 +279,9 @@ class WifiHotspotConnectorTest : public testing::Test {
   void SetUp() override {
     other_wifi_service_path_.clear();
     connection_callback_responses_.clear();
-    helper_.network_state_handler()->SetTetherTechnologyState(
+    network_state_handler()->SetTetherTechnologyState(
         NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED);
-    helper_.technology_state_controller()->SetTechnologiesEnabled(
+    technology_state_controller()->SetTechnologiesEnabled(
         NetworkTypePattern::WiFi(), true /* enabled */,
         network_handler::ErrorCallback());
     base::RunLoop().RunUntilIdle();
@@ -289,26 +290,25 @@ class WifiHotspotConnectorTest : public testing::Test {
 
     test_network_connect_ = base::WrapUnique(new TestNetworkConnect(&helper_));
 
-    helper_.network_state_handler()->AddTetherNetworkState(
+    network_state_handler()->AddTetherNetworkState(
         kTetherNetworkGuid, "tetherNetworkName" /* name */,
         "tetherNetworkCarrier" /* carrier */, 100 /* full battery */,
         100 /* full signal strength */, false /* has_connected_to_host */);
 
-    helper_.network_state_handler()->AddTetherNetworkState(
+    network_state_handler()->AddTetherNetworkState(
         kTetherNetworkGuid2, "tetherNetworkName2" /* name */,
         "tetherNetworkCarrier2" /* carrier */, 100 /* full battery */,
         100 /* full signal strength */, false /* has_connected_to_host */);
 
     wifi_hotspot_connector_ = base::WrapUnique(new WifiHotspotConnector(
-        helper_.network_state_handler(), helper_.technology_state_controller(),
-        test_network_connect_.get()));
+        NetworkHandler::Get(), test_network_connect_.get()));
 
     mock_timer_ = new base::MockOneShotTimer();
     test_clock_.SetNow(base::Time::UnixEpoch());
     test_task_runner_ = base::MakeRefCounted<base::TestSimpleTaskRunner>();
     wifi_hotspot_connector_->SetTestDoubles(base::WrapUnique(mock_timer_.get()),
                                             &test_clock_, test_task_runner_);
-    helper_.network_state_handler()->AddObserver(&scan_observer_);
+    network_state_handler()->AddObserver(&scan_observer_);
   }
 
   void SetUpShillState() {
@@ -320,7 +320,7 @@ class WifiHotspotConnectorTest : public testing::Test {
 
   void TearDown() override {
     wifi_hotspot_connector_.reset();
-    helper_.network_state_handler()->RemoveObserver(&scan_observer_);
+    network_state_handler()->RemoveObserver(&scan_observer_);
     scan_observer_.Reset();
   }
 
@@ -371,12 +371,12 @@ class WifiHotspotConnectorTest : public testing::Test {
       const std::string& tether_guid,
       uint32_t expected_num_connection_attempts) {
     const NetworkState* wifi_network_state =
-        helper_.network_state_handler()->GetNetworkStateFromGuid(wifi_guid);
+        network_state_handler()->GetNetworkStateFromGuid(wifi_guid);
     ASSERT_TRUE(wifi_network_state);
     EXPECT_EQ(tether_guid, wifi_network_state->tether_guid());
 
     const NetworkState* tether_network_state =
-        helper_.network_state_handler()->GetNetworkStateFromGuid(tether_guid);
+        network_state_handler()->GetNetworkStateFromGuid(tether_guid);
     ASSERT_TRUE(tether_network_state);
     EXPECT_EQ(wifi_guid, tether_network_state->tether_guid());
 
@@ -386,7 +386,7 @@ class WifiHotspotConnectorTest : public testing::Test {
 
   void VerifyNetworkNotAssociated(const std::string& guid) {
     const NetworkState* network_state =
-        helper_.network_state_handler()->GetNetworkStateFromGuid(guid);
+        network_state_handler()->GetNetworkStateFromGuid(guid);
     ASSERT_TRUE(network_state);
     EXPECT_TRUE(network_state->tether_guid().empty());
   }
@@ -400,15 +400,15 @@ class WifiHotspotConnectorTest : public testing::Test {
   }
 
   NetworkStateHandler* network_state_handler() {
-    return helper_.network_state_handler();
+    return NetworkHandler::Get()->network_state_handler();
   }
 
   TechnologyStateController* technology_state_controller() {
-    return helper_.technology_state_controller();
+    return NetworkHandler::Get()->technology_state_controller();
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-  NetworkStateTestHelper helper_{true /* use_default_devices_and_services */};
+  NetworkHandlerTestHelper helper_{};
 
   std::string other_wifi_service_path_;
   std::vector<std::string> connection_callback_responses_;

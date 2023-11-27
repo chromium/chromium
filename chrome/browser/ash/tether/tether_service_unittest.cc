@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
-#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -19,7 +18,6 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/ui/ash/network/tether_notification_presenter.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/shill/shill_device_client.h"
@@ -39,8 +37,6 @@
 #include "chromeos/ash/components/tether/tether_component_impl.h"
 #include "chromeos/ash/components/tether/tether_host_fetcher_impl.h"
 #include "chromeos/ash/services/device_sync/cryptauth_device_manager.h"
-#include "chromeos/ash/services/device_sync/cryptauth_enroller.h"
-#include "chromeos/ash/services/device_sync/cryptauth_enrollment_manager.h"
 #include "chromeos/ash/services/device_sync/fake_cryptauth_enrollment_manager.h"
 #include "chromeos/ash/services/device_sync/fake_remote_device_provider.h"
 #include "chromeos/ash/services/device_sync/public/cpp/device_sync_client_impl.h"
@@ -96,14 +92,12 @@ class TestTetherService : public TetherService {
       device_sync::DeviceSyncClient* device_sync_client,
       secure_channel::SecureChannelClient* secure_channel_client,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
-      NetworkStateHandler* network_state_handler,
       session_manager::SessionManager* session_manager)
       : TetherService(profile,
                       power_manager_client,
                       device_sync_client,
                       secure_channel_client,
                       multidevice_setup_client,
-                      network_state_handler,
                       session_manager) {}
   ~TestTetherService() override {}
 
@@ -155,10 +149,8 @@ class TestTetherComponentFactory final : public TetherComponentImpl::Factory {
       GmsCoreNotificationsStateTrackerImpl*
           gms_core_notifications_state_tracker,
       PrefService* pref_service,
-      NetworkStateHandler* network_state_handler,
-      ManagedNetworkConfigurationHandler* managed_network_configuration_handler,
+      NetworkHandler* network_handler,
       NetworkConnect* network_connect,
-      NetworkConnectionHandler* network_connection_handler,
       scoped_refptr<device::BluetoothAdapter> adapter,
       session_manager::SessionManager* session_manager) override {
     active_tether_component_ =
@@ -417,8 +409,7 @@ class TetherServiceTest : public testing::Test {
     tether_service_ = base::WrapUnique(new TestTetherService(
         profile_.get(), chromeos::FakePowerManagerClient::Get(),
         fake_device_sync_client_.get(), fake_secure_channel_client_.get(),
-        fake_multidevice_setup_client_.get(), network_state_handler(),
-        nullptr /* session_manager */));
+        fake_multidevice_setup_client_.get(), nullptr /* session_manager */));
 
     fake_notification_presenter_ = new FakeNotificationPresenter();
     mock_timer_ = new base::MockOneShotTimer();
