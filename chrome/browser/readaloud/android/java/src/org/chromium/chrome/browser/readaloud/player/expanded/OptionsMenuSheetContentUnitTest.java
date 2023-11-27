@@ -66,7 +66,6 @@ public class OptionsMenuSheetContentUnitTest {
     @Test
     public void testSetup() {
         assertTrue(mMenu.getItem(Item.VOICE) != null);
-        assertTrue(mMenu.getItem(Item.TRANSLATE) != null);
         assertTrue(mMenu.getItem(Item.HIGHLIGHT) != null);
     }
 
