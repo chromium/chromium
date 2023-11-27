@@ -22,7 +22,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
@@ -124,7 +123,7 @@ class NoStatePrefetchManager::OnCloseWebContentsDeleter
         FROM_HERE,
         base::BindOnce(
             &OnCloseWebContentsDeleter::ScheduleWebContentsForDeletion,
-            AsWeakPtr(), /*timeout=*/true),
+            AsWeakPtr()),
         kDeleteWithExtremePrejudice);
   }
 
@@ -134,12 +133,11 @@ class NoStatePrefetchManager::OnCloseWebContentsDeleter
 
   void CloseContents(WebContents* source) override {
     DCHECK_EQ(tab_.get(), source);
-    ScheduleWebContentsForDeletion(/*timeout=*/false);
+    ScheduleWebContentsForDeletion();
   }
 
  private:
-  void ScheduleWebContentsForDeletion(bool timeout) {
-    UMA_HISTOGRAM_BOOLEAN("Prerender.TabContentsDeleterTimeout", timeout);
+  void ScheduleWebContentsForDeletion() {
     tab_->SetDelegate(nullptr);
     tab_->SetOwnerLocationForDebug(absl::nullopt);
     manager_->ScheduleDeleteOldWebContents(std::move(tab_), this);

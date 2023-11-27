@@ -2134,15 +2134,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Prerender.TabContentsDeleterTimeout"
-    enum="BooleanCloseTimeout" expires_after="M85">
-  <owner>pasko@chromium.org</owner>
-  <summary>
-    A boolean that indicates how often we fail to delete an old prerendered tab
-    before the timeout.
-  </summary>
-</histogram>
-
 </histograms>
 
 </histogram-configuration>
