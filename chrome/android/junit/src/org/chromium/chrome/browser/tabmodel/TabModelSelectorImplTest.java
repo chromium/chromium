@@ -73,6 +73,7 @@ public class TabModelSelectorImplTest {
 
     @Mock private Callback<TabModel> mTabModelSupplierObserverMock;
     @Mock private Callback<Tab> mTabSupplierObserverMock;
+    @Mock private Callback<Integer> mTabCountSupplierObserverMock;
     @Mock private TabModelSelectorObserver mTabModelSelectorObserverMock;
     @Mock private ProfileProvider mProfileProvider;
     @Mock private Profile mProfile;
@@ -174,6 +175,71 @@ public class TabModelSelectorImplTest {
         verify(mTabSupplierObserverMock, times(2)).onResult(eq(normalTab));
 
         mTabModelSelector.getCurrentTabSupplier().removeObserver(mTabSupplierObserverMock);
+    }
+
+    @Test
+    public void testCurrentModelTabCountSupplier() {
+        mTabModelSelector
+                .getCurrentModelTabCountSupplier()
+                .addObserver(mTabCountSupplierObserverMock);
+        assertEquals(0, mTabModelSelector.getCurrentModelTabCountSupplier().get().intValue());
+        ShadowLooper.runUiThreadTasks();
+        verify(mTabCountSupplierObserverMock).onResult(0);
+
+        MockTab normalTab1 = new MockTab(1, mProfile);
+        mTabModelSelector
+                .getModel(false)
+                .addTab(
+                        normalTab1,
+                        0,
+                        TabLaunchType.FROM_CHROME_UI,
+                        TabCreationState.LIVE_IN_FOREGROUND);
+        ShadowLooper.runUiThreadTasks();
+        verify(mTabCountSupplierObserverMock).onResult(1);
+        assertEquals(1, mTabModelSelector.getCurrentModelTabCountSupplier().get().intValue());
+
+        MockTab normalTab2 = new MockTab(2, mProfile);
+        mTabModelSelector
+                .getModel(false)
+                .addTab(
+                        normalTab2,
+                        0,
+                        TabLaunchType.FROM_CHROME_UI,
+                        TabCreationState.LIVE_IN_FOREGROUND);
+        ShadowLooper.runUiThreadTasks();
+        verify(mTabCountSupplierObserverMock).onResult(2);
+        assertEquals(2, mTabModelSelector.getCurrentModelTabCountSupplier().get().intValue());
+
+        MockTab incognitoTab = new MockTab(2, mIncognitoProfile);
+        mTabModelSelector
+                .getModel(true)
+                .addTab(
+                        incognitoTab,
+                        0,
+                        TabLaunchType.FROM_CHROME_UI,
+                        TabCreationState.LIVE_IN_FOREGROUND);
+        ShadowLooper.runUiThreadTasks();
+        verify(mTabCountSupplierObserverMock).onResult(2);
+        assertEquals(2, mTabModelSelector.getCurrentModelTabCountSupplier().get().intValue());
+
+        mTabModelSelector.selectModel(true);
+        ShadowLooper.runUiThreadTasks();
+        verify(mTabCountSupplierObserverMock, times(2)).onResult(1);
+        assertEquals(1, mTabModelSelector.getCurrentModelTabCountSupplier().get().intValue());
+
+        mTabModelSelector.getModel(false).removeTab(normalTab1);
+        mTabModelSelector.getModel(false).removeTab(normalTab2);
+        assertEquals(1, mTabModelSelector.getCurrentModelTabCountSupplier().get().intValue());
+        verify(mTabCountSupplierObserverMock, times(2)).onResult(1);
+
+        mTabModelSelector.selectModel(false);
+        ShadowLooper.runUiThreadTasks();
+        assertEquals(0, mTabModelSelector.getCurrentModelTabCountSupplier().get().intValue());
+        verify(mTabCountSupplierObserverMock, times(2)).onResult(0);
+
+        mTabModelSelector
+                .getCurrentModelTabCountSupplier()
+                .removeObserver(mTabCountSupplierObserverMock);
     }
 
     @Test

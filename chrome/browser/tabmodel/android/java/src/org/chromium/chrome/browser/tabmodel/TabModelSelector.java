@@ -78,6 +78,15 @@ public interface TabModelSelector {
     ObservableSupplier<Tab> getCurrentTabSupplier();
 
     /**
+     * Returns a supplier for the current tab count in the current model. This will update as the
+     * current tab model changes so it will always contain the tab count of the current model. If
+     * the tab count of a specific model is desired add an observer to that {@link TabModel}
+     * directly.
+     */
+    @NonNull
+    ObservableSupplier<Integer> getCurrentModelTabCountSupplier();
+
+    /**
      * Convenience function to get the {@link TabModel} for a {@link Tab} specified by
      * {@code id}.
      * @param id The id of the {@link Tab} to find the {@link TabModel} for.

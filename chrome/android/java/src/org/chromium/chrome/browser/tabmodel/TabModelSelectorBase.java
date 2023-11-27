@@ -46,6 +46,7 @@ public abstract class TabModelSelectorBase
     private final ObservableSupplierImpl<TabModel> mTabModelSupplier =
             new ObservableSupplierImpl<>();
     private final TransitiveObservableSupplier<TabModel, Tab> mCurrentTabSupplier;
+    private final TransitiveObservableSupplier<TabModel, Integer> mCurrentModelTabCountSupplier;
 
     private final ObserverList<TabModelSelectorObserver> mObservers = new ObserverList<>();
     private final ObserverList<IncognitoTabModelObserver> mIncognitoObservers =
@@ -77,7 +78,10 @@ public abstract class TabModelSelectorBase
         mTabModelSupplier.addObserver(mIncognitoReauthDialogDelegateCallback);
         mCurrentTabSupplier =
                 new TransitiveObservableSupplier<>(
-                        mTabModelSupplier, p -> p.getCurrentTabSupplier());
+                        mTabModelSupplier, tabModel -> tabModel.getCurrentTabSupplier());
+        mCurrentModelTabCountSupplier =
+                new TransitiveObservableSupplier<>(
+                        mTabModelSupplier, tabModel -> tabModel.getTabCountSupplier());
     }
 
     protected final void initialize(TabModel normalModel, IncognitoTabModel incognitoModel) {
@@ -205,6 +209,11 @@ public abstract class TabModelSelectorBase
     @Override
     public @NonNull ObservableSupplier<Tab> getCurrentTabSupplier() {
         return mCurrentTabSupplier;
+    }
+
+    @Override
+    public @NonNull ObservableSupplier<Integer> getCurrentModelTabCountSupplier() {
+        return mCurrentModelTabCountSupplier;
     }
 
     @Override
