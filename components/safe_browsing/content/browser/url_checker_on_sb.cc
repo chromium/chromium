@@ -26,10 +26,12 @@
 namespace safe_browsing {
 
 UrlCheckerOnSB::UrlCheckerOnSB(
-    BrowserURLLoaderThrottle::GetDelegateCallback delegate_getter,
+    GetDelegateCallback delegate_getter,
     int frame_tree_node_id,
     base::RepeatingCallback<content::WebContents*()> web_contents_getter,
-    base::WeakPtr<BrowserURLLoaderThrottle> throttle,
+    OnCompleteCheckCallback complete_callback,
+    OnSkipChecksCallback skip_checks_callback,
+    OnNotifySlowCheckCallback slow_check_callback,
     bool url_real_time_lookup_enabled,
     bool can_urt_check_subresource_url,
     bool can_check_db,
@@ -43,7 +45,9 @@ UrlCheckerOnSB::UrlCheckerOnSB(
     : delegate_getter_(std::move(delegate_getter)),
       frame_tree_node_id_(frame_tree_node_id),
       web_contents_getter_(web_contents_getter),
-      throttle_(std::move(throttle)),
+      complete_callback_(std::move(complete_callback)),
+      skip_checks_callback_(std::move(skip_checks_callback)),
+      slow_check_callback_(std::move(slow_check_callback)),
       url_real_time_lookup_enabled_(url_real_time_lookup_enabled),
       can_urt_check_subresource_url_(can_urt_check_subresource_url),
       can_check_db_(can_check_db),
@@ -92,11 +96,10 @@ void UrlCheckerOnSB::Start(
           /*render_frame_token=*/std::nullopt, originated_from_service_worker);
   if (skip_checks_) {
     if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-      throttle_->SkipChecks();
+      skip_checks_callback_.Run();
     } else {
       content::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(&BrowserURLLoaderThrottle::SkipChecks, throttle_));
+          FROM_HERE, base::BindOnce(skip_checks_callback_));
     }
     return;
   }
@@ -135,11 +138,10 @@ void UrlCheckerOnSB::CheckUrl(const GURL& url, const std::string& method) {
           : content::BrowserThread::IO);
   if (skip_checks_) {
     if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-      throttle_->SkipChecks();
+      skip_checks_callback_.Run();
     } else {
       content::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(&BrowserURLLoaderThrottle::SkipChecks, throttle_));
+          FROM_HERE, base::BindOnce(skip_checks_callback_));
     }
     return;
   }
@@ -162,7 +164,7 @@ void UrlCheckerOnSB::SetUrlCheckerForTesting(
 }
 
 void UrlCheckerOnSB::OnCheckUrlResult(
-    BrowserURLLoaderThrottle::NativeUrlCheckNotifier* slow_check_notifier,
+    NativeUrlCheckNotifier* slow_check_notifier,
     bool proceed,
     bool showed_interstitial,
     SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
@@ -174,11 +176,10 @@ void UrlCheckerOnSB::OnCheckUrlResult(
   }
 
   if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-    throttle_->NotifySlowCheck();
+    slow_check_callback_.Run();
   } else {
     content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&BrowserURLLoaderThrottle::NotifySlowCheck, throttle_));
+        FROM_HERE, base::BindOnce(slow_check_callback_));
   }
 
   // In this case |proceed| and |showed_interstitial| should be ignored. The
@@ -195,15 +196,13 @@ void UrlCheckerOnSB::OnCompleteCheck(
     SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
     bool did_check_url_real_time_allowlist) {
   if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-    throttle_->OnCompleteCheck(slow_check, proceed, showed_interstitial,
-                               performed_check,
-                               did_check_url_real_time_allowlist);
+    complete_callback_.Run(slow_check, proceed, showed_interstitial,
+                           performed_check, did_check_url_real_time_allowlist);
   } else {
     content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&BrowserURLLoaderThrottle::OnCompleteCheck, throttle_,
-                       slow_check, proceed, showed_interstitial,
-                       performed_check, did_check_url_real_time_allowlist));
+        FROM_HERE, base::BindOnce(complete_callback_, slow_check, proceed,
+                                  showed_interstitial, performed_check,
+                                  did_check_url_real_time_allowlist));
   }
 }
 

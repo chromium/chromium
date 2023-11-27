@@ -11,6 +11,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "components/safe_browsing/content/browser/url_checker_on_sb.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #include "content/public/browser/browser_thread.h"
@@ -28,9 +29,6 @@ class HttpRequestHeaders;
 
 namespace safe_browsing {
 
-class UrlCheckerOnSB;
-class UrlCheckerDelegate;
-
 class RealTimeUrlLookupServiceBase;
 class HashRealTimeService;
 class PingManager;
@@ -47,17 +45,8 @@ class AsyncCheckTracker;
 // the load if any URLs turn out to be bad.
 class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
  public:
-  using GetDelegateCallback =
-      base::OnceCallback<scoped_refptr<UrlCheckerDelegate>()>;
-
-  using NativeUrlCheckNotifier = base::OnceCallback<void(
-      bool /* proceed */,
-      bool /* showed_interstitial */,
-      SafeBrowsingUrlCheckerImpl::PerformedCheck /* performed_check */,
-      bool /* did_check_url_real_time_allowlist */)>;
-
   static std::unique_ptr<BrowserURLLoaderThrottle> Create(
-      GetDelegateCallback delegate_getter,
+      UrlCheckerOnSB::GetDelegateCallback delegate_getter,
       const base::RepeatingCallback<content::WebContents*()>&
           web_contents_getter,
       int frame_tree_node_id,
@@ -90,11 +79,10 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
   UrlCheckerOnSB* GetSBCheckerForTesting();
 
  private:
-  friend class UrlCheckerOnSB;
   // |web_contents_getter| is used for displaying SafeBrowsing UI when
   // necessary.
   BrowserURLLoaderThrottle(
-      GetDelegateCallback delegate_getter,
+      UrlCheckerOnSB::GetDelegateCallback delegate_getter,
       const base::RepeatingCallback<content::WebContents*()>&
           web_contents_getter,
       int frame_tree_node_id,

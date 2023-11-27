@@ -12,7 +12,6 @@
 #include "base/trace_event/trace_event.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
-#include "components/safe_browsing/content/browser/url_checker_on_sb.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
@@ -76,7 +75,7 @@ namespace safe_browsing {
 
 // static
 std::unique_ptr<BrowserURLLoaderThrottle> BrowserURLLoaderThrottle::Create(
-    GetDelegateCallback delegate_getter,
+    UrlCheckerOnSB::GetDelegateCallback delegate_getter,
     const base::RepeatingCallback<content::WebContents*()>& web_contents_getter,
     int frame_tree_node_id,
     base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
@@ -92,7 +91,7 @@ std::unique_ptr<BrowserURLLoaderThrottle> BrowserURLLoaderThrottle::Create(
 }
 
 BrowserURLLoaderThrottle::BrowserURLLoaderThrottle(
-    GetDelegateCallback delegate_getter,
+    UrlCheckerOnSB::GetDelegateCallback delegate_getter,
     const base::RepeatingCallback<content::WebContents*()>& web_contents_getter,
     int frame_tree_node_id,
     base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
@@ -139,11 +138,20 @@ BrowserURLLoaderThrottle::BrowserURLLoaderThrottle(
 
   sb_checker_ = std::make_unique<UrlCheckerOnSB>(
       std::move(delegate_getter), frame_tree_node_id, web_contents_getter,
-      weak_factory_.GetWeakPtr(), url_real_time_lookup_enabled_,
-      can_urt_check_subresource_url, can_check_db,
-      can_check_high_confidence_allowlist, url_lookup_service_metric_suffix_,
-      url_lookup_service, hash_realtime_service, ping_manager,
-      is_mechanism_experiment_allowed, hash_realtime_selection);
+      /*complete_callback=*/
+      base::BindRepeating(&BrowserURLLoaderThrottle::OnCompleteCheck,
+                          weak_factory_.GetWeakPtr()),
+      /*skip_checks_callback=*/
+      base::BindRepeating(&BrowserURLLoaderThrottle::SkipChecks,
+                          weak_factory_.GetWeakPtr()),
+      /*slow_check_callback=*/
+      base::BindRepeating(&BrowserURLLoaderThrottle::NotifySlowCheck,
+                          weak_factory_.GetWeakPtr()),
+      url_real_time_lookup_enabled_, can_urt_check_subresource_url,
+      can_check_db, can_check_high_confidence_allowlist,
+      url_lookup_service_metric_suffix_, url_lookup_service,
+      hash_realtime_service, ping_manager, is_mechanism_experiment_allowed,
+      hash_realtime_selection);
 }
 
 BrowserURLLoaderThrottle::~BrowserURLLoaderThrottle() {
