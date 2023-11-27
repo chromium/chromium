@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include "ash/constants/ash_features.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -26,8 +28,11 @@
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/ash/components/quick_start/quick_start_metrics.h"
+#include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-shared.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "content/public/test/browser_test.h"
+#include "device/bluetooth/bluetooth_adapter_factory.h"
+#include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -35,6 +40,9 @@
 namespace ash {
 
 namespace {
+
+using bluetooth_config::mojom::BluetoothSystemState;
+
 constexpr char kWifiNetworkName[] = "wifi-test-network";
 constexpr char kWelcomeScreen[] = "welcomeScreen";
 constexpr char kQuickStartEntryPoint[] = "quickStartWelcomeEntryPoint";
@@ -116,11 +124,23 @@ class QuickStartBrowserTest : public OobeBaseTest {
     OobeBaseTest::SetUpInProcessBrowserTestFixture();
     quick_start::TargetDeviceConnectionBrokerFactory::SetFactoryForTesting(
         &connection_broker_factory_);
+
+    mock_bluetooth_adapter_ =
+        base::MakeRefCounted<testing::NiceMock<device::MockBluetoothAdapter>>();
+    device::BluetoothAdapterFactory::SetAdapterForTesting(
+        mock_bluetooth_adapter_);
+    ON_CALL(*mock_bluetooth_adapter_, IsPresent())
+        .WillByDefault(testing::Return(true));
+
+    SetUpBluetoothIsPoweredResponse(mock_bluetooth_adapter_, true);
+
+    testing::Mock::AllowLeak(mock_bluetooth_adapter_.get());
   }
 
   void TearDownInProcessBrowserTestFixture() override {
     quick_start::TargetDeviceConnectionBrokerFactory::SetFactoryForTesting(
         nullptr);
+    mock_bluetooth_adapter_.reset();
     OobeBaseTest::TearDownInProcessBrowserTestFixture();
   }
 
@@ -144,20 +164,20 @@ class QuickStartBrowserTest : public OobeBaseTest {
     OobeScreenWaiter(QuickStartView::kScreenId).Wait();
   }
 
-  void WaitForBluetoothDialogToOpen() {
-    test::OobeJS()
-        .CreateWaiter(
-            test::GetOobeElementPath({kQuickStartBluetoothDialogPath}) +
-            ".open")
-        ->Wait();
+  void SetUpBluetoothIsPoweredResponse(
+      scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>>
+          mock_bluetooth_adapter,
+      bool is_powered) {
+    ON_CALL(*mock_bluetooth_adapter, IsPowered())
+        .WillByDefault(testing::Return(is_powered));
   }
 
-  void WaitForBluetoothDialogToClose() {
-    test::OobeJS()
-        .CreateWaiter(
-            test::GetOobeElementPath({kQuickStartBluetoothDialogPath}) +
-            ".open === false")
-        ->Wait();
+  void EnsureBluetoothState(bool is_powered) {
+    EXPECT_EQ(WizardController::default_controller()
+                  ->quick_start_controller()
+                  ->get_bluetooth_system_state_for_testing(),
+              is_powered ? BluetoothSystemState::kEnabled
+                         : BluetoothSystemState::kDisabled);
   }
 
   void SkipUpdateScreenOnBrandedBuilds() {
@@ -285,6 +305,8 @@ class QuickStartBrowserTest : public OobeBaseTest {
  protected:
   quick_start::FakeTargetDeviceConnectionBroker::Factory
       connection_broker_factory_;
+  scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>>
+      mock_bluetooth_adapter_;
 
  private:
   std::unique_ptr<NetworkStateTestHelper> network_helper_;
@@ -301,6 +323,38 @@ class QuickStartNotDeterminedBrowserTest : public QuickStartBrowserTest {
   }
 };
 
+class QuickStartBrowserTestWithBluetoothDisabled
+    : public QuickStartBrowserTest {
+ public:
+  QuickStartBrowserTestWithBluetoothDisabled() {}
+  ~QuickStartBrowserTestWithBluetoothDisabled() override = default;
+
+  void SetUpInProcessBrowserTestFixture() override {
+    QuickStartBrowserTest::SetUpInProcessBrowserTestFixture();
+    SetUpBluetoothIsPoweredResponse(mock_bluetooth_adapter_, false);
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    QuickStartBrowserTest::TearDownInProcessBrowserTestFixture();
+  }
+
+  void WaitForBluetoothDialogToOpen() {
+    test::OobeJS()
+        .CreateWaiter(
+            test::GetOobeElementPath({kQuickStartBluetoothDialogPath}) +
+            ".open")
+        ->Wait();
+  }
+
+  void WaitForBluetoothDialogToClose() {
+    test::OobeJS()
+        .CreateWaiter(
+            test::GetOobeElementPath({kQuickStartBluetoothDialogPath}) +
+            ".open === false")
+        ->Wait();
+  }
+};
+
 IN_PROC_BROWSER_TEST_F(QuickStartNotDeterminedBrowserTest,
                        ButtonVisibleOnWelcomeScreen) {
   test::WaitForWelcomeScreen();
@@ -313,6 +367,77 @@ IN_PROC_BROWSER_TEST_F(QuickStartNotDeterminedBrowserTest,
   test::OobeJS()
       .CreateVisibilityWaiter(/*visibility=*/true, kQuickStartButtonPath)
       ->Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(QuickStartBrowserTestWithBluetoothDisabled,
+                       ClickingOnQuickStartWhenBluetoothDisabled) {
+  test::WaitForWelcomeScreen();
+
+  test::OobeJS()
+      .CreateVisibilityWaiter(/*visibility=*/true, kQuickStartButtonPath)
+      ->Wait();
+
+  EXPECT_CALL(*mock_bluetooth_adapter_, IsPowered())
+      .WillRepeatedly(testing::Return(false));
+
+  EnsureBluetoothState(/*is_powered=*/false);
+
+  test::OobeJS().ClickOnPath(kQuickStartButtonPath);
+  WaitForBluetoothDialogToOpen();
+}
+
+IN_PROC_BROWSER_TEST_F(QuickStartBrowserTestWithBluetoothDisabled,
+                       CancellingBluetoothEnablingClosesDialog) {
+  test::WaitForWelcomeScreen();
+
+  test::OobeJS()
+      .CreateVisibilityWaiter(/*visibility=*/true, kQuickStartButtonPath)
+      ->Wait();
+
+  EXPECT_CALL(*mock_bluetooth_adapter_, IsPowered())
+      .WillRepeatedly(testing::Return(false));
+
+  EnsureBluetoothState(/*is_powered=*/false);
+
+  test::OobeJS().ClickOnPath(kQuickStartButtonPath);
+
+  WaitForBluetoothDialogToOpen();
+
+  test::OobeJS()
+      .CreateVisibilityWaiter(/*visibility=*/true,
+                              kQuickStartBluetoothCancelButtonPath)
+      ->Wait();
+
+  test::OobeJS().ClickOnPath(kQuickStartBluetoothCancelButtonPath);
+
+  WaitForBluetoothDialogToClose();
+}
+
+IN_PROC_BROWSER_TEST_F(QuickStartBrowserTestWithBluetoothDisabled,
+                       TurningOnBlueoothFromBluetoothDialog) {
+  test::WaitForWelcomeScreen();
+
+  test::OobeJS()
+      .CreateVisibilityWaiter(/*visibility=*/true, kQuickStartButtonPath)
+      ->Wait();
+
+  EXPECT_CALL(*mock_bluetooth_adapter_, IsPowered())
+      .WillRepeatedly(testing::Return(false));
+
+  EnsureBluetoothState(/*is_powered=*/false);
+
+  test::OobeJS().ClickOnPath(kQuickStartButtonPath);
+
+  WaitForBluetoothDialogToOpen();
+
+  test::OobeJS()
+      .CreateVisibilityWaiter(/*visibility=*/true,
+                              kQuickStartBluetoothEnableButtonPath)
+      ->Wait();
+
+  test::OobeJS().ClickOnPath(kQuickStartBluetoothEnableButtonPath);
+
+  OobeScreenWaiter(QuickStartView::kScreenId).Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, QRCode) {
@@ -377,77 +502,6 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, PinCode) {
                       ".textContent === '" + digit + "'")
         ->Wait();
   }
-}
-
-// TODO(ayag)(b/309384358): update tests after adding bluetooth checks
-IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest,
-                       ClickingOnQuickStartWhenBluetoothDisabled) {
-  test::WaitForWelcomeScreen();
-
-  test::OobeJS()
-      .CreateVisibilityWaiter(/*visibility=*/true, kQuickStartButtonPath)
-      ->Wait();
-
-  WizardController::default_controller()
-      ->quick_start_controller()
-      ->set_fake_bluetooth_state_for_testing(false);
-
-  test::OobeJS().ClickOnPath(kQuickStartButtonPath);
-  WaitForBluetoothDialogToOpen();
-}
-
-// TODO(ayag)(b/309384358): update tests after adding bluetooth checks
-IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest,
-                       CancellingBluetoothEnablingClosesDialog) {
-  test::WaitForWelcomeScreen();
-
-  test::OobeJS()
-      .CreateVisibilityWaiter(/*visibility=*/true, kQuickStartButtonPath)
-      ->Wait();
-
-  WizardController::default_controller()
-      ->quick_start_controller()
-      ->set_fake_bluetooth_state_for_testing(false);
-
-  test::OobeJS().ClickOnPath(kQuickStartButtonPath);
-
-  WaitForBluetoothDialogToOpen();
-
-  test::OobeJS()
-      .CreateVisibilityWaiter(/*visibility=*/true,
-                              kQuickStartBluetoothCancelButtonPath)
-      ->Wait();
-
-  test::OobeJS().ClickOnPath(kQuickStartBluetoothCancelButtonPath);
-
-  WaitForBluetoothDialogToClose();
-}
-
-// TODO(ayag)(b/309384358): update tests after adding bluetooth checks
-IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest,
-                       TurningOnBlueoothFromBluetoothDialog) {
-  test::WaitForWelcomeScreen();
-
-  test::OobeJS()
-      .CreateVisibilityWaiter(/*visibility=*/true, kQuickStartButtonPath)
-      ->Wait();
-
-  WizardController::default_controller()
-      ->quick_start_controller()
-      ->set_fake_bluetooth_state_for_testing(false);
-
-  test::OobeJS().ClickOnPath(kQuickStartButtonPath);
-
-  WaitForBluetoothDialogToOpen();
-
-  test::OobeJS()
-      .CreateVisibilityWaiter(/*visibility=*/true,
-                              kQuickStartBluetoothEnableButtonPath)
-      ->Wait();
-
-  test::OobeJS().ClickOnPath(kQuickStartBluetoothEnableButtonPath);
-
-  OobeScreenWaiter(QuickStartView::kScreenId).Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest,

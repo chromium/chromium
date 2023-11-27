@@ -5,6 +5,9 @@
 #include "chrome/browser/ash/login/quickstart_controller.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/bluetooth_config_service.h"
+#include "base/check.h"
+#include "base/logging.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
@@ -24,6 +27,9 @@
 namespace ash::quick_start {
 
 namespace {
+
+using bluetooth_config::mojom::BluetoothDevicePropertiesPtr;
+using bluetooth_config::mojom::BluetoothSystemState;
 
 absl::optional<QuickStartController::EntryPoint> EntryPointFromScreen(
     OobeScreenId screen) {
@@ -77,6 +83,7 @@ ConnectionClosedReasonFromAbortFlowReason(
 QuickStartController::QuickStartController() {
   if (features::IsOobeQuickStartEnabled()) {
     InitTargetDeviceBootstrapController();
+    StartObservingBluetoothState();
   }
 }
 
@@ -140,21 +147,6 @@ void QuickStartController::AbortFlow(AbortFlowReason reason) {
       ConnectionClosedReasonFromAbortFlowReason(reason));
   bootstrap_controller_->StopAdvertising();
   ResetState();
-}
-
-bool QuickStartController::ShouldShowBluetoothDialog() {
-  // TODO(ayag)(b/309382466): check bluetooth enabled
-  return !this->is_bluetooth_enabled_;
-}
-
-void QuickStartController::TurnOnBluetooth() {
-  // TODO(ayag)(b/309382466): enable bluetooth
-  this->is_bluetooth_enabled_ = true;
-}
-
-void QuickStartController::set_fake_bluetooth_state_for_testing(
-    bool bluetooth_enabled) {
-  this->is_bluetooth_enabled_ = bluetooth_enabled;
 }
 
 QuickStartController::EntryPoint QuickStartController::GetExitPoint() {
@@ -392,6 +384,52 @@ void QuickStartController::ResetState() {
   wizard_context->quick_start_setup_ongoing = false;
   wizard_context->quick_start_wifi_credentials.reset();
   bootstrap_controller_->Cleanup();
+}
+
+/******************* Bluetooth dialog related functions *******************/
+
+void QuickStartController::StartObservingBluetoothState() {
+  GetBluetoothConfigService(
+      cros_bluetooth_config_remote_.BindNewPipeAndPassReceiver());
+  cros_bluetooth_config_remote_->ObserveSystemProperties(
+      cros_system_properties_observer_receiver_.BindNewPipeAndPassRemote());
+}
+
+void QuickStartController::OnPropertiesUpdated(
+    bluetooth_config::mojom::BluetoothSystemPropertiesPtr properties) {
+  bluetooth_system_state_ = properties->system_state;
+}
+
+bool QuickStartController::ShouldShowBluetoothDialog() {
+  switch (bluetooth_system_state_) {
+    case BluetoothSystemState::kDisabled:
+      QS_LOG(INFO) << "Bluetooth is turned off.";
+      return true;
+    case BluetoothSystemState::kDisabling:
+      QS_LOG(INFO) << "Bluetooth is in the process of turning off.";
+      return false;
+    case BluetoothSystemState::kEnabled:
+      QS_LOG(INFO) << "Bluetooth is turned on.";
+      return false;
+    case BluetoothSystemState::kEnabling:
+      QS_LOG(INFO) << "Bluetooth is in the process of turning on.";
+      return false;
+    case BluetoothSystemState::kUnavailable:
+      QS_LOG(INFO) << "Device does not have access to Bluetooth.";
+      return false;
+  }
+}
+
+void QuickStartController::TurnOnBluetooth() {
+  // TODO(ayag)(b/310566204): rename SetBluetoothHidDetectionActive to be
+  // generic.
+  CHECK(cros_bluetooth_config_remote_);
+  cros_bluetooth_config_remote_->SetBluetoothHidDetectionActive();
+}
+
+bluetooth_config::mojom::BluetoothSystemState
+QuickStartController::get_bluetooth_system_state_for_testing() {
+  return bluetooth_system_state_;
 }
 
 }  // namespace ash::quick_start

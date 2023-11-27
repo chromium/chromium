@@ -14,6 +14,11 @@
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
+#include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-forward.h"
+#include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-shared.h"
+#include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash::quick_start {
 
@@ -23,8 +28,10 @@ namespace ash::quick_start {
 // source of truth for what the UI (QuickStartScreen) should be showing. Unlike
 // other OOBE screens, QuickStartScreen just acts as a delegate for this main
 // controller.
-class QuickStartController : public OobeUI::Observer,
-                             public TargetDeviceBootstrapController::Observer {
+class QuickStartController
+    : public OobeUI::Observer,
+      public TargetDeviceBootstrapController::Observer,
+      public bluetooth_config::mojom::SystemPropertiesObserver {
  public:
   // QuickStart flow entry point locations.
   enum class EntryPoint {
@@ -122,7 +129,8 @@ class QuickStartController : public OobeUI::Observer,
   // Turn on bluetooth for quick start flow to continue
   void TurnOnBluetooth();
 
-  void set_fake_bluetooth_state_for_testing(bool bluetooth_enabled);
+  bluetooth_config::mojom::BluetoothSystemState
+  get_bluetooth_system_state_for_testing();
 
   // Exit point to be used when the flow is cancelled.
   EntryPoint GetExitPoint();
@@ -130,6 +138,13 @@ class QuickStartController : public OobeUI::Observer,
  private:
   // Initializes the BootstrapController and starts to observe it.
   void InitTargetDeviceBootstrapController();
+
+  // Initializes the Bluetooth and starts to observe it.
+  void StartObservingBluetoothState();
+
+  // bluetooth_config::mojom::SystemPropertiesObserver
+  void OnPropertiesUpdated(bluetooth_config::mojom::BluetoothSystemPropertiesPtr
+                               properties) override;
 
   // Updates the UI state and notifies the frontend.
   void UpdateUiState(UiState ui_state);
@@ -203,8 +218,14 @@ class QuickStartController : public OobeUI::Observer,
   // is shown. UI updates happen over this observation path.
   base::ObserverList<UiDelegate> ui_delegates_;
 
-  // TODO(ayag)(b/309382466): set value by fetching bluetooth state
-  bool is_bluetooth_enabled_ = true;
+  mojo::Remote<bluetooth_config::mojom::CrosBluetoothConfig>
+      cros_bluetooth_config_remote_;
+
+  mojo::Receiver<bluetooth_config::mojom::SystemPropertiesObserver>
+      cros_system_properties_observer_receiver_{this};
+
+  bluetooth_config::mojom::BluetoothSystemState bluetooth_system_state_ =
+      bluetooth_config::mojom::BluetoothSystemState::kUnavailable;
 
   base::ScopedObservation<OobeUI, OobeUI::Observer> observation_{this};
   base::WeakPtrFactory<QuickStartController> weak_ptr_factory_{this};

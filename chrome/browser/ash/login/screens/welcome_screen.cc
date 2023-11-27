@@ -742,6 +742,9 @@ void WelcomeScreen::OnQuickStartClicked() {
 
 void WelcomeScreen::OnTurnOnBluetoothForQuickStart() {
   CHECK(context()->quick_start_enabled);
+  WizardController::default_controller()
+      ->quick_start_controller()
+      ->TurnOnBluetooth();
   Exit(Result::QUICK_START);
 }
 
