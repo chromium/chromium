@@ -114,14 +114,18 @@ class DefaultWidgetDelegate : public WidgetDelegate {
     // In most situations where a Widget is used without a delegate the Widget
     // is used as a container, so that we want focus to advance to the top-level
     // widget. A good example of this is the find bar.
-    SetOwnedByWidget(true);
     SetFocusTraversesOut(true);
+    RegisterDeleteDelegateCallback(base::BindOnce(
+        &DefaultWidgetDelegate::Destroy, base::Unretained(this)));
   }
 
   DefaultWidgetDelegate(const DefaultWidgetDelegate&) = delete;
   DefaultWidgetDelegate& operator=(const DefaultWidgetDelegate&) = delete;
 
   ~DefaultWidgetDelegate() override = default;
+
+ private:
+  void Destroy() { delete this; }
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -379,23 +383,20 @@ void Widget::Init(InitParams params) {
     // ViewsDelegate::OnBeforeWidgetInit() may change `params.delegate` either
     // by setting it to null or assigning a different value to it, so handle
     // both cases.
-    // TODO(kylixrd): Rework this to avoid always creating the default delegate
-    // once the widget never owns a provided delegate.
-    owned_widget_delegate_ = std::make_unique<DefaultWidgetDelegate>();
-    widget_delegate_ = params.delegate ? params.delegate->AsWeakPtr()
-                                       : owned_widget_delegate_->AsWeakPtr();
-
     ViewsDelegate::GetInstance()->OnBeforeWidgetInit(&params, this);
 
-    widget_delegate_ = params.delegate ? params.delegate->AsWeakPtr()
-                                       : owned_widget_delegate_->AsWeakPtr();
-    if (widget_delegate_.get() != owned_widget_delegate_.get()) {
+    if (params.delegate) {
       // TODO(kylixrd): This will be unnecessary once the Widget can no longer
       // "own" the delegate.
-      if (widget_delegate_->owned_by_widget())
-        owned_widget_delegate_ = base::WrapUnique(widget_delegate_.get());
-      else
-        owned_widget_delegate_.reset();
+      if (params.delegate->owned_by_widget()) {
+        owned_widget_delegate_ = base::WrapUnique(params.delegate.get());
+        widget_delegate_ = owned_widget_delegate_->AsWeakPtr();
+      } else {
+        widget_delegate_ = params.delegate->AsWeakPtr();
+      }
+    } else {
+      auto default_delegate = std::make_unique<DefaultWidgetDelegate>();
+      widget_delegate_ = default_delegate.release()->AsWeakPtr();
     }
   }
   DCHECK(widget_delegate_);
