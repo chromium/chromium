@@ -119,7 +119,7 @@ class ToolbarController : public ui::SimpleMenuModel::Delegate {
 
   // Returns true if layout manager of `toolbar_container_view_` hides any
   // toolbar elements.
-  bool ShouldShowOverflowButton();
+  bool ShouldShowOverflowButton() const;
 
   views::View* overflow_button() { return overflow_button_; }
 
@@ -140,14 +140,14 @@ class ToolbarController : public ui::SimpleMenuModel::Delegate {
                                                ui::ElementIdentifier id);
 
  private:
-  friend class ToolbarControllerInteractiveTest;
+  friend class ToolbarControllerUiTest;
   friend class ToolbarControllerUnitTest;
 
   // Returns currently hidden elements.
   std::vector<const ResponsiveElementInfo*> GetOverflowedElements();
 
   // Check if element has overflowed.
-  bool IsOverflowed(ui::ElementIdentifier id);
+  bool IsOverflowed(ui::ElementIdentifier id) const;
 
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;

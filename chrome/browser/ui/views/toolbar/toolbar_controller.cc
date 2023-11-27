@@ -245,7 +245,7 @@ bool ToolbarController::EndPopOut(ui::ElementIdentifier identifier) {
   return true;
 }
 
-bool ToolbarController::ShouldShowOverflowButton() {
+bool ToolbarController::ShouldShowOverflowButton() const {
   // Once at least one button has been dropped by layout manager show overflow
   // button.
   for (const auto& element : responsive_elements_) {
@@ -293,10 +293,10 @@ ToolbarController::GetOverflowedElements() {
   return overflowed_buttons;
 }
 
-bool ToolbarController::IsOverflowed(ui::ElementIdentifier id) {
+bool ToolbarController::IsOverflowed(ui::ElementIdentifier id) const {
   const auto* const toolbar_element =
       FindToolbarElementWithId(toolbar_container_view_, id);
-  const views::FlexLayout* flex_layout = static_cast<views::FlexLayout*>(
+  const views::FlexLayout* const flex_layout = static_cast<views::FlexLayout*>(
       toolbar_container_view_->GetLayoutManager());
   return flex_layout->CanBeVisible(toolbar_element) &&
          !toolbar_element->GetVisible();
