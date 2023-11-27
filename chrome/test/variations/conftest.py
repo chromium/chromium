@@ -15,6 +15,7 @@ pytest_plugins = [
   'chrome.test.variations.fixtures.result_sink',
   'chrome.test.variations.fixtures.seed_locator',
   'chrome.test.variations.fixtures.skia_gold',
+  'chrome.test.variations.fixtures.features',
   'chrome.test.variations.fixtures.test_options'
 ]
 
