@@ -512,7 +512,7 @@ void Shell::OnDictationEnded() {
 }
 
 bool Shell::IsInTabletMode() const {
-  return tablet_mode_controller()->InTabletMode();
+  return display::Screen::GetScreen()->InTabletMode();
 }
 
 bool Shell::ShouldSaveDisplaySettings() {

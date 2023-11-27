@@ -10,7 +10,6 @@
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -18,6 +17,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -165,7 +165,7 @@ bool HotseatTransitionAnimator::ShouldDoAnimation(HotseatState old_state,
           old_state == HotseatState::kShownHomeLauncher) &&
          !(new_state == HotseatState::kShownClamshell ||
            old_state == HotseatState::kShownClamshell) &&
-         Shell::Get()->tablet_mode_controller()->InTabletMode();
+         display::Screen::GetScreen()->InTabletMode();
 }
 
 void HotseatTransitionAnimator::NotifyHotseatTransitionAnimationEnded(

@@ -27,7 +27,6 @@
 #include "ash/shelf/shelf_metrics.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/numerics/safe_conversions.h"
@@ -96,7 +95,7 @@ void ShelfContextMenuModel::ExecuteCommand(int command_id, int event_flags) {
     return;
 
   // Clamshell mode only options should not activate in tablet mode.
-  const bool is_tablet_mode = shell->tablet_mode_controller()->InTabletMode();
+  const bool is_tablet_mode = display::Screen::GetScreen()->InTabletMode();
   switch (command_id) {
     case MENU_AUTO_HIDE:
       SetShelfAutoHideBehaviorPref(
@@ -191,8 +190,7 @@ void ShelfContextMenuModel::AddShelfAndWallpaperItems() {
   // (regular or Family Link user). In tablet mode, the shelf alignment option
   // is not shown.
   LoginStatus status = Shell::Get()->session_controller()->login_status();
-  const bool in_tablet_mode =
-      Shell::Get()->tablet_mode_controller()->InTabletMode();
+  const bool in_tablet_mode = display::Screen::GetScreen()->InTabletMode();
   if ((status == LoginStatus::USER || status == LoginStatus::CHILD) &&
       !in_tablet_mode &&
       prefs->FindPreference(prefs::kShelfAlignmentLocal)->IsUserModifiable()) {

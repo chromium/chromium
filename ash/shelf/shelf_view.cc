@@ -45,7 +45,6 @@
 #include "ash/user_education/user_education_class_properties.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/mru_window_tracker.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_util.h"
 #include "base/auto_reset.h"
 #include "base/check_op.h"
@@ -134,12 +133,6 @@ constexpr char kShelfIconFadeInAnimationHistogram[] =
     "Ash.ShelfIcon.AnimationSmoothness.FadeIn";
 constexpr char kShelfIconFadeOutAnimationHistogram[] =
     "Ash.ShelfIcon.AnimationSmoothness.FadeOut";
-
-// Helper to check if tablet mode is enabled.
-bool IsTabletModeEnabled() {
-  return Shell::Get()->tablet_mode_controller() &&
-         Shell::Get()->tablet_mode_controller()->InTabletMode();
-}
 
 // A class to temporarily disable a given bounds animator.
 class BoundsAnimatorDisabler {
@@ -362,7 +355,6 @@ ShelfView::ShelfView(ShelfModel* model,
       shelf_button_delegate_(shelf_button_delegate) {
   DCHECK(model_);
   DCHECK(shelf_);
-  Shell::Get()->tablet_mode_controller()->AddObserver(this);
   Shell::Get()->AddShellObserver(this);
   shelf_->AddObserver(this);
   bounds_animator_->AddObserver(this);
@@ -384,9 +376,6 @@ ShelfView::ShelfView(ShelfModel* model,
 }
 
 ShelfView::~ShelfView() {
-  // Shell destroys the TabletModeController before destroying all root windows.
-  if (Shell::Get()->tablet_mode_controller())
-    Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
   shelf_->RemoveObserver(this);
   Shell::Get()->RemoveShellObserver(this);
   bounds_animator_->RemoveObserver(this);
@@ -862,18 +851,18 @@ void ShelfView::ShowContextMenuForViewImpl(views::View* source,
       display_id, context_menu_callback_.callback());
 }
 
-void ShelfView::OnTabletModeStarted() {
-  // Close all menus when tablet mode starts to ensure that the clamshell only
-  // context menu options are not available in tablet mode.
-  if (shelf_menu_model_adapter_)
-    shelf_menu_model_adapter_->Cancel();
-}
+void ShelfView::OnDisplayTabletStateChanged(display::TabletState state) {
+  if (state != display::TabletState::kInClamshellMode &&
+      state != display::TabletState::kInTabletMode) {
+    return;
+  }
 
-void ShelfView::OnTabletModeEnded() {
-  // Close all menus when tablet mode ends so that menu options are kept
-  // consistent with device state.
-  if (shelf_menu_model_adapter_)
+  // Close all menus when tablet mode starts or ends so that menu options are
+  // kept consistent with device state and not show the clamshell / tablet only
+  // context menu options while they are unavailable.
+  if (shelf_menu_model_adapter_) {
     shelf_menu_model_adapter_->Cancel();
+  }
 }
 
 void ShelfView::OnShelfConfigUpdated() {
@@ -2043,7 +2032,8 @@ gfx::Rect ShelfView::GetMenuAnchorRect(const views::View& source,
     return source.GetBoundsInScreen();
 
   gfx::Rect shelf_bounds_in_screen;
-  if (ShelfConfig::Get()->is_in_app() && IsTabletModeEnabled()) {
+  if (ShelfConfig::Get()->is_in_app() &&
+      display::Screen::GetScreen()->InTabletMode()) {
     // Use the shelf widget background as the menu anchor point in tablet mode
     // and in app.
     ShelfWidget* shelf_widget = shelf_->shelf_widget();
@@ -2674,7 +2664,7 @@ void ShelfView::ShowMenu(std::unique_ptr<ui::SimpleMenuModel> menu_model,
       source_type,
       base::BindOnce(&ShelfView::OnMenuClosed, base::Unretained(this),
                      base::UnsafeDanglingUntriaged(source)),
-      IsTabletModeEnabled(),
+      display::Screen::GetScreen()->InTabletMode(),
       /*for_application_menu_items*/ !context_menu);
   shelf_menu_model_adapter_->Run(
       GetMenuAnchorRect(*source, click_point, context_menu),

@@ -385,9 +385,10 @@ class ASH_EXPORT Shell : public SessionObserver,
   // Called when dictation is ended.
   void OnDictationEnded();
 
-  // Returns whether the device is currently in tablet mode. If the tablet
-  // mode controller isn't available, we assume the device is not in
-  // tablet mode.
+  // DEPRECATED. Use display::Screen::GetScreen()->InTabletMode() instead.
+  // TODO(crbug.com/1502114): Remove this.
+  //
+  // Returns whether the device is currently in tablet mode.
   bool IsInTabletMode() const;
 
   // Tests if TabletModeWindowManager is not enabled, and if

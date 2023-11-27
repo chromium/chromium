@@ -16,7 +16,6 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model_observer.h"
-#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_button_delegate.h"
 #include "ash/shelf/shelf_button_pressed_metric_tracker.h"
@@ -33,6 +32,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/throughput_tracker.h"
+#include "ui/display/display_observer.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/animation/bounds_animator_observer.h"
@@ -50,7 +50,8 @@ class SimpleMenuModel;
 
 namespace display {
 class ScopedDisplayForNewWindows;
-}
+enum class TabletState;
+}  // namespace display
 
 namespace views {
 class BoundsAnimator;
@@ -86,7 +87,7 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
                              public views::BoundsAnimatorObserver,
                              public ApplicationDragAndDropHost,
                              public ShelfTooltipDelegate,
-                             public TabletModeObserver {
+                             public display::DisplayObserver {
  public:
   METADATA_HEADER(ShelfView);
   // Used to communicate with the container class ScrollableShelfView.
@@ -205,9 +206,8 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
                                   const gfx::Point& point,
                                   ui::MenuSourceType source_type) override;
 
-  // ash::TabletModeObserver:
-  void OnTabletModeStarted() override;
-  void OnTabletModeEnded() override;
+  // display::DisplayObserver:
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   // Called from ScrollableShelfView when shelf config is updated.
   void OnShelfConfigUpdated();
@@ -822,6 +822,8 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // Set of promise app items with pending removal. Maps the promise app ID to
   // the promise app icon image.
   PendingPromiseAppsMap pending_promise_apps_removals_;
+
+  display::ScopedDisplayObserver display_observer_{this};
 
   base::WeakPtrFactory<ShelfView> weak_factory_{this};
 };

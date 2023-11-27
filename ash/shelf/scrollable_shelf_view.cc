@@ -19,7 +19,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/wm/desks/desk_button/desk_button.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/i18n/rtl.h"
@@ -2045,7 +2044,7 @@ gfx::Rect ScrollableShelfView::CalculateVisibleSpace(
 
 gfx::Insets ScrollableShelfView::CalculateRipplePaddingInsets() const {
   // Indicates whether it is in tablet mode with hotseat enabled.
-  const bool in_tablet_mode = Shell::Get()->IsInTabletMode();
+  const bool in_tablet_mode = display::Screen::GetScreen()->InTabletMode();
 
   const int ripple_padding =
       ShelfConfig::Get()->scrollable_shelf_ripple_padding();
@@ -2064,16 +2063,9 @@ gfx::Insets ScrollableShelfView::CalculateRipplePaddingInsets() const {
 
 gfx::RoundedCornersF
 ScrollableShelfView::CalculateShelfContainerRoundedCorners() const {
-  // This function may access TabletModeController during destruction of
-  // Hotseat. However, TabletModeController is destructed before Hotseat. So
-  // check the pointer explicitly here.
-  // TODO(https://crbug.com/1067490): reorder the destruction order in
-  // Shell::~Shell then remove the explicit check.
-  const bool is_in_tablet_mode =
-      Shell::Get()->tablet_mode_controller() && Shell::Get()->IsInTabletMode();
-
-  if (!is_in_tablet_mode)
+  if (!display::Screen::GetScreen()->InTabletMode()) {
     return gfx::RoundedCornersF();
+  }
 
   const bool is_horizontal_alignment = GetShelf()->IsHorizontalAlignment();
   const float radius = (is_horizontal_alignment ? height() : width()) / 2.f;
@@ -2257,12 +2249,9 @@ void ScrollableShelfView::EnableShelfRoundedCorners(bool enable) {
   // Only enable shelf rounded corners in tablet mode. Note that we allow
   // disabling rounded corners in clamshell. Because when switching to clamshell
   // from tablet, this method may be called after tablet mode ends.
-  // TODO(https://crbug.com/1067490): reorder the destruction order in
-  // Shell::~Shell then remove the explicit check.
-  const bool is_in_tablet_mode =
-      Shell::Get()->tablet_mode_controller() && Shell::Get()->IsInTabletMode();
-  if (enable && !is_in_tablet_mode)
+  if (enable && !display::Screen::GetScreen()->InTabletMode()) {
     return;
+  }
 
   ui::Layer* layer = shelf_container_view_->layer();
 
@@ -2310,14 +2299,10 @@ bool ScrollableShelfView::ShouldEnableLayerClip() const {
   if (layout_strategy_ != LayoutStrategy::kNotShowArrowButtons)
     return true;
 
-  // TODO(https://crbug.com/1067490): reorder the destruction order in
-  // Shell::~Shell then remove the explicit check.
-  const bool is_in_tablet_mode =
-      Shell::Get()->tablet_mode_controller() && Shell::Get()->IsInTabletMode();
-
   // In clamshell, only use layer clip in overflow mode.
-  if (!is_in_tablet_mode)
+  if (!display::Screen::GetScreen()->InTabletMode()) {
     return false;
+  }
 
   // In tablet mode, whether using layer clip in non-overflow mode depends on
   // |layer_clip_in_non_overflow_|.

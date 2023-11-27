@@ -9,7 +9,6 @@
 #include "ash/shelf/shelf_button_delegate.h"
 #include "ash/shell.h"
 #include "ash/style/style_util.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
