@@ -1780,8 +1780,16 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, MAYBE_CSSVisibilityChanged) {
 // This test verifies that hiding an OOPIF in CSS will stop generating
 // compositor frames for the OOPIF and any nested OOPIFs inside it. This holds
 // even when the whole page is shown.
+#if BUILDFLAG(IS_MAC)
+// Flaky on Mac. https://crbug.com/1505297
+#define MAYBE_HiddenOOPIFWillNotGenerateCompositorFrames \
+  DISABLED_HiddenOOPIFWillNotGenerateCompositorFrames
+#else
+#define MAYBE_HiddenOOPIFWillNotGenerateCompositorFrames \
+  HiddenOOPIFWillNotGenerateCompositorFrames
+#endif
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
-                       HiddenOOPIFWillNotGenerateCompositorFrames) {
+                       MAYBE_HiddenOOPIFWillNotGenerateCompositorFrames) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/frame_tree/page_with_two_frames.html"));
   ASSERT_TRUE(NavigateToURL(shell(), main_url));
