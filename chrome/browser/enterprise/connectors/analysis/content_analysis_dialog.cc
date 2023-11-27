@@ -727,8 +727,8 @@ std::unique_ptr<views::View> ContentAnalysisDialog::CreateSideIcon() {
   icon->SetLayoutManager(std::make_unique<views::FillLayout>());
 
   auto side_image = std::make_unique<DeepScanningSideIconImageView>(this);
-  side_image->SetImage(gfx::CreateVectorIcon(
-      gfx::IconDescription(vector_icons::kBusinessIcon, kSideImageSize)));
+  side_image->SetImage(ui::ImageModel::FromVectorIcon(
+      vector_icons::kBusinessIcon, gfx::kPlaceholderColor, kSideImageSize));
   side_image->SetBorder(views::CreateEmptyBorder(kSideImageInsets));
   side_icon_image_ = icon->AddChildView(std::move(side_image));
 
@@ -983,9 +983,8 @@ bool ContentAnalysisDialog::ShouldUseDarkTopImage() const {
       contents_view_->GetColorProvider()->GetColor(ui::kColorDialogBackground));
 }
 
-const gfx::ImageSkia* ContentAnalysisDialog::GetTopImage() const {
-  return ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-      GetTopImageId(ShouldUseDarkTopImage()));
+ui::ImageModel ContentAnalysisDialog::GetTopImage() const {
+  return ui::ImageModel::FromResourceId(GetTopImageId(ShouldUseDarkTopImage()));
 }
 
 bool ContentAnalysisDialog::is_print_scan() const {

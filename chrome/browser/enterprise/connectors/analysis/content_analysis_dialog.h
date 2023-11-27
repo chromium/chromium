@@ -24,10 +24,6 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-namespace gfx {
-class ImageSkia;
-}  // namespace gfx
-
 namespace views {
 class BoxLayoutView;
 class ImageView;
@@ -166,7 +162,7 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   bool ShouldUseDarkTopImage() const;
 
   // Returns the appropriate top image depending on `dialog_state_`.
-  const gfx::ImageSkia* GetTopImage() const;
+  ui::ImageModel GetTopImage() const;
 
   // Accessors used to validate the views in tests.
   views::ImageView* GetTopImageForTesting() const;
