@@ -289492,6 +289492,10 @@
      "e047f234b5dca16639f19394507230c001abada9",
      []
     ],
+    "WEB_FEATURES.yml": [
+     "9e19a422b0a02fcecc38a542e5281e59e6717aa4",
+     []
+    ],
     "animated-avif-timeout-ref.html": [
      "52374220c9155eda3442d0b9d92a896b6d20eebf",
      []
@@ -353376,6 +353380,10 @@
      "212e449935d26b6f59f486c69dd23f6cf5aa48af",
      []
     ],
+    "WEB_FEATURES.yml": [
+     "0a2878cf6ec047f8f1950d9bfeb3fda9d755594b",
+     []
+    ],
     "api": {
      "document-fullscreen-enabled-removing-allowfullscreen.sub-expected.txt": [
       "e6fd66e87e15e3dd74d63fc2d6477b837debb338",
@@ -367240,6 +367248,10 @@
        "84360244f4fef37b9d80991df49dc030e0744d5f",
        []
       ],
+      "WEB_FEATURES.yml": [
+       "e1b9f82de372b485f0bdc4f8b7ab56576048a4a5",
+       []
+      ],
       "popover-anchor-change-display-ref.html": [
        "9530e7d3c4b98d7233a9ad22287d9f3d632b1ace",
        []
@@ -376866,6 +376878,10 @@
      "e962bea003364aff10975e414f8a68f3b69cee97",
      []
     ],
+    "WEB_FEATURES.yml": [
+     "3516e9555e60a6cb1b038d978eb7b36a8f34d79a",
+     []
+    ],
     "commit-behavior": {
      "resources": {
       "after-transition-commit-helpers.js": [
@@ -381654,6 +381670,10 @@
     ],
     "OWNERS": [
      "b2e83ff43cbd1ec9192337d7bd7cee3852375d44",
+     []
+    ],
+    "WEB_FEATURES.yml": [
+     "4b5218b8b6163addb34274cc4979103db0330b92",
      []
     ]
    },
@@ -391652,6 +391672,10 @@
      "0a1324a1ac46c77aacfbec1691192f728c7bcd6e",
      []
     ],
+    "WEB_FEATURES.yml": [
+     "89681db88506de3c2ddfbe7f9d07ee64ae822057",
+     []
+    ],
     "audio-data.crossOriginIsolated.https.any.js.headers": [
      "5f8621ef83660c66f0d037ea28fafefb558140f1",
      []
@@ -391856,6 +391880,10 @@
       []
      ],
      "bidi": {
+      "WEB_FEATURES.yml": [
+       "a3af7470a94722117865077f8900f9a9eddedd9e",
+       []
+      ],
       "__init__.py": [
        "9c976d4a674cc2912909695a62014a317cced331",
        []
@@ -395042,6 +395070,10 @@
      "c19e8fa3475860e2bfb57921a56b5be2b8d5fdc0",
      []
     ],
+    "WEB_FEATURES.yml": [
+     "5f1fff3e3e2c73011d8b04033be19c14d93ac7e4",
+     []
+    ],
     "getDevices": {
      "reject_opaque_origin.https.html.headers": [
       "1efcf8c226fac074c98d0a5a747856f532e5d84e",
@@ -395120,6 +395152,10 @@
     ],
     "README.md": [
      "ce12691caebf51e8c6726e19908add2ef861160e",
+     []
+    ],
+    "WEB_FEATURES.yml": [
+     "5b5544deec225d8e064d9dd8a1124e5622276632",
      []
     ],
     "api": {
