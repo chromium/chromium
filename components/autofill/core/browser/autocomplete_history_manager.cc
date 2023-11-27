@@ -80,7 +80,7 @@ bool AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
     AutofillSuggestionTriggerSource trigger_source,
     const FormFieldData& field,
     const AutofillClient& client,
-    base::WeakPtr<SuggestionsHandler> handler,
+    OnSuggestionsReturnedCallback on_suggestions_returned,
     const SuggestionsContext& context) {
   if (!field.should_autocomplete)
     return false;
@@ -90,8 +90,9 @@ bool AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
   if (!IsMeaningfulFieldName(field.name) || !client.IsAutocompleteEnabled() ||
       field.form_control_type == FormControlType::kTextArea ||
       IsInAutofillSuggestionsDisabledExperiment()) {
-    SendSuggestions({}, QueryHandler(field.global_id(), trigger_source,
-                                     field.value, handler));
+    SendSuggestions({},
+                    QueryHandler(field.global_id(), trigger_source, field.value,
+                                 std::move(on_suggestions_returned)));
     return true;
   }
 
@@ -101,8 +102,9 @@ bool AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
 
     // We can simply insert, since |query_handle| is always unique.
     pending_queries_.insert(
-        {query_handle, QueryHandler(field.global_id(), trigger_source,
-                                    field.value, handler)});
+        {query_handle,
+         QueryHandler(field.global_id(), trigger_source, field.value,
+                      std::move(on_suggestions_returned))});
     return true;
   }
 
@@ -224,11 +226,11 @@ AutocompleteHistoryManager::QueryHandler::QueryHandler(
     FieldGlobalId field_id,
     AutofillSuggestionTriggerSource trigger_source,
     std::u16string prefix,
-    base::WeakPtr<SuggestionsHandler> handler)
+    OnSuggestionsReturnedCallback on_suggestions_returned)
     : field_id_(field_id),
       trigger_source_(trigger_source),
       prefix_(std::move(prefix)),
-      handler_(std::move(handler)) {}
+      on_suggestions_returned_(std::move(on_suggestions_returned)) {}
 
 AutocompleteHistoryManager::QueryHandler::QueryHandler(QueryHandler&&) =
     default;
@@ -238,11 +240,6 @@ AutocompleteHistoryManager::QueryHandler::~QueryHandler() = default;
 void AutocompleteHistoryManager::SendSuggestions(
     const std::vector<AutocompleteEntry>& entries,
     QueryHandler query_handler) {
-  if (!query_handler.handler_) {
-    // Either the handler has been destroyed, or it is invalid.
-    return;
-  }
-
   // If there is only one suggestion that is the exact same string as
   // what is in the input box, then don't show the suggestion.
   bool hide_suggestions =
@@ -258,8 +255,8 @@ void AutocompleteHistoryManager::SendSuggestions(
     }
   }
 
-  query_handler.handler_->OnSuggestionsReturned(
-      query_handler.field_id_, query_handler.trigger_source_, suggestions);
+  std::move(query_handler.on_suggestions_returned_)
+      .Run(query_handler.field_id_, query_handler.trigger_source_, suggestions);
 }
 
 void AutocompleteHistoryManager::CancelAllPendingQueries() {

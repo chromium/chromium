@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_SINGLE_FIELD_FORM_FILLER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_SINGLE_FIELD_FORM_FILLER_H_
 
+#include "base/functional/callback_forward.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_data.h"
@@ -18,20 +19,20 @@ struct SuggestionsContext;
 // time, such as autocomplete or merchant promo codes.
 class SingleFieldFormFiller {
  public:
-  // Interface to be implemented by classes that want to fetch autocomplete
+  // Some `SingleFieldFormFillers` return suggestions asynchronously. This
+  // callback is used to eventually return suggestions. `field_id` identifies
+  // the field the query refer to. `suggestions` is the list of fetched
   // suggestions.
-  class SuggestionsHandler {
-   public:
-    virtual ~SuggestionsHandler() = default;
-
-    // Will be called-back once SingleFieldFormFiller gets the corresponding
-    // response from the DB. `field_id` identifies the field the query refers
-    // to. `suggestions` is the list of fetched suggestions.
-    virtual void OnSuggestionsReturned(
-        FieldGlobalId field_id,
-        AutofillSuggestionTriggerSource trigger_source,
-        const std::vector<Suggestion>& suggestions) = 0;
-  };
+  // TODO(crbug.com/1007974): This should be a `base::OnceCallback<>`. It is
+  // currently a repeating callback, because the `SingleFieldFormFillRouter`
+  // asks all available `SingleFieldFormFiller`s using
+  // `OnGetSingleFieldSuggestions()`, until the first one returns true. This
+  // requires passing the callback to all `SingleFieldFormFillers` (even though
+  // only one of them will end up calling it).
+  using OnSuggestionsReturnedCallback =
+      base::RepeatingCallback<void(FieldGlobalId,
+                                   AutofillSuggestionTriggerSource,
+                                   const std::vector<Suggestion>&)>;
 
   SingleFieldFormFiller();
   virtual ~SingleFieldFormFiller();
@@ -58,7 +59,7 @@ class SingleFieldFormFiller {
       AutofillSuggestionTriggerSource trigger_source,
       const FormFieldData& field,
       const AutofillClient& client,
-      base::WeakPtr<SuggestionsHandler> handler,
+      OnSuggestionsReturnedCallback on_suggestions_returned,
       const SuggestionsContext& context) = 0;
 
   // Runs when a form is going to be submitted. In the case of Autocomplete, it

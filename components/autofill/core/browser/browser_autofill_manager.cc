@@ -1268,9 +1268,21 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     if (ShouldOfferSingleFieldFormFill()) {
       // Suggestions come back asynchronously, so the SingleFieldFormFillRouter
       // will handle sending the results back to the renderer.
+      // TODO(crbug.com/1007974): The callback will only be called once.
       bool handled_by_single_field_form_filler =
           single_field_form_fill_router_->OnGetSingleFieldSuggestions(
-              trigger_source, field, client(), weak_ptr_factory_.GetWeakPtr(),
+              trigger_source, field, client(),
+              base::BindRepeating(
+                  [](base::WeakPtr<BrowserAutofillManager> self,
+                     FieldGlobalId field_id,
+                     AutofillSuggestionTriggerSource trigger_source,
+                     const std::vector<Suggestion>& suggestions) {
+                    if (self) {
+                      self->external_delegate_->OnSuggestionsReturned(
+                          field_id, suggestions, trigger_source);
+                    }
+                  },
+                  weak_ptr_factory_.GetWeakPtr()),
               context);
       if (handled_by_single_field_form_filler) {
         return false;
@@ -1933,15 +1945,6 @@ const FormData& BrowserAutofillManager::last_query_form() const {
 bool BrowserAutofillManager::ShouldUploadForm(const FormStructure& form) {
   return IsAutofillEnabled() && !client().IsOffTheRecord() &&
          form.ShouldBeUploaded();
-}
-
-// AutocompleteHistoryManager::SuggestionsHandler implementation
-void BrowserAutofillManager::OnSuggestionsReturned(
-    FieldGlobalId field_id,
-    AutofillSuggestionTriggerSource trigger_source,
-    const std::vector<Suggestion>& suggestions) {
-  external_delegate_->OnSuggestionsReturned(field_id, suggestions,
-                                            trigger_source);
 }
 
 void BrowserAutofillManager::

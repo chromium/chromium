@@ -22,7 +22,7 @@ bool MerchantPromoCodeManager::OnGetSingleFieldSuggestions(
     AutofillSuggestionTriggerSource trigger_source,
     const FormFieldData& field,
     const AutofillClient& client,
-    base::WeakPtr<SuggestionsHandler> handler,
+    OnSuggestionsReturnedCallback on_suggestions_returned,
     const SuggestionsContext& context) {
   // The field is eligible only if it's focused on a merchant promo code.
   bool field_is_eligible =
@@ -38,7 +38,8 @@ bool MerchantPromoCodeManager::OnGetSingleFieldSuggestions(
         personal_data_manager_->GetActiveAutofillPromoCodeOffersForOrigin(
             context.form_structure->main_frame_origin().GetURL());
     if (!promo_code_offers.empty()) {
-      SendPromoCodeSuggestions(std::move(promo_code_offers), field, handler,
+      SendPromoCodeSuggestions(std::move(promo_code_offers), field,
+                               std::move(on_suggestions_returned),
                                trigger_source);
       return true;
     }
@@ -146,29 +147,22 @@ void MerchantPromoCodeManager::UMARecorder::OnOfferSuggestionSelected(
 void MerchantPromoCodeManager::SendPromoCodeSuggestions(
     std::vector<const AutofillOfferData*> promo_code_offers,
     const FormFieldData& field,
-    base::WeakPtr<SuggestionsHandler> handler,
+    OnSuggestionsReturnedCallback on_suggestions_returned,
     AutofillSuggestionTriggerSource trigger_source) {
-  if (!handler) {
-    // Either the handler has been destroyed, or it is invalid.
-    return;
-  }
-
   // If the input box content equals any of the available promo codes, then
   // assume the promo code has been filled, and don't show any suggestions.
   for (const AutofillOfferData* promo_code_offer : promo_code_offers) {
     if (field.value == base::ASCIIToUTF16(promo_code_offer->GetPromoCode())) {
-      // Return empty suggestions to query handler. This will result in no
-      // suggestions being displayed.
-      handler->OnSuggestionsReturned(field.global_id(), trigger_source, {});
+      std::move(on_suggestions_returned)
+          .Run(field.global_id(), trigger_source, {});
       return;
     }
   }
 
-  // Return suggestions to query handler.
-  handler->OnSuggestionsReturned(
-      field.global_id(), trigger_source,
-      AutofillSuggestionGenerator::GetPromoCodeSuggestionsFromPromoCodeOffers(
-          promo_code_offers));
+  std::move(on_suggestions_returned)
+      .Run(field.global_id(), trigger_source,
+           AutofillSuggestionGenerator::
+               GetPromoCodeSuggestionsFromPromoCodeOffers(promo_code_offers));
 
   // Log that promo code autofill suggestions were shown.
   uma_recorder_.OnOffersSuggestionsShown(field.global_id(), promo_code_offers);

@@ -30,7 +30,7 @@ bool IbanManager::OnGetSingleFieldSuggestions(
     AutofillSuggestionTriggerSource trigger_source,
     const FormFieldData& field,
     const AutofillClient& client,
-    base::WeakPtr<SuggestionsHandler> handler,
+    OnSuggestionsReturnedCallback on_suggestions_returned,
     const SuggestionsContext& context) {
   // The field is eligible only if it's focused on an IBAN field.
   AutofillField* focused_field = context.focused_field;
@@ -73,7 +73,8 @@ bool IbanManager::OnGetSingleFieldSuggestions(
                                 const Iban* iban0, const Iban* iban1) {
     return iban0->HasGreaterRankingThan(iban1, comparison_time);
   });
-  SendIbanSuggestions(std::move(ibans), field, handler, trigger_source);
+  SendIbanSuggestions(std::move(ibans), field,
+                      std::move(on_suggestions_returned), trigger_source);
 
   return true;
 }
@@ -117,13 +118,8 @@ void IbanManager::UmaRecorder::OnIbanSuggestionSelected() {
 void IbanManager::SendIbanSuggestions(
     std::vector<const Iban*> ibans,
     const FormFieldData& field,
-    base::WeakPtr<SuggestionsHandler> handler,
+    OnSuggestionsReturnedCallback on_suggestions_returned,
     AutofillSuggestionTriggerSource trigger_source) {
-  if (!handler) {
-    // Either the handler has been destroyed, or it is invalid.
-    return;
-  }
-
   // If the input box content equals any of the available IBANs, then
   // assume the IBAN has been filled, and don't show any suggestions.
   if (!field.value.empty() &&
@@ -137,10 +133,9 @@ void IbanManager::SendIbanSuggestions(
     return;
   }
 
-  // Return suggestions to query handler.
-  handler->OnSuggestionsReturned(
-      field.global_id(), trigger_source,
-      AutofillSuggestionGenerator::GetSuggestionsForIbans(ibans));
+  std::move(on_suggestions_returned)
+      .Run(field.global_id(), trigger_source,
+           AutofillSuggestionGenerator::GetSuggestionsForIbans(ibans));
 
   uma_recorder_.OnIbanSuggestionsShown(field.global_id());
 }

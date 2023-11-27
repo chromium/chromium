@@ -65,23 +65,22 @@ bool SingleFieldFormFillRouter::OnGetSingleFieldSuggestions(
     AutofillSuggestionTriggerSource trigger_source,
     const FormFieldData& field,
     const AutofillClient& client,
-    base::WeakPtr<SingleFieldFormFiller::SuggestionsHandler> handler,
+    OnSuggestionsReturnedCallback on_suggestions_returned,
     const SuggestionsContext& context) {
   // Retrieving suggestions for a new field; select the appropriate filler.
   if (merchant_promo_code_manager_ &&
       merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
-          trigger_source, field, client, handler, context)) {
+          trigger_source, field, client, on_suggestions_returned, context)) {
     return true;
   }
-  if (iban_manager_ && iban_manager_->OnGetSingleFieldSuggestions(
-                           trigger_source, field, client, handler, context)) {
+  if (iban_manager_ &&
+      iban_manager_->OnGetSingleFieldSuggestions(
+          trigger_source, field, client, on_suggestions_returned, context)) {
     return true;
   }
-  if (autocomplete_history_manager_->OnGetSingleFieldSuggestions(
-          trigger_source, field, client, handler, context)) {
-    return true;
-  }
-  return false;
+  return autocomplete_history_manager_->OnGetSingleFieldSuggestions(
+      trigger_source, field, client, std::move(on_suggestions_returned),
+      context);
 }
 
 void SingleFieldFormFillRouter::OnWillSubmitFormWithFields(

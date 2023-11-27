@@ -39,7 +39,7 @@ class MerchantPromoCodeManager : public SingleFieldFormFiller,
       AutofillSuggestionTriggerSource trigger_source,
       const FormFieldData& field,
       const AutofillClient& client,
-      base::WeakPtr<SuggestionsHandler> handler,
+      OnSuggestionsReturnedCallback on_suggestions_returned,
       const SuggestionsContext& context) override;
   void OnWillSubmitFormWithFields(const std::vector<FormFieldData>& fields,
                                   bool is_autocomplete_enabled) override;
@@ -91,15 +91,16 @@ class MerchantPromoCodeManager : public SingleFieldFormFiller,
     FieldGlobalId most_recent_suggestion_selected_field_global_id_;
   };
 
-  // Generates suggestions from the `promo_code_offers` and sends them to the
-  // `handler`. If suggestions were sent, this function also logs metrics
-  // for promo code suggestions shown. Data is filtered based on the `field`'s
-  // value`. For metrics, this ensures we log the correct histogram, as we have
-  // separate histograms for unique shows and repetitive shows.
+  // Generates suggestions from the `promo_code_offers` and return them via
+  // `on_suggestions_returned`. If suggestions were sent, this function also
+  // logs metrics for promo code suggestions shown. Data is filtered based on
+  // the `field`'s value`. For metrics, this ensures we log the correct
+  // histogram, as we have separate histograms for unique shows and repetitive
+  // shows.
   void SendPromoCodeSuggestions(
       std::vector<const AutofillOfferData*> promo_code_offers,
       const FormFieldData& field,
-      base::WeakPtr<SuggestionsHandler> handler,
+      OnSuggestionsReturnedCallback on_suggestions_returned,
       AutofillSuggestionTriggerSource trigger_source);
 
   raw_ptr<PersonalDataManager> personal_data_manager_ = nullptr;

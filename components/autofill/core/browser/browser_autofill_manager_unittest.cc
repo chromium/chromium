@@ -779,19 +779,6 @@ class BrowserAutofillManagerTest : public testing::Test {
             : AutofillSuggestionTriggerSource::kTextFieldDidChange);
   }
 
-  void AutocompleteSuggestionsReturned(
-      FieldGlobalId field_id,
-      const std::vector<std::u16string>& results) {
-    std::vector<Suggestion> suggestions;
-    base::ranges::transform(
-        results, std::back_inserter(suggestions),
-        [](const auto& result) { return Suggestion(result); });
-
-    browser_autofill_manager_->OnSuggestionsReturned(
-        field_id, AutofillSuggestionTriggerSource::kFormControlElementClicked,
-        suggestions);
-  }
-
   void FormsSeen(const std::vector<FormData>& forms) {
     browser_autofill_manager_->OnFormsSeen(/*updated_forms=*/forms,
                                            /*removed_forms=*/{});
@@ -2122,20 +2109,32 @@ TEST_F(BrowserAutofillManagerTest,
 
 TEST_F(BrowserAutofillManagerTest,
        OnSuggestionsReturned_CallsExternalDelegate) {
-  FieldGlobalId field_id = test::MakeFieldGlobalId();
-  std::vector<Suggestion> suggestions = {
-      Suggestion("Charles", "123 Apple St.", Suggestion::Icon::kNoIcon,
-                 PopupItemId::kAddressEntry),
-      Suggestion("Elvis", "3734 Elvis Presley Blvd.", Suggestion::Icon::kNoIcon,
-                 PopupItemId::kAddressEntry)};
+  FormData form = CreateTestAddressFormData();
+  form.fields = {CreateTestFormField("Some Field", "somefield", "",
+                                     FormControlType::kInputText)};
+  FormsSeen({form});
 
-  browser_autofill_manager_->OnSuggestionsReturned(
-      field_id, AutofillSuggestionTriggerSource::kFormControlElementClicked,
-      suggestions);
+  std::vector<Suggestion> suggestions = {Suggestion(u"one"),
+                                         Suggestion(u"two")};
+
+  // Mock returning some autocomplete `suggestions`.
+  EXPECT_CALL(*single_field_form_fill_router(), OnGetSingleFieldSuggestions)
+      .WillOnce([&](AutofillSuggestionTriggerSource trigger_source,
+                    const FormFieldData& field, const AutofillClient& client,
+                    SingleFieldFormFiller::OnSuggestionsReturnedCallback
+                        on_suggestions_returned,
+                    const SuggestionsContext& context) {
+        std::move(on_suggestions_returned)
+            .Run(field.global_id(), trigger_source, suggestions);
+        return true;
+      });
+  GetAutofillSuggestions(
+      form, form.fields[0],
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
 
   EXPECT_EQ(external_delegate()->trigger_source(),
             AutofillSuggestionTriggerSource::kFormControlElementClicked);
-  CheckSuggestions(field_id, suggestions[0], suggestions[1]);
+  CheckSuggestions(form.fields[0].global_id(), suggestions[0], suggestions[1]);
 }
 
 // Test that we return all credit card profile suggestions when all form fields
@@ -3616,33 +3615,6 @@ TEST_P(SuggestionMatchingTest, GetFieldSuggestionsWhenFormIsAutofilled) {
                               PopupItemId::kAddressEntry),
                    Suggestion("Elvis", label2, kAddressEntryIcon,
                               PopupItemId::kAddressEntry));
-}
-
-// Test that nothing breaks when there are single field form fill (Autocomplete)
-// suggestions but no autofill suggestions.
-TEST_F(BrowserAutofillManagerTest,
-       GetFieldSuggestionsForSingleFieldFormFillOnly) {
-  // Set up our form data.
-  FormData form = CreateTestAddressFormData();
-  form.fields = {CreateTestFormField("Some Field", "somefield", "",
-                                     FormControlType::kInputText)};
-  FormsSeen({form});
-
-  GetAutofillSuggestions(form, form.fields.back());
-
-  // Add some Autocomplete suggestions.
-  // This triggers the combined message send.
-  std::vector<std::u16string> suggestions;
-  suggestions.push_back(u"one");
-  suggestions.push_back(u"two");
-  AutocompleteSuggestionsReturned(form.fields.back().global_id(), suggestions);
-
-  // Test that we sent the right values to the external delegate.
-  CheckSuggestions(form.fields.back().global_id(),
-                   Suggestion("one", "", Suggestion::Icon::kNoIcon,
-                              PopupItemId::kAutocompleteEntry),
-                   Suggestion("two", "", Suggestion::Icon::kNoIcon,
-                              PopupItemId::kAutocompleteEntry));
 }
 
 // The method `AutofillSuggestionGenerator::GetPrefixMatchedProfiles` prevents

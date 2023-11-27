@@ -32,7 +32,7 @@ class MockSingleFieldFormFillRouter : public SingleFieldFormFillRouter {
               (AutofillSuggestionTriggerSource trigger_source,
                const FormFieldData& field,
                const AutofillClient& client,
-               base::WeakPtr<SingleFieldFormFiller::SuggestionsHandler> handler,
+               SingleFieldFormFiller::OnSuggestionsReturnedCallback callback,
                const SuggestionsContext& context),
               (override));
   MOCK_METHOD(void,

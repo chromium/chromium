@@ -42,7 +42,7 @@ class IbanManager : public SingleFieldFormFiller, public KeyedService {
       AutofillSuggestionTriggerSource trigger_source,
       const FormFieldData& field,
       const AutofillClient& client,
-      base::WeakPtr<SuggestionsHandler> handler,
+      OnSuggestionsReturnedCallback on_suggestions_returned,
       const SuggestionsContext& context) override;
   void OnWillSubmitFormWithFields(const std::vector<FormFieldData>& fields,
                                   bool is_autocomplete_enabled) override {}
@@ -72,12 +72,13 @@ class IbanManager : public SingleFieldFormFiller, public KeyedService {
     FieldGlobalId most_recent_suggestion_selected_field_global_id_;
   };
 
-  // Filters the `ibans` based on the `field`'s value and sends the result to
-  // the `handler`.
-  void SendIbanSuggestions(std::vector<const Iban*> ibans,
-                           const FormFieldData& field,
-                           base::WeakPtr<SuggestionsHandler> handler,
-                           AutofillSuggestionTriggerSource trigger_source);
+  // Filters the `ibans` based on the `field`'s value and returns the resulting
+  // suggestions via `on_suggestions_returned`.
+  void SendIbanSuggestions(
+      std::vector<const Iban*> ibans,
+      const FormFieldData& field,
+      OnSuggestionsReturnedCallback on_suggestions_returned,
+      AutofillSuggestionTriggerSource trigger_source);
 
   // Filter out IBAN-based suggestions based on the following criteria:
   // For local IBANs: Filter out the IBAN value which does not starts with the

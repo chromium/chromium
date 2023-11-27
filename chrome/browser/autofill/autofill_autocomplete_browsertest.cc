@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/autocomplete_history_manager_factory.h"
@@ -49,31 +50,6 @@ namespace {
 const char kDefaultAutocompleteInputId[] = "n300";
 const char kSimpleFormFileName[] = "autocomplete_simple_form.html";
 }  // namespace
-
-class MockSuggestionsHandler
-    : public AutocompleteHistoryManager::SuggestionsHandler {
- public:
-  MockSuggestionsHandler() = default;
-
-  void OnSuggestionsReturned(
-      FieldGlobalId field_id,
-      AutofillSuggestionTriggerSource trigger_source,
-      const std::vector<Suggestion>& suggestions) override {
-    last_suggestions_ = suggestions;
-  }
-
-  base::WeakPtr<MockSuggestionsHandler> GetWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
-  const std::vector<Suggestion>& last_suggestions() {
-    return last_suggestions_;
-  }
-
- private:
-  std::vector<Suggestion> last_suggestions_;
-  base::WeakPtrFactory<MockSuggestionsHandler> weak_ptr_factory_{this};
-};
 
 class AutofillAutocompleteTest : public InProcessBrowserTest {
  protected:
@@ -149,10 +125,7 @@ class AutofillAutocompleteTest : public InProcessBrowserTest {
   // given |prefix|, and its value is equal to |expected_value|.
   void ValidateSingleValue(const std::string& prefix,
                            const std::string& expected_value) {
-    MockSuggestionsHandler handler;
-    GetAutocompleteSuggestions(kDefaultAutocompleteInputId, prefix, handler);
-
-    EXPECT_THAT(handler.last_suggestions(),
+    EXPECT_THAT(GetAutocompleteSuggestions(kDefaultAutocompleteInputId, prefix),
                 ElementsAre(Field(
                     &Suggestion::main_text,
                     Suggestion::Text(ASCIIToUTF16(expected_value),
@@ -160,10 +133,8 @@ class AutofillAutocompleteTest : public InProcessBrowserTest {
   }
 
   void ValidateNoValue() {
-    MockSuggestionsHandler handler;
-    GetAutocompleteSuggestions(kDefaultAutocompleteInputId, "", handler);
-
-    EXPECT_TRUE(handler.last_suggestions().empty());
+    EXPECT_TRUE(
+        GetAutocompleteSuggestions(kDefaultAutocompleteInputId, "").empty());
   }
 
   void ReinitializeAutocompleteHistoryManager() {
@@ -199,17 +170,23 @@ class AutofillAutocompleteTest : public InProcessBrowserTest {
   PrefService* pref_service() { return active_browser_->profile()->GetPrefs(); }
 
  private:
-  void GetAutocompleteSuggestions(const std::string& input_name,
-                                  const std::string& prefix,
-                                  MockSuggestionsHandler& handler) {
+  std::vector<Suggestion> GetAutocompleteSuggestions(
+      const std::string& input_name,
+      const std::string& prefix) {
+    base::MockCallback<SingleFieldFormFiller::OnSuggestionsReturnedCallback>
+        callback;
+    std::vector<Suggestion> suggestions;
+    EXPECT_CALL(callback, Run).WillOnce(testing::SaveArg<2>(&suggestions));
     EXPECT_TRUE(autocomplete_history_manager()->OnGetSingleFieldSuggestions(
         AutofillSuggestionTriggerSource::kFormControlElementClicked,
         test::CreateTestFormField(/*label=*/"", input_name, prefix,
                                   FormControlType::kInputText),
-        manager().client(), handler.GetWeakPtr(), SuggestionsContext()));
+        manager().client(), callback.Get(), SuggestionsContext()));
 
     // Make sure the DB task gets executed.
     WaitForDBTasks();
+
+    return suggestions;
   }
 
   GURL GetURL(const std::string& filename) {

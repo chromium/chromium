@@ -100,9 +100,7 @@ enum class ValuePatternsMetric {
 
 // Manages saving and restoring the user's personal information entered into web
 // forms. One per frame; owned by the AutofillDriver.
-class BrowserAutofillManager
-    : public AutofillManager,
-      public SingleFieldFormFiller::SuggestionsHandler {
+class BrowserAutofillManager : public AutofillManager {
  public:
   BrowserAutofillManager(AutofillDriver* driver,
                          AutofillClient* client,
@@ -248,11 +246,6 @@ class BrowserAutofillManager
   void Reset() override;
   void OnContextMenuShownInField(const FormGlobalId& form_global_id,
                                  const FieldGlobalId& field_global_id) override;
-  // SingleFieldFormFiller::SuggestionsHandler:
-  void OnSuggestionsReturned(
-      FieldGlobalId field_id,
-      AutofillSuggestionTriggerSource trigger_source,
-      const std::vector<Suggestion>& suggestions) override;
 
   // Retrieves the four digit combinations from the DOM of the current web page
   // and stores them in `four_digit_combinations_in_dom_`. This is used to check

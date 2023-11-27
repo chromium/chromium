@@ -47,7 +47,7 @@ class AutocompleteHistoryManager : public SingleFieldFormFiller,
       AutofillSuggestionTriggerSource trigger_source,
       const FormFieldData& field,
       const AutofillClient& client,
-      base::WeakPtr<SuggestionsHandler> handler,
+      OnSuggestionsReturnedCallback on_suggestions_returned,
       const SuggestionsContext& context) override;
   void OnWillSubmitFormWithFields(const std::vector<FormFieldData>& fields,
                                   bool is_autocomplete_enabled) override;
@@ -83,7 +83,7 @@ class AutocompleteHistoryManager : public SingleFieldFormFiller,
     QueryHandler(FieldGlobalId field_id,
                  AutofillSuggestionTriggerSource trigger_source,
                  std::u16string prefix,
-                 base::WeakPtr<SuggestionsHandler> handler);
+                 OnSuggestionsReturnedCallback on_suggestions_returned);
     QueryHandler(const QueryHandler&) = delete;
     QueryHandler(QueryHandler&&);
     ~QueryHandler();
@@ -93,16 +93,15 @@ class AutocompleteHistoryManager : public SingleFieldFormFiller,
 
     // Describes what caused the suggestions to trigger. This value was provided
     // by the handler when requesting suggestions. It is temporarily stored
-    // while suggestions are queried, so it can be passed on to
-    // `OnSuggestionsReturned()`.
+    // while suggestions are queried, so it can be passed on to the
+    // `on_suggestions_returned_` callback.
     AutofillSuggestionTriggerSource trigger_source_;
 
     // Prefix used to search suggestions, submitted by the handler.
     std::u16string prefix_;
 
-    // Weak pointer to the handler instance which will be called-back when
-    // we get the response for the associate query.
-    base::WeakPtr<SuggestionsHandler> handler_;
+    // Callback to-be-executed once a response from the DB is available.
+    OnSuggestionsReturnedCallback on_suggestions_returned_;
   };
 
   // Sends the autocomplete `entries` to the `query_handler` for display in the
