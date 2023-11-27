@@ -3646,6 +3646,7 @@ void InterestGroupAuction::DecodeAdditionalBidsIfReady() {
                        weak_ptr_factory_.GetWeakPtr()));
   }
   encoded_signed_additional_bids_.clear();
+  currently_decoding_additional_bids_ = true;
 }
 
 void InterestGroupAuction::HandleDecodedSignedAdditionalBid(
@@ -3839,6 +3840,12 @@ void InterestGroupAuction::OnScoringDependencyDone() {
   // pending scoring signals request to complete the auction more quickly.
   if (num_scoring_dependencies_ == 0 && ReadyToScoreBids()) {
     seller_worklet_handle_->GetSellerWorklet()->SendPendingSignalsRequests();
+  }
+
+  // If all scoring dependencies are done, this means additional bid decoding
+  // in particular is.
+  if (num_scoring_dependencies_ == 0) {
+    currently_decoding_additional_bids_ = false;
   }
 
   MaybeCompleteBiddingAndScoringPhase();

@@ -221,7 +221,6 @@ InterestGroupAuctionReporter::InterestGroupAuctionReporter(
   DCHECK(auction_worklet_manager_);
   DCHECK(url_loader_factory_);
   DCHECK(client_security_state_);
-  DCHECK(!interest_groups_that_bid_.empty());
   EnforceAttestationsReportUrls(debug_win_report_urls_);
   EnforceAttestationsReportUrls(debug_loss_report_urls_);
 }

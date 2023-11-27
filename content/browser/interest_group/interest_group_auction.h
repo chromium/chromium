@@ -892,6 +892,7 @@ class CONTENT_EXPORT InterestGroupAuction
   bool MayHaveAdditionalBids() const {
     return config_->expects_additional_bids ||
            !encoded_signed_additional_bids_.empty() ||
+           currently_decoding_additional_bids_ ||
            !bid_states_for_additional_bids_.empty();
   }
 
@@ -1166,6 +1167,11 @@ class CONTENT_EXPORT InterestGroupAuction
   // directFromSellerSignalsHeaderAdSlot response. Bid generation will be
   // blocked while true, even if promises have all resolved.
   bool direct_from_seller_signals_header_ad_slot_pending_ = false;
+
+  // This is true during the window where the additional bids have been moved
+  // away from `encoded_signed_additional_bids_` but haven't yet been put into
+  // `bid_states_for_additional_bids_` (and a little bit afterwards).
+  bool currently_decoding_additional_bids_ = false;
 
   // If this is a component auction, the parent Auction. Null, otherwise.
   const raw_ptr<const InterestGroupAuction> parent_;
