@@ -6,6 +6,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -37,8 +38,15 @@
 #include "ui/gfx/image/image_skia_rep.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/public/cpp/shelf_model.h"
 #include "chrome/browser/apps/app_service/subscriber_crosapi.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
+#include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
+#include "chrome/browser/ui/ash/shelf/shelf_spinner_item_controller.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "ui/base/window_open_disposition.h"
+#include "ui/display/types/display_constants.h"
 #endif
 
 namespace apps {
@@ -46,6 +54,10 @@ namespace apps {
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 class FakePublisherForProxyTest : public AppPublisher {
  public:
+  using LaunchRequests = base::flat_map<
+      std::string,
+      std::vector<std::unique_ptr<AppServiceProxyBase::LaunchParams>>>;
+
   FakePublisherForProxyTest(AppServiceProxy* proxy,
                             AppType app_type,
                             std::vector<std::string> initial_app_ids)
@@ -59,10 +71,56 @@ class FakePublisherForProxyTest : public AppPublisher {
   void Launch(const std::string& app_id,
               int32_t event_flags,
               LaunchSource launch_source,
-              WindowInfoPtr window_info) override {}
+              WindowInfoPtr window_info) override {
+    std::unique_ptr<AppServiceProxyBase::LaunchParams> params =
+        std::make_unique<AppServiceProxyBase::LaunchParams>();
+    params->event_flags_ = event_flags;
+    params->launch_source_ = launch_source;
+    params->window_info_ = std::move(window_info);
+    launch_requests_[app_id].push_back(std::move(params));
+  }
+
+  void LaunchAppWithFiles(const std::string& app_id,
+                          int32_t event_flags,
+                          LaunchSource launch_source,
+                          std::vector<base::FilePath> file_paths) override {
+    std::unique_ptr<AppServiceProxyBase::LaunchParams> params =
+        std::make_unique<AppServiceProxyBase::LaunchParams>();
+    params->event_flags_ = event_flags;
+    params->launch_source_ = launch_source;
+    params->file_paths_ = std::move(file_paths);
+    launch_requests_[app_id].push_back(std::move(params));
+  }
+
+  void LaunchAppWithIntent(const std::string& app_id,
+                           int32_t event_flags,
+                           IntentPtr intent,
+                           LaunchSource launch_source,
+                           WindowInfoPtr window_info,
+                           LaunchCallback callback) override {
+    std::unique_ptr<AppServiceProxyBase::LaunchParams> params =
+        std::make_unique<AppServiceProxyBase::LaunchParams>();
+    params->event_flags_ = event_flags;
+    params->intent_ = std::move(intent);
+    params->launch_source_ = launch_source;
+    params->window_info_ = std::move(window_info);
+    launch_requests_[app_id].push_back(std::move(params));
+    if (!callback.is_null()) {
+      std::move(callback).Run(LaunchResult(State::SUCCESS));
+    }
+  }
 
   void LaunchAppWithParams(AppLaunchParams&& params,
-                           LaunchCallback callback) override {}
+                           LaunchCallback callback) override {
+    std::unique_ptr<AppServiceProxyBase::LaunchParams> launch_params =
+        std::make_unique<AppServiceProxyBase::LaunchParams>();
+    std::string app_id = params.app_id;
+    launch_params->params_ = std::move(params);
+    launch_requests_[app_id].push_back(std::move(launch_params));
+    if (!callback.is_null()) {
+      std::move(callback).Run(LaunchResult(State::SUCCESS));
+    }
+  }
 
   void LoadIcon(const std::string& app_id,
                 const IconKey& icon_key,
@@ -82,6 +140,8 @@ class FakePublisherForProxyTest : public AppPublisher {
   bool AppHasSupportedLinksPreference(const std::string& app_id) {
     return supported_link_apps_.find(app_id) != supported_link_apps_.end();
   }
+
+  LaunchRequests& launch_requests() { return launch_requests_; }
 
  private:
   void CallOnApps(std::vector<std::string>& app_ids, bool uninstall) {
@@ -107,6 +167,7 @@ class FakePublisherForProxyTest : public AppPublisher {
   }
 
   AppType app_type_;
+  LaunchRequests launch_requests_;
   std::vector<std::string> known_app_ids_;
   std::set<std::string> supported_link_apps_;
 };
@@ -127,8 +188,8 @@ class FakeAppRegistryCacheObserver : public apps::AppRegistryCache::Observer {
     if (base::Contains(app_ids_, update.AppId())) {
       app_ids_.erase(update.AppId());
     }
-    if (app_ids_.empty() && !result_.GetCallback().is_null()) {
-      std::move(result_.GetCallback()).Run();
+    if (app_ids_.empty() && !result_.IsReady()) {
+      result_.SetValue();
     }
   }
 
@@ -175,6 +236,7 @@ class FakeSubscriberForProxyTest : public SubscriberCrosapi {
 #endif
 
 class AppServiceProxyTest : public testing::Test {
+ public:
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(kAppServiceStorage);
   }
@@ -1276,6 +1338,250 @@ TEST_F(AppServiceProxyTest, CreatePublisherAfterReadAppStorage) {
   observer.WaitForOnAppUpdate(app_ids);
   EXPECT_FALSE(proxy->AppRegistryCache().GetAllApps().empty());
   EXPECT_EQ(AppType::kArc, proxy->AppRegistryCache().GetAppType(kTestAppId));
+}
+
+class AppServiceProxyLaunchTest : public AppServiceProxyTest {
+ public:
+  void SetUp() override {
+    AppServiceProxyTest::SetUp();
+    profile_ = std::make_unique<TestingProfile>();
+    proxy_ = AppServiceProxyFactory::GetForProfile(profile_.get());
+    CreateAndInitShelfController();
+  }
+
+  void TearDown() override { shelf_controller_ = nullptr; }
+
+  // Create and initialize the controller.
+  void CreateAndInitShelfController() {
+    model_ = std::make_unique<ash::ShelfModel>();
+    shelf_controller_ =
+        std::make_unique<ChromeShelfController>(profile_.get(), model_.get());
+    shelf_controller_->SetProfileForTest(profile_.get());
+    shelf_controller_->Init();
+  }
+
+  void InstallApp(AppType app_type, const std::string& app_id) {
+    FakeAppRegistryCacheObserver observer(&proxy()->AppRegistryCache());
+
+    AppPtr app1 = std::make_unique<App>(app_type, app_id);
+    app1->readiness = Readiness::kReady;
+    std::vector<AppPtr> apps1;
+    apps1.push_back(std::move(app1));
+    proxy()->OnApps(std::move(apps1), app_type,
+                    /*should_notify_initialized=*/false);
+    observer.WaitForOnAppUpdate(std::set<std::string>{app_id});
+  }
+
+  ChromeShelfController* shelf_controller() { return shelf_controller_.get(); }
+  AppServiceProxy* proxy() { return proxy_; }
+
+ public:
+  std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<ash::ShelfModel> model_;
+  std::unique_ptr<ChromeShelfController> shelf_controller_;
+  raw_ptr<AppServiceProxy> proxy_;
+};
+
+// Verify the spinner can be closed when the app is uninstalled.
+TEST_F(AppServiceProxyLaunchTest, UninstallAppAfterLaunch) {
+  constexpr char kTestAppId1[] = "webapp1";
+  constexpr char kTestAppId2[] = "webapp2";
+  InstallApp(AppType::kWeb, kTestAppId1);
+  InstallApp(AppType::kWeb, kTestAppId2);
+
+  proxy()->Launch(kTestAppId1, /*event_flags=*/0, LaunchSource::kFromTest);
+  std::vector<base::FilePath> file_paths{base::FilePath("/abc")};
+  proxy()->LaunchAppWithFiles(kTestAppId1, /*event_flags=*/2,
+                              LaunchSource::kFromChromeInternal, file_paths);
+  proxy()->LaunchAppWithIntent(
+      kTestAppId2, /*event_flags=*/3,
+      apps_util::MakeShareIntent(/*text=*/"text", /*title=*/"title"),
+      LaunchSource::kFromManagementApi,
+      std::make_unique<WindowInfo>(display::kDefaultDisplayId),
+      base::NullCallback());
+
+  // Verify the spinner is applied to the app icon.
+  EXPECT_TRUE(
+      shelf_controller()->GetShelfSpinnerController()->HasApp(kTestAppId1));
+  EXPECT_TRUE(
+      shelf_controller()->GetShelfSpinnerController()->HasApp(kTestAppId2));
+
+  // Uninstall the app.
+  AppPtr app2 = std::make_unique<App>(AppType::kWeb, kTestAppId1);
+  app2->readiness = Readiness::kUninstalledByUser;
+  std::vector<AppPtr> apps2;
+  apps2.push_back(std::move(app2));
+  proxy()->OnApps(std::move(apps2), AppType::kWeb,
+                  /*should_notify_initialized=*/false);
+
+  // Verify the spinner is closed for `kTestAppId1`, and `kTestAppId2` still has
+  // the spinner.
+  EXPECT_FALSE(
+      shelf_controller()->GetShelfSpinnerController()->HasApp(kTestAppId1));
+  EXPECT_TRUE(
+      shelf_controller()->GetShelfSpinnerController()->HasApp(kTestAppId2));
+
+  // Register the ARC publisher.
+  FakePublisherForProxyTest pub1(proxy(), AppType::kArc,
+                                 std::vector<std::string>{});
+  auto& arc_launch_requests = pub1.launch_requests();
+
+  // Verify `kTestAppId2` still has the spinner.
+  EXPECT_TRUE(
+      shelf_controller()->GetShelfSpinnerController()->HasApp(kTestAppId2));
+  EXPECT_TRUE(arc_launch_requests.empty());
+
+  // Register the publisher for the web app.
+  FakePublisherForProxyTest pub2(proxy(), AppType::kWeb,
+                                 std::vector<std::string>{kTestAppId2});
+  auto& web_launch_requests = pub2.launch_requests();
+
+  // Verify the Launch request has been removed, and the launch function is not
+  // called.
+  EXPECT_FALSE(base::Contains(web_launch_requests, kTestAppId1));
+  EXPECT_TRUE(base::Contains(web_launch_requests, kTestAppId2));
+}
+
+TEST_F(AppServiceProxyLaunchTest, Launch) {
+  constexpr char kTestAppId[] = "webapp";
+  InstallApp(AppType::kWeb, kTestAppId);
+
+  proxy()->Launch(kTestAppId, /*event_flags=*/1, LaunchSource::kFromTest,
+                  std::make_unique<WindowInfo>(display::kDefaultDisplayId));
+  proxy()->Launch(kTestAppId, /*event_flags=*/2,
+                  LaunchSource::kFromChromeInternal,
+                  std::make_unique<WindowInfo>(display::kDefaultDisplayId));
+
+  // Verify the spinner is applied to the app icon.
+  EXPECT_TRUE(
+      shelf_controller()->GetShelfSpinnerController()->HasApp(kTestAppId));
+
+  // Register the publisher for the web app.
+  FakePublisherForProxyTest pub(proxy(), AppType::kWeb,
+                                std::vector<std::string>{kTestAppId});
+  auto& launch_requests = pub.launch_requests();
+
+  // Verify the spinner is closed.
+  EXPECT_FALSE(
+      shelf_controller()->GetShelfSpinnerController()->HasApp(kTestAppId));
+
+  // Verify the Launch function is called.
+  EXPECT_TRUE(base::Contains(launch_requests, kTestAppId));
+  EXPECT_EQ(2u, launch_requests[kTestAppId].size());
+  EXPECT_EQ(1, launch_requests[kTestAppId][0]->event_flags_);
+  EXPECT_EQ(LaunchSource::kFromTest,
+            launch_requests[kTestAppId][0]->launch_source_);
+  EXPECT_EQ(display::kDefaultDisplayId,
+            launch_requests[kTestAppId][0]->window_info_->display_id);
+  EXPECT_EQ(2, launch_requests[kTestAppId][1]->event_flags_);
+  EXPECT_EQ(LaunchSource::kFromChromeInternal,
+            launch_requests[kTestAppId][1]->launch_source_);
+  EXPECT_EQ(display::kDefaultDisplayId,
+            launch_requests[kTestAppId][1]->window_info_->display_id);
+}
+
+TEST_F(AppServiceProxyLaunchTest, LaunchAppWithFiles) {
+  constexpr char kTestAppId[] = "webapp";
+  InstallApp(AppType::kWeb, kTestAppId);
+
+  std::vector<base::FilePath> file_paths{base::FilePath("/abc")};
+  proxy()->LaunchAppWithFiles(kTestAppId, /*event_flags=*/2,
+                              LaunchSource::kFromChromeInternal, file_paths);
+
+  // Verify the spinner is applied to the app icon.
+  EXPECT_TRUE(
+      shelf_controller()->GetShelfSpinnerController()->HasApp(kTestAppId));
+
+  // Register the publisher for the web app.
+  FakePublisherForProxyTest pub(proxy(), AppType::kWeb,
+                                std::vector<std::string>{kTestAppId});
+  auto& launch_requests = pub.launch_requests();
+
+  // Verify the spinner is closed.
+  EXPECT_FALSE(
+      shelf_controller()->GetShelfSpinnerController()->HasApp(kTestAppId));
+
+  // Verify the Launch function is called.
+  EXPECT_TRUE(base::Contains(launch_requests, kTestAppId));
+  EXPECT_EQ(1u, launch_requests[kTestAppId].size());
+  EXPECT_EQ(2, launch_requests[kTestAppId][0]->event_flags_);
+  EXPECT_EQ(LaunchSource::kFromChromeInternal,
+            launch_requests[kTestAppId][0]->launch_source_);
+  EXPECT_EQ(file_paths, launch_requests[kTestAppId][0]->file_paths_);
+}
+
+TEST_F(AppServiceProxyLaunchTest, LaunchAppWithIntent) {
+  constexpr char kTestAppId[] = "webapp";
+  InstallApp(AppType::kWeb, kTestAppId);
+
+  auto intent = apps_util::MakeShareIntent(/*text=*/"text", /*title=*/"title");
+  bool is_called = false;
+  proxy()->LaunchAppWithIntent(
+      kTestAppId, /*event_flags=*/3, intent->Clone(),
+      LaunchSource::kFromManagementApi,
+      std::make_unique<WindowInfo>(display::kDefaultDisplayId),
+      base::BindLambdaForTesting(
+          [&is_called](apps::LaunchResult&& callback_result) {
+            is_called = true;
+          }));
+
+  // Verify the spinner is applied to the app icon.
+  EXPECT_TRUE(
+      shelf_controller()->GetShelfSpinnerController()->HasApp(kTestAppId));
+
+  // Register the publisher for the web app.
+  FakePublisherForProxyTest pub(proxy(), AppType::kWeb,
+                                std::vector<std::string>{kTestAppId});
+  auto& launch_requests = pub.launch_requests();
+
+  // Verify the spinner is closed.
+  EXPECT_FALSE(
+      shelf_controller()->GetShelfSpinnerController()->HasApp(kTestAppId));
+
+  // Verify the Launch function is called.
+  EXPECT_TRUE(base::Contains(launch_requests, kTestAppId));
+  EXPECT_EQ(1u, launch_requests[kTestAppId].size());
+  EXPECT_EQ(3, launch_requests[kTestAppId][0]->event_flags_);
+  EXPECT_EQ(*intent, *launch_requests[kTestAppId][0]->intent_);
+  EXPECT_EQ(LaunchSource::kFromManagementApi,
+            launch_requests[kTestAppId][0]->launch_source_);
+  EXPECT_TRUE(is_called);
+}
+
+TEST_F(AppServiceProxyLaunchTest, LaunchAppWithParams) {
+  constexpr char kTestAppId[] = "webapp";
+  InstallApp(AppType::kWeb, kTestAppId);
+
+  AppLaunchParams params(kTestAppId, LaunchContainer::kLaunchContainerWindow,
+                         WindowOpenDisposition::NEW_WINDOW,
+                         LaunchSource::kFromManagementApi);
+  bool is_called = false;
+  proxy()->LaunchAppWithParams(
+      std::move(params),
+      base::BindLambdaForTesting(
+          [&is_called](apps::LaunchResult&& callback_result) {
+            is_called = true;
+          }));
+
+  // Verify the spinner is applied to the app icon.
+  EXPECT_TRUE(
+      shelf_controller()->GetShelfSpinnerController()->HasApp(kTestAppId));
+
+  // Register the publisher for the web app.
+  FakePublisherForProxyTest pub(proxy(), AppType::kWeb,
+                                std::vector<std::string>{kTestAppId});
+  auto& launch_requests = pub.launch_requests();
+
+  // Verify the spinner is closed.
+  EXPECT_FALSE(
+      shelf_controller()->GetShelfSpinnerController()->HasApp(kTestAppId));
+
+  // Verify the Launch function is called.
+  EXPECT_TRUE(base::Contains(launch_requests, kTestAppId));
+  EXPECT_EQ(1u, launch_requests[kTestAppId].size());
+  EXPECT_EQ(LaunchSource::kFromManagementApi,
+            launch_requests[kTestAppId][0]->params_->launch_source);
+  EXPECT_TRUE(is_called);
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

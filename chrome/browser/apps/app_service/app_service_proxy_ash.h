@@ -117,6 +117,7 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   apps::AppInstallService& AppInstallService();
 
   // apps::AppServiceProxyBase overrides:
+  void RegisterPublisher(AppType app_type, AppPublisher* publisher) override;
   void Uninstall(const std::string& app_id,
                  UninstallSource uninstall_source,
                  gfx::NativeWindow parent_window) override;
@@ -307,6 +308,10 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
       base::flat_map<apps::ShortcutId,
                      std::unique_ptr<apps::ShortcutRemovalDialog>>;
 
+  // Map of app ID to a list of launch params.
+  using LaunchRequests =
+      std::map<std::string, std::vector<std::unique_ptr<LaunchParams>>>;
+
   bool IsValidProfile() override;
   void Initialize() override;
 
@@ -364,6 +369,11 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   // apps::AppServiceProxyBase overrides:
   void InitializePreferredAppsForAllSubscribers() override;
   void OnPreferredAppsChanged(PreferredAppChangesPtr changes) override;
+  // Displays spinner, and store the launch parameters to implement the launch
+  // task when the publisher is ready.
+  void OnPublisherNotReadyForLaunch(
+      const std::string& app_id,
+      std::unique_ptr<LaunchParams> launch_request) override;
   bool MaybeShowLaunchPreventionDialog(const apps::AppUpdate& update) override;
   void OnLaunched(LaunchCallback callback,
                   LaunchResult&& launch_result) override;
@@ -598,6 +608,9 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   // from the outstanding callback queue.
   std::list<std::pair<base::RepeatingCallback<bool(void)>, base::OnceClosure>>
       callback_list_;
+
+  // The launch requests when the publisher is not available.
+  LaunchRequests launch_requests_;
 
   base::flat_map<AppType, ShortcutPublisher*> shortcut_publishers_;
 

@@ -37,6 +37,9 @@
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
+#include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
+#include "chrome/browser/ui/ash/shelf/shelf_spinner_item_controller.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
@@ -257,6 +260,55 @@ void AppServiceProxyAsh::RegisterCrosApiSubScriber(
       preferred_apps_impl_->preferred_apps_list().IsInitialized()) {
     crosapi_subscriber_->InitializePreferredApps(
         preferred_apps_impl_->preferred_apps_list().GetValue());
+  }
+}
+
+void AppServiceProxyAsh::RegisterPublisher(AppType app_type,
+                                           AppPublisher* publisher) {
+  AppServiceProxyBase::RegisterPublisher(app_type, publisher);
+
+  for (auto it = launch_requests_.begin(); it != launch_requests_.end();) {
+    const std::string& app_id = it->first;
+    if (app_registry_cache_.GetAppType(app_id) != app_type) {
+      ++it;
+      continue;
+    }
+
+    // Close the spinner for the app icon.
+    auto* chrome_controller = ChromeShelfController::instance();
+    if (chrome_controller) {
+      chrome_controller->GetShelfSpinnerController()->CloseSpinner(app_id);
+    }
+
+    // Check the saved launch requests for `app_type`, and launch the app.
+    for (auto& launch_request : it->second) {
+      if (launch_request->params_.has_value()) {
+        LaunchAppWithParams(std::move(launch_request->params_.value()),
+                            std::move(launch_request->call_back_));
+        continue;
+      }
+
+      if (launch_request->intent_) {
+        LaunchAppWithIntent(app_id, launch_request->event_flags_,
+                            std::move(launch_request->intent_),
+                            launch_request->launch_source_,
+                            std::move(launch_request->window_info_),
+                            std::move(launch_request->call_back_));
+        continue;
+      }
+
+      if (!launch_request->file_paths_.empty()) {
+        LaunchAppWithFiles(app_id, launch_request->event_flags_,
+                           launch_request->launch_source_,
+                           std::move(launch_request->file_paths_));
+        continue;
+      }
+
+      Launch(app_id, launch_request->event_flags_,
+             launch_request->launch_source_,
+             std::move(launch_request->window_info_));
+    }
+    it = launch_requests_.erase(it);
   }
 }
 
@@ -864,6 +916,28 @@ void AppServiceProxyAsh::OnPreferredAppsChanged(
   crosapi_subscriber_->OnPreferredAppsChanged(std::move(changes));
 }
 
+void AppServiceProxyAsh::OnPublisherNotReadyForLaunch(
+    const std::string& app_id,
+    std::unique_ptr<LaunchParams> launch_request) {
+  if (!base::FeatureList::IsEnabled(kAppServiceStorage)) {
+    AppServiceProxyBase::OnPublisherNotReadyForLaunch(
+        app_id, std::move(launch_request));
+    return;
+  }
+
+  auto* chrome_controller = ChromeShelfController::instance();
+  if (!chrome_controller) {
+    return;
+  }
+
+  // Add spinner to the app icon.
+  chrome_controller->GetShelfSpinnerController()->AddSpinnerToShelf(
+      app_id, std::make_unique<ShelfSpinnerItemController>(app_id));
+
+  // Save the launch request to launch the app later.
+  launch_requests_[app_id].push_back(std::move(launch_request));
+}
+
 bool AppServiceProxyAsh::MaybeShowLaunchPreventionDialog(
     const apps::AppUpdate& update) {
   if (update.AppId() == app_constants::kChromeAppId) {
@@ -1006,6 +1080,24 @@ void AppServiceProxyAsh::OnAppUpdate(const apps::AppUpdate& update) {
        !apps_util::IsInstalled(update.Readiness()))) {
     pending_pause_requests_.MaybeRemoveApp(update.AppId());
   }
+
+  if (apps_util::IsInstalled(update.Readiness())) {
+    return;
+  }
+
+  auto it = launch_requests_.find(update.AppId());
+  if (it == launch_requests_.end()) {
+    return;
+  }
+
+  // If the app is uninstalled, close the spinner for the icon, and remove the
+  // launch requests for the app.
+  auto* chrome_controller = ChromeShelfController::instance();
+  if (chrome_controller) {
+    chrome_controller->GetShelfSpinnerController()->CloseSpinner(
+        update.AppId());
+  }
+  launch_requests_.erase(it);
 }
 
 void AppServiceProxyAsh::OnAppRegistryCacheWillBeDestroyed(
