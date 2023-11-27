@@ -19,6 +19,8 @@ const char kCredentialProviderEnabledOnStartup[] =
 
 #if BUILDFLAG(IS_ANDROID)
 const char kAutoSignInEnabledGMS[] = "profile.auto_sign_in_enabled_gms";
+const char kEmptyProfileStoreLoginDatabase[] =
+    "password_manager.empty_profile_store_login_database";
 const char kOfferToSavePasswordsEnabledGMS[] =
     "profile.save_passwords_enabed_gms";
 const char kSavePasswordsSuspendedByError[] =

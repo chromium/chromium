@@ -44,6 +44,10 @@ extern const char kCredentialProviderEnabledOnStartup[];
 // migration steps, it should not be modified in Chrome.
 extern const char kAutoSignInEnabledGMS[];
 
+// A cache of whether the profile LoginDatabase is empty, so that can be checked
+// early on startup.
+extern const char kEmptyProfileStoreLoginDatabase[];
+
 // Boolean controlling whether the password manager offers to save passwords.
 // If false, the password manager will not save credentials, but it will still
 // fill previously saved ones. This pref is not synced. Its value is set

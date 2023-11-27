@@ -11,6 +11,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/pickle.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -45,7 +46,14 @@ extern const int kCompatibleVersionNumber;
 // the login information.
 class LoginDatabase {
  public:
-  LoginDatabase(const base::FilePath& db_path, IsAccountStore is_account_store);
+  // If a non-null `is_empty_cb` is passed, it's called to signal whether the
+  // database is empty, i.e. without any logins *or* blocklists. The call
+  // happens when initializing the database and when adding/removing entries,
+  // regardless of success.
+  LoginDatabase(const base::FilePath& db_path,
+                IsAccountStore is_account_store,
+                const base::RepeatingCallback<void(bool)>& is_empty_cb =
+                    base::NullCallback());
 
   LoginDatabase(const LoginDatabase&) = delete;
   LoginDatabase& operator=(const LoginDatabase&) = delete;
@@ -341,8 +349,13 @@ class LoginDatabase {
   void UpdatePasswordNotes(FormPrimaryKey primary_key,
                            const std::vector<PasswordNote>& notes);
 
+  // If a non-null `is_empty_cb` was passed on construction, computes whether
+  // the DB is empty (SQL statement) and invokes the callback with the result.
+  void TriggerIsEmptyCb();
+
   const base::FilePath db_path_;
   const IsAccountStore is_account_store_;
+  const base::RepeatingCallback<void(bool)> is_empty_cb_;
 
   mutable sql::Database db_;
   sql::MetaTable meta_table_;

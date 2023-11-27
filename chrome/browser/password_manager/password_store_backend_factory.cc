@@ -4,7 +4,9 @@
 
 #include "chrome/browser/password_manager/password_store_backend_factory.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/bind_post_task.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/android/password_manager_android_util.h"
@@ -32,9 +34,19 @@ CreateProfilePasswordStoreBackend(
 #if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(USE_LEGACY_PASSWORD_STORE_BACKEND)
   return std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
       password_manager::CreateLoginDatabaseForProfileStorage(
-          login_db_directory),
+          login_db_directory, /*is_empty_cb=*/base::NullCallback()),
       syncer::WipeModelUponSyncDisabledBehavior::kNever);
 #else  // BUILDFLAG(IS_ANDROID) && !USE_LEGACY_PASSWORD_STORE_BACKEND
+  // base::Unretained() is safe, `prefs` outlives all keyed services, including
+  // the PasswordStore (LoginDatabase's owner).
+  auto is_profile_db_empty_cb =
+      base::BindPostTaskToCurrentDefault(base::BindRepeating(
+          &PrefService::SetBoolean, base::Unretained(prefs),
+          password_manager::prefs::kEmptyProfileStoreLoginDatabase));
+  std::unique_ptr<password_manager::LoginDatabase> profile_login_db =
+      password_manager::CreateLoginDatabaseForProfileStorage(
+          login_db_directory, is_profile_db_empty_cb);
+
   if (password_manager::PasswordStoreAndroidBackendBridgeHelper::
           CanCreateBackend()) {
     base::UmaHistogramBoolean(
@@ -52,16 +64,14 @@ CreateProfilePasswordStoreBackend(
     return std::make_unique<
         password_manager::PasswordStoreBackendMigrationDecorator>(
         std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
-            password_manager::CreateLoginDatabaseForProfileStorage(
-                login_db_directory),
+            std::move(profile_login_db),
             syncer::WipeModelUponSyncDisabledBehavior::kNever),
         std::make_unique<password_manager::PasswordStoreAndroidBackend>(
             prefs, affiliations_prefetcher),
         prefs, password_manager::IsAccountStore(false));
   }
   return std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
-      password_manager::CreateLoginDatabaseForProfileStorage(
-          login_db_directory),
+      std::move(profile_login_db),
       syncer::WipeModelUponSyncDisabledBehavior::kNever);
 #endif
 }

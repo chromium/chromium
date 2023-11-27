@@ -17,15 +17,17 @@
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_store/login_database.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 
 namespace password_manager {
 
 std::unique_ptr<LoginDatabase> CreateLoginDatabaseForProfileStorage(
-    const base::FilePath& db_directory) {
+    const base::FilePath& db_directory,
+    const base::RepeatingCallback<void(bool)>& is_empty_cb) {
   base::FilePath login_db_file_path =
       db_directory.Append(kLoginDataForProfileFileName);
   return std::make_unique<LoginDatabase>(login_db_file_path,
-                                         IsAccountStore(false));
+                                         IsAccountStore(false), is_empty_cb);
 }
 
 std::unique_ptr<LoginDatabase> CreateLoginDatabaseForAccountStorage(

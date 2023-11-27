@@ -1058,10 +1058,13 @@ struct LoginDatabase::PrimaryKeyAndPassword {
   std::string keychain_identifier;
 };
 
-LoginDatabase::LoginDatabase(const base::FilePath& db_path,
-                             IsAccountStore is_account_store)
+LoginDatabase::LoginDatabase(
+    const base::FilePath& db_path,
+    IsAccountStore is_account_store,
+    const base::RepeatingCallback<void(bool)>& is_empty_cb)
     : db_path_(db_path),
       is_account_store_(is_account_store),
+      is_empty_cb_(is_empty_cb),
       // Set options for a small, private database (based on WebDatabase).
       db_({.page_size = 2048, .cache_size = 32}) {}
 
@@ -1247,6 +1250,7 @@ bool LoginDatabase::Init() {
     return false;
   }
 
+  TriggerIsEmptyCb();
   LogDatabaseInitError(INIT_OK);
   return true;
 }
@@ -1308,6 +1312,8 @@ void LoginDatabase::ReportMetrics() {
 PasswordStoreChangeList LoginDatabase::AddLogin(const PasswordForm& form,
                                                 AddCredentialError* error) {
   TRACE_EVENT0("passwords", "LoginDatabase::AddLogin");
+  base::ScopedClosureRunner is_empty_runner(
+      base::BindOnce(&LoginDatabase::TriggerIsEmptyCb, base::Unretained(this)));
   if (error) {
     *error = AddCredentialError::kNone;
   }
@@ -1547,6 +1553,8 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(
 bool LoginDatabase::RemoveLogin(const PasswordForm& form,
                                 PasswordStoreChangeList* changes) {
   TRACE_EVENT0("passwords", "LoginDatabase::RemoveLogin");
+  base::ScopedClosureRunner is_empty_runner(
+      base::BindOnce(&LoginDatabase::TriggerIsEmptyCb, base::Unretained(this)));
   if (changes) {
     changes->clear();
   }
@@ -1585,6 +1593,8 @@ bool LoginDatabase::RemoveLoginByPrimaryKey(FormPrimaryKey primary_key,
   TRACE_EVENT0("passwords", "LoginDatabase::RemoveLoginByPrimaryKey");
   CHECK(changes);
 
+  base::ScopedClosureRunner is_empty_runner(
+      base::BindOnce(&LoginDatabase::TriggerIsEmptyCb, base::Unretained(this)));
   changes->clear();
   sql::Statement s1(db_.GetCachedStatement(
       SQL_FROM_HERE, "SELECT * FROM logins WHERE id = ?"));
@@ -1618,6 +1628,8 @@ bool LoginDatabase::RemoveLoginsCreatedBetween(
     base::Time delete_end,
     PasswordStoreChangeList* changes) {
   TRACE_EVENT0("passwords", "LoginDatabase::RemoveLoginsCreatedBetween");
+  base::ScopedClosureRunner is_empty_runner(
+      base::BindOnce(&LoginDatabase::TriggerIsEmptyCb, base::Unretained(this)));
   if (changes) {
     changes->clear();
   }
@@ -1904,6 +1916,8 @@ bool LoginDatabase::DeleteAndRecreateDatabaseFile() {
 
 DatabaseCleanupResult LoginDatabase::DeleteUndecryptableLogins() {
   TRACE_EVENT0("passwords", "LoginDatabase::DeleteUndecryptableLogins");
+  base::ScopedClosureRunner is_empty_runner(
+      base::BindOnce(&LoginDatabase::TriggerIsEmptyCb, base::Unretained(this)));
   // If the Keychain in MacOS or the real secret key in Linux is unavailable,
   // don't delete any logins.
   if (!OSCrypt::IsEncryptionAvailable()) {
@@ -2457,6 +2471,12 @@ void LoginDatabase::UpdatePasswordNotes(
   password_notes_table_.RemovePasswordNotes(primary_key);
   for (const PasswordNote& note : notes) {
     password_notes_table_.InsertOrReplace(primary_key, note);
+  }
+}
+
+void LoginDatabase::TriggerIsEmptyCb() {
+  if (is_empty_cb_) {
+    is_empty_cb_.Run(IsEmpty());
   }
 }
 
