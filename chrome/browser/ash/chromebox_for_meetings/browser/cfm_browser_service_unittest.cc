@@ -127,7 +127,7 @@ TEST_F(CfmBrowserServiceTest, GetBrowserRemote) {
 
 TEST_F(CfmBrowserServiceTest, GetVariationsData) {
   std::string field_trial_parameters = "Foo.Bar:Key/Value";
-  std::string field_trial_states = "*Baz/Qux/Foo/Bar/";
+  std::string field_trial_states = "*Baz/Qux/Foo/Bar";
   std::string enabled_features = "enabled<Foo";
   std::string disabled_features = "disabled<Baz";
 
