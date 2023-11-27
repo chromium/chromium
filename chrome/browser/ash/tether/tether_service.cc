@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/tether/tether_service.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -521,13 +522,12 @@ TetherService::TetherFeatureState TetherService::GetTetherFeatureState() {
   if (!HasSyncedTetherHosts())
     return NO_AVAILABLE_HOSTS;
 
-  // TODO(b/309128386): Don't treat Tether as a subset of Cellular if the
-  // Instant Hotspot Rebrand feature flag is enabled.
-  // If Cellular technology is available, then Tether technology is treated
-  // as a subset of Cellular, and it should only be enabled when Cellular
-  // technology is enabled.
-  if (IsCellularAvailableButNotEnabled())
+  // Don't treat Tether as a subset of Cellular if the Instant Hotspot Rebrand
+  // feature flag is enabled.
+  if (!features::IsInstantHotspotRebrandEnabled() &&
+      IsCellularAvailableButNotEnabled()) {
     return CELLULAR_DISABLED;
+  }
 
   if (!IsBluetoothPowered())
     return BLUETOOTH_DISABLED;

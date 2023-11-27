@@ -157,7 +157,12 @@ class TetherService
   FRIEND_TEST_ALL_PREFIXES(TetherServiceTest, TestProhibitedByPolicy);
   FRIEND_TEST_ALL_PREFIXES(TetherServiceTest, TestIsBluetoothPowered);
   FRIEND_TEST_ALL_PREFIXES(TetherServiceTest, TestCellularIsUnavailable);
-  FRIEND_TEST_ALL_PREFIXES(TetherServiceTest, TestCellularIsAvailable);
+  FRIEND_TEST_ALL_PREFIXES(
+      TetherServiceTest,
+      TestCellularIsAvailable_InstantHotspotRebrandDisabled);
+  FRIEND_TEST_ALL_PREFIXES(
+      TetherServiceTest,
+      TestCellularIsAvailable_InstantHotspotRebrandEnabled);
   FRIEND_TEST_ALL_PREFIXES(TetherServiceTest, TestDisabled);
   FRIEND_TEST_ALL_PREFIXES(TetherServiceTest, TestEnabled);
   FRIEND_TEST_ALL_PREFIXES(TetherServiceTest,

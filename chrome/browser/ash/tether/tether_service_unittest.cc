@@ -462,6 +462,24 @@ class TetherServiceTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  void SetTetherUserPrefState(bool enabled) {
+    fake_multidevice_setup_client_->InvokePendingSetFeatureEnabledStateCallback(
+        multidevice_setup::mojom::Feature::kInstantTethering,
+        enabled /* expected_enabled */, absl::nullopt /* expected_auth_token */,
+        !enabled /* success */);
+    profile_->GetPrefs()->SetBoolean(
+        multidevice_setup::kInstantTetheringEnabledPrefName, enabled);
+    if (enabled) {
+      fake_multidevice_setup_client_->SetFeatureState(
+          multidevice_setup::mojom::Feature::kInstantTethering,
+          multidevice_setup::mojom::FeatureState::kEnabledByUser);
+    } else {
+      fake_multidevice_setup_client_->SetFeatureState(
+          multidevice_setup::mojom::Feature::kInstantTethering,
+          multidevice_setup::mojom::FeatureState::kDisabledByUser);
+    }
+  }
+
   void SetIsBluetoothPowered(bool powered) {
     is_adapter_powered_ = powered;
     for (auto& observer : mock_adapter_->GetObservers())
@@ -1083,12 +1101,12 @@ TEST_F(TetherServiceTest, DISABLED_TestCellularIsUnavailable) {
                                    2 /* expected_count */);
 }
 
-// TODO(https://crbug.com/893878): Fix disabled test.
-TEST_F(TetherServiceTest, DISABLED_TestCellularIsAvailable) {
-  // TODO (lesliewatkins): Investigate why cellular needs to be removed and
-  // re-added for NetworkStateHandler to return the correct TechnologyState.
-  manager_test()->RemoveTechnology(shill::kTypeCellular);
-  manager_test()->AddTechnology(shill::kTypeCellular, false);
+TEST_F(TetherServiceTest,
+       TestCellularIsAvailable_InstantHotspotRebrandDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {} /* enabled_features */,
+      {features::kInstantHotspotRebrand} /* disabled_features */);
 
   CreateTetherService();
 
@@ -1099,13 +1117,19 @@ TEST_F(TetherServiceTest, DISABLED_TestCellularIsAvailable) {
                 NetworkTypePattern::Cellular()));
   VerifyTetherActiveStatus(false /* expected_active */);
 
+  // Tether disabled
   SetTetherTechnologyStateEnabled(false);
+  SetTetherUserPrefState(false);
   EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_UNAVAILABLE,
             network_state_handler()->GetTechnologyState(
                 NetworkTypePattern::Tether()));
   VerifyTetherActiveStatus(false /* expected_active */);
 
+  // Tether enabled
   SetTetherTechnologyStateEnabled(true);
+  SetTetherUserPrefState(true);
+  // If the Instant Hotspot Rebrand feature flag is disabled, enabling tether
+  // while cellular is disabled should NOT affect tether.
   EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_UNAVAILABLE,
             network_state_handler()->GetTechnologyState(
                 NetworkTypePattern::Tether()));
@@ -1118,13 +1142,16 @@ TEST_F(TetherServiceTest, DISABLED_TestCellularIsAvailable) {
                 NetworkTypePattern::Cellular()));
   VerifyTetherActiveStatus(true /* expected_active */);
 
+  // Tether enabled
   SetTetherTechnologyStateEnabled(false);
+  SetTetherUserPrefState(false);
   EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_AVAILABLE,
             network_state_handler()->GetTechnologyState(
                 NetworkTypePattern::Tether()));
   VerifyTetherActiveStatus(false /* expected_active */);
 
   SetTetherTechnologyStateEnabled(true);
+  SetTetherUserPrefState(true);
   EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
             network_state_handler()->GetTechnologyState(
                 NetworkTypePattern::Tether()));
@@ -1136,6 +1163,71 @@ TEST_F(TetherServiceTest, DISABLED_TestCellularIsAvailable) {
       TetherService::TetherFeatureState::CELLULAR_DISABLED,
       2 /* expected_count */);
   VerifyLastShutdownReason(TetherComponent::ShutdownReason::CELLULAR_DISABLED);
+}
+
+TEST_F(TetherServiceTest,
+       TestCellularIsAvailable_InstantHotspotRebrandEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kInstantHotspotRebrand} /* enabled_features */,
+      {} /* disabled_features */);
+
+  CreateTetherService();
+
+  // Cellular disabled
+  SetCellularTechnologyStateEnabled(false);
+  ASSERT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_AVAILABLE,
+            network_state_handler()->GetTechnologyState(
+                NetworkTypePattern::Cellular()));
+  VerifyTetherActiveStatus(true /* expected_active */);
+
+  // Tether disabled
+  SetTetherTechnologyStateEnabled(false);
+  SetTetherUserPrefState(false);
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_AVAILABLE,
+            network_state_handler()->GetTechnologyState(
+                NetworkTypePattern::Tether()));
+  VerifyTetherActiveStatus(false /* expected_active */);
+
+  // Tether enabled
+  SetTetherTechnologyStateEnabled(true);
+  SetTetherUserPrefState(true);
+  // If the Instant Hotspot Rebrand feature flag is enabled, enabling tether
+  // while cellular is disabled should affect tether.
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
+            network_state_handler()->GetTechnologyState(
+                NetworkTypePattern::Tether()));
+  VerifyTetherActiveStatus(true /* expected_active */);
+
+  // Cellular enabled
+  SetCellularTechnologyStateEnabled(true);
+  ASSERT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
+            network_state_handler()->GetTechnologyState(
+                NetworkTypePattern::Cellular()));
+  VerifyTetherActiveStatus(true /* expected_active */);
+
+  // Tether enabled
+  SetTetherTechnologyStateEnabled(false);
+  SetTetherUserPrefState(false);
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_AVAILABLE,
+            network_state_handler()->GetTechnologyState(
+                NetworkTypePattern::Tether()));
+  VerifyTetherActiveStatus(false /* expected_active */);
+
+  SetTetherTechnologyStateEnabled(true);
+  SetTetherUserPrefState(true);
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
+            network_state_handler()->GetTechnologyState(
+                NetworkTypePattern::Tether()));
+  VerifyTetherActiveStatus(true /* expected_active */);
+
+  SetCellularTechnologyStateEnabled(false);
+
+  VerifyTetherFeatureStateRecorded(
+      TetherService::TetherFeatureState::CELLULAR_DISABLED,
+      0 /* expected_count */);
+
+  VerifyLastShutdownReason(TetherComponent::ShutdownReason::PREF_DISABLED);
 }
 
 // TODO(https://crbug.com/893878): Fix disabled test.
@@ -1262,15 +1354,7 @@ TEST_F(TetherServiceTest, TestUserPrefChangesViaTechnologyStateChange) {
   VerifyTetherActiveStatus(true /* expected_active */);
 
   SetTetherTechnologyStateEnabled(false);
-  fake_multidevice_setup_client_->InvokePendingSetFeatureEnabledStateCallback(
-      multidevice_setup::mojom::Feature::kInstantTethering,
-      false /* expected_enabled */, absl::nullopt /* expected_auth_token */,
-      true /* success */);
-  profile_->GetPrefs()->SetBoolean(
-      multidevice_setup::kInstantTetheringEnabledPrefName, false);
-  fake_multidevice_setup_client_->SetFeatureState(
-      multidevice_setup::mojom::Feature::kInstantTethering,
-      multidevice_setup::mojom::FeatureState::kDisabledByUser);
+  SetTetherUserPrefState(false);
   EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_AVAILABLE,
             network_state_handler()->GetTechnologyState(
                 NetworkTypePattern::Tether()));
@@ -1280,15 +1364,7 @@ TEST_F(TetherServiceTest, TestUserPrefChangesViaTechnologyStateChange) {
       1u /* expected_count */);
 
   SetTetherTechnologyStateEnabled(true);
-  fake_multidevice_setup_client_->InvokePendingSetFeatureEnabledStateCallback(
-      multidevice_setup::mojom::Feature::kInstantTethering,
-      true /* expected_enabled */, absl::nullopt /* expected_auth_token */,
-      false /* success */);
-  profile_->GetPrefs()->SetBoolean(
-      multidevice_setup::kInstantTetheringEnabledPrefName, true);
-  fake_multidevice_setup_client_->SetFeatureState(
-      multidevice_setup::mojom::Feature::kInstantTethering,
-      multidevice_setup::mojom::FeatureState::kEnabledByUser);
+  SetTetherUserPrefState(true);
   EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED,
             network_state_handler()->GetTechnologyState(
                 NetworkTypePattern::Tether()));
