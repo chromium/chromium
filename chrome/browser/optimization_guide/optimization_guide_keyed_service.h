@@ -42,6 +42,7 @@ class ChromeHintsManager;
 class ModelExecutionManager;
 class ModelInfo;
 class ModelQualityLogEntry;
+class ModelQualityLogsUploaderService;
 class OptimizationGuideStore;
 class PredictionManager;
 class PredictionManagerBrowserTestBase;
@@ -270,6 +271,11 @@ class OptimizationGuideKeyedService
 
   std::unique_ptr<optimization_guide::ModelExecutionFeaturesController>
       model_execution_features_controller_;
+
+  // Manages the model quality logs uploader service. Not created for off the
+  // record profiles.
+  std::unique_ptr<optimization_guide::ModelQualityLogsUploaderService>
+      model_quality_logs_uploader_service_;
 
   // Used to observe profile initialization event.
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};

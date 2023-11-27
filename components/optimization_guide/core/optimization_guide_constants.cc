@@ -20,6 +20,9 @@ const char kOptimizationGuideServiceGetModelsDefaultURL[] =
 const char kOptimizationGuideServiceModelExecutionDefaultURL[] =
     "https://chromemodelexecution-pa.googleapis.com/v1:Execute";
 
+const char kOptimizationGuideServiceModelQualtiyDefaultURL[] =
+    "https://chromemodelquality-pa.googleapis.com/v1:LogAiData";
+
 const char kLoadedHintLocalHistogramString[] =
     "OptimizationGuide.LoadedHint.Result";
 

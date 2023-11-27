@@ -737,6 +737,27 @@ chromium-metrics-reviews@google.com.
   <token key="OptimizationTarget" variants="OptimizationTarget"/>
 </histogram>
 
+<histogram
+    name="OptimizationGuide.ModelQualityLogsUploaderService.NetErrorCode"
+    enum="NetErrorCodes" expires_after="2024-05-10">
+  <owner>sreejakshetty@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Net error codes for each model quality logs upload, recorded on success and
+    failure.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.ModelQualityLogsUploaderService.Status"
+    enum="HttpResponseCode" expires_after="2024-05-10">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>sreejakshetty@chromium.org</owner>
+  <summary>
+    The HTTP response code for each model quality logs upload, recorded on
+    success and failure.
+  </summary>
+</histogram>
+
 <histogram name="OptimizationGuide.OptimizationFilterStatus.{OptimizationType}"
     enum="OptimizationGuideOptimizationFilterStatus" expires_after="2024-05-12">
   <owner>mcrouse@chromium.org</owner>

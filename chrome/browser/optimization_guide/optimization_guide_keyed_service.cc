@@ -35,6 +35,7 @@
 #include "components/optimization_guide/core/model_execution/model_execution_manager.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
+#include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -290,6 +291,17 @@ void OptimizationGuideKeyedService::Initialize() {
             std::move(service_controller), optimization_guide_logger_.get());
   }
 
+  if (!profile->IsOffTheRecord() &&
+      // Don't create logs uploader service when feature is disabled. All the
+      // logs upload get route through this service which exists one per
+      // session.
+      base::FeatureList::IsEnabled(
+          optimization_guide::features::kModelQualityLogging)) {
+    model_quality_logs_uploader_service_ =
+        std::make_unique<optimization_guide::ModelQualityLogsUploaderService>(
+            url_loader_factory);
+  }
+
   // Register for profile initialization event to initialize the model
   // downloads.
   profile_observation_.Observe(profile);
@@ -451,8 +463,12 @@ void OptimizationGuideKeyedService::UploadModelQualityLogs(
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // TODO(b/301301447): Uploads logs by passing the log entry's ownership to the
-  // server.
+  if (!model_quality_logs_uploader_service_) {
+    return;
+  }
+
+  model_quality_logs_uploader_service_.get()->UploadModelQualityLogs(
+      std::move(log_entry));
 }
 
 void OptimizationGuideKeyedService::OnProfileInitializationComplete(
