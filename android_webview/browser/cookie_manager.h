@@ -6,6 +6,7 @@
 #define ANDROID_WEBVIEW_BROWSER_COOKIE_MANAGER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/android/jni_array.h"
@@ -290,7 +291,7 @@ class CookieManager {
   bool workaround_http_secure_cookies_;
 
   base::Thread cookie_store_client_thread_;
-  base::Thread cookie_store_backend_thread_;
+  std::optional<base::Thread> cookie_store_backend_thread_;
 
   scoped_refptr<base::SingleThreadTaskRunner> cookie_store_task_runner_;
   std::unique_ptr<net::CookieStore> cookie_store_;
