@@ -1324,6 +1324,12 @@ Unknown properties are collapsed to zero. -->
   <int value="15" label="iOS Shortcuts App (Camera)"/>
   <int value="16" label="Web Images Search Bar (Camera)"/>
   <int value="17" label="What's New Promo (Camera)"/>
+  <int value="18"
+      label="Context menu item for 'Search Video Frame with Google Lens'
+             (Video Frame)"/>
+  <int value="19"
+      label="Context menu item for 'Search Video Frame with Web' (Video
+             Frame)"/>
 </enum>
 
 <enum name="AMDDeviceId">

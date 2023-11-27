@@ -5,6 +5,7 @@
 #include "components/lens/lens_url_utils.h"
 
 #include <map>
+#include <string>
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -28,6 +29,7 @@ constexpr char kChromeSearchWithGoogleLensContextMenuItem[] = "ccm";
 constexpr char kChromeTranslateImageWithGoogleLensContextMenuItem[] = "ctrcm";
 constexpr char kChromeOpenNewTabSidePanel[] = "cnts";
 constexpr char kChromeFullscreenSearchMenuItem[] = "cfs";
+constexpr char kChromeVideoFrameSearchContextMenuItem[] = "cvfs";
 constexpr char kCompanionRegionSearch[] = "cscidr";
 
 constexpr char kSurfaceQueryParameter[] = "s";
@@ -57,41 +59,41 @@ void AppendQueryParam(std::string* query_string,
   base::StrAppend(query_string, {name, "=", value});
 }
 
+std::string GetEntryPointQueryString(lens::EntryPoint entry_point) {
+  switch (entry_point) {
+    case lens::CHROME_OPEN_NEW_TAB_SIDE_PANEL:
+      return kChromeOpenNewTabSidePanel;
+    case lens::CHROME_REGION_SEARCH_MENU_ITEM:
+      return kChromeRegionSearchMenuItem;
+    case lens::CHROME_SEARCH_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM:
+      return kChromeSearchWithGoogleLensContextMenuItem;
+    case lens::CHROME_TRANSLATE_IMAGE_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM:
+      return kChromeTranslateImageWithGoogleLensContextMenuItem;
+    case lens::CHROME_FULLSCREEN_SEARCH_MENU_ITEM:
+      return kChromeFullscreenSearchMenuItem;
+    case lens::CHROME_VIDEO_FRAME_SEARCH_CONTEXT_MENU_ITEM:
+      return kChromeVideoFrameSearchContextMenuItem;
+    case lens::COMPANION_REGION_SEARCH:
+      return kCompanionRegionSearch;
+    case lens::UNKNOWN:
+      return "";
+  }
+}
+
 std::map<std::string, std::string> GetLensQueryParametersMap(
     lens::EntryPoint ep,
     lens::RenderingEnvironment re,
     bool is_side_panel_request) {
   std::map<std::string, std::string> query_parameters;
-  switch (ep) {
-    case lens::CHROME_OPEN_NEW_TAB_SIDE_PANEL:
-      query_parameters.insert(
-          {kEntryPointQueryParameter, kChromeOpenNewTabSidePanel});
-      break;
-    case lens::CHROME_REGION_SEARCH_MENU_ITEM:
-      query_parameters.insert(
-          {kEntryPointQueryParameter, kChromeRegionSearchMenuItem});
-      break;
-    case lens::CHROME_SEARCH_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM:
-      query_parameters.insert({kEntryPointQueryParameter,
-                               kChromeSearchWithGoogleLensContextMenuItem});
-      break;
-    case lens::CHROME_TRANSLATE_IMAGE_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM:
-      query_parameters.insert(
-          {kEntryPointQueryParameter,
-           kChromeTranslateImageWithGoogleLensContextMenuItem});
-      break;
-    case lens::CHROME_FULLSCREEN_SEARCH_MENU_ITEM:
-      query_parameters.insert(
-          {kEntryPointQueryParameter, kChromeFullscreenSearchMenuItem});
-      break;
-    case lens::COMPANION_REGION_SEARCH:
-      query_parameters.insert(
-          {kEntryPointQueryParameter, kCompanionRegionSearch});
-      break;
-    default:
-      // Empty strings are ignored when query parameters are built.
-      break;
+
+  // Insert EntryPoint query parameter.
+  std::string entry_point_query_string = GetEntryPointQueryString(ep);
+  if (!entry_point_query_string.empty()) {
+    query_parameters.insert(
+        {kEntryPointQueryParameter, entry_point_query_string});
   }
+
+  // Insert RenderingEnvironment query parameter.
   switch (re) {
     case lens::ONELENS_DESKTOP_WEB_CHROME_SIDE_PANEL:
       query_parameters.insert({kRenderingEnvironmentQueryParameter,
@@ -111,8 +113,7 @@ std::map<std::string, std::string> GetLensQueryParametersMap(
       query_parameters.insert(
           {kSourceQueryParameter, kSourceQueryParameterValue});
       break;
-    default:
-      // Empty strings are ignored when query parameters are built.
+    case lens::RENDERING_ENV_UNKNOWN:
       break;
   }
 

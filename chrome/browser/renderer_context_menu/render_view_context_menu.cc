@@ -3078,7 +3078,15 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       break;
 
     case IDC_CONTENT_CONTEXT_SEARCHLENSFORVIDEOFRAME:
+      RecordAmbientSearchQuery(
+          lens::AmbientSearchEntryPoint::
+              CONTEXT_MENU_SEARCH_VIDEO_FRAME_WITH_GOOGLE_LENS);
+      ExecSearchForVideoFrame();
+      break;
+
     case IDC_CONTENT_CONTEXT_SEARCHWEBFORVIDEOFRAME:
+      RecordAmbientSearchQuery(lens::AmbientSearchEntryPoint::
+                                   CONTEXT_MENU_SEARCH_VIDEO_FRAME_WITH_WEB);
       ExecSearchForVideoFrame();
       break;
 
@@ -4371,9 +4379,9 @@ void RenderViewContextMenu::SearchForVideoFrame(const gfx::ImageSkia& image) {
   }
 
   if (search::DefaultSearchProviderIsGoogle(GetProfile())) {
-    // TODO(crbug.com/1453681): Add an entry point for VideoFrame search.
-    core_tab_helper->SearchWithLens(gfx::Image(image),
-                                    lens::EntryPoint::UNKNOWN);
+    core_tab_helper->SearchWithLens(
+        gfx::Image(image),
+        lens::EntryPoint::CHROME_VIDEO_FRAME_SEARCH_CONTEXT_MENU_ITEM);
   } else {
     core_tab_helper->SearchByImage(gfx::Image(image));
   }

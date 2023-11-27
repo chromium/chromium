@@ -81,7 +81,9 @@ enum class AmbientSearchEntryPoint {
   INTENTS = 15,
   WEB_IMAGES_SEARCH_BAR = 16,
   WHATS_NEW_PROMO = 17,
-  kMaxValue = WHATS_NEW_PROMO
+  CONTEXT_MENU_SEARCH_VIDEO_FRAME_WITH_GOOGLE_LENS = 18,
+  CONTEXT_MENU_SEARCH_VIDEO_FRAME_WITH_WEB = 19,
+  kMaxValue = CONTEXT_MENU_SEARCH_VIDEO_FRAME_WITH_WEB
 };
 
 // This should be kept in sync with the LensRegionSearchAspectRatio enum
