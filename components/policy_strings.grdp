@@ -373,6 +373,9 @@ Additional details:
   <message name="IDS_POLICY_SITE_SEARCH_SETTINGS_MAX_PROVIDERS_LIMIT_ERROR" desc="The text displayed in the status column of the SiteSearchSettings policy when the max number of search providers is exceeded.">
     This policy should not have more than <ph name="MAX_ITEMS_LIMIT">$1<ex>1000</ex></ph> entries.
   </message>
+  <message name="IDS_POLICY_SITE_SEARCH_SETTINGS_MAX_FEATURED_PROVIDERS_LIMIT_ERROR" desc="The text displayed in the status column of the SiteSearchSettings policy when the max number of featured search providers is exceeded.">
+    This policy should not have more than <ph name="MAX_ITEMS_LIMIT">$1<ex>10</ex></ph> featured entries.
+  </message>
   <message name="IDS_POLICY_SITE_SEARCH_SETTINGS_DUPLICATED_SHORTCUT" desc="The text displayed in the status column of the SiteSearchSettings policy when there is more than one entry using the same shortcut.">
     Ignored non-unique shortcut: <ph name="SHORTCUT_NAME">$1<ex>shortcut</ex></ph>
   </message>

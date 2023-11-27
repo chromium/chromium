@@ -6,6 +6,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -240,6 +241,7 @@ const char SiteSearchPolicyHandler::kUrl[] = "url";
 const char SiteSearchPolicyHandler::kFeatured[] = "featured";
 
 const int SiteSearchPolicyHandler::kMaxSiteSearchProviders = 100;
+const int SiteSearchPolicyHandler::kMaxFeaturedProviders = 3;
 
 SiteSearchPolicyHandler::SiteSearchPolicyHandler(Schema schema)
     : SimpleSchemaValidatingPolicyHandler(
@@ -272,6 +274,20 @@ bool SiteSearchPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
     errors->AddError(policy_name(),
                      IDS_POLICY_SITE_SEARCH_SETTINGS_MAX_PROVIDERS_LIMIT_ERROR,
                      base::NumberToString(kMaxSiteSearchProviders));
+    return false;
+  }
+
+  int num_featured = base::ranges::count_if(
+      site_search_providers, [](const base::Value& provider) {
+        return provider.GetDict()
+            .FindBool(SiteSearchPolicyHandler::kFeatured)
+            .value_or(false);
+      });
+  if (num_featured > kMaxFeaturedProviders) {
+    errors->AddError(
+        policy_name(),
+        IDS_POLICY_SITE_SEARCH_SETTINGS_MAX_FEATURED_PROVIDERS_LIMIT_ERROR,
+        base::NumberToString(kMaxFeaturedProviders));
     return false;
   }
 

@@ -420,7 +420,8 @@ TEST(SiteSearchPolicyHandlerTest, TooManySiteSearchEntries) {
   for (int i = 0; i <= SiteSearchPolicyHandler::kMaxSiteSearchProviders; ++i) {
     policy_value.Append(GenerateSiteSearchPolicyEntry(
         base::StringPrintf("shortcut_%d", i), base::StringPrintf("name %d", i),
-        base::StringPrintf("https://site_%d.com/q={searchTerms}", i), false));
+        base::StringPrintf("https://site_%d.com/q={searchTerms}", i),
+        /*featured_by_policy=*/false));
   }
 
   policies.Set(key::kSiteSearchSettings, policy::POLICY_LEVEL_MANDATORY,
@@ -433,6 +434,39 @@ TEST(SiteSearchPolicyHandlerTest, TooManySiteSearchEntries) {
                   IDS_POLICY_SITE_SEARCH_SETTINGS_MAX_PROVIDERS_LIMIT_ERROR,
                   base::NumberToString16(
                       SiteSearchPolicyHandler::kMaxSiteSearchProviders))));
+}
+
+TEST(SiteSearchPolicyHandlerTest, TooManyFeaturedSiteSearchEntries) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
+
+  SiteSearchPolicyHandler handler(
+      policy::Schema::Wrap(policy::GetChromeSchemaData()));
+
+  policy::PolicyMap policies;
+  PolicyErrorMap errors;
+  PrefValueMap prefs;
+
+  // Policy value has one featured list entry over the max allowed.
+  base::Value::List policy_value;
+  for (int i = 0; i <= SiteSearchPolicyHandler::kMaxFeaturedProviders; ++i) {
+    policy_value.Append(GenerateSiteSearchPolicyEntry(
+        base::StringPrintf("shortcut_%d", i), base::StringPrintf("name %d", i),
+        base::StringPrintf("https://site_%d.com/q={searchTerms}", i),
+        /*featured_by_policy=*/true));
+  }
+
+  policies.Set(key::kSiteSearchSettings, policy::POLICY_LEVEL_MANDATORY,
+               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+               base::Value(std::move(policy_value)), nullptr);
+
+  ASSERT_FALSE(handler.CheckPolicySettings(policies, &errors));
+  EXPECT_THAT(
+      &errors,
+      HasValidationError(l10n_util::GetStringFUTF16(
+          IDS_POLICY_SITE_SEARCH_SETTINGS_MAX_FEATURED_PROVIDERS_LIMIT_ERROR,
+          base::NumberToString16(
+              SiteSearchPolicyHandler::kMaxFeaturedProviders))));
 }
 
 TEST(SiteSearchPolicyHandlerTest, MissingRequiredField) {
