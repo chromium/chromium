@@ -404,14 +404,6 @@ import org.chromium.url.Origin;
                         value);
     }
 
-    @Override
-    public boolean isEntryMarkedToBeSkipped(int index) {
-        if (mNativeNavigationControllerAndroid == 0) return false;
-        return NavigationControllerImplJni.get()
-                .isEntryMarkedToBeSkipped(
-                        mNativeNavigationControllerAndroid, NavigationControllerImpl.this, index);
-    }
-
     @CalledByNative
     private static void addToNavigationHistory(Object history, Object navigationEntry) {
         ((NavigationHistory) history).addEntry((NavigationEntry) navigationEntry);
@@ -573,8 +565,5 @@ import org.chromium.url.Origin;
                 int index,
                 String key,
                 String value);
-
-        boolean isEntryMarkedToBeSkipped(
-                long nativeNavigationControllerAndroid, NavigationControllerImpl caller, int index);
     }
 }

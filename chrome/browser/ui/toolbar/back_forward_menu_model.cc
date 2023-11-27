@@ -12,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
@@ -230,11 +229,6 @@ void BackForwardMenuModel::ActivatedAt(size_t index, int event_flags) {
 
   absl::optional<size_t> controller_index = MenuIndexToNavEntryIndex(index);
   DCHECK(controller_index.has_value());
-
-  UMA_HISTOGRAM_BOOLEAN(
-      "Navigation.BackForward.NavigatingToEntryMarkedToBeSkipped",
-      GetWebContents()->GetController().IsEntryMarkedToBeSkipped(
-          controller_index.value()));
 
   WindowOpenDisposition disposition =
       ui::DispositionFromEventFlags(event_flags);

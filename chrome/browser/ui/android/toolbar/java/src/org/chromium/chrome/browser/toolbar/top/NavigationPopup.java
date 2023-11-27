@@ -26,7 +26,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -297,9 +296,6 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
             // 1-based index to keep in line with Desktop implementation.
             RecordUserAction.record(buildComputedAction("HistoryClick" + (position + 1)));
             int index = entry.getIndex();
-            RecordHistogram.recordBooleanHistogram(
-                    "Navigation.BackForward.NavigatingToEntryMarkedToBeSkipped",
-                    mNavigationController.isEntryMarkedToBeSkipped(index));
             mNavigationController.goToNavigationIndex(index);
         }
 

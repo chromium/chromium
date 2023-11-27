@@ -173,10 +173,4 @@ public interface NavigationController {
      * @param value The data value.
      */
     void setEntryExtraData(int index, String key, String value);
-
-    /**
-     * @param index The index of the navigation entry.
-     * @return true if the entry at |index| is marked to be skipped on back/forward UI.
-     */
-    public boolean isEntryMarkedToBeSkipped(int index);
 }

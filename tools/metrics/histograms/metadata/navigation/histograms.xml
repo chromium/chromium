@@ -498,17 +498,6 @@ chromium-metrics-reviews@google.com.
   <summary>The cache flags set on back-forward navigations.</summary>
 </histogram>
 
-<histogram name="Navigation.BackForward.NavigatingToEntryMarkedToBeSkipped"
-    enum="Boolean" expires_after="2019-12-31">
-  <owner>shivanisha@chromium.org</owner>
-  <owner>csharrison@chromium.org</owner>
-  <summary>
-    This metric logs true if the existing entry being navigated to is marked to
-    be skipped on back/forward UI. This is logged at the start of navigation
-    initiated using long-press back/forward button.
-  </summary>
-</histogram>
-
 <histogram
     name="Navigation.BackForward.TimeFromOpenBackNavigationMenuToActivateItem"
     units="ms" expires_after="2024-04-28">

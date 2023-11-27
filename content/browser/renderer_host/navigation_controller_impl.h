@@ -154,7 +154,6 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   void PruneAllButLastCommitted() override;
   void DeleteNavigationEntries(
       const DeletionPredicate& deletionPredicate) override;
-  bool IsEntryMarkedToBeSkipped(int index) override;
   BackForwardCacheImpl& GetBackForwardCache() override;
 
   // Discards the pending entry if any. If this is caused by a navigation

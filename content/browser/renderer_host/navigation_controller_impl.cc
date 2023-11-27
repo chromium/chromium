@@ -2543,11 +2543,6 @@ void NavigationControllerImpl::DeleteNavigationEntries(
   delegate()->NotifyNavigationEntriesDeleted();
 }
 
-bool NavigationControllerImpl::IsEntryMarkedToBeSkipped(int index) {
-  auto* entry = GetEntryAtIndex(index);
-  return entry && entry->should_skip_on_back_forward_ui();
-}
-
 BackForwardCacheImpl& NavigationControllerImpl::GetBackForwardCache() {
   return back_forward_cache_;
 }

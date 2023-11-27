@@ -1665,8 +1665,6 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
   back_model->MenuWillShow();
   back_model->MenuWillClose();
   back_model->ActivatedAt(0);
-  histogram.ExpectBucketCount(
-      "Navigation.BackForward.NavigatingToEntryMarkedToBeSkipped", true, 1);
   histogram.ExpectTotalCount(
       "Navigation.BackForward.TimeFromOpenBackNavigationMenuToActivateItem", 1);
   histogram.ExpectTotalCount(
