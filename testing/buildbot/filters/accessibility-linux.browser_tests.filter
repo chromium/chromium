@@ -137,6 +137,7 @@
 -ServiceWorker/ExtensionPreferenceApiTest.OnChangeSplitWithoutIncognitoAccess/0
 -ServiceWorker/ExtensionPreferenceApiTest.SessionOnlyIncognito/0
 -SessionRestoreTest.IncognitotoNonIncognito
+-SettingsTest.A11yPage
 -StorageAccessAPIStorageBrowserTest.MultiTabTest/*
 -StorageAccessAPIWith3PCEnabledBrowserTest.AllowedByUserBypass
 -SubresourceFilterBrowserTest.ActivationEnabledOnReload
