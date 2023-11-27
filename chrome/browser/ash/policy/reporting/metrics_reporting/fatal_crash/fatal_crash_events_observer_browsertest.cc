@@ -47,9 +47,9 @@ bool IsRecordCrashEvent(const ::reporting::Record& record) {
       // Destination must be EVENT_METRIC.
       record.has_destination() &&
       record.destination() == Destination::EVENT_METRIC &&
-      // Event type must be CRASH_FATALLY.
+      // Event type must be FATAL_CRASH.
       record_data.has_event_data() && record_data.event_data().has_type() &&
-      record_data.event_data().type() == MetricEventType::CRASH_FATALLY;
+      record_data.event_data().type() == MetricEventType::FATAL_CRASH;
 }
 
 // Browser test environment for fatal crash events.

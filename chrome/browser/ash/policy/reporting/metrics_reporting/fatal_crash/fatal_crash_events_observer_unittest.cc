@@ -202,7 +202,7 @@ class FatalCrashEventsObserverTestBase : public ::ash::NoSessionAshTestBase {
 
     EXPECT_TRUE(metric_data.has_event_data());
     EXPECT_TRUE(metric_data.event_data().has_type());
-    EXPECT_EQ(metric_data.event_data().type(), MetricEventType::CRASH_FATALLY);
+    EXPECT_EQ(metric_data.event_data().type(), MetricEventType::FATAL_CRASH);
 
     EXPECT_TRUE(metric_data.has_telemetry_data());
     EXPECT_TRUE(metric_data.telemetry_data().has_fatal_crash_telemetry());
