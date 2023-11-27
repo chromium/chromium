@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_PROCESS_CONTEXT_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_PROCESS_CONTEXT_H_
 
+#include <compare>
 #include <string>
 
 #include "base/memory/weak_ptr.h"
@@ -105,13 +106,34 @@ class ProcessContext {
   // convenience.
   std::string ToString() const;
 
- private:
-  friend bool operator<(const ProcessContext&, const ProcessContext&);
-  friend bool operator==(const ProcessContext&, const ProcessContext&);
+  // Compare ProcessContexts by process host id.
+  friend std::strong_ordering operator<=>(const ProcessContext& a,
+                                          const ProcessContext& b) {
+    // absl::variant doesn't define <=>.
+    if (a.id_ < b.id_) {
+      return std::strong_ordering::less;
+    }
+    if (a.id_ == b.id_) {
+      return std::strong_ordering::equal;
+    }
+    return std::strong_ordering::greater;
+  }
 
-  // Use absl::monostate, which has comparators defined, as a tag for the
-  // browser process which has no id.
-  using BrowserProcessTag = absl::monostate;
+  // Test ProcessContexts for equality by process host id.
+  friend bool operator==(const ProcessContext& a, const ProcessContext& b) {
+    return a.id_ == b.id_;
+  }
+
+ private:
+  // A tag for the browser process which has no id.
+  struct BrowserProcessTag {
+    friend constexpr auto operator<=>(const BrowserProcessTag&,
+                                      const BrowserProcessTag&) = default;
+    friend constexpr bool operator==(const BrowserProcessTag&,
+                                     const BrowserProcessTag&) = default;
+  };
+  static_assert(BrowserProcessTag{} == BrowserProcessTag{},
+                "empty structs should always compare equal");
 
   using AnyProcessHostId = absl::variant<BrowserProcessTag,
                                          RenderProcessHostId,
@@ -122,30 +144,6 @@ class ProcessContext {
   AnyProcessHostId id_;
   base::WeakPtr<ProcessNode> weak_node_;
 };
-
-inline bool operator<(const ProcessContext& a, const ProcessContext& b) {
-  return a.id_ < b.id_;
-}
-
-inline bool operator==(const ProcessContext& a, const ProcessContext& b) {
-  return a.id_ == b.id_;
-}
-
-inline bool operator!=(const ProcessContext& a, const ProcessContext& b) {
-  return !(a == b);
-}
-
-inline bool operator<=(const ProcessContext& a, const ProcessContext& b) {
-  return !(b < a);
-}
-
-inline bool operator>(const ProcessContext& a, const ProcessContext& b) {
-  return !(a < b || a == b);
-}
-
-inline bool operator>=(const ProcessContext& a, const ProcessContext& b) {
-  return !(a > b);
-}
 
 }  // namespace performance_manager::resource_attribution
 
