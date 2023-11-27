@@ -137,7 +137,7 @@ action("gen_structured_events") {
     "//tools/metrics/structured/model_util.py",
     "//tools/metrics/structured/templates_events.py",
   ]
-  sources = [ "//tools/metrics/structured/structured.xml" ]
+  sources = [ "//tools/metrics/structured/sync/structured.xml" ]
 
   outdir = "$target_gen_dir"
 
@@ -175,7 +175,7 @@ action("gen_structured_metrics_validator") {
     "//tools/metrics/structured/model_util.py",
     "//tools/metrics/structured/templates_validator.py",
   ]
-  sources = [ "//tools/metrics/structured/structured.xml" ]
+  sources = [ "//tools/metrics/structured/sync/structured.xml" ]
 
   outdir = "$target_gen_dir"
 

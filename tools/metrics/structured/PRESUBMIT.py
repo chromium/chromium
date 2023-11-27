@@ -2,15 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""Presubmit script for structured.xml.
+"""Presubmit script for structured.xml, stored in the sync directory.
 
 See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details on the presubmit API built into gcl.
 """
 
-
-STRUCTURED_XML = 'structured.xml'
-STRUCTURED_OLD_XML = 'structured.old.xml'
+STRUCTURED_XML = 'sync/structured.xml'
+STRUCTURED_OLD_XML = 'sync/structured.old.xml'
 
 
 def CheckChange(input_api, output_api):

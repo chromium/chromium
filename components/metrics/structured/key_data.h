@@ -24,7 +24,8 @@ class KeyDataTest;
 // structured metrics.
 //
 // The class maintains one key and its rotation data for every project defined
-// in /tools/metrics/structured.xml. This can be used to generate:
+// in /tools/metrics/structured/sync/structured.xml. This can be used to
+// generate:
 //  - an ID for the project with KeyData::Id.
 //  - a hash of a given value for an event with KeyData::HmacMetric.
 //
