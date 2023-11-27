@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_GPU_VP9_SVC_LAYERS_H_
-#define MEDIA_GPU_VP9_SVC_LAYERS_H_
+#ifndef MEDIA_GPU_VP9_SVC_LAYERS_STATEFUL_H_
+#define MEDIA_GPU_VP9_SVC_LAYERS_STATEFUL_H_
 
 #include <stdint.h>
 
@@ -23,7 +23,7 @@ struct Vp9Metadata;
 // number of temporal layers. The temporal layer sizes among spatial layers must
 // be identical. Temporal layers and spatial layers are described in
 // https://tools.ietf.org/html/draft-ietf-payload-vp9-10#section-3.
-class MEDIA_GPU_EXPORT VP9SVCLayers {
+class MEDIA_GPU_EXPORT VP9SVCLayersStateful {
  public:
   struct FrameConfig;
 
@@ -33,16 +33,16 @@ class MEDIA_GPU_EXPORT VP9SVCLayers {
       kVp9NumRefFrames / kMaxSpatialLayers;
   static_assert(
       kMaxNumUsedRefFramesEachSpatialLayer == 2u,
-      "VP9SVCLayers uses two reference frames for each spatial layer");
+      "VP9SVCLayersStateful uses two reference frames for each spatial layer");
   constexpr static size_t kMaxNumUsedReferenceFrames =
       kMaxNumUsedRefFramesEachSpatialLayer * kMaxSpatialLayers;
   static_assert(kMaxNumUsedReferenceFrames == 6u,
-                "VP9SVCLayers uses six reference frames");
+                "VP9SVCLayersStateful uses six reference frames");
 
   using SpatialLayer = VideoEncodeAccelerator::Config::SpatialLayer;
-  explicit VP9SVCLayers(const std::vector<SpatialLayer>& spatial_layers,
-                        SVCInterLayerPredMode inter_layer_pred);
-  ~VP9SVCLayers();
+  explicit VP9SVCLayersStateful(const std::vector<SpatialLayer>& spatial_layers,
+                                SVCInterLayerPredMode inter_layer_pred);
+  ~VP9SVCLayersStateful();
 
   // Returns true if EncodeJob needs to produce key frame.
   bool UpdateEncodeJob(bool is_key_frame_requested, size_t kf_period_frames);
@@ -64,7 +64,7 @@ class MEDIA_GPU_EXPORT VP9SVCLayers {
   }
 
  private:
-  friend class VP9SVCLayersTest;
+  friend class VP9SVCLayersStatefulTest;
 
   // Useful functions to construct refresh flag and detect reference frames
   // from the flag.
@@ -98,4 +98,4 @@ class MEDIA_GPU_EXPORT VP9SVCLayers {
 };
 
 }  // namespace media
-#endif  // MEDIA_GPU_VP9_SVC_LAYERS_H_
+#endif  // MEDIA_GPU_VP9_SVC_LAYERS_STATEFUL_H_

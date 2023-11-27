@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/gpu/vp9_svc_layers.h"
+#include "media/gpu/vp9_svc_layers_stateful.h"
 
 #include <algorithm>
 #include <array>
@@ -25,12 +25,12 @@ namespace {
 constexpr gfx::Size kDefaultEncodeSize(1280, 720);
 constexpr int kSpatialLayerResolutionDenom[] = {4, 2, 1};
 
-std::vector<VP9SVCLayers::SpatialLayer> GetDefaultSVCLayers(
+std::vector<VP9SVCLayersStateful::SpatialLayer> GetDefaultSVCLayers(
     size_t num_spatial_layers,
     size_t num_temporal_layers) {
-  std::vector<VP9SVCLayers::SpatialLayer> spatial_layers;
+  std::vector<VP9SVCLayersStateful::SpatialLayer> spatial_layers;
   for (uint8_t i = 0; i < num_spatial_layers; ++i) {
-    VP9SVCLayers::SpatialLayer spatial_layer;
+    VP9SVCLayersStateful::SpatialLayer spatial_layer;
     const int denom = kSpatialLayerResolutionDenom[i];
     spatial_layer.width = kDefaultEncodeSize.width() / denom;
     spatial_layer.height = kDefaultEncodeSize.height() / denom;
@@ -52,12 +52,12 @@ std::vector<gfx::Size> GetDefaultSVCResolutions(size_t num_spatial_layers) {
 }
 }  // namespace
 
-class VP9SVCLayersTest
+class VP9SVCLayersStatefulTest
     : public ::testing::TestWithParam<
           ::testing::tuple<size_t, size_t, SVCInterLayerPredMode>> {
  public:
-  VP9SVCLayersTest() = default;
-  ~VP9SVCLayersTest() = default;
+  VP9SVCLayersStatefulTest() = default;
+  ~VP9SVCLayersStatefulTest() = default;
 
  protected:
   void VerifykSVCRefFrames(
@@ -82,7 +82,7 @@ class VP9SVCLayersTest
                        size_t num_spatial_layers,
                        const Vp9Metadata& metadata);
 
-  void VerifyActiveLayer(const VP9SVCLayers& svc_layers,
+  void VerifyActiveLayer(const VP9SVCLayersStateful& svc_layers,
                          size_t expected_begin,
                          size_t expected_end) {
     EXPECT_EQ(svc_layers.begin_active_layer_, expected_begin);
@@ -90,14 +90,16 @@ class VP9SVCLayersTest
   }
 
  private:
-  std::vector<uint8_t> temporal_indices_[VP9SVCLayers::kMaxSpatialLayers];
+  std::vector<uint8_t>
+      temporal_indices_[VP9SVCLayersStateful::kMaxSpatialLayers];
   uint8_t spatial_index_;
 };
 
-void VP9SVCLayersTest::VerifyStructure(bool first_frame_in_spatial_layer,
-                                       size_t num_temporal_layers,
-                                       size_t num_spatial_layers,
-                                       const Vp9Metadata& metadata) {
+void VP9SVCLayersStatefulTest::VerifyStructure(
+    bool first_frame_in_spatial_layer,
+    size_t num_temporal_layers,
+    size_t num_spatial_layers,
+    const Vp9Metadata& metadata) {
   const uint8_t temporal_index = metadata.temporal_idx;
   const uint8_t spatial_index = metadata.spatial_idx;
   // Spatial index monotonically increases modulo |num_spatial_layers|.
@@ -138,7 +140,7 @@ void VP9SVCLayersTest::VerifyStructure(bool first_frame_in_spatial_layer,
   }
 }
 
-void VP9SVCLayersTest::VerifykSVCRefFrames(
+void VP9SVCLayersStatefulTest::VerifykSVCRefFrames(
     const Vp9FrameHeader& frame_hdr,
     const Vp9Metadata& metadata,
     const std::array<bool, kVp9NumRefsPerFrame>& ref_frames_used,
@@ -203,7 +205,7 @@ void VP9SVCLayersTest::VerifykSVCRefFrames(
   }
 }
 
-void VP9SVCLayersTest::VerifySmodeRefFrames(
+void VP9SVCLayersStatefulTest::VerifySmodeRefFrames(
     const Vp9FrameHeader& frame_hdr,
     const Vp9Metadata& metadata,
     const std::array<bool, kVp9NumRefsPerFrame>& ref_frames_used,
@@ -253,15 +255,15 @@ void VP9SVCLayersTest::VerifySmodeRefFrames(
   EXPECT_EQ(ref_spatial_index, spatial_index);
 }
 
-TEST_P(VP9SVCLayersTest, ) {
+TEST_P(VP9SVCLayersStatefulTest, ) {
   const size_t num_spatial_layers = ::testing::get<0>(GetParam());
   const size_t num_temporal_layers = ::testing::get<1>(GetParam());
   const SVCInterLayerPredMode inter_layer_pred_mode =
       ::testing::get<2>(GetParam());
 
-  const std::vector<VP9SVCLayers::SpatialLayer> spatial_layers =
+  const std::vector<VP9SVCLayersStateful::SpatialLayer> spatial_layers =
       GetDefaultSVCLayers(num_spatial_layers, num_temporal_layers);
-  VP9SVCLayers svc_layers(spatial_layers, inter_layer_pred_mode);
+  VP9SVCLayersStateful svc_layers(spatial_layers, inter_layer_pred_mode);
 
   constexpr size_t kNumFramesToEncode = 32;
   Vp9ReferenceFrameVector ref_frames;
@@ -307,7 +309,7 @@ TEST_P(VP9SVCLayersTest, ) {
 // inter_layer_pred_mode)
 INSTANTIATE_TEST_SUITE_P(
     ,
-    VP9SVCLayersTest,
+    VP9SVCLayersStatefulTest,
     ::testing::Values(std::make_tuple(1, 2, SVCInterLayerPredMode::kOff),
                       std::make_tuple(1, 3, SVCInterLayerPredMode::kOff),
                       std::make_tuple(2, 1, SVCInterLayerPredMode::kOnKeyPic),
@@ -323,18 +325,19 @@ INSTANTIATE_TEST_SUITE_P(
                       std::make_tuple(3, 2, SVCInterLayerPredMode::kOff),
                       std::make_tuple(3, 3, SVCInterLayerPredMode::kOff)));
 
-class VP9SVCLayersUpdateActiveLayerTest : public VP9SVCLayersTest {};
+class VP9SVCLayersStatefulUpdateActiveLayerTest
+    : public VP9SVCLayersStatefulTest {};
 
 // This test verifies the bitrate check in MaybeUpdateActiveLayer().
-TEST_P(VP9SVCLayersUpdateActiveLayerTest, MaybeUpdateActiveLayer) {
-  constexpr size_t kNumSpatialLayers = VP9SVCLayers::kMaxSpatialLayers;
+TEST_P(VP9SVCLayersStatefulUpdateActiveLayerTest, MaybeUpdateActiveLayer) {
+  constexpr size_t kNumSpatialLayers = VP9SVCLayersStateful::kMaxSpatialLayers;
   constexpr static size_t kNumTemporalLayers =
-      VP9SVCLayers::kMaxSupportedTemporalLayers;
+      VP9SVCLayersStateful::kMaxSupportedTemporalLayers;
   const SVCInterLayerPredMode inter_layer_pred_mode =
       ::testing::get<2>(GetParam());
-  const std::vector<VP9SVCLayers::SpatialLayer> spatial_layers =
+  const std::vector<VP9SVCLayersStateful::SpatialLayer> spatial_layers =
       GetDefaultSVCLayers(kNumSpatialLayers, kNumTemporalLayers);
-  VP9SVCLayers svc_layers(spatial_layers, inter_layer_pred_mode);
+  VP9SVCLayersStateful svc_layers(spatial_layers, inter_layer_pred_mode);
   const std::vector<gfx::Size> kSpatialLayerResolutions =
       svc_layers.active_spatial_layer_resolutions();
 
@@ -517,7 +520,7 @@ TEST_P(VP9SVCLayersUpdateActiveLayerTest, MaybeUpdateActiveLayer) {
 // Pass invalid spatial and temporal layers as won't use it.
 INSTANTIATE_TEST_SUITE_P(
     ,
-    VP9SVCLayersUpdateActiveLayerTest,
+    VP9SVCLayersStatefulUpdateActiveLayerTest,
     ::testing::Values(
         std::make_tuple(-1, -1, SVCInterLayerPredMode::kOff),
         std::make_tuple(-1, -1, SVCInterLayerPredMode::kOnKeyPic)));

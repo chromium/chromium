@@ -23,7 +23,7 @@ struct VP9RateControlRtcConfig;
 
 namespace media {
 class VaapiWrapper;
-class VP9SVCLayers;
+class VP9SVCLayersStateful;
 
 // Wrapper for the libVPX VP9 rate controller that allows us to override methods
 // for unit testing.
@@ -129,7 +129,7 @@ class VP9VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   EncodeParams current_params_;
 
   Vp9ReferenceFrameVector reference_frames_;
-  std::unique_ptr<VP9SVCLayers> svc_layers_;
+  std::unique_ptr<VP9SVCLayersStateful> svc_layers_;
 
   absl::optional<std::pair<VideoBitrateAllocation, uint32_t>>
       pending_update_rates_;

@@ -385,8 +385,8 @@ source_set("common") {
 
   if (is_win || use_vaapi) {
     sources += [
-      "vp9_svc_layers.cc",
-      "vp9_svc_layers.h",
+      "vp9_svc_layers_stateful.cc",
+      "vp9_svc_layers_stateful.h",
     ]
     configs += [ "//third_party/libvpx:libvpx_config" ]
     deps += [
@@ -653,7 +653,7 @@ source_set("unit_tests") {
   }
 
   if (is_win || use_vaapi) {
-    sources += [ "vp9_svc_layers_unittest.cc" ]
+    sources += [ "vp9_svc_layers_stateful_unittest.cc" ]
   }
 }
 

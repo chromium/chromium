@@ -21,7 +21,7 @@
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "media/gpu/vaapi/vp9_vaapi_video_encoder_delegate.h"
 #include "media/gpu/vp9_picture.h"
-#include "media/gpu/vp9_svc_layers.h"
+#include "media/gpu/vp9_svc_layers_stateful.h"
 #include "media/video/fake_gpu_memory_buffer.h"
 #include "media/video/video_encode_accelerator.h"
 #include "testing/gmock/include/gmock/gmock.h"

@@ -18,7 +18,7 @@
 #include "media/gpu/macros.h"
 #include "media/gpu/vaapi/vaapi_common.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
-#include "media/gpu/vp9_svc_layers.h"
+#include "media/gpu/vp9_svc_layers_stateful.h"
 #include "third_party/libvpx/source/libvpx/vp9/ratectrl_rtc.h"
 
 namespace media {
@@ -242,8 +242,9 @@ bool VP9VaapiVideoEncoderDelegate::Initialize(
         return false;
       }
     }
-    if (num_spatial_layers > VP9SVCLayers::kMaxSpatialLayers ||
-        num_temporal_layers > VP9SVCLayers::kMaxSupportedTemporalLayers) {
+    if (num_spatial_layers > VP9SVCLayersStateful::kMaxSpatialLayers ||
+        num_temporal_layers >
+            VP9SVCLayersStateful::kMaxSupportedTemporalLayers) {
       VLOGF(1) << "Unsupported amount of spatial/temporal layers: "
                << ", Spatial layer number: " << num_spatial_layers
                << ", Temporal layer number: " << num_temporal_layers;
@@ -259,8 +260,8 @@ bool VP9VaapiVideoEncoderDelegate::Initialize(
       spatial_layer_resolutions.emplace_back(
           gfx::Size(spatial_layer.width, spatial_layer.height));
     }
-    svc_layers_ = std::make_unique<VP9SVCLayers>(config.spatial_layers,
-                                                 config.inter_layer_pred);
+    svc_layers_ = std::make_unique<VP9SVCLayersStateful>(
+        config.spatial_layers, config.inter_layer_pred);
 
     current_params_.error_resilident_mode = true;
   }

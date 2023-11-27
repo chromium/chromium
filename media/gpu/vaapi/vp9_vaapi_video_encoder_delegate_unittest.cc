@@ -20,7 +20,7 @@
 #include "media/gpu/gpu_video_encode_accelerator_helpers.h"
 #include "media/gpu/vaapi/vaapi_common.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
-#include "media/gpu/vp9_svc_layers.h"
+#include "media/gpu/vp9_svc_layers_stateful.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -469,7 +469,7 @@ void VP9VaapiVideoEncoderDelegateTest::UpdateRatesAndEncode(
                   bitrate_allocation ||
               encoder_->current_params_.framerate != framerate);
   // Since the request is pended, this is always successful and no call happens
-  // to VP9SVCLayers and RateControl.
+  // to VP9SVCLayersStateful and RateControl.
   EXPECT_TRUE(encoder_->UpdateRates(bitrate_allocation, framerate));
   EXPECT_TRUE(encoder_->pending_update_rates_.has_value());
 
@@ -515,8 +515,10 @@ void VP9VaapiVideoEncoderDelegateTest::UpdateRatesTest(
     SVCInterLayerPredMode inter_layer_pred,
     size_t num_spatial_layers,
     size_t num_temporal_layers) {
-  ASSERT_TRUE(num_temporal_layers <= VP9SVCLayers::kMaxSupportedTemporalLayers);
-  ASSERT_TRUE(num_spatial_layers <= VP9SVCLayers::kMaxSupportedTemporalLayers);
+  ASSERT_TRUE(num_temporal_layers <=
+              VP9SVCLayersStateful::kMaxSupportedTemporalLayers);
+  ASSERT_TRUE(num_spatial_layers <=
+              VP9SVCLayersStateful::kMaxSupportedTemporalLayers);
   const auto spatial_layer_resolutions =
       GetDefaultSpatialLayerResolutions(num_spatial_layers);
   auto update_rates_and_encode = [this, inter_layer_pred, num_spatial_layers,
@@ -700,7 +702,7 @@ TEST_P(VP9VaapiVideoEncoderDelegateTest, DeactivateActivateSpatialLayers) {
   // that it has non-zero bitrate up to the maximum supported temporal layers.
   const VideoBitrateAllocation kDefaultBitrateAllocation =
       AllocateDefaultBitrateForTesting(
-          num_spatial_layers, VP9SVCLayers::kMaxSupportedTemporalLayers,
+          num_spatial_layers, VP9SVCLayersStateful::kMaxSupportedTemporalLayers,
           kDefaultVideoEncodeAcceleratorConfig.bitrate);
   const std::vector<gfx::Size> kDefaultSpatialLayers =
       GetDefaultSpatialLayerResolutions(num_spatial_layers);

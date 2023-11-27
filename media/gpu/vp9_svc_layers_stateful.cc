@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/gpu/vp9_svc_layers.h"
+#include "media/gpu/vp9_svc_layers_stateful.h"
 
 #include <bitset>
 
@@ -14,14 +14,16 @@
 
 namespace media {
 namespace {
-static_assert(VideoBitrateAllocation::kMaxTemporalLayers >=
-                  VP9SVCLayers::kMaxSupportedTemporalLayers,
-              "VP9SVCLayers and VideoBitrateAllocation are dimensionally "
-              "inconsistent.");
-static_assert(VideoBitrateAllocation::kMaxSpatialLayers >=
-                  VP9SVCLayers::kMaxSpatialLayers,
-              "VP9SVCLayers and VideoBitrateAllocation are dimensionally "
-              "inconsistent.");
+static_assert(
+    VideoBitrateAllocation::kMaxTemporalLayers >=
+        VP9SVCLayersStateful::kMaxSupportedTemporalLayers,
+    "VP9SVCLayersStateful and VideoBitrateAllocation are dimensionally "
+    "inconsistent.");
+static_assert(
+    VideoBitrateAllocation::kMaxSpatialLayers >=
+        VP9SVCLayersStateful::kMaxSpatialLayers,
+    "VP9SVCLayersStateful and VideoBitrateAllocation are dimensionally "
+    "inconsistent.");
 
 enum FrameFlags : uint8_t {
   kNone = 0,
@@ -41,7 +43,7 @@ const char* GetSVCName(size_t begin_active_layer,
 }
 }  // namespace
 
-struct VP9SVCLayers::FrameConfig {
+struct VP9SVCLayersStateful::FrameConfig {
   FrameConfig(size_t layer_index,
               FrameFlags first,
               FrameFlags second,
@@ -51,9 +53,9 @@ struct VP9SVCLayers::FrameConfig {
         temporal_up_switch_(temporal_up_switch) {}
   FrameConfig() = delete;
 
-  // VP9SVCLayers uses 2 reference frame slots for each spatial layer, and
-  // totally uses up to 6 reference frame slots. SL0 uses the first two (0, 1)
-  // slots, SL1 uses middle two (2, 3) slots, and SL2 uses last two (4, 5)
+  // VP9SVCLayersStateful uses 2 reference frame slots for each spatial layer,
+  // and totally uses up to 6 reference frame slots. SL0 uses the first two (0,
+  // 1) slots, SL1 uses middle two (2, 3) slots, and SL2 uses last two (4, 5)
   // slots.
   std::vector<uint8_t> GetRefFrameIndices(
       size_t spatial_idx,
@@ -102,9 +104,9 @@ struct VP9SVCLayers::FrameConfig {
 namespace {
 // GetTemporalLayersReferencePattern() constructs the
 // following temporal layers.
-std::vector<VP9SVCLayers::FrameConfig> GetTemporalLayersReferencePattern(
-    size_t num_temporal_layers) {
-  using FrameConfig = VP9SVCLayers::FrameConfig;
+std::vector<VP9SVCLayersStateful::FrameConfig>
+GetTemporalLayersReferencePattern(size_t num_temporal_layers) {
+  using FrameConfig = VP9SVCLayersStateful::FrameConfig;
   switch (num_temporal_layers) {
     case 1:
       // In this case, the number of spatial layers must great than 1.
@@ -137,8 +139,9 @@ std::vector<VP9SVCLayers::FrameConfig> GetTemporalLayersReferencePattern(
 }
 }  // namespace
 
-VP9SVCLayers::VP9SVCLayers(const std::vector<SpatialLayer>& spatial_layers,
-                           SVCInterLayerPredMode inter_layer_pred)
+VP9SVCLayersStateful::VP9SVCLayersStateful(
+    const std::vector<SpatialLayer>& spatial_layers,
+    SVCInterLayerPredMode inter_layer_pred)
     : num_temporal_layers_(spatial_layers[0].num_of_temporal_layers),
       temporal_layers_reference_pattern_(
           GetTemporalLayersReferencePattern(num_temporal_layers_)),
@@ -156,10 +159,10 @@ VP9SVCLayers::VP9SVCLayers(const std::vector<SpatialLayer>& spatial_layers,
   CHECK_LE(spatial_layer_resolutions_.size(), kMaxSpatialLayers);
 }
 
-VP9SVCLayers::~VP9SVCLayers() = default;
+VP9SVCLayersStateful::~VP9SVCLayersStateful() = default;
 
-bool VP9SVCLayers::UpdateEncodeJob(bool is_key_frame_requested,
-                                   size_t kf_period_frames) {
+bool VP9SVCLayersStateful::UpdateEncodeJob(bool is_key_frame_requested,
+                                           size_t kf_period_frames) {
   if (force_key_frame_ || is_key_frame_requested) {
     frame_num_ = 0;
     spatial_idx_ = 0;
@@ -175,7 +178,7 @@ bool VP9SVCLayers::UpdateEncodeJob(bool is_key_frame_requested,
   return frame_num_ == 0 && spatial_idx_ == 0;
 }
 
-bool VP9SVCLayers::MaybeUpdateActiveLayer(
+bool VP9SVCLayersStateful::MaybeUpdateActiveLayer(
     VideoBitrateAllocation* bitrate_allocation) {
   // Don't update active layer if current picture haven't completed SVC
   // encoding. Since the |spatial_idx_| is updated in the beginning of next
@@ -319,7 +322,7 @@ bool VP9SVCLayers::MaybeUpdateActiveLayer(
   return true;
 }
 
-void VP9SVCLayers::FillUsedRefFramesAndMetadata(
+void VP9SVCLayersStateful::FillUsedRefFramesAndMetadata(
     VP9Picture* picture,
     std::array<bool, kVp9NumRefsPerFrame>* ref_frames_used) {
   DCHECK(picture->frame_hdr);
@@ -362,7 +365,7 @@ void VP9SVCLayers::FillUsedRefFramesAndMetadata(
 
   if (spatial_idx_ == 0)
     pattern_index_ = (pattern_index_ + 1) % temporal_pattern_size_;
-  const VP9SVCLayers::FrameConfig& temporal_layers_config =
+  const VP9SVCLayersStateful::FrameConfig& temporal_layers_config =
       temporal_layers_reference_pattern_[pattern_index_];
 
   // Set the slots in reference frame pool that will be updated.
@@ -404,7 +407,7 @@ void VP9SVCLayers::FillUsedRefFramesAndMetadata(
   spatial_idx_++;
 }
 
-void VP9SVCLayers::FillVp9MetadataForEncoding(
+void VP9SVCLayersStateful::FillVp9MetadataForEncoding(
     Vp9Metadata* metadata,
     const std::vector<uint8_t>& reference_frame_indices) const {
   metadata->end_of_picture =
@@ -425,7 +428,7 @@ void VP9SVCLayers::FillVp9MetadataForEncoding(
     metadata->spatial_layer_resolutions = active_spatial_layer_resolutions_;
     // |begin_active_layer_| and |end_active_layer_| are less than
     // |spatial_layer_resolutions_.size()|, which is
-    // VP9SVCLayers::kMaxSpatialLayers at most.
+    // VP9SVCLayersStateful::kMaxSpatialLayers at most.
     metadata->begin_active_spatial_layer_index =
         base::checked_cast<uint8_t>(begin_active_layer_);
     metadata->end_active_spatial_layer_index =
@@ -479,7 +482,7 @@ void VP9SVCLayers::FillVp9MetadataForEncoding(
 
 // Use current pattern index to update the reference frame's pattern index,
 // this is used to calculate |p_diffs|.
-void VP9SVCLayers::UpdateRefFramesPatternIndex(
+void VP9SVCLayersStateful::UpdateRefFramesPatternIndex(
     const std::vector<uint8_t>& refresh_frame_indices) {
   for (const uint8_t i : refresh_frame_indices)
     pattern_index_of_ref_frames_slots_[i] = pattern_index_;
