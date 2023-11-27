@@ -3029,7 +3029,7 @@ if (!is_android) {
         "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
         "//chrome/browser/ash/system_web_apps/types",
         "//chrome/browser/ui/ash/system_web_apps",
-        "//chrome/test/data/webui:web_ui_test_bindings",
+        "//chrome/test/data/webui/chromeos:web_ui_test_bindings",
         "//chromeos/ash/components/standalone_browser",
         "//chromeos/components/kiosk:test_support",
       ]
@@ -10512,7 +10512,7 @@ if (!is_android) {
         "//chrome/browser/ash",
         "//chrome/browser/ash/system_web_apps",
         "//chrome/browser/ash/system_web_apps/test_support",
-        "//chrome/test/data/webui:web_ui_test_bindings",
+        "//chrome/test/data/webui/chromeos:web_ui_test_bindings",
         "//chromeos/ash/components/browser_context_helper",
         "//chromeos/ash/components/cryptohome",
         "//chromeos/ash/services/device_sync",

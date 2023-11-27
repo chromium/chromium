@@ -10,7 +10,6 @@ import("//components/compose/features.gni")
 import("//components/signin/features.gni")
 import("//crypto/features.gni")
 import("//extensions/buildflags/buildflags.gni")
-import("//mojo/public/tools/bindings/mojom.gni")
 import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//tools/grit/grit_rule.gni")
@@ -271,36 +270,6 @@ generate_grd("build_mocha_grdp") {
   input_files = [ "mocha.js" ]
 }
 
-if (is_chromeos_ash) {
-  mojom("web_ui_test_bindings") {
-    sources = [ "web_ui_test.mojom" ]
-    webui_module_path = "/"
-
-    # Used by legacy MojoWebUIBrowserTest.
-    use_typescript_sources = false
-  }
-
-  generate_grd("build_web_ui_test_mojo_grdp") {
-    testonly = true
-    grd_prefix = "webui_test"
-    out_grd = "$target_gen_dir/web_ui_test_mojo_resources.grdp"
-    input_files_base_dir =
-        rebase_path("$root_gen_dir/mojom-webui/chrome/test/data/webui/",
-                    root_build_dir)
-    input_files = [ "web_ui_test.mojom-webui.js" ]
-    deps = [ ":web_ui_test_bindings_js__generator" ]
-  }
-
-  generate_grd("build_web_ui_test_mojo_lite_grdp") {
-    testonly = true
-    grd_prefix = "webui_test"
-    out_grd = "$target_gen_dir/web_ui_test_mojo_lite_resources.grdp"
-    input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
-    input_files = [ "web_ui_test.mojom-lite.js" ]
-    deps = [ ":web_ui_test_bindings_js__generator" ]
-  }
-}
-
 ts_library("build_ts") {
   root_dir = "."
   out_dir = "$target_gen_dir/tsc"
@@ -508,9 +477,9 @@ generate_grd("build_grd") {
 
   if (is_chromeos_ash) {
     deps += [
-      ":build_web_ui_test_mojo_grdp",
-      ":build_web_ui_test_mojo_lite_grdp",
       "chromeos:build_grdp",
+      "chromeos:build_web_ui_test_mojo_grdp",
+      "chromeos:build_web_ui_test_mojo_lite_grdp",
       "chromeos/ash_common:build_grdp",
       "chromeos/borealis_installer:build_grdp",
       "chromeos/cloud_upload:build_grdp",
@@ -533,7 +502,6 @@ generate_grd("build_grd") {
       "//ui/file_manager:build_tests_grdp",
     ]
     grdp_files += [
-      "$target_gen_dir/chromeos/resources.grdp",
       "$target_gen_dir/chromeos/ash_common/resources.grdp",
       "$target_gen_dir/chromeos/borealis_installer/resources.grdp",
       "$target_gen_dir/chromeos/cloud_upload/resources.grdp",
@@ -542,18 +510,19 @@ generate_grd("build_grd") {
       "$target_gen_dir/chromeos/emoji_picker/resources.grdp",
       "$target_gen_dir/chromeos/enterprise_reporting/resources.grdp",
       "$target_gen_dir/chromeos/firmware_update/resources.grdp",
+      "$target_gen_dir/chromeos/manage_mirrorsync/resources.grdp",
       "$target_gen_dir/chromeos/office_fallback/resources.grdp",
       "$target_gen_dir/chromeos/parent_access/resources.grdp",
       "$target_gen_dir/chromeos/personalization_app/resources.grdp",
+      "$target_gen_dir/chromeos/print_management/resources.grdp",
+      "$target_gen_dir/chromeos/resources.grdp",
       "$target_gen_dir/chromeos/scanning/resources.grdp",
       "$target_gen_dir/chromeos/shortcut_customization/resources.grdp",
-      "$target_gen_dir/chromeos/print_management/resources.grdp",
-      "$target_gen_dir/chromeos/manage_mirrorsync/resources.grdp",
+      "$target_gen_dir/chromeos/web_ui_test_mojo_lite_resources.grdp",
+      "$target_gen_dir/chromeos/web_ui_test_mojo_resources.grdp",
       "$target_gen_dir/cr_components/chromeos/resources.grdp",
       "$target_gen_dir/nearby_share/resources.grdp",
       "$target_gen_dir/settings/chromeos/resources.grdp",
-      "$target_gen_dir/web_ui_test_mojo_lite_resources.grdp",
-      "$target_gen_dir/web_ui_test_mojo_resources.grdp",
       "$root_gen_dir/ui/file_manager/tests_resources.grdp",
       "$root_gen_dir/ui/file_manager/tests_gen_resources.grdp",
     ]

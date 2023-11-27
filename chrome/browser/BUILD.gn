@@ -8620,7 +8620,7 @@ if (!is_android) {
       "//content/test:test_support",
     ]
     if (is_chromeos_ash) {
-      deps += [ "//chrome/test/data/webui:web_ui_test_bindings" ]
+      deps += [ "//chrome/test/data/webui/chromeos:web_ui_test_bindings" ]
     }
 
     public_deps = [

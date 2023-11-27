@@ -7,7 +7,7 @@
  * "mojo_webui" to have proper support in test_api.js.
  */
 
-import {TestRunner} from './web_ui_test.mojom-webui.js';
+import {TestRunner} from './chromeos/web_ui_test.mojom-webui.js';
 
 /**
  * Reports a test result using the TestRunner Mojo interface.
