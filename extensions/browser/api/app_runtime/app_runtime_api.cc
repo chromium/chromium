@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "extensions/browser/entry_info.h"
@@ -51,8 +50,6 @@ void DispatchOnLaunchedEventImpl(const std::string& extension_id,
                                  app_runtime::LaunchSource source,
                                  base::Value::Dict launch_data,
                                  BrowserContext* context) {
-  UMA_HISTOGRAM_ENUMERATION("Extensions.AppLaunchSource", source);
-
   launch_data.Set("isDemoSession",
                   ExtensionsBrowserClient::Get()->IsInDemoMode());
 
