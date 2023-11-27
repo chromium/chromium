@@ -72,7 +72,7 @@ class CONTENT_EXPORT PrefetchOriginProber {
                                     const net::AddressList& addresses);
 
   // The current browser context, not owned.
-  raw_ptr<BrowserContext, AcrossTasksDanglingUntriaged> browser_context_;
+  raw_ptr<BrowserContext> browser_context_;
 
   // The TLS canary url checker.
   std::unique_ptr<PrefetchCanaryChecker> tls_canary_checker_;
