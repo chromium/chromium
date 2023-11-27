@@ -65,7 +65,6 @@ import org.chromium.chrome.browser.customtabs.ClientManager.CalledWarmup;
 import org.chromium.chrome.browser.customtabs.content.EngagementSignalsHandler;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.page_insights.proto.Config.PageInsightsConfig;
@@ -163,10 +162,6 @@ public class CustomTabsConnection {
     @VisibleForTesting static final String ON_ACTIVITY_LAYOUT_RIGHT_EXTRA = "right";
     @VisibleForTesting static final String ON_ACTIVITY_LAYOUT_BOTTOM_EXTRA = "bottom";
     @VisibleForTesting static final String ON_ACTIVITY_LAYOUT_STATE_EXTRA = "state";
-
-    private static final MutableFlagWithSafeDefault sRealTimeEngagementFlag =
-            new MutableFlagWithSafeDefault(
-                    ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS, false);
 
     @IntDef({
         ParallelRequestStatus.NO_REQUEST,
@@ -1515,7 +1510,7 @@ public class CustomTabsConnection {
             }
         }
         if (featureName.equals(ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS)) {
-            return sRealTimeEngagementFlag.isEnabled();
+            return ChromeFeatureList.sCctRealTimeEngagementSignals.isEnabled();
         }
         Log.e(TAG, "Unsupported Feature!");
         return false;

@@ -50,7 +50,6 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.EventFilter.EventType;
@@ -113,11 +112,6 @@ public class CompositorViewHolder extends FrameLayout
                 TabObscuringHandler.Observer,
                 ViewGroup.OnHierarchyChangeListener {
     private static final long SYSTEM_UI_VIEWPORT_UPDATE_DELAY_MS = 500;
-    private static final MutableFlagWithSafeDefault sDeferKeepScreenOnFlag =
-            new MutableFlagWithSafeDefault(
-                    ChromeFeatureList.DEFER_KEEP_SCREEN_ON_DURING_GESTURE, false);
-    private static final MutableFlagWithSafeDefault sDeferNotifyInMotion =
-            new MutableFlagWithSafeDefault(ChromeFeatureList.DEFER_NOTIFY_IN_MOTION, false);
 
     /**
      * Initializer interface used to decouple initialization from the class that owns
@@ -723,7 +717,7 @@ public class CompositorViewHolder extends FrameLayout
             mInGesture = false;
             tryUpdateControlsAndWebContentsSizing();
         }
-        if (!sDeferNotifyInMotion.isEnabled()) {
+        if (!ChromeFeatureList.sDeferNotifyInMotion.isEnabled()) {
             updateInMotion();
         }
     }
@@ -732,7 +726,7 @@ public class CompositorViewHolder extends FrameLayout
         // TODO(https://crbug.com/1378716): Track fling as well.
         boolean inMotion = mInGesture || mContentViewScrolling;
         mInMotionSupplier.set(inMotion);
-        if (sDeferKeepScreenOnFlag.isEnabled() && mContentView != null) {
+        if (ChromeFeatureList.sDeferKeepScreenOnDuringGesture.isEnabled() && mContentView != null) {
             mContentView.setDeferKeepScreenOnChanges(inMotion);
         }
     }
@@ -794,7 +788,7 @@ public class CompositorViewHolder extends FrameLayout
         // notifying in motion, should be done after this.
         boolean handled = super.dispatchTouchEvent(e);
 
-        if (sDeferNotifyInMotion.isEnabled()) {
+        if (ChromeFeatureList.sDeferNotifyInMotion.isEnabled()) {
             updateInMotion();
         }
         return handled;

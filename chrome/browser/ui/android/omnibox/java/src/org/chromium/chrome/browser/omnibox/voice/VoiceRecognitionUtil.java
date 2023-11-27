@@ -14,7 +14,6 @@ import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -26,9 +25,6 @@ import org.chromium.ui.permissions.AndroidPermissionDelegate;
 public class VoiceRecognitionUtil {
     private static Boolean sHasRecognitionIntentHandler;
     private static Boolean sIsVoiceSearchEnabledForTesting;
-    private static MutableFlagWithSafeDefault sVoiceSearchAudioCapturePolicyFlag =
-            new MutableFlagWithSafeDefault(
-                    ChromeFeatureList.VOICE_SEARCH_AUDIO_CAPTURE_POLICY, false);
 
     /**
      * Returns whether voice search is enabled.
@@ -81,7 +77,7 @@ public class VoiceRecognitionUtil {
      * @return true if the Enterprise policies permit execution of a voice search.
      */
     public static boolean isVoiceSearchPermittedByPolicy(boolean strictPolicyCheck) {
-        if (sVoiceSearchAudioCapturePolicyFlag.isEnabled()) {
+        if (ChromeFeatureList.sVoiceSearchAudioCapturePolicy.isEnabled()) {
             // If the PrefService isn't initialized yet we won't know here whether or not voice
             // search is allowed by policy. In that case, treat voice search as enabled but check
             // again when a Profile is set and PrefService becomes available.

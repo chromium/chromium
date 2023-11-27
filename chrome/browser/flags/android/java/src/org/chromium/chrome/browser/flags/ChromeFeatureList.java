@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.flags;
 
 import org.chromium.base.FeatureMap;
+import org.chromium.base.MutableFlagWithSafeDefault;
 
 import java.util.List;
 import java.util.Map;
@@ -94,6 +95,11 @@ public abstract class ChromeFeatureList {
      */
     public static Map<String, String> getFieldTrialParamsForFeature(String featureName) {
         return ChromeFeatureMap.getInstance().getFieldTrialParamsForFeature(featureName);
+    }
+
+    private static MutableFlagWithSafeDefault newMutableFlagWithSafeDefault(
+            String featureName, boolean defaultValue) {
+        return ChromeFeatureMap.getInstance().mutableFlagWithSafeDefault(featureName, defaultValue);
     }
 
     /* Alphabetical: */
@@ -742,6 +748,63 @@ public abstract class ChromeFeatureList {
 
     // MutableFlagWithSafeDefault instances
     /* Alphabetical: */
+    public static final MutableFlagWithSafeDefault sAdvancedPeripheralsSupportTabStrip =
+            newMutableFlagWithSafeDefault(ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP, false);
+    public static final MutableFlagWithSafeDefault sAndroidImprovedBookmarks =
+            newMutableFlagWithSafeDefault(ANDROID_IMPROVED_BOOKMARKS, false);
+    public static final MutableFlagWithSafeDefault sAvoidRelayoutDuringFocusAnimation =
+            newMutableFlagWithSafeDefault(AVOID_RELAYOUT_DURING_FOCUS_ANIMATION, true);
+    public static final MutableFlagWithSafeDefault sCctRealTimeEngagementSignals =
+            newMutableFlagWithSafeDefault(CCT_REAL_TIME_ENGAGEMENT_SIGNALS, false);
     public static final MutableFlagWithSafeDefault sCctTextFragmentLookupApiEnabled =
-            new MutableFlagWithSafeDefault(CCT_TEXT_FRAGMENT_LOOKUP_API_ENABLED, false);
+            newMutableFlagWithSafeDefault(CCT_TEXT_FRAGMENT_LOOKUP_API_ENABLED, false);
+    public static final MutableFlagWithSafeDefault sDeferKeepScreenOnDuringGesture =
+            newMutableFlagWithSafeDefault(DEFER_KEEP_SCREEN_ON_DURING_GESTURE, false);
+    public static final MutableFlagWithSafeDefault sDeferNotifyInMotion =
+            newMutableFlagWithSafeDefault(DEFER_NOTIFY_IN_MOTION, false);
+    public static final MutableFlagWithSafeDefault sDelayTransitionsForAnimation =
+            newMutableFlagWithSafeDefault(DELAY_TRANSITIONS_FOR_ANIMATION, true);
+    public static final MutableFlagWithSafeDefault sEnableBookmarkFoldersForAccountStorage =
+            newMutableFlagWithSafeDefault(ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE, false);
+
+    public static final MutableFlagWithSafeDefault sIncognitoNtpRevamp =
+            newMutableFlagWithSafeDefault(INCOGNITO_NTP_REVAMP, false);
+    public static final MutableFlagWithSafeDefault sIncognitoScreenshot =
+            newMutableFlagWithSafeDefault(INCOGNITO_SCREENSHOT, false);
+    public static final MutableFlagWithSafeDefault sNoVisibleHintForTablets =
+            newMutableFlagWithSafeDefault(ANDROID_NO_VISIBLE_HINT_FOR_TABLETS, false);
+    public static final MutableFlagWithSafeDefault sOmniboxCacheSuggestionResources =
+            newMutableFlagWithSafeDefault(OMNIBOX_CACHE_SUGGESTION_RESOURCES, true);
+    public static final MutableFlagWithSafeDefault sOmniboxHistoryClusterProvider =
+            newMutableFlagWithSafeDefault(OMNIBOX_HISTORY_CLUSTER_PROVIDER, false);
+    public static final MutableFlagWithSafeDefault sOmniboxJourneysActionChipFlag =
+            newMutableFlagWithSafeDefault(OMNIBOX_HISTORY_CLUSTER_ACTION_CHIP, false);
+    public static final MutableFlagWithSafeDefault sOmniboxNoopEditUrlSuggestionClicks =
+            newMutableFlagWithSafeDefault(OMNIBOX_NOOP_EDIT_URL_SUGGESTION_CLICKS, false);
+    public static final MutableFlagWithSafeDefault sOmniboxWarmRecycledViewPool =
+            newMutableFlagWithSafeDefault(OMNIBOX_WARM_RECYCLED_VIEW_POOL, true);
+    public static final MutableFlagWithSafeDefault sQuickDeleteForAndroid =
+            newMutableFlagWithSafeDefault(QUICK_DELETE_FOR_ANDROID, false);
+    public static final MutableFlagWithSafeDefault sReaderModeCct =
+            newMutableFlagWithSafeDefault(READER_MODE_IN_CCT, false);
+    public static final MutableFlagWithSafeDefault sRecordSuppressionMetrics =
+            newMutableFlagWithSafeDefault(RECORD_SUPPRESSION_METRICS, true);
+    public static final MutableFlagWithSafeDefault sScrollToTLDOptimizations =
+            newMutableFlagWithSafeDefault(SCROLL_TO_TLD_OPTIMIZATION, false);
+    public static final MutableFlagWithSafeDefault sSearchReadyOmniboxAllowQueryEdit =
+            newMutableFlagWithSafeDefault(SEARCH_READY_OMNIBOX_ALLOW_QUERY_EDIT, false);
+    public static final MutableFlagWithSafeDefault sShortCircuitUnfocusAnimation =
+            newMutableFlagWithSafeDefault(SHORT_CIRCUIT_UNFOCUS_ANIMATION, false);
+    public static final MutableFlagWithSafeDefault sSuppressionToolbarCaptures =
+            newMutableFlagWithSafeDefault(SUPPRESS_TOOLBAR_CAPTURES, false);
+    public static final MutableFlagWithSafeDefault sThumbnailPlaceholder =
+            newMutableFlagWithSafeDefault(THUMBNAIL_PLACEHOLDER, false);
+    public static final MutableFlagWithSafeDefault sToolbarScrollAblation =
+            newMutableFlagWithSafeDefault(TOOLBAR_SCROLL_ABLATION_ANDROID, false);
+    public static final MutableFlagWithSafeDefault sTouchDownTriggerForPrefetch =
+            newMutableFlagWithSafeDefault(OMNIBOX_TOUCH_DOWN_TRIGGER_FOR_PREFETCH, false);
+    public static final MutableFlagWithSafeDefault sVisibleUrlTruncation =
+            newMutableFlagWithSafeDefault(ANDROID_VISIBLE_URL_TRUNCATION, false);
+    public static final MutableFlagWithSafeDefault sVoiceSearchAudioCapturePolicy =
+            newMutableFlagWithSafeDefault(VOICE_SEARCH_AUDIO_CAPTURE_POLICY, false);
 }

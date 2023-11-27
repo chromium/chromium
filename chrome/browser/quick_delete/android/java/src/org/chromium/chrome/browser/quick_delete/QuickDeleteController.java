@@ -16,7 +16,6 @@ import androidx.annotation.NonNull;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.browsing_data.TimePeriodUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -30,8 +29,6 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** A controller responsible for setting up quick delete MVC. */
 public class QuickDeleteController {
-    private static final MutableFlagWithSafeDefault sQuickDeleteForAndroidFlag =
-            new MutableFlagWithSafeDefault(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID, false);
 
     private final @NonNull Context mContext;
     private final @NonNull QuickDeleteDelegate mDelegate;
@@ -105,7 +102,7 @@ public class QuickDeleteController {
      * @return True, if quick delete feature flag is enabled, false otherwise
      */
     public static boolean isQuickDeleteEnabled() {
-        return sQuickDeleteForAndroidFlag.isEnabled();
+        return ChromeFeatureList.sQuickDeleteForAndroid.isEnabled();
     }
 
     /** A method called when the user confirms or cancels the dialog. */

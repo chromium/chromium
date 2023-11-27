@@ -26,6 +26,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -219,7 +220,7 @@ public class UrlBarUiUnitTest {
 
         updateUrlBarText(
                 getUrlText() + "/foooooo", UrlBar.ScrollType.SCROLL_TO_TLD, domain.length());
-        if (UrlBar.sScrollToTLDOptimizationsFlag.isEnabled()) {
+        if (ChromeFeatureList.sScrollToTLDOptimizations.isEnabled()) {
             assertTextEquals(urlText, getVisibleTextPrefixHint());
         } else {
             assertTextEquals(urlText + "/", getVisibleTextPrefixHint());

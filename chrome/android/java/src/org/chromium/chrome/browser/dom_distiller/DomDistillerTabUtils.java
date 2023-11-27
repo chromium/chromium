@@ -9,7 +9,6 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.navigation_interception.InterceptNavigationDelegate;
@@ -25,9 +24,6 @@ public class DomDistillerTabUtils {
 
     /** Used to specify whether mobile friendly is enabled for testing purposes. */
     private static Boolean sExcludeMobileFriendlyForTesting;
-
-    private static MutableFlagWithSafeDefault sReaderModeCctFlag =
-            new MutableFlagWithSafeDefault(ChromeFeatureList.READER_MODE_IN_CCT, false);
 
     @DistillerHeuristicsType private static Integer sHeuristicsForTesting;
 
@@ -137,7 +133,7 @@ public class DomDistillerTabUtils {
      * @return True if it should.
      */
     public static boolean isCctMode() {
-        return sReaderModeCctFlag.isEnabled();
+        return ChromeFeatureList.sReaderModeCct.isEnabled();
     }
 
     /**

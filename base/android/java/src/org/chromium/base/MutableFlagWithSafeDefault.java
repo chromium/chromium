@@ -2,26 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.flags;
-
-import org.chromium.base.FeatureList;
-import org.chromium.base.Flag;
+package org.chromium.base;
 
 /**
  * Flags of this type are un-cached flags that may be called before native,
  * but not primarily. They have good default values to use before native is loaded,
  * and will switch to using the native value once native is loaded.
  * These flags replace code like:
- * if (FeatureList.isInitialized() && ChromeFeatureList.isEnabled(featureName))
+ * if (FeatureList.isInitialized() && SomeFeatureMap.isEnabled(featureName))
  * or
- * if (!FeatureList.isInitialized() || ChromeFeatureList.isEnabled(featureName)).
+ * if (!FeatureList.isInitialized() || SomeFeatureMap.isEnabled(featureName)).
  */
 public class MutableFlagWithSafeDefault extends Flag {
     private final boolean mDefaultValue;
+    private final FeatureMap mFeatureMap;
     private Boolean mInMemoryCachedValue;
 
-    public MutableFlagWithSafeDefault(String featureName, boolean defaultValue) {
+    public MutableFlagWithSafeDefault(
+            FeatureMap featureMap, String featureName, boolean defaultValue) {
         super(featureName);
+        mFeatureMap = featureMap;
         mDefaultValue = defaultValue;
     }
 
@@ -29,11 +29,11 @@ public class MutableFlagWithSafeDefault extends Flag {
     public boolean isEnabled() {
         if (mInMemoryCachedValue != null) return mInMemoryCachedValue;
         if (FeatureList.hasTestFeature(mFeatureName)) {
-            return ChromeFeatureList.isEnabled(mFeatureName);
+            return mFeatureMap.isEnabledInNative(mFeatureName);
         }
 
         if (FeatureList.isNativeInitialized()) {
-            mInMemoryCachedValue = ChromeFeatureList.isEnabled(mFeatureName);
+            mInMemoryCachedValue = mFeatureMap.isEnabledInNative(mFeatureName);
             return mInMemoryCachedValue;
         }
 

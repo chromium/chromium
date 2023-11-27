@@ -366,6 +366,7 @@ android_library("unit_device_javatests") {
   deps = [
     ":java",
     ":java_resources",
+    "//base:base_java",
     "//base:base_java_test_support",
     "//chrome/android:chrome_app_java_resources",
     "//chrome/browser/flags:java",

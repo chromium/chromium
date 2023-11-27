@@ -13,7 +13,6 @@ import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
-import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 
@@ -58,13 +57,6 @@ public class TabUiFeatureUtilities {
                     ChromeFeatureList.GRID_TAB_SWITCHER_ANDROID_ANIMATIONS,
                     ANIMATION_START_TIMEOUT_MS_PARAM,
                     300);
-
-    public static final MutableFlagWithSafeDefault sThumbnailPlaceholder =
-            new MutableFlagWithSafeDefault(ChromeFeatureList.THUMBNAIL_PLACEHOLDER, false);
-
-    public static final MutableFlagWithSafeDefault sAdvancedPeripheralsSupportTabStrip =
-            new MutableFlagWithSafeDefault(
-                    ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP, false);
 
     // Cached and fixed values.
     private static boolean sTabSelectionEditorLongPressEntryEnabled;

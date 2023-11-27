@@ -148,6 +148,12 @@ public abstract class FeatureMap {
         return result;
     }
 
+    /** Create a {@link MutableFlagWithSafeDefault} in this FeatureMap. */
+    public MutableFlagWithSafeDefault mutableFlagWithSafeDefault(
+            String featureName, boolean defaultValue) {
+        return new MutableFlagWithSafeDefault(this, featureName, defaultValue);
+    }
+
     private void ensureNativeMapInit() {
         assert FeatureList.isNativeInitialized();
 

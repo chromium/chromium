@@ -26,6 +26,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.tab_ui.R;
 
 /**
@@ -324,7 +325,7 @@ public class TabThumbnailView extends ImageView {
     }
 
     private boolean useThumbnailPlaceholder() {
-        return TabUiFeatureUtilities.sThumbnailPlaceholder.isEnabled()
-                || TabUiFeatureUtilities.sAdvancedPeripheralsSupportTabStrip.isEnabled();
+        return ChromeFeatureList.sThumbnailPlaceholder.isEnabled()
+                || ChromeFeatureList.sAdvancedPeripheralsSupportTabStrip.isEnabled();
     }
 }

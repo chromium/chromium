@@ -10,21 +10,29 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.FeatureMap;
 import org.chromium.base.Flag;
+import org.chromium.base.MutableFlagWithSafeDefault;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.DisabledTest;
 
 /** Unit Tests for {@link Flag}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class FlagUnitTest {
     @Rule public final BaseFlagTestRule mBaseFlagTestRule = new BaseFlagTestRule();
 
-    @DisabledTest(message = "Temporary while landing 3-side patch, crbug.com/1504869")
+    private final FeatureMap mFeatureMap =
+            new FeatureMap() {
+                @Override
+                protected long getNativeMap() {
+                    return 0;
+                }
+            };
+
     @Test
     public void testDuplicateFeatureFlags_throwsAssertionError() {
         new PostNativeFlag(FEATURE_A);
         try {
-            new MutableFlagWithSafeDefault(FEATURE_A, false);
+            new MutableFlagWithSafeDefault(mFeatureMap, FEATURE_A, false);
             throw new RuntimeException("Duplicate feature");
         } catch (AssertionError e) {
         }
@@ -36,7 +44,7 @@ public class FlagUnitTest {
 
         Flag.resetFlagsForTesting();
 
-        new MutableFlagWithSafeDefault(FEATURE_A, false);
+        new MutableFlagWithSafeDefault(mFeatureMap, FEATURE_A, false);
         try {
             new PostNativeFlag(FEATURE_A);
             throw new RuntimeException("Duplicate feature");
@@ -52,7 +60,7 @@ public class FlagUnitTest {
 
         new CachedFlag(FEATURE_A, false);
         try {
-            new MutableFlagWithSafeDefault(FEATURE_A, false);
+            new MutableFlagWithSafeDefault(mFeatureMap, FEATURE_A, false);
             throw new RuntimeException("Duplicate feature");
         } catch (AssertionError e) {
         }
