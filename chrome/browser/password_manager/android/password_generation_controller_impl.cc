@@ -160,6 +160,7 @@ void PasswordGenerationControllerImpl::GeneratedPasswordAccepted(
   driver->GeneratedPasswordAccepted(
       generation_element_data_->form_data,
       generation_element_data_->generation_element_id, password);
+  driver->FocusNextFieldAfterPasswords();
   ResetFocusState();
 }
 

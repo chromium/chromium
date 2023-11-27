@@ -362,10 +362,6 @@ void PasswordGenerationAgent::GeneratedPasswordAccepted(
       return;
     }
     password_agent_->TrackAutofilledElement(password_element);
-
-    // Advance focus to the next input field. We assume password fields in
-    // an account creation form are always adjacent.
-    render_frame()->GetWebView()->AdvanceFocus(false);
   }
   CHECK(base::Contains(current_generation_item_->password_elements_,
                        current_generation_item_->generation_element_));
@@ -388,6 +384,20 @@ void PasswordGenerationAgent::GeneratedPasswordAccepted(
     // https://crbug.com/493455
     password_agent_->autofill_agent().UpdateStateForTextChange(
         password_element, FieldPropertiesFlags::kUserTyped);
+  }
+}
+
+void PasswordGenerationAgent::FocusNextFieldAfterPasswords() {
+  if (!current_generation_item_ || !render_frame()) {
+    return;
+  }
+
+  for (const WebInputElement& password_element :
+       current_generation_item_->password_elements_) {
+    if (password_element ==
+        password_agent_->focused_element().DynamicTo<WebInputElement>()) {
+      render_frame()->GetWebView()->AdvanceFocus(false);
+    }
   }
 }
 

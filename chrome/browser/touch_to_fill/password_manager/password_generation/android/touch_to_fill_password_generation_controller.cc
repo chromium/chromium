@@ -97,6 +97,7 @@ void TouchToFillPasswordGenerationController::OnGeneratedPasswordAccepted(
   frame_driver_->GeneratedPasswordAccepted(
       generation_element_data_.form_data,
       generation_element_data_.generation_element_id, password);
+  frame_driver_->FocusNextFieldAfterPasswords();
 }
 
 void TouchToFillPasswordGenerationController::OnGeneratedPasswordRejected() {

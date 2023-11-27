@@ -573,6 +573,7 @@ TEST_F(PasswordGenerationAgentTest, FillTest) {
   EXPECT_CALL(fake_pw_client_, PresaveGeneratedPassword(_, Eq(password)));
 
   password_generation_->GeneratedPasswordAccepted(password);
+  password_generation_->FocusNextFieldAfterPasswords();
 
   // Password fields are filled out and set as being autofilled.
   EXPECT_EQ(password, first_password_element.Value().Utf16());
@@ -1212,6 +1213,7 @@ TEST_F(PasswordGenerationAgentTest, JavascriptClearedThePassword_TypeUsername) {
 
   // Edit some other field.
   EXPECT_CALL(fake_pw_client_, PasswordNoLongerGenerated(testing::_));
+  EXPECT_CALL(fake_pw_client_, GenerationElementLostFocus());
   ExecuteJavaScriptForTests(
       "document.getElementById('first_password').value = '';");
   FocusField("username");
@@ -1428,6 +1430,21 @@ TEST_F(PasswordGenerationAgentTest, SuggestionPreviewTest) {
   // Clearing should not succeed when there is nothing to clear.
   EXPECT_FALSE(password_generation_->DidClearGenerationSuggestion(
       first_password_element));
+}
+
+TEST_F(PasswordGenerationAgentTest, AdvancesFocusToNextFieldAfterPasswords) {
+  constexpr char kGenerationElementId[] = "first_password";
+  LoadHTMLWithUserGesture(kAccountCreationFormHTML);
+  SetFoundFormEligibleForGeneration(password_generation_,
+                                    GetMainFrame()->GetDocument(),
+                                    /*new_password_id=*/kGenerationElementId,
+                                    /*confirm_password_id=*/"second_password");
+  ExpectAutomaticGenerationAvailable(kGenerationElementId, kAvailable);
+
+  password_generation_->FocusNextFieldAfterPasswords();
+  WebDocument document = GetMainFrame()->GetDocument();
+  EXPECT_EQ(document.FocusedElement(),
+            document.GetElementById(WebString::FromUTF8("address")));
 }
 
 }  // namespace autofill

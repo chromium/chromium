@@ -177,4 +177,8 @@ interface PasswordGenerationAgent {
   // Tells the renderer that a password can be generated on the fields
   // identified by |form|.
   FoundFormEligibleForGeneration(PasswordFormGenerationData form);
+
+  // Tells the renderer to advance focus to the next field after password fields
+  // (assuming that password fields are adjacent in account creation).
+  FocusNextFieldAfterPasswords();
 };

@@ -24,6 +24,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect_f.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "base/test/scoped_feature_list.h"
+#include "components/password_manager/core/browser/features/password_features.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 namespace password_manager {
 
 namespace {
@@ -62,6 +67,7 @@ class MockPasswordManagerDriver
               (const std::u16string& password),
               (override));
   MOCK_METHOD(void, ClearPreviewedForm, (), (override));
+  MOCK_METHOD(void, FocusNextFieldAfterPasswords, (), (override));
 };
 
 class MockPasswordGenerationPopupView : public PasswordGenerationPopupView {
@@ -280,5 +286,55 @@ TEST_F(PasswordGenerationPopupControllerImplTest, ClearsFormPreviewOnHide) {
   EXPECT_CALL(*driver, ClearPreviewedForm());
   controller->Hide(autofill::PopupHidingReason::kViewDestroyed);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(PasswordGenerationPopupControllerImplTest,
+       AdvancesFieldFocusOnUseStrongPassword) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{password_manager::features::kPasswordGenerationExperiment,
+        {{"password_generation_variation", "edit_password"}}}},
+      {});
+
+  PasswordGenerationUIData ui_data{CreatePasswordGenerationUIData()};
+  auto driver = CreateDriver();
+  std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
+  base::WeakPtr<PasswordGenerationPopupController> controller =
+      PasswordGenerationPopupControllerImpl::GetOrCreate(
+          /*previous=*/nullptr, ui_data.bounds, ui_data, driver->AsWeakPtr(),
+          /*observer=*/nullptr, web_contents.get(), main_rfh());
+
+  EXPECT_CALL(*driver,
+              GeneratedPasswordAccepted(_, autofill::FieldRendererId(100), _));
+  EXPECT_CALL(*driver, FocusNextFieldAfterPasswords);
+  controller->PasswordAccepted();
+}
+
+TEST_F(PasswordGenerationPopupControllerImplTest,
+       DoesNotAdvanceFieldFocusOnEditPassword) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{password_manager::features::kPasswordGenerationExperiment,
+        {{"password_generation_variation", "edit_password"}}}},
+      {});
+
+  PasswordGenerationUIData ui_data{CreatePasswordGenerationUIData()};
+  auto driver = CreateDriver();
+  std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
+  base::WeakPtr<PasswordGenerationPopupController> controller =
+      PasswordGenerationPopupControllerImpl::GetOrCreate(
+          /*previous=*/nullptr, ui_data.bounds, ui_data, driver->AsWeakPtr(),
+          /*observer=*/nullptr, web_contents.get(), main_rfh());
+  // EditPasswordClicked() below results in calling view->Show(), hence the need
+  // to use the mock.
+  static_cast<PasswordGenerationPopupControllerImpl*>(controller.get())
+      ->SetViewForTesting(popup_view());
+
+  EXPECT_CALL(*driver,
+              GeneratedPasswordAccepted(_, autofill::FieldRendererId(100), _));
+  EXPECT_CALL(*driver, FocusNextFieldAfterPasswords).Times(0);
+  controller->EditPasswordClicked();
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace password_manager

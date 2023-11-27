@@ -258,8 +258,10 @@ void PasswordGenerationPopupControllerImpl::PasswordAccepted() {
   }
   // |this| can be destroyed here because GeneratedPasswordAccepted pops up
   // another UI and generates some event to close the dropdown.
-  if (weak_this)
+  if (weak_this) {
+    driver_->FocusNextFieldAfterPasswords();
     weak_this->HideImpl();
+  }
 }
 
 void PasswordGenerationPopupControllerImpl::Show(GenerationUIState state) {
