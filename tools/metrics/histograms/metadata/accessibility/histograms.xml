@@ -2311,6 +2311,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ScreenAI.OCR.ImageSize.PDF" units="count"
+    expires_after="2024-10-01">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the number of pixels in the passed image to OCR from PDF.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ScreenAI.OCR.ImageSize10M" units="count"
     expires_after="2024-10-01">
   <owner>rhalavati@chromium.org</owner>
@@ -2320,11 +2329,39 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ScreenAI.OCR.LinesCount" units="count"
+    expires_after="2024-10-01">
+  <owner>rhalavati@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the number of lines that OCR recognized for an image.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.ScreenAI.OCR.LinesCount.PDF" units="count"
+    expires_after="2024-10-01">
+  <owner>rhalavati@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the number of lines that OCR recognized for an image sent from PDF.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ScreenAI.OCR.Time" units="ms"
     expires_after="2024-10-01">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>Records how long an OCR request in Screen AI service takes.</summary>
+</histogram>
+
+<histogram name="Accessibility.ScreenAI.OCR.Time.PDF" units="ms"
+    expires_after="2024-10-01">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records how long an OCR request in Screen AI service takes for a PDF
+    request.
+  </summary>
 </histogram>
 
 <histogram name="Accessibility.ScreenAI.Screen2xDistillationTime.{Result}"
@@ -2346,13 +2383,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.ScreenAI.VisualAnnotator.NodesCount"
-    units="count" expires_after="2024-05-19">
+    units="count" expires_after="2023-11-28">
   <owner>kyungjunlee@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
-    Records the number of annotations produced by ScreenAI visual annotator.
-    It's being emitted whenever getting annotations from ScreenAI visual
-    annotator.
+    Deprecated, see Accessibility.ScreenAI.OCR.LinesCount instead. Records the
+    number of annotations produced by ScreenAI visual annotator. It's being
+    emitted whenever getting annotations from ScreenAI visual annotator.
   </summary>
 </histogram>
 

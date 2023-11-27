@@ -120,7 +120,8 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
 
   // Wrapper to call `PerformOcr` library function and record metrics.
   absl::optional<chrome_screen_ai::VisualAnnotation> PerformOcrAndRecordMetrics(
-      const SkBitmap& image);
+      const SkBitmap& image,
+      bool a11y_tree_request);
 
   mojo::Receiver<mojom::ScreenAIServiceFactory> factory_receiver_;
   mojo::Receiver<mojom::OCRService> ocr_receiver_;

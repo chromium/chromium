@@ -43,9 +43,6 @@ constexpr int kFirstValidNegativeId = -2;
 
 ui::AXNodeID next_negative_node_id{kFirstValidNegativeId};
 
-// TODO(crbug.com/1443341): Check if this max count will cover different cases.
-constexpr int kUmaMaxNodesCount = 500;
-
 // Returns the next valid negative ID that can be used for identifying
 // `AXNode`s in the accessibility tree. Using negative IDs here enables
 // adding nodes built from OCR results to PDF accessibility tree in PDF
@@ -563,9 +560,6 @@ ui::AXTreeUpdate VisualAnnotationToAXTreeUpdate(
                node_data.id != ui::kInvalidAXNodeID;
       });
   update.nodes.resize(std::distance(std::begin(update.nodes), end_node_iter));
-  base::UmaHistogramCustomCounts(
-      "Accessibility.ScreenAI.VisualAnnotator.NodesCount", nodes.size(),
-      /*min=*/1, kUmaMaxNodesCount, /*buckets=*/100);
 
   return update;
 }
