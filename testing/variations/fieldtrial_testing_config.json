@@ -19180,6 +19180,24 @@
             ]
         }
     ],
+    "UnoPhase2FollowUp": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "EnableUnoPhase2FollowUp",
+                    "params": {
+                        "event_trigger": "name:do_not_trigger_signin_iph_for_tests;comparator:>=360;window:360;storage:360"
+                    },
+                    "disable_features": [
+                        "IPH_iOSReplaceSyncPromosWithSignInPromos"
+                    ]
+                }
+            ]
+        }
+    ],
     "UploadOfficeToCloud": [
         {
             "platforms": [

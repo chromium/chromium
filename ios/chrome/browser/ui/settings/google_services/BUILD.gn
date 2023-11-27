@@ -180,6 +180,7 @@ source_set("eg2_tests") {
     "//base",
     "//base/test:test_support",
     "//components/bookmarks/common",
+    "//components/feature_engagement/public",
     "//components/password_manager/core/common",
     "//components/policy:generated",
     "//components/policy/core/common:common_constants",

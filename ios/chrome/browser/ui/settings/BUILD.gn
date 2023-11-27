@@ -175,6 +175,8 @@ source_set("settings") {
     "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
     "//ios/chrome/browser/ui/authentication/signin:signin_headers",
     "//ios/chrome/browser/ui/autofill/cells",
+    "//ios/chrome/browser/ui/bubble:bubble",
+    "//ios/chrome/browser/ui/bubble:constants",
     "//ios/chrome/browser/ui/content_suggestions/cells",
     "//ios/chrome/browser/ui/first_run:field_trial",
     "//ios/chrome/browser/ui/keyboard",

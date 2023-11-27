@@ -1922,6 +1922,25 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
                     kMaxStorageDaysForIOSPullToRefresh));
     return config;
   }
+  if (kIPHiOSReplaceSyncPromosWithSignInPromos.name == feature->name) {
+    // A config to show a user education bubble from the account row in the
+    // settings page. Will be shown only the first time user signs-in from
+    // settings. Subsequent sign-ins will not trigger it.
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->trigger =
+        EventConfig("signin_from_settings_trigger", Comparator(LESS_THAN, 1),
+                    feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+    config->used =
+        EventConfig("signin_from_settings_used", Comparator(EQUAL, 0),
+                    feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+    config->blocked_by.type = BlockedBy::Type::NONE;
+    return config;
+  }
 
   // iOS Promo Configs are split out into a separate file, so check that too.
   if (absl::optional<FeatureConfig> ios_promo_feature_config =

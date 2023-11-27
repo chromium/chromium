@@ -3947,6 +3947,9 @@ Try to use a unique password for every site.
       <message name="IDS_IOS_SETTINGS_TITLE" desc="Title for the settings panel [iOS].">
         Settings
       </message>
+      <message name="IDS_IOS_SETTING_IPH_SIGNIN" desc="Message for an IPH shown after users signs-in from the sign-in row in settings page. It informs the users that they can control all their data type synchronization to their account from a single page.">
+        You can now control all your account settings in one place
+      </message>
       <message name="IDS_IOS_SETTING_OFF" desc="Generic status label displayed in Settings to show that a setting is currently turned off. [Length: 5em] [iOS only]" meaning="The setting is off.">
         Off
       </message>
