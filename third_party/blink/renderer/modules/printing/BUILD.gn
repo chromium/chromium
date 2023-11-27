@@ -12,6 +12,8 @@ blink_modules_sources("printing") {
     "web_printer.h",
     "web_printing_manager.cc",
     "web_printing_manager.h",
+    "web_printing_type_converters.cc",
+    "web_printing_type_converters.h",
   ]
   deps = [ "//printing/buildflags" ]
 }

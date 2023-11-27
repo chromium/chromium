@@ -31,6 +31,9 @@ class WebPrintingServiceChromeOS
   // blink::mojom::WebPrintingService:
   void GetPrinters(GetPrintersCallback callback) override;
 
+  // blink::mojom::WebPrinter:
+  void FetchAttributes(FetchAttributesCallback callback) override;
+
  private:
   using PrinterId = base::StrongAlias<class PrinterId, std::string>;
 

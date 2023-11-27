@@ -16,6 +16,7 @@ namespace blink {
 class ExceptionState;
 class ExecutionContext;
 class ScriptPromise;
+class ScriptPromiseResolver;
 class WebPrintDocumentDescription;
 class WebPrintJobTemplateAttributes;
 class WebPrinterAttributes;
@@ -40,7 +41,11 @@ class MODULES_EXPORT WebPrinter : public ScriptWrappable {
   void Trace(Visitor* visitor) const override;
 
  private:
+  void OnFetchAttributes(ScriptPromiseResolver*,
+                         mojom::blink::WebPrinterAttributesPtr new_attributes);
+
   Member<WebPrinterAttributes> attributes_;
+  Member<ScriptPromiseResolver> fetch_attributes_resolver_;
   HeapMojoRemote<mojom::blink::WebPrinter> printer_;
 };
 

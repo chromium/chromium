@@ -7036,6 +7036,8 @@ static_library("browser") {
           sources += [
             "printing/web_api/web_printing_service_chromeos.cc",
             "printing/web_api/web_printing_service_chromeos.h",
+            "printing/web_api/web_printing_type_converters.cc",
+            "printing/web_api/web_printing_type_converters.h",
           ]
         }
       }

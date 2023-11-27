@@ -7,9 +7,22 @@
 #include <utility>
 
 #include "chrome/browser/printing/local_printer_utils_chromeos.h"
+#include "chrome/browser/printing/web_api/web_printing_type_converters.h"
 #include "content/public/browser/render_frame_host.h"
 
 namespace printing {
+
+namespace {
+
+blink::mojom::WebPrinterAttributesPtr ConvertResponse(
+    crosapi::mojom::CapabilitiesResponsePtr response) {
+  if (!response || !response->capabilities) {
+    return nullptr;
+  }
+  return blink::mojom::WebPrinterAttributes::From(*response->capabilities);
+}
+
+}  // namespace
 
 WebPrintingServiceChromeOS::WebPrintingServiceChromeOS(
     content::RenderFrameHost* render_frame_host,
@@ -22,6 +35,13 @@ void WebPrintingServiceChromeOS::GetPrinters(GetPrintersCallback callback) {
   GetLocalPrinterInterface()->GetPrinters(
       base::BindOnce(&WebPrintingServiceChromeOS::OnPrintersRetrieved,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void WebPrintingServiceChromeOS::FetchAttributes(
+    FetchAttributesCallback callback) {
+  GetLocalPrinterInterface()->GetCapability(
+      *printers_.current_context(),
+      base::BindOnce(&ConvertResponse).Then(std::move(callback)));
 }
 
 void WebPrintingServiceChromeOS::OnPrintersRetrieved(

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "base/test/values_test_util.h"
 #include "chrome/browser/extensions/api/printing/printing_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chromeos/printing/printer_configuration.h"
@@ -10,9 +11,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/printing/fake_cups_printers_manager.h"
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "base/test/gmock_callback_support.h"
 #include "chrome/browser/printing/local_printer_utils_chromeos.h"
 #include "chrome/test/chromeos/printing/mock_local_printer_chromeos.h"
@@ -138,6 +137,56 @@ IN_PROC_BROWSER_TEST_F(WebPrintingBrowserTest, GetPrinters) {
 
   ASSERT_TRUE(EvalJs(app_frame(), content::JsReplace(kGetPrintersScript, kName))
                   .ExtractBool());
+}
+
+IN_PROC_BROWSER_TEST_F(WebPrintingBrowserTest, FetchAttributes) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  AddPrinterWithSemanticCaps(kId, kName,
+                             extensions::ConstructPrinterCapabilities());
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  EXPECT_CALL(local_printer(), GetPrinters(_))
+      .WillOnce(base::test::RunOnceCallback<0>(
+          extensions::ConstructGetPrintersResponse(kId, kName)));
+
+  EXPECT_CALL(local_printer(), GetCapability(kId, _))
+      .WillOnce(base::test::RunOnceCallback<1>(
+          printing::PrinterWithCapabilitiesToMojom(
+              chromeos::Printer(kId),
+              *extensions::ConstructPrinterCapabilities())));
+#endif
+
+  // Keep in sync with extensions::ConstructPrinterCapabilities().
+  constexpr base::StringPiece kExpectedAttributes = R"({
+    "copiesDefault": 1,
+    "copiesSupported": {
+      "from": 1,
+      "to": 2
+    },
+    "documentFormatDefault": "application/pdf",
+    "documentFormatSupported": [ "application/pdf" ],
+    "multipleDocumentHandlingDefault": "separate-documents-uncollated-copies",
+    "multipleDocumentHandlingSupported": [
+      "separate-documents-uncollated-copies",
+      "separate-documents-collated-copies"
+    ],
+    "printerName": "name",
+    "sidesDefault": "one-sided",
+    "sidesSupported": [ "one-sided" ]
+  })";
+
+  constexpr base::StringPiece kFetchAttributesScript = R"(
+    (async () => {
+      const printers = await navigator.printing.getPrinters();
+      return await printers[0].fetchAttributes();
+    })();
+  )";
+
+  auto eval_result = EvalJs(app_frame(), kFetchAttributesScript);
+  ASSERT_TRUE(eval_result.error.empty()) << "Failed with " << eval_result.error;
+
+  const auto& attributes = eval_result.value.GetDict();
+  EXPECT_THAT(attributes, base::test::DictionaryHasValues(
+                              base::test::ParseJsonDict(kExpectedAttributes)));
 }
 
 }  // namespace printing
