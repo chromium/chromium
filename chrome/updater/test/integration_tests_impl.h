@@ -364,6 +364,7 @@ void CloseInstallCompleteDialog(const std::wstring& child_window_text_to_find);
 
 #if BUILDFLAG(IS_MAC)
 void PrivilegedHelperInstall(UpdaterScope scope);
+void DeleteLegacyUpdater(UpdaterScope scope);
 #endif  // BUILDFLAG(IS_WIN)
 
 void ExpectLegacyUpdaterMigrated(UpdaterScope scope);

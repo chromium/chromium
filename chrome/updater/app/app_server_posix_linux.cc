@@ -41,7 +41,12 @@ bool AppServerPosix::MigrateLegacyUpdaters(
   return true;
 }
 
+void AppServerPosix::RepairUpdater(UpdaterScope scope, bool is_internal) {
+  // No repairs to do on Linux.
+}
+
 scoped_refptr<App> MakeAppServer() {
   return base::MakeRefCounted<AppServerLinux>();
 }
+
 }  // namespace updater

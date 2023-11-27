@@ -203,7 +203,7 @@ void MaybeInstallUpdater(UpdaterScope scope) {
   if (!setup_path || ![NSFileManager.defaultManager
                          fileExistsAtPath:base::apple::FilePathToNSString(
                                               setup_path.value())]) {
-    VLOG(2) << "No existing updater to install from.";
+    VLOG(0) << "No existing updater to install from.";
     return;
   }
 
@@ -741,7 +741,9 @@ int KSAdminAppMain(int argc, const char* argv[]) {
   // command line.
   VLOG(0) << base::CommandLine::ForCurrentProcess()->GetCommandLineString();
 
-  return base::MakeRefCounted<KSAdminApp>(command_line)->Run();
+  int exit = base::MakeRefCounted<KSAdminApp>(command_line)->Run();
+  VLOG_IF(0, exit != 0) << "Exiting " << exit;
+  return exit;
 }
 
 }  // namespace updater

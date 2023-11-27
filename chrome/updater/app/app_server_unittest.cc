@@ -52,6 +52,7 @@ class AppServerTest : public AppServer {
               MigrateLegacyUpdaters,
               (base::RepeatingCallback<void(const RegistrationRequest&)>),
               (override));
+  MOCK_METHOD(void, RepairUpdater, (UpdaterScope, bool), (override));
   MOCK_METHOD(void, UninstallSelf, (), (override));
   MOCK_METHOD(bool, ShutdownIfIdleAfterTask, (), (override));
   MOCK_METHOD(void, OnDelayedTaskComplete, (), (override));

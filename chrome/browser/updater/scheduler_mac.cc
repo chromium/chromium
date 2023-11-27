@@ -19,7 +19,7 @@
 #include "chrome/browser/updater/browser_updater_client_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/updater/updater_scope.h"
-#include "chrome/updater/util/util.h"
+#include "chrome/updater/util/mac_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {

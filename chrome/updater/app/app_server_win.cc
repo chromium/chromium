@@ -503,4 +503,11 @@ bool AppServerWin::MigrateLegacyUpdaters(
   return true;
 }
 
+void AppServerWin::RepairUpdater(UpdaterScope scope, bool is_internal) {
+  if (AreComInterfacesPresent(scope, is_internal)) {
+    return;
+  }
+  InstallComInterfaces(scope, is_internal);
+}
+
 }  // namespace updater
