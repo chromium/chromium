@@ -1464,7 +1464,7 @@ export class Authenticator extends EventTarget {
    */
   onGaiaDoneTimeout_() {
     if (!this.services_) {
-      console.error('Gaia done timeout: Forcing empty services.');
+      console.warn('Gaia done timeout: Forcing empty services.');
       this.services_ = [];
       const metric = this.authFlow === AuthFlow.SAML ?
           GAIA_MESSAGE_SAML_USER_INFO :
@@ -1473,7 +1473,7 @@ export class Authenticator extends EventTarget {
     }
 
     if (!this.closeViewReceived_) {
-      console.error('Gaia done timeout: closeView was not called.');
+      console.warn('Gaia done timeout: closeView was not called.');
       this.closeViewReceived_ = true;
 
       const metric = this.authFlow === AuthFlow.SAML ?
