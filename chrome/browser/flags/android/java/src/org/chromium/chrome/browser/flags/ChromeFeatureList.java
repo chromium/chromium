@@ -492,6 +492,8 @@ public abstract class ChromeFeatureList {
     public static final String USE_LIBUNWINDSTACK_NATIVE_UNWINDER_ANDROID =
             "UseLibunwindstackNativeUnwinderAndroid";
     public static final String USER_BYPASS_UI = "UserBypassUI";
+    public static final String VERTICAL_AUTOMOTIVE_BACK_BUTTON_TOOLBAR =
+            "VerticalAutomotiveBackButtonToolbar";
     public static final String VOICE_BUTTON_IN_TOP_TOOLBAR = "VoiceButtonInTopToolbar";
     public static final String VOICE_SEARCH_AUDIO_CAPTURE_POLICY = "VoiceSearchAudioCapturePolicy";
     public static final String WEBNOTES_STYLIZE = "WebNotesStylize";
@@ -652,6 +654,8 @@ public abstract class ChromeFeatureList {
             new CachedFlag(USE_CHIME_ANDROID_SDK, false);
     public static final CachedFlag sUseLibunwindstackNativeUnwinderAndroid =
             new CachedFlag(USE_LIBUNWINDSTACK_NATIVE_UNWINDER_ANDROID, true);
+    public static final CachedFlag sVerticalAutomotiveBackButtonToolbar =
+            new CachedFlag(VERTICAL_AUTOMOTIVE_BACK_BUTTON_TOOLBAR, false);
 
     public static final List<CachedFlag> sFlagsCachedFullBrowser =
             List.of(
@@ -731,7 +735,8 @@ public abstract class ChromeFeatureList {
                     sTabToGTSAnimation,
                     sToolbarUseHardwareBitmapDraw,
                     sUseChimeAndroidSdk,
-                    sUseLibunwindstackNativeUnwinderAndroid);
+                    sUseLibunwindstackNativeUnwinderAndroid,
+                    sVerticalAutomotiveBackButtonToolbar);
 
     public static final List<CachedFlag> sFlagsCachedInMinimalBrowser =
             List.of(sExperimentsForAgsa);

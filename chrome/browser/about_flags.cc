@@ -11376,6 +11376,14 @@ const FeatureEntry kFeatureEntries[] = {
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
     // AboutFlagsHistogramTest unit test to verify this process).
+
+#if BUILDFLAG(IS_ANDROID)
+    {"enable-vertical-automotive-back-button-toolbar",
+     flag_descriptions::kVerticalAutomotiveBackButtonToolbarName,
+     flag_descriptions::kVerticalAutomotiveBackButtonToolbarDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kVerticalAutomotiveBackButtonToolbar)},
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 class FlagsStateSingleton : public flags_ui::FlagsState::Delegate {
