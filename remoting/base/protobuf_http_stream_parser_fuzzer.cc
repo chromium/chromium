@@ -29,7 +29,14 @@ class Environment {
 };
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+  constexpr size_t kMaxInputSize = 100 * 1000;
+
   static Environment env;
+
+  if (size > kMaxInputSize) {
+    // To avoid spurious timeout and out-of-memory fuzz reports.
+    return 0;
+  }
   FuzzedDataProvider provider(data, size);
 
   // Create a parser. `stream_closed_callback` destroys it, to satisfy the
