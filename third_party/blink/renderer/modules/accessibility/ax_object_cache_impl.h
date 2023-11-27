@@ -308,7 +308,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   int GetDeferredEventsDelay() const;
 
   // Called during the accessibility lifecycle to refresh the AX tree.
-  void ProcessDeferredAccessibilityEvents(Document&) override;
+  void ProcessDeferredAccessibilityEvents(Document&, bool force) override;
   // Remove AXObject subtrees (once flat tree traversal is safe).
   void ProcessSubtreeRemovals() override;
   // Is there work to be done when layout becomes clean?
