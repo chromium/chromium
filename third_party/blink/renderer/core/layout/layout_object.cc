@@ -4971,7 +4971,7 @@ bool LayoutObject::CanBeSelectionLeaf() const {
 }
 
 Vector<PhysicalRect> LayoutObject::CollectOutlineRectsAndAdvance(
-    NGOutlineType outline_type,
+    OutlineType outline_type,
     AccompaniedFragmentIterator& iterator) const {
   NOT_DESTROYED();
   Vector<PhysicalRect> outline_rects;
@@ -5018,7 +5018,7 @@ Vector<PhysicalRect> LayoutObject::CollectOutlineRectsAndAdvance(
 Vector<PhysicalRect> LayoutObject::OutlineRects(
     OutlineInfo* info,
     const PhysicalOffset& additional_offset,
-    NGOutlineType outline_type) const {
+    OutlineType outline_type) const {
   NOT_DESTROYED();
   VectorOutlineRectCollector collector;
   AddOutlineRects(collector, info, additional_offset, outline_type);

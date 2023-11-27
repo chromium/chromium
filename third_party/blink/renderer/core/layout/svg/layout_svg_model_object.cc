@@ -83,7 +83,7 @@ void LayoutSVGModelObject::AbsoluteQuads(Vector<gfx::QuadF>& quads,
 void LayoutSVGModelObject::AddOutlineRects(OutlineRectCollector& collector,
                                            OutlineInfo* info,
                                            const PhysicalOffset&,
-                                           NGOutlineType) const {
+                                           OutlineType) const {
   NOT_DESTROYED();
   gfx::RectF visual_rect = VisualRectInLocalSVGCoordinates();
   bool was_empty = visual_rect.IsEmpty();

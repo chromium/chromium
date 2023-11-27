@@ -44,7 +44,7 @@ class CORE_EXPORT LayoutNGBlockFlow : public LayoutBlockFlow {
   void AddOutlineRects(OutlineRectCollector&,
                        LayoutObject::OutlineInfo*,
                        const PhysicalOffset& additional_offset,
-                       NGOutlineType) const final;
+                       OutlineType) const final;
 
   void DirtyLinesFromChangedChild(LayoutObject* child) final;
 

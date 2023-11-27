@@ -21,7 +21,7 @@ void NGFragmentPainter::PaintOutline(const PaintInfo& paint_info,
   VectorOutlineRectCollector collector;
   LayoutObject::OutlineInfo info;
   fragment.AddSelfOutlineRects(
-      paint_offset, style_to_use.OutlineRectsShouldIncludeBlockVisualOverflow(),
+      paint_offset, style_to_use.OutlineRectsShouldIncludeBlockInkOverflow(),
       collector, &info);
 
   VectorOf<PhysicalRect> outline_rects = collector.TakeRects();
@@ -51,7 +51,7 @@ void NGFragmentPainter::AddURLRectIfNeeded(const PaintInfo& paint_info,
     return;
 
   auto outline_rects = fragment.GetLayoutObject()->OutlineRects(
-      nullptr, paint_offset, NGOutlineType::kIncludeBlockVisualOverflow);
+      nullptr, paint_offset, OutlineType::kIncludeBlockInkOverflow);
   gfx::Rect rect = ToPixelSnappedRect(UnionRect(outline_rects));
   if (rect.IsEmpty())
     return;

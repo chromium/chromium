@@ -480,7 +480,7 @@ TEST_F(FragmentItemTest, Outline) {
   )HTML");
   auto* target = To<LayoutBlockFlow>(GetLayoutObjectByElementId("target"));
   Vector<PhysicalRect> rects = target->OutlineRects(
-      nullptr, PhysicalOffset(), NGOutlineType::kIncludeBlockVisualOverflow);
+      nullptr, PhysicalOffset(), OutlineType::kIncludeBlockInkOverflow);
   EXPECT_THAT(rects,
               testing::ElementsAre(
                   PhysicalRect(0, 0, 200, 10),   // <div id="target">

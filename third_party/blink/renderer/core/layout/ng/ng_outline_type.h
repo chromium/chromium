@@ -8,19 +8,19 @@
 namespace blink {
 
 // Outline styles
-enum class NGOutlineType {
-  kDontIncludeBlockVisualOverflow,       // Standard outline
-  kIncludeBlockVisualOverflow,           // Focus outline
-  kIncludeBlockVisualOverflowForAnchor,  // Focus outline for anchor
+enum class OutlineType {
+  kDontIncludeBlockInkOverflow,       // Standard outline
+  kIncludeBlockInkOverflow,           // Focus outline
+  kIncludeBlockInkOverflowForAnchor,  // Focus outline for anchor
 };
 
-inline bool ShouldIncludeBlockVisualOverflow(NGOutlineType type) {
-  return type == NGOutlineType::kIncludeBlockVisualOverflow ||
-         type == NGOutlineType::kIncludeBlockVisualOverflowForAnchor;
+inline bool ShouldIncludeBlockInkOverflow(OutlineType type) {
+  return type == OutlineType::kIncludeBlockInkOverflow ||
+         type == OutlineType::kIncludeBlockInkOverflowForAnchor;
 }
 
-inline bool ShouldIncludeBlockVisualOverflowForAnchorOnly(NGOutlineType type) {
-  return type == NGOutlineType::kIncludeBlockVisualOverflowForAnchor;
+inline bool ShouldIncludeBlockInkOverflowForAnchorOnly(OutlineType type) {
+  return type == OutlineType::kIncludeBlockInkOverflowForAnchor;
 }
 
 }  // namespace blink

@@ -182,7 +182,7 @@ void LayoutFlowThread::AddOutlineRects(
     OutlineRectCollector& collector,
     OutlineInfo* info,
     const PhysicalOffset& additional_offset,
-    NGOutlineType include_block_overflows) const {
+    OutlineType include_block_overflows) const {
   NOT_DESTROYED();
   Vector<PhysicalRect> rects_in_flowthread;
   UnionOutlineRectCollector flow_collector;

@@ -1458,7 +1458,7 @@ PhysicalRect LayoutBox::PhysicalBackgroundRect(
 void LayoutBox::AddOutlineRects(OutlineRectCollector& collector,
                                 OutlineInfo* info,
                                 const PhysicalOffset& additional_offset,
-                                NGOutlineType) const {
+                                OutlineType) const {
   NOT_DESTROYED();
   collector.AddRect(PhysicalRect(additional_offset, Size()));
   if (info)
@@ -3235,7 +3235,7 @@ PhysicalBoxStrut LayoutBox::ComputeVisualEffectOverflowOutsets() {
     OutlineInfo info;
     Vector<PhysicalRect> outline_rects =
         OutlineRects(&info, PhysicalOffset(),
-                     style.OutlineRectsShouldIncludeBlockVisualOverflow());
+                     style.OutlineRectsShouldIncludeBlockInkOverflow());
     PhysicalRect rect = UnionRect(outline_rects);
     bool outline_affected = rect.size != Size();
     SetOutlineMayBeAffectedByDescendants(outline_affected);

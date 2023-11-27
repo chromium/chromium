@@ -36,11 +36,10 @@ class FragmentData;
 class FragmentItem;
 class Node;
 class PaintLayer;
+enum class OutlineType;
 struct FragmentedOofData;
 struct LogicalRect;
 struct PhysicalOofPositionedNode;
-
-enum class NGOutlineType;
 
 // The NGPhysicalFragment contains the output geometry from layout. The
 // fragment stores all of its information in the physical coordinate system for
@@ -739,18 +738,18 @@ class CORE_EXPORT NGPhysicalFragment
   void AddOutlineRectsForNormalChildren(
       OutlineRectCollector& collector,
       const PhysicalOffset& additional_offset,
-      NGOutlineType outline_type,
+      OutlineType outline_type,
       const LayoutBoxModelObject* containing_block) const;
   void AddOutlineRectsForCursor(OutlineRectCollector& collector,
                                 const PhysicalOffset& additional_offset,
-                                NGOutlineType outline_type,
+                                OutlineType outline_type,
                                 const LayoutBoxModelObject* containing_block,
                                 InlineCursor* cursor) const;
   void AddOutlineRectsForDescendant(
       const PhysicalFragmentLink& descendant,
       OutlineRectCollector& collector,
       const PhysicalOffset& additional_offset,
-      NGOutlineType outline_type,
+      OutlineType outline_type,
       const LayoutBoxModelObject* containing_block) const;
 
   static bool DependsOnPercentageBlockSize(const FragmentBuilder&);

@@ -61,7 +61,7 @@ class LayoutSVGInline : public LayoutInline {
   void AddOutlineRects(OutlineRectCollector&,
                        OutlineInfo*,
                        const PhysicalOffset& additional_offset,
-                       NGOutlineType) const final;
+                       OutlineType) const final;
 
  private:
   void WillBeDestroyed() final;

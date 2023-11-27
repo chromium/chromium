@@ -67,7 +67,7 @@ void LayoutNGBlockFlow::AddOutlineRects(
     OutlineRectCollector& collector,
     LayoutObject::OutlineInfo* info,
     const PhysicalOffset& additional_offset,
-    NGOutlineType include_block_overflows) const {
+    OutlineType include_block_overflows) const {
   NOT_DESTROYED();
 
   // TODO(crbug.com/1145048): Currently |NGBoxPhysicalFragment| does not support

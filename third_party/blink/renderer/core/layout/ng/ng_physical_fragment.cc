@@ -768,7 +768,7 @@ void NGPhysicalFragment::SetChildrenInvalid() const {
 void NGPhysicalFragment::AddOutlineRectsForNormalChildren(
     OutlineRectCollector& collector,
     const PhysicalOffset& additional_offset,
-    NGOutlineType outline_type,
+    OutlineType outline_type,
     const LayoutBoxModelObject* containing_block) const {
   if (const auto* box = DynamicTo<NGPhysicalBoxFragment>(this)) {
     DCHECK_EQ(box->PostLayout(), box);
@@ -800,7 +800,7 @@ void NGPhysicalFragment::AddOutlineRectsForNormalChildren(
 void NGPhysicalFragment::AddOutlineRectsForCursor(
     OutlineRectCollector& collector,
     const PhysicalOffset& additional_offset,
-    NGOutlineType outline_type,
+    OutlineType outline_type,
     const LayoutBoxModelObject* containing_block,
     InlineCursor* cursor) const {
   const auto* const text_combine =
@@ -821,7 +821,7 @@ void NGPhysicalFragment::AddOutlineRectsForCursor(
       }
       case FragmentItem::kGeneratedText:
       case FragmentItem::kText: {
-        if (!ShouldIncludeBlockVisualOverflow(outline_type)) {
+        if (!ShouldIncludeBlockInkOverflow(outline_type)) {
           break;
         }
         PhysicalRect rect = item.RectInContainerFragment();
@@ -955,7 +955,7 @@ void NGPhysicalFragment::AddOutlineRectsForDescendant(
     const PhysicalFragmentLink& descendant,
     OutlineRectCollector& collector,
     const PhysicalOffset& additional_offset,
-    NGOutlineType outline_type,
+    OutlineType outline_type,
     const LayoutBoxModelObject* containing_block) const {
   DCHECK(!descendant->IsLayoutObjectDestroyedOrMoved());
   if (descendant->IsListMarker())

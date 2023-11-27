@@ -93,7 +93,7 @@ class LayoutSVGModelObject : public LayoutObject {
   void AddOutlineRects(OutlineRectCollector&,
                        OutlineInfo*,
                        const PhysicalOffset& additional_offset,
-                       NGOutlineType) const final;
+                       OutlineType) const final;
 };
 
 }  // namespace blink

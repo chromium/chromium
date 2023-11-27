@@ -465,7 +465,7 @@ TEST_F(LayoutInlineTest, DISABLED_FocusRingRecursiveContinuations) {
   )HTML");
 
   auto rects = GetLayoutObjectByElementId("target")->OutlineRects(
-      nullptr, PhysicalOffset(), NGOutlineType::kIncludeBlockVisualOverflow);
+      nullptr, PhysicalOffset(), OutlineType::kIncludeBlockInkOverflow);
 
   EXPECT_THAT(
       rects, UnorderedElementsAre(PhysicalRect(0, 0, 100, 20),   // 'SPAN0'
@@ -501,7 +501,7 @@ TEST_F(LayoutInlineTest, DISABLED_FocusRingRecursiveInlinesVerticalRL) {
   auto* target = GetLayoutObjectByElementId("target");
   auto rects =
       target->OutlineRects(nullptr, target->FirstFragment().PaintOffset(),
-                           NGOutlineType::kIncludeBlockVisualOverflow);
+                           OutlineType::kIncludeBlockInkOverflow);
   EXPECT_THAT(rects, UnorderedElementsAre(
                          PhysicalRect(180, 0, 20, 120),     // 'INLINE'
                          PhysicalRect(160, 0, 20, 80),      // 'TEXT'
@@ -536,7 +536,7 @@ TEST_F(LayoutInlineTest, DISABLED_FocusRingRecursiveContinuationsVerticalRL) {
   auto* target = GetLayoutObjectByElementId("target");
   auto rects =
       target->OutlineRects(nullptr, target->FirstFragment().PaintOffset(),
-                           NGOutlineType::kIncludeBlockVisualOverflow);
+                           OutlineType::kIncludeBlockInkOverflow);
   EXPECT_THAT(rects, UnorderedElementsAre(
                          PhysicalRect(180, 0, 20, 100),   // 'SPAN0'
                          PhysicalRect(140, 0, 40, 400),   // div DIV1
@@ -569,7 +569,7 @@ TEST_F(LayoutInlineTest, DISABLED_FocusRingRecursiveInlines) {
   )HTML");
 
   auto rects = GetLayoutObjectByElementId("target")->OutlineRects(
-      nullptr, PhysicalOffset(), NGOutlineType::kIncludeBlockVisualOverflow);
+      nullptr, PhysicalOffset(), OutlineType::kIncludeBlockInkOverflow);
 
   EXPECT_THAT(rects, UnorderedElementsAre(
                          PhysicalRect(0, 0, 120, 20),     // 'INLINE'

@@ -404,7 +404,7 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
 
   void AddOutlineRectsForNormalChildren(OutlineRectCollector&,
                                         const PhysicalOffset& additional_offset,
-                                        NGOutlineType) const;
+                                        OutlineType) const;
 
   void UpdateCanCompositeBackgroundAttachmentFixed(
       bool enable_composited_background_attachment_fixed);
@@ -424,7 +424,7 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   void AddOutlineRectsForDescendant(const LayoutObject& descendant,
                                     OutlineRectCollector&,
                                     const PhysicalOffset& additional_offset,
-                                    NGOutlineType) const;
+                                    OutlineType) const;
 
   void StyleWillChange(StyleDifference,
                        const ComputedStyle& new_style) override;

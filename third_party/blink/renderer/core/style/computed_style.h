@@ -649,12 +649,11 @@ class ComputedStyle final : public ComputedStyleBase {
 
   // For history and compatibility reasons, we draw outline:auto (for focus
   // rings) and normal style outline differently.
-  // Focus rings enclose block visual overflows (of line boxes and descendants),
+  // Focus rings enclose block ink overflows (of line boxes and descendants),
   // while normal outlines don't.
-  NGOutlineType OutlineRectsShouldIncludeBlockVisualOverflow() const {
-    return OutlineStyleIsAuto()
-               ? NGOutlineType::kIncludeBlockVisualOverflow
-               : NGOutlineType::kDontIncludeBlockVisualOverflow;
+  OutlineType OutlineRectsShouldIncludeBlockInkOverflow() const {
+    return OutlineStyleIsAuto() ? OutlineType::kIncludeBlockInkOverflow
+                                : OutlineType::kDontIncludeBlockInkOverflow;
   }
 
   // position-fallback

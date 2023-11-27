@@ -39,7 +39,7 @@ void ObjectPainter::PaintOutline(const PaintInfo& paint_info,
   LayoutObject::OutlineInfo info;
   auto outline_rects = layout_object_.OutlineRects(
       &info, paint_offset,
-      style_to_use.OutlineRectsShouldIncludeBlockVisualOverflow());
+      style_to_use.OutlineRectsShouldIncludeBlockInkOverflow());
   if (outline_rects.empty())
     return;
 
@@ -73,7 +73,7 @@ void ObjectPainter::AddURLRectIfNeeded(const PaintInfo& paint_info,
     return;
 
   auto outline_rects = layout_object_.OutlineRects(
-      nullptr, paint_offset, NGOutlineType::kIncludeBlockVisualOverflow);
+      nullptr, paint_offset, OutlineType::kIncludeBlockInkOverflow);
   gfx::Rect bounding_rect = ToPixelSnappedRect(UnionRect(outline_rects));
   if (bounding_rect.IsEmpty()) {
     return;

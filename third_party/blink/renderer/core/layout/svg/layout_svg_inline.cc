@@ -148,7 +148,7 @@ void LayoutSVGInline::AbsoluteQuads(Vector<gfx::QuadF>& quads,
 void LayoutSVGInline::AddOutlineRects(OutlineRectCollector& collector,
                                       OutlineInfo* info,
                                       const PhysicalOffset& additional_offset,
-                                      NGOutlineType outline_type) const {
+                                      OutlineType outline_type) const {
   if (!IsInLayoutNGInlineFormattingContext()) {
     LayoutInline::AddOutlineRects(collector, nullptr, additional_offset,
                                   outline_type);

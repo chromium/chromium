@@ -164,7 +164,7 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   void AddOutlineRects(OutlineRectCollector&,
                        OutlineInfo*,
                        const PhysicalOffset& additional_offset,
-                       NGOutlineType) const override;
+                       OutlineType) const override;
 
   bool AlwaysCreateLineBoxes() const {
     NOT_DESTROYED();

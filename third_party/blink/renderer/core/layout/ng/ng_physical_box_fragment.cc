@@ -1215,7 +1215,7 @@ PhysicalRect NGPhysicalBoxFragment::ComputeSelfInkOverflow() const {
     LayoutObject::OutlineInfo info;
     // The result rects are in coordinates of this object's border box.
     AddSelfOutlineRects(PhysicalOffset(),
-                        style.OutlineRectsShouldIncludeBlockVisualOverflow(),
+                        style.OutlineRectsShouldIncludeBlockInkOverflow(),
                         collector, &info);
     PhysicalRect rect = collector.Rect();
     rect.Inflate(LayoutUnit(OutlinePainter::OutlineOutsetExtent(style, info)));
@@ -1232,7 +1232,7 @@ void NGPhysicalBoxFragment::InvalidateInkOverflow() {
 
 void NGPhysicalBoxFragment::AddSelfOutlineRects(
     const PhysicalOffset& additional_offset,
-    NGOutlineType outline_type,
+    OutlineType outline_type,
     OutlineRectCollector& collector,
     LayoutObject::OutlineInfo* info) const {
   if (info) {
@@ -1242,9 +1242,9 @@ void NGPhysicalBoxFragment::AddSelfOutlineRects(
       *info = LayoutObject::OutlineInfo::GetFromStyle(Style());
   }
 
-  if (ShouldIncludeBlockVisualOverflow(outline_type) &&
+  if (ShouldIncludeBlockInkOverflow(outline_type) &&
       IsA<HTMLAnchorElement>(GetNode())) {
-    outline_type = NGOutlineType::kIncludeBlockVisualOverflowForAnchor;
+    outline_type = OutlineType::kIncludeBlockInkOverflowForAnchor;
   }
 
   AddOutlineRects(additional_offset, outline_type,
@@ -1253,7 +1253,7 @@ void NGPhysicalBoxFragment::AddSelfOutlineRects(
 
 void NGPhysicalBoxFragment::AddOutlineRects(
     const PhysicalOffset& additional_offset,
-    NGOutlineType outline_type,
+    OutlineType outline_type,
     OutlineRectCollector& collector) const {
   AddOutlineRects(additional_offset, outline_type,
                   /* container_relative */ true, collector);
@@ -1261,7 +1261,7 @@ void NGPhysicalBoxFragment::AddOutlineRects(
 
 void NGPhysicalBoxFragment::AddOutlineRects(
     const PhysicalOffset& additional_offset,
-    NGOutlineType outline_type,
+    OutlineType outline_type,
     bool inline_container_relative,
     OutlineRectCollector& collector) const {
   DCHECK_EQ(PostLayout(), this);
@@ -1285,8 +1285,8 @@ void NGPhysicalBoxFragment::AddOutlineRects(
     }
   }
 
-  if (ShouldIncludeBlockVisualOverflow(outline_type) &&
-      !HasNonVisibleOverflow() && !HasControlClip(*this)) {
+  if (ShouldIncludeBlockInkOverflow(outline_type) && !HasNonVisibleOverflow() &&
+      !HasControlClip(*this)) {
     // Tricky code ahead: we pass a 0,0 additional_offset to
     // AddOutlineRectsForNormalChildren, and add it in after the call.
     // This is necessary because AddOutlineRectsForNormalChildren expects
@@ -1299,7 +1299,7 @@ void NGPhysicalBoxFragment::AddOutlineRects(
         To<LayoutBoxModelObject>(GetLayoutObject()));
     collector.Combine(child_collector, additional_offset);
 
-    if (ShouldIncludeBlockVisualOverflowForAnchorOnly(outline_type)) {
+    if (ShouldIncludeBlockInkOverflowForAnchorOnly(outline_type)) {
       for (const auto& child : PostLayoutChildren()) {
         if (!child->IsOutOfFlowPositioned()) {
           continue;
@@ -1317,7 +1317,7 @@ void NGPhysicalBoxFragment::AddOutlineRects(
 
 void NGPhysicalBoxFragment::AddOutlineRectsForInlineBox(
     PhysicalOffset additional_offset,
-    NGOutlineType outline_type,
+    OutlineType outline_type,
     bool container_relative,
     OutlineRectCollector& collector) const {
   DCHECK_EQ(PostLayout(), this);
@@ -1381,7 +1381,7 @@ void NGPhysicalBoxFragment::AddOutlineRectsForInlineBox(
     additional_offset -= this_offset_in_container;
   collector.Combine(cursor_collector, additional_offset);
 
-  if (ShouldIncludeBlockVisualOverflowForAnchorOnly(outline_type) &&
+  if (ShouldIncludeBlockInkOverflowForAnchorOnly(outline_type) &&
       !HasNonVisibleOverflow() && !HasControlClip(*this)) {
     if (!RuntimeEnabledFeatures::LayoutNewContainingBlockEnabled() &&
         container->IsAnonymousBlock()) {

@@ -716,7 +716,7 @@ PhysicalRect LayoutBlock::LocalCaretRect(
 void LayoutBlock::AddOutlineRects(OutlineRectCollector& collector,
                                   OutlineInfo* info,
                                   const PhysicalOffset& additional_offset,
-                                  NGOutlineType include_block_overflows) const {
+                                  OutlineType include_block_overflows) const {
   NOT_DESTROYED();
 #if DCHECK_IS_ON()
   // TODO(crbug.com/987836): enable this DCHECK universally.
@@ -732,7 +732,7 @@ void LayoutBlock::AddOutlineRects(OutlineRectCollector& collector,
     collector.AddRect(PhysicalRect(additional_offset, Size()));
   }
 
-  if (ShouldIncludeBlockVisualOverflow(include_block_overflows) &&
+  if (ShouldIncludeBlockInkOverflow(include_block_overflows) &&
       !HasNonVisibleOverflow() && !HasControlClip()) {
     AddOutlineRectsForNormalChildren(collector, additional_offset,
                                      include_block_overflows);

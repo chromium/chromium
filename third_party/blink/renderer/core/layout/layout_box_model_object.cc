@@ -349,7 +349,7 @@ PaintLayerScrollableArea* LayoutBoxModelObject::GetScrollableArea() const {
 void LayoutBoxModelObject::AddOutlineRectsForNormalChildren(
     OutlineRectCollector& collector,
     const PhysicalOffset& additional_offset,
-    NGOutlineType include_block_overflows) const {
+    OutlineType include_block_overflows) const {
   NOT_DESTROYED();
   for (LayoutObject* child = SlowFirstChild(); child;
        child = child->NextSibling()) {
@@ -367,7 +367,7 @@ void LayoutBoxModelObject::AddOutlineRectsForDescendant(
     const LayoutObject& descendant,
     OutlineRectCollector& collector,
     const PhysicalOffset& additional_offset,
-    NGOutlineType include_block_overflows) const {
+    OutlineType include_block_overflows) const {
   NOT_DESTROYED();
   if (descendant.IsText()) {
     return;
