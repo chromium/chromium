@@ -192,7 +192,7 @@ content::PreloadingEligibility PreviewTab::IsPrerender2Supported(
 }
 
 bool PreviewTab::IsInPreviewMode() const {
-  return base::FeatureList::IsEnabled(blink::features::kLinkPreviewNavigation);
+  return true;
 }
 
 void PreviewTab::PromoteToNewTab(content::WebContents& initiator_web_contents) {
@@ -237,12 +237,6 @@ void PreviewTab::PromoteToNewTab(content::WebContents& initiator_web_contents) {
 
 void PreviewTab::Activate(base::WeakPtr<content::WebContents> web_contents) {
   CHECK(web_contents);
-
-  // If we used ordinal navigation, we don't need to activate it.
-  if (!base::FeatureList::IsEnabled(blink::features::kLinkPreviewNavigation)) {
-    return;
-  }
-
   web_contents->ActivatePreviewPage();
 }
 
