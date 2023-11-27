@@ -423,7 +423,7 @@ int HypotheticalScrollbarThickness(const LayoutBox& box,
 }
 
 void RecalcFragmentScrollableOverflow(RecalcScrollableOverflowResult& result,
-                                      const NGPhysicalFragment& fragment) {
+                                      const PhysicalFragment& fragment) {
   for (const auto& child : fragment.PostLayoutChildren()) {
     if (child->GetLayoutObject()) {
       if (const auto* box = DynamicTo<NGPhysicalBoxFragment>(child.get())) {
@@ -2545,11 +2545,11 @@ void LayoutBox::InLayoutNGInlineFormattingContextWillChange(bool new_value) {
     ClearFirstInlineFragmentItemIndex();
 }
 
-bool LayoutBox::NGPhysicalFragmentList::MayHaveFragmentItems() const {
+bool LayoutBox::PhysicalFragmentList::MayHaveFragmentItems() const {
   return !IsEmpty() && front().IsInlineFormattingContext();
 }
 
-bool LayoutBox::NGPhysicalFragmentList::SlowHasFragmentItems() const {
+bool LayoutBox::PhysicalFragmentList::SlowHasFragmentItems() const {
   for (const NGPhysicalBoxFragment& fragment : *this) {
     if (fragment.HasItems())
       return true;
@@ -2557,7 +2557,7 @@ bool LayoutBox::NGPhysicalFragmentList::SlowHasFragmentItems() const {
   return false;
 }
 
-wtf_size_t LayoutBox::NGPhysicalFragmentList::IndexOf(
+wtf_size_t LayoutBox::PhysicalFragmentList::IndexOf(
     const NGPhysicalBoxFragment& fragment) const {
   wtf_size_t index = 0;
   for (const auto& result : layout_results_) {
@@ -2569,7 +2569,7 @@ wtf_size_t LayoutBox::NGPhysicalFragmentList::IndexOf(
   return kNotFound;
 }
 
-bool LayoutBox::NGPhysicalFragmentList::Contains(
+bool LayoutBox::PhysicalFragmentList::Contains(
     const NGPhysicalBoxFragment& fragment) const {
   return IndexOf(fragment) != kNotFound;
 }
@@ -2855,16 +2855,16 @@ const LayoutResult* LayoutBox::GetLayoutResult(wtf_size_t i) const {
 }
 
 const NGPhysicalBoxFragment&
-LayoutBox::NGPhysicalFragmentList::Iterator::operator*() const {
+LayoutBox::PhysicalFragmentList::Iterator::operator*() const {
   return To<NGPhysicalBoxFragment>((*iterator_)->GetPhysicalFragment());
 }
 
-const NGPhysicalBoxFragment& LayoutBox::NGPhysicalFragmentList::front() const {
+const NGPhysicalBoxFragment& LayoutBox::PhysicalFragmentList::front() const {
   return To<NGPhysicalBoxFragment>(
       layout_results_.front()->GetPhysicalFragment());
 }
 
-const NGPhysicalBoxFragment& LayoutBox::NGPhysicalFragmentList::back() const {
+const NGPhysicalBoxFragment& LayoutBox::PhysicalFragmentList::back() const {
   return To<NGPhysicalBoxFragment>(
       layout_results_.back()->GetPhysicalFragment());
 }

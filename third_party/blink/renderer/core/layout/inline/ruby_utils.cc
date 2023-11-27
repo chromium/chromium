@@ -105,7 +105,7 @@ AnnotationOverhang GetOverhang(const InlineItemResult& item) {
 
   const ComputedStyle* ruby_text_style = nullptr;
   for (const auto& child_link : column_fragment.PostLayoutChildren()) {
-    const NGPhysicalFragment& child_fragment = *child_link.get();
+    const PhysicalFragment& child_fragment = *child_link.get();
     const LayoutObject* layout_object = child_fragment.GetLayoutObject();
     if (!layout_object)
       continue;
@@ -124,7 +124,7 @@ AnnotationOverhang GetOverhang(const InlineItemResult& item) {
   LayoutUnit end_overhang = half_width_of_ruby_font;
   bool found_line = false;
   for (const auto& child_link : column_fragment.PostLayoutChildren()) {
-    const NGPhysicalFragment& child_fragment = *child_link.get();
+    const PhysicalFragment& child_fragment = *child_link.get();
     const LayoutObject* layout_object = child_fragment.GetLayoutObject();
     if (!layout_object->IsRubyBase())
       continue;

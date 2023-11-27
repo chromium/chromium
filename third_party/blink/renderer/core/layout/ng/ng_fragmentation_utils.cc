@@ -791,7 +791,7 @@ BreakStatus FinishFragmentationForFragmentainer(const ConstraintSpace& space,
 }
 
 bool HasBreakOpportunityBeforeNextChild(
-    const NGPhysicalFragment& child_fragment,
+    const PhysicalFragment& child_fragment,
     const BreakToken* incoming_child_break_token) {
   // Once we have added a child, there'll be a valid class A/B breakpoint [1]
   // before consecutive siblings, which implies that we have container

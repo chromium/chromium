@@ -52,7 +52,7 @@ class CORE_EXPORT FragmentItemsBuilder {
   // positions the line box.
   //
   // 1. |AcquireLogicalLineItems| to get an instance of |LogicalLineItems|.
-  // 2. Add items to |LogicalLineItems| and create |NGPhysicalFragment|,
+  // 2. Add items to |LogicalLineItems| and create |PhysicalFragment|,
   //    then associate them by |AssociateLogicalLineItems|.
   // 3. |AddLine| adds the |PhysicalLineBoxFragment|.
   //
@@ -70,7 +70,7 @@ class CORE_EXPORT FragmentItemsBuilder {
   const LogicalLineItems& GetLogicalLineItems(
       const PhysicalLineBoxFragment&) const;
   void AssociateLogicalLineItems(LogicalLineItems* line_items,
-                                 const NGPhysicalFragment& line_fragment);
+                                 const PhysicalFragment& line_fragment);
   void AddLine(const PhysicalLineBoxFragment& line,
                const LogicalOffset& offset);
 
@@ -155,9 +155,9 @@ class CORE_EXPORT FragmentItemsBuilder {
 
   // Keeps children of a line until the offset is determined. See |AddLine|.
   LogicalLineItems* current_line_items_ = nullptr;
-  const NGPhysicalFragment* current_line_fragment_ = nullptr;
+  const PhysicalFragment* current_line_fragment_ = nullptr;
 
-  HeapHashMap<Member<const NGPhysicalFragment>, Member<LogicalLineItems>>
+  HeapHashMap<Member<const PhysicalFragment>, Member<LogicalLineItems>>
       line_items_map_;
   LogicalLineItems* const line_items_pool_ =
       MakeGarbageCollected<LogicalLineItems>();

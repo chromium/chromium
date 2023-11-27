@@ -28,13 +28,13 @@ for every kind of layout:
 
  - The [ConstraintSpace](ng_constraint_space.h) which represents the "space"
    in which the current layout should produce a
-   [NGPhysicalFragment](ng_physical_fragment.h).
+   [PhysicalFragment](ng_physical_fragment.h).
 
  - TODO(layout-dev): BreakTokens should go here once implemented.
 
 The current layout should not access any information outside this set, this
 will break invariants in the system. (As a concrete example we intend to cache
-[NGPhysicalFragment](ng_physical_fragment.h)s based on this set, accessing
+[PhysicalFragment](ng_physical_fragment.h)s based on this set, accessing
 additional information outside this set will break caching behaviour).
 
 ### Box Tree ###
@@ -49,7 +49,7 @@ Please refer to the [inline layout README](../inline/README.md).
 
 TODO(layout-dev): Document with lots of pretty pictures.
 
-All coordinates and sizes associated with an NGPhysicalFragment are physical,
+All coordinates and sizes associated with an PhysicalFragment are physical,
 i.e. pure left/top offsets from the parent fragment, and sizes are expressed
 with widths and heights (not inline-size / block-size). No logical offsets or
 sizes. Writing mode and direction are resolved during layout.
@@ -135,10 +135,10 @@ may be dumped, for debugging, logging and testing purposes.
 Call LayoutInputNode::ShowNodeTree() to dump the tree to stderr.
 
 #### For physical fragment subtree ####
-Call NGPhysicalFragment::ShowFragmentTree() to dump the tree to
+Call PhysicalFragment::ShowFragmentTree() to dump the tree to
 stderr. Fragments in the subtree are not required to be marked as placed
 (i.e. know their offset).
 
 A fragment tree may also be dumped to a String, by calling
-NGPhysicalFragment::DumpFragmentTree(). It takes a flag parameter, so that the
+PhysicalFragment::DumpFragmentTree(). It takes a flag parameter, so that the
 output can be customized to only contain what's relevant for a given purpose.

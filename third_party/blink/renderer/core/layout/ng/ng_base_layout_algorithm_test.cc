@@ -87,7 +87,7 @@ const NGPhysicalBoxFragment* FragmentChildIterator::NextChild(
   if (index_ >= parent_->Children().size())
     return nullptr;
   while (parent_->Children()[index_]->Type() !=
-         NGPhysicalFragment::kFragmentBox) {
+         PhysicalFragment::kFragmentBox) {
     ++index_;
     if (index_ >= parent_->Children().size())
       return nullptr;

@@ -24,7 +24,7 @@ class ConstraintSpace;
 class LayoutOutsideListMarker;
 class LayoutResult;
 class LayoutUnit;
-class NGPhysicalFragment;
+class PhysicalFragment;
 
 // Represents an unpositioned list marker.
 //
@@ -66,11 +66,11 @@ class CORE_EXPORT UnpositionedListMarker final {
   absl::optional<LayoutUnit> ContentAlignmentBaseline(
       const ConstraintSpace&,
       FontBaseline,
-      const NGPhysicalFragment& content) const;
+      const PhysicalFragment& content) const;
   // Add a fragment for an outside list marker.
   void AddToBox(const ConstraintSpace&,
                 FontBaseline,
-                const NGPhysicalFragment& content,
+                const PhysicalFragment& content,
                 const BoxStrut&,
                 const LayoutResult& marker_layout_result,
                 LayoutUnit content_baseline,

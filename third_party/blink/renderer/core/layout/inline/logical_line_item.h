@@ -198,7 +198,7 @@ struct LogicalLineItem {
   const LogicalSize& Size() const { return rect.size; }
   LogicalSize MarginSize() const { return {inline_size, Size().block_size}; }
 
-  const NGPhysicalFragment* GetPhysicalFragment() const {
+  const PhysicalFragment* GetPhysicalFragment() const {
     if (layout_result)
       return &layout_result->GetPhysicalFragment();
     return nullptr;

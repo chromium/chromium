@@ -32,7 +32,7 @@
 
 namespace blink {
 
-class NGPhysicalFragment;
+class PhysicalFragment;
 
 class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   STACK_ALLOCATED();
@@ -146,7 +146,7 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   LayoutUnit IntrinsicBlockSize() const { return intrinsic_block_size_; }
   const BoxStrut& Borders() const {
     DCHECK(initial_fragment_geometry_);
-    DCHECK_NE(BoxType(), NGPhysicalFragment::kInlineBox);
+    DCHECK_NE(BoxType(), PhysicalFragment::kInlineBox);
     return initial_fragment_geometry_->border;
   }
   const BoxStrut& Scrollbar() const {
@@ -223,7 +223,7 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   // Other callers should call AddResult() instead of this when possible, since
   // there is information in the layout result that might need to be propagated.
   void AddChild(
-      const NGPhysicalFragment&,
+      const PhysicalFragment&,
       const LogicalOffset&,
       const MarginStrut* margin_strut = nullptr,
       bool is_self_collapsing = false,
@@ -414,7 +414,7 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
 
   // See |NGPhysicalBoxFragment::InflowBounds|.
   void SetInflowBounds(const LogicalRect& inflow_bounds) {
-    DCHECK_NE(box_type_, NGPhysicalBoxFragment::NGBoxType::kInlineBox);
+    DCHECK_NE(box_type_, PhysicalFragment::BoxType::kInlineBox);
     DCHECK(Node().IsScrollContainer());
 #if DCHECK_IS_ON()
     is_inflow_bounds_explicitly_set_ = true;
@@ -433,14 +433,14 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
 
   // Creates the fragment. Can only be called once.
   const LayoutResult* ToBoxFragment() {
-    DCHECK_NE(BoxType(), NGPhysicalFragment::kInlineBox);
+    DCHECK_NE(BoxType(), PhysicalFragment::kInlineBox);
     return ToBoxFragment(GetWritingMode());
   }
   const LayoutResult* ToInlineBoxFragment() {
     // The logical coordinate for inline box uses line-relative writing-mode,
     // not
     // flow-relative.
-    DCHECK_EQ(BoxType(), NGPhysicalFragment::kInlineBox);
+    DCHECK_EQ(BoxType(), PhysicalFragment::kInlineBox);
     return ToBoxFragment(ToLineWritingMode(GetWritingMode()));
   }
 

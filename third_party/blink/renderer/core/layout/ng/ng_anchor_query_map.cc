@@ -97,7 +97,7 @@ struct StitchedAnchorQuery : public GarbageCollected<StitchedAnchorQuery>,
     kOverwriteIfAfter,
   };
 
-  void AddAnchorQuery(const NGPhysicalFragment& fragment,
+  void AddAnchorQuery(const PhysicalFragment& fragment,
                       const PhysicalOffset& offset_from_fragmentainer,
                       const FragmentainerContext& fragmentainer) {
     const PhysicalAnchorQuery* anchor_query = fragment.AnchorQuery();
@@ -212,7 +212,7 @@ struct StitchedAnchorQueries {
     }
   }
 
-  void AddChild(const NGPhysicalFragment& fragment,
+  void AddChild(const PhysicalFragment& fragment,
                 const PhysicalOffset& offset_from_fragmentainer,
                 const FragmentainerContext& fragmentainer) {
     if (const auto* box = DynamicTo<NGPhysicalBoxFragment>(&fragment))

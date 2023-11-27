@@ -279,7 +279,7 @@ BlockLayoutAlgorithm::BlockLayoutAlgorithm(const LayoutAlgorithmParams& params)
 // header.
 BlockLayoutAlgorithm::~BlockLayoutAlgorithm() = default;
 
-void BlockLayoutAlgorithm::SetBoxType(NGPhysicalFragment::NGBoxType type) {
+void BlockLayoutAlgorithm::SetBoxType(PhysicalFragment::BoxType type) {
   container_builder_.SetBoxType(type);
 }
 
@@ -1430,7 +1430,7 @@ void BlockLayoutAlgorithm::HandleFloat(
   // TODO(mstensho): There should be a class A breakpoint between a float and
   // another float, and also between a float and an in-flow block.
 
-  const NGPhysicalFragment& physical_fragment =
+  const PhysicalFragment& physical_fragment =
       positioned_float.layout_result->GetPhysicalFragment();
   LayoutUnit float_inline_size =
       LogicalFragment(constraint_space.GetWritingDirection(), physical_fragment)
@@ -3012,7 +3012,7 @@ ConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
 }
 
 void BlockLayoutAlgorithm::PropagateBaselineFromLineBox(
-    const NGPhysicalFragment& child,
+    const PhysicalFragment& child,
     LayoutUnit block_offset) {
   const auto& line_box = To<PhysicalLineBoxFragment>(child);
 
@@ -3049,7 +3049,7 @@ void BlockLayoutAlgorithm::PropagateBaselineFromLineBox(
 }
 
 void BlockLayoutAlgorithm::PropagateBaselineFromBlockChild(
-    const NGPhysicalFragment& child,
+    const PhysicalFragment& child,
     const BoxStrut& margins,
     LayoutUnit block_offset) {
   DCHECK(child.IsBox());
@@ -3385,7 +3385,7 @@ LayoutUnit BlockLayoutAlgorithm::HandleTextControlPlaceholder(
   if (container_builder_.Children().size() > 0 && apply_fixed_size) {
     // The placeholder should have the width same as "editing-view-port"
     // element, which is the first grandchild of the text control.
-    const NGPhysicalFragment& child =
+    const PhysicalFragment& child =
         *container_builder_.Children()[kTextBlockIndex].fragment;
     if (child.IsTextControlContainer()) {
       const auto& grand_children = child.PostLayoutChildren();

@@ -12,15 +12,15 @@
 
 namespace blink {
 
-class NGPhysicalFragmentTest : public RenderingTest {
+class PhysicalFragmentTest : public RenderingTest {
  public:
-  String DumpAll(const NGPhysicalFragment* target = nullptr) const {
-    return NGPhysicalFragment::DumpFragmentTree(
-        *GetDocument().GetLayoutView(), NGPhysicalFragment::DumpAll, target);
+  String DumpAll(const PhysicalFragment* target = nullptr) const {
+    return PhysicalFragment::DumpFragmentTree(
+        *GetDocument().GetLayoutView(), PhysicalFragment::DumpAll, target);
   }
 };
 
-TEST_F(NGPhysicalFragmentTest, DumpFragmentTreeBasic) {
+TEST_F(PhysicalFragmentTest, DumpFragmentTreeBasic) {
   SetBodyInnerHTML(R"HTML(
     <div id="block"></div>
   )HTML");
@@ -35,7 +35,7 @@ TEST_F(NGPhysicalFragmentTest, DumpFragmentTreeBasic) {
 }
 
 // LayoutView is the containing block of an absolutely positioned descendant.
-TEST_F(NGPhysicalFragmentTest, DumpFragmentTreeWithAbspos) {
+TEST_F(PhysicalFragmentTest, DumpFragmentTreeWithAbspos) {
   SetBodyInnerHTML(R"HTML(
     <div id="abs" style="position:absolute;"></div>
   )HTML");
@@ -51,7 +51,7 @@ TEST_F(NGPhysicalFragmentTest, DumpFragmentTreeWithAbspos) {
 }
 
 // An NG object is the containing block of an absolutely positioned descendant.
-TEST_F(NGPhysicalFragmentTest, DumpFragmentTreeWithAbsposInRelpos) {
+TEST_F(PhysicalFragmentTest, DumpFragmentTreeWithAbsposInRelpos) {
   SetBodyInnerHTML(R"HTML(
     <div id="rel" style="position:relative;">
       <div id="abs" style="position:absolute; left:10px; top:20px;"></div>
@@ -70,7 +70,7 @@ TEST_F(NGPhysicalFragmentTest, DumpFragmentTreeWithAbsposInRelpos) {
 }
 
 // A legacy grid with another legacy grid inside, and some NG objects, too.
-TEST_F(NGPhysicalFragmentTest, DumpFragmentTreeWithGrid) {
+TEST_F(PhysicalFragmentTest, DumpFragmentTreeWithGrid) {
   SetBodyInnerHTML(R"HTML(
     <div id="outer-grid" style="display:grid;">
       <div id="grid-as-item" style="display:grid;">
@@ -99,7 +99,7 @@ TEST_F(NGPhysicalFragmentTest, DumpFragmentTreeWithGrid) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGPhysicalFragmentTest, DumpFragmentTreeWithTargetInsideColumn) {
+TEST_F(PhysicalFragmentTest, DumpFragmentTreeWithTargetInsideColumn) {
   SetBodyInnerHTML(R"HTML(
     <div id="multicol" style="columns:3;">
       <div id="child" style="height:150px;"></div>

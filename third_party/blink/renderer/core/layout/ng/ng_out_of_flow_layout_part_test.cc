@@ -31,10 +31,10 @@ class OutOfFlowLayoutPartTest : public BaseLayoutAlgorithmTest {
   }
 
   String DumpFragmentTree(const blink::NGPhysicalBoxFragment* fragment) {
-    NGPhysicalFragment::DumpFlags flags =
-        NGPhysicalFragment::DumpHeaderText | NGPhysicalFragment::DumpSubtree |
-        NGPhysicalFragment::DumpIndentation | NGPhysicalFragment::DumpOffset |
-        NGPhysicalFragment::DumpSize;
+    PhysicalFragment::DumpFlags flags =
+        PhysicalFragment::DumpHeaderText | PhysicalFragment::DumpSubtree |
+        PhysicalFragment::DumpIndentation | PhysicalFragment::DumpOffset |
+        PhysicalFragment::DumpSize;
 
     return fragment->DumpFragmentTree(flags);
   }

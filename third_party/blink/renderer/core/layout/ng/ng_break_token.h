@@ -25,8 +25,8 @@ namespace blink {
 // accept a break token. For example:
 //
 // LayoutInputNode* node = ...;
-// NGPhysicalFragment* fragment = node->Layout(space);
-// NGPhysicalFragment* fragment2 =
+// PhysicalFragment* fragment = node->Layout(space);
+// PhysicalFragment* fragment2 =
 //     node->Layout(space, fragment->GetBreakToken());
 //
 // The break token should encapsulate enough information to "resume" the layout.

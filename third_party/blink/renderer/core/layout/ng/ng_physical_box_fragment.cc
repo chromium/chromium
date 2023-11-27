@@ -40,7 +40,7 @@ unsigned NGPhysicalBoxFragment::AllowPostLayoutScope::allow_count_ = 0;
 
 namespace {
 
-struct SameSizeAsNGPhysicalBoxFragment : NGPhysicalFragment {
+struct SameSizeAsNGPhysicalBoxFragment : PhysicalFragment {
   unsigned flags;
   LayoutUnit baseline;
   LayoutUnit last_baseline;
@@ -200,7 +200,7 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::Create(
   // We store the children list inline in the fragment as a flexible
   // array. Therefore, we need to make sure to allocate enough space for
   // that array here, which requires a manual allocation + placement new.
-  // The initialization of the array is done by NGPhysicalFragment;
+  // The initialization of the array is done by PhysicalFragment;
   // we pass the buffer as a constructor argument.
   return MakeGarbageCollected<NGPhysicalBoxFragment>(
       AdditionalBytes(byte_size), PassKey(), builder, has_scrollable_overflow,
@@ -304,10 +304,10 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
     const absl::optional<PhysicalRect>& inflow_bounds,
     bool has_fragment_items,
     WritingMode block_or_line_writing_mode)
-    : NGPhysicalFragment(builder,
-                         block_or_line_writing_mode,
-                         kFragmentBox,
-                         builder->BoxType()),
+    : PhysicalFragment(builder,
+                       block_or_line_writing_mode,
+                       kFragmentBox,
+                       builder->BoxType()),
       bit_field_(ConstHasFragmentItemsFlag::encode(has_fragment_items) |
                  HasDescendantsForTablePartFlag::encode(false) |
                  IsFragmentationContextRootFlag::encode(
@@ -407,7 +407,7 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
     const NGPhysicalBoxFragment& other,
     bool has_scrollable_overflow,
     const PhysicalRect& scrollable_overflow)
-    : NGPhysicalFragment(other),
+    : PhysicalFragment(other),
       bit_field_(other.bit_field_),
       first_baseline_(other.first_baseline_),
       last_baseline_(other.last_baseline_),
@@ -426,7 +426,7 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
 
 NGPhysicalBoxFragment::~NGPhysicalBoxFragment() {
   // Note: This function may not always be called because the dtor of
-  // NGPhysicalFragment is made non-virtual for memory efficiency.
+  // PhysicalFragment is made non-virtual for memory efficiency.
   SetInkOverflowType(ink_overflow_.Reset(InkOverflowType()));
 }
 
@@ -438,7 +438,7 @@ void NGPhysicalBoxFragment::Dispose() {
 }
 
 // TODO(kojii): Move to ng_physical_fragment.cc
-NGPhysicalFragment::OofData* NGPhysicalFragment::FragmentedOofDataFromBuilder(
+PhysicalFragment::OofData* PhysicalFragment::FragmentedOofDataFromBuilder(
     FragmentBuilder* builder) {
   DCHECK(has_fragmented_out_of_flow_data_);
   DCHECK_EQ(has_fragmented_out_of_flow_data_,
@@ -805,7 +805,7 @@ PhysicalRect NGPhysicalBoxFragment::ComputeRubyEmHeightBox() const {
   } else if (layout_object->IsLayoutInline()) {
     // Inline overflow is a union of child overflows.
     PhysicalRect overflow;
-    if (BoxType() != kInlineBox) {
+    if (GetBoxType() != kInlineBox) {
       overflow = PhysicalRect({}, Size());
     }
     for (const auto& child_fragment : PostLayoutChildren()) {
@@ -863,7 +863,7 @@ PhysicalRect NGPhysicalBoxFragment::ComputeRubyEmHeightBoxFromChildren() const {
     }
 
     void AddFloatingOrOutOfFlowPositionedChild(
-        const NGPhysicalFragment& child,
+        const PhysicalFragment& child,
         const PhysicalOffset& child_offset) {
       DCHECK(child.IsFloatingOrOutOfFlowPositioned());
       PhysicalRect child_scrollable_overflow =
@@ -1858,7 +1858,7 @@ void NGPhysicalBoxFragment::TraceAfterDispatch(Visitor* visitor) const {
   // in ctor so they do not cause TOCTOU.
   if (HasItems())
     visitor->Trace(*ComputeItemsAddress());
-  NGPhysicalFragment::TraceAfterDispatch(visitor);
+  PhysicalFragment::TraceAfterDispatch(visitor);
 }
 
 }  // namespace blink

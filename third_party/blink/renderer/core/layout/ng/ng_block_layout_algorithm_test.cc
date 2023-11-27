@@ -65,10 +65,10 @@ class BlockLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
   }
 
   String DumpFragmentTree(const NGPhysicalBoxFragment* fragment) {
-    NGPhysicalFragment::DumpFlags flags =
-        NGPhysicalFragment::DumpHeaderText | NGPhysicalFragment::DumpSubtree |
-        NGPhysicalFragment::DumpIndentation | NGPhysicalFragment::DumpOffset |
-        NGPhysicalFragment::DumpSize;
+    PhysicalFragment::DumpFlags flags =
+        PhysicalFragment::DumpHeaderText | PhysicalFragment::DumpSubtree |
+        PhysicalFragment::DumpIndentation | PhysicalFragment::DumpOffset |
+        PhysicalFragment::DumpSize;
 
     return fragment->DumpFragmentTree(flags);
   }
@@ -344,7 +344,7 @@ TEST_F(BlockLayoutAlgorithmTest, LayoutBlockChildren) {
   EXPECT_EQ(LayoutUnit(kWidth), fragment->Size().width);
   EXPECT_EQ(LayoutUnit(kHeight1 + kHeight2 + kMarginTop),
             fragment->Size().height);
-  EXPECT_EQ(NGPhysicalFragment::kFragmentBox, fragment->Type());
+  EXPECT_EQ(PhysicalFragment::kFragmentBox, fragment->Type());
   ASSERT_EQ(fragment->Children().size(), 2UL);
 
   const PhysicalFragmentLink& first_child = fragment->Children()[0];
@@ -788,7 +788,7 @@ TEST_F(BlockLayoutAlgorithmTest, CollapsingMarginsCase6) {
 
   ASSERT_EQ(fragment->Children().size(), 2UL);
 
-  const NGPhysicalFragment* child1 = fragment->Children()[0].get();
+  const PhysicalFragment* child1 = fragment->Children()[0].get();
   PhysicalOffset child1_offset = fragment->Children()[0].Offset();
   EXPECT_EQ(0, child1_offset.top);
   EXPECT_EQ(kHeight, child1->Size().height);
@@ -1087,7 +1087,7 @@ TEST_F(BlockLayoutAlgorithmTest, BorderAndPadding) {
   ASSERT_EQ(fragment->Children().size(), 1UL);
 
   // div1
-  const NGPhysicalFragment* child = fragment->Children()[0].get();
+  const PhysicalFragment* child = fragment->Children()[0].get();
   EXPECT_EQ(kBorderLeft + kPaddingLeft + kWidth + kPaddingRight + kBorderRight,
             child->Size().width);
   EXPECT_EQ(kBorderTop + kPaddingTop + kHeight + kPaddingBottom + kBorderBottom,
@@ -1121,10 +1121,10 @@ TEST_F(BlockLayoutAlgorithmTest, PercentageResolutionSize) {
       RunBlockLayoutAlgorithm(container, space);
 
   EXPECT_EQ(LayoutUnit(kWidth + kPaddingLeft), fragment->Size().width);
-  EXPECT_EQ(NGPhysicalFragment::kFragmentBox, fragment->Type());
+  EXPECT_EQ(PhysicalFragment::kFragmentBox, fragment->Type());
   ASSERT_EQ(fragment->Children().size(), 1UL);
 
-  const NGPhysicalFragment* child = fragment->Children()[0].get();
+  const PhysicalFragment* child = fragment->Children()[0].get();
   EXPECT_EQ(LayoutUnit(12), child->Size().width);
 }
 
@@ -1153,10 +1153,10 @@ TEST_F(BlockLayoutAlgorithmTest, AutoMargin) {
       RunBlockLayoutAlgorithm(container, space);
 
   EXPECT_EQ(LayoutUnit(kWidth + kPaddingLeft), fragment->Size().width);
-  EXPECT_EQ(NGPhysicalFragment::kFragmentBox, fragment->Type());
+  EXPECT_EQ(PhysicalFragment::kFragmentBox, fragment->Type());
   ASSERT_EQ(1UL, fragment->Children().size());
 
-  const NGPhysicalFragment* child = fragment->Children()[0].get();
+  const PhysicalFragment* child = fragment->Children()[0].get();
   PhysicalOffset child_offset = fragment->Children()[0].Offset();
   EXPECT_EQ(LayoutUnit(kChildWidth), child->Size().width);
   EXPECT_EQ(LayoutUnit(kPaddingLeft + 10), child_offset.left);

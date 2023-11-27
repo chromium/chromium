@@ -468,7 +468,7 @@ void NGTablePainter::PaintBoxDecorationBackground(
 
 namespace {
 
-const NGPhysicalFragment* StartSection(const NGPhysicalBoxFragment& table) {
+const PhysicalFragment* StartSection(const NGPhysicalBoxFragment& table) {
   for (const auto& child : table.Children()) {
     if (!child->IsTableSection()) {
       continue;
@@ -478,7 +478,7 @@ const NGPhysicalFragment* StartSection(const NGPhysicalBoxFragment& table) {
   return nullptr;
 }
 
-const NGPhysicalFragment* EndSection(const NGPhysicalBoxFragment& table) {
+const PhysicalFragment* EndSection(const NGPhysicalBoxFragment& table) {
   const auto children = table.Children();
   for (auto it = children.rbegin(); it != children.rend(); ++it) {
     const auto& child = *it;

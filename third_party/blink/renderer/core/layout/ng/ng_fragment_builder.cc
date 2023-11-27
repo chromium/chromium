@@ -23,7 +23,7 @@ bool IsInlineContainerForNode(const BlockNode& node,
 }
 
 LogicalAnchorQuery::SetOptions AnchorQuerySetOptions(
-    const NGPhysicalFragment& fragment,
+    const PhysicalFragment& fragment,
     const LayoutInputNode& container,
     bool maybe_out_of_order_if_oof) {
   // If the |fragment| is not absolutely positioned, it's an in-flow anchor.
@@ -60,41 +60,41 @@ LogicalAnchorQuery::SetOptions AnchorQuerySetOptions(
 
 }  // namespace
 
-NGPhysicalFragment::NGBoxType FragmentBuilder::BoxType() const {
-  if (box_type_ != NGPhysicalFragment::NGBoxType::kNormalBox) {
+PhysicalFragment::BoxType FragmentBuilder::BoxType() const {
+  if (box_type_ != PhysicalFragment::BoxType::kNormalBox) {
     return box_type_;
   }
 
   // When implicit, compute from LayoutObject.
   DCHECK(layout_object_);
   if (layout_object_->IsFloating()) {
-    return NGPhysicalFragment::NGBoxType::kFloating;
+    return PhysicalFragment::BoxType::kFloating;
   }
   if (layout_object_->IsOutOfFlowPositioned()) {
-    return NGPhysicalFragment::NGBoxType::kOutOfFlowPositioned;
+    return PhysicalFragment::BoxType::kOutOfFlowPositioned;
   }
   if (layout_object_->IsRenderedLegend()) {
-    return NGPhysicalFragment::NGBoxType::kRenderedLegend;
+    return PhysicalFragment::BoxType::kRenderedLegend;
   }
   if (layout_object_->IsInline()) {
     // Check |IsAtomicInlineLevel()| after |IsInline()| because |LayoutReplaced|
     // sets |IsAtomicInlineLevel()| even when it's block-level. crbug.com/567964
     if (layout_object_->IsAtomicInlineLevel()) {
-      return NGPhysicalFragment::NGBoxType::kAtomicInline;
+      return PhysicalFragment::BoxType::kAtomicInline;
     }
-    return NGPhysicalFragment::NGBoxType::kInlineBox;
+    return PhysicalFragment::BoxType::kInlineBox;
   }
   DCHECK(node_) << "Must call SetBoxType if there is no node";
   DCHECK_EQ(is_new_fc_, node_.CreatesNewFormattingContext())
       << "Forgot to call builder.SetIsNewFormattingContext";
   if (is_new_fc_) {
-    return NGPhysicalFragment::NGBoxType::kBlockFlowRoot;
+    return PhysicalFragment::BoxType::kBlockFlowRoot;
   }
-  return NGPhysicalFragment::NGBoxType::kNormalBox;
+  return PhysicalFragment::BoxType::kNormalBox;
 }
 
 void FragmentBuilder::ReplaceChild(wtf_size_t index,
-                                   const NGPhysicalFragment& new_child,
+                                   const PhysicalFragment& new_child,
                                    const LogicalOffset offset) {
   DCHECK_LT(index, children_.size());
   children_[index] = LogicalFragmentLink{std::move(&new_child), offset};
@@ -110,7 +110,7 @@ FragmentBuilder::EnsureStickyDescendants() {
 }
 
 void FragmentBuilder::PropagateStickyDescendants(
-    const NGPhysicalFragment& child) {
+    const PhysicalFragment& child) {
   if (child.HasStickyConstrainedPosition()) {
     EnsureStickyDescendants().push_front(
         To<LayoutBoxModelObject>(child.GetMutableLayoutObject()));
@@ -129,7 +129,7 @@ HeapHashSet<Member<LayoutBox>>& FragmentBuilder::EnsureSnapAreas() {
   return *snap_areas_;
 }
 
-void FragmentBuilder::PropagateSnapAreas(const NGPhysicalFragment& child) {
+void FragmentBuilder::PropagateSnapAreas(const PhysicalFragment& child) {
   if (child.IsSnapArea()) {
     EnsureSnapAreas().insert(To<LayoutBox>(child.GetMutableLayoutObject()));
   }
@@ -152,7 +152,7 @@ LogicalAnchorQuery& FragmentBuilder::EnsureAnchorQuery() {
   return *anchor_query_;
 }
 
-void FragmentBuilder::PropagateChildAnchors(const NGPhysicalFragment& child,
+void FragmentBuilder::PropagateChildAnchors(const PhysicalFragment& child,
                                             const LogicalOffset& child_offset) {
   absl::optional<LogicalAnchorQuery::SetOptions> options;
   if (child.IsBox() &&
@@ -212,7 +212,7 @@ ScrollStartTargetCandidates& FragmentBuilder::EnsureScrollStartTargets() {
 }
 
 void FragmentBuilder::PropagateScrollStartTarget(
-    const NGPhysicalFragment& child) {
+    const PhysicalFragment& child) {
   auto UpdateScrollStartTarget = [](Member<const LayoutBox>& old_target,
                                     const LayoutBox* new_target) {
     if (new_target &&
@@ -238,7 +238,7 @@ void FragmentBuilder::PropagateScrollStartTarget(
 // Propagate data in |child| to this fragment. The |child| will then be added as
 // a child fragment or a child fragment item.
 void FragmentBuilder::PropagateFromFragment(
-    const NGPhysicalFragment& child,
+    const PhysicalFragment& child,
     LogicalOffset child_offset,
     LogicalOffset relative_offset,
     const OofInlineContainer<LogicalOffset>* inline_container) {
@@ -316,11 +316,11 @@ void FragmentBuilder::PropagateFromFragment(
       !break_token_ && !should_add_break_tokens_manually_) {
     const BreakToken* child_break_token = child.GetBreakToken();
     switch (child.Type()) {
-      case NGPhysicalFragment::kFragmentBox:
+      case PhysicalFragment::kFragmentBox:
         if (child_break_token)
           child_break_tokens_.push_back(child_break_token);
         break;
-      case NGPhysicalFragment::kFragmentLineBox:
+      case PhysicalFragment::kFragmentLineBox:
         if (child.IsLineForParallelFlow()) {
           // This is a line that only contains a resumed float / block after a
           // fragmentation break. It should not affect orphans / widows
@@ -345,7 +345,7 @@ void FragmentBuilder::PropagateFromFragment(
   }
 }
 
-void FragmentBuilder::AddChildInternal(const NGPhysicalFragment* child,
+void FragmentBuilder::AddChildInternal(const PhysicalFragment* child,
                                        const LogicalOffset& child_offset) {
   // In order to know where list-markers are within the children list (for the
   // |SimplifiedLayoutAlgorithm|) we always place them as the first child.
@@ -503,7 +503,7 @@ LayoutUnit FragmentBuilder::BlockOffsetAdjustmentForFragmentainer(
 }
 
 void FragmentBuilder::PropagateOOFPositionedInfo(
-    const NGPhysicalFragment& fragment,
+    const PhysicalFragment& fragment,
     LogicalOffset offset,
     LogicalOffset relative_offset,
     LogicalOffset offset_adjustment,
@@ -617,7 +617,7 @@ void FragmentBuilder::PropagateOOFPositionedInfo(
       OofInlineContainer<LogicalOffset> new_fixedpos_inline_container(
           multicol_info->fixedpos_inline_container.container,
           fixedpos_inline_relative_offset);
-      const NGPhysicalFragment* fixedpos_containing_block_fragment =
+      const PhysicalFragment* fixedpos_containing_block_fragment =
           multicol_info->fixedpos_containing_block.Fragment();
 
       AdjustFixedposContainerInfo(box_fragment, relative_offset,
@@ -681,7 +681,7 @@ void FragmentBuilder::PropagateOOFPositionedInfo(
 }
 
 void FragmentBuilder::PropagateOOFFragmentainerDescendants(
-    const NGPhysicalFragment& fragment,
+    const PhysicalFragment& fragment,
     LogicalOffset offset,
     LogicalOffset relative_offset,
     LayoutUnit containing_block_adjustment,
@@ -704,7 +704,7 @@ void FragmentBuilder::PropagateOOFFragmentainerDescendants(
        idx = next_idx) {
     next_idx = idx + 1;
     const auto& descendant = out_of_flow_fragmentainer_descendants[idx];
-    const NGPhysicalFragment* containing_block_fragment =
+    const PhysicalFragment* containing_block_fragment =
         descendant.containing_block.Fragment();
     bool container_inside_column_spanner =
         descendant.containing_block.IsInsideColumnSpanner();
@@ -808,7 +808,7 @@ void FragmentBuilder::PropagateOOFFragmentainerDescendants(
     OofInlineContainer<LogicalOffset> new_fixedpos_inline_container(
         descendant.fixedpos_inline_container.container,
         fixedpos_inline_relative_offset);
-    const NGPhysicalFragment* fixedpos_containing_block_fragment =
+    const PhysicalFragment* fixedpos_containing_block_fragment =
         descendant.fixedpos_containing_block.Fragment();
 
     AdjustFixedposContainerInfo(
@@ -877,10 +877,10 @@ void FragmentBuilder::PropagateOOFFragmentainerDescendants(
 }
 
 void FragmentBuilder::AdjustFixedposContainerInfo(
-    const NGPhysicalFragment* box_fragment,
+    const PhysicalFragment* box_fragment,
     LogicalOffset relative_offset,
     OofInlineContainer<LogicalOffset>* fixedpos_inline_container,
-    const NGPhysicalFragment** fixedpos_containing_block_fragment,
+    const PhysicalFragment** fixedpos_containing_block_fragment,
     const OofInlineContainer<LogicalOffset>* current_inline_container) const {
   DCHECK(fixedpos_inline_container);
   DCHECK(fixedpos_containing_block_fragment);
@@ -936,7 +936,7 @@ String FragmentBuilder::ToString() const {
                        children_.size());
   for (auto& child : children_) {
     builder.Append(child.fragment->DumpFragmentTree(
-        NGPhysicalFragment::DumpAll & ~NGPhysicalFragment::DumpHeaderText));
+        PhysicalFragment::DumpAll & ~PhysicalFragment::DumpHeaderText));
   }
   return builder.ToString();
 }

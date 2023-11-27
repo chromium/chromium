@@ -199,7 +199,7 @@ void NGLineBoxFragmentPainter::PaintBackgroundBorderShadow(
     const PaintInfo& paint_info,
     const PhysicalOffset& paint_offset) {
   DCHECK_EQ(paint_info.phase, PaintPhase::kForeground);
-  DCHECK_EQ(inline_box_fragment_.Type(), NGPhysicalFragment::kFragmentLineBox);
+  DCHECK_EQ(inline_box_fragment_.Type(), PhysicalFragment::kFragmentLineBox);
   DCHECK(NeedsPaint(inline_box_fragment_));
   // |FragmentItem| uses the fragment id when painting the background of
   // line boxes. Please see |FragmentItem::kInitialLineFragmentId|.
@@ -549,10 +549,7 @@ void NGInlineBoxFragmentPainter::CheckValid() const {
   DCHECK(inline_box_cursor_);
   DCHECK_EQ(inline_box_cursor_->Current().Item(), &inline_box_item_);
 
-  DCHECK_EQ(inline_box_fragment_.Type(),
-            NGPhysicalFragment::NGFragmentType::kFragmentBox);
-  DCHECK_EQ(inline_box_fragment_.BoxType(),
-            NGPhysicalFragment::NGBoxType::kInlineBox);
+  DCHECK(inline_box_fragment_.IsInlineBox());
 }
 #endif
 

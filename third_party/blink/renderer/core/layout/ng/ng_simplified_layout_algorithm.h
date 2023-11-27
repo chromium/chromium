@@ -15,7 +15,7 @@
 namespace blink {
 
 class BlockBreakToken;
-class NGPhysicalFragment;
+class PhysicalFragment;
 struct PhysicalFragmentLink;
 
 // The "simplified" layout algorithm will run in the following circumstances:
@@ -46,7 +46,7 @@ class CORE_EXPORT SimplifiedLayoutAlgorithm
   // Perform a simple copy of all children of the old fragment.
   void CloneOldChildren();
 
-  void AppendNewChildFragment(const NGPhysicalFragment&, LogicalOffset);
+  void AppendNewChildFragment(const PhysicalFragment&, LogicalOffset);
 
   // Just create a new layout result based on the current builder state. To be
   // used after CloneOldChildren() / AppendNewChildFragment().
@@ -66,7 +66,7 @@ class CORE_EXPORT SimplifiedLayoutAlgorithm
 
  private:
   void AddChildFragment(const PhysicalFragmentLink& old_fragment,
-                        const NGPhysicalFragment& new_fragment,
+                        const PhysicalFragment& new_fragment,
                         const MarginStrut* margin_strut = nullptr,
                         bool is_self_collapsing = false);
 

@@ -41,7 +41,7 @@ struct FragmentedOofData;
 struct LogicalRect;
 struct PhysicalOofPositionedNode;
 
-// The NGPhysicalFragment contains the output geometry from layout. The
+// The PhysicalFragment contains the output geometry from layout. The
 // fragment stores all of its information in the physical coordinate system for
 // use by paint, hit-testing etc.
 //
@@ -52,16 +52,15 @@ struct PhysicalOofPositionedNode;
 // Layout code should only access geometry information through the
 // LogicalFragment wrapper classes which transforms information into the logical
 // coordinate system.
-class CORE_EXPORT NGPhysicalFragment
-    : public GarbageCollected<NGPhysicalFragment> {
+class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
  public:
-  enum NGFragmentType {
+  enum FragmentType {
     kFragmentBox = 0,
     kFragmentLineBox = 1,
     // When adding new values, make sure the bit size of |type_| is large
     // enough to store.
   };
-  enum NGBoxType {
+  enum BoxType {
     kNormalBox,
     kInlineBox,
     // A multi-column container creates column boxes as its children, which
@@ -102,44 +101,46 @@ class CORE_EXPORT NGPhysicalFragment
     Member<const ScrollStartTargetCandidates> scroll_start_targets;
   };
 
-  NGPhysicalFragment(FragmentBuilder* builder,
-                     WritingMode block_or_line_writing_mode,
-                     NGFragmentType type,
-                     unsigned sub_type);
+  PhysicalFragment(FragmentBuilder* builder,
+                   WritingMode block_or_line_writing_mode,
+                   FragmentType type,
+                   unsigned sub_type);
 
-  NGPhysicalFragment(const NGPhysicalFragment& other);
+  PhysicalFragment(const PhysicalFragment& other);
 
-  ~NGPhysicalFragment();
+  ~PhysicalFragment();
 
   void Dispose();
 
-  NGFragmentType Type() const { return static_cast<NGFragmentType>(type_); }
+  FragmentType Type() const { return static_cast<FragmentType>(type_); }
   bool IsContainer() const {
-    return Type() == NGFragmentType::kFragmentBox ||
-           Type() == NGFragmentType::kFragmentLineBox;
+    return Type() == FragmentType::kFragmentBox ||
+           Type() == FragmentType::kFragmentLineBox;
   }
-  bool IsBox() const { return Type() == NGFragmentType::kFragmentBox; }
-  bool IsLineBox() const { return Type() == NGFragmentType::kFragmentLineBox; }
+  bool IsBox() const { return Type() == FragmentType::kFragmentBox; }
+  bool IsLineBox() const { return Type() == FragmentType::kFragmentLineBox; }
 
   // Returns the box type of this fragment.
-  NGBoxType BoxType() const {
+  BoxType GetBoxType() const {
     DCHECK(IsBox());
-    return static_cast<NGBoxType>(sub_type_);
+    return static_cast<BoxType>(sub_type_);
   }
   // True if this is an inline box; e.g., <span>. Atomic inlines such as
   // replaced elements or inline block are not included.
   bool IsInlineBox() const {
-    return IsBox() && BoxType() == NGBoxType::kInlineBox;
+    return IsBox() && GetBoxType() == BoxType::kInlineBox;
   }
   bool IsColumnBox() const {
-    return IsBox() && BoxType() == NGBoxType::kColumnBox;
+    return IsBox() && GetBoxType() == BoxType::kColumnBox;
   }
-  bool IsPageBox() const { return IsBox() && BoxType() == NGBoxType::kPageBox; }
-  static bool IsFragmentainerBoxType(NGBoxType type) {
-    return type == NGBoxType::kColumnBox || type == NGBoxType::kPageBox;
+  bool IsPageBox() const {
+    return IsBox() && GetBoxType() == BoxType::kPageBox;
+  }
+  static bool IsFragmentainerBoxType(BoxType type) {
+    return type == BoxType::kColumnBox || type == BoxType::kPageBox;
   }
   bool IsFragmentainerBox() const {
-    return IsBox() && IsFragmentainerBoxType(BoxType());
+    return IsBox() && IsFragmentainerBoxType(GetBoxType());
   }
   bool IsColumnSpanAll() const {
     if (const auto* box = DynamicTo<LayoutBox>(GetLayoutObject()))
@@ -149,7 +150,7 @@ class CORE_EXPORT NGPhysicalFragment
   // An atomic inline is represented as a kFragmentBox, such as inline block and
   // replaced elements.
   bool IsAtomicInline() const {
-    return IsBox() && BoxType() == NGBoxType::kAtomicInline;
+    return IsBox() && GetBoxType() == BoxType::kAtomicInline;
   }
   // True if this box is a block-in-inline, or if this line contains a
   // block-in-inline.
@@ -160,10 +161,10 @@ class CORE_EXPORT NGPhysicalFragment
   // True if this fragment is in-flow in an inline formatting context.
   bool IsInline() const { return IsInlineBox() || IsAtomicInline(); }
   bool IsFloating() const {
-    return IsBox() && BoxType() == NGBoxType::kFloating;
+    return IsBox() && GetBoxType() == BoxType::kFloating;
   }
   bool IsOutOfFlowPositioned() const {
-    return IsBox() && BoxType() == NGBoxType::kOutOfFlowPositioned;
+    return IsBox() && GetBoxType() == BoxType::kOutOfFlowPositioned;
   }
   bool IsFixedPositioned() const {
     return IsCSSBox() && layout_object_->IsFixedPositioned();
@@ -191,7 +192,7 @@ class CORE_EXPORT NGPhysicalFragment
   // Return true if this is the legend child of a fieldset that gets special
   // treatment (i.e. placed over the block-start border).
   bool IsRenderedLegend() const {
-    return IsBox() && BoxType() == NGBoxType::kRenderedLegend;
+    return IsBox() && GetBoxType() == BoxType::kRenderedLegend;
   }
   bool IsMathML() const {
     return IsBox() && GetSelfOrContainerLayoutObject()->IsMathML();
@@ -275,7 +276,7 @@ class CORE_EXPORT NGPhysicalFragment
   bool HasCollapsedBorders() const { return has_collapsed_borders_; }
 
   bool IsFormattingContextRoot() const {
-    return IsBox() && BoxType() >= NGBoxType::kMinimumFormattingContextRoot;
+    return IsBox() && GetBoxType() >= BoxType::kMinimumFormattingContextRoot;
   }
 
   // Returns true if we have a descendant within this formatting context, which
@@ -464,12 +465,12 @@ class CORE_EXPORT NGPhysicalFragment
 
   const FragmentData* GetFragmentData() const;
 
-  // |NGPhysicalFragment| may live longer than the corresponding |LayoutObject|.
-  // Though |NGPhysicalFragment| is immutable, |layout_object_| is cleared to
+  // |PhysicalFragment| may live longer than the corresponding |LayoutObject|.
+  // Though |PhysicalFragment| is immutable, |layout_object_| is cleared to
   // |nullptr| when it was destroyed to avoid reading destroyed objects.
   bool IsLayoutObjectDestroyedOrMoved() const { return !layout_object_; }
   void LayoutObjectWillBeDestroyed() const {
-    const_cast<NGPhysicalFragment*>(this)->layout_object_ = nullptr;
+    const_cast<PhysicalFragment*>(this)->layout_object_ = nullptr;
   }
 
   // Returns the latest generation of the post-layout fragment. Returns
@@ -478,7 +479,7 @@ class CORE_EXPORT NGPhysicalFragment
   // When subtree relayout occurs at the relayout boundary, its containing block
   // may keep the reference to old generations of this fragment. Callers can
   // check if there were newer generations.
-  const NGPhysicalFragment* PostLayout() const;
+  const PhysicalFragment* PostLayout() const;
 
   // Em height box. including contents, in the local coordinate.
   PhysicalRect ComputeRubyEmHeightBox(
@@ -519,7 +520,7 @@ class CORE_EXPORT NGPhysicalFragment
   // Dump the fragment tree, optionally mark |target| if it's found. If not
   // found, the subtree established by |target| will be dumped as well.
   String DumpFragmentTree(DumpFlags,
-                          const NGPhysicalFragment* target = nullptr,
+                          const PhysicalFragment* target = nullptr,
                           absl::optional<PhysicalOffset> = absl::nullopt,
                           unsigned indent = 2) const;
 
@@ -531,14 +532,14 @@ class CORE_EXPORT NGPhysicalFragment
   // behavior is undefined.
   static String DumpFragmentTree(const LayoutObject& root,
                                  DumpFlags,
-                                 const NGPhysicalFragment* target = nullptr);
+                                 const PhysicalFragment* target = nullptr);
 
   void Trace(Visitor*) const;
   void TraceAfterDispatch(Visitor*) const;
 
   // Same as |base::span<const PhysicalFragmentLink>|, except that:
   // * Each |PhysicalFragmentLink| has the latest generation of post-layout. See
-  //   |NGPhysicalFragment::PostLayout()| for more details.
+  //   |PhysicalFragment::PostLayout()| for more details.
   // * The iterator skips fragments for destroyed or moved |LayoutObject|.
   class PostLayoutChildLinkList {
     STACK_ALLOCATED();
@@ -586,10 +587,10 @@ class CORE_EXPORT NGPhysicalFragment
      private:
       void SkipInvalidAndSetPostLayout() {
         for (; current_ != end_; ++current_) {
-          const NGPhysicalFragment* fragment = current_->fragment.Get();
+          const PhysicalFragment* fragment = current_->fragment.Get();
           if (UNLIKELY(fragment->IsLayoutObjectDestroyedOrMoved()))
             continue;
-          if (const NGPhysicalFragment* post_layout = fragment->PostLayout()) {
+          if (const PhysicalFragment* post_layout = fragment->PostLayout()) {
             post_layout_.fragment = post_layout;
             post_layout_.offset = current_->offset;
             return;
@@ -762,8 +763,8 @@ class CORE_EXPORT NGPhysicalFragment
   Member<LayoutObject> layout_object_;
   PhysicalSize size_;
 
-  const uint8_t type_ : 1;           // NGFragmentType
-  const uint8_t sub_type_ : 4;       // NGBoxType, NGTextType, or NGLineBoxType
+  const uint8_t type_ : 1;           // FragmentType
+  const uint8_t sub_type_ : 4;       // BoxType, NGTextType, or LineBoxType
   const uint8_t style_variant_ : 2;  // StyleVariant
   const uint8_t is_hidden_for_paint_ : 1;
   uint8_t : 0;  // NOLINT, zero-length bitfield used to allow the compiler to
@@ -808,11 +809,11 @@ class CORE_EXPORT NGPhysicalFragment
   Member<OofData> oof_data_;
 };
 
-CORE_EXPORT std::ostream& operator<<(std::ostream&, const NGPhysicalFragment*);
-CORE_EXPORT std::ostream& operator<<(std::ostream&, const NGPhysicalFragment&);
+CORE_EXPORT std::ostream& operator<<(std::ostream&, const PhysicalFragment*);
+CORE_EXPORT std::ostream& operator<<(std::ostream&, const PhysicalFragment&);
 
 #if !DCHECK_IS_ON()
-inline void NGPhysicalFragment::CheckType() const {}
+inline void PhysicalFragment::CheckType() const {}
 #endif
 
 }  // namespace blink
@@ -822,19 +823,18 @@ inline void NGPhysicalFragment::CheckType() const {}
 
 // Output the fragment tree to the log.
 // See DumpFragmentTree().
-CORE_EXPORT void ShowFragmentTree(const blink::NGPhysicalFragment*);
+CORE_EXPORT void ShowFragmentTree(const blink::PhysicalFragment*);
 
 // Output the fragment tree(s) inside |root| to the log.
 // See DumpFragmentTree(const LayoutObject& ...).
 CORE_EXPORT void ShowFragmentTree(
     const blink::LayoutObject& root,
-    const blink::NGPhysicalFragment* target = nullptr);
+    const blink::PhysicalFragment* target = nullptr);
 
 // Output the fragment tree(s) from the entire document to the log.
 // See DumpFragmentTree(const LayoutObject& ...).
 CORE_EXPORT void ShowEntireFragmentTree(const blink::LayoutObject& target);
-CORE_EXPORT void ShowEntireFragmentTree(
-    const blink::NGPhysicalFragment* target);
+CORE_EXPORT void ShowEntireFragmentTree(const blink::PhysicalFragment* target);
 #endif  // DCHECK_IS_ON()
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_PHYSICAL_FRAGMENT_H_

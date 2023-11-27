@@ -19,7 +19,7 @@ class CORE_EXPORT LogicalFragment {
 
  public:
   LogicalFragment(WritingDirectionMode writing_direction,
-                  const NGPhysicalFragment& physical_fragment)
+                  const PhysicalFragment& physical_fragment)
       : physical_fragment_(physical_fragment),
         writing_direction_(writing_direction) {}
 
@@ -41,7 +41,7 @@ class CORE_EXPORT LogicalFragment {
   }
 
  protected:
-  const NGPhysicalFragment& physical_fragment_;
+  const PhysicalFragment& physical_fragment_;
   const WritingDirectionMode writing_direction_;
 };
 

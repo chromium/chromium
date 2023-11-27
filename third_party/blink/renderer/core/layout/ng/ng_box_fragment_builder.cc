@@ -161,7 +161,7 @@ void BoxFragmentBuilder::AddResult(const LayoutResult& child_layout_result,
 }
 
 void BoxFragmentBuilder::AddChild(
-    const NGPhysicalFragment& child,
+    const PhysicalFragment& child,
     const LogicalOffset& child_offset,
     const MarginStrut* margin_strut,
     bool is_self_collapsing,
@@ -175,7 +175,7 @@ void BoxFragmentBuilder::AddChild(
 
   if (!relative_offset) {
     relative_offset = LogicalOffset();
-    if (box_type_ != NGPhysicalBoxFragment::NGBoxType::kInlineBox) {
+    if (box_type_ != PhysicalFragment::BoxType::kInlineBox) {
       if (child.IsLineBox()) {
         if (UNLIKELY(child.MayHaveDescendantAboveBlockStart()))
           may_have_descendant_above_block_start_ = true;
@@ -509,7 +509,7 @@ const LayoutResult* BoxFragmentBuilder::ToBoxFragment(
   if (ItemsBuilder()) {
     for (const LogicalFragmentLink& child : Children()) {
       DCHECK(child.fragment);
-      const NGPhysicalFragment& fragment = *child.fragment;
+      const PhysicalFragment& fragment = *child.fragment;
       DCHECK(fragment.IsLineBox() ||
              // TODO(kojii): How to place floats and OOF is TBD.
              fragment.IsFloatingOrOutOfFlowPositioned());
@@ -517,9 +517,10 @@ const LayoutResult* BoxFragmentBuilder::ToBoxFragment(
   }
 #endif
 
-  if (UNLIKELY(box_type_ == NGPhysicalFragment::kNormalBox && node_ &&
-               node_.IsBlockInInline()))
+  if (UNLIKELY(box_type_ == PhysicalFragment::kNormalBox && node_ &&
+               node_.IsBlockInInline())) {
     SetIsBlockInInline();
+  }
 
   if (UNLIKELY(has_block_fragmentation_ && node_)) {
     if (previous_break_token_ && previous_break_token_->IsAtBlockEnd()) {
@@ -541,7 +542,7 @@ const LayoutResult* BoxFragmentBuilder::ToBoxFragment(
     // Make some final adjustments to block-size for fragmentation, unless this
     // is a fragmentainer (so that we only include the block-size propagated
     // from children in that case).
-    if (!NGPhysicalFragment::IsFragmentainerBoxType(box_type_)) {
+    if (!PhysicalFragment::IsFragmentainerBoxType(box_type_)) {
       OverflowClipAxes block_axis = GetWritingDirection().IsHorizontal()
                                         ? kOverflowClipY
                                         : kOverflowClipX;

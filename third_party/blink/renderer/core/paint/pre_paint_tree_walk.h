@@ -19,7 +19,7 @@ namespace blink {
 class LayoutObject;
 class LocalFrameView;
 class NGPhysicalBoxFragment;
-class NGPhysicalFragment;
+class PhysicalFragment;
 struct PhysicalFragmentLink;
 
 // This class walks the whole layout tree, beginning from the root
@@ -240,7 +240,7 @@ class CORE_EXPORT PrePaintTreeWalk final {
 
   // List of fragments that may be missed during LayoutObject walking. See
   // CollectMissableChildren() and WalkMissedChildren().
-  HeapHashSet<Member<const NGPhysicalFragment>> pending_missables_;
+  HeapHashSet<Member<const PhysicalFragment>> pending_missables_;
 
   bool needs_invalidate_chrome_client_and_intersection_ = false;
 

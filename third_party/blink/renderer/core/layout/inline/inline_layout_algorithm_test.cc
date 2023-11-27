@@ -292,7 +292,7 @@ TEST_F(InlineLayoutAlgorithmTest, BoxForEndMargin) {
   // though there's no borders on the 1st line.
   const NGPhysicalBoxFragment* box_fragment = cursor.Current().BoxFragment();
   ASSERT_TRUE(box_fragment);
-  EXPECT_EQ(NGPhysicalFragment::kFragmentBox, box_fragment->Type());
+  EXPECT_EQ(PhysicalFragment::kFragmentBox, box_fragment->Type());
 
   line_box.MoveToNextLine();
   ASSERT_FALSE(line_box) << "block_flow has two lines.";

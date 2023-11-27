@@ -572,7 +572,7 @@ const LayoutResult* BlockNode::Layout(
 }
 
 const LayoutResult* BlockNode::SimplifiedLayout(
-    const NGPhysicalFragment& previous_fragment) const {
+    const PhysicalFragment& previous_fragment) const {
   const LayoutResult* previous_result = box_->GetSingleCachedLayoutResult();
   DCHECK(previous_result);
 
@@ -1586,7 +1586,7 @@ const LayoutResult* BlockNode::RunSimplifiedLayout(
 
 void BlockNode::UpdateMarginPaddingInfoIfNeeded(
     const ConstraintSpace& space,
-    const NGPhysicalFragment& fragment) const {
+    const PhysicalFragment& fragment) const {
   // Table-cells don't have margins, and aren't grid-items.
   if (space.IsTableCell())
     return;

@@ -304,7 +304,7 @@ BreakStatus FinishFragmentationForFragmentainer(const ConstraintSpace&,
 // fragment that was just added to the builder, and the next sibling, if one is
 // added.
 bool HasBreakOpportunityBeforeNextChild(
-    const NGPhysicalFragment& child_fragment,
+    const PhysicalFragment& child_fragment,
     const BreakToken* incoming_child_break_token);
 
 // Insert a fragmentainer break before the child if necessary. In that case, the

@@ -15,7 +15,7 @@ namespace blink {
 class FragmentItem;
 class LineBoxFragmentBuilder;
 
-class CORE_EXPORT PhysicalLineBoxFragment final : public NGPhysicalFragment {
+class CORE_EXPORT PhysicalLineBoxFragment final : public PhysicalFragment {
  public:
   enum LineBoxType {
     kNormalLineBox,
@@ -84,7 +84,7 @@ class CORE_EXPORT PhysicalLineBoxFragment final : public NGPhysicalFragment {
   }
 
  protected:
-  friend class NGPhysicalFragment;
+  friend class PhysicalFragment;
   void Dispose();
 
  private:
@@ -93,8 +93,8 @@ class CORE_EXPORT PhysicalLineBoxFragment final : public NGPhysicalFragment {
 
 template <>
 struct DowncastTraits<PhysicalLineBoxFragment> {
-  static bool AllowFrom(const NGPhysicalFragment& fragment) {
-    return fragment.Type() == NGPhysicalFragment::kFragmentLineBox;
+  static bool AllowFrom(const PhysicalFragment& fragment) {
+    return fragment.Type() == PhysicalFragment::kFragmentLineBox;
   }
 };
 

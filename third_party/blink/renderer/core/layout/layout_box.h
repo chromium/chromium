@@ -697,11 +697,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       LayoutCacheStatus* out_cache_status);
 
   using LayoutResultList = HeapVector<Member<const LayoutResult>, 1>;
-  class NGPhysicalFragmentList {
+  class PhysicalFragmentList {
     STACK_ALLOCATED();
 
    public:
-    explicit NGPhysicalFragmentList(const LayoutResultList& layout_results)
+    explicit PhysicalFragmentList(const LayoutResultList& layout_results)
         : layout_results_(layout_results) {}
 
     wtf_size_t Size() const { return layout_results_.size(); }
@@ -760,9 +760,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     const LayoutResultList& layout_results_;
   };
 
-  NGPhysicalFragmentList PhysicalFragments() const {
+  PhysicalFragmentList PhysicalFragments() const {
     NOT_DESTROYED();
-    return NGPhysicalFragmentList(layout_results_);
+    return PhysicalFragmentList(layout_results_);
   }
   const LayoutResult* GetLayoutResult(wtf_size_t i) const;
   const LayoutResultList& GetLayoutResults() const {

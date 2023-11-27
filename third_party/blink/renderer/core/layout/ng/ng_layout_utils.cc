@@ -340,7 +340,7 @@ LayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
     // At this point we know that either we have the same block-size for our
     // fragment, or our initial block-size was indefinite.
     //
-    // The |NGPhysicalFragment::DependsOnPercentageBlockSize| flag
+    // The |PhysicalFragment::DependsOnPercentageBlockSize| flag
     // will returns true if we are in quirks mode, and have a descendant that
     // depends on a percentage block-size, however it will also return true if
     // the node itself depends on the %-block-size.

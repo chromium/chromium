@@ -69,7 +69,7 @@ inline bool HasSelection(const LayoutObject* layout_object) {
   return layout_object->GetSelectionState() != SelectionState::kNone;
 }
 
-inline bool IsVisibleToPaint(const NGPhysicalFragment& fragment,
+inline bool IsVisibleToPaint(const PhysicalFragment& fragment,
                              const ComputedStyle& style) {
   if (fragment.IsHiddenForPaint())
     return false;
@@ -133,7 +133,7 @@ inline bool IsVisibleToHitTest(const FragmentItem& item,
   return false;
 }
 
-inline bool IsVisibleToHitTest(const NGPhysicalFragment& fragment,
+inline bool IsVisibleToHitTest(const PhysicalFragment& fragment,
                                const HitTestRequest& request) {
   const ComputedStyle& style = fragment.Style();
   return IsVisibleToPaint(fragment, style) &&
@@ -815,7 +815,7 @@ void NGBoxFragmentPainter::PaintBlockChildren(const PaintInfo& paint_info,
   DCHECK(!box_fragment_.IsInlineFormattingContext());
   PaintInfo paint_info_for_descendants = paint_info.ForDescendants();
   for (const PhysicalFragmentLink& child : box_fragment_.Children()) {
-    const NGPhysicalFragment& child_fragment = *child;
+    const PhysicalFragment& child_fragment = *child;
     DCHECK(child_fragment.IsBox());
     if (child_fragment.HasSelfPaintingLayer() || child_fragment.IsFloating())
       continue;
@@ -829,7 +829,7 @@ void NGBoxFragmentPainter::PaintBlockChild(
     const PaintInfo& paint_info,
     const PaintInfo& paint_info_for_descendants,
     PhysicalOffset paint_offset) {
-  const NGPhysicalFragment& child_fragment = *child;
+  const PhysicalFragment& child_fragment = *child;
   DCHECK(child_fragment.IsBox());
   DCHECK(!child_fragment.HasSelfPaintingLayer());
   DCHECK(!child_fragment.IsFloating());
@@ -889,7 +889,7 @@ void NGBoxFragmentPainter::PaintFloatingItems(const PaintInfo& paint_info,
 }
 
 void NGBoxFragmentPainter::PaintFloatingChildren(
-    const NGPhysicalFragment& container,
+    const PhysicalFragment& container,
     const PaintInfo& paint_info) {
   DCHECK(container.HasFloatingDescendantsForPaint());
   const PaintInfo* local_paint_info = &paint_info;
@@ -904,7 +904,7 @@ void NGBoxFragmentPainter::PaintFloatingChildren(
   DCHECK(container.HasFloatingDescendantsForPaint());
 
   for (const PhysicalFragmentLink& child : container.Children()) {
-    const NGPhysicalFragment& child_fragment = *child;
+    const PhysicalFragment& child_fragment = *child;
     if (child_fragment.HasSelfPaintingLayer())
       continue;
 
@@ -1558,7 +1558,7 @@ void NGBoxFragmentPainter::PaintInlineItems(const PaintInfo& paint_info,
 // It also paints the backgrounds of the `::first-line` line box. Other line
 // boxes don't have their own background.
 inline void NGBoxFragmentPainter::PaintLineBox(
-    const NGPhysicalFragment& line_box_fragment,
+    const PhysicalFragment& line_box_fragment,
     const DisplayItemClient& display_item_client,
     const FragmentItem& line_box_item,
     const PaintInfo& paint_info,
@@ -2086,7 +2086,7 @@ bool NGBoxFragmentPainter::UpdateHitTestResultForView(
   if (!element)
     return false;
   const auto children = GetPhysicalFragment().Children();
-  auto it = base::ranges::find(children, element, &NGPhysicalFragment::GetNode);
+  auto it = base::ranges::find(children, element, &PhysicalFragment::GetNode);
   if (it == children.end())
     return false;
   return hit_test.AddNodeToResultWithContentOffset(
@@ -2495,7 +2495,7 @@ bool NGBoxFragmentPainter::HitTestItemsChildren(
 
 bool NGBoxFragmentPainter::HitTestFloatingChildren(
     const HitTestContext& hit_test,
-    const NGPhysicalFragment& container,
+    const PhysicalFragment& container,
     const PhysicalOffset& accumulated_offset) {
   DCHECK_EQ(hit_test.phase, HitTestPhase::kFloat);
   DCHECK(container.HasFloatingDescendantsForPaint());
@@ -2514,7 +2514,7 @@ bool NGBoxFragmentPainter::HitTestFloatingChildren(
 
   auto children = container.Children();
   for (const PhysicalFragmentLink& child : base::Reversed(children)) {
-    const NGPhysicalFragment& child_fragment = *child.fragment;
+    const PhysicalFragment& child_fragment = *child.fragment;
     if (UNLIKELY(child_fragment.IsLayoutObjectDestroyedOrMoved()))
       continue;
     if (child_fragment.HasSelfPaintingLayer())

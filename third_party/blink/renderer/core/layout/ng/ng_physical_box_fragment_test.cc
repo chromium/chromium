@@ -117,12 +117,12 @@ TEST_F(NGPhysicalBoxFragmentTest, ReplacedBlock) {
     <img id="target" style="display: block">
   )HTML");
   const NGPhysicalBoxFragment& body = GetBodyFragment();
-  const NGPhysicalFragment& fragment = *body.Children().front();
-  EXPECT_EQ(fragment.Type(), NGPhysicalFragment::kFragmentBox);
+  const PhysicalFragment& fragment = *body.Children().front();
+  EXPECT_EQ(fragment.Type(), PhysicalFragment::kFragmentBox);
   // |LayoutReplaced| sets |IsAtomicInlineLevel()| even when it is block-level.
   // crbug.com/567964
   EXPECT_FALSE(fragment.IsAtomicInline());
-  EXPECT_EQ(fragment.BoxType(), NGPhysicalFragment::kBlockFlowRoot);
+  EXPECT_EQ(fragment.GetBoxType(), PhysicalFragment::kBlockFlowRoot);
 }
 
 TEST_F(NGPhysicalBoxFragmentTest, IsFragmentationContextRoot) {

@@ -605,7 +605,7 @@ OutOfFlowLayoutPart::GetContainingBlockInfo(
     if (fragmentainer_descendant.containing_block.Fragment()) {
       DCHECK(container_builder_->IsBlockFragmentationContextRoot());
 
-      const NGPhysicalFragment* containing_block_fragment =
+      const PhysicalFragment* containing_block_fragment =
           fragmentainer_descendant.containing_block.Fragment();
       const LayoutObject* containing_block =
           containing_block_fragment->GetLayoutObject();
@@ -1139,7 +1139,7 @@ void OutOfFlowLayoutPart::LayoutOOFsInMulticol(
         multicol_offset.block_offset -=
             previous_multicol_break_token->ConsumedBlockSize();
       }
-      const NGPhysicalFragment* containing_block_fragment =
+      const PhysicalFragment* containing_block_fragment =
           descendant.containing_block.Fragment();
       // If the containing block is not set, that means that the inner multicol
       // was its containing block, and the OOF will be laid out elsewhere.
@@ -1152,7 +1152,7 @@ void OutOfFlowLayoutPart::LayoutOOFsInMulticol(
           converter.ToLogical(descendant.containing_block.RelativeOffset(),
                               containing_block_fragment->Size());
 
-      const NGPhysicalFragment* fixedpos_containing_block_fragment =
+      const PhysicalFragment* fixedpos_containing_block_fragment =
           descendant.fixedpos_containing_block.Fragment();
       LogicalOffset fixedpos_containing_block_offset;
       LogicalOffset fixedpos_containing_block_rel_offset;
@@ -1487,7 +1487,7 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
       // Layout the OOF descendants in order of fragmentainer index.
       for (wtf_size_t index = 0; index < descendants_to_layout.size();
            index++) {
-        const NGPhysicalFragment* fragment = nullptr;
+        const PhysicalFragment* fragment = nullptr;
         if (index < num_children)
           fragment = children[index].fragment;
         else if (column_balancing_info_)
@@ -1602,7 +1602,7 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
 OutOfFlowLayoutPart::NodeInfo OutOfFlowLayoutPart::SetupNodeInfo(
     const LogicalOofPositionedNode& oof_node) {
   BlockNode node = oof_node.Node();
-  const NGPhysicalFragment* containing_block_fragment =
+  const PhysicalFragment* containing_block_fragment =
       oof_node.is_for_fragmentation
           ? To<LogicalOofNodeForFragmentation>(oof_node)
                 .containing_block.Fragment()
@@ -1623,8 +1623,7 @@ OutOfFlowLayoutPart::NodeInfo OutOfFlowLayoutPart::SetupNodeInfo(
   } else {
     // If there's no layout object associated, the containing fragment should be
     // a page, and the containing block of the node should be the LayoutView.
-    DCHECK_EQ(containing_block_fragment->BoxType(),
-              NGPhysicalFragment::kPageBox);
+    DCHECK(containing_block_fragment->IsPageBox());
     DCHECK_EQ(node.GetLayoutBox()->ContainingBlock(),
               node.GetLayoutBox()->View());
   }
@@ -2532,7 +2531,7 @@ void OutOfFlowLayoutPart::ReplaceFragmentainer(
     container_builder_->AddChild(new_result->GetPhysicalFragment(), offset);
   } else {
     const LayoutResult* new_result = algorithm->Layout();
-    const NGPhysicalFragment* new_fragment = &new_result->GetPhysicalFragment();
+    const PhysicalFragment* new_fragment = &new_result->GetPhysicalFragment();
     container_builder_->ReplaceChild(index, *new_fragment, offset);
 
     if (multicol_children_ && index < multicol_children_->size()) {
@@ -2769,7 +2768,7 @@ void OutOfFlowLayoutPart::ReplaceFragment(
   // Replace the old fragment with the new one, if |multicol_child| is a
   // fragmentainer and has the old fragment as a child.
   auto ReplaceFragmentainerChild =
-      [ReplaceChild](const NGPhysicalFragment& multicol_child) -> bool {
+      [ReplaceChild](const PhysicalFragment& multicol_child) -> bool {
     // We're going to replace a child of a fragmentainer. First check if it's a
     // fragmentainer at all.
     if (!multicol_child.IsFragmentainerBox())

@@ -30,7 +30,7 @@ class BoxDecorationData {
                           layout_replaced.StyleRef().HasBorderDecoration()) {}
 
   BoxDecorationData(const PaintInfo& paint_info,
-                    const NGPhysicalFragment& fragment,
+                    const PhysicalFragment& fragment,
                     const ComputedStyle& style)
       : BoxDecorationData(
             paint_info,
@@ -39,7 +39,7 @@ class BoxDecorationData {
             !fragment.HasCollapsedBorders() && style.HasBorderDecoration()) {}
 
   BoxDecorationData(const PaintInfo& paint_info,
-                    const NGPhysicalFragment& fragment)
+                    const PhysicalFragment& fragment)
       : BoxDecorationData(paint_info, fragment, fragment.Style()) {}
 
   BoxDecorationData BackgroundOnly() const {

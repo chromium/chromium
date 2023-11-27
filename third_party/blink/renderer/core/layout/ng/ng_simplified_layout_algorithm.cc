@@ -214,7 +214,7 @@ void SimplifiedLayoutAlgorithm::CloneOldChildren() {
 }
 
 void SimplifiedLayoutAlgorithm::AppendNewChildFragment(
-    const NGPhysicalFragment& fragment,
+    const PhysicalFragment& fragment,
     LogicalOffset offset) {
   container_builder_.AddChild(fragment, offset);
 }
@@ -337,7 +337,7 @@ SimplifiedLayoutAlgorithm::LayoutWithItemsBuilder() {
 
 void SimplifiedLayoutAlgorithm::AddChildFragment(
     const PhysicalFragmentLink& old_fragment,
-    const NGPhysicalFragment& new_fragment,
+    const PhysicalFragment& new_fragment,
     const MarginStrut* margin_strut,
     bool is_self_collapsing) {
   DCHECK_EQ(old_fragment->Size(), new_fragment.Size());

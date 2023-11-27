@@ -38,10 +38,10 @@ class FragmentBuilder;
 class LineBoxFragmentBuilder;
 
 // The LayoutResult stores the resulting data from layout. This includes
-// geometry information in form of a NGPhysicalFragment, which is kept around
+// geometry information in form of a PhysicalFragment, which is kept around
 // for painting, hit testing, etc., as well as additional data which is only
 // necessary during layout and stored on this object.
-// Layout code should access the NGPhysicalFragment through the wrappers in
+// Layout code should access the PhysicalFragment through the wrappers in
 // LogicalFragment et al.
 class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
  public:
@@ -83,10 +83,10 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
 
   // Creates a copy of LayoutResult with a new (but "identical") fragment.
   LayoutResult(const LayoutResult& other,
-               const NGPhysicalFragment* physical_fragment);
+               const PhysicalFragment* physical_fragment);
 
   // Delegate constructor that sets up what it can, based on the builder.
-  LayoutResult(const NGPhysicalFragment* physical_fragment,
+  LayoutResult(const PhysicalFragment* physical_fragment,
                FragmentBuilder* builder);
 
   // We don't need the copy constructor, move constructor, copy
@@ -101,7 +101,7 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
 
   ~LayoutResult() = default;
 
-  const NGPhysicalFragment& GetPhysicalFragment() const {
+  const PhysicalFragment& GetPhysicalFragment() const {
     DCHECK(physical_fragment_);
     DCHECK_EQ(kSuccess, Status());
     return *physical_fragment_;
@@ -587,13 +587,13 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
   // This constructor requires a non-null fragment and sets a success status.
   using BoxFragmentBuilderPassKey = base::PassKey<BoxFragmentBuilder>;
   LayoutResult(BoxFragmentBuilderPassKey,
-               const NGPhysicalFragment* physical_fragment,
+               const PhysicalFragment* physical_fragment,
                BoxFragmentBuilder*);
 
   using LineBoxFragmentBuilderPassKey = base::PassKey<LineBoxFragmentBuilder>;
   // This constructor requires a non-null fragment and sets a success status.
   LayoutResult(LineBoxFragmentBuilderPassKey,
-               const NGPhysicalFragment* physical_fragment,
+               const PhysicalFragment* physical_fragment,
                LineBoxFragmentBuilder*);
 
   void Trace(Visitor*) const;
@@ -1012,7 +1012,7 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
   // The constraint space which generated this layout result.
   const ConstraintSpace space_;
 
-  Member<const NGPhysicalFragment> physical_fragment_;
+  Member<const PhysicalFragment> physical_fragment_;
 
   // |rare_data_| cannot be stored in the union because it is difficult to have
   // a const bitfield for it and it cannot be traced.

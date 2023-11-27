@@ -19,7 +19,7 @@ struct PhysicalFragmentLink;
 // This is more a copy-and-append algorithm than a layout algorithm.
 // This algorithm will only run when we are trying to add OOF-positioned
 // elements to an already laid out fragmentainer. It performs a copy of the
-// previous |NGPhysicalFragment| and appends the OOF-positioned elements to the
+// previous |PhysicalFragment| and appends the OOF-positioned elements to the
 // |container_builder_|.
 class CORE_EXPORT SimplifiedOofLayoutAlgorithm
     : public LayoutAlgorithm<BlockNode, BoxFragmentBuilder, BlockBreakToken> {

@@ -30,7 +30,7 @@ class BoxFragmentBuilder;
 enum class OutlineType;
 struct FrameSetLayoutData;
 
-class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
+class CORE_EXPORT NGPhysicalBoxFragment final : public PhysicalFragment {
  public:
   static const NGPhysicalBoxFragment* Create(
       BoxFragmentBuilder* builder,
@@ -98,7 +98,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
 
   // Similar to |Children()| but all children are the latest generation of
   // post-layout, and therefore all descendants are safe.
-  NGPhysicalFragment::PostLayoutChildLinkList PostLayoutChildren() const {
+  PhysicalFragment::PostLayoutChildLinkList PostLayoutChildren() const {
     DCHECK(children_valid_);
     return PostLayoutChildLinkList(children_.size(), children_.data());
   }
@@ -393,7 +393,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   }
 
   const BlockBreakToken* GetBreakToken() const {
-    return To<BlockBreakToken>(NGPhysicalFragment::GetBreakToken());
+    return To<BlockBreakToken>(PhysicalFragment::GetBreakToken());
   }
 
   // Return true if this is the first fragment generated from a node.
@@ -532,7 +532,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
 #endif
 
  protected:
-  friend class NGPhysicalFragment;
+  friend class PhysicalFragment;
   void Dispose();
 
  private:
@@ -639,8 +639,8 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
 
 template <>
 struct DowncastTraits<NGPhysicalBoxFragment> {
-  static bool AllowFrom(const NGPhysicalFragment& fragment) {
-    return fragment.Type() == NGPhysicalFragment::kFragmentBox;
+  static bool AllowFrom(const PhysicalFragment& fragment) {
+    return fragment.Type() == PhysicalFragment::kFragmentBox;
   }
 };
 

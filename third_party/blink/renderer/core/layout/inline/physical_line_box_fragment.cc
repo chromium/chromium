@@ -18,7 +18,7 @@ namespace blink {
 
 namespace {
 
-struct SameSizeAsPhysicalLineBoxFragment : NGPhysicalFragment {
+struct SameSizeAsPhysicalLineBoxFragment : PhysicalFragment {
   FontHeight metrics;
 };
 
@@ -40,10 +40,10 @@ const PhysicalLineBoxFragment* PhysicalLineBoxFragment::Clone(
 PhysicalLineBoxFragment::PhysicalLineBoxFragment(
     PassKey key,
     LineBoxFragmentBuilder* builder)
-    : NGPhysicalFragment(builder,
-                         builder->GetWritingMode(),
-                         kFragmentLineBox,
-                         builder->line_box_type_),
+    : PhysicalFragment(builder,
+                       builder->GetWritingMode(),
+                       kFragmentLineBox,
+                       builder->line_box_type_),
       metrics_(builder->metrics_) {
   // A line box must have a metrics unless it's an empty line box.
   DCHECK(!metrics_.IsEmpty() || IsEmptyLineBox());
@@ -57,7 +57,7 @@ PhysicalLineBoxFragment::PhysicalLineBoxFragment(
 PhysicalLineBoxFragment::PhysicalLineBoxFragment(
     PassKey key,
     const PhysicalLineBoxFragment& other)
-    : NGPhysicalFragment(other), metrics_(other.metrics_) {
+    : PhysicalFragment(other), metrics_(other.metrics_) {
   base_direction_ = other.base_direction_;
   has_hanging_ = other.has_hanging_;
   has_propagated_descendants_ = other.has_propagated_descendants_;
@@ -137,7 +137,7 @@ bool PhysicalLineBoxFragment::HasSoftWrapToNextLine() const {
 }
 
 void PhysicalLineBoxFragment::TraceAfterDispatch(Visitor* visitor) const {
-  NGPhysicalFragment::TraceAfterDispatch(visitor);
+  PhysicalFragment::TraceAfterDispatch(visitor);
 }
 
 }  // namespace blink

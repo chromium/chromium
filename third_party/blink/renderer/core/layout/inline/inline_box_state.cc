@@ -835,7 +835,7 @@ const LayoutResult* InlineLayoutStateStack::BoxData::CreateBoxFragment(
   BoxFragmentBuilder box(item->GetLayoutObject(), &style, space,
                          {style.GetWritingMode(), TextDirection::kLtr});
   box.SetInitialFragmentGeometry(fragment_geometry);
-  box.SetBoxType(NGPhysicalFragment::kInlineBox);
+  box.SetBoxType(PhysicalFragment::kInlineBox);
   box.SetStyleVariant(item->GetStyleVariant());
 
   if (UNLIKELY(is_opaque)) {

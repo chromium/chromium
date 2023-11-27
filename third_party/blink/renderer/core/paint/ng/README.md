@@ -8,30 +8,30 @@ This README can be viewed in formatted form
 
 ## NGPaintFragment ##
 
-LayoutNG produces a tree of [NGPhysicalFragment].
+LayoutNG produces a tree of [PhysicalFragment].
 
-One of its goals is to share a sub-tree of NGPhysicalFragment across frames,
+One of its goals is to share a sub-tree of PhysicalFragment across frames,
 or even within a frame where possible.
 This goal enforces a few characteristics:
 
 * It must be immutable.
 * It must be relative within the sub-tree, ideally only to its parent.
 
-A [NGPaintFragment] owns a NGPhysicalFragment by `scoped_refptr` in n:1 relation.
-For instance, NGPhysicalFragment can be shared across frames,
+A [NGPaintFragment] owns a PhysicalFragment by `scoped_refptr` in n:1 relation.
+For instance, PhysicalFragment can be shared across frames,
 but different NGPaintFragment instance can be created for each frame.
 
-It has following characteristics when compared to NGPhysicalFragment:
+It has following characteristics when compared to PhysicalFragment:
 
 * It can have mutable fields, such as `VisualRect()`.
 * It can use its own coordinate system.
-* Separate instances can be created when NGPhysicalFragment is shared.
-* It can have its own tree structure, differently from NGPhysicalFragment tree.
+* Separate instances can be created when PhysicalFragment is shared.
+* It can have its own tree structure, differently from PhysicalFragment tree.
 
 ### The tree structure ###
 
 In short, one can think that the NGPaintFragment tree structure is
-exactly the same as the NGPhysicalFragment tree structure.
+exactly the same as the PhysicalFragment tree structure.
 
 LayoutNG will be launched in phases. In the phase 1 implementation,
 only boxes with inline children are painted directly from fragments, and
@@ -59,7 +59,7 @@ even though the inline block LayoutObject has children.
 If the inline block has another inline block which LayoutNG can handle,
 another NGPaintFragment tree is created for the inner inline block.
 
-### NGPhysicalFragment traversal ###
+### PhysicalFragment traversal ###
 
 When possible (when sufficiently transitioned to LayoutNG), we'll paint and
 hit-test by traversing the physical fragment tree, rather than traversing the
@@ -79,5 +79,5 @@ straight-forward job for pre-paint to calculate the offsets and bounding box.
 
 [LayoutNG]: ../../layout/ng/README.md
 [NGPaintFragment]: ng_paint_fragment.h
-[NGPhysicalFragment]: ../../layout/ng/ng_physical_fragment.h
+[PhysicalFragment]: ../../layout/ng/ng_physical_fragment.h
 [fragmentainer]: https://drafts.csswg.org/css-break/#fragmentation-container

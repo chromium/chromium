@@ -11,7 +11,7 @@
 
 namespace blink {
 
-class NGPhysicalFragment;
+class PhysicalFragment;
 
 // Similar to |PhysicalFragmentLink| but with |LogicalOffset| instead of
 // |PhysicalOffset|.
@@ -20,15 +20,15 @@ struct CORE_EXPORT LogicalFragmentLink {
 
  public:
   const LogicalOffset& Offset() const { return offset; }
-  const NGPhysicalFragment* get() const { return fragment.Get(); }
+  const PhysicalFragment* get() const { return fragment.Get(); }
 
   explicit operator bool() const { return fragment != nullptr; }
-  const NGPhysicalFragment& operator*() const { return *fragment; }
-  const NGPhysicalFragment* operator->() const { return fragment.Get(); }
+  const PhysicalFragment& operator*() const { return *fragment; }
+  const PhysicalFragment* operator->() const { return fragment.Get(); }
 
   void Trace(Visitor* visitor) const { visitor->Trace(fragment); }
 
-  Member<const NGPhysicalFragment> fragment;
+  Member<const PhysicalFragment> fragment;
   LogicalOffset offset;
 };
 

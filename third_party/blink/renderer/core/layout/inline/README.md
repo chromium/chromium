@@ -74,7 +74,7 @@ Inline layout is performed in the following phases:
 | Pre-layout | LayoutObject | [InlineItem] |
 | Line Breaking | [InlineItem] | [InlineItemResult] |
 | Line box construction | [InlineItemResult] | [LogicalLineItem] |
-| Generate fragments | [LogicalLineItem] | [NGPhysicalFragment] / [FragmentItem] |
+| Generate fragments | [LogicalLineItem] | [PhysicalFragment] / [FragmentItem] |
 
 Note: There is [an idea](https://docs.google.com/document/d/1dxzIHl1dwBtgeKgWd2cKcog8AyydN5rduQvXthMOMD0/edit?usp=sharing)
 to merge [InlineItemResult] and [LogicalLineItem], but this hasn't been happened yet.
@@ -254,7 +254,7 @@ When all [LogicalLineItem]s are ordered and positioned,
 they are converted to fragments.
 
 Without [FragmentItem] enabled,
-each [LogicalLineItem] produces a [NGPhysicalFragment],
+each [LogicalLineItem] produces a [PhysicalFragment],
 added to the [PhysicalLineBoxFragment].
 
 With [FragmentItem] enabled,
@@ -273,7 +273,8 @@ Computing baselines in LayoutNG goes the following process.
    that calls appropriate layout algorithm.
 3. Each layout algorithm computes baseline according to the requests.
 4. Users retrieve the result by [NGPhysicalBoxFragment]`::Baseline()`,
-   or by higher level functions such as [NGBoxFragment]`::BaselineMetrics()`.
+   or by higher level functions such as
+   [LogicalBoxFragment]`::BaselineMetrics()`.
 
 Algorithms are responsible
 for checking [ConstraintSpace]`::BaselineRequests()`,
@@ -385,14 +386,14 @@ positions in the context. See [design doc](https://goo.gl/CJbxky) for details.
 [InlineNode]: ng_inline_node.h
 [LayoutInputNode]: ../ng/ng_layout_input_node.h
 [LineBreaker]: ng_line_breaker.h
+[LogicalBoxFragment]: ../ng/ng_box_fragment.h
 [LogicalLineItem]: ng_logical_line_item.h
 [LogicalLineItems]: ng_logical_line_items.h
 [NGBaselineRequest]: ng_baseline.h
-[NGBoxFragment]: ../ng/ng_box_fragment.h
 [NGPhysicalBoxFragment]: ../ng/ng_physical_box_fragment.h
-[NGPhysicalFragment]: ../ng/ng_physical_fragment.h
 [NGPhysicalTextFragment]: ng_physical_text_fragment.h
 [OffsetMapping]: ng_offset_mapping.h
+[PhysicalFragment]: ../ng/ng_physical_fragment.h
 [PhysicalLineBoxFragment]: ng_physical_line_box_fragment.h
 [ShapeResult]: ../../../platform/fonts/shaping/shape_result.h
 [ShapingLineBreaker]: ../../../platform/fonts/shaping/shaping_line_breaker.h

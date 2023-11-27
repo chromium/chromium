@@ -249,7 +249,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
     // The physical fragment of the containing block used when laying out a
     // fragmentainer descendant. This is the containing block as defined by the
     // spec: https://www.w3.org/TR/css-position-3/#absolute-cb.
-    Member<const NGPhysicalFragment> containing_block_fragment;
+    Member<const PhysicalFragment> containing_block_fragment;
 
     void Trace(Visitor* visitor) const;
   };

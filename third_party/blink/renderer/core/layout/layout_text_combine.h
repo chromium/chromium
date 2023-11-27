@@ -59,8 +59,8 @@ class CORE_EXPORT LayoutTextCombine final : public LayoutNGBlockFlow {
   //    |LayoutObject::DebugRect()|, intersection observer, and scroll anchor.
   //  * |FragmentItem::RecalcInkOverflow()| for line box
   //  * |ScrollableOverflowCalculator::AddItemsInternal()| for line box.
-  //  * |NGPhysicalFragment::AddOutlineRectsForCursor()|
-  //  * |NGPhysicalFragment::AddScrollableOverflowForInlineChild()|
+  //  * |PhysicalFragment::AddOutlineRectsForCursor()|
+  //  * |PhysicalFragment::AddScrollableOverflowForInlineChild()|
   PhysicalRect AdjustRectForBoundingBox(const PhysicalRect& rect) const;
 
   PhysicalRect ComputeTextBoundsRectForHitTest(

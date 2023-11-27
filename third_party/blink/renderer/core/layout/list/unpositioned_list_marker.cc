@@ -55,7 +55,7 @@ const LayoutResult* UnpositionedListMarker::Layout(
 absl::optional<LayoutUnit> UnpositionedListMarker::ContentAlignmentBaseline(
     const ConstraintSpace& space,
     FontBaseline baseline_type,
-    const NGPhysicalFragment& content) const {
+    const PhysicalFragment& content) const {
   // Compute the baseline of the child content.
   if (content.IsLineBox()) {
     const auto& line_box = To<PhysicalLineBoxFragment>(content);
@@ -81,7 +81,7 @@ absl::optional<LayoutUnit> UnpositionedListMarker::ContentAlignmentBaseline(
 void UnpositionedListMarker::AddToBox(
     const ConstraintSpace& space,
     FontBaseline baseline_type,
-    const NGPhysicalFragment& content,
+    const PhysicalFragment& content,
     const BoxStrut& border_scrollbar_padding,
     const LayoutResult& marker_layout_result,
     LayoutUnit content_baseline,

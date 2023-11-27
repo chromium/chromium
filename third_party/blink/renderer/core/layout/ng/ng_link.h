@@ -10,29 +10,29 @@
 
 namespace blink {
 
-class NGPhysicalFragment;
+class PhysicalFragment;
 
 // Class representing the offset of a child fragment relative to the
 // parent fragment. Fragments themselves have no position information
 // allowing entire fragment subtrees to be reused and cached regardless
 // of placement.
 // This class is stored in a C-style regular array on
-// NGPhysicalFragment. It cannot have destructors. Fragment reference
+// PhysicalFragment. It cannot have destructors. Fragment reference
 // counting is done manually.
 struct CORE_EXPORT PhysicalFragmentLink {
   DISALLOW_NEW();
 
  public:
   PhysicalOffset Offset() const { return offset; }
-  const NGPhysicalFragment* get() const { return fragment.Get(); }
+  const PhysicalFragment* get() const { return fragment.Get(); }
 
   explicit operator bool() const { return fragment != nullptr; }
-  const NGPhysicalFragment& operator*() const { return *fragment; }
-  const NGPhysicalFragment* operator->() const { return fragment.Get(); }
+  const PhysicalFragment& operator*() const { return *fragment; }
+  const PhysicalFragment* operator->() const { return fragment.Get(); }
 
   void Trace(Visitor* visitor) const { visitor->Trace(fragment); }
 
-  Member<const NGPhysicalFragment> fragment;
+  Member<const PhysicalFragment> fragment;
   PhysicalOffset offset;
 };
 

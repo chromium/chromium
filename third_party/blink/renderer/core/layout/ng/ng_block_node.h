@@ -23,7 +23,7 @@ class InlineNode;
 class LayoutBox;
 class LayoutResult;
 class NGPhysicalBoxFragment;
-class NGPhysicalFragment;
+class PhysicalFragment;
 enum class BaselineAlgorithmType;
 enum class MathScriptType;
 struct LayoutAlgorithmParams;
@@ -48,7 +48,7 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
   // space used to generate the |LayoutResult|.
   // Otherwise it will simply return the previous layout result generated.
   const LayoutResult* SimplifiedLayout(
-      const NGPhysicalFragment& previous_fragment) const;
+      const PhysicalFragment& previous_fragment) const;
 
   // Lay out a repeatable node during block fragmentation (fixed positioned
   // element during printing, or table header / footer). To be called once for
@@ -284,9 +284,8 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
       const NGPhysicalBoxFragment&,
       const BlockBreakToken* previous_container_break_token) const;
 
-  void UpdateMarginPaddingInfoIfNeeded(
-      const ConstraintSpace&,
-      const NGPhysicalFragment& fragment) const;
+  void UpdateMarginPaddingInfoIfNeeded(const ConstraintSpace&,
+                                       const PhysicalFragment& fragment) const;
 
   void UpdateShapeOutsideInfoIfNeeded(
       const LayoutResult&,

@@ -30,7 +30,7 @@ class NGInlineBoxFragmentPainterBase {
                                    LayoutUnit* total_width) const;
 
  protected:
-  NGInlineBoxFragmentPainterBase(const NGPhysicalFragment& inline_box_fragment,
+  NGInlineBoxFragmentPainterBase(const PhysicalFragment& inline_box_fragment,
                                  const InlineCursor* inline_box_cursor,
                                  const FragmentItem& inline_box_item,
                                  const LayoutObject& layout_object,
@@ -146,7 +146,7 @@ class NGInlineBoxFragmentPainterBase {
   // Style taking ::first-line into account.
   const ComputedStyle& line_style_;
 
-  const NGPhysicalFragment& inline_box_fragment_;
+  const PhysicalFragment& inline_box_fragment_;
   const FragmentItem& inline_box_item_;
   const InlineCursor* inline_box_cursor_ = nullptr;
   NGInlinePaintContext* inline_context_ = nullptr;
@@ -218,7 +218,7 @@ class NGLineBoxFragmentPainter : public NGInlineBoxFragmentPainterBase {
   STACK_ALLOCATED();
 
  public:
-  NGLineBoxFragmentPainter(const NGPhysicalFragment& line_box_fragment,
+  NGLineBoxFragmentPainter(const PhysicalFragment& line_box_fragment,
                            const FragmentItem& line_box_item,
                            const NGPhysicalBoxFragment& block_fragment)
       : NGLineBoxFragmentPainter(line_box_fragment,
@@ -226,9 +226,8 @@ class NGLineBoxFragmentPainter : public NGInlineBoxFragmentPainterBase {
                                  block_fragment,
                                  *block_fragment.GetLayoutObject()) {}
 
-  static bool NeedsPaint(const NGPhysicalFragment& line_fragment) {
-    DCHECK_EQ(line_fragment.Type(),
-              NGPhysicalFragment::NGFragmentType::kFragmentLineBox);
+  static bool NeedsPaint(const PhysicalFragment& line_fragment) {
+    DCHECK(line_fragment.IsLineBox());
     return line_fragment.UsesFirstLineStyle();
   }
 
@@ -238,7 +237,7 @@ class NGLineBoxFragmentPainter : public NGInlineBoxFragmentPainterBase {
                                    const PhysicalOffset& paint_offset);
 
  private:
-  NGLineBoxFragmentPainter(const NGPhysicalFragment& line_box_fragment,
+  NGLineBoxFragmentPainter(const PhysicalFragment& line_box_fragment,
                            const FragmentItem& line_box_item,
                            const NGPhysicalBoxFragment& block_fragment,
                            const LayoutObject& layout_block_flow)
@@ -255,8 +254,7 @@ class NGLineBoxFragmentPainter : public NGInlineBoxFragmentPainterBase {
             layout_block_flow.FirstLineStyleRef(),
             /* inline_context */ nullptr),
         block_fragment_(block_fragment) {
-    DCHECK_EQ(line_box_fragment.Type(),
-              NGPhysicalFragment::NGFragmentType::kFragmentLineBox);
+    DCHECK(line_box_fragment.IsLineBox());
     DCHECK(NeedsPaint(line_box_fragment));
     DCHECK(layout_block_flow.IsLayoutNGObject());
   }

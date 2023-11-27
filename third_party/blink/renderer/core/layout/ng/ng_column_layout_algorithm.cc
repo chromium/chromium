@@ -133,7 +133,7 @@ void MulticolPartWalker::UpdateNextColumnBreakToken(
     const FragmentBuilder::ChildrenVector& children) {
   if (children.empty())
     return;
-  const blink::NGPhysicalFragment* last_child =
+  const blink::PhysicalFragment* last_child =
       children[children.size() - 1].fragment;
   if (!last_child->IsColumnBox())
     return;
@@ -748,7 +748,7 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
       params.column_spanner_path = spanner_path_;
 
       BlockLayoutAlgorithm child_algorithm(params);
-      child_algorithm.SetBoxType(NGPhysicalFragment::kColumnBox);
+      child_algorithm.SetBoxType(PhysicalFragment::kColumnBox);
       result = child_algorithm.Layout();
       const auto& column =
           To<NGPhysicalBoxFragment>(result->GetPhysicalFragment());
@@ -1309,7 +1309,7 @@ LayoutUnit ColumnLayoutAlgorithm::ResolveColumnAutoBlockSizeInternal(
     LayoutAlgorithmParams params(Node(), fragment_geometry, space, break_token);
     params.column_spanner_path = spanner_path_;
     BlockLayoutAlgorithm balancing_algorithm(params);
-    balancing_algorithm.SetBoxType(NGPhysicalFragment::kColumnBox);
+    balancing_algorithm.SetBoxType(PhysicalFragment::kColumnBox);
     const LayoutResult* result = balancing_algorithm.Layout();
 
     // This algorithm should never abort.

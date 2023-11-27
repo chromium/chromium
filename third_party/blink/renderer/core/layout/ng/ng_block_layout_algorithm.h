@@ -67,7 +67,7 @@ class CORE_EXPORT BlockLayoutAlgorithm
 
   ~BlockLayoutAlgorithm() override;
 
-  void SetBoxType(NGPhysicalFragment::NGBoxType type);
+  void SetBoxType(PhysicalFragment::BoxType type);
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
   const LayoutResult* Layout() override;
@@ -253,9 +253,9 @@ class CORE_EXPORT BlockLayoutAlgorithm
   void UpdateEarlyBreakBetweenLines();
 
   // Propagates the baseline from the given |child| if needed.
-  void PropagateBaselineFromLineBox(const NGPhysicalFragment& child,
+  void PropagateBaselineFromLineBox(const PhysicalFragment& child,
                                     LayoutUnit block_offset);
-  void PropagateBaselineFromBlockChild(const NGPhysicalFragment& child,
+  void PropagateBaselineFromBlockChild(const PhysicalFragment& child,
                                        const BoxStrut& margins,
                                        LayoutUnit block_offset);
 

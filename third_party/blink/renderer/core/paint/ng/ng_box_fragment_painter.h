@@ -28,7 +28,7 @@ class HitTestResult;
 class InlineBackwardCursor;
 class InlineCursor;
 class NGInlineBoxFragmentPainter;
-class NGPhysicalFragment;
+class PhysicalFragment;
 class ScopedPaintState;
 struct PaintInfo;
 
@@ -151,7 +151,7 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
   void PaintLineBoxChildItems(InlineCursor* children,
                               const PaintInfo&,
                               const PhysicalOffset& paint_offset);
-  void PaintLineBox(const NGPhysicalFragment& line_box_fragment,
+  void PaintLineBox(const PhysicalFragment& line_box_fragment,
                     const DisplayItemClient& display_item_client,
                     const FragmentItem& line_box_item,
                     const PaintInfo&,
@@ -174,7 +174,7 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
                     const PhysicalOffset& paint_offset,
                     const PhysicalOffset& parent_offset);
   void PaintFloatingItems(const PaintInfo& paint_info, InlineCursor* cursor);
-  void PaintFloatingChildren(const NGPhysicalFragment&,
+  void PaintFloatingChildren(const PhysicalFragment&,
                              const PaintInfo& paint_info);
   void PaintFloats(const PaintInfo&);
   void PaintMask(const PaintInfo&, const PhysicalOffset& paint_offset);
@@ -253,7 +253,7 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
                             const NGPhysicalBoxFragment& container,
                             const InlineCursor& children);
   bool HitTestFloatingChildren(const HitTestContext& hit_test,
-                               const NGPhysicalFragment& container,
+                               const PhysicalFragment& container,
                                const PhysicalOffset& accumulated_offset);
   bool HitTestFloatingChildItems(const HitTestContext& hit_test,
                                  const InlineCursor& children,

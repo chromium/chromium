@@ -53,7 +53,7 @@ const LayoutResult* LayoutResult::CloneWithPostLayoutFragments(
 }
 
 LayoutResult::LayoutResult(BoxFragmentBuilderPassKey passkey,
-                           const NGPhysicalFragment* physical_fragment,
+                           const PhysicalFragment* physical_fragment,
                            BoxFragmentBuilder* builder)
     : LayoutResult(std::move(physical_fragment),
                    static_cast<FragmentBuilder*>(builder)) {
@@ -112,7 +112,7 @@ LayoutResult::LayoutResult(BoxFragmentBuilderPassKey passkey,
 }
 
 LayoutResult::LayoutResult(LineBoxFragmentBuilderPassKey passkey,
-                           const NGPhysicalFragment* physical_fragment,
+                           const PhysicalFragment* physical_fragment,
                            LineBoxFragmentBuilder* builder)
     : LayoutResult(std::move(physical_fragment),
                    static_cast<FragmentBuilder*>(builder)) {
@@ -181,7 +181,7 @@ LayoutResult::LayoutResult(const LayoutResult& other,
 }
 
 LayoutResult::LayoutResult(const LayoutResult& other,
-                           const NGPhysicalFragment* physical_fragment)
+                           const PhysicalFragment* physical_fragment)
     : space_(other.space_),
       physical_fragment_(std::move(physical_fragment)),
       rare_data_(other.rare_data_
@@ -200,7 +200,7 @@ LayoutResult::LayoutResult(const LayoutResult& other,
   DCHECK_EQ(physical_fragment_->Size(), other.physical_fragment_->Size());
 }
 
-LayoutResult::LayoutResult(const NGPhysicalFragment* physical_fragment,
+LayoutResult::LayoutResult(const PhysicalFragment* physical_fragment,
                            FragmentBuilder* builder)
     : space_(builder->space_),
       physical_fragment_(std::move(physical_fragment)),

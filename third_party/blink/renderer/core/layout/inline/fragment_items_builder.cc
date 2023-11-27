@@ -106,7 +106,7 @@ const LogicalLineItems& FragmentItemsBuilder::GetLogicalLineItems(
 
 void FragmentItemsBuilder::AssociateLogicalLineItems(
     LogicalLineItems* line_items,
-    const NGPhysicalFragment& line_fragment) {
+    const PhysicalFragment& line_fragment) {
   DCHECK(!current_line_items_ || current_line_items_ == line_items);
   current_line_items_ = line_items;
   DCHECK(!current_line_fragment_);

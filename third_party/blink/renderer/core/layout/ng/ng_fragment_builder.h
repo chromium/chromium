@@ -78,14 +78,12 @@ class CORE_EXPORT FragmentBuilder {
   // Either this function or SetBoxType must be called before ToBoxFragment().
   void SetIsNewFormattingContext(bool is_new_fc) { is_new_fc_ = is_new_fc; }
 
-  NGPhysicalFragment::NGBoxType BoxType() const;
-  void SetBoxType(NGPhysicalFragment::NGBoxType box_type) {
-    box_type_ = box_type;
-  }
+  PhysicalFragment::BoxType BoxType() const;
+  void SetBoxType(PhysicalFragment::BoxType box_type) { box_type_ = box_type; }
   bool IsFragmentainerBoxType() const {
-    NGPhysicalFragment::NGBoxType box_type = BoxType();
-    return box_type == NGPhysicalFragment::kColumnBox ||
-           box_type == NGPhysicalFragment::kPageBox;
+    PhysicalFragment::BoxType box_type = BoxType();
+    return box_type == PhysicalFragment::kColumnBox ||
+           box_type == PhysicalFragment::kPageBox;
   }
 
   LayoutUnit InlineSize() const { return size_.inline_size; }
@@ -155,7 +153,7 @@ class CORE_EXPORT FragmentBuilder {
   }
 
   void ReplaceChild(wtf_size_t index,
-                    const NGPhysicalFragment& new_child,
+                    const PhysicalFragment& new_child,
                     const LogicalOffset offset);
 
   const ChildrenVector& Children() const { return children_; }
@@ -169,13 +167,13 @@ class CORE_EXPORT FragmentBuilder {
     items_builder_ = builder;
   }
 
-  void PropagateStickyDescendants(const NGPhysicalFragment& child);
-  void PropagateSnapAreas(const NGPhysicalFragment& child);
+  void PropagateStickyDescendants(const PhysicalFragment& child);
+  void PropagateSnapAreas(const PhysicalFragment& child);
 
   // Propagate |child|'s anchor for the CSS Anchor Positioning to |this|
   // builder. This includes the anchor of the |child| itself and anchors
   // propagated to the |child| from its descendants.
-  void PropagateChildAnchors(const NGPhysicalFragment& child,
+  void PropagateChildAnchors(const PhysicalFragment& child,
                              const LogicalOffset& child_offset);
 
   const LogicalAnchorQuery* AnchorQuery() const { return anchor_query_; }
@@ -327,7 +325,7 @@ class CORE_EXPORT FragmentBuilder {
   // list of descendants.
   // In addition, propagate any inner multicols with pending OOF descendants.
   void PropagateOOFPositionedInfo(
-      const NGPhysicalFragment& fragment,
+      const PhysicalFragment& fragment,
       LogicalOffset offset,
       LogicalOffset relative_offset,
       LogicalOffset offset_adjustment = LogicalOffset(),
@@ -344,7 +342,7 @@ class CORE_EXPORT FragmentBuilder {
   // fragmentainer descendants should be propagated there rather than to this
   // builder.
   void PropagateOOFFragmentainerDescendants(
-      const NGPhysicalFragment& fragment,
+      const PhysicalFragment& fragment,
       LogicalOffset offset,
       LogicalOffset relative_offset,
       LayoutUnit containing_block_adjustment,
@@ -530,23 +528,23 @@ class CORE_EXPORT FragmentBuilder {
       const OofInlineContainer<LogicalOffset>* = nullptr);
 
   void PropagateFromLayoutResult(const LayoutResult&);
-  void PropagateScrollStartTarget(const NGPhysicalFragment& child);
+  void PropagateScrollStartTarget(const PhysicalFragment& child);
 
   void PropagateFromFragment(
-      const NGPhysicalFragment& child,
+      const PhysicalFragment& child,
       LogicalOffset child_offset,
       LogicalOffset relative_offset,
       const OofInlineContainer<LogicalOffset>* inline_container = nullptr);
 
-  void AddChildInternal(const NGPhysicalFragment*, const LogicalOffset&);
+  void AddChildInternal(const PhysicalFragment*, const LogicalOffset&);
 
   // Set the fixedpos inline container and containing block based on the current
   // |box_fragment|, |relative_offset| and |current_inline_container|.
   void AdjustFixedposContainerInfo(
-      const NGPhysicalFragment* box_fragment,
+      const PhysicalFragment* box_fragment,
       LogicalOffset relative_offset,
       OofInlineContainer<LogicalOffset>* fixedpos_inline_container,
-      const NGPhysicalFragment** fixedpos_containing_block_fragment,
+      const PhysicalFragment** fixedpos_containing_block_fragment,
       const OofInlineContainer<LogicalOffset>* current_inline_container =
           nullptr) const;
 
@@ -555,8 +553,7 @@ class CORE_EXPORT FragmentBuilder {
   const ComputedStyle* style_;
   WritingDirectionMode writing_direction_;
   StyleVariant style_variant_;
-  NGPhysicalFragment::NGBoxType box_type_ =
-      NGPhysicalFragment::NGBoxType::kNormalBox;
+  PhysicalFragment::BoxType box_type_ = PhysicalFragment::BoxType::kNormalBox;
   LogicalSize size_;
   LayoutObject* layout_object_ = nullptr;
 
@@ -645,7 +642,7 @@ class CORE_EXPORT FragmentBuilder {
 
   friend class InlineLayoutStateStack;
   friend class LayoutResult;
-  friend class NGPhysicalFragment;
+  friend class PhysicalFragment;
 };
 
 }  // namespace blink

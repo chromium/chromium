@@ -31,7 +31,7 @@ class OofContainingBlock {
 
   OofContainingBlock(OffsetType offset,
                      OffsetType relative_offset,
-                     const NGPhysicalFragment* fragment,
+                     const PhysicalFragment* fragment,
                      absl::optional<LayoutUnit> clipped_container_block_offset,
                      bool is_inside_column_spanner)
       : offset_(offset),
@@ -46,7 +46,7 @@ class OofContainingBlock {
     offset_.block_offset += block_offset;
   }
   OffsetType RelativeOffset() const { return relative_offset_; }
-  const NGPhysicalFragment* Fragment() const { return fragment_.Get(); }
+  const PhysicalFragment* Fragment() const { return fragment_.Get(); }
   absl::optional<LayoutUnit> ClippedContainerBlockOffset() const {
     if (clipped_container_block_offset_ == LayoutUnit::Min()) {
       return absl::nullopt;
@@ -69,7 +69,7 @@ class OofContainingBlock {
   // The relative offset is stored separately to ensure that it is applied after
   // fragmentation: https://www.w3.org/TR/css-break-3/#transforms.
   OffsetType relative_offset_;
-  Member<const NGPhysicalFragment> fragment_;
+  Member<const PhysicalFragment> fragment_;
   // The distance to the innermost container that clips block overflow, if any.
   LayoutUnit clipped_container_block_offset_ = LayoutUnit::Min();
   // True if there is a column spanner between the containing block and the
@@ -332,20 +332,20 @@ struct DowncastTraits<LogicalOofNodeForFragmentation> {
   }
 };
 
-// This is a sub class of |NGPhysicalFragment::OofData| that can store OOF
+// This is a sub class of |PhysicalFragment::OofData| that can store OOF
 // propagation data under the NG block fragmentation context.
 //
-// This class is defined here instead of |NGPhysicalFragment| because types
-// needed for this class requires full definition of |NGPhysicalFragment|, and
-// |NGPhysicalFragment| requires full definition of this class if this is put
-// into |NGPhysicalFragment|.
-struct FragmentedOofData final : NGPhysicalFragment::OofData {
+// This class is defined here instead of |PhysicalFragment| because types
+// needed for this class requires full definition of |PhysicalFragment|, and
+// |PhysicalFragment| requires full definition of this class if this is put
+// into |PhysicalFragment|.
+struct FragmentedOofData final : PhysicalFragment::OofData {
   using MulticolCollection =
       HeapHashMap<Member<LayoutBox>,
                   Member<MulticolWithPendingOofs<PhysicalOffset>>>;
 
   static bool HasOutOfFlowPositionedFragmentainerDescendants(
-      const NGPhysicalFragment& fragment) {
+      const PhysicalFragment& fragment) {
     const auto* oof_data = fragment.GetFragmentedOofData();
     return oof_data &&
            !oof_data->oof_positioned_fragmentainer_descendants.empty();
@@ -358,7 +358,7 @@ struct FragmentedOofData final : NGPhysicalFragment::OofData {
 
   static base::span<PhysicalOofNodeForFragmentation>
   OutOfFlowPositionedFragmentainerDescendants(
-      const NGPhysicalFragment& fragment) {
+      const PhysicalFragment& fragment) {
     const auto* oof_data = fragment.GetFragmentedOofData();
     if (!oof_data || oof_data->oof_positioned_fragmentainer_descendants.empty())
       return base::span<PhysicalOofNodeForFragmentation>();
@@ -371,7 +371,7 @@ struct FragmentedOofData final : NGPhysicalFragment::OofData {
   void Trace(Visitor* visitor) const override {
     visitor->Trace(oof_positioned_fragmentainer_descendants);
     visitor->Trace(multicols_with_pending_oofs);
-    NGPhysicalFragment::OofData::Trace(visitor);
+    PhysicalFragment::OofData::Trace(visitor);
   }
 
   HeapVector<PhysicalOofNodeForFragmentation>

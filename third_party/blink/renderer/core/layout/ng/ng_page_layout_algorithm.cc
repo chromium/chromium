@@ -98,7 +98,7 @@ const NGPhysicalBoxFragment* PageLayoutAlgorithm::LayoutPage(
       CalculateInitialFragmentGeometry(child_space, Node(), GetBreakToken());
   BlockLayoutAlgorithm child_algorithm(
       {Node(), fragment_geometry, child_space, break_token});
-  child_algorithm.SetBoxType(NGPhysicalFragment::kPageBox);
+  child_algorithm.SetBoxType(PhysicalFragment::kPageBox);
   const LayoutResult* result = child_algorithm.Layout();
   return &To<NGPhysicalBoxFragment>(result->GetPhysicalFragment());
 }
