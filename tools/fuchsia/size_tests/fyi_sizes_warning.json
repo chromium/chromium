@@ -5,6 +5,10 @@
   ],
   "far_total_name" : "chrome_fuchsia",
   "size_limits" : {
-    "chrome_fuchsia_compressed": 43126480
+    "comment": "The change https://crrev.com/c/5038007 increased the",
+    "comment": "binary size by ~200K and we need to increase the limit now.",
+    "comment": "The latest run showed the size of 43294720, so round it a ",
+    "comment": "little bit.",
+    "chrome_fuchsia_compressed": 43319296
   }
 }
