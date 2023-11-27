@@ -57,6 +57,7 @@ enum UpdateState {
   kRestarting,
   kFailed,
   kSuccess,
+  kWaitingForUser,
 };
 
 // Send update descriptions.

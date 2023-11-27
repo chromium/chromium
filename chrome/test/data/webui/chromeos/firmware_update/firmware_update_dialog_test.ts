@@ -187,4 +187,37 @@ suite('FirmwareUpdateDialogTest', () => {
     assertFalse(isVisible(updateDialogElement.shadowRoot.querySelector(
         '#indeterminateProgressBar')));
   });
+
+  test('UpdateDialogContent_WaitingForUser_V2Disabled', async () => {
+    loadTimeData.overrideValues({isFirmwareUpdateUIV2Enabled: false});
+
+    assert(updateDialogElement?.shadowRoot);
+    // Start update.
+    await setInstallationProgress(1, UpdateState.kUpdating);
+    assertTrue(getUpdateDialog().open);
+
+    // Dialog remains open while the device is waiting for user action.
+    await setInstallationProgress(70, UpdateState.kWaitingForUser);
+    assertTrue(getUpdateDialog().open);
+
+    // If the v2 flag is disabled, the dialog should indicate that it's
+    // restarting when the state is kWaitingForUser.
+    assertEquals(
+        getTextContent('#updateDialogTitle'),
+        loadTimeData.getStringF(
+            'restartingTitleText',
+            mojoString16ToString(updateDialogElement.update!.deviceName)));
+    assertEquals(
+        getTextContent('#updateDialogBody'),
+        loadTimeData.getString('restartingBodyText'));
+    assertEquals(
+        getTextContent('#progress'),
+        loadTimeData.getString('restartingFooterText'));
+    // Check that the indeterminate progress is shown.
+    assertTrue(!!updateDialogElement.shadowRoot.querySelector(
+        '#indeterminateProgressBar'));
+    // No percentage progress bar.
+    assertFalse(
+        !!updateDialogElement.shadowRoot.querySelector('#updateProgressBar'));
+  });
 });

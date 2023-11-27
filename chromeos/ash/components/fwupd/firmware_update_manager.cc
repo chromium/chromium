@@ -59,6 +59,7 @@ enum class FwupdStatus {
   kWaitingForAuth,
   kDeviceBusy,
   kShutdown,
+  kWaitingForUser,
 };
 
 static constexpr auto FwupdStatusStringMap =
@@ -76,7 +77,8 @@ static constexpr auto FwupdStatusStringMap =
          {FwupdStatus::kDeviceErase, "Erasing a device"},
          {FwupdStatus::kWaitingForAuth, "Waiting for authentication"},
          {FwupdStatus::kDeviceBusy, "The device is busy"},
-         {FwupdStatus::kShutdown, "The daemon is shutting down"}});
+         {FwupdStatus::kShutdown, "The daemon is shutting down"},
+         {FwupdStatus::kWaitingForUser, "Waiting for user action"}});
 
 const char* GetFwupdStatusString(FwupdStatus enum_val) {
   DCHECK(base::Contains(FwupdStatusStringMap, enum_val));
@@ -234,6 +236,8 @@ firmware_update::mojom::UpdateState GetUpdateState(FwupdStatus fwupd_status) {
       return firmware_update::mojom::UpdateState::kRestarting;
     case FwupdStatus::kDeviceWrite:
       return firmware_update::mojom::UpdateState::kUpdating;
+    case FwupdStatus::kWaitingForUser:
+      return firmware_update::mojom::UpdateState::kWaitingForUser;
   }
 }
 
