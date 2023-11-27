@@ -1,0 +1,21 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module content.mojom;
+
+struct SyntheticTrialGroup {
+  string trial_name;
+  string group_name;
+};
+
+// Interface used by the browser process to tell the child processes about
+// the current active synthetic trial groups.
+interface SyntheticTrialConfiguration {
+  // Tells the child process to add new synthetic trial groups or update the
+  // existing synthetic trial groups.
+  AddOrUpdateSyntheticTrialGroups(array<SyntheticTrialGroup> groups);
+
+  // Tells the child process to remove the existing synthetic trial groups.
+  RemoveSyntheticTrialGroups(array<SyntheticTrialGroup> groups);
+};

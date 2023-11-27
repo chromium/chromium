@@ -483,6 +483,7 @@ mojom("mojo_bindings") {
     "renderer.mojom",
     "renderer_host.mojom",
     "renderer_variations_configuration.mojom",
+    "synthetic_trial_configuration.mojom",
     "web_ui.mojom",
   ]
 

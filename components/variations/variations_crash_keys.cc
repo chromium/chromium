@@ -59,10 +59,6 @@ crash_reporter::CrashKeyString<kVariationsKeySize> g_variations_crash_key(
 crash_reporter::CrashKeyString<64> g_variations_seed_version_crash_key(
     kVariationsSeedVersionKey);
 
-std::string ActiveGroupToString(const ActiveGroupId& active_group) {
-  return base::StringPrintf("%x-%x,", active_group.name, active_group.group);
-}
-
 std::string GetVariationsSeedVersion() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   // kVariationsSeedVersion should be set by the browser process in
@@ -300,4 +296,9 @@ ExperimentListInfo GetExperimentListInfo() {
   DCHECK(g_variations_crash_keys);
   return g_variations_crash_keys->GetExperimentListInfo();
 }
+
+std::string ActiveGroupToString(const ActiveGroupId& active_group) {
+  return base::StringPrintf("%x-%x,", active_group.name, active_group.group);
+}
+
 }  // namespace variations

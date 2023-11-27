@@ -18,6 +18,10 @@ namespace metrics {
 class MetricsServiceAccessor;
 }  // namespace metrics
 
+namespace content {
+class SyntheticTrialSyncer;
+}  // namespace content
+
 namespace tpcd::experiment {
 class ExperimentManagerImplBrowserTest;
 }  // namespace tpcd::experiment
@@ -87,6 +91,7 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialRegistry {
   friend FieldTrialsProviderTest;
   friend SyntheticTrialRegistryTest;
   friend ::tpcd::experiment::ExperimentManagerImplBrowserTest;
+  friend content::SyntheticTrialSyncer;
   FRIEND_TEST_ALL_PREFIXES(SyntheticTrialRegistryTest, RegisterSyntheticTrial);
   FRIEND_TEST_ALL_PREFIXES(SyntheticTrialRegistryTest,
                            GetSyntheticFieldTrialsOlderThanSuffix);
@@ -131,6 +136,12 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialRegistry {
       base::TimeTicks time,
       std::vector<ActiveGroupId>* synthetic_trials,
       base::StringPiece suffix = "") const;
+
+  // SyntheticTrialSyncer needs to know all current synthetic trial
+  // groups after launching new child processes.
+  const std::vector<SyntheticTrialGroup>& GetSyntheticTrialGroups() const {
+    return synthetic_trial_groups_;
+  }
 
   // Notifies observers on a synthetic trial list change.
   void NotifySyntheticTrialObservers(

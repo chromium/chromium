@@ -19,6 +19,7 @@
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "components/variations/child_process_field_trial_syncer.h"
+#include "content/child/child_process_synthetic_trial_syncer.h"
 #include "content/common/associated_interfaces.mojom.h"
 #include "content/common/child_process.mojom.h"
 #include "content/public/child/child_thread.h"

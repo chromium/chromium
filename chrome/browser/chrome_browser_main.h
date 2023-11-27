@@ -36,6 +36,10 @@ class CommandLine;
 class RunLoop;
 }
 
+namespace content {
+class SyntheticTrialSyncer;
+}
+
 namespace tracing {
 class TraceEventSystemStatsMonitor;
 }
@@ -174,6 +178,8 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
   // until tracing of the |system_stats| category is enabled.
   std::unique_ptr<tracing::TraceEventSystemStatsMonitor>
       trace_event_system_stats_monitor_;
+
+  std::unique_ptr<content::SyntheticTrialSyncer> synthetic_trial_syncer_;
 
   // Members initialized after / released before main_message_loop_ ------------
 

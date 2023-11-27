@@ -2195,6 +2195,7 @@ source_set("browser") {
     "storage_partition_impl.h",
     "storage_partition_impl_map.cc",
     "storage_partition_impl_map.h",
+    "synthetic_trial_syncer.cc",
     "theme_helper.cc",
     "theme_helper.h",
     "tracing/background_startup_tracing_observer.cc",

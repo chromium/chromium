@@ -176,6 +176,7 @@
 #include "content/public/browser/first_party_sets_handler.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_instance.h"
+#include "content/public/browser/synthetic_trial_syncer.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -677,6 +678,8 @@ void ChromeBrowserMainParts::SetupMetrics() {
       variations::VariationsIdsProvider::GetInstance());
   metrics->GetSyntheticTrialRegistry()->AddObserver(
       variations::SyntheticTrialsActiveGroupIdProvider::GetInstance());
+  synthetic_trial_syncer_ = content::SyntheticTrialSyncer::Create(
+      metrics->GetSyntheticTrialRegistry());
   // Now that field trials have been created, initializes metrics recording.
   metrics->InitializeMetricsRecordingState();
 
@@ -1896,6 +1899,11 @@ void ChromeBrowserMainParts::PostMainMessageLoopRun() {
 #endif  // BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 
   browser_process_->metrics_service()->Stop();
+
+  // BrowserProcessImpl::StartTearDown() makes SyntheticTrialRegistry
+  // unavailable. Since SyntheticTrialSyncer depends on SyntheticTrialRegistry,
+  // destroy before the tear-down.
+  synthetic_trial_syncer_.reset();
 
   restart_last_session_ = browser_shutdown::ShutdownPreThreadsStop();
   browser_process_->StartTearDown();

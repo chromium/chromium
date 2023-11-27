@@ -418,6 +418,7 @@ source_set("browser_sources") {
     "supported_delegations.cc",
     "supported_delegations.h",
     "swap_metrics_driver.h",
+    "synthetic_trial_syncer.h",
     "touch_selection_controller_client_manager.h",
     "tracing_controller.h",
     "tracing_delegate.cc",
@@ -544,6 +545,7 @@ source_set("browser_sources") {
     "//build:chromeos_buildflags",
     "//cc",
     "//components/services/storage/public/cpp",
+    "//components/variations:variations",
     "//components/viz/host",
     "//content/browser",  # Must not be public_deps!
     "//device/fido",

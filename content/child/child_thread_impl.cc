@@ -42,6 +42,7 @@
 #include "build/build_config.h"
 #include "content/child/browser_exposed_child_interfaces.h"
 #include "content/child/child_process.h"
+#include "content/child/child_process_synthetic_trial_syncer.h"
 #include "content/common/child_process.mojom.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/features.h"
@@ -876,7 +877,8 @@ void ChildThreadImpl::ExposeInterfacesToBrowser(mojo::BinderMap binders) {
   // NOTE: Do not add new binders directly within this method. Instead, modify
   // the definition of |ExposeChildInterfacesToBrowser()|, ensuring security
   // review coverage.
-  ExposeChildInterfacesToBrowser(GetIOTaskRunner(), &binders);
+  ExposeChildInterfacesToBrowser(GetIOTaskRunner(), IsInBrowserProcess(),
+                                 &binders);
 
   ChildThreadImpl::GetIOTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&IOThreadState::ExposeInterfacesToBrowser,

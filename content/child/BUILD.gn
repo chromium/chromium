@@ -45,6 +45,8 @@ target(link_target_type, "child") {
     "child_histogram_fetcher_impl.h",
     "child_process.cc",
     "child_process.h",
+    "child_process_synthetic_trial_syncer.cc",
+    "child_process_synthetic_trial_syncer.h",
     "child_thread_impl.cc",
     "child_thread_impl.h",
     "field_trial.cc",
