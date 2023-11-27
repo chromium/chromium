@@ -1464,9 +1464,6 @@ suite('AddExceptionDialog', function() {
         dialog.set('category', ContentSettingsTypes.COOKIES);
         dialog.set('cookiesExceptionType', CookiesExceptionType.COMBINED);
         flush();
-        // TODO(crbug.com/1378703): Remove after crbug/1378703 launched and the
-        // checkbox is deprecated.
-        assertTrue(dialog.$.thirdParties.hidden);
 
         // Enter a pattern and click the button.
         const expectedPattern = 'foo-bar.com';
@@ -1485,9 +1482,6 @@ suite('AddExceptionDialog', function() {
     dialog.set('category', ContentSettingsTypes.COOKIES);
     dialog.set('cookiesExceptionType', CookiesExceptionType.THIRD_PARTY);
     flush();
-    // TODO(crbug.com/1378703): Remove after crbug/1378703 launched and the
-    // checkbox is deprecated.
-    assertTrue(dialog.$.thirdParties.hidden);
 
     // Enter a pattern and click the button.
     const expectedPattern = 'foo-bar.com';
@@ -1506,9 +1500,6 @@ suite('AddExceptionDialog', function() {
     dialog.set('category', ContentSettingsTypes.COOKIES);
     dialog.set('cookiesExceptionType', CookiesExceptionType.SITE_DATA);
     flush();
-    // TODO(crbug.com/1378703): Remove after crbug/1378703 launched and the
-    // checkbox is deprecated.
-    assertTrue(dialog.$.thirdParties.hidden);
 
     // Enter a pattern and click the button.
     const expectedPattern = 'foo-bar.com';

@@ -297,8 +297,7 @@ class SettingsSiteSettingsListElement extends
    * Update the third-party cookies link row label when the pref changes.
    */
   private updateThirdPartyCookiesLabel_() {
-    if (!loadTimeData.getBoolean('isPrivacySandboxSettings4') ||
-        loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')) {
+    if (loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')) {
       return;
     }
 
