@@ -79,6 +79,7 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version 17 - 2023/09 - crrev.com/c/4852051
 // Version 18 - 2023/09 - crrev.com/c/4902233
 // Version 19 - 2023/10 - crrev.com/c/4891458
+// Version 20 - 2023/11 - crrev.com/c/5050989
 //
 // Version 1 adds a table for interest groups.
 // Version 2 adds a column for rate limiting interest group updates.
@@ -103,7 +104,9 @@ const base::FilePath::CharType kDatabasePath[] =
 // split caps on max interest groups per owner.
 // Version 19 adds the aggregation_coordinator_origin and storage_size columns
 // to the interest group table.
-const int kCurrentVersionNumber = 19;
+// Version 20 adds the lockout_debugging_only_report and
+// cooldown_debugging_only_report tables.
+const int kCurrentVersionNumber = 20;
 
 // Earliest version of the code which can use a |kCurrentVersionNumber|
 // database without failing.
@@ -757,7 +760,7 @@ bool InsertKAnonForJoinedInterestGroup(sql::Database& db,
 
 // Initializes the tables, returning true on success.
 // The tables cannot exist when calling this function.
-bool CreateV19Schema(sql::Database& db) {
+bool CreateV20Schema(sql::Database& db) {
   DCHECK(!db.DoesTableExist("interest_groups"));
   static const char kInterestGroupTableSql[] =
       // clang-format off
@@ -878,6 +881,56 @@ bool CreateV19Schema(sql::Database& db) {
       "ON win_history(owner,name,win_time DESC)";
   // clang-format on
   if (!db.Execute(kWinHistoryIndexSQL)) {
+    return false;
+  }
+
+  DCHECK(!db.DoesTableExist("lockout_debugging_only_report"));
+  static const char kLockoutDebuggingOnlyReportTableSql[] =
+      // clang-format off
+      "CREATE TABLE lockout_debugging_only_report("
+        "date_of_last_report_sent INTEGER NOT NULL)";
+  // clang-format on
+  if (!db.Execute(kLockoutDebuggingOnlyReportTableSql)) {
+    return false;
+  }
+
+  DCHECK(!db.DoesTableExist("cooldown_debugging_only_report"));
+  static const char kCooldownDebuggingOnlyReportTableSql[] =
+      // clang-format off
+      "CREATE TABLE cooldown_debugging_only_report("
+        "origin TEXT NOT NULL,"
+        "starting_date INTEGER NOT NULL,"
+        "duration INTEGER NOT NULL,"
+      "PRIMARY KEY(origin))";
+  // clang-format on
+  if (!db.Execute(kCooldownDebuggingOnlyReportTableSql)) {
+    return false;
+  }
+
+  return true;
+}
+
+bool UpgradeV19SchemaToV20(sql::Database& db, sql::MetaTable& meta_table) {
+  // The difference from V19 is V20 adds the following two new tables, used for
+  // down sampling forDebuggingOnly reports.
+  static const char kLockoutDebuggingOnlyReportTableSql[] =
+      // clang-format off
+      "CREATE TABLE lockout_debugging_only_report("
+        "date_of_last_report_sent INTEGER NOT NULL)";
+  // clang-format on
+  if (!db.Execute(kLockoutDebuggingOnlyReportTableSql)) {
+    return false;
+  }
+
+  static const char kCooldownDebuggingOnlyReportTableSql[] =
+      // clang-format off
+      "CREATE TABLE cooldown_debugging_only_report("
+        "origin TEXT NOT NULL,"
+        "starting_date INTEGER NOT NULL,"
+        "duration INTEGER NOT NULL,"
+      "PRIMARY KEY(origin))";
+  // clang-format on
+  if (!db.Execute(kCooldownDebuggingOnlyReportTableSql)) {
     return false;
   }
 
@@ -3664,6 +3717,8 @@ bool InterestGroupStorage::InitializeDB() {
   DCHECK(db_->DoesTableExist("bid_history"));
   DCHECK(db_->DoesTableExist("win_history"));
   DCHECK(db_->DoesTableExist("k_anon"));
+  DCHECK(db_->DoesTableExist("lockout_debugging_only_report"));
+  DCHECK(db_->DoesTableExist("cooldown_debugging_only_report"));
   return true;
 }
 
@@ -3693,7 +3748,7 @@ bool InterestGroupStorage::InitializeSchema() {
   }
 
   if (new_db) {
-    return CreateV19Schema(*db_);
+    return CreateV20Schema(*db_);
   }
 
   const int db_version = meta_table.GetVersionNumber();
@@ -3777,6 +3832,11 @@ bool InterestGroupStorage::InitializeSchema() {
         ABSL_FALLTHROUGH_INTENDED;
       case 18:
         if (!UpgradeV18SchemaToV19(*db_, meta_table)) {
+          return false;
+        }
+        ABSL_FALLTHROUGH_INTENDED;
+      case 19:
+        if (!UpgradeV19SchemaToV20(*db_, meta_table)) {
           return false;
         }
         if (!meta_table.SetVersionNumber(kCurrentVersionNumber)) {

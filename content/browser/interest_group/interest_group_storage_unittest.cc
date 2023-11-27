@@ -280,8 +280,9 @@ TEST_F(InterestGroupStorageTest, DatabaseInitialized_CreateDatabase) {
     EXPECT_TRUE(raw_db.Open(db_path()));
 
     // [interest_groups], [join_history], [bid_history], [win_history],
-    // [k_anon], [meta].
-    EXPECT_EQ(6u, sql::test::CountSQLTables(&raw_db)) << raw_db.GetSchema();
+    // [k_anon], [meta], [lockout_debugging_only_report],
+    // [cooldown_debugging_only_report].
+    EXPECT_EQ(8u, sql::test::CountSQLTables(&raw_db)) << raw_db.GetSchema();
   }
 }
 
@@ -316,8 +317,9 @@ TEST_F(InterestGroupStorageTest, DatabaseRazesOldVersion) {
     EXPECT_TRUE(raw_db.Open(db_path()));
 
     // [interest_groups], [join_history], [bid_history], [win_history],
-    // [k_anon], [meta].
-    EXPECT_EQ(6u, sql::test::CountSQLTables(&raw_db)) << raw_db.GetSchema();
+    // [k_anon], [meta], [lockout_debugging_only_report],
+    // [cooldown_debugging_only_report].
+    EXPECT_EQ(8u, sql::test::CountSQLTables(&raw_db)) << raw_db.GetSchema();
   }
 }
 
@@ -352,8 +354,9 @@ TEST_F(InterestGroupStorageTest, DatabaseRazesNewVersion) {
     EXPECT_TRUE(raw_db.Open(db_path()));
 
     // [interest_groups], [join_history], [bid_history], [win_history],
-    // [k_anon], [meta].
-    EXPECT_EQ(6u, sql::test::CountSQLTables(&raw_db)) << raw_db.GetSchema();
+    // [k_anon], [meta], [lockout_debugging_only_report],
+    // [cooldown_debugging_only_report].
+    EXPECT_EQ(8u, sql::test::CountSQLTables(&raw_db)) << raw_db.GetSchema();
   }
 }
 
