@@ -44,6 +44,8 @@ constexpr char kServerCreatePlusAddressEndpoint[] = "v1/profiles/create";
 // A move-only class for communicating with a remote plus-address server.
 class PlusAddressClient {
  public:
+  using TokenReadyCallback =
+      base::OnceCallback<void(absl::optional<std::string>)>;
   PlusAddressClient(
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
@@ -76,17 +78,27 @@ class PlusAddressClient {
   void GetAllPlusAddresses(PlusAddressMapCallback callback);
 
   // Initiates a request for a new OAuth token. If the request succeeds, this
-  // stores the token in `access_token_info_` and runs `on_fetched`.
-  void GetAuthToken(base::OnceClosure on_fetched);
+  // runs `on_fetched` with the retrieved token. Must be run on the UI thread.
+  void GetAuthToken(TokenReadyCallback on_fetched);
 
-  void SetAccessTokenInfoForTesting(signin::AccessTokenInfo info) {
-    access_token_info_ = info;
-  }
   void SetClockForTesting(base::Clock* clock) { clock_ = clock; }
   absl::optional<GURL> GetServerUrlForTesting() const { return server_url_; }
 
  private:
   using UrlLoaderList = std::list<std::unique_ptr<network::SimpleURLLoader>>;
+
+  void CreatePlusAddressInternal(const url::Origin& origin,
+                                 PlusAddressCallback callback,
+                                 absl::optional<std::string> auth_token);
+  void ReservePlusAddressInternal(const url::Origin& origin,
+                                  PlusAddressRequestCallback on_completed,
+                                  absl::optional<std::string> auth_token);
+  void ConfirmPlusAddressInternal(const url::Origin& origin,
+                                  const std::string& plus_address,
+                                  PlusAddressRequestCallback on_completed,
+                                  absl::optional<std::string> auth_token);
+  void GetAllPlusAddressesInternal(PlusAddressMapCallback callback,
+                                   absl::optional<std::string> auth_token);
 
   // Only used by CreatePlusAddress.
   void OnCreatePlusAddressComplete(UrlLoaderList::iterator it,
@@ -105,10 +117,9 @@ class PlusAddressClient {
   void OnGetAllPlusAddressesComplete(base::Time request_start,
                                      PlusAddressMapCallback callback,
                                      std::unique_ptr<std::string> response);
-  // Initiates a network request for an OAuth token, and may only be
-  // called by GetAuthToken. This also must be run on the UI thread.
-  void RequestAuthToken();
-  void OnTokenFetched(GoogleServiceAuthError error,
+  // Runs callback and any pending_callbacks_ blocked on the token.
+  void OnTokenFetched(TokenReadyCallback callback,
+                      GoogleServiceAuthError error,
                       signin::AccessTokenInfo access_token_info);
 
   // The IdentityManager instance for the signed-in user.
@@ -127,11 +138,9 @@ class PlusAddressClient {
   std::unique_ptr<network::SimpleURLLoader> loader_for_sync_;
 
   absl::optional<GURL> server_url_;
-  signin::AccessTokenInfo access_token_info_;
-  GoogleServiceAuthError access_token_request_error_;
   signin::ScopeSet scopes_;
-  // Stores callbacks to be run once `access_token_info_` is retrieved.
-  base::queue<base::OnceClosure> pending_callbacks_;
+  // Stores callbacks that raced to get an auth token to run them once ready.
+  base::queue<TokenReadyCallback> pending_callbacks_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
