@@ -91,6 +91,16 @@ export class DirectoryTreePageObject {
   }
 
   /**
+   * Returns the selector by the tree label.
+   *
+   * @param {string} label Label of the tree item
+   * @return {string}
+   */
+  itemSelectorByLabel(label) {
+    return this.selectors_.itemByLabel(label);
+  }
+
+  /**
    * Wait for the selected(aka "active" in the old tree implementation) tree
    * item with the label.
    *
