@@ -103,7 +103,7 @@ public class StatusBarColorController
     private float mStatusBarScrimFraction;
 
     private float mToolbarUrlExpansionPercentage;
-    private boolean mShouldUpdateStatusBarColorForNTP;
+    private boolean mShouldUpdateStatusBarColorForNtp;
     private @ColorInt int mStatusIndicatorColor;
     private @ColorInt int mStatusBarColorWithoutStatusIndicator;
     private OneshotSupplier<StartSurface> mStartSurfaceSupplier;
@@ -197,17 +197,17 @@ public class StatusBarColorController
 
                     @Override
                     public void onContentChanged(Tab tab) {
-                        final boolean newShouldUpdateStatusBarColorForNTP = isStandardNTP();
+                        final boolean newShouldUpdateStatusBarColorForNtp = isStandardNtp();
                         // Also update the status bar color if the content was previously an NTP,
                         // because an NTP can use a different status bar color than the default
                         // theme color. In this case, the theme color might not change, and thus
                         // #onDidChangeThemeColor
                         // might not get called.
-                        if (mShouldUpdateStatusBarColorForNTP
-                                || newShouldUpdateStatusBarColorForNTP) {
+                        if (mShouldUpdateStatusBarColorForNtp
+                                || newShouldUpdateStatusBarColorForNtp) {
                             updateStatusBarColor();
                         }
-                        mShouldUpdateStatusBarColorForNTP = newShouldUpdateStatusBarColorForNTP;
+                        mShouldUpdateStatusBarColorForNtp = newShouldUpdateStatusBarColorForNtp;
                     }
 
                     @Override
@@ -225,13 +225,13 @@ public class StatusBarColorController
                         // #onUrlExpansionPercentageChanged() is
                         // called.
                         mCurrentTab = null;
-                        mShouldUpdateStatusBarColorForNTP = false;
+                        mShouldUpdateStatusBarColorForNtp = false;
                     }
 
                     @Override
                     protected void onObservingDifferentTab(Tab tab, boolean hint) {
                         mCurrentTab = tab;
-                        mShouldUpdateStatusBarColorForNTP = isStandardNTP();
+                        mShouldUpdateStatusBarColorForNtp = isStandardNtp();
 
                         // |tab == null| means we're switching tabs - by the tab switcher or by
                         // swiping on the omnibox. These cases are dealt with differently,
@@ -350,7 +350,7 @@ public class StatusBarColorController
     @Override
     public void onUrlExpansionProgressChanged(float fraction) {
         mToolbarUrlExpansionPercentage = fraction;
-        if (mShouldUpdateStatusBarColorForNTP) updateStatusBarColor();
+        if (mShouldUpdateStatusBarColorForNtp) updateStatusBarColor();
     }
 
     // TopToolbarCoordinator.ToolbarColorObserver implementation.
@@ -479,7 +479,7 @@ public class StatusBarColorController
 
         // Return status bar color in standard NewTabPage. If location bar is not shown in NTP, we
         // use the tab theme color regardless of the URL expansion percentage.
-        if (isLocationBarShownInNTP()) {
+        if (isLocationBarShownInNtp()) {
             if (mIsSurfacePolishEnabled) {
                 return mPolishedHomeSurfaceBgColor;
             }
@@ -555,15 +555,15 @@ public class StatusBarColorController
     /**
      * @return Whether or not the current tab is a new tab page in standard mode.
      */
-    private boolean isStandardNTP() {
+    private boolean isStandardNtp() {
         return mCurrentTab != null && mCurrentTab.getNativePage() instanceof NewTabPage;
     }
 
     /**
      * @return Whether or not the fake location bar is shown on the current NTP.
      */
-    private boolean isLocationBarShownInNTP() {
-        if (!isStandardNTP()) return false;
+    private boolean isLocationBarShownInNtp() {
+        if (!isStandardNtp()) return false;
         final NewTabPage newTabPage = (NewTabPage) mCurrentTab.getNativePage();
         return newTabPage != null && newTabPage.isLocationBarShownInNTP();
     }
