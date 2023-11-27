@@ -54,16 +54,6 @@ found in the LICENSE file.
         android:paddingEnd="16dp"
         android:contentDescription="@string/accessibility_toolbar_btn_new_tab" />
 
-    <ImageView
-        android:id="@+id/logo"
-        android:layout_width="wrap_content"
-        android:layout_height="32dp"
-        android:layout_gravity="center"
-        android:scaleType="centerInside"
-        app:srcCompat="@drawable/google_logo"
-        android:visibility="gone"
-        android:contentDescription="@null"/>
-
     <ViewStub
         android:id="@+id/incognito_tabs_stub"
         android:inflatedId="@+id/incognito_toggle_tabs"
