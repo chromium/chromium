@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ios/swift_source_set.gni")
+
 source_set("model") {
   public = [
     "image_file_manager.h",
@@ -55,6 +57,15 @@ source_set("snapshot_id") {
   deps = [ "//base" ]
 }
 
+swift_source_set("model_swift") {
+  bridge_header = "snapshot_swift_bridge.h"
+  sources = [ "snapshot_lru_cache.swift" ]
+  deps = [
+    ":snapshot_id",
+    "//base",
+  ]
+}
+
 source_set("test_utils") {
   testonly = true
   sources = [
@@ -77,6 +88,7 @@ source_set("unit_tests") {
   deps = [
     ":features",
     ":model",
+    ":model_swift",
     ":snapshot_id",
     ":test_utils",
     "//base",
