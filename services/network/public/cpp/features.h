@@ -159,6 +159,15 @@ BASE_DECLARE_FEATURE(kSharedZstd);
 COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kCookieAccessDetailsNotificationDeDuping);
 
+COMPONENT_EXPORT(NETWORK_CPP)
+BASE_DECLARE_FEATURE(kSkipTpcdMitigationsForAds);
+COMPONENT_EXPORT(NETWORK_CPP)
+extern const base::FeatureParam<bool> kSkipTpcdMitigationsForAdsHeuristics;
+COMPONENT_EXPORT(NETWORK_CPP)
+extern const base::FeatureParam<bool> kSkipTpcdMitigationsForAdsMetadata;
+COMPONENT_EXPORT(NETWORK_CPP)
+extern const base::FeatureParam<bool> kSkipTpcdMitigationsForAdsSupport;
+
 }  // namespace features
 }  // namespace network
 

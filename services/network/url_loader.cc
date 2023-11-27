@@ -63,6 +63,7 @@
 #include "net/url_request/redirect_info.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_getter.h"
+#include "services/network/ad_heuristic_cookie_overrides.h"
 #include "services/network/attribution/attribution_request_helper.h"
 #include "services/network/chunked_data_pipe_upload_data_stream.h"
 #include "services/network/data_pipe_element_reader.h"
@@ -690,6 +691,9 @@ URLLoader::URLLoader(
     url_request_->cookie_setting_overrides().Put(
         net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible);
   }
+
+  AddAdsHeuristicCookieSettingOverrides(
+      request.is_ad_tagged, url_request_->cookie_setting_overrides());
 
   // The `kStorageAccessGrantEligible` override will be applied (in-place) by
   // individual request jobs as appropriate, but should not be present

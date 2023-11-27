@@ -2527,6 +2527,7 @@ if (!is_android) {
       "../browser/storage/durable_storage_browsertest.cc",
       "../browser/storage/shared_storage_browsertest.cc",
       "../browser/storage_access_api/api_browsertest.cc",
+      "../browser/subresource_filter/ad_heuristic_tpcd_browsertest.cc",
       "../browser/subresource_filter/ad_tagging_browsertest.cc",
       "../browser/subresource_filter/ads_intervention_manager_browsertest.cc",
       "../browser/subresource_filter/ruleset_browsertest.cc",

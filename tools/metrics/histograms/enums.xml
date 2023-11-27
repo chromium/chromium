@@ -1857,6 +1857,15 @@ Unknown properties are collapsed to zero. -->
   <int value="3" label="Insecure non-ad request"/>
 </enum>
 
+<enum name="AdsHeuristicCookieOverride">
+  <int value="0" label="kNone"/>
+  <int value="1" label="kNotAd"/>
+  <int value="2" label="kAny"/>
+  <int value="3" label="kSkipHeuristics"/>
+  <int value="4" label="kSkipMetadata"/>
+  <int value="5" label="kSkipSupport"/>
+</enum>
+
 <enum name="AdsInterventionStatus">
   <int value="0" label="Expired"/>
   <int value="1" label="Would Block"/>

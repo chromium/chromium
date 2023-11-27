@@ -39,6 +39,7 @@
 #include "net/cookies/site_for_cookies.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
+#include "services/network/ad_heuristic_cookie_overrides.h"
 #include "services/network/cookie_settings.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -375,7 +376,7 @@ class RestrictedCookieManager::Listener : public base::LinkNode<Listener> {
     if (!restricted_cookie_manager_->cookie_settings().IsCookieAccessible(
             change.cookie, url_, site_for_cookies_, top_frame_origin_,
             restricted_cookie_manager_->GetCookieSettingOverrides(
-                has_storage_access_),
+                has_storage_access_, /*is_ad_tagged=*/false),
             /*cookie_inclusion_status=*/nullptr)) {
       return;
     }
@@ -573,13 +574,14 @@ void RestrictedCookieManager::GetAllForUrl(
 
   cookie_store_->GetCookieListWithOptionsAsync(
       url, net_options, cookie_partition_key_collection_,
-      base::BindOnce(&RestrictedCookieManager::CookieListToGetAllForUrlCallback,
-                     weak_ptr_factory_.GetWeakPtr(), url, site_for_cookies,
-                     top_frame_origin,
-                     isolation_info_.top_frame_origin().value_or(url::Origin()),
-                     is_ad_tagged,
-                     GetCookieSettingOverrides(has_storage_access), net_options,
-                     std::move(options), std::move(callback)));
+      base::BindOnce(
+          &RestrictedCookieManager::CookieListToGetAllForUrlCallback,
+          weak_ptr_factory_.GetWeakPtr(), url, site_for_cookies,
+          top_frame_origin,
+          isolation_info_.top_frame_origin().value_or(url::Origin()),
+          is_ad_tagged,
+          GetCookieSettingOverrides(has_storage_access, is_ad_tagged),
+          net_options, std::move(options), std::move(callback)));
 }
 
 void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
@@ -720,7 +722,8 @@ void RestrictedCookieManager::SetCanonicalCookie(
   // TODO(morlovich): Try to validate site_for_cookies as well.
   bool blocked = !cookie_settings_->IsCookieAccessible(
       cookie, url, site_for_cookies, top_frame_origin,
-      GetCookieSettingOverrides(has_storage_access), &status);
+      GetCookieSettingOverrides(has_storage_access, /*is_ad_tagged=*/false),
+      &status);
 
   if (blocked) {
     // Cookie allowed by cookie_settings checks could be blocked explicitly,
@@ -744,7 +747,7 @@ void RestrictedCookieManager::SetCanonicalCookie(
   url::Origin isolated_top_frame_origin =
       isolation_info_.top_frame_origin().value_or(url::Origin());
   net::CookieSettingOverrides cookie_setting_overrides =
-      GetCookieSettingOverrides(has_storage_access);
+      GetCookieSettingOverrides(has_storage_access, /*is_ad_tagged=*/false);
   if (!status.IsInclude()) {
     if (cookie_observer_) {
       std::vector<network::mojom::CookieOrLineWithAccessResultPtr>
@@ -950,7 +953,8 @@ void RestrictedCookieManager::SetCookieFromString(
           site_for_cookies, std::move(result_with_access_result), absl::nullopt,
           /*count=*/1,
           /*is_ad_tagged=*/false,
-          GetCookieSettingOverrides(has_storage_access)));
+          GetCookieSettingOverrides(has_storage_access,
+                                    /*is_ad_tagged=*/false)));
     }
     return;
   }
@@ -1031,7 +1035,7 @@ void RestrictedCookieManager::CookiesEnabledFor(
 
   std::move(callback).Run(cookie_settings_->IsFullCookieAccessAllowed(
       url, site_for_cookies, top_frame_origin,
-      GetCookieSettingOverrides(has_storage_access)));
+      GetCookieSettingOverrides(has_storage_access, /*is_ad_tagged=*/false)));
 }
 
 void RestrictedCookieManager::InstallReceiver(
@@ -1088,11 +1092,13 @@ bool RestrictedCookieManager::ValidateAccessToCookiesAt(
 }
 
 net::CookieSettingOverrides RestrictedCookieManager::GetCookieSettingOverrides(
-    bool has_storage_access) const {
+    bool has_storage_access,
+    bool is_ad_tagged) const {
   net::CookieSettingOverrides overrides = cookie_setting_overrides_;
   if (has_storage_access) {
     overrides.Put(net::CookieSettingOverride::kStorageAccessGrantEligible);
   }
+  AddAdsHeuristicCookieSettingOverrides(is_ad_tagged, overrides);
   return overrides;
 }
 

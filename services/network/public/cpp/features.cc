@@ -411,4 +411,24 @@ BASE_FEATURE(kCookieAccessDetailsNotificationDeDuping,
              "CookieAccessDetailsNotificationDeDuping",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// This feature allows skipping TPCD mitigation checks when the cookie access
+// is tagged as being used for advertising purposes. This means that cookies
+// will continue to be blocked for cookie accesses on ad requests even if the
+// 3PC mitigations would otherwise allow the access.
+BASE_FEATURE(kSkipTpcdMitigationsForAds,
+             "SkipTpcdMitigationsForAds",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// Controls whether we ignore opener heuristic grants for 3PC accesses.
+const base::FeatureParam<bool> kSkipTpcdMitigationsForAdsHeuristics{
+    &kSkipTpcdMitigationsForAds, /*name=*/"SkipTpcdMitigationsForAdsHeuristics",
+    /*default_value=*/false};
+// Controls whether we ignore checks on the metadata allowlist for 3PC cookies.
+const base::FeatureParam<bool> kSkipTpcdMitigationsForAdsMetadata{
+    &kSkipTpcdMitigationsForAds, /*name=*/"SkipTpcdMitigationsForAdsMetadata",
+    /*default_value=*/false};
+// Controls whether we ignore checks on the deprecation trial for 3PC.
+const base::FeatureParam<bool> kSkipTpcdMitigationsForAdsSupport{
+    &kSkipTpcdMitigationsForAds, /*name=*/"SkipTpcdMitigationsForAdsSupport",
+    /*default_value=*/false};
+
 }  // namespace network::features
