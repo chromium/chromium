@@ -110,6 +110,10 @@ class TpmManagerClientImpl : public TpmManagerClient {
     CallProtoMethod(::tpm_manager::kClearStoredOwnerPassword, request,
                     std::move(callback));
   }
+  void ClearTpm(const ::tpm_manager::ClearTpmRequest& request,
+                ClearTpmCallback callback) override {
+    CallProtoMethod(::tpm_manager::kClearTpm, request, std::move(callback));
+  }
 
   void AddObserver(Observer* observer) override {
     observer_list_.AddObserver(observer);
