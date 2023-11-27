@@ -278,15 +278,11 @@ bool GLSurface::ExtensionsContain(const char* c_extensions, const char* name) {
   return extensions.find(delimited_name) != std::string::npos;
 }
 
-scoped_refptr<GLSurface> InitializeGLSurfaceWithFormat(
-    scoped_refptr<GLSurface> surface, GLSurfaceFormat format) {
-  if (!surface->Initialize(format))
-    return nullptr;
-  return surface;
-}
-
 scoped_refptr<GLSurface> InitializeGLSurface(scoped_refptr<GLSurface> surface) {
-  return InitializeGLSurfaceWithFormat(surface, GLSurfaceFormat());
+  if (!surface->Initialize(GLSurfaceFormat())) {
+    return nullptr;
+  }
+  return surface;
 }
 
 }  // namespace gl

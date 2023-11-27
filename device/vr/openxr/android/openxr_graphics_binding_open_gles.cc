@@ -87,8 +87,7 @@ bool OpenXrGraphicsBindingOpenGLES::Initialize(XrInstance instance,
   DCHECK(gl::GetGLImplementation() != gl::kGLImplementationEGLANGLE);
 
   scoped_refptr<gl::GLSurface> surface;
-  surface = gl::init::CreateOffscreenGLSurfaceWithFormat(display, {0, 0},
-                                                         gl::GLSurfaceFormat());
+  surface = gl::init::CreateOffscreenGLSurface(display, {0, 0});
 
   DVLOG(3) << "surface=" << surface.get();
   if (!surface.get()) {

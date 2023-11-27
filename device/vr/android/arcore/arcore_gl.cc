@@ -468,8 +468,7 @@ bool ArCoreGl::InitializeGl(gfx::AcceleratedWidget drawing_widget) {
   if (drawing_widget != gfx::kNullAcceleratedWidget) {
     surface = gl::init::CreateViewGLSurface(display, drawing_widget);
   } else {
-    surface = gl::init::CreateOffscreenGLSurfaceWithFormat(
-        display, {0, 0}, gl::GLSurfaceFormat());
+    surface = gl::init::CreateOffscreenGLSurface(display, {0, 0});
   }
   DVLOG(3) << "surface=" << surface.get();
   if (!surface.get()) {

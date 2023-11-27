@@ -299,10 +299,6 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
 GL_EXPORT scoped_refptr<GLSurface> InitializeGLSurface(
     scoped_refptr<GLSurface> surface);
 
-GL_EXPORT scoped_refptr<GLSurface> InitializeGLSurfaceWithFormat(
-    scoped_refptr<GLSurface> surface,
-    GLSurfaceFormat format);
-
 }  // namespace gl
 
 #endif  // UI_GL_GL_SURFACE_H_

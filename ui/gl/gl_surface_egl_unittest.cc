@@ -18,12 +18,6 @@
 #include "ui/platform_window/platform_window_delegate.h"
 #include "ui/platform_window/win/win_window.h"
 #endif
-// TODO(crbug.com/969798): Fix memory leaks in tests and re-enable on LSAN.
-#ifdef LEAK_SANITIZER
-#define MAYBE_SurfaceFormatTest DISABLED_SurfaceFormatTest
-#else
-#define MAYBE_SurfaceFormatTest SurfaceFormatTest
-#endif
 
 namespace gl {
 
@@ -51,33 +45,6 @@ class GLSurfaceEGLTest : public testing::Test {
  private:
   raw_ptr<GLDisplay> display_ = nullptr;
 };
-
-#if !defined(MEMORY_SANITIZER)
-// Fails under MSAN: crbug.com/886995
-TEST_F(GLSurfaceEGLTest, MAYBE_SurfaceFormatTest) {
-  GLSurfaceFormat surface_format = GLSurfaceFormat();
-  surface_format.SetDepthBits(24);
-  surface_format.SetStencilBits(8);
-  surface_format.SetSamples(0);
-  scoped_refptr<GLSurface> surface = init::CreateOffscreenGLSurfaceWithFormat(
-      GetTestDisplay(), gfx::Size(1, 1), surface_format);
-  EGLConfig config = surface->GetConfig();
-  EXPECT_TRUE(config);
-
-  EGLint attrib;
-  eglGetConfigAttrib(surface->GetGLDisplay()->GetDisplay(), config,
-                     EGL_DEPTH_SIZE, &attrib);
-  EXPECT_LE(24, attrib);
-
-  eglGetConfigAttrib(surface->GetGLDisplay()->GetDisplay(), config,
-                     EGL_STENCIL_SIZE, &attrib);
-  EXPECT_LE(8, attrib);
-
-  eglGetConfigAttrib(surface->GetGLDisplay()->GetDisplay(), config, EGL_SAMPLES,
-                     &attrib);
-  EXPECT_EQ(0, attrib);
-}
-#endif
 
 #if BUILDFLAG(IS_WIN)
 
