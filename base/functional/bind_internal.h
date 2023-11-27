@@ -118,9 +118,9 @@ class UnretainedWrapper {
   // match `StorageType`, but sometimes we can't have both, as shown in
   // https://docs.google.com/document/d/1dLM34aKqbNBfRdOYxxV_T-zQU4J5wjmXwIBJZr7JvZM/edit
   // When we can't have both, prefer the former, mostly because
-  // `GetPtrType`=`raw_ptr<T>` would break if e.g. UnretainedWrapper() is
+  // `GetPtrType`=`raw_ptr<T>` would break if e.g. `UnretainedWrapper()` is
   // constructed using `char*`, but the receiver is of type `std::string&`.
-  // This is enforced by static_asserts in base::internal::AssertConstructible.
+  // This is enforced by `static_assert`s in `AssertParamCanBeBound()`.
   using GetPtrType = std::conditional_t<
       raw_ptr_traits::IsSupportedType<T>::value &&
           std::is_same_v<UnretainedTrait, unretained_traits::MayDangle>,
@@ -277,8 +277,9 @@ class UnretainedRefWrapperReceiver {
   UnretainedRefWrapperReceiver(
       UnretainedRefWrapper<T, UnretainedTrait, PtrTraits>&& obj)
       : obj_(std::move(obj)) {}
-  // NOLINTNEXTLINE(google-explicit-constructor)
+
   T& operator*() const { return obj_.get(); }
+  T* operator->() const { return &obj_.get(); }
 
  private:
   UnretainedRefWrapper<T, UnretainedTrait, PtrTraits> obj_;
@@ -1114,7 +1115,7 @@ struct BindState final : BindStateBase {
   std::tuple<BoundArgs...> bound_args_;
 
  private:
-  static constexpr bool is_nested_callback =
+  static constexpr bool kIsNestedCallback =
       MakeFunctorTraits<Functor>::is_callback;
 
   template <typename ForwardFunctor, typename... ForwardBoundArgs>
@@ -1131,7 +1132,7 @@ struct BindState final : BindStateBase {
     // release builds to avoid null pointers from ending up in posted tasks,
     // causing hard-to-diagnose crashes. Ideally we'd do this for all functors
     // here, but that would have a large binary size impact.
-    if (is_nested_callback) {
+    if constexpr (kIsNestedCallback) {
       CHECK(!IsNull(functor_));
     } else {
       DCHECK(!IsNull(functor_));
@@ -1147,7 +1148,7 @@ struct BindState final : BindStateBase {
         functor_(std::forward<ForwardFunctor>(functor)),
         bound_args_(std::forward<ForwardBoundArgs>(bound_args)...) {
     // See above for CHECK/DCHECK rationale.
-    if (is_nested_callback) {
+    if constexpr (kIsNestedCallback) {
       CHECK(!IsNull(functor_));
     } else {
       DCHECK(!IsNull(functor_));
@@ -1272,9 +1273,9 @@ struct UnderlyingReceiverType {
 };
 
 template <typename T>
-  requires requires { &*std::declval<T>(); }
+  requires requires(T&& t) { std::to_address(t); }
 struct UnderlyingReceiverType<T> {
-  using Type = decltype(&*std::declval<T>());
+  using Type = decltype(std::to_address(std::declval<T>()));
 };
 
 // Performs special handling for this pointers.
@@ -1336,7 +1337,7 @@ struct BindArgument {
   struct ForwardedAs {
     template <typename FunctorParamType>
     struct ToParamWithType {
-      static constexpr bool kNotARawPtr = !IsRawPtrV<FunctorParamType>;
+      static constexpr bool kRawPtr = IsRawPtrV<FunctorParamType>;
 
       static constexpr bool kCanBeForwardedToBoundFunctor =
           std::is_convertible_v<ForwardingType, FunctorParamType>;
@@ -1429,16 +1430,19 @@ template <int i,
           typename Storage,
           typename Unwrapped,
           typename Param>
-struct AssertConstructible {
- private:
+constexpr void AssertParamCanBeBound() {
+  using UnwrappedParam = BindArgument<i>::template ForwardedAs<
+      Unwrapped>::template ToParamWithType<Param>;
+  using ParamStorage = BindArgument<i>::template ToParamWithType<
+      Param>::template StoredAs<Storage>;
+  using BoundStorage =
+      BindArgument<i>::template BoundAs<Arg>::template StoredAs<Storage>;
+
   // We forbid callbacks to use raw_ptr as a parameter. However, we allow
   // MayBeDangling<T> iff the callback argument was created using
   // `base::UnsafeDangling`.
   static_assert(
-      BindArgument<i>::template ForwardedAs<
-          Unwrapped>::template ToParamWithType<Param>::kNotARawPtr ||
-          BindArgument<i>::template ToParamWithType<Param>::template StoredAs<
-              Storage>::kMayBeDanglingMustBeUsed,
+      !UnwrappedParam::kRawPtr || ParamStorage::kMayBeDanglingMustBeUsed,
       "base::Bind() target functor has a parameter of type raw_ptr<T>. "
       "raw_ptr<T> should not be used for function parameters; please use T* or "
       "T& instead.");
@@ -1449,14 +1453,12 @@ struct AssertConstructible {
   // methods, exempt a bound receiver (i.e. the this pointer) as it is not
   // passed as a regular function argument.
   static_assert(
-      BindArgument<i>::template ToParamWithType<Param>::template StoredAs<
-          Storage>::template kMayBeDanglingPtrPassedCorrectly<is_method>,
+      ParamStorage::template kMayBeDanglingPtrPassedCorrectly<is_method>,
       "base::UnsafeDangling() pointers must be received by functors with "
       "MayBeDangling<T> as parameter.");
 
   static_assert(
-      BindArgument<i>::template ToParamWithType<Param>::template StoredAs<
-          Storage>::kUnsafeDanglingAndMayBeDanglingHaveMatchingTraits,
+      ParamStorage::kUnsafeDanglingAndMayBeDanglingHaveMatchingTraits,
       "MayBeDangling<T> parameter must receive the same RawPtrTraits as the "
       "one passed to the corresponding base::UnsafeDangling() call.");
 
@@ -1487,79 +1489,74 @@ struct AssertConstructible {
   // `Passed()` argument is really a `OnceCallback` and should eventually be
   // migrated.
   static_assert(
-      BindArgument<i>::template ForwardedAs<Unwrapped>::
-          template ToParamWithType<Param>::kMoveOnlyTypeMustUseBasePassed,
+      UnwrappedParam::kMoveOnlyTypeMustUseBasePassed,
       "base::BindRepeating() argument is a move-only type. Use base::Passed() "
       "instead of std::move() to transfer ownership from the callback to the "
       "bound functor.");
+
   static_assert(
-      BindArgument<i>::template ForwardedAs<Unwrapped>::
-          template ToParamWithType<Param>::kNonConstRefParamMustBeWrapped,
+      UnwrappedParam::kNonConstRefParamMustBeWrapped,
       "Bound argument for non-const reference parameter must be wrapped in "
       "std::ref() or base::OwnedRef().");
   static_assert(
-      BindArgument<i>::template ForwardedAs<Unwrapped>::
-          template ToParamWithType<Param>::kCanBeForwardedToBoundFunctor,
+      UnwrappedParam::kCanBeForwardedToBoundFunctor,
       "Type mismatch between bound argument and bound functor's parameter.");
-
-  static_assert(BindArgument<i>::template BoundAs<Arg>::template StoredAs<
-                    Storage>::kMoveOnlyTypeMustUseStdMove,
+  static_assert(BoundStorage::kMoveOnlyTypeMustUseStdMove,
                 "Attempting to bind a move-only type. Use std::move() to "
                 "transfer ownership to the created callback.");
+
   // In practice, this static_assert should be quite rare as the storage type
   // is deduced from the arguments passed to `BindOnce()`/`BindRepeating()`.
   static_assert(
-      BindArgument<i>::template BoundAs<Arg>::template StoredAs<
-          Storage>::kBindArgumentCanBeCaptured,
+      BoundStorage::kBindArgumentCanBeCaptured,
       "Cannot capture argument: is the argument copyable or movable?");
-};
+}
 
-// Takes three same-length TypeLists, and applies AssertConstructible for each
-// triples.
+// Takes three same-length `TypeList`s, and applies `AssertParamCanBeBound()`
+// for each triple.
 template <bool is_method,
           typename Index,
           typename Args,
           typename UnwrappedTypeList,
           typename ParamsList>
-struct AssertBindArgsValidity;
+struct AssertParamsCanBeBound {};
 
 template <bool is_method,
           size_t... Ns,
           typename... Args,
           typename... Unwrapped,
           typename... Params>
-struct AssertBindArgsValidity<is_method,
+struct AssertParamsCanBeBound<is_method,
                               std::index_sequence<Ns...>,
                               TypeList<Args...>,
                               TypeList<Unwrapped...>,
-                              TypeList<Params...>>
-    : AssertConstructible<Ns,
-                          is_method,
-                          Args,
-                          std::decay_t<Args>,
-                          Unwrapped,
-                          Params>... {
-  static constexpr bool ok = true;
+                              TypeList<Params...>> {
+  static constexpr bool ok = [] {
+    (..., AssertParamCanBeBound<Ns, is_method, Args, std::decay_t<Args>,
+                                Unwrapped, Params>());
+    return true;
+  }();
 };
 
 template <typename T>
-struct AssertBindArgIsNotBasePassed : public std::true_type {};
+inline constexpr bool kBindArgIsBasePassed = false;
 
 template <typename T>
-struct AssertBindArgIsNotBasePassed<PassedWrapper<T>> : public std::false_type {
-};
+inline constexpr bool kBindArgIsBasePassed<PassedWrapper<T>> = true;
 
 template <template <typename> class CallbackT,
           typename Functor,
           typename... Args>
-decltype(auto) BindImpl(Functor&& functor, Args&&... args) {
+auto BindImpl(Functor&& functor, Args&&... args) {
   static constexpr bool kIsFunctionRef =
-      is_instantiation_v<FunctionRef, std::remove_cvref_t<Functor>> ||
-      is_instantiation_v<absl::FunctionRef, std::remove_cvref_t<Functor>>;
+      is_instantiation<FunctionRef, std::remove_cvref_t<Functor>> ||
+      is_instantiation<absl::FunctionRef, std::remove_cvref_t<Functor>>;
 
-  // This block checks if each |args| matches to the corresponding params of the
-  // target function. This check does not affect the behavior of Bind, but its
-  // error message should be more readable.
+  static constexpr bool kIsStateless = MakeFunctorTraits<Functor>::is_stateless;
+
+  // This block checks if each of the |args| matches to the corresponding param
+  // of the target function. This check does not affect the behavior of Bind,
+  // but its error message should be more readable.
   static constexpr bool kIsOnce = IsOnceCallback<CallbackT<void()>>::value;
   using Helper = BindTypeHelper<Functor, Args...>;
   using FunctorTraits = typename Helper::FunctorTraits;
@@ -1575,11 +1572,11 @@ decltype(auto) BindImpl(Functor&& functor, Args&&... args) {
   static_assert(
       // Function refs are never stateless; they'll already print the root
       // cause error above, so suppress a second error here.
-      MakeFunctorTraits<Functor>::is_stateless || kIsFunctionRef,
+      kIsStateless || kIsFunctionRef,
       "Capturing lambdas and stateful lambdas are intentionally not supported. "
       "Please use base::Bind{Once,Repeating} directly to bind arguments.");
   static_assert(
-      AssertBindArgsValidity<FunctorTraits::is_method,
+      AssertParamsCanBeBound<FunctorTraits::is_method,
                              std::make_index_sequence<Helper::num_bounds>,
                              BoundArgsList, UnwrappedArgsList,
                              BoundParamsList>::ok,

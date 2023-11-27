@@ -8,6 +8,7 @@
 #ifndef BASE_FUNCTIONAL_CALLBACK_INTERNAL_H_
 #define BASE_FUNCTIONAL_CALLBACK_INTERNAL_H_
 
+#include <type_traits>
 #include <utility>
 
 #include "base/base_export.h"
@@ -199,7 +200,7 @@ struct ThenHelper<OriginalCallback<OriginalR(OriginalArgs...)>,
                 "|then| callback must accept exactly one parameter if |this| "
                 "has a non-void return type.");
   // TODO(dcheng): This should probably check is_convertible as well (same with
-  // `AssertBindArgsValidity`).
+  // `AssertParamsCanBeBound`).
   static_assert(std::is_constructible_v<ThenArgs..., OriginalR&&>,
                 "|then| callback's parameter must be constructible from "
                 "return type of |this|.");

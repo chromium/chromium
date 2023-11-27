@@ -49,7 +49,7 @@ struct BindLambdaHelper<F, R(Args...)> {
 // This doesn't support extra arguments binding as the lambda itself can do.
 template <typename Lambda,
           std::enable_if_t<internal::HasConstCallOperator<Lambda>>* = nullptr>
-decltype(auto) BindLambdaForTesting(Lambda&& lambda) {
+auto BindLambdaForTesting(Lambda&& lambda) {
   using Signature = internal::ExtractCallableRunType<std::decay_t<Lambda>>;
   // If WTF::BindRepeating is available, and a callback argument is in WTF, then
   // this call is ambiguous without the full namespace path.
@@ -65,7 +65,7 @@ decltype(auto) BindLambdaForTesting(Lambda&& lambda) {
 // RepeatingCallback.
 template <typename Lambda,
           std::enable_if_t<!internal::HasConstCallOperator<Lambda>>* = nullptr>
-decltype(auto) BindLambdaForTesting(Lambda&& lambda) {
+auto BindLambdaForTesting(Lambda&& lambda) {
   static_assert(
       std::is_rvalue_reference<Lambda&&>() &&
           !std::is_const<std::remove_reference_t<Lambda>>(),

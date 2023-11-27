@@ -55,17 +55,14 @@ namespace base {
 
 // Bind as OnceCallback.
 template <typename Functor, typename... Args>
-inline OnceCallback<internal::MakeUnboundRunType<Functor, Args...>> BindOnce(
-    Functor&& functor,
-    Args&&... args) {
+inline auto BindOnce(Functor&& functor, Args&&... args) {
   static_assert(!internal::IsOnceCallback<std::decay_t<Functor>>() ||
                     (std::is_rvalue_reference<Functor&&>() &&
                      !std::is_const<std::remove_reference_t<Functor>>()),
                 "BindOnce requires non-const rvalue for OnceCallback binding, "
                 "i.e. base::BindOnce(std::move(callback)).");
   static_assert(
-      std::conjunction_v<
-          internal::AssertBindArgIsNotBasePassed<std::decay_t<Args>>...>,
+      !(... || internal::kBindArgIsBasePassed<std::decay_t<Args>>),
       "Use std::move() instead of base::Passed() with base::BindOnce().");
 
   return internal::BindImpl<OnceCallback>(std::forward<Functor>(functor),
@@ -74,8 +71,7 @@ inline OnceCallback<internal::MakeUnboundRunType<Functor, Args...>> BindOnce(
 
 // Bind as RepeatingCallback.
 template <typename Functor, typename... Args>
-inline RepeatingCallback<internal::MakeUnboundRunType<Functor, Args...>>
-BindRepeating(Functor&& functor, Args&&... args) {
+inline auto BindRepeating(Functor&& functor, Args&&... args) {
   static_assert(
       !internal::IsOnceCallback<std::decay_t<Functor>>(),
       "BindRepeating cannot bind OnceCallback. Use BindOnce with std::move().");
