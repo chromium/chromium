@@ -252,11 +252,16 @@ BOOL WaitForKeyboardToAppear() {
       storeCredentialWithUsername:@"user"
                          password:@"password"
                               URL:net::NSURLWithGURL(self.testServer->GetURL(
-                                      "/simple_login_form.html"))];
+                                      "/simple_login_form_empty.html"))];
   [PasswordManagerAppInterface setAccountStorageNoticeShown:NO];
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
                                 enableSync:NO];
-  [self loadLoginPage];
+
+  // Loads simple login page with empty fields on localhost (it is considered a
+  // secure context).
+  [ChromeEarlGrey
+      loadURL:self.testServer->GetURL("/simple_login_form_empty.html")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Login form."];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
@@ -293,16 +298,6 @@ BOOL WaitForKeyboardToAppear() {
 
   // Load the page again and have a new password value to save.
   [self loadLoginPage];
-  // Open and dismiss the bottom sheet
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"Eguser")];
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_KEYBOARD)]
-      performAction:grey_tap()];
-  [ChromeEarlGreyUI waitForAppToIdle];
   // Simulate user interacting with fields.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormUsername)];

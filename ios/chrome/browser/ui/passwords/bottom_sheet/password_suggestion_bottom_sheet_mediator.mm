@@ -109,9 +109,6 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
   // the bottom sheet is dismissed. Default is true.
   bool _needsRefocus;
 
-  // Whether to disable the bottom sheet on exit. Default is false.
-  bool _disableBottomSheetOnExit;
-
   // FaviconLoader is a keyed service that uses LargeIconService to retrieve
   // favicon images.
   raw_ptr<FaviconLoader> _faviconLoader;
@@ -139,7 +136,6 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
                         accountPasswordStore {
   if (self = [super init]) {
     _needsRefocus = true;
-    _disableBottomSheetOnExit = false;
     _faviconLoader = faviconLoader;
     _prefService = prefService;
     _reauthenticationModule = reauthModule;
@@ -302,7 +298,7 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
 }
 
 - (void)dismiss {
-  if ((_needsRefocus || _disableBottomSheetOnExit) && _webStateList) {
+  if (_needsRefocus && _webStateList) {
     [self logExitReason:kDismissal];
     [self incrementDismissCount];
     [self markSharedPasswordNotificationsDisplayed];
@@ -325,16 +321,6 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
 
 - (void)disableRefocus {
   _needsRefocus = false;
-}
-
-- (void)willSelectSuggestion:(NSInteger)row {
-  if ([[self usernameAtRow:row] length] == 0) {
-    // If the currently selected row has no username, the bottom sheet will
-    // disable itself on exit to allow the user to open the keyboard to fill in
-    // the username field.
-    _disableBottomSheetOnExit = true;
-  }
-  [self disableRefocus];
 }
 
 - (NSString*)usernameAtRow:(NSInteger)row {
@@ -399,7 +385,6 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
 
 - (void)onWebStateChange {
   _needsRefocus = false;
-  _disableBottomSheetOnExit = false;
   [self.consumer dismiss];
 }
 

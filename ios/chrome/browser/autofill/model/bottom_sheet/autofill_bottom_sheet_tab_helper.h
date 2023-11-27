@@ -125,14 +125,12 @@ class AutofillBottomSheetTabHelper
   void AttachListeners(
       const std::vector<autofill::FieldRendererId>& renderer_ids,
       std::set<autofill::FieldRendererId>& registered_renderer_ids,
-      const std::string& frame_id,
-      bool must_be_empty);
+      const std::string& frame_id);
 
   // Detach listeners, which will deactivate the associated bottom sheet.
   void DetachListenersForFrame(
       const std::string& frame_id,
       const std::set<autofill::FieldRendererId>& renderer_ids,
-      bool must_be_empty,
       bool refocus);
 
   // Send command to show the Password Bottom Sheet.
