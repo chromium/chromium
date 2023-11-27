@@ -910,8 +910,7 @@ gn_args.config(
 gn_args.config(
     "siso",
     args = {
-        # TODO: b/311110622 - Switch to use_siso=true.
-        "enable_precompiled_headers": False,
+        "use_siso": True,
     },
 )
 

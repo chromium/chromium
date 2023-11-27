@@ -8,7 +8,6 @@
         "enable_backup_ref_ptr_feature_flag": true,
         "enable_dangling_raw_ptr_checks": true,
         "enable_dangling_raw_ptr_feature_flag": true,
-        "enable_precompiled_headers": false,
         "ffmpeg_branding": "ChromeOS",
         "is_component_build": false,
         "is_debug": false,
@@ -19,7 +18,8 @@
         "use_cups": true,
         "use_dummy_lastchange": true,
         "use_goma": false,
-        "use_remoteexec": false
+        "use_remoteexec": false,
+        "use_siso": true
       }
     },
     "reproxy": {

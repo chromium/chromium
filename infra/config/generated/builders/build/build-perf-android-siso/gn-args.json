@@ -8,7 +8,6 @@
         "debuggable_apks": false,
         "enable_dangling_raw_ptr_checks": true,
         "enable_dangling_raw_ptr_feature_flag": true,
-        "enable_precompiled_headers": false,
         "fail_on_android_expectations": true,
         "ffmpeg_branding": "Chrome",
         "is_component_build": false,
@@ -22,7 +21,8 @@
         "target_os": "android",
         "use_clang_coverage": true,
         "use_dummy_lastchange": true,
-        "use_remoteexec": false
+        "use_remoteexec": false,
+        "use_siso": true
       }
     },
     "reproxy": {
