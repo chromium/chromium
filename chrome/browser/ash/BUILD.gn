@@ -3062,7 +3062,6 @@ source_set("ash") {
     "remote_apps/remote_apps_model.cc",
     "remote_apps/remote_apps_model.h",
     "remote_apps/remote_apps_types.h",
-    "reset/metrics.h",
     "scalable_iph/scalable_iph_delegate_impl.cc",
     "scalable_iph/scalable_iph_delegate_impl.h",
     "scanning/chrome_scanning_app_delegate.cc",

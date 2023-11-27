@@ -95,8 +95,6 @@ export class OsSettingsPowerwashDialogElement extends PolymerElement {
 
   override connectedCallback(): void {
     super.connectedCallback();
-
-    this.osResetBrowserProxy_.onPowerwashDialogShow();
     this.$.dialog.showModal();
   }
 

@@ -4,11 +4,6 @@
 
 export interface OsResetBrowserProxy {
   /**
-   * A method to be called when the reset powerwash dialog is shown.
-   */
-  onPowerwashDialogShow(): void;
-
-  /**
    * Initiates a factory reset and restarts.
    */
   requestFactoryResetRestart(): void;
@@ -23,10 +18,6 @@ export class OsResetBrowserProxyImpl implements OsResetBrowserProxy {
 
   static setInstanceForTesting(obj: OsResetBrowserProxy): void {
     instance = obj;
-  }
-
-  onPowerwashDialogShow(): void {
-    chrome.send('onPowerwashDialogShow');
   }
 
   requestFactoryResetRestart(): void {

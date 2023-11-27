@@ -49309,15 +49309,6 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="Lacros">Web page info comes from lacros chrome.</int>
 </enum>
 
-<enum name="PowerwashDialogViewType">
-  <int value="0" label="Invoked on settings page"/>
-  <int value="1" label="Shortcut. Confirmation for powerwash only."/>
-  <int value="2" label="Shortcut. Confirmation for powerwash and rollback."/>
-  <int value="3" label="Shortcut. Offer. Rollback unavailable."/>
-  <int value="4" label="Shortcut. Offer. Rollback available."/>
-  <int value="5" label="Shortcut. Restart required."/>
-</enum>
-
 <enum name="PredictionGrantLikelihood">
   <int value="0" label="Unknown"/>
   <int value="1" label="Very unlikely"/>

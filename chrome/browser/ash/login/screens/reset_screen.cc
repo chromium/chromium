@@ -20,7 +20,6 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
-#include "chrome/browser/ash/reset/metrics.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/tpm_firmware_update.h"
 #include "chrome/browser/browser_process.h"
@@ -209,16 +208,12 @@ void ResetScreen::ShowImpl() {
         LoginScreen::Get()->GetScopedGuestButtonBlocker();
   }
 
-  reset::DialogViewType dialog_type =
-      reset::DialogViewType::kCount;  // used by UMA metrics.
-
   bool restart_required = user_manager::UserManager::Get()->IsUserLoggedIn() ||
                           !base::CommandLine::ForCurrentProcess()->HasSwitch(
                               switches::kFirstExecAfterBoot);
   if (restart_required) {
     if (view_)
       view_->SetScreenState(ResetView::State::kRestartRequired);
-    dialog_type = reset::DialogViewType::kShortcutRestartRequired;
   } else {
     if (view_)
       view_->SetScreenState(ResetView::State::kPowerwashProposal);
@@ -229,15 +224,9 @@ void ResetScreen::ShowImpl() {
           switches::kDisableRollbackOption)) {
     if (view_)
       view_->SetIsRollbackAvailable(false);
-    dialog_type = reset::DialogViewType::kShortcutOfferingRollbackUnavailable;
   } else {
     UpdateEngineClient::Get()->CanRollbackCheck(base::BindOnce(
         &ResetScreen::OnRollbackCheck, weak_ptr_factory_.GetWeakPtr()));
-  }
-
-  if (dialog_type < reset::DialogViewType::kCount) {
-    UMA_HISTOGRAM_ENUMERATION("Reset.ChromeOS.PowerwashDialogShown",
-                              dialog_type, reset::DialogViewType::kCount);
   }
 
   // Set availability of TPM firmware update.
@@ -412,22 +401,11 @@ void ResetScreen::OnToggleRollback() {
   VLOG(1) << "Requested rollback availability"
           << view_->GetIsRollbackAvailable();
   if (view_->GetIsRollbackAvailable() && !view_->GetIsRollbackRequested()) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "Reset.ChromeOS.PowerwashDialogShown",
-        reset::DialogViewType::kShortcutOfferingRollbackAvailable,
-        reset::DialogViewType::kCount);
     view_->SetIsRollbackRequested(true);
   }
 }
 
 void ResetScreen::OnShowConfirm() {
-  reset::DialogViewType dialog_type =
-      view_->GetIsRollbackRequested()
-          ? reset::DialogViewType::kShortcutConfirmingPowerwashAndRollback
-          : reset::DialogViewType::kShortcutConfirmingPowerwashOnly;
-  UMA_HISTOGRAM_ENUMERATION("Reset.ChromeOS.PowerwashDialogShown", dialog_type,
-                            reset::DialogViewType::kCount);
-
   view_->SetShouldShowConfirmationDialog(true);
 }
 
@@ -468,12 +446,6 @@ void ResetScreen::OnRollbackCheck(bool can_rollback) {
 
   const bool rollback_available =
       !connector->IsDeviceEnterpriseManaged() && can_rollback;
-  reset::DialogViewType dialog_type =
-      rollback_available
-          ? reset::DialogViewType::kShortcutOfferingRollbackAvailable
-          : reset::DialogViewType::kShortcutOfferingRollbackUnavailable;
-  UMA_HISTOGRAM_ENUMERATION("Reset.ChromeOS.PowerwashDialogShown", dialog_type,
-                            reset::DialogViewType::kCount);
 
   view_->SetIsRollbackAvailable(rollback_available);
 }

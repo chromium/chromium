@@ -83,11 +83,6 @@ class ResetSettingsHandler : public SettingsPageUIHandler {
       bool send_feedback,
       reset_report::ChromeResetReport::ResetRequestOrigin request_origin);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Will be called when powerwash dialog is shown.
-  void OnShowPowerwashDialog(const base::Value::List& args);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
   const raw_ptr<Profile> profile_;
 
   std::unique_ptr<ProfileResetter> resetter_;

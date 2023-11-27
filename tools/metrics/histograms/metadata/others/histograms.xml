@@ -8448,15 +8448,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Reset.ChromeOS.PowerwashDialogShown"
-    enum="PowerwashDialogViewType" expires_after="M77">
-  <owner>merkulova@chromium.org</owner>
-  <summary>
-    Records the number of times the factory reset dialog was shown. Grouped by
-    the viewtype.
-  </summary>
-</histogram>
-
 <histogram name="ResourceLoadingHints.ResourceLoadingBlocked"
     units="loading blocked" expires_after="M85">
   <owner>tbansal@chromium.org</owner>
