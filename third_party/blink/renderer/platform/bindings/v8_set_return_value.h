@@ -70,7 +70,7 @@ struct V8ReturnValue {
              .ToLocal(&wrapper)) {
       return;
     }
-    info.GetReturnValue().Set(wrapper);
+    info.GetReturnValue().SetNonEmpty(wrapper);
   }
 };
 

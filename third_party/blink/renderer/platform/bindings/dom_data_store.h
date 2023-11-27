@@ -164,7 +164,7 @@ class DOMDataStore final : public GarbageCollected<DOMDataStore> {
       return object->SetReturnValue(return_value);
     auto it = wrapper_map_.find(object);
     if (it != wrapper_map_.end()) {
-      return_value.Set(it->value);
+      return_value.SetNonEmpty(it->value);
       return true;
     }
     return false;

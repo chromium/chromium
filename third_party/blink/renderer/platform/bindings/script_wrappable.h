@@ -201,16 +201,20 @@ class PLATFORM_EXPORT ScriptWrappable
   }
 
   bool SetReturnValue(v8::ReturnValue<v8::Value> return_value) {
-    return_value.Set(main_world_wrapper_);
-    return ContainsWrapper();
+    const bool contains_wrapper = ContainsWrapper();
+    if (contains_wrapper) {
+      return_value.SetNonEmpty(main_world_wrapper_);
+    }
+    return contains_wrapper;
   }
 
-  bool ContainsWrapper() const { return !main_world_wrapper_.IsEmpty(); }
 
  protected:
   ScriptWrappable() = default;
 
  private:
+  bool ContainsWrapper() const { return !main_world_wrapper_.IsEmpty(); }
+
   v8::Local<v8::Object> MainWorldWrapper(v8::Isolate* isolate) const {
     return main_world_wrapper_.Get(isolate);
   }
