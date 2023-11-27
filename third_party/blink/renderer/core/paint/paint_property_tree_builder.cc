@@ -2588,14 +2588,19 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
             if (needs_effect_node) {
               EffectPaintPropertyNode::State effect_state;
               effect_state.local_transform_space = context_.current.transform;
-              if (properties_->OverflowClip()) {
-                // Scrollbars are not clipped by OverflowClip, so the output
-                // clip should be the parent of the overflow clip.
-                DCHECK_EQ(context_.current.clip, properties_->OverflowClip());
-                effect_state.output_clip = context_.current.clip->Parent();
+
+              // Scrollbars are not clipped by InnerBorderRadiusClip or
+              // OverflowClip, so the output clip should skip them.
+              auto* clip_to_skip = properties_->InnerBorderRadiusClip();
+              if (!clip_to_skip) {
+                clip_to_skip = properties_->OverflowClip();
+              }
+              if (clip_to_skip) {
+                effect_state.output_clip = clip_to_skip->Parent();
               } else {
                 effect_state.output_clip = context_.current.clip;
               }
+
               effect_state.compositor_element_id =
                   scrollable_area->GetScrollbarElementId(orientation);
 
