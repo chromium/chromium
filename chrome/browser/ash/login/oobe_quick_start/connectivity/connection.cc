@@ -109,14 +109,18 @@ void Connection::Close(
     return;
   }
 
-  // TODO(b/310241114): Notify phone when reason ==
-  // ConnectionClosedReason::kComplete.
   if (authenticated_ &&
       reason ==
           TargetDeviceConnectionBroker::ConnectionClosedReason::kUserAborted) {
     // TODO(b/306422046): Verify the message is received despite closing the
     // NearbyConnection immediately after.
-    NotifyPhoneUserAborted();
+    SendMessageWithoutResponse(requests::BuildBootstrapStateCancelMessage(),
+                               QuickStartResponseType::kBootstrapStateCancel);
+  } else if (authenticated_ && reason ==
+                                   TargetDeviceConnectionBroker::
+                                       ConnectionClosedReason::kComplete) {
+    SendMessageWithoutResponse(requests::BuildBootstrapStateCompleteMessage(),
+                               QuickStartResponseType::kBootstrapStateComplete);
   }
 
   connection_state_ = State::kClosing;
@@ -450,11 +454,6 @@ void Connection::OnUserVerificationPacketDecoded(
 
 base::Value::Dict Connection::GetPrepareForUpdateInfo() {
   return session_context_.GetPrepareForUpdateInfo();
-}
-
-void Connection::NotifyPhoneUserAborted() {
-  SendMessageWithoutResponse(requests::BuildBootstrapStateCancelMessage(),
-                             QuickStartResponseType::kBootstrapStateCancel);
 }
 
 void Connection::DecodeQuickStartMessage(

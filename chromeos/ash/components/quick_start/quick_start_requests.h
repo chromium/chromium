@@ -35,6 +35,9 @@ std::unique_ptr<QuickStartMessage> BuildNotifySourceOfUpdateMessage(
     const base::span<uint8_t, 32> shared_secret);
 
 std::unique_ptr<QuickStartMessage> BuildBootstrapStateCancelMessage();
+
+std::unique_ptr<QuickStartMessage> BuildBootstrapStateCompleteMessage();
+
 }  // namespace ash::quick_start::requests
 
 #endif  // CHROMEOS_ASH_COMPONENTS_QUICK_START_QUICK_START_REQUESTS_H

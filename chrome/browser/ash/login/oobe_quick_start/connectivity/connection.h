@@ -130,11 +130,6 @@ class Connection
   void DoWaitForUserVerification(size_t attempt_number,
                                  AwaitUserVerificationCallback callback);
 
-  // Sends a BootstrapState::CANCEL message to the source device when the user
-  // clicks on button to cancel out of Quick Start or move back to previous
-  // screen.
-  void NotifyPhoneUserAborted();
-
   // Called each time any one of the three user verification packets
   // (UserVerificationRequested, UserVerificationMethod,
   // UserVerificationResponse) is decoded. |attempt_number| tracks how many user

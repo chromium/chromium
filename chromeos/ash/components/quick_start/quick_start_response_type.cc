@@ -30,6 +30,9 @@ std::ostream& operator<<(std::ostream& stream,
     case QuickStartResponseType::kBootstrapStateCancel:
       stream << "BootstrapStateCancel";
       break;
+    case QuickStartResponseType::kBootstrapStateComplete:
+      stream << "BootstrapStateComplete";
+      break;
   }
   return stream;
 }

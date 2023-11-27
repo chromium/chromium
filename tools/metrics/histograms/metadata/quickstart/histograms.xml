@@ -185,6 +185,7 @@ chromium-metrics-reviews@google.com.
     <variant name="Assertion"/>
     <variant name="BootstrapConfigurations"/>
     <variant name="BootstrapStateCancel"/>
+    <variant name="BootstrapStateComplete"/>
     <variant name="GetInfo"/>
     <variant name="Handshake"/>
     <variant name="NotifySourceOfUpdate"/>
@@ -206,6 +207,7 @@ chromium-metrics-reviews@google.com.
     <variant name="Assertion"/>
     <variant name="BootstrapConfigurations"/>
     <variant name="BootstrapStateCancel"/>
+    <variant name="BootstrapStateComplete"/>
     <variant name="GetInfo"/>
     <variant name="Handshake"/>
     <variant name="NotifySourceOfUpdate"/>
@@ -226,6 +228,7 @@ chromium-metrics-reviews@google.com.
     <variant name="Assertion"/>
     <variant name="BootstrapConfigurations"/>
     <variant name="BootstrapStateCancel"/>
+    <variant name="BootstrapStateComplete"/>
     <variant name="GetInfo"/>
     <variant name="Handshake"/>
     <variant name="NotifySourceOfUpdate"/>
