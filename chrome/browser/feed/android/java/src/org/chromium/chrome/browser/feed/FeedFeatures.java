@@ -40,17 +40,6 @@ public final class FeedFeatures {
     }
 
     /**
-     * Deprecated. Use {@link #isWebFeedUIEnabled(Profile profile)} instead. TODO(1410601): Migrate
-     * clank test `FeedFirstRunDialogIntegrationTest` and remove this method.
-     *
-     * @return Whether the feed is allowed to be used. Returns false if the feed is disabled due to
-     *     enterprise policy, or by flag. The value returned should not be cached as it may change.
-     */
-    public static boolean isWebFeedUIEnabled() {
-        return isWebFeedUIEnabled(Profile.getLastUsedRegularProfile());
-    }
-
-    /**
      * @param profile the profile of the current user.
      * @return Whether the WebFeed UI should be enabled. Checks for the WEB_FEED flag, if the user
      *     is signed in and confirms it's not a child profile.
