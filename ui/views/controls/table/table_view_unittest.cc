@@ -470,6 +470,7 @@ class TableViewTest : public ViewsTestBase,
     }
     table_ = table.get();
     auto scroll_view = TableView::CreateScrollViewWithTable(std::move(table));
+    scroll_view_ = scroll_view.get();
     scroll_view->SetBounds(0, 0, 10000, 10000);
     helper_ = std::make_unique<TableViewTestHelper>(table_);
 
@@ -486,6 +487,7 @@ class TableViewTest : public ViewsTestBase,
 
   void TearDown() override {
     table_ = nullptr;
+    scroll_view_ = nullptr;
     helper_.reset();
     widget_.reset();
     ViewsTestBase::TearDown();
@@ -610,6 +612,7 @@ class TableViewTest : public ViewsTestBase,
 
   // Owned by the scroll view owned by `widget_`.
   raw_ptr<TableView> table_ = nullptr;
+  raw_ptr<ScrollView> scroll_view_ = nullptr;
 
   std::unique_ptr<TableViewTestHelper> helper_;
 
@@ -853,8 +856,9 @@ TEST_P(TableViewTest, ResizeViaGesture) {
 // Verifies resizing a column works with the keyboard.
 // The resize keyboard amount is 5 pixels.
 TEST_P(TableViewTest, ResizeViaKeyboard) {
-  if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell)
-    return;
+  if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
+    GTEST_SKIP() << "platform doesn't support table keyboard navigation";
+  }
 
   table_->RequestFocus();
   const int x = table_->GetVisibleColumn(0).width;
@@ -1056,8 +1060,9 @@ TEST_P(TableViewTest, SortOnMouse) {
 // Verifies that pressing the space bar when a particular visible column is
 // active will sort by that column.
 TEST_P(TableViewTest, SortOnSpaceBar) {
-  if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell)
-    return;
+  if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
+    GTEST_SKIP() << "platform doesn't support table keyboard navigation";
+  }
 
   table_->RequestFocus();
   ASSERT_TRUE(table_->sort_descriptors().empty());
@@ -1634,8 +1639,9 @@ TEST_P(TableViewTest, KeyUpDown) {
 
 // Verifies left/right correctly navigate through visible columns.
 TEST_P(TableViewTest, KeyLeftRight) {
-  if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell)
-    return;
+  if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
+    GTEST_SKIP() << "platform doesn't support table keyboard navigation";
+  }
 
   TableViewObserverImpl observer;
   table_->set_observer(&observer);
@@ -1729,6 +1735,95 @@ TEST_P(TableViewTest, KeyLeftRight) {
   EXPECT_EQ("active=1 anchor=1 selection=1", SelectionStateAsString());
 
   table_->set_observer(nullptr);
+}
+
+// Verify table view that the left/right navigation scrolls the visible rect
+// correctly.
+TEST_P(TableViewTest, KeyLeftRightScrollRectToVisibleInTableView) {
+  if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
+    GTEST_SKIP() << "platform doesn't support table keyboard navigation";
+  }
+
+  table_->RequestFocus();
+  EXPECT_EQ(2u, helper_->visible_col_count());
+  // Initially no active visible column.
+  EXPECT_FALSE(helper_->GetActiveVisibleColumnIndex().has_value());
+  EXPECT_FALSE(scroll_view_->horizontal_scroll_bar()->GetVisible());
+  scroll_view_->SetBounds(0, 0, 800, 800);
+  // Set the column width to make the horizontal scroll bar visible.
+  constexpr int kColumn0Width = 500;
+  constexpr int kColumn1Width = 1000;
+  table_->SetVisibleColumnWidth(0, kColumn0Width);
+  table_->SetVisibleColumnWidth(1, kColumn1Width);
+  test::RunScheduledLayout(scroll_view_);
+  EXPECT_EQ(table_->GetVisibleColumn(0).width, kColumn0Width);
+  EXPECT_EQ(table_->GetVisibleColumn(1).width, kColumn1Width);
+  EXPECT_TRUE(scroll_view_->horizontal_scroll_bar()->GetVisible());
+
+  gfx::Rect visible_bounds = table_->GetVisibleBounds();
+  PressKey(ui::VKEY_RIGHT);
+  test::RunScheduledLayout(scroll_view_);
+  EXPECT_EQ(0u, helper_->GetActiveVisibleColumnIndex());
+  EXPECT_EQ(visible_bounds, table_->GetVisibleBounds());
+
+  PressKey(ui::VKEY_RIGHT);
+  test::RunScheduledLayout(scroll_view_);
+  EXPECT_EQ(1u, helper_->GetActiveVisibleColumnIndex());
+  EXPECT_EQ(table_->GetVisibleBounds(),
+            gfx::Rect(kColumn0Width, visible_bounds.y(), visible_bounds.width(),
+                      visible_bounds.height()));
+
+  PressKey(ui::VKEY_LEFT);
+  test::RunScheduledLayout(scroll_view_);
+  EXPECT_EQ(0u, helper_->GetActiveVisibleColumnIndex());
+  EXPECT_EQ(visible_bounds, table_->GetVisibleBounds());
+}
+
+// Verify table header that the left/right navigation scrolls the visible rect
+// correctly.
+TEST_P(TableViewTest, KeyLeftRightScrollRectToVisibleInTableHeader) {
+  if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
+    GTEST_SKIP() << "platform doesn't support table keyboard navigation";
+  }
+
+  table_->RequestFocus();
+  EXPECT_EQ(2u, helper_->visible_col_count());
+  // Initially no active visible column.
+  EXPECT_FALSE(helper_->GetActiveVisibleColumnIndex().has_value());
+  EXPECT_FALSE(scroll_view_->horizontal_scroll_bar()->GetVisible());
+  scroll_view_->SetBounds(0, 0, 800, 800);
+  // Set the column width to make the horizontal scroll bar visible.
+  constexpr int kColumn0Width = 500;
+  constexpr int kColumn1Width = 1000;
+  table_->SetVisibleColumnWidth(0, kColumn0Width);
+  table_->SetVisibleColumnWidth(1, kColumn1Width);
+  test::RunScheduledLayout(scroll_view_);
+  EXPECT_EQ(table_->GetVisibleColumn(0).width, kColumn0Width);
+  EXPECT_EQ(table_->GetVisibleColumn(1).width, kColumn1Width);
+  EXPECT_TRUE(scroll_view_->horizontal_scroll_bar()->GetVisible());
+  gfx::Rect visible_bounds = table_->GetVisibleBounds();
+
+  // Navigate to the table header
+  PressKey(ui::VKEY_RIGHT);
+  EXPECT_FALSE(table_->header_row_is_active());
+  PressKey(ui::VKEY_UP);
+  EXPECT_TRUE(table_->header_row_is_active());
+
+  test::RunScheduledLayout(scroll_view_);
+  EXPECT_EQ(0u, helper_->GetActiveVisibleColumnIndex());
+  EXPECT_EQ(visible_bounds, table_->GetVisibleBounds());
+
+  PressKey(ui::VKEY_RIGHT);
+  test::RunScheduledLayout(scroll_view_);
+  EXPECT_EQ(1u, helper_->GetActiveVisibleColumnIndex());
+  EXPECT_EQ(table_->GetVisibleBounds(),
+            gfx::Rect(kColumn0Width, visible_bounds.y(), visible_bounds.width(),
+                      visible_bounds.height()));
+
+  PressKey(ui::VKEY_LEFT);
+  test::RunScheduledLayout(scroll_view_);
+  EXPECT_EQ(0u, helper_->GetActiveVisibleColumnIndex());
+  EXPECT_EQ(visible_bounds, table_->GetVisibleBounds());
 }
 
 // Verifies home/end do the right thing.
@@ -2048,8 +2143,9 @@ TEST_P(TableViewTest, TableHeaderRowAccessibleViewFocusable) {
 // Ensure that the TableView's header columns are keyboard accessible.
 // Tests for crbug.com/1189851.
 TEST_P(TableViewTest, TableHeaderColumnAccessibleViewsFocusable) {
-  if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell)
-    return;
+  if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
+    GTEST_SKIP() << "platform doesn't support table keyboard navigation";
+  }
 
   ASSERT_NE(nullptr, helper_->header());
   table_->RequestFocus();

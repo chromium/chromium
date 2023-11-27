@@ -1347,15 +1347,20 @@ absl::optional<size_t> TableView::GetActiveVisibleColumnIndex() const {
 }
 
 void TableView::SetActiveVisibleColumnIndex(absl::optional<size_t> index) {
-  if (active_visible_column_index_ == index)
+  if (active_visible_column_index_ == index) {
     return;
+  }
   active_visible_column_index_ = index;
-
-  if (selection_model_.active().has_value() &&
-      active_visible_column_index_.has_value()) {
-    ScrollRectToVisible(
-        GetCellBounds(ModelToView(selection_model_.active().value()),
-                      active_visible_column_index_.value()));
+  if (active_visible_column_index_.has_value()) {
+    if (selection_model_.active().has_value()) {
+      ScrollRectToVisible(
+          GetCellBounds(ModelToView(selection_model_.active().value()),
+                        active_visible_column_index_.value()));
+    } else if (header_row_is_active()) {
+      const TableView::VisibleColumn& column =
+          GetVisibleColumn(active_visible_column_index_.value());
+      ScrollRectToVisible(gfx::Rect(column.x, 0, column.width, height()));
+    }
   }
 
   UpdateFocusRings();
