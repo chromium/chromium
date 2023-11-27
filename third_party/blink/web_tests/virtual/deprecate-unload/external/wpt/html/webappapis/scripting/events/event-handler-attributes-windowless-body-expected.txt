@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Ignore setting of unload window event handlers on windowless body
+  assert_equals: expected (function) function "function () { return "Handler attached to the window"; }" but got (object) null
+[FAIL] Ignore setting of unload window event handlers on windowless frameset
+  assert_equals: expected (function) function "function () { return "Handler attached to the window"; }" but got (object) null
+Harness: the test ran to completion.
+
