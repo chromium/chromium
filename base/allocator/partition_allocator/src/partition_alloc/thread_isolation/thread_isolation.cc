@@ -7,6 +7,7 @@
 #if BUILDFLAG(ENABLE_THREAD_ISOLATION)
 
 #include "partition_alloc/address_pool_manager.h"
+#include "partition_alloc/page_allocator.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_alloc_constants.h"
 #include "partition_alloc/reservation_offset_table.h"
@@ -23,9 +24,19 @@ ThreadIsolationSettings ThreadIsolationSettings::settings;
 
 void WriteProtectThreadIsolatedMemory(ThreadIsolationOption thread_isolation,
                                       void* address,
-                                      size_t size) {
+                                      size_t size,
+                                      bool read_only = false) {
   PA_DCHECK((reinterpret_cast<uintptr_t>(address) &
              PA_THREAD_ISOLATED_ALIGN_OFFSET_MASK) == 0);
+  if (read_only) {
+    SetSystemPagesAccess(
+        address, size,
+        PageAccessibilityConfiguration(
+            thread_isolation.enabled
+                ? PageAccessibilityConfiguration::Permissions::kRead
+                : PageAccessibilityConfiguration::Permissions::kReadWrite));
+    return;
+  }
 #if BUILDFLAG(ENABLE_PKEYS)
   partition_alloc::internal::TagMemoryWithPkey(
       thread_isolation.enabled ? thread_isolation.pkey : kDefaultPkey, address,
@@ -38,9 +49,10 @@ void WriteProtectThreadIsolatedMemory(ThreadIsolationOption thread_isolation,
 template <typename T>
 void WriteProtectThreadIsolatedVariable(ThreadIsolationOption thread_isolation,
                                         T& var,
-                                        size_t offset = 0) {
+                                        size_t offset = 0,
+                                        bool read_only = false) {
   WriteProtectThreadIsolatedMemory(thread_isolation, (char*)&var + offset,
-                                   sizeof(T) - offset);
+                                   sizeof(T) - offset, read_only);
 }
 
 int MprotectWithThreadIsolation(void* addr,
@@ -54,7 +66,7 @@ int MprotectWithThreadIsolation(void* addr,
 
 void WriteProtectThreadIsolatedGlobals(ThreadIsolationOption thread_isolation) {
   WriteProtectThreadIsolatedVariable(thread_isolation,
-                                     PartitionAddressSpace::setup_);
+                                     PartitionAddressSpace::setup_, 0, true);
 
   AddressPoolManager::Pool* pool =
       AddressPoolManager::GetInstance().GetPool(kThreadIsolatedPoolHandle);

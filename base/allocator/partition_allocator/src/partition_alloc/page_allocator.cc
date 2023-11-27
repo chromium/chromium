@@ -287,6 +287,13 @@ void SetSystemPagesAccess(uintptr_t address,
   internal::SetSystemPagesAccessInternal(address, length, accessibility);
 }
 
+void SetSystemPagesAccess(void* address,
+                          size_t length,
+                          PageAccessibilityConfiguration accessibility) {
+  SetSystemPagesAccess(reinterpret_cast<uintptr_t>(address), length,
+                       accessibility);
+}
+
 void DecommitSystemPages(
     uintptr_t address,
     size_t length,
