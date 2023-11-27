@@ -42,6 +42,7 @@ constexpr DataType DATA_TYPE_LOCAL_CUSTOM_DICTIONARY = DATA_TYPE_EMBEDDER_BEGIN
                                                        << 12;
 constexpr DataType DATA_TYPE_ISOLATED_WEB_APP_COOKIES = DATA_TYPE_EMBEDDER_BEGIN
                                                         << 13;
+constexpr DataType DATA_TYPE_READING_LIST = DATA_TYPE_EMBEDDER_BEGIN << 14;
 
 // Group datatypes.
 
@@ -83,12 +84,13 @@ constexpr DataType ALL_DATA_TYPES =
     DATA_TYPE_SITE_DATA |  //
     content::BrowsingDataRemover::DATA_TYPE_CACHE |
     content::BrowsingDataRemover::DATA_TYPE_DOWNLOADS |
-    DATA_TYPE_FORM_DATA |         //
-    DATA_TYPE_HISTORY |           //
-    DATA_TYPE_PASSWORDS |         //
-    DATA_TYPE_CONTENT_SETTINGS |  //
-    DATA_TYPE_BOOKMARKS |         //
-    DATA_TYPE_LOCAL_CUSTOM_DICTIONARY;
+    DATA_TYPE_FORM_DATA |                //
+    DATA_TYPE_HISTORY |                  //
+    DATA_TYPE_PASSWORDS |                //
+    DATA_TYPE_CONTENT_SETTINGS |         //
+    DATA_TYPE_BOOKMARKS |                //
+    DATA_TYPE_LOCAL_CUSTOM_DICTIONARY |  //
+    DATA_TYPE_READING_LIST;
 
 // Includes all available remove options. Meant to be used when the Profile
 // is scheduled to be deleted, and all possible data should be wiped from

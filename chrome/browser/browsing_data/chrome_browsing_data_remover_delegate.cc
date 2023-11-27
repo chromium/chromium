@@ -64,6 +64,7 @@
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/reading_list/reading_list_model_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -115,6 +116,7 @@
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
+#include "components/reading_list/core/reading_list_model.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/sync/service/sync_service.h"
@@ -765,6 +767,20 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
       auto* dict = spellcheck->GetCustomDictionary();
       if (dict)
         dict->Clear();
+    }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // DATA_TYPE_READING_LIST
+  if (remove_mask & constants::DATA_TYPE_READING_LIST) {
+    auto* reading_list_model =
+        ReadingListModelFactory::GetForBrowserContext(profile_);
+    if (reading_list_model) {
+      if (delete_begin_.is_null() && delete_end_.is_max()) {
+        reading_list_model->DeleteAllEntries();
+      } else {
+        NOTIMPLEMENTED();
+      }
     }
   }
 
