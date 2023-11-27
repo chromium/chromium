@@ -307,6 +307,7 @@ BlobDataHandle::BlobDataHandle(std::unique_ptr<BlobData> data, uint64_t size)
       is_single_unknown_size_file_(data->IsSingleUnknownSizeFile()) {
   auto elements = data->ReleaseElements();
   TRACE_EVENT0("Blob", "Registry::RegisterBlob");
+  mojo::internal::AutoRecordReplayAssertBufferAllocations assertsEnabled("RUN-2859-2904");
   GetThreadSpecificRegistry()->Register(
       blob_remote_.InitWithNewPipeAndPassReceiver(), uuid_,
       type_.IsNull() ? "" : type_, "", std::move(elements));
