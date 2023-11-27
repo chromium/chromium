@@ -169,6 +169,7 @@ class AdAuctionURLLoaderInterceptorTest : public RenderViewHostTestHarness {
   void TearDown() override {
     SetBrowserClientForTesting(original_client_);
 
+    subresource_proxying_url_loader_service_.reset();
     content::RenderViewHostTestHarness::TearDown();
   }
 
