@@ -7,6 +7,8 @@
 #include <memory>
 #include <string>
 
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -28,8 +30,6 @@ namespace {
 class SyncToSigninMigrationTestBase {
  public:
   explicit SyncToSigninMigrationTestBase(bool migration_feature_enabled) {
-    // TODO(crbug.com/1486420): Add tests for the feature-enabled case, once
-    // that is implemented.
     if (migration_feature_enabled) {
       features_.InitAndEnableFeature(kMigrateSyncingUserToSignedIn);
     } else {
@@ -40,6 +40,8 @@ class SyncToSigninMigrationTestBase {
     syncer::SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
 
     sync_prefs_ = std::make_unique<syncer::SyncPrefs>(&pref_service_);
+
+    CHECK(fake_profile_dir_.CreateUniqueTempDir());
   }
   virtual ~SyncToSigninMigrationTestBase() = default;
 
@@ -82,6 +84,7 @@ class SyncToSigninMigrationTestBase {
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<syncer::SyncPrefs> sync_prefs_;
   syncer::TestSyncService sync_service_;
+  base::ScopedTempDir fake_profile_dir_;
 };
 
 class SyncToSigninMigrationTest : public SyncToSigninMigrationTestBase,
@@ -110,7 +113,8 @@ TEST_F(SyncToSigninMigrationTest, SyncActive) {
           .empty());
 
   // Run the migration. This should change the user to be non-syncing.
-  MaybeMigrateSyncingUserToSignedIn(&pref_service_);
+  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
+                                    &pref_service_);
 
   // Note that TestSyncService doesn't consume the prefs, so verify the prefs
   // directly here.
@@ -150,7 +154,8 @@ TEST_F(SyncToSigninMigrationTest, SyncStatusPrefsUnset) {
       pref_service_.user_prefs_store()->GetValues();
 
   // Trigger the migration - it should NOT actually run in this state.
-  MaybeMigrateSyncingUserToSignedIn(&pref_service_);
+  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
+                                    &pref_service_);
 
   // Note that TestSyncService doesn't consume the prefs, so verify the prefs
   // directly here.
@@ -174,7 +179,8 @@ TEST_F(SyncToSigninMigrationTest, SyncTransport) {
       pref_service_.user_prefs_store()->GetValues();
 
   // Trigger the migration - it should NOT actually run in this state.
-  MaybeMigrateSyncingUserToSignedIn(&pref_service_);
+  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
+                                    &pref_service_);
 
   // Note that TestSyncService doesn't consume the prefs, so verify the prefs
   // directly here.
@@ -204,7 +210,8 @@ TEST_F(SyncToSigninMigrationTest, SyncDisabledByPolicy) {
 
   // Run the migration. This should change the user to be non-syncing (even
   // though Sync wasn't actually active).
-  MaybeMigrateSyncingUserToSignedIn(&pref_service_);
+  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
+                                    &pref_service_);
 
   // Note that TestSyncService doesn't consume the prefs, so verify the prefs
   // directly here.
@@ -249,7 +256,8 @@ TEST_F(SyncToSigninMigrationTest, SyncPaused) {
 
   // Run the migration. This should change the user to be non-syncing (even
   // though Sync wasn't actually active).
-  MaybeMigrateSyncingUserToSignedIn(&pref_service_);
+  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
+                                    &pref_service_);
 
   // Note that TestSyncService doesn't consume the prefs, so verify the prefs
   // directly here.
@@ -287,7 +295,8 @@ TEST_F(SyncToSigninMigrationTest, SyncInitializing) {
       pref_service_.user_prefs_store()->GetValues();
 
   // Trigger the migration - it should NOT actually run in this state.
-  MaybeMigrateSyncingUserToSignedIn(&pref_service_);
+  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
+                                    &pref_service_);
 
   // Note that TestSyncService doesn't consume the prefs, so verify the prefs
   // directly here.
@@ -324,7 +333,8 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncAndAllDataTypesActive) {
 
   base::HistogramTester histograms;
 
-  MaybeMigrateSyncingUserToSignedIn(&pref_service_);
+  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
+                                    &pref_service_);
 
   // The overall migration should run, except if the feature flag is disabled.
   int expected_decision =
@@ -370,7 +380,8 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncActiveButNotDataTypes) {
 
   base::HistogramTester histograms;
 
-  MaybeMigrateSyncingUserToSignedIn(&pref_service_);
+  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
+                                    &pref_service_);
 
   // The overall migration should run, except if the feature flag is disabled.
   int expected_decision =
@@ -411,7 +422,8 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncStatusPrefsUnset) {
 
   base::HistogramTester histograms;
 
-  MaybeMigrateSyncingUserToSignedIn(&pref_service_);
+  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
+                                    &pref_service_);
 
   // The migration should not run due to the missing/undefined status.
   histograms.ExpectUniqueSample(
@@ -444,7 +456,8 @@ TEST_P(SyncToSigninMigrationMetricsTest, NotSignedIn) {
 
   base::HistogramTester histograms;
 
-  MaybeMigrateSyncingUserToSignedIn(&pref_service_);
+  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
+                                    &pref_service_);
 
   // The migration should not run since there's no signed-in user.
   histograms.ExpectUniqueSample(
@@ -478,7 +491,8 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncTransport) {
 
   base::HistogramTester histograms;
 
-  MaybeMigrateSyncingUserToSignedIn(&pref_service_);
+  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
+                                    &pref_service_);
 
   // The migration should not run since this is not a Sync-the-feature user.
   histograms.ExpectUniqueSample(
@@ -510,7 +524,8 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncPaused) {
 
   base::HistogramTester histograms;
 
-  MaybeMigrateSyncingUserToSignedIn(&pref_service_);
+  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
+                                    &pref_service_);
 
   // In the Sync-paused state, the overall migration should run, except if the
   // feature flag is disabled.
@@ -549,7 +564,8 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncInitializing) {
 
   base::HistogramTester histograms;
 
-  MaybeMigrateSyncingUserToSignedIn(&pref_service_);
+  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
+                                    &pref_service_);
 
   // The migration should not run, because Sync was still initializing.
   histograms.ExpectUniqueSample(
@@ -577,6 +593,315 @@ INSTANTIATE_TEST_SUITE_P(,
                            return info.param ? "MigrationEnabled"
                                              : "MigrationDisabled";
                          });
+
+class SyncToSigninMigrationDataTypesTest : public SyncToSigninMigrationTestBase,
+                                           public testing::Test {
+ public:
+  SyncToSigninMigrationDataTypesTest()
+      : SyncToSigninMigrationTestBase(
+            /*migration_feature_enabled=*/true) {}
+
+  void SetUp() override {
+    // Everything is active.
+    ASSERT_EQ(sync_service_.GetTransportState(),
+              syncer::SyncService::TransportState::ACTIVE);
+    ASSERT_TRUE(sync_service_.HasSyncConsent());
+    ASSERT_TRUE(sync_service_.GetActiveDataTypes().HasAll(
+        {syncer::BOOKMARKS, syncer::PASSWORDS, syncer::READING_LIST}));
+
+    // Save the above state to prefs.
+    RecordStateToPrefs();
+  }
+
+  base::FilePath GetBookmarksLocalStorePath() const {
+    return fake_profile_dir_.GetPath().AppendASCII("Bookmarks");
+  }
+  base::FilePath GetBookmarksAccountStorePath() const {
+    return fake_profile_dir_.GetPath().AppendASCII("AccountBookmarks");
+  }
+
+  base::FilePath GetPasswordsLocalStorePath() const {
+    return fake_profile_dir_.GetPath().AppendASCII("Login Data");
+  }
+  base::FilePath GetPasswordsAccountStorePath() const {
+    return fake_profile_dir_.GetPath().AppendASCII("Login Data For Account");
+  }
+};
+
+// The Bookmarks migration isn't implemented on platforms other than iOS yet.
+#if BUILDFLAG(IS_IOS)
+TEST_F(SyncToSigninMigrationDataTypesTest, MoveBookmarks_BothExist) {
+  // Both bookmark stores exist on disk. The account store is empty, since it
+  // was unused pre-migration. This is the typical pre-migration state.
+  base::WriteFile(GetBookmarksLocalStorePath(), "local bookmarks");
+  base::WriteFile(GetBookmarksAccountStorePath(), "");
+
+  base::HistogramTester histograms;
+
+  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
+                                    &pref_service_);
+
+  // The local file should have been moved over the account one.
+  EXPECT_FALSE(base::PathExists(GetBookmarksLocalStorePath()));
+  EXPECT_TRUE(base::PathExists(GetBookmarksAccountStorePath()));
+
+  std::string account_contents;
+  ASSERT_TRUE(base::ReadFileToString(GetBookmarksAccountStorePath(),
+                                     &account_contents));
+  EXPECT_EQ(account_contents, "local bookmarks");
+
+  histograms.ExpectUniqueSample(
+      "Sync.SyncToSigninMigrationOutcome.BookmarksFileMove",
+      -base::File::FILE_OK, 1);
+}
+
+TEST_F(SyncToSigninMigrationDataTypesTest, MoveBookmarks_OnlyLocalExists) {
+  // Only the local store exists on disk; the account store doesn't. This is
+  // uncommon, but could happen upgrades directly from an old Chrome version
+  // that didn't have an account store yet.
+  base::WriteFile(GetBookmarksLocalStorePath(), "local bookmarks");
+
+  base::HistogramTester histograms;
+
+  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
+                                    &pref_service_);
+
+  // The local file should have been renamed to the account one.
+  EXPECT_FALSE(base::PathExists(GetBookmarksLocalStorePath()));
+  EXPECT_TRUE(base::PathExists(GetBookmarksAccountStorePath()));
+
+  std::string account_contents;
+  ASSERT_TRUE(base::ReadFileToString(GetBookmarksAccountStorePath(),
+                                     &account_contents));
+  EXPECT_EQ(account_contents, "local bookmarks");
+
+  histograms.ExpectUniqueSample(
+      "Sync.SyncToSigninMigrationOutcome.BookmarksFileMove",
+      -base::File::FILE_OK, 1);
+}
+
+TEST_F(SyncToSigninMigrationDataTypesTest, MoveBookmarks_OnlyAccountExists) {
+  // Only the account store exists on disk; the local store doesn't. This
+  // should be impossible in practice, except maybe in rare error cases.
+  base::WriteFile(GetBookmarksAccountStorePath(), "account bookmarks");
+
+  base::HistogramTester histograms;
+
+  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
+                                    &pref_service_);
+
+  // The migration shouldn't have done anything; the account store should still
+  // exist with the same contents.
+  EXPECT_FALSE(base::PathExists(GetBookmarksLocalStorePath()));
+  EXPECT_TRUE(base::PathExists(GetBookmarksAccountStorePath()));
+
+  std::string account_contents;
+  ASSERT_TRUE(base::ReadFileToString(GetBookmarksAccountStorePath(),
+                                     &account_contents));
+  EXPECT_EQ(account_contents, "account bookmarks");
+
+  histograms.ExpectUniqueSample(
+      "Sync.SyncToSigninMigrationOutcome.BookmarksFileMove",
+      -base::File::FILE_ERROR_NOT_FOUND, 1);
+}
+
+TEST_F(SyncToSigninMigrationDataTypesTest, MoveBookmarks_NoneExists) {
+  // Neither of the two stores exist on disk. This should be impossible in
+  // practice, except maybe in rare error cases.
+
+  base::HistogramTester histograms;
+
+  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
+                                    &pref_service_);
+
+  // The migration shouldn't have done anything; still neither of the stores
+  // should exist.
+  EXPECT_FALSE(base::PathExists(GetBookmarksLocalStorePath()));
+  EXPECT_FALSE(base::PathExists(GetBookmarksAccountStorePath()));
+
+  histograms.ExpectUniqueSample(
+      "Sync.SyncToSigninMigrationOutcome.BookmarksFileMove",
+      -base::File::FILE_ERROR_NOT_FOUND, 1);
+}
+
+#if BUILDFLAG(IS_POSIX)
+TEST_F(SyncToSigninMigrationDataTypesTest, MoveBookmarks_FolderNotWritable) {
+  // Both bookmark stores exist on disk. The account store is empty, since it
+  // was unused pre-migration. This is the typical pre-migration state.
+  base::WriteFile(GetBookmarksLocalStorePath(), "local bookmarks");
+  base::WriteFile(GetBookmarksAccountStorePath(), "");
+  // However, the folder containing the files is (for some reason) not writable,
+  // so the move/rename can't actually happen. This should not happen in
+  // practice (if it does, Chrome will likely be very broken). This test mostly
+  // verifies that nothing catastrophic happens, e.g. no crash.
+  int mode = 0;
+  ASSERT_TRUE(
+      base::GetPosixFilePermissions(fake_profile_dir_.GetPath(), &mode));
+  mode &= ~base::FILE_PERMISSION_WRITE_BY_USER;
+  mode &= ~base::FILE_PERMISSION_WRITE_BY_GROUP;
+  mode &= ~base::FILE_PERMISSION_WRITE_BY_OTHERS;
+  ASSERT_TRUE(base::SetPosixFilePermissions(fake_profile_dir_.GetPath(), mode));
+
+  base::HistogramTester histograms;
+
+  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
+                                    &pref_service_);
+
+  // Nothing should have changed.
+  EXPECT_TRUE(base::PathExists(GetBookmarksLocalStorePath()));
+  EXPECT_TRUE(base::PathExists(GetBookmarksAccountStorePath()));
+
+  std::string local_contents;
+  ASSERT_TRUE(
+      base::ReadFileToString(GetBookmarksLocalStorePath(), &local_contents));
+  EXPECT_EQ(local_contents, "local bookmarks");
+  std::string account_contents;
+  ASSERT_TRUE(base::ReadFileToString(GetBookmarksAccountStorePath(),
+                                     &account_contents));
+  EXPECT_EQ(account_contents, "");
+
+  histograms.ExpectUniqueSample(
+      "Sync.SyncToSigninMigrationOutcome.BookmarksFileMove",
+      -base::File::FILE_ERROR_ACCESS_DENIED, 1);
+}
+#endif  // BUILDFLAG(IS_POSIX)
+#endif  // BUILDFLAG(IS_IOS)
+
+TEST_F(SyncToSigninMigrationDataTypesTest, MovePasswords_BothExist) {
+  // Both password stores exist on disk. The account store is empty, since it
+  // was unused pre-migration. This is the typical pre-migration state.
+  base::WriteFile(GetPasswordsLocalStorePath(), "local passwords");
+  base::WriteFile(GetPasswordsAccountStorePath(), "");
+
+  base::HistogramTester histograms;
+
+  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
+                                    &pref_service_);
+
+  // The local file should have been moved over the account one.
+  EXPECT_FALSE(base::PathExists(GetPasswordsLocalStorePath()));
+  EXPECT_TRUE(base::PathExists(GetPasswordsAccountStorePath()));
+
+  std::string account_contents;
+  ASSERT_TRUE(base::ReadFileToString(GetPasswordsAccountStorePath(),
+                                     &account_contents));
+  EXPECT_EQ(account_contents, "local passwords");
+
+  histograms.ExpectUniqueSample(
+      "Sync.SyncToSigninMigrationOutcome.PasswordsFileMove",
+      -base::File::FILE_OK, 1);
+}
+
+TEST_F(SyncToSigninMigrationDataTypesTest, MovePasswords_OnlyLocalExists) {
+  // Only the local store exists on disk; the account store doesn't. This is
+  // uncommon, but could happen upgrades directly from an old Chrome version
+  // that didn't have an account store yet.
+  base::WriteFile(GetPasswordsLocalStorePath(), "local passwords");
+
+  base::HistogramTester histograms;
+
+  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
+                                    &pref_service_);
+
+  // The local file should have been renamed to the account one.
+  EXPECT_FALSE(base::PathExists(GetPasswordsLocalStorePath()));
+  EXPECT_TRUE(base::PathExists(GetPasswordsAccountStorePath()));
+
+  std::string account_contents;
+  ASSERT_TRUE(base::ReadFileToString(GetPasswordsAccountStorePath(),
+                                     &account_contents));
+  EXPECT_EQ(account_contents, "local passwords");
+
+  histograms.ExpectUniqueSample(
+      "Sync.SyncToSigninMigrationOutcome.PasswordsFileMove",
+      -base::File::FILE_OK, 1);
+}
+
+TEST_F(SyncToSigninMigrationDataTypesTest, MovePasswords_OnlyAccountExists) {
+  // Only the account store exists on disk; the local store doesn't. This
+  // should be impossible in practice, except maybe in rare error cases.
+  base::WriteFile(GetPasswordsAccountStorePath(), "account passwords");
+
+  base::HistogramTester histograms;
+
+  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
+                                    &pref_service_);
+
+  // The migration shouldn't have done anything; the account store should still
+  // exist with the same contents.
+  EXPECT_FALSE(base::PathExists(GetPasswordsLocalStorePath()));
+  EXPECT_TRUE(base::PathExists(GetPasswordsAccountStorePath()));
+
+  std::string account_contents;
+  ASSERT_TRUE(base::ReadFileToString(GetPasswordsAccountStorePath(),
+                                     &account_contents));
+  EXPECT_EQ(account_contents, "account passwords");
+
+  histograms.ExpectUniqueSample(
+      "Sync.SyncToSigninMigrationOutcome.PasswordsFileMove",
+      -base::File::FILE_ERROR_NOT_FOUND, 1);
+}
+
+TEST_F(SyncToSigninMigrationDataTypesTest, MovePasswords_NoneExists) {
+  // Neither of the two stores exist on disk. This should be impossible in
+  // practice, except maybe in rare error cases.
+
+  base::HistogramTester histograms;
+
+  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
+                                    &pref_service_);
+
+  // The migration shouldn't have done anything; still neither of the stores
+  // should exist.
+  EXPECT_FALSE(base::PathExists(GetPasswordsLocalStorePath()));
+  EXPECT_FALSE(base::PathExists(GetPasswordsAccountStorePath()));
+
+  histograms.ExpectUniqueSample(
+      "Sync.SyncToSigninMigrationOutcome.PasswordsFileMove",
+      -base::File::FILE_ERROR_NOT_FOUND, 1);
+}
+
+#if BUILDFLAG(IS_POSIX)
+TEST_F(SyncToSigninMigrationDataTypesTest, MovePasswords_FolderNotWritable) {
+  // Both password stores exist on disk. The account store is empty, since it
+  // was unused pre-migration. This is the typical pre-migration state.
+  base::WriteFile(GetPasswordsLocalStorePath(), "local passwords");
+  base::WriteFile(GetPasswordsAccountStorePath(), "");
+  // However, the folder containing the files is (for some reason) not writable,
+  // so the move/rename can't actually happen. This should not happen in
+  // practice (if it does, Chrome will likely be very broken). This test mostly
+  // verifies that nothing catastrophic happens, e.g. no crash.
+  int mode = 0;
+  ASSERT_TRUE(
+      base::GetPosixFilePermissions(fake_profile_dir_.GetPath(), &mode));
+  mode &= ~base::FILE_PERMISSION_WRITE_BY_USER;
+  mode &= ~base::FILE_PERMISSION_WRITE_BY_GROUP;
+  mode &= ~base::FILE_PERMISSION_WRITE_BY_OTHERS;
+  ASSERT_TRUE(base::SetPosixFilePermissions(fake_profile_dir_.GetPath(), mode));
+
+  base::HistogramTester histograms;
+
+  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
+                                    &pref_service_);
+
+  // Nothing should have changed.
+  EXPECT_TRUE(base::PathExists(GetPasswordsLocalStorePath()));
+  EXPECT_TRUE(base::PathExists(GetPasswordsAccountStorePath()));
+
+  std::string local_contents;
+  ASSERT_TRUE(
+      base::ReadFileToString(GetPasswordsLocalStorePath(), &local_contents));
+  EXPECT_EQ(local_contents, "local passwords");
+  std::string account_contents;
+  ASSERT_TRUE(base::ReadFileToString(GetPasswordsAccountStorePath(),
+                                     &account_contents));
+  EXPECT_EQ(account_contents, "");
+
+  histograms.ExpectUniqueSample(
+      "Sync.SyncToSigninMigrationOutcome.PasswordsFileMove",
+      -base::File::FILE_ERROR_ACCESS_DENIED, 1);
+}
+#endif  // BUILDFLAG(IS_POSIX)
 
 }  // namespace
 }  // namespace browser_sync

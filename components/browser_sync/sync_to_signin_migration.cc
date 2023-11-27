@@ -7,8 +7,12 @@
 #include <string>
 
 #include "base/feature_list.h"
+#include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "build/build_config.h"
+#include "components/bookmarks/common/bookmark_constants.h"
+#include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -124,7 +128,8 @@ const char* GetHistogramMigratingOrNotInfix(bool doing_migration) {
 
 }  // namespace
 
-void MaybeMigrateSyncingUserToSignedIn(PrefService* pref_service) {
+void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
+                                       PrefService* pref_service) {
   // ======================================
   // Global migration decision and metrics.
   // ======================================
@@ -230,7 +235,39 @@ void MaybeMigrateSyncingUserToSignedIn(PrefService* pref_service) {
   // Data-type-specific migrations.
   // ==============================
 
-  // TODO(crbug.com/1486420): Add actual data type migration logic.
+  // Move passwords DB file, if password sync is enabled.
+  if (passwords_decision == SyncToSigninMigrationDataTypeDecision::kMigrate) {
+    base::FilePath from_path =
+        profile_path.Append(password_manager::kLoginDataForProfileFileName);
+    base::FilePath to_path =
+        profile_path.Append(password_manager::kLoginDataForAccountFileName);
+    base::File::Error error = base::File::Error::FILE_OK;
+    base::ReplaceFile(from_path, to_path, &error);
+    base::UmaHistogramExactLinear(
+        "Sync.SyncToSigninMigrationOutcome.PasswordsFileMove", -error,
+        -base::File::FILE_ERROR_MAX);
+  }
+
+#if BUILDFLAG(IS_IOS)
+  // Move bookmarks json file, if bookmark sync is enabled.
+  if (bookmarks_decision == SyncToSigninMigrationDataTypeDecision::kMigrate) {
+    base::FilePath from_path =
+        profile_path.Append(bookmarks::kLocalOrSyncableBookmarksFileName);
+    base::FilePath to_path =
+        profile_path.Append(bookmarks::kAccountBookmarksFileName);
+    base::File::Error error = base::File::Error::FILE_OK;
+    base::ReplaceFile(from_path, to_path, &error);
+    base::UmaHistogramExactLinear(
+        "Sync.SyncToSigninMigrationOutcome.BookmarksFileMove", -error,
+        -base::File::FILE_ERROR_MAX);
+  }
+#else
+  // TODO(crbug.com/1503647): On platforms other than iOS, the on-disk layout of
+  // bookmarks may be different (no two separate JSON files).
+  NOTIMPLEMENTED();
+#endif  // BUILDFLAG(IS_IOS)
+
+  // TODO(crbug.com/1486420): Add migration logic for ReadingList.
   NOTIMPLEMENTED();
 }
 

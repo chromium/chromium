@@ -1593,6 +1593,32 @@ chromium-metrics-reviews@google.com.
       variants="SyncModelTypeForSyncToSigninMigration"/>
 </histogram>
 
+<histogram name="Sync.SyncToSigninMigrationOutcome.BookmarksFileMove"
+    enum="PlatformFileError" expires_after="2024-05-01">
+  <owner>treib@chromium.org</owner>
+  <owner>mastiz@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    The outcome of moving the bookmarks JSON file from the local to the account
+    location, during the Sync-to-Signin migration. Recorded only if the overall
+    migration ran and decided migrate passwords (see
+    Sync.SyncToSigninMigrationDecision.Migration.BOOKMARK).
+  </summary>
+</histogram>
+
+<histogram name="Sync.SyncToSigninMigrationOutcome.PasswordsFileMove"
+    enum="PlatformFileError" expires_after="2024-05-01">
+  <owner>treib@chromium.org</owner>
+  <owner>mastiz@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    The outcome of moving the passwords DB file from the local to the account
+    location, during the Sync-to-Signin migration. Recorded only if the overall
+    migration ran and decided migrate passwords (see
+    Sync.SyncToSigninMigrationDecision.Migration.PASSWORD).
+  </summary>
+</histogram>
+
 <histogram name="Sync.ThrottledAllModelTypes" enum="Boolean"
     expires_after="2024-02-12">
   <owner>victorvianna@google.com</owner>

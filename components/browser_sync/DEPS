@@ -2,6 +2,7 @@ include_rules = [
   "+ash/constants",
   "+components/autofill/core",
   "+components/bookmarks/browser",
+  "+components/bookmarks/common",
   "+components/bookmarks/managed",
   "+components/bookmarks/test",
   "+components/history/core/browser",

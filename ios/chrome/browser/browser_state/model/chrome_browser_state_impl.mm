@@ -148,7 +148,7 @@ ChromeBrowserStateImpl::ChromeBrowserStateImpl(
   user_prefs::UserPrefs::Set(this, prefs_.get());
 
   // Migrate obsolete prefs.
-  MigrateObsoleteBrowserStatePrefs(prefs_.get());
+  MigrateObsoleteBrowserStatePrefs(state_path, prefs_.get());
 
   BrowserStateDependencyManager::GetInstance()->CreateBrowserStateServices(
       this);

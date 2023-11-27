@@ -713,7 +713,8 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
 }
 
 // This method should be periodically pruned of year+ old migrations.
-void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
+void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
+                                      PrefService* prefs) {
   // Check MigrateDeprecatedAutofillPrefs() to see if this is safe to remove.
   autofill::prefs::MigrateDeprecatedAutofillPrefs(prefs);
 
@@ -838,7 +839,7 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
 
   // Added 10/2023, but DO NOT REMOVE after the usual year!
   // TODO(crbug.com/1486420): Remove ~one year after full launch.
-  browser_sync::MaybeMigrateSyncingUserToSignedIn(prefs);
+  browser_sync::MaybeMigrateSyncingUserToSignedIn(state_path, prefs);
 }
 
 void MigrateObsoleteUserDefault() {

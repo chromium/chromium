@@ -7,13 +7,18 @@
 
 #include "base/feature_list.h"
 
+namespace base {
+class FilePath;
+}  // namespace base
+
 class PrefService;
 
 namespace browser_sync {
 
 BASE_DECLARE_FEATURE(kMigrateSyncingUserToSignedIn);
 
-void MaybeMigrateSyncingUserToSignedIn(PrefService* pref_service);
+void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
+                                       PrefService* pref_service);
 
 }  // namespace browser_sync
 
