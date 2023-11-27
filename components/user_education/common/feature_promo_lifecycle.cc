@@ -133,8 +133,12 @@ void FeaturePromoLifecycle::OnPromoShown(
     return;
   }
   ScopedPromoData data(storage_service_, iph_feature_);
+  const auto now = base::Time::Now();
+  if (data->show_count == 0) {
+    data->first_show_time = now;
+  }
   ++data->show_count;
-  data->last_show_time = base::Time::Now();
+  data->last_show_time = now;
   RecordShown();
 }
 

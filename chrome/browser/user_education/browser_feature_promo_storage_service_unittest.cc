@@ -47,8 +47,9 @@ class BrowserFeaturePromoStorageServiceTest : public testing::Test {
     user_education::FeaturePromoData data;
     data.is_dismissed = true;
     data.last_dismissed_by = user_education::FeaturePromoClosedReason::kSnooze;
-    data.last_show_time = base::Time::FromMillisecondsSinceUnixEpoch(1);
-    data.last_snooze_time = base::Time::FromMillisecondsSinceUnixEpoch(2);
+    data.first_show_time = base::Time::FromMillisecondsSinceUnixEpoch(1);
+    data.last_show_time = base::Time::FromMillisecondsSinceUnixEpoch(100);
+    data.last_snooze_time = base::Time::FromMillisecondsSinceUnixEpoch(200);
     data.snooze_count = 3;
     data.show_count = 4;
     data.last_snooze_duration = base::Days(3);
@@ -66,6 +67,7 @@ class BrowserFeaturePromoStorageServiceTest : public testing::Test {
     const auto actual = service_.ReadPromoData(to_read_data_for);
     ASSERT_TRUE(actual.has_value());
     EXPECT_EQ(expected.is_dismissed, actual->is_dismissed);
+    EXPECT_EQ(expected.first_show_time, actual->first_show_time);
     EXPECT_EQ(expected.last_show_time, actual->last_show_time);
     EXPECT_EQ(expected.last_snooze_time, actual->last_snooze_time);
     EXPECT_EQ(expected.snooze_count, actual->snooze_count);

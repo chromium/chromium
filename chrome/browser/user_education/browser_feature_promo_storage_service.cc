@@ -26,6 +26,9 @@ constexpr char kIPHIsDismissedPath[] = "is_dismissed";
 // Path to the enum that indicates how an IPH was dismissed.
 // in_product_help.snoozed_feature.[iph_name].last_dismissed_by
 constexpr char kIPHLastDismissedByPath[] = "last_dismissed_by";
+// Path to the timestamp an IPH was first shown.
+// in_product_help.snoozed_feature.[iph_name].first_show_time
+constexpr char kIPHFirstShowTimePath[] = "first_show_time";
 // Path to the timestamp an IPH was last shown.
 // in_product_help.snoozed_feature.[iph_name].last_show_time
 constexpr char kIPHLastShowTimePath[] = "last_show_time";
@@ -88,7 +91,9 @@ BrowserFeaturePromoStorageService::ReadPromoData(
       pref_data.FindBoolByDottedPath(path_prefix + kIPHIsDismissedPath);
   absl::optional<int> last_dismissed_by =
       pref_data.FindIntByDottedPath(path_prefix + kIPHLastDismissedByPath);
-  absl::optional<base::Time> show_time = base::ValueToTime(
+  absl::optional<base::Time> first_show_time = base::ValueToTime(
+      pref_data.FindByDottedPath(path_prefix + kIPHFirstShowTimePath));
+  absl::optional<base::Time> last_show_time = base::ValueToTime(
       pref_data.FindByDottedPath(path_prefix + kIPHLastShowTimePath));
   absl::optional<base::Time> snooze_time = base::ValueToTime(
       pref_data.FindByDottedPath(path_prefix + kIPHLastSnoozeTimePath));
@@ -108,16 +113,23 @@ BrowserFeaturePromoStorageService::ReadPromoData(
     return promo_data;
   }
 
-  if (!show_time || !show_count) {
+  if (!last_show_time || !show_count) {
     // This data was stored by a previous version. Assume previous IPH were
     // snoozed.
-    show_time = *snooze_time - base::Seconds(1);
+    last_show_time = *snooze_time - base::Seconds(1);
     show_count = *snooze_count;
+  }
+
+  if (!first_show_time) {
+    // This data was stored by a previous version. First show time inherits
+    // last show time, or null.
+    first_show_time = show_count > 0 ? *last_show_time : base::Time();
   }
 
   promo_data = user_education::FeaturePromoData();
   promo_data->is_dismissed = *is_dismissed;
-  promo_data->last_show_time = *show_time;
+  promo_data->first_show_time = *first_show_time;
+  promo_data->last_show_time = *last_show_time;
   promo_data->last_snooze_time = *snooze_time;
   promo_data->last_snooze_duration = *snooze_duration;
   promo_data->snooze_count = *snooze_count;
@@ -160,6 +172,8 @@ void BrowserFeaturePromoStorageService::SavePromoData(
                             promo_data.is_dismissed);
   pref_data.SetByDottedPath(path_prefix + kIPHLastDismissedByPath,
                             static_cast<int>(promo_data.last_dismissed_by));
+  pref_data.SetByDottedPath(path_prefix + kIPHFirstShowTimePath,
+                            base::TimeToValue(promo_data.first_show_time));
   pref_data.SetByDottedPath(path_prefix + kIPHLastShowTimePath,
                             base::TimeToValue(promo_data.last_show_time));
   pref_data.SetByDottedPath(path_prefix + kIPHLastSnoozeTimePath,
