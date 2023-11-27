@@ -28,18 +28,19 @@ class TabResumptionPageHandlerTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
 
+    mock_session_sync_service_ = static_cast<MockSessionSyncService*>(
+        SessionSyncServiceFactory::GetForProfile(profile()));
     web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(profile()));
     handler_ = std::make_unique<TabResumptionPageHandler>(
         mojo::PendingReceiver<ntp::tab_resumption::mojom::PageHandler>(),
-        profile(), web_contents_.get());
-    mock_session_sync_service_ = static_cast<MockSessionSyncService*>(
-        SessionSyncServiceFactory::GetForProfile(profile()));
+        web_contents_.get());
   }
 
   void TearDown() override {
     handler_.reset();
     web_contents_.reset();
+    mock_session_sync_service_ = nullptr;
     BrowserWithTestWindowTest::TearDown();
   }
 
@@ -48,8 +49,6 @@ class TabResumptionPageHandlerTest : public BrowserWithTestWindowTest {
   }
 
   TabResumptionPageHandler& handler() { return *handler_; }
-
-  void ResetHandler() { handler_.reset(); }
 
  private:
   // BrowserWithTestWindowTest:
@@ -61,19 +60,17 @@ class TabResumptionPageHandlerTest : public BrowserWithTestWindowTest {
              })}};
   }
 
-  raw_ptr<MockSessionSyncService, DisableDanglingPtrDetection>
-      mock_session_sync_service_;
+  raw_ptr<MockSessionSyncService> mock_session_sync_service_;
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<TabResumptionPageHandler> handler_;
 };
 
-// TODO(mfacey): Figure out why test breaks on exit.
-TEST_F(TabResumptionPageHandlerTest, DISABLED_GetTabs) {
+TEST_F(TabResumptionPageHandlerTest, GetTabs) {
   const int kSampleSessionsCount = 3;
-  std::vector<const sync_sessions::SyncedSession*> sample_sessions;
+  std::vector<std::unique_ptr<sync_sessions::SyncedSession>> sample_sessions;
   for (int i = 0; i < kSampleSessionsCount; i++) {
-    sample_sessions.push_back(
-        SampleSession(("Test Tag " + base::NumberToString(i)).c_str(), 3));
+    sample_sessions.push_back(SampleSession(
+        "Test Name", ("Test Tag " + base::NumberToString(i)).c_str(), 3));
   }
 
   EXPECT_CALL(*mock_session_sync_service().GetOpenTabsUIDelegate(),
@@ -81,7 +78,9 @@ TEST_F(TabResumptionPageHandlerTest, DISABLED_GetTabs) {
       .WillOnce(testing::Invoke(
           [&sample_sessions](
               std::vector<const sync_sessions::SyncedSession*>* sessions) {
-            *sessions = sample_sessions;
+            for (auto& sample_session : sample_sessions) {
+              sessions->push_back(sample_session.get());
+            }
             return true;
           }));
 
@@ -109,7 +108,5 @@ TEST_F(TabResumptionPageHandlerTest, DISABLED_GetTabs) {
       ASSERT_EQ(GURL(kSampleUrl), tabs[0]->url);
     }
   }
-
-  ResetHandler();
 }
 }  // namespace

@@ -40,15 +40,15 @@ MockSessionSyncService::GetControllerDelegate() {
   return nullptr;
 }
 
-sync_sessions::SyncedSession* SampleSession(const char session_tag[],
-                                            int num_windows) {
-  auto* sample_session = new sync_sessions::SyncedSession();
+std::unique_ptr<sync_sessions::SyncedSession> SampleSession(
+    const char session_name[],
+    const char session_tag[],
+    int num_windows) {
+  auto sample_session = std::make_unique<sync_sessions::SyncedSession>();
   for (int i = 0; i < num_windows; i++) {
     sample_session->windows[SessionID::FromSerializedValue(i)] =
         SampleSessionWindow(3);
   }
-
-  constexpr char session_name[] = "Test Name";
 
   sample_session->SetSessionTag(session_tag);
   sample_session->SetSessionName(session_name);

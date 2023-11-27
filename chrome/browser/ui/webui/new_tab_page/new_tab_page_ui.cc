@@ -897,7 +897,7 @@ void NewTabPageUI::BindInterface(
     mojo::PendingReceiver<ntp::tab_resumption::mojom::PageHandler>
         pending_page_handler) {
   tab_resumption_handler_ = std::make_unique<TabResumptionPageHandler>(
-      std::move(pending_page_handler), profile_, web_contents());
+      std::move(pending_page_handler), web_contents());
 }
 
 void NewTabPageUI::BindInterface(

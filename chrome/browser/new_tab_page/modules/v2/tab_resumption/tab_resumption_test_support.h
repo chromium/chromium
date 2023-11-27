@@ -69,8 +69,10 @@ class MockSessionSyncService : public sync_sessions::SessionSyncService {
   MockOpenTabsUIDelegate mock_open_tabs_ui_delegate_;
 };
 
-sync_sessions::SyncedSession* SampleSession(const char session_tag[],
-                                            int num_windows);
+std::unique_ptr<sync_sessions::SyncedSession> SampleSession(
+    const char session_name[],
+    const char session_tag[],
+    int num_windows);
 std::unique_ptr<sync_sessions::SyncedSessionWindow> SampleSessionWindow(
     int num_tabs);
 std::unique_ptr<sessions::SessionTab> SampleSessionTab(int tab_id);

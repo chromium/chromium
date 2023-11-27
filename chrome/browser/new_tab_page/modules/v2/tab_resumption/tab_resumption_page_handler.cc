@@ -101,9 +101,8 @@ absl::optional<history::mojom::WindowPtr> SessionWindowToMojom(
 TabResumptionPageHandler::TabResumptionPageHandler(
     mojo::PendingReceiver<ntp::tab_resumption::mojom::PageHandler>
         pending_page_handler,
-    Profile* profile,
     content::WebContents* web_contents)
-    : profile_(profile),
+    : profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
       web_contents_(web_contents),
       page_handler_(this, std::move(pending_page_handler)) {
   DCHECK(profile_);
