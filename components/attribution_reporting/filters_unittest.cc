@@ -135,6 +135,14 @@ const struct {
             {*FilterConfig::Create({}, /*lookback_window=*/base::Seconds(1))}),
     },
     {
+        "reserved_key",
+        base::test::ParseJson(R"json({
+          "_some_key": ["a"]
+        })json"),
+        base::unexpected(SourceRegistrationError::kFilterDataKeyReserved),
+        base::unexpected(TriggerRegistrationError::kFiltersUsingReservedKey),
+    },
+    {
         "lookback_window_list",
         base::test::ParseJson(R"json({"_lookback_window": ["a"]})json"),
         base::unexpected(

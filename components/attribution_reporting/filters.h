@@ -105,6 +105,7 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) FilterPair {
 class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) FilterConfig {
  public:
   static constexpr char kLookbackWindowKey[] = "_lookback_window";
+  static constexpr char kReservedKeyPrefix[] = "_";
 
   // If set, FilterConfig's `lookback_window` must be positive.
   static absl::optional<FilterConfig> Create(

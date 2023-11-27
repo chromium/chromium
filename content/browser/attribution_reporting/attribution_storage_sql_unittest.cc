@@ -1507,8 +1507,7 @@ TEST_P(AttributionStorageSqlTest, CreateReport_DeactivatesAttributedSources) {
   ExpectImpressionRows(2);
 }
 
-// Tests that a "source_type" or "_lookback_window" filter key present in the
-// serialized data is removed.
+// Tests that invalid filter keys present in the serialized data are removed.
 TEST_P(AttributionStorageSqlTest, DeserializeFilterData_RemovesReservedKeys) {
   {
     OpenDatabase();
@@ -1524,6 +1523,7 @@ TEST_P(AttributionStorageSqlTest, DeserializeFilterData_RemovesReservedKeys) {
     sql::Statement statement(raw_db.GetUniqueStatement(kUpdateSql));
     statement.BindBlob(0, CreateSerializedFilterData({
                               {"source_type", {"abc"}},
+                              {"_some_key", {"y"}},
                               {"x", {"y"}},
                               {"_lookback_window", {"def"}},
                           }));

@@ -10432,6 +10432,7 @@ Called by update_net_error_codes.py.-->
   <int value="46" label="excessive trigger data"/>
   <int value="47" label="duplicate trigger data"/>
   <int value="48" label="invalid trigger data for matching mode"/>
+  <int value="49" label="filter_data key reserved (starts with &quot;_&quot;)"/>
 </enum>
 
 <enum name="ConversionStorageCreateReportStatus">
@@ -10528,6 +10529,8 @@ Called by update_net_error_codes.py.-->
   <int value="34" label="aggregatable_source_registration_time has wrong type"/>
   <int value="35"
       label="aggregatable_source_registration_time has unknown value"/>
+  <int value="36"
+      label="Filters is using a reserved key (starts with &quot;_&quot;)"/>
 </enum>
 
 <enum name="ConversionTriggerVerificationGetHeadersStatus">

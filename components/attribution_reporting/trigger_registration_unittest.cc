@@ -286,7 +286,7 @@ TEST(TriggerRegistrationTest, Parse) {
   };
 
   static constexpr char kTriggerRegistrationErrorMetric[] =
-      "Conversions.TriggerRegistrationError7";
+      "Conversions.TriggerRegistrationError8";
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.description);
@@ -380,7 +380,7 @@ TEST(TriggerRegistrationTest, ParseAggregationCoordinator) {
   };
 
   static constexpr char kTriggerRegistrationErrorMetric[] =
-      "Conversions.TriggerRegistrationError7";
+      "Conversions.TriggerRegistrationError8";
 
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(

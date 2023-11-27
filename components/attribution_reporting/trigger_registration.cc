@@ -216,7 +216,11 @@ TriggerRegistration::Parse(base::StringPiece json) {
   }
 
   if (!trigger.has_value()) {
-    base::UmaHistogramEnumeration("Conversions.TriggerRegistrationError7",
+    static_assert(
+        TriggerRegistrationError::kMaxValue ==
+            TriggerRegistrationError::kFiltersUsingReservedKey,
+        "Bump version of Conversions.TriggerRegistrationError8 histogram.");
+    base::UmaHistogramEnumeration("Conversions.TriggerRegistrationError8",
                                   trigger.error());
   }
 

@@ -3271,7 +3271,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.SourceRegistrationError7"
+<histogram name="Conversions.SourceRegistrationError8"
     enum="ConversionSourceRegistrationError" expires_after="2024-03-24">
   <owner>tquintanilla@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
@@ -3428,7 +3428,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.TriggerRegistrationError7"
+<histogram name="Conversions.TriggerRegistrationError8"
     enum="ConversionTriggerRegistrationError" expires_after="M121">
   <owner>tquintanilla@chromium.org</owner>
   <owner>linnan@chromium.org</owner>

@@ -36,13 +36,62 @@
             }
           }
         ]
+      },
+      {
+        "timestamp": "2",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "attribution_src_url": "https://reporter.test/register-source",
+          "source_type": "navigation"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+            "Attribution-Reporting-Register-Source": {
+              "destination": "https://destination.test",
+              // filter data using reserved key
+              "filter_data": {
+                "_some_key": ["123", "456"]
+              }
+            }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "3",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "1",
+                    // filters using reserved key
+                    "filters": {
+                      "_some_key": []
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
       }
     ]
   },
   "output": {
     "unparsable_registrations": [
-      { "time": "0", "type": "source" },
-      { "time": "1", "type": "trigger" }
+      {"time": "0", "type": "source"},
+      {"time": "1", "type": "trigger"},
+      {"time": "2", "type": "source"},
+      {"time": "3", "type": "trigger"}
     ],
     "reports": []
   }

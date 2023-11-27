@@ -220,8 +220,8 @@ absl::optional<attribution_reporting::FilterData> DeserializeFilterData(
     // corruption or deliberate modification.
     if (entry.first ==
             attribution_reporting::FilterData::kSourceTypeFilterKey ||
-        entry.first ==
-            attribution_reporting::FilterConfig::kLookbackWindowKey) {
+        entry.first.starts_with(
+            attribution_reporting::FilterConfig::kReservedKeyPrefix)) {
       continue;
     }
 

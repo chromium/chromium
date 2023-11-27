@@ -20,6 +20,7 @@ enum SourceRegistrationError {
   kFilterDataHasSourceTypeKey = 7,
   kFilterDataHasLookbackWindowKey = 24,
   kFilterDataKeyTooLong = 8,
+  kFilterDataKeyReserved = 49,
   kFilterDataListWrongType = 9,
   kFilterDataListTooLong = 10,
   kFilterDataValueWrongType = 11,
