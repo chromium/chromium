@@ -36,7 +36,7 @@ exhausted or in other exceptional circumstances.
 ## Critical severity {#TOC-Critical-severity}
 
 Critical severity issues allow an attacker to read or write arbitrary resources
-(including but not limited to the file system, registry, network, et c.) on the
+(including but not limited to the file system, registry, network, etc.) on the
 underlying platform, with the user's full privileges.
 
 They are normally assigned priority **Pri-0** and assigned to the current stable
@@ -55,6 +55,9 @@ if there is evidence of active exploitation.
 Example bugs:
 
 * Memory corruption in the browser process ([319125](https://crbug.com/319125#c10)).
+* Memory corruption in the GPU process when it is reachable directly from web
+  content without compromising the renderer.
+  ([1420130](https://crbug.com/1420130), [1427865](https://crbug.com/1427865))
 * Exploit chains made up of multiple bugs that can lead to code execution
   outside of the sandbox ([416449](https://crbug.com/416449)).
 * A bug that enables web content to read local files
@@ -95,19 +98,19 @@ Example bugs:
 bugs fall into this category, as they allow script execution in the context of
 an arbitrary origin ([534923](https://crbug.com/534923)).
 * A bug that allows arbitrary code execution within the confines of the sandbox,
-such as renderer or network process memory corruption (the GPU process is
-sandboxed only on some platforms, so if the bug impacts all Chromium platforms,
-it should be considered unsandboxed)
+such as memory corruption in the renderer process
 ([570427](https://crbug.com/570427), [468936](https://crbug.com/468936)).
 * Complete control over the apparent origin in the omnibox
 ([76666](https://crbug.com/76666)).
-* Memory corruption in the browser process that can only be triggered from a
-compromised renderer, leading to a sandbox escape
-([469152](https://crbug.com/469152)).
+* Memory corruption in the browser or another high privileged process (e.g. GPU
+  or network process), that can only be triggered from a compromised renderer,
+  leading to a sandbox escape ([1393177](https://crbug.com/1393177),
+  [1421268](crbug.com/1421268)).
 * Kernel memory corruption that could be used as a sandbox escape from a
 compromised renderer ([377392](https://crbug.com/377392)).
-* Memory corruption in the browser process that requires specific user
-interaction, such as granting a permission ([455735](https://crbug.com/455735)).
+* Memory corruption in the browser or another high privileged process (e.g. GPU
+  or network process) that requires specific user interaction, such as granting
+  a permission ([455735](https://crbug.com/455735)).
 * Site Isolation bypasses:
     - Cross-site execution contexts unexpectedly sharing a renderer process
       ([863069](https://crbug.com/863069), [886976](https://crbug.com/886976)).
