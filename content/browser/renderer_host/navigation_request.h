@@ -1997,6 +1997,18 @@ class CONTENT_EXPORT NavigationRequest
   // IsInMainFrame().
   void UnblockPendingSubframeNavigationRequestsIfNeeded();
 
+  // If this request is a same-origin cross-document traversal (i.e., session
+  // history navigation), this will send a message to the renderer to have it
+  // fire the navigate event. Normally, the renderer fires the navigate event at
+  // navigation start for cross-document navigations, before sending the
+  // BeginNavigation to the browser. That doesn't work for traversals, because
+  // the renderer don't know which frame(s) will navigate. This is called after
+  // beforeunload events fire and after any navigation start throttles have
+  // resumed, so we know the navigation is proceeding. The navigate event can't
+  // cancel a cross-document traversal, so it can be sent in parallel, instead
+  // of blocking and waiting for the result.
+  void MaybeDispatchNavigateEventForCrossDocumentTraversal();
+
   // Returns if we should add/reset the `CookieChangeListener` for the current
   // navigation.
   bool ShouldAddCookieChangeListener();

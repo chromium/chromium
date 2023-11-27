@@ -5,6 +5,7 @@
 module blink.mojom;
 
 import "cc/mojom/browser_controls_state.mojom";
+import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/text_direction.mojom";
@@ -1066,6 +1067,15 @@ interface LocalFrame {
   // session history entry for this frame. It is sent back to the renderer here
   // to indicate which traversal failed.
   TraverseCancelled(string navigation_api_key, TraverseCancelledReason reason);
+
+  // Dispatches a (uninterceptable, uncancelable) navigate event to the current
+  // document when the browser process determines that this frame will perform
+  // a same-origin cross-document traversal. `is_browser_initiated` will be
+  // false iff this traversal was triggered by a web API (i.e.,
+  // history.back()/forward()/go() or navigation.back()/forward()/traverseTo()).
+  DispatchNavigateEventForCrossDocumentTraversal(
+      url.mojom.Url url, mojo_base.mojom.ByteString page_state,
+      bool is_browser_initiated);
 
   // Requests a one-time snapshot of the document state for a ViewTransition.
   // See https://drafts.csswg.org/css-view-transitions-1/ for details.

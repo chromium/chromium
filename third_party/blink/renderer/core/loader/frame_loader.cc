@@ -1054,33 +1054,6 @@ void FrameLoader::CommitNavigation(
   if (!CancelProvisionalLoaderForNewNavigation())
     return;
 
-  // Dispatch the "navigate" event on the previous document if needed. Note that
-  // when the navigation is going to do a LocalFrame <-> LocalFrame swap, the
-  // event should be dispatched on the previous LocalFrame's document, instead
-  // of the new provisional LocalFrame's initial empty document.
-  LocalFrame* frame_for_navigate_event = frame_.Get();
-  if (frame_->IsProvisional() && frame_->GetPreviousLocalFrameForLocalSwap()) {
-    frame_for_navigate_event = frame_->GetPreviousLocalFrameForLocalSwap();
-  }
-  auto url_origin = SecurityOrigin::Create(navigation_params->url);
-  if (IsBackForwardOrRestore(navigation_params->frame_load_type) &&
-      frame_for_navigate_event->DomWindow()
-          ->GetSecurityOrigin()
-          ->IsSameOriginWith(url_origin.get())) {
-    auto* params = MakeGarbageCollected<NavigateEventDispatchParams>(
-        navigation_params->url, NavigateEventType::kCrossDocument,
-        navigation_params->frame_load_type);
-    if (navigation_params->is_browser_initiated)
-      params->involvement = UserNavigationInvolvement::kBrowserUI;
-    params->destination_item = navigation_params->history_item;
-    auto result = frame_for_navigate_event->DomWindow()
-                      ->navigation()
-                      ->DispatchNavigateEvent(params);
-    DCHECK_EQ(result, NavigationApi::DispatchResult::kContinue);
-    if (!document_loader_)
-      return;
-  }
-
   FillStaticResponseIfNeeded(navigation_params.get(), frame_);
   AssertCanNavigate(navigation_params.get(), frame_);
 
@@ -1097,6 +1070,7 @@ void FrameLoader::CommitNavigation(
   // another FrameLoader) and save it in ScopedOldDocumentInfoForCommitCapturer,
   // so that the old document can access it and fill in the information as it
   // is being unloaded/swapped out.
+  auto url_origin = SecurityOrigin::Create(navigation_params->url);
   ScopedOldDocumentInfoForCommitCapturer scoped_old_document_info(
       MakeGarbageCollected<OldDocumentInfoForCommit>(url_origin));
 

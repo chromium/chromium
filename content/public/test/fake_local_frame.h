@@ -147,6 +147,10 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
       const std::vector<std::string>& keys) override;
   void TraverseCancelled(const std::string& navigation_api_key,
                          blink::mojom::TraverseCancelledReason reason) override;
+  void DispatchNavigateEventForCrossDocumentTraversal(
+      const GURL&,
+      const std::string& page_state,
+      bool is_browser_initiated) override;
   void SnapshotDocumentForViewTransition(
       SnapshotDocumentForViewTransitionCallback callback) override;
   void AddResourceTimingEntryForFailedSubframeNavigation(

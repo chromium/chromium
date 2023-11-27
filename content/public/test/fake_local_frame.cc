@@ -196,6 +196,11 @@ void FakeLocalFrame::TraverseCancelled(
     const std::string& navigation_api_key,
     blink::mojom::TraverseCancelledReason reason) {}
 
+void FakeLocalFrame::DispatchNavigateEventForCrossDocumentTraversal(
+    const GURL&,
+    const std::string& page_state,
+    bool is_browser_initiated) {}
+
 void FakeLocalFrame::SnapshotDocumentForViewTransition(
     SnapshotDocumentForViewTransitionCallback callback) {}
 

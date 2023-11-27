@@ -201,6 +201,10 @@ class LocalFrameMojoHandler
       const WTF::Vector<WTF::String>&) final;
   void TraverseCancelled(const String& navigation_api_key,
                          mojom::blink::TraverseCancelledReason reason) final;
+  void DispatchNavigateEventForCrossDocumentTraversal(
+      const KURL&,
+      const std::string& page_state,
+      bool is_browser_initiated) final;
   void SnapshotDocumentForViewTransition(
       SnapshotDocumentForViewTransitionCallback callback) final;
 

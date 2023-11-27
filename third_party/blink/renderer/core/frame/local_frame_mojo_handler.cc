@@ -15,6 +15,7 @@
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
+#include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-blink.h"
@@ -1148,6 +1149,22 @@ void LocalFrameMojoHandler::NotifyNavigationApiOfDisposedEntries(
     const WTF::Vector<WTF::String>& keys) {
   frame_->DomWindow()->navigation()->DisposeEntriesForSessionHistoryRemoval(
       keys);
+}
+
+void LocalFrameMojoHandler::DispatchNavigateEventForCrossDocumentTraversal(
+    const KURL& url,
+    const std::string& page_state,
+    bool is_browser_initiated) {
+  auto* params = MakeGarbageCollected<NavigateEventDispatchParams>(
+      url, NavigateEventType::kCrossDocument, WebFrameLoadType::kBackForward);
+  params->involvement = is_browser_initiated
+                            ? UserNavigationInvolvement::kBrowserUI
+                            : UserNavigationInvolvement::kNone;
+  params->destination_item =
+      WebHistoryItem(PageState::CreateFromEncodedData(page_state));
+  auto result =
+      frame_->DomWindow()->navigation()->DispatchNavigateEvent(params);
+  CHECK_EQ(result, NavigationApi::DispatchResult::kContinue);
 }
 
 void LocalFrameMojoHandler::TraverseCancelled(
