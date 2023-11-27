@@ -994,6 +994,66 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
             initial_selection_bounds_in_child_coords);
 }
 
+IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
+                       TouchSelectionDeactivatedAfterReload) {
+  const GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(a)"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  WaitForHitTestData(root->current_frame_host());
+
+  InitSelectionController(true);
+
+  {
+    // Load touch selection test page into iframe.
+    const GURL child_url(
+        embedded_test_server()->GetURL("b.com", "/touch_selection.html"));
+    EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), child_url));
+    FrameTreeNode* child = root->child_at(0);
+    WaitForHitTestData(child->current_frame_host());
+
+    // Find the location of some text in the iframe to select.
+    RenderWidgetHostViewChildFrame* child_view =
+        static_cast<RenderWidgetHostViewChildFrame*>(
+            child->current_frame_host()->GetRenderWidgetHost()->GetView());
+    gfx::PointF point_in_text;
+    JSONToPoint(EvalJs(child->current_frame_host(), "get_top_left_of_text()")
+                    .ExtractString(),
+                &point_in_text);
+    point_in_text.Offset(2.0 * kCharacterWidth, 0.5f * kCharacterHeight);
+    point_in_text = child_view->TransformPointToRootCoordSpaceF(point_in_text);
+
+    // Long press some text in the iframe to show selection handles.
+    selection_controller_client()->InitWaitForSelectionEvent(
+        ui::SELECTION_HANDLES_SHOWN);
+    SelectWithLongTap(gfx::Point(point_in_text.x(), point_in_text.y()),
+                      child_view);
+    selection_controller_client()->Wait();
+  }
+
+  // Touch selection handles and menu should be active.
+  EXPECT_EQ(
+      ui::TouchSelectionController::SELECTION_ACTIVE,
+      GetRenderWidgetHostViewAura()->selection_controller()->active_status());
+  EXPECT_TRUE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
+
+  {
+    // Reload web contents.
+    TestNavigationObserver reload_observer(shell()->web_contents());
+    shell()->web_contents()->GetController().Reload(
+        content::ReloadType::NORMAL, false /* check_for_repost */);
+    reload_observer.Wait();
+  }
+
+  // Touch selection handles and menu should be deactivated.
+  EXPECT_EQ(
+      ui::TouchSelectionController::INACTIVE,
+      GetRenderWidgetHostViewAura()->selection_controller()->active_status());
+  EXPECT_FALSE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
+}
+
 // Tests that tapping in a textfield brings up the insertion handle, but not the
 // quick menu, initially. Then, successive taps on the insertion handle toggle
 // the quick menu visibility.
