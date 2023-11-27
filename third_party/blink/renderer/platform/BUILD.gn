@@ -2007,7 +2007,10 @@ test("blink_platform_unittests") {
     ]
   }
   if (is_ios) {
-    bundle_deps = [ ":blink_platform_unittests_bundle_data" ]
+    bundle_deps = [
+      ":blink_platform_unittests_bundle_data",
+      "//testing/buildbot/filters:blink_platform_unittests_filters_bundle_data",
+    ]
   }
 }
 

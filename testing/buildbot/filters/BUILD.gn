@@ -137,6 +137,13 @@ bundle_data("compositor_unittests_filters_bundle_data") {
               "{{source_root_relative_dir}}/{{source_file_part}}" ]
 }
 
+bundle_data("blink_platform_unittests_filters_bundle_data") {
+  testonly = true
+  sources = [ "//testing/buildbot/filters/ios.blink_platform_unittests.filter" ]
+  outputs = [ "{{bundle_resources_dir}}/" +
+              "{{source_root_relative_dir}}/{{source_file_part}}" ]
+}
+
 source_set("content_browsertests_filters") {
   testonly = true
 

@@ -4543,7 +4543,13 @@ targets.legacy_basic_suite(
         "blink_common_unittests": None,
         "blink_fuzzer_unittests": None,
         "blink_heap_unittests": None,
-        "blink_platform_unittests": None,
+        "blink_platform_unittests": targets.legacy_test_config(
+            test = "blink_platform_unittests",
+            args = [
+                "--test-launcher-bot-mode",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.blink_platform_unittests.filter",
+            ],
+        ),
         "blink_unittests": None,
         "blink_unittests_v2": None,
         "boringssl_crypto_tests": None,
