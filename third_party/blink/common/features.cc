@@ -111,12 +111,11 @@ BASE_FEATURE(kAllowSyncXHRInPageDismissal,
              "AllowSyncXHRInPageDismissal",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables URN URLs like those produced by FLEDGE auctions to be displayed by
-// iframes (instead of requiring fenced frames). This is only intended to be
-// enabled as part of the FLEDGE origin trial.
+// Enables URN URLs like those produced by Protected Audience auctions to be
+// displayed by iframes (instead of requiring fenced frames).
 BASE_FEATURE(kAllowURNsInIframes,
              "AllowURNsInIframes",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Anchor Element Interaction
 BASE_FEATURE(kAnchorElementInteraction,
