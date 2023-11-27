@@ -436,7 +436,7 @@ bool BoxPainterBase::CalculateFillLayerOcclusionCulling(
     // TODO(trchen): A fill layer cannot paint if the calculated tile size is
     // empty.  This occlusion check can be wrong.
     if (current_layer->ClipOccludesNextLayers() &&
-        current_layer->ImageOccludesNextLayers(*document_, style_)) {
+        current_layer->ImageOccludesNextLayers(document_, style_)) {
       if (current_layer->Clip() == EFillBox::kBorder)
         is_non_associative = false;
       break;
@@ -708,11 +708,11 @@ void DrawTiledBackground(LocalFrame* frame,
                          paint_timing_info, op, respect_orientation);
 }
 
-scoped_refptr<Image> GetBGColorPaintWorkletImage(const Document* document,
+scoped_refptr<Image> GetBGColorPaintWorkletImage(const Document& document,
                                                  Node* node,
                                                  const gfx::SizeF& image_size) {
   BackgroundColorPaintImageGenerator* generator =
-      GetBackgroundColorPaintImageGenerator(*document);
+      GetBackgroundColorPaintImageGenerator(document);
   // The generator can be null in testing environment.
   if (!generator)
     return nullptr;
@@ -727,7 +727,7 @@ scoped_refptr<Image> GetBGColorPaintWorkletImage(const Document* document,
 }
 
 // Returns true if the background color was painted by the paint worklet.
-bool PaintBGColorWithPaintWorklet(const Document* document,
+bool PaintBGColorWithPaintWorklet(const Document& document,
                                   const BoxPainterBase::FillLayerInfo& info,
                                   Node* node,
                                   const ComputedStyle& style,
@@ -841,7 +841,7 @@ inline bool CanUseBottomLayerFastPath(const BoxPainterBase::FillLayerInfo& info,
   return true;
 }
 
-inline bool PaintFastBottomLayer(const Document* document,
+inline bool PaintFastBottomLayer(const Document& document,
                                  Node* node,
                                  const ComputedStyle& style,
                                  GraphicsContext& context,
@@ -930,7 +930,7 @@ inline bool PaintFastBottomLayer(const Document* document,
       gfx::RectF(image->Rect()), gfx::RectF(image_border.Rect()));
 
   auto image_auto_dark_mode = ImageClassifierHelper::GetImageAutoDarkMode(
-      *document->GetFrame(), style, image_border.Rect(), src_rect);
+      *document.GetFrame(), style, image_border.Rect(), src_rect);
 
   Image::ImageClampingMode clamping_mode =
       Image::ImageClampingMode::kClampImageToSourceRect;
@@ -1040,7 +1040,7 @@ FloatRoundedRect RoundedBorderRectForClip(
   return border;
 }
 
-void PaintFillLayerBackground(const Document* document,
+void PaintFillLayerBackground(const Document& document,
                               GraphicsContext& context,
                               const BoxPainterBase::FillLayerInfo& info,
                               Node* node,
@@ -1077,7 +1077,7 @@ void PaintFillLayerBackground(const Document* document,
         inspector_paint_image_event::Data, node, *info.image,
         gfx::RectF(image->Rect()), gfx::RectF(scrolled_paint_rect));
     DrawTiledBackground(
-        document->GetFrame(), context, style, *image, geometry, composite_op,
+        document.GetFrame(), context, style, *image, geometry, composite_op,
         info.respect_image_orientation,
         ComputeImagePaintTimingInfo(node, *image, *info.image, context,
                                     gfx::RectF(geometry.SnappedDestRect())));
@@ -1375,7 +1375,7 @@ void BoxPainterBase::PaintMaskImages(const PaintInfo& paint_info,
 
   PaintFillLayers(paint_info, Color::kTransparent, style_.MaskLayers(),
                   paint_rect, geometry);
-  NinePieceImagePainter::Paint(paint_info.context, obj, *document_, node_,
+  NinePieceImagePainter::Paint(paint_info.context, obj, document_, node_,
                                paint_rect, style_, style_.MaskBoxImage(),
                                sides_to_include);
 }

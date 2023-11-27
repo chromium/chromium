@@ -30,7 +30,7 @@ Node* GetNode(const LayoutBoxModelObject& box_model) {
 }  // anonymous namespace
 
 BoxModelObjectPainter::BoxModelObjectPainter(const LayoutBoxModelObject& box)
-    : BoxPainterBase(&box.GetDocument(), box.StyleRef(), GetNode(box)),
+    : BoxPainterBase(box.GetDocument(), box.StyleRef(), GetNode(box)),
       box_model_(box) {}
 
 PhysicalRect BoxModelObjectPainter::AdjustRectForScrolledContent(

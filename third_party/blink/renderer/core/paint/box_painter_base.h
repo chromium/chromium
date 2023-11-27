@@ -40,7 +40,7 @@ class BoxPainterBase {
   STACK_ALLOCATED();
 
  public:
-  BoxPainterBase(const Document* document,
+  BoxPainterBase(const Document& document,
                  const ComputedStyle& style,
                  Node* node)
       : document_(document), style_(style), node_(node) {}
@@ -177,7 +177,7 @@ class BoxPainterBase {
  private:
   PhysicalBoxStrut ComputeSnappedBorders() const;
 
-  const Document* document_;
+  const Document& document_;
   const ComputedStyle& style_;
   Node* node_;
 };
