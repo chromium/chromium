@@ -64,7 +64,7 @@ void LogComposeDialogOpenLatency(base::TimeDelta duration) {
 }
 
 void LogComposeDialogSelectionLength(int length) {
-  // The autofil::kMaxSelectedTextLength is in UTF16 bytes so divide by 2 for
+  // The autofill::kMaxSelectedTextLength is in UTF16 bytes so divide by 2 for
   // the maximum number of unicode code points.
   const int max_selection_size = 51200 / 2;
   base::UmaHistogramCustomCounts(kComposeDialogSelectionLength, length, 1,

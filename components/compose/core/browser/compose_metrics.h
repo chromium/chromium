@@ -33,7 +33,8 @@ enum class ComposeContextMenuCtrEvent {
   kComposeOpened = 1,
   kMaxValue = kComposeOpened,
 };
-// Keep in sync with ComposeContextMenuCtrEvent in
+
+// Keep in sync with ComposeSessionCloseReasonType in
 // src/tools/metrics/histograms/enums.xml.
 enum class ComposeSessionCloseReason {
   kAcceptedSuggestion = 0,
@@ -68,7 +69,7 @@ void LogComposeContextMenuShowStatus(ComposeShowStatus status);
 // the request.
 void LogComposeRequestDuration(base::TimeDelta duration, bool is_ok);
 
-// Log session based meterics at when a session ends.
+// Log session based metrics when a session ends.
 void LogComposeSessionCloseMetrics(ComposeSessionCloseReason reason,
                                    int compose_count,
                                    int dialog_shown_count,
