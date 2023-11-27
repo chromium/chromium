@@ -4,8 +4,6 @@
 
 import {assertEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {reportPromise} from '../../../common/js/test_error_reporting.js';
-
 import {FileSystemMetadataProvider} from './file_system_metadata_provider.js';
 import {MetadataKey} from './metadata_item.js';
 import {MetadataRequest} from './metadata_request.js';
@@ -30,7 +28,7 @@ const entryB: Entry = {
   },
 } as Entry;
 
-export function testFileSystemMetadataProviderBasic(callback: () => void) {
+export async function testFileSystemMetadataProviderBasic() {
   const provider = new FileSystemMetadataProvider();
   const names: MetadataKey[] = [
     'modificationTime',
@@ -39,41 +37,33 @@ export function testFileSystemMetadataProviderBasic(callback: () => void) {
     'present',
     'availableOffline',
   ];
-  reportPromise(
-      provider
-          .get([
-            new MetadataRequest(entryA, names),
-            new MetadataRequest(entryB, names),
-          ])
-          .then(results => {
-            assertEquals(2, results.length);
-            assertEquals(
-                new Date(2015, 1, 1).toString(),
-                results[0]!.modificationTime!.toString());
-            assertEquals(1024, results[0]!.size);
-            assertTrue(!!results[0]!.present);
-            assertTrue(!!results[0]!.availableOffline);
-            assertEquals(
-                new Date(2015, 2, 2).toString(),
-                results[1]!.modificationTime!.toString());
-            assertEquals(2048, results[1]!.size);
-            assertTrue(!!results[1]!.present);
-            assertTrue(!!results[1]!.availableOffline);
-          }),
-      callback);
+  const results = await provider.get([
+    new MetadataRequest(entryA, names),
+    new MetadataRequest(entryB, names),
+  ]);
+  assertEquals(2, results.length);
+  assertEquals(
+      new Date(2015, 1, 1).toString(),
+      results[0]!.modificationTime!.toString());
+  assertEquals(1024, results[0]!.size);
+  assertTrue(!!results[0]!.present);
+  assertTrue(!!results[0]!.availableOffline);
+  assertEquals(
+      new Date(2015, 2, 2).toString(),
+      results[1]!.modificationTime!.toString());
+  assertEquals(2048, results[1]!.size);
+  assertTrue(!!results[1]!.present);
+  assertTrue(!!results[1]!.availableOffline);
 }
 
-export function testFileSystemMetadataProviderPartialRequest(
-    callback: () => void) {
+export async function testFileSystemMetadataProviderPartialRequest() {
   const provider = new FileSystemMetadataProvider();
-  reportPromise(
-      provider.get([new MetadataRequest(entryA, ['modificationTime', 'size'])])
-          .then(results => {
-            assertEquals(1, results.length);
-            assertEquals(
-                new Date(2015, 1, 1).toString(),
-                results[0]!.modificationTime!.toString());
-            assertEquals(1024, results[0]!.size);
-          }),
-      callback);
+  const results = await provider.get(
+      [new MetadataRequest(entryA, ['modificationTime', 'size'])]);
+
+  assertEquals(1, results.length);
+  assertEquals(
+      new Date(2015, 1, 1).toString(),
+      results[0]!.modificationTime!.toString());
+  assertEquals(1024, results[0]!.size);
 }

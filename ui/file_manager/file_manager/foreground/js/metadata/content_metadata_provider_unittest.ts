@@ -4,8 +4,6 @@
 
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {reportPromise} from '../../../common/js/test_error_reporting.js';
-
 import {ContentMetadataProvider} from './content_metadata_provider.js';
 import {MetadataRequest} from './metadata_request.js';
 
@@ -66,7 +64,7 @@ const entryA = makeFileEntryFromDataURL(
 
 const entryB = makeFileEntryFromDataURL('empty.jpg', 'data:image/jpeg;base64,');
 
-export function testExternalMetadataProviderBasic(callback: () => void) {
+export async function testExternalMetadataProviderBasic() {
   // Mocking SharedWorker's port.
   const port = {
     postMessage: function(message) {
@@ -90,26 +88,19 @@ export function testExternalMetadataProviderBasic(callback: () => void) {
 
   // TODO(ryoh): chrome.mediaGalleries API is not available in unit tests.
   const provider = new ContentMetadataProvider(port);
-  reportPromise(
-      provider
-          .get([
-            new MetadataRequest(
-                entryA as unknown as FileSystemEntry,
-                ['contentThumbnailUrl', 'contentThumbnailTransform']),
-            new MetadataRequest(
-                entryB as unknown as FileSystemEntry,
-                ['contentThumbnailUrl', 'contentThumbnailTransform']),
-          ])
-          .then(results => {
-            assertEquals(2, results.length);
-            assertEquals(entryA.url + ',url', results[0]!.contentThumbnailUrl);
-            assertEquals(
-                entryA.url + ',transform',
-                results[0]!.contentThumbnailTransform);
-            assertEquals(entryB.url + ',url', results[1]!.contentThumbnailUrl);
-            assertEquals(
-                entryB.url + ',transform',
-                results[1]!.contentThumbnailTransform);
-          }),
-      callback);
+  const results = await provider.get([
+    new MetadataRequest(
+        entryA as unknown as FileSystemEntry,
+        ['contentThumbnailUrl', 'contentThumbnailTransform']),
+    new MetadataRequest(
+        entryB as unknown as FileSystemEntry,
+        ['contentThumbnailUrl', 'contentThumbnailTransform']),
+  ]);
+  assertEquals(2, results.length);
+  assertEquals(entryA.url + ',url', results[0]!.contentThumbnailUrl);
+  assertEquals(
+      entryA.url + ',transform', results[0]!.contentThumbnailTransform);
+  assertEquals(entryB.url + ',url', results[1]!.contentThumbnailUrl);
+  assertEquals(
+      entryB.url + ',transform', results[1]!.contentThumbnailTransform);
 }
