@@ -7,7 +7,7 @@
  * with keyboard events.
  */
 import {AsyncUtil} from '../../common/async_util.js';
-import {KeyCode} from '../../common/key_code.js';
+import {KeyCode, KeyName} from '../../common/key_code.js';
 
 import {KeySequence} from './key_sequence.js';
 import {Msgs} from './msgs.js';
@@ -93,26 +93,10 @@ export class KeyUtil {
     if (keyCode === KeyCode.CONTROL) {
       return 'Ctrl';
     }
-    if (keyCode === KeyCode.ALT) {
-      return 'Alt';
+    if (KeyName.fromCode(keyCode)) {
+      return KeyName.fromCode(keyCode);
     }
-    if (keyCode === KeyCode.SHIFT) {
-      return 'Shift';
-    }
-    if ((keyCode === KeyCode.SEARCH) || (keyCode === KeyCode.APPS)) {
-      return 'Search';
-    }
-    // TODO(rshearer): This is a hack to work around the special casing of the
-    // sticky mode string that used to happen in keyEventToString. We won't need
-    // it once we move away from strings completely.
-    if (keyCode === KeyCode.INSERT) {
-      return 'Insert';
-    }
-    if ((keyCode >= KeyCode.A && keyCode <= KeyCode.Z) ||
-        (keyCode >= KeyCode.ZERO && keyCode <= KeyCode.NINE)) {
-      // A - Z, 0 - 9
-      return String.fromCharCode(keyCode);
-    }
+
     // Anything else
     return '#' + keyCode;
   }
@@ -178,41 +162,6 @@ export class KeyUtil {
   static getReadableNameForKeyCode(keyCode) {
     const msg = Msgs.getMsg.bind(Msgs);
     switch (keyCode) {
-      case 0:
-        return 'Power button';
-      case KeyCode.CONTROL:
-        return 'Control';
-      case KeyCode.ALT:
-        return 'Alt';
-      case KeyCode.SHIFT:
-        return 'Shift';
-      case KeyCode.TAB:
-        return 'Tab';
-      case KeyCode.SEARCH:
-      case KeyCode.APPS:
-        return 'Search';
-      case KeyCode.BACK:
-        return 'Backspace';
-      case KeyCode.SPACE:
-        return 'Space';
-      case KeyCode.END:
-        return 'end';
-      case KeyCode.HOME:
-        return 'home';
-      case KeyCode.LEFT:
-        return 'Left arrow';
-      case KeyCode.UP:
-        return 'Up arrow';
-      case KeyCode.RIGHT:
-        return 'Right arrow';
-      case KeyCode.DOWN:
-        return 'Down arrow';
-      case KeyCode.INSERT:
-        return 'Insert';
-      case KeyCode.RETURN:
-        return 'Enter';
-      case KeyCode.ESCAPE:
-        return 'Escape';
       case KeyCode.BROWSER_BACK:
         return msg('back_key');
       case KeyCode.BROWSER_FORWARD:
@@ -233,43 +182,12 @@ export class KeyUtil {
         return msg('volume_down_key');
       case KeyCode.VOLUME_UP:
         return msg('volume_up_key');
-      case KeyCode.F11:
-        return 'F11';
-      case KeyCode.F12:
-        return 'F12';
       case KeyCode.ASSISTANT:
         return msg('assistant_key');
       case KeyCode.MEDIA_PLAY_PAUSE:
         return msg('media_play_pause');
-      case KeyCode.OEM_1:
-        return 'Semicolon';
-      case KeyCode.OEM_PLUS:
-        return 'Equal sign';
-      case KeyCode.OEM_COMMA:
-        return 'Comma';
-      case KeyCode.OEM_MINUS:
-        return 'Dash';
-      case KeyCode.OEM_PERIOD:
-        return 'Period';
-      case KeyCode.OEM_2:
-        return 'Forward slash';
-      case KeyCode.OEM_3:
-        return 'Grave accent';
-      case KeyCode.OEM_4:
-        return 'Open bracket';
-      case KeyCode.OEM_5:
-        return 'Back slash';
-      case KeyCode.OEM_6:
-        return 'Close bracket';
-      case KeyCode.OEM_7:
-        return 'Single quote';
-      case KeyCode.F4:
-        return 'Toggle full screen';
     }
-    if (keyCode >= KeyCode.ZERO && keyCode <= KeyCode.Z) {
-      return String.fromCharCode(keyCode);
-    }
-    return '';
+    return KeyName.fromCode(keyCode);
   }
 
   /**

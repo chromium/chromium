@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {KeyCode} from './key_code.js';
+import {Key} from './key_code.js';
 
 /**
  * @fileoverview Wraps automation and accessibility_private callbacks
@@ -22,7 +22,7 @@ export class AsyncUtil {
   }
 
   /**
-   * @param {!KeyCode} keyCode
+   * @param {!Key.Code} keyCode
    * @return {!Promise<string>}
    */
   static async getLocalizedDomKeyStringForKeyCode(keyCode) {
