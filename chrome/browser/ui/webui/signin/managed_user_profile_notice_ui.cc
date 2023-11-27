@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
+#include "chrome/browser/ui/webui/signin/managed_user_profile_notice_ui.h"
 
 #include <memory>
 #include <utility>
@@ -13,7 +13,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_features.h"
-#include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_handler.h"
+#include "chrome/browser/ui/webui/signin/managed_user_profile_notice_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
@@ -30,7 +30,7 @@
 #include "ui/base/webui/resource_path.h"
 #include "ui/resources/grit/webui_resources.h"
 
-EnterpriseProfileWelcomeUI::EnterpriseProfileWelcomeUI(content::WebUI* web_ui)
+ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
     : content::WebUIController(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui),
@@ -78,22 +78,22 @@ EnterpriseProfileWelcomeUI::EnterpriseProfileWelcomeUI(content::WebUI* web_ui)
   webui::SetupChromeRefresh2023(source);
 }
 
-EnterpriseProfileWelcomeUI::~EnterpriseProfileWelcomeUI() = default;
+ManagedUserProfileNoticeUI::~ManagedUserProfileNoticeUI() = default;
 
-void EnterpriseProfileWelcomeUI::Initialize(
+void ManagedUserProfileNoticeUI::Initialize(
     Browser* browser,
-    EnterpriseProfileWelcomeUI::ScreenType type,
+    ManagedUserProfileNoticeUI::ScreenType type,
     const AccountInfo& account_info,
     bool profile_creation_required_by_policy,
     bool show_link_data_option,
     signin::SigninChoiceCallback proceed_callback) {
-  auto handler = std::make_unique<EnterpriseProfileWelcomeHandler>(
+  auto handler = std::make_unique<ManagedUserProfileNoticeHandler>(
       browser, type, profile_creation_required_by_policy, show_link_data_option,
       account_info, std::move(proceed_callback));
   handler_ = handler.get();
 
   if (type ==
-      EnterpriseProfileWelcomeUI::ScreenType::kEnterpriseAccountCreation) {
+      ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation) {
     base::Value::Dict update_data;
     update_data.Set("isModalDialog", true);
 
@@ -113,9 +113,9 @@ void EnterpriseProfileWelcomeUI::Initialize(
   web_ui()->AddMessageHandler(std::move(handler));
 }
 
-EnterpriseProfileWelcomeHandler*
-EnterpriseProfileWelcomeUI::GetHandlerForTesting() {
+ManagedUserProfileNoticeHandler*
+ManagedUserProfileNoticeUI::GetHandlerForTesting() {
   return handler_;
 }
 
-WEB_UI_CONTROLLER_TYPE_IMPL(EnterpriseProfileWelcomeUI)
+WEB_UI_CONTROLLER_TYPE_IMPL(ManagedUserProfileNoticeUI)

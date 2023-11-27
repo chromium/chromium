@@ -128,7 +128,7 @@ class LacrosFirstRunSignedInFlowController
   }
 
   void SwitchToEnterpriseProfileWelcome(
-      EnterpriseProfileWelcomeUI::ScreenType type,
+      ManagedUserProfileNoticeUI::ScreenType type,
       signin::SigninChoiceCallback proceed_callback) override {
     NOTREACHED();
   }

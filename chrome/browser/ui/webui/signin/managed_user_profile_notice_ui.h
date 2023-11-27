@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_ENTERPRISE_PROFILE_WELCOME_UI_H_
-#define CHROME_BROWSER_UI_WEBUI_SIGNIN_ENTERPRISE_PROFILE_WELCOME_UI_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_MANAGED_USER_PROFILE_NOTICE_UI_H_
+#define CHROME_BROWSER_UI_WEBUI_SIGNIN_MANAGED_USER_PROFILE_NOTICE_UI_H_
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -14,18 +14,16 @@
 #include "third_party/skia/include/core/SkColor.h"
 
 class Browser;
-class EnterpriseProfileWelcomeHandler;
+class ManagedUserProfileNoticeHandler;
 struct AccountInfo;
 
 namespace content {
 class WebUI;
 }
 
-// TODO(crbug.com/1300109): Rename this and all related files to get rid of
-// "Enterprise".
-class EnterpriseProfileWelcomeUI : public content::WebUIController {
+class ManagedUserProfileNoticeUI : public content::WebUIController {
  public:
-  // Type of a welcome screen for the enterprise flow.
+  // Type of a managed user notice screen.
   enum class ScreenType {
     kEntepriseAccountSyncEnabled,
     kEntepriseAccountSyncDisabled,
@@ -33,14 +31,14 @@ class EnterpriseProfileWelcomeUI : public content::WebUIController {
     kEnterpriseAccountCreation,
   };
 
-  explicit EnterpriseProfileWelcomeUI(content::WebUI* web_ui);
-  ~EnterpriseProfileWelcomeUI() override;
+  explicit ManagedUserProfileNoticeUI(content::WebUI* web_ui);
+  ~ManagedUserProfileNoticeUI() override;
 
-  EnterpriseProfileWelcomeUI(const EnterpriseProfileWelcomeUI&) = delete;
-  EnterpriseProfileWelcomeUI& operator=(const EnterpriseProfileWelcomeUI&) =
+  ManagedUserProfileNoticeUI(const ManagedUserProfileNoticeUI&) = delete;
+  ManagedUserProfileNoticeUI& operator=(const ManagedUserProfileNoticeUI&) =
       delete;
 
-  // Initializes the EnterpriseProfileWelcomeUI, which will obtain the user's
+  // Initializes the ManagedUserProfileNoticeUI, which will obtain the user's
   // choice about how to set up the profile with the new account.
   // `proceed_callback` will be called when the user performs an action to exit
   // the screen. Their choice will depend on other flags passed to this method.
@@ -59,13 +57,13 @@ class EnterpriseProfileWelcomeUI : public content::WebUIController {
                   signin::SigninChoiceCallback proceed_callback);
 
   // Allows tests to trigger page events.
-  EnterpriseProfileWelcomeHandler* GetHandlerForTesting();
+  ManagedUserProfileNoticeHandler* GetHandlerForTesting();
 
  private:
   // Stored for tests.
-  raw_ptr<EnterpriseProfileWelcomeHandler> handler_ = nullptr;
+  raw_ptr<ManagedUserProfileNoticeHandler> handler_ = nullptr;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_ENTERPRISE_PROFILE_WELCOME_UI_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_MANAGED_USER_PROFILE_NOTICE_UI_H_

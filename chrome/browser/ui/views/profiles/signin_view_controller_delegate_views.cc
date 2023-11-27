@@ -196,15 +196,15 @@ SigninViewControllerDelegateViews::CreateEnterpriseConfirmationWebView(
       kEnterpriseConfirmationDialogHeight, kEnterpriseConfirmationDialogWidth,
       InitializeSigninWebDialogUI(false));
 
-  EnterpriseProfileWelcomeUI* web_dialog_ui =
+  ManagedUserProfileNoticeUI* web_dialog_ui =
       web_view->GetWebContents()
           ->GetWebUI()
           ->GetController()
-          ->GetAs<EnterpriseProfileWelcomeUI>();
+          ->GetAs<ManagedUserProfileNoticeUI>();
   DCHECK(web_dialog_ui);
   web_dialog_ui->Initialize(
       browser,
-      EnterpriseProfileWelcomeUI::ScreenType::kEnterpriseAccountCreation,
+      ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation,
       account_info, profile_creation_required_by_policy, show_link_data_option,
       std::move(callback));
 

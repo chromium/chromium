@@ -93,7 +93,7 @@ void ProfilePickerSignedInFlowController::SwitchToSyncConfirmation() {
 }
 
 void ProfilePickerSignedInFlowController::SwitchToEnterpriseProfileWelcome(
-    EnterpriseProfileWelcomeUI::ScreenType type,
+    ManagedUserProfileNoticeUI::ScreenType type,
     signin::SigninChoiceCallback proceed_callback) {
   DCHECK(IsInitialized());
   host_->ShowScreen(contents(),
@@ -171,17 +171,17 @@ void ProfilePickerSignedInFlowController::SwitchToSyncConfirmationFinished() {
 
 void ProfilePickerSignedInFlowController::
     SwitchToEnterpriseProfileWelcomeFinished(
-        EnterpriseProfileWelcomeUI::ScreenType type,
+        ManagedUserProfileNoticeUI::ScreenType type,
         signin::SigninChoiceCallback proceed_callback) {
   DCHECK(IsInitialized());
   // Initialize the WebUI page once we know it's committed.
-  EnterpriseProfileWelcomeUI* enterprise_profile_welcome_ui =
+  ManagedUserProfileNoticeUI* managed_user_profile_notice_ui =
       contents()
           ->GetWebUI()
           ->GetController()
-          ->GetAs<EnterpriseProfileWelcomeUI>();
+          ->GetAs<ManagedUserProfileNoticeUI>();
 
-  enterprise_profile_welcome_ui->Initialize(
+  managed_user_profile_notice_ui->Initialize(
       /*browser=*/nullptr, type,
       IdentityManagerFactory::GetForProfile(profile_)
           ->FindExtendedAccountInfoByEmailAddress(email_),

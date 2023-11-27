@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_ENTERPRISE_PROFILE_WELCOME_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_SIGNIN_ENTERPRISE_PROFILE_WELCOME_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_MANAGED_USER_PROFILE_NOTICE_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_SIGNIN_MANAGED_USER_PROFILE_NOTICE_HANDLER_H_
 
 #include <string>
 
@@ -15,7 +15,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/ui/browser_list_observer.h"
-#include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
+#include "chrome/browser/ui/webui/signin/managed_user_profile_notice_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -24,34 +24,33 @@
 
 class Browser;
 class Profile;
-class EnterpriseProfileWelcomeHandleTest;
 struct AccountInfo;
 
 namespace base {
 class FilePath;
 }
 
-// WebUI message handler for the welcome screen for enterprise profiles in the
+// WebUI message handler for the managed user notice screen for profiles in the
 // profile creation flow.
-class EnterpriseProfileWelcomeHandler
+class ManagedUserProfileNoticeHandler
     : public content::WebUIMessageHandler,
       public ProfileAttributesStorage::Observer,
       public BrowserListObserver,
       public signin::IdentityManager::Observer {
  public:
-  EnterpriseProfileWelcomeHandler(
+  ManagedUserProfileNoticeHandler(
       Browser* browser,
-      EnterpriseProfileWelcomeUI::ScreenType type,
+      ManagedUserProfileNoticeUI::ScreenType type,
       bool profile_creation_required_by_policy,
       bool show_link_data_option,
       const AccountInfo& account_info,
       signin::SigninChoiceCallback proceed_callback);
-  ~EnterpriseProfileWelcomeHandler() override;
+  ~ManagedUserProfileNoticeHandler() override;
 
-  EnterpriseProfileWelcomeHandler(const EnterpriseProfileWelcomeHandler&) =
+  ManagedUserProfileNoticeHandler(const ManagedUserProfileNoticeHandler&) =
       delete;
-  EnterpriseProfileWelcomeHandler& operator=(
-      const EnterpriseProfileWelcomeHandler&) = delete;
+  ManagedUserProfileNoticeHandler& operator=(
+      const ManagedUserProfileNoticeHandler&) = delete;
 
   // content::WebUIMessageHandler:
   void RegisterMessages() override;
@@ -72,19 +71,19 @@ class EnterpriseProfileWelcomeHandler
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
 
   // Access to construction parameters for tests.
-  EnterpriseProfileWelcomeUI::ScreenType GetTypeForTesting();
+  ManagedUserProfileNoticeUI::ScreenType GetTypeForTesting();
   void CallProceedCallbackForTesting(signin::SigninChoice choice);
   void set_web_ui_for_test(content::WebUI* web_ui) { set_web_ui(web_ui); }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(
-      EnterpriseProfileWelcomeHandleTest,
+      ManagedUserProfileNoticeHandlerTest,
       GetManagedAccountTitleWithEmailInterceptionEnforcedAtMachineLevel);
   FRIEND_TEST_ALL_PREFIXES(
-      EnterpriseProfileWelcomeHandleTest,
+      ManagedUserProfileNoticeHandlerTest,
       GetManagedAccountTitleWithEmailInterceptionEnforcedByExistingProfile);
   FRIEND_TEST_ALL_PREFIXES(
-      EnterpriseProfileWelcomeHandleTest,
+      ManagedUserProfileNoticeHandlerTest,
       GetManagedAccountTitleWithEmailInterceptionEnforcedByInterceptedAccount);
 
   void HandleInitialized(const base::Value::List& args);
@@ -125,7 +124,7 @@ class EnterpriseProfileWelcomeHandler
       observed_account_{this};
 
   raw_ptr<Browser> browser_ = nullptr;
-  const EnterpriseProfileWelcomeUI::ScreenType type_;
+  const ManagedUserProfileNoticeUI::ScreenType type_;
   const bool profile_creation_required_by_policy_;
 #if !BUILDFLAG(IS_CHROMEOS)
   const bool show_link_data_option_;
@@ -136,4 +135,4 @@ class EnterpriseProfileWelcomeHandler
   signin::SigninChoiceCallback proceed_callback_;
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_ENTERPRISE_PROFILE_WELCOME_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_MANAGED_USER_PROFILE_NOTICE_HANDLER_H_

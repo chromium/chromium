@@ -64,10 +64,10 @@
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
-#include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_handler.h"
-#include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
+#include "chrome/browser/ui/webui/signin/managed_user_profile_notice_handler.h"
+#include "chrome/browser/ui/webui/signin/managed_user_profile_notice_ui.h"
 #include "chrome/browser/ui/webui/signin/profile_customization_handler.h"
 #include "chrome/browser/ui/webui/signin/profile_customization_ui.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_handler.h"
@@ -2089,7 +2089,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
                        CreateSignedInProfile) {
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
   // Simulate a successful sign-in and wait for the sign-in to propagate to the
-  // flow, resulting in enterprise welcome screen getting displayed.
+  // flow, resulting in managed user notice screen getting displayed.
   // Consumer-looking gmail address avoids code that forces the sync service to
   // actually start which would add overhead in mocking further stuff.
   // Enterprise domain needed for this profile being detected as Work.
@@ -2097,9 +2097,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
       SignInForNewProfile(GURL("chrome://enterprise-profile-welcome/"),
                           "joe.enterprise@gmail.com", "Joe", "enterprise.com");
 
-  profiles::testing::ExpectPickerWelcomeScreenTypeAndProceed(
+  profiles::testing::ExpectPickerManagedUserNoticeScreenTypeAndProceed(
       /*expected_type=*/
-      EnterpriseProfileWelcomeUI::ScreenType::kEntepriseAccountSyncEnabled,
+      ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled,
       /*choice=*/signin::SIGNIN_CHOICE_NEW_PROFILE);
 
   WaitForLoadStop(GetSyncConfirmationURL());
@@ -2156,13 +2156,13 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   FinishDiceSignIn(profile_being_created, "joe.enterprise@gmail.com", "Joe",
                    "enterprise.com");
 
-  // Wait for the sign-in to propagate to the flow, resulting in enterprise
-  // welcome screen getting displayed.
+  // Wait for the sign-in to propagate to the flow, resulting in managed user
+  // notice screen getting displayed.
   WaitForLoadStop(GURL("chrome://enterprise-profile-welcome/"));
 
-  profiles::testing::ExpectPickerWelcomeScreenTypeAndProceed(
+  profiles::testing::ExpectPickerManagedUserNoticeScreenTypeAndProceed(
       /*expected_type=*/
-      EnterpriseProfileWelcomeUI::ScreenType::kEntepriseAccountSyncDisabled,
+      ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncDisabled,
       /*choice=*/signin::SIGNIN_CHOICE_NEW_PROFILE);
 
   Browser* new_browser = BrowserAddedWaiter(2u).Wait();
@@ -2207,7 +2207,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
                        MAYBE_CreateSignedInEnterpriseProfileSettings) {
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
   // Simulate a successful sign-in and wait for the sign-in to propagate to the
-  // flow, resulting in enterprise welcome screen getting displayed.
+  // flow, resulting in managed user notice screen getting displayed.
   // Consumer-looking gmail address avoids code that forces the sync service to
   // actually start which would add overhead in mocking further stuff.
   // Enterprise domain needed for this profile being detected as Work.
@@ -2215,13 +2215,13 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
       SignInForNewProfile(GURL("chrome://enterprise-profile-welcome/"),
                           "joe.enterprise@gmail.com", "Joe", "enterprise.com");
 
-  // Wait for the sign-in to propagate to the flow, resulting in enterprise
-  // welcome screen getting displayed.
+  // Wait for the sign-in to propagate to the flow, resulting in managed user
+  // notice screen getting displayed.
   WaitForLoadStop(GURL("chrome://enterprise-profile-welcome/"));
 
-  profiles::testing::ExpectPickerWelcomeScreenTypeAndProceed(
+  profiles::testing::ExpectPickerManagedUserNoticeScreenTypeAndProceed(
       /*expected_type=*/
-      EnterpriseProfileWelcomeUI::ScreenType::kEntepriseAccountSyncEnabled,
+      ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled,
       /*choice=*/signin::SIGNIN_CHOICE_NEW_PROFILE);
 
   WaitForLoadStop(GetSyncConfirmationURL());
@@ -2266,7 +2266,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
 IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest, Cancel) {
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
   // Simulate a successful sign-in and wait for the sign-in to propagate to the
-  // flow, resulting in enterprise welcome screen getting displayed.
+  // flow, resulting in managed user notice screen getting displayed.
   // Consumer-looking gmail address avoids code that forces the sync service to
   // actually start which would add overhead in mocking further stuff.
   // Enterprise domain needed for this profile being detected as Work.
@@ -2275,14 +2275,14 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest, Cancel) {
                           "joe.enterprise@gmail.com", "Joe", "enterprise.com");
   base::FilePath profile_being_created_path = profile_being_created->GetPath();
 
-  // Wait for the sign-in to propagate to the flow, resulting in enterprise
-  // welcome screen getting displayed.
+  // Wait for the sign-in to propagate to the flow, resulting in managed user
+  // notice screen getting displayed.
   WaitForLoadStop(GURL("chrome://enterprise-profile-welcome/"));
 
   ProfileDeletionObserver observer;
-  profiles::testing::ExpectPickerWelcomeScreenTypeAndProceed(
+  profiles::testing::ExpectPickerManagedUserNoticeScreenTypeAndProceed(
       /*expected_type=*/
-      EnterpriseProfileWelcomeUI::ScreenType::kEntepriseAccountSyncEnabled,
+      ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled,
       /*choice=*/signin::SIGNIN_CHOICE_CANCEL);
 
   // As the profile creation flow was opened directly, the window is closed now.
@@ -2302,7 +2302,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
 
   // Simulate a successful sign-in and wait for the sign-in to propagate to the
-  // flow, resulting in enterprise welcome screen getting displayed.
+  // flow, resulting in managed user notice screen getting displayed.
   // Consumer-looking gmail address avoids code that forces the sync service to
   // actually start which would add overhead in mocking further stuff.
   // Enterprise domain needed for this profile being detected as Work.
@@ -2311,14 +2311,14 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
       "Joe", "enterprise.com", /*start_on_management_page=*/true);
   base::FilePath profile_being_created_path = profile_being_created->GetPath();
 
-  // Wait for the sign-in to propagate to the flow, resulting in enterprise
-  // welcome screen getting displayed.
+  // Wait for the sign-in to propagate to the flow, resulting in managed user
+  // notice screen getting displayed.
   WaitForLoadStop(GURL("chrome://enterprise-profile-welcome/"));
 
   ProfileDeletionObserver observer;
-  profiles::testing::ExpectPickerWelcomeScreenTypeAndProceed(
+  profiles::testing::ExpectPickerManagedUserNoticeScreenTypeAndProceed(
       /*expected_type=*/
-      EnterpriseProfileWelcomeUI::ScreenType::kEntepriseAccountSyncEnabled,
+      ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled,
       /*choice=*/signin::SIGNIN_CHOICE_CANCEL);
 
   // As the management page was opened, the picker returns to it.

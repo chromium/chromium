@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
+#include "chrome/browser/ui/webui/signin/managed_user_profile_notice_ui.h"
 
 #include <memory>
 
@@ -32,7 +32,7 @@
 // and not in the webui directory because they manipulate views.
 
 namespace {
-struct EnterpriseWelcomeTestParam {
+struct ManagedUserNoticeTestParam {
   PixelTestParam pixel_test_param;
   bool profile_creation_required_by_policy = false;
   bool show_link_data_checkbox = false;
@@ -42,12 +42,12 @@ struct EnterpriseWelcomeTestParam {
 // to be named like `<TestClassName>.InvokeUi_default/<TestSuffix>` instead
 // of using the index of the param in `TestParam` as suffix.
 std::string ParamToTestSuffix(
-    const ::testing::TestParamInfo<EnterpriseWelcomeTestParam>& info) {
+    const ::testing::TestParamInfo<ManagedUserNoticeTestParam>& info) {
   return info.param.pixel_test_param.test_suffix;
 }
 
 // Permutations of supported parameters.
-const EnterpriseWelcomeTestParam kWindowTestParams[] = {
+const ManagedUserNoticeTestParam kWindowTestParams[] = {
     {.pixel_test_param = {.test_suffix = "Regular"}},
     {.pixel_test_param = {.test_suffix = "DarkTheme", .use_dark_theme = true}},
     {.pixel_test_param = {.test_suffix = "Rtl",
@@ -58,7 +58,7 @@ const EnterpriseWelcomeTestParam kWindowTestParams[] = {
                           .use_chrome_refresh_2023_style = true}},
 };
 
-const EnterpriseWelcomeTestParam kDialogTestParams[] = {
+const ManagedUserNoticeTestParam kDialogTestParams[] = {
     {.pixel_test_param = {.test_suffix = "Regular"}},
     {.pixel_test_param = {.test_suffix = "WithLinkDataCheckbox"},
      .show_link_data_checkbox = true},
@@ -74,43 +74,43 @@ const EnterpriseWelcomeTestParam kDialogTestParams[] = {
 };
 
 // Creates a step to represent the enterprise-profile-welcome
-class EnterpriseWelcomeStepControllerForTest
+class ManagedUserNoticeStepControllerForTest
     : public ProfileManagementStepController {
  public:
-  explicit EnterpriseWelcomeStepControllerForTest(
+  explicit ManagedUserNoticeStepControllerForTest(
       ProfilePickerWebContentsHost* host,
       Profile* profile,
       const AccountInfo& account_info)
       : ProfileManagementStepController(host),
-        enterprise_welcome_url_(
+        managed_user_notice_url_(
             GURL(chrome::kChromeUIEnterpriseProfileWelcomeURL)),
         profile_(profile),
         account_info_(&account_info) {}
 
-  ~EnterpriseWelcomeStepControllerForTest() override = default;
+  ~ManagedUserNoticeStepControllerForTest() override = default;
 
   void Show(StepSwitchFinishedCallback step_shown_callback,
             bool reset_state) override {
     // Reload the WebUI in the picker contents.
     host()->ShowScreenInPickerContents(
-        enterprise_welcome_url_,
+        managed_user_notice_url_,
         base::BindOnce(
-            &EnterpriseWelcomeStepControllerForTest::OnEnterpriseWelcomeLoaded,
+            &ManagedUserNoticeStepControllerForTest::OnManagedUserNoticeLoaded,
             weak_ptr_factory_.GetWeakPtr(), std::move(step_shown_callback)));
   }
 
   void OnNavigateBackRequested() override { NOTREACHED_NORETURN(); }
 
-  void OnEnterpriseWelcomeLoaded(
+  void OnManagedUserNoticeLoaded(
       StepSwitchFinishedCallback step_shown_callback) {
     DCHECK(profile_);
     DCHECK(account_info_);
-    auto* enterprise_welcome_ui = static_cast<EnterpriseProfileWelcomeUI*>(
+    auto* managed_user_notice_ui = static_cast<ManagedUserProfileNoticeUI*>(
         host()->GetPickerContents()->GetWebUI()->GetController());
 
-    enterprise_welcome_ui->Initialize(
+    managed_user_notice_ui->Initialize(
         /*browser=*/nullptr,
-        EnterpriseProfileWelcomeUI::ScreenType::kEntepriseAccountSyncEnabled,
+        ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled,
         *account_info_, /*profile_creation_required_by_policy=*/false,
         /*show_link_data_option=*/false,
         /*proceed_callback*/ base::DoNothing());
@@ -121,19 +121,19 @@ class EnterpriseWelcomeStepControllerForTest
   }
 
  private:
-  const GURL enterprise_welcome_url_;
+  const GURL managed_user_notice_url_;
   raw_ptr<Profile> profile_;
   raw_ptr<const AccountInfo> account_info_;
-  base::WeakPtrFactory<EnterpriseWelcomeStepControllerForTest>
+  base::WeakPtrFactory<ManagedUserNoticeStepControllerForTest>
       weak_ptr_factory_{this};
 };
 }  // namespace
 
-class EnterpriseWelcomeUIWindowPixelTest
+class ManagedUserNoticeUIWindowPixelTest
     : public ProfilesPixelTestBaseT<UiBrowserTest>,
-      public testing::WithParamInterface<EnterpriseWelcomeTestParam> {
+      public testing::WithParamInterface<ManagedUserNoticeTestParam> {
  public:
-  EnterpriseWelcomeUIWindowPixelTest()
+  ManagedUserNoticeUIWindowPixelTest()
       : ProfilesPixelTestBaseT<UiBrowserTest>(GetParam().pixel_test_param) {}
 
   void ShowUi(const std::string& name) override {
@@ -151,7 +151,7 @@ class EnterpriseWelcomeUIWindowPixelTest
         base::BindLambdaForTesting(
             [this, &account_info](ProfilePickerWebContentsHost* host)
                 -> std::unique_ptr<ProfileManagementStepController> {
-              return std::make_unique<EnterpriseWelcomeStepControllerForTest>(
+              return std::make_unique<ManagedUserNoticeStepControllerForTest>(
                   host, browser()->profile(), account_info);
             }));
     profile_picker_view_->ShowAndWait(
@@ -167,7 +167,7 @@ class EnterpriseWelcomeUIWindowPixelTest
     const std::string screenshot_name =
         base::StrCat({test_info->test_case_name(), "_", test_info->name()});
 
-    return VerifyPixelUi(widget, "EnterpriseWelcomeUIWindowPixelTest",
+    return VerifyPixelUi(widget, "ManagedUserProfileNoticeUIWindowPixelTest",
                          screenshot_name) != ui::test::ActionResult::kFailed;
   }
 
@@ -185,24 +185,24 @@ class EnterpriseWelcomeUIWindowPixelTest
       profile_picker_view_;
 };
 
-IN_PROC_BROWSER_TEST_P(EnterpriseWelcomeUIWindowPixelTest, InvokeUi_default) {
+IN_PROC_BROWSER_TEST_P(ManagedUserNoticeUIWindowPixelTest, InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
 INSTANTIATE_TEST_SUITE_P(,
-                         EnterpriseWelcomeUIWindowPixelTest,
+                         ManagedUserNoticeUIWindowPixelTest,
                          testing::ValuesIn(kWindowTestParams),
                          &ParamToTestSuffix);
 
-class EnterpriseWelcomeUIDialogPixelTest
+class ManagedUserNoticeUIDialogPixelTest
     : public ProfilesPixelTestBaseT<DialogBrowserTest>,
-      public testing::WithParamInterface<EnterpriseWelcomeTestParam> {
+      public testing::WithParamInterface<ManagedUserNoticeTestParam> {
  public:
-  EnterpriseWelcomeUIDialogPixelTest()
+  ManagedUserNoticeUIDialogPixelTest()
       : ProfilesPixelTestBaseT<DialogBrowserTest>(GetParam().pixel_test_param) {
   }
 
-  ~EnterpriseWelcomeUIDialogPixelTest() override = default;
+  ~ManagedUserNoticeUIDialogPixelTest() override = default;
 
   void ShowUi(const std::string& name) override {
     DCHECK(browser());
@@ -239,12 +239,12 @@ class EnterpriseWelcomeUIDialogPixelTest
 #else
 #define MAYBE_InvokeUi_default InvokeUi_default
 #endif
-IN_PROC_BROWSER_TEST_P(EnterpriseWelcomeUIDialogPixelTest,
+IN_PROC_BROWSER_TEST_P(ManagedUserNoticeUIDialogPixelTest,
                        MAYBE_InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
 INSTANTIATE_TEST_SUITE_P(,
-                         EnterpriseWelcomeUIDialogPixelTest,
+                         ManagedUserNoticeUIDialogPixelTest,
                          testing::ValuesIn(kDialogTestParams),
                          &ParamToTestSuffix);

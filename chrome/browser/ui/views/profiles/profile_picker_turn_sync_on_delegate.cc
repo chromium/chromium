@@ -126,7 +126,7 @@ void ProfilePickerTurnSyncOnDelegate::ShowEnterpriseAccountConfirmation(
     signin::SigninChoiceCallback callback) {
   enterprise_account_ = true;
   // In this flow, the enterprise confirmation is replaced by an enterprise
-  // welcome screen. Knowing if sync is enabled is needed for the screen. Thus,
+  // notice screen. Knowing if sync is enabled is needed for the screen. Thus,
   // it is delayed until either ShowSyncConfirmation() or
   // ShowSyncDisabledConfirmation() gets called.
   // Assume an implicit "Continue" here.
@@ -151,10 +151,10 @@ void ProfilePickerTurnSyncOnDelegate::ShowSyncConfirmation(
   }
 #endif
   if (enterprise_account_) {
-    // First show the welcome screen and only after that (if the user proceeds
+    // First show the notice screen and only after that (if the user proceeds
     // with the flow) the sync consent.
-    ShowEnterpriseWelcome(
-        EnterpriseProfileWelcomeUI::ScreenType::kEntepriseAccountSyncEnabled);
+    ShowManagedUserNotice(
+        ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled);
     return;
   }
 
@@ -182,10 +182,10 @@ void ProfilePickerTurnSyncOnDelegate::ShowSyncDisabledConfirmation(
   sync_disabled_ = true;
 
   sync_confirmation_callback_ = std::move(callback);
-  ShowEnterpriseWelcome(is_managed_account
-                            ? EnterpriseProfileWelcomeUI::ScreenType::
+  ShowManagedUserNotice(is_managed_account
+                            ? ManagedUserProfileNoticeUI::ScreenType::
                                   kEntepriseAccountSyncDisabled
-                            : EnterpriseProfileWelcomeUI::ScreenType::
+                            : ManagedUserProfileNoticeUI::ScreenType::
                                   kConsumerAccountSyncDisabled);
 }
 
@@ -253,15 +253,15 @@ void ProfilePickerTurnSyncOnDelegate::FinishSyncConfirmation(
   std::move(sync_confirmation_callback_).Run(result);
 }
 
-void ProfilePickerTurnSyncOnDelegate::ShowEnterpriseWelcome(
-    EnterpriseProfileWelcomeUI::ScreenType type) {
+void ProfilePickerTurnSyncOnDelegate::ShowManagedUserNotice(
+    ManagedUserProfileNoticeUI::ScreenType type) {
   DCHECK(sync_confirmation_callback_);
   // Unretained as the delegate lives until `sync_confirmation_callback_` gets
-  // called and thus always outlives the enterprise screen.
+  // called and thus always outlives the notice screen.
   if (controller_) {
     controller_->SwitchToEnterpriseProfileWelcome(
         type, base::BindOnce(
-                  &ProfilePickerTurnSyncOnDelegate::OnEnterpriseWelcomeClosed,
+                  &ProfilePickerTurnSyncOnDelegate::OnManagedUserNoticeClosed,
                   base::Unretained(this), type));
   }
 }
@@ -279,8 +279,8 @@ void ProfilePickerTurnSyncOnDelegate::HandleCancelSigninChoice(
   ProfilePicker::CancelSignedInFlow();
 }
 
-void ProfilePickerTurnSyncOnDelegate::OnEnterpriseWelcomeClosed(
-    EnterpriseProfileWelcomeUI::ScreenType type,
+void ProfilePickerTurnSyncOnDelegate::OnManagedUserNoticeClosed(
+    ManagedUserProfileNoticeUI::ScreenType type,
     signin::SigninChoice choice) {
   if (choice == signin::SIGNIN_CHOICE_CANCEL) {
     HandleCancelSigninChoice(ProfileMetrics::ProfileSignedInFlowOutcome::
@@ -293,11 +293,11 @@ void ProfilePickerTurnSyncOnDelegate::OnEnterpriseWelcomeClosed(
   DCHECK_EQ(choice, signin::SIGNIN_CHOICE_NEW_PROFILE);
 
   switch (type) {
-    case EnterpriseProfileWelcomeUI::ScreenType::kEntepriseAccountSyncEnabled:
+    case ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled:
       ShowSyncConfirmationScreen();
       return;
-    case EnterpriseProfileWelcomeUI::ScreenType::kEntepriseAccountSyncDisabled:
-    case EnterpriseProfileWelcomeUI::ScreenType::kConsumerAccountSyncDisabled:
+    case ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncDisabled:
+    case ManagedUserProfileNoticeUI::ScreenType::kConsumerAccountSyncDisabled:
       // Logging kEnterpriseSyncDisabled for consumer accounts on managed
       // devices is a pre-existing minor imprecision in reporting of this metric
       // that's not worth fixing.
@@ -309,10 +309,10 @@ void ProfilePickerTurnSyncOnDelegate::OnEnterpriseWelcomeClosed(
       // entries to better match the situation.
       FinishSyncConfirmation(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
       break;
-    case EnterpriseProfileWelcomeUI::ScreenType::kEnterpriseAccountCreation:
+    case ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation:
       NOTREACHED_NORETURN()
-          << "The profile picker should not show an enterprise "
-             "welcome that prompts for profile creation";
+          << "The profile picker should not show a managed user "
+             "notice that prompts for profile creation";
   }
 }
 

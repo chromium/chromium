@@ -17,8 +17,8 @@
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
-#include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_handler.h"
-#include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
+#include "chrome/browser/ui/webui/signin/managed_user_profile_notice_handler.h"
+#include "chrome/browser/ui/webui/signin/managed_user_profile_notice_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
@@ -311,25 +311,25 @@ void WaitForPickerClosed() {
   }
 }
 
-EnterpriseProfileWelcomeHandler* ExpectPickerWelcomeScreenType(
-    EnterpriseProfileWelcomeUI::ScreenType expected_type) {
+ManagedUserProfileNoticeHandler* ExpectPickerNoticeScreenType(
+    ManagedUserProfileNoticeUI::ScreenType expected_type) {
   content::WebContents* web_contents = GetPickerWebContents();
   EXPECT_TRUE(web_contents);
-  EnterpriseProfileWelcomeHandler* handler =
+  ManagedUserProfileNoticeHandler* handler =
       web_contents->GetWebUI()
           ->GetController()
-          ->GetAs<EnterpriseProfileWelcomeUI>()
+          ->GetAs<ManagedUserProfileNoticeUI>()
           ->GetHandlerForTesting();
   EXPECT_TRUE(handler);
   EXPECT_EQ(handler->GetTypeForTesting(), expected_type);
   return handler;
 }
 
-void ExpectPickerWelcomeScreenTypeAndProceed(
-    EnterpriseProfileWelcomeUI::ScreenType expected_type,
+void ExpectPickerManagedUserNoticeScreenTypeAndProceed(
+    ManagedUserProfileNoticeUI::ScreenType expected_type,
     signin::SigninChoice choice) {
-  EnterpriseProfileWelcomeHandler* handler =
-      ExpectPickerWelcomeScreenType(expected_type);
+  ManagedUserProfileNoticeHandler* handler =
+      ExpectPickerNoticeScreenType(expected_type);
 
   // Simulate clicking on the next button.
   handler->CallProceedCallbackForTesting(choice);

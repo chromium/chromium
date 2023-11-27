@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_handler.h"
+#include "chrome/browser/ui/webui/signin/managed_user_profile_notice_handler.h"
 
 #include <string>
 #include <vector>
@@ -75,9 +75,9 @@ std::string GetManagedDeviceTitle() {
 
 }  // namespace
 
-EnterpriseProfileWelcomeHandler::EnterpriseProfileWelcomeHandler(
+ManagedUserProfileNoticeHandler::ManagedUserProfileNoticeHandler(
     Browser* browser,
-    EnterpriseProfileWelcomeUI::ScreenType type,
+    ManagedUserProfileNoticeUI::ScreenType type,
     bool profile_creation_required_by_policy,
     bool show_link_data_option,
     const AccountInfo& account_info,
@@ -96,57 +96,57 @@ EnterpriseProfileWelcomeHandler::EnterpriseProfileWelcomeHandler(
   DCHECK(
       browser_ ||
       type_ !=
-          EnterpriseProfileWelcomeUI::ScreenType::kEnterpriseAccountCreation);
+          ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation);
   BrowserList::AddObserver(this);
 }
 
-EnterpriseProfileWelcomeHandler::~EnterpriseProfileWelcomeHandler() {
+ManagedUserProfileNoticeHandler::~ManagedUserProfileNoticeHandler() {
   BrowserList::RemoveObserver(this);
   HandleCancel(base::Value::List());
 }
 
-void EnterpriseProfileWelcomeHandler::RegisterMessages() {
+void ManagedUserProfileNoticeHandler::RegisterMessages() {
   profile_path_ = Profile::FromWebUI(web_ui())->GetPath();
   web_ui()->RegisterMessageCallback(
       "initialized",
-      base::BindRepeating(&EnterpriseProfileWelcomeHandler::HandleInitialized,
+      base::BindRepeating(&ManagedUserProfileNoticeHandler::HandleInitialized,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "initializedWithSize",
       base::BindRepeating(
-          &EnterpriseProfileWelcomeHandler::HandleInitializedWithSize,
+          &ManagedUserProfileNoticeHandler::HandleInitializedWithSize,
           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "proceed",
-      base::BindRepeating(&EnterpriseProfileWelcomeHandler::HandleProceed,
+      base::BindRepeating(&ManagedUserProfileNoticeHandler::HandleProceed,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "cancel",
-      base::BindRepeating(&EnterpriseProfileWelcomeHandler::HandleCancel,
+      base::BindRepeating(&ManagedUserProfileNoticeHandler::HandleCancel,
                           base::Unretained(this)));
 }
 
-void EnterpriseProfileWelcomeHandler::OnProfileAvatarChanged(
+void ManagedUserProfileNoticeHandler::OnProfileAvatarChanged(
     const base::FilePath& profile_path) {
   UpdateProfileInfo(profile_path);
 }
 
-void EnterpriseProfileWelcomeHandler::OnProfileHighResAvatarLoaded(
+void ManagedUserProfileNoticeHandler::OnProfileHighResAvatarLoaded(
     const base::FilePath& profile_path) {
   UpdateProfileInfo(profile_path);
 }
 
-void EnterpriseProfileWelcomeHandler::OnProfileHostedDomainChanged(
+void ManagedUserProfileNoticeHandler::OnProfileHostedDomainChanged(
     const base::FilePath& profile_path) {
   UpdateProfileInfo(profile_path);
 }
 
-void EnterpriseProfileWelcomeHandler::OnBrowserRemoved(Browser* browser) {
+void ManagedUserProfileNoticeHandler::OnBrowserRemoved(Browser* browser) {
   if (browser_ == browser)
     browser_ = nullptr;
 }
 
-void EnterpriseProfileWelcomeHandler::OnExtendedAccountInfoUpdated(
+void ManagedUserProfileNoticeHandler::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {
   if (info.account_id == account_id_ && !info.account_image.IsEmpty()) {
     UpdateProfileInfo(profile_path_);
@@ -154,9 +154,9 @@ void EnterpriseProfileWelcomeHandler::OnExtendedAccountInfoUpdated(
   }
 }
 
-void EnterpriseProfileWelcomeHandler::OnJavascriptAllowed() {
+void ManagedUserProfileNoticeHandler::OnJavascriptAllowed() {
   if (type_ !=
-      EnterpriseProfileWelcomeUI::ScreenType::kEnterpriseAccountCreation) {
+      ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation) {
     observed_profile_.Observe(
         &g_browser_process->profile_manager()->GetProfileAttributesStorage());
   } else {
@@ -165,12 +165,12 @@ void EnterpriseProfileWelcomeHandler::OnJavascriptAllowed() {
   }
 }
 
-void EnterpriseProfileWelcomeHandler::OnJavascriptDisallowed() {
+void ManagedUserProfileNoticeHandler::OnJavascriptDisallowed() {
   observed_profile_.Reset();
   observed_account_.Reset();
 }
 
-void EnterpriseProfileWelcomeHandler::HandleInitialized(
+void ManagedUserProfileNoticeHandler::HandleInitialized(
     const base::Value::List& args) {
   CHECK_EQ(1u, args.size());
   AllowJavascript();
@@ -178,7 +178,7 @@ void EnterpriseProfileWelcomeHandler::HandleInitialized(
   ResolveJavascriptCallback(callback_id, GetProfileInfoValue());
 }
 
-void EnterpriseProfileWelcomeHandler::HandleInitializedWithSize(
+void ManagedUserProfileNoticeHandler::HandleInitializedWithSize(
     const base::Value::List& args) {
   AllowJavascript();
 
@@ -186,7 +186,7 @@ void EnterpriseProfileWelcomeHandler::HandleInitializedWithSize(
     signin::SetInitializedModalHeight(browser_, web_ui(), args);
 }
 
-void EnterpriseProfileWelcomeHandler::HandleProceed(
+void ManagedUserProfileNoticeHandler::HandleProceed(
     const base::Value::List& args) {
   CHECK_EQ(1u, args.size());
   if (proceed_callback_) {
@@ -197,13 +197,13 @@ void EnterpriseProfileWelcomeHandler::HandleProceed(
   }
 }
 
-void EnterpriseProfileWelcomeHandler::HandleCancel(
+void ManagedUserProfileNoticeHandler::HandleCancel(
     const base::Value::List& args) {
   if (proceed_callback_)
     std::move(proceed_callback_).Run(signin::SIGNIN_CHOICE_CANCEL);
 }
 
-void EnterpriseProfileWelcomeHandler::UpdateProfileInfo(
+void ManagedUserProfileNoticeHandler::UpdateProfileInfo(
     const base::FilePath& profile_path) {
   DCHECK(IsJavascriptAllowed());
   if (profile_path != profile_path_)
@@ -212,7 +212,7 @@ void EnterpriseProfileWelcomeHandler::UpdateProfileInfo(
 }
 
 // static
-std::string EnterpriseProfileWelcomeHandler::GetManagedAccountTitleWithEmail(
+std::string ManagedUserProfileNoticeHandler::GetManagedAccountTitleWithEmail(
     Profile* profile,
     ProfileAttributesEntry* entry,
     const std::string& account_domain_name,
@@ -271,7 +271,7 @@ std::string EnterpriseProfileWelcomeHandler::GetManagedAccountTitleWithEmail(
 #endif  //  !BUILDFLAG(IS_CHROMEOS)
 }
 
-base::Value::Dict EnterpriseProfileWelcomeHandler::GetProfileInfoValue() {
+base::Value::Dict ManagedUserProfileNoticeHandler::GetProfileInfoValue() {
   base::Value::Dict dict;
   dict.Set("pictureUrl", GetPictureUrl());
 
@@ -283,7 +283,7 @@ base::Value::Dict EnterpriseProfileWelcomeHandler::GetProfileInfoValue() {
   ProfileAttributesEntry* entry = GetProfileEntry();
 
   switch (type_) {
-    case EnterpriseProfileWelcomeUI::ScreenType::kEntepriseAccountSyncEnabled:
+    case ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled:
       dict.Set("showEnterpriseBadge", true);
       subtitle = GetManagedAccountTitle(entry, domain_name_);
       enterprise_info = l10n_util::GetStringUTF8(
@@ -291,21 +291,21 @@ base::Value::Dict EnterpriseProfileWelcomeHandler::GetProfileInfoValue() {
       dict.Set("proceedLabel", l10n_util::GetStringUTF8(
                                    IDS_PROFILE_PICKER_IPH_NEXT_BUTTON_LABEL));
       break;
-    case EnterpriseProfileWelcomeUI::ScreenType::kEntepriseAccountSyncDisabled:
+    case ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncDisabled:
       dict.Set("showEnterpriseBadge", true);
       subtitle = GetManagedAccountTitle(entry, domain_name_);
       enterprise_info = l10n_util ::GetStringUTF8(
           IDS_ENTERPRISE_PROFILE_WELCOME_MANAGED_DESCRIPTION_WITHOUT_SYNC);
       dict.Set("proceedLabel", l10n_util::GetStringUTF8(IDS_DONE));
       break;
-    case EnterpriseProfileWelcomeUI::ScreenType::kConsumerAccountSyncDisabled:
+    case ManagedUserProfileNoticeUI::ScreenType::kConsumerAccountSyncDisabled:
       dict.Set("showEnterpriseBadge", false);
       subtitle = GetManagedDeviceTitle();
       enterprise_info =
           l10n_util::GetStringUTF8(IDS_SYNC_DISABLED_CONFIRMATION_DETAILS);
       dict.Set("proceedLabel", l10n_util::GetStringUTF8(IDS_DONE));
       break;
-    case EnterpriseProfileWelcomeUI::ScreenType::kEnterpriseAccountCreation:
+    case ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation:
       title = l10n_util::GetStringUTF8(
           profile_creation_required_by_policy_
               ? IDS_ENTERPRISE_WELCOME_PROFILE_REQUIRED_TITLE
@@ -348,7 +348,7 @@ base::Value::Dict EnterpriseProfileWelcomeHandler::GetProfileInfoValue() {
   return dict;
 }
 
-ProfileAttributesEntry* EnterpriseProfileWelcomeHandler::GetProfileEntry()
+ProfileAttributesEntry* ManagedUserProfileNoticeHandler::GetProfileEntry()
     const {
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
@@ -358,10 +358,10 @@ ProfileAttributesEntry* EnterpriseProfileWelcomeHandler::GetProfileEntry()
   return entry;
 }
 
-std::string EnterpriseProfileWelcomeHandler::GetPictureUrl() {
+std::string ManagedUserProfileNoticeHandler::GetPictureUrl() {
   absl::optional<gfx::Image> icon;
   if (type_ ==
-      EnterpriseProfileWelcomeUI::ScreenType::kEnterpriseAccountCreation) {
+      ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation) {
     AccountInfo account_info =
         IdentityManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()))
             ->FindExtendedAccountInfoByAccountId(account_id_);
@@ -380,12 +380,12 @@ std::string EnterpriseProfileWelcomeHandler::GetPictureUrl() {
           .AsBitmap());
 }
 
-EnterpriseProfileWelcomeUI::ScreenType
-EnterpriseProfileWelcomeHandler::GetTypeForTesting() {
+ManagedUserProfileNoticeUI::ScreenType
+ManagedUserProfileNoticeHandler::GetTypeForTesting() {
   return type_;
 }
 
-void EnterpriseProfileWelcomeHandler::CallProceedCallbackForTesting(
+void ManagedUserProfileNoticeHandler::CallProceedCallbackForTesting(
     signin::SigninChoice choice) {
   if (proceed_callback_)
     std::move(proceed_callback_).Run(choice);

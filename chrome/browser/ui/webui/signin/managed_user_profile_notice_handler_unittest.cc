@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_handler.h"
+#include "chrome/browser/ui/webui/signin/managed_user_profile_notice_handler.h"
 
 #include <memory>
 
@@ -46,15 +46,15 @@ ProfileAttributesEntry* GetProfileEntry(Profile* profile) {
 
 }  // namespace
 
-class EnterpriseProfileWelcomeHandlerTestBase
+class ManagedUserProfileNoticeHandlerTestBase
     : public BrowserWithTestWindowTest {
  public:
-  EnterpriseProfileWelcomeHandlerTestBase() = default;
-  EnterpriseProfileWelcomeHandlerTestBase(
-      const EnterpriseProfileWelcomeHandlerTestBase&) = delete;
-  EnterpriseProfileWelcomeHandler& operator=(
-      const EnterpriseProfileWelcomeHandlerTestBase&) = delete;
-  ~EnterpriseProfileWelcomeHandlerTestBase() override = default;
+  ManagedUserProfileNoticeHandlerTestBase() = default;
+  ManagedUserProfileNoticeHandlerTestBase(
+      const ManagedUserProfileNoticeHandlerTestBase&) = delete;
+  ManagedUserProfileNoticeHandler& operator=(
+      const ManagedUserProfileNoticeHandlerTestBase&) = delete;
+  ~ManagedUserProfileNoticeHandlerTestBase() override = default;
 
   // BrowserWithTestWindowTest:
   void SetUp() override {
@@ -70,13 +70,13 @@ class EnterpriseProfileWelcomeHandlerTestBase
     account_info_.account_id = CoreAccountId::FromGaiaId(account_info_.gaia);
   }
 
-  void InitializeHandler(EnterpriseProfileWelcomeUI::ScreenType screen_type,
+  void InitializeHandler(ManagedUserProfileNoticeUI::ScreenType screen_type,
                          bool profile_creation_required_by_policy,
                          bool show_link_data_option,
                          signin::SigninChoiceCallback proceed_callback) {
     message_handler_.reset();
 
-    message_handler_ = std::make_unique<EnterpriseProfileWelcomeHandler>(
+    message_handler_ = std::make_unique<ManagedUserProfileNoticeHandler>(
         /*browser=*/nullptr, screen_type, profile_creation_required_by_policy,
         show_link_data_option, account_info_, std::move(proceed_callback));
     message_handler_->set_web_ui_for_test(web_ui());
@@ -89,13 +89,13 @@ class EnterpriseProfileWelcomeHandlerTestBase
   }
 
   content::TestWebUI* web_ui() { return web_ui_.get(); }
-  EnterpriseProfileWelcomeHandler* handler() { return message_handler_.get(); }
+  ManagedUserProfileNoticeHandler* handler() { return message_handler_.get(); }
 
  private:
   std::unique_ptr<content::TestWebUI> web_ui_;
   AccountInfo account_info_;
 
-  std::unique_ptr<EnterpriseProfileWelcomeHandler> message_handler_;
+  std::unique_ptr<ManagedUserProfileNoticeHandler> message_handler_;
 };
 
 struct HandleProceedTestParam {
@@ -110,16 +110,16 @@ const HandleProceedTestParam kHandleProceedParams[] = {
     {true, true, signin::SIGNIN_CHOICE_CONTINUE},
 };
 
-class EnterpriseProfileWelcomeHandleProceedTest
-    : public EnterpriseProfileWelcomeHandlerTestBase,
+class ManagedUserProfileNoticeHandleProceedTest
+    : public ManagedUserProfileNoticeHandlerTestBase,
       public testing::WithParamInterface<HandleProceedTestParam> {};
 
 // Tests how `HandleProceed` processes the arguments and the handler's state to
 // notify the registered callback.
-TEST_P(EnterpriseProfileWelcomeHandleProceedTest, HandleProceed) {
+TEST_P(ManagedUserProfileNoticeHandleProceedTest, HandleProceed) {
   base::MockCallback<signin::SigninChoiceCallback> mock_proceed_callback;
   InitializeHandler(
-      EnterpriseProfileWelcomeUI::ScreenType::kEntepriseAccountSyncEnabled,
+      ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled,
       GetParam().profile_creation_required_by_policy,
       /*show_link_data_option=*/true, mock_proceed_callback.Get());
 
@@ -130,19 +130,19 @@ TEST_P(EnterpriseProfileWelcomeHandleProceedTest, HandleProceed) {
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         EnterpriseProfileWelcomeHandleProceedTest,
+                         ManagedUserProfileNoticeHandleProceedTest,
                          testing::ValuesIn(kHandleProceedParams));
 
 #if !BUILDFLAG(IS_CHROMEOS)
-class EnterpriseProfileWelcomeHandleTest
-    : public EnterpriseProfileWelcomeHandlerTestBase {
+class ManagedUserProfileNoticeHandlerTest
+    : public ManagedUserProfileNoticeHandlerTestBase {
  protected:
   ProfileManager* profile_manager() {
     return g_browser_process->profile_manager();
   }
 };
 
-TEST_F(EnterpriseProfileWelcomeHandleTest,
+TEST_F(ManagedUserProfileNoticeHandlerTest,
        GetManagedAccountTitleWithEmailInterceptionEnforcedByExistingProfile) {
   auto& managed_profile = profiles::testing::CreateProfileSync(
       profile_manager(), profile_manager()->GenerateNextProfileDirectoryPath());
@@ -166,7 +166,7 @@ TEST_F(EnterpriseProfileWelcomeHandleTest,
     chrome::ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
         unknown_device_manager.c_str());
     std::string title =
-        EnterpriseProfileWelcomeHandler::GetManagedAccountTitleWithEmail(
+        ManagedUserProfileNoticeHandler::GetManagedAccountTitleWithEmail(
             &unmanaged_profile, GetProfileEntry(&unmanaged_profile),
             "intercepted.com", u"alice@intercepted.com");
     EXPECT_EQ(
@@ -181,7 +181,7 @@ TEST_F(EnterpriseProfileWelcomeHandleTest,
     chrome::ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
         device_manager.c_str());
     std::string title =
-        EnterpriseProfileWelcomeHandler::GetManagedAccountTitleWithEmail(
+        ManagedUserProfileNoticeHandler::GetManagedAccountTitleWithEmail(
             &unmanaged_profile, GetProfileEntry(&unmanaged_profile),
             "intercepted.com", u"alice@intercepted.com");
     EXPECT_EQ(
@@ -196,7 +196,7 @@ TEST_F(EnterpriseProfileWelcomeHandleTest,
     chrome::ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
         unknown_device_manager.c_str());
     std::string title =
-        EnterpriseProfileWelcomeHandler::GetManagedAccountTitleWithEmail(
+        ManagedUserProfileNoticeHandler::GetManagedAccountTitleWithEmail(
             &managed_profile, GetProfileEntry(&managed_profile),
             "intercepted.com", u"alice@intercepted.com");
     EXPECT_EQ(
@@ -211,7 +211,7 @@ TEST_F(EnterpriseProfileWelcomeHandleTest,
     chrome::ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
         device_manager.c_str());
     std::string title =
-        EnterpriseProfileWelcomeHandler::GetManagedAccountTitleWithEmail(
+        ManagedUserProfileNoticeHandler::GetManagedAccountTitleWithEmail(
             &managed_profile, GetProfileEntry(&managed_profile),
             "intercepted.com", u"alice@intercepted.com");
     EXPECT_EQ(
@@ -222,7 +222,7 @@ TEST_F(EnterpriseProfileWelcomeHandleTest,
   }
 }
 
-TEST_F(EnterpriseProfileWelcomeHandleTest,
+TEST_F(ManagedUserProfileNoticeHandlerTest,
        GetManagedAccountTitleWithEmailInterceptionEnforcedAtMachineLevel) {
   auto& managed_profile = profiles::testing::CreateProfileSync(
       profile_manager(), profile_manager()->GenerateNextProfileDirectoryPath());
@@ -250,7 +250,7 @@ TEST_F(EnterpriseProfileWelcomeHandleTest,
     chrome::ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
         unknown_device_manager.c_str());
     std::string title =
-        EnterpriseProfileWelcomeHandler::GetManagedAccountTitleWithEmail(
+        ManagedUserProfileNoticeHandler::GetManagedAccountTitleWithEmail(
             &unmanaged_profile, GetProfileEntry(&unmanaged_profile),
             "intercepted.com", u"alice@intercepted.com");
     EXPECT_EQ(
@@ -265,7 +265,7 @@ TEST_F(EnterpriseProfileWelcomeHandleTest,
     chrome::ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
         device_manager.c_str());
     std::string title =
-        EnterpriseProfileWelcomeHandler::GetManagedAccountTitleWithEmail(
+        ManagedUserProfileNoticeHandler::GetManagedAccountTitleWithEmail(
             &unmanaged_profile, GetProfileEntry(&unmanaged_profile),
             "intercepted.com", u"alice@intercepted.com");
     EXPECT_EQ(
@@ -280,7 +280,7 @@ TEST_F(EnterpriseProfileWelcomeHandleTest,
     chrome::ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
         unknown_device_manager.c_str());
     std::string title =
-        EnterpriseProfileWelcomeHandler::GetManagedAccountTitleWithEmail(
+        ManagedUserProfileNoticeHandler::GetManagedAccountTitleWithEmail(
             &managed_profile, GetProfileEntry(&managed_profile),
             "intercepted.com", u"alice@intercepted.com");
     l10n_util::GetStringFUTF8(
@@ -293,7 +293,7 @@ TEST_F(EnterpriseProfileWelcomeHandleTest,
     chrome::ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
         device_manager.c_str());
     std::string title =
-        EnterpriseProfileWelcomeHandler::GetManagedAccountTitleWithEmail(
+        ManagedUserProfileNoticeHandler::GetManagedAccountTitleWithEmail(
             &managed_profile, GetProfileEntry(&managed_profile),
             "intercepted.com", u"alice@intercepted.com");
     EXPECT_EQ(
@@ -305,7 +305,7 @@ TEST_F(EnterpriseProfileWelcomeHandleTest,
 }
 
 TEST_F(
-    EnterpriseProfileWelcomeHandleTest,
+    ManagedUserProfileNoticeHandlerTest,
     GetManagedAccountTitleWithEmailInterceptionEnforcedByInterceptedAccount) {
   auto& profile = profiles::testing::CreateProfileSync(
       profile_manager(), profile_manager()->GenerateNextProfileDirectoryPath());
@@ -313,7 +313,7 @@ TEST_F(
   // No account manager
   {
     std::string title =
-        EnterpriseProfileWelcomeHandler::GetManagedAccountTitleWithEmail(
+        ManagedUserProfileNoticeHandler::GetManagedAccountTitleWithEmail(
             &profile, GetProfileEntry(&profile), "intercepted.com",
             u"alice@intercepted.com");
     EXPECT_EQ(title,
@@ -329,7 +329,7 @@ TEST_F(
     // Set account manager
     GetProfileEntry(&profile)->SetHostedDomain("example.com");
     std::string title =
-        EnterpriseProfileWelcomeHandler::GetManagedAccountTitleWithEmail(
+        ManagedUserProfileNoticeHandler::GetManagedAccountTitleWithEmail(
             &profile, GetProfileEntry(&profile), "intercepted.com",
             u"alice@intercepted.com");
     EXPECT_EQ(
