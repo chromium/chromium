@@ -156,9 +156,9 @@ void TestDisplayCompositorTemperature(int64_t display_id, float temperature) {
   EXPECT_FLOAT_EQ(
       blue_scale,
       NightLightControllerImpl::BlueColorScaleFromTemperature(temperature));
-  EXPECT_FLOAT_EQ(green_scale,
-                  NightLightControllerImpl::GreenColorScaleFromTemperature(
-                      temperature, false /* in_linear_gamma_space */));
+  EXPECT_FLOAT_EQ(
+      green_scale,
+      NightLightControllerImpl::GreenColorScaleFromTemperature(temperature));
 }
 
 // Tests that the display color matrices of all compositors correctly correspond
@@ -1246,7 +1246,6 @@ class NightLightCrtcTest : public NightLightTest,
 
   struct TestSnapshotParams {
     bool has_ctm_support;
-    bool correction_in_linear_space;
   };
 
   // Builds two displays snapshots into |owned_snapshots_| and return a list of
@@ -1264,8 +1263,6 @@ class NightLightCrtcTest : public NightLightTest,
             .SetNativeMode(kDisplaySize)
             .SetCurrentMode(kDisplaySize)
             .SetHasColorCorrectionMatrix(snapshot_params[0].has_ctm_support)
-            .SetColorCorrectionInLinearSpace(
-                snapshot_params[0].correction_in_linear_space)
             .SetType(display::DISPLAY_CONNECTION_TYPE_INTERNAL)
             .Build());
     owned_snapshots_.back()->set_origin({0, 0});
@@ -1275,8 +1272,6 @@ class NightLightCrtcTest : public NightLightTest,
             .SetNativeMode(kDisplaySize)
             .SetCurrentMode(kDisplaySize)
             .SetHasColorCorrectionMatrix(snapshot_params[1].has_ctm_support)
-            .SetColorCorrectionInLinearSpace(
-                snapshot_params[1].correction_in_linear_space)
             .Build());
     owned_snapshots_.back()->set_origin({1030, 0});
     std::vector<display::DisplaySnapshot*> outputs = {
@@ -1308,17 +1303,12 @@ class NightLightCrtcTest : public NightLightTest,
 
   bool VerifyCrtcMatrix(int64_t display_id,
                         float temperature,
-                        bool in_linear_gamma_space,
                         const std::string& logger_actions_string) const {
-    if (in_linear_gamma_space)
-      temperature =
-          NightLightControllerImpl::GetNonLinearTemperature(temperature);
     constexpr float kRedScale = 1.0f;
     const float blue_scale =
         NightLightControllerImpl::BlueColorScaleFromTemperature(temperature);
     const float green_scale =
-        NightLightControllerImpl::GreenColorScaleFromTemperature(
-            temperature, in_linear_gamma_space);
+        NightLightControllerImpl::GreenColorScaleFromTemperature(temperature);
     std::stringstream pattern_stream;
     pattern_stream << "*set_color_matrix(id=" << display_id
                    << ",ctm[0]=" << kRedScale << "*ctm[4]=" << green_scale
@@ -1349,7 +1339,7 @@ constexpr gfx::Size NightLightCrtcTest::kDisplaySize;
 TEST_F(NightLightCrtcTest, TestAllDisplaysSupportCrtcMatrix) {
   // Create two displays with both having support for CRTC matrices.
   std::vector<display::DisplaySnapshot*> outputs =
-      BuildAndGetDisplaySnapshots({{true, true}, {true, true}});
+      BuildAndGetDisplaySnapshots({{true}, {true}});
   UpdateDisplays(outputs);
 
   EXPECT_EQ(2u, display_manager()->GetNumDisplays());
@@ -1371,8 +1361,8 @@ TEST_F(NightLightCrtcTest, TestAllDisplaysSupportCrtcMatrix) {
   EXPECT_FALSE(IsCursorCompositingEnabled());
   // Verify correct matrix has been set on both crtcs.
   std::string logger_actions = GetLoggerActionsAndClear();
-  EXPECT_TRUE(VerifyCrtcMatrix(kId1, temperature, true, logger_actions));
-  EXPECT_TRUE(VerifyCrtcMatrix(kId2, temperature, true, logger_actions));
+  EXPECT_TRUE(VerifyCrtcMatrix(kId1, temperature, logger_actions));
+  EXPECT_TRUE(VerifyCrtcMatrix(kId2, temperature, logger_actions));
 
   // Setting a new temperature is applied.
   temperature = 0.65f;
@@ -1381,8 +1371,8 @@ TEST_F(NightLightCrtcTest, TestAllDisplaysSupportCrtcMatrix) {
   TestCompositorsTemperature(0.0f);
   EXPECT_FALSE(IsCursorCompositingEnabled());
   logger_actions = GetLoggerActionsAndClear();
-  EXPECT_TRUE(VerifyCrtcMatrix(kId1, temperature, true, logger_actions));
-  EXPECT_TRUE(VerifyCrtcMatrix(kId2, temperature, true, logger_actions));
+  EXPECT_TRUE(VerifyCrtcMatrix(kId1, temperature, logger_actions));
+  EXPECT_TRUE(VerifyCrtcMatrix(kId2, temperature, logger_actions));
 
   // Test the cursor compositing behavior when Night Light is on (and doesn't
   // require the software cursor) while other accessibility settings that affect
@@ -1405,7 +1395,7 @@ TEST_F(NightLightCrtcTest,
   // Create two displays with both having support for CRTC matrices that are
   // applied in the compressed gamma space.
   std::vector<display::DisplaySnapshot*> outputs =
-      BuildAndGetDisplaySnapshots({{true, false}, {true, false}});
+      BuildAndGetDisplaySnapshots({{true}, {true}});
   UpdateDisplays(outputs);
 
   EXPECT_EQ(2u, display_manager()->GetNumDisplays());
@@ -1427,8 +1417,8 @@ TEST_F(NightLightCrtcTest,
   EXPECT_FALSE(IsCursorCompositingEnabled());
   // Verify compressed gamma space matrix has been set on both crtcs.
   std::string logger_actions = GetLoggerActionsAndClear();
-  EXPECT_TRUE(VerifyCrtcMatrix(kId1, temperature, false, logger_actions));
-  EXPECT_TRUE(VerifyCrtcMatrix(kId2, temperature, false, logger_actions));
+  EXPECT_TRUE(VerifyCrtcMatrix(kId1, temperature, logger_actions));
+  EXPECT_TRUE(VerifyCrtcMatrix(kId2, temperature, logger_actions));
 
   // Setting a new temperature is applied.
   temperature = 0.65f;
@@ -1437,14 +1427,14 @@ TEST_F(NightLightCrtcTest,
   TestCompositorsTemperature(0.0f);
   EXPECT_FALSE(IsCursorCompositingEnabled());
   logger_actions = GetLoggerActionsAndClear();
-  EXPECT_TRUE(VerifyCrtcMatrix(kId1, temperature, false, logger_actions));
-  EXPECT_TRUE(VerifyCrtcMatrix(kId2, temperature, false, logger_actions));
+  EXPECT_TRUE(VerifyCrtcMatrix(kId1, temperature, logger_actions));
+  EXPECT_TRUE(VerifyCrtcMatrix(kId2, temperature, logger_actions));
 }
 
 // One display supports CRTC matrix and the other doesn't.
 TEST_F(NightLightCrtcTest, TestMixedCrtcMatrixSupport) {
   std::vector<display::DisplaySnapshot*> outputs =
-      BuildAndGetDisplaySnapshots({{true, true}, {false, false}});
+      BuildAndGetDisplaySnapshots({{true}, {false}});
   UpdateDisplays(outputs);
 
   EXPECT_EQ(2u, display_manager()->GetNumDisplays());
@@ -1468,14 +1458,14 @@ TEST_F(NightLightCrtcTest, TestMixedCrtcMatrixSupport) {
   EXPECT_TRUE(IsCursorCompositingEnabled());
   // Verify correct matrix has been set on both crtcs.
   const std::string logger_actions = GetLoggerActionsAndClear();
-  EXPECT_TRUE(VerifyCrtcMatrix(kId1, temperature, true, logger_actions));
-  EXPECT_FALSE(VerifyCrtcMatrix(kId2, temperature, false, logger_actions));
+  EXPECT_TRUE(VerifyCrtcMatrix(kId1, temperature, logger_actions));
+  EXPECT_FALSE(VerifyCrtcMatrix(kId2, temperature, logger_actions));
 }
 
 // All displays don't support CRTC matrices.
 TEST_F(NightLightCrtcTest, TestNoCrtcMatrixSupport) {
   std::vector<display::DisplaySnapshot*> outputs =
-      BuildAndGetDisplaySnapshots({{false, false}, {false, false}});
+      BuildAndGetDisplaySnapshots({{false}, {false}});
   UpdateDisplays(outputs);
 
   EXPECT_EQ(2u, display_manager()->GetNumDisplays());
@@ -1495,15 +1485,15 @@ TEST_F(NightLightCrtcTest, TestNoCrtcMatrixSupport) {
   EXPECT_TRUE(IsCursorCompositingEnabled());
   // No CRTC matrices have been set.
   const std::string logger_actions = GetLoggerActionsAndClear();
-  EXPECT_FALSE(VerifyCrtcMatrix(kId1, temperature, false, logger_actions));
-  EXPECT_FALSE(VerifyCrtcMatrix(kId2, temperature, false, logger_actions));
+  EXPECT_FALSE(VerifyCrtcMatrix(kId1, temperature, logger_actions));
+  EXPECT_FALSE(VerifyCrtcMatrix(kId2, temperature, logger_actions));
 }
 
 // Tests that switching CRTC matrix support on while Night Light is enabled
 // doesn't result in the matrix being applied twice.
 TEST_F(NightLightCrtcTest, TestNoDoubleNightLightEffect) {
   std::vector<display::DisplaySnapshot*> outputs =
-      BuildAndGetDisplaySnapshots({{false, false}, {false, false}});
+      BuildAndGetDisplaySnapshots({{false}, {false}});
   UpdateDisplays(outputs);
 
   EXPECT_EQ(2u, display_manager()->GetNumDisplays());
@@ -1523,8 +1513,8 @@ TEST_F(NightLightCrtcTest, TestNoDoubleNightLightEffect) {
   EXPECT_TRUE(IsCursorCompositingEnabled());
   // No CRTC matrices have been set.
   std::string logger_actions = GetLoggerActionsAndClear();
-  EXPECT_FALSE(VerifyCrtcMatrix(kId1, temperature, false, logger_actions));
-  EXPECT_FALSE(VerifyCrtcMatrix(kId2, temperature, false, logger_actions));
+  EXPECT_FALSE(VerifyCrtcMatrix(kId1, temperature, logger_actions));
+  EXPECT_FALSE(VerifyCrtcMatrix(kId2, temperature, logger_actions));
 
   // Simulate that the two displays suddenly became able to support CRTC matrix.
   // This shouldn't happen in practice, but we noticed multiple times on resume
@@ -1537,13 +1527,13 @@ TEST_F(NightLightCrtcTest, TestNoDoubleNightLightEffect) {
   // matrix is set to identity, and the cursor compositing is updated correctly.
   // TODO(afakhry): Investigate the root cause of this https://crbug.com/844067.
   std::vector<display::DisplaySnapshot*> outputs2 =
-      BuildAndGetDisplaySnapshots({{true, true}, {true, true}});
+      BuildAndGetDisplaySnapshots({{true}, {true}});
   UpdateDisplays(outputs2);
   TestCompositorsTemperature(0.0f);
   EXPECT_FALSE(IsCursorCompositingEnabled());
   logger_actions = GetLoggerActionsAndClear();
-  EXPECT_TRUE(VerifyCrtcMatrix(kId1, temperature, true, logger_actions));
-  EXPECT_TRUE(VerifyCrtcMatrix(kId2, temperature, true, logger_actions));
+  EXPECT_TRUE(VerifyCrtcMatrix(kId1, temperature, logger_actions));
+  EXPECT_TRUE(VerifyCrtcMatrix(kId2, temperature, logger_actions));
 }
 
 // The following tests are for ambient color temperature conversions

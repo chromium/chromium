@@ -168,13 +168,11 @@ bool StructTraits<display::mojom::DisplaySnapshotDataView,
       data.base_connector_id(), path_topology,
       data.is_aspect_preserving_scaling(), data.has_overscan(),
       privacy_screen_state, data.has_content_protection_key(),
-      data.has_color_correction_matrix(),
-      data.color_correction_in_linear_space(), color_space,
-      data.bits_per_channel(), hdr_static_metadata, display_name, file_path,
-      std::move(modes), panel_orientation, std::move(edid), current_mode,
-      native_mode, data.product_code(), data.year_of_manufacture(),
-      maximum_cursor_size, variable_refresh_rate_state, vsync_rate_min,
-      drm_formats_and_modifiers);
+      data.has_color_correction_matrix(), color_space, data.bits_per_channel(),
+      hdr_static_metadata, display_name, file_path, std::move(modes),
+      panel_orientation, std::move(edid), current_mode, native_mode,
+      data.product_code(), data.year_of_manufacture(), maximum_cursor_size,
+      variable_refresh_rate_state, vsync_rate_min, drm_formats_and_modifiers);
   return true;
 }
 

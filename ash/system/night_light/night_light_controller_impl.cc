@@ -118,24 +118,16 @@ int GetTemperatureRange(float temperature) {
 
 // Returns the color matrix that corresponds to the given |temperature|.
 // The matrix will be affected by the current |ambient_temperature_| if
-// |apply_ambient_temperature| is true.
-// If |in_linear_gamma_space| is true, the generated matrix is the one that
-// should be applied after gamma correction, and it corresponds to the
-// non-linear temperature value for the given |temperature|.
+// |apply_ambient_temperature| is true. This matrix should be applied to
+// sRGB-encoded colors.
 SkM44 MatrixFromTemperature(float temperature,
-                            bool in_linear_gamma_space,
                             bool apply_ambient_temperature) {
-  if (in_linear_gamma_space)
-    temperature =
-        NightLightControllerImpl::GetNonLinearTemperature(temperature);
-
   SkM44 matrix;
   if (temperature != 0.0f) {
     const float blue_scale =
         NightLightControllerImpl::BlueColorScaleFromTemperature(temperature);
     const float green_scale =
-        NightLightControllerImpl::GreenColorScaleFromTemperature(
-            temperature, in_linear_gamma_space);
+        NightLightControllerImpl::GreenColorScaleFromTemperature(temperature);
 
     matrix.setRC(1, 1, green_scale);
     matrix.setRC(2, 2, blue_scale);
@@ -170,26 +162,18 @@ void UpdateCompositorMatrix(aura::WindowTreeHost* host,
   }
 }
 
-// Attempts setting one of the given color matrices on the display hardware of
-// |display_id| depending on the hardware capability. The matrix
-// |linear_gamma_space_matrix| will be applied if the hardware applies the
-// CTM in the linear gamma space (i.e. after gamma decoding), whereas the
-// matrix |gamma_compressed_matrix| will be applied instead if the hardware
-// applies the CTM in the gamma compressed space (i.e. after degamma
-// encoding).
-// Returns true if the hardware supports this operation and one of the
-// matrices was successfully sent to the GPU.
+// Attempts setting the given color matrix on the display hardware of
+// |display_id|. The matrix `gamma_compressed_matrix` will be applied
+// in gamma space. Returns true if the hardware supports this operation
+// the matrix was successfully sent to the GPU.
 bool AttemptSettingHardwareCtm(int64_t display_id,
-                               const SkM44& linear_gamma_space_matrix,
                                const SkM44& gamma_compressed_matrix) {
   for (const auto* snapshot :
        Shell::Get()->display_configurator()->cached_displays()) {
     if (snapshot->display_id() == display_id &&
         snapshot->has_color_correction_matrix()) {
       return Shell::Get()->display_color_manager()->SetDisplayColorMatrix(
-          snapshot, snapshot->color_correction_in_linear_space()
-                        ? linear_gamma_space_matrix
-                        : gamma_compressed_matrix);
+          snapshot, gamma_compressed_matrix);
     }
   }
 
@@ -222,12 +206,10 @@ void ApplyTemperatureToHost(aura::WindowTreeHost* host, float temperature) {
       night_light_controller->GetAmbientColorEnabled() &&
       display::IsInternalDisplayId(display_id);
 
-  const SkM44 linear_gamma_space_matrix =
-      MatrixFromTemperature(temperature, true, apply_ambient_temperature);
   const SkM44 gamma_compressed_matrix =
-      MatrixFromTemperature(temperature, false, apply_ambient_temperature);
-  const bool crtc_result = AttemptSettingHardwareCtm(
-      display_id, linear_gamma_space_matrix, gamma_compressed_matrix);
+      MatrixFromTemperature(temperature, apply_ambient_temperature);
+  const bool crtc_result =
+      AttemptSettingHardwareCtm(display_id, gamma_compressed_matrix);
   UpdateCompositorMatrix(host, gamma_compressed_matrix, crtc_result);
 }
 
@@ -389,18 +371,11 @@ float NightLightControllerImpl::BlueColorScaleFromTemperature(
 
 // static
 float NightLightControllerImpl::GreenColorScaleFromTemperature(
-    float temperature,
-    bool in_linear_space) {
+    float temperature) {
   // If we only tone down the blue scale, the screen will look very green so
   // we also need to tone down the green, but with a less value compared to
   // the blue scale to avoid making things look very red.
-  return 1.0f - (in_linear_space ? 0.7f : 0.5f) * temperature;
-}
-
-// static
-float NightLightControllerImpl::GetNonLinearTemperature(float temperature) {
-  constexpr float kGammaFactor = 1.0f / 2.2f;
-  return std::pow(temperature, kGammaFactor);
+  return 1.0f - 0.5f * temperature;
 }
 
 // static

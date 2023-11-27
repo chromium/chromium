@@ -46,7 +46,6 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
       PrivacyScreenState privacy_screen_state,
       bool has_content_protection_key,
       bool has_color_correction_matrix,
-      bool color_correction_in_linear_space,
       const gfx::ColorSpace& color_space,
       uint32_t bits_per_channel,
       const absl::optional<gfx::HDRStaticMetadata>& hdr_static_metadata,
@@ -96,9 +95,6 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
   }
   bool has_color_correction_matrix() const {
     return has_color_correction_matrix_;
-  }
-  bool color_correction_in_linear_space() const {
-    return color_correction_in_linear_space_;
   }
   const gfx::ColorSpace& color_space() const { return color_space_; }
   uint32_t bits_per_channel() const { return bits_per_channel_; }
@@ -230,9 +226,6 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
 
   // Whether this display has advanced color correction available.
   const bool has_color_correction_matrix_;
-  // Whether the color correction matrix will be applied in linear color space
-  // instead of gamma compressed one.
-  const bool color_correction_in_linear_space_;
 
   const gfx::ColorSpace color_space_;
   uint32_t bits_per_channel_;
