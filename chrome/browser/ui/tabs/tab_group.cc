@@ -12,7 +12,6 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/favicon/favicon_utils.h"
-#include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/tab_group_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -53,14 +52,12 @@ std::u16string TabGroup::GetContentString() const {
   gfx::Range tabs_in_group = ListTabs();
   DCHECK_GT(tabs_in_group.length(), 0u);
 
-  TabUIHelper* const tab_ui_helper = TabUIHelper::FromWebContents(
-      controller_->GetWebContentsAt(tabs_in_group.start()));
   constexpr size_t kContextMenuTabTitleMaxLength = 30;
   std::u16string format_string = l10n_util::GetPluralStringFUTF16(
       IDS_TAB_CXMENU_PLACEHOLDER_GROUP_TITLE, tabs_in_group.length() - 1);
   std::u16string short_title;
-  gfx::ElideString(tab_ui_helper->GetTitle(), kContextMenuTabTitleMaxLength,
-                   &short_title);
+  gfx::ElideString(controller_->GetTitleAt(tabs_in_group.start()),
+                   kContextMenuTabTitleMaxLength, &short_title);
   return base::ReplaceStringPlaceholders(format_string, {short_title}, nullptr);
 }
 

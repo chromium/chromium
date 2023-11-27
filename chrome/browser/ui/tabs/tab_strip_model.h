@@ -278,7 +278,7 @@ class TabStripModel : public TabGroupController {
 
   // Returns the WebContents at the specified index, or NULL if there is
   // none.
-  content::WebContents* GetWebContentsAt(int index) const override;
+  content::WebContents* GetWebContentsAt(int index) const;
 
   // Returns the index of the specified WebContents, or TabStripModel::kNoTab
   // if the WebContents is not in this TabStripModel.
@@ -485,6 +485,7 @@ class TabStripModel : public TabGroupController {
       const TabGroupChange::VisualsChange& visuals) override;
   void MoveTabGroup(const tab_groups::TabGroupId& group) override;
   void CloseTabGroup(const tab_groups::TabGroupId& group) override;
+  std::u16string GetTitleAt(int index) const override;
   // The same as count(), but overridden for TabGroup to access.
   int GetTabCount() const override;
 

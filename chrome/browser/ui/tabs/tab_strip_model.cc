@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
+#include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
@@ -1247,6 +1248,10 @@ void TabStripModel::CloseTabGroup(const tab_groups::TabGroupId& group) {
   TabGroupChange change(this, group, TabGroupChange::kClosed);
   for (auto& observer : observers_)
     observer.OnTabGroupChanged(change);
+}
+
+std::u16string TabStripModel::GetTitleAt(int index) const {
+  return TabUIHelper::FromWebContents(GetWebContentsAt(index))->GetTitle();
 }
 
 void TabStripModel::FollowSites(const std::vector<int>& indices) {
