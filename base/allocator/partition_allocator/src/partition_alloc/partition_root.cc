@@ -991,6 +991,8 @@ void PartitionRoot::Init(PartitionOptions opts) {
         (opts.use_configurable_pool == PartitionOptions::kAllowed) &&
         IsConfigurablePoolAvailable();
     PA_DCHECK(!settings.use_configurable_pool || IsConfigurablePoolAvailable());
+    settings.zapping_by_free_flags =
+        opts.zapping_by_free_flags == PartitionOptions::kEnabled;
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
     settings.memory_tagging_enabled_ =
         opts.memory_tagging.enabled == PartitionOptions::kEnabled;
