@@ -22,9 +22,18 @@ and with chrome_pgo_phase _not_ set. (It defaults to =2 in official builds.)
 import argparse
 import glob
 import os
+import pathlib
 import shutil
 import subprocess
 import sys
+
+_SRC_DIR = pathlib.Path(__file__).parents[2]
+_TELEMETRY_DIR = _SRC_DIR / 'third_party/catapult/telemetry'
+if str(_TELEMETRY_DIR) not in sys.path:
+    sys.path.append(str(_TELEMETRY_DIR))
+from telemetry.internal.backends import android_browser_backend_settings
+
+ANDROID_SETTINGS = android_browser_backend_settings.ANDROID_BACKEND_SETTINGS
 
 exe_ext = '.exe' if sys.platform == 'win32' else ''
 
@@ -48,14 +57,17 @@ def main():
                         required=True,
                         metavar='builddir',
                         dest='builddir')
-    parser.add_argument('--keep-temps', help='Whether to keep temp files')
+    parser.add_argument('--keep-temps',
+                        action='store_true',
+                        help='Whether to keep temp files')
     parser.add_argument('--android-browser',
                         help='The type of android browser to test, e.g. '
                         'android-trichrome-bundle.')
     parser.add_argument('--android-device-path',
-                        help='The device path to pull profiles from. Usually '
-                        'this is /data/data/<package>/cache/pgo_profiles/ but '
-                        'it may differ depending on your device.')
+                        help='The device path to pull profiles from. By '
+                        'default this is '
+                        '/data/data/<package>/cache/pgo_profiles/ but you can '
+                        'override it for your device if needed.')
     parser.add_argument('-v',
                         '--verbose',
                         action='count',
@@ -74,6 +86,15 @@ def main():
         chrome_path = f'{builddir}/Chromium.app/Contents/MacOS/Chromium'
     elif args.android_browser:
         chrome_path = None
+        if not args.android_device_path:
+            for settings in ANDROID_SETTINGS:
+                if settings.browser_type == args.android_browser:
+                    package = settings.package
+                    break
+            else:
+                assert False, f'Unable to find {args.android_browser} settings.'
+            args.android_device_path = (
+                f'/data/data/{package}/cache/pgo_profiles')
     else:
         chrome_path = f'{builddir}/chrome' + exe_ext
     profiledir = f'{builddir}/profile'
@@ -123,13 +144,14 @@ def main():
     if os.path.exists(profiledir):
         shutil.rmtree(profiledir)
 
+    # Run the shortest benchmark first to fail early if anything is wrong.
+    run_benchmark(['speedometer2'])
     if args.android_browser:
         run_benchmark(
             ['system_health.common_mobile', '--run-abridged-story-set'])
     else:
         run_benchmark(
             ['system_health.common_desktop', '--run-abridged-story-set'])
-    run_benchmark(['speedometer2'])
     run_benchmark(['jetstream2'])
     if args.android_browser:
         run_benchmark([
