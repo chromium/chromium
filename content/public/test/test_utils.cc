@@ -103,17 +103,6 @@ class TaskObserver : public base::TaskObserver {
   bool processed_ = false;
 };
 
-// Adapter that makes a WindowedNotificationObserver::ConditionTestCallback from
-// a WindowedNotificationObserver::ConditionTestCallbackWithoutSourceAndDetails
-// by ignoring the notification source and details.
-bool IgnoreSourceAndDetails(
-    WindowedNotificationObserver::ConditionTestCallbackWithoutSourceAndDetails
-        callback,
-    const NotificationSource& source,
-    const NotificationDetails& details) {
-  return std::move(callback).Run();
-}
-
 }  // namespace
 
 blink::mojom::FetchAPIRequestPtr CreateFetchAPIRequest(
@@ -355,52 +344,39 @@ void MessageLoopRunner::Quit() {
 
 WindowedNotificationObserver::WindowedNotificationObserver(
     int notification_type,
-    const NotificationSource& source)
-    : source_(NotificationService::AllSources()) {
-  AddNotificationType(notification_type, source);
+    const NotificationSource& source) {
+  registrar_.Add(this, notification_type, source);
 }
 
 WindowedNotificationObserver::WindowedNotificationObserver(
     int notification_type,
     ConditionTestCallback callback)
-    : callback_(std::move(callback)),
-      source_(NotificationService::AllSources()) {
-  AddNotificationType(notification_type, source_);
-}
-
-WindowedNotificationObserver::WindowedNotificationObserver(
-    int notification_type,
-    ConditionTestCallbackWithoutSourceAndDetails callback)
-    : callback_(
-          base::BindRepeating(&IgnoreSourceAndDetails, std::move(callback))),
-      source_(NotificationService::AllSources()) {
-  registrar_.Add(this, notification_type, source_);
+    : callback_(std::move(callback)) {
+  registrar_.Add(this, notification_type, NotificationService::AllSources());
 }
 
 WindowedNotificationObserver::~WindowedNotificationObserver() = default;
 
-void WindowedNotificationObserver::AddNotificationType(
-    int notification_type,
-    const NotificationSource& source) {
-  registrar_.Add(this, notification_type, source);
-}
-
 void WindowedNotificationObserver::Wait() {
-  if (!seen_)
+  if (!seen_) {
     run_loop_.Run();
+  }
   EXPECT_TRUE(seen_);
 }
 
 void WindowedNotificationObserver::Observe(int type,
                                            const NotificationSource& source,
                                            const NotificationDetails& details) {
-  source_ = source;
-  details_ = details;
-  if (!callback_.is_null() && !callback_.Run(source, details))
+  if (!callback_.is_null() && !callback_.Run(source, details)) {
     return;
+  }
 
   seen_ = true;
   run_loop_.Quit();
+}
+
+bool WindowedNotificationObserver::NotificationReceived() const {
+  return seen_;
 }
 
 LoadStopObserver::LoadStopObserver(WebContents* web_contents)

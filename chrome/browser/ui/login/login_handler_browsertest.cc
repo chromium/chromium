@@ -44,6 +44,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/network_service_util.h"
+#include "content/public/browser/notification_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -104,13 +105,6 @@ class SlowAuthResponse : public content::SlowHttpResponse {
     return {net::HTTP_UNAUTHORIZED, "Unauthorized"};
   }
 };
-
-// This helper function sets |notification_fired| to true if called. It's used
-// as an observer callback for notifications that are not expected to fire.
-bool FailIfNotificationFires(bool* notification_fired) {
-  *notification_fired = true;
-  return true;
-}
 
 void TestProxyAuth(Browser* browser, const GURL& test_page) {
   bool https = test_page.SchemeIs(url::kHttpsScheme);
@@ -2099,16 +2093,15 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTestThirdPartyCookiesUnblocked,
   ASSERT_EQ(1u, observer.handlers().size());
 
   // Cancel the prompt and check that another prompt is not shown.
-  bool notification_fired = false;
   content::WindowedNotificationObserver no_auth_needed_observer(
       chrome::NOTIFICATION_AUTH_NEEDED,
-      base::BindRepeating(&FailIfNotificationFires, &notification_fired));
+      content::NotificationService::AllSources());
   WindowedAuthCancelledObserver auth_cancelled_waiter(controller);
   LoginHandler* handler = observer.handlers().front();
   handler->CancelAuth();
   auth_cancelled_waiter.Wait();
   subframe_observer.Wait();
-  EXPECT_FALSE(notification_fired);
+  EXPECT_FALSE(no_auth_needed_observer.NotificationReceived());
 }
 
 namespace {
