@@ -100,5 +100,5 @@ ci.builder(
             },
         ],
     },
-    service_account = ci.DEFAULT_SERVICE_ACCOUNT,
+    service_account = "chromium-automated-expectation@chops-service-accounts.iam.gserviceaccount.com",
 )
