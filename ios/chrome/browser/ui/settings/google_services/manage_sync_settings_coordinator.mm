@@ -48,6 +48,7 @@
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_mediator.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/sync_error_settings_command_handler.h"
+#import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/settings/sync/sync_encryption_passphrase_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/sync/sync_encryption_table_view_controller.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -62,6 +63,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
     BulkUploadCoordinatorDelegate,
     ManageSyncSettingsCommandHandler,
     ManageSyncSettingsTableViewControllerPresentationDelegate,
+    SettingsNavigationControllerDelegate,
     SignoutActionSheetCoordinatorDelegate,
     SyncErrorSettingsCommandHandler,
     SyncObserverModelBridge> {
@@ -78,6 +80,10 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
     ManageSyncSettingsTableViewController* viewController;
 // Mediator.
 @property(nonatomic, strong) ManageSyncSettingsMediator* mediator;
+// The navigation controller used to present child controllers of
+// ManageSyncSettings.
+@property(nonatomic, readonly)
+    UINavigationController* _navigationControllerForChildPages;
 // Sync service.
 @property(nonatomic, assign, readonly) syncer::SyncService* syncService;
 // Authentication service.
@@ -96,9 +102,23 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   DismissViewCallback _dismissAccountDetailsController;
   // The account sync state.
   SyncSettingsAccountState _accountState;
+  // The navigation controller to use only when presenting the
+  // ManageSyncSettings modally.
+  SettingsNavigationController* _navigationControllerInModalView;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                              accountState:
+                                  (SyncSettingsAccountState)accountState {
+  if (self = [super initWithBaseViewController:viewController
+                                       browser:browser]) {
+    _accountState = accountState;
+  }
+  return self;
+}
 
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
@@ -114,7 +134,6 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 }
 
 - (void)start {
-  DCHECK(self.baseNavigationController);
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   SyncSetupService* syncSetupService =
       SyncSetupServiceFactory::GetForBrowserState(browserState);
@@ -181,8 +200,13 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
       HandlerForProtocol(dispatcher, SnackbarCommands);
 
   self.mediator.consumer = viewController;
-  [self.baseNavigationController pushViewController:viewController
-                                           animated:YES];
+
+  if (_baseNavigationController) {
+    [self.baseNavigationController pushViewController:viewController
+                                             animated:YES];
+  } else {
+    [self presentViewController:viewController];
+  }
   _syncObserver = std::make_unique<SyncObserverBridge>(self, self.syncService);
 }
 
@@ -207,6 +231,14 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 
 #pragma mark - Properties
 
+- (UINavigationController*)navigationControllerForChildPages {
+  if (_baseNavigationController) {
+    return _baseNavigationController;
+  }
+  CHECK(_navigationControllerInModalView);
+  return _navigationControllerInModalView;
+}
+
 - (syncer::SyncService*)syncService {
   return SyncServiceFactory::GetForBrowserState(
       self.browser->GetBrowserState());
@@ -218,6 +250,18 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 }
 
 #pragma mark - Private
+
+- (void)presentViewController:(UIViewController*)controller {
+  SettingsNavigationController* navigationController =
+      [[SettingsNavigationController alloc]
+          initWithRootViewController:controller
+                             browser:self.browser
+                            delegate:self];
+  _navigationControllerInModalView = navigationController;
+  [self.baseViewController presentViewController:navigationController
+                                        animated:YES
+                                      completion:nil];
+}
 
 - (void)stopBulkUpload {
   [_bulkUploadCoordinator stop];
@@ -240,7 +284,8 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
     }
 
     NSEnumerator<UIViewController*>* inversedViewControllers =
-        [self.baseNavigationController.viewControllers reverseObjectEnumerator];
+        [self.navigationControllerForChildPages
+                .viewControllers reverseObjectEnumerator];
     for (UIViewController* controller in inversedViewControllers) {
       if (controller == self.viewController) {
         break;
@@ -250,9 +295,16 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
       }
     }
 
-    [self.baseNavigationController popToViewController:self.viewController
-                                              animated:NO];
-    [self.baseNavigationController popViewControllerAnimated:YES];
+    if (_baseNavigationController) {
+      [self.baseNavigationController popToViewController:self.viewController
+                                                animated:NO];
+      [self.baseNavigationController popViewControllerAnimated:YES];
+    } else {
+      [self.navigationControllerForChildPages.presentingViewController
+          dismissViewControllerAnimated:YES
+                             completion:nil];
+      [self.delegate manageSyncSettingsCoordinatorWasRemoved:self];
+    }
   }
   _settingsAreDismissed = YES;
 }
@@ -271,7 +323,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   [self stopBulkUpload];
   base::RecordAction(base::UserMetricsAction("BulkUploadSettingsOpen"));
   _bulkUploadCoordinator = [[BulkUploadCoordinator alloc]
-      initWithBaseNavigationController:self.baseNavigationController
+      initWithBaseNavigationController:self.navigationControllerForChildPages
                                browser:self.browser];
   _bulkUploadCoordinator.delegate = self;
   [_bulkUploadCoordinator start];
@@ -363,8 +415,11 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   accountsTableViewController.applicationCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   accountsTableViewController.signoutDismissalByParentCoordinator = YES;
-  [self.baseNavigationController pushViewController:accountsTableViewController
-                                           animated:YES];
+  accountsTableViewController.navigationItem.rightBarButtonItem =
+      self.viewController.navigationItem.rightBarButtonItem;
+  [self.navigationControllerForChildPages
+      pushViewController:accountsTableViewController
+                animated:YES];
 }
 
 - (void)showManageYourGoogleAccount {
@@ -408,8 +463,8 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   }
 
   [self.viewController configureHandlersForRootViewController:controllerToPush];
-  [self.baseNavigationController pushViewController:controllerToPush
-                                           animated:YES];
+  [self.navigationControllerForChildPages pushViewController:controllerToPush
+                                                    animated:YES];
 }
 
 - (void)openTrustedVaultReauthForFetchKeys {
@@ -467,6 +522,19 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   if (!self.syncService->GetDisableReasons().Empty()) {
     [self closeManageSyncSettings];
   }
+}
+
+#pragma mark - SettingsNavigationControllerDelegate
+
+- (void)closeSettings {
+  [self.navigationControllerForChildPages.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:nil];
+  [self.delegate manageSyncSettingsCoordinatorWasRemoved:self];
+}
+
+- (void)settingsWasDismissed {
+  [self.delegate manageSyncSettingsCoordinatorWasRemoved:self];
 }
 
 @end
