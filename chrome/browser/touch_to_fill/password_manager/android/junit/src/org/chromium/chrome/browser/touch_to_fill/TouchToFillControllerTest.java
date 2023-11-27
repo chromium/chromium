@@ -359,7 +359,7 @@ public class TouchToFillControllerTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.SHARED_PASSWORD_NOTIFICATION_UI)
-    public void testShowTitleForOneSharedCredential() {
+    public void testShowSheetForOneSharedCredential() {
         Credential sharedCredentials =
                 new Credential(
                         "Ana",
@@ -392,11 +392,20 @@ public class TouchToFillControllerTest {
                         mContext.getResources()
                                 .getQuantityString(
                                         R.plurals.touch_to_fill_sheet_shared_passwords_title, 1)));
+        assertThat(
+                itemList.get(0).model.get(SUBTITLE),
+                is(
+                        String.format(
+                                mContext.getString(
+                                        R.string
+                                                .touch_to_fill_sheet_shared_passwords_one_password_subtitle),
+                                "Sender Name",
+                                TEST_URL_FORMATTED)));
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.SHARED_PASSWORD_NOTIFICATION_UI)
-    public void testShowTitleForMultipleSharedCredentials() {
+    public void testShowSheetForMultipleSharedCredentials() {
         Credential sharedCredential1 =
                 new Credential(
                         "Ana",
@@ -442,6 +451,14 @@ public class TouchToFillControllerTest {
                         mContext.getResources()
                                 .getQuantityString(
                                         R.plurals.touch_to_fill_sheet_shared_passwords_title, 2)));
+        assertThat(
+                itemList.get(0).model.get(SUBTITLE),
+                is(
+                        String.format(
+                                mContext.getString(
+                                        R.string
+                                                .touch_to_fill_sheet_shared_passwords_multiple_passwords_subtitle),
+                                TEST_URL_FORMATTED)));
     }
 
     @Test

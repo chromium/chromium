@@ -56,6 +56,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -115,7 +116,13 @@ class TouchToFillMediator {
                         TouchToFillProperties.ItemType.HEADER,
                         new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
                                 .with(TITLE, getTitle(webAuthnCredentials, credentials))
-                                .with(SUBTITLE, getSubtitle(url, isOriginSecure, triggerSubmission))
+                                .with(
+                                        SUBTITLE,
+                                        getSubtitle(
+                                                url,
+                                                isOriginSecure,
+                                                triggerSubmission,
+                                                credentials))
                                 // TODO(crbug.com/1471888): Use the TTF resource provider instead
                                 // and use a
                                 // 32dp icon.
@@ -194,7 +201,7 @@ class TouchToFillMediator {
     private String getTitle(
             List<WebAuthnCredential> webAuthnCredentials, List<Credential> credentials) {
         int sharedPasswordsRequireNotificationCount =
-                numberOfSharedPasswordsThatRequireNotification(credentials);
+                getSharedPasswordsThatRequireNotification(credentials).size();
         if (sharedPasswordsRequireNotificationCount > 0) {
             return mContext.getResources()
                     .getQuantityString(
@@ -210,9 +217,30 @@ class TouchToFillMediator {
         return mContext.getString(R.string.touch_to_fill_sheet_uniform_title);
     }
 
-    private String getSubtitle(GURL url, boolean isOriginSecure, boolean triggerSubmission) {
+    private String getSubtitle(
+            GURL url,
+            boolean isOriginSecure,
+            boolean triggerSubmission,
+            List<Credential> credentials) {
+        // TODO(http://crbug.com/1504098) :  Format the sender name to be in bold
         String formattedUrl =
                 UrlFormatter.formatUrlForSecurityDisplay(url, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
+        List<Credential> sharedCredentials = getSharedPasswordsThatRequireNotification(credentials);
+        if (sharedCredentials.size() == 1) {
+            return String.format(
+                    mContext.getString(
+                            R.string.touch_to_fill_sheet_shared_passwords_one_password_subtitle),
+                    sharedCredentials.get(0).getSenderName(),
+                    formattedUrl);
+        }
+        if (sharedCredentials.size() > 1) {
+            return String.format(
+                    mContext.getString(
+                            R.string
+                                    .touch_to_fill_sheet_shared_passwords_multiple_passwords_subtitle),
+                    formattedUrl);
+        }
+
         if (triggerSubmission) {
             return String.format(
                     mContext.getString(
@@ -390,20 +418,20 @@ class TouchToFillMediator {
                 .build();
     }
 
-    // Returns whether the bottom sheet UI should be adapted to inform the user that one of the
-    // credentials has been received via the password sharing feature.
-    private static int numberOfSharedPasswordsThatRequireNotification(
+    // Returns a list of the credentials that have been received via the password sharing feature,
+    // for which the user hasn't been notified yet.
+    private static List<Credential> getSharedPasswordsThatRequireNotification(
             List<Credential> credentials) {
         // TODO(http://crbug.com/1504098) : Add render test for a bottom sheet with shared passwords
         // after the UI is complete.
-        int count = 0;
+        List<Credential> sharedCredentials = new ArrayList<Credential>();
         for (Credential credential : credentials) {
             if (credential.isShared()
                     && !credential.isSharingNotificationDisplayed()
                     && ChromeFeatureList.isEnabled(SHARED_PASSWORD_NOTIFICATION_UI)) {
-                count++;
+                sharedCredentials.add(credential);
             }
         }
-        return count;
+        return sharedCredentials;
     }
 }
