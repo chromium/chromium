@@ -547,7 +547,7 @@ void PasswordsPrivateDelegateImpl::RequestCredentialsDetails(
       base::BindOnce(
           &PasswordsPrivateDelegateImpl::OnRequestCredentialDetailsAuthResult,
           weak_ptr_factory_.GetWeakPtr(), ids, std::move(callback),
-          web_contents));
+          web_contents->GetWeakPtr()));
 }
 
 void PasswordsPrivateDelegateImpl::OnFetchingFamilyMembersCompleted(
@@ -794,7 +794,7 @@ void PasswordsPrivateDelegateImpl::ExportPasswords(
       web_contents, base::Seconds(0), message,
       base::BindOnce(&PasswordsPrivateDelegateImpl::OnExportPasswordsAuthResult,
                      weak_ptr_factory_.GetWeakPtr(),
-                     std::move(accepted_callback), web_contents));
+                     std::move(accepted_callback), web_contents->GetWeakPtr()));
 }
 
 api::passwords_private::ExportProgressStatus
@@ -917,8 +917,11 @@ void PasswordsPrivateDelegateImpl::RestartAuthTimer() {
 }
 
 void PasswordsPrivateDelegateImpl::MaybeShowPasswordShareButtonIPH(
-    content::WebContents* web_contents) {
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+    base::WeakPtr<content::WebContents> web_contents) {
+  if (!web_contents) {
+    return;
+  }
+  Browser* browser = chrome::FindBrowserWithTab(web_contents.get());
   if (!browser || !browser->window()) {
     return;
   }
@@ -969,9 +972,9 @@ void PasswordsPrivateDelegateImpl::OnRequestPlaintextPasswordAuthResult(
 void PasswordsPrivateDelegateImpl::OnRequestCredentialDetailsAuthResult(
     const std::vector<int>& ids,
     UiEntriesCallback callback,
-    content::WebContents* web_contents,
+    base::WeakPtr<content::WebContents> web_contents,
     bool authenticated) {
-  if (!authenticated) {
+  if (!authenticated || !web_contents) {
     std::move(callback).Run({});
     return;
   }
@@ -1016,9 +1019,9 @@ void PasswordsPrivateDelegateImpl::OnRequestCredentialDetailsAuthResult(
 
 void PasswordsPrivateDelegateImpl::OnExportPasswordsAuthResult(
     base::OnceCallback<void(const std::string&)> accepted_callback,
-    content::WebContents* web_contents,
+    base::WeakPtr<content::WebContents> web_contents,
     bool authenticated) {
-  if (!authenticated) {
+  if (!authenticated || !web_contents) {
     std::move(accepted_callback).Run(kReauthenticationFailed);
     return;
   }
