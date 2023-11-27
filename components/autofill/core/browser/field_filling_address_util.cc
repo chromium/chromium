@@ -347,14 +347,13 @@ std::optional<std::u16string> GetValueForProfileForInput(
     const FormFieldData& field_data,
     std::string* failure_to_fill) {
   const std::u16string value = profile.GetInfo(field_type, app_locale);
+  if (value.empty()) {
+    return std::nullopt;
+  }
   if (field_type.group() == FieldTypeGroup::kPhone) {
-    return field_data.IsSelectOrSelectListElement() &&
-                   field_type.GetStorableType() == PHONE_HOME_COUNTRY_CODE
-               ? GetPhoneCountryCodeSelectControlForInput(
-                     value, field_data.options, failure_to_fill)
-               : GetPhoneNumberValueForInput(
-                     field_data.max_length, value,
-                     profile.GetInfo(PHONE_HOME_CITY_AND_NUMBER, app_locale));
+    return GetPhoneNumberValueForInput(
+        field_data.max_length, value,
+        profile.GetInfo(PHONE_HOME_CITY_AND_NUMBER, app_locale));
   }
   if (field_type.GetStorableType() == ADDRESS_HOME_STREET_ADDRESS) {
     return GetStreetAddressForInput(value, profile.language_code(),
