@@ -68,7 +68,7 @@ class ThumbnailCapturer {
   // Returns a valid pointer if the capturer requires the user to make a
   // selection from a source list provided by the capturer.
   // Returns nullptr if the capturer does not provide a UI for the user to make
-  // a selection.
+  // a selection. The capturer must return the same value each time.
   //
   // Callers should not take ownership of the returned pointer, but it is
   // guaranteed to be valid as long as the desktop_capturer is valid.

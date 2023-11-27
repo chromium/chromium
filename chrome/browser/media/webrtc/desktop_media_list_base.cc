@@ -179,31 +179,6 @@ void DesktopMediaListBase::UpdateSourcesList(
   }
 }
 
-// TODO(https://crbug.com/1479849): Remove this function once there's a function
-// in NativeDesktopMediaList that can set the window_id. Once this is in place
-// we can determine a correct DesktopMediaID and call UpdateSourceThumbnail().
-void DesktopMediaListBase::UpdateSourceThumbnailForId(
-    const DesktopMediaID::Id id,
-    const gfx::ImageSkia& image) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  // Unlike other methods that check can_refresh(), this one won't cause
-  // OnRefreshComplete() to be called, but the caller is expected to schedule a
-  // call to OnRefreshComplete() after this method and UpdateSourcePreview()
-  // have been called as many times as needed, so the check is still valid.
-  DCHECK(can_refresh());
-
-  for (size_t i = 0; i < sources_.size(); ++i) {
-    if (sources_[i].id.id == id) {
-      sources_[i].thumbnail = image;
-      if (observer_) {
-        observer_->OnSourceThumbnailChanged(i);
-      }
-      break;
-    }
-  }
-}
-
 void DesktopMediaListBase::UpdateSourceThumbnail(const DesktopMediaID& id,
                                                  const gfx::ImageSkia& image) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

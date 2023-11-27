@@ -250,6 +250,20 @@ content::DesktopMediaID::Id GetUpdatedWindowId(
   return window_id;
 }
 
+using ThumbnailCallback =
+    base::OnceCallback<void(const content::DesktopMediaID&,
+                            const gfx::ImageSkia&)>;
+
+void AssignWindowIdAndUpdateThumbnail(
+    content::DesktopMediaID desktop_media_id,
+    bool is_source_list_delegated,
+    const gfx::ImageSkia& thumbnail,
+    ThumbnailCallback update_thumbnail_callback) {
+  desktop_media_id.window_id =
+      GetUpdatedWindowId(desktop_media_id, is_source_list_delegated);
+  std::move(update_thumbnail_callback).Run(desktop_media_id, thumbnail);
+}
+
 }  // namespace
 
 class NativeDesktopMediaList::Worker
@@ -335,6 +349,7 @@ class NativeDesktopMediaList::Worker
   const ThumbnailCapturer::FrameDeliveryMethod frame_delivery_method_;
   const bool add_current_process_windows_;
 
+  const bool is_source_list_delegated_;
   bool delegated_source_list_has_selection_ = false;
   bool focused_ = false;
 
@@ -370,7 +385,9 @@ NativeDesktopMediaList::Worker::Worker(
       source_type_(ConvertToDesktopMediaIDType(type)),
       capturer_(std::move(capturer)),
       frame_delivery_method_(capturer_->GetFrameDeliveryMethod()),
-      add_current_process_windows_(add_current_process_windows) {
+      add_current_process_windows_(add_current_process_windows),
+      is_source_list_delegated_(capturer_->GetDelegatedSourceListController() !=
+                                nullptr) {
   DCHECK(capturer_);
 
   DCHECK(source_type_ == DesktopMediaID::Type::TYPE_WINDOW ||
@@ -385,8 +402,9 @@ void NativeDesktopMediaList::Worker::Start() {
   DCHECK(task_runner_->BelongsToCurrentThread());
   capturer_->Start(this);
 
-  if (capturer_->GetDelegatedSourceListController())
+  if (is_source_list_delegated_) {
     capturer_->GetDelegatedSourceListController()->Observe(this);
+  }
 }
 
 void NativeDesktopMediaList::Worker::Refresh(bool update_thumbnails) {
@@ -655,6 +673,8 @@ void NativeDesktopMediaList::Worker::OnRecurrentCaptureResult(
     ThumbnailCapturer::Result result,
     std::unique_ptr<webrtc::DesktopFrame> frame,
     ThumbnailCapturer::SourceId source_id) {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+
   // |frame| may be null if capture failed (e.g. because window has been
   // closed).
   if (!frame) {
@@ -663,10 +683,15 @@ void NativeDesktopMediaList::Worker::OnRecurrentCaptureResult(
 
   gfx::ImageSkia thumbnail =
       ScaleDesktopFrame(std::move(frame), thumbnail_size_);
+
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&NativeDesktopMediaList::UpdateSourceThumbnailForId,
-                     media_list_, source_id, thumbnail));
+      base::BindOnce(
+          &AssignWindowIdAndUpdateThumbnail,
+          DesktopMediaID(source_type_, source_id), is_source_list_delegated_,
+          thumbnail,
+          base::BindOnce(&NativeDesktopMediaList::UpdateSourceThumbnail,
+                         media_list_)));
 }
 
 void NativeDesktopMediaList::Worker::OnSourceListUpdated() {
@@ -674,7 +699,7 @@ void NativeDesktopMediaList::Worker::OnSourceListUpdated() {
 }
 
 void NativeDesktopMediaList::Worker::ClearDelegatedSourceListSelection() {
-  DCHECK(capturer_->GetDelegatedSourceListController());
+  DCHECK(is_source_list_delegated_);
   if (!delegated_source_list_has_selection_)
     return;
 
@@ -702,9 +727,9 @@ void NativeDesktopMediaList::Worker::FocusList() {
   // its source list is visible, unless a selection has previously been made.
   // If the capturer doesn't use a delegated source list, there's nothing for us
   // to do as we're continually querying the list state ourselves.
-  if (capturer_->GetDelegatedSourceListController() &&
-      !delegated_source_list_has_selection_)
+  if (is_source_list_delegated_ && !delegated_source_list_has_selection_) {
     capturer_->GetDelegatedSourceListController()->EnsureVisible();
+  }
 }
 
 void NativeDesktopMediaList::Worker::HideList() {
@@ -714,8 +739,9 @@ void NativeDesktopMediaList::Worker::HideList() {
   // If the capturer doesn't use a delegated source list, there's nothing for us
   // to do as we want to continually querying the list state ourselves as we
   // have been doing.
-  if (capturer_->GetDelegatedSourceListController())
+  if (is_source_list_delegated_) {
     capturer_->GetDelegatedSourceListController()->EnsureHidden();
+  }
 }
 
 void NativeDesktopMediaList::Worker::OnSelection() {

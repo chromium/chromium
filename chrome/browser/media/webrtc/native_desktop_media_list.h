@@ -74,7 +74,7 @@ class NativeDesktopMediaList final : public DesktopMediaListBase {
   // Whether we need to find and add the windows owned by the current process.
   // If false, the capturer will do this for us.
   const bool add_current_process_windows_;
-  const bool is_source_list_delegated_ = false;
+  const bool is_source_list_delegated_;
   bool is_capturer_started_ = false;
 
 #if defined(USE_AURA)
