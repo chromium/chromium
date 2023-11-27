@@ -1189,30 +1189,30 @@ BASE_FEATURE(kLowLatencyCanvas2dImageChromium,
 
 BASE_FEATURE(kLowPriorityAsyncScriptExecution,
              "LowPriorityAsyncScriptExecution",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<base::TimeDelta>
     kTimeoutForLowPriorityAsyncScriptExecution{
         &kLowPriorityAsyncScriptExecution, "low_pri_async_exec_timeout",
-        base::Seconds(1)};
+        base::Milliseconds(0)};
 
 // kLowPriorityAsyncScriptExecution will be disabled after document elapsed more
 // than |low_pri_async_exec_feature_limit|. Zero value means no limit.
 const base::FeatureParam<base::TimeDelta>
     kLowPriorityAsyncScriptExecutionFeatureLimitParam{
         &kLowPriorityAsyncScriptExecution, "low_pri_async_exec_feature_limit",
-        base::Seconds(3)};
+        base::Seconds(0)};
 
 // kLowPriorityAsyncScriptExecution will be applied only for cross site scripts.
 const base::FeatureParam<bool>
     kLowPriorityAsyncScriptExecutionCrossSiteOnlyParam{
         &kLowPriorityAsyncScriptExecution, "low_pri_async_exec_cross_site_only",
-        true};
+        false};
 
 const base::FeatureParam<bool>
     kLowPriorityAsyncScriptExecutionMainFrameOnlyParam{
         &kLowPriorityAsyncScriptExecution, "low_pri_async_exec_main_frame_only",
-        true};
+        false};
 
 // kLowPriorityAsyncScriptExecution will exclude scripts that influence LCP
 // element.
