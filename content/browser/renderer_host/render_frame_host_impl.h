@@ -3168,11 +3168,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
                            UnloadACKArrivesPriorToProcessShutdownRequest);
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplBrowserTest,
                            FullscreenAfterFrameUnload);
-  FRIEND_TEST_ALL_PREFIXES(SitePerProcessBrowserTest, UnloadHandlerSubframes);
-  FRIEND_TEST_ALL_PREFIXES(SitePerProcessBrowserTest, Unload_ABAB);
+  FRIEND_TEST_ALL_PREFIXES(SitePerProcessBrowserTest, PagehideHandlerSubframes);
+  FRIEND_TEST_ALL_PREFIXES(SitePerProcessBrowserTest, PagehideHandlerABAB);
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessBrowserTest,
                            UnloadNestedPendingDeletion);
-  FRIEND_TEST_ALL_PREFIXES(SitePerProcessBrowserTest, PartialUnloadHandler);
+  FRIEND_TEST_ALL_PREFIXES(SitePerProcessBrowserTest, PartialPagehideHandler);
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessBrowserTest,
                            PendingDeletionCheckCompletedOnSubtree);
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessBrowserTest,
@@ -3235,7 +3235,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   FRIEND_TEST_ALL_PREFIXES(NavigationRequestTest, SharedStorageWritable);
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplBrowserTest, SetTitleOnPagehide);
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessBrowserTest,
-                           DetachedIframeUnloadHandlerABCB);
+                           DetachedIframePagehideHandlerABCB);
 
   class SubresourceLoaderFactoriesConfig;
 

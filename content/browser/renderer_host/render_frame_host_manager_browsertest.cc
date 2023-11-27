@@ -5782,10 +5782,10 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
                             .root();
   RenderFrameHostImpl* rfh = root->current_frame_host();
 
-  // Set up an unload handler which never finishes to force |rfh| to stay
+  // Set up a pagehide handler which never finishes to force |rfh| to stay
   // around in pending delete state and never receive the
   // mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame.
-  EXPECT_TRUE(ExecJs(rfh, "window.onunload = function(e) { while(1); };\n"));
+  EXPECT_TRUE(ExecJs(rfh, "window.onpagehide = function(e) { while(1); };\n"));
   rfh->DisableUnloadTimerForTesting();
 
   // Navigate to another page with two subframes.
