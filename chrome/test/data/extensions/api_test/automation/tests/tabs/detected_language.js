@@ -60,4 +60,4 @@ function buildOutputString(text,startIndex,endIndex) {
   return result;
 }
 
-setUpAndRunTests(allTests, 'detected_language.html');
+setUpAndRunTabsTests(allTests, 'detected_language.html');

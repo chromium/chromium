@@ -23,4 +23,4 @@ var allTests = [
   }
 ];
 
-setUpAndRunTests(allTests, 'ignored_nodes_not_returned.html');
+setUpAndRunTabsTests(allTests, 'ignored_nodes_not_returned.html');

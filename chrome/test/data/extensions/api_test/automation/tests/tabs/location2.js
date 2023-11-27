@@ -14,4 +14,4 @@ var allTests = [
   }
 ];
 
-setUpAndRunTests(allTests, 'location2.html');
+setUpAndRunTabsTests(allTests, 'location2.html');

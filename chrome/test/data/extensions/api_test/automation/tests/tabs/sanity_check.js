@@ -80,4 +80,4 @@ var allTests = [
   }
 ];
 
-setUpAndRunTests(allTests);
+setUpAndRunTabsTests(allTests);

@@ -19,4 +19,4 @@ var allTests = [function testAutomationNodeProperties() {
   chrome.test.succeed();
 }];
 
-setUpAndRunTests(allTests, 'attributes.html');
+setUpAndRunTabsTests(allTests);
