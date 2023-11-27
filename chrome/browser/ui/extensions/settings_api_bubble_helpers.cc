@@ -8,8 +8,8 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/controlled_home_bubble_delegate.h"
 #include "chrome/browser/extensions/extension_web_ui.h"
-#include "chrome/browser/extensions/settings_api_bubble_delegate.h"
 #include "chrome/browser/extensions/settings_api_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -110,16 +110,16 @@ void MaybeShowExtensionControlledHomeNotification(Browser* browser) {
     return;
   }
 
-  std::unique_ptr<ExtensionMessageBubbleController> settings_api_bubble(
+  std::unique_ptr<ExtensionMessageBubbleController> controlled_home_bubble(
       new ExtensionMessageBubbleController(
-          new SettingsApiBubbleDelegate(browser->profile()), browser));
-  if (!settings_api_bubble->ShouldShow()) {
+          new ControlledHomeBubbleDelegate(browser->profile()), browser));
+  if (!controlled_home_bubble->ShouldShow()) {
     return;
   }
 
-  settings_api_bubble->SetIsActiveBubble();
+  controlled_home_bubble->SetIsActiveBubble();
   std::unique_ptr<ToolbarActionsBarBubbleDelegate> bridge(
-      new ExtensionMessageBubbleBridge(std::move(settings_api_bubble)));
+      new ExtensionMessageBubbleBridge(std::move(controlled_home_bubble)));
   browser->window()->GetExtensionsContainer()->ShowToolbarActionBubble(
       std::move(bridge));
 #endif

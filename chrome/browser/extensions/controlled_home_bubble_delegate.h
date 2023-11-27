@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_SETTINGS_API_BUBBLE_DELEGATE_H_
-#define CHROME_BROWSER_EXTENSIONS_SETTINGS_API_BUBBLE_DELEGATE_H_
+#ifndef CHROME_BROWSER_EXTENSIONS_CONTROLLED_HOME_BUBBLE_DELEGATE_H_
+#define CHROME_BROWSER_EXTENSIONS_CONTROLLED_HOME_BUBBLE_DELEGATE_H_
 
 #include <stddef.h>
 
@@ -16,18 +16,16 @@
 
 namespace extensions {
 
-// TODO(https://crbug.com/1503268): This is only showed for an extension
-// overriding the home page; rename it to ControlledHomeBubbleDelegate.
-class SettingsApiBubbleDelegate
+class ControlledHomeBubbleDelegate
     : public ExtensionMessageBubbleController::Delegate {
  public:
-  explicit SettingsApiBubbleDelegate(Profile* profile);
+  explicit ControlledHomeBubbleDelegate(Profile* profile);
 
-  SettingsApiBubbleDelegate(const SettingsApiBubbleDelegate&) = delete;
-  SettingsApiBubbleDelegate& operator=(const SettingsApiBubbleDelegate&) =
+  ControlledHomeBubbleDelegate(const ControlledHomeBubbleDelegate&) = delete;
+  ControlledHomeBubbleDelegate& operator=(const ControlledHomeBubbleDelegate&) =
       delete;
 
-  ~SettingsApiBubbleDelegate() override;
+  ~ControlledHomeBubbleDelegate() override;
 
   // The preference used to indicate if the user has acknowledged the extension
   // taking over some aspect of the user's settings (homepage, startup pages,
@@ -68,4 +66,4 @@ class SettingsApiBubbleDelegate
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_SETTINGS_API_BUBBLE_DELEGATE_H_
+#endif  // CHROME_BROWSER_EXTENSIONS_CONTROLLED_HOME_BUBBLE_DELEGATE_H_

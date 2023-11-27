@@ -7,8 +7,8 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/extensions/controlled_home_bubble_delegate.h"
 #include "chrome/browser/extensions/extension_web_ui.h"
-#include "chrome/browser/extensions/settings_api_bubble_delegate.h"
 #include "chrome/browser/extensions/settings_api_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -223,7 +223,7 @@ GetSearchOverriddenParams(Profile* profile) {
   // way, users won't see the bubble or dialog UI if they've already
   // acknowledged either version.
   const char* preference_name =
-      extensions::SettingsApiBubbleDelegate::kAcknowledgedPreference;
+      extensions::ControlledHomeBubbleDelegate::kAcknowledgedPreference;
 
   // Find the active search engine (which is provided by the extension).
   TemplateURLService* template_url_service =

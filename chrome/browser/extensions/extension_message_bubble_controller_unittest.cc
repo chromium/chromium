@@ -18,12 +18,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/extensions/controlled_home_bubble_delegate.h"
 #include "chrome/browser/extensions/dev_mode_bubble_delegate.h"
 #include "chrome/browser/extensions/extension_action_test_util.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_web_ui_override_registrar.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
-#include "chrome/browser/extensions/settings_api_bubble_delegate.h"
 #include "chrome/browser/extensions/suspicious_extension_bubble_delegate.h"
 #include "chrome/browser/extensions/test_extension_message_bubble_delegate.h"
 #include "chrome/browser/extensions/test_extension_system.h"
@@ -341,7 +341,7 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
     // global variables, they can be shared between tests and cause
     // unpredicatable behavior.
     DevModeBubbleDelegate(profile()).ClearProfileSetForTesting();
-    SettingsApiBubbleDelegate(profile()).ClearProfileSetForTesting();
+    ControlledHomeBubbleDelegate(profile()).ClearProfileSetForTesting();
     SuspiciousExtensionBubbleDelegate(profile()).ClearProfileSetForTesting();
     profile_keep_alive_.reset();
     BrowserWithTestWindowTest::TearDown();
@@ -682,7 +682,7 @@ TEST_F(ExtensionMessageBubbleTest, SettingsApiControllerTest) {
 
   std::unique_ptr<TestExtensionMessageBubbleController> controller(
       new TestExtensionMessageBubbleController(
-          new SettingsApiBubbleDelegate(browser()->profile()), browser()));
+          new ControlledHomeBubbleDelegate(browser()->profile()), browser()));
   controller->SetIsActiveBubble();
 
   // The list will contain one enabled unpacked extension (ext 2).
@@ -720,7 +720,7 @@ TEST_F(ExtensionMessageBubbleTest, SettingsApiControllerTest) {
   bubble.set_action_on_show(
       FakeExtensionMessageBubble::BUBBLE_ACTION_CLICK_LINK);
   controller = std::make_unique<TestExtensionMessageBubbleController>(
-      new SettingsApiBubbleDelegate(browser()->profile()), browser());
+      new ControlledHomeBubbleDelegate(browser()->profile()), browser());
   controller->SetIsActiveBubble();
   bubble.set_controller(controller.get());
   bubble.Show();
@@ -742,7 +742,7 @@ TEST_F(ExtensionMessageBubbleTest, SettingsApiControllerTest) {
   bubble.set_action_on_show(
       FakeExtensionMessageBubble::BUBBLE_ACTION_CLICK_ACTION_BUTTON);
   controller = std::make_unique<TestExtensionMessageBubbleController>(
-      new SettingsApiBubbleDelegate(browser()->profile()), browser());
+      new ControlledHomeBubbleDelegate(browser()->profile()), browser());
   controller->SetIsActiveBubble();
   EXPECT_TRUE(controller->ShouldShow());
   override_extensions = controller->GetExtensionList();

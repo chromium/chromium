@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/settings_api_bubble_delegate.h"
+#include "chrome/browser/extensions/controlled_home_bubble_delegate.h"
 
 #include "base/lazy_instance.h"
 #include "base/metrics/histogram_macros.h"
@@ -31,17 +31,17 @@ base::LazyInstance<std::set<Profile*>>::Leaky g_settings_api_shown =
 
 }  // namespace
 
-SettingsApiBubbleDelegate::SettingsApiBubbleDelegate(Profile* profile)
+ControlledHomeBubbleDelegate::ControlledHomeBubbleDelegate(Profile* profile)
     : ExtensionMessageBubbleController::Delegate(profile), profile_(profile) {
   set_acknowledged_flag_pref_name(kAcknowledgedPreference);
 }
 
-const char SettingsApiBubbleDelegate::kAcknowledgedPreference[] =
+const char ControlledHomeBubbleDelegate::kAcknowledgedPreference[] =
     "ack_settings_bubble";
 
-SettingsApiBubbleDelegate::~SettingsApiBubbleDelegate() {}
+ControlledHomeBubbleDelegate::~ControlledHomeBubbleDelegate() {}
 
-bool SettingsApiBubbleDelegate::ShouldIncludeExtension(
+bool ControlledHomeBubbleDelegate::ShouldIncludeExtension(
     const Extension* extension) {
   if (HasBubbleInfoBeenAcknowledged(extension->id()))
     return false;
@@ -57,25 +57,25 @@ bool SettingsApiBubbleDelegate::ShouldIncludeExtension(
   return true;
 }
 
-void SettingsApiBubbleDelegate::AcknowledgeExtension(
+void ControlledHomeBubbleDelegate::AcknowledgeExtension(
     const std::string& extension_id,
     ExtensionMessageBubbleController::BubbleAction user_action) {
   if (user_action != ExtensionMessageBubbleController::ACTION_EXECUTE)
     SetBubbleInfoBeenAcknowledged(extension_id, true);
 }
 
-void SettingsApiBubbleDelegate::PerformAction(const ExtensionIdList& list) {
+void ControlledHomeBubbleDelegate::PerformAction(const ExtensionIdList& list) {
   for (size_t i = 0; i < list.size(); ++i) {
     service()->DisableExtension(list[i], disable_reason::DISABLE_USER_ACTION);
   }
 }
 
-std::u16string SettingsApiBubbleDelegate::GetTitle() const {
+std::u16string ControlledHomeBubbleDelegate::GetTitle() const {
   return l10n_util::GetStringUTF16(
       IDS_EXTENSIONS_SETTINGS_API_TITLE_HOME_PAGE_BUBBLE);
 }
 
-std::u16string SettingsApiBubbleDelegate::GetMessageBody(
+std::u16string ControlledHomeBubbleDelegate::GetMessageBody(
     bool anchored_to_browser_action,
     int extension_count) const {
   const Extension* extension =
@@ -117,42 +117,42 @@ std::u16string SettingsApiBubbleDelegate::GetMessageBody(
   return body;
 }
 
-std::u16string SettingsApiBubbleDelegate::GetOverflowText(
+std::u16string ControlledHomeBubbleDelegate::GetOverflowText(
     const std::u16string& overflow_count) const {
   // Does not have more than one extension in the list at a time.
   NOTREACHED();
   return std::u16string();
 }
 
-GURL SettingsApiBubbleDelegate::GetLearnMoreUrl() const {
+GURL ControlledHomeBubbleDelegate::GetLearnMoreUrl() const {
   return GURL(chrome::kExtensionControlledSettingLearnMoreURL);
 }
 
-std::u16string SettingsApiBubbleDelegate::GetActionButtonLabel() const {
+std::u16string ControlledHomeBubbleDelegate::GetActionButtonLabel() const {
   return l10n_util::GetStringUTF16(IDS_EXTENSION_CONTROLLED_RESTORE_SETTINGS);
 }
 
-std::u16string SettingsApiBubbleDelegate::GetDismissButtonLabel() const {
+std::u16string ControlledHomeBubbleDelegate::GetDismissButtonLabel() const {
   return l10n_util::GetStringUTF16(IDS_EXTENSION_CONTROLLED_KEEP_CHANGES);
 }
 
-bool SettingsApiBubbleDelegate::ShouldCloseOnDeactivate() const {
+bool ControlledHomeBubbleDelegate::ShouldCloseOnDeactivate() const {
   return true;
 }
 
-bool SettingsApiBubbleDelegate::ShouldShow(
+bool ControlledHomeBubbleDelegate::ShouldShow(
     const ExtensionIdList& extensions) const {
   DCHECK_EQ(1u, extensions.size());
   return !g_settings_api_shown.Get().count(profile_);
 }
 
-void SettingsApiBubbleDelegate::OnShown(const ExtensionIdList& extensions) {
+void ControlledHomeBubbleDelegate::OnShown(const ExtensionIdList& extensions) {
   DCHECK_EQ(1u, extensions.size());
   DCHECK(!g_settings_api_shown.Get().count(profile_));
   g_settings_api_shown.Get().insert(profile_);
 }
 
-void SettingsApiBubbleDelegate::OnAction() {
+void ControlledHomeBubbleDelegate::OnAction() {
   // We clear the profile set because the user chooses to remove or disable the
   // extension. Thus if that extension or another takes effect, it is worth
   // mentioning to the user (ShouldShow() would return true) because it is
@@ -160,19 +160,19 @@ void SettingsApiBubbleDelegate::OnAction() {
   g_settings_api_shown.Get().clear();
 }
 
-void SettingsApiBubbleDelegate::ClearProfileSetForTesting() {
+void ControlledHomeBubbleDelegate::ClearProfileSetForTesting() {
   g_settings_api_shown.Get().clear();
 }
 
-bool SettingsApiBubbleDelegate::ShouldShowExtensionList() const {
+bool ControlledHomeBubbleDelegate::ShouldShowExtensionList() const {
   return false;
 }
 
-bool SettingsApiBubbleDelegate::ShouldLimitToEnabledExtensions() const {
+bool ControlledHomeBubbleDelegate::ShouldLimitToEnabledExtensions() const {
   return true;
 }
 
-bool SettingsApiBubbleDelegate::SupportsPolicyIndicator() {
+bool ControlledHomeBubbleDelegate::SupportsPolicyIndicator() {
   return true;
 }
 
