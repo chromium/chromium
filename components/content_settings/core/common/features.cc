@@ -72,7 +72,7 @@ BASE_FEATURE(kUserBypassFeedback,
 
 BASE_FEATURE(kImprovedSemanticsActivityIndicators,
              "ImprovedSemanticsActivityIndicators",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTrackingProtection3pcd,
              "TrackingProtection3pcd",
