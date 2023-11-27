@@ -2073,17 +2073,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.ResultsRenderedTime" units="ms" expires_after="M90">
-  <owner>calamity@chromium.org</owner>
-  <owner>dbeam@chromium.org</owner>
-  <component>UI&gt;Browser&gt;History</component>
-  <summary>
-    Records the time taken to load the history Web UI and render (at least) a
-    screen full of items. This is roughly equivalent to 'time to first
-    meaningful paint' for the history page.
-  </summary>
-</histogram>
-
 <histogram name="History.TopSites.QueryFromHistoryTime" units="ms"
     expires_after="2024-05-12">
   <owner>mahmadi@chromium.org</owner>

@@ -333,11 +333,6 @@ export class HistoryAppElement extends HistoryAppElementBase {
   }
 
   private onFirstRender_() {
-    setTimeout(() => {
-      this.browserService_!.recordTime(
-          'History.ResultsRenderedTime', window.performance.now());
-    });
-
     // Focus the search field on load. Done here to ensure the history page
     // is rendered before we try to take focus.
     const searchField = this.$.toolbar.searchField;
