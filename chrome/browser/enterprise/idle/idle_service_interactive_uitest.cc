@@ -134,6 +134,8 @@ class IdleServiceTest : public InProcessBrowserTest {
 
     keep_alive_ = std::make_unique<ScopedKeepAlive>(
         KeepAliveOrigin::BROWSER, KeepAliveRestartOption::DISABLED);
+
+    InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
   }
 
   void TearDownOnMainThread() override {
@@ -152,10 +154,20 @@ class IdleServiceTest : public InProcessBrowserTest {
       // already doing the same thing.
       keep_alive_.reset();
     }
+
+    if (ProfilePicker::IsOpen()) {
+      // `ProfilePicker` prevents browsers from being closed. We need to destroy
+      // `ProfilePicker` first, and then tear down browsers.
+      ProfilePicker::Hide();
+    }
+
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
-  void TearDownInProcessBrowserTestFixture() override { keep_alive_.reset(); }
+  void TearDownInProcessBrowserTestFixture() override {
+    keep_alive_.reset();
+    InProcessBrowserTest::TearDownInProcessBrowserTestFixture();
+  }
 
   void SetIdleTimeoutPolicies(
       policy::MockConfigurationPolicyProvider& policy_provider,
@@ -612,8 +624,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, JustCloseBrowsers) {
   EXPECT_FALSE(ProfilePicker::IsOpen());
 }
 
-// TODO(crbug.com/1326685): Figure out why this test fails during teardown.
-IN_PROC_BROWSER_TEST_F(IdleServiceTest, DISABLED_JustShowProfilePicker) {
+IN_PROC_BROWSER_TEST_F(IdleServiceTest, JustShowProfilePicker) {
   EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillOnce(Return(base::Seconds(58)));
   Profile* profile = browser()->profile();
@@ -637,8 +648,6 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, DISABLED_JustShowProfilePicker) {
   EXPECT_FALSE(IsDialogOpen());
   EXPECT_FALSE(GetIdleBubble(browser()));
   EXPECT_TRUE(ProfilePicker::IsOpen());
-
-  // Browsers are still open.
   EXPECT_EQ(1, GetBrowserCount(profile));
 }
 
