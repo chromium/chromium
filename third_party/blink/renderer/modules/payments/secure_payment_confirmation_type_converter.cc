@@ -17,21 +17,6 @@
 
 namespace mojo {
 
-template <>
-struct TypeConverter<Vector<Vector<uint8_t>>,
-                     blink::HeapVector<blink::Member<
-                         blink::V8UnionArrayBufferOrArrayBufferView>>> {
-  static Vector<Vector<uint8_t>> Convert(
-      const blink::HeapVector<
-          blink::Member<blink::V8UnionArrayBufferOrArrayBufferView>>& input) {
-    Vector<Vector<uint8_t>> result;
-    for (const auto& item : input) {
-      result.push_back(mojo::ConvertTo<Vector<uint8_t>>(item.Get()));
-    }
-    return result;
-  }
-};
-
 payments::mojom::blink::SecurePaymentConfirmationRequestPtr
 TypeConverter<payments::mojom::blink::SecurePaymentConfirmationRequestPtr,
               blink::SecurePaymentConfirmationRequest*>::
