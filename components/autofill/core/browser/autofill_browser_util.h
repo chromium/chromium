@@ -14,6 +14,11 @@ namespace autofill {
 class AutofillClient;
 class FormStructure;
 
+// Returns true if submitting a form with the given action url is insecure.
+// Matches the blink check for mixed content at
+// blink::MixedContentChecker::IsMixedFormAction().
+bool IsInsecureFormAction(const GURL& action_url);
+
 // Checks whether a given form is considered insecure (by origin or action).
 bool IsFormOrClientNonSecure(const AutofillClient& client,
                              const FormData& form);

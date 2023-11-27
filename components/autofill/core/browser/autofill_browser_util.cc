@@ -8,8 +8,8 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 
-namespace {
-// Matches the blink check for mixed content.
+namespace autofill {
+
 bool IsInsecureFormAction(const GURL& action_url) {
   // blob: and filesystem: URLs never hit the network, and access is restricted
   // to same-origin contexts, so they are not blocked. Some forms use
@@ -22,9 +22,6 @@ bool IsInsecureFormAction(const GURL& action_url) {
   }
   return !network::IsUrlPotentiallyTrustworthy(action_url);
 }
-}  // namespace
-
-namespace autofill {
 
 bool IsFormOrClientNonSecure(const AutofillClient& client,
                              const FormData& form) {

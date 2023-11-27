@@ -74,6 +74,7 @@ static_library("security_interstitial_page") {
     "//base",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
+    "//components/autofill/core/browser",
     "//components/captive_portal/core",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",

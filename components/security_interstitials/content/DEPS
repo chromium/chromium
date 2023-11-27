@@ -5,6 +5,7 @@ include_rules = [
   "+components/embedder_support",
   "+components/grit/components_resources.h",
   "+components/guest_view/browser",
+  "+components/autofill/core/browser",
   "+components/keyed_service/core",
   "+components/network_time",
   "+components/pref_registry",
