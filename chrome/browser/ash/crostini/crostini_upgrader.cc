@@ -334,7 +334,7 @@ void CrostiniUpgrader::Upgrade(const guest_os::GuestId& container_id) {
               return;
             }
 
-            auto target_version = ContainerVersion::BULLSEYE;
+            auto target_version = ContainerVersion::BOOKWORM;
 
             CrostiniManager::GetForProfile(weak_this->profile_)
                 ->UpgradeContainer(

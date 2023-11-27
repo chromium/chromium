@@ -1046,7 +1046,8 @@ ContainerOsVersion VersionFromOsRelease(
 
 bool IsUpgradableContainerVersion(ContainerOsVersion version) {
   return version == ContainerOsVersion::kDebianStretch ||
-         version == ContainerOsVersion::kDebianBuster;
+         version == ContainerOsVersion::kDebianBuster ||
+         version == ContainerOsVersion::kDebianBullseye;
 }
 
 }  // namespace
