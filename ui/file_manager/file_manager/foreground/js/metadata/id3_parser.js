@@ -309,7 +309,7 @@ export class Id3Parser extends MetadataParser {
     this.log('Starting id3 parser for ' + file.name);
 
     const id3v1Parser = new FunctionSequence(
-        'id3v1parser', [
+        [
           /**
            * Reads last 128 bytes of file in bytebuffer,
            * which passes further.
@@ -376,7 +376,7 @@ export class Id3Parser extends MetadataParser {
         this, () => {}, error => {});
 
     const id3v2Parser = new FunctionSequence(
-        'id3v2parser', [
+        [
           // @ts-ignore: error TS7006: Parameter 'file' implicitly has an 'any'
           // type.
           function readHead(file) {
