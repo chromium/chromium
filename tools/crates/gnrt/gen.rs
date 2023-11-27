@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-use crate::*;
-
-use crates::{CrateFiles, VendoredCrate};
-
+use crate::config;
+use crate::crates::{self, CrateFiles, Epoch, NormalizedName, VendoredCrate};
+use crate::deps;
+use crate::gn;
+use crate::paths;
 use crate::util::{
     check_exit_ok, check_spawn, check_wait_with_output, create_dirs_if_needed, init_handlebars,
     run_cargo_metadata,
 };
+use crate::GenCommandArgs;
 
 use std::collections::{HashMap, HashSet};
 use std::fs;
@@ -20,11 +22,11 @@ use std::process;
 use anyhow::{ensure, format_err, Context, Result};
 
 pub fn generate(
-    args: &clap::ArgMatches,
+    args: GenCommandArgs,
     tools: &paths::ToolPaths,
     paths: &paths::ChromiumPaths,
 ) -> Result<()> {
-    if args.get_one::<String>("for-std").is_some() {
+    if args.for_std.is_some() {
         generate_for_std(args, tools, paths)
     } else {
         generate_for_third_party(args, tools, paths)
@@ -32,7 +34,7 @@ pub fn generate(
 }
 
 fn generate_for_std(
-    args: &clap::ArgMatches,
+    args: GenCommandArgs,
     tools: &paths::ToolPaths,
     paths: &paths::ChromiumPaths,
 ) -> Result<()> {
@@ -47,13 +49,13 @@ fn generate_for_std(
 
     // The Rust source tree, containing the standard library and vendored
     // dependencies.
-    let rust_src_root = args.get_one::<String>("for-std").unwrap().clone();
+    let rust_src_root = args.for_std.as_ref().unwrap();
 
     println!("Generating stdlib GN rules from {}", rust_src_root);
 
     let cargo_config = std::fs::read_to_string(paths.std_fake_root_config_template)
         .unwrap()
-        .replace("RUST_SRC_ROOT", &rust_src_root);
+        .replace("RUST_SRC_ROOT", rust_src_root);
     std::fs::write(
         paths.strip_template(paths.std_fake_root_config_template).unwrap(),
         cargo_config,
@@ -62,11 +64,11 @@ fn generate_for_std(
 
     let cargo_toml = std::fs::read_to_string(paths.std_fake_root_cargo_template)
         .unwrap()
-        .replace("RUST_SRC_ROOT", &rust_src_root);
+        .replace("RUST_SRC_ROOT", rust_src_root);
     std::fs::write(paths.strip_template(paths.std_fake_root_cargo_template).unwrap(), cargo_toml)
         .unwrap();
     // Convert the `rust_src_root` to a Path hereafter.
-    let rust_src_root = paths.root.join(Path::new(&rust_src_root));
+    let rust_src_root = paths.root.join(Path::new(rust_src_root));
 
     // Delete the Cargo.lock if it exists.
     let mut std_fake_root_cargo_lock = paths.std_fake_root.to_path_buf();
@@ -217,7 +219,7 @@ fn generate_for_std(
         |crate_id| crate_inputs.get(crate_id).unwrap(),
     )?;
 
-    if args.get_flag("dump-template-input") {
+    if args.dump_template_input {
         return serde_json::to_writer_pretty(
             std::fs::File::create("gnrt-template-input.json").context("opening dump file")?,
             &build_file,
@@ -232,7 +234,7 @@ fn generate_for_std(
 }
 
 fn generate_for_third_party(
-    args: &clap::ArgMatches,
+    args: GenCommandArgs,
     tools: &paths::ToolPaths,
     paths: &paths::ChromiumPaths,
 ) -> Result<()> {
@@ -315,7 +317,7 @@ fn generate_for_third_party(
         for dep in &dependencies {
             let epoch = crates::Epoch::from_version(&dep.version);
             if found.insert((&dep.package_name, epoch)) == false {
-                Err(anyhow!(
+                Err(format_err!(
                     "Two '{}' crates found with the same {} epoch",
                     dep.package_name,
                     epoch
@@ -338,8 +340,8 @@ fn generate_for_third_party(
             )?;
             let path = paths
                 .third_party
-                .join(crates::NormalizedName::from_crate_name(&dep.package_name).as_str())
-                .join(crates::Epoch::from_version(&dep.version).to_string());
+                .join(NormalizedName::from_crate_name(&dep.package_name).as_str())
+                .join(Epoch::from_version(&dep.version).to_string());
             let previous = map.insert(path, build_file);
             if previous.is_some() {
                 Err(format_err!(
@@ -355,7 +357,7 @@ fn generate_for_third_party(
         create_dirs_if_needed(dir).context(format!("dir: {}", dir.display()))?;
     }
 
-    if args.get_flag("dump-template-input") {
+    if args.dump_template_input {
         for (dir, build_file) in &all_build_files {
             serde_json::to_writer_pretty(
                 std::fs::File::create(dir.join("gnrt-template-input.json"))

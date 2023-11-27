@@ -4,11 +4,12 @@
 
 use crate::paths;
 use crate::util::{remove_checksums_from_lock, run_cargo_command, without_cargo_config_toml};
+use crate::AddCommandArgs;
 use anyhow::{Context, Result};
 use std::collections::HashMap;
 
 pub fn add(
-    args: &clap::ArgMatches,
+    args: AddCommandArgs,
     tools: &paths::ToolPaths,
     paths: &paths::ChromiumPaths,
 ) -> Result<()> {
@@ -20,7 +21,7 @@ pub fn add(
 }
 
 fn add_impl(
-    args: &clap::ArgMatches,
+    args: AddCommandArgs,
     tools: &paths::ToolPaths,
     paths: &paths::ChromiumPaths,
 ) -> Result<()> {
@@ -30,7 +31,7 @@ fn add_impl(
         paths.third_party_cargo_root.into(),
         "add",
         tools,
-        args.get_many("passthrough").map(|x| x.cloned().collect()).unwrap_or_default(),
+        args.passthrough,
         HashMap::new(),
     )
     .context("run_cargo_command")?;

@@ -14,12 +14,13 @@ use crate::util::{
     create_dirs_if_needed, init_handlebars, remove_checksums_from_lock, run_cargo_metadata,
     run_command, without_cargo_config_toml,
 };
+use crate::VendorCommandArgs;
 use anyhow::{format_err, Context, Result};
 use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
 
 pub fn vendor(
-    args: &clap::ArgMatches,
+    args: VendorCommandArgs,
     tools: &paths::ToolPaths,
     paths: &paths::ChromiumPaths,
 ) -> Result<()> {
@@ -31,7 +32,7 @@ pub fn vendor(
 }
 
 fn vendor_impl(
-    args: &clap::ArgMatches,
+    args: VendorCommandArgs,
     tools: &paths::ToolPaths,
     paths: &paths::ChromiumPaths,
 ) -> Result<()> {
@@ -131,12 +132,9 @@ fn vendor_impl(
         } else if !dirs.contains(&crate_dir) {
             println!("Downloading {}-{}", p.name, p.version);
             download_crate(&p.name, &p.version, paths)?;
-            let skip_patches = if let Some(no_patches_args) = args.get_many::<String>("no-patches")
-            {
-                let skipped_crates: Vec<&String> = no_patches_args.collect();
-                skipped_crates.len() == 0 || skipped_crates.contains(&&p.name)
-            } else {
-                false
+            let skip_patches = match &args.no_patches {
+                Some(v) => v.len() == 0 || v.contains(&&p.name),
+                None => false,
             };
             if skip_patches {
                 log::warn!("Skipped applying patches for {}-{}", p.name, p.version);
@@ -176,7 +174,7 @@ fn vendor_impl(
         create_dirs_if_needed(&dir).context(format!("dir: {}", dir.display()))?;
     }
 
-    if args.get_flag("dump-template-input") {
+    if args.dump_template_input {
         for (dir, readme_file) in &all_readme_files {
             serde_json::to_writer_pretty(
                 std::fs::File::create(dir.join("gnrt-template-input.json"))
