@@ -226,9 +226,24 @@ void AutocompleteHistoryManager::OnWebDataServiceRequestDone(
   request_callbacks_iter->second.Run(current_handle, std::move(result));
 }
 
+AutocompleteHistoryManager::QueryHandler::QueryHandler(
+    FieldGlobalId field_id,
+    AutofillSuggestionTriggerSource trigger_source,
+    std::u16string prefix,
+    base::WeakPtr<SuggestionsHandler> handler)
+    : field_id_(field_id),
+      trigger_source_(trigger_source),
+      prefix_(std::move(prefix)),
+      handler_(std::move(handler)) {}
+
+AutocompleteHistoryManager::QueryHandler::QueryHandler(QueryHandler&&) =
+    default;
+
+AutocompleteHistoryManager::QueryHandler::~QueryHandler() = default;
+
 void AutocompleteHistoryManager::SendSuggestions(
     const std::vector<AutocompleteEntry>& entries,
-    const QueryHandler& query_handler) {
+    QueryHandler query_handler) {
   if (!query_handler.handler_) {
     // Either the handler has been destroyed, or it is invalid.
     return;
@@ -293,7 +308,7 @@ void AutocompleteHistoryManager::OnAutofillValuesReturned(
       static_cast<const WDResult<std::vector<AutocompleteEntry>>*>(
           result.get());
   std::vector<AutocompleteEntry> entries = autocomplete_result->GetValue();
-  SendSuggestions(entries, query_handler);
+  SendSuggestions(entries, std::move(query_handler));
 }
 
 void AutocompleteHistoryManager::OnAutofillCleanupReturned(

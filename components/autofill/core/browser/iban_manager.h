@@ -72,10 +72,12 @@ class IbanManager : public SingleFieldFormFiller, public KeyedService {
     FieldGlobalId most_recent_suggestion_selected_field_global_id_;
   };
 
-  // Sends suggestions for `ibans` to the `query_handler`'s handler for display
-  // in the associated Autofill popup.
-  void SendIbanSuggestions(const QueryHandler& query_handler,
-                           std::vector<const Iban*>& ibans);
+  // Filters the `ibans` based on the `field`'s value and sends the result to
+  // the `handler`.
+  void SendIbanSuggestions(std::vector<const Iban*> ibans,
+                           const FormFieldData& field,
+                           base::WeakPtr<SuggestionsHandler> handler,
+                           AutofillSuggestionTriggerSource trigger_source);
 
   // Filter out IBAN-based suggestions based on the following criteria:
   // For local IBANs: Filter out the IBAN value which does not starts with the

@@ -77,11 +77,39 @@ class AutocompleteHistoryManager : public SingleFieldFormFiller,
  private:
   friend class AutocompleteHistoryManagerTest;
 
-  // Sends the autocomplete |suggestions| to the |query_handler|'s handler for
-  // display in the associated Autofill popup. The parameter may be empty if
-  // there are no new autocomplete additions.
+  // Internal data object used to keep a request's context to associate it
+  // with the appropriate response.
+  struct QueryHandler {
+    QueryHandler(FieldGlobalId field_id,
+                 AutofillSuggestionTriggerSource trigger_source,
+                 std::u16string prefix,
+                 base::WeakPtr<SuggestionsHandler> handler);
+    QueryHandler(const QueryHandler&) = delete;
+    QueryHandler(QueryHandler&&);
+    ~QueryHandler();
+
+    // The queried field ID.
+    FieldGlobalId field_id_;
+
+    // Describes what caused the suggestions to trigger. This value was provided
+    // by the handler when requesting suggestions. It is temporarily stored
+    // while suggestions are queried, so it can be passed on to
+    // `OnSuggestionsReturned()`.
+    AutofillSuggestionTriggerSource trigger_source_;
+
+    // Prefix used to search suggestions, submitted by the handler.
+    std::u16string prefix_;
+
+    // Weak pointer to the handler instance which will be called-back when
+    // we get the response for the associate query.
+    base::WeakPtr<SuggestionsHandler> handler_;
+  };
+
+  // Sends the autocomplete `entries` to the `query_handler` for display in the
+  // associated Autofill popup. The parameter may be empty if there are no new
+  // autocomplete additions.
   void SendSuggestions(const std::vector<AutocompleteEntry>& entries,
-                       const QueryHandler& query_handler);
+                       QueryHandler query_handler);
 
   // Cancels all outstanding queries and clears out the |pending_queries_| map.
   void CancelAllPendingQueries();

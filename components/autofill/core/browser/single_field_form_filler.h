@@ -87,34 +87,6 @@ class SingleFieldFormFiller {
   // suggestion selected.
   virtual void OnSingleFieldSuggestionSelected(const std::u16string& value,
                                                PopupItemId popup_item_id) = 0;
-
- protected:
-  // Internal data object used to keep a request's context to associate it
-  // with the appropriate response.
-  struct QueryHandler {
-    QueryHandler(FieldGlobalId field_id,
-                 AutofillSuggestionTriggerSource trigger_source,
-                 std::u16string prefix,
-                 base::WeakPtr<SuggestionsHandler> handler);
-    QueryHandler(const QueryHandler& original);
-    ~QueryHandler();
-
-    // The queried field ID.
-    FieldGlobalId field_id_;
-
-    // Describes what caused the suggestions to trigger. This value was provided
-    // by the handler when requesting suggestions. It is temporarily stored
-    // while suggestions are queried, so it can be passed on to
-    // `OnSuggestionsReturned()`.
-    AutofillSuggestionTriggerSource trigger_source_;
-
-    // Prefix used to search suggestions, submitted by the handler.
-    std::u16string prefix_;
-
-    // Weak pointer to the handler instance which will be called-back when
-    // we get the response for the associate query.
-    base::WeakPtr<SuggestionsHandler> handler_;
-  };
 };
 
 }  // namespace autofill
