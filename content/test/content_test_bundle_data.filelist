@@ -4983,6 +4983,7 @@ data/accessibility/html/var-expected-win.txt
 data/accessibility/html/var.html
 data/accessibility/html/video-controls-expected-auralinux.txt
 data/accessibility/html/video-controls-expected-blink.txt
+data/accessibility/html/video-controls-expected-mac.txt
 data/accessibility/html/video-controls-expected-uia-win.txt
 data/accessibility/html/video-controls.html
 data/accessibility/html/video-expected-android.txt
