@@ -1322,6 +1322,24 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   }
 }
 
+bool BrowserAutofillManager::ShouldFetchCreditCard(
+    const FormData& form,
+    const FormFieldData& field,
+    const CreditCard& credit_card) {
+  FormStructure* form_structure = nullptr;
+  AutofillField* autofill_field = nullptr;
+  if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field)) {
+    return false;
+  }
+  if (WillFillCreditCardNumber(form.fields, form_structure->fields(),
+                               *autofill_field)) {
+    return true;
+  }
+  return credit_card.record_type() == CreditCard::RecordType::kVirtualCard &&
+         autofill_field->Type().GetStorableType() ==
+             CREDIT_CARD_STANDALONE_VERIFICATION_CODE;
+}
+
 void BrowserAutofillManager::FillOrPreviewCreditCardForm(
     mojom::ActionPersistence action_persistence,
     const FormData& form,
@@ -1336,15 +1354,8 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
   // TODO(crbug.com/1330108): Accept credit card by reference.
   credit_card_ = credit_card ? *credit_card : CreditCard();
   bool is_preview = action_persistence != mojom::ActionPersistence::kFill;
-  bool is_virtual_card_standalone_cvc_field =
-      credit_card->record_type() == CreditCard::RecordType::kVirtualCard &&
-      (autofill_field->Type().GetStorableType() ==
-       CREDIT_CARD_STANDALONE_VERIFICATION_CODE);
   bool should_fetch_card =
-      !is_preview &&
-      (WillFillCreditCardNumber(form.fields, form_structure->fields(),
-                                *autofill_field) ||
-       is_virtual_card_standalone_cvc_field);
+      !is_preview && ShouldFetchCreditCard(form, field, *credit_card);
 
   if (should_fetch_card) {
     credit_card_form_event_logger_->OnDidSelectCardSuggestion(

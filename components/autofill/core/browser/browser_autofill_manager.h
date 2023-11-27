@@ -163,6 +163,21 @@ class BrowserAutofillManager : public AutofillManager {
       const AutofillProfile& profile,
       const AutofillTriggerDetails& trigger_details);
 
+  // Retrieves the parsed form structure from cache and checks if the
+  // `credit_card` needs to be fetched in order to complete the current filling
+  // flow. This is the case if the `form` contains a credit card number field,
+  // which is going to be filled. Or it is the case when the `credit_card` is
+  // virtual and the `field` is of type
+  // `CREDIT_CARD_STANDALONE_VERIFICATION_CODE`. This happens for the web sites,
+  // which cache all credit card details except for the cvc, which is different
+  // every time the virtual credit card is being used.
+  // TODO(crbug.com/1331312): Remove this function once all callers use already
+  // parsed form. This function is needed only to make the query to the form
+  // cache, which must remain private to the `BrowserAutofillManager`.
+  bool ShouldFetchCreditCard(const FormData& form,
+                             const FormFieldData& field,
+                             const CreditCard& credit_card);
+
   // Fills or previews the credit card form.
   // Assumes the form and field are valid.
   // Asks for authentication via CVC before filling with server card data.
