@@ -3344,11 +3344,6 @@ const char kTabGroupsSaveDescription[] =
     "Enable saving and recalling of tab groups. Right click a tab group to "
     "save it. Recall groups from the bookmarks bar.";
 
-const char kTabHoverCardImageSettingsName[] = "Tab Hover Card Image Setting";
-const char kTabHoverCardImageSettingsDescription[] =
-    "Show a toggle in appearance settings to control if tab hover card preview "
-    "images are shown.";
-
 const char kTabHoverCardImagesName[] = "Tab Hover Card Images";
 const char kTabHoverCardImagesDescription[] =
     "Shows a preview image in tab hover cards, if tab hover cards are enabled.";
