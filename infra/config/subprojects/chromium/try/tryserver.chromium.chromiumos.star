@@ -502,7 +502,6 @@ try_.orchestrator_builder(
     experiments = {
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
-        "chromium.pre_retry_shards_without_patch_compile": 100,
         "chromium.skip_successful_tests": 50,
     },
     gn_args = gn_args.config(
