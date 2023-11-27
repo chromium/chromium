@@ -752,6 +752,8 @@ void SequenceManagerImpl::DidRunTask(LazyNow& lazy_now) {
   ExecutingTask& executing_task =
       *main_thread_only().task_execution_stack.rbegin();
 
+  recordreplay::AutoPerformanceActivity apa("SequenceManagerImpl::DidRunTask");
+
   NotifyDidProcessTask(&executing_task, &lazy_now);
   main_thread_only().task_execution_stack.pop_back();
 

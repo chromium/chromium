@@ -247,8 +247,14 @@ static void MaybeStartProfiling() {
     return;
   }
 
+#if BUILDFLAG(IS_WIN)
+  int pid = GetCurrentProcessId();
+#else
+  int pid = getpid();
+#endif
+
   char path[1000];
-  snprintf(path, sizeof(path), "%s/profile-%d.log", directory, rand());
+  snprintf(path, sizeof(path), "%s/profile-%d.log", directory, pid);
 
   gRecordReplayProfileExecution(path);
 }

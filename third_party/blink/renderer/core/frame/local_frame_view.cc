@@ -3243,6 +3243,8 @@ void LocalFrameView::UpdateStyleAndLayout() {
     return;
   }
 
+  recordreplay::AutoPerformanceActivity apa("LocalFrameView::UpdateStyleAndLayout");
+
   VisualViewport& visual_viewport = frame_->GetPage()->GetVisualViewport();
   gfx::SizeF visual_viewport_size(visual_viewport.VisibleWidthCSSPx(),
                                   visual_viewport.VisibleHeightCSSPx());

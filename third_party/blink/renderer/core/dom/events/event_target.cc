@@ -872,6 +872,10 @@ bool EventTarget::FireEventListeners(Event& event,
   // index |size|, so iterating up to (but not including) |size| naturally
   // excludes new event listeners.
 
+  recordreplay::AutoPerformanceActivity apa(
+    base::StringPrintf("EventTarget::FireEventListeners:%s",
+                       event.type().Utf8().c_str()));
+
   ExecutionContext* context = GetExecutionContext();
   if (!context)
     return false;

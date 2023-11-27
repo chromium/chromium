@@ -43,7 +43,9 @@ namespace recordreplay {
   Macro(V8IsMainThread, (), (), bool, false)                            \
   Macro(V8RecordReplayIsInReplayCode,                                   \
         (const char* why), (why), bool, false)                          \
-  Macro(V8RecordReplayHadMismatch, (), (), bool, false)
+  Macro(V8RecordReplayHadMismatch, (), (), bool, false)                 \
+  Macro(V8RecordReplayShouldReportPerformanceEvent,                     \
+        (uint32_t kind), (kind), bool, false)
 
 #define ForEachV8APIVoid(Macro)                                         \
   Macro(V8RecordReplayAssertVA,                                         \
@@ -126,7 +128,10 @@ namespace recordreplay {
   Macro(V8RecordReplayGetCurrentJSStack,                                \
         (std::string* stackTrace), (stackTrace))                        \
   Macro(V8RecordReplayEnterReplayCode, (), ())                          \
-  Macro(V8RecordReplayExitReplayCode, (), ())
+  Macro(V8RecordReplayExitReplayCode, (), ())                           \
+  Macro(V8RecordReplayPerformanceEvent,                                 \
+        (uint32_t kind, const void* buf, uint32_t size),                \
+        (kind, buf, size))
 
 #if BUILDFLAG(IS_WIN)
 
@@ -302,6 +307,23 @@ void AssertBytes(const char* why, const void* buf, size_t size) {
 
 bool AreAssertsDisabled() {
   return V8RecordReplayAreAssertsDisabled();
+}
+
+bool ShouldReportPerformanceEvent(uint32_t kind) {
+  return V8RecordReplayShouldReportPerformanceEvent(kind);
+}
+
+void PerformanceEvent(uint32_t kind, const void* buf, uint32_t size) {
+  V8RecordReplayPerformanceEvent(kind, buf, size);
+}
+
+AutoPerformanceActivity::AutoPerformanceActivity(const std::string& activity) {
+  PerformanceEvent(/* BeginActivity */ 1,
+                   activity.c_str(), (uint32_t)activity.length());
+}
+
+AutoPerformanceActivity::~AutoPerformanceActivity() {
+  PerformanceEvent(/* EndActivity */ 2, nullptr, 0);
 }
 
 void Print(const char* format, ...) {
