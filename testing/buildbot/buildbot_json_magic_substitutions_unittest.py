@@ -104,6 +104,75 @@ def CreateConfigWithGpu(gpu):
   }
 
 
+class GPUExpectedVendorId(unittest.TestCase):
+  def testSingleGpuSingleDimension(self):
+    test_config = CreateConfigWithGpu('vendor:device1-driver')
+    self.assertEqual(
+        magic_substitutions.GPUExpectedVendorId(test_config, None, {}),
+        ['--expected-vendor-id', 'vendor'])
+
+  def testDoubleGpuSingleDimension(self):
+    test_config = CreateConfigWithGpu(
+        'vendor:device1-driver|vendor:device2-driver')
+    self.assertEqual(
+        magic_substitutions.GPUExpectedVendorId(test_config, None, {}),
+        ['--expected-vendor-id', 'vendor'])
+
+  def testDoubleGpuSingleDimensionDifferentVendors(self):
+    test_config = CreateConfigWithGpu(
+        'vendor:device1-driver|vendor2:device2-driver')
+    with self.assertRaises(AssertionError):
+      magic_substitutions.GPUExpectedVendorId(test_config, None, {})
+
+  def testAppleSilicon(self):
+    test_config = CreateConfigWithGpu('apple:m1')
+    self.assertEqual(
+        magic_substitutions.GPUExpectedVendorId(test_config, None, {}),
+        ['--expected-vendor-id', '106b'])
+
+  def testNoGpu(self):
+    test_config = {
+        'swarming': {
+            'dimensions': {},
+        },
+    }
+    self.assertEqual(
+        magic_substitutions.GPUExpectedVendorId(test_config, None, {}),
+        ['--expected-vendor-id', '0'])
+
+  def testNoDimensions(self):
+    with self.assertRaises(AssertionError):
+      magic_substitutions.GPUExpectedVendorId({}, None, {})
+
+  def testSkylabKnownBoard(self):
+    test_config = {
+        'name': 'test_name',
+        'cros_board': 'volteer',
+    }
+    tester_config = {
+        'browser_config': 'cros-chrome',
+        'use_swarming': False,
+    }
+    self.assertEqual(
+        magic_substitutions.GPUExpectedVendorId(test_config, None,
+                                                tester_config),
+        ['--expected-vendor-id', '8086'])
+
+  def testSkylabUnknownBoard(self):
+    test_config = {
+        'name': 'test_name',
+        'cros_board': 'fancy_new_board',
+    }
+    tester_config = {
+        'browser_config': 'cros-chrome',
+        'use_swarming': False,
+    }
+    self.assertEqual(
+        magic_substitutions.GPUExpectedVendorId(test_config, None,
+                                                tester_config),
+        ['--expected-vendor-id', '0'])
+
+
 class GPUExpectedDeviceId(unittest.TestCase):
   def assertDeviceIdCorrectness(self, retval, device_ids):
     self.assertEqual(len(retval), 2 * len(device_ids))
@@ -125,6 +194,11 @@ class GPUExpectedDeviceId(unittest.TestCase):
         magic_substitutions.GPUExpectedDeviceId(test_config, None, {}),
         ['device1', 'device2'])
 
+  def testAppleSilicon(self):
+    test_config = CreateConfigWithGpu('apple:m1')
+    self.assertDeviceIdCorrectness(
+        magic_substitutions.GPUExpectedDeviceId(test_config, None, {}), ['0'])
+
   def testNoGpu(self):
     self.assertDeviceIdCorrectness(
         magic_substitutions.GPUExpectedDeviceId(
@@ -135,6 +209,32 @@ class GPUExpectedDeviceId(unittest.TestCase):
   def testNoDimensions(self):
     with self.assertRaises(AssertionError):
       magic_substitutions.GPUExpectedDeviceId({}, None, {})
+
+  def testSkylabKnownBoard(self):
+    test_config = {
+        'name': 'test_name',
+        'cros_board': 'volteer',
+    }
+    tester_config = {
+        'browser_config': 'cros-chrome',
+        'use_swarming': False,
+    }
+    self.assertDeviceIdCorrectness(
+        magic_substitutions.GPUExpectedDeviceId(test_config, None,
+                                                tester_config), ['9a49'])
+
+  def testSkylabUnknownBoard(self):
+    test_config = {
+        'name': 'test_name',
+        'cros_board': 'fancy_new_board',
+    }
+    tester_config = {
+        'browser_config': 'cros-chrome',
+        'use_swarming': False,
+    }
+    self.assertDeviceIdCorrectness(
+        magic_substitutions.GPUExpectedDeviceId(test_config, None,
+                                                tester_config), ['0'])
 
 
 class GPUParallelJobs(unittest.TestCase):

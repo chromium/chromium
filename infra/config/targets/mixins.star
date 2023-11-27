@@ -962,6 +962,7 @@ targets.mixin(
     swarming = targets.swarming(
         dimensions = {
             "cpu": "arm64",
+            "gpu": "apple:m1",
             "mac_model": "Macmini9,1",
             "os": "Mac-13.4",
             "pool": "chromium.tests",
@@ -975,6 +976,7 @@ targets.mixin(
     swarming = targets.swarming(
         dimensions = {
             "cpu": "arm64",
+            "gpu": "apple:m1",
             "mac_model": "Macmini9,1",
             "os": "Mac-13.5.2",
             "pool": "chromium.tests",
@@ -988,6 +990,7 @@ targets.mixin(
     swarming = targets.swarming(
         dimensions = {
             "cpu": "arm64",
+            "gpu": "apple:m2",
             "mac_model": "Mac14,7",
             "os": "Mac-13.3.1",
             "pool": "chromium.tests.gpu",

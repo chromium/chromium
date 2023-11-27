@@ -2780,8 +2780,7 @@ targets.legacy_basic_suite(
                 "has_native_resultdb_integration",
             ],
             args = [
-                "--expected-vendor-id",
-                "${gpu_vendor_id}",
+                "$$MAGIC_SUBSTITUTION_GPUExpectedVendorId",
                 "$$MAGIC_SUBSTITUTION_GPUExpectedDeviceId",
                 # On dual-GPU devices we want the high-performance GPU to be active
                 "--extra-browser-args=--force_high_performance_gpu",
@@ -3459,8 +3458,7 @@ targets.legacy_basic_suite(
                 "has_native_resultdb_integration",
             ],
             args = [
-                "--expected-vendor-id",
-                "${gpu_vendor_id}",
+                "$$MAGIC_SUBSTITUTION_GPUExpectedVendorId",
                 "$$MAGIC_SUBSTITUTION_GPUExpectedDeviceId",
                 # On dual-GPU devices we want the high-performance GPU to be active
                 "--extra-browser-args=--force_high_performance_gpu",

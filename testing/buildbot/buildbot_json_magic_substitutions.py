@@ -13,7 +13,22 @@ This is meant as an alternative to many entries in test_suite_exceptions.pyl if
 the differentiation can be done programmatically.
 """
 
+import collections
+
 MAGIC_SUBSTITUTION_PREFIX = '$$MAGIC_SUBSTITUTION_'
+
+GpuDevice = collections.namedtuple('GpuDevice', ['vendor', 'device'])
+CROS_BOARD_GPUS = {
+    'volteer': GpuDevice('8086', '9a49'),
+}
+
+VENDOR_SUBSTITUTIONS = {
+    'apple': '106b',
+}
+DEVICE_SUBSTITUTIONS = {
+    'm1': '0',
+    'm2': '0',
+}
 
 
 def ChromeOSTelemetryRemote(test_config, _, tester_config):
@@ -91,6 +106,52 @@ def _IsSkylabBot(tester_config):
           and not tester_config.get('use_swarming', True))
 
 
+def GPUExpectedVendorId(test_config, _, tester_config):
+  """Substitutes the correct expected GPU vendor for certain GPU tests.
+
+  We only ever trigger tests on a single vendor type per builder definition,
+  so multiple found vendors is an error.
+
+  Args:
+    test_config: A dict containing a configuration for a specific test on a
+        specific builder.
+    tester_config: A dict containing the configuration for the builder
+        that |test_config| is for.
+  """
+  if _IsSkylabBot(tester_config):
+    return _GPUExpectedVendorIdSkylab(test_config)
+  dimensions = test_config.get('swarming', {}).get('dimensions')
+  assert dimensions is not None
+  dimensions = dimensions or {}
+  gpus = []
+  # Split up multiple GPU/driver combinations if the swarming OR operator is
+  # being used.
+  if 'gpu' in dimensions:
+    gpus.extend(dimensions['gpu'].split('|'))
+
+  # We don't specify GPU on things like Android and certain CrOS devices, so
+  # default to 0.
+  if not gpus:
+    return ['--expected-vendor-id', '0']
+
+  vendor_ids = set()
+  for gpu_and_driver in gpus:
+    # In the form vendor:device-driver.
+    vendor = gpu_and_driver.split(':')[0]
+    vendor = VENDOR_SUBSTITUTIONS.get(vendor, vendor)
+    vendor_ids.add(vendor)
+  assert len(vendor_ids) == 1
+
+  return ['--expected-vendor-id', vendor_ids.pop()]
+
+
+def _GPUExpectedVendorIdSkylab(test_config):
+  cros_board = test_config.get('cros_board')
+  assert cros_board is not None
+  gpu_device = CROS_BOARD_GPUS.get(cros_board, GpuDevice('0', '0'))
+  return ['--expected-vendor-id', gpu_device.vendor]
+
+
 def GPUExpectedDeviceId(test_config, _, tester_config):
   """Substitutes the correct expected GPU(s) for certain GPU tests.
 
@@ -103,8 +164,10 @@ def GPUExpectedDeviceId(test_config, _, tester_config):
     tester_config: A dict containing the configuration for the builder
         that |test_config| is for.
   """
+  if _IsSkylabBot(tester_config):
+    return _GPUExpectedDeviceIdSkylab(test_config)
   dimensions = test_config.get('swarming', {}).get('dimensions')
-  assert dimensions is not None or _IsSkylabBot(tester_config)
+  assert dimensions is not None
   dimensions = dimensions or {}
   gpus = []
   # Split up multiple GPU/driver combinations if the swarming OR operator is
@@ -120,12 +183,20 @@ def GPUExpectedDeviceId(test_config, _, tester_config):
   for gpu_and_driver in gpus:
     # In the form vendor:device-driver.
     device = gpu_and_driver.split('-')[0].split(':')[1]
+    device = DEVICE_SUBSTITUTIONS.get(device, device)
     device_ids.add(device)
 
   retval = []
   for device_id in sorted(device_ids):
     retval.extend(['--expected-device-id', device_id])
   return retval
+
+
+def _GPUExpectedDeviceIdSkylab(test_config):
+  cros_board = test_config.get('cros_board')
+  assert cros_board is not None
+  gpu_device = CROS_BOARD_GPUS.get(cros_board, GpuDevice('0', '0'))
+  return ['--expected-device-id', gpu_device.device]
 
 
 def _GetGpusFromTestConfig(test_config):
