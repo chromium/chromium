@@ -7,14 +7,12 @@ found in the LICENSE file.
 
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Autofill keyboard accessory dimensions -->
-    <dimen name="keyboard_accessory_bar_item_height">36dp</dimen>
     <dimen name="keyboard_accessory_bar_item_padding">8dp</dimen>
     <dimen name="keyboard_accessory_horizontal_padding">6dp</dimen>
     <dimen name="keyboard_accessory_height">48dp</dimen>
     <!--dimen name="keyboard_accessory_height_with_shadow">56dp</dimen-->
     <dimen name="keyboard_accessory_image_top_padding">12dp</dimen>
     <dimen name="keyboard_accessory_shadow">5dp</dimen>
-    <dimen name="keyboard_accessory_chip_vertical_margin">8dp</dimen>
     <!--dimen name="keyboard_accessory_sheet_height">330dp</dimen-->
     <dimen name="keyboard_accessory_sheet_divider_margin">24dp</dimen>
     <dimen name="keyboard_accessory_sheet_footer_trailing_margin">64dp</dimen>

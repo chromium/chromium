@@ -89,7 +89,6 @@ android_library("internal_java") {
     "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryProperties.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryRecyclerViewMcp.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryView.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryViewBinder.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/data/CachedProviderAdapter.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/data/ConditionalProviderAdapter.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/helper/FaviconHelper.java",
@@ -135,17 +134,14 @@ android_library("internal_java") {
 
 android_resources("java_resources") {
   sources = [
-    "java/res/drawable/autofill_chip_inset.xml",
     "java/res/drawable/ic_vpn_key_off.xml",
     "java/res/layout/accessory_sheet_header.xml",
     "java/res/layout/address_accessory_sheet.xml",
     "java/res/layout/all_passwords_bottom_sheet.xml",
     "java/res/layout/credit_card_accessory_sheet.xml",
     "java/res/layout/keyboard_accessory.xml",
-    "java/res/layout/keyboard_accessory_action.xml",
     "java/res/layout/keyboard_accessory_action_modern.xml",
     "java/res/layout/keyboard_accessory_buttons.xml",
-    "java/res/layout/keyboard_accessory_chip.xml",
     "java/res/layout/keyboard_accessory_modern.xml",
     "java/res/layout/keyboard_accessory_sheet.xml",
     "java/res/layout/keyboard_accessory_sheet_tab_address_info.xml",
