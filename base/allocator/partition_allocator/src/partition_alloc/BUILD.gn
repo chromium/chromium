@@ -80,7 +80,6 @@ config("dependants_extra_warnings") {
     # prototyped in:
     # https://chromium-review.googlesource.com/c/chromium/src/+/5057762
     cflags -= [
-      "-Wconditional-uninitialized",
       "-Wextra-semi-stmt",
       "-Wmissing-field-initializers",
       "-Wunused-macros",

@@ -915,8 +915,8 @@ void IterateSlotSpans(uintptr_t super_page,
       Page::FromAddr(SuperPagePayloadBegin(super_page, with_quarantine));
   auto* const last_page =
       Page::FromAddr(SuperPagePayloadEnd(super_page) - PartitionPageSize());
-  Page* page;
-  SlotSpan* slot_span;
+  Page* page = nullptr;
+  SlotSpan* slot_span = nullptr;
   for (page = first_page; page <= last_page;) {
     PA_DCHECK(!page->slot_span_metadata_offset);  // Ensure slot span beginning.
     if (!page->is_valid) {

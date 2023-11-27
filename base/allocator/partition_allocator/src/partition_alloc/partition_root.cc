@@ -1318,7 +1318,7 @@ bool PartitionRoot::TryReallocInPlaceForNormalBuckets(void* object,
   // statistics (and cookie, if present).
   if (slot_span->CanStoreRawSize()) {
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) && BUILDFLAG(PA_DCHECK_IS_ON)
-    internal::PartitionRefCount* old_ref_count;
+    internal::PartitionRefCount* old_ref_count = nullptr;
     if (brp_enabled()) {
       old_ref_count = internal::PartitionRefCountPointer(slot_start);
     }
