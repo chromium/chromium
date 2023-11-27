@@ -1163,7 +1163,7 @@ TEST_F(ReadAnythingAppModelTest, InvalidPDFFormat) {
   ASSERT_FALSE(IsPDFFormatted());
 }
 
-TEST_F(ReadAnythingAppModelTest, PdfEvents_SetRequiresDistillationProperly) {
+TEST_F(ReadAnythingAppModelTest, PdfEvents_SetRequiresDistillation) {
   SetIsPdf(GURL("http://www.google.com/foo/bar.pdf"));
 
   ui::AXTreeUpdate initial_update;
@@ -1204,4 +1204,27 @@ TEST_F(ReadAnythingAppModelTest, PdfEvents_SetRequiresDistillationProperly) {
   update2.nodes[1].child_ids = {3};
   AccessibilityEventReceived({update2});
   ASSERT_TRUE(RequiresDistillation());
+}
+
+TEST_F(ReadAnythingAppModelTest, PdfEvents_DontSetRequiresDistillation) {
+  SetIsPdf(GURL("http://www.google.com/foo/bar.pdf"));
+
+  ui::AXTreeUpdate initial_update;
+  SetUpdateTreeID(&initial_update);
+  initial_update.root_id = 1;
+  initial_update.nodes.resize(1);
+  initial_update.nodes[0].id = 1;
+  initial_update.nodes[0].role = ax::mojom::Role::kPdfRoot;
+  AccessibilityEventReceived({initial_update});
+
+  // Updates that don't create a new subtree, for example, a role change, should
+  // not set requires_distillation_.
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.root_id = 1;
+  update.nodes.resize(1);
+  update.nodes[0].id = 1;
+  update.nodes[0].role = ax::mojom::Role::kStaticText;
+  AccessibilityEventReceived({update});
+  ASSERT_FALSE(RequiresDistillation());
 }

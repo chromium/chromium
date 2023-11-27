@@ -715,7 +715,22 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
                      ax::mojom::Action::kSetSelection,
                  /* from_reading_mode= */ false);
         break;
-
+      case ui::AXEventGenerator::Event::SUBTREE_CREATED:
+        // PDFs are not completely loaded on the kLoadComplete event. The PDF
+        // accessibility tree is only complete when the embedded node in the
+        // tree is populated with the actual contents of the PDF. When this
+        // happens, a SUBTREE_CREATED event will be generated and distillation
+        // should occur.
+        // However, when the user scrolls in the PDF, SUBTREE_CREATED events
+        // will be generated. This happens because the accessibility tree tracks
+        // the scroll position of the PDF (which part of the PDF is currently
+        // displaying). To avoid distilling and causing RM to flicker, only
+        // distill if the size of the updated tree is larger than before (to
+        // capture the complete PDF load mentioned earlier).
+        if (is_pdf_ && prev_tree_size < tree_size) {
+          requires_distillation_ = true;
+        }
+        break;
       // Audit these events e.g. to trigger distillation.
       case ui::AXEventGenerator::Event::NONE:
       case ui::AXEventGenerator::Event::ACCESS_KEY_CHANGED:
@@ -787,22 +802,6 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
       case ui::AXEventGenerator::Event::SET_SIZE_CHANGED:
       case ui::AXEventGenerator::Event::SORT_CHANGED:
       case ui::AXEventGenerator::Event::STATE_CHANGED:
-      case ui::AXEventGenerator::Event::SUBTREE_CREATED:
-        // PDFs are not completely loaded on the kLoadComplete event. The PDF
-        // accessibility tree is only complete when the embedded node in the
-        // tree is populated with the actual contents of the PDF. When this
-        // happens, a SUBTREE_CREATED event will be generated and distillation
-        // should occur.
-        // However, when the user scrolls in the PDF, SUBTREE_CREATED events
-        // will be generated. This happens because the accessibility tree tracks
-        // the scroll position of the PDF (which part of the PDF is currently
-        // displaying). To avoid distilling and causing RM to flicker, only
-        // distill if the size of the updated tree is larger than before (to
-        // capture the complete PDF load mentioned earlier).
-        if (is_pdf_ && prev_tree_size < tree_size) {
-          requires_distillation_ = true;
-        }
-        break;
       case ui::AXEventGenerator::Event::TEXT_ATTRIBUTE_CHANGED:
       case ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED:
       case ui::AXEventGenerator::Event::VALUE_IN_TEXT_FIELD_CHANGED:
