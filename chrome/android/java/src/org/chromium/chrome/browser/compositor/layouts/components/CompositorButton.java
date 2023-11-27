@@ -78,8 +78,8 @@ public class CompositorButton implements VirtualView {
     private boolean mIsVisible;
     private boolean mIsIncognito;
     private boolean mIsEnabled;
-    private String mAccessibilityDescription;
-    private String mAccessibilityDescriptionIncognito;
+    private String mAccessibilityDescription = "";
+    private String mAccessibilityDescriptionIncognito = "";
 
     /**
      * Default constructor for {@link CompositorButton}

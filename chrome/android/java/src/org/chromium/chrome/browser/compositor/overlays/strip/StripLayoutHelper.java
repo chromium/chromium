@@ -1032,21 +1032,19 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         // 1. Replace the placeholder tabs by updating the relevant properties.
         for (int i = 0; i < numTabsToCopy; i++) {
-            final StripLayoutTab tab = mStripTabs[i];
+            final StripLayoutTab stripTab = mStripTabs[i];
+            final Tab tab = mModel.getTabAt(i);
 
-            tab.setId(mModel.getTabAt(i).getId());
-            tab.setIsPlaceholder(false);
-            tab.setContainerOpacity(TAB_OPACITY_HIDDEN);
+            pushPropertiesToPlaceholder(stripTab, tab);
         }
         if (!needPlaceholdersBeforeActiveTab) mActiveTabReplaced = true;
 
         // 2. If a new tab was created on startup (e.g. through intent), copy it over now.
         if (mCreatedTabOnStartup) {
-            final StripLayoutTab tab = mStripTabs[mStripTabs.length - 1];
+            final StripLayoutTab stripTab = mStripTabs[mStripTabs.length - 1];
+            final Tab tab = mModel.getTabAt(mModel.getCount() - 1);
 
-            tab.setId(mModel.getTabAt(mModel.getCount() - 1).getId());
-            tab.setIsPlaceholder(false);
-            tab.setContainerOpacity(TAB_OPACITY_HIDDEN);
+            pushPropertiesToPlaceholder(stripTab, tab);
         }
 
         // 3. If the active tab could not be copied earlier, copy it over now at the correct index.
@@ -1055,11 +1053,10 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             if (mCreatedTabOnStartup) prevActiveIndex--;
 
             if (prevActiveIndex >= 0) {
-                final StripLayoutTab tab = mStripTabs[mActiveTabIndexOnStartup];
+                final StripLayoutTab stripTab = mStripTabs[mActiveTabIndexOnStartup];
+                final Tab tab = mModel.getTabAt(prevActiveIndex);
 
-                tab.setId(mModel.getTabAt(prevActiveIndex).getId());
-                tab.setIsPlaceholder(false);
-                tab.setContainerOpacity(TAB_OPACITY_HIDDEN);
+                pushPropertiesToPlaceholder(stripTab, tab);
 
                 mActiveTabReplaced = true;
             }
@@ -1106,9 +1103,9 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         if (replaceIndex >= 0 && replaceIndex < mStripTabs.length) {
             final StripLayoutTab placeholderTab = mStripTabs[replaceIndex];
-            placeholderTab.setId(id);
-            placeholderTab.setIsPlaceholder(false);
-            placeholderTab.setContainerOpacity(TAB_OPACITY_HIDDEN);
+            final Tab tab = getTabById(id);
+
+            pushPropertiesToPlaceholder(placeholderTab, tab);
 
             if (placeholderTab.isVisible()) {
                 mRenderHost.requestRender();
@@ -2076,6 +2073,13 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         tab.setHeight(mHeight);
         tab.setIsPlaceholder(true);
         tab.setContainerOpacity(TAB_OPACITY_VISIBLE_FOREGROUND);
+
+        // TODO(https://crbug.com/1502238): Added placeholder a11y descriptions to prevent crash due
+        //  to invalid a11y node. Replace with official strings when available.
+        String description = "Placeholder Tab";
+        String title = "Placeholder";
+        tab.setAccessibilityDescription(description, title);
+
         pushStackerPropertiesToTab(tab);
 
         return tab;
@@ -2097,6 +2101,14 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         }
 
         return tab;
+    }
+
+    private void pushPropertiesToPlaceholder(StripLayoutTab placeholderTab, Tab tab) {
+        placeholderTab.setId(tab.getId());
+        placeholderTab.setIsPlaceholder(false);
+        placeholderTab.setContainerOpacity(TAB_OPACITY_HIDDEN);
+
+        setAccessibilityDescription(placeholderTab, tab);
     }
 
     private void pushStackerPropertiesToTab(StripLayoutTab tab) {
