@@ -91,7 +91,6 @@ config("dependants_extra_warnings") {
       "-Wno-gnu-zero-variadic-macro-arguments",
       "-Wno-invalid-offsetof",
       "-Wno-language-extension-token",
-      "-Wno-nested-anon-types",
       "-Wno-zero-length-array",
     ]
   }

@@ -204,12 +204,14 @@ struct Arg {
   template <class T>
   Arg(T* p) : ptr((void*)p), type(POINTER) {}
 
+  struct Integer {
+    int64_t i;
+    unsigned char width;
+  };
+
   union {
     // An integer-like value.
-    struct {
-      int64_t i;
-      unsigned char width;
-    } integer;
+    Integer integer;
 
     // A C-style text string.
     const char* str;
