@@ -1878,18 +1878,14 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("element-class-id-src-attr.html"));
 }
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
-// Flaky failures: http://crbug.com/445929.
-// Mac failures: http://crbug.com/571712.
-#define MAYBE_AccessibilityContenteditableDescendantsWithSelection \
-  DISABLED_AccessibilityContenteditableDescendantsWithSelection
-#else
-#define MAYBE_AccessibilityContenteditableDescendantsWithSelection \
-  AccessibilityContenteditableDescendantsWithSelection
-#endif
-IN_PROC_BROWSER_TEST_P(
-    DumpAccessibilityTreeTest,
-    MAYBE_AccessibilityContenteditableDescendantsWithSelection) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityContenteditableDescendantsWithSelection) {
+  RunHtmlTest(
+      FILE_PATH_LITERAL("contenteditable-descendants-with-selection.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
+                       AccessibilityContenteditableDescendantsWithSelection) {
   RunHtmlTest(
       FILE_PATH_LITERAL("contenteditable-descendants-with-selection.html"));
 }

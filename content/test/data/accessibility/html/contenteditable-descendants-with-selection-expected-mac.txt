@@ -1,10 +1,8 @@
 AXWebArea
-++AXTextArea AXValue='A contenteditable with a link and an  and a .
-Always expose editable tables as tables.
-Editable list item.'
+++AXTextArea AXValue='A contenteditable with a link and an <newline><newline> and a Button.<newline>Always expose editable tables as tables.<newline>1. Editable list item.'
 ++++AXGroup
 ++++++AXStaticText AXValue='A contenteditable with a '
-++++++AXLink AXTitle='link'
+++++++AXLink AXDescription='link'
 ++++++++AXStaticText AXValue='link'
 ++++++AXStaticText AXValue=' and an '
 ++++++AXImage AXDescription='Image'
@@ -16,8 +14,10 @@ Editable list item.'
 ++++++++AXCell
 ++++++++++AXStaticText AXValue='Always expose editable tables as tables.'
 ++++++AXColumn
+++++++++AXCell
+++++++++++AXStaticText AXValue='Always expose editable tables as tables.'
 ++++++AXGroup
-++++AXList
+++++AXList AXSubrole=AXContentList
 ++++++AXGroup
 ++++++++AXListMarker AXValue='1. '
 ++++++++AXStaticText AXValue='Editable list item.'
