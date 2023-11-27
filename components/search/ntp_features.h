@@ -30,6 +30,7 @@ BASE_DECLARE_FEATURE(kDismissPromos);
 BASE_DECLARE_FEATURE(kIframeOneGoogleBar);
 BASE_DECLARE_FEATURE(kOneGoogleBarModalOverlays);
 BASE_DECLARE_FEATURE(kRealboxCr23All);
+BASE_DECLARE_FEATURE(kRealboxCr23ConsistentRowHeight);
 BASE_DECLARE_FEATURE(kRealboxCr23ExpandedStateIcons);
 BASE_DECLARE_FEATURE(kRealboxCr23ExpandedStateLayout);
 BASE_DECLARE_FEATURE(kRealboxMatchOmniboxTheme);

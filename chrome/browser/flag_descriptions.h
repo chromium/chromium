@@ -2891,6 +2891,9 @@ extern const char kNtpRealboxIsTallDescription[];
 extern const char kNtpRealboxCr23AllName[];
 extern const char kNtpRealboxCr23AllDescription[];
 
+extern const char kNtpRealboxCr23ConsistentRowHeightName[];
+extern const char kNtpRealboxCr23ConsistentRowHeightDescription[];
+
 extern const char kNtpRealboxCr23ExpandedStateIconsName[];
 extern const char kNtpRealboxCr23ExpandedStateIconsDescription[];
 

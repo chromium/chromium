@@ -5006,6 +5006,11 @@ const char kNtpRealboxCr23AllName[] = "Realbox Chrome Refresh 2023";
 const char kNtpRealboxCr23AllDescription[] =
     "Enables all NTP Realbox Chrome Refresh features";
 
+const char kNtpRealboxCr23ConsistentRowHeightName[] =
+    "Realbox Chrome Refresh Consistent Row Height";
+const char kNtpRealboxCr23ConsistentRowHeightDescription[] =
+    "Realbox rows will have a consistent height";
+
 const char kNtpRealboxCr23ExpandedStateIconsName[] =
     "Realbox Chrome Refresh Expanded State Icons";
 const char kNtpRealboxCr23ExpandedStateIconsDescription[] =

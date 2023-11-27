@@ -57,6 +57,12 @@ BASE_FEATURE(kRealboxCr23All,
              "NtpRealboxCr23All",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, NTP "realbox" will have consistent row height. Includes changing
+// entity sizes and inlining subtitles.
+BASE_FEATURE(kRealboxCr23ConsistentRowHeight,
+             "NtpRealboxCr23ConsistentRowHeight",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, NTP "realbox" expanded state icon CR23 updates will appear.
 // Includes CR23 icons as well as backgrounds for AiS and pedal suggestions and
 // updated entity corner radii.

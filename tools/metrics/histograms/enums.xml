@@ -34000,6 +34000,7 @@ from previous Chrome versions.
   <int value="-1700764114" label="HelpAppBackgroundPage:enabled"/>
   <int value="-1700068858" label="HelpAppCrosComponents:disabled"/>
   <int value="-1699960514" label="ChromeOSSyncedSessionSharing:enabled"/>
+  <int value="-1699908146" label="NtpRealboxCr23ConsistentRowHeight:enabled"/>
   <int value="-1699700244"
       label="VirtualKeyboardMultipasteSuggestion:disabled"/>
   <int value="-1698438797" label="TabGroupsCollapseFreezing:enabled"/>
@@ -39316,6 +39317,7 @@ from previous Chrome versions.
   <int value="824022134" label="ShelfGesturesWithVirtualKeyboard:disabled"/>
   <int value="824961931" label="use-simple-cache-backend"/>
   <int value="824968180" label="SimLockPolicy:enabled"/>
+  <int value="826644834" label="NtpRealboxCr23ConsistentRowHeight:disabled"/>
   <int value="828092263" label="TemporaryUnexpireFlagsM78:enabled"/>
   <int value="828678083" label="DynamicTopChrome:disabled"/>
   <int value="830282555" label="DecodeJpeg420ImagesToYUV:enabled"/>
