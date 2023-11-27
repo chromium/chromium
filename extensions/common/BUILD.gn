@@ -697,6 +697,9 @@ fuzzer_test("extension_manifest_fuzzer") {
     "//base",
     "//extensions:test_support",
   ]
+
+  # The fuzzed code needs more RAM that the default limit.
+  libfuzzer_options = [ "rss_limit_mb=4096" ]
 }
 
 fuzzer_test("extension_url_pattern_fuzzer") {
