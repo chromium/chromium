@@ -192,15 +192,6 @@ public class ChromeActivitySessionTracker {
         IntentHandler.clearPendingReferrer();
         IntentHandler.clearPendingIncognitoUrl();
 
-        int totalTabCount = 0;
-        for (Activity activity : ApplicationStatus.getRunningActivities()) {
-            Supplier<TabModelSelector> tabModelSelectorSupplier =
-                    mTabModelSelectorSuppliers.get(activity);
-            if (tabModelSelectorSupplier == null || !tabModelSelectorSupplier.hasValue()) continue;
-            totalTabCount += tabModelSelectorSupplier.get().getTotalTabCount();
-        }
-        RecordHistogram.recordCount1MHistogram("Tab.TotalTabCount.BeforeLeavingApp", totalTabCount);
-
         Tracker tracker = TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
         tracker.notifyEvent(EventConstants.FOREGROUND_SESSION_DESTROYED);
     }

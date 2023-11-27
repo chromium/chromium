@@ -402,17 +402,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tab.TotalTabCount.BeforeLeavingApp" units="tabs"
-    expires_after="M85">
-  <owner>tedchoc@chromium.org</owner>
-  <owner>clank-team@google.com</owner>
-  <summary>
-    [Android] The total count of tabs which were kept while Chrome process is in
-    the foreground. This is recorded only for Android right before Chrome
-    process goes into the background.
-  </summary>
-</histogram>
-
 <histogram name="TabGroups.CollapsedGroupCountPerLoad" units="groups"
     expires_after="2024-04-28">
   <owner>dpenning@chromium.org</owner>
