@@ -1611,19 +1611,6 @@
     "expires": "Sep 1, 2024"
   },
   {
-    "prefix": "fledge-rounding",
-    "platforms": ["Linux", "Mac", "Win"],
-    "owners": ["behamilton@google.com", "caraitto@chromium.org", "pauljensen@chromium.org", "mmenke@chromium.org", "morlovich@chromium.org", "qingxinwu@google.com"],
-    "bases": [
-      "external/wpt/fledge/tentative/round-a-value.https.window.js"
-    ],
-    "args": [
-      "--enable-features=InterestGroupStorage,PrivacySandboxAdsAPIsOverride,FencedFrames:implementation_type/mparch,FledgeRounding:fledge_bid_reporting_bits/8/fledge_score_reporting_bits/8/fledge_ad_cost_reporting_bits/8",
-      "--disable-threaded-compositing", "--disable-threaded-animation"
-    ],
-    "expires": "Sep 1, 2024"
-  },
-  {
     "prefix": "automatic-lazy-frame-loading",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
