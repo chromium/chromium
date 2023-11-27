@@ -19,6 +19,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.background_task_scheduler.TaskIds;
+import org.chromium.components.webapps.WebappsUtils;
 
 /**
  * The Notification service receives intents fired as responses to user actions issued on Android
@@ -79,6 +80,12 @@ public class NotificationServiceImpl extends NotificationService.Impl {
                 TaskTraits.UI_DEFAULT,
                 () -> {
                     dispatchIntentOnUIThread(intent);
+                });
+
+        PostTask.runOrPostTask(
+                TaskTraits.BEST_EFFORT,
+                () -> {
+                    WebappsUtils.prepareIsRequestPinShortcutSupported();
                 });
     }
 

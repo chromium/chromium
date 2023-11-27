@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.webapps.WebappDataStorage;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.webapps.WebApkDistributor;
+import org.chromium.components.webapps.WebappsUtils;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -28,6 +29,7 @@ public class WebApkUninstallUmaTracker {
 
         long fallbackUninstallTimestamp = System.currentTimeMillis();
         WebappRegistry.warmUpSharedPrefs();
+        WebappsUtils.prepareIsRequestPinShortcutSupported();
         for (String uninstalledPackage : uninstalledPackages) {
             RecordHistogram.recordBooleanHistogram("WebApk.Uninstall.Browser", true);
 

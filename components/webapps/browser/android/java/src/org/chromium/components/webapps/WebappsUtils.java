@@ -16,6 +16,7 @@ import android.graphics.drawable.Icon;
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
+import androidx.annotation.WorkerThread;
 
 import org.jni_zero.CalledByNative;
 
@@ -35,10 +36,14 @@ public class WebappsUtils {
     private static final String INSTALL_SHORTCUT = "com.android.launcher.action.INSTALL_SHORTCUT";
 
     // True when Android O's ShortcutManager.requestPinShortcut() is supported.
-    private static boolean sIsRequestPinShortcutSupported;
+    private static volatile boolean sIsRequestPinShortcutSupported;
 
     // True when it is already checked if ShortcutManager.requestPinShortcut() is supported.
-    private static boolean sCheckedIfRequestPinShortcutSupported;
+    private static volatile boolean sCheckedIfRequestPinShortcutSupported;
+
+    // Synchronization locks for thread-safe access to variables
+    // sCheckedIfRequestPinShortcutSupported and sIsRequestPinShortcutSupported.
+    private static final Object sLock = new Object();
 
     /**
      * Creates an intent that will add a shortcut to the home screen.
@@ -153,13 +158,30 @@ public class WebappsUtils {
         return !receivers.isEmpty();
     }
 
+    /** Prepares whether Android O's ShortcutManager.requestPinShortcut() is supported. */
+    @WorkerThread
+    public static void prepareIsRequestPinShortcutSupported() {
+        isRequestPinShortcutSupported();
+    }
+
     /** Returns whether Android O's ShortcutManager.requestPinShortcut() is supported. */
     public static boolean isRequestPinShortcutSupported() {
         if (!sCheckedIfRequestPinShortcutSupported) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                checkIfRequestPinShortcutSupported();
+            synchronized (sLock) {
+                if (!sCheckedIfRequestPinShortcutSupported) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        ShortcutManager shortcutManager =
+                                ContextUtils.getApplicationContext()
+                                        .getSystemService(ShortcutManager.class);
+                        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
+                            sIsRequestPinShortcutSupported =
+                                    shortcutManager != null
+                                            && shortcutManager.isRequestPinShortcutSupported();
+                        }
+                    }
+                    sCheckedIfRequestPinShortcutSupported = true;
+                }
             }
-            sCheckedIfRequestPinShortcutSupported = true;
         }
         return sIsRequestPinShortcutSupported;
     }
@@ -171,16 +193,6 @@ public class WebappsUtils {
     @CalledByNative
     private static String queryFirstWebApkPackage(String url) {
         return WebApkValidator.queryFirstWebApkPackage(ContextUtils.getApplicationContext(), url);
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    private static void checkIfRequestPinShortcutSupported() {
-        ShortcutManager shortcutManager =
-                ContextUtils.getApplicationContext().getSystemService(ShortcutManager.class);
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            sIsRequestPinShortcutSupported =
-                    shortcutManager != null && shortcutManager.isRequestPinShortcutSupported();
-        }
     }
 
     /**
