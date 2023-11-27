@@ -22,6 +22,7 @@ import '../settings_shared.css.js';
 import {PrefControlMixinInterface} from '/shared/settings/controls/pref_control_mixin.js';
 import {DropdownMenuOptionList} from '/shared/settings/controls/settings_dropdown_menu.js';
 import {StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
+import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -64,15 +65,13 @@ export interface SettingsClearBrowsingDataDialogElement {
   };
 }
 
-enum TimePeriod {
+export enum TimePeriod {
   LAST_HOUR = 0,
   LAST_DAY = 1,
   LAST_WEEK = 2,
   FOUR_WEEKS = 3,
   ALL_TIME = 4,
-  OLDER_THAN_30_DAYS = 5,
-  LAST_15_MINUTES = 6,
-  TIME_PERIOD_LAST = LAST_15_MINUTES
+  TIME_PERIOD_LAST = ALL_TIME
 }
 
 // TODO(crbug.com/1487530): Remove this after CbdTimeframeRequired finishes.
@@ -88,8 +87,8 @@ export enum TimePeriodExperiment {
   TIME_PERIOD_LAST = LAST_15_MINUTES
 }
 
-const SettingsClearBrowsingDataDialogElementBase =
-    RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
+const SettingsClearBrowsingDataDialogElementBase = RouteObserverMixin(
+    WebUiListenerMixin(PrefsMixin(I18nMixin(PolymerElement))));
 
 export class SettingsClearBrowsingDataDialogElement extends
     SettingsClearBrowsingDataDialogElementBase {
@@ -306,6 +305,15 @@ export class SettingsClearBrowsingDataDialogElement extends
 
       nonGoogleSearchHistoryString_: String,
     };
+  }
+
+  static get observers() {
+    return [
+      `onTimePeriodAdvancedPrefUpdated_(
+          prefs.browser.clear_data.time_period.value)`,
+      `onTimePeriodBasicPrefUpdated_(
+          prefs.browser.clear_data.time_period_basic.value)`,
+    ];
   }
 
   // TODO(dpapad): make |syncStatus| private.
@@ -633,6 +641,27 @@ export class SettingsClearBrowsingDataDialogElement extends
     showFooter = !!this.syncStatus && !!this.syncStatus!.signedIn;
     // </if>
     return showFooter;
+  }
+
+  private onTimePeriodAdvancedPrefUpdated_() {
+    this.onTimePeriodPrefUpdated_(false);
+  }
+
+  private onTimePeriodBasicPrefUpdated_() {
+    this.onTimePeriodPrefUpdated_(true);
+  }
+
+
+  private onTimePeriodPrefUpdated_(basic: boolean) {
+    const timePeriodPref = basic ? 'browser.clear_data.time_period_basic' :
+                                   'browser.clear_data.time_period';
+
+    const timePeriodValue = this.getPref(timePeriodPref).value;
+
+    if (!(timePeriodValue in TimePeriod)) {
+      // If the synced time period is not supported, default to "Last hour".
+      this.setPrefValue(timePeriodPref, TimePeriod.LAST_HOUR);
+    }
   }
 }
 
