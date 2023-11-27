@@ -61,48 +61,52 @@ public final class JniAndroid {
      * @param throwable The uncaught Java exception that was thrown by a Java method called via JNI.
      * @param nativeStackTrace The stack trace of the native code that called the Java method that
      *     threw.
+     * @return null, unless the uncaught exception handler threw an exception other than
+     *     OutOfMemoryError exception, in which case that exception is returned.
      */
     @CalledByNative
-    private static void handleException(Throwable throwable, String nativeStackTrace) {
-        // Try to make sure the exception details at least make their way to the log even if the
-        // rest of this method goes horribly wrong.
-        Log.e(TAG, "Handling uncaught Java exception", throwable);
-
-        // Wrap the original exception so that we can annotate it with native stack information,
-        // with the goal of including as much information in the Java crash report as possible.
-        // (The native caller might itself have been called from Java. We don't need to care about
-        // that because the stack trace in `throwable` includes the *entire* Java stack of the
-        // current thread, even if there are native calls in the middle.)
-        throwable = new UncaughtExceptionException(nativeStackTrace, throwable);
-
-        // The Chromium JNI framework does not support resuming execution after a Java method called
-        // through JNI throws an exception - we have to terminate the process at some point,
-        // otherwise undefined behavior may result. The goal here is to provide as much useful
-        // information to the crash handler as we can.
-        //
-        // To that end, we try to call the global uncaught exception handler. Hopefully that will
-        // eventually reach the default Android uncaught exception handler (possibly going through
-        // JavaExceptionReporter first, if we set one up), which will terminate the process. If for
-        // any reason that doesn't happen (e.g. the app set up a different handler), then we just
-        // give up and return - the native code we're returning to will terminate the process for
-        // us. (Note that, even then, there is still a case where we might not terminate the
-        // process: if the uncaught exception handler deliberately terminates the current thread but
-        // not the entire process. This is very contrived though, and protecting against this would
-        // be complicated, so we don't even try.)
-        //
-        // Log profusely along the way so that someone looking at the system log can easily
-        // reconstruct the above sequence of events.
-        Throwable handlerThrowable = null;
+    private static Throwable handleException(Throwable throwable, String nativeStackTrace) {
         try {
+            // Try to make sure the exception details at least make their way to the log even if the
+            // rest of this method goes horribly wrong.
+            Log.e(TAG, "Handling uncaught Java exception", throwable);
+
+            // Wrap the original exception so that we can annotate it with native stack information,
+            // with the goal of including as much information in the Java crash report as possible.
+            // (The native caller might itself have been called from Java. We don't need to care
+            // about that because the stack trace in `throwable` includes the *entire* Java stack of
+            // the current thread, even if there are native calls in the middle.)
+            var wrappedThrowable = new UncaughtExceptionException(nativeStackTrace, throwable);
+
+            // The Chromium JNI framework does not support resuming execution after a Java method
+            // called through JNI throws an exception - we have to terminate the process at some
+            // point, otherwise undefined behavior may result. The goal here is to provide as much
+            // useful information to the crash handler as we can.
+            //
+            // To that end, we try to call the global uncaught exception handler. Hopefully that
+            // will eventually reach the default Android uncaught exception handler (possibly going
+            // through JavaExceptionReporter first, if we set one up), which will terminate the
+            // process. If for any reason that doesn't happen (e.g. the app set up a different
+            // handler), then we just give up and return the new exception (if any) - the native
+            // code we're returning to will terminate the process for us. (Note that, even then,
+            // there is still a case where we might not terminate the process: if the uncaught
+            // exception handler deliberately terminates the current thread but not the entire
+            // process. This is very contrived though, and protecting against this would be
+            // complicated, so we don't even try.)
             Thread.getDefaultUncaughtExceptionHandler()
-                    .uncaughtException(Thread.currentThread(), throwable);
+                    .uncaughtException(Thread.currentThread(), wrappedThrowable);
+            Log.e(TAG, "Global uncaught exception handler did not terminate the process.");
+            return null;
+        } catch (OutOfMemoryError e) {
+            // Don't call Log.e() so as to not risk throwing again.
+            return null;
         } catch (Throwable e) {
-            handlerThrowable = e;
+            // Log the new crash rather than the original crash, since if there is a bug in our
+            // crash handling logic, we need to know about it. If there is a crash in a webview
+            // app's crash handling logic, then we can rely on other apps to upload the underlying
+            // exception.
+            Log.e(TAG, "Exception in uncaught exception handler.", e);
+            return e;
         }
-        Log.e(
-                TAG,
-                "Global uncaught exception handler did not terminate the process - letting "
-                        + "native code terminate the process instead",
-                handlerThrowable);
     }
 }

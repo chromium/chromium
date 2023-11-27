@@ -346,11 +346,19 @@ void CheckException(JNIEnv* env) {
   const std::string native_stack_trace = base::debug::StackTrace().ToString();
   LOG(ERROR) << "Native stack trace:" << std::endl << native_stack_trace;
 
-  Java_JniAndroid_handleException(
-      env, throwable, ConvertUTF8ToJavaString(env, native_stack_trace));
+  ScopedJavaLocalRef<jthrowable> secondary_exception =
+      Java_JniAndroid_handleException(
+          env, throwable, ConvertUTF8ToJavaString(env, native_stack_trace));
 
   // Ideally handleException() should have terminated the process and we should
-  // not get here. In the unlikely case it didn't, we need to do that ourselves.
+  // not get here. This can happen in the case of OutOfMemoryError or if the
+  // app that embedded WebView installed an exception handler that does not
+  // terminate, or itself threw an exception. We cannot be confident that
+  // JavaExceptionReporter ran, so set the java exception explicitly.
+  base::android::SetJavaException(
+      GetJavaExceptionInfo(
+          env, secondary_exception ? secondary_exception : throwable)
+          .c_str());
   LOG(FATAL)
       << "Uncaught Java exception in native code, and the Java uncaught "
          "exception handler did not terminate the process. Please include the "
