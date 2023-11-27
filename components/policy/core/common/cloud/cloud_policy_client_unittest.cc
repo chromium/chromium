@@ -36,6 +36,7 @@
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/policy/core/common/cloud/reporting_job_configuration_base.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "components/reporting/util/encrypted_reporting_json_keys.h"
 #include "components/version_info/version_info.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -133,7 +134,8 @@ base::Value::Dict ConvertEncryptedRecordToValue(
     base::Value::Dict encrypted_wrapped_record;
     std::string base64_encode;
     base::Base64Encode(record.encrypted_wrapped_record(), &base64_encode);
-    record_request.Set("encryptedWrappedRecord", base64_encode);
+    record_request.Set(reporting::json_keys::kEncryptedWrappedRecord,
+                       base64_encode);
   }
   if (record.has_encryption_info()) {
     base::Value::Dict encryption_info;
@@ -141,32 +143,33 @@ base::Value::Dict ConvertEncryptedRecordToValue(
       std::string base64_encode;
       base::Base64Encode(record.encryption_info().encryption_key(),
                          &base64_encode);
-      encryption_info.Set("encryptionKey", base64_encode);
+      encryption_info.Set(reporting::json_keys::kEncryptionKey, base64_encode);
     }
     if (record.encryption_info().has_public_key_id()) {
       encryption_info.Set(
-          "publicKeyId",
+          reporting::json_keys::kPublicKeyId,
           base::NumberToString(record.encryption_info().public_key_id()));
     }
-    record_request.Set("encryptionInfo", std::move(encryption_info));
+    record_request.Set(reporting::json_keys::kEncryptionInfo,
+                       std::move(encryption_info));
   }
   if (record.has_sequence_information()) {
     base::Value::Dict sequence_information;
     if (record.sequence_information().has_sequencing_id()) {
       sequence_information.Set(
-          "sequencingId",
+          reporting::json_keys::kSequencingId,
           base::NumberToString(record.sequence_information().sequencing_id()));
     }
     if (record.sequence_information().has_generation_id()) {
       sequence_information.Set(
-          "generationId",
+          reporting::json_keys::kGenerationId,
           base::NumberToString(record.sequence_information().generation_id()));
     }
     if (record.sequence_information().has_priority()) {
-      sequence_information.Set("priority",
+      sequence_information.Set(reporting::json_keys::kPriority,
                                record.sequence_information().priority());
     }
-    record_request.Set("sequencingInformation",
+    record_request.Set(reporting::json_keys::kSequenceInformation,
                        std::move(sequence_information));
   }
   return record_request;

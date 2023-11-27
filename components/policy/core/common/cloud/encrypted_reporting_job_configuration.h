@@ -35,6 +35,7 @@ namespace policy {
 //         "sequencingId": 1,
 //         "generationId": 123456789,
 //         "priority": 1
+//         "generation_guid": "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
 //       },
 //       "compressionInformation": {
 //         "compressionAlgorithm": 1
@@ -50,6 +51,7 @@ namespace policy {
 //         "sequencingId": 2,
 //         "generationId": 123456789,
 //         "priority": 1
+//         "generation_guid": "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
 //       },
 //       "compressionInformation": {
 //         "compressionAlgorithm": 1

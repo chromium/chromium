@@ -16,7 +16,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "components/reporting/proto/synced/record.pb.h"
-#include "components/reporting/util/record_upload_request_json_keys.h"
+#include "components/reporting/util/encrypted_reporting_json_keys.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -95,7 +95,7 @@ UploadEncryptedReportingRequestBuilder::SetRequestId(
     return *this;
   }
 
-  result_->Set(reporting::json_keys::kRequestIdKey, request_id);
+  result_->Set(reporting::json_keys::kRequestId, request_id);
 
   return *this;
 }
@@ -105,10 +105,10 @@ UploadEncryptedReportingRequestBuilder::Build() {
   // Ensure that if result_ has value, then it must not have a non-string
   // requestId.
   CHECK(!(result_.has_value() &&
-          result_->Find(reporting::json_keys::kRequestIdKey) &&
-          !result_->FindString(reporting::json_keys::kRequestIdKey)));
+          result_->Find(reporting::json_keys::kRequestId) &&
+          !result_->FindString(reporting::json_keys::kRequestId)));
   if (result_.has_value() &&
-      result_->FindString(reporting::json_keys::kRequestIdKey) == nullptr) {
+      result_->FindString(reporting::json_keys::kRequestId) == nullptr) {
     SetRequestId(base::Token::CreateRandom().ToString());
   }
   return std::move(result_);
@@ -117,24 +117,24 @@ UploadEncryptedReportingRequestBuilder::Build() {
 // static
 std::string_view
 UploadEncryptedReportingRequestBuilder::GetEncryptedRecordListPath() {
-  return reporting::json_keys::kEncryptedRecordListKey;
+  return reporting::json_keys::kEncryptedRecordList;
 }
 
 // static
 std::string_view
 UploadEncryptedReportingRequestBuilder::GetAttachEncryptionSettingsPath() {
-  return reporting::json_keys::kAttachEncryptionSettingsKey;
+  return reporting::json_keys::kAttachEncryptionSettings;
 }
 
 // static
 std::string_view
 UploadEncryptedReportingRequestBuilder::GetConfigurationFileVersionPath() {
-  return reporting::json_keys::kConfigurationFileVersionKey;
+  return reporting::json_keys::kConfigurationFileVersion;
 }
 
 // static
 std::string_view UploadEncryptedReportingRequestBuilder::GetSourcePath() {
-  return reporting::json_keys::kSourceKey;
+  return reporting::json_keys::kSource;
 }
 
 EncryptedRecordDictionaryBuilder::EncryptedRecordDictionaryBuilder(
@@ -215,24 +215,24 @@ absl::optional<base::Value::Dict> EncryptedRecordDictionaryBuilder::Build() {
 // static
 std::string_view
 EncryptedRecordDictionaryBuilder::GetEncryptedWrappedRecordPath() {
-  return json_keys::kEncryptedWrappedRecordKey;
+  return json_keys::kEncryptedWrappedRecord;
 }
 
 // static
 std::string_view
 EncryptedRecordDictionaryBuilder::GetSequenceInformationKeyPath() {
-  return reporting::json_keys::kSequenceInformationKey;
+  return reporting::json_keys::kSequenceInformation;
 }
 
 // static
 std::string_view EncryptedRecordDictionaryBuilder::GetEncryptionInfoPath() {
-  return json_keys::kEncryptionInfoKey;
+  return json_keys::kEncryptionInfo;
 }
 
 // static
 std::string_view
 EncryptedRecordDictionaryBuilder::GetCompressionInformationPath() {
-  return json_keys::kCompressionInformationKey;
+  return json_keys::kCompressionInformation;
 }
 
 SequenceInformationDictionaryBuilder::SequenceInformationDictionaryBuilder(
@@ -274,23 +274,23 @@ SequenceInformationDictionaryBuilder::Build() {
 
 // static
 std::string_view SequenceInformationDictionaryBuilder::GetSequencingIdPath() {
-  return reporting::json_keys::kSequencingIdKey;
+  return reporting::json_keys::kSequencingId;
 }
 
 // static
 std::string_view SequenceInformationDictionaryBuilder::GetGenerationIdPath() {
-  return reporting::json_keys::kGenerationIdKey;
+  return reporting::json_keys::kGenerationId;
 }
 
 // static
 std::string_view SequenceInformationDictionaryBuilder::GetPriorityPath() {
-  return reporting::json_keys::kPriorityKey;
+  return reporting::json_keys::kPriority;
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
 // static
 std::string_view SequenceInformationDictionaryBuilder::GetGenerationGuidPath() {
-  return json_keys::kGenerationGuidKey;
+  return json_keys::kGenerationGuid;
 }
 
 // static
@@ -369,7 +369,7 @@ CompressionInformationDictionaryBuilder::Build() {
 // static
 std::string_view
 CompressionInformationDictionaryBuilder::GetCompressionAlgorithmPath() {
-  return json_keys::kCompressionAlgorithmKey;
+  return json_keys::kCompressionAlgorithm;
 }
 
 }  // namespace reporting

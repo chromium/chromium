@@ -13,6 +13,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/policy/messaging_layer/upload/record_upload_request_builder.h"
+#include "components/reporting/util/encrypted_reporting_json_keys.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 
 namespace reporting {
@@ -33,7 +34,7 @@ static bool IsPositiveInteger(std::string_view s) {
 // null pointer.
 static const base::Value::List* GetRecordList(const base::Value::Dict& arg,
                                               MatchResultListener* listener) {
-  const auto* const record_list = arg.FindList("encryptedRecord");
+  const auto* const record_list = arg.FindList(json_keys::kEncryptedRecordList);
   if (record_list == nullptr) {
     *listener << "No key named \"encryptedRecord\" in the argument or the "
                  "value is not a list.";
@@ -46,7 +47,7 @@ bool AttachEncryptionSettingsMatcher::MatchAndExplain(
     const base::Value::Dict& arg,
     MatchResultListener* listener) const {
   const auto attach_encryption_settings =
-      arg.FindBool("attachEncryptionSettings");
+      arg.FindBool(json_keys::kAttachEncryptionSettings);
   if (!attach_encryption_settings) {
     *listener << "No key named \"attachEncryptionSettings\" in the argument or "
                  "the value is not of bool type.";
@@ -75,7 +76,7 @@ std::string AttachEncryptionSettingsMatcher::Name() const {
 bool NoAttachEncryptionSettingsMatcher::MatchAndExplain(
     const base::Value::Dict& arg,
     MatchResultListener* listener) const {
-  if (arg.Find("attachEncryptionSettings") != nullptr) {
+  if (arg.Find(json_keys::kAttachEncryptionSettings) != nullptr) {
     *listener << "Found \"attachEncryptionSettings\" in the argument.";
     return false;
   }
@@ -98,7 +99,8 @@ std::string NoAttachEncryptionSettingsMatcher::Name() const {
 bool ConfigurationFileVersionMatcher::MatchAndExplain(
     const base::Value::Dict& arg,
     MatchResultListener* listener) const {
-  auto* attach_configuration_file = arg.Find("configurationFileVersion");
+  auto* attach_configuration_file =
+      arg.Find(json_keys::kConfigurationFileVersion);
   if (!attach_configuration_file->GetIfInt().has_value()) {
     *listener << "No key named \"configurationFileVersion\" in the argument or "
                  "the value is not of int type.";
@@ -123,7 +125,7 @@ std::string ConfigurationFileVersionMatcher::Name() const {
 bool NoConfigurationFileVersionMatcher::MatchAndExplain(
     const base::Value::Dict& arg,
     MatchResultListener* listener) const {
-  if (arg.Find("configurationFileVersion") != nullptr) {
+  if (arg.Find(json_keys::kConfigurationFileVersion) != nullptr) {
     *listener << "Found \"configurationFileVersion\" in the argument.";
     return false;
   }
@@ -145,7 +147,7 @@ std::string NoConfigurationFileVersionMatcher::Name() const {
 
 bool SourceMatcher::MatchAndExplain(const base::Value::Dict& arg,
                                     MatchResultListener* listener) const {
-  if (arg.FindString("source") == nullptr) {
+  if (arg.FindString(json_keys::kSource) == nullptr) {
     *listener << "No key named \"source\" or the value "
                  "is not a string in the argument.";
     return false;
@@ -167,7 +169,7 @@ std::string SourceMatcher::Name() const {
 
 bool NoSourceMatcher::MatchAndExplain(const base::Value::Dict& arg,
                                       MatchResultListener* listener) const {
-  if (arg.Find("source") != nullptr) {
+  if (arg.Find(json_keys::kSource) != nullptr) {
     *listener << "Found \"source\" in the argument.";
     return false;
   }
@@ -219,7 +221,7 @@ std::string EncryptedRecordMatcher::Name() const {
 
 bool RequestIdMatcher::MatchAndExplain(const base::Value::Dict& arg,
                                        MatchResultListener* listener) const {
-  const auto* const request_id = arg.FindString("requestId");
+  const auto* const request_id = arg.FindString(json_keys::kRequestId);
   if (request_id == nullptr) {
     *listener << "No key named \"requestId\" in the argument or the value "
                  "is not a string.";
@@ -291,7 +293,7 @@ bool CompressionInformationMatcher::MatchAndExplainRecord(
     const base::Value::Dict& record,
     MatchResultListener* listener) const {
   const auto* const compression_info =
-      record.FindDict("compressionInformation");
+      record.FindDict(json_keys::kCompressionInformation);
   if (compression_info == nullptr) {
     *listener << "No key named \"compressionInformation\" or the value is "
                  "not a dict in record "
@@ -300,7 +302,7 @@ bool CompressionInformationMatcher::MatchAndExplainRecord(
   }
 
   const auto compression_algorithm =
-      compression_info->FindInt("compressionAlgorithm");
+      compression_info->FindInt(json_keys::kCompressionAlgorithm);
   if (!compression_algorithm.has_value()) {
     *listener << "No key named \"compressionAlgorithm\" under "
                  "compressionInformation "
@@ -321,7 +323,7 @@ bool CompressionInformationMatcher::MatchAndExplainRecord(
 bool EncryptedWrappedRecordRecordMatcher::MatchAndExplainRecord(
     const base::Value::Dict& record,
     MatchResultListener* listener) const {
-  if (record.FindString("encryptedWrappedRecord") == nullptr) {
+  if (record.FindString(json_keys::kEncryptedWrappedRecord) == nullptr) {
     *listener << "No key named \"encryptedWrappedRecord\" or the value "
                  "is not a string in record "
               << record << '.';
@@ -347,7 +349,7 @@ std::string EncryptedWrappedRecordRecordMatcher::Name() const {
 bool NoEncryptedWrappedRecordRecordMatcher::MatchAndExplainRecord(
     const base::Value::Dict& record,
     MatchResultListener* listener) const {
-  if (record.Find("encryptedWrappedRecord") != nullptr) {
+  if (record.Find(json_keys::kEncryptedWrappedRecord) != nullptr) {
     *listener << "Found \"encryptedWrappedRecord\" in record " << record << '.';
     return false;
   }
@@ -371,7 +373,7 @@ bool SequenceInformationRecordMatcher::MatchAndExplainRecord(
     const base::Value::Dict& record,
     MatchResultListener* listener) const {
   const auto* const sequence_information =
-      record.FindDict("sequenceInformation");
+      record.FindDict(json_keys::kSequenceInformation);
   if (sequence_information == nullptr) {
     *listener << "No key named \"sequenceInformation\" or the value is "
                  "not a dict in record "
@@ -379,14 +381,14 @@ bool SequenceInformationRecordMatcher::MatchAndExplainRecord(
     return false;
   }
 
-  if (!sequence_information->FindInt("priority").has_value()) {
+  if (!sequence_information->FindInt(json_keys::kPriority).has_value()) {
     *listener << "No key named \"sequenceInformation/priority\" or the "
                  "value is not an integer in record "
               << record << '.';
     return false;
   }
 
-  for (const char* id : {"sequencingId", "generationId"}) {
+  for (const char* id : {json_keys::kSequencingId, json_keys::kGenerationId}) {
     const auto* const id_val = sequence_information->FindString(id);
     if (id_val == nullptr) {
       *listener << "No key named \"sequenceInformation/" << id
@@ -405,7 +407,7 @@ bool SequenceInformationRecordMatcher::MatchAndExplainRecord(
 #if BUILDFLAG(IS_CHROMEOS)
   if (SequenceInformationDictionaryBuilder::GenerationGuidIsRequired()) {
     const auto* generation_guid =
-        sequence_information->FindString("generationGuid");
+        sequence_information->FindString(json_keys::kGenerationGuid);
     if ((!generation_guid || generation_guid->empty())) {
       *listener << "No key named \"sequenceInformation/generationGuid\" or the "
                    "value is not a string in record "
