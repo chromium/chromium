@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="or">
 <translation id="1000498691615767391">ଖୋଲିବା ପାଇଁ ଏକ ଫୋଲ୍ଡର୍ ବାଛନ୍ତୁ</translation>
+<translation id="1014208178561091457"><ph name="FILE_NAME" />କୁ ଏନକ୍ରିପ୍ଟ କରାଯାଇଥିବା ଯୋଗୁଁ ଏହାକୁ କପି କରାଯାଇପାରିଲା ନାହିଁ।</translation>
 <translation id="1047956942837015229"><ph name="COUNT" />ଟି ଆଇଟମ୍‍କୁ ଡିଲିଟ୍ କରାଯାଉଛି...</translation>
 <translation id="1049926623896334335">Word ଡକ୍ୟୁମେଣ୍ଟ</translation>
 <translation id="1056775291175587022">ନେଟୱାର୍କ ନାହିଁ</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Parallels Desktop ସହ ଫୋଲ୍ଡର ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="1439919885608649279">ଫୁଲଗୁଡ଼ିକ ସହ ଜଣେ ବ୍ୟକ୍ତି</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" />କୁ ବାହାର କରିଦିଅନ୍ତୁ</translation>
+<translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> ଫାଇଲକୁ ଏନକ୍ରିପ୍ଟ କରାଯାଇଥିବା ଯୋଗୁଁ ସେଗୁଡ଼ିକୁ କପି କରାଯାଇପାରିଲା ନାହିଁ।</translation>
 <translation id="1471718551822868769">ସ୍ଲୋଭାକ୍</translation>
 <translation id="1482884275703521657">ଫିନିଶ୍</translation>
 <translation id="148466539719134488">ସ୍ଵିସ୍</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="3254434849914415189"><ph name="FILE_TYPE" /> ଫାଇଲ୍‍ଗୁଡ଼ିକ ପାଇଁ ଡିଫଲ୍ଟ ଆପ୍‍ ବାଛନ୍ତୁ:</translation>
 <translation id="3255159654094949700">ଆରବିକ୍</translation>
+<translation id="326396468955264502"><ph name="NUMBER_OF_FILES" /> ଫାଇଲକୁ ଏନକ୍ରିପ୍ଟ କରାଯାଇଥିବା ଯୋଗୁଁ ସେଗୁଡ଼ିକୁ ମୁଭ କରାଯାଇପାରିଲା ନାହିଁ।</translation>
 <translation id="3264582393905923483">ପ୍ରସଙ୍ଗ</translation>
 <translation id="3272909651715601089">"<ph name="PATH" />" ଖୋଲାଯାଇପାରିଲା ନାହିଁ</translation>
 <translation id="3280431534455935878">ପ୍ରସ୍ତୁତ ହେଉଛି</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490"><ph name="VM_NAME" /> ସହ 1 ଫୋଲ୍ଡର ସେୟାର କରାଯାଇଛି</translation>
 <translation id="3524311639100184459">ସାବଧାନ: ଏହି ଫାଇଲଗୁଡ଼ିକ ଅସ୍ଥାୟୀ ଅଟେ ଏବଂ ଡିସ୍କରେ ଜାଗା ଖାଲି କରିବା ପାଇଁ ଏଗୁଡ଼ିକ ସ୍ୱଚାଳିତ ଭାବେ ଡିଲିଟ୍ ହୋଇଯାଇପାରେ।  <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">ଫୋଲ୍ଡର୍</translation>
+<translation id="3529424493985988200">ବିବରଣୀ ପାଇଁ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କୁ କଣ୍ଟାକ୍ଟ କରନ୍ତୁ।</translation>
 <translation id="3548125359243647069">ଏକ ଭୁଲ PIN ବହୁତ ଥର ଲେଖାଯାଇଛି।</translation>
 <translation id="3549797760399244642">drive.google.comକୁ ଯାଆନ୍ତୁ …</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> ମାଧ୍ୟମରେ ଫାଇଲଗୁଡ଼ିକ ଖୋଲିବାକୁ, ପ୍ରଥମେ ସେଗୁଡ଼ିକୁ Windows ଫାଇଲ୍ ଫୋଲ୍ଡରରେ କପି କରନ୍ତୁ।</translation>
@@ -696,6 +700,7 @@
 <translation id="637062427944097960">ଏହି ଫାଇଲ୍‌ଟି ଏକ ଭିନ୍ନ ଡେସ୍କଟପ୍‌ରେ ଖୋଲିଲା। (<ph name="MAIL_ADDRESS" />)କୁ ଦେଖିବା ପାଇଁ <ph name="USER_NAME" />କୁ ଘୁଞ୍ଚାନ୍ତୁ</translation>
 <translation id="6394388407447716302">କେବଳ-ପଢ଼ିବା ପାଇଁ</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" />ଟି ଆଇଟମ୍</translation>
+<translation id="6407769893376380348"><ph name="FILE_NAME" />କୁ ଏନକ୍ରିପ୍ଟ କରାଯାଇଥିବା ଯୋଗୁଁ ଏହାକୁ ମୁଭ କରାଯାଇପାରିଲା ନାହିଁ।</translation>
 <translation id="642282551015776456">ଏହି ନାମ କୌଣସି ଫାଇଲ୍‍ କିମ୍ବା ଫୋଲ୍ଡର୍‌ର ନାମ ଭାବେ ବ୍ୟବହାର କରାଯାଇନପାରେ</translation>
 <translation id="6423031066725912715">TCVN କୀବୋର୍ଡ ସହ ଭିଏତନାମିଜ୍</translation>
 <translation id="6430271654280079150">ଆପଣଙ୍କ ପାଖରେ 1ଟି ପ୍ରଚେଷ୍ଟା ବାକି ଅଛି।</translation>

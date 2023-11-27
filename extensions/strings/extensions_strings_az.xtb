@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Təsadüfi RSA şəxsi kilidini yaratmaq alınmadı.</translation>
 <translation id="1445572445564823378">Bu artırma yavaşlaşır <ph name="PRODUCT_NAME" />. <ph name="PRODUCT_NAME" /> məhsulunun performansını bərpa etmək üçün onu deaktiv etməlisiniz.</translation>
 <translation id="1468038450257740950">WebGL dəstəklənmir.</translation>
+<translation id="1610570795592207282">Skript üçün css "<ph name="RELATIVE_PATH" />" yüklənmədi.</translation>
 <translation id="1803557475693955505">'<ph name="BACKGROUND_PAGE" />' arxa fon səhifəsini yükləmək alınmadı.</translation>
 <translation id="2159915644201199628">Təsviri deşifrələmək olmadı: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">Lokalizasiya işlənir, lakin defolt default_locale manifestdə göstərilməyib.</translation>
@@ -31,6 +32,7 @@
 <translation id="4988792151665380515">İctimai açarı eksport etmək alınmadı.</translation>
 <translation id="5026754133087629784">Veb baxış: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Paketə istiqamət üçün mütləq yol tapmaq olmur</translation>
+<translation id="5160071981665899014">Skript üçün JavaScript "<ph name="RELATIVE_PATH" />" yüklənmədi.</translation>
 <translation id="5356315618422219272">Tətbiqə baxış: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Fiqurlu pəncərələr dəstəklənmir.</translation>
 <translation id="5456409301717116725">Bu artırma <ph name="KEY_PATH" /> açar faylını içərir.</translation>

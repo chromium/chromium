@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="az">
 <translation id="1000498691615767391">Açmaq üçün qovluq seçin</translation>
+<translation id="1014208178561091457"><ph name="FILE_NAME" /> şifrələndiyi üçün kopyalanmadı.</translation>
 <translation id="1047956942837015229"><ph name="COUNT" /> element silinir...</translation>
 <translation id="1049926623896334335">Word sənədi</translation>
 <translation id="1056775291175587022">Şəbəkə yoxdur</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Qovluğu Parallels Desktop ilə paylaşın</translation>
 <translation id="1439919885608649279">Əlində gül olan adam</translation>
 <translation id="1458457385801829801">Çıxarın: <ph name="TARGET_NAME" /></translation>
+<translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> fayl şifrələndiyi üçün kopyalanmadı.</translation>
 <translation id="1471718551822868769">Slovak</translation>
 <translation id="1482884275703521657">Fin</translation>
 <translation id="148466539719134488">İsveçrəyə aid</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">Əlçatan deyil</translation>
 <translation id="3254434849914415189"><ph name="FILE_TYPE" /> fayllar üçün defolt tətbiq seçin:</translation>
 <translation id="3255159654094949700">Ərəb</translation>
+<translation id="326396468955264502"><ph name="NUMBER_OF_FILES" /> fayl şifrələndiyi üçün köçürülmədi.</translation>
 <translation id="3264582393905923483">Məzmun</translation>
 <translation id="3272909651715601089">"<ph name="PATH" />" açılmadı</translation>
 <translation id="3280431534455935878">Hazırlanır</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490">1 qovluq <ph name="VM_NAME" /> ilə paylaşıldı</translation>
 <translation id="3524311639100184459">Xəbərdarlıq: Bu fayllar müvəqqətidir və diskdə yer boşaltmaq üçün avtomatik silinə bilər.  <ph name="BEGIN_LINK" />Ətraflı Məlumat<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Qovluq</translation>
+<translation id="3529424493985988200">Detallar üçün administrator ilə əlaqə saxlayın.</translation>
 <translation id="3548125359243647069">Yanlış PIN kod dəfələrlə daxil edilib.</translation>
 <translation id="3549797760399244642">drive.google.com saytına keçin...</translation>
 <translation id="3553048479571901246">Faylları <ph name="APP_NAME" /> ilə açmaq üçün əvvəlcə onları Windows fayllar qovluğuna kopyalayın.</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">Bu fayl başqa masaüstündə açıldı. Ona baxmaq üçün <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) köçürün.</translation>
 <translation id="6394388407447716302">Yalnız oxunan</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> element</translation>
+<translation id="6407769893376380348"><ph name="FILE_NAME" /> şifrələndiyi üçün köçürülmədi.</translation>
 <translation id="642282551015776456">Bu ad qovluq adının faylı kimi istifadə edilə bilməz</translation>
 <translation id="6423031066725912715">TCVN klaviaturası ilə Vyetnam dili</translation>
 <translation id="6430271654280079150">1 cəhdiniz qalıb.</translation>

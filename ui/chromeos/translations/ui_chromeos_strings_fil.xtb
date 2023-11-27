@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fil">
 <translation id="1000498691615767391">Piliin ang isang folder para buksan</translation>
+<translation id="1014208178561091457">Hindi makopya ang <ph name="FILE_NAME" /> dahil naka-encrypt ito.</translation>
 <translation id="1047956942837015229">Nagtatanggal ng <ph name="COUNT" /> (na) item...</translation>
 <translation id="1049926623896334335">Dokumento ng Word</translation>
 <translation id="1056775291175587022">Walang network</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Ibahagi ang folder sa Parallels Desktop</translation>
 <translation id="1439919885608649279">Taong may mga bulaklak</translation>
 <translation id="1458457385801829801">I-eject ang <ph name="TARGET_NAME" /></translation>
+<translation id="146691674290220697">Hindi makopya ang <ph name="NUMBER_OF_FILES" /> (na) file dahil naka-encrypt ang mga ito.</translation>
 <translation id="1471718551822868769">Slovak</translation>
 <translation id="1482884275703521657">Finnish</translation>
 <translation id="148466539719134488">Swiss</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">Hindi available</translation>
 <translation id="3254434849914415189">Piliin ang default na app para sa mga <ph name="FILE_TYPE" /> na file:</translation>
 <translation id="3255159654094949700">Arabic</translation>
+<translation id="326396468955264502">Hindi mailipat ang <ph name="NUMBER_OF_FILES" /> (na) file dahil naka-encrypt ang mga ito.</translation>
 <translation id="3264582393905923483">Konteksto</translation>
 <translation id="3272909651715601089">Hindi mabuksan ang "<ph name="PATH" />"</translation>
 <translation id="3280431534455935878">Ihinahanda</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490">1 folder ang na-share sa <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Mag-ingat: Ang mga file na ito ay pansamantala lang at puwedeng awtomatikong ma-delete para magbakante ng espasyo sa disk.  <ph name="BEGIN_LINK" />Matuto Pa<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Folder</translation>
+<translation id="3529424493985988200">Makipag-ugnayan sa iyong administrator para sa mga detalye.</translation>
 <translation id="3548125359243647069">Napakaraming beses nang naglagay ng maling PIN.</translation>
 <translation id="3549797760399244642">Pumunta sa drive.google.com...</translation>
 <translation id="3553048479571901246">Para makapagbukas ng mga file gamit ang <ph name="APP_NAME" />, kopyahin muna ang mga ito sa folder ng mga Windows file.</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">Ang file na ito na binuksan sa ibang desktop. Ilipat sa <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) upang tingnan ito.</translation>
 <translation id="6394388407447716302">Read-only</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> (na) item</translation>
+<translation id="6407769893376380348">Hindi mailipat ang <ph name="FILE_NAME" /> dahil naka-encrypt ito.</translation>
 <translation id="642282551015776456">Hindi maaaring gamitin ang pangalang ito bilang isang pangalan ng file o folder</translation>
 <translation id="6423031066725912715">Vietnamese na may TCVN keyboard</translation>
 <translation id="6430271654280079150">Mayroon ka na lang 1 natitirang pagsubok.</translation>

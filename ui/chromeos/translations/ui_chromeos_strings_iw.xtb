@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
 <translation id="1000498691615767391">בחירת תיקייה לפתיחה</translation>
+<translation id="1014208178561091457">לא ניתן להעתיק את <ph name="FILE_NAME" /> כי הוא מוצפן.</translation>
 <translation id="1047956942837015229">מתבצעת מחיקה של <ph name="COUNT" /> פריטים...</translation>
 <translation id="1049926623896334335">‏מסמך Word</translation>
 <translation id="1056775291175587022">אין רשתות</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">‏שיתוף תיקייה באמצעות Parallels Desktop</translation>
 <translation id="1439919885608649279">אדם עם פרחים</translation>
 <translation id="1458457385801829801">הוצאה של <ph name="TARGET_NAME" /></translation>
+<translation id="146691674290220697">לא ניתן להעתיק <ph name="NUMBER_OF_FILES" /> קבצים כי הם מוצפנים.</translation>
 <translation id="1471718551822868769">סלובקית</translation>
 <translation id="1482884275703521657">פינית</translation>
 <translation id="148466539719134488">שווייצרית</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">רשת לא זמינה</translation>
 <translation id="3254434849914415189">יש לבחור את יישום ברירת המחדל עבור קובצי <ph name="FILE_TYPE" />:</translation>
 <translation id="3255159654094949700">ערבית</translation>
+<translation id="326396468955264502">לא ניתן להעביר <ph name="NUMBER_OF_FILES" /> קבצים כי הם מוצפנים.</translation>
 <translation id="3264582393905923483">הקשר</translation>
 <translation id="3272909651715601089">לא ניתן היה לפתוח את "<ph name="PATH" />"</translation>
 <translation id="3280431534455935878">הקובץ בהכנה</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490">תיקייה אחת שותפה עם <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">זהירות: הקבצים האלה זמניים, וייתכן שהם יימחקו באופן אוטומטי כדי לפנות מקום בכונן.  <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">תיקייה</translation>
+<translation id="3529424493985988200">לפרטים נוספים, יש לפנות לאדמין.</translation>
 <translation id="3548125359243647069">הוזן קוד אימות שגוי יותר מדי פעמים.</translation>
 <translation id="3549797760399244642">‏מעבר אל drive.google.com...</translation>
 <translation id="3553048479571901246">‏כדי שניתן יהיה לפתוח קבצים באמצעות <ph name="APP_NAME" />, צריך להעתיק אותם לתיקיית קובצי Windows.</translation>
@@ -702,6 +706,7 @@
 <translation id="637062427944097960">הקובץ הזה נפתח בשולחן עבודה שונה. עבור אל <ph name="USER_NAME" />‏ (<ph name="MAIL_ADDRESS" />) כדי לראות אותו.</translation>
 <translation id="6394388407447716302">לקריאה בלבד</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> פריטים</translation>
+<translation id="6407769893376380348">לא ניתן להעביר את הקובץ <ph name="FILE_NAME" /> כי הוא מוצפן.</translation>
 <translation id="642282551015776456">ייתכן שלא ניתן להשתמש בשם זה כשם קובץ או תיקייה</translation>
 <translation id="6423031066725912715">‏וייטנאמית עם מקלדת TCVN</translation>
 <translation id="6430271654280079150">נותר לך עוד ניסיון אחד.</translation>

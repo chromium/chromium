@@ -819,6 +819,7 @@
 <translation id="5300589172476337783">הצגה</translation>
 <translation id="5317780077021120954">שמירה</translation>
 <translation id="5318298563956633672">כבר מתבצע מעקב אחר המוצר הזה.</translation>
+<translation id="5329451663851195956">אפשר למשוך למטה כדי לרענן.</translation>
 <translation id="5339316356165661760">הפעלת הסנכרון</translation>
 <translation id="5345598430982201510">ללא זיהוי אוטומטי של חבילות</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{לעקוב אחרי החבילה הזו?}one{לעקוב אחרי {COUNT} חבילות?}two{לעקוב אחרי {COUNT} חבילות?}other{לעקוב אחרי {COUNT} חבילות?}}</translation>
