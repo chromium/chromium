@@ -40,11 +40,12 @@ import * as Sources from 'devtools/panels/sources/sources.js';
       TestRunner.addSniffer(
           Sources.WatchExpressionsSidebarPane.WatchExpression.prototype, 'createWatchExpression',
           watchExpressionsUpdated);
-      let updateCount = 2;
-      function watchExpressionsUpdated(result, wasThrown) {
-        if (result !== undefined || wasThrown !== undefined) {
-          TestRunner.addResult(this.element.deepTextContent());
-          if (--updateCount === 0) {
+      const watches = [];
+      function watchExpressionsUpdated(result, exceptionDetails) {
+        if (result !== undefined || exceptionDetails !== undefined) {
+          watches.push(this.element.deepTextContent());
+          if (watches.length === 2) {
+            watches.sort().forEach(TestRunner.addResult);
             resolve();
             return;
           }
