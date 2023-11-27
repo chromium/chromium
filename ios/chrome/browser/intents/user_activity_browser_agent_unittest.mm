@@ -51,6 +51,7 @@
 #import "ios/chrome/common/intents/OpenInChromeIntent.h"
 #import "ios/chrome/common/intents/OpenLatestTabIntent.h"
 #import "ios/chrome/common/intents/OpenLensIntent.h"
+#import "ios/chrome/common/intents/OpenNewIncognitoTabIntent.h"
 #import "ios/chrome/common/intents/OpenNewTabIntent.h"
 #import "ios/chrome/common/intents/OpenReadingListIntent.h"
 #import "ios/chrome/common/intents/OpenRecentTabsIntent.h"
@@ -989,6 +990,29 @@ TEST_F(UserActivityBrowserAgentTest,
   user_activity_browser_agent_->ContinueUserActivity(mock_user_activity, YES);
 
   EXPECT_EQ(VIEW_HISTORY,
+            [connection_information_ startupParameters].postOpeningAction);
+}
+
+// Tests that Chrome respond to open a new incognito tab.
+TEST_F(UserActivityBrowserAgentTest,
+       ContinueUserActivityIntentOpenNewIncognitoTab) {
+  NSUserActivity* user_activity =
+      [[NSUserActivity alloc] initWithActivityType:kSiriOpenNewIncognitoTab];
+
+  OpenNewIncognitoTabIntent* intent = [[OpenNewIncognitoTabIntent alloc] init];
+  INInteraction* interaction = [[INInteraction alloc] initWithIntent:intent
+                                                            response:nil];
+  id mock_user_activity = CreateMockNSUserActivity(user_activity, interaction);
+
+  user_activity_browser_agent_->ContinueUserActivity(mock_user_activity, YES);
+
+  EXPECT_EQ(ApplicationModeForTabOpening::INCOGNITO,
+            [connection_information_ startupParameters].applicationMode);
+  EXPECT_EQ(GURL(kChromeUINewTabURL),
+            [connection_information_ startupParameters].completeURL);
+  EXPECT_EQ(GURL(kChromeUINewTabURL),
+            [connection_information_ startupParameters].externalURL);
+  EXPECT_EQ(NO_ACTION,
             [connection_information_ startupParameters].postOpeningAction);
 }
 
