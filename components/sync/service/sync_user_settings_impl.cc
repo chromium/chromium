@@ -103,7 +103,7 @@ UserSelectableTypeSet SyncUserSettingsImpl::GetSelectedTypes() const {
       break;
     }
     case SyncPrefs::SyncAccountState::kSyncing: {
-      types = prefs_->GetSelectedTypes(SyncPrefs::SyncAccountState::kSyncing);
+      types = prefs_->GetSelectedTypesForSyncingUser();
       break;
     }
   }
@@ -159,7 +159,8 @@ void SyncUserSettingsImpl::SetSelectedTypes(bool sync_everything,
       }
       break;
     case SyncPrefs::SyncAccountState::kSyncing:
-      prefs_->SetSelectedTypes(sync_everything, registered_types, types);
+      prefs_->SetSelectedTypesForSyncingUser(sync_everything, registered_types,
+                                             types);
       break;
   }
 }

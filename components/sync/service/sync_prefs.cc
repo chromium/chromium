@@ -246,34 +246,22 @@ UserSelectableTypeSet SyncPrefs::GetSelectedTypesForAccount(
   return selected_types;
 }
 
-UserSelectableTypeSet SyncPrefs::GetSelectedTypes(
-    SyncAccountState account_state) const {
+UserSelectableTypeSet SyncPrefs::GetSelectedTypesForSyncingUser() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   UserSelectableTypeSet selected_types;
 
-  switch (account_state) {
-    case SyncAccountState::kNotSignedIn: {
-      NOTREACHED_NORETURN();
-    }
-    case SyncAccountState::kSignedInNotSyncing: {
-      NOTREACHED_NORETURN() << "Call GetSelectedTypesForAccount() instead";
-    }
-    case SyncAccountState::kSyncing: {
-      for (UserSelectableType type : UserSelectableTypeSet::All()) {
-        const char* pref_name = GetPrefNameForType(type);
-        DCHECK(pref_name);
-        if (pref_service_->GetBoolean(pref_name) ||
-            (!IsTypeManagedByPolicy(type) && !IsTypeManagedByCustodian(type) &&
-             pref_service_->GetBoolean(
-                 prefs::internal::kSyncKeepEverythingSynced))) {
-          // In full-sync mode, the "sync everything" bit is honored. If it's
-          // true, all types are considered selected, irrespective of their
-          // individual prefs.
-          selected_types.Put(type);
-        }
-      }
-      break;
+  for (UserSelectableType type : UserSelectableTypeSet::All()) {
+    const char* pref_name = GetPrefNameForType(type);
+    DCHECK(pref_name);
+    if (pref_service_->GetBoolean(pref_name) ||
+        (!IsTypeManagedByPolicy(type) && !IsTypeManagedByCustodian(type) &&
+         pref_service_->GetBoolean(
+             prefs::internal::kSyncKeepEverythingSynced))) {
+      // In full-sync mode, the "sync everything" bit is honored. If it's
+      // true, all types are considered selected, irrespective of their
+      // individual prefs.
+      selected_types.Put(type);
     }
   }
 
@@ -311,9 +299,10 @@ int SyncPrefs::GetNumberOfAccountsWithPasswordsSelected() const {
 }
 #endif
 
-void SyncPrefs::SetSelectedTypes(bool keep_everything_synced,
-                                 UserSelectableTypeSet registered_types,
-                                 UserSelectableTypeSet selected_types) {
+void SyncPrefs::SetSelectedTypesForSyncingUser(
+    bool keep_everything_synced,
+    UserSelectableTypeSet registered_types,
+    UserSelectableTypeSet selected_types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   pref_service_->SetBoolean(prefs::internal::kSyncKeepEverythingSynced,

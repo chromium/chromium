@@ -57,9 +57,9 @@ class SyncToSigninMigrationTestBase {
     // Populate sync prefs. The TestSyncService doesn't write these, so they
     // have to be set manually here.
     syncer::SyncUserSettings* settings = sync_service_.GetUserSettings();
-    sync_prefs_->SetSelectedTypes(settings->IsSyncEverythingEnabled(),
-                                  settings->GetRegisteredSelectableTypes(),
-                                  settings->GetSelectedTypes());
+    sync_prefs_->SetSelectedTypesForSyncingUser(
+        settings->IsSyncEverythingEnabled(),
+        settings->GetRegisteredSelectableTypes(), settings->GetSelectedTypes());
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     sync_prefs_->SetInitialSyncFeatureSetupComplete();
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

@@ -199,7 +199,7 @@ void ResetSyncSelectedDataTypes() {
   // directly.
   // TODO(crbug.com/1462552): Remove once sync-the-feature is gone on iOS.
   syncer::SyncPrefs(browser_state->GetPrefs())
-      .SetSelectedTypes(
+      .SetSelectedTypesForSyncingUser(
           /*sync_everything=*/true,
           /*registered_types=*/syncer::UserSelectableTypeSet::All(),
           /*selected_types=*/syncer::UserSelectableTypeSet::All());

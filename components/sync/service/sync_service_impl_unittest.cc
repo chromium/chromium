@@ -204,7 +204,7 @@ class SyncServiceImplTest : public ::testing::Test {
     component_factory()->set_first_time_sync_configure_done(true);
     // Set first sync time before initialize to simulate a complete sync setup.
     SyncPrefs sync_prefs(prefs());
-    sync_prefs.SetSelectedTypes(
+    sync_prefs.SetSelectedTypesForSyncingUser(
         /*keep_everything_synced=*/true,
         /*registered_types=*/UserSelectableTypeSet::All(),
         /*selected_types=*/UserSelectableTypeSet::All());
@@ -316,7 +316,7 @@ TEST_F(SyncServiceImplTest, NeedsConfirmation) {
   // Mimic the sync setup being pending (SetInitialSyncFeatureSetupComplete()
   // not invoked).
   SyncPrefs sync_prefs(prefs());
-  sync_prefs.SetSelectedTypes(
+  sync_prefs.SetSelectedTypesForSyncingUser(
       /*keep_everything_synced=*/true,
       /*registered_types=*/UserSelectableTypeSet::All(),
       /*selected_types=*/UserSelectableTypeSet::All());

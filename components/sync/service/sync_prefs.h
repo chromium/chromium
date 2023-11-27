@@ -90,9 +90,7 @@ class SyncPrefs {
   // This is only used for syncing users and takes HasKeepEverythingSynced()
   // into account (i.e. returns "all types").
   // If some types are force-disabled by policy, they will not be included.
-  // TODO(crbug.com/1485015): Remove `account_state` parameter and rename to
-  // GetSelectedTypesForSyncingUser().
-  UserSelectableTypeSet GetSelectedTypes(SyncAccountState account_state) const;
+  UserSelectableTypeSet GetSelectedTypesForSyncingUser() const;
   // Returns the set of types for the given gaia_id_hash for sign-in users.
   // If some types are force-disabled by policy, they will not be included.
   // Note: this is used for signed-in not syncing users.
@@ -121,10 +119,9 @@ class SyncPrefs {
   // Changes are still made to the individual selectable type prefs even if
   // |keep_everything_synced| is true, but won't be visible until it's set to
   // false.
-  // TODO(crbug.com/1485015): Rename to SetSelectedTypesForSyncingUser().
-  void SetSelectedTypes(bool keep_everything_synced,
-                        UserSelectableTypeSet registered_types,
-                        UserSelectableTypeSet selected_types);
+  void SetSelectedTypesForSyncingUser(bool keep_everything_synced,
+                                      UserSelectableTypeSet registered_types,
+                                      UserSelectableTypeSet selected_types);
   // Used to set user's selected types prefs in Sync-the-transport mode.
   // Note: this is used for signed-in not syncing users.
   void SetSelectedTypeForAccount(UserSelectableType type,
