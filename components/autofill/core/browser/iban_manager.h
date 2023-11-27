@@ -7,7 +7,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "components/autofill/core/browser/autofill_subject.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -26,9 +25,7 @@ struct SuggestionsContext;
 // such as retrieving IBAN data from PersonalDataManager, managing IBAN
 // suggestions, filling IBAN fields, and handling form submission data when
 // there is an IBAN field present.
-class IbanManager : public SingleFieldFormFiller,
-                    public KeyedService,
-                    public AutofillSubject {
+class IbanManager : public SingleFieldFormFiller, public KeyedService {
  public:
   // Initializes the instance with the given parameters. `personal_data_manager`
   // is a profile-scope data manager used to retrieve IBAN data from the

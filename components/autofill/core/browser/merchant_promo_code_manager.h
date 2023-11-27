@@ -6,7 +6,6 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_MERCHANT_PROMO_CODE_MANAGER_H_
 
 #include "base/gtest_prod_util.h"
-#include "components/autofill/core/browser/autofill_subject.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/single_field_form_filler.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
@@ -26,8 +25,7 @@ struct SuggestionsContext;
 // promo code suggestions, filling promo code fields, and handling form
 // submission data when there is a merchant promo code field present.
 class MerchantPromoCodeManager : public SingleFieldFormFiller,
-                                 public KeyedService,
-                                 public AutofillSubject {
+                                 public KeyedService {
  public:
   MerchantPromoCodeManager();
 

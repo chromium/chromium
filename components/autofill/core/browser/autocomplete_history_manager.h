@@ -12,7 +12,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/autofill/core/browser/autofill_subject.h"
 #include "components/autofill/core/browser/single_field_form_filler.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/webdata/autocomplete_entry.h"
@@ -33,8 +32,7 @@ struct SuggestionsContext;
 // through WebDataServiceBase.
 class AutocompleteHistoryManager : public SingleFieldFormFiller,
                                    public KeyedService,
-                                   public WebDataServiceConsumer,
-                                   public AutofillSubject {
+                                   public WebDataServiceConsumer {
  public:
   AutocompleteHistoryManager();
 

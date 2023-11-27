@@ -29,8 +29,6 @@
 
 namespace autofill {
 
-using NotificationType = AutofillObserver::NotificationType;
-
 namespace {
 
 // Limit on the number of suggestions to appear in the pop-up menu under an
@@ -118,7 +116,6 @@ void AutocompleteHistoryManager::OnWillSubmitFormWithFields(
     const std::vector<FormFieldData>& fields,
     bool is_autocomplete_enabled) {
   if (!is_autocomplete_enabled || is_off_the_record_) {
-    Notify(NotificationType::AutocompleteFormSkipped);
     return;
   }
   std::vector<FormFieldData> autocomplete_saveable_fields;
@@ -130,7 +127,6 @@ void AutocompleteHistoryManager::OnWillSubmitFormWithFields(
   }
   if (!autocomplete_saveable_fields.empty() && profile_database_.get()) {
     profile_database_->AddFormFields(autocomplete_saveable_fields);
-    Notify(NotificationType::AutocompleteFormSubmitted);
   }
 }
 
@@ -309,8 +305,6 @@ void AutocompleteHistoryManager::OnAutofillCleanupReturned(
   // Cleanup was successful, update the latest run milestone.
   pref_service_->SetInteger(prefs::kAutocompleteLastVersionRetentionPolicy,
                             CHROME_VERSION_MAJOR);
-
-  Notify(NotificationType::AutocompleteCleanupDone);
 }
 
 // We put the following restriction on stored FormFields:

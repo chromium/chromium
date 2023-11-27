@@ -22,8 +22,8 @@
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/suggestions_context.h"
-#include "components/autofill/core/browser/test_autofill_async_observer.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
+#include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -39,12 +39,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/switches.h"
 
-using autofill::test::TestAutofillAsyncObserver;
 using base::ASCIIToUTF16;
 using testing::ElementsAre;
 using testing::Field;
-
-using NotificationType = TestAutofillAsyncObserver::NotificationType;
 
 namespace autofill {
 
@@ -133,21 +130,14 @@ class AutofillAutocompleteTest : public InProcessBrowserTest {
 
     ASSERT_TRUE(content::ExecJs(web_contents(), js));
 
-    // Set up observer for Autocomplete form submissions.
-    TestAutofillAsyncObserver observer(
-        should_skip_save ? NotificationType::AutocompleteFormSkipped
-                         : NotificationType::AutocompleteFormSubmitted,
-        /*detach_on_notify=*/true);
-    autocomplete_history_manager()->Attach(&observer);
-
     // Simulate a mouse click to submit the form because form submissions not
     // triggered by user gestures are ignored.
+    TestAutofillManagerWaiter waiter(manager(),
+                                     {AutofillManagerEvent::kFormSubmitted});
     content::SimulateMouseClick(
         active_browser_->tab_strip_model()->GetActiveWebContents(), 0,
         blink::WebMouseEvent::Button::kLeft);
-
-    // Wait for the form to be submitted.
-    observer.Wait();
+    ASSERT_TRUE(waiter.Wait(1));
 
     if (!should_skip_save) {
       // Wait for data to have been saved in the DB.
@@ -200,22 +190,23 @@ class AutofillAutocompleteTest : public InProcessBrowserTest {
     run_loop.Run();
   }
 
+  AutofillManager& manager() {
+    return ContentAutofillDriverFactory::FromWebContents(web_contents())
+        ->DriverForFrame(web_contents()->GetPrimaryMainFrame())
+        ->GetAutofillManager();
+  }
+
   PrefService* pref_service() { return active_browser_->profile()->GetPrefs(); }
 
  private:
   void GetAutocompleteSuggestions(const std::string& input_name,
                                   const std::string& prefix,
                                   MockSuggestionsHandler& handler) {
-    AutofillClient& autofill_client =
-        ContentAutofillDriverFactory::FromWebContents(web_contents())
-            ->DriverForFrame(web_contents()->GetPrimaryMainFrame())
-            ->GetAutofillManager()
-            .client();
     EXPECT_TRUE(autocomplete_history_manager()->OnGetSingleFieldSuggestions(
         AutofillSuggestionTriggerSource::kFormControlElementClicked,
         test::CreateTestFormField(/*label=*/"", input_name, prefix,
                                   FormControlType::kInputText),
-        autofill_client, handler.GetWeakPtr(), SuggestionsContext()));
+        manager().client(), handler.GetWeakPtr(), SuggestionsContext()));
 
     // Make sure the DB task gets executed.
     WaitForDBTasks();
@@ -312,14 +303,11 @@ IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest,
   test_clock.Advance(days_delta);
   pref_service()->SetInteger(prefs::kAutocompleteLastVersionRetentionPolicy,
                              CHROME_VERSION_MAJOR - 1);
-  TestAutofillAsyncObserver observer(NotificationType::AutocompleteCleanupDone,
-                                     /*detach_on_notify=*/true);
-  autocomplete_history_manager()->Attach(&observer);
 
   // Trigger the retention policy cleanup (by reinitializing the
   // AutocompleteHistoryManager), and wait for the cleanup to complete.
   ReinitializeAutocompleteHistoryManager();
-  observer.Wait();
+  WaitForDBTasks();
 
   ValidateNoValue();
 }
@@ -346,14 +334,11 @@ IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest,
   test_clock.Advance(days_delta);
   pref_service()->SetInteger(prefs::kAutocompleteLastVersionRetentionPolicy,
                              CHROME_VERSION_MAJOR - 1);
-  TestAutofillAsyncObserver observer(NotificationType::AutocompleteCleanupDone,
-                                     /*detach_on_notify=*/true);
-  autocomplete_history_manager()->Attach(&observer);
 
   // Trigger the retention policy cleanup (by reinitializing the
   // AutocompleteHistoryManager), and wait for the cleanup to complete.
   ReinitializeAutocompleteHistoryManager();
-  observer.Wait();
+  WaitForDBTasks();
 
   // Verify that the entry is still there.
   ValidateSingleValue(prefix, test_value);
