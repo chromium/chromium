@@ -424,7 +424,8 @@ void PipWindowResizer::RevertDrag() {
 }
 
 void PipWindowResizer::FlingOrSwipe(ui::GestureEvent* event) {
-  if (event->type() != ui::ET_SCROLL_FLING_START) {
+  if (event->type() != ui::ET_SCROLL_FLING_START &&
+      event->type() != ui::ET_GESTURE_SWIPE) {
     return;
   }
 
