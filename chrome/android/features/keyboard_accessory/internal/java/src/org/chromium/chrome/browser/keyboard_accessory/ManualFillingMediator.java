@@ -747,8 +747,12 @@ class ManualFillingMediator extends EmptyTabObserver
 
         int minimumVerticalSpacePx = Math.round(density * MINIMAL_AVAILABLE_VERTICAL_SPACE);
 
-        if (visibleViewportHeightPx >= minimumVerticalSpacePx)
+        // TODO(crbug.com/1491626): google-java-format did not introduce '{}'s as expected in the if
+        // construct below (see crbug.com/1505284 for failure). Investigate why and fix it or file a
+        // corresponding bug.
+        if (visibleViewportHeightPx >= minimumVerticalSpacePx) {
             return; // Sheet height needs no adjustment!
+        }
 
         // Adjust the height such that the new visible height will be exactly
         // MINIMAL_AVAILABLE_VERTICAL_SPACE.
