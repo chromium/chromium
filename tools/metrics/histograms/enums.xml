@@ -35169,6 +35169,7 @@ from previous Chrome versions.
   <int value="-1157991559" label="CloudApAuthAttachAsHeader:enabled"/>
   <int value="-1156950420"
       label="CryptAuthV2DeviceActivityStatusUseConnectivity:enabled"/>
+  <int value="-1156639003" label="ArcResizeCompat:enabled"/>
   <int value="-1156179600" label="OmniboxRichEntitySuggestions:enabled"/>
   <int value="-1155543191" label="CopylessPaste:disabled"/>
   <int value="-1155411808" label="HoldingSpacePredictability:enabled"/>
@@ -41965,6 +41966,7 @@ from previous Chrome versions.
   <int value="2088061188" label="LibinputHandleTouchpad:enabled"/>
   <int value="2088438916" label="CrosShortstand:disabled"/>
   <int value="2088446947" label="enable-ephemeral-guest-profiles-on-desktop"/>
+  <int value="2088963066" label="ArcResizeCompat:disabled"/>
   <int value="2089897928" label="enable-audio-focus"/>
   <int value="2089901626" label="QuickSettingsPWA:enabled"/>
   <int value="2089934964" label="QuickActionShowBubbleLauncher:enabled"/>

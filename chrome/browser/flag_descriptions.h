@@ -3221,6 +3221,9 @@ extern const char kArcNearbyShareFuseBoxDescription[];
 extern const char kArcPerAppLanguageName[];
 extern const char kArcPerAppLanguageDescription[];
 
+extern const char kArcResizeCompatName[];
+extern const char kArcResizeCompatDescription[];
+
 extern const char kArcRoundedWindowCompatName[];
 extern const char kArcRoundedWindowCompatDescription[];
 

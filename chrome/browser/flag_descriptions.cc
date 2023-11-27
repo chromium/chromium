@@ -5604,6 +5604,10 @@ const char kArcPerAppLanguageDescription[] =
     "When enabled, ARC Per-App Language settings will be surfaced in ChromeOS "
     "settings.";
 
+const char kArcResizeCompatName[] = "Enable ARC Resize Compatibility features";
+const char kArcResizeCompatDescription[] =
+    "Enable resize compatibility features for ARC++ apps";
+
 const char kArcRoundedWindowCompatName[] = "ARC Rounded Window Compatibility";
 const char kArcRoundedWindowCompatDescription[] =
     "Enable rounded window compatibility feature for ARC++ apps";

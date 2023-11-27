@@ -225,6 +225,10 @@ BASE_FEATURE(kPictureInPictureFeature,
              "ArcPictureInPicture",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kResizeCompat,
+             "ArcResizeCompat",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kRoundedWindowCompat,
              "ArcRoundedWindowCompat",
              base::FEATURE_DISABLED_BY_DEFAULT);

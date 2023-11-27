@@ -341,6 +341,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "arc-resize-compat",
+    "owners": [ "toshikikikuchi@chromium.org" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "arc-rounded-window-compat",
     "owners": [ "toshikikikuchi@chromium.org" ],
     "expiry_milestone": 125

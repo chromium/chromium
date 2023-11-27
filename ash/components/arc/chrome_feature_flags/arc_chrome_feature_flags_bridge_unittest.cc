@@ -180,5 +180,17 @@ TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyGameDashboard_Disabled) {
   EXPECT_FALSE(instance()->flags_called_value()->game_dashboard);
 }
 
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyResizeCompat_Enabled) {
+  scoped_feature_list()->InitAndEnableFeature(arc::kResizeCompat);
+  Connect();
+  EXPECT_TRUE(instance()->flags_called_value()->resize_compat);
+}
+
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyResizeCompat_Disabled) {
+  scoped_feature_list()->InitAndDisableFeature(arc::kResizeCompat);
+  Connect();
+  EXPECT_FALSE(instance()->flags_called_value()->resize_compat);
+}
+
 }  // namespace
 }  // namespace arc

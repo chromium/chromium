@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 8
+// Next MinVersion: 9
 
 module arc.mojom;
 
@@ -37,6 +37,8 @@ struct FeatureFlags {
   [MinVersion=6] bool render_arc_notifications_by_chrome;
   // ash::features::IsGameDashboardEnabled
   [MinVersion=7] bool game_dashboard;
+  // chrome://flags#arc-resize-compat;
+  [MinVersion=8] bool resize_compat;
 };
 
 // This interface provides methods to propagate the feature flag status to

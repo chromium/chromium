@@ -92,6 +92,7 @@ void ArcChromeFeatureFlagsBridge::NotifyFeatureFlags() {
   flags->render_arc_notifications_by_chrome =
       ash::features::IsRenderArcNotificationsByChromeEnabled();
   flags->game_dashboard = ash::features::IsGameDashboardEnabled();
+  flags->resize_compat = base::FeatureList::IsEnabled(arc::kResizeCompat);
 
   chrome_feature_flags_instance->NotifyFeatureFlags(std::move(flags));
 }
