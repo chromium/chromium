@@ -52,6 +52,9 @@ class StandaloneBrowserTestController
                              bool dev_mode,
                              InstallIsolatedWebAppCallback callback) override;
 
+  void SetWebAppSettingsPref(const std::string& web_app_settings_json,
+                             SetWebAppSettingsPrefCallback callback) override;
+
  private:
   class LacrosUtteranceEventDelegate;
 

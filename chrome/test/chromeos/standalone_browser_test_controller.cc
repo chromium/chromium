@@ -8,8 +8,10 @@
 
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
+#include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/expected_macros.h"
+#include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/extensions/extension_keeplist_chromeos.h"
@@ -20,8 +22,10 @@
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chromeos/crosapi/mojom/tts.mojom-forward.h"
+#include "components/prefs/pref_service.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/tts_utterance.h"
 #include "extensions/browser/extension_registry.h"
@@ -260,6 +264,28 @@ void StandaloneBrowserTestController::InstallIsolatedWebApp(
       iwa_location_location,
       base::BindOnce(&OnIsolatedWebAppUrlInfoCreated, iwa_location_location,
                      std::move(callback)));
+}
+
+void StandaloneBrowserTestController::SetWebAppSettingsPref(
+    const std::string& policy,
+    SetWebAppSettingsPrefCallback callback) {
+  CHECK(callback);
+
+  auto result = base::JSONReader::ReadAndReturnValueWithError(
+      policy, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
+  if (!result.has_value()) {
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+  if (!result->is_list()) {
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+
+  ProfileManager::GetPrimaryUserProfile()->GetPrefs()->SetList(
+      prefs::kWebAppSettings, std::move(*result).TakeList());
+
+  std::move(callback).Run(/*success=*/true);
 }
 
 void StandaloneBrowserTestController::OnUtteranceFinished(int utterance_id) {

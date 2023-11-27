@@ -21,6 +21,7 @@ SelectToSpeak*
 SwitchAccess*
 VpnExtensionObserverBrowserTest*
 WebAppsCrosapiBrowserTest*
+*WebAppsPreventCloseCrosapiBrowserTest*
 WebAppPreloadInstallerLacrosBrowserTest*
 WebAppProviderBridgeBrowserTest*
 WebKioskAcceleratorLacrosTest*

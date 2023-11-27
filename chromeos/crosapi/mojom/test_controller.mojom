@@ -71,8 +71,8 @@ struct AppListItemAttributes {
 // Implemented in lacros-chrome.
 // Lets the Ash browser tests that require Lacros to send commands to this
 // lacros-chrome instance.
-// Next version: 7
-// Next method id: 7
+// Next version: 8
+// Next method id: 8
 [Stable, Uuid="20e7f031-f4e1-4ad9-bd91-ad59eb8b1504"]
 interface StandaloneBrowserTestController {
   // Installs a test web app in lacros-chrome given a start URL and mode (open
@@ -110,6 +110,10 @@ interface StandaloneBrowserTestController {
   [MinVersion=6]
   InstallIsolatedWebApp@6(IsolatedWebAppLocation location, bool dev_mode)
     => (InstallWebAppResult result);
+
+  // Sets WebAppSettings pref for a primary user profile.
+  [MinVersion=7]
+  SetWebAppSettingsPref@7(string policy) => (bool success);
 };
 
 // Allows callers running in lacros to trigger test events that are passed to
