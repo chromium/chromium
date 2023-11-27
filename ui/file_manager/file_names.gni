@@ -91,7 +91,6 @@ static_js_files = [
   "file_manager/foreground/js/thumbnail_loader.js",
 
   # Metadata:
-  "file_manager/foreground/js/metadata/external_metadata_provider.js",
   "file_manager/foreground/js/metadata/id3_parser.js",
   "file_manager/foreground/js/metadata/image_parsers.js",
   "file_manager/foreground/js/metadata/metadata_cache_item.js",
@@ -359,6 +358,7 @@ ts_files = [
   "file_manager/foreground/js/metadata/dlp_metadata_provider.ts",
   "file_manager/foreground/js/metadata/exif_constants.ts",
   "file_manager/foreground/js/metadata/exif_parser.ts",
+  "file_manager/foreground/js/metadata/external_metadata_provider.ts",
   "file_manager/foreground/js/metadata/file_system_metadata_provider.ts",
   "file_manager/foreground/js/metadata/function_parallel.ts",
   "file_manager/foreground/js/metadata/function_sequence.ts",
@@ -545,6 +545,7 @@ ts_test_files = [
   # Metadata:
   "file_manager/foreground/js/metadata/content_metadata_provider_unittest.ts",
   "file_manager/foreground/js/metadata/exif_parser_unittest.ts",
+  "file_manager/foreground/js/metadata/external_metadata_provider_unittest.ts",
   "file_manager/foreground/js/metadata/file_system_metadata_provider_unittest.ts",
   "file_manager/foreground/js/metadata/metadata_model_unittest.ts",
   "file_manager/foreground/js/metadata/mock_metadata.ts",
@@ -614,7 +615,6 @@ unittest_files = [
 
   # Foreground:
   "file_manager/foreground/js/metadata/metadata_cache_item_unittest.js",
-  "file_manager/foreground/js/metadata/external_metadata_provider_unittest.js",
   "file_manager/foreground/js/metadata/metadata_cache_set_unittest.js",
   "file_manager/foreground/js/metadata/multi_metadata_provider_unittest.js",
   "file_manager/foreground/js/file_manager_commands_unittest.js",
