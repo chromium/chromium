@@ -62,8 +62,7 @@ class ZeroCopyGpuBacking : public ResourcePool::GpuBacking {
       if (!shared_image) {
         return;
       }
-      auto mapping =
-          shared_image_interface->MapSharedImage(shared_image->mailbox());
+      auto mapping = shared_image_interface->MapSharedImage(shared_image);
       if (!mapping) {
         return;
       }
@@ -182,7 +181,7 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
         }
       }
 
-      mapping = sii->MapSharedImage(backing_->shared_image->mailbox());
+      mapping = sii->MapSharedImage(backing_->shared_image);
       if (!mapping) {
         LOG(ERROR) << "MapSharedImage Failed.";
         sii->DestroySharedImage(gpu::SyncToken(),

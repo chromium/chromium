@@ -372,8 +372,7 @@ bool OneCopyRasterBufferProvider::PlaybackToStagingBuffer(
       }
     }
 
-    mapping =
-        sii->MapSharedImage(staging_buffer->client_shared_image->mailbox());
+    mapping = sii->MapSharedImage(staging_buffer->client_shared_image);
     if (!mapping) {
       LOG(ERROR) << "MapSharedImage Failed.";
       return false;
