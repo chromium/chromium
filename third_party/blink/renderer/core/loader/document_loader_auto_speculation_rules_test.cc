@@ -46,6 +46,27 @@ class DocumentLoaderAutoSpeculationRulesTest : public ::testing::Test {
   WebViewImpl* web_view_impl_;
 };
 
+enum class OptOutRuleSetType { kInline, kExternal };
+class DocumentLoaderAutoSpeculationRulesOptOutTest
+    : public DocumentLoaderAutoSpeculationRulesTest,
+      public testing::WithParamInterface<OptOutRuleSetType> {
+ public:
+  SpeculationRuleSet* GetOptOutRuleSet() const {
+    switch (GetParam()) {
+      case OptOutRuleSetType::kInline:
+        return SpeculationRuleSet::Parse(
+            SpeculationRuleSet::Source::FromInlineScript("{}", GetDocument(),
+                                                         0),
+            GetLocalFrame().DomWindow());
+      case OptOutRuleSetType::kExternal:
+        return SpeculationRuleSet::Parse(
+            SpeculationRuleSet::Source::FromRequest(
+                "{}", KURL("https://example.com/speculation-rules.json"), 0u),
+            GetLocalFrame().DomWindow());
+    }
+  }
+};
+
 TEST_F(DocumentLoaderAutoSpeculationRulesTest, InvalidJSON) {
   test::AutoSpeculationRulesConfigOverride override(R"(
   {
@@ -88,8 +109,7 @@ TEST_F(DocumentLoaderAutoSpeculationRulesTest, ValidRules) {
   // the speculation rules tests.
 }
 
-TEST_F(DocumentLoaderAutoSpeculationRulesTest,
-       ExistingFromInlineScriptRuleSetOptsOut) {
+TEST_P(DocumentLoaderAutoSpeculationRulesOptOutTest, ExistingRuleSetOptsOut) {
   test::AutoSpeculationRulesConfigOverride override(R"(
   {
     "framework_to_speculation_rules": {
@@ -101,9 +121,7 @@ TEST_F(DocumentLoaderAutoSpeculationRulesTest,
   auto& rules = GetDocumentSpeculationRules();
   CHECK_EQ(rules.rule_sets().size(), 0u);
 
-  auto* rule_set = SpeculationRuleSet::Parse(
-      SpeculationRuleSet::Source::FromInlineScript("{}", GetDocument(), 0),
-      GetLocalFrame().DomWindow());
+  auto* rule_set = GetOptOutRuleSet();
   rules.AddRuleSet(rule_set);
 
   EXPECT_EQ(rules.rule_sets().size(), 1u);
@@ -127,45 +145,55 @@ TEST_F(DocumentLoaderAutoSpeculationRulesTest,
       /*expected_bucket_count=*/1);
 }
 
-TEST_F(DocumentLoaderAutoSpeculationRulesTest,
-       ExistingFromRequestRuleSetOptsOut) {
+TEST_P(DocumentLoaderAutoSpeculationRulesOptOutTest, AddedLaterRuleSetOptsOut) {
+  // Test 2 auto speculation rule sets to ensure we remove both of them
+  // correctly.
   test::AutoSpeculationRulesConfigOverride override(R"(
   {
     "framework_to_speculation_rules": {
-      "1": "{\"prefetch\":[{\"source\":\"list\", \"urls\":[\"https://example.com/foo.html\"]}]}"
+      "1": "{\"prefetch\":[{\"source\":\"list\", \"urls\":[\"https://example.com/foo.html\"]}]}",
+      "3": "{\"prefetch\":[{\"source\":\"list\", \"urls\":[\"https://example.com/baz.html\"]}]}"
     }
   }
   )");
 
+  base::HistogramTester histogram_tester;
+
   auto& rules = GetDocumentSpeculationRules();
   CHECK_EQ(rules.rule_sets().size(), 0u);
 
-  auto* rule_set = SpeculationRuleSet::Parse(
-      SpeculationRuleSet::Source::FromRequest(
-          "{}", KURL("https://example.com/speculation-rules.json"), 0u),
-      GetLocalFrame().DomWindow());
-  rules.AddRuleSet(rule_set);
+  static_assert(base::to_underlying(mojom::JavaScriptFramework::kVuePress) ==
+                1);
+  static_assert(base::to_underlying(mojom::JavaScriptFramework::kGatsby) == 3);
+  GetDocumentLoader().DidObserveJavaScriptFrameworks(
+      {{{mojom::JavaScriptFramework::kVuePress, kNoFrameworkVersionDetected},
+        {mojom::JavaScriptFramework::kGatsby, kNoFrameworkVersionDetected}}});
 
-  EXPECT_EQ(rules.rule_sets().size(), 1u);
+  EXPECT_EQ(rules.rule_sets().size(), 2u);
   EXPECT_FALSE(
       GetDocument().IsUseCounted(WebFeature::kAutoSpeculationRulesOptedOut));
 
-  base::HistogramTester histogram_tester;
+  auto* manually_added_rule_set = GetOptOutRuleSet();
+  rules.AddRuleSet(manually_added_rule_set);
 
-  static_assert(base::to_underlying(mojom::JavaScriptFramework::kVuePress) ==
-                1);
-  GetDocumentLoader().DidObserveJavaScriptFrameworks(
-      {{{mojom::JavaScriptFramework::kVuePress, kNoFrameworkVersionDetected}}});
-
-  // Still just one, but now the UseCounter and histogram have triggered.
   EXPECT_EQ(rules.rule_sets().size(), 1u);
+  EXPECT_EQ(rules.rule_sets().at(0), manually_added_rule_set);
+
   EXPECT_TRUE(
       GetDocument().IsUseCounted(WebFeature::kAutoSpeculationRulesOptedOut));
-  histogram_tester.ExpectUniqueSample(
-      "Blink.SpeculationRules.LoadOutcome",
-      SpeculationRulesLoadOutcome::kAutoSpeculationRulesOptedOut,
-      /*expected_bucket_count=*/1);
+
+  // The load outcome should not be AutoSpeculationRulesOptedOut, since it did
+  // load correctly. Instead, we should get 3 succeses: 2 auto speculation rules
+  // + 1 normal speculation rule.
+  histogram_tester.ExpectUniqueSample("Blink.SpeculationRules.LoadOutcome",
+                                      SpeculationRulesLoadOutcome::kSuccess,
+                                      /*expected_bucket_count=*/3);
 }
+
+INSTANTIATE_TEST_SUITE_P(FromInlineOrExternal,
+                         DocumentLoaderAutoSpeculationRulesOptOutTest,
+                         testing::Values(OptOutRuleSetType::kInline,
+                                         OptOutRuleSetType::kExternal));
 
 TEST_F(DocumentLoaderAutoSpeculationRulesTest, MultipleRules) {
   test::AutoSpeculationRulesConfigOverride override(R"(

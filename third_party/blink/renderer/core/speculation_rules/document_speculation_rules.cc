@@ -233,6 +233,23 @@ void DocumentSpeculationRules::AddRuleSet(SpeculationRuleSet* rule_set) {
   QueueUpdateSpeculationCandidates();
 
   probe::DidAddSpeculationRuleSet(*GetSupplementable(), *rule_set);
+
+  if (!rule_set->source()->IsFromBrowserInjected()) {
+    HeapVector<Member<SpeculationRuleSet>> to_remove;
+    for (const auto& other_rule_set : rule_sets_) {
+      if (other_rule_set->source()->IsFromBrowserInjected()) {
+        to_remove.push_back(other_rule_set);
+      }
+    }
+
+    if (!to_remove.empty()) {
+      UseCounter::Count(GetSupplementable(),
+                        WebFeature::kAutoSpeculationRulesOptedOut);
+      for (const auto& to_remove_rule_set : to_remove) {
+        RemoveRuleSet(to_remove_rule_set);
+      }
+    }
+  }
 }
 
 void DocumentSpeculationRules::RemoveRuleSet(SpeculationRuleSet* rule_set) {
