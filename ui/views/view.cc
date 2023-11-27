@@ -234,6 +234,10 @@ View::View() {
 }
 
 View::~View() {
+  for (ViewObserver& observer : observers_) {
+    observer.OnViewHierarchyWillBeDeleted(this);
+  }
+
   life_cycle_state_ = LifeCycleState::kDestroying;
 
   if (parent_)
