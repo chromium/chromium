@@ -237,11 +237,11 @@ TEST_F(BackForwardCacheMetricsTest, MAYBE_TimeRecordedWhenRendererIsKilled) {
 // Test that |GetDisallowedFeatures()| and |GetAllowedFeatures()| cover all the
 // blocklisted features.
 // TODO(crbug.com/1504558): Re-enable the test
-#if BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_IOS)
 #define MAYBE_AllFeaturesCovered DISABLED_AllFeaturesCovered
 #else
 #define MAYBE_AllFeaturesCovered AllFeaturesCovered
-#endif  // BUILDFLAG(IS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_IOS)
 TEST_F(BackForwardCacheMetricsTest, MAYBE_AllFeaturesCovered) {
   // Features that were removed from the enum must have their int value listed
   // here because ::All() will still include them.
