@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.IncognitoToggleTabLayout;
 import org.chromium.chrome.browser.toolbar.NewTabButton;
 import org.chromium.chrome.browser.toolbar.R;
-import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.ToolbarAlphaInOverviewObserver;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -46,7 +45,6 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
         implements View.OnClickListener, IncognitoStateProvider.IncognitoStateObserver {
     private View.OnClickListener mNewTabListener;
 
-    private TabCountProvider mTabCountProvider;
     private TabModelSelector mTabModelSelector;
     private IncognitoStateProvider mIncognitoStateProvider;
     private BooleanSupplier mIsIncognitoModeEnabledSupplier;
@@ -226,17 +224,6 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
     }
 
     /**
-     * @param tabCountProvider The {@link TabCountProvider} used to observe the number of tabs in
-     *                         the current model.
-     */
-    void setTabCountProvider(TabCountProvider tabCountProvider) {
-        mTabCountProvider = tabCountProvider;
-        if (mIncognitoToggleTabLayout != null) {
-            mIncognitoToggleTabLayout.setTabCountProvider(tabCountProvider);
-        }
-    }
-
-    /**
      * Sets the current TabModelSelector so the toolbar can pass it into buttons that need access to
      * it.
      */
@@ -350,10 +337,6 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
     private void inflateIncognitoToggle() {
         ViewStub incognitoToggleTabsStub = findViewById(R.id.incognito_tabs_stub);
         mIncognitoToggleTabLayout = (IncognitoToggleTabLayout) incognitoToggleTabsStub.inflate();
-
-        if (mTabCountProvider != null) {
-            mIncognitoToggleTabLayout.setTabCountProvider(mTabCountProvider);
-        }
 
         if (mTabModelSelector != null) {
             mIncognitoToggleTabLayout.setTabModelSelector(mTabModelSelector);

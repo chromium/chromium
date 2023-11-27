@@ -27,7 +27,6 @@ import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.R;
-import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.TabSwitcherButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.TabSwitcherButtonView;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
@@ -57,7 +56,6 @@ public class StartSurfaceToolbarCoordinator {
     private TabModelSelector mTabModelSelector;
     private TabSwitcherButtonCoordinator mTabSwitcherButtonCoordinator;
     private TabSwitcherButtonView mTabSwitcherButtonView;
-    private TabCountProvider mTabCountProvider;
     private ThemeColorProvider mThemeColorProvider;
     private OnClickListener mTabSwitcherClickListener;
     private OnLongClickListener mTabSwitcherLongClickListener;
@@ -162,7 +160,6 @@ public class StartSurfaceToolbarCoordinator {
         }
         mTabSwitcherButtonCoordinator = null;
         mTabSwitcherButtonView = null;
-        mTabCountProvider = null;
         mThemeColorProvider = null;
         mTabSwitcherClickListener = null;
         mTabSwitcherLongClickListener = null;
@@ -182,6 +179,10 @@ public class StartSurfaceToolbarCoordinator {
      */
     void setTabModelSelector(TabModelSelector selector) {
         mTabModelSelector = selector;
+        if (mTabSwitcherButtonCoordinator != null) {
+            mTabSwitcherButtonCoordinator.setTabCountSupplier(
+                    mTabModelSelector.getCurrentModelTabCountSupplier());
+        }
         mToolbarMediator.setTabModelSelector(selector);
     }
 
@@ -198,18 +199,6 @@ public class StartSurfaceToolbarCoordinator {
      */
     void onAccessibilityStatusChanged(boolean enabled) {
         mToolbarMediator.onAccessibilityStatusChanged(enabled);
-    }
-
-    /**
-     * @param tabCountProvider The {@link TabCountProvider} to update the tab switcher button.
-     */
-    void setTabCountProvider(TabCountProvider tabCountProvider) {
-        if (mTabSwitcherButtonCoordinator != null) {
-            mTabSwitcherButtonCoordinator.setTabCountProvider(tabCountProvider);
-        } else {
-            mTabCountProvider = tabCountProvider;
-        }
-        mToolbarMediator.setTabCountProvider(tabCountProvider);
     }
 
     /**
@@ -339,9 +328,9 @@ public class StartSurfaceToolbarCoordinator {
         }
         mTabSwitcherButtonCoordinator = new TabSwitcherButtonCoordinator(mTabSwitcherButtonView);
         mTabSwitcherButtonCoordinator.setThemeColorProvider(mThemeColorProvider);
-        if (mTabCountProvider != null) {
-            mTabSwitcherButtonCoordinator.setTabCountProvider(mTabCountProvider);
-            mTabCountProvider = null;
+        if (mTabModelSelector != null) {
+            mTabSwitcherButtonCoordinator.setTabCountSupplier(
+                    mTabModelSelector.getCurrentModelTabCountSupplier());
         }
         if (mTabSwitcherClickListener != null) {
             mTabSwitcherButtonCoordinator.setTabSwitcherListener(mTabSwitcherClickListener);
@@ -385,7 +374,8 @@ public class StartSurfaceToolbarCoordinator {
                         + getDimenPixel(R.dimen.start_surface_fake_search_box_top_margin);
     }
 
-    public TabCountProvider getIncognitoToggleTabCountProviderForTesting() {
-        return mPropertyModel.get(StartSurfaceToolbarProperties.INCOGNITO_TAB_COUNT_PROVIDER);
+    public TabModelSelector getIncognitoToggleTabModelSelectorForTesting() {
+        return mPropertyModel.get(
+                StartSurfaceToolbarProperties.INCOGNITO_TOGGLE_TAB_MODEL_SELECTOR);
     }
 }

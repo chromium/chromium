@@ -10,10 +10,12 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.R;
-import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.listmenu.ListMenuButton;
@@ -22,19 +24,25 @@ import org.chromium.ui.widget.Toast;
 /**
  * A button displaying the number of open tabs. Clicking the button toggles the tab switcher view.
  * TODO(twellington): Replace with TabSwitcherButtonCoordinator so code can be shared with bottom
- *                    toolbar.
+ * toolbar.
  */
 public class ToggleTabStackButton extends ListMenuButton
-        implements TabCountProvider.TabCountObserver,
-                View.OnClickListener,
-                View.OnLongClickListener {
+        implements View.OnClickListener, View.OnLongClickListener {
+    private final Callback<Integer> mTabCountSupplierObserver;
     private TabSwitcherDrawable mTabSwitcherButtonDrawable;
-    private TabCountProvider mTabCountProvider;
+    private ObservableSupplier<Integer> mTabCountSupplier;
+    private Supplier<Boolean> mIsIncognitoSupplier;
     private OnClickListener mTabSwitcherListener;
     private OnLongClickListener mTabSwitcherLongClickListener;
 
     public ToggleTabStackButton(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        mTabCountSupplierObserver =
+                (tabCount) -> {
+                    setEnabled(tabCount >= 1);
+                    mTabSwitcherButtonDrawable.updateForTabCount(
+                            tabCount, mIsIncognitoSupplier.get());
+                };
     }
 
     @Override
@@ -51,7 +59,9 @@ public class ToggleTabStackButton extends ListMenuButton
 
     /** Called to destroy the tab stack button. */
     void destroy() {
-        if (mTabCountProvider != null) mTabCountProvider.removeObserver(this);
+        if (mTabCountSupplier != null) {
+            mTabCountSupplier.removeObserver(mTabCountSupplierObserver);
+        }
     }
 
     /**
@@ -78,18 +88,14 @@ public class ToggleTabStackButton extends ListMenuButton
     }
 
     /**
-     * @param provider The {@link TabCountProvider} used to observe the number of tabs in the
-     *                 current model.
+     * @param tabCountSupplier A supplier used to observe the number of tabs in the current model.
+     * @param incognitoSupplier A supplier used to check for incongito state.
      */
-    void setTabCountProvider(TabCountProvider provider) {
-        mTabCountProvider = provider;
-        mTabCountProvider.addObserverAndTrigger(this);
-    }
-
-    @Override
-    public void onTabCountChanged(int numberOfTabs, boolean isIncognito) {
-        setEnabled(numberOfTabs >= 1);
-        mTabSwitcherButtonDrawable.updateForTabCount(numberOfTabs, isIncognito);
+    void setTabCountSupplier(
+            ObservableSupplier<Integer> tabCountSupplier, Supplier<Boolean> isIncognitoSupplier) {
+        mTabCountSupplier = tabCountSupplier;
+        mTabCountSupplier.addObserver(mTabCountSupplierObserver);
+        mIsIncognitoSupplier = isIncognitoSupplier;
     }
 
     @Override

@@ -46,8 +46,10 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.graphics.drawable.DrawableWrapperCompat;
 import androidx.core.widget.ImageViewCompat;
 
+import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -67,8 +69,6 @@ import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.KeyboardNavigationListener;
 import org.chromium.chrome.browser.toolbar.R;
-import org.chromium.chrome.browser.toolbar.TabCountProvider;
-import org.chromium.chrome.browser.toolbar.TabCountProvider.TabCountObserver;
 import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
@@ -103,7 +103,7 @@ import java.util.function.BooleanSupplier;
 
 /** Phone specific toolbar implementation. */
 public class ToolbarPhone extends ToolbarLayout
-        implements OnClickListener, TabCountObserver, OmniboxSuggestionsDropdownScrollListener {
+        implements OnClickListener, OmniboxSuggestionsDropdownScrollListener {
     /** The amount of time transitioning from one theme color to another should take in ms. */
     public static final long THEME_COLOR_TRANSITION_DURATION = 250;
 
@@ -133,7 +133,8 @@ public class ToolbarPhone extends ToolbarLayout
             })
     static final int LOCATION_BAR_TRANSPARENT_BACKGROUND_ALPHA = 51;
 
-    private @Nullable TabCountProvider mTabCountProvider;
+    private final Callback<Integer> mTabCountSupplierObserver;
+    private @Nullable ObservableSupplier<Integer> mTabCountSupplier;
 
     protected LocationBarCoordinator mLocationBar;
 
@@ -348,6 +349,7 @@ public class ToolbarPhone extends ToolbarLayout
         mHomeSurfaceToolbarBackgroundColor =
                 ChromeColors.getSurfaceColor(
                         getContext(), R.dimen.home_surface_background_color_elevation);
+        mTabCountSupplierObserver = this::onTabCountChanged;
     }
 
     @Override
@@ -398,6 +400,10 @@ public class ToolbarPhone extends ToolbarLayout
         Handler handler = getHandler();
         if (handler != null) {
             handler.removeCallbacksAndMessages(null);
+        }
+
+        if (mTabCountSupplier != null) {
+            mTabCountSupplier.removeObserver(mTabCountSupplierObserver);
         }
 
         super.destroy();
@@ -1881,7 +1887,7 @@ public class ToolbarPhone extends ToolbarLayout
                         urlBarData.displayText, mLocationBar.getOmniboxVisibleTextPrefixHint());
         return new PhoneCaptureStateToken(
                 getTint().getDefaultColor(),
-                mTabCountProvider.getTabCount(),
+                mTabCountSupplier == null ? 0 : mTabCountSupplier.get(),
                 mButtonData,
                 mVisualState,
                 visibleUrlText,
@@ -2433,23 +2439,22 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     @Override
-    public void setTabCountProvider(TabCountProvider tabCountProvider) {
-        mTabCountProvider = tabCountProvider;
-        mTabCountProvider.addObserver(this);
+    public void setTabCountSupplier(ObservableSupplier<Integer> tabCountSupplier) {
+        mTabCountSupplier = tabCountSupplier;
+        mTabCountSupplier.addObserver(mTabCountSupplierObserver);
         if (mToggleTabStackButton != null) {
-            mToggleTabStackButton.setTabCountProvider(tabCountProvider);
+            mToggleTabStackButton.setTabCountSupplier(tabCountSupplier, this::isIncognito);
         }
     }
 
-    @Override
-    public void onTabCountChanged(int numberOfTabs, boolean isIncognito) {
+    private void onTabCountChanged(int numberOfTabs) {
         mHomeButton.setEnabled(true);
         if (mToggleTabStackButton == null) return;
 
         @BrandedColorScheme
         int overlayTabStackDrawableScheme =
                 OmniboxResourceProvider.getBrandedColorScheme(
-                        getContext(), isIncognito, getTabThemeColor());
+                        getContext(), isIncognito(), getTabThemeColor());
         if (mTabSwitcherAnimationTabStackDrawable == null
                 || mOverlayTabStackDrawableScheme != overlayTabStackDrawableScheme) {
             mTabSwitcherAnimationTabStackDrawable =
@@ -2461,7 +2466,7 @@ public class ToolbarPhone extends ToolbarLayout
         }
 
         if (mTabSwitcherAnimationTabStackDrawable != null) {
-            mTabSwitcherAnimationTabStackDrawable.updateForTabCount(numberOfTabs, isIncognito);
+            mTabSwitcherAnimationTabStackDrawable.updateForTabCount(numberOfTabs, isIncognito());
         }
     }
 

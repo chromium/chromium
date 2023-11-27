@@ -34,6 +34,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.lifetime.DestroyChecker;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.omnibox.LocationBar;
@@ -43,14 +44,12 @@ import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.ThemeColorObserver;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.TintObserver;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.R;
-import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.ToolbarTabController;
@@ -662,9 +661,10 @@ public abstract class ToolbarLayout extends FrameLayout
 
     /**
      * Gives inheriting classes the chance to observe tab count changes.
-     * @param tabCountProvider The {@link TabCountProvider} subclasses can observe.
+     *
+     * @param tabCountSupplier The observable supplier subclasses can observe.
      */
-    void setTabCountProvider(TabCountProvider tabCountProvider) {}
+    void setTabCountSupplier(ObservableSupplier<Integer> tabCountSupplier) {}
 
     /**
      * Gives inheriting classes the chance to update themselves based on default search engine
@@ -820,12 +820,6 @@ public abstract class ToolbarLayout extends FrameLayout
     public View getOptionalButtonViewForTesting() {
         return null;
     }
-
-    /**
-     * Sets the current TabModelSelector so the toolbar can pass it into buttons that need access to
-     * it.
-     */
-    void setTabModelSelector(TabModelSelector selector) {}
 
     /**
      * @return Home button this {@link ToolbarLayout} contains, if any.

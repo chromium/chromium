@@ -14,7 +14,6 @@ import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.R;
-import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.ui.base.DeviceFormFactor;
 
@@ -34,7 +33,6 @@ class TabSwitcherModeTTCoordinator {
     // aggregate properties and bind them to a view the first time it's shown.
     private View.OnClickListener mTabSwitcherListener;
     private View.OnClickListener mNewTabListener;
-    private TabCountProvider mTabCountProvider;
     private TabModelSelector mTabModelSelector;
     private IncognitoStateProvider mIncognitoStateProvider;
     private MenuButtonCoordinator mMenuButtonCoordinator;
@@ -113,17 +111,6 @@ class TabSwitcherModeTTCoordinator {
     }
 
     /**
-     * @param tabCountProvider The {@link TabCountProvider} used to observe the number of tabs in
-     *                         the current model.
-     */
-    void setTabCountProvider(TabCountProvider tabCountProvider) {
-        mTabCountProvider = tabCountProvider;
-        if (mActiveTabSwitcherToolbar != null) {
-            mActiveTabSwitcherToolbar.setTabCountProvider(tabCountProvider);
-        }
-    }
-
-    /**
      * Sets the current TabModelSelector so the toolbar can pass it into buttons that need access to
      * it.
      */
@@ -192,9 +179,6 @@ class TabSwitcherModeTTCoordinator {
         // It's expected that these properties are set by the time the tab switcher is entered.
         assert mNewTabListener != null;
         toolbar.setOnNewTabClickHandler(mNewTabListener);
-
-        assert mTabCountProvider != null;
-        toolbar.setTabCountProvider(mTabCountProvider);
 
         assert mTabModelSelector != null;
         toolbar.setTabModelSelector(mTabModelSelector);

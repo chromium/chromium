@@ -199,7 +199,6 @@ public class ToolbarManager
                 ChromeAccessibilityUtil.Observer,
                 TabObscuringHandler.Observer {
     private final IncognitoStateProvider mIncognitoStateProvider;
-    private final TabCountProvider mTabCountProvider;
     private final TopUiThemeColorProvider mTopUiThemeColorProvider;
     private final Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
     private AppThemeColorProvider mAppThemeColorProvider;
@@ -621,7 +620,6 @@ public class ToolbarManager
         mActivity.registerComponentCallbacks(mComponentCallbacks);
 
         mIncognitoStateProvider = new IncognitoStateProvider();
-        mTabCountProvider = new TabCountProvider();
         mTopUiThemeColorProvider = topUiThemeColorProvider;
         mTopUiThemeColorProvider.addThemeColorObserver(this);
 
@@ -1211,7 +1209,6 @@ public class ToolbarManager
                     }
                 };
 
-        mToolbar.setTabCountProvider(mTabCountProvider);
         mToolbar.setIncognitoStateProvider(mIncognitoStateProvider);
 
         ChromeAccessibilityUtil.get().addObserver(this);
@@ -1725,7 +1722,6 @@ public class ToolbarManager
         maybeShowUrlBarCursorIfHardwareKeyboardAvailable();
         if (mTabModelSelector.isTabStateInitialized()) mTabRestoreCompleted = true;
         handleTabRestoreCompleted();
-        mTabCountProvider.setTabModelSelector(mTabModelSelector);
         mIncognitoStateProvider.setTabModelSelector(mTabModelSelector);
         mAppThemeColorProvider.setIncognitoStateProvider(mIncognitoStateProvider);
 
@@ -1868,7 +1864,6 @@ public class ToolbarManager
         mToolbar.destroy();
 
         mIncognitoStateProvider.destroy();
-        mTabCountProvider.destroy();
 
         mLocationBarModel.destroy();
         mHandler.removeCallbacksAndMessages(null); // Cancel delayed tasks.

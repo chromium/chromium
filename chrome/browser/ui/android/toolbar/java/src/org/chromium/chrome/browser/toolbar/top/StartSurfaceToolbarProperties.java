@@ -9,7 +9,6 @@ import android.view.View;
 
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -51,12 +50,8 @@ class StartSurfaceToolbarProperties {
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableBooleanPropertyKey TAB_SWITCHER_BUTTON_IS_VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey();
-    public static final PropertyModel.WritableObjectPropertyKey<TabCountProvider>
-            INCOGNITO_TAB_COUNT_PROVIDER =
-                    new PropertyModel.WritableObjectPropertyKey<TabCountProvider>();
     public static final PropertyModel.WritableObjectPropertyKey<TabModelSelector>
-            INCOGNITO_TAB_MODEL_SELECTOR =
-                    new PropertyModel.WritableObjectPropertyKey<TabModelSelector>();
+            INCOGNITO_TOGGLE_TAB_MODEL_SELECTOR = new PropertyModel.WritableObjectPropertyKey<>();
 
     /** When set to true, move identity disc to the start of the toolbar. Can only set to true. */
     public static final PropertyModel.WritableBooleanPropertyKey IDENTITY_DISC_AT_START =
@@ -94,8 +89,7 @@ class StartSurfaceToolbarProperties {
                 TRANSLATION_Y,
                 ALPHA,
                 TAB_SWITCHER_BUTTON_IS_VISIBLE,
-                INCOGNITO_TAB_COUNT_PROVIDER,
-                INCOGNITO_TAB_MODEL_SELECTOR,
+                INCOGNITO_TOGGLE_TAB_MODEL_SELECTOR,
                 BACKGROUND_COLOR
             };
 }

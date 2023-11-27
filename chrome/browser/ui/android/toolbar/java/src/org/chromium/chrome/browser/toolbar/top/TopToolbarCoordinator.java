@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
-import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.ToolbarTabController;
@@ -326,7 +325,8 @@ public class TopToolbarCoordinator implements Toolbar {
             mStartSurfaceToolbarCoordinator.initLogoWithNative();
         }
 
-        mToolbarLayout.setTabModelSelector(mTabModelSelectorSupplier.get());
+        mToolbarLayout.setTabCountSupplier(
+                mTabModelSelectorSupplier.get().getCurrentModelTabCountSupplier());
         getLocationBar().updateVisualsForState();
         mToolbarLayout.setOnTabSwitcherClickHandler(tabSwitcherClickHandler);
         mToolbarLayout.setOnTabSwitcherLongClickHandler(
@@ -648,20 +648,6 @@ public class TopToolbarCoordinator implements Toolbar {
      */
     public void onTabSwitcherTransitionFinished() {
         mToolbarLayout.onTabSwitcherTransitionFinished();
-    }
-
-    /**
-     * Gives inheriting classes the chance to observe tab count changes.
-     * @param tabCountProvider The {@link TabCountProvider} subclasses can observe.
-     */
-    public void setTabCountProvider(TabCountProvider tabCountProvider) {
-        mToolbarLayout.setTabCountProvider(tabCountProvider);
-        if (mTabSwitcherModeCoordinator != null) {
-            mTabSwitcherModeCoordinator.setTabCountProvider(tabCountProvider);
-        }
-        if (mStartSurfaceToolbarCoordinator != null) {
-            mStartSurfaceToolbarCoordinator.setTabCountProvider(tabCountProvider);
-        }
     }
 
     /**

@@ -7,9 +7,10 @@ package org.chromium.chrome.browser.toolbar;
 import android.content.res.ColorStateList;
 import android.view.View.OnClickListener;
 
+import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.TintObserver;
-import org.chromium.chrome.browser.toolbar.TabCountProvider.TabCountObserver;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -27,11 +28,12 @@ public class TabSwitcherButtonCoordinator {
     private final PropertyModel mTabSwitcherButtonModel =
             new PropertyModel(TabSwitcherButtonProperties.ALL_KEYS);
 
+    private final Callback<Integer> mTabCountObserver;
+
     private ThemeColorProvider mThemeColorProvider;
     private TintObserver mTintObserver;
 
-    private TabCountProvider mTabCountProvider;
-    private TabCountObserver mTabCountObserver;
+    private ObservableSupplier<Integer> mTabCountSupplier;
 
     /**
      * Build the controller that manages the tab switcher button.
@@ -40,6 +42,11 @@ public class TabSwitcherButtonCoordinator {
     public TabSwitcherButtonCoordinator(TabSwitcherButtonView view) {
         PropertyModelChangeProcessor.create(
                 mTabSwitcherButtonModel, view, new TabSwitcherButtonViewBinder());
+        mTabCountObserver =
+                (tabCount) -> {
+                    mTabSwitcherButtonModel.set(
+                            TabSwitcherButtonProperties.NUMBER_OF_TABS, tabCount);
+                };
     }
 
     /**
@@ -65,18 +72,10 @@ public class TabSwitcherButtonCoordinator {
                 TabSwitcherButtonProperties.TINT, mThemeColorProvider.getTint());
     }
 
-    public void setTabCountProvider(TabCountProvider tabCountProvider) {
-        mTabCountProvider = tabCountProvider;
+    public void setTabCountSupplier(ObservableSupplier<Integer> tabCountSupplier) {
+        mTabCountSupplier = tabCountSupplier;
         mTabSwitcherButtonModel.set(TabSwitcherButtonProperties.IS_ENABLED, true);
-        mTabCountObserver =
-                new TabCountObserver() {
-                    @Override
-                    public void onTabCountChanged(int tabCount, boolean isIncognito) {
-                        mTabSwitcherButtonModel.set(
-                                TabSwitcherButtonProperties.NUMBER_OF_TABS, tabCount);
-                    }
-                };
-        mTabCountProvider.addObserverAndTrigger(mTabCountObserver);
+        mTabCountSupplier.addObserver(mTabCountObserver);
     }
 
     public void destroy() {
@@ -84,9 +83,9 @@ public class TabSwitcherButtonCoordinator {
             mThemeColorProvider.removeTintObserver(mTintObserver);
             mThemeColorProvider = null;
         }
-        if (mTabCountProvider != null) {
-            mTabCountProvider.removeObserver(mTabCountObserver);
-            mTabCountProvider = null;
+        if (mTabCountSupplier != null) {
+            mTabCountSupplier.removeObserver(mTabCountObserver);
+            mTabCountSupplier = null;
         }
     }
 }

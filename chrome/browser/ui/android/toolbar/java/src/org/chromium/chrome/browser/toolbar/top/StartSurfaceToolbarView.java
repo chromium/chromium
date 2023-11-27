@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.IncognitoToggleTabLayout;
 import org.chromium.chrome.browser.toolbar.NewTabButton;
 import org.chromium.chrome.browser.toolbar.R;
-import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
@@ -216,16 +215,6 @@ class StartSurfaceToolbarView extends RelativeLayout {
      */
     void setTabSwitcherButtonVisibility(boolean isVisible) {
         mTabSwitcherButtonView.setVisibility(getVisibility(isVisible));
-    }
-
-    /**
-     * Set TabCountProvider for incognito toggle view.
-     * @param tabCountProvider The {@link TabCountProvider} to update the incognito toggle view.
-     */
-    void setTabCountProvider(TabCountProvider tabCountProvider) {
-        if (mIncognitoToggleTabLayout != null) {
-            mIncognitoToggleTabLayout.setTabCountProvider(tabCountProvider);
-        }
     }
 
     /**

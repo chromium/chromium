@@ -15,8 +15,7 @@ import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarPropert
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IDENTITY_DISC_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.INCOGNITO_STATE_PROVIDER;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.INCOGNITO_SWITCHER_VISIBLE;
-import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.INCOGNITO_TAB_COUNT_PROVIDER;
-import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.INCOGNITO_TAB_MODEL_SELECTOR;
+import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.INCOGNITO_TOGGLE_TAB_MODEL_SELECTOR;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IS_NEW_TAB_ENABLED;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_BUTTON_HIGHLIGHT;
@@ -51,7 +50,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
-import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.ToolbarAlphaInOverviewObserver;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
@@ -85,7 +83,6 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
     private final Context mContext;
 
     private TabModelSelector mTabModelSelector;
-    private TabCountProvider mTabCountProvider;
 
     @StartSurfaceState private int mStartSurfaceState;
     @LayoutType private int mLayoutType;
@@ -282,10 +279,6 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
         mPropertyModel.set(NEW_TAB_CLICK_HANDLER, listener);
     }
 
-    void setTabCountProvider(TabCountProvider tabCountProvider) {
-        mTabCountProvider = tabCountProvider;
-    }
-
     void setTabModelSelector(TabModelSelector selector) {
         mTabModelSelector = selector;
 
@@ -305,9 +298,7 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
 
     private void maybeInitializeIncognitoToggle() {
         if (mIsIncognitoModeEnabledSupplier.getAsBoolean()) {
-            assert mTabCountProvider != null;
-            mPropertyModel.set(INCOGNITO_TAB_COUNT_PROVIDER, mTabCountProvider);
-            mPropertyModel.set(INCOGNITO_TAB_MODEL_SELECTOR, mTabModelSelector);
+            mPropertyModel.set(INCOGNITO_TOGGLE_TAB_MODEL_SELECTOR, mTabModelSelector);
         }
     }
 

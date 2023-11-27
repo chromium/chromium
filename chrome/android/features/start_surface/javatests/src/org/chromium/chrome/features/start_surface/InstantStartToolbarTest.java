@@ -120,17 +120,17 @@ public class InstantStartToolbarTest {
 
         StartSurfaceToolbarCoordinator startSurfaceToolbarCoordinator =
                 topToolbarCoordinator.getStartSurfaceToolbarForTesting();
-        // Verifies that the TabCountProvider for incognito toggle tab layout hasn't been set when
+        // Verifies that the TabModelSelector for incognito toggle tab layout hasn't been set when
         // the {@link StartSurfaceToolbarCoordinator#inflate()} is called.
         Assert.assertNull(
-                startSurfaceToolbarCoordinator.getIncognitoToggleTabCountProviderForTesting());
+                startSurfaceToolbarCoordinator.getIncognitoToggleTabModelSelectorForTesting());
 
         // Initializes native.
         StartSurfaceTestUtils.startAndWaitNativeInitialization(mActivityTestRule);
         CriteriaHelper.pollInstrumentationThread(
                 () ->
                         startSurfaceToolbarCoordinator
-                                        .getIncognitoToggleTabCountProviderForTesting()
+                                        .getIncognitoToggleTabModelSelectorForTesting()
                                 != null);
     }
 
