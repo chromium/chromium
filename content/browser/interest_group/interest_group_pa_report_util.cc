@@ -322,7 +322,6 @@ void SplitContributionsIntoBatchesThenSendToHost(
     absl::optional<url::Origin> aggregation_coordinator_origin,
     const url::Origin& main_frame_origin) {
   CHECK_EQ(reporting_origin.scheme(), url::kHttpsScheme);
-  CHECK_EQ(main_frame_origin.scheme(), url::kHttpsScheme);
 
   // Split the vector of requests into those with matching debug mode details.
   std::map<
