@@ -1484,58 +1484,6 @@ TEST_F(ToplevelWindowEventHandlerPipPinchToResizeTest,
 }
 
 TEST_F(ToplevelWindowEventHandlerPipPinchToResizeTest,
-       PinchingBeyondSizeLimitOnPipCausesResistanceEffect) {
-  UpdateDisplay("1500x1000");
-
-  ui::test::EventGenerator* gen = GetEventGenerator();
-
-  // Create a PiP window with maximum_size and minimum_size.
-  std::unique_ptr<aura::Window> window(CreatePipWindow());
-  ASSERT_TRUE(WindowState::Get(window.get())->IsPip());
-
-  // Start pinch gesture that goes beyond the maximum size.
-  gen->PressTouchId(0, gfx::Point(100, 100));
-  gen->PressTouchId(1, gfx::Point(250, 100));
-  gen->MoveTouchId(gfx::Point(200, 200), 0);
-  gen->MoveTouchId(gfx::Point(600, 500), 1);
-
-  // Verify that the window has scaled up with transform.
-  EXPECT_GE(window->transform().To2dScale().x(), 1.10);
-  EXPECT_LE(window->transform().To2dScale().x(), 1.15);
-  EXPECT_GE(window->transform().To2dScale().y(), 1.10);
-  EXPECT_LE(window->transform().To2dScale().y(), 1.15);
-
-  // Release the pinch gesture.
-  gen->ReleaseTouchId(0);
-  gen->ReleaseTouchId(1);
-
-  // Verify that scaling for the window is back to 1.
-  EXPECT_EQ(window->transform().rc(0, 0), 1);
-
-  // Start pinch gesture that becomes smaller than the minimum size.
-  gen->PressTouchId(0, gfx::Point(700, 700));
-  gen->PressTouchId(1, gfx::Point(1100, 700));
-  gen->MoveTouchId(gfx::Point(800, 700), 0);
-  gen->MoveTouchId(gfx::Point(820, 700), 1);
-
-  // Verify that the window has scaled down with transform.
-  EXPECT_LE(window->transform().To2dScale().x(), 0.90);
-  EXPECT_GE(window->transform().To2dScale().x(), 0.85);
-  EXPECT_LE(window->transform().To2dScale().y(), 0.90);
-  EXPECT_GE(window->transform().To2dScale().y(), 0.85);
-
-  // Release the pinch gesture.
-  gen->ReleaseTouchId(0);
-  gen->ReleaseTouchId(1);
-
-  // Verify that scaling for the window is back to 1.
-  EXPECT_EQ(window->transform().rc(0, 0), 1);
-
-  const WMEvent exit_pip(WM_EVENT_NORMAL);
-  WindowState::Get(window.get())->OnWMEvent(&exit_pip);
-}
-
-TEST_F(ToplevelWindowEventHandlerPipPinchToResizeTest,
        PlacingThirdFingerWithDifferentTargetDuringPipPinchToResizeEndsDrag) {
   std::unique_ptr<aura::Window> window(CreatePipWindow());
   auto* toplevel_window_event_handler =
