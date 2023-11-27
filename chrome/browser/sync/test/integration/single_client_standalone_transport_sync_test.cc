@@ -269,7 +269,8 @@ class SingleClientStandaloneTransportWithReplaceSyncWithSigninSyncTest
         {syncer::kEnablePreferencesAccountStorage,
          syncer::kSyncEnableContactInfoDataTypeInTransportMode,
          syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers,
-         syncer::kReplaceSyncPromosWithSignInPromos},
+         syncer::kReplaceSyncPromosWithSignInPromos,
+         syncer::kSyncAutofillWalletCredentialData},
         /*disabled_features=*/{});
   }
   ~SingleClientStandaloneTransportWithReplaceSyncWithSigninSyncTest() override =
@@ -326,6 +327,8 @@ IN_PROC_BROWSER_TEST_F(
       syncer::AUTOFILL_WALLET_DATA));
   EXPECT_TRUE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
+  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::AUTOFILL_WALLET_CREDENTIAL));
 }
 
 // TODO(crbug.com/1117345): Android currently doesn't support PRE_ tests.
@@ -382,11 +385,14 @@ IN_PROC_BROWSER_TEST_F(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
   if (!base::FeatureList::IsEnabled(
           syncer::kSyncDecoupleAddressPaymentSettings)) {
-    // AUTOFILL_WALLET_DATA should be disabled when CONTACT_INFO is disabled.
+    // AUTOFILL_WALLET_DATA and AUTOFILL_WALLET_CREDENTIAL should be disabled
+    // when CONTACT_INFO is disabled.
     // TODO(crbug.com/1435431): It shouldn't be disabled once kPayments is
     // decoupled from kAutofill.
     EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(
         syncer::AUTOFILL_WALLET_DATA));
+    EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(
+        syncer::AUTOFILL_WALLET_CREDENTIAL));
   }
 
   // Enabling kAutofill to enable CONTACT_INFO.
@@ -404,11 +410,14 @@ IN_PROC_BROWSER_TEST_F(
             GetSyncService(0)->GetTransportState());
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
-  // CONTACT_INFO and AUTOFILL_WALLET_DATA should be enabled.
+  // CONTACT_INFO, AUTOFILL_WALLET_DATA, and AUTOFILL_WALLET_CREDENTIAL should
+  // be enabled.
   EXPECT_TRUE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
   EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
       syncer::AUTOFILL_WALLET_DATA));
+  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::AUTOFILL_WALLET_CREDENTIAL));
 }
 
 // Tests that a custom passphrase user's opt-in to kAutofill (which happened in
@@ -423,13 +432,16 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
             GetSyncService(0)->GetTransportState());
 
-  // CONTACT_INFO and AUTOFILL_WALLET_DATA should be enabled after restarting.
+  // CONTACT_INFO, AUTOFILL_WALLET_DATA, and AUTOFILL_WALLET_CREDENTIAL should
+  // be enabled after restarting.
   EXPECT_TRUE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
   // TODO(crbug.com/1435431): This should be removed once kPayments is decoupled
   // from kAutofill.
   EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
       syncer::AUTOFILL_WALLET_DATA));
+  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::AUTOFILL_WALLET_CREDENTIAL));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
