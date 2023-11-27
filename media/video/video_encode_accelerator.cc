@@ -232,9 +232,11 @@ bool VideoEncodeAccelerator::IsGpuFrameResizeSupported() {
 
 void VideoEncodeAccelerator::RequestEncodingParametersChange(
     const VideoBitrateAllocation& bitrate_allocation,
-    uint32_t framerate) {
+    uint32_t framerate,
+    const absl::optional<gfx::Size>& size) {
   RequestEncodingParametersChange(
-      Bitrate::ConstantBitrate(bitrate_allocation.GetSumBps()), framerate);
+      Bitrate::ConstantBitrate(bitrate_allocation.GetSumBps()), framerate,
+      size);
 }
 
 bool operator==(const VideoEncodeAccelerator::SupportedProfile& l,

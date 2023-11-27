@@ -1011,7 +1011,8 @@ void MediaFoundationVideoEncodeAccelerator::UseOutputBitstreamBuffer(
 
 void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChange(
     const Bitrate& bitrate,
-    uint32_t framerate) {
+    uint32_t framerate,
+    const absl::optional<gfx::Size>& size) {
   DVLOG(3) << __func__ << ": bitrate=" << bitrate.ToString()
            << ": framerate=" << framerate;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1029,12 +1030,13 @@ void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChange(
       break;
   }
 
-  RequestEncodingParametersChange(allocation, framerate);
+  RequestEncodingParametersChange(allocation, framerate, size);
 }
 
 void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChange(
     const VideoBitrateAllocation& bitrate_allocation,
-    uint32_t framerate) {
+    uint32_t framerate,
+    const absl::optional<gfx::Size>& size) {
   DVLOG(3) << __func__ << ": bitrate=" << bitrate_allocation.GetSumBps()
            << ": framerate=" << framerate;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1045,6 +1047,12 @@ void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChange(
   if (bitrate_allocation.GetMode() != bitrate_allocation_.GetMode()) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderUnsupportedConfig,
                        "Can't change bitrate mode after Initialize()"});
+    return;
+  }
+
+  if (size.has_value()) {
+    NotifyErrorStatus({EncoderStatus::Codes::kEncoderUnsupportedConfig,
+                       "Update output frame size is not supported"});
     return;
   }
 

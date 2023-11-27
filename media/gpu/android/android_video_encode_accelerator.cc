@@ -274,7 +274,8 @@ void AndroidVideoEncodeAccelerator::UseOutputBitstreamBuffer(
 
 void AndroidVideoEncodeAccelerator::RequestEncodingParametersChange(
     const Bitrate& bitrate,
-    uint32_t framerate) {
+    uint32_t framerate,
+    const absl::optional<gfx::Size>& size) {
   // If this is changed to use variable bitrate encoding, change the mode check
   // to check that the mode matches the current mode.
   if (bitrate.mode() != Bitrate::Mode::kConstant) {
@@ -282,6 +283,11 @@ void AndroidVideoEncodeAccelerator::RequestEncodingParametersChange(
         {EncoderStatus::Codes::kEncoderUnsupportedConfig,
          "Unexpected bitrate mode: " +
              base::NumberToString(static_cast<int>(bitrate.mode()))});
+    return;
+  }
+  if (size.has_value()) {
+    NotifyErrorStatus({EncoderStatus::Codes::kEncoderUnsupportedConfig,
+                       "Update output frame size is not supported"});
     return;
   }
   DVLOG(3) << __PRETTY_FUNCTION__ << ": bitrate: " << bitrate.ToString()

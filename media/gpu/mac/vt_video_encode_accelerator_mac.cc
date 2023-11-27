@@ -520,10 +520,22 @@ void VTVideoEncodeAccelerator::UseOutputBitstreamBuffer(
 
 void VTVideoEncodeAccelerator::RequestEncodingParametersChange(
     const Bitrate& bitrate,
-    uint32_t framerate) {
-  DVLOG(3) << __func__ << ": bitrate=" << bitrate.ToString()
-           << ": framerate=" << framerate;
+    uint32_t framerate,
+    const absl::optional<gfx::Size>& size) {
+  std::ostringstream parameters_description;
+  parameters_description << ": bitrate=" << bitrate.ToString()
+                         << ": framerate=" << framerate;
+  if (size.has_value()) {
+    parameters_description << ": frame size=" << size->width() << "x"
+                           << size->height();
+  }
+  DVLOG(3) << __func__ << parameters_description.str();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (size.has_value()) {
+    NotifyErrorStatus({EncoderStatus::Codes::kEncoderUnsupportedConfig,
+                       "Update output frame size is not supported"});
+    return;
+  }
 
   if (!compression_session_) {
     NotifyErrorStatus(
@@ -723,7 +735,7 @@ bool VTVideoEncodeAccelerator::ResetCompressionSession(VideoCodec codec) {
     return false;
   }
 
-  RequestEncodingParametersChange(bitrate_, frame_rate_);
+  RequestEncodingParametersChange(bitrate_, frame_rate_, absl::nullopt);
   return true;
 }
 

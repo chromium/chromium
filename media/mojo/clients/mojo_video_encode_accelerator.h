@@ -47,10 +47,14 @@ class MojoVideoEncodeAccelerator : public VideoEncodeAccelerator {
   void Encode(scoped_refptr<VideoFrame> frame,
               const VideoEncoder::EncodeOptions&) override;
   void UseOutputBitstreamBuffer(BitstreamBuffer buffer) override;
-  void RequestEncodingParametersChange(const Bitrate& bitrate,
-                                       uint32_t framerate_num) override;
-  void RequestEncodingParametersChange(const VideoBitrateAllocation& bitrate,
-                                       uint32_t framerate) override;
+  void RequestEncodingParametersChange(
+      const Bitrate& bitrate,
+      uint32_t framerate_num,
+      const absl::optional<gfx::Size>& size) override;
+  void RequestEncodingParametersChange(
+      const VideoBitrateAllocation& bitrate,
+      uint32_t framerate,
+      const absl::optional<gfx::Size>& size) override;
   bool IsFlushSupported() override;
   void Flush(FlushCallback flush_callback) override;
   void Destroy() override;

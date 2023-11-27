@@ -31,8 +31,10 @@ class MockVideoEncodeAccelerator : public VideoEncodeAccelerator {
   MOCK_METHOD2(Encode,
                void(scoped_refptr<VideoFrame> frame, bool force_keyframe));
   MOCK_METHOD1(UseOutputBitstreamBuffer, void(BitstreamBuffer buffer));
-  MOCK_METHOD2(RequestEncodingParametersChange,
-               void(const Bitrate& bitrate, uint32_t framerate));
+  MOCK_METHOD3(RequestEncodingParametersChange,
+               void(const Bitrate& bitrate,
+                    uint32_t framerate,
+                    const absl::optional<gfx::Size>& size));
   MOCK_METHOD0(Destroy, void());
 
  private:

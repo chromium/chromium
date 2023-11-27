@@ -407,10 +407,14 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
   // Parameters:
   //  |bitrate| is the requested new bitrate. The bitrate mode cannot be changed
   //  using this method and attempting to do so will result in an error.
-  //  Instead, re-create a VideoEncodeAccelerator. |framerate| is the requested
-  //  new framerate, in frames per second.
-  virtual void RequestEncodingParametersChange(const Bitrate& bitrate,
-                                               uint32_t framerate) = 0;
+  //  Instead, re-create a VideoEncodeAccelerator.
+  //  |framerate| is the requested new framerate, in frames per second.
+  //  |size| is the requested new input visible frame size. Clients can request
+  //  frame size change only when there is no pending frame in the encoder.
+  virtual void RequestEncodingParametersChange(
+      const Bitrate& bitrate,
+      uint32_t framerate,
+      const absl::optional<gfx::Size>& size) = 0;
 
   // Request a change to the encoding parameters. If not implemented, default
   // behavior is to get the sum over layers and pass to version with bitrate
@@ -418,9 +422,12 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
   // Parameters:
   //  |bitrate| is the requested new bitrate, per spatial and temporal layer.
   //  |framerate| is the requested new framerate, in frames per second.
+  //  |size| is the requested new input visible frame size. Clients can request
+  //  frame size change only when there is no pending frame in the encoder.
   virtual void RequestEncodingParametersChange(
       const VideoBitrateAllocation& bitrate,
-      uint32_t framerate);
+      uint32_t framerate,
+      const absl::optional<gfx::Size>& size);
 
   // Destroys the encoder: all pending inputs and outputs are dropped
   // immediately and the component is freed.  This call may asynchronously free

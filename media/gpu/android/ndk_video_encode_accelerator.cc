@@ -345,8 +345,15 @@ void NdkVideoEncodeAccelerator::UseOutputBitstreamBuffer(
 
 void NdkVideoEncodeAccelerator::RequestEncodingParametersChange(
     const Bitrate& bitrate,
-    uint32_t framerate) {
+    uint32_t framerate,
+    const absl::optional<gfx::Size>& size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (size.has_value()) {
+    NotifyErrorStatus({EncoderStatus::Codes::kEncoderUnsupportedConfig,
+                       "Update output frame size is not supported"});
+    return;
+  }
+
   MediaFormatPtr format(AMediaFormat_new());
 
   if (effective_framerate_ != framerate)

@@ -995,7 +995,8 @@ void VaapiVideoEncodeAccelerator::UseOutputBitstreamBufferTask(
 
 void VaapiVideoEncodeAccelerator::RequestEncodingParametersChange(
     const Bitrate& bitrate,
-    uint32_t framerate) {
+    uint32_t framerate,
+    const absl::optional<gfx::Size>& size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(child_sequence_checker_);
 
   VideoBitrateAllocation allocation;
@@ -1004,27 +1005,34 @@ void VaapiVideoEncodeAccelerator::RequestEncodingParametersChange(
       FROM_HERE,
       base::BindOnce(
           &VaapiVideoEncodeAccelerator::RequestEncodingParametersChangeTask,
-          encoder_weak_this_, allocation, framerate));
+          encoder_weak_this_, allocation, framerate, size));
 }
 
 void VaapiVideoEncodeAccelerator::RequestEncodingParametersChange(
     const VideoBitrateAllocation& bitrate_allocation,
-    uint32_t framerate) {
+    uint32_t framerate,
+    const absl::optional<gfx::Size>& size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(child_sequence_checker_);
 
   encoder_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
           &VaapiVideoEncodeAccelerator::RequestEncodingParametersChangeTask,
-          encoder_weak_this_, bitrate_allocation, framerate));
+          encoder_weak_this_, bitrate_allocation, framerate, size));
 }
 
 void VaapiVideoEncodeAccelerator::RequestEncodingParametersChangeTask(
     VideoBitrateAllocation bitrate_allocation,
-    uint32_t framerate) {
+    uint32_t framerate,
+    const absl::optional<gfx::Size>& size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
   DCHECK_NE(state_, kUninitialized);
 
+  if (size.has_value()) {
+    NotifyError({EncoderStatus::Codes::kEncoderUnsupportedConfig,
+                 "Update output frame size is not supported"});
+    return;
+  }
   if (!encoder_->UpdateRates(bitrate_allocation, framerate)) {
     VLOGF(1) << "Failed to update rates to " << bitrate_allocation.GetSumBps()
              << " " << framerate;

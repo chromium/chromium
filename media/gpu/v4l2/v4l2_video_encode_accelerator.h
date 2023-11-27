@@ -59,8 +59,10 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
                   std::unique_ptr<MediaLog> media_log) override;
   void Encode(scoped_refptr<VideoFrame> frame, bool force_keyframe) override;
   void UseOutputBitstreamBuffer(BitstreamBuffer buffer) override;
-  void RequestEncodingParametersChange(const Bitrate& bitrate,
-                                       uint32_t framerate) override;
+  void RequestEncodingParametersChange(
+      const Bitrate& bitrate,
+      uint32_t framerate,
+      const absl::optional<gfx::Size>& size) override;
   void Destroy() override;
   void Flush(FlushCallback flush_callback) override;
   bool IsFlushSupported() override;
@@ -197,8 +199,10 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
   void MaybeFlushImageProcessor();
 
   // Change encoding parameters.
-  void RequestEncodingParametersChangeTask(const Bitrate& bitrate,
-                                           uint32_t framerate);
+  void RequestEncodingParametersChangeTask(
+      const Bitrate& bitrate,
+      uint32_t framerate,
+      const absl::optional<gfx::Size>& size);
 
   // Do several initializations (e.g. set up format) on |encoder_task_runner_|.
   void InitializeTask(const Config& config);

@@ -219,9 +219,13 @@ interface VideoEncodeAccelerator {
   //  |bitrate_allocation| is the requested new bitrate, per spatial and
   //                       temporal layer.
   //  |framerate| is the requested new framerate, in frames per second.
+  //  |size| is the requested new input visible frame size. Clients can request
+  //         frame size change only when there is no pending frame in the
+  //         encoder.
   RequestEncodingParametersChangeWithLayers(
     VideoBitrateAllocation bitrate_allocation,
-    uint32 framerate);
+    uint32 framerate,
+    gfx.mojom.Size? size);
 
   // Request a change to the encoding parameters. This method is for use
   // with non-layered bitrates, and may make requests for constant or
@@ -231,9 +235,13 @@ interface VideoEncodeAccelerator {
   //            may be constant or variable bitrate. This should not change the
   //            encoding mode (constant -> variable or variable -> constant).
   //  |framerate| is the requested new framerate, in frames per second.
+  //  |size| is the requested new input visible frame size. Clients can request
+  //         frame size change only when there is no pending frame in the
+  //         encoder.
   RequestEncodingParametersChangeWithBitrate(
     Bitrate bitrate,
-    uint32 framerate);
+    uint32 framerate,
+    gfx.mojom.Size? size);
 
   [Sync]
   IsFlushSupported() => (bool result);
