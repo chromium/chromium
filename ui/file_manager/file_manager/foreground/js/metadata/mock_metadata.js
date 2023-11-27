@@ -13,11 +13,11 @@ import {MetadataModel} from './metadata_model.js';
  * @final
  */
 export class MockMetadataModel {
-  /** @param {Object} initial_properties */
+  /** @param {Record<string, any>} initial_properties */
   constructor(initial_properties) {
     /**
      * Dummy properties, which can be overwritten by a test.
-     * @public @const @type {Object}
+     * @public @const @type {Record<string, any>}
      */
     this.properties = initial_properties;
 

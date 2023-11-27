@@ -27,7 +27,7 @@ import {changeDirectory} from '../../state/ducks/current_directory.js';
 import {getFileData, getStore} from '../../state/store.js';
 import {XfTreeItem} from '../../widgets/xf_tree_item.js';
 
-import {ActionsModel} from './actions_model.js';
+import {CommonActionId, InternalActionId} from './actions_model.js';
 import {constants} from './constants.js';
 import {DirectoryModel} from './directory_model.js';
 import {FileSelection, FileSelectionHandler} from './file_selection.js';
@@ -2879,10 +2879,10 @@ CommandHandler.COMMANDS_['toggle-pinned'] = new (class extends FilesCommand {
           if (!actionsModel) {
             return;
           }
-          const saveForOfflineAction = actionsModel.getAction(
-              ActionsModel.CommonActionId.SAVE_FOR_OFFLINE);
-          const offlineNotNeededAction = actionsModel.getAction(
-              ActionsModel.CommonActionId.OFFLINE_NOT_NECESSARY);
+          const saveForOfflineAction =
+              actionsModel.getAction(CommonActionId.SAVE_FOR_OFFLINE);
+          const offlineNotNeededAction =
+              actionsModel.getAction(CommonActionId.OFFLINE_NOT_NECESSARY);
           // Saving for offline has a priority if both actions are available.
           let action = offlineNotNeededAction;
           if (saveForOfflineAction && saveForOfflineAction.canExecute()) {
@@ -2931,9 +2931,9 @@ CommandHandler.COMMANDS_['toggle-pinned'] = new (class extends FilesCommand {
         return;
       }
       const saveForOfflineAction =
-          actionsModel.getAction(ActionsModel.CommonActionId.SAVE_FOR_OFFLINE);
-      const offlineNotNeededAction = actionsModel.getAction(
-          ActionsModel.CommonActionId.OFFLINE_NOT_NECESSARY);
+          actionsModel.getAction(CommonActionId.SAVE_FOR_OFFLINE);
+      const offlineNotNeededAction =
+          actionsModel.getAction(CommonActionId.OFFLINE_NOT_NECESSARY);
       let action = offlineNotNeededAction;
       command.checked = !!offlineNotNeededAction;
       if (saveForOfflineAction && saveForOfflineAction.canExecute()) {
@@ -3110,8 +3110,7 @@ CommandHandler.COMMANDS_['share'] = new (class extends FilesCommand {
           if (!actionsModel) {
             return;
           }
-          const action =
-              actionsModel.getAction(ActionsModel.CommonActionId.SHARE);
+          const action = actionsModel.getAction(CommonActionId.SHARE);
           if (action) {
             actionsController.executeAction(action);
           }
@@ -3140,7 +3139,7 @@ CommandHandler.COMMANDS_['share'] = new (class extends FilesCommand {
       if (!actionsModel) {
         return;
       }
-      const action = actionsModel.getAction(ActionsModel.CommonActionId.SHARE);
+      const action = actionsModel.getAction(CommonActionId.SHARE);
       event.canExecute = action && action.canExecute();
       command.disabled = !event.canExecute;
       command.setHidden(!action);
@@ -3180,8 +3179,8 @@ CommandHandler.COMMANDS_['manage-in-drive'] = new (class extends FilesCommand {
           if (!actionsModel) {
             return;
           }
-          const action = actionsModel.getAction(
-              ActionsModel.InternalActionId.MANAGE_IN_DRIVE);
+          const action =
+              actionsModel.getAction(InternalActionId.MANAGE_IN_DRIVE);
           if (action) {
             actionsController.executeAction(action);
           }
@@ -3210,8 +3209,7 @@ CommandHandler.COMMANDS_['manage-in-drive'] = new (class extends FilesCommand {
       if (!actionsModel) {
         return;
       }
-      const action =
-          actionsModel.getAction(ActionsModel.InternalActionId.MANAGE_IN_DRIVE);
+      const action = actionsModel.getAction(InternalActionId.MANAGE_IN_DRIVE);
       if (action) {
         command.setHidden(!action);
         event.canExecute = action && action.canExecute();
@@ -3545,8 +3543,8 @@ CommandHandler.COMMANDS_['pin-folder'] = new (class extends FilesCommand {
           if (!actionsModel) {
             return;
           }
-          const action = actionsModel.getAction(
-              ActionsModel.InternalActionId.CREATE_FOLDER_SHORTCUT);
+          const action =
+              actionsModel.getAction(InternalActionId.CREATE_FOLDER_SHORTCUT);
           if (action) {
             actionsController.executeAction(action);
           }
@@ -3575,8 +3573,8 @@ CommandHandler.COMMANDS_['pin-folder'] = new (class extends FilesCommand {
       if (!actionsModel) {
         return;
       }
-      const action = actionsModel.getAction(
-          ActionsModel.InternalActionId.CREATE_FOLDER_SHORTCUT);
+      const action =
+          actionsModel.getAction(InternalActionId.CREATE_FOLDER_SHORTCUT);
       event.canExecute = action && action.canExecute();
       command.disabled = !event.canExecute;
       command.setHidden(!action);
@@ -3617,8 +3615,8 @@ CommandHandler.COMMANDS_['unpin-folder'] = new (class extends FilesCommand {
           if (!actionsModel) {
             return;
           }
-          const action = actionsModel.getAction(
-              ActionsModel.InternalActionId.REMOVE_FOLDER_SHORTCUT);
+          const action =
+              actionsModel.getAction(InternalActionId.REMOVE_FOLDER_SHORTCUT);
           if (action) {
             actionsController.executeAction(action);
           }
@@ -3647,8 +3645,8 @@ CommandHandler.COMMANDS_['unpin-folder'] = new (class extends FilesCommand {
       if (!actionsModel) {
         return;
       }
-      const action = actionsModel.getAction(
-          ActionsModel.InternalActionId.REMOVE_FOLDER_SHORTCUT);
+      const action =
+          actionsModel.getAction(InternalActionId.REMOVE_FOLDER_SHORTCUT);
       command.setHidden(!action);
       event.canExecute = action && action.canExecute();
       command.disabled = !event.canExecute;
