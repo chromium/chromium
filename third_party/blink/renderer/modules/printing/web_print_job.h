@@ -7,10 +7,12 @@
 
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 
 class ExecutionContext;
+class WebPrintJobAttributes;
 
 class MODULES_EXPORT WebPrintJob : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -19,7 +21,12 @@ class MODULES_EXPORT WebPrintJob : public ScriptWrappable {
   explicit WebPrintJob(ExecutionContext* execution_context);
   ~WebPrintJob() override;
 
+  WebPrintJobAttributes* attributes() const { return attributes_; }
+
   void Trace(Visitor* visitor) const override;
+
+ private:
+  Member<WebPrintJobAttributes> attributes_;
 };
 
 }  // namespace blink

@@ -2,6 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+enum WebPrintJobState {
+  "pending",
+  "processing",
+  "completed",
+  "canceled",
+  "aborted"
+};
+
+dictionary WebPrintJobAttributes {
+  DOMString jobName;
+  WebPrintJobState jobState;
+};
+
 [
   Exposed=Window,
   RuntimeEnabled=WebPrinting,
@@ -9,5 +22,7 @@
   IsolatedContext
 ]
 interface WebPrintJob {
+  WebPrintJobAttributes attributes();
+
   // TODO(b/302505962): Add remaining methods.
 };
