@@ -75,14 +75,14 @@ SimplifiedOofLayoutAlgorithm::SimplifiedOofLayoutAlgorithm(
       previous_fragment.MayHaveDescendantAboveBlockStart());
 }
 
-const NGLayoutResult* SimplifiedOofLayoutAlgorithm::Layout() {
+const LayoutResult* SimplifiedOofLayoutAlgorithm::Layout() {
   FinishFragmentationForFragmentainer(GetConstraintSpace(),
                                       &container_builder_);
   return container_builder_.ToBoxFragment();
 }
 
 void SimplifiedOofLayoutAlgorithm::AppendOutOfFlowResult(
-    const NGLayoutResult* result) {
+    const LayoutResult* result) {
   container_builder_.AddResult(*result, result->OutOfFlowPositionedOffset());
 }
 

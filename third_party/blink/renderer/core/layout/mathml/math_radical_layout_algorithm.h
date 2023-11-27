@@ -16,7 +16,7 @@ class CORE_EXPORT MathRadicalLayoutAlgorithm
  public:
   explicit MathRadicalLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
-  const NGLayoutResult* Layout() final;
+  const LayoutResult* Layout() final;
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) final;
 

@@ -23,7 +23,7 @@ namespace blink {
 
 SimplifiedLayoutAlgorithm::SimplifiedLayoutAlgorithm(
     const LayoutAlgorithmParams& params,
-    const NGLayoutResult& result,
+    const LayoutResult& result,
     bool keep_old_size)
     : LayoutAlgorithm(params),
       previous_result_(result),
@@ -219,16 +219,16 @@ void SimplifiedLayoutAlgorithm::AppendNewChildFragment(
   container_builder_.AddChild(fragment, offset);
 }
 
-const NGLayoutResult*
+const LayoutResult*
 SimplifiedLayoutAlgorithm::CreateResultAfterManualChildLayout() {
-  const NGLayoutResult* result = container_builder_.ToBoxFragment();
+  const LayoutResult* result = container_builder_.ToBoxFragment();
   if (result->PhysicalFragment().IsOutOfFlowPositioned()) {
     result->CopyMutableOutOfFlowData(previous_result_);
   }
   return result;
 }
 
-const NGLayoutResult* SimplifiedLayoutAlgorithm::Layout() {
+const LayoutResult* SimplifiedLayoutAlgorithm::Layout() {
   // Since simplified layout's |Layout()| function deals with laying out
   // children, we can early out if we are display-locked.
   if (Node().ChildLayoutBlockedByDisplayLock())
@@ -251,7 +251,7 @@ const NGLayoutResult* SimplifiedLayoutAlgorithm::Layout() {
     }
 
     // Add the (potentially updated) layout result.
-    const NGLayoutResult* result =
+    const LayoutResult* result =
         BlockNode(To<LayoutBox>(child_fragment.GetMutableLayoutObject()))
             .SimplifiedLayout(child_fragment);
 
@@ -323,11 +323,11 @@ const NGLayoutResult* SimplifiedLayoutAlgorithm::Layout() {
   return container_builder_.ToBoxFragment();
 }
 
-NOINLINE const NGLayoutResult*
+NOINLINE const LayoutResult*
 SimplifiedLayoutAlgorithm::LayoutWithItemsBuilder() {
   FragmentItemsBuilder items_builder(writing_direction_);
   container_builder_.SetItemsBuilder(&items_builder);
-  const NGLayoutResult* result = Layout();
+  const LayoutResult* result = Layout();
   // Ensure stack-allocated |FragmentItemsBuilder| is not used anymore.
   // TODO(kojii): Revisit when the storage of |FragmentItemsBuilder| is
   // finalized.

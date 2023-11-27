@@ -11,7 +11,7 @@
 namespace blink {
 
 class ConstraintSpace;
-class NGLayoutResult;
+class LayoutResult;
 struct MarginStrut;
 
 // NGLayoutCacheStatus indicates what type of cache hit/miss occurred. For
@@ -38,7 +38,7 @@ enum class NGLayoutCacheStatus {
 NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatus(
     const BlockNode& node,
     const BlockBreakToken* break_token,
-    const NGLayoutResult& cached_layout_result,
+    const LayoutResult& cached_layout_result,
     const ConstraintSpace& new_space,
     absl::optional<FragmentGeometry>* fragment_geometry);
 
@@ -54,7 +54,7 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatus(
 // If this function returns false, |bfc_block_offset|, |block_offset_delta|,
 // and |end_margin_strut| are in an undefined state and should not be used.
 bool MaySkipLayoutWithinBlockFormattingContext(
-    const NGLayoutResult& cached_layout_result,
+    const LayoutResult& cached_layout_result,
     const ConstraintSpace& new_space,
     absl::optional<LayoutUnit>* bfc_block_offset,
     LayoutUnit* block_offset_delta,

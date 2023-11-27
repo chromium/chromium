@@ -230,7 +230,7 @@ TableTypes::Row ComputeMinimumRowBlockSize(
         LayoutResultCacheSlot::kMeasure, &space_builder);
 
     const auto cell_space = space_builder.ToConstraintSpace();
-    const NGLayoutResult* layout_result = cell.Layout(cell_space);
+    const LayoutResult* layout_result = cell.Layout(cell_space);
 
     const LogicalBoxFragment fragment(
         table_writing_direction,

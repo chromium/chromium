@@ -25,7 +25,7 @@ class CORE_EXPORT MathRowLayoutAlgorithm
     ChildWithOffsetAndMargins(const BlockNode& child,
                               const BoxStrut& margins,
                               LogicalOffset offset,
-                              const NGLayoutResult* result)
+                              const LayoutResult* result)
         : child(child),
           margins(margins),
           offset(offset),
@@ -39,12 +39,12 @@ class CORE_EXPORT MathRowLayoutAlgorithm
     BlockNode child;
     BoxStrut margins;
     LogicalOffset offset;
-    Member<const NGLayoutResult> result;
+    Member<const LayoutResult> result;
   };
   typedef HeapVector<ChildWithOffsetAndMargins, 4> ChildrenVector;
 
  private:
-  const NGLayoutResult* Layout() final;
+  const LayoutResult* Layout() final;
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) final;
 

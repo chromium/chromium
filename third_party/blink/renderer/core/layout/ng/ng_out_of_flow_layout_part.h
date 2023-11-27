@@ -26,7 +26,7 @@ namespace blink {
 class BlockBreakToken;
 class LayoutBox;
 class LayoutObject;
-class NGLayoutResult;
+class LayoutResult;
 template <typename OffsetType>
 class OofContainingBlock;
 class SimplifiedOofLayoutAlgorithm;
@@ -205,7 +205,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
     // layout result if we needed to know the size in order to calculate the
     // offset. If an initial result is set, it will either be re-used or
     // replaced in the final layout pass.
-    Member<const NGLayoutResult> initial_layout_result;
+    Member<const LayoutResult> initial_layout_result;
     // The |block_estimate| is wrt. the candidate's writing mode.
     absl::optional<LayoutUnit> block_estimate;
     LogicalOofDimensions node_dimensions;
@@ -305,7 +305,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
 
   NodeInfo SetupNodeInfo(const LogicalOofPositionedNode& oof_node);
 
-  const NGLayoutResult* LayoutOOFNode(
+  const LayoutResult* LayoutOOFNode(
       NodeToLayout& oof_node_to_layout,
       const ConstraintSpace* fragmentainer_constraint_space = nullptr,
       bool is_last_fragmentainer_so_far = false);
@@ -328,14 +328,14 @@ class CORE_EXPORT OutOfFlowLayoutPart {
       bool is_first_run,
       NonOverflowingScrollRange* out_scroll_range);
 
-  const NGLayoutResult* Layout(
+  const LayoutResult* Layout(
       const NodeToLayout& oof_node_to_layout,
       const ConstraintSpace* fragmentainer_constraint_space,
       bool is_last_fragmentainer_so_far);
 
   bool IsContainingBlockForCandidate(const LogicalOofPositionedNode&);
 
-  const NGLayoutResult* GenerateFragment(
+  const LayoutResult* GenerateFragment(
       const NodeToLayout& oof_node_to_layout,
       const ConstraintSpace* fragmentainer_constraint_space,
       bool is_last_fragmentainer_so_far);
@@ -382,7 +382,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
       wtf_size_t* start_index,
       LogicalOffset* offset) const;
 
-  void ReplaceFragment(const NGLayoutResult* new_result,
+  void ReplaceFragment(const LayoutResult* new_result,
                        const NGPhysicalBoxFragment& old_fragment,
                        wtf_size_t index);
 

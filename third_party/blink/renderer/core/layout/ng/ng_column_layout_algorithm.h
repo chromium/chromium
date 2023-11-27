@@ -24,7 +24,7 @@ class CORE_EXPORT ColumnLayoutAlgorithm
  public:
   explicit ColumnLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
-  const NGLayoutResult* Layout() override;
+  const LayoutResult* Layout() override;
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
 
@@ -43,9 +43,9 @@ class CORE_EXPORT ColumnLayoutAlgorithm
   // column that was laid out. The rows themselves don't create fragments. If
   // we're in a nested fragmentation context, and a break is inserted before the
   // row, nullptr is returned.
-  const NGLayoutResult* LayoutRow(const BlockBreakToken* next_column_token,
-                                  LayoutUnit miminum_column_block_size,
-                                  MarginStrut*);
+  const LayoutResult* LayoutRow(const BlockBreakToken* next_column_token,
+                                LayoutUnit miminum_column_block_size,
+                                MarginStrut*);
 
   // Lay out a column spanner. The return value will tell whether to break
   // before the spanner or not. If |BreakStatus::kContinue| is returned, and

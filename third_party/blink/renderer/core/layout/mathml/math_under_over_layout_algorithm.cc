@@ -182,7 +182,7 @@ void MathUnderOverLayoutAlgorithm::GatherChildren(BlockNode* base,
   }
 }
 
-const NGLayoutResult* MathUnderOverLayoutAlgorithm::Layout() {
+const LayoutResult* MathUnderOverLayoutAlgorithm::Layout() {
   DCHECK(!GetBreakToken());
   DCHECK(IsValidMathMLScript(Node()));
 
@@ -216,7 +216,7 @@ const NGLayoutResult* MathUnderOverLayoutAlgorithm::Layout() {
 
   // https://w3c.github.io/mathml-core/#dfn-algorithm-for-stretching-operators-along-the-inline-axis
   LayoutUnit inline_stretch_size;
-  auto UpdateInlineStretchSize = [&](const NGLayoutResult* result) {
+  auto UpdateInlineStretchSize = [&](const LayoutResult* result) {
     LogicalFragment fragment(
         constraint_space.GetWritingDirection(),
         To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
@@ -307,7 +307,7 @@ const NGLayoutResult* MathUnderOverLayoutAlgorithm::Layout() {
   // therefore centered relative to themselves).
   if (over) {
     const auto over_space = CreateConstraintSpaceForUnderOverChild(over);
-    const NGLayoutResult* over_layout_result = over.Layout(over_space);
+    const LayoutResult* over_layout_result = over.Layout(over_space);
     BoxStrut over_margins =
         ComputeMarginsFor(over_space, over.Style(), constraint_space);
     LogicalBoxFragment over_fragment(
@@ -354,7 +354,7 @@ const NGLayoutResult* MathUnderOverLayoutAlgorithm::Layout() {
 
   if (under) {
     const auto under_space = CreateConstraintSpaceForUnderOverChild(under);
-    const NGLayoutResult* under_layout_result = under.Layout(under_space);
+    const LayoutResult* under_layout_result = under.Layout(under_space);
     BoxStrut under_margins =
         ComputeMarginsFor(under_space, under.Style(), constraint_space);
     LogicalBoxFragment under_fragment(

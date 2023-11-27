@@ -20,7 +20,7 @@ class CORE_EXPORT MathTokenLayoutAlgorithm
   explicit MathTokenLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
  private:
-  const NGLayoutResult* Layout() final;
+  const LayoutResult* Layout() final;
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) final;
 };
 

@@ -67,7 +67,7 @@ bool LayoutBox::IsUserScrollable() const {
   return HasScrollableOverflowX() || HasScrollableOverflowY();
 }
 
-const NGLayoutResult* LayoutBox::CachedLayoutResult(
+const LayoutResult* LayoutBox::CachedLayoutResult(
     const ConstraintSpace& new_space,
     const BlockBreakToken* break_token,
     const EarlyBreak* early_break,
@@ -84,7 +84,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
   const bool use_layout_cache_slot =
       new_space.CacheSlot() == LayoutResultCacheSlot::kLayout &&
       !layout_results_.empty();
-  const NGLayoutResult* cached_layout_result =
+  const LayoutResult* cached_layout_result =
       use_layout_cache_slot ? GetCachedLayoutResult(break_token)
                             : GetCachedMeasureResult();
 
@@ -98,7 +98,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
     return nullptr;
   }
 
-  DCHECK_EQ(cached_layout_result->Status(), NGLayoutResult::kSuccess);
+  DCHECK_EQ(cached_layout_result->Status(), LayoutResult::kSuccess);
 
   // Set our initial temporary cache status to "hit".
   NGLayoutCacheStatus cache_status = NGLayoutCacheStatus::kHit;
@@ -425,7 +425,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
 
           // Check if we have content which might cross the fragmentation line.
           //
-          // NOTE: It's fine to use NGLayoutResult::BlockSizeForFragmentation()
+          // NOTE: It's fine to use LayoutResult::BlockSizeForFragmentation()
           // directly here, rather than the helper BlockSizeForFragmentation()
           // in ng_fragmentation_utils.cc, since what the latter does shouldn't
           // matter, since we're not monolithic content
@@ -487,8 +487,8 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
   if (use_layout_cache_slot && !is_blocked_by_display_lock &&
       NeedsScrollableOverflowRecalc()) {
 #if DCHECK_IS_ON()
-    const NGLayoutResult* cloned_cached_layout_result =
-        NGLayoutResult::CloneWithPostLayoutFragments(*cached_layout_result);
+    const LayoutResult* cloned_cached_layout_result =
+        LayoutResult::CloneWithPostLayoutFragments(*cached_layout_result);
 #endif
     if (!NGDisableSideEffectsScope::IsDisabled())
       RecalcScrollableOverflow();
@@ -540,7 +540,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
     return cached_layout_result;
   }
 
-  const NGLayoutResult* new_result = MakeGarbageCollected<NGLayoutResult>(
+  const auto* new_result = MakeGarbageCollected<LayoutResult>(
       *cached_layout_result, new_space, end_margin_strut, bfc_line_offset,
       bfc_block_offset, block_offset_delta);
 

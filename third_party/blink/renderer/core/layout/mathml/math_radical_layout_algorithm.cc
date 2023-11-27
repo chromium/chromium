@@ -61,7 +61,7 @@ void MathRadicalLayoutAlgorithm::GatherChildren(
   }
 }
 
-const NGLayoutResult* MathRadicalLayoutAlgorithm::Layout() {
+const LayoutResult* MathRadicalLayoutAlgorithm::Layout() {
   DCHECK(!GetBreakToken());
   DCHECK(IsValidMathMLRadical(Node()));
 
@@ -77,8 +77,8 @@ const NGLayoutResult* MathRadicalLayoutAlgorithm::Layout() {
   BlockNode index = nullptr;
   GatherChildren(&base, &index, &container_builder_);
 
-  const NGLayoutResult* base_layout_result = nullptr;
-  const NGLayoutResult* index_layout_result = nullptr;
+  const LayoutResult* base_layout_result = nullptr;
+  const LayoutResult* index_layout_result = nullptr;
   if (base) {
     // Handle layout of base child. For <msqrt> the base is anonymous and uses
     // the row layout algorithm.

@@ -20,8 +20,8 @@ namespace blink {
 
 namespace {
 
-struct SameSizeAsNGLayoutResult
-    : public GarbageCollected<SameSizeAsNGLayoutResult> {
+struct SameSizeAsLayoutResult
+    : public GarbageCollected<SameSizeAsLayoutResult> {
   const ConstraintSpace space;
   Member<void*> physical_fragment;
   Member<void*> rare_data_;
@@ -33,30 +33,30 @@ struct SameSizeAsNGLayoutResult
   unsigned bitfields[1];
 };
 
-ASSERT_SIZE(NGLayoutResult, SameSizeAsNGLayoutResult);
+ASSERT_SIZE(LayoutResult, SameSizeAsLayoutResult);
 
 }  // namespace
 
 // static
-const NGLayoutResult* NGLayoutResult::Clone(const NGLayoutResult& other) {
-  return MakeGarbageCollected<NGLayoutResult>(
+const LayoutResult* LayoutResult::Clone(const LayoutResult& other) {
+  return MakeGarbageCollected<LayoutResult>(
       other, NGPhysicalBoxFragment::Clone(
                  To<NGPhysicalBoxFragment>(other.PhysicalFragment())));
 }
 
 // static
-const NGLayoutResult* NGLayoutResult::CloneWithPostLayoutFragments(
-    const NGLayoutResult& other) {
-  return MakeGarbageCollected<NGLayoutResult>(
+const LayoutResult* LayoutResult::CloneWithPostLayoutFragments(
+    const LayoutResult& other) {
+  return MakeGarbageCollected<LayoutResult>(
       other, NGPhysicalBoxFragment::CloneWithPostLayoutFragments(
                  To<NGPhysicalBoxFragment>(other.PhysicalFragment())));
 }
 
-NGLayoutResult::NGLayoutResult(BoxFragmentBuilderPassKey passkey,
-                               const NGPhysicalFragment* physical_fragment,
-                               BoxFragmentBuilder* builder)
-    : NGLayoutResult(std::move(physical_fragment),
-                     static_cast<FragmentBuilder*>(builder)) {
+LayoutResult::LayoutResult(BoxFragmentBuilderPassKey passkey,
+                           const NGPhysicalFragment* physical_fragment,
+                           BoxFragmentBuilder* builder)
+    : LayoutResult(std::move(physical_fragment),
+                   static_cast<FragmentBuilder*>(builder)) {
   bitfields_.is_initial_block_size_indefinite =
       builder->is_initial_block_size_indefinite_;
   intrinsic_block_size_ = builder->intrinsic_block_size_;
@@ -111,11 +111,11 @@ NGLayoutResult::NGLayoutResult(BoxFragmentBuilderPassKey passkey,
   }
 }
 
-NGLayoutResult::NGLayoutResult(LineBoxFragmentBuilderPassKey passkey,
-                               const NGPhysicalFragment* physical_fragment,
-                               LineBoxFragmentBuilder* builder)
-    : NGLayoutResult(std::move(physical_fragment),
-                     static_cast<FragmentBuilder*>(builder)) {
+LayoutResult::LayoutResult(LineBoxFragmentBuilderPassKey passkey,
+                           const NGPhysicalFragment* physical_fragment,
+                           LineBoxFragmentBuilder* builder)
+    : LayoutResult(std::move(physical_fragment),
+                   static_cast<FragmentBuilder*>(builder)) {
   DCHECK_EQ(builder->bfc_block_offset_.has_value(),
             builder->line_box_bfc_block_offset_.has_value());
   if (builder->bfc_block_offset_ != builder->line_box_bfc_block_offset_) {
@@ -132,21 +132,21 @@ NGLayoutResult::NGLayoutResult(LineBoxFragmentBuilderPassKey passkey,
   }
 }
 
-NGLayoutResult::NGLayoutResult(FragmentBuilderPassKey key,
-                               EStatus status,
-                               FragmentBuilder* builder)
-    : NGLayoutResult(/* physical_fragment */ nullptr, builder) {
+LayoutResult::LayoutResult(FragmentBuilderPassKey key,
+                           EStatus status,
+                           FragmentBuilder* builder)
+    : LayoutResult(/* physical_fragment */ nullptr, builder) {
   bitfields_.status = status;
   DCHECK_NE(status, kSuccess)
       << "Use the other constructor for successful layout";
 }
 
-NGLayoutResult::NGLayoutResult(const NGLayoutResult& other,
-                               const ConstraintSpace& new_space,
-                               const MarginStrut& new_end_margin_strut,
-                               LayoutUnit bfc_line_offset,
-                               absl::optional<LayoutUnit> bfc_block_offset,
-                               LayoutUnit block_offset_delta)
+LayoutResult::LayoutResult(const LayoutResult& other,
+                           const ConstraintSpace& new_space,
+                           const MarginStrut& new_end_margin_strut,
+                           LayoutUnit bfc_line_offset,
+                           absl::optional<LayoutUnit> bfc_block_offset,
+                           LayoutUnit block_offset_delta)
     : space_(new_space),
       physical_fragment_(other.physical_fragment_),
       rare_data_(other.rare_data_
@@ -180,8 +180,8 @@ NGLayoutResult::NGLayoutResult(const NGLayoutResult& other,
   }
 }
 
-NGLayoutResult::NGLayoutResult(const NGLayoutResult& other,
-                               const NGPhysicalFragment* physical_fragment)
+LayoutResult::LayoutResult(const LayoutResult& other,
+                           const NGPhysicalFragment* physical_fragment)
     : space_(other.space_),
       physical_fragment_(std::move(physical_fragment)),
       rare_data_(other.rare_data_
@@ -200,8 +200,8 @@ NGLayoutResult::NGLayoutResult(const NGLayoutResult& other,
   DCHECK_EQ(physical_fragment_->Size(), other.physical_fragment_->Size());
 }
 
-NGLayoutResult::NGLayoutResult(const NGPhysicalFragment* physical_fragment,
-                               FragmentBuilder* builder)
+LayoutResult::LayoutResult(const NGPhysicalFragment* physical_fragment,
+                           FragmentBuilder* builder)
     : space_(builder->space_),
       physical_fragment_(std::move(physical_fragment)),
       rare_data_(nullptr),
@@ -281,8 +281,8 @@ NGLayoutResult::NGLayoutResult(const NGPhysicalFragment* physical_fragment,
       !builder->bfc_block_offset_.has_value();
 }
 
-ExclusionSpace NGLayoutResult::MergeExclusionSpaces(
-    const NGLayoutResult& other,
+ExclusionSpace LayoutResult::MergeExclusionSpaces(
+    const LayoutResult& other,
     const ExclusionSpace& new_input_exclusion_space,
     LayoutUnit bfc_line_offset,
     LayoutUnit block_offset_delta) {
@@ -295,15 +295,14 @@ ExclusionSpace NGLayoutResult::MergeExclusionSpaces(
       /* new_input */ new_input_exclusion_space, offset_delta);
 }
 
-NGLayoutResult::RareData* NGLayoutResult::EnsureRareData() {
+LayoutResult::RareData* LayoutResult::EnsureRareData() {
   if (!rare_data_) {
     rare_data_ = MakeGarbageCollected<RareData>();
   }
   return rare_data_.Get();
 }
 
-void NGLayoutResult::CopyMutableOutOfFlowData(
-    const NGLayoutResult& other) const {
+void LayoutResult::CopyMutableOutOfFlowData(const LayoutResult& other) const {
   if (bitfields_.has_oof_insets_for_get_computed_style) {
     return;
   }
@@ -315,8 +314,8 @@ void NGLayoutResult::CopyMutableOutOfFlowData(
 }
 
 #if DCHECK_IS_ON()
-void NGLayoutResult::CheckSameForSimplifiedLayout(
-    const NGLayoutResult& other,
+void LayoutResult::CheckSameForSimplifiedLayout(
+    const LayoutResult& other,
     bool check_same_block_size,
     bool check_no_fragmentation) const {
   To<NGPhysicalBoxFragment>(*physical_fragment_)
@@ -361,19 +360,19 @@ void NGLayoutResult::CheckSameForSimplifiedLayout(
 #endif
 
 #if DCHECK_IS_ON()
-void NGLayoutResult::AssertSoleBoxFragment() const {
+void LayoutResult::AssertSoleBoxFragment() const {
   DCHECK(physical_fragment_->IsBox());
   DCHECK(To<NGPhysicalBoxFragment>(PhysicalFragment()).IsFirstForNode());
   DCHECK(!physical_fragment_->GetBreakToken());
 }
 #endif
 
-void NGLayoutResult::Trace(Visitor* visitor) const {
+void LayoutResult::Trace(Visitor* visitor) const {
   visitor->Trace(physical_fragment_);
   visitor->Trace(rare_data_);
 }
 
-void NGLayoutResult::RareData::Trace(Visitor* visitor) const {
+void LayoutResult::RareData::Trace(Visitor* visitor) const {
   visitor->Trace(early_break);
   // This will not cause TOCTOU issue because data_union_type is set in the
   // constructor and never changed.

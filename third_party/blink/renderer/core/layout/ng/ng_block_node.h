@@ -21,7 +21,7 @@ class EarlyBreak;
 class FragmentItems;
 class InlineNode;
 class LayoutBox;
-class NGLayoutResult;
+class LayoutResult;
 class NGPhysicalBoxFragment;
 class NGPhysicalFragment;
 enum class BaselineAlgorithmType;
@@ -37,17 +37,17 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
 
   BlockNode(std::nullptr_t) : LayoutInputNode(nullptr) {}
 
-  const NGLayoutResult* Layout(const ConstraintSpace& constraint_space,
-                               const BlockBreakToken* break_token = nullptr,
-                               const EarlyBreak* = nullptr,
-                               const ColumnSpannerPath* = nullptr) const;
+  const LayoutResult* Layout(const ConstraintSpace& constraint_space,
+                             const BlockBreakToken* break_token = nullptr,
+                             const EarlyBreak* = nullptr,
+                             const ColumnSpannerPath* = nullptr) const;
 
   // This method is just for use within the |SimplifiedLayoutAlgorithm|.
   //
   // If layout is dirty, it will perform layout using the previous constraint
-  // space used to generate the |NGLayoutResult|.
+  // space used to generate the |LayoutResult|.
   // Otherwise it will simply return the previous layout result generated.
-  const NGLayoutResult* SimplifiedLayout(
+  const LayoutResult* SimplifiedLayout(
       const NGPhysicalFragment& previous_fragment) const;
 
   // Lay out a repeatable node during block fragmentation (fixed positioned
@@ -75,8 +75,8 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
   // (mainly), we need to clone the fragment as many times as it repeats, and we
   // also need to make sure that the break tokens are reasonably intact -
   // including the sequence numbers. This is why we need this.
-  const NGLayoutResult* LayoutRepeatableRoot(const ConstraintSpace&,
-                                             const BlockBreakToken*) const;
+  const LayoutResult* LayoutRepeatableRoot(const ConstraintSpace&,
+                                           const BlockBreakToken*) const;
 
   // Finalize the cloned layout results of a repeatable root. This will
   // deep-clone and set the correct break token sequence numbers, and make sure
@@ -97,7 +97,7 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
   //
   // If the containing-block size hasn't changed, and we are layout-clean we
   // can reuse the previous layout result.
-  const NGLayoutResult* CachedLayoutResultForOutOfFlowPositioned(
+  const LayoutResult* CachedLayoutResultForOutOfFlowPositioned(
       LogicalSize container_content_size) const;
 
   LayoutInputNode NextSibling() const;
@@ -199,7 +199,7 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
   bool HasIndex() const;
 
   // Layout an atomic inline; e.g., inline block.
-  const NGLayoutResult* LayoutAtomicInline(
+  const LayoutResult* LayoutAtomicInline(
       const ConstraintSpace& parent_constraint_space,
       const ComputedStyle& parent_style,
       bool use_first_line_style,
@@ -249,19 +249,19 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
  private:
   void PrepareForLayout() const;
 
-  const NGLayoutResult* RunSimplifiedLayout(const LayoutAlgorithmParams&,
-                                            const NGLayoutResult&) const;
+  const LayoutResult* RunSimplifiedLayout(const LayoutAlgorithmParams&,
+                                          const LayoutResult&) const;
 
   // If this node is a LayoutNGMixin, the caller must pass the layout object for
   // this node cast to a LayoutBlockFlow as the first argument.
   void FinishLayout(LayoutBlockFlow*,
                     const ConstraintSpace&,
                     const BlockBreakToken*,
-                    const NGLayoutResult*,
+                    const LayoutResult*,
                     const absl::optional<PhysicalSize>& old_box_size) const;
 
   // Update the layout results vector in LayoutBox with the new result.
-  void StoreResultInLayoutBox(const NGLayoutResult*,
+  void StoreResultInLayoutBox(const LayoutResult*,
                               const BlockBreakToken*,
                               bool clear_trailing_results = false) const;
 
@@ -269,7 +269,7 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
   // data to the layout box.
   void CopyFragmentDataToLayoutBox(
       const ConstraintSpace&,
-      const NGLayoutResult&,
+      const LayoutResult&,
       const BlockBreakToken* previous_break_token) const;
   void CopyFragmentItemsToLayoutBox(
       const NGPhysicalBoxFragment& container,
@@ -289,7 +289,7 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
       const NGPhysicalFragment& fragment) const;
 
   void UpdateShapeOutsideInfoIfNeeded(
-      const NGLayoutResult&,
+      const LayoutResult&,
       const ConstraintSpace& constraint_space) const;
 };
 

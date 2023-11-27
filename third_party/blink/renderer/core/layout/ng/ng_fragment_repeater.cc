@@ -131,7 +131,7 @@ void NGFragmentRepeater::CloneChildFragments(
         DCHECK(child_box_fragment->GetLayoutObject()->IsLayoutInline());
         continue;
       }
-      const NGLayoutResult* child_result =
+      const LayoutResult* child_result =
           GetClonableLayoutResult(*child_layout_box, *child_box_fragment);
       child_result = Repeat(*child_result);
       child_box_fragment =
@@ -148,7 +148,7 @@ void NGFragmentRepeater::CloneChildFragments(
       if (child_box->IsCSSBox()) {
         const auto* child_layout_box =
             To<LayoutBox>(child_box->GetLayoutObject());
-        const NGLayoutResult* child_result =
+        const LayoutResult* child_result =
             GetClonableLayoutResult(*child_layout_box, *child_box);
         child_result = Repeat(*child_result);
         child.fragment = &child_result->PhysicalFragment();
@@ -164,8 +164,8 @@ void NGFragmentRepeater::CloneChildFragments(
   }
 }
 
-const NGLayoutResult* NGFragmentRepeater::Repeat(const NGLayoutResult& other) {
-  const NGLayoutResult* cloned_result = NGLayoutResult::Clone(other);
+const LayoutResult* NGFragmentRepeater::Repeat(const LayoutResult& other) {
+  const LayoutResult* cloned_result = LayoutResult::Clone(other);
   const auto& cloned_fragment =
       To<NGPhysicalBoxFragment>(cloned_result->PhysicalFragment());
   auto& layout_box = *To<LayoutBox>(cloned_fragment.GetMutableLayoutObject());
@@ -194,7 +194,7 @@ const NGLayoutResult* NGFragmentRepeater::Repeat(const NGLayoutResult& other) {
   return cloned_result;
 }
 
-const NGLayoutResult* NGFragmentRepeater::GetClonableLayoutResult(
+const LayoutResult* NGFragmentRepeater::GetClonableLayoutResult(
     const LayoutBox& layout_box,
     const NGPhysicalBoxFragment& fragment) const {
   if (const BlockBreakToken* break_token = fragment.GetBreakToken()) {
@@ -208,7 +208,7 @@ const NGLayoutResult* NGFragmentRepeater::GetClonableLayoutResult(
   // fragmentation context), in case we've already been through this. This will
   // actually be the very first result, unless there's a fragmentation context
   // established inside the repeated root.
-  for (const NGLayoutResult* result : layout_box.GetLayoutResults()) {
+  for (const LayoutResult* result : layout_box.GetLayoutResults()) {
     const BlockBreakToken* break_token =
         To<NGPhysicalBoxFragment>(result->PhysicalFragment()).GetBreakToken();
     if (!break_token || break_token->IsRepeated())

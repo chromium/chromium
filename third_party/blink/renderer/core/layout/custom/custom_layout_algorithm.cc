@@ -78,7 +78,7 @@ MinMaxSizesResult CustomLayoutAlgorithm::ComputeMinMaxSizes(
   return MinMaxSizesResult(sizes, depends_on_block_constraints);
 }
 
-const NGLayoutResult* CustomLayoutAlgorithm::Layout() {
+const LayoutResult* CustomLayoutAlgorithm::Layout() {
   DCHECK(!IsBreakInside(GetBreakToken()));
 
   if (!Node().IsCustomLayoutLoaded())
@@ -206,7 +206,7 @@ MinMaxSizesResult CustomLayoutAlgorithm::FallbackMinMaxSizes(
   return BlockLayoutAlgorithm(params_).ComputeMinMaxSizes(input);
 }
 
-const NGLayoutResult* CustomLayoutAlgorithm::FallbackLayout() {
+const LayoutResult* CustomLayoutAlgorithm::FallbackLayout() {
   return BlockLayoutAlgorithm(params_).Layout();
 }
 

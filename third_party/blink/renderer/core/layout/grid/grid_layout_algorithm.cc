@@ -204,16 +204,16 @@ bool HasBlockSizeDependentGridItem(const GridItems& grid_items) {
 
 }  // namespace
 
-const NGLayoutResult* GridLayoutAlgorithm::Layout() {
+const LayoutResult* GridLayoutAlgorithm::Layout() {
   const auto* result = LayoutInternal();
-  if (result->Status() == NGLayoutResult::kDisableFragmentation) {
+  if (result->Status() == LayoutResult::kDisableFragmentation) {
     DCHECK(GetConstraintSpace().HasBlockFragmentation());
     return RelayoutWithoutFragmentation<GridLayoutAlgorithm>();
   }
   return result;
 }
 
-const NGLayoutResult* GridLayoutAlgorithm::LayoutInternal() {
+const LayoutResult* GridLayoutAlgorithm::LayoutInternal() {
   PaintLayerScrollableArea::DelayScrollOffsetClampScope delay_clamp_scope;
 
   LayoutUnit intrinsic_block_size;
@@ -320,7 +320,7 @@ const NGLayoutResult* GridLayoutAlgorithm::LayoutInternal() {
         node, constraint_space, border_padding.block_end,
         FragmentainerSpaceLeft(constraint_space), &container_builder_);
     if (status == BreakStatus::kDisableFragmentation) {
-      return container_builder_.Abort(NGLayoutResult::kDisableFragmentation);
+      return container_builder_.Abort(LayoutResult::kDisableFragmentation);
     }
     DCHECK_EQ(status, BreakStatus::kContinue);
   } else {
@@ -999,7 +999,7 @@ LayoutUnit GridLayoutAlgorithm::ComputeIntrinsicBlockSizeIgnoringChildren()
 
 namespace {
 
-const NGLayoutResult* LayoutGridItemForMeasure(
+const LayoutResult* LayoutGridItemForMeasure(
     const GridItemData& grid_item,
     const ConstraintSpace& constraint_space,
     SizingConstraint sizing_constraint) {
@@ -1203,7 +1203,7 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
     if (is_for_columns)
       grid_item->is_sizing_dependent_on_block_size = true;
 
-    const NGLayoutResult* result = nullptr;
+    const LayoutResult* result = nullptr;
     if (space.AvailableSize().inline_size == kIndefiniteSize) {
       // If we are orthogonal grid item, resolving against an indefinite size,
       // set our inline size to our max-content contribution size.
@@ -3670,14 +3670,14 @@ struct ResultAndOffsets {
   DISALLOW_NEW();
 
  public:
-  ResultAndOffsets(const NGLayoutResult* result,
+  ResultAndOffsets(const LayoutResult* result,
                    LogicalOffset offset,
                    LogicalOffset relative_offset)
       : result(result), offset(offset), relative_offset(relative_offset) {}
 
   void Trace(Visitor* visitor) const { visitor->Trace(result); }
 
-  Member<const NGLayoutResult> result;
+  Member<const LayoutResult> result;
   LogicalOffset offset;
   LogicalOffset relative_offset;
 };
@@ -3877,7 +3877,7 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
         continue;
 
       auto* result = grid_item.node.Layout(space, break_token);
-      DCHECK_EQ(result->Status(), NGLayoutResult::kSuccess);
+      DCHECK_EQ(result->Status(), LayoutResult::kSuccess);
       result_and_offsets.emplace_back(
           result,
           LogicalOffset(item_placement_data.offset.inline_offset,

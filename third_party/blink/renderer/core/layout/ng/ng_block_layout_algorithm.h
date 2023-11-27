@@ -70,26 +70,26 @@ class CORE_EXPORT BlockLayoutAlgorithm
   void SetBoxType(NGPhysicalFragment::NGBoxType type);
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
-  const NGLayoutResult* Layout() override;
+  const LayoutResult* Layout() override;
 
  private:
-  NOINLINE const NGLayoutResult* HandleNonsuccessfulLayoutResult(
-      const NGLayoutResult*);
+  NOINLINE const LayoutResult* HandleNonsuccessfulLayoutResult(
+      const LayoutResult*);
 
-  const NGLayoutResult* LayoutInlineChild(const InlineNode& child);
-  NOINLINE const NGLayoutResult* LayoutWithSimpleInlineChildLayoutContext(
+  const LayoutResult* LayoutInlineChild(const InlineNode& child);
+  NOINLINE const LayoutResult* LayoutWithSimpleInlineChildLayoutContext(
       const InlineNode& child);
   template <wtf_size_t capacity>
-  NOINLINE const NGLayoutResult* LayoutWithOptimalInlineChildLayoutContext(
+  NOINLINE const LayoutResult* LayoutWithOptimalInlineChildLayoutContext(
       const InlineNode& child);
 
-  NOINLINE const NGLayoutResult* RelayoutIgnoringLineClamp();
+  NOINLINE const LayoutResult* RelayoutIgnoringLineClamp();
 
-  inline const NGLayoutResult* Layout(
+  inline const LayoutResult* Layout(
       InlineChildLayoutContext* inline_child_layout_context);
 
-  const NGLayoutResult* FinishLayout(PreviousInflowPosition*,
-                                     InlineChildLayoutContext*);
+  const LayoutResult* FinishLayout(PreviousInflowPosition*,
+                                   InlineChildLayoutContext*);
 
   // Return the BFC block offset of this block.
   LayoutUnit BfcBlockOffset() const {
@@ -136,7 +136,7 @@ class CORE_EXPORT BlockLayoutAlgorithm
       const InflowChildData&,
       const absl::optional<LayoutUnit>& child_bfc_block_offset,
       const LogicalOffset&,
-      const NGLayoutResult&,
+      const LayoutResult&,
       const LogicalFragment&,
       bool self_collapsing_child_had_clearance);
 
@@ -151,7 +151,7 @@ class CORE_EXPORT BlockLayoutAlgorithm
       const LayoutInputNode& child,
       const ConstraintSpace& child_space,
       const InflowChildData& child_data,
-      const NGLayoutResult&) const;
+      const LayoutResult&) const;
 
   void AlignContent(LayoutUnit content_block_size);
 
@@ -186,14 +186,14 @@ class CORE_EXPORT BlockLayoutAlgorithm
   //
   // Returns false if we need to abort layout, because a previously unknown BFC
   // block offset has now been resolved.
-  NGLayoutResult::EStatus HandleNewFormattingContext(
+  LayoutResult::EStatus HandleNewFormattingContext(
       LayoutInputNode child,
       const BlockBreakToken* child_break_token,
       PreviousInflowPosition*);
 
   // Performs the actual layout of a new formatting context. This may be called
   // multiple times from HandleNewFormattingContext.
-  const NGLayoutResult* LayoutNewFormattingContext(
+  const LayoutResult* LayoutNewFormattingContext(
       LayoutInputNode child,
       const BlockBreakToken* child_break_token,
       const InflowChildData&,
@@ -205,19 +205,19 @@ class CORE_EXPORT BlockLayoutAlgorithm
   // Handle an in-flow child.
   // Returns false if we need to abort layout, because a previously unknown BFC
   // block offset has now been resolved. (Same as HandleNewFormattingContext).
-  NGLayoutResult::EStatus HandleInflow(
+  LayoutResult::EStatus HandleInflow(
       LayoutInputNode child,
       const BreakToken* child_break_token,
       PreviousInflowPosition*,
       InlineChildLayoutContext*,
       const InlineBreakToken** previous_inline_break_token);
 
-  NGLayoutResult::EStatus FinishInflow(
+  LayoutResult::EStatus FinishInflow(
       LayoutInputNode child,
       const BreakToken* child_break_token,
       const ConstraintSpace&,
       bool has_clearance_past_adjoining_floats,
-      const NGLayoutResult*,
+      const LayoutResult*,
       InflowChildData*,
       PreviousInflowPosition*,
       InlineChildLayoutContext*,
@@ -243,7 +243,7 @@ class CORE_EXPORT BlockLayoutAlgorithm
   // Insert a fragmentainer break before the child if necessary.
   // See |::blink::BreakBeforeChildIfNeeded()| for more documentation.
   BreakStatus BreakBeforeChildIfNeeded(LayoutInputNode child,
-                                       const NGLayoutResult&,
+                                       const LayoutResult&,
                                        PreviousInflowPosition*,
                                        LayoutUnit bfc_block_offset,
                                        bool has_container_separation);
@@ -316,7 +316,7 @@ class CORE_EXPORT BlockLayoutAlgorithm
 
   // Positions a list marker for the specified block content.
   // Return false if it aborts when resolving BFC block offset for LI.
-  bool PositionOrPropagateListMarker(const NGLayoutResult&,
+  bool PositionOrPropagateListMarker(const LayoutResult&,
                                      LogicalOffset*,
                                      PreviousInflowPosition*);
 
@@ -379,7 +379,7 @@ class CORE_EXPORT BlockLayoutAlgorithm
   // This function returns a new value for `PreviousInflowPosition::
   // logical_block_offset`.
   LayoutUnit FinishTextControlPlaceholder(
-      const NGLayoutResult* result,
+      const LayoutResult* result,
       const LogicalOffset& offset,
       bool apply_fixed_size,
       const PreviousInflowPosition& previous_inflow_position);
@@ -393,7 +393,7 @@ class CORE_EXPORT BlockLayoutAlgorithm
   LogicalSize child_percentage_size_;
   LogicalSize replaced_child_percentage_size_;
 
-  const NGLayoutResult* previous_result_ = nullptr;
+  const LayoutResult* previous_result_ = nullptr;
 
   const ColumnSpannerPath* column_spanner_path_ = nullptr;
 

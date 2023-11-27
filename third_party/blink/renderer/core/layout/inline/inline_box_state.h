@@ -294,9 +294,9 @@ class CORE_EXPORT InlineLayoutStateStack {
 
     void UpdateFragmentEdges(Vector<BoxData, 4>& list);
 
-    const NGLayoutResult* CreateBoxFragment(const ConstraintSpace&,
-                                            LogicalLineItems*,
-                                            bool is_opaque = false);
+    const LayoutResult* CreateBoxFragment(const ConstraintSpace&,
+                                          LogicalLineItems*,
+                                          bool is_opaque = false);
   };
 
   // Update start/end of the first BoxData found at |index|.

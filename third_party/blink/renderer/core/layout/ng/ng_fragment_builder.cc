@@ -188,7 +188,7 @@ void FragmentBuilder::PropagateChildAnchors(const NGPhysicalFragment& child,
 }
 
 void FragmentBuilder::PropagateFromLayoutResultAndFragment(
-    const NGLayoutResult& child_result,
+    const LayoutResult& child_result,
     LogicalOffset child_offset,
     LogicalOffset relative_offset,
     const OofInlineContainer<LogicalOffset>* inline_container) {
@@ -198,7 +198,7 @@ void FragmentBuilder::PropagateFromLayoutResultAndFragment(
 }
 
 void FragmentBuilder::PropagateFromLayoutResult(
-    const NGLayoutResult& child_result) {
+    const LayoutResult& child_result) {
   has_orthogonal_fallback_size_descendant_ |=
       child_result.HasOrthogonalFallbackInlineSize() ||
       child_result.HasOrthogonalFallbackSizeDescendant();
@@ -922,9 +922,9 @@ void FragmentBuilder::PropagateSpaceShortage(
   UpdateMinimalSpaceShortage(space_shortage, &minimal_space_shortage_);
 }
 
-const NGLayoutResult* FragmentBuilder::Abort(NGLayoutResult::EStatus status) {
-  return MakeGarbageCollected<NGLayoutResult>(
-      NGLayoutResult::FragmentBuilderPassKey(), status, this);
+const LayoutResult* FragmentBuilder::Abort(LayoutResult::EStatus status) {
+  return MakeGarbageCollected<LayoutResult>(
+      LayoutResult::FragmentBuilderPassKey(), status, this);
 }
 
 #if DCHECK_IS_ON()

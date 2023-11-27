@@ -78,14 +78,13 @@ void LineBoxFragmentBuilder::PropagateChildrenData(LogicalLineItems& children) {
   MoveOutOfFlowDescendantCandidatesToDescendants();
 }
 
-const NGLayoutResult* LineBoxFragmentBuilder::ToLineBoxFragment() {
+const LayoutResult* LineBoxFragmentBuilder::ToLineBoxFragment() {
   writing_direction_.SetWritingMode(ToLineWritingMode(GetWritingMode()));
 
   const auto* fragment = PhysicalLineBoxFragment::Create(this);
 
-  return MakeGarbageCollected<NGLayoutResult>(
-      NGLayoutResult::LineBoxFragmentBuilderPassKey(), std::move(fragment),
-      this);
+  return MakeGarbageCollected<LayoutResult>(
+      LayoutResult::LineBoxFragmentBuilderPassKey(), std::move(fragment), this);
 }
 
 }  // namespace blink

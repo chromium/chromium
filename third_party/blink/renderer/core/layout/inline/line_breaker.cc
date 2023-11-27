@@ -2721,13 +2721,13 @@ void LineBreaker::HandleBlockInInline(const InlineItem& item,
     BlockNode block_node(To<LayoutBox>(item.GetLayoutObject()));
     const ColumnSpannerPath* spanner_path_for_child =
         FollowColumnSpannerPath(column_spanner_path_, block_node);
-    const NGLayoutResult* layout_result =
+    const LayoutResult* layout_result =
         block_node.Layout(constraint_space_, block_break_token,
                           /* early_break */ nullptr, spanner_path_for_child);
     line_info->SetBlockInInlineLayoutResult(layout_result);
 
     // Early exit if the layout didn't succeed.
-    if (layout_result->Status() != NGLayoutResult::kSuccess) {
+    if (layout_result->Status() != LayoutResult::kSuccess) {
       state_ = LineBreakState::kDone;
       return;
     }
@@ -3659,7 +3659,7 @@ const InlineBreakToken* LineBreaker::CreateBreakToken(
   if (resume_block_in_inline_in_same_flow_) {
     const auto* block_in_inline = line_info.BlockInInlineLayoutResult();
     DCHECK(block_in_inline);
-    if (UNLIKELY(block_in_inline->Status() != NGLayoutResult::kSuccess)) {
+    if (UNLIKELY(block_in_inline->Status() != LayoutResult::kSuccess)) {
       return nullptr;
     }
     // Look for a break token inside the block-in-inline, so that we can add it

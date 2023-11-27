@@ -55,7 +55,7 @@ struct CORE_EXPORT UnpositionedFloat final {
 
   // layout_result and margins are used as a cache when measuring the
   // inline_size of a float in an inline context.
-  const NGLayoutResult* layout_result = nullptr;
+  const LayoutResult* layout_result = nullptr;
   BoxStrut margins;
 
   bool IsLineLeft(TextDirection cb_direction) const {

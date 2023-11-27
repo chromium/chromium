@@ -12,7 +12,7 @@
 
 namespace blink {
 
-class NGLayoutResult;
+class LayoutResult;
 
 // Contains the information necessary for copying back data to a FloatingObject.
 struct CORE_EXPORT PositionedFloat {
@@ -20,7 +20,7 @@ struct CORE_EXPORT PositionedFloat {
 
  public:
   PositionedFloat() = default;
-  PositionedFloat(const NGLayoutResult* layout_result,
+  PositionedFloat(const LayoutResult* layout_result,
                   const BlockBreakToken* break_before_token,
                   const BfcOffset& bfc_offset,
                   LayoutUnit minimum_space_shortage)
@@ -37,7 +37,7 @@ struct CORE_EXPORT PositionedFloat {
 
   const BlockBreakToken* BreakToken() const;
 
-  Member<const NGLayoutResult> layout_result;
+  Member<const LayoutResult> layout_result;
   Member<const BlockBreakToken> break_before_token;
   BfcOffset bfc_offset;
   LayoutUnit minimum_space_shortage;

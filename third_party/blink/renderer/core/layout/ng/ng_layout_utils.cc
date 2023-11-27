@@ -28,7 +28,7 @@ inline bool InlineLengthMayChange(const ComputedStyle& style,
                                   LengthResolveType type,
                                   const ConstraintSpace& new_space,
                                   const ConstraintSpace& old_space,
-                                  const NGLayoutResult& layout_result) {
+                                  const LayoutResult& layout_result) {
   DCHECK_EQ(new_space.InlineAutoBehavior(), old_space.InlineAutoBehavior());
 
   bool is_unspecified =
@@ -76,7 +76,7 @@ inline bool BlockLengthMayChange(const Length& length,
 bool BlockSizeMayChange(const BlockNode& node,
                         const ConstraintSpace& new_space,
                         const ConstraintSpace& old_space,
-                        const NGLayoutResult& layout_result) {
+                        const LayoutResult& layout_result) {
   DCHECK_EQ(new_space.IsFixedBlockSize(), old_space.IsFixedBlockSize());
   DCHECK_EQ(new_space.IsInitialBlockSizeIndefinite(),
             old_space.IsInitialBlockSizeIndefinite());
@@ -119,7 +119,7 @@ bool BlockSizeMayChange(const BlockNode& node,
 bool SizeMayChange(const BlockNode& node,
                    const ConstraintSpace& new_space,
                    const ConstraintSpace& old_space,
-                   const NGLayoutResult& layout_result) {
+                   const LayoutResult& layout_result) {
   DCHECK_EQ(new_space.IsFixedInlineSize(), old_space.IsFixedInlineSize());
   DCHECK_EQ(new_space.BlockAutoBehavior(), old_space.BlockAutoBehavior());
 
@@ -179,7 +179,7 @@ bool SizeMayChange(const BlockNode& node,
 NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
     const BlockNode& node,
     const FragmentGeometry& fragment_geometry,
-    const NGLayoutResult& layout_result,
+    const LayoutResult& layout_result,
     const ConstraintSpace& new_space,
     const ConstraintSpace& old_space) {
   const ComputedStyle& style = node.Style();
@@ -239,7 +239,7 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
     // the new block-size.
     //
     // TODO(ikilpatrick): Similar to %-block-size descendants we could store a
-    // bit on the |NGLayoutResult| which indicates if it had a child which
+    // bit on the |LayoutResult| which indicates if it had a child which
     // sized itself based on the parent's block-size.
     // We should consider this optimization if we are missing this cache often
     // within this branch (and could have re-used the result).
@@ -438,7 +438,7 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
 bool IntrinsicSizeWillChange(
     const BlockNode& node,
     const BlockBreakToken* break_token,
-    const NGLayoutResult& cached_layout_result,
+    const LayoutResult& cached_layout_result,
     const ConstraintSpace& new_space,
     absl::optional<FragmentGeometry>* fragment_geometry) {
   const ComputedStyle& style = node.Style();
@@ -466,10 +466,10 @@ bool IntrinsicSizeWillChange(
 NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatus(
     const BlockNode& node,
     const BlockBreakToken* break_token,
-    const NGLayoutResult& cached_layout_result,
+    const LayoutResult& cached_layout_result,
     const ConstraintSpace& new_space,
     absl::optional<FragmentGeometry>* fragment_geometry) {
-  DCHECK_EQ(cached_layout_result.Status(), NGLayoutResult::kSuccess);
+  DCHECK_EQ(cached_layout_result.Status(), LayoutResult::kSuccess);
 
   const ConstraintSpace& old_space =
       cached_layout_result.GetConstraintSpaceForCaching();
@@ -505,12 +505,12 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatus(
 }
 
 bool MaySkipLayoutWithinBlockFormattingContext(
-    const NGLayoutResult& cached_layout_result,
+    const LayoutResult& cached_layout_result,
     const ConstraintSpace& new_space,
     absl::optional<LayoutUnit>* bfc_block_offset,
     LayoutUnit* block_offset_delta,
     MarginStrut* end_margin_strut) {
-  DCHECK_EQ(cached_layout_result.Status(), NGLayoutResult::kSuccess);
+  DCHECK_EQ(cached_layout_result.Status(), LayoutResult::kSuccess);
   DCHECK(bfc_block_offset);
   DCHECK(block_offset_delta);
   DCHECK(end_margin_strut);

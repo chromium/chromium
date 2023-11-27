@@ -94,7 +94,7 @@ class CORE_EXPORT LineBoxFragmentBuilder final : public FragmentBuilder {
   }
 
   // Creates the fragment. Can only be called once.
-  const NGLayoutResult* ToLineBoxFragment();
+  const LayoutResult* ToLineBoxFragment();
 
  private:
   absl::optional<LayoutUnit> line_box_bfc_block_offset_;
@@ -105,7 +105,7 @@ class CORE_EXPORT LineBoxFragmentBuilder final : public FragmentBuilder {
   PhysicalLineBoxFragment::LineBoxType line_box_type_;
   TextDirection base_direction_;
 
-  friend class NGLayoutResult;
+  friend class LayoutResult;
   friend class PhysicalLineBoxFragment;
 };
 

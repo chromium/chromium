@@ -54,7 +54,7 @@ class CORE_EXPORT InlineLayoutAlgorithm final
                   LineInfo*,
                   LogicalLineItems* line_box);
 
-  const NGLayoutResult* Layout() override;
+  const LayoutResult* Layout() override;
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override {
     NOTREACHED();

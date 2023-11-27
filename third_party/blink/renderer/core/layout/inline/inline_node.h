@@ -20,7 +20,7 @@ class BreakToken;
 class ColumnSpannerPath;
 class ConstraintSpace;
 class InlineChildLayoutContext;
-class NGLayoutResult;
+class LayoutResult;
 class OffsetMapping;
 struct InlineItemsData;
 struct SvgTextContentRange;
@@ -36,10 +36,10 @@ class CORE_EXPORT InlineNode : public LayoutInputNode {
     return To<LayoutBlockFlow>(box_.Get());
   }
 
-  const NGLayoutResult* Layout(const ConstraintSpace&,
-                               const BreakToken*,
-                               const ColumnSpannerPath*,
-                               InlineChildLayoutContext* context) const;
+  const LayoutResult* Layout(const ConstraintSpace&,
+                             const BreakToken*,
+                             const ColumnSpannerPath*,
+                             InlineChildLayoutContext* context) const;
 
   // Computes the value of min-content and max-content for this anonymous block
   // box. min-content is the inline size when lines wrap at every break

@@ -1609,7 +1609,7 @@ void InlineNode::AssociateItemsWithInlines(InlineNodeData* data) const {
   }
 }
 
-const NGLayoutResult* InlineNode::Layout(
+const LayoutResult* InlineNode::Layout(
     const ConstraintSpace& constraint_space,
     const BreakToken* break_token,
     const ColumnSpannerPath* column_spanner_path,

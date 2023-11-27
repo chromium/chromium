@@ -496,7 +496,7 @@ bool ComputeOofInlineDimensions(
   return depends_on_min_max_sizes;
 }
 
-const NGLayoutResult* ComputeOofBlockDimensions(
+const LayoutResult* ComputeOofBlockDimensions(
     const BlockNode& node,
     const ComputedStyle& style,
     const ConstraintSpace& space,
@@ -511,7 +511,7 @@ const NGLayoutResult* ComputeOofBlockDimensions(
 
   const bool is_table = node.IsTable();
 
-  const NGLayoutResult* result = nullptr;
+  const LayoutResult* result = nullptr;
 
   MinMaxSizes min_max_block_sizes = ComputeMinMaxBlockSizes(
       space, style, border_padding, imcb.Size().block_size, anchor_evaluator);

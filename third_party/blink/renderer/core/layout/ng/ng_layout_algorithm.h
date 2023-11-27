@@ -18,7 +18,7 @@ namespace blink {
 class ColumnSpannerPath;
 class ComputedStyle;
 class EarlyBreak;
-class NGLayoutResult;
+class LayoutResult;
 
 // Operations provided by a layout algorithm.
 class LayoutAlgorithmOperations {
@@ -27,7 +27,7 @@ class LayoutAlgorithmOperations {
   // constraints given by the ConstraintSpace. Returns a layout result with
   // the resulting layout information.
   // TODO(layout-dev): attempt to make this function const.
-  virtual const NGLayoutResult* Layout() = 0;
+  virtual const LayoutResult* Layout() = 0;
 
   // Computes the min-content and max-content intrinsic sizes for the given box.
   // The result will not take any min-width, max-width or width properties into
@@ -61,7 +61,7 @@ struct LayoutAlgorithmParams {
   const BlockBreakToken* break_token;
   const EarlyBreak* early_break;
   const ColumnSpannerPath* column_spanner_path = nullptr;
-  const NGLayoutResult* previous_result = nullptr;
+  const LayoutResult* previous_result = nullptr;
   const HeapVector<Member<EarlyBreak>>* additional_early_breaks;
 };
 
@@ -149,7 +149,7 @@ class CORE_EXPORT LayoutAlgorithm : public LayoutAlgorithmOperations {
   // fragmentainer at an less-than-ideal location, due to breaking restrictions,
   // such as orphans, widows, break-before:avoid or break-after:avoid.
   template <typename Algorithm>
-  const NGLayoutResult* RelayoutAndBreakEarlier(
+  const LayoutResult* RelayoutAndBreakEarlier(
       const EarlyBreak& breakpoint,
       const HeapVector<Member<EarlyBreak>>* additional_early_breaks = nullptr) {
     // Not allowed to recurse!
@@ -165,7 +165,7 @@ class CORE_EXPORT LayoutAlgorithm : public LayoutAlgorithmOperations {
   }
 
   template <typename Algorithm>
-  const NGLayoutResult* RelayoutAndBreakEarlier(Algorithm* new_algorithm) {
+  const LayoutResult* RelayoutAndBreakEarlier(Algorithm* new_algorithm) {
     DCHECK(new_algorithm);
     auto& new_builder = new_algorithm->container_builder_;
     new_builder.SetBoxType(container_builder_.BoxType());
@@ -182,7 +182,7 @@ class CORE_EXPORT LayoutAlgorithm : public LayoutAlgorithmOperations {
   // wants to break. We don't want any zero-sized clipped fragments that
   // contribute to superfluous fragmentainers.
   template <typename Algorithm>
-  const NGLayoutResult* RelayoutWithoutFragmentation() {
+  const LayoutResult* RelayoutWithoutFragmentation() {
     DCHECK(GetConstraintSpace().HasBlockFragmentation());
     // We'll relayout with a special cloned constraint space that disables
     // further fragmentation (but rather lets clipped child content "overflow"

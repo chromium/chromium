@@ -21,7 +21,7 @@
 namespace blink {
 
 class InlineItem;
-class NGLayoutResult;
+class LayoutResult;
 class ShapeResult;
 class ShapeResultView;
 struct PositionedFloat;
@@ -88,8 +88,8 @@ struct CORE_EXPORT InlineItemResult {
   // This field may be set even when this item is not hyphenated.
   HyphenResult hyphen;
 
-  // NGLayoutResult for atomic inline items.
-  Member<const NGLayoutResult> layout_result;
+  // LayoutResult for atomic inline items.
+  Member<const LayoutResult> layout_result;
 
   // PositionedFloat for floating inline items. Should only be present for
   // positioned floats (not unpositioned). It indicates where it was placed

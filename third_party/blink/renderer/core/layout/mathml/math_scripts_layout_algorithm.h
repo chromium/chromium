@@ -24,7 +24,7 @@ class CORE_EXPORT MathScriptsLayoutAlgorithm
     DISALLOW_NEW();
 
    public:
-    Member<const NGLayoutResult> result;
+    Member<const LayoutResult> result;
     LayoutUnit ascent;
     LayoutUnit descent;
     LayoutUnit inline_size;
@@ -79,7 +79,7 @@ class CORE_EXPORT MathScriptsLayoutAlgorithm
       const ChildrenAndMetrics& sub_metrics,
       const ChildrenAndMetrics& sup_metrics) const;
 
-  const NGLayoutResult* Layout() final;
+  const LayoutResult* Layout() final;
 };
 
 }  // namespace blink

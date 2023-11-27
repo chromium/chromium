@@ -66,7 +66,7 @@ void MathRowLayoutAlgorithm::LayoutRowItems(ChildrenVector* children,
   if (!inherits_block_stretch_size_constraint &&
       !inherits_inline_stretch_size_constraint) {
     auto UpdateBlockStretchSizes =
-        [&](const NGLayoutResult* result) {
+        [&](const LayoutResult* result) {
           LogicalBoxFragment fragment(
               constraint_space.GetWritingDirection(),
               To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
@@ -189,7 +189,7 @@ void MathRowLayoutAlgorithm::LayoutRowItems(ChildrenVector* children,
   row_total_size->block_size = max_row_ascent + max_row_descent;
 }
 
-const NGLayoutResult* MathRowLayoutAlgorithm::Layout() {
+const LayoutResult* MathRowLayoutAlgorithm::Layout() {
   DCHECK(!IsBreakInside(GetBreakToken()));
 
   bool is_display_block_math =

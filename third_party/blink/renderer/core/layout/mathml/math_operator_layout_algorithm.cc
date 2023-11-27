@@ -32,7 +32,7 @@ MathOperatorLayoutAlgorithm::MathOperatorLayoutAlgorithm(
       Node().IsInlineFormattingContextRoot());
 }
 
-const NGLayoutResult* MathOperatorLayoutAlgorithm::Layout() {
+const LayoutResult* MathOperatorLayoutAlgorithm::Layout() {
   // This algorithm can only be used for operators with a single text node,
   // which itself must contain only one glyph. We ensure that the subtree is
   // properly laid out but the glyph will actually be used to determine a
@@ -46,7 +46,7 @@ const NGLayoutResult* MathOperatorLayoutAlgorithm::Layout() {
 
   SimpleInlineChildLayoutContext context(To<InlineNode>(child),
                                          &container_builder_);
-  const NGLayoutResult* child_layout_result = To<InlineNode>(child).Layout(
+  const LayoutResult* child_layout_result = To<InlineNode>(child).Layout(
       GetConstraintSpace(), /* break_token */ nullptr,
       /* column_spanner_path */ nullptr, &context);
   container_builder_.AddResult(*child_layout_result, {});

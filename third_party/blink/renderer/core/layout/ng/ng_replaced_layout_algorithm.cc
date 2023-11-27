@@ -17,7 +17,7 @@ ReplacedLayoutAlgorithm::ReplacedLayoutAlgorithm(
   DCHECK(params.space.IsNewFormattingContext());
 }
 
-const NGLayoutResult* ReplacedLayoutAlgorithm::Layout() {
+const LayoutResult* ReplacedLayoutAlgorithm::Layout() {
   DCHECK(!GetBreakToken() || GetBreakToken()->IsBreakBefore());
   // TODO(crbug.com/1252693): kIgnoreBlockLengths applies inline constraints
   // through the aspect ratio. But the aspect ratio is ignored when computing
@@ -82,7 +82,7 @@ void ReplacedLayoutAlgorithm::LayoutMediaChildren() {
     space_builder.SetIsFixedInlineSize(true);
     space_builder.SetIsFixedBlockSize(true);
 
-    const NGLayoutResult* result =
+    const LayoutResult* result =
         To<BlockNode>(child).Layout(space_builder.ToConstraintSpace());
     LogicalOffset offset =
         converter.ToLogical(new_rect.offset, result->PhysicalFragment().Size());

@@ -22,7 +22,7 @@ class CORE_EXPORT TableLayoutAlgorithm
  public:
   explicit TableLayoutAlgorithm(const LayoutAlgorithmParams& params)
       : LayoutAlgorithm(params) {}
-  const NGLayoutResult* Layout() override;
+  const LayoutResult* Layout() override;
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
 
@@ -48,12 +48,12 @@ class CORE_EXPORT TableLayoutAlgorithm
     }
 
     BlockNode node;
-    Member<const NGLayoutResult> layout_result;
+    Member<const LayoutResult> layout_result;
     const BoxStrut margins;
   };
 
  private:
-  const NGLayoutResult* RelayoutAsLastTableBox();
+  const LayoutResult* RelayoutAsLastTableBox();
 
   void ComputeRows(const LayoutUnit table_grid_inline_size,
                    const TableGroupedChildren& grouped_children,
@@ -75,7 +75,7 @@ class CORE_EXPORT TableLayoutAlgorithm
       const LogicalRect& table_grid_rect,
       LayoutUnit table_grid_block_size);
 
-  const NGLayoutResult* GenerateFragment(
+  const LayoutResult* GenerateFragment(
       LayoutUnit table_inline_size,
       LayoutUnit minimal_table_grid_block_size,
       const TableGroupedChildren& grouped_children,

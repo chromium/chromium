@@ -702,7 +702,7 @@ class CORE_EXPORT ExclusionSpace {
     exclusion_space_->MoveDerivedGeometry(*other.exclusion_space_);
   }
 
-  // This produces a new exclusion space for a |NGLayoutResult| which is being
+  // This produces a new exclusion space for a |LayoutResult| which is being
   // re-used for caching purposes.
   //
   // It takes:

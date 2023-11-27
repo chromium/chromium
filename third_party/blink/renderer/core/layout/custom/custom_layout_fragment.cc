@@ -14,7 +14,7 @@ namespace blink {
 CustomLayoutFragment::CustomLayoutFragment(
     CustomLayoutChild* child,
     CustomLayoutToken* token,
-    const NGLayoutResult* layout_result,
+    const LayoutResult* layout_result,
     const LogicalSize& size,
     const absl::optional<LayoutUnit> baseline,
     v8::Isolate* isolate)
@@ -30,7 +30,7 @@ CustomLayoutFragment::CustomLayoutFragment(
     layout_worklet_world_v8_data_.Reset(isolate, data->Deserialize(isolate));
 }
 
-const NGLayoutResult& CustomLayoutFragment::GetLayoutResult() const {
+const LayoutResult& CustomLayoutFragment::GetLayoutResult() const {
   DCHECK(layout_result_);
   return *layout_result_;
 }

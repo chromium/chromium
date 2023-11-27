@@ -16,7 +16,7 @@ namespace blink {
 class CustomLayoutChild;
 class LayoutBox;
 class LayoutInputNode;
-class NGLayoutResult;
+class LayoutResult;
 class ScriptState;
 class ScriptValue;
 struct LogicalSize;
@@ -37,7 +37,7 @@ class CustomLayoutFragment : public ScriptWrappable {
  public:
   CustomLayoutFragment(CustomLayoutChild*,
                        CustomLayoutToken*,
-                       const NGLayoutResult*,
+                       const LayoutResult*,
                        const LogicalSize& size,
                        const absl::optional<LayoutUnit> baseline,
                        v8::Isolate*);
@@ -58,7 +58,7 @@ class CustomLayoutFragment : public ScriptWrappable {
 
   ScriptValue data(ScriptState*) const;
 
-  const NGLayoutResult& GetLayoutResult() const;
+  const LayoutResult& GetLayoutResult() const;
   const LayoutInputNode& GetLayoutNode() const;
 
   bool IsValid() const { return token_->IsValid(); }
@@ -83,7 +83,7 @@ class CustomLayoutFragment : public ScriptWrappable {
   // that the last layout on the child wasn't with the same inputs, and force a
   // layout again.
 
-  Member<const NGLayoutResult> layout_result_;
+  Member<const LayoutResult> layout_result_;
 
   // The inline and block size on this object should never change.
   const double inline_size_;

@@ -16,7 +16,7 @@ class CORE_EXPORT MathFractionLayoutAlgorithm
   explicit MathFractionLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
  private:
-  const NGLayoutResult* Layout() final;
+  const LayoutResult* Layout() final;
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) final;
 

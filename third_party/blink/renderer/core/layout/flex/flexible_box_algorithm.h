@@ -175,7 +175,7 @@ class FlexItem {
   // The above fields are used by the flex algorithm. The following fields, by
   // contrast, are just convenient storage.
   BlockNode ng_input_node_;
-  Member<const NGLayoutResult> layout_result_;
+  Member<const LayoutResult> layout_result_;
   absl::optional<LayoutUnit> max_content_contribution_;
 };
 

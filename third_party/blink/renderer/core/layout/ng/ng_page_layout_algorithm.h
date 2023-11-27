@@ -22,7 +22,7 @@ class CORE_EXPORT PageLayoutAlgorithm
  public:
   explicit PageLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
-  const NGLayoutResult* Layout() override;
+  const LayoutResult* Layout() override;
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
 

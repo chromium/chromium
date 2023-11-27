@@ -27,13 +27,13 @@ class CORE_EXPORT FlexLayoutAlgorithm
       const HashMap<wtf_size_t, LayoutUnit>* cross_size_adjustments = nullptr);
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
-  const NGLayoutResult* Layout() override;
+  const LayoutResult* Layout() override;
 
  private:
-  const NGLayoutResult* RelayoutIgnoringChildScrollbarChanges();
-  const NGLayoutResult* RelayoutAndBreakEarlierForFlex(
-      const NGLayoutResult* previous_result);
-  const NGLayoutResult* LayoutInternal();
+  const LayoutResult* RelayoutIgnoringChildScrollbarChanges();
+  const LayoutResult* RelayoutAndBreakEarlierForFlex(
+      const LayoutResult* previous_result);
+  const LayoutResult* LayoutInternal();
 
   void PlaceFlexItems(
       HeapVector<NGFlexLine>* flex_line_outputs,
@@ -89,17 +89,17 @@ class CORE_EXPORT FlexLayoutAlgorithm
       HeapVector<Member<LayoutBox>>* oof_children = nullptr);
   void ApplyFinalAlignmentAndReversals(
       HeapVector<NGFlexLine>* flex_line_outputs);
-  NGLayoutResult::EStatus GiveItemsFinalPositionAndSize(
+  LayoutResult::EStatus GiveItemsFinalPositionAndSize(
       HeapVector<NGFlexLine>* flex_line_outputs,
       Vector<EBreakBetween>* row_break_between_outputs);
-  NGLayoutResult::EStatus GiveItemsFinalPositionAndSizeForFragmentation(
+  LayoutResult::EStatus GiveItemsFinalPositionAndSizeForFragmentation(
       HeapVector<NGFlexLine>* flex_line_outputs,
       Vector<EBreakBetween>* row_break_between_outputs,
       FlexBreakTokenData::FlexBreakBeforeRow* break_before_row);
-  NGLayoutResult::EStatus PropagateFlexItemInfo(FlexItem* flex_item,
-                                                wtf_size_t flex_line_idx,
-                                                LogicalOffset offset,
-                                                PhysicalSize fragment_size);
+  LayoutResult::EStatus PropagateFlexItemInfo(FlexItem* flex_item,
+                                              wtf_size_t flex_line_idx,
+                                              LogicalOffset offset,
+                                              PhysicalSize fragment_size);
   void LayoutColumnReverse(LayoutUnit main_axis_content_size);
 
   // This is same method as FlexItem but we need that logic before FlexItem is
@@ -168,7 +168,7 @@ class CORE_EXPORT FlexLayoutAlgorithm
   // If a flex item expands past the row cross-size as a result of
   // fragmentation, we will abort and re-run layout with the appropriate row
   // cross-size adjustments.
-  const NGLayoutResult* RelayoutWithNewRowSizes();
+  const LayoutResult* RelayoutWithNewRowSizes();
 
   // Used to determine when to allow an item to expand as a result of
   // fragmentation.

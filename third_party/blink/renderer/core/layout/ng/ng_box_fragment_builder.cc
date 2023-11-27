@@ -23,9 +23,9 @@
 
 namespace blink {
 
-const NGLayoutResult& BoxFragmentBuilder::LayoutResultForPropagation(
-    const NGLayoutResult& layout_result) const {
-  if (layout_result.Status() != NGLayoutResult::kSuccess) {
+const LayoutResult& BoxFragmentBuilder::LayoutResultForPropagation(
+    const LayoutResult& layout_result) const {
+  if (layout_result.Status() != LayoutResult::kSuccess) {
     return layout_result;
   }
   const auto& fragment = layout_result.PhysicalFragment();
@@ -101,7 +101,7 @@ void BoxFragmentBuilder::AddBreakBeforeChild(LayoutInputNode child,
 }
 
 void BoxFragmentBuilder::AddResult(
-    const NGLayoutResult& child_layout_result,
+    const LayoutResult& child_layout_result,
     const LogicalOffset offset,
     absl::optional<const BoxStrut> margins,
     absl::optional<LogicalOffset> relative_offset,
@@ -113,7 +113,7 @@ void BoxFragmentBuilder::AddResult(
   // instead. The fact that we create a line box at all in such cases is just an
   // implementation detail -- anything of interest is stored on the child block
   // fragment.
-  const NGLayoutResult* result_for_propagation = &child_layout_result;
+  const LayoutResult* result_for_propagation = &child_layout_result;
 
   if (!fragment.IsBox() && items_builder_) {
     if (const auto* line = DynamicTo<PhysicalLineBoxFragment>(&fragment)) {
@@ -155,7 +155,7 @@ void BoxFragmentBuilder::AddResult(
   PropagateFromLayoutResult(*result_for_propagation);
 }
 
-void BoxFragmentBuilder::AddResult(const NGLayoutResult& child_layout_result,
+void BoxFragmentBuilder::AddResult(const LayoutResult& child_layout_result,
                                    const LogicalOffset offset) {
   AddResult(child_layout_result, offset, absl::nullopt, absl::nullopt, nullptr);
 }
@@ -349,7 +349,7 @@ void BoxFragmentBuilder::MoveChildrenInBlockDirection(LayoutUnit delta) {
 }
 
 void BoxFragmentBuilder::PropagateBreakInfo(
-    const NGLayoutResult& child_layout_result,
+    const LayoutResult& child_layout_result,
     LogicalOffset offset) {
   DCHECK(has_block_fragmentation_);
 
@@ -467,9 +467,10 @@ void BoxFragmentBuilder::PropagateBreakInfo(
 }
 
 void BoxFragmentBuilder::PropagateChildBreakValues(
-    const NGLayoutResult& child_layout_result) {
-  if (child_layout_result.Status() != NGLayoutResult::kSuccess)
+    const LayoutResult& child_layout_result) {
+  if (child_layout_result.Status() != LayoutResult::kSuccess) {
     return;
+  }
 
   const auto& fragment = child_layout_result.PhysicalFragment();
   if (fragment.IsInline() || !fragment.IsCSSBox() ||
@@ -503,7 +504,7 @@ void BoxFragmentBuilder::PropagateChildBreakValues(
   }
 }
 
-const NGLayoutResult* BoxFragmentBuilder::ToBoxFragment(
+const LayoutResult* BoxFragmentBuilder::ToBoxFragment(
     WritingMode block_or_line_writing_mode) {
 #if DCHECK_IS_ON()
   if (ItemsBuilder()) {
@@ -572,8 +573,8 @@ const NGLayoutResult* BoxFragmentBuilder::ToBoxFragment(
       NGPhysicalBoxFragment::Create(this, block_or_line_writing_mode);
   fragment->CheckType();
 
-  return MakeGarbageCollected<NGLayoutResult>(
-      NGLayoutResult::BoxFragmentBuilderPassKey(), std::move(fragment), this);
+  return MakeGarbageCollected<LayoutResult>(
+      LayoutResult::BoxFragmentBuilderPassKey(), std::move(fragment), this);
 }
 
 LogicalOffset BoxFragmentBuilder::GetChildOffset(

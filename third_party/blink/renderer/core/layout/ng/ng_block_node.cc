@@ -201,9 +201,9 @@ NOINLINE void DetermineAlgorithmAndRun(const LayoutAlgorithmParams& params,
   }
 }
 
-inline const NGLayoutResult* LayoutWithAlgorithm(
+inline const LayoutResult* LayoutWithAlgorithm(
     const LayoutAlgorithmParams& params) {
-  const NGLayoutResult* result = nullptr;
+  const LayoutResult* result = nullptr;
   DetermineAlgorithmAndRun(params,
                            [&result](LayoutAlgorithmOperations* algorithm) {
                              result = algorithm->Layout();
@@ -315,7 +315,7 @@ absl::optional<LayoutUnit> ContentMinimumInlineSize(
 
 }  // namespace
 
-const NGLayoutResult* BlockNode::Layout(
+const LayoutResult* BlockNode::Layout(
     const ConstraintSpace& constraint_space,
     const BlockBreakToken* break_token,
     const EarlyBreak* early_break,
@@ -325,7 +325,7 @@ const NGLayoutResult* BlockNode::Layout(
   // internal shared vector.
   // In order for the caching logic to work correctly we need to set the
   // pointer to the value previous shared vector.
-  if (const NGLayoutResult* previous_result =
+  if (const LayoutResult* previous_result =
           box_->GetCachedLayoutResult(break_token)) {
     constraint_space.GetExclusionSpace().PreInitialize(
         previous_result->GetConstraintSpaceForCaching().GetExclusionSpace());
@@ -343,7 +343,7 @@ const NGLayoutResult* BlockNode::Layout(
   if (needed_layout)
     box_->GetFrameView()->IncBlockLayoutCount();
 
-  const NGLayoutResult* layout_result = box_->CachedLayoutResult(
+  const LayoutResult* layout_result = box_->CachedLayoutResult(
       constraint_space, break_token, early_break, column_spanner_path,
       &fragment_geometry, &cache_status);
 
@@ -357,8 +357,7 @@ const NGLayoutResult* BlockNode::Layout(
     // clone the result to pick the most recent fragments from the LayoutBox
     // children, because we stopped rebuilding the fragment spine right here
     // after performing subtree layout.
-    layout_result =
-        NGLayoutResult::CloneWithPostLayoutFragments(*layout_result);
+    layout_result = LayoutResult::CloneWithPostLayoutFragments(*layout_result);
     const auto& new_fragment =
         To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment());
     // If we have fragment items, and we're not done (more fragments to follow),
@@ -431,7 +430,7 @@ const NGLayoutResult* BlockNode::Layout(
       (!block_flow || !block_flow->IsFragmentationContextRoot())) {
     DCHECK(layout_result);
 #if DCHECK_IS_ON()
-    const NGLayoutResult* previous_result = layout_result;
+    const LayoutResult* previous_result = layout_result;
 #endif
 
     // A child may have changed size while performing "simplified" layout (it
@@ -471,7 +470,7 @@ const NGLayoutResult* BlockNode::Layout(
   PaintLayerScrollableArea::DelayScrollOffsetClampScope delay_clamp_scope;
 
   absl::optional<PhysicalSize> optional_old_box_size;
-  if (layout_result->Status() == NGLayoutResult::kSuccess &&
+  if (layout_result->Status() == LayoutResult::kSuccess &&
       !layout_result->PhysicalFragment().GetBreakToken()) {
     optional_old_box_size = box_->Size();
   }
@@ -565,15 +564,15 @@ const NGLayoutResult* BlockNode::Layout(
   // shape-outside area.
   //
   // TODO(ikilpatrick): This should be fixed by moving the shape-outside data
-  // to the NGLayoutResult, removing this "side" data-structure.
+  // to the LayoutResult, removing this "side" data-structure.
   UpdateShapeOutsideInfoIfNeeded(*layout_result, constraint_space);
 
   return layout_result;
 }
 
-const NGLayoutResult* BlockNode::SimplifiedLayout(
+const LayoutResult* BlockNode::SimplifiedLayout(
     const NGPhysicalFragment& previous_fragment) const {
-  const NGLayoutResult* previous_result = box_->GetSingleCachedLayoutResult();
+  const LayoutResult* previous_result = box_->GetSingleCachedLayoutResult();
   DCHECK(previous_result);
 
   // We might be be trying to perform simplfied layout on a fragment in the
@@ -589,9 +588,9 @@ const NGLayoutResult* BlockNode::SimplifiedLayout(
 
   // Perform layout on ourselves using the previous constraint space.
   const ConstraintSpace space(previous_result->GetConstraintSpaceForCaching());
-  const NGLayoutResult* result = Layout(space, /* break_token */ nullptr);
+  const LayoutResult* result = Layout(space, /* break_token */ nullptr);
 
-  if (result->Status() != NGLayoutResult::kSuccess) {
+  if (result->Status() != LayoutResult::kSuccess) {
     // TODO(crbug.com/1297864): The optimistic BFC block-offsets aren't being
     // set correctly for block-in-inline causing these layouts to fail.
     return nullptr;
@@ -623,7 +622,7 @@ const NGLayoutResult* BlockNode::SimplifiedLayout(
   return result;
 }
 
-const NGLayoutResult* BlockNode::LayoutRepeatableRoot(
+const LayoutResult* BlockNode::LayoutRepeatableRoot(
     const ConstraintSpace& constraint_space,
     const BlockBreakToken* break_token) const {
   // We read and write the physical fragments vector in LayoutBox here, which
@@ -639,7 +638,7 @@ const NGLayoutResult* BlockNode::LayoutRepeatableRoot(
   DCHECK(!IsBreakInside(break_token));
 
   bool is_first = !break_token || !break_token->IsRepeated();
-  const NGLayoutResult* result;
+  const LayoutResult* result;
   if (is_first) {
     // We're generating the first fragment for repeated content. Perform regular
     // layout.
@@ -648,7 +647,7 @@ const NGLayoutResult* BlockNode::LayoutRepeatableRoot(
   } else {
     // We're repeating. Create a shallow clone of the first result. Once we're
     // at the last fragment, we'll actually create a deep clone.
-    result = NGLayoutResult::Clone(*box_->GetLayoutResult(0));
+    result = LayoutResult::Clone(*box_->GetLayoutResult(0));
   }
 
   wtf_size_t index = FragmentIndex(break_token);
@@ -708,7 +707,7 @@ void BlockNode::FinishRepeatableRoot() const {
   }
 }
 
-const NGLayoutResult* BlockNode::CachedLayoutResultForOutOfFlowPositioned(
+const LayoutResult* BlockNode::CachedLayoutResultForOutOfFlowPositioned(
     LogicalSize container_content_size) const {
   DCHECK(IsOutOfFlowPositioned());
 
@@ -720,7 +719,7 @@ const NGLayoutResult* BlockNode::CachedLayoutResultForOutOfFlowPositioned(
   if (box_->PhysicalFragmentCount() > 1)
     return nullptr;
 
-  const NGLayoutResult* cached_layout_result =
+  const LayoutResult* cached_layout_result =
       box_->GetSingleCachedLayoutResult();
   if (!cached_layout_result)
     return nullptr;
@@ -744,7 +743,7 @@ const NGLayoutResult* BlockNode::CachedLayoutResultForOutOfFlowPositioned(
   // we know it doesn't depend on the static-position.
   //
   // TODO(layout-dev): We might be able to determine what the previous
-  // static-position was based on |NGLayoutResult::OutOfFlowPositionedOffset|.
+  // static-position was based on |LayoutResult::OutOfFlowPositionedOffset|.
   bool depends_on_static_position =
       (Style().UsedLeft().IsAuto() && Style().UsedRight().IsAuto()) ||
       (Style().UsedTop().IsAuto() && Style().UsedBottom().IsAuto());
@@ -773,14 +772,14 @@ void BlockNode::FinishLayout(
     LayoutBlockFlow* block_flow,
     const ConstraintSpace& constraint_space,
     const BlockBreakToken* break_token,
-    const NGLayoutResult* layout_result,
+    const LayoutResult* layout_result,
     const absl::optional<PhysicalSize>& old_box_size) const {
   // Computing MinMax after layout. Do not modify the |LayoutObject| tree, paint
   // properties, and other global states.
   if (NGDisableSideEffectsScope::IsDisabled())
     return;
 
-  if (layout_result->Status() != NGLayoutResult::kSuccess) {
+  if (layout_result->Status() != LayoutResult::kSuccess) {
     // Layout aborted, but there may be results from a previous layout lying
     // around. They are fine to keep, but since we aborted, it means that we
     // want to attempt layout again. Be sure to miss the cache.
@@ -861,7 +860,7 @@ void BlockNode::FinishLayout(
   CopyFragmentDataToLayoutBox(constraint_space, *layout_result, break_token);
 }
 
-void BlockNode::StoreResultInLayoutBox(const NGLayoutResult* result,
+void BlockNode::StoreResultInLayoutBox(const LayoutResult* result,
                                        const BlockBreakToken* break_token,
                                        bool clear_trailing_results) const {
   const auto& fragment = To<NGPhysicalBoxFragment>(result->PhysicalFragment());
@@ -932,8 +931,8 @@ MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
     if (!GetLayoutBox()->NeedsLayout())
       disable_side_effects.emplace();
 
-    const NGLayoutResult* layout_result = Layout(constraint_space);
-    DCHECK_EQ(layout_result->Status(), NGLayoutResult::kSuccess);
+    const LayoutResult* layout_result = Layout(constraint_space);
+    DCHECK_EQ(layout_result->Status(), LayoutResult::kSuccess);
     sizes = LogicalFragment({container_writing_mode, TextDirection::kLtr},
                             layout_result->PhysicalFragment())
                 .InlineSize();
@@ -1142,7 +1141,7 @@ String BlockNode::ToString() const {
 
 void BlockNode::CopyFragmentDataToLayoutBox(
     const ConstraintSpace& constraint_space,
-    const NGLayoutResult& layout_result,
+    const LayoutResult& layout_result,
     const BlockBreakToken* previous_break_token) const {
   const auto& physical_fragment =
       To<NGPhysicalBoxFragment>(layout_result.PhysicalFragment());
@@ -1538,7 +1537,7 @@ bool BlockNode::HasIndex() const {
   return To<MathMLRadicalElement>(GetDOMNode())->HasIndex();
 }
 
-const NGLayoutResult* BlockNode::LayoutAtomicInline(
+const LayoutResult* BlockNode::LayoutAtomicInline(
     const ConstraintSpace& parent_constraint_space,
     const ComputedStyle& parent_style,
     bool use_first_line_style,
@@ -1559,7 +1558,7 @@ const NGLayoutResult* BlockNode::LayoutAtomicInline(
   builder.SetReplacedPercentageResolutionSize(
       parent_constraint_space.ReplacedPercentageResolutionSize());
   ConstraintSpace constraint_space = builder.ToConstraintSpace();
-  const NGLayoutResult* result = Layout(constraint_space);
+  const LayoutResult* result = Layout(constraint_space);
   if (!NGDisableSideEffectsScope::IsDisabled()) {
     // TODO(kojii): Investigate why ClearNeedsLayout() isn't called
     // automatically when it's being laid out.
@@ -1568,9 +1567,9 @@ const NGLayoutResult* BlockNode::LayoutAtomicInline(
   return result;
 }
 
-const NGLayoutResult* BlockNode::RunSimplifiedLayout(
+const LayoutResult* BlockNode::RunSimplifiedLayout(
     const LayoutAlgorithmParams& params,
-    const NGLayoutResult& previous_result) const {
+    const LayoutResult& previous_result) const {
   SimplifiedLayoutAlgorithm algorithm(params, previous_result);
   if (const auto* previous_box_fragment = DynamicTo<NGPhysicalBoxFragment>(
           &previous_result.PhysicalFragment())) {
@@ -1614,19 +1613,20 @@ void BlockNode::UpdateMarginPaddingInfoIfNeeded(
 // current shape machinery requires setting the size of the float after layout
 // in the parents writing mode.
 void BlockNode::UpdateShapeOutsideInfoIfNeeded(
-    const NGLayoutResult& layout_result,
+    const LayoutResult& layout_result,
     const ConstraintSpace& constraint_space) const {
   if (!box_->IsFloating() || !box_->GetShapeOutsideInfo())
     return;
 
-  if (layout_result.Status() != NGLayoutResult::kSuccess)
+  if (layout_result.Status() != LayoutResult::kSuccess) {
     return;
+  }
 
   // The box_ may not have a valid size yet (due to an intermediate layout),
   // use the fragment's size instead.
   PhysicalSize box_size = layout_result.PhysicalFragment().Size();
 
-  // TODO(ikilpatrick): Ideally this should be moved to a NGLayoutResult
+  // TODO(ikilpatrick): Ideally this should be moved to a LayoutResult
   // computing the shape area. There may be an issue with the new fragmentation
   // model and computing the correct sizes of shapes.
   ShapeOutsideInfo* shape_outside = box_->GetShapeOutsideInfo();

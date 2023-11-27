@@ -21,7 +21,7 @@ class CORE_EXPORT ReplacedLayoutAlgorithm
   explicit ReplacedLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
-  const NGLayoutResult* Layout() override;
+  const LayoutResult* Layout() override;
 
  private:
   void LayoutMediaChildren();

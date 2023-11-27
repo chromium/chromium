@@ -10,7 +10,7 @@
 namespace blink {
 
 class LayoutBox;
-class NGLayoutResult;
+class LayoutResult;
 class NGPhysicalBoxFragment;
 
 // Fragment tree mutator / cloner / repeater.
@@ -36,9 +36,9 @@ class NGFragmentRepeater {
   void CloneChildFragments(const NGPhysicalBoxFragment& cloned_fragment);
 
  private:
-  const NGLayoutResult* Repeat(const NGLayoutResult& other);
+  const LayoutResult* Repeat(const LayoutResult& other);
 
-  const NGLayoutResult* GetClonableLayoutResult(
+  const LayoutResult* GetClonableLayoutResult(
       const LayoutBox& layout_box,
       const NGPhysicalBoxFragment& fragment) const;
 

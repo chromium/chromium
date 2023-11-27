@@ -453,7 +453,7 @@ class CORE_EXPORT FragmentBuilder {
     has_descendant_that_depends_on_percentage_block_size_ = b;
   }
 
-  // See NGLayoutResult::AnnotationOverflow().
+  // See LayoutResult::AnnotationOverflow().
   void SetAnnotationOverflow(LayoutUnit overflow) {
     annotation_overflow_ = overflow;
   }
@@ -489,7 +489,7 @@ class CORE_EXPORT FragmentBuilder {
   void SetIsInitialColumnBalancingPass() {
     // Note that we have no dedicated flag for being in the initial column
     // balancing pass here. We'll just bump tallest_unbreakable_block_size_ to
-    // 0, so that NGLayoutResult knows that we need to store unbreakable
+    // 0, so that LayoutResult knows that we need to store unbreakable
     // block-size.
     DCHECK_EQ(tallest_unbreakable_block_size_, LayoutUnit::Min());
     tallest_unbreakable_block_size_ = LayoutUnit();
@@ -498,7 +498,7 @@ class CORE_EXPORT FragmentBuilder {
     return tallest_unbreakable_block_size_ >= LayoutUnit();
   }
 
-  const NGLayoutResult* Abort(NGLayoutResult::EStatus);
+  const LayoutResult* Abort(LayoutResult::EStatus);
 
 #if DCHECK_IS_ON()
   String ToString() const;
@@ -524,12 +524,12 @@ class CORE_EXPORT FragmentBuilder {
   ScrollStartTargetCandidates& EnsureScrollStartTargets();
 
   void PropagateFromLayoutResultAndFragment(
-      const NGLayoutResult&,
+      const LayoutResult&,
       LogicalOffset child_offset,
       LogicalOffset relative_offset,
       const OofInlineContainer<LogicalOffset>* = nullptr);
 
-  void PropagateFromLayoutResult(const NGLayoutResult&);
+  void PropagateFromLayoutResult(const LayoutResult&);
   void PropagateScrollStartTarget(const NGPhysicalFragment& child);
 
   void PropagateFromFragment(
@@ -601,9 +601,9 @@ class CORE_EXPORT FragmentBuilder {
   // The appeal of breaking inside this container.
   BreakAppeal break_appeal_ = kBreakAppealPerfect;
 
-  // See NGLayoutResult::AnnotationOverflow().
+  // See LayoutResult::AnnotationOverflow().
   LayoutUnit annotation_overflow_;
-  // See NGLayoutResult::BlockEndAnnotationSpace().
+  // See LayoutResult::BlockEndAnnotationSpace().
   LayoutUnit block_end_annotation_space_;
 
   LayoutUnit minimal_space_shortage_ = kIndefiniteSize;
@@ -644,7 +644,7 @@ class CORE_EXPORT FragmentBuilder {
 #endif
 
   friend class InlineLayoutStateStack;
-  friend class NGLayoutResult;
+  friend class LayoutResult;
   friend class NGPhysicalFragment;
 };
 

@@ -232,7 +232,7 @@ ColumnLayoutAlgorithm::ColumnLayoutAlgorithm(
   }
 }
 
-const NGLayoutResult* ColumnLayoutAlgorithm::Layout() {
+const LayoutResult* ColumnLayoutAlgorithm::Layout() {
   const LogicalSize border_box_size = container_builder_.InitialBorderBoxSize();
   // TODO(mstensho): This isn't the content-box size, as
   // |BorderScrollbarPadding()| has been adjusted for fragmentation. Verify
@@ -454,7 +454,7 @@ BreakStatus ColumnLayoutAlgorithm::LayoutChildren() {
     // break token, we wouldn't be able to resume layout after the any initial
     // spanners.
     if (!entry.spanner) {
-      const NGLayoutResult* result =
+      const LayoutResult* result =
           LayoutRow(child_break_token, LayoutUnit(), &margin_strut);
 
       if (!result) {
@@ -562,10 +562,10 @@ struct ResultWithOffset {
   DISALLOW_NEW();
 
  public:
-  Member<const NGLayoutResult> result;
+  Member<const LayoutResult> result;
   LogicalOffset offset;
 
-  ResultWithOffset(const NGLayoutResult* result, LogicalOffset offset)
+  ResultWithOffset(const LayoutResult* result, LogicalOffset offset)
       : result(result), offset(offset) {}
 
   const NGPhysicalBoxFragment& Fragment() const {
@@ -575,7 +575,7 @@ struct ResultWithOffset {
   void Trace(Visitor* visitor) const { visitor->Trace(result); }
 };
 
-const NGLayoutResult* ColumnLayoutAlgorithm::LayoutRow(
+const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
     const BlockBreakToken* next_column_token,
     LayoutUnit minimum_column_block_size,
     MarginStrut* margin_strut) {
@@ -711,7 +711,7 @@ const NGLayoutResult* ColumnLayoutAlgorithm::LayoutRow(
     }
   }
 
-  const NGLayoutResult* result = nullptr;
+  const LayoutResult* result = nullptr;
   absl::optional<BreakAppeal> min_break_appeal;
   LayoutUnit intrinsic_block_size_contribution;
 
@@ -1140,7 +1140,7 @@ void ColumnLayoutAlgorithm::AttemptToPositionListMarker(
   if (!baseline)
     return;
 
-  const NGLayoutResult* layout_result = marker.Layout(
+  const LayoutResult* layout_result = marker.Layout(
       GetConstraintSpace(), container_builder_.Style(), baseline_type);
   DCHECK(layout_result);
 
@@ -1163,7 +1163,7 @@ void ColumnLayoutAlgorithm::PositionAnyUnclaimedListMarker() {
 
   // Lay out the list marker.
   FontBaseline baseline_type = Style().GetFontBaseline();
-  const NGLayoutResult* layout_result =
+  const LayoutResult* layout_result =
       marker.Layout(GetConstraintSpace(), Style(), baseline_type);
   DCHECK(layout_result);
   // Position the list marker without aligning with line boxes.
@@ -1310,10 +1310,10 @@ LayoutUnit ColumnLayoutAlgorithm::ResolveColumnAutoBlockSizeInternal(
     params.column_spanner_path = spanner_path_;
     BlockLayoutAlgorithm balancing_algorithm(params);
     balancing_algorithm.SetBoxType(NGPhysicalFragment::kColumnBox);
-    const NGLayoutResult* result = balancing_algorithm.Layout();
+    const LayoutResult* result = balancing_algorithm.Layout();
 
     // This algorithm should never abort.
-    DCHECK_EQ(result->Status(), NGLayoutResult::kSuccess);
+    DCHECK_EQ(result->Status(), LayoutResult::kSuccess);
 
     const NGPhysicalBoxFragment& fragment =
         To<NGPhysicalBoxFragment>(result->PhysicalFragment());

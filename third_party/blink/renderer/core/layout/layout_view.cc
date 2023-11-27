@@ -987,7 +987,7 @@ CompositingReasons LayoutView::AdditionalCompositingReasons() const {
 }
 
 bool LayoutView::AffectedByResizedInitialContainingBlock(
-    const NGLayoutResult& layout_result) {
+    const LayoutResult& layout_result) {
   NOT_DESTROYED();
   if (!initial_containing_block_resize_handled_list_) {
     return false;

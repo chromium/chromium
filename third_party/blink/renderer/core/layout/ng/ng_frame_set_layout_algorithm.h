@@ -18,7 +18,7 @@ class CORE_EXPORT FrameSetLayoutAlgorithm
  public:
   explicit FrameSetLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
-  const NGLayoutResult* Layout() override;
+  const LayoutResult* Layout() override;
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
 
  private:

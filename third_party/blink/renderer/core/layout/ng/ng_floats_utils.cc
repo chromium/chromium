@@ -216,7 +216,7 @@ PositionedFloat PositionFloat(UnpositionedFloat* unpositioned_float,
   bool is_fragmentable =
       is_same_writing_mode && parent_space.HasBlockFragmentation();
 
-  const NGLayoutResult* layout_result = nullptr;
+  const LayoutResult* layout_result = nullptr;
   BoxStrut fragment_margins;
   LayoutOpportunity opportunity;
   bool need_break_before = false;
@@ -279,7 +279,7 @@ PositionedFloat PositionFloat(UnpositionedFloat* unpositioned_float,
       is_at_fragmentainer_start = space.IsAtFragmentainerStart();
 
       layout_result = node.Layout(space, unpositioned_float->token);
-      DCHECK_EQ(layout_result->Status(), NGLayoutResult::kSuccess);
+      DCHECK_EQ(layout_result->Status(), LayoutResult::kSuccess);
 
       // If we knew the right block-offset up front, we're done.
       if (!optimistically_placed)

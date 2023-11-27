@@ -18,7 +18,7 @@ namespace blink {
 class BlockNode;
 class BoxFragmentBuilder;
 class ConstraintSpace;
-class NGLayoutResult;
+class LayoutResult;
 struct LogicalStaticPosition;
 
 struct CORE_EXPORT LogicalOofDimensions {
@@ -133,7 +133,7 @@ CORE_EXPORT bool ComputeOofInlineDimensions(
 
 // If layout was performed to determine the position, this will be returned
 // otherwise it will return nullptr.
-CORE_EXPORT const NGLayoutResult* ComputeOofBlockDimensions(
+CORE_EXPORT const LayoutResult* ComputeOofBlockDimensions(
     const BlockNode&,
     const ComputedStyle& style,
     const ConstraintSpace&,

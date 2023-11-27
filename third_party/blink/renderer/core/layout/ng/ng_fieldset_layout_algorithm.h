@@ -21,7 +21,7 @@ class CORE_EXPORT FieldsetLayoutAlgorithm
  public:
   explicit FieldsetLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
-  const NGLayoutResult* Layout() override;
+  const LayoutResult* Layout() override;
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
 

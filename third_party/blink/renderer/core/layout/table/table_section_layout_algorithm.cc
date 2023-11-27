@@ -30,7 +30,7 @@ TableSectionLayoutAlgorithm::TableSectionLayoutAlgorithm(
 // |  +--------------------+  |
 // |       vspacing           |
 // +--------------------------+
-const NGLayoutResult* TableSectionLayoutAlgorithm::Layout() {
+const LayoutResult* TableSectionLayoutAlgorithm::Layout() {
   const auto& constraint_space = GetConstraintSpace();
   const TableConstraintSpaceData& table_data = *constraint_space.TableData();
   const auto& section =
@@ -87,7 +87,7 @@ const NGLayoutResult* TableSectionLayoutAlgorithm::Layout() {
     }
 
     ConstraintSpace row_space = row_space_builder.ToConstraintSpace();
-    const NGLayoutResult* row_result = row.Layout(row_space, row_break_token);
+    const LayoutResult* row_result = row.Layout(row_space, row_break_token);
 
     if (constraint_space.HasBlockFragmentation()) {
       LayoutUnit fragmentainer_block_offset =

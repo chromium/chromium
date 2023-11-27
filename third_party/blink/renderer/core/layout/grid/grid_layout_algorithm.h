@@ -38,7 +38,7 @@ class CORE_EXPORT GridLayoutAlgorithm
  public:
   explicit GridLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
-  const NGLayoutResult* Layout() override;
+  const LayoutResult* Layout() override;
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
 
   MinMaxSizesResult ComputeMinMaxSizes(const GridSizingSubtree& sizing_subtree);
@@ -75,7 +75,7 @@ class CORE_EXPORT GridLayoutAlgorithm
       HeapVector<Member<LayoutBox>>* oof_children = nullptr) const;
   GridSizingTree BuildGridSizingTreeIgnoringChildren() const;
 
-  const NGLayoutResult* LayoutInternal();
+  const LayoutResult* LayoutInternal();
 
   LayoutUnit Baseline(const GridLayoutData& layout_data,
                       const GridItemData& grid_item,

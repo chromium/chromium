@@ -268,7 +268,7 @@ class CORE_EXPORT LayoutView : public LayoutNGBlockFlow {
   // Return true if re-laying out the specified node (as a cached layout result)
   // with a new initial containing block size. Subsequent calls for the same
   // node within the same lifecycle update will return false.
-  bool AffectedByResizedInitialContainingBlock(const NGLayoutResult&);
+  bool AffectedByResizedInitialContainingBlock(const LayoutResult&);
 
   // Update generated markers and counters after style and layout tree update.
   // container - The container for container queries, otherwise nullptr.

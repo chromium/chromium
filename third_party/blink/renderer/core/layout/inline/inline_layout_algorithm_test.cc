@@ -189,19 +189,19 @@ TEST_F(InlineLayoutAlgorithmTest, BreakToken) {
       block_flow, block_flow->Style(), constraint_space,
       block_flow->Style()->GetWritingDirection());
   SimpleInlineChildLayoutContext context(inline_node, &container_builder);
-  const NGLayoutResult* layout_result =
+  const LayoutResult* layout_result =
       inline_node.Layout(constraint_space, nullptr, nullptr, &context);
   const auto& line1 = layout_result->PhysicalFragment();
   EXPECT_TRUE(line1.GetBreakToken());
 
   // Perform 2nd layout with the break token from the 1st line.
-  const NGLayoutResult* layout_result2 = inline_node.Layout(
+  const LayoutResult* layout_result2 = inline_node.Layout(
       constraint_space, line1.GetBreakToken(), nullptr, &context);
   const auto& line2 = layout_result2->PhysicalFragment();
   EXPECT_TRUE(line2.GetBreakToken());
 
   // Perform 3rd layout with the break token from the 2nd line.
-  const NGLayoutResult* layout_result3 = inline_node.Layout(
+  const LayoutResult* layout_result3 = inline_node.Layout(
       constraint_space, line2.GetBreakToken(), nullptr, &context);
   const auto& line3 = layout_result3->PhysicalFragment();
   EXPECT_FALSE(line3.GetBreakToken());

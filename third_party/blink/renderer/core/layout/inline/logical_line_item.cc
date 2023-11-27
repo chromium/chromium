@@ -71,7 +71,7 @@ LogicalLineItem* LogicalLineItems::LastInFlowChild() {
   return nullptr;
 }
 
-const NGLayoutResult* LogicalLineItems::BlockInInlineLayoutResult() const {
+const LayoutResult* LogicalLineItems::BlockInInlineLayoutResult() const {
   for (const LogicalLineItem& item : *this) {
     if (item.layout_result &&
         item.layout_result->PhysicalFragment().IsBlockInInline())

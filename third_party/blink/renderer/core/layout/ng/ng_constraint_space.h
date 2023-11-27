@@ -632,7 +632,7 @@ class CORE_EXPORT ConstraintSpace final {
 
   // The amount of available space for block-start side annotation.
   // For the first box, this is the padding-block-start value of the container.
-  // Otherwise, this comes from NGLayoutResult::BlockEndAnnotationSpace().
+  // Otherwise, this comes from LayoutResult::BlockEndAnnotationSpace().
   // If the value is negative, it's block-end annotation overflow of the
   // previous box.
   LayoutUnit BlockStartAnnotationSpace() const {

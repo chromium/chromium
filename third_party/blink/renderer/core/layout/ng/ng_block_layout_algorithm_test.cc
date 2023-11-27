@@ -55,8 +55,8 @@ class BlockLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     return algorithm.ComputeMinMaxSizes(MinMaxSizesFloatInput()).sizes;
   }
 
-  const NGLayoutResult* RunCachedLayoutResult(const ConstraintSpace& space,
-                                              const BlockNode& node) {
+  const LayoutResult* RunCachedLayoutResult(const ConstraintSpace& space,
+                                            const BlockNode& node) {
     NGLayoutCacheStatus cache_status;
     absl::optional<FragmentGeometry> initial_fragment_geometry;
     return To<LayoutBlockFlow>(node.GetLayoutBox())
@@ -117,7 +117,7 @@ TEST_F(BlockLayoutAlgorithmTest, Caching) {
   auto* block_flow = To<LayoutBlockFlow>(GetLayoutObjectByElementId("box"));
   BlockNode node(block_flow);
 
-  const NGLayoutResult* result = node.Layout(space, nullptr);
+  const LayoutResult* result = node.Layout(space, nullptr);
   EXPECT_EQ(PhysicalSize(30, 40), result->PhysicalFragment().Size());
 
   // Test pointer-equal constraint space.
@@ -164,7 +164,7 @@ TEST_F(BlockLayoutAlgorithmTest, MinInlineSizeCaching) {
   auto* block_flow = To<LayoutBlockFlow>(GetLayoutObjectByElementId("box"));
   BlockNode node(block_flow);
 
-  const NGLayoutResult* result = node.Layout(space, nullptr);
+  const LayoutResult* result = node.Layout(space, nullptr);
   EXPECT_EQ(PhysicalSize(30, 40), result->PhysicalFragment().Size());
 
   // Test pointer-equal constraint space.
@@ -245,13 +245,13 @@ TEST_F(BlockLayoutAlgorithmTest, PercentageBlockSizeQuirkDescendantsCaching) {
   ConstraintSpace space200 =
       create_space(LogicalSize(LayoutUnit(100), LayoutUnit(200)));
 
-  auto run_test = [&](auto id) -> const NGLayoutResult* {
+  auto run_test = [&](auto id) -> const LayoutResult* {
     // Grab the box under test.
     auto* box = To<LayoutBlockFlow>(GetLayoutObjectByElementId(id));
     BlockNode node(box);
 
     // Check that we have a cache hit with space100.
-    const NGLayoutResult* result = RunCachedLayoutResult(space100, node);
+    const LayoutResult* result = RunCachedLayoutResult(space100, node);
     EXPECT_NE(result, nullptr);
 
     // Return the result of the cache with space200.
@@ -310,7 +310,7 @@ TEST_F(BlockLayoutAlgorithmTest, LineOffsetCaching) {
       create_space(LogicalSize(LayoutUnit(300), LayoutUnit(100)),
                    BfcOffset(LayoutUnit(50), LayoutUnit()));
 
-  const NGLayoutResult* result = nullptr;
+  const LayoutResult* result = nullptr;
   auto* box1 = To<LayoutBlockFlow>(GetLayoutObjectByElementId("box1"));
 
   // Ensure we get a cached layout result, even if our BFC line-offset changed.

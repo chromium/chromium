@@ -37,14 +37,13 @@ class ExclusionSpace;
 class FragmentBuilder;
 class LineBoxFragmentBuilder;
 
-// The NGLayoutResult stores the resulting data from layout. This includes
+// The LayoutResult stores the resulting data from layout. This includes
 // geometry information in form of a NGPhysicalFragment, which is kept around
 // for painting, hit testing, etc., as well as additional data which is only
 // necessary during layout and stored on this object.
 // Layout code should access the NGPhysicalFragment through the wrappers in
 // LogicalFragment et al.
-class CORE_EXPORT NGLayoutResult final
-    : public GarbageCollected<NGLayoutResult> {
+class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
  public:
   enum EStatus {
     kSuccess = 0,
@@ -65,42 +64,42 @@ class CORE_EXPORT NGLayoutResult final
   // Make a shallow clone of the result. The fragment is cloned. Fragment
   // *items* are also cloned, but child fragments are not. Apart from that it's
   // truly shallow. Pinky promise.
-  static const NGLayoutResult* Clone(const NGLayoutResult&);
+  static const LayoutResult* Clone(const LayoutResult&);
 
   // Same as Clone(), but uses the "post-layout" fragments to ensure
   // fragment-tree consistency.
-  static const NGLayoutResult* CloneWithPostLayoutFragments(
-      const NGLayoutResult& other);
+  static const LayoutResult* CloneWithPostLayoutFragments(
+      const LayoutResult& other);
 
-  // Create a copy of NGLayoutResult with |BfcBlockOffset| replaced by the given
+  // Create a copy of LayoutResult with |BfcBlockOffset| replaced by the given
   // parameter. Note, when |bfc_block_offset| is |nullopt|, |BfcBlockOffset| is
   // still replaced with |nullopt|.
-  NGLayoutResult(const NGLayoutResult& other,
-                 const ConstraintSpace& new_space,
-                 const MarginStrut& new_end_margin_strut,
-                 LayoutUnit bfc_line_offset,
-                 absl::optional<LayoutUnit> bfc_block_offset,
-                 LayoutUnit block_offset_delta);
+  LayoutResult(const LayoutResult& other,
+               const ConstraintSpace& new_space,
+               const MarginStrut& new_end_margin_strut,
+               LayoutUnit bfc_line_offset,
+               absl::optional<LayoutUnit> bfc_block_offset,
+               LayoutUnit block_offset_delta);
 
-  // Creates a copy of NGLayoutResult with a new (but "identical") fragment.
-  NGLayoutResult(const NGLayoutResult& other,
-                 const NGPhysicalFragment* physical_fragment);
+  // Creates a copy of LayoutResult with a new (but "identical") fragment.
+  LayoutResult(const LayoutResult& other,
+               const NGPhysicalFragment* physical_fragment);
 
   // Delegate constructor that sets up what it can, based on the builder.
-  NGLayoutResult(const NGPhysicalFragment* physical_fragment,
-                 FragmentBuilder* builder);
+  LayoutResult(const NGPhysicalFragment* physical_fragment,
+               FragmentBuilder* builder);
 
   // We don't need the copy constructor, move constructor, copy
   // assigmnment-operator, or move assignment-operator today.
   // If at some point we do need these constructors particular care will need
   // to be taken with the |rare_data_| field.
-  NGLayoutResult(const NGLayoutResult&) = delete;
-  NGLayoutResult(NGLayoutResult&&) = delete;
-  NGLayoutResult& operator=(const NGLayoutResult& other) = delete;
-  NGLayoutResult& operator=(NGLayoutResult&& other) = delete;
-  NGLayoutResult() = delete;
+  LayoutResult(const LayoutResult&) = delete;
+  LayoutResult(LayoutResult&&) = delete;
+  LayoutResult& operator=(const LayoutResult& other) = delete;
+  LayoutResult& operator=(LayoutResult&& other) = delete;
+  LayoutResult() = delete;
 
-  ~NGLayoutResult() = default;
+  ~LayoutResult() = default;
 
   const NGPhysicalFragment& PhysicalFragment() const {
     DCHECK(physical_fragment_);
@@ -170,7 +169,7 @@ class CORE_EXPORT NGLayoutResult final
 
   // Called after subtree layout to make sure the fields for out-of-flow
   // positioned nodes are set.
-  void CopyMutableOutOfFlowData(const NGLayoutResult& previous_result) const;
+  void CopyMutableOutOfFlowData(const LayoutResult& previous_result) const;
 
   // Returns if we can use the first-tier OOF-positioned cache.
   bool CanUseOutOfFlowPositionedFirstTierCache() const {
@@ -541,11 +540,11 @@ class CORE_EXPORT NGLayoutResult final
     }
 
    private:
-    friend class NGLayoutResult;
-    MutableForOutOfFlow(const NGLayoutResult* layout_result)
-        : layout_result_(const_cast<NGLayoutResult*>(layout_result)) {}
+    friend class LayoutResult;
+    MutableForOutOfFlow(const LayoutResult* layout_result)
+        : layout_result_(const_cast<LayoutResult*>(layout_result)) {}
 
-    NGLayoutResult* layout_result_;
+    LayoutResult* layout_result_;
   };
 
   MutableForOutOfFlow GetMutableForOutOfFlow() const {
@@ -563,12 +562,11 @@ class CORE_EXPORT NGLayoutResult final
     }
 
    private:
-    friend class NGLayoutResult;
-    explicit MutableForLayoutBoxCachedResults(
-        const NGLayoutResult* layout_result)
-        : layout_result_(const_cast<NGLayoutResult*>(layout_result)) {}
+    friend class LayoutResult;
+    explicit MutableForLayoutBoxCachedResults(const LayoutResult* layout_result)
+        : layout_result_(const_cast<LayoutResult*>(layout_result)) {}
 
-    NGLayoutResult* layout_result_;
+    LayoutResult* layout_result_;
   };
 
   MutableForLayoutBoxCachedResults GetMutableForLayoutBoxCachedResults() const {
@@ -576,26 +574,26 @@ class CORE_EXPORT NGLayoutResult final
   }
 
 #if DCHECK_IS_ON()
-  void CheckSameForSimplifiedLayout(const NGLayoutResult&,
+  void CheckSameForSimplifiedLayout(const LayoutResult&,
                                     bool check_same_block_size = true,
                                     bool check_no_fragmentation = true) const;
 #endif
 
   using FragmentBuilderPassKey = base::PassKey<FragmentBuilder>;
   // This constructor is for a non-success status.
-  NGLayoutResult(FragmentBuilderPassKey, EStatus, FragmentBuilder*);
+  LayoutResult(FragmentBuilderPassKey, EStatus, FragmentBuilder*);
 
   // This constructor requires a non-null fragment and sets a success status.
   using BoxFragmentBuilderPassKey = base::PassKey<BoxFragmentBuilder>;
-  NGLayoutResult(BoxFragmentBuilderPassKey,
-                 const NGPhysicalFragment* physical_fragment,
-                 BoxFragmentBuilder*);
+  LayoutResult(BoxFragmentBuilderPassKey,
+               const NGPhysicalFragment* physical_fragment,
+               BoxFragmentBuilder*);
 
   using LineBoxFragmentBuilderPassKey = base::PassKey<LineBoxFragmentBuilder>;
   // This constructor requires a non-null fragment and sets a success status.
-  NGLayoutResult(LineBoxFragmentBuilderPassKey,
-                 const NGPhysicalFragment* physical_fragment,
-                 LineBoxFragmentBuilder*);
+  LayoutResult(LineBoxFragmentBuilderPassKey,
+               const NGPhysicalFragment* physical_fragment,
+               LineBoxFragmentBuilder*);
 
   void Trace(Visitor*) const;
 
@@ -603,7 +601,7 @@ class CORE_EXPORT NGLayoutResult final
   friend class MutableForOutOfFlow;
 
   static ExclusionSpace MergeExclusionSpaces(
-      const NGLayoutResult& other,
+      const LayoutResult& other,
       const ExclusionSpace& new_input_exclusion_space,
       LayoutUnit bfc_line_offset,
       LayoutUnit block_offset_delta);

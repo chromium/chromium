@@ -14,7 +14,7 @@ Main spec: https://www.w3.org/TR/css-break-3/
 Any layout algorithm for block nodes takes ConstraintSpace, BlockNode and
 BlockBreakToken as input, and writes output to BoxFragmentBuilder, which
 will eventually generate an NGPhysicalBoxFragment wrapped inside an
-NGLayoutResult. This will serve as input to the parent algorithm, which will
+LayoutResult. This will serve as input to the parent algorithm, which will
 eventually add the child fragment to their output, i.e. BoxFragmentBuilder (or
 abort / finish without doing so). Rather than having each layout algorithm
 implement block fragmentation on its own, we have a shared fragmentation
@@ -23,7 +23,7 @@ machinery, which mainly consists of utility functions in
 algorithm can easily hook up with the various stages or aspects of block
 fragmentation of a node. The utility functions will perform the relevant
 operations on these core NG structures (ConstraintSpace, BlockNode,
-BlockBreakToken, NGLayoutResult, and so on).
+BlockBreakToken, LayoutResult, and so on).
 
 The purpose of the fragmentation machinery is to find the ideal (most appealing)
 places to break in one
@@ -389,7 +389,7 @@ kNeedsEarlierBreak, we ran out of space at an unappealing breakpoint. It also
 means that we have actually found a better earlier breakpoint (further up in the
 fragmentainer). When this happens, we need to abort and rerun layout, but this
 time with a parameter that says exactly where to stop and break. Early breaks
-are stored in NGLayoutResult when found. See NGLayoutResult::GetEarlyBreak() and
+are stored in LayoutResult when found. See LayoutResult::GetEarlyBreak() and
 the [EarlyBreak](ng_early_break.h) structure.
 
 An algorithm can be rerun to break at the appealing early breakpoint by passing
@@ -564,7 +564,7 @@ Details:
 * If we're out of space, and the appeal of breaking before and inside are both
   lower than the appeal of an earlier breakpoint, we need to use said earlier
   breakpoint, which is stored in the fragment builder (and propagated from
-  descendants via their [NGLayoutResult](ng_layout_result.h)). Return
+  descendants via their [LayoutResult](ng_layout_result.h)). Return
   kNeedsEarlierBreak. We'll need to re-run layout in a special mode, where the
   algorithm is told to break at a specified node (automatic breaking will be
   disabled). There may be nested situations to consider here. For example:
@@ -608,11 +608,11 @@ When laying out this multicol container, the following will happen:
    unappealing it is). Add #a to the #wrapper2 fragment builder.
 1. Lay out #b. There's a perfect breakpoint before it. Overwrite the previously
    found early (last-resort) break. Add #b to the builder. We still have room.
-1. Finish #wrapper2. Its NGLayoutResult will contain the early break pointing
+1. Finish #wrapper2. Its LayoutResult will contain the early break pointing
    before #b. There's a last-resort breakpoint before #wrapper2 (as the first
    child of #wrapper1), but we already have something better - the perfect one
    before #b.
-1. Finish #wrapper1. Its NGLayoutResult will contain the early break pointing
+1. Finish #wrapper1. Its LayoutResult will contain the early break pointing
    inside #wrapper2, which has an early break pointing before #b. There's a
    perfect breakpoint before #wrapper1, but the possible break inside (before
    #b) is further down, so keep that one.

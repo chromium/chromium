@@ -16,7 +16,7 @@ class CORE_EXPORT MathUnderOverLayoutAlgorithm
  public:
   explicit MathUnderOverLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
-  const NGLayoutResult* Layout() override;
+  const LayoutResult* Layout() override;
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
 

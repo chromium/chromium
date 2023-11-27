@@ -36,7 +36,7 @@ LayoutUnit UnpositionedListMarker::InlineOffset(
   return margins.first;
 }
 
-const NGLayoutResult* UnpositionedListMarker::Layout(
+const LayoutResult* UnpositionedListMarker::Layout(
     const ConstraintSpace& parent_space,
     const ComputedStyle& parent_style,
     FontBaseline baseline_type) const {
@@ -45,7 +45,7 @@ const NGLayoutResult* UnpositionedListMarker::Layout(
 
   // We need the first-line baseline from the list-marker, instead of the
   // typical atomic-inline baseline.
-  const NGLayoutResult* marker_layout_result = marker_node.LayoutAtomicInline(
+  const LayoutResult* marker_layout_result = marker_node.LayoutAtomicInline(
       parent_space, parent_style, parent_space.UseFirstLineStyle(),
       BaselineAlgorithmType::kDefault);
   DCHECK(marker_layout_result);
@@ -83,7 +83,7 @@ void UnpositionedListMarker::AddToBox(
     FontBaseline baseline_type,
     const NGPhysicalFragment& content,
     const BoxStrut& border_scrollbar_padding,
-    const NGLayoutResult& marker_layout_result,
+    const LayoutResult& marker_layout_result,
     LayoutUnit content_baseline,
     LayoutUnit* block_offset,
     BoxFragmentBuilder* container_builder) const {
@@ -125,7 +125,7 @@ void UnpositionedListMarker::AddToBox(
 void UnpositionedListMarker::AddToBoxWithoutLineBoxes(
     const ConstraintSpace& space,
     FontBaseline baseline_type,
-    const NGLayoutResult& marker_layout_result,
+    const LayoutResult& marker_layout_result,
     BoxFragmentBuilder* container_builder,
     LayoutUnit* intrinsic_block_size) const {
   const NGPhysicalBoxFragment& marker_physical_fragment =

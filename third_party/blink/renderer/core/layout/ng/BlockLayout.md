@@ -13,7 +13,7 @@ below) and floats do not intrude, the exclusion space is completely separate.
 
 Our block layout implementation is based on the principle that children place
 *themselves* within the block formatting context. This information is
-communicated with the optional [NGLayoutResult::BfcOffset](https://cs.chromium.org/chromium/src/third_party/blink/renderer/core/layout/ng/ng_layout_result.h).
+communicated with the optional [LayoutResult::BfcOffset](https://cs.chromium.org/chromium/src/third_party/blink/renderer/core/layout/ng/ng_layout_result.h).
 
 A child's BFCOffset is optional as empty blocks cannot place themselves within
 the BFC. They may be affected by siblings.

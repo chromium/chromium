@@ -18,7 +18,7 @@
 namespace blink {
 
 class LayoutObject;
-class NGLayoutResult;
+class LayoutResult;
 
 // This class represents an item in a line, after line break, but still mutable
 // and in the logical coordinate system.
@@ -34,8 +34,8 @@ struct LogicalLineItem {
   // Crete a bidi control. A bidi control does not have a fragment, but has
   // bidi level and affects bidi reordering.
   explicit LogicalLineItem(UBiDiLevel bidi_level) : bidi_level(bidi_level) {}
-  // Create an in-flow |NGLayoutResult|.
-  LogicalLineItem(const NGLayoutResult* layout_result,
+  // Create an in-flow |LayoutResult|.
+  LogicalLineItem(const LayoutResult* layout_result,
                   const LogicalRect& rect,
                   unsigned children_count,
                   UBiDiLevel bidi_level)
@@ -43,7 +43,7 @@ struct LogicalLineItem {
         rect(rect),
         children_count(children_count),
         bidi_level(bidi_level) {}
-  LogicalLineItem(const NGLayoutResult* layout_result,
+  LogicalLineItem(const LayoutResult* layout_result,
                   LogicalOffset offset,
                   LayoutUnit inline_size,
                   unsigned children_count,
@@ -139,7 +139,7 @@ struct LogicalLineItem {
         item_index(item_index),
         bidi_level(bidi_level) {}
   // Create a positioned float.
-  LogicalLineItem(const NGLayoutResult* layout_result,
+  LogicalLineItem(const LayoutResult* layout_result,
                   BfcOffset bfc_offset,
                   UBiDiLevel bidi_level)
       : layout_result(layout_result),
@@ -226,7 +226,7 @@ struct LogicalLineItem {
   // Data to create a generated text fragment.
   String text_content;
 
-  Member<const NGLayoutResult> layout_result;
+  Member<const LayoutResult> layout_result;
 
   // Ellipsis does not have |InlineItem|, but built from |LayoutObject| and
   // |StyleVariant|.
@@ -307,7 +307,7 @@ class CORE_EXPORT LogicalLineItems : public GarbageCollected<LogicalLineItems> {
   LogicalLineItem* FirstInFlowChild();
   LogicalLineItem* LastInFlowChild();
 
-  const NGLayoutResult* BlockInInlineLayoutResult() const;
+  const LayoutResult* BlockInInlineLayoutResult() const;
 
   // Add a child. Accepts all constructor arguments for |LogicalLineItem|.
   template <class... Args>
@@ -319,7 +319,7 @@ class CORE_EXPORT LogicalLineItems : public GarbageCollected<LogicalLineItems> {
     children_.insert(index, item);
   }
   void InsertChild(unsigned index,
-                   const NGLayoutResult* layout_result,
+                   const LayoutResult* layout_result,
                    const LogicalRect& rect,
                    unsigned children_count) {
     WillInsertChild(index);

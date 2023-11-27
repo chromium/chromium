@@ -198,10 +198,10 @@ class CORE_EXPORT LineInfo {
   bool NeedsAccurateEndPosition() const { return needs_accurate_end_position_; }
 
   // The block-in-inline layout result.
-  const NGLayoutResult* BlockInInlineLayoutResult() const {
+  const LayoutResult* BlockInInlineLayoutResult() const {
     return block_in_inline_layout_result_;
   }
-  void SetBlockInInlineLayoutResult(const NGLayoutResult* layout_result) {
+  void SetBlockInInlineLayoutResult(const LayoutResult* layout_result) {
     block_in_inline_layout_result_ = std::move(layout_result);
   }
 
@@ -262,7 +262,7 @@ class CORE_EXPORT LineInfo {
   const InlineBreakToken* break_token_ = nullptr;
   HeapVector<Member<const BreakToken>> parallel_flow_break_tokens_;
 
-  const NGLayoutResult* block_in_inline_layout_result_ = nullptr;
+  const LayoutResult* block_in_inline_layout_result_ = nullptr;
 
   absl::optional<LayoutUnit> minimum_space_shortage_;
 

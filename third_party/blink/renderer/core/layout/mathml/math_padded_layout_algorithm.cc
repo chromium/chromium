@@ -54,14 +54,14 @@ void MathPaddedLayoutAlgorithm::GetContentAsAnonymousMrow(
   }
 }
 
-const NGLayoutResult* MathPaddedLayoutAlgorithm::Layout() {
+const LayoutResult* MathPaddedLayoutAlgorithm::Layout() {
   DCHECK(!GetBreakToken());
 
   BlockNode content = nullptr;
   GetContentAsAnonymousMrow(&content);
   LayoutUnit content_ascent, content_descent;
   BoxStrut content_margins;
-  const NGLayoutResult* content_layout_result = nullptr;
+  const LayoutResult* content_layout_result = nullptr;
   if (content) {
     ConstraintSpace constraint_space = CreateConstraintSpaceForMathChild(
         Node(), ChildAvailableSize(), GetConstraintSpace(), content);

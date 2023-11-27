@@ -137,7 +137,7 @@ struct SameSizeAsLayoutBox : public LayoutBoxModelObject {
   LayoutUnit intrinsic_logical_widths_initial_block_size;
   Member<void*> min_max_sizes_cache;
   Member<void*> result;
-  HeapVector<Member<const NGLayoutResult>, 1> layout_results;
+  HeapVector<Member<const LayoutResult>, 1> layout_results;
   wtf_size_t first_fragment_item_index_;
   Member<void*> members[2];
 };
@@ -916,7 +916,7 @@ void LayoutBox::LayoutSubtreeRoot() {
   DCHECK(previous_result);
   auto space = previous_result->GetConstraintSpaceForCaching();
   DCHECK_EQ(space.GetWritingMode(), StyleRef().GetWritingMode());
-  const NGLayoutResult* result = BlockNode(this).Layout(space);
+  const LayoutResult* result = BlockNode(this).Layout(space);
   GetDocument().GetFrame()->GetInputMethodController().DidLayoutSubtree(*this);
 
   if (IsOutOfFlowPositioned()) {
@@ -2572,7 +2572,7 @@ bool LayoutBox::NGPhysicalFragmentList::Contains(
   return IndexOf(fragment) != kNotFound;
 }
 
-void LayoutBox::SetCachedLayoutResult(const NGLayoutResult* result,
+void LayoutBox::SetCachedLayoutResult(const LayoutResult* result,
                                       wtf_size_t index) {
   NOT_DESTROYED();
   if (result->GetConstraintSpaceForCaching().CacheSlot() ==
@@ -2611,10 +2611,9 @@ void LayoutBox::SetCachedLayoutResult(const NGLayoutResult* result,
   SetLayoutResult(result, index);
 }
 
-void LayoutBox::SetLayoutResult(const NGLayoutResult* result,
-                                wtf_size_t index) {
+void LayoutBox::SetLayoutResult(const LayoutResult* result, wtf_size_t index) {
   NOT_DESTROYED();
-  DCHECK_EQ(result->Status(), NGLayoutResult::kSuccess);
+  DCHECK_EQ(result->Status(), LayoutResult::kSuccess);
   const auto& box_fragment =
       To<NGPhysicalBoxFragment>(result->PhysicalFragment());
 
@@ -2659,7 +2658,7 @@ void LayoutBox::SetLayoutResult(const NGLayoutResult* result,
   }
 }
 
-void LayoutBox::AppendLayoutResult(const NGLayoutResult* result) {
+void LayoutBox::AppendLayoutResult(const LayoutResult* result) {
   const auto& fragment = To<NGPhysicalBoxFragment>(result->PhysicalFragment());
   // |layout_results_| is particularly critical when side effects are disabled.
   DCHECK(!NGDisableSideEffectsScope::IsDisabled());
@@ -2671,11 +2670,11 @@ void LayoutBox::AppendLayoutResult(const NGLayoutResult* result) {
     FragmentCountOrSizeDidChange();
 }
 
-void LayoutBox::ReplaceLayoutResult(const NGLayoutResult* result,
+void LayoutBox::ReplaceLayoutResult(const LayoutResult* result,
                                     wtf_size_t index) {
   NOT_DESTROYED();
   DCHECK_LE(index, layout_results_.size());
-  const NGLayoutResult* old_result = layout_results_[index];
+  const LayoutResult* old_result = layout_results_[index];
   if (old_result == result)
     return;
   const auto& fragment = To<NGPhysicalBoxFragment>(result->PhysicalFragment());
@@ -2730,7 +2729,7 @@ void LayoutBox::RebuildFragmentTreeSpine() {
   while (container && container->PhysicalFragmentCount() &&
          !container->NeedsLayout()) {
     for (auto& result : container->layout_results_)
-      result = NGLayoutResult::CloneWithPostLayoutFragments(*result);
+      result = LayoutResult::CloneWithPostLayoutFragments(*result);
     container = container->ContainingNGBox();
   }
 
@@ -2782,7 +2781,7 @@ void LayoutBox::InvalidateCachedGeometry() {
   }
 }
 
-void LayoutBox::InvalidateItems(const NGLayoutResult& result) {
+void LayoutBox::InvalidateItems(const LayoutResult& result) {
   NOT_DESTROYED();
   // Invalidate if inline |DisplayItemClient|s will be destroyed.
   const auto& box_fragment =
@@ -2800,19 +2799,19 @@ void LayoutBox::InvalidateItems(const NGLayoutResult& result) {
   ObjectPaintInvalidator(*this).SlowSetPaintingLayerNeedsRepaint();
 }
 
-const NGLayoutResult* LayoutBox::GetCachedLayoutResult(
+const LayoutResult* LayoutBox::GetCachedLayoutResult(
     const BlockBreakToken* break_token) const {
   NOT_DESTROYED();
   wtf_size_t index = FragmentIndex(break_token);
   if (index >= layout_results_.size())
     return nullptr;
-  const NGLayoutResult* result = layout_results_[index];
+  const LayoutResult* result = layout_results_[index];
   DCHECK(!result->PhysicalFragment().IsLayoutObjectDestroyedOrMoved() ||
          BeingDestroyed());
   return result;
 }
 
-const NGLayoutResult* LayoutBox::GetCachedMeasureResult() const {
+const LayoutResult* LayoutBox::GetCachedMeasureResult() const {
   NOT_DESTROYED();
   if (!measure_result_)
     return nullptr;
@@ -2840,12 +2839,12 @@ const NGLayoutResult* LayoutBox::GetCachedMeasureResult() const {
   return measure_result_.Get();
 }
 
-const NGLayoutResult* LayoutBox::GetSingleCachedLayoutResult() const {
+const LayoutResult* LayoutBox::GetSingleCachedLayoutResult() const {
   DCHECK_LE(layout_results_.size(), 1u);
   return GetCachedLayoutResult(nullptr);
 }
 
-const NGLayoutResult* LayoutBox::GetLayoutResult(wtf_size_t i) const {
+const LayoutResult* LayoutBox::GetLayoutResult(wtf_size_t i) const {
   NOT_DESTROYED();
   return layout_results_[i].Get();
 }
@@ -4286,7 +4285,7 @@ void ForEachAnchorQueryOnContainer(const LayoutBox& box, Function func) {
 #if EXPENSIVE_DCHECKS_ARE_ON()
 template <typename Function>
 void AssertSameDataOnLayoutResults(
-    const LayoutBox::NGLayoutResultList& layout_results,
+    const LayoutBox::LayoutResultList& layout_results,
     Function func) {
   // When an out-of-flow box is fragmented, the position fallback results on all
   // fragments should be the same.

@@ -28,7 +28,7 @@ struct PhysicalFragmentLink;
 //
 // This algorithm effectively performs a (convoluted) "copy" of the previous
 // layout result. It will:
-//  1. Copy data from the previous |NGLayoutResult| into the
+//  1. Copy data from the previous |LayoutResult| into the
 //     |BoxFragmentBuilder|, (e.g. flags, end margin strut, etc).
 //  2. Iterate through all the children and:
 //    a. If OOF-positioned determine the static-position and add it as an
@@ -40,7 +40,7 @@ class CORE_EXPORT SimplifiedLayoutAlgorithm
     : public LayoutAlgorithm<BlockNode, BoxFragmentBuilder, BlockBreakToken> {
  public:
   SimplifiedLayoutAlgorithm(const LayoutAlgorithmParams&,
-                            const NGLayoutResult&,
+                            const LayoutResult&,
                             bool keep_old_size = false);
 
   // Perform a simple copy of all children of the old fragment.
@@ -50,19 +50,19 @@ class CORE_EXPORT SimplifiedLayoutAlgorithm
 
   // Just create a new layout result based on the current builder state. To be
   // used after CloneOldChildren() / AppendNewChildFragment().
-  const NGLayoutResult* CreateResultAfterManualChildLayout();
+  const LayoutResult* CreateResultAfterManualChildLayout();
 
   // Attempt to perform simplified layout on all children and return a new
   // result. If nullptr is returned, it means that simplified layout isn't
   // possible.
-  const NGLayoutResult* Layout() override;
+  const LayoutResult* Layout() override;
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override {
     NOTREACHED();
     return MinMaxSizesResult();
   }
 
-  NOINLINE const NGLayoutResult* LayoutWithItemsBuilder();
+  NOINLINE const LayoutResult* LayoutWithItemsBuilder();
 
  private:
   void AddChildFragment(const PhysicalFragmentLink& old_fragment,
@@ -70,7 +70,7 @@ class CORE_EXPORT SimplifiedLayoutAlgorithm
                         const MarginStrut* margin_strut = nullptr,
                         bool is_self_collapsing = false);
 
-  const NGLayoutResult& previous_result_;
+  const LayoutResult& previous_result_;
   BoxStrut border_scrollbar_padding_;
 
   const WritingDirectionMode writing_direction_;

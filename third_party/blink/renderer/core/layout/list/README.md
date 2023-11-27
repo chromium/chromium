@@ -92,7 +92,7 @@ or in [BlockLayoutAlgorithm]
 if it appears within a block formatting context,
 but its positioning is determined when [LayoutListItem] is laid out.
 
-To do this, algorithms can set an unpositioned list marker to [NGLayoutResult],
+To do this, algorithms can set an unpositioned list marker to [LayoutResult],
 which will be propagated to the nearest [LayoutListItem],
 similar to absolute positioned objects propagate to its containing blocks.
 
@@ -139,5 +139,5 @@ and still easy to implement across implementations.
 [LayoutListItem]: layout_list_item.h
 [LayoutInsideListMarker]: layout_inside_list_marker.h
 [LayoutOutsideListMarker]: layout_outside_list_marker.h
-[NGLayoutResult]: ../ng/ng_layout_result.h
+[LayoutResult]: ../ng/ng_layout_result.h
 [PaintLayer]: ../../paint/PaintLayer.h

@@ -98,9 +98,9 @@ TableLayoutAlgorithm::CaptionResult LayoutCaption(
     BoxStrut margins,
     const BlockBreakToken* break_token = nullptr,
     const EarlyBreak* early_break = nullptr) {
-  const NGLayoutResult* layout_result =
+  const LayoutResult* layout_result =
       caption.Layout(caption_constraint_space, break_token, early_break);
-  DCHECK_EQ(layout_result->Status(), NGLayoutResult::kSuccess);
+  DCHECK_EQ(layout_result->Status(), LayoutResult::kSuccess);
 
   LogicalFragment fragment(table_constraint_space.GetWritingDirection(),
                            layout_result->PhysicalFragment());
@@ -552,7 +552,7 @@ LayoutUnit TableLayoutAlgorithm::ComputeCaptionBlockSize() {
   return captions_block_size;
 }
 
-const NGLayoutResult* TableLayoutAlgorithm::Layout() {
+const LayoutResult* TableLayoutAlgorithm::Layout() {
   const bool is_fixed_layout = Style().IsFixedTableLayout();
   const LogicalSize border_spacing = Style().TableBorderSpacing();
   TableGroupedChildren grouped_children(Node());
@@ -656,15 +656,16 @@ const NGLayoutResult* TableLayoutAlgorithm::Layout() {
   }
 #endif
 
-  const NGLayoutResult* result = GenerateFragment(
+  const LayoutResult* result = GenerateFragment(
       container_builder_.InlineSize(), minimal_table_grid_block_size,
       grouped_children, column_locations, rows, cell_block_constraints,
       sections, captions, *table_borders,
       is_grid_empty ? LogicalSize() : border_spacing);
 
-  if (result->Status() == NGLayoutResult::kNeedsRelayoutAsLastTableBox)
+  if (result->Status() == LayoutResult::kNeedsRelayoutAsLastTableBox) {
     return RelayoutAsLastTableBox();
-  if (result->Status() == NGLayoutResult::kNeedsEarlierBreak) {
+  }
+  if (result->Status() == LayoutResult::kNeedsEarlierBreak) {
     // We shouldn't insert early-breaks when we're relaying out as the last
     // table-box fragment. That should take place *first*.
     DCHECK(!is_known_to_be_last_table_box_);
@@ -713,7 +714,7 @@ MinMaxSizesResult TableLayoutAlgorithm::ComputeMinMaxSizes(
                            /* depends_on_block_constraints */ false};
 }
 
-const NGLayoutResult* TableLayoutAlgorithm::RelayoutAsLastTableBox() {
+const LayoutResult* TableLayoutAlgorithm::RelayoutAsLastTableBox() {
   DCHECK(!is_known_to_be_last_table_box_);
   LayoutAlgorithmParams params(
       Node(), container_builder_.InitialFragmentGeometry(),
@@ -888,7 +889,7 @@ void TableLayoutAlgorithm::ComputeTableSpecificFragmentData(
 // |     table border/padding       |
 // |     bottom caption fragments   |
 // +--------------------------------+
-const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
+const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
     const LayoutUnit table_inline_size,
     LayoutUnit minimal_table_grid_block_size,
     const TableGroupedChildren& grouped_children,
@@ -1176,7 +1177,7 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
     }
 
     const BlockBreakToken* child_break_token = entry.GetBreakToken();
-    const NGLayoutResult* child_result;
+    const LayoutResult* child_result;
     absl::optional<LayoutUnit> offset_before_repeated_header;
     LayoutUnit child_inline_offset;
 
@@ -1230,7 +1231,7 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
       CaptionResult caption = LayoutCaption(
           constraint_space, Style(), container_builder_.InlineSize(),
           child_space, child, margins, child_break_token, early_break_in_child);
-      DCHECK_EQ(caption.layout_result->Status(), NGLayoutResult::kSuccess);
+      DCHECK_EQ(caption.layout_result->Status(), LayoutResult::kSuccess);
       child_result = caption.layout_result;
       child_inline_offset = caption.margins.inline_start;
 
@@ -1360,7 +1361,7 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
           constraint_space, child, *child_result, fragmentainer_block_offset,
           has_container_separation, &container_builder_);
       if (break_status == BreakStatus::kNeedsEarlierBreak) {
-        return container_builder_.Abort(NGLayoutResult::kNeedsEarlierBreak);
+        return container_builder_.Abort(LayoutResult::kNeedsEarlierBreak);
       }
       if (break_status == BreakStatus::kBrokeBefore) {
         broke_inside = true;
@@ -1485,7 +1486,7 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
     ConstraintSpace child_space = CreateSectionConstraintSpace(
         grouped_children.footer, offset.block_offset, entry.GetSectionIndex(),
         /* reserved_space */ LayoutUnit(), kMayRepeatAgain);
-    const NGLayoutResult* result = grouped_children.footer.LayoutRepeatableRoot(
+    const LayoutResult* result = grouped_children.footer.LayoutRepeatableRoot(
         child_space, entry.GetBreakToken());
 
     BreakStatus break_status = BreakStatus::kContinue;
@@ -1614,7 +1615,7 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
         FinishFragmentation(Node(), constraint_space, border_padding.block_end,
                             fragmentainer_space_at_start, &container_builder_);
     if (status == BreakStatus::kNeedsEarlierBreak) {
-      return container_builder_.Abort(NGLayoutResult::kNeedsEarlierBreak);
+      return container_builder_.Abort(LayoutResult::kNeedsEarlierBreak);
     }
 
     DCHECK_EQ(status, BreakStatus::kContinue);
@@ -1685,8 +1686,7 @@ const NGLayoutResult* TableLayoutAlgorithm::GenerateFragment(
     // outgoing "repeat" break token). However, we managed to finish the table
     // box in this fragment, so it shouldn't repeat anymore. We now need to
     // re-layout, with this in mind.
-    return container_builder_.Abort(
-        NGLayoutResult::kNeedsRelayoutAsLastTableBox);
+    return container_builder_.Abort(LayoutResult::kNeedsRelayoutAsLastTableBox);
   }
 
   return container_builder_.ToBoxFragment();

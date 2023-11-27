@@ -288,7 +288,7 @@ MathScriptsLayoutAlgorithm::LayoutAndGetMetrics(BlockNode child) const {
   return child_and_metrics;
 }
 
-const NGLayoutResult* MathScriptsLayoutAlgorithm::Layout() {
+const LayoutResult* MathScriptsLayoutAlgorithm::Layout() {
   DCHECK(!GetBreakToken());
 
   BlockNode base = nullptr;

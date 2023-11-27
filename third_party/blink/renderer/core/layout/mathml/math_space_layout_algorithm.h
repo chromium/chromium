@@ -17,7 +17,7 @@ class CORE_EXPORT MathSpaceLayoutAlgorithm
   explicit MathSpaceLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
  private:
-  const NGLayoutResult* Layout() final;
+  const LayoutResult* Layout() final;
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) final;
 };

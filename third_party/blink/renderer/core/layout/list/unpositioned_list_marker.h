@@ -22,8 +22,8 @@ class BoxFragmentBuilder;
 class ComputedStyle;
 class ConstraintSpace;
 class LayoutOutsideListMarker;
+class LayoutResult;
 class LayoutUnit;
-class NGLayoutResult;
 class NGPhysicalFragment;
 
 // Represents an unpositioned list marker.
@@ -34,7 +34,7 @@ class NGPhysicalFragment;
 //
 // To handle these two cases consistently, when list markers appear in these
 // algorithm, they are set as "unpositioned", and are propagated to ancestors
-// through NGLayoutResult until they meet the corresponding list items.
+// through LayoutResult until they meet the corresponding list items.
 //
 // In order to adjust with the other content of LI, marker will be handled
 // after other children.
@@ -72,7 +72,7 @@ class CORE_EXPORT UnpositionedListMarker final {
                 FontBaseline,
                 const NGPhysicalFragment& content,
                 const BoxStrut&,
-                const NGLayoutResult& marker_layout_result,
+                const LayoutResult& marker_layout_result,
                 LayoutUnit content_baseline,
                 LayoutUnit* block_offset,
                 BoxFragmentBuilder*) const;
@@ -82,7 +82,7 @@ class CORE_EXPORT UnpositionedListMarker final {
   // marker.
   void AddToBoxWithoutLineBoxes(const ConstraintSpace&,
                                 FontBaseline,
-                                const NGLayoutResult& marker_layout_result,
+                                const LayoutResult& marker_layout_result,
                                 BoxFragmentBuilder*,
                                 LayoutUnit* intrinsic_block_size) const;
   LayoutUnit InlineOffset(const LayoutUnit marker_inline_size) const;
@@ -91,9 +91,9 @@ class CORE_EXPORT UnpositionedListMarker final {
     return marker_layout_object_ == other.marker_layout_object_;
   }
 
-  const NGLayoutResult* Layout(const ConstraintSpace& parent_space,
-                               const ComputedStyle& parent_style,
-                               FontBaseline) const;
+  const LayoutResult* Layout(const ConstraintSpace& parent_space,
+                             const ComputedStyle& parent_style,
+                             FontBaseline) const;
 
 #if DCHECK_IS_ON()
   void CheckMargin() const;

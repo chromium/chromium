@@ -167,7 +167,7 @@ LayoutTableSection* LayoutTable::PreviousSection(
 
 wtf_size_t LayoutTable::ColumnCount() const {
   NOT_DESTROYED();
-  const NGLayoutResult* cached_layout_result = GetCachedLayoutResult(nullptr);
+  const LayoutResult* cached_layout_result = GetCachedLayoutResult(nullptr);
   if (!cached_layout_result)
     return 0;
   return cached_layout_result->TableColumnCount();

@@ -41,7 +41,7 @@ FrameSetLayoutAlgorithm::FrameSetLayoutAlgorithm(
     const LayoutAlgorithmParams& params)
     : LayoutAlgorithm<BlockNode, BoxFragmentBuilder, BlockBreakToken>(params) {}
 
-const NGLayoutResult* FrameSetLayoutAlgorithm::Layout() {
+const LayoutResult* FrameSetLayoutAlgorithm::Layout() {
   auto& frame_set = *To<HTMLFrameSetElement>(Node().GetDOMNode());
   auto layout_data = std::make_unique<FrameSetLayoutData>();
   layout_data->border_thickness = frame_set.Border(Style());
@@ -318,7 +318,7 @@ void FrameSetLayoutAlgorithm::LayoutChild(const LayoutInputNode& child,
   space_builder.SetAvailableSize(available_size);
   space_builder.SetIsFixedInlineSize(true);
   space_builder.SetIsFixedBlockSize(true);
-  const NGLayoutResult* result =
+  const LayoutResult* result =
       To<BlockNode>(child).Layout(space_builder.ToConstraintSpace());
   container_builder_.AddResult(
       *result, position.ConvertToLogical(container_direction, frameset_size,

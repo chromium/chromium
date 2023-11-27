@@ -193,7 +193,7 @@ PaintRecord FormattedText::PaintFormattedText(Document& document,
   LogicalSize available_size = {inline_constraint_, block_constraint_};
   builder.SetAvailableSize(available_size);
   ConstraintSpace space = builder.ToConstraintSpace();
-  const NGLayoutResult* block_results = block_node.Layout(space, nullptr);
+  const LayoutResult* block_results = block_node.Layout(space, nullptr);
   const auto& fragment =
       To<NGPhysicalBoxFragment>(block_results->PhysicalFragment());
   block_->RecalcVisualOverflow();
