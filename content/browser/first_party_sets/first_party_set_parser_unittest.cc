@@ -14,6 +14,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/local_set_declaration.h"
+#include "net/first_party_sets/sets_mutation.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -780,7 +781,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
           .first.value(),
-      FirstPartySetParser::ParsedPolicySetLists({}, {}));
+      net::SetsMutation({}, {}));
 }
 
 TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
@@ -795,7 +796,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
           .first.value(),
-      FirstPartySetParser::ParsedPolicySetLists({}, {}));
+      net::SetsMutation({}, {}));
 }
 
 TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
@@ -997,7 +998,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
           .first.value(),
-      FirstPartySetParser::ParsedPolicySetLists(
+      net::SetsMutation(
           {
               FirstPartySetParser::SetsMap({
                   {primary2,
@@ -1055,7 +1056,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
           .first.value(),
-      FirstPartySetParser::ParsedPolicySetLists(
+      net::SetsMutation(
           {
               FirstPartySetParser::SetsMap({
                   {primary1,
@@ -1093,7 +1094,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
           .first.value(),
-      FirstPartySetParser::ParsedPolicySetLists(
+      net::SetsMutation(
           {
               FirstPartySetParser::SetsMap({
                   {primary2,
@@ -1273,7 +1274,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
           .first.value(),
-      FirstPartySetParser::ParsedPolicySetLists(
+      net::SetsMutation(
           {FirstPartySetParser::SetsMap({
                {primary1,
                 net::FirstPartySetEntry(primary1, net::SiteType::kPrimary,
@@ -1330,7 +1331,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
           .first.value(),
-      FirstPartySetParser::ParsedPolicySetLists(
+      net::SetsMutation(
           {FirstPartySetParser::SetsMap({
                {primary1,
                 net::FirstPartySetEntry(primary1, net::SiteType::kPrimary,
@@ -1403,7 +1404,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
           .first.value(),
-      FirstPartySetParser::ParsedPolicySetLists(
+      net::SetsMutation(
           {FirstPartySetParser::SetsMap({
                {primary1,
                 net::FirstPartySetEntry(primary1, net::SiteType::kPrimary,
@@ -1468,7 +1469,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
           .first.value(),
-      FirstPartySetParser::ParsedPolicySetLists(
+      net::SetsMutation(
           {FirstPartySetParser::SetsMap({
                {primary1,
                 net::FirstPartySetEntry(primary1, net::SiteType::kPrimary,
@@ -1610,7 +1611,7 @@ TEST_F(FirstPartySetParserTest,
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
           .first.value(),
-      FirstPartySetParser::ParsedPolicySetLists(
+      net::SetsMutation(
           {FirstPartySetParser::SetsMap({
               {primary1, net::FirstPartySetEntry(
                              primary1, net::SiteType::kPrimary, absl::nullopt)},

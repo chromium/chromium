@@ -28,6 +28,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/local_set_declaration.h"
+#include "net/first_party_sets/sets_mutation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -43,6 +44,7 @@ using ParseWarning = FirstPartySetsHandler::ParseWarning;
 using Aliases = FirstPartySetParser::Aliases;
 using SetsAndAliases = FirstPartySetParser::SetsAndAliases;
 using SetsMap = FirstPartySetParser::SetsMap;
+using SingleSet = FirstPartySetParser::SingleSet;
 
 constexpr char kFirstPartySetPrimaryField[] = "primary";
 constexpr char kFirstPartySetAssociatedSitesField[] = "associatedSites";
@@ -146,6 +148,11 @@ absl::optional<std::string> RemoveTldFromSite(const net::SchemefulSite& site) {
   const std::string serialized = site.Serialize();
   return serialized.substr(0, serialized.size() - tld_length);
 }
+
+struct ParsedPolicySetLists {
+  std::vector<SingleSet> replacements;
+  std::vector<SingleSet> additions;
+};
 
 class ParseContext {
  public:
@@ -387,13 +394,13 @@ class ParseContext {
   // Removes invalid site entries and fixes up any lingering singletons.
   // Modifies the lists in-place.
   void PostProcessSetLists(
-      base::expected<FirstPartySetParser::ParsedPolicySetLists,
-                     FirstPartySetsHandler::ParseError>& lists_or_error) const {
+      base::expected<ParsedPolicySetLists, FirstPartySetsHandler::ParseError>&
+          lists_or_error) const {
     if (!lists_or_error.has_value() || invalid_keys_.empty()) {
       return;
     }
 
-    FirstPartySetParser::ParsedPolicySetLists& lists = lists_or_error.value();
+    ParsedPolicySetLists& lists = lists_or_error.value();
 
     // Erase invalid members/primaries.
     const auto is_invalid_entry =
@@ -656,25 +663,6 @@ class ParseContext {
 
 }  // namespace
 
-FirstPartySetParser::ParsedPolicySetLists::ParsedPolicySetLists(
-    std::vector<FirstPartySetParser::SingleSet> replacement_list,
-    std::vector<FirstPartySetParser::SingleSet> addition_list)
-    : replacements(std::move(replacement_list)),
-      additions(std::move(addition_list)) {}
-
-FirstPartySetParser::ParsedPolicySetLists::ParsedPolicySetLists() = default;
-FirstPartySetParser::ParsedPolicySetLists::ParsedPolicySetLists(
-    FirstPartySetParser::ParsedPolicySetLists&&) = default;
-FirstPartySetParser::ParsedPolicySetLists::ParsedPolicySetLists(
-    const FirstPartySetParser::ParsedPolicySetLists&) = default;
-FirstPartySetParser::ParsedPolicySetLists::~ParsedPolicySetLists() = default;
-
-bool FirstPartySetParser::ParsedPolicySetLists::operator==(
-    const FirstPartySetParser::ParsedPolicySetLists& other) const {
-  return std::tie(replacements, additions) ==
-         std::tie(other.replacements, other.additions);
-}
-
 absl::optional<net::SchemefulSite>
 FirstPartySetParser::CanonicalizeRegisteredDomain(
     const base::StringPiece origin_string,
@@ -766,8 +754,12 @@ FirstPartySetParser::ParseSetsFromEnterprisePolicy(
 
   context.PostProcessSetLists(set_lists);
 
-  return FirstPartySetParser::PolicyParseResult(std::move(set_lists),
-                                                context.warnings());
+  return FirstPartySetParser::PolicyParseResult(
+      std::move(set_lists).transform([](ParsedPolicySetLists lists) {
+        return net::SetsMutation(std::move(lists.replacements),
+                                 std::move(lists.additions));
+      }),
+      context.warnings());
 }
 
 // static
@@ -798,25 +790,6 @@ net::LocalSetDeclaration FirstPartySetParser::ParseFromCommandLine(
   }
 
   return net::LocalSetDeclaration(std::move(entries), std::move(aliases));
-}
-
-std::ostream& operator<<(
-    std::ostream& os,
-    const FirstPartySetParser::ParsedPolicySetLists& lists) {
-  os << "additions: {";
-  for (const auto& set : lists.additions) {
-    for (const auto& pair : set) {
-      os << pair.first << " -> " << pair.second << ", ";
-    }
-  }
-  os << "}, replacements: {";
-  for (const auto& set : lists.replacements) {
-    for (const auto& pair : set) {
-      os << pair.first << " -> " << pair.second << ", ";
-    }
-  }
-  os << "}";
-  return os;
 }
 
 }  // namespace content

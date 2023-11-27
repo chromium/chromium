@@ -17,6 +17,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/local_set_declaration.h"
+#include "net/first_party_sets/sets_mutation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -31,25 +32,8 @@ class CONTENT_EXPORT FirstPartySetParser {
 
   enum class PolicySetType { kReplacement, kAddition };
 
-  struct CONTENT_EXPORT ParsedPolicySetLists {
-    ParsedPolicySetLists(std::vector<SingleSet> replacement_list,
-                         std::vector<SingleSet> addition_list);
-
-    ParsedPolicySetLists();
-    ParsedPolicySetLists(ParsedPolicySetLists&&);
-    ParsedPolicySetLists& operator=(ParsedPolicySetLists&&) = default;
-    ParsedPolicySetLists(const ParsedPolicySetLists&);
-    ParsedPolicySetLists& operator=(const ParsedPolicySetLists&) = default;
-    ~ParsedPolicySetLists();
-
-    bool operator==(const ParsedPolicySetLists& other) const;
-
-    std::vector<SingleSet> replacements;
-    std::vector<SingleSet> additions;
-  };
-
   using PolicyParseResult = std::pair<
-      base::expected<ParsedPolicySetLists, FirstPartySetsHandler::ParseError>,
+      base::expected<net::SetsMutation, FirstPartySetsHandler::ParseError>,
       std::vector<FirstPartySetsHandler::ParseWarning>>;
 
   FirstPartySetParser() = delete;
@@ -88,10 +72,6 @@ class CONTENT_EXPORT FirstPartySetParser {
   [[nodiscard]] static net::LocalSetDeclaration ParseFromCommandLine(
       const std::string& switch_value);
 };
-
-CONTENT_EXPORT std::ostream& operator<<(
-    std::ostream& os,
-    const FirstPartySetParser::ParsedPolicySetLists& lists);
 
 }  // namespace content
 

@@ -206,9 +206,9 @@ void GlobalFirstPartySets::ApplyManuallySpecifiedSet(
 
   // We handle the manually-specified set the same way as we handle
   // replacement enterprise policy sets.
-  manual_config_ = ComputeConfig(
+  manual_config_ = ComputeConfig(SetsMutation(
       /*replacement_sets=*/{manual_entries},
-      /*addition_sets=*/{});
+      /*addition_sets=*/{}));
   manual_aliases_ = std::move(manual_aliases);
 }
 
@@ -219,8 +219,9 @@ void GlobalFirstPartySets::UnsafeSetManualConfig(
 }
 
 FirstPartySetsContextConfig GlobalFirstPartySets::ComputeConfig(
-    const std::vector<SingleSet>& replacement_sets,
-    const std::vector<SingleSet>& addition_sets) const {
+    const SetsMutation& mutation) const {
+  const std::vector<SingleSet>& replacement_sets = mutation.replacements();
+  const std::vector<SingleSet>& addition_sets = mutation.additions();
   if (base::ranges::all_of(replacement_sets,
                            [](const SingleSet& set) { return set.empty(); }) &&
       base::ranges::all_of(addition_sets,

@@ -12,6 +12,7 @@
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/local_set_declaration.h"
+#include "net/first_party_sets/sets_mutation.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -329,7 +330,7 @@ TEST_F(GlobalFirstPartySetsTest,
 
   // Modify kPrimary's set by removing kAssociated5 and modifying kAssociated4,
   // via policy.
-  FirstPartySetsContextConfig config = global_sets.ComputeConfig(
+  FirstPartySetsContextConfig config = global_sets.ComputeConfig(SetsMutation(
       /*replacement_sets=*/
       {
           {
@@ -346,7 +347,7 @@ TEST_F(GlobalFirstPartySetsTest,
                FirstPartySetEntry(kPrimary, SiteType::kService, absl::nullopt)},
           },
       },
-      /*addition_sets=*/{});
+      /*addition_sets=*/{}));
 
   // Note that since the policy sets take precedence over the manual set,
   // kAssociated5 is no longer in an FPS.
@@ -665,7 +666,7 @@ TEST_F(PopulatedGlobalFirstPartySetsTest,
        ForEachEffectiveSetEntry_PublicSetsWithConfig_FullIteration) {
   // Modify kPrimary's set by removing kAssociated2 and adding kAssociated4, via
   // policy.
-  FirstPartySetsContextConfig config = global_sets().ComputeConfig(
+  FirstPartySetsContextConfig config = global_sets().ComputeConfig(SetsMutation(
       /*replacement_sets=*/
       {
           {
@@ -682,7 +683,7 @@ TEST_F(PopulatedGlobalFirstPartySetsTest,
                FirstPartySetEntry(kPrimary, SiteType::kService, absl::nullopt)},
           },
       },
-      /*addition_sets=*/{});
+      /*addition_sets=*/{}));
 
   EXPECT_THAT(
       CollectEffectiveSetEntries(global_sets(), config),
@@ -723,7 +724,7 @@ TEST_F(
 
   // Modify kPrimary's set by removing kAssociated2 and adding kAssociated4, via
   // policy.
-  FirstPartySetsContextConfig config = global_sets().ComputeConfig(
+  FirstPartySetsContextConfig config = global_sets().ComputeConfig(SetsMutation(
       /*replacement_sets=*/
       {
           {
@@ -740,7 +741,7 @@ TEST_F(
                FirstPartySetEntry(kPrimary, SiteType::kService, absl::nullopt)},
           },
       },
-      /*addition_sets=*/{});
+      /*addition_sets=*/{}));
 
   // Note that since the policy sets take precedence over the manual set,
   // kAssociated5 is no longer in an FPS.
@@ -779,7 +780,7 @@ TEST_F(
           {kAssociated1Cctld2, kAssociated1},
       }));
 
-  FirstPartySetsContextConfig config = global_sets().ComputeConfig(
+  FirstPartySetsContextConfig config = global_sets().ComputeConfig(SetsMutation(
       /*replacement_sets=*/
       {
           {
@@ -790,7 +791,7 @@ TEST_F(
                                   absl::nullopt)},
           },
       },
-      /*addition_sets=*/{});
+      /*addition_sets=*/{}));
 
   EXPECT_THAT(
       CollectEffectiveSetEntries(global_sets(), config),
@@ -844,7 +845,7 @@ TEST_F(GlobalFirstPartySetsTest, ComputeConfig_Empty) {
                      FirstPartySetEntry(kPrimary, SiteType::kAssociated, 0)},
                 },
                 /*aliases=*/{})
-                .ComputeConfig({}, {}),
+                .ComputeConfig(SetsMutation({}, {})),
             FirstPartySetsContextConfig());
 }
 
@@ -860,7 +861,7 @@ TEST_F(GlobalFirstPartySetsTest,
            FirstPartySetEntry(kPrimary, SiteType::kAssociated, 0)},
       },
       /*aliases=*/{});
-  FirstPartySetsContextConfig config = sets.ComputeConfig(
+  FirstPartySetsContextConfig config = sets.ComputeConfig(SetsMutation(
       /*replacement_sets=*/
       {
           {
@@ -871,7 +872,7 @@ TEST_F(GlobalFirstPartySetsTest,
                                   absl::nullopt)},
           },
       },
-      /*addition_sets=*/{});
+      /*addition_sets=*/{}));
   EXPECT_THAT(
       sets.FindEntries({kAssociated2, kPrimary2}, config),
       UnorderedElementsAre(
@@ -899,7 +900,7 @@ TEST_F(
            FirstPartySetEntry(kPrimary, SiteType::kAssociated, 1)},
       },
       /*aliases=*/{});
-  FirstPartySetsContextConfig config = sets.ComputeConfig(
+  FirstPartySetsContextConfig config = sets.ComputeConfig(SetsMutation(
       /*replacement_sets=*/
       {
           {
@@ -910,7 +911,7 @@ TEST_F(
                                   absl::nullopt)},
           },
       },
-      /*addition_sets=*/{});
+      /*addition_sets=*/{}));
   EXPECT_THAT(
       sets.FindEntries({kPrimary2, kAssociated2}, config),
       UnorderedElementsAre(
@@ -938,7 +939,7 @@ TEST_F(
            FirstPartySetEntry(kPrimary, SiteType::kAssociated, 1)},
       },
       /*aliases=*/{});
-  FirstPartySetsContextConfig config = sets.ComputeConfig(
+  FirstPartySetsContextConfig config = sets.ComputeConfig(SetsMutation(
       /*replacement_sets=*/
       {
           {
@@ -948,7 +949,7 @@ TEST_F(
                                                 absl::nullopt)},
           },
       },
-      /*addition_sets=*/{});
+      /*addition_sets=*/{}));
   EXPECT_THAT(
       sets.FindEntries({kAssociated3, kPrimary, kAssociated1, kAssociated2},
                        config),
@@ -974,7 +975,7 @@ TEST_F(
            FirstPartySetEntry(kPrimary, SiteType::kAssociated, 0)},
       },
       /*aliases=*/{});
-  FirstPartySetsContextConfig config = sets.ComputeConfig(
+  FirstPartySetsContextConfig config = sets.ComputeConfig(SetsMutation(
       /*replacement_sets=*/
       {
           {
@@ -985,7 +986,7 @@ TEST_F(
                                   absl::nullopt)},
           },
       },
-      /*addition_sets=*/{});
+      /*addition_sets=*/{}));
   EXPECT_THAT(
       sets.FindEntries({kAssociated1, kPrimary3, kPrimary}, config),
       UnorderedElementsAre(
@@ -1010,7 +1011,7 @@ TEST_F(GlobalFirstPartySetsTest,
            FirstPartySetEntry(kPrimary, SiteType::kAssociated, 0)},
       },
       /*aliases=*/{});
-  FirstPartySetsContextConfig config = sets.ComputeConfig(
+  FirstPartySetsContextConfig config = sets.ComputeConfig(SetsMutation(
       /*replacement_sets=*/{},
       /*addition_sets=*/{
           {
@@ -1020,7 +1021,7 @@ TEST_F(GlobalFirstPartySetsTest,
                FirstPartySetEntry(kPrimary2, SiteType::kAssociated,
                                   absl::nullopt)},
           },
-      });
+      }));
   EXPECT_THAT(
       sets.FindEntries({kAssociated2, kPrimary2}, config),
       UnorderedElementsAre(
@@ -1047,7 +1048,7 @@ TEST_F(
            FirstPartySetEntry(kPrimary, SiteType::kAssociated, 0)},
       },
       /*aliases=*/{});
-  FirstPartySetsContextConfig config = sets.ComputeConfig(
+  FirstPartySetsContextConfig config = sets.ComputeConfig(SetsMutation(
       /*replacement_sets=*/{},
       /*addition_sets=*/{
           {
@@ -1061,7 +1062,7 @@ TEST_F(
                FirstPartySetEntry(kAssociated1, SiteType::kAssociated,
                                   absl::nullopt)},
           },
-      });
+      }));
   EXPECT_THAT(
       sets.FindEntries({kPrimary, kAssociated2, kAssociated3, kAssociated1},
                        config),
@@ -1097,14 +1098,14 @@ TEST_F(
            FirstPartySetEntry(kPrimary, SiteType::kAssociated, 1)},
       },
       /*aliases=*/{});
-  FirstPartySetsContextConfig config = sets.ComputeConfig(
+  FirstPartySetsContextConfig config = sets.ComputeConfig(SetsMutation(
       /*replacement_sets=*/{},
       /*addition_sets=*/{{
           {kPrimary,
            FirstPartySetEntry(kPrimary, SiteType::kPrimary, absl::nullopt)},
           {kAssociated2,
            FirstPartySetEntry(kPrimary, SiteType::kAssociated, absl::nullopt)},
-      }});
+      }}));
   EXPECT_THAT(
       sets.FindEntries({kAssociated1, kAssociated2, kAssociated3, kPrimary},
                        config),
@@ -1135,7 +1136,7 @@ TEST_F(
            FirstPartySetEntry(kPrimary, SiteType::kAssociated, 1)},
       },
       /*aliases=*/{});
-  FirstPartySetsContextConfig config = sets.ComputeConfig(
+  FirstPartySetsContextConfig config = sets.ComputeConfig(SetsMutation(
       /*replacement_sets=*/
       {
           {
@@ -1153,7 +1154,7 @@ TEST_F(
               {kAssociated3, FirstPartySetEntry(kPrimary, SiteType::kAssociated,
                                                 absl::nullopt)},
           },
-      });
+      }));
   EXPECT_THAT(
       sets.FindEntries(
           {kAssociated1, kAssociated2, kAssociated3, kPrimary, kPrimary2},
@@ -1194,7 +1195,7 @@ TEST_F(GlobalFirstPartySetsTest, TransitiveOverlap_TwoCommonPrimaries) {
           {primary2, FirstPartySetEntry(primary1, SiteType::kAssociated, 0)},
       },
       /*aliases=*/{});
-  FirstPartySetsContextConfig config = sets.ComputeConfig(
+  FirstPartySetsContextConfig config = sets.ComputeConfig(SetsMutation(
       /*replacement_sets=*/{},
       /*addition_sets=*/{
           {{primary0,
@@ -1217,7 +1218,7 @@ TEST_F(GlobalFirstPartySetsTest, TransitiveOverlap_TwoCommonPrimaries) {
            {associated_site42,
             FirstPartySetEntry(primary42, SiteType::kAssociated,
                                absl::nullopt)}},
-      });
+      }));
   EXPECT_THAT(
       sets.FindEntries(
           {
@@ -1276,7 +1277,7 @@ TEST_F(GlobalFirstPartySetsTest, TransitiveOverlap_TwoCommonAssociatedSites) {
           {primary1, FirstPartySetEntry(primary2, SiteType::kAssociated, 0)},
       },
       /*aliases=*/{});
-  FirstPartySetsContextConfig config = sets.ComputeConfig(
+  FirstPartySetsContextConfig config = sets.ComputeConfig(SetsMutation(
       /*replacement_sets=*/{},
       /*addition_sets=*/{
           {{primary0,
@@ -1299,7 +1300,7 @@ TEST_F(GlobalFirstPartySetsTest, TransitiveOverlap_TwoCommonAssociatedSites) {
            {associated_site42,
             FirstPartySetEntry(primary42, SiteType::kAssociated,
                                absl::nullopt)}},
-      });
+      }));
   EXPECT_THAT(
       sets.FindEntries(
           {
@@ -1348,7 +1349,7 @@ TEST_F(GlobalFirstPartySetsTest, InvalidPublicSetsVersion_ComputeConfig) {
       /*aliases=*/{});
   ASSERT_TRUE(sets.empty());
 
-  FirstPartySetsContextConfig config = sets.ComputeConfig(
+  FirstPartySetsContextConfig config = sets.ComputeConfig(SetsMutation(
       /*replacement_sets=*/
       {
           {
@@ -1359,7 +1360,7 @@ TEST_F(GlobalFirstPartySetsTest, InvalidPublicSetsVersion_ComputeConfig) {
                                   absl::nullopt)},
           },
       },
-      /*addition_sets=*/{});
+      /*addition_sets=*/{}));
 
   // The config should still be nonempty, even though the component was invalid.
   EXPECT_FALSE(config.empty());

@@ -15,6 +15,7 @@
 #include "net/first_party_sets/first_party_set_entry_override.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/local_set_declaration.h"
+#include "net/first_party_sets/sets_mutation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
@@ -54,15 +55,8 @@ class NET_EXPORT GlobalFirstPartySets {
   GlobalFirstPartySets Clone() const;
 
   // Returns a FirstPartySetsContextConfig that respects the overrides given by
-  // `replacement_sets` and `addition_sets`, relative to this instance's state.
-  //
-  // Preconditions: sets defined by `replacement_sets` and
-  // `addition_sets` must be disjoint.
-  FirstPartySetsContextConfig ComputeConfig(
-      const std::vector<base::flat_map<SchemefulSite, FirstPartySetEntry>>&
-          replacement_sets,
-      const std::vector<base::flat_map<SchemefulSite, FirstPartySetEntry>>&
-          addition_sets) const;
+  // `mutation`, relative to this instance's state.
+  FirstPartySetsContextConfig ComputeConfig(const SetsMutation& mutation) const;
 
   // Returns the entry corresponding to the given `site`, if one exists.
   // Respects any customization/overlay specified by `config`. This is
