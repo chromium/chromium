@@ -1,6 +1,5 @@
 # Web Test Expectations and Baselines
 
-
 The primary function of the web tests is as a regression test suite; this
 means that, while we care about whether a page is being rendered correctly, we
 care more about whether the page is being rendered the way we expect it to. In
@@ -74,16 +73,11 @@ These are the cases where you can't rebaseline:
 
 ## Handling flaky tests
 
-The
-[flakiness dashboard](https://test-results.appspot.com/dashboards/flakiness_dashboard.html)
-is a tool for understanding a test’s behavior over time.
-Originally designed for managing flaky tests, the dashboard shows a timeline
-view of the test’s behavior over time. The tool may be overwhelming at first,
-but
-[the documentation](https://dev.chromium.org/developers/testing/flakiness-dashboard)
-should help. Once you decide that a test is truly flaky, you can suppress it
-using the TestExpectations file, as described below.
+<!-- TODO(crbug.com/1429690): Describe the current flakiness dashboard and
+    LUCI test history. -->
 
+Once you decide that a test is truly flaky, you can suppress it using the
+TestExpectations file, as [described below](#updating-the-expectations-files).
 We do not generally expect Chromium sheriffs to spend time trying to address
 flakiness, though.
 
@@ -117,7 +111,7 @@ When a change will cause many tests to fail, the try jobs may exit early because
 the number of failures exceeds the limit, or the try jobs may timeout because
 more time is needed for the retries. Rebaseline based on such results are not
 suggested. The solution is to temporarily increase the number of shards in
-[test_suite_exceptions.pyl](https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/test_suite_exceptions.pyl) in your CL.
+[`test_suite_exceptions.pyl`](/testing/buildbot/test_suite_exceptions.pyl) in your CL.
 Change the values back to its original value before sending the CL to CQ.
 
 #### Options
@@ -151,10 +145,7 @@ way to rebaseline tests for a particular platform.
 * Add files into git and commit.
 
 The generated command includes `blink_tool.py optimize-baselines <tests>` which
-removes redundant baselines. However, the optimization doesn't work for
-flag-specific baselines for now, so the rebaseline script may create redundant
-baselines for flag-specific results. We prefer local manual rebaselining (see
-below) for flag-specific rebaselines when possible.
+removes redundant baselines.
 
 ### Local manual rebaselining
 
@@ -180,9 +171,9 @@ test is being re-baselined.
 See [Testing Runtime Flags](./web_tests.md#Testing-Runtime-Flags) for details
 about flag-specific expectations.
 
-Though we prefer the [Rebaseline Tool](#How-to-rebaseline) to local rebaselining,
-the Rebaseline Tool doesn't support rebaselining flag-specific expectations except
-highdpi.
+The [Rebaseline Tool](#How-to-rebaseline) supports all flag-specific suites that
+[run in CQ/CI](/third_party/blink/tools/blinkpy/common/config/builders.json).
+You may also rebaseline flag-specific results locally with:
 
 ```bash
 third_party/blink/tools/run_web_tests.py --flag-specific=config --reset-results foo/bar/test.html
@@ -218,6 +209,12 @@ files. You can follow the steps below for easier review.
 * [TestExpectations](../../third_party/blink/web_tests/TestExpectations): The
   main test failure suppression file. In theory, this should be used for
   temporarily marking tests as flaky.
+* [ChromeTestExpectations](/third_party/blink/web_tests/ChromeTestExpectations):
+  Tests that fail under Chrome but pass under content shell.
+  Tests absent from this file inherit expectations from `TestExpectations` and
+  other files.
+  See [the `run_wpt_tests.py` doc](run_web_platform_tests.md) for information
+  about WPT coverage for Chrome.
 * [ASANExpectations](../../third_party/blink/web_tests/ASANExpectations):
   Tests that fail under ASAN.
 * [LeakExpectations](../../third_party/blink/web_tests/LeakExpectations):
@@ -274,7 +271,7 @@ The syntax of a line is roughly:
   test_name_or_directory are not optional**; however the modifiers component is optional. In
   other words, if you want to specify modifiers or expectations, you must
   enclose them in brackets.
-* If test_name_or_directory is a directory, it should be ended with '/*', and all
+* If test_name_or_directory is a directory, it should be ended with `/*`, and all
   tests under the directory will have the expectations, unless overridden by
   more specific expectation lines. **The wildcard is intentionally only allowed at the
   end of test_name_or_directory, so that it will be easy to reason about
@@ -285,20 +282,21 @@ The syntax of a line is roughly:
   `Bug(username)`.
 * If no modifiers are specified, the test applies to all of the configurations
   applicable to that file.
-* If specified, modifiers must be one of `Fuchsia`, `Mac`, `Mac10.13`,
+* If specified, modifiers can be one of `Fuchsia`, `Mac`, `Mac10.13`,
   `Mac10.14`, `Mac10.15`, `Mac11`, `Mac11-arm64`, `Mac12`, `Mac12-arm64`,
-  `Mac13`, `Mac13-arm64`, `Linux`, `Trusty`, `Win`, `Win10.20h2`,
-  `Win11`, `iOS16-Simulator`, and, optionally, `Release`, or `Debug`. Check the top of
-  [TestExpectations](../../third_party/blink/web_tests/TestExpectations) or the
-  `ALL_SYSTEMS` macro in
-  [third_party/blink/tools/blinkpy/web_tests/port/base.py](../../third_party/blink/tools/blinkpy/web_tests/port/base.py)
-  for an up-to-date list.
+  `Mac13`, `Mac13-arm64`, `Linux`, `Chrome`, `Win`, `Win10.20h2`,
+  `Win11`, `iOS16-Simulator`, and, optionally, `Release`, or `Debug`.
+  Check the `# tags: ...` comments [at the top of each
+  file](/third_party/blink/web_tests/TestExpectations#1) to see which modifiers
+  that file supports.
 * Some modifiers are meta keywords, e.g. `Win` represents `Win10.20h2` and `Win11`.
   See the `CONFIGURATION_SPECIFIER_MACROS` dictionary in
   [third_party/blink/tools/blinkpy/web_tests/port/base.py](../../third_party/blink/tools/blinkpy/web_tests/port/base.py)
   for the meta keywords and which modifiers they represent.
-* Expectations can be one or more of `Crash`, `Failure`, `Pass`, `Rebaseline`,
-  `Slow`, `Skip`, `Timeout`, `WontFix`, `Missing`.
+* Expectations can be one or more of `Crash`, `Failure`, `Pass`, `Slow`, or
+  `Skip`, `Timeout`.
+  Some results don't make sense for some files; check the `# results: ...`
+  comment at the top of each file to see what results that file supports.
   If multiple expectations are listed, the test is considered "flaky" and any
   of those results will be considered as expected.
 
@@ -314,29 +312,20 @@ crash is bug \#12345 in the [Chromium issue tracker](https://crbug.com). Note
 that the test will still be run, so that we can notice if it doesn't actually
 crash.
 
-Assuming you're running a debug build on Mac 10.9, the following lines are all
+Assuming you're running a debug build on Mac 10.9, the following lines are
 equivalent (in terms of whether the test is performed and its expected outcome):
 
 ```
 fast/html/keygen.html [ Skip ]
-fast/html/keygen.html [ WontFix ]
 Bug(darin) [ Mac10.9 Debug ] fast/html/keygen.html [ Skip ]
 ```
 
 ### Semantics
 
-* `WontFix` implies `Skip` and also indicates that we don't have any plans to
-  make the test pass.
-* `WontFix` lines always go in the
-  [NeverFixTests file](../../third_party/blink/web_tests/NeverFixTests) as
-  we never intend to fix them. These are just for tests that only apply to some
-  subset of the platforms we support.
-* `WontFix` and `Skip` must be used by themselves and cannot be specified
-  alongside `Crash` or another expectation keyword.
-* `Slow` causes the test runner to give the test 5x the usual time limit to run.
-  `Slow` lines go in the
-  [SlowTests file ](../../third_party/blink/web_tests/SlowTests). A given
-  line cannot have both Slow and Timeout.
+`Slow` causes the test runner to give the test 5x the usual time limit to run.
+`Slow` lines go in the
+[`SlowTests` file](../../third_party/blink/web_tests/SlowTests).
+A given line cannot have both Slow and Timeout.
 
 Also, when parsing the file, we use two rules to figure out if an expectation
 line applies to the current run:
@@ -345,6 +334,11 @@ line applies to the current run:
    run, the expectation is ignored.
 2. Expectations that match more of a test name are used before expectations that
    match less of a test name.
+
+If a [virtual test] has no explicit expectations (following the rules above),
+it inherits its expectations from the base (nonvirtual) test.
+
+[virtual test]: /docs/testing/web_tests.md#Virtual-test-suites
 
 For example, if you had the following lines in your file, and you were running a
 debug build on `Mac10.10`:
@@ -365,6 +359,8 @@ You would expect:
   match).
 * `fast/html/section-element.html` to either crash or produce a text (or image
   and text) failure, but not time out or pass.
+* `virtual/foo/fast/html/article-element.html` to fail with a text diff. The
+  virtual test inherits its expectation from the first line.
 
 Test expectation can also apply to all tests under a directory (specified with a
 name ending with `/*`). A more specific expectation can override a less
