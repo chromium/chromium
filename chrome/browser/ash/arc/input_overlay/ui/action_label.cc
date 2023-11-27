@@ -473,13 +473,13 @@ void ActionLabel::SetToViewMode() {
 
   if (mouse_action_ != MouseAction::NONE) {
     if (mouse_action_ == MouseAction::PRIMARY_CLICK) {
-      auto left_click_icon = gfx::CreateVectorIcon(
-          gfx::IconDescription(kMouseLeftClickViewIcon, kIconSize));
-      SetImage(views::Button::STATE_NORMAL, left_click_icon);
+      auto left_click_icon = ui::ImageModel::FromVectorIcon(
+          kMouseLeftClickViewIcon, gfx::kPlaceholderColor, kIconSize);
+      SetImageModel(views::Button::STATE_NORMAL, left_click_icon);
     } else {
-      auto right_click_icon = gfx::CreateVectorIcon(
-          gfx::IconDescription(kMouseRightClickViewIcon, kIconSize));
-      SetImage(views::Button::STATE_NORMAL, right_click_icon);
+      auto right_click_icon = ui::ImageModel::FromVectorIcon(
+          kMouseRightClickViewIcon, gfx::kPlaceholderColor, kIconSize);
+      SetImageModel(views::Button::STATE_NORMAL, right_click_icon);
     }
   }
 
@@ -510,13 +510,13 @@ void ActionLabel::SetToEditMode() {
 
   if (mouse_action_ != MouseAction::NONE) {
     if (mouse_action_ == MouseAction::PRIMARY_CLICK) {
-      auto left_click_icon = gfx::CreateVectorIcon(
-          gfx::IconDescription(kMouseLeftClickEditIcon, kIconSize));
-      SetImage(views::Button::STATE_NORMAL, left_click_icon);
+      auto left_click_icon = ui::ImageModel::FromVectorIcon(
+          kMouseLeftClickEditIcon, gfx::kPlaceholderColor, kIconSize);
+      SetImageModel(views::Button::STATE_NORMAL, left_click_icon);
     } else {
-      auto right_click_icon = gfx::CreateVectorIcon(
-          gfx::IconDescription(kMouseRightClickEditIcon, kIconSize));
-      SetImage(views::Button::STATE_NORMAL, right_click_icon);
+      auto right_click_icon = ui::ImageModel::FromVectorIcon(
+          kMouseRightClickEditIcon, gfx::kPlaceholderColor, kIconSize);
+      SetImageModel(views::Button::STATE_NORMAL, right_click_icon);
     }
   }
   SetToEditDefault();

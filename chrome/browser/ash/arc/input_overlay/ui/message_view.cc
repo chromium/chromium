@@ -76,20 +76,21 @@ MessageView::MessageView(DisplayOverlayController* controller,
   image()->SetHorizontalAlignment(views::ImageView::Alignment::kLeading);
   switch (message_type) {
     case MessageType::kInfo:
-      SetImage(views::Button::STATE_NORMAL,
-               gfx::CreateVectorIcon(gfx::IconDescription(
-                   vector_icons::kInfoOutlineIcon, kIconSize, kInfoIconColor)));
+      SetImageModel(
+          views::Button::STATE_NORMAL,
+          ui::ImageModel::FromVectorIcon(vector_icons::kInfoOutlineIcon,
+                                         kInfoIconColor, kIconSize));
       break;
     case MessageType::kError:
-      SetImage(
+      SetImageModel(
           views::Button::STATE_NORMAL,
-          gfx::CreateVectorIcon(gfx::IconDescription(
-              vector_icons::kErrorOutlineIcon, kIconSize, kErrorIconColor)));
+          ui::ImageModel::FromVectorIcon(vector_icons::kErrorOutlineIcon,
+                                         kErrorIconColor, kIconSize));
       break;
     case MessageType::kInfoLabelFocus:
-      SetImage(views::Button::STATE_NORMAL,
-               gfx::CreateVectorIcon(gfx::IconDescription(
-                   vector_icons::kKeyboardIcon, kIconSize, kInfoIconColor)));
+      SetImageModel(views::Button::STATE_NORMAL,
+                    ui::ImageModel::FromVectorIcon(vector_icons::kKeyboardIcon,
+                                                   kInfoIconColor, kIconSize));
       break;
     default:
       NOTREACHED();

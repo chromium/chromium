@@ -126,8 +126,8 @@ void ZeroStateIconButton::OnThemeChanged() {
   DeskButtonBase::OnThemeChanged();
   const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kButtonIconColor);
-  SetImage(views::Button::STATE_NORMAL,
-           gfx::CreateVectorIcon(*button_icon_, icon_color));
+  SetImageModel(views::Button::STATE_NORMAL,
+                ui::ImageModel::FromVectorIcon(*button_icon_, icon_color));
 }
 
 gfx::Size ZeroStateIconButton::CalculatePreferredSize() const {

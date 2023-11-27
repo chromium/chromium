@@ -72,13 +72,13 @@ class ASH_EXPORT InnerExpandedDesksBarButton : public DeskButtonBase {
     const SkColor enabled_icon_color =
         AshColorProvider::Get()->GetContentLayerColor(
             AshColorProvider::ContentLayerType::kButtonIconColor);
-    SetImage(views::Button::STATE_NORMAL,
-             gfx::CreateVectorIcon(*outer_button_->button_icon(),
-                                   enabled_icon_color));
-    SetImage(
-        views::Button::STATE_DISABLED,
-        gfx::CreateVectorIcon(*outer_button_->button_icon(),
-                              ColorUtil::GetDisabledColor(enabled_icon_color)));
+    SetImageModel(views::Button::STATE_NORMAL,
+                  ui::ImageModel::FromVectorIcon(*outer_button_->button_icon(),
+                                                 enabled_icon_color));
+    SetImageModel(views::Button::STATE_DISABLED,
+                  ui::ImageModel::FromVectorIcon(
+                      *outer_button_->button_icon(),
+                      ColorUtil::GetDisabledColor(enabled_icon_color)));
     SetButtonState(GetEnabled());
   }
 

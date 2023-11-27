@@ -194,14 +194,14 @@ ui::ImageModel SizeImageModel(const ui::ImageModel& image_model, int size) {
                                         size);
 }
 
-const gfx::ImageSkia ProfileManagementImageFromIcon(
+const ui::ImageModel ProfileManagementImageFromIcon(
     const gfx::VectorIcon& icon,
     const ui::ColorProvider* color_provider) {
   constexpr float kIconToImageRatio = 0.75f;
   constexpr int kIconSize = 20;
   const SkColor icon_color = color_provider->GetColor(ui::kColorIcon);
   gfx::ImageSkia image = ImageForMenu(icon, kIconToImageRatio, icon_color);
-  return SizeImage(image, kIconSize);
+  return ui::ImageModel::FromImageSkia(SizeImage(image, kIconSize));
 }
 
 // TODO(crbug.com/1146998): Adjust button size to be 16x16.
@@ -339,8 +339,8 @@ class ProfileManagementFeatureButton : public HoverButton {
   // HoverButton:
   void OnThemeChanged() override {
     HoverButton::OnThemeChanged();
-    SetImage(STATE_NORMAL,
-             ProfileManagementImageFromIcon(*icon_, GetColorProvider()));
+    SetImageModel(Button::STATE_NORMAL,
+                  ProfileManagementImageFromIcon(*icon_, GetColorProvider()));
   }
 
  private:
@@ -435,7 +435,9 @@ class SyncButton : public HoverButton {
   // HoverButton:
   void OnThemeChanged() override {
     HoverButton::OnThemeChanged();
-    SetImage(STATE_NORMAL, SizeImage(root_view_->GetSyncIcon(), kBadgeSize));
+    SetImageModel(Button::STATE_NORMAL,
+                  ui::ImageModel::FromImageSkia(
+                      SizeImage(root_view_->GetSyncIcon(), kBadgeSize)));
   }
 
  private:

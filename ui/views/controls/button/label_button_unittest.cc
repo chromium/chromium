@@ -237,7 +237,9 @@ TEST_F(LabelButtonTest, LabelPreferredSizeWithMaxWidth) {
     button()->SetMultiLine(is_multiline);
     for (bool set_image : {false, true}) {
       if (set_image)
-        button()->SetImage(Button::STATE_NORMAL, CreateTestImage(16, 16));
+        button()->SetImageModel(
+            Button::STATE_NORMAL,
+            ui::ImageModel::FromImageSkia(CreateTestImage(16, 16)));
 
       bool preferred_size_is_sometimes_narrower_than_max = false;
       bool preferred_height_shrinks_as_max_width_grows = false;
@@ -413,27 +415,32 @@ TEST_F(LabelButtonTest, Image) {
 
   EXPECT_LT(button()->GetPreferredSize().width(), small_size);
   EXPECT_LT(button()->GetPreferredSize().height(), small_size);
-  button()->SetImage(Button::STATE_NORMAL, small_image);
+  button()->SetImageModel(Button::STATE_NORMAL,
+                          ui::ImageModel::FromImageSkia(small_image));
   EXPECT_GT(button()->GetPreferredSize().width(), small_size);
   EXPECT_GT(button()->GetPreferredSize().height(), small_size);
   EXPECT_LT(button()->GetPreferredSize().width(), large_size);
   EXPECT_LT(button()->GetPreferredSize().height(), large_size);
-  button()->SetImage(Button::STATE_NORMAL, large_image);
+  button()->SetImageModel(Button::STATE_NORMAL,
+                          ui::ImageModel::FromImageSkia(large_image));
   EXPECT_GT(button()->GetPreferredSize().width(), large_size);
   EXPECT_GT(button()->GetPreferredSize().height(), large_size);
-  button()->SetImage(Button::STATE_NORMAL, small_image);
+  button()->SetImageModel(Button::STATE_NORMAL,
+                          ui::ImageModel::FromImageSkia(small_image));
   EXPECT_GT(button()->GetPreferredSize().width(), small_size);
   EXPECT_GT(button()->GetPreferredSize().height(), small_size);
   EXPECT_LT(button()->GetPreferredSize().width(), large_size);
   EXPECT_LT(button()->GetPreferredSize().height(), large_size);
 
   // Clamp the size to a maximum value.
-  button()->SetImage(Button::STATE_NORMAL, large_image);
+  button()->SetImageModel(Button::STATE_NORMAL,
+                          ui::ImageModel::FromImageSkia(large_image));
   button()->SetMaxSize(gfx::Size(large_size, 1));
   EXPECT_EQ(button()->GetPreferredSize(), gfx::Size(large_size, 1));
 
   // Clamp the size to a minimum value.
-  button()->SetImage(Button::STATE_NORMAL, small_image);
+  button()->SetImageModel(Button::STATE_NORMAL,
+                          ui::ImageModel::FromImageSkia(small_image));
   button()->SetMaxSize(gfx::Size());
   button()->SetMinSize(gfx::Size(large_size, large_size));
   EXPECT_EQ(button()->GetPreferredSize(), gfx::Size(large_size, large_size));
@@ -450,7 +457,8 @@ TEST_F(LabelButtonTest, ImageAlignmentWithMultilineLabel) {
 
   const int image_size = 16;
   const gfx::ImageSkia image = CreateTestImage(image_size, image_size);
-  button()->SetImage(Button::STATE_NORMAL, image);
+  button()->SetImageModel(Button::STATE_NORMAL,
+                          ui::ImageModel::FromImageSkia(image));
 
   button()->SetBoundsRect(gfx::Rect(button()->GetPreferredSize()));
   views::test::RunScheduledLayout(button());
@@ -481,7 +489,8 @@ TEST_F(LabelButtonTest, LabelAndImage) {
   EXPECT_GT(button()->GetPreferredSize().height(), font_list.GetHeight());
   EXPECT_LT(button()->GetPreferredSize().width(), text_width + image_size);
   EXPECT_LT(button()->GetPreferredSize().height(), image_size);
-  button()->SetImage(Button::STATE_NORMAL, image);
+  button()->SetImageModel(Button::STATE_NORMAL,
+                          ui::ImageModel::FromImageSkia(image));
   EXPECT_GT(button()->GetPreferredSize().width(), text_width + image_size);
   EXPECT_GT(button()->GetPreferredSize().height(), image_size);
 
@@ -511,13 +520,14 @@ TEST_F(LabelButtonTest, LabelAndImage) {
   EXPECT_LT(button()->GetPreferredSize().width(), text_width + image_size);
   EXPECT_GT(button()->GetPreferredSize().width(), image_size);
   EXPECT_GT(button()->GetPreferredSize().height(), image_size);
-  button()->SetImage(Button::STATE_NORMAL, gfx::ImageSkia());
+  button()->SetImageModel(Button::STATE_NORMAL, ui::ImageModel());
   EXPECT_LT(button()->GetPreferredSize().width(), image_size);
   EXPECT_LT(button()->GetPreferredSize().height(), image_size);
 
   // Clamp the size to a minimum value.
   button()->SetText(text);
-  button()->SetImage(Button::STATE_NORMAL, image);
+  button()->SetImageModel(Button::STATE_NORMAL,
+                          ui::ImageModel::FromImageSkia(image));
   button()->SetMinSize(
       gfx::Size((text_width + image_size) * 2, image_size * 2));
   EXPECT_EQ(button()->GetPreferredSize().width(),
@@ -545,7 +555,8 @@ TEST_F(LabelButtonTest, LabelWrapAndImageAlignment) {
   const gfx::ImageSkia image = CreateTestImage(image_size, image_size);
   ASSERT_EQ(font_list.GetHeight(), image.width());
 
-  button()->SetImage(Button::STATE_NORMAL, image);
+  button()->SetImageModel(Button::STATE_NORMAL,
+                          ui::ImageModel::FromImageSkia(image));
   button()->SetImageCentered(false);
   button()->SetMaxSize(
       gfx::Size(image.width() + image_spacing + text_wrap_width, 0));
@@ -589,7 +600,8 @@ TEST_F(LabelButtonTest, GetHeightForWidthConsistentWithGetPreferredSize) {
     SCOPED_TRACE(testing::Message() << "Image Size: " << image_size);
     // Set image and reset monotonic min size for every test iteration.
     const gfx::ImageSkia image = CreateTestImage(image_size, image_size);
-    button()->SetImage(Button::STATE_NORMAL, image);
+    button()->SetImageModel(Button::STATE_NORMAL,
+                            ui::ImageModel::FromImageSkia(image));
 
     const gfx::Size preferred_button_size = button()->GetPreferredSize();
 
@@ -681,7 +693,8 @@ TEST_F(LabelButtonTest, ChangeTextSize) {
 
 TEST_F(LabelButtonTest, ChangeLabelImageSpacing) {
   button()->SetText(u"abc");
-  button()->SetImage(Button::STATE_NORMAL, CreateTestImage(50, 50));
+  button()->SetImageModel(Button::STATE_NORMAL, ui::ImageModel::FromImageSkia(
+                                                    CreateTestImage(50, 50)));
 
   const int kOriginalSpacing = 5;
   button()->SetImageLabelSpacing(kOriginalSpacing);
@@ -769,8 +782,9 @@ TEST_F(LabelButtonTest, ImageOrLabelGetClipped) {
 
   const gfx::FontList font_list = button()->label()->font_list();
   const int image_size = font_list.GetHeight();
-  button()->SetImage(Button::STATE_NORMAL,
-                     CreateTestImage(image_size, image_size));
+  button()->SetImageModel(
+      Button::STATE_NORMAL,
+      ui::ImageModel::FromImageSkia(CreateTestImage(image_size, image_size)));
 
   button()->SetBoundsRect(gfx::Rect(button()->GetPreferredSize()));
   // The border size + the content height is more than button's preferred size.

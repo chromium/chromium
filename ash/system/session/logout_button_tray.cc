@@ -140,14 +140,14 @@ void LogoutButtonTray::UpdateButtonTextAndImage() {
       user::GetLocalizedSignOutStringForStatus(login_status, false);
   if (shelf()->IsHorizontalAlignment()) {
     button_->SetText(title);
-    button_->SetImage(views::Button::STATE_NORMAL, gfx::ImageSkia());
+    button_->SetImageModel(views::Button::STATE_NORMAL, ui::ImageModel());
     button_->SetMinSize(gfx::Size(0, kTrayItemSize));
   } else {
     button_->SetText(std::u16string());
     button_->SetAccessibleName(title);
-    button_->SetImage(
+    button_->SetImageModel(
         views::Button::STATE_NORMAL,
-        gfx::CreateVectorIcon(
+        ui::ImageModel::FromVectorIcon(
             kShelfLogoutIcon,
             AshColorProvider::Get()->GetContentLayerColor(
                 AshColorProvider::ContentLayerType::kIconColorPrimary)));

@@ -38,11 +38,12 @@ AppStreamLauncherListItem::AppStreamLauncherListItem(
           skia::ImageOperations::RESIZE_BEST,
           gfx::Size(kEcheAppLIstItemIconSize, kEcheAppLIstItemIconSize));
 
-  SetImage(STATE_NORMAL, resized_app_icon);
+  SetImageModel(STATE_NORMAL, ui::ImageModel::FromImageSkia(resized_app_icon));
   // Fade the image in order to make it look like grayed out.
-  SetImage(views::Button::ButtonState::STATE_DISABLED,
-           gfx::ImageSkiaOperations::CreateTransparentImage(
-               resized_app_icon, kAlphaValueForInhibitedIconOpacity));
+  SetImageModel(views::Button::ButtonState::STATE_DISABLED,
+                ui::ImageModel::FromImageSkia(
+                    gfx::ImageSkiaOperations::CreateTransparentImage(
+                        resized_app_icon, kAlphaValueForInhibitedIconOpacity)));
 
   if (chromeos::features::IsJellyrollEnabled()) {
     ash::StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),

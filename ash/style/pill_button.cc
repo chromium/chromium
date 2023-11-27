@@ -437,9 +437,9 @@ void PillButton::UpdateIconColor() {
   // If custom icon color is set, use it to set icon color.
   if (IsAssignedColorVariant(icon_color_)) {
     if (absl::holds_alternative<SkColor>(icon_color_)) {
-      SetImage(views::Button::STATE_NORMAL,
-               gfx::CreateVectorIcon(*icon_, kIconSize,
-                                     absl::get<SkColor>(icon_color_)));
+      SetImageModel(views::Button::STATE_NORMAL,
+                    ui::ImageModel::FromVectorIcon(
+                        *icon_, absl::get<SkColor>(icon_color_), kIconSize));
     } else {
       SetImageModel(
           views::Button::STATE_NORMAL,

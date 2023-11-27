@@ -48,8 +48,6 @@ class VIEWS_EXPORT LabelButton : public Button, public NativeThemeDelegate {
   // Gets or sets the image shown for the specified button state.
   // GetImage returns the image for STATE_NORMAL if the state's image is empty.
   virtual gfx::ImageSkia GetImage(ButtonState for_state) const;
-  // TODO(http://crbug.com/1100034) prefer SetImageModel over SetImage().
-  void SetImage(ButtonState for_state, const gfx::ImageSkia& image);
 
   const ui::ImageModel& GetImageModel(ButtonState for_state) const;
   virtual void SetImageModel(ButtonState for_state,
