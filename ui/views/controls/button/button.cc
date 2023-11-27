@@ -234,6 +234,11 @@ void Button::SetState(ButtonState state) {
       hover_animation_.Reset(1);
     }
   }
+  // The hover animation affects the highlight state, make sure the highlight
+  // state is correct if there are supposed to be anchor highlights.
+  if (anchor_count_ > 0) {
+    SetHighlighted(true);
+  }
 
   ButtonState old_state = state_;
   state_ = state;

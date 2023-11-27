@@ -520,8 +520,7 @@ void ToolbarButton::ShowDropDownMenu(ui::MenuSourceType source_type) {
 
   menu_showing_ = true;
 
-  views::InkDrop::Get(this)->AnimateToState(views::InkDropState::ACTIVATED,
-                                            nullptr /* event */);
+  menu_anchor_higlight_ = AddAnchorHighlight();
 
   // Exit if the model is null. Although ToolbarButton::ShouldShowMenu()
   // performs the same check, its overrides may not.
@@ -545,8 +544,7 @@ void ToolbarButton::ShowDropDownMenu(ui::MenuSourceType source_type) {
 }
 
 void ToolbarButton::OnMenuClosed() {
-  views::InkDrop::Get(this)->AnimateToState(views::InkDropState::DEACTIVATED,
-                                            nullptr /* event */);
+  menu_anchor_higlight_.reset();
 
   menu_showing_ = false;
 

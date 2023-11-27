@@ -305,6 +305,9 @@ class ToolbarButton : public views::LabelButton,
   // Optional identifier for the menu when it runs.
   ui::ElementIdentifier menu_identifier_;
 
+  // Used to ensure the button remains highlighted while the menu is active.
+  absl::optional<Button::ScopedAnchorHighlight> menu_anchor_higlight_;
+
   // Vector icons for the ToolbarButton. The icon is chosen based on touch-ui.
   // Reacts to theme changes using default colors.
   absl::optional<VectorIcons> vector_icons_;
