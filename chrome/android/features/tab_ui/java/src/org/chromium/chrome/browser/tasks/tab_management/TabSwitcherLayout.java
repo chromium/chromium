@@ -98,6 +98,29 @@ public class TabSwitcherLayout extends Layout {
     private static final String TRACE_DONE_SHOWING_TAB_SWITCHER = "TabSwitcherLayout.DoneShowing";
     private static final String TRACE_DONE_HIDING_TAB_SWITCHER = "TabSwitcherLayout.DoneHiding";
 
+    private static class HideTabCallback {
+        private Runnable mRunnable;
+        private boolean mIsCancelled;
+
+        HideTabCallback(Runnable runnable) {
+            mRunnable = runnable;
+        }
+
+        void run() {
+            RecordHistogram.recordBooleanHistogram("Android.TabSwitcher.TabHidden", !mIsCancelled);
+            if (mIsCancelled) return;
+
+            assert mRunnable != null;
+            mRunnable.run();
+            mRunnable = null;
+        }
+
+        void cancel() {
+            mIsCancelled = true;
+            mRunnable = null;
+        }
+    }
+
     private boolean mHasPerfListenerForTesting;
 
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
@@ -135,7 +158,6 @@ public class TabSwitcherLayout extends Layout {
 
     private final TabSwitcher mTabSwitcher;
     private final TabSwitcher.Controller mController;
-    private final TabSwitcherViewObserver mTabSwitcherObserver;
     @Nullable private final ViewGroup mScrimAnchor;
     @Nullable private final ScrimCoordinator mScrimCoordinator;
     private final TabSwitcher.TabListDelegate mGridTabListDelegate;
@@ -156,32 +178,79 @@ public class TabSwitcherLayout extends Layout {
     private Runnable mFinishedShowingRunnable;
     private boolean mBackToStartSurface;
 
-    private static class HideTabCallback {
-        private Runnable mRunnable;
-        private boolean mIsCancelled;
-
-        HideTabCallback(Runnable runnable) {
-            mRunnable = runnable;
-        }
-
-        void run() {
-            RecordHistogram.recordBooleanHistogram("Android.TabSwitcher.TabHidden", !mIsCancelled);
-            if (mIsCancelled) return;
-
-            assert mRunnable != null;
-            mRunnable.run();
-            mRunnable = null;
-        }
-
-        void cancel() {
-            mIsCancelled = true;
-            mRunnable = null;
-        }
-    }
-
     private HideTabCallback mHideTabCallback;
 
     private ShrinkExpandImageView mTabJavaView;
+    private final TabSwitcherViewObserver mTabSwitcherObserver =
+            new TabSwitcherViewObserver() {
+                @Override
+                public void startedShowing() {
+                    mAndroidViewFinishedShowing = false;
+                }
+
+                @Override
+                public void finishedShowing() {
+                    mAndroidViewFinishedShowing = true;
+                    if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())
+                            && !mSkipDoneShowingOnTabSwitcherFinishedShowing) {
+                        doneShowing();
+                    }
+
+                    if (ChromeFeatureList.sGridTabSwitcherAndroidAnimations.isEnabled()) {
+                        if (ChromeFeatureList.sHideTabOnTabSwitcher.isEnabled()) {
+                            final Tab currentTab = mTabModelSelector.getCurrentTab();
+                            if (currentTab != null) {
+                                RecordHistogram.recordBooleanHistogram(
+                                        "Android.TabSwitcher.TabHidden", true);
+                                currentTab.hide(TabHidingType.TAB_SWITCHER_SHOWN);
+                            }
+                        }
+                        mShowEmptyLayer = true;
+                        resetLayoutTabs();
+                        return;
+                    }
+
+                    // When Tab-to-GTS animation is done, it's time to renew the thumbnail
+                    // without causing janky frames. When animation is off or not used, the
+                    // thumbnail is already updated when showing the GTS. Tab-to-GTS animation
+                    // is not invoked for tablet tab switcher polish.
+                    if (TabUiFeatureUtilities.isTabToGtsAnimationEnabled(getContext())) {
+                        // Delay thumbnail taking a bit more to make it less likely to happen
+                        // before the thumbnail taking triggered by ThumbnailFetcher. See
+                        // crbug.com/996385 for details.
+                        mFinishedShowingRunnable =
+                                TabSwitcherLayout.this::onFinishedShowingWithAnimation;
+                    } else {
+                        mFinishedShowingRunnable =
+                                TabSwitcherLayout.this::onFinishedShowingWithoutAnimation;
+                    }
+                    mHandler.postDelayed(mFinishedShowingRunnable, ZOOMING_DURATION);
+                }
+
+                @Override
+                public void startedHiding() {
+                    clearFinishedShowingRunnable();
+                }
+
+                @Override
+                public void finishedHiding() {
+                    // The Android View version of GTS overview is hidden.
+                    // If not doing GTS-to-Tab transition animation, we show the fade-out
+                    // instead, which was already done.
+                    if (!TabUiFeatureUtilities.isTabToGtsAnimationEnabled(getContext())
+                            || mBackToStartSurface) {
+                        mBackToStartSurface = false;
+                        postHiding();
+                        return;
+                    }
+                    // If we are doing GTS-to-Tab transition animation, we start showing the
+                    // Bitmap version of the GTS overview in the background while expanding the
+                    // thumbnail to the viewport.
+                    if (!ChromeFeatureList.sGridTabSwitcherAndroidAnimations.isEnabled()) {
+                        expandTab(getThumbnailLocationOfCurrentTab());
+                    }
+                }
+            };
 
     public TabSwitcherLayout(
             Context context,
@@ -216,136 +285,6 @@ public class TabSwitcherLayout extends Layout {
                         mTabJavaView,
                         new ViewGroup.LayoutParams(
                                 Math.round(getWidth()), Math.round(getHeight())));
-
-        mTabSwitcherObserver =
-                new TabSwitcherViewObserver() {
-                    @Override
-                    public void startedShowing() {
-                        mAndroidViewFinishedShowing = false;
-                    }
-
-                    @Override
-                    public void finishedShowing() {
-                        mAndroidViewFinishedShowing = true;
-                        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
-                                && !mSkipDoneShowingOnTabSwitcherFinishedShowing) {
-                            doneShowing();
-                        }
-
-                        if (ChromeFeatureList.sGridTabSwitcherAndroidAnimations.isEnabled()) {
-                            if (ChromeFeatureList.sHideTabOnTabSwitcher.isEnabled()) {
-                                final Tab currentTab = mTabModelSelector.getCurrentTab();
-                                if (currentTab != null) {
-                                    RecordHistogram.recordBooleanHistogram(
-                                            "Android.TabSwitcher.TabHidden", true);
-                                    currentTab.hide(TabHidingType.TAB_SWITCHER_SHOWN);
-                                }
-                            }
-                            mShowEmptyLayer = true;
-                            resetLayoutTabs();
-                            return;
-                        }
-
-                        // When Tab-to-GTS animation is done, it's time to renew the thumbnail
-                        // without causing janky frames. When animation is off or not used, the
-                        // thumbnail is already updated when showing the GTS. Tab-to-GTS animation
-                        // is not invoked for tablet tab switcher polish.
-                        if (TabUiFeatureUtilities.isTabToGtsAnimationEnabled(getContext())) {
-                            // Delay thumbnail taking a bit more to make it less likely to happen
-                            // before the thumbnail taking triggered by ThumbnailFetcher. See
-                            // crbug.com/996385 for details.
-                            mFinishedShowingRunnable =
-                                    () -> {
-                                        final Tab currentTab = mTabModelSelector.getCurrentTab();
-                                        if (currentTab != null) {
-                                            if (ChromeFeatureList.sHideTabOnTabSwitcher
-                                                    .isEnabled()) {
-                                                if (mHideTabCallback != null) {
-                                                    mHideTabCallback.cancel();
-                                                }
-                                                HideTabCallback hideTabCallback =
-                                                        new HideTabCallback(
-                                                                () -> {
-                                                                    Tab tab =
-                                                                            mTabModelSelector
-                                                                                    .getCurrentTab();
-                                                                    if (currentTab == tab) {
-                                                                        currentTab.hide(
-                                                                                TabHidingType
-                                                                                        .TAB_SWITCHER_SHOWN);
-                                                                    }
-                                                                    mHideTabCallback = null;
-                                                                });
-                                                mHideTabCallback = hideTabCallback;
-                                                mTabContentManager.cacheTabThumbnailWithCallback(
-                                                        currentTab,
-                                                        /* returnBitmap= */ false,
-                                                        (bitmap) -> {
-                                                            hideTabCallback.run();
-                                                        });
-                                            } else {
-                                                mTabContentManager.cacheTabThumbnail(currentTab);
-                                            }
-                                        }
-                                        resetLayoutTabs();
-                                        mFinishedShowingRunnable = null;
-                                    };
-                            mHandler.postDelayed(mFinishedShowingRunnable, ZOOMING_DURATION);
-                        } else {
-                            mFinishedShowingRunnable =
-                                    () -> {
-                                        if (ChromeFeatureList.sHideTabOnTabSwitcher.isEnabled()) {
-                                            final Tab currentTab =
-                                                    mTabModelSelector.getCurrentTab();
-                                            if (currentTab != null) {
-                                                RecordHistogram.recordBooleanHistogram(
-                                                        "Android.TabSwitcher.TabHidden", true);
-                                                currentTab.hide(TabHidingType.TAB_SWITCHER_SHOWN);
-                                            }
-                                        }
-                                        resetLayoutTabs();
-                                        mFinishedShowingRunnable = null;
-                                    };
-                            mHandler.postDelayed(mFinishedShowingRunnable, ZOOMING_DURATION);
-                        }
-                    }
-
-                    @Override
-                    public void startedHiding() {
-                        clearFinishedShowingRunnable();
-                    }
-
-                    @Override
-                    public void finishedHiding() {
-                        // The Android View version of GTS overview is hidden.
-                        // If not doing GTS-to-Tab transition animation, we show the fade-out
-                        // instead, which was already done.
-                        if (!TabUiFeatureUtilities.isTabToGtsAnimationEnabled(getContext())
-                                || mBackToStartSurface) {
-                            mBackToStartSurface = false;
-                            postHiding();
-                            return;
-                        }
-                        // If we are doing GTS-to-Tab transition animation, we start showing the
-                        // Bitmap version of the GTS overview in the background while expanding the
-                        // thumbnail to the viewport.
-                        if (!ChromeFeatureList.sGridTabSwitcherAndroidAnimations.isEnabled()) {
-                            expandTab(getThumbnailLocationOfCurrentTab());
-                        }
-                    }
-
-                    private void resetLayoutTabs() {
-                        // Clear the visible IDs. Once mLayoutTabs is empty, tabs will no longer be
-                        // captureable and this prevents a thumbnailing request from waiting
-                        // indefinitely.
-                        updateCacheVisibleIds(Collections.emptyList());
-
-                        // crbug.com/1176548, mLayoutTabs is used to capture thumbnail, null it in a
-                        // post delay handler to avoid creating a new pending surface in native,
-                        // which will hold the thumbnail capturing task.
-                        mLayoutTabs = null;
-                    }
-                };
 
         mController.addTabSwitcherViewObserver(mTabSwitcherObserver);
     }
@@ -503,6 +442,60 @@ public class TabSwitcherLayout extends Layout {
                         });
             }
         }
+    }
+
+    private void onFinishedShowingWithoutAnimation() {
+        if (ChromeFeatureList.sHideTabOnTabSwitcher.isEnabled()) {
+            Tab currentTab = mTabModelSelector.getCurrentTab();
+            if (currentTab != null) {
+                RecordHistogram.recordBooleanHistogram("Android.TabSwitcher.TabHidden", true);
+                currentTab.hide(TabHidingType.TAB_SWITCHER_SHOWN);
+            }
+        }
+        resetLayoutTabs();
+        mFinishedShowingRunnable = null;
+    }
+
+    private void onFinishedShowingWithAnimation() {
+        Tab currentTab = mTabModelSelector.getCurrentTab();
+        if (currentTab != null) {
+            if (ChromeFeatureList.sHideTabOnTabSwitcher.isEnabled()) {
+                if (mHideTabCallback != null) {
+                    mHideTabCallback.cancel();
+                }
+                HideTabCallback hideTabCallback =
+                        new HideTabCallback(
+                                () -> {
+                                    Tab tab = mTabModelSelector.getCurrentTab();
+                                    if (currentTab == tab) {
+                                        currentTab.hide(TabHidingType.TAB_SWITCHER_SHOWN);
+                                    }
+                                    mHideTabCallback = null;
+                                });
+                mHideTabCallback = hideTabCallback;
+                mTabContentManager.cacheTabThumbnailWithCallback(
+                        currentTab,
+                        /* returnBitmap= */ false,
+                        (bitmap) -> {
+                            hideTabCallback.run();
+                        });
+            } else {
+                mTabContentManager.cacheTabThumbnail(currentTab);
+            }
+        }
+        resetLayoutTabs();
+        mFinishedShowingRunnable = null;
+    }
+
+    private void resetLayoutTabs() {
+        // Clear the visible IDs. Once mLayoutTabs is empty, tabs will no longer be captureable and
+        // this prevents a thumbnailing request from waiting indefinitely.
+        updateCacheVisibleIds(Collections.emptyList());
+
+        // crbug.com/1176548, mLayoutTabs is used to capture thumbnail, null it in a post delay
+        // handler to avoid creating a new pending surface in native, which will hold the thumbnail
+        // capturing task.
+        mLayoutTabs = null;
     }
 
     private void showBrowserScrim() {

@@ -95,6 +95,7 @@ import org.chromium.chrome.browser.tab.RequestDesktopUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
@@ -559,20 +560,19 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         if (EphemeralTabCoordinator.isSupported()) {
+            Supplier<TabCreator> tabCreator =
+                    () ->
+                            mTabCreatorManagerSupplier
+                                    .get()
+                                    .getTabCreator(
+                                            mTabModelSelectorSupplier.get().isIncognitoSelected());
             mEphemeralTabCoordinatorSupplier.set(
                     new EphemeralTabCoordinator(
                             mActivity,
                             mWindowAndroid,
                             mActivity.getWindow().getDecorView(),
                             mActivityTabProvider,
-                            () -> {
-                                return mTabCreatorManagerSupplier
-                                        .get()
-                                        .getTabCreator(
-                                                mTabModelSelectorSupplier
-                                                        .get()
-                                                        .isIncognitoSelected());
-                            },
+                            tabCreator,
                             getBottomSheetController(),
                             true));
         }

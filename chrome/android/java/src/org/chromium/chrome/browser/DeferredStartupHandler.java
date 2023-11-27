@@ -105,8 +105,9 @@ public class DeferredStartupHandler {
         DeferredStartupHandler instance =
                 ThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
-                            if (sInstance != null)
+                            if (sInstance != null) {
                                 sInstance.mLatchForTesting = new CountDownLatch(1);
+                            }
                             return sInstance;
                         });
         // Tasks completed and instance was cleared before we started waiting.

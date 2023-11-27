@@ -94,7 +94,6 @@ public class StatusBarColorController
 
     private @Nullable TabModelSelector mTabModelSelector;
     private CallbackController mCallbackController = new CallbackController();
-    private @Nullable LayoutStateObserver mLayoutStateObserver;
     private @Nullable Tab mCurrentTab;
     private boolean mIsInOverviewMode;
     private boolean mIsIncognito;
@@ -111,6 +110,32 @@ public class StatusBarColorController
     private StartSurface mStartSurface;
     private StartSurface.StateObserver mStartSurfaceStateObserver;
     private @StartSurfaceState int mStartSurfaceState = StartSurfaceState.NOT_SHOWN;
+
+    private final LayoutStateObserver mLayoutStateObserver =
+            new LayoutStateObserver() {
+                @Override
+                public void onStartedShowing(int layoutType) {
+                    if (layoutType != LayoutType.TAB_SWITCHER
+                            && layoutType != LayoutType.START_SURFACE) {
+                        return;
+                    }
+                    mIsInOverviewMode = true;
+                    if (shouldUpdateStatusBarColorForHomeSurface()
+                            || !OmniboxFeatures.shouldMatchToolbarAndStatusBarColor()) {
+                        updateStatusBarColor();
+                    }
+                }
+
+                @Override
+                public void onFinishedHiding(int layoutType) {
+                    if (layoutType != LayoutType.TAB_SWITCHER
+                            && layoutType != LayoutType.START_SURFACE) {
+                        return;
+                    }
+                    mIsInOverviewMode = false;
+                    updateStatusBarColor();
+                }
+            };
 
     /**
      * Constructs a StatusBarColorController.
@@ -244,33 +269,6 @@ public class StatusBarColorController
                             layoutManager -> {
                                 assert layoutManager != null;
                                 mLayoutStateProvider = layoutManager;
-                                mLayoutStateObserver =
-                                        new LayoutStateObserver() {
-                                            @Override
-                                            public void onStartedShowing(int layoutType) {
-                                                if (layoutType != LayoutType.TAB_SWITCHER
-                                                        && layoutType != LayoutType.START_SURFACE) {
-                                                    return;
-                                                }
-                                                mIsInOverviewMode = true;
-                                                if (shouldUpdateStatusBarColorForHomeSurface()
-                                                        || !OmniboxFeatures
-                                                                .shouldMatchToolbarAndStatusBarColor()) {
-                                                    updateStatusBarColor();
-                                                }
-                                            }
-
-                                            @Override
-                                            public void onFinishedHiding(int layoutType) {
-                                                if (layoutType != LayoutType.TAB_SWITCHER
-                                                        && layoutType != LayoutType.START_SURFACE) {
-                                                    return;
-                                                }
-                                                mIsInOverviewMode = false;
-                                                updateStatusBarColor();
-                                            }
-                                        };
-
                                 mLayoutStateProvider.addObserver(mLayoutStateObserver);
                                 // It is possible that the Start surface is showing when the
                                 // LayoutStateProvider becomes available. We need to check the

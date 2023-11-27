@@ -193,9 +193,9 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
 
                         @Override
                         public void onSheetOffsetChanged(float heightFraction, float offsetPx) {
-                            if (mSheetContent == null) return;
-                            if (mCanPromoteToNewTab)
+                            if (mSheetContent != null && mCanPromoteToNewTab) {
                                 mSheetContent.showOpenInNewTabButton(heightFraction);
+                            }
                         }
                     };
             mBottomSheetController.addObserver(mSheetObserver);

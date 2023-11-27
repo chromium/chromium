@@ -103,53 +103,50 @@ public class WebappModeTest {
 
     @Before
     public void setUp() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    WebappRegistry.refreshSharedPrefsForTesting();
+        TestThreadUtils.runOnUiThreadBlocking(this::setUpOnUiThread);
+    }
 
-                    // Register the webapps so when the data storage is opened, the test doesn't
-                    // crash.
-                    // There is no race condition with the retrieval as AsyncTasks are run
-                    // sequentially on the background thread.
-                    WebappRegistry.getInstance()
-                            .register(
-                                    WEBAPP_1_ID,
-                                    new WebappRegistry.FetchWebappDataStorageCallback() {
-                                        @Override
-                                        public void onWebappDataStorageRetrieved(
-                                                WebappDataStorage storage) {
-                                            BrowserServicesIntentDataProvider intentDataProvider =
-                                                    WebappIntentDataProviderFactory.create(
-                                                            createIntent(
-                                                                    WEBAPP_1_ID,
-                                                                    WEBAPP_1_URL,
-                                                                    WEBAPP_1_TITLE,
-                                                                    WEBAPP_ICON,
-                                                                    true));
-                                            storage.updateFromWebappIntentDataProvider(
-                                                    intentDataProvider);
-                                        }
-                                    });
-                    WebappRegistry.getInstance()
-                            .register(
-                                    WEBAPP_2_ID,
-                                    new WebappRegistry.FetchWebappDataStorageCallback() {
-                                        @Override
-                                        public void onWebappDataStorageRetrieved(
-                                                WebappDataStorage storage) {
-                                            BrowserServicesIntentDataProvider intentDataProvider =
-                                                    WebappIntentDataProviderFactory.create(
-                                                            createIntent(
-                                                                    WEBAPP_1_ID,
-                                                                    WEBAPP_1_URL,
-                                                                    WEBAPP_1_TITLE,
-                                                                    WEBAPP_ICON,
-                                                                    true));
-                                            storage.updateFromWebappIntentDataProvider(
-                                                    intentDataProvider);
-                                        }
-                                    });
-                });
+    private void setUpOnUiThread() {
+        WebappRegistry.refreshSharedPrefsForTesting();
+
+        // Register the webapps so when the data storage is opened, the test doesn't
+        // crash.
+        // There is no race condition with the retrieval as AsyncTasks are run
+        // sequentially on the background thread.
+        WebappRegistry.getInstance()
+                .register(
+                        WEBAPP_1_ID,
+                        new WebappRegistry.FetchWebappDataStorageCallback() {
+                            @Override
+                            public void onWebappDataStorageRetrieved(WebappDataStorage storage) {
+                                BrowserServicesIntentDataProvider intentDataProvider =
+                                        WebappIntentDataProviderFactory.create(
+                                                createIntent(
+                                                        WEBAPP_1_ID,
+                                                        WEBAPP_1_URL,
+                                                        WEBAPP_1_TITLE,
+                                                        WEBAPP_ICON,
+                                                        true));
+                                storage.updateFromWebappIntentDataProvider(intentDataProvider);
+                            }
+                        });
+        WebappRegistry.getInstance()
+                .register(
+                        WEBAPP_2_ID,
+                        new WebappRegistry.FetchWebappDataStorageCallback() {
+                            @Override
+                            public void onWebappDataStorageRetrieved(WebappDataStorage storage) {
+                                BrowserServicesIntentDataProvider intentDataProvider =
+                                        WebappIntentDataProviderFactory.create(
+                                                createIntent(
+                                                        WEBAPP_1_ID,
+                                                        WEBAPP_1_URL,
+                                                        WEBAPP_1_TITLE,
+                                                        WEBAPP_ICON,
+                                                        true));
+                                storage.updateFromWebappIntentDataProvider(intentDataProvider);
+                            }
+                        });
     }
 
     /** Tests that WebappActivities are started properly. */

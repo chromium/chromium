@@ -134,79 +134,73 @@ public class ShareDelegateImpl implements ShareDelegate {
         triggerShare(currentTab, shareOrigin, shareDirectly);
     }
 
-    private void triggerShare(
-            final Tab currentTab, @ShareOrigin final int shareOrigin, final boolean shareDirectly) {
+    private void triggerShare(Tab currentTab, @ShareOrigin int shareOrigin, boolean shareDirectly) {
         OfflinePageUtils.maybeShareOfflinePage(
                 currentTab,
                 (ShareParams p) -> {
                     if (p != null) {
-                        share(
-                                p,
-                                new ChromeShareExtras.Builder().setIsUrlOfVisiblePage(true).build(),
-                                shareOrigin);
+                        var extras =
+                                new ChromeShareExtras.Builder().setIsUrlOfVisiblePage(true).build();
+                        share(p, extras, shareOrigin);
+                        return;
+                    }
+                    // Could not share as an offline page.
+                    if (!shouldFetchCanonicalUrl(currentTab)) {
+                        triggerShareWithCanonicalUrlResolved(
+                                currentTab.getWindowAndroid(),
+                                currentTab.getWebContents(),
+                                currentTab.getTitle(),
+                                currentTab.getUrl(),
+                                GURL.emptyGURL(),
+                                shareOrigin,
+                                shareDirectly);
                     } else {
-                        WindowAndroid window = currentTab.getWindowAndroid();
-                        // Could not share as an offline page.
-                        if (shouldFetchCanonicalUrl(currentTab)) {
-                            WebContents webContents = currentTab.getWebContents();
-                            String title = currentTab.getTitle();
-                            GURL visibleUrl = currentTab.getUrl();
-                            webContents
-                                    .getMainFrame()
-                                    .getCanonicalUrlForSharing(
-                                            new Callback<GURL>() {
-                                                @Override
-                                                public void onResult(GURL result) {
-                                                    if (LinkToTextHelper.hasTextFragment(
-                                                            visibleUrl)) {
-                                                        LinkToTextHelper
-                                                                .getExistingSelectorsAllFrames(
-                                                                        currentTab,
-                                                                        (selectors) -> {
-                                                                            GURL canonicalUrl =
-                                                                                    new GURL(
-                                                                                            LinkToTextHelper
-                                                                                                    .getUrlToShare(
-                                                                                                            result
-                                                                                                                    .getSpec(),
-                                                                                                            selectors));
-                                                                            logCanonicalUrlResult(
-                                                                                    visibleUrl,
-                                                                                    canonicalUrl);
-                                                                            triggerShareWithCanonicalUrlResolved(
-                                                                                    window,
-                                                                                    webContents,
-                                                                                    title,
-                                                                                    visibleUrl,
-                                                                                    canonicalUrl,
-                                                                                    shareOrigin,
-                                                                                    shareDirectly);
-                                                                        });
-                                                    } else {
-                                                        logCanonicalUrlResult(visibleUrl, result);
-                                                        triggerShareWithCanonicalUrlResolved(
-                                                                window,
-                                                                webContents,
-                                                                title,
-                                                                visibleUrl,
-                                                                result,
-                                                                shareOrigin,
-                                                                shareDirectly);
-                                                    }
-                                                }
-                                            });
-                        } else {
-                            triggerShareWithCanonicalUrlResolved(
-                                    window,
-                                    currentTab.getWebContents(),
-                                    currentTab.getTitle(),
-                                    currentTab.getUrl(),
-                                    GURL.emptyGURL(),
-                                    shareOrigin,
-                                    shareDirectly);
-                        }
+                        triggerShareWithUnresolvedUrl(currentTab, shareOrigin, shareDirectly);
                     }
                 });
+    }
+
+    private void triggerShareWithUnresolvedUrl(
+            Tab currentTab, @ShareOrigin int shareOrigin, boolean shareDirectly) {
+        WindowAndroid window = currentTab.getWindowAndroid();
+        WebContents webContents = currentTab.getWebContents();
+        String title = currentTab.getTitle();
+        GURL visibleUrl = currentTab.getUrl();
+        webContents
+                .getMainFrame()
+                .getCanonicalUrlForSharing(
+                        (GURL result) -> {
+                            if (!LinkToTextHelper.hasTextFragment(visibleUrl)) {
+                                logCanonicalUrlResult(visibleUrl, result);
+                                triggerShareWithCanonicalUrlResolved(
+                                        window,
+                                        webContents,
+                                        title,
+                                        visibleUrl,
+                                        result,
+                                        shareOrigin,
+                                        shareDirectly);
+                                return;
+                            }
+
+                            LinkToTextHelper.getExistingSelectorsAllFrames(
+                                    currentTab,
+                                    (selectors) -> {
+                                        GURL canonicalUrl =
+                                                new GURL(
+                                                        LinkToTextHelper.getUrlToShare(
+                                                                result.getSpec(), selectors));
+                                        logCanonicalUrlResult(visibleUrl, canonicalUrl);
+                                        triggerShareWithCanonicalUrlResolved(
+                                                window,
+                                                webContents,
+                                                title,
+                                                visibleUrl,
+                                                canonicalUrl,
+                                                shareOrigin,
+                                                shareDirectly);
+                                    });
+                        });
     }
 
     private void triggerShareWithCanonicalUrlResolved(

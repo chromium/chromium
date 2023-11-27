@@ -82,7 +82,7 @@ public class FileAccessPermissionHelper {
 
         Consumer<PropertyModel> requestPermissions =
                 (model) -> {
-                    final PermissionCallback permissionCallback =
+                    PermissionCallback permissionCallback =
                             (permissions, grantResults) -> {
                                 final ModalDialogManager modalDialogManager =
                                         windowAndroid.getModalDialogManager();
@@ -93,13 +93,11 @@ public class FileAccessPermissionHelper {
                                     modalDialogManager.dismissDialog(
                                             model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
                                 }
-                                callback.onResult(
-                                        Pair.create(
-                                                grantResults.length > 0
-                                                        && grantResults[0]
-                                                                == PackageManager
-                                                                        .PERMISSION_GRANTED,
-                                                null));
+                                boolean granted =
+                                        grantResults.length > 0
+                                                && grantResults[0]
+                                                        == PackageManager.PERMISSION_GRANTED;
+                                callback.onResult(Pair.create(granted, null));
                             };
 
                     permissionDelegate.requestPermissions(

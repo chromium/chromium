@@ -247,7 +247,6 @@ import org.chromium.url.GURL;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -602,12 +601,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     }
                     String message =
                             String.format(
-                                    (Locale) null,
-                                    "VIEW intent sent to .Main activity alias was not dispatched. PLEASE "
-                                            + "report the following info to crbug.com/789732: \"%s\". Use "
-                                            + "--%s flag to disable this check.",
-                                    intentInfo,
-                                    ChromeSwitches.DONT_CRASH_ON_VIEW_MAIN_INTENTS);
+                                    """
+                                    VIEW intent sent to .Main activity alias was not dispatched. \
+                                    PLEASE report the following info to crbug.com/789732: \
+                                    "%s". Use --%s flag to disable this check.""",
+                                    intentInfo, ChromeSwitches.DONT_CRASH_ON_VIEW_MAIN_INTENTS);
                     throw new IllegalStateException(message);
                 }
             }
@@ -1809,14 +1807,12 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     boolean loaded = false;
                     if (matchingTabIndex != TabModel.INVALID_TAB_INDEX) {
                         Tab tab = tabModel.getTabAt(matchingTabIndex);
-                        if (tab.getUrl().getSpec().equals(url)
-                                || tab.getUrl()
-                                        .getSpec()
-                                        .equals(
-                                                IntentUtils.safeGetStringExtra(
-                                                        intent,
-                                                        TabOpenType
-                                                                .REUSE_TAB_ORIGINAL_URL_STRING))) {
+                        String spec = tab.getUrl().getSpec();
+                        if (spec.equals(url)
+                                || spec.equals(
+                                        IntentUtils.safeGetStringExtra(
+                                                intent,
+                                                TabOpenType.REUSE_TAB_ORIGINAL_URL_STRING))) {
                             tabModel.setIndex(matchingTabIndex, TabSelectionType.FROM_USER, false);
                             tab.loadUrl(loadUrlParams);
                             loaded = true;
@@ -2422,80 +2418,67 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     @Override
     protected void initDeferredStartupForActivity() {
         super.initDeferredStartupForActivity();
-        DeferredStartupHandler.getInstance()
-                .addDeferredTask(
-                        () -> {
-                            if (isActivityFinishingOrDestroyed()) return;
+        DeferredStartupHandler.getInstance().addDeferredTask(this::onDeferredStartup);
+    }
 
-                            LauncherShortcutActivity.updateIncognitoShortcut(
-                                    ChromeTabbedActivity.this);
+    private void onDeferredStartup() {
+        if (isActivityFinishingOrDestroyed()) {
+            return;
+        }
 
-                            ChromeSurveyController.initialize(
-                                    mTabModelSelector,
-                                    getLifecycleDispatcher(),
-                                    ChromeTabbedActivity.this,
-                                    MessageDispatcherProvider.from(getWindowAndroid()),
-                                    mTabModelProfileSupplier.get());
+        LauncherShortcutActivity.updateIncognitoShortcut(ChromeTabbedActivity.this);
 
-                            if (mStartSurfaceSupplier.get() != null) {
-                                // The start surface is not the layout shown on startup, so wait
-                                // until it is shown before notifying the start surface that is was.
-                                // TODO(1292661): We should allow the start surface to be the layout
-                                // that the browser starts on to avoid logic like this.
-                                // TODO(1315676): Clean up the check of LayoutType.TAB_SWITCHER once
-                                // the refactoring is done. This is because only Start surface is
-                                // allowed to shown on startup, not the Grid Tab switcher.
-                                boolean isStartSurfaceLayoutShown = false;
-                                if (isStartSurfaceRefactorEnabled()) {
-                                    isStartSurfaceLayoutShown =
-                                            getLayoutManager().getActiveLayoutType()
-                                                            == LayoutType.START_SURFACE
-                                                    || getLayoutManager().getNextLayoutType()
-                                                            != LayoutType.START_SURFACE;
-                                } else {
-                                    isStartSurfaceLayoutShown =
-                                            getLayoutManager().getActiveLayoutType()
-                                                            == LayoutType.TAB_SWITCHER
-                                                    || getLayoutManager().getNextLayoutType()
-                                                            != LayoutType.TAB_SWITCHER;
-                                }
-                                if (isStartSurfaceLayoutShown) {
-                                    mStartSurfaceSupplier
-                                            .get()
-                                            .onOverviewShownAtLaunch(
-                                                    mOverviewShownOnStart,
-                                                    getOnCreateTimestampMs());
-                                } else if (getLayoutManager().getNextLayoutType()
-                                                == LayoutType.TAB_SWITCHER
-                                        || getLayoutManager().getNextLayoutType()
-                                                == LayoutType.START_SURFACE) {
-                                    getLayoutManager()
-                                            .addObserver(
-                                                    new LayoutStateProvider.LayoutStateObserver() {
-                                                        @Override
-                                                        public void onStartedShowing(
-                                                                int layoutType) {
-                                                            if (layoutType
-                                                                            != LayoutType
-                                                                                    .TAB_SWITCHER
-                                                                    && layoutType
-                                                                            != LayoutType
-                                                                                    .START_SURFACE) {
-                                                                return;
-                                                            }
+        ChromeSurveyController.initialize(
+                mTabModelSelector,
+                getLifecycleDispatcher(),
+                ChromeTabbedActivity.this,
+                MessageDispatcherProvider.from(getWindowAndroid()),
+                mTabModelProfileSupplier.get());
 
-                                                            mStartSurfaceSupplier
-                                                                    .get()
-                                                                    .onOverviewShownAtLaunch(
-                                                                            mOverviewShownOnStart,
-                                                                            getOnCreateTimestampMs());
-
-                                                            getLayoutManager().removeObserver(this);
-                                                        }
-                                                    });
-                                }
+        if (mStartSurfaceSupplier.get() == null) {
+            return;
+        }
+        // The start surface is not the layout shown on startup, so wait
+        // until it is shown before notifying the start surface that is was.
+        // TODO(1292661): We should allow the start surface to be the layout
+        // that the browser starts on to avoid logic like this.
+        // TODO(1315676): Clean up the check of LayoutType.TAB_SWITCHER once
+        // the refactoring is done. This is because only Start surface is
+        // allowed to shown on startup, not the Grid Tab switcher.
+        boolean isStartSurfaceLayoutShown = false;
+        var layoutManager = getLayoutManager();
+        @LayoutType int activeType = layoutManager.getActiveLayoutType();
+        @LayoutType int nextType = layoutManager.getNextLayoutType();
+        if (isStartSurfaceRefactorEnabled()) {
+            isStartSurfaceLayoutShown =
+                    activeType == LayoutType.START_SURFACE || nextType != LayoutType.START_SURFACE;
+        } else {
+            isStartSurfaceLayoutShown =
+                    activeType == LayoutType.TAB_SWITCHER || nextType != LayoutType.TAB_SWITCHER;
+        }
+        if (isStartSurfaceLayoutShown) {
+            mStartSurfaceSupplier
+                    .get()
+                    .onOverviewShownAtLaunch(mOverviewShownOnStart, getOnCreateTimestampMs());
+        } else if (nextType == LayoutType.TAB_SWITCHER || nextType == LayoutType.START_SURFACE) {
+            layoutManager.addObserver(
+                    new LayoutStateProvider.LayoutStateObserver() {
+                        @Override
+                        public void onStartedShowing(int layoutType) {
+                            if (layoutType != LayoutType.TAB_SWITCHER
+                                    && layoutType != LayoutType.START_SURFACE) {
+                                return;
                             }
-                        });
+
+                            mStartSurfaceSupplier
+                                    .get()
+                                    .onOverviewShownAtLaunch(
+                                            mOverviewShownOnStart, getOnCreateTimestampMs());
+
+                            getLayoutManager().removeObserver(this);
+                        }
+                    });
+        }
     }
 
     @Override

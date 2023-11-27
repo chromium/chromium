@@ -43,6 +43,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.v
 import static org.chromium.components.embedder_support.util.UrlConstants.NTP_URL;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
+import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -2095,14 +2096,14 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
                 });
 
         // Check empty view should show up.
+        Context appContext = ApplicationProvider.getApplicationContext();
         onView(
                         allOf(
                                 withId(R.id.empty_state_container),
                                 withParent(
                                         withId(
                                                 TabUiTestHelper.getTabSwitcherParentId(
-                                                        ApplicationProvider
-                                                                .getApplicationContext())))))
+                                                        appContext)))))
                 .check(matches(isDisplayed()));
     }
 
@@ -2135,14 +2136,14 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         switchTabModel(cta, true);
 
         // Check empty view should never show up in incognito tab switcher.
+        Context appContext = ApplicationProvider.getApplicationContext();
         onView(
                         allOf(
                                 withId(R.id.empty_state_container),
                                 withParent(
                                         withId(
                                                 TabUiTestHelper.getTabSwitcherParentId(
-                                                        ApplicationProvider
-                                                                .getApplicationContext())))))
+                                                        appContext)))))
                 .check(matches(not(isDisplayed())));
 
         // Close the last incognito tab.
@@ -2164,8 +2165,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
                                 withParent(
                                         withId(
                                                 TabUiTestHelper.getTabSwitcherParentId(
-                                                        ApplicationProvider
-                                                                .getApplicationContext())))))
+                                                        appContext)))))
                 .check(matches(isDisplayed()));
     }
 

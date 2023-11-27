@@ -15,7 +15,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.browser.AppHooks;
-import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappIntentUtils;
 import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder;
 import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder.WebApkUserTheme;
@@ -87,40 +86,31 @@ public class WebApkInstaller {
         }
 
         Callback<Integer> callback =
-                new Callback<Integer>() {
-                    @Override
-                    public void onResult(Integer result) {
-                        WebApkInstaller.this.notify(result);
-                        if (result == WebApkInstallResult.FAILURE) return;
+                (Integer result) -> {
+                    WebApkInstaller.this.notify(result);
+                    if (result == WebApkInstallResult.FAILURE) return;
 
-                        // Stores the source info of WebAPK in WebappDataStorage.
-                        WebappRegistry.getInstance()
-                                .register(
-                                        WebappIntentUtils.getIdForWebApkPackage(packageName),
-                                        new WebappRegistry.FetchWebappDataStorageCallback() {
-                                            @Override
-                                            public void onWebappDataStorageRetrieved(
-                                                    WebappDataStorage storage) {
-                                                BrowserServicesIntentDataProvider
-                                                        intentDataProvider =
-                                                                WebApkIntentDataProviderFactory
-                                                                        .create(
-                                                                                new Intent(),
-                                                                                packageName,
-                                                                                null,
-                                                                                source,
-                                                                                /* forceNavigation= */ false,
-                                                                                /* canUseSplashFromContentProvider= */ false,
-                                                                                /* shareData= */ null,
-                                                                                /* shareDataActivityClassName= */ null);
-                                                storage.updateFromWebappIntentDataProvider(
-                                                        intentDataProvider);
-                                                storage.updateSource(source);
-                                                storage
-                                                        .updateTimeOfLastCheckForUpdatedWebManifest();
-                                            }
-                                        });
-                    }
+                    // Stores the source info of WebAPK in WebappDataStorage.
+                    WebappRegistry.FetchWebappDataStorageCallback fetchCallback =
+                            (WebappDataStorage storage) -> {
+                                var intentDataProvider =
+                                        WebApkIntentDataProviderFactory.create(
+                                                new Intent(),
+                                                packageName,
+                                                null,
+                                                source,
+                                                /* forceNavigation= */ false,
+                                                /* canUseSplashFromContentProvider= */ false,
+                                                /* shareData= */ null,
+                                                /* shareDataActivityClassName= */ null);
+                                storage.updateFromWebappIntentDataProvider(intentDataProvider);
+                                storage.updateSource(source);
+                                storage.updateTimeOfLastCheckForUpdatedWebManifest();
+                            };
+                    WebappRegistry.getInstance()
+                            .register(
+                                    WebappIntentUtils.getIdForWebApkPackage(packageName),
+                                    fetchCallback);
                 };
         mInstallDelegate.installAsync(packageName, version, title, token, callback);
         @WebApkUserTheme

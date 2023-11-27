@@ -128,8 +128,9 @@ public class JourneyManager implements DestroyObserver {
                         // The transition source (e.g. FROM_ADDRESS_BAR = 0x02000000) is bitwise
                         // OR'ed with the transition method (e.g. TYPED = 0x01) and we are only
                         // interested in whether a navigation happened from the address bar.
-                        if ((params.getTransitionType() & PageTransition.FROM_ADDRESS_BAR) == 0)
+                        if ((params.getTransitionType() & PageTransition.FROM_ADDRESS_BAR) == 0) {
                             return;
+                        }
 
                         int tabId = tab.getId();
 

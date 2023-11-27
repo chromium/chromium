@@ -36,50 +36,48 @@ public class AutofillVirtualCardUnenrollmentDialog {
 
     /** Shows an AutofillVirtualCardUnenrollmentDialog. */
     public void show() {
-        SimpleModalDialogController modalDialogController =
+        var context = mContext;
+        var resources = context.getResources();
+        var modalDialogController =
                 new SimpleModalDialogController(
                         mModalDialogManager,
                         result -> {
+                            boolean wasClicked =
+                                    result == DialogDismissalCause.POSITIVE_BUTTON_CLICKED;
                             RecordHistogram.recordBooleanHistogram(
-                                    "Autofill.VirtualCard.SettingsPageUnenrollment",
-                                    result == DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
-                            mResultHandler.onResult(
-                                    result == DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+                                    "Autofill.VirtualCard.SettingsPageUnenrollment", wasClicked);
+                            mResultHandler.onResult(wasClicked);
                         });
+        var paragraph1 =
+                AutofillUiUtils.getSpannableStringWithClickableSpansToOpenLinksInCustomTabs(
+                        context,
+                        R.string.autofill_credit_card_editor_virtual_card_unenroll_dialog_message,
+                        ChromeStringConstants.AUTOFILL_VIRTUAL_CARD_ENROLLMENT_SUPPORT_URL,
+                        url -> {
+                            RecordHistogram.recordEnumeratedHistogram(
+                                    "Autofill.VirtualCard.SettingsPageUnenrollment.LinkClicked",
+                                    VirtualCardEnrollmentLinkType
+                                            .VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK,
+                                    VirtualCardEnrollmentLinkType.MAX_VALUE + 1);
+                            CustomTabActivity.showInfoPage(context, url);
+                        });
+        int unenrollTitle = R.string.autofill_credit_card_editor_virtual_card_unenroll_dialog_title;
+        int positiveButtonLabel =
+                R.string
+                        .autofill_credit_card_editor_virtual_card_unenroll_dialog_positive_button_label;
         PropertyModel.Builder builder =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, modalDialogController)
-                        .with(
-                                ModalDialogProperties.TITLE,
-                                mContext.getString(
-                                        R.string
-                                                .autofill_credit_card_editor_virtual_card_unenroll_dialog_title))
-                        .with(
-                                ModalDialogProperties.MESSAGE_PARAGRAPH_1,
-                                AutofillUiUtils
-                                        .getSpannableStringWithClickableSpansToOpenLinksInCustomTabs(
-                                                mContext,
-                                                R.string
-                                                        .autofill_credit_card_editor_virtual_card_unenroll_dialog_message,
-                                                ChromeStringConstants
-                                                        .AUTOFILL_VIRTUAL_CARD_ENROLLMENT_SUPPORT_URL,
-                                                url -> {
-                                                    RecordHistogram.recordEnumeratedHistogram(
-                                                            "Autofill.VirtualCard.SettingsPageUnenrollment.LinkClicked",
-                                                            VirtualCardEnrollmentLinkType
-                                                                    .VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK,
-                                                            VirtualCardEnrollmentLinkType.MAX_VALUE
-                                                                    + 1);
-                                                    CustomTabActivity.showInfoPage(mContext, url);
-                                                }))
+                        .with(ModalDialogProperties.TITLE, resources, unenrollTitle)
+                        .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1, paragraph1)
                         .with(
                                 ModalDialogProperties.POSITIVE_BUTTON_TEXT,
-                                mContext.getString(
-                                        R.string
-                                                .autofill_credit_card_editor_virtual_card_unenroll_dialog_positive_button_label))
+                                resources,
+                                positiveButtonLabel)
                         .with(
                                 ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
-                                mContext.getString(android.R.string.cancel));
+                                resources,
+                                android.R.string.cancel);
 
         mModalDialogManager.showDialog(builder.build(), ModalDialogManager.ModalDialogType.APP);
     }

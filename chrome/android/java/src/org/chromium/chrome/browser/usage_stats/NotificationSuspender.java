@@ -61,8 +61,9 @@ public class NotificationSuspender {
                 .then((Void v) -> UsageStatsService.getInstance().getAllSuspendedWebsitesAsync())
                 .then(
                         (List<String> fqdns) -> {
-                            if (!fqdns.contains(getValidFqdnOrEmptyString(notification)))
+                            if (!fqdns.contains(getValidFqdnOrEmptyString(notification))) {
                                 return false;
+                            }
                             UsageStatsService.getInstance()
                                     .getNotificationSuspender()
                                     .storeNotificationResources(

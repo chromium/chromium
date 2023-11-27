@@ -500,28 +500,11 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
                 new View.OnAttachStateChangeListener() {
                     @Override
                     public void onViewAttachedToWindow(View view) {
-                        if (mBottomSheetObserver == null) {
-                            mBottomSheetObserver =
-                                    new EmptyBottomSheetObserver() {
-                                        @Override
-                                        public void onSheetStateChanged(
-                                                int sheetState, int reason) {
-                                            if (mTab.isHidden()) return;
-                                            mInfoBarContainerView.setVisibility(
-                                                    sheetState
-                                                                    == BottomSheetController
-                                                                            .SheetState.FULL
-                                                            ? View.INVISIBLE
-                                                            : View.VISIBLE);
-                                        }
-                                    };
-                            mBottomSheetController =
-                                    BottomSheetControllerProvider.from(mTab.getWindowAndroid());
-                            mBottomSheetController.addObserver(mBottomSheetObserver);
-                        }
+                        initBottomSheetObserver();
+                        boolean infoBarsExist = !mInfoBars.isEmpty();
 
                         for (InfoBarContainer.InfoBarContainerObserver observer : mObservers) {
-                            observer.onInfoBarContainerAttachedToWindow(!mInfoBars.isEmpty());
+                            observer.onInfoBarContainerAttachedToWindow(infoBarsExist);
                         }
                     }
 
@@ -537,6 +520,25 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
         addObserver(mIPHSupport);
 
         mTab.getWindowAndroid().getKeyboardDelegate().addKeyboardVisibilityListener(this);
+    }
+
+    private void initBottomSheetObserver() {
+        if (mBottomSheetObserver != null) {
+            return;
+        }
+        mBottomSheetObserver =
+                new EmptyBottomSheetObserver() {
+                    @Override
+                    public void onSheetStateChanged(int sheetState, int reason) {
+                        if (mTab.isHidden()) return;
+                        mInfoBarContainerView.setVisibility(
+                                sheetState == BottomSheetController.SheetState.FULL
+                                        ? View.INVISIBLE
+                                        : View.VISIBLE);
+                    }
+                };
+        mBottomSheetController = BottomSheetControllerProvider.from(mTab.getWindowAndroid());
+        mBottomSheetController.addObserver(mBottomSheetObserver);
     }
 
     private void destroyContainerView() {

@@ -32,5 +32,4 @@ public class EnsureAsyncPostingRule extends ExternalResource {
     protected void after() {
         if (!mWasSchedulerPaused) mScheduler.unPause();
     }
-
 }

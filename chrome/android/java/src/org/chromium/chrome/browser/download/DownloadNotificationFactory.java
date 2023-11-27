@@ -85,18 +85,16 @@ public final class DownloadNotificationFactory {
                 && downloadStatus == DownloadNotificationService.DownloadStatus.COMPLETED) {
             channelId = ChromeChannelDefinitions.ChannelId.COMPLETED_DOWNLOADS;
         }
+        var metadata =
+                new NotificationMetadata(
+                        LegacyHelpers.isLegacyDownload(downloadUpdate.getContentId())
+                                ? NotificationUmaTracker.SystemNotificationType.DOWNLOAD_FILES
+                                : NotificationUmaTracker.SystemNotificationType.DOWNLOAD_PAGES,
+                        /* tag= */ null,
+                        notificationId);
         NotificationWrapperBuilder builder =
                 NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
-                                channelId,
-                                new NotificationMetadata(
-                                        LegacyHelpers.isLegacyDownload(
-                                                        downloadUpdate.getContentId())
-                                                ? NotificationUmaTracker.SystemNotificationType
-                                                        .DOWNLOAD_FILES
-                                                : NotificationUmaTracker.SystemNotificationType
-                                                        .DOWNLOAD_PAGES,
-                                        /* tag= */ null,
-                                        notificationId))
+                                channelId, metadata)
                         .setLocalOnly(true)
                         .setGroup(NotificationConstants.GROUP_DOWNLOADS)
                         .setAutoCancel(true);
@@ -116,6 +114,7 @@ public final class DownloadNotificationFactory {
             resumeActionType = NotificationUmaTracker.ActionType.DOWNLOAD_PAGE_RESUME;
         }
 
+        var resources = context.getResources();
         switch (downloadStatus) {
             case DownloadNotificationService.DownloadStatus.IN_PROGRESS:
                 checkNotNull(downloadUpdate.getProgress());
@@ -159,15 +158,13 @@ public final class DownloadNotificationFactory {
                         .setAutoCancel(false)
                         .addAction(
                                 R.drawable.ic_pause_white_24dp,
-                                context.getResources()
-                                        .getString(R.string.download_notification_pause_button),
+                                resources.getString(R.string.download_notification_pause_button),
                                 buildPendingIntentProvider(
                                         context, pauseIntent, downloadUpdate.getNotificationId()),
                                 pauseActionType)
                         .addAction(
                                 R.drawable.btn_close_white,
-                                context.getResources()
-                                        .getString(R.string.download_notification_cancel_button),
+                                resources.getString(R.string.download_notification_cancel_button),
                                 buildPendingIntentProvider(
                                         context, cancelIntent, downloadUpdate.getNotificationId()),
                                 cancelActionType);
@@ -203,8 +200,7 @@ public final class DownloadNotificationFactory {
                 checkNotNull(downloadUpdate.getContentId());
                 checkArgument(downloadUpdate.getNotificationId() != -1);
 
-                contentText =
-                        context.getResources().getString(R.string.download_notification_paused);
+                contentText = resources.getString(R.string.download_notification_paused);
                 iconId = R.drawable.ic_download_pause;
 
                 Intent resumeIntent =
@@ -223,15 +219,13 @@ public final class DownloadNotificationFactory {
                 builder.setAutoCancel(false)
                         .addAction(
                                 R.drawable.ic_file_download_white_24dp,
-                                context.getResources()
-                                        .getString(R.string.download_notification_resume_button),
+                                resources.getString(R.string.download_notification_resume_button),
                                 buildPendingIntentProvider(
                                         context, resumeIntent, downloadUpdate.getNotificationId()),
                                 resumeActionType)
                         .addAction(
                                 R.drawable.btn_close_white,
-                                context.getResources()
-                                        .getString(R.string.download_notification_cancel_button),
+                                resources.getString(R.string.download_notification_cancel_button),
                                 buildPendingIntentProvider(
                                         context, cancelIntent, downloadUpdate.getNotificationId()),
                                 cancelActionType);
@@ -253,17 +247,13 @@ public final class DownloadNotificationFactory {
                 // Don't show file size in incognito mode.
                 if (downloadUpdate.getTotalBytes() > 0 && !downloadUpdate.getIsOffTheRecord()) {
                     contentText =
-                            context.getResources()
-                                    .getString(
-                                            R.string.download_notification_completed_with_size,
-                                            org.chromium.components.browser_ui.util.DownloadUtils
-                                                    .getStringForBytes(
-                                                            context,
-                                                            downloadUpdate.getTotalBytes()));
+                            resources.getString(
+                                    R.string.download_notification_completed_with_size,
+                                    org.chromium.components.browser_ui.util.DownloadUtils
+                                            .getStringForBytes(
+                                                    context, downloadUpdate.getTotalBytes()));
                 } else {
-                    contentText =
-                            context.getResources()
-                                    .getString(R.string.download_notification_completed);
+                    contentText = resources.getString(R.string.download_notification_completed);
                 }
 
                 iconId = R.drawable.offline_pin;
@@ -353,8 +343,7 @@ public final class DownloadNotificationFactory {
         if (downloadUpdate.getIsOffTheRecord()) {
             // A sub text to inform the users that they are using incognito mode.
             builder.setSubText(
-                    context.getResources()
-                            .getString(R.string.download_notification_incognito_subtext));
+                    resources.getString(R.string.download_notification_incognito_subtext));
         } else if (downloadUpdate.getShouldPromoteOrigin()) {
             // Always show the origin URL if available (for normal profiles).
             String formattedUrl =

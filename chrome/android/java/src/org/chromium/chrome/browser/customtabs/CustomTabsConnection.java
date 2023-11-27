@@ -855,8 +855,9 @@ public class CustomTabsConnection {
                 () -> {
                     // If the API is not enabled, we don't set the post message origin, which will
                     // avoid PostMessageHandler initialization and disallow postMessage calls.
-                    if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_POST_MESSAGE_API))
+                    if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_POST_MESSAGE_API)) {
                         return;
+                    }
 
                     // Attempt to verify origin synchronously. If successful directly initialize
                     // postMessage channel for session.

@@ -111,8 +111,9 @@ public class ClearBrowsingDataCheckBoxPreference extends ChromeBaseCheckBoxPrefe
                                 new NoUnderlineClickableSpan(
                                         getContext(),
                                         (widget) -> {
-                                            if (mLinkClickDelegate != null)
+                                            if (mLinkClickDelegate != null) {
                                                 mLinkClickDelegate.run();
+                                            }
                                         })));
 
         mHasClickableSpans = true;

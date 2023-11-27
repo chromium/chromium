@@ -30,19 +30,15 @@ import org.chromium.components.browser_ui.notifications.NotificationManagerProxy
                 () -> {
                     NotificationManagerProxy notificationManager =
                             new NotificationManagerProxyImpl(context);
+                    var resources = context.getResources();
+                    String title = resources.getString(R.string.vr_preparing_vr_notification_title);
+                    String message =
+                            resources.getString(R.string.vr_preparing_vr_notification_body);
                     Notification notification =
                             NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
                                             ChromeChannelDefinitions.ChannelId.VR)
-                                    .setContentTitle(
-                                            context.getResources()
-                                                    .getString(
-                                                            R.string
-                                                                    .vr_preparing_vr_notification_title))
-                                    .setContentText(
-                                            context.getResources()
-                                                    .getString(
-                                                            R.string
-                                                                    .vr_preparing_vr_notification_body))
+                                    .setContentTitle(title)
+                                    .setContentText(message)
                                     .setSmallIcon(R.drawable.ic_chrome)
                                     // Need to set category and max priority. Otherwise,
                                     // notification won't show up.

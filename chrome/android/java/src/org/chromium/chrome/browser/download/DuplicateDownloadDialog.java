@@ -50,6 +50,7 @@ public class DuplicateDownloadDialog {
             boolean duplicateExists,
             OTRProfileID otrProfileID,
             Callback<Boolean> callback) {
+        var resources = context.getResources();
         mModalDialogManager = modalDialogManager;
         mPropertyModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
@@ -58,12 +59,10 @@ public class DuplicateDownloadDialog {
                                 getController(context, modalDialogManager, pageUrl, callback))
                         .with(
                                 ModalDialogProperties.TITLE,
-                                context.getResources()
-                                        .getString(
-                                                pageUrl.isEmpty()
-                                                        ? R.string.duplicate_download_dialog_title
-                                                        : R.string
-                                                                .duplicate_page_download_dialog_title))
+                                resources,
+                                pageUrl.isEmpty()
+                                        ? R.string.duplicate_download_dialog_title
+                                        : R.string.duplicate_page_download_dialog_title)
                         .with(
                                 ModalDialogProperties.MESSAGE_PARAGRAPH_1,
                                 getClickableSpan(
@@ -75,18 +74,19 @@ public class DuplicateDownloadDialog {
                                         otrProfileID))
                         .with(
                                 ModalDialogProperties.POSITIVE_BUTTON_TEXT,
-                                context.getResources()
-                                        .getString(R.string.duplicate_download_dialog_confirm_text))
+                                resources,
+                                R.string.duplicate_download_dialog_confirm_text)
                         .with(
                                 ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
-                                context.getResources().getString(R.string.cancel))
+                                resources,
+                                R.string.cancel)
                         .build();
 
         if (DownloadDialogUtils.shouldShowIncognitoWarning(
                 OTRProfileID.isOffTheRecord(otrProfileID))) {
             mPropertyModel.set(
                     ModalDialogProperties.MESSAGE_PARAGRAPH_2,
-                    context.getResources().getString(R.string.download_location_incognito_warning));
+                    resources.getString(R.string.download_location_incognito_warning));
         }
 
         modalDialogManager.showDialog(mPropertyModel, ModalDialogManager.ModalDialogType.TAB);

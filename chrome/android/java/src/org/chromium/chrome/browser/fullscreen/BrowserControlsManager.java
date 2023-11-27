@@ -187,8 +187,9 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
                         mHtmlApiHandler.getPersistentFullscreenModeSupplier());
         mBrowserVisibilityDelegate.addObserver(
                 (constraints) -> {
-                    if (constraints == BrowserControlsState.SHOWN)
+                    if (constraints == BrowserControlsState.SHOWN) {
                         setPositionsForTabToNonFullscreen();
+                    }
                 });
     }
 

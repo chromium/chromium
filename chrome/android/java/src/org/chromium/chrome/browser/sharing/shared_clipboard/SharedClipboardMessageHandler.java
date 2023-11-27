@@ -81,71 +81,50 @@ public class SharedClipboardMessageHandler {
         // TODO(crbug.com/1015411): Wait for device info in a more central place.
         SharingServiceProxy.getInstance()
                 .addDeviceCandidatesInitializedObserver(
-                        () -> {
-                            SharingServiceProxy.getInstance()
-                                    .sendSharedClipboardMessage(
-                                            guid,
-                                            text,
-                                            result -> {
-                                                if (result == SharingSendMessageResult.SUCCESSFUL) {
-                                                    SharingNotificationUtil.dismissNotification(
-                                                            NotificationConstants
-                                                                    .GROUP_SHARED_CLIPBOARD,
-                                                            NotificationConstants
-                                                                    .NOTIFICATION_ID_SHARED_CLIPBOARD_OUTGOING);
-                                                } else {
-                                                    String contentTitle =
-                                                            getErrorNotificationTitle(result);
-                                                    String contentText =
-                                                            getErrorNotificationText(result, name);
-                                                    PendingIntentProvider tryAgainIntent = null;
+                        () -> onDeviceCandidatesInitialized(guid, text, name));
+    }
 
-                                                    if (result
-                                                                    == SharingSendMessageResult
-                                                                            .ACK_TIMEOUT
-                                                            || result
-                                                                    == SharingSendMessageResult
-                                                                            .NETWORK_ERROR) {
-                                                        Context context =
-                                                                ContextUtils
-                                                                        .getApplicationContext();
-                                                        tryAgainIntent =
-                                                                PendingIntentProvider.getBroadcast(
-                                                                        context,
-                                                                        /* requestCode= */ 0,
-                                                                        new Intent(
-                                                                                        context,
-                                                                                        TryAgainReceiver
-                                                                                                .class)
-                                                                                .putExtra(
-                                                                                        Intent
-                                                                                                .EXTRA_TEXT,
-                                                                                        text)
-                                                                                .putExtra(
-                                                                                        EXTRA_DEVICE_GUID,
-                                                                                        guid)
-                                                                                .putExtra(
-                                                                                        EXTRA_DEVICE_CLIENT_NAME,
-                                                                                        name),
-                                                                        PendingIntent
-                                                                                .FLAG_UPDATE_CURRENT);
-                                                    }
+    private static void onDeviceCandidatesInitialized(String guid, String text, String name) {
+        SharingServiceProxy.getInstance()
+                .sendSharedClipboardMessage(
+                        guid,
+                        text,
+                        result -> onSharedClipboardMessageResult(guid, text, name, result));
+    }
 
-                                                    SharingNotificationUtil
-                                                            .showSendErrorNotification(
-                                                                    NotificationUmaTracker
-                                                                            .SystemNotificationType
-                                                                            .SHARED_CLIPBOARD,
-                                                                    NotificationConstants
-                                                                            .GROUP_SHARED_CLIPBOARD,
-                                                                    NotificationConstants
-                                                                            .NOTIFICATION_ID_SHARED_CLIPBOARD_OUTGOING,
-                                                                    contentTitle,
-                                                                    contentText,
-                                                                    tryAgainIntent);
-                                                }
-                                            });
-                        });
+    private static void onSharedClipboardMessageResult(
+            String guid, String text, String name, Integer result) {
+        if (result == SharingSendMessageResult.SUCCESSFUL) {
+            SharingNotificationUtil.dismissNotification(
+                    NotificationConstants.GROUP_SHARED_CLIPBOARD,
+                    NotificationConstants.NOTIFICATION_ID_SHARED_CLIPBOARD_OUTGOING);
+            return;
+        }
+        String contentTitle = getErrorNotificationTitle(result);
+        String contentText = getErrorNotificationText(result, name);
+        PendingIntentProvider tryAgainIntent = null;
+
+        if (result == SharingSendMessageResult.ACK_TIMEOUT
+                || result == SharingSendMessageResult.NETWORK_ERROR) {
+            Context context = ContextUtils.getApplicationContext();
+            tryAgainIntent =
+                    PendingIntentProvider.getBroadcast(
+                            context,
+                            /* requestCode= */ 0,
+                            new Intent(context, TryAgainReceiver.class)
+                                    .putExtra(Intent.EXTRA_TEXT, text)
+                                    .putExtra(EXTRA_DEVICE_GUID, guid)
+                                    .putExtra(EXTRA_DEVICE_CLIENT_NAME, name),
+                            PendingIntent.FLAG_UPDATE_CURRENT);
+        }
+
+        SharingNotificationUtil.showSendErrorNotification(
+                NotificationUmaTracker.SystemNotificationType.SHARED_CLIPBOARD,
+                NotificationConstants.GROUP_SHARED_CLIPBOARD,
+                NotificationConstants.NOTIFICATION_ID_SHARED_CLIPBOARD_OUTGOING,
+                contentTitle,
+                contentText,
+                tryAgainIntent);
     }
 
     /**

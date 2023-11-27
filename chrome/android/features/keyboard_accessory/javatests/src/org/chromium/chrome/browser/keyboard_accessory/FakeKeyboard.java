@@ -69,10 +69,12 @@ public class FakeKeyboard extends ChromeKeyboardVisibilityDelegate {
         runOnUiThreadBlocking(
                 () -> {
                     // Fake a layout change for components listening to the activity directly ...
-                    if (getStaticKeyboardHeight() <= 0)
+                    if (getStaticKeyboardHeight() <= 0) {
                         return; // ... unless the keyboard didn't affect it.
-                    if (!keyboardWasVisible)
+                    }
+                    if (!keyboardWasVisible) {
                         notifyListeners(isKeyboardShowing(getActivity(), view));
+                    }
                     // Pretend a layout change for components listening to the activity directly:
                     View contentView = getActivity().findViewById(android.R.id.content);
                     ViewGroup.LayoutParams p = contentView.getLayoutParams();
@@ -88,8 +90,9 @@ public class FakeKeyboard extends ChromeKeyboardVisibilityDelegate {
         runOnUiThreadBlocking(
                 () -> {
                     // Fake a layout change for components listening to the activity directly ...
-                    if (getStaticKeyboardHeight() <= 0)
+                    if (getStaticKeyboardHeight() <= 0) {
                         return; // ... unless the keyboard didn't affect it.
+                    }
                     if (keyboardWasVisible) notifyListeners(isKeyboardShowing(getActivity(), view));
                     View contentView = getActivity().findViewById(android.R.id.content);
                     ViewGroup.LayoutParams p = contentView.getLayoutParams();

@@ -334,13 +334,12 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
                 .createRecoverabilityDegradedIntent(primaryAccountInfo)
                 .then(
                         (intent) -> {
-                            IntentUtils.safeStartActivity(
-                                    getApplicationContext(),
+                            var action = TrustedVaultUserActionTriggerForUMA.NEW_TAB_PAGE_INFOBAR;
+                            var proxyIntent =
                                     SyncTrustedVaultProxyActivity
                                             .createRecoverabilityDegradedProxyIntent(
-                                                    intent,
-                                                    TrustedVaultUserActionTriggerForUMA
-                                                            .NEW_TAB_PAGE_INFOBAR));
+                                                    intent, action);
+                            IntentUtils.safeStartActivity(getApplicationContext(), proxyIntent);
                         },
                         (exception) ->
                                 Log.w(

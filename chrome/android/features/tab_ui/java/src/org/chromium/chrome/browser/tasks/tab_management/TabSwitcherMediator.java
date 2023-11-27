@@ -402,8 +402,9 @@ class TabSwitcherMediator
                             mIsSelectingInTabSwitcher = false;
 
                             // Use TabSelectionType.From_USER to filter the new tab creation case.
-                            if (type == TabSelectionType.FROM_USER)
+                            if (type == TabSelectionType.FROM_USER) {
                                 recordUserSwitchedTab(tab, lastId);
+                            }
                         }
 
                         if (mContainerViewModel.get(IS_VISIBLE)) {

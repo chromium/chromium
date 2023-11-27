@@ -167,31 +167,31 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
         final Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.putExtra(Intent.EXTRA_TEXT, shareParams.getTextAndUrl());
         shareIntent.setType("text/plain");
+        var context = mContext;
+        var resources = context.getResources();
         shareIntent.putExtra(
                 Intent.EXTRA_TITLE,
-                mContext.getResources()
-                        .getQuantityString(
-                                R.plurals.tab_selection_editor_share_sheet_preview_message,
-                                sortedTabIndexList.size(),
-                                sortedTabIndexList.size()));
+                resources.getQuantityString(
+                        R.plurals.tab_selection_editor_share_sheet_preview_message,
+                        sortedTabIndexList.size(),
+                        sortedTabIndexList.size()));
         shareIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
+        float padding =
+                resources.getDimension(
+                        R.dimen.tab_selection_editor_share_sheet_preview_thumbnail_padding);
         Drawable drawable =
                 new InsetDrawable(
-                        AppCompatResources.getDrawable(mContext, R.drawable.chrome_sync_logo),
-                        (int)
-                                mContext.getResources()
-                                        .getDimension(
-                                                R.dimen
-                                                        .tab_selection_editor_share_sheet_preview_thumbnail_padding));
+                        AppCompatResources.getDrawable(context, R.drawable.chrome_sync_logo),
+                        (int) padding);
 
         // Create a custom share intent and receiver to assess if another app receives the share
         // intent sent from the tab selection editor.
         Intent receiver = new Intent("SHARE_ACTION");
         PendingIntent pendingIntent =
-                PendingIntent.getBroadcast(mContext, 0, receiver, PendingIntent.FLAG_IMMUTABLE);
+                PendingIntent.getBroadcast(context, 0, receiver, PendingIntent.FLAG_IMMUTABLE);
         ContextUtils.registerNonExportedBroadcastReceiver(
-                mContext, mBroadcastReceiver, new IntentFilter("SHARE_ACTION"));
+                context, mBroadcastReceiver, new IntentFilter("SHARE_ACTION"));
         createShareableImageAndSendIntent(shareIntent, drawable, actionId, pendingIntent);
         return true;
     }

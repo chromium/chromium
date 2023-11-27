@@ -173,6 +173,13 @@ public class MathUtils {
     }
 
     /**
+     * Compute the distance given two coordinate vectors
+     */
+    public static float distance(float distanceX, float distanceY) {
+        return (float) Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+    }
+
+    /**
      * Maps {@code value} in [{@code fromStart}, {@code fromStop}] to
      * [{@code toStart}, {@code toStop}].
      *

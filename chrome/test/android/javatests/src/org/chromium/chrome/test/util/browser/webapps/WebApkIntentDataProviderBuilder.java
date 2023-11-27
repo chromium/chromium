@@ -102,12 +102,12 @@ public class WebApkIntentDataProviderBuilder {
                 manifestId(),
                 /* appKey= */ null,
                 WebApkDistributor.BROWSER,
-                /* iconUrlToMurmur2HashMap= */ new HashMap<String, String>() ,
+                /* iconUrlToMurmur2HashMap= */ new HashMap<String, String>(),
                 null,
                 /* forceNavigation= */ false,
                 /* isSplashProvidedByWebApk= */ false,
                 null,
-               /* shortcutItems= */  new ArrayList<>(),
+                /* shortcutItems= */ new ArrayList<>(),
                 mWebApkVersionCode);
     }
 }

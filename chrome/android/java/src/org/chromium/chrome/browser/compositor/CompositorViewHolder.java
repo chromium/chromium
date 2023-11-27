@@ -149,7 +149,6 @@ public class CompositorViewHolder extends FrameLayout
     private final ObservableSupplierImpl<Boolean> mInMotionSupplier =
             new ObservableSupplierImpl<>();
 
-    private EventOffsetHandler mEventOffsetHandler;
     private boolean mIsKeyboardShowing;
     private boolean mNativeInitialized;
 
@@ -190,8 +189,6 @@ public class CompositorViewHolder extends FrameLayout
      * in the current Tab.
      */
     private ContentView mContentView;
-
-    private TabObserver mTabObserver;
 
     // Cache objects that should not be created frequently.
     private final Rect mCacheRect = new Rect();
@@ -247,6 +244,114 @@ public class CompositorViewHolder extends FrameLayout
 
     private TopUiThemeColorProvider mTopUiThemeColorProvider;
 
+    private final EventOffsetHandler mEventOffsetHandler =
+            new EventOffsetHandler(
+                    new EventOffsetHandler.EventOffsetHandlerDelegate() {
+                        // Cache objects that should not be created frequently.
+                        private final RectF mCacheViewport = new RectF();
+
+                        @Override
+                        public float getTop() {
+                            if (mLayoutManager != null) {
+                                mLayoutManager.getViewportPixel(mCacheViewport);
+                            }
+                            return mCacheViewport.top;
+                        }
+
+                        @Override
+                        public void setCurrentTouchEventOffsets(float top) {
+                            EventForwarder forwarder = getEventForwarder();
+                            if (forwarder != null) forwarder.setCurrentTouchEventOffsets(0, top);
+                        }
+
+                        @Override
+                        public void setCurrentDragEventOffsets(float dx, float dy) {
+                            EventForwarder forwarder = getEventForwarder();
+                            if (forwarder != null) forwarder.setDragDispatchingOffset(dx, dy);
+                        }
+
+                        private EventForwarder getEventForwarder() {
+                            if (mTabVisible == null) return null;
+                            WebContents webContents = mTabVisible.getWebContents();
+                            if (webContents == null) return null;
+                            return webContents.getEventForwarder();
+                        }
+                    });
+
+    private final OnLayoutChangeListener mLayoutChangeListender =
+            new OnLayoutChangeListener() {
+                @Override
+                public void onLayoutChange(
+                        View v,
+                        int left,
+                        int top,
+                        int right,
+                        int bottom,
+                        int oldLeft,
+                        int oldTop,
+                        int oldRight,
+                        int oldBottom) {
+                    v.removeOnLayoutChangeListener(this);
+                    if (mLastActiveTouchEvent == null) return;
+                    MotionEvent touchEvent = MotionEvent.obtain(mLastActiveTouchEvent);
+                    touchEvent.setAction(MotionEvent.ACTION_DOWN);
+                    CompositorViewHolder.this.dispatchTouchEvent(touchEvent);
+                    for (int i = 1; i < mLastActiveTouchEvent.getPointerCount(); i++) {
+                        MotionEvent pointerDownEvent = MotionEvent.obtain(mLastActiveTouchEvent);
+                        pointerDownEvent.setAction(
+                                MotionEvent.ACTION_POINTER_DOWN
+                                        | (i << MotionEvent.ACTION_POINTER_INDEX_SHIFT));
+                        CompositorViewHolder.this.dispatchTouchEvent(pointerDownEvent);
+                    }
+                }
+            };
+
+    private final TabObserver mTabObserver =
+            new EmptyTabObserver() {
+                @Override
+                public void onContentChanged(Tab tab) {
+                    CompositorViewHolder.this.onContentChanged();
+                }
+
+                @Override
+                public void onContentViewScrollingStateChanged(boolean scrolling) {
+                    mContentViewScrolling = scrolling;
+                    updateInMotion();
+                    if (!scrolling) updateContentViewChildrenDimension();
+                }
+
+                @Override
+                public void onWebContentsSwapped(
+                        Tab tab, boolean didStartLoad, boolean didFinishLoad) {
+                    // After swapping web contents, any gesture active in the old ContentView is
+                    // cancelled. We still want to continue a previously running gesture in the new
+                    // ContentView, so we synthetically dispatch a new ACTION_DOWN MotionEvent with
+                    // the coordinates of where we estimate the pointer currently is (the
+                    // coordinates of the last ACTION_MOVE MotionEvent received before the swap).
+                    //
+                    // We wait for layout to happen as the newly created ContentView currently
+                    // has a width and height of zero, which would result in the event not being
+                    // dispatched.
+                    mView.addOnLayoutChangeListener(mLayoutChangeListender);
+                }
+
+                @Override
+                public void onVirtualKeyboardModeChanged(
+                        Tab tab, @VirtualKeyboardMode.EnumType int mode) {
+                    updateVirtualKeyboardMode(mode);
+                }
+
+                @Override
+                public void onDidFinishNavigationInPrimaryMainFrame(
+                        Tab tab, NavigationHandle navigation) {
+                    if (!navigation.isSameDocument() && navigation.hasCommitted()) {
+                        assert getWebContents() == tab.getWebContents();
+                        assert getWebContents() != null;
+                        updateVirtualKeyboardMode(getWebContents().getVirtualKeyboardMode());
+                    }
+                }
+            };
+
     /** This view is created on demand to display debugging information. */
     private static class DebugOverlay extends View {
         private final List<Pair<Rect, Integer>> mRectangles = new ArrayList<>();
@@ -263,7 +368,7 @@ public class CompositorViewHolder extends FrameLayout
         /**
          * Pushes a rectangle to be drawn on the screen on top of everything.
          *
-         * @param rect  The rectangle to be drawn on screen
+         * @param rect The rectangle to be drawn on screen
          * @param color The color of the rectangle
          */
         public void pushRect(Rect rect, int color) {
@@ -309,120 +414,6 @@ public class CompositorViewHolder extends FrameLayout
     }
 
     private void internalInit() {
-        mEventOffsetHandler =
-                new EventOffsetHandler(
-                        new EventOffsetHandler.EventOffsetHandlerDelegate() {
-                            // Cache objects that should not be created frequently.
-                            private final RectF mCacheViewport = new RectF();
-
-                            @Override
-                            public float getTop() {
-                                if (mLayoutManager != null)
-                                    mLayoutManager.getViewportPixel(mCacheViewport);
-                                return mCacheViewport.top;
-                            }
-
-                            @Override
-                            public void setCurrentTouchEventOffsets(float top) {
-                                EventForwarder forwarder = getEventForwarder();
-                                if (forwarder != null)
-                                    forwarder.setCurrentTouchEventOffsets(0, top);
-                            }
-
-                            @Override
-                            public void setCurrentDragEventOffsets(float dx, float dy) {
-                                EventForwarder forwarder = getEventForwarder();
-                                if (forwarder != null) forwarder.setDragDispatchingOffset(dx, dy);
-                            }
-
-                            private EventForwarder getEventForwarder() {
-                                if (mTabVisible == null) return null;
-                                WebContents webContents = mTabVisible.getWebContents();
-                                if (webContents == null) return null;
-                                return webContents.getEventForwarder();
-                            }
-                        });
-
-        mTabObserver =
-                new EmptyTabObserver() {
-                    @Override
-                    public void onContentChanged(Tab tab) {
-                        CompositorViewHolder.this.onContentChanged();
-                    }
-
-                    @Override
-                    public void onContentViewScrollingStateChanged(boolean scrolling) {
-                        mContentViewScrolling = scrolling;
-                        updateInMotion();
-                        if (!scrolling) updateContentViewChildrenDimension();
-                    }
-
-                    @Override
-                    public void onWebContentsSwapped(
-                            Tab tab, boolean didStartLoad, boolean didFinishLoad) {
-                        /**
-                         * After swapping web contents, any gesture active in the old ContentView is
-                         * cancelled. We still want to continue a previously running gesture in the new
-                         * ContentView, so we synthetically dispatch a new ACTION_DOWN MotionEvent with the
-                         * coordinates of where we estimate the pointer currently is (the coordinates of
-                         * the last ACTION_MOVE MotionEvent received before the swap).
-                         *
-                         * We wait for layout to happen as the newly created ContentView currently has a
-                         * width and height of zero, which would result in the event not being dispatched.
-                         */
-                        mView.addOnLayoutChangeListener(
-                                new OnLayoutChangeListener() {
-                                    @Override
-                                    public void onLayoutChange(
-                                            View v,
-                                            int left,
-                                            int top,
-                                            int right,
-                                            int bottom,
-                                            int oldLeft,
-                                            int oldTop,
-                                            int oldRight,
-                                            int oldBottom) {
-                                        v.removeOnLayoutChangeListener(this);
-                                        if (mLastActiveTouchEvent == null) return;
-                                        MotionEvent touchEvent =
-                                                MotionEvent.obtain(mLastActiveTouchEvent);
-                                        touchEvent.setAction(MotionEvent.ACTION_DOWN);
-                                        CompositorViewHolder.this.dispatchTouchEvent(touchEvent);
-                                        for (int i = 1;
-                                                i < mLastActiveTouchEvent.getPointerCount();
-                                                i++) {
-                                            MotionEvent pointerDownEvent =
-                                                    MotionEvent.obtain(mLastActiveTouchEvent);
-                                            pointerDownEvent.setAction(
-                                                    MotionEvent.ACTION_POINTER_DOWN
-                                                            | (i
-                                                                    << MotionEvent
-                                                                            .ACTION_POINTER_INDEX_SHIFT));
-                                            CompositorViewHolder.this.dispatchTouchEvent(
-                                                    pointerDownEvent);
-                                        }
-                                    }
-                                });
-                    }
-
-                    @Override
-                    public void onVirtualKeyboardModeChanged(
-                            Tab tab, @VirtualKeyboardMode.EnumType int mode) {
-                        updateVirtualKeyboardMode(mode);
-                    }
-
-                    @Override
-                    public void onDidFinishNavigationInPrimaryMainFrame(
-                            Tab tab, NavigationHandle navigation) {
-                        if (!navigation.isSameDocument() && navigation.hasCommitted()) {
-                            assert getWebContents() == tab.getWebContents();
-                            assert getWebContents() != null;
-                            updateVirtualKeyboardMode(getWebContents().getVirtualKeyboardMode());
-                        }
-                    }
-                };
-
         addOnLayoutChangeListener(
                 (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
                     Tab tab = getCurrentTab();

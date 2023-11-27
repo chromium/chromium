@@ -22,7 +22,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -302,6 +301,23 @@ public class TrustedWebActivityClient {
                             throws RemoteException {
                         TrustedWebActivityCallback resultCallback =
                                 new TrustedWebActivityCallback() {
+                                    private void onUiThread(
+                                            String callbackName, @Nullable Bundle bundle) {
+                                        boolean granted =
+                                                CHECK_LOCATION_PERMISSION_COMMAND_NAME.equals(
+                                                                callbackName)
+                                                        && bundle != null
+                                                        && bundle.getBoolean(
+                                                                LOCATION_PERMISSION_RESULT);
+                                        @ContentSettingValues
+                                        int settingValue =
+                                                granted
+                                                        ? ContentSettingValues.ALLOW
+                                                        : ContentSettingValues.BLOCK;
+                                        permissionCallback.onPermission(
+                                                service.getComponentName(), settingValue);
+                                    }
+
                                     @Override
                                     public void onExtraCallback(
                                             String callbackName, @Nullable Bundle bundle) {
@@ -309,25 +325,7 @@ public class TrustedWebActivityClient {
                                         // thread.
                                         PostTask.postTask(
                                                 TaskTraits.UI_USER_VISIBLE,
-                                                () -> {
-                                                    boolean granted = false;
-                                                    if (TextUtils.equals(
-                                                                    callbackName,
-                                                                    CHECK_LOCATION_PERMISSION_COMMAND_NAME)
-                                                            && bundle != null) {
-                                                        granted =
-                                                                bundle.getBoolean(
-                                                                        LOCATION_PERMISSION_RESULT);
-                                                    }
-                                                    @ContentSettingValues
-                                                    int settingValue =
-                                                            granted
-                                                                    ? ContentSettingValues.ALLOW
-                                                                    : ContentSettingValues.BLOCK;
-                                                    permissionCallback.onPermission(
-                                                            service.getComponentName(),
-                                                            settingValue);
-                                                });
+                                                () -> onUiThread(callbackName, bundle));
                                     }
                                 };
                         Bundle executionResult =

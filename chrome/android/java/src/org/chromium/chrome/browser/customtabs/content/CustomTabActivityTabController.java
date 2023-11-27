@@ -19,6 +19,7 @@ import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import dagger.Lazy;
 
+import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -374,15 +375,11 @@ public class CustomTabActivityTabController implements InflationObserver {
 
     private Tab createTab() {
         WebContents webContents = takeWebContents();
-        Tab tab =
-                mTabFactory.createTab(
-                        webContents,
-                        mCustomTabDelegateFactory.get(),
-                        (preInitTab) ->
-                                TabAssociatedApp.from(preInitTab)
-                                        .setAppId(
-                                                mConnection.getClientPackageNameForSession(
-                                                        mSession)));
+        Callback<Tab> tabCallback =
+                preInitTab ->
+                        TabAssociatedApp.from(preInitTab)
+                                .setAppId(mConnection.getClientPackageNameForSession(mSession));
+        Tab tab = mTabFactory.createTab(webContents, mCustomTabDelegateFactory.get(), tabCallback);
 
         initializeTab(tab);
 
@@ -497,20 +494,20 @@ public class CustomTabActivityTabController implements InflationObserver {
                     public void didFirstVisuallyNonEmptyPaint(final Tab tab) {
                         tab.removeObserver(this);
 
+                        Runnable finishedCallback =
+                                () -> {
+                                    if (tab.isInitialized()
+                                            && ActivityUtils.isActivityFinishingOrDestroyed(
+                                                    mActivity)) {
+                                        tab.getView().setBackgroundResource(0);
+                                    }
+                                };
                         // Blink has rendered the page by this point, but we need to wait for the
                         // compositor frame swap to avoid flash of white content.
                         mCompositorViewHolder
                                 .get()
                                 .getCompositorView()
-                                .surfaceRedrawNeededAsync(
-                                        () -> {
-                                            if (!tab.isInitialized()
-                                                    || ActivityUtils.isActivityFinishingOrDestroyed(
-                                                            mActivity)) {
-                                                return;
-                                            }
-                                            tab.getView().setBackgroundResource(0);
-                                        });
+                                .surfaceRedrawNeededAsync(finishedCallback);
                     }
                 };
 

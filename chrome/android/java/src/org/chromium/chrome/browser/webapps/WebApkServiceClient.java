@@ -112,6 +112,20 @@ public class WebApkServiceClient {
                 });
     }
 
+    private static Handler createPermissionHandler(Callback<Integer> permissionCallback) {
+        return new Handler(
+                Looper.getMainLooper(),
+                message -> {
+                    @ContentSettingValues
+                    int settingValue =
+                            toContentSettingValue(
+                                    message.getData()
+                                            .getInt(KEY_PERMISSION_STATUS, PermissionStatus.BLOCK));
+                    permissionCallback.onResult(settingValue);
+                    return true;
+                });
+    }
+
     /**
      * Requests the notification permission for the package.
      * @param permissionCallback To be called on a background thread with a permission setting, one
@@ -138,20 +152,7 @@ public class WebApkServiceClient {
                         return;
                     }
 
-                    Handler handler =
-                            new Handler(
-                                    Looper.getMainLooper(),
-                                    message -> {
-                                        @ContentSettingValues
-                                        int settingValue =
-                                                toContentSettingValue(
-                                                        message.getData()
-                                                                .getInt(
-                                                                        KEY_PERMISSION_STATUS,
-                                                                        PermissionStatus.BLOCK));
-                                        permissionCallback.onResult(settingValue);
-                                        return true;
-                                    });
+                    Handler handler = createPermissionHandler(permissionCallback);
                     Intent extraIntent = new Intent();
                     extraIntent.putExtra(EXTRA_MESSENGER, new Messenger(handler));
                     try {

@@ -1054,33 +1054,27 @@ public class TabPersistentStoreTest {
     private TestTabModelSelector createAndRestoreRealTabModelImpls(
             TabModelMetaDataInfo info, boolean restoreIncognito, boolean expectMatchingIds)
             throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    ApplicationStatus.onStateChangeForTesting(
-                            mChromeActivity, ActivityState.STARTED);
-                });
-
         TestTabModelSelector selector =
                 TestThreadUtils.runOnUiThreadBlocking(
-                        new Callable<TestTabModelSelector>() {
-                            @Override
-                            public TestTabModelSelector call() {
-                                // Clear any existing TestTabModelSelector (required when
-                                // createAndRestoreRealTabModelImpls is called multiple times in one
-                                // test).
-                                sTabWindowManager.onActivityStateChange(
-                                        mChromeActivity, ActivityState.DESTROYED);
-                                return (TestTabModelSelector)
-                                        sTabWindowManager.requestSelector(
-                                                        mChromeActivity,
-                                                        new ActivityProfileProvider(
-                                                                mChromeActivity
-                                                                        .getLifecycleDispatcher()),
-                                                        mChromeActivity,
-                                                        null,
-                                                        0)
-                                                .second;
-                            }
+                        () -> {
+                            ApplicationStatus.onStateChangeForTesting(
+                                    mChromeActivity, ActivityState.STARTED);
+                            // Clear any existing TestTabModelSelector (required when
+                            // createAndRestoreRealTabModelImpls is called multiple times in one
+                            // test).
+                            sTabWindowManager.onActivityStateChange(
+                                    mChromeActivity, ActivityState.DESTROYED);
+                            var profileProvider =
+                                    new ActivityProfileProvider(
+                                            mChromeActivity.getLifecycleDispatcher());
+                            return (TestTabModelSelector)
+                                    sTabWindowManager.requestSelector(
+                                                    mChromeActivity,
+                                                    profileProvider,
+                                                    mChromeActivity,
+                                                    null,
+                                                    0)
+                                            .second;
                         });
 
         final TabPersistentStore store = selector.mTabPersistentStore;

@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tab;
 
 import android.app.Activity;
-import android.os.Handler;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -17,6 +16,8 @@ import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.SwipeRefreshHandler;
@@ -115,6 +116,32 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
         if (mObserver != null) mObserver.renderProcessGone();
     }
 
+    private void showSadTab(SadTab sadTab) {
+        sadTab.show(
+                mTab.getThemedApplicationContext(),
+                /* suggestionAction= */ () -> {
+                    Activity activity = mTab.getWindowAndroid().getActivity().get();
+                    assert activity != null;
+                    HelpAndFeedbackLauncherImpl.getForProfile(mTab.getProfile())
+                            .show(
+                                    activity,
+                                    activity.getString(R.string.help_context_sad_tab),
+                                    null);
+                },
+
+                /* buttonAction= */ () -> {
+                    if (sadTab.showSendFeedbackView()) {
+                        mTab.getActivity()
+                                .startHelpAndFeedback(
+                                        mTab.getUrl().getSpec(),
+                                        "MobileSadTabFeedback",
+                                        mTab.getProfile());
+                    } else {
+                        mTab.reload();
+                    }
+                });
+    }
+
     private class Observer extends WebContentsObserver {
         public Observer(WebContents webContents) {
             super(webContents);
@@ -155,7 +182,7 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
                 // The tab crashed in background or was killed by the OS out-of-memory killer.
                 mTab.setNeedsReload();
             } else {
-                // TODO(crbug.com/1074078): Remove the Handler and call SadTab directly when
+                // TODO(crbug.com/1074078): Remove the PostTask and call SadTab directly when
                 // WebContentsObserverProxy observers' iterator concurrency issue is fixed.
                 // Showing the SadTab will cause the content view hosting WebContents to lose focus.
                 // Post the show in order to avoid immediately triggering
@@ -163,37 +190,7 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
                 // observers in {@link WebContentsObserverProxy} receive callbacks for
                 // {@link WebContentsObserver#renderProcessGone} first.
                 SadTab sadTab = SadTab.from(mTab);
-                (new Handler())
-                        .post(
-                                () -> {
-                                    sadTab.show(
-                                            mTab.getThemedApplicationContext(),
-                                            /* suggestionAction= */ () -> {
-                                                Activity activity =
-                                                        mTab.getWindowAndroid().getActivity().get();
-                                                assert activity != null;
-                                                HelpAndFeedbackLauncherImpl.getForProfile(
-                                                                mTab.getProfile())
-                                                        .show(
-                                                                activity,
-                                                                activity.getString(
-                                                                        R.string
-                                                                                .help_context_sad_tab),
-                                                                null);
-                                            },
-
-                                            /* buttonAction= */ () -> {
-                                                if (sadTab.showSendFeedbackView()) {
-                                                    mTab.getActivity()
-                                                            .startHelpAndFeedback(
-                                                                    mTab.getUrl().getSpec(),
-                                                                    "MobileSadTabFeedback",
-                                                                    mTab.getProfile());
-                                                } else {
-                                                    mTab.reload();
-                                                }
-                                            });
-                                });
+                PostTask.postTask(TaskTraits.UI_DEFAULT, () -> showSadTab(sadTab));
                 // This is necessary to correlate histogram data with stability counts.
                 RecordHistogram.recordBooleanHistogram("Stability.Android.RendererCrash", true);
             }

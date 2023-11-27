@@ -237,8 +237,9 @@ public class EphemeralTabMediator {
                             new Handler()
                                     .postDelayed(
                                             () -> {
-                                                if (mSheetContent != null)
+                                                if (mSheetContent != null) {
                                                     mSheetContent.setProgressVisible(false);
+                                                }
                                             },
                                             HIDE_PROGRESS_BAR_DELAY_MS);
                         }

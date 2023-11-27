@@ -55,7 +55,6 @@ public class ContextualPageActionController {
          * @param action Enum value of the action shown.
          */
         default void onActionShown(Tab tab, @AdaptiveToolbarButtonVariant int action) {}
-
     }
 
     private final ObservableSupplier<Profile> mProfileSupplier;

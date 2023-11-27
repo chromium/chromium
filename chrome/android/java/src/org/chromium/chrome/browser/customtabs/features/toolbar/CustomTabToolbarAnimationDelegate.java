@@ -50,6 +50,28 @@ class CustomTabToolbarAnimationDelegate {
     private @DrawableRes int mSecurityIconRes;
     private boolean mIsInAnimation;
 
+    private final AnimatorListenerAdapter mTitleBarAnimatorListenerAdapter =
+            new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mIsInAnimation = false;
+                }
+            };
+
+    private final AnimatorListenerAdapter mUrlBarAnimatorListenerAdapter =
+            new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mTitleBar
+                            .animate()
+                            .alpha(1f)
+                            .setInterpolator(Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR)
+                            .setDuration(SecurityButtonAnimationDelegate.FADE_DURATION_MS)
+                            .setListener(mTitleBarAnimatorListenerAdapter)
+                            .start();
+                }
+            };
+
     /** Constructs an instance of {@link CustomTabToolbarAnimationDelegate}. */
     CustomTabToolbarAnimationDelegate(
             ImageButton securityButton,
@@ -85,21 +107,22 @@ class CustomTabToolbarAnimationDelegate {
         if (!mShouldRunTitleAnimation) return;
         mShouldRunTitleAnimation = false;
 
-        mTitleBar.setVisibility(View.VISIBLE);
-        mTitleBar.setAlpha(0f);
+        var titleBar = mTitleBar;
+        titleBar.setVisibility(View.VISIBLE);
+        titleBar.setAlpha(0f);
 
+        TextView urlBar = mUrlBar;
         float newSizeSp = context.getResources().getDimension(R.dimen.custom_tabs_url_text_size);
-
-        float oldSizePx = mUrlBar.getTextSize();
-        mUrlBar.setTextSize(TypedValue.COMPLEX_UNIT_PX, newSizeSp);
+        float oldSizePx = urlBar.getTextSize();
+        urlBar.setTextSize(TypedValue.COMPLEX_UNIT_PX, newSizeSp);
 
         // View#getY() cannot be used because the boundary of the parent will change after relayout.
         final int[] oldLoc = new int[2];
-        mUrlBar.getLocationInWindow(oldLoc);
+        urlBar.getLocationInWindow(oldLoc);
 
-        ViewUtils.requestLayout(mUrlBar, "CustomTabToolbarAnimationDelegate.startTitleAnimation");
+        ViewUtils.requestLayout(urlBar, "CustomTabToolbarAnimationDelegate.startTitleAnimation");
 
-        mUrlBar.addOnLayoutChangeListener(
+        urlBar.addOnLayoutChangeListener(
                 new View.OnLayoutChangeListener() {
                     @Override
                     public void onLayoutChange(
@@ -112,53 +135,31 @@ class CustomTabToolbarAnimationDelegate {
                             int oldTop,
                             int oldRight,
                             int oldBottom) {
-                        mUrlBar.removeOnLayoutChangeListener(this);
+                        TextView urlBar = mUrlBar;
+                        urlBar.removeOnLayoutChangeListener(this);
 
                         int[] newLoc = new int[2];
-                        mUrlBar.getLocationInWindow(newLoc);
+                        urlBar.getLocationInWindow(newLoc);
 
                         // The size may change during the measuring pass, so we should calculate the
                         // new size here, after the layout is done.
-                        float newSizePx = mUrlBar.getTextSize();
+                        float newSizePx = urlBar.getTextSize();
                         final float scale = oldSizePx / newSizePx;
 
-                        mUrlBar.setScaleX(scale);
-                        mUrlBar.setScaleY(scale);
-                        mUrlBar.setTranslationX(oldLoc[0] - newLoc[0]);
-                        mUrlBar.setTranslationY(oldLoc[1] - newLoc[1]);
+                        urlBar.setScaleX(scale);
+                        urlBar.setScaleY(scale);
+                        urlBar.setTranslationX(oldLoc[0] - newLoc[0]);
+                        urlBar.setTranslationY(oldLoc[1] - newLoc[1]);
 
                         mIsInAnimation = true;
-                        mUrlBar.animate()
+                        urlBar.animate()
                                 .scaleX(1f)
                                 .scaleY(1f)
                                 .translationX(0)
                                 .translationY(0)
                                 .setDuration(SecurityButtonAnimationDelegate.SLIDE_DURATION_MS)
                                 .setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR)
-                                .setListener(
-                                        new AnimatorListenerAdapter() {
-                                            @Override
-                                            public void onAnimationEnd(Animator animation) {
-                                                mTitleBar
-                                                        .animate()
-                                                        .alpha(1f)
-                                                        .setInterpolator(
-                                                                Interpolators
-                                                                        .LINEAR_OUT_SLOW_IN_INTERPOLATOR)
-                                                        .setDuration(
-                                                                SecurityButtonAnimationDelegate
-                                                                        .FADE_DURATION_MS)
-                                                        .setListener(
-                                                                new AnimatorListenerAdapter() {
-                                                                    @Override
-                                                                    public void onAnimationEnd(
-                                                                            Animator animation) {
-                                                                        mIsInAnimation = false;
-                                                                    }
-                                                                })
-                                                        .start();
-                                            }
-                                        })
+                                .setListener(mUrlBarAnimatorListenerAdapter)
                                 .start();
                     }
                 });

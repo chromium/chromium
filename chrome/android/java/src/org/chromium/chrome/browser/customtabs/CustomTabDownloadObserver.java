@@ -57,8 +57,11 @@ public class CustomTabDownloadObserver extends EmptyTabObserver {
                 && navigation.isDownload()) {
             Runnable urlRegistration =
                     () -> {
-                        if (mActivity.isFinishing() || mActivity.isDestroyed() || tab.isDestroyed())
+                        if (mActivity.isFinishing()
+                                || mActivity.isDestroyed()
+                                || tab.isDestroyed()) {
                             return;
+                        }
                         DownloadManagerService.getDownloadManagerService()
                                 .getMessageUiController(/* otrProfileID= */ null)
                                 .addDownloadInterstitialSource(tab.getOriginalUrl());

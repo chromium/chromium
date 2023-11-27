@@ -817,8 +817,9 @@ public class TabPersistentStore {
                                 File[] files = baseStateFile.listFiles();
                                 if (files == null) continue;
                                 for (File file : files) {
-                                    if (!file.delete())
+                                    if (!file.delete()) {
                                         Log.e(TAG, "Failed to delete file: " + file);
+                                    }
                                 }
                             }
                         }

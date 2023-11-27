@@ -246,8 +246,9 @@ public class FullscreenHtmlApiHandler
                     protected void onObservingDifferentTab(Tab tab, boolean hint) {
                         mTab = tab;
                         setContentView(tab != null ? tab.getContentView() : null);
-                        if (tab != null)
+                        if (tab != null) {
                             updateMultiTouchZoomSupport(!getPersistentFullscreenMode());
+                        }
                     }
                 };
 
@@ -267,9 +268,8 @@ public class FullscreenHtmlApiHandler
                     @Override
                     public void onDidFinishNavigationInPrimaryMainFrame(
                             Tab tab, NavigationHandle navigation) {
-                        if (!navigation.isSameDocument()) {
-                            if (tab == modelSelector.getCurrentTab())
-                                exitPersistentFullscreenMode();
+                        if (!navigation.isSameDocument() && tab == modelSelector.getCurrentTab()) {
+                            exitPersistentFullscreenMode();
                         }
                     }
 
