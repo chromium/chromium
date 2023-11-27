@@ -56,6 +56,7 @@ suite('allInputsDisabledTest', function() {
     // kEnterRSUWPDisableCode
     service.setGetRsuDisableWriteProtectChallengeResult('');
     service.setGetRsuDisableWriteProtectHwidResult('');
+    service.setGetRsuDisableWriteProtectChallengeQrCodeResponse([]);
 
     // kUpdateDeviceInformation
     service.setGetOriginalSerialNumberResult('');
