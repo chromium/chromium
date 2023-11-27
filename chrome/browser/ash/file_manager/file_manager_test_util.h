@@ -60,6 +60,12 @@ class FolderInMyFiles {
   std::vector<base::FilePath> files_;
 };
 
+// Take test files from the chromeos/file_manager/ test directory and copy them
+// into a temp folder mounted within MyFiles.
+std::vector<storage::FileSystemURL> CopyTestFilesIntoMyFiles(
+    Profile* profile,
+    std::vector<std::string> file_names);
+
 // Load the default set of component extensions used on ChromeOS. This should be
 // done in an override of InProcessBrowserTest::SetUpOnMainThread().
 void AddDefaultComponentExtensionsOnMainThread(Profile* profile);

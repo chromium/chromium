@@ -587,23 +587,8 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ExecuteChromeApp) {
   TaskDescriptor task_descriptor(extension->id(), TASK_TYPE_FILE_HANDLER,
                                  "tiffAction");
 
-  base::FilePath path;
-  EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &path));
-  path = path.AppendASCII("chromeos/file_manager/test_small.tiff");
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    EXPECT_TRUE(base::PathExists(path));
-  }
-  // Copy the file into My Files.
-  file_manager::test::FolderInMyFiles folder(profile);
-  folder.Add({path});
-  base::FilePath path_in_my_files = folder.files()[0];
-
-  GURL tiff_url;
-  CHECK(util::ConvertAbsoluteFilePathToFileSystemUrl(
-      profile, path_in_my_files, util::GetFileManagerURL(), &tiff_url));
-  std::vector<storage::FileSystemURL> files;
-  files.push_back(storage::FileSystemURL::CreateForTest(tiff_url));
+  std::vector<storage::FileSystemURL> files =
+      test::CopyTestFilesIntoMyFiles(profile, {"test_small.tiff"});
 
   content::DOMMessageQueue message_queue;
   ExecuteFileTask(profile, task_descriptor, files, nullptr, base::DoNothing());

@@ -212,32 +212,8 @@ class FileHandlerDialogBrowserTest : public InProcessBrowserTest {
         {kDocxFileExtension, kPptxFileExtension, kXlsxFileExtension},
         {kDocxMimeType, kPptxMimeType, kXlsxMimeType}, num_tasks_);
 
-    file_manager::test::FolderInMyFiles folder(profile());
-
-    base::FilePath test_data_path;
-    EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_path));
-    std::string file_names[] = {"text.docx", "presentation.pptx"};
-
-    for (const auto& file_name : file_names) {
-      base::FilePath file_path =
-          test_data_path.AppendASCII("chromeos/file_manager/" + file_name);
-      {
-        base::ScopedAllowBlockingForTesting allow_blocking;
-        EXPECT_TRUE(base::PathExists(file_path));
-      }
-      // Copy the file into My Files.
-      folder.Add({file_path});
-    }
-
-    for (const auto& path_in_my_files : folder.files()) {
-      GURL url;
-      CHECK(file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
-          profile(), path_in_my_files, file_manager::util::GetFileManagerURL(),
-          &url));
-      auto* file_system_context =
-          file_manager::util::GetFileManagerFileSystemContext(profile());
-      files_.push_back(file_system_context->CrackURLInFirstPartyContext(url));
-    }
+    files_ = file_manager::test::CopyTestFilesIntoMyFiles(
+        profile(), {"text.docx", "presentation.pptx"});
   }
 
  protected:

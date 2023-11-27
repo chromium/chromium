@@ -13,6 +13,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager_observer.h"
 #include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
@@ -98,6 +99,35 @@ void FolderInMyFiles::Refresh() {
             [](const base::FilePath& l, const base::FilePath& r) {
               return l.BaseName() < r.BaseName();
             });
+}
+
+std::vector<storage::FileSystemURL> CopyTestFilesIntoMyFiles(
+    Profile* profile,
+    std::vector<std::string> file_names) {
+  FolderInMyFiles folder(profile);
+  base::FilePath test_data_path;
+  EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_path));
+
+  for (const auto& file_name : file_names) {
+    base::FilePath file_path =
+        test_data_path.AppendASCII("chromeos/file_manager/" + file_name);
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      EXPECT_TRUE(base::PathExists(file_path));
+    }
+    // Copy the file into My Files.
+    folder.Add({file_path});
+  }
+
+  std::vector<storage::FileSystemURL> files;
+  for (const auto& path_in_my_files : folder.files()) {
+    GURL url;
+    CHECK(util::ConvertAbsoluteFilePathToFileSystemUrl(
+        profile, path_in_my_files, util::GetFileManagerURL(), &url));
+    auto* file_system_context = util::GetFileManagerFileSystemContext(profile);
+    files.push_back(file_system_context->CrackURLInFirstPartyContext(url));
+  }
+  return files;
 }
 
 void AddDefaultComponentExtensionsOnMainThread(Profile* profile) {
