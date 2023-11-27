@@ -557,11 +557,11 @@ public class StatusMediator
             return SearchEngineUtils.getFallbackNavigationIcon(mBrandedColorScheme);
         }
 
-        var profile = mProfileSupplier.get();
-        if (profile == null) {
+        if (!mProfileSupplier.hasValue()) {
             return SearchEngineUtils.getFallbackSearchIcon(mBrandedColorScheme);
         }
 
+        var profile = mProfileSupplier.get();
         return SearchEngineUtils.getForProfile(profile).getSearchEngineLogo(mBrandedColorScheme);
     }
 
