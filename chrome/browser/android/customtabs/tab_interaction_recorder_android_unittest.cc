@@ -34,14 +34,16 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using autofill::AutofillManager;
-using testing::_;
-using testing::NiceMock;
-using AutofillObsever = AutofillManager::Observer;
-
 namespace customtabs {
 
 namespace {
+
+using ::autofill::AutofillManager;
+using ::autofill::FormData;
+using ::autofill::test::CreateTestAddressFormData;
+using ::testing::_;
+using ::testing::NiceMock;
+
 class MockAutofillClient : public autofill::TestAutofillClient {
  public:
   MockAutofillClient() = default;
@@ -71,12 +73,10 @@ class MockAutofillManager : public autofill::TestBrowserAutofillManager {
 void OnTextFieldDidChangeForAutofillManager(
     AutofillManager* autofill_manager,
     base::test::TaskEnvironment& task_environment) {
-  autofill::FormData form;
-  autofill::test::CreateTestAddressFormData(&form);
-  autofill::FormFieldData field = form.fields.front();
-
+  FormData form = CreateTestAddressFormData();
   autofill_manager->OnTextFieldDidChange(
-      form, field, gfx::RectF(), autofill::AutofillTickClock::NowTicks());
+      form, form.fields.front(), gfx::RectF(),
+      autofill::AutofillTickClock::NowTicks());
   task_environment.RunUntilIdle();
 }
 
@@ -84,13 +84,11 @@ void OnFormsSeenForAutofillManager(
     AutofillManager* autofill_manager,
     content::RenderFrameHost* rfh,
     base::test::TaskEnvironment& task_environment) {
-  autofill::FormData form;
-  autofill::test::CreateTestAddressFormData(&form);
+  FormData form = CreateTestAddressFormData();
   if (rfh) {
     form.host_frame = autofill::LocalFrameToken(rfh->GetFrameToken().value());
   }
-  autofill_manager->OnFormsSeen(std::vector<autofill::FormData>{form},
-                                std::vector<autofill::FormGlobalId>());
+  autofill_manager->OnFormsSeen({form}, std::vector<autofill::FormGlobalId>());
   task_environment.RunUntilIdle();
 }
 }  // namespace

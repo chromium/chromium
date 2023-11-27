@@ -97,14 +97,10 @@ std::unique_ptr<PrefService> PrefServiceForTesting();
 std::unique_ptr<PrefService> PrefServiceForTesting(
     user_prefs::PrefRegistrySyncable* registry);
 
-// Populates `form` with data corresponding to a simple address form.
-// Note that this actually appends fields to the form data, which can be useful
-// for building up more complex test forms. Another version of the function is
-// provided in case the caller wants the vector of expected field `types`. Use
-// `unique_id` optionally ensure that each form has its own signature.
+// Returns a `FormData` corresponding to a simple address form. Use `unique_id`
+// to ensure that the form has its own signature.
 [[nodiscard]] FormData CreateTestAddressFormData(
     const char* unique_id = nullptr);
-void CreateTestAddressFormData(FormData* form, const char* unique_id = nullptr);
 
 // Returns a full profile with valid info according to rules for Canada.
 AutofillProfile GetFullValidProfileForCanada();

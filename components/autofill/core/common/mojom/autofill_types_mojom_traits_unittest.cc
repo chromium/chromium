@@ -84,7 +84,7 @@ void CreatePasswordGenerationUIData(
   data->generation_element = u"generation_element";
   data->text_direction = base::i18n::RIGHT_TO_LEFT;
   data->is_generation_element_password_type = false;
-  test::CreateTestAddressFormData(&data->form_data);
+  data->form_data = test::CreateTestAddressFormData();
 }
 
 void CheckEqualPasswordFormFillData(const PasswordFormFillData& expected,
@@ -364,8 +364,7 @@ TEST_F(AutofillTypeTraitsTestImpl, PassDataListFormFieldData) {
 }
 
 TEST_F(AutofillTypeTraitsTestImpl, PassFormData) {
-  FormData input;
-  test::CreateTestAddressFormData(&input);
+  FormData input = test::CreateTestAddressFormData();
   input.username_predictions = {autofill::FieldRendererId(1),
                                 autofill::FieldRendererId(13),
                                 autofill::FieldRendererId(2)};
@@ -394,7 +393,7 @@ TEST_F(AutofillTypeTraitsTestImpl, PassFormFieldDataPredictions) {
 
 TEST_F(AutofillTypeTraitsTestImpl, PassFormDataPredictions) {
   FormDataPredictions input;
-  test::CreateTestAddressFormData(&input.data);
+  input.data = test::CreateTestAddressFormData();
   input.signature = "TestSignature";
 
   FormFieldDataPredictions field_predict;

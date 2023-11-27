@@ -44,8 +44,7 @@ class AutocompleteUnrecognizedFallbackEventLoggerTest
 // emitted correctly.
 TEST_F(AutocompleteUnrecognizedFallbackEventLoggerTest,
        FillAfterSuggestion_NotFilled) {
-  FormData form;
-  test::CreateTestAddressFormData(&form);
+  FormData form = test::CreateTestAddressFormData();
   form.fields[0].parsed_autocomplete =
       AutocompleteParsingResult{.field_type = HtmlFieldType::kUnrecognized};
   SeeForm(form);
@@ -65,8 +64,7 @@ TEST_F(AutocompleteUnrecognizedFallbackEventLoggerTest,
 // emitted correctly.
 TEST_F(AutocompleteUnrecognizedFallbackEventLoggerTest,
        FillAfterSuggestion_Filled) {
-  FormData form;
-  test::CreateTestAddressFormData(&form);
+  FormData form = test::CreateTestAddressFormData();
   form.fields[0].parsed_autocomplete =
       AutocompleteParsingResult{.field_type = HtmlFieldType::kUnrecognized};
   ShowSuggestions(form);
@@ -89,8 +87,7 @@ TEST_F(AutocompleteUnrecognizedFallbackEventLoggerTest,
 // Regression test for crbug.com/1483883.
 TEST_F(AutocompleteUnrecognizedFallbackEventLoggerTest,
        FillAfterSuggestion_DynamicChange) {
-  FormData form;
-  test::CreateTestAddressFormData(&form);
+  FormData form = test::CreateTestAddressFormData();
   SeeForm(form);
   // Since the form doesn't have any ac=unrecognized fields, the
   // `AutocompleteUnrecognizedFallbackEventLogger` is not notified.
@@ -120,8 +117,7 @@ TEST_F(AutocompleteUnrecognizedFallbackEventLoggerTest,
 // emitted.
 TEST_F(AutocompleteUnrecognizedFallbackEventLoggerTest,
        FillAfterSuggestion_RegularAutofill) {
-  FormData form;
-  test::CreateTestAddressFormData(&form);
+  FormData form = test::CreateTestAddressFormData();
   SeeForm(form);
   ShowSuggestions(form);
 

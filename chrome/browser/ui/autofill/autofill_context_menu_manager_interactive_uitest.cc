@@ -213,12 +213,8 @@ IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
                        IncludesTriggerFormAndFieldSignatures) {
   content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
   LocalFrameToken frame_token(rfh->GetFrameToken().value());
-  FormData form;
-  test::CreateTestAddressFormData(&form);
-  form.host_frame = frame_token;
-  for (auto& field : form.fields) {
-    field.host_frame = frame_token;
-  }
+  FormData form = test::CreateFormDataForFrame(
+      test::CreateTestAddressFormData(), frame_token);
   GetAutofillManager()->OnFormsSeen(
       /*updated_forms=*/{form},
       /*removed_forms=*/{});

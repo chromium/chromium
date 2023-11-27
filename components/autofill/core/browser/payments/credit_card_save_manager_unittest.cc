@@ -1794,9 +1794,8 @@ TEST_F(CreditCardSaveManagerTest,
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_ZipCodesConflict) {
   // Create, fill and submit two address forms with different zip codes.
-  FormData address_form1, address_form2;
-  test::CreateTestAddressFormData(&address_form1, "1");
-  test::CreateTestAddressFormData(&address_form2, "2");
+  FormData address_form1 = test::CreateTestAddressFormData("1");
+  FormData address_form2 = test::CreateTestAddressFormData("2");
 
   std::vector<FormData> address_forms;
   address_forms.push_back(address_form1);
@@ -1895,9 +1894,8 @@ TEST_F(CreditCardSaveManagerTest,
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_ZipCodesHavePrefixMatch) {
   // Create, fill and submit two address forms with different zip codes.
-  FormData address_form1, address_form2;
-  test::CreateTestAddressFormData(&address_form1);
-  test::CreateTestAddressFormData(&address_form2);
+  FormData address_form1 = test::CreateTestAddressFormData("1");
+  FormData address_form2 = test::CreateTestAddressFormData("2");
 
   std::vector<FormData> address_forms;
   address_forms.push_back(address_form1);
@@ -1988,9 +1986,8 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NoZipCodeAvailable) {
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_CCFormHasMiddleInitial) {
   // Create, fill and submit two address forms with different names.
-  FormData address_form1, address_form2;
-  test::CreateTestAddressFormData(&address_form1);
-  test::CreateTestAddressFormData(&address_form2);
+  FormData address_form1 = test::CreateTestAddressFormData("1");
+  FormData address_form2 = test::CreateTestAddressFormData("2");
   FormsSeen({address_form1, address_form2});
 
   // Names can be different case.
@@ -2033,9 +2030,8 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_CCFormHasMiddleInitial) {
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NoMiddleInitialInCCForm) {
   // Create, fill and submit two address forms with different names.
-  FormData address_form1, address_form2;
-  test::CreateTestAddressFormData(&address_form1);
-  test::CreateTestAddressFormData(&address_form2);
+  FormData address_form1 = test::CreateTestAddressFormData("1");
+  FormData address_form2 = test::CreateTestAddressFormData("2");
   FormsSeen({address_form1, address_form2});
 
   // Names can have different variations of middle initials.
@@ -2164,9 +2160,8 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_CCFormHasAddressMiddleName) {
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NamesCanMismatch) {
   // Create, fill and submit two address forms with different names.
-  FormData address_form1, address_form2;
-  test::CreateTestAddressFormData(&address_form1);
-  test::CreateTestAddressFormData(&address_form2);
+  FormData address_form1 = test::CreateTestAddressFormData("1");
+  FormData address_form2 = test::CreateTestAddressFormData("2");
 
   std::vector<FormData> address_forms;
   address_forms.push_back(address_form1);
@@ -2222,9 +2217,8 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_IgnoreOldProfiles) {
   test_clock.SetNow(kArbitraryTime);
 
   // Create, fill and submit two address forms with different names.
-  FormData address_form1, address_form2;
-  test::CreateTestAddressFormData(&address_form1);
-  test::CreateTestAddressFormData(&address_form2);
+  FormData address_form1 = test::CreateTestAddressFormData("1");
+  FormData address_form2 = test::CreateTestAddressFormData("2");
   FormsSeen({address_form1, address_form2});
 
   ManuallyFillAddressForm("Jane", "Doe", "77401", "US", &address_form1);

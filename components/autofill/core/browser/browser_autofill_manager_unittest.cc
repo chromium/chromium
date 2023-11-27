@@ -3001,7 +3001,8 @@ TEST_F(BrowserAutofillManagerTest, FillTriggeredSection) {
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
   size_t index_of_trigger_field = form.fields.size();
-  CreateTestAddressFormData(&form);
+  base::ranges::move(CreateTestAddressFormData().fields,
+                     std::back_inserter(form.fields));
   FormsSeen({form});
 
   // Check that the form has been parsed into two sections.
@@ -4697,7 +4698,8 @@ TEST_F(BrowserAutofillManagerTest, FillFormWithMultipleSections) {
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
   const size_t kAddressFormSize = form.fields.size();
-  CreateTestAddressFormData(&form);
+  base::ranges::move(CreateTestAddressFormData().fields,
+                     std::back_inserter(form.fields));
   for (size_t i = kAddressFormSize; i < form.fields.size(); ++i) {
     // Make sure the fields have distinct names.
     form.fields[i].name = form.fields[i].name + u"_";

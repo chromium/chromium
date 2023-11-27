@@ -136,47 +136,42 @@ std::unique_ptr<PrefService> PrefServiceForTesting(
 
 [[nodiscard]] FormData CreateTestAddressFormData(const char* unique_id) {
   FormData form;
-  CreateTestAddressFormData(&form, unique_id);
-  return form;
-}
-
-void CreateTestAddressFormData(FormData* form,
-                               const char* unique_id) {
-  form->host_frame = MakeLocalFrameToken();
-  form->unique_renderer_id = MakeFormRendererId();
-  form->name = u"MyForm" + ASCIIToUTF16(unique_id ? unique_id : "");
-  form->button_titles = {std::make_pair(
+  form.host_frame = MakeLocalFrameToken();
+  form.unique_renderer_id = MakeFormRendererId();
+  form.name = u"MyForm" + ASCIIToUTF16(unique_id ? unique_id : "");
+  form.button_titles = {std::make_pair(
       u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
-  form->url = GURL("https://myform.com/form.html");
-  form->action = GURL("https://myform.com/submit.html");
-  form->is_action_empty = true;
-  form->main_frame_origin =
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("https://myform.com/submit.html");
+  form.is_action_empty = true;
+  form.main_frame_origin =
       url::Origin::Create(GURL("https://myform_root.com/form.html"));
-  form->submission_event =
+  form.submission_event =
       mojom::SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
 
-  form->fields.push_back(CreateTestFormField("First Name", "firstname", "",
-                                             FormControlType::kInputText));
-  form->fields.push_back(CreateTestFormField("Middle Name", "middlename", "",
-                                             FormControlType::kInputText));
-  form->fields.push_back(CreateTestFormField("Last Name", "lastname", "",
-                                             FormControlType::kInputText));
-  form->fields.push_back(CreateTestFormField("Address Line 1", "addr1", "",
-                                             FormControlType::kInputText));
-  form->fields.push_back(CreateTestFormField("Address Line 2", "addr2", "",
-                                             FormControlType::kInputText));
-  form->fields.push_back(
+  form.fields.push_back(CreateTestFormField("First Name", "firstname", "",
+                                            FormControlType::kInputText));
+  form.fields.push_back(CreateTestFormField("Middle Name", "middlename", "",
+                                            FormControlType::kInputText));
+  form.fields.push_back(CreateTestFormField("Last Name", "lastname", "",
+                                            FormControlType::kInputText));
+  form.fields.push_back(CreateTestFormField("Address Line 1", "addr1", "",
+                                            FormControlType::kInputText));
+  form.fields.push_back(CreateTestFormField("Address Line 2", "addr2", "",
+                                            FormControlType::kInputText));
+  form.fields.push_back(
       CreateTestFormField("City", "city", "", FormControlType::kInputText));
-  form->fields.push_back(
+  form.fields.push_back(
       CreateTestFormField("State", "state", "", FormControlType::kInputText));
-  form->fields.push_back(CreateTestFormField("Postal Code", "zipcode", "",
-                                             FormControlType::kInputText));
-  form->fields.push_back(CreateTestFormField("Country", "country", "",
-                                             FormControlType::kInputText));
-  form->fields.push_back(CreateTestFormField("Phone Number", "phonenumber", "",
-                                             FormControlType::kInputTelephone));
-  form->fields.push_back(
+  form.fields.push_back(CreateTestFormField("Postal Code", "zipcode", "",
+                                            FormControlType::kInputText));
+  form.fields.push_back(CreateTestFormField("Country", "country", "",
+                                            FormControlType::kInputText));
+  form.fields.push_back(CreateTestFormField("Phone Number", "phonenumber", "",
+                                            FormControlType::kInputTelephone));
+  form.fields.push_back(
       CreateTestFormField("Email", "email", "", FormControlType::kInputEmail));
+  return form;
 }
 
 inline void check_and_set(

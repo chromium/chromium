@@ -448,9 +448,7 @@ class ContentAutofillDriverTestWithAddressForm
  public:
   void SetUp() override {
     ContentAutofillDriverTest::SetUp();
-    FormData form;
-    test::CreateTestAddressFormData(&form);
-    address_form_ = SeeForm(main_frame(), std::move(form));
+    address_form_ = SeeForm(main_frame(), test::CreateTestAddressFormData());
   }
 
   FormData& address_form() { return address_form_; }
@@ -597,11 +595,9 @@ TEST_F(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfForm_AboutScheme) {
 // Tests that the FormData::version of forms passed to AutofillManager
 // increases.
 TEST_F(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfForm_Version) {
-  FormData form;
-  test::CreateTestAddressFormData(&form);
-
+  FormData form = test::CreateTestAddressFormData();
   std::vector<FormData> augmented_forms;
-  EXPECT_CALL(manager(), OnFormsSeen(_, _))
+  EXPECT_CALL(manager(), OnFormsSeen)
       .WillOnce(DoAll(SaveArg<0>(&augmented_forms)));
   driver().renderer_events().FormsSeen(/*updated_forms=*/{form},
                                        /*removed_forms=*/{});
@@ -666,8 +662,7 @@ TEST_F(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfField) {
 // Tests that FormsSeen() for an updated form arrives in the AutofillManager.
 // Does not test multiple frames.
 TEST_F(ContentAutofillDriverTest, FormsSeen_UpdatedForm) {
-  FormData form;
-  test::CreateTestAddressFormData(&form);
+  FormData form = test::CreateTestAddressFormData();
   EXPECT_CALL(manager(),
               OnFormsSeen(ElementsAre(AllOf(
                               // The received form has some frame-specific meta
@@ -699,8 +694,7 @@ TEST_F(ContentAutofillDriverTest, FormsSeen_RemovedForm) {
 // AutofillManager.
 // Does not test multiple frames.
 TEST_F(ContentAutofillDriverTest, FormsSeen_UpdatedAndRemovedForm) {
-  FormData form;
-  test::CreateTestAddressFormData(&form);
+  FormData form = test::CreateTestAddressFormData();
   FormRendererId other_form_renderer_id = test::MakeFormRendererId();
   EXPECT_CALL(
       manager(),
@@ -773,11 +767,9 @@ TEST_F(ContentAutofillDriverTest, TypePredictionsSentToRendererWhenEnabled) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kShowAutofillTypePredictions);
 
-  FormData form;
-  test::CreateTestAddressFormData(&form);
-
+  FormData form = test::CreateTestAddressFormData();
   std::vector<FormData> augmented_forms;
-  EXPECT_CALL(manager(), OnFormsSeen(_, _))
+  EXPECT_CALL(manager(), OnFormsSeen)
       .WillOnce(DoAll(SaveArg<0>(&augmented_forms)));
   driver().renderer_events().FormsSeen(/*updated_forms=*/{form},
                                        /*removed_forms=*/{});

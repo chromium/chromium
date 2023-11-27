@@ -278,8 +278,7 @@ class BaseAutofillContextMenuManagerTest : public InProcessBrowserTest {
 
   // Creates a form with classifiable fields and registers it with the manager.
   FormData CreateAndAttachClassifiedForm() {
-    FormData form;
-    test::CreateTestAddressFormData(&form);
+    FormData form = test::CreateTestAddressFormData();
     AttachForm(form);
     return form;
   }
@@ -287,8 +286,7 @@ class BaseAutofillContextMenuManagerTest : public InProcessBrowserTest {
   // Creates a form where every field has unrecognized autocomplete attribute
   // and registers it with the manager.
   FormData CreateAndAttachAutocompleteUnrecognizedForm() {
-    FormData form;
-    test::CreateTestAddressFormData(&form);
+    FormData form = test::CreateTestAddressFormData();
     for (FormFieldData& field : form.fields) {
       field.parsed_autocomplete =
           AutocompleteParsingResult{.field_type = HtmlFieldType::kUnrecognized};
@@ -300,8 +298,7 @@ class BaseAutofillContextMenuManagerTest : public InProcessBrowserTest {
   // Creates a form with unclassifiable fields and registers it with the
   // manager.
   FormData CreateAndAttachUnclassifiedForm() {
-    FormData form;
-    test::CreateTestAddressFormData(&form);
+    FormData form = test::CreateTestAddressFormData();
     for (FormFieldData& field : form.fields) {
       field.label = u"unclassifiable";
       field.name = u"unclassifiable";

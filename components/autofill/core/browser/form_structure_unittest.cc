@@ -6731,8 +6731,7 @@ TEST_F(FormStructureTestImpl, ExperimentalServerPredictionsAreSeparate) {
 
 // Tests that ParseFieldTypesWithPatterns() sets (only) the PatternSource.
 TEST_P(FormStructureTest_ForPatternSource, ParseFieldTypesWithPatterns) {
-  FormData form;
-  test::CreateTestAddressFormData(&form);
+  FormData form = test::CreateTestAddressFormData();
   FormStructure form_structure(form);
   test_api(form_structure).ParseFieldTypesWithPatterns(pattern_source());
   ASSERT_THAT(form_structure.fields(), Not(IsEmpty()));
@@ -6809,8 +6808,7 @@ TEST_F(FormStructureTestImpl, GetFormTypes_AutocompleteUnrecognized) {
   base::test::ScopedFeatureList feature(
       features::kAutofillPredictionsForAutocompleteUnrecognized);
 
-  FormData form;
-  test::CreateTestAddressFormData(&form);
+  FormData form = test::CreateTestAddressFormData();
   for (FormFieldData& field : form.fields) {
     field.parsed_autocomplete =
         AutocompleteParsingResult{.field_type = HtmlFieldType::kUnrecognized};

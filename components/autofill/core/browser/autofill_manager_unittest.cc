@@ -218,9 +218,10 @@ class MockAutofillMlPredictionModelHandler
 // Creates a vector of test forms which differ in their FormGlobalIds
 // and FieldGlobalIds.
 std::vector<FormData> CreateTestForms(size_t num_forms) {
-  std::vector<FormData> forms(num_forms);
-  for (FormData& form : forms)
-    test::CreateTestAddressFormData(&form);
+  std::vector<FormData> forms;
+  for (size_t i = 0; i < num_forms; ++i) {
+    forms.push_back(test::CreateTestAddressFormData());
+  }
   return forms;
 }
 
