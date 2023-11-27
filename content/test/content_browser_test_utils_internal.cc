@@ -398,10 +398,14 @@ std::string FrameTreeVisualizer::DepictFrameTree(FrameTreeNode* root) {
   for (auto& legend_entry : legend) {
     SiteInstanceImpl* site_instance =
         static_cast<SiteInstanceImpl*>(legend_entry.second);
-    std::string description = site_instance->GetSiteURL().spec();
+    std::string description =
+        GetUrlWithoutPort(site_instance->GetSiteURL()).spec();
     base::StringAppendF(&result, "\n%s%s = %s", prefix,
                         legend_entry.first.c_str(), description.c_str());
     // Highlight some exceptionable conditions.
+    if (site_instance->GetSiteInfo().is_sandboxed()) {
+      result.append(" (sandboxed)");
+    }
     if (site_instance->group()->active_frame_count() == 0)
       result.append(" (active_frame_count == 0)");
     if (!site_instance->GetProcess()->IsInitializedAndNotDead())
@@ -424,6 +428,12 @@ std::string FrameTreeVisualizer::GetName(SiteInstance* site_instance) {
     return base::StringPrintf("%c", 'A' + static_cast<char>(index));
   else
     return base::StringPrintf("Z%d", static_cast<int>(index - 25));
+}
+
+GURL FrameTreeVisualizer::GetUrlWithoutPort(const GURL& url) {
+  GURL::Replacements replacements;
+  replacements.ClearPort();
+  return url.ReplaceComponents(replacements);
 }
 
 std::string DepictFrameTree(FrameTreeNode& root) {
