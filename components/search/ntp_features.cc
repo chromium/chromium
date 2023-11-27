@@ -76,6 +76,12 @@ BASE_FEATURE(kRealboxCr23ExpandedStateLayout,
              "NtpRealboxCr23ExpandedStateLayout",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, NTP "realbox" will be themed for CR23. Includes realbox
+// matching omnibox theme and increased realbox shadow.
+BASE_FEATURE(kRealboxCr23Theming,
+             "NtpRealboxCr23Theming",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, the NTP "realbox" will have same border/drop shadow in hover
 // state as searchbox.
 BASE_FEATURE(kRealboxMatchSearchboxTheme,

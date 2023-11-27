@@ -35519,6 +35519,7 @@ from previous Chrome versions.
   <int value="-993583908" label="GuestOsFiles:disabled"/>
   <int value="-993476089" label="AutoScreenBrightness:disabled"/>
   <int value="-992554993" label="TemporaryHoldingSpacePreviews:disabled"/>
+  <int value="-992325472" label="NtpRealboxCr23Theming:enabled"/>
   <int value="-991416218" label="PdfViewerPresentationMode:enabled"/>
   <int value="-991412904" label="SettingsLandingPageRedesign:disabled"/>
   <int value="-991253797"
@@ -40906,6 +40907,7 @@ from previous Chrome versions.
       label="AutofillFillCreditCardAsPerFormatString:disabled"/>
   <int value="1596689942" label="OmniboxRevertModelBeforeClosingPopup:enabled"/>
   <int value="1596717222" label="SyncPollImmediatelyOnEveryStartup:enabled"/>
+  <int value="1596843821" label="NtpRealboxCr23Theming:disabled"/>
   <int value="1597516564" label="kDiagnosticsAppJelly:enabled"/>
   <int value="1597880096" label="FocusMode:disabled"/>
   <int value="1599431665" label="WebRtcApmDownmixCaptureAudioMethod:enabled"/>
