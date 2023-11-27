@@ -7,12 +7,14 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/time/time.h"
+
 // Clear all default browser promo data for testing.
 void ClearDefaultBrowserPromoData();
 
-// Sets an object into NSUserDefaults storage under the default browser utils
+// Sets a timestamp into NSUserDefaults storage under the default browser utils
 // key. Replaces the entire dictionary, so any existing entries are erased.
-void ResetStorageAndSetObjectForKey(NSString* key, NSObject* data);
+void ResetStorageAndSetTimestampForKey(NSString* key, base::Time timestamp);
 
 // Overwrites the dictionary under the default browser utils key with the
 // provided one.

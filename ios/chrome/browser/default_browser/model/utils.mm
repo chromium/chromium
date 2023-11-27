@@ -453,16 +453,12 @@ int NumDaysSincePromoInteraction() {
     return 0;
   }
 
-  NSDateComponents* components =
-      [NSCalendar.currentCalendar components:NSCalendarUnitDay
-                                    fromDate:timestamp
-                                      toDate:[NSDate date]
-                                     options:0];
-  if (!components.day || components.day < 0) {
+  int days = (base::Time::Now() - base::Time::FromNSDate(timestamp)).InDays();
+  if (days < 0) {
     return 0;
   }
 
-  return components.day;
+  return days;
 }
 
 // Returns number of days in past `kTriggerCriteriaExperimentStatExpiration`

@@ -17,6 +17,9 @@
 
 namespace {
 
+// A bit more than a day.
+constexpr base::TimeDelta kMoreThan1Day = base::Days(1) + base::Minutes(1);
+
 // Less than 7 days.
 constexpr base::TimeDelta kLessThan7Days = base::Days(7) - base::Minutes(1);
 
@@ -75,8 +78,8 @@ void SimulateUserInteractionWithFullscreenPromo(const base::TimeDelta& timeAgo,
                                                 int count) {
   NSDictionary<NSString*, NSObject*>* values = @{
     kUserHasInteractedWithFullscreenPromo : @YES,
-    kLastTimeUserInteractedWithFullscreenPromo :
-        [[NSDate alloc] initWithTimeIntervalSinceNow:-timeAgo.InSecondsF()],
+    kLastTimeUserInteractedWithFullscreenPromo : (base::Time::Now() - timeAgo)
+        .ToNSDate(),
     kGenericPromoInteractionCount : [NSNumber numberWithInt:count]
   };
   SetValuesInStorage(values);
@@ -170,8 +173,8 @@ TEST_F(DefaultBrowserUtilsTest,
 TEST_F(DefaultBrowserUtilsTest, NonModalPromoCoolDownWithPriorInteraction) {
   EXPECT_FALSE(UserInNonModalPromoCooldown());
 
-  ResetStorageAndSetObjectForKey(kLastTimeUserInteractedWithNonModalPromo,
-                                 [NSDate date]);
+  ResetStorageAndSetTimestampForKey(kLastTimeUserInteractedWithNonModalPromo,
+                                    base::Time::Now());
 
   EXPECT_TRUE(UserInNonModalPromoCooldown());
 }
@@ -181,8 +184,8 @@ TEST_F(DefaultBrowserUtilsTest, NonModalPromoCoolDownWithPriorInteraction) {
 TEST_F(DefaultBrowserUtilsTest, NonModalPromoCoolDownWithoutPriorInteraction) {
   EXPECT_FALSE(UserInNonModalPromoCooldown());
 
-  ResetStorageAndSetObjectForKey(kLastTimeUserInteractedWithFullscreenPromo,
-                                 [NSDate date]);
+  ResetStorageAndSetTimestampForKey(kLastTimeUserInteractedWithFullscreenPromo,
+                                    base::Time::Now());
 
   EXPECT_TRUE(UserInNonModalPromoCooldown());
 }
@@ -269,10 +272,8 @@ TEST_F(DefaultBrowserUtilsTest,
 TEST_F(
     DefaultBrowserUtilsTest,
     ManualHasRecentFirstPartyIntentLaunchesAndRecordsCurrentLaunchLessThan6Hours) {
-  ResetStorageAndSetObjectForKey(
-      kTimestampAppLastOpenedViaFirstPartyIntent,
-      [[NSDate alloc]
-          initWithTimeIntervalSinceNow:-kLessThan6Hours.InSecondsF()]);
+  ResetStorageAndSetTimestampForKey(kTimestampAppLastOpenedViaFirstPartyIntent,
+                                    (base::Time::Now() - kLessThan6Hours));
   EXPECT_FALSE(HasRecentFirstPartyIntentLaunchesAndRecordsCurrentLaunch());
 }
 
@@ -281,10 +282,8 @@ TEST_F(
 TEST_F(
     DefaultBrowserUtilsTest,
     ManualHasRecentFirstPartyIntentLaunchesAndRecordsCurrentLaunchMoreThan7Days) {
-  ResetStorageAndSetObjectForKey(
-      kTimestampAppLastOpenedViaFirstPartyIntent,
-      [[NSDate alloc]
-          initWithTimeIntervalSinceNow:-kMoreThan7Days.InSecondsF()]);
+  ResetStorageAndSetTimestampForKey(kTimestampAppLastOpenedViaFirstPartyIntent,
+                                    (base::Time::Now() - kMoreThan7Days));
   EXPECT_FALSE(HasRecentFirstPartyIntentLaunchesAndRecordsCurrentLaunch());
 }
 
@@ -293,10 +292,8 @@ TEST_F(
 TEST_F(
     DefaultBrowserUtilsTest,
     ManualHasRecentFirstPartyIntentLaunchesAndRecordsCurrentLaunchLessThan7DaysMoreThan6Hours) {
-  ResetStorageAndSetObjectForKey(
-      kTimestampAppLastOpenedViaFirstPartyIntent,
-      [[NSDate alloc]
-          initWithTimeIntervalSinceNow:-kLessThan7Days.InSecondsF()]);
+  ResetStorageAndSetTimestampForKey(kTimestampAppLastOpenedViaFirstPartyIntent,
+                                    (base::Time::Now() - kLessThan7Days));
   EXPECT_TRUE(HasRecentFirstPartyIntentLaunchesAndRecordsCurrentLaunch());
 }
 
@@ -312,20 +309,16 @@ TEST_F(DefaultBrowserUtilsTest, TwoConsecutivePastesUnder7Days) {
 // Manually tests two consecutive pastes recorded within 7 days, should return
 // true.
 TEST_F(DefaultBrowserUtilsTest, ManualTwoConsecutivePastesUnder7Days) {
-  ResetStorageAndSetObjectForKey(
-      kTimestampLastValidURLPasted,
-      [[NSDate alloc]
-          initWithTimeIntervalSinceNow:-kLessThan7Days.InSecondsF()]);
+  ResetStorageAndSetTimestampForKey(kTimestampLastValidURLPasted,
+                                    (base::Time::Now() - kLessThan7Days));
   EXPECT_TRUE(HasRecentValidURLPastesAndRecordsCurrentPaste());
 }
 
 // Manually tests two consecutive pastes recorded with more than 7 days between,
 // should return false.
 TEST_F(DefaultBrowserUtilsTest, ManualTwoConsecutivePastesOver7Days) {
-  ResetStorageAndSetObjectForKey(
-      kTimestampLastValidURLPasted,
-      [[NSDate alloc]
-          initWithTimeIntervalSinceNow:-kMoreThan7Days.InSecondsF()]);
+  ResetStorageAndSetTimestampForKey(kTimestampLastValidURLPasted,
+                                    (base::Time::Now() - kMoreThan7Days));
   EXPECT_FALSE(HasRecentValidURLPastesAndRecordsCurrentPaste());
 }
 
@@ -341,20 +334,16 @@ TEST_F(DefaultBrowserUtilsTest, HasRecentTimestampForKeyUnder6Hours) {
 // Manually tests that a recent event timestamp (less than 6 hours) has already
 // been recorded.
 TEST_F(DefaultBrowserUtilsTest, ManualHasRecentTimestampForKeyUnder6Hours) {
-  ResetStorageAndSetObjectForKey(
-      kTestTimestampKey,
-      [[NSDate alloc]
-          initWithTimeIntervalSinceNow:-kLessThan6Hours.InSecondsF()]);
+  ResetStorageAndSetTimestampForKey(kTestTimestampKey,
+                                    (base::Time::Now() - kLessThan6Hours));
   EXPECT_TRUE(HasRecentTimestampForKey(kTestTimestampKey));
 }
 
 // Manually tests that no recent event timestamp (more than 6 hours) has already
 // been recorded.
 TEST_F(DefaultBrowserUtilsTest, ManualRecentTimestampForKeyOver6Hours) {
-  ResetStorageAndSetObjectForKey(
-      kTestTimestampKey,
-      [[NSDate alloc]
-          initWithTimeIntervalSinceNow:-kMoreThan6Hours.InSecondsF()]);
+  ResetStorageAndSetTimestampForKey(kTestTimestampKey,
+                                    (base::Time::Now() - kMoreThan6Hours));
   EXPECT_FALSE(HasRecentTimestampForKey(kTestTimestampKey));
 }
 
@@ -461,9 +450,7 @@ TEST_F(DefaultBrowserUtilsTest, CalculatePromoStatisticsTest_FlagDisabled) {
 }
 
 // Test `CalculatePromoStatistics` when feature flag is enabled.
-// TODO(crbug.com/1499711): Test is failing.
-TEST_F(DefaultBrowserUtilsTest,
-       DISABLED_CalculatePromoStatisticsTest_FlagEnabled) {
+TEST_F(DefaultBrowserUtilsTest, CalculatePromoStatisticsTest_FlagEnabled) {
   feature_list_.InitWithFeatures({kDefaultBrowserTriggerCriteriaExperiment},
                                  {});
   {
@@ -472,11 +459,8 @@ TEST_F(DefaultBrowserUtilsTest,
     EXPECT_EQ(0, promo_stats.numDaysSinceLastPromo);
   }
 
-  NSTimeInterval secondsPerDay = 24 * 60 * 60;
-  NSDate* yesterday =
-      [[NSDate alloc] initWithTimeIntervalSinceNow:-secondsPerDay];
-  ResetStorageAndSetObjectForKey(kLastTimeUserInteractedWithFullscreenPromo,
-                                 yesterday);
+  ResetStorageAndSetTimestampForKey(kLastTimeUserInteractedWithFullscreenPromo,
+                                    (base::Time::Now() - kMoreThan1Day));
 
   LogFullscreenDefaultBrowserPromoDisplayed();
 

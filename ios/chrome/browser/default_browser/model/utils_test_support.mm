@@ -17,11 +17,11 @@ void ClearDefaultBrowserPromoData() {
   [defaults removeObjectForKey:kDefaultBrowserUtilsKey];
 }
 
-void ResetStorageAndSetObjectForKey(NSString* key, NSObject* data) {
+void ResetStorageAndSetTimestampForKey(NSString* key, base::Time timestamp) {
   NSMutableDictionary<NSString*, NSObject*>* dict =
       [[NSMutableDictionary alloc] init];
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  dict[key] = data;
+  dict[key] = timestamp.ToNSDate();
 
   [defaults setObject:dict forKey:kDefaultBrowserUtilsKey];
 }
