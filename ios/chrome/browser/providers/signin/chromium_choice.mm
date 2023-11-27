@@ -39,5 +39,10 @@ bool IsChoiceEnabled() {
   return false;
 }
 
+bool IsSearchEngineChoiceScreenEnabledFre() {
+  // The feature is disabled on chromium
+  return false;
+}
+
 }  // namespace provider
 }  // namespace ios

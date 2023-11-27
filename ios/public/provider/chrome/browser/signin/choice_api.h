@@ -14,8 +14,6 @@
 #import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
 #import "ios/chrome/browser/ui/promos_manager/standard_promo_display_handler.h"
 
-class ChromeBrowserState;
-
 namespace ios {
 namespace provider {
 
@@ -39,8 +37,13 @@ id<StandardPromoDisplayHandler> CreateChoiceDisplayHandler();
 id<SceneAgent> CreateChoiceSceneAgent(PromosManager* promosManager,
                                       ChromeBrowserState* browserState);
 
-// Whether the feature is enabled
+// Whether the feature flag is enabled on runs that are not the first run.
+// TODO(b/306576460): Update this method's name to make it clearer what is
+// enabled or not.
 bool IsChoiceEnabled();
+
+// Whether the feature flag is enabled for the first run.
+bool IsSearchEngineChoiceScreenEnabledFre();
 
 }  // namespace provider
 }  // namespace ios

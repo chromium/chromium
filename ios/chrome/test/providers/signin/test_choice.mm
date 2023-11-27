@@ -37,5 +37,9 @@ bool IsChoiceEnabled() {
   return false;
 }
 
+bool IsSearchEngineChoiceScreenEnabledFre() {
+  return false;
+}
+
 }  // namespace provider
 }  // namespace ios
