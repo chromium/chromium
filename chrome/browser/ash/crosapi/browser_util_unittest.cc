@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
@@ -20,17 +19,13 @@
 #include "base/values.h"
 #include "chrome/browser/ash/crosapi/crosapi_util.h"
 #include "chrome/browser/ash/crosapi/environment_provider.h"
-#include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/standalone_browser/browser_support.h"
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
 #include "chromeos/ash/components/standalone_browser/migrator_util.h"
 #include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
-#include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/policy_constants.h"
@@ -120,7 +115,6 @@ class BrowserUtilTest : public testing::Test {
     browser_util::RegisterLocalStatePrefs(pref_service_.registry());
     ash::standalone_browser::migrator_util::RegisterLocalStatePrefs(
         pref_service_.registry());
-    ash::system::StatisticsProvider::SetTestProvider(&statistics_provider_);
   }
 
   void TearDown() override {
@@ -128,13 +122,12 @@ class BrowserUtilTest : public testing::Test {
             IsInitializedForPrimaryUser()) {
       ash::standalone_browser::BrowserSupport::Shutdown();
     }
-    ash::system::StatisticsProvider::SetTestProvider(nullptr);
     fake_user_manager_.Reset();
     ash::standalone_browser::BrowserSupport::SetCpuSupportedForTesting(
         absl::nullopt);
   }
 
-  void AddRegularUser(const std::string& email) {
+  const user_manager::User* AddRegularUser(const std::string& email) {
     AccountId account_id = AccountId::FromUserEmail(email);
     const User* user = fake_user_manager_->AddUser(account_id);
     fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
@@ -142,18 +135,13 @@ class BrowserUtilTest : public testing::Test {
                                      /*is_child=*/false);
     ash::standalone_browser::BrowserSupport::InitializeForPrimaryUser(
         policy::PolicyMap());
-    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
-        user, &testing_profile_);
+    return user;
   }
 
-  // The order of these members is relevant for both construction and
-  // destruction timing.
   content::BrowserTaskEnvironment task_environment_;
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
-  TestingProfile testing_profile_;
   TestingPrefServiceSimple pref_service_;
-  ash::system::FakeStatisticsProvider statistics_provider_;
 };
 
 // TODO(hidehiko): Replace with ScopedTestingLocalState.
@@ -216,9 +204,7 @@ TEST_F(BrowserUtilTest, LacrosDisabledWithoutMigration) {
   // `IsProfileMigrationCompletedForUser()` inside `IsLacrosEnabled()`.
   ScopedLocalState scoped_local_state(&pref_service_);
 
-  AddRegularUser("user@test.com");
-  const user_manager::User* const user =
-      ash::ProfileHelper::Get()->GetUserByProfile(&testing_profile_);
+  const user_manager::User* const user = AddRegularUser("user@test.com");
 
   // Lacros is enabled only after profile migration for LacrosOnly mode.
   {
@@ -246,9 +232,7 @@ TEST_F(BrowserUtilTest, IsLacrosEnabledForMigrationBeforePolicyInit) {
   ScopedLocalState scoped_local_state(&pref_service_);
 
   // Add an user.
-  AddRegularUser("user@test.com");
-  const user_manager::User* const user =
-      ash::ProfileHelper::Get()->GetUserByProfile(&testing_profile_);
+  const user_manager::User* const user = AddRegularUser("user@test.com");
 
   // Lacros is not enabled yet for profile migration to happen.
   EXPECT_FALSE(browser_util::IsLacrosEnabledForMigration(
@@ -302,9 +286,8 @@ TEST_F(BrowserUtilTest, BlockedForChildUser) {
 }
 
 TEST_F(BrowserUtilTest, AshWebBrowserEnabled) {
-  AddRegularUser("user@managedchrome.com");
   const user_manager::User* const user =
-      ash::ProfileHelper::Get()->GetUserByProfile(&testing_profile_);
+      AddRegularUser("user@managedchrome.com");
 
   // Lacros is not allowed.
   {
@@ -355,10 +338,7 @@ TEST_F(BrowserUtilTest, AshWebBrowserEnabled) {
 }
 
 TEST_F(BrowserUtilTest, IsAshWebBrowserEnabledForMigration) {
-  // Add an user.
-  AddRegularUser("user@test.com");
-  const user_manager::User* const user =
-      ash::ProfileHelper::Get()->GetUserByProfile(&testing_profile_);
+  const user_manager::User* const user = AddRegularUser("user@test.com");
 
   // Ash browser is enabled if Lacros is not enabled.
   EXPECT_TRUE(browser_util::IsAshWebBrowserEnabledForMigration(
@@ -377,10 +357,8 @@ TEST_F(BrowserUtilTest, IsAshWebBrowserEnabledForMigration) {
 }
 
 TEST_F(BrowserUtilTest, IsAshWebBrowserDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  AddRegularUser("user@managedchrome.com");
   const user_manager::User* const user =
-      ash::ProfileHelper::Get()->GetUserByProfile(&testing_profile_);
+      AddRegularUser("user@managedchrome.com");
   ScopedLacrosAvailabilityCache cache(LacrosAvailability::kLacrosOnly);
 
   // Lacros is allowed and enabled and is the only browser by policy.
@@ -392,9 +370,7 @@ TEST_F(BrowserUtilTest, IsAshWebBrowserDisabled) {
 }
 
 TEST_F(BrowserUtilTest, IsAshWebBrowserDisabledByFlags) {
-  AddRegularUser("user@test.com");
-  const user_manager::User* const user =
-      ash::ProfileHelper::Get()->GetUserByProfile(&testing_profile_);
+  const user_manager::User* const user = AddRegularUser("user@test.com");
   EXPECT_TRUE(browser_util::IsAshWebBrowserEnabled());
 
   // Just enabling LacrosOnly feature is enough.
@@ -668,9 +644,7 @@ TEST_F(BrowserUtilTest, GetMigrationStatus) {
   using browser_util::GetMigrationStatus;
   using browser_util::MigrationStatus;
 
-  AddRegularUser("user@test.com");
-  const user_manager::User* const user =
-      ash::ProfileHelper::Get()->GetUserByProfile(&testing_profile_);
+  const user_manager::User* const user = AddRegularUser("user@test.com");
 
   EXPECT_EQ(GetMigrationStatus(&pref_service_, user),
             MigrationStatus::kLacrosNotEnabled);
@@ -866,9 +840,7 @@ TEST_F(BrowserUtilTest, LacrosGoogleRolloutUserChoice) {
 }
 
 TEST_F(BrowserUtilTest, LacrosGoogleRolloutOnly) {
-  AddRegularUser("user@google.com");
-  const user_manager::User* const user =
-      ash::ProfileHelper::Get()->GetUserByProfile(&testing_profile_);
+  const user_manager::User* const user = AddRegularUser("user@google.com");
   // Lacros availability is set by policy to only.
   ScopedLacrosAvailabilityCache cache(LacrosAvailability::kLacrosOnly);
 
@@ -882,64 +854,6 @@ TEST_F(BrowserUtilTest, LacrosGoogleRolloutOnly) {
   EXPECT_FALSE(browser_util::IsAshWebBrowserEnabled());
   EXPECT_FALSE(browser_util::IsAshWebBrowserEnabledForMigration(
       user, browser_util::PolicyInitState::kAfterInit));
-}
-
-TEST_F(BrowserUtilTest, IsArcAvailable) {
-  arc::SetArcAvailableCommandLineForTesting(
-      base::CommandLine::ForCurrentProcess());
-  IdleServiceAsh::DisableForTesting();
-  ScopedTestingLocalState local_state(TestingBrowserProcess::GetGlobal());
-  AddRegularUser("user@google.com");
-
-  EnvironmentProvider environment_provider;
-  mojom::BrowserInitParamsPtr browser_init_params =
-      browser_util::GetBrowserInitParams(
-          &environment_provider,
-          browser_util::InitialBrowserAction(
-              crosapi::mojom::InitialBrowserAction::kDoNotOpenWindow),
-          /*is_keep_alive_enabled=*/false, absl::nullopt);
-  EXPECT_TRUE(browser_init_params->device_properties->is_arc_available);
-  EXPECT_FALSE(browser_init_params->device_properties->is_tablet_form_factor);
-}
-
-TEST_F(BrowserUtilTest, IsTabletFormFactor) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ash::switches::kEnableTabletFormFactor);
-  IdleServiceAsh::DisableForTesting();
-  ScopedTestingLocalState local_state(TestingBrowserProcess::GetGlobal());
-  AddRegularUser("user@google.com");
-
-  EnvironmentProvider environment_provider;
-  mojom::BrowserInitParamsPtr browser_init_params =
-      browser_util::GetBrowserInitParams(
-          &environment_provider,
-          browser_util::InitialBrowserAction(
-              crosapi::mojom::InitialBrowserAction::kDoNotOpenWindow),
-          /*is_keep_alive_enabled=*/false, absl::nullopt);
-  EXPECT_FALSE(browser_init_params->device_properties->is_arc_available);
-  EXPECT_TRUE(browser_init_params->device_properties->is_tablet_form_factor);
-}
-
-TEST_F(BrowserUtilTest, SerialNumber) {
-  IdleServiceAsh::DisableForTesting();
-  ScopedTestingLocalState local_state(TestingBrowserProcess::GetGlobal());
-  AddRegularUser("user@google.com");
-
-  std::string expected_serial_number = "fake-serial-number";
-  statistics_provider_.SetMachineStatistic("serial_number",
-                                           expected_serial_number);
-
-  EnvironmentProvider environment_provider;
-  mojom::BrowserInitParamsPtr browser_init_params =
-      browser_util::GetBrowserInitParams(
-          &environment_provider,
-          browser_util::InitialBrowserAction(
-              crosapi::mojom::InitialBrowserAction::kDoNotOpenWindow),
-          /*is_keep_alive_enabled=*/false, absl::nullopt);
-
-  auto serial_number = browser_init_params->device_properties->serial_number;
-  ASSERT_TRUE(serial_number.has_value());
-  EXPECT_EQ(serial_number.value(), expected_serial_number);
 }
 
 TEST_F(BrowserUtilTest, LacrosSelection) {

@@ -7,15 +7,22 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/arc/test/arc_util_test_support.h"
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/system/fake_statistics_provider.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -34,6 +41,7 @@ class CrosapiUtilTest : public testing::Test {
   void SetUp() override {
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
     browser_util::RegisterLocalStatePrefs(pref_service_.registry());
+    ash::system::StatisticsProvider::SetTestProvider(&statistics_provider_);
 
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
@@ -42,12 +50,19 @@ class CrosapiUtilTest : public testing::Test {
         TestingProfile::kDefaultProfileUserName);
   }
 
+  void TearDown() override {
+    ash::system::StatisticsProvider::SetTestProvider(nullptr);
+  }
+
   void AddRegularUser(const std::string& email) {
     AccountId account_id = AccountId::FromUserEmail(email);
     const User* user = fake_user_manager_->AddUser(account_id);
     fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
                                      /*browser_restart=*/false,
                                      /*is_child=*/false);
+
+    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
+        user, testing_profile_.get());
   }
 
   // The order of these members is relevant for both construction and
@@ -55,6 +70,7 @@ class CrosapiUtilTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
+  ash::system::FakeStatisticsProvider statistics_provider_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   raw_ptr<TestingProfile> testing_profile_;
   TestingPrefServiceSimple pref_service_;
@@ -203,6 +219,61 @@ TEST_F(CrosapiUtilTest, DeviceSettingsWithData) {
   EXPECT_EQ(settings->report_upload_frequency->value, kReportUploadFrequencyMs);
   EXPECT_EQ(settings->report_device_network_telemetry_collection_rate_ms->value,
             kReportDeviceNetworkTelemetryCollectionRateMs);
+}
+
+TEST_F(CrosapiUtilTest, IsArcAvailable) {
+  arc::SetArcAvailableCommandLineForTesting(
+      base::CommandLine::ForCurrentProcess());
+  IdleServiceAsh::DisableForTesting();
+  AddRegularUser("user@google.com");
+
+  EnvironmentProvider environment_provider;
+  mojom::BrowserInitParamsPtr browser_init_params =
+      browser_util::GetBrowserInitParams(
+          &environment_provider,
+          browser_util::InitialBrowserAction(
+              crosapi::mojom::InitialBrowserAction::kDoNotOpenWindow),
+          /*is_keep_alive_enabled=*/false, absl::nullopt);
+  EXPECT_TRUE(browser_init_params->device_properties->is_arc_available);
+  EXPECT_FALSE(browser_init_params->device_properties->is_tablet_form_factor);
+}
+
+TEST_F(CrosapiUtilTest, IsTabletFormFactor) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ash::switches::kEnableTabletFormFactor);
+  IdleServiceAsh::DisableForTesting();
+  AddRegularUser("user@google.com");
+
+  EnvironmentProvider environment_provider;
+  mojom::BrowserInitParamsPtr browser_init_params =
+      browser_util::GetBrowserInitParams(
+          &environment_provider,
+          browser_util::InitialBrowserAction(
+              crosapi::mojom::InitialBrowserAction::kDoNotOpenWindow),
+          /*is_keep_alive_enabled=*/false, absl::nullopt);
+  EXPECT_FALSE(browser_init_params->device_properties->is_arc_available);
+  EXPECT_TRUE(browser_init_params->device_properties->is_tablet_form_factor);
+}
+
+TEST_F(CrosapiUtilTest, SerialNumber) {
+  IdleServiceAsh::DisableForTesting();
+  AddRegularUser("user@google.com");
+
+  std::string expected_serial_number = "fake-serial-number";
+  statistics_provider_.SetMachineStatistic("serial_number",
+                                           expected_serial_number);
+
+  EnvironmentProvider environment_provider;
+  mojom::BrowserInitParamsPtr browser_init_params =
+      browser_util::GetBrowserInitParams(
+          &environment_provider,
+          browser_util::InitialBrowserAction(
+              crosapi::mojom::InitialBrowserAction::kDoNotOpenWindow),
+          /*is_keep_alive_enabled=*/false, absl::nullopt);
+
+  auto serial_number = browser_init_params->device_properties->serial_number;
+  ASSERT_TRUE(serial_number.has_value());
+  EXPECT_EQ(serial_number.value(), expected_serial_number);
 }
 
 }  // namespace crosapi
