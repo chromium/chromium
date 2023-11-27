@@ -143,6 +143,7 @@ class V8Manager {
   void ConfigureSpeechRecognition(
       mojom::AccessibilityServiceClient* ax_service_client);
   void ConfigureTts(mojom::AccessibilityServiceClient* ax_service_client);
+  void ConfigureUserInput(mojom::AccessibilityServiceClient* ax_service_client);
   void ConfigureUserInterface(
       mojom::AccessibilityServiceClient* ax_service_client);
 

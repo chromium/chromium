@@ -17,9 +17,13 @@
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
 #include "services/accessibility/public/mojom/speech_recognition.mojom.h"
 #include "services/accessibility/public/mojom/tts.mojom.h"
+#include "services/accessibility/public/mojom/user_input.mojom.h"
 #include "services/accessibility/public/mojom/user_interface.mojom-shared.h"
 #include "services/accessibility/public/mojom/user_interface.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/events/mojom/event_constants.mojom-shared.h"
 
 namespace ax {
 
@@ -514,10 +518,15 @@ class AccessibilityPrivateJSApiTest : public AtpJSApiTest {
     // permissions so we load support JS within the test.
     return std::vector<std::string>{
         "services/accessibility/features/mojo/test/mojom_test_support.js",
+        "mojo/public/mojom/base/time.mojom-lite.js",
         "skia/public/mojom/skcolor.mojom-lite.js",
         "ui/gfx/geometry/mojom/geometry.mojom-lite.js",
+        "ui/latency/mojom/latency_info.mojom-lite.js",
+        "ui/events/mojom/event_constants.mojom-lite.js",
+        "ui/events/mojom/event.mojom-lite.js",
         "services/accessibility/public/mojom/"
         "assistive_technology_type.mojom-lite.js",
+        "services/accessibility/public/mojom/user_input.mojom-lite.js",
         "services/accessibility/public/mojom/user_interface.mojom-lite.js",
         "services/accessibility/features/javascript/chrome_event.js",
         "services/accessibility/features/javascript/accessibility_private.js",
@@ -835,6 +844,116 @@ TEST_F(AccessibilityPrivateJSApiTest, GetDisplayNameForLocale) {
   )JS");
 
   WaitForJSTestComplete();
+}
+
+TEST_F(AccessibilityPrivateJSApiTest,
+       SendSyntheticKeyEventForShortcutOrNavigation) {
+  base::RunLoop waiter;
+
+  client_->SetSyntheticKeyEventCallback(
+      base::BindLambdaForTesting([&waiter, this]() {
+        const std::vector<mojom::SyntheticKeyEventPtr>& events =
+            client_->GetKeyEvents();
+        if (events.size() < 2) {
+          return;
+        }
+
+        ASSERT_EQ(events.size(), 2u);
+
+        auto& press_event = events[0];
+        ASSERT_EQ(press_event->type, ui::mojom::EventType::KEY_PRESSED);
+        ASSERT_EQ(press_event->key_data->key_code, ui::VKEY_X);
+        // TODO(b/307553499): Update SyntheticKeyEvent to use dom_code and
+        // dom_key.
+        ASSERT_EQ(press_event->key_data->dom_code, 0u);
+        ASSERT_EQ(press_event->key_data->dom_key, 0);
+        ASSERT_FALSE(press_event->key_data->is_char);
+        ASSERT_EQ(press_event->flags, ui::EF_NONE);
+
+        auto& release_event = events[1];
+        ASSERT_EQ(release_event->type, ui::mojom::EventType::KEY_RELEASED);
+        ASSERT_EQ(release_event->key_data->key_code, ui::VKEY_X);
+        // TODO(b/307553499): Update SyntheticKeyEvent to use dom_code and
+        // dom_key.
+        ASSERT_EQ(release_event->key_data->dom_code, 0u);
+        ASSERT_EQ(release_event->key_data->dom_key, 0);
+        ASSERT_FALSE(release_event->key_data->is_char);
+        ASSERT_EQ(release_event->flags, ui::EF_NONE);
+
+        waiter.Quit();
+      }));
+
+  ExecuteJS(R"JS(
+    chrome.accessibilityPrivate.sendSyntheticKeyEvent(
+        {type: 'keydown', keyCode: /*X=*/ 88});
+    chrome.accessibilityPrivate.sendSyntheticKeyEvent(
+        {type: 'keyup', keyCode: /*X=*/ 88});
+  )JS");
+  waiter.Run();
+}
+
+TEST_F(AccessibilityPrivateJSApiTest,
+       SendSyntheticKeyEventForShortcutOrNavigationWithModifiers) {
+  base::RunLoop waiter;
+
+  client_->SetSyntheticKeyEventCallback(base::BindLambdaForTesting([&waiter,
+                                                                    this]() {
+    const std::vector<mojom::SyntheticKeyEventPtr>& events =
+        client_->GetKeyEvents();
+    if (events.size() < 2) {
+      return;
+    }
+
+    ASSERT_EQ(events.size(), 2u);
+
+    auto& press_event = events[0];
+    ASSERT_EQ(press_event->type, ui::mojom::EventType::KEY_PRESSED);
+    ASSERT_EQ(press_event->key_data->key_code, ui::VKEY_ESCAPE);
+    // TODO(b/307553499): Update SyntheticKeyEvent to use dom_code and  dom_key.
+    ASSERT_EQ(press_event->key_data->dom_code, 0u);
+    ASSERT_EQ(press_event->key_data->dom_key, 0);
+    ASSERT_FALSE(press_event->key_data->is_char);
+    ASSERT_EQ(press_event->flags, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN |
+                                      ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+
+    auto& release_event = events[1];
+    ASSERT_EQ(release_event->type, ui::mojom::EventType::KEY_RELEASED);
+    ASSERT_EQ(release_event->key_data->key_code, ui::VKEY_ESCAPE);
+    // TODO(b/307553499): Update SyntheticKeyEvent to use dom_code and dom_key.
+    ASSERT_EQ(release_event->key_data->dom_code, 0u);
+    ASSERT_EQ(release_event->key_data->dom_key, 0);
+    ASSERT_FALSE(release_event->key_data->is_char);
+    ASSERT_EQ(release_event->flags, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN |
+                                        ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+
+    waiter.Quit();
+  }));
+
+  ExecuteJS(R"JS(
+    chrome.accessibilityPrivate.sendSyntheticKeyEvent({
+      type: 'keydown',
+      keyCode: /*ESC=*/ 27,
+      modifiers: {
+        alt: true,
+        ctrl: true,
+        search: true,
+        shift: true,
+      },
+    });
+
+    chrome.accessibilityPrivate.sendSyntheticKeyEvent({
+      type: 'keyup',
+      keyCode: /*ESC=*/ 27,
+      modifiers: {
+        alt: true,
+        ctrl: true,
+        search: true,
+        shift: true,
+      },
+    });
+  )JS");
+
+  waiter.Run();
 }
 
 class SpeechRecognitionJSApiTest : public AtpJSApiTest {

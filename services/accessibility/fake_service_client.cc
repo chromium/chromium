@@ -40,6 +40,11 @@ void FakeServiceClient::BindTts(
   tts_receivers_.Add(this, std::move(tts_receiver));
 }
 
+void FakeServiceClient::BindUserInput(
+    mojo::PendingReceiver<mojom::UserInput> ui_receiver) {
+  ui_receivers_.Add(this, std::move(ui_receiver));
+}
+
 void FakeServiceClient::BindUserInterface(
     mojo::PendingReceiver<mojom::UserInterface> ux_receiver) {
   ux_receivers_.Add(this, std::move(ux_receiver));
@@ -157,6 +162,14 @@ void FakeServiceClient::GetVoices(GetVoicesCallback callback) {
   std::move(callback).Run(std::move(voices));
 }
 
+void FakeServiceClient::SendSyntheticKeyEventForShortcutOrNavigation(
+    mojom::SyntheticKeyEventPtr key_event) {
+  key_events_.emplace_back(std::move(key_event));
+  if (synthetic_key_event_callback_) {
+    synthetic_key_event_callback_.Run();
+  }
+}
+
 void FakeServiceClient::DarkenScreen(bool darken) {
   if (darken_screen_callback_) {
     darken_screen_callback_.Run(darken);
@@ -257,6 +270,16 @@ void FakeServiceClient::SetTtsSpeakCallback(
 void FakeServiceClient::SendTtsUtteranceEvent(mojom::TtsEventPtr tts_event) {
   CHECK(tts_utterance_client_.is_bound());
   tts_utterance_client_->OnEvent(std::move(tts_event));
+}
+
+void FakeServiceClient::SetSyntheticKeyEventCallback(
+    base::RepeatingCallback<void()> callback) {
+  synthetic_key_event_callback_ = std::move(callback);
+}
+
+const std::vector<mojom::SyntheticKeyEventPtr>&
+FakeServiceClient::GetKeyEvents() const {
+  return key_events_;
 }
 
 void FakeServiceClient::SetDarkenScreenCallback(

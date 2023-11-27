@@ -14,6 +14,8 @@ import "services/accessibility/public/mojom/tts.mojom";
 [EnableIf=supports_os_accessibility_service]
 import "third_party/blink/public/mojom/devtools/devtools_agent.mojom";
 [EnableIf=supports_os_accessibility_service]
+import "services/accessibility/public/mojom/user_input.mojom";
+[EnableIf=supports_os_accessibility_service]
 import "services/accessibility/public/mojom/user_interface.mojom";
 [EnableIf=supports_os_accessibility_service]
 import "services/accessibility/public/mojom/assistive_technology_type.mojom";
@@ -94,6 +96,11 @@ interface AccessibilityServiceClient {
   // called by the service.
   [EnableIf=supports_os_accessibility_service]
   BindTts(pending_receiver<Tts> tts_receiver);
+
+  // Binds to a User Input client implemented in the main OS process,
+  // called by the service.
+  [EnableIf=supports_os_accessibility_service]
+  BindUserInput(pending_receiver<UserInput> user_input_receiver);
 
   // Binds to a User Interface client implemented in the main OS process,
   // called by the service.

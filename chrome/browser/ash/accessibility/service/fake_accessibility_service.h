@@ -21,6 +21,7 @@
 #include "services/accessibility/public/mojom/speech_recognition.mojom-forward.h"
 #include "services/accessibility/public/mojom/speech_recognition.mojom.h"
 #include "services/accessibility/public/mojom/tts.mojom.h"
+#include "services/accessibility/public/mojom/user_input.mojom.h"
 #include "services/accessibility/public/mojom/user_interface.mojom.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_event.h"
@@ -103,6 +104,7 @@ class FakeAccessibilityService
   void BindAnotherAutoclickClient();
   void BindAnotherSpeechRecognition();
   void BindAnotherTts();
+  void BindAnotherUserInput();
   void BindAnotherUserInterface();
 
   //
@@ -156,6 +158,14 @@ class FakeAccessibilityService
 
   // Sends a request from the service for the TTS voices list.
   void RequestTtsVoices(ax::mojom::Tts::GetVoicesCallback callback);
+
+  //
+  // Methods to pretend a UserInput request came from the service.
+  //
+
+  // Sends a request to send a synthetic key event.
+  void RequestSendSyntheticKeyEventForShortcutOrNavigation(
+      ax::mojom::SyntheticKeyEventPtr key_event);
 
   //
   // Methods to pretend a UserInterface request came from the service.
@@ -233,6 +243,7 @@ class FakeAccessibilityService
   mojo::RemoteSet<ax::mojom::AutoclickClient> autoclick_client_remotes_;
   mojo::ReceiverSet<ax::mojom::Autoclick> autoclick_receivers_;
   mojo::RemoteSet<ax::mojom::Tts> tts_remotes_;
+  mojo::RemoteSet<ax::mojom::UserInput> ui_remotes_;
   mojo::RemoteSet<ax::mojom::UserInterface> ux_remotes_;
 
   mojo::ReceiverSet<ax::mojom::AssistiveTechnologyController>

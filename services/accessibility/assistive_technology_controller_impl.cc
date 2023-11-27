@@ -66,6 +66,12 @@ void AssistiveTechnologyControllerImpl::BindTts(
   accessibility_service_client_remote_->BindTts(std::move(tts_receiver));
 }
 
+void AssistiveTechnologyControllerImpl::BindUserInput(
+    mojo::PendingReceiver<mojom::UserInput> user_input_receiver) {
+  accessibility_service_client_remote_->BindUserInput(
+      std::move(user_input_receiver));
+}
+
 void AssistiveTechnologyControllerImpl::BindUserInterface(
     mojo::PendingReceiver<mojom::UserInterface> user_interface_receiver) {
   accessibility_service_client_remote_->BindUserInterface(
@@ -157,7 +163,6 @@ void AssistiveTechnologyControllerImpl::CreateV8ManagerForTypeIfNoneExists(
   }
   if (type == mojom::AssistiveTechnologyType::kChromeVox ||
       type == mojom::AssistiveTechnologyType::kSelectToSpeak) {
-    // TTS needs to know the type that is speaking.
     manager.ConfigureTts(this);
   }
   if (type == mojom::AssistiveTechnologyType::kChromeVox ||
@@ -171,6 +176,14 @@ void AssistiveTechnologyControllerImpl::CreateV8ManagerForTypeIfNoneExists(
   }
   if (type == mojom::AssistiveTechnologyType::kAutoClick) {
     manager.ConfigureAutoclick(this);
+  }
+  if (type == mojom::AssistiveTechnologyType::kAutoClick ||
+      type == mojom::AssistiveTechnologyType::kChromeVox ||
+      type == mojom::AssistiveTechnologyType::kDictation ||
+      type == mojom::AssistiveTechnologyType::kMagnifier ||
+      type == mojom::AssistiveTechnologyType::kSelectToSpeak ||
+      type == mojom::AssistiveTechnologyType::kSwitchAccess) {
+    manager.ConfigureUserInput(this);
   }
   // TODO(b/262637071): Configure other bindings based on the type
   // once they are implemented.

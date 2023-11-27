@@ -22,6 +22,7 @@
 #include "services/accessibility/public/mojom/file_loader.mojom.h"
 #include "services/accessibility/public/mojom/speech_recognition.mojom.h"
 #include "services/accessibility/public/mojom/tts.mojom.h"
+#include "services/accessibility/public/mojom/user_input.mojom.h"
 #include "services/accessibility/public/mojom/user_interface.mojom.h"
 #endif  // BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
 
@@ -38,6 +39,7 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
                           public mojom::AutoclickClient,
                           public mojom::SpeechRecognition,
                           public mojom::Tts,
+                          public mojom::UserInput,
                           public mojom::UserInterface,
 #endif
                           public mojom::AutomationClient {
@@ -62,6 +64,8 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
   void BindSpeechRecognition(
       mojo::PendingReceiver<ax::mojom::SpeechRecognition> sr_receiver) override;
   void BindTts(mojo::PendingReceiver<ax::mojom::Tts> tts_receiver) override;
+  void BindUserInput(
+      mojo::PendingReceiver<ax::mojom::UserInput> ui_receiver) override;
   void BindUserInterface(
       mojo::PendingReceiver<ax::mojom::UserInterface> ux_receiver) override;
 
@@ -86,6 +90,10 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
   void Resume() override;
   void IsSpeaking(IsSpeakingCallback callback) override;
   void GetVoices(GetVoicesCallback callback) override;
+
+  // ax::mojom::UserInput:
+  void SendSyntheticKeyEventForShortcutOrNavigation(
+      ax::mojom::SyntheticKeyEventPtr key_event) override;
 
   // ax::mojom::UserInterface:
   void DarkenScreen(bool darken) override;
@@ -122,6 +130,9 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
       base::RepeatingCallback<void(const std::string&, mojom::TtsOptionsPtr)>
           callback);
   void SendTtsUtteranceEvent(mojom::TtsEventPtr tts_event);
+
+  void SetSyntheticKeyEventCallback(base::RepeatingCallback<void()> callback);
+  const std::vector<ax::mojom::SyntheticKeyEventPtr>& GetKeyEvents() const;
 
   bool UserInterfaceIsBound() const;
   void SetDarkenScreenCallback(
@@ -161,6 +172,10 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
       tts_speak_callback_;
   mojo::ReceiverSet<mojom::Tts> tts_receivers_;
   mojo::Remote<ax::mojom::TtsUtteranceClient> tts_utterance_client_;
+
+  base::RepeatingCallback<void()> synthetic_key_event_callback_;
+  mojo::ReceiverSet<mojom::UserInput> ui_receivers_;
+  std::vector<ax::mojom::SyntheticKeyEventPtr> key_events_;
 
   base::RepeatingCallback<void(bool darken)> darken_screen_callback_;
   base::RepeatingCallback<void(const std::string& subpage)>

@@ -66,6 +66,8 @@ source_set("ash") {
     "accessibility/service/speech_recognition_impl.h",
     "accessibility/service/tts_client_impl.cc",
     "accessibility/service/tts_client_impl.h",
+    "accessibility/service/user_input_impl.cc",
+    "accessibility/service/user_input_impl.h",
     "accessibility/service/user_interface_impl.cc",
     "accessibility/service/user_interface_impl.h",
     "account_manager/account_apps_availability.cc",

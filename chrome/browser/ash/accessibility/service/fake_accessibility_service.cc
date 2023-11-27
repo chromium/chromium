@@ -15,6 +15,7 @@
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
 #include "services/accessibility/public/mojom/autoclick.mojom.h"
 #include "services/accessibility/public/mojom/tts.mojom.h"
+#include "services/accessibility/public/mojom/user_input.mojom.h"
 #include "services/accessibility/public/mojom/user_interface.mojom.h"
 
 namespace ash {
@@ -29,6 +30,22 @@ void FakeAccessibilityService::BindAccessibilityServiceClient(
       std::move(accessibility_service_client));
   accessibility_service_client_remote_->BindAccessibilityFileLoader(
       file_loader_remote_.BindNewPipeAndPassReceiver());
+}
+
+void FakeAccessibilityService::BindAnotherAutoclickClient() {
+  mojo::PendingReceiver<ax::mojom::AutoclickClient> autoclick_client_receiver;
+  autoclick_client_remotes_.Add(
+      autoclick_client_receiver.InitWithNewPipeAndPassRemote());
+  accessibility_service_client_remote_->BindAutoclickClient(
+      std::move(autoclick_client_receiver));
+
+  // Now connect the autoclick remote in the service back to the client in the
+  // browser by getting a PendingReceiver<Autoclick> from the browser.
+  for (auto& remote : autoclick_client_remotes_) {
+    remote->BindAutoclick(
+        base::BindOnce(&FakeAccessibilityService::OnAutoclickBoundCallback,
+                       base::Unretained(this)));
+  }
 }
 
 void FakeAccessibilityService::BindAnotherAutomation() {
@@ -57,20 +74,10 @@ void FakeAccessibilityService::BindAnotherTts() {
   accessibility_service_client_remote_->BindTts(std::move(tts_receiver));
 }
 
-void FakeAccessibilityService::BindAnotherAutoclickClient() {
-  mojo::PendingReceiver<ax::mojom::AutoclickClient> autoclick_client_receiver;
-  autoclick_client_remotes_.Add(
-      autoclick_client_receiver.InitWithNewPipeAndPassRemote());
-  accessibility_service_client_remote_->BindAutoclickClient(
-      std::move(autoclick_client_receiver));
-
-  // Now connect the autoclick remote in the service back to the client in the
-  // browser by getting a PendingReceiver<Autoclick> from the browser.
-  for (auto& remote : autoclick_client_remotes_) {
-    remote->BindAutoclick(
-        base::BindOnce(&FakeAccessibilityService::OnAutoclickBoundCallback,
-                       base::Unretained(this)));
-  }
+void FakeAccessibilityService::BindAnotherUserInput() {
+  mojo::PendingReceiver<ax::mojom::UserInput> ui_receiver;
+  ui_remotes_.Add(ui_receiver.InitWithNewPipeAndPassRemote());
+  accessibility_service_client_remote_->BindUserInput(std::move(ui_receiver));
 }
 
 void FakeAccessibilityService::BindAnotherUserInterface() {
@@ -257,6 +264,15 @@ void FakeAccessibilityService::RequestTtsVoices(
   CHECK_EQ(tts_remotes_.size(), 1u);
   for (auto& tts_client : tts_remotes_) {
     tts_client->GetVoices(std::move(callback));
+  }
+}
+
+void FakeAccessibilityService::
+    RequestSendSyntheticKeyEventForShortcutOrNavigation(
+        ax::mojom::SyntheticKeyEventPtr key_event) {
+  for (auto& ui_client : ui_remotes_) {
+    ui_client->SendSyntheticKeyEventForShortcutOrNavigation(
+        mojo::Clone(key_event));
   }
 }
 

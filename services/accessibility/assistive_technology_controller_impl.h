@@ -16,6 +16,7 @@
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
 #include "services/accessibility/public/mojom/autoclick.mojom-forward.h"
 #include "services/accessibility/public/mojom/file_loader.mojom.h"
+#include "services/accessibility/public/mojom/user_input.mojom-forward.h"
 #include "services/accessibility/public/mojom/user_interface.mojom-forward.h"
 
 namespace ax {
@@ -56,6 +57,8 @@ class AssistiveTechnologyControllerImpl
   void BindSpeechRecognition(
       mojo::PendingReceiver<mojom::SpeechRecognition> sr_receiver) override;
   void BindTts(mojo::PendingReceiver<mojom::Tts> tts_receiver) override;
+  void BindUserInput(
+      mojo::PendingReceiver<mojom::UserInput> user_input_receiver) override;
   void BindUserInterface(mojo::PendingReceiver<mojom::UserInterface>
                              user_interface_receiver) override;
   void BindAccessibilityFileLoader(
