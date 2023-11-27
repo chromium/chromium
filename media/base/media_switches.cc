@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// 2023-10-22: Newly added flags and features should document an owner and
+// expiry condition. The expiry condition is freeform and could be a date,
+// experiment, bug, the deletion of a file, etc.
+
 #include "media/base/media_switches.h"
 
 #include "base/command_line.h"
@@ -882,11 +886,15 @@ BASE_FEATURE(kVideoBlitColorAccuracy,
 
 #if BUILDFLAG(IS_APPLE)
 // Use VideoToolbox for AV1 hardware decoding.
+// Owner: dalecurtis@chromium.org, sandersd@chromium.org
+// Expiry: When enabled by default for a full release cycle
 BASE_FEATURE(kVideoToolboxAv1Decoding,
              "VideoToolboxAv1Decoding",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Use the new VideoToolboxVideoDecoder for hardware decoding.
+// Owner: sandersd@chromium.org
+// Expiry: When VTVideoDecodeAccelerator is deleted
 BASE_FEATURE(kVideoToolboxVideoDecoder,
              "VideoToolboxVideoDecoder",
              base::FEATURE_DISABLED_BY_DEFAULT);
