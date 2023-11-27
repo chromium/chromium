@@ -118,7 +118,7 @@ class ArcWmMetrics::WindowStateChangeObserver
             ArcWmMetrics::GetWindowEnterTabletModeTimeHistogramName(app_type),
             window_operation_elapsed_timer_.Elapsed(),
             /*minimum=*/base::Milliseconds(1),
-            /*maximum=*/base::Seconds(5), 100);
+            /*maximum=*/base::Seconds(2), 100);
       }
     } else {
       if (state->IsMaximized()) {
@@ -126,7 +126,7 @@ class ArcWmMetrics::WindowStateChangeObserver
             ArcWmMetrics::GetWindowMaximizedTimeHistogramName(app_type),
             window_operation_elapsed_timer_.Elapsed(),
             /*minimum=*/base::Milliseconds(1),
-            /*maximum=*/base::Seconds(3), 100);
+            /*maximum=*/base::Seconds(2), 100);
       } else if (state->IsMinimized()) {
         base::UmaHistogramCustomTimes(
             ArcWmMetrics::GetWindowMinimizedTimeHistogramName(app_type),
@@ -138,7 +138,7 @@ class ArcWmMetrics::WindowStateChangeObserver
             ArcWmMetrics::GetWindowExitTabletModeTimeHistogramName(app_type),
             window_operation_elapsed_timer_.Elapsed(),
             /*minimum=*/base::Milliseconds(1),
-            /*maximum=*/base::Seconds(5), 100);
+            /*maximum=*/base::Seconds(2), 100);
       }
     }
   }
@@ -181,7 +181,7 @@ class ArcWmMetrics::WindowCloseObserver : public aura::WindowObserver {
         ArcWmMetrics::GetArcWindowClosedTimeHistogramName(),
         window_close_elapsed_timer_.Elapsed(),
         /*minimum=*/base::Milliseconds(1),
-        /*maximum=*/base::Seconds(3), 100);
+        /*maximum=*/base::Seconds(2), 100);
   }
 
   // Tracks the elapsed time from the window closing operation happens until the
