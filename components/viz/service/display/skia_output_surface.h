@@ -45,10 +45,7 @@ namespace copy_output {
 struct RenderPassGeometry;
 }  // namespace copy_output
 
-// This class extends the OutputSurface for SkiaRenderer needs. In future, the
-// SkiaRenderer will be the only renderer. When other renderers are removed,
-// we will replace OutputSurface with SkiaOutputSurface, and remove all
-// OutputSurface's methods which are not useful for SkiaRenderer.
+// This class extends the OutputSurface for SkiaRenderer needs.
 class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
                                              public ExternalUseClient {
  public:
