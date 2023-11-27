@@ -968,10 +968,6 @@ void OverviewGrid::RemoveDropTarget() {
       window_list_, base::MatchesUniquePtr<OverviewItemBase>(drop_target_ptr));
   CHECK_EQ(1u, erased_count);
 
-  const size_t num_items = overview_session_->num_items();
-  CHECK_GT(num_items, 0u);
-  overview_session_->set_num_items(num_items - 1u);
-
   // Skip repositioning here. The caller is expected to call `PositionWindows()`
   // after more drag-ending cleanup in `OverviewWindowDragController`.
 }
@@ -2156,16 +2152,16 @@ void OverviewGrid::UpdateSaveDeskButtons() {
       saved_desk_presenter->GetMaxEntryCount(DeskTemplateType::kTemplate),
       num_incognito_windows_ + snapped_incognito_window,
       num_unsupported_windows_ + snapped_unsupported_window,
-      size() + snapped_incognito_window + snapped_unsupported_window +
-          snapped_supported_window);
+      window_list_.size() + snapped_incognito_window +
+          snapped_unsupported_window + snapped_supported_window);
   container->UpdateButtonEnableStateAndTooltip(
       SavedDeskSaveDeskButton::Type::kSaveForLater,
       saved_desk_presenter->GetEntryCount(DeskTemplateType::kSaveAndRecall),
       saved_desk_presenter->GetMaxEntryCount(DeskTemplateType::kSaveAndRecall),
       num_incognito_windows_ + snapped_incognito_window,
       num_unsupported_windows_ + snapped_unsupported_window,
-      size() + snapped_incognito_window + snapped_unsupported_window +
-          snapped_supported_window);
+      window_list_.size() + snapped_incognito_window +
+          snapped_unsupported_window + snapped_supported_window);
 
   // Set the widget position above the overview item window and default width
   // and height.
@@ -2226,6 +2222,14 @@ bool OverviewGrid::IsSaveDeskForLaterButtonVisible() const {
   const auto* container = GetSaveDeskButtonContainer();
   return container && container->save_desk_for_later_button() &&
          container->save_desk_for_later_button()->GetVisible();
+}
+
+size_t OverviewGrid::GetNumWindows() const {
+  size_t size = 0u;
+  for (const std::unique_ptr<OverviewItemBase>& item : window_list_) {
+    size += item->GetWindows().size();
+  }
+  return size;
 }
 
 SavedDeskSaveDeskButton* OverviewGrid::GetSaveDeskAsTemplateButton() {
@@ -2674,7 +2678,8 @@ size_t OverviewGrid::FindInsertionIndex(const aura::Window* window) const {
   // between. Ignore those other windows, and only increment `grid_item_index`
   // when we reach the next window in this grid.
   size_t grid_item_index = 0, mru_window_index = 0;
-  while (grid_item_index < size() && mru_window_index < mru_windows.size()) {
+  while (grid_item_index < window_list_.size() &&
+         mru_window_index < mru_windows.size()) {
     OverviewItemBase* grid_item = window_list_[grid_item_index].get();
     aura::Window* mru_window = mru_windows[mru_window_index];
     if (grid_item == drop_target_ || mru_window == window) {
@@ -2690,7 +2695,7 @@ size_t OverviewGrid::FindInsertionIndex(const aura::Window* window) const {
 
   // If there is no drop target window and `window` is not in the MRU window
   // list, insert at the end.
-  return size();
+  return window_list_.size();
 }
 
 void OverviewGrid::AddDraggedWindowIntoOverviewOnDragEnd(
@@ -2817,9 +2822,6 @@ void OverviewGrid::AddDropTargetImpl(OverviewItemBase* dragged_item,
   auto drop_target = std::make_unique<OverviewDropTarget>(this);
   drop_target_ = drop_target.get();
   window_list_.insert(window_list_.begin() + position, std::move(drop_target));
-
-  const size_t num_items = overview_session_->num_items();
-  overview_session_->set_num_items(num_items + 1u);
 
   base::flat_set<OverviewItemBase*> ignored_items;
   if (dragged_item) {

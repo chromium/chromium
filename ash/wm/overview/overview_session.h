@@ -325,6 +325,8 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // piece of UI is shown or hidden.
   void UpdateAccessibilityFocus();
 
+  void UpdateFrameThrottling();
+
   // DesksController::Observer:
   void OnDeskActivationChanged(const Desk* activated,
                                const Desk* deactivated) override;
@@ -356,8 +358,6 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   void OnTabletModeStarted() override;
   void OnTabletModeEnded() override;
 
-  void UpdateFrameThrottling();
-
   OverviewDelegate* delegate() { return delegate_; }
 
   bool ignore_activations() const { return ignore_activations_; }
@@ -373,9 +373,6 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   const std::vector<std::unique_ptr<OverviewGrid>>& grid_list() const {
     return grid_list_;
   }
-
-  size_t num_items() const { return num_items_; }
-  void set_num_items(size_t num_items) { num_items_ = num_items; }
 
   OverviewEnterExitType enter_exit_overview_type() const {
     return enter_exit_overview_type_;
@@ -424,6 +421,9 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
  private:
   friend class DesksAcceleratorsTest;
   friend class OverviewTestBase;
+  friend class TestOverviewItemsOnOverviewModeEndObserver;
+  FRIEND_TEST_ALL_PREFIXES(SplitViewControllerTest,
+                           ItemsRemovedFromOverviewOnSnap);
 
   // Called when tablet mode changes.
   void OnTabletModeChanged();
@@ -447,6 +447,8 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   void RefreshNoWindowsWidgetBoundsOnEachGrid(bool animate);
 
   void OnItemAdded(aura::Window* window);
+
+  size_t GetNumWindows() const;
 
   // Weak pointer to the overview delegate which will be called when a selection
   // is made.
@@ -482,11 +484,11 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // The time when overview was started.
   base::Time overview_start_time_;
 
-  // The number of arrow key presses.
+  // The number of arrow and tab key presses.
   size_t num_key_presses_ = 0;
 
-  // The number of items in the overview.
-  size_t num_items_ = 0;
+  // The number of windows in overview when it was started.
+  size_t num_start_windows_ = 0;
 
   // True if we are currently using keyboard (control + left/right) to scroll
   // through the grid.

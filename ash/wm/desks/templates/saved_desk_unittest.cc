@@ -387,9 +387,7 @@ class SavedDeskTest : public OverviewTestBase,
   }
 
   void SetDisableAppIdCheckForSavedDesks(bool disabled) {
-    Shell::Get()
-        ->overview_controller()
-        ->set_disable_app_id_check_for_saved_desks(disabled);
+    OverviewController::Get()->disable_app_id_check_for_saved_desks_ = disabled;
   }
 
   SkBitmap GetBitmapWithInnerRoundedRect(gfx::Size size,

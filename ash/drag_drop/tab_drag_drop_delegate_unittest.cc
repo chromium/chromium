@@ -17,6 +17,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test_shell_delegate.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/containers/contains.h"
@@ -332,10 +333,8 @@ TEST_F(TabDragDropDelegateTest, DropTabInSplitViewMode) {
             split_view_controller->GetSnappedWindow(
                 SplitViewController::SnapPosition::kPrimary));
   ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
-  auto windows_list = Shell::Get()
-                          ->overview_controller()
-                          ->GetWindowsListInOverviewGridsForTest();
-  EXPECT_TRUE(base::Contains(windows_list, source_window.get()));
+  EXPECT_TRUE(
+      base::Contains(GetWindowsListInOverviewGrids(), source_window.get()));
 }
 
 TEST_F(TabDragDropDelegateTest, DropTabToOverviewMode) {
@@ -370,10 +369,8 @@ TEST_F(TabDragDropDelegateTest, DropTabToOverviewMode) {
 
   EXPECT_EQ(nullptr, split_view_controller->GetSnappedWindow(
                          SplitViewController::SnapPosition::kSecondary));
-  auto windows_list = Shell::Get()
-                          ->overview_controller()
-                          ->GetWindowsListInOverviewGridsForTest();
-  EXPECT_TRUE(base::Contains(windows_list, new_window.get()));
+  EXPECT_TRUE(
+      base::Contains(GetWindowsListInOverviewGrids(), new_window.get()));
 }
 
 TEST_F(TabDragDropDelegateTest, WillNotDropTabToOverviewModeInSnappingZone) {
@@ -444,10 +441,8 @@ TEST_F(TabDragDropDelegateTest, WillNotDropTabToOverviewMode) {
 
   EXPECT_EQ(new_window.get(), split_view_controller->GetSnappedWindow(
                                   SplitViewController::SnapPosition::kPrimary));
-  auto windows_list = Shell::Get()
-                          ->overview_controller()
-                          ->GetWindowsListInOverviewGridsForTest();
-  EXPECT_FALSE(base::Contains(windows_list, new_window.get()));
+  EXPECT_FALSE(
+      base::Contains(GetWindowsListInOverviewGrids(), new_window.get()));
 }
 
 TEST_F(TabDragDropDelegateTest, SourceWindowBoundsUpdatedWhileDragging) {

@@ -266,12 +266,6 @@ class SplitViewControllerTest : public AshTestBase {
         ->OnGestureEvent(&event);
   }
 
-  std::vector<aura::Window*> GetWindowsInOverviewGrids() {
-    return Shell::Get()
-        ->overview_controller()
-        ->GetWindowsListInOverviewGridsForTest();
-  }
-
   SplitViewController* split_view_controller() {
     return SplitViewController::Get(Shell::GetPrimaryRootWindow());
   }
@@ -741,7 +735,7 @@ TEST_F(SplitViewControllerTest, EnterOverviewMode) {
   EXPECT_EQ(split_view_controller()->state(),
             SplitViewController::State::kPrimarySnapped);
   EXPECT_FALSE(
-      base::Contains(GetWindowsInOverviewGrids(),
+      base::Contains(GetWindowsListInOverviewGrids(),
                      split_view_controller()->GetDefaultSnappedWindow()));
 }
 
@@ -2958,29 +2952,31 @@ TEST_F(SplitViewControllerTest, EndSplitViewDuringDividerSnapAnimation) {
   EXPECT_TRUE(window->layer()->GetTargetTransform().IsIdentity());
 }
 
-// TestOverviewObserver which tracks how many overview items there are when
+// Test `OverviewObserver` which tracks how many overview items there are when
 // overview mode is about to end.
 class TestOverviewItemsOnOverviewModeEndObserver : public OverviewObserver {
  public:
   TestOverviewItemsOnOverviewModeEndObserver() {
     OverviewController::Get()->AddObserver(this);
   }
-
   TestOverviewItemsOnOverviewModeEndObserver(
       const TestOverviewItemsOnOverviewModeEndObserver&) = delete;
   TestOverviewItemsOnOverviewModeEndObserver& operator=(
       const TestOverviewItemsOnOverviewModeEndObserver&) = delete;
-
   ~TestOverviewItemsOnOverviewModeEndObserver() override {
     OverviewController::Get()->RemoveObserver(this);
   }
-  void OnOverviewModeEnding(OverviewSession* overview_session) override {
-    items_on_last_overview_end_ = overview_session->num_items();
+
+  size_t items_on_last_overview_end() const {
+    return items_on_last_overview_end_;
   }
-  int items_on_last_overview_end() const { return items_on_last_overview_end_; }
+
+  void OnOverviewModeEnding(OverviewSession* overview_session) override {
+    items_on_last_overview_end_ = overview_session->GetNumWindows();
+  }
 
  private:
-  int items_on_last_overview_end_ = 0;
+  size_t items_on_last_overview_end_ = 0;
 };
 
 TEST_F(SplitViewControllerTest, ItemsRemovedFromOverviewOnSnap) {
@@ -2989,18 +2985,18 @@ TEST_F(SplitViewControllerTest, ItemsRemovedFromOverviewOnSnap) {
   std::unique_ptr<aura::Window> window2(CreateWindow(bounds));
 
   ToggleOverview();
-  ASSERT_EQ(2u, OverviewController::Get()->overview_session()->num_items());
+  ASSERT_EQ(2u, OverviewController::Get()->overview_session()->GetNumWindows());
   split_view_controller()->SnapWindow(
       window1.get(), SplitViewController::SnapPosition::kPrimary);
   ASSERT_TRUE(OverviewController::Get()->InOverviewSession());
-  EXPECT_EQ(1u, OverviewController::Get()->overview_session()->num_items());
+  EXPECT_EQ(1u, OverviewController::Get()->overview_session()->GetNumWindows());
 
   // Create |observer| after splitview is entered so that it gets notified after
   // splitview does, and so will notice the changes splitview made to overview
   // on overview end.
   TestOverviewItemsOnOverviewModeEndObserver observer;
   ToggleOverview();
-  EXPECT_EQ(0, observer.items_on_last_overview_end());
+  EXPECT_EQ(0u, observer.items_on_last_overview_end());
 }
 
 // Test that resizing ends properly if split view ends during divider dragging.

@@ -644,7 +644,7 @@ TEST_F(WindowFloatTest, MoveFloatWindowBetweenDesks) {
       overview_session->GetOverviewItemForWindow(window_1.get());
   auto* grid =
       overview_session->GetGridWithRootWindow(Shell::GetPrimaryRootWindow());
-  EXPECT_EQ(1u, grid->size());
+  EXPECT_EQ(1u, grid->GetNumWindows());
   // Get position of `desk_2`'s desk mini view on the secondary display.
   const auto* desks_bar_view = grid->desks_bar_view();
   auto* desk_2_mini_view = desks_bar_view->mini_views()[1];
@@ -694,9 +694,9 @@ TEST_F(WindowFloatTest, MoveFloatWindowBetweenDesksOnDifferentDisplay) {
       overview_session->GetOverviewItemForWindow(window_1.get());
   auto* grid1 = overview_session->GetGridWithRootWindow(primary_root);
   auto* grid2 = overview_session->GetGridWithRootWindow(secondary_root);
-  EXPECT_EQ(1u, grid1->size());
+  EXPECT_EQ(1u, grid1->GetNumWindows());
   EXPECT_EQ(grid1, overview_item->overview_grid());
-  EXPECT_EQ(0u, grid2->size());
+  EXPECT_EQ(0u, grid2->GetNumWindows());
 
   // Get position of `desk_2`'s desk mini view on the secondary display.
   const auto* desks_bar_view = grid2->desks_bar_view();
@@ -1062,7 +1062,7 @@ TEST_F(WindowFloatMetricsTest, FloatWindowMovedToAnotherDeskCountPerSession) {
       overview_session->GetOverviewItemForWindow(window_1.get());
   auto* grid =
       overview_session->GetGridWithRootWindow(Shell::GetPrimaryRootWindow());
-  EXPECT_EQ(1u, grid->size());
+  EXPECT_EQ(1u, grid->GetNumWindows());
   // Get position of `desk_2`'s desk mini view.
   const auto* desks_bar_view = grid->desks_bar_view();
   gfx::Point desk_2_mini_view_center =

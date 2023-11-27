@@ -86,14 +86,30 @@ OverviewGrid* GetOverviewGridForRoot(aura::Window* root) {
   DCHECK(root->IsRootWindow());
 
   auto* overview_controller = OverviewController::Get();
-  DCHECK(overview_controller->InOverviewSession());
-
+  CHECK(overview_controller->InOverviewSession());
   return overview_controller->overview_session()->GetGridWithRootWindow(root);
 }
 
 const std::vector<std::unique_ptr<OverviewItemBase>>& GetOverviewItemsForRoot(
     int index) {
   return GetOverviewSession()->grid_list()[index]->window_list();
+}
+
+std::vector<aura::Window*> GetWindowsListInOverviewGrids() {
+  auto* overview_controller = OverviewController::Get();
+  CHECK(overview_controller->InOverviewSession());
+
+  std::vector<aura::Window*> windows;
+  for (const std::unique_ptr<OverviewGrid>& grid :
+       overview_controller->overview_session()->grid_list()) {
+    for (const std::unique_ptr<OverviewItemBase>& item : grid->window_list()) {
+      for (aura::Window* window : item->GetWindows()) {
+        CHECK(window);
+        windows.push_back(window);
+      }
+    }
+  }
+  return windows;
 }
 
 OverviewItemBase* GetOverviewItemForWindow(aura::Window* window) {

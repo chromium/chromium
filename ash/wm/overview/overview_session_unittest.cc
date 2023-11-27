@@ -6398,7 +6398,7 @@ TEST_F(TabletModeOverviewSessionTest, FlingToClose) {
 
   ToggleOverview();
   ASSERT_TRUE(GetOverviewController()->InOverviewSession());
-  EXPECT_EQ(1u, GetOverviewSession()->grid_list()[0]->size());
+  EXPECT_EQ(1u, GetOverviewSession()->grid_list()[0]->GetNumWindows());
 
   auto* item = GetOverviewItemForWindow(widget->GetNativeWindow());
   const gfx::PointF start = item->target_bounds().CenterPoint();
@@ -8230,8 +8230,8 @@ TEST_F(SplitViewOverviewSessionTest,
   EXPECT_TRUE(InOverviewSession());
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
   ASSERT_TRUE(split_view_controller()->split_view_divider());
-  std::vector<aura::Window*> window_list =
-      GetOverviewController()->GetWindowsListInOverviewGridsForTest();
+  const std::vector<aura::Window*> window_list =
+      GetWindowsListInOverviewGrids();
   EXPECT_EQ(2u, window_list.size());
   EXPECT_FALSE(base::Contains(window_list, window1.get()));
   EXPECT_TRUE(wm::IsActiveWindow(window1.get()));
@@ -8248,9 +8248,10 @@ TEST_F(SplitViewOverviewSessionTest,
   // the overview list.
   EXPECT_TRUE(InOverviewSession());
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
-  window_list = GetOverviewController()->GetWindowsListInOverviewGridsForTest();
-  EXPECT_EQ(3u, window_list.size());
-  EXPECT_TRUE(base::Contains(window_list, window1.get()));
+  const std::vector<aura::Window*> new_window_list =
+      GetWindowsListInOverviewGrids();
+  EXPECT_EQ(3u, new_window_list.size());
+  EXPECT_TRUE(base::Contains(new_window_list, window1.get()));
   EXPECT_FALSE(wm::IsActiveWindow(window1.get()));
 }
 
@@ -8289,8 +8290,7 @@ TEST_F(
   EXPECT_EQ(
       expected_mru_list,
       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk));
-  EXPECT_EQ(expected_overview_list,
-            GetOverviewController()->GetWindowsListInOverviewGridsForTest());
+  EXPECT_EQ(expected_overview_list, GetWindowsListInOverviewGrids());
 
   // Verify the stacking order.
   aura::Window* parent = window1->parent();
@@ -8339,8 +8339,7 @@ TEST_F(
   EXPECT_EQ(
       expected_mru_list,
       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk));
-  EXPECT_EQ(expected_overview_list,
-            GetOverviewController()->GetWindowsListInOverviewGridsForTest());
+  EXPECT_EQ(expected_overview_list, GetWindowsListInOverviewGrids());
 
   // Verify the stacking order.
   aura::Window* parent = window1->parent();
@@ -10212,8 +10211,7 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
   // Verify that the right grid is in MRU order.
   const std::vector<aura::Window*> expected_order = {
       window1.get(), window2.get(), window3.get()};
-  EXPECT_EQ(expected_order,
-            GetOverviewController()->GetWindowsListInOverviewGridsForTest());
+  EXPECT_EQ(expected_order, GetWindowsListInOverviewGrids());
 }
 
 // Test dragging from one display to another and then snapping.

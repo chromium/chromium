@@ -1148,8 +1148,7 @@ TEST_F(DragWindowFromShelfControllerTest, DropsIntoOverviewAtCorrectPosition) {
   EXPECT_EQ(
       expected_mru_list,
       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk));
-  EXPECT_EQ(expected_overview_list,
-            overview_controller->GetWindowsListInOverviewGridsForTest());
+  EXPECT_EQ(expected_overview_list, GetWindowsListInOverviewGrids());
 
   // Verify the stacking order.
   aura::Window* parent = window1->parent();

@@ -285,17 +285,6 @@ void OverviewController::OnWindowActivating(ActivationReason reason,
     overview_session_->OnWindowActivating(reason, gained_active, lost_active);
 }
 
-std::vector<aura::Window*>
-OverviewController::GetWindowsListInOverviewGridsForTest() {
-  std::vector<aura::Window*> windows;
-  for (const std::unique_ptr<OverviewGrid>& grid :
-       overview_session_->grid_list()) {
-    for (const auto& overview_item : grid->window_list())
-      windows.push_back(overview_item->GetWindow());
-  }
-  return windows;
-}
-
 bool OverviewController::CanEnterOverview() const {
   if (!DesksController::Get()->CanEnterOverview()) {
     return false;

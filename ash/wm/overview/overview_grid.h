@@ -379,6 +379,11 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   bool IsSaveDeskAsTemplateButtonVisible() const;
   bool IsSaveDeskForLaterButtonVisible() const;
 
+  // This is different from `window_list_.size()` which contains the drop target
+  // if it exists, and if two windows are in a snap group, they are a single
+  // item.
+  size_t GetNumWindows() const;
+
   // Returns the save desk as template button if available, otherwise null.
   SavedDeskSaveDeskButton* GetSaveDeskAsTemplateButton();
 
@@ -413,9 +418,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   // Returns true if the grid has no more windows.
   bool empty() const { return window_list_.empty(); }
-
-  // Returns how many overview items are in the grid.
-  size_t size() const { return window_list_.size(); }
 
   const OverviewDropTarget* drop_target() const { return drop_target_; }
 
@@ -589,7 +591,8 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // Pointer to the OverviewSession that spawned this grid.
   raw_ptr<OverviewSession, ExperimentalAsh> overview_session_;
 
-  // Vector containing all the windows in this grid.
+  // Vector containing all the items in this grid.
+  // TODO(sammiequon): Rename this to `items_list_`.
   std::vector<std::unique_ptr<OverviewItemBase>> window_list_;
 
   // A widget that is shown if we entered overview without any windows opened.

@@ -222,7 +222,6 @@ void OverviewSession::Init(const WindowList& windows,
 
   for (auto* root : root_windows) {
     auto grid = std::make_unique<OverviewGrid>(root, windows, this);
-    num_items_ += grid->size();
     grid_list_.push_back(std::move(grid));
   }
 
@@ -282,7 +281,8 @@ void OverviewSession::Init(const WindowList& windows,
   overview_focus_widget_->SetContentsView(
       std::make_unique<OverviewFocusButton>());
 
-  UMA_HISTOGRAM_COUNTS_100("Ash.Overview.Items", num_items_);
+  num_start_windows_ = GetNumWindows();
+  UMA_HISTOGRAM_COUNTS_100("Ash.Overview.Items", num_start_windows_);
 
   SplitViewController::Get(Shell::GetPrimaryRootWindow())->AddObserver(this);
 
@@ -362,7 +362,6 @@ void OverviewSession::Shutdown() {
       overview_item->RestoreWindow(/*reset_transform=*/true,
                                    /*animate=*/!was_saved_desk_library_showing);
     }
-    remaining_items += overview_grid->size();
   }
 
   // Setting focus after restoring windows' state avoids unnecessary animations.
@@ -377,10 +376,9 @@ void OverviewSession::Shutdown() {
   for (std::unique_ptr<OverviewGrid>& overview_grid : grid_list_)
     overview_grid->Shutdown(enter_exit_overview_type_);
 
-  DCHECK(num_items_ >= remaining_items);
   if (!was_saved_desk_library_showing) {
     UMA_HISTOGRAM_COUNTS_100("Ash.Overview.OverviewClosedItems",
-                             num_items_ - remaining_items);
+                             num_start_windows_ - remaining_items);
     UMA_HISTOGRAM_MEDIUM_TIMES("Ash.Overview.TimeInOverview",
                                base::Time::Now() - overview_start_time_);
   }
@@ -615,7 +613,6 @@ void OverviewSession::RemoveItem(OverviewItemBase* overview_item,
 
   overview_item->overview_grid()->RemoveItem(overview_item, item_destroying,
                                              reposition);
-  --num_items_;
 
   UpdateNoWindowsWidgetOnEachGrid(/*animate=*/true,
                                   /*is_continuous_enter=*/false);
@@ -1019,9 +1016,14 @@ void OverviewSession::RestoreWindowActivation(bool restore) {
 
 void OverviewSession::OnFocusedItemActivated(OverviewItem* item) {
   UMA_HISTOGRAM_COUNTS_100("Ash.Overview.ArrowKeyPresses", num_key_presses_);
-  UMA_HISTOGRAM_CUSTOM_COUNTS("Ash.Overview.KeyPressesOverItemsRatio",
-                              (num_key_presses_ * 100) / num_items_, 1, 300,
-                              30);
+
+  // Do not record this if `num_start_windows_` has changed as it will be
+  // inaccurate.
+  if (num_start_windows_ == GetNumWindows()) {
+    UMA_HISTOGRAM_CUSTOM_COUNTS("Ash.Overview.KeyPressesOverItemsRatio",
+                                (num_key_presses_ * 100) / num_start_windows_,
+                                1, 300, 30);
+  }
   base::RecordAction(
       base::UserMetricsAction("WindowSelector_OverviewEnterKey"));
   SelectWindow(item);
@@ -1259,6 +1261,26 @@ void OverviewSession::UpdateAccessibilityFocus() {
     a11y_widgets[i]->GetContentsView()->NotifyAccessibilityEvent(
         ax::mojom::Event::kTreeChanged, true);
   }
+}
+
+void OverviewSession::UpdateFrameThrottling() {
+  std::vector<aura::Window*> windows_to_throttle;
+  if (!grid_list_.empty()) {
+    windows_to_throttle.reserve(num_start_windows_ * 2);
+    for (auto& grid : grid_list_) {
+      if (grid->dragged_window()) {
+        windows_to_throttle.push_back(grid->dragged_window());
+      }
+
+      for (auto& item : grid->window_list()) {
+        for (auto* window : item->GetWindows()) {
+          windows_to_throttle.push_back(window);
+        }
+      }
+    }
+  }
+  Shell::Get()->frame_throttling_controller()->StartThrottling(
+      windows_to_throttle);
 }
 
 void OverviewSession::OnDeskActivationChanged(const Desk* activated,
@@ -1619,7 +1641,6 @@ void OverviewSession::RefreshNoWindowsWidgetBoundsOnEachGrid(bool animate) {
 }
 
 void OverviewSession::OnItemAdded(aura::Window* window) {
-  ++num_items_;
   UpdateNoWindowsWidgetOnEachGrid(/*animate=*/true,
                                   /*is_continuous_enter=*/false);
 
@@ -1640,24 +1661,12 @@ void OverviewSession::OnItemAdded(aura::Window* window) {
   UpdateAccessibilityFocus();
 }
 
-void OverviewSession::UpdateFrameThrottling() {
-  std::vector<aura::Window*> windows_to_throttle;
-  if (!grid_list_.empty()) {
-    windows_to_throttle.reserve(grid_list_.size() * grid_list_[0]->size() * 2);
-    for (auto& grid : grid_list_) {
-      if (grid->dragged_window()) {
-        windows_to_throttle.push_back(grid->dragged_window());
-      }
-
-      for (auto& item : grid->window_list()) {
-        for (auto* window : item->GetWindows()) {
-          windows_to_throttle.push_back(window);
-        }
-      }
-    }
+size_t OverviewSession::GetNumWindows() const {
+  size_t size = 0u;
+  for (const std::unique_ptr<OverviewGrid>& grid : grid_list_) {
+    size += grid->GetNumWindows();
   }
-  Shell::Get()->frame_throttling_controller()->StartThrottling(
-      windows_to_throttle);
+  return size;
 }
 
 }  // namespace ash
