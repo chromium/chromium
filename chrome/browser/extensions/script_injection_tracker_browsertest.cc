@@ -875,7 +875,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // This is a regression test for https://crbug.com/1312125 - it simulates a race
 // where an extension is loaded during or before a navigation, resulting in
-// ScriptInjectionTracker::WillUpdateContentScriptsInRenderer getting called
+// ScriptInjectionTracker::DidUpdateContentScriptsInRenderer getting called
 // between ReadyToCommit and DidCommit of a navigation from a page where content
 // scripts are not injected, to a page where content scripts are injected.
 IN_PROC_BROWSER_TEST_F(
@@ -980,7 +980,7 @@ IN_PROC_BROWSER_TEST_F(
   // *) Racey steps where ordering matters for the repro, but where the test
   //    doesn't guarantee the ordering between UI.3a and UI.3b:
   //     *) Race step UI.3a: Task posted by FILE.2 gets run on UI thread.
-  //        ScriptInjectionTracker::WillUpdateContentScriptsInRenderer get
+  //        ScriptInjectionTracker::DidUpdateContentScriptsInRenderer get
   //        called.
   //     *) Race step UI.3b: Task posted by IO.2 gets run on UI thread.
   //        DidCommit happens.
@@ -992,7 +992,7 @@ IN_PROC_BROWSER_TEST_F(
   //
   // Triggering https://crbug.com/1312125 requires that UI.3a happens before
   // UI.3b - when this happens then ScriptInjectionTracker's
-  // WillUpdateContentScriptsInRenderer won't see the newly committed URL and
+  // DidUpdateContentScriptsInRenderer won't see the newly committed URL and
   // won't realize that content script may be injected into the newly committed
   // document (the fix is to add ScriptInjectionTracker::DidFinishNavigation).
   // Additionally, the repro requires that RENDERER.2.??? happens before the
@@ -1264,14 +1264,13 @@ IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest,
 }
 
 // Regression test for https://crbug.com/1439642.
-// TODO(crbug.com/1502769): Test is flaky.
 IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest,
-                       DISABLED_ContentScriptViaScriptingApiWhileIdle) {
+                       ContentScriptViaScriptingApiWhileIdle) {
   // The test orchestrates the following sequence of events.
   //
-  // Step 1: `DidFinishNavigation` for a.com/iframe_cross_site.html
-  //         - At this point navigation to b.com/title1.html subframe
-  //           will be paused thanks to using `ControllableHttpResponse`
+  // Step 1: `DidFinishNavigation` for a.com/controllable_request.html
+  //         - At this point DOMContentLoaded will not happen yet because
+  //           we use `ControllableHttpResponse`.
   //         - At this point `ScriptInjectionTracker::DidFinishNavigation`
   //           will be called (and we want that to happen before step 2, because
   //           we want to prevent `ScriptInjectionTracker` from relying on
@@ -1279,33 +1278,27 @@ IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest,
   //           scripts)
   //
   // Step 2: `chrome.scripting.registerContentScripts`
-  //         - registering content script injection for a.com (but *not* for
-  //           b.com)
-  //         - at this point
-  //           `ScriptInjectionTracker::WillUpdateContentScriptsInRenderer` will
+  //         - registering content script injection for a.com
+  //         - when the script gets loaded (step 2b)
+  //           `ScriptInjectionTracker::DidUpdateContentScriptsInRenderer` will
   //           be called (but as described in https://crbug.com/1439642 there
   //           may be trouble with seeing the newly registered scripts)
   //
-  // Step 3: DidFinishNavigation for b.com/title1.html
-  //         - Triggered by `subframe_response.Done()`
-  //         - This is a *cross-site* frame, *not* covered by
-  //           `registerContentScripts` URL patterns => it doesn't matter that
-  //           `ScriptInjectionTracker::DidFinishNavigation` will be called
-  //           here)
+  // Step 3: DOMContentLoaded
+  //         - Triggered by `controllable_request.Done()`
+  //         - This enables injecting the content script (at `document_end`)
   //
   // Step 4: Content script gets injected
-  //        - This happens at `document_idle` / because step 3 above finished
-  //          loading of the whole page
   //
   // Step 5: Verification if `ScriptInjectionTracker` understands that the
   // content script has been injected.
 
-  // Set up ControllableHttpResponse to Control the timing of the navigation
-  // to the subframe (and therefore to control the timing of the "onload" event
-  // for the main frame).
-  std::string subframe_relative_path = "/title1.html";
-  net::test_server::ControllableHttpResponse subframe_response(
-      embedded_test_server(), subframe_relative_path);
+  // Set up ControllableHttpResponse to control the timing of the navigation
+  // (and therefore to control the timing of the "DOMContentLoaded" event
+  // and therefore the timing of content script injection).
+  std::string navigation_relative_path = "/controllable_request.html";
+  net::test_server::ControllableHttpResponse navigation_response(
+      embedded_test_server(), navigation_relative_path);
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Install a test extension.
@@ -1321,11 +1314,20 @@ IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest,
   dir.WriteManifest(kManifestTemplate);
   dir.WriteFile(FILE_PATH_LITERAL("page.html"), "<p>Extension page</p>");
   const char kContentScript[] = R"(
-      window.onload = function() {
-          chrome.test.assertEq('complete', document.readyState);
-          document.body.innerText = 'content script has run';
-          chrome.test.notifyPass();
-      }
+      // TODO(https://crbug.com/1502769): Remove `console.log` after confirming
+      // that the test is no longer flaky
+      console.log('CONTENT SCRIPT: running...');
+
+      // `document_end` waits for `DOMContentLoaded`.  `document.body` should
+      // therefore be already available.
+      chrome.test.assertTrue(!!document.body);
+
+      document.body.innerText = 'content script has run';
+      chrome.test.notifyPass();
+
+      // TODO(https://crbug.com/1502769): Remove `console.log` after confirming
+      // that the test is no longer flaky
+      console.log('CONTENT SCRIPT: running... DONE.');
   )";
   dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), kContentScript);
   const Extension* extension = LoadExtension(dir.UnpackedPath());
@@ -1338,16 +1340,19 @@ IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest,
   ASSERT_TRUE(extension_frame);
 
   // Step 1: Navigate to a test page that *will later* be covered by the dynamic
-  // content script.  Wait for DidFinishNavigation of the main page navigation,
-  // but do *not* wait for `onload` event.
+  // content script.  Wait for DidFinishNavigation, but do *not* wait for
+  // `onload` event.
   {
     GURL main_url =
-        embedded_test_server()->GetURL("a.com", "/iframe_cross_site.html");
+        embedded_test_server()->GetURL("a.com", navigation_relative_path);
     content::TestNavigationObserver nav_observer(main_url);
     nav_observer.StartWatchingNewWebContents();
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), main_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
+    navigation_response.WaitForRequest();
+    navigation_response.Send(net::HTTP_OK, "text/html",
+                             "<p>First paragraph</p>");
     nav_observer.WaitForNavigationFinished();
   }
   content::WebContents* second_tab =
@@ -1355,12 +1360,18 @@ IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest,
 
   // Verify that initially the process doesn't show up as having been injected
   // with content scripts.  We can't inspect `document.body.innerText` because
-  // "onload" didn't happen yet (i.e. maybe none of HTML has been parsed yet).
+  // "DOMContentLoaded" didn't happen yet (i.e. maybe none of HTML has been
+  // parsed yet).
   EXPECT_FALSE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
       *second_tab->GetPrimaryMainFrame()->GetProcess(), extension->id()));
 
   {
-    ResultCatcher catcher;
+    UserScriptManager* user_script_manager =
+        ExtensionSystem::Get(second_tab->GetBrowserContext())
+            ->user_script_manager();
+    ExtensionUserScriptLoader* user_script_loader =
+        user_script_manager->GetUserScriptLoaderForExtension(extension->id());
+    ContentScriptLoadWaiter content_script_load_waiter(user_script_loader);
 
     // Step 2: Register a dynamic content script.
     {
@@ -1375,20 +1386,31 @@ IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest,
       ASSERT_TRUE(content::ExecJs(extension_frame, kRegistrationScript));
     }
 
-    // Step 3: Finish sending the subframe contents over the network.  This will
-    // unblock `onload` event and will allow injecting the script at
-    // `document_idle` time.
+    // Step 2b: Wait until the dynamic content script loads (in the same message
+    // loop iteration the ScriptInjectionTracker's
+    // DidUpdateContentScriptsInRenderer will run.
+    ResultCatcher catcher;
+    content_script_load_waiter.Wait();
+
+    // At this point ScriptInjectionTracker should already be aware about the
+    // content script.
+    EXPECT_TRUE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
+        *second_tab->GetPrimaryMainFrame()->GetProcess(), extension->id()));
+
+    // Step 3: Finish sending the page contents over the network.  This will
+    // unblock `DOMContentLoaded` event and will allow injecting the script at
+    // `document_end` time.
     {
-      subframe_response.WaitForRequest();
-      subframe_response.Send(net::HTTP_OK, "text/html", "<p>Subframe</p>");
-      subframe_response.Done();
+      navigation_response.Send(net::HTTP_OK, "text/html",
+                               "<p>Second paragraph</p>");
+      navigation_response.Done();
 
       // Step 4: Wait until content script gets injected.
       ASSERT_TRUE(catcher.GetNextResult());
     }
   }
 
-  // Step 5: Verify that *now* the second tab shows up as having been injected
+  // Step 5: Verify again that the second tab shows up as having been injected
   // with content scripts.
   EXPECT_EQ("content script has run",
             content::EvalJs(second_tab, "document.body.innerText"));
