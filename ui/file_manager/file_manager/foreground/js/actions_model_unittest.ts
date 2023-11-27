@@ -243,7 +243,7 @@ export async function testDriveFileEntry() {
     });
     saveForOfflineAction.execute();
   });
-  assertTrue(mockMetadataModel.properties['pinned']);
+  assertTrue(mockMetadataModel.properties['pinned']!);
   assertEquals(1, invalidated);
 
   assertEquals(1, countMetricCalls('FileBrowser.DrivePinSuccess'));
@@ -285,7 +285,7 @@ export async function testDriveFileEntry() {
     });
     offlineNotNecessaryAction.execute();
   });
-  assertFalse(mockMetadataModel.properties['pinned']);
+  assertFalse(mockMetadataModel.properties['pinned']!);
   assertEquals(2, invalidated);
 }
 
@@ -307,7 +307,7 @@ export async function testDriveHostedFileEntry() {
   };
   chrome.fileManagerPrivate.pinDriveFile =
       (entry: Entry, pin: boolean, callback: VoidCallback) => {
-        const metadata = mockMetadataModel.getCache([entry])[0];
+        const metadata = mockMetadataModel.getCache([entry])[0]!;
         metadata['pinned'] = pin;
         mockMetadataModel.set(entry, metadata);
         callback();
@@ -349,8 +349,8 @@ export async function testDriveHostedFileEntry() {
     saveForOfflineAction.execute();
   });
 
-  assertTrue(!!mockMetadataModel.getCache([testDocument])[0]['pinned']);
-  assertTrue(!!mockMetadataModel.getCache([testFile])[0]['pinned']);
+  assertTrue(!!mockMetadataModel.getCache([testDocument])[0]!['pinned']);
+  assertTrue(!!mockMetadataModel.getCache([testFile])[0]!['pinned']);
 
   assertEquals(2, countMetricCalls('FileBrowser.DrivePinSuccess'));
   assertEquals(1, countMetricCalls('FileBrowser.DriveHostedFilePinSuccess'));
@@ -380,8 +380,8 @@ export async function testDriveHostedFileEntry() {
     offlineNotNecessaryAction.execute();
   });
 
-  assertFalse(!!mockMetadataModel.getCache([testDocument])[0]['pinned']);
-  assertFalse(!!mockMetadataModel.getCache([testFile])[0]['pinned']);
+  assertFalse(!!mockMetadataModel.getCache([testDocument])[0]!['pinned']);
+  assertFalse(!!mockMetadataModel.getCache([testFile])[0]!['pinned']);
 }
 
 /**
@@ -403,7 +403,7 @@ export async function testUnpinnableDriveHostedFileEntry() {
   };
   chrome.fileManagerPrivate.pinDriveFile =
       (entry: Entry, pin: boolean, callback: VoidCallback) => {
-        const metadata = mockMetadataModel.getCache([entry])[0];
+        const metadata = mockMetadataModel.getCache([entry])[0]!;
         metadata['pinned'] = pin;
         mockMetadataModel.set(entry, metadata);
         callback();
@@ -447,8 +447,8 @@ export async function testUnpinnableDriveHostedFileEntry() {
     saveForOfflineAction.execute();
   });
 
-  assertFalse(!!mockMetadataModel.getCache([testDocument])[0]['pinned']);
-  assertTrue(!!mockMetadataModel.getCache([testFile])[0]['pinned']);
+  assertFalse(!!mockMetadataModel.getCache([testDocument])[0]!['pinned']);
+  assertTrue(!!mockMetadataModel.getCache([testFile])[0]!['pinned']);
 
   assertEquals(1, countMetricCalls('FileBrowser.DrivePinSuccess'));
   assertEquals(0, countMetricCalls('FileBrowser.DriveHostedFilePinSuccess'));
@@ -480,8 +480,8 @@ export async function testUnpinnableDriveHostedFileEntry() {
     offlineNotNecessaryAction.execute();
   });
 
-  assertFalse(!!mockMetadataModel.getCache([testDocument])[0]['pinned']);
-  assertFalse(!!mockMetadataModel.getCache([testFile])[0]['pinned']);
+  assertFalse(!!mockMetadataModel.getCache([testDocument])[0]!['pinned']);
+  assertFalse(!!mockMetadataModel.getCache([testFile])[0]!['pinned']);
 }
 
 /**
