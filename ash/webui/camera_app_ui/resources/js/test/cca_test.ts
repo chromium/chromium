@@ -185,6 +185,23 @@ export class CCATest {
   }
 
   /**
+   * Chooses a video resolution with the specified resolution for the camera
+   * with |facing| facing. Throws an error if there is no specified resolution.
+   */
+  static chooseVideoResolution(facing: Facing, resolution: Resolution): void {
+    const {width, height} = resolution;
+    const selector =
+        `#view-video-resolution-settings .menu-item>input[data-facing="${
+            facing}"][data-width="${width}"][data-height="${height}"]`;
+    try {
+      const resolutionPicker = dom.get(selector, HTMLInputElement);
+      resolutionPicker.click();
+    } catch {
+      throw new Error(`Cannot find a resolution`);
+    }
+  }
+
+  /**
    * Returns aria-label of the focused element. Throws an error if a focused
    * element is null.
    */
