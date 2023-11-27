@@ -4,21 +4,25 @@
 
 package org.chromium.net.impl;
 
+import static org.chromium.net.impl.HttpEngineNativeProvider.EXT_API_LEVEL;
+import static org.chromium.net.impl.HttpEngineNativeProvider.EXT_VERSION;
+
 import android.net.http.HttpException;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
+import androidx.annotation.RequiresExtension;
 
 import java.nio.ByteBuffer;
 import java.util.Objects;
 
-@RequiresApi(api = 34)
+@RequiresExtension(extension = EXT_API_LEVEL, version = EXT_VERSION)
 @SuppressWarnings("Override")
-class BidirectionalStreamCallbackWrapper implements android.net.http.BidirectionalStream.Callback {
+class AndroidBidirectionalStreamCallbackWrapper implements
+    android.net.http.BidirectionalStream.Callback {
     private final org.chromium.net.BidirectionalStream.Callback mBackend;
 
-    public BidirectionalStreamCallbackWrapper(
+    public AndroidBidirectionalStreamCallbackWrapper(
             org.chromium.net.BidirectionalStream.Callback backend) {
         Objects.requireNonNull(backend, "Callback is required.");
         this.mBackend = backend;

@@ -34,8 +34,8 @@ public class HttpEngineNativeProvider extends CronetProvider {
     // TODO(crbug/1499829): Move this to CronetProvider
     public static final String PROVIDER_NAME_HTTPENGINE_NATIVE = "HttpEngine-Native-Provider";
 
-    private static final int EXT_API_LEVEL = Build.VERSION_CODES.S;
-    private static final int EXT_VERSION = 7;
+    static final int EXT_API_LEVEL = Build.VERSION_CODES.S;
+    static final int EXT_VERSION = 7;
 
     public HttpEngineNativeProvider(Context context) {
         super(context);
@@ -54,6 +54,7 @@ public class HttpEngineNativeProvider extends CronetProvider {
     }
 
     @Override
+    @RequiresExtension(extension = EXT_API_LEVEL, version = EXT_VERSION)
     public String getVersion() {
         return HttpEngine.getVersionString();
     }

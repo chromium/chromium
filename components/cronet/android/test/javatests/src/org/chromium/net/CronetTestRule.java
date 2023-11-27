@@ -17,7 +17,6 @@ import android.os.Build;
 import android.os.StrictMode;
 
 import androidx.annotation.Nullable;
-import androidx.core.os.BuildCompat;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.rules.TestRule;
@@ -208,7 +207,7 @@ public class CronetTestRule implements TestRule {
             excludedImplementations.addAll(
                     Arrays.asList(ignoreDueToMethodAnnotation.implementations()));
         }
-        if (!BuildCompat.isAtLeastU()) {
+        if (Build.VERSION.SDK_INT < 34) {
             excludedImplementations.add(CronetImplementation.AOSP_PLATFORM);
         }
 

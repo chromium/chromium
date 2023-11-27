@@ -9,25 +9,18 @@ import static org.chromium.net.impl.HttpEngineNativeProvider.EXT_VERSION;
 
 import androidx.annotation.RequiresExtension;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 @RequiresExtension(extension = EXT_API_LEVEL, version = EXT_VERSION)
-class AndroidHeaderBlockWrapper extends org.chromium.net.UrlResponseInfo.HeaderBlock {
-    private final android.net.http.HeaderBlock mBackend;
+@SuppressWarnings("Override")
+class AndroidUrlRequestStatusListenerWrapper implements android.net.http.UrlRequest.StatusListener {
+    private final org.chromium.net.UrlRequest.StatusListener mBackend;
 
-    AndroidHeaderBlockWrapper(android.net.http.HeaderBlock backend) {
+    public AndroidUrlRequestStatusListenerWrapper(
+            org.chromium.net.UrlRequest.StatusListener backend) {
         this.mBackend = backend;
     }
 
     @Override
-    public List<Entry<String, String>> getAsList() {
-        return mBackend.getAsList();
-    }
-
-    @Override
-    public Map<String, List<String>> getAsMap() {
-        return mBackend.getAsMap();
+    public void onStatus(int i) {
+        mBackend.onStatus(i);
     }
 }

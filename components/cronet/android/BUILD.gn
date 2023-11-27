@@ -498,6 +498,7 @@ android_library("cronet_impl_native_base_java") {
 android_library("httpengine_native_provider_base_java") {
   sources = [
     "java/src/org/chromium/net/impl/AndroidBidirectionalStreamBuilderWrapper.java",
+    "java/src/org/chromium/net/impl/AndroidBidirectionalStreamCallbackWrapper.java",
     "java/src/org/chromium/net/impl/AndroidBidirectionalStreamWrapper.java",
     "java/src/org/chromium/net/impl/AndroidCallbackExceptionWrapper.java",
     "java/src/org/chromium/net/impl/AndroidHeaderBlockWrapper.java",
@@ -506,16 +507,15 @@ android_library("httpengine_native_provider_base_java") {
     "java/src/org/chromium/net/impl/AndroidHttpExceptionWrapper.java",
     "java/src/org/chromium/net/impl/AndroidNetworkExceptionWrapper.java",
     "java/src/org/chromium/net/impl/AndroidQuicExceptionWrapper.java",
+    "java/src/org/chromium/net/impl/AndroidUploadDataProviderWrapper.java",
     "java/src/org/chromium/net/impl/AndroidUploadDataSinkWrapper.java",
     "java/src/org/chromium/net/impl/AndroidUrlRequestBuilderWrapper.java",
+    "java/src/org/chromium/net/impl/AndroidUrlRequestCallbackWrapper.java",
+    "java/src/org/chromium/net/impl/AndroidUrlRequestStatusListenerWrapper.java",
     "java/src/org/chromium/net/impl/AndroidUrlRequestWrapper.java",
     "java/src/org/chromium/net/impl/AndroidUrlResponseInfoWrapper.java",
-    "java/src/org/chromium/net/impl/BidirectionalStreamCallbackWrapper.java",
     "java/src/org/chromium/net/impl/CronetExceptionTranslationUtils.java",
     "java/src/org/chromium/net/impl/HttpEngineNativeProvider.java",
-    "java/src/org/chromium/net/impl/UploadDataProviderWrapper.java",
-    "java/src/org/chromium/net/impl/UrlRequestCallbackWrapper.java",
-    "java/src/org/chromium/net/impl/UrlRequestStatusListenerWrapper.java",
   ]
 
   deps = [

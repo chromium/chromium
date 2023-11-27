@@ -4,21 +4,24 @@
 
 package org.chromium.net.impl;
 
+import static org.chromium.net.impl.HttpEngineNativeProvider.EXT_API_LEVEL;
+import static org.chromium.net.impl.HttpEngineNativeProvider.EXT_VERSION;
+
 import android.net.http.HttpException;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 
+import androidx.annotation.RequiresExtension;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 
-@RequiresApi(api = 34)
+@RequiresExtension(extension = EXT_API_LEVEL, version = EXT_VERSION)
 @SuppressWarnings("Override")
-class UrlRequestCallbackWrapper implements android.net.http.UrlRequest.Callback {
+class AndroidUrlRequestCallbackWrapper implements android.net.http.UrlRequest.Callback {
     private final org.chromium.net.UrlRequest.Callback mBackend;
 
-    public UrlRequestCallbackWrapper(org.chromium.net.UrlRequest.Callback backend) {
+    public AndroidUrlRequestCallbackWrapper(org.chromium.net.UrlRequest.Callback backend) {
         Objects.requireNonNull(backend, "Callback is required.");
         this.mBackend = backend;
     }

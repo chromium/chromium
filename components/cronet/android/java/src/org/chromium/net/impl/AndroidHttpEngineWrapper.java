@@ -4,10 +4,13 @@
 
 package org.chromium.net.impl;
 
+import static org.chromium.net.impl.HttpEngineNativeProvider.EXT_API_LEVEL;
+import static org.chromium.net.impl.HttpEngineNativeProvider.EXT_VERSION;
+
 import android.net.Network;
 import android.net.http.HttpEngine;
 
-import androidx.annotation.RequiresApi;
+import androidx.annotation.RequiresExtension;
 
 import org.chromium.net.ExperimentalCronetEngine;
 
@@ -18,7 +21,7 @@ import java.net.URLConnection;
 import java.net.URLStreamHandlerFactory;
 import java.util.concurrent.Executor;
 
-@RequiresApi(api = 34)
+@RequiresExtension(extension = EXT_API_LEVEL, version = EXT_VERSION)
 class AndroidHttpEngineWrapper extends ExperimentalCronetEngine {
     private final HttpEngine mBackend;
 
@@ -94,7 +97,7 @@ class AndroidHttpEngineWrapper extends ExperimentalCronetEngine {
             String url, org.chromium.net.BidirectionalStream.Callback callback, Executor executor) {
         return new AndroidBidirectionalStreamBuilderWrapper(
                 mBackend.newBidirectionalStreamBuilder(
-                        url, executor, new BidirectionalStreamCallbackWrapper(callback)));
+                        url, executor, new AndroidBidirectionalStreamCallbackWrapper(callback)));
     }
 
     @Override
@@ -102,6 +105,6 @@ class AndroidHttpEngineWrapper extends ExperimentalCronetEngine {
             String url, org.chromium.net.UrlRequest.Callback callback, Executor executor) {
         return new AndroidUrlRequestBuilderWrapper(
                 mBackend.newUrlRequestBuilder(
-                        url, executor, new UrlRequestCallbackWrapper(callback)));
+                        url, executor, new AndroidUrlRequestCallbackWrapper(callback)));
     }
 }

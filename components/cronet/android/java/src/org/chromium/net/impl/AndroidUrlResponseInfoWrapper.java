@@ -4,12 +4,15 @@
 
 package org.chromium.net.impl;
 
-import androidx.annotation.RequiresApi;
+import static org.chromium.net.impl.HttpEngineNativeProvider.EXT_API_LEVEL;
+import static org.chromium.net.impl.HttpEngineNativeProvider.EXT_VERSION;
+
+import androidx.annotation.RequiresExtension;
 
 import java.util.List;
 import java.util.Map;
 
-@RequiresApi(api = 34)
+@RequiresExtension(extension = EXT_API_LEVEL, version = EXT_VERSION)
 class AndroidUrlResponseInfoWrapper extends org.chromium.net.UrlResponseInfo {
     private final android.net.http.UrlResponseInfo mBackend;
     /* org.chromium.net.UrlRequest and org.chromium.net.BidirectionalStream map the direct or

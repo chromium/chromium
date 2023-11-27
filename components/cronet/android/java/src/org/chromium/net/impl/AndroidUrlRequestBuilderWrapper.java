@@ -4,15 +4,18 @@
 
 package org.chromium.net.impl;
 
+import static org.chromium.net.impl.HttpEngineNativeProvider.EXT_API_LEVEL;
+import static org.chromium.net.impl.HttpEngineNativeProvider.EXT_VERSION;
+
 import android.net.Network;
 
-import androidx.annotation.RequiresApi;
+import androidx.annotation.RequiresExtension;
 
 import org.chromium.net.CronetEngine;
 
 import java.util.concurrent.Executor;
 
-@RequiresApi(api = 34)
+@RequiresExtension(extension = EXT_API_LEVEL, version = EXT_VERSION)
 class AndroidUrlRequestBuilderWrapper extends org.chromium.net.ExperimentalUrlRequest.Builder {
     private final android.net.http.UrlRequest.Builder mBackend;
 
@@ -47,7 +50,8 @@ class AndroidUrlRequestBuilderWrapper extends org.chromium.net.ExperimentalUrlRe
     @Override
     public org.chromium.net.ExperimentalUrlRequest.Builder setUploadDataProvider(
             org.chromium.net.UploadDataProvider uploadDataProvider, Executor executor) {
-        mBackend.setUploadDataProvider(new UploadDataProviderWrapper(uploadDataProvider), executor);
+        mBackend.setUploadDataProvider(
+                new AndroidUploadDataProviderWrapper(uploadDataProvider), executor);
         return this;
     }
 
