@@ -46,4 +46,4 @@ class WebTestFedCmManager
 
 }  // namespace content
 
-#endif  // CONTENT_WEB_TEST_BROWSER_WEB_TEST_STORAGE_ACCESS_MANAGER_H_
+#endif  // CONTENT_WEB_TEST_BROWSER_WEB_TEST_FEDCM_MANAGER_H_

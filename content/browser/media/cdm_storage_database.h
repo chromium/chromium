@@ -67,4 +67,4 @@ class CONTENT_EXPORT CdmStorageDatabase {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_MEDIA_MEDIA_LICENSE_DATABASE_H_
+#endif  // CONTENT_BROWSER_MEDIA_CDM_STORAGE_DATABASE_H_

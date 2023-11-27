@@ -40,4 +40,4 @@ class PerWebUIBrowserInterfaceBroker
 };
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_BROWSER_PER_WEBUI_BROWSER_INTERFACE_BROKER_H_
+#endif  // CONTENT_PUBLIC_BROWSER_PER_WEB_UI_BROWSER_INTERFACE_BROKER_H_

@@ -66,4 +66,4 @@ class TracingProcessSetMonitor : public DevToolsSession::ChildObserver,
 
 }  // namespace content
 
-#endif  // #define CONTENT_BROWSER_DEVTOOLS_TRACING_PROCESS_SET_MONITOR_H_
+#endif  // CONTENT_BROWSER_DEVTOOLS_TRACING_PROCESS_SET_MONITOR_H_

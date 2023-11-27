@@ -75,4 +75,4 @@ class MockMediaSession : public MediaSession {
 
 }  // namespace content
 
-#endif
+#endif  // CONTENT_PUBLIC_TEST_MOCK_MEDIA_SESSION_H_

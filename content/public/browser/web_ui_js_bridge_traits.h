@@ -26,4 +26,4 @@ struct JsBridgeTraits;
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_BROWSER_WEB_UI_JS_BRIDGE_H_
+#endif  // CONTENT_PUBLIC_BROWSER_WEB_UI_JS_BRIDGE_TRAITS_H_
