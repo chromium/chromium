@@ -118,6 +118,7 @@ TabStripControlButton::TabStripControlButton(
   views::FocusRing::Get(this)->SetColorId(kColorNewTabButtonFocusRing);
 
   if (text.size() > 0) {
+    SetEnabledTextColorIds(foreground_frame_active_color_id_);
     // Required for text to be visible on hover
     label()->SetPaintToLayer();
     label()->SetSkipSubpixelRenderingOpacityCheck(true);
