@@ -8,6 +8,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//mojo/public/tools/fuzzers/mojolpm.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
+import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 # Empty group for package discovery.
@@ -318,6 +319,22 @@ fuzzer_test("first_party_set_parser_json_fuzzer") {
     "//testing/libfuzzer/proto:json_proto_converter",
     "//third_party/libprotobuf-mutator",
   ]
+}
+
+if (use_fuzzing_engine_with_lpm) {
+  fuzzer_test("first_party_set_parser_value_fuzzer") {
+    sources = [ "../../browser/first_party_sets/test/first_party_set_parser_value_fuzzer.cc" ]
+    deps = [
+      ":first_party_set_parser_fuzzer_support",
+      ":related_website_sets_proto",
+      "//third_party/libprotobuf-mutator",
+    ]
+  }
+
+  fuzzable_proto_library("related_website_sets_proto") {
+    sources =
+        [ "../../browser/first_party_sets/test/related_website_sets.proto" ]
+  }
 }
 
 mojolpm_fuzzer_test("media_stream_dispatcher_host_mojolpm_fuzzer") {
