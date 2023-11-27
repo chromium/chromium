@@ -38,7 +38,8 @@ WGPUComputePipelineDescriptor AsDawnType(
   dawn_desc.compute.constantCount = computeStage->constantCount;
   dawn_desc.compute.constants = computeStage->constants.get();
   dawn_desc.compute.module = programmable_stage_desc->module()->GetHandle();
-  dawn_desc.compute.entryPoint = computeStage->entry_point.c_str();
+  dawn_desc.compute.entryPoint =
+      computeStage->entry_point ? computeStage->entry_point->c_str() : nullptr;
 
   return dawn_desc;
 }
