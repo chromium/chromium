@@ -42,11 +42,11 @@ struct BlinkGCPluginOptions {
 
   // Enables checking for `mojo::Associated{Remote,Receiver}` in the forbidden
   // fields checker.
-  bool forbid_associated_remote_receiver = false;
+  bool forbid_associated_remote_receiver = true;
 
   // Enables checks for GCed objects, Members, and pointers or references to
   // GCed objects and in stl and WTF collections.
-  bool enable_off_heap_collections_of_gced_check = false;
+  bool enable_off_heap_collections_of_gced_check = true;
   bool enable_off_heap_collections_of_gced_check_pdfium = false;
 
   std::set<std::string> ignored_classes;

@@ -123,6 +123,22 @@ config("config") {
       "blink-gc-plugin",
     ]
 
+    # Enable GC plugin forbidding mojo::Associated{Remote,Receiver}:
+    cflags += [
+      "-Xclang",
+      "-plugin-arg-blink-gc-plugin",
+      "-Xclang",
+      "forbid-associated-remote-receiver",
+    ]
+
+    # Enable GC plugin forbidding off-heap collections of GCed:
+    cflags += [
+      "-Xclang",
+      "-plugin-arg-blink-gc-plugin",
+      "-Xclang",
+      "enable-off-heap-collections-of-gced-check",
+    ]
+
     # Add arguments for enabled GC plugin options:
     if (blink_gc_plugin_option_do_dump_graph) {
       cflags += [
@@ -132,14 +148,6 @@ config("config") {
         "dump-graph",
       ]
     }
-
-    # Enable GC plugin forbidding mojo::Associated{Remote,Receiver}:
-    cflags += [
-      "-Xclang",
-      "-plugin-arg-blink-gc-plugin",
-      "-Xclang",
-      "forbid-associated-remote-receiver",
-    ]
   }
 }
 

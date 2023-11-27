@@ -222,7 +222,8 @@ class LRUCacheBase {
       const LruCacheType&);
 
   ValueList ordering_;
-  KeyIndex index_;
+  // TODO(crbug.com/1472363): Remove annotation once crbug.com/1472363 is fixed.
+  __attribute__((annotate("blink_gc_plugin_ignore"))) KeyIndex index_;
 
   size_type max_size_;
 };
