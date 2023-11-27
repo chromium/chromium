@@ -25,8 +25,11 @@ const char kLauncherSearchAppId[] = "ceoplblcdaffnnflkkcagjpomjgedmdl";
 const char kIgnoredAppIdPrefix[] = "org.chromium.guest_os.borealis.xid.";
 const char kBorealisDlcName[] = "borealis-dlc";
 const char kAllowedScheme[] = "steam";
-const re2::LazyRE2 kURLAllowlistRegex[] = {{"//store/[0-9]{1,32}"},
-                                           {"//run/[0-9]{1,32}"}};
+const re2::LazyRE2 kURLAllowlistRegex[] = {
+    {"//store/[0-9]{1,32}"},
+    {"//run/[0-9]{1,32}"},
+    {"//subscriptioninstall/[0-9]{1,32}"},
+    {"//launch/[0-9]{1,32}/Dialog"}};
 const char kCompatToolVersionGameMismatch[] = "UNKNOWN (GameID mismatch)";
 const char kDeviceInformationKey[] = "entry.1613887985";
 const re2::LazyRE2 kSpuriousGameBlocklist[] = {
