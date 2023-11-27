@@ -351,5 +351,12 @@ TEST(ColorSpace, ExpectationsMatchSRGB) {
   }
 }
 
+TEST(ColorSpaceUtil, SkcmsMatrixConvert) {
+  skcms_Matrix3x3 in_m33 = SkNamedGamut::kSRGB;
+  SkM44 m44 = SkM44FromSkcmsMatrix3x3(in_m33);
+  skcms_Matrix3x3 out_m33 = SkcmsMatrix3x3FromSkM44(m44);
+  EXPECT_EQ(memcmp(&in_m33, &out_m33, sizeof(in_m33)), 0);
+}
+
 }  // namespace
 }  // namespace gfx

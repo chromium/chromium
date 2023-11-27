@@ -12,31 +12,42 @@
 
 namespace gfx {
 
-// Return the parameterized function in |fn|, evaluated at |x|. Note that this
-// will clamp output values to the range [0, 1].
-float COLOR_SPACE_EXPORT SkTransferFnEval(const skcms_TransferFunction& fn,
-                                          float x);
-
 // Return the parameterized function in |fn|, evaluated at |x|. This will not
 // clamp output values.
+// TODO(crbug.com/1504131): Replace this function with
+// skcms_TransferFunction_eval.
 float COLOR_SPACE_EXPORT
 SkTransferFnEvalUnclamped(const skcms_TransferFunction& fn, float x);
 
+// TODO(crbug.com/1504131): Replace this function with
+// skcms_TransferFunction_invert.
 skcms_TransferFunction COLOR_SPACE_EXPORT
 SkTransferFnInverse(const skcms_TransferFunction& fn);
 
-skcms_TransferFunction COLOR_SPACE_EXPORT
-SkTransferFnScaled(const skcms_TransferFunction& fn, float scale);
-
+// Return true if `a` and `b` approximately cancel out.
+// TODO(crbug.com/1504131): This function determines the result by testing `b`
+// after `a` on several points on the unit interval, which is not efficient or
+// accurate.
 bool COLOR_SPACE_EXPORT
 SkTransferFnsApproximatelyCancel(const skcms_TransferFunction& a,
                                  const skcms_TransferFunction& b);
 
+// Returns true if `fn` is approximately the identity.
+// TODO(crbug.com/1504131): This function determines the result by testing `fn`
+// on several points in the unit interval, which is not efficient or accurate.
 bool COLOR_SPACE_EXPORT
 SkTransferFnIsApproximatelyIdentity(const skcms_TransferFunction& fn);
 
-bool COLOR_SPACE_EXPORT SkM44IsApproximatelyIdentity(const SkM44& m);
+// Returns true if `m` is within `epsilon` of the identity in the L-infinity
+// sense.
+bool COLOR_SPACE_EXPORT SkM44IsApproximatelyIdentity(const SkM44& m,
+                                                     float epsilon = 1.f /
+                                                                     256.f);
 
+// Convert between skcms and Skia matrices. These assume that the 4th row and
+// column of the SkM44 are [0,0,0,1].
+skcms_Matrix3x3 COLOR_SPACE_EXPORT SkcmsMatrix3x3FromSkM44(const SkM44& in);
+SkM44 COLOR_SPACE_EXPORT SkM44FromSkcmsMatrix3x3(const skcms_Matrix3x3& in);
 SkM44 COLOR_SPACE_EXPORT SkM44FromRowMajor3x3(const float* scale);
 
 }  // namespace gfx
