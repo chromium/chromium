@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
 <script>
@@ -31,6 +32,6 @@ function readyStateChanged(evt)
 }
 </script>
 </head>
-<body onload="window.parent.subframeLoaded()" onunload="loadXML()">
+<body onload="window.parent.subframeLoaded()" onpagehide="loadXML()">
 </body>
 </html>
