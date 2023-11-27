@@ -214,15 +214,6 @@ chromium-metrics-reviews@google.com.
   <summary>Size of the saved copy of an offline page.</summary>
 </histogram>
 
-<histogram name="OfflinePages.PublishArchive.PublishSource"
-    enum="OfflinePagesPublishSource" expires_after="M85">
-  <owner>petewil@chromium.org</owner>
-  <summary>
-    When publishing an offline page, a page might not be found. This returns the
-    publishing path that was used (ex: by Guid or by OfflineId).
-  </summary>
-</histogram>
-
 <histogram name="OfflinePages.SavePage.PercentLoaded" units="%"
     expires_after="M77">
   <owner>twellington@chromium.org</owner>

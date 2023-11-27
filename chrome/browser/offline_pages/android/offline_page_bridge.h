@@ -31,9 +31,6 @@ class WebContents;
 namespace offline_pages {
 namespace android {
 
-// This enum must be kept in sync with enums.xml - OfflinePagesPublishSource
-enum PublishSource { kPublishByOfflineId = 0, kPublishByGuid = 1, kMaxValue };
-
 /**
  * Bridge between C++ and Java for exposing native implementation of offline
  * pages model in managed code.
@@ -246,12 +243,10 @@ class OfflinePageBridge : public OfflinePageModel::Observer,
 
   void PublishInternalArchive(
       const base::android::ScopedJavaGlobalRef<jobject>& j_callback_obj,
-      const PublishSource publish_source,
       const OfflinePageItem* offline_pages);
 
   void PublishInternalArchiveOfFirstItem(
       const base::android::ScopedJavaGlobalRef<jobject>& j_callback_obj,
-      const PublishSource publish_source,
       const std::vector<OfflinePageItem>& offline_pages);
 
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;

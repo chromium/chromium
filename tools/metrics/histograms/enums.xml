@@ -46591,15 +46591,6 @@ Called by update_net_error_codes.py.-->
   </int>
 </enum>
 
-<enum name="OfflinePagesPublishSource">
-  <int value="0" label="Published By Offline ID">
-    Reported when the publishing path finds the page by Offline Id
-  </int>
-  <int value="1" label="Published By Guid">
-    Reported when the publishing path finds the page by Guid.
-  </int>
-</enum>
-
 <enum name="OfflinePagesStoreEvent">
   <int value="0" label="Store opened first time">
     Store was opened for this first time during this session.
