@@ -276,7 +276,7 @@ BASE_FEATURE(kOmniboxTriggerForPrerender2,
 // Enables bookmark trigger prerendering.
 BASE_FEATURE(kBookmarkTriggerForPrerender2,
              "BookmarkTriggerForPrerender2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables New Tab Page trigger prerendering.
 BASE_FEATURE(kNewTabPageTriggerForPrerender2,

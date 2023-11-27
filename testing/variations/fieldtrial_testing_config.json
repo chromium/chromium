@@ -13213,36 +13213,6 @@
             ]
         }
     ],
-    "Prerender2BookmarkBarTrigger": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows",
-                "chromeos",
-                "chromeos_lacros"
-            ],
-            "experiments": [
-                {
-                    "name": "BothMouseDownAndMouseHover_20231017",
-                    "params": {
-                        "prerender_bookmarkbar_on_mouse_hover_trigger": "true",
-                        "prerender_bookmarkbar_on_mouse_pressed_trigger": "true",
-                        "prerender_start_delay_on_mouse_hover_ms": "300"
-                    },
-                    "enable_features": [
-                        "BookmarkTriggerForPrerender2"
-                    ]
-                },
-                {
-                    "name": "Control",
-                    "disable_features": [
-                        "BookmarkTriggerForPrerender2"
-                    ]
-                }
-            ]
-        }
-    ],
     "Prerender2DesktopOmniboxTriggers": [
         {
             "platforms": [
