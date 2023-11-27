@@ -108,7 +108,7 @@ class ResultProcessor():
         date = datetime.date.fromisoformat(r['date'])
       if 'is_slow' in r:
         is_slow = r['is_slow']
-      if 'status' in r:
+      if 'typ_expectations' in r:
         typ_expectations = r['typ_expectations']
       object_results.append(
           data_types.Result(suite, test_name, typ_tags, build_id, status, date,
