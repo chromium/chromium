@@ -554,7 +554,7 @@ FrameOrWorkerScheduler* LocalDOMWindow::GetScheduler() {
   if (GetFrame())
     return GetFrame()->GetFrameScheduler();
   if (!detached_scheduler_)
-    detached_scheduler_ = scheduler::CreateDummyFrameScheduler();
+    detached_scheduler_ = scheduler::CreateDummyFrameScheduler(GetIsolate());
   return detached_scheduler_.get();
 }
 

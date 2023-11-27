@@ -28,15 +28,6 @@ class VirtualTimeController;
 namespace scheduler {
 namespace {
 
-AgentGroupScheduler* CreateDummyAgentGroupSchedulerWithIsolate(
-    v8::Isolate* isolate);
-
-std::unique_ptr<FrameScheduler> CreateDummyFrameSchedulerWithIsolate(
-    v8::Isolate* isolate);
-
-std::unique_ptr<PageScheduler> CreateDummyPageSchedulerWithIsolate(
-    v8::Isolate* isolate);
-
 class DummyWidgetScheduler final : public WidgetScheduler {
  public:
   DummyWidgetScheduler() = default;
@@ -73,7 +64,7 @@ class DummyWidgetScheduler final : public WidgetScheduler {
 class DummyFrameScheduler : public FrameScheduler {
  public:
   explicit DummyFrameScheduler(v8::Isolate* isolate)
-      : page_scheduler_(CreateDummyPageSchedulerWithIsolate(isolate)) {}
+      : page_scheduler_(CreateDummyPageScheduler(isolate)) {}
   ~DummyFrameScheduler() override = default;
 
   DummyFrameScheduler(const DummyFrameScheduler&) = delete;
@@ -168,8 +159,7 @@ class DummyFrameScheduler : public FrameScheduler {
 class DummyPageScheduler : public PageScheduler {
  public:
   explicit DummyPageScheduler(v8::Isolate* isolate)
-      : agent_group_scheduler_(
-            CreateDummyAgentGroupSchedulerWithIsolate(isolate)) {}
+      : agent_group_scheduler_(CreateDummyAgentGroupScheduler(isolate)) {}
   ~DummyPageScheduler() override = default;
 
   DummyPageScheduler(const DummyPageScheduler&) = delete;
@@ -179,8 +169,7 @@ class DummyPageScheduler : public PageScheduler {
       FrameScheduler::Delegate* delegate,
       bool is_in_embedded_frame_tree,
       FrameScheduler::FrameType) override {
-    return CreateDummyFrameSchedulerWithIsolate(
-        agent_group_scheduler_->Isolate());
+    return CreateDummyFrameScheduler(agent_group_scheduler_->Isolate());
   }
 
   void OnTitleOrFaviconUpdated() override {}
@@ -326,7 +315,7 @@ class DummyWebMainThreadScheduler : public WebThreadScheduler,
   }
 
   AgentGroupScheduler* CreateAgentGroupScheduler() override {
-    return CreateDummyAgentGroupSchedulerWithIsolate(isolate_);
+    return CreateDummyAgentGroupScheduler(isolate_);
   }
 
   std::unique_ptr<WebAgentGroupScheduler> CreateWebAgentGroupScheduler()
@@ -378,7 +367,7 @@ class DummyAgentGroupScheduler : public AgentGroupScheduler {
 
   std::unique_ptr<PageScheduler> CreatePageScheduler(
       PageScheduler::Delegate*) override {
-    return CreateDummyPageSchedulerWithIsolate(Isolate());
+    return CreateDummyPageScheduler(Isolate());
   }
   scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner() override {
     DCHECK(WTF::IsMainThread());
@@ -404,33 +393,22 @@ class DummyAgentGroupScheduler : public AgentGroupScheduler {
   std::unique_ptr<DummyWebMainThreadScheduler> main_thread_scheduler_;
 };
 
-AgentGroupScheduler* CreateDummyAgentGroupSchedulerWithIsolate(
-    v8::Isolate* isolate) {
-  return MakeGarbageCollected<DummyAgentGroupScheduler>(isolate);
-}
+}  // namespace
 
-std::unique_ptr<FrameScheduler> CreateDummyFrameSchedulerWithIsolate(
+std::unique_ptr<FrameScheduler> CreateDummyFrameScheduler(
     v8::Isolate* isolate) {
+  DCHECK(isolate);
   return std::make_unique<DummyFrameScheduler>(isolate);
 }
 
-std::unique_ptr<PageScheduler> CreateDummyPageSchedulerWithIsolate(
-    v8::Isolate* isolate) {
+std::unique_ptr<PageScheduler> CreateDummyPageScheduler(v8::Isolate* isolate) {
+  // TODO(crbug.com/1315595): Assert isolate is non-null.
   return std::make_unique<DummyPageScheduler>(isolate);
 }
 
-}  // namespace
-
-std::unique_ptr<FrameScheduler> CreateDummyFrameScheduler() {
-  return CreateDummyFrameSchedulerWithIsolate(/*isolate=*/nullptr);
-}
-
-std::unique_ptr<PageScheduler> CreateDummyPageScheduler() {
-  return CreateDummyPageSchedulerWithIsolate(/*isolate=*/nullptr);
-}
-
-AgentGroupScheduler* CreateDummyAgentGroupScheduler() {
-  return CreateDummyAgentGroupSchedulerWithIsolate(/*isolate=*/nullptr);
+AgentGroupScheduler* CreateDummyAgentGroupScheduler(v8::Isolate* isolate) {
+  // TODO(crbug.com/1315595): Assert isolate is non-null.
+  return MakeGarbageCollected<DummyAgentGroupScheduler>(isolate);
 }
 
 std::unique_ptr<WebThreadScheduler> CreateDummyWebMainThreadScheduler() {

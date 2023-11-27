@@ -22,7 +22,11 @@ namespace blink {
 class NullExecutionContext : public GarbageCollected<NullExecutionContext>,
                              public ExecutionContext {
  public:
+  // Deprecated: Use version that takes an Isolate.
+  // TODO(crbug.com/1315595): Remove this constructor.
   NullExecutionContext();
+
+  explicit NullExecutionContext(v8::Isolate* isolate);
   explicit NullExecutionContext(std::unique_ptr<FrameScheduler> scheduler);
   ~NullExecutionContext() override;
 

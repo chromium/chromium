@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "v8/include/v8-forward.h"
 
 namespace blink {
 class FrameScheduler;
@@ -32,9 +33,12 @@ class WebThreadScheduler;
 // - Detached frames (should be fixed with frame:document lifetime refactoring).
 // - Tests
 
-PLATFORM_EXPORT std::unique_ptr<FrameScheduler> CreateDummyFrameScheduler();
-PLATFORM_EXPORT std::unique_ptr<PageScheduler> CreateDummyPageScheduler();
-PLATFORM_EXPORT AgentGroupScheduler* CreateDummyAgentGroupScheduler();
+PLATFORM_EXPORT std::unique_ptr<FrameScheduler> CreateDummyFrameScheduler(
+    v8::Isolate* isolate);
+PLATFORM_EXPORT std::unique_ptr<PageScheduler> CreateDummyPageScheduler(
+    v8::Isolate* isolate = nullptr);
+PLATFORM_EXPORT AgentGroupScheduler* CreateDummyAgentGroupScheduler(
+    v8::Isolate* isolate = nullptr);
 PLATFORM_EXPORT std::unique_ptr<WebThreadScheduler>
 CreateDummyWebMainThreadScheduler();
 
