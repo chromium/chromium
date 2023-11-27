@@ -36,6 +36,8 @@ class FloatingAccessibilityBubbleView : public TrayBubbleView {
   // TrayBubbleView:
   bool IsAnchoredToStatusArea() const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
+
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,

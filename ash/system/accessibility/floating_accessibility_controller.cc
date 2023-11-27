@@ -29,6 +29,28 @@ namespace {
 constexpr int kFloatingMenuHeight = 64;
 constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(150);
 
+// Implements scoped (RAII) activation for a FloatingAccessibilityBubbleView
+// object.
+class ScopedBubbleViewActivator {
+ public:
+  explicit ScopedBubbleViewActivator(
+      ash::FloatingAccessibilityBubbleView* bubble_view)
+      : bubble_view_(bubble_view) {
+    DCHECK(bubble_view_);
+    bubble_view_->SetCanActivate(true);
+  }
+
+  ScopedBubbleViewActivator(const ScopedBubbleViewActivator&) = delete;
+  ScopedBubbleViewActivator& operator=(const ScopedBubbleViewActivator&) =
+      delete;
+
+  ~ScopedBubbleViewActivator() { bubble_view_->SetCanActivate(false); }
+
+ private:
+  raw_ptr<ash::FloatingAccessibilityBubbleView, ExperimentalAsh> bubble_view_ =
+      nullptr;
+};
+
 }  // namespace
 
 FloatingAccessibilityController::FloatingAccessibilityController(
@@ -83,7 +105,9 @@ void FloatingAccessibilityController::Show(FloatingMenuPosition position) {
   bubble_view_->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 
   bubble_widget_ = views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
-  bubble_view_->SetCanActivate(true);
+  // Keep bubble view deactivated not to steal focus from input by clicks on
+  // dictation or on-screen keyboard buttons.
+  bubble_view_->SetCanActivate(false);
   TrayBackgroundView::InitializeBubbleAnimations(bubble_widget_);
   bubble_view_->InitializeAndShowBubble();
 
@@ -145,6 +169,10 @@ void FloatingAccessibilityController::SetMenuPosition(
 }
 
 void FloatingAccessibilityController::FocusOnMenu() {
+  // Temporarily activate floating accessibility bubble view when processing
+  // a keyboard shortcut to allow getting focus.
+  ScopedBubbleViewActivator activator(bubble_view_);
+
   bubble_view_->GetFocusManager()->ClearFocus();
   bubble_view_->GetFocusManager()->AdvanceFocus(false /* reverse */);
 }
