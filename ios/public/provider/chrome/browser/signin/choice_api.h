@@ -23,13 +23,6 @@ ChromeCoordinator* CreateChoiceCoordinatorWithViewController(
     UIViewController* view_controller,
     Browser* browser);
 
-// Creates a new ChoiceCoordinator instance for the FRE.
-// TODO(b/280753569): Rename this method to CreateCoordinatorForFRE(...).
-ChromeCoordinator* CreateChoiceCoordinatorForFREWithNavigationController(
-    UINavigationController* navigation_controller,
-    Browser* browser,
-    id<FirstRunScreenDelegate> first_run_delegate);
-
 // Creates a new ChoiceDisplayHandler instance.
 id<StandardPromoDisplayHandler> CreateChoiceDisplayHandler();
 

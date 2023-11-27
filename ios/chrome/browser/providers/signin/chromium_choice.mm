@@ -18,13 +18,6 @@ ChromeCoordinator* CreateChoiceCoordinatorWithViewController(
   NOTREACHED_NORETURN();
 }
 
-ChromeCoordinator* CreateChoiceCoordinatorForFREWithNavigationController(
-    UINavigationController* navigation_controller,
-    Browser* browser,
-    id<FirstRunScreenDelegate> first_run_delegate) {
-  NOTREACHED_NORETURN();
-}
-
 id<StandardPromoDisplayHandler> CreateChoiceDisplayHandler() {
   NOTREACHED_NORETURN();
 }
