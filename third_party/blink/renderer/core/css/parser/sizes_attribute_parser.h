@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/media_values.h"
 #include "third_party/blink/renderer/core/css/parser/media_query_parser.h"
+#include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -19,8 +20,12 @@ class CORE_EXPORT SizesAttributeParser {
   STACK_ALLOCATED();
 
  public:
-  SizesAttributeParser(MediaValues*, const String&, const ExecutionContext*);
+  SizesAttributeParser(MediaValues*,
+                       const String&,
+                       const ExecutionContext*,
+                       const HTMLImageElement* = nullptr);
 
+  bool IsAuto();
   float Size();
 
  private:
@@ -35,6 +40,8 @@ class CORE_EXPORT SizesAttributeParser {
   float size_{};
   bool size_was_set_{};
   bool is_valid_{};
+  bool is_auto_{};
+  const HTMLImageElement* img_{};
 };
 
 }  // namespace blink

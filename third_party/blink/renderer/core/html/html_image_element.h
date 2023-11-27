@@ -79,6 +79,9 @@ class CORE_EXPORT HTMLImageElement final
   unsigned LayoutBoxWidth() const;
   unsigned LayoutBoxHeight() const;
 
+  bool IsBeingRendered() const;
+  bool AllowAutoSizes() const;
+
   const String& currentSrc() const;
 
   bool IsServerMap() const;

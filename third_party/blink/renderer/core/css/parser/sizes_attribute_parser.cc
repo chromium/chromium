@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/css/media_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/parser/sizes_math_function_parser.h"
+#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/media_type_names.h"
 
 namespace blink {
@@ -14,8 +15,11 @@ namespace blink {
 SizesAttributeParser::SizesAttributeParser(
     MediaValues* media_values,
     const String& attribute,
-    const ExecutionContext* execution_context)
-    : media_values_(media_values), execution_context_(execution_context) {
+    const ExecutionContext* execution_context,
+    const HTMLImageElement* img)
+    : media_values_(media_values),
+      execution_context_(execution_context),
+      img_(img) {
   DCHECK(media_values_);
   DCHECK(media_values_->Width().has_value());
   DCHECK(media_values_->Height().has_value());
@@ -32,6 +36,16 @@ bool SizesAttributeParser::Parse(CSSParserTokenRange range,
   // Split on a comma token and parse the result tokens as (media-condition,
   // length) pairs
   while (!range.AtEnd()) {
+    if (RuntimeEnabledFeatures::AutoSizeLazyLoadedImagesEnabled() &&
+        css_parsing_utils::AtIdent(range.Peek(), "auto")) {
+      // Spec: "For better backwards-compatibility with legacy user
+      // agents that don't support the auto keyword, fallback sizes
+      // can be specified if desired."
+      // For example: sizes="auto, (max-width: 30em) 100vw, ..."
+      is_auto_ = true;
+      return true;
+    }
+
     const CSSParserToken* media_condition_start = &range.Peek();
     // The length is the last component value before the comma which isn't
     // whitespace or a comment
@@ -115,16 +129,35 @@ float SizesAttributeParser::Size() {
 }
 
 float SizesAttributeParser::EffectiveSize() {
+  // Spec:
+  // https://html.spec.whatwg.org/#parsing-a-sizes-attribute
+
+  // 3.6 If size is not auto, then return size.
   if (size_was_set_) {
     return size_;
   }
 
+  // 3.3 If size is auto, and img is not null, and img is being rendered, and
+  // img allows auto-sizes, then set size to the concrete object size width of
+  // img, in CSS pixels.
+  if (is_auto_ && img_ && img_->IsBeingRendered() && img_->AllowAutoSizes()) {
+    auto layout_box_width = img_->LayoutBoxWidth();
+    if (layout_box_width != 0) {
+      return layout_box_width;
+    }
+  }
+
+  // 4. Return 100vw.
   return EffectiveSizeDefaultValue();
 }
 
 float SizesAttributeParser::EffectiveSizeDefaultValue() {
   // Returning the equivalent of "100vw"
   return ClampTo<float>(*media_values_->Width());
+}
+
+bool SizesAttributeParser::IsAuto() {
+  return is_auto_;
 }
 
 }  // namespace blink

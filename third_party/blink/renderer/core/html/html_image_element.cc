@@ -684,6 +684,27 @@ unsigned HTMLImageElement::LayoutBoxHeight() const {
              : 0;
 }
 
+bool HTMLImageElement::IsBeingRendered() const {
+  // Spec:
+  // https://html.spec.whatwg.org/#being-rendered
+  // An element is being rendered if it has any associated CSS layout boxes,
+  // SVG layout boxes, or some equivalent in other styling languages.
+  return GetLayoutBox() != nullptr;
+}
+
+bool HTMLImageElement::AllowAutoSizes() const {
+  // Spec:
+  // https://html.spec.whatwg.org/#allows-auto-sizes
+  // An img element allows auto-sizes if:
+  // its loading attribute is in the Lazy state, and
+  // its sizes attribute's value is "auto" (ASCII case-insensitive),
+  // or starts with "auto," (ASCII case-insensitive).
+  //
+  // Since this is only used by SizesAttributeParser when sizes starts with
+  // "auto" is already, it's unnecessary to check it again here.
+  return HasLazyLoadingAttribute();
+}
+
 const String& HTMLImageElement::currentSrc() const {
   // http://www.whatwg.org/specs/web-apps/current-work/multipage/edits.html#dom-img-currentsrc
   // The currentSrc IDL attribute must return the img element's current
