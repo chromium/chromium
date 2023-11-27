@@ -30,10 +30,7 @@ class MockMerchantPromoCodeManager : public MerchantPromoCodeManager {
               (const std::vector<FormFieldData>& fields,
                bool is_autocomplete_enabled),
               (override));
-  MOCK_METHOD(void,
-              CancelPendingQueries,
-              (const MerchantPromoCodeManager::SuggestionsHandler*),
-              (override));
+  MOCK_METHOD(void, CancelPendingQueries, (), (override));
   MOCK_METHOD(void,
               OnRemoveCurrentSingleFieldSuggestion,
               (const std::u16string&, const std::u16string&, PopupItemId),

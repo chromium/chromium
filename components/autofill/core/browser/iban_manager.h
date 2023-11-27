@@ -46,7 +46,7 @@ class IbanManager : public SingleFieldFormFiller, public KeyedService {
       const SuggestionsContext& context) override;
   void OnWillSubmitFormWithFields(const std::vector<FormFieldData>& fields,
                                   bool is_autocomplete_enabled) override {}
-  void CancelPendingQueries(const SuggestionsHandler* handler) override {}
+  void CancelPendingQueries() override {}
   void OnRemoveCurrentSingleFieldSuggestion(
       const std::u16string& field_name,
       const std::u16string& value,

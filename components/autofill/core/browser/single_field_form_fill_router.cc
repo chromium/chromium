@@ -88,14 +88,16 @@ void SingleFieldFormFillRouter::OnWillSubmitFormWithFields(
     const std::vector<FormFieldData>& fields,
     bool is_autocomplete_enabled) {}
 
-void SingleFieldFormFillRouter::CancelPendingQueries(
-    const SingleFieldFormFiller::SuggestionsHandler* handler) {
-  if (autocomplete_history_manager_)
-    autocomplete_history_manager_->CancelPendingQueries(handler);
-  if (merchant_promo_code_manager_)
-    merchant_promo_code_manager_->CancelPendingQueries(handler);
-  if (iban_manager_)
-    iban_manager_->CancelPendingQueries(handler);
+void SingleFieldFormFillRouter::CancelPendingQueries() {
+  if (autocomplete_history_manager_) {
+    autocomplete_history_manager_->CancelPendingQueries();
+  }
+  if (merchant_promo_code_manager_) {
+    merchant_promo_code_manager_->CancelPendingQueries();
+  }
+  if (iban_manager_) {
+    iban_manager_->CancelPendingQueries();
+  }
 }
 
 void SingleFieldFormFillRouter::OnRemoveCurrentSingleFieldSuggestion(

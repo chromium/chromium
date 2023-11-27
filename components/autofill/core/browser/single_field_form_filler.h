@@ -70,9 +70,9 @@ class SingleFieldFormFiller {
       const std::vector<FormFieldData>& fields,
       bool is_autocomplete_enabled) = 0;
 
-  // Cancels the currently pending WebDataService queries associated with the
-  // given |handler|.
-  virtual void CancelPendingQueries(const SuggestionsHandler* handler) = 0;
+  // Cancels all pending queries. This is only applicable to
+  // `SingleFieldFormFillers`` that fetch suggestions asynchronously.
+  virtual void CancelPendingQueries() = 0;
 
   // If applicable, removes the currently-selected suggestion from the database.
   // `popup_item_id` is the PopupItemId of the suggestion to be removed.

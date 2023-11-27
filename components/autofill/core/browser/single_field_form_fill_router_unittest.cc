@@ -200,16 +200,11 @@ TEST_F(SingleFieldFormFillRouterTest,
 // CancelPendingQueries call.
 TEST_F(SingleFieldFormFillRouterTest,
        RouteToAllSingleFieldFormFillers_CancelPendingQueries) {
-  auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
-
   EXPECT_CALL(*autocomplete_history_manager_, CancelPendingQueries);
-
   EXPECT_CALL(*merchant_promo_code_manager_, CancelPendingQueries);
-
   EXPECT_CALL(*iban_manager_, CancelPendingQueries);
 
-  single_field_form_fill_router_->CancelPendingQueries(
-      suggestions_handler.get());
+  single_field_form_fill_router_->CancelPendingQueries();
 }
 
 // Ensure that the router routes to AutocompleteHistoryManager for this

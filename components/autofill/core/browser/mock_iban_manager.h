@@ -32,10 +32,7 @@ class MockIbanManager : public IbanManager {
               (const std::vector<FormFieldData>& fields,
                bool is_autocomplete_enabled),
               (override));
-  MOCK_METHOD(void,
-              CancelPendingQueries,
-              (const IbanManager::SuggestionsHandler*),
-              (override));
+  MOCK_METHOD(void, CancelPendingQueries, (), (override));
   MOCK_METHOD(void,
               OnRemoveCurrentSingleFieldSuggestion,
               (const std::u16string&, const std::u16string&, PopupItemId),

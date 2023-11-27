@@ -50,9 +50,6 @@ void MerchantPromoCodeManager::OnWillSubmitFormWithFields(
     const std::vector<FormFieldData>& fields,
     bool is_autocomplete_enabled) {}
 
-void MerchantPromoCodeManager::CancelPendingQueries(
-    const SuggestionsHandler* handler) {}
-
 void MerchantPromoCodeManager::OnRemoveCurrentSingleFieldSuggestion(
     const std::u16string& field_name,
     const std::u16string& value,

@@ -85,7 +85,7 @@ bool AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
   if (!field.should_autocomplete)
     return false;
 
-  CancelPendingQueries(handler.get());
+  CancelPendingQueries();
 
   if (!IsMeaningfulFieldName(field.name) || !client.IsAutocompleteEnabled() ||
       field.form_control_type == FormControlType::kTextArea ||
@@ -130,19 +130,13 @@ void AutocompleteHistoryManager::OnWillSubmitFormWithFields(
   }
 }
 
-void AutocompleteHistoryManager::CancelPendingQueries(
-    const SuggestionsHandler* handler) {
-  if (handler && profile_database_) {
+void AutocompleteHistoryManager::CancelPendingQueries() {
+  if (profile_database_) {
     for (const auto& [handle, query_handler] : pending_queries_) {
-      if (query_handler.handler_ && query_handler.handler_.get() == handler) {
-        profile_database_->CancelRequest(handle);
-      }
+      profile_database_->CancelRequest(handle);
     }
   }
-
-  // Cleaning up the map with the cancelled handler to remove cancelled
-  // requests.
-  CleanupEntries(handler);
+  pending_queries_.clear();
 }
 
 void AutocompleteHistoryManager::OnRemoveCurrentSingleFieldSuggestion(
@@ -276,14 +270,6 @@ void AutocompleteHistoryManager::CancelAllPendingQueries() {
   }
 
   pending_queries_.clear();
-}
-
-void AutocompleteHistoryManager::CleanupEntries(
-    const SuggestionsHandler* handler) {
-  std::erase_if(pending_queries_, [handler](const auto& pending_query) {
-    const QueryHandler& query_handler = pending_query.second;
-    return !query_handler.handler_ || query_handler.handler_.get() == handler;
-  });
 }
 
 void AutocompleteHistoryManager::OnAutofillValuesReturned(

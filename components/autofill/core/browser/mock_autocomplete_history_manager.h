@@ -34,10 +34,7 @@ class MockAutocompleteHistoryManager : public AutocompleteHistoryManager {
               OnWebDataServiceRequestDone,
               (WebDataServiceBase::Handle, std::unique_ptr<WDTypedResult>),
               (override));
-  MOCK_METHOD(void,
-              CancelPendingQueries,
-              (const AutocompleteHistoryManager::SuggestionsHandler*),
-              (override));
+  MOCK_METHOD(void, CancelPendingQueries, (), (override));
   MOCK_METHOD(void,
               OnRemoveCurrentSingleFieldSuggestion,
               (const std::u16string&, const std::u16string&, PopupItemId),

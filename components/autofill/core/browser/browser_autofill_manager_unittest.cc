@@ -6836,7 +6836,7 @@ TEST_F(
 
 TEST_F(BrowserAutofillManagerTest,
        DestructorCancelsSingleFieldFormFillQueries) {
-  EXPECT_CALL(*single_field_form_fill_router(), CancelPendingQueries).Times(1);
+  EXPECT_CALL(*single_field_form_fill_router(), CancelPendingQueries);
   browser_autofill_manager_.reset();
 }
 

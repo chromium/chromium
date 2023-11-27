@@ -51,7 +51,7 @@ class AutocompleteHistoryManager : public SingleFieldFormFiller,
       const SuggestionsContext& context) override;
   void OnWillSubmitFormWithFields(const std::vector<FormFieldData>& fields,
                                   bool is_autocomplete_enabled) override;
-  void CancelPendingQueries(const SuggestionsHandler* handler) override;
+  void CancelPendingQueries() override;
   void OnRemoveCurrentSingleFieldSuggestion(const std::u16string& field_name,
                                             const std::u16string& value,
                                             PopupItemId popup_item_id) override;
@@ -113,11 +113,6 @@ class AutocompleteHistoryManager : public SingleFieldFormFiller,
 
   // Cancels all outstanding queries and clears out the |pending_queries_| map.
   void CancelAllPendingQueries();
-
-  // Cleans-up the dictionary of |pending_queries_| by checking
-  // - If any handler instance was destroyed (known via WeakPtr)
-  // - If the given |handler| pointer is associated with a query.
-  void CleanupEntries(const SuggestionsHandler* handler);
 
   // Function handling WebDataService responses of type AUTOFILL_VALUE_RESULT.
   // |current_handle| is the DB query handle, and is used to retrieve the

@@ -913,135 +913,38 @@ TEST_F(AutocompleteHistoryManagerTest,
 }
 
 TEST_F(AutocompleteHistoryManagerTest,
-       SuggestionsReturned_InvokeHandler_TwoRequests_TwoHandlers) {
-  int mocked_db_query_id_first = 100;
-  int mocked_db_query_id_second = 101;
-
-  auto suggestions_handler_first = std::make_unique<MockSuggestionsHandler>();
-  auto suggestions_handler_second = std::make_unique<MockSuggestionsHandler>();
-
-  std::vector<AutocompleteEntry> expected_values_first = {
-      GetAutocompleteEntry(test_field_.name, u"SomePrefixOne")};
-
-  std::vector<AutocompleteEntry> expected_values_second = {
-      GetAutocompleteEntry(test_field_.name, u"SomePrefixTwo")};
-
-  std::unique_ptr<WDTypedResult> mocked_results_first =
-      GetMockedDbResults(expected_values_first);
-
-  std::unique_ptr<WDTypedResult> mocked_results_second =
-      GetMockedDbResults(expected_values_second);
-
-  EXPECT_CALL(*web_data_service_,
-              GetFormValuesForElementName(test_field_.name, test_field_.value,
-                                          _, autocomplete_manager_.get()))
-      .WillOnce(Return(mocked_db_query_id_first))
-      .WillOnce(Return(mocked_db_query_id_second));
-
-  // Simulate request for the first suggestions.
-  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
-      AutofillSuggestionTriggerSource::kFormControlElementClicked, test_field_,
-      autofill_client_, suggestions_handler_first->GetWeakPtr(),
-      SuggestionsContext()));
-
-  // Simulate request for the second suggestions.
-  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
-      AutofillSuggestionTriggerSource::kFormControlElementClicked, test_field_,
-      autofill_client_, suggestions_handler_second->GetWeakPtr(),
-      SuggestionsContext()));
-
-  // Setting up mock to verify that we get the second response first.
-  EXPECT_CALL(*suggestions_handler_second.get(),
-              OnSuggestionsReturned(
-                  test_field_.global_id(),
-                  AutofillSuggestionTriggerSource::kFormControlElementClicked,
-                  UnorderedElementsAre(Field(
-                      &Suggestion::main_text,
-                      Suggestion::Text(expected_values_second[0].key().value(),
-                                       Suggestion::Text::IsPrimary(true))))));
-
-  // Simulate response from DB, second request comes back before.
-  autocomplete_manager_->OnWebDataServiceRequestDone(
-      mocked_db_query_id_second, std::move(mocked_results_second));
-
-  // Setting up mock to verify that we get the first response second.
-  EXPECT_CALL(*suggestions_handler_first.get(),
-              OnSuggestionsReturned(
-                  test_field_.global_id(),
-                  AutofillSuggestionTriggerSource::kFormControlElementClicked,
-                  UnorderedElementsAre(Field(
-                      &Suggestion::main_text,
-                      Suggestion::Text(expected_values_first[0].key().value(),
-                                       Suggestion::Text::IsPrimary(true))))));
-
-  // Simulate response from DB, first request comes back after.
-  autocomplete_manager_->OnWebDataServiceRequestDone(
-      mocked_db_query_id_first, std::move(mocked_results_first));
-}
-
-TEST_F(AutocompleteHistoryManagerTest,
-       SuggestionsReturned_CancelOne_ReturnOne) {
-  // Initialize variables for the first handler, which is the one that will be
-  // cancelled.
-  auto suggestions_handler_one = std::make_unique<MockSuggestionsHandler>();
-  int mocked_db_query_id_one = 100;
+       SuggestionsReturned_CancelPendingQueries) {
+  auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
+  int mocked_db_query_id = 100;
   std::vector<AutocompleteEntry> expected_values_one = {
       GetAutocompleteEntry(test_field_.name, u"SomePrefixOne")};
   std::unique_ptr<WDTypedResult> mocked_results_one =
       GetMockedDbResults(expected_values_one);
 
-  // Initialize variables for the second handler, which will be fulfilled.
-  auto suggestions_handler_two = std::make_unique<MockSuggestionsHandler>();
-  int mocked_db_query_id_two = 101;
-  std::vector<AutocompleteEntry> expected_values_two = {
-      GetAutocompleteEntry(test_field_.name, u"SomePrefixTwo")};
-  std::unique_ptr<WDTypedResult> mocked_results_two =
-      GetMockedDbResults(expected_values_two);
-
-  // Simulate first handler request for autocomplete suggestions.
+  // Simulate a request for autocomplete suggestions.
   EXPECT_CALL(*web_data_service_,
               GetFormValuesForElementName(test_field_.name, test_field_.value,
                                           _, autocomplete_manager_.get()))
-      .WillOnce(Return(mocked_db_query_id_one))
-      .WillOnce(Return(mocked_db_query_id_two));
+      .WillOnce(Return(mocked_db_query_id));
 
   EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       AutofillSuggestionTriggerSource::kFormControlElementClicked, test_field_,
-      autofill_client_, suggestions_handler_one->GetWeakPtr(),
+      autofill_client_, suggestions_handler->GetWeakPtr(),
       SuggestionsContext()));
 
-  // Simulate second handler request for autocomplete suggestions.
-  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
-      AutofillSuggestionTriggerSource::kFormControlElementClicked, test_field_,
-      autofill_client_, suggestions_handler_two->GetWeakPtr(),
-      SuggestionsContext()));
+  // Simulate cancelling the request.
+  EXPECT_CALL(*web_data_service_, CancelRequest(mocked_db_query_id));
+  autocomplete_manager_->CancelPendingQueries();
 
-  // Simulate first handler cancelling its request.
-  EXPECT_CALL(*web_data_service_, CancelRequest(mocked_db_query_id_one))
-      .Times(1);
-  autocomplete_manager_->CancelPendingQueries(suggestions_handler_one.get());
-
-  // Simulate second handler receiving the suggestions.
-  EXPECT_CALL(*suggestions_handler_two.get(),
-              OnSuggestionsReturned(
-                  test_field_.global_id(),
-                  AutofillSuggestionTriggerSource::kFormControlElementClicked,
-                  UnorderedElementsAre(Field(
-                      &Suggestion::main_text,
-                      Suggestion::Text(expected_values_two[0].key().value(),
-                                       Suggestion::Text::IsPrimary(true))))));
-  autocomplete_manager_->OnWebDataServiceRequestDone(
-      mocked_db_query_id_two, std::move(mocked_results_two));
-
-  // Make sure first handler is not called when the DB responds.
+  // Make sure the handler is not called when the DB responds.
   EXPECT_CALL(
-      *suggestions_handler_one.get(),
+      *suggestions_handler.get(),
       OnSuggestionsReturned(
           test_field_.global_id(),
           AutofillSuggestionTriggerSource::kFormControlElementClicked, _))
       .Times(0);
   autocomplete_manager_->OnWebDataServiceRequestDone(
-      mocked_db_query_id_one, std::move(mocked_results_one));
+      mocked_db_query_id, std::move(mocked_results_one));
 }
 
 // Verify that no autocomplete suggestion is returned for a textarea.
@@ -1068,35 +971,22 @@ TEST_F(AutocompleteHistoryManagerTest, NoAutocompleteSuggestionsForTextarea) {
 }
 
 TEST_F(AutocompleteHistoryManagerTest, DestructorCancelsRequests) {
-  int mocked_db_query_id_first = 100;
-  int mocked_db_query_id_second = 101;
-
-  auto suggestions_handler_first = std::make_unique<MockSuggestionsHandler>();
-  auto suggestions_handler_second = std::make_unique<MockSuggestionsHandler>();
+  int mocked_db_query_id = 100;
+  auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
 
   EXPECT_CALL(*web_data_service_,
               GetFormValuesForElementName(test_field_.name, test_field_.value,
                                           _, autocomplete_manager_.get()))
-      .WillOnce(Return(mocked_db_query_id_first))
-      .WillOnce(Return(mocked_db_query_id_second));
+      .WillOnce(Return(mocked_db_query_id));
 
-  // Simulate request for the first suggestions.
+  // Simulate request for suggestions.
   EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       AutofillSuggestionTriggerSource::kFormControlElementClicked, test_field_,
-      autofill_client_, suggestions_handler_first->GetWeakPtr(),
+      autofill_client_, suggestions_handler->GetWeakPtr(),
       SuggestionsContext()));
 
-  // Simulate request for the second suggestions.
-  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
-      AutofillSuggestionTriggerSource::kFormControlElementClicked, test_field_,
-      autofill_client_, suggestions_handler_second->GetWeakPtr(),
-      SuggestionsContext()));
-
-  // Expect cancel calls for both requests.
-  EXPECT_CALL(*web_data_service_, CancelRequest(mocked_db_query_id_first))
-      .Times(1);
-  EXPECT_CALL(*web_data_service_, CancelRequest(mocked_db_query_id_second))
-      .Times(1);
+  // Expect a cancel call.
+  EXPECT_CALL(*web_data_service_, CancelRequest(mocked_db_query_id));
 
   autocomplete_manager_.reset();
 

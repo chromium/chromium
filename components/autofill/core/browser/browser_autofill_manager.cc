@@ -615,7 +615,7 @@ BrowserAutofillManager::~BrowserAutofillManager() {
     ProcessFieldLogEventsInForm(*form_structure);
   }
 
-  single_field_form_fill_router_->CancelPendingQueries(this);
+  single_field_form_fill_router_->CancelPendingQueries();
 
   address_form_event_logger_->OnDestroyed();
   credit_card_form_event_logger_->OnDestroyed();
@@ -1164,7 +1164,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
         break;
 
       case SuppressReason::kAblation:
-        single_field_form_fill_router_->CancelPendingQueries(this);
+        single_field_form_fill_router_->CancelPendingQueries();
         external_delegate_->OnSuggestionsReturned(field.global_id(),
                                                   suggestions, trigger_source);
         LOG_AF(log_manager())
@@ -1277,7 +1277,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
       }
     }
 
-    single_field_form_fill_router_->CancelPendingQueries(this);
+    single_field_form_fill_router_->CancelPendingQueries();
     if (touch_to_fill_delegate_ &&
         (touch_to_fill_delegate_->IsShowingTouchToFill() ||
          (form_element_was_clicked &&
@@ -1630,7 +1630,7 @@ void BrowserAutofillManager::OnHidePopupImpl() {
   if (!IsAutofillEnabled())
     return;
 
-  single_field_form_fill_router_->CancelPendingQueries(this);
+  single_field_form_fill_router_->CancelPendingQueries();
   client().HideAutofillPopup(PopupHidingReason::kRendererEvent);
   if (fast_checkout_delegate_) {
     fast_checkout_delegate_->HideFastCheckout(/*allow_further_runs=*/false);
