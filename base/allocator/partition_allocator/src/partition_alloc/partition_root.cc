@@ -1441,7 +1441,7 @@ void PartitionRoot::DumpStats(const char* partition_name,
   }
   PartitionBucketMemoryStats bucket_stats[internal::kNumBuckets];
   size_t num_direct_mapped_allocations = 0;
-  PartitionMemoryStats stats = {0};
+  PartitionMemoryStats stats = {};
 
   stats.syscall_count = syscall_count.load(std::memory_order_relaxed);
   stats.syscall_total_time_ns =

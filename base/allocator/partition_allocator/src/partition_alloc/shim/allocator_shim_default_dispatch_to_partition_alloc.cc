@@ -792,7 +792,7 @@ SHIM_ALWAYS_EXPORT struct mallinfo mallinfo(void) __THROW {
                                      &nonquarantinable_allocator_dumper);
   }
 
-  struct mallinfo info = {0};
+  struct mallinfo info = {};
   info.arena = 0;  // Memory *not* allocated with mmap().
 
   // Memory allocated with mmap(), aka virtual size.

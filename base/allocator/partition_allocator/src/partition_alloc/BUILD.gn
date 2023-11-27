@@ -81,7 +81,6 @@ config("dependants_extra_warnings") {
     # https://chromium-review.googlesource.com/c/chromium/src/+/5057762
     cflags -= [
       "-Wextra-semi-stmt",
-      "-Wmissing-field-initializers",
       "-Wunused-macros",
     ]
     cflags += [

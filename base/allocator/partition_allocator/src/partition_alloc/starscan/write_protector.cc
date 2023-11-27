@@ -42,7 +42,11 @@ void UserFaultFDThread(int uffd) {
 
   while (true) {
     // Pool on the uffd descriptor for page fault events.
-    pollfd pollfd{.fd = uffd, .events = POLLIN};
+    pollfd pollfd{
+        .fd = uffd,
+        .events = POLLIN,
+        .revents = 0,  // Unused output param of `pool` call.
+    };
     const int nready = PA_HANDLE_EINTR(poll(&pollfd, 1, -1));
     PA_CHECK(-1 != nready);
 
