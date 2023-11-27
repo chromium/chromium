@@ -195,8 +195,7 @@ void WebContentsFrameTracker::SetCapturedContentSize(
   TRACE_EVENT_INSTANT1(
       "gpu.capture", "WebContentsFrameTracker::SetCapturedContentSize",
       TRACE_EVENT_SCOPE_THREAD, "content_size", content_size.ToString());
-  if (base::FeatureList::IsEnabled(media::kWebContentsCaptureHiDpi) &&
-      is_high_dpi_enabled_) {
+  if (is_high_dpi_enabled_) {
     // Now that we have a new content size, reset some related values.
     content_size_ = content_size;
     max_capture_scale_override_ = kMaxCaptureScaleOverride;
@@ -263,7 +262,7 @@ gfx::Size WebContentsFrameTracker::CalculatePreferredSize(
             preferred_size, static_cast<float>(1 / scale_ratio));
       }
 
-      DVLOG(3) << __func__ << ": x_ratio=" << x_ratio << " y_ratio=" << y_ratio
+      DVLOG(1) << __func__ << ": x_ratio=" << x_ratio << " y_ratio=" << y_ratio
                << " scale_ratio=" << scale_ratio
                << " preferred_size=" << preferred_size.ToString();
     }
@@ -332,8 +331,7 @@ float WebContentsFrameTracker::CalculatePreferredScaleFactor(
       std::clamp(std::round(largest_factor * 4) / 4, kMinCaptureScaleOverride,
                  kMaxCaptureScaleOverride);
 
-  DVLOG(3) << __func__ << ":"
-           << " capture_size_=" << capture_size_.ToString()
+  DVLOG(1) << __func__ << ":" << " capture_size_=" << capture_size_.ToString()
            << ", letterbox_size=" << letterbox_size.ToString()
            << ", current_content_size=" << current_content_size.ToString()
            << ", unscaled_current_content_size="

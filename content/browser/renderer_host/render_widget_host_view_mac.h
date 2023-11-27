@@ -558,6 +558,12 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
 
   void UpdateWindowsNow();
 
+  // For HiDPI capture mode, adjust the device scale factor to render the
+  // contents at a higher pixel density when scale_override_for_capture_ > 1.0.
+  // The first boolean returns true if any screen info was changed.
+  // The second boolean returns true if the ScreenInfo was changed.
+  std::pair<bool, bool> MaybeUpdateScreenInfosForHiDPI();
+
   // Interface through which the NSView is to be manipulated. This points either
   // to |in_process_ns_view_bridge_| or to |remote_ns_view_|.
   raw_ptr<remote_cocoa::mojom::RenderWidgetHostNSView> ns_view_ = nullptr;
