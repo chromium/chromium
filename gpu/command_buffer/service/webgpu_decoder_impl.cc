@@ -1364,6 +1364,16 @@ void WebGPUDecoderImpl::RequestDeviceImpl(
     required_features.push_back(wgpu::FeatureName::DawnMultiPlanarFormats);
   }
 
+  // Require platform-specific SharedTextureMemory features for use by
+  // the relevant SharedImage backings. These features should always be
+  // supported when running on the corresponding backend.
+  if (adapter_obj.HasFeature(wgpu::FeatureName::SharedTextureMemoryIOSurface)) {
+    CHECK(adapter_obj.HasFeature(wgpu::FeatureName::SharedFenceMTLSharedEvent));
+    required_features.push_back(
+        wgpu::FeatureName::SharedTextureMemoryIOSurface);
+    required_features.push_back(wgpu::FeatureName::SharedFenceMTLSharedEvent);
+  }
+
 #if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
   // On Desktop GL via ANGLE, require GL texture sharing.
   if (use_webgpu_adapter_ == WebGPUAdapterName::kOpenGLES &&
