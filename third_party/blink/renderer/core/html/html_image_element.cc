@@ -885,12 +885,25 @@ static bool SourceSizeValue(const Element* element,
                             float& source_size) {
   String sizes = element->FastGetAttribute(html_names::kSizesAttr);
   bool exists = !sizes.IsNull();
-  if (exists)
+  if (exists) {
     UseCounter::Count(current_document, WebFeature::kSizes);
-  source_size =
-      SizesAttributeParser(MediaValuesDynamic::Create(current_document), sizes,
-                           current_document.GetExecutionContext())
-          .Size();
+  }
+
+  SizesAttributeParser parser(MediaValuesDynamic::Create(current_document),
+                              sizes, current_document.GetExecutionContext());
+
+  source_size = parser.Size();
+
+  if (parser.IsAuto()) {
+    if (auto* img = DynamicTo<HTMLImageElement>(element)) {
+      if (img->HasLazyLoadingAttribute()) {
+        UseCounter::Count(current_document, WebFeature::kAutoSizesLazy);
+      } else {
+        UseCounter::Count(current_document, WebFeature::kAutoSizesNonLazy);
+      }
+    }
+  }
+
   return exists;
 }
 
