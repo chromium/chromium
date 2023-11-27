@@ -741,7 +741,7 @@ TEST_F(PrivateAggregationBudgeterTest, BudgetValidityMetricsRecorded) {
           run_loop.Quit();
         }));
     histograms.ExpectUniqueSample(
-        "PrivacySandbox.PrivateAggregation.Budgeter.BudgetValidityStatus",
+        "PrivacySandbox.PrivateAggregation.Budgeter.BudgetValidityStatus2",
         test_case.expected_status, 1);
     run_loop.Run();
   }
