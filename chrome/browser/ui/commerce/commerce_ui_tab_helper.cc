@@ -120,6 +120,9 @@ CommerceUiTabHelper::CommerceUiTabHelper(
 
   if (shopping_service_) {
     scoped_observation_.Observe(shopping_service_);
+    shopping_service_->WaitForReady(
+        base::BindOnce(&CommerceUiTabHelper::UpdateUiForShoppingServiceReady,
+                       weak_ptr_factory_.GetWeakPtr()));
   } else {
     CHECK_IS_TEST();
   }
@@ -131,6 +134,23 @@ CommerceUiTabHelper::~CommerceUiTabHelper() = default;
 void CommerceUiTabHelper::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kShouldShowPriceTrackFUEBubble, true);
+}
+
+void CommerceUiTabHelper::UpdateUiForShoppingServiceReady(
+    ShoppingService* service) {
+  // This will happen in tests that don't pass CHECK_IS_TEST.
+  if (!service) {
+    return;
+  }
+
+  if (service->IsShoppingListEligible()) {
+    // Fetching the image may have been blocked by the eligibility check, retry.
+    MaybeDoProductImageFetch(product_info_for_page_);
+    UpdatePriceTrackingIconView();
+  }
+  if (service->IsPriceInsightsEligible()) {
+    UpdatePriceInsightsIconView();
+  }
 }
 
 void CommerceUiTabHelper::DidFinishNavigation(
@@ -351,12 +371,7 @@ void CommerceUiTabHelper::HandleProductInfoResponse(
 
     // TODO(1360850): Delay this fetch by possibly waiting until page load has
     //                finished.
-    image_fetcher_->FetchImage(
-        info.value().image_url,
-        base::BindOnce(&CommerceUiTabHelper::HandleImageFetcherResponse,
-                       weak_ptr_factory_.GetWeakPtr(), info.value().image_url),
-        image_fetcher::ImageFetcherParams(kTrafficAnnotation,
-                                          kImageFetcherUmaClient));
+    MaybeDoProductImageFetch(info);
   }
 
   if (shopping_service_->IsPriceInsightsEligible()) {
@@ -371,6 +386,23 @@ void CommerceUiTabHelper::HandleProductInfoResponse(
       got_insights_response_for_page_ = true;
     }
   }
+}
+
+void CommerceUiTabHelper::MaybeDoProductImageFetch(
+    const absl::optional<ProductInfo>& info) {
+  if (!shopping_service_->IsShoppingListEligible() || !CanTrackPrice(info) ||
+      info->image_url.is_empty() || !this->last_fetched_image_.IsEmpty()) {
+    return;
+  }
+
+  // TODO(1360850): Delay this fetch by possibly waiting until page load has
+  //                finished.
+  image_fetcher_->FetchImage(
+      info.value().image_url,
+      base::BindOnce(&CommerceUiTabHelper::HandleImageFetcherResponse,
+                     weak_ptr_factory_.GetWeakPtr(), info.value().image_url),
+      image_fetcher::ImageFetcherParams(kTrafficAnnotation,
+                                        kImageFetcherUmaClient));
 }
 
 void CommerceUiTabHelper::HandlePriceInsightsInfoResponse(

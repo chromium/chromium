@@ -148,8 +148,12 @@ class CommerceUiTabHelper
   friend class content::WebContentsUserData<CommerceUiTabHelper>;
   friend class CommerceUiTabHelperTest;
 
+  void UpdateUiForShoppingServiceReady(ShoppingService* service);
+
   void HandleProductInfoResponse(const GURL& url,
                                  const absl::optional<const ProductInfo>& info);
+
+  void MaybeDoProductImageFetch(const absl::optional<ProductInfo>& info);
 
   void HandlePriceInsightsInfoResponse(
       const GURL& url,

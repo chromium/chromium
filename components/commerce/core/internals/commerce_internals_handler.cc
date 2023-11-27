@@ -4,6 +4,7 @@
 
 #include "components/commerce/core/internals/commerce_internals_handler.h"
 
+#include "base/check_is_test.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/shopping_service.h"
@@ -18,8 +19,22 @@ CommerceInternalsHandler::CommerceInternalsHandler(
     : page_(std::move(page)),
       receiver_(this, std::move(receiver)),
       shopping_service_(shopping_service) {
-  page_->OnShoppingListEligibilityChanged(
-      shopping_service_ ? shopping_service_->IsShoppingListEligible() : false);
+  shopping_service_->WaitForReady(base::BindOnce(
+      [](base::WeakPtr<CommerceInternalsHandler> handler,
+         ShoppingService* service) {
+        if (handler.WasInvalidated()) {
+          return;
+        }
+
+        // This will happen in tests that don't pass CHECK_IS_TEST.
+        if (!service) {
+          return;
+        }
+
+        handler->page_->OnShoppingListEligibilityChanged(
+            service->IsShoppingListEligible());
+      },
+      weak_ptr_factory_.GetWeakPtr()));
 }
 
 CommerceInternalsHandler::~CommerceInternalsHandler() = default;
