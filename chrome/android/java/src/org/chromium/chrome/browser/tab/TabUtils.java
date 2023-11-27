@@ -26,11 +26,11 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.automotive.AutomotiveUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
-import org.chromium.components.browser_ui.util.AutomotiveUtils;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.WebContents;
@@ -256,16 +256,12 @@ public class TabUtils {
                             : Math.round(
                                     (float) browserControlsStateProvider.getTopControlsHeight()
                                             / context.getResources().getDisplayMetrics().density);
-            int horizontalAutomotiveToolbarHeightDp =
-                    AutomotiveUtils.getHorizontalAutomotiveToolbarHeightDp(context);
-            int verticalAutomotiveToolbarWidthDp =
-                    AutomotiveUtils.getVerticalAutomotiveToolbarWidthDp(context);
+            int automotiveToolbarHeightDp = AutomotiveUtils.getAutomotiveToolbarHeightDp(context);
             // This should match the aspect ratio of a Tab's content area.
-            return (context.getResources().getConfiguration().screenWidthDp * 1.f
-                            - verticalAutomotiveToolbarWidthDp)
+            return (context.getResources().getConfiguration().screenWidthDp * 1.f)
                     / (context.getResources().getConfiguration().screenHeightDp * 1.f
                             - browserControlsHeightDp
-                            - horizontalAutomotiveToolbarHeightDp);
+                            - automotiveToolbarHeightDp);
         }
         // This is an experimentally determined value.
         return PORTRAIT_THUMBNAIL_ASPECT_RATIO;
