@@ -108,6 +108,9 @@ void AppPlatformMetricsServiceTestBase::SetUp() {
     ::chromeos::PowerManagerClient::InitializeFake();
   }
 
+  // Wait for AppServiceProxy to be ready.
+  app_service_test_.SetUp(profile());
+
   app_platform_metrics_service_ =
       std::make_unique<AppPlatformMetricsService>(profile());
 

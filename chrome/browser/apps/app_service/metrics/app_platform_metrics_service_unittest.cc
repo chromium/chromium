@@ -244,7 +244,6 @@ class AppPlatformMetricsServiceTest
       public ::testing::WithParamInterface<bool> {
  public:
   void SetUp() override {
-    AppPlatformMetricsServiceTestBase::SetUp();
     if (IsLacrosEnabled()) {
       feature_list_.InitWithFeatures(
           /*enabled_features=*/ash::standalone_browser::GetFeatureRefs(), {});
@@ -252,6 +251,7 @@ class AppPlatformMetricsServiceTest
       feature_list_.InitWithFeatures(
           {}, /*disabled_features=*/ash::standalone_browser::GetFeatureRefs());
     }
+    AppPlatformMetricsServiceTestBase::SetUp();
 
     InstallApps();
     // The WebAppProvider system must be started after the apps are added, as

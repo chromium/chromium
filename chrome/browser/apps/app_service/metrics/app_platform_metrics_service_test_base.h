@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_service.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/testing_profile.h"
@@ -149,6 +150,7 @@ class AppPlatformMetricsServiceTestBase : public ::testing::Test {
   raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> fake_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
+  apps::AppServiceTest app_service_test_;
 };
 
 }  // namespace apps
