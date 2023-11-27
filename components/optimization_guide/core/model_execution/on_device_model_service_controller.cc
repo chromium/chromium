@@ -14,6 +14,7 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
@@ -104,6 +105,18 @@ OnDeviceModelServiceController::StartSession(
       base::BindRepeating(&OnDeviceModelServiceController::StartMojoSession,
                           weak_ptr_factory_.GetWeakPtr()),
       feature, config_interpreter_.get(), weak_ptr_factory_.GetWeakPtr());
+}
+
+void OnDeviceModelServiceController::GetEstimatedPerformanceClass(
+    GetEstimatedPerformanceClassCallback callback) {
+  LaunchService();
+  service_remote_->GetEstimatedPerformanceClass(base::BindOnce(
+      [](GetEstimatedPerformanceClassCallback callback,
+         on_device_model::mojom::PerformanceClass performance_class) {
+        std::move(callback).Run(performance_class);
+      },
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
+                                                  std::nullopt)));
 }
 
 void OnDeviceModelServiceController::StartMojoSession(

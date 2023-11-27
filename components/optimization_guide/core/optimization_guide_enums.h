@@ -264,6 +264,31 @@ enum class OnDeviceModelEligibilityReason {
   kMaxValue = kTooManyRecentCrashes,
 };
 
+// Performance class of this device.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class OnDeviceModelPerformanceClass {
+  kUnknown = 0,
+
+  // See on_device_model::mojom::PerformanceClass for explanation of these.
+  kError = 1,
+  kVeryLow = 2,
+  kLow = 3,
+  kMedium = 4,
+  kHigh = 5,
+  kVeryHigh = 6,
+
+  // The service crashed, so a valid value was not returned.
+  kServiceCrash = 7,
+
+  // This must be kept in sync with
+  // OnDeviceModelPerformanceClass in optimization/enums.xml.
+
+  // Insert new values before this line.
+  kMaxValue = kServiceCrash,
+};
+
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_ENUMS_H_

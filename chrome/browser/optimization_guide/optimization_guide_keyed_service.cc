@@ -67,6 +67,8 @@
 
 namespace {
 
+using ::optimization_guide::OnDeviceModelPerformanceClass;
+
 // Deletes old store paths that were written in incorrect locations.
 void DeleteOldStorePaths(const base::FilePath& profile_path) {
   // Added 11/2023
@@ -102,6 +104,55 @@ Profile* GetProfileForOTROptimizationGuide(Profile* profile) {
     }
   }
   return profile->GetOriginalProfile();
+}
+
+OnDeviceModelPerformanceClass ConvertToOnDeviceModelPerformanceClass(
+    std::optional<on_device_model::mojom::PerformanceClass> performance_class) {
+  if (!performance_class) {
+    return OnDeviceModelPerformanceClass::kServiceCrash;
+  }
+
+  switch (*performance_class) {
+    case on_device_model::mojom::PerformanceClass::kError:
+      return OnDeviceModelPerformanceClass::kError;
+    case on_device_model::mojom::PerformanceClass::kVeryLow:
+      return OnDeviceModelPerformanceClass::kVeryLow;
+    case on_device_model::mojom::PerformanceClass::kLow:
+      return OnDeviceModelPerformanceClass::kLow;
+    case on_device_model::mojom::PerformanceClass::kMedium:
+      return OnDeviceModelPerformanceClass::kMedium;
+    case on_device_model::mojom::PerformanceClass::kHigh:
+      return OnDeviceModelPerformanceClass::kHigh;
+    case on_device_model::mojom::PerformanceClass::kVeryHigh:
+      return OnDeviceModelPerformanceClass::kVeryHigh;
+  }
+}
+
+scoped_refptr<optimization_guide::OnDeviceModelServiceController>
+GetOnDeviceModelServiceController() {
+  scoped_refptr<optimization_guide::OnDeviceModelServiceController>
+      service_controller = optimization_guide::
+          ChromeOnDeviceModelServiceController::GetSingleInstanceMayBeNull();
+  if (!service_controller) {
+    service_controller = base::MakeRefCounted<
+        optimization_guide::ChromeOnDeviceModelServiceController>();
+    service_controller->Init();
+  }
+  return service_controller;
+}
+
+void LogOnDeviceMetrics() {
+  auto controller = GetOnDeviceModelServiceController();
+  controller->GetEstimatedPerformanceClass(base::BindOnce(
+      [](scoped_refptr<optimization_guide::OnDeviceModelServiceController>
+             controller,
+         std::optional<on_device_model::mojom::PerformanceClass>
+             performance_class) {
+        base::UmaHistogramEnumeration(
+            "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass",
+            ConvertToOnDeviceModelPerformanceClass(performance_class));
+      },
+      controller));
 }
 
 }  // namespace
@@ -272,18 +323,20 @@ void OptimizationGuideKeyedService::Initialize() {
 
   if (!profile->IsOffTheRecord() &&
       base::FeatureList::IsEnabled(
+          optimization_guide::features::kLogOnDeviceMetricsOnStartup)) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, base::BindOnce(&LogOnDeviceMetrics),
+        optimization_guide::features::GetOnDeviceStartupMetricDelay());
+  }
+
+  if (!profile->IsOffTheRecord() &&
+      base::FeatureList::IsEnabled(
           optimization_guide::features::kOptimizationGuideModelExecution)) {
     scoped_refptr<optimization_guide::OnDeviceModelServiceController>
         service_controller;
     if (base::FeatureList::IsEnabled(
             optimization_guide::features::kOptimizationGuideOnDeviceModel)) {
-      service_controller = optimization_guide::
-          ChromeOnDeviceModelServiceController::GetSingleInstanceMayBeNull();
-      if (!service_controller) {
-        service_controller = base::MakeRefCounted<
-            optimization_guide::ChromeOnDeviceModelServiceController>();
-        service_controller->Init();
-      }
+      service_controller = GetOnDeviceModelServiceController();
     }
     model_execution_manager_ =
         std::make_unique<optimization_guide::ModelExecutionManager>(

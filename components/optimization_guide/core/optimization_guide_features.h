@@ -57,6 +57,7 @@ BASE_DECLARE_FEATURE(kOptimizationGuidePredictionModelKillswitch);
 BASE_DECLARE_FEATURE(kOptimizationGuideModelExecution);
 BASE_DECLARE_FEATURE(kOptimizationGuideOnDeviceModel);
 BASE_DECLARE_FEATURE(kModelQualityLogging);
+BASE_DECLARE_FEATURE(kLogOnDeviceMetricsOnStartup);
 
 // Enables use of task runner with trait CONTINUE_ON_SHUTDOWN for page content
 // annotations on-device models.
@@ -385,6 +386,8 @@ int GetOnDeviceModelContextTokenChunkSize();
 // Returns the number of crashes without a successful response before the
 // on-device model won't be used.
 int GetOnDeviceModelCrashCountBeforeDisable();
+
+base::TimeDelta GetOnDeviceStartupMetricDelay();
 
 }  // namespace features
 }  // namespace optimization_guide

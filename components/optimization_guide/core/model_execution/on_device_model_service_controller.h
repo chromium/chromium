@@ -62,6 +62,14 @@ class OnDeviceModelServiceController
   // Launches the on-device model-service.
   virtual void LaunchService() = 0;
 
+  // Starts the service and calls |callback| with the estimated performance
+  // class. Will call with std::nullopt if the service crashes.
+  using GetEstimatedPerformanceClassCallback = base::OnceCallback<void(
+      std::optional<on_device_model::mojom::PerformanceClass>
+          performance_class)>;
+  void GetEstimatedPerformanceClass(
+      GetEstimatedPerformanceClassCallback callback);
+
   // A session completed successfully.
   void OnResponseCompleted(base::PassKey<OnDeviceSession>,
                            OnDeviceSession& session);

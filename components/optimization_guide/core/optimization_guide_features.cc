@@ -330,6 +330,12 @@ BASE_FEATURE(kOptimizationGuideOnDeviceModel,
              "OptimizationGuideOnDeviceModel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Whether the on device service is launched after a delay on startup to log
+// metrics.
+BASE_FEATURE(kLogOnDeviceMetricsOnStartup,
+             "LogOnDeviceMetricsOnStartup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 size_t MaxRelatedSearchesCacheSize() {
   return GetFieldTrialParamByFeatureAsInt(
       kExtractRelatedSearchesFromPrefetchedZPSResponse,
@@ -966,6 +972,13 @@ int GetOnDeviceModelCrashCountBeforeDisable() {
       &features::kOptimizationGuideOnDeviceModel,
       "on_device_model_disable_crash_count", 3};
   return kOnDeviceModelDisableCrashCount.Get();
+}
+
+base::TimeDelta GetOnDeviceStartupMetricDelay() {
+  static const base::FeatureParam<base::TimeDelta> kOnDeviceStartupMetricDelay{
+      &kLogOnDeviceMetricsOnStartup, "on_device_startup_metric_delay",
+      base::Minutes(2)};
+  return kOnDeviceStartupMetricDelay.Get();
 }
 
 }  // namespace features
