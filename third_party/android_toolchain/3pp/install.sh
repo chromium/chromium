@@ -13,7 +13,6 @@ set -o pipefail
 # The commands below should output the built product to this directory.
 PREFIX="$1"
 CLANG_VERSION="14.0.7"
-LIB="lib64"
 
 # Glob patterns to include from the NDK.
 GLOB_INCLUDES=(
@@ -22,11 +21,9 @@ GLOB_INCLUDES=(
   # Used for remote debugging, include server / client binaries and libs.
   toolchains/llvm/prebuilt/linux-x86_64/bin/lldb
   toolchains/llvm/prebuilt/linux-x86_64/bin/lldb.sh
-  toolchains/llvm/prebuilt/linux-x86_64/${LIB}/clang/${CLANG_VERSION}/lib/linux/*/lldb-server
-  toolchains/llvm/prebuilt/linux-x86_64/${LIB}/lib*.*
-  toolchains/llvm/prebuilt/linux-x86_64/${LIB}/python3
-  # * For r25c python3.9/ is under lib/ instead of lib64/.
-  toolchains/llvm/prebuilt/linux-x86_64/lib/python3.9
+  toolchains/llvm/prebuilt/linux-x86_64/lib/clang/*/lib/linux/*/lldb-server
+  toolchains/llvm/prebuilt/linux-x86_64/lib/lib*.so*
+  toolchains/llvm/prebuilt/linux-x86_64/lib/python*
   toolchains/llvm/prebuilt/linux-x86_64/python3
   # Used for compilation.
   toolchains/llvm/prebuilt/linux-x86_64/sysroot
