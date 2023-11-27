@@ -691,9 +691,10 @@ class PageDeleter final : public NativeEventListener {
 TEST(PaymentRequestTest, NoCrashWhenPaymentMethodChangeEventDestroysContext) {
   PageDeleter* page_deleter = MakeGarbageCollected<PageDeleter>();
   LocalFrame& frame = page_deleter->page()->GetFrame();
-  v8::HandleScope handle_scope(ToIsolate(&frame));
+  auto* isolate = ToIsolate(&frame);
+  v8::HandleScope handle_scope(isolate);
   ScriptState* script_state = ScriptState::From(
-      ToV8ContextEvenIfDetached(&frame, DOMWrapperWorld::MainWorld()));
+      ToV8ContextEvenIfDetached(&frame, DOMWrapperWorld::MainWorld(isolate)));
   v8::Local<v8::Context> context(script_state->GetContext());
   v8::Context::Scope context_scope(context);
   MockFunctionScope funcs(script_state);

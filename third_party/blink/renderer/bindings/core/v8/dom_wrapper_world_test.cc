@@ -59,7 +59,9 @@ void WorkerThreadFunc(
 
 TEST(DOMWrapperWorldTest, Basic) {
   // Initial setup
-  DOMWrapperWorld& main_world = DOMWrapperWorld::MainWorld();
+  V8TestingScope scope;
+  v8::Isolate* isolate = scope.GetIsolate();
+  DOMWrapperWorld& main_world = DOMWrapperWorld::MainWorld(isolate);
   EXPECT_TRUE(main_world.IsMainWorld());
   Vector<scoped_refptr<DOMWrapperWorld>> initial_worlds;
   DOMWrapperWorld::AllWorldsInCurrentThread(initial_worlds);
@@ -71,8 +73,6 @@ TEST(DOMWrapperWorldTest, Basic) {
     }
   }
   ASSERT_TRUE(DOMWrapperWorld::IsIsolatedWorldId(used_isolated_world_id + 1));
-  V8TestingScope scope;
-  v8::Isolate* isolate = scope.GetIsolate();
 
   // Isolated worlds
   auto isolated_world1 =
