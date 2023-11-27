@@ -105,6 +105,10 @@ AST_POLYMORPHIC_MATCHER(isInThirdPartyLocation,
   if (filename.find("/third_party/blink/") != std::string::npos) {
     return false;
   }
+  // Dawn repo has started using raw_ptr.
+  if (filename.find("/third_party/dawn/") != std::string::npos) {
+    return false;
+  }
   // Otherwise, just check if the paths contains the "third_party" substring.
   // We don't want to rewrite content of such paths even if they are in the main
   // Chromium git repository.
