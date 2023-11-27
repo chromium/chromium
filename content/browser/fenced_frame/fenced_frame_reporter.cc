@@ -567,7 +567,7 @@ bool FencedFrameReporter::SendReportInternal(
         InvokingAPIAsString(invoking_api_),
         "'",
         (base::FeatureList::IsEnabled(
-             blink::features::kFencedFramesM120FeaturesPart2) &&
+             blink::features::kFencedFramesReportingAttestationsChanges) &&
          invoking_api_ == PrivacySandboxInvokingAPI::kProtectedAudience)
             ? " or 'Attribution Reporting'."
             : ".",
