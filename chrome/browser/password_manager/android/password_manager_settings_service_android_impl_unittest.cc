@@ -1453,3 +1453,16 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
   SetPasswordsSync(false);
   CreateNewService(std::move(bridge_helper));
 }
+
+TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+       SavePasswordsSettingManagedByCustodian) {
+  InitializeSettingsService(/*password_sync_enabled=*/false,
+                            /*setting_sync_enabled=*/false);
+  pref_service()->SetSupervisedUserPref(
+      password_manager::prefs::kCredentialsEnableService, base::Value(false));
+  pref_service()->SetUserPref(
+      password_manager::prefs::kOfferToSavePasswordsEnabledGMS,
+      base::Value(true));
+  EXPECT_FALSE(settings_service()->IsSettingEnabled(
+      PasswordManagerSetting::kOfferToSavePasswords));
+}

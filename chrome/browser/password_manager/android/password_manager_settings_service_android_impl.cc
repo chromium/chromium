@@ -150,7 +150,7 @@ bool PasswordManagerSettingsServiceAndroidImpl::IsSettingEnabled(
     return regular_pref->GetValue()->GetBool();
   }
 
-  if (regular_pref->IsManaged()) {
+  if (regular_pref->IsManaged() || regular_pref->IsManagedByCustodian()) {
     return regular_pref->GetValue()->GetBool();
   }
 
