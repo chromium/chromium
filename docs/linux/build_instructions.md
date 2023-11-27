@@ -155,51 +155,80 @@ sorted so that the things that make the biggest difference are first.
 
 #### Use reclient
 
-If you are a Google employee, do not follow the instructions below. See
-[go/chrome-linux-build#setup-remote-execution](http://go/chrome-linux-build#setup-remote-execution)
-instead.
-
-Google developed the
-[Remote Execution API](https://github.com/bazelbuild/remote-apis)
-client called [reclient](https://github.com/bazelbuild/reclient).
-
 *** note
-**Warning:** Following instruction is not ready to be used yet.
+**Warning:** If you are a Google employee, do not follow the instructions below.
+See [go/chrome-linux-build#setup-remote-execution](http://go/chrome-linux-build#setup-remote-execution)
+instead.
 ***
 
-If you would like to use `reclient`, install gcloud via
-https://cloud.google.com/sdk/docs/install, authorize with your account via
-https://cloud.google.com/sdk/docs/authorizing and specify your `rbe_instance`
-in .gclient like
+Chromium's build can be sped up significantly by using a remote execution system
+compatible with [REAPI](https://github.com/bazelbuild/remote-apis). This allows
+you to benefit from remote caching and executing many build actions in parallel
+on a shared cluster of workers.
+
+To get started, you need access to an REAPI-compatible backend. The following
+instructions assume that you received an invitation from Google to use
+Chromium's RBE service and were granted access to it. However, you are welcome
+to use any of the
+[other compatible backends](https://github.com/bazelbuild/remote-apis#servers),
+in which case you will have to adapt the following instructions regarding the
+authentication method, instance name, etc. to work with your backend.
+
+Chromium's build uses a client developed by Google called
+[reclient](https://github.com/bazelbuild/reclient) to remotely execute build
+actions. If you would like to use `reclient` with RBE, you'll first need to:
+
+1. [Install the gcloud CLI](https://cloud.google.com/sdk/docs/install). You can
+   pick any installation method from that page that works best for you.
+2. Run `gcloud auth login --update-adc` and login with your authorized
+   account. Ignore the message about the `--update-adc` flag being deprecated.
+
+Next, you'll have to specify your `rbe_instance` in your `.gclient`
+configuration to use the correct one for Chromium contributors:
+
 ```
 solutions = [
   {
     ...,
     "custom_vars": {
-      # e.g. <your instance> can be something like
-      # "projects/rbe-chromium-untrusted/instances/default_instance"
-      # if you are allowed to use Google's RBE backend.
-      "rbe_instance": <your instance>,
+      # This is the correct instance name for using Chromium's RBE service.
+      # You can only use it if you were granted access to it. If you use your
+      # own REAPI-compatible backend, you will need to change this accordingly
+      # to its requirements.
+      "rbe_instance": "projects/rbe-chromium-untrusted/instances/default_instance",
     },
   },
 ]
 ```
-and run `gclient sync`. Then, add the following GN args to your `args.gn`.
+
+and run `gclient sync`. This will regenerate the config files in
+`buildtools/reclient_cfgs` to use the `rbe_instance` that you just added to your
+`.gclient` file.
+
+Then, add the following GN args to your `args.gn`:
+
 ```
-use_remoteexec=true
-rbe_cfg_dir="../../buildtools/reclient_cfgs/linux"
+use_remoteexec = true
+rbe_cfg_dir = "../../buildtools/reclient_cfgs/linux"
 ```
+
+That's it. Remember to always use `autoninja` for building Chromium as described
+below, which handles the startup and shutdown of the reproxy daemon process
+that's required during the build, instead of directly invoking `ninja`.
 
 #### Use Goma (deprecated)
 
-Google developed the distributed compiler called
-[Goma](https://chromium.googlesource.com/infra/goma/client).
+*** note
+**Warning:** Goma is deprecated and Chromium will [remove support for building
+with Goma by end of January 2024](https://groups.google.com/a/chromium.org/g/chromium-dev/c/rajt7THxIng/m/ZoDB54wQBAAJ).
+***
 
-If you would like to use `Goma` provisioned by Google,
-please follow [Goma for Chromium contributors](https://chromium.googlesource.com/infra/goma/client/+/HEAD/doc/early-access-guide.md).
+Please use the above instructions for reclient instead. If you have any issues
+migrating to reclient, please reach out to chromium-dev@chromium.org so that we
+can address them before the shutdown.
 
-If you are a Google employee, see
-[go/building-chrome](https://goto.google.com/building-chrome) instead.
+If you need to refer to the older instructions for using Goma, you can still
+find them here: [Goma for Chromium contributors](https://chromium.googlesource.com/infra/goma/client/+/HEAD/doc/early-access-guide.md).
 
 #### Disable NaCl
 
