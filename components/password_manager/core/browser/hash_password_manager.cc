@@ -96,8 +96,8 @@ bool StringToLengthAndSalt(const std::string& s,
 std::string BooleanToString(bool bool_value) {
   return bool_value ? "true" : "false";
 }
+}  // namespace
 
-// Helper function to convert a dictionary value to PasswordWordHashData.
 std::optional<PasswordHashData> ConvertToPasswordHashData(
     const base::Value& dict) {
   PasswordHashData result;
@@ -119,8 +119,6 @@ std::optional<PasswordHashData> ConvertToPasswordHashData(
 
   return result;
 }
-
-}  // namespace
 
 HashPasswordManager::HashPasswordManager(PrefService* prefs) : prefs_(prefs) {}
 HashPasswordManager::HashPasswordManager() = default;

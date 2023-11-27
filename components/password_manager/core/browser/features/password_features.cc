@@ -52,6 +52,10 @@ BASE_FEATURE(kEnablePasswordsAccountStorage,
 BASE_FEATURE(kFillingAcrossAffiliatedWebsitesAndroid,
              "FillingAcrossAffiliatedWebsitesAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
+// Enables reading credentials from SharedPreferences.
+BASE_FEATURE(kFetchGaiaHashOnSignIn,
+             "FetchGaiaHashOnSignIn",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // This flag enables password filling across grouped websites. Information about

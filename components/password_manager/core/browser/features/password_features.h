@@ -23,6 +23,7 @@ BASE_DECLARE_FEATURE(kEnablePasswordsAccountStorage);
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kFillingAcrossAffiliatedWebsitesAndroid);
+BASE_DECLARE_FEATURE(kFetchGaiaHashOnSignIn);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_DECLARE_FEATURE(kFillingAcrossGroupedSites);

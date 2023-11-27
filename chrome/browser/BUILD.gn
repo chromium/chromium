@@ -3285,6 +3285,8 @@ static_library("browser") {
       "password_manager/android/password_ui_view_android.h",
       "password_manager/android/save_update_password_message_delegate.cc",
       "password_manager/android/save_update_password_message_delegate.h",
+      "password_manager/android/shared_preferences_delegate_android.cc",
+      "password_manager/android/shared_preferences_delegate_android.h",
       "payments/android/service_worker_payment_app_bridge.cc",
       "permissions/notification_blocked_dialog_controller_android.cc",
       "permissions/notification_blocked_dialog_controller_android.h",
