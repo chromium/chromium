@@ -192,7 +192,6 @@ BOOL UserActivityBrowserAgent::ContinueUserActivity(
     SearchInChromeIntent* intent =
         base::apple::ObjCCastStrict<SearchInChromeIntent>(
             user_activity.interaction.intent);
-
     if (!intent) {
       return NO;
     }

@@ -57,6 +57,7 @@
 #import "ios/chrome/common/intents/OpenRecentTabsIntent.h"
 #import "ios/chrome/common/intents/OpenTabGridIntent.h"
 #import "ios/chrome/common/intents/RunSafetyCheckIntent.h"
+#import "ios/chrome/common/intents/SearchInChromeIntent.h"
 #import "ios/chrome/common/intents/SearchWithVoiceIntent.h"
 #import "ios/chrome/common/intents/SetChromeDefaultBrowserIntent.h"
 #import "ios/chrome/common/intents/ViewHistoryIntent.h"
@@ -1013,6 +1014,28 @@ TEST_F(UserActivityBrowserAgentTest,
   EXPECT_EQ(GURL(kChromeUINewTabURL),
             [connection_information_ startupParameters].externalURL);
   EXPECT_EQ(NO_ACTION,
+            [connection_information_ startupParameters].postOpeningAction);
+}
+
+// Tests that Chrome respond to search in chrome.
+TEST_F(UserActivityBrowserAgentTest, ContinueUserActivityIntentSearchInChrome) {
+  NSUserActivity* user_activity =
+      [[NSUserActivity alloc] initWithActivityType:kSiriShortcutSearchInChrome];
+
+  SearchInChromeIntent* intent = [[SearchInChromeIntent alloc] init];
+  INInteraction* interaction = [[INInteraction alloc] initWithIntent:intent
+                                                            response:nil];
+  id mock_user_activity = CreateMockNSUserActivity(user_activity, interaction);
+
+  user_activity_browser_agent_->ContinueUserActivity(mock_user_activity, YES);
+
+  EXPECT_EQ(ApplicationModeForTabOpening::NORMAL,
+            [connection_information_ startupParameters].applicationMode);
+  EXPECT_EQ(GURL(kChromeUINewTabURL),
+            [connection_information_ startupParameters].completeURL);
+  EXPECT_EQ(GURL(kChromeUINewTabURL),
+            [connection_information_ startupParameters].externalURL);
+  EXPECT_EQ(FOCUS_OMNIBOX,
             [connection_information_ startupParameters].postOpeningAction);
 }
 
