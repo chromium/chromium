@@ -41,46 +41,8 @@ __handlers.update(proto.handlers)
 __handlers.update(rust.handlers)
 __handlers.update(typescript.handlers)
 
-def __disable_remote_b289968566(ctx, step_config):
-    rule = {
-        # TODO(b/289968566): they often faile with exit=137 (OOM?).
-        # We should migrate default machine type to n2-standard-2.
-        "name": "b289968566/exit-137",
-        "action_outs": [
-            "./android_clang_arm/obj/third_party/distributed_point_functions/distributed_point_functions/evaluate_prg_hwy.o",
-            "./obj/chrome/browser/ash/ash/autotest_private_api.o",
-            "./obj/chrome/browser/ash/ash/chrome_browser_main_parts_ash.o",
-            "./obj/chrome/browser/ash/system_web_apps/browser_tests/system_web_app_manager_browsertest.o",
-            "./obj/chrome/browser/browser/browser_prefs.o",
-            "./obj/chrome/browser/browser/chrome_browser_interface_binders.o",
-            "./obj/chrome/browser/ui/ash/holding_space/browser_tests/holding_space_ui_browsertest.o",
-            "./obj/chrome/test/browser_tests/browser_non_client_frame_view_chromeos_browsertest.o",
-            "./obj/chrome/test/browser_tests/chrome_shelf_controller_browsertest.o",
-            "./obj/chrome/test/browser_tests/device_local_account_browsertest.o",
-            "./obj/chrome/test/browser_tests/file_manager_browsertest_base.o",
-            "./obj/chrome/test/browser_tests/remote_apps_manager_browsertest.o",
-            "./obj/chrome/test/browser_tests/spoken_feedback_browsertest.o",
-            "./obj/chrome/test/unit_tests/chrome_browsing_data_remover_delegate_unittest.o",
-            "./obj/chrome/test/unit_tests/site_settings_handler_unittest.o",
-            "./obj/content/browser/browser/browser_interface_binders.o",
-            "./obj/fuchsia_web/runners/cast_runner_integration_tests__exec/cast_runner_integration_test.o",
-            "./obj/fuchsia_web/webengine/web_engine_core/frame_impl.o",
-            "./ash_clang_x64/obj/chrome/browser/ash/ash/autotest_private_api.o",
-            "./ash_clang_x64/obj/chrome/browser/ash/ash/chrome_browser_main_parts_ash.o",
-            "./ash_clang_x64/obj/chrome/browser/browser/browser_prefs.o",
-            "./ash_clang_x64/obj/chrome/browser/browser/chrome_browser_interface_binders.o",
-        ],
-        "remote": False,
-    }
-    if reproxy.enabled(ctx):
-        rule["handler"] = "strip_rewrapper"
-    step_config["rules"].insert(0, rule)
-    return step_config
-
 def __step_config(ctx, step_config):
     config.check(ctx)
-
-    step_config = __disable_remote_b289968566(ctx, step_config)
 
     if android.enabled(ctx):
         step_config = android.step_config(ctx, step_config)

@@ -16,6 +16,53 @@ load("./reproxy.star", "reproxy")
 load("./simple.star", "simple")
 load("./windows.star", chromium_windows = "chromium")
 
+def __use_large_b289968566(ctx, step_config):
+    # TODO(b/289968566): they often faile with exit=137 (OOM?).
+    # They need to run on a machine has more memory than the default machine type n2-custom-2-3840
+    exit137_list = [
+        "./android_clang_arm/obj/third_party/distributed_point_functions/distributed_point_functions/evaluate_prg_hwy.o",
+        "./ash_clang_x64/obj/chrome/browser/ash/ash/autotest_private_api.o",
+        "./ash_clang_x64/obj/chrome/browser/ash/ash/chrome_browser_main_parts_ash.o",
+        "./ash_clang_x64/obj/chrome/browser/browser/browser_prefs.o",
+        "./ash_clang_x64/obj/chrome/browser/browser/chrome_browser_interface_binders.o",
+        "./obj/chrome/browser/ash/ash/autotest_private_api.o",
+        "./obj/chrome/browser/ash/ash/chrome_browser_main_parts_ash.o",
+        "./obj/chrome/browser/ash/system_web_apps/browser_tests/system_web_app_manager_browsertest.o",
+        "./obj/chrome/browser/browser/browser_prefs.o",
+        "./obj/chrome/browser/browser/chrome_browser_interface_binders.o",
+        "./obj/chrome/browser/ui/ash/holding_space/browser_tests/holding_space_ui_browsertest.o",
+        "./obj/chrome/test/browser_tests/browser_non_client_frame_view_chromeos_browsertest.o",
+        "./obj/chrome/test/browser_tests/chrome_shelf_controller_browsertest.o",
+        "./obj/chrome/test/browser_tests/device_local_account_browsertest.o",
+        "./obj/chrome/test/browser_tests/file_manager_browsertest_base.o",
+        "./obj/chrome/test/browser_tests/remote_apps_manager_browsertest.o",
+        "./obj/chrome/test/browser_tests/spoken_feedback_browsertest.o",
+        "./obj/chrome/test/unit_tests/chrome_browsing_data_remover_delegate_unittest.o",
+        "./obj/chrome/test/unit_tests/site_settings_handler_unittest.o",
+        "./obj/content/browser/browser/browser_interface_binders.o",
+        "./obj/fuchsia_web/runners/cast_runner_integration_tests__exec/cast_runner_integration_test.o",
+        "./obj/fuchsia_web/webengine/web_engine_core/frame_impl.o",
+    ]
+    if runtime.os == "windows":
+        exit137_list = [obj.removesuffix(".o") + ".obj" for obj in exit137_list if obj.startswith("./obj/")]
+
+    new_rules = []
+    for rule in step_config["rules"]:
+        if not rule["name"].endswith("/cxx"):
+            new_rules.append(rule)
+            continue
+        if "action_outs" in rule:
+            fail("unexpeced \"action_outs\" in cxx rule %s" % rule["name"])
+        r = {}
+        r.update(rule)
+        r["name"] += "/b289968566/exit-137"
+        r["action_outs"] = exit137_list
+        r["platform_ref"] = "large"
+        new_rules.append(r)
+        new_rules.append(rule)
+    step_config["rules"] = new_rules
+    return step_config
+
 def init(ctx):
     print("runtime: os:%s arch:%s run:%d" % (
         runtime.os,
@@ -75,6 +122,8 @@ def init(ctx):
         if p.get("OSFamily") == "Linux":
             arg0 = arg0.removesuffix(".exe")
         rule["remote_command"] = arg0
+
+    step_config = __use_large_b289968566(ctx, step_config)
 
     filegroups = {}
     filegroups.update(blink_all.filegroups(ctx))
