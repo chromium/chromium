@@ -252,30 +252,16 @@ TEST_F(ProxyResolverImplTest, GetProxyForUrl) {
   client.WaitForResult();
 
   EXPECT_THAT(client.error(), IsOk());
-  std::vector<net::ProxyServer> servers =
-      client.results().proxy_list().GetAll();
-  ASSERT_EQ(6u, servers.size());
-  EXPECT_EQ(net::ProxyServer::SCHEME_HTTP, servers[0].scheme());
-  EXPECT_EQ("proxy.example.com", servers[0].host_port_pair().host());
-  EXPECT_EQ(1, servers[0].host_port_pair().port());
+  std::vector<net::ProxyChain> chains =
+      client.results().proxy_list().AllChains();
+  ASSERT_EQ(6u, chains.size());
+  EXPECT_EQ("[proxy.example.com:1]", chains[0].ToDebugString());
+  EXPECT_EQ("[socks4://socks4.example.com:2]", chains[1].ToDebugString());
+  EXPECT_EQ("[socks5://socks5.example.com:3]", chains[2].ToDebugString());
+  EXPECT_EQ("[https://https.example.com:4]", chains[3].ToDebugString());
+  EXPECT_EQ("[quic://quic.example.com:65000]", chains[4].ToDebugString());
 
-  EXPECT_EQ(net::ProxyServer::SCHEME_SOCKS4, servers[1].scheme());
-  EXPECT_EQ("socks4.example.com", servers[1].host_port_pair().host());
-  EXPECT_EQ(2, servers[1].host_port_pair().port());
-
-  EXPECT_EQ(net::ProxyServer::SCHEME_SOCKS5, servers[2].scheme());
-  EXPECT_EQ("socks5.example.com", servers[2].host_port_pair().host());
-  EXPECT_EQ(3, servers[2].host_port_pair().port());
-
-  EXPECT_EQ(net::ProxyServer::SCHEME_HTTPS, servers[3].scheme());
-  EXPECT_EQ("https.example.com", servers[3].host_port_pair().host());
-  EXPECT_EQ(4, servers[3].host_port_pair().port());
-
-  EXPECT_EQ(net::ProxyServer::SCHEME_QUIC, servers[4].scheme());
-  EXPECT_EQ("quic.example.com", servers[4].host_port_pair().host());
-  EXPECT_EQ(65000, servers[4].host_port_pair().port());
-
-  EXPECT_EQ(net::ProxyServer::SCHEME_DIRECT, servers[5].scheme());
+  EXPECT_EQ(net::ProxyChain::Direct(), chains[5]);
 }
 
 TEST_F(ProxyResolverImplTest, GetProxyForUrlWithNetworkAnonymizationKey) {
@@ -311,9 +297,9 @@ TEST_F(ProxyResolverImplTest, GetProxyForUrlFailure) {
   client.WaitForResult();
 
   EXPECT_THAT(client.error(), IsError(net::ERR_FAILED));
-  std::vector<net::ProxyServer> proxy_servers =
-      client.results().proxy_list().GetAll();
-  EXPECT_TRUE(proxy_servers.empty());
+  std::vector<net::ProxyChain> proxy_chains =
+      client.results().proxy_list().AllChains();
+  EXPECT_TRUE(proxy_chains.empty());
 }
 
 TEST_F(ProxyResolverImplTest, GetProxyForUrlMultiple) {
@@ -343,19 +329,21 @@ TEST_F(ProxyResolverImplTest, GetProxyForUrlMultiple) {
   client2.WaitForResult();
 
   EXPECT_THAT(client1.error(), IsOk());
-  std::vector<net::ProxyServer> proxy_servers1 =
-      client1.results().proxy_list().GetAll();
-  ASSERT_EQ(1u, proxy_servers1.size());
-  net::ProxyServer& server1 = proxy_servers1[0];
+  std::vector<net::ProxyChain> proxy_chain1 =
+      client1.results().proxy_list().AllChains();
+  ASSERT_EQ(1u, proxy_chain1.size());
+  const net::ProxyServer& server1 =
+      proxy_chain1.at(0).GetProxyServer(/*chain_index=*/0);
   EXPECT_EQ(net::ProxyServer::SCHEME_HTTPS, server1.scheme());
   EXPECT_EQ("proxy.example.com", server1.host_port_pair().host());
   EXPECT_EQ(12345, server1.host_port_pair().port());
 
   EXPECT_THAT(client2.error(), IsOk());
-  std::vector<net::ProxyServer> proxy_servers2 =
-      client2.results().proxy_list().GetAll();
-  ASSERT_EQ(1u, proxy_servers1.size());
-  net::ProxyServer& server2 = proxy_servers2[0];
+  std::vector<net::ProxyChain> proxy_chain2 =
+      client2.results().proxy_list().AllChains();
+  ASSERT_EQ(1u, proxy_chain2.size());
+  const net::ProxyServer& server2 =
+      proxy_chain2.at(0).GetProxyServer(/*chain_index=*/0);
   EXPECT_EQ(net::ProxyServer::SCHEME_SOCKS5, server2.scheme());
   EXPECT_EQ("another-proxy.example.com", server2.host_port_pair().host());
   EXPECT_EQ(6789, server2.host_port_pair().port());
