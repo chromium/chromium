@@ -68,10 +68,6 @@ PhysicalBoxStrut BoxModelObjectPainter::ComputePadding() const {
   return box_model_.PaddingOutsets();
 }
 
-PhysicalBoxStrut BoxModelObjectPainter::ComputeMargins() const {
-  return box_model_.MarginOutsets();
-}
-
 BoxPainterBase::FillLayerInfo BoxModelObjectPainter::GetFillLayerInfo(
     const Color& color,
     const FillLayer& bg_layer,

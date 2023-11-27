@@ -145,7 +145,6 @@ class BoxPainterBase {
  protected:
   virtual PhysicalBoxStrut ComputeBorders() const = 0;
   virtual PhysicalBoxStrut ComputePadding() const = 0;
-  virtual PhysicalBoxStrut ComputeMargins() const = 0;
   PhysicalBoxStrut AdjustedBorderOutsets(const FillLayerInfo&) const;
   void PaintFillLayerTextFillBox(const PaintInfo&,
                                  const FillLayerInfo&,

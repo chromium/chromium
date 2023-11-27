@@ -78,7 +78,6 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
  protected:
   PhysicalBoxStrut ComputeBorders() const override;
   PhysicalBoxStrut ComputePadding() const override;
-  PhysicalBoxStrut ComputeMargins() const override;
   BoxPainterBase::FillLayerInfo GetFillLayerInfo(
       const Color&,
       const FillLayer&,
