@@ -200,7 +200,8 @@ int ComparePart(const liburlpattern::Part& lh, const liburlpattern::Part& rh) {
 }  // anonymous namespace
 
 // static
-Component* Component::Compile(StringView pattern,
+Component* Component::Compile(v8::Isolate* isolate,
+                              StringView pattern,
                               Type type,
                               Component* protocol_component,
                               const URLPatternOptions& external_options,
@@ -239,14 +240,16 @@ Component* Component::Compile(StringView pattern,
                                             : WTF::kTextCaseASCIIInsensitive;
     DCHECK(base::IsStringASCII(regexp_string));
     regexp = MakeGarbageCollected<ScriptRegexp>(
-        String(regexp_string.data(), regexp_string.size()), case_sensitive,
-        MultilineMode::kMultilineDisabled, UnicodeMode::kUnicode);
+        isolate, String(regexp_string.data(), regexp_string.size()),
+        case_sensitive, MultilineMode::kMultilineDisabled,
+        UnicodeMode::kUnicode);
 
     // There are some incompatible regexp patterns between "u" and "v". Counting
     // those cases to measure the potential impact of upgrading to the "v" flag.
     ScriptRegexp* regexp_v = MakeGarbageCollected<ScriptRegexp>(
-        String(regexp_string.data(), regexp_string.size()), case_sensitive,
-        MultilineMode::kMultilineDisabled, UnicodeMode::kUnicodeSets);
+        isolate, String(regexp_string.data(), regexp_string.size()),
+        case_sensitive, MultilineMode::kMultilineDisabled,
+        UnicodeMode::kUnicodeSets);
     base::UmaHistogramBoolean(
         "Blink.URLPattern.IncompatiblePatternWithUnicodeSetsMode",
         regexp->IsValid() && !regexp_v->IsValid());
@@ -266,7 +269,8 @@ Component* Component::Compile(StringView pattern,
         DCHECK(base::IsStringASCII(part.value));
         String group_value(part.value.data(), part.value.size());
         regexp = MakeGarbageCollected<ScriptRegexp>(
-            group_value, case_sensitive, MultilineMode::kMultilineDisabled,
+            isolate, group_value, case_sensitive,
+            MultilineMode::kMultilineDisabled,
             RuntimeEnabledFeatures::URLPatternRegexpUnicodeSetsModeEnabled()
                 ? UnicodeMode::kUnicodeSets
                 : UnicodeMode::kUnicode);

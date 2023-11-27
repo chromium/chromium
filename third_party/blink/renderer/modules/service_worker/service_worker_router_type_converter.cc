@@ -27,6 +27,7 @@ namespace blink {
 namespace {
 
 absl::optional<ServiceWorkerRouterCondition> RouterConditionToBlink(
+    v8::Isolate* isolate,
     RouterCondition* v8_condition,
     const KURL& url_pattern_base_url,
     ExceptionState& exception_state);
@@ -88,17 +89,19 @@ absl::optional<std::vector<liburlpattern::Part>> ToPartList(
 // SafeURLPattern and remove the conversion from here.
 // The method should take a exception_state to raise on regex usage.
 absl::optional<SafeUrlPattern> RouterUrlPatternConditionToBlink(
+    v8::Isolate* isolate,
     const V8URLPatternInput* url_pattern_input,
     const KURL& url_pattern_base_url,
     ExceptionState& exception_state) {
   URLPattern* url_pattern;
   switch (url_pattern_input->GetContentType()) {
     case blink::V8URLPatternInput::ContentType::kUSVString:
-      url_pattern = URLPattern::Create(url_pattern_input, url_pattern_base_url,
-                                       exception_state);
+      url_pattern = URLPattern::Create(isolate, url_pattern_input,
+                                       url_pattern_base_url, exception_state);
       break;
     case blink::V8URLPatternInput::ContentType::kURLPatternInit:
-      url_pattern = URLPattern::Create(url_pattern_input, exception_state);
+      url_pattern =
+          URLPattern::Create(isolate, url_pattern_input, exception_state);
       break;
   }
   if (!url_pattern) {
@@ -186,6 +189,7 @@ RouterRunningStatusConditionToBlink(RouterCondition* v8_condition,
 }
 
 absl::optional<ServiceWorkerRouterOrCondition> RouterOrConditionToBlink(
+    v8::Isolate* isolate,
     RouterCondition* v8_condition,
     const KURL& url_pattern_base_url,
     ExceptionState& exception_state) {
@@ -193,8 +197,8 @@ absl::optional<ServiceWorkerRouterOrCondition> RouterOrConditionToBlink(
   const auto& v8_objects = v8_condition->orConditions();
   or_condition.conditions.reserve(v8_objects.size());
   for (auto&& v8_ob : v8_objects) {
-    absl::optional<ServiceWorkerRouterCondition> c =
-        RouterConditionToBlink(v8_ob, url_pattern_base_url, exception_state);
+    absl::optional<ServiceWorkerRouterCondition> c = RouterConditionToBlink(
+        isolate, v8_ob, url_pattern_base_url, exception_state);
     if (!c) {
       CHECK(exception_state.HadException());
       return absl::nullopt;
@@ -205,13 +209,15 @@ absl::optional<ServiceWorkerRouterOrCondition> RouterOrConditionToBlink(
 }
 
 absl::optional<ServiceWorkerRouterCondition> RouterConditionToBlink(
+    v8::Isolate* isolate,
     RouterCondition* v8_condition,
     const KURL& url_pattern_base_url,
     ExceptionState& exception_state) {
   absl::optional<SafeUrlPattern> url_pattern;
   if (v8_condition->hasUrlPattern()) {
-    url_pattern = RouterUrlPatternConditionToBlink(
-        v8_condition->urlPattern(), url_pattern_base_url, exception_state);
+    url_pattern =
+        RouterUrlPatternConditionToBlink(isolate, v8_condition->urlPattern(),
+                                         url_pattern_base_url, exception_state);
     if (!url_pattern.has_value()) {
       CHECK(exception_state.HadException());
       return absl::nullopt;
@@ -238,8 +244,8 @@ absl::optional<ServiceWorkerRouterCondition> RouterConditionToBlink(
   absl::optional<ServiceWorkerRouterOrCondition> or_condition;
   if (v8_condition->hasOrConditions()) {
     // Not checking here for the `or` is actually exclusive.
-    or_condition = RouterOrConditionToBlink(v8_condition, url_pattern_base_url,
-                                            exception_state);
+    or_condition = RouterOrConditionToBlink(
+        isolate, v8_condition, url_pattern_base_url, exception_state);
     if (!or_condition.has_value()) {
       CHECK(exception_state.HadException());
       return absl::nullopt;
@@ -329,6 +335,7 @@ absl::optional<ServiceWorkerRouterSource> RouterSourceInputToBlink(
 }  // namespace
 
 absl::optional<ServiceWorkerRouterRule> ConvertV8RouterRuleToBlink(
+    v8::Isolate* isolate,
     const RouterRule* input,
     const KURL& url_pattern_base_url,
     ExceptionState& exception_state) {
@@ -348,7 +355,7 @@ absl::optional<ServiceWorkerRouterRule> ConvertV8RouterRuleToBlink(
     return absl::nullopt;
   }
   absl::optional<ServiceWorkerRouterCondition> condition =
-      RouterConditionToBlink(input->condition(), url_pattern_base_url,
+      RouterConditionToBlink(isolate, input->condition(), url_pattern_base_url,
                              exception_state);
   if (!condition.has_value()) {
     return absl::nullopt;

@@ -19,7 +19,7 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   DummyExceptionStateForTesting exception_state;
   auto* input = MakeGarbageCollected<V8URLPatternInput>(
       String::FromUTF8(reinterpret_cast<const char*>(data), size));
-  URLPattern::Create(input, exception_state);
+  URLPattern::Create(test_support.GetIsolate(), input, exception_state);
   test_support.GetIsolate()->RequestGarbageCollectionForTesting(
       v8::Isolate::kFullGarbageCollection);
   return 0;

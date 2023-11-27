@@ -250,7 +250,8 @@ ScriptPromise PaymentRequestEvent::changeShippingAddress(
   auto shipping_address_ptr =
       payments::mojom::blink::PaymentAddress::From(shipping_address);
   String shipping_address_error;
-  if (!PaymentsValidators::IsValidShippingAddress(shipping_address_ptr,
+  if (!PaymentsValidators::IsValidShippingAddress(script_state->GetIsolate(),
+                                                  shipping_address_ptr,
                                                   &shipping_address_error)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
                                       shipping_address_error);

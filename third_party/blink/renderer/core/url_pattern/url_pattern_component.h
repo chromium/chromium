@@ -48,7 +48,8 @@ class Component final : public GarbageCollected<Component> {
   // compiled for.  This will select the correct encoding callback,
   // liburlpattern options, and populate errors messages with the correct
   // component string.
-  static Component* Compile(StringView pattern,
+  static Component* Compile(v8::Isolate* isolate,
+                            StringView pattern,
                             Type type,
                             Component* protocol_component,
                             const URLPatternOptions& external_options,

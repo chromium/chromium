@@ -19,7 +19,7 @@ namespace url_pattern {
 Parser::Parser(const String& input, const URLPatternOptions& external_options)
     : input_(input), utf8_(input), external_options_(external_options) {}
 
-void Parser::Parse(ExceptionState& exception_state) {
+void Parser::Parse(v8::Isolate* isolate, ExceptionState& exception_state) {
   DCHECK_EQ(state_, StringParseState::kInit);
   DCHECK_EQ(token_index_, 0u);
 
@@ -150,7 +150,7 @@ void Parser::Parse(ExceptionState& exception_state) {
           // compute if this entire URLPattern should be treated as a
           // "standard" URL.  If any of the special schemes, like `https`,
           // match the protocol pattern then we treat it as standard.
-          ComputeShouldTreatAsStandardURL(exception_state);
+          ComputeShouldTreatAsStandardURL(isolate, exception_state);
           if (exception_state.HadException())
             return;
 
@@ -519,10 +519,11 @@ String Parser::MakeComponentString() const {
                           token.index - component_char_start);
 }
 
-void Parser::ComputeShouldTreatAsStandardURL(ExceptionState& exception_state) {
+void Parser::ComputeShouldTreatAsStandardURL(v8::Isolate* isolate,
+                                             ExceptionState& exception_state) {
   DCHECK_EQ(state_, StringParseState::kProtocol);
   protocol_component_ = Component::Compile(
-      MakeComponentString(), Component::Type::kProtocol,
+      isolate, MakeComponentString(), Component::Type::kProtocol,
       /*protocol_component=*/nullptr, external_options_, exception_state);
   if (protocol_component_ && protocol_component_->ShouldTreatAsStandardURL())
     should_treat_as_standard_url_ = true;

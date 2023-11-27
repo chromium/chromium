@@ -102,8 +102,9 @@ TEST(ServiceWorkerRouterTypeConverterTest, Basic) {
   expected_rule.sources.emplace_back(expected_source);
 
   V8TestingScope scope;
-  auto blink_rule = ConvertV8RouterRuleToBlink(idl_rule, DefaultBaseUrl(),
-                                               scope.GetExceptionState());
+  auto blink_rule =
+      ConvertV8RouterRuleToBlink(scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
+                                 scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_TRUE(blink_rule.has_value());
   EXPECT_EQ(expected_rule, *blink_rule);
@@ -159,8 +160,9 @@ TEST(ServiceWorkerRouterTypeConverterTest, BasicURLPatternInit) {
   expected_rule.sources.emplace_back(expected_source);
 
   V8TestingScope scope;
-  auto blink_rule = ConvertV8RouterRuleToBlink(idl_rule, DefaultBaseUrl(),
-                                               scope.GetExceptionState());
+  auto blink_rule =
+      ConvertV8RouterRuleToBlink(scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
+                                 scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_TRUE(blink_rule.has_value());
   EXPECT_EQ(expected_rule, *blink_rule);
@@ -211,8 +213,9 @@ TEST(ServiceWorkerRouterTypeConverterTest, URLPatternInitWithEmptyPathname) {
   expected_rule.sources.emplace_back(expected_source);
 
   V8TestingScope scope;
-  auto blink_rule = ConvertV8RouterRuleToBlink(idl_rule, DefaultBaseUrl(),
-                                               scope.GetExceptionState());
+  auto blink_rule =
+      ConvertV8RouterRuleToBlink(scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
+                                 scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_TRUE(blink_rule.has_value());
   EXPECT_EQ(expected_rule, *blink_rule);
@@ -241,8 +244,9 @@ TEST(ServiceWorkerRouterTypeConverterTest,
   expected_rule.sources.emplace_back(expected_source);
 
   V8TestingScope scope;
-  auto blink_rule = ConvertV8RouterRuleToBlink(idl_rule, DefaultBaseUrl(),
-                                               scope.GetExceptionState());
+  auto blink_rule =
+      ConvertV8RouterRuleToBlink(scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
+                                 scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_TRUE(blink_rule.has_value());
   EXPECT_EQ(expected_rule, *blink_rule);
@@ -264,8 +268,8 @@ TEST(ServiceWorkerRouterTypeConverterTest,
               blink::V8RouterSourceEnum::Enum::kNetwork)));
 
   V8TestingScope scope;
-  auto blink_rule = ConvertV8RouterRuleToBlink(idl_rule, kFakeBaseUrl,
-                                               scope.GetExceptionState());
+  auto blink_rule = ConvertV8RouterRuleToBlink(
+      scope.GetIsolate(), idl_rule, kFakeBaseUrl, scope.GetExceptionState());
   EXPECT_TRUE(scope.GetExceptionState().HadException());
   EXPECT_FALSE(blink_rule.has_value());
 }
@@ -284,8 +288,9 @@ TEST(ServiceWorkerRouterTypeConverterTest, RegexpUrlPatternShouldBeNullopt) {
                 blink::V8RouterSourceEnum::Enum::kNetwork)));
 
     V8TestingScope scope;
-    auto blink_rule = ConvertV8RouterRuleToBlink(idl_rule, DefaultBaseUrl(),
-                                                 scope.GetExceptionState());
+    auto blink_rule =
+        ConvertV8RouterRuleToBlink(scope.GetIsolate(), idl_rule,
+                                   DefaultBaseUrl(), scope.GetExceptionState());
     EXPECT_TRUE(scope.GetExceptionState().HadException());
     EXPECT_FALSE(blink_rule.has_value());
   };
@@ -323,8 +328,9 @@ TEST(ServiceWorkerRouterTypeConverterTest, Race) {
   expected_rule.sources.emplace_back(expected_source);
 
   V8TestingScope scope;
-  auto blink_rule = ConvertV8RouterRuleToBlink(idl_rule, DefaultBaseUrl(),
-                                               scope.GetExceptionState());
+  auto blink_rule =
+      ConvertV8RouterRuleToBlink(scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
+                                 scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_TRUE(blink_rule.has_value());
   EXPECT_EQ(expected_rule, *blink_rule);
@@ -360,8 +366,9 @@ TEST(ServiceWorkerRouterTypeConverterTest, FetchEvent) {
   expected_rule.sources.emplace_back(expected_source);
 
   V8TestingScope scope;
-  auto blink_rule = ConvertV8RouterRuleToBlink(idl_rule, DefaultBaseUrl(),
-                                               scope.GetExceptionState());
+  auto blink_rule =
+      ConvertV8RouterRuleToBlink(scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
+                                 scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_TRUE(blink_rule.has_value());
   EXPECT_EQ(expected_rule, *blink_rule);
@@ -393,8 +400,9 @@ TEST(ServiceWorkerRouterTypeConverterTest, Request) {
   expected_rule.sources.emplace_back(expected_source);
 
   V8TestingScope scope;
-  auto blink_rule = ConvertV8RouterRuleToBlink(idl_rule, DefaultBaseUrl(),
-                                               scope.GetExceptionState());
+  auto blink_rule =
+      ConvertV8RouterRuleToBlink(scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
+                                 scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_TRUE(blink_rule.has_value());
   EXPECT_EQ(expected_rule, *blink_rule);
@@ -423,8 +431,9 @@ TEST(ServiceWorkerRouterTypeConverterTest, RequestMethodNormalize) {
     expected_rule.sources.emplace_back(expected_source);
 
     V8TestingScope scope;
-    auto blink_rule = ConvertV8RouterRuleToBlink(idl_rule, DefaultBaseUrl(),
-                                                 scope.GetExceptionState());
+    auto blink_rule =
+        ConvertV8RouterRuleToBlink(scope.GetIsolate(), idl_rule,
+                                   DefaultBaseUrl(), scope.GetExceptionState());
     EXPECT_FALSE(scope.GetExceptionState().HadException());
     EXPECT_TRUE(blink_rule.has_value());
     EXPECT_EQ(expected_rule, *blink_rule);
@@ -464,7 +473,8 @@ TEST(ServiceWorkerRouterTypeConverterTest, RunningStatus) {
         expected_rule.sources.emplace_back(expected_source);
 
         V8TestingScope scope;
-        auto blink_rule = ConvertV8RouterRuleToBlink(idl_rule, DefaultBaseUrl(),
+        auto blink_rule = ConvertV8RouterRuleToBlink(scope.GetIsolate(),
+                                                     idl_rule, DefaultBaseUrl(),
                                                      scope.GetExceptionState());
         EXPECT_FALSE(scope.GetExceptionState().HadException());
         EXPECT_TRUE(blink_rule.has_value());
@@ -499,8 +509,9 @@ TEST(ServiceWorkerRouterTypeConverterTest, EmptyOrConditionShouldBeAllowed) {
   expected_rule.sources.emplace_back(expected_source);
 
   V8TestingScope scope;
-  auto blink_rule = ConvertV8RouterRuleToBlink(idl_rule, DefaultBaseUrl(),
-                                               scope.GetExceptionState());
+  auto blink_rule =
+      ConvertV8RouterRuleToBlink(scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
+                                 scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_TRUE(blink_rule.has_value());
   EXPECT_EQ(expected_rule, *blink_rule);
@@ -559,8 +570,9 @@ TEST(ServiceWorkerRouterTypeConverterTest, OrConditionWithMultipleElements) {
   expected_rule.sources.emplace_back(expected_source);
 
   V8TestingScope scope;
-  auto blink_rule = ConvertV8RouterRuleToBlink(idl_rule, DefaultBaseUrl(),
-                                               scope.GetExceptionState());
+  auto blink_rule =
+      ConvertV8RouterRuleToBlink(scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
+                                 scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_TRUE(blink_rule.has_value());
   EXPECT_EQ(expected_rule, *blink_rule);
@@ -598,8 +610,9 @@ TEST(ServiceWorkerRouterTypeConverterTest, NestedOrCondition) {
   expected_rule.sources.emplace_back(expected_source);
 
   V8TestingScope scope;
-  auto blink_rule = ConvertV8RouterRuleToBlink(idl_rule, DefaultBaseUrl(),
-                                               scope.GetExceptionState());
+  auto blink_rule =
+      ConvertV8RouterRuleToBlink(scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
+                                 scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_TRUE(blink_rule.has_value());
   EXPECT_EQ(expected_rule, *blink_rule);
@@ -621,8 +634,8 @@ TEST(ServiceWorkerRouterTypeConverterTest,
               blink::V8RouterSourceEnum::Enum::kNetwork)));
 
   V8TestingScope scope;
-  auto blink_rule = ConvertV8RouterRuleToBlink(idl_rule, kFakeBaseUrl,
-                                               scope.GetExceptionState());
+  auto blink_rule = ConvertV8RouterRuleToBlink(
+      scope.GetIsolate(), idl_rule, kFakeBaseUrl, scope.GetExceptionState());
   EXPECT_TRUE(scope.GetExceptionState().HadException());
   EXPECT_FALSE(blink_rule.has_value());
 }
@@ -658,8 +671,9 @@ TEST(ServiceWorkerRouterTypeConverterTest, Cache) {
   expected_rule.sources.emplace_back(expected_source);
 
   V8TestingScope scope;
-  auto blink_rule = ConvertV8RouterRuleToBlink(idl_rule, DefaultBaseUrl(),
-                                               scope.GetExceptionState());
+  auto blink_rule =
+      ConvertV8RouterRuleToBlink(scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
+                                 scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_TRUE(blink_rule.has_value());
   EXPECT_EQ(expected_rule, *blink_rule);
@@ -698,8 +712,9 @@ TEST(ServiceWorkerRouterTypeConverterTest, CacheName) {
   expected_rule.sources.emplace_back(expected_source);
 
   V8TestingScope scope;
-  auto blink_rule = ConvertV8RouterRuleToBlink(idl_rule, DefaultBaseUrl(),
-                                               scope.GetExceptionState());
+  auto blink_rule =
+      ConvertV8RouterRuleToBlink(scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
+                                 scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_TRUE(blink_rule.has_value());
   EXPECT_EQ(expected_rule, *blink_rule);

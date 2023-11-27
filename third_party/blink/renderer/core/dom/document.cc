@@ -7899,8 +7899,10 @@ Document::EnsureDocumentExplicitRootIntersectionObserverData() {
 }
 
 const ScriptRegexp& Document::EnsureEmailRegexp() const {
-  if (!data_->email_regexp_)
-    data_->email_regexp_ = EmailInputType::CreateEmailRegexp();
+  if (!data_->email_regexp_) {
+    data_->email_regexp_ =
+        EmailInputType::CreateEmailRegexp(GetAgent().isolate());
+  }
   return *data_->email_regexp_;
 }
 

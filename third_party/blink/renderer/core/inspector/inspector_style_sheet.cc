@@ -63,6 +63,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
@@ -2270,8 +2271,12 @@ std::unique_ptr<protocol::Array<protocol::CSS::Value>>
 InspectorStyleSheet::SelectorsFromSource(CSSRuleSourceData* source_data,
                                          const String& sheet_text,
                                          CSSStyleRule* rule) {
-  auto* comment = MakeGarbageCollected<ScriptRegexp>(
-      "/\\*[^]*?\\*/", kTextCaseSensitive, MultilineMode::kMultilineEnabled);
+  ScriptRegexp* comment = nullptr;
+  if (page_style_sheet_->OwnerDocument()) {
+    comment = MakeGarbageCollected<ScriptRegexp>(
+        page_style_sheet_->OwnerDocument()->GetAgent().isolate(),
+        "/\\*[^]*?\\*/", kTextCaseSensitive, MultilineMode::kMultilineEnabled);
+  }
   auto result = std::make_unique<protocol::Array<protocol::CSS::Value>>();
   const Vector<SourceRange>& ranges = source_data->selector_ranges;
   const CSSSelector* obj_selector = rule->GetStyleRule()->FirstSelector();
@@ -2281,12 +2286,15 @@ InspectorStyleSheet::SelectorsFromSource(CSSRuleSourceData* source_data,
     const SourceRange& range = ranges.at(i);
     String selector = sheet_text.Substring(range.start, range.length());
 
-    // We don't want to see any comments in the selector components, only the
-    // meaningful parts.
-    int match_length;
-    int offset = 0;
-    while ((offset = comment->Match(selector, offset, &match_length)) >= 0)
-      selector.replace(offset, match_length, "");
+    if (comment) {
+      // We don't want to see any comments in the selector components, only the
+      // meaningful parts.
+      int match_length;
+      int offset = 0;
+      while ((offset = comment->Match(selector, offset, &match_length)) >= 0) {
+        selector.replace(offset, match_length, "");
+      }
+    }
 
     std::unique_ptr<protocol::CSS::Value> simple_selector =
         protocol::CSS::Value::create()

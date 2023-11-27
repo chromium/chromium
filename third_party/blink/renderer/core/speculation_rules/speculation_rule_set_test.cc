@@ -89,6 +89,48 @@ class ListRuleMatcher {
   ::testing::Matcher<const Vector<KURL>&> url_matcher_;
 };
 
+class URLPatternMatcher {
+ public:
+  explicit URLPatternMatcher(v8::Isolate* isolate,
+                             String pattern,
+                             const KURL& base_url) {
+    auto* url_pattern_input = MakeGarbageCollected<V8URLPatternInput>(pattern);
+    url_pattern_ = URLPattern::Create(isolate, url_pattern_input, base_url,
+                                      ASSERT_NO_EXCEPTION);
+  }
+
+  bool MatchAndExplain(URLPattern* pattern,
+                       ::testing::MatchResultListener* listener) const {
+    if (!pattern) {
+      return false;
+    }
+    return MatchAndExplain(*pattern, listener);
+  }
+
+  bool MatchAndExplain(const URLPattern& pattern,
+                       ::testing::MatchResultListener* listener) const {
+    using Component = V8URLPatternComponent::Enum;
+    Component components[] = {Component::kProtocol, Component::kUsername,
+                              Component::kPassword, Component::kHostname,
+                              Component::kPort,     Component::kPathname,
+                              Component::kSearch,   Component::kHash};
+    for (auto component : components) {
+      if (URLPattern::compareComponent(V8URLPatternComponent(component),
+                                       url_pattern_, &pattern) != 0) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  void DescribeTo(::std::ostream* os) const { *os << url_pattern_->ToString(); }
+
+  void DescribeNegationTo(::std::ostream* os) const { DescribeTo(os); }
+
+ private:
+  Persistent<URLPattern> url_pattern_;
+};
+
 template <typename... Matchers>
 auto MatchesListOfURLs(Matchers&&... matchers) {
   return ::testing::MakePolymorphicMatcher(
@@ -155,6 +197,12 @@ class SpeculationRuleSetTest : public ::testing::Test {
 
   NullExecutionContext* execution_context() {
     return static_cast<NullExecutionContext*>(execution_context_.Get());
+  }
+
+  auto URLPattern(String pattern,
+                  const KURL& base_url = KURL("https://example.com/")) {
+    return ::testing::MakePolymorphicMatcher(
+        URLPatternMatcher(execution_context_->GetIsolate(), pattern, base_url));
   }
 
  private:
@@ -1436,51 +1484,6 @@ auto Selector(Vector<::testing::Matcher<StyleRule>> style_rule_matchers = {}) {
   return MakePredicateMatcher(std::move(style_rule_matchers),
                               DocumentRulePredicate::Type::kCSSSelectors,
                               &DocumentRulePredicate::GetStyleRulesForTesting);
-}
-
-class URLPatternMatcher {
- public:
-  explicit URLPatternMatcher(String pattern, const KURL& base_url) {
-    auto* url_pattern_input = MakeGarbageCollected<V8URLPatternInput>(pattern);
-    url_pattern_ =
-        URLPattern::Create(url_pattern_input, base_url, ASSERT_NO_EXCEPTION);
-  }
-
-  bool MatchAndExplain(URLPattern* pattern,
-                       ::testing::MatchResultListener* listener) const {
-    if (!pattern)
-      return false;
-    return MatchAndExplain(*pattern, listener);
-  }
-
-  bool MatchAndExplain(const URLPattern& pattern,
-                       ::testing::MatchResultListener* listener) const {
-    using Component = V8URLPatternComponent::Enum;
-    Component components[] = {Component::kProtocol, Component::kUsername,
-                              Component::kPassword, Component::kHostname,
-                              Component::kPort,     Component::kPathname,
-                              Component::kSearch,   Component::kHash};
-    for (auto component : components) {
-      if (URLPattern::compareComponent(V8URLPatternComponent(component),
-                                       url_pattern_, &pattern) != 0) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  void DescribeTo(::std::ostream* os) const { *os << url_pattern_->ToString(); }
-
-  void DescribeNegationTo(::std::ostream* os) const { DescribeTo(os); }
-
- private:
-  Persistent<URLPattern> url_pattern_;
-};
-
-auto URLPattern(String pattern,
-                const KURL& base_url = KURL("https://example.com/")) {
-  return ::testing::MakePolymorphicMatcher(
-      URLPatternMatcher(pattern, base_url));
 }
 
 class StyleRuleMatcher {

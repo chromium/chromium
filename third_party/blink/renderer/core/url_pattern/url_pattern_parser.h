@@ -48,7 +48,7 @@ class Parser final {
   // absolute pattern strings.  It is not compiled for relative pattern string.
   // The compiled protocol Component can be accessed by calling
   // `GetProtocolComponent()`.
-  void Parse(ExceptionState& exception_state);
+  void Parse(v8::Isolate* isolate, ExceptionState& exception_state);
 
   // Return the parse result.  Should only be called after `Parse()` succeeds.
   URLPatternInit* GetResult() const { return result_; }
@@ -156,7 +156,8 @@ class Parser final {
 
   // Returns true if this URL should be treated as a "standard URL".  These URLs
   // automatically append a `/` for the pathname if one is not specified.
-  void ComputeShouldTreatAsStandardURL(ExceptionState& exception_state);
+  void ComputeShouldTreatAsStandardURL(v8::Isolate* isolate,
+                                       ExceptionState& exception_state);
 
   // The input string to the parser.
   const String input_;

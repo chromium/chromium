@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_regexp.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/email_input_type.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
@@ -105,9 +106,10 @@ bool BaseTextInputType::PatternMismatchPerValue(const String& value) const {
   if (raw_pattern.IsNull() || value.empty())
     return false;
   if (!regexp_ || pattern_for_regexp_ != raw_pattern) {
+    v8::Isolate* isolate = GetElement().GetDocument().GetAgent().isolate();
     ScriptRegexp* raw_regexp = MakeGarbageCollected<ScriptRegexp>(
-        raw_pattern, kTextCaseSensitive, MultilineMode::kMultilineDisabled,
-        unicode_mode);
+        isolate, raw_pattern, kTextCaseSensitive,
+        MultilineMode::kMultilineDisabled, unicode_mode);
     if (!raw_regexp->IsValid()) {
       GetElement().GetDocument().AddConsoleMessage(
           MakeGarbageCollected<ConsoleMessage>(
@@ -122,7 +124,7 @@ bool BaseTextInputType::PatternMismatchPerValue(const String& value) const {
     }
     String pattern = "^(?:" + raw_pattern + ")$";
     regexp_ = MakeGarbageCollected<ScriptRegexp>(
-        pattern, kTextCaseSensitive, MultilineMode::kMultilineDisabled,
+        isolate, pattern, kTextCaseSensitive, MultilineMode::kMultilineDisabled,
         unicode_mode);
     pattern_for_regexp_ = raw_pattern;
   } else if (!regexp_->IsValid()) {

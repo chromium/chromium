@@ -139,7 +139,8 @@ void PaymentRequestRespondWithObserver::OnResponseFulfilled(
                                  : nullptr;
   if (should_have_shipping_info_) {
     if (!PaymentsValidators::IsValidShippingAddress(
-            shipping_address_ptr, nullptr /* = optional_error_message */)) {
+            script_state->GetIsolate(), shipping_address_ptr,
+            nullptr /* = optional_error_message */)) {
       BlankResponseWithError(
           PaymentEventResponseType::SHIPPING_ADDRESS_INVALID);
       return;

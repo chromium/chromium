@@ -30,8 +30,8 @@ TEST(URLPatternTest, CompatibleFromString) {
       V8String(scope.GetIsolate(), "baz/:quux");
   auto* compatible = V8URLPatternCompatible::Create(
       scope.GetIsolate(), pattern_string, ASSERT_NO_EXCEPTION);
-  auto* url_pattern =
-      URLPattern::From(compatible, base_url, ASSERT_NO_EXCEPTION);
+  auto* url_pattern = URLPattern::From(scope.GetIsolate(), compatible, base_url,
+                                       ASSERT_NO_EXCEPTION);
   EXPECT_EQ(url_pattern->protocol(), "https");
   EXPECT_EQ(url_pattern->hostname(), "urlpattern.example");
   EXPECT_EQ(url_pattern->pathname(), "/foo/baz/:quux");
@@ -44,7 +44,8 @@ TEST(URLPatternTest, CompatibleFromStringInvalid) {
   auto* compatible = V8URLPatternCompatible::Create(
       scope.GetIsolate(), pattern_string, ASSERT_NO_EXCEPTION);
   DummyExceptionStateForTesting exception_state;
-  EXPECT_FALSE(URLPattern::From(compatible, base_url, exception_state));
+  EXPECT_FALSE(URLPattern::From(scope.GetIsolate(), compatible, base_url,
+                                exception_state));
   EXPECT_TRUE(exception_state.HadException());
 }
 
@@ -55,8 +56,8 @@ TEST(URLPatternTest, CompatibleFromInit) {
   ASSERT_TRUE(init->IsObject());
   auto* compatible = V8URLPatternCompatible::Create(scope.GetIsolate(), init,
                                                     ASSERT_NO_EXCEPTION);
-  auto* url_pattern =
-      URLPattern::From(compatible, base_url, ASSERT_NO_EXCEPTION);
+  auto* url_pattern = URLPattern::From(scope.GetIsolate(), compatible, base_url,
+                                       ASSERT_NO_EXCEPTION);
   EXPECT_EQ(url_pattern->protocol(), "https");
   EXPECT_EQ(url_pattern->hostname(), "urlpattern.example");
   EXPECT_EQ(url_pattern->pathname(), "/foo/bar");
@@ -71,8 +72,8 @@ TEST(URLPatternTest, CompatibleFromInitWithBaseURL) {
   ASSERT_TRUE(init->IsObject());
   auto* compatible = V8URLPatternCompatible::Create(scope.GetIsolate(), init,
                                                     ASSERT_NO_EXCEPTION);
-  auto* url_pattern =
-      URLPattern::From(compatible, base_url, ASSERT_NO_EXCEPTION);
+  auto* url_pattern = URLPattern::From(scope.GetIsolate(), compatible, base_url,
+                                       ASSERT_NO_EXCEPTION);
   EXPECT_EQ(url_pattern->protocol(), "https");
   EXPECT_EQ(url_pattern->hostname(), "alt.example");
   EXPECT_EQ(url_pattern->pathname(), "/");
@@ -87,7 +88,8 @@ TEST(URLPatternTest, CompatibleFromInitInvalid) {
   auto* compatible = V8URLPatternCompatible::Create(scope.GetIsolate(), init,
                                                     ASSERT_NO_EXCEPTION);
   DummyExceptionStateForTesting exception_state;
-  EXPECT_FALSE(URLPattern::From(compatible, base_url, exception_state));
+  EXPECT_FALSE(URLPattern::From(scope.GetIsolate(), compatible, base_url,
+                                exception_state));
   EXPECT_TRUE(exception_state.HadException());
 }
 
@@ -99,8 +101,8 @@ TEST(URLPatternTest, CompatibleFromURLPattern) {
   ASSERT_TRUE(V8URLPattern::HasInstance(scope.GetIsolate(), wrapper));
   auto* compatible = V8URLPatternCompatible::Create(scope.GetIsolate(), wrapper,
                                                     ASSERT_NO_EXCEPTION);
-  auto* url_pattern =
-      URLPattern::From(compatible, base_url, ASSERT_NO_EXCEPTION);
+  auto* url_pattern = URLPattern::From(scope.GetIsolate(), compatible, base_url,
+                                       ASSERT_NO_EXCEPTION);
   EXPECT_EQ(url_pattern, ToScriptWrappable(wrapper.As<v8::Object>()));
 }
 

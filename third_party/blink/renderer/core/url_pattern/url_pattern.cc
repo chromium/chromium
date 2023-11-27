@@ -296,7 +296,8 @@ URLPatternComponentResult* MakeURLPatternComponentResult(
 
 }  // namespace
 
-URLPattern* URLPattern::From(const V8URLPatternCompatible* compatible,
+URLPattern* URLPattern::From(v8::Isolate* isolate,
+                             const V8URLPatternCompatible* compatible,
                              const KURL& base_url,
                              ExceptionState& exception_state) {
   switch (compatible->GetContentType()) {
@@ -335,18 +336,20 @@ URLPattern* URLPattern::From(const V8URLPatternCompatible* compatible,
         }
         init->setBaseURL(base_url.GetString());
       }
-      return Create(init, /*precomputed_protocol_component=*/nullptr,
+      return Create(isolate, init, /*precomputed_protocol_component=*/nullptr,
                     MakeGarbageCollected<URLPatternOptions>(), exception_state);
     }
     case V8URLPatternCompatible::ContentType::kUSVString:
       return Create(
+          isolate,
           MakeGarbageCollected<V8URLPatternInput>(compatible->GetAsUSVString()),
           base_url.GetString(), MakeGarbageCollected<URLPatternOptions>(),
           exception_state);
   }
 }
 
-URLPattern* URLPattern::Create(const V8URLPatternInput* input,
+URLPattern* URLPattern::Create(v8::Isolate* isolate,
+                               const V8URLPatternInput* input,
                                const String& base_url,
                                const URLPatternOptions* options,
                                ExceptionState& exception_state) {
@@ -362,7 +365,7 @@ URLPattern* URLPattern::Create(const V8URLPatternInput* input,
   const auto& input_string = input->GetAsUSVString();
 
   url_pattern::Parser parser(input_string, *options);
-  parser.Parse(exception_state);
+  parser.Parse(isolate, exception_state);
   if (exception_state.HadException())
     return nullptr;
 
@@ -377,8 +380,8 @@ URLPattern* URLPattern::Create(const V8URLPatternInput* input,
   if (base_url)
     init->setBaseURL(base_url);
 
-  URLPattern* result =
-      Create(init, parser.GetProtocolComponent(), options, exception_state);
+  URLPattern* result = Create(isolate, init, parser.GetProtocolComponent(),
+                              options, exception_state);
   if (result) {
     URLPattern::ComponentSet present = parser.GetPresentComponents();
     URLPattern::ComponentSet wildcard_with_string_format_change =
@@ -426,37 +429,42 @@ URLPattern* URLPattern::Create(const V8URLPatternInput* input,
   return result;
 }
 
-URLPattern* URLPattern::Create(const V8URLPatternInput* input,
+URLPattern* URLPattern::Create(v8::Isolate* isolate,
+                               const V8URLPatternInput* input,
                                const String& base_url,
                                ExceptionState& exception_state) {
-  return Create(input, base_url, MakeGarbageCollected<URLPatternOptions>(),
-                exception_state);
+  return Create(isolate, input, base_url,
+                MakeGarbageCollected<URLPatternOptions>(), exception_state);
 }
 
-URLPattern* URLPattern::Create(const V8URLPatternInput* input,
+URLPattern* URLPattern::Create(v8::Isolate* isolate,
+                               const V8URLPatternInput* input,
                                const URLPatternOptions* options,
                                ExceptionState& exception_state) {
   if (input->IsURLPatternInit()) {
-    return URLPattern::Create(input->GetAsURLPatternInit(),
+    return URLPattern::Create(isolate, input->GetAsURLPatternInit(),
                               /*precomputed_protocol_component=*/nullptr,
                               options, exception_state);
   }
-  return Create(input, /*base_url=*/String(), options, exception_state);
+  return Create(isolate, input, /*base_url=*/String(), options,
+                exception_state);
 }
 
-URLPattern* URLPattern::Create(const V8URLPatternInput* input,
+URLPattern* URLPattern::Create(v8::Isolate* isolate,
+                               const V8URLPatternInput* input,
                                ExceptionState& exception_state) {
   if (input->IsURLPatternInit()) {
-    return URLPattern::Create(input->GetAsURLPatternInit(),
+    return URLPattern::Create(isolate, input->GetAsURLPatternInit(),
                               /*precomputed_protocol_component=*/nullptr,
                               MakeGarbageCollected<URLPatternOptions>(),
                               exception_state);
   }
 
-  return Create(input, /*base_url=*/String(), exception_state);
+  return Create(isolate, input, /*base_url=*/String(), exception_state);
 }
 
-URLPattern* URLPattern::Create(const URLPatternInit* init,
+URLPattern* URLPattern::Create(v8::Isolate* isolate,
+                               const URLPatternInit* init,
                                Component* precomputed_protocol_component,
                                const URLPatternOptions* options,
                                ExceptionState& exception_state) {
@@ -491,51 +499,51 @@ URLPattern* URLPattern::Create(const URLPatternInit* init,
   auto* protocol_component = precomputed_protocol_component;
   if (!protocol_component) {
     protocol_component = Component::Compile(
-        protocol, Component::Type::kProtocol,
+        isolate, protocol, Component::Type::kProtocol,
         /*protocol_component=*/nullptr, *options, exception_state);
   }
   if (exception_state.HadException())
     return nullptr;
 
   auto* username_component =
-      Component::Compile(username, Component::Type::kUsername,
+      Component::Compile(isolate, username, Component::Type::kUsername,
                          protocol_component, *options, exception_state);
   if (exception_state.HadException())
     return nullptr;
 
   auto* password_component =
-      Component::Compile(password, Component::Type::kPassword,
+      Component::Compile(isolate, password, Component::Type::kPassword,
                          protocol_component, *options, exception_state);
   if (exception_state.HadException())
     return nullptr;
 
   auto* hostname_component =
-      Component::Compile(hostname, Component::Type::kHostname,
+      Component::Compile(isolate, hostname, Component::Type::kHostname,
                          protocol_component, *options, exception_state);
   if (exception_state.HadException())
     return nullptr;
 
   auto* port_component =
-      Component::Compile(port, Component::Type::kPort, protocol_component,
-                         *options, exception_state);
+      Component::Compile(isolate, port, Component::Type::kPort,
+                         protocol_component, *options, exception_state);
   if (exception_state.HadException())
     return nullptr;
 
   auto* pathname_component =
-      Component::Compile(pathname, Component::Type::kPathname,
+      Component::Compile(isolate, pathname, Component::Type::kPathname,
                          protocol_component, *options, exception_state);
   if (exception_state.HadException())
     return nullptr;
 
   auto* search_component =
-      Component::Compile(search, Component::Type::kSearch, protocol_component,
-                         *options, exception_state);
+      Component::Compile(isolate, search, Component::Type::kSearch,
+                         protocol_component, *options, exception_state);
   if (exception_state.HadException())
     return nullptr;
 
   auto* hash_component =
-      Component::Compile(hash, Component::Type::kHash, protocol_component,
-                         *options, exception_state);
+      Component::Compile(isolate, hash, Component::Type::kHash,
+                         protocol_component, *options, exception_state);
   if (exception_state.HadException())
     return nullptr;
 
