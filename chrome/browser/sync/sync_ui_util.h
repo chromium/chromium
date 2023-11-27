@@ -11,7 +11,6 @@
 
 class Browser;
 class Profile;
-class PrefService;
 
 namespace signin {
 class IdentityManager;
@@ -122,17 +121,6 @@ bool ShouldRequestSyncConfirmation(const syncer::SyncService* service);
 // Returns whether it makes sense to show a Sync passphrase error UI, i.e.
 // whether a missing passphrase is preventing Sync from fully starting up.
 bool ShouldShowSyncPassphraseError(const syncer::SyncService* service);
-
-// Returns whether missing trusted vault keys is preventing sync from starting
-// up encrypted datatypes.
-bool ShouldShowSyncKeysMissingError(const syncer::SyncService* sync_service,
-                                    const PrefService* pref_service);
-
-// Returns whether user action is required to improve the recoverability of the
-// trusted vault.
-bool ShouldShowTrustedVaultDegradedRecoverabilityError(
-    const syncer::SyncService* sync_service,
-    const PrefService* pref_service);
 
 // Opens a tab for the purpose of retrieving the trusted vault keys, which
 // usually requires a reauth.

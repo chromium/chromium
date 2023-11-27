@@ -1022,8 +1022,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
                   ->GetUserSettings()
                   ->IsTrustedVaultKeyRequiredForPreferredDataTypes());
   ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
-  ASSERT_TRUE(ShouldShowSyncKeysMissingError(GetSyncService(0),
-                                             GetProfile(0)->GetPrefs()));
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Verify the profile-menu error string.
@@ -1060,8 +1058,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
   EXPECT_FALSE(GetSyncService(0)
                    ->GetUserSettings()
                    ->IsTrustedVaultKeyRequiredForPreferredDataTypes());
-  EXPECT_FALSE(ShouldShowSyncKeysMissingError(GetSyncService(0),
-                                              GetProfile(0)->GetPrefs()));
   EXPECT_THAT(GetSyncStatusLabels(GetProfile(0)),
               StatusLabelsMatch(
                   SyncStatusMessageType::kSynced, IDS_SYNC_ACCOUNT_SYNCING,
@@ -1091,8 +1087,6 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(GetSyncService(0)
                   ->GetUserSettings()
                   ->IsTrustedVaultKeyRequiredForPreferredDataTypes());
-  ASSERT_TRUE(ShouldShowSyncKeysMissingError(GetSyncService(0),
-                                             GetProfile(0)->GetPrefs()));
 
   // There needs to be an existing tab for the second tab (the retrieval flow)
   // to be closeable via javascript.
@@ -1115,8 +1109,6 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_FALSE(GetSyncService(0)
                    ->GetUserSettings()
                    ->IsTrustedVaultKeyRequiredForPreferredDataTypes());
-  ASSERT_FALSE(ShouldShowSyncKeysMissingError(GetSyncService(0),
-                                              GetProfile(0)->GetPrefs()));
 
   // Now mimic entering degraded recoverability state.
   GetSecurityDomainsServer()->RequirePublicKeyToAvoidRecoverabilityDegraded(
@@ -1392,10 +1384,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
                    ->GetUserSettings()
                    ->IsTrustedVaultRecoverabilityDegraded());
   EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
-  EXPECT_FALSE(ShouldShowSyncKeysMissingError(GetSyncService(0),
-                                              GetProfile(0)->GetPrefs()));
-  EXPECT_FALSE(ShouldShowTrustedVaultDegradedRecoverabilityError(
-      GetSyncService(0), GetProfile(0)->GetPrefs()));
   EXPECT_THAT(GetSyncStatusLabels(GetProfile(0)),
               StatusLabelsMatch(
                   SyncStatusMessageType::kSynced, IDS_SYNC_ACCOUNT_SYNCING,
@@ -1466,8 +1454,6 @@ IN_PROC_BROWSER_TEST_F(
                   ->GetUserSettings()
                   ->IsTrustedVaultKeyRequiredForPreferredDataTypes());
   EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
-  EXPECT_TRUE(ShouldShowSyncKeysMissingError(GetSyncService(0),
-                                             GetProfile(0)->GetPrefs()));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1482,8 +1468,6 @@ IN_PROC_BROWSER_TEST_F(
                   ->GetUserSettings()
                   ->IsTrustedVaultKeyRequiredForPreferredDataTypes());
   ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
-  ASSERT_TRUE(ShouldShowSyncKeysMissingError(GetSyncService(0),
-                                             GetProfile(0)->GetPrefs()));
 
   // There needs to be an existing tab for the second tab (the retrieval flow)
   // to be closeable via javascript.
@@ -1546,8 +1530,6 @@ IN_PROC_BROWSER_TEST_F(
                   ->GetUserSettings()
                   ->IsTrustedVaultKeyRequiredForPreferredDataTypes());
   ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
-  ASSERT_TRUE(ShouldShowSyncKeysMissingError(GetSyncService(0),
-                                             GetProfile(0)->GetPrefs()));
 
   // There needs to be an existing tab for the second tab (the retrieval flow)
   // to be closeable via javascript.
@@ -1631,8 +1613,6 @@ IN_PROC_BROWSER_TEST_F(
                   ->GetUserSettings()
                   ->IsTrustedVaultKeyRequiredForPreferredDataTypes());
   ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
-  ASSERT_TRUE(ShouldShowSyncKeysMissingError(GetSyncService(0),
-                                             GetProfile(0)->GetPrefs()));
 
   histogram_tester.ExpectUniqueSample("Sync.TrustedVaultErrorShownOnStartup",
                                       /*sample=*/true,
@@ -1698,8 +1678,6 @@ IN_PROC_BROWSER_TEST_F(
                    ->GetUserSettings()
                    ->IsTrustedVaultKeyRequiredForPreferredDataTypes());
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
-  ASSERT_FALSE(ShouldShowSyncKeysMissingError(GetSyncService(0),
-                                              GetProfile(0)->GetPrefs()));
 
   histogram_tester.ExpectUniqueSample("Sync.TrustedVaultErrorShownOnStartup",
                                       /*sample=*/false,
@@ -1736,16 +1714,15 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
                                                              /*degraded=*/true)
                   .Wait());
 
-  EXPECT_TRUE(ShouldShowTrustedVaultDegradedRecoverabilityError(
-      GetSyncService(0), GetProfile(0)->GetPrefs()));
+  EXPECT_TRUE(GetSyncService(0)
+                  ->GetUserSettings()
+                  ->IsTrustedVaultRecoverabilityDegraded());
 
   ASSERT_THAT(GetSyncService(0)->GetUserSettings()->GetPassphraseType(),
               Eq(syncer::PassphraseType::kTrustedVaultPassphrase));
   ASSERT_FALSE(GetSyncService(0)
                    ->GetUserSettings()
                    ->IsTrustedVaultKeyRequiredForPreferredDataTypes());
-  ASSERT_FALSE(ShouldShowSyncKeysMissingError(GetSyncService(0),
-                                              GetProfile(0)->GetPrefs()));
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Verify the profile-menu error string.
@@ -1773,8 +1750,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
   EXPECT_TRUE(TrustedVaultRecoverabilityDegradedStateChecker(GetSyncService(0),
                                                              /*degraded=*/false)
                   .Wait());
-  EXPECT_FALSE(ShouldShowTrustedVaultDegradedRecoverabilityError(
-      GetSyncService(0), GetProfile(0)->GetPrefs()));
+  EXPECT_FALSE(GetSyncService(0)
+                   ->GetUserSettings()
+                   ->IsTrustedVaultRecoverabilityDegraded());
   EXPECT_FALSE(GetSecurityDomainsServer()->IsRecoverabilityDegraded());
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1915,8 +1893,9 @@ IN_PROC_BROWSER_TEST_F(
       /*last_key_version=*/GetSecurityDomainsServer()->GetCurrentEpoch());
   ASSERT_TRUE(SetupSync());
   ASSERT_FALSE(GetSecurityDomainsServer()->IsRecoverabilityDegraded());
-  ASSERT_FALSE(ShouldShowTrustedVaultDegradedRecoverabilityError(
-      GetSyncService(0), GetProfile(0)->GetPrefs()));
+  ASSERT_FALSE(GetSyncService(0)
+                   ->GetUserSettings()
+                   ->IsTrustedVaultRecoverabilityDegraded());
 
   // Mimic a server-side persistent auth error together with a degraded
   // recoverability, such as an account recovery flow that resets the account

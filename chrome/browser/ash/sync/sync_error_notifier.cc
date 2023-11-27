@@ -114,7 +114,8 @@ BubbleViewParameters GetBubbleViewParameters(
     return params;
   }
 
-  if (ShouldShowSyncKeysMissingError(sync_service, profile->GetPrefs())) {
+  if (sync_service->GetUserSettings()
+          ->IsTrustedVaultKeyRequiredForPreferredDataTypes()) {
     BubbleViewParameters params;
     params.title_id =
         sync_service->GetUserSettings()->IsEncryptEverythingEnabled()
@@ -130,8 +131,8 @@ BubbleViewParameters GetBubbleViewParameters(
     return params;
   }
 
-  DCHECK(ShouldShowTrustedVaultDegradedRecoverabilityError(
-      sync_service, profile->GetPrefs()));
+  DCHECK(
+      sync_service->GetUserSettings()->IsTrustedVaultRecoverabilityDegraded());
 
   BubbleViewParameters params;
   params.title_id = IDS_SYNC_NEEDS_VERIFICATION_BUBBLE_VIEW_TITLE;
@@ -172,9 +173,9 @@ void SyncErrorNotifier::OnStateChanged(syncer::SyncService* service) {
 
   const bool should_display_notification =
       ShouldShowSyncPassphraseError(sync_service_) ||
-      ShouldShowSyncKeysMissingError(service, profile_->GetPrefs()) ||
-      ShouldShowTrustedVaultDegradedRecoverabilityError(service,
-                                                        profile_->GetPrefs());
+      sync_service_->GetUserSettings()
+          ->IsTrustedVaultKeyRequiredForPreferredDataTypes() ||
+      sync_service_->GetUserSettings()->IsTrustedVaultRecoverabilityDegraded();
 
   if (should_display_notification == notification_displayed_) {
     return;
