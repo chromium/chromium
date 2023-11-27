@@ -72,8 +72,15 @@ void TestInterestGroupManagerImpl::EnqueueReports(
   EXPECT_EQ(expected_frame_origin_, frame_origin);
   EXPECT_EQ(*expected_client_security_state_, client_security_state);
   EXPECT_EQ(expected_url_loader_factory_.get(), url_loader_factory.get());
-  for (const auto& report_url : report_urls) {
-    reports_.emplace_back(Report{report_type, std::move(report_url)});
+
+  if (use_real_enqueue_reports_) {
+    InterestGroupManagerImpl::EnqueueReports(
+        report_type, std::move(report_urls), frame_tree_node_id, frame_origin,
+        client_security_state, url_loader_factory);
+  } else {
+    for (auto& report_url : report_urls) {
+      reports_.push_back(Report{report_type, std::move(report_url)});
+    }
   }
 }
 
@@ -121,6 +128,11 @@ void TestInterestGroupManagerImpl::ExpectReports(
     const std::vector<Report>& expected_reports) {
   EXPECT_THAT(reports_, testing::UnorderedElementsAreArray(expected_reports));
   reports_.clear();
+}
+
+void TestInterestGroupManagerImpl::set_use_real_enqueue_reports(
+    bool use_real_enqueue_reports) {
+  use_real_enqueue_reports_ = use_real_enqueue_reports;
 }
 
 std::vector<GURL> TestInterestGroupManagerImpl::TakeReportUrlsOfType(

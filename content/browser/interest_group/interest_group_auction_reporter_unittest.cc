@@ -23,6 +23,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/header_direct_from_seller_signals.h"
@@ -41,6 +42,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -114,7 +116,10 @@ class InterestGroupAuctionReporterTest
     : public RenderViewHostTestHarness,
       public AuctionWorkletManager::Delegate {
  public:
-  InterestGroupAuctionReporterTest() : winning_bid_info_(GetWinningBidInfo()) {
+  InterestGroupAuctionReporterTest()
+      : RenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        winning_bid_info_(GetWinningBidInfo()) {
     feature_list_.InitAndEnableFeatureWithParameters(
         blink::features::kPrivateAggregationApi,
         {{"fledge_extensions_enabled", "true"}});
@@ -629,6 +634,8 @@ class InterestGroupAuctionReporterTest
 
   base::HistogramTester histogram_tester_;
 
+  network::TestURLLoaderFactory dummy_test_url_loader_factory_;
+
   // SharedURLLoaderFactory used for reports. Reports are short-circuited by the
   // TestInterestGroupManagerImpl before they make it over the network, so this
   // is only used for equality checks around making sure the right factory is
@@ -636,7 +643,7 @@ class InterestGroupAuctionReporterTest
   scoped_refptr<network::SharedURLLoaderFactory>
       dummy_report_shared_url_loader_factory_ =
           base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-              nullptr);
+              &dummy_test_url_loader_factory_);
 
   MockAuctionProcessManager auction_process_manager_;
   std::unique_ptr<AuctionWorkletManager> auction_worklet_manager_;
@@ -722,6 +729,36 @@ TEST_F(InterestGroupAuctionReporterTest, SingleSellerReports) {
         kBidderReportUrl}});
 
   WaitForCompletion();
+}
+
+// Test the case where we are in the middle of reporting and the frametree node
+// is destroyed, we want to ensure that there is no crash.
+TEST_F(InterestGroupAuctionReporterTest,
+       SingleSellerReportsWhenFrameTreeNodeIsDestroyed) {
+  const base::TimeDelta reporting_interval = base::Milliseconds(50);
+  interest_group_manager_impl_->set_use_real_enqueue_reports(true);
+  interest_group_manager_impl_->set_max_active_report_requests_for_testing(1);
+  interest_group_manager_impl_->set_reporting_interval_for_testing(
+      reporting_interval);
+
+  dummy_test_url_loader_factory_.AddResponse(
+      "https://seller.report.test/seller-report", "");
+  dummy_test_url_loader_factory_.AddResponse(
+      "https://bidder.report.test/bidder=report", "");
+
+  SetUpAndStartSingleSellerAuction();
+
+  WaitForReportResultAndRunCallback(kSellerScriptUrl, kSellerReportUrl);
+  WaitForReportWinAndRunCallback(kBidderReportUrl);
+
+  interest_group_auction_reporter_
+      ->OnNavigateToWinningAdCallback(main_rfh()->GetFrameTreeNodeId())
+      .Run();
+
+  WaitForCompletion();
+  DeleteContents();
+  task_environment()->RunUntilIdle();
+  task_environment()->AdvanceClock(reporting_interval);
 }
 
 TEST_F(InterestGroupAuctionReporterTest, ComponentAuctionReports) {

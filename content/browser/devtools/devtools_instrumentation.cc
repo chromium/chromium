@@ -1434,6 +1434,9 @@ void OnAuctionWorkletNetworkRequestWillBeSent(
   if (frame_tree_node_id != FrameTreeNode::kFrameTreeNodeInvalidId) {
     FrameTreeNode* ftn = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
 
+    if (ftn == nullptr) {
+      return;
+    }
     const absl::optional<base::UnguessableToken>& devtools_navigation_token =
         ftn->current_frame_host()->GetDevToolsNavigationToken();
 
