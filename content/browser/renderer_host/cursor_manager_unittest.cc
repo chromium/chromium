@@ -367,6 +367,7 @@ TEST_F(CursorManagerTest, CustomCursorDisallowedScope_CustomCursorViewFocused) {
   }
 
   EXPECT_EQ(top_view_->cursor(), kCursorCustom);
+  top_view_->GetCursorManager()->ViewBeingDestroyed(child_view.get());
 }
 
 TEST_F(CursorManagerTest,
