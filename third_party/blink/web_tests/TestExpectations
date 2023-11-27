@@ -1561,7 +1561,6 @@ crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/browsers/the-window
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/browsers/the-window-object/close-method.window.html [ Failure Skip Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/browsers/the-window-object/open-close/close_unload.html [ Failure Skip Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/browsers/the-window-object/self-et-al.window.html [ Failure Skip Timeout ]
-crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/infrastructure/urls/base-url/document-base-url-window-initiator-is-not-opener.https.window.html [ Failure Skip Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/webappapis/dynamic-markup-insertion/opening-the-input-stream/bailout-exception-vs-return-origin.sub.window.html [ Failure Skip Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/webappapis/dynamic-markup-insertion/opening-the-input-stream/bailout-exception-vs-return-xml.window.html [ Failure Skip Timeout ]
 crbug.com/1488371 virtual/deprecate-unload/external/wpt/html/webappapis/dynamic-markup-insertion/opening-the-input-stream/bailout-side-effects-ignore-opens-during-unload.window.html [ Failure Skip Timeout ]
