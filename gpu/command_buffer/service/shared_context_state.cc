@@ -92,6 +92,15 @@ MakeGraphiteRecorderWithImageProvider(skgpu::graphite::Context* context) {
   return context->makeRecorder(options);
 }
 
+#if BUILDFLAG(SKIA_USE_DAWN)
+int32_t GetDawnMaxTextureSize(gpu::DawnContextProvider* context_provider) {
+  wgpu::SupportedLimits limits = {};
+  auto succeded = context_provider->GetDevice().GetLimits(&limits);
+  CHECK(succeded);
+  return limits.limits.maxTextureDimension2D;
+}
+#endif  // BUILDFLAG(SKIA_USE_DAWN)
+
 }  // anonymous namespace
 
 namespace gpu {
@@ -1011,15 +1020,19 @@ int32_t SharedContextState::GetMaxTextureSize() const {
     NOTREACHED_NORETURN();
 #endif
   } else {
-#if BUILDFLAG(SKIA_USE_DAWN)
-    DCHECK(dawn_context_provider());
-    wgpu::SupportedLimits limits = {};
-    auto succeded = dawn_context_provider()->GetDevice().GetLimits(&limits);
-    CHECK(succeded);
-    max_texture_size = limits.limits.maxTextureDimension2D;
-#else
     max_texture_size = 8192;
-#endif
+#if BUILDFLAG(SKIA_USE_DAWN)
+#if BUILDFLAG(IS_IOS)
+    // Note: We currently run tests against the Graphite-Metal backend on iOS;
+    // in these contexts the Dawn context provider is not created.
+    if (dawn_context_provider()) {
+      max_texture_size = GetDawnMaxTextureSize(dawn_context_provider());
+    }
+#else
+    CHECK(dawn_context_provider());
+    max_texture_size = GetDawnMaxTextureSize(dawn_context_provider());
+#endif  // BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(SKIA_USE_DAWN)
   }
   // Ensure max_texture_size_ is less than INT_MAX so that gfx::Rect and friends
   // can be used to accurately represent all valid sub-rects, with overflow
