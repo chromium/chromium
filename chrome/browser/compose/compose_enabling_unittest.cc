@@ -426,18 +426,11 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupWithSavedStateTest) {
   compose_enabling.SetEnabledForTesting();
   std::string autocomplete_attribute;
 
+  // test all variants of: popup with, popup without state.
   std::vector<std::pair<bool, bool>> tests = {
-      // config: popup with, popup without. expect: trigger with, trigger
-      // without.
-      {true, true},
-      {true, false},
-      {false, true},
-      {false, false}};
+      {true, true}, {true, false}, {false, true}, {false, false}};
 
-  bool popup_with_state, popup_without_state;
-  for (auto it = tests.begin(); it != tests.end(); ++it) {
-    std::tie(popup_with_state, popup_without_state) = *it;
-
+  for (auto [popup_with_state, popup_without_state] : tests) {
     compose::Config& config = compose::GetMutableConfigForTesting();
     config.popup_with_saved_state = popup_with_state;
     config.popup_with_no_saved_state = popup_without_state;
@@ -477,10 +470,7 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupNudgeDisabledTest) {
       {false, true},
       {false, false}};
 
-  bool popup_with_state, popup_without_state;
-  for (auto it = tests.begin(); it != tests.end(); ++it) {
-    std::tie(popup_with_state, popup_without_state) = *it;
-
+  for (auto [popup_with_state, popup_without_state] : tests) {
     compose::Config& config = compose::GetMutableConfigForTesting();
     config.popup_with_saved_state = popup_with_state;
     config.popup_with_no_saved_state = popup_without_state;

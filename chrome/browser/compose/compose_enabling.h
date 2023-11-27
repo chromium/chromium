@@ -37,7 +37,7 @@ class ComposeEnabling {
   bool ShouldTriggerPopup(std::string_view autocomplete_attribute,
                           Profile* profile,
                           translate::TranslateManager* translate_manager,
-                          bool has_saved_state,
+                          bool ongoing_session,
                           const url::Origin& top_level_frame_origin,
                           const url::Origin& element_frame_origin,
                           GURL url);

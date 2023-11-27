@@ -47,6 +47,16 @@ namespace {
 
 const char kComposeURL[] = "chrome://compose/";
 
+bool ShouldResumeSessionFromEntryPoint(
+    ChromeComposeClient::EntryPoint entry_point) {
+  switch (entry_point) {
+    case ChromeComposeClient::EntryPoint::kAutofillPopup:
+      return true;
+    case ChromeComposeClient::EntryPoint::kContextMenu:
+      return false;
+  }
+}
+
 }  // namespace
 
 ChromeComposeClient::ChromeComposeClient(content::WebContents* web_contents)
@@ -156,11 +166,22 @@ void ChromeComposeClient::CreateOrUpdateSession(
   std::string selected_text = base::UTF16ToUTF8(trigger_field.selected_text);
   ComposeSession* current_session;
 
-  bool should_create_new_session_for_selection =
-      ui_entry_point != EntryPoint::kAutofillPopup && !selected_text.empty();
-  if (!HasSession(active_compose_field_id_.value()) ||
-      should_create_new_session_for_selection) {
-    if (!selected_text.empty()) {
+  // We only want to resume if the popup was clicked or the selection is empty.
+  // If the context menu were clicked with a selection, presume this is intent
+  // to restart using the new selection.
+  bool resume_current_session =
+      ShouldResumeSessionFromEntryPoint(ui_entry_point) ||
+      selected_text.empty();
+
+  bool has_session = HasSession(active_compose_field_id_.value());
+  if (has_session && resume_current_session) {
+    auto it = sessions_.find(active_compose_field_id_.value());
+    current_session = it->second.get();
+    current_session->set_compose_callback(std::move(callback));
+  } else {
+    if (has_session) {
+      // We have a session already, and we are going to close it and create a
+      // new one, which will require a close reason.
       SetSessionCloseReason(
           compose::ComposeSessionCloseReason::kNewSessionWithSelectedText);
     }
@@ -176,14 +197,13 @@ void ChromeComposeClient::CreateOrUpdateSession(
     auto utf8_chars = base::CountUnicodeCharacters(selected_text);
     compose::LogComposeDialogSelectionLength(
         utf8_chars.has_value() ? utf8_chars.value() : 0);
-  } else {
-    auto it = sessions_.find(active_compose_field_id_.value());
-    current_session = it->second.get();
-    current_session->set_compose_callback(std::move(callback));
   }
-  current_session->InitializeWithText(should_create_new_session_for_selection
-                                          ? std::make_optional(selected_text)
-                                          : std::nullopt);
+
+  // If we are resuming then don't send the selected text - we want to keep the
+  // prior selection and not trigger another Compose.
+  current_session->InitializeWithText(resume_current_session
+                                          ? std::nullopt
+                                          : std::make_optional(selected_text));
 }
 
 void ChromeComposeClient::RemoveActiveSession() {
@@ -231,8 +251,6 @@ ComposeEnabling& ChromeComposeClient::GetComposeEnabling() {
 
 bool ChromeComposeClient::ShouldTriggerPopup(
     const autofill::FormFieldData& form_field_data) {
-  bool saved_state =
-      sessions_.end() != sessions_.find(form_field_data.global_id());
   translate::TranslateManager* translate_manager =
       ChromeTranslateClient::GetManagerFromWebContents(&GetWebContents());
   content::RenderFrameHost* top_level_frame =
@@ -242,8 +260,8 @@ bool ChromeComposeClient::ShouldTriggerPopup(
 
   return compose_enabling_.ShouldTriggerPopup(
       form_field_data.autocomplete_attribute, profile_, translate_manager,
-      saved_state, top_level_frame->GetLastCommittedOrigin(),
-      form_field_data.origin, url);
+      HasSession(form_field_data.global_id()),
+      top_level_frame->GetLastCommittedOrigin(), form_field_data.origin, url);
 }
 
 bool ChromeComposeClient::ShouldTriggerContextMenu(
