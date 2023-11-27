@@ -244,8 +244,15 @@ void PinnedToolbarActionsContainer::PinnedActionToolbarButton::
       PinnedToolbarActionsModel::Get(browser_->profile());
   actions::ActionId action_id = action_item_->GetActionId().value();
 
-  actions_model->UpdatePinnedState(
-      action_id, container_->IsActionPinned(action_id) ? false : true);
+  const bool updated_pin_state = !container_->IsActionPinned(action_id);
+  const absl::optional<std::string> metrics_name =
+      actions::ActionIdMap::ActionIdToString(action_id);
+  CHECK(metrics_name.has_value());
+  base::RecordComputedAction(
+      base::StrCat({"Actions.PinnedToolbarButton.",
+                    updated_pin_state ? "Pinned" : "Unpinned",
+                    ".ByContextMenu.", metrics_name.value()}));
+  actions_model->UpdatePinnedState(action_id, updated_pin_state);
 }
 
 BEGIN_METADATA(PinnedToolbarActionsContainer,

@@ -2457,6 +2457,24 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="Actions.PinnedToolbarButton.Pinned.ByContextMenu">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    Recorded when the suffxied action is pinned to the toolbar through the
+    context menu.
+  </description>
+</action>
+
+<action name="Actions.PinnedToolbarButton.Unpinned.ByContextMenu">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    Recorded when the suffxied action unpinned from the toolbar through the
+    context menu.
+  </description>
+</action>
+
 <action name="Actions.PinnedToolbarButtonActivation">
   <owner>corising@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
@@ -40931,6 +40949,26 @@ should be able to be added at any place in this file.
   <suffix name="NewTabButton" label="New tab button for thumbnail tab strip"/>
   <suffix name="SidePanelButton" label="Side Panel button"/>
   <affected-action name="ResponsiveToolbar.OverflowMenuItemActivated"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="kActionSidePanelShowBookmarks"
+      label="Show bookmarks side panel action"/>
+  <suffix name="kActionSidePanelShowFeed" label="Show feed side panel action"/>
+  <suffix name="kActionSidePanelShowHistoryCluster"
+      label="Show history clusster side panel action"/>
+  <suffix name="kActionSidePanelShowPerformance"
+      label="Show performance side panel action"/>
+  <suffix name="kActionSidePanelShowReadAnything"
+      label="Show read anything side panel action"/>
+  <suffix name="kActionSidePanelShowReadingList"
+      label="Show reading list side panel action"/>
+  <suffix name="kActionSidePanelShowSearchCompanion"
+      label="Show search companion side panel action"/>
+  <suffix name="kActionSidePanelShowUserNote"
+      label="Show user note side panel action"/>
+  <affected-action name="Actions.PinnedToolbarButton.Pinned.ByContextMenu"/>
+  <affected-action name="Actions.PinnedToolbarButton.Unpinned.ByContextMenu"/>
 </action-suffix>
 
 </actions>
