@@ -716,14 +716,26 @@ id<SystemIdentity> GetDisplayedIdentity(
     }
     DCHECK(self.displayedIdentity)
         << base::SysNSStringToUTF8([self description]);
-    return [[SigninPromoViewConfigurator alloc]
-        initWithSigninPromoViewMode:
-            SigninPromoViewModeSignedInWithPrimaryAccount
-                          userEmail:self.displayedIdentity.userEmail
-                      userGivenName:self.displayedIdentity.userGivenName
-                          userImage:self.displayedIdentityAvatar
-                     hasCloseButton:hasCloseButton
-                   hasSignInSpinner:self.showSpinner];
+    SigninPromoViewConfigurator* configurator =
+        [[SigninPromoViewConfigurator alloc]
+            initWithSigninPromoViewMode:
+                SigninPromoViewModeSignedInWithPrimaryAccount
+                              userEmail:self.displayedIdentity.userEmail
+                          userGivenName:self.displayedIdentity.userGivenName
+                              userImage:self.displayedIdentityAvatar
+                         hasCloseButton:hasCloseButton
+                       hasSignInSpinner:self.showSpinner];
+    switch (self.signinPromoAction) {
+      case SigninPromoAction::kSync:
+      case SigninPromoAction::kSigninSheet:
+      case SigninPromoAction::kInstantSignin:
+        break;
+      case SigninPromoAction::kReviewAccountSettings:
+        configurator.primaryButtonTitleOverride =
+            l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_REVIEW_SETTINGS_BUTTON);
+        break;
+    }
+    return configurator;
   }
   if (self.displayedIdentity) {
     return [[SigninPromoViewConfigurator alloc]
@@ -744,6 +756,7 @@ id<SystemIdentity> GetDisplayedIdentity(
                      hasSignInSpinner:self.showSpinner];
   switch (self.signinPromoAction) {
     case SigninPromoAction::kSync:
+    case SigninPromoAction::kReviewAccountSettings:
       break;
     case SigninPromoAction::kSigninSheet:
     case SigninPromoAction::kInstantSignin:
@@ -1081,35 +1094,44 @@ id<SystemIdentity> GetDisplayedIdentity(
                          operation:AuthenticationOperation::kSigninOnly
                        promoAction:promoAction];
       return;
+    case SigninPromoAction::kReviewAccountSettings:
+      NOTREACHED() << "This action is only valid for a signed in account.";
+      return;
   }
 }
 
-- (void)signinPromoViewDidTapSigninWithDefaultAccount:
+- (void)signinPromoViewDidTapPrimaryButtonWithDefaultAccount:
     (SigninPromoView*)signinPromoView {
   DCHECK(self.displayedIdentity) << base::SysNSStringToUTF8([self description]);
   DCHECK(self.signinPromoViewVisible)
       << base::SysNSStringToUTF8([self description]);
   DCHECK(!self.invalidClosedOrNeverVisible)
       << base::SysNSStringToUTF8([self description]);
-  [self sendImpressionsTillSigninButtonsHistogram];
   switch (self.signinPromoAction) {
     case SigninPromoAction::kInstantSignin:
+      [self sendImpressionsTillSigninButtonsHistogram];
       [self showSigninWithIdentity:self.displayedIdentity
                          operation:AuthenticationOperation::kInstantSignin
                        promoAction:signin_metrics::PromoAction::
                                        PROMO_ACTION_WITH_DEFAULT];
       return;
     case SigninPromoAction::kSync:
+      [self sendImpressionsTillSigninButtonsHistogram];
       [self showSigninWithIdentity:self.displayedIdentity
                          operation:AuthenticationOperation::kSigninAndSync
                        promoAction:signin_metrics::PromoAction::
                                        PROMO_ACTION_WITH_DEFAULT];
       return;
     case SigninPromoAction::kSigninSheet:
+      [self sendImpressionsTillSigninButtonsHistogram];
       [self showSigninWithIdentity:nil
                          operation:AuthenticationOperation::kSigninOnly
                        promoAction:signin_metrics::PromoAction::
                                        PROMO_ACTION_WITH_DEFAULT];
+      return;
+    case SigninPromoAction::kReviewAccountSettings:
+      // TODO(crbug.com/1459255): Record metrics for this promo action.
+      [self showAccountSettings];
       return;
   }
 }
@@ -1142,6 +1164,9 @@ id<SystemIdentity> GetDisplayedIdentity(
                          operation:AuthenticationOperation::kSigninOnly
                        promoAction:signin_metrics::PromoAction::
                                        PROMO_ACTION_NOT_DEFAULT];
+      return;
+    case SigninPromoAction::kReviewAccountSettings:
+      NOTREACHED() << "This action is only valid for a signed in account.";
       return;
   }
 }

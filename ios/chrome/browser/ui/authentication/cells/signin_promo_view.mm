@@ -482,7 +482,7 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
       [self activateSigninWithAccountMode];
       return;
     case SigninPromoViewModeSignedInWithPrimaryAccount:
-      [self activateSyncWithPrimaryAccountMode];
+      [self activateSignedInWithPrimaryAccountMode];
       return;
   }
 }
@@ -769,8 +769,8 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
   self.secondaryButton.hidden = NO;
 }
 
-// Updates promo for sync with account mode.
-- (void)activateSyncWithPrimaryAccountMode {
+// Updates promo for a signed-in account mode.
+- (void)activateSignedInWithPrimaryAccountMode {
   DCHECK_EQ(_mode, SigninPromoViewModeSignedInWithPrimaryAccount);
   self.secondaryButton.hidden = YES;
 }
@@ -799,7 +799,7 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
       break;
     case SigninPromoViewModeSigninWithAccount:
     case SigninPromoViewModeSignedInWithPrimaryAccount:
-      [self.delegate signinPromoViewDidTapSigninWithDefaultAccount:self];
+      [self.delegate signinPromoViewDidTapPrimaryButtonWithDefaultAccount:self];
       break;
   }
 }

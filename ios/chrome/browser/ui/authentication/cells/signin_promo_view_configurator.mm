@@ -124,9 +124,10 @@ using l10n_util::GetNSStringF;
       break;
     }
     case SigninPromoViewModeSignedInWithPrimaryAccount: {
-      [signinPromoView
-          configurePrimaryButtonWithTitle:GetNSString(
-                                              IDS_IOS_SYNC_PROMO_TURN_ON_SYNC)];
+      [signinPromoView configurePrimaryButtonWithTitle:
+                           self.primaryButtonTitleOverride
+                               ? self.primaryButtonTitleOverride
+                               : GetNSString(IDS_IOS_SYNC_PROMO_TURN_ON_SYNC)];
       [self assignProfileImageToSigninPromoView:signinPromoView];
       break;
     }

@@ -59,6 +59,8 @@ enum class SigninPromoAction {
   kInstantSignin,
   // Performs AuthenticationOperationSigninOnly.
   kSigninSheet,
+  // Shows account settings.
+  kReviewAccountSettings,
 };
 
 // Class that monitors the available identities and creates
