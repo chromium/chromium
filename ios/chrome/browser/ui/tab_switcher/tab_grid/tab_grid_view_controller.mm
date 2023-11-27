@@ -540,13 +540,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       self.currentPage != TabGridPageRegularTabs;
 }
 
-- (void)setRemoteTabsViewController:
-    (RecentTabsTableViewController*)remoteTabsViewController {
-  _remoteTabsViewController = remoteTabsViewController;
-  _remoteTabsViewController.view.accessibilityElementsHidden =
-      self.currentPage != TabGridPageRemoteTabs;
-}
-
 - (void)setRemoteDisabledViewController:
     (DisabledGridViewController*)remoteDisabledViewController {
   _remoteDisabledViewController = remoteDisabledViewController;

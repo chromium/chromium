@@ -132,7 +132,7 @@ enum class TabGridPageConfiguration {
 // TODO(crbug.com/845192) : This was only exposed in the public interface so
 // that TabGridViewController does not need to know about model objects. The
 // model objects used in this view controller should be factored out.
-@property(nonatomic, strong)
+@property(nonatomic, readonly)
     RecentTabsTableViewController* remoteTabsViewController;
 
 // Provides the context menu for the tabs on the grid.
