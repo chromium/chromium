@@ -113,6 +113,13 @@ class NET_EXPORT ProxyConfig {
     // Returns true if |*this| describes the same configuration as |other|.
     bool Equals(const ProxyRules& other) const;
 
+    static ProxyRules CreateForTesting(const ProxyList& proxy_list) {
+      ProxyRules proxy_rules;
+      proxy_rules.type = Type::PROXY_LIST;
+      proxy_rules.single_proxies = proxy_list;
+      return proxy_rules;
+    }
+
     // Exceptions for when not to use a proxy.
     ProxyBypassRules bypass_rules;
 
@@ -224,6 +231,12 @@ class NET_EXPORT ProxyConfig {
     config.set_pac_url(pac_url);
     // By default fall back to direct connection in case PAC script fails.
     config.set_pac_mandatory(false);
+    return config;
+  }
+
+  static ProxyConfig CreateForTesting(const ProxyList& proxy_list) {
+    ProxyConfig config;
+    config.proxy_rules_ = ProxyRules::CreateForTesting(proxy_list);
     return config;
   }
 

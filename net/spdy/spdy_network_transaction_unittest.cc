@@ -76,6 +76,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/platform_test.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 using net::test::IsError;
 using net::test::IsOk;
@@ -4630,6 +4631,286 @@ TEST_P(SpdyNetworkTransactionTest,
     EXPECT_FALSE(http_server_properties->RequiresHTTP11(
         url::SchemeHostPort(request_.url), kNetworkAnonymizationKeys[i]));
   }
+}
+
+// Same as HTTP11RequiredProxyRetry above except for nested proxies where
+// HTTP_1_1_REQUIRED is received from the first proxy in the chain.
+TEST_P(SpdyNetworkTransactionTest, HTTP11RequiredNestedProxyFirstProxyRetry) {
+  request_.method = "GET";
+
+  // Configure a nested proxy.
+  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy1.test", 70)};
+  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy2.test", 71)};
+  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+
+  ProxyList proxy_list;
+  proxy_list.AddProxyChain(kNestedProxyChain);
+  ProxyConfig proxy_config = ProxyConfig::CreateForTesting(proxy_list);
+
+  auto session_deps = std::make_unique<SpdySessionDependencies>(
+      ConfiguredProxyResolutionService::CreateFixedForTest(
+          ProxyConfigWithAnnotation(proxy_config,
+                                    TRAFFIC_ANNOTATION_FOR_TESTS)));
+  // Do not force SPDY so that second socket can negotiate HTTP/1.1.
+  NormalSpdyTransactionHelper helper(request_, DEFAULT_PRIORITY, log_,
+                                     std::move(session_deps));
+
+  // First socket: HTTP/2 CONNECT rejected with HTTP_1_1_REQUIRED.
+  spdy::SpdySerializedFrame req(spdy_util_.ConstructSpdyConnect(
+      nullptr, 0, 1, HttpProxyConnectJob::kH2QuicTunnelPriority,
+      kProxyServer2.host_port_pair()));
+  MockWrite writes0[] = {CreateMockWrite(req, 0)};
+  spdy::SpdySerializedFrame rst(
+      spdy_util_.ConstructSpdyRstStream(1, spdy::ERROR_CODE_HTTP_1_1_REQUIRED));
+  MockRead reads0[] = {CreateMockRead(rst, 1)};
+  SequencedSocketData data0(reads0, writes0);
+
+  auto ssl_provider0 = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
+  // Expect HTTP/2 protocols too in SSLConfig.
+  ssl_provider0->next_protos_expected_in_ssl_config =
+      NextProtoVector{kProtoHTTP2, kProtoHTTP11};
+  // Force SPDY.
+  ssl_provider0->next_proto = kProtoHTTP2;
+  helper.AddDataWithSSLSocketDataProvider(&data0, std::move(ssl_provider0));
+
+  // Second socket: retry using HTTP/1.1.
+  MockWrite writes1[] = {
+      MockWrite(ASYNC, 0,
+                "CONNECT proxy2.test:71 HTTP/1.1\r\n"
+                "Host: proxy2.test:71\r\n"
+                "Proxy-Connection: keep-alive\r\n\r\n"),
+      MockWrite(ASYNC, 2,
+                "CONNECT www.example.org:443 HTTP/1.1\r\n"
+                "Host: www.example.org:443\r\n"
+                "Proxy-Connection: keep-alive\r\n\r\n"),
+      MockWrite(ASYNC, 4,
+                "GET / HTTP/1.1\r\n"
+                "Host: www.example.org\r\n"
+                "Connection: keep-alive\r\n\r\n"),
+  };
+
+  MockRead reads1[] = {
+      MockRead(ASYNC, 1, "HTTP/1.1 200 OK\r\n\r\n"),
+      MockRead(ASYNC, 3, "HTTP/1.1 200 OK\r\n\r\n"),
+      MockRead(ASYNC, 5,
+               "HTTP/1.1 200 OK\r\n"
+               "Content-Length: 5\r\n\r\n"
+               "hello"),
+  };
+  SequencedSocketData data1(reads1, writes1);
+
+  auto ssl_provider1 = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
+  // Expect only HTTP/1.1 protocol in SSLConfig.
+  ssl_provider1->next_protos_expected_in_ssl_config =
+      NextProtoVector{kProtoHTTP11};
+  // Force HTTP/1.1.
+  ssl_provider1->next_proto = kProtoHTTP11;
+  helper.AddDataWithSSLSocketDataProvider(&data1, std::move(ssl_provider1));
+
+  // A third and fourth socket are needed for the connection to the second hop
+  // and for the tunnelled GET request.
+  auto ssl_provider2 = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
+  ssl_provider2->next_protos_expected_in_ssl_config =
+      NextProtoVector{kProtoHTTP2, kProtoHTTP11};
+  helper.session_deps()->socket_factory->AddSSLSocketDataProvider(
+      ssl_provider2.get());
+  auto ssl_provider3 = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
+  helper.session_deps()->socket_factory->AddSSLSocketDataProvider(
+      ssl_provider3.get());
+
+  HttpServerProperties* http_server_properties =
+      helper.session()->spdy_session_pool()->http_server_properties();
+  url::SchemeHostPort proxy_scheme_host_port(
+      url::kHttpsScheme, kProxyServer1.host_port_pair().host(),
+      kProxyServer1.host_port_pair().port());
+  EXPECT_FALSE(http_server_properties->RequiresHTTP11(
+      proxy_scheme_host_port, NetworkAnonymizationKey()));
+
+  helper.RunPreTestSetup();
+  helper.StartDefaultTest();
+  helper.FinishDefaultTestWithoutVerification();
+  helper.VerifyDataConsumed();
+  EXPECT_TRUE(http_server_properties->RequiresHTTP11(
+      proxy_scheme_host_port, NetworkAnonymizationKey()));
+
+  const HttpResponseInfo* response = helper.trans()->GetResponseInfo();
+  ASSERT_TRUE(response);
+  ASSERT_TRUE(response->headers);
+  EXPECT_EQ("HTTP/1.1 200 OK", response->headers->GetStatusLine());
+  EXPECT_FALSE(response->was_fetched_via_spdy);
+  EXPECT_EQ(HttpResponseInfo::CONNECTION_INFO_HTTP1_1,
+            response->connection_info);
+  EXPECT_FALSE(response->was_alpn_negotiated);
+  EXPECT_TRUE(request_.url.SchemeIs("https"));
+  EXPECT_EQ("127.0.0.1", response->remote_endpoint.ToStringWithoutPort());
+  EXPECT_EQ(70, response->remote_endpoint.port());
+  std::string response_data;
+  ASSERT_THAT(ReadTransaction(helper.trans(), &response_data), IsOk());
+  EXPECT_EQ("hello", response_data);
+}
+
+// Same as above except for nested proxies where HTTP_1_1_REQUIRED is received
+// from the second proxy in the chain.
+TEST_P(SpdyNetworkTransactionTest, HTTP11RequiredNestedProxySecondProxyRetry) {
+  request_.method = "GET";
+
+  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy1.test", 70)};
+  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy2.test", 71)};
+  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+
+  ProxyList proxy_list;
+  proxy_list.AddProxyChain(kNestedProxyChain);
+  ProxyConfig proxy_config = ProxyConfig::CreateForTesting(proxy_list);
+
+  auto session_deps = std::make_unique<SpdySessionDependencies>(
+      ConfiguredProxyResolutionService::CreateFixedForTest(
+          ProxyConfigWithAnnotation(proxy_config,
+                                    TRAFFIC_ANNOTATION_FOR_TESTS)));
+  // Do not force SPDY so that second socket can negotiate HTTP/1.1.
+  NormalSpdyTransactionHelper helper(request_, DEFAULT_PRIORITY, log_,
+                                     std::move(session_deps));
+
+  // CONNECT to proxy2.test:71 via SPDY.
+  spdy::SpdySerializedFrame proxy2_connect(spdy_util_.ConstructSpdyConnect(
+      nullptr, 0, 1, HttpProxyConnectJob::kH2QuicTunnelPriority,
+      kProxyServer2.host_port_pair()));
+
+  spdy::SpdySerializedFrame proxy2_connect_resp(
+      spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
+
+  // Need to use a new `SpdyTestUtil()` so that the stream parent ID of this
+  // request is calculated correctly.
+  SpdyTestUtil new_spdy_util;
+  // HTTP/2 endpoint CONNECT rejected with HTTP_1_1_REQUIRED.
+  spdy::SpdySerializedFrame endpoint_connect(new_spdy_util.ConstructSpdyConnect(
+      nullptr, 0, 1, HttpProxyConnectJob::kH2QuicTunnelPriority,
+      HostPortPair("www.example.org", 443)));
+  spdy::SpdySerializedFrame server_rst(new_spdy_util.ConstructSpdyRstStream(
+      1, spdy::ERROR_CODE_HTTP_1_1_REQUIRED));
+  spdy::SpdySerializedFrame client_rst(
+      spdy_util_.ConstructSpdyRstStream(1, spdy::ERROR_CODE_CANCEL));
+
+  // Since this request and response are sent over the tunnel established
+  // previously, from a socket-perspective these need to be wrapped as data
+  // frames.
+  spdy::SpdySerializedFrame wrapped_endpoint_connect(
+      new_spdy_util.ConstructSpdyDataFrame(1, endpoint_connect, false));
+  spdy::SpdySerializedFrame wrapped_server_rst(
+      new_spdy_util.ConstructSpdyDataFrame(1, server_rst, /*fin=*/true));
+
+  MockWrite writes0[] = {
+      CreateMockWrite(proxy2_connect, 0),
+      CreateMockWrite(wrapped_endpoint_connect, 2),
+      CreateMockWrite(client_rst, 5),
+  };
+
+  MockRead reads0[] = {
+      CreateMockRead(proxy2_connect_resp, 1),
+      CreateMockRead(wrapped_server_rst, 3),
+      MockRead(ASYNC, 0, 4),
+  };
+
+  SequencedSocketData data0(reads0, writes0);
+
+  auto ssl_provider0 = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
+  // Expect HTTP/2 protocols too in SSLConfig.
+  ssl_provider0->next_protos_expected_in_ssl_config =
+      NextProtoVector{kProtoHTTP2, kProtoHTTP11};
+  ssl_provider0->next_proto = kProtoHTTP2;
+  helper.session_deps()->socket_factory->AddSSLSocketDataProvider(
+      ssl_provider0.get());
+
+  auto ssl_provider1 = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
+  ssl_provider1->next_protos_expected_in_ssl_config =
+      NextProtoVector{kProtoHTTP2, kProtoHTTP11};
+  // Force SPDY.
+  ssl_provider1->next_proto = kProtoHTTP2;
+  helper.AddDataWithSSLSocketDataProvider(&data0, std::move(ssl_provider1));
+
+  // Second socket: retry using HTTP/1.1.
+  MockWrite writes1[] = {
+      MockWrite(ASYNC, 0,
+                "CONNECT proxy2.test:71 HTTP/1.1\r\n"
+                "Host: proxy2.test:71\r\n"
+                "Proxy-Connection: keep-alive\r\n\r\n"),
+      MockWrite(ASYNC, 2,
+                "CONNECT www.example.org:443 HTTP/1.1\r\n"
+                "Host: www.example.org:443\r\n"
+                "Proxy-Connection: keep-alive\r\n\r\n"),
+      MockWrite(ASYNC, 4,
+                "GET / HTTP/1.1\r\n"
+                "Host: www.example.org\r\n"
+                "Connection: keep-alive\r\n\r\n"),
+  };
+
+  MockRead reads1[] = {
+      MockRead(ASYNC, 1, "HTTP/1.1 200 OK\r\n\r\n"),
+      MockRead(ASYNC, 3, "HTTP/1.1 200 OK\r\n\r\n"),
+      MockRead(ASYNC, 5,
+               "HTTP/1.1 200 OK\r\n"
+               "Content-Length: 5\r\n\r\n"
+               "hello"),
+  };
+  SequencedSocketData data1(reads1, writes1);
+
+  // Create a new SSLSocketDataProvider for the new connection to the first
+  // proxy.
+  auto ssl_provider2 = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
+  // Force HTTP/1.1 for the reconnection to the first proxy for simplicity.
+  ssl_provider2->next_protos_expected_in_ssl_config =
+      NextProtoVector{kProtoHTTP2, kProtoHTTP11};
+  ssl_provider2->next_proto = kProtoHTTP11;
+  helper.AddDataWithSSLSocketDataProvider(&data1, std::move(ssl_provider2));
+
+  // Create a new SSLSocketDataProvider for the new connection to the second
+  // proxy.
+  auto ssl_provider3 = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
+  // Expect only HTTP/1.1 protocol in the SSLConfig for the second proxy.
+  ssl_provider3->next_protos_expected_in_ssl_config =
+      NextProtoVector{kProtoHTTP11};
+  // Force HTTP/1.1.
+  ssl_provider3->next_proto = kProtoHTTP11;
+  helper.session_deps()->socket_factory->AddSSLSocketDataProvider(
+      ssl_provider3.get());
+
+  // One final SSL provider for the connection through the proxy.
+  auto ssl_provider4 = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
+  helper.session_deps()->socket_factory->AddSSLSocketDataProvider(
+      ssl_provider4.get());
+
+  HttpServerProperties* http_server_properties =
+      helper.session()->spdy_session_pool()->http_server_properties();
+  url::SchemeHostPort proxy_scheme_host_port(
+      url::kHttpsScheme, kProxyServer2.host_port_pair().host(),
+      kProxyServer2.host_port_pair().port());
+  EXPECT_FALSE(http_server_properties->RequiresHTTP11(
+      proxy_scheme_host_port, NetworkAnonymizationKey()));
+
+  helper.RunPreTestSetup();
+  helper.StartDefaultTest();
+  helper.FinishDefaultTestWithoutVerification();
+  helper.VerifyDataConsumed();
+  EXPECT_TRUE(http_server_properties->RequiresHTTP11(
+      proxy_scheme_host_port, NetworkAnonymizationKey()));
+
+  const HttpResponseInfo* response = helper.trans()->GetResponseInfo();
+  ASSERT_TRUE(response);
+  ASSERT_TRUE(response->headers);
+  EXPECT_EQ("HTTP/1.1 200 OK", response->headers->GetStatusLine());
+  EXPECT_FALSE(response->was_fetched_via_spdy);
+  EXPECT_EQ(HttpResponseInfo::CONNECTION_INFO_HTTP1_1,
+            response->connection_info);
+  EXPECT_FALSE(response->was_alpn_negotiated);
+  EXPECT_TRUE(request_.url.SchemeIs("https"));
+  EXPECT_EQ("127.0.0.1", response->remote_endpoint.ToStringWithoutPort());
+  EXPECT_EQ(70, response->remote_endpoint.port());
+  std::string response_data;
+  ASSERT_THAT(ReadTransaction(helper.trans(), &response_data), IsOk());
+  EXPECT_EQ("hello", response_data);
 }
 
 // Test to make sure we can correctly connect through a proxy.

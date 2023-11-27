@@ -430,19 +430,31 @@ SpdySessionKey HttpStreamFactory::Job::GetSpdySessionKey(
     const SocketTag& socket_tag,
     const NetworkAnonymizationKey& network_anonymization_key,
     SecureDnsPolicy secure_dns_policy) {
-  // TODO(https://crbug.com/1491092): Update this to support proxy chains with
-  // multiple proxies and add tests.
-  CHECK(!proxy_chain.is_multi_proxy());
-  // In the case that we're using an HTTPS proxy for an HTTP url, look for a
-  // HTTP/2 proxy session *to* the proxy, instead of to the origin server.
+  // In the case that we're using an HTTPS proxy chain for an HTTP url, look for
+  // a HTTP/2 proxy session *to* the last proxy, instead of to the origin
+  // server. The way HTTP over HTTPS proxies work is that the ConnectJob makes a
+  // SpdyProxy, and then the HttpStreamFactory detects it when it's added to the
+  // SpdySession pool, and uses it directly (completely ignoring the result of
+  // the ConnectJob, and in fact cancelling it). So we need to create the same
+  // key used by the HttpProxyConnectJob for the last proxy in the chain.
   if (!proxy_chain.is_direct() &&
       proxy_chain.GetProxyServer(proxy_chain.length() - 1).is_https() &&
       origin_url.SchemeIs(url::kHttpScheme)) {
-    return SpdySessionKey(
-        proxy_chain.GetProxyServer(proxy_chain.length() - 1).host_port_pair(),
-        ProxyChain::Direct(), PRIVACY_MODE_DISABLED,
-        SpdySessionKey::IsProxySession::kTrue, socket_tag,
-        network_anonymization_key, secure_dns_policy);
+    // For this to work as expected, the whole chain should be HTTPS.
+    for (const auto& proxy_server : proxy_chain.proxy_servers()) {
+      CHECK(proxy_server.is_https());
+    }
+    const auto& last_proxy_host_port_pair =
+        proxy_chain.GetProxyServer(proxy_chain.length() - 1).host_port_pair();
+    ProxyChain last_proxy_partial_chain(
+        {proxy_chain.proxy_servers().begin(),
+         proxy_chain.proxy_servers().end() - 1});
+    // If `proxy_chain` only contains one proxy server, then
+    // `last_proxy_partial_chain` will be a direct proxy chain.
+    return SpdySessionKey(last_proxy_host_port_pair, last_proxy_partial_chain,
+                          PRIVACY_MODE_DISABLED,
+                          SpdySessionKey::IsProxySession::kTrue, socket_tag,
+                          network_anonymization_key, secure_dns_policy);
   }
   return SpdySessionKey(HostPortPair::FromURL(origin_url), proxy_chain,
                         privacy_mode, SpdySessionKey::IsProxySession::kFalse,

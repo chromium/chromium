@@ -619,6 +619,9 @@ class HttpNetworkTransactionTestBase : public PlatformTest,
                                base::Unretained(this), delta);
   }
 
+  void HttpsNestedProxyNoSocketReuseHelper(const net::ProxyChain& chain1,
+                                           const net::ProxyChain& chain2);
+
   const CommonConnectJobParams dummy_connect_job_params_;
 
   const net::NetworkAnonymizationKey kNetworkAnonymizationKey =
@@ -5282,15 +5285,15 @@ TEST_P(HttpNetworkTransactionTest, HttpsServerRequestsProxyAuthThroughProxy) {
   SSLSocketDataProvider ssl(ASYNC, OK);
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl);
 
-  TestCompletionCallback callback1;
+  TestCompletionCallback callback;
 
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
 
-  int rv = trans.Start(&request, callback1.callback(),
+  int rv = trans.Start(&request, callback.callback(),
                        NetLogWithSource::Make(NetLogSourceType::NONE));
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
-  rv = callback1.WaitForResult();
+  rv = callback.WaitForResult();
   EXPECT_THAT(rv, IsError(ERR_UNEXPECTED_PROXY_AUTH));
   auto entries = net_log_observer.GetEntries();
   size_t pos = ExpectLogContainsSomewhere(
@@ -6547,7 +6550,8 @@ TEST_P(HttpNetworkTransactionTest, ProxyHostResolutionFailure) {
   EXPECT_THAT(response->resolve_error_info.error, IsError(ERR_DNS_TIMED_OUT));
 }
 
-// Test a simple get through an HTTPS Proxy.
+// Test a simple GET (for an HTTP endpoint) through an HTTPS Proxy
+// (HTTPS -> HTTP).
 TEST_P(HttpNetworkTransactionTest, HttpsProxyGet) {
   HttpRequestInfo request;
   request.method = "GET";
@@ -6585,17 +6589,17 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxyGet) {
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl);
 
   ConnectedHandler connected_handler;
-  TestCompletionCallback callback1;
+  TestCompletionCallback callback;
 
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
 
   trans.SetConnectedCallback(connected_handler.Callback());
 
-  int rv = trans.Start(&request, callback1.callback(),
+  int rv = trans.Start(&request, callback.callback(),
                        NetLogWithSource::Make(NetLogSourceType::NONE));
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
-  rv = callback1.WaitForResult();
+  rv = callback.WaitForResult();
   EXPECT_THAT(rv, IsOk());
 
   LoadTimingInfo load_timing_info;
@@ -6628,7 +6632,107 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxyGet) {
   EXPECT_FALSE(response->ssl_info.cert);
 }
 
-// Test a SPDY get through an HTTPS Proxy.
+// Test a simple GET (for an HTTP endpoint) through two HTTPS proxies
+// (HTTPS -> HTTPS -> HTTP).
+TEST_P(HttpNetworkTransactionTest, HttpsNestedProxyGet) {
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("http://www.example.org/");
+  request.traffic_annotation =
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  // Configure a nested proxy.
+  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy1.test", 70)};
+  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy2.test", 71)};
+  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+
+  ProxyList proxy_list;
+  proxy_list.AddProxyChain(kNestedProxyChain);
+  ProxyConfig proxy_config = ProxyConfig::CreateForTesting(proxy_list);
+
+  session_deps_.proxy_resolution_service =
+      ConfiguredProxyResolutionService::CreateFixedForTest(
+          ProxyConfigWithAnnotation(proxy_config,
+                                    TRAFFIC_ANNOTATION_FOR_TESTS));
+  session_deps_.net_log = NetLog::Get();
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+
+  MockWrite data_writes1[] = {
+      MockWrite("CONNECT proxy2.test:71 HTTP/1.1\r\n"
+                "Host: proxy2.test:71\r\n"
+                "Proxy-Connection: keep-alive\r\n\r\n"),
+      // Since we are sending the GET request through the proxies, use the full
+      // URL.
+      MockWrite("GET http://www.example.org/ HTTP/1.1\r\n"
+                "Host: www.example.org\r\n"
+                "Proxy-Connection: keep-alive\r\n\r\n"),
+  };
+
+  MockRead data_reads1[] = {
+      MockRead("HTTP/1.1 200 Connection Established\r\n\r\n"),
+      MockRead("HTTP/1.1 200 OK\r\n"),
+      MockRead("Content-Type: text/html; charset=iso-8859-1\r\n"),
+      MockRead("Content-Length: 100\r\n\r\n"),
+      MockRead(SYNCHRONOUS, OK),
+  };
+
+  StaticSocketDataProvider data1(data_reads1, data_writes1);
+  session_deps_.socket_factory->AddSocketDataProvider(&data1);
+
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl);
+
+  SSLSocketDataProvider ssl2(ASYNC, OK);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl2);
+
+  ConnectedHandler connected_handler;
+  TestCompletionCallback callback;
+
+  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
+
+  trans.SetConnectedCallback(connected_handler.Callback());
+
+  int rv = trans.Start(&request, callback.callback(),
+                       NetLogWithSource::Make(NetLogSourceType::NONE));
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  rv = callback.WaitForResult();
+  EXPECT_THAT(rv, IsOk());
+
+  LoadTimingInfo load_timing_info;
+  EXPECT_TRUE(trans.GetLoadTimingInfo(&load_timing_info));
+  TestLoadTimingNotReused(load_timing_info,
+                          CONNECT_TIMING_HAS_CONNECT_TIMES_ONLY);
+
+  const HttpResponseInfo* response = trans.GetResponseInfo();
+  ASSERT_TRUE(response);
+
+  EXPECT_TRUE(response->proxy_chain.proxy_server().is_https());
+  EXPECT_TRUE(response->headers->IsKeepAlive());
+  EXPECT_EQ(200, response->headers->response_code());
+  EXPECT_EQ(100, response->headers->GetContentLength());
+  EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
+
+  // DNS aliases should be empty when using a proxy.
+  EXPECT_TRUE(response->dns_aliases.empty());
+
+  TransportInfo expected_transport;
+  expected_transport.type = TransportType::kProxied;
+  expected_transport.endpoint = IPEndPoint(IPAddress::IPv4Localhost(), 70);
+  EXPECT_THAT(connected_handler.transports(), ElementsAre(expected_transport));
+
+  // The password prompt info should not be set.
+  EXPECT_FALSE(response->auth_challenge.has_value());
+
+  // Although we use an HTTPS proxy, the `SSLInfo` from that connection should
+  // not be reported as a property of the origin.
+  EXPECT_FALSE(response->ssl_info.cert);
+}
+
+// Test a SPDY GET (for an HTTP endpoint) through an HTTPS (SPDY) proxy
+// (SPDY -> HTTP).
 TEST_P(HttpNetworkTransactionTest, HttpsProxySpdyGet) {
   HttpRequestInfo request;
   request.method = "GET";
@@ -6668,17 +6772,17 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxySpdyGet) {
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl);
 
   ConnectedHandler connected_handler;
-  TestCompletionCallback callback1;
+  TestCompletionCallback callback;
 
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
 
   trans.SetConnectedCallback(connected_handler.Callback());
 
-  int rv = trans.Start(&request, callback1.callback(),
+  int rv = trans.Start(&request, callback.callback(),
                        NetLogWithSource::Make(NetLogSourceType::NONE));
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
-  rv = callback1.WaitForResult();
+  rv = callback.WaitForResult();
   EXPECT_THAT(rv, IsOk());
 
   LoadTimingInfo load_timing_info;
@@ -6707,6 +6811,859 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxySpdyGet) {
   // Although we use an HTTPS proxy, the `SSLInfo` from that connection should
   // not be reported as a property of the origin.
   EXPECT_FALSE(response->ssl_info.cert);
+}
+
+// Test a SPDY GET (for an HTTP endpoint) through two HTTPS (SPDY) proxies
+// (SPDY -> SPDY -> HTTP).
+TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySpdyGet) {
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("http://www.example.org/");
+  request.traffic_annotation =
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  // Configure a nested proxy.
+  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy1.test", 70)};
+  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy2.test", 71)};
+  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+
+  ProxyList proxy_list;
+  proxy_list.AddProxyChain(kNestedProxyChain);
+  ProxyConfig proxy_config = ProxyConfig::CreateForTesting(proxy_list);
+
+  session_deps_.proxy_resolution_service =
+      ConfiguredProxyResolutionService::CreateFixedForTest(
+          ProxyConfigWithAnnotation(proxy_config,
+                                    TRAFFIC_ANNOTATION_FOR_TESTS));
+  session_deps_.net_log = NetLog::Get();
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+
+  // CONNECT to proxy2.test:71 via SPDY.
+  spdy::SpdySerializedFrame proxy2_connect(spdy_util_.ConstructSpdyConnect(
+      /*extra_headers=*/nullptr, 0, 1,
+      HttpProxyConnectJob::kH2QuicTunnelPriority,
+      kProxyServer2.host_port_pair()));
+
+  spdy::SpdySerializedFrame proxy2_connect_resp(
+      spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
+
+  // fetch http://www.example.org/ via SPDY.
+  // Need to use a new `SpdyTestUtil()` so that the stream parent ID of this
+  // request is calculated correctly.
+  SpdyTestUtil new_spdy_util(/*use_priority_header=*/true);
+  spdy::SpdySerializedFrame req(
+      new_spdy_util.ConstructSpdyGet("http://www.example.org/", 1, LOWEST));
+  spdy::SpdySerializedFrame wrapped_req(
+      spdy_util_.ConstructWrappedSpdyFrame(req, 1));
+
+  spdy::SpdySerializedFrame resp(
+      new_spdy_util.ConstructSpdyGetReply(nullptr, 0, 1));
+  spdy::SpdySerializedFrame wrapped_resp(
+      spdy_util_.ConstructWrappedSpdyFrame(resp, 1));
+  spdy::SpdySerializedFrame data(new_spdy_util.ConstructSpdyDataFrame(1, true));
+  spdy::SpdySerializedFrame wrapped_data(
+      spdy_util_.ConstructWrappedSpdyFrame(data, 1));
+
+  MockWrite spdy_writes[] = {CreateMockWrite(proxy2_connect, 0),
+                             CreateMockWrite(wrapped_req, 2)};
+
+  MockRead spdy_reads[] = {
+      CreateMockRead(proxy2_connect_resp, 1),
+      // TODO(https://crbug.com/497228): We have to manually delay this read so
+      // that the higher-level SPDY stream doesn't get notified of an available
+      // read before the write it initiated (the second CONNECT) finishes,
+      // triggering a DCHECK.
+      MockRead(ASYNC, ERR_IO_PENDING, 3),
+      CreateMockRead(wrapped_resp, 4),
+      CreateMockRead(wrapped_data, 5),
+      MockRead(ASYNC, 0, 6),
+  };
+
+  SequencedSocketData spdy_data(spdy_reads, spdy_writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&spdy_data);
+
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  ssl.next_proto = kProtoHTTP2;
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl);
+
+  SSLSocketDataProvider ssl2(ASYNC, OK);
+  ssl2.next_proto = kProtoHTTP2;
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl2);
+
+  ConnectedHandler connected_handler;
+  TestCompletionCallback callback;
+
+  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
+
+  trans.SetConnectedCallback(connected_handler.Callback());
+
+  int rv = trans.Start(&request, callback.callback(),
+                       NetLogWithSource::Make(NetLogSourceType::NONE));
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  spdy_data.RunUntilPaused();
+  base::RunLoop().RunUntilIdle();
+  spdy_data.Resume();
+
+  rv = callback.WaitForResult();
+  ASSERT_THAT(rv, IsOk());
+
+  LoadTimingInfo load_timing_info;
+  EXPECT_TRUE(trans.GetLoadTimingInfo(&load_timing_info));
+  TestLoadTimingNotReused(load_timing_info,
+                          CONNECT_TIMING_HAS_CONNECT_TIMES_ONLY);
+
+  const HttpResponseInfo* response = trans.GetResponseInfo();
+  ASSERT_TRUE(response);
+  EXPECT_EQ(response->proxy_chain.GetProxyServer(/*chain_index=*/0),
+            kProxyServer1);
+  EXPECT_EQ(response->proxy_chain.GetProxyServer(/*chain_index=*/1),
+            kProxyServer2);
+  ASSERT_TRUE(response->headers);
+  EXPECT_EQ("HTTP/1.1 200", response->headers->GetStatusLine());
+
+  // DNS aliases should be empty when using a proxy.
+  EXPECT_TRUE(response->dns_aliases.empty());
+
+  TransportInfo expected_transport;
+  expected_transport.type = TransportType::kProxied;
+  expected_transport.endpoint = IPEndPoint(IPAddress::IPv4Localhost(), 70);
+  EXPECT_THAT(connected_handler.transports(), ElementsAre(expected_transport));
+
+  std::string response_data;
+  ASSERT_THAT(ReadTransaction(&trans, &response_data), IsOk());
+  EXPECT_EQ(kUploadData, response_data);
+
+  // Although we use an HTTPS proxy, the `SSLInfo` from that connection should
+  // not be reported as a property of the origin.
+  EXPECT_FALSE(response->ssl_info.cert);
+}
+
+// Test a SPDY GET (for an HTTP endpoint) through the same HTTPS (SPDY) proxy
+// twice (SPDY -> SPDY -> HTTP).
+TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySameProxyTwiceSpdyGet) {
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("http://www.example.org/");
+  request.traffic_annotation =
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  // Configure a nested proxy.
+  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy1.test", 70)};
+  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer1}};
+
+  ProxyList proxy_list;
+  proxy_list.AddProxyChain(kNestedProxyChain);
+  ProxyConfig proxy_config = ProxyConfig::CreateForTesting(proxy_list);
+
+  session_deps_.proxy_resolution_service =
+      ConfiguredProxyResolutionService::CreateFixedForTest(
+          ProxyConfigWithAnnotation(proxy_config,
+                                    TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  session_deps_.net_log = NetLog::Get();
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+
+  // CONNECT to proxy2.test:70 via SPDY.
+  spdy::SpdySerializedFrame proxy1_connect(spdy_util_.ConstructSpdyConnect(
+      /*extra_headers=*/nullptr, 0, 1,
+      HttpProxyConnectJob::kH2QuicTunnelPriority,
+      kProxyServer1.host_port_pair()));
+
+  spdy::SpdySerializedFrame proxy1_connect_resp(
+      spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
+
+  // fetch http://www.example.org/ via SPDY.
+  // Need to use a new `SpdyTestUtil()` so that the stream parent ID of this
+  // request is calculated correctly.
+  SpdyTestUtil new_spdy_util(/*use_priority_header=*/true);
+  spdy::SpdySerializedFrame req(
+      new_spdy_util.ConstructSpdyGet("http://www.example.org/", 1, LOWEST));
+  spdy::SpdySerializedFrame wrapped_req(
+      spdy_util_.ConstructWrappedSpdyFrame(req, 1));
+
+  spdy::SpdySerializedFrame resp(
+      new_spdy_util.ConstructSpdyGetReply(nullptr, 0, 1));
+  spdy::SpdySerializedFrame wrapped_resp(
+      spdy_util_.ConstructWrappedSpdyFrame(resp, 1));
+  spdy::SpdySerializedFrame data(new_spdy_util.ConstructSpdyDataFrame(1, true));
+  spdy::SpdySerializedFrame wrapped_data(
+      spdy_util_.ConstructWrappedSpdyFrame(data, 1));
+
+  MockWrite spdy_writes[] = {CreateMockWrite(proxy1_connect, 0),
+                             CreateMockWrite(wrapped_req, 2)};
+
+  MockRead spdy_reads[] = {
+      CreateMockRead(proxy1_connect_resp, 1),
+      // TODO(https://crbug.com/497228): We have to manually delay this read so
+      // that the higher-level SPDY stream doesn't get notified of an available
+      // read before the write it initiated (the second CONNECT) finishes,
+      // triggering a DCHECK.
+      MockRead(ASYNC, ERR_IO_PENDING, 3),
+      CreateMockRead(wrapped_resp, 4),
+      CreateMockRead(wrapped_data, 5),
+      MockRead(ASYNC, 0, 6),
+  };
+
+  SequencedSocketData spdy_data(spdy_reads, spdy_writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&spdy_data);
+
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  ssl.next_proto = kProtoHTTP2;
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl);
+
+  SSLSocketDataProvider ssl2(ASYNC, OK);
+  ssl2.next_proto = kProtoHTTP2;
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl2);
+
+  ConnectedHandler connected_handler;
+  TestCompletionCallback callback;
+
+  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
+
+  trans.SetConnectedCallback(connected_handler.Callback());
+
+  int rv = trans.Start(&request, callback.callback(),
+                       NetLogWithSource::Make(NetLogSourceType::NONE));
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  spdy_data.RunUntilPaused();
+  base::RunLoop().RunUntilIdle();
+  spdy_data.Resume();
+
+  rv = callback.WaitForResult();
+  ASSERT_THAT(rv, IsOk());
+
+  LoadTimingInfo load_timing_info;
+  EXPECT_TRUE(trans.GetLoadTimingInfo(&load_timing_info));
+  TestLoadTimingNotReused(load_timing_info,
+                          CONNECT_TIMING_HAS_CONNECT_TIMES_ONLY);
+
+  const HttpResponseInfo* response = trans.GetResponseInfo();
+  ASSERT_TRUE(response);
+  EXPECT_EQ(response->proxy_chain.GetProxyServer(/*chain_index=*/0),
+            kProxyServer1);
+  EXPECT_EQ(response->proxy_chain.GetProxyServer(/*chain_index=*/1),
+            kProxyServer1);
+  ASSERT_TRUE(response->headers);
+  EXPECT_EQ("HTTP/1.1 200", response->headers->GetStatusLine());
+
+  // DNS aliases should be empty when using a proxy.
+  EXPECT_TRUE(response->dns_aliases.empty());
+
+  TransportInfo expected_transport;
+  expected_transport.type = TransportType::kProxied;
+  expected_transport.endpoint = IPEndPoint(IPAddress::IPv4Localhost(), 70);
+  EXPECT_THAT(connected_handler.transports(), ElementsAre(expected_transport));
+
+  std::string response_data;
+  ASSERT_THAT(ReadTransaction(&trans, &response_data), IsOk());
+  EXPECT_EQ(kUploadData, response_data);
+
+  // Although we use an HTTPS proxy, the `SSLInfo` from that connection should
+  // not be reported as a property of the origin.
+  EXPECT_FALSE(response->ssl_info.cert);
+}
+
+// Test that a SPDY protocol error encountered when attempting to perform an
+// HTTP request over a multi-proxy chain is handled correctly.
+TEST_P(HttpNetworkTransactionTest, NestedProxyHttpOverSpdyProtocolError) {
+  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy1.test", 70)};
+  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy2.test", 71)};
+  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+
+  ProxyList proxy_list;
+  proxy_list.AddProxyChain(kNestedProxyChain);
+  ProxyConfig proxy_config = ProxyConfig::CreateForTesting(proxy_list);
+
+  session_deps_.proxy_resolution_service =
+      ConfiguredProxyResolutionService::CreateFixedForTest(
+          ProxyConfigWithAnnotation(proxy_config,
+                                    TRAFFIC_ANNOTATION_FOR_TESTS));
+  session_deps_.net_log = NetLog::Get();
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+
+  // CONNECT to proxy2.test:71 via SPDY.
+  spdy::SpdySerializedFrame proxy2_connect(spdy_util_.ConstructSpdyConnect(
+      /*extra_headers=*/nullptr, 0, 1,
+      HttpProxyConnectJob::kH2QuicTunnelPriority,
+      kProxyServer2.host_port_pair()));
+
+  spdy::SpdySerializedFrame proxy2_connect_resp(
+      spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
+
+  // fetch http://www.example.org/ via SPDY.
+  // Need to use a new `SpdyTestUtil()` so that the stream parent ID of this
+  // request is calculated correctly.
+  SpdyTestUtil new_spdy_util(/*use_priority_header=*/true);
+  spdy::SpdySerializedFrame req(
+      new_spdy_util.ConstructSpdyGet("http://www.example.org/", 1, LOWEST));
+  spdy::SpdySerializedFrame wrapped_req(
+      spdy_util_.ConstructWrappedSpdyFrame(req, 1));
+
+  spdy::SpdySerializedFrame data(new_spdy_util.ConstructSpdyDataFrame(1, true));
+  spdy::SpdySerializedFrame wrapped_data(
+      spdy_util_.ConstructWrappedSpdyFrame(data, 1));
+
+  MockWrite spdy_writes[] = {
+      CreateMockWrite(proxy2_connect, 0),
+      CreateMockWrite(wrapped_req, 2),
+  };
+
+  MockRead spdy_reads[] = {
+      CreateMockRead(proxy2_connect_resp, 1),
+      // TODO(https://crbug.com/497228): We have to manually delay this read so
+      // that the higher-level SPDY stream doesn't get notified of an available
+      // read before the write it initiated (the second CONNECT) finishes,
+      // triggering a DCHECK.
+      MockRead(ASYNC, ERR_IO_PENDING, 3),
+      // Instead of returning a valid response, just return wrapped data. This
+      // should trigger an HTTP2 protocol error and not CHECK when nested
+      // proxies are in use.
+      CreateMockRead(wrapped_data, 4),
+      MockRead(ASYNC, 0, 5),
+  };
+
+  SequencedSocketData spdy_data(spdy_reads, spdy_writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&spdy_data);
+
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  ssl.next_proto = kProtoHTTP2;
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl);
+
+  SSLSocketDataProvider ssl2(ASYNC, OK);
+  ssl2.next_proto = kProtoHTTP2;
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl2);
+
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("http://www.example.org/");
+  request.traffic_annotation =
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  TestCompletionCallback callback;
+
+  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
+
+  int rv = trans.Start(&request, callback.callback(),
+                       NetLogWithSource::Make(NetLogSourceType::NONE));
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  spdy_data.RunUntilPaused();
+  base::RunLoop().RunUntilIdle();
+  spdy_data.Resume();
+
+  rv = callback.WaitForResult();
+  ASSERT_THAT(rv, IsError(ERR_HTTP2_PROTOCOL_ERROR));
+}
+
+// Test that a proxy server requesting a client auth cert doesn't cause a crash.
+// TODO(https://crbug.com/1491092): This test can be deleted once we no longer
+// need the multi-proxy chain version below, since this functionality should
+// be sufficiently tested elsewhere. For now this test just shows that
+// single-proxy and multi-proxy behavior is consistent (when a read returns
+// ERR_SSL_CLIENT_AUTH_CERT_NEEDED).
+TEST_P(HttpNetworkTransactionTest, HttpsClientAuthCertNeededNoCrash) {
+  // Configure against https proxy server "proxy:70".
+  session_deps_.proxy_resolution_service =
+      ConfiguredProxyResolutionService::CreateFixedForTest(
+          "https://proxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  session_deps_.net_log = NetLog::Get();
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+
+  // CONNECT to www.example.org:443 via SPDY.
+  spdy::SpdySerializedFrame endpoint_connect(spdy_util_.ConstructSpdyConnect(
+      /*extra_headers=*/nullptr, 0, 1,
+      HttpProxyConnectJob::kH2QuicTunnelPriority,
+      HostPortPair("www.example.org", 443)));
+
+  spdy::SpdySerializedFrame spdy_response_go_away(
+      spdy_util_.ConstructSpdyGoAway(0, spdy::ERROR_CODE_PROTOCOL_ERROR,
+                                     "Error 110 reading from socket."));
+
+  MockWrite spdy_writes[] = {
+      CreateMockWrite(endpoint_connect, 0),
+      CreateMockWrite(spdy_response_go_away, 2),
+  };
+
+  MockRead spdy_reads[] = {
+      MockRead(ASYNC, ERR_SSL_CLIENT_AUTH_CERT_NEEDED, 1),
+      MockRead(ASYNC, 0, 3),
+  };
+
+  SequencedSocketData spdy_data(spdy_reads, spdy_writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&spdy_data);
+
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  ssl.next_proto = kProtoHTTP2;
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl);
+
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("https://www.example.org/");
+  request.traffic_annotation =
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  TestCompletionCallback callback;
+
+  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
+
+  int rv = trans.Start(&request, callback.callback(),
+                       NetLogWithSource::Make(NetLogSourceType::NONE));
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  rv = callback.WaitForResult();
+  ASSERT_THAT(rv, IsError(ERR_SSL_CLIENT_AUTH_CERT_NEEDED));
+  SSLCertRequestInfo* cert_request_info =
+      trans.GetResponseInfo()->cert_request_info.get();
+  // In the case of a read returning ERR_SSL_CLIENT_AUTH_CERT_NEEDED directly,
+  // no `SSLCertRequestInfo` is available.
+  EXPECT_FALSE(cert_request_info);
+}
+
+// Test that the first proxy server in a multi-proxy chain requesting a client
+// auth cert doesn't cause a crash.
+// TODO(https://crbug.com/1491092): Support client auth certificates for
+// multi-proxy chains and then replace this test with a more robust one (for
+// instance, a version of the AuthEverywhere test that uses a multi-proxy
+// chain).
+TEST_P(HttpNetworkTransactionTest,
+       HttpsNestedProxyClientAuthCertNeededFirstProxyNoCrash) {
+  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy1.test", 70)};
+  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy2.test", 71)};
+  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+
+  ProxyList proxy_list;
+  proxy_list.AddProxyChain(kNestedProxyChain);
+  ProxyConfig proxy_config = ProxyConfig::CreateForTesting(proxy_list);
+
+  session_deps_.proxy_resolution_service =
+      ConfiguredProxyResolutionService::CreateFixedForTest(
+          ProxyConfigWithAnnotation(proxy_config,
+                                    TRAFFIC_ANNOTATION_FOR_TESTS));
+  session_deps_.net_log = NetLog::Get();
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+
+  // CONNECT to proxy2.test:71 via SPDY.
+  spdy::SpdySerializedFrame proxy2_connect(spdy_util_.ConstructSpdyConnect(
+      /*extra_headers=*/nullptr, 0, 1,
+      HttpProxyConnectJob::kH2QuicTunnelPriority,
+      kProxyServer2.host_port_pair()));
+
+  spdy::SpdySerializedFrame spdy_response_go_away(
+      spdy_util_.ConstructSpdyGoAway(0, spdy::ERROR_CODE_PROTOCOL_ERROR,
+                                     "Error 110 reading from socket."));
+
+  MockWrite spdy_writes[] = {
+      CreateMockWrite(proxy2_connect, 0),
+      CreateMockWrite(spdy_response_go_away, 2),
+  };
+
+  MockRead spdy_reads[] = {
+      MockRead(ASYNC, ERR_SSL_CLIENT_AUTH_CERT_NEEDED, 1),
+      MockRead(ASYNC, 0, 3),
+  };
+
+  SequencedSocketData spdy_data(spdy_reads, spdy_writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&spdy_data);
+
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  ssl.next_proto = kProtoHTTP2;
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl);
+
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("https://www.example.org/");
+  request.traffic_annotation =
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  TestCompletionCallback callback;
+
+  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
+
+  int rv = trans.Start(&request, callback.callback(),
+                       NetLogWithSource::Make(NetLogSourceType::NONE));
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  rv = callback.WaitForResult();
+  ASSERT_THAT(rv, IsError(ERR_SSL_CLIENT_AUTH_CERT_NEEDED));
+  SSLCertRequestInfo* cert_request_info =
+      trans.GetResponseInfo()->cert_request_info.get();
+  // In the case of a read returning ERR_SSL_CLIENT_AUTH_CERT_NEEDED directly,
+  // no `SSLCertRequestInfo` is available.
+  EXPECT_FALSE(cert_request_info);
+}
+
+// Same as above but using a different method to request the client auth
+// certificate.
+// TODO(https://crbug.com/1491092): Support client auth certificates for
+// multi-proxy chains and then replace this test with a more robust one (for
+// instance, a version of the AuthEverywhere test that uses a multi-proxy
+// chain).
+TEST_P(HttpNetworkTransactionTest,
+       HttpsNestedProxyClientAuthCertNeededFirstProxyNoCrash2) {
+  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy1.test", 70)};
+  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy2.test", 71)};
+  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+
+  ProxyList proxy_list;
+  proxy_list.AddProxyChain(kNestedProxyChain);
+  ProxyConfig proxy_config = ProxyConfig::CreateForTesting(proxy_list);
+
+  session_deps_.proxy_resolution_service =
+      ConfiguredProxyResolutionService::CreateFixedForTest(
+          ProxyConfigWithAnnotation(proxy_config,
+                                    TRAFFIC_ANNOTATION_FOR_TESTS));
+  session_deps_.net_log = NetLog::Get();
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+
+  StaticSocketDataProvider spdy_data{base::span<MockRead>(),
+                                     base::span<MockWrite>()};
+  session_deps_.socket_factory->AddSocketDataProvider(&spdy_data);
+
+  auto cert_request_info_proxy = base::MakeRefCounted<SSLCertRequestInfo>();
+  cert_request_info_proxy->host_and_port = kProxyServer1.host_port_pair();
+
+  SSLSocketDataProvider ssl(ASYNC, ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
+  ssl.cert_request_info = cert_request_info_proxy;
+  ssl.expected_send_client_cert = false;
+  ssl.next_proto = kProtoHTTP2;
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl);
+
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("https://www.example.org/");
+  request.traffic_annotation =
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  TestCompletionCallback callback;
+
+  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
+
+  int rv = trans.Start(&request, callback.callback(),
+                       NetLogWithSource::Make(NetLogSourceType::NONE));
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  rv = callback.WaitForResult();
+  ASSERT_THAT(rv, IsError(ERR_SSL_CLIENT_AUTH_CERT_NEEDED));
+  SSLCertRequestInfo* cert_request_info =
+      trans.GetResponseInfo()->cert_request_info.get();
+  ASSERT_TRUE(cert_request_info);
+  EXPECT_TRUE(cert_request_info->is_proxy);
+  EXPECT_EQ(cert_request_info->host_and_port, kProxyServer1.host_port_pair());
+}
+
+// Test that a read returning ERR_SSL_CLIENT_AUTH_CERT_NEEDED after the first
+// CONNECT doesn't result in a crash when a multi-proxy chain is in use.
+// TODO(https://crbug.com/1491092): Support client auth certificates for
+// multi-proxy chains and then replace this test with a more robust one (for
+// instance, a version of the AuthEverywhere test that uses a multi-proxy
+// chain).
+TEST_P(HttpNetworkTransactionTest,
+       HttpsNestedProxyClientAuthCertNeededAfterFirstConnectNoCrash2) {
+  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy1.test", 70)};
+  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy2.test", 71)};
+  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+
+  ProxyList proxy_list;
+  proxy_list.AddProxyChain(kNestedProxyChain);
+  ProxyConfig proxy_config = ProxyConfig::CreateForTesting(proxy_list);
+
+  session_deps_.proxy_resolution_service =
+      ConfiguredProxyResolutionService::CreateFixedForTest(
+          ProxyConfigWithAnnotation(proxy_config,
+                                    TRAFFIC_ANNOTATION_FOR_TESTS));
+  session_deps_.net_log = NetLog::Get();
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+
+  // CONNECT to proxy2.test:71 via SPDY.
+  spdy::SpdySerializedFrame proxy2_connect(spdy_util_.ConstructSpdyConnect(
+      /*extra_headers=*/nullptr, 0, 1,
+      HttpProxyConnectJob::kH2QuicTunnelPriority,
+      kProxyServer2.host_port_pair()));
+
+  spdy::SpdySerializedFrame proxy2_connect_resp(
+      spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
+
+  // fetch http://www.example.org/ via SPDY.
+  // Need to use a new `SpdyTestUtil()` so that the stream parent ID of this
+  // request is calculated correctly.
+  SpdyTestUtil new_spdy_util(/*use_priority_header=*/true);
+  spdy::SpdySerializedFrame req(
+      new_spdy_util.ConstructSpdyGet("http://www.example.org/", 1, LOWEST));
+  spdy::SpdySerializedFrame wrapped_req(
+      spdy_util_.ConstructWrappedSpdyFrame(req, 1));
+
+  MockWrite spdy_writes[] = {
+      CreateMockWrite(proxy2_connect, 0),
+      CreateMockWrite(wrapped_req, 2),
+  };
+
+  MockRead spdy_reads[] = {
+      CreateMockRead(proxy2_connect_resp, 1),
+      // TODO(https://crbug.com/497228): We have to manually delay this read so
+      // that the higher-level SPDY stream doesn't get notified of an available
+      // read before the write it initiated (the second CONNECT) finishes,
+      // triggering a DCHECK.
+      MockRead(ASYNC, ERR_IO_PENDING, 3),
+      MockRead(ASYNC, ERR_SSL_CLIENT_AUTH_CERT_NEEDED, 4),
+  };
+
+  SequencedSocketData spdy_data(spdy_reads, spdy_writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&spdy_data);
+
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  ssl.next_proto = kProtoHTTP2;
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl);
+
+  SSLSocketDataProvider ssl2(ASYNC, OK);
+  ssl2.next_proto = kProtoHTTP2;
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl2);
+
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("http://www.example.org/");
+  request.traffic_annotation =
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  TestCompletionCallback callback;
+
+  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
+
+  int rv = trans.Start(&request, callback.callback(),
+                       NetLogWithSource::Make(NetLogSourceType::NONE));
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  spdy_data.RunUntilPaused();
+  base::RunLoop().RunUntilIdle();
+  spdy_data.Resume();
+
+  rv = callback.WaitForResult();
+  ASSERT_THAT(rv, IsError(ERR_CONNECTION_CLOSED));
+  SSLCertRequestInfo* cert_request_info =
+      trans.GetResponseInfo()->cert_request_info.get();
+  EXPECT_FALSE(cert_request_info);
+}
+
+// Test that the second proxy server in a multi-proxy chain requesting a client
+// auth cert doesn't cause a crash.
+// TODO(https://crbug.com/1491092): Support client auth certificates for
+// multi-proxy chains and then replace this test with a more robust one (for
+// instance, a version of the AuthEverywhere test that uses a multi-proxy
+// chain).
+TEST_P(HttpNetworkTransactionTest,
+       HttpsNestedProxyClientAuthCertNeededSecondProxyNoCrash) {
+  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy1.test", 70)};
+  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy2.test", 71)};
+  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+
+  ProxyList proxy_list;
+  proxy_list.AddProxyChain(kNestedProxyChain);
+  ProxyConfig proxy_config = ProxyConfig::CreateForTesting(proxy_list);
+
+  session_deps_.proxy_resolution_service =
+      ConfiguredProxyResolutionService::CreateFixedForTest(
+          ProxyConfigWithAnnotation(proxy_config,
+                                    TRAFFIC_ANNOTATION_FOR_TESTS));
+  session_deps_.net_log = NetLog::Get();
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+
+  // CONNECT to proxy2.test:71 via SPDY.
+  spdy::SpdySerializedFrame proxy2_connect(spdy_util_.ConstructSpdyConnect(
+      /*extra_headers=*/nullptr, 0, 1,
+      HttpProxyConnectJob::kH2QuicTunnelPriority,
+      kProxyServer2.host_port_pair()));
+
+  spdy::SpdySerializedFrame proxy2_connect_resp(
+      spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
+
+  spdy::SpdySerializedFrame rst(
+      spdy_util_.ConstructSpdyRstStream(1, spdy::ERROR_CODE_CANCEL));
+
+  MockWrite spdy_writes[] = {
+      CreateMockWrite(proxy2_connect, 0),
+      CreateMockWrite(rst, 2),
+  };
+
+  MockRead spdy_reads[] = {
+      CreateMockRead(proxy2_connect_resp, 1),
+      MockRead(ASYNC, 0, 3),
+  };
+
+  SequencedSocketData spdy_data(spdy_reads, spdy_writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&spdy_data);
+
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  ssl.next_proto = kProtoHTTP2;
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl);
+
+  auto cert_request_info_proxy = base::MakeRefCounted<SSLCertRequestInfo>();
+  cert_request_info_proxy->host_and_port = kProxyServer2.host_port_pair();
+
+  SSLSocketDataProvider ssl2(ASYNC, ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
+  ssl2.cert_request_info = cert_request_info_proxy;
+  ssl2.expected_send_client_cert = false;
+  ssl2.next_proto = kProtoHTTP2;
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl2);
+
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("http://www.example.org/");
+  request.traffic_annotation =
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  TestCompletionCallback callback;
+
+  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
+
+  int rv = trans.Start(&request, callback.callback(),
+                       NetLogWithSource::Make(NetLogSourceType::NONE));
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  rv = callback.WaitForResult();
+  ASSERT_THAT(rv, IsError(ERR_SSL_CLIENT_AUTH_CERT_NEEDED));
+  SSLCertRequestInfo* cert_request_info =
+      trans.GetResponseInfo()->cert_request_info.get();
+  ASSERT_TRUE(cert_request_info);
+  EXPECT_TRUE(cert_request_info->is_proxy);
+  EXPECT_EQ(cert_request_info->host_and_port, kProxyServer2.host_port_pair());
+}
+
+// Test that the endpoint requesting a client auth cert over a multi-proxy chain
+// tunnel doesn't cause a crash.
+// TODO(https://crbug.com/1491092): Support client auth certificates for
+// multi-proxy chains and then replace this test with a more robust one (for
+// instance, a version of the AuthEverywhere test that uses a multi-proxy
+// chain).
+TEST_P(HttpNetworkTransactionTest,
+       HttpsNestedProxyClientAuthCertNeededEndpointNoCrash) {
+  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy1.test", 70)};
+  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy2.test", 71)};
+  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+
+  ProxyList proxy_list;
+  proxy_list.AddProxyChain(kNestedProxyChain);
+  ProxyConfig proxy_config = ProxyConfig::CreateForTesting(proxy_list);
+
+  session_deps_.proxy_resolution_service =
+      ConfiguredProxyResolutionService::CreateFixedForTest(
+          ProxyConfigWithAnnotation(proxy_config,
+                                    TRAFFIC_ANNOTATION_FOR_TESTS));
+  session_deps_.net_log = NetLog::Get();
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+
+  // CONNECT to proxy2.test:71 via SPDY.
+  spdy::SpdySerializedFrame proxy2_connect(spdy_util_.ConstructSpdyConnect(
+      nullptr, 0, 1, HttpProxyConnectJob::kH2QuicTunnelPriority,
+      kProxyServer2.host_port_pair()));
+
+  spdy::SpdySerializedFrame proxy2_connect_resp(
+      spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
+
+  // CONNECT to www.example.org:443 via SPDY.
+  // Need to use a new `SpdyTestUtil()` so that the stream parent ID of this
+  // CONNECT is calculated correctly.
+  SpdyTestUtil new_spdy_util;
+  spdy::SpdySerializedFrame endpoint_connect(new_spdy_util.ConstructSpdyConnect(
+      nullptr, 0, 1, HttpProxyConnectJob::kH2QuicTunnelPriority,
+      HostPortPair("www.example.org", 443)));
+
+  // Since this request and response are sent over the tunnel established
+  // previously, from a socket-perspective these need to be wrapped as data
+  // frames.
+  spdy::SpdySerializedFrame wrapped_endpoint_connect(
+      spdy_util_.ConstructWrappedSpdyFrame(endpoint_connect, 1));
+
+  spdy::SpdySerializedFrame endpoint_connect_resp(
+      new_spdy_util.ConstructSpdyGetReply(nullptr, 0, 1));
+  spdy::SpdySerializedFrame wrapped_endpoint_connect_resp(
+      spdy_util_.ConstructWrappedSpdyFrame(endpoint_connect_resp, 1));
+
+  spdy::SpdySerializedFrame rst(
+      new_spdy_util.ConstructSpdyRstStream(1, spdy::ERROR_CODE_CANCEL));
+  spdy::SpdySerializedFrame wrapped_rst(
+      spdy_util_.ConstructWrappedSpdyFrame(rst, 1));
+
+  MockWrite spdy_writes[] = {
+      CreateMockWrite(proxy2_connect, 0),
+      CreateMockWrite(wrapped_endpoint_connect, 2),
+      CreateMockWrite(wrapped_rst, 5),
+  };
+
+  MockRead spdy_reads[] = {
+      CreateMockRead(proxy2_connect_resp, 1, ASYNC),
+      // TODO(https://crbug.com/497228): We have to manually delay this read so
+      // that the higher-level SPDY stream doesn't get notified of an available
+      // read before the write it initiated (the second CONNECT) finishes,
+      // triggering a DCHECK.
+      MockRead(ASYNC, ERR_IO_PENDING, 3),
+      CreateMockRead(wrapped_endpoint_connect_resp, 4, ASYNC),
+      MockRead(ASYNC, ERR_IO_PENDING, 6),
+      MockRead(ASYNC, 0, 7),
+  };
+
+  SequencedSocketData spdy_data(spdy_reads, spdy_writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&spdy_data);
+
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  ssl.next_proto = kProtoHTTP2;
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl);
+
+  SSLSocketDataProvider ssl2(ASYNC, OK);
+  ssl2.next_proto = kProtoHTTP2;
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl2);
+
+  auto cert_request_info_origin = base::MakeRefCounted<SSLCertRequestInfo>();
+  cert_request_info_origin->host_and_port =
+      HostPortPair("www.example.org", 443);
+
+  SSLSocketDataProvider ssl3(ASYNC, ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
+  ssl3.cert_request_info = cert_request_info_origin;
+  ssl3.expected_send_client_cert = false;
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl3);
+
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("https://www.example.org/");
+  request.traffic_annotation =
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  TestCompletionCallback callback;
+
+  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
+
+  int rv = trans.Start(&request, callback.callback(),
+                       NetLogWithSource::Make(NetLogSourceType::NONE));
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  spdy_data.RunUntilPaused();
+  base::RunLoop().RunUntilIdle();
+  spdy_data.Resume();
+
+  rv = callback.WaitForResult();
+  ASSERT_THAT(rv, IsError(ERR_SSL_CLIENT_AUTH_CERT_NEEDED));
+  SSLCertRequestInfo* cert_request_info =
+      trans.GetResponseInfo()->cert_request_info.get();
+  ASSERT_TRUE(cert_request_info);
+  EXPECT_FALSE(cert_request_info->is_proxy);
+  EXPECT_EQ(cert_request_info->host_and_port,
+            HostPortPair("www.example.org", 443));
 }
 
 // Verifies that a session which races and wins against the owning transaction
@@ -6786,7 +7743,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxySpdyGetWithSessionRace) {
   EXPECT_EQ(kUploadData, response_data);
 }
 
-// Test a SPDY get through an HTTPS Proxy.
+// Test a SPDY GET through an HTTPS proxy that uses proxy auth.
 TEST_P(HttpNetworkTransactionTest, HttpsProxySpdyGetWithProxyAuth) {
   HttpRequestInfo request;
   request.method = "GET";
@@ -6883,7 +7840,8 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxySpdyGetWithProxyAuth) {
   EXPECT_FALSE(response_restart->auth_challenge.has_value());
 }
 
-// Test a SPDY CONNECT through an HTTPS Proxy to an HTTPS (non-SPDY) Server.
+// Test a SPDY CONNECT through an HTTPS Proxy to an HTTPS (non-SPDY) Server
+// (SPDY -> HTTPS).
 TEST_P(HttpNetworkTransactionTest, HttpsProxySpdyConnectHttps) {
   HttpRequestInfo request;
   request.method = "GET";
@@ -6970,7 +7928,151 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxySpdyConnectHttps) {
   EXPECT_EQ("1234567890", response_data);
 }
 
-// Test a SPDY CONNECT through an HTTPS Proxy to a SPDY server.
+// Test a SPDY CONNECT through two HTTPS (SPDY) proxies to an HTTPS (non-SPDY)
+// server (SPDY -> SPDY -> HTTPS).
+TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySpdyConnectHttps) {
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("https://www.example.org/");
+  request.traffic_annotation =
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  // Configure a nested proxy.
+  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy1.test", 70)};
+  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy2.test", 71)};
+  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+
+  ProxyList proxy_list;
+  proxy_list.AddProxyChain(kNestedProxyChain);
+  ProxyConfig proxy_config = ProxyConfig::CreateForTesting(proxy_list);
+
+  session_deps_.proxy_resolution_service =
+      ConfiguredProxyResolutionService::CreateFixedForTest(
+          ProxyConfigWithAnnotation(proxy_config,
+                                    TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  session_deps_.net_log = NetLog::Get();
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+
+  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
+
+  // CONNECT to proxy2.test:71 via SPDY.
+  spdy::SpdySerializedFrame proxy2_connect(spdy_util_.ConstructSpdyConnect(
+      nullptr, 0, 1, HttpProxyConnectJob::kH2QuicTunnelPriority,
+      kProxyServer2.host_port_pair()));
+
+  spdy::SpdySerializedFrame proxy2_connect_resp(
+      spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
+
+  // CONNECT to www.example.org:443 via SPDY.
+  // Need to use a new `SpdyTestUtil()` so that the stream parent ID of this
+  // CONNECT is calculated correctly.
+  SpdyTestUtil new_spdy_util;
+  spdy::SpdySerializedFrame endpoint_connect(new_spdy_util.ConstructSpdyConnect(
+      nullptr, 0, 1, HttpProxyConnectJob::kH2QuicTunnelPriority,
+      HostPortPair("www.example.org", 443)));
+
+  // Since this request and response are sent over the tunnel established
+  // previously, from a socket-perspective these need to be wrapped as data
+  // frames.
+  spdy::SpdySerializedFrame wrapped_endpoint_connect(
+      spdy_util_.ConstructWrappedSpdyFrame(endpoint_connect, 1));
+
+  spdy::SpdySerializedFrame endpoint_connect_resp(
+      new_spdy_util.ConstructSpdyGetReply(nullptr, 0, 1));
+  spdy::SpdySerializedFrame wrapped_endpoint_connect_resp(
+      spdy_util_.ConstructWrappedSpdyFrame(endpoint_connect_resp, 1));
+
+  // fetch https://www.example.org/ via HTTP.
+  // Since this request will go over two tunnels, it needs to be double-wrapped.
+  const char get[] =
+      "GET / HTTP/1.1\r\n"
+      "Host: www.example.org\r\n"
+      "Connection: keep-alive\r\n\r\n";
+  spdy::SpdySerializedFrame wrapped_get(
+      new_spdy_util.ConstructSpdyDataFrame(1, get, false));
+  spdy::SpdySerializedFrame wrapped_wrapped_get(
+      spdy_util_.ConstructWrappedSpdyFrame(wrapped_get, 1));
+
+  const char resp[] =
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Length: 10\r\n\r\n";
+  spdy::SpdySerializedFrame wrapped_get_resp(
+      new_spdy_util.ConstructSpdyDataFrame(1, resp, false));
+  spdy::SpdySerializedFrame wrapped_wrapped_get_resp(
+      spdy_util_.ConstructWrappedSpdyFrame(wrapped_get_resp, 1));
+
+  spdy::SpdySerializedFrame wrapped_body(
+      new_spdy_util.ConstructSpdyDataFrame(1, "1234567890", false));
+  spdy::SpdySerializedFrame wrapped_wrapped_body(
+      spdy_util_.ConstructWrappedSpdyFrame(wrapped_body, 1));
+
+  spdy::SpdySerializedFrame window_update(
+      spdy_util_.ConstructSpdyWindowUpdate(1, wrapped_wrapped_get_resp.size()));
+
+  MockWrite spdy_writes[] = {
+      CreateMockWrite(proxy2_connect, 0),
+      CreateMockWrite(wrapped_endpoint_connect, 2),
+      CreateMockWrite(wrapped_wrapped_get, 5),
+      CreateMockWrite(window_update, 9),
+  };
+
+  MockRead spdy_reads[] = {
+      CreateMockRead(proxy2_connect_resp, 1, ASYNC),
+      // TODO(https://crbug.com/497228): We have to manually delay this read so
+      // that the higher-level SPDY stream doesn't get notified of an available
+      // read before the write it initiated (the second CONNECT) finishes,
+      // triggering a DCHECK.
+      MockRead(ASYNC, ERR_IO_PENDING, 3),
+      CreateMockRead(wrapped_endpoint_connect_resp, 4, ASYNC),
+      CreateMockRead(wrapped_wrapped_get_resp, 6, ASYNC),
+      CreateMockRead(wrapped_wrapped_body, 7, ASYNC),
+      CreateMockRead(wrapped_wrapped_body, 8, ASYNC),
+      MockRead(ASYNC, 0, 10),
+  };
+
+  SequencedSocketData spdy_data(spdy_reads, spdy_writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&spdy_data);
+
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  ssl.next_proto = kProtoHTTP2;
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl);
+  SSLSocketDataProvider ssl2(ASYNC, OK);
+  ssl2.next_proto = kProtoHTTP2;
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl2);
+  SSLSocketDataProvider ssl3(ASYNC, OK);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl3);
+
+  TestCompletionCallback callback1;
+
+  int rv = trans.Start(&request, callback1.callback(),
+                       NetLogWithSource::Make(NetLogSourceType::NONE));
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  spdy_data.RunUntilPaused();
+  base::RunLoop().RunUntilIdle();
+  spdy_data.Resume();
+
+  rv = callback1.WaitForResult();
+  ASSERT_THAT(rv, IsOk());
+
+  LoadTimingInfo load_timing_info;
+  EXPECT_TRUE(trans.GetLoadTimingInfo(&load_timing_info));
+  TestLoadTimingNotReused(load_timing_info, CONNECT_TIMING_HAS_SSL_TIMES);
+
+  const HttpResponseInfo* response = trans.GetResponseInfo();
+  ASSERT_TRUE(response);
+  ASSERT_TRUE(response->headers);
+  EXPECT_EQ("HTTP/1.1 200 OK", response->headers->GetStatusLine());
+
+  std::string response_data;
+  ASSERT_THAT(ReadTransaction(&trans, &response_data), IsOk());
+  EXPECT_EQ("1234567890", response_data);
+}
+
+// Test a SPDY CONNECT through an HTTPS Proxy to a SPDY server (SPDY -> SPDY).
 TEST_P(HttpNetworkTransactionTest, HttpsProxySpdyConnectSpdy) {
   SpdyTestUtil spdy_util_wrapped(/*use_priority_header=*/true);
 
@@ -7066,7 +8168,253 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxySpdyConnectSpdy) {
   EXPECT_EQ(kUploadData, response_data);
 }
 
-// Test a SPDY CONNECT failure through an HTTPS Proxy.
+// Test a SPDY CONNECT for an HTTPS (non-SPDY) endpoint through an HTTPS
+// (non-SPDY) proxy and HTTPS (SPDY) proxy chain (HTTPS -> SPDY -> HTTPS).
+TEST_P(HttpNetworkTransactionTest, HttpsNestedProxyMixedConnectSpdy) {
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("https://www.example.org/");
+  request.traffic_annotation =
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  // Configure a nested proxy.
+  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy1.test", 70)};
+  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy2.test", 71)};
+  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+
+  ProxyList proxy_list;
+  proxy_list.AddProxyChain(kNestedProxyChain);
+  ProxyConfig proxy_config = ProxyConfig::CreateForTesting(proxy_list);
+
+  session_deps_.proxy_resolution_service =
+      ConfiguredProxyResolutionService::CreateFixedForTest(
+          ProxyConfigWithAnnotation(proxy_config,
+                                    TRAFFIC_ANNOTATION_FOR_TESTS));
+  session_deps_.net_log = NetLog::Get();
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+
+  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
+
+  // CONNECT to proxy2.test:71 via HTTP.
+  const char proxy2_connect[] =
+      "CONNECT proxy2.test:71 HTTP/1.1\r\n"
+      "Host: proxy2.test:71\r\n"
+      "Proxy-Connection: keep-alive\r\n\r\n";
+
+  const char proxy2_connect_resp[] =
+      "HTTP/1.1 200 Connection Established\r\n\r\n";
+
+  // CONNECT to www.example.org:443 via SPDY.
+  spdy::SpdySerializedFrame endpoint_connect(spdy_util_.ConstructSpdyConnect(
+      nullptr, 0, 1, HttpProxyConnectJob::kH2QuicTunnelPriority,
+      HostPortPair("www.example.org", 443)));
+
+  spdy::SpdySerializedFrame endpoint_connect_resp(
+      spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
+
+  // fetch https://www.example.org/ via HTTP.
+  // Since this request and response are sent over the tunnel established
+  // previously, from a socket-perspective these need to be wrapped as data
+  // frames.
+  const char get[] =
+      "GET / HTTP/1.1\r\n"
+      "Host: www.example.org\r\n"
+      "Connection: keep-alive\r\n\r\n";
+  spdy::SpdySerializedFrame wrapped_get(
+      spdy_util_.ConstructSpdyDataFrame(1, get, false));
+
+  const char resp[] =
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Length: 10\r\n\r\n";
+  spdy::SpdySerializedFrame wrapped_get_resp(
+      spdy_util_.ConstructSpdyDataFrame(1, resp, false));
+
+  spdy::SpdySerializedFrame wrapped_body(
+      spdy_util_.ConstructSpdyDataFrame(1, "1234567890", false));
+
+  spdy::SpdySerializedFrame window_update(
+      spdy_util_.ConstructSpdyWindowUpdate(1, wrapped_get_resp.size()));
+
+  MockWrite socket_writes[] = {
+      MockWrite(ASYNC, 0, proxy2_connect),
+      CreateMockWrite(endpoint_connect, 2),
+      CreateMockWrite(wrapped_get, 4),
+      CreateMockWrite(window_update, 8),
+  };
+
+  MockRead socket_reads[] = {
+      MockRead(ASYNC, 1, proxy2_connect_resp),
+      CreateMockRead(endpoint_connect_resp, 3, ASYNC),
+      CreateMockRead(wrapped_get_resp, 5, ASYNC),
+      CreateMockRead(wrapped_body, 6, ASYNC),
+      CreateMockRead(wrapped_body, 7, ASYNC),
+      MockRead(ASYNC, 0, 9),
+  };
+
+  SequencedSocketData socket_data(socket_reads, socket_writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&socket_data);
+
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl);
+  SSLSocketDataProvider ssl2(ASYNC, OK);
+  ssl2.next_proto = kProtoHTTP2;
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl2);
+  SSLSocketDataProvider ssl3(ASYNC, OK);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl3);
+
+  TestCompletionCallback callback1;
+
+  int rv = trans.Start(&request, callback1.callback(),
+                       NetLogWithSource::Make(NetLogSourceType::NONE));
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  rv = callback1.WaitForResult();
+  ASSERT_THAT(rv, IsOk());
+
+  LoadTimingInfo load_timing_info;
+  EXPECT_TRUE(trans.GetLoadTimingInfo(&load_timing_info));
+  TestLoadTimingNotReused(load_timing_info, CONNECT_TIMING_HAS_SSL_TIMES);
+
+  const HttpResponseInfo* response = trans.GetResponseInfo();
+  ASSERT_TRUE(response);
+  ASSERT_TRUE(response->headers);
+  EXPECT_EQ("HTTP/1.1 200 OK", response->headers->GetStatusLine());
+
+  std::string response_data;
+  ASSERT_THAT(ReadTransaction(&trans, &response_data), IsOk());
+  EXPECT_EQ("1234567890", response_data);
+}
+
+// Test an HTTP CONNECT for an HTTPS (non-SPDY) endpoint through an HTTPS (SPDY)
+// proxy and HTTPS (non-SPDY) proxy chain (SPDY -> HTTPS -> HTTPS).
+TEST_P(HttpNetworkTransactionTest, HttpsNestedProxyMixedConnectHttps) {
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("https://www.example.org/");
+  request.traffic_annotation =
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  // Configure a nested proxy.
+  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy1.test", 70)};
+  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy2.test", 71)};
+  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+
+  ProxyList proxy_list;
+  proxy_list.AddProxyChain(kNestedProxyChain);
+  ProxyConfig proxy_config = ProxyConfig::CreateForTesting(proxy_list);
+
+  session_deps_.proxy_resolution_service =
+      ConfiguredProxyResolutionService::CreateFixedForTest(
+          ProxyConfigWithAnnotation(proxy_config,
+                                    TRAFFIC_ANNOTATION_FOR_TESTS));
+  session_deps_.net_log = NetLog::Get();
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+
+  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
+
+  // CONNECT to proxy2.test:71 via SPDY.
+  spdy::SpdySerializedFrame proxy2_connect(spdy_util_.ConstructSpdyConnect(
+      nullptr, 0, 1, HttpProxyConnectJob::kH2QuicTunnelPriority,
+      kProxyServer2.host_port_pair()));
+
+  spdy::SpdySerializedFrame proxy2_connect_resp(
+      spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
+
+  // CONNECT to www.example.org:443 via HTTPS.
+  const char endpoint_connect[] =
+      "CONNECT www.example.org:443 HTTP/1.1\r\n"
+      "Host: www.example.org:443\r\n"
+      "Proxy-Connection: keep-alive\r\n\r\n";
+
+  const char endpoint_connect_resp[] =
+      "HTTP/1.1 200 Connection Established\r\n\r\n";
+
+  // Since this request and response are sent over the tunnel established
+  // previously, from a socket-perspective these need to be wrapped as data
+  // frames.
+  spdy::SpdySerializedFrame wrapped_endpoint_connect(
+      spdy_util_.ConstructSpdyDataFrame(1, endpoint_connect, false));
+  spdy::SpdySerializedFrame wrapped_endpoint_connect_resp(
+      spdy_util_.ConstructSpdyDataFrame(1, endpoint_connect_resp, false));
+
+  // fetch https://www.example.org/ via HTTP.
+  // Since this request will go over the SPDY tunnel, it needs to be wrapped as
+  // well.
+  const char get[] =
+      "GET / HTTP/1.1\r\n"
+      "Host: www.example.org\r\n"
+      "Connection: keep-alive\r\n\r\n";
+  spdy::SpdySerializedFrame wrapped_get(
+      spdy_util_.ConstructSpdyDataFrame(1, get, false));
+
+  const char resp[] =
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Length: 10\r\n\r\n";
+  spdy::SpdySerializedFrame wrapped_get_resp(
+      spdy_util_.ConstructSpdyDataFrame(1, resp, false));
+
+  spdy::SpdySerializedFrame wrapped_body(
+      spdy_util_.ConstructSpdyDataFrame(1, "1234567890", false));
+
+  spdy::SpdySerializedFrame window_update(
+      spdy_util_.ConstructSpdyWindowUpdate(1, wrapped_get_resp.size()));
+
+  MockWrite spdy_writes[] = {
+      CreateMockWrite(proxy2_connect, 0),
+      CreateMockWrite(wrapped_endpoint_connect, 2),
+      CreateMockWrite(wrapped_get, 4),
+      CreateMockWrite(window_update, 8),
+  };
+
+  MockRead spdy_reads[] = {
+      CreateMockRead(proxy2_connect_resp, 1, ASYNC),
+      CreateMockRead(wrapped_endpoint_connect_resp, 3, ASYNC),
+      CreateMockRead(wrapped_get_resp, 5, ASYNC),
+      CreateMockRead(wrapped_body, 6, ASYNC),
+      CreateMockRead(wrapped_body, 7, ASYNC),
+      MockRead(ASYNC, 0, 9),
+  };
+
+  SequencedSocketData spdy_data(spdy_reads, spdy_writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&spdy_data);
+
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  ssl.next_proto = kProtoHTTP2;
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl);
+  SSLSocketDataProvider ssl2(ASYNC, OK);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl2);
+  SSLSocketDataProvider ssl3(ASYNC, OK);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl3);
+
+  TestCompletionCallback callback1;
+
+  int rv = trans.Start(&request, callback1.callback(),
+                       NetLogWithSource::Make(NetLogSourceType::NONE));
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  rv = callback1.WaitForResult();
+  ASSERT_THAT(rv, IsOk());
+
+  LoadTimingInfo load_timing_info;
+  EXPECT_TRUE(trans.GetLoadTimingInfo(&load_timing_info));
+  TestLoadTimingNotReused(load_timing_info, CONNECT_TIMING_HAS_SSL_TIMES);
+
+  const HttpResponseInfo* response = trans.GetResponseInfo();
+  ASSERT_TRUE(response);
+  ASSERT_TRUE(response->headers);
+  EXPECT_EQ("HTTP/1.1 200 OK", response->headers->GetStatusLine());
+
+  std::string response_data;
+  ASSERT_THAT(ReadTransaction(&trans, &response_data), IsOk());
+  EXPECT_EQ("1234567890", response_data);
+}
+
+// Test a SPDY CONNECT failure through an HTTPS (SPDY) proxy
+// (SPDY -> HTTPS/SPDY).
 TEST_P(HttpNetworkTransactionTest, HttpsProxySpdyConnectFailure) {
   HttpRequestInfo request;
   request.method = "GET";
@@ -7083,23 +8431,199 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxySpdyConnectFailure) {
 
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
 
-  // CONNECT to www.example.org:443 via SPDY
+  // CONNECT to www.example.org:443 via SPDY.
   spdy::SpdySerializedFrame connect(spdy_util_.ConstructSpdyConnect(
       nullptr, 0, 1, HttpProxyConnectJob::kH2QuicTunnelPriority,
       HostPortPair("www.example.org", 443)));
-  spdy::SpdySerializedFrame get(
+  spdy::SpdySerializedFrame rst(
       spdy_util_.ConstructSpdyRstStream(1, spdy::ERROR_CODE_CANCEL));
 
   MockWrite spdy_writes[] = {
       CreateMockWrite(connect, 0),
-      CreateMockWrite(get, 2),
+      CreateMockWrite(rst, 2),
   };
 
   spdy::SpdySerializedFrame resp(spdy_util_.ConstructSpdyReplyError(1));
-  spdy::SpdySerializedFrame data(spdy_util_.ConstructSpdyDataFrame(1, true));
   MockRead spdy_reads[] = {
       CreateMockRead(resp, 1, ASYNC),
-      MockRead(ASYNC, 0, 3),
+      // Pause instead of triggering a connection close so that it's more clear
+      // which action is causing the tunnel error (the endpoint connect error
+      // above).
+      MockRead(ASYNC, ERR_IO_PENDING, 3),
+      MockRead(ASYNC, 0, 4),
+  };
+
+  SequencedSocketData spdy_data(spdy_reads, spdy_writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&spdy_data);
+
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  ssl.next_proto = kProtoHTTP2;
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl);
+
+  TestCompletionCallback callback1;
+
+  int rv = trans.Start(&request, callback1.callback(),
+                       NetLogWithSource::Make(NetLogSourceType::NONE));
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  rv = callback1.WaitForResult();
+  EXPECT_THAT(rv, IsError(ERR_TUNNEL_CONNECTION_FAILED));
+
+  // TODO(juliatuttle): Anything else to check here?
+}
+
+// Test a SPDY CONNECT failure through two HTTPS (SPDY) proxies where the
+// connection to the first proxy fails (SPDY -> HTTPS/SPDY -> HTTPS/SPDY).
+TEST_P(HttpNetworkTransactionTest,
+       HttpsNestedProxySpdyConnectFirstProxyFailure) {
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("https://www.example.org/");
+  request.traffic_annotation =
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  // Configure a nested proxy.
+  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy1.test", 70)};
+  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy2.test", 71)};
+  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+
+  ProxyList proxy_list;
+  proxy_list.AddProxyChain(kNestedProxyChain);
+  ProxyConfig proxy_config = ProxyConfig::CreateForTesting(proxy_list);
+
+  session_deps_.proxy_resolution_service =
+      ConfiguredProxyResolutionService::CreateFixedForTest(
+          ProxyConfigWithAnnotation(proxy_config,
+                                    TRAFFIC_ANNOTATION_FOR_TESTS));
+  session_deps_.net_log = NetLog::Get();
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+
+  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
+
+  // CONNECT to proxy2.test:71 via SPDY.
+  spdy::SpdySerializedFrame proxy2_connect(spdy_util_.ConstructSpdyConnect(
+      nullptr, 0, 1, HttpProxyConnectJob::kH2QuicTunnelPriority,
+      kProxyServer2.host_port_pair()));
+  spdy::SpdySerializedFrame proxy2_connect_error_resp(
+      spdy_util_.ConstructSpdyReplyError(1));
+
+  spdy::SpdySerializedFrame rst(
+      spdy_util_.ConstructSpdyRstStream(1, spdy::ERROR_CODE_CANCEL));
+
+  MockWrite spdy_writes[] = {
+      CreateMockWrite(proxy2_connect, 0),
+      CreateMockWrite(rst, 2),
+  };
+  MockRead spdy_reads[] = {
+      CreateMockRead(proxy2_connect_error_resp, 1, ASYNC),
+      // Pause instead of triggering a connection close so that it's more clear
+      // which action is causing the tunnel error (the endpoint connect error
+      // above).
+      MockRead(ASYNC, ERR_IO_PENDING, 3),
+      MockRead(ASYNC, 0, 4),
+  };
+
+  SequencedSocketData spdy_data(spdy_reads, spdy_writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&spdy_data);
+
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  ssl.next_proto = kProtoHTTP2;
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl);
+
+  TestCompletionCallback callback1;
+
+  int rv = trans.Start(&request, callback1.callback(),
+                       NetLogWithSource::Make(NetLogSourceType::NONE));
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  rv = callback1.WaitForResult();
+  EXPECT_THAT(rv, IsError(ERR_TUNNEL_CONNECTION_FAILED));
+}
+
+// Test a SPDY CONNECT failure through two HTTPS (SPDY) proxies where the
+// connection to the second proxy fails (SPDY -> SPDY -> HTTPS/SPDY).
+TEST_P(HttpNetworkTransactionTest,
+       HttpsNestedProxySpdyConnectSecondProxyFailure) {
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("https://www.example.org/");
+  request.traffic_annotation =
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  // Configure a nested proxy.
+  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy1.test", 70)};
+  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy2.test", 71)};
+  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+
+  ProxyList proxy_list;
+  proxy_list.AddProxyChain(kNestedProxyChain);
+  ProxyConfig proxy_config = ProxyConfig::CreateForTesting(proxy_list);
+
+  session_deps_.proxy_resolution_service =
+      std::make_unique<ConfiguredProxyResolutionService>(
+          std::make_unique<ProxyConfigServiceFixed>(ProxyConfigWithAnnotation(
+              proxy_config, TRAFFIC_ANNOTATION_FOR_TESTS)),
+          /*resolver_factory=*/nullptr,
+          /*net_log=*/nullptr, /*quick_check_enabled=*/true);
+  session_deps_.net_log = NetLog::Get();
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+
+  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
+
+  // CONNECT to proxy2.test:71 via SPDY.
+  spdy::SpdySerializedFrame proxy2_connect(spdy_util_.ConstructSpdyConnect(
+      nullptr, 0, 1, HttpProxyConnectJob::kH2QuicTunnelPriority,
+      kProxyServer2.host_port_pair()));
+
+  spdy::SpdySerializedFrame proxy2_connect_resp(
+      spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
+
+  // Need to use a new `SpdyTestUtil()` so that the stream parent ID of this
+  // request is calculated correctly.
+  SpdyTestUtil new_spdy_util;
+  // CONNECT to www.example.org:443 via SPDY.
+  spdy::SpdySerializedFrame endpoint_connect(new_spdy_util.ConstructSpdyConnect(
+      nullptr, 0, 1, HttpProxyConnectJob::kH2QuicTunnelPriority,
+      HostPortPair("www.example.org", 443)));
+  spdy::SpdySerializedFrame rst(
+      new_spdy_util.ConstructSpdyRstStream(1, spdy::ERROR_CODE_CANCEL));
+
+  // Since this request and response are sent over the tunnel established
+  // previously, from a socket-perspective these need to be wrapped as data
+  // frames.
+  spdy::SpdySerializedFrame wrapped_endpoint_connect(
+      spdy_util_.ConstructSpdyDataFrame(1, endpoint_connect, false));
+  spdy::SpdySerializedFrame wrapped_rst(
+      spdy_util_.ConstructSpdyDataFrame(1, rst, false));
+
+  spdy::SpdySerializedFrame endpoint_connect_error_resp(
+      new_spdy_util.ConstructSpdyReplyError(1));
+  spdy::SpdySerializedFrame wrapped_endpoint_connect_error_resp(
+      spdy_util_.ConstructSpdyDataFrame(1, endpoint_connect_error_resp, false));
+
+  MockWrite spdy_writes[] = {
+      CreateMockWrite(proxy2_connect, 0),
+      CreateMockWrite(wrapped_endpoint_connect, 2),
+      CreateMockWrite(wrapped_rst, 5),
+  };
+
+  MockRead spdy_reads[] = {
+      CreateMockRead(proxy2_connect_resp, 1, ASYNC),
+      // TODO(https://crbug.com/497228): We have to manually delay this read so
+      // that the higher-level SPDY stream doesn't get notified of an available
+      // read before the write it initiated (the second CONNECT) finishes,
+      // triggering a DCHECK.
+      MockRead(ASYNC, ERR_IO_PENDING, 3),
+      CreateMockRead(wrapped_endpoint_connect_error_resp, 4, ASYNC),
+      // Pause instead of triggering a connection close so that it's more clear
+      // which action is causing the tunnel error (the endpoint connect error
+      // above).
+      MockRead(ASYNC, ERR_IO_PENDING, 6),
+      MockRead(ASYNC, 0, 7),
   };
 
   SequencedSocketData spdy_data(spdy_reads, spdy_writes);
@@ -7118,10 +8642,645 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxySpdyConnectFailure) {
                        NetLogWithSource::Make(NetLogSourceType::NONE));
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
+  spdy_data.RunUntilPaused();
+  base::RunLoop().RunUntilIdle();
+  spdy_data.Resume();
+
   rv = callback1.WaitForResult();
   EXPECT_THAT(rv, IsError(ERR_TUNNEL_CONNECTION_FAILED));
+}
 
-  // TODO(juliatuttle): Anything else to check here?
+// This method creates a tunnel using `chain1`, proxies an HTTP GET request
+// through it to ensure that it has been created successfully, and then creates
+// another tunnel using `chain2` to check whether a new socket is used for it.
+// This is used to test that no unexpected socket reuse occurs between different
+// proxy chains.
+void HttpNetworkTransactionTestBase::HttpsNestedProxyNoSocketReuseHelper(
+    const net::ProxyChain& chain1,
+    const net::ProxyChain& chain2) {
+  ASSERT_NE(chain1, chain2);
+
+  auto proxy_delegate = std::make_unique<SingleProxyDelegate>();
+  proxy_delegate->set_proxy(chain1);
+
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("http://www.example.org/");
+  request.traffic_annotation =
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  session_deps_.proxy_resolution_service =
+      ConfiguredProxyResolutionService::CreateFixedForTest(
+          "https://not-used:70", TRAFFIC_ANNOTATION_FOR_TESTS);
+  session_deps_.proxy_resolution_service->SetProxyDelegate(
+      proxy_delegate.get());
+  session_deps_.net_log = NetLog::Get();
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+
+  std::vector<SSLSocketDataProvider> ssl_socket_data_providers;
+  std::vector<std::string> connects;
+  // Allocate enough space in each of these so that the address of each entry
+  // will not change after insertion.
+  ssl_socket_data_providers.reserve(chain1.length() + chain2.length());
+  connects.reserve(chain1.length() - 1 + chain2.length() - 1);
+
+  std::vector<MockWrite> data_writes1;
+  std::vector<MockRead> data_reads1;
+
+  for (size_t proxy_index = 1; proxy_index < chain1.length(); ++proxy_index) {
+    const auto& proxy_host_port_pair_string =
+        chain1.GetProxyServer(proxy_index).host_port_pair().ToString();
+    connects.push_back(
+        base::StringPrintf("CONNECT %s HTTP/1.1\r\n"
+                           "Host: %s\r\n"
+                           "Proxy-Connection: keep-alive\r\n\r\n",
+                           proxy_host_port_pair_string.c_str(),
+                           proxy_host_port_pair_string.c_str()));
+    data_writes1.emplace_back(connects.back().c_str());
+    data_reads1.emplace_back("HTTP/1.1 200 Connection Established\r\n\r\n");
+  }
+  data_writes1.emplace_back(
+      "GET http://www.example.org/ HTTP/1.1\r\n"
+      "Host: www.example.org\r\n"
+      "Proxy-Connection: keep-alive\r\n\r\n");
+
+  data_reads1.emplace_back("HTTP/1.1 200 OK\r\n");
+  data_reads1.emplace_back(SYNCHRONOUS, OK);
+
+  StaticSocketDataProvider data1(data_reads1, data_writes1);
+  session_deps_.socket_factory->AddSocketDataProvider(&data1);
+
+  for (size_t proxy_index = 0; proxy_index < chain1.length(); ++proxy_index) {
+    ssl_socket_data_providers.emplace_back(ASYNC, OK);
+    session_deps_.socket_factory->AddSSLSocketDataProvider(
+        &ssl_socket_data_providers.back());
+  }
+
+  TestCompletionCallback callback1;
+
+  HttpNetworkTransaction trans1(DEFAULT_PRIORITY, session.get());
+
+  int rv = trans1.Start(&request, callback1.callback(),
+                        NetLogWithSource::Make(NetLogSourceType::NONE));
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  rv = callback1.WaitForResult();
+  EXPECT_THAT(rv, IsOk());
+
+  const HttpResponseInfo* response = trans1.GetResponseInfo();
+  ASSERT_TRUE(response);
+  EXPECT_EQ(200, response->headers->response_code());
+  EXPECT_EQ(chain1, response->proxy_chain);
+
+  // Now use the second proxy chain. We expect that it will use a new
+  // socket, so to test this we will create a new socket data provider and
+  // expect that this gets used instead of the one created above for the
+  // first transaction.
+  proxy_delegate->set_proxy(chain2);
+
+  std::vector<MockWrite> data_writes2;
+  std::vector<MockRead> data_reads2;
+
+  for (size_t proxy_index = 1; proxy_index < chain2.length(); ++proxy_index) {
+    const auto& proxy_host_port_pair_string =
+        chain2.GetProxyServer(proxy_index).host_port_pair().ToString();
+    connects.push_back(
+        base::StringPrintf("CONNECT %s HTTP/1.1\r\n"
+                           "Host: %s\r\n"
+                           "Proxy-Connection: keep-alive\r\n\r\n",
+                           proxy_host_port_pair_string.c_str(),
+                           proxy_host_port_pair_string.c_str()));
+    data_writes2.emplace_back(connects.back().c_str());
+    data_reads2.emplace_back("HTTP/1.1 200 Connection Established\r\n\r\n");
+  }
+  data_writes2.emplace_back(
+      "GET http://www.example.org/ HTTP/1.1\r\n"
+      "Host: www.example.org\r\n"
+      "Proxy-Connection: keep-alive\r\n\r\n");
+
+  data_reads2.emplace_back("HTTP/1.1 200 OK\r\n");
+  data_reads2.emplace_back(SYNCHRONOUS, OK);
+
+  StaticSocketDataProvider data2(data_reads2, data_writes2);
+  session_deps_.socket_factory->AddSocketDataProvider(&data2);
+
+  for (size_t proxy_index = 0; proxy_index < chain2.length(); ++proxy_index) {
+    ssl_socket_data_providers.emplace_back(ASYNC, OK);
+    session_deps_.socket_factory->AddSSLSocketDataProvider(
+        &ssl_socket_data_providers.back());
+  }
+
+  TestCompletionCallback callback2;
+  HttpNetworkTransaction trans2(DEFAULT_PRIORITY, session.get());
+
+  rv = trans2.Start(&request, callback2.callback(),
+                    NetLogWithSource::Make(NetLogSourceType::NONE));
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  rv = callback2.WaitForResult();
+  EXPECT_THAT(rv, IsOk());
+
+  response = trans2.GetResponseInfo();
+  ASSERT_TRUE(response);
+  EXPECT_EQ(200, response->headers->response_code());
+  EXPECT_EQ(chain2, response->proxy_chain);
+
+  EXPECT_TRUE(data1.AllReadDataConsumed());
+  EXPECT_TRUE(data1.AllWriteDataConsumed());
+  EXPECT_TRUE(data2.AllReadDataConsumed());
+  EXPECT_TRUE(data2.AllWriteDataConsumed());
+}
+
+// If we have established a proxy tunnel through a two hop proxy and then
+// establish a tunnel through only the first hop, ensure that socket re-use does
+// not occur (HTTPS A -> HTTPS B != HTTPS A).
+TEST_P(HttpNetworkTransactionTest, HttpsNestedProxyNoSocketReuseFirstHop) {
+  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy1.test", 70)};
+  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy2.test", 71)};
+  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+
+  const ProxyChain kFirstHopOnlyChain{{kProxyServer1}};
+  HttpsNestedProxyNoSocketReuseHelper(kNestedProxyChain, kFirstHopOnlyChain);
+}
+
+// If we have established a proxy tunnel through a two hop proxy and then
+// establish a tunnel through only the second hop, ensure that socket re-use
+// does not occur (HTTPS A -> HTTPS B != HTTPS B).
+TEST_P(HttpNetworkTransactionTest, HttpsNestedProxyNoSocketReuseSecondHop) {
+  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy1.test", 70)};
+  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy2.test", 71)};
+  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+
+  const ProxyChain kSecondHopOnlyChain{{kProxyServer1}};
+
+  HttpsNestedProxyNoSocketReuseHelper(kNestedProxyChain, kSecondHopOnlyChain);
+}
+
+// If we have established a proxy tunnel through a two hop proxy and then
+// establish a tunnel through the same proxies with the order reversed, ensure
+// that socket re-use does not occur (HTTPS A -> HTTPS B != HTTPS B -> HTTPS A).
+TEST_P(HttpNetworkTransactionTest, HttpsNestedProxyNoSocketReuseReversedChain) {
+  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy1.test", 70)};
+  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy2.test", 71)};
+  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+
+  const ProxyChain kReversedChain{{kProxyServer2, kProxyServer1}};
+
+  HttpsNestedProxyNoSocketReuseHelper(kNestedProxyChain, kReversedChain);
+}
+
+// If we have established a proxy tunnel through a two hop proxy using SPDY,
+// ensure that socket reuse occurs as expected. Specifically, for:
+// (SPDY A -> SPDY B -> HTTPS Endpoint),
+// (SPDY A -> HTTPS Endpoint) should send the endpoint CONNECT to
+// the existing SPDY A socket but for:
+// (SPDY B -> HTTPS Endpoint), the SPDY A -> SPDY B socket should not be used.
+TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySpdySocketReuse) {
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("https://www.example.org/");
+  request.traffic_annotation =
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  // Configure a nested proxy.
+  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy1.test", 70)};
+  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy2.test", 71)};
+  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+  const ProxyChain kFirstHopOnlyChain{{kProxyServer1}};
+  const ProxyChain kSecondHopOnlyChain{{kProxyServer1}};
+
+  auto proxy_delegate = std::make_unique<SingleProxyDelegate>();
+  proxy_delegate->set_proxy(kNestedProxyChain);
+
+  session_deps_.proxy_resolution_service =
+      ConfiguredProxyResolutionService::CreateFixedForTest(
+          "https://not-used:70", TRAFFIC_ANNOTATION_FOR_TESTS);
+  session_deps_.proxy_resolution_service->SetProxyDelegate(
+      proxy_delegate.get());
+  session_deps_.net_log = NetLog::Get();
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+
+  // CONNECT to proxy2.test:71 via SPDY.
+  spdy::SpdySerializedFrame proxy2_connect(spdy_util_.ConstructSpdyConnect(
+      nullptr, 0, 1, HttpProxyConnectJob::kH2QuicTunnelPriority,
+      kProxyServer2.host_port_pair()));
+
+  spdy::SpdySerializedFrame proxy2_connect_resp(
+      spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
+
+  // CONNECT to www.example.org:443 via SPDY.
+  // Need to use a new `SpdyTestUtil()` so that the stream parent ID of this
+  // CONNECT is calculated correctly.
+  SpdyTestUtil new_spdy_util;
+  spdy::SpdySerializedFrame endpoint_connect(new_spdy_util.ConstructSpdyConnect(
+      nullptr, 0, 1, HttpProxyConnectJob::kH2QuicTunnelPriority,
+      HostPortPair("www.example.org", 443)));
+
+  // Since this request and response are sent over the tunnel established
+  // previously, from a socket-perspective these need to be wrapped as data
+  // frames.
+  spdy::SpdySerializedFrame wrapped_endpoint_connect(
+      spdy_util_.ConstructWrappedSpdyFrame(endpoint_connect, 1));
+
+  spdy::SpdySerializedFrame endpoint_connect_resp(
+      new_spdy_util.ConstructSpdyGetReply(nullptr, 0, 1));
+  spdy::SpdySerializedFrame wrapped_endpoint_connect_resp(
+      spdy_util_.ConstructWrappedSpdyFrame(endpoint_connect_resp, 1));
+
+  // fetch https://www.example.org/ via HTTP.
+  // Since this request will go over two tunnels, it needs to be double-wrapped.
+  const char get[] =
+      "GET / HTTP/1.1\r\n"
+      "Host: www.example.org\r\n"
+      "Connection: keep-alive\r\n\r\n";
+  spdy::SpdySerializedFrame wrapped_get(
+      new_spdy_util.ConstructSpdyDataFrame(1, get, false));
+  spdy::SpdySerializedFrame wrapped_wrapped_get(
+      spdy_util_.ConstructWrappedSpdyFrame(wrapped_get, 1));
+
+  const char resp[] =
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Length: 10\r\n\r\n";
+  spdy::SpdySerializedFrame wrapped_get_resp(
+      new_spdy_util.ConstructSpdyDataFrame(1, resp, false));
+  spdy::SpdySerializedFrame wrapped_wrapped_get_resp(
+      spdy_util_.ConstructWrappedSpdyFrame(wrapped_get_resp, 1));
+
+  spdy::SpdySerializedFrame wrapped_body(
+      new_spdy_util.ConstructSpdyDataFrame(1, "1234567890", false));
+  spdy::SpdySerializedFrame wrapped_wrapped_body(
+      spdy_util_.ConstructWrappedSpdyFrame(wrapped_body, 1));
+
+  spdy::SpdySerializedFrame window_update(
+      spdy_util_.ConstructSpdyWindowUpdate(1, wrapped_wrapped_get_resp.size()));
+
+  spdy::SpdySerializedFrame second_trans_endpoint_connect(
+      spdy_util_.ConstructSpdyConnect(
+          nullptr, 0, 3, HttpProxyConnectJob::kH2QuicTunnelPriority,
+          HostPortPair("www.example.org", 443)));
+  spdy::SpdySerializedFrame second_trans_endpoint_connect_resp(
+      spdy_util_.ConstructSpdyGetReply(nullptr, 0, 3));
+  spdy::SpdySerializedFrame second_trans_wrapped_get(
+      new_spdy_util.ConstructSpdyDataFrame(3, get, false));
+  spdy::SpdySerializedFrame second_trans_wrapped_get_resp(
+      new_spdy_util.ConstructSpdyDataFrame(3, resp, false));
+  spdy::SpdySerializedFrame second_trans_wrapped_body(
+      new_spdy_util.ConstructSpdyDataFrame(3, "abcdefghij", false));
+
+  MockWrite spdy_writes1[] = {
+      CreateMockWrite(proxy2_connect, 0),
+      CreateMockWrite(wrapped_endpoint_connect, 2),
+      CreateMockWrite(wrapped_wrapped_get, 5),
+      // For the second transaction, we expect the endpoint connect on this
+      // socket.
+      CreateMockWrite(second_trans_endpoint_connect, 9),
+      CreateMockWrite(second_trans_wrapped_get, 11),
+
+  };
+
+  MockRead spdy_reads1[] = {
+      CreateMockRead(proxy2_connect_resp, 1, ASYNC),
+      // TODO(https://crbug.com/497228): We have to manually delay this read so
+      // that the higher-level SPDY stream doesn't get notified of an available
+      // read before the write it initiated (the second CONNECT) finishes,
+      // triggering a DCHECK.
+      MockRead(ASYNC, ERR_IO_PENDING, 3),
+      CreateMockRead(wrapped_endpoint_connect_resp, 4, ASYNC),
+      CreateMockRead(wrapped_wrapped_get_resp, 6, ASYNC),
+      CreateMockRead(wrapped_wrapped_body, 7, ASYNC),
+      CreateMockRead(wrapped_wrapped_body, 8, ASYNC),
+      CreateMockRead(second_trans_endpoint_connect_resp, 10),
+      CreateMockRead(second_trans_wrapped_get_resp, 12, ASYNC),
+      CreateMockRead(second_trans_wrapped_body, 13, ASYNC),
+      CreateMockRead(second_trans_wrapped_body, 14, ASYNC),
+      MockRead(ASYNC, 0, 15),
+  };
+
+  SequencedSocketData spdy_data1(spdy_reads1, spdy_writes1);
+  session_deps_.socket_factory->AddSocketDataProvider(&spdy_data1);
+
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  ssl.next_proto = kProtoHTTP2;
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl);
+  SSLSocketDataProvider ssl2(ASYNC, OK);
+  ssl2.next_proto = kProtoHTTP2;
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl2);
+  SSLSocketDataProvider ssl3(ASYNC, OK);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl3);
+
+  TestCompletionCallback callback1;
+  HttpNetworkTransaction trans1(DEFAULT_PRIORITY, session.get());
+
+  int rv = trans1.Start(&request, callback1.callback(),
+                        NetLogWithSource::Make(NetLogSourceType::NONE));
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  spdy_data1.RunUntilPaused();
+  base::RunLoop().RunUntilIdle();
+  spdy_data1.Resume();
+
+  rv = callback1.WaitForResult();
+  ASSERT_THAT(rv, IsOk());
+
+  const HttpResponseInfo* response = trans1.GetResponseInfo();
+  ASSERT_TRUE(response);
+  ASSERT_TRUE(response->headers);
+  EXPECT_EQ("HTTP/1.1 200 OK", response->headers->GetStatusLine());
+  EXPECT_EQ(kNestedProxyChain, response->proxy_chain);
+
+  std::string response_data;
+  ASSERT_THAT(ReadTransaction(&trans1, &response_data), IsOk());
+  EXPECT_EQ("1234567890", response_data);
+
+  // Now use a proxy chain consisting of only the first proxy. We expect that it
+  // will re-use the existing socket to the proxy, so we will look for the reads
+  // and writes associated with this in the same SocketDataProvider used by the
+  // first transaction.
+  proxy_delegate->set_proxy(kFirstHopOnlyChain);
+
+  SSLSocketDataProvider ssl4(ASYNC, OK);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl4);
+
+  TestCompletionCallback callback2;
+  HttpNetworkTransaction trans2(DEFAULT_PRIORITY, session.get());
+
+  rv = trans2.Start(&request, callback2.callback(),
+                    NetLogWithSource::Make(NetLogSourceType::NONE));
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  rv = callback2.WaitForResult();
+  ASSERT_THAT(rv, IsOk());
+
+  response = trans2.GetResponseInfo();
+  ASSERT_TRUE(response);
+  ASSERT_TRUE(response->headers);
+  EXPECT_EQ("HTTP/1.1 200 OK", response->headers->GetStatusLine());
+  EXPECT_EQ(kFirstHopOnlyChain, response->proxy_chain);
+
+  ASSERT_THAT(ReadTransaction(&trans2, &response_data), IsOk());
+  EXPECT_EQ("abcdefghij", response_data);
+
+  // Now use a proxy chain consisting of only the second proxy. We expect that
+  // it will not re-use the existing socket to the first proxy, so we will look
+  // for the reads and writes associated with this in a new SocketDataProvider.
+  proxy_delegate->set_proxy(kSecondHopOnlyChain);
+
+  // CONNECT to www.example.org:443 via SPDY.
+  SpdyTestUtil third_spdy_util;
+  spdy::SpdySerializedFrame third_trans_endpoint_connect(
+      third_spdy_util.ConstructSpdyConnect(
+          nullptr, 0, 1, HttpProxyConnectJob::kH2QuicTunnelPriority,
+          HostPortPair("www.example.org", 443)));
+
+  spdy::SpdySerializedFrame third_trans_endpoint_connect_resp(
+      third_spdy_util.ConstructSpdyGetReply(nullptr, 0, 1));
+
+  // fetch https://www.example.org/ via HTTP.
+  spdy::SpdySerializedFrame third_trans_wrapped_get(
+      third_spdy_util.ConstructSpdyDataFrame(1, get, false));
+
+  spdy::SpdySerializedFrame third_trans_wrapped_get_resp(
+      third_spdy_util.ConstructSpdyDataFrame(1, resp, false));
+
+  spdy::SpdySerializedFrame third_trans_wrapped_body(
+      third_spdy_util.ConstructSpdyDataFrame(1, "!@#$%^&*()", false));
+
+  MockWrite spdy_writes2[] = {
+      CreateMockWrite(third_trans_endpoint_connect, 0),
+      CreateMockWrite(third_trans_wrapped_get, 2),
+  };
+
+  MockRead spdy_reads2[] = {
+      CreateMockRead(third_trans_endpoint_connect_resp, 1, ASYNC),
+      CreateMockRead(third_trans_wrapped_get_resp, 3, ASYNC),
+      CreateMockRead(third_trans_wrapped_body, 4, ASYNC),
+      CreateMockRead(third_trans_wrapped_body, 5, ASYNC),
+      MockRead(ASYNC, 0, 6),
+  };
+
+  SequencedSocketData spdy_data2(spdy_reads2, spdy_writes2);
+  session_deps_.socket_factory->AddSocketDataProvider(&spdy_data2);
+
+  SSLSocketDataProvider ssl5(ASYNC, OK);
+  ssl5.next_proto = kProtoHTTP2;
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl5);
+
+  SSLSocketDataProvider ssl6(ASYNC, OK);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl6);
+
+  TestCompletionCallback callback3;
+  HttpNetworkTransaction trans3(DEFAULT_PRIORITY, session.get());
+
+  rv = trans3.Start(&request, callback3.callback(),
+                    NetLogWithSource::Make(NetLogSourceType::NONE));
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  rv = callback3.WaitForResult();
+  ASSERT_THAT(rv, IsOk());
+
+  response = trans3.GetResponseInfo();
+  ASSERT_TRUE(response);
+  ASSERT_TRUE(response->headers);
+  EXPECT_EQ("HTTP/1.1 200 OK", response->headers->GetStatusLine());
+  EXPECT_EQ(kFirstHopOnlyChain, response->proxy_chain);
+
+  ASSERT_THAT(ReadTransaction(&trans3, &response_data), IsOk());
+  EXPECT_EQ("!@#$%^&*()", response_data);
+
+  EXPECT_TRUE(spdy_data1.AllReadDataConsumed());
+  EXPECT_TRUE(spdy_data1.AllWriteDataConsumed());
+  EXPECT_TRUE(spdy_data2.AllReadDataConsumed());
+  EXPECT_TRUE(spdy_data2.AllWriteDataConsumed());
+}
+
+// Ensure that socket reuse occurs after an error from a SPDY connection through
+// the nested proxy.
+TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySpdySocketReuseAfterError) {
+  const ProxyServer kProxyServer1{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy1.test", 70)};
+  const ProxyServer kProxyServer2{ProxyServer::SCHEME_HTTPS,
+                                  HostPortPair("proxy2.test", 71)};
+  const ProxyChain kNestedProxyChain{{kProxyServer1, kProxyServer2}};
+
+  ProxyList proxy_list;
+  proxy_list.AddProxyChain(kNestedProxyChain);
+  ProxyConfig proxy_config = ProxyConfig::CreateForTesting(proxy_list);
+
+  session_deps_.proxy_resolution_service =
+      ConfiguredProxyResolutionService::CreateFixedForTest(
+          ProxyConfigWithAnnotation(proxy_config,
+                                    TRAFFIC_ANNOTATION_FOR_TESTS));
+  session_deps_.net_log = NetLog::Get();
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+
+  // CONNECT to proxy2.test:71 via SPDY.
+  spdy::SpdySerializedFrame proxy2_connect(spdy_util_.ConstructSpdyConnect(
+      nullptr, 0, 1, HttpProxyConnectJob::kH2QuicTunnelPriority,
+      kProxyServer2.host_port_pair()));
+
+  spdy::SpdySerializedFrame proxy2_connect_resp(
+      spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
+
+  // CONNECT to www.example.org:443 via SPDY.
+  // Need to use a new `SpdyTestUtil()` so that the stream parent ID of this
+  // CONNECT is calculated correctly.
+  SpdyTestUtil new_spdy_util;
+  spdy::SpdySerializedFrame endpoint_connect(new_spdy_util.ConstructSpdyConnect(
+      nullptr, 0, 1, HttpProxyConnectJob::kH2QuicTunnelPriority,
+      HostPortPair("www.example.org", 443)));
+
+  // Since this request and response are sent over the tunnel established
+  // previously, from a socket-perspective these need to be wrapped as data
+  // frames.
+  spdy::SpdySerializedFrame wrapped_endpoint_connect(
+      spdy_util_.ConstructWrappedSpdyFrame(endpoint_connect, 1));
+
+  spdy::SpdySerializedFrame endpoint_connect_resp(
+      new_spdy_util.ConstructSpdyGetReply(nullptr, 0, 1));
+  spdy::SpdySerializedFrame wrapped_endpoint_connect_resp(
+      spdy_util_.ConstructWrappedSpdyFrame(endpoint_connect_resp, 1));
+
+  spdy::SpdySerializedFrame rst(
+      new_spdy_util.ConstructSpdyRstStream(1, spdy::ERROR_CODE_CANCEL));
+  spdy::SpdySerializedFrame wrapped_rst(
+      spdy_util_.ConstructWrappedSpdyFrame(rst, 1));
+
+  new_spdy_util.UpdateWithStreamDestruction(1);
+  spdy::SpdySerializedFrame attempt2_endpoint_connect(
+      new_spdy_util.ConstructSpdyConnect(
+          nullptr, 0, 3, HttpProxyConnectJob::kH2QuicTunnelPriority,
+          HostPortPair("www.example.org", 443)));
+  spdy::SpdySerializedFrame attempt2_wrapped_endpoint_connect(
+      spdy_util_.ConstructWrappedSpdyFrame(attempt2_endpoint_connect, 1));
+
+  spdy::SpdySerializedFrame attempt2_endpoint_connect_resp(
+      new_spdy_util.ConstructSpdyGetReply(nullptr, 0, 3));
+  spdy::SpdySerializedFrame attempt2_wrapped_endpoint_connect_resp(
+      spdy_util_.ConstructWrappedSpdyFrame(attempt2_endpoint_connect_resp, 1));
+
+  // fetch https://www.example.org/ via HTTPS.
+  // Since this request will go over two tunnels, it needs to be double-wrapped.
+  const char get[] =
+      "GET / HTTP/1.1\r\n"
+      "Host: www.example.org\r\n"
+      "Connection: keep-alive\r\n\r\n";
+  SpdyTestUtil attempt2_spdy_util(/*use_priority_header=*/true);
+  spdy::SpdySerializedFrame attempt2_wrapped_get(
+      attempt2_spdy_util.ConstructSpdyDataFrame(3, get, false));
+  spdy::SpdySerializedFrame attempt2_wrapped_wrapped_get(
+      spdy_util_.ConstructWrappedSpdyFrame(attempt2_wrapped_get, 1));
+
+  const char resp[] =
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Length: 10\r\n\r\n";
+  spdy::SpdySerializedFrame attempt2_wrapped_get_resp(
+      attempt2_spdy_util.ConstructSpdyDataFrame(3, resp, false));
+  spdy::SpdySerializedFrame attempt2_wrapped_wrapped_get_resp(
+      spdy_util_.ConstructWrappedSpdyFrame(attempt2_wrapped_get_resp, 1));
+
+  spdy::SpdySerializedFrame attempt2_wrapped_body(
+      attempt2_spdy_util.ConstructSpdyDataFrame(3, "1234567890", false));
+  spdy::SpdySerializedFrame attempt2_wrapped_wrapped_body(
+      spdy_util_.ConstructWrappedSpdyFrame(attempt2_wrapped_body, 1));
+
+  MockWrite spdy_writes[] = {
+      CreateMockWrite(proxy2_connect, 0),
+      CreateMockWrite(wrapped_endpoint_connect, 2),
+      CreateMockWrite(wrapped_rst, 5),
+      CreateMockWrite(attempt2_wrapped_endpoint_connect, 6),
+      CreateMockWrite(attempt2_wrapped_wrapped_get, 9),
+  };
+
+  MockRead spdy_reads[] = {
+      CreateMockRead(proxy2_connect_resp, 1, ASYNC),
+      // TODO(https://crbug.com/497228): We have to manually delay this read so
+      // that the higher-level SPDY stream doesn't get notified of an available
+      // read before the write it initiated (the second CONNECT) finishes,
+      // triggering a DCHECK.
+      MockRead(ASYNC, ERR_IO_PENDING, 3),
+      CreateMockRead(wrapped_endpoint_connect_resp, 4, ASYNC),
+      // The SSL socket error should occur here.
+      MockRead(ASYNC, ERR_IO_PENDING, 7),
+      CreateMockRead(attempt2_wrapped_endpoint_connect_resp, 8, ASYNC),
+      CreateMockRead(attempt2_wrapped_wrapped_get_resp, 10, ASYNC),
+      CreateMockRead(attempt2_wrapped_wrapped_body, 11, ASYNC),
+      MockRead(ASYNC, 0, 12),
+  };
+
+  SequencedSocketData spdy_data(spdy_reads, spdy_writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&spdy_data);
+
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  ssl.next_proto = kProtoHTTP2;
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl);
+
+  SSLSocketDataProvider ssl2(ASYNC, OK);
+  ssl2.next_proto = kProtoHTTP2;
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl2);
+
+  auto cert_request_info_proxy = base::MakeRefCounted<SSLCertRequestInfo>();
+  cert_request_info_proxy->host_and_port = kProxyServer1.host_port_pair();
+
+  SSLSocketDataProvider ssl3(ASYNC, ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
+  ssl3.cert_request_info = cert_request_info_proxy;
+  ssl3.expected_send_client_cert = false;
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl3);
+
+  HttpRequestInfo request1;
+  request1.method = "GET";
+  request1.url = GURL("https://www.example.org/");
+  request1.traffic_annotation =
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  TestCompletionCallback callback1;
+
+  HttpNetworkTransaction trans1(DEFAULT_PRIORITY, session.get());
+
+  int rv = trans1.Start(&request1, callback1.callback(),
+                        NetLogWithSource::Make(NetLogSourceType::NONE));
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  spdy_data.RunUntilPaused();
+  base::RunLoop().RunUntilIdle();
+  spdy_data.Resume();
+
+  rv = callback1.WaitForResult();
+  ASSERT_THAT(rv, IsError(ERR_SSL_CLIENT_AUTH_CERT_NEEDED));
+
+  SSLSocketDataProvider ssl4(ASYNC, OK);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl4);
+
+  TestCompletionCallback callback2;
+
+  HttpNetworkTransaction trans2(DEFAULT_PRIORITY, session.get());
+
+  rv = trans2.Start(&request1, callback2.callback(),
+                    NetLogWithSource::Make(NetLogSourceType::NONE));
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  spdy_data.RunUntilPaused();
+  base::RunLoop().RunUntilIdle();
+  spdy_data.Resume();
+
+  rv = callback2.WaitForResult();
+  ASSERT_THAT(rv, IsOk());
+
+  const HttpResponseInfo* response = trans2.GetResponseInfo();
+  ASSERT_TRUE(response);
+  ASSERT_TRUE(response->headers);
+  EXPECT_EQ("HTTP/1.1 200 OK", response->headers->GetStatusLine());
+
+  std::string response_data;
+  ASSERT_THAT(ReadTransaction(&trans2, &response_data), IsOk());
+  EXPECT_EQ("1234567890", response_data);
 }
 
 // Test the case where a proxied H2 session doesn't exist when an auth challenge
@@ -19091,10 +21250,9 @@ TEST_P(HttpNetworkTransactionTest, DoNotUseSpdySessionIfCertDoesNotMatch) {
   ProxyConfig proxy_config;
   proxy_config.proxy_rules().ParseFromString("http=https://proxy:443");
   session_deps_.proxy_resolution_service =
-      std::make_unique<ConfiguredProxyResolutionService>(
-          std::make_unique<ProxyConfigServiceFixed>(ProxyConfigWithAnnotation(
-              proxy_config, TRAFFIC_ANNOTATION_FOR_TESTS)),
-          nullptr, nullptr, /*quick_check_enabled=*/true);
+      ConfiguredProxyResolutionService::CreateFixedForTest(
+          ProxyConfigWithAnnotation(proxy_config,
+                                    TRAFFIC_ANNOTATION_FOR_TESTS));
 
   SSLSocketDataProvider ssl1(ASYNC, OK);  // to the proxy
   ssl1.next_proto = kProtoHTTP2;

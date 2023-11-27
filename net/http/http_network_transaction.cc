@@ -916,11 +916,11 @@ int HttpNetworkTransaction::DoCreateStreamComplete(int result) {
   } else if (result == ERR_HTTP_1_1_REQUIRED ||
              result == ERR_PROXY_HTTP_1_1_REQUIRED) {
     return HandleHttp11Required(result);
+  } else {
+    // Handle possible client certificate errors that may have occurred if the
+    // stream used SSL for one or more of the layers.
+    result = HandleSSLClientAuthError(result);
   }
-
-  // Handle possible client certificate errors that may have occurred if the
-  // stream used SSL for one or more of the layers.
-  result = HandleSSLClientAuthError(result);
 
   // At this point we are done with the stream_request_.
   stream_request_.reset();
@@ -1649,6 +1649,10 @@ int HttpNetworkTransaction::HandleSSLClientAuthError(int error) {
   // origin and proxy errors.
   //
   // See https://crbug.com/828965.
+  if (error != ERR_SSL_PROTOCOL_ERROR && !IsClientCertificateError(error)) {
+    return error;
+  }
+
   bool is_server = !UsingHttpProxyWithoutTunnel();
   HostPortPair host_port_pair;
   // TODO(https://crbug.com/1491092): Remove check and return error when
@@ -1662,30 +1666,26 @@ int HttpNetworkTransaction::HandleSSLClientAuthError(int error) {
                          .host_port_pair();
   }
 
-  if (error == ERR_SSL_PROTOCOL_ERROR || IsClientCertificateError(error)) {
-    DCHECK((is_server && IsSecureRequest()) ||
-           proxy_info_.is_secure_http_like());
-    if (session_->ssl_client_context()->ClearClientCertificate(
-            host_port_pair)) {
-      // The private key handle may have gone stale due to, e.g., the user
-      // unplugging their smartcard. Operating systems do not provide reliable
-      // notifications for this, so if the signature failed and the user was
-      // not already prompted for certificate on this request, retry to ask
-      // the user for a new one.
-      //
-      // TODO(davidben): There is no corresponding feature for proxy client
-      // certificates. Ideally this would live at a lower level, common to both,
-      // but |configured_client_cert_for_server_| is not accessible below the
-      // socket pools.
-      if (is_server && error == ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED &&
-          !configured_client_cert_for_server_ && !HasExceededMaxRetries()) {
-        retry_attempts_++;
-        net_log_.AddEventWithNetErrorCode(
-            NetLogEventType::HTTP_TRANSACTION_RESTART_AFTER_ERROR, error);
-        ResetConnectionAndRequestForResend(
-            RetryReason::kSslClientAuthSignatureFailed);
-        return OK;
-      }
+  DCHECK((is_server && IsSecureRequest()) || proxy_info_.is_secure_http_like());
+  if (session_->ssl_client_context()->ClearClientCertificate(host_port_pair)) {
+    // The private key handle may have gone stale due to, e.g., the user
+    // unplugging their smartcard. Operating systems do not provide reliable
+    // notifications for this, so if the signature failed and the user was
+    // not already prompted for certificate on this request, retry to ask
+    // the user for a new one.
+    //
+    // TODO(davidben): There is no corresponding feature for proxy client
+    // certificates. Ideally this would live at a lower level, common to both,
+    // but |configured_client_cert_for_server_| is not accessible below the
+    // socket pools.
+    if (is_server && error == ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED &&
+        !configured_client_cert_for_server_ && !HasExceededMaxRetries()) {
+      retry_attempts_++;
+      net_log_.AddEventWithNetErrorCode(
+          NetLogEventType::HTTP_TRANSACTION_RESTART_AFTER_ERROR, error);
+      ResetConnectionAndRequestForResend(
+          RetryReason::kSslClientAuthSignatureFailed);
+      return OK;
     }
   }
   return error;
@@ -1946,6 +1946,10 @@ void HttpNetworkTransaction::ResetConnectionAndRequestForResend(
 }
 
 bool HttpNetworkTransaction::ShouldApplyProxyAuth() const {
+  // TODO(https://crbug.com/1491092): Update to handle multi-proxy chains.
+  if (proxy_info_.proxy_chain().is_multi_proxy()) {
+    return false;
+  }
   return UsingHttpProxyWithoutTunnel();
 }
 

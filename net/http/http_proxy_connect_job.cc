@@ -23,6 +23,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/http_user_agent_settings.h"
 #include "net/base/net_errors.h"
+#include "net/base/proxy_chain.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/log/net_log_source_type.h"
 #include "net/log/net_log_with_source.h"
@@ -485,8 +486,37 @@ int HttpProxyConnectJob::DoTransportConnectComplete(int result) {
     if (result == ERR_SSL_CLIENT_AUTH_CERT_NEEDED) {
       DCHECK_EQ(ProxyServer::SCHEME_HTTPS, scheme);
       ssl_cert_request_info_ = nested_connect_job_->GetCertRequestInfo();
+      if (params_->proxy_chain().is_multi_proxy() && !ssl_cert_request_info_) {
+        // When multi-proxy chains are in use, it's possible that a client auth
+        // cert is requested by the first proxy after the transport connection
+        // to it has been established. When this occurs,
+        // ERR_SSL_CLIENT_AUTH_CERT_NEEDED will get passed back to the parent
+        // SSLConnectJob and then to the parent HttpProxyConnectJob, but the SSL
+        // cert request info won't have been set up for the parent
+        // HttpProxyConnectJob to use it in this method. Fail gracefully when
+        // this case is encountered.
+        // TODO(https://crbug.com/1491092): Investigate whether changes are
+        // needed to support making the SSL cert request info available here in
+        // the case described above. Just returning `result` here makes the
+        // behavior for multi-proxy chains match that of single-proxy chains
+        // (where the proxied request fails with ERR_SSL_CLIENT_AUTH_CERT_NEEDED
+        // and no `SSLCertRequestInfo` is available from the corresponding
+        // `ResponseInfo`), though, so it could be that no further action is
+        // needed here.
+        return result;
+      }
       DCHECK(ssl_cert_request_info_);
       ssl_cert_request_info_->is_proxy = true;
+      return result;
+    }
+
+    // If this transport connection was attempting to be made through other
+    // proxies, prefer to propagate errors from attempting to establish the
+    // previous proxy connection(s) instead of returning
+    // `ERR_PROXY_CONNECTION_FAILED`. For instance, if the attempt to connect to
+    // the first proxy resulted in `ERR_PROXY_HTTP_1_1_REQUIRED`, return that so
+    // that the whole job will be restarted using HTTP/1.1.
+    if (params_->proxy_chain_index() != 0) {
       return result;
     }
 
@@ -799,11 +829,22 @@ std::string HttpProxyConnectJob::GetUserAgent() const {
 }
 
 SpdySessionKey HttpProxyConnectJob::CreateSpdySessionKey() const {
-  // TODO(https://crbug.com/1491092): For supporting nested proxies we will want
-  // to construct a new ProxyChain here that contains the current proxy server
-  // (based on `proxy_chain_index_`) and all previous hops in the chain.
-  return SpdySessionKey(params_->proxy_chain().proxy_server().host_port_pair(),
-                        ProxyChain::Direct(), PRIVACY_MODE_DISABLED,
+  // Construct the SpdySessionKey using a ProxyChain that corresponds to what we
+  // are sending the CONNECT to. For the first proxy server use
+  // `ProxyChain::Direct()`, and for the others use a proxy chain containing all
+  // proxy servers that we have already connected through.
+  std::vector<ProxyServer> intermediate_proxy_servers;
+  for (size_t proxy_index = 0; proxy_index < params_->proxy_chain_index();
+       ++proxy_index) {
+    intermediate_proxy_servers.push_back(
+        params_->proxy_chain().GetProxyServer(proxy_index));
+  }
+  ProxyChain session_key_proxy_chain(std::move(intermediate_proxy_servers));
+  if (params_->proxy_chain_index() == 0) {
+    DCHECK(session_key_proxy_chain.is_direct());
+  }
+  return SpdySessionKey(params_->proxy_server().host_port_pair(),
+                        session_key_proxy_chain, PRIVACY_MODE_DISABLED,
                         SpdySessionKey::IsProxySession::kTrue, socket_tag(),
                         params_->network_anonymization_key(),
                         params_->secure_dns_policy());

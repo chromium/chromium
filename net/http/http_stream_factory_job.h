@@ -13,7 +13,6 @@
 #include "base/time/time.h"
 #include "net/base/completion_repeating_callback.h"
 #include "net/base/net_export.h"
-#include "net/base/proxy_chain.h"
 #include "net/base/request_priority.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/dns/public/secure_dns_policy.h"
@@ -47,6 +46,7 @@ class HttpNetworkSession;
 class HttpStream;
 class SpdySessionPool;
 class NetLog;
+class ProxyChain;
 struct SSLConfig;
 
 // An HttpStreamRequest exists for each stream which is in progress of being
@@ -341,7 +341,6 @@ class HttpStreamFactory::Job
                               bool is_websocket);
 
   // Called in Job constructor. Use |spdy_session_key_| after construction.
-  // TODO(crbug.com/1491092): Update to take a proxy_chain.
   static SpdySessionKey GetSpdySessionKey(
       const ProxyChain& proxy_chain,
       const GURL& origin_url,
@@ -467,7 +466,8 @@ class HttpStreamFactory::Job
   base::WeakPtr<SpdySession> existing_spdy_session_;
 
   // Which SpdySessions in the pool to use. Note that, if requesting an HTTP URL
-  // through an HTTPS proxy, this key matches the proxy, not the origin server.
+  // through an HTTPS proxy, this key corresponds to the last proxy in the proxy
+  // chain and not the origin server.
   const SpdySessionKey spdy_session_key_;
 
   // Type of stream that is requested.

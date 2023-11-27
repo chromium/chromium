@@ -6,6 +6,7 @@
 
 #include "net/base/net_errors.h"
 #include "net/base/proxy_chain.h"
+#include "net/base/proxy_server.h"
 
 namespace net {
 
@@ -14,10 +15,6 @@ NET_EXPORT bool CanFalloverToNextProxy(const ProxyChain& proxy_chain,
                                        int* final_error,
                                        bool is_for_ip_protection) {
   *final_error = error;
-
-  // TODO(https://crbug.com/1491092): Update this to support proxy chains with
-  // multiple proxies and add tests.
-  CHECK(!proxy_chain.is_multi_proxy());
 
   if (!proxy_chain.is_direct() &&
       proxy_chain.GetProxyServer(/*chain_index=*/0).is_quic()) {
