@@ -169,6 +169,7 @@
 #include "components/variations/entropy_provider.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -1085,6 +1086,25 @@ void MetricsService::CloseCurrentLog(
       current_log->GetCurrentClockTime(/*record_time_zone=*/true);
   std::string signing_key = log_store()->GetSigningKeyForLogType(log_type);
   std::string current_app_version = client_->GetVersionString();
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          features::kMetricsServiceDeltaSnapshotInBg)) {
+    // If this is an async periodic log, and the browser is about to be shut
+    // down (determined by KeepAliveRegistry::IsShuttingDown(), indicating that
+    // there is nothing else to keep the browser alive), then do the work
+    // synchronously instead. Otherwise, creating a ScopedKeepAlive below while
+    // the KeepAliveRegistry has already started shutting down will trigger a
+    // CHECK. Alternatively, the ScopedKeepAlive below could be omitted when the
+    // KeepAliveRegistry is shutting down, but since the browser is shutting
+    // down soon, then it is likely that the asynchronous task to close the
+    // current the log will be cut short, causing data loss.
+    if (async && KeepAliveRegistry::GetInstance()->IsShuttingDown()) {
+      async = false;
+    }
+  }
+#endif
+
   if (async) {
     if (base::FeatureList::IsEnabled(
             features::kMetricsServiceDeltaSnapshotInBg)) {
