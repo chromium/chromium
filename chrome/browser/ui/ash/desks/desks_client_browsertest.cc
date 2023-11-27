@@ -147,6 +147,14 @@ constexpr char kTestAppName[] = "test_app_name";
 constexpr char kUnknownTestAppName[] = "unknown_test_app_name";
 constexpr char kUnknownTestAppId[] = "07eb07d7-f338-48aa-a996-7beb76a5042c";
 
+void WaitForDeskModel() {
+  while (
+      !(DesksClient::Get() && DesksClient::Get()->GetDeskModel()->IsReady())) {
+    base::RunLoop run_loop;
+    run_loop.RunUntilIdle();
+  }
+}
+
 Browser* FindBrowser(int32_t window_id) {
   for (auto* browser : *BrowserList::GetInstance()) {
     aura::Window* window = browser->window()->GetNativeWindow();
@@ -3507,6 +3515,8 @@ class DesksTemplatesClientMultiProfileTest : public ash::LoginManagerTest {
         ash::ProfileHelper::Get()
             ->GetProfileByAccountId(account_id1_)
             ->GetPath());
+
+    WaitForDeskModel();
   }
 
  protected:
@@ -3516,13 +3526,7 @@ class DesksTemplatesClientMultiProfileTest : public ash::LoginManagerTest {
   AccountId account_id2_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_MultiProfileTest DISABLED_MultiProfileTest
-#else
-#define MAYBE_MultiProfileTest MultiProfileTest
-#endif
-IN_PROC_BROWSER_TEST_F(DesksTemplatesClientMultiProfileTest,
-                       MAYBE_MultiProfileTest) {
+IN_PROC_BROWSER_TEST_F(DesksTemplatesClientMultiProfileTest, MultiProfileTest) {
   CreateBrowser(ash::ProfileHelper::Get()->GetProfileByAccountId(account_id1_));
   // Capture the active desk, which contains the browser windows.
   std::unique_ptr<ash::DeskTemplate> desk_template =
@@ -3538,13 +3542,16 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientMultiProfileTest,
   // be accessed from |account_id2_|.
   ash::UserAddingScreen::Get()->Start();
   AddUser(account_id2_);
+
+  // Make sure desk template storage async load completes after user switches.
+  WaitForDeskModel();
   EXPECT_EQ(0u, GetDeskTemplates().size());
 }
 
 // Flakily failing https://crbug.com/1447440
 // Tests that admin templates policy can be set.
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientMultiProfileTest,
-                       DISABLED_SetAndClearAdminTemplates) {
+                       SetAndClearAdminTemplates) {
   EXPECT_TRUE(DesksClient::Get());
 
   base::Uuid admin_template_uuid =
