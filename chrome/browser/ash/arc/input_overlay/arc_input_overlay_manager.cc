@@ -9,6 +9,7 @@
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/connection_holder.h"
+#include "ash/game_dashboard/game_dashboard_main_menu_view.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
@@ -34,15 +35,11 @@
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/display/manager/display_manager.h"
+#include "ui/views/view_utils.h"
 #include "ui/wm/core/window_util.h"
 
 namespace arc::input_overlay {
 namespace {
-
-// TODO(b/301518561): Add a function in GD to check whether the window is GD
-// window.
-constexpr char kGameDashboardButton[] = "GameDashboardButton";
-constexpr char kGameDashboardMainMenu[] = "GameDashboardMainMenuView";
 
 // Singleton factory for ArcInputOverlayManager.
 class ArcInputOverlayManagerFactory
@@ -284,53 +281,15 @@ void ArcInputOverlayManager::OnWindowFocused(aura::Window* gained_focus,
     gained_focus_top_level_window = gained_focus->GetToplevelWindow();
   }
 
-  // For beta, the window is still considered as focused when the focus is on
-  // its transient sibling window or the game dashboard main menu.
-  if (IsBeta()) {
-    // If `gained_window_by_transient` is nullptr, it means
-    // `gained_focus_top_level_window` is nullptr or not a transient window.
-    auto* gained_window_by_transient =
-        gained_focus_top_level_window
-            ? wm::GetTransientParent(gained_focus_top_level_window)
-            : nullptr;
-    // If `lost_window_by_transient` is nullptr, it means
-    // `lost_focus_top_level_window` is nullptr or not a transient window.
-    auto* lost_window_by_transient =
-        lost_focus_top_level_window
-            ? wm::GetTransientParent(lost_focus_top_level_window)
-            : nullptr;
+  auto* gained_anchor_window = GetAnchorWindow(gained_focus_top_level_window);
+  auto* lost_anchor_window = GetAnchorWindow(lost_focus_top_level_window);
 
-    // Check if the focus is on the GD main menu view.
-    auto* gained_window_by_main_menu =
-        GetGameWindow(gained_focus_top_level_window);
-
-    auto* lost_window_by_main_menu = GetGameWindow(lost_focus_top_level_window);
-
-    auto* real_gained_window =
-        gained_window_by_main_menu
-            ? gained_window_by_main_menu
-            : (gained_window_by_transient ? gained_window_by_transient
-                                          : gained_focus_top_level_window);
-    auto* real_lost_window =
-        lost_window_by_main_menu
-            ? lost_window_by_main_menu
-            : (lost_window_by_transient ? lost_window_by_transient
-                                        : lost_focus_top_level_window);
-
-    if (real_gained_window == real_lost_window) {
-      return;
-    }
-
-    UnRegisterWindow(real_lost_window);
-    RegisterWindow(real_gained_window);
-  } else {
-    if (lost_focus_top_level_window == gained_focus_top_level_window) {
-      return;
-    }
-
-    UnRegisterWindow(lost_focus_top_level_window);
-    RegisterWindow(gained_focus_top_level_window);
+  if (gained_anchor_window == lost_anchor_window) {
+    return;
   }
+
+  UnRegisterWindow(lost_anchor_window);
+  RegisterWindow(gained_anchor_window);
 }
 
 void ArcInputOverlayManager::OnTabletModeStarting() {
@@ -677,14 +636,7 @@ void ArcInputOverlayManager::RegisterFocusedWindow() {
     return;
   }
 
-  auto* top_level_window = focused_window->GetToplevelWindow();
-  if (input_overlay_enabled_windows_.find(top_level_window) ==
-          input_overlay_enabled_windows_.end() &&
-      IsBeta()) {
-    RegisterWindow(GetGameWindow(top_level_window));
-  } else {
-    RegisterWindow(top_level_window);
-  }
+  RegisterWindow(GetAnchorWindow(focused_window->GetToplevelWindow()));
 }
 
 void ArcInputOverlayManager::AddDisplayOverlayController(
@@ -773,24 +725,33 @@ ArcAppListPrefs* ArcInputOverlayManager::GetArcAppListPrefs() {
   return ArcAppListPrefs::Get(profile);
 }
 
-aura::Window* ArcInputOverlayManager::GetGameWindow(aura::Window* window) {
-  // TODO(b/301518561): Add a function in GD to check whether the window is GD
-  // window.
-  if (!window || (window->GetName() != kGameDashboardMainMenu &&
-                  window->GetName() != kGameDashboardButton)) {
-    return nullptr;
+aura::Window* ArcInputOverlayManager::GetAnchorWindow(aura::Window* window) {
+  if (window) {
+    auto* widget = views::Widget::GetWidgetForNativeWindow(window);
+    DCHECK(widget);
+    // Check whether `window` is the Game Dashboard main menu dialog window.
+    if (auto* widget_delegate = widget->widget_delegate()) {
+      if (auto* bubble_delegate = widget_delegate->AsBubbleDialogDelegate()) {
+        if (views::AsViewClass<ash::GameDashboardMainMenuView>(
+                bubble_delegate->GetContentsView())) {
+          auto* widget_parent = widget->parent();
+          DCHECK(widget_parent);
+          auto* native_parent_window = widget_parent->GetNativeWindow();
+          DCHECK(native_parent_window);
+          return wm::GetTransientParent(native_parent_window);
+        }
+      }
+    }
+
+    // Check whether `window` is a transient sibling window.
+    auto* native_window = widget->GetNativeWindow();
+    DCHECK(native_window);
+    if (auto* anchor_window = wm::GetTransientParent(native_window)) {
+      return anchor_window;
+    }
   }
 
-  auto* widget = views::Widget::GetWidgetForNativeWindow(window);
-  DCHECK(widget);
-  if (window->GetName() == kGameDashboardMainMenu) {
-    DCHECK(widget->parent());
-    DCHECK(widget->parent()->GetNativeWindow());
-    return wm::GetTransientParent(widget->parent()->GetNativeWindow());
-  }
-
-  DCHECK_EQ(window->GetName(), kGameDashboardButton);
-  return wm::GetTransientParent(widget->GetNativeWindow());
+  return window;
 }
 
 }  // namespace arc::input_overlay
