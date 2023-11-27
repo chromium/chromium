@@ -452,13 +452,12 @@ BoxPainterBase::FillLayerInfo::FillLayerInfo(
     Color bg_color,
     const FillLayer& layer,
     BackgroundBleedAvoidance bleed_avoidance,
-    RespectImageOrientationEnum respect_image_orientation,
     PhysicalBoxSides sides_to_include,
     bool is_inline,
     bool is_painting_background_in_contents_space)
     : image(layer.GetImage()),
       color(bg_color),
-      respect_image_orientation(respect_image_orientation),
+      respect_image_orientation(style.ImageOrientation()),
       sides_to_include(sides_to_include),
       is_bottom_layer(!layer.Next()),
       is_border_fill(layer.Clip() == EFillBox::kStrokeBox ||
@@ -506,6 +505,11 @@ BoxPainterBase::FillLayerInfo::FillLayerInfo(
   is_printing = doc.Printing();
 
   should_paint_image = image && image->CanRender();
+  if (should_paint_image) {
+    respect_image_orientation =
+        image->ForceOrientationIfNecessary(respect_image_orientation);
+  }
+
   bool composite_bgcolor_animation =
       RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
       style.HasCurrentBackgroundColorAnimation() &&

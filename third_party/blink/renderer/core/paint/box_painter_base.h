@@ -118,7 +118,6 @@ class BoxPainterBase {
                   Color bg_color,
                   const FillLayer&,
                   BackgroundBleedAvoidance,
-                  RespectImageOrientationEnum,
                   PhysicalBoxSides sides_to_include,
                   bool is_inline,
                   bool is_painting_background_in_contents_space);
