@@ -326,7 +326,7 @@
       'ChromeOS FYI Release Skylab (jacuzzi)': {
         'additional_compile_targets': [
           'chromiumos_preflight',
-          'nacl_helper_bootstrap',
+          'nacl_helper',
         ],
         'browser_config': 'cros-chrome',
         'os_type': 'chromeos',
@@ -346,7 +346,7 @@
       'Lacros FYI Release (jacuzzi)': {
         'additional_compile_targets': [
           'chrome',
-          'nacl_helper_bootstrap',
+          'nacl_helper',
         ],
         'os_type': 'chromeos',
         'browser_config': 'lacros-chrome',
@@ -363,7 +363,7 @@
       'Lacros FYI Release (octopus)': {
         'additional_compile_targets': [
           'chrome',
-          'nacl_helper_bootstrap',
+          'nacl_helper',
         ],
         'os_type': 'chromeos',
         'browser_config': 'lacros-chrome',
