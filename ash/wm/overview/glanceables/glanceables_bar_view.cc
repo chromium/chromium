@@ -8,7 +8,6 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
-#include "ash/wm/overview/glanceables/glanceables_chip_button.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
@@ -49,6 +48,7 @@ class GlanceablesBarView::GlanceablesChipsContainer
   explicit GlanceablesChipsContainer(GlanceablesBarView* glanceable_bar)
       : glanceable_bar_(glanceable_bar) {
     SetPaintToLayer();
+    layer()->SetFillsBoundsOpaquely(false);
     SetOrientation(views::BoxLayout::Orientation::kHorizontal);
     SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter);
     SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
@@ -75,6 +75,15 @@ class GlanceablesBarView::GlanceablesChipsContainer
     CHECK_GE(child_num, 1u);
     // Insert the chip before `hide_glanceables_button_`.
     chips_.push_back(AddChildViewAt(std::move(chip), child_num - 1));
+  }
+
+  void RemoveChip(GlanceablesChipButton* chip) {
+    auto iter = std::find(chips_.begin(), chips_.end(), chip);
+    if (iter != chips_.end()) {
+      RemoveChildViewT(chip);
+      chips_.erase(iter);
+      Layout();
+    }
   }
 
  private:
@@ -109,6 +118,7 @@ void GlanceablesBarView::ShowWidgetForTesting(
     std::unique_ptr<GlanceablesBarView> bar_view) {
   views::Widget::InitParams params;
   params.type = views::Widget::InitParams::TYPE_POPUP;
+  params.layer_type = ui::LAYER_NOT_DRAWN;
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   auto* root_window = Shell::Get()->GetPrimaryRootWindow();
@@ -148,6 +158,7 @@ void GlanceablesBarView::AddChip(
                   .SetTitleText(title)
                   .SetSubtitleText(sub_title)
                   .SetCallback(std::move(callback))
+                  .SetDelegate(this)
                   .Build();
   if (button_title.has_value() && button_callback.has_value()) {
     chip->SetActionButton(button_title.value(),
@@ -176,6 +187,10 @@ void GlanceablesBarView::Layout() {
     content->SetPosition(gfx::Point(center_point.x() - content->width() / 2,
                                     center_point.y() - content->height() / 2));
   }
+}
+
+void GlanceablesBarView::RemoveChip(GlanceablesChipButton* chip) {
+  chips_container_->RemoveChip(chip);
 }
 
 void GlanceablesBarView::OnAnimationsEnded(bool show) {

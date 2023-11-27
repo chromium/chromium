@@ -5,6 +5,7 @@
 #ifndef ASH_WM_OVERVIEW_GLANCEABLES_GLANCEABLES_BAR_VIEW_H_
 #define ASH_WM_OVERVIEW_GLANCEABLES_GLANCEABLES_BAR_VIEW_H_
 
+#include "ash/wm/overview/glanceables/glanceables_chip_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/views/controls/button/button.h"
@@ -18,7 +19,8 @@ class IconButton;
 // be shown in a row with a hiding chips button at the end. When pressing the
 // hiding button, the glanceables chips will fade out and the showing chips
 // button will appear in the center.
-class GlanceablesBarView : public views::View {
+class GlanceablesBarView : public views::View,
+                           public GlanceablesChipButton::Delegate {
   METADATA_HEADER(GlanceablesBarView, views::View)
 
  public:
@@ -49,6 +51,9 @@ class GlanceablesBarView : public views::View {
   gfx::Size CalculatePreferredSize() const override;
   int GetHeightForWidth(int width) const override;
   void Layout() override;
+
+  // GlanceablesChipButton::Delegate:
+  void RemoveChip(GlanceablesChipButton* chip) override;
 
  private:
   class GlanceablesChipsContainer;
