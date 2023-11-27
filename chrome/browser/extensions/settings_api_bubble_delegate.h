@@ -16,10 +16,12 @@
 
 namespace extensions {
 
+// TODO(https://crbug.com/1503268): This is only showed for an extension
+// overriding the home page; rename it to ControlledHomeBubbleDelegate.
 class SettingsApiBubbleDelegate
     : public ExtensionMessageBubbleController::Delegate {
  public:
-  SettingsApiBubbleDelegate(Profile* profile, SettingsApiOverrideType type);
+  explicit SettingsApiBubbleDelegate(Profile* profile);
 
   SettingsApiBubbleDelegate(const SettingsApiBubbleDelegate&) = delete;
   SettingsApiBubbleDelegate& operator=(const SettingsApiBubbleDelegate&) =
@@ -58,14 +60,6 @@ class SettingsApiBubbleDelegate
   bool SupportsPolicyIndicator() override;
 
  private:
-  // Returns a key unique to the type of bubble that can be used to retrieve
-  // state specific to the type (e.g., shown for profiles).
-  const char* GetKey() const;
-  // The type of settings override this bubble will report on. This can be, for
-  // example, a bubble to notify the user that the search engine has been
-  // changed by an extension (or homepage/startup pages/etc).
-  SettingsApiOverrideType type_;
-
   // The ID of the extension we are showing the bubble for.
   ExtensionId extension_id_;
 

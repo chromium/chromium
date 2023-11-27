@@ -60,27 +60,6 @@ bool g_acknowledge_existing_ntp_extensions =
 const char kDidAcknowledgeExistingNtpExtensions[] =
     "ack_existing_ntp_extensions";
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-void ShowSettingsApiBubble(SettingsApiOverrideType type,
-                           Browser* browser) {
-  ToolbarActionsModel* model = ToolbarActionsModel::Get(browser->profile());
-  if (model->has_active_bubble())
-    return;
-
-  std::unique_ptr<ExtensionMessageBubbleController> settings_api_bubble(
-      new ExtensionMessageBubbleController(
-          new SettingsApiBubbleDelegate(browser->profile(), type), browser));
-  if (!settings_api_bubble->ShouldShow())
-    return;
-
-  settings_api_bubble->SetIsActiveBubble();
-  std::unique_ptr<ToolbarActionsBarBubbleDelegate> bridge(
-      new ExtensionMessageBubbleBridge(std::move(settings_api_bubble)));
-  browser->window()->GetExtensionsContainer()->ShowToolbarActionBubble(
-      std::move(bridge));
-}
-#endif
-
 }  // namespace
 
 // Whether a given ntp-overriding extension has been acknowledged by the user.
@@ -126,7 +105,23 @@ void RegisterSettingsOverriddenUiPrefs(PrefRegistrySimple* registry) {
 
 void MaybeShowExtensionControlledHomeNotification(Browser* browser) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  ShowSettingsApiBubble(BUBBLE_TYPE_HOME_PAGE, browser);
+  ToolbarActionsModel* model = ToolbarActionsModel::Get(browser->profile());
+  if (model->has_active_bubble()) {
+    return;
+  }
+
+  std::unique_ptr<ExtensionMessageBubbleController> settings_api_bubble(
+      new ExtensionMessageBubbleController(
+          new SettingsApiBubbleDelegate(browser->profile()), browser));
+  if (!settings_api_bubble->ShouldShow()) {
+    return;
+  }
+
+  settings_api_bubble->SetIsActiveBubble();
+  std::unique_ptr<ToolbarActionsBarBubbleDelegate> bridge(
+      new ExtensionMessageBubbleBridge(std::move(settings_api_bubble)));
+  browser->window()->GetExtensionsContainer()->ShowToolbarActionBubble(
+      std::move(bridge));
 #endif
 }
 

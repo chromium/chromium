@@ -26,18 +26,13 @@ namespace extensions {
 
 namespace {
 
-using ProfileSetMap = std::map<std::string, std::set<Profile*>>;
-base::LazyInstance<ProfileSetMap>::Leaky g_settings_api_shown =
+base::LazyInstance<std::set<Profile*>>::Leaky g_settings_api_shown =
     LAZY_INSTANCE_INITIALIZER;
 
 }  // namespace
 
-SettingsApiBubbleDelegate::SettingsApiBubbleDelegate(
-    Profile* profile,
-    SettingsApiOverrideType type)
-    : ExtensionMessageBubbleController::Delegate(profile),
-      type_(type),
-      profile_(profile) {
+SettingsApiBubbleDelegate::SettingsApiBubbleDelegate(Profile* profile)
+    : ExtensionMessageBubbleController::Delegate(profile), profile_(profile) {
   set_acknowledged_flag_pref_name(kAcknowledgedPreference);
 }
 
@@ -51,15 +46,12 @@ bool SettingsApiBubbleDelegate::ShouldIncludeExtension(
   if (HasBubbleInfoBeenAcknowledged(extension->id()))
     return false;
 
-  const Extension* override = nullptr;
-  switch (type_) {
-    case extensions::BUBBLE_TYPE_HOME_PAGE:
-      override = extensions::GetExtensionOverridingHomepage(profile());
-      break;
-  }
+  const Extension* overriding_extension =
+      extensions::GetExtensionOverridingHomepage(profile());
 
-  if (!override || override != extension)
+  if (!overriding_extension || overriding_extension != extension) {
     return false;
+  }
 
   extension_id_ = extension->id();
   return true;
@@ -79,13 +71,8 @@ void SettingsApiBubbleDelegate::PerformAction(const ExtensionIdList& list) {
 }
 
 std::u16string SettingsApiBubbleDelegate::GetTitle() const {
-  switch (type_) {
-    case BUBBLE_TYPE_HOME_PAGE:
-      return l10n_util::GetStringUTF16(
-          IDS_EXTENSIONS_SETTINGS_API_TITLE_HOME_PAGE_BUBBLE);
-  }
-  NOTREACHED();
-  return std::u16string();
+  return l10n_util::GetStringUTF16(
+      IDS_EXTENSIONS_SETTINGS_API_TITLE_HOME_PAGE_BUBBLE);
 }
 
 std::u16string SettingsApiBubbleDelegate::GetMessageBody(
@@ -103,24 +90,18 @@ std::u16string SettingsApiBubbleDelegate::GetMessageBody(
   bool startup_change = !settings->startup_pages.empty();
   bool search_change = settings->search_engine.has_value();
 
-  int first_line_id = 0;
-  int second_line_id = 0;
-
   std::u16string body;
-  switch (type_) {
-    case BUBBLE_TYPE_HOME_PAGE:
-      first_line_id = anchored_to_browser_action ?
-          IDS_EXTENSIONS_SETTINGS_API_FIRST_LINE_HOME_PAGE_SPECIFIC :
-          IDS_EXTENSIONS_SETTINGS_API_FIRST_LINE_HOME_PAGE;
-      if (startup_change && search_change) {
-        second_line_id =
-            IDS_EXTENSIONS_SETTINGS_API_SECOND_LINE_START_AND_SEARCH;
-      } else if (startup_change) {
-        second_line_id = IDS_EXTENSIONS_SETTINGS_API_SECOND_LINE_START_PAGES;
-      } else if (search_change) {
-        second_line_id = IDS_EXTENSIONS_SETTINGS_API_SECOND_LINE_SEARCH_ENGINE;
-      }
-      break;
+  int first_line_id =
+      anchored_to_browser_action
+          ? IDS_EXTENSIONS_SETTINGS_API_FIRST_LINE_HOME_PAGE_SPECIFIC
+          : IDS_EXTENSIONS_SETTINGS_API_FIRST_LINE_HOME_PAGE;
+  int second_line_id = 0;
+  if (startup_change && search_change) {
+    second_line_id = IDS_EXTENSIONS_SETTINGS_API_SECOND_LINE_START_AND_SEARCH;
+  } else if (startup_change) {
+    second_line_id = IDS_EXTENSIONS_SETTINGS_API_SECOND_LINE_START_PAGES;
+  } else if (search_change) {
+    second_line_id = IDS_EXTENSIONS_SETTINGS_API_SECOND_LINE_SEARCH_ENGINE;
   }
   DCHECK_NE(0, first_line_id);
   body = anchored_to_browser_action ?
@@ -162,13 +143,13 @@ bool SettingsApiBubbleDelegate::ShouldCloseOnDeactivate() const {
 bool SettingsApiBubbleDelegate::ShouldShow(
     const ExtensionIdList& extensions) const {
   DCHECK_EQ(1u, extensions.size());
-  return !g_settings_api_shown.Get()[GetKey()].count(profile_);
+  return !g_settings_api_shown.Get().count(profile_);
 }
 
 void SettingsApiBubbleDelegate::OnShown(const ExtensionIdList& extensions) {
   DCHECK_EQ(1u, extensions.size());
-  DCHECK(!g_settings_api_shown.Get()[GetKey()].count(profile_));
-  g_settings_api_shown.Get()[GetKey()].insert(profile_);
+  DCHECK(!g_settings_api_shown.Get().count(profile_));
+  g_settings_api_shown.Get().insert(profile_);
 }
 
 void SettingsApiBubbleDelegate::OnAction() {
@@ -176,11 +157,11 @@ void SettingsApiBubbleDelegate::OnAction() {
   // extension. Thus if that extension or another takes effect, it is worth
   // mentioning to the user (ShouldShow() would return true) because it is
   // contrary to the user's choice.
-  g_settings_api_shown.Get()[GetKey()].clear();
+  g_settings_api_shown.Get().clear();
 }
 
 void SettingsApiBubbleDelegate::ClearProfileSetForTesting() {
-  g_settings_api_shown.Get()[GetKey()].clear();
+  g_settings_api_shown.Get().clear();
 }
 
 bool SettingsApiBubbleDelegate::ShouldShowExtensionList() const {
@@ -189,15 +170,6 @@ bool SettingsApiBubbleDelegate::ShouldShowExtensionList() const {
 
 bool SettingsApiBubbleDelegate::ShouldLimitToEnabledExtensions() const {
   return true;
-}
-
-const char* SettingsApiBubbleDelegate::GetKey() const {
-  switch (type_) {
-    case BUBBLE_TYPE_HOME_PAGE:
-      return "SettingsApiBubbleDelegate.HomePage";
-  }
-  NOTREACHED();
-  return "";
 }
 
 bool SettingsApiBubbleDelegate::SupportsPolicyIndicator() {

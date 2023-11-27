@@ -12,10 +12,6 @@
 
 namespace extensions {
 
-enum SettingsApiOverrideType {
-  BUBBLE_TYPE_HOME_PAGE = 0,
-};
-
 // SettingsOverride is associated with "chrome_settings_overrides" manifest key.
 // An extension can add a search engine as default or non-default, overwrite the
 // homepage and append a startup page to the list.
