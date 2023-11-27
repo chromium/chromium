@@ -4084,6 +4084,8 @@ enum WebFeature {
   kSubtleCryptoDeriveBitsZeroLength = 4745,
   kSubtleCryptoDeriveBitsTruncation = 4746,
   kTextDirectiveInShadowDOM = 4747,
+  kPseudoFirstLetterOnRt = 4748,
+  kPseudoFirstLineOnRt = 4749,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

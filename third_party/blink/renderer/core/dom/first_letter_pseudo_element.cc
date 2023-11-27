@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/css/style_request.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/generated_children.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
@@ -264,6 +265,12 @@ LayoutText* FirstLetterPseudoElement::FirstLetterTextLayoutObject(
       IsInvalidFirstLetterLayoutObject(first_letter_text_layout_object))
     return nullptr;
 
+  // TODO(crbug.com/1501719): See LayoutObject::BehavesLikeBlockContainer().
+  if (parent_layout_object->IsRubyText() &&
+      IsA<HTMLRTElement>(parent_layout_object->GetNode())) {
+    UseCounter::Count(element.GetDocument(),
+                      WebFeature::kPseudoFirstLetterOnRt);
+  }
   return To<LayoutText>(first_letter_text_layout_object);
 }
 

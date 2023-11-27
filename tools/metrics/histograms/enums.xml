@@ -25257,6 +25257,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4745" label="SubtleCryptoDeriveBitsZeroLength"/>
   <int value="4746" label="SubtleCryptoDeriveBitsTruncation"/>
   <int value="4747" label="TextDirectiveInShadowDOM"/>
+  <int value="4748" label="PseudoFirstLetterOnRt"/>
+  <int value="4749" label="PseudoFirstLineOnRt"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">
