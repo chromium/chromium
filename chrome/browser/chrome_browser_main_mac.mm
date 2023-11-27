@@ -26,7 +26,6 @@
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/mac/install_from_dmg.h"
 #import "chrome/browser/mac/keystone_glue.h"
-#include "chrome/browser/mac/mac_startup_profiler.h"
 #include "chrome/browser/ui/cocoa/main_menu_builder.h"
 #include "chrome/browser/updater/browser_updater_client_util.h"
 #include "chrome/browser/updater/scheduler.h"
@@ -71,8 +70,6 @@ int ChromeBrowserMainPartsMac::PreEarlyInitialization() {
 }
 
 void ChromeBrowserMainPartsMac::PreCreateMainMessageLoop() {
-  MacStartupProfiler::GetInstance()->Profile(
-      MacStartupProfiler::PRE_MAIN_MESSAGE_LOOP_START);
   ChromeBrowserMainPartsPosix::PreCreateMainMessageLoop();
 
   // ChromeBrowserMainParts should have loaded the resource bundle by this
@@ -139,16 +136,12 @@ void ChromeBrowserMainPartsMac::PreCreateMainMessageLoop() {
 }
 
 void ChromeBrowserMainPartsMac::PostCreateMainMessageLoop() {
-  MacStartupProfiler::GetInstance()->Profile(
-      MacStartupProfiler::POST_MAIN_MESSAGE_LOOP_START);
   ChromeBrowserMainPartsPosix::PostCreateMainMessageLoop();
 
   net::InitializeTrustStoreMacCache();
 }
 
 void ChromeBrowserMainPartsMac::PreProfileInit() {
-  MacStartupProfiler::GetInstance()->Profile(
-      MacStartupProfiler::PRE_PROFILE_INIT);
   ChromeBrowserMainPartsPosix::PreProfileInit();
 
   // This is called here so that the app shim socket is only created after
@@ -158,11 +151,6 @@ void ChromeBrowserMainPartsMac::PreProfileInit() {
 
 void ChromeBrowserMainPartsMac::PostProfileInit(Profile* profile,
                                                 bool is_initial_profile) {
-  if (is_initial_profile) {
-    MacStartupProfiler::GetInstance()->Profile(
-        MacStartupProfiler::POST_PROFILE_INIT);
-  }
-
   ChromeBrowserMainPartsPosix::PostProfileInit(profile, is_initial_profile);
 
   if (!is_initial_profile)

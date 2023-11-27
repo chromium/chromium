@@ -603,13 +603,6 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowserCloudManagementEnrollmentTest, MAYBE_Test) {
   delegate_.MaybeCheckTotalBrowserCount(1u);
 
   VerifyEnrollmentResult();
-#if BUILDFLAG(IS_MAC)
-  // Verify the last mericis of launch is recorded in
-  // applicationDidFinishNotification.
-  EXPECT_EQ(1u, histogram_tester_
-                    .GetAllSamples("Startup.OSX.DockIconWillFinishBouncing")
-                    .size());
-#endif
 }
 
 #if BUILDFLAG(IS_ANDROID)

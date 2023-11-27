@@ -923,69 +923,6 @@ chromium-metrics-reviews@google.com.
   <summary>The calling application (if any).</summary>
 </histogram>
 
-<histogram name="Startup.OSX.AwakeFromNib" units="ms"
-    expires_after="2018-08-30">
-  <owner>erikchen@chromium.org</owner>
-  <summary>
-    The amount of time that elapsed between main entry and the invocation of
-    -[AppControllerMac awakeFromNib].
-  </summary>
-</histogram>
-
-<histogram name="Startup.OSX.DockIconWillFinishBouncing" units="ms"
-    expires_after="M77">
-  <owner>erikchen@chromium.org</owner>
-  <summary>
-    The amount of time that elapsed between main entry and the invocation of
-    -[AppControllerMac didFinishLaunching:]. At that point, the dock icon will
-    finish its current animation and stop bouncing.
-  </summary>
-</histogram>
-
-<histogram name="Startup.OSX.PostMainMessageLoopStart" units="ms"
-    expires_after="M85">
-  <owner>erikchen@chromium.org</owner>
-  <summary>
-    The amount of time that elapsed between main entry and the invocation of
-    ChromeBrowserMainPartsMac::PostMainMessageLoopStart.
-  </summary>
-</histogram>
-
-<histogram name="Startup.OSX.PostProfileInit" units="ms" expires_after="M77">
-  <owner>erikchen@chromium.org</owner>
-  <summary>
-    The amount of time that elapsed between main entry and the invocation of
-    ChromeBrowserMainPartsMac::PostProfileInit.
-  </summary>
-</histogram>
-
-<histogram name="Startup.OSX.PreMainMessageLoopStart" units="ms"
-    expires_after="2018-08-30">
-  <owner>erikchen@chromium.org</owner>
-  <summary>
-    The amount of time that elapsed between main entry and the invocation of
-    ChromeBrowserMainPartsMac::PreMainMessageLoopStart.
-  </summary>
-</histogram>
-
-<histogram name="Startup.OSX.PreProfileInit" units="ms"
-    expires_after="2018-08-30">
-  <owner>erikchen@chromium.org</owner>
-  <summary>
-    The amount of time that elapsed between main entry and the invocation of
-    ChromeBrowserMainPartsMac::PreProfileInit.
-  </summary>
-</histogram>
-
-<histogram name="Startup.OSX.WillFinishLaunching" units="ms"
-    expires_after="2018-08-30">
-  <owner>erikchen@chromium.org</owner>
-  <summary>
-    The amount of time that elapsed between main entry and the invocation of
-    -[AppControllerMac willFinishLaunching:].
-  </summary>
-</histogram>
-
 <histogram name="Startup.PreMainMessageLoopRunImplLongTime" units="ms"
     expires_after="2024-04-28">
   <owner>rkaplow@chromium.org</owner>
