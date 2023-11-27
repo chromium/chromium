@@ -118,20 +118,14 @@ class ScopedAccountStorageSettingsUpdate {
 
 }  // namespace
 
-bool ShouldShowAccountStorageOptIn(const PrefService* pref_service,
-                                   const syncer::SyncService* sync_service) {
-  DCHECK(pref_service);
-
+bool ShouldShowAccountStorageOptIn(const syncer::SyncService* sync_service) {
   // Show the opt-in if the user is eligible, but not yet opted in.
   return internal::IsUserEligibleForAccountStorage(sync_service) &&
-         !IsOptedInForAccountStorage(pref_service, sync_service);
+         !IsOptedInForAccountStorage(sync_service);
 }
 
-bool ShouldShowAccountStorageReSignin(const PrefService* pref_service,
-                                      const syncer::SyncService* sync_service,
+bool ShouldShowAccountStorageReSignin(const syncer::SyncService* sync_service,
                                       const GURL& current_page_url) {
-  DCHECK(pref_service);
-
   // Checks that the sync_service is not null and the feature is enabled.
   // IsUserEligibleForAccountStorage() doesn't fit because it's false for
   // signed-out users.
@@ -181,8 +175,7 @@ PasswordForm::Store GetDefaultPasswordStore(
     // in, then saves go to the profile store by default. If the user *has*
     // opted in, then they've chosen to save to the account, so that becomes the
     // default.
-    bool save_to_profile_store =
-        !IsOptedInForAccountStorage(pref_service, sync_service);
+    bool save_to_profile_store = !IsOptedInForAccountStorage(sync_service);
     return save_to_profile_store ? PasswordForm::Store::kProfileStore
                                  : PasswordForm::Store::kAccountStore;
   }
@@ -328,7 +321,7 @@ void RecordMoveOfferedToNonOptedInUser(
   DCHECK(sync_service);
   std::string gaia_id = sync_service->GetAccountInfo().gaia;
   DCHECK(!gaia_id.empty());
-  DCHECK(!IsOptedInForAccountStorage(pref_service, sync_service));
+  DCHECK(!IsOptedInForAccountStorage(sync_service));
   ScopedAccountStorageSettingsUpdate(pref_service,
                                      GaiaIdHash::FromGaiaId(gaia_id))
       .RecordMoveOfferedToNonOptedInUser();
@@ -341,7 +334,7 @@ int GetMoveOfferedToNonOptedInUserCount(
   DCHECK(sync_service);
   std::string gaia_id = sync_service->GetAccountInfo().gaia;
   DCHECK(!gaia_id.empty());
-  DCHECK(!IsOptedInForAccountStorage(pref_service, sync_service));
+  DCHECK(!IsOptedInForAccountStorage(sync_service));
   AccountStorageSettingsReader reader(pref_service,
                                       GaiaIdHash::FromGaiaId(gaia_id));
   return reader.GetMoveOfferedToNonOptedInUserCount();

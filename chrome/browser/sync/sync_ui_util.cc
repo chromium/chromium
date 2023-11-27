@@ -371,7 +371,7 @@ bool ShouldShowSyncKeysMissingError(const syncer::SyncService* sync_service,
   //
   // WARNING: Must match CredentialModelTypeController::GetPreconditionState().
   return password_manager::features_util::IsOptedInForAccountStorage(
-      pref_service, sync_service);
+      sync_service);
 }
 
 bool ShouldShowTrustedVaultDegradedRecoverabilityError(
@@ -399,7 +399,7 @@ bool ShouldShowTrustedVaultDegradedRecoverabilityError(
   //
   // WARNING: Must match CredentialModelTypeController::GetPreconditionState().
   return password_manager::features_util::IsOptedInForAccountStorage(
-      pref_service, sync_service);
+      sync_service);
 }
 
 void OpenTabForSyncKeyRetrieval(

@@ -75,25 +75,19 @@ bool IsUserEligibleForAccountStorage(const syncer::SyncService* sync_service);
 // Whether the current signed-in user (aka unconsented primary account) has
 // opted in to use the Google account storage for passwords (as opposed to
 // local/profile storage). This always returns false for sync-the-feature users.
-// |pref_service| must not be null.
 // |sync_service| may be null (commonly the case in incognito mode), in which
 // case this will simply return false.
 // See PasswordFeatureManager::IsOptedInForAccountStorage.
-// TODO(crbug.com/1484531): Remove the `pref_service` parameter, it's unused
-// now. Possibly also from other functions in this file.
-bool IsOptedInForAccountStorage(const PrefService* pref_service,
-                                const syncer::SyncService* sync_service);
+bool IsOptedInForAccountStorage(const syncer::SyncService* sync_service);
 
 // Whether it makes sense to ask the user to opt-in for account-based
 // password storage. This is true if the opt-in doesn't exist yet, but all
 // other requirements are met (i.e. there is a signed-in user, Sync-the-feature
 // is not enabled, etc).
-// |pref_service| must not be null.
 // |sync_service| may be null (commonly the case in incognito mode), in which
 // case this will simply return false.
 // See PasswordFeatureManager::ShouldShowAccountStorageOptIn.
-bool ShouldShowAccountStorageOptIn(const PrefService* pref_service,
-                                   const syncer::SyncService* sync_service);
+bool ShouldShowAccountStorageOptIn(const syncer::SyncService* sync_service);
 
 // Whether it makes sense to ask the user to signin again to access the
 // account-based password storage. This is true if a user on this device
@@ -103,8 +97,7 @@ bool ShouldShowAccountStorageOptIn(const PrefService* pref_service,
 // already doing that). For non-web contexts (e.g. native UIs), it is valid to
 // pass an empty GURL.
 // See PasswordFeatureManager::ShouldShowAccountStorageReSignin.
-bool ShouldShowAccountStorageReSignin(const PrefService* pref_service,
-                                      const syncer::SyncService* sync_service,
+bool ShouldShowAccountStorageReSignin(const syncer::SyncService* sync_service,
                                       const GURL& current_page_url);
 
 // Whether it makes sense to ask the user to move a password to their account or

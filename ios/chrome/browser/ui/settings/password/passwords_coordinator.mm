@@ -152,8 +152,7 @@ using password_manager::WarningType;
                                        GetForBrowserState(browserState)
                      faviconLoader:faviconLoader
                        syncService:SyncServiceFactory::GetForBrowserState(
-                                       browserState)
-                       prefService:browserState->GetPrefs()];
+                                       browserState)];
   self.mediator.tracker =
       feature_engagement::TrackerFactory::GetForBrowserState(browserState);
 

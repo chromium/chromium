@@ -76,10 +76,7 @@ bool IsUserEligibleForAccountStorage(const syncer::SyncService* sync_service) {
 
 }  // namespace internal
 
-bool IsOptedInForAccountStorage(const PrefService* pref_service,
-                                const syncer::SyncService* sync_service) {
-  DCHECK(pref_service);
-
+bool IsOptedInForAccountStorage(const syncer::SyncService* sync_service) {
   if (!internal::IsUserEligibleForAccountStorage(sync_service)) {
     return false;
   }
@@ -137,7 +134,7 @@ PasswordAccountStorageUserState ComputePasswordAccountStorageUserState(
   if (sync_service->HasDisableReason(
           syncer::SyncService::DisableReason::DISABLE_REASON_NOT_SIGNED_IN)) {
     // Signed out. Check if any account storage opt-in exists.
-    return ShouldShowAccountStorageReSignin(pref_service, sync_service, GURL())
+    return ShouldShowAccountStorageReSignin(sync_service, GURL())
                ? PasswordAccountStorageUserState::kSignedOutAccountStoreUser
                : PasswordAccountStorageUserState::kSignedOutUser;
   }
@@ -147,7 +144,7 @@ PasswordAccountStorageUserState ComputePasswordAccountStorageUserState(
                             PasswordForm::Store::kProfileStore;
 
   // Signed in. Check for account storage opt-in.
-  if (IsOptedInForAccountStorage(pref_service, sync_service)) {
+  if (IsOptedInForAccountStorage(sync_service)) {
     // Signed in and opted in. Check default storage location.
     return saving_locally
                ? PasswordAccountStorageUserState::

@@ -97,7 +97,7 @@ TEST_F(CWVSyncControllerTest, StartSyncWithIdentity) {
                 &pref_service_, &sync_service_),
             password_manager::PasswordForm::Store::kAccountStore);
   EXPECT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
-      &pref_service_, &sync_service_));
+      &sync_service_));
 }
 
 TEST_F(CWVSyncControllerTest, StopSyncAndClearIdentity) {

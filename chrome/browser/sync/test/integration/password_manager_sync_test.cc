@@ -959,14 +959,14 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, Resignin) {
   // some account opted in. No opt-in yet, so no re-signin.
   EXPECT_FALSE(
       password_manager::features_util::ShouldShowAccountStorageReSignin(
-          GetProfile(0)->GetPrefs(), GetSyncService(0), GURL()));
+          GetSyncService(0), GURL()));
 
   SignIn();
 
   // Still no opt-in. Plus, the user is signed-in already.
   EXPECT_FALSE(
       password_manager::features_util::ShouldShowAccountStorageReSignin(
-          GetProfile(0)->GetPrefs(), GetSyncService(0), GURL()));
+          GetSyncService(0), GURL()));
 
   password_manager::features_util::OptInToAccountStorage(
       GetProfile(0)->GetPrefs(), GetSyncService(0));
@@ -974,7 +974,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, Resignin) {
   // Now there's an opt-in but the user is signed-in already.
   EXPECT_FALSE(
       password_manager::features_util::ShouldShowAccountStorageReSignin(
-          GetProfile(0)->GetPrefs(), GetSyncService(0), GURL()));
+          GetSyncService(0), GURL()));
 
   SignOut();
 
@@ -982,20 +982,17 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, Resignin) {
   // except the Gaia sign-in page where it's useless. Native UI can offer
   // re-signin too, in that case the GURL is empty.
   EXPECT_TRUE(password_manager::features_util::ShouldShowAccountStorageReSignin(
-      GetProfile(0)->GetPrefs(), GetSyncService(0),
-      GURL("http://www.example.com")));
+      GetSyncService(0), GURL("http://www.example.com")));
   EXPECT_TRUE(password_manager::features_util::ShouldShowAccountStorageReSignin(
-      GetProfile(0)->GetPrefs(), GetSyncService(0),
-      GURL("https://www.example.com")));
+      GetSyncService(0), GURL("https://www.example.com")));
   EXPECT_TRUE(password_manager::features_util::ShouldShowAccountStorageReSignin(
-      GetProfile(0)->GetPrefs(), GetSyncService(0), GURL()));
+      GetSyncService(0), GURL()));
   EXPECT_FALSE(
       password_manager::features_util::ShouldShowAccountStorageReSignin(
-          GetProfile(0)->GetPrefs(), GetSyncService(0),
-          GaiaUrls::GetInstance()->gaia_url()));
+          GetSyncService(0), GaiaUrls::GetInstance()->gaia_url()));
   EXPECT_FALSE(
       password_manager::features_util::ShouldShowAccountStorageReSignin(
-          GetProfile(0)->GetPrefs(), GetSyncService(0),
+          GetSyncService(0),
           GaiaUrls::GetInstance()->gaia_url().Resolve("path")));
 
   SignIn();
@@ -1003,7 +1000,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, Resignin) {
   // Once the user signs in, no re-signin offered anymore.
   EXPECT_FALSE(
       password_manager::features_util::ShouldShowAccountStorageReSignin(
-          GetProfile(0)->GetPrefs(), GetSyncService(0), GURL()));
+          GetSyncService(0), GURL()));
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
@@ -1025,11 +1022,11 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
 
   SignIn("first@gmail.com");
   EXPECT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
-      GetProfile(0)->GetPrefs(), GetSyncService(0)));
+      GetSyncService(0)));
   SignOut();
   SignIn("second@gmail.com");
   EXPECT_FALSE(password_manager::features_util::IsOptedInForAccountStorage(
-      GetProfile(0)->GetPrefs(), GetSyncService(0)));
+      GetSyncService(0)));
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
@@ -1049,7 +1046,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   ASSERT_EQ(fake_server_->GetSyncEntitiesByModelType(syncer::PASSWORDS).size(),
             1u);
   EXPECT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
-      GetProfile(0)->GetPrefs(), GetSyncService(0)));
+      GetSyncService(0)));
 
   // Clear cookies and account passwords.
   content::BrowsingDataRemover* remover =
@@ -1069,7 +1066,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
 
   // The opt-in should be gone as well.
   EXPECT_FALSE(password_manager::features_util::IsOptedInForAccountStorage(
-      GetProfile(0)->GetPrefs(), GetSyncService(0)));
+      GetSyncService(0)));
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
@@ -1119,7 +1116,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, ClearAccountStoreOnStartup) {
 
   // Since we mangled the prefs file, the opt-in should be gone.
   ASSERT_FALSE(password_manager::features_util::IsOptedInForAccountStorage(
-      GetProfile(0)->GetPrefs(), GetSyncService(0)));
+      GetSyncService(0)));
   ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
 
   // Since there's no opt-in, the account-scoped store should have been cleared

@@ -103,8 +103,7 @@ bool CheckForDuplicates(
     return;
   _consumer = consumer;
   std::optional<std::string> account =
-      password_manager::sync_util::GetAccountForSaving(_prefService,
-                                                       _syncService);
+      password_manager::sync_util::GetAccountForSaving(_syncService);
   if (account) {
     CHECK(!account->empty());
     [_consumer setAccountSavingPasswords:base::SysUTF8ToNSString(*account)];

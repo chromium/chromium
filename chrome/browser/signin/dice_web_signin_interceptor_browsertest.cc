@@ -587,7 +587,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithUnoEnabledBrowserTest,
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(GetProfile());
   EXPECT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
-      pref_service, sync_service));
+      sync_service));
   EXPECT_EQ(password_manager::features_util::GetDefaultPasswordStore(
                 pref_service, sync_service),
             password_manager::PasswordForm::Store::kAccountStore);

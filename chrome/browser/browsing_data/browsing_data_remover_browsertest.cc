@@ -867,12 +867,12 @@ IN_PROC_BROWSER_TEST_F(
       signin::ConsentLevel::kSignin);
   password_manager::features_util::OptInToAccountStorage(prefs, sync_service);
   ASSERT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
-      prefs, sync_service));
+      sync_service));
 
   RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA);
 
   EXPECT_FALSE(password_manager::features_util::IsOptedInForAccountStorage(
-      prefs, sync_service));
+      sync_service));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -886,7 +886,7 @@ IN_PROC_BROWSER_TEST_F(
       signin::ConsentLevel::kSignin);
   password_manager::features_util::OptInToAccountStorage(prefs, sync_service);
   ASSERT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
-      prefs, sync_service));
+      sync_service));
 
   // Clearing cookies for some random domain should have no effect on the
   // opt-in.
@@ -899,7 +899,7 @@ IN_PROC_BROWSER_TEST_F(
                             std::move(filter_builder));
   }
   EXPECT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
-      prefs, sync_service));
+      sync_service));
 
   // Clearing cookies for google.com should clear the opt-in.
   {
@@ -911,7 +911,7 @@ IN_PROC_BROWSER_TEST_F(
                             std::move(filter_builder));
   }
   EXPECT_FALSE(password_manager::features_util::IsOptedInForAccountStorage(
-      prefs, sync_service));
+      sync_service));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -980,13 +980,13 @@ IN_PROC_BROWSER_TEST_F(
 
     password_manager::features_util::OptInToAccountStorage(prefs, sync_service);
     ASSERT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
-        prefs, sync_service));
+        sync_service));
 
     ClearSiteDataAndWait(test_case.origin, test_case.cookie_partition_key,
                          test_case.storage_key, {});
 
     ASSERT_EQ(password_manager::features_util::IsOptedInForAccountStorage(
-                  prefs, sync_service),
+                  sync_service),
               test_case.expects_opted_in);
   }
 }

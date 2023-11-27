@@ -138,8 +138,7 @@ class PasswordManagerViewControllerTest
                        faviconLoader:IOSChromeFaviconLoaderFactory::
                                          GetForBrowserState(browserState)
                          syncService:SyncServiceFactory::GetForBrowserState(
-                                         browserState)
-                         prefService:browserState->GetPrefs()];
+                                         browserState)];
     mediator_.encryptionState = OnDeviceEncryptionStateNotShown;
 
     // Inject some fake passwords to pass the loading state.

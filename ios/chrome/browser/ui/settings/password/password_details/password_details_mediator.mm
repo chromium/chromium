@@ -502,7 +502,7 @@ bool ShouldDisplayCredentialAsMuted(
     password.shouldOfferToMoveToAccount =
         self.context == DetailsContext::kPasswordSettings &&
         password_manager::features_util::IsOptedInForAccountStorage(
-            _prefService, _syncService) &&
+            _syncService) &&
         ShouldShowLocalOnlyIcon(credential, _syncService);
     [passwords addObject:password];
   }
@@ -555,8 +555,7 @@ bool ShouldDisplayCredentialAsMuted(
 // * Password sending feature is enabled.
 // * Password sharing pref is enabled.
 - (BOOL)isUserEligibleForSendingPasswords {
-  return password_manager::sync_util::GetAccountForSaving(_prefService,
-                                                          _syncService) &&
+  return password_manager::sync_util::GetAccountForSaving(_syncService) &&
          _prefService->GetBoolean(
              password_manager::prefs::kPasswordSharingEnabled) &&
          base::FeatureList::IsEnabled(
