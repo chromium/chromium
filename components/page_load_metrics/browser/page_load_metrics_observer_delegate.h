@@ -38,22 +38,28 @@ enum class PageVisibility {
 };
 
 // Represents the page's state of prerendering.
+// If the page is previewed, the state starts with kInPreview, and may be
+// transitted to kNoPrerendering after its activation and promotion.
+// If the page is prerendereed, the state starts with kInPrerendering, and may
+// be transmitted to kActivatedNoActivationStart, and kActivated.
+// Otherwise, it sticks on kNoPrerendering.
 //
 // TODO(crbug.com/1348097): Remove kActivatedNoActivationStart if possible.
 enum class PrerenderingState {
   // Not prerenedered
-  kNoPrerendering = 0,
+  kNoPrerendering,
+  // Previewed before acitvation and promotion
+  kInPreview,
   // Prerendered before activation
-  kInPrerendering = 1,
+  kInPrerendering,
   // Prerendered and activated, but `PageLoadTiming.activation_start` is not
   // arrived
   //
   // In many cases, PageLoadMetricsObservers can regard this state
   // kInPrerendering.
-  kActivatedNoActivationStart = 2,
+  kActivatedNoActivationStart,
   // Prerendered and activated
-  kActivated = 3,
-  kMaxValue = kActivated,
+  kActivated,
 };
 
 // This class tracks global state for the page load that should be accessible

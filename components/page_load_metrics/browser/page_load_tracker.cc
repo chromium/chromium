@@ -30,6 +30,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "page_load_metrics_observer_delegate.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -373,6 +374,7 @@ PageLoadTracker::PageLoadTracker(
       break;
     case internal::PageLoadTrackerPageType::kPreviewPrimaryPage:
       CHECK_NE(ukm::kInvalidSourceId, source_id_);
+      prerendering_state_ = PrerenderingState::kInPreview;
       InvokeAndPruneObservers(
           "PageLoadMetricsObserver::OnPreviewStart",
           base::BindRepeating(
@@ -448,7 +450,8 @@ void PageLoadTracker::PageHidden() {
     //
     // Here we check that the first background follows some event in foreground.
     if (!first_background_time_.has_value()) {
-      if (prerendering_state_ == PrerenderingState::kNoPrerendering) {
+      if (prerendering_state_ == PrerenderingState::kNoPrerendering ||
+          prerendering_state_ == PrerenderingState::kInPreview) {
         DCHECK_EQ(!started_in_foreground_, first_foreground_time_.has_value());
       } else {
         DCHECK(!first_foreground_time_.has_value());
@@ -488,7 +491,8 @@ void PageLoadTracker::PageShown() {
     // See comment about visibility state transitions in PageHidden.
     //
     // Here we check that the first foreground follows some event in background.
-    if (prerendering_state_ == PrerenderingState::kNoPrerendering) {
+    if (prerendering_state_ == PrerenderingState::kNoPrerendering ||
+        prerendering_state_ == PrerenderingState::kInPreview) {
       DCHECK_EQ(started_in_foreground_, first_background_time_.has_value());
     } else {
       DCHECK(first_background_time_.has_value());
@@ -637,6 +641,12 @@ void PageLoadTracker::DidActivatePrerenderedPage(
 
 void PageLoadTracker::DidActivatePreviewedPage(
     base::TimeTicks activation_time) {
+  CHECK_EQ(prerendering_state_, PrerenderingState::kInPreview);
+  prerendering_state_ = PrerenderingState::kNoPrerendering;
+
+  // We don't keep `activation_time` as `activation_start_` because we measure
+  // preview mode performance as navigation originated rather than activation.
+
   for (const auto& observer : observers_) {
     observer->DidActivatePreviewedPage(activation_time);
   }
@@ -992,16 +1002,10 @@ void PageLoadTracker::OnTimingChanged() {
   const mojom::PageLoadTiming& new_timing = metrics_update_dispatcher_.timing();
 
   if (new_timing.activation_start &&
-      !last_dispatched_merged_page_timing_->activation_start) {
-    // Link Preview doesn't emit activation event yet and assertion of event
-    // orders fail.
-    //
-    // TODO(b:302999778): Reenable it.
-    if (!base::FeatureList::IsEnabled(
-            blink::features::kLinkPreviewNavigation)) {
-      DCHECK(prerendering_state_ ==
+      !last_dispatched_merged_page_timing_->activation_start &&
+      prerendering_state_ != PrerenderingState::kNoPrerendering) {
+    CHECK_EQ(prerendering_state_,
              PrerenderingState::kActivatedNoActivationStart);
-    }
     prerendering_state_ = PrerenderingState::kActivated;
     activation_start_ = new_timing.activation_start;
   }
