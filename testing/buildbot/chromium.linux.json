@@ -3189,6 +3189,10 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "chrome_wpt_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
         "results_handler": "layout tests",
         "swarming": {
           "dimensions": {

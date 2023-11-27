@@ -1760,6 +1760,9 @@ targets.legacy_basic_suite(
         "chrome_wpt_tests": targets.legacy_test_config(
             test = "chrome_wpt_tests",
             results_handler = "layout tests",
+            mixins = [
+                "has_native_resultdb_integration",
+            ],
             args = [
                 "--test-type",
                 "testharness",

@@ -1478,6 +1478,9 @@
       'chrome_wpt_tests': {
         'test': 'chrome_wpt_tests',
         'results_handler': 'layout tests',
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
         'args': [
           '--test-type',
           'testharness',
