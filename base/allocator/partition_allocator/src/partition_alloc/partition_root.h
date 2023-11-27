@@ -2304,9 +2304,8 @@ PA_ALWAYS_INLINE void* PartitionRoot::AlignedAllocInline(
   // don't pass anything less, because it'll mess up callee's calculations.
   size_t slot_span_alignment =
       std::max(alignment, internal::PartitionPageSize());
-  // TODO(mikt): Investigate why all flags except kNoHooks are ignored here.
-  void* object = AllocInternal<flags & AllocFlags::kNoHooks>(
-      adjusted_size, slot_span_alignment, nullptr);
+  void* object =
+      AllocInternal<flags>(adjusted_size, slot_span_alignment, nullptr);
 
   // |alignment| is a power of two, but the compiler doesn't necessarily know
   // that. A regular % operation is very slow, make sure to use the equivalent,
