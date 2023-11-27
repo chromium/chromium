@@ -1084,21 +1084,6 @@ void PaintFillLayerBackground(const Document& document,
   }
 }
 
-PhysicalBoxStrut AdjustOutsetsForEdgeInclusion(
-    const PhysicalBoxStrut& outsets,
-    const BoxPainterBase::FillLayerInfo& info) {
-  PhysicalBoxStrut adjusted = outsets;
-  if (!info.sides_to_include.top)
-    adjusted.top = LayoutUnit();
-  if (!info.sides_to_include.right)
-    adjusted.right = LayoutUnit();
-  if (!info.sides_to_include.bottom)
-    adjusted.bottom = LayoutUnit();
-  if (!info.sides_to_include.left)
-    adjusted.left = LayoutUnit();
-  return adjusted;
-}
-
 bool ShouldApplyBlendOperation(const BoxPainterBase::FillLayerInfo& info,
                                const FillLayer& layer) {
   // For a mask layer, don't use the operator if this is the bottom layer.
@@ -1149,7 +1134,9 @@ PhysicalBoxStrut BoxPainterBase::ComputeSnappedBorders() const {
 
 PhysicalBoxStrut BoxPainterBase::AdjustedBorderOutsets(
     const FillLayerInfo& info) const {
-  return AdjustOutsetsForEdgeInclusion(ComputeSnappedBorders(), info);
+  PhysicalBoxStrut snapped_borders = ComputeSnappedBorders();
+  snapped_borders.TruncateSides(info.sides_to_include);
+  return snapped_borders;
 }
 
 void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
@@ -1276,14 +1263,15 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
         }
 
         // Clip to the padding or content boxes as necessary.
-        PhysicalRect clip_rect = scrolled_paint_rect;
-        clip_rect.Contract(
-            AdjustOutsetsForEdgeInclusion(border, fill_layer_info));
+        PhysicalBoxStrut outsets = border;
         if (bg_layer.Clip() == EFillBox::kFillBox ||
             bg_layer.Clip() == EFillBox::kContent) {
-          clip_rect.Contract(
-              AdjustOutsetsForEdgeInclusion(padding, fill_layer_info));
+          outsets += padding;
         }
+        outsets.TruncateSides(fill_layer_info.sides_to_include);
+
+        PhysicalRect clip_rect = scrolled_paint_rect;
+        clip_rect.Contract(outsets);
         background_clip_state_saver.emplace(context);
         context.Clip(ToPixelSnappedRect(clip_rect));
         break;
