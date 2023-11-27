@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 use crate::config;
-use crate::crates;
+use crate::crates::{self, Epoch};
 use crate::inherit::{
     find_inherited_privilege_group, find_inherited_security_critical_flag,
     find_inherited_shipped_flag,
@@ -169,6 +169,34 @@ fn vendor_impl(
             find_security_critical,
             find_shipped,
         )?;
+
+    // Find any epoch dirs which don't correspond to vendored sources anymore,
+    // i.e. that are not present in `all_readme_files`.
+    for crate_dir in std::fs::read_dir(paths.third_party)? {
+        let crate_dir = crate_dir.context("crate_dir")?;
+        if !crate_dir.metadata().context("crate_dir metadata")?.is_dir() {
+            continue;
+        }
+
+        for epoch_dir in std::fs::read_dir(crate_dir.path()).context("read_dir")? {
+            let epoch_dir = epoch_dir.context("epoch_dir")?;
+
+            // There are vendored sources for the epoch dir, go to the next.
+            if all_readme_files.contains_key(&epoch_dir.path()) {
+                continue;
+            }
+
+            let is_epoch_name = |n: &str| <Epoch as std::str::FromStr>::from_str(n).is_ok();
+
+            let metadata = epoch_dir.metadata()?;
+            if metadata.is_dir() && is_epoch_name(&epoch_dir.file_name().to_string_lossy()) {
+                log::warn!(
+                    "No vendored sources for '{}', it should be removed.",
+                    epoch_dir.path().display()
+                );
+            }
+        }
+    }
 
     for dir in all_readme_files.keys() {
         create_dirs_if_needed(&dir).context(format!("dir: {}", dir.display()))?;
