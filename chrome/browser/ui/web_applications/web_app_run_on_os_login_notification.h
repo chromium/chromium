@@ -5,8 +5,12 @@
 #ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_RUN_ON_OS_LOGIN_NOTIFICATION_H_
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_RUN_ON_OS_LOGIN_NOTIFICATION_H_
 
+#include <string>
 #include <vector>
-#include "chrome/browser/profiles/profile.h"
+
+#include "base/memory/weak_ptr.h"
+
+class Profile;
 
 namespace web_app {
 
