@@ -784,18 +784,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Gpu.GL.ProgramBuildTime" units="ms" expires_after="M82">
-  <owner>ccameron@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
-  <summary>
-    The time that elapsed between a call to glCreateProgram and the call to
-    query GL_LINK_STATUS via glGetProgramiv in Skia's GrGLInterface. This
-    encompasses the creation of the vertex, fragment, and geometry shaders,
-    their compilation, and their linking. This is called for every program
-    created by Skia via the GrGLInterface.
-  </summary>
-</histogram>
-
 <histogram name="GPU.GLImplementation" enum="GLImplementation"
     expires_after="2024-05-19">
   <owner>magchen@chromium.org</owner>

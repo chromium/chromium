@@ -4,9 +4,7 @@
 
 #include "ui/gl/init/create_gr_gl_interface.h"
 
-#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
-#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/traits_bag.h"
 #include "build/build_config.h"
@@ -95,13 +93,6 @@ GLboolean glIsSyncEmulateEGL(GLsync sync) {
   NOTREACHED();
   return true;
 }
-
-#if BUILDFLAG(IS_APPLE)
-std::map<GLuint, base::TimeTicks>& GetProgramCreateTimesMap() {
-  static base::NoDestructor<std::map<GLuint, base::TimeTicks>> instance;
-  return *instance.get();
-}
-#endif
 
 }  // namespace
 
@@ -322,28 +313,11 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
   BIND(CompressedTexSubImage2D, Slow);
   BIND(CopyBufferSubData);
   BIND(CopyTexSubImage2D, Slow);
-#if BUILDFLAG(IS_APPLE)
-  functions->fCreateProgram = [func = gl->glCreateProgramFn]() {
-    auto& program_create_times = GetProgramCreateTimesMap();
-    GLuint program = func();
-    program_create_times[program] = base::TimeTicks::Now();
-    return program;
-  };
-#else
   BIND(CreateProgram);
-#endif
   BIND(CreateShader);
   BIND(CullFace);
   BIND_EXTENSION(DeleteBuffers, DeleteBuffersARB, Slow);
-#if BUILDFLAG(IS_APPLE)
-  functions->fDeleteProgram = [func = gl->glDeleteProgramFn](GLuint program) {
-    auto& program_create_times = GetProgramCreateTimesMap();
-    program_create_times.erase(program);
-    func(program);
-  };
-#else
   BIND(DeleteProgram, Slow);
-#endif
   BIND(DeleteQueries);
   BIND(DeleteSamplers);
   BIND(DeleteShader, Slow);
@@ -397,23 +371,7 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
   BIND(GetQueryiv);
   BIND(GetProgramBinary);
   BIND(GetProgramInfoLog);
-#if BUILDFLAG(IS_APPLE)
-  functions->fGetProgramiv = [func = gl->glGetProgramivFn](
-                                 GLuint program, GLenum pname, GLint* params) {
-    func(program, pname, params);
-    if (pname == 0x8B82 /* GR_GL_LINK_STATUS */) {
-      auto& program_create_times = GetProgramCreateTimesMap();
-      auto found = program_create_times.find(program);
-      if (found != program_create_times.end()) {
-        base::TimeDelta elapsed = base::TimeTicks::Now() - found->second;
-        UMA_HISTOGRAM_TIMES("Gpu.GL.ProgramBuildTime", elapsed);
-        program_create_times.erase(found);
-      }
-    }
-  };
-#else
   BIND(GetProgramiv);
-#endif
   BIND(GetShaderInfoLog);
   BIND(GetShaderiv);
   functions->fGetString = get_string;
