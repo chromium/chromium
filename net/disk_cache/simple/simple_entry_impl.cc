@@ -1611,7 +1611,7 @@ void SimpleEntryImpl::DoomOperationComplete(
   PostClientCallback(std::move(callback), result);
   RunNextOperationIfNeeded();
   if (post_doom_waiting_) {
-    post_doom_waiting_->OnDoomComplete(entry_hash_);
+    post_doom_waiting_->OnOperationComplete(entry_hash_);
     post_doom_waiting_ = nullptr;
   }
 }

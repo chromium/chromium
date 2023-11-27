@@ -20,7 +20,7 @@
 #include "net/base/net_export.h"
 #include "net/base/request_priority.h"
 #include "net/disk_cache/disk_cache.h"
-#include "net/disk_cache/simple/post_doom_waiter.h"
+#include "net/disk_cache/simple/post_operation_waiter.h"
 #include "net/disk_cache/simple/simple_entry_format.h"
 #include "net/disk_cache/simple/simple_entry_operation.h"
 #include "net/disk_cache/simple/simple_synchronous_entry.h"
@@ -451,7 +451,7 @@ class NET_EXPORT_PRIVATE SimpleEntryImpl : public Entry,
   scoped_refptr<net::GrowableIOBuffer> stream_1_prefetch_data_;
 
   // This is used only while a doom is pending.
-  scoped_refptr<SimplePostDoomWaiterTable> post_doom_waiting_;
+  scoped_refptr<SimplePostOperationWaiterTable> post_doom_waiting_;
 
   // Choosing uint32_t over uint64_t for space savings. Pages have in the
   // hundres to possibly thousands of resources. Wrapping every 4 billion
