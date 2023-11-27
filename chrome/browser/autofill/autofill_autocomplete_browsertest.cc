@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion_test_helpers.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -40,15 +41,18 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/switches.h"
 
-using base::ASCIIToUTF16;
-using testing::ElementsAre;
-using testing::Field;
-
 namespace autofill {
 
 namespace {
+
+using ::base::UTF8ToUTF16;
+using ::testing::ElementsAre;
+using ::testing::Field;
+using ::testing::IsEmpty;
+
 const char kDefaultAutocompleteInputId[] = "n300";
 const char kSimpleFormFileName[] = "autocomplete_simple_form.html";
+
 }  // namespace
 
 class AutofillAutocompleteTest : public InProcessBrowserTest {
@@ -121,22 +125,6 @@ class AutofillAutocompleteTest : public InProcessBrowserTest {
     }
   }
 
-  // Validates that there is only one available autocomplete suggestion for the
-  // given |prefix|, and its value is equal to |expected_value|.
-  void ValidateSingleValue(const std::string& prefix,
-                           const std::string& expected_value) {
-    EXPECT_THAT(GetAutocompleteSuggestions(kDefaultAutocompleteInputId, prefix),
-                ElementsAre(Field(
-                    &Suggestion::main_text,
-                    Suggestion::Text(ASCIIToUTF16(expected_value),
-                                     Suggestion::Text::IsPrimary(true)))));
-  }
-
-  void ValidateNoValue() {
-    EXPECT_TRUE(
-        GetAutocompleteSuggestions(kDefaultAutocompleteInputId, "").empty());
-  }
-
   void ReinitializeAutocompleteHistoryManager() {
     autocomplete_history_manager()->Init(GetWebDataService(), pref_service(),
                                          current_profile()->IsOffTheRecord());
@@ -169,7 +157,6 @@ class AutofillAutocompleteTest : public InProcessBrowserTest {
 
   PrefService* pref_service() { return active_browser_->profile()->GetPrefs(); }
 
- private:
   std::vector<Suggestion> GetAutocompleteSuggestions(
       const std::string& input_name,
       const std::string& prefix) {
@@ -189,6 +176,7 @@ class AutofillAutocompleteTest : public InProcessBrowserTest {
     return suggestions;
   }
 
+ private:
   GURL GetURL(const std::string& filename) {
     return embedded_test_server()->GetURL("/autofill/" + filename);
   }
@@ -214,7 +202,9 @@ IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest, SubmitSimpleValue_Saves) {
   std::string test_value = "SomeName!";
   NavigateToFile(kSimpleFormFileName);
   FillInputAndSubmit(test_value, /*should_skip_save=*/false);
-  ValidateSingleValue(prefix, test_value);
+  EXPECT_THAT(GetAutocompleteSuggestions(kDefaultAutocompleteInputId, prefix),
+              SuggestionVectorMainTextsAre(Suggestion::Text(
+                  UTF8ToUTF16(test_value), Suggestion::Text::IsPrimary(true))));
 }
 
 // Tests that we don't save new autocomplete entries when in Incognito.
@@ -226,7 +216,8 @@ IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest,
   std::string test_value = "SomeName!";
   NavigateToFile(kSimpleFormFileName, WindowOpenDisposition::OFF_THE_RECORD);
   FillInputAndSubmit(test_value, /*should_skip_save=*/true);
-  ValidateNoValue();
+  EXPECT_THAT(GetAutocompleteSuggestions(kDefaultAutocompleteInputId, ""),
+              IsEmpty());
 }
 
 // Tests that we don't save new autocomplete entries when Autocomplete was
@@ -238,7 +229,8 @@ IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest,
   std::string test_value = "SomeName!";
   NavigateToFile(kSimpleFormFileName);
   FillInputAndSubmit(test_value, /*should_skip_save=*/true);
-  ValidateNoValue();
+  EXPECT_THAT(GetAutocompleteSuggestions(kDefaultAutocompleteInputId, ""),
+              IsEmpty());
 }
 
 // Tests that initialization of the AutocompleteHistoryManager sets the
@@ -273,7 +265,9 @@ IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest,
   std::string test_value = "SomeName!";
   NavigateToFile(kSimpleFormFileName);
   FillInputAndSubmit(test_value, /*should_skip_save=*/false);
-  ValidateSingleValue(prefix, test_value);
+  EXPECT_THAT(GetAutocompleteSuggestions(kDefaultAutocompleteInputId, prefix),
+              SuggestionVectorMainTextsAre(Suggestion::Text(
+                  UTF8ToUTF16(test_value), Suggestion::Text::IsPrimary(true))));
 
   // Come back to current time, modify the saved major version and setup our
   // observer.
@@ -286,7 +280,8 @@ IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest,
   ReinitializeAutocompleteHistoryManager();
   WaitForDBTasks();
 
-  ValidateNoValue();
+  EXPECT_THAT(GetAutocompleteSuggestions(kDefaultAutocompleteInputId, ""),
+              IsEmpty());
 }
 
 // Tests that the retention policy cleanup does not remove a valid entry (e.g.
@@ -304,7 +299,9 @@ IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest,
   std::string test_value = "SomeName!";
   NavigateToFile(kSimpleFormFileName);
   FillInputAndSubmit(test_value, /*should_skip_save=*/false);
-  ValidateSingleValue(prefix, test_value);
+  EXPECT_THAT(GetAutocompleteSuggestions(kDefaultAutocompleteInputId, prefix),
+              SuggestionVectorMainTextsAre(Suggestion::Text(
+                  UTF8ToUTF16(test_value), Suggestion::Text::IsPrimary(true))));
 
   // Come back to current time, modify the saved major version and setup our
   // observer.
@@ -318,7 +315,9 @@ IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest,
   WaitForDBTasks();
 
   // Verify that the entry is still there.
-  ValidateSingleValue(prefix, test_value);
+  EXPECT_THAT(GetAutocompleteSuggestions(kDefaultAutocompleteInputId, prefix),
+              SuggestionVectorMainTextsAre(Suggestion::Text(
+                  UTF8ToUTF16(test_value), Suggestion::Text::IsPrimary(true))));
 }
 
 }  // namespace autofill
