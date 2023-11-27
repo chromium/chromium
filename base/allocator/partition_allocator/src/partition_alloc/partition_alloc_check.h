@@ -44,7 +44,8 @@
     int error = errno;                                       \
     ::partition_alloc::internal::base::debug::Alias(&error); \
     PA_IMMEDIATE_CRASH();                                    \
-  }
+  }                                                          \
+  static_assert(true)
 
 #if BUILDFLAG(PA_DCHECK_IS_ON)
 #define PA_DPCHECK(condition) PA_PCHECK(condition)

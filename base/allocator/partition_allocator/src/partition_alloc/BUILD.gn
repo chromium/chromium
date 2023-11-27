@@ -79,10 +79,7 @@ config("dependants_extra_warnings") {
     # This is blocking using PartitionAlloc in Dawn. Most fixes have been
     # prototyped in:
     # https://chromium-review.googlesource.com/c/chromium/src/+/5057762
-    cflags -= [
-      "-Wextra-semi-stmt",
-      "-Wunused-macros",
-    ]
+    cflags -= [ "-Wunused-macros" ]
     cflags += [
       # Those are compiler extension banned by -pedantic.
       "-Wno-import-preprocessor-directive-pedantic",
