@@ -348,19 +348,15 @@ scoped_refptr<gfx::NativePixmap> TestSharedImageInterface::GetNativePixmap(
 }
 
 std::unique_ptr<gpu::SharedImageInterface::ScopedMapping>
-TestSharedImageInterface::MapSharedImage(const gpu::Mailbox& mailbox) {
+TestSharedImageInterface::MapSharedImage(
+    const scoped_refptr<gpu::ClientSharedImage>& client_shared_image) {
+  const auto& mailbox = client_shared_image->mailbox();
   auto it = mailbox_to_gmb_map_.find(mailbox);
   // The mailbox for which the query is made must be present.
   CHECK(it != mailbox_to_gmb_map_.end());
 
   auto* gmb = it->second.get();
   return SharedImageInterface::ScopedMapping::Create(gmb);
-}
-
-std::unique_ptr<gpu::SharedImageInterface::ScopedMapping>
-TestSharedImageInterface::MapSharedImage(
-    const scoped_refptr<gpu::ClientSharedImage>& client_shared_image) {
-  return MapSharedImage(client_shared_image->mailbox());
 }
 
 bool TestSharedImageInterface::CheckSharedImageExists(

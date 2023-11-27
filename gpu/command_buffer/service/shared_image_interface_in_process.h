@@ -95,8 +95,6 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
       base::StringPiece debug_label,
       SurfaceHandle surface_handle,
       gfx::BufferUsage buffer_usage) override;
-  std::unique_ptr<SharedImageInterface::ScopedMapping> MapSharedImage(
-      const Mailbox& mailbox) override;
   std::unique_ptr<gpu::SharedImageInterface::ScopedMapping> MapSharedImage(
       const scoped_refptr<gpu::ClientSharedImage>& client_shared_image)
       override;

@@ -434,8 +434,10 @@ gfx::GpuMemoryBuffer* SharedImageInterfaceInProcess::GetGpuMemoryBuffer(
   return raw_gpu_memory_buffer;
 }
 
-std::unique_ptr<SharedImageInterface::ScopedMapping>
-SharedImageInterfaceInProcess::MapSharedImage(const Mailbox& mailbox) {
+std::unique_ptr<gpu::SharedImageInterface::ScopedMapping>
+SharedImageInterfaceInProcess::MapSharedImage(
+    const scoped_refptr<gpu::ClientSharedImage>& client_shared_image) {
+  const auto& mailbox = client_shared_image->mailbox();
   auto* gpu_memory_buffer = GetGpuMemoryBuffer(mailbox);
   if (!gpu_memory_buffer) {
     LOG(ERROR) << "Buffer is null.";
@@ -450,12 +452,6 @@ SharedImageInterfaceInProcess::MapSharedImage(const Mailbox& mailbox) {
   }
 
   return scoped_mapping;
-}
-
-std::unique_ptr<gpu::SharedImageInterface::ScopedMapping>
-SharedImageInterfaceInProcess::MapSharedImage(
-    const scoped_refptr<gpu::ClientSharedImage>& client_shared_image) {
-  return MapSharedImage(client_shared_image->mailbox());
 }
 
 void SharedImageInterfaceInProcess::GetGpuMemoryBufferHandleInfoOnGpuThread(

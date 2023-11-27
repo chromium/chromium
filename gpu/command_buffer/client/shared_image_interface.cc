@@ -110,12 +110,6 @@ void SharedImageInterface::CopyToGpuMemoryBuffer(const SyncToken& sync_token,
 }
 
 std::unique_ptr<SharedImageInterface::ScopedMapping>
-SharedImageInterface::MapSharedImage(const Mailbox& mailbox) {
-  NOTIMPLEMENTED();
-  return nullptr;
-}
-
-std::unique_ptr<SharedImageInterface::ScopedMapping>
 SharedImageInterface::MapSharedImage(
     const scoped_refptr<ClientSharedImage>& client_shared_image) {
   NOTIMPLEMENTED();

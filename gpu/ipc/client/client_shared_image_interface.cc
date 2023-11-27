@@ -261,7 +261,9 @@ void ClientSharedImageInterface::AddReferenceToSharedImage(
 }
 
 std::unique_ptr<SharedImageInterface::ScopedMapping>
-ClientSharedImageInterface::MapSharedImage(const Mailbox& mailbox) {
+ClientSharedImageInterface::MapSharedImage(
+    const scoped_refptr<gpu::ClientSharedImage>& client_shared_image) {
+  const auto& mailbox = client_shared_image->mailbox();
   gfx::GpuMemoryBuffer* gpu_memory_buffer = nullptr;
   {
     base::AutoLock lock(lock_);
@@ -283,12 +285,6 @@ ClientSharedImageInterface::MapSharedImage(const Mailbox& mailbox) {
     return nullptr;
   }
   return scoped_mapping;
-}
-
-std::unique_ptr<gpu::SharedImageInterface::ScopedMapping>
-ClientSharedImageInterface::MapSharedImage(
-    const scoped_refptr<gpu::ClientSharedImage>& client_shared_image) {
-  return MapSharedImage(client_shared_image->mailbox());
 }
 
 uint32_t ClientSharedImageInterface::UsageForMailbox(const Mailbox& mailbox) {

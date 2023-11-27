@@ -366,12 +366,8 @@ class GPU_EXPORT SharedImageInterface {
   // set to do CPU READ/WRITE) and returns a ScopedMapping object which can be
   // used to read/write to the CPU mapped memory. Mailbox must have been created
   // with CPU_READ/CPU_WRITE usage. Note that this call can be blocking
-  // and blocks on the clients thread only the first time for a given |mailbox|.
-  virtual std::unique_ptr<SharedImageInterface::ScopedMapping> MapSharedImage(
-      const Mailbox& mailbox);
-
-  // Same behavior as the above, except that this version takes
-  // a |client_shared_image| parameter (which holds a mailbox).
+  // and blocks on the clients thread only the first time for a given
+  // |client_shared_image|.
   virtual std::unique_ptr<SharedImageInterface::ScopedMapping> MapSharedImage(
       const scoped_refptr<ClientSharedImage>& client_shared_image);
 
