@@ -1709,6 +1709,11 @@ EXPORT_TEMPLATE void* PartitionRoot::AlignedAlloc<AllocFlags::kNone>(size_t,
                                                                      size_t);
 #undef EXPORT_TEMPLATE
 
+// TODO(https://crbug.com/1500662) Stop ignoring the -Winvalid-offsetof warning.
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winvalid-offsetof"
+#endif
 static_assert(offsetof(PartitionRoot, sentinel_bucket) ==
                   offsetof(PartitionRoot, buckets) +
                       internal::kNumBuckets * sizeof(PartitionRoot::Bucket),
@@ -1717,5 +1722,8 @@ static_assert(offsetof(PartitionRoot, sentinel_bucket) ==
 static_assert(
     offsetof(PartitionRoot, lock_) >= 64,
     "The lock should not be on the same cacheline as the read-mostly flags");
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 
 }  // namespace partition_alloc
