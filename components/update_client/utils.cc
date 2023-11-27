@@ -10,10 +10,10 @@
 #include <cstring>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
@@ -146,7 +146,7 @@ bool IsValidInstallerAttribute(const InstallerAttribute& attr) {
 
 void RemoveUnsecureUrls(std::vector<GURL>* urls) {
   CHECK(urls);
-  base::EraseIf(*urls,
+  std::erase_if(*urls,
                 [](const GURL& url) { return !url.SchemeIsCryptographic(); });
 }
 
