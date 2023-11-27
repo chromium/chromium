@@ -25,6 +25,7 @@
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
 #include "services/network/public/mojom/accept_ch_frame_observer.mojom.h"
+#include "services/network/public/mojom/service_worker_router_info.mojom-forward.h"
 #include "services/network/public/mojom/shared_dictionary_access_observer.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -351,6 +352,8 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   // it, we still expose the worker timing as part of the response.
   base::TimeTicks intercepting_worker_start_time_;
   base::TimeTicks intercepting_worker_ready_time_;
+
+  network::mojom::ServiceWorkerRouterInfoPtr intercepting_worker_router_info_;
 
   base::WeakPtrFactory<NavigationURLLoaderImpl> weak_factory_{this};
 };

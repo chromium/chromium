@@ -313,10 +313,13 @@ void ServiceWorkerMainResourceLoader::StartRequest(
               base::BindOnce(
                   [](NavigationLoaderInterceptor::FallbackCallback
                          fallback_callback,
-                     scoped_refptr<ServiceWorkerVersion> active_worker) {
+                     scoped_refptr<ServiceWorkerVersion> active_worker,
+                     network::mojom::ServiceWorkerRouterInfoPtr router_info) {
+                    ResponseHeadUpdateParams head_update_params;
+                    head_update_params.router_info = std::move(router_info);
                     std::move(fallback_callback)
                         .Run(false /* reset_subresource_loader_params */,
-                             ResponseHeadUpdateParams());
+                             head_update_params);
                     if (active_worker->running_status() !=
                             blink::EmbeddedWorkerStatus::kRunning &&
                         base::FeatureList::IsEnabled(
@@ -327,7 +330,8 @@ void ServiceWorkerMainResourceLoader::StartRequest(
                           base::DoNothing());
                     }
                   },
-                  std::move(fallback_callback_), active_worker));
+                  std::move(fallback_callback_), active_worker,
+                  std::move(response_head_->service_worker_router_info)));
           return;
         case blink::ServiceWorkerRouterSource::Type::kRace:
           race_network_request_mode = RaceNetworkRequestMode::kForced;

@@ -1,0 +1,5 @@
+Verifies that the request head has static routing information on the main resource when the request fallbacks to the network.
+{
+    ruleIdMatched : 1
+}
+

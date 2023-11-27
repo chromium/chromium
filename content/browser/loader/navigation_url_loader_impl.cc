@@ -699,6 +699,7 @@ void NavigationURLLoaderImpl::FallbackToNonInterceptedRequest(
       head_update_params.load_timing_info.service_worker_start_time;
   intercepting_worker_ready_time_ =
       head_update_params.load_timing_info.service_worker_ready_time;
+  intercepting_worker_router_info_ = head_update_params.router_info.Clone();
 
   scoped_refptr<network::SharedURLLoaderFactory> factory =
       PrepareForNonInterceptedRequest();
@@ -859,14 +860,18 @@ void NavigationURLLoaderImpl::OnReceiveResponse(
     head_->load_timing.service_worker_ready_time =
         intercepting_worker_ready_time_;
   }
+  if (!intercepting_worker_router_info_.is_null()) {
+    head_->service_worker_router_info =
+        intercepting_worker_router_info_.Clone();
+  }
 
   // If the default loader (network) was used to handle the URL load request
   // we need to see if the interceptors want to potentially create a new
   // loader for the response. e.g. service workers.
   //
   // As the navigation request has received a response, the URLLoader has
-  // completed without any network errors. Some interceptors may still wish to
-  // handle the response.
+  // completed without any network errors. Some interceptors may still wish
+  // to handle the response.
   auto status = network::URLLoaderCompletionStatus(net::OK);
   if (MaybeCreateLoaderForResponse(status, &head_)) {
     return;

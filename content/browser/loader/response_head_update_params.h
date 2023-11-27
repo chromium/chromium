@@ -7,6 +7,7 @@
 
 #include "content/common/content_export.h"
 #include "net/base/load_timing_info.h"
+#include "services/network/public/mojom/service_worker_router_info.mojom.h"
 
 namespace content {
 
@@ -21,6 +22,7 @@ struct CONTENT_EXPORT ResponseHeadUpdateParams {
   ResponseHeadUpdateParams& operator=(ResponseHeadUpdateParams&& other);
 
   net::LoadTimingInfo load_timing_info;
+  network::mojom::ServiceWorkerRouterInfoPtr router_info;
 };
 
 }  // namespace content
