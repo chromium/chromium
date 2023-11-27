@@ -103,14 +103,6 @@ const char* const kPersistentPrefsAllowlist[] = {
     variations::prefs::kVariationsLastFetchTime,
     variations::prefs::kVariationsSeedDate,
 
-    // A dictionary that caches 'AppPackageNameLoggingRule' object which decides
-    // whether the app package name should be recorded in UMA or not.
-    prefs::kMetricsAppPackageNameLoggingRule,
-
-    // The last time the apps package name allowlist was queried from the
-    // component update service, regardless if it was successful or not.
-    prefs::kAppPackageNameLoggingRuleLastUpdateTime,
-
     // The state of the previous background tracing session.
     tracing::kBackgroundTracingSessionState,
 

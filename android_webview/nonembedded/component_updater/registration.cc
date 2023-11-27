@@ -8,7 +8,6 @@
 
 #include "android_webview/common/aw_switches.h"
 #include "android_webview/nonembedded/component_updater/aw_component_installer_policy_shim.h"
-#include "android_webview/nonembedded/component_updater/installer_policies/aw_package_names_allowlist_component_installer_policy.h"
 #include "base/barrier_closure.h"
 #include "base/command_line.h"
 #include "base/functional/callback.h"
@@ -35,12 +34,6 @@ void RegisterComponentsForUpdate(
   // AwComponentInstallerPolicy as a parent class
   std::vector<std::unique_ptr<component_updater::ComponentInstallerPolicy>>
       component_installer_list;
-  // Set of AW components that are always downloaded on the default path (not
-  // guarded by any flags). Update when changing the AW components WebView
-  // registers. Note: 'AW' refers to classes that contain
-  // AwComponentInstallerPolicy as a parent class
-  std::vector<std::unique_ptr<AwComponentInstallerPolicy>>
-      aw_component_installer_list;
 
   component_installer_list.push_back(
       std::make_unique<
@@ -57,8 +50,6 @@ void RegisterComponentsForUpdate(
                   LOG(ERROR) << "Could not read Masked Domain List file";
                 }
               })));
-  aw_component_installer_list.push_back(
-      std::make_unique<AwPackageNamesAllowlistComponentInstallerPolicy>());
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kWebViewEnableTrustTokensComponent)) {
@@ -73,19 +64,10 @@ void RegisterComponentsForUpdate(
   }
 
   base::RepeatingClosure barrier_closure = base::BarrierClosure(
-      component_installer_list.size() + aw_component_installer_list.size(),
-      std::move(on_finished));
+      component_installer_list.size(), std::move(on_finished));
   for (auto& component : component_installer_list) {
     base::MakeRefCounted<component_updater::ComponentInstaller>(
         std::make_unique<AwComponentInstallerPolicyShim>(std::move(component)))
-        ->Register(base::OnceCallback<bool(
-                       const component_updater::ComponentRegistration&)>(
-                       register_callback),
-                   base::OnceClosure(barrier_closure));
-  }
-  for (auto& component : aw_component_installer_list) {
-    base::MakeRefCounted<component_updater::ComponentInstaller>(
-        std::move(component))
         ->Register(base::OnceCallback<bool(
                        const component_updater::ComponentRegistration&)>(
                        register_callback),
