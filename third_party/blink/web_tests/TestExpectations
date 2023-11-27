@@ -2698,6 +2698,8 @@ crbug.com/626703 [ Mac ] virtual/webcodecs-without-task-runner-with-custom-delet
 crbug.com/626703 [ Mac ] virtual/webcodecs-without-task-runner-with-custom-deleter/external/wpt/webcodecs/videoDecoder-codec-specific.https.any.worker.html?h265_hevc [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Win10.20h2 ] external/wpt/pointerevents/pointerevent_after_target_appended.html?mouse [ Timeout ]
+crbug.com/626703 [ Mac12 ] external/wpt/pointerevents/pointerevent_after_target_appended.html?mouse [ Timeout ]
 crbug.com/626703 external/wpt/css/css-nesting/has-nesting.html [ Failure ]
 crbug.com/626703 external/wpt/png/apng/acTL-plays-one.html [ Failure ]
 crbug.com/626703 external/wpt/png/apng/fcTL-blend-source-nearly-transparent.html [ Timeout ]

@@ -82,6 +82,8 @@ async function runFullCycleTest(t, options) {
   await checkEncoderSupport(t, encoder_config);
   let decoder = new VideoDecoder({
     output(frame) {
+      t.add_cleanup(() => { frame.close() });
+
       assert_equals(frame.visibleRect.width, w, "visibleRect.width");
       assert_equals(frame.visibleRect.height, h, "visibleRect.height");
       assert_equals(frame.timestamp, next_ts++, "decode timestamp");
@@ -105,7 +107,6 @@ async function runFullCycleTest(t, options) {
       frames_decoded++;
       assert_true(validateBlackDots(frame, frame.timestamp),
         "frame doesn't match. ts: " + frame.timestamp);
-      frame.close();
     },
     error(e) {
       assert_unreached(e.message);

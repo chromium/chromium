@@ -5045,6 +5045,13 @@
        {}
       ]
      ],
+     "delete-from-after-empty-table-header-grouped-element.html": [
+      "e6ad4fa9e36c8d6b70d08294d772ba32e3d84d40",
+      [
+       null,
+       {}
+      ]
+     ],
      "delete-immediately-after-changing-input-type-from-time.html": [
       "e608b8c86612d73f731d3127127e768328c7644c",
       [
@@ -554026,7 +554033,7 @@
         ]
        ],
        "document-base-url-window-initiator-is-not-opener.https.window.js": [
-        "ca3028d9cc3214a8110808f18cc7b76471cc2449",
+        "a8519b5d1b6d3f39f7642e0e21a0955d69821ecd",
         [
          "html/infrastructure/urls/base-url/document-base-url-window-initiator-is-not-opener.https.window.html",
          {}
@@ -649095,7 +649102,7 @@
      ]
     ],
     "full-cycle-test.https.any.js": [
-     "b7d5f7ea658fb6440ac253b9276110f97640131d",
+     "d8b23f9a88f48ef212acc4ff815a74dd0f11ed70",
      [
       "webcodecs/full-cycle-test.https.any.html?av1",
       {
@@ -696094,7 +696101,7 @@
       "log": {
        "entry_added": {
         "console.py": [
-         "533dfd795017fc5c6042399aaeff0f1fc2d443b1",
+         "061e85b7b6b31758b0abedb274778f083a2947cf",
          [
           null,
           {}
