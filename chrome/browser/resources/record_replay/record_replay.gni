@@ -10,3 +10,4 @@ non_web_component_files =
     ]
 
 ts_files = non_web_component_files
+mojo_js_files = [ "record_replay_manager.mojom-webui.js" ]

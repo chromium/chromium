@@ -37,6 +37,7 @@ grit("resources") {
 
   deps = [
     ":build_grd",
+    "//chrome/browser/ui/webui/record_replay:mojo_bindings_js",
   ]
 
   outputs = [
@@ -60,7 +61,29 @@ if (optimize_webui) {
     js_out_files = [
       "record_replay.rollup.js",
     ]
+    excludes = mojo_js_files
   }
+
+  # Register all mojo files to their own grdp, since they are excluded from the
+  # bundle on optimized builds and need to be registered separately.
+  generate_grd("build_mojo_grdp") {
+    grd_prefix = grd_prefix
+    out_grd = "$target_gen_dir/mojo_resources.grdp"
+    input_files = mojo_js_files
+    input_files_base_dir = rebase_path("$target_gen_dir/tsc", root_build_dir)
+    deps = [ ":build_ts" ]
+  }
+}
+
+copy("copy_mojom") {
+  deps = [ "//chrome/browser/ui/webui/record_replay:mojo_bindings_js__generator" ]
+  sources = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/record_replay/record_replay_manager.mojom-webui.js" ]
+  outputs = [ "$target_gen_dir/$preprocess_folder/{{source_file_part}}" ]
+}
+
+copy("copy_src") {
+  sources = ts_files
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
 
 ts_library_sourcemaps("build_ts") {
@@ -72,10 +95,12 @@ ts_library_sourcemaps("build_ts") {
   } else {
     tsconfig_base = "tsconfig_base.json"
   }
-  in_files = ts_files
+  in_files = ts_files + mojo_js_files
 
   extra_deps = [
     ":preprocess",
+    ":copy_mojom",
+    ":copy_src",
   ]
 }
 
@@ -88,18 +113,21 @@ generate_grd("build_grd") {
   input_files_base_dir = rebase_path(".", "//")
 
   deps = []
-  
+  grdp_files = []
+
   if (optimize_webui) {
     deps += [
+      ":build_mojo_grdp",
       ":optimized_js",
     ]
     resource_path_rewrites = [
       "record_replay.rollup.js|record_replay.js",
     ]
     manifest_files = [ "$target_gen_dir/$build_manifest" ]
+    grdp_files += [ "$target_gen_dir/mojo_resources.grdp" ]
   } else {
     deps += [ ":build_ts" ]
     manifest_files =
-        filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
   }
 }

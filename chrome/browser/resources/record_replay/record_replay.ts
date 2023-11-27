@@ -14,6 +14,15 @@
 // we should also be able to add mojo bindings or use `chrome.send()`
 // and other things mentioned in webui_explainer.md.
 
-import "./auth.js";
+//import "./auth.js";
+// console.error("in record_replay.ts after importing auth.ts");
 
-console.error("in record_replay.ts after importing auth.ts");
+/*
+import {
+  RecordReplayManagerCallbackRouter,
+  RecordReplayManagerHandler,
+} from './record_replay.mojom-webui.js';
+*/
+
+import * as RR from './record_replay_manager.mojom-webui.js';
+console.error("Imported RR Api = " + [...Object.keys(RR)].join(", "));
