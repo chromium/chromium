@@ -9,6 +9,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
+#include "components/privacy_sandbox/tracking_protection_onboarding.h"
 
 namespace tpcd::experiment {
 class ExperimentManager;
@@ -74,6 +75,8 @@ class ThirdPartyCookieDeprecationMetricsObserver
 
   // Not owned and the lifetime of ExperimentManager will exceed |this|.
   raw_ptr<tpcd::experiment::ExperimentManager> experiment_manager_;
+  raw_ptr<privacy_sandbox::TrackingProtectionOnboarding>
+      tracking_protection_onboarding_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
 };
 
