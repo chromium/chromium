@@ -276,7 +276,7 @@ bool IsPdfOcrEnabled() {
              ::features::kEmergencyDisableScreenAIOCR);
 }
 
-BASE_FEATURE(kReadAnything, "ReadAnything", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kReadAnything, "ReadAnything", base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsReadAnythingEnabled() {
   return base::FeatureList::IsEnabled(::features::kReadAnything);
 }
@@ -311,7 +311,7 @@ bool IsReadAnythingWebUIToolbarEnabled() {
 
 BASE_FEATURE(kReadAnythingWithScreen2x,
              "ReadAnythingWithScreen2x",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsReadAnythingWithScreen2xEnabled() {
   return base::FeatureList::IsEnabled(::features::kReadAnythingWithScreen2x) &&
          !base::FeatureList::IsEnabled(
