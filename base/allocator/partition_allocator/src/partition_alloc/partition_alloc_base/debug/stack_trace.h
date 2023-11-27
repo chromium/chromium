@@ -71,4 +71,4 @@ size_t TraceStackFramePointers(const void** out_trace,
 
 }  // namespace partition_alloc::internal::base::debug
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_SRC_PARTITION_ALLOC_BASE_DEBUG_STACK_TRACE_H_
+#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_DEBUG_STACK_TRACE_H_

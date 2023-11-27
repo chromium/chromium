@@ -116,4 +116,4 @@ class BASE_I18N_EXPORT IcuMergeableDataFile {
 
 }  // namespace base::i18n
 
-#endif  // BASE_I18N_MERGEABLE_ICU_DATA_FILE_H_
+#endif  // BASE_I18N_ICU_MERGEABLE_DATA_FILE_H_

@@ -96,4 +96,4 @@ class BASE_EXPORT Semaphore {
 }  // namespace internal
 }  // namespace base
 
-#endif  // V8_BASE_PLATFORM_SEMAPHORE_H_
+#endif  // BASE_TASK_THREAD_POOL_SEMAPHORE_H_
