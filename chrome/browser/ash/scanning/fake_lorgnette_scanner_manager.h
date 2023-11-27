@@ -100,6 +100,9 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
   void SetCancelScanResponse(
       const absl::optional<lorgnette::CancelScanResponse>& response);
 
+  // Optionally sets `scan_data` if a matching set of scan settings is found.
+  void MaybeSetScanDataBasedOnSettings(const lorgnette::ScanSettings& settings);
+
  private:
   std::vector<std::string> scanner_names_;
   absl::optional<lorgnette::ListScannersResponse> list_scanners_response_;
