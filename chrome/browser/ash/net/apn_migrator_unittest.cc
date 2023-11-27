@@ -1774,10 +1774,11 @@ TEST_F(
   EXPECT_EQ(kDefaultAccessPointName, custom_apns[0]->access_point_name);
   EXPECT_EQ(ApnState::kEnabled, custom_apns[0]->state);
   EXPECT_TRUE(base::Contains(custom_apns[0]->apn_types, ApnType::kDefault));
+  EXPECT_TRUE(base::Contains(custom_apns[0]->apn_types, ApnType::kAttach));
 
   // Last connected attach APN is saved second.
   EXPECT_EQ(kAttachAccessPointName, custom_apns[1]->access_point_name);
-  EXPECT_EQ(ApnState::kDisabled, custom_apns[1]->state);
+  EXPECT_EQ(ApnState::kEnabled, custom_apns[1]->state);
   EXPECT_TRUE(base::Contains(custom_apns[1]->apn_types, ApnType::kAttach));
 
   histogram_tester().ExpectTotalCount(

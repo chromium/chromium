@@ -419,20 +419,21 @@ void ApnMigrator::OnGetManagedProperties(
   }
 
   if (has_last_connected_attach && is_last_connected_default_custom) {
-    NET_LOG(EVENT) << "Only last_connected_default_apn matches "
-                      "pre_revamp_custom_apn, last_connected_attach_apn exists "
-                      "but does not match pre_revamp_custom_apn, migrating "
-                      "last_connected_default_apn APN in enabled state with "
-                      "Default type and last_connected_attach_apn APN in "
-                      "disabled state with Attach type for network: "
-                   << guid;
+    NET_LOG(EVENT)
+        << "Only last_connected_default_apn matches "
+           "pre_revamp_custom_apn, last_connected_attach_apn exists "
+           "but does not match pre_revamp_custom_apn, migrating "
+           "last_connected_default_apn APN in enabled state with "
+           "Default and Attach type, and last_connected_attach_apn APN in "
+           "enabled state with Attach type for network: "
+        << guid;
     CellularNetworkMetricsLogger::LogUnmanagedCustomApnMigrationType(
         CellularNetworkMetricsLogger::UnmanagedApnMigrationType::
             kMatchesLastConnectedDefaultOnlyAndAttachExists);
 
     CreateDefaultThenAttachCustomApns(std::move(*last_connected_attach_apn),
-                                      /*enable_attach=*/false,
                                       std::move(*last_connected_default_apn),
+                                      /*can_use_default_apn_as_attach=*/true,
                                       guid, iccid);
     return;
   }
@@ -445,8 +446,8 @@ void ApnMigrator::OnGetManagedProperties(
         CellularNetworkMetricsLogger::UnmanagedApnMigrationType::
             kMatchesLastConnectedAttachOnlyAndDefaultExists);
     CreateDefaultThenAttachCustomApns(std::move(*last_connected_attach_apn),
-                                      /*enable_attach=*/true,
                                       std::move(*last_connected_default_apn),
+                                      /*can_use_default_apn_as_attach=*/false,
                                       guid, iccid);
     return;
   }
@@ -465,24 +466,29 @@ void ApnMigrator::OnGetManagedProperties(
 
 void ApnMigrator::CreateDefaultThenAttachCustomApns(
     chromeos::network_config::mojom::ApnPropertiesPtr attach_apn,
-    bool enable_attach,
     chromeos::network_config::mojom::ApnPropertiesPtr default_apn,
+    bool can_use_default_apn_as_attach,
     const std::string& guid,
     const std::string& iccid) {
   DCHECK(!attach_apn.is_null());
   DCHECK(!default_apn.is_null());
   NET_LOG(EVENT) << "Migrating default_apn: " << default_apn->access_point_name
-                 << " in the enabled state, and then attach_apn: "
+                 << " in the enabled state; default_apn is also type attach: "
+                 << can_use_default_apn_as_attach
+                 << ". Then, migrate attach_apn: "
                  << attach_apn->access_point_name
-                 << ", enabled: " << enable_attach
-                 << " for Network with guid: " << guid
+                 << " in the enabled state for Network with guid: " << guid
                  << " and iccid: " << iccid;
 
-  attach_apn->state = enable_attach ? ApnState::kEnabled : ApnState::kDisabled;
+  attach_apn->state = ApnState::kEnabled;
   attach_apn->apn_types = {ApnType::kAttach};
 
   default_apn->state = ApnState::kEnabled;
-  default_apn->apn_types = {ApnType::kDefault};
+  if (can_use_default_apn_as_attach) {
+    default_apn->apn_types = {ApnType::kAttach, ApnType::kDefault};
+  } else {
+    default_apn->apn_types = {ApnType::kDefault};
+  }
 
   // Migrate default APN first, then attach APN in case both are to
   // be enabled; enabled default APN must be created before enabled attach APN.
