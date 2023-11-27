@@ -196,14 +196,17 @@ void FilesPolicyErrorDialog::SetupBlockedFilesSections(
 
   auto merged_enterprise_connectors_files = GetFilesBlockedByReasons(
       merged_enterprise_connectors_reasons, dialog_info_map);
-  sections_.emplace_back(
-      MapBlockReasonToViewID(
-          FilesPolicyDialog::BlockReason::kEnterpriseConnectors),
-      files_string_util::GetBlockReasonMessage(
-          FilesPolicyDialog::BlockReason::kEnterpriseConnectors,
-          merged_enterprise_connectors_files.size()),
-      merged_enterprise_connectors_files,
-      GetLearnMoreLinks(merged_enterprise_connectors_reasons, dialog_info_map));
+  if (!merged_enterprise_connectors_files.empty()) {
+    sections_.emplace_back(
+        MapBlockReasonToViewID(
+            FilesPolicyDialog::BlockReason::kEnterpriseConnectors),
+        files_string_util::GetBlockReasonMessage(
+            FilesPolicyDialog::BlockReason::kEnterpriseConnectors,
+            merged_enterprise_connectors_files.size()),
+        merged_enterprise_connectors_files,
+        GetLearnMoreLinks(merged_enterprise_connectors_reasons,
+                          dialog_info_map));
+  }
 
   AppendBlockedFilesSection(
       FilesPolicyErrorDialog::BlockReason::kEnterpriseConnectorsEncryptedFile,
