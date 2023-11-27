@@ -25,6 +25,80 @@ config("public_includes") {
   ]
 }
 
+# Enable more warnings that were found when using PartitionAlloc in other
+# projects.
+#
+# This list was initially copied from Dawn, who gathered this list from its own
+# dependants.
+config("dependants_extra_warnings") {
+  # Add them only when building PartitionAlloc as part of Chrome, because we
+  # control which clang version we use. Otherwise we risk breaking dependants
+  # when they use a different clang version.
+  #
+  # Fuchsia has been excluded from the extra warnings: Dependency over
+  # fuchsia.kernel involves too many warning. This is not a real issue, because
+  # the header is only used by PartitionAlloc internally. The dependants do not
+  # include it transitively.
+  if (build_with_chromium && is_clang && !is_fuchsia) {
+    cflags = [
+      "-Wc++11-narrowing",
+      "-Wconditional-uninitialized",
+      "-Wcstring-format-directive",
+      "-Wctad-maybe-unsupported",
+      "-Wdeprecated-copy",
+      "-Wdeprecated-copy-dtor",
+      "-Wduplicate-enum",
+      "-Wextra-semi",
+      "-Wextra-semi-stmt",
+      "-Wimplicit-fallthrough",
+      "-Winconsistent-missing-destructor-override",
+      "-Winvalid-offsetof",
+      "-Wmissing-field-initializers",
+      "-Wnon-c-typedef-for-linkage",
+      "-Wpessimizing-move",
+      "-Wrange-loop-analysis",
+      "-Wredundant-move",
+      "-Wshadow-field",
+      "-Wstrict-prototypes",
+      "-Wsuggest-destructor-override",
+      "-Wsuggest-override",
+      "-Wtautological-unsigned-zero-compare",
+      "-Wunreachable-code-aggressive",
+      "-Wunused-but-set-variable",
+      "-Wunused-macros",
+    ]
+
+    # clang-cl doesn't know -pedantic, pass it explicitly to the clang driver
+    if (is_win) {
+      cflags += [ "/clang:-pedantic" ]
+    } else {
+      cflags += [ "-pedantic" ]
+    }
+
+    # TODO(https://crbug.com/1464560) Get rid of those warning exceptions.
+    # This is blocking using PartitionAlloc in Dawn. Most fixes have been
+    # prototyped in:
+    # https://chromium-review.googlesource.com/c/chromium/src/+/5057762
+    cflags -= [
+      "-Wconditional-uninitialized",
+      "-Wextra-semi-stmt",
+      "-Wmissing-field-initializers",
+      "-Wunused-macros",
+    ]
+    cflags += [
+      # Those are compiler extension banned by -pedantic.
+      "-Wno-import-preprocessor-directive-pedantic",
+      "-Wno-embedded-directive",
+      "-Wno-gnu-statement-expression-from-macro-expansion",
+      "-Wno-gnu-zero-variadic-macro-arguments",
+      "-Wno-invalid-offsetof",
+      "-Wno-language-extension-token",
+      "-Wno-nested-anon-types",
+      "-Wno-zero-length-array",
+    ]
+  }
+}
+
 _remove_configs = []
 _add_configs = []
 if (!is_debug || partition_alloc_optimized_debug) {
@@ -81,6 +155,7 @@ source_set("raw_ptr") {
 
   configs -= _remove_configs
   configs += _add_configs
+  configs += [ ":dependants_extra_warnings" ]
 }
 
 # Changes the freelist implementation to use pointer offsets in lieu
@@ -517,6 +592,7 @@ if (is_clang_or_gcc) {
 
     configs -= _remove_configs
     configs += _add_configs
+    configs += [ ":dependants_extra_warnings" ]
 
     # We want to be able to test pkey mode without access to the default pkey.
     # This is incompatible with stack protectors since the TLS won't be pkey-tagged.
@@ -715,6 +791,7 @@ if (is_clang_or_gcc) {
 
     configs -= _remove_configs
     configs += _add_configs
+    configs += [ ":dependants_extra_warnings" ]
   }
 
   component("allocator_shim") {
@@ -732,6 +809,7 @@ if (is_clang_or_gcc) {
 
     configs -= _remove_configs
     configs += _add_configs
+    configs += [ ":dependants_extra_warnings" ]
 
     shim_headers = []
     shim_sources = []
