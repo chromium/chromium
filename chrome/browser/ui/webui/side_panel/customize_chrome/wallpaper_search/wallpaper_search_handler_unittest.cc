@@ -1146,3 +1146,78 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
   EXPECT_TRUE(quality.images_quality(1).selected());
   EXPECT_EQ(123, quality.images_quality(1).preview_latency_ms());
 }
+
+TEST_F(WallpaperSearchHandlerTest, SetUserFeedback) {
+  // Mock first request, then mark as thumbs down.
+  optimization_guide::proto::WallpaperSearchRequest request1;
+  optimization_guide::OptimizationGuideModelExecutionResultCallback
+      done_callback1;
+  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _))
+      .WillOnce(Invoke(
+          [&request1, &done_callback1](
+              optimization_guide::proto::ModelExecutionFeature feature_arg,
+              const google::protobuf::MessageLite& request_arg,
+              optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  done_callback_arg) {
+            request1.CheckTypeAndMergeFrom(request_arg);
+            done_callback1 = std::move(done_callback_arg);
+          }));
+  base::MockCallback<WallpaperSearchHandler::GetWallpaperSearchResultsCallback>
+      callback1;
+  auto handler = MakeHandler(/*session_id=*/123);
+  handler->GetWallpaperSearchResults(
+      "foo1", "bar1", "baz1",
+      side_panel::customize_chrome::mojom::DescriptorDValue::NewColor(
+          SK_ColorWHITE),
+      callback1.Get());
+  optimization_guide::proto::WallpaperSearchResponse response1;
+  std::string serialized_metadata1;
+  response1.SerializeToString(&serialized_metadata1);
+  optimization_guide::proto::Any result1;
+  result1.set_value(serialized_metadata1);
+  result1.set_type_url("type.googleapis.com/" + response1.GetTypeName());
+  optimization_guide::proto::WallpaperSearchQuality quality1;
+  std::move(done_callback1).Run(base::ok(result1), SaveQuality(&quality1));
+  handler->SetUserFeedback(
+      side_panel::customize_chrome::mojom::UserFeedback::kThumbsDown);
+
+  // Mock second request, then mark as thumbs up.
+  optimization_guide::proto::WallpaperSearchRequest request2;
+  optimization_guide::OptimizationGuideModelExecutionResultCallback
+      done_callback2;
+  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _))
+      .WillOnce(Invoke(
+          [&request2, &done_callback2](
+              optimization_guide::proto::ModelExecutionFeature feature_arg,
+              const google::protobuf::MessageLite& request_arg,
+              optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  done_callback_arg) {
+            ASSERT_EQ(request2.GetTypeName(), request_arg.GetTypeName());
+            request2.CheckTypeAndMergeFrom(request_arg);
+            done_callback2 = std::move(done_callback_arg);
+          }));
+  base::MockCallback<WallpaperSearchHandler::GetWallpaperSearchResultsCallback>
+      callback2;
+  handler->GetWallpaperSearchResults(
+      "foo2", "bar2", "baz2",
+      side_panel::customize_chrome::mojom::DescriptorDValue::NewColor(
+          SK_ColorRED),
+      callback2.Get());
+  optimization_guide::proto::WallpaperSearchResponse response2;
+  std::string serialized_metadata2;
+  response2.SerializeToString(&serialized_metadata2);
+  optimization_guide::proto::Any result2;
+  result2.set_value(serialized_metadata2);
+  result2.set_type_url("type.googleapis.com/" + response2.GetTypeName());
+  optimization_guide::proto::WallpaperSearchQuality quality2;
+  std::move(done_callback2).Run(base::ok(result2), SaveQuality(&quality2));
+  handler->SetUserFeedback(
+      side_panel::customize_chrome::mojom::UserFeedback::kThumbsUp);
+
+  // Quality logs on destruction.
+  handler.reset();
+  EXPECT_EQ(optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_DOWN,
+            quality1.user_feedback());
+  EXPECT_EQ(optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_UP,
+            quality2.user_feedback());
+}

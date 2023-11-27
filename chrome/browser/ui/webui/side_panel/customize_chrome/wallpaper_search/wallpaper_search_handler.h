@@ -78,6 +78,8 @@ class WallpaperSearchHandler
   void SetBackgroundToWallpaperSearchResult(const base::Token& result_id,
                                             double time) override;
   void UpdateHistory() override;
+  void SetUserFeedback(side_panel::customize_chrome::mojom::UserFeedback
+                           selected_option) override;
 
  private:
   void DecodeHistoryImage(image_fetcher::ImageDecodedCallback callback,

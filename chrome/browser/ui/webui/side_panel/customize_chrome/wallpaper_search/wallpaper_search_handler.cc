@@ -51,7 +51,10 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 
+using side_panel::customize_chrome::mojom::UserFeedback;
+
 namespace {
+
 const char kDescriptorsBaseUrl[] =
     "https://static.corp.google.com/chrome-wallpaper-search/";
 // Calculate new dimensions given the width and height that will make the
@@ -80,6 +83,18 @@ std::string ReadFile(const base::FilePath& path) {
   std::string result;
   base::ReadFileToString(path, &result);
   return result;
+}
+
+optimization_guide::proto::UserFeedback
+OptimizationFeedbackFromWallpaperSearchFeedback(UserFeedback feedback) {
+  switch (feedback) {
+    case UserFeedback::kThumbsUp:
+      return optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_UP;
+    case UserFeedback::kThumbsDown:
+      return optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_DOWN;
+    case UserFeedback::kUnspecified:
+      return optimization_guide::proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
+  }
 }
 }  // namespace
 
@@ -292,6 +307,19 @@ void WallpaperSearchHandler::UpdateHistory() {
                                  std::pair(image.AsBitmap(), id));
                            },
                            barrier, entry)));
+  }
+}
+
+void WallpaperSearchHandler::SetUserFeedback(UserFeedback selected_option) {
+  optimization_guide::proto::UserFeedback user_feedback =
+      OptimizationFeedbackFromWallpaperSearchFeedback(selected_option);
+  if (!log_entries_.empty()) {
+    auto* quality =
+        log_entries_.back()
+            ->quality_data<optimization_guide::WallpaperSearchFeatureTypeMap>();
+    if (quality) {
+      quality->set_user_feedback(user_feedback);
+    }
   }
 }
 

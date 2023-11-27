@@ -50,6 +50,13 @@ interface WallpaperSearchHandlerFactory {
                 pending_receiver<WallpaperSearchHandler> handler);
 };
 
+// TODO(b/311697865): Replace with a common UserFeedback enum.
+enum UserFeedback {
+  kUnspecified,
+  kThumbsUp,
+  kThumbsDown,
+};
+
 // Browser-side handler for requests from WebUI page.
 interface WallpaperSearchHandler {
   // Retrieves NTP descriptors.
@@ -78,6 +85,9 @@ interface WallpaperSearchHandler {
 
   // Triggers a call to |WallpaperSearchClient.SetHistory|.
   UpdateHistory();
+
+  // Tells the handler to set a UserFeedback option on the latest result.
+  SetUserFeedback(UserFeedback selected_option);
 };
 
 // WebUI-side handler for requests from the browser.

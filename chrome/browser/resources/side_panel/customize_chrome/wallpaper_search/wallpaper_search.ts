@@ -7,6 +7,7 @@ import './combobox/customize_chrome_combobox.js';
 import 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
 import 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
@@ -19,6 +20,7 @@ import {SpHeading} from 'chrome://customize-chrome-side-panel.top-chrome/shared/
 import {ThemeHueSliderDialogElement} from 'chrome://resources/cr_components/theme_color_picker/theme_hue_slider_dialog.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import {CrFeedbackButtonsElement, CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {hexColorToSkColor} from 'chrome://resources/js/color_utils.js';
@@ -28,7 +30,7 @@ import {Debouncer, DomRepeatEvent, PolymerElement, timeOut} from 'chrome://resou
 
 import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerInterface, Theme} from '../customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from '../customize_chrome_api_proxy.js';
-import {DescriptorA, DescriptorB, DescriptorDValue, Descriptors, WallpaperSearchClientCallbackRouter, WallpaperSearchHandlerInterface, WallpaperSearchResult, WallpaperSearchStatus} from '../wallpaper_search.mojom-webui.js';
+import {DescriptorA, DescriptorB, DescriptorDValue, Descriptors, UserFeedback, WallpaperSearchClientCallbackRouter, WallpaperSearchHandlerInterface, WallpaperSearchResult, WallpaperSearchStatus} from '../wallpaper_search.mojom-webui.js';
 import {WindowProxy} from '../window_proxy.js';
 
 import {CustomizeChromeCombobox} from './combobox/customize_chrome_combobox.js';
@@ -51,6 +53,7 @@ export interface WallpaperSearchElement {
     descriptorComboboxB: CustomizeChromeCombobox,
     descriptorComboboxC: CustomizeChromeCombobox,
     descriptorMenuD: CrActionMenuElement,
+    feedbackButtons: CrFeedbackButtonsElement,
     heading: SpHeading,
     historyCard: HTMLElement,
     hueSlider: ThemeHueSliderDialogElement,
@@ -101,6 +104,10 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
       },
       history_: Object,
       results_: Object,
+      selectedFeedbackOption_: {
+        type: Number,
+        value: CrFeedbackOption.UNSPECIFIED,
+      },
       selectedHue_: Number,
       status_: {
         type: WallpaperSearchStatus,
@@ -133,6 +140,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   private selectedDescriptorB_: string|null;
   private selectedDescriptorC_: string|null;
   private selectedDescriptorD_: DescriptorDValue|null;
+  private selectedFeedbackOption_: CrFeedbackOption;
   private selectedHue_: number|undefined;
   private status_: WallpaperSearchStatus;
   private submitBtnText_: string;
@@ -359,6 +367,22 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     };
   }
 
+  private onFeedbackSelectedOptionChanged_(
+      e: CustomEvent<{value: CrFeedbackOption}>) {
+    this.selectedFeedbackOption_ = e.detail.value;
+    switch (e.detail.value) {
+      case CrFeedbackOption.UNSPECIFIED:
+        this.wallpaperSearchHandler_.setUserFeedback(UserFeedback.kUnspecified);
+        return;
+      case CrFeedbackOption.THUMBS_UP:
+        this.wallpaperSearchHandler_.setUserFeedback(UserFeedback.kThumbsUp);
+        return;
+      case CrFeedbackOption.THUMBS_DOWN:
+        this.wallpaperSearchHandler_.setUserFeedback(UserFeedback.kThumbsDown);
+        return;
+    }
+  }
+
   private onHistoryImageClick_(e: DomRepeatEvent<WallpaperSearchResult>) {
     this.wallpaperSearchHandler_.setBackgroundToHistoryImage(e.model.item.id);
   }
@@ -396,6 +420,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     this.loading_ = false;
     this.results_ = results;
     this.status_ = status;
+    this.selectedFeedbackOption_ = CrFeedbackOption.UNSPECIFIED;
     this.emptyResultContainers_ = this.calculateEmptyTiles(results);
   }
 
@@ -407,6 +432,10 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   private async onResultClick_(e: DomRepeatEvent<WallpaperSearchResult>) {
     this.wallpaperSearchHandler_.setBackgroundToWallpaperSearchResult(
         e.model.item.id, WindowProxy.getInstance().now());
+  }
+
+  private shouldShowFeedbackButtons_() {
+    return !this.loading_ && this.results_.length > 0;
   }
 
   private shouldShowGrid_(): boolean {

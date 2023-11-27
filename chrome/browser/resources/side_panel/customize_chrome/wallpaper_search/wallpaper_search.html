@@ -404,7 +404,12 @@
       </template>
     </cr-grid>
     <div id="footer">
-      $i18n{experimentalFeatureDisclaimer}
+      <div id="disclaimer">$i18n{experimentalFeatureDisclaimer}</div>
+      <cr-feedback-buttons id="feedbackButtons"
+          hidden$="[[!shouldShowFeedbackButtons_(loading_, results_)]]"
+          selected-option="[[selectedFeedbackOption_]]"
+          on-selected-option-changed="onFeedbackSelectedOptionChanged_">
+      </cr-feedback-buttons>
     </div>
   </div>
 </div>

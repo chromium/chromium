@@ -7,10 +7,11 @@ import 'chrome://customize-chrome-side-panel.top-chrome/strings.m.js';
 
 import {CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
-import {Descriptors, WallpaperSearchClientCallbackRouter, WallpaperSearchClientRemote, WallpaperSearchHandlerInterface, WallpaperSearchHandlerRemote, WallpaperSearchStatus} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search.mojom-webui.js';
+import {Descriptors, UserFeedback, WallpaperSearchClientCallbackRouter, WallpaperSearchClientRemote, WallpaperSearchHandlerInterface, WallpaperSearchHandlerRemote, WallpaperSearchStatus} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search.mojom-webui.js';
 import {DESCRIPTOR_D_VALUE, WallpaperSearchElement} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/wallpaper_search.js';
 import {WallpaperSearchProxy} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/wallpaper_search_proxy.js';
 import {WindowProxy} from 'chrome://customize-chrome-side-panel.top-chrome/window_proxy.js';
+import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {hexColorToSkColor} from 'chrome://resources/js/color_utils.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertGE, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -826,6 +827,74 @@ suite('WallpaperSearchTest', () => {
           BigInt(10), handler.getArgs('setBackgroundToHistoryImage')[0].high);
       assertEquals(
           BigInt(1), handler.getArgs('setBackgroundToHistoryImage')[0].low);
+    });
+  });
+
+  suite('Feedback', () => {
+    function updateCrFeedbackButtons(option: CrFeedbackOption) {
+      wallpaperSearchElement.$.feedbackButtons.selectedOption = option;
+      wallpaperSearchElement.$.feedbackButtons.dispatchEvent(
+          new CustomEvent('selected-option-changed', {
+            bubbles: true,
+            composed: true,
+            detail: {value: option},
+          }));
+    }
+
+    test('shows feedback buttons and submits', async () => {
+      handler.setResultFor(
+          'getWallpaperSearchResults',
+          Promise.resolve({results: [{image: '123', id: {high: 10, low: 1}}]}));
+      createWallpaperSearchElementWithDescriptors();
+      await flushTasks();
+      assertFalse(isVisible(wallpaperSearchElement.$.feedbackButtons));
+
+      wallpaperSearchElement.$.submitButton.click();
+      await waitAfterNextRender(wallpaperSearchElement);
+      assertTrue(isVisible(wallpaperSearchElement.$.feedbackButtons));
+
+      // Mock interacting with the feedback buttons.
+      updateCrFeedbackButtons(CrFeedbackOption.THUMBS_DOWN);
+      let feedbackArgs = await handler.whenCalled('setUserFeedback');
+      assertEquals(UserFeedback.kThumbsDown, feedbackArgs);
+      handler.resetResolver('setUserFeedback');
+
+      updateCrFeedbackButtons(CrFeedbackOption.THUMBS_UP);
+      feedbackArgs = await handler.whenCalled('setUserFeedback');
+      assertEquals(UserFeedback.kThumbsUp, feedbackArgs);
+      handler.resetResolver('setUserFeedback');
+
+      updateCrFeedbackButtons(CrFeedbackOption.UNSPECIFIED);
+      feedbackArgs = await handler.whenCalled('setUserFeedback');
+      assertEquals(UserFeedback.kUnspecified, feedbackArgs);
+    });
+
+    test('resets on new results', async () => {
+      // First result.
+      handler.setResultFor(
+          'getWallpaperSearchResults',
+          Promise.resolve({results: [{image: '123', id: {high: 10, low: 1}}]}));
+      createWallpaperSearchElementWithDescriptors();
+      await flushTasks();
+      wallpaperSearchElement.$.submitButton.click();
+      await waitAfterNextRender(wallpaperSearchElement);
+
+      updateCrFeedbackButtons(CrFeedbackOption.THUMBS_UP);
+      await handler.whenCalled('setUserFeedback');
+      handler.resetResolver('setUserFeedback');
+
+      // New results.
+      handler.setResultFor(
+          'getWallpaperSearchResults',
+          Promise.resolve({results: [{image: '321', id: {high: 10, low: 1}}]}));
+      wallpaperSearchElement.$.submitButton.click();
+      await waitAfterNextRender(wallpaperSearchElement);
+
+      // Verify feedback option was reset, but this shouldn't call the back-end.
+      assertEquals(
+          CrFeedbackOption.UNSPECIFIED,
+          wallpaperSearchElement.$.feedbackButtons.selectedOption);
+      assertEquals(0, handler.getCallCount('setUserFeedback'));
     });
   });
 });
