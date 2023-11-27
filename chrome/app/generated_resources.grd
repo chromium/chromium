@@ -8469,6 +8469,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_SIDE_PANEL_HEADER_PIN_BUTTON_TOOLTIP" desc="The tooltip for pinning a side panel toolbar button.">
         Pin to toolbar
       </message>
+      <message name="IDS_SIDE_PANEL_UNPINNED" is_accessibility_with_no_ui="true" desc="Used to indicate to a screen reader user that a side panel has been unpinned.">
+        Side panel unpinned
+      </message>
+      <message name="IDS_SIDE_PANEL_PINNED" is_accessibility_with_no_ui="true" desc="Used to indicate to a screen reader user that a side panel has been pinned.">
+        Side panel pinned
+      </message>
       <message name="IDS_SIDE_PANEL_GENERIC_MENU_IPH" desc="The body text of the IPH describing how to find side panel entry points in the Chrome menu.">
         You can open most side panel features through the Chrome menu
       </message>

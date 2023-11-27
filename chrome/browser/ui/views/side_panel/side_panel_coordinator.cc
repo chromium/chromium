@@ -540,6 +540,9 @@ void SidePanelCoordinator::UpdatePinState() {
 
   SidePanelUtil::RecordPinnedButtonClicked(current_entry_->key().id(),
                                            updated_pin_state);
+  header_pin_button_->GetViewAccessibility().AnnounceText(
+      l10n_util::GetStringUTF16(updated_pin_state ? IDS_SIDE_PANEL_PINNED
+                                                  : IDS_SIDE_PANEL_UNPINNED));
 }
 
 absl::optional<SidePanelEntry::Id> SidePanelCoordinator::GetCurrentEntryId()
@@ -907,6 +910,12 @@ std::unique_ptr<views::View> SidePanelCoordinator::CreateHeader() {
       header->AddChildView(CreatePinToggleButton(base::BindRepeating(
           &SidePanelCoordinator::UpdatePinState, base::Unretained(this))));
   header_pin_button_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  // By default, the button's accessible description is set to the button's
+  // tooltip text. For the pin button, we only want the accessible name to be
+  // read on accessibility mode since it includes the tooltip text. Thus we
+  // override the accessible description.
+  header_pin_button_->GetViewAccessibility().OverrideDescription(
+      std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
   // The icon is later set as visible for side panels that support it.
   header_pin_button_->SetVisible(false);
 
