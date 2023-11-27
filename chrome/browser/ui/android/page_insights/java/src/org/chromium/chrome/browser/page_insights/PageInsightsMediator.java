@@ -82,6 +82,8 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
             "page_insights_can_autotrigger_after_end";
     static final String PAGE_INSIGHTS_CAN_AUTOTRIGGER_WHILE_IN_MOTION =
             "page_insights_can_autotrigger_while_in_motion";
+    static final String PAGE_INSIGHTS_CAN_RETURN_TO_PEEK_AFTER_EXPANSION =
+            "page_insights_can_return_to_peek_after_expansion";
 
     private final PageInsightsSheetContent mSheetContent;
     private final ManagedBottomSheetController mSheetController;
@@ -122,6 +124,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     private final ObservableSupplierImpl<Boolean> mWillHandleBackPressSupplier;
     private final boolean mIsAccessibilityEnabled;
     private final boolean mCanAutoTriggerWhileInMotion;
+    private final boolean mCanReturnToPeekAfterExpansion;
     @Nullable private final ObservableSupplier<Boolean> mInMotionSupplier;
 
     private PageInsightsDataLoader mPageInsightsDataLoader;
@@ -283,6 +286,11 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
                 ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                         ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
                         PAGE_INSIGHTS_CAN_AUTOTRIGGER_WHILE_IN_MOTION,
+                        false);
+        mCanReturnToPeekAfterExpansion =
+                ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
+                        PAGE_INSIGHTS_CAN_RETURN_TO_PEEK_AFTER_EXPANSION,
                         false);
         tabObservable.addObserver(
                 tab -> {
@@ -600,12 +608,25 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
             mWillHandleBackPressSupplier.set(false);
             setBottomControlsHeight(mSheetController.getCurrentOffset());
             setBackgroundColors(/* ratioOfCompletionFromPeekToExpanded= */ .0f);
+            // The user should always be able to swipe to dismiss from peek state.
+            mSheetContent.setSwipeToDismissEnabled(true);
             logPageInsightsEvent(PageInsightsEvent.STATE_PEEK);
             // We don't log peek state to XSurface here, as its BOTTOM_SHEET_PEEKING event is only
             // intended for when the feature initially auto-peeks.
         } else if (newState == SheetState.FULL) {
             mWillHandleBackPressSupplier.set(true);
             setBackgroundColors(/* ratioOfCompletionFromPeekToExpanded= */ 1.0f);
+            if (mOldState == SheetState.PEEK && mCanReturnToPeekAfterExpansion) {
+                // Disable swiping to dismiss, so that swiping/scrim-tapping returns to peek state
+                // instead.
+                mSheetContent.setSwipeToDismissEnabled(false);
+            } else if (mOldState != SheetState.FULL) {
+                // Enable swiping to dismiss, and also explicitly disable peek state. If peek state
+                // remains enabled then some lighter swipes can return to it, even with
+                // swipeToDismissEnabled true.
+                mSheetContent.setSwipeToDismissEnabled(true);
+                mSheetContent.setShouldHavePeekState(false);
+            }
             logPageInsightsEvent(PageInsightsEvent.STATE_EXPANDED);
             getSurfaceRenderer().onEvent(BOTTOM_SHEET_EXPANDED);
         } else {
