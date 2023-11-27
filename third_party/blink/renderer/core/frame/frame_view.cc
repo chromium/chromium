@@ -113,7 +113,8 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
         /* target_margin */ {},
         /* scroll_margin */ {}, geometry_flags, root_geometry);
 
-    PhysicalRect new_rect_in_parent = geometry.IntersectionRect();
+    PhysicalRect new_rect_in_parent =
+        PhysicalRect::FastAndLossyFromRectF(geometry.IntersectionRect());
 
     // Convert to DIP
     const auto& screen_info =
@@ -196,9 +197,7 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
     PhysicalRect mainframe_intersection_rect;
     if (!geometry.UnclippedIntersectionRect().IsEmpty()) {
       mainframe_intersection_rect = PhysicalRect::EnclosingRect(
-          matrix
-              .ProjectQuad(
-                  gfx::QuadF(gfx::RectF(geometry.UnclippedIntersectionRect())))
+          matrix.ProjectQuad(gfx::QuadF(geometry.UnclippedIntersectionRect()))
               .BoundingBox());
 
       if (mainframe_intersection_rect.IsEmpty()) {

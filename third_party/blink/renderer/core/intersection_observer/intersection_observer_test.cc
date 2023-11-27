@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 
 namespace blink {
 
@@ -630,7 +631,7 @@ TEST_P(IntersectionObserverTest, RootIntersectionWithForceZeroLayoutHeight) {
   test::RunPendingTasks();
   ASSERT_EQ(observer_delegate->CallCount(), 2);
   EXPECT_FALSE(observer_delegate->LastIntersectionRect().IsEmpty());
-  EXPECT_EQ(PhysicalRect(200, 400, 100, 100),
+  EXPECT_EQ(gfx::RectF(200, 400, 100, 100),
             observer_delegate->LastIntersectionRect());
 
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
@@ -931,9 +932,8 @@ TEST_P(IntersectionObserverTest, RootMarginDevicePixelRatio) {
   EXPECT_EQ(observer_delegate->CallCount(), 1);
   EXPECT_EQ(observer_delegate->EntryCount(), 1);
   EXPECT_FALSE(observer_delegate->LastEntry()->isIntersecting());
-  EXPECT_EQ(ToPixelSnappedRect(
-                observer_delegate->LastEntry()->GetGeometry().RootRect()),
-            gfx::Rect(0, 31, 800, 600 - 31));
+  EXPECT_RECTF_NEAR(observer_delegate->LastEntry()->GetGeometry().RootRect(),
+                    gfx::RectF(0, 31, 800, 600 - 31), 0.0001);
 }
 
 TEST_P(IntersectionObserverTest, CachedRectsWithScrollers) {

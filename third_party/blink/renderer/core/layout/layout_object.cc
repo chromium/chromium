@@ -2212,7 +2212,7 @@ PhysicalRect LayoutObject::LocalVisualRectIgnoringVisibility() const {
 
 bool LayoutObject::MapToVisualRectInAncestorSpaceInternalFastPath(
     const LayoutBoxModelObject* ancestor,
-    PhysicalRect& rect,
+    gfx::RectF& rect,
     VisualRectFlags visual_rect_flags,
     bool& intersects) const {
   NOT_DESTROYED();
@@ -2236,16 +2236,15 @@ bool LayoutObject::MapToVisualRectInAncestorSpaceInternalFastPath(
   // FirstFragment().PaintOffset() is relative to the transform space defined by
   // FirstFragment().LocalBorderBoxProperties() (if this == property_container)
   // or property_container->FirstFragment().ContentsProperties().
-  rect.Move(FirstFragment().PaintOffset());
+  rect.Offset(gfx::Vector2dF(FirstFragment().PaintOffset()));
   if (property_container != ancestor) {
-    FloatClipRect clip_rect((gfx::RectF(rect)));
+    FloatClipRect clip_rect(rect);
     intersects = GeometryMapper::LocalToAncestorVisualRect(
         container_properties, ancestor->FirstFragment().ContentsProperties(),
         clip_rect, kIgnoreOverlayScrollbarSize, visual_rect_flags);
-    rect = PhysicalRect::EnclosingRect(clip_rect.Rect());
+    rect = clip_rect.Rect();
   }
-  rect.offset -= ancestor->FirstFragment().PaintOffset();
-
+  rect.Offset(-gfx::Vector2dF(ancestor->FirstFragment().PaintOffset()));
   return true;
 }
 
@@ -2254,18 +2253,41 @@ bool LayoutObject::MapToVisualRectInAncestorSpace(
     PhysicalRect& rect,
     VisualRectFlags visual_rect_flags) const {
   NOT_DESTROYED();
+  gfx::RectF float_rect(rect);
+
   bool intersects = true;
   if (MapToVisualRectInAncestorSpaceInternalFastPath(
-          ancestor, rect, visual_rect_flags, intersects))
+          ancestor, float_rect, visual_rect_flags, intersects)) {
+    rect = PhysicalRect::EnclosingRect(float_rect);
     return intersects;
-
+  }
   TransformState transform_state(TransformState::kApplyTransformDirection,
-                                 gfx::QuadF(gfx::RectF(rect)));
+                                 gfx::QuadF(float_rect));
   intersects = MapToVisualRectInAncestorSpaceInternal(ancestor, transform_state,
                                                       visual_rect_flags);
   transform_state.Flatten();
   rect = PhysicalRect::EnclosingRect(
       transform_state.LastPlanarQuad().BoundingBox());
+  return intersects;
+}
+
+bool LayoutObject::MapToVisualRectInAncestorSpace(
+    const LayoutBoxModelObject* ancestor,
+    gfx::RectF& rect,
+    VisualRectFlags visual_rect_flags) const {
+  NOT_DESTROYED();
+  bool intersects = true;
+  if (MapToVisualRectInAncestorSpaceInternalFastPath(
+          ancestor, rect, visual_rect_flags, intersects)) {
+    return intersects;
+  }
+
+  TransformState transform_state(TransformState::kApplyTransformDirection,
+                                 gfx::QuadF(rect));
+  intersects = MapToVisualRectInAncestorSpaceInternal(ancestor, transform_state,
+                                                      visual_rect_flags);
+  transform_state.Flatten();
+  rect = transform_state.LastPlanarQuad().BoundingBox();
   return intersects;
 }
 

@@ -2651,6 +2651,11 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
       PhysicalRect&,
       VisualRectFlags = kDefaultVisualRectFlags) const;
 
+  bool MapToVisualRectInAncestorSpace(
+      const LayoutBoxModelObject* ancestor,
+      gfx::RectF&,
+      VisualRectFlags = kDefaultVisualRectFlags) const;
+
   // Do not call this method directly. Call mapToVisualRectInAncestorSpace
   // instead.
   virtual bool MapToVisualRectInAncestorSpaceInternal(
@@ -3597,7 +3602,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // The return value of this method is whether the fast path could be used.
   bool MapToVisualRectInAncestorSpaceInternalFastPath(
       const LayoutBoxModelObject* ancestor,
-      PhysicalRect&,
+      gfx::RectF&,
       VisualRectFlags,
       bool& intersects) const;
 

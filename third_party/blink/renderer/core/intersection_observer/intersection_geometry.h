@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
-#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -63,16 +62,16 @@ class CORE_EXPORT IntersectionGeometry {
 
     float zoom = 1.0f;
     // The root object's content rect in the root object's own coordinate system
-    PhysicalRect local_root_rect;
+    gfx::RectF local_root_rect;
     gfx::Transform root_to_document_transform;
   };
 
   struct CachedRects {
     // Target's bounding rect in the target's coordinate space
-    PhysicalRect local_target_rect;
+    gfx::RectF local_target_rect;
     // Target rect mapped up to the root's space, with intermediate clips
     // applied, but without applying the root's clip or scroll offset.
-    PhysicalRect unscrolled_unclipped_intersection_rect;
+    gfx::RectF unscrolled_unclipped_intersection_rect;
     // This is calculated basically based on the distance between the root rect
     // and the target rect, when it's applicable. On each scroll, we subtract
     // the absolute scroll delta from it, and only need to update intersection
@@ -118,21 +117,15 @@ class CORE_EXPORT IntersectionGeometry {
     return flags_ & kShouldTrackFractionOfRoot;
   }
 
-  PhysicalRect TargetRect() const { return target_rect_; }
-  PhysicalRect IntersectionRect() const { return intersection_rect_; }
+  gfx::RectF TargetRect() const { return target_rect_; }
+  gfx::RectF IntersectionRect() const { return intersection_rect_; }
 
   // The intersection rect without applying viewport clipping.
-  PhysicalRect UnclippedIntersectionRect() const {
+  gfx::RectF UnclippedIntersectionRect() const {
     return unclipped_intersection_rect_;
   }
 
-  PhysicalRect RootRect() const { return root_rect_; }
-
-  gfx::Rect IntersectionIntRect() const {
-    return ToPixelSnappedRect(intersection_rect_);
-  }
-  gfx::Rect TargetIntRect() const { return ToPixelSnappedRect(target_rect_); }
-  gfx::Rect RootIntRect() const { return ToPixelSnappedRect(root_rect_); }
+  gfx::RectF RootRect() const { return root_rect_; }
 
   double IntersectionRatio() const { return intersection_ratio_; }
   wtf_size_t ThresholdIndex() const { return threshold_index_; }
@@ -200,16 +193,16 @@ class CORE_EXPORT IntersectionGeometry {
   // Map intersection_rect from the coordinate system of the target to the
   // coordinate system of the root, applying intervening clips.
   bool ClipToRoot(const RootAndTarget& root_and_target,
-                  const PhysicalRect& root_rect,
-                  PhysicalRect& unclipped_intersection_rect,
-                  PhysicalRect& intersection_rect,
+                  const gfx::RectF& root_rect,
+                  gfx::RectF& unclipped_intersection_rect,
+                  gfx::RectF& intersection_rect,
                   const Vector<Length>& scroll_margin,
                   CachedRects* cached_rects);
   bool ApplyClip(const LayoutObject* target,
                  const LayoutObject* root,
-                 const PhysicalRect& root_rect,
-                 PhysicalRect& unclipped_intersection_rect,
-                 PhysicalRect& intersection_rect,
+                 const gfx::RectF& root_rect,
+                 gfx::RectF& unclipped_intersection_rect,
+                 gfx::RectF& intersection_rect,
                  const Vector<Length>& scroll_margin,
                  bool ignore_local_clip_path,
                  CachedRects* cached_rects);
@@ -224,10 +217,10 @@ class CORE_EXPORT IntersectionGeometry {
       const Vector<float>& thresholds,
       const Vector<Length>& scroll_margin) const;
 
-  PhysicalRect target_rect_;
-  PhysicalRect intersection_rect_;
-  PhysicalRect unclipped_intersection_rect_;
-  PhysicalRect root_rect_;
+  gfx::RectF target_rect_;
+  gfx::RectF intersection_rect_;
+  gfx::RectF unclipped_intersection_rect_;
+  gfx::RectF root_rect_;
   unsigned flags_;
   double intersection_ratio_ = 0;
   wtf_size_t threshold_index_ = 0;

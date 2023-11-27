@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "ui/gfx/geometry/size_conversions.h"
 
 namespace blink {
 
@@ -234,9 +235,10 @@ void MediaCustomControlsFullscreenDetector::OnIntersectionChanged(
   }
 
   const IntersectionGeometry& geometry = entries.back()->GetGeometry();
-  gfx::Size target_size = ToRoundedSize(geometry.TargetRect().size);
-  gfx::Size intersection_size = ToRoundedSize(geometry.IntersectionRect().size);
-  gfx::Size root_size = ToRoundedSize(geometry.RootRect().size);
+  gfx::Size target_size = gfx::ToRoundedSize(geometry.TargetRect().size());
+  gfx::Size intersection_size =
+      gfx::ToRoundedSize(geometry.IntersectionRect().size());
+  gfx::Size root_size = gfx::ToRoundedSize(geometry.RootRect().size());
 
   UpdateDominantAndFullscreenStatus(
       false, IsFullscreenVideoOfDifferentRatio(target_size, root_size,
