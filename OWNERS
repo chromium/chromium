@@ -7,6 +7,7 @@ file://ATL_OWNERS
 
 per-file .clang-format=thakis@chromium.org
 per-file .clang-tidy=file://styleguide/c++/OWNERS
+per-file .clangd=file://styleguide/c++/OWNERS
 per-file .eslintrc.js=file://tools/web_dev_style/OWNERS
 per-file .gitattributes=*
 per-file .gitignore=*
