@@ -50,7 +50,7 @@ inline bool MayHaveMultipleFragmentItems(const FragmentItem& item,
 }  // namespace
 
 PhysicalBoxSides NGInlineBoxFragmentPainter::SidesToInclude() const {
-  return PhysicalFragment().SidesToInclude();
+  return BoxFragment().SidesToInclude();
 }
 
 void NGInlineBoxFragmentPainter::Paint(const PaintInfo& paint_info,
@@ -79,7 +79,7 @@ void NGInlineBoxFragmentPainter::Paint(const PaintInfo& paint_info,
                                                      inline_context_);
   DCHECK(inline_box_cursor_);
   NGBoxFragmentPainter box_painter(*inline_box_cursor_, inline_box_item_,
-                                   PhysicalFragment(), inline_context_);
+                                   BoxFragment(), inline_context_);
   box_painter.PaintObject(paint_info, adjusted_paint_offset,
                           suppress_box_decoration_background);
 }
@@ -108,7 +108,7 @@ void NGInlineBoxFragmentPainter::PaintMask(const PaintInfo& paint_info,
 
   DCHECK(inline_box_cursor_);
   NGBoxFragmentPainter box_painter(*inline_box_cursor_, inline_box_item_,
-                                   PhysicalFragment(), inline_context_);
+                                   BoxFragment(), inline_context_);
 
   BackgroundImageGeometry geometry(
       static_cast<const LayoutBoxModelObject&>(layout_object));
@@ -220,7 +220,7 @@ void NGLineBoxFragmentPainter::PaintBackgroundBorderShadow(
   // the height of inline box does not. The box "behaves similar to that of an
   // inline-level element".
   // https://drafts.csswg.org/css-pseudo-4/#first-line-styling
-  const PhysicalLineBoxFragment& line_box = PhysicalFragment();
+  const PhysicalLineBoxFragment& line_box = LineBoxFragment();
   const FontHeight line_metrics = line_box.Metrics();
   const FontHeight text_metrics = line_style_.GetFontHeight();
   const WritingMode writing_mode = line_style_.GetWritingMode();

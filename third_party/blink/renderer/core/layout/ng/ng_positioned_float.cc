@@ -17,7 +17,8 @@ const BlockBreakToken* PositionedFloat::BreakToken() const {
   if (break_before_token) {
     return break_before_token.Get();
   }
-  return To<BlockBreakToken>(layout_result->PhysicalFragment().GetBreakToken());
+  return To<BlockBreakToken>(
+      layout_result->GetPhysicalFragment().GetBreakToken());
 }
 
 }  // namespace blink

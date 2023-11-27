@@ -198,7 +198,7 @@ class NGInlineBoxFragmentPainter : public NGInlineBoxFragmentPainterBase {
  private:
   void PaintMask(const PaintInfo&, const PhysicalOffset& paint_offset);
 
-  const NGPhysicalBoxFragment& PhysicalFragment() const {
+  const NGPhysicalBoxFragment& BoxFragment() const {
     return static_cast<const NGPhysicalBoxFragment&>(inline_box_fragment_);
   }
 
@@ -261,7 +261,7 @@ class NGLineBoxFragmentPainter : public NGInlineBoxFragmentPainterBase {
     DCHECK(layout_block_flow.IsLayoutNGObject());
   }
 
-  const PhysicalLineBoxFragment& PhysicalFragment() const {
+  const PhysicalLineBoxFragment& LineBoxFragment() const {
     return static_cast<const PhysicalLineBoxFragment&>(inline_box_fragment_);
   }
 

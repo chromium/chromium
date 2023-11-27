@@ -255,7 +255,7 @@ void FieldsetLayoutAlgorithm::LayoutLegend(BlockNode& legend) {
   // Legends are monolithic, so abortions are not expected.
   DCHECK_EQ(result->Status(), LayoutResult::kSuccess);
 
-  const auto& physical_fragment = result->PhysicalFragment();
+  const auto& physical_fragment = result->GetPhysicalFragment();
 
   LayoutUnit legend_border_box_block_size =
       LogicalFragment(writing_direction_, physical_fragment).BlockSize();
@@ -288,7 +288,7 @@ void FieldsetLayoutAlgorithm::LayoutLegend(BlockNode& legend) {
 
   LayoutUnit legend_inline_start = ComputeLegendInlineOffset(
       legend.Style(),
-      LogicalFragment(writing_direction_, result->PhysicalFragment())
+      LogicalFragment(writing_direction_, result->GetPhysicalFragment())
           .InlineSize(),
       legend_margins, Style(), BorderScrollbarPadding().inline_start,
       ChildAvailableSize().inline_size);
@@ -379,7 +379,7 @@ BreakStatus FieldsetLayoutAlgorithm::LayoutFieldsetContent(
     }
 
     if (result) {
-      const auto& fragment = result->PhysicalFragment();
+      const auto& fragment = result->GetPhysicalFragment();
       LayoutUnit total_block_size =
           LogicalFragment(writing_direction_, fragment).BlockSize();
       if (content_break_token)
@@ -414,7 +414,7 @@ BreakStatus FieldsetLayoutAlgorithm::LayoutFieldsetContent(
     container_builder_.AddResult(*result, offset);
 
     const auto& fragment =
-        To<NGPhysicalBoxFragment>(result->PhysicalFragment());
+        To<NGPhysicalBoxFragment>(result->GetPhysicalFragment());
     if (auto first_baseline = fragment.FirstBaseline()) {
       container_builder_.SetFirstBaseline(offset.block_offset +
                                           *first_baseline);

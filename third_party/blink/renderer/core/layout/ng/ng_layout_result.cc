@@ -41,7 +41,7 @@ ASSERT_SIZE(LayoutResult, SameSizeAsLayoutResult);
 const LayoutResult* LayoutResult::Clone(const LayoutResult& other) {
   return MakeGarbageCollected<LayoutResult>(
       other, NGPhysicalBoxFragment::Clone(
-                 To<NGPhysicalBoxFragment>(other.PhysicalFragment())));
+                 To<NGPhysicalBoxFragment>(other.GetPhysicalFragment())));
 }
 
 // static
@@ -49,7 +49,7 @@ const LayoutResult* LayoutResult::CloneWithPostLayoutFragments(
     const LayoutResult& other) {
   return MakeGarbageCollected<LayoutResult>(
       other, NGPhysicalBoxFragment::CloneWithPostLayoutFragments(
-                 To<NGPhysicalBoxFragment>(other.PhysicalFragment())));
+                 To<NGPhysicalBoxFragment>(other.GetPhysicalFragment())));
 }
 
 LayoutResult::LayoutResult(BoxFragmentBuilderPassKey passkey,
@@ -362,7 +362,7 @@ void LayoutResult::CheckSameForSimplifiedLayout(
 #if DCHECK_IS_ON()
 void LayoutResult::AssertSoleBoxFragment() const {
   DCHECK(physical_fragment_->IsBox());
-  DCHECK(To<NGPhysicalBoxFragment>(PhysicalFragment()).IsFirstForNode());
+  DCHECK(To<NGPhysicalBoxFragment>(GetPhysicalFragment()).IsFirstForNode());
   DCHECK(!physical_fragment_->GetBreakToken());
 }
 #endif

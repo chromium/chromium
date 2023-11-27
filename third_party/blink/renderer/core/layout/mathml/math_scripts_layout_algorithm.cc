@@ -275,7 +275,8 @@ MathScriptsLayoutAlgorithm::LayoutAndGetMetrics(BlockNode child) const {
       child.Layout(constraint_space, nullptr /*break_token*/);
   LogicalBoxFragment fragment(
       GetConstraintSpace().GetWritingDirection(),
-      To<NGPhysicalBoxFragment>(child_and_metrics.result->PhysicalFragment()));
+      To<NGPhysicalBoxFragment>(
+          child_and_metrics.result->GetPhysicalFragment()));
   child_and_metrics.inline_size = fragment.InlineSize();
   child_and_metrics.margins =
       ComputeMarginsFor(constraint_space, child.Style(), GetConstraintSpace());

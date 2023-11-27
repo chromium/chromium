@@ -1654,7 +1654,7 @@ TEST_F(LayoutResultCachingTest, HitFlexDefiniteChange) {
   const LayoutResult* result1 = target1->GetSingleCachedLayoutResult();
   const LayoutResult* measure1 = target1->GetCachedMeasureResult();
   EXPECT_EQ(measure1->IntrinsicBlockSize(), 100);
-  EXPECT_EQ(result1->PhysicalFragment().Size().height, 200);
+  EXPECT_EQ(result1->GetPhysicalFragment().Size().height, 200);
 
   EXPECT_EQ(result1->GetConstraintSpaceForCaching().CacheSlot(),
             LayoutResultCacheSlot::kMeasure);
@@ -2005,7 +2005,7 @@ TEST_F(LayoutResultCachingTest, FragmentainerSizeChange) {
   const ConstraintSpace& test_space1 =
       test_result1->GetConstraintSpaceForCaching();
   const auto* test_break_token1 =
-      To<BlockBreakToken>(test_result1->PhysicalFragment().GetBreakToken());
+      To<BlockBreakToken>(test_result1->GetPhysicalFragment().GetBreakToken());
   ASSERT_TRUE(test_break_token1);
   const LayoutResult* test_result2 =
       test->GetCachedLayoutResult(test_break_token1);
@@ -2013,21 +2013,21 @@ TEST_F(LayoutResultCachingTest, FragmentainerSizeChange) {
   const ConstraintSpace& test_space2 =
       test_result2->GetConstraintSpaceForCaching();
   const auto* test_break_token2 =
-      To<BlockBreakToken>(test_result2->PhysicalFragment().GetBreakToken());
+      To<BlockBreakToken>(test_result2->GetPhysicalFragment().GetBreakToken());
   ASSERT_TRUE(test_break_token2);
   const LayoutResult* test_result3 =
       test->GetCachedLayoutResult(test_break_token2);
   ASSERT_TRUE(test_result3);
   const ConstraintSpace& test_space3 =
       test_result3->GetConstraintSpaceForCaching();
-  EXPECT_FALSE(test_result3->PhysicalFragment().GetBreakToken());
+  EXPECT_FALSE(test_result3->GetPhysicalFragment().GetBreakToken());
 
   const LayoutResult* src_result1 = src->GetCachedLayoutResult(nullptr);
   ASSERT_TRUE(src_result1);
   const ConstraintSpace& src_space1 =
       src_result1->GetConstraintSpaceForCaching();
   const auto* src_break_token1 =
-      To<BlockBreakToken>(src_result1->PhysicalFragment().GetBreakToken());
+      To<BlockBreakToken>(src_result1->GetPhysicalFragment().GetBreakToken());
   ASSERT_TRUE(src_break_token1);
   const LayoutResult* src_result2 =
       src->GetCachedLayoutResult(src_break_token1);
@@ -2035,14 +2035,14 @@ TEST_F(LayoutResultCachingTest, FragmentainerSizeChange) {
   const ConstraintSpace& src_space2 =
       src_result2->GetConstraintSpaceForCaching();
   const auto* src_break_token2 =
-      To<BlockBreakToken>(src_result2->PhysicalFragment().GetBreakToken());
+      To<BlockBreakToken>(src_result2->GetPhysicalFragment().GetBreakToken());
   ASSERT_TRUE(src_break_token2);
   const LayoutResult* src_result3 =
       src->GetCachedLayoutResult(src_break_token2);
   ASSERT_TRUE(src_result3);
   const ConstraintSpace& src_space3 =
       src_result3->GetConstraintSpaceForCaching();
-  EXPECT_FALSE(src_result3->PhysicalFragment().GetBreakToken());
+  EXPECT_FALSE(src_result3->GetPhysicalFragment().GetBreakToken());
 
   // If the extrinsic constraints are unchanged, hit the cache, even if
   // fragmented:

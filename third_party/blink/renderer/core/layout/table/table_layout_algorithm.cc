@@ -103,7 +103,7 @@ TableLayoutAlgorithm::CaptionResult LayoutCaption(
   DCHECK_EQ(layout_result->Status(), LayoutResult::kSuccess);
 
   LogicalFragment fragment(table_constraint_space.GetWritingDirection(),
-                           layout_result->PhysicalFragment());
+                           layout_result->GetPhysicalFragment());
   ResolveInlineAutoMargins(caption.Style(), table_style, table_inline_size,
                            fragment.InlineSize(), &margins);
 
@@ -160,8 +160,9 @@ void ComputeCaptionFragments(
     TableLayoutAlgorithm::CaptionResult caption_result =
         LayoutCaption(table_constraint_space, table_style, table_inline_size,
                       caption_constraint_space, caption, margins);
-    LogicalFragment fragment(table_constraint_space.GetWritingDirection(),
-                             caption_result.layout_result->PhysicalFragment());
+    LogicalFragment fragment(
+        table_constraint_space.GetWritingDirection(),
+        caption_result.layout_result->GetPhysicalFragment());
     captions_block_size +=
         fragment.BlockSize() + caption_result.margins.BlockSum();
     if (captions)
@@ -961,10 +962,11 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
         LogicalOffset(caption.margins.inline_start, *block_offset),
         caption.margins);
 
-    *block_offset += LogicalFragment(table_writing_direction,
-                                     caption.layout_result->PhysicalFragment())
-                         .BlockSize() +
-                     caption.margins.block_end;
+    *block_offset +=
+        LogicalFragment(table_writing_direction,
+                        caption.layout_result->GetPhysicalFragment())
+            .BlockSize() +
+        caption.margins.block_end;
   };
 
   // We have already laid out the captions, in order to calculate the table grid
@@ -1333,7 +1335,7 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
       child_inline_offset = section_inline_offset;
 
       border_spacing_after_last_section = border_spacing.block_size;
-      if (To<NGPhysicalBoxFragment>(child_result->PhysicalFragment())
+      if (To<NGPhysicalBoxFragment>(child_result->GetPhysicalFragment())
               .HasDescendantsForTablePart()) {
         // We want to add border-spacing after this section, but not if the
         // current fragment is past the block-end of the section. This might
@@ -1371,7 +1373,7 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
     }
 
     const auto& physical_fragment =
-        To<NGPhysicalBoxFragment>(child_result->PhysicalFragment());
+        To<NGPhysicalBoxFragment>(child_result->GetPhysicalFragment());
     LogicalBoxFragment fragment(table_writing_direction, physical_fragment);
     if (child.IsTableSection()) {
       if (!is_repeated_section) {

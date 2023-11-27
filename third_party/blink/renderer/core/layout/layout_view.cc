@@ -993,7 +993,7 @@ bool LayoutView::AffectedByResizedInitialContainingBlock(
     return false;
   }
   const LayoutObject* layout_object =
-      layout_result.PhysicalFragment().GetLayoutObject();
+      layout_result.GetPhysicalFragment().GetLayoutObject();
   DCHECK(layout_object);
   auto add_result =
       initial_containing_block_resize_handled_list_->insert(layout_object);

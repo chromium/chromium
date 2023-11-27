@@ -1221,7 +1221,7 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
 
     LogicalBoxFragment baseline_fragment(
         grid_item->BaselineWritingDirection(track_direction),
-        To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
+        To<NGPhysicalBoxFragment>(result->GetPhysicalFragment()));
 
     if (grid_item->IsBaselineAligned(track_direction)) {
       CalculateBaselineShim(
@@ -1633,7 +1633,7 @@ void GridLayoutAlgorithm::ComputeGridItemBaselines(
         grid_item.BaselineWritingDirection(track_direction);
     const LogicalBoxFragment baseline_fragment(
         baseline_writing_direction,
-        To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
+        To<NGPhysicalBoxFragment>(result->GetPhysicalFragment()));
 
     const bool has_synthesized_baseline =
         !baseline_fragment.FirstBaseline().has_value();
@@ -3569,7 +3569,7 @@ void GridLayoutAlgorithm::PlaceGridItems(
 
     auto* result = grid_item.node.Layout(space);
     const auto& physical_fragment =
-        To<NGPhysicalBoxFragment>(result->PhysicalFragment());
+        To<NGPhysicalBoxFragment>(result->GetPhysicalFragment());
     LogicalBoxFragment fragment(container_writing_direction, physical_fragment);
 
     auto BaselineOffset = [&](GridTrackSizingDirection track_direction,
@@ -3886,7 +3886,7 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
 
       const LogicalBoxFragment fragment(
           container_writing_direction,
-          To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
+          To<NGPhysicalBoxFragment>(result->GetPhysicalFragment()));
       baseline_accumulator.Accumulate(grid_item, fragment,
                                       fragment_relative_block_offset);
 
@@ -3966,7 +3966,7 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
         }
 
         LayoutUnit item_expansion;
-        if (result->PhysicalFragment().GetBreakToken()) {
+        if (result->GetPhysicalFragment().GetBreakToken()) {
           // This item may have a break, and will want to expand into the next
           // fragmentainer, (causing the row to expand into the next
           // fragmentainer). We can't use the size of the fragment, as we don't

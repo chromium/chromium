@@ -94,7 +94,7 @@ void FragmentItems::FinalizeAfterLayout(
 
   for (const auto& result : results) {
     const auto& fragment =
-        To<NGPhysicalBoxFragment>(result->PhysicalFragment());
+        To<NGPhysicalBoxFragment>(result->GetPhysicalFragment());
     const FragmentItems* fragment_items = fragment.Items();
     if (UNLIKELY(!fragment_items)) {
       may_be_non_contiguous_ifc = true;

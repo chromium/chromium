@@ -194,7 +194,8 @@ LayoutUnit ComputeMarginBoxInlineSizeForUnpositionedFloat(
   LayoutFloatWithoutFragmentation(unpositioned_float);
   DCHECK(unpositioned_float->layout_result);
 
-  const auto& fragment = unpositioned_float->layout_result->PhysicalFragment();
+  const auto& fragment =
+      unpositioned_float->layout_result->GetPhysicalFragment();
   DCHECK(!fragment.GetBreakToken());
 
   const ConstraintSpace& parent_space = unpositioned_float->parent_space;
@@ -229,7 +230,7 @@ PositionedFloat PositionFloat(UnpositionedFloat* unpositioned_float,
     fragment_margins = unpositioned_float->margins;
 
     LogicalFragment float_fragment(parent_space.GetWritingDirection(),
-                                   layout_result->PhysicalFragment());
+                                   layout_result->GetPhysicalFragment());
 
     // Find a layout opportunity that will fit our float.
     opportunity = FindLayoutOpportunityForFloat(
@@ -251,7 +252,7 @@ PositionedFloat PositionFloat(UnpositionedFloat* unpositioned_float,
       // We have already laid out the float to find its inline-size.
       LogicalFragment float_fragment(
           parent_space.GetWritingDirection(),
-          unpositioned_float->layout_result->PhysicalFragment());
+          unpositioned_float->layout_result->GetPhysicalFragment());
       // We can find a layout opportunity and set the fragmentainer offset right
       // away.
       opportunity = FindLayoutOpportunityForFloat(
@@ -286,7 +287,7 @@ PositionedFloat PositionFloat(UnpositionedFloat* unpositioned_float,
         break;
 
       LogicalFragment float_fragment(parent_space.GetWritingDirection(),
-                                     layout_result->PhysicalFragment());
+                                     layout_result->GetPhysicalFragment());
 
       // Find a layout opportunity that will fit our float, and see if our
       // initial estimate was correct.
@@ -335,7 +336,7 @@ PositionedFloat PositionFloat(UnpositionedFloat* unpositioned_float,
           opportunity.rect.start_offset.block_offset +
           fragment_margins.block_start;
       const auto* break_token = To<BlockBreakToken>(
-          layout_result->PhysicalFragment().GetBreakToken());
+          layout_result->GetPhysicalFragment().GetBreakToken());
       bool is_at_block_end = !break_token || break_token->IsAtBlockEnd();
       if (!is_at_block_end) {
         // We need to resume in the next fragmentainer (or even push the whole
@@ -350,7 +351,7 @@ PositionedFloat PositionFloat(UnpositionedFloat* unpositioned_float,
       } else if (is_at_block_end &&
                  parent_space.HasKnownFragmentainerBlockSize()) {
         LogicalFragment float_fragment(parent_space.GetWritingDirection(),
-                                       layout_result->PhysicalFragment());
+                                       layout_result->GetPhysicalFragment());
         LayoutUnit outer_block_end = fragmentainer_block_offset +
                                      float_fragment.BlockSize() +
                                      fragment_margins.block_end;
@@ -366,7 +367,7 @@ PositionedFloat PositionFloat(UnpositionedFloat* unpositioned_float,
   }
 
   const auto& physical_fragment =
-      To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment());
+      To<NGPhysicalBoxFragment>(layout_result->GetPhysicalFragment());
   LogicalFragment float_fragment(parent_space.GetWritingDirection(),
                                  physical_fragment);
 

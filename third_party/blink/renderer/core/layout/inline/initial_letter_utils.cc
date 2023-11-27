@@ -255,8 +255,8 @@ const ExclusionArea* PostPlaceInitialLetterBox(
       line_box->begin(), line_box->end(),
       [](const auto& line_item) { return line_item.IsInitialLetterBox(); });
 
-  const auto& initial_letter_box_fragment =
-      *To<NGPhysicalBoxFragment>(initial_letter_line_item->PhysicalFragment());
+  const auto& initial_letter_box_fragment = *To<NGPhysicalBoxFragment>(
+      initial_letter_line_item->GetPhysicalFragment());
 
   DCHECK(initial_letter_box_fragment.IsInitialLetterBox());
   DCHECK(!initial_letter_box_fragment.Style().InitialLetter().IsNormal());

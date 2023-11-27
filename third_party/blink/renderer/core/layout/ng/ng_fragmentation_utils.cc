@@ -118,7 +118,8 @@ EBreakBetween CalculateBreakBetweenValue(LayoutInputNode child,
   // box fragment.
   const NGPhysicalBoxFragment* box_fragment = nullptr;
   if (layout_result.Status() == LayoutResult::kSuccess) {
-    box_fragment = &To<NGPhysicalBoxFragment>(layout_result.PhysicalFragment());
+    box_fragment =
+        &To<NGPhysicalBoxFragment>(layout_result.GetPhysicalFragment());
     if (!box_fragment->IsFirstForNode()) {
       // If the node is resumed after a break, we are not *before* it anymore,
       // so ignore values. We normally don't even consider breaking before a
@@ -159,8 +160,9 @@ bool IsBreakableAtStartOfResumedContainer(
   }
   bool is_first_for_node = true;
   if (const auto* box_fragment = DynamicTo<NGPhysicalBoxFragment>(
-          child_layout_result.PhysicalFragment()))
+          child_layout_result.GetPhysicalFragment())) {
     is_first_for_node = box_fragment->IsFirstForNode();
+  }
   return IsBreakableAtStartOfResumedContainer(space, builder,
                                               is_first_for_node);
 }
@@ -231,7 +233,7 @@ BreakAppeal CalculateBreakAppealInside(
     absl::optional<BreakAppeal> hypothetical_appeal) {
   if (layout_result.HasForcedBreak())
     return kBreakAppealPerfect;
-  const auto& physical_fragment = layout_result.PhysicalFragment();
+  const auto& physical_fragment = layout_result.GetPhysicalFragment();
   const auto* break_token =
       DynamicTo<BlockBreakToken>(physical_fragment.GetBreakToken());
   BreakAppeal appeal;
@@ -871,7 +873,7 @@ void BreakBeforeChild(const ConstraintSpace& space,
   if (layout_result && layout_result->Status() == LayoutResult::kSuccess) {
     // In order to successfully break before a node, this has to be its first
     // fragment.
-    const auto& physical_fragment = layout_result->PhysicalFragment();
+    const auto& physical_fragment = layout_result->GetPhysicalFragment();
     DCHECK(!physical_fragment.IsBox() ||
            To<NGPhysicalBoxFragment>(physical_fragment).IsFirstForNode());
   }
@@ -935,7 +937,7 @@ LayoutUnit CalculateSpaceShortage(
       return kIndefiniteSize;
     }
     LogicalFragment fragment(space.GetWritingDirection(),
-                             layout_result->PhysicalFragment());
+                             layout_result->GetPhysicalFragment());
     space_shortage = fragmentainer_block_offset + fragment.BlockSize() -
                      space.FragmentainerBlockSize();
   } else {
@@ -979,7 +981,7 @@ bool MovePastBreakpoint(const ConstraintSpace& space,
 
   if (child.IsBlock()) {
     const auto& box_fragment =
-        To<NGPhysicalBoxFragment>(layout_result.PhysicalFragment());
+        To<NGPhysicalBoxFragment>(layout_result.GetPhysicalFragment());
 
     // If we're at a resumed fragment, don't break before it. Once we've found
     // room for the first fragment, we cannot skip fragmentainers afterwards. We
@@ -1003,7 +1005,7 @@ bool MovePastBreakpoint(const ConstraintSpace& space,
 
   if (!space.HasKnownFragmentainerBlockSize() &&
       space.IsInitialColumnBalancingPass() && builder) {
-    if (layout_result.PhysicalFragment().IsMonolithic() ||
+    if (layout_result.GetPhysicalFragment().IsMonolithic() ||
         (child.IsBlock() &&
          IsAvoidBreakValue(space, child.Style().BreakInside()))) {
       // If this is the initial column balancing pass, attempt to make the
@@ -1051,7 +1053,7 @@ bool MovePastBreakpoint(const ConstraintSpace& space,
     return true;
   }
 
-  const auto& physical_fragment = layout_result.PhysicalFragment();
+  const auto& physical_fragment = layout_result.GetPhysicalFragment();
   LogicalFragment fragment(space.GetWritingDirection(), physical_fragment);
   const auto* break_token =
       DynamicTo<BlockBreakToken>(physical_fragment.GetBreakToken());
@@ -1151,7 +1153,7 @@ void UpdateEarlyBreakAtBlockChild(const ConstraintSpace& space,
   // help honor any break avoidance requests that come after this child. But
   // breaking *before* the child might help.
   const auto* break_token =
-      To<BlockBreakToken>(layout_result.PhysicalFragment().GetBreakToken());
+      To<BlockBreakToken>(layout_result.GetPhysicalFragment().GetBreakToken());
   // See if there's a good breakpoint inside the child.
   BreakAppeal appeal_inside = kBreakAppealLastResort;
   if (const auto* breakpoint = layout_result.GetEarlyBreak()) {
@@ -1482,7 +1484,7 @@ LayoutUnit BlockSizeForFragmentation(
     // other kind of monolithic content.
     WritingMode writing_mode = container_writing_direction.GetWritingMode();
     LogicalSize logical_size =
-        result.PhysicalFragment().Size().ConvertToLogical(writing_mode);
+        result.GetPhysicalFragment().Size().ConvertToLogical(writing_mode);
     block_size = logical_size.block_size;
   }
 

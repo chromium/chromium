@@ -104,7 +104,7 @@ const LayoutResult* LayoutBox::CachedLayoutResult(
   LayoutCacheStatus cache_status = LayoutCacheStatus::kHit;
 
   const NGPhysicalBoxFragment& physical_fragment =
-      To<NGPhysicalBoxFragment>(cached_layout_result->PhysicalFragment());
+      To<NGPhysicalBoxFragment>(cached_layout_result->GetPhysicalFragment());
 
   // No fun allowed for repeated content.
   if ((physical_fragment.GetBreakToken() &&
@@ -562,7 +562,7 @@ const LayoutResult* LayoutBox::CachedLayoutResult(
 const NGPhysicalBoxFragment* LayoutBox::GetPhysicalFragment(
     wtf_size_t i) const {
   NOT_DESTROYED();
-  return &To<NGPhysicalBoxFragment>(layout_results_[i]->PhysicalFragment());
+  return &To<NGPhysicalBoxFragment>(layout_results_[i]->GetPhysicalFragment());
 }
 
 }  // namespace blink

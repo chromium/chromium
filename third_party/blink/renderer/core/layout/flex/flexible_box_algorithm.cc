@@ -181,7 +181,7 @@ LayoutUnit FlexItem::MarginBoxAscent(bool is_last_baseline,
   DCHECK(layout_result_);
   LogicalBoxFragment baseline_fragment(
       baseline_writing_direction_,
-      To<NGPhysicalBoxFragment>(layout_result_->PhysicalFragment()));
+      To<NGPhysicalBoxFragment>(layout_result_->GetPhysicalFragment()));
 
   const auto font_baseline = algorithm_->StyleRef().GetFontBaseline();
   LayoutUnit baseline =

@@ -1335,8 +1335,8 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
         DCHECK_EQ(flex_item.layout_result_->Status(), LayoutResult::kSuccess);
         flex_item.cross_axis_size_ =
             is_horizontal_flow_
-                ? flex_item.layout_result_->PhysicalFragment().Size().height
-                : flex_item.layout_result_->PhysicalFragment().Size().width;
+                ? flex_item.layout_result_->GetPhysicalFragment().Size().height
+                : flex_item.layout_result_->GetPhysicalFragment().Size().width;
       }
     }
     // cross_axis_offset is updated in each iteration of the loop, for passing
@@ -1519,7 +1519,7 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
       }
 
       const auto& physical_fragment =
-          To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment());
+          To<NGPhysicalBoxFragment>(layout_result->GetPhysicalFragment());
 
       const auto writing_direction = GetConstraintSpace().GetWritingDirection();
       LogicalBoxFragment fragment(writing_direction, physical_fragment);
@@ -1910,7 +1910,7 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     }
 
     const auto& physical_fragment =
-        To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment());
+        To<NGPhysicalBoxFragment>(layout_result->GetPhysicalFragment());
 
     LogicalBoxFragment fragment(GetConstraintSpace().GetWritingDirection(),
                                 physical_fragment);

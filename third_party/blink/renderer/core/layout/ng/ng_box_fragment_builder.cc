@@ -28,7 +28,7 @@ const LayoutResult& BoxFragmentBuilder::LayoutResultForPropagation(
   if (layout_result.Status() != LayoutResult::kSuccess) {
     return layout_result;
   }
-  const auto& fragment = layout_result.PhysicalFragment();
+  const auto& fragment = layout_result.GetPhysicalFragment();
   if (fragment.IsBox()) {
     return layout_result;
   }
@@ -106,7 +106,7 @@ void BoxFragmentBuilder::AddResult(
     absl::optional<const BoxStrut> margins,
     absl::optional<LogicalOffset> relative_offset,
     const OofInlineContainer<LogicalOffset>* inline_container) {
-  const auto& fragment = child_layout_result.PhysicalFragment();
+  const auto& fragment = child_layout_result.GetPhysicalFragment();
 
   // We'll normally propagate info from child_layout_result here, but if that's
   // a line box with a block inside, we'll use the result for that block
@@ -367,8 +367,7 @@ void BoxFragmentBuilder::PropagateBreakInfo(
       is_block_size_for_fragmentation_clamped_ = true;
   }
 
-  const NGPhysicalFragment& child_fragment =
-      child_layout_result.PhysicalFragment();
+  const auto& child_fragment = child_layout_result.GetPhysicalFragment();
   const auto* child_box_fragment =
       DynamicTo<NGPhysicalBoxFragment>(child_fragment);
   const BlockBreakToken* token =
@@ -449,7 +448,7 @@ void BoxFragmentBuilder::PropagateBreakInfo(
     if (const auto* child_spanner_path =
             child_layout_result.GetColumnSpannerPath()) {
       DCHECK(HasInflowChildBreakInside() ||
-             !child_layout_result.PhysicalFragment().IsBox());
+             !child_layout_result.GetPhysicalFragment().IsBox());
       const auto* spanner_path =
           MakeGarbageCollected<ColumnSpannerPath>(Node(), child_spanner_path);
       SetColumnSpannerPath(spanner_path);
@@ -472,7 +471,7 @@ void BoxFragmentBuilder::PropagateChildBreakValues(
     return;
   }
 
-  const auto& fragment = child_layout_result.PhysicalFragment();
+  const auto& fragment = child_layout_result.GetPhysicalFragment();
   if (fragment.IsInline() || !fragment.IsCSSBox() ||
       fragment.IsFloatingOrOutOfFlowPositioned())
     return;

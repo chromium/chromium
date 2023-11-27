@@ -300,7 +300,7 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
   bool UpdateHitTestResultForView(const PhysicalRect& bounds_rect,
                                   const HitTestContext& hit_test) const;
 
-  const NGPhysicalBoxFragment& PhysicalFragment() const {
+  const NGPhysicalBoxFragment& GetPhysicalFragment() const {
     return box_fragment_;
   }
   const DisplayItemClient& GetDisplayItemClient() const {

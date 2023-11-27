@@ -32,7 +32,7 @@ SimplifiedLayoutAlgorithm::SimplifiedLayoutAlgorithm(
 
   const bool is_block_flow = Node().IsBlockFlow();
   const NGPhysicalBoxFragment& physical_fragment =
-      To<NGPhysicalBoxFragment>(result.PhysicalFragment());
+      To<NGPhysicalBoxFragment>(result.GetPhysicalFragment());
 
   container_builder_.SetIsNewFormattingContext(
       physical_fragment.IsFormattingContextRoot());
@@ -206,7 +206,7 @@ SimplifiedLayoutAlgorithm::SimplifiedLayoutAlgorithm(
 
 void SimplifiedLayoutAlgorithm::CloneOldChildren() {
   const auto& previous_fragment =
-      To<NGPhysicalBoxFragment>(previous_result_.PhysicalFragment());
+      To<NGPhysicalBoxFragment>(previous_result_.GetPhysicalFragment());
   for (const auto& child_link : previous_fragment.Children()) {
     const auto& child_fragment = *child_link.get();
     AddChildFragment(child_link, child_fragment);
@@ -222,7 +222,7 @@ void SimplifiedLayoutAlgorithm::AppendNewChildFragment(
 const LayoutResult*
 SimplifiedLayoutAlgorithm::CreateResultAfterManualChildLayout() {
   const LayoutResult* result = container_builder_.ToBoxFragment();
-  if (result->PhysicalFragment().IsOutOfFlowPositioned()) {
+  if (result->GetPhysicalFragment().IsOutOfFlowPositioned()) {
     result->CopyMutableOutOfFlowData(previous_result_);
   }
   return result;
@@ -235,7 +235,7 @@ const LayoutResult* SimplifiedLayoutAlgorithm::Layout() {
     return container_builder_.ToBoxFragment();
 
   const auto& previous_fragment =
-      To<NGPhysicalBoxFragment>(previous_result_.PhysicalFragment());
+      To<NGPhysicalBoxFragment>(previous_result_.GetPhysicalFragment());
 
   for (const auto& child_link : previous_fragment.Children()) {
     const auto& child_fragment = *child_link.get();
@@ -263,11 +263,11 @@ const LayoutResult* SimplifiedLayoutAlgorithm::Layout() {
 
     const MarginStrut end_margin_strut = result->EndMarginStrut();
     // No margins should pierce outside formatting-context roots.
-    DCHECK(!result->PhysicalFragment().IsFormattingContextRoot() ||
+    DCHECK(!result->GetPhysicalFragment().IsFormattingContextRoot() ||
            end_margin_strut.IsEmpty());
 
-    AddChildFragment(child_link, result->PhysicalFragment(), &end_margin_strut,
-                     result->IsSelfCollapsing());
+    AddChildFragment(child_link, result->GetPhysicalFragment(),
+                     &end_margin_strut, result->IsSelfCollapsing());
   }
 
   // Iterate through all our OOF-positioned children and add them as candidates.

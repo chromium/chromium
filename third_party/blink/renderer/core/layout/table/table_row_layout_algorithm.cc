@@ -181,7 +181,7 @@ const LayoutResult* TableRowLayoutAlgorithm::Layout() {
 
       bool has_rowspan = cell_data.rowspan_block_size != kIndefiniteSize;
       const auto& physical_fragment =
-          To<NGPhysicalBoxFragment>(cell_result->PhysicalFragment());
+          To<NGPhysicalBoxFragment>(cell_result->GetPhysicalFragment());
       const LogicalBoxFragment fragment(table_data.table_writing_direction,
                                         physical_fragment);
       row_baseline_tabulator.ProcessCell(

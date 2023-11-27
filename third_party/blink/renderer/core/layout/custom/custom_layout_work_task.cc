@@ -141,7 +141,7 @@ void CustomLayoutWorkTask::RunLayoutFragmentTask(
 
   LogicalBoxFragment fragment(
       parent_space.GetWritingDirection(),
-      To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
+      To<NGPhysicalBoxFragment>(result->GetPhysicalFragment()));
 
   resolver_->Resolve(MakeGarbageCollected<CustomLayoutFragment>(
       child_, token_, std::move(result), fragment.Size(),

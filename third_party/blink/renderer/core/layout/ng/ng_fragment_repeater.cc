@@ -135,7 +135,7 @@ void FragmentRepeater::CloneChildFragments(
           GetClonableLayoutResult(*child_layout_box, *child_box_fragment);
       child_result = Repeat(*child_result);
       child_box_fragment =
-          &To<NGPhysicalBoxFragment>(child_result->PhysicalFragment());
+          &To<NGPhysicalBoxFragment>(child_result->GetPhysicalFragment());
       cloned_item.GetMutableForCloning().ReplaceBoxFragment(
           *child_box_fragment);
     }
@@ -151,7 +151,7 @@ void FragmentRepeater::CloneChildFragments(
         const LayoutResult* child_result =
             GetClonableLayoutResult(*child_layout_box, *child_box);
         child_result = Repeat(*child_result);
-        child.fragment = &child_result->PhysicalFragment();
+        child.fragment = &child_result->GetPhysicalFragment();
       } else if (child_box->IsFragmentainerBox()) {
         child_box = NGPhysicalBoxFragment::Clone(*child_box);
         CloneChildFragments(*child_box);
@@ -167,7 +167,7 @@ void FragmentRepeater::CloneChildFragments(
 const LayoutResult* FragmentRepeater::Repeat(const LayoutResult& other) {
   const LayoutResult* cloned_result = LayoutResult::Clone(other);
   const auto& cloned_fragment =
-      To<NGPhysicalBoxFragment>(cloned_result->PhysicalFragment());
+      To<NGPhysicalBoxFragment>(cloned_result->GetPhysicalFragment());
   auto& layout_box = *To<LayoutBox>(cloned_fragment.GetMutableLayoutObject());
 
   if (is_first_clone_ && cloned_fragment.IsFirstForNode()) {
@@ -210,7 +210,8 @@ const LayoutResult* FragmentRepeater::GetClonableLayoutResult(
   // established inside the repeated root.
   for (const LayoutResult* result : layout_box.GetLayoutResults()) {
     const BlockBreakToken* break_token =
-        To<NGPhysicalBoxFragment>(result->PhysicalFragment()).GetBreakToken();
+        To<NGPhysicalBoxFragment>(result->GetPhysicalFragment())
+            .GetBreakToken();
     if (!break_token || break_token->IsRepeated())
       return result;
   }

@@ -874,13 +874,12 @@ const LayoutResult* InlineLayoutStateStack::BoxData::CreateBoxFragment(
 
     // Propagate any OOF-positioned descendants from any atomic-inlines, etc.
     if (child.layout_result) {
+      const ComputedStyle& child_style = child.GetPhysicalFragment()->Style();
       box.PropagateFromLayoutResultAndFragment(
           *child.layout_result,
           child.rect.offset - rect.offset -
-              ComputeRelativeOffsetForInline(space,
-                                             child.PhysicalFragment()->Style()),
-          ComputeRelativeOffsetForOOFInInline(
-              space, child.PhysicalFragment()->Style()));
+              ComputeRelativeOffsetForInline(space, child_style),
+          ComputeRelativeOffsetForOOFInInline(space, child_style));
     }
 
     // |FragmentItems| has a flat list of all descendants, except

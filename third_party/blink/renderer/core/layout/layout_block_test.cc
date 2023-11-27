@@ -122,7 +122,7 @@ TEST_F(LayoutBlockTest, ContainmentStyleChange) {
       GetDocument().getElementById(AtomicString("target"));
   auto* target = To<LayoutBlockFlow>(target_element->GetLayoutObject());
   EXPECT_TRUE(target->GetSingleCachedLayoutResult()
-                  ->PhysicalFragment()
+                  ->GetPhysicalFragment()
                   .HasOutOfFlowFragmentChild());
 
   // Remove layout containment. This should cause |contained| to now be
@@ -131,11 +131,11 @@ TEST_F(LayoutBlockTest, ContainmentStyleChange) {
                                AtomicString("contain:style"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(target->GetSingleCachedLayoutResult()
-                   ->PhysicalFragment()
+                   ->GetPhysicalFragment()
                    .HasOutOfFlowFragmentChild());
   const LayoutView* view = GetDocument().GetLayoutView();
   EXPECT_TRUE(view->GetSingleCachedLayoutResult()
-                  ->PhysicalFragment()
+                  ->GetPhysicalFragment()
                   .HasOutOfFlowFragmentChild());
 }
 

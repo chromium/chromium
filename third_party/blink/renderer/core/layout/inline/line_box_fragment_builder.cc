@@ -51,13 +51,13 @@ void LineBoxFragmentBuilder::PropagateChildrenData(LogicalLineItems& children) {
       // An accumulated relative offset is applied to an OOF once it reaches its
       // inline container. Subtract out the relative offset to avoid adding it
       // twice.
+      const ComputedStyle& child_style = child.GetPhysicalFragment()->Style();
       PropagateFromLayoutResultAndFragment(
           *child.layout_result,
           child.Offset() -
-              ComputeRelativeOffsetForInline(GetConstraintSpace(),
-                                             child.PhysicalFragment()->Style()),
-          ComputeRelativeOffsetForOOFInInline(
-              GetConstraintSpace(), child.PhysicalFragment()->Style()));
+              ComputeRelativeOffsetForInline(GetConstraintSpace(), child_style),
+          ComputeRelativeOffsetForOOFInInline(GetConstraintSpace(),
+                                              child_style));
 
       // Skip over any children, the information should have already been
       // propagated into this layout result.

@@ -84,8 +84,8 @@ void ReplacedLayoutAlgorithm::LayoutMediaChildren() {
 
     const LayoutResult* result =
         To<BlockNode>(child).Layout(space_builder.ToConstraintSpace());
-    LogicalOffset offset =
-        converter.ToLogical(new_rect.offset, result->PhysicalFragment().Size());
+    LogicalOffset offset = converter.ToLogical(
+        new_rect.offset, result->GetPhysicalFragment().Size());
     container_builder_.AddResult(*result, offset);
   }
 }

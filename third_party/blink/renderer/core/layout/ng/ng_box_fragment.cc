@@ -22,12 +22,12 @@ FontHeight LogicalBoxFragment::BaselineMetrics(
   absl::optional<LayoutUnit> baseline;
   switch (physical_fragment_.Style().BaselineSource()) {
     case EBaselineSource::kAuto:
-      baseline = PhysicalBoxFragment().UseLastBaselineForInlineBaseline()
+      baseline = GetPhysicalBoxFragment().UseLastBaselineForInlineBaseline()
                      ? LastBaseline()
                      : FirstBaseline();
 
       // Some blocks force the baseline to be the block-end margin edge.
-      if (PhysicalBoxFragment().UseBlockEndMarginEdgeForInlineBaseline()) {
+      if (GetPhysicalBoxFragment().UseBlockEndMarginEdgeForInlineBaseline()) {
         baseline = BlockSize() + (writing_direction_.IsFlippedLines()
                                       ? margins.line_over
                                       : margins.line_under);
@@ -68,7 +68,7 @@ FontHeight LogicalBoxFragment::BaselineMetrics(
 LayoutUnit LogicalBoxFragment::BlockEndScrollableOverflow() const {
   WritingModeConverter converter(writing_direction_, physical_fragment_.Size());
   LogicalRect overflow =
-      converter.ToLogical(PhysicalBoxFragment().ScrollableOverflow());
+      converter.ToLogical(GetPhysicalBoxFragment().ScrollableOverflow());
   return overflow.BlockEndOffset();
 }
 

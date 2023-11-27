@@ -100,7 +100,7 @@ bool BlockSizeMayChange(const BlockNode& node,
       return true;
     // We only need to check if the PercentageResolutionBlockSizes match if the
     // layout result has explicitly marked itself as dependent.
-    if (layout_result.PhysicalFragment().DependsOnPercentageBlockSize()) {
+    if (layout_result.GetPhysicalFragment().DependsOnPercentageBlockSize()) {
       if (new_space.PercentageResolutionBlockSize() !=
           old_space.PercentageResolutionBlockSize())
         return true;
@@ -183,8 +183,8 @@ LayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
     const ConstraintSpace& new_space,
     const ConstraintSpace& old_space) {
   const ComputedStyle& style = node.Style();
-  const NGPhysicalBoxFragment& physical_fragment =
-      To<NGPhysicalBoxFragment>(layout_result.PhysicalFragment());
+  const auto& physical_fragment =
+      To<NGPhysicalBoxFragment>(layout_result.GetPhysicalFragment());
   LogicalBoxFragment fragment(style.GetWritingDirection(), physical_fragment);
 
   if (fragment_geometry.border_box_size.inline_size != fragment.InlineSize())
@@ -452,7 +452,7 @@ bool IntrinsicSizeWillChange(
 
   LayoutUnit inline_size =
       LogicalFragment(style.GetWritingDirection(),
-                      cached_layout_result.PhysicalFragment())
+                      cached_layout_result.GetPhysicalFragment())
           .InlineSize();
 
   if ((*fragment_geometry)->border_box_size.inline_size != inline_size)
@@ -568,7 +568,7 @@ bool MaySkipLayoutWithinBlockFormattingContext(
     return false;
 
   const auto& physical_fragment =
-      To<NGPhysicalBoxFragment>(cached_layout_result.PhysicalFragment());
+      To<NGPhysicalBoxFragment>(cached_layout_result.GetPhysicalFragment());
 
   // Check we have a descendant that *may* be positioned above the block-start
   // edge. We abort if either the old or new space has floats, as we don't keep

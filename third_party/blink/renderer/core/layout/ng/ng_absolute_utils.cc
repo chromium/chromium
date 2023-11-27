@@ -545,7 +545,7 @@ const LayoutResult* ComputeOofBlockDimensions(
     }
 
     return LogicalFragment(style.GetWritingDirection(),
-                           result->PhysicalFragment())
+                           result->GetPhysicalFragment())
         .BlockSize();
   };
 

@@ -193,7 +193,7 @@ void FragmentBuilder::PropagateFromLayoutResultAndFragment(
     LogicalOffset relative_offset,
     const OofInlineContainer<LogicalOffset>* inline_container) {
   PropagateFromLayoutResult(child_result);
-  PropagateFromFragment(child_result.PhysicalFragment(), child_offset,
+  PropagateFromFragment(child_result.GetPhysicalFragment(), child_offset,
                         relative_offset, inline_container);
 }
 

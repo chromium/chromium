@@ -100,7 +100,7 @@ const NGPhysicalBoxFragment* PageLayoutAlgorithm::LayoutPage(
       {Node(), fragment_geometry, child_space, break_token});
   child_algorithm.SetBoxType(NGPhysicalFragment::kPageBox);
   const LayoutResult* result = child_algorithm.Layout();
-  return &To<NGPhysicalBoxFragment>(result->PhysicalFragment());
+  return &To<NGPhysicalBoxFragment>(result->GetPhysicalFragment());
 }
 
 ConstraintSpace PageLayoutAlgorithm::CreateConstraintSpaceForPages(

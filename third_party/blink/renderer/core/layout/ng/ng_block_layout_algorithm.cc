@@ -1231,7 +1231,7 @@ bool BlockLayoutAlgorithm::TryReuseFragmentsFromCache(
   }
 
   const auto& previous_fragment =
-      To<NGPhysicalBoxFragment>(previous_result_->PhysicalFragment());
+      To<NGPhysicalBoxFragment>(previous_result_->GetPhysicalFragment());
   const FragmentItems* previous_items = previous_fragment.Items();
   DCHECK(previous_items);
 
@@ -1431,7 +1431,7 @@ void BlockLayoutAlgorithm::HandleFloat(
   // another float, and also between a float and an in-flow block.
 
   const NGPhysicalFragment& physical_fragment =
-      positioned_float.layout_result->PhysicalFragment();
+      positioned_float.layout_result->GetPhysicalFragment();
   LayoutUnit float_inline_size =
       LogicalFragment(constraint_space.GetWritingDirection(), physical_fragment)
           .InlineSize();
@@ -1637,7 +1637,7 @@ LayoutResult::EStatus BlockLayoutAlgorithm::HandleNewFormattingContext(
     DCHECK_EQ(layout_result->Status(), LayoutResult::kSuccess);
   }
 
-  const auto& physical_fragment = layout_result->PhysicalFragment();
+  const auto& physical_fragment = layout_result->GetPhysicalFragment();
   LogicalFragment fragment(constraint_space.GetWritingDirection(),
                            physical_fragment);
 
@@ -1787,7 +1787,7 @@ const LayoutResult* BlockLayoutAlgorithm::LayoutNewFormattingContext(
 
     // Check if we can fit in the opportunity block direction.
     LogicalFragment fragment(writing_direction,
-                             layout_result->PhysicalFragment());
+                             layout_result->GetPhysicalFragment());
     if (fragment.BlockSize() > opportunity.rect.BlockSize())
       continue;
 
@@ -1802,7 +1802,7 @@ const LayoutResult* BlockLayoutAlgorithm::LayoutNewFormattingContext(
       // Because the marker is laid out as a normal block child, its inline
       // size is extended to fill up the space. Compute the regular marker size
       // from the first child.
-      const auto& marker_fragment = layout_result->PhysicalFragment();
+      const auto& marker_fragment = layout_result->GetPhysicalFragment();
       LayoutUnit marker_inline_size;
       if (!marker_fragment.Children().empty()) {
         marker_inline_size =
@@ -2085,9 +2085,11 @@ LayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
 
       // We may need to relayout this child if it had any (adjoining) objects
       // which were positioned in the incorrect place.
-      if (layout_result->PhysicalFragment().HasAdjoiningObjectDescendants() &&
-          *child_bfc_block_offset != child_space.ExpectedBfcBlockOffset())
+      if (layout_result->GetPhysicalFragment()
+              .HasAdjoiningObjectDescendants() &&
+          *child_bfc_block_offset != child_space.ExpectedBfcBlockOffset()) {
         self_collapsing_child_needs_relayout = true;
+      }
     }
   } else if (!child_had_clearance && !is_self_collapsing) {
     // Only non self-collapsing children are allowed resolve their parent's BFC
@@ -2259,7 +2261,7 @@ LayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
       container_builder_.SetIsPushedByFloats();
   }
 
-  const auto& physical_fragment = layout_result->PhysicalFragment();
+  const auto& physical_fragment = layout_result->GetPhysicalFragment();
   LogicalFragment fragment(GetConstraintSpace().GetWritingDirection(),
                            physical_fragment);
 
@@ -2489,7 +2491,7 @@ PreviousInflowPosition BlockLayoutAlgorithm::ComputeInflowPosition(
     // doesn't really make much of a difference, this isn't the case in the
     // initial column balancing pass.
     if (const auto* physical_fragment = DynamicTo<NGPhysicalBoxFragment>(
-            &layout_result.PhysicalFragment())) {
+            &layout_result.GetPhysicalFragment())) {
       if (const BlockBreakToken* token = physical_fragment->GetBreakToken()) {
         // TODO(mstensho): Don't apply the margin to all overflowing fragments
         // (if any). It should only be applied after the fragment where we
@@ -3030,7 +3032,7 @@ void BlockLayoutAlgorithm::PropagateBaselineFromLineBox(
         container_builder_.ItemsBuilder()->GetLogicalLineItems(line_box);
     const LayoutResult* result = items.BlockInInlineLayoutResult();
     DCHECK(result);
-    PropagateBaselineFromBlockChild(result->PhysicalFragment(),
+    PropagateBaselineFromBlockChild(result->GetPhysicalFragment(),
                                     /* margins */ BoxStrut(), block_offset);
     return;
   }
@@ -3207,7 +3209,7 @@ bool BlockLayoutAlgorithm::PositionOrPropagateListMarker(
   container_builder_.ClearUnpositionedListMarker();
 
   const ConstraintSpace& space = GetConstraintSpace();
-  const NGPhysicalFragment& content = layout_result.PhysicalFragment();
+  const auto& content = layout_result.GetPhysicalFragment();
   FontBaseline baseline_type = Style().GetFontBaseline();
   if (auto content_baseline =
           list_marker.ContentAlignmentBaseline(space, baseline_type, content)) {
@@ -3306,8 +3308,8 @@ void BlockLayoutAlgorithm::HandleRubyText(BlockNode ruby_text_child) {
   const LayoutResult* result =
       ruby_text_child.Layout(builder.ToConstraintSpace(), break_token);
 
-  const NGPhysicalBoxFragment& ruby_text_fragment =
-      To<NGPhysicalBoxFragment>(result->PhysicalFragment());
+  const auto& ruby_text_fragment =
+      To<NGPhysicalBoxFragment>(result->GetPhysicalFragment());
   const LogicalRect ruby_text_box = ruby_text_fragment.ConvertChildToLogical(
       ruby_text_fragment.ComputeRubyEmHeightBox());
 
@@ -3418,7 +3420,7 @@ LayoutUnit BlockLayoutAlgorithm::HandleTextControlPlaceholder(
   }
   LogicalBoxFragment fragment(
       GetConstraintSpace().GetWritingDirection(),
-      To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
+      To<NGPhysicalBoxFragment>(result->GetPhysicalFragment()));
   // We should apply FirstBaseline() of the placeholder fragment because the
   // placeholder might have the 'overflow' property, and its LastBaseline()
   // might be the block-end margin.
@@ -3460,7 +3462,7 @@ LayoutUnit BlockLayoutAlgorithm::FinishTextControlPlaceholder(
   }
   LogicalBoxFragment fragment(
       GetConstraintSpace().GetWritingDirection(),
-      To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
+      To<NGPhysicalBoxFragment>(result->GetPhysicalFragment()));
   return std::max(block_offset, offset.block_offset + fragment.BlockSize());
 }
 

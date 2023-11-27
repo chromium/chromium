@@ -69,7 +69,7 @@ void MathRowLayoutAlgorithm::LayoutRowItems(ChildrenVector* children,
         [&](const LayoutResult* result) {
           LogicalBoxFragment fragment(
               constraint_space.GetWritingDirection(),
-              To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
+              To<NGPhysicalBoxFragment>(result->GetPhysicalFragment()));
           LayoutUnit ascent = fragment.FirstBaselineOrSynthesize(baseline_type);
           stretch_sizes.ascent = std::max(stretch_sizes.ascent, ascent),
           stretch_sizes.descent =
@@ -154,7 +154,7 @@ void MathRowLayoutAlgorithm::LayoutRowItems(ChildrenVector* children,
     if (should_add_space)
       DetermineOperatorSpacing(To<BlockNode>(child), &lspace, &rspace);
     const auto& physical_fragment =
-        To<NGPhysicalBoxFragment>(child_layout_result->PhysicalFragment());
+        To<NGPhysicalBoxFragment>(child_layout_result->GetPhysicalFragment());
     LogicalBoxFragment fragment(constraint_space.GetWritingDirection(),
                                 physical_fragment);
 

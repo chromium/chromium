@@ -86,8 +86,9 @@ TEST_F(OutOfFlowLayoutPartTest, FixedInsideAbs) {
   auto* block_flow = To<LayoutBlockFlow>(rel->GetLayoutObject());
   const LayoutResult* result = block_flow->GetSingleCachedLayoutResult();
   EXPECT_TRUE(result);
-  EXPECT_EQ(result->PhysicalFragment().OutOfFlowPositionedDescendants().size(),
-            2u);
+  EXPECT_EQ(
+      result->GetPhysicalFragment().OutOfFlowPositionedDescendants().size(),
+      2u);
 
   // Test the final result.
   Element* fixed_1 = GetDocument().getElementById(AtomicString("fixed1"));

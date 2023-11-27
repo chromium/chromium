@@ -151,7 +151,7 @@ void LayoutSVGForeignObject::UpdateLayout() {
   // Any propagated sticky-descendants may have invalid sticky-constraints.
   // Clear them now.
   if (const auto* sticky_descendants =
-          result->PhysicalFragment().PropagatedStickyDescendants()) {
+          result->GetPhysicalFragment().PropagatedStickyDescendants()) {
     for (const auto& sticky_descendant : *sticky_descendants) {
       sticky_descendant->SetStickyConstraints(nullptr);
     }

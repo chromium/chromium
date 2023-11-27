@@ -67,7 +67,7 @@ const LayoutResult* MathPaddedLayoutAlgorithm::Layout() {
         Node(), ChildAvailableSize(), GetConstraintSpace(), content);
     content_layout_result = content.Layout(constraint_space);
     const auto& content_fragment =
-        To<NGPhysicalBoxFragment>(content_layout_result->PhysicalFragment());
+        To<NGPhysicalBoxFragment>(content_layout_result->GetPhysicalFragment());
     content_margins = ComputeMarginsFor(constraint_space, content.Style(),
                                         GetConstraintSpace());
     LogicalBoxFragment fragment(GetConstraintSpace().GetWritingDirection(),

@@ -234,7 +234,7 @@ TableTypes::Row ComputeMinimumRowBlockSize(
 
     const LogicalBoxFragment fragment(
         table_writing_direction,
-        To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment()));
+        To<NGPhysicalBoxFragment>(layout_result->GetPhysicalFragment()));
     const Length& cell_specified_block_length =
         IsParallelWritingMode(table_writing_direction.GetWritingMode(),
                               cell_style.GetWritingMode())

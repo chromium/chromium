@@ -359,7 +359,7 @@ const LayoutResult* BlockNode::Layout(
     // after performing subtree layout.
     layout_result = LayoutResult::CloneWithPostLayoutFragments(*layout_result);
     const auto& new_fragment =
-        To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment());
+        To<NGPhysicalBoxFragment>(layout_result->GetPhysicalFragment());
     // If we have fragment items, and we're not done (more fragments to follow),
     // be sure to miss the cache for any subsequent fragments, lest finalization
     // be missed (which could cause trouble for InlineCursor when walking the
@@ -376,7 +376,7 @@ const LayoutResult* BlockNode::Layout(
     // We may have to update the margins on box_; we reuse the layout result
     // even if a percentage margin may have changed.
     UpdateMarginPaddingInfoIfNeeded(constraint_space,
-                                    layout_result->PhysicalFragment());
+                                    layout_result->GetPhysicalFragment());
 
     UpdateShapeOutsideInfoIfNeeded(*layout_result, constraint_space);
 
@@ -471,7 +471,7 @@ const LayoutResult* BlockNode::Layout(
 
   absl::optional<PhysicalSize> optional_old_box_size;
   if (layout_result->Status() == LayoutResult::kSuccess &&
-      !layout_result->PhysicalFragment().GetBreakToken()) {
+      !layout_result->GetPhysicalFragment().GetBreakToken()) {
     optional_old_box_size = box_->Size();
   }
 
@@ -578,8 +578,9 @@ const LayoutResult* BlockNode::SimplifiedLayout(
 
   // We might be be trying to perform simplfied layout on a fragment in the
   // "measure" cache slot, abort if this is the case.
-  if (&previous_result->PhysicalFragment() != &previous_fragment)
+  if (&previous_result->GetPhysicalFragment() != &previous_fragment) {
     return nullptr;
+  }
 
   if (!box_->NeedsLayout())
     return previous_result;
@@ -598,9 +599,9 @@ const LayoutResult* BlockNode::SimplifiedLayout(
   }
 
   const auto& old_fragment =
-      To<NGPhysicalBoxFragment>(previous_result->PhysicalFragment());
+      To<NGPhysicalBoxFragment>(previous_result->GetPhysicalFragment());
   const auto& new_fragment =
-      To<NGPhysicalBoxFragment>(result->PhysicalFragment());
+      To<NGPhysicalBoxFragment>(result->GetPhysicalFragment());
 
   // Simplified layout has the ability to add/remove scrollbars, this can cause
   // a couple (rare) edge-cases which will make the fragment different enough
@@ -644,7 +645,7 @@ const LayoutResult* BlockNode::LayoutRepeatableRoot(
     // We're generating the first fragment for repeated content. Perform regular
     // layout.
     result = Layout(constraint_space, break_token);
-    DCHECK(!result->PhysicalFragment().GetBreakToken());
+    DCHECK(!result->GetPhysicalFragment().GetBreakToken());
   } else {
     // We're repeating. Create a shallow clone of the first result. Once we're
     // at the last fragment, we'll actually create a deep clone.
@@ -652,7 +653,8 @@ const LayoutResult* BlockNode::LayoutRepeatableRoot(
   }
 
   wtf_size_t index = FragmentIndex(break_token);
-  const auto& fragment = To<NGPhysicalBoxFragment>(result->PhysicalFragment());
+  const auto& fragment =
+      To<NGPhysicalBoxFragment>(result->GetPhysicalFragment());
   // We need to create a special "repeat" break token, which will be the
   // incoming break token when generating the next fragment. This is needed in
   // order to get the sequence numbers right, which is important when adding the
@@ -790,7 +792,7 @@ void BlockNode::FinishLayout(
   }
 
   const auto& physical_fragment =
-      To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment());
+      To<NGPhysicalBoxFragment>(layout_result->GetPhysicalFragment());
 
   if (auto* replaced = DynamicTo<LayoutReplaced>(*box_)) {
     // NG replaced elements are painted with legacy painters. We need to force
@@ -853,7 +855,7 @@ void BlockNode::FinishLayout(
     DCHECK(!physical_fragment.HasItems());
   }
 
-  if (!layout_result->PhysicalFragment().GetBreakToken()) {
+  if (!layout_result->GetPhysicalFragment().GetBreakToken()) {
     DCHECK(old_box_size);
     if (box_->Size() != *old_box_size) {
       box_->SizeChanged();
@@ -865,7 +867,8 @@ void BlockNode::FinishLayout(
 void BlockNode::StoreResultInLayoutBox(const LayoutResult* result,
                                        const BlockBreakToken* break_token,
                                        bool clear_trailing_results) const {
-  const auto& fragment = To<NGPhysicalBoxFragment>(result->PhysicalFragment());
+  const auto& fragment =
+      To<NGPhysicalBoxFragment>(result->GetPhysicalFragment());
   wtf_size_t fragment_idx = 0;
 
   if (fragment.IsOnlyForNode()) {
@@ -936,7 +939,7 @@ MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
     const LayoutResult* layout_result = Layout(constraint_space);
     DCHECK_EQ(layout_result->Status(), LayoutResult::kSuccess);
     sizes = LogicalFragment({container_writing_mode, TextDirection::kLtr},
-                            layout_result->PhysicalFragment())
+                            layout_result->GetPhysicalFragment())
                 .InlineSize();
     const bool depends_on_block_constraints =
         Style().LogicalWidth().IsAuto() ||
@@ -1146,7 +1149,7 @@ void BlockNode::CopyFragmentDataToLayoutBox(
     const LayoutResult& layout_result,
     const BlockBreakToken* previous_break_token) const {
   const auto& physical_fragment =
-      To<NGPhysicalBoxFragment>(layout_result.PhysicalFragment());
+      To<NGPhysicalBoxFragment>(layout_result.GetPhysicalFragment());
   bool is_last_fragment = !physical_fragment.GetBreakToken();
 
   // TODO(mstensho): This should always be done by the parent algorithm, since
@@ -1574,7 +1577,7 @@ const LayoutResult* BlockNode::RunSimplifiedLayout(
     const LayoutResult& previous_result) const {
   SimplifiedLayoutAlgorithm algorithm(params, previous_result);
   if (const auto* previous_box_fragment = DynamicTo<NGPhysicalBoxFragment>(
-          &previous_result.PhysicalFragment())) {
+          &previous_result.GetPhysicalFragment())) {
     if (previous_box_fragment->HasItems())
       return algorithm.LayoutWithItemsBuilder();
   }
@@ -1626,7 +1629,7 @@ void BlockNode::UpdateShapeOutsideInfoIfNeeded(
 
   // The box_ may not have a valid size yet (due to an intermediate layout),
   // use the fragment's size instead.
-  PhysicalSize box_size = layout_result.PhysicalFragment().Size();
+  PhysicalSize box_size = layout_result.GetPhysicalFragment().Size();
 
   // TODO(ikilpatrick): Ideally this should be moved to a LayoutResult
   // computing the shape area. There may be an issue with the new fragmentation

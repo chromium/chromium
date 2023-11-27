@@ -101,7 +101,7 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
 
   ~LayoutResult() = default;
 
-  const NGPhysicalFragment& PhysicalFragment() const {
+  const NGPhysicalFragment& GetPhysicalFragment() const {
     DCHECK(physical_fragment_);
     DCHECK_EQ(kSuccess, Status());
     return *physical_fragment_;
@@ -269,8 +269,9 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
   // In the above example the |BfcBlockOffset()| will be at 0px, where-as the
   // |LineBoxBfcBlockOffset()| will be at 20px.
   absl::optional<LayoutUnit> LineBoxBfcBlockOffset() const {
-    if (Status() != kSuccess || !PhysicalFragment().IsLineBox())
+    if (Status() != kSuccess || !GetPhysicalFragment().IsLineBox()) {
       return absl::nullopt;
+    }
 
     if (rare_data_) {
       if (absl::optional<LayoutUnit> offset =

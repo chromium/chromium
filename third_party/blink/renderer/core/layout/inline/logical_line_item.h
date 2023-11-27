@@ -147,18 +147,18 @@ struct LogicalLineItem {
         bidi_level(bidi_level) {}
 
   bool IsFloating() const {
-    return layout_result && layout_result->PhysicalFragment().IsFloating();
+    return layout_result && layout_result->GetPhysicalFragment().IsFloating();
   }
   bool IsInitialLetterBox() const {
     return layout_result &&
-           layout_result->PhysicalFragment().IsInitialLetterBox();
+           layout_result->GetPhysicalFragment().IsInitialLetterBox();
   }
   bool IsInlineBox() const {
-    return layout_result && layout_result->PhysicalFragment().IsInlineBox();
+    return layout_result && layout_result->GetPhysicalFragment().IsInlineBox();
   }
   bool HasInFlowFragment() const {
-    return inline_item ||
-           (layout_result && !layout_result->PhysicalFragment().IsFloating());
+    return inline_item || (layout_result &&
+                           !layout_result->GetPhysicalFragment().IsFloating());
   }
   bool HasInFlowOrFloatingFragment() const {
     return inline_item || layout_result || layout_object;
@@ -181,9 +181,12 @@ struct LogicalLineItem {
     // Skip all inline boxes. Fragments for inline boxes maybe created earlier
     // if they have no children.
     if (layout_result) {
-      DCHECK(layout_result->PhysicalFragment().GetLayoutObject());
-      if (layout_result->PhysicalFragment().GetLayoutObject()->IsLayoutInline())
+      DCHECK(layout_result->GetPhysicalFragment().GetLayoutObject());
+      if (layout_result->GetPhysicalFragment()
+              .GetLayoutObject()
+              ->IsLayoutInline()) {
         return true;
+      }
     }
     return false;
   }
@@ -195,9 +198,9 @@ struct LogicalLineItem {
   const LogicalSize& Size() const { return rect.size; }
   LogicalSize MarginSize() const { return {inline_size, Size().block_size}; }
 
-  const NGPhysicalFragment* PhysicalFragment() const {
+  const NGPhysicalFragment* GetPhysicalFragment() const {
     if (layout_result)
-      return &layout_result->PhysicalFragment();
+      return &layout_result->GetPhysicalFragment();
     return nullptr;
   }
   const LayoutObject* GetLayoutObject() const;

@@ -1307,7 +1307,7 @@ static inline bool ObjectIsRelayoutBoundary(const LayoutObject* object) {
   }
 
   // Make sure our fragment is safe to use.
-  const NGPhysicalFragment& fragment = layout_result->PhysicalFragment();
+  const auto& fragment = layout_result->GetPhysicalFragment();
   if (fragment.IsLayoutObjectDestroyedOrMoved()) {
     return false;
   }

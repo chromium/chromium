@@ -101,7 +101,7 @@ AnnotationOverhang GetOverhang(const InlineItemResult& item) {
   if (!item.layout_result)
     return overhang;
 
-  const auto& column_fragment = item.layout_result->PhysicalFragment();
+  const auto& column_fragment = item.layout_result->GetPhysicalFragment();
 
   const ComputedStyle* ruby_text_style = nullptr;
   for (const auto& child_link : column_fragment.PostLayoutChildren()) {
@@ -208,7 +208,7 @@ LayoutUnit CommitPendingEndOverhang(LineInfo* line_info) {
       return LayoutUnit();
   }
   InlineItemResult& atomic_inline_item = (*items)[i];
-  if (!atomic_inline_item.layout_result->PhysicalFragment().IsRubyColumn()) {
+  if (!atomic_inline_item.layout_result->GetPhysicalFragment().IsRubyColumn()) {
     return LayoutUnit();
   }
   if (atomic_inline_item.pending_end_overhang <= LayoutUnit())
@@ -258,7 +258,7 @@ AnnotationMetrics ComputeAnnotationOverflow(
             item_over, item_under, *style, *item.shape_result);
       }
     } else {
-      const auto* fragment = item.PhysicalFragment();
+      const auto* fragment = item.GetPhysicalFragment();
       if (fragment && fragment->IsRubyColumn()) {
         PhysicalRect rect =
             To<NGPhysicalBoxFragment>(fragment)->ComputeRubyEmHeightBox();

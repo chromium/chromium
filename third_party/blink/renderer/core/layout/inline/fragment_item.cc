@@ -167,8 +167,8 @@ FragmentItem::FragmentItem(LogicalLineItem&& line_item,
   }
 
   if (line_item.layout_result) {
-    const NGPhysicalBoxFragment& box_fragment =
-        To<NGPhysicalBoxFragment>(line_item.layout_result->PhysicalFragment());
+    const auto& box_fragment = To<NGPhysicalBoxFragment>(
+        line_item.layout_result->GetPhysicalFragment());
     new (this) FragmentItem(box_fragment, line_item.ResolvedDirection());
     return;
   }

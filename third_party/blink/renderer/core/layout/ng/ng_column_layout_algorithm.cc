@@ -466,7 +466,7 @@ BreakStatus ColumnLayoutAlgorithm::LayoutChildren() {
       walker.Next();
 
       const auto* next_column_token =
-          To<BlockBreakToken>(result->PhysicalFragment().GetBreakToken());
+          To<BlockBreakToken>(result->GetPhysicalFragment().GetBreakToken());
 
       if (const auto* path = result->GetColumnSpannerPath()) {
         // We found a spanner, and if there's column content to resume at after
@@ -569,7 +569,7 @@ struct ResultWithOffset {
       : result(result), offset(offset) {}
 
   const NGPhysicalBoxFragment& Fragment() const {
-    return To<NGPhysicalBoxFragment>(result->PhysicalFragment());
+    return To<NGPhysicalBoxFragment>(result->GetPhysicalFragment());
   }
 
   void Trace(Visitor* visitor) const { visitor->Trace(result); }
@@ -751,7 +751,7 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
       child_algorithm.SetBoxType(NGPhysicalFragment::kColumnBox);
       result = child_algorithm.Layout();
       const auto& column =
-          To<NGPhysicalBoxFragment>(result->PhysicalFragment());
+          To<NGPhysicalBoxFragment>(result->GetPhysicalFragment());
       intrinsic_block_size_contribution = column_size.block_size;
       if (shrink_to_fit_column_block_size) {
         // Shrink-to-fit the row block-size contribution from the first column
@@ -1097,7 +1097,7 @@ BreakStatus ColumnLayoutAlgorithm::LayoutSpanner(
   }
 
   const auto& spanner_fragment =
-      To<NGPhysicalBoxFragment>(result->PhysicalFragment());
+      To<NGPhysicalBoxFragment>(result->GetPhysicalFragment());
   LogicalFragment logical_fragment(GetConstraintSpace().GetWritingDirection(),
                                    spanner_fragment);
 
@@ -1315,8 +1315,8 @@ LayoutUnit ColumnLayoutAlgorithm::ResolveColumnAutoBlockSizeInternal(
     // This algorithm should never abort.
     DCHECK_EQ(result->Status(), LayoutResult::kSuccess);
 
-    const NGPhysicalBoxFragment& fragment =
-        To<NGPhysicalBoxFragment>(result->PhysicalFragment());
+    const auto& fragment =
+        To<NGPhysicalBoxFragment>(result->GetPhysicalFragment());
 
     // Add a content run, as long as we have soft break opportunities. Ignore
     // content that's doomed to end up in overflowing columns (because of too

@@ -39,7 +39,7 @@ class BlockLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
                           ->item(0)
                           ->GetLayoutObject());
     return To<NGPhysicalBoxFragment>(
-        &layout_box->GetSingleCachedLayoutResult()->PhysicalFragment());
+        &layout_box->GetSingleCachedLayoutResult()->GetPhysicalFragment());
   }
 
   MinMaxSizes RunComputeMinMaxSizes(BlockNode node) {
@@ -118,7 +118,7 @@ TEST_F(BlockLayoutAlgorithmTest, Caching) {
   BlockNode node(block_flow);
 
   const LayoutResult* result = node.Layout(space, nullptr);
-  EXPECT_EQ(PhysicalSize(30, 40), result->PhysicalFragment().Size());
+  EXPECT_EQ(PhysicalSize(30, 40), result->GetPhysicalFragment().Size());
 
   // Test pointer-equal constraint space.
   result = RunCachedLayoutResult(space, node);
@@ -165,7 +165,7 @@ TEST_F(BlockLayoutAlgorithmTest, MinInlineSizeCaching) {
   BlockNode node(block_flow);
 
   const LayoutResult* result = node.Layout(space, nullptr);
-  EXPECT_EQ(PhysicalSize(30, 40), result->PhysicalFragment().Size());
+  EXPECT_EQ(PhysicalSize(30, 40), result->GetPhysicalFragment().Size());
 
   // Test pointer-equal constraint space.
   result = RunCachedLayoutResult(space, node);
@@ -1033,7 +1033,7 @@ TEST_F(BlockLayoutAlgorithmTest, NewFormattingContextAutoMargins) {
   const auto* fragment =
       &To<NGPhysicalBoxFragment>(GetLayoutBoxByElementId("container")
                                      ->GetSingleCachedLayoutResult()
-                                     ->PhysicalFragment());
+                                     ->GetPhysicalFragment());
 
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
   offset:unplaced size:200x60

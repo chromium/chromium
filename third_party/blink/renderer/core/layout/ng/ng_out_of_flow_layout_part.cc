@@ -990,8 +990,9 @@ void OutOfFlowLayoutPart::LayoutCandidates(
         }
         if (needs_anchor_queries) {
           DCHECK(anchor_queries);
-          if (result->PhysicalFragment().HasAnchorQueryToPropagate())
+          if (result->GetPhysicalFragment().HasAnchorQueryToPropagate()) {
             anchor_queries->SetChildren(container_builder_->Children(), items);
+          }
         }
       } else {
         container_builder_->AddOutOfFlowDescendant(candidate);
@@ -1255,8 +1256,10 @@ void OutOfFlowLayoutPart::LayoutOOFsInMulticol(
     wtf_size_t fragment_idx = fragment_count - 1;
     do {
       old_result = box.GetLayoutResult(fragment_idx);
-      if (&old_result->PhysicalFragment() == last_fragment_with_fragmentainer)
+      if (&old_result->GetPhysicalFragment() ==
+          last_fragment_with_fragmentainer) {
         break;
+      }
       DCHECK_GT(fragment_idx, 0u);
       fragment_idx--;
     } while (true);
@@ -1277,7 +1280,7 @@ void OutOfFlowLayoutPart::LayoutOOFsInMulticol(
     algorithm.CloneOldChildren();
 
     WritingModeConverter converter(constraint_space.GetWritingDirection(),
-                                   old_result->PhysicalFragment().Size());
+                                   old_result->GetPhysicalFragment().Size());
     LayoutUnit additional_column_block_size;
     // Then append the new fragmentainers.
     for (wtf_size_t i = old_fragment_count; i < new_fragment_count; i++) {
@@ -2422,7 +2425,7 @@ void OutOfFlowLayoutPart::AddOOFToFragmentainer(
   }
 
   const auto& physical_fragment =
-      To<NGPhysicalBoxFragment>(result->PhysicalFragment());
+      To<NGPhysicalBoxFragment>(result->GetPhysicalFragment());
   const BlockBreakToken* break_token = physical_fragment.GetBreakToken();
   if (break_token) {
     // We must continue layout in the next fragmentainer. Update any information
@@ -2473,9 +2476,9 @@ void OutOfFlowLayoutPart::AddOOFToFragmentainer(
   LayoutUnit containing_block_adjustment =
       container_builder_->BlockOffsetAdjustmentForFragmentainer(
           fragmentainer_consumed_block_size_);
-  if (result->PhysicalFragment().NeedsOOFPositionedInfoPropagation()) {
+  if (result->GetPhysicalFragment().NeedsOOFPositionedInfoPropagation()) {
     container_builder_->PropagateOOFPositionedInfo(
-        result->PhysicalFragment(), oof_offset, relative_offset,
+        result->GetPhysicalFragment(), oof_offset, relative_offset,
         offset_adjustment,
         /* inline_container */ nullptr, containing_block_adjustment,
         &descendant.node_info.containing_block,
@@ -2526,10 +2529,10 @@ void OutOfFlowLayoutPart::ReplaceFragmentainer(
 
   if (create_new_fragment) {
     const LayoutResult* new_result = algorithm->Layout();
-    container_builder_->AddChild(new_result->PhysicalFragment(), offset);
+    container_builder_->AddChild(new_result->GetPhysicalFragment(), offset);
   } else {
     const LayoutResult* new_result = algorithm->Layout();
-    const NGPhysicalFragment* new_fragment = &new_result->PhysicalFragment();
+    const NGPhysicalFragment* new_fragment = &new_result->GetPhysicalFragment();
     container_builder_->ReplaceChild(index, *new_fragment, offset);
 
     if (multicol_children_ && index < multicol_children_->size()) {
@@ -2757,7 +2760,7 @@ void OutOfFlowLayoutPart::ReplaceFragment(
          parent.GetMutableChildrenForOutOfFlow().Children()) {
       if (child_link.fragment != &old_fragment)
         continue;
-      child_link.fragment = &new_result->PhysicalFragment();
+      child_link.fragment = &new_result->GetPhysicalFragment();
       return true;
     }
     return false;
@@ -2787,7 +2790,7 @@ void OutOfFlowLayoutPart::ReplaceFragment(
         // an OOF inside.
         if (FragmentItems::ReplaceBoxFragment(
                 old_fragment,
-                To<NGPhysicalBoxFragment>(new_result->PhysicalFragment()),
+                To<NGPhysicalBoxFragment>(new_result->GetPhysicalFragment()),
                 parent_fragment)) {
           return;
         }

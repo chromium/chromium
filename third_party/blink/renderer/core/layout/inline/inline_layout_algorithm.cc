@@ -840,7 +840,7 @@ void InlineLayoutAlgorithm::PlaceLayoutResult(InlineItemResult* item_result,
   FontHeight metrics =
       LogicalBoxFragment(GetConstraintSpace().GetWritingDirection(),
                          To<NGPhysicalBoxFragment>(
-                             item_result->layout_result->PhysicalFragment()))
+                             item_result->layout_result->GetPhysicalFragment()))
           .BaselineMetrics(item_result->margins, baseline_type_);
   if (box)
     box->metrics.Unite(metrics);
@@ -864,7 +864,7 @@ void InlineLayoutAlgorithm::PlaceBlockInInline(const InlineItem& item,
   DCHECK(item_result->layout_result);
   const LayoutResult& result = *item_result->layout_result;
   const auto& box_fragment =
-      To<NGPhysicalBoxFragment>(result.PhysicalFragment());
+      To<NGPhysicalBoxFragment>(result.GetPhysicalFragment());
   LogicalBoxFragment fragment(GetConstraintSpace().GetWritingDirection(),
                               box_fragment);
 
@@ -1072,8 +1072,9 @@ void InlineLayoutAlgorithm::PlaceFloatingObjects(
 
     // Skip any children which aren't positioned floats.
     if (!child.layout_result ||
-        !child.layout_result->PhysicalFragment().IsFloating())
+        !child.layout_result->GetPhysicalFragment().IsFloating()) {
       continue;
+    }
 
     LayoutUnit block_offset =
         child.bfc_offset.block_offset - bfc_block_offset + baseline_adjustment;
@@ -1081,7 +1082,7 @@ void InlineLayoutAlgorithm::PlaceFloatingObjects(
     // We need to manually account for the flipped-lines writing mode here :(.
     if (IsFlippedLinesWritingMode(GetConstraintSpace().GetWritingMode())) {
       LogicalFragment fragment(GetConstraintSpace().GetWritingDirection(),
-                               child.layout_result->PhysicalFragment());
+                               child.layout_result->GetPhysicalFragment());
 
       block_offset = -fragment.BlockSize() - block_offset;
     }
@@ -1094,7 +1095,7 @@ void InlineLayoutAlgorithm::PlaceFloatingObjects(
 void InlineLayoutAlgorithm::PlaceRelativePositionedItems(
     LogicalLineItems* line_box) {
   for (auto& child : *line_box) {
-    const auto* physical_fragment = child.PhysicalFragment();
+    const auto* physical_fragment = child.GetPhysicalFragment();
     if (!physical_fragment)
       continue;
     child.rect.offset += ComputeRelativeOffsetForInline(
@@ -1719,8 +1720,8 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
   DCHECK(items_builder);
   container_builder_.PropagateChildrenData(*line_box);
   const LayoutResult* layout_result = container_builder_.ToLineBoxFragment();
-  items_builder->AssociateLogicalLineItems(line_box,
-                                           layout_result->PhysicalFragment());
+  items_builder->AssociateLogicalLineItems(
+      line_box, layout_result->GetPhysicalFragment());
   line_break_strategy.DidCreateLine(is_end_paragraph);
   return layout_result;
 }

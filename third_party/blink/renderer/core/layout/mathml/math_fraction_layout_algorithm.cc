@@ -173,10 +173,12 @@ const LayoutResult* MathFractionLayoutAlgorithm::Layout() {
 
   const LogicalBoxFragment numerator_fragment(
       GetConstraintSpace().GetWritingDirection(),
-      To<NGPhysicalBoxFragment>(numerator_layout_result->PhysicalFragment()));
+      To<NGPhysicalBoxFragment>(
+          numerator_layout_result->GetPhysicalFragment()));
   const LogicalBoxFragment denominator_fragment(
       GetConstraintSpace().GetWritingDirection(),
-      To<NGPhysicalBoxFragment>(denominator_layout_result->PhysicalFragment()));
+      To<NGPhysicalBoxFragment>(
+          denominator_layout_result->GetPhysicalFragment()));
   const auto baseline_type = Style().GetFontBaseline();
 
   const LayoutUnit numerator_ascent =
