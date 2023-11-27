@@ -1664,6 +1664,9 @@ extern const char kPreloadingOnPerformancePageDescription[];
 extern const char kCbdTimeframeRequiredName[];
 extern const char kCbdTimeframeRequiredDescription[];
 
+extern const char kPriceChangeModuleName[];
+extern const char kPriceChangeModuleDescription[];
+
 extern const char kPrivacyGuideAndroidName[];
 extern const char kPrivacyGuideAndroidDescription[];
 

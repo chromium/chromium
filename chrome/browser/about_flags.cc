@@ -6796,6 +6796,12 @@ const FeatureEntry kFeatureEntries[] = {
                                     kParcelTrackingTestDataVariations,
                                     "ParcelTrackingTestData")},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"price-change-module", flag_descriptions::kPriceChangeModuleName,
+     flag_descriptions::kPriceChangeModuleDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kPriceChangeModule)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if !BUILDFLAG(IS_ANDROID)
     {"enable-price-tracking-chip-experiment",
      commerce::flag_descriptions::kPriceTrackingChipExperimentName,

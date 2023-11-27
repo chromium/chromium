@@ -362,6 +362,7 @@ public abstract class ChromeFeatureList {
             "PreemptiveLinkToTextGeneration";
     public static final String PRERENDER2 = "Prerender2";
     public static final String PRECONNECT_ON_TAB_CREATION = "PreconnectOnTabCreation";
+    public static final String PRICE_CHANGE_MODULE = "PriceChangeModule";
     public static final String PRIVACY_GUIDE = "PrivacyGuideAndroid";
     public static final String PRIVACY_GUIDE_ANDROID_3 = "PrivacyGuideAndroid3";
     public static final String PRIVACY_GUIDE_PRELOAD_ANDROID = "PrivacyGuidePreloadAndroid";
@@ -583,6 +584,7 @@ public abstract class ChromeFeatureList {
             new CachedFlag(HIDE_TAB_ON_TAB_SWITCHER, false);
     public static final CachedFlag sNewTabSearchEngineUrlAndroid =
             new CachedFlag(NEW_TAB_SEARCH_ENGINE_URL_ANDROID, false);
+    public static final CachedFlag sPriceChangeModule = new CachedFlag(PRICE_CHANGE_MODULE, false);
     public static final CachedFlag sPrivacyGuideAndroid3 =
             new CachedFlag(PRIVACY_GUIDE_ANDROID_3, false);
     public static final CachedFlag sPrivacyGuidePreloadAndroid =
@@ -691,6 +693,7 @@ public abstract class ChromeFeatureList {
                     sHideTabOnTabSwitcher,
                     sNewTabSearchEngineUrlAndroid,
                     sPaintPreviewNewColdStartHeuristic,
+                    sPriceChangeModule,
                     sPrivacyGuideAndroid3,
                     sPrivacyGuidePreloadAndroid,
                     sPrivacyGuidePostMVP,

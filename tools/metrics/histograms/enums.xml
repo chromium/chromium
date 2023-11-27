@@ -35986,6 +35986,7 @@ from previous Chrome versions.
   <int value="-763730918" label="CCTTargetTranslateLanguage:disabled"/>
   <int value="-763640405" label="WebXRARModule:enabled"/>
   <int value="-763219650" label="OmniboxDefaultBrowserPedal:enabled"/>
+  <int value="-763000741" label="PriceChangeModule:disabled"/>
   <int value="-762787417" label="RestoreSyncedPlaceholderTabs:enabled"/>
   <int value="-762785269"
       label="EnableBackForwardCacheForScreenReader:disabled"/>
@@ -39088,6 +39089,7 @@ from previous Chrome versions.
   <int value="719614898" label="LensEnableRegionSearchOnPdfViewer:enabled"/>
   <int value="719922283" label="MessagesForAndroidSaveCard:enabled"/>
   <int value="720931007" label="WebAuthenticationBle:enabled"/>
+  <int value="722313909" label="PriceChangeModule:enabled"/>
   <int value="722334179" label="NoncedPartitionedCookies:disabled"/>
   <int value="722614233" label="TrackingProtectionOnboardingRollback:disabled"/>
   <int value="723318188" label="EnableUniveralLinks:disabled"/>

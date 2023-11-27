@@ -2907,6 +2907,10 @@ const char kCbdTimeframeRequiredDescription[] =
     "in the clear browsing data dialog. It also adds a new 'Last 15 minutes' "
     "value to the list.";
 
+const char kPriceChangeModuleName[] = "Price Change Module";
+const char kPriceChangeModuleDescription[] =
+    "Show a module with price drops of open tabs on new tab page.";
+
 const char kPrivacyGuideAndroidName[] = "Privacy Guide on Android";
 const char kPrivacyGuideAndroidDescription[] =
     "Shows a new subpage in Settings that helps the user to review various "

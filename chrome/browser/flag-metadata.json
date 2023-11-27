@@ -6494,6 +6494,11 @@
     "expiry_milestone": 122
   },
   {
+    "name": "price-change-module",
+    "owners": [ "yuezhanggg@chromium.org", "chrome-shopping-eng@google.com" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "price-insights",
     "owners": [ "zhiyuancai@chromium.org", "chrome-shopping-eng@google.com" ],
     "expiry_milestone": 120

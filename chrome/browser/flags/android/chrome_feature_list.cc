@@ -263,6 +263,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kPageAnnotationsService,
     &kPaintPreviewNewColdStartHeuristic,
     &kPreconnectOnTabCreation,
+    &kPriceChangeModule,
     &kPwaRestoreUi,
     &kBookmarksImprovedSaveFlow,
     &kBookmarksRefresh,
@@ -838,6 +839,10 @@ BASE_FEATURE(kPaintPreviewNewColdStartHeuristic,
 
 BASE_FEATURE(kPreconnectOnTabCreation,
              "PreconnectOnTabCreation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPriceChangeModule,
+             "PriceChangeModule",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPwaRestoreUi, "PwaRestoreUi", base::FEATURE_DISABLED_BY_DEFAULT);
