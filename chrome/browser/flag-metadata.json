@@ -3679,21 +3679,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "enable-user-policy-for-signin-and-nosync-consent-level",
-    "owners": [ "vincb@chromium.org" ],
-    "expiry_milestone": 130
-  },
-  {
-    "name": "enable-user-policy-for-signin-or-sync-consent-level",
-    "owners": [ "vincb@chromium.org" ],
-    "expiry_milestone": 130
-  },
-  {
-    "name": "enable-user-policy-notif",
-    "owners": [ "vincb@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "enable-variable-refresh-rate",
     "owners": [ "aswolfers@chromium.org", "chromeos-gfx-compositor@google.com" ],
     "expiry_milestone": 125

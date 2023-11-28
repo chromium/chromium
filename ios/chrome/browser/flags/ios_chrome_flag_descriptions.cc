@@ -439,18 +439,6 @@ const char kEnableUIButtonConfigurationName[] =
 const char kEnableUIButtonConfigurationDescription[] =
     "Enable UIButtonConfiguration usage for UIButtons.";
 
-const char kEnableUserPolicyForSigninAndNoSyncConsentLevelName[] =
-    "Enable user policies when signed-in only without sync";
-const char kEnableUserPolicyForSigninAndNoSyncConsentLevelDescription[] =
-    "Enable the fetch and application of user policies when signed-in only with"
-    "a managed account, excluding signed-in+sync.";
-
-const char kEnableUserPolicyForSigninOrSyncConsentLevelName[] =
-    "Enable user policies when signed-in only or signed-in+sync";
-const char kEnableUserPolicyForSigninOrSyncConsentLevelDescription[] =
-    "Enable the fetch and application of user policies when signed-in only or "
-    "signed-in+sync with a managed account.";
-
 const char kEnableWebChannelsName[] = "Enable WebFeed";
 const char kEnableWebChannelsDescription[] =
     "Enable folowing content from web and display Following feed on NTP based "
@@ -935,12 +923,6 @@ const char kShowInactiveTabsCountName[] =
 const char kShowInactiveTabsCountDescription[] =
     "When enabled, the count of Inactive Tabs is shown in the Inactive Tabs "
     "button that appears in the Tab Grid.";
-
-extern const char  kShowUserPolicyNotificationAtStartupIfNeededName[] =
-    "Show User Policy notif at startup if needed";
-extern const char  kShowUserPolicyNotificationAtStartupIfNeededDescription[] =
-    "When enabled, evaluate if the User Policy notification should be shown "
-    "during startup.";
 
 const char kSkipUndecryptablePasswordsName[] =
     "Enable silent ignoring of undecryptable passwords";

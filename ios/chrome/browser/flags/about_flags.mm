@@ -79,7 +79,6 @@
 #import "ios/chrome/browser/follow/model/follow_features.h"
 #import "ios/chrome/browser/iph_for_new_chrome_user/model/features.h"
 #import "ios/chrome/browser/parcel_tracking/features.h"
-#import "ios/chrome/browser/policy/cloud/user_policy_constants.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/promos_manager/features.h"
 #import "ios/chrome/browser/screen_time/model/screen_time_buildflags.h"
@@ -1148,17 +1147,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableUIButtonConfigurationName,
      flag_descriptions::kEnableUIButtonConfigurationDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kEnableUIButtonConfiguration)},
-    {"enable-user-policy-for-signin-and-nosync-consent-level",
-     flag_descriptions::kEnableUserPolicyForSigninAndNoSyncConsentLevelName,
-     flag_descriptions::
-         kEnableUserPolicyForSigninAndNoSyncConsentLevelDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(policy::kUserPolicyForSigninAndNoSyncConsentLevel)},
-    {"enable-user-policy-for-signin-or-sync-consent-level",
-     flag_descriptions::kEnableUserPolicyForSigninOrSyncConsentLevelName,
-     flag_descriptions::kEnableUserPolicyForSigninOrSyncConsentLevelDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(policy::kUserPolicyForSigninOrSyncConsentLevel)},
     {"omnibox-max-url-matches", flag_descriptions::kOmniboxMaxURLMatchesName,
      flag_descriptions::kOmniboxMaxURLMatchesDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kOmniboxMaxURLMatches,
@@ -1657,11 +1645,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIOSPasswordSignInUffName,
      flag_descriptions::kIOSPasswordSignInUffDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(password_manager::features::kIOSPasswordSignInUff)},
-    {"enable-user-policy-notif",
-     flag_descriptions::kShowUserPolicyNotificationAtStartupIfNeededName,
-     flag_descriptions::kShowUserPolicyNotificationAtStartupIfNeededDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(policy::kShowUserPolicyNotificationAtStartupIfNeeded)},
     {"tab-grid-compositional-layout",
      flag_descriptions::kTabGridCompositionalLayoutName,
      flag_descriptions::kTabGridCompositionalLayoutDescription,

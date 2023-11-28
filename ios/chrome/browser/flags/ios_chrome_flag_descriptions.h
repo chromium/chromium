@@ -374,16 +374,6 @@ extern const char kEnableSuggestionsScrollingOnIPadDescription[];
 extern const char kEnableSignedOutViewDemotionName[];
 extern const char kEnableSignedOutViewDemotionDescription[];
 
-// Title and description for the flag to enable user policies for users that
-// are signed-in only without sync (unless explicitly enabled for that level).
-extern const char kEnableUserPolicyForSigninAndNoSyncConsentLevelName[];
-extern const char kEnableUserPolicyForSigninAndNoSyncConsentLevelDescription[];
-
-// Title and description for the flag to enable user policies for users that
-// are signed-in or signed-in+sync.
-extern const char kEnableUserPolicyForSigninOrSyncConsentLevelName[];
-extern const char kEnableUserPolicyForSigninOrSyncConsentLevelDescription[];
-
 // Title and description for the flag to enable filtering experiments by Google
 // group membership.
 extern const char kEnableVariationsGoogleGroupFilteringName[];
@@ -829,11 +819,6 @@ extern const char kShowAutofillTypePredictionsDescription[];
 // Tab Grid button.
 extern const char kShowInactiveTabsCountName[];
 extern const char kShowInactiveTabsCountDescription[];
-
-// Title and description for the flag to show the User Policy notification at
-// startup if needed.
-extern const char  kShowUserPolicyNotificationAtStartupIfNeededName[];
-extern const char  kShowUserPolicyNotificationAtStartupIfNeededDescription[];
 
 // Title and description for the flag to enable ignoring undecryptable passwords
 // in the password storage.
