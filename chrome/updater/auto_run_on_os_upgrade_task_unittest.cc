@@ -102,7 +102,7 @@ TEST_F(AutoRunOnOsUpgradeTaskTest, RunOnOsUpgradeForApp) {
   ASSERT_EQ(os_upgrade_task->RunOnOsUpgradeForApp(base::WideToASCII(kAppId)),
             2U);
 
-  const std::wstring os_upgrade_string = [&]() {
+  const std::wstring os_upgrade_string = [&] {
     std::string versions;
     for (const auto& version : {last_os_version, current_os_version.value()}) {
       versions += base::StringPrintf(
@@ -118,7 +118,7 @@ TEST_F(AutoRunOnOsUpgradeTaskTest, RunOnOsUpgradeForApp) {
   base::FilePath os_upgrade_file = current_directory.Append(os_upgrade_string);
   base::FilePath hardcoded_file = current_directory.Append(L"HardcodedFile");
 
-  EXPECT_TRUE(test::WaitFor([&]() {
+  EXPECT_TRUE(test::WaitFor([&] {
     return base::PathExists(os_upgrade_file) &&
            base::PathExists(hardcoded_file);
   }));

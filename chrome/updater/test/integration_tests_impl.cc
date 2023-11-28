@@ -397,7 +397,7 @@ void ExpectVersionActive(UpdaterScope scope, const std::string& version) {
   ASSERT_NE(prefs, nullptr) << "Failed to acquire GlobalPrefs.";
   EXPECT_EQ(prefs->GetActiveVersion(), version);
 #if BUILDFLAG(IS_WIN)
-  EXPECT_EQ(version, [scope]() {
+  EXPECT_EQ(version, [scope] {
     std::wstring version;
     EXPECT_EQ(base::win::RegKey(UpdaterScopeToHKeyRoot(scope), UPDATER_KEY,
                                 Wow6432(KEY_READ))
@@ -485,7 +485,7 @@ void CopyLog(const base::FilePath& src_dir) {
       base::PathExists(log_path)) {
     dest_dir = dest_dir.AppendASCII(GetTestName());
     EXPECT_TRUE(base::CreateDirectory(dest_dir));
-    const base::FilePath dest_file_path = [dest_dir]() {
+    const base::FilePath dest_file_path = [dest_dir] {
       base::FilePath path = dest_dir.AppendASCII("updater.log");
       for (int i = 1; i < 10 && base::PathExists(path); ++i) {
         path = dest_dir.AppendASCII(base::StringPrintf("updater.%d.log", i));
@@ -1106,7 +1106,7 @@ void StressUpdateService(UpdaterScope scope) {
 #endif
 
   // Runs on the main sequence.
-  auto loop_closure = [&]() {
+  auto loop_closure = [&] {
     LOG(ERROR) << __func__ << ": n: " << n << ", " << base::Time::Now();
     if (--n) {
       return false;
@@ -1117,7 +1117,7 @@ void StressUpdateService(UpdaterScope scope) {
 
   // Creates a task runner, and runs the service instance on it.
   using LoopClosure = decltype(loop_closure);
-  auto stress_runner = [scope, loop_closure]() {
+  auto stress_runner = [scope, loop_closure] {
     // `task_runner` is always bound on the main sequence.
     struct Local {
       static void GetVersion(
@@ -1126,7 +1126,7 @@ void StressUpdateService(UpdaterScope scope) {
           LoopClosure loop_closure) {
         base::ThreadPool::CreateSequencedTaskRunner({})->PostDelayedTask(
             FROM_HERE,
-            base::BindLambdaForTesting([scope, task_runner, loop_closure]() {
+            base::BindLambdaForTesting([scope, task_runner, loop_closure] {
               auto update_service = CreateUpdateServiceProxy(scope);
               update_service->GetVersion(
                   base::BindOnce(GetVersionCallback, scope, update_service,
@@ -1144,7 +1144,7 @@ void StressUpdateService(UpdaterScope scope) {
         EXPECT_EQ(version, base::Version(kUpdaterVersion));
         task_runner->PostTask(
             FROM_HERE,
-            base::BindLambdaForTesting([scope, task_runner, loop_closure]() {
+            base::BindLambdaForTesting([scope, task_runner, loop_closure] {
               if (loop_closure()) {
                 return;
               }
@@ -1311,7 +1311,7 @@ void ExpectDeviceManagementRegistrationRequest(
     const std::string& dm_token) {
   ExpectDeviceManagementRequest(
       test_server, "register_policy_agent", "GoogleEnrollmentToken",
-      enrollment_token, [&dm_token]() {
+      enrollment_token, [&dm_token] {
         enterprise_management::DeviceManagementResponse dm_response;
         dm_response.mutable_register_response()->set_device_management_token(
             dm_token);
@@ -1326,7 +1326,7 @@ void ExpectDeviceManagementPolicyFetchRequest(
         OmahaSettingsClientProto& omaha_settings) {
   ExpectDeviceManagementRequest(
       test_server, "policy", "GoogleDMToken", dm_token,
-      [&dm_token, &omaha_settings]() {
+      [&dm_token, &omaha_settings] {
         std::unique_ptr<::enterprise_management::DeviceManagementResponse>
             dm_response = GetDMResponseForOmahaPolicy(
                 /*first_request=*/true, /*rotate_to_new_key=*/false,

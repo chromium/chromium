@@ -232,7 +232,7 @@ ProcessExitResult BuildCommandLineArguments(const wchar_t* cmd_line,
   // argument exists. If --tag is present in `argv`, then it is going to be
   // handed over to the updater, along with the other arguments. Otherwise, try
   // extracting a tag embedded in the program image of the meta installer.
-  if (![&argv, num_args]() {
+  if (![&argv, num_args] {
         // Returns true if the --tag argument is present on the command line.
         constexpr wchar_t kTagSwitch[] = L"--tag=";
         for (int i = 1; i != num_args; ++i) {
@@ -328,7 +328,7 @@ ProcessExitResult HandleRunDeElevated(const base::CommandLine& command_line) {
 
   // Deelevate the metainstaller.
   HRESULT hr =
-      RunDeElevated(command_line.GetProgram().value(), [&command_line]() {
+      RunDeElevated(command_line.GetProgram().value(), [&command_line] {
         base::CommandLine de_elevate_command_line = command_line;
         de_elevate_command_line.AppendSwitch(kCmdLineExpectDeElevated);
         return de_elevate_command_line.GetArgumentsString();

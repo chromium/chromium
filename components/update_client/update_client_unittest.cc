@@ -6110,7 +6110,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeInstall) {
     EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_DOWNLOADING,
                                   "jebgalgnebhfojomionfpkfelancnnkf"))
         .Times(AtLeast(1))
-        .WillRepeatedly(Invoke([&cancel]() { cancel.Run(); }));
+        .WillRepeatedly(Invoke([&cancel] { cancel.Run(); }));
     EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_ERROR,
                                   "jebgalgnebhfojomionfpkfelancnnkf"))
         .Times(1);
@@ -6288,7 +6288,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeDownload) {
     EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_FOUND,
                                   "jebgalgnebhfojomionfpkfelancnnkf"))
         .Times(1)
-        .WillOnce(Invoke([&cancel]() { cancel.Run(); }));
+        .WillOnce(Invoke([&cancel] { cancel.Run(); }));
     EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_ERROR,
                                   "jebgalgnebhfojomionfpkfelancnnkf"))
         .Times(1);

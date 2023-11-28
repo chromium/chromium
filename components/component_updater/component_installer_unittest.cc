@@ -433,7 +433,7 @@ TEST_F(ComponentInstallerTest, InstallerRegister_CheckSequence) {
   }
 
   base::RunLoop run_loop;
-  EXPECT_CALL(update_client(), DoUpdate(_, _)).WillOnce(Invoke([&run_loop]() {
+  EXPECT_CALL(update_client(), DoUpdate(_, _)).WillOnce(Invoke([&run_loop] {
     run_loop.QuitClosure().Run();
   }));
 
@@ -461,7 +461,7 @@ TEST_F(ComponentInstallerTest, InstallerRegister_CheckSequence) {
   auto installer =
       base::MakeRefCounted<ComponentInstaller>(std::move(installer_policy));
   installer->Register(component_updater(),
-                      base::BindLambdaForTesting([&mock_register_handler]() {
+                      base::BindLambdaForTesting([&mock_register_handler] {
                         mock_register_handler.RegisterComplete();
                       }));
   run_loop.Run();

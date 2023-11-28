@@ -72,7 +72,7 @@ class LegacyAppCommandWebImplTest : public testing::Test {
 
   void WaitForUpdateCompletion(
       Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl>& app_command_web) {
-    EXPECT_TRUE(test::WaitFor([&]() {
+    EXPECT_TRUE(test::WaitFor([&] {
       UINT status = 0;
       EXPECT_HRESULT_SUCCEEDED(app_command_web->get_status(&status));
       return status == COMMAND_STATUS_COMPLETE;

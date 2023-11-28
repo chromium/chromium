@@ -249,7 +249,7 @@ base::FilePath GetLogDestinationDir() {
 }
 
 void InitLoggingForUnitTest(const base::FilePath& log_base_path) {
-  const std::optional<base::FilePath> log_file_path = [&log_base_path]() {
+  const std::optional<base::FilePath> log_file_path = [&log_base_path] {
     const base::FilePath dest_dir = GetLogDestinationDir();
     return dest_dir.empty()
                ? std::nullopt

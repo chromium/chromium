@@ -173,12 +173,12 @@ TEST(UnitTestUtil, FindProcesses) {
   const base::Process process = base::LaunchProcess(command_line, {});
   ASSERT_TRUE(process.IsValid());
 
-  EXPECT_TRUE(test::WaitFor([&]() { return process.IsRunning(); }));
+  EXPECT_TRUE(test::WaitFor([&] { return process.IsRunning(); }));
   EXPECT_EQ(test::FindProcesses(kTestProcessExecutableName).size(), 1U);
 
   event_holder.event.Signal();
 
-  EXPECT_TRUE(test::WaitFor([&]() { return !process.IsRunning(); }));
+  EXPECT_TRUE(test::WaitFor([&] { return !process.IsRunning(); }));
   EXPECT_TRUE(test::FindProcesses(kTestProcessExecutableName).empty());
 }
 #endif  // BUILDFLAG(IS_WIN)

@@ -654,7 +654,7 @@ std::wstring BuildExeCommandLine(
 
   return base::StrCat(
       {base::CommandLine::QuoteForCommandLineToArgvW(exe_installer.value()),
-       L" ", arguments, [&installer_data_file]() {
+       L" ", arguments, [&installer_data_file] {
          if (!installer_data_file)
            return std::wstring();
 

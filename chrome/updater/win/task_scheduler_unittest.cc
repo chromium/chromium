@@ -140,7 +140,7 @@ class TaskSchedulerTests : public ::testing::Test {
       EXPECT_TRUE(task_scheduler_->StartTask(kTaskName1));
     }
 
-    VLOG(0) << [this]() {
+    VLOG(0) << [this] {
       TaskScheduler::TaskInfo info;
       EXPECT_TRUE(task_scheduler_->GetTaskInfo(kTaskName1, info));
       return info;
@@ -149,7 +149,7 @@ class TaskSchedulerTests : public ::testing::Test {
     EXPECT_TRUE(
         event_holder.event.TimedWait(TestTimeouts::action_max_timeout()));
     EXPECT_TRUE(test::WaitFor(
-        [&]() { return !task_scheduler_->IsTaskRunning(kTaskName1); }));
+        [&] { return !task_scheduler_->IsTaskRunning(kTaskName1); }));
 
     if (trigger_type == TaskScheduler::TRIGGER_TYPE_NOW) {
       base::Time next_run_time;
@@ -296,13 +296,13 @@ TEST_F(TaskSchedulerTests, IsTaskRunning) {
                                     TaskScheduler::TRIGGER_TYPE_NOW, false));
 
   EXPECT_TRUE(test::WaitFor(
-      [&]() { return task_scheduler_->IsTaskRunning(kTaskName1); }));
+      [&] { return task_scheduler_->IsTaskRunning(kTaskName1); }));
   EXPECT_EQ(test::FindProcesses(kTestProcessExecutableName).size(), 1U);
 
   event_holder.event.Signal();
 
   EXPECT_TRUE(test::WaitFor(
-      [&]() { return !task_scheduler_->IsTaskRunning(kTaskName1); }));
+      [&] { return !task_scheduler_->IsTaskRunning(kTaskName1); }));
   EXPECT_TRUE(test::FindProcesses(kTestProcessExecutableName).empty());
 }
 

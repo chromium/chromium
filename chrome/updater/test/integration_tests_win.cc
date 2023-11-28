@@ -400,13 +400,13 @@ void CheckInstallation(UpdaterScope scope,
   const std::optional<base::FilePath> path =
       GetVersionedInstallDirectory(scope, base::Version(kUpdaterVersion));
   ASSERT_TRUE(path);
-  EXPECT_TRUE(WaitFor([&]() { return is_installed == base::PathExists(*path); },
-                      [&]() {
+  EXPECT_TRUE(WaitFor([&] { return is_installed == base::PathExists(*path); },
+                      [&] {
                         VLOG(0) << "Still waiting for " << *path
                                 << " where is_installed=" << is_installed;
                       }))
       << base::JoinString(
-             [&path]() {
+             [&path] {
                std::vector<base::FilePath::StringType> files;
                base::FileEnumerator(*path, true,
                                     base::FileEnumerator::FILES |
@@ -450,7 +450,7 @@ base::Process LaunchOfflineInstallProcess(bool is_legacy_install,
                                           const std::wstring& app_id,
                                           const std::wstring& offline_dir_guid,
                                           bool is_silent_install) {
-  auto launch_legacy_offline_install = [&]() -> base::Process {
+  auto launch_legacy_offline_install = [&] {
     auto build_legacy_switch =
         [](const std::string& switch_name) -> std::wstring {
       return base::ASCIIToWide(base::StrCat({"/", switch_name}));
@@ -484,7 +484,7 @@ base::Process LaunchOfflineInstallProcess(bool is_legacy_install,
     return base::LaunchProcess(base::JoinString(install_cmd_args, L" "), {});
   };
 
-  auto launch_offline_install = [&]() -> base::Process {
+  auto launch_offline_install = [&] {
     base::CommandLine install_cmd(exe_path);
 
     install_cmd.AppendSwitch(kEnableLoggingSwitch);
@@ -869,11 +869,11 @@ void ExpectClean(UpdaterScope scope) {
   // Check that the caches have been removed.
   const std::optional<base::FilePath> path = GetCacheBaseDirectory(scope);
   ASSERT_TRUE(path);
-  EXPECT_TRUE(WaitFor(
-      [&]() { return !base::PathExists(*path); },
-      [&]() { VLOG(0) << "Still waiting for cache removal: " << *path; }))
+  EXPECT_TRUE(
+      WaitFor([&] { return !base::PathExists(*path); },
+              [&] { VLOG(0) << "Still waiting for cache removal: " << *path; }))
       << base::JoinString(
-             [&path]() {
+             [&path] {
                std::vector<base::FilePath::StringType> files;
                base::FileEnumerator(*path, true,
                                     base::FileEnumerator::FILES |
@@ -1506,7 +1506,7 @@ void ExpectLegacyAppCommandWebSucceeds(UpdaterScope scope,
       variant_params[3], variant_params[4], variant_params[5],
       variant_params[6], variant_params[7], variant_params[8]));
 
-  EXPECT_TRUE(WaitFor([&]() {
+  EXPECT_TRUE(WaitFor([&] {
     UINT status = 0;
     EXPECT_HRESULT_SUCCEEDED(app_command_web->get_status(&status));
     return status == COMMAND_STATUS_COMPLETE;
@@ -1523,7 +1523,7 @@ void ExpectLegacyAppCommandWebSucceeds(UpdaterScope scope,
 
   CallDispatchMethod(command_dispatch, L"execute", variant_params);
 
-  EXPECT_TRUE(WaitFor([&]() {
+  EXPECT_TRUE(WaitFor([&] {
     base::win::ScopedVariant status =
         GetDispatchProperty(command_dispatch, L"status");
     return V_UINT(status.ptr()) == COMMAND_STATUS_COMPLETE;
@@ -1843,7 +1843,7 @@ void CloseInstallCompleteDialog(const std::wstring& child_window_text_to_find) {
                           GetLocalizedString(IDS_FRIENDLY_COMPANY_NAME_BASE));
   bool found = false;
   ASSERT_TRUE(WaitFor(
-      [&]() {
+      [&] {
         if (!found) {
           // Enumerate the top-level dialogs to find the setup dialog.
           base::win::EnumerateChildWindows(

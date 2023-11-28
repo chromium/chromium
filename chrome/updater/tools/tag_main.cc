@@ -126,7 +126,7 @@ CommandLineArguments ParseCommandLineArgs(int argc, char** argv) {
 int TagMain(int argc, char** argv) {
   const auto args = ParseCommandLineArgs(argc, argv);
   if (args.get_tag_string) {
-    const std::string tag_string = [&args]() {
+    const std::string tag_string = [&args] {
       if (args.is_exe) {
         return tagging::ExeReadTag(args.in_filename);
       }

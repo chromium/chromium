@@ -74,7 +74,7 @@ bool WaitForUpdaterExit(UpdaterScope /*scope*/) {
   const std::set<base::FilePath::StringType> process_names =
       GetTestProcessNames();
   return WaitFor(
-      [&process_names]() {
+      [&process_names] {
         return base::ranges::none_of(process_names, IsProcessRunning);
       },
       [] { VLOG(0) << "Still waiting for updater to exit..."; });

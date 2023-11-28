@@ -242,7 +242,7 @@ std::optional<std::vector<std::string>> DMPolicyManager::GetForceInstallApps()
   std::vector<std::string> force_install_apps;
   for (const auto& app_settings_proto :
        omaha_settings_.application_settings()) {
-    const std::string app_id = [&app_settings_proto, this]() {
+    const std::string app_id = [&app_settings_proto, this] {
       if (app_settings_proto.install() != kPolicyForceInstallMachine &&
           omaha_settings_.install_default() != kPolicyForceInstallMachine) {
         return std::string();

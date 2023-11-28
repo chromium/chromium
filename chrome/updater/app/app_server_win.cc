@@ -155,7 +155,7 @@ bool SwapGoogleUpdate(UpdaterScope scope,
       base::ASCIIToWide(PRODUCT_FULLNAME_STRING), true);
   list->AddSetRegValueWorkItem(
       root, UPDATER_KEY, KEY_WOW64_32KEY, kRegValueUninstallCmdLine,
-      [scope, &updater_path]() {
+      [scope, &updater_path] {
         base::CommandLine uninstall_if_unused_command(updater_path);
         uninstall_if_unused_command.AppendSwitch(kWakeSwitch);
         if (IsSystemInstall(scope)) {

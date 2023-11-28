@@ -348,7 +348,7 @@ class IntegrationTest : public ::testing::Test {
   void InstallApp(
       const std::string& app_id,
       const base::Version& version = base::Version("0.1"),
-      base::FunctionRef<void()> post_install_action = []() {}) {
+      base::FunctionRef<void()> post_install_action = [] {}) {
     test_commands_->InstallApp(app_id, version);
     post_install_action();
   }
@@ -1855,7 +1855,7 @@ class IntegrationTestDeviceManagement : public IntegrationTest {
     const base::Version version = install_v1 ? app.v1 : app.v2;
     const base::FilePath& installer_path =
         GetInstallerPath(install_v1 ? app.v1_crx : app.v2_crx);
-    InstallApp(app.appid, version, [&]() {
+    InstallApp(app.appid, version, [&] {
       base::FilePath exe_path;
       ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
 #if BUILDFLAG(IS_WIN)
@@ -2288,7 +2288,7 @@ class IntegrationTestMsi : public IntegrationTest {
   }
 
   void InstallMsiWithVersion(const base::Version& version) {
-    InstallApp(kMsiAppId, version, [&]() {
+    InstallApp(kMsiAppId, version, [&] {
       base::FilePath msi_path;
       ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &msi_path));
       msi_path = msi_path.Append(

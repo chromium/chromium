@@ -137,29 +137,29 @@ void GetComponents(
   for (const auto& id : ids) {
     base::MakeRefCounted<Installer>(
         id,
-        [&app_client_install_data, &id]() {
+        [&app_client_install_data, &id] {
           auto it = app_client_install_data.find(id);
           return it != app_client_install_data.end() ? it->second : "";
         }(),
-        [&app_install_data_index, &id]() {
+        [&app_install_data_index, &id] {
           auto it = app_install_data_index.find(id);
           return it != app_install_data_index.end() ? it->second : "";
         }(),
-        [&config, &id]() {
+        [&config, &id] {
           return config->GetPolicyService()->GetTargetChannel(id).policy_or(
               std::string());
         }(),
-        [&config, &id]() {
+        [&config, &id] {
           return config->GetPolicyService()
               ->GetTargetVersionPrefix(id)
               .policy_or(std::string());
         }(),
-        [&config, &id]() {
+        [&config, &id] {
           return config->GetPolicyService()
               ->IsRollbackToTargetVersionAllowed(id)
               .policy_or(false);
         }(),
-        [&config, &id, &is_foreground, update_blocked]() {
+        [&config, &id, &is_foreground, update_blocked] {
           if (update_blocked) {
             return true;
           }

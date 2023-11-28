@@ -1246,7 +1246,7 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::ValuesIn(std::vector<MsiTagTestMsiReadTagTestCase>{
         // tag:BRAND=QAQA.
         {"GUH-brand-only.msi",
-         []() {
+         [] {
            tagging::TagArgs tag_args;
            tag_args.brand_code = "QAQA";
            return tag_args;
@@ -1254,7 +1254,7 @@ INSTANTIATE_TEST_SUITE_P(
 
         // tag:BRAND=QAQA&.
         {"GUH-ampersand-ending.msi",
-         []() {
+         [] {
            tagging::TagArgs tag_args;
            tag_args.brand_code = "QAQA";
            return tag_args;
@@ -1267,7 +1267,7 @@ INSTANTIATE_TEST_SUITE_P(
         //   needsadmin=prefers&brand=CHMB&
         //   installdataindex=defaultbrowser.
         {"GUH-multiple.msi",
-         []() {
+         [] {
            tagging::TagArgs tag_args;
            tag_args.bundle_name = "Google Chrome";
            tag_args.installation_id = "{2D8C18E9-8D3A-4EFC-6D61-AE23E3530EA2}";
@@ -1287,7 +1287,7 @@ INSTANTIATE_TEST_SUITE_P(
 
         // MSI file size greater than `kMaxBufferLength` of 80KB.
         {"GUH-size-greater-than-max.msi",
-         []() {
+         [] {
            tagging::TagArgs tag_args;
            tag_args.bundle_name = "Google Chrome Beta";
            tag_args.brand_code = "GGLL";
@@ -1302,7 +1302,7 @@ INSTANTIATE_TEST_SUITE_P(
 
         // special character in the tag value.
         {"GUH-special-value.msi",
-         []() {
+         [] {
            tagging::TagArgs tag_args;
            tag_args.brand_code = "QA*A";
            return tag_args;

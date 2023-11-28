@@ -98,7 +98,7 @@ Matcher GetContentMatcher(
 
 Matcher GetScopeMatcher(UpdaterScope scope) {
   return base::BindLambdaForTesting([scope](const HttpRequest& request) {
-    const bool is_match = [&scope, &request]() {
+    const bool is_match = [&scope, &request] {
       const std::optional<base::Value> doc =
           base::JSONReader::Read(request.decoded_content);
       if (!doc || !doc->is_dict()) {
@@ -132,7 +132,7 @@ Matcher GetAppPriorityMatcher(const std::string& app_id,
                               UpdateService::Priority priority) {
   return base::BindLambdaForTesting(
       [app_id, priority](const HttpRequest& request) {
-        const bool is_match = [&app_id, priority, &request]() {
+        const bool is_match = [&app_id, priority, &request] {
           const std::optional<base::Value> doc =
               base::JSONReader::Read(request.decoded_content);
           if (!doc || !doc->is_dict()) {

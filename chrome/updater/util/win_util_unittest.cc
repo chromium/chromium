@@ -194,9 +194,8 @@ TEST(WinUtil, RunDeElevated_Exe) {
                     test_process_cmd_line.GetArgumentsString()));
   EXPECT_TRUE(event.TimedWait(TestTimeouts::action_max_timeout()));
 
-  EXPECT_TRUE(test::WaitFor([&]() {
-    return test::FindProcesses(kTestProcessExecutableName).empty();
-  }));
+  EXPECT_TRUE(test::WaitFor(
+      [&] { return test::FindProcesses(kTestProcessExecutableName).empty(); }));
 }
 
 TEST(WinUtil, GetOSVersion) {

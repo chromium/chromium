@@ -101,7 +101,7 @@ std::string PrintProcesses(const base::FilePath::StringType& executable_name);
 // predicate becomes true before a timeout, otherwise returns false.
 [[nodiscard]] bool WaitFor(
     base::FunctionRef<bool()> predicate,
-    base::FunctionRef<void()> still_waiting = []() {});
+    base::FunctionRef<void()> still_waiting = [] {});
 
 struct EventHolder {
   base::WaitableEvent event;

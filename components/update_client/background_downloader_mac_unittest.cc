@@ -507,7 +507,7 @@ TEST_F(BackgroundDownloaderCrashingClientTest, ClientCrash) {
           return base::WrapUnique<HttpResponse>(response.release());
         } else {
           return base::WrapUnique<HttpResponse>(
-              new InterruptedHttpResponse(base::BindLambdaForTesting([&]() {
+              new InterruptedHttpResponse(base::BindLambdaForTesting([&] {
                 CHECK(test_child_process.IsValid());
                 // Terminate the child process with extreme prejudice. SIGKILL
                 // is used to prevent the client from cleaning up.

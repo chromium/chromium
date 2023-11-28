@@ -30,7 +30,7 @@ UpdateService::AppState::~AppState() = default;
 
 std::ostream& operator<<(std::ostream& os,
                          const UpdateService::UpdateState& update_state) {
-  auto state_formatter = [update_state]() {
+  auto state_formatter = [update_state] {
     switch (update_state.state) {
       case UpdateService::UpdateState::State::kUnknown:
         return "unknown";
@@ -53,13 +53,13 @@ std::ostream& operator<<(std::ostream& os,
     }
   };
 
-  auto version_formatter = [update_state]() {
+  auto version_formatter = [update_state] {
     return update_state.next_version.IsValid()
                ? update_state.next_version.GetString()
                : "";
   };
 
-  auto error_category_formatter = [update_state]() {
+  auto error_category_formatter = [update_state] {
     switch (update_state.error_category) {
       case UpdateService::ErrorCategory::kNone:
         return "none";
