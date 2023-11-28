@@ -25,6 +25,7 @@
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
+#include "ash/wm/bounds_tracker/window_bounds_tracker.h"
 #include "ash/wm/window_util.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
@@ -657,6 +658,10 @@ void WindowTreeHostManager::OnDisplayAdded(const display::Display& display) {
   if (display::features::IsRoundedDisplayEnabled()) {
     EnableRoundedCorners(display);
   }
+
+  if (Shell::Get()->window_bounds_tracker()) {
+    should_restore_windows_on_display_addd_ = true;
+  }
 }
 
 void WindowTreeHostManager::DeleteHost(AshWindowTreeHost* host_to_delete) {
@@ -992,6 +997,11 @@ void WindowTreeHostManager::PostDisplayConfigurationChange() {
   // Enable cursor compositing, so that cursor could be mirrored to
   // destination displays along with other display content.
   Shell::Get()->UpdateCursorCompositingEnabled();
+
+  if (should_restore_windows_on_display_addd_) {
+    Shell::Get()->window_bounds_tracker()->MaybeRestoreWindowsOnDisplayAdded();
+    should_restore_windows_on_display_addd_ = false;
+  }
 }
 
 ui::EventDispatchDetails WindowTreeHostManager::DispatchKeyEventPostIME(

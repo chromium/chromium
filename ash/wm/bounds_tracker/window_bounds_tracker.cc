@@ -4,8 +4,11 @@
 
 #include "ash/wm/bounds_tracker/window_bounds_tracker.h"
 
+#include "ash/shell.h"
 #include "ash/wm/window_state.h"
+#include "ash/wm/window_util.h"
 #include "ui/aura/window.h"
+#include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 
@@ -195,6 +198,28 @@ gfx::Rect WindowBoundsTracker::RemapOrRestore(aura::Window* window,
   remapped_bounds.AdjustToFit(target_work_area);
 
   return remapped_bounds;
+}
+
+void WindowBoundsTracker::AddWindowDisplayIdOnDisplayRemoval(
+    aura::Window* window) {
+  const display::Display display =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+  CHECK(display.is_valid());
+  window_to_display_map_[window] = display.id();
+}
+
+void WindowBoundsTracker::MaybeRestoreWindowsOnDisplayAdded() {
+  auto* display_manager = Shell::Get()->display_manager();
+  auto iter = window_to_display_map_.begin();
+  while (iter != window_to_display_map_.end()) {
+    const auto display_id = iter->second;
+    if (display_manager->IsDisplayIdValid(display_id)) {
+      window_util::MoveWindowToDisplay(iter->first, display_id);
+      iter = window_to_display_map_.erase(iter);
+    } else {
+      ++iter;
+    }
+  }
 }
 
 // -----------------------------------------------------------------------------

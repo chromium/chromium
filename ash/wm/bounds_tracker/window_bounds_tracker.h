@@ -44,6 +44,14 @@ class WindowBoundsTracker : public aura::WindowObserver {
   // the work area 3) offscreen protection.
   gfx::Rect RemapOrRestore(aura::Window* window, int64_t target_display_id);
 
+  // Adds `window` and its host display id to `window_to_display_map_` before
+  // removing its host display.
+  void AddWindowDisplayIdOnDisplayRemoval(aura::Window* window);
+
+  // Checks `window_to_display_map_` to restore the windows if their previous
+  // host display is the display that was just added.
+  void MaybeRestoreWindowsOnDisplayAdded();
+
  private:
   // This defines the key of the window bounds database that stores the window's
   // bounds in each display configuration. It tracks the display's change,
@@ -91,6 +99,13 @@ class WindowBoundsTracker : public aura::WindowObserver {
       display::Display::Rotation rotation,
       const gfx::Rect& work_area);
 
+  // Stores the window's host display id when removing its host display, which
+  // will be used to restore the window when its host display being reconnected
+  // later.
+  base::flat_map<aura::Window*, int64_t> window_to_display_map_;
+
+  // TODO: Figure out how we can redesign this data structure, then extra data
+  // structures like `window_to_display_map_` above can be removed.
   // The database that stores the window's bounds in each display configuration.
   // `WindowDisplayInfo` defines the display configuration changes that we are
   // tracking. Note: stored window bounds are in parent coordinates.

@@ -52,6 +52,7 @@
 #include "ash/touch/touch_observer_hud.h"
 #include "ash/wallpaper/views/wallpaper_widget_controller.h"
 #include "ash/wm/always_on_top_controller.h"
+#include "ash/wm/bounds_tracker/window_bounds_tracker.h"
 #include "ash/wm/container_finder.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
@@ -207,10 +208,18 @@ void ReparentWindow(aura::Window* window, aura::Window* new_parent) {
       screen_util::GetDisplayWorkAreaBoundsInParent(new_parent);
 
   gfx::Rect local_bounds;
+  auto* window_bounds_tracker = Shell::Get()->window_bounds_tracker();
   if (update_bounds) {
-    local_bounds = state->window()->bounds();
-    MoveOriginRelativeToSize(src_size, dst_size, &local_bounds);
-    local_bounds.AdjustToFit(work_area_in_new_parent);
+    if (window_bounds_tracker) {
+      local_bounds = window_bounds_tracker->RemapOrRestore(
+          window, display::Screen::GetScreen()
+                      ->GetDisplayNearestWindow(new_parent)
+                      .id());
+    } else {
+      local_bounds = state->window()->bounds();
+      MoveOriginRelativeToSize(src_size, dst_size, &local_bounds);
+      local_bounds.AdjustToFit(work_area_in_new_parent);
+    }
   }
 
   if (has_restore_bounds) {
@@ -219,6 +228,14 @@ void ReparentWindow(aura::Window* window, aura::Window* new_parent) {
     restore_bounds.AdjustToFit(work_area_in_new_parent);
   }
 
+  if (window_bounds_tracker) {
+    window_bounds_tracker->AddWindowDisplayIdOnDisplayRemoval(window);
+  }
+
+  // TODO: Let `WindowBoundsTracker` maintain an observing windows list, then
+  // the window's bounds can be updated correctly inside
+  // `OnWindowRemovingRootWindow` and `OnWindowAddedToRootWindow` because of
+  // reparenting.
   new_parent->AddChild(window);
 
   // Snapped windows have bounds handled by the layout manager in AddChild().
