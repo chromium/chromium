@@ -124,22 +124,24 @@ def GenerateAutofillFieldPredictionQualityByFieldType():
 if __name__ == '__main__':
   server_field_types = ReadServerFieldTypes(FIELD_TYPES_PATH)
 
-  update_histogram_enum.UpdateHistogramFromDict('AutofillServerFieldType',
-                                                server_field_types,
-                                                FIELD_TYPES_PATH,
-                                                os.path.basename(__file__))
+  update_histogram_enum.UpdateHistogramFromDict(
+      'tools/metrics/histograms/enums.xml', 'AutofillServerFieldType',
+      server_field_types, FIELD_TYPES_PATH, os.path.basename(__file__))
 
   update_histogram_enum.UpdateHistogramFromDict(
+      'tools/metrics/histograms/enums.xml',
       'AutofilledFieldUserEditingStatusByFieldType',
       GenerateAutofilledFieldUserEditingStatusByFieldType(server_field_types),
       FIELD_TYPES_PATH, os.path.basename(__file__))
 
   update_histogram_enum.UpdateHistogramFromDict(
+      'tools/metrics/histograms/enums.xml',
       'AutofillPredictionsComparisonResult',
       GenerateAutofillPredictionsComparisonResult(server_field_types),
       FIELD_TYPES_PATH, os.path.basename(__file__))
 
   update_histogram_enum.UpdateHistogramFromDict(
+      'tools/metrics/histograms/enums.xml',
       'AutofillFieldPredictionQualityByFieldType',
       GenerateAutofillFieldPredictionQualityByFieldType(),
       FIELD_PREDICTION_GROUPS_PATH, os.path.basename(__file__))

@@ -125,9 +125,9 @@ def MaybeUpdateEnumFromFile(file_path):
   xml_dict = ParseProtocolCommandsFromXML()
   CheckDictsForCollisions(pdl_dict, xml_dict)
   files_for_enum_comment = '*.pdl files'
-  update_histogram_enum.UpdateHistogramFromDict('CDPCommands', pdl_dict,
-                                                files_for_enum_comment,
-                                                os.path.basename(__file__))
+  update_histogram_enum.UpdateHistogramFromDict(
+      'tools/metrics/histograms/enums.xml', 'CDPCommands', pdl_dict,
+      files_for_enum_comment, os.path.basename(__file__))
 
 
 def main():

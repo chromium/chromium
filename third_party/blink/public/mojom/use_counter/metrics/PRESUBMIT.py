@@ -51,6 +51,7 @@ def CheckHistograms(input_api, output_api):  # pylint: disable=C0103
         if f.LocalPath() not in _VALIDATE_HISTOGRAM_ARGS:
             continue
         presubmit_error = update_histogram_enum.CheckPresubmitErrors(
+            'tools/metrics/histograms/enums.xml',
             source_enum_path=f.LocalPath(),
             **_VALIDATE_HISTOGRAM_ARGS[f.LocalPath()])
         if presubmit_error:

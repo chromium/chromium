@@ -33,6 +33,7 @@ def _RunUmaHistogramChecks(input_api, output_api):  # pylint: disable=C0103
     start_marker = '^enum class WebSchedulerTrackedFeature {'
     end_marker = '^kMaxValue'
     presubmit_error = update_histogram_enum.CheckPresubmitErrors(
+        'tools/metrics/histograms/enums.xml',
         histogram_enum_name='WebSchedulerTrackedFeature',
         update_script_name='update_scheduler_enums.py',
         source_enum_path=source_path,

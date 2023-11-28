@@ -20,7 +20,8 @@ if __name__ == '__main__':
     sys.stderr.write(__doc__)
     sys.exit(1)
 
-  UpdateHistogramEnum(histogram_enum_name='DebugScenario',
+  UpdateHistogramEnum('tools/metrics/histograms/metadata/stability/enums.xml',
+                      histogram_enum_name='DebugScenario',
                       source_enum_path='content/common/debug_utils.h',
                       start_marker='^enum class ?DebugScenario {',
                       end_marker='^kMaxValue',
