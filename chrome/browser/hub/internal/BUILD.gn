@@ -14,7 +14,6 @@ android_library("java") {
     "//chrome/test/android:chrome_java_transit",
   ]
   sources = [
-    "android/java/src/org/chromium/chrome/browser/hub/DelegateButtonData.java",
     "android/java/src/org/chromium/chrome/browser/hub/FadeHubLayoutAnimationFactory.java",
     "android/java/src/org/chromium/chrome/browser/hub/FadeHubLayoutAnimationFactoryImpl.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubCoordinator.java",
@@ -35,7 +34,6 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/hub/PaneBackStackHandler.java",
     "android/java/src/org/chromium/chrome/browser/hub/PaneManagerImpl.java",
     "android/java/src/org/chromium/chrome/browser/hub/PaneTransitionHelper.java",
-    "android/java/src/org/chromium/chrome/browser/hub/ResourceButtonData.java",
     "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandHubLayoutAnimationFactory.java",
     "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandHubLayoutAnimatorProvider.java",
     "android/java/src/org/chromium/chrome/browser/hub/TranslateHubLayoutAnimationFactory.java",
@@ -99,7 +97,6 @@ android_library("unit_device_javatests") {
 robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.hub"
   sources = [
-    "android/java/src/org/chromium/chrome/browser/hub/DelegateButtonDataUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/FadeHubLayoutAnimationFactoryImplUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubCoordinatorUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimationRunnerImplUnitTest.java",
@@ -110,7 +107,6 @@ robolectric_library("junit") {
     "android/java/src/org/chromium/chrome/browser/hub/PaneBackStackHandlerUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/PaneManagerImplUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/PaneTransitionHelperUnitTest.java",
-    "android/java/src/org/chromium/chrome/browser/hub/ResourceButtonDataUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandHubLayoutAnimatorProviderUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/TranslateHubLayoutAnimationFactoryImplUnitTest.java",
   ]
