@@ -7,9 +7,9 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -66,7 +66,7 @@ TEST(CapabilitiesTest, HasCapability) {
   // Verify that HasCapability(|capabilities|, |key|) returns |result|.
   // |result|.
   for (size_t i = 0; i < std::size(data); ++i) {
-    std::vector<base::StringPiece> caps =
+    std::vector<std::string_view> caps =
         base::SplitStringPiece(data[i].capabilities, " ", base::KEEP_WHITESPACE,
                                base::SPLIT_WANT_NONEMPTY);
     do {
@@ -98,7 +98,7 @@ TEST(CapabilitiesTest, Intersect) {
   // Verify that intersection of |right| with all permutations of |left| yields
   // |result|.
   for (size_t i = 0; i < std::size(data); ++i) {
-    std::vector<base::StringPiece> caps = base::SplitStringPiece(
+    std::vector<std::string_view> caps = base::SplitStringPiece(
         data[i].left, " ", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     do {
       EXPECT_EQ(data[i].result,

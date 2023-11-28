@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include <optional>
@@ -220,7 +221,7 @@ class It2MeHostTest : public testing::Test, public It2MeHost::Observer {
   void OnStateChanged(It2MeHostState state, ErrorCode error_code) override;
 
   void SetPolicies(
-      std::initializer_list<std::pair<base::StringPiece, const base::Value&>>
+      std::initializer_list<std::pair<std::string_view, const base::Value&>>
           policies);
 
   void RunUntilStateChanged(It2MeHostState expected_state);
@@ -231,7 +232,7 @@ class It2MeHostTest : public testing::Test, public It2MeHost::Observer {
   void StartHost(std::optional<ChromeOsEnterpriseParams> enterprise_params);
   void ShutdownHost();
 
-  static base::Value MakeList(std::initializer_list<base::StringPiece> values);
+  static base::Value MakeList(std::initializer_list<std::string_view> values);
 
   ChromotingHost* GetHost() { return it2me_host_->host_.get(); }
 
@@ -332,7 +333,7 @@ void It2MeHostTest::OnValidationComplete(base::OnceClosure resume_callback,
 }
 
 void It2MeHostTest::SetPolicies(
-    std::initializer_list<std::pair<base::StringPiece, const base::Value&>>
+    std::initializer_list<std::pair<std::string_view, const base::Value&>>
         policies) {
   policies_.emplace();
   for (const auto& policy : policies) {
@@ -475,7 +476,7 @@ void It2MeHostTest::ShutdownHost() {
 }
 
 base::Value It2MeHostTest::MakeList(
-    std::initializer_list<base::StringPiece> values) {
+    std::initializer_list<std::string_view> values) {
   base::Value::List result;
   for (const auto& value : values) {
     result.Append(value);

@@ -34,7 +34,7 @@ ProtobufHttpStreamParser::ProtobufHttpStreamParser(
 
 ProtobufHttpStreamParser::~ProtobufHttpStreamParser() = default;
 
-void ProtobufHttpStreamParser::Append(base::StringPiece data) {
+void ProtobufHttpStreamParser::Append(std::string_view data) {
   int required_remaining_capacity = data.size() + kReadBufferSpareCapacity;
   if (!read_buffer_) {
     read_buffer_ = base::MakeRefCounted<net::GrowableIOBuffer>();

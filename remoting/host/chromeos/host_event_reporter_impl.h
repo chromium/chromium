@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/strings/string_piece.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/crd_event.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "remoting/host/host_event_reporter.h"

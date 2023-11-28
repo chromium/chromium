@@ -10,7 +10,6 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "remoting/base/protobuf_http_status.h"
 #include "remoting/base/protobuf_http_stream_parser.h"

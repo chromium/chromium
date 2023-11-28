@@ -37,8 +37,8 @@ std::string GetSharedSecretHash(const std::string& tag,
 
 // static
 std::string GetAuthBytes(net::SSLSocket* socket,
-                         const base::StringPiece& label,
-                         const base::StringPiece& shared_secret) {
+                         const std::string_view& label,
+                         const std::string_view& shared_secret) {
   // Get keying material from SSL.
   unsigned char key_material[kAuthDigestLength];
   int export_result = socket->ExportKeyingMaterial(

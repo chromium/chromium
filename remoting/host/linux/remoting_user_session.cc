@@ -33,6 +33,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -45,7 +46,6 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/process/launch.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 
 namespace {
@@ -100,7 +100,7 @@ void PrintUsage() {
 // different shells. Returns nullopt when argument contains a newline, which
 // can't be represented in a cross-shell fashion.
 std::optional<std::string> ShellEscapeArgument(
-    const base::StringPiece argument) {
+    const std::string_view argument) {
   std::string result;
   for (char character : argument) {
     // csh in particular doesn't provide a good way to handle this
@@ -242,7 +242,7 @@ class PamHandle {
   }
 
   // Sets a PAM environment variable.
-  int PutEnv(base::StringPiece name, base::StringPiece value) {
+  int PutEnv(std::string_view name, std::string_view value) {
     std::string name_value = base::StrCat({name, "=", value});
     return last_return_code_ = pam_putenv(pam_handle_, name_value.c_str());
   }
@@ -276,7 +276,7 @@ class PamHandle {
   }
 
   // Logs a fatal error if return_code isn't PAM_SUCCESS
-  void CheckReturnCode(int return_code, base::StringPiece what) {
+  void CheckReturnCode(int return_code, std::string_view what) {
     if (return_code != PAM_SUCCESS) {
       LOG(FATAL) << "[PAM] " << what << ": " << ErrorString(return_code);
     }
@@ -628,8 +628,8 @@ void HandleAlarm(int) {
 // Relay messages from the host session and then exit.
 void WaitForMessagesAndExit(int read_fd, const std::string& log_name) {
   // Use initializer-list syntax to avoid trailing null
-  static const base::StringPiece kMessagePrefix = "MSG:";
-  static const base::StringPiece kReady = "READY\n";
+  static const std::string_view kMessagePrefix = "MSG:";
+  static const std::string_view kReady = "READY\n";
 
   struct sigaction action = {};
   sigemptyset(&action.sa_mask);
@@ -658,7 +658,7 @@ void WaitForMessagesAndExit(int read_fd, const std::string& log_name) {
   bool host_ready = false;
   while ((line_size = getline(&buffer, &buffer_size, stream)) >= 0) {
     message_received = true;
-    base::StringPiece line(buffer, line_size);
+    std::string_view line(buffer, line_size);
     if (base::StartsWith(line, kMessagePrefix, base::CompareCase::SENSITIVE)) {
       line.remove_prefix(kMessagePrefix.size());
       std::fwrite(line.data(), sizeof(char), line.size(), stderr);

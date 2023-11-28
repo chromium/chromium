@@ -5,10 +5,11 @@
 #ifndef REMOTING_BASE_PROTOBUF_HTTP_STREAM_PARSER_H_
 #define REMOTING_BASE_PROTOBUF_HTTP_STREAM_PARSER_H_
 
+#include <string_view>
+
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 
 namespace google {
 namespace protobuf {
@@ -43,7 +44,7 @@ class ProtobufHttpStreamParser final {
 
   // Appends the stream data (which should be the partial or full serialized
   // StreamBody) and runs callbacks if there is something decodable.
-  void Append(base::StringPiece data);
+  void Append(std::string_view data);
 
   // Indicates whether the parser has pending data that needs more input to
   // complete a StreamBody message.

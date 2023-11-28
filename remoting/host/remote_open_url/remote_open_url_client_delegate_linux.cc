@@ -6,6 +6,8 @@
 
 #include <gtk/gtk.h>
 
+#include <string_view>
+
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
@@ -45,7 +47,7 @@ void ShowMessageDialog(const std::string& message) {
 
 bool IsBrowserValid(const std::string& browser) {
   static constexpr auto invalid_browsers =
-      base::MakeFixedFlatSet<base::StringPiece>({
+      base::MakeFixedFlatSet<std::string_view>({
           // This is the chromoting forwarder itself.
           "crd-url-forwarder.desktop",
 

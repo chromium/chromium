@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <string_view>
 #include <utility>
 
 #include "base/base64.h"
@@ -51,7 +52,7 @@ PairingRegistry::Pairing PairingRegistry::Pairing::Create(
   std::string shared_secret;
   char buffer[kKeySize];
   crypto::RandBytes(buffer, std::size(buffer));
-  base::Base64Encode(base::StringPiece(buffer, std::size(buffer)),
+  base::Base64Encode(std::string_view(buffer, std::size(buffer)),
                      &shared_secret);
   return Pairing(created_time, client_name, client_id, shared_secret);
 }

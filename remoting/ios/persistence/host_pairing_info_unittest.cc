@@ -5,7 +5,6 @@
 #import "remoting/ios/persistence/host_pairing_info.h"
 
 #include "base/json/json_string_value_serializer.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/sys_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

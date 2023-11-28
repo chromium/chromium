@@ -6,10 +6,10 @@
 #define REMOTING_PROTOCOL_WEBRTC_EVENT_LOG_DATA_H_
 
 #include <cstdint>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
-#include "base/strings/string_piece.h"
 
 namespace remoting::protocol {
 
@@ -43,7 +43,7 @@ class WebrtcEventLogData {
   // than RTCP packets). If that ever happens, the log_event will be stored in
   // a new section anyway - the buffer's reserved capacity may be exceeded and
   // re-allocation may occur.
-  void Write(base::StringPiece log_event);
+  void Write(std::string_view log_event);
 
   // Removes all event data, so the instance can be reused.
   void Clear();
