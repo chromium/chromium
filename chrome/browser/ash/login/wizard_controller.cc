@@ -1801,19 +1801,19 @@ void WizardController::OnWelcomeScreenExit(WelcomeScreen::Result result) {
   OnScreenExit(WelcomeView::kScreenId, WelcomeScreen::GetResultString(result));
 
   switch (result) {
-    case WelcomeScreen::Result::SETUP_DEMO:
+    case WelcomeScreen::Result::kSetupDemo:
       StartDemoModeSetup();
       return;
-    case WelcomeScreen::Result::ENABLE_DEBUGGING:
+    case WelcomeScreen::Result::kEnableDebugging:
       ShowEnableDebuggingScreen();
       return;
-    case WelcomeScreen::Result::NEXT_OS_INSTALL:
+    case WelcomeScreen::Result::kNextOSInstall:
       ShowOsTrialScreen();
       return;
-    case WelcomeScreen::Result::NEXT:
+    case WelcomeScreen::Result::kNext:
       ShowNetworkScreen();
       return;
-    case WelcomeScreen::Result::QUICK_START:
+    case WelcomeScreen::Result::kQuickStart:
       ShowQuickStartScreen();
       return;
   }

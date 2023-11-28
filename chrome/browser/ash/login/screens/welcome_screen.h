@@ -67,11 +67,11 @@ class WelcomeScreen : public BaseScreen,
   };
 
   enum class Result {
-    NEXT,
-    NEXT_OS_INSTALL,
-    SETUP_DEMO,
-    ENABLE_DEBUGGING,
-    QUICK_START
+    kNext,
+    kNextOSInstall,
+    kSetupDemo,
+    kEnableDebugging,
+    kQuickStart
   };
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
