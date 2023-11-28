@@ -56,6 +56,14 @@ export class ResetSettingsCardElement extends ResetSettingsCardElementBase {
         },
       },
 
+      isRevampWayfindingEnabled_: {
+        type: Boolean,
+        value() {
+          return isRevampWayfindingEnabled();
+        },
+        readOnly: true,
+      },
+
       /**
        * Used by DeepLinkingMixin to focus this page's deep links.
        */
@@ -67,14 +75,15 @@ export class ResetSettingsCardElement extends ResetSettingsCardElementBase {
   }
 
   private installedESimProfiles_: ESimProfileRemote[];
+  private readonly isRevampWayfindingEnabled_: boolean;
   private route_: Route;
   private showPowerwashDialog_: boolean;
 
   constructor() {
     super();
 
-    this.route_ = isRevampWayfindingEnabled() ? routes.SYSTEM_PREFERENCES :
-                                                routes.OS_RESET;
+    this.route_ = this.isRevampWayfindingEnabled_ ? routes.SYSTEM_PREFERENCES :
+                                                    routes.OS_RESET;
   }
 
   private async onShowPowerwashDialog_(e: Event): Promise<void> {
