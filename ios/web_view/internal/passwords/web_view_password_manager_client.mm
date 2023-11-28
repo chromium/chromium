@@ -236,6 +236,8 @@ void WebViewPasswordManagerClient::NotifyUserCredentialsWereLeaked(
                                 username:username];
 }
 
+void WebViewPasswordManagerClient::NotifyKeychainError() {}
+
 bool WebViewPasswordManagerClient::IsSavingAndFillingEnabled(
     const GURL& url) const {
   return *saving_passwords_enabled_ && !IsOffTheRecord() &&

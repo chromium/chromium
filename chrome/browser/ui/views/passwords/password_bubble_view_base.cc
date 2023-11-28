@@ -32,6 +32,10 @@
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "ui/views/controls/button/button.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/views/passwords/password_relaunch_chrome_view.h"
+#endif
+
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #include "chrome/browser/ui/views/passwords/biometric_authentication_confirmation_bubble_view.h"
 #include "chrome/browser/ui/views/passwords/biometric_authentication_for_filling_bubble_view.h"
@@ -131,6 +135,13 @@ PasswordBubbleViewBase* PasswordBubbleViewBase::CreateBubble(
   } else if (model_state ==
              password_manager::ui::NOTIFY_RECEIVED_SHARED_CREDENTIALS) {
     view = new SharedPasswordsNotificationView(web_contents, anchor_view);
+#if BUILDFLAG(IS_MAC)
+  } else if (model_state == password_manager::ui::KEYCHAIN_ERROR_STATE) {
+    view = new RelaunchChromeView(
+        web_contents, anchor_view,
+        Profile::FromBrowserContext(web_contents->GetBrowserContext())
+            ->GetPrefs());
+#endif
   } else {
     NOTREACHED_NORETURN();
   }

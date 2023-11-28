@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/passwords/views_utils.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/fill_layout.h"
@@ -35,6 +36,7 @@ RelaunchChromeView::RelaunchChromeView(content::WebContents* web_contents,
   auto label = std::make_unique<views::Label>();
   label->SetText(controller_.GetBody());
   label->SetMultiLine(/*multi_line=*/true);
+  label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   AddChildView(std::move(label));
 
   SetAcceptCallback(base::BindOnce(&RelaunchChromeBubbleController::OnAccepted,

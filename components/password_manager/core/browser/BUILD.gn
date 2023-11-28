@@ -184,6 +184,7 @@ static_library("browser") {
     "//components/autofill/core/common",
     "//components/device_reauth",
     "//components/favicon/core",
+    "//components/os_crypt/sync:os_crypt",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/browser/form_parsing",
     "//components/password_manager/core/browser/generation",

@@ -252,6 +252,9 @@ class PasswordManagerClient {
   virtual void NotifyOnSuccessfulLogin(
       const std::u16string& submitted_username) {}
 
+  // Informs that that Keychain is not available.
+  virtual void NotifyKeychainError() = 0;
+
   // Informs that a credential filled by Touch To Fill can be submitted.
   // TODO(crbug.com/1299394): Remove when the TimeToSuccessfulLogin metric is
   // deprecated.

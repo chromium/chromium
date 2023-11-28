@@ -112,6 +112,7 @@ class ManagePasswordsUIController
   void ShowBiometricActivationConfirmation() override;
   void OnBiometricAuthBeforeFillingDeclined() override;
   void OnAddUsernameSaveClicked(const std::u16string& username) override;
+  void OnKeychainError() override;
 
   virtual void NotifyUnsyncedCredentialsWillBeDeleted(
       std::vector<password_manager::PasswordForm> unsynced_credentials);

@@ -55,6 +55,7 @@ class StubPasswordManagerClient : public PasswordManagerClient {
   void NotifySuccessfulLoginWithExistingPassword(
       std::unique_ptr<PasswordFormManagerForUI> submitted_manager) override;
   void NotifyStorePasswordCalled() override;
+  void NotifyKeychainError() override;
   void AutomaticPasswordSave(
       std::unique_ptr<PasswordFormManagerForUI> saved_manager,
       bool is_update_confirmation) override;

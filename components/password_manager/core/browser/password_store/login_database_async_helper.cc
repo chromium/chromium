@@ -133,10 +133,20 @@ LoginsResultOrError LoginDatabaseAsyncHelper::FillMatchingLogins(
   std::vector<PasswordForm> results;
   for (const auto& form : forms) {
     std::vector<PasswordForm> matched_forms;
-    if (!login_db_ || !login_db_->GetLogins(form, include_psl, &matched_forms))
+    if (!login_db_ ||
+        !login_db_->GetLogins(form, include_psl, &matched_forms)) {
+#if BUILDFLAG(IS_MAC)
+      return PasswordStoreBackendError(
+          OSCrypt::IsEncryptionAvailable()
+              ? PasswordStoreBackendErrorType::kUncategorized
+              : PasswordStoreBackendErrorType::kKeychainError,
+          PasswordStoreBackendErrorRecoveryType::kUnrecoverable);
+#else
       return PasswordStoreBackendError(
           PasswordStoreBackendErrorType::kUncategorized,
           PasswordStoreBackendErrorRecoveryType::kUnrecoverable);
+#endif
+    }
     results.insert(results.end(),
                    std::make_move_iterator(matched_forms.begin()),
                    std::make_move_iterator(matched_forms.end()));
