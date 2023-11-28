@@ -2365,6 +2365,28 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Accessibility.ScreenAI.Service.Initialization"
+    enum="BooleanSuccess" expires_after="2024-10-01">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records if launching the ScreenAI service was successful or not.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.ScreenAI.Service.InitializationTime.{Result}"
+    units="ms" expires_after="2024-10-01">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records how long it took for the ScreenAI service to {Result}.
+  </summary>
+  <token key="Result">
+    <variant name="Failure" summary="fail initialization"/>
+    <variant name="Success" summary="initialize successfully"/>
+  </token>
+</histogram>
+
 <histogram name="Accessibility.ScreenAI.VisualAnnotator.NodesCount"
     units="count" expires_after="2023-11-28">
   <owner>kyungjunlee@google.com</owner>
