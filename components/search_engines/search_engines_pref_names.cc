@@ -77,4 +77,12 @@ const char kSearchProviderOverridesVersion[] =
 // local state, not the profile prefs.
 const char kSearchEnginesChoiceProfile[] = "search_engines.choice_profile";
 
+// String that refers to the study group in which this install was enrolled.
+// Used to implement the first run experiment tracking.
+// NOTE: Unlike most of the other preferences here, this one is stored in the
+// local state, not the profile prefs.
+// TODO(b/313067383): Clean up experiment setup.
+const char kSearchEnginesStudyGroup[] =
+    "search_engines.client_side_study_group";
+
 }  // namespace prefs
