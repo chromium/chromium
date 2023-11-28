@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert.js';
+
 import {queryRequiredElement} from '../../common/js/dom_utils.js';
 
 import {FileListModel} from './file_list_model.js';
@@ -16,6 +18,7 @@ export class SortMenuController {
   constructor(
       sortButton: MultiMenuButton, private fileListModel_: FileListModel) {
     const menu = sortButton.menu;
+    assert(menu);
     this.sortByNameButton_ =
         queryRequiredElement('#sort-menu-sort-by-name', menu);
     this.sortBySizeButton_ =

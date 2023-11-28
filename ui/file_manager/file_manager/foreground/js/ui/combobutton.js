@@ -142,6 +142,7 @@ export class ComboButton extends MultiMenuButton {
    * @param {!Element} el Element to be decorated.
    * @return {!ComboButton} Decorated element.
    * @public
+   * @override
    */
   static decorate(el) {
     // Add the ComboButton methods to the element we're
@@ -205,6 +206,7 @@ export class ComboButton extends MultiMenuButton {
 
   /**
    * Initializes the element.
+   * @override
    */
   decorate() {
     // @ts-ignore: error TS2339: Property 'decorate' does not exist on type
