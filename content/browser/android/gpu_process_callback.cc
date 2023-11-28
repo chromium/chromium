@@ -7,6 +7,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/android/unguessable_token_android.h"
 #include "base/functional/overloaded.h"
+#include "base/logging.h"
 #include "content/browser/android/scoped_surface_request_manager.h"
 #include "content/common/android/surface_wrapper.h"
 #include "content/public/android/content_jni_headers/GpuProcessCallback_jni.h"
