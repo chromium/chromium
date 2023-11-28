@@ -17966,32 +17966,6 @@
             ]
         }
     ],
-    "SubprocessMetricsAsync": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled,PeriodicMergeAsync,DeregisterAsync",
-                    "params": {
-                        "DeregisterAsync": "true",
-                        "DeregisterSequenced": "false",
-                        "PeriodicMergeAsync": "true"
-                    },
-                    "enable_features": [
-                        "SubprocessMetricsAsync"
-                    ]
-                }
-            ]
-        }
-    ],
     "SubstringSetTreeForAttributeBuckets": [
         {
             "platforms": [

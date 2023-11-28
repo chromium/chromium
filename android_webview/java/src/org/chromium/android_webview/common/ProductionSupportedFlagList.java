@@ -518,9 +518,6 @@ public final class ProductionSupportedFlagList {
                 "Disable the per-domain blocking for 3D APIs after GPU reset. "
                         + "This switch is intended only for tests."),
         Flag.baseFeature(
-                MetricsFeatures.SUBPROCESS_METRICS_ASYNC,
-                "Controls whether to merge subprocess metrics asynchronously."),
-        Flag.baseFeature(
                 MetricsFeatures.METRICS_SERVICE_ALLOW_EARLY_LOG_CLOSE,
                 "Controls whether a log is allowed to be closed when Chrome"
                         + " is backgrounded/foregrounded early."),
