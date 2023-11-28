@@ -16,13 +16,12 @@
   SnapshotID _snapshotID;
 }
 
-- (instancetype)initWithWebState:(web::WebState*)webState
-                      snapshotID:(SnapshotID)snapshotID {
+- (instancetype)initWithGenerator:(SnapshotGenerator*)generator
+                       snapshotID:(SnapshotID)snapshotID {
   if ((self = [super init])) {
-    DCHECK(webState);
     DCHECK(snapshotID.valid());
+    _snapshotGenerator = generator;
     _snapshotID = snapshotID;
-    _snapshotGenerator = [[SnapshotGenerator alloc] initWithWebState:webState];
   }
   return self;
 }

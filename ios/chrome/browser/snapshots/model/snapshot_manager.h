@@ -12,10 +12,6 @@ class SnapshotID;
 @class SnapshotGenerator;
 @protocol SnapshotGeneratorDelegate;
 
-namespace web {
-class WebState;
-}
-
 // A class that takes care of creating, storing and returning snapshots of a
 // tab's web page. This lives on the UI thread.
 @interface SnapshotManager : NSObject
@@ -32,8 +28,8 @@ class WebState;
 @property(nonatomic, readonly) SnapshotID snapshotID;
 
 // Designated initializer.
-- (instancetype)initWithWebState:(web::WebState*)webState
-                      snapshotID:(SnapshotID)snapshotID
+- (instancetype)initWithGenerator:(SnapshotGenerator*)generator
+                       snapshotID:(SnapshotID)snapshotID
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
