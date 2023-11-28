@@ -148,12 +148,8 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
       SharedImageInterface::CreateGpuMemoryBufferForUseByScopedMapping(
           GpuMemoryBufferHandleInfo(std::move(buffer_handle), format, size,
                                     buffer_usage));
-  {
-    base::AutoLock lock(lock_);
-    mailbox_to_gmb_map_[mailbox] = std::move(gpu_memory_buffer);
-  }
-
-  return base::MakeRefCounted<ClientSharedImage>(AddMailbox(mailbox));
+  return base::MakeRefCounted<ClientSharedImage>(AddMailbox(mailbox),
+                                                 std::move(gpu_memory_buffer));
 }
 
 scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
@@ -237,11 +233,6 @@ void ClientSharedImageInterface::DestroySharedImage(const SyncToken& sync_token,
     mailboxes_.erase(it);
   }
   proxy_->DestroySharedImage(sync_token, mailbox);
-
-  {
-    base::AutoLock lock(lock_);
-    mailbox_to_gmb_map_.erase(mailbox);
-  }
 }
 
 void ClientSharedImageInterface::DestroySharedImage(
@@ -263,23 +254,8 @@ void ClientSharedImageInterface::AddReferenceToSharedImage(
 std::unique_ptr<SharedImageInterface::ScopedMapping>
 ClientSharedImageInterface::MapSharedImage(
     const scoped_refptr<gpu::ClientSharedImage>& client_shared_image) {
-  const auto& mailbox = client_shared_image->mailbox();
-  gfx::GpuMemoryBuffer* gpu_memory_buffer = nullptr;
-  {
-    base::AutoLock lock(lock_);
-    auto it = mailbox_to_gmb_map_.find(mailbox);
-
-    // The mailbox for which the query is made must be present.
-    CHECK(it != mailbox_to_gmb_map_.end());
-    gpu_memory_buffer = it->second.get();
-  }
-
-  // The GMB must be present as it should have been populated while creating the
-  // mailbox.
-  CHECK(gpu_memory_buffer);
-
-  auto scoped_mapping =
-      SharedImageInterface::ScopedMapping::Create(gpu_memory_buffer);
+  auto scoped_mapping = SharedImageInterface::ScopedMapping::Create(
+      client_shared_image->gpu_memory_buffer());
   if (!scoped_mapping) {
     LOG(ERROR) << "Unable to create ScopedMapping.";
     return nullptr;

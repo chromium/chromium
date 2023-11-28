@@ -103,6 +103,7 @@ source_set("client_sources") {
   # These files now rely on Skia which isn't allowed as a dependency in nacl builds.
   if (!is_nacl && !is_minimal_toolchain) {
     sources += [
+      "client_shared_image.cc",
       "client_shared_image.h",
       "shared_image_interface.cc",
       "shared_image_interface.h",
