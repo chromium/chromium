@@ -138,7 +138,10 @@
                         "external/wpt/requestidlecallback",
                         "external/wpt/scheduler/tentative/yield/yield-priority-idle-callbacks.html",
                         "http/tests/devtools/isolated-code-cache"],
-    "args": ["--enable-threaded-compositing"],
+    "args": [
+      "--disable-features=DeprecateUnload",
+      "--enable-threaded-compositing"
+    ],
     "expires": "Jul 1, 2023"
   },
   {
