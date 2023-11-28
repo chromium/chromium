@@ -145,10 +145,6 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
                       const EncodeOptions& options,
                       bool discard_output);
 
-  // Get supported profiles for specific codec.
-  VideoEncodeAccelerator::SupportedProfiles GetSupportedProfilesForCodec(
-      VideoCodec codec);
-
   // Activates the asynchronous encoder instance |encoder_| according to codec
   // merit.
   bool ActivateAsyncEncoder(IMFActivate** pp_activates,
