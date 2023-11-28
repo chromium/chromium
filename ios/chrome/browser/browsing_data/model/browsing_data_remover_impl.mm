@@ -373,8 +373,8 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
     sessions::TabRestoreService* tab_service =
         IOSChromeTabRestoreServiceFactory::GetForBrowserState(browser_state_);
     if (tab_service) {
-      tab_service->ClearEntries();
       tab_service->DeleteLastSession();
+      tab_service->ClearEntries();
     }
 
     // The saved Autofill profiles and credit cards can include the origin from
