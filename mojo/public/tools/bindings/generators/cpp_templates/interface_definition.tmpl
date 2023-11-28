@@ -50,6 +50,34 @@ bool {{iface.name}}::RuntimeFeature_IsEnabled_(bool expected) {
 }
 {%- endmacro %}
 
+{%- macro check_feature_for_method(method) %}
+{%-   if method.runtime_feature %}
+{%-     set feature_cpp = method.runtime_feature|get_qualified_name_for_feature %}
+CHECK(base::FeatureList::IsEnabled({{feature_cpp}}));
+{%-   endif %}
+{%- endmacro %}
+
+{#--- Function with signature of GenericValidationInfo.request_validator ---#}
+{%- macro define_validate_with_runtime_feature(class_name, method) %}
+{%-  set feature_cpp = method.runtime_feature|get_qualified_name_for_feature %}
+bool ValidateWithRuntimeFeature_{{class_name}}_{{method.name}}(
+  const void* data, mojo::internal::ValidationContext* validation_context) {
+  if (!base::FeatureList::IsEnabled({{feature_cpp}})) {
+    return false;
+  }
+  return internal::{{class_name}}_{{method.name}}_Params_Data::Validate(
+    data, validation_context);
+}
+{%- endmacro %}
+
+{%- macro request_validator(class_name, method) %}
+{%-   if method.runtime_feature -%}
+&ValidateWithRuntimeFeature_{{class_name}}_{{method.name}}
+{%-   else -%}
+&internal::{{class_name}}_{{method.name}}_Params_Data::Validate
+{%-   endif -%}
+{%- endmacro -%}
+
 {#--- Begin #}
 const char {{class_name}}::Name_[] = "{{module_namespace}}.{{class_name}}";
 {%-  if interface.uuid %}
@@ -228,6 +256,7 @@ bool {{proxy_name}}::{{method.name}}(
 {%-     set event_name = "%s::%s" % (class_name, method.name) %}
   {{interface_macros.trace_event(method_name=event_name)}}
 #endif
+  {{check_feature_for_method(method)|indent(2)}}
   const bool kExpectsResponse = true;
   const bool kIsSync = true;
   const bool kAllowInterrupt =
@@ -289,6 +318,7 @@ void {{proxy_name}}::{{method.name}}(
                                  method_name=event_name,
                                  parameter_group="input_parameters")}}
 #endif
+{{check_feature_for_method(method)|indent(2)}}
 {%- if method.response_parameters != None %}
   const bool kExpectsResponse = true;
 {%- else %}
@@ -626,12 +656,24 @@ bool {{class_name}}StubDispatch::AcceptWithResponder(
   return false;
 }
 
+{#--- Feature validators for methods with [RuntimeFeature=] ---#}
+{%- if interface.methods|selectattr('runtime_feature') %}
+namespace {
+{%-   for method in interface.methods %}
+{%-     if method.runtime_feature %}
+{{ define_validate_with_runtime_feature(class_name, method)}}
+{%-     endif %}
+{%-   endfor %}
+}  // namespace
+{%- endif %}
+
+{#--- Table of validation functions (packed or sparse) ---#}
 {% if interface.methods and (interface | has_packed_method_ordinals) %}
 static const mojo::internal::GenericValidationInfo k{{class_name}}ValidationInfo[] = {
 {%-   for i in range(interface.methods | map(attribute='ordinal') | max + 1) -%}
 {%-     set method = (interface.methods | selectattr('ordinal', 'equalto', i) | list)[0] %}
 {%-     if method %}
-    {&internal::{{class_name}}_{{method.name}}_Params_Data::Validate,
+    { {{request_validator(class_name, method)}},
 {%-       if method.response_parameters != None %}
      &internal::{{class_name}}_{{method.name}}_ResponseParams_Data::Validate},
 {%-       else %}
@@ -646,7 +688,7 @@ static const mojo::internal::GenericValidationInfo k{{class_name}}ValidationInfo
 static const std::pair<uint32_t, mojo::internal::GenericValidationInfo> k{{class_name}}ValidationInfo[] = {
 {%-   for method in interface.methods %}
     {internal::k{{class_name}}_{{method.name}}_Name,
-     {&internal::{{class_name}}_{{method.name}}_Params_Data::Validate,
+     { {{request_validator(class_name, method)}},
 {%-     if method.response_parameters != None %}
       &internal::{{class_name}}_{{method.name}}_ResponseParams_Data::Validate}},
 {%-     else %}

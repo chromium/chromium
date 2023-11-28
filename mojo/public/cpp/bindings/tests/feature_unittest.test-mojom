@@ -40,6 +40,9 @@ interface FeaturesOnMethods {
   [RuntimeFeature=TestFeatureOff]
   DefaultDenied() => (int32 ret);
 
+  [RuntimeFeature=TestFeatureOff, Sync]
+  DefaultDeniedSync() => (int32 ret);
+
   [RuntimeFeature=TestFeatureOn]
   DefaultAllowed() => (int32 ret);
 

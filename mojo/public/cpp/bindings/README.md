@@ -932,6 +932,26 @@ interface PassesInterfaces {
   }
 ```
 
+### RuntimeFeature on methods
+
+If a method is marked with a `RuntimeFeature` attribute it is not possible to
+call that method on a remote (attempting to do so will result in a CHECK()),
+and receivers will reject incoming messages at the validation stage, causing
+their linked remote to become disconnected.
+
+```mojom
+// Feature controls runtime availability of interface.
+interface NormalInterface {
+  [RuntimeFeature=related.module.mojom.kFeature]
+  GetInt() => (int32 ret);
+};
+```
+
+```C++
+mojo::Remote<mojom::NormalInterface> remote;
+remote->GetInt();  // CHECKs if kFeature is not enabled.
+```
+
 ## Other Interface Binding Types
 
 The [Interfaces](#Interfaces) section above covers basic usage of the most

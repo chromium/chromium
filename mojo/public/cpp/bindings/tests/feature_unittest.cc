@@ -163,7 +163,10 @@ class FeaturesOnMethodsImpl : public mojom::FeaturesOnMethods {
  public:
   explicit FeaturesOnMethodsImpl(
       mojo::PendingReceiver<mojom::FeaturesOnMethods> receiver)
-      : receiver_(this, std::move(receiver)) {}
+      : receiver_(this, std::move(receiver)), assoc_receiver_(nullptr) {}
+  explicit FeaturesOnMethodsImpl(
+      mojo::PendingAssociatedReceiver<mojom::FeaturesOnMethods> receiver)
+      : receiver_(nullptr), assoc_receiver_(this, std::move(receiver)) {}
 
   ~FeaturesOnMethodsImpl() override = default;
 
@@ -174,6 +177,9 @@ class FeaturesOnMethodsImpl : public mojom::FeaturesOnMethods {
   void DefaultDenied(DefaultDeniedCallback callback) override {
     std::move(callback).Run(1);
   }
+  void DefaultDeniedSync(DefaultDeniedCallback callback) override {
+    std::move(callback).Run(1);
+  }
   void DefaultAllowed(DefaultAllowedCallback callback) override {
     std::move(callback).Run(1);
   }
@@ -181,6 +187,7 @@ class FeaturesOnMethodsImpl : public mojom::FeaturesOnMethods {
 
  private:
   mojo::Receiver<mojom::FeaturesOnMethods> receiver_;
+  mojo::AssociatedReceiver<mojom::FeaturesOnMethods> assoc_receiver_;
 };
 
 class PassesInterfacesImpl : public mojom::PassesInterfaces {
@@ -344,6 +351,39 @@ TEST_P(FeatureBindingsTest, FeaturesOnMethodsAllowed) {
   remote->Normal(base::BindLambdaForTesting([&](int) { run_loop2.Quit(); }));
   run_loop2.Run();
   EXPECT_FALSE(error);
+}
+
+TEST_P(FeatureBindingsTest, FeaturesOnReceiverDenied) {
+  if (GetParam() == mojo::BindingsTestSerializationMode::kNeverSerialize) {
+    return;
+  }
+  // Validate that disabled methods on `FeaturesOnMethods` cannot be called.
+  bool called = false;
+  bool called_disconnect = false;
+  base::RunLoop run_loop;
+
+  Remote<mojom::FeaturesOnMethods> remote;
+  auto pending_receiver = remote.BindNewPipeAndPassReceiver();
+
+  remote.set_disconnect_handler(base::BindLambdaForTesting([&] {
+    called_disconnect = true;
+    run_loop.Quit();
+  }));
+
+  {
+    // Queue to the pending_receiver with the feature enabled.
+    // --enable-features=TestFeatureOff.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitFromCommandLine("TestFeatureOff", "");
+    remote->DefaultDenied(
+        base::BindLambdaForTesting([&](int) { called = true; }));
+  }
+  // Receiver can now process messages and TestFeatureOff is now disabled.
+  FeaturesOnMethodsImpl impl(std::move(pending_receiver));
+  run_loop.Run();
+
+  EXPECT_FALSE(called);
+  EXPECT_TRUE(called_disconnect);
 }
 
 TEST_P(FeatureBindingsTest, PassesInterfacesAllowed) {
@@ -799,6 +839,50 @@ TEST_P(FeatureBindingsTest, RemoteSetDenied) {
 }
 
 #endif  // !DCHECK_IS_ON()
+
+////
+//  Death tests - these are flaky on Android.
+////
+#if defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
+using FeatureBindingsDeathTest = FeatureBindingsTest;
+
+TEST_P(FeatureBindingsDeathTest, MethodsOnRemoteDenied) {
+  // Validate that disabled methods on `FeaturesOnMethods` cannot be called.
+  bool called = false;
+  Remote<mojom::FeaturesOnMethods> remote;
+  FeaturesOnMethodsImpl impl(remote.BindNewPipeAndPassReceiver());
+  EXPECT_DEATH(remote->DefaultDenied(
+                   base::BindLambdaForTesting([&](int) { called = true; })),
+               "");
+  EXPECT_FALSE(called);
+}
+
+TEST_P(FeatureBindingsDeathTest, MethodsOnRemoteDeniedSync) {
+  // Validate that disabled sync methods on remotes cannot be called.
+  int result = 0;
+  Remote<mojom::FeaturesOnMethods> remote;
+  FeaturesOnMethodsImpl impl(remote.BindNewPipeAndPassReceiver());
+  EXPECT_DEATH(remote->DefaultDeniedSync(&result), "");
+  EXPECT_EQ(result, 0);
+}
+
+TEST_P(FeatureBindingsDeathTest, MethodsOnAssociatedRemoteDenied) {
+  bool called = false;
+  // Validate that disabled methods on associated remotes cannot be called.
+  AssociatedRemote<mojom::FeaturesOnMethods> remote;
+  FeaturesOnMethodsImpl impl(remote.BindNewEndpointAndPassDedicatedReceiver());
+  EXPECT_DEATH(remote->DefaultDenied(
+                   base::BindLambdaForTesting([&](int) { called = true; })),
+               "");
+  EXPECT_FALSE(called);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    FeatureBindingsDeathTest,
+    testing::Values(mojo::BindingsTestSerializationMode::kNeverSerialize));
+
+#endif  // defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
 
 INSTANTIATE_TEST_SUITE_P(
     ,
