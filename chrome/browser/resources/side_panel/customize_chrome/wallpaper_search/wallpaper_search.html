@@ -385,7 +385,8 @@
       <template is="dom-repeat" id="resultsRepeat" items="[[results_]]"
           on-dom-change="onResultsRender_">
         <div class="tile result" tabindex="0" role="button"
-            on-click="onResultClick_">
+            on-click="onResultClick_"
+            aria-current$="[[getBackgroundCheckedStatus_(item.id, theme_)]]">
           <customize-chrome-check-mark-wrapper class="image-check-mark"
               checked="[[isBackgroundSelected_(item.id, theme_)]]">
             <div class="image-container">
@@ -422,12 +423,16 @@
     <cr-grid columns="3" disable-arrow-navigation>
       <template is="dom-repeat" id="historyRepeat" items="[[history_]]">
         <div class="tile result" tabindex="0" role="button"
-            aria-label="[[getHistoryTileTitle_(index)]]"
-            on-click="onHistoryImageClick_">
-          <div class="image-container">
-            <img src="data:image/png;base64,[[item.image]]">
-            </img>
-          </div>
+            aria-label$="[[getHistoryTileTitle_(index)]]"
+            on-click="onHistoryImageClick_"
+            aria-current$="[[getBackgroundCheckedStatus_(item.id, theme_)]]">
+          <customize-chrome-check-mark-wrapper class="image-check-mark"
+            checked="[[isBackgroundSelected_(item.id, theme_)]]">
+            <div class="image-container">
+              <img src="data:image/png;base64,[[item.image]]">
+              </img>
+            </div>
+          </customize-chrome-check-mark-wrapper>
         </div>
       </template>
       <template is="dom-repeat"

@@ -547,6 +547,9 @@ suite('WallpaperSearchTest', () => {
               '.tile [checked]');
       assertEquals(checkedResults.length, 1);
       assertEquals(checkedResults[0], firstResult);
+      assertEquals(
+          checkedResults[0]!.parentElement!.getAttribute('aria-current'),
+          'true');
     });
   });
 
@@ -827,6 +830,47 @@ suite('WallpaperSearchTest', () => {
           BigInt(10), handler.getArgs('setBackgroundToHistoryImage')[0].high);
       assertEquals(
           BigInt(1), handler.getArgs('setBackgroundToHistoryImage')[0].low);
+    });
+
+    test('current history theme is checked', async () => {
+      createWallpaperSearchElement();
+
+      wallpaperSearchCallbackRouterRemote.setHistory([
+        {image: '123', id: {high: BigInt(10), low: BigInt(1)}},
+        {image: '456', id: {high: BigInt(8), low: BigInt(2)}},
+      ]);
+      await wallpaperSearchCallbackRouterRemote.$.flushForTesting();
+
+      // Set a default theme.
+      let theme = createTheme();
+      callbackRouterRemote.setTheme(theme);
+      await callbackRouterRemote.$.flushForTesting();
+      await waitAfterNextRender(wallpaperSearchElement);
+
+      // There should be no checked tiles.
+      assertFalse(!!$$(wallpaperSearchElement, '.tile [checked]'));
+
+      // Set theme to the first tile.
+      theme = createTheme();
+      theme.backgroundImage = createBackgroundImage('');
+      theme.backgroundImage.localBackgroundId = {
+        high: BigInt(10),
+        low: BigInt(1),
+      };
+      callbackRouterRemote.setTheme(theme);
+      await callbackRouterRemote.$.flushForTesting();
+      await waitAfterNextRender(wallpaperSearchElement);
+
+      // The first result should be checked and be the only one checked.
+      const firstResult = $$(wallpaperSearchElement, '.tile .image-check-mark');
+      const checkedResults =
+          wallpaperSearchElement.shadowRoot!.querySelectorAll(
+              '.tile [checked]');
+      assertEquals(checkedResults.length, 1);
+      assertEquals(checkedResults[0], firstResult);
+      assertEquals(
+          checkedResults[0]!.parentElement!.getAttribute('aria-current'),
+          'true');
     });
   });
 

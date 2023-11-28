@@ -309,6 +309,10 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     }
   }
 
+  private getBackgroundCheckedStatus_(id: Token): string {
+    return this.isBackgroundSelected_(id) ? 'true' : 'false';
+  }
+
   private getCategoryIcon_(categoryIndex: number): string {
     return this.expandedCategories_[categoryIndex] ? 'cr:expand-less' :
                                                      'cr:expand-more';
