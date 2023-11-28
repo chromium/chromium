@@ -8,7 +8,6 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
@@ -43,7 +42,6 @@ class PrivacySandboxAttestationsBrowserTest
       component_updater::PrivacySandboxAttestationsComponentInstallerPolicy;
 
  private:
-  base::test::ScopedFeatureList attestations_feature_;
   PrivacySandboxAttestationsMixin privacy_sandbox_attestations_mixin_{
       &mixin_host_};
 };
