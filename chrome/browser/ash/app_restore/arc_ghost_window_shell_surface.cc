@@ -140,8 +140,12 @@ std::unique_ptr<ArcGhostWindowShellSurface> ArcGhostWindowShellSurface::Create(
         chromeos::ShouldHaveRoundedWindow(window_state)
             ? chromeos::features::RoundedWindowsRadius()
             : 0;
-    shell_surface->SetWindowCornerRadii(
-        gfx::RoundedCornersF(window_corner_radius));
+
+    gfx::RoundedCornersF window_radii(window_corner_radius);
+    shell_surface->SetWindowCornerRadii(window_radii);
+
+    // Ghost surface shadow radii must match the window radii.
+    shell_surface->SetShadowCornersRadii(window_radii);
 
     // Ghost surface is an overlay widget, so its corners must be rounded. The
     // bottom two corners of the ghost window overlay overlap with the window,
