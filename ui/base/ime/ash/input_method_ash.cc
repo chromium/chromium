@@ -172,6 +172,15 @@ ui::EventDispatchDetails InputMethodAsh::DispatchKeyEvent(ui::KeyEvent* event) {
     }
   }
 
+  // Simply forward the key event if there's no focused TextInputClient.
+  // Dead keys cannot be supported in this case because composition and commit
+  // are not supported.
+  if (base::FeatureList::IsEnabled(
+          features::kInputMethodDeadKeyFixForNoInputField) &&
+      GetTextInputClient() == nullptr) {
+    return DispatchKeyEventPostIME(event);
+  }
+
   // If |context_| is not usable, then we can only dispatch the key event as is.
   // We only dispatch the key event to input method when the |context_| is an
   // normal input field (not a password field).

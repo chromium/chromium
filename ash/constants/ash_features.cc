@@ -2904,6 +2904,13 @@ BASE_FEATURE(kInputDeviceSettingsSplit,
              "InputDeviceSettingsSplit",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables bug fix for dead keys where there's no input field.
+// When enabled, keys are forwarded without dead key processing when there's no
+// input field.
+BASE_FEATURE(kInputMethodDeadKeyFixForNoInputField,
+             "InputMethodDeadKeyFixForNoInputField",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables bug fix for dead keys on the Terminal app.
 // When enabled, dead keys correctly emit the 'Dead' event on key down for the
 // Terminal.
