@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.bookmarks;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -27,12 +26,8 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.components.sync.ModelType;
-import org.chromium.components.sync.SyncService;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
-
-import java.util.Collections;
 
 /** Unit tests for {@link PageImageServiceQueue}. */
 @Batch(Batch.UNIT_TESTS)
@@ -44,19 +39,14 @@ public class PageImageServiceQueueTest {
     @Mock private BookmarkModel mBookmarkModel;
     @Mock private Callback<GURL> mBookmarkUrlCallback;
     @Mock private Callback<GURL> mQueuedBookmarkUrlCallback;
-    @Mock private SyncService mSyncService;
     @Captor private ArgumentCaptor<Callback<GURL>> mGurlCallbackCaptor;
 
     private PageImageServiceQueue mPageImageServiceQueue;
 
     @Before
     public void setUp() {
-        doReturn(true).when(mSyncService).isSyncFeatureActive();
-        doReturn(Collections.singleton(ModelType.BOOKMARKS))
-                .when(mSyncService)
-                .getActiveDataTypes();
         mPageImageServiceQueue =
-                new PageImageServiceQueue(mBookmarkModel, /* maxFetchRequests= */ 1, mSyncService);
+                new PageImageServiceQueue(mBookmarkModel, /* maxFetchRequests= */ 1);
     }
 
     @Test
@@ -109,19 +99,5 @@ public class PageImageServiceQueueTest {
 
         mGurlCallbackCaptor.getValue().onResult(JUnitTestGURLs.EXAMPLE_URL);
         verify(mBookmarkUrlCallback, times(3)).onResult(any());
-    }
-
-    @Test
-    public void testRequest_syncNotEnabled() {
-        doReturn(false).when(mSyncService).isSyncFeatureActive();
-        mPageImageServiceQueue.getSalientImageUrl(JUnitTestGURLs.URL_1, mBookmarkUrlCallback);
-        verify(mBookmarkUrlCallback).onResult(null);
-    }
-
-    @Test
-    public void testRequest_bookmarksDataTypeNotActive() {
-        doReturn(Collections.emptySet()).when(mSyncService).getActiveDataTypes();
-        mPageImageServiceQueue.getSalientImageUrl(JUnitTestGURLs.URL_1, mBookmarkUrlCallback);
-        verify(mBookmarkUrlCallback).onResult(null);
     }
 }
