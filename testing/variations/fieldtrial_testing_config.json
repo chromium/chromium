@@ -4394,7 +4394,7 @@
             ]
         }
     ],
-    "CookieDeprecationFacilitatedTestingLabelOnly": [
+    "CookieDeprecationFacilitatedTestingCookieDeprecation": [
         {
             "platforms": [
                 "chromeos",
@@ -4406,32 +4406,18 @@
             ],
             "experiments": [
                 {
-                    "name": "LabelOnly_PreStable_20231002",
+                    "name": "Treatment_PreStable_20231002",
                     "params": {
                         "decision_delay_time": "1s",
-                        "disable_3p_cookies": "false",
+                        "disable_3p_cookies": "true",
                         "disable_ads_apis": "false",
                         "enable_otr_profiles": "false",
-                        "label": "prestable_label_only_1",
+                        "label": "prestable_treatment_1",
                         "use_profile_filtering": "false",
                         "version": "1"
                     },
                     "enable_features": [
-                        "CookieDeprecationFacilitatedTesting"
-                    ]
-                },
-                {
-                    "name": "PerProfileLabelOnly_PreStable_20231002",
-                    "params": {
-                        "decision_delay_time": "1s",
-                        "disable_3p_cookies": "false",
-                        "disable_ads_apis": "false",
-                        "enable_otr_profiles": "false",
-                        "label": "prestable_label_only_2",
-                        "use_profile_filtering": "true",
-                        "version": "1"
-                    },
-                    "enable_features": [
+                        "AttributionDebugReportingCookieDeprecationTesting",
                         "CookieDeprecationFacilitatedTesting"
                     ]
                 }

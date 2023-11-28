@@ -704,12 +704,19 @@ class TrackingProtectionOffboardingNoticeBrowserTest
     : public TrackingProtectionBaseNoticeBrowserTest {
  protected:
   TrackingProtectionOffboardingNoticeBrowserTest()
-      : TrackingProtectionBaseNoticeBrowserTest(EnabledFeatures()) {}
+      : TrackingProtectionBaseNoticeBrowserTest(EnabledFeatures(),
+                                                DisabledFeatures()) {}
 
   std::vector<base::test::FeatureRef> EnabledFeatures() override {
     return {privacy_sandbox::kTrackingProtectionOnboardingRollback,
             feature_engagement::kIPHTrackingProtectionOnboardingFeature,
             feature_engagement::kIPHTrackingProtectionOffboardingFeature};
+  }
+
+  std::vector<base::test::FeatureRef> DisabledFeatures() override {
+    // This feature is irrelevant for these tests, disabling to avoid
+    // interplaying with the tests.
+    return {features::kCookieDeprecationFacilitatedTesting};
   }
 
   bool IsOnboardingPromoActive(Browser* browser) {
