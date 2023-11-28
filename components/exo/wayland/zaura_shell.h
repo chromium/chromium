@@ -34,7 +34,7 @@ namespace wayland {
 class SerialTracker;
 
 constexpr uint32_t kZAuraShellVersion =
-    ZAURA_TOPLEVEL_OVERVIEW_CHANGE_SINCE_VERSION;
+    ZAURA_TOPLEVEL_SET_SHADOW_CORNER_RADII_SINCE_VERSION;
 
 // Adds bindings to the Aura Shell. Normally this implies Ash on ChromeOS
 // builds. On non-ChromeOS builds the protocol provides access to Aura windowing
@@ -184,6 +184,7 @@ class AuraToplevel {
                          bool restart);
   void SetCanMaximize(bool can_maximize);
   void SetCanFullscreen(bool can_fullscreen);
+  void SetShadowCornersRadii(const gfx::RoundedCornersF& radii);
 
   raw_ptr<ShellSurface, DanglingUntriaged | ExperimentalAsh> shell_surface_;
   const raw_ptr<SerialTracker, ExperimentalAsh> serial_tracker_;
@@ -198,7 +199,7 @@ class AuraToplevel {
 
 class AuraPopup {
  public:
-  AuraPopup(ShellSurfaceBase* shell_surface);
+  explicit AuraPopup(ShellSurfaceBase* shell_surface);
   AuraPopup(const AuraPopup&) = delete;
   AuraPopup& operator=(const AuraPopup&) = delete;
   ~AuraPopup();

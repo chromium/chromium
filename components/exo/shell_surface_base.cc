@@ -525,9 +525,16 @@ void ShellSurfaceBase::SetTopInset(int height) {
 }
 
 void ShellSurfaceBase::SetWindowCornerRadii(const gfx::RoundedCornersF& radii) {
-  TRACE_EVENT1("exo", "ShellSurfaceBase::SetWindowCornerRadii", "radii",
+  TRACE_EVENT1("exo", "ShellSurfaceBase::SetWindowCornerRadii", "window_radii",
                radii.ToString());
   pending_window_corners_radii_dp_ = radii;
+}
+
+void ShellSurfaceBase::SetShadowCornersRadii(
+    const gfx::RoundedCornersF& radii) {
+  TRACE_EVENT1("exo", "ShellSurfaceBase::SetShadowCornersRadii", "shadow_radii",
+               radii.ToString());
+  pending_shadow_corners_radii_dp_ = radii;
 }
 
 void ShellSurfaceBase::SetBoundsForShadows(
@@ -2022,6 +2029,8 @@ void ShellSurfaceBase::UpdateShadowRoundedCorners() {
     return;
   }
 
+  shadow_corners_radii_dp_ = pending_shadow_corners_radii_dp_;
+
   aura::Window* window = widget_->GetNativeWindow();
   ui::Shadow* shadow = wm::ShadowController::GetShadowForWindow(window);
 
@@ -2029,20 +2038,25 @@ void ShellSurfaceBase::UpdateShadowRoundedCorners() {
     return;
   }
 
-  int shadow_radius = 0;
+  gfx::RoundedCornersF shadow_radii;
 
   const ash::WindowState* window_state = ash::WindowState::Get(window);
   if (window_state && window_state->IsPip()) {
-    shadow_radius = chromeos::kPipRoundedCornerRadius;
+    shadow_radii = gfx::RoundedCornersF(chromeos::kPipRoundedCornerRadius);
   } else if (chromeos::features::IsRoundedWindowsEnabled() &&
-             window_corners_radii_dp_) {
+             (shadow_corners_radii_dp_.has_value() ||
+              window_corners_radii_dp_.has_value())) {
+    // For backward version compatibility, fallback to use the window radii if
+    // the shadow radii is not specified.
+    // TODO(crbug.com/1415486): Revisit once all the clients have migrated.
+    shadow_radii = shadow_corners_radii_dp_.value_or(
+        window_corners_radii_dp_.value_or(gfx::RoundedCornersF()));
+
     // TODO(crbug.com/1415486): Support shadow with variable radius corners.
-    // We expect to have windows with same rounded corners.
-    DCHECK(IsRadiiUniform(window_corners_radii_dp_.value()));
-    shadow_radius = window_corners_radii_dp_->upper_left();
+    DCHECK(IsRadiiUniform(shadow_radii));
   }
 
-  shadow->SetRoundedCornerRadius(shadow_radius);
+  shadow->SetRoundedCornerRadius(shadow_radii.upper_left());
 }
 
 void ShellSurfaceBase::UpdateFrameType() {

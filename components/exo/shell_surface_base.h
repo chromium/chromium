@@ -157,6 +157,9 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   // Sets the window corner radii.
   void SetWindowCornerRadii(const gfx::RoundedCornersF& radii);
 
+  // Sets the shadow corner radii.
+  void SetShadowCornersRadii(const gfx::RoundedCornersF& radii);
+
   // Set normal shadow bounds, |shadow_bounds_|, to |bounds| to be used and
   // applied via `UpdateShadow()`. Set and update resize shadow bounds with
   // |widget_|'s origin and |bounds| via `UpdateResizeShadowBoundsOfWindow()`.
@@ -465,9 +468,14 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   absl::optional<cc::Region> shape_dp_;
   absl::optional<cc::Region> pending_shape_dp_;
 
-  // Radii of window corners in dips.
+  // Radii of window corners in dps. Currently only specified by clients that do
+  // server-side rounded windows.
   absl::optional<gfx::RoundedCornersF> window_corners_radii_dp_;
   absl::optional<gfx::RoundedCornersF> pending_window_corners_radii_dp_;
+
+  // Radii of shadow corners in dps.
+  absl::optional<gfx::RoundedCornersF> shadow_corners_radii_dp_;
+  absl::optional<gfx::RoundedCornersF> pending_shadow_corners_radii_dp_;
 
   int64_t display_id_ = display::kInvalidDisplayId;
   int64_t pending_display_id_ = display::kInvalidDisplayId;
