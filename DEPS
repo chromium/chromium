@@ -381,7 +381,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling chromium_variations
   # and whatever else without interference from each other.
-  'chromium_variations_revision': '6ba10fa34cfb8451d982149d5171ed934426c339',
+  'chromium_variations_revision': '419f99ea41815a3348e42c39a05d391c7c2fc74b',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling CrossBench
   # and whatever else without interference from each other.
