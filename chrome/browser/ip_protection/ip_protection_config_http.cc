@@ -9,6 +9,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/ip_protection/get_proxy_config.pb.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/features.h"
@@ -180,7 +181,15 @@ void IpProtectionConfigHttp::OnDoRequestCompleted(
   std::move(callback)(std::move(bsa_response));
 }
 
-void IpProtectionConfigHttp::GetProxyConfig(GetProxyConfigCallback callback) {
+void IpProtectionConfigHttp::GetProxyConfig(GetProxyConfigCallback callback,
+                                            bool for_testing) {
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (!for_testing) {
+    std::move(callback).Run(absl::InternalError(
+        "GetProxyConfig is only supported in Chrome builds"));
+    return;
+  }
+#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
   GURL::Replacements replacements;
   replacements.SetPathStr(ip_protection_server_get_proxy_config_path_);
   GURL request_url = ip_protection_server_url_.ReplaceComponents(replacements);

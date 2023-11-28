@@ -131,8 +131,8 @@ class MockIpProtectionConfigHttp : public IpProtectionConfigHttp {
     NOTREACHED();
   }
 
-  void GetProxyConfig(
-      IpProtectionConfigHttp::GetProxyConfigCallback callback) override {
+  void GetProxyConfig(IpProtectionConfigHttp::GetProxyConfigCallback callback,
+                      bool for_testing = false) override {
     if (!proxy_list_.has_value()) {
       std::move(callback).Run(absl::InternalError("uhoh"));
       return;
