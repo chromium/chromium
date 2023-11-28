@@ -71,9 +71,17 @@ class TimeZoneResolverManager
   // system timezone (preferences might have changed since request was started).
   bool ShouldApplyResolvedTimezone();
 
-  // Returns true if TimeZoneResolver should be running and taking in account
-  // all configuration data.
+  // Returns true if `TimeZoneResolver` should be running, taking into account
+  // all relevant conditions, namely the system geolocation permission and time
+  // zone configuration data.
   bool TimeZoneResolverShouldBeRunning();
+
+  // Returns true if the time zone configuration data allows `TimeZoneResolver`
+  // to be running. The configuration data encompasses all time zone related
+  // policy, user and login-screen prefs.
+  // Unlike `TimeZoneResolverShouldBeRunning()`, this method disregards the
+  // system geolocation permission.
+  bool TimeZoneResolverAllowedByTimeZoneConfigData();
 
   // Convert kResolveTimezoneByGeolocationMethod /
   // kResolveDeviceTimezoneByGeolocationMethod preference value to

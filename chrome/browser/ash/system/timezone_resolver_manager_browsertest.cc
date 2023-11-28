@@ -419,15 +419,19 @@ IN_PROC_BROWSER_TEST_F(TimeZoneResolverManagerUnenrolledDeviceTest,
   PrefService* pref_service =
       g_browser_process->profile_manager()->GetActiveUserProfile()->GetPrefs();
 
-  // Check the default configuration: TZResolver should be running.
-  EXPECT_EQ(
-      SimpleGeolocationProvider::GetInstance()->GetGeolocationAccessLevel(),
-      GeolocationAccessLevel::kAllowed);
-  EXPECT_TRUE(tz_resolver_manager->TimeZoneResolverShouldBeRunning());
+  // Check the default configuration: Should be set to IP-resolution.
+  EXPECT_TRUE(
+      tz_resolver_manager->TimeZoneResolverAllowedByTimeZoneConfigData());
   EXPECT_EQ(
       system::TimeZoneResolverManager::GetEffectiveUserTimeZoneResolveMethod(
           pref_service, true),
       system::TimeZoneResolverManager::TimeZoneResolveMethod::IP_ONLY);
+
+  // Check the permission is granted and timezone resolver is actually running.
+  EXPECT_EQ(
+      SimpleGeolocationProvider::GetInstance()->GetGeolocationAccessLevel(),
+      GeolocationAccessLevel::kAllowed);
+  EXPECT_TRUE(tz_resolver_manager->TimeZoneResolverShouldBeRunning());
   EXPECT_TRUE(tz_resolver->IsRunning());
 
   // Disable geolocation permission.
@@ -437,6 +441,9 @@ IN_PROC_BROWSER_TEST_F(TimeZoneResolverManagerUnenrolledDeviceTest,
   // `OnGeolocationPermissionChanged()`, stopping the scheduler.
   EXPECT_FALSE(tz_resolver_manager->TimeZoneResolverShouldBeRunning());
   EXPECT_FALSE(tz_resolver->IsRunning());
+  // Check the timezone configuration didn't change on permission update.
+  EXPECT_TRUE(
+      tz_resolver_manager->TimeZoneResolverAllowedByTimeZoneConfigData());
 
   // Re-enable geolocation permission and check that the resolver is working
   // again.
@@ -444,6 +451,9 @@ IN_PROC_BROWSER_TEST_F(TimeZoneResolverManagerUnenrolledDeviceTest,
                                   GeolocationAccessLevel::kAllowed);
   EXPECT_TRUE(tz_resolver_manager->TimeZoneResolverShouldBeRunning());
   EXPECT_TRUE(tz_resolver->IsRunning());
+  // Check timezone configuration still hasn't changed.
+  EXPECT_TRUE(
+      tz_resolver_manager->TimeZoneResolverAllowedByTimeZoneConfigData());
 
   // Disable and re-enable geolocation permission with `kOnlyAllowedForSystem`.
   // Check that the resolver is working.
@@ -451,8 +461,12 @@ IN_PROC_BROWSER_TEST_F(TimeZoneResolverManagerUnenrolledDeviceTest,
                                   GeolocationAccessLevel::kDisallowed);
   UpdateUserGeolocationPermission(
       pref_service, GeolocationAccessLevel::kOnlyAllowedForSystem);
+  // Check that resolver is actually running.
   EXPECT_TRUE(tz_resolver_manager->TimeZoneResolverShouldBeRunning());
   EXPECT_TRUE(tz_resolver->IsRunning());
+  // Check timezone configuration is still unchanged.
+  EXPECT_TRUE(
+      tz_resolver_manager->TimeZoneResolverAllowedByTimeZoneConfigData());
 }
 
 }  // namespace ash

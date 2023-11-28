@@ -315,6 +315,12 @@ bool TimeZoneResolverManager::TimeZoneResolverShouldBeRunning() {
     return false;
   }
 
+  // Once the permission is granted, it's all up to the time zone
+  // configuration data.
+  return TimeZoneResolverAllowedByTimeZoneConfigData();
+}
+
+bool TimeZoneResolverManager::TimeZoneResolverAllowedByTimeZoneConfigData() {
   ServiceConfiguration result = GetServiceConfigurationFromPolicy();
 
   if (result == UNSPECIFIED) {
