@@ -34,6 +34,7 @@ bool StructTraits<media::mojom::VideoFrameMetadataDataView,
   // int.
   DESERIALIZE_INTO_OPT(capture_counter);
   output->sub_capture_target_version = input.sub_capture_target_version();
+  output->frame_sequence = input.frame_sequence();
 
   // bool.
   output->allow_overlay = input.allow_overlay();
@@ -78,6 +79,8 @@ bool StructTraits<media::mojom::VideoFrameMetadataDataView,
   READ_AND_ASSIGN_OPT(base::TimeDelta, frame_duration, FrameDuration);
   READ_AND_ASSIGN_OPT(base::TimeDelta, wallclock_frame_duration,
                       WallclockFrameDuration);
+
+  output->frame_sequence = input.frame_sequence();
 
   return true;
 }

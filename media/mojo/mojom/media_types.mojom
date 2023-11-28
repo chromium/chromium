@@ -377,6 +377,8 @@ struct VideoFrameMetadata {
   mojo_base.mojom.TimeTicks? receive_time;
 
   mojo_base.mojom.TimeDelta? wallclock_frame_duration;
+
+  uint64? frame_sequence;
 };
 
 // This defines a mojo transport format for media::VideoFrame.
