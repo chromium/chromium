@@ -84,14 +84,10 @@ if (is_win) {
       "imm32.lib",  # chrome_elf_init.cc
       "netapi32.lib",
       "ndfapi.lib",  # For browser/net/net_error_diagnostics_dialog_win.h
-      "pdh.lib",  # For browser/private_working_set_snapshot.h
       "wbemuuid.lib",  # For browser/metrics /
                        # antivirus_metrics_provider_win.cc
     ]
-    ldflags = [
-      "/DELAYLOAD:ndfapi.dll",
-      "/DELAYLOAD:pdh.dll",  # The task manager is rarely used.
-    ]
+    ldflags = [ "/DELAYLOAD:ndfapi.dll" ]
   }
 }
 
@@ -5903,6 +5899,9 @@ static_library("browser") {
 
       # Needed for _variant_t used in browser_dm_token_storage_win.cc
       "comsuppw.lib",
+
+      # Needed for cpu_probe_win.cc
+      "pdh.lib",
     ]
     sources += [
       "accessibility/caption_settings_dialog.h",
@@ -6076,7 +6075,6 @@ static_library("browser") {
 
     deps += [
       ":chrome_process_finder",
-      ":cpu_probe_pdh_support",
       "//base/win:base_win_buildflags",
       "//chrome/app:chrome_exe_main_exports",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
@@ -8120,29 +8118,6 @@ if (is_win) {
   source_set("titlebar_config") {
     sources = [ "win/titlebar_config.h" ]
     deps = [ "//base" ]
-  }
-
-  # This is in a separate config so the flags can be applied to dependents.
-  # ldflags in GN aren't automatically inherited.
-  config("cpu_probe_pdh_support_linker_flags") {
-    libs = [ "pdh.lib" ]
-    ldflags = [
-      # Don't load unless the CpuProbe feature is enabled.
-      "/DELAYLOAD:pdh.dll",
-    ]
-  }
-
-  # This is in a separate source set so that it can specify that it needs
-  # pdh.lib, which isn't commonly used.
-  source_set("cpu_probe_pdh_support") {
-    sources = [
-      "performance_manager/metrics/cpu_probe/scoped_pdh_query.cc",
-      "performance_manager/metrics/cpu_probe/scoped_pdh_query.h",
-    ]
-
-    deps = [ "//base" ]
-
-    all_dependent_configs = [ ":cpu_probe_pdh_support_linker_flags" ]
   }
 }
 

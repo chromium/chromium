@@ -4,15 +4,6 @@
 
 import("//build/config/features.gni")
 
-if (is_win) {
-  # This is in a separate config so the flags can be applied to dependents.
-  # ldflags in GN aren't automatically inherited.
-  config("compute_pressure_win_linker_flags") {
-    libs = [ "pdh.lib" ]
-    ldflags = [ "/DELAYLOAD:pdh.dll" ]
-  }
-}
-
 source_set("compute_pressure") {
   visibility = [ "//services/device:*" ]
 
@@ -34,6 +25,8 @@ source_set("compute_pressure") {
     "//services/device/public/cpp:device_features",
   ]
 
+  libs = []
+
   if (is_linux || is_chromeos) {
     sources += [
       "core_times.cc",
@@ -49,11 +42,9 @@ source_set("compute_pressure") {
     sources += [
       "cpu_probe_win.cc",
       "cpu_probe_win.h",
-      "scoped_pdh_query.cc",
-      "scoped_pdh_query.h",
     ]
 
-    all_dependent_configs = [ ":compute_pressure_win_linker_flags" ]
+    libs += [ "pdh.lib" ]
   }
 
   if (is_mac) {
