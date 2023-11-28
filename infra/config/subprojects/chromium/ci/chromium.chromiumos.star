@@ -21,11 +21,13 @@ ci.defaults.set(
     sheriff_rotations = sheriff_rotations.CHROMIUM,
     tree_closing = True,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
-    health_spec = health_spec.modified_default(
-        build_time = struct(
-            p50_mins = 60,
+    health_spec = health_spec.modified_default({
+        "Unhealthy": struct(
+            build_time = struct(
+                p50_mins = 60,
+            ),
         ),
-    ),
+    }),
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.DEFAULT,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
@@ -186,11 +188,13 @@ ci.builder(
             "also_build_lacros_chrome_for_architecture_amd64",
         ],
     ),
-    health_spec = health_spec.modified_default(
-        build_time = struct(
-            p50_mins = 100,
+    health_spec = health_spec.modified_default({
+        "Unhealthy": struct(
+            build_time = struct(
+                p50_mins = 100,
+            ),
         ),
-    ),
+    }),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -989,11 +993,13 @@ ci.builder(
             "use_cups",
         ],
     ),
-    health_spec = health_spec.modified_default(
-        build_time = struct(
-            p50_mins = 150,
+    health_spec = health_spec.modified_default({
+        "Unhealthy": struct(
+            build_time = struct(
+                p50_mins = 150,
+            ),
         ),
-    ),
+    }),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 

@@ -486,11 +486,13 @@ ci.builder(
             "reclient",
         ],
     ),
-    health_spec = health_spec.modified_default(
-        pending_time = struct(
-            p50_mins = None,  # exception added because this builder has a pool of 1 machine and 2 concurrent invocations
+    health_spec = health_spec.modified_default({
+        "Unhealthy": struct(
+            pending_time = struct(
+                p50_mins = None,  # exception added because this builder has a pool of 1 machine and 2 concurrent invocations
+            ),
         ),
-    ),
+    }),
 )
 
 ci.builder(

@@ -1,7 +1,6 @@
 {
-  "_default": {
-    "contact_team_email": "",
-    "thresholds": {
+  "_default_specs": {
+    "Unhealthy": {
       "build_time": {
         "p50_mins": null
       },
@@ -20,2563 +19,3460 @@
     "ci": {
       "ASAN Debug": {
         "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "ASAN Release": {
         "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "ASAN Release Media": {
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "ASan Debug (32-bit x86 with V8-ARM)": {
         "contact_team_email": "v8-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "ASan Release (32-bit x86 with V8-ARM)": {
         "contact_team_email": "v8-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "ASan Release Media (32-bit x86 with V8-ARM)": {
         "contact_team_email": "v8-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Android ASAN (dbg)": {
         "contact_team_email": "clank-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Android Release (Nexus 5X)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Android WebView O (dbg)": {
         "contact_team_email": "woa-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Android WebView P (dbg)": {
         "contact_team_email": "woa-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Android arm Builder (dbg)": {
         "contact_team_email": "clank-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Android arm64 Builder (dbg)": {
         "contact_team_email": "clank-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Android arm64 Builder All Targets (dbg)": {
         "contact_team_email": "clank-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Android x64 Builder (dbg)": {
         "contact_team_email": "clank-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Android x64 Builder All Targets (dbg)": {
         "contact_team_email": "clank-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Android x86 Builder (dbg)": {
         "contact_team_email": "clank-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "CFI Linux CF": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "CFI Linux ToT": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "Cast Android (dbg)": {
         "contact_team_email": "clank-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Cast Audio Linux": {
         "contact_team_email": "chrome-linux-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Cast Linux": {
         "contact_team_email": "chrome-linux-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Cast Linux ARM64": {
         "contact_team_email": "chrome-linux-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Cast Linux Debug": {
         "contact_team_email": "chrome-linux-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Centipede Upload Linux ASan": {
         "contact_team_email": "chrome-deet-core@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "ChromiumOS ASAN Release": {
         "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "CrWinAsan": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "CrWinAsan(dll)": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "Dawn Android arm Builder": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Dawn Android arm DEPS Builder": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Dawn Android arm DEPS Release (Nexus 5X)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Dawn Android arm DEPS Release (Pixel 4)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Dawn Android arm Release (Nexus 5X)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Dawn Android arm Release (Pixel 4)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Dawn Android arm64 DEPS Release (Pixel 6)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Dawn Android arm64 Release (Pixel 6)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Dawn Linux TSAN Release": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Dawn Linux x64 Builder": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Dawn Linux x64 DEPS Builder": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Dawn Linux x64 DEPS Release (Intel UHD 630)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Dawn Linux x64 DEPS Release (NVIDIA)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Dawn Linux x64 Release (Intel UHD 630)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Dawn Linux x64 Release (NVIDIA)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Dawn Mac arm64 DEPS Release (Apple M2)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Dawn Mac arm64 Release (Apple M2)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Dawn Mac x64 Builder": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Dawn Mac x64 DEPS Builder": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Dawn Mac x64 DEPS Release (AMD)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Dawn Mac x64 DEPS Release (Intel)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Dawn Mac x64 Experimental Release (AMD)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Dawn Mac x64 Experimental Release (Intel)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Dawn Mac x64 Release (AMD)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Dawn Mac x64 Release (Intel)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Dawn Win10 x64 ASAN Builder": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Dawn Win10 x64 ASAN Release (Intel)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Dawn Win10 x64 ASAN Release (NVIDIA)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Dawn Win10 x64 Builder": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Dawn Win10 x64 DEPS Builder": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Dawn Win10 x64 DEPS Release (Intel)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Dawn Win10 x64 DEPS Release (NVIDIA)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Dawn Win10 x64 Experimental Release (Intel)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Dawn Win10 x64 Release (Intel)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Dawn Win10 x64 Release (NVIDIA)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Dawn Win10 x86 Builder": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Dawn Win10 x86 DEPS Builder": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Dawn Win10 x86 DEPS Release (Intel)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Dawn Win10 x86 DEPS Release (NVIDIA)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Dawn Win10 x86 Experimental Release (Intel)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Dawn Win10 x86 Release (Intel)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Dawn Win10 x86 Release (NVIDIA)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Deterministic Android": {
         "contact_team_email": "clank-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Deterministic Android (dbg)": {
         "contact_team_email": "clank-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Deterministic Fuchsia (dbg)": {
         "contact_team_email": "chrome-fuchsia-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Deterministic Linux": {
         "contact_team_email": "chrome-linux-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Deterministic Linux (dbg)": {
         "contact_team_email": "chrome-linux-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "GPU Linux Builder": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "GPU Linux Builder (dbg)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "GPU Mac Builder": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "GPU Mac Builder (dbg)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "GPU Win x64 Builder": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "GPU Win x64 Builder (dbg)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Leak Detection Linux": {
         "contact_team_email": "chrome-linux-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Libfuzzer Upload Chrome OS ASan": {
         "contact_team_email": "chrome-deet-core@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Libfuzzer Upload Linux ASan": {
         "contact_team_email": "chrome-deet-core@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Libfuzzer Upload Linux ASan Debug": {
         "contact_team_email": "chrome-deet-core@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Libfuzzer Upload Linux MSan": {
         "contact_team_email": "chrome-deet-core@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Libfuzzer Upload Linux UBSan": {
         "contact_team_email": "chrome-deet-core@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Libfuzzer Upload Linux V8-ARM64 ASan": {
         "contact_team_email": "v8-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Libfuzzer Upload Linux V8-ARM64 ASan Debug": {
         "contact_team_email": "v8-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Libfuzzer Upload Linux32 ASan": {
         "contact_team_email": "chrome-deet-core@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Libfuzzer Upload Linux32 V8-ARM ASan": {
         "contact_team_email": "v8-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Libfuzzer Upload Linux32 V8-ARM ASan Debug": {
         "contact_team_email": "v8-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Libfuzzer Upload Mac ASan": {
         "contact_team_email": "chrome-deet-core@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Libfuzzer Upload Windows ASan": {
         "contact_team_email": "chrome-deet-core@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Libfuzzer Upload iOS Catalyst Debug": {
         "contact_team_email": "chrome-deet-core@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Linux ASan LSan Builder": {
         "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Linux ASan LSan Tests (1)": {
         "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Linux Builder": {
         "contact_team_email": "chrome-linux-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Linux Builder (Wayland)": {
         "contact_team_email": "chrome-linux-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Linux Builder (dbg)": {
         "contact_team_email": "chrome-linux-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Linux CFI": {
         "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Linux Chromium OS ASan LSan Builder": {
         "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Linux Chromium OS ASan LSan Tests (1)": {
         "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Linux ChromiumOS MSan Builder": {
         "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Linux ChromiumOS MSan Tests": {
         "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Linux Debug (NVIDIA)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Linux MSan Builder": {
         "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Linux MSan Tests": {
         "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Linux Release (NVIDIA)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Linux TSan Builder": {
         "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Linux TSan Tests": {
         "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Linux Tests": {
         "contact_team_email": "chrome-linux-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Linux Tests (Wayland)": {
         "contact_team_email": "chrome-linux-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Linux Tests (dbg)(1)": {
         "contact_team_email": "chrome-linux-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "MSAN Release (chained origins)": {
         "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "MSAN Release (no origins)": {
         "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Mac ASAN Release": {
         "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
-        "thresholds": {
-          "build_time": {},
-          "fail_rate": {
-            "average": 0.2
-          },
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {}
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {}
+          }
         }
       },
       "Mac ASAN Release Media": {
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Mac ASan 64 Builder": {
         "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Mac ASan 64 Tests (1)": {
         "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Mac Builder": {
         "contact_team_email": "bling-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Mac Builder (dbg)": {
         "contact_team_email": "bling-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Mac Debug (Intel)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Mac Release (Intel)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Mac Retina Debug (AMD)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Mac Retina Release (AMD)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Mac10.15 Tests": {
         "contact_team_email": "bling-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Mac11 Tests": {
         "contact_team_email": "bling-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Mac12 Tests": {
         "contact_team_email": "bling-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Mac13 Tests": {
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Mac13 Tests (dbg)": {
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Network Service Linux": {
         "contact_team_email": "chrome-linux-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Oreo Phone Tester": {
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "TSAN Debug": {
         "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "TSAN Release": {
         "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "ToTAndroid": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "ToTAndroid (dbg)": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "ToTAndroid x64": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "ToTAndroid x86": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "ToTAndroid64": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "ToTAndroidASan": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "ToTAndroidCoverage x86": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "ToTAndroidOfficial": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "ToTChromeOS": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "ToTChromeOS (dbg)": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "ToTFuchsia x64": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "ToTFuchsiaOfficial arm64": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "ToTLinux": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "ToTLinux (dbg)": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "ToTLinuxASan": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "ToTLinuxASanLibfuzzer": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "ToTLinuxCoverage": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "ToTLinuxMSan": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "ToTLinuxPGO": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "ToTLinuxTSan": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "ToTLinuxUBSanVptr": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "ToTMac": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "ToTMac (dbg)": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "ToTMacASan": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "ToTMacArm64": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "ToTMacArm64PGO": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "ToTMacCoverage": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "ToTMacPGO": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "ToTWin": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "ToTWin(dbg)": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "ToTWin(dll)": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "ToTWin64": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "ToTWin64(dbg)": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "ToTWin64(dll)": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "ToTWin64PGO": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "ToTWinASanLibfuzzer": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "ToTWinArm64PGO": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "ToTWindowsCoverage": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "ToTiOS": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "ToTiOSDevice": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "UBSan Release": {
         "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "UBSan vptr Release": {
         "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "WebKit Linux ASAN": {
         "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "WebKit Linux Leak": {
         "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "WebKit Linux MSAN": {
         "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "WebKit Win10": {
         "contact_team_email": "chrome-desktop-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Win ASan Release": {
         "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Win ASan Release Media": {
         "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Win Builder": {
         "contact_team_email": "chrome-desktop-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Win Builder (dbg)": {
         "contact_team_email": "chrome-desktop-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Win x64 Builder": {
         "contact_team_email": "chrome-desktop-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Win x64 Builder (dbg)": {
         "contact_team_email": "chrome-desktop-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Win10 Tests x64": {
         "contact_team_email": "chrome-desktop-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Win10 Tests x64 (dbg)": {
         "contact_team_email": "chrome-desktop-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Win10 x64 Debug (NVIDIA)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Win10 x64 Release (NVIDIA)": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Win11 Tests x64": {
         "contact_team_email": "chrome-desktop-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "Windows deterministic": {
         "contact_team_email": "chrome-desktop-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-10-arm64-rel": {
         "contact_team_email": "clank-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-11-x86-rel": {
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-12-x64-rel": {
         "contact_team_email": "clank-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-12l-x64-dbg-tests": {
         "contact_team_email": "clank-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-13-x64-rel": {
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-angle-chromium-arm64-builder": {
         "contact_team_email": "angle-team@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-angle-chromium-arm64-nexus5x": {
         "contact_team_email": "angle-team@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-archive-rel": {
         "contact_team_email": "clank-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-arm64-archive-rel": {
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-arm64-proguard-rel": {
         "contact_team_email": "clank-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-asan": {
         "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-bfcache-rel": {
         "contact_team_email": "clank-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-binary-size-generator": {
         "contact_team_email": "clank-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-cronet-arm-dbg": {
         "contact_team_email": "cronet-team@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-cronet-arm-rel": {
         "contact_team_email": "cronet-team@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-cronet-arm64-dbg": {
         "contact_team_email": "cronet-team@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-cronet-arm64-rel": {
         "contact_team_email": "cronet-team@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-cronet-asan-arm-rel": {
         "contact_team_email": "cronet-team@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-cronet-mainline-clang-arm64-dbg": {
         "contact_team_email": "cronet-team@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-cronet-mainline-clang-arm64-rel": {
         "contact_team_email": "cronet-team@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-cronet-mainline-clang-riscv64-dbg": {
         "contact_team_email": "cronet-team@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-cronet-mainline-clang-riscv64-rel": {
         "contact_team_email": "cronet-team@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-cronet-mainline-clang-x86-dbg": {
         "contact_team_email": "cronet-team@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-cronet-mainline-clang-x86-rel": {
         "contact_team_email": "cronet-team@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-cronet-marshmallow-arm64-perf-rel": {
         "contact_team_email": "cronet-team@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-cronet-riscv64-dbg": {
         "contact_team_email": "cronet-sheriff@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-cronet-riscv64-rel": {
         "contact_team_email": "cronet-sheriff@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-cronet-x64-dbg": {
         "contact_team_email": "cronet-team@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-cronet-x64-dbg-12-tests": {
         "contact_team_email": "cronet-team@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-cronet-x64-dbg-13-tests": {
         "contact_team_email": "cronet-team@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-cronet-x64-dbg-14-tests": {
         "contact_team_email": "cronet-team@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-cronet-x64-rel": {
         "contact_team_email": "cronet-team@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-cronet-x86-dbg": {
         "contact_team_email": "cronet-team@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-cronet-x86-dbg-10-tests": {
         "contact_team_email": "cronet-team@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-cronet-x86-dbg-11-tests": {
         "contact_team_email": "cronet-team@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-cronet-x86-dbg-lollipop-tests": {
         "contact_team_email": "cronet-team@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-cronet-x86-dbg-marshmallow-tests": {
         "contact_team_email": "cronet-team@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-cronet-x86-dbg-nougat-tests": {
         "contact_team_email": "cronet-team@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-cronet-x86-dbg-oreo-tests": {
         "contact_team_email": "cronet-team@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-cronet-x86-dbg-pie-tests": {
         "contact_team_email": "cronet-team@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-cronet-x86-rel": {
         "contact_team_email": "cronet-team@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-official": {
         "contact_team_email": "clank-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-oreo-x86-rel": {
         "contact_team_email": "clank-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-pie-arm64-dbg": {
         "contact_team_email": "clank-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-pie-arm64-rel": {
         "contact_team_email": "clank-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-pie-x86-rel": {
         "contact_team_email": "clank-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-webview-10-x86-rel-tests": {
         "contact_team_email": "woa-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "android-x86-rel": {
         "contact_team_email": "woa-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "chromeos-amd64-generic-asan-rel": {
         "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
-        "thresholds": {
-          "build_time": {
-            "p50_mins": 60
-          },
-          "fail_rate": {
-            "average": 0.2
-          },
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": 60
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "chromeos-amd64-generic-cfi-thin-lto-rel": {
         "contact_team_email": "chromeos-sw-engprod@google.com",
-        "thresholds": {
-          "build_time": {
-            "p50_mins": 100
-          },
-          "fail_rate": {
-            "average": 0.2
-          },
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": 100
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "chromeos-amd64-generic-dbg": {
         "contact_team_email": "chromeos-sw-engprod@google.com",
-        "thresholds": {
-          "build_time": {
-            "p50_mins": 60
-          },
-          "fail_rate": {
-            "average": 0.2
-          },
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": 60
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "chromeos-amd64-generic-lacros-dbg": {
         "contact_team_email": "chrome-desktop-engprod@google.com",
-        "thresholds": {
-          "build_time": {
-            "p50_mins": 60
-          },
-          "fail_rate": {
-            "average": 0.2
-          },
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": 60
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "chromeos-amd64-generic-rel": {
         "contact_team_email": "chromeos-sw-engprod@google.com",
-        "thresholds": {
-          "build_time": {
-            "p50_mins": 60
-          },
-          "fail_rate": {
-            "average": 0.2
-          },
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": 60
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "chromeos-amd64-generic-rel-gtest": {
         "contact_team_email": "chromeos-sw-engprod@google.com",
-        "thresholds": {
-          "build_time": {
-            "p50_mins": 60
-          },
-          "fail_rate": {
-            "average": 0.2
-          },
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": 60
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "chromeos-amd64-generic-rel-renamed": {
         "contact_team_email": "chromeos-sw-engprod@google.com",
-        "thresholds": {
-          "build_time": {
-            "p50_mins": 60
-          },
-          "fail_rate": {
-            "average": 0.2
-          },
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": 60
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "chromeos-amd64-generic-rel-tast": {
         "contact_team_email": "chromeos-sw-engprod@google.com",
-        "thresholds": {
-          "build_time": {
-            "p50_mins": 60
-          },
-          "fail_rate": {
-            "average": 0.2
-          },
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": 60
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "chromeos-arm-generic-dbg": {
         "contact_team_email": "chromeos-sw-engprod@google.com",
-        "thresholds": {
-          "build_time": {
-            "p50_mins": 60
-          },
-          "fail_rate": {
-            "average": 0.2
-          },
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": 60
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "chromeos-arm-generic-rel": {
         "contact_team_email": "chromeos-sw-engprod@google.com",
-        "thresholds": {
-          "build_time": {
-            "p50_mins": 60
-          },
-          "fail_rate": {
-            "average": 0.2
-          },
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": 60
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "chromeos-arm64-generic-rel": {
         "contact_team_email": "chromeos-sw-engprod@google.com",
-        "thresholds": {
-          "build_time": {
-            "p50_mins": 60
-          },
-          "fail_rate": {
-            "average": 0.2
-          },
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": 60
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "chromeos-jacuzzi-rel": {
-        "thresholds": {
-          "build_time": {
-            "p50_mins": 60
-          },
-          "fail_rate": {
-            "average": 0.2
-          },
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": 60
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "chromeos-octopus-rel": {
-        "thresholds": {
-          "build_time": {
-            "p50_mins": 60
-          },
-          "fail_rate": {
-            "average": 0.2
-          },
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": 60
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "fuchsia-angle-builder": {
         "contact_team_email": "angle-team@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "fuchsia-arm64-cast-receiver-rel": {
         "contact_team_email": "chrome-fuchsia-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "fuchsia-arm64-rel": {
         "contact_team_email": "chrome-fuchsia-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "fuchsia-official": {
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "fuchsia-x64-cast-receiver-rel": {
         "contact_team_email": "chrome-fuchsia-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "fuchsia-x64-dbg": {
         "contact_team_email": "chrome-fuchsia-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "fuchsia-x64-rel": {
         "contact_team_email": "chrome-fuchsia-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "ios-angle-builder": {
         "contact_team_email": "angle-team@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "ios-angle-intel": {
         "contact_team_email": "angle-team@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "ios-asan": {
         "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "ios-catalyst": {
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "ios-device": {
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "ios-simulator": {
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "ios-simulator-full-configs": {
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "ios-simulator-noncq": {
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "lacros-amd64-generic-rel": {
         "contact_team_email": "chrome-desktop-engprod@google.com",
-        "thresholds": {
-          "build_time": {
-            "p50_mins": 60
-          },
-          "fail_rate": {
-            "average": 0.2
-          },
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": 60
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "lacros-amd64-generic-rel-non-skylab": {
         "contact_team_email": "chrome-desktop-engprod@google.com",
-        "thresholds": {
-          "build_time": {
-            "p50_mins": 60
-          },
-          "fail_rate": {
-            "average": 0.2
-          },
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": 60
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "lacros-arm-archive-rel": {
         "contact_team_email": "chrome-desktop-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "lacros-arm-generic-rel": {
         "contact_team_email": "chrome-desktop-engprod@google.com",
-        "thresholds": {
-          "build_time": {
-            "p50_mins": 60
-          },
-          "fail_rate": {
-            "average": 0.2
-          },
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": 60
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "lacros-arm-generic-rel-skylab": {
         "contact_team_email": "chrome-desktop-engprod@google.com",
-        "thresholds": {
-          "build_time": {
-            "p50_mins": 60
-          },
-          "fail_rate": {
-            "average": 0.2
-          },
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": 60
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "lacros-arm64-archive-rel": {
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "lacros-arm64-generic-rel": {
-        "thresholds": {
-          "build_time": {
-            "p50_mins": 60
-          },
-          "fail_rate": {
-            "average": 0.2
-          },
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": 60
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "lacros-arm64-generic-rel-skylab": {
         "contact_team_email": "chrome-desktop-engprod@google.com",
-        "thresholds": {
-          "build_time": {
-            "p50_mins": 60
-          },
-          "fail_rate": {
-            "average": 0.2
-          },
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": 60
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "lacros64-archive-rel": {
         "contact_team_email": "chrome-desktop-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "linux-angle-chromium-builder": {
         "contact_team_email": "angle-team@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "linux-angle-chromium-intel": {
         "contact_team_email": "angle-team@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "linux-angle-chromium-nvidia": {
         "contact_team_email": "angle-team@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "linux-archive-rel": {
         "contact_team_email": "chrome-browser-infra-team@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "linux-arm64-rel-cft": {
         "contact_team_email": "browser-automation-staff@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "linux-ash-chromium-generator-rel": {
-        "thresholds": {
-          "build_time": {
-            "p50_mins": 60
-          },
-          "fail_rate": {
-            "average": 0.2
-          },
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": 60
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "linux-bfcache-rel": {
         "contact_team_email": "chrome-linux-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "linux-cfm-rel": {
         "contact_team_email": "core-devices-eng@google.com",
-        "thresholds": {
-          "build_time": {
-            "p50_mins": 60
-          },
-          "fail_rate": {
-            "average": 0.2
-          },
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": 60
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "linux-chromeos-archive-rel": {
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "linux-chromeos-dbg": {
         "contact_team_email": "chromeos-sw-engprod@google.com",
-        "thresholds": {
-          "build_time": {
-            "p50_mins": 150
-          },
-          "fail_rate": {
-            "average": 0.2
-          },
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": 150
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "linux-chromeos-rel": {
         "contact_team_email": "chromeos-sw-engprod@google.com",
-        "thresholds": {
-          "build_time": {
-            "p50_mins": 60
-          },
-          "fail_rate": {
-            "average": 0.2
-          },
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": 60
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "linux-extended-tracing-rel": {
         "contact_team_email": "chrome-linux-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "linux-gcc-rel": {
         "contact_team_email": "chrome-linux-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "linux-lacros-archive-rel": {
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "linux-lacros-asan-lsan-rel": {
         "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "linux-lacros-builder-rel": {
         "contact_team_email": "chrome-desktop-engprod@google.com",
-        "thresholds": {
-          "build_time": {
-            "p50_mins": 60
-          },
-          "fail_rate": {
-            "average": 0.2
-          },
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": 60
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "linux-lacros-dbg": {
         "contact_team_email": "chrome-desktop-engprod@google.com",
-        "thresholds": {
-          "build_time": {
-            "p50_mins": 60
-          },
-          "fail_rate": {
-            "average": 0.2
-          },
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": 60
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "linux-lacros-tester-rel": {
         "contact_team_email": "chrome-desktop-engprod@google.com",
-        "thresholds": {
-          "build_time": {
-            "p50_mins": 60
-          },
-          "fail_rate": {
-            "average": 0.2
-          },
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": 60
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "linux-official": {
-        "thresholds": {
-          "build_time": {
-            "p50_mins": 240
-          },
-          "fail_rate": {
-            "average": 0.2
-          },
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": 240
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "linux-rel-cft": {
         "contact_team_email": "browser-automation-staff@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "linux-swangle-chromium-x64": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "linux-swangle-chromium-x64-exp": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "linux-swangle-tot-swiftshader-x64": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "linux-swangle-x64": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "linux-swangle-x64-exp": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "linux-ubsan-vptr": {
         "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "linux-v4l2-codec-rel": {
         "contact_team_email": "chrome-linux-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "linux-win_cross-rel": {
         "contact_team_email": "lexan@google.com",
-        "thresholds": {
-          "build_time": {},
-          "infra_fail_rate": {
-            "average": 0.05
-          },
-          "pending_time": {
-            "p50_mins": 20
+        "problem_specs": {
+          "Unhealthy": {
+            "build_time": {
+              "p50_mins": null
+            },
+            "fail_rate": {
+              "average": 0.2
+            },
+            "infra_fail_rate": {
+              "average": 0.05
+            },
+            "pending_time": {
+              "p50_mins": 20
+            }
           }
         }
       },
       "mac-angle-chromium-amd": {
         "contact_team_email": "angle-team@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "mac-angle-chromium-builder": {
         "contact_team_email": "angle-team@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "mac-angle-chromium-intel": {
         "contact_team_email": "angle-team@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "mac-archive-rel": {
         "contact_team_email": "bling-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "mac-arm64-archive-rel": {
         "contact_team_email": "bling-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "mac-arm64-dbg": {
         "contact_team_email": "bling-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "mac-arm64-on-arm64-rel": {
         "contact_team_email": "bling-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "mac-arm64-rel": {
         "contact_team_email": "bling-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "mac-intel-on-arm64-rel": {
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "mac-official": {
         "contact_team_email": "bling-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "mac-rel-cft": {
         "contact_team_email": "browser-automation-staff@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "mac-swangle-chromium-x64": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "mac11-arm64-rel-tests": {
         "contact_team_email": "bling-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "mac12-arm64-rel-tests": {
         "contact_team_email": "bling-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "mac13-arm64-rel-tests": {
         "contact_team_email": "bling-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "win-angle-chromium-x64-builder": {
         "contact_team_email": "angle-team@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "win-angle-chromium-x86-builder": {
         "contact_team_email": "angle-team@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "win-archive-rel": {
         "contact_team_email": "chrome-desktop-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "win-asan": {
         "contact_team_email": "chrome-sanitizer-builder-owners@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "win-official": {
         "contact_team_email": "chrome-desktop-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "win-rel-cft": {
         "contact_team_email": "browser-automation-staff@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "win-swangle-chromium-x86": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "win-swangle-tot-swiftshader-x64": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "win-swangle-tot-swiftshader-x86": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "win-swangle-x64": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "win-swangle-x86": {
         "contact_team_email": "chrome-gpu-infra@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "win10-angle-chromium-x64-intel": {
         "contact_team_email": "angle-team@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "win10-angle-chromium-x64-nvidia": {
         "contact_team_email": "angle-team@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "win32-archive-rel": {
         "contact_team_email": "chrome-desktop-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       },
       "win32-official": {
         "contact_team_email": "chrome-desktop-engprod@google.com",
-        "thresholds": {
-          "_default": "_default"
+        "problem_specs": {
+          "Unhealthy": {
+            "_default": "Unhealthy"
+          }
         }
       }
     }

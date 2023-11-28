@@ -493,11 +493,13 @@ ci.builder(
     gn_args = gn_args.config(
         configs = ["official_optimize", "reclient"],
     ),
-    health_spec = health_spec.modified_default(
-        build_time = struct(
-            p50_mins = 240,
+    health_spec = health_spec.modified_default({
+        "Unhealthy": struct(
+            build_time = struct(
+                p50_mins = 240,
+            ),
         ),
-    ),
+    }),
 )
 
 ci.builder(

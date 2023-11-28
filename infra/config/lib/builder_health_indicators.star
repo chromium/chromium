@@ -14,29 +14,26 @@ load("./structs.star", "structs")
 
 _HEALTH_SPEC = nodes.create_bucket_scoped_node_type("health_spec")
 
-# See https://source.chromium.org/chromium/infra/infra/+/main:go/src/infra/cr_builder_health/thresholds.go?q=f:thresholds.go%20%22type%20BuilderThresholds%22
+# See https://source.chromium.org/chromium/infra/infra/+/main:go/src/infra/cr_builder_health/src_config.go
 # for all configurable thresholds.
-_default_thresholds = struct(
-    # If any of these threholds are exceeded, the builder will be deemed unhealthy.
-    # Setting a value of None will ignore that threshold
-    infra_fail_rate = struct(
-        average = 0.05,
+_default_specs = {
+    "Unhealthy": struct(
+        # If any of these thresholds are exceeded, the builder will be deemed unhealthy.
+        # Setting a value of None will ignore that threshold
+        infra_fail_rate = struct(
+            average = 0.05,
+        ),
+        fail_rate = struct(
+            average = 0.2,
+        ),
+        build_time = struct(
+            p50_mins = None,
+        ),
+        pending_time = struct(
+            p50_mins = 20,
+        ),
     ),
-    fail_rate = struct(
-        average = 0.2,
-    ),
-    build_time = struct(
-        p50_mins = None,
-    ),
-    pending_time = struct(
-        p50_mins = 20,
-    ),
-)
-
-_default_spec = struct(
-    thresholds = _default_thresholds,
-    contact_team_email = "",
-)
+}
 
 _blank_thresholds = struct(
     infra_fail_rate = struct(
@@ -53,13 +50,24 @@ _blank_thresholds = struct(
     ),
 )
 
-DEFAULT = struct(_default = "_default")
+DEFAULT = {
+    "Unhealthy": struct(
+        _default = "Unhealthy",
+    ),
+}
 
 def thresholds(**kwargs):
     return structs.evolve(_blank_thresholds, **kwargs)
 
-def modified_default(**kwargs):
-    return structs.evolve(_default_thresholds, **kwargs)
+def modified_default(modifications):
+    spec = dict(_default_specs)
+    for problem in modifications:
+        if problem not in spec:
+            spec[problem] = modifications[problem]
+        else:
+            spec[problem] = structs.evolve(spec[problem], **structs.to_proto_properties(modifications[problem]))
+
+    return spec
 
 def _exempted_from_contact(bucket, builder):
     return builder in _exempted_from_contact_builders.get(bucket, [])
@@ -70,7 +78,7 @@ def register_health_spec(bucket, name, thresholds, contact_team_email):
 
     if thresholds:
         spec = struct(
-            thresholds = thresholds,
+            problem_specs = thresholds,
             contact_team_email = contact_team_email,
         )
         health_spec_key = _HEALTH_SPEC.add(
@@ -91,7 +99,7 @@ def _generate_health_specs(ctx):
         specs.setdefault(bucket, {})[builder] = node.props
 
     result = {
-        "_default": _default_spec,
+        "_default_specs": _default_specs,
         "specs": specs,
     }
 
@@ -972,7 +980,7 @@ _exempted_from_contact_builders = {
 
 health_spec = struct(
     DEFAULT = DEFAULT,
-    spec = thresholds,
+    thresholds = thresholds,
     modified_default = modified_default,
 )
 
