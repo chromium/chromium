@@ -18,6 +18,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager.ThumbnailChangeListener;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -28,10 +29,8 @@ import org.chromium.chrome.browser.hub.HubLayoutDependencyHolder;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegateProvider;
@@ -92,11 +91,11 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     /** Whether or not animations are enabled.  This can disable certain layouts or effects. */
     private boolean mEnableAnimations = true;
 
-    private boolean mCreatingNtp;
     private LayoutStateObserver mTabSwitcherFocusLayoutStateObserver;
 
     protected ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
     private boolean mFinishNativeInitialization;
+    private TabContentManager mTabContentManager;
 
     // Lazy Tab Switcher Init
     private final Supplier<StartSurface> mStartSurfaceSupplier;
@@ -105,6 +104,8 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     private final Callable<ViewGroup> mCreateTabSwitcherOrStartSurfaceCallable;
 
     private final HubLayoutDependencyHolder mHubLayoutDependencyHolder;
+    private final ThumbnailChangeListener mThumbnailChangeListener = (id) -> requestUpdate();
+    private final Callback<TabContentManager> mOnTabContentManager = this::onTabContentManager;
 
     // Theme Color
     private TopUiThemeColorProvider mTopUiThemeColorProvider;
@@ -144,31 +145,11 @@ public class LayoutManagerChrome extends LayoutManagerImpl
             Callable<ViewGroup> delayedTabSwitcherOrStartSurfaceCallable,
             HubLayoutDependencyHolder hubLayoutDependencyHolder) {
         super(host, contentContainer, tabContentManagerSupplier, topUiThemeColorProvider);
-
         // Build Event Filter Handlers
         mToolbarSwipeHandler = createToolbarSwipeHandler(/* supportSwipeDown= */ true);
 
         mTabContentManagerSupplier = tabContentManagerSupplier;
-        mTabContentManagerSupplier.addObserver(
-                new Callback<TabContentManager>() {
-                    @Override
-                    public void onResult(TabContentManager manager) {
-                        manager.addThumbnailChangeListener((id) -> requestUpdate());
-                        if (mOverviewLayout != null) {
-                            mOverviewLayout.setTabContentManager(manager);
-                        }
-                        if (mTabSwitcherLayout != null) {
-                            mTabSwitcherLayout.setTabContentManager(manager);
-                        }
-                        if (mStartSurfaceHomeLayout != null) {
-                            mStartSurfaceHomeLayout.setTabContentManager(manager);
-                        }
-                        if (mHubLayout != null) {
-                            mHubLayout.setTabContentManager(manager);
-                        }
-                        tabContentManagerSupplier.removeObserver(this);
-                    }
-                });
+        mTabContentManagerSupplier.addObserver(mOnTabContentManager);
 
         mStartSurfaceSupplier = startSurfaceSupplier;
         mTabSwitcherSupplier = tabSwitcherSupplier;
@@ -420,9 +401,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
         }
     }
 
-    /**
-     * @return A list of virtual views representing compositor rendered views.
-     */
+    /** Returns a list of virtual views representing compositor rendered views. */
     @Override
     public void getVirtualViews(List<VirtualView> views) {
         // TODO(dtrainor): Investigate order.
@@ -432,9 +411,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
         }
     }
 
-    /**
-     * @return The {@link SwipeHandler} responsible for processing swipe events for the toolbar.
-     */
+    /** Returns the {@link SwipeHandler} responsible for processing swipe events for the toolbar. */
     @Override
     public SwipeHandler getToolbarSwipeHandler() {
         return mToolbarSwipeHandler;
@@ -582,7 +559,13 @@ public class LayoutManagerChrome extends LayoutManagerImpl
         super.destroy();
 
         if (mTabContentManagerSupplier != null) {
+            mTabContentManagerSupplier.removeObserver(mOnTabContentManager);
             mTabContentManagerSupplier = null;
+        }
+
+        if (mTabContentManager != null) {
+            mTabContentManager.removeThumbnailChangeListener(mThumbnailChangeListener);
+            mTabContentManager = null;
         }
 
         if (mTabSwitcherFocusLayoutStateObserver != null) {
@@ -638,12 +621,6 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     }
 
     @Override
-    protected void startShowing(Layout layout, boolean animate) {
-        mCreatingNtp = false;
-        super.startShowing(layout, animate);
-    }
-
-    @Override
     public void doneHiding() {
         if (getNextLayout() == getDefaultLayout()) {
             Tab tab = getTabModelSelector() != null ? getTabModelSelector().getCurrentTab() : null;
@@ -651,20 +628,6 @@ public class LayoutManagerChrome extends LayoutManagerImpl
         }
 
         super.doneHiding();
-    }
-
-    @Override
-    protected void tabCreated(
-            int id,
-            int sourceId,
-            @TabLaunchType int launchType,
-            boolean incognito,
-            boolean willBeSelected,
-            float originX,
-            float originY) {
-        Tab newTab = TabModelUtils.getTabById(getTabModelSelector().getModel(incognito), id);
-        mCreatingNtp = newTab != null && newTab.isNativePage();
-        super.tabCreated(id, sourceId, launchType, incognito, willBeSelected, originX, originY);
     }
 
     @Override
@@ -687,9 +650,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
         super.onTabsAllClosing(incognito);
     }
 
-    /**
-     * @return The overview layout {@link Layout} managed by this class.
-     */
+    /** Returns the overview layout {@link Layout} managed by this class. */
     @VisibleForTesting
     public Layout getOverviewLayout() {
         return mOverviewLayout;
@@ -721,9 +682,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
         mEnableAnimations = enabled;
     }
 
-    /**
-     * @return Whether animations should be done for model changes.
-     */
+    /** Returns whether animations should be done for model changes. */
     @VisibleForTesting
     public boolean animationsEnabled() {
         return mEnableAnimations;
@@ -854,9 +813,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
             return direction == ScrollDirection.LEFT || direction == ScrollDirection.RIGHT;
         }
 
-        /**
-         * @return Whether or not we are ready to show the GTS layout.
-         */
+        /** Returns whether or not we are ready to show the GTS layout. */
         private boolean isTabSwitcherReady() {
             // On Tablets, or with Start Surface Refactor, attempting to show the GTS while it's
             // null will trigger its creation.
@@ -887,5 +844,26 @@ public class LayoutManagerChrome extends LayoutManagerImpl
 
         mToolbarSwipeLayout.setSwitchToTab(tab.getId(), lastTabId);
         showLayout(LayoutType.TOOLBAR_SWIPE, false);
+    }
+
+    private void onTabContentManager(TabContentManager tabContentManager) {
+        assert mTabContentManager == null;
+        mTabContentManager = tabContentManager;
+        mTabContentManager.addThumbnailChangeListener(mThumbnailChangeListener);
+        if (mOverviewLayout != null) {
+            mOverviewLayout.setTabContentManager(mTabContentManager);
+        }
+        if (mTabSwitcherLayout != null) {
+            mTabSwitcherLayout.setTabContentManager(mTabContentManager);
+        }
+        if (mStartSurfaceHomeLayout != null) {
+            mStartSurfaceHomeLayout.setTabContentManager(mTabContentManager);
+        }
+        if (mHubLayout != null) {
+            mHubLayout.setTabContentManager(mTabContentManager);
+        }
+        if (mTabContentManagerSupplier != null) {
+            mTabContentManagerSupplier.removeObserver(mOnTabContentManager);
+        }
     }
 }

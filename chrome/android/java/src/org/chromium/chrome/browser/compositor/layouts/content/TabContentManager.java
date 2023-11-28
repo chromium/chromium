@@ -97,8 +97,7 @@ public class TabContentManager {
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private long mNativeTabContentManager;
 
-    private final ArrayList<ThumbnailChangeListener> mListeners =
-            new ArrayList<ThumbnailChangeListener>();
+    private final ArrayList<ThumbnailChangeListener> mListeners = new ArrayList<>();
 
     private final boolean mSnapshotsEnabled;
     private final TabFinder mTabFinder;
@@ -109,7 +108,7 @@ public class TabContentManager {
         /**
          * @param id The tab id.
          */
-        public void onThumbnailChange(int id);
+        void onThumbnailChange(int id);
     }
 
     /** The interface to get a {@link Tab} from a tab ID. */
@@ -134,9 +133,10 @@ public class TabContentManager {
     }
 
     /**
-     * @param context                      The context that this cache is created in.
-     * @param BrowserControlsStateProvider The provider of offsets.
-     * @param tabFinder                    The helper function to get tab from an ID.
+     * @param context The context that this cache is created in.
+     * @param browserControlsStateProvider The provider of offsets.
+     * @param snapshotsEnabled When false, causes many operations to no-op to save resources.
+     * @param tabFinder The helper function to get tab from an ID.
      */
     public TabContentManager(
             Context context,
@@ -255,7 +255,7 @@ public class TabContentManager {
     }
 
     private Bitmap readbackNativeView(View viewToDraw, float scale, NativePage nativePage) {
-        Bitmap bitmap = null;
+        Bitmap bitmap;
         float overlayTranslateY = mBrowserControlsStateProvider.getTopVisibleContentOffset();
 
         float leftMargin = 0.f;
@@ -413,7 +413,7 @@ public class TabContentManager {
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(path, options);
 
-        // Raw height and width of image
+        // Raw height and width of image.
         final int height = options.outHeight;
         final int width = options.outWidth;
         int inSampleSize = 1;
@@ -431,7 +431,7 @@ public class TabContentManager {
         }
         options.inSampleSize = inSampleSize;
 
-        // Decode bitmap with inSampleSize set
+        // Decode bitmap with inSampleSize set.
         options.inJustDecodeBounds = false;
         return BitmapFactory.decodeFile(path, options);
     }
@@ -475,9 +475,7 @@ public class TabContentManager {
                     Bitmap bitmap = getJpegForTab(tabId, thumbnailSize);
                     PostTask.postTask(
                             TaskTraits.UI_USER_VISIBLE,
-                            () -> {
-                                onBitmapRead(tabId, thumbnailSize, attempts, bitmap, callback);
-                            });
+                            () -> onBitmapRead(tabId, thumbnailSize, attempts, bitmap, callback));
                 },
                 attempts == 0 ? 0 : WAIT_FOR_NATIVE_BACKOFF_MS);
     }
@@ -678,13 +676,14 @@ public class TabContentManager {
     }
 
     /**
-     * Update the priority-ordered list of visible tabs. This should only be called directly via
-     * the active {@link Layout} to avoid invalidating visible tab IDs that are in use.
-     * @param priority The list of tab ids to load cached thumbnails for. Only the first
-     *                 {@link mFullResThumbnailsMaxSize} thumbnails will be loaded.
+     * Update the priority-ordered list of visible tabs. This should only be called directly via the
+     * active {@link Layout} to avoid invalidating visible tab IDs that are in use.
+     *
+     * @param priority The list of tab ids to load cached thumbnails for. Only the first {@link
+     *     mFullResThumbnailsMaxSize} thumbnails will be loaded.
      * @param primaryTabId The id of the current tab this is not loaded under the assumption it will
-     *                     have a live layer. If this is not the case it should be the first tab in
-     *                     the priority list.
+     *     have a live layer. If this is not the case it should be the first tab in the priority
+     *     list.
      */
     public void updateVisibleIds(List<Integer> priority, int primaryTabId) {
         if (mNativeTabContentManager == 0) return;
