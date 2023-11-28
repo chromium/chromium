@@ -21,7 +21,7 @@
 namespace ash {
 namespace {
 
-constexpr const char kUserActionRetry[] = "retry";
+constexpr const char kUserActionCanel[] = "cancelLoginFlow";
 
 }  // namespace
 
@@ -46,13 +46,14 @@ void OSAuthErrorScreen::ShowImpl() {
   if (!view_) {
     return;
   }
+  CHECK(context()->osauth_error.has_value());
   view_->Show();
 }
 
 void OSAuthErrorScreen::OnUserAction(const base::Value::List& args) {
   CHECK_GE(args.size(), 1u);
   const std::string& action_id = args[0].GetString();
-  if (action_id == kUserActionRetry) {
+  if (action_id == kUserActionCanel) {
     if (context()->extra_factors_token.has_value()) {
       AuthSessionStorage::Get()->Invalidate(
           GetToken(), base::BindOnce(&OSAuthErrorScreen::OnTokenInvalidated,

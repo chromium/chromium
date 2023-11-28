@@ -70,8 +70,8 @@ class OSAuthErrorScreen extends OSAuthErrorBase {
    */
   onBeforeShow(data) {}
 
-  onRetryButtonPressed_() {
-    this.userActed('retry');
+  onRetryLoginButtonPressed_() {
+    this.userActed('cancelLoginFlow');
   }
 }
 

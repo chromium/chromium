@@ -89,6 +89,11 @@ class WizardContext {
     AuthFactorsSet modified_factors;
   };
 
+  enum class OSAuthErrorKind {
+    // Most of the errors
+    kFatal,
+  };
+
   // Configuration for automating OOBE screen actions, e.g. during device
   // version rollback.
   // Set by WizardController.
@@ -163,6 +168,8 @@ class WizardContext {
   RecoverySetup recovery_setup;
 
   KnowledgeFactorSetup knowledge_factor_setup;
+
+  absl::optional<OSAuthErrorKind> osauth_error;
 
   // Same as above, but the actual context is stored in AuthSessionStorage,
   // and the token can be used to retrieve it.

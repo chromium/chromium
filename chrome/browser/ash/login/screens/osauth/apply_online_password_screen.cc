@@ -81,6 +81,7 @@ void ApplyOnlinePasswordScreen::InspectContext(UserContext* user_context) {
 
 void ApplyOnlinePasswordScreen::SetOnlinePassword() {
   if (!online_password_.has_value()) {
+    context()->osauth_error = WizardContext::OSAuthErrorKind::kFatal;
     exit_callback_.Run(Result::kError);
     return;
   }
@@ -98,7 +99,7 @@ void ApplyOnlinePasswordScreen::SetOnlinePassword() {
 void ApplyOnlinePasswordScreen::OnOnlinePasswordSet(
     auth::mojom::ConfigureResult result) {
   if (result != auth::mojom::ConfigureResult::kSuccess) {
-    // TODO(b/291808449): Error handling.
+    context()->osauth_error = WizardContext::OSAuthErrorKind::kFatal;
     exit_callback_.Run(Result::kError);
     LOG(ERROR) << "Could not set online password";
   } else {

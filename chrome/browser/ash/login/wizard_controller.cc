@@ -1092,6 +1092,7 @@ void WizardController::ShowPasswordSelectionScreen() {
 }
 
 void WizardController::ShowOSAuthErrorScreen() {
+  CHECK(wizard_context_->osauth_error.has_value());
   SetCurrentScreen(GetScreen(OSAuthErrorScreenView::kScreenId));
 }
 
