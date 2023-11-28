@@ -765,7 +765,7 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
                 : kColorReadAnythingBackgroundLight};
   mixer[kColorReadAnythingBackgroundBlue] = {gfx::kGoogleBlue100};
   mixer[kColorReadAnythingBackgroundDark] = {gfx::kGoogleGrey900};
-  mixer[kColorReadAnythingBackgroundLight] = {gfx::kGoogleGrey100};
+  mixer[kColorReadAnythingBackgroundLight] = {SK_ColorWHITE};
   mixer[kColorReadAnythingBackgroundYellow] = {gfx::kGoogleYellow100};
   // The Read Anything themes need to be hard coded because they do not
   // change with the chrome theme, which is the purpose of the Read Anything
