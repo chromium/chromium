@@ -155,21 +155,32 @@ void WebDatabaseMigrationTest::LoadDatabase(
 // schema as migrating from an empty database.
 TEST_F(WebDatabaseMigrationTest, VersionXxSqlFilesAreGolden) {
   DoMigration();
-  sql::Database connection;
-  ASSERT_TRUE(connection.Open(GetDatabasePath()));
-  const std::string& expected_schema = connection.GetSchema();
+
+  // Initialize the database and retrieve the initial schema. The database needs
+  // to be closed.
+  const base::FilePath db_path = GetDatabasePath();
+  std::string expected_schema;
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(db_path));
+    expected_schema = connection.GetSchema();
+    ASSERT_TRUE(connection.Raze());
+  }
+
   for (int i = WebDatabase::kDeprecatedVersionNumber + 1;
        i < kCurrentTestedVersionNumber; ++i) {
-    connection.Raze();
-    const base::FilePath& file_name = base::FilePath::FromUTF8Unsafe(
+    const base::FilePath file_name = base::FilePath::FromUTF8Unsafe(
         "version_" + base::NumberToString(i) + ".sql");
     ASSERT_NO_FATAL_FAILURE(LoadDatabase(file_name.value()))
         << "Failed to load " << file_name.MaybeAsASCII();
     DoMigration();
 
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(db_path));
     EXPECT_EQ(NormalizeSchemaForComparison(expected_schema),
               NormalizeSchemaForComparison(connection.GetSchema()))
         << "For version " << i;
+    ASSERT_TRUE(connection.Raze());
   }
 }
 
