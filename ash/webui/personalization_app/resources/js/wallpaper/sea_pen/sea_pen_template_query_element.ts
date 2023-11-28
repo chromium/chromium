@@ -9,11 +9,39 @@
 
 import '../../../common/icons.html.js';
 
+import {assert} from 'chrome://resources/js/assert.js';
+
 import {WithPersonalizationStore} from '../../personalization_store.js';
 import {isNonEmptyArray} from '../../utils.js';
 import {getSampleSeaPenTemplates, parseTemplateText, SeaPenOption, SeaPenTemplate} from '../utils.js';
 
 import {getTemplate} from './sea_pen_template_query_element.html.js';
+
+/**
+ * Returns a random number between [0, max).
+ */
+function getRandomInt(max: number) {
+  return Math.floor(Math.random() * max);
+}
+
+function isChip(word: string): boolean {
+  return !!word && word.startsWith('<') && word.endsWith('>');
+}
+
+/**
+ * A template token that is a chip.
+ */
+export interface ChipToken {
+  // The translated string displayed on the UI.
+  translation: string;
+  // The identifier of the chip .e.g. <city> or <style>.
+  id: string;
+}
+
+/**
+ * A tokenized unit of the `SeaPenTemplate`. Used to render the prompt on the UI
+ */
+type TemplateToken = string|ChipToken;
 
 export class SeaPenTemplateQueryElement extends WithPersonalizationStore {
   static get is() {
@@ -33,30 +61,25 @@ export class SeaPenTemplateQueryElement extends WithPersonalizationStore {
       seaPenTemplate_: {
         type: Object,
         computed: 'computeSeaPenTemplate_(templateId)',
+        observer: 'onSeaPenTemplateChanged_',
       },
 
+      // A map of chip to its selected option. By default, populated after
+      // `seaPenTemplate_` is constructed. Updated when the user selects the
+      // option on the UI.
       selectedOptions_: {
-        type: Map,
-        computed: 'computeSelectedOptions_(seaPenTemplate_)',
+        type: Object,
       },
 
-      // `templateText_` is the template string. The string is broken down into
-      // an array of substrings by whether it contains a word that is a
-      // "<chip>".
-      templateText_: {
+      // The tokens generated from `seaPenTemplate_` and `selectedOptions_`.
+      templateTokens_: {
         type: Array,
-        computed: 'computeTemplateText_(seaPenTemplate_)',
       },
 
-      // `selectedChip_` is the DOM element of a selected chip in the template
-      // string. It is updated whenever the user clicks a chip word in the
-      // template.
+      // The selected chip token. Updated whenever the user clicks a chip in the
+      // UI.
       selectedChip_: {
-        type: HTMLElement,
-      },
-
-      selectedChipText_: {
-        type: String,
+        type: Object,
       },
 
       // `options_` is an array of possible values for the selected chip. Each
@@ -70,10 +93,9 @@ export class SeaPenTemplateQueryElement extends WithPersonalizationStore {
 
   private seaPenTemplate_: SeaPenTemplate;
   private selectedOptions_: Map<string, string>;
-  private templateText_: string[];
-  private options_: SeaPenOption[];
-  private selectedChip_: HTMLElement;
-  private selectedChipText_: string|null;
+  private templateTokens_: TemplateToken[];
+  private options_: SeaPenOption[]|null;
+  private selectedChip_: ChipToken|null;
   templateId: string|null;
 
   private computeSeaPenTemplate_(templateId: string|null) {
@@ -83,74 +105,111 @@ export class SeaPenTemplateQueryElement extends WithPersonalizationStore {
     return correctTemplate as SeaPenTemplate;
   }
 
-  private isChip_(word: string): boolean {
-    return !!word && word.startsWith('<');
+  private isChip_(token: any): token is ChipToken {
+    return typeof token?.translation === 'string';
   }
 
-  private onClickChip_(event: Event) {
-    this.selectedChip_ = event.currentTarget as HTMLElement;
-    this.selectedChipText_ = this.selectedChip_.innerText;
-    const chip = this.getSelectedChipName_();
-    this.options_ = this.seaPenTemplate_.options.get(chip) as SeaPenOption[];
+  private onClickChip_(event: Event&{model: {token: ChipToken}}) {
+    assert(this.isChip_(event.model.token), 'Token must be a chip');
+    this.selectedChip_ = event.model.token;
+    assert(
+        this.seaPenTemplate_.options.has(this.selectedChip_.id),
+        'options must exist');
+    this.options_ = this.seaPenTemplate_.options.get(this.selectedChip_.id)!;
   }
 
   private onClickOption_(event: Event) {
     const eventTarget = event.currentTarget as HTMLElement;
-    this.selectedChip_.innerText = eventTarget.innerText;
-    this.selectedChipText_ = eventTarget.innerText;
-    const chip = this.getSelectedChipName_();
     const newValue = eventTarget.getAttribute('value') as string;
-    this.selectedOptions_.set(chip, newValue);
+    // Notifies the selected chip's translation has changed to the UI.
+    this.set('selectedChip_.translation', newValue);
+    this.selectedOptions_.set(this.selectedChip_!.id, newValue);
+    this.templateTokens_ = this.computeTemplateTokens_(
+        this.seaPenTemplate_, this.selectedOptions_);
   }
 
-  private getSelectedChipName_(): string {
-    // First class name is the chip. Determined by |this.computeChipClassName_|.
-    return `<${this.selectedChip_.className.split(' ')[0]}>`;
-  }
-
-  private computeSelectedOptions_(template: SeaPenTemplate) {
-    const selected = new Map();
-    template.options.forEach((options, chip) => {
-      selected.set(
-          chip, isNonEmptyArray(options) ? options[0].translation : '');
+  // TODO(b/309679850): Query for actual images.
+  private onClickInspire_() {
+    this.seaPenTemplate_.options.forEach((options, chip) => {
+      if (isNonEmptyArray(options)) {
+        const option = options[getRandomInt(options.length)];
+        this.selectedOptions_.set(chip, option.translation);
+      } else {
+        console.warn('empty options for', this.seaPenTemplate_.id);
+        this.selectedOptions_.set(chip, '');
+      }
     });
-    return selected;
-  }
-
-  private getChipDefaultValue_(chip: string) {
-    return this.selectedOptions_.get(chip);
-  }
-
-  private computeTemplateText_(template: SeaPenTemplate) {
-    return parseTemplateText(template.text);
-  }
-
-  private computeChipClassName_(chip: string, selectedChipText: string|null) {
-    if (!this.isChip_(chip)) {
-      return;
+    if (this.selectedChip_) {
+      // The selected chip translation might have changed due to randomized
+      // option. Notifies the UI to update its value.
+      this.set(
+          `selectedChip_.translation`,
+          this.selectedOptions_.get(this.selectedChip_.id));
     }
+    this.templateTokens_ = this.computeTemplateTokens_(
+        this.seaPenTemplate_, this.selectedOptions_);
+  }
+
+  private onSeaPenTemplateChanged_(template: SeaPenTemplate) {
+    const selectedOptions = new Map<string, string>();
+    template.options.forEach((options, chip) => {
+      if (isNonEmptyArray(options)) {
+        const option = options[0];
+        selectedOptions.set(chip, option.translation);
+      } else {
+        console.warn('empty options for', template.id);
+        selectedOptions.set(chip, '');
+      }
+    });
+    this.selectedChip_ = null;
+    this.options_ = null;
+    this.selectedOptions_ = selectedOptions;
+    this.templateTokens_ = this.computeTemplateTokens_(
+        this.seaPenTemplate_, this.selectedOptions_);
+  }
+
+  private computeTemplateTokens_(
+      template: SeaPenTemplate, selectedOptions: Map<string, string>) {
+    const strs = parseTemplateText(template.text);
+    const tokens: TemplateToken[] = [];
+    strs.forEach(str => {
+      if (isChip(str)) {
+        tokens.push({
+          translation: isChip(str) ? selectedOptions.get(str) || '' : str,
+          id: str,
+        });
+      } else {
+        tokens.push(str);
+      }
+    });
+    return tokens;
+  }
+
+  private getChipClassName_(chip: ChipToken, selectedChip: ChipToken|null) {
+    assert(this.isChip_(chip), 'Token must be a chip');
     // If there are no selected chips, then use the 'selected' styling on all
     // chips.
-    const selected = !selectedChipText || this.getSelectedChipName_() === chip ?
+    const selected = !selectedChip || chip.id === selectedChip.id ?
         'selected' :
         'unselected';
-    return `${chip.substring(1, chip.length - 1)} clickable ${selected}`;
+    return `clickable ${selected}`;
   }
 
   private isOptionSelected_(
-      option: SeaPenOption, selectedChipText: string|null): 'true'|'false' {
-    return option.translation === selectedChipText ? 'true' : 'false';
+      option: SeaPenOption, selectedChipTranslation: string): string {
+    return (option.translation === selectedChipTranslation).toString();
   }
 
-  private getOptionClass_(option: SeaPenOption, selectedChipText: string|null):
-      string {
-    return option.translation === selectedChipText ? 'action-button' :
-                                                     'unselected-option';
+  private getOptionClass_(
+      option: SeaPenOption, selectedChipTranslation: string): string {
+    return this.isOptionSelected_(option, selectedChipTranslation) === 'true' ?
+        'action-button' :
+        'unselected-option';
   }
 
-  private computeTextClassName_(selectedChipText: string|null): string {
+  private getTextClassName_(selectedChip: TemplateToken|null): string {
     // Use the 'unselected' styling only if a chip has been selected.
-    return selectedChipText ? 'unselected' : '';
+    return selectedChip ? 'unselected' : '';
   }
 }
 

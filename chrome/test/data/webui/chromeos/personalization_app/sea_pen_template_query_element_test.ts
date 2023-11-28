@@ -111,4 +111,40 @@ suite('SeaPenTemplateQueryElementTest', function() {
         selectedOption!.innerText, optionText,
         'the option should now be selected');
   });
+
+  test('inspires me', async () => {
+    seaPenTemplateQueryElement = initElement(
+        SeaPenTemplateQueryElement,
+        {'templateId': 'ChromeOSWallpaperTemplateSamplePark'});
+    await waitAfterNextRender(seaPenTemplateQueryElement);
+    const inspireButton =
+        seaPenTemplateQueryElement.shadowRoot!.getElementById('inspire');
+    assertTrue(!!inspireButton);
+    inspireButton!.click();
+    await waitAfterNextRender(seaPenTemplateQueryElement);
+
+    const chips =
+        seaPenTemplateQueryElement.shadowRoot!.querySelectorAll<HTMLElement>(
+            '.clickable');
+    assertTrue(chips.length >= 2, 'there should be chips to select');
+    chips[0]!.click();
+    await waitAfterNextRender(seaPenTemplateQueryElement);
+
+    let selectedOption = seaPenTemplateQueryElement.shadowRoot!.querySelector(
+                             '#options cr-button.action-button') as HTMLElement;
+    let optionText = selectedOption!.innerText;
+    assertTrue(
+        optionText === chips[0]!.innerText,
+        'selected option should match text');
+
+    chips[1]!.click();
+    await waitAfterNextRender(seaPenTemplateQueryElement);
+
+    selectedOption = seaPenTemplateQueryElement.shadowRoot!.querySelector(
+                         '#options cr-button.action-button') as HTMLElement;
+    optionText = selectedOption!.innerText;
+    assertTrue(
+        optionText === chips[1]!.innerText,
+        'selected option should match text');
+  });
 });
