@@ -98,19 +98,6 @@ void RecordCookieCommitProblem(CookieCommitProblem event) {
                             COOKIE_COMMIT_PROBLEM_LAST_ENTRY);
 }
 
-// The persistent cookie store is loaded into memory on eTLD at a time. This
-// variable controls the delay between loading eTLDs, so as to not overload the
-// CPU or I/O with these low priority requests immediately after start up.
-#if BUILDFLAG(IS_IOS)
-// TODO(ellyjones): This should be 200ms, but currently CookieStoreIOS is
-// waiting for -FinishedLoadingCookies to be called after all eTLD cookies are
-// loaded before making any network requests.  Changing to 0ms for now.
-// crbug.com/462593
-const int kLoadDelayMilliseconds = 0;
-#else
-const int kLoadDelayMilliseconds = 0;
-#endif
-
 }  // namespace
 
 namespace net {
@@ -818,11 +805,9 @@ void SQLitePersistentCookieStore::Backend::ChainLoadCookies(
   // then post a background task to continue chain-load;
   // Otherwise notify on client runner.
   if (load_success && keys_to_load_.size() > 0) {
-    bool success = background_task_runner()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&Backend::ChainLoadCookies, this,
-                       std::move(loaded_callback)),
-        base::Milliseconds(kLoadDelayMilliseconds));
+    bool success = background_task_runner()->PostTask(
+        FROM_HERE, base::BindOnce(&Backend::ChainLoadCookies, this,
+                                  std::move(loaded_callback)));
     if (!success) {
       LOG(WARNING) << "Failed to post task from " << FROM_HERE.ToString()
                    << " to background_task_runner().";
