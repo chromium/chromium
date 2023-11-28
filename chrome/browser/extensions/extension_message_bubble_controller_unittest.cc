@@ -18,7 +18,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/controlled_home_bubble_delegate.h"
 #include "chrome/browser/extensions/dev_mode_bubble_delegate.h"
 #include "chrome/browser/extensions/extension_action_test_util.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -341,7 +340,6 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
     // global variables, they can be shared between tests and cause
     // unpredicatable behavior.
     DevModeBubbleDelegate(profile()).ClearProfileSetForTesting();
-    ControlledHomeBubbleDelegate(profile()).ClearProfileSetForTesting();
     SuspiciousExtensionBubbleDelegate(profile()).ClearProfileSetForTesting();
     profile_keep_alive_.reset();
     BrowserWithTestWindowTest::TearDown();
@@ -663,114 +661,6 @@ TEST_F(ExtensionMessageBubbleTest, ShowDevModeBubbleOncePerOriginalProfile) {
     EXPECT_FALSE(controller->ShouldShow());
   }
 }
-
-// The feature this is meant to test is only implemented on Windows and Mac.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-
-TEST_F(ExtensionMessageBubbleTest, SettingsApiControllerTest) {
-  Init();
-
-  // Load two extensions overriding home page and one overriding something
-  // unrelated (to check for interference). Extension 2 should still win
-  // on the home page setting.
-  ASSERT_TRUE(
-      LoadExtensionOverridingHome("1", kId1, ManifestLocation::kUnpacked));
-  ASSERT_TRUE(
-      LoadExtensionOverridingHome("2", kId2, ManifestLocation::kUnpacked));
-  ASSERT_TRUE(
-      LoadExtensionOverridingStart("3", kId3, ManifestLocation::kUnpacked));
-
-  std::unique_ptr<TestExtensionMessageBubbleController> controller(
-      new TestExtensionMessageBubbleController(
-          new ControlledHomeBubbleDelegate(browser()->profile()), browser()));
-  controller->SetIsActiveBubble();
-
-  // The list will contain one enabled unpacked extension (ext 2).
-  EXPECT_TRUE(controller->ShouldShow());
-  std::vector<std::u16string> override_extensions =
-      controller->GetExtensionList();
-  ASSERT_EQ(1U, override_extensions.size());
-  EXPECT_EQ(u"Extension 2", override_extensions[0]);
-  EXPECT_EQ(0U, controller->link_click_count());
-  EXPECT_EQ(0U, controller->dismiss_click_count());
-  EXPECT_EQ(0U, controller->action_click_count());
-
-  // Simulate showing the bubble and dismissing it.
-  FakeExtensionMessageBubble bubble;
-  bubble.set_action_on_show(
-      FakeExtensionMessageBubble::BUBBLE_ACTION_CLICK_DISMISS_BUTTON);
-  bubble.set_controller(controller.get());
-  bubble.Show();
-  EXPECT_EQ(0U, controller->link_click_count());
-  EXPECT_EQ(0U, controller->action_click_count());
-  EXPECT_EQ(1U, controller->dismiss_click_count());
-  // No extension should have become disabled.
-  ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
-  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId1) != NULL);
-  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId2) != NULL);
-  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId3) != NULL);
-  // Only extension 2 should have been acknowledged.
-  EXPECT_FALSE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId1));
-  EXPECT_TRUE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId2));
-  EXPECT_FALSE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId3));
-  // Clean up after ourselves.
-  controller->delegate()->SetBubbleInfoBeenAcknowledged(kId2, false);
-
-  // Simulate clicking the learn more link to dismiss it.
-  bubble.set_action_on_show(
-      FakeExtensionMessageBubble::BUBBLE_ACTION_CLICK_LINK);
-  controller = std::make_unique<TestExtensionMessageBubbleController>(
-      new ControlledHomeBubbleDelegate(browser()->profile()), browser());
-  controller->SetIsActiveBubble();
-  bubble.set_controller(controller.get());
-  bubble.Show();
-  EXPECT_EQ(1U, controller->link_click_count());
-  EXPECT_EQ(0U, controller->action_click_count());
-  EXPECT_EQ(0U, controller->dismiss_click_count());
-  // No extension should have become disabled.
-  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId1) != NULL);
-  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId2) != NULL);
-  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId3) != NULL);
-  // Only extension 2 should have been acknowledged.
-  EXPECT_FALSE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId1));
-  EXPECT_TRUE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId2));
-  EXPECT_FALSE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId3));
-  // Clean up after ourselves.
-  controller->delegate()->SetBubbleInfoBeenAcknowledged(kId2, false);
-
-  // Do it again, but now opt to disable the extension.
-  bubble.set_action_on_show(
-      FakeExtensionMessageBubble::BUBBLE_ACTION_CLICK_ACTION_BUTTON);
-  controller = std::make_unique<TestExtensionMessageBubbleController>(
-      new ControlledHomeBubbleDelegate(browser()->profile()), browser());
-  controller->SetIsActiveBubble();
-  EXPECT_TRUE(controller->ShouldShow());
-  override_extensions = controller->GetExtensionList();
-  EXPECT_EQ(1U, override_extensions.size());
-  bubble.set_controller(controller.get());
-  bubble.Show();  // Simulate showing the bubble.
-  EXPECT_EQ(0U, controller->link_click_count());
-  EXPECT_EQ(1U, controller->action_click_count());
-  EXPECT_EQ(0U, controller->dismiss_click_count());
-  // Only extension 2 should have become disabled.
-  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId1) != NULL);
-  EXPECT_TRUE(registry->disabled_extensions().GetByID(kId2) != NULL);
-  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId3) != NULL);
-  // No extension should have been acknowledged (it got disabled).
-  EXPECT_FALSE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId1));
-  EXPECT_FALSE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId2));
-  EXPECT_FALSE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId3));
-
-  // Clean up after ourselves.
-  service_->UninstallExtension(kId1, extensions::UNINSTALL_REASON_FOR_TESTING,
-                               NULL);
-  service_->UninstallExtension(kId2, extensions::UNINSTALL_REASON_FOR_TESTING,
-                               NULL);
-  service_->UninstallExtension(kId3, extensions::UNINSTALL_REASON_FOR_TESTING,
-                               NULL);
-}
-
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 // Tests that a displayed extension bubble will be closed after its associated
 // enabled extension is uninstalled.

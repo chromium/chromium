@@ -6410,6 +6410,8 @@ static_library("ui") {
       "extensions/app_launch_params.h",
       "extensions/application_launch.cc",
       "extensions/application_launch.h",
+      "extensions/controlled_home_bubble_delegate.cc",
+      "extensions/controlled_home_bubble_delegate.h",
       "extensions/extension_action_platform_delegate.h",
       "extensions/extension_action_view_controller.cc",
       "extensions/extension_action_view_controller.h",

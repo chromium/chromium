@@ -8,13 +8,12 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/controlled_home_bubble_delegate.h"
 #include "chrome/browser/extensions/extension_web_ui.h"
 #include "chrome/browser/extensions/settings_api_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/extensions/extension_message_bubble_bridge.h"
+#include "chrome/browser/ui/extensions/controlled_home_bubble_delegate.h"
 #include "chrome/browser/ui/extensions/extension_settings_overridden_dialog.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
@@ -105,23 +104,15 @@ void RegisterSettingsOverriddenUiPrefs(PrefRegistrySimple* registry) {
 
 void MaybeShowExtensionControlledHomeNotification(Browser* browser) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  ToolbarActionsModel* model = ToolbarActionsModel::Get(browser->profile());
-  if (model->has_active_bubble()) {
+  auto bubble_delegate =
+      std::make_unique<ControlledHomeBubbleDelegate>(browser);
+  if (!bubble_delegate->ShouldShow()) {
     return;
   }
 
-  std::unique_ptr<ExtensionMessageBubbleController> controlled_home_bubble(
-      new ExtensionMessageBubbleController(
-          new ControlledHomeBubbleDelegate(browser->profile()), browser));
-  if (!controlled_home_bubble->ShouldShow()) {
-    return;
-  }
-
-  controlled_home_bubble->SetIsActiveBubble();
-  std::unique_ptr<ToolbarActionsBarBubbleDelegate> bridge(
-      new ExtensionMessageBubbleBridge(std::move(controlled_home_bubble)));
+  bubble_delegate->PendingShow();
   browser->window()->GetExtensionsContainer()->ShowToolbarActionBubble(
-      std::move(bridge));
+      std::move(bubble_delegate));
 #endif
 }
 

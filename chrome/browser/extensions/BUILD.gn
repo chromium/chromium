@@ -484,8 +484,6 @@ static_library("extensions") {
     "component_loader.h",
     "context_menu_matcher.cc",
     "context_menu_matcher.h",
-    "controlled_home_bubble_delegate.cc",
-    "controlled_home_bubble_delegate.h",
     "convert_user_script.cc",
     "convert_user_script.h",
     "corrupted_extension_reinstaller.cc",
