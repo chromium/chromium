@@ -20,7 +20,6 @@ class SearchEngineChoiceJsBrowserTest : public WebUIMochaBrowserTest {
     command_line->AppendSwitchASCII(switches::kSearchEngineChoiceCountry, "BE");
   }
 
- private:
   base::test::ScopedFeatureList scoped_feature_list_{
       switches::kSearchEngineChoice};
   base::AutoReset<bool> scoped_chrome_build_override_ =
@@ -29,6 +28,22 @@ class SearchEngineChoiceJsBrowserTest : public WebUIMochaBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(SearchEngineChoiceJsBrowserTest,
+                       SearchEngineChoiceTest) {
+  RunTest("search_engine_choice/search_engine_choice_test.js", "mocha.run()");
+}
+
+class SearchEngineChoiceJsBrowserTestWithForcedScroll
+    : public SearchEngineChoiceJsBrowserTest {
+ protected:
+  SearchEngineChoiceJsBrowserTestWithForcedScroll() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        switches::kSearchEngineChoice,
+        {{switches::kWithForcedScrollEnabled.name, "true"}});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(SearchEngineChoiceJsBrowserTestWithForcedScroll,
                        SearchEngineChoiceTest) {
   RunTest("search_engine_choice/search_engine_choice_test.js", "mocha.run()");
 }
