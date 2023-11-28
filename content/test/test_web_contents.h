@@ -174,8 +174,8 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
   void SetOverscrollNavigationEnabled(bool enabled) override;
   bool GetOverscrollNavigationEnabled() override;
 
-  void SetDisplayCutoutHost(
-      std::unique_ptr<DisplayCutoutHostImpl> display_cutout_host_impl);
+  void SetSafeAreaInsetsHost(
+      std::unique_ptr<SafeAreaInsetsHost> safe_area_insets_host);
 
  protected:
   // The deprecated WebContentsTester still needs to subclass this.

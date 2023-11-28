@@ -5,29 +5,18 @@
 #include "content/browser/display_cutout/display_cutout_host_impl.h"
 
 #include "content/browser/display_cutout/display_cutout_constants.h"
+#include "content/browser/display_cutout/safe_area_insets_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/navigation_handle.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
 namespace content {
 
 DisplayCutoutHostImpl::DisplayCutoutHostImpl(WebContentsImpl* web_contents)
-    : receivers_(web_contents, this), web_contents_impl_(web_contents) {}
+    : SafeAreaInsetsHost(web_contents) {}
 
 DisplayCutoutHostImpl::~DisplayCutoutHostImpl() = default;
-
-void DisplayCutoutHostImpl::BindReceiver(
-    mojo::PendingAssociatedReceiver<blink::mojom::DisplayCutoutHost> receiver,
-    RenderFrameHost* rfh) {
-  receivers_.Bind(rfh, std::move(receiver));
-}
-
-void DisplayCutoutHostImpl::NotifyViewportFitChanged(
-    blink::mojom::ViewportFit value) {
-  ViewportFitChangedForFrame(receivers_.GetCurrentTargetFrame(), value);
-}
 
 void DisplayCutoutHostImpl::ViewportFitChangedForFrame(
     RenderFrameHost* rfh,
@@ -128,18 +117,6 @@ void DisplayCutoutHostImpl::SetCurrentRenderFrameHost(RenderFrameHost* rfh) {
 
   // Notify the WebContentsObservers that the viewport fit value has changed.
   web_contents_impl_->NotifyViewportFitChanged(GetValueOrDefault(rfh));
-}
-
-void DisplayCutoutHostImpl::SendSafeAreaToFrame(RenderFrameHost* rfh,
-                                                gfx::Insets insets) {
-  blink::AssociatedInterfaceProvider* provider =
-      rfh->GetRemoteAssociatedInterfaces();
-  if (!provider)
-    return;
-
-  mojo::AssociatedRemote<blink::mojom::DisplayCutoutClient> client;
-  provider->GetInterface(client.BindNewEndpointAndPassReceiver());
-  client->SetSafeArea(insets);
 }
 
 blink::mojom::ViewportFit DisplayCutoutHostImpl::GetValueOrDefault(

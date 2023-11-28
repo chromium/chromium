@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "content/browser/display_cutout/safe_area_insets_host.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -18,8 +19,7 @@ namespace content {
 class RenderFrameHostImpl;
 class WebContentsImpl;
 
-class CONTENT_EXPORT DisplayCutoutHostImpl
-    : public blink::mojom::DisplayCutoutHost {
+class CONTENT_EXPORT DisplayCutoutHostImpl : public SafeAreaInsetsHost {
  public:
   explicit DisplayCutoutHostImpl(WebContentsImpl*);
 
@@ -28,34 +28,21 @@ class CONTENT_EXPORT DisplayCutoutHostImpl
 
   ~DisplayCutoutHostImpl() override;
 
-  // Binds a new receiver for the specified frame.
-  void BindReceiver(
-      mojo::PendingAssociatedReceiver<blink::mojom::DisplayCutoutHost> receiver,
-      RenderFrameHost* rfh);
-
-  // blink::mojom::DisplayCutoutHost
-  void NotifyViewportFitChanged(blink::mojom::ViewportFit value) override;
-
   // Called by WebContents when various events occur.
-  void DidAcquireFullscreen(RenderFrameHost* rfh);
-  void DidExitFullscreen();
-  void DidFinishNavigation(NavigationHandle* navigation_handle);
-  void RenderFrameDeleted(RenderFrameHost* rfh);
-  void RenderFrameCreated(RenderFrameHost* rfh);
+  void DidAcquireFullscreen(RenderFrameHost* rfh) override;
+  void DidExitFullscreen() override;
+  void DidFinishNavigation(NavigationHandle* navigation_handle) override;
+  void RenderFrameDeleted(RenderFrameHost* rfh) override;
+  void RenderFrameCreated(RenderFrameHost* rfh) override;
 
   // Updates the safe area insets on the current frame.
-  void SetDisplayCutoutSafeArea(gfx::Insets insets);
+  void SetDisplayCutoutSafeArea(gfx::Insets insets) override;
 
  protected:
-  // Send the safe area insets to a |RenderFrameHost|.
-  // Protected and virtual for testing only.
-  virtual void SendSafeAreaToFrame(RenderFrameHost* rfh, gfx::Insets insets);
+  void ViewportFitChangedForFrame(RenderFrameHost* rfh,
+                                  blink::mojom::ViewportFit value) override;
 
  private:
-  // Stores the updated viewport fit value for a |frame| and notifies observers
-  // if it has changed.
-  void ViewportFitChangedForFrame(RenderFrameHost* rfh,
-                                  blink::mojom::ViewportFit value);
   // Set the current |RenderFrameHost| that should have control over the
   // viewport fit value and we should set safe area insets on.
   void SetCurrentRenderFrameHost(RenderFrameHost* rfh);
@@ -76,12 +63,6 @@ class CONTENT_EXPORT DisplayCutoutHostImpl
 
   // Stores a map of RenderFrameHosts and their current viewport fit values.
   std::map<RenderFrameHost*, blink::mojom::ViewportFit> values_;
-
-  // Holds WebContents associated mojo receivers.
-  RenderFrameHostReceiverSet<blink::mojom::DisplayCutoutHost> receivers_;
-
-  // Weak pointer to the owning |WebContentsImpl| instance.
-  raw_ptr<WebContentsImpl> web_contents_impl_;
 };
 
 }  // namespace content

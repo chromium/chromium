@@ -546,9 +546,9 @@ bool TestWebContents::GetOverscrollNavigationEnabled() {
   return overscroll_enabled_;
 }
 
-void TestWebContents::SetDisplayCutoutHost(
-    std::unique_ptr<DisplayCutoutHostImpl> display_cutout_host_impl) {
-  display_cutout_host_impl_ = std::move(display_cutout_host_impl);
+void TestWebContents::SetSafeAreaInsetsHost(
+    std::unique_ptr<SafeAreaInsetsHost> safe_area_insets_host) {
+  safe_area_insets_host_ = std::move(safe_area_insets_host);
 }
 
 }  // namespace content

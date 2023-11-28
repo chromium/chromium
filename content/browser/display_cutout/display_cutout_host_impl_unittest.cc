@@ -57,7 +57,7 @@ class DisplayCutoutHostImplTest : public RenderViewHostTestHarness {
     std::unique_ptr<TestDisplayCutoutHostImpl> test_display_cutout_host_impl =
         absl::make_unique<TestDisplayCutoutHostImpl>(test_web_contents());
     test_display_cutout_host_ = test_display_cutout_host_impl.get();
-    test_web_contents()->SetDisplayCutoutHost(
+    test_web_contents()->SetSafeAreaInsetsHost(
         std::move(test_display_cutout_host_impl));
   }
 
