@@ -5249,7 +5249,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   SetupRemoteObjectInvocation(shell(), url);
 
   std::string kScript = "testObject.getInnerId();";
-  EXPECT_FALSE(EvalJs(web_contents(), kScript).error.empty());
+  EXPECT_THAT(EvalJs(web_contents(), kScript), EvalJsResult::IsError());
 }
 
 // TODO(crbug.com/1357783): This test is flaky.
@@ -5273,7 +5273,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   SetupRemoteObjectInvocation(shell(), url);
 
   std::string kScript = "testObject.readArray([6, 8, 2]);";
-  EXPECT_TRUE(EvalJs(web_contents(), kScript).error.empty());
+  EXPECT_THAT(EvalJs(web_contents(), kScript), EvalJsResult::IsOk());
   EXPECT_EQ(
       3, injector.GetObjectHost().GetMockObject()->get_num_elements_received());
 }

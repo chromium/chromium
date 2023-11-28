@@ -698,6 +698,12 @@ struct EvalJsResult {
   // Copy ctor.
   EvalJsResult(const EvalJsResult& value);
 
+  // Matchers for successful & unsuccessful runs.
+  static auto IsOk() {
+    return testing::Field(&EvalJsResult::error, testing::Eq(""));
+  }
+  static auto IsError() { return testing::Not(IsOk()); }
+
   // Extract a result value of the requested type, or die trying.
   //
   // If there was an error, or if returned value is of a different type, these
