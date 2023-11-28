@@ -78,7 +78,7 @@ template("absl_source_set") {
           "//libassistant/*",
 
           # Not built into Chrome.
-          "//third_party/ml/*",
+          "//components/optimization_guide/internal/*",
         ]
       } else {
         visibility = [ "*" ]
