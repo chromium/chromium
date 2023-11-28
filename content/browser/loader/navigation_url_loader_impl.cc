@@ -159,7 +159,7 @@ class NavigationLoaderInterceptorBrowserContainer
       bool* skip_other_interceptors) override {
     return browser_interceptor_->MaybeCreateLoaderForResponse(
         status, request, response_head, response_body, loader, client_receiver,
-        url_loader, skip_other_interceptors);
+        url_loader);
   }
 
  private:

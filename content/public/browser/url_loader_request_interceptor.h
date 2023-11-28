@@ -84,8 +84,7 @@ class CONTENT_EXPORT URLLoaderRequestInterceptor {
       mojo::ScopedDataPipeConsumerHandle* response_body,
       mojo::PendingRemote<network::mojom::URLLoader>* loader,
       mojo::PendingReceiver<network::mojom::URLLoaderClient>* client_receiver,
-      blink::ThrottlingURLLoader* url_loader,
-      bool* skip_other_interceptors);
+      blink::ThrottlingURLLoader* url_loader);
 };
 
 }  // namespace content
