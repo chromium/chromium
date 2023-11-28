@@ -3,6 +3,12 @@
 # found in the LICENSE file.
 
 # Provides per-crate and overall configuration options to gnrt.
+#
+# Most commonly needed configuration options can be found in the top-level doc
+# comment in //third_party/rust/chromium_crates_io/gnrt_config.toml.  As a
+# fallback, one may also read the doc comments in
+# `//tools/crates/gnrt/lib/config.rs` (e.g. `CrateConfig`'s fields correspond
+# to per-crate options).
 
 [resolve]
 # There is a virtual "sysroot" crate that includes all sysroot libraries as
