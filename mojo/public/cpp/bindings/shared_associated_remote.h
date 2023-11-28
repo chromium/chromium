@@ -11,6 +11,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "mojo/public/cpp/bindings/runtime_features.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 
 namespace mojo {
@@ -83,6 +84,9 @@ class SharedAssociatedRemote {
   mojo::PendingAssociatedReceiver<Interface> BindNewEndpointAndPassReceiver(
       scoped_refptr<base::SequencedTaskRunner> bind_task_runner =
           base::SequencedTaskRunner::GetCurrentDefault()) {
+    if (!internal::GetRuntimeFeature_ExpectEnabled<Interface>()) {
+      return PendingAssociatedReceiver<Interface>();
+    }
     mojo::PendingAssociatedRemote<Interface> remote;
     auto receiver = remote.InitWithNewEndpointAndPassReceiver();
     Bind(std::move(remote), std::move(bind_task_runner));
@@ -95,6 +99,10 @@ class SharedAssociatedRemote {
                 base::SequencedTaskRunner::GetCurrentDefault()) {
     DCHECK(!remote_);
     DCHECK(pending_remote.is_valid());
+    if (!internal::GetRuntimeFeature_ExpectEnabled<Interface>()) {
+      remote_.reset();
+      return;
+    }
     remote_ = SharedRemoteBase<AssociatedRemote<Interface>>::Create(
         std::move(pending_remote), std::move(bind_task_runner));
   }

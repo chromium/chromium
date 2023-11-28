@@ -401,6 +401,7 @@ class Generator(generator.Generator):
         "get_name_for_kind": self._GetNameForKind,
         "get_pad": pack.GetPad,
         "get_qualified_name_for_kind": self._GetQualifiedNameForKind,
+        "get_qualified_name_for_feature": self._GetQualifiedNameForFeature,
         "has_callbacks": mojom.HasCallbacks,
         "has_packed_method_ordinals": HasPackedMethodOrdinals,
         "get_sync_method_ordinals": mojom.GetSyncMethodOrdinals,
@@ -586,6 +587,14 @@ class Generator(generator.Generator):
     return _NameFormatter(
         kind, self.variant if include_variant else None).FormatForCpp(
             internal=internal, flatten_nested_kind=flatten_nested_kind)
+
+  def _GetQualifiedNameForFeature(self,
+                                  kind,
+                                  internal=False,
+                                  flatten_nested_kind=False,
+                                  include_variant=False):
+    return _NameFormatter(kind, None).FormatForCpp(
+        internal=internal, flatten_nested_kind=flatten_nested_kind)
 
   def _GetFullMojomNameForKind(self, kind):
     return _NameFormatter(kind, self.variant).FormatForMojom()

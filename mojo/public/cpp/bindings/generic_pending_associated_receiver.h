@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 #include "base/strings/string_piece.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/runtime_features.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 
 namespace mojo {
@@ -65,6 +66,9 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) GenericPendingAssociatedReceiver {
   // if and only if that interface's name matches the stored interface name.
   template <typename Interface>
   mojo::PendingAssociatedReceiver<Interface> As() {
+    if (!internal::GetRuntimeFeature_ExpectEnabled<Interface>()) {
+      return mojo::PendingAssociatedReceiver<Interface>();
+    }
     return mojo::PendingAssociatedReceiver<Interface>(
         PassHandleIfNameIs(Interface::Name_));
   }

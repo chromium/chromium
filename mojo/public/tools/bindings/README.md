@@ -351,6 +351,37 @@ struct Employee {
 The effect of nested definitions on generated bindings varies depending on the
 target language. See [documentation for individual target languages](#Generated-Code-For-Target-Languages).
 
+### Features
+
+Features can be declared with a `name` and `default_state` and can be attached
+in mojo to interfaces or methods using the `RuntimeFeature` attribute. If the
+feature is disabled at runtime the method will crash, and the interface will
+refused to be bound / instantiated. Features cannot serialized to be sent over
+IPC at this time.
+
+```
+module experimental.mojom;
+
+feature kUseElevators {
+  const string name = "UseElevators";
+  const bool default_state = false;
+}
+
+[RuntimeFeature=kUseElevators]
+interface Elevator {
+  // This interface cannot be bound or called if the feature is disabled.
+}
+
+interface Building {
+  // This method cannot be called if the feature is disabled.
+  [RuntimeFeature=kUseElevators]
+  CallElevator(int floor);
+
+  // This method can be called.
+  RingDoorbell(int volune);
+}
+```
+
 ### Interfaces
 
 An **interface** is a logical bundle of parameterized request messages. Each
@@ -460,6 +491,16 @@ interesting attributes supported today.
   name changes. The value given for this attribute should be a standard UUID
   string representation as specified by RFC 4122. New UUIDs can be generated
   with common tools such as `uuidgen`.
+
+* **`[RuntimeFeature=feature]`**
+  The `RuntimeFeature` attribute should reference a mojo `feature`. If this
+  feature is enabled (e.g. using `--enable-features={feature.name}`) then the
+  interface behaves entirely as expected. If the feature is not enabled the
+  interface cannot be bound to a concrete receiver or remote - attempting to do
+  so will result in the receiver or remote being reset() to an unbound state.
+  Note that this is a different concept to the build-time `EnableIf` directive.
+  `RuntimeFeature` is currently only supported for C++ bindings and has no
+  effect for, say, Java or TypeScript bindings (see https://crbug.com/1278253).
 
 * **`[EnableIf=value]`**:
   The `EnableIf` attribute is used to conditionally enable definitions when the

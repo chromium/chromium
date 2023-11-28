@@ -15,6 +15,7 @@ action("precompile_templates") {
     "$mojom_generator_root/generators/cpp_templates/feature_definition.tmpl",
     "$mojom_generator_root/generators/cpp_templates/interface_declaration.tmpl",
     "$mojom_generator_root/generators/cpp_templates/interface_definition.tmpl",
+    "$mojom_generator_root/generators/cpp_templates/interface_feature_declaration.tmpl",
     "$mojom_generator_root/generators/cpp_templates/interface_macros.tmpl",
     "$mojom_generator_root/generators/cpp_templates/interface_proxy_declaration.tmpl",
     "$mojom_generator_root/generators/cpp_templates/interface_request_validator_declaration.tmpl",

@@ -36,6 +36,20 @@ std::move(p_{{param.name}})
 {%-   endfor %}
 {%- endmacro %}
 
+{%- macro feature_enabled_helper(iface) %}
+{%- set feature=iface.runtime_feature|get_qualified_name_for_feature %}
+// static
+bool {{iface.name}}::RuntimeFeature_IsEnabled_(bool expected) {
+  bool enabled = base::FeatureList::IsEnabled({{feature}});
+#if DCHECK_IS_ON()
+  if (expected) {
+    DCHECK(enabled) << "RuntimeFeature {{feature}} for {{iface.name}} is not enabled";
+  }
+#endif
+  return enabled;
+}
+{%- endmacro %}
+
 {#--- Begin #}
 const char {{class_name}}::Name_[] = "{{module_namespace}}.{{class_name}}";
 {%-  if interface.uuid %}
@@ -115,6 +129,10 @@ uint32_t {{interface.name}}::{{method.name}}_Sym::IPCStableHash() {
 }
 {%-   endfor %}
 # endif // !BUILDFLAG(IS_FUCHSIA)
+
+{%-   if interface.runtime_feature %}
+{{feature_enabled_helper(interface)}}
+{%-   endif %}
 
 {%- for method in interface.methods %}
 {%-   if method.sync %}

@@ -20,6 +20,7 @@
 #include "mojo/public/cpp/bindings/pending_flush.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/raw_ptr_impl_ref_traits.h"
+#include "mojo/public/cpp/bindings/runtime_features.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 
 namespace mojo {
@@ -138,6 +139,10 @@ class Receiver {
     DCHECK(!is_bound()) << "Receiver for " << Interface::Name_
                         << " is already bound";
     PendingRemote<Interface> remote;
+    if (!internal::GetRuntimeFeature_ExpectEnabled<Interface>()) {
+      reset();
+      return remote;
+    }
     Bind(remote.InitWithNewPipeAndPassReceiver(), std::move(task_runner));
     return remote;
   }
@@ -171,12 +176,16 @@ class Receiver {
             scoped_refptr<base::SequencedTaskRunner> task_runner) {
     DCHECK(!is_bound()) << "Receiver for " << Interface::Name_
                         << " is already bound";
-    if (pending_receiver) {
-      internal_state_.Bind(pending_receiver.internal_state(),
-                           std::move(task_runner));
-    } else {
+    if (!pending_receiver) {
       reset();
+      return;
     }
+    if (!internal::GetRuntimeFeature_ExpectEnabled<Interface>()) {
+      reset();
+      return;
+    }
+    internal_state_.Bind(pending_receiver.internal_state(),
+                         std::move(task_runner));
   }
 
   // Unbinds this Receiver, preventing any further |impl| method calls or

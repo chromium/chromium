@@ -37,6 +37,7 @@
 
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
+#include "{{module.path}}-features.h"
 #include "{{module.path}}-shared.h"
 #include "{{variant_path(module.path, variant)}}-forward.h"
 
@@ -175,6 +176,15 @@ namespace mojo {
 {%-   for union in unions %}
 {%      include "union_traits_declaration.tmpl" %}
 {%-   endfor %}
+{%- endif %}
+
+{#--- Feature helper template overrides -#}
+{%- if interfaces|selectattr('runtime_feature')|list|length %}
+namespace internal {
+{%-   for interface in interfaces if interface.runtime_feature -%}
+{%      include "interface_feature_declaration.tmpl" %}
+{%-   endfor %}
+}  // namespace internal
 {%- endif %}
 
 }  // namespace mojo

@@ -6,6 +6,7 @@
 #define MOJO_PUBLIC_CPP_BINDINGS_REMOTE_SET_H_
 
 #include <iterator>
+#include <optional>
 #include <set>
 #include <utility>
 
@@ -19,6 +20,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/runtime_features.h"
 
 namespace mojo {
 
@@ -95,26 +97,44 @@ class RemoteSetImpl {
 
   // Adds a new remote to this set and returns a unique ID that can be used to
   // identify the remote later.
-  RemoteSetElementId Add(RemoteType<Interface> remote) {
-    DCHECK(remote.is_bound());
-    auto id = GenerateNextElementId();
-    remote.set_disconnect_with_reason_handler(base::BindOnce(
-        &RemoteSetImpl::OnDisconnect, base::Unretained(this), id));
-    auto result = storage_.emplace(id, std::move(remote));
-    DCHECK(result.second);
-    return id;
+  RemoteSetElementId Add(RemoteType<Interface> remote)
+    requires(!internal::kIsRuntimeFeatureGuarded<Interface>)
+  {
+    return AddImpl(std::move(remote));
   }
 
-  // Same as above but for the equivalent pending remote type. If |task_runner|
-  // is null, the value of |base::SequencedTaskRunner::GetCurrentDefault()| at
-  // the time of the |Add()| call will be used to run scheduled tasks for the
-  // remote.
+  // Adds a new remote to this set and returns a unique ID that can be used to
+  // identify the remote later.
   RemoteSetElementId Add(
       PendingRemoteType<Interface> remote,
-      scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr) {
-    DCHECK(remote.is_valid());
-    return Add(
-        RemoteType<Interface>(std::move(remote), std::move(task_runner)));
+      scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr)
+    requires(!internal::kIsRuntimeFeatureGuarded<Interface>)
+  {
+    return AddImpl(std::move(remote), std::move(task_runner));
+  }
+
+  // Adds a new remote to this set if the remote is runtime enabled and returns
+  // a unique ID that can be used to identify the remote later.
+  std::optional<RemoteSetElementId> Add(RemoteType<Interface> remote)
+    requires(internal::kIsRuntimeFeatureGuarded<Interface>)
+  {
+    if (!internal::GetRuntimeFeature_ExpectEnabled<Interface>()) {
+      return std::nullopt;
+    }
+    return AddImpl(std::move(remote));
+  }
+
+  // Adds a new remote to this set if the remote is runtime enabled and returns
+  // a unique ID that can be used to identify the remote later.
+  std::optional<RemoteSetElementId> Add(
+      PendingRemoteType<Interface> remote,
+      scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr)
+    requires(internal::kIsRuntimeFeatureGuarded<Interface>)
+  {
+    if (!internal::GetRuntimeFeature_ExpectEnabled<Interface>()) {
+      return std::nullopt;
+    }
+    return AddImpl(std::move(remote), std::move(task_runner));
   }
 
   // Removes a remote from the set given |id|, if present.
@@ -188,6 +208,30 @@ class RemoteSetImpl {
   }
 
  private:
+  // Adds a new remote to this set and returns a unique ID that can be used to
+  // identify the remote later.
+  RemoteSetElementId AddImpl(RemoteType<Interface> remote) {
+    DCHECK(remote.is_bound());
+    auto id = GenerateNextElementId();
+    remote.set_disconnect_with_reason_handler(base::BindOnce(
+        &RemoteSetImpl::OnDisconnect, base::Unretained(this), id));
+    auto result = storage_.emplace(id, std::move(remote));
+    DCHECK(result.second);
+    return id;
+  }
+
+  // Same as above but for the equivalent pending remote type. If |task_runner|
+  // is null, the value of |base::SequencedTaskRunner::GetCurrentDefault()| at
+  // the time of the |Add()| call will be used to run scheduled tasks for the
+  // remote.
+  RemoteSetElementId AddImpl(
+      PendingRemoteType<Interface> remote,
+      scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr) {
+    DCHECK(remote.is_valid());
+    return AddImpl(
+        RemoteType<Interface>(std::move(remote), std::move(task_runner)));
+  }
+
   RemoteSetElementId GenerateNextElementId() {
     return remote_set_element_id_generator_.GenerateNextId();
   }

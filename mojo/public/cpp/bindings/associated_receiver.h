@@ -23,6 +23,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/raw_ptr_impl_ref_traits.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/runtime_features.h"
 
 namespace mojo {
 
@@ -189,8 +190,10 @@ class AssociatedReceiver : public internal::AssociatedReceiverBase {
       scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr) {
     DCHECK(!is_bound()) << "AssociatedReceiver for " << Interface::Name_
                         << " is already bound";
-
     PendingAssociatedRemote<Interface> remote;
+    if (!internal::GetRuntimeFeature_ExpectEnabled<Interface>()) {
+      return remote;
+    }
     Bind(remote.InitWithNewEndpointAndPassReceiver(), std::move(task_runner));
     return remote;
   }
@@ -204,17 +207,20 @@ class AssociatedReceiver : public internal::AssociatedReceiverBase {
             scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr) {
     DCHECK(!is_bound()) << "AssociatedReceiver for " << Interface::Name_
                         << " is already bound";
-
-    if (pending_receiver) {
-      BindImpl(pending_receiver.PassHandle(), &stub_,
-               base::WrapUnique(new typename Interface::RequestValidator_()),
-               internal::SyncMethodTraits<Interface>::GetOrdinals(),
-               std::move(task_runner), Interface::Version_, Interface::Name_,
-               Interface::MessageToMethodInfo_,
-               Interface::MessageToMethodName_);
-    } else {
+    if (!pending_receiver) {
       reset();
+      return;
     }
+    if (!internal::GetRuntimeFeature_ExpectEnabled<Interface>()) {
+      reset();
+      return;
+    }
+
+    BindImpl(pending_receiver.PassHandle(), &stub_,
+             base::WrapUnique(new typename Interface::RequestValidator_()),
+             internal::SyncMethodTraits<Interface>::GetOrdinals(),
+             std::move(task_runner), Interface::Version_, Interface::Name_,
+             Interface::MessageToMethodInfo_, Interface::MessageToMethodName_);
   }
 
   // Binds this AssociatedReceiver with the returned PendingAssociatedRemote
@@ -230,9 +236,10 @@ class AssociatedReceiver : public internal::AssociatedReceiverBase {
   BindNewEndpointAndPassDedicatedRemote() {
     DCHECK(!is_bound()) << "AssociatedReceiver for " << Interface::Name_
                         << " is already bound";
-
     PendingAssociatedRemote<Interface> remote = BindNewEndpointAndPassRemote();
-    remote.EnableUnassociatedUsage();
+    if (remote) {
+      remote.EnableUnassociatedUsage();
+    }
     return remote;
   }
 

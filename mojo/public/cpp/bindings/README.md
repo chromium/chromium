@@ -886,6 +886,52 @@ TableListenerImpl impl(listener.InitWithNewPipeAndPassReceiver());
 table->AddListener(std::move(listener));
 ```
 
+### RuntimeFeature on interfaces
+
+If an interface is marked with a `RuntimeFeature` attribute, and the associated
+feature is disabled, then it is not possible to bind the interface to a
+receiver, and not possible to create a remote to call methods on. Attempts to
+bind remotes or receivers will result in the underlying pipe being `reset()`.
+`SelfOwnedReceivers` will not be created. A compromised process can override
+these checks and might falsely request a disabled interface but a trustworthy
+process will not bind a concrete endpoint to interact with the disabled
+interface.
+
+Note that it remains possible to create and transport generic wrapper
+objects to disabled interfaces - security decisions should be made based on a
+test of the generated feature - or the bound state of a Remote or Receiver.
+
+```mojom
+// Feature controls runtime availability of interface.
+[RuntimeFeature=kUseElevator]
+interface DefaultDenied {
+  GetInt() => (int32 ret);
+};
+
+interface PassesInterfaces {
+  BindPendingRemoteDisabled(pending_remote<DefaultDenied> iface);
+  BindPendingReceiverDisabled(pending_receiver<DefaultDenied> iface);
+};
+```
+
+```C++
+  void BindPendingRemoteDisabled(
+      mojo::PendingRemote<mojom::DefaultDenied> iface) override {
+    mojo::Remote<mojom::DefaultDenied> denied_remote;
+    // Remote will not bind:
+    denied_remote.Bind(std::move(iface));
+    ASSERT_FALSE(denied_remote);
+  }
+  void BindPendingReceiverDisabled(
+      mojo::PendingReceiver<mojom::DefaultDenied> iface) override {
+    std::unique_ptr<DefaultDeniedImpl> denied_impl;
+    // Object can still be created:
+    denied_impl = std::make_unique<DefaultDeniedImpl>(std::move(iface));
+    // But its internal receiver_ will not bind or receive remote calls.
+    ASSERT_FALSE(denied_impl->receiver().is_bound());
+  }
+```
+
 ## Other Interface Binding Types
 
 The [Interfaces](#Interfaces) section above covers basic usage of the most
