@@ -12,7 +12,7 @@
   Progress saved
   </message>
   <message name="IDS_COMPOSE_SUGGESTION_SAVED_LABEL" desc="The label beneath the main text in the Autofill suggestion that a user sees after interacting with a supported text element, indicating that user state was saved." translateable="false">
-  Select to Autofill
+  Re-open to continue
   </message>
 
   <!-- Consent dialog -->
@@ -48,6 +48,9 @@
   </message>
   <message name="IDS_COMPOSE_SUBMIT_BUTTON" desc="The button to submit the input." translateable="false">
   Submit
+  </message>
+  <message name="IDS_COMPOSE_EDIT_UPDATE_BUTTON" desc="The button that confirms the edited input." translateable="false">
+  Update
   </message>
 
   <!-- Result dialog -->
@@ -94,9 +97,6 @@
   </message>
   <message name="IDS_COMPOSE_ERROR_GENERIC" desc="Error without further details." translateable="false">
   Something went wrong.
-  </message>
-  <message name="IDS_COMPOSE_EDIT_UPDATE_BUTTON" desc="The button that confirms the edited input." translateable="false">
-    Update
   </message>
 
   <!-- Cross-dialog -->
