@@ -1021,15 +1021,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.Handoff.Origin" enum="IOSHandoffOrigin"
-    expires_after="M77">
-  <owner>erikchen@chromium.org</owner>
-  <summary>
-    This event is recorded each time a Handoff is received by Chrome on iOS. The
-    enumeration indicates the source of the Handoff.
-  </summary>
-</histogram>
-
 <histogram name="IOS.InactiveTabs.Settings.Threshold"
     enum="InactiveTabsThresholdSettingType" expires_after="2024-05-12">
   <owner>alionadangla@chromium.org</owner>

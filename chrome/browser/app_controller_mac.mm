@@ -20,7 +20,6 @@
 #include "base/functional/bind.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/run_loop.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
@@ -1963,11 +1962,6 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
           isEqualToString:NSUserActivityTypeBrowsingWeb]) {
     return NO;
   }
-
-  NSString* originString = base::apple::ObjCCast<NSString>(
-      (userActivity.userInfo)[handoff::kOriginKey]);
-  handoff::Origin origin = handoff::OriginFromString(originString);
-  base::UmaHistogramEnumeration("OSX.Handoff.Origin", origin);
 
   NSURL* url = userActivity.webpageURL;
   if (!url)

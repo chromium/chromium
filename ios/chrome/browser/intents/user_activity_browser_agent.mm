@@ -119,10 +119,6 @@ BOOL UserActivityBrowserAgent::ContinueUserActivity(
       [user_activity.activityType
           isEqualToString:NSUserActivityTypeBrowsingWeb]) {
     // App was launched by iOS as a result of Handoff.
-    NSString* origin_string = base::apple::ObjCCast<NSString>(
-        user_activity.userInfo[handoff::kOriginKey]);
-    handoff::Origin origin = handoff::OriginFromString(origin_string);
-    base::UmaHistogramEnumeration("IOS.Handoff.Origin", origin);
     base::UmaHistogramEnumeration(kAppLaunchSource, AppLaunchSource::HANDOFF);
   } else if (spotlight::IsSpotlightAvailable() &&
              [user_activity.activityType

@@ -46720,12 +46720,6 @@ Called by update_net_error_codes.py.-->
   </int>
 </enum>
 
-<enum name="OSXHandoffOrigin">
-  <int value="0" label="Unknown Origin"/>
-  <int value="1" label="Chrome on iOS"/>
-  <int value="2" label="Chrome on Mac"/>
-</enum>
-
 <enum name="OSXNSException">
   <int value="0" label="NSGenericException"/>
   <int value="1" label="NSRangeException"/>
