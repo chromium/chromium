@@ -819,6 +819,7 @@
 <translation id="5300589172476337783">表示</translation>
 <translation id="5317780077021120954">保存</translation>
 <translation id="5318298563956633672">この商品はすでにトラッキングしています。</translation>
+<translation id="5329451663851195956">下にスワイプして更新できます。</translation>
 <translation id="5339316356165661760">同期をオンにする</translation>
 <translation id="5345598430982201510">荷物を自動検出しない</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{この荷物を追跡しますか？}other{{COUNT} 個の荷物を追跡しますか？}}</translation>

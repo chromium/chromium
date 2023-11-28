@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="kk">
 <translation id="1000498691615767391">Ашылатын қалтаны таңдау</translation>
+<translation id="1014208178561091457"><ph name="FILE_NAME" /> файлын көшіру мүмкін емес, себебі ол шифрланған.</translation>
 <translation id="1047956942837015229"><ph name="COUNT" /> элемент жойылуда…</translation>
 <translation id="1049926623896334335">Word құжаты</translation>
 <translation id="1056775291175587022">Желі табылмады</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Қалтаны Parallels Desktop арқылы бөлісу</translation>
 <translation id="1439919885608649279">Гүл ұстаған адам</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> шығарылсын</translation>
+<translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> файлды көшіру мүмкін болмады, себебі олар шифрланған.</translation>
 <translation id="1471718551822868769">Словак</translation>
 <translation id="1482884275703521657">Фин</translation>
 <translation id="148466539719134488">Швейцария</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">Қолжетімді емес</translation>
 <translation id="3254434849914415189"><ph name="FILE_TYPE" /> файлдары үшін әдепкі қолданбаны таңдаңыз:</translation>
 <translation id="3255159654094949700">Араб</translation>
+<translation id="326396468955264502"><ph name="NUMBER_OF_FILES" /> файлды жылжыту мүмкін емес, себебі олар шифрланған.</translation>
 <translation id="3264582393905923483">Мәнмәтін</translation>
 <translation id="3272909651715601089">"<ph name="PATH" />" ашылмады</translation>
 <translation id="3280431534455935878">Дайындау</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490">1 қалтаны <ph name="VM_NAME" /> құрылғысымен бөлістіңіз.</translation>
 <translation id="3524311639100184459">Абайлаңыз: бұл файлдар уақытша және дискідегі орынды босату үшін автоматты түрде жойылуы мүмкін.  <ph name="BEGIN_LINK" />Толығырақ<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Қалта</translation>
+<translation id="3529424493985988200">Мәліметтер алу үшін әкімшіге хабарласыңыз.</translation>
 <translation id="3548125359243647069">PIN коды бірнеше рет қате енгізілді.</translation>
 <translation id="3549797760399244642">drive.google.com бетіне өту…</translation>
 <translation id="3553048479571901246">Файлдарды <ph name="APP_NAME" /> қолданбасымен ашу үшін оларды алдымен Windows файлдар қалтасына көшіріңіз.</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">Бұл файл басқа жұмыс үстелінде ашылды. Оны көру үшін <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) мекенжайына өтіңіз.</translation>
 <translation id="6394388407447716302">Тек оқуға арналған</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> элемент</translation>
+<translation id="6407769893376380348"><ph name="FILE_NAME" /> файлын жылжыту мүмкін болмады, себебі ол шифрланған.</translation>
 <translation id="642282551015776456">Бұл атауды файл немесе қалта атауы ретінде пайдалануға болмайды</translation>
 <translation id="6423031066725912715">Вьетнам (TCVN пернетақтасымен)</translation>
 <translation id="6430271654280079150">1 мүмкіндік қалды.</translation>

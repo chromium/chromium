@@ -3911,6 +3911,7 @@
 <translation id="4005817994523282006">Μέθοδος ανίχνευσης ζώνης ώρας</translation>
 <translation id="4007856537951125667">Απόκρυψη συντομεύσεων</translation>
 <translation id="4008291085758151621">Οι πληροφορίες ιστοτόπου δεν είναι διαθέσιμες σε VR</translation>
+<translation id="4010746393007464819">Υπάρχει διαθέσιμη αναβάθμιση σε Debian 12 (Bookworm)</translation>
 <translation id="4010917659463429001">Για να μεταφέρετε τους σελιδοδείκτες σας στην κινητή συσκευή σας, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Να γίνει επιδιόρθωση του "<ph name="EXTENSION_NAME" />";</translation>
 <translation id="4015163439792426608">Έχετε επεκτάσεις; <ph name="BEGIN_LINK" />Διαχειριστείτε τις επεκτάσεις σας<ph name="END_LINK" /> σε ένα βολικό μέρος.</translation>
@@ -6075,6 +6076,7 @@
 <translation id="5782040878821624922">Διατίθεται σε οποιαδήποτε συσκευή</translation>
 <translation id="5782227691023083829">Μετάφραση...</translation>
 <translation id="57838592816432529">Σίγαση</translation>
+<translation id="5784291589716625675">Αλλαγή γλώσσας εφαρμογής</translation>
 <translation id="5785583009707899920">Βοηθητικά προγράμματα διαχείρισης αρχείων του Chrome</translation>
 <translation id="5787146423283493983">Βασική συμφωνία</translation>
 <translation id="5787420647064736989">Όνομα συσκευής</translation>
@@ -6549,6 +6551,7 @@
 <translation id="6151323131516309312">Πατήστε <ph name="SEARCH_KEY" /> για αναζήτηση <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">Το αρχείο υπάρχει ήδη στον φάκελο λήψεων.</translation>
 <translation id="6152918902620844577">Αναμονή για την επόμενη λειτουργία</translation>
+<translation id="6153439704237222699">Μάθετε περισσότερα σχετικά με το αίτημα Do Not Track</translation>
 <translation id="6154240335466762404">Κατάργηση όλων των θυρών</translation>
 <translation id="615436196126345398">Πρωτόκολλο</translation>
 <translation id="6155141482566063812">Μια καρτέλα παρασκηνίου μοιράζεται την οθόνη σας</translation>
@@ -8868,6 +8871,7 @@
 <translation id="7988805580376093356">Διατηρήστε το λειτουργικό σας σύστημα και εκτελέστε το <ph name="DEVICE_OS" /> μέσω USB.</translation>
 <translation id="7988876720343145286">Περισσότερες ρυθμίσεις και άδειες Android</translation>
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> Φωνή <ph name="COUNT" /></translation>
+<translation id="7990958035181555539">Αυτόματη μεταφορά Wi-Fi από το τηλέφωνό σας Android</translation>
 <translation id="7991296728590311172">Ρυθμίσεις Πρόσβασης με διακόπτη</translation>
 <translation id="7992203134935383159">Σύνθεση ομιλίας</translation>
 <translation id="7994515119120860317">Μετάφραση κειμένου στην εικόνα μέσω <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -9815,6 +9819,7 @@
 <translation id="8736288397686080465">Αυτός ο ιστότοπος έχει ενημερωθεί στο παρασκήνιο.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Επιλέξτε τη γλώσσα στην οποία θέλετε να μεταφράσετε τη σελίδα.</translation>
+<translation id="8738418093147087440">Αναζήτηση κατά χώρες, γλώσσα ή ονόματα εισόδου</translation>
 <translation id="8740086188450289493">Χρήση κωδικού πρόσβασης Λογαριασμού Google</translation>
 <translation id="8740247629089392745">Μπορείτε να δώσετε αυτό το Chromebook στον χρήστη <ph name="SUPERVISED_USER_NAME" />. Η ρύθμιση έχει σχεδόν ολοκληρωθεί, είναι ώρα για εξερεύνηση.</translation>
 <translation id="8740672167979365981">Απαιτείται ενημέρωση ChromeOS Flex</translation>

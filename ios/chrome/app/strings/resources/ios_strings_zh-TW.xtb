@@ -817,6 +817,7 @@
 <translation id="5300589172476337783">顯示</translation>
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5318298563956633672">你已在追蹤這項產品。</translation>
+<translation id="5329451663851195956">向下拉即可重新整理。</translation>
 <translation id="5339316356165661760">開啟同步功能</translation>
 <translation id="5345598430982201510">一律不自動偵測包裹</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{要追蹤這個包裹嗎？}other{要追蹤這 {COUNT} 個包裹嗎？}}</translation>

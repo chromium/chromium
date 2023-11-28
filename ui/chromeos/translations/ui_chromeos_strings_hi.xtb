@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hi">
 <translation id="1000498691615767391">खोलने के लिए फ़ोल्‍डर को चुनें</translation>
+<translation id="1014208178561091457"><ph name="FILE_NAME" /> को कॉपी नहीं किया जा सका, क्योंकि इसे एन्क्रिप्ट (सुरक्षित) किया गया है.</translation>
 <translation id="1047956942837015229"><ph name="COUNT" /> आइटम हटा रहा है...</translation>
 <translation id="1049926623896334335">Word दस्तावेज़</translation>
 <translation id="1056775291175587022">नेटवर्क नहीं है</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Parallels Desktop के साथ फ़ोल्डर शेयर करें</translation>
 <translation id="1439919885608649279">हाथ में फूल पकड़े खड़ा व्यक्ति</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> को हटाएं</translation>
+<translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> फ़ाइलों को कॉपी नहीं किया जा सका, क्योंकि उन्हें एन्क्रिप्ट (सुरक्षित) किया गया है.</translation>
 <translation id="1471718551822868769">स्लोवाक</translation>
 <translation id="1482884275703521657">फ़िनिश</translation>
 <translation id="148466539719134488">स्विस</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">उपलब्ध नहीं है</translation>
 <translation id="3254434849914415189"><ph name="FILE_TYPE" />की फ़ाइलों के लिए डिफ़ॉल्ट ऐप्लिकेशन चुनें:</translation>
 <translation id="3255159654094949700">अरेबिक</translation>
+<translation id="326396468955264502"><ph name="NUMBER_OF_FILES" /> फ़ाइलों को दूसरी जगह पर नहीं ले जाया जा सका, क्योंकि उन्हें एन्क्रिप्ट (सुरक्षित) किया गया है.</translation>
 <translation id="3264582393905923483">प्रसंग</translation>
 <translation id="3272909651715601089">"<ph name="PATH" />" को नहीं खोला जा सका</translation>
 <translation id="3280431534455935878">तैयार कर रहा है</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490"><ph name="VM_NAME" /> के साथ एक फ़ोल्डर शेयर किया गया</translation>
 <translation id="3524311639100184459">चेतावनी: ये फ़ाइलें अस्थायी हैं और डिस्क की जगह खाली करने के लिए अपने-आप मिटाई जा सकती हैं.  <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">फ़ोल्डर</translation>
+<translation id="3529424493985988200">ज़्यादा जानकारी के लिए, अपने एडमिन से संपर्क करें.</translation>
 <translation id="3548125359243647069">कई बार गलत पिन डाला गया.</translation>
 <translation id="3549797760399244642">drive.google.com पर जाएं...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> में फ़ाइलें खोलने के लिए, पहले उन्हें Windows के फ़ाइल फ़ोल्डर में कॉपी करें.</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">यह फ़ाइल किसी अलग डेस्कटॉप पर खुली है. उसे देखने के लिए <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) पर जाएं.</translation>
 <translation id="6394388407447716302">सिर्फ़ पढ़ने के लिए</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> आइटम</translation>
+<translation id="6407769893376380348"><ph name="FILE_NAME" /> को दूसरी जगह नहीं ले जाया जा सका, क्योंकि इसे एन्क्रिप्ट (सुरक्षित) किया गया है.</translation>
 <translation id="642282551015776456">यह नाम कि‍सी फ़ाइल या फ़ोल्‍डर के लि‍ए उपयोग नहीं कि‍या जा सकता</translation>
 <translation id="6423031066725912715">टीसीवीएन कीबोर्ड के साथ वियतनामीज़</translation>
 <translation id="6430271654280079150">आपके पास 1 मौका बचा है.</translation>

@@ -819,6 +819,7 @@
 <translation id="5300589172476337783">Показать</translation>
 <translation id="5317780077021120954">Сохранить</translation>
 <translation id="5318298563956633672">Вы уже отслеживаете этот товар.</translation>
+<translation id="5329451663851195956">Чтобы обновить вкладку, потяните вниз.</translation>
 <translation id="5339316356165661760">Включить синхронизацию</translation>
 <translation id="5345598430982201510">Не определять посылки автоматически</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Отслеживать эту посылку?}one{Отслеживать {COUNT} посылку?}few{Отслеживать {COUNT} посылки?}many{Отслеживать {COUNT} посылок?}other{Отслеживать {COUNT} посылки?}}</translation>

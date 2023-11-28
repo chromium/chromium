@@ -1004,6 +1004,7 @@
 <translation id="6341580099087024258">Να γίνεται ερώτηση σχετικά με την τοποθεσία αποθήκευσης των αρχείων</translation>
 <translation id="6342069812937806050">Μόλις τώρα</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ακόμη}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ακόμη}}</translation>
+<translation id="6344622098450209924">Προστασία από παρακολούθηση</translation>
 <translation id="6345878117466430440">Επισήμανση ως αναγνωσμένο</translation>
 <translation id="6356893102071098867">Ελέγξτε ότι έχετε επιλέξει τον σωστό λογαριασμό</translation>
 <translation id="6357653805084533597">Μπορείτε να χρησιμοποιήσετε αυτό το τηλέφωνο για να συνδεθείτε στη συσκευή όπου εμφανίζεται αυτός ο κωδικός QR.</translation>
@@ -1208,7 +1209,6 @@
 <translation id="729975465115245577">Η συσκευή σας δεν διαθέτει κάποια εφαρμογή για την αποθήκευση του αρχείου κωδικών πρόσβασης.</translation>
 <translation id="7304072650267745798">Η συσκευή σας Android μπορεί να περιλαμβάνει μια παρόμοια ρύθμιση. Εάν αυτή η ρύθμιση είναι ενεργοποιημένη στο Chrome και στη συσκευή σας Android, μια εταιρεία μπορεί να έχει τη δυνατότητα μέτρησης της αποτελεσματικότητας μιας διαφήμισης στους ιστοτόπους που επισκέπτεστε και στις εφαρμογές που χρησιμοποιείτε.</translation>
 <translation id="7304873321153398381">Εκτός σύνδεσης. Το Chrome δεν μπορεί να ελέγξει τους κωδικούς πρόσβασής σας.</translation>
-<translation id="7313094438430838513">Προστασία από παρακολούθηση</translation>
 <translation id="7313188324932846546">Πατήστε για ρύθμιση συγχρονισμού</translation>
 <translation id="7324354302972299151">Αποστολή αιτήματος Do Not Track</translation>
 <translation id="7332075081379534664">Η σύνδεση ήταν επιτυχής</translation>

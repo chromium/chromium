@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">‏اوہ! بے ترتیب RSA کی نجی کلید بنانے میں ناکام ہوگیا۔</translation>
 <translation id="1445572445564823378">یہ ایکسٹینشن <ph name="PRODUCT_NAME" /> کو سست کر رہی ہے۔ <ph name="PRODUCT_NAME" /> کی کارکردگی کو بحال کرنے کیلئے آپ کو اسے غیر فعال کر دینا چاہیے۔</translation>
 <translation id="1468038450257740950">‏WebGL تعاون یافتہ نہیں ہے۔</translation>
+<translation id="1610570795592207282">‏اسکرپٹ کے لیے CSS '<ph name="RELATIVE_PATH" />' لوڈ نہیں ہو سکا۔</translation>
 <translation id="1803557475693955505">پس منظر کا صفحہ '<ph name="BACKGROUND_PAGE" />' لوڈ نہں کیا جا سکا۔</translation>
 <translation id="2159915644201199628">تصویر کو ڈیکوڈ نہیں کیا جا سکا: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">‏لوکلائزیشن کا استعمال کیا گیا، لیکن مینی فیسٹ میں default_locale کی وضاحت نہیں کی گئی۔</translation>
@@ -31,6 +32,7 @@
 <translation id="4988792151665380515">عوامی کلید کو دریافت کرنے کیلئے ناکام ہوگیا۔</translation>
 <translation id="5026754133087629784">ویب منظر: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">پیک کرنے کیلئے ڈائریکٹری کا مطلق پاتھ تلاش نہیں کیا جا سکتا۔</translation>
+<translation id="5160071981665899014">‏اسکرپٹ کے لیے JavaScript '<ph name="RELATIVE_PATH" />' لوڈ نہیں ہو سکا۔</translation>
 <translation id="5356315618422219272">ایپ ویو: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">شکل والی ونڈوز تعاون یافتہ نہیں ہیں۔</translation>
 <translation id="5456409301717116725">اس ایکسٹیسشن میں کلیدی فائل '<ph name="KEY_PATH" />' شامل ہے۔ غالباً آپ کو ایسا کرنے کی ضرورت نہیں ہے۔</translation>

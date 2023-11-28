@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Кездейсоқ RSA жеке кілтін жасау сәтсіз аяқталды.</translation>
 <translation id="1445572445564823378">Бұл кеңейтім <ph name="PRODUCT_NAME" /> жұмысын баяулатады. <ph name="PRODUCT_NAME" /> жұмысын қалпына келтіру үшін кеңейтімді өшіруіңіз керек.</translation>
 <translation id="1468038450257740950">WebGL қолдау көрсетілмеген.</translation>
+<translation id="1610570795592207282">Скриптіге арналған CSS "<ph name="RELATIVE_PATH" />" жүктелмеді.</translation>
 <translation id="1803557475693955505">"<ph name="BACKGROUND_PAGE" />" фондық бетін жүктеу мүмкін болмады.</translation>
 <translation id="2159915644201199628">Кескінді шифрсыздандыру мүмкін емес: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2350172092385603347">Локализациялау пайдаланылды, бірақ default_locale манифестте көрсетілмеген.</translation>
@@ -31,6 +32,7 @@
 <translation id="4988792151665380515">Ортақ кілтті экспорттау сәтсіз аяқталды.</translation>
 <translation id="5026754133087629784">Веб-көрініс: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Пакетке қосу үшін каталогтің абсолютті жолын табу мүмкін емес.</translation>
+<translation id="5160071981665899014">Скриптіге арналған JavaScript "<ph name="RELATIVE_PATH" />" жүктелмеді.</translation>
 <translation id="5356315618422219272">Қолданба көрінісі: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Пішінделген терезелерге қолдау көрсетілмейді.</translation>
 <translation id="5456409301717116725">Бұл кеңейтім "<ph name="KEY_PATH" />" кілт файлын қамтиды. Оны қолданбаған дұрыс шығар.</translation>

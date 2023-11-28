@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
 <translation id="1000498691615767391">フォルダを選択して開く</translation>
+<translation id="1014208178561091457">暗号化されているため、<ph name="FILE_NAME" /> をコピーできませんでした。</translation>
 <translation id="1047956942837015229"><ph name="COUNT" /> 件の項目を削除しています...</translation>
 <translation id="1049926623896334335">Word ドキュメント</translation>
 <translation id="1056775291175587022">なし</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Parallels Desktop とのフォルダ共有</translation>
 <translation id="1439919885608649279">花を持っている人</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> を取り外す</translation>
+<translation id="146691674290220697">暗号化されているため、<ph name="NUMBER_OF_FILES" /> 個のファイルをコピーできませんでした。</translation>
 <translation id="1471718551822868769">スロバキア語</translation>
 <translation id="1482884275703521657">フィンランド語</translation>
 <translation id="148466539719134488">スイス語</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">利用できません</translation>
 <translation id="3254434849914415189"><ph name="FILE_TYPE" /> ファイルのデフォルト アプリを選択:</translation>
 <translation id="3255159654094949700">アラビア語</translation>
+<translation id="326396468955264502">暗号化されているため、<ph name="NUMBER_OF_FILES" /> 個のファイルを移動できませんでした。</translation>
 <translation id="3264582393905923483">コンテキスト</translation>
 <translation id="3272909651715601089">「<ph name="PATH" />」を開けませんでした</translation>
 <translation id="3280431534455935878">準備中</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490">1 個のフォルダを <ph name="VM_NAME" /> と共有しました</translation>
 <translation id="3524311639100184459">注: これらのファイルは一時的なもので、ディスクの空き容量を増やすために自動的に削除されることがあります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">フォルダ</translation>
+<translation id="3529424493985988200">詳細については、管理者にお問い合わせください。</translation>
 <translation id="3548125359243647069">間違った PIN が繰り返し入力されました。</translation>
 <translation id="3549797760399244642">drive.google.com にアクセスします...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> でファイルを開くには、まず [Windows ファイル] フォルダにファイルをコピーしてください。</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">このファイルは別のデスクトップで開かれます。表示するには <ph name="USER_NAME" />（<ph name="MAIL_ADDRESS" />）に移動してください。</translation>
 <translation id="6394388407447716302">読み取り専用</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> 個のアイテム</translation>
+<translation id="6407769893376380348">暗号化されているため、<ph name="FILE_NAME" /> を移動できませんでした。</translation>
 <translation id="642282551015776456">この名前はフォルダのファイル名として使用できません</translation>
 <translation id="6423031066725912715">ベトナム語（TCVN）キーボード</translation>
 <translation id="6430271654280079150">入力できるのはあと 1 回です。</translation>

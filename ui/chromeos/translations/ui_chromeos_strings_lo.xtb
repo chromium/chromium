@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lo">
 <translation id="1000498691615767391">ເລືອກໂຟລເດີທີ່ຈະເປີດ</translation>
+<translation id="1014208178561091457">ບໍ່ສາມາດສຳເນົາ <ph name="FILE_NAME" /> ໄດ້ເນື່ອງຈາກມັນຖືກເຂົ້າລະຫັດໄວ້.</translation>
 <translation id="1047956942837015229">ກໍາລັງລຶບ <ph name="COUNT" /> ​ລາຍ​ການ...</translation>
 <translation id="1049926623896334335">ເອ​ກະ​ສານ Word</translation>
 <translation id="1056775291175587022">ບໍ່ມີເຄືອຂ່າຍ</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">ແບ່ງປັນໂຟນເດີກັບ Parallels Desktop</translation>
 <translation id="1439919885608649279">ຄົນຖືດອກໄມ້</translation>
 <translation id="1458457385801829801">ຖອດ <ph name="TARGET_NAME" /> ອອກ</translation>
+<translation id="146691674290220697">ບໍ່ສາມາດຍ້າຍ <ph name="NUMBER_OF_FILES" /> ໄຟລ໌ໄດ້ເນື່ອງຈາກພວກມັນຖືກເຂົ້າລະຫັດໄວ້.</translation>
 <translation id="1471718551822868769">ພາສາສະໂລແວັກ</translation>
 <translation id="1482884275703521657">ພາສາຟິນນິຊ</translation>
 <translation id="148466539719134488">ພາສາ​ສະ​ວິດ</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">ບໍ່ມີຂໍ້ມູນ</translation>
 <translation id="3254434849914415189">ເລືອກ​ແອັບມາດຕະຖານສໍາ​ລັບໄຟລ໌ <ph name="FILE_TYPE" />:</translation>
 <translation id="3255159654094949700">ພາສາອາຣາບິກ</translation>
+<translation id="326396468955264502">ບໍ່ສາມາດສຳເນົາ <ph name="NUMBER_OF_FILES" /> ໄຟລ໌ໄດ້ເນື່ອງຈາກມັນຖືກເຂົ້າລະຫັດໄວ້.</translation>
 <translation id="3264582393905923483">ສະພາບການ</translation>
 <translation id="3272909651715601089">ບໍ່ສາມາດເປີດ "<ph name="PATH" />"</translation>
 <translation id="3280431534455935878">ກໍາລັງກະ​ກຽມ</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490">ແບ່ງປັນ 1 ໂຟນເດີໃຫ້ກັບ <ph name="VM_NAME" /> ແລ້ວ</translation>
 <translation id="3524311639100184459">ລະວັງ: ໄຟລ໌ເຫຼົ່ານີ້ເປັນໄຟລ໌ຊົ່ວຄາວ ແລະອາດຈະຖືກລຶບໄປໂດຍອັດຕະໂນມັດເພື່ອຂະຫຍາຍພື້ນທີ່ດິສ.  <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">ໂຟລເດີ</translation>
+<translation id="3529424493985988200">ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານສຳລັບລາຍລະອຽດ.</translation>
 <translation id="3548125359243647069">ລະບຸ PIN ບໍ່ຖືກຕ້ອງຫຼາຍເທື່ອເກີນໄປແລ້ວ.</translation>
 <translation id="3549797760399244642">ໄປທີ່ drive.google.com...</translation>
 <translation id="3553048479571901246">ເພື່ອເປີດໄຟລ໌ດ້ວຍ <ph name="APP_NAME" />, ກະລຸນາສຳເນົາພວກມັນໄປໃສ່ໂຟນເດີໄຟລ໌ຂອງ Windows ກ່ອນ.</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">ໄຟລ໌ນີ້ເປີດຢູ່ໃນເດັສທັອບອື່ນແລ້ວ. ຍ້າຍໄປຫາ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) ເພື່ອເບິ່ງມັນ.</translation>
 <translation id="6394388407447716302">ອ່ານເທົ່ານັ້ນ</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> ລາຍການ</translation>
+<translation id="6407769893376380348">ບໍ່ສາມາດຍ້າຍ <ph name="FILE_NAME" /> ໄດ້ເນື່ອງຈາກມັນຖືກເຂົ້າລະຫັດໄວ້.</translation>
 <translation id="642282551015776456">ຊື່ນີ້ອາດຈະບໍ່ໃຊ້ເປັນຊື່ໄຟລ໌ ຫຼືໂຟລເດີໄດ້</translation>
 <translation id="6423031066725912715">ພາສາຫວຽດນາມທີ່ໃຊ້ແປ້ນພິມ TCVN</translation>
 <translation id="6430271654280079150">ທ່ານລອງໄດ້ອີກ 1 ເທື່ອ.</translation>

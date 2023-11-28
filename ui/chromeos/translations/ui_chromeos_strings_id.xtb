@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="id">
 <translation id="1000498691615767391">Pilih yang akan dibuka</translation>
+<translation id="1014208178561091457"><ph name="FILE_NAME" /> tidak dapat disalin karena dienkripsi.</translation>
 <translation id="1047956942837015229">Menghapus <ph name="COUNT" /> item...</translation>
 <translation id="1049926623896334335">Dokumen Word</translation>
 <translation id="1056775291175587022">Jaringan nihil</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Bagikan folder ke Parallels Desktop</translation>
 <translation id="1439919885608649279">Orang dengan bunga</translation>
 <translation id="1458457385801829801">Keluarkan <ph name="TARGET_NAME" /></translation>
+<translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> file tidak dapat disalin karena dienkripsi.</translation>
 <translation id="1471718551822868769">Slovakia</translation>
 <translation id="1482884275703521657">Finlandia</translation>
 <translation id="148466539719134488">Swiss</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">Tidak tersedia</translation>
 <translation id="3254434849914415189">Pilih aplikasi default untuk file <ph name="FILE_TYPE" />:</translation>
 <translation id="3255159654094949700">Arab</translation>
+<translation id="326396468955264502"><ph name="NUMBER_OF_FILES" /> file tidak dapat dipindahkan karena dienkripsi.</translation>
 <translation id="3264582393905923483">Konteks</translation>
 <translation id="3272909651715601089">Tidak dapat membuka "<ph name="PATH" />"</translation>
 <translation id="3280431534455935878">Menyiapkan</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490">1 folder dibagikan ke <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Perhatian: File ini bersifat sementara dan dapat dihapus secara otomatis untuk mengosongkan ruang disk.  <ph name="BEGIN_LINK" />Pelajari Lebih Lanjut<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Folder</translation>
+<translation id="3529424493985988200">Hubungi administrator Anda untuk mengetahui detailnya.</translation>
 <translation id="3548125359243647069">Terlalu sering memasukkan PIN yang salah.</translation>
 <translation id="3549797760399244642">Buka drive.google.com...</translation>
 <translation id="3553048479571901246">Untuk membuka file dengan <ph name="APP_NAME" />, salin ke folder file Windows terlebih dulu.</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">File ini dibuka pada desktop yang berbeda. Pindahkan ke <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) untuk melihatnya.</translation>
 <translation id="6394388407447716302">Hanya baca</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> item</translation>
+<translation id="6407769893376380348"><ph name="FILE_NAME" /> tidak dapat dipindahkan karena dienkripsi.</translation>
 <translation id="642282551015776456">Nama ini tidak dapat digunakan sebagai nama file atau folder</translation>
 <translation id="6423031066725912715">Vietnam dengan keyboard TCVN</translation>
 <translation id="6430271654280079150">Tersisa 1 upaya lagi.</translation>

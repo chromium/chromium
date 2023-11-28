@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Spiacenti, operazione di generazione della chiave privata RSA casuale non riuscita.</translation>
 <translation id="1445572445564823378">Questa estensione sta rallentando <ph name="PRODUCT_NAME" />. È necessario disabilitarla per ripristinare le prestazioni di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL non è supportato.</translation>
+<translation id="1610570795592207282">Impossibile caricare il CSS "<ph name="RELATIVE_PATH" />" per lo script.</translation>
 <translation id="1803557475693955505">Impossibile caricare la pagina di sfondo "<ph name="BACKGROUND_PAGE" />".</translation>
 <translation id="2159915644201199628">Impossibile decodificare l'immagine: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2350172092385603347">Localizzazione utilizzata, ma default_locale non era specificato nel file manifest.</translation>
@@ -31,6 +32,7 @@
 <translation id="4988792151665380515">Operazione di esportazione della chiave pubblica non riuscita.</translation>
 <translation id="5026754133087629784">Visualizzazione web: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Impossibile trovare il percorso assoluto della directory per creare il pacchetto.</translation>
+<translation id="5160071981665899014">Impossibile caricare il codice JavaScript "<ph name="RELATIVE_PATH" />" per lo script.</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Le finestre con forma personalizzata non sono supportate.</translation>
 <translation id="5456409301717116725">Questa estensione include il file di chiave "<ph name="KEY_PATH" />". Probabilmente preferiresti che non l'includesse.</translation>

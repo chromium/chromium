@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">임의의 RSA 비공개 키를 생성하지 못했습니다.</translation>
 <translation id="1445572445564823378">이 확장 프로그램은 <ph name="PRODUCT_NAME" />의 성능을 저하시킵니다. <ph name="PRODUCT_NAME" />의 성능을 복원하려면 확장 프로그램을 사용중지해야 합니다.</translation>
 <translation id="1468038450257740950">WebGL이 지원되지 않습니다.</translation>
+<translation id="1610570795592207282">스크립트의 '<ph name="RELATIVE_PATH" />' css를 로드할 수 없습니다.</translation>
 <translation id="1803557475693955505">배경 페이지('<ph name="BACKGROUND_PAGE" />')를 로드하지 못했습니다.</translation>
 <translation id="2159915644201199628">'<ph name="IMAGE_NAME" />' 이미지를 디코딩하지 못했습니다.</translation>
 <translation id="2350172092385603347">번역한 언어를 이용하였지만 매니페스트에 기본 언어(default_locale)를 지정하지 않았습니다.</translation>
@@ -31,6 +32,7 @@
 <translation id="4988792151665380515">공개 키를 내보내지 못했습니다.</translation>
 <translation id="5026754133087629784">Webview: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">패키지할 디렉터리에 대한 절대 경로를 찾을 수 없습니다.</translation>
+<translation id="5160071981665899014">스크립트의 '<ph name="RELATIVE_PATH" />' JavaScript를 로드할 수 없습니다.</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">창 모양은 지원되지 않습니다.</translation>
 <translation id="5456409301717116725">이 확장 프로그램은 키 파일 '<ph name="KEY_PATH" />'을(를) 포함합니다. 사용하지 않는 것이 좋습니다.</translation>

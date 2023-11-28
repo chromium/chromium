@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zu">
 <translation id="1000498691615767391">Khetha ifolda ukuze uyivule</translation>
+<translation id="1014208178561091457">I-<ph name="FILE_NAME" /> ayikwazanga ukukopishwa ngoba ibethelwe.</translation>
 <translation id="1047956942837015229">Isusa izinto ezingu-<ph name="COUNT" />...</translation>
 <translation id="1049926623896334335">Idokhumenti ye-Word</translation>
 <translation id="1056775291175587022">Akuna-network</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Yabelana ngefolda ne-Parallels Desktop</translation>
 <translation id="1439919885608649279">Umuntu onezimbali</translation>
 <translation id="1458457385801829801">Khipha u-<ph name="TARGET_NAME" /></translation>
+<translation id="146691674290220697">Amafayela angu-<ph name="NUMBER_OF_FILES" /> awakwazanga ukukopishwa ngoba abethelwe.</translation>
 <translation id="1471718551822868769">Isi-Slovak</translation>
 <translation id="1482884275703521657">Finnish</translation>
 <translation id="148466539719134488">I-Swiss</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">Ayitholakali</translation>
 <translation id="3254434849914415189">Khetha uhlelo lokusebenza oluzenzakalelayo lwamafayela we-<ph name="FILE_TYPE" />:</translation>
 <translation id="3255159654094949700">Arabic</translation>
+<translation id="326396468955264502">Amafayela angu-<ph name="NUMBER_OF_FILES" /> awakwazanga ukususwa ngoba abethelwe.</translation>
 <translation id="3264582393905923483">Okuqukethwe</translation>
 <translation id="3272909651715601089">Ayikwazanga ukuvula i-"<ph name="PATH" />"</translation>
 <translation id="3280431534455935878">Iyalungiselela</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490">1 folda eyabelwe u-<ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Isexwayiso: Lamafayela awesikhashana futhi angase asuswe ngokuzenzekelayo ukukhulula isikhala sediski.  <ph name="BEGIN_LINK" />Funda kabanzi<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Ifolda</translation>
+<translation id="3529424493985988200">Xhumana nomlawuli wakho ukuze uthole imininingwane.</translation>
 <translation id="3548125359243647069">Iphinikhodi engalungile ifakwe izikhathi eziningi kakhulu.</translation>
 <translation id="3549797760399244642">Hamba ku-drive.google.com...</translation>
 <translation id="3553048479571901246">Ukuze uvule amafayela nge-<ph name="APP_NAME" />, kukopishe kuqala kufolda lamafayela we-Windows.</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">Leli fayela livuleke kudeskithophu ehlukile. Iya ku-<ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) ukuze ulibuke.</translation>
 <translation id="6394388407447716302">Funda kuphela</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> izinto</translation>
+<translation id="6407769893376380348">I-<ph name="FILE_NAME" /> ayikwazanga ukususwa ngoba ibethelwe.</translation>
 <translation id="642282551015776456">Leli gama akumele lisetshenziswe njengefayela noma igama lefayela</translation>
 <translation id="6423031066725912715">Isi-Vietnamese esinekhibhodi ye-TCVN</translation>
 <translation id="6430271654280079150">Unokuzama oku-1 okusele.</translation>

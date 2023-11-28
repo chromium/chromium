@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">അയ്യോ! ക്രമരഹിത RSA സ്വകാര്യ കീ ജനറേറ്റ് ചെയ്യുന്നതിന് പരാജയപ്പെട്ടു. </translation>
 <translation id="1445572445564823378">ഈ വിപുലീകരണം <ph name="PRODUCT_NAME" />-നെ മന്ദഗതിയിലാക്കുന്നു. <ph name="PRODUCT_NAME" />-ന്റെ പ്രകടനം പുനഃസ്ഥാപിക്കുന്നതിനായി നിങ്ങൾ അതിനെ പ്രവർത്തനരഹിതമാക്കണം.</translation>
 <translation id="1468038450257740950">WebGL പിന്തുണയ്‌ക്കുന്നില്ല.</translation>
+<translation id="1610570795592207282">സ്ക്രിപ്‌റ്റിനായി css '<ph name="RELATIVE_PATH" />' ലോഡ് ചെയ്യാനായില്ല.</translation>
 <translation id="1803557475693955505">പശ്ചാത്തല പേജ് '<ph name="BACKGROUND_PAGE" />' ലോഡ് ചെയ്യാനായില്ല.</translation>
 <translation id="2159915644201199628">ചിത്രം ഡീകോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">പ്രാദേശികവൽക്കരണം ഉപയോഗിച്ചു, പക്ഷെ മാനിഫെസ്‌റ്റിൽ സ്ഥിര-ഭാഷ വ്യക്തമാക്കിയിട്ടില്ല.</translation>
@@ -31,6 +32,7 @@
 <translation id="4988792151665380515">പൊതു കീ കയറ്റുമതി ചെയ്യുന്നതിന് പരാജയപ്പെട്ടു.</translation>
 <translation id="5026754133087629784">വെബ് കാഴ്‌ച: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">പായ്‌ക്കിലേക്കുള്ള ഡയറക്‌ടറിയുടെ കൃത്യമായ പാത കണ്ടെത്താനാകുന്നില്ല.</translation>
+<translation id="5160071981665899014">സ്ക്രിപ്റ്റിനായി javascript '<ph name="RELATIVE_PATH" />' ലോഡ് ചെയ്യാനായില്ല.</translation>
 <translation id="5356315618422219272">ആപ്പ് കാഴ്‌‌ച: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">രൂപപ്പെടുത്തിയ വിൻഡോകൾ പിന്തുണയ്ക്കുന്നില്ല.</translation>
 <translation id="5456409301717116725">ഈ വിപുലീകരണത്തിൽ '<ph name="KEY_PATH" />' എന്ന കീ ഫയൽ ഉൾപ്പെടുന്നു. മിക്കവാറും നിങ്ങൾ ഇത് ചെയ്യാൻ താൽപ്പര്യപ്പെട്ടേക്കില്ല.</translation>

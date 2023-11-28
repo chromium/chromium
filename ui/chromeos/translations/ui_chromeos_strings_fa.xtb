@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fa">
 <translation id="1000498691615767391">انتخاب پوشه برای باز کردن</translation>
+<translation id="1014208178561091457">‏<ph name="FILE_NAME" /> کپی نشد زیر رمزگذاری شده است.</translation>
 <translation id="1047956942837015229">در حال حذف <ph name="COUNT" /> مورد...</translation>
 <translation id="1049926623896334335">‏سند Word </translation>
 <translation id="1056775291175587022">شبکه‌ای وجود ندارد</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">‏هم‌رسانی پوشه با Parallels Desktop</translation>
 <translation id="1439919885608649279">شخصی میان گل‌ها</translation>
 <translation id="1458457385801829801">برداشتن <ph name="TARGET_NAME" /></translation>
+<translation id="146691674290220697">‏<ph name="NUMBER_OF_FILES" /> فایل کپی نشدند زیرا رمزگذاری شده‌اند.</translation>
 <translation id="1471718551822868769">اسلوواکی</translation>
 <translation id="1482884275703521657">فنلاندی</translation>
 <translation id="148466539719134488">سوئیسی</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">موجود نیست</translation>
 <translation id="3254434849914415189">برنامه پیش‌فرض را برای فایل‌های <ph name="FILE_TYPE" /> انتخاب کنید:</translation>
 <translation id="3255159654094949700">عربی</translation>
+<translation id="326396468955264502">‏<ph name="NUMBER_OF_FILES" /> فایل منتقل نشدند زیرا رمزگذاری شده‌اند.</translation>
 <translation id="3264582393905923483">زمینه</translation>
 <translation id="3272909651715601089">«<ph name="PATH" />» باز نشد</translation>
 <translation id="3280431534455935878"> آماده‌سازی</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490">۱ پوشه با <ph name="VM_NAME" /> هم‌رسانی شد</translation>
 <translation id="3524311639100184459">احتیاط: این فایل‌ها موقتی هستند و ممکن است برای آزادسازی فضای دیسک به‌طور خودکار حذف شوند.  <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">پوشه</translation>
+<translation id="3529424493985988200">برای دریافت جزئیات با سرپرست خود تماس بگیرید.</translation>
 <translation id="3548125359243647069">پین نادرست دفعات زیادی وارد شده است.</translation>
 <translation id="3549797760399244642">‏رفتن به drive.google.com…</translation>
 <translation id="3553048479571901246">‏برای باز کردن فایل‌ها با <ph name="APP_NAME" />، ابتدا آن‌ها را در پوشه فایل‌های Windows کپی کنید.</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">این فایل در میزکار دیگری باز شده است. به <ph name="USER_NAME" /> ‏(<ph name="MAIL_ADDRESS" />) بروید تا آن را مشاهده کنید.</translation>
 <translation id="6394388407447716302">فقط خواندنی</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> مورد</translation>
+<translation id="6407769893376380348">‏<ph name="FILE_NAME" /> منتقل نشد زیر رمزگذاری شده است.</translation>
 <translation id="642282551015776456">این نام ممکن است به‌عنوان نام فایلی از پوشه استفاده نشود</translation>
 <translation id="6423031066725912715">‏ویتنامی با صفحه‌کلید TCVN</translation>
 <translation id="6430271654280079150">۱ تلاش دیگر دارید.</translation>

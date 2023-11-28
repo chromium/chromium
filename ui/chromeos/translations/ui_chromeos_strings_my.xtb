@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="my">
 <translation id="1000498691615767391">ဖွင့်ရန် ဖိုလ်ဒါကို ရွေးပါ</translation>
+<translation id="1014208178561091457"><ph name="FILE_NAME" /> ကို အသွင်ဝှက်ထားသောကြောင့် မိတ္တူကူး၍မရပါ။</translation>
 <translation id="1047956942837015229">အရာ <ph name="COUNT" />ခုကို ဖျက်နေ...</translation>
 <translation id="1049926623896334335">Word စာတမ်း</translation>
 <translation id="1056775291175587022">ကွန်ရက် မရှိပါ</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">ဖိုင်တွဲကို Parallels Desktop အား မျှဝေခြင်း</translation>
 <translation id="1439919885608649279">ပန်းများနှင့်လူ</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> ထုတ်ရန်</translation>
+<translation id="146691674290220697">ဖိုင် <ph name="NUMBER_OF_FILES" /> ဖိုင်ကို အသွင်ဝှက်ထားသောကြောင့် မိတ္တူကူး၍မရပါ။</translation>
 <translation id="1471718551822868769">ဆလိုဗက်</translation>
 <translation id="1482884275703521657">ဖင်လန်</translation>
 <translation id="148466539719134488">ဆွစ်</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">မရနိုင်ပါ</translation>
 <translation id="3254434849914415189"><ph name="FILE_TYPE" /> ဖိုင်များ အတွက် ပုံသေ အက်ပ်ကို ရွေးရန်:</translation>
 <translation id="3255159654094949700">အာရဗီ</translation>
+<translation id="326396468955264502">ဖိုင် <ph name="NUMBER_OF_FILES" /> ဖိုင်ကို အသွင်ဝှက်ထားသောကြောင့် ရွှေ့၍မရပါ။</translation>
 <translation id="3264582393905923483">အခြေအနေ</translation>
 <translation id="3272909651715601089">"<ph name="PATH" />" ကို ဖွင့်၍မရပါ</translation>
 <translation id="3280431534455935878">ပြင်ဆင်နေ</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490"><ph name="VM_NAME" /> နှင့် ဖိုင်တွဲ ၁ ခု မျှဝေထားသည်</translation>
 <translation id="3524311639100184459">သတိ- ဤဖိုင်များသည် ယာယီဖြစ်ပြီး ဒစ်ခ်နေရာလွတ်ပြုလုပ်ရန် အလိုအလျောက် ဖျက်နိုင်ပါသည်။  <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">ဖိုင်တွဲ</translation>
+<translation id="3529424493985988200">အသေးစိတ်အတွက် သင့်စီမံခန့်ခွဲသူကို ဆက်သွယ်ပါ။</translation>
 <translation id="3548125359243647069">ပင်နံပါတ်အမှားကို အကြိမ်များစွာ ထည့်ထားသည်။</translation>
 <translation id="3549797760399244642">drive.google.com သို့သွားရန်...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> ဖြင့် ဖိုင်များဖွင့်ရန် ၎င်းတို့ကို ဝင်းဒိုး ဖိုင်တွဲသို့ ဦးစွာမိတ္တူကူးပါ။</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">ဒီဖိုင်ကို အခြား ဒက်စ်တော့မှာ ဖွင့်ထားသည်။  ၎င်းကို ကြည့်ရန် <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />)သို့ သွားပါ။</translation>
 <translation id="6394388407447716302">ဖတ်ရန်အတွက်သာ</translation>
 <translation id="6395575651121294044">ပါဝင်သည့် အရာ <ph name="NUMBER_OF_FILES" /> ခု</translation>
+<translation id="6407769893376380348"><ph name="FILE_NAME" /> ကို အသွင်ဝှက်ထားသောကြောင့် ရွှေ့၍မရပါ။</translation>
 <translation id="642282551015776456">ဒီအမည်ကို ဖိုင် သို့မဟုတ် ဖိုလ်ဒါ အမည် အဖြစ် သုံးမရနိုင်</translation>
 <translation id="6423031066725912715">TCVN ကီးဘုတ်ဖြင့် ဗီယက်နမ်</translation>
 <translation id="6430271654280079150">သင့်တွင် ကြိုးစားခွင့် ၁ ကြိမ် ကျန်သည်။</translation>

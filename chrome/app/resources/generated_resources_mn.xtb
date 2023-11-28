@@ -3906,6 +3906,7 @@
 <translation id="4005817994523282006">Цагийн бүс илрүүлэх арга</translation>
 <translation id="4007856537951125667">Товчлолыг нуух</translation>
 <translation id="4008291085758151621">Сайтын мэдээлэл VR-д боломжгүй байна</translation>
+<translation id="4010746393007464819">Debian 12 (Bookworm) луу сайжруулах боломжтой байна</translation>
 <translation id="4010917659463429001">Хавчуургаа мобайл төхөөрөмждөө авахын тулд, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Та "<ph name="EXTENSION_NAME" />-г" засварлах уу?</translation>
 <translation id="4015163439792426608">Өргөтгөлтэй болсон уу? Хялбарчилсан нэг газраас <ph name="BEGIN_LINK" />өргөтгөлүүдээ удирдаарай<ph name="END_LINK" />.</translation>
@@ -6070,6 +6071,7 @@
 <translation id="5782040878821624922">Энэ нь дурын төхөөрөмжид боломжтой</translation>
 <translation id="5782227691023083829">Орчуулж байна...</translation>
 <translation id="57838592816432529">Дууг хаах</translation>
+<translation id="5784291589716625675">Аппын хэлийг өөрчлөх</translation>
 <translation id="5785583009707899920">Chrome Файл хэрэгсэл</translation>
 <translation id="5787146423283493983">Гол хэлэлцээр</translation>
 <translation id="5787420647064736989">Төхөөрөмжийн нэр</translation>
@@ -6543,6 +6545,7 @@
 <translation id="6151323131516309312"><ph name="SITE_NAME" />-г хайхын тулд <ph name="SEARCH_KEY" /> дээр дарна уу</translation>
 <translation id="6151771661215463137">Файл таны таталтын фолдерт байна.</translation>
 <translation id="6152918902620844577">Дараагийн үйл ажиллагааг хүлээж байна</translation>
+<translation id="6153439704237222699">Do Not Track-н талаар нэмэлт мэдээлэл авах</translation>
 <translation id="6154240335466762404">Бүх портыг хасах</translation>
 <translation id="615436196126345398">Протокол</translation>
 <translation id="6155141482566063812">Дэвсгэр чихтэй хуудaс таны дэлгэцийг хуваалцаж байна</translation>
@@ -8860,6 +8863,7 @@
 <translation id="7988805580376093356">Үйлдлийн системээ хэвээр үлдээж, USB-с <ph name="DEVICE_OS" />-г ажиллуулаарай.</translation>
 <translation id="7988876720343145286">Android-н бусад тохиргоо болон зөвшөөрөл</translation>
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> Дуу хоолой <ph name="COUNT" /></translation>
+<translation id="7990958035181555539">Android утаснаасаа Wi-Fi-г автоматаар шилжүүлэх</translation>
 <translation id="7991296728590311172">Сэлгүүрийн тохиргоо</translation>
 <translation id="7992203134935383159">Ярианы синтез</translation>
 <translation id="7994515119120860317"><ph name="VISUAL_SEARCH_PROVIDER" />-р зургийн текстийг орчуулах</translation>
@@ -9805,6 +9809,7 @@
 <translation id="8736288397686080465">Энэ сайтыг шинэчлэсэн байна.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Хуудсыг орчуулах хэлээ сонгоно уу</translation>
+<translation id="8738418093147087440">Улс, хэл эсвэл оролтын нэрээр хайх</translation>
 <translation id="8740086188450289493">Google Бүртгэлийн нууц үгийг ашиглах</translation>
 <translation id="8740247629089392745">Та энэ Chromebook-г <ph name="SUPERVISED_USER_NAME" />-д өгч болно. Тохируулга бараг дуусаж, одоо судлах цаг боллоо.</translation>
 <translation id="8740672167979365981">ChromeOS Flex-г шинэчлэх шаардлагатай</translation>

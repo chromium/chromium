@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="te">
 <translation id="1000498691615767391">తెరవడానికి ఫైల్‌ని ఎంచుకోండి</translation>
+<translation id="1014208178561091457"><ph name="FILE_NAME" /> ఎన్‌క్రిప్ట్ చేయబడింది కాబట్టి దాన్ని కాపీ చేయడం సాధ్యం కాలేదు.</translation>
 <translation id="1047956942837015229"><ph name="COUNT" /> అంశాలను తొలగిస్తోంది...</translation>
 <translation id="1049926623896334335">Word డాక్యుమెంట్‌</translation>
 <translation id="1056775291175587022">నెట్‌వ. లేవు</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Parallels Desktopతో ఫోల్డర్‌ను షేర్ చేయండి</translation>
 <translation id="1439919885608649279">పూలను పట్టుకున్న వ్యక్తి</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" />‌ను తొలగించండి</translation>
+<translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> ఫైళ్లు ఎన్‌క్రిప్ట్ చేయబడ్డాయి కాబట్టి వాటిని కాపీ చేయడం సాధ్యం కాలేదు.</translation>
 <translation id="1471718551822868769">స్లోవాక్</translation>
 <translation id="1482884275703521657">ఫిన్నిష్</translation>
 <translation id="148466539719134488">స్విస్</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">అందుబాటులో లేదు</translation>
 <translation id="3254434849914415189"><ph name="FILE_TYPE" /> ఫైళ్ల కోసం డిఫాల్ట్ యాప్‌ను ఎంచుకోండి:</translation>
 <translation id="3255159654094949700">అరబిక్</translation>
+<translation id="326396468955264502"><ph name="NUMBER_OF_FILES" /> ఫైళ్లు ఎన్‌క్రిప్ట్ చేయబడ్డాయి కాబట్టి వాటిని తరలించడం సాధ్యం కాలేదు.</translation>
 <translation id="3264582393905923483">సందర్భం</translation>
 <translation id="3272909651715601089">"<ph name="PATH" />"ను తెరవడం సాధ్యపడలేదు</translation>
 <translation id="3280431534455935878">సిద్ధం చేస్తోంది</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490"><ph name="VM_NAME" />‌తో 1 ఫోల్డర్ షేర్ చేయబడింది</translation>
 <translation id="3524311639100184459">హెచ్చరిక: ఈ ఫైల్స్ తాత్కాలికమైనవి, డిస్క్ స్పేస్‌ను ఖాళీ చేయడం కోసం ఆటోమేటిక్‌గా ఇవి తొలగించబడవచ్చు.  <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">ఫోల్డర్</translation>
+<translation id="3529424493985988200">వివరాల కోసం మీ అడ్మినిస్ట్రేటర్‌ను సంప్రదించండి.</translation>
 <translation id="3548125359243647069">చాలా ఎక్కువ సార్లు తప్పు PIN ఎంటర్ చేయబడింది.</translation>
 <translation id="3549797760399244642">drive.google.comకు వెళ్లండి...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" />తో ఫైళ్లను తెరవడానికి ముందుగా వాటిని Windows ఫైళ్ల ఫోల్డర్‌కు కాపీ చేయండి.</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">ఈ పైల్ వేరే డెస్క్‌టాప్‌లో తెరవబడింది. దీన్ని చూడటానికి <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />)కు తరలించండి.</translation>
 <translation id="6394388407447716302">చదవడానికి మాత్రమే</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> అంశాలు</translation>
+<translation id="6407769893376380348"><ph name="FILE_NAME" /> ఎన్‌క్రిప్ట్ చేయబడింది కాబట్టి దాన్ని తరలించడం సాధ్యం కాలేదు.</translation>
 <translation id="642282551015776456">ఈ పేరును ఫైల్ యొక్క ఫోల్డర్ పేరుగా ఉపయోగించలేము.</translation>
 <translation id="6423031066725912715">TCVN కీబోర్డ్‌తో వియత్నామీస్</translation>
 <translation id="6430271654280079150">మీకు 1 ప్రయత్నం మిగిలి ఉంది.</translation>

@@ -819,6 +819,7 @@
 <translation id="5300589172476337783">Прикажи</translation>
 <translation id="5317780077021120954">Зачувај</translation>
 <translation id="5318298563956633672">Веќе го следите производов.</translation>
+<translation id="5329451663851195956">Може да повлечете надолу за да освежите.</translation>
 <translation id="5339316356165661760">Вклучи синхронизација</translation>
 <translation id="5345598430982201510">Никогаш не откривај пакети автоматски</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Да се следи пакетов?}one{Да се следат {COUNT} пакет?}other{Да се следат {COUNT} пакети?}}</translation>

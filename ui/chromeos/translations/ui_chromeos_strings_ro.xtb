@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
 <translation id="1000498691615767391">Selectează un dosar pentru a-l deschide</translation>
+<translation id="1014208178561091457">Fișierul <ph name="FILE_NAME" /> nu s-a putut copia deoarece este criptat.</translation>
 <translation id="1047956942837015229">Se șterg <ph name="COUNT" /> elemente...</translation>
 <translation id="1049926623896334335">Document Word</translation>
 <translation id="1056775291175587022">Nicio rețea</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Permite accesul Parallels Desktop la dosar</translation>
 <translation id="1439919885608649279">Persoană cu flori</translation>
 <translation id="1458457385801829801">Exclude participantul <ph name="TARGET_NAME" /></translation>
+<translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> fișiere nu s-au putut copia deoarece sunt criptate.</translation>
 <translation id="1471718551822868769">Slovacă</translation>
 <translation id="1482884275703521657">Finlandeză</translation>
 <translation id="148466539719134488">Elvețiană</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">Indisponibilă</translation>
 <translation id="3254434849914415189">Alegeți aplicația prestabilită pentru fișierele <ph name="FILE_TYPE" />:</translation>
 <translation id="3255159654094949700">Arabă</translation>
+<translation id="326396468955264502"><ph name="NUMBER_OF_FILES" /> fișiere nu s-au putut muta deoarece sunt criptate.</translation>
 <translation id="3264582393905923483">Context</translation>
 <translation id="3272909651715601089">Nu se poate deschide „<ph name="PATH" />”</translation>
 <translation id="3280431534455935878">Se pregătește</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490"><ph name="VM_NAME" /> a primit acces la un dosar</translation>
 <translation id="3524311639100184459">Atenție: aceste fișiere sunt temporare și pot fi șterse automat pentru a elibera spațiu pe disc.  <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Dosar</translation>
+<translation id="3529424493985988200">Contactează administratorul pentru detalii.</translation>
 <translation id="3548125359243647069">Codul PIN a fost introdus greșit de prea multe ori.</translation>
 <translation id="3549797760399244642">Accesați drive.google.com...</translation>
 <translation id="3553048479571901246">Pentru a deschide fișiere cu <ph name="APP_NAME" />, mai întâi copiază-le în dosarul cu fișiere Windows.</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">Acest fișier a fost deschis pe alt desktop. Pentru a-l vedea, treceți la <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="6394388407447716302">Numai în citire</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> elemente</translation>
+<translation id="6407769893376380348">Fișierul <ph name="FILE_NAME" /> nu a putut fi mutat deoarece este criptat.</translation>
 <translation id="642282551015776456">Acest nume nu poate fi folosit ca nume de fișier sau de dosar</translation>
 <translation id="6423031066725912715">Tastatură vietnameză TCVN</translation>
 <translation id="6430271654280079150">Mai ai o încercare.</translation>

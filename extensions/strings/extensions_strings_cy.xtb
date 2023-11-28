@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Iesgwn! Wedi methu â chynhyrchu allwedd breifat RSA ar hap.</translation>
 <translation id="1445572445564823378">Mae'r estyniad hwn yn arafu <ph name="PRODUCT_NAME" />. Dylech ei analluogi i adfer perfformiad <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">Nid yw WebGL yn cael ei gefnogi.</translation>
+<translation id="1610570795592207282">Nid oedd modd llwytho'r css '<ph name="RELATIVE_PATH" />' ar gyfer sgript.</translation>
 <translation id="1803557475693955505">Ni ellid llwytho'r dudalen gefndir '<ph name="BACKGROUND_PAGE" />'.</translation>
 <translation id="2159915644201199628">Methu â dadgodio'r llun: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">Defnyddiwyd lleoleiddio, ond ni nodwyd default_locale yn y maniffest.</translation>
@@ -31,6 +32,7 @@
 <translation id="4988792151665380515">Wedi methu allforio ag allwedd gyhoeddus.</translation>
 <translation id="5026754133087629784">Gwedd we: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Methu â dod o hyd i'r llwybr absoliwt i'r cyfeiriadur i'w bacio.</translation>
+<translation id="5160071981665899014">Methu â llwytho javascript '<ph name="RELATIVE_PATH" />' ar gyfer sgript.</translation>
 <translation id="5356315618422219272">Gwedd ap: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Nid yw ffenestri wedi'u siapio yn cael eu cefnogi.</translation>
 <translation id="5456409301717116725">Mae'r estyniad hwn yn cynnwys y ffeil allwedd '<ph name="KEY_PATH" />'. Mae'n debyg nad ydych eisiau gwneud hynny.</translation>

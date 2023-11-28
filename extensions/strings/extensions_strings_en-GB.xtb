@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Yikes! Failed to generate random RSA private key.</translation>
 <translation id="1445572445564823378">This extension is slowing down <ph name="PRODUCT_NAME" />. You should disable it to restore <ph name="PRODUCT_NAME" />'s performance.</translation>
 <translation id="1468038450257740950">WebGL is not supported.</translation>
+<translation id="1610570795592207282">Could not load CSS '<ph name="RELATIVE_PATH" />' for script.</translation>
 <translation id="1803557475693955505">Could not load background page '<ph name="BACKGROUND_PAGE" />'.</translation>
 <translation id="2159915644201199628">Could not decode image: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">Localisation used, but default_locale wasn't specified in the manifest.</translation>
@@ -31,6 +32,7 @@
 <translation id="4988792151665380515">Failed to export public key.</translation>
 <translation id="5026754133087629784">Webview: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Can't find the absolute path to the directory to pack.</translation>
+<translation id="5160071981665899014">Could not load JavaScript '<ph name="RELATIVE_PATH" />' for script.</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Shaped windows are not supported.</translation>
 <translation id="5456409301717116725">This extension includes the key file '<ph name="KEY_PATH" />'. You probably don't want to do that.</translation>

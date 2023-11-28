@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
 <translation id="1000498691615767391">열려는 폴더 선택</translation>
+<translation id="1014208178561091457"><ph name="FILE_NAME" /> 파일이 암호화되어 있으므로 복사할 수 없습니다.</translation>
 <translation id="1047956942837015229"><ph name="COUNT" />개 항목 삭제 중...</translation>
 <translation id="1049926623896334335">Word 문서</translation>
 <translation id="1056775291175587022">네트워크 없음</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Parallels Desktop과 폴더 공유</translation>
 <translation id="1439919885608649279">꽃에 둘러싸인 사람</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> 꺼내기</translation>
+<translation id="146691674290220697">파일 <ph name="NUMBER_OF_FILES" />개가 암호화되어 있으므로 복사할 수 없습니다.</translation>
 <translation id="1471718551822868769">슬로바키아어</translation>
 <translation id="1482884275703521657">핀란드어</translation>
 <translation id="148466539719134488">스위스어</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">사용할 수 없음</translation>
 <translation id="3254434849914415189"><ph name="FILE_TYPE" /> 파일의 기본 앱 선택:</translation>
 <translation id="3255159654094949700">아랍어</translation>
+<translation id="326396468955264502">파일 <ph name="NUMBER_OF_FILES" />개가 암호화되어 있으므로 이동할 수 없습니다.</translation>
 <translation id="3264582393905923483">컨텍스트</translation>
 <translation id="3272909651715601089">'<ph name="PATH" />' 파일을 열 수 없음</translation>
 <translation id="3280431534455935878">준비 중</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490">폴더 1개가 <ph name="VM_NAME" />과(와) 공유됨</translation>
 <translation id="3524311639100184459">주의: 이 파일은 임시 파일이며 디스크 여유 공간을 확보하기 위해 자동으로 삭제될 수 있습니다.  <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">폴더</translation>
+<translation id="3529424493985988200">자세한 내용은 관리자에게 문의하세요.</translation>
 <translation id="3548125359243647069">잘못된 PIN을 너무 여러 번 입력했습니다</translation>
 <translation id="3549797760399244642">drive.google.com 사이트로 이동...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> 앱으로 파일을 열려면 먼저 파일을 Windows 파일 폴더에 복사하세요.</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">파일이 다른 데스크톱에서 열려 있습니다. 파일을 보려면 <ph name="USER_NAME" />(<ph name="MAIL_ADDRESS" />)(으)로 이동하세요.</translation>
 <translation id="6394388407447716302">읽기 전용</translation>
 <translation id="6395575651121294044">항목 <ph name="NUMBER_OF_FILES" />개</translation>
+<translation id="6407769893376380348"><ph name="FILE_NAME" /> 파일이 암호화되어 있으므로 이동할 수 없습니다.</translation>
 <translation id="642282551015776456">폴더 이름의 파일으로 사용할 수 없는 이름입니다.</translation>
 <translation id="6423031066725912715">베트남어(TCVN 키보드)</translation>
 <translation id="6430271654280079150">기회가 1번 남았습니다.</translation>

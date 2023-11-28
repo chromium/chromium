@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr">
 <translation id="1000498691615767391">Sélectionner le dossier à ouvrir</translation>
+<translation id="1014208178561091457">Impossible de copier <ph name="FILE_NAME" />, car ce fichier est chiffré.</translation>
 <translation id="1047956942837015229">Suppression de <ph name="COUNT" /> éléments en cours…</translation>
 <translation id="1049926623896334335">Document Word</translation>
 <translation id="1056775291175587022">Aucun réseau</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Partager le dossier avec Parallels Desktop</translation>
 <translation id="1439919885608649279">Personne avec des fleurs</translation>
 <translation id="1458457385801829801">Éjecter <ph name="TARGET_NAME" /></translation>
+<translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> fichiers n'ont pas pu être copiés, car ils sont chiffrés.</translation>
 <translation id="1471718551822868769">Slovaque</translation>
 <translation id="1482884275703521657">Finnois</translation>
 <translation id="148466539719134488">Suisse</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">Indisponible</translation>
 <translation id="3254434849914415189">Sélectionnez l'application par défaut pour les fichiers <ph name="FILE_TYPE" /> :</translation>
 <translation id="3255159654094949700">Arabe</translation>
+<translation id="326396468955264502"><ph name="NUMBER_OF_FILES" /> fichiers n'ont pas pu être déplacés, car ils sont chiffrés.</translation>
 <translation id="3264582393905923483">Contexte</translation>
 <translation id="3272909651715601089">Impossible d'ouvrir "<ph name="PATH" />"</translation>
 <translation id="3280431534455935878">Préparation en cours</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490">1 dossier partagé avec <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Attention : Ces fichiers sont temporaires et peuvent être automatiquement supprimés pour libérer de l'espace disque.  <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Dossier</translation>
+<translation id="3529424493985988200">Pour en savoir plus, contactez votre administrateur.</translation>
 <translation id="3548125359243647069">Vous avez saisi un code PIN erroné trop de fois.</translation>
 <translation id="3549797760399244642">Accéder à drive.google.com…</translation>
 <translation id="3553048479571901246">Pour ouvrir des fichiers avec <ph name="APP_NAME" />, copiez-les d'abord dans le dossier "Fichiers Windows".</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">Ce fichier est ouvert sur un autre bureau. Utilisez le compte de <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) pour l'afficher.</translation>
 <translation id="6394388407447716302">Lecture seule</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> éléments</translation>
+<translation id="6407769893376380348">Impossible de déplacer <ph name="FILE_NAME" />, car ce fichier est chiffré.</translation>
 <translation id="642282551015776456">Ce nom ne peut pas être utilisé comme nom de fichier ni de dossier.</translation>
 <translation id="6423031066725912715">Vietnamien (avec clavier TCVN)</translation>
 <translation id="6430271654280079150">Il vous reste 1 tentative.</translation>

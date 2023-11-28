@@ -819,6 +819,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5317780077021120954">Gardar</translation>
 <translation id="5318298563956633672">Xa estás facendo un seguimento deste produto.</translation>
+<translation id="5329451663851195956">Podes arrastrar cara abaixo para actualizar a pestana.</translation>
 <translation id="5339316356165661760">Activar sincronización</translation>
 <translation id="5345598430982201510">Non detectar nunca paquetes automaticamente</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Queres facer un seguimento deste paquete?}other{Queres facer un seguimento de {COUNT} paquetes?}}</translation>

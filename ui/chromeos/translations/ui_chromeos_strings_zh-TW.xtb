@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-TW">
 <translation id="1000498691615767391">選取要開啟的資料夾</translation>
+<translation id="1014208178561091457"><ph name="FILE_NAME" /> 已加密，因此無法複製。</translation>
 <translation id="1047956942837015229">正在刪除 <ph name="COUNT" /> 個項目...</translation>
 <translation id="1049926623896334335">Word 文件</translation>
 <translation id="1056775291175587022">沒有網路</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">與 Parallels Desktop 共用資料夾</translation>
 <translation id="1439919885608649279">拿花的人</translation>
 <translation id="1458457385801829801">卸載「<ph name="TARGET_NAME" />」</translation>
+<translation id="146691674290220697">有 <ph name="NUMBER_OF_FILES" /> 個檔案已加密，因此無法複製。</translation>
 <translation id="1471718551822868769">斯洛伐克文</translation>
 <translation id="1482884275703521657">芬蘭文</translation>
 <translation id="148466539719134488">瑞士文</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">無法使用</translation>
 <translation id="3254434849914415189">選擇開啟 <ph name="FILE_TYPE" /> 檔案的預設應用程式：</translation>
 <translation id="3255159654094949700">阿拉伯文</translation>
+<translation id="326396468955264502">有 <ph name="NUMBER_OF_FILES" /> 個檔案已加密，因此無法移動。</translation>
 <translation id="3264582393905923483">內容</translation>
 <translation id="3272909651715601089">無法開啟「<ph name="PATH" />」</translation>
 <translation id="3280431534455935878">準備中</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490">已與 <ph name="VM_NAME" /> 共用 1 個資料夾</translation>
 <translation id="3524311639100184459">注意：這些是暫存檔案，系統可能會自動將其刪除，以釋出磁碟空間。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">資料夾</translation>
+<translation id="3529424493985988200">詳情請洽詢管理員。</translation>
 <translation id="3548125359243647069">PIN 碼輸入錯誤次數太多。</translation>
 <translation id="3549797760399244642">前往 drive.google.com...</translation>
 <translation id="3553048479571901246">如要使用「<ph name="APP_NAME" />」開啟檔案，請先將檔案複製到 Windows 檔案資料夾。</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">這個檔案已在其他電腦上開啟。前往 <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) 查看。</translation>
 <translation id="6394388407447716302">唯讀</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> 個項目</translation>
+<translation id="6407769893376380348"><ph name="FILE_NAME" /> 已加密，因此無法移動。</translation>
 <translation id="642282551015776456">無法使用這個名稱做為檔案名稱或資料夾名稱</translation>
 <translation id="6423031066725912715">越南文搭配 TCVN 鍵盤</translation>
 <translation id="6430271654280079150">你只剩 1 次重試機會。</translation>

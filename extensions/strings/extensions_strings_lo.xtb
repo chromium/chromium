@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">ຢະ! ສ້າງລະຫັດສ່ວນຕົວ RSA ​ແບບສຸ່ມບໍ່ສໍາເລັດ.</translation>
 <translation id="1445572445564823378">ສ່ວນຂະຫຍາຍນີ້ກໍາລັງຊ້າລົງ <ph name="PRODUCT_NAME" />. ທ່ານຄວນຈະປິດໃຊ້ງານມັນ​ເພື່ອ​ກູ້​ຄືນ​ການ​ໃຊ້​ງານ​ຂອງ <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL ບໍ່ຮອງຮັບ.</translation>
+<translation id="1610570795592207282">ບໍ່ສາມາດໂຫຼດ css '<ph name="RELATIVE_PATH" />' ສໍາລັບສະຄຣິບໄດ້.</translation>
 <translation id="1803557475693955505">ບໍ່ສາມາດໂຫຼດໜ້າພື້ນຫຼັງໄດ້ '<ph name="BACKGROUND_PAGE" />'.</translation>
 <translation id="2159915644201199628">ບໍ່ສາມາດຖອດລະຫັດຮູບໄດ້: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">ໃຊ້ການຈໍາກັດແລ້ວ, ແຕ່ default_locale ບໍ່ໄດ້ກໍານົດຢູ່ໃນໃບລາຍການ.</translation>
@@ -31,6 +32,7 @@
 <translation id="4988792151665380515">ສົ່ງປຸ່ມທົ່ວໄປອອກບໍ່ສໍາເລັດ.</translation>
 <translation id="5026754133087629784">ມຸມມອງເວັບ: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">ບໍ່ສາມາດຊອກຫາຊ່ອງທາງສົມບູນໄປຫາບັນຊີລາຍຊື່ໄປຫາກ່ອງໄດ້.</translation>
+<translation id="5160071981665899014">ບໍ່ສາມາດໂຫຼດ javascript '<ph name="RELATIVE_PATH" />' ສຳລັບສະຄຣິບໄດ້.</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">ໜ້າຕ່າງທີ່ຈັດຮູບຮ່າງແລ້ວບໍ່ຮອງຮັບ.</translation>
 <translation id="5456409301717116725">ສ່ວນຂະຫຍາຍນີ້ລວມມີໄຟລ໌ລະຫັດ <ph name="KEY_PATH" /> . ທ່ານ​ອາດ​ຈະ​ບໍ່​ຕ້ອງ​ການ​ທີ່​ຈະ​ເຮັດ​ແນວ​ນັ້ນ​.</translation>

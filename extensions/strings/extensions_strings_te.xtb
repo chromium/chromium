@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">అరె! RSA ప్రైవేట్ కీని రాండమ్‌గా రూపొందించడంలో విఫలమైంది.</translation>
 <translation id="1445572445564823378">ఈ ఎక్స్‌టెన్ష‌న్‌ <ph name="PRODUCT_NAME" />ను మందగింప చేస్తోంది. <ph name="PRODUCT_NAME" /> యొక్క పనితీరును పునరుద్ధరించడానికి మీరు దీన్ని నిలిపివేయాలి.</translation>
 <translation id="1468038450257740950">WebGLకి మద్దతు లేదు.</translation>
+<translation id="1610570795592207282">స్క్రిప్ట్‌కు css '<ph name="RELATIVE_PATH" />'ను లోడ్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="1803557475693955505">నేపథ్య పేజీ '<ph name="BACKGROUND_PAGE" />'ను లోడ్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="2159915644201199628">ఈ చిత్రం డీకోడ్ చేయబడదు: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">స్థానికీకరణ ఉపయోగించబడుతుంది, అయితే మానిఫెస్ట్‌లో default_localeను పేర్కొనలేదు.</translation>
@@ -31,6 +32,7 @@
 <translation id="4988792151665380515">పబ్లిక్ కీని ఎగుమతి చేయడానికి విఫలమైంది.</translation>
 <translation id="5026754133087629784">వెబ్ వీక్షణ: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">ప్యాక్ చేయడానికి డైరెక్టరీకి ఖచ్చితమైన పాథ్‌ను కనుగొనడం సాధ్యపడదు.</translation>
+<translation id="5160071981665899014">స్క్రిప్ట్‌కు JavaScript '<ph name="RELATIVE_PATH" />' లోడ్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="5356315618422219272">యాప్‌ వీక్షణ: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">ఆకృతీకరించిన విండోలకు మద్దతు లేదు.</translation>
 <translation id="5456409301717116725">ఈ ఎక్స్‌టెన్షన్‌ '<ph name="KEY_PATH" />' కీ ఫైల్‌ను కలిగి ఉంది. బహుశా మీరు దాన్ని చేయకూడదు.</translation>

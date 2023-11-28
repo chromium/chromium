@@ -3892,6 +3892,7 @@
 <translation id="4005817994523282006">Ժամային գոտու որոշման եղանակ</translation>
 <translation id="4007856537951125667">Թաքցնել դյուրանցումները</translation>
 <translation id="4008291085758151621">Կայքի մասին տեղեկությունները հասանելի չեն VR ռեժիմում</translation>
+<translation id="4010746393007464819">Հասանելի է Debian 12-ի (Bookworm) նորացում</translation>
 <translation id="4010917659463429001">Ձեր էջանիշները ձեր շարժական սարքում օգտագործելու համար <ph name="GET_IOS_APP_LINK" />:</translation>
 <translation id="4014432863917027322">Վերանորոգե՞լ «<ph name="EXTENSION_NAME" />»-ը:</translation>
 <translation id="4015163439792426608">Օգտվո՞ւմ եք ընդլայնումներից: <ph name="BEGIN_LINK" />Կառավարեք ձեր ընդլայնումները<ph name="END_LINK" /> մեկ վայրում:</translation>
@@ -6050,6 +6051,7 @@
 <translation id="5782040878821624922">Այն հասանելի է ցանկացած սարքում</translation>
 <translation id="5782227691023083829">Թարգմանվում է...</translation>
 <translation id="57838592816432529">Անջատել ձայնը</translation>
+<translation id="5784291589716625675">Հավելվածի լեզվի փոփոխում</translation>
 <translation id="5785583009707899920">Chrome-ի ֆայլերի օժանդակ ծրագրեր</translation>
 <translation id="5787146423283493983">Բանալիների համաձայնեցում</translation>
 <translation id="5787420647064736989">Սարքի անվանումը</translation>
@@ -6522,6 +6524,7 @@
 <translation id="6151323131516309312"><ph name="SITE_NAME" />-ը որոնելու համար սեղմեք <ph name="SEARCH_KEY" /></translation>
 <translation id="6151771661215463137">Ֆայլն արդեն առկա է ներբեռնումների պանակում։</translation>
 <translation id="6152918902620844577">Սպասում է հաջորդ գործողությանը</translation>
+<translation id="6153439704237222699">Իմանալ ավելին Do Not Track հատկանիշի մասին</translation>
 <translation id="6154240335466762404">Հեռացնել բոլոր միացքները</translation>
 <translation id="615436196126345398">Հաղորդակարգ</translation>
 <translation id="6155141482566063812">Ֆոնային ներդիրում օգտագործվում է ձեր էկրանը</translation>
@@ -8838,6 +8841,7 @@
 <translation id="7988805580376093356">Պահպանել ընթացիկ օպերացիոն համակարգը և գործարկել <ph name="DEVICE_OS" />-ը USB կրիչից։</translation>
 <translation id="7988876720343145286">Android-ի այլ կարգավորումներ և թույլտվություններ</translation>
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> Ձայն <ph name="COUNT" /></translation>
+<translation id="7990958035181555539">Ավտոմատ տեղափոխել Wi-Fi-ը Android հեռախոսից</translation>
 <translation id="7991296728590311172">Switch Access-ի կարգավորումներ</translation>
 <translation id="7992203134935383159">Խոսքի սինթեզ</translation>
 <translation id="7994515119120860317">Թարգմանել պատկերում առկա տեքստը <ph name="VISUAL_SEARCH_PROVIDER" />-ի միջոցով</translation>
@@ -9783,6 +9787,7 @@
 <translation id="8736288397686080465">Այս կայքը թարմացվել է հետին պլանում:</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Ընտրեք լեզու, որով պետք է թարգմանել էջը</translation>
+<translation id="8738418093147087440">Որոնեք ըստ երկրների, լեզուների կամ ներածման մեթոդների</translation>
 <translation id="8740086188450289493">Օգտագործել Google հաշվի գաղտնաբառը</translation>
 <translation id="8740247629089392745">Դուք կարող եք տալ այս Chromebook-ը <ph name="SUPERVISED_USER_NAME" />-ին։ Կարգավորումը գրեթե ավարտված է։ Սարքը շուտով պատրաստ կլինի օգտագործման։</translation>
 <translation id="8740672167979365981">Թարմացրեք ChromeOS Flex-ը</translation>

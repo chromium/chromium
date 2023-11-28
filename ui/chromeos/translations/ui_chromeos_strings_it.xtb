@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
 <translation id="1000498691615767391">Seleziona una cartella da aprire</translation>
+<translation id="1014208178561091457">Impossibile copiare <ph name="FILE_NAME" /> perché è criptato.</translation>
 <translation id="1047956942837015229">Eliminazione di <ph name="COUNT" /> elementi...</translation>
 <translation id="1049926623896334335">Documento di Word</translation>
 <translation id="1056775291175587022">Nessuna rete</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Condividi cartella con Parallels Desktop</translation>
 <translation id="1439919885608649279">Persona con fiori</translation>
 <translation id="1458457385801829801">Espelli <ph name="TARGET_NAME" /></translation>
+<translation id="146691674290220697">Impossibile copiare <ph name="NUMBER_OF_FILES" /> file perché è criptato.</translation>
 <translation id="1471718551822868769">Slovacco</translation>
 <translation id="1482884275703521657">Finlandese</translation>
 <translation id="148466539719134488">Svizzero</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">Non disponibile</translation>
 <translation id="3254434849914415189">Seleziona l'applicazione predefinita per i file <ph name="FILE_TYPE" />:</translation>
 <translation id="3255159654094949700">Arabo</translation>
+<translation id="326396468955264502">Impossibile spostare <ph name="NUMBER_OF_FILES" /> file perché sono criptati.</translation>
 <translation id="3264582393905923483">Contesto</translation>
 <translation id="3272909651715601089">Impossibile aprire "<ph name="PATH" />"</translation>
 <translation id="3280431534455935878">Preparazione in corso</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490">1 cartella condivisa con <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Attenzione: questi file sono temporanei e potrebbero essere eliminati automaticamente per liberare spazio su disco.  <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Cartella</translation>
+<translation id="3529424493985988200">Per informazioni al riguardo, contatta il tuo amministratore.</translation>
 <translation id="3548125359243647069">Hai inserito troppe volte un PIN non corretto.</translation>
 <translation id="3549797760399244642">Vai all'indirizzo drive.google.com...</translation>
 <translation id="3553048479571901246">Per aprire file con l'app <ph name="APP_NAME" />, devi prima copiarli nella cartella File di Windows.</translation>
@@ -700,6 +704,7 @@
 <translation id="637062427944097960">Questo file è aperto su un desktop differente. Passa a <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) per visualizzarlo.</translation>
 <translation id="6394388407447716302">Sola lettura</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> elementi</translation>
+<translation id="6407769893376380348">Impossibile spostare <ph name="FILE_NAME" /> perché è criptato.</translation>
 <translation id="642282551015776456">Questo nome non può essere utilizzato per un file o una cartella</translation>
 <translation id="6423031066725912715">Vietnamita con tastiera TCVN</translation>
 <translation id="6430271654280079150">Hai ancora 1 tentativo a disposizione.</translation>

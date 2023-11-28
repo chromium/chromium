@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ka">
 <translation id="1000498691615767391">აირჩიეთ გასახსნელი საქაღალდე</translation>
+<translation id="1014208178561091457"><ph name="FILE_NAME" />-ის კოპირება ვერ მოხერხდა, რადგან ის დაშიფრულია.</translation>
 <translation id="1047956942837015229"><ph name="COUNT" /> ელემენტის წაშლა…</translation>
 <translation id="1049926623896334335">Word დოკუმენტი</translation>
 <translation id="1056775291175587022">ქსელები არ არის</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">საქაღალდის გაზიარება Parallels Desktop-თან</translation>
 <translation id="1439919885608649279">პიროვნება ყვავილებით</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" />-ის ამოღება</translation>
+<translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> ფაილის კოპირება ვერ მოხერხდა, რადგან ისინი დაშიფრულია.</translation>
 <translation id="1471718551822868769">სლოვაკური</translation>
 <translation id="1482884275703521657">ფინური</translation>
 <translation id="148466539719134488">შვეიცარიული</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">მიუწვდომელია</translation>
 <translation id="3254434849914415189">აირჩიეთ ნაგულისხმევი პროგრამა <ph name="FILE_TYPE" /> ფაილებისთვის:</translation>
 <translation id="3255159654094949700">არაბული</translation>
+<translation id="326396468955264502"><ph name="NUMBER_OF_FILES" /> ფაილის გადატანა ვერ მოხერხდა, რადგან ისინი დაშიფრულია.</translation>
 <translation id="3264582393905923483">კონტექსტი</translation>
 <translation id="3272909651715601089">„<ph name="PATH" />“ ვერ გაიხსნა</translation>
 <translation id="3280431534455935878">მომზადება</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490">1 საქაღალდე გაზიარებულია <ph name="VM_NAME" />-თან</translation>
 <translation id="3524311639100184459">გაფრთხილება: ეს ფაილები დროებითია და შეიძლება ავტომატურად წაიშალოს დისკზე ადგილის გასათავისუფლებლად.  <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">საქაღალდე</translation>
+<translation id="3529424493985988200">დეტალური ინფორმაციისთვის დაუკავშირდით თქვენს ადმინისტრატორს.</translation>
 <translation id="3548125359243647069">არასწორი PIN-კოდი ზედმეტად ბევრჯერ შეიყვანეთ.</translation>
 <translation id="3549797760399244642">drive.google.com-ზე გადასვლა…</translation>
 <translation id="3553048479571901246">ფაილების <ph name="APP_NAME" />-ით გასახსნელად, პირველ რიგში, დააკოპირეთ ისინი Windows-ის ფაილების საქაღალდეში.</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">ეს ფაილი გახსნილია სხვა სამუშაო დაფაზე. მის სანახავად გადადით <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />)-ზე.</translation>
 <translation id="6394388407447716302">მხოლოდ კითხვადი</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> ერთეული</translation>
+<translation id="6407769893376380348"><ph name="FILE_NAME" />-ის გადატანა ვერ მოხერხდა, რადგან ის დაშიფრულია.</translation>
 <translation id="642282551015776456">ამ სახელის გამოყენება ფაილის ან საქაღალდის სახელად შეუძლებელია</translation>
 <translation id="6423031066725912715">ვიეტნამური TCVN კლავიატურით</translation>
 <translation id="6430271654280079150">1 მცდელობა დაგრჩათ.</translation>

@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">ဖြစ်မှဖြစ်ရတယ်! ကျပန်း RSA ကိုယ်ပိုင် သော့ ထုတ်လုပ် မရလိုက်ပါ။</translation>
 <translation id="1445572445564823378">ဒီတိုးချဲ့မှုက <ph name="PRODUCT_NAME" />ကို နှေးလာစေနေသည်။ သင်သည် <ph name="PRODUCT_NAME" />၏ လုပ်ကိုင်နိုင်စွမ်းကို ပြန်ဖေါ်ထုတ်ပေးရန် ၎င်းကို ပိတ်သင့်ပါသည်။</translation>
 <translation id="1468038450257740950">WebGL ကို မပံ့ပိုးပါ။</translation>
+<translation id="1610570795592207282">CSS '<ph name="RELATIVE_PATH" />' ကို Script အတွက် ဖွင့်၍မရပါ။</translation>
 <translation id="1803557475693955505">နောက်ခံစာမျက်နှာ '<ph name="BACKGROUND_PAGE" />' အားဖွင့်၍မရပါ။</translation>
 <translation id="2159915644201199628">'<ph name="IMAGE_NAME" />' ပုံအား ကုဒ်မဖြုတ်နိုင်ပါ။</translation>
 <translation id="2350172092385603347">ဒေသတွင်း အသုံးပြုနိုင်ရန် ဖန်တီးရာတွင် အသုံးပြုခဲ့၊ သို့သော် default_locale အားသိသာစွာ သတ်မှတ်မထားပါ။</translation>
@@ -31,6 +32,7 @@
 <translation id="4988792151665380515">အများပြည်သူ သော့ကို တင်ပို့ မရခဲ့ပါ။</translation>
 <translation id="5026754133087629784">ဝက်ဘ်မြင်ကွင်း: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">အထုပ်ဆီ သွားရာ ဒါရိုက်ထရီ ထံသို့ ပကတိ လမ်းကြောင်းကို မရှာနိုင်ပါ။</translation>
+<translation id="5160071981665899014">JavaScript '<ph name="RELATIVE_PATH" />' ကို Script အတွက် ဖွင့်၍မရပါ။</translation>
 <translation id="5356315618422219272">Appview- <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">ပုံသွင်းထားသည့် ဝင်းဒိုးများ မထောက်ပံ့ပါ။</translation>
 <translation id="5456409301717116725">အိတ်စတန်းရှင်းတွင် '<ph name="KEY_PATH" />' ကီးဖိုင်ပါဝင်သည်။ သင်လုပ်ချင်မည်မဟုတ်ပါ။</translation>
