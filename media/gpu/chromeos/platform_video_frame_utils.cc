@@ -115,7 +115,15 @@ class GbmDeviceWrapper {
       base::FilePath dev_path(FILE_PATH_LITERAL(
           base::StringPrintf(kRenderNodeFilePattern, i).c_str()));
       render_node_file_ =
-          base::File(dev_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+          base::File(dev_path, base::File::FLAG_OPEN | base::File::FLAG_READ
+// TODO(b/313513760): don't guard base::File::FLAG_WRITE behind
+// BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_V4L2_CODEC) once the hardware video
+// decoding sandbox allows R+W access to the render nodes.
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_V4L2_CODEC)
+                         // Needed on Linux for gbm_create_device().
+                         | base::File::FLAG_WRITE
+#endif
+          );
       if (!render_node_file_.IsValid())
         return;
       // Skip the virtual graphics memory manager device.
