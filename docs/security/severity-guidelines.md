@@ -179,6 +179,12 @@ Example bugs:
 * An uncontrolled single-byte out-of-bounds read
 ([128163](https://crbug.com/128163)).
 
+## Priority for in the wild vulnerabilities {#TOC-itw-pri}
+
+If there is evidence of a weaponized exploit or active exploitation in the wild,
+the vulnerability is considered a Pri-0 - regardless of the severity rating -
+with a SLO of 7 days or faster. Our goal is to release a fix in a Stable
+channel update of Chrome as soon as possible.
 
 ## Can't impact Chrome users by default {#TOC-No-impact}
 
