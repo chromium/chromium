@@ -403,6 +403,10 @@ class CORE_EXPORT CSSMathExpressionOperation final
     return operator_ == CSSMathOperator::kAdd ||
            operator_ == CSSMathOperator::kSubtract;
   }
+  bool IsMultiplyOrDivide() const {
+    return operator_ == CSSMathOperator::kMultiply ||
+           operator_ == CSSMathOperator::kDivide;
+  }
   bool AllOperandsAreNumeric() const;
   bool IsMinOrMax() const {
     return operator_ == CSSMathOperator::kMin ||

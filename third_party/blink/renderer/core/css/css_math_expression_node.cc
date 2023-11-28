@@ -1818,9 +1818,12 @@ String CSSMathExpressionOperation::CustomCSSText() const {
 
       StringBuilder result;
 
+      // After all the simplifications we only need parentheses here for the
+      // cases like: (lhs as unsimplified sum/sub) [* or /] rhs
       const bool left_side_needs_parentheses =
-          (operands[0]->IsOperation() && !operands[0]->IsMathFunction()) &&
-          op != CSSMathOperator::kAdd && op != CSSMathOperator::kSubtract;
+          IsMultiplyOrDivide() && operands.front()->IsOperation() &&
+          To<CSSMathExpressionOperation>(operands.front().Get())
+              ->IsAddOrSubtract();
       if (left_side_needs_parentheses) {
         result.Append('(');
       }
@@ -1833,9 +1836,12 @@ String CSSMathExpressionOperation::CustomCSSText() const {
       result.Append(ToString(op));
       result.Append(' ');
 
+      // After all the simplifications we only need parentheses here for the
+      // cases like: lhs [* or /] (rhs as unsimplified sum/sub)
       const bool right_side_needs_parentheses =
-          (operands[1]->IsOperation() && !operands[1]->IsMathFunction()) &&
-          op != CSSMathOperator::kAdd;
+          IsMultiplyOrDivide() && operands.back()->IsOperation() &&
+          To<CSSMathExpressionOperation>(operands.back().Get())
+              ->IsAddOrSubtract();
       if (right_side_needs_parentheses) {
         result.Append('(');
       }
