@@ -15,6 +15,7 @@
 #include "base/clang_profiling_buildflags.h"
 #include "base/containers/id_map.h"
 #include "base/functional/function_ref.h"
+#include "base/memory/safety_checks.h"
 #include "base/process/kill.h"
 #include "base/process/process.h"
 #include "base/supports_user_data.h"
@@ -121,6 +122,10 @@ class Renderer;
 class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
                                          public IPC::Listener,
                                          public base::SupportsUserData {
+  // Do not remove this macro!
+  // The macro is maintained by the memory safety team.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   using iterator = base::IDMap<RenderProcessHost*>::iterator;
 
