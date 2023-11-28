@@ -770,7 +770,7 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       case SearchResultIcon.kPrinter:
         return 'os-settings:print';
       case SearchResultIcon.kReset:
-        return 'os-settings:restore';
+        return isRevampEnabled ? 'os-settings:startup' : 'os-settings:restore';
       case SearchResultIcon.kSelectToSpeak:
         return 'os-settings:select-to-speak';
       case SearchResultIcon.kShield:
