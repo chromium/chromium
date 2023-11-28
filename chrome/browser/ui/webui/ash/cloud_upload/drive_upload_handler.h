@@ -73,14 +73,21 @@ class DriveUploadHandler : public base::RefCounted<DriveUploadHandler>,
   void UpdateProgressNotification();
 
   // Called upon a copy to Drive success or failure. If required, complete or
-  // undo the operation. Then call |OnEndUpload| to end the upload.
-  void OnEndCopy(base::expected<GURL, std::string> hosted_url,
-                 OfficeFilesUploadResult result_metric);
+  // undo the operation. Then call |OnSuccessfulUpload| or |OnFailedUpload| to
+  // end the successful or failed upload respectively.
+  void OnEndCopy(OfficeFilesUploadResult result_metric,
+                 base::expected<GURL, std::string> hosted_url =
+                     base::unexpected(GetGenericErrorMessage()));
 
-  // Ends the upload by showing any complete or error notifications. Runs the
+  // Ends upload in a successful state, shows a complete notification and runs
+  // the upload callback.
+  void OnSuccessfulUpload(OfficeFilesUploadResult result_metric,
+                          GURL hosted_url);
+
+  // Ends upload in a failed state, shows an error notification and runs the
   // upload callback.
-  void OnEndUpload(base::expected<GURL, std::string> hosted_url,
-                   OfficeFilesUploadResult result_metric);
+  void OnFailedUpload(OfficeFilesUploadResult result_metric,
+                      std::string error_message);
 
   // Callback for when ImmediatelyUpload() is called on DriveFS.
   void ImmediatelyUploadDone(drive::FileError error);

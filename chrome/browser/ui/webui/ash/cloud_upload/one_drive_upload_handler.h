@@ -69,10 +69,15 @@ class OneDriveUploadHandler
 
   FileSystemURL GetDestinationFolderUrl();
 
-  // Ends upload and runs Upload callback.
-  void OnEndUpload(
-      base::expected<storage::FileSystemURL, std::string> url_or_error,
-      OfficeFilesUploadResult result_metric);
+  // Ends upload in a successful state, shows a complete notification and runs
+  // the upload callback.
+  void OnSuccessfulUpload(OfficeFilesUploadResult result_metric,
+                          storage::FileSystemURL url);
+
+  // Ends upload in a failed state, shows an error notification and runs the
+  // upload callback.
+  void OnFailedUpload(OfficeFilesUploadResult result_metric,
+                      std::string error_message = GetGenericErrorMessage());
 
   // IOTaskController::Observer:
   void OnIOTaskStatus(
