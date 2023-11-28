@@ -7613,15 +7613,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "system-live-caption",
-    "owners": [
-      "amoylan@chromium.org",
-      "abigailbklein@google.com",
-      "robsc@chromium.org"
-    ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "system-nudge-v2",
     "owners": [
       "kradtke@chromium.org",
