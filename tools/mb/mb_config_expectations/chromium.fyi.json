@@ -773,6 +773,17 @@
       "use_remoteexec": true
     }
   },
+  "linux-wpt-chromium-rel": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "use_remoteexec": true
+    }
+  },
   "linux-wpt-content-shell-asan-fyi-rel": {
     "gn_args": {
       "dcheck_always_on": true,
@@ -797,17 +808,6 @@
     }
   },
   "linux-wpt-content-shell-leak-detection": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "use_remoteexec": true
-    }
-  },
-  "linux-wpt-fyi-rel": {
     "gn_args": {
       "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",

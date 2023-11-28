@@ -48426,6 +48426,40 @@
       }
     ]
   },
+  "linux-wpt-chromium-rel": {
+    "isolated_scripts": [
+      {
+        "args": [
+          "--test-type",
+          "testharness",
+          "reftest",
+          "crashtest",
+          "print-reftest"
+        ],
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "chrome_wpt_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "dimensions": {
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 15
+        },
+        "test": "chrome_wpt_tests",
+        "test_id_prefix": "ninja://:chrome_wpt_tests/"
+      }
+    ]
+  },
   "linux-wpt-content-shell-asan-fyi-rel": {
     "isolated_scripts": [
       {
@@ -48566,40 +48600,6 @@
         },
         "test": "content_shell_wpt",
         "test_id_prefix": "ninja://:content_shell_wpt/"
-      }
-    ]
-  },
-  "linux-wpt-fyi-rel": {
-    "isolated_scripts": [
-      {
-        "args": [
-          "--test-type",
-          "testharness",
-          "reftest",
-          "crashtest",
-          "print-reftest"
-        ],
-        "merge": {
-          "args": [
-            "--verbose"
-          ],
-          "script": "//third_party/blink/tools/merge_web_test_results.py"
-        },
-        "name": "chrome_wpt_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "results_handler": "layout tests",
-        "swarming": {
-          "dimensions": {
-            "os": "Ubuntu-22.04"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 15
-        },
-        "test": "chrome_wpt_tests",
-        "test_id_prefix": "ninja://:chrome_wpt_tests/"
       }
     ]
   },

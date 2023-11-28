@@ -68,7 +68,7 @@ PRODUCTS_TO_STEPNAMES.update({
 PRODUCTS_TO_BUILDER_NAME = {
     'android_webview': 'android-webview-pie-x86-wpt-fyi-rel',
     'chrome_android': 'android-chrome-pie-x86-wpt-fyi-rel',
-    'chrome_linux': 'linux-wpt-fyi-rel',
+    'chrome_linux': 'linux-wpt-chromium-rel',
     'wpt_content_shell_linux': 'linux-wpt-content-shell-fyi-rel',
     'wpt_content_shell_win10': 'win10-wpt-content-shell-fyi-rel',
     'wpt_content_shell_win11': 'win11-wpt-content-shell-fyi-rel',

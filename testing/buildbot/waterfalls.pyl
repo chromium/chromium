@@ -3807,6 +3807,15 @@
         },
         'use_swarming': False,
       },
+      'linux-wpt-chromium-rel': {
+        'mixins': [
+          'has_native_resultdb_integration',
+          'linux-jammy',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'chromium_wpt_tests_isolated_scripts',
+        },
+      },
       'linux-wpt-content-shell-asan-fyi-rel': {
         'mixins': [
           'has_native_resultdb_integration',
@@ -3832,15 +3841,6 @@
         ],
         'test_suites': {
           'isolated_scripts': 'wpt_web_tests_enable_leak_detection',
-        },
-      },
-      'linux-wpt-fyi-rel': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'linux-jammy',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'chromium_wpt_tests_isolated_scripts',
         },
       },
       'mac-fieldtrial-tester': {
