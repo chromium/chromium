@@ -37,7 +37,7 @@ class AwTracingDelegateTest : public testing::Test {
 
   void TearDown() override {
     delete browser_process_;
-    tracing::BackgroundTracingStateManager::GetInstance().Reset();
+    tracing::BackgroundTracingStateManager::GetInstance().ResetForTesting();
   }
 
   android_webview::AwTracingDelegate delegate_;
