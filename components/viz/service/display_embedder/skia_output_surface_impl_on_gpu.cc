@@ -2184,15 +2184,8 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
       }
       output_device_ = std::move(output_device);
     }
-#elif BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)
+#elif BUILDFLAG(IS_APPLE)
     presenter_ = dependency_->CreatePresenter(weak_ptr_factory_.GetWeakPtr());
-#if BUILDFLAG(IS_ANDROID)
-    // NOTE: The fallback case for SurfaceControl not being used is not yet
-    // supported.
-    // TODO(crbug.com/1505768): Get SkiaOutputDeviceDawn to work on Android and
-    // use it here if `presenter_` is null as is being done for Windows above.
-    CHECK(presenter_);
-#endif
 #if BUILDFLAG(IS_MAC)
     if (features::UseGpuVsync()) {
       presenter_->SetVSyncDisplayID(renderer_settings_.display_id);
