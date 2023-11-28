@@ -520,23 +520,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.AndroidServiceInfo"
-    enum="AccessibilityAndroidServiceInfoEnum" expires_after="M109">
-  <owner>aleventhal@chromium.org</owner>
-  <owner>mschillaci@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Deprecated as of 10/2022, M109. Now using the per-variant enum (below).
-    Tracks flags and capabilities of enabled accessibility services. Recorded
-    every time an Android web content view first creates a virtual view
-    hierarchy, indicating that some accessibility service is running. The number
-    of emits of this histogram won't be as useful as the unique user counts. The
-    primary purpose of this is to guide optimization by determining what
-    capabilities of accessibility services are widespread and which ones are
-    relatively rare.
-  </summary>
-</histogram>
-
 <histogram name="Accessibility.AndroidServiceInfo.{RunningApps}"
     enum="AccessibilityAndroidServiceInfoEnum" expires_after="2024-04-28">
   <owner>mschillaci@google.com</owner>
