@@ -31,9 +31,7 @@ void DevToolsTraceableScreenshot::AppendAsTraceFormat(std::string* out) const {
     std::vector<unsigned char> data;
     bool encoded = gfx::JPEGCodec::Encode(frame_, 80, &data);
     if (encoded) {
-      std::string encoded_data =
-          base::Base64Encode(base::as_bytes(base::make_span(data)));
-      out->append(encoded_data);
+      base::Base64EncodeAppend(base::make_span(data), out);
     }
   }
   out->append("\"");
