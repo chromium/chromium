@@ -371,6 +371,9 @@ class CONTENT_EXPORT MediaDevicesManager
 #if BUILDFLAG(IS_MAC)
   void StartMonitoringOnUIThread();
 #endif
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  void RegisterVideoCaptureDevicesChangedObserver();
+#endif
 
   bool use_fake_devices_;
   const raw_ptr<media::AudioSystem, DanglingUntriaged>

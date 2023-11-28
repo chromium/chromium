@@ -976,37 +976,6 @@ bool VideoCaptureDeviceMFWin::CreateMFCameraControlMonitor() {
   return true;
 }
 
-bool VideoCaptureDeviceMFWin::CreateMFSensorActivityMonitor() {
-  DCHECK(video_callback_);
-
-  // The MF DLLs have been loaded by VideoCaptureDeviceFactoryWin.
-  // Just get a DLL module handle here, once.
-  static const HMODULE module = GetModuleHandleW(L"mfsensorgroup.dll");
-  if (!module) {
-    DLOG(ERROR) << "Failed to get the mfsensorgroup.dll module handle";
-    return false;
-  }
-
-  using MFCreateSensorActivityMonitorType =
-      decltype(&MFCreateSensorActivityMonitor);
-  static const MFCreateSensorActivityMonitorType create_function =
-      reinterpret_cast<MFCreateSensorActivityMonitorType>(
-          GetProcAddress(module, "MFCreateSensorActivityMonitor"));
-  if (!create_function) {
-    DLOG(ERROR) << "Failed to get the MFCreateSensorActivityMonitor function";
-    return false;
-  }
-
-  HRESULT hr =
-      create_function(activities_report_callback_.get(), &activity_monitor_);
-  if (!activity_monitor_) {
-    LOG(ERROR) << "Failed to create IMFSensorActivityMonitor: "
-               << logging::SystemErrorCodeToString(hr);
-    return false;
-  }
-  return true;
-}
-
 HRESULT VideoCaptureDeviceMFWin::ExecuteHresultCallbackWithRetries(
     base::RepeatingCallback<HRESULT()> callback,
     MediaFoundationFunctionRequiringRetry which_function) {
@@ -2457,7 +2426,8 @@ void VideoCaptureDeviceMFWin::ProcessEventError(HRESULT hr) {
           device_descriptor_.device_id);
     }
     if (!activity_monitor_) {
-      bool created = CreateMFSensorActivityMonitor();
+      bool created = CreateMFSensorActivityMonitor(
+          activities_report_callback_.get(), &activity_monitor_);
       if (!created) {
         // Can't rely on activity monitor to check if the camera is in use.
         // Just report the error.
@@ -2657,6 +2627,36 @@ void VideoCaptureDeviceMFWin::OnCameraInUseReport(bool in_use,
   if (activity_monitor_) {
     activity_monitor_->Stop();
   }
+}
+
+bool CreateMFSensorActivityMonitor(
+    IMFSensorActivitiesReportCallback* report_callback,
+    IMFSensorActivityMonitor** monitor) {
+  // The MF DLLs have been loaded by VideoCaptureDeviceFactoryWin.
+  // Just get a DLL module handle here, once.
+  static const HMODULE module = GetModuleHandleW(L"mfsensorgroup.dll");
+  if (!module) {
+    DLOG(ERROR) << "Failed to get the mfsensorgroup.dll module handle";
+    return false;
+  }
+
+  using MFCreateSensorActivityMonitorType =
+      decltype(&MFCreateSensorActivityMonitor);
+  static const MFCreateSensorActivityMonitorType create_function =
+      reinterpret_cast<MFCreateSensorActivityMonitorType>(
+          GetProcAddress(module, "MFCreateSensorActivityMonitor"));
+  if (!create_function) {
+    DLOG(ERROR) << "Failed to get the MFCreateSensorActivityMonitor function";
+    return false;
+  }
+
+  HRESULT hr = create_function(report_callback, monitor);
+  if (!*monitor) {
+    LOG(ERROR) << "Failed to create IMFSensorActivityMonitor: "
+               << logging::SystemErrorCodeToString(hr);
+    return false;
+  }
+  return true;
 }
 
 }  // namespace media

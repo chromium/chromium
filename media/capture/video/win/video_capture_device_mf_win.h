@@ -130,7 +130,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
   class MFActivitiesReportCallback;
 
   bool CreateMFCameraControlMonitor();
-  bool CreateMFSensorActivityMonitor();
   void DeinitVideoCallbacksControlsAndMonitors();
   HRESULT ExecuteHresultCallbackWithRetries(
       base::RepeatingCallback<HRESULT()> callback,
@@ -254,6 +253,14 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
 
   base::WeakPtrFactory<VideoCaptureDeviceMFWin> weak_factory_{this};
 };
+
+// Creates a new sensor activity monitor and returns it on `monitor`.
+// The monitor will execute `report_callback` every time a new activity report
+// becomes available.
+// This function return `true` on success and `false` on failure.
+bool CreateMFSensorActivityMonitor(
+    IMFSensorActivitiesReportCallback* report_callback,
+    IMFSensorActivityMonitor** monitor);
 
 }  // namespace media
 
