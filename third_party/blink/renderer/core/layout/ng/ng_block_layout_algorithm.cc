@@ -846,23 +846,36 @@ inline const LayoutResult* BlockLayoutAlgorithm::Layout(
     }
   }
 
-#if DCHECK_IS_ON()
-  // Assert that we have made actual progress. Breaking before we're done with
-  // all parallel flows from incoming break tokens means that we'll never get
-  // the opportunity to handle them again. We don't repropagate unhandled
-  // incoming break tokens, and there should be no need to.
   if (auto* inline_token = DynamicTo<InlineBreakToken>(entry.token)) {
-    DCHECK(!inline_token->IsInParallelBlockFlow());
-  } else if (auto* block_token = DynamicTo<BlockBreakToken>(entry.token)) {
-    // A column spanner forces all content preceding it to stay in the same
-    // flow, so we can (and must) skip the check. Even if IsAtBlockEnd() is true
-    // in such cases, it doesn't mean that a parallel flow is established.
-    if (!container_builder_.FoundColumnSpanner() &&
-        !container_builder_.ShouldForceSameFragmentationFlow()) {
-      DCHECK(!block_token->IsAtBlockEnd());
+    if (inline_token->IsInParallelBlockFlow()) {
+      // Failed to resume in a parallel block flow inside an inline formatting
+      // context (fragmented floats or blocks in an inline formatting context).
+      // This may happen if there's already a float that was defined in an
+      // earlier fragmentainer, that takes up too much space in the current
+      // fragmentainer as well. We now need to repropagate what we didn't get to
+      // handle.
+      do {
+        container_builder_.AddBreakToken(entry.token);
+        entry = child_iterator.NextChild(previous_inline_break_token);
+      } while (entry.node);
     }
-  }
+  } else {
+#if DCHECK_IS_ON()
+    // Assert that we have made actual progress. Breaking before we're done with
+    // all parallel flows from incoming break tokens means that we'll never get
+    // the opportunity to handle them again.
+    if (auto* block_token = DynamicTo<BlockBreakToken>(entry.token)) {
+      // A column spanner forces all content preceding it to stay in the same
+      // flow, so we can (and must) skip the check. Even if IsAtBlockEnd() is
+      // true in such cases, it doesn't mean that a parallel flow is
+      // established.
+      if (!container_builder_.FoundColumnSpanner() &&
+          !container_builder_.ShouldForceSameFragmentationFlow()) {
+        DCHECK(!block_token->IsAtBlockEnd());
+      }
+    }
 #endif
+  }
 
   if (ruby_text_child)
     HandleRubyText(ruby_text_child);
