@@ -12,7 +12,7 @@ import {MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {ProgressItemState} from '../../common/js/progress_center_common.js';
 import {LEGACY_FILES_EXTENSION_ID} from '../../common/js/url_constants.js';
 import {descriptorEqual} from '../../common/js/util.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {RootType, VolumeError, VolumeType} from '../../common/js/volume_manager_types.js';
 import {EntryLocation} from '../../externs/entry_location.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
@@ -133,7 +133,7 @@ function getMockFileManager(): FileManager {
     volumeManager: /** @type {!VolumeManager} */ ({
       getLocationInfo: function(_entry: Entry) {
         return {
-          rootType: VolumeManagerCommon.RootType.DRIVE,
+          rootType: RootType.DRIVE,
         };
       },
       getDriveConnectionState: function() {
@@ -141,7 +141,7 @@ function getMockFileManager(): FileManager {
       },
       getVolumeInfo: function(_entry: Entry) {
         return {
-          volumeType: VolumeManagerCommon.VolumeType.DRIVE,
+          volumeType: VolumeType.DRIVE,
         };
       },
     }),
@@ -446,7 +446,7 @@ function setUpInstallLinuxPackage() {
   const fileManager = getMockFileManager();
   fileManager.volumeManager.getLocationInfo = (_entry): EntryLocation => {
     return {
-      rootType: VolumeManagerCommon.RootType.CROSTINI,
+      rootType: RootType.CROSTINI,
     } as unknown as EntryLocation;
   };
   const fileTask = {
@@ -606,7 +606,7 @@ testMountArchiveAndChangeDirectoryNotificationInvalidArchive(done: () => void) {
       fileManager.taskController);
 
   fileManager.volumeManager.mountArchive = function(_url, _password) {
-    return Promise.reject(VolumeManagerCommon.VolumeError.INTERNAL_ERROR);
+    return Promise.reject(VolumeError.INTERNAL_ERROR);
   };
 
   // Mount archive.
@@ -645,7 +645,7 @@ testMountArchiveAndChangeDirectoryNotificationCancelPassword(done: () => void) {
       fileManager.taskController);
 
   fileManager.volumeManager.mountArchive = function(_url, _password) {
-    return Promise.reject(VolumeManagerCommon.VolumeError.NEED_PASSWORD);
+    return Promise.reject(VolumeError.NEED_PASSWORD);
   };
 
   passwordDialog.askForPassword =
@@ -697,7 +697,7 @@ testMountArchiveAndChangeDirectoryNotificationEncryptedArchive(
         const volumeInfo = {resolveDisplayRoot: () => null};
         resolve(volumeInfo as unknown as VolumeInfo);
       } else {
-        reject(VolumeManagerCommon.VolumeError.NEED_PASSWORD);
+        reject(VolumeError.NEED_PASSWORD);
       }
     });
   };

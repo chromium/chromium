@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {recordEnum} from '../../common/js/metrics.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {RootTypesForUMA} from '../../common/js/volume_manager_types.js';
 
 /**
  * UMA exporter for navigation in the Files app.
@@ -34,8 +34,7 @@ export class NavigationUma {
   exportRootType_(entry, name) {
     const locationInfo = this.volumeManager_.getLocationInfo(entry);
     if (locationInfo) {
-      recordEnum(
-          name, locationInfo.rootType, VolumeManagerCommon.RootTypesForUMA);
+      recordEnum(name, locationInfo.rootType, RootTypesForUMA);
     }
   }
 

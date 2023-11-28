@@ -14,7 +14,7 @@ import {MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {reportPromise, waitUntil} from '../../common/js/test_error_reporting.js';
 import {str} from '../../common/js/translations.js';
 import {TrashRootEntry} from '../../common/js/trash.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {DialogType} from '../../externs/ts/state.js';
 
@@ -97,8 +97,7 @@ export function testModel() {
 
   const crostiniFakeItem = new NavigationModelFakeItem(
       'linux-files-label', NavigationModelItemType.CROSTINI,
-      new FakeEntryImpl(
-          'linux-files-label', VolumeManagerCommon.RootType.CROSTINI));
+      new FakeEntryImpl('linux-files-label', RootType.CROSTINI));
 
   const androidAppListModelWithApps =
       createFakeAndroidAppListModel(['android:app1', 'android:app2']);
@@ -175,7 +174,7 @@ export function testNoRecentOrLinuxFiles() {
 export function testDisabledVolumes() {
   const volumeManager = new MockVolumeManager();
   volumeManager.isDisabled = (volume) => {
-    return (volume === VolumeManagerCommon.VolumeType.DRIVE);
+    return (volume === VolumeType.DRIVE);
   };
 
   const shortcutListModel = new MockFolderShortcutDataModel(
@@ -286,8 +285,7 @@ export function testAddAndRemoveVolumes() {
 
   // Mount removable volume 'hoge'.
   volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.REMOVABLE, 'removable:hoge', '',
-      'device/path/1'));
+      VolumeType.REMOVABLE, 'removable:hoge', '', 'device/path/1'));
 
   assertEquals(4, model.length);
   assertEquals(
@@ -316,8 +314,7 @@ export function testAddAndRemoveVolumes() {
   // Mount removable volume 'fuga'. Not a partition, so set a different device
   // path to 'hoge'.
   volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.REMOVABLE, 'removable:fuga', '',
-      'device/path/2'));
+      VolumeType.REMOVABLE, 'removable:fuga', '', 'device/path/2'));
 
   assertEquals(5, model.length);
   assertEquals(
@@ -411,28 +408,26 @@ export function testOrderAndNestItems() {
 
   // Create different volumes.
   volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.PROVIDED, 'provided:prov1'));
+      VolumeType.PROVIDED, 'provided:prov1'));
   // Set the device paths of the removable volumes to different strings to
   // test the behaviour of two physically separate external devices.
   volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.REMOVABLE, 'removable:hoge', '',
-      'device/path/1'));
+      VolumeType.REMOVABLE, 'removable:hoge', '', 'device/path/1'));
   volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.REMOVABLE, 'removable:fuga', '',
-      'device/path/2'));
+      VolumeType.REMOVABLE, 'removable:fuga', '', 'device/path/2'));
   volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.ARCHIVE, 'archive:a-rar'));
+      VolumeType.ARCHIVE, 'archive:a-rar'));
+  volumeManager.volumeInfoList.add(
+      MockVolumeManager.createMockVolumeInfo(VolumeType.MTP, 'mtp:a-phone'));
   volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.MTP, 'mtp:a-phone'));
+      VolumeType.PROVIDED, 'provided:prov2'));
   volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.PROVIDED, 'provided:prov2'));
-  volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.ANDROID_FILES, 'android_files:droid'));
-  volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.SMB, 'smb:file-share'));
+      VolumeType.ANDROID_FILES, 'android_files:droid'));
+  volumeManager.volumeInfoList.add(
+      MockVolumeManager.createMockVolumeInfo(VolumeType.SMB, 'smb:file-share'));
   // Add ODFS.
   volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.PROVIDED, 'provided:odfs', '', '',
+      VolumeType.PROVIDED, 'provided:odfs', '', '',
       constants.ODFS_EXTENSION_ID));
 
   const androidAppListModelWithApps =
@@ -587,8 +582,7 @@ export function testMyFilesVolumeEnabled(callback) {
   const volumeManager = new MockVolumeManager();
   // Item 1 of the volume info list should have Downloads volume type.
   assertEquals(
-      VolumeManagerCommon.VolumeType.DOWNLOADS,
-      volumeManager.volumeInfoList.item(1).volumeType);
+      VolumeType.DOWNLOADS, volumeManager.volumeInfoList.item(1).volumeType);
   // Create a downloads folder inside the item.
   const downloadsVolume = volumeManager.volumeInfoList.item(1);
   /** @type {!MockFileSystem} */ (downloadsVolume.fileSystem).populate([
@@ -600,12 +594,11 @@ export function testMyFilesVolumeEnabled(callback) {
 
   // Create Android 'Play files' volume.
   volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.ANDROID_FILES, 'android_files:droid'));
+      VolumeType.ANDROID_FILES, 'android_files:droid'));
 
   const crostiniFakeItem = new NavigationModelFakeItem(
       'linux-files-label', NavigationModelItemType.CROSTINI,
-      new FakeEntryImpl(
-          'linux-files-label', VolumeManagerCommon.RootType.CROSTINI));
+      new FakeEntryImpl('linux-files-label', RootType.CROSTINI));
 
   // Navigation items built above:
   //  1. My files
@@ -669,8 +662,7 @@ export function testMyFilesSubdirectoriesCanBeDisabled() {
   const volumeManager = new MockVolumeManager();
   // Item 1 of the volume info list should have Downloads volume type.
   assertEquals(
-      VolumeManagerCommon.VolumeType.DOWNLOADS,
-      volumeManager.volumeInfoList.item(1).volumeType);
+      VolumeType.DOWNLOADS, volumeManager.volumeInfoList.item(1).volumeType);
   // Create a downloads folder inside the item.
   const downloadsVolume = volumeManager.volumeInfoList.item(1);
   /** @type {!MockFileSystem} */ (downloadsVolume.fileSystem).populate([
@@ -682,14 +674,14 @@ export function testMyFilesSubdirectoriesCanBeDisabled() {
 
   // Create Android 'Play files' volume and set as disabled.
   volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.ANDROID_FILES, 'android_files:droid'));
+      VolumeType.ANDROID_FILES, 'android_files:droid'));
   volumeManager.isDisabled = (volume) => {
-    return (volume === VolumeManagerCommon.VolumeType.ANDROID_FILES);
+    return (volume === VolumeType.ANDROID_FILES);
   };
 
   // Create Crostini 'Linux files' volume. It should be enabled by default.
-  volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.CROSTINI, 'crostini'));
+  volumeManager.volumeInfoList.add(
+      MockVolumeManager.createMockVolumeInfo(VolumeType.CROSTINI, 'crostini'));
 
   // Navigation items built above:
   //  1. My files
@@ -733,14 +725,14 @@ export function testMultipleUsbPartitionsGrouping() {
 
   // Use same device path so the partitions are grouped.
   volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.REMOVABLE, 'removable:partition1',
-      'partition1', 'device/path/1'));
+      VolumeType.REMOVABLE, 'removable:partition1', 'partition1',
+      'device/path/1'));
   volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.REMOVABLE, 'removable:partition2',
-      'partition2', 'device/path/1'));
+      VolumeType.REMOVABLE, 'removable:partition2', 'partition2',
+      'device/path/1'));
   volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.REMOVABLE, 'removable:partition3',
-      'partition3', 'device/path/1'));
+      VolumeType.REMOVABLE, 'removable:partition3', 'partition3',
+      'device/path/1'));
 
   const model = new NavigationListModel(
       volumeManager, shortcutListModel.asFolderShortcutsDataModel(), recentItem,
@@ -755,8 +747,8 @@ export function testMultipleUsbPartitionsGrouping() {
 
   // Add a 4th partition, which triggers NavigationListModel to recalculate.
   volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.REMOVABLE, 'removable:partition4',
-      'partition4', 'device/path/1'));
+      VolumeType.REMOVABLE, 'removable:partition4', 'partition4',
+      'device/path/1'));
 
   // Check that the common root shows 4 partitions.
   groupedUsbs = /** @type NavigationModelFakeItem */ (model.item(2));
@@ -779,8 +771,8 @@ export function testMultipleUsbPartitionsGrouping() {
   // Add an extra copy of partition3, which replaces the existing partition3
   // and triggers NavigationListModel to recalculate.
   volumeManager.volumeInfoList.add(MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.REMOVABLE, 'removable:partition3',
-      'partition3', 'device/path/1'));
+      VolumeType.REMOVABLE, 'removable:partition3', 'partition3',
+      'device/path/1'));
 
   // Check that partition3 is not duplicated.
   groupedUsbs = /** @type NavigationModelFakeItem */ (model.item(2));

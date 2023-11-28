@@ -17,7 +17,7 @@ import {isSameEntry} from '../../common/js/entry_utils.js';
 import {parseActionId} from '../../common/js/file_tasks.js';
 import {getType} from '../../common/js/file_type.js';
 import {getEntryLabel, str} from '../../common/js/translations.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {VolumeType} from '../../common/js/volume_manager_types.js';
 import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
 import {DialogType} from '../../externs/ts/state.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
@@ -694,15 +694,15 @@ export class QuickViewController {
  * Drive).
  */
 const LOCAL_VOLUME_TYPES_ = [
-  VolumeManagerCommon.VolumeType.ARCHIVE,
-  VolumeManagerCommon.VolumeType.DOWNLOADS,
-  VolumeManagerCommon.VolumeType.REMOVABLE,
-  VolumeManagerCommon.VolumeType.ANDROID_FILES,
-  VolumeManagerCommon.VolumeType.CROSTINI,
-  VolumeManagerCommon.VolumeType.GUEST_OS,
-  VolumeManagerCommon.VolumeType.MEDIA_VIEW,
-  VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER,
-  VolumeManagerCommon.VolumeType.SMB,
+  VolumeType.ARCHIVE,
+  VolumeType.DOWNLOADS,
+  VolumeType.REMOVABLE,
+  VolumeType.ANDROID_FILES,
+  VolumeType.CROSTINI,
+  VolumeType.GUEST_OS,
+  VolumeType.MEDIA_VIEW,
+  VolumeType.DOCUMENTS_PROVIDER,
+  VolumeType.SMB,
 ];
 
 /**

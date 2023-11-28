@@ -24,7 +24,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {EntryList} from '../../common/js/files_app_entry_types.js';
 import {isSinglePartitionFormatEnabled} from '../../common/js/flags.js';
 import {bytesToString, str, strf} from '../../common/js/translations.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {FileSystemType} from '../../common/js/volume_manager_types.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
 import {validateExternalDriveName} from '../js/file_rename.js';
@@ -100,7 +100,7 @@ export class FilesFormatDialog extends PolymerElement {
   format() {
     try {
       validateExternalDriveName(
-          this.label_, this.formatType_ as VolumeManagerCommon.FileSystemType);
+          this.label_, this.formatType_ as FileSystemType);
     } catch (error: any) {
       this.$.label.setAttribute('error-message', error.message);
       this.$.label.invalid = true;

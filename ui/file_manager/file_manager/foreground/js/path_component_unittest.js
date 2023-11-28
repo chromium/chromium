@@ -7,7 +7,7 @@ import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {fakeDriveVolumeId, fakeMyFilesVolumeId, MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {MockFileSystem} from '../../common/js/mock_entry.js';
 import {str} from '../../common/js/translations.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {VolumeType} from '../../common/js/volume_manager_types.js';
 
 import {PathComponent} from './path_component.js';
 
@@ -15,8 +15,8 @@ export async function testComputeComponentsFromEntry() {
   const volumeManager = new MockVolumeManager();
   window.webkitResolveLocalFileSystemURL =
       MockVolumeManager.resolveLocalFileSystemUrl.bind(null, volumeManager);
-  const driveVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
-      VolumeManagerCommon.VolumeType.DRIVE);
+  const driveVolumeInfo =
+      volumeManager.getCurrentProfileVolumeInfo(VolumeType.DRIVE);
   if (!driveVolumeInfo) {
     throw new Error('Failed to get the drive volume info');
   }
@@ -129,8 +129,8 @@ export async function testComputeComponentsFromEntry() {
     ['file', `filesystem:${fakeDriveVolumeId}/team_drives/S1/a/file`],
   ]);
 
-  const downloadsVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
-      VolumeManagerCommon.VolumeType.DOWNLOADS);
+  const downloadsVolumeInfo =
+      volumeManager.getCurrentProfileVolumeInfo(VolumeType.DOWNLOADS);
   if (!downloadsVolumeInfo) {
     throw new Error('Failed to get the drive volume info');
   }

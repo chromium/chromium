@@ -9,7 +9,7 @@
  */
 
 import {str} from '../../../../common/js/translations.js';
-import {VolumeManagerCommon} from '../../../../common/js/volume_manager_types.js';
+import {RootType, VolumeError} from '../../../../common/js/volume_manager_types.js';
 
 import {getTemplate} from './invalid_usb_filesystem_banner.html.js';
 import {StateBanner} from './state_banner.js';
@@ -41,7 +41,7 @@ export class InvalidUsbFileSystemBanner extends StateBanner {
    * roots with errors are shown the banner.
    */
   override allowedVolumes() {
-    return [{root: VolumeManagerCommon.RootType.REMOVABLE}];
+    return [{root: RootType.REMOVABLE}];
   }
 
   /**
@@ -49,16 +49,14 @@ export class InvalidUsbFileSystemBanner extends StateBanner {
    * context to the banner. This is used to identify if the device has an
    * unsupported OR unknown file system.
    */
-  override onFilteredContext(context:
-                                 {error: VolumeManagerCommon.VolumeError}) {
+  override onFilteredContext(context: {error: VolumeError}) {
     if (!context || !context.error) {
       console.warn('Context not supplied or error key missing');
       return;
     }
     const text =
         this.shadowRoot!.querySelector<HTMLSpanElement>('span[slot="text"]')!;
-    if (context.error ===
-        VolumeManagerCommon.VolumeError.UNSUPPORTED_FILESYSTEM) {
+    if (context.error === VolumeError.UNSUPPORTED_FILESYSTEM) {
       text.innerText = str('UNSUPPORTED_FILESYSTEM_WARNING');
       return;
     }

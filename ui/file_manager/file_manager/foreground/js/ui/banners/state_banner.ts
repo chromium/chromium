@@ -30,7 +30,7 @@ import {type AllowedVolumeOrType, Banner} from './types.js';
  *
  *    class ConcreteStateBanner extends StateBanner {
  *      allowedVolumes() {
- *        return [{type: VolumeManagerCommon.VolumeType.DOWNLOADS}];
+ *        return [{type: VolumeType.DOWNLOADS}];
  *      }
  *    }
  *

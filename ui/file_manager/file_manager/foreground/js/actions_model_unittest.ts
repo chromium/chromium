@@ -9,7 +9,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeo
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {installMockChrome, MockCommandLinePrivate, MockMetrics} from '../../common/js/mock_chrome.js';
 import {MockDirectoryEntry, MockFileEntry} from '../../common/js/mock_entry.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {VolumeType} from '../../common/js/volume_manager_types.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 
 import {ActionsModel, CommonActionId, InternalActionId} from './actions_model.js';
@@ -106,13 +106,13 @@ export function setUp() {
 
   // Setup Drive file system.
   mockVolumeManager = new MockVolumeManager();
-  let type = VolumeManagerCommon.VolumeType.DRIVE;
+  let type = VolumeType.DRIVE;
   assert(mockVolumeManager.getCurrentProfileVolumeInfo(type)!.fileSystem);
   driveFileSystem =
       mockVolumeManager.getCurrentProfileVolumeInfo(type)!.fileSystem;
 
   // Setup Provided file system.
-  type = VolumeManagerCommon.VolumeType.PROVIDED;
+  type = VolumeType.PROVIDED;
   mockVolumeManager.createVolumeInfo(type, 'provided', 'Provided');
   assert(mockVolumeManager.getCurrentProfileVolumeInfo(type)!.fileSystem);
   providedFileSystem =

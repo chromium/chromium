@@ -7,7 +7,7 @@ import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {FakeEntryImpl, GuestOsPlaceholder, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {waitUntil} from '../../common/js/test_error_reporting.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import {FileData, State} from '../../externs/ts/state.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
 import {convertEntryToFileData} from '../ducks/all_entries.js';
@@ -27,8 +27,8 @@ export function setUp() {
 function createMyFilesDataWithVolumeEntry():
     {fileData: FileData, volumeInfo: VolumeInfo} {
   const {volumeManager} = window.fileManager;
-  const downloadsVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
-      VolumeManagerCommon.VolumeType.DOWNLOADS)!;
+  const downloadsVolumeInfo =
+      volumeManager.getCurrentProfileVolumeInfo(VolumeType.DOWNLOADS)!;
   const fileData = convertEntryToFileData(new VolumeEntry(downloadsVolumeInfo));
   return {fileData, volumeInfo: downloadsVolumeInfo};
 }
@@ -39,8 +39,7 @@ export async function testAddUiEntry(done: () => void) {
   const store = setupStore(initialState);
 
   // Dispatch an action to add a UI entry.
-  const uiEntry =
-      new FakeEntryImpl('Ui entry', VolumeManagerCommon.RootType.RECENT);
+  const uiEntry = new FakeEntryImpl('Ui entry', RootType.RECENT);
   store.dispatch(addUiEntry({entry: uiEntry}));
 
   // Expect the newly added entry is in the store.
@@ -62,8 +61,7 @@ export async function testAddUiEntry(done: () => void) {
 export async function testAddDuplicateUiEntry(done: () => void) {
   const initialState = getEmptyState();
   // Add one UI entry in the store.
-  const uiEntry =
-      new FakeEntryImpl('Ui entry', VolumeManagerCommon.RootType.RECENT);
+  const uiEntry = new FakeEntryImpl('Ui entry', RootType.RECENT);
   initialState.uiEntries.push(uiEntry.toURL());
 
   const store = setupStore(initialState);
@@ -103,8 +101,7 @@ export async function testAddUiEntryForMyFiles(done: () => void) {
   const store = setupStore(initialState);
 
   // Dispatch an action to add a new UI entry which belongs to MyFiles.
-  const uiEntry =
-      new FakeEntryImpl('Linux files', VolumeManagerCommon.RootType.CROSTINI);
+  const uiEntry = new FakeEntryImpl('Linux files', RootType.CROSTINI);
   store.dispatch(addUiEntry({entry: uiEntry}));
 
   // Expect 2 ui entries in the store.
@@ -186,8 +183,8 @@ export async function testAddDuplicateUiEntryForMyFilesWhenVolumeExists(
       volumeInfo, createFakeVolumeMetadata(volumeInfo));
   initialState.allEntries[fileData.entry.toURL()] = fileData;
   initialState.volumes[volumeInfo.volumeId] = myFilesVolume;
-  const playFilesVolumeInfo = MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.ANDROID_FILES, label);
+  const playFilesVolumeInfo =
+      MockVolumeManager.createMockVolumeInfo(VolumeType.ANDROID_FILES, label);
   const playFilesVolumeEntry = new VolumeEntry(playFilesVolumeInfo);
   myFilesEntry.addEntry(playFilesVolumeEntry);
   fileData.children.push(playFilesVolumeEntry.toURL());
@@ -221,7 +218,7 @@ export async function testAddUiEntryWithDisabledVolumeType(done: () => void) {
   const {volumeManager} = window.fileManager;
   // Disable Android files volume type.
   volumeManager.isDisabled = (volumeType) => {
-    return volumeType === VolumeManagerCommon.VolumeType.ANDROID_FILES;
+    return volumeType === VolumeType.ANDROID_FILES;
   };
   const uiEntry = new GuestOsPlaceholder(
       'Play files', 0, chrome.fileManagerPrivate.VmType.ARCVM);
@@ -236,8 +233,7 @@ export async function testAddUiEntryWithDisabledVolumeType(done: () => void) {
 /** Tests that UI entry can be removed from store correctly. */
 export async function testRemoveUiEntry(done: () => void) {
   const initialState = getEmptyState();
-  const uiEntry =
-      new FakeEntryImpl('Ui entry', VolumeManagerCommon.RootType.RECENT);
+  const uiEntry = new FakeEntryImpl('Ui entry', RootType.RECENT);
   // Setup the UI entry in both uiEntries and allEntries in the store.
   initialState.allEntries[uiEntry.toURL()] = convertEntryToFileData(uiEntry);
   initialState.uiEntries.push(uiEntry.toURL());
@@ -259,8 +255,7 @@ export async function testRemoveNonExistedUiEntry(done: () => void) {
   const store = setupStore(initialState);
 
   // Dispatch an action to remove a non-existed UI entry.
-  const uiEntry =
-      new FakeEntryImpl('Ui entry', VolumeManagerCommon.RootType.TRASH);
+  const uiEntry = new FakeEntryImpl('Ui entry', RootType.TRASH);
   store.dispatch(removeUiEntry({key: uiEntry.toURL()}));
 
   // Expect nothing changes in the store.
@@ -274,8 +269,7 @@ export async function testRemoveNonExistedUiEntry(done: () => void) {
  */
 export async function testRemoveUiEntryFromMyFiles(done: () => void) {
   const initialState = getEmptyState();
-  const uiEntry =
-      new FakeEntryImpl('Linux files', VolumeManagerCommon.RootType.CROSTINI);
+  const uiEntry = new FakeEntryImpl('Linux files', RootType.CROSTINI);
   // Setup MyFiles entry and add the ui entry in the store.
   const {fileData, volumeInfo} = createMyFilesDataWithVolumeEntry();
   const myFilesEntry = fileData.entry as VolumeEntry;

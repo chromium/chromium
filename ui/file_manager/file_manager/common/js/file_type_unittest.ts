@@ -6,12 +6,12 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeo
 
 import {getIcon, getType, isDocument, isEncrypted} from './file_type.js';
 import {MockFileSystem} from './mock_entry.js';
-import {VolumeManagerCommon} from './volume_manager_types.js';
+import {RootType} from './volume_manager_types.js';
 
 function makeFakeEntry(name: string): Entry {
   return {
     isDirectory: false,
-    rootType: VolumeManagerCommon.RootType.MY_FILES,
+    rootType: RootType.MY_FILES,
     name: name,
     toURL: () => `filesystem:chrome://file-manager/root/${name}`,
   } as any as Entry;
@@ -20,7 +20,7 @@ function makeFakeEntry(name: string): Entry {
 function makeFakeDriveEntry(name: string): Entry {
   return {
     isDirectory: false,
-    rootType: VolumeManagerCommon.RootType.DRIVE,
+    rootType: RootType.DRIVE,
     name: name,
     toURL: () =>
         `filesystem:chrome://file-manager/external/drivefs-aaaaa/root/${name}`,
@@ -46,9 +46,9 @@ export function testDownloadsIcon() {
   const downloads = fileSystem.entries['/Downloads']!;
   const fileB = fileSystem.entries['/Downloads/file_b.txt']!;
 
-  const downloadsRoot = VolumeManagerCommon.RootType.DOWNLOADS;
-  const driveRoot = VolumeManagerCommon.RootType.DRIVE;
-  const androidRoot = VolumeManagerCommon.RootType.ANDROID_FILES;
+  const downloadsRoot = RootType.DOWNLOADS;
+  const driveRoot = RootType.DRIVE;
+  const androidRoot = RootType.ANDROID_FILES;
 
   const mimetype = undefined;
   assertEquals('folder', getIcon(folder, mimetype, downloadsRoot));

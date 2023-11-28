@@ -4,7 +4,7 @@
 
 import {isSameEntry, isVolumeEntry, sortEntries} from '../../common/js/entry_utils.js';
 import {EntryList} from '../../common/js/files_app_entry_types.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {RootType} from '../../common/js/volume_manager_types.js';
 import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
 import {FileKey, State} from '../../externs/ts/state.js';
 import {Slice} from '../../lib/base_store.js';
@@ -25,9 +25,9 @@ const slice = new Slice<State, State['uiEntries']>('uiEntries');
 export {slice as uiEntriesSlice};
 
 const uiEntryRootTypesInMyFiles = new Set([
-  VolumeManagerCommon.RootType.ANDROID_FILES,
-  VolumeManagerCommon.RootType.CROSTINI,
-  VolumeManagerCommon.RootType.GUEST_OS,
+  RootType.ANDROID_FILES,
+  RootType.CROSTINI,
+  RootType.GUEST_OS,
 ]);
 
 

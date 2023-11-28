@@ -19,7 +19,7 @@ import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../com
 import {bytesToString, str, strf} from '../../common/js/translations.js';
 import {LEGACY_FILES_EXTENSION_ID} from '../../common/js/url_constants.js';
 import {descriptorEqual, extractFilePath, isTeleported, makeTaskID, splitExtension} from '../../common/js/util.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {RootType, RootTypesForUMA, VolumeError, VolumeType} from '../../common/js/volume_manager_types.js';
 import {Crostini} from '../../externs/background/crostini.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {FileTasks as StoreFileTasks} from '../../externs/ts/state.js';
@@ -214,12 +214,10 @@ export class FileTasks {
    * @param rootType The type of the root where entries are being opened.
    */
   private static recordViewingRootTypeUma_(
-      volumeManager: VolumeManager,
-      rootType: VolumeManagerCommon.RootType|null) {
+      volumeManager: VolumeManager, rootType: RootType|null) {
     if (rootType !== null) {
       FileTasks.recordEnumWithOnlineAndOffline_(
-          volumeManager, 'ViewingRootType', rootType,
-          VolumeManagerCommon.RootTypesForUMA);
+          volumeManager, 'ViewingRootType', rootType, RootTypesForUMA);
     }
   }
 
@@ -230,15 +228,14 @@ export class FileTasks {
    *     from.
    * @param time Time to be recorded in milliseconds.
    */
-  private static recordZipMountTimeUma_(
-      rootType: VolumeManagerCommon.RootType|null, time: number) {
+  private static recordZipMountTimeUma_(rootType: RootType|null, time: number) {
     let root;
     switch (rootType) {
-      case VolumeManagerCommon.RootType.MY_FILES:
-      case VolumeManagerCommon.RootType.DOWNLOADS:
+      case RootType.MY_FILES:
+      case RootType.DOWNLOADS:
         root = 'MyFiles';
         break;
-      case VolumeManagerCommon.RootType.DRIVE:
+      case RootType.DRIVE:
         root = 'Drive';
         break;
       default:
@@ -253,8 +250,7 @@ export class FileTasks {
    * @param rootType The type of the root where entries are being opened.
    */
   private static recordOfficeFileHandlerUma_(
-      volumeManager: VolumeManager, entries: Entry[],
-      rootType: VolumeManagerCommon.RootType|null,
+      volumeManager: VolumeManager, entries: Entry[], rootType: RootType|null,
       task: chrome.fileManagerPrivate.FileTask|null) {
     if (!task) {
       return;
@@ -267,7 +263,7 @@ export class FileTasks {
 
     let histogramName = 'OfficeFiles.FileHandler';
     switch (rootType) {
-      case VolumeManagerCommon.RootType.DRIVE:
+      case RootType.DRIVE:
         histogramName += '.Drive';
         break;
       default:
@@ -548,8 +544,7 @@ export class FileTasks {
 
     const containsDriveEntries = this.entries_.some(entry => {
       const volumeInfo = this.volumeManager_.getVolumeInfo(entry);
-      return volumeInfo &&
-          volumeInfo.volumeType === VolumeManagerCommon.VolumeType.DRIVE;
+      return volumeInfo && volumeInfo.volumeType === VolumeType.DRIVE;
     });
 
     // Availability is not checked for non-Drive files, as availableOffline, nor
@@ -698,7 +693,7 @@ export class FileTasks {
       return await this.volumeManager_.mountArchive(url);
     } catch (error) {
       // If error is not about needing a password, propagate it.
-      if (error !== VolumeManagerCommon.VolumeError.NEED_PASSWORD) {
+      if (error !== VolumeError.NEED_PASSWORD) {
         throw error;
       }
     } finally {
@@ -727,7 +722,7 @@ export class FileTasks {
           return await this.volumeManager_.mountArchive(url, password);
         } catch (error) {
           // If error is not about needing a password, propagate it.
-          if (error !== VolumeManagerCommon.VolumeError.NEED_PASSWORD) {
+          if (error !== VolumeError.NEED_PASSWORD) {
             throw error;
           }
         } finally {
@@ -773,8 +768,7 @@ export class FileTasks {
     } catch (error) {
       // No need to display an error message if user canceled mounting or
       // canceled the password prompt.
-      if (error === USER_CANCELLED ||
-          error === VolumeManagerCommon.VolumeError.CANCELLED) {
+      if (error === USER_CANCELLED || error === VolumeError.CANCELLED) {
         return;
       }
 
@@ -782,7 +776,7 @@ export class FileTasks {
       const item = new ProgressCenterItem();
       item.id = 'Cannot mount: ' + url;
       item.type = ProgressItemType.MOUNT_ARCHIVE;
-      const msgId = error === VolumeManagerCommon.VolumeError.INVALID_PATH ?
+      const msgId = error === VolumeError.INVALID_PATH ?
           'ARCHIVE_MOUNT_INVALID_PATH' :
           'ARCHIVE_MOUNT_FAILED';
       item.message = strf(msgId, filename);
@@ -844,8 +838,8 @@ export class FileTasks {
 
   private static async getPvmSharedDir_(volumeManager: VolumeManager):
       Promise<DirectoryEntry> {
-    const volumeInfo = volumeManager.getCurrentProfileVolumeInfo(
-        VolumeManagerCommon.VolumeType.DOWNLOADS);
+    const volumeInfo =
+        volumeManager.getCurrentProfileVolumeInfo(VolumeType.DOWNLOADS);
     if (!volumeInfo) {
       throw new Error(`Error getting PvmDefault dir`);
     }
@@ -874,12 +868,10 @@ function hasOfficeExtension(entry: Entry): boolean {
 
 function isCrostiniEntry(entry: Entry, volumeManager: VolumeManager): boolean {
   const location = volumeManager.getLocationInfo(entry);
-  return !!location &&
-      location.rootType === VolumeManagerCommon.RootType.CROSTINI;
+  return !!location && location.rootType === RootType.CROSTINI;
 }
 
 function isMyFilesEntry(entry: Entry, volumeManager: VolumeManager): boolean {
   const location = volumeManager.getLocationInfo(entry);
-  return !!location &&
-      location.rootType === VolumeManagerCommon.RootType.DOWNLOADS;
+  return !!location && location.rootType === RootType.DOWNLOADS;
 }

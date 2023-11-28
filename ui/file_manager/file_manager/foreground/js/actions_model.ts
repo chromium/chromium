@@ -10,7 +10,7 @@ import {isDirectoryEntry, isSameVolume, unwrapEntry} from '../../common/js/entry
 import {recordBoolean} from '../../common/js/metrics.js';
 import {strf} from '../../common/js/translations.js';
 import {visitURL} from '../../common/js/util.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {VolumeType} from '../../common/js/volume_manager_types.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 
 import {constants} from './constants.js';
@@ -425,7 +425,7 @@ export class ActionsModel extends EventTarget {
           switch (volumeInfo.volumeType) {
             // For Drive, actions are constructed directly in the Files app
             // code.
-            case VolumeManagerCommon.VolumeType.DRIVE:
+            case VolumeType.DRIVE:
               const shareAction = DriveShareAction.create(
                   this.entries_, this.metadataModel_, this.volumeManager_);
               if (shareAction) {
@@ -475,7 +475,7 @@ export class ActionsModel extends EventTarget {
               break;
 
             // For FSP, fetch custom actions via an API.
-            case VolumeManagerCommon.VolumeType.PROVIDED:
+            case VolumeType.PROVIDED:
               chrome.fileManagerPrivate.getCustomActions(
                   this.entries_.map(e => unwrapEntry(e)) as Entry[],
                   (customActions: chrome.fileManagerPrivate

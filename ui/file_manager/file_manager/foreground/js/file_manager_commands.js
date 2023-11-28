@@ -18,7 +18,7 @@ import {recordEnum, recordUserAction} from '../../common/js/metrics.js';
 import {getFileErrorString, str, strf} from '../../common/js/translations.js';
 import {deleteIsForever, RestoreFailedType, RestoreFailedTypesUMA, RestoreFailedUMA, shouldMoveToTrash, TrashEntry} from '../../common/js/trash.js';
 import {visitURL} from '../../common/js/util.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {FileSystemType, isRecentArcEntry, RootType, VolumeError, VolumeType} from '../../common/js/volume_manager_types.js';
 import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
 import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {DialogType, State} from '../../externs/ts/state.js';
@@ -530,7 +530,7 @@ CommandUtil.isDriveEntries = (entries, volumeManager) => {
     return false;
   }
 
-  if (volumeInfo.volumeType === VolumeManagerCommon.VolumeType.DRIVE &&
+  if (volumeInfo.volumeType === VolumeType.DRIVE &&
       isSameVolume(entries, volumeManager)) {
     return true;
   }
@@ -556,7 +556,7 @@ CommandUtil.isOnlyMyDriveEntries = (entries, state) => {
     if (!fileData) {
       return false;
     }
-    if (fileData.rootType !== VolumeManagerCommon.RootType.DRIVE) {
+    if (fileData.rootType !== RootType.DRIVE) {
       return false;
     }
   }
@@ -770,14 +770,14 @@ export class CommandHandler {
 
 /**
  * Supported disk file system types for renaming.
- * @private @const @type {!Array<!VolumeManagerCommon.FileSystemType>}
+ * @private @const @type {!Array<!FileSystemType>}
  */
 // @ts-ignore: error TS2341: Property 'RENAME_DISK_FILE_SYSTEM_SUPPORT_' is
 // private and only accessible within class 'CommandHandler'.
 CommandHandler.RENAME_DISK_FILE_SYSTEM_SUPPORT_ = [
-  VolumeManagerCommon.FileSystemType.EXFAT,
-  VolumeManagerCommon.FileSystemType.VFAT,
-  VolumeManagerCommon.FileSystemType.NTFS,
+  FileSystemType.EXFAT,
+  FileSystemType.VFAT,
+  FileSystemType.NTFS,
 ];
 
 /**
@@ -887,9 +887,9 @@ CommandHandler.COMMANDS_['unmount'] = new (class extends FilesCommand {
    * @private
    */
   async executeImpl_(event, fileManager) {
-    /** @param {VolumeManagerCommon.VolumeType=} opt_volumeType */
+    /** @param {VolumeType=} opt_volumeType */
     const errorCallback = opt_volumeType => {
-      if (opt_volumeType === VolumeManagerCommon.VolumeType.REMOVABLE) {
+      if (opt_volumeType === VolumeType.REMOVABLE) {
         fileManager.ui.alertDialog.showHtml(
             '', str('UNMOUNT_FAILED'), null, null, null);
       } else {
@@ -936,7 +936,7 @@ CommandHandler.COMMANDS_['unmount'] = new (class extends FilesCommand {
       } catch (error) {
         console.warn('Cannot unmount (redacted):', error);
         console.debug(`Cannot unmount '${volume.volumeId}':`, error);
-        if (error != VolumeManagerCommon.VolumeError.PATH_NOT_MOUNTED) {
+        if (error != VolumeError.PATH_NOT_MOUNTED) {
           errorCallback(volume.volumeType);
         }
       }
@@ -972,19 +972,18 @@ CommandHandler.COMMANDS_['unmount'] = new (class extends FilesCommand {
     }
 
     event.canExecute =
-        (volumeType === VolumeManagerCommon.VolumeType.ARCHIVE ||
-         volumeType === VolumeManagerCommon.VolumeType.REMOVABLE ||
-         volumeType === VolumeManagerCommon.VolumeType.PROVIDED ||
-         volumeType === VolumeManagerCommon.VolumeType.SMB);
+        (volumeType === VolumeType.ARCHIVE ||
+         volumeType === VolumeType.REMOVABLE ||
+         volumeType === VolumeType.PROVIDED || volumeType === VolumeType.SMB);
     event.command.setHidden(!event.canExecute);
 
     switch (volumeType) {
-      case VolumeManagerCommon.VolumeType.ARCHIVE:
-      case VolumeManagerCommon.VolumeType.PROVIDED:
-      case VolumeManagerCommon.VolumeType.SMB:
+      case VolumeType.ARCHIVE:
+      case VolumeType.PROVIDED:
+      case VolumeType.SMB:
         event.command.label = str('CLOSE_VOLUME_BUTTON_LABEL');
         break;
-      case VolumeManagerCommon.VolumeType.REMOVABLE:
+      case VolumeType.REMOVABLE:
         event.command.label = str('UNMOUNT_DEVICE_BUTTON_LABEL');
         break;
     }
@@ -1050,8 +1049,8 @@ CommandHandler.COMMANDS_['format'] = new (class extends FilesCommand {
     const isRoot = location && location.isRootEntry;
 
     // Enable the command if this is a removable device (e.g. a USB drive).
-    const removableRoot = location && isRoot &&
-        location.rootType === VolumeManagerCommon.RootType.REMOVABLE;
+    const removableRoot =
+        location && isRoot && location.rootType === RootType.REMOVABLE;
     event.canExecute = removableRoot && (isUnrecognizedVolume || writable);
 
     if (isSinglePartitionFormatEnabled()) {
@@ -1101,8 +1100,8 @@ CommandHandler.COMMANDS_['erase-device'] = new (class extends FilesCommand {
     const writable = location && !location.isReadOnly;
     const isRoot = location && location.isRootEntry;
 
-    const removableRoot = location && isRoot &&
-        location.rootType === VolumeManagerCommon.RootType.REMOVABLE;
+    const removableRoot =
+        location && isRoot && location.rootType === RootType.REMOVABLE;
 
     let isDevice = false;
     if (root && root instanceof EntryList) {
@@ -1420,13 +1419,12 @@ CommandHandler.COMMANDS_['toggle-hidden-android-folders'] =
       canExecute(event, fileManager) {
         const hasAndroidFilesVolumeInfo =
             !!fileManager.volumeManager.getCurrentProfileVolumeInfo(
-                VolumeManagerCommon.VolumeType.ANDROID_FILES);
+                VolumeType.ANDROID_FILES);
         const currentRootType = fileManager.directoryModel.getCurrentRootType();
-        const isInMyFiles =
-            currentRootType == VolumeManagerCommon.RootType.MY_FILES ||
-            currentRootType == VolumeManagerCommon.RootType.DOWNLOADS ||
-            currentRootType == VolumeManagerCommon.RootType.CROSTINI ||
-            currentRootType == VolumeManagerCommon.RootType.ANDROID_FILES;
+        const isInMyFiles = currentRootType == RootType.MY_FILES ||
+            currentRootType == RootType.DOWNLOADS ||
+            currentRootType == RootType.CROSTINI ||
+            currentRootType == RootType.ANDROID_FILES;
         event.canExecute = hasAndroidFilesVolumeInfo && isInMyFiles;
         event.command.setHidden(!event.canExecute);
         event.command.checked =
@@ -2225,8 +2223,7 @@ CommandHandler.COMMANDS_['rename'] = new (class extends FilesCommand {
             return true;
           }
           const writable = !location.isReadOnly;
-          const removable =
-              location.rootType === VolumeManagerCommon.RootType.REMOVABLE;
+          const removable = location.rootType === RootType.REMOVABLE;
           event.canExecute = removable && writable &&
               volumeInfo.diskFileSystemType &&
               // @ts-ignore: error TS2341: Property
@@ -2266,14 +2263,14 @@ CommandHandler.COMMANDS_['rename'] = new (class extends FilesCommand {
     // ARC doesn't support rename for now. http://b/232152680
     // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry | undefined'
     // is not assignable to parameter of type 'FileSystemEntry | null'.
-    const isRecentArcEntry = VolumeManagerCommon.isRecentArcEntry(entries[0]);
+    const recentArcEntry = isRecentArcEntry(entries[0]);
     // Drive grand roots do not support rename.
     // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry | undefined'
     // is not assignable to parameter of type 'FileSystemEntry | null'.
     const isDriveGrandRoot = isGrandRootEntryInDrives(entries[0]);
 
     event.canExecute = entries.length === 1 && volumeIsNotReadOnly &&
-        !isRecentArcEntry && !isDriveGrandRoot &&
+        !recentArcEntry && !isDriveGrandRoot &&
         CommandUtil.hasCapability(fileManager, entries, 'canRename');
     event.command.setHidden(false);
   }
@@ -2804,7 +2801,7 @@ CommandHandler.COMMANDS_['search'] = new (class extends FilesCommand {
     // start native search for an app window. Thus we always allow it and do
     // nothing in trash.
     const currentRootType = fileManager.directoryModel.getCurrentRootType();
-    if (currentRootType !== VolumeManagerCommon.RootType.TRASH) {
+    if (currentRootType !== RootType.TRASH) {
       // Cancel item selection.
       fileManager.directoryModel.clearSelection();
       // Open the query input via the search container.
@@ -3254,9 +3251,8 @@ CommandHandler.COMMANDS_['manage-mirrorsync'] =
         // MirrorSync is only available to sync local directories, only show the
         // folder when navigated to a local directory.
         const currentRootType = fileManager.directoryModel.getCurrentRootType();
-        event.canExecute =
-            (currentRootType === VolumeManagerCommon.RootType.MY_FILES ||
-             currentRootType === VolumeManagerCommon.RootType.DOWNLOADS) &&
+        event.canExecute = (currentRootType === RootType.MY_FILES ||
+                            currentRootType === RootType.DOWNLOADS) &&
             isMirrorSyncEnabled();
         event.command.setHidden(!event.canExecute);
       }
@@ -3357,10 +3353,9 @@ class GuestOsShareCommand extends FilesCommand {
           share, () => {});
     } else if (
         info.isRootEntry &&
-        (info.rootType == VolumeManagerCommon.RootType.DRIVE ||
-         info.rootType == VolumeManagerCommon.RootType.COMPUTERS_GRAND_ROOT ||
-         info.rootType ==
-             VolumeManagerCommon.RootType.SHARED_DRIVES_GRAND_ROOT)) {
+        (info.rootType == RootType.DRIVE ||
+         info.rootType == RootType.COMPUTERS_GRAND_ROOT ||
+         info.rootType == RootType.SHARED_DRIVES_GRAND_ROOT)) {
       // Only show the dialog for My Drive, Shared Drives Grand Root and
       // Computers Grand Root.  Do not show for roots of a single Shared
       // Drive or Computer.
@@ -4024,18 +4019,12 @@ CommandHandler.COMMANDS_['volume-storage'] = new (class extends FilesCommand {
     }
 
     // Can execute only for local file systems.
-    if (currentVolumeInfo.volumeType ==
-            VolumeManagerCommon.VolumeType.MY_FILES ||
-        currentVolumeInfo.volumeType ==
-            VolumeManagerCommon.VolumeType.DOWNLOADS ||
-        currentVolumeInfo.volumeType ==
-            VolumeManagerCommon.VolumeType.CROSTINI ||
-        currentVolumeInfo.volumeType ==
-            VolumeManagerCommon.VolumeType.GUEST_OS ||
-        currentVolumeInfo.volumeType ==
-            VolumeManagerCommon.VolumeType.ANDROID_FILES ||
-        currentVolumeInfo.volumeType ==
-            VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER) {
+    if (currentVolumeInfo.volumeType == VolumeType.MY_FILES ||
+        currentVolumeInfo.volumeType == VolumeType.DOWNLOADS ||
+        currentVolumeInfo.volumeType == VolumeType.CROSTINI ||
+        currentVolumeInfo.volumeType == VolumeType.GUEST_OS ||
+        currentVolumeInfo.volumeType == VolumeType.ANDROID_FILES ||
+        currentVolumeInfo.volumeType == VolumeType.DOCUMENTS_PROVIDER) {
       event.canExecute = true;
     }
   }

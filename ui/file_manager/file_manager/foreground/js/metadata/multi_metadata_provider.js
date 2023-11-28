@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/ash/common/assert.js';
 
 import {isTrashEntry} from '../../../common/js/entry_utils.js';
-import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.js';
+import {VolumeType} from '../../../common/js/volume_manager_types.js';
 
 import {ContentMetadataProvider} from './content_metadata_provider.js';
 import {DlpMetadataProvider} from './dlp_metadata_provider.js';
@@ -127,8 +127,8 @@ export class MultiMetadataProvider extends MetadataProvider {
         }
       };
       if (volumeInfo && !isTrashEntry(request.entry) &&
-          (volumeInfo.volumeType === VolumeManagerCommon.VolumeType.DRIVE ||
-           volumeInfo.volumeType === VolumeManagerCommon.VolumeType.PROVIDED)) {
+          (volumeInfo.volumeType === VolumeType.DRIVE ||
+           volumeInfo.volumeType === VolumeType.PROVIDED)) {
         // Because properties can be out of sync just after sync completion
         // even if 'dirty' is false, it refers 'present' here to switch the
         // content and the external providers.
@@ -147,8 +147,7 @@ export class MultiMetadataProvider extends MetadataProvider {
         addRequests(fallbackContentRequests, fallbackContentPropertyNames);
       } else if (
           volumeInfo &&
-          volumeInfo.volumeType ===
-              VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER) {
+          volumeInfo.volumeType === VolumeType.DOCUMENTS_PROVIDER) {
         // When using a documents provider, we need to discard:
         // - contentRequests: since the content sniffing code
         //   can't resolve the file path in the MediaGallery API. See

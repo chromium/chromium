@@ -9,7 +9,7 @@ import {AsyncQueue, Group} from '../../common/js/async_util.js';
 import {comparePath, isSameEntry} from '../../common/js/entry_utils.js';
 import {FilteredVolumeManager} from '../../common/js/filtered_volume_manager.js';
 import {recordSmallCount, recordUserAction} from '../../common/js/metrics.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {VolumeType} from '../../common/js/volume_manager_types.js';
 import {addFolderShortcut, refreshFolderShortcut, removeFolderShortcut} from '../../state/ducks/folder_shortcuts.js';
 import {getStore} from '../../state/store.js';
 
@@ -77,8 +77,8 @@ export class FolderShortcutsDataModel extends EventTarget {
     if (this.lastDriveRootURL_) {
       return;
     }
-    const volumeInfo = this.volumeManager_.getCurrentProfileVolumeInfo(
-        VolumeManagerCommon.VolumeType.DRIVE);
+    const volumeInfo =
+        this.volumeManager_.getCurrentProfileVolumeInfo(VolumeType.DRIVE);
     if (volumeInfo) {
       this.lastDriveRootURL_ = volumeInfo.fileSystem.root.toURL();
     }
@@ -102,8 +102,8 @@ export class FolderShortcutsDataModel extends EventTarget {
     });
 
     this.queue_.run(queueCallback => {
-      const volumeInfo = this.volumeManager_.getCurrentProfileVolumeInfo(
-          VolumeManagerCommon.VolumeType.DRIVE);
+      const volumeInfo =
+          this.volumeManager_.getCurrentProfileVolumeInfo(VolumeType.DRIVE);
       let changed = false;
       const resolvedURLs = {};
       this.rememberLastDriveURL_();  // Required for conversions.

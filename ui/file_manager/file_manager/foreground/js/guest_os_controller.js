@@ -5,7 +5,7 @@
 import {listMountableGuests} from '../../common/js/api.js';
 import {GuestOsPlaceholder} from '../../common/js/files_app_entry_types.js';
 import {isGuestOsEnabled, isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {VolumeType} from '../../common/js/volume_manager_types.js';
 import {addUiEntry, removeUiEntry} from '../../state/ducks/ui_entries.js';
 import {getEntry, getStore} from '../../state/store.js';
 
@@ -80,8 +80,8 @@ export class GuestOsController {
           guest.displayName, NavigationModelItemType.GUEST_OS, guestOsEntry);
       const volumeType =
           guest.vmType == chrome.fileManagerPrivate.VmType.ARCVM ?
-          VolumeManagerCommon.VolumeType.ANDROID_FILES :
-          VolumeManagerCommon.VolumeType.GUEST_OS;
+          VolumeType.ANDROID_FILES :
+          VolumeType.GUEST_OS;
 
       navigationModelItem.disabled = this.volumeManager_.isDisabled(volumeType);
       store.dispatch(addUiEntry({entry: guestOsEntry}));

@@ -6,7 +6,7 @@
  * @fileoverview Interfaces for the Files app Entry Types.
  */
 
-import {VolumeManagerCommon} from '../common/js/volume_manager_types.js';
+import {RootType, VolumeType} from '../common/js/volume_manager_types.js';
 
 /**
  * FilesAppEntry represents a single Entry (file, folder or root) in the Files
@@ -59,7 +59,7 @@ export class FilesAppEntry {
      */
     this.type_name = 'FilesAppEntry';
 
-    /** @type {VolumeManagerCommon.RootType|null} */
+    /** @type {RootType|null} */
     this.rootType = null;
 
     /**
@@ -215,7 +215,7 @@ export class FilesAppDirEntry extends FilesAppEntry {
 export class FakeEntry extends FilesAppDirEntry {
   /**
    * @param {string} label Translated text to be displayed to user.
-   * @param {!VolumeManagerCommon.RootType} rootType Root type of this entry.
+   * @param {!RootType} rootType Root type of this entry.
    * @param {chrome.fileManagerPrivate.SourceRestriction=} opt_sourceRestriction
    *    used on Recents to filter the source of recent files/directories.
    * @param {chrome.fileManagerPrivate.FileCategory=} opt_fileCategory
@@ -234,7 +234,7 @@ export class FakeEntry extends FilesAppDirEntry {
     /** @type {string} Name for this volume. */
     this.name;
 
-    /** @type {!VolumeManagerCommon.RootType} */
+    /** @type {!RootType} */
     this.rootType;
 
     /** @type {boolean} true FakeEntry are always directory-like. */
@@ -283,7 +283,7 @@ export class FakeEntry extends FilesAppDirEntry {
   /**
    * FakeEntry can be a placeholder for the real volume, if so this field will
    * be the volume type of the volume it represents.
-   * @return {VolumeManagerCommon.VolumeType|null}
+   * @return {VolumeType|null}
    */
   // @ts-ignore: error TS2378: A 'get' accessor must return a value.
   get volumeType() {

@@ -6,7 +6,7 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
 import {LruCache} from '../../common/js/lru_cache.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {Source, VolumeType} from '../../common/js/volume_manager_types.js';
 
 import {DirectoryModel} from './directory_model.js';
 // @ts-ignore: error TS6133: 'FileListModel' is declared but its value is never
@@ -111,7 +111,7 @@ export class ListThumbnailLoader extends EventTarget {
   getNumOfPrefetch_() {
     switch (/** @type {?ListThumbnailLoader.VolumeType} */
             (this.currentVolumeType_)) {
-      case VolumeManagerCommon.VolumeType.MTP:
+      case VolumeType.MTP:
         return 0;
       case ListThumbnailLoader.TEST_VOLUME_TYPE:
         return 1;
@@ -129,7 +129,7 @@ export class ListThumbnailLoader extends EventTarget {
   getNumOfMaxActiveTasks_() {
     switch (/** @type {?ListThumbnailLoader.VolumeType} */
             (this.currentVolumeType_)) {
-      case VolumeManagerCommon.VolumeType.MTP:
+      case VolumeType.MTP:
         return 1;
       case ListThumbnailLoader.TEST_VOLUME_TYPE:
         return ListThumbnailLoader.numOfMaxActiveTasksForTest;
@@ -338,7 +338,7 @@ ListThumbnailLoader.TEST_VOLUME_TYPE = 'test_volume_type';
 ListThumbnailLoader.numOfMaxActiveTasksForTest = 2;
 
 /**
- * @typedef {(VolumeManagerCommon.VolumeType|string)}
+ * @typedef {(VolumeType|string)}
  */
 ListThumbnailLoader.VolumeType;
 
@@ -473,9 +473,8 @@ ListThumbnailLoader.Task = class {
           // thumbnails of Drive files from file entry only if cached locally.
           const volumeInfo = this.volumeManager_.getVolumeInfo(this.entry_);
           if (volumeInfo &&
-              (volumeInfo.source !== VolumeManagerCommon.Source.NETWORK ||
-               volumeInfo.volumeType ===
-                   VolumeManagerCommon.VolumeType.DRIVE)) {
+              (volumeInfo.source !== Source.NETWORK ||
+               volumeInfo.volumeType === VolumeType.DRIVE)) {
             loadTargets.push(ThumbnailLoader.LoadTarget.FILE_ENTRY);
           }
 

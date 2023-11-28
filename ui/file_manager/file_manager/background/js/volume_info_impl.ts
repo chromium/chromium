@@ -7,7 +7,7 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 import {isDriveFsBulkPinningEnabled} from '../../common/js/flags.js';
 import {str} from '../../common/js/translations.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {COMPUTERS_DIRECTORY_NAME, FileSystemType, RootType, SHARED_DRIVES_DIRECTORY_NAME, Source, VolumeType} from '../../common/js/volume_manager_types.js';
 import {FakeEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
 
@@ -25,8 +25,7 @@ export class VolumeInfoImpl implements VolumeInfo {
    * > Downloads", "My Files" is a prefixEntry on "Downloads" VolumeInfo.
    */
   private prefixEntry_: FilesAppEntry|null = null;
-  private fakeEntries_:
-      Partial<Record<VolumeManagerCommon.RootType, FakeEntry>> = {};
+  private fakeEntries_: Partial<Record<RootType, FakeEntry>> = {};
   private displayRootPromise_: Promise<DirectoryEntry>;
   /**
    * `volumeType` is the type of the volume.
@@ -62,8 +61,8 @@ export class VolumeInfoImpl implements VolumeInfo {
    *     GuestOS volume.
    */
   constructor(
-      private volumeType_: VolumeManagerCommon.VolumeType,
-      private volumeId_: string, private fileSystem_: FileSystem|null,
+      private volumeType_: VolumeType, private volumeId_: string,
+      private fileSystem_: FileSystem|null,
       // Note: This represents if the mounting of the volume is successfully
       // done or not. (If error is empty string, the mount is successfully
       // done).
@@ -75,8 +74,8 @@ export class VolumeInfoImpl implements VolumeInfo {
       private profile_: {displayName: string, isCurrentProfile: boolean},
       private label_: string, private providerId_: (string|undefined),
       private hasMedia_: boolean, private configurable_: boolean,
-      private watchable_: boolean, private source_: VolumeManagerCommon.Source,
-      private diskFileSystemType_: VolumeManagerCommon.FileSystemType,
+      private watchable_: boolean, private source_: Source,
+      private diskFileSystemType_: FileSystemType,
       private iconSet_: chrome.fileManagerPrivate.IconSet,
       private driveLabel_: (string|undefined),
       private remoteMountPath_: (string|undefined),
@@ -89,24 +88,21 @@ export class VolumeInfoImpl implements VolumeInfo {
 
     this.fakeEntries_ = {};
 
-    if (volumeType_ === VolumeManagerCommon.VolumeType.DRIVE) {
+    if (volumeType_ === VolumeType.DRIVE) {
       if (!isDriveFsBulkPinningEnabled()) {
-        this.fakeEntries_[VolumeManagerCommon.RootType.DRIVE_OFFLINE] =
-            new FakeEntryImpl(
-                str('DRIVE_OFFLINE_COLLECTION_LABEL'),
-                VolumeManagerCommon.RootType.DRIVE_OFFLINE);
+        this.fakeEntries_[RootType.DRIVE_OFFLINE] = new FakeEntryImpl(
+            str('DRIVE_OFFLINE_COLLECTION_LABEL'), RootType.DRIVE_OFFLINE);
       }
 
-      this.fakeEntries_[VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME] =
-          new FakeEntryImpl(
-              str('DRIVE_SHARED_WITH_ME_COLLECTION_LABEL'),
-              VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME);
+      this.fakeEntries_[RootType.DRIVE_SHARED_WITH_ME] = new FakeEntryImpl(
+          str('DRIVE_SHARED_WITH_ME_COLLECTION_LABEL'),
+          RootType.DRIVE_SHARED_WITH_ME);
     }
 
     this.displayRootPromise_ = this.resolveDisplayRootImpl_();
   }
 
-  get volumeType(): VolumeManagerCommon.VolumeType {
+  get volumeType(): VolumeType {
     return this.volumeType_;
   }
 
@@ -140,7 +136,7 @@ export class VolumeInfoImpl implements VolumeInfo {
     return this.computersDisplayRoot_!;
   }
 
-  get fakeEntries(): Partial<Record<VolumeManagerCommon.RootType, FakeEntry>> {
+  get fakeEntries(): Partial<Record<RootType, FakeEntry>> {
     return this.fakeEntries_;
   }
 
@@ -203,14 +199,14 @@ export class VolumeInfoImpl implements VolumeInfo {
   /**
    * Source of the volume's data.
    */
-  get source(): VolumeManagerCommon.Source {
+  get source(): Source {
     return this.source_;
   }
 
   /**
    * File system type identifier.
    */
-  get diskFileSystemType(): VolumeManagerCommon.FileSystemType {
+  get diskFileSystemType(): FileSystemType {
     return this.diskFileSystemType_;
   }
 
@@ -275,8 +271,7 @@ export class VolumeInfoImpl implements VolumeInfo {
 
     return VolumeInfoImpl
         .resolveFileSystemUrl_(
-            this.fileSystem_.root.toURL() +
-            VolumeManagerCommon.SHARED_DRIVES_DIRECTORY_NAME)
+            this.fileSystem_.root.toURL() + SHARED_DRIVES_DIRECTORY_NAME)
         .then(
             sharedDrivesRoot => {
               this.sharedDriveDisplayRoot_ = sharedDrivesRoot as DirectoryEntry;
@@ -304,8 +299,7 @@ export class VolumeInfoImpl implements VolumeInfo {
 
     return VolumeInfoImpl
         .resolveFileSystemUrl_(
-            this.fileSystem_.root.toURL() +
-            VolumeManagerCommon.COMPUTERS_DIRECTORY_NAME)
+            this.fileSystem_.root.toURL() + COMPUTERS_DIRECTORY_NAME)
         .then(
             (computersRoot) => {
               this.computersDisplayRoot_ = computersRoot as DirectoryEntry;
@@ -325,7 +319,7 @@ export class VolumeInfoImpl implements VolumeInfo {
       return Promise.reject(this.error);
     }
 
-    if (this.volumeType !== VolumeManagerCommon.VolumeType.DRIVE) {
+    if (this.volumeType !== VolumeType.DRIVE) {
       this.displayRoot_ = this.fileSystem_.root;
       return Promise.resolve(this.displayRoot_);
     }

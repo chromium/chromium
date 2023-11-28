@@ -8,7 +8,7 @@
  * @suppress {checkTypes}
  */
 
-import {VolumeManagerCommon} from '../../../../common/js/volume_manager_types.js';
+import {RootType, VolumeType} from '../../../../common/js/volume_manager_types.js';
 import {HoldingSpaceUtil} from '../../holding_space_util.js';
 
 import {EducationalBanner} from './educational_banner.js';
@@ -41,11 +41,11 @@ export class HoldingSpaceWelcomeBanner extends EducationalBanner {
    */
   override allowedVolumes() {
     return HoldingSpaceUtil.getAllowedVolumeTypes().map(
-        (type: VolumeManagerCommon.VolumeType|null) => {
-          if (type === VolumeManagerCommon.VolumeType.DRIVE) {
+        (type: VolumeType|null) => {
+          if (type === VolumeType.DRIVE) {
             return {
-              type: VolumeManagerCommon.VolumeType.DRIVE,
-              root: VolumeManagerCommon.RootType.DRIVE,
+              type: VolumeType.DRIVE,
+              root: RootType.DRIVE,
             };
           }
           return {type: type!};

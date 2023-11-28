@@ -11,7 +11,7 @@ import {EntryList, FakeEntryImpl, VolumeEntry} from '../../common/js/files_app_e
 import {isSinglePartitionFormatEnabled} from '../../common/js/flags.js';
 import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {str} from '../../common/js/translations.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import {FileData, State, Volume} from '../../externs/ts/state.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
 import {constants} from '../../foreground/js/constants.js';
@@ -27,8 +27,7 @@ export function setUp() {
 
 /** Generate MyFiles entry with fake entry list. */
 function createMyFilesDataWithEntryList(): FileData {
-  const myFilesEntryList =
-      new EntryList('My files', VolumeManagerCommon.RootType.MY_FILES);
+  const myFilesEntryList = new EntryList('My files', RootType.MY_FILES);
   return convertEntryToFileData(myFilesEntryList);
 }
 
@@ -36,8 +35,8 @@ function createMyFilesDataWithEntryList(): FileData {
 export function createMyFilesDataWithVolumeEntry():
     {fileData: FileData, volumeInfo: VolumeInfo} {
   const {volumeManager} = window.fileManager;
-  const downloadsVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
-      VolumeManagerCommon.VolumeType.DOWNLOADS)!;
+  const downloadsVolumeInfo =
+      volumeManager.getCurrentProfileVolumeInfo(VolumeType.DOWNLOADS)!;
   const fileData = convertEntryToFileData(new VolumeEntry(downloadsVolumeInfo));
   return {fileData, volumeInfo: downloadsVolumeInfo};
 }
@@ -51,8 +50,8 @@ export async function testAddMyFilesVolume(done: () => void) {
   initialState.allEntries[myFilesEntryList.toURL()] = myFilesFileData;
   initialState.uiEntries.push(myFilesEntryList.toURL());
   // Put Play files placeholder UI entry in the store.
-  const playFilesEntry = new FakeEntryImpl(
-      'Play files', VolumeManagerCommon.RootType.ANDROID_FILES);
+  const playFilesEntry =
+      new FakeEntryImpl('Play files', RootType.ANDROID_FILES);
   initialState.allEntries[playFilesEntry.toURL()] =
       convertEntryToFileData(playFilesEntry);
   myFilesEntryList.addEntry(playFilesEntry);
@@ -60,7 +59,7 @@ export async function testAddMyFilesVolume(done: () => void) {
   myFilesFileData.children.push(playFilesEntry.toURL());
   // Put Linux files volume entry in the store.
   const linuxFilesVolumeInfo = MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.CROSTINI, 'linuxFilesId', 'Linux files');
+      VolumeType.CROSTINI, 'linuxFilesId', 'Linux files');
   const linuxFilesEntry = new VolumeEntry(linuxFilesVolumeInfo);
   const {volumeManager} = window.fileManager;
   volumeManager.volumeInfoList.add(linuxFilesVolumeInfo);
@@ -126,8 +125,8 @@ export async function testAddNestedMyFilesVolume(done: () => void) {
   initialState.allEntries[myFilesVolumeEntry.toURL()] = fileData;
   initialState.volumes[volumeInfo.volumeId] = myFilesVolume;
   // Put Play files placeholder UI entry in the store.
-  const playFilesUiEntry = new FakeEntryImpl(
-      'Play files', VolumeManagerCommon.RootType.ANDROID_FILES);
+  const playFilesUiEntry =
+      new FakeEntryImpl('Play files', RootType.ANDROID_FILES);
   myFilesVolumeEntry.addEntry(playFilesUiEntry);
   fileData.children.push(playFilesUiEntry.toURL());
   initialState.uiEntries.push(playFilesUiEntry.toURL());
@@ -139,8 +138,7 @@ export async function testAddNestedMyFilesVolume(done: () => void) {
   // Dispatch an action to add Play files volume.
   const {volumeManager} = window.fileManager;
   const playFilesVolumeInfo = MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.ANDROID_FILES, 'playFilesId',
-      playFilesUiEntry.label);
+      VolumeType.ANDROID_FILES, 'playFilesId', playFilesUiEntry.label);
   volumeManager.volumeInfoList.add(playFilesVolumeInfo);
   const playFilesVolumeMetadata = createFakeVolumeMetadata(playFilesVolumeInfo);
   store.dispatch(addVolume({
@@ -188,8 +186,8 @@ export async function testAddDriveVolume(done: () => void) {
 
   // Dispatch an action to add Drive volume.
   const {volumeManager} = window.fileManager;
-  const driveVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
-      VolumeManagerCommon.VolumeType.DRIVE)!;
+  const driveVolumeInfo =
+      volumeManager.getCurrentProfileVolumeInfo(VolumeType.DRIVE)!;
   const driveVolumeMetadata = createFakeVolumeMetadata(driveVolumeInfo);
   // DriveFS takes time to resolve.
   await driveVolumeInfo.resolveDisplayRoot();
@@ -200,16 +198,13 @@ export async function testAddDriveVolume(done: () => void) {
 
   // Expect all fake entries inside Drive will be added as its children.
   const myFilesFileData = createMyFilesDataWithEntryList();
-  const driveFakeRootEntryList = new EntryList(
-      str('DRIVE_DIRECTORY_LABEL'),
-      VolumeManagerCommon.RootType.DRIVE_FAKE_ROOT);
+  const driveFakeRootEntryList =
+      new EntryList(str('DRIVE_DIRECTORY_LABEL'), RootType.DRIVE_FAKE_ROOT);
   const driveVolumeEntry = new VolumeEntry(driveVolumeInfo);
   const {sharedDriveDisplayRoot, computersDisplayRoot, fakeEntries} =
       driveVolumeInfo;
-  const fakeSharedWithMeEntry =
-      fakeEntries[VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME]!;
-  const fakeOfflineEntry =
-      fakeEntries[VolumeManagerCommon.RootType.DRIVE_OFFLINE]!;
+  const fakeSharedWithMeEntry = fakeEntries[RootType.DRIVE_SHARED_WITH_ME]!;
+  const fakeOfflineEntry = fakeEntries[RootType.DRIVE_OFFLINE]!;
   driveFakeRootEntryList.addEntry(driveVolumeEntry);
   driveFakeRootEntryList.addEntry(sharedDriveDisplayRoot);
   driveFakeRootEntryList.addEntry(computersDisplayRoot);
@@ -273,8 +268,7 @@ async function addVolumeForSinglePartitionRemovable(done: () => void) {
 
   // Dispatch an action to add single partition volume.
   const volumeInfo = MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.REMOVABLE, 'removable:hoge', 'USB Drive',
-      '/device/path/1');
+      VolumeType.REMOVABLE, 'removable:hoge', 'USB Drive', '/device/path/1');
   const volumeMetadata = createFakeVolumeMetadata(volumeInfo);
   store.dispatch(addVolume({
     volumeInfo: volumeInfo,
@@ -285,7 +279,7 @@ async function addVolumeForSinglePartitionRemovable(done: () => void) {
   const myFilesFileData = createMyFilesDataWithEntryList();
   const volumeEntry = new VolumeEntry(volumeInfo);
   const parentEntry = new EntryList(
-      volumeMetadata.driveLabel || '', VolumeManagerCommon.RootType.REMOVABLE,
+      volumeMetadata.driveLabel || '', RootType.REMOVABLE,
       volumeMetadata.devicePath);
   parentEntry.addEntry(volumeEntry);
 
@@ -355,8 +349,8 @@ async function addVolumeForMultipleUsbPartitionsGrouping(done: () => void) {
   // Put partition-1 volume in the store.
   const {volumeManager} = window.fileManager;
   const partition1VolumeInfo = MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.REMOVABLE, 'removable:partition1',
-      'Partition 1', '/device/path/1');
+      VolumeType.REMOVABLE, 'removable:partition1', 'Partition 1',
+      '/device/path/1');
   volumeManager.volumeInfoList.add(partition1VolumeInfo);
   const partition1VolumeEntry = new VolumeEntry(partition1VolumeInfo);
   const partition1FileData = convertEntryToFileData(partition1VolumeEntry);
@@ -372,8 +366,8 @@ async function addVolumeForMultipleUsbPartitionsGrouping(done: () => void) {
 
   // Dispatch an action to add partition-2 volume.
   const partition2VolumeInfo = MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.REMOVABLE, 'removable:partition2',
-      'Partition 2', partition1VolumeInfo.devicePath);
+      VolumeType.REMOVABLE, 'removable:partition2', 'Partition 2',
+      partition1VolumeInfo.devicePath);
   const partition2VolumeMetadata =
       createFakeVolumeMetadata(partition2VolumeInfo);
   partition2VolumeMetadata.driveLabel = partition1VolumeMetadata.driveLabel;
@@ -387,8 +381,8 @@ async function addVolumeForMultipleUsbPartitionsGrouping(done: () => void) {
   const myFilesFileData = createMyFilesDataWithEntryList();
   const partition2VolumeEntry = new VolumeEntry(partition2VolumeInfo);
   const parentEntry = new EntryList(
-      partition1VolumeMetadata.driveLabel,
-      VolumeManagerCommon.RootType.REMOVABLE, partition1VolumeInfo.devicePath);
+      partition1VolumeMetadata.driveLabel, RootType.REMOVABLE,
+      partition1VolumeInfo.devicePath);
   parentEntry.addEntry(partition1VolumeEntry);
   parentEntry.addEntry(partition2VolumeEntry);
   const want: Partial<State> = {
@@ -460,12 +454,12 @@ export async function testAddDisabledVolume(done: () => void) {
   // Dispatch an action to add crostini volume.
   const {volumeManager} = window.fileManager;
   const volumeInfo = MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.CROSTINI, 'crostini', 'Linux files');
+      VolumeType.CROSTINI, 'crostini', 'Linux files');
   volumeManager.volumeInfoList.add(volumeInfo);
   const volumeMetadata = createFakeVolumeMetadata(volumeInfo);
   // Disable crostini volume type.
   volumeManager.isDisabled = (volumeType) => {
-    return volumeType === VolumeManagerCommon.VolumeType.CROSTINI;
+    return volumeType === VolumeType.CROSTINI;
   };
   store.dispatch(addVolume({volumeInfo, volumeMetadata}));
 
@@ -492,14 +486,14 @@ export async function testAddDisabledDriveVolume(done: () => void) {
 
   // Dispatch an action to add drive volume.
   const {volumeManager} = window.fileManager;
-  const driveVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
-      VolumeManagerCommon.VolumeType.DRIVE)!;
+  const driveVolumeInfo =
+      volumeManager.getCurrentProfileVolumeInfo(VolumeType.DRIVE)!;
   // DriveFS takes time to resolve.
   await driveVolumeInfo.resolveDisplayRoot();
   const driveVolumeMetadata = createFakeVolumeMetadata(driveVolumeInfo);
   // Disable Drive volume type.
   volumeManager.isDisabled = (volumeType) => {
-    return volumeType === VolumeManagerCommon.VolumeType.DRIVE;
+    return volumeType === VolumeType.DRIVE;
   };
   store.dispatch(addVolume(
       {volumeInfo: driveVolumeInfo, volumeMetadata: driveVolumeMetadata}));
@@ -528,7 +522,7 @@ export async function testAddArchiveVolume(done: () => void) {
 
   const {volumeManager} = window.fileManager;
   const volumeInfo = MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.ARCHIVE, 'test', 'test.zip');
+      VolumeType.ARCHIVE, 'test', 'test.zip');
   volumeManager.volumeInfoList.add(volumeInfo);
   const volumeEntry = new VolumeEntry(volumeInfo);
   const volumeMetadata = createFakeVolumeMetadata(volumeInfo);
@@ -567,7 +561,7 @@ export async function testRemoveVolume(done: () => void) {
   const initialState = getEmptyState();
   const {volumeManager} = window.fileManager;
   const volumeInfo = MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.ARCHIVE, 'test', 'test.zip');
+      VolumeType.ARCHIVE, 'test', 'test.zip');
   volumeManager.volumeInfoList.add(volumeInfo);
   const volume = convertVolumeInfoAndMetadataToVolume(
       volumeInfo, createFakeVolumeMetadata(volumeInfo));
@@ -599,7 +593,7 @@ export async function testRemoveVolumeFromMyFiles(done: () => void) {
   // Put Crostini in the store.
   const {volumeManager} = window.fileManager;
   const crostiniVolumeInfo = MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.CROSTINI, 'crostiniId', 'Linux files');
+      VolumeType.CROSTINI, 'crostiniId', 'Linux files');
   volumeManager.volumeInfoList.add(crostiniVolumeInfo);
   const crostiniVolume = convertVolumeInfoAndMetadataToVolume(
       crostiniVolumeInfo, createFakeVolumeMetadata(crostiniVolumeInfo));
@@ -611,8 +605,8 @@ export async function testRemoveVolumeFromMyFiles(done: () => void) {
   fileData.children.push(crostiniVolumeEntry.toURL());
   myFilesVolumeEntry.addEntry(crostiniVolumeEntry);
   // Put Linux files placeholder in the store.
-  const linuxFilesUiEntry = new FakeEntryImpl(
-      crostiniVolume.label, VolumeManagerCommon.RootType.CROSTINI);
+  const linuxFilesUiEntry =
+      new FakeEntryImpl(crostiniVolume.label, RootType.CROSTINI);
   initialState.uiEntries.push(linuxFilesUiEntry.toURL());
   initialState.allEntries[linuxFilesUiEntry.toURL()] =
       convertEntryToFileData(linuxFilesUiEntry);
@@ -659,8 +653,8 @@ export async function testRemoveGroupedRemovableVolume(done: () => void) {
   // Put partition-1 volume in the store.
   const {volumeManager} = window.fileManager;
   const partition1VolumeInfo = MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.REMOVABLE, 'removable:partition1',
-      'Partition 1', '/device/path');
+      VolumeType.REMOVABLE, 'removable:partition1', 'Partition 1',
+      '/device/path');
   volumeManager.volumeInfoList.add(partition1VolumeInfo);
   const partition1VolumeEntry = new VolumeEntry(partition1VolumeInfo);
   const partition1FileData = convertEntryToFileData(partition1VolumeEntry);
@@ -674,8 +668,8 @@ export async function testRemoveGroupedRemovableVolume(done: () => void) {
 
   // Put partition-2 volume in the store.
   const partition2VolumeInfo = MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.REMOVABLE, 'removable:partition2',
-      'Partition 2', '/device/path');
+      VolumeType.REMOVABLE, 'removable:partition2', 'Partition 2',
+      '/device/path');
   volumeManager.volumeInfoList.add(partition2VolumeInfo);
   const partition2VolumeEntry = new VolumeEntry(partition2VolumeInfo);
   const partition2FileData = convertEntryToFileData(partition2VolumeEntry);
@@ -689,8 +683,7 @@ export async function testRemoveGroupedRemovableVolume(done: () => void) {
 
   // Put parent wrapper in the store.
   const parentEntry = new EntryList(
-      partition1VolumeMetadata.driveLabel || '',
-      VolumeManagerCommon.RootType.REMOVABLE,
+      partition1VolumeMetadata.driveLabel || '', RootType.REMOVABLE,
       partition1VolumeMetadata.devicePath);
   parentEntry.addEntry(partition1VolumeEntry);
   initialState.volumes[partition1Volume.volumeId]!.prefixKey =
@@ -777,7 +770,7 @@ export async function testUpdateIsInteractiveVolume(done: () => void) {
   const initialState = getEmptyState();
   const {volumeManager} = window.fileManager;
   const volumeInfo = MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.ARCHIVE, 'test', 'test.zip');
+      VolumeType.ARCHIVE, 'test', 'test.zip');
   volumeManager.volumeInfoList.add(volumeInfo);
   const volume = convertVolumeInfoAndMetadataToVolume(
       volumeInfo, createFakeVolumeMetadata(volumeInfo));

@@ -11,7 +11,7 @@ import {isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
 import {recordEnum} from '../../common/js/metrics.js';
 import {getEntryLabel, str} from '../../common/js/translations.js';
 import type {TrashEntry} from '../../common/js/trash.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {RootType} from '../../common/js/volume_manager_types.js';
 import type {DirectoryChangeEvent} from '../../externs/directory_change_event.js';
 import {DialogType} from '../../externs/ts/state.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
@@ -209,8 +209,7 @@ export class MainWindowComponent {
     if (this.dialogType_ === DialogType.FULL_PAGE) {
       // Files within the trash root should not have default tasks. They should
       // be restored first.
-      if (this.directoryModel_.getCurrentRootType() ===
-          VolumeManagerCommon.RootType.TRASH) {
+      if (this.directoryModel_.getCurrentRootType() === RootType.TRASH) {
         const selection = this.selectionHandler_.selection;
         if (!selection) {
           return true;

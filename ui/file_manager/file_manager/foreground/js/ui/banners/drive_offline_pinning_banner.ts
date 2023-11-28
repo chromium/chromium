@@ -9,7 +9,7 @@
  */
 
 import {str, strf} from '../../../../common/js/translations.js';
-import {VolumeManagerCommon} from '../../../../common/js/volume_manager_types.js';
+import {RootType, VolumeType} from '../../../../common/js/volume_manager_types.js';
 
 import {getTemplate} from './drive_offline_pinning_banner.html.js';
 import {EducationalBanner} from './educational_banner.js';
@@ -54,8 +54,8 @@ export class DriveOfflinePinningBanner extends EducationalBanner {
    */
   override allowedVolumes() {
     return [{
-      type: VolumeManagerCommon.VolumeType.DRIVE,
-      root: VolumeManagerCommon.RootType.DRIVE,
+      type: VolumeType.DRIVE,
+      root: RootType.DRIVE,
     }];
   }
 }

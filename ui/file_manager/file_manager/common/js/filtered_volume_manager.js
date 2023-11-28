@@ -12,7 +12,7 @@ import {VolumeInfoList} from '../../externs/volume_info_list.js';
 
 import {ArrayDataModel} from './array_data_model.js';
 import {isFuseBoxDebugEnabled} from './flags.js';
-import {AllowedPaths, VolumeManagerCommon} from './volume_manager_types.js';
+import {AllowedPaths, ARCHIVE_OPENED_EVENT_TYPE, isNative, VolumeType} from './volume_manager_types.js';
 
 /**
  * Implementation of VolumeInfoList for FilteredVolumeManager.
@@ -78,11 +78,11 @@ export class FilteredVolumeInfoList {
 /**
  * Volume types that match the Android 'media-store-files-only' volume filter,
  * viz., the volume content is indexed by the Android MediaStore.
- * @const !Array<!VolumeManagerCommon.VolumeType>
+ * @const !Array<!VolumeType>
  */
 const MEDIA_STORE_VOLUME_TYPES = [
-  VolumeManagerCommon.VolumeType.DOWNLOADS,
-  VolumeManagerCommon.VolumeType.REMOVABLE,
+  VolumeType.DOWNLOADS,
+  VolumeType.REMOVABLE,
 ];
 
 /**
@@ -101,7 +101,7 @@ export class FilteredVolumeManager extends EventTarget {
    *     been initialized.
    * @param {!Array<string>} volumeFilter Array of Files app mode dependent
    *     volume filter names from Files app launch params, [] typically.
-   * @param {!Array<!VolumeManagerCommon.VolumeType>} disabledVolumes List of
+   * @param {!Array<!VolumeType>} disabledVolumes List of
    *     volumes that should be visible but can't be selected.
    */
   constructor(
@@ -156,7 +156,7 @@ export class FilteredVolumeManager extends EventTarget {
 
     /**
      * List of disabled volumes.
-     * @private @const @type {!Array<!VolumeManagerCommon.VolumeType>}
+     * @private @const @type {!Array<!VolumeType>}
      */
     this.disabledVolumes_ = disabledVolumes;
 
@@ -182,7 +182,7 @@ export class FilteredVolumeManager extends EventTarget {
   }
 
   /**
-   * @return {!Array<!VolumeManagerCommon.VolumeType>}
+   * @return {!Array<!VolumeType>}
    */
   get disabledVolumes() {
     return this.disabledVolumes_;
@@ -195,7 +195,7 @@ export class FilteredVolumeManager extends EventTarget {
    * disallowed for other restrictions. To check if a specific volume is allowed
    * or not, use isAllowedVolume_() instead.
    *
-   * @param {VolumeManagerCommon.VolumeType} volumeType
+   * @param {VolumeType} volumeType
    * @return {boolean}
    * @private
    */
@@ -205,7 +205,7 @@ export class FilteredVolumeManager extends EventTarget {
       case AllowedPaths.ANY_PATH_OR_URL:
         return true;
       case AllowedPaths.NATIVE_PATH:
-        return VolumeManagerCommon.isNative(assert(volumeType));
+        return isNative(assert(volumeType));
     }
   }
 
@@ -260,7 +260,7 @@ export class FilteredVolumeManager extends EventTarget {
     } else if (this.isFuseBoxOnly_) {
       // SelectFileAsh requires fusebox volumes or native volumes.
       return this.isFuseBoxFileSystem_(volumeInfo.diskFileSystemType) ||
-          VolumeManagerCommon.isNative(volumeInfo.volumeType);
+          isNative(volumeInfo.volumeType);
     } else if (this.isFuseBoxFileSystem_(volumeInfo.diskFileSystemType)) {
       // Normal Files app: remove fusebox volumes.
       return false;
@@ -290,7 +290,7 @@ export class FilteredVolumeManager extends EventTarget {
     this.volumeManager_.addEventListener(
         'externally-unmounted', this.onEventBound_);
     this.volumeManager_.addEventListener(
-        VolumeManagerCommon.ARCHIVE_OPENED_EVENT_TYPE, this.onEventBound_);
+        ARCHIVE_OPENED_EVENT_TYPE, this.onEventBound_);
 
     // Dispatch 'drive-connection-changed' to listeners, since the return value
     // of FilteredVolumeManager.getDriveConnectionState() can be changed by
@@ -347,7 +347,7 @@ export class FilteredVolumeManager extends EventTarget {
     // runtime "The event is already being dispatched." error.
     switch (event.type) {
       case 'drive-connection-changed':
-        if (this.isAllowedVolumeType_(VolumeManagerCommon.VolumeType.DRIVE)) {
+        if (this.isAllowedVolumeType_(VolumeType.DRIVE)) {
           dispatchSimpleEvent(this, 'drive-connection-changed');
         }
         break;
@@ -365,7 +365,7 @@ export class FilteredVolumeManager extends EventTarget {
               new CustomEvent('externally-unmount', {detail: event.detail}));
         }
         break;
-      case VolumeManagerCommon.ARCHIVE_OPENED_EVENT_TYPE:
+      case ARCHIVE_OPENED_EVENT_TYPE:
         // @ts-ignore: error TS2339: Property 'detail' does not exist on type
         // 'Event'.
         if (this.getVolumeInfo(event.detail.mountPoint)) {
@@ -444,8 +444,7 @@ export class FilteredVolumeManager extends EventTarget {
    *     connection state.
    */
   getDriveConnectionState() {
-    if (!this.isAllowedVolumeType_(VolumeManagerCommon.VolumeType.DRIVE) ||
-        !this.volumeManager_) {
+    if (!this.isAllowedVolumeType_(VolumeType.DRIVE) || !this.volumeManager_) {
       return {
         type: chrome.fileManagerPrivate.DriveConnectionStateType.OFFLINE,
         reason: chrome.fileManagerPrivate.DriveOfflineReason.NO_SERVICE,
@@ -464,7 +463,7 @@ export class FilteredVolumeManager extends EventTarget {
 
   /**
    * Obtains a volume information of the current profile.
-   * @param {VolumeManagerCommon.VolumeType} volumeType Volume type.
+   * @param {VolumeType} volumeType Volume type.
    * @return {?import('../../externs/volume_info.js').VolumeInfo} Found volume
    *     info.
    */
@@ -479,8 +478,8 @@ export class FilteredVolumeManager extends EventTarget {
   // type.
   getDefaultDisplayRoot(callback) {
     this.ensureInitialized(() => {
-      const defaultVolume = this.getCurrentProfileVolumeInfo(
-          VolumeManagerCommon.VolumeType.DOWNLOADS);
+      const defaultVolume =
+          this.getCurrentProfileVolumeInfo(VolumeType.DOWNLOADS);
       if (!defaultVolume) {
         console.warn('Cannot get default display root');
         callback(null);

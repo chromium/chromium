@@ -6,7 +6,7 @@ import {queryRequiredElement} from '../../common/js/dom_utils.js';
 import {getODFSMetadataQueryEntry, isInteractiveVolume, isOneDrive, isRecentRootType} from '../../common/js/entry_utils.js';
 import {str} from '../../common/js/translations.js';
 import {FileErrorToDomError} from '../../common/js/util.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {RootType} from '../../common/js/volume_manager_types.js';
 import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
 import {updateIsInteractiveVolume} from '../../state/ducks/volumes.js';
@@ -250,7 +250,7 @@ export class EmptyFolderController {
     let svgRef = null;
     if (isRecentRootType(currentRootType)) {
       svgRef = RECENTS_EMPTY_FOLDER;
-    } else if (currentRootType === VolumeManagerCommon.RootType.TRASH) {
+    } else if (currentRootType === RootType.TRASH) {
       svgRef = TRASH_EMPTY_FOLDER;
     } else if (
         isOneDrive(currentVolumeInfo) &&

@@ -9,7 +9,7 @@
  */
 
 import {bytesToString, strf} from '../../../../common/js/translations.js';
-import {VolumeManagerCommon} from '../../../../common/js/volume_manager_types.js';
+import {RootType, VolumeType} from '../../../../common/js/volume_manager_types.js';
 
 import {getTemplate} from './drive_low_individual_space_banner.html.js';
 import {WarningBanner} from './warning_banner.js';
@@ -41,7 +41,7 @@ export class DriveLowIndividualSpaceBanner extends WarningBanner {
    */
   override diskThreshold() {
     return {
-      type: VolumeManagerCommon.RootType.DRIVE,
+      type: RootType.DRIVE,
       minRatio: 0.2,
     };
   }
@@ -53,8 +53,8 @@ export class DriveLowIndividualSpaceBanner extends WarningBanner {
    */
   override allowedVolumes() {
     return [{
-      type: VolumeManagerCommon.VolumeType.DRIVE,
-      root: VolumeManagerCommon.RootType.DRIVE,
+      type: VolumeType.DRIVE,
+      root: RootType.DRIVE,
     }];
   }
 

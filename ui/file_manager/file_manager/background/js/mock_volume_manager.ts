@@ -7,7 +7,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {isComputersRoot, isFakeEntry, isSameEntry, isTeamDriveRoot} from '../../common/js/entry_utils.js';
 import {MockEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {str} from '../../common/js/translations.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {FileSystemType, getRootTypeFromVolumeType, RootType, Source, VolumeType} from '../../common/js/volume_manager_types.js';
 import {EntryLocation} from '../../externs/entry_location.js';
 import {FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
@@ -20,10 +20,8 @@ import {VolumeInfoListImpl} from './volume_info_list_impl.js';
 import {volumeManagerFactory} from './volume_manager_factory.js';
 import {VolumeManagerImpl} from './volume_manager_impl.js';
 
-export const fakeMyFilesVolumeId =
-    VolumeManagerCommon.VolumeType.DOWNLOADS + ':test_mount_path';
-export const fakeDriveVolumeId =
-    VolumeManagerCommon.VolumeType.DRIVE + ':test_mount_path';
+export const fakeMyFilesVolumeId = VolumeType.DOWNLOADS + ':test_mount_path';
+export const fakeDriveVolumeId = VolumeType.DRIVE + ':test_mount_path';
 
 let volumeManagerInstance: VolumeManager|null = null;
 
@@ -62,15 +60,14 @@ export class MockVolumeManager implements VolumeManager {
 
     // Create Drive, swap entries back in, revert window.webkitResolve.
     const drive = this.createVolumeInfo(
-        VolumeManagerCommon.VolumeType.DRIVE, fakeDriveVolumeId,
-        str('DRIVE_DIRECTORY_LABEL'));
+        VolumeType.DRIVE, fakeDriveVolumeId, str('DRIVE_DIRECTORY_LABEL'));
     (drive.fileSystem as MockFileSystem)
         .populate(Object.values(driveFs.entries));
     window.webkitResolveLocalFileSystemURL = orig;
 
     // Create Downloads.
     this.createVolumeInfo(
-        VolumeManagerCommon.VolumeType.DOWNLOADS, fakeMyFilesVolumeId,
+        VolumeType.DOWNLOADS, fakeMyFilesVolumeId,
         str('DOWNLOADS_DIRECTORY_LABEL'));
   }
 
@@ -100,8 +97,8 @@ export class MockVolumeManager implements VolumeManager {
    * Creates, installs and returns a mock VolumeInfo instance.
    */
   createVolumeInfo(
-      type: VolumeManagerCommon.VolumeType, volumeId: string, label: string,
-      providerId?: string, remoteMountPath?: string): VolumeInfo {
+      type: VolumeType, volumeId: string, label: string, providerId?: string,
+      remoteMountPath?: string): VolumeInfo {
     const volumeInfo = MockVolumeManager.createMockVolumeInfo(
         type, volumeId, label, undefined, providerId, remoteMountPath);
     this.volumeInfoList.add(volumeInfo);
@@ -117,9 +114,8 @@ export class MockVolumeManager implements VolumeManager {
    */
   getLocationInfo(entry: Entry|FilesAppEntry): EntryLocation|null {
     if (isFakeEntry(entry)) {
-      const isReadOnly =
-          entry.rootType !== VolumeManagerCommon.RootType.RECENT &&
-          entry.rootType !== VolumeManagerCommon.RootType.TRASH;
+      const isReadOnly = entry.rootType !== RootType.RECENT &&
+          entry.rootType !== RootType.TRASH;
       return new EntryLocationImpl(
           this.volumeInfoList.item(0), entry.rootType, /* isRootType= */ true,
           isReadOnly);
@@ -127,26 +123,26 @@ export class MockVolumeManager implements VolumeManager {
 
     if (entry.filesystem?.name === fakeDriveVolumeId) {
       const volumeInfo = this.volumeInfoList.item(0);
-      let rootType = VolumeManagerCommon.RootType.DRIVE;
+      let rootType = RootType.DRIVE;
       let isRootEntry = entry.fullPath === '/root';
       if (entry.fullPath.startsWith('/team_drives')) {
         if (entry.fullPath === '/team_drives') {
-          rootType = VolumeManagerCommon.RootType.SHARED_DRIVES_GRAND_ROOT;
+          rootType = RootType.SHARED_DRIVES_GRAND_ROOT;
           isRootEntry = true;
         } else {
-          rootType = VolumeManagerCommon.RootType.SHARED_DRIVE;
+          rootType = RootType.SHARED_DRIVE;
           isRootEntry = isTeamDriveRoot(entry);
         }
       } else if (entry.fullPath.startsWith('/Computers')) {
         if (entry.fullPath === '/Computers') {
-          rootType = VolumeManagerCommon.RootType.COMPUTERS_GRAND_ROOT;
+          rootType = RootType.COMPUTERS_GRAND_ROOT;
           isRootEntry = true;
         } else {
-          rootType = VolumeManagerCommon.RootType.COMPUTER;
+          rootType = RootType.COMPUTER;
           isRootEntry = isComputersRoot(entry);
         }
       } else if (/^\/\.(files|shortcut-targets)-by-id/.test(entry.fullPath)) {
-        rootType = VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME;
+        rootType = RootType.DRIVE_SHARED_WITH_ME;
       }
       return new EntryLocationImpl(volumeInfo, rootType, isRootEntry, true);
     }
@@ -158,8 +154,7 @@ export class MockVolumeManager implements VolumeManager {
       return null;
     }
     assert(volumeInfo.volumeType);
-    const rootType =
-        VolumeManagerCommon.getRootTypeFromVolumeType(volumeInfo.volumeType);
+    const rootType = getRootTypeFromVolumeType(volumeInfo.volumeType);
     const isRootEntry = isSameEntry(entry, volumeInfo.fileSystem.root);
     return new EntryLocationImpl(volumeInfo, rootType, isRootEntry, false);
   }
@@ -168,8 +163,7 @@ export class MockVolumeManager implements VolumeManager {
    * @param volumeType Volume type.
    * @return Volume info.
    */
-  getCurrentProfileVolumeInfo(volumeType: VolumeManagerCommon.VolumeType): null
-      |VolumeInfo {
+  getCurrentProfileVolumeInfo(volumeType: VolumeType): null|VolumeInfo {
     for (let i = 0; i < this.volumeInfoList.length; i++) {
       const volumeInfo = this.volumeInfoList.item(i);
       if (volumeInfo.profile.isCurrentProfile &&
@@ -199,21 +193,20 @@ export class MockVolumeManager implements VolumeManager {
    *     VolumeInfo.
    */
   static createMockVolumeInfo(
-      type: VolumeManagerCommon.VolumeType, volumeId: string, label?: string,
-      devicePath?: string, providerId?: string,
-      remoteMountPath?: string): VolumeInfo {
+      type: VolumeType, volumeId: string, label?: string, devicePath?: string,
+      providerId?: string, remoteMountPath?: string): VolumeInfo {
     const fileSystem = new MockFileSystem(volumeId, 'filesystem:' + volumeId);
 
-    let diskFileSystemType = VolumeManagerCommon.FileSystemType.UNKNOWN;
+    let diskFileSystemType = FileSystemType.UNKNOWN;
     if (devicePath && devicePath.startsWith('fusebox')) {
-      diskFileSystemType = 'fusebox' as VolumeManagerCommon.FileSystemType;
+      diskFileSystemType = 'fusebox' as FileSystemType;
     }
 
-    let source = VolumeManagerCommon.Source.NETWORK;
-    if (type === VolumeManagerCommon.VolumeType.ARCHIVE) {
-      source = VolumeManagerCommon.Source.FILE;
-    } else if (type === VolumeManagerCommon.VolumeType.REMOVABLE) {
-      source = VolumeManagerCommon.Source.DEVICE;
+    let source = Source.NETWORK;
+    if (type === VolumeType.ARCHIVE) {
+      source = Source.FILE;
+    } else if (type === VolumeType.REMOVABLE) {
+      source = Source.DEVICE;
     }
 
     // If there's no label set it to volumeId to make it shorter to write
@@ -278,7 +271,7 @@ export class MockVolumeManager implements VolumeManager {
     return false;
   }
 
-  isDisabled(_volume: VolumeManagerCommon.VolumeType): boolean {
+  isDisabled(_volume: VolumeType): boolean {
     return false;
   }
 
@@ -322,7 +315,7 @@ export class MockVolumeManager implements VolumeManager {
       errorCallback?: (arg0: FileError) => void) {
     const match = url.match(/^filesystem:(\w+):\w+(\/.*)/);
     if (match) {
-      const volumeType = match[1]! as VolumeManagerCommon.VolumeType;
+      const volumeType = match[1]! as VolumeType;
       let path = match[2]!;
       const volume = volumeManager.getCurrentProfileVolumeInfo(volumeType);
       if (volume) {

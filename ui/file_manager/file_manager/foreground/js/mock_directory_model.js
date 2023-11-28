@@ -4,7 +4,7 @@
 
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {RootType} from '../../common/js/volume_manager_types.js';
 import {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfaces.js';
 
 import {FileFilter} from './directory_contents.js';
@@ -73,7 +73,7 @@ export function createFakeDirectoryModel() {
     }
 
     /**
-     * @returns {?VolumeManagerCommon.RootType}
+     * @returns {?RootType}
      */
     getCurrentRootType() {
       return null;

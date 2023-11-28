@@ -5,7 +5,7 @@
 import {getDriveQuotaMetadata, getSizeStats} from '../../common/js/api.js';
 import {isRecentRoot} from '../../common/js/entry_utils.js';
 import {str} from '../../common/js/translations.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {VolumeType} from '../../common/js/volume_manager_types.js';
 import {DirectoryChangeEvent} from '../../externs/directory_change_event.js';
 
 import {DirectoryModel} from './directory_model.js';
@@ -113,19 +113,16 @@ export class GearMenuController {
 
     // TODO(mtomasz): Add support for remaining space indication for provided
     // file systems.
-    if (currentVolumeInfo.volumeType ==
-            VolumeManagerCommon.VolumeType.PROVIDED ||
-        currentVolumeInfo.volumeType ==
-            VolumeManagerCommon.VolumeType.MEDIA_VIEW ||
-        currentVolumeInfo.volumeType ==
-            VolumeManagerCommon.VolumeType.ARCHIVE) {
+    if (currentVolumeInfo.volumeType == VolumeType.PROVIDED ||
+        currentVolumeInfo.volumeType == VolumeType.MEDIA_VIEW ||
+        currentVolumeInfo.volumeType == VolumeType.ARCHIVE) {
       // @ts-ignore: error TS2345: Argument of type 'null' is not assignable to
       // parameter of type 'Promise<SpaceInfo | undefined>'.
       this.gearMenu_.setSpaceInfo(null, false);
       return;
     }
 
-    if (currentVolumeInfo.volumeType == VolumeManagerCommon.VolumeType.DRIVE) {
+    if (currentVolumeInfo.volumeType == VolumeType.DRIVE) {
       this.gearMenu_.setSpaceInfo(
           // @ts-ignore: error TS2345: Argument of type 'Promise<SpaceInfo | {
           // totalSize: number; usedSize: number; warningMessage: string | null;

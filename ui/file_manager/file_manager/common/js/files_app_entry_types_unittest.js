@@ -8,7 +8,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeo
 import {CombinedReaders, EntryList, FakeEntryImpl, StaticReader, VolumeEntry} from './files_app_entry_types.js';
 import {MockFileSystem} from './mock_entry.js';
 import {reportPromise, waitUntil} from './test_error_reporting.js';
-import {VolumeManagerCommon} from './volume_manager_types.js';
+import {RootType, VolumeType} from './volume_manager_types.js';
 
 
 // @ts-ignore: error TS7006: Parameter 'error' implicitly has an 'any' type.
@@ -18,7 +18,7 @@ function notreached(error) {
 
 /**
  * Creates a new volume with a single, mock VolumeEntry.
- * @param {?VolumeManagerCommon.VolumeType} volumeType
+ * @param {?VolumeType} volumeType
  * @param {DirectoryEntry=} displayRoot
  * @param {Object=} additionalProperties
  * @return {!VolumeEntry}
@@ -46,8 +46,7 @@ function fakeVolumeEntry(volumeType, displayRoot, additionalProperties) {
  * @param {()=>void} done
  */
 export function testEntryList(done) {
-  const entryList =
-      new EntryList('My files', VolumeManagerCommon.RootType.MY_FILES);
+  const entryList = new EntryList('My files', RootType.MY_FILES);
   assertEquals('My files', entryList.label);
   assertEquals('entry-list://my_files', entryList.toURL());
   assertEquals('my_files', entryList.rootType);
@@ -57,8 +56,7 @@ export function testEntryList(done) {
   assertTrue(entryList.isDirectory);
   assertFalse(entryList.isFile);
 
-  entryList.addEntry(
-      new EntryList('Child Entry', VolumeManagerCommon.RootType.MY_FILES));
+  entryList.addEntry(new EntryList('Child Entry', RootType.MY_FILES));
   assertEquals(1, entryList.getUIChildren().length);
 
   const reader = entryList.createReader();
@@ -96,8 +94,7 @@ export function testEntryList(done) {
  * @param {()=>void} done
  */
 export function testEntryListGetParent(done) {
-  const entryList =
-      new EntryList('My files', VolumeManagerCommon.RootType.MY_FILES);
+  const entryList = new EntryList('My files', RootType.MY_FILES);
   let callbackTriggered = false;
   entryList.getParent(parentEntry => {
     // EntryList should return itself since it's a root and that's what the web
@@ -110,11 +107,10 @@ export function testEntryListGetParent(done) {
 
 /** Tests method EntryList.addEntry. */
 export function testEntryListAddEntry() {
-  const entryList =
-      new EntryList('My files', VolumeManagerCommon.RootType.MY_FILES);
+  const entryList = new EntryList('My files', RootType.MY_FILES);
   assertEquals(0, entryList.getUIChildren().length);
 
-  const childEntry = fakeVolumeEntry(VolumeManagerCommon.VolumeType.DOWNLOADS);
+  const childEntry = fakeVolumeEntry(VolumeType.DOWNLOADS);
   entryList.addEntry(childEntry);
   assertEquals(1, entryList.getUIChildren().length);
   assertEquals(childEntry, entryList.getUIChildren()[0]);
@@ -125,11 +121,10 @@ export function testEntryListAddEntry() {
  * removeByVolumeType, removeAllByRootType, removeChildEntry.
  */
 export function testEntryFindIndex() {
-  const entryList =
-      new EntryList('My files', VolumeManagerCommon.RootType.MY_FILES);
+  const entryList = new EntryList('My files', RootType.MY_FILES);
 
-  const downloads = fakeVolumeEntry(VolumeManagerCommon.VolumeType.DOWNLOADS);
-  const crostini = fakeVolumeEntry(VolumeManagerCommon.VolumeType.CROSTINI);
+  const downloads = fakeVolumeEntry(VolumeType.DOWNLOADS);
+  const crostini = fakeVolumeEntry(VolumeType.CROSTINI);
 
   // @ts-ignore: error TS2352: Conversion of type '{ isDirectory: true;
   // rootType: string; name: string; toURL: () => string; }' to type
@@ -138,7 +133,7 @@ export function testEntryFindIndex() {
   // 'unknown' first.
   const fakeEntry = /** @type{!Entry} */ ({
     isDirectory: true,
-    rootType: VolumeManagerCommon.RootType.CROSTINI,
+    rootType: RootType.CROSTINI,
     name: 'Linux files',
     toURL: function() {
       return 'fake-entry://linux-files';
@@ -153,18 +148,16 @@ export function testEntryFindIndex() {
   assertEquals(1, entryList.findIndexByVolumeInfo(crostini.volumeInfo));
 
   // Test removeByVolumeType.
-  assertTrue(
-      entryList.removeByVolumeType(VolumeManagerCommon.VolumeType.CROSTINI));
+  assertTrue(entryList.removeByVolumeType(VolumeType.CROSTINI));
   assertEquals(1, entryList.getUIChildren().length);
   // Now crostini volume doesn't exist anymore, so should return False.
-  assertFalse(
-      entryList.removeByVolumeType(VolumeManagerCommon.VolumeType.CROSTINI));
+  assertFalse(entryList.removeByVolumeType(VolumeType.CROSTINI));
 
   // Test removeAllByRootType.
   entryList.addEntry(fakeEntry);
   entryList.addEntry(fakeEntry);
   assertEquals(3, entryList.getUIChildren().length);
-  entryList.removeAllByRootType(VolumeManagerCommon.RootType.CROSTINI);
+  entryList.removeAllByRootType(RootType.CROSTINI);
   assertEquals(1, entryList.getUIChildren().length);
 
   // Test removeChildEntry.
@@ -184,11 +177,10 @@ export function testEntryFindIndex() {
  */
 export function testVolumeEntryFindIndex() {
   const fakeRootEntry = createFakeDisplayRoot();
-  const volumeEntry =
-      fakeVolumeEntry(VolumeManagerCommon.VolumeType.DOWNLOADS, fakeRootEntry);
+  const volumeEntry = fakeVolumeEntry(VolumeType.DOWNLOADS, fakeRootEntry);
 
-  const crostini = fakeVolumeEntry(VolumeManagerCommon.VolumeType.CROSTINI);
-  const android = fakeVolumeEntry(VolumeManagerCommon.VolumeType.ANDROID_FILES);
+  const crostini = fakeVolumeEntry(VolumeType.CROSTINI);
+  const android = fakeVolumeEntry(VolumeType.ANDROID_FILES);
 
   // @ts-ignore: error TS2352: Conversion of type '{ isDirectory: true;
   // rootType: string; name: string; toURL: () => string; }' to type
@@ -197,7 +189,7 @@ export function testVolumeEntryFindIndex() {
   // 'unknown' first.
   const fakeEntry = /** @type{!Entry} */ ({
     isDirectory: true,
-    rootType: VolumeManagerCommon.RootType.CROSTINI,
+    rootType: RootType.CROSTINI,
     name: 'Linux files',
     toURL: function() {
       return 'fake-entry://linux-files';
@@ -215,14 +207,12 @@ export function testVolumeEntryFindIndex() {
   assertEquals(android, volumeEntry.getUIChildren()[1]);
 
   // Test removeByVolumeType.
-  assertTrue(
-      volumeEntry.removeByVolumeType(VolumeManagerCommon.VolumeType.CROSTINI));
+  assertTrue(volumeEntry.removeByVolumeType(VolumeType.CROSTINI));
   // @ts-ignore: error TS2341: Property 'children_' is private and only
   // accessible within class 'VolumeEntry'.
   assertEquals(1, volumeEntry.children_.length);
   // Now crostini volume doesn't exist anymore, so should return False.
-  assertFalse(
-      volumeEntry.removeByVolumeType(VolumeManagerCommon.VolumeType.CROSTINI));
+  assertFalse(volumeEntry.removeByVolumeType(VolumeType.CROSTINI));
 
   // Test removeAllByRootType.
   volumeEntry.addEntry(fakeEntry);
@@ -230,7 +220,7 @@ export function testVolumeEntryFindIndex() {
   // @ts-ignore: error TS2341: Property 'children_' is private and only
   // accessible within class 'VolumeEntry'.
   assertEquals(3, volumeEntry.children_.length);
-  volumeEntry.removeAllByRootType(VolumeManagerCommon.RootType.CROSTINI);
+  volumeEntry.removeAllByRootType(RootType.CROSTINI);
   // @ts-ignore: error TS2341: Property 'children_' is private and only
   // accessible within class 'VolumeEntry'.
   assertEquals(1, volumeEntry.children_.length);
@@ -250,8 +240,7 @@ export function testVolumeEntryFindIndex() {
  * @param {()=>void} done
  */
 export function testEntryListGetMetadata(done) {
-  const entryList =
-      new EntryList('My files', VolumeManagerCommon.RootType.MY_FILES);
+  const entryList = new EntryList('My files', RootType.MY_FILES);
 
   // @ts-ignore: error TS7034: Variable 'modificationTime' implicitly has type
   // 'any' in some locations where its type cannot be determined.
@@ -454,12 +443,11 @@ function createFakeDisplayRoot() {
  */
 export function testVolumeEntry() {
   const fakeRootEntry = createFakeDisplayRoot();
-  const volumeEntry =
-      fakeVolumeEntry(VolumeManagerCommon.VolumeType.DOWNLOADS, fakeRootEntry);
+  const volumeEntry = fakeVolumeEntry(VolumeType.DOWNLOADS, fakeRootEntry);
 
   assertEquals(fakeRootEntry, volumeEntry.getNativeEntry());
   // Downloads volume is displayed with MyFiles icon.
-  assertEquals(VolumeManagerCommon.VolumeType.MY_FILES, volumeEntry.iconName);
+  assertEquals(VolumeType.MY_FILES, volumeEntry.iconName);
   // @ts-ignore: error TS2339: Property 'rootURL' does not exist on type
   // 'FileSystem'.
   assertEquals('filesystem:fake-fs/', volumeEntry.filesystem.rootURL);
@@ -480,10 +468,9 @@ export function testVolumeEntryCreateReader(done) {
   // @ts-ignore: error TS2322: Type 'string' is not assignable to type
   // 'FileSystemEntry | FilesAppEntry'.
   fakeRootEntry.createReader = () => new StaticReader(['file1']);
-  const volumeEntry =
-      fakeVolumeEntry(VolumeManagerCommon.VolumeType.DOWNLOADS, fakeRootEntry);
-  const crostini = fakeVolumeEntry(VolumeManagerCommon.VolumeType.CROSTINI);
-  const android = fakeVolumeEntry(VolumeManagerCommon.VolumeType.ANDROID_FILES);
+  const volumeEntry = fakeVolumeEntry(VolumeType.DOWNLOADS, fakeRootEntry);
+  const crostini = fakeVolumeEntry(VolumeType.CROSTINI);
+  const android = fakeVolumeEntry(VolumeType.ANDROID_FILES);
 
   volumeEntry.addEntry(crostini);
   volumeEntry.addEntry(android);
@@ -540,7 +527,7 @@ export function testVolumeEntryCreateReaderUnresolved(done) {
       /** @type{!import("../../externs/volume_info.js").VolumeInfo} */ ({
         displayRoot: null,
         label: 'Fake Filesystem label',
-        volumeType: VolumeManagerCommon.VolumeType.DOWNLOADS,
+        volumeType: VolumeType.DOWNLOADS,
         // @ts-ignore: error TS6133: 'errorCallback' is declared but its value
         // is never read.
         resolveDisplayRoot: (successCallback, errorCallback) => {
@@ -549,8 +536,8 @@ export function testVolumeEntryCreateReaderUnresolved(done) {
       });
 
   const volumeEntry = new VolumeEntry(fakeVolumeInfo);
-  const crostini = fakeVolumeEntry(VolumeManagerCommon.VolumeType.CROSTINI);
-  const android = fakeVolumeEntry(VolumeManagerCommon.VolumeType.ANDROID_FILES);
+  const crostini = fakeVolumeEntry(VolumeType.CROSTINI);
+  const android = fakeVolumeEntry(VolumeType.ANDROID_FILES);
 
   assertEquals(null, volumeEntry.filesystem);
   assertEquals('', volumeEntry.fullPath);
@@ -703,8 +690,7 @@ export function testVolumeEntryGetMetadata(done) {
  */
 export function testEntryListAddEntrySetsPrefix() {
   const volumeEntry = fakeVolumeEntry(null);
-  const entryList =
-      new EntryList('My files', VolumeManagerCommon.RootType.MY_FILES);
+  const entryList = new EntryList('My files', RootType.MY_FILES);
 
   entryList.addEntry(volumeEntry);
   assertEquals(1, entryList.getUIChildren().length);
@@ -717,8 +703,7 @@ export function testEntryListAddEntrySetsPrefix() {
  * @param {()=>void} done
  */
 export function testFakeEntry(done) {
-  let fakeEntry =
-      new FakeEntryImpl('label', VolumeManagerCommon.RootType.CROSTINI);
+  let fakeEntry = new FakeEntryImpl('label', RootType.CROSTINI);
 
   assertEquals(undefined, fakeEntry.sourceRestriction);
   assertEquals('FakeEntry', fakeEntry.type_name);
@@ -726,7 +711,7 @@ export function testFakeEntry(done) {
   assertEquals('label', fakeEntry.name);
   assertEquals('fake-entry://crostini', fakeEntry.toURL());
   assertEquals('crostini', fakeEntry.iconName);
-  assertEquals(VolumeManagerCommon.RootType.CROSTINI, fakeEntry.rootType);
+  assertEquals(RootType.CROSTINI, fakeEntry.rootType);
   assertFalse(fakeEntry.isNativeType);
   assertEquals(null, fakeEntry.getNativeEntry());
   assertTrue(fakeEntry.isDirectory);
@@ -735,8 +720,7 @@ export function testFakeEntry(done) {
   // Check sourceRestriction constructor args.
   const kSourceRestriction =
       /** @type{chrome.fileManagerPrivate.SourceRestriction} */ ('fake');
-  fakeEntry = new FakeEntryImpl(
-      'label', VolumeManagerCommon.RootType.CROSTINI, kSourceRestriction);
+  fakeEntry = new FakeEntryImpl('label', RootType.CROSTINI, kSourceRestriction);
   assertEquals(kSourceRestriction, fakeEntry.sourceRestriction);
 
   let callCounter = 0;

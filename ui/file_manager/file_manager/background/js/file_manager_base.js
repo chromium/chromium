@@ -8,7 +8,7 @@ import {resolveIsolatedEntries} from '../../common/js/api.js';
 import {FilesAppState} from '../../common/js/files_app_state.js';
 import {recordInterval} from '../../common/js/metrics.js';
 import {doIfPrimaryContext} from '../../common/js/util.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {createArchiveOpenedEvent, VOLUME_ALREADY_MOUNTED, VolumeError, VolumeType} from '../../common/js/volume_manager_types.js';
 import {Crostini} from '../../externs/background/crostini.js';
 import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.js';
 import {FileManagerBaseInterface} from '../../externs/background/file_manager_base.js';
@@ -85,8 +85,7 @@ export class FileManagerBase {
 
       volumeManagerFactory.getInstance().then(volumeManager => {
         volumeManager.addEventListener(
-            VolumeManagerCommon.VOLUME_ALREADY_MOUNTED,
-            this.handleViewEvent_.bind(this));
+            VOLUME_ALREADY_MOUNTED, this.handleViewEvent_.bind(this));
 
         this.crostini.initVolumeManager(volumeManager);
       });
@@ -193,7 +192,7 @@ export class FileManagerBase {
             // @ts-ignore: error TS2339: Property 'volumeId' does not exist on
             // type 'Event'.
           } else if (event.volumeId) {
-            if (event.type === VolumeManagerCommon.VOLUME_ALREADY_MOUNTED) {
+            if (event.type === VOLUME_ALREADY_MOUNTED) {
               // @ts-ignore: error TS2339: Property 'volumeId' does not exist on
               // type 'Event'.
               this.navigateToVolumeInFocusedWindowWhenReady_(event.volumeId);
@@ -315,7 +314,7 @@ export class FileManagerBase {
           if (directoryEntry) {
             volumeManagerFactory.getInstance().then(volumeManager => {
               volumeManager.dispatchEvent(
-                  VolumeManagerCommon.createArchiveOpenedEvent(directoryEntry));
+                  createArchiveOpenedEvent(directoryEntry));
             });
           }
         });
@@ -340,17 +339,17 @@ export class FileManagerBase {
   onMountCompletedInternal_(event) {
     // @ts-ignore: error TS2339: Property 'status' does not exist on type
     // 'Object'.
-    const statusOK = event.status === 'success' ||
+    const statusOK = event.status === VolumeError.SUCCESS ||
         // @ts-ignore: error TS2339: Property 'status' does not exist on type
         // 'Object'.
-        event.status === VolumeManagerCommon.VolumeError.PATH_ALREADY_MOUNTED;
-    // @ts-ignore: error TS2339: Property 'volumeMetadata' does not exist on
-    // type 'Object'.
-    const volumeTypeOK = event.volumeMetadata.volumeType ===
-            VolumeManagerCommon.VolumeType.PROVIDED &&
+        event.status === VolumeError.PATH_ALREADY_MOUNTED;
+    const volumeTypeOK =
         // @ts-ignore: error TS2339: Property 'volumeMetadata' does not exist on
         // type 'Object'.
-        event.volumeMetadata.source === VolumeManagerCommon.Source.FILE;
+        event.volumeMetadata.volumeType === VolumeType.PROVIDED &&
+        // @ts-ignore: error TS2339: Property 'volumeMetadata' does not exist on
+        // type 'Object'.
+        event.volumeMetadata.source === Source.FILE;
     // @ts-ignore: error TS2339: Property 'eventType' does not exist on type
     // 'Object'.
     if (event.eventType === 'mount' && statusOK &&

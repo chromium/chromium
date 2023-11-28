@@ -10,7 +10,7 @@ import {promisify} from '../../common/js/api.js';
 import {getRootType, isComputersRoot, isFakeEntry, isSameEntry, isSameFileSystem, isTeamDriveRoot} from '../../common/js/entry_utils.js';
 import {str} from '../../common/js/translations.js';
 import {timeoutPromise} from '../../common/js/util.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {COMPUTERS_DIRECTORY_PATH, FileSystemType, getMediaViewRootTypeFromVolumeId, getRootTypeFromVolumeType, MediaViewRootType, RootType, SHARED_DRIVES_DIRECTORY_PATH, Source, VOLUME_ALREADY_MOUNTED, VolumeError, VolumeType} from '../../common/js/volume_manager_types.js';
 import {EntryLocation} from '../../externs/entry_location.js';
 import {FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
@@ -34,13 +34,12 @@ const TIMEOUT_STR_REQUEST_FILE_SYSTEM = 'timeout(requestFileSystem)';
 
 /**
  * Logs a warning message if the given error is not in
- * VolumeManagerCommon.VolumeError.
+ * VolumeError.
  *
  * @param error Status string usually received from APIs.
  */
 function validateError(error: string) {
-  const found = Object.values(VolumeManagerCommon.VolumeError)
-                    .find(value => value === error);
+  const found = Object.values(VolumeError).find(value => value === error);
   if (found) {
     return;
   }
@@ -58,30 +57,29 @@ export async function createVolumeInfo(
     Promise<VolumeInfo> {
   let localizedLabel: string;
   switch (volumeMetadata.volumeType) {
-    case VolumeManagerCommon.VolumeType.DOWNLOADS:
+    case VolumeType.DOWNLOADS:
       localizedLabel = str('MY_FILES_ROOT_LABEL');
       break;
-    case VolumeManagerCommon.VolumeType.DRIVE:
+    case VolumeType.DRIVE:
       localizedLabel = str('DRIVE_DIRECTORY_LABEL');
       break;
-    case VolumeManagerCommon.VolumeType.MEDIA_VIEW:
-      switch (VolumeManagerCommon.getMediaViewRootTypeFromVolumeId(
-          volumeMetadata.volumeId)) {
-        case VolumeManagerCommon.MediaViewRootType.IMAGES:
+    case VolumeType.MEDIA_VIEW:
+      switch (getMediaViewRootTypeFromVolumeId(volumeMetadata.volumeId)) {
+        case MediaViewRootType.IMAGES:
           localizedLabel = str('MEDIA_VIEW_IMAGES_ROOT_LABEL');
           break;
-        case VolumeManagerCommon.MediaViewRootType.VIDEOS:
+        case MediaViewRootType.VIDEOS:
           localizedLabel = str('MEDIA_VIEW_VIDEOS_ROOT_LABEL');
           break;
-        case VolumeManagerCommon.MediaViewRootType.AUDIO:
+        case MediaViewRootType.AUDIO:
           localizedLabel = str('MEDIA_VIEW_AUDIO_ROOT_LABEL');
           break;
       }
       break;
-    case VolumeManagerCommon.VolumeType.CROSTINI:
+    case VolumeType.CROSTINI:
       localizedLabel = str('LINUX_FILES_ROOT_LABEL');
       break;
-    case VolumeManagerCommon.VolumeType.ANDROID_FILES:
+    case VolumeType.ANDROID_FILES:
       localizedLabel = str('ANDROID_FILES_ROOT_LABEL');
       break;
     default:
@@ -113,16 +111,14 @@ export async function createVolumeInfo(
       .then(rootDirectoryEntry => {
         console.debug(`Got file system '${volumeMetadata.volumeId}'`);
         return new VolumeInfoImpl(
-            volumeMetadata.volumeType as VolumeManagerCommon.VolumeType,
-            volumeMetadata.volumeId, rootDirectoryEntry.filesystem,
-            volumeMetadata.mountCondition, volumeMetadata.deviceType,
-            volumeMetadata.devicePath, volumeMetadata.isReadOnly,
-            volumeMetadata.isReadOnlyRemovableDevice, volumeMetadata.profile,
-            localizedLabel, volumeMetadata.providerId, volumeMetadata.hasMedia,
-            volumeMetadata.configurable, volumeMetadata.watchable,
-            volumeMetadata.source as VolumeManagerCommon.Source,
-            volumeMetadata.diskFileSystemType as
-                VolumeManagerCommon.FileSystemType,
+            volumeMetadata.volumeType as VolumeType, volumeMetadata.volumeId,
+            rootDirectoryEntry.filesystem, volumeMetadata.mountCondition,
+            volumeMetadata.deviceType, volumeMetadata.devicePath,
+            volumeMetadata.isReadOnly, volumeMetadata.isReadOnlyRemovableDevice,
+            volumeMetadata.profile, localizedLabel, volumeMetadata.providerId,
+            volumeMetadata.hasMedia, volumeMetadata.configurable,
+            volumeMetadata.watchable, volumeMetadata.source as Source,
+            volumeMetadata.diskFileSystemType as FileSystemType,
             volumeMetadata.iconSet, volumeMetadata.driveLabel,
             volumeMetadata.remoteMountPath, volumeMetadata.vmType);
       })
@@ -142,17 +138,15 @@ export async function createVolumeInfo(
         // TODO(crbug/847729): Report a mount error via UMA.
 
         return new VolumeInfoImpl(
-            volumeMetadata.volumeType as VolumeManagerCommon.VolumeType,
-            volumeMetadata.volumeId,
+            volumeMetadata.volumeType as VolumeType, volumeMetadata.volumeId,
             null,  // File system is not found.
             volumeMetadata.mountCondition, volumeMetadata.deviceType,
             volumeMetadata.devicePath, volumeMetadata.isReadOnly,
             volumeMetadata.isReadOnlyRemovableDevice, volumeMetadata.profile,
             localizedLabel, volumeMetadata.providerId, volumeMetadata.hasMedia,
             volumeMetadata.configurable, volumeMetadata.watchable,
-            volumeMetadata.source as VolumeManagerCommon.Source,
-            volumeMetadata.diskFileSystemType as
-                VolumeManagerCommon.FileSystemType,
+            volumeMetadata.source as Source,
+            volumeMetadata.diskFileSystemType as FileSystemType,
             volumeMetadata.iconSet, volumeMetadata.driveLabel,
             volumeMetadata.remoteMountPath, volumeMetadata.vmType);
       });
@@ -164,7 +158,7 @@ type VolumeAlreadyMountedEvent = Event&{
 };
 
 type RequestSuccessCallback = (volumeInfo?: VolumeInfo) => void;
-type RequestErrorCallback = (error: VolumeManagerCommon.VolumeError) => void;
+type RequestErrorCallback = (error: VolumeError) => void;
 interface Request {
   successCallbacks: RequestSuccessCallback[];
   errorCallbacks: RequestErrorCallback[];
@@ -249,7 +243,7 @@ export class VolumeManagerImpl extends EventTarget implements VolumeManager {
    * volume info has already been added, the volumeMetadata is ignored.
    */
   private addVolumeInfo_(volumeInfo: VolumeInfo): VolumeInfo {
-    const volumeType = volumeInfo.volumeType as VolumeManagerCommon.VolumeType;
+    const volumeType = volumeInfo.volumeType as VolumeType;
 
     // We don't show Downloads and Drive on volume list if they have
     // mount error, since users can do nothing in this situation. We
@@ -260,8 +254,8 @@ export class VolumeManagerImpl extends EventTarget implements VolumeManager {
     // volume. crbug.com/517772.
     let shouldShow = true;
     switch (volumeType) {
-      case VolumeManagerCommon.VolumeType.DOWNLOADS:
-      case VolumeManagerCommon.VolumeType.DRIVE:
+      case VolumeType.DOWNLOADS:
+      case VolumeType.DRIVE:
         shouldShow = !!volumeInfo.fileSystem;
         break;
     }
@@ -277,10 +271,10 @@ export class VolumeManagerImpl extends EventTarget implements VolumeManager {
       // is initialized, the status is set to not ready.
       // TODO(mtomasz): The connection status should be migrated into
       // chrome.fileManagerPrivate.VolumeMetadata.
-      if (volumeType === VolumeManagerCommon.VolumeType.DRIVE) {
+      if (volumeType === VolumeType.DRIVE) {
         this.onDriveConnectionStatusChanged_();
       }
-    } else if (volumeType === VolumeManagerCommon.VolumeType.REMOVABLE) {
+    } else if (volumeType === VolumeType.REMOVABLE) {
       // Update for remounted USB external storage, because they were
       // remounted to switch read-only policy.
       this.volumeInfoList.add(volumeInfo);
@@ -343,9 +337,8 @@ export class VolumeManagerImpl extends EventTarget implements VolumeManager {
           // Finish after all volumes have been processed, or at least Downloads
           // or Drive.
           const isDriveOrDownloads = volumeInfo &&
-              (volumeInfo.volumeType ==
-                   VolumeManagerCommon.VolumeType.DOWNLOADS ||
-               volumeInfo.volumeType == VolumeManagerCommon.VolumeType.DRIVE);
+              (volumeInfo.volumeType == VolumeType.DOWNLOADS ||
+               volumeInfo.volumeType == VolumeType.DRIVE);
           if (counter === volumeMetadataList.length || isDriveOrDownloads) {
             finishInitialization();
           }
@@ -379,16 +372,16 @@ export class VolumeManagerImpl extends EventTarget implements VolumeManager {
 
     const {eventType, status, volumeMetadata} = event;
     const {sourcePath = '', volumeId} = volumeMetadata;
-    const volumeError = status as string as VolumeManagerCommon.VolumeError;
+    const volumeError = status as string as VolumeError;
 
     switch (eventType) {
       case 'mount': {
         const requestKey = this.makeRequestKey_('mount', sourcePath);
 
         switch (volumeError) {
-          case VolumeManagerCommon.VolumeError.SUCCESS:
-          case VolumeManagerCommon.VolumeError.UNKNOWN_FILESYSTEM:
-          case VolumeManagerCommon.VolumeError.UNSUPPORTED_FILESYSTEM: {
+          case VolumeError.SUCCESS:
+          case VolumeError.UNKNOWN_FILESYSTEM:
+          case VolumeError.UNSUPPORTED_FILESYSTEM: {
             console.debug(`Mounted '${sourcePath}' as '${volumeId}'`);
             if (volumeMetadata.hidden) {
               console.debug(`Mount discarded for hidden volume: '${volumeId}'`);
@@ -413,22 +406,21 @@ export class VolumeManagerImpl extends EventTarget implements VolumeManager {
             return;
           }
 
-          case VolumeManagerCommon.VolumeError.PATH_ALREADY_MOUNTED: {
+          case VolumeError.PATH_ALREADY_MOUNTED: {
             console.warn(
                 `Cannot mount (redacted): Already mounted as '${volumeId}'`);
             console.debug(`Cannot mount '${sourcePath}': Already mounted as '${
                 volumeId}'`);
             const navigationEvent =
-                new Event(VolumeManagerCommon.VOLUME_ALREADY_MOUNTED) as
-                VolumeAlreadyMountedEvent;
+                new Event(VOLUME_ALREADY_MOUNTED) as VolumeAlreadyMountedEvent;
             navigationEvent.volumeId = volumeId;
             this.dispatchEvent(navigationEvent);
             this.finishRequest_(requestKey, volumeError);
             return;
           }
 
-          case VolumeManagerCommon.VolumeError.NEED_PASSWORD:
-          case VolumeManagerCommon.VolumeError.CANCELLED:
+          case VolumeError.NEED_PASSWORD:
+          case VolumeError.CANCELLED:
           default:
             console.warn('Cannot mount (redacted):', volumeError);
             console.debug(`Cannot mount '${sourcePath}':`, volumeError);
@@ -445,7 +437,7 @@ export class VolumeManagerImpl extends EventTarget implements VolumeManager {
             null;
 
         switch (volumeError) {
-          case VolumeManagerCommon.VolumeError.SUCCESS: {
+          case VolumeError.SUCCESS: {
             const requested = requestKey in this.requests_;
             if (!requested && volumeInfo) {
               console.debug(`Unmounted '${volumeId}' without request`);
@@ -531,8 +523,7 @@ export class VolumeManagerImpl extends EventTarget implements VolumeManager {
     return null;
   }
 
-  getCurrentProfileVolumeInfo(volumeType: VolumeManagerCommon.VolumeType):
-      VolumeInfo|null {
+  getCurrentProfileVolumeInfo(volumeType: VolumeType): VolumeInfo|null {
     for (let i = 0; i < this.volumeInfoList.length; i++) {
       const volumeInfo = this.volumeInfoList.item(i);
       if (volumeInfo.profile.isCurrentProfile &&
@@ -559,8 +550,7 @@ export class VolumeManagerImpl extends EventTarget implements VolumeManager {
       // actually defer their logic to some underlying implementation or
       // delegate to the location filesystem.
       let isReadOnly = true;
-      if (rootType === VolumeManagerCommon.RootType.RECENT ||
-          rootType === VolumeManagerCommon.RootType.TRASH) {
+      if (rootType === RootType.RECENT || rootType === RootType.TRASH) {
         isReadOnly = false;
       }
       return new EntryLocationImpl(
@@ -575,24 +565,22 @@ export class VolumeManagerImpl extends EventTarget implements VolumeManager {
     let rootType;
     let isReadOnly;
     let isRootEntry;
-    if (volumeInfo.volumeType === VolumeManagerCommon.VolumeType.DRIVE) {
+    if (volumeInfo.volumeType === VolumeType.DRIVE) {
       // For Drive, the roots are /root, /team_drives, /Computers and /other,
       // instead of /. Root URLs contain trailing slashes.
       if (entry.fullPath == '/root' || entry.fullPath.indexOf('/root/') === 0) {
-        rootType = VolumeManagerCommon.RootType.DRIVE;
+        rootType = RootType.DRIVE;
         isReadOnly = volumeInfo.isReadOnly;
         isRootEntry = entry.fullPath === '/root';
       } else if (
-          entry.fullPath == VolumeManagerCommon.SHARED_DRIVES_DIRECTORY_PATH ||
-          entry.fullPath.indexOf(
-              VolumeManagerCommon.SHARED_DRIVES_DIRECTORY_PATH + '/') === 0) {
-        if (entry.fullPath ==
-            VolumeManagerCommon.SHARED_DRIVES_DIRECTORY_PATH) {
-          rootType = VolumeManagerCommon.RootType.SHARED_DRIVES_GRAND_ROOT;
+          entry.fullPath == SHARED_DRIVES_DIRECTORY_PATH ||
+          entry.fullPath.indexOf(SHARED_DRIVES_DIRECTORY_PATH + '/') === 0) {
+        if (entry.fullPath == SHARED_DRIVES_DIRECTORY_PATH) {
+          rootType = RootType.SHARED_DRIVES_GRAND_ROOT;
           isReadOnly = true;
           isRootEntry = true;
         } else {
-          rootType = VolumeManagerCommon.RootType.SHARED_DRIVE;
+          rootType = RootType.SHARED_DRIVE;
           if (isTeamDriveRoot(entry)) {
             isReadOnly = false;
             isRootEntry = true;
@@ -603,15 +591,14 @@ export class VolumeManagerImpl extends EventTarget implements VolumeManager {
           }
         }
       } else if (
-          entry.fullPath == VolumeManagerCommon.COMPUTERS_DIRECTORY_PATH ||
-          entry.fullPath.indexOf(
-              VolumeManagerCommon.COMPUTERS_DIRECTORY_PATH + '/') === 0) {
-        if (entry.fullPath == VolumeManagerCommon.COMPUTERS_DIRECTORY_PATH) {
-          rootType = VolumeManagerCommon.RootType.COMPUTERS_GRAND_ROOT;
+          entry.fullPath == COMPUTERS_DIRECTORY_PATH ||
+          entry.fullPath.indexOf(COMPUTERS_DIRECTORY_PATH + '/') === 0) {
+        if (entry.fullPath == COMPUTERS_DIRECTORY_PATH) {
+          rootType = RootType.COMPUTERS_GRAND_ROOT;
           isReadOnly = true;
           isRootEntry = true;
         } else {
-          rootType = VolumeManagerCommon.RootType.COMPUTER;
+          rootType = RootType.COMPUTER;
           if (isComputersRoot(entry)) {
             isReadOnly = true;
             isRootEntry = true;
@@ -624,7 +611,7 @@ export class VolumeManagerImpl extends EventTarget implements VolumeManager {
       } else if (
           entry.fullPath === '/.files-by-id' ||
           entry.fullPath.indexOf('/.files-by-id/') === 0) {
-        rootType = VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME;
+        rootType = RootType.DRIVE_SHARED_WITH_ME;
 
         // /.files-by-id/<id> is read-only, but /.files-by-id/<id>/foo is
         // read-write.
@@ -633,7 +620,7 @@ export class VolumeManagerImpl extends EventTarget implements VolumeManager {
       } else if (
           entry.fullPath === '/.shortcut-targets-by-id' ||
           entry.fullPath.indexOf('/.shortcut-targets-by-id/') === 0) {
-        rootType = VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME;
+        rootType = RootType.DRIVE_SHARED_WITH_ME;
 
         // /.shortcut-targets-by-id/<id> is read-only, but
         // /.shortcut-targets-by-id/<id>/foo is read-write.
@@ -644,7 +631,7 @@ export class VolumeManagerImpl extends EventTarget implements VolumeManager {
           entry.fullPath.indexOf('/.Trash-1000/') === 0) {
         // Drive uses "$topdir/.Trash-$uid" as the trash dir as per XDG spec.
         // User chronos is always uid 1000.
-        rootType = VolumeManagerCommon.RootType.TRASH;
+        rootType = RootType.TRASH;
         isReadOnly = false;
         isRootEntry = entry.fullPath === '/.Trash-1000';
       } else {
@@ -654,16 +641,13 @@ export class VolumeManagerImpl extends EventTarget implements VolumeManager {
       }
     } else {
       assert(volumeInfo.volumeType);
-      rootType =
-          VolumeManagerCommon.getRootTypeFromVolumeType(volumeInfo.volumeType);
+      rootType = getRootTypeFromVolumeType(volumeInfo.volumeType);
       isRootEntry = isSameEntry(entry, volumeInfo.fileSystem.root);
       // Although "Play files" root directory is writable in file system level,
       // we prohibit write operations on it in the UI level to avoid confusion.
       // Users can still have write access in sub directories like
       // /Play files/Pictures, /Play files/DCIM, etc...
-      if (volumeInfo.volumeType ==
-              VolumeManagerCommon.VolumeType.ANDROID_FILES &&
-          isRootEntry) {
+      if (volumeInfo.volumeType == VolumeType.ANDROID_FILES && isRootEntry) {
         isReadOnly = true;
       } else {
         isReadOnly = volumeInfo.isReadOnly;
@@ -706,7 +690,7 @@ export class VolumeManagerImpl extends EventTarget implements VolumeManager {
   /**
    * @param key Key produced by |makeRequestKey_|.
    * @return Fulfilled on success, otherwise rejected with a
-   *     VolumeManagerCommon.VolumeError.
+   *     VolumeError.
    */
   private startRequest_(key: string): Promise<VolumeInfo> {
     return new Promise((successCallback, errorCallback) => {
@@ -731,8 +715,7 @@ export class VolumeManagerImpl extends EventTarget implements VolumeManager {
    * @param key Key produced by |makeRequestKey_|.
    */
   private onTimeout_(key: string) {
-    this.invokeRequestCallbacks_(
-        this.requests_[key]!, VolumeManagerCommon.VolumeError.TIMEOUT);
+    this.invokeRequestCallbacks_(this.requests_[key]!, VolumeError.TIMEOUT);
     delete this.requests_[key];
   }
 
@@ -742,8 +725,7 @@ export class VolumeManagerImpl extends EventTarget implements VolumeManager {
    * @param volumeInfo Volume info of the mounted volume.
    */
   private finishRequest_(
-      key: string, status: VolumeManagerCommon.VolumeError,
-      volumeInfo?: VolumeInfo) {
+      key: string, status: VolumeError, volumeInfo?: VolumeInfo) {
     const request = this.requests_[key];
     if (!request) {
       return;
@@ -760,9 +742,8 @@ export class VolumeManagerImpl extends EventTarget implements VolumeManager {
    * @param volumeInfo Volume info of the mounted volume.
    */
   private invokeRequestCallbacks_(
-      request: Request, status: VolumeManagerCommon.VolumeError,
-      volumeInfo?: VolumeInfo) {
-    if (status === VolumeManagerCommon.VolumeError.SUCCESS) {
+      request: Request, status: VolumeError, volumeInfo?: VolumeInfo) {
+    if (status === VolumeError.SUCCESS) {
       request.successCallbacks.map(cb => cb(volumeInfo));
 
     } else {
@@ -775,7 +756,7 @@ export class VolumeManagerImpl extends EventTarget implements VolumeManager {
     return false;
   }
 
-  isDisabled(_volume: VolumeManagerCommon.VolumeType): boolean {
+  isDisabled(_volume: VolumeType): boolean {
     return false;
   }
 

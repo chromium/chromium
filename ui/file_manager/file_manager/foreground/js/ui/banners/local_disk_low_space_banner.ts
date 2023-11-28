@@ -8,7 +8,8 @@
  * @suppress {checkTypes}
  */
 
-import {VolumeManagerCommon} from '../../../../common/js/volume_manager_types.js';
+
+import {RootType, VolumeType} from '../../../../common/js/volume_manager_types.js';
 
 import {getTemplate} from './local_disk_low_space_banner.html.js';
 import {WarningBanner} from './warning_banner.js';
@@ -40,7 +41,7 @@ export class LocalDiskLowSpaceBanner extends WarningBanner {
    */
   override diskThreshold() {
     return {
-      type: VolumeManagerCommon.RootType.DOWNLOADS,
+      type: RootType.DOWNLOADS,
       minSize: 1 * 1024 * 1024 * 1024,  // 1 GB
     };
   }
@@ -50,7 +51,7 @@ export class LocalDiskLowSpaceBanner extends WarningBanner {
    * type (this includes the My files directory).
    */
   override allowedVolumes() {
-    return [{type: VolumeManagerCommon.VolumeType.DOWNLOADS}];
+    return [{type: VolumeType.DOWNLOADS}];
   }
 }
 

@@ -11,7 +11,7 @@
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {RootType} from '../../common/js/volume_manager_types.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 
 /**
@@ -27,22 +27,21 @@ const PLUGIN_VM = 'PvmDefault';
 /**
  * Valid root types to their share location.
  */
-const VALID_ROOT_TYPES_FOR_SHARE =
-    new Map<VolumeManagerCommon.RootType, string>([
-      [VolumeManagerCommon.RootType.DOWNLOADS, 'Downloads'],
-      [VolumeManagerCommon.RootType.REMOVABLE, 'Removable'],
-      [VolumeManagerCommon.RootType.ANDROID_FILES, 'AndroidFiles'],
-      [VolumeManagerCommon.RootType.COMPUTERS_GRAND_ROOT, 'DriveComputers'],
-      [VolumeManagerCommon.RootType.COMPUTER, 'DriveComputers'],
-      [VolumeManagerCommon.RootType.DRIVE, 'MyDrive'],
-      [VolumeManagerCommon.RootType.SHARED_DRIVES_GRAND_ROOT, 'TeamDrive'],
-      [VolumeManagerCommon.RootType.SHARED_DRIVE, 'TeamDrive'],
-      [VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME, 'SharedWithMe'],
-      [VolumeManagerCommon.RootType.CROSTINI, 'Crostini'],
-      [VolumeManagerCommon.RootType.GUEST_OS, 'GuestOs'],
-      [VolumeManagerCommon.RootType.ARCHIVE, 'Archive'],
-      [VolumeManagerCommon.RootType.SMB, 'SMB'],
-    ]);
+const VALID_ROOT_TYPES_FOR_SHARE = new Map<RootType, string>([
+  [RootType.DOWNLOADS, 'Downloads'],
+  [RootType.REMOVABLE, 'Removable'],
+  [RootType.ANDROID_FILES, 'AndroidFiles'],
+  [RootType.COMPUTERS_GRAND_ROOT, 'DriveComputers'],
+  [RootType.COMPUTER, 'DriveComputers'],
+  [RootType.DRIVE, 'MyDrive'],
+  [RootType.SHARED_DRIVES_GRAND_ROOT, 'TeamDrive'],
+  [RootType.SHARED_DRIVE, 'TeamDrive'],
+  [RootType.DRIVE_SHARED_WITH_ME, 'SharedWithMe'],
+  [RootType.CROSTINI, 'Crostini'],
+  [RootType.GUEST_OS, 'GuestOs'],
+  [RootType.ARCHIVE, 'Archive'],
+  [RootType.SMB, 'SMB'],
+]);
 
 /**
  * Implementation of Crostini shared path state handler.
@@ -219,37 +218,32 @@ export class CrostiniImpl {
 
     // TODO(crbug.com/917920): Remove when DriveFS enforces allowed write paths.
     // Disallow Computers Grand Root, and Computer Root.
-    if (root === VolumeManagerCommon.RootType.COMPUTERS_GRAND_ROOT ||
-        (root === VolumeManagerCommon.RootType.COMPUTER &&
-         entry.fullPath.split('/').length <= 3)) {
+    if (root === RootType.COMPUTERS_GRAND_ROOT ||
+        (root === RootType.COMPUTER && entry.fullPath.split('/').length <= 3)) {
       return false;
     }
 
     // TODO(crbug.com/958840): Sharing Play files root is disallowed until
     // we can ensure it will not also share Downloads.
-    if (root === VolumeManagerCommon.RootType.ANDROID_FILES &&
-        entry.fullPath === '/') {
+    if (root === RootType.ANDROID_FILES && entry.fullPath === '/') {
       return false;
     }
 
     // Special case to disallow PluginVm sharing on /MyFiles/PluginVm and
     // subfolders since it gets shared by default.
-    if (vmName === PLUGIN_VM &&
-        root === VolumeManagerCommon.RootType.DOWNLOADS &&
+    if (vmName === PLUGIN_VM && root === RootType.DOWNLOADS &&
         entry.fullPath.split('/')[1] === PLUGIN_VM) {
       return false;
     }
 
     // Disallow sharing LinuxFiles with itself.
-    if (vmName === DEFAULT_VM &&
-        root === VolumeManagerCommon.RootType.CROSTINI) {
+    if (vmName === DEFAULT_VM && root === RootType.CROSTINI) {
       return false;
     }
 
     // Cannot share root of Shared with me since it represents 2 dirs:
     // `.files-by-id` and `.shortcut-targets-by-id`.
-    if (root === VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME &&
-        entry.fullPath === '/') {
+    if (root === RootType.DRIVE_SHARED_WITH_ME && entry.fullPath === '/') {
       return false;
     }
 

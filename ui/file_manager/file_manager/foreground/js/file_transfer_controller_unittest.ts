@@ -12,7 +12,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeo
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {MockDirectoryEntry, MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {decorate} from '../../common/js/ui.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {VolumeType} from '../../common/js/volume_manager_types.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {DialogType} from '../../externs/ts/state.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
@@ -203,8 +203,7 @@ export function testIsDocumentWideEvent() {
 export function testCanMoveDownloads() {
   // Item 1 of the volume info list should be Downloads volume type.
   assertEquals(
-      VolumeManagerCommon.VolumeType.DOWNLOADS,
-      volumeManager.volumeInfoList.item(1).volumeType);
+      VolumeType.DOWNLOADS, volumeManager.volumeInfoList.item(1).volumeType);
 
   // Create a downloads folder inside the item.
   const myFilesVolume = volumeManager.volumeInfoList.item(1);

@@ -17,7 +17,7 @@ import {isArcVmEnabled, isPluginVmEnabled} from './flags.js';
 import {collator, getEntryLabel} from './translations.js';
 import {TrashEntry} from './trash.js';
 import {FileErrorToDomError} from './util.js';
-import {VolumeManagerCommon} from './volume_manager_types.js';
+import {COMPUTERS_DIRECTORY_NAME, COMPUTERS_DIRECTORY_PATH, RootType, SHARED_DRIVES_DIRECTORY_NAME, SHARED_DRIVES_DIRECTORY_PATH, VolumeType} from './volume_manager_types.js';
 
 /**
  * Type guard used to identify if a generic Entry is actually a DirectoryEntry.
@@ -70,8 +70,7 @@ export function isMyFilesEntry(entry: Entry|FilesAppEntry|
   if (entry instanceof EntryList && entry.toURL() === myFilesEntryListKey) {
     return true;
   }
-  if (isVolumeEntry(entry) &&
-      entry.volumeType === VolumeManagerCommon.VolumeType.DOWNLOADS) {
+  if (isVolumeEntry(entry) && entry.volumeType === VolumeType.DOWNLOADS) {
     return true;
   }
 
@@ -100,8 +99,8 @@ export function isDriveRootEntryList(entry: Entry|FilesAppEntry|
 export function isGrandRootEntryInDrives(entry: Entry|FilesAppEntry):
     entry is DirectoryEntry {
   const {fullPath} = entry;
-  return fullPath === VolumeManagerCommon.SHARED_DRIVES_DIRECTORY_PATH ||
-      fullPath === VolumeManagerCommon.COMPUTERS_DIRECTORY_PATH;
+  return fullPath === SHARED_DRIVES_DIRECTORY_PATH ||
+      fullPath === COMPUTERS_DIRECTORY_PATH;
 }
 
 /**
@@ -115,8 +114,8 @@ export function isFakeEntryInDrives(entry: Entry|
   }
   const {rootType} = entry;
 
-  return rootType === VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME ||
-      rootType === VolumeManagerCommon.RootType.DRIVE_OFFLINE;
+  return rootType === RootType.DRIVE_SHARED_WITH_ME ||
+      rootType === RootType.DRIVE_OFFLINE;
 }
 
 /**
@@ -124,7 +123,7 @@ export function isFakeEntryInDrives(entry: Entry|
  */
 export function isEntryInsideMyDrive(fileData: FileData): boolean {
   const {rootType} = fileData;
-  return !!rootType && rootType === VolumeManagerCommon.RootType.DRIVE;
+  return !!rootType && rootType === RootType.DRIVE;
 }
 
 /**
@@ -133,8 +132,8 @@ export function isEntryInsideMyDrive(fileData: FileData): boolean {
 export function isEntryInsideComputers(fileData: FileData): boolean {
   const {rootType} = fileData;
   return !!rootType &&
-      (rootType === VolumeManagerCommon.RootType.COMPUTERS_GRAND_ROOT ||
-       rootType === VolumeManagerCommon.RootType.COMPUTER);
+      (rootType === RootType.COMPUTERS_GRAND_ROOT ||
+       rootType === RootType.COMPUTER);
 }
 
 /**
@@ -144,14 +143,13 @@ export function isEntryInsideDrive(fileData: FileData|
                                    CurrentDirectory): boolean {
   const {rootType} = fileData;
   return !!rootType &&
-      (rootType === VolumeManagerCommon.RootType.DRIVE ||
-       rootType === VolumeManagerCommon.RootType.SHARED_DRIVES_GRAND_ROOT ||
-       rootType === VolumeManagerCommon.RootType.SHARED_DRIVE ||
-       rootType === VolumeManagerCommon.RootType.COMPUTERS_GRAND_ROOT ||
-       rootType === VolumeManagerCommon.RootType.COMPUTER ||
-       rootType === VolumeManagerCommon.RootType.DRIVE_OFFLINE ||
-       rootType === VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME ||
-       rootType === VolumeManagerCommon.RootType.DRIVE_FAKE_ROOT);
+      (rootType === RootType.DRIVE ||
+       rootType === RootType.SHARED_DRIVES_GRAND_ROOT ||
+       rootType === RootType.SHARED_DRIVE ||
+       rootType === RootType.COMPUTERS_GRAND_ROOT ||
+       rootType === RootType.COMPUTER || rootType === RootType.DRIVE_OFFLINE ||
+       rootType === RootType.DRIVE_SHARED_WITH_ME ||
+       rootType === RootType.DRIVE_FAKE_ROOT);
 }
 
 /** Sort the entries based on the filter and the names. */
@@ -188,8 +186,8 @@ export function sortEntries(
  * Take an entry and extract the rootType.
  */
 export function getRootType(entry: Entry|FilesAppEntry|DirectoryEntry|
-                            FilesAppDirEntry|FakeEntry|
-                            EntryLocation): VolumeManagerCommon.RootType|null {
+                            FilesAppDirEntry|FakeEntry|EntryLocation): RootType|
+    null {
   return 'rootType' in entry ? entry.rootType : null;
 }
 
@@ -237,8 +235,7 @@ export function isSharedDriveEntry(entry: Entry|FilesAppEntry) {
     return false;
   }
   const tree = entry.fullPath.split('/');
-  return tree[0] == '' &&
-      tree[1] == VolumeManagerCommon.SHARED_DRIVES_DIRECTORY_NAME;
+  return tree[0] == '' && tree[1] == SHARED_DRIVES_DIRECTORY_NAME;
 }
 
 /**
@@ -260,8 +257,8 @@ export function getTeamDriveName(entry: Entry|FakeEntry|FilesAppEntry): string {
 /**
  * Returns true if the given root type is for a container of recent files.
  */
-export function isRecentRootType(rootType: VolumeManagerCommon.RootType|null) {
-  return rootType == VolumeManagerCommon.RootType.RECENT;
+export function isRecentRootType(rootType: RootType|null) {
+  return rootType == RootType.RECENT;
 }
 
 /**
@@ -293,15 +290,14 @@ export function isComputersEntry(entry: Entry|FilesAppEntry) {
     return false;
   }
   const tree = entry.fullPath.split('/');
-  return tree[0] == '' &&
-      tree[1] == VolumeManagerCommon.COMPUTERS_DIRECTORY_NAME;
+  return tree[0] == '' && tree[1] == COMPUTERS_DIRECTORY_NAME;
 }
 
 /**
  * Returns true if the given root type is Trash.
  */
-export function isTrashRootType(rootType: VolumeManagerCommon.RootType|null) {
-  return rootType == VolumeManagerCommon.RootType.TRASH;
+export function isTrashRootType(rootType: RootType|null) {
+  return rootType == RootType.TRASH;
 }
 
 /**
@@ -633,7 +629,7 @@ export function isNonModifiable(
 
   const volumeType = volumeInfo.volumeType;
 
-  if (volumeType === VolumeManagerCommon.VolumeType.DOWNLOADS) {
+  if (volumeType === VolumeType.DOWNLOADS) {
     if (!entry.isDirectory) {
       return false;
     }
@@ -655,7 +651,7 @@ export function isNonModifiable(
     return false;
   }
 
-  if (volumeType === VolumeManagerCommon.VolumeType.ANDROID_FILES) {
+  if (volumeType === VolumeType.ANDROID_FILES) {
     if (!entry.isDirectory) {
       return false;
     }
@@ -678,11 +674,11 @@ export function isNonModifiable(
     return false;
   }
 
-  if (volumeType === VolumeManagerCommon.VolumeType.CROSTINI) {
+  if (volumeType === VolumeType.CROSTINI) {
     return entry.fullPath === '/';
   }
 
-  if (volumeType === VolumeManagerCommon.VolumeType.GUEST_OS) {
+  if (volumeType === VolumeType.GUEST_OS) {
     return entry.fullPath === '/';
   }
 
@@ -885,10 +881,9 @@ export function isOneDrive(volumeInfo: VolumeInfo) {
  * Returns a boolean indicating whether the volume is a GuestOs volume. And
  * ANDROID_FILES type volume can also be a GuestOs volume if ARCVM is enabled.
  */
-export function isGuestOs(type: VolumeManagerCommon.VolumeType) {
-  return type === VolumeManagerCommon.VolumeType.GUEST_OS ||
-      (type === VolumeManagerCommon.VolumeType.ANDROID_FILES &&
-       isArcVmEnabled());
+export function isGuestOs(type: VolumeType) {
+  return type === VolumeType.GUEST_OS ||
+      (type === VolumeType.ANDROID_FILES && isArcVmEnabled());
 }
 
 /**

@@ -14,7 +14,7 @@ import {isDlpEnabled, isDriveFsBulkPinningEnabled} from '../../common/js/flags.j
 import {recordMediumCount, recordUserAction} from '../../common/js/metrics.js';
 import {getEntryLabel} from '../../common/js/translations.js';
 import {testSendMessage} from '../../common/js/util.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {getVolumeTypeFromRootType, isNative, RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {PropStatus, SearchLocation, SearchOptions, State, Volume, VolumeId} from '../../externs/ts/state.js';
 // @ts-ignore: error TS6133: 'Store' is declared but its value is never read.
@@ -323,7 +323,7 @@ export class DirectoryModel extends EventTarget {
   }
 
   /**
-   * @return {?VolumeManagerCommon.RootType} Root type of current root, or null
+   * @return {?RootType} Root type of current root, or null
    *     if not found.
    */
   getCurrentRootType() {
@@ -373,7 +373,7 @@ export class DirectoryModel extends EventTarget {
     if (currentDirEntry &&
         // @ts-ignore: error TS2339: Property 'rootType' does not exist on type
         // 'FileSystemDirectoryEntry | FilesAppDirEntry | FakeEntry'.
-        currentDirEntry.rootType === VolumeManagerCommon.RootType.TRASH) {
+        currentDirEntry.rootType === RootType.TRASH) {
       return true;
     }
     return !this.isReadOnly();
@@ -397,14 +397,14 @@ export class DirectoryModel extends EventTarget {
    * @return {boolean} True if it's on Drive.
    */
   isOnDrive() {
-    return this.isCurrentRootVolumeType_(VolumeManagerCommon.VolumeType.DRIVE);
+    return this.isCurrentRootVolumeType_(VolumeType.DRIVE);
   }
 
   /**
    * @return {boolean} True if it's on MTP volume.
    */
   isOnMTP() {
-    return this.isCurrentRootVolumeType_(VolumeManagerCommon.VolumeType.MTP);
+    return this.isCurrentRootVolumeType_(VolumeType.MTP);
   }
 
   /**
@@ -423,8 +423,7 @@ export class DirectoryModel extends EventTarget {
   isOnNative() {
     const rootType = this.getCurrentRootType();
     return rootType != null && !isRecentRootType(rootType) &&
-        VolumeManagerCommon.isNative(
-            VolumeManagerCommon.getVolumeTypeFromRootType(rootType));
+        isNative(getVolumeTypeFromRootType(rootType));
   }
 
   /**
@@ -439,7 +438,7 @@ export class DirectoryModel extends EventTarget {
   }
 
   /**
-   * @param {VolumeManagerCommon.VolumeType} volumeType Volume Type
+   * @param {VolumeType} volumeType Volume Type
    * @return {boolean} True if current root volume type is equal to specified
    *     volume type.
    * @private
@@ -447,7 +446,7 @@ export class DirectoryModel extends EventTarget {
   isCurrentRootVolumeType_(volumeType) {
     const rootType = this.getCurrentRootType();
     return rootType != null && !isRecentRootType(rootType) &&
-        VolumeManagerCommon.getVolumeTypeFromRootType(rootType) === volumeType;
+        getVolumeTypeFromRootType(rootType) === volumeType;
   }
 
   /**
@@ -1060,9 +1059,7 @@ export class DirectoryModel extends EventTarget {
         const locationInfo = this.volumeManager_.getLocationInfo(
             assert(dirContents.getDirectoryEntry()));
         const volumeInfo = locationInfo && locationInfo.volumeInfo;
-        if (volumeInfo &&
-            volumeInfo.volumeType ===
-                VolumeManagerCommon.VolumeType.DOWNLOADS &&
+        if (volumeInfo && volumeInfo.volumeType === VolumeType.DOWNLOADS &&
             locationInfo.isRootEntry) {
           recordMediumCount('DownloadsCount', dirContents.getFileListLength());
         }
@@ -1307,8 +1304,7 @@ export class DirectoryModel extends EventTarget {
     // available because it returns UI-only entries too, like Linux files and
     // Play files.
     const locationInfo = this.volumeManager_.getLocationInfo(dirEntry);
-    if (locationInfo &&
-        locationInfo.rootType === VolumeManagerCommon.RootType.DOWNLOADS &&
+    if (locationInfo && locationInfo.rootType === RootType.DOWNLOADS &&
         locationInfo.isRootEntry) {
       dirEntry = this.getMyFiles();
     }
@@ -1530,12 +1526,11 @@ export class DirectoryModel extends EventTarget {
 
     // If the current directory is the Drive placeholder and the real Drive is
     // mounted, switch to it.
-    if (this.getCurrentRootType() ===
-        VolumeManagerCommon.RootType.DRIVE_FAKE_ROOT) {
+    if (this.getCurrentRootType() === RootType.DRIVE_FAKE_ROOT) {
       // @ts-ignore: error TS2339: Property 'added' does not exist on type
       // 'Event'.
       for (const newVolume of event.added) {
-        if (newVolume.volumeType === VolumeManagerCommon.VolumeType.DRIVE) {
+        if (newVolume.volumeType === VolumeType.DRIVE) {
           // @ts-ignore: error TS7006: Parameter 'displayRoot' implicitly has an
           // 'any' type.
           newVolume.resolveDisplayRoot().then((displayRoot) => {
@@ -1562,22 +1557,20 @@ export class DirectoryModel extends EventTarget {
         (window.isFocused() &&
          // @ts-ignore: error TS2339: Property 'added' does not exist on type
          // 'Event'.
-         event.added[0].volumeType ===
-             VolumeManagerCommon.VolumeType.PROVIDED &&
+         event.added[0].volumeType === VolumeType.PROVIDED &&
          // @ts-ignore: error TS2339: Property 'added' does not exist on type
          // 'Event'.
-         event.added[0].source === VolumeManagerCommon.Source.FILE) ||
+         event.added[0].source === Source.FILE) ||
         // @ts-ignore: error TS2339: Property 'added' does not exist on type
         // 'Event'.
-        (event.added[0].volumeType ===
-             VolumeManagerCommon.VolumeType.CROSTINI &&
-         this.getCurrentRootType() === VolumeManagerCommon.RootType.CROSTINI) ||
+        (event.added[0].volumeType === VolumeType.CROSTINI &&
+         this.getCurrentRootType() === RootType.CROSTINI) ||
         // TODO(crbug/1293229): Don't redirect if the user is looking at a
         // different Guest OS folder.
         // @ts-ignore: error TS2339: Property 'added' does not exist on type
         // 'Event'.
         (isGuestOs(event.added[0].volumeType) &&
-         this.getCurrentRootType() === VolumeManagerCommon.RootType.GUEST_OS)) {
+         this.getCurrentRootType() === RootType.GUEST_OS)) {
       // Resolving a display root on FSP volumes is instant, despite the
       // asynchronous call.
       // @ts-ignore: error TS7006: Parameter 'displayRoot' implicitly has an
@@ -1643,15 +1636,15 @@ export class DirectoryModel extends EventTarget {
     if (isRecentRootType(entry.rootType) ||
         // @ts-ignore: error TS2339: Property 'rootType' does not exist on type
         // 'FileSystemDirectoryEntry | FilesAppEntry'.
-        entry.rootType == VolumeManagerCommon.RootType.CROSTINI ||
+        entry.rootType == RootType.CROSTINI ||
         // @ts-ignore: error TS2339: Property 'rootType' does not exist on type
         // 'FileSystemDirectoryEntry | FilesAppEntry'.
-        entry.rootType == VolumeManagerCommon.RootType.DRIVE_FAKE_ROOT) {
+        entry.rootType == RootType.DRIVE_FAKE_ROOT) {
       return true;
     }
     // @ts-ignore: error TS2339: Property 'rootType' does not exist on type
     // 'FileSystemDirectoryEntry | FilesAppEntry'.
-    if (entry.rootType == VolumeManagerCommon.RootType.MY_FILES) {
+    if (entry.rootType == RootType.MY_FILES) {
       return false;
     }
 
@@ -1661,7 +1654,7 @@ export class DirectoryModel extends EventTarget {
 
     const locationInfo = this.volumeManager_.getLocationInfo(entry);
     if (locationInfo &&
-        (locationInfo.rootType == VolumeManagerCommon.RootType.MEDIA_VIEW ||
+        (locationInfo.rootType == RootType.MEDIA_VIEW ||
          locationInfo.isSpecialSearchRoot)) {
       return true;
     }
@@ -1694,14 +1687,14 @@ export class DirectoryModel extends EventTarget {
     // volume entry.
     // @ts-ignore: error TS2339: Property 'rootType' does not exist on type
     // 'FileSystemDirectoryEntry | FilesAppEntry'.
-    if (entry.rootType == VolumeManagerCommon.RootType.CROSTINI) {
+    if (entry.rootType == RootType.CROSTINI) {
       return () => {
         return new CrostiniMounter();
       };
     }
     // @ts-ignore: error TS2339: Property 'rootType' does not exist on type
     // 'FileSystemDirectoryEntry | FilesAppEntry'.
-    if (entry.rootType == VolumeManagerCommon.RootType.GUEST_OS) {
+    if (entry.rootType == RootType.GUEST_OS) {
       return () => {
         const placeholder = /** @type {!GuestOsPlaceholder} */ (entry);
         return new GuestOsMounter(placeholder.guest_id);
@@ -1709,7 +1702,7 @@ export class DirectoryModel extends EventTarget {
     }
     // @ts-ignore: error TS2339: Property 'rootType' does not exist on type
     // 'FileSystemDirectoryEntry | FilesAppEntry'.
-    if (entry.rootType == VolumeManagerCommon.RootType.MY_FILES) {
+    if (entry.rootType == RootType.MY_FILES) {
       return () => {
         return new DirectoryContentScanner(
             /** @type {!FilesAppDirEntry} */ (entry));
@@ -1717,14 +1710,14 @@ export class DirectoryModel extends EventTarget {
     }
     // @ts-ignore: error TS2339: Property 'rootType' does not exist on type
     // 'FileSystemDirectoryEntry | FilesAppEntry'.
-    if (entry.rootType == VolumeManagerCommon.RootType.DRIVE_FAKE_ROOT) {
+    if (entry.rootType == RootType.DRIVE_FAKE_ROOT) {
       return () => {
         return new ContentScanner();
       };
     }
     // @ts-ignore: error TS2339: Property 'rootType' does not exist on type
     // 'FileSystemDirectoryEntry | FilesAppEntry'.
-    if (entry.rootType == VolumeManagerCommon.RootType.TRASH) {
+    if (entry.rootType == RootType.TRASH) {
       return () => {
         return new TrashContentScanner(this.volumeManager_);
       };
@@ -1736,8 +1729,7 @@ export class DirectoryModel extends EventTarget {
             options || getDefaultSearchOptions());
       };
     }
-    if (locationInfo &&
-        locationInfo.rootType == VolumeManagerCommon.RootType.MEDIA_VIEW) {
+    if (locationInfo && locationInfo.rootType == RootType.MEDIA_VIEW) {
       return () => {
         return new MediaViewContentScanner(
             /** @type {!DirectoryEntry} */ (entry));
@@ -1750,13 +1742,13 @@ export class DirectoryModel extends EventTarget {
       // 'any' in some locations where its type cannot be determined.
       let searchType;
       switch (locationInfo.rootType) {
-        case VolumeManagerCommon.RootType.DRIVE_OFFLINE:
+        case RootType.DRIVE_OFFLINE:
           searchType = chrome.fileManagerPrivate.SearchType.OFFLINE;
           break;
-        case VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME:
+        case RootType.DRIVE_SHARED_WITH_ME:
           searchType = chrome.fileManagerPrivate.SearchType.SHARED_WITH_ME;
           break;
-        case VolumeManagerCommon.RootType.DRIVE_RECENT:
+        case RootType.DRIVE_RECENT:
           searchType = chrome.fileManagerPrivate.SearchType.EXCLUDE_DIRECTORIES;
           break;
         default:
@@ -1896,10 +1888,10 @@ export class DirectoryModel extends EventTarget {
    */
   updateFileListAfterIOTask_(event) {
     let rescan = false;
-    /** @type {!Set<?VolumeManagerCommon.RootType>} */
+    /** @type {!Set<?RootType>} */
     const fakeDirectoryEntryRootTypes = new Set([
-      VolumeManagerCommon.RootType.RECENT,
-      VolumeManagerCommon.RootType.TRASH,
+      RootType.RECENT,
+      RootType.TRASH,
     ]);
     const currentRootType = this.getCurrentRootType();
     const currentVolumeInfo = this.getCurrentVolumeInfo();

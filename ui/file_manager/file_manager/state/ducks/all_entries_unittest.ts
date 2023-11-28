@@ -9,7 +9,7 @@ import {EntryList, FakeEntryImpl, GuestOsPlaceholder, VolumeEntry} from '../../c
 import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {MockFileSystem} from '../../common/js/mock_entry.js';
 import {waitUntil} from '../../common/js/test_error_reporting.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import {EntryType, FileData, State} from '../../externs/ts/state.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
 import {constants} from '../../foreground/js/constants.js';
@@ -35,8 +35,7 @@ export function setUp() {
 
   fileSystem = window.fileManager.volumeManager
                    .getCurrentProfileVolumeInfo(
-                       VolumeManagerCommon.VolumeType.DOWNLOADS)!.fileSystem as
-      MockFileSystem;
+                       VolumeType.DOWNLOADS)!.fileSystem as MockFileSystem;
   fileSystem.populate(
       [
         '/dir-1/',
@@ -50,8 +49,7 @@ export function setUp() {
 
 /** Generate MyFiles entry with fake entry list. */
 function createMyFilesDataWithEntryList(): FileData {
-  const myFilesEntryList =
-      new EntryList('My files', VolumeManagerCommon.RootType.MY_FILES);
+  const myFilesEntryList = new EntryList('My files', RootType.MY_FILES);
   return convertEntryToFileData(myFilesEntryList);
 }
 
@@ -59,8 +57,8 @@ function createMyFilesDataWithEntryList(): FileData {
 function createMyFilesDataWithVolumeEntry():
     {fileData: FileData, volumeInfo: VolumeInfo} {
   const volumeManager = new MockVolumeManager();
-  const downloadsVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
-      VolumeManagerCommon.VolumeType.DOWNLOADS)!;
+  const downloadsVolumeInfo =
+      volumeManager.getCurrentProfileVolumeInfo(VolumeType.DOWNLOADS)!;
   const myFilesVolumeEntry = new VolumeEntry(downloadsVolumeInfo);
   const fileData = convertEntryToFileData(myFilesVolumeEntry);
   return {fileData, volumeInfo: downloadsVolumeInfo};
@@ -148,8 +146,7 @@ export function testCacheEntries() {
   assertEquals(resultEntry.volumeId, fakeMyFilesVolumeId);
   assertEquals(resultEntry.type, EntryType.FS_API);
   assertTrue(!!resultEntry.metadata.isRestrictedForDestination);
-  const recentRoot =
-      new FakeEntryImpl('Recent', VolumeManagerCommon.RootType.RECENT);
+  const recentRoot = new FakeEntryImpl('Recent', RootType.RECENT);
   cd(store, recentRoot);
   resultEntry = store.getState().allEntries[recentRoot.toURL()]!;
   assertTrue(!!resultEntry);
@@ -161,7 +158,7 @@ export function testCacheEntries() {
 
   const volumeInfo =
       window.fileManager.volumeManager.getCurrentProfileVolumeInfo(
-          VolumeManagerCommon.VolumeType.DOWNLOADS)!;
+          VolumeType.DOWNLOADS)!;
   const volumeEntry = new VolumeEntry(volumeInfo);
   cd(store, volumeEntry);
   resultEntry = store.getState().allEntries[volumeEntry.toURL()]!;
@@ -260,8 +257,7 @@ export function testGetMyFilesCreateEntryList() {
   const myFilesFileData = currentState.allEntries[myFilesEntryListKey]!;
   assertNotEquals(undefined, myFilesFileData);
   const myFIlesEntryList = myFilesFileData.entry as EntryList;
-  assertEquals(
-      VolumeManagerCommon.RootType.MY_FILES, myFIlesEntryList.rootType);
+  assertEquals(RootType.MY_FILES, myFIlesEntryList.rootType);
   assertEquals(myFIlesEntryList, myFilesEntry);
   assertEquals(null, myFilesVolume);
 }
@@ -345,8 +341,8 @@ export async function testAddChildEntries(done: () => void) {
 /** Tests converting VolumeEntry into FileData. */
 export async function testConvertVolumeEntryToFileData(done: () => void) {
   const {volumeManager} = window.fileManager;
-  const downloadsVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
-      VolumeManagerCommon.VolumeType.DOWNLOADS)!;
+  const downloadsVolumeInfo =
+      volumeManager.getCurrentProfileVolumeInfo(VolumeType.DOWNLOADS)!;
   const downloadsEntry = new VolumeEntry(downloadsVolumeInfo);
   const got = convertEntryToFileData(downloadsEntry);
   const want: FileData = {
@@ -356,7 +352,7 @@ export async function testConvertVolumeEntryToFileData(done: () => void) {
     isDirectory: true,
     label: 'Downloads',
     volumeId: fakeMyFilesVolumeId,
-    rootType: VolumeManagerCommon.RootType.DOWNLOADS,
+    rootType: RootType.DOWNLOADS,
     metadata: {} as MetadataItem,
     expanded: false,
     disabled: false,
@@ -369,7 +365,7 @@ export async function testConvertVolumeEntryToFileData(done: () => void) {
 
   // Now disabled the volume in the volume manager.
   volumeManager.isDisabled = (volumeType) =>
-      volumeType === VolumeManagerCommon.VolumeType.DOWNLOADS;
+      volumeType === VolumeType.DOWNLOADS;
   const fileData = convertEntryToFileData(downloadsEntry);
   assertEquals(true, fileData.disabled);
 
@@ -384,8 +380,7 @@ export async function testGenericIconInDocumentsProviderFileData(
     done: () => void) {
   // By default an empty IconSet is used in this mock function.
   const documentsProviderVolumeInfo = MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER, 'documentProviderId',
-      'Google Photos');
+      VolumeType.DOCUMENTS_PROVIDER, 'documentProviderId', 'Google Photos');
   const {volumeManager} = window.fileManager;
   volumeManager.volumeInfoList.add(documentsProviderVolumeInfo);
   const documentsProviderEntry = new VolumeEntry(documentsProviderVolumeInfo);
@@ -397,7 +392,7 @@ export async function testGenericIconInDocumentsProviderFileData(
     isDirectory: true,
     label: 'Google Photos',
     volumeId: 'documentProviderId',
-    rootType: VolumeManagerCommon.RootType.DOCUMENTS_PROVIDER,
+    rootType: RootType.DOCUMENTS_PROVIDER,
     metadata: {} as MetadataItem,
     expanded: false,
     disabled: false,
@@ -413,8 +408,7 @@ export async function testGenericIconInDocumentsProviderFileData(
 
 /** Tests converting EntryList into FileData. */
 export async function testConvertEntryListToFileData(done: () => void) {
-  const myFilesEntryList =
-      new EntryList('My files', VolumeManagerCommon.RootType.MY_FILES);
+  const myFilesEntryList = new EntryList('My files', RootType.MY_FILES);
   const got = convertEntryToFileData(myFilesEntryList);
   const want: FileData = {
     entry: myFilesEntryList,
@@ -423,7 +417,7 @@ export async function testConvertEntryListToFileData(done: () => void) {
     isDirectory: true,
     label: 'My files',
     volumeId: null,  // No volume info for the entry list.
-    rootType: VolumeManagerCommon.RootType.MY_FILES,
+    rootType: RootType.MY_FILES,
     metadata: {} as MetadataItem,
     expanded: false,
     disabled: false,
@@ -449,7 +443,7 @@ export async function testConvertFakeEntryToFileData(done: () => void) {
     isDirectory: true,
     label: 'Android files',
     volumeId: null,  // No volume info for the placeholder entry.
-    rootType: VolumeManagerCommon.RootType.GUEST_OS,
+    rootType: RootType.GUEST_OS,
     metadata: {} as MetadataItem,
     expanded: false,
     disabled: false,
@@ -474,7 +468,7 @@ export async function testConvertNativeFileEntryToFileData(done: () => void) {
     isDirectory: false,
     label: 'file-1.txt',
     volumeId: fakeMyFilesVolumeId,
-    rootType: VolumeManagerCommon.RootType.DOWNLOADS,
+    rootType: RootType.DOWNLOADS,
     metadata: {} as MetadataItem,
     expanded: false,
     disabled: false,
@@ -500,7 +494,7 @@ export async function testConvertNativeDirectoryEntryToFileData(
     isDirectory: true,
     label: 'dir-1',
     volumeId: fakeMyFilesVolumeId,
-    rootType: VolumeManagerCommon.RootType.DOWNLOADS,
+    rootType: RootType.DOWNLOADS,
     metadata: {} as MetadataItem,
     expanded: false,
     disabled: false,
@@ -522,8 +516,8 @@ export async function testReadSubDirectories(done: () => void) {
   const initialState = getEmptyState();
   // Populate fake entries in the file system.
   const {volumeManager} = window.fileManager;
-  const downloadsVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
-      VolumeManagerCommon.VolumeType.DOWNLOADS)!;
+  const downloadsVolumeInfo =
+      volumeManager.getCurrentProfileVolumeInfo(VolumeType.DOWNLOADS)!;
   const fakeFs = downloadsVolumeInfo.fileSystem as MockFileSystem;
   fakeFs.populate(
       [
@@ -568,8 +562,8 @@ export async function testReadSubDirectoriesRecursively(done: () => void) {
   const initialState = getEmptyState();
   // Populate fake entries in the file system.
   const {volumeManager} = window.fileManager;
-  const downloadsVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
-      VolumeManagerCommon.VolumeType.DOWNLOADS)!;
+  const downloadsVolumeInfo =
+      volumeManager.getCurrentProfileVolumeInfo(VolumeType.DOWNLOADS)!;
   const fakeFs = downloadsVolumeInfo.fileSystem as MockFileSystem;
   fakeFs.populate(
       [
@@ -653,8 +647,8 @@ export async function testReadSubDirectoriesWithDisabledEntry(
 
   // Make downloadsEntry as disabled.
   const {volumeManager} = window.fileManager;
-  const downloadsVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
-      VolumeManagerCommon.VolumeType.DOWNLOADS)!;
+  const downloadsVolumeInfo =
+      volumeManager.getCurrentProfileVolumeInfo(VolumeType.DOWNLOADS)!;
   const downloadsEntry = new VolumeEntry(downloadsVolumeInfo);
   downloadsEntry.disabled = true;
 
@@ -676,17 +670,16 @@ export async function testReadSubDirectoriesForFakeDriveEntry(
   // MockVolumeManager will populate Drive's /root, /team_drives, /Computers
   // automatically.
   const {volumeManager} = window.fileManager;
-  const driveVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
-      VolumeManagerCommon.VolumeType.DRIVE)!;
+  const driveVolumeInfo =
+      volumeManager.getCurrentProfileVolumeInfo(VolumeType.DRIVE)!;
   const driveFs = driveVolumeInfo.fileSystem as MockFileSystem;
 
   // Create drive root entry list and add all its children.
-  const driveRootEntryList = new EntryList(
-      'Google Drive', VolumeManagerCommon.RootType.DRIVE_FAKE_ROOT);
-  const sharedWithMeEntry = new FakeEntryImpl(
-      'Shared with me', VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME);
-  const offlineEntry =
-      new FakeEntryImpl('Offline', VolumeManagerCommon.RootType.DRIVE_OFFLINE);
+  const driveRootEntryList =
+      new EntryList('Google Drive', RootType.DRIVE_FAKE_ROOT);
+  const sharedWithMeEntry =
+      new FakeEntryImpl('Shared with me', RootType.DRIVE_SHARED_WITH_ME);
+  const offlineEntry = new FakeEntryImpl('Offline', RootType.DRIVE_OFFLINE);
   const driveEntry = driveFs.entries['/root']!;
   const computersEntry = driveFs.entries['/Computers']!;
   driveRootEntryList.addEntry(driveEntry);
@@ -744,8 +737,8 @@ export async function testTraverseAndExpandPathEntriesFound(
   const initialState = getEmptyState();
   const {volumeManager} = window.fileManager;
   // Populate some fake entries.
-  const downloadsVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
-      VolumeManagerCommon.VolumeType.DOWNLOADS)!;
+  const downloadsVolumeInfo =
+      volumeManager.getCurrentProfileVolumeInfo(VolumeType.DOWNLOADS)!;
   const fakeFs = downloadsVolumeInfo.fileSystem as MockFileSystem;
   fakeFs.populate(
       [
@@ -816,8 +809,8 @@ export async function testTraverseAndExpandPathEntriesNotFound(
   const initialState = getEmptyState();
   const {volumeManager} = window.fileManager;
   // Populate some fake entries.
-  const downloadsVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
-      VolumeManagerCommon.VolumeType.DOWNLOADS)!;
+  const downloadsVolumeInfo =
+      volumeManager.getCurrentProfileVolumeInfo(VolumeType.DOWNLOADS)!;
   const fakeFs = downloadsVolumeInfo.fileSystem as MockFileSystem;
   fakeFs.populate(
       [

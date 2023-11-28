@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {recordDirectoryListLoadWithTolerance, startInterval} from '../../common/js/metrics.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import {updateDirectoryContent} from '../../state/ducks/current_directory.js';
 import {getStore} from '../../state/store.js';
 
@@ -87,10 +87,9 @@ export class ScanController {
 
     const volumeInfo = this.directoryModel_.getCurrentVolumeInfo();
     if (volumeInfo &&
-        (volumeInfo.volumeType === VolumeManagerCommon.VolumeType.DOWNLOADS ||
-         volumeInfo.volumeType === VolumeManagerCommon.VolumeType.MY_FILES)) {
-      startInterval(
-          `DirectoryListLoad.${VolumeManagerCommon.RootType.MY_FILES}`);
+        (volumeInfo.volumeType === VolumeType.DOWNLOADS ||
+         volumeInfo.volumeType === VolumeType.MY_FILES)) {
+      startInterval(`DirectoryListLoad.${RootType.MY_FILES}`);
     }
 
     this.listContainer_.startBatchUpdates();
@@ -139,10 +138,9 @@ export class ScanController {
     if (this.directoryModel_.getCurrentDirEntry()) {
       const volumeInfo = this.directoryModel_.getCurrentVolumeInfo();
       if (volumeInfo &&
-          (volumeInfo.volumeType === VolumeManagerCommon.VolumeType.DOWNLOADS ||
-           volumeInfo.volumeType === VolumeManagerCommon.VolumeType.MY_FILES)) {
-        const metricName =
-            `DirectoryListLoad.${VolumeManagerCommon.RootType.MY_FILES}`;
+          (volumeInfo.volumeType === VolumeType.DOWNLOADS ||
+           volumeInfo.volumeType === VolumeType.MY_FILES)) {
+        const metricName = `DirectoryListLoad.${RootType.MY_FILES}`;
         recordDirectoryListLoadWithTolerance(
             metricName, this.directoryModel_.getFileList().length,
             [10, 100, 1000], /*tolerance=*/ 0.2);

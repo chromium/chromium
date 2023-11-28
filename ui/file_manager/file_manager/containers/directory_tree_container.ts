@@ -11,7 +11,7 @@ import {EntryList, FakeEntryImpl, VolumeEntry} from '../common/js/files_app_entr
 import {vmTypeToIconName} from '../common/js/icon_util.js';
 import {recordEnum, recordUserAction} from '../common/js/metrics.js';
 import {str, strf} from '../common/js/translations.js';
-import {VolumeManagerCommon} from '../common/js/volume_manager_types.js';
+import {RootTypesForUMA, VolumeType} from '../common/js/volume_manager_types.js';
 import {AndroidApp, CurrentDirectory, FileData, FileKey, NavigationKey, NavigationRoot, NavigationType, PropStatus, SearchLocation, State} from '../externs/ts/state.js';
 import type {VolumeManager} from '../externs/volume_manager.js';
 import {constants} from '../foreground/js/constants.js';
@@ -530,7 +530,7 @@ export class DirectoryTreeContainer {
     if (!volumeData) {
       return;
     }
-    if (volumeData.volumeType == VolumeManagerCommon.VolumeType.GUEST_OS) {
+    if (volumeData.volumeType == VolumeType.GUEST_OS) {
       element.setAttribute(
           'volume-type-for-testing', vmTypeToIconName(volumeData.vmType));
     } else {
@@ -622,8 +622,7 @@ export class DirectoryTreeContainer {
       // For SMB shares, avoid prefetching sub directories to delay
       // authentication.
       if (isVolumeEntry(entry) && entry.volumeInfo.providerId !== '@smb' &&
-          getVolumeType(this.store_.getState(), fileData) !==
-              VolumeManagerCommon.VolumeType.SMB) {
+          getVolumeType(this.store_.getState(), fileData) !== VolumeType.SMB) {
         this.store_.dispatch(readSubDirectories(entry));
       }
       return;
@@ -915,7 +914,7 @@ export class DirectoryTreeContainer {
     const rootType = fileData.rootType ?? 'unknown';
     const level = fileData.isRootEntry ? 'TopLevel' : 'NonTopLevel';
     const metricName = `Location.OnEntryExpandedOrCollapsed.${level}`;
-    recordEnum(metricName, rootType, VolumeManagerCommon.RootTypesForUMA);
+    recordEnum(metricName, rootType, RootTypesForUMA);
   }
 
   /** Record UMA for tree item selected. */
@@ -923,7 +922,7 @@ export class DirectoryTreeContainer {
     const rootType = fileData.rootType ?? 'unknown';
     const level = fileData.isRootEntry ? 'TopLevel' : 'NonTopLevel';
     const metricName = `Location.OnEntrySelected.${level}`;
-    recordEnum(metricName, rootType, VolumeManagerCommon.RootTypesForUMA);
+    recordEnum(metricName, rootType, RootTypesForUMA);
   }
 
   /** Activate the directory behind the item. */

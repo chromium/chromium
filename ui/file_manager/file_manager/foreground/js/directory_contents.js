@@ -15,7 +15,7 @@ import {recordInterval, recordMediumCount, startInterval} from '../../common/js/
 import {getEarliestTimestamp} from '../../common/js/recent_date_bucket.js';
 import {createTrashReaders} from '../../common/js/trash.js';
 import {FileErrorToDomError} from '../../common/js/util.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {SearchLocation, SearchOptions} from '../../externs/ts/state.js';
 import {getDefaultSearchOptions} from '../../state/ducks/search.js';
@@ -152,15 +152,15 @@ export class SearchV2ContentScanner extends ContentScanner {
     this.options_ = options || getDefaultSearchOptions();
     this.driveSearchTypeMap_ = new Map([
       [
-        VolumeManagerCommon.RootType.DRIVE_OFFLINE,
+        RootType.DRIVE_OFFLINE,
         chrome.fileManagerPrivate.SearchType.OFFLINE,
       ],
       [
-        VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME,
+        RootType.DRIVE_SHARED_WITH_ME,
         chrome.fileManagerPrivate.SearchType.EXCLUDE_DIRECTORIES,
       ],
       [
-        VolumeManagerCommon.RootType.DRIVE_RECENT,
+        RootType.DRIVE_RECENT,
         chrome.fileManagerPrivate.SearchType.EXCLUDE_DIRECTORIES,
       ],
     ]);
@@ -430,8 +430,8 @@ export class SearchV2ContentScanner extends ContentScanner {
    * @private
    */
   createMyFilesSearch_(modifiedTimestamp, category, maxResults) {
-    const myFilesVolume = this.volumeManager_.getCurrentProfileVolumeInfo(
-        VolumeManagerCommon.VolumeType.DOWNLOADS);
+    const myFilesVolume =
+        this.volumeManager_.getCurrentProfileVolumeInfo(VolumeType.DOWNLOADS);
     if (!myFilesVolume || !myFilesVolume.displayRoot) {
       return [];
     }
@@ -454,12 +454,11 @@ export class SearchV2ContentScanner extends ContentScanner {
   createRemovablesSearch_(modifiedTimestamp, category, maxResults) {
     // @ts-ignore: error TS6133: 'rootFolderList' is declared but its value is
     // never read.
-    const rootFolderList = this.getRootFoldersByVolumeType_(
-        VolumeManagerCommon.VolumeType.REMOVABLE);
+    const rootFolderList =
+        this.getRootFoldersByVolumeType_(VolumeType.REMOVABLE);
     return this.makeFileSearchPromiseList_(
         modifiedTimestamp, category, maxResults, 'Removable',
-        this.getRootFoldersByVolumeType_(
-            VolumeManagerCommon.VolumeType.REMOVABLE));
+        this.getRootFoldersByVolumeType_(VolumeType.REMOVABLE));
   }
 
   /**
@@ -473,8 +472,8 @@ export class SearchV2ContentScanner extends ContentScanner {
    * @private
    */
   createDocumentsProviderSearch_(modifiedTimestamp, category, maxResults) {
-    const rootFolderList = this.getRootFoldersByVolumeType_(
-        VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER);
+    const rootFolderList =
+        this.getRootFoldersByVolumeType_(VolumeType.DOCUMENTS_PROVIDER);
     return rootFolderList.map(
         rootFolder => this.makeReadEntriesRecursivelyPromise_(
             rootFolder, modifiedTimestamp, category, maxResults,
@@ -492,8 +491,8 @@ export class SearchV2ContentScanner extends ContentScanner {
    * @private
    */
   createFileSystemProviderSearch_(modifiedTimestamp, category, maxResults) {
-    const rootFolderList = this.getRootFoldersByVolumeType_(
-        VolumeManagerCommon.VolumeType.PROVIDED);
+    const rootFolderList =
+        this.getRootFoldersByVolumeType_(VolumeType.PROVIDED);
     return rootFolderList.map(
         rootFolder => this.makeReadEntriesRecursivelyPromise_(
             rootFolder, modifiedTimestamp, category, maxResults, 'Provided'));
@@ -564,19 +563,17 @@ export class SearchV2ContentScanner extends ContentScanner {
     const searchFolder = this.options_.location === SearchLocation.THIS_FOLDER ?
         this.entry_ :
         this.getTopMostVolume_(this.entry_);
-    if (this.rootType_ === VolumeManagerCommon.RootType.DOCUMENTS_PROVIDER) {
+    if (this.rootType_ === RootType.DOCUMENTS_PROVIDER) {
       return [this.makeReadEntriesRecursivelyPromise_(
           searchFolder, modifiedTimestamp, category, maxResults,
           'DocumentsProvider')];
     }
-    if (this.rootType_ === VolumeManagerCommon.RootType.PROVIDED) {
+    if (this.rootType_ === RootType.PROVIDED) {
       return [this.makeReadEntriesRecursivelyPromise_(
           searchFolder, modifiedTimestamp, category, maxResults, 'Provided')];
     }
     const metricVariant =
-        this.rootType_ === VolumeManagerCommon.RootType.REMOVABLE ?
-        'Removable' :
-        'Local';
+        this.rootType_ === RootType.REMOVABLE ? 'Removable' : 'Local';
     // My Files or a folder nested in it.
     return this.makeFileSearchPromiseList_(
         modifiedTimestamp, category, maxResults, metricVariant,
@@ -1030,8 +1027,7 @@ export class FileFilter extends EventTarget {
         if (entry.fullPath.startsWith('/PvmDefault/') &&
             FileFilter.WINDOWS_HIDDEN.includes(entry.name)) {
           const info = this.volumeManager_.getLocationInfo(entry);
-          if (info &&
-              info.rootType === VolumeManagerCommon.RootType.DOWNLOADS) {
+          if (info && info.rootType === RootType.DOWNLOADS) {
             return false;
           }
         }

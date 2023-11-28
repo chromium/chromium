@@ -10,7 +10,7 @@
  */
 
 import {recordUserAction} from '../../../../common/js/metrics.js';
-import {VolumeManagerCommon} from '../../../../common/js/volume_manager_types.js';
+import {RootType, VolumeType} from '../../../../common/js/volume_manager_types.js';
 
 import {EducationalBanner} from './educational_banner.js';
 import {getTemplate} from './google_one_offer_banner.html.js';
@@ -51,8 +51,8 @@ export class GoogleOneOfferBanner extends EducationalBanner {
    */
   override allowedVolumes() {
     return [{
-      type: VolumeManagerCommon.VolumeType.DRIVE,
-      root: VolumeManagerCommon.RootType.DRIVE,
+      type: VolumeType.DRIVE,
+      root: RootType.DRIVE,
     }];
   }
 

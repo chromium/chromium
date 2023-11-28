@@ -11,7 +11,7 @@ import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {str} from '../../common/js/translations.js';
 import {FileErrorToDomError} from '../../common/js/util.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
 import {PropStatus} from '../../externs/ts/state.js';
 import {constants} from '../../foreground/js/constants.js';
@@ -76,7 +76,7 @@ export function setUp() {
   directoryModel.isSearching = () => false;
   providersModel = new ProvidersModel(new MockVolumeManager());
   recentEntry = new FakeEntryImpl(
-      'Recent', VolumeManagerCommon.RootType.RECENT,
+      'Recent', RootType.RECENT,
       chrome.fileManagerPrivate.SourceRestriction.ANY_SOURCE,
       chrome.fileManagerPrivate.FileCategory.ALL);
   emptyFolderController = new TestEmptyFolderController(
@@ -107,7 +107,7 @@ export function setUp() {
  */
 export function testNoFilesMessage() {
   // Mock current directory to Recent.
-  directoryModel.getCurrentRootType = () => VolumeManagerCommon.RootType.RECENT;
+  directoryModel.getCurrentRootType = () => RootType.RECENT;
 
   // For all filter.
   emptyFolderController.updateUi();
@@ -146,8 +146,7 @@ export function testNoFilesMessage() {
  */
 export function testHiddenForNonRecent() {
   // Mock current directory to Downloads.
-  directoryModel.getCurrentRootType = () =>
-      VolumeManagerCommon.RootType.DOWNLOADS;
+  directoryModel.getCurrentRootType = () => RootType.DOWNLOADS;
 
   emptyFolderController.updateUi();
   assertTrue(element.hidden);
@@ -159,7 +158,7 @@ export function testHiddenForNonRecent() {
  */
 export function testHiddenForScanning() {
   // Mock current directory to Recent.
-  directoryModel.getCurrentRootType = () => VolumeManagerCommon.RootType.RECENT;
+  directoryModel.getCurrentRootType = () => RootType.RECENT;
   // Mock scanning.
   emptyFolderController.isScanning = true;
 
@@ -173,7 +172,7 @@ export function testHiddenForScanning() {
  */
 export function testHiddenForFiles() {
   // Mock current directory to Recent.
-  directoryModel.getCurrentRootType = () => VolumeManagerCommon.RootType.RECENT;
+  directoryModel.getCurrentRootType = () => RootType.RECENT;
   // Current file list has 1 item.
   fileListModel.push({name: 'a.txt', isDirectory: false, toURL: () => 'a.txt'});
 
@@ -193,8 +192,7 @@ export function testHiddenForODFS() {
   const initialState = getEmptyState();
   const {volumeManager} = window.fileManager;
   const odfsVolumeInfo = MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.PROVIDED, 'odfs', 'odfs', 'odfs',
-      constants.ODFS_EXTENSION_ID);
+      VolumeType.PROVIDED, 'odfs', 'odfs', 'odfs', constants.ODFS_EXTENSION_ID);
   volumeManager.volumeInfoList.add(odfsVolumeInfo);
   const volume = convertVolumeInfoAndMetadataToVolume(
       odfsVolumeInfo, createFakeVolumeMetadata(odfsVolumeInfo));
@@ -219,7 +217,7 @@ export function testHiddenForODFS() {
  * Tests that the empty state image shows up when root type is Trash.
  */
 export function testShownForTrash() {
-  directoryModel.getCurrentRootType = () => VolumeManagerCommon.RootType.TRASH;
+  directoryModel.getCurrentRootType = () => RootType.TRASH;
   emptyFolderController.updateUi();
   assertFalse(element.hidden);
   const text = emptyFolderController.label.innerText;
@@ -238,8 +236,7 @@ export async function testShownForODFS(done: VoidCallback) {
   const initialState = getEmptyState();
   const {volumeManager} = window.fileManager;
   const odfsVolumeInfo = MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.PROVIDED, 'odfs', 'odfs', 'odfs',
-      constants.ODFS_EXTENSION_ID);
+      VolumeType.PROVIDED, 'odfs', 'odfs', 'odfs', constants.ODFS_EXTENSION_ID);
   volumeManager.volumeInfoList.add(odfsVolumeInfo);
   const volume = convertVolumeInfoAndMetadataToVolume(
       odfsVolumeInfo, createFakeVolumeMetadata(odfsVolumeInfo));

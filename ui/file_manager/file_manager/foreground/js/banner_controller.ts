@@ -16,7 +16,7 @@ import {getTeamDriveName} from '../../common/js/entry_utils.js';
 import {isGoogleOneOfferFilesBannerEligibleAndEnabled} from '../../common/js/flags.js';
 import {storage} from '../../common/js/storage.js';
 import {isNullOrUndefined} from '../../common/js/util.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import {Crostini} from '../../externs/background/crostini.js';
 import {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfaces.js';
 import {DialogType, State} from '../../externs/ts/state.js';
@@ -145,7 +145,7 @@ export class BannerController extends EventTarget {
    * Maintains the currently navigated root type. This is updated by the
    * directory-changed event.
    */
-  private currentRootType_: VolumeManagerCommon.RootType|null = null;
+  private currentRootType_: RootType|null = null;
 
   /**
    * Maintains the currently navigated shared drive if any. This is updated
@@ -919,7 +919,7 @@ export class BannerController extends EventTarget {
       return;
     }
     for (const {volumeType, volumeId} of this.pendingVolumeSizeUpdates_) {
-      if (volumeType === VolumeManagerCommon.VolumeType.DRIVE) {
+      if (volumeType === VolumeType.DRIVE) {
         try {
           if (!this.currentEntry_) {
             continue;
@@ -974,8 +974,7 @@ export class BannerController extends EventTarget {
  * array for a specific banner.
  */
 export function isAllowedVolume(
-    currentVolume: VolumeInfo|null,
-    currentRootType: VolumeManagerCommon.RootType|null,
+    currentVolume: VolumeInfo|null, currentRootType: RootType|null,
     allowedVolumes: AllowedVolumeOrType[]) {
   let currentVolumeType = null;
   let currentVolumeId = null;

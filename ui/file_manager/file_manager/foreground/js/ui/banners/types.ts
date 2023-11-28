@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {VolumeManagerCommon} from '../../../../common/js/volume_manager_types.js';
+import {RootType, VolumeType} from '../../../../common/js/volume_manager_types.js';
+
 
 /**
  * Events dispatched by concrete banners.
@@ -31,7 +32,7 @@ export const BANNER_INFINITE_TIME = 0;
  */
 interface AllowedVolume {
   id?: string;
-  type: VolumeManagerCommon.VolumeType;
+  type: VolumeType;
 }
 
 /**
@@ -39,7 +40,7 @@ interface AllowedVolume {
  */
 interface AllowedRoot {
   id?: string;
-  root: VolumeManagerCommon.RootType;
+  root: RootType;
 }
 
 /**
@@ -52,7 +53,7 @@ export type AllowedVolumeOrType = AllowedVolume|AllowedRoot;
  * be shown.
  */
 interface MinRatioThreshold {
-  type: VolumeManagerCommon.RootType;
+  type: RootType;
   minRatio: number;
 }
 
@@ -61,7 +62,7 @@ interface MinRatioThreshold {
  * shown.
  */
 interface MinSizeThreshold {
-  type: VolumeManagerCommon.RootType;
+  type: RootType;
   minSize: number;
 }
 

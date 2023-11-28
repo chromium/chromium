@@ -8,7 +8,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeo
 
 import {MockDirectoryEntry, MockEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {reportPromise, waitUntil} from '../../common/js/test_error_reporting.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {VolumeType} from '../../common/js/volume_manager_types.js';
 
 import {DirectoryModel} from './directory_model.js';
 import {FileListModel} from './file_list_model.js';
@@ -440,7 +440,7 @@ export function testChangeEvent(callback) {
  * Test case for MTP volume.
  */
 export function testMTPVolume() {
-  currentVolumeType = VolumeManagerCommon.VolumeType.MTP;
+  currentVolumeType = VolumeType.MTP;
 
   listThumbnailLoader.setHighPriorityRange(0, 2);
   fileListModel.push(directory1, entry1, entry2, entry3);

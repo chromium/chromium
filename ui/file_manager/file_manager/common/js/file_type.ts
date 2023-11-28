@@ -8,7 +8,7 @@ import {FileData} from '../../externs/ts/state.js';
 import {getFileTypeForName, getFinalExtension} from './file_types_base.js';
 import {FileExtensionType, MIME_TO_TYPE} from './file_types_data.js';
 import {VolumeEntry} from './files_app_entry_types.js';
-import {VolumeManagerCommon} from './volume_manager_types.js';
+import {RootType, VolumeType} from './volume_manager_types.js';
 
 export {FileExtensionType};
 
@@ -200,7 +200,7 @@ export function isEncrypted(
  */
 export function getIcon(
     entry: Entry|VolumeEntry|FileData, mimeType?: string,
-    rootType?: VolumeManagerCommon.RootType): string {
+    rootType?: RootType): string {
   // Handles the FileData and FilesAppEntry types.
   if (entry && 'iconName' in entry) {
     return entry.iconName;
@@ -224,21 +224,19 @@ export function getIcon(
  * @param rootType The root type of the entry.
  */
 export function getIconOverrides(
-    entry: Entry|FilesAppEntry,
-    rootType?: VolumeManagerCommon.RootType): string {
+    entry: Entry|FilesAppEntry, rootType?: RootType): string {
   if (!rootType) {
     return '';
   }
 
   // Overrides per RootType and defined by fullPath.
-  const overrides:
-      Partial<Record<VolumeManagerCommon.RootType, Record<string, string>>> = {
-        [VolumeManagerCommon.RootType.DOWNLOADS]: {
-          '/Camera': 'camera-folder',
-          '/Downloads': VolumeManagerCommon.VolumeType.DOWNLOADS,
-          '/PvmDefault': 'plugin_vm',
-        },
-      };
+  const overrides: Partial<Record<RootType, Record<string, string>>> = {
+    [RootType.DOWNLOADS]: {
+      '/Camera': 'camera-folder',
+      '/Downloads': VolumeType.DOWNLOADS,
+      '/PvmDefault': 'plugin_vm',
+    },
+  };
 
   const root = overrides[rootType];
   if (!root) {

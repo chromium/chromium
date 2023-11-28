@@ -9,7 +9,7 @@ import {isFolderDialogType} from '../../common/js/dialog_type.js';
 import {recordEnum} from '../../common/js/metrics.js';
 import {str} from '../../common/js/translations.js';
 import {testSendMessage, UserCanceledError} from '../../common/js/util.js';
-import {AllowedPaths, VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {AllowedPaths, RootTypesForUMA} from '../../common/js/volume_manager_types.js';
 import {DialogType} from '../../externs/ts/state.js';
 
 import {FileFilter} from './directory_contents.js';
@@ -284,9 +284,7 @@ export class DialogActionController {
     // Record the root types of chosen files in OPEN dialog.
     if (this.dialogType_ == DialogType.SELECT_OPEN_FILE ||
         this.dialogType_ == DialogType.SELECT_OPEN_MULTI_FILE) {
-      recordEnum(
-          'OpenFiles.RootType', currentRootType,
-          VolumeManagerCommon.RootTypesForUMA);
+      recordEnum('OpenFiles.RootType', currentRootType, RootTypesForUMA);
     }
     // @ts-ignore: error TS2339: Property 'multiple' does not exist on type
     // 'Object'.

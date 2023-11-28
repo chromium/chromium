@@ -6,7 +6,7 @@ import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {installMockChrome} from '../../common/js/mock_chrome.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {RootType} from '../../common/js/volume_manager_types.js';
 
 import {FileFilter} from './directory_contents.js';
 import {DirectoryModel} from './directory_model.js';
@@ -80,8 +80,7 @@ export function testRecanAfterDeletionForRecents() {
   };
 
   // Current directory is not Recent.
-  directoryModel.getCurrentRootType = () =>
-      VolumeManagerCommon.RootType.DOWNLOADS;
+  directoryModel.getCurrentRootType = () => RootType.DOWNLOADS;
   // @ts-ignore: error TS2721: Cannot invoke an object which is possibly 'null'.
   onIOTaskProgressStatusCallback(deleteEvent);
   assertFalse(isRescanCalled);
@@ -90,7 +89,7 @@ export function testRecanAfterDeletionForRecents() {
   assertFalse(isRescanCalled);
 
   // Current directory is Recent.
-  directoryModel.getCurrentRootType = () => VolumeManagerCommon.RootType.RECENT;
+  directoryModel.getCurrentRootType = () => RootType.RECENT;
   // @ts-ignore: error TS2721: Cannot invoke an object which is possibly 'null'.
   onIOTaskProgressStatusCallback(deleteEvent);
   assertTrue(isRescanCalled);

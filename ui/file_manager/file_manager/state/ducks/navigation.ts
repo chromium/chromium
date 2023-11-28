@@ -4,7 +4,7 @@
 
 import {isOneDriveId} from '../../common/js/entry_utils.js';
 import {EntryList, VolumeEntry} from '../../common/js/files_app_entry_types.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {VolumeType} from '../../common/js/volume_manager_types.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {AndroidApp, DialogType, NavigationKey, NavigationRoot, NavigationSection, NavigationType, State, Volume} from '../../externs/ts/state.js';
 import {Slice} from '../../lib/base_store.js';
@@ -21,9 +21,7 @@ import {getEntry, getFileData} from '../store.js';
 const slice = new Slice<State, State['navigation']>('navigation');
 export {slice as navigationSlice};
 
-const VolumeType = VolumeManagerCommon.VolumeType;
-
-const sections = new Map<VolumeManagerCommon.VolumeType, NavigationSection>();
+const sections = new Map<VolumeType, NavigationSection>();
 // My Files.
 sections.set(VolumeType.DOWNLOADS, NavigationSection.MY_FILES);
 // Cloud.
@@ -152,18 +150,17 @@ function refreshNavigationRootsReducer(currentState: State): State {
 
 
   // 5/6/7/8 Other volumes.
-  const volumesOrder:
-      Partial<Record<VolumeManagerCommon.VolumeType, number>> = {
-        // ODFS is a PROVIDED volume type but is a special case to be directly
-        // below Drive.
-        // ODFS : 0
-        [VolumeType.SMB]: 1,
-        [VolumeType.PROVIDED]: 2,  // FSP.
-        [VolumeType.DOCUMENTS_PROVIDER]: 3,
-        [VolumeType.REMOVABLE]: 4,
-        [VolumeType.ARCHIVE]: 5,
-        [VolumeType.MTP]: 6,
-      };
+  const volumesOrder: Partial<Record<VolumeType, number>> = {
+    // ODFS is a PROVIDED volume type but is a special case to be directly
+    // below Drive.
+    // ODFS : 0
+    [VolumeType.SMB]: 1,
+    [VolumeType.PROVIDED]: 2,  // FSP.
+    [VolumeType.DOCUMENTS_PROVIDER]: 3,
+    [VolumeType.REMOVABLE]: 4,
+    [VolumeType.ARCHIVE]: 5,
+    [VolumeType.MTP]: 6,
+  };
   // Filter volumes based on the volumeInfoList in volumeManager.
   const {volumeManager} = window.fileManager;
   const filteredVolumes =

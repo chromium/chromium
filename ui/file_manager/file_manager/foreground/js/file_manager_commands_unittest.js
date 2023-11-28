@@ -10,7 +10,7 @@ import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 import {installMockChrome, MockMetrics} from '../../common/js/mock_chrome.js';
 import {MockDirectoryEntry, MockEntry} from '../../common/js/mock_entry.js';
 import {waitUntil} from '../../common/js/test_error_reporting.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import {addVolume, convertVolumeInfoAndMetadataToVolume, updateIsInteractiveVolume} from '../../state/ducks/volumes.js';
 import {createMyFilesDataWithVolumeEntry} from '../../state/ducks/volumes_unittest.js';
 import {createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore, waitDeepEquals} from '../../state/for_tests.js';
@@ -66,14 +66,12 @@ export async function testToggleHoldingSpaceCommand(done) {
 
   // Create `DOWNLOADS` volume.
   const downloadsVolumeInfo = volumeManager.createVolumeInfo(
-      VolumeManagerCommon.VolumeType.DOWNLOADS, 'downloadsVolumeId',
-      'Downloads volume');
+      VolumeType.DOWNLOADS, 'downloadsVolumeId', 'Downloads volume');
   const downloadsFileSystem = downloadsVolumeInfo.fileSystem;
 
   // Create `REMOVABLE` volume.
   const removableVolumeInfo = volumeManager.createVolumeInfo(
-      VolumeManagerCommon.VolumeType.REMOVABLE, 'removableVolumeId',
-      'Removable volume');
+      VolumeType.REMOVABLE, 'removableVolumeId', 'Removable volume');
   const removableFileSystem = removableVolumeInfo.fileSystem;
 
   // Mock file/folder entries.
@@ -89,9 +87,9 @@ export async function testToggleHoldingSpaceCommand(done) {
   const testCases = [
     {
       description: 'Tests empty selection in `Downloads`',
-      currentRootType: VolumeManagerCommon.RootType.DOWNLOADS,
+      currentRootType: RootType.DOWNLOADS,
       currentVolumeInfo: {
-        volumeType: VolumeManagerCommon.VolumeType.DOWNLOADS,
+        volumeType: VolumeType.DOWNLOADS,
       },
       itemUrls: [],
       selection: [],
@@ -103,9 +101,9 @@ export async function testToggleHoldingSpaceCommand(done) {
     },
     {
       description: 'Tests selection from supported volume in `Downloads`',
-      currentRootType: VolumeManagerCommon.RootType.DOWNLOADS,
+      currentRootType: RootType.DOWNLOADS,
       currentVolumeInfo: {
-        volumeType: VolumeManagerCommon.VolumeType.DOWNLOADS,
+        volumeType: VolumeType.DOWNLOADS,
       },
       itemUrls: [],
       selection: [downloadFileEntry],
@@ -119,9 +117,9 @@ export async function testToggleHoldingSpaceCommand(done) {
     {
       description:
           'Tests folder selection from supported volume in `Downloads`',
-      currentRootType: VolumeManagerCommon.RootType.DOWNLOADS,
+      currentRootType: RootType.DOWNLOADS,
       currentVolumeInfo: {
-        volumeType: VolumeManagerCommon.VolumeType.DOWNLOADS,
+        volumeType: VolumeType.DOWNLOADS,
       },
       itemUrls: [],
       selection: [folderEntry],
@@ -135,9 +133,9 @@ export async function testToggleHoldingSpaceCommand(done) {
     {
       description:
           'Tests pinned selection from supported volume in `Downloads`',
-      currentRootType: VolumeManagerCommon.RootType.DOWNLOADS,
+      currentRootType: RootType.DOWNLOADS,
       currentVolumeInfo: {
-        volumeType: VolumeManagerCommon.VolumeType.DOWNLOADS,
+        volumeType: VolumeType.DOWNLOADS,
       },
       itemUrls: entriesToURLs([downloadFileEntry]),
       selection: [downloadFileEntry],
@@ -150,7 +148,7 @@ export async function testToggleHoldingSpaceCommand(done) {
     },
     {
       description: 'Tests selection from supported volume in `Recent`',
-      currentRootType: VolumeManagerCommon.RootType.RECENT,
+      currentRootType: RootType.RECENT,
       currentVolumeInfo: null,
       selection: [downloadFileEntry],
       itemUrls: [],
@@ -163,7 +161,7 @@ export async function testToggleHoldingSpaceCommand(done) {
     },
     {
       description: 'Test selection from unsupported volume in `Recent`',
-      currentRootType: VolumeManagerCommon.RootType.RECENT,
+      currentRootType: RootType.RECENT,
       currentVolumeInfo: null,
       itemUrls: [],
       selection: [removableFileEntry],
@@ -175,7 +173,7 @@ export async function testToggleHoldingSpaceCommand(done) {
     },
     {
       description: 'Test selection from mix of volumes in `Recent`',
-      currentRootType: VolumeManagerCommon.RootType.RECENT,
+      currentRootType: RootType.RECENT,
       currentVolumeInfo: null,
       itemUrls: [],
       selection: [audioFileEntry, removableFileEntry, downloadFileEntry],
@@ -308,8 +306,7 @@ export async function testExtractAllCommand(done) {
 
   // Create `DOWNLOADS` volume.
   const downloadsVolumeInfo = volumeManager.createVolumeInfo(
-      VolumeManagerCommon.VolumeType.DOWNLOADS, 'downloadsVolumeId',
-      'Downloads volume');
+      VolumeType.DOWNLOADS, 'downloadsVolumeId', 'Downloads volume');
   const downloadsFileSystem = downloadsVolumeInfo.fileSystem;
 
   // Mock file entries.
@@ -343,7 +340,7 @@ export async function testExtractAllCommand(done) {
     directoryModel: {
       isOnNative: () => true,
       isReadOnly: () => false,
-      getCurrentRootType: () => VolumeManagerCommon.RootType.DOWNLOADS,
+      getCurrentRootType: () => RootType.DOWNLOADS,
     },
     metadataModel: {
       getCache: () => [],
@@ -435,12 +432,11 @@ export async function testRenameCommand(done) {
 
   // Create `documents_root` volume.
   const documentsRootVolumeInfo = volumeManager.createVolumeInfo(
-      VolumeManagerCommon.VolumeType.MEDIA_VIEW,
+      VolumeType.MEDIA_VIEW,
       'com.android.providers.media.documents:documents_root', 'Documents');
 
   // Mock file entries.
-  const recentEntry =
-      new FakeEntryImpl('Recent', VolumeManagerCommon.RootType.RECENT);
+  const recentEntry = new FakeEntryImpl('Recent', RootType.RECENT);
   const pdfEntry = MockDirectoryEntry.create(
       documentsRootVolumeInfo.fileSystem, 'Documents/abc.pdf');
 
@@ -569,7 +565,7 @@ export async function testCommandsForNonInteractiveVolumeAndNoEntries(done) {
     directoryModel: {
       getCurrentDirEntry: () => null,
       // Navigate to the non-interactive volume.
-      getCurrentRootType: () => VolumeManagerCommon.RootType.DOWNLOADS,
+      getCurrentRootType: () => RootType.DOWNLOADS,
       getCurrentVolumeInfo: () => nonInteractiveVolumeInfo,
     },
     document: {

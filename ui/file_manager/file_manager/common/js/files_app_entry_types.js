@@ -24,7 +24,7 @@
 import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 
 import {vmTypeToIconName} from './icon_util.js';
-import {VolumeManagerCommon} from './volume_manager_types.js';
+import {getVolumeTypeFromRootType, RootType, VolumeType} from './volume_manager_types.js';
 
 /**
  * A reader compatible with DirectoryEntry.createReader (from Web Standards)
@@ -136,7 +136,7 @@ export class EntryList {
   /**
    * @param {string} label: Label to be used when displaying to user, it should
    *    already translated.
-   * @param {VolumeManagerCommon.RootType} rootType root type.
+   * @param {RootType} rootType root type.
    * @param {string} devicePath Device path
    */
   constructor(label, rootType, devicePath = '') {
@@ -147,7 +147,7 @@ export class EntryList {
      */
     this.label_ = label;
 
-    /** @private @type {VolumeManagerCommon.RootType} rootType root type. */
+    /** @private @type {RootType} rootType root type. */
     this.rootType_ = rootType;
 
     /**
@@ -285,7 +285,7 @@ export class EntryList {
 
   /**
    * Removes the first volume with the given type.
-   * @param {!VolumeManagerCommon.VolumeType} volumeType desired type.
+   * @param {!VolumeType} volumeType desired type.
    * This method is specific to VolumeEntry/EntryList instance.
    * @return {boolean} if entry was removed.
    */
@@ -303,7 +303,7 @@ export class EntryList {
 
   /**
    * Removes all entries that match the rootType.
-   * @param {!VolumeManagerCommon.RootType} rootType to be removed.
+   * @param {!RootType} rootType to be removed.
    * This method is specific to VolumeEntry/EntryList instance.
    */
   removeAllByRootType(rootType) {
@@ -313,7 +313,7 @@ export class EntryList {
 
   /**
    * Removes all entries that match the volumeType.
-   * @param {!VolumeManagerCommon.VolumeType} volumeType to be removed.
+   * @param {!VolumeType} volumeType to be removed.
    * This method is specific to VolumeEntry/EntryList instance.
    */
   removeAllByVolumeType(volumeType) {
@@ -345,14 +345,14 @@ export class EntryList {
    * EntryList can be a placeholder for the real volume (e.g. MyFiles or
    * DriveFakeRootEntryList), if so this field will be the volume type of the
    * volume it represents.
-   * @return {VolumeManagerCommon.VolumeType|null}
+   * @return {VolumeType|null}
    */
   get volumeType() {
     switch (this.rootType) {
-      case VolumeManagerCommon.RootType.MY_FILES:
-        return VolumeManagerCommon.VolumeType.DOWNLOADS;
-      case VolumeManagerCommon.RootType.DRIVE_FAKE_ROOT:
-        return VolumeManagerCommon.VolumeType.DRIVE;
+      case RootType.MY_FILES:
+        return VolumeType.DOWNLOADS;
+      case RootType.DRIVE_FAKE_ROOT:
+        return VolumeType.DRIVE;
       default:
         return null;
     }
@@ -451,7 +451,7 @@ export class VolumeEntry {
     // TODO(b/271485133): consider deriving this from volumeInfo. Setting
     // rootType here breaks some integration tests, e.g.
     // saveAsDlpRestrictedAndroid.
-    /** @type {?VolumeManagerCommon.RootType} */
+    /** @type {?RootType} */
     this.rootType = null;
 
     this.disabled_ = false;
@@ -466,7 +466,7 @@ export class VolumeEntry {
     return this.volumeInfo_;
   }
 
-  /** @return {!VolumeManagerCommon.VolumeType} */
+  /** @return {!VolumeType} */
   get volumeType() {
     return this.volumeInfo_.volumeType;
   }
@@ -575,13 +575,11 @@ export class VolumeEntry {
    * @return {string}
    */
   get iconName() {
-    if (this.volumeInfo_.volumeType ==
-        VolumeManagerCommon.VolumeType.GUEST_OS) {
+    if (this.volumeInfo_.volumeType == VolumeType.GUEST_OS) {
       return vmTypeToIconName(this.volumeInfo_.vmType);
     }
-    if (this.volumeInfo_.volumeType ==
-        VolumeManagerCommon.VolumeType.DOWNLOADS) {
-      return /** @type {string} */ (VolumeManagerCommon.VolumeType.MY_FILES);
+    if (this.volumeInfo_.volumeType == VolumeType.DOWNLOADS) {
+      return /** @type {string} */ (VolumeType.MY_FILES);
     }
     return /** @type {string} */ (this.volumeInfo_.volumeType);
   }
@@ -680,7 +678,7 @@ export class VolumeEntry {
 
   /**
    * Removes the first volume with the given type.
-   * @param {!VolumeManagerCommon.VolumeType} volumeType desired type.
+   * @param {!VolumeType} volumeType desired type.
    * This method is specific to VolumeEntry/EntryList instance.
    * @return {boolean} if entry was removed.
    */
@@ -698,7 +696,7 @@ export class VolumeEntry {
 
   /**
    * Removes all entries that match the rootType.
-   * @param {!VolumeManagerCommon.RootType} rootType to be removed.
+   * @param {!RootType} rootType to be removed.
    * This method is specific to VolumeEntry/EntryList instance.
    */
   removeAllByRootType(rootType) {
@@ -708,7 +706,7 @@ export class VolumeEntry {
 
   /**
    * Removes all entries that match the volumeType.
-   * @param {!VolumeManagerCommon.VolumeType} volumeType to be removed.
+   * @param {!VolumeType} volumeType to be removed.
    * This method is specific to VolumeEntry/EntryList instance.
    */
   removeAllByVolumeType(volumeType) {
@@ -774,7 +772,7 @@ export class VolumeEntry {
 export class FakeEntryImpl {
   /**
    * @param {string} label Translated text to be displayed to user.
-   * @param {!VolumeManagerCommon.RootType} rootType Root type of this entry.
+   * @param {!RootType} rootType Root type of this entry.
    * @param {chrome.fileManagerPrivate.SourceRestriction=} opt_sourceRestriction
    *    used on Recents to filter the source of recent files/directories.
    * @param {chrome.fileManagerPrivate.FileCategory=} opt_fileCategory
@@ -790,7 +788,7 @@ export class FakeEntryImpl {
     /** @public @type {string} Name for this volume. */
     this.name = label;
 
-    /** @public @type {!VolumeManagerCommon.RootType} */
+    /** @public @type {!RootType} */
     this.rootType = rootType;
 
     /** @public @type {boolean} true FakeEntry are always directory-like. */
@@ -872,8 +870,8 @@ export class FakeEntryImpl {
   get iconName() {
     // When Drive volume isn't available yet, the FakeEntry should show the
     // "drive" icon.
-    if (this.rootType === VolumeManagerCommon.RootType.DRIVE_FAKE_ROOT) {
-      return /** @type {string}  */ (VolumeManagerCommon.RootType.DRIVE);
+    if (this.rootType === RootType.DRIVE_FAKE_ROOT) {
+      return /** @type {string}  */ (RootType.DRIVE);
     }
 
     return /** @type{string} */ (this.rootType);
@@ -906,16 +904,16 @@ export class FakeEntryImpl {
   /**
    * FakeEntry can be a placeholder for the real volume, if so this field will
    * be the volume type of the volume it represents.
-   * @return {VolumeManagerCommon.VolumeType|null}
+   * @return {VolumeType|null}
    */
   get volumeType() {
     // Recent rootType has no corresponding volume type, and it will throw error
     // in the below getVolumeTypeFromRootType() call, we need to return null
     // here.
-    if (this.rootType === VolumeManagerCommon.RootType.RECENT) {
+    if (this.rootType === RootType.RECENT) {
       return null;
     }
-    return VolumeManagerCommon.getVolumeTypeFromRootType(this.rootType);
+    return getVolumeTypeFromRootType(this.rootType);
   }
 
   /**
@@ -983,7 +981,7 @@ export class GuestOsPlaceholder extends FakeEntryImpl {
    *     VM
    */
   constructor(label, guest_id, vm_type) {
-    super(label, VolumeManagerCommon.RootType.GUEST_OS, undefined, undefined);
+    super(label, RootType.GUEST_OS, undefined, undefined);
 
     /**
      * @public @type {number} The id of this guest
@@ -1017,8 +1015,8 @@ export class GuestOsPlaceholder extends FakeEntryImpl {
   /** @override */
   get volumeType() {
     if (this.vm_type === chrome.fileManagerPrivate.VmType.ARCVM) {
-      return VolumeManagerCommon.VolumeType.ANDROID_FILES;
+      return VolumeType.ANDROID_FILES;
     }
-    return VolumeManagerCommon.VolumeType.GUEST_OS;
+    return VolumeType.GUEST_OS;
   }
 }

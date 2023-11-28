@@ -7,7 +7,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeo
 
 import {EntryList, FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 import {installMockChrome} from '../../common/js/mock_chrome.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {RootType} from '../../common/js/volume_manager_types.js';
 import {DirectoryChangeEvent} from '../../externs/directory_change_event.js';
 import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
 
@@ -90,15 +90,14 @@ export function setUp() {
   container = /** @type {!HTMLInputElement} */ (document.createElement('div'));
   directoryModel = MockDirectoryModel.create();
   recentEntry = new FakeEntryImpl(
-      'Recent', VolumeManagerCommon.RootType.RECENT,
+      'Recent', RootType.RECENT,
       chrome.fileManagerPrivate.SourceRestriction.ANY_SOURCE,
       chrome.fileManagerPrivate.FileCategory.ALL);
   fileTypeFiltersController = new FileTypeFiltersController(
       container, directoryModel, recentEntry, mockA11y);
 
   // Create a directory entry which is not Recents to simulate directory change.
-  myFilesEntry =
-      new EntryList('My Files', VolumeManagerCommon.RootType.MY_FILES);
+  myFilesEntry = new EntryList('My Files', RootType.MY_FILES);
 }
 
 /**

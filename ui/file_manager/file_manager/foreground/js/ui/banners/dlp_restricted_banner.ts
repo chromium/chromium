@@ -9,7 +9,7 @@
  */
 
 import {str} from '../../../../common/js/translations.js';
-import {VolumeManagerCommon} from '../../../../common/js/volume_manager_types.js';
+import {RootType} from '../../../../common/js/volume_manager_types.js';
 import {DialogType} from '../../../../externs/ts/state.js';
 
 import {getTemplate} from './dlp_restricted_banner.html.js';
@@ -45,7 +45,7 @@ export class DlpRestrictedBanner extends StateBanner {
    * them.
    */
   override allowedVolumes() {
-    return Object.values(VolumeManagerCommon.RootType).map(x => ({root: x}));
+    return Object.values(RootType).map(x => ({root: x}));
   }
 
   /**

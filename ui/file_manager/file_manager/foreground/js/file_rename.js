@@ -13,7 +13,7 @@ import {getEntry, getParentEntry, moveEntryTo, validatePathNameLength} from '../
 import {createDOMError} from '../../common/js/dom_utils.js';
 import {getFileErrorString, str, strf} from '../../common/js/translations.js';
 import {FileErrorToDomError} from '../../common/js/util.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {FileSystemType, FileSystemTypeVolumeNameLengthLimit} from '../../common/js/volume_manager_types.js';
 
 /**
  * Verifies name for file, folder, or removable root to be created or renamed.
@@ -51,14 +51,14 @@ export async function validateEntryName(
  * This function throws if the new label is invalid, else it completes.
  *
  * @param {string} name New external drive name.
- * @param {!VolumeManagerCommon.FileSystemType} fileSystem
+ * @param {!FileSystemType} fileSystem
  */
 export function validateExternalDriveName(name, fileSystem) {
   // Verify if entered name for external drive respects restrictions
   // provided by the target filesystem.
 
   const nameLength = name.length;
-  const lengthLimit = VolumeManagerCommon.FileSystemTypeVolumeNameLengthLimit;
+  const lengthLimit = FileSystemTypeVolumeNameLengthLimit;
 
   // Verify length for the target file system type.
   if (lengthLimit.hasOwnProperty(fileSystem) &&

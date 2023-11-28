@@ -13,7 +13,7 @@ import {vmTypeToIconName} from '../../../common/js/icon_util.js';
 import {recordEnum, recordInterval, recordSmallCount, recordUserAction, startInterval} from '../../../common/js/metrics.js';
 import {getEntryLabel, str, strf} from '../../../common/js/translations.js';
 import {iconSetToCSSBackgroundImageValue} from '../../../common/js/util.js';
-import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.js';
+import {getMediaViewRootTypeFromVolumeId, RootType, RootTypesForUMA, shouldProvideIcons, Source, VolumeType} from '../../../common/js/volume_manager_types.js';
 import {FilesAppDirEntry} from '../../../externs/files_app_entry_interfaces.js';
 import {PropStatus, SearchData, SearchLocation, State} from '../../../externs/ts/state.js';
 import {getStore} from '../../../state/store.js';
@@ -138,7 +138,7 @@ DirectoryItemTreeBaseMethods.searchAndSelectByEntry = async function(entry) {
  * true.
  *
  * @param {Event} e The click event.
- * @param {VolumeManagerCommon.RootType} rootType The root type to record.
+ * @param {RootType} rootType The root type to record.
  * @param {boolean} isRootEntry Whether the entry selected was a root entry.
  * @return
  */
@@ -158,7 +158,7 @@ DirectoryItemTreeBaseMethods.recordUMASelectedEntry =
         metricName = 'Location.OnEntryExpandedOrCollapsed.NonTopLevel';
       }
 
-      recordEnum(metricName, rootType, VolumeManagerCommon.RootTypesForUMA);
+      recordEnum(metricName, rootType, RootTypesForUMA);
     };
 
 Object.freeze(DirectoryItemTreeBaseMethods);
@@ -358,7 +358,7 @@ export class DirectoryItem extends FilesTreeItem {
 
   /**
    * Gets the RootType of the Volume this entry belongs to.
-   * @type {VolumeManagerCommon.RootType|null}
+   * @type {RootType|null}
    */
   get rootType() {
     let rootType = null;
@@ -382,7 +382,7 @@ export class DirectoryItem extends FilesTreeItem {
     const rootType = this.rootType;
     // @ts-ignore: error TS2322: Type 'string | boolean | null' is not
     // assignable to type 'boolean'.
-    return rootType && (rootType === VolumeManagerCommon.RootType.DRIVE);
+    return rootType && (rootType === RootType.DRIVE);
   }
 
   /**
@@ -394,8 +394,8 @@ export class DirectoryItem extends FilesTreeItem {
     // @ts-ignore: error TS2322: Type 'string | boolean | null' is not
     // assignable to type 'boolean'.
     return rootType &&
-        (rootType === VolumeManagerCommon.RootType.COMPUTERS_GRAND_ROOT ||
-         rootType === VolumeManagerCommon.RootType.COMPUTER);
+        (rootType === RootType.COMPUTERS_GRAND_ROOT ||
+         rootType === RootType.COMPUTER);
   }
 
   /**
@@ -1056,14 +1056,12 @@ export class SubDirectoryItem extends DirectoryItem {
 
     if (metadata[0] && metadata[0].isMachineRoot) {
       // @ts-ignore: error TS18047: 'icon' is possibly 'null'.
-      icon.setAttribute(
-          'volume-type-icon', VolumeManagerCommon.RootType.COMPUTER);
+      icon.setAttribute('volume-type-icon', RootType.COMPUTER);
     }
 
     if (metadata[0] && metadata[0].isExternalMedia) {
       // @ts-ignore: error TS18047: 'icon' is possibly 'null'.
-      icon.setAttribute(
-          'volume-type-icon', VolumeManagerCommon.RootType.EXTERNAL_MEDIA);
+      icon.setAttribute('volume-type-icon', RootType.EXTERNAL_MEDIA);
     }
   }
 
@@ -1098,7 +1096,7 @@ export class SubDirectoryItem extends DirectoryItem {
  */
 export class EntryListItem extends DirectoryItem {
   /**
-   * @param {VolumeManagerCommon.RootType} rootType The root type to record.
+   * @param {RootType} rootType The root type to record.
    * @param {!NavigationModelFakeItem} modelItem NavigationModelItem of this
    *     volume.
    * @param {DirectoryTree} tree Current tree, which contains this item.
@@ -1116,7 +1114,7 @@ export class EntryListItem extends DirectoryItem {
     this.rootType_ = rootType;
     this.disabled = modelItem.disabled;
 
-    if (rootType === VolumeManagerCommon.RootType.REMOVABLE) {
+    if (rootType === RootType.REMOVABLE) {
       // @ts-ignore: error TS2339: Property 'rowElement' does not exist on type
       // 'EntryListItem'.
       this.setupEjectButton_(this.rowElement, modelItem.label);
@@ -1160,7 +1158,7 @@ export class EntryListItem extends DirectoryItem {
     }
 
     // MyFiles shows expanded by default.
-    if (rootType === VolumeManagerCommon.RootType.MY_FILES) {
+    if (rootType === RootType.MY_FILES) {
       this.mayHaveChildren_ = true;
       this.expanded = true;
     }
@@ -1297,11 +1295,9 @@ class VolumeItem extends DirectoryItem {
 
     // Certain (often network) file systems should delay the expansion of child
     // nodes for performance reasons.
-    this.delayExpansion =
-        this.volumeInfo.source === VolumeManagerCommon.Source.NETWORK &&
-        (this.volumeInfo.volumeType ===
-             VolumeManagerCommon.VolumeType.PROVIDED ||
-         this.volumeInfo.volumeType === VolumeManagerCommon.VolumeType.SMB);
+    this.delayExpansion = this.volumeInfo.source === Source.NETWORK &&
+        (this.volumeInfo.volumeType === VolumeType.PROVIDED ||
+         this.volumeInfo.volumeType === VolumeType.SMB);
 
     // Set helper attribute for testing.
     if (window.IN_TEST) {
@@ -1321,10 +1317,9 @@ class VolumeItem extends DirectoryItem {
 
     // Attach a placeholder for rename input text box and the eject icon if the
     // volume is ejectable
-    if ((modelItem.volumeInfo_.source === VolumeManagerCommon.Source.DEVICE &&
-         modelItem.volumeInfo_.volumeType !==
-             VolumeManagerCommon.VolumeType.MTP) ||
-        modelItem.volumeInfo_.source === VolumeManagerCommon.Source.FILE) {
+    if ((modelItem.volumeInfo_.source === Source.DEVICE &&
+         modelItem.volumeInfo_.volumeType !== VolumeType.MTP) ||
+        modelItem.volumeInfo_.source === Source.FILE) {
       // This placeholder is added to allow to put textbox before eject button
       // while executing renaming action on external drive.
       // @ts-ignore: error TS2339: Property 'rowElement' does not exist on type
@@ -1351,8 +1346,7 @@ class VolumeItem extends DirectoryItem {
     // Populate children of this volume using resolved display root. For SMB
     // shares, avoid prefetching sub directories to delay authentication.
     if (modelItem.volumeInfo_.providerId !== '@smb' &&
-        modelItem.volumeInfo_.volumeType !==
-            VolumeManagerCommon.VolumeType.SMB) {
+        modelItem.volumeInfo_.volumeType !== VolumeType.SMB) {
       this.volumeInfo_.resolveDisplayRoot(
           // @ts-ignore: error TS6133: 'displayRoot' is declared but its value
           // is never read.
@@ -1378,8 +1372,7 @@ class VolumeItem extends DirectoryItem {
       return;
     }
 
-    if (this.volumeInfo.volumeType ===
-        VolumeManagerCommon.VolumeType.MEDIA_VIEW) {
+    if (this.volumeInfo.volumeType === VolumeType.MEDIA_VIEW) {
       // If this is a media-view volume, we don't show child directories.
       // (Instead, we provide flattened files in the file list.)
       opt_successCallback && opt_successCallback();
@@ -1427,12 +1420,11 @@ class VolumeItem extends DirectoryItem {
         iconSetToCSSBackgroundImageValue(volumeInfo.iconSet);
     if (backgroundImage !== 'none') {
       icon.setAttribute('style', 'background-image: ' + backgroundImage);
-    } else if (VolumeManagerCommon.shouldProvideIcons(
-                   assert(volumeInfo.volumeType))) {
+    } else if (shouldProvideIcons(assert(volumeInfo.volumeType))) {
       icon.setAttribute('use-generic-provided-icon', '');
     }
 
-    if (volumeInfo.volumeType == VolumeManagerCommon.VolumeType.GUEST_OS) {
+    if (volumeInfo.volumeType == VolumeType.GUEST_OS) {
       icon.setAttribute(
           'volume-type-icon', vmTypeToIconName(volumeInfo.vmType));
     } else {
@@ -1440,9 +1432,8 @@ class VolumeItem extends DirectoryItem {
           'volume-type-icon', /** @type {string} */ (volumeInfo.volumeType));
     }
 
-    if (volumeInfo.volumeType === VolumeManagerCommon.VolumeType.MEDIA_VIEW) {
-      const subtype = VolumeManagerCommon.getMediaViewRootTypeFromVolumeId(
-          volumeInfo.volumeId);
+    if (volumeInfo.volumeType === VolumeType.MEDIA_VIEW) {
+      const subtype = getMediaViewRootTypeFromVolumeId(volumeInfo.volumeId);
       icon.setAttribute('volume-subtype', subtype);
     } else {
       icon.setAttribute(
@@ -1527,7 +1518,7 @@ export class DriveVolumeItem extends VolumeItem {
     this.selectDisplayRoot_(e.target);
 
     DirectoryItemTreeBaseMethods.recordUMASelectedEntry.call(
-        this, e, VolumeManagerCommon.RootType.DRIVE_FAKE_ROOT, true);
+        this, e, RootType.DRIVE_FAKE_ROOT, true);
   }
 
   /**
@@ -2169,7 +2160,7 @@ class AndroidAppItem extends FilesTreeItem {
  */
 export class FakeItem extends FilesTreeItem {
   /**
-   * @param {!VolumeManagerCommon.RootType} rootType root type.
+   * @param {!RootType} rootType root type.
    * @param {!NavigationModelFakeItem} modelItem
    * @param {!DirectoryTree} tree Current tree, which contains this item.
    */
@@ -3095,8 +3086,7 @@ DirectoryTree.createDirectoryItem = (modelItem, tree) => {
     case NavigationModelItemType.VOLUME:
       const volumeModelItem =
           /** @type {NavigationModelVolumeItem} */ (modelItem);
-      if (volumeModelItem.volumeInfo.volumeType ===
-          VolumeManagerCommon.VolumeType.DRIVE) {
+      if (volumeModelItem.volumeInfo.volumeType === VolumeType.DRIVE) {
         return new DriveVolumeItem(volumeModelItem, tree);
       } else {
         return new VolumeItem(volumeModelItem, tree);
@@ -3110,32 +3100,32 @@ DirectoryTree.createDirectoryItem = (modelItem, tree) => {
       break;
     case NavigationModelItemType.RECENT:
       return new FakeItem(
-          VolumeManagerCommon.RootType.RECENT,
+          RootType.RECENT,
           /** @type {!NavigationModelFakeItem} */ (modelItem), tree);
       // @ts-ignore: error TS7027: Unreachable code detected.
       break;
     case NavigationModelItemType.CROSTINI:
       return new FakeItem(
-          VolumeManagerCommon.RootType.CROSTINI,
+          RootType.CROSTINI,
           /** @type {!NavigationModelFakeItem} */ (modelItem), tree);
       // @ts-ignore: error TS7027: Unreachable code detected.
       break;
     case NavigationModelItemType.GUEST_OS:
       return new FakeItem(
-          VolumeManagerCommon.RootType.GUEST_OS,
+          RootType.GUEST_OS,
           /** @type {!NavigationModelFakeItem} */ (modelItem), tree);
       // @ts-ignore: error TS7027: Unreachable code detected.
       break;
     case NavigationModelItemType.DRIVE:
       return new FakeItem(
-          VolumeManagerCommon.RootType.DRIVE,
+          RootType.DRIVE,
           /** @type {!NavigationModelFakeItem} */ (modelItem), tree);
       // @ts-ignore: error TS7027: Unreachable code detected.
       break;
     case NavigationModelItemType.ENTRY_LIST:
       const rootType = modelItem.section === NavigationSection.REMOVABLE ?
-          VolumeManagerCommon.RootType.REMOVABLE :
-          VolumeManagerCommon.RootType.MY_FILES;
+          RootType.REMOVABLE :
+          RootType.MY_FILES;
       return new EntryListItem(
           rootType,
           /** @type {!NavigationModelFakeItem} */ (modelItem), tree);
@@ -3148,7 +3138,7 @@ DirectoryTree.createDirectoryItem = (modelItem, tree) => {
       break;
     case NavigationModelItemType.TRASH:
       return new EntryListItem(
-          VolumeManagerCommon.RootType.TRASH,
+          RootType.TRASH,
           /** @type {!NavigationModelFakeItem} */ (modelItem), tree);
       // @ts-ignore: error TS7027: Unreachable code detected.
       break;

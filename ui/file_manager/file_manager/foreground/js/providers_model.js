@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {VolumeType} from '../../common/js/volume_manager_types.js';
 
 /**
  * An item in the model. Represents a single providing extension.
@@ -145,7 +145,7 @@ export class ProvidersModel {
       const mountedProviders = {};
       for (let i = 0; i < this.volumeManager_.volumeInfoList.length; i++) {
         const volumeInfo = this.volumeManager_.volumeInfoList.item(i);
-        if (volumeInfo.volumeType === VolumeManagerCommon.VolumeType.PROVIDED) {
+        if (volumeInfo.volumeType === VolumeType.PROVIDED) {
           // @ts-ignore: error TS2538: Type 'undefined' cannot be used as an
           // index type.
           mountedProviders[volumeInfo.providerId] = true;

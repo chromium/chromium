@@ -29,7 +29,7 @@ import {getTemplate} from './warning_banner.html.js';
  *
  *    class ConcreteWarningBanner extends WarningBanner {
  *      allowedVolumes() {
- *        return [{type: VolumeManagerCommon.VolumeType.DOWNLOADS}];
+ *        return [{type: VolumeType.DOWNLOADS}];
  *      }
  *    }
  *

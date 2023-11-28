@@ -4,7 +4,7 @@
 
 import {getExtension} from '../../common/js/file_type.js';
 import {recordEnum} from '../../common/js/metrics.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {VolumeType} from '../../common/js/volume_manager_types.js';
 import {DialogType} from '../../externs/ts/state.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 
@@ -93,17 +93,17 @@ const WAY_TO_OPEN_ENUM_TO_INDEX = [
  * tools/metrics/histograms/enums.xml.
  */
 const QUICK_VIEW_VOLUME_TYPES = [
-  VolumeManagerCommon.VolumeType.DRIVE,
-  VolumeManagerCommon.VolumeType.DOWNLOADS,
-  VolumeManagerCommon.VolumeType.REMOVABLE,
-  VolumeManagerCommon.VolumeType.ARCHIVE,
-  VolumeManagerCommon.VolumeType.PROVIDED,
-  VolumeManagerCommon.VolumeType.MTP,
-  VolumeManagerCommon.VolumeType.MEDIA_VIEW,
-  VolumeManagerCommon.VolumeType.CROSTINI,
-  VolumeManagerCommon.VolumeType.ANDROID_FILES,
-  VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER,
-  VolumeManagerCommon.VolumeType.SMB,
-  VolumeManagerCommon.VolumeType.SYSTEM_INTERNAL,
-  VolumeManagerCommon.VolumeType.GUEST_OS,
+  VolumeType.DRIVE,
+  VolumeType.DOWNLOADS,
+  VolumeType.REMOVABLE,
+  VolumeType.ARCHIVE,
+  VolumeType.PROVIDED,
+  VolumeType.MTP,
+  VolumeType.MEDIA_VIEW,
+  VolumeType.CROSTINI,
+  VolumeType.ANDROID_FILES,
+  VolumeType.DOCUMENTS_PROVIDER,
+  VolumeType.SMB,
+  VolumeType.SYSTEM_INTERNAL,
+  VolumeType.GUEST_OS,
 ];

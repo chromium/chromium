@@ -9,7 +9,7 @@ import {VolumeInfoImpl} from '../../background/js/volume_info_impl.js';
 import {installMockChrome, MockCommandLinePrivate} from '../../common/js/mock_chrome.js';
 import {MockDirectoryEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {reportPromise} from '../../common/js/test_error_reporting.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {FileSystemType, Source, VolumeType} from '../../common/js/volume_manager_types.js';
 
 import {ProvidersModel} from './providers_model.js';
 
@@ -128,20 +128,20 @@ function addProvidedVolume(volumeManager, providerId, volumeId) {
   fileSystem.entries['/'] = MockDirectoryEntry.create(fileSystem, '');
 
   const volumeInfo = new VolumeInfoImpl(
-      VolumeManagerCommon.VolumeType.PROVIDED, volumeId, fileSystem,
-      '',                                          // error
-      '',                                          // deviceType
-      '',                                          // devicePath
-      false,                                       // isReadonly
-      false,                                       // isReadonlyRemovableDevice
-      {isCurrentProfile: true, displayName: ''},   // profile
-      '',                                          // label
-      providerId,                                  // providerId
-      false,                                       // hasMedia
-      false,                                       // configurable
-      false,                                       // watchable
-      VolumeManagerCommon.Source.NETWORK,          // source
-      VolumeManagerCommon.FileSystemType.UNKNOWN,  // diskFileSystemType
+      VolumeType.PROVIDED, volumeId, fileSystem,
+      '',                                         // error
+      '',                                         // deviceType
+      '',                                         // devicePath
+      false,                                      // isReadonly
+      false,                                      // isReadonlyRemovableDevice
+      {isCurrentProfile: true, displayName: ''},  // profile
+      '',                                         // label
+      providerId,                                 // providerId
+      false,                                      // hasMedia
+      false,                                      // configurable
+      false,                                      // watchable
+      Source.NETWORK,                             // source
+      FileSystemType.UNKNOWN,                     // diskFileSystemType
       // @ts-ignore: error TS2345: Argument of type '{}' is not assignable to
       // parameter of type 'IconSet'.
       {},          // iconSet

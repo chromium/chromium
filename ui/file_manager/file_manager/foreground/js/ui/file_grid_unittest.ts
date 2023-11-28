@@ -8,7 +8,7 @@ import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {MockVolumeManager} from '../../../background/js/mock_volume_manager.js';
 import {FakeEntryImpl} from '../../../common/js/files_app_entry_types.js';
-import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.js';
+import {RootType} from '../../../common/js/volume_manager_types.js';
 import {FileListModel, GROUP_BY_FIELD_DIRECTORY, GROUP_BY_FIELD_MODIFICATION_TIME} from '../file_list_model.js';
 import {MetadataModel} from '../metadata/metadata_model.js';
 import {MockMetadataModel} from '../metadata/mock_metadata.js';
@@ -73,8 +73,7 @@ function setupFileGrid(): FileGrid {
   // Add 10 fake files.
   const entries = [];
   for (let i = 1; i <= 20; i++) {
-    entries.push(
-        new FakeEntryImpl(`${i}.txt`, VolumeManagerCommon.RootType.RECENT));
+    entries.push(new FakeEntryImpl(`${i}.txt`, RootType.RECENT));
   }
   const dataModel = new FileListModel(metadataModel);
   dataModel.splice(0, 0, ...entries);

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {VolumeManagerCommon} from '../common/js/volume_manager_types.js';
+import type {VolumeType} from '../common/js/volume_manager_types.js';
 
 import type {EntryLocation} from './entry_location.js';
 import type {FilesAppDirEntry, FilesAppEntry} from './files_app_entry_interfaces.js';
@@ -55,7 +55,7 @@ export interface VolumeManager {
    * @param fileUrl File url to the archive file.
    * @param password Password to decrypt archive file.
    * @return Fulfilled on success, otherwise rejected with a
-   *     VolumeManagerCommon.VolumeError.
+   *     VolumeError.
    */
   mountArchive(fileUrl: string, password?: string): Promise<VolumeInfo>;
 
@@ -63,7 +63,7 @@ export interface VolumeManager {
    * Cancels mounting an archive.
    * @param fileUrl File url to the archive file.
    * @return Fulfilled on success, otherwise rejected with a
-   *     VolumeManagerCommon.VolumeError.
+   *     VolumeError.
    */
   cancelMounting(fileUrl: string): Promise<void>;
 
@@ -71,7 +71,7 @@ export interface VolumeManager {
    * Unmounts a volume.
    * @param volumeInfo Volume to be unmounted.
    * @return Fulfilled on success, otherwise rejected with a
-   *     VolumeManagerCommon.VolumeError.
+   *     VolumeError.
    */
   unmount(volumeInfo: VolumeInfo): Promise<void>;
 
@@ -88,8 +88,7 @@ export interface VolumeManager {
    * @param volumeType Volume type.
    * @return Volume info.
    */
-  getCurrentProfileVolumeInfo(volumeType: VolumeManagerCommon.VolumeType):
-      VolumeInfo|null;
+  getCurrentProfileVolumeInfo(volumeType: VolumeType): VolumeInfo|null;
 
   /**
    * Obtains location information from an entry.
@@ -157,7 +156,7 @@ export interface VolumeManager {
    * @param volume Volume to check.
    * @return Whether the volume is disabled or not.
    */
-  isDisabled(volume: VolumeManagerCommon.VolumeType): boolean;
+  isDisabled(volume: VolumeType): boolean;
 
   /**
    * Checks if a volume is allowed.

@@ -8,7 +8,7 @@ import {queryRequiredElement} from '../common/js/dom_utils.js';
 import {isEntryInsideDrive} from '../common/js/entry_utils.js';
 import {recordUserAction} from '../common/js/metrics.js';
 import {str, strf} from '../common/js/translations.js';
-import {VolumeManagerCommon} from '../common/js/volume_manager_types.js';
+import {RootType} from '../common/js/volume_manager_types.js';
 import type {FakeEntry} from '../externs/files_app_entry_interfaces.js';
 import {CurrentDirectory, PropStatus, SearchData, SearchLocation, SearchOptions, SearchRecency, State} from '../externs/ts/state.js';
 import type {VolumeManager} from '../externs/volume_manager.js';
@@ -44,7 +44,7 @@ enum SearchInputState {
  * directory.
  */
 function isInRecent(dir: CurrentDirectory|undefined): boolean {
-  return dir?.rootType == VolumeManagerCommon.RootType.RECENT;
+  return dir?.rootType == RootType.RECENT;
 }
 
 /**

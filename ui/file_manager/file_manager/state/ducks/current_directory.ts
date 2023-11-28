@@ -6,7 +6,7 @@ import {getFileTasks} from '../../common/js/api.js';
 import {getNativeEntry} from '../../common/js/entry_utils.js';
 import {annotateTasks, getDefaultTask, INSTALL_LINUX_PACKAGE_TASK_DESCRIPTOR} from '../../common/js/file_tasks.js';
 import {descriptorEqual} from '../../common/js/util.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {RootType} from '../../common/js/volume_manager_types.js';
 import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {CurrentDirectory, DialogType, DirectoryContent, FileData, FileKey, FileTask, FileTasks, PropStatus, Selection, State} from '../../externs/ts/state.js';
 import {constants} from '../../foreground/js/constants.js';
@@ -330,7 +330,7 @@ function allowCrostiniTask(filesData: FileData[]) {
   }
   const fileData = filesData[0]!;
   const rootType = (fileData.entry as FakeEntry).rootType;
-  if (rootType !== VolumeManagerCommon.RootType.CROSTINI) {
+  if (rootType !== RootType.CROSTINI) {
     return false;
   }
   const crostini = window.fileManager.crostini;
@@ -347,8 +347,7 @@ const emptyAction = (status: PropStatus) => updateFileTasks({
 });
 
 export async function*
-    fetchFileTasksInternal(filesData: FileData[]):
-        ActionsProducerGen {
+    fetchFileTasksInternal(filesData: FileData[]): ActionsProducerGen {
   // Filters out the non-native entries.
   filesData = filesData.filter(getNativeEntry);
   const state = getStore().getState();
@@ -358,8 +357,7 @@ export async function*
       // File Picker/Save As doesn't show the "Open" button.
       dialogType !== DialogType.FULL_PAGE ||
       // The list of available tasks should not be available to trashed items.
-      currentRootType === VolumeManagerCommon.RootType.TRASH ||
-      filesData.length === 0);
+      currentRootType === RootType.TRASH || filesData.length === 0);
   if (shouldDisableTasks) {
     yield emptyAction(PropStatus.SUCCESS);
     return;

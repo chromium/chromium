@@ -8,7 +8,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeo
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 
 import {FilteredVolumeManager} from './filtered_volume_manager.js';
-import {AllowedPaths, VolumeManagerCommon} from './volume_manager_types.js';
+import {AllowedPaths, VolumeType} from './volume_manager_types.js';
 
 /**
  * Create a new MockVolumeManager for each test fixture.
@@ -44,30 +44,29 @@ export function testVolumeDefaultFilter(done) {
   const volumeManager = createMockVolumeManager();
 
   // Get `DRIVE` volume.
-  const driveVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
-      VolumeManagerCommon.VolumeType.DRIVE);
+  const driveVolumeInfo =
+      volumeManager.getCurrentProfileVolumeInfo(VolumeType.DRIVE);
   assert(driveVolumeInfo);
 
   // Get `DOWNLOADS` volume.
-  const downloadsVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
-      VolumeManagerCommon.VolumeType.DOWNLOADS);
+  const downloadsVolumeInfo =
+      volumeManager.getCurrentProfileVolumeInfo(VolumeType.DOWNLOADS);
   assert(downloadsVolumeInfo);
 
   // Add `MTP` volume.
   const mtpVolumeInfo = MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.MTP, 'mtpNormalVolumeId',
-      'MTP normal volume', 'mtp-path');
+      VolumeType.MTP, 'mtpNormalVolumeId', 'MTP normal volume', 'mtp-path');
   volumeManager.volumeInfoList.add(mtpVolumeInfo);
 
   // Add `MTP` fusebox volume.
   const mtpFuseBoxVolumeInfo = MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.MTP, 'mtpFuseBoxVolumeId',
-      'MTP fusebox volume', 'fusebox/mtp-path');
+      VolumeType.MTP, 'mtpFuseBoxVolumeId', 'MTP fusebox volume',
+      'fusebox/mtp-path');
   volumeManager.volumeInfoList.add(mtpFuseBoxVolumeInfo);
 
   // Add `DOCUMENTS_PROVIDER` volume.
   const documentsProviderVolumeInfo = MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER, 'adpNormalVolumeId',
+      VolumeType.DOCUMENTS_PROVIDER, 'adpNormalVolumeId',
       'Documents provider normal volume', 'documents-provider-path');
   volumeManager.volumeInfoList.add(documentsProviderVolumeInfo);
 
@@ -98,17 +97,17 @@ export function testVolumeDefaultFilter(done) {
     // Get `DRIVE` volume.
     let info = filteredVolumeManager.volumeInfoList.item(0);
     assert(info, 'volume[0] DRIVE expected');
-    assertEquals(VolumeManagerCommon.VolumeType.DRIVE, info.volumeType);
+    assertEquals(VolumeType.DRIVE, info.volumeType);
 
     // Get `DOWNLOADS` volume.
     info = filteredVolumeManager.volumeInfoList.item(1);
     assert(info, 'volume[1] DOWNLOADS expected');
-    assertEquals(VolumeManagerCommon.VolumeType.DOWNLOADS, info.volumeType);
+    assertEquals(VolumeType.DOWNLOADS, info.volumeType);
 
     // Get `MTP` volume.
     info = filteredVolumeManager.volumeInfoList.item(2);
     assert(info, 'volume[2] MTP expected');
-    assertEquals(VolumeManagerCommon.VolumeType.MTP, info.volumeType);
+    assertEquals(VolumeType.MTP, info.volumeType);
 
     // Check: the MTP volume should be a normal volume.
     assertEquals('MTP normal volume', info.label);
@@ -117,8 +116,7 @@ export function testVolumeDefaultFilter(done) {
     // Get `DOCUMENTS_PROVIDER` volume.
     info = filteredVolumeManager.volumeInfoList.item(3);
     assert(info, 'volume[3] DOCUMENTS_PROVIDER expected');
-    assertEquals(
-        VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER, info.volumeType);
+    assertEquals(VolumeType.DOCUMENTS_PROVIDER, info.volumeType);
 
     // Check: the DOCUMENTS_PROVIDER volume should be a normal volume.
     assertEquals('Documents provider normal volume', info.label);
@@ -137,30 +135,29 @@ export function testVolumeFuseboxOnlyFilter(done) {
   const volumeManager = createMockVolumeManager();
 
   // Get `DRIVE` volume.
-  const driveVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
-      VolumeManagerCommon.VolumeType.DRIVE);
+  const driveVolumeInfo =
+      volumeManager.getCurrentProfileVolumeInfo(VolumeType.DRIVE);
   assert(driveVolumeInfo);
 
   // Get `DOWNLOADS` volume.
-  const downloadsVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
-      VolumeManagerCommon.VolumeType.DOWNLOADS);
+  const downloadsVolumeInfo =
+      volumeManager.getCurrentProfileVolumeInfo(VolumeType.DOWNLOADS);
   assert(downloadsVolumeInfo);
 
   // Add `MTP` volume.
   const mtpVolumeInfo = MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.MTP, 'mtpNormalVolumeId',
-      'MTP normal volume', 'mtp-path');
+      VolumeType.MTP, 'mtpNormalVolumeId', 'MTP normal volume', 'mtp-path');
   volumeManager.volumeInfoList.add(mtpVolumeInfo);
 
   // Add `MTP` fusebox volume.
   const mtpFuseBoxVolumeInfo = MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.MTP, 'mtpFuseBoxVolumeId',
-      'MTP fusebox volume', 'fusebox/mtp-path');
+      VolumeType.MTP, 'mtpFuseBoxVolumeId', 'MTP fusebox volume',
+      'fusebox/mtp-path');
   volumeManager.volumeInfoList.add(mtpFuseBoxVolumeInfo);
 
   // Add `DOCUMENTS_PROVIDER` volume.
   const documentsProviderVolumeInfo = MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER, 'adpNormalVolumeId',
+      VolumeType.DOCUMENTS_PROVIDER, 'adpNormalVolumeId',
       'Documents provider normal volume', 'documents-provider-path');
   volumeManager.volumeInfoList.add(documentsProviderVolumeInfo);
 
@@ -191,17 +188,17 @@ export function testVolumeFuseboxOnlyFilter(done) {
     // Get `DRIVE` volume.
     let info = filteredVolumeManager.volumeInfoList.item(0);
     assert(info, 'volume[0] DRIVE expected');
-    assertEquals(VolumeManagerCommon.VolumeType.DRIVE, info.volumeType);
+    assertEquals(VolumeType.DRIVE, info.volumeType);
 
     // Get `DOWNLOADS` volume.
     info = filteredVolumeManager.volumeInfoList.item(1);
     assert(info, 'volume[1] DOWNLOADS expected');
-    assertEquals(VolumeManagerCommon.VolumeType.DOWNLOADS, info.volumeType);
+    assertEquals(VolumeType.DOWNLOADS, info.volumeType);
 
     // Get `MTP` volume.
     info = filteredVolumeManager.volumeInfoList.item(2);
     assert(info, 'volume[2] MTP expected');
-    assertEquals(VolumeManagerCommon.VolumeType.MTP, info.volumeType);
+    assertEquals(VolumeType.MTP, info.volumeType);
 
     // Check: the MTP volume should be a fusebox volume.
     assertEquals('MTP fusebox volume', info.label);
@@ -221,61 +218,60 @@ export function testVolumeMediaStoreFilesOnlyFilter(done) {
   const volumeManager = createMockVolumeManager();
 
   // Get `DRIVE` volume.
-  const driveVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
-      VolumeManagerCommon.VolumeType.DRIVE);
+  const driveVolumeInfo =
+      volumeManager.getCurrentProfileVolumeInfo(VolumeType.DRIVE);
   assert(driveVolumeInfo);
 
   // Get `DOWNLOADS` volume.
-  const downloadsVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
-      VolumeManagerCommon.VolumeType.DOWNLOADS);
+  const downloadsVolumeInfo =
+      volumeManager.getCurrentProfileVolumeInfo(VolumeType.DOWNLOADS);
   assert(downloadsVolumeInfo);
 
   // Add `ARCHIVE` volume.
   const zipArchiveVolumeInfo = MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.ARCHIVE, 'zipArchiveVolumeId',
-      'zip archive volume', 'zip-archive-volume-path');
+      VolumeType.ARCHIVE, 'zipArchiveVolumeId', 'zip archive volume',
+      'zip-archive-volume-path');
   volumeManager.volumeInfoList.add(zipArchiveVolumeInfo);
 
   // Add `REMOVABLE` volume.
   const removableVolumeInfo = MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.REMOVABLE, 'removableVolumeId',
-      'removable volume', 'removable-volume-path');
+      VolumeType.REMOVABLE, 'removableVolumeId', 'removable volume',
+      'removable-volume-path');
   volumeManager.volumeInfoList.add(removableVolumeInfo);
 
   // Add `MTP` volume.
   const mtpVolumeInfo = MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.MTP, 'mtpNormalVolumeId',
-      'MTP normal volume', 'mtp-path');
+      VolumeType.MTP, 'mtpNormalVolumeId', 'MTP normal volume', 'mtp-path');
   volumeManager.volumeInfoList.add(mtpVolumeInfo);
 
   // Add `MTP` fusebox volume.
   const mtpFuseBoxVolumeInfo = MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.MTP, 'mtpFuseBoxVolumeId',
-      'MTP fusebox volume', 'fusebox/mtp-path');
+      VolumeType.MTP, 'mtpFuseBoxVolumeId', 'MTP fusebox volume',
+      'fusebox/mtp-path');
   volumeManager.volumeInfoList.add(mtpFuseBoxVolumeInfo);
 
   // Add `DOCUMENTS_PROVIDER` volume.
   const documentsProviderVolumeInfo = MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER, 'adpNormalVolumeId',
+      VolumeType.DOCUMENTS_PROVIDER, 'adpNormalVolumeId',
       'Documents provider normal volume', 'documents-provider-path');
   volumeManager.volumeInfoList.add(documentsProviderVolumeInfo);
 
   // Add `PROVIDED` volume.
   const fspVolumeInfo = MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.PROVIDED, 'fspNormalVolumeId',
-      'FSP normal volume', 'fsp-provider-path');
+      VolumeType.PROVIDED, 'fspNormalVolumeId', 'FSP normal volume',
+      'fsp-provider-path');
   volumeManager.volumeInfoList.add(fspVolumeInfo);
 
   // Add `PROVIDED` fusebox volume.
   const fspFuseBoxVolumeInfo = MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.PROVIDED, 'fspFuseBoxVolumeId',
-      'FSP fusebox volume', 'fusebox/fsp-provider-path');
+      VolumeType.PROVIDED, 'fspFuseBoxVolumeId', 'FSP fusebox volume',
+      'fusebox/fsp-provider-path');
   volumeManager.volumeInfoList.add(fspFuseBoxVolumeInfo);
 
   // Add `SMB` volume.
   const smbVolumeInfo = MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.SMB, 'smbVolumeId',
-      'SMB server message block volume', 'server-message-block-path');
+      VolumeType.SMB, 'smbVolumeId', 'SMB server message block volume',
+      'server-message-block-path');
   volumeManager.volumeInfoList.add(smbVolumeInfo);
 
   // Check: volumeManager.volumeInfoList should have 10 volumes.
@@ -305,12 +301,12 @@ export function testVolumeMediaStoreFilesOnlyFilter(done) {
     // Get `DOWNLOADS` volume.
     let info = filteredVolumeManager.volumeInfoList.item(0);
     assert(info, 'volume[0] DOWNLOADS expected');
-    assertEquals(VolumeManagerCommon.VolumeType.DOWNLOADS, info.volumeType);
+    assertEquals(VolumeType.DOWNLOADS, info.volumeType);
 
     // Get `REMOVABLE` volume.
     info = filteredVolumeManager.volumeInfoList.item(1);
     assert(info, 'volume[1] REMOVABLE expected');
-    assertEquals(VolumeManagerCommon.VolumeType.REMOVABLE, info.volumeType);
+    assertEquals(VolumeType.REMOVABLE, info.volumeType);
 
     done();
   });
@@ -325,30 +321,29 @@ export function testDisabledVolumes(done) {
   const volumeManager = createMockVolumeManager();
 
   // Get `DRIVE` volume.
-  const driveVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
-      VolumeManagerCommon.VolumeType.DRIVE);
+  const driveVolumeInfo =
+      volumeManager.getCurrentProfileVolumeInfo(VolumeType.DRIVE);
   assert(driveVolumeInfo);
 
   // Get `DOWNLOADS` volume.
-  const downloadsVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
-      VolumeManagerCommon.VolumeType.DOWNLOADS);
+  const downloadsVolumeInfo =
+      volumeManager.getCurrentProfileVolumeInfo(VolumeType.DOWNLOADS);
   assert(downloadsVolumeInfo);
 
   // Add `MTP` volume.
   const mtpVolumeInfo = MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.MTP, 'mtpNormalVolumeId',
-      'MTP normal volume', 'mtp-path');
+      VolumeType.MTP, 'mtpNormalVolumeId', 'MTP normal volume', 'mtp-path');
   volumeManager.volumeInfoList.add(mtpVolumeInfo);
 
   // Add `MTP` fusebox volume.
   const mtpFuseBoxVolumeInfo = MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.MTP, 'mtpFuseBoxVolumeId',
-      'MTP fusebox volume', 'fusebox/mtp-path');
+      VolumeType.MTP, 'mtpFuseBoxVolumeId', 'MTP fusebox volume',
+      'fusebox/mtp-path');
   volumeManager.volumeInfoList.add(mtpFuseBoxVolumeInfo);
 
   // Add `DOCUMENTS_PROVIDER` volume.
   const documentsProviderVolumeInfo = MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER, 'adpNormalVolumeId',
+      VolumeType.DOCUMENTS_PROVIDER, 'adpNormalVolumeId',
       'Documents provider normal volume', 'documents-provider-path');
   volumeManager.volumeInfoList.add(documentsProviderVolumeInfo);
 
@@ -357,19 +352,17 @@ export function testDisabledVolumes(done) {
 
   const filteredVolumeManager = new FilteredVolumeManager(
       AllowedPaths.ANY_PATH_OR_URL, false, Promise.resolve(volumeManager), [],
-      [VolumeManagerCommon.VolumeType.DRIVE]);
+      [VolumeType.DRIVE]);
 
   filteredVolumeManager.ensureInitialized(() => {
     // Check: hasDisabledVolumes() should return true.
     assertTrue(filteredVolumeManager.hasDisabledVolumes());
 
     // Check: isDisabled() should return true for DRIVE.
-    assertTrue(
-        filteredVolumeManager.isDisabled(VolumeManagerCommon.VolumeType.DRIVE));
+    assertTrue(filteredVolumeManager.isDisabled(VolumeType.DRIVE));
 
     // Check: isDisabled() should return false for REMOVABLE.
-    assertFalse(filteredVolumeManager.isDisabled(
-        VolumeManagerCommon.VolumeType.REMOVABLE));
+    assertFalse(filteredVolumeManager.isDisabled(VolumeType.REMOVABLE));
 
     done();
   });

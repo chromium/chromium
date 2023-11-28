@@ -5,7 +5,7 @@
 import {assertArrayEquals, assertEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {reportPromise} from '../../../common/js/test_error_reporting.js';
-import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.js';
+import {VolumeType} from '../../../common/js/volume_manager_types.js';
 
 import {ContentMetadataProvider} from './content_metadata_provider.js';
 import {DlpMetadataProvider} from './dlp_metadata_provider.js';
@@ -46,19 +46,19 @@ const volumeManager =
           getVolumeInfo: function(entry) {
             if (entry.toURL() === 'filesystem://A') {
               return {
-                volumeType: VolumeManagerCommon.VolumeType.DOWNLOADS,
+                volumeType: VolumeType.DOWNLOADS,
               };
             } else if (entry.toURL() === 'filesystem://B') {
               return {
-                volumeType: VolumeManagerCommon.VolumeType.DRIVE,
+                volumeType: VolumeType.DRIVE,
               };
             } else if (entry.toURL() === 'filesystem://C') {
               return {
-                volumeType: VolumeManagerCommon.VolumeType.DRIVE,
+                volumeType: VolumeType.DRIVE,
               };
             } else if (entry.toURL() === 'filesystem://D') {
               return {
-                volumeType: VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER,
+                volumeType: VolumeType.DOCUMENTS_PROVIDER,
               };
             }
             assertNotReached();

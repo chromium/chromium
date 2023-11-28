@@ -4,7 +4,7 @@
 
 import {isFakeEntry} from '../../common/js/entry_utils.js';
 import {getEntryLabel, getRootTypeLabel, str} from '../../common/js/translations.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {COMPUTERS_DIRECTORY_PATH, RootType, SHARED_DRIVES_DIRECTORY_PATH} from '../../common/js/volume_manager_types.js';
 import {FakeEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 
 /**
@@ -100,13 +100,11 @@ export class PathComponent {
     // Directories under Drive Fake Root can return the fake root entry list as
     // prefix entry, but we will never show "Google Drive" as the prefix in the
     // breadcrumb.
-    if (prefixEntry &&
-        prefixEntry.rootType !== VolumeManagerCommon.RootType.DRIVE_FAKE_ROOT) {
+    if (prefixEntry && prefixEntry.rootType !== RootType.DRIVE_FAKE_ROOT) {
       components.push(new PathComponent(
           prefixEntry.name, prefixEntry.toURL(), prefixEntry));
     }
-    if (locationInfo.rootType ===
-        VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME) {
+    if (locationInfo.rootType === RootType.DRIVE_SHARED_WITH_ME) {
       // DriveFS shared items are in either of:
       // <drivefs>/.files-by-id/<id>/<item>
       // <drivefs>/.shortcut-targets-by-id/<id>/<item>
@@ -119,21 +117,18 @@ export class PathComponent {
       }
       displayRootUrl = replaceRootName(displayRootUrl, displayRootFullPath);
       const sharedWithMeFakeEntry =
-          locationInfo.volumeInfo
-              .fakeEntries[VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME];
+          locationInfo.volumeInfo.fakeEntries[RootType.DRIVE_SHARED_WITH_ME];
       components.push(new PathComponent(
           str('DRIVE_SHARED_WITH_ME_COLLECTION_LABEL'),
           sharedWithMeFakeEntry.toURL(), sharedWithMeFakeEntry));
-    } else if (
-        locationInfo.rootType === VolumeManagerCommon.RootType.SHARED_DRIVE) {
-      displayRootUrl = replaceRootName(
-          displayRootUrl, VolumeManagerCommon.SHARED_DRIVES_DIRECTORY_PATH);
+    } else if (locationInfo.rootType === RootType.SHARED_DRIVE) {
+      displayRootUrl =
+          replaceRootName(displayRootUrl, SHARED_DRIVES_DIRECTORY_PATH);
       components.push(
           new PathComponent(getRootTypeLabel(locationInfo), displayRootUrl));
-    } else if (
-        locationInfo.rootType === VolumeManagerCommon.RootType.COMPUTER) {
-      displayRootUrl = replaceRootName(
-          displayRootUrl, VolumeManagerCommon.COMPUTERS_DIRECTORY_PATH);
+    } else if (locationInfo.rootType === RootType.COMPUTER) {
+      displayRootUrl =
+          replaceRootName(displayRootUrl, COMPUTERS_DIRECTORY_PATH);
       components.push(
           new PathComponent(getRootTypeLabel(locationInfo), displayRootUrl));
     } else {
@@ -143,14 +138,10 @@ export class PathComponent {
 
     // Get relative path to display root (e.g. /root/foo/bar -> foo/bar).
     let relativePath = entry.fullPath.slice(displayRootFullPath.length);
-    if (entry.fullPath.startsWith(
-            VolumeManagerCommon.SHARED_DRIVES_DIRECTORY_PATH)) {
-      relativePath = entry.fullPath.slice(
-          VolumeManagerCommon.SHARED_DRIVES_DIRECTORY_PATH.length);
-    } else if (entry.fullPath.startsWith(
-                   VolumeManagerCommon.COMPUTERS_DIRECTORY_PATH)) {
-      relativePath = entry.fullPath.slice(
-          VolumeManagerCommon.COMPUTERS_DIRECTORY_PATH.length);
+    if (entry.fullPath.startsWith(SHARED_DRIVES_DIRECTORY_PATH)) {
+      relativePath = entry.fullPath.slice(SHARED_DRIVES_DIRECTORY_PATH.length);
+    } else if (entry.fullPath.startsWith(COMPUTERS_DIRECTORY_PATH)) {
+      relativePath = entry.fullPath.slice(COMPUTERS_DIRECTORY_PATH.length);
     }
     if (relativePath.indexOf('/') === 0) {
       relativePath = relativePath.slice(1);
@@ -171,8 +162,7 @@ export class PathComponent {
       // assignable to parameter of type 'string | number | boolean'.
       currentUrl += '/' + encodeURIComponent(paths[i]);
       let path = paths[i];
-      if (i === 0 &&
-          locationInfo.rootType === VolumeManagerCommon.RootType.DOWNLOADS) {
+      if (i === 0 && locationInfo.rootType === RootType.DOWNLOADS) {
         if (path === 'Downloads') {
           path = str('DOWNLOADS_DIRECTORY_LABEL');
         }

@@ -13,7 +13,7 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 
 import {entriesToURLs} from '../../common/js/entry_utils.js';
 import {recordEnum} from '../../common/js/metrics.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {VolumeType} from '../../common/js/volume_manager_types.js';
 import {FileManagerBaseInterface} from '../../externs/background/file_manager_base.js';
 
 import {test} from './test_util_base.js';
@@ -1109,7 +1109,7 @@ test.util.async.getNotificationIDs = callback => {
 /**
  * Gets file entries just under the volume.
  *
- * @param {VolumeManagerCommon.VolumeType} volumeType Volume type.
+ * @param {VolumeType} volumeType Volume type.
  * @param {Array<string>} names File name list.
  * @param {function(*):void} callback Callback function with results returned by
  *     the script.
@@ -1136,7 +1136,7 @@ test.util.async.getFilesUnderVolume = async (volumeType, names, callback) => {
 
   const filesPromise = names.map(name => {
     // TODO(crbug.com/880130): Remove this conditional.
-    if (volumeType === VolumeManagerCommon.VolumeType.DOWNLOADS) {
+    if (volumeType === VolumeType.DOWNLOADS) {
       name = 'Downloads/' + name;
     }
     // @ts-ignore: error TS7005: Variable 'displayRoot' implicitly has an 'any'
@@ -1157,7 +1157,7 @@ test.util.async.getFilesUnderVolume = async (volumeType, names, callback) => {
 /**
  * Unmounts the specified volume.
  *
- * @param {VolumeManagerCommon.VolumeType} volumeType Volume type.
+ * @param {VolumeType} volumeType Volume type.
  * @param {function(boolean):void} callback Function receives true on success.
  */
 test.util.async.unmount = async (volumeType, callback) => {

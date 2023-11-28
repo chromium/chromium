@@ -31,7 +31,7 @@ import {type AllowedVolumeOrType, Banner, BannerEvent, DismissedForeverEventSour
  *
  *    class ConcreteEducationalBanner extends EducationalBanner {
  *      allowedVolumes() {
- *        return [{type: VolumeManagerCommon.VolumeType.DOWNLOADS}];
+ *        return [{type: VolumeType.DOWNLOADS}];
  *      }
  *    }
  *

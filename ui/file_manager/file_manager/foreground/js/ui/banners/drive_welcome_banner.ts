@@ -8,7 +8,8 @@
  * @suppress {checkTypes}
  */
 
-import {VolumeManagerCommon} from '../../../../common/js/volume_manager_types.js';
+
+import {RootType, VolumeType} from '../../../../common/js/volume_manager_types.js';
 
 import {getTemplate} from './drive_welcome_banner.html.js';
 import {EducationalBanner} from './educational_banner.js';
@@ -39,8 +40,8 @@ export class DriveWelcomeBanner extends EducationalBanner {
    */
   override allowedVolumes() {
     return [{
-      type: VolumeManagerCommon.VolumeType.DRIVE,
-      root: VolumeManagerCommon.RootType.DRIVE,
+      type: VolumeType.DRIVE,
+      root: RootType.DRIVE,
     }];
   }
 }

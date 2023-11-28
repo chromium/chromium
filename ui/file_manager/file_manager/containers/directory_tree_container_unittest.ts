@@ -11,7 +11,7 @@ import {installMockChrome} from '../common/js/mock_chrome.js';
 import {MockFileSystem} from '../common/js/mock_entry.js';
 import {waitUntil} from '../common/js/test_error_reporting.js';
 import {waitForElementUpdate} from '../common/js/unittest_util.js';
-import {VolumeManagerCommon} from '../common/js/volume_manager_types.js';
+import {RootType, VolumeType} from '../common/js/volume_manager_types.js';
 import {State} from '../externs/ts/state.js';
 import {convertEntryToFileData} from '../state/ducks/all_entries.js';
 import {addVolume, convertVolumeInfoAndMetadataToVolume, driveRootEntryListKey, removeVolume} from '../state/ducks/volumes.js';
@@ -75,8 +75,8 @@ async function addMyFilesAndDriveToStore(state: State):
     Promise<{myFilesFs: MockFileSystem, driveFs: MockFileSystem}> {
   const {volumeManager} = window.fileManager;
   // Prepare data for MyFiles.
-  const downloadsVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
-      VolumeManagerCommon.VolumeType.DOWNLOADS)!;
+  const downloadsVolumeInfo =
+      volumeManager.getCurrentProfileVolumeInfo(VolumeType.DOWNLOADS)!;
   const downloadsEntry = new VolumeEntry(downloadsVolumeInfo);
   state.allEntries[downloadsEntry.toURL()] =
       convertEntryToFileData(downloadsEntry);
@@ -85,14 +85,14 @@ async function addMyFilesAndDriveToStore(state: State):
           downloadsVolumeInfo, createFakeVolumeMetadata(downloadsVolumeInfo));
   // Prepare data for Drive.
   // - Fake drive root.
-  const driveRootEntryList = new EntryList(
-      'Google Drive', VolumeManagerCommon.RootType.DRIVE_FAKE_ROOT);
+  const driveRootEntryList =
+      new EntryList('Google Drive', RootType.DRIVE_FAKE_ROOT);
   state.allEntries[driveRootEntryListKey] =
       convertEntryToFileData(driveRootEntryList);
   state.uiEntries.push(driveRootEntryListKey);
   // - My Drive
-  const driveVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
-      VolumeManagerCommon.VolumeType.DRIVE)!;
+  const driveVolumeInfo =
+      volumeManager.getCurrentProfileVolumeInfo(VolumeType.DRIVE)!;
   await driveVolumeInfo.resolveDisplayRoot();
   const driveEntry = new VolumeEntry(driveVolumeInfo);
   state.allEntries[driveEntry.toURL()] = convertEntryToFileData(driveEntry);
@@ -102,15 +102,13 @@ async function addMyFilesAndDriveToStore(state: State):
   driveRootEntryList.addEntry(driveEntry);
   // - Shared with me
   const sharedWithMeEntry =
-      driveVolumeInfo
-          .fakeEntries[VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME]!;
+      driveVolumeInfo.fakeEntries[RootType.DRIVE_SHARED_WITH_ME]!;
   state.allEntries[sharedWithMeEntry.toURL()] =
       convertEntryToFileData(sharedWithMeEntry);
   state.uiEntries.push(sharedWithMeEntry.toURL());
   driveRootEntryList.addEntry(sharedWithMeEntry);
   // - Offline
-  const offlineEntry =
-      driveVolumeInfo.fakeEntries[VolumeManagerCommon.RootType.DRIVE_OFFLINE]!;
+  const offlineEntry = driveVolumeInfo.fakeEntries[RootType.DRIVE_OFFLINE]!;
   state.allEntries[offlineEntry.toURL()] = convertEntryToFileData(offlineEntry);
   state.uiEntries.push(offlineEntry.toURL());
   driveRootEntryList.addEntry(offlineEntry);
@@ -127,8 +125,8 @@ async function addMyFilesAndDriveToStore(state: State):
  */
 function addTeamDrivesToStore(state: State, childEntries: string[] = []) {
   const {volumeManager} = window.fileManager;
-  const driveVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
-      VolumeManagerCommon.VolumeType.DRIVE)!;
+  const driveVolumeInfo =
+      volumeManager.getCurrentProfileVolumeInfo(VolumeType.DRIVE)!;
   const teamDrivesEntry = driveVolumeInfo.sharedDriveDisplayRoot;
   state.allEntries[teamDrivesEntry.toURL()] =
       convertEntryToFileData(teamDrivesEntry);
@@ -149,8 +147,8 @@ function addTeamDrivesToStore(state: State, childEntries: string[] = []) {
  */
 function addComputerDrivesToStore(state: State, childEntries: string[] = []) {
   const {volumeManager} = window.fileManager;
-  const driveVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
-      VolumeManagerCommon.VolumeType.DRIVE)!;
+  const driveVolumeInfo =
+      volumeManager.getCurrentProfileVolumeInfo(VolumeType.DRIVE)!;
   const computersEntry = driveVolumeInfo.computersDisplayRoot;
   state.allEntries[computersEntry.toURL()] =
       convertEntryToFileData(computersEntry);
@@ -511,7 +509,7 @@ export async function testDirectoryTreeUpdateWithVolumeChanges(
   // Mounts a removable volume.
   const {volumeManager} = window.fileManager;
   const removableVolumeInfo = MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.REMOVABLE, 'removable', 'Removable 1');
+      VolumeType.REMOVABLE, 'removable', 'Removable 1');
   volumeManager.volumeInfoList.add(removableVolumeInfo);
   store.dispatch(addVolume({
     volumeInfo: removableVolumeInfo,
@@ -530,7 +528,7 @@ export async function testDirectoryTreeUpdateWithVolumeChanges(
 
   // Mounts an archive volume.
   const archiveVolumeInfo = MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.ARCHIVE, 'archive', 'Archive 1');
+      VolumeType.ARCHIVE, 'archive', 'Archive 1');
   volumeManager.volumeInfoList.add(archiveVolumeInfo);
   store.dispatch(addVolume({
     volumeInfo: archiveVolumeInfo,
@@ -584,11 +582,10 @@ export async function testDirectoryTreeWithAndroidDisabled(done: () => void) {
   // Create Android 'Play files' volume and set as disabled.
   const {volumeManager} = window.fileManager;
   const androidVolumeInfo = MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.ANDROID_FILES, 'android_files:droid',
-      'Android files');
+      VolumeType.ANDROID_FILES, 'android_files:droid', 'Android files');
   volumeManager.volumeInfoList.add(androidVolumeInfo);
   volumeManager.isDisabled = (volumeType) => {
-    return volumeType === VolumeManagerCommon.VolumeType.ANDROID_FILES;
+    return volumeType === VolumeType.ANDROID_FILES;
   };
   store.dispatch(addVolume({
     volumeInfo: androidVolumeInfo,
@@ -638,10 +635,10 @@ export async function testDirectoryTreeWithRemovableDisabled(done: () => void) {
   // Create removable volume and set as disabled.
   const {volumeManager} = window.fileManager;
   const removableVolumeInfo = MockVolumeManager.createMockVolumeInfo(
-      VolumeManagerCommon.VolumeType.REMOVABLE, 'removable', 'Removable');
+      VolumeType.REMOVABLE, 'removable', 'Removable');
   volumeManager.volumeInfoList.add(removableVolumeInfo);
   volumeManager.isDisabled = (volumeType) => {
-    return volumeType === VolumeManagerCommon.VolumeType.REMOVABLE;
+    return volumeType === VolumeType.REMOVABLE;
   };
   store.dispatch(addVolume({
     volumeInfo: removableVolumeInfo,
@@ -936,7 +933,7 @@ export async function testAddProviders(done: () => void) {
   const volumeManager = window.fileManager.volumeManager as MockVolumeManager;
   // Add a volume representing a non-Smb provider to the mock filesystem.
   const nonSmbProviderVolumeInfo = volumeManager.createVolumeInfo(
-      VolumeManagerCommon.VolumeType.PROVIDED, 'not_smb', 'NOT_SMB_LABEL');
+      VolumeType.PROVIDED, 'not_smb', 'NOT_SMB_LABEL');
   volumeManager.volumeInfoList.add(nonSmbProviderVolumeInfo);
   // Add a sub directory to the non-Smb provider.
   const providerFs =
@@ -949,7 +946,7 @@ export async function testAddProviders(done: () => void) {
 
   // Add a volume representing an Smb provider to the mock filesystem.
   const smbProviderVolumeInfo = volumeManager.createVolumeInfo(
-      VolumeManagerCommon.VolumeType.PROVIDED, 'smb', 'SMB_LABEL', '@smb');
+      VolumeType.PROVIDED, 'smb', 'SMB_LABEL', '@smb');
   volumeManager.volumeInfoList.add(smbProviderVolumeInfo);
   // Add a sub directory to the Smb provider.
   const smbProviderFs =
@@ -961,8 +958,8 @@ export async function testAddProviders(done: () => void) {
   }));
 
   // Add a volume representing an smbfs share to the mock filesystem.
-  const smbShareVolumeInfo = volumeManager.createVolumeInfo(
-      VolumeManagerCommon.VolumeType.SMB, 'smbfs', 'SMBFS_LABEL');
+  const smbShareVolumeInfo =
+      volumeManager.createVolumeInfo(VolumeType.SMB, 'smbfs', 'SMBFS_LABEL');
   volumeManager.volumeInfoList.add(smbShareVolumeInfo);
   // Add a sub directory to the smbfs.
   const smbFs =
@@ -1014,7 +1011,7 @@ export async function testSmbNotFetchedUntilClick(done: () => void) {
   const volumeManager = window.fileManager.volumeManager as MockVolumeManager;
   // Add a volume representing a smb provider to the mock filesystem.
   const smbProviderVolumeInfo = volumeManager.createVolumeInfo(
-      VolumeManagerCommon.VolumeType.PROVIDED, 'smb', 'SMB_LABEL', '@smb');
+      VolumeType.PROVIDED, 'smb', 'SMB_LABEL', '@smb');
   volumeManager.volumeInfoList.add(smbProviderVolumeInfo);
   // Add a sub directory to the smb provider.
   const smbProviderFs =

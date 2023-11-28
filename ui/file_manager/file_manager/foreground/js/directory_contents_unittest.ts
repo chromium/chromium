@@ -5,7 +5,7 @@
 import {assertEquals, assertFalse} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {installMockChrome} from '../../common/js/mock_chrome.js';
-import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {RootType} from '../../common/js/volume_manager_types.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 
@@ -42,7 +42,7 @@ export function setUp() {
  * Check that files are shown or hidden correctly.
  */
 export function testHiddenFiles() {
-  let volumeManagerRootType = VolumeManagerCommon.RootType.DOWNLOADS;
+  let volumeManagerRootType = RootType.DOWNLOADS;
   // Create a fake volume manager that provides entry location info.
   const volumeManager = {
     getLocationInfo: (_: FileEntry) => {
@@ -84,7 +84,7 @@ export function testHiddenFiles() {
   assertEquals(0, hidden.length);
 
   // $RECYCLE.BIN is not hidden in other volumes.
-  volumeManagerRootType = 'testroot' as VolumeManagerCommon.RootType;
+  volumeManagerRootType = 'testroot' as RootType;
   filter.setHiddenFilesVisible(false);
   hidden = entries.filter(entry => !filter.filter(entry));
   assertEquals(2, hidden.length);
