@@ -94,7 +94,6 @@ int InitSocketPoolHelper(
     const ProxyInfo& proxy_info,
     const SSLConfig& ssl_config_for_origin,
     const SSLConfig& base_ssl_config_for_proxies,
-    bool is_for_websockets,
     PrivacyMode privacy_mode,
     NetworkAnonymizationKey network_anonymization_key,
     SecureDnsPolicy secure_dns_policy,
@@ -241,10 +240,10 @@ int InitSocketHandleForHttpRequest(
   return InitSocketPoolHelper(
       std::move(endpoint), request_load_flags, request_priority, session,
       proxy_info, ssl_config_for_origin, base_ssl_config_for_proxies,
-      /*is_for_websockets=*/false, privacy_mode,
-      std::move(network_anonymization_key), secure_dns_policy, socket_tag,
-      net_log, 0, socket_handle, HttpNetworkSession::NORMAL_SOCKET_POOL,
-      std::move(callback), proxy_auth_callback);
+      privacy_mode, std::move(network_anonymization_key), secure_dns_policy,
+      socket_tag, net_log, 0, socket_handle,
+      HttpNetworkSession::NORMAL_SOCKET_POOL, std::move(callback),
+      proxy_auth_callback);
 }
 
 int InitSocketHandleForWebSocketRequest(
@@ -274,9 +273,8 @@ int InitSocketHandleForWebSocketRequest(
   return InitSocketPoolHelper(
       std::move(endpoint), request_load_flags, request_priority, session,
       proxy_info, ssl_config_for_origin, base_ssl_config_for_proxies,
-      /*is_for_websockets=*/true, privacy_mode,
-      std::move(network_anonymization_key), SecureDnsPolicy::kAllow,
-      SocketTag(), net_log, 0, socket_handle,
+      privacy_mode, std::move(network_anonymization_key),
+      SecureDnsPolicy::kAllow, SocketTag(), net_log, 0, socket_handle,
       HttpNetworkSession::WEBSOCKET_SOCKET_POOL, std::move(callback),
       proxy_auth_callback);
 }
@@ -306,9 +304,8 @@ int PreconnectSocketsForHttpRequest(
   return InitSocketPoolHelper(
       std::move(endpoint), request_load_flags, request_priority, session,
       proxy_info, ssl_config_for_origin, base_ssl_config_for_proxies,
-      /*is_for_websockets=*/false, privacy_mode,
-      std::move(network_anonymization_key), secure_dns_policy, SocketTag(),
-      net_log, num_preconnect_streams, nullptr,
+      privacy_mode, std::move(network_anonymization_key), secure_dns_policy,
+      SocketTag(), net_log, num_preconnect_streams, nullptr,
       HttpNetworkSession::NORMAL_SOCKET_POOL, std::move(callback),
       ClientSocketPool::ProxyAuthCallback());
 }
