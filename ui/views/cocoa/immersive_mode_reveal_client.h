@@ -21,4 +21,4 @@ class VIEWS_EXPORT ImmersiveModeRevealClient {
 
 }  // namespace views
 
-#endif  // UI_VIEWS_COCOA_REVEAL_CLIENT_H_
+#endif  // UI_VIEWS_COCOA_IMMERSIVE_MODE_REVEAL_CLIENT_H_

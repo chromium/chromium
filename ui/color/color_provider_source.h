@@ -63,4 +63,4 @@ class COMPONENT_EXPORT(COLOR) ColorProviderSource {
 
 }  // namespace ui
 
-#endif  // UI_COLOR_COLOR_PROVIDER_H_
+#endif  // UI_COLOR_COLOR_PROVIDER_SOURCE_H_

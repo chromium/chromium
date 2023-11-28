@@ -51,4 +51,4 @@ class MESSAGE_CENTER_EXPORT NotificationViewController {
 
 }  // namespace message_center
 
-#endif  // UI_MESSAGE_CENTER_VIEWS_MESSAGE_POPUP_COLLECTION_H_
+#endif  // UI_MESSAGE_CENTER_NOTIFICATION_VIEW_CONTROLLER_H_

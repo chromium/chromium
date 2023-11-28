@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_COLOR_FORCED_COLORS_MIXER_WIN_H_
-#define UI_COLOR_FORCED_COLORS_MIXER_WIN_H_
+#ifndef UI_COLOR_WIN_FORCED_COLORS_MIXER_WIN_H_
+#define UI_COLOR_WIN_FORCED_COLORS_MIXER_WIN_H_
 
 namespace ui {
 
@@ -17,4 +17,4 @@ void AddSystemForcedColorsColorMixer(ColorProvider* provider,
 
 }  // namespace ui
 
-#endif  // UI_COLOR_FORCED_COLORS_MIXER_WIN_H_
+#endif  // UI_COLOR_WIN_FORCED_COLORS_MIXER_WIN_H_

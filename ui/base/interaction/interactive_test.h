@@ -1134,4 +1134,4 @@ InteractionSequence::StepBuilder InteractiveTestApi::CheckElement(
 
 }  // namespace ui::test
 
-#endif  // UI_BASE_INTERACTION_INTERACTIVE_TEST_BASE_H_
+#endif  // UI_BASE_INTERACTION_INTERACTIVE_TEST_H_
