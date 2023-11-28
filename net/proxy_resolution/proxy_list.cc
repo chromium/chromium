@@ -127,12 +127,6 @@ bool ProxyList::Equals(const ProxyList& other) const {
   return proxy_chains_ == other.proxy_chains_;
 }
 
-const ProxyServer& ProxyList::Get() const {
-  CHECK(!proxy_chains_.empty());
-  const auto& proxy_chain = First();
-  return proxy_chain.proxy_server();
-}
-
 const ProxyChain& ProxyList::First() const {
   CHECK(!proxy_chains_.empty());
   return proxy_chains_[0];

@@ -127,9 +127,9 @@ absl::optional<base::Value::Dict> CreateProxyRulesDict(
     const ProxyConfigDictionary& proxy_config);
 
 // Creates and returns a ProxyServer dictionary as defined in the extension API
-// with values from a net::ProxyServer object. Returns an empty dictionary on
+// with values from a net::ProxyChain object. Returns an empty dictionary on
 // error.
-base::Value::Dict CreateProxyServerDict(const net::ProxyServer& proxy);
+base::Value::Dict CreateProxyServerDict(const net::ProxyChain& proxy);
 
 // Creates and returns a PacScript dictionary as defined in the extension API
 // with the values of a ProxyconfigDictionary configured for pac scripts.

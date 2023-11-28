@@ -81,11 +81,6 @@ class NET_EXPORT_PRIVATE ProxyList {
   // Returns true if |*this| lists the same proxies as |other|.
   bool Equals(const ProxyList& other) const;
 
-  // Returns the single server of the first proxy chain in the list. It is only
-  // valid to call this if !IsEmpty() and no chains in the list are multi-proxy.
-  // TODO(crbug.com/1491092): Remove this method.
-  const ProxyServer& Get() const;
-
   // Returns the first proxy chain in the list.
   const ProxyChain& First() const;
 

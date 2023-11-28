@@ -136,9 +136,9 @@ TEST_F(PrefProxyConfigTrackerImplTest, DynamicPrefOverrides) {
   EXPECT_FALSE(actual_config.value().auto_detect());
   EXPECT_EQ(net::ProxyConfig::ProxyRules::Type::PROXY_LIST,
             actual_config.value().proxy_rules().type);
-  EXPECT_EQ(actual_config.value().proxy_rules().single_proxies.Get(),
-            net::ProxyUriToProxyServer("http://example.com:3128",
-                                       net::ProxyServer::SCHEME_HTTP));
+  EXPECT_EQ(actual_config.value().proxy_rules().single_proxies.First(),
+            net::ProxyUriToProxyChain("http://example.com:3128",
+                                      net::ProxyServer::SCHEME_HTTP));
 
   pref_service_->SetManagedPref(
       proxy_config::prefs::kProxy,

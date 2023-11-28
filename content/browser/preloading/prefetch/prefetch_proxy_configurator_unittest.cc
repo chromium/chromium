@@ -78,9 +78,10 @@ class PrefetchProxyConfiguratorTest : public testing::Test {
     EXPECT_EQ(config->rules.proxies_for_ftp.size(), 0U);
 
     ASSERT_EQ(config->rules.proxies_for_https.size(), 1U);
-    EXPECT_EQ(
-        GURL(net::ProxyServerToProxyUri(config->rules.proxies_for_https.Get())),
-        proxy_url);
+    EXPECT_EQ(GURL(net::ProxyServerToProxyUri(
+                  config->rules.proxies_for_https.First().GetProxyServer(
+                      /*chain_index=*/0))),
+              proxy_url);
   }
 
   PrefetchProxyConfigurator* configurator() {
