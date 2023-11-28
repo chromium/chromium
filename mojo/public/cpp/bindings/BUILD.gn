@@ -296,7 +296,6 @@ source_set("protobuf_support") {
 if (use_blink) {
   component("wtf_support") {
     sources = [
-      "array_traits_wtf_vector.h",
       "lib/string_traits_wtf.cc",
       "lib/wtf_clone_equals_util.h",
       "lib/wtf_hash_util.h",
