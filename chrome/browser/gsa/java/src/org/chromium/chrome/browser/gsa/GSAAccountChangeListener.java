@@ -19,7 +19,6 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.SysUtils;
-import org.chromium.base.metrics.RecordHistogram;
 
 /**
  * Listens to te account change notifications from GSA.
@@ -49,8 +48,6 @@ public class GSAAccountChangeListener {
     // Reference count for the connection.
     private int mUsersCount;
     private GSAServiceClient mClient;
-
-    private boolean mAlreadyReportedHistogram;
 
     @VisibleForTesting
     static class AccountChangeBroadcastReceiver extends BroadcastReceiver {
@@ -153,16 +150,6 @@ public class GSAAccountChangeListener {
                             // GSAServiceClient, but this extra bit of paranoia protects from old
                             // versions of GSA that don't check what Chrome sends.
                             if (holdsAccountUpdatePermission()) notifyGsaBroadcastsAccountChanges();
-                        }
-
-                        // If GSA doesn't support the broadcast, we connect several times to the
-                        // service per Chrome session (since there is a disconnect() call in
-                        // ChromeActivity#onStopWithNative()). Only record the histogram once per
-                        // startup to avoid skewing the results.
-                        if (!mAlreadyReportedHistogram) {
-                            RecordHistogram.recordBooleanHistogram(
-                                    "Search.GsaBroadcastsAccountChanges", supportsBroadcast);
-                            mAlreadyReportedHistogram = true;
                         }
                     }
                 };
