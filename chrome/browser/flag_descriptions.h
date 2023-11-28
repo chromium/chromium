@@ -2059,9 +2059,6 @@ extern const char kV8VmFutureDescription[];
 extern const char kGlobalVaapiLockName[];
 extern const char kGlobalVaapiLockDescription[];
 
-extern const char kVmPerBootShaderCacheDescription[];
-extern const char kVmPerBootShaderCacheName[];
-
 extern const char kWalletServiceUseSandboxName[];
 extern const char kWalletServiceUseSandboxDescription[];
 

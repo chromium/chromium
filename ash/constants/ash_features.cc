@@ -2808,12 +2808,6 @@ BASE_FEATURE(kVirtualKeyboardRemoveNacl,
              "VirtualKeyboardRemoveNacl",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables a per-boot host GPU cache generation for VMs. On default, the cache
-// is generated per OS version.
-BASE_FEATURE(kVmPerBootShaderCache,
-             "VmPerBootShaderCache",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether to allow enabling wake on WiFi features in shill.
 BASE_FEATURE(kWakeOnWifiAllowed,
              "WakeOnWifiAllowed",

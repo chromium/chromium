@@ -8211,11 +8211,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "vm-per-boot-shader-cache",
-    "owners": [ "endlesspring@google.com", "allenwebb@google.com", "borealis-syd@google.com" ],
-    "expiry_milestone": 123
-  },
-  {
     "name": "vulkan-from-angle",
     "owners": [ "hob@google.com" ],
     "expiry_milestone": 130

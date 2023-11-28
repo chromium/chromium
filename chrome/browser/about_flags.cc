@@ -3070,7 +3070,6 @@ constexpr char kBorealisScaleClientByDPIInternalName[] =
     "borealis-scale-client-by-dpi";
 constexpr char kBorealisWebUIInstallerInternalName[] =
     "borealis-web-ui-installer";
-constexpr char kVmPerBootShaderCacheName[] = "vm-per-boot-shader-cache";
 constexpr char kClipboardHistoryLongpressInternalName[] =
     "clipboard-history-longpress";
 constexpr char kClipboardHistoryRefreshInternalName[] =
@@ -9497,9 +9496,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBorealisWebUIInstallerName,
      flag_descriptions::kBorealisWebUIInstallerDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kBorealisWebUIInstaller)},
-    {kVmPerBootShaderCacheName, flag_descriptions::kVmPerBootShaderCacheName,
-     flag_descriptions::kVmPerBootShaderCacheDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kVmPerBootShaderCache)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"https-first-mode-v2-for-engaged-sites",
