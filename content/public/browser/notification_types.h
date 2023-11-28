@@ -44,12 +44,6 @@ enum NotificationType {
 
   // WebContents ---------------------------------------------------------------
 
-  // Indicates that a RenderWidgetHost has become unresponsive for a period of
-  // time. The source will be the RenderWidgetHost that corresponds to the
-  // hung view, and no details are expected.
-  // TODO(https://crbug.com/1174769): Remove.
-  NOTIFICATION_RENDER_WIDGET_HOST_HANG,
-
   // Indicates a RenderWidgetHost has been hidden or restored. The source is
   // the RWH whose visibility changed, the details is a bool set to true if
   // the new state is "visible."
