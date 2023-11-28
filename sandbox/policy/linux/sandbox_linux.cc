@@ -87,6 +87,22 @@ bool IsRunningTSAN() {
 #endif
 }
 
+// In processes which must bring up GPU drivers before sandbox initialization,
+// we can't ensure that other threads won't be running already.
+bool ShouldAllowThreadsDuringSandboxInit(const std::string& process_type,
+                                         sandbox::mojom::Sandbox sandbox_type) {
+  if (process_type == switches::kGpuProcess) {
+    return true;
+  }
+
+  if (process_type == switches::kUtilityProcess &&
+      sandbox_type == sandbox::mojom::Sandbox::kOnDeviceModelExecution) {
+    return true;
+  }
+
+  return false;
+}
+
 // Get a file descriptor to /proc. Either duplicate |proc_fd| or try to open
 // it by using the filesystem directly.
 // TODO(jln): get rid of this ugly interface.
@@ -368,8 +384,10 @@ bool SandboxLinux::InitializeSandbox(sandbox::mojom::Sandbox sandbox_type,
     if (IsRunningTSAN())
       return false;
 
-    // The GPU process is allowed to call InitializeSandbox() with threads.
-    bool sandbox_failure_fatal = process_type != switches::kGpuProcess;
+    // Only a few specific processes are allowed to call InitializeSandbox()
+    // with multiple threads running.
+    bool sandbox_failure_fatal =
+        !ShouldAllowThreadsDuringSandboxInit(process_type, sandbox_type);
     // This can be disabled with the '--gpu-sandbox-failures-fatal' flag.
     // Setting the flag with no value or any value different than 'yes' or 'no'
     // is equal to setting '--gpu-sandbox-failures-fatal=yes'.

@@ -16,6 +16,7 @@ template("model_service") {
     public_deps = [
       "//base",
       "//mojo/public/cpp/bindings",
+      "//sandbox/policy",
       "//services/on_device_model/public/cpp",
       "//services/on_device_model/public/mojom",
     ]
@@ -31,6 +32,15 @@ template("model_service") {
       defines += [ "ENABLE_ML_INTERNAL" ]
     } else {
       sources += [ "on_device_model.cc" ]
+    }
+
+    if (is_linux || is_chromeos) {
+      deps += [
+        "//gpu/config",
+        "//third_party/dawn/src/dawn:cpp",
+        "//third_party/dawn/src/dawn:proc",
+        "//third_party/dawn/src/dawn/native",
+      ]
     }
   }
 }

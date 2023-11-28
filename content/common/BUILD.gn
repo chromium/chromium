@@ -7,6 +7,7 @@ import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//content/public/common/zygote/features.gni")
 import("//ipc/features.gni")
+import("//media/media_options.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//sandbox/features.gni")
@@ -374,11 +375,23 @@ source_set("common") {
   }
 
   if (is_linux || is_chromeos) {
+    sources += [
+      "gpu_pre_sandbox_hook_linux.cc",
+      "gpu_pre_sandbox_hook_linux.h",
+    ]
+    public_deps += [ "//sandbox/policy" ]
     deps += [
       ":sandbox_support_linux",
       ":set_process_title_linux",
+      "//media/gpu:buildflags",
+      "//sandbox/linux:sandbox_services",
+      "//sandbox/linux:seccomp_bpf",
+      "//sandbox/policy:chromecast_sandbox_allowlist_buildflags",
       "//third_party/fontconfig",
     ]
+    if (use_v4l2_codec) {
+      deps += [ "//media/gpu/v4l2" ]
+    }
   }
 
   if (use_zygote) {

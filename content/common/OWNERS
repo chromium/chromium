@@ -29,3 +29,6 @@ per-file *font_config_ipc_linux*=file://ipc/SECURITY_OWNERS
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
+
+per-file gpu_pre_sandbox_hook_linux.*=set noparent
+per-file gpu_pre_sandbox_hook_linux.*=file://sandbox/linux/OWNERS

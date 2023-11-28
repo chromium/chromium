@@ -14,7 +14,45 @@
 #include "services/on_device_model/ml/chrome_ml.h"  // nogncheck
 #endif
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "gpu/config/gpu_info_collector.h"                    // nogncheck
+#include "third_party/dawn/include/dawn/native/DawnNative.h"  // nogncheck
+#include "third_party/dawn/include/dawn/webgpu_cpp.h"         // nogncheck
+#endif
+
 namespace on_device_model {
+
+namespace {
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+constexpr uint32_t kVendorIdAMD = 0x1002;
+constexpr uint32_t kVendorIdIntel = 0x8086;
+constexpr uint32_t kVendorIdNVIDIA = 0x10DE;
+constexpr uint32_t kVendorIdVirtIO = 0x1AF4;
+
+void UpdateSandboxOptionsForGpu(
+    const gpu::GPUInfo::GPUDevice& device,
+    sandbox::policy::SandboxLinux::Options& options) {
+  switch (device.vendor_id) {
+    case kVendorIdAMD:
+      options.use_amd_specific_policies = true;
+      break;
+    case kVendorIdIntel:
+      options.use_intel_specific_policies = true;
+      break;
+    case kVendorIdNVIDIA:
+      options.use_nvidia_specific_policies = true;
+      break;
+    case kVendorIdVirtIO:
+      options.use_virtio_specific_policies = true;
+      break;
+    default:
+      break;
+  }
+}
+#endif
+
+}  // namespace
 
 // static
 bool OnDeviceModelService::PreSandboxInit() {
@@ -35,7 +73,43 @@ bool OnDeviceModelService::PreSandboxInit() {
   }
 #endif
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // Warm any relevant drivers before attempting to bring up the sandbox. For
+  // good measure we initialize a device instance for any adapter with an
+  // appropriate backend on top of any integrated or discrete GPU.
+  auto instance = std::make_unique<dawn::native::Instance>();
+  const wgpu::RequestAdapterOptions adapter_options{
+      .backendType = wgpu::BackendType::Vulkan,
+  };
+  std::vector<dawn::native::Adapter> adapters =
+      instance->EnumerateAdapters(&adapter_options);
+  for (auto& adapter : adapters) {
+    wgpu::AdapterProperties props;
+    adapter.GetProperties(&props);
+    if (props.adapterType == wgpu::AdapterType::IntegratedGPU ||
+        props.adapterType == wgpu::AdapterType::DiscreteGPU) {
+      const wgpu::DeviceDescriptor descriptor;
+      wgpu::Device device{adapter.CreateDevice(&descriptor)};
+      device.Destroy();
+    }
+  }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
   return true;
 }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// static
+void OnDeviceModelService::AddSandboxLinuxOptions(
+    sandbox::policy::SandboxLinux::Options& options) {
+  // Make sure any necessary vendor-specific options are set.
+  gpu::GPUInfo info;
+  gpu::CollectBasicGraphicsInfo(&info);
+  UpdateSandboxOptionsForGpu(info.gpu, options);
+  for (const auto& gpu : info.secondary_gpus) {
+    UpdateSandboxOptionsForGpu(gpu, options);
+  }
+}
+#endif
 
 }  // namespace on_device_model

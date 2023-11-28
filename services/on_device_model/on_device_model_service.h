@@ -7,10 +7,15 @@
 
 #include "base/component_export.h"
 #include "base/types/expected.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "services/on_device_model/public/cpp/on_device_model.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "sandbox/policy/linux/sandbox_linux.h"
+#endif
 
 namespace on_device_model {
 
@@ -18,9 +23,13 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL) OnDeviceModelService
     : public mojom::OnDeviceModelService {
  public:
   // Must be called in the service's process before sandbox initialization.
-  // This is defined separately in pre_sandbox_init.cc for explicit security
+  // These are defined separately in pre_sandbox_init.cc for explicit security
   // review coverage.
   [[nodiscard]] static bool PreSandboxInit();
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  static void AddSandboxLinuxOptions(
+      sandbox::policy::SandboxLinux::Options& options);
+#endif
 
   static mojom::PerformanceClass GetEstimatedPerformanceClass();
 

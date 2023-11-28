@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/gpu/gpu_sandbox_hook_linux.h"
+#include "content/common/gpu_pre_sandbox_hook_linux.h"
 
 #include <dlfcn.h>
 #include <errno.h>
@@ -75,9 +75,11 @@ inline bool IsArchitectureArm() {
 #endif
 }
 
-inline bool UseV4L2Codec() {
+inline bool UseV4L2Codec(
+    const sandbox::policy::SandboxSeccompBPF::Options& options) {
 #if BUILDFLAG(USE_V4L2_CODEC)
-  return true;
+  return options.accelerated_video_decode_enabled ||
+      options.accelerated_video_encode_enabled;
 #else
   return false;
 #endif
@@ -484,7 +486,7 @@ std::vector<BrokerFilePermission> FilePermissionsForGpu(
   if (IsChromeOS()) {
     // Permissions are additive, there can be multiple GPUs in the system.
     AddStandardChromeOsPermissions(&permissions);
-    if (UseV4L2Codec())
+    if (UseV4L2Codec(options))
       AddV4L2GpuPermissions(&permissions, options);
     if (IsArchitectureArm()) {
       AddImgPvrGpuPermissions(&permissions);
@@ -510,7 +512,7 @@ std::vector<BrokerFilePermission> FilePermissionsForGpu(
   }
 
   if (UseChromecastSandboxAllowlist()) {
-    if (UseV4L2Codec())
+    if (UseV4L2Codec(options))
       AddV4L2GpuPermissions(&permissions, options);
 
     if (IsArchitectureArm()) {
@@ -636,8 +638,9 @@ bool LoadLibrariesForGpu(
     }
   } else {
     if (UseChromecastSandboxAllowlist() && IsArchitectureArm()) {
-      if (UseV4L2Codec())
+      if (UseV4L2Codec(options)) {
         LoadChromecastV4L2Libraries();
+      }
     }
   }
   if (options.use_nvidia_specific_policies)
@@ -672,7 +675,7 @@ bool BrokerProcessPreSandboxHook(
 
 }  // namespace
 
-bool GpuProcessPreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
+bool GpuPreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
   sandbox::policy::SandboxLinux::GetInstance()->StartBrokerProcess(
       CommandSetForGPU(options), FilePermissionsForGpu(options),
       base::BindOnce(BrokerProcessPreSandboxHook), options);
