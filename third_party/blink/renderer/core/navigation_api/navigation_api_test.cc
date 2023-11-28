@@ -6,7 +6,6 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/commit_result/commit_result.mojom-blink.h"
-#include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
@@ -120,48 +119,6 @@ TEST_F(NavigationApiTest, BrowserInitiatedSameDocumentBackForward) {
       mojom::blink::TriggeringEventInfo::kNotFromEvent,
       true /* is_browser_initiated */, absl::nullopt);
   EXPECT_EQ(result3, mojom::blink::CommitResult::Ok);
-}
-
-TEST_F(NavigationApiTest, BrowserInitiatedSameDocumentBackForwardUncancelable) {
-  // Disable the feature that allows navigate events to cancel traversals, and
-  // ensure that the cancellation fails.
-  WebRuntimeFeatures::EnableFeatureFromString(
-      "NavigateEventCancelableTraversals", false);
-
-  url_test_helpers::RegisterMockedURLLoad(
-      url_test_helpers::ToKURL(
-          "https://example.com/navigation-api/onnavigate-preventDefault.html"),
-      test::CoreTestDataPath("navigation-api/onnavigate-preventDefault.html"));
-
-  frame_test_helpers::WebViewHelper web_view_helper;
-  web_view_helper.InitializeAndLoad(
-      "https://example.com/navigation-api/onnavigate-preventDefault.html");
-
-  LocalFrame* frame = web_view_helper.LocalMainFrame()->GetFrame();
-  DocumentLoader* document_loader = frame->Loader().GetDocumentLoader();
-  const KURL& url = document_loader->Url();
-  const String& key = document_loader->GetHistoryItem()->GetNavigationApiKey();
-
-  // Emulate a same-document back-forward navigation initiated by browser UI and
-  // with user activation. The navigate event would be cancelable if
-  // kNavigateEventCancelableTraversals were enabled, but since we disabled it,
-  // the cancel should fail and the navigation should proceed.
-  LocalFrame::NotifyUserActivation(
-      frame, mojom::UserActivationNotificationType::kTest);
-  auto result = document_loader->CommitSameDocumentNavigation(
-      url, WebFrameLoadType::kBackForward, MakeHistoryItemFor(url, key),
-      ClientRedirectPolicy::kNotClientRedirect,
-      /*has_transient_user_activation=*/false, /*initiator_origin=*/nullptr,
-      /*is_synchronously_committed=*/false, /*source_element=*/nullptr,
-      mojom::blink::TriggeringEventInfo::kNotFromEvent,
-      /*is_browser_initiated=*/true,
-      /*soft_navigation_heuristics_task_id=*/absl::nullopt);
-
-  EXPECT_EQ(result, mojom::blink::CommitResult::Ok);
-
-  // Reenable NavigateEventCancelableTraversals
-  WebRuntimeFeatures::EnableFeatureFromString(
-      "NavigateEventCancelableTraversals", true);
 }
 
 TEST_F(NavigationApiTest, BrowserInitiatedSameDocumentBackForwardWindowStop) {

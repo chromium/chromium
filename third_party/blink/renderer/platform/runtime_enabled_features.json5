@@ -2441,10 +2441,6 @@
       status: "stable",
     },
     {
-      name: "NavigateEventCancelableTraversals",
-      status: "stable",
-    },
-    {
       name: "NavigateEventCommitBehavior",
       status: "experimental",
     },

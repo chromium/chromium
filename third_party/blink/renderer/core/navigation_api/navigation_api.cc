@@ -787,7 +787,6 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   init->setDestination(destination);
 
   bool should_allow_traversal_cancellation =
-      RuntimeEnabledFeatures::NavigateEventCancelableTraversalsEnabled() &&
       IsBackForwardOrRestore(params->frame_load_type) &&
       params->event_type != NavigateEventType::kCrossDocument &&
       frame->IsMainFrame() &&

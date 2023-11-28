@@ -9441,10 +9441,6 @@ void NavigationRequest::RenderFallbackContentForObjectTag() {
 absl::optional<base::UnguessableToken>
 NavigationRequest::GetNavigationTokenForDeferringSubframes() {
   DCHECK(IsInMainFrame());
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kNavigateEventCancelableTraversals)) {
-    return absl::nullopt;
-  }
   if (!IsSameDocument() ||
       !NavigationTypeUtils::IsHistory(common_params_->navigation_type)) {
     return absl::nullopt;
