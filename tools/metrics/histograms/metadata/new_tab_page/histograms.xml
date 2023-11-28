@@ -787,6 +787,8 @@ chromium-metrics-reviews@google.com.
     <variant name="1"/>
     <variant name="2"/>
     <variant name="3"/>
+    <variant name="4"/>
+    <variant name="5"/>
   </token>
   <token key="Type">
     <variant name="Suggest"/>
