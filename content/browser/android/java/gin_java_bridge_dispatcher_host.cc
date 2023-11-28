@@ -77,6 +77,9 @@ mojom::GinJavaBridge* GinJavaBridgeDispatcherHost::GetJavaBridge(
     auto& bound_remote = remotes_[routing_id];
     frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
         bound_remote.BindNewEndpointAndPassReceiver());
+    bound_remote.set_disconnect_handler(
+        base::BindOnce(&GinJavaBridgeDispatcherHost::RemoteDisconnected,
+                       base::Unretained(this), routing_id));
 
     mojo::PendingReceiver<mojom::GinJavaBridgeHost> host_receiver;
     bound_remote->SetHost(host_receiver.InitWithNewPipeAndPassRemote());
@@ -86,9 +89,26 @@ mojom::GinJavaBridge* GinJavaBridgeDispatcherHost::GetJavaBridge(
             &GinJavaBridgeDispatcherHost::BindNewHostOnBackgroundThread, this,
             routing_id, std::move(host_receiver)));
 
+    // Initialize with all the current named objects.
+    for (auto& object : named_objects_) {
+      bound_remote->AddNamedObject(object.first, object.second);
+    }
+
     return bound_remote.get();
   }
   return it->second.get();
+}
+
+void GinJavaBridgeDispatcherHost::RemoteDisconnected(
+    const content::GlobalRenderFrameHostId& routing_id) {
+  remotes_.erase(routing_id);
+
+  auto* frame_host = RenderFrameHost::FromID(routing_id);
+  // If the RenderHost is still alive try to reconnect.
+  if (frame_host->IsRenderFrameLive()) {
+    LOG(ERROR) << "Reconnecting to RenderFrame";
+    GetJavaBridge(frame_host, true);
+  }
 }
 
 // GinJavaBridgeDispatcherHost gets created earlier than RenderProcessHost
@@ -144,11 +164,8 @@ void GinJavaBridgeDispatcherHost::RenderFrameCreated(
   }
 
   if (mojo_enabled_) {
-    mojom::GinJavaBridge* bridge =
-        GetJavaBridge(render_frame_host, /*should_create=*/true);
-    for (auto& object : named_objects_) {
-      bridge->AddNamedObject(object.first, object.second);
-    }
+    GetJavaBridge(render_frame_host, /*should_create=*/true);
+    // Named objects will be sent in GetJavaBridge when it is first connected.
   } else {
     InstallFilterAndRegisterRoutingId(render_frame_host);
     for (NamedObjectMap::const_iterator iter = named_objects_.begin();

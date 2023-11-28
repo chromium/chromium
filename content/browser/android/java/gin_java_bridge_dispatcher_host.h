@@ -121,6 +121,7 @@ class GinJavaBridgeDispatcherHost
   void InstallFilterAndRegisterAllRoutingIds();
   void InstallFilterAndRegisterRoutingId(RenderFrameHost* render_frame_host);
   WebContentsImpl* web_contents() const;
+  void RemoteDisconnected(const content::GlobalRenderFrameHostId& routing_id);
 
   // Run on any thread.
   GinJavaBoundObject::ObjectID AddObject(
