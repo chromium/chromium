@@ -8,6 +8,7 @@
 #include "base/test/scoped_command_line.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display_switches.h"
+#include "ui/display/types/display_color_management.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -89,6 +90,48 @@ TEST(DisplayTest, DisplayLabel) {
 
   display.set_label("Display 2");
   EXPECT_EQ("Display 2", display.label());
+}
+
+TEST(DisplayTest, GammaCurve) {
+  std::vector<GammaRampRGBEntry> lut({
+      {0, 1, 1},
+      {32768, 2, 5},
+      {65535, 3, 9},
+  });
+  GammaCurve curve(lut);
+  uint16_t r, g, b;
+
+  // Evaluate at the control points.
+  curve.Evaluate(0 / 2.f, r, g, b);
+  EXPECT_EQ(0, r);
+  EXPECT_EQ(1, g);
+  EXPECT_EQ(1, b);
+
+  curve.Evaluate(1 / 2.f, r, g, b);
+  EXPECT_EQ(32768, r);
+  EXPECT_EQ(2, g);
+  EXPECT_EQ(5, b);
+
+  curve.Evaluate(2 / 2.f, r, g, b);
+  EXPECT_EQ(65535, r);
+  EXPECT_EQ(3, g);
+  EXPECT_EQ(9, b);
+
+  // Evaluate between points.
+  curve.Evaluate(0.25f / 2.f, r, g, b);
+  EXPECT_EQ(2, b);
+  curve.Evaluate(0.50f / 2.f, r, g, b);
+  EXPECT_EQ(3, b);
+  curve.Evaluate(0.75f / 2.f, r, g, b);
+  EXPECT_EQ(4, b);
+  curve.Evaluate(1.00f / 2.f, r, g, b);
+  EXPECT_EQ(5, b);
+  curve.Evaluate(1.25f / 2.f, r, g, b);
+  EXPECT_EQ(6, b);
+  curve.Evaluate(1.50f / 2.f, r, g, b);
+  EXPECT_EQ(7, b);
+  curve.Evaluate(1.75f / 2.f, r, g, b);
+  EXPECT_EQ(8, b);
 }
 
 }  // namespace display

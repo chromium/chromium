@@ -12,15 +12,18 @@
 #include "ui/display/display.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/mojom/display.mojom.h"
+#include "ui/display/mojom/display_color_management.mojom.h"
+#include "ui/display/mojom/display_color_management_mojom_traits.h"
 #include "ui/display/mojom/display_layout_mojom_traits.h"
 #include "ui/display/mojom/display_mode_mojom_traits.h"
 #include "ui/display/mojom/display_mojom_traits.h"
 #include "ui/display/mojom/display_snapshot_mojom_traits.h"
+#include "ui/display/mojom/gamma_ramp_rgb_entry.mojom.h"
 #include "ui/display/mojom/gamma_ramp_rgb_entry_mojom_traits.h"
+#include "ui/display/types/display_color_management.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_mode.h"
 #include "ui/display/types/display_snapshot.h"
-#include "ui/display/types/gamma_ramp_rgb_entry.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/mojom/color_space_mojom_traits.h"
@@ -254,10 +257,20 @@ TEST(DisplayStructTraitsTest, DisplayLayoutThreeExtended) {
 }
 
 TEST(DisplayStructTraitsTest, BasicGammaRampRGBEntry) {
-  const GammaRampRGBEntry input{259, 81, 16};
-
+  GammaRampRGBEntry input{259, 81, 16};
   GammaRampRGBEntry output;
   SerializeAndDeserialize<mojom::GammaRampRGBEntry>(input, &output);
+
+  EXPECT_EQ(input.r, output.r);
+  EXPECT_EQ(input.g, output.g);
+  EXPECT_EQ(input.b, output.b);
+
+  GammaCurve curve_input({input});
+  GammaCurve curve_output;
+  SerializeAndDeserialize<mojom::GammaCurve>(curve_input, &curve_output);
+
+  curve_input.Evaluate(0.5f, input.r, input.g, input.b);
+  curve_output.Evaluate(0.5f, output.r, output.g, output.b);
 
   EXPECT_EQ(input.r, output.r);
   EXPECT_EQ(input.g, output.g);

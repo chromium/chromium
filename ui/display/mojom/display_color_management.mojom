@@ -1,0 +1,16 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module display.mojom;
+
+import "ui/display/mojom/gamma_ramp_rgb_entry.mojom";
+
+// A structure that specifies curves for the red, green, and blue color
+// channels.
+struct GammaCurve {
+  // An array of RGB samples that specify a look-up table (LUT) that uniformly
+  // samples the unit interval. This may have any number of entries (including
+  // 0 which evaluates to identity and 1 which evaluates to a constant).
+  array<GammaRampRGBEntry> lut;
+};
