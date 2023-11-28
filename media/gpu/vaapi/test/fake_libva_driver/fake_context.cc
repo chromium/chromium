@@ -4,9 +4,11 @@
 
 #include "media/gpu/vaapi/test/fake_libva_driver/fake_context.h"
 
+#include "base/environment.h"
 #include "base/notreached.h"
 #include "media/gpu/vaapi/test/fake_libva_driver/fake_buffer.h"
 #include "media/gpu/vaapi/test/fake_libva_driver/fake_config.h"
+#include "media/gpu/vaapi/test/fake_libva_driver/no_op_context_delegate.h"
 #include "media/gpu/vaapi/test/fake_libva_driver/vpx_decoder_delegate.h"
 
 namespace {
@@ -15,6 +17,14 @@ std::unique_ptr<media::internal::ContextDelegate> CreateDelegate(
     const media::internal::FakeConfig& config,
     int picture_width,
     int picture_height) {
+  std::unique_ptr<base::Environment> env = base::Environment::Create();
+  CHECK(env);
+  std::string no_op_flag;
+  if (env->GetVar("USE_NO_OP_CONTEXT_DELEGATE", &no_op_flag) &&
+      no_op_flag == "1") {
+    return std::make_unique<media::internal::NoOpContextDelegate>();
+  }
+
   if (config.GetEntrypoint() != VAEntrypointVLD) {
     NOTIMPLEMENTED();
     return nullptr;
