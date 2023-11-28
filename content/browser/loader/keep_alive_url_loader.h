@@ -42,6 +42,7 @@ namespace content {
 class BrowserContext;
 class KeepAliveURLLoaderService;
 class PolicyContainerHost;
+class RenderFrameHostImpl;
 class WeakDocumentPtr;
 
 // A URLLoader for loading a fetch keepalive request via the browser process,
@@ -178,6 +179,10 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // called. Otherwise, returns false by default.
   bool IsStarted() const;
 
+  // Returns a pointer to the RenderFrameHostImpl of the request initiator
+  // document if it is still alive. Otherwise, returns nullptr;
+  RenderFrameHostImpl* GetInitiator() const;
+
   // Receives actions from renderer.
   // `network::mojom::URLLoader` overrides:
   void FollowRedirect(
@@ -251,6 +256,9 @@ class CONTENT_EXPORT KeepAliveURLLoader
 
   // The ID to identify the request being loaded by this loader.
   const int32_t request_id_;
+
+  // The ID to identify the request used by DevTools
+  const std::string devtools_request_id_;
 
   // A bitfield of the options of the request being loaded.
   // See services/network/public/mojom/url_loader_factory.mojom.

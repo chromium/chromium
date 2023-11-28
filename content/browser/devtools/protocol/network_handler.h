@@ -248,6 +248,17 @@ class NetworkHandler : public DevToolsDomainHandler,
       const char* resource_type,
       const network::URLLoaderCompletionStatus& completion_status);
 
+  void FetchKeepAliveRequestWillBeSent(
+      const std::string& request_id,
+      const network::ResourceRequest& request,
+      const GURL& initiator_url,
+      Maybe<std::string> frame_token,
+      base::TimeTicks timestamp,
+      absl::optional<
+          std::pair<const GURL&,
+                    const network::mojom::URLResponseHeadDevToolsInfo&>>
+          redirect_info);
+
   void OnSignedExchangeReceived(
       absl::optional<const base::UnguessableToken> devtools_navigation_token,
       const GURL& outer_request_url,

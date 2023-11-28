@@ -1,0 +1,106 @@
+Tests that appropriate Network domain events are dispatched during a fetchLater request following redirects cross site.
+Network.requestWillBeSent{
+    documentURL : <string>
+    frameId : <string>
+    hasUserGesture : false
+    initiator : {
+        type : script
+        url : https://127.0.0.1:8443/
+    }
+    loaderId : <string>
+    redirectHasExtraInfo : false
+    request : {
+        headers : {
+            Accept : */*
+            Referer : https://127.0.0.1:8443/inspector-protocol/resources/inspector-protocol-page.html
+            User-Agent : <string>
+            sec-ch-ua : "content_shell";v="999"
+            sec-ch-ua-mobile : ?0
+            sec-ch-ua-platform : "Unknown"
+        }
+        initialPriority : High
+        method : GET
+        mixedContentType : blockable
+        referrerPolicy : strict-origin-when-cross-origin
+        url : https://127.0.0.1:8443/resources/redirect.php?url=https%3A%2F%2Flocalhost%3A8443%2Fresources%2Fblank.html
+    }
+    requestId : <string>
+    timestamp : <number>
+    type : Fetch
+    wallTime : <number>
+}
+Network.requestWillBeSent{
+    documentURL : <string>
+    frameId : <string>
+    hasUserGesture : false
+    initiator : {
+        type : script
+        url : https://127.0.0.1:8443/
+    }
+    loaderId : <string>
+    redirectHasExtraInfo : false
+    redirectResponse : {
+        alternateProtocolUsage : unspecifiedReason
+        connectionId : <number>
+        connectionReused : true
+        encodedDataLength : 248
+        fromDiskCache : false
+        fromPrefetchCache : false
+        fromServiceWorker : false
+        headers : {
+            Connection : Keep-Alive
+            Content-Length : 0
+            Content-Type : text/html
+            Date : <string>
+            Keep-Alive : timeout=10
+            Location : https://localhost:8443/resources/blank.html
+            Server : Apache
+            X-Powered-By : <string>
+        }
+        mimeType : text/html
+        protocol : http/1.1
+        remoteIPAddress : <string>
+        remotePort : 8443
+        responseTime : <number>
+        securityState : insecure
+        status : 302
+        statusText : Found
+        timing : <object>
+        url : https://127.0.0.1:8443/resources/redirect.php?url=https%3A%2F%2Flocalhost%3A8443%2Fresources%2Fblank.html
+    }
+    request : {
+        headers : {
+            Accept : */*
+            Referer : https://127.0.0.1:8443/inspector-protocol/resources/inspector-protocol-page.html
+            User-Agent : <string>
+            sec-ch-ua : "content_shell";v="999"
+            sec-ch-ua-mobile : ?0
+            sec-ch-ua-platform : "Unknown"
+        }
+        initialPriority : High
+        method : GET
+        mixedContentType : blockable
+        referrerPolicy : strict-origin-when-cross-origin
+        url : https://127.0.0.1:8443/resources/redirect.php?url=https%3A%2F%2Flocalhost%3A8443%2Fresources%2Fblank.html
+    }
+    requestId : <string>
+    timestamp : <number>
+    type : Fetch
+    wallTime : <number>
+}
+Network.loadingFailed{
+    canceled : false
+    corsErrorStatus : {
+        corsError : MissingAllowOriginHeader
+        failedParameter : 
+    }
+    errorText : net::ERR_FAILED
+    requestId : <string>
+    timestamp : <number>
+    type : Fetch
+}
+Unable to get fetchLater response body{
+    code : -32000
+    message : No resource with given identifier found
+}
+

@@ -1,0 +1,101 @@
+Tests that appropriate Network domain events are dispatched for a fetchLater request when its Document is alive.
+Network.requestWillBeSent{
+    documentURL : <string>
+    frameId : <string>
+    hasUserGesture : false
+    initiator : {
+        type : script
+        url : https://127.0.0.1:8443/
+    }
+    loaderId : <string>
+    redirectHasExtraInfo : false
+    request : {
+        headers : {
+            Accept : */*
+            Referer : https://127.0.0.1:8443/inspector-protocol/resources/inspector-protocol-page.html
+            User-Agent : <string>
+            sec-ch-ua : "content_shell";v="999"
+            sec-ch-ua-mobile : ?0
+            sec-ch-ua-platform : "Unknown"
+        }
+        initialPriority : High
+        method : GET
+        mixedContentType : blockable
+        referrerPolicy : strict-origin-when-cross-origin
+        url : https://127.0.0.1:8443/devtools/network/resources/resource.php
+    }
+    requestId : <string>
+    timestamp : <number>
+    type : Fetch
+    wallTime : <number>
+}
+Network.responseReceived{
+    frameId : <string>
+    hasExtraInfo : false
+    loaderId : <string>
+    requestId : <string>
+    response : {
+        alternateProtocolUsage : unspecifiedReason
+        connectionId : <number>
+        connectionReused : true
+        encodedDataLength : 334
+        fromDiskCache : false
+        fromPrefetchCache : false
+        fromServiceWorker : false
+        headers : {
+            Access-Control-Allow-Origin : *
+            Cache-Control : no-store, no-cache, must-revalidate
+            Connection : Keep-Alive
+            Content-Length : 11
+            Content-Type : text/plain
+            Date : <string>
+            Expires : Thu, 01 Dec 2003 16:00:00 GMT
+            Keep-Alive : timeout=10
+            Pragma : no-cache
+            Server : Apache
+            X-Powered-By : <string>
+        }
+        mimeType : text/plain
+        protocol : http/1.1
+        remoteIPAddress : 127.0.0.1
+        remotePort : 8443
+        responseTime : <number>
+        securityState : insecure
+        status : 200
+        statusText : OK
+        timing : {
+            connectEnd : -1
+            connectStart : -1
+            dnsEnd : -1
+            dnsStart : -1
+            proxyEnd : -1
+            proxyStart : -1
+            pushEnd : 0
+            pushStart : 0
+            receiveHeadersEnd : <number>
+            receiveHeadersStart : <number>
+            requestTime : <number>
+            sendEnd : <number>
+            sendStart : <number>
+            sslEnd : -1
+            sslStart : -1
+            workerFetchStart : -1
+            workerReady : -1
+            workerRespondWithSettled : -1
+            workerStart : -1
+        }
+        url : https://127.0.0.1:8443/devtools/network/resources/resource.php
+    }
+    timestamp : <number>
+    type : Fetch
+}
+Network.loadingFinished{
+    encodedDataLength : 345
+    requestId : <string>
+    timestamp : <number>
+}
+Unable to get fetchLater response body{
+    code : -32000
+    message : No resource with given identifier found
+}
+
