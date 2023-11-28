@@ -36,6 +36,7 @@ namespace ash {
 class RoundedImageView;
 class AshNotificationExpandButton;
 class IconButton;
+class NotificationGroupingController;
 
 // Customized NotificationView for notification on ChromeOS. This view is used
 // to displays all current types of notification on ChromeOS (web, basic, image,
@@ -53,6 +54,18 @@ class ASH_EXPORT AshNotificationView
   AshNotificationView(const AshNotificationView&) = delete;
   AshNotificationView& operator=(const AshNotificationView&) = delete;
   ~AshNotificationView() override;
+
+  // Update the expanded state for grouped child notification.
+  void SetGroupedChildExpanded(bool expanded);
+
+  // Animate the grouped child notification when switching between expand and
+  // collapse state.
+  void AnimateGroupedChildExpandedCollapse(bool expanded);
+
+  // Animations when converting from single to group notification.
+  void AnimateSingleToGroup(NotificationGroupingController* grouping_controller,
+                            const std::string& notification_id,
+                            std::string parent_id);
 
   // Toggle the expand state of the notification. This function should only be
   // used to handle user manually expand/collapse a notification.
@@ -80,16 +93,12 @@ class ASH_EXPORT AshNotificationView
   bool IsDraggable() const;
 
   // message_center::MessageView:
-  void AnimateGroupedChildExpandedCollapse(bool expanded) override;
-  void AnimateSingleToGroup(const std::string& notification_id,
-                            std::string parent_id) override;
   void AddGroupNotification(
       const message_center::Notification& notification) override;
   void PopulateGroupNotifications(
       const std::vector<const message_center::Notification*>& notifications)
       override;
   void RemoveGroupNotification(const std::string& notification_id) override;
-  void SetGroupedChildExpanded(bool expanded) override;
   // Called after `PreferredSizeChanged()`, so the current state is the target
   // state.
   base::TimeDelta GetBoundsAnimationDuration(

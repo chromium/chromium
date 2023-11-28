@@ -174,18 +174,6 @@ GetActiveNotificationViewControllerForNotificationView(
   return GetActiveNotificationViewControllerForDisplay(display_id);
 }
 
-NotificationGroupingController* GetGroupingControllerForNotificationView(
-    views::View* notification_view) {
-  aura::Window* window = notification_view->GetWidget()->GetNativeWindow();
-  auto display_id =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
-
-  return Shell::GetRootWindowControllerWithDisplayId(display_id)
-      ->GetStatusAreaWidget()
-      ->notification_center_tray()
-      ->notification_grouping_controller();
-}
-
 void InitLayerForAnimations(views::View* view) {
   view->SetPaintToLayer();
   view->layer()->SetFillsBoundsOpaquely(false);
