@@ -39,7 +39,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) ZxLogMessage
 }  // namespace partition_alloc::internal::logging
 
 #define PA_ZX_LOG_STREAM(severity, zx_err) \
-  PA_COMPACT_GOOGLE_LOG_EX_##severity(ZxLogMessage, zx_err).stream()
+  PA_COMPACT_GOOGLE_PLOG_EX_##severity(ZxLogMessage, zx_err).stream()
 
 #define PA_ZX_LOG(severity, zx_err) \
   PA_LAZY_STREAM(PA_ZX_LOG_STREAM(severity, zx_err), PA_LOG_IS_ON(severity))

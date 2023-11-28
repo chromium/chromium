@@ -54,7 +54,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) MachLogMessage
 #endif
 
 #define PA_MACH_LOG_STREAM(severity, mach_err) \
-  PA_COMPACT_GOOGLE_LOG_EX_##severity(MachLogMessage, mach_err).stream()
+  PA_COMPACT_GOOGLE_PLOG_EX_##severity(MachLogMessage, mach_err).stream()
 #define PA_MACH_VLOG_STREAM(verbose_level, mach_err)    \
   ::partition_alloc::internal::logging::MachLogMessage( \
       __FILE__, __LINE__, -verbose_level, mach_err)     \

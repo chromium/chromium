@@ -84,7 +84,6 @@ config("dependants_extra_warnings") {
       "-Wno-import-preprocessor-directive-pedantic",
       "-Wno-embedded-directive",
       "-Wno-gnu-statement-expression-from-macro-expansion",
-      "-Wno-gnu-zero-variadic-macro-arguments",
       "-Wno-language-extension-token",
       "-Wno-zero-length-array",
     ]
