@@ -214,16 +214,6 @@ chromium-metrics-reviews@google.com.
   <summary>Size of the saved copy of an offline page.</summary>
 </histogram>
 
-<histogram name="OfflinePages.SavePage.PercentLoaded" units="%"
-    expires_after="M77">
-  <owner>twellington@chromium.org</owner>
-  <owner>ianwen@chromium.org</owner>
-  <summary>
-    The percentage of the page load completed when the button to save an offline
-    page is pressed.
-  </summary>
-</histogram>
-
 <histogram name="OfflinePages.SQLStorage.StoreEvent"
     enum="OfflinePagesStoreEvent" expires_after="2021-06-25">
   <owner>sclittle@chromium.org</owner>

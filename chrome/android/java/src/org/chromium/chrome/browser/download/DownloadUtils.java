@@ -33,7 +33,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
@@ -269,16 +268,6 @@ public class DownloadUtils {
     }
 
     /**
-     * Records metrics related to downloading a page. Should be called after a tap on the download
-     * page button.
-     * @param tab The Tab containing the page being downloaded.
-     */
-    public static void recordDownloadPageMetrics(Tab tab) {
-        RecordHistogram.recordPercentageHistogram(
-                "OfflinePages.SavePage.PercentLoaded", Math.round(tab.getProgress() * 100));
-    }
-
-    /**
      * Shows a "Downloading..." toast. Should be called after a download has been started.
      * @param context The {@link Context} used to make the toast.
      */
@@ -306,7 +295,6 @@ public class DownloadUtils {
         } else {
             // Otherwise, the download can be started immediately.
             OfflinePageDownloadBridge.startDownload(tab, origin);
-            DownloadUtils.recordDownloadPageMetrics(tab);
         }
         Tracker tracker = TrackerFactory.getTrackerForProfile(tab.getProfile());
         tracker.notifyEvent(EventConstants.DOWNLOAD_PAGE_STARTED);
