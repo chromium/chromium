@@ -1669,9 +1669,6 @@ crbug.com/1107923 inspector-protocol/debugger/wasm-streaming-url.js [ Failure Pa
 # Will be re-enabled and rebaselined once we remove the '--enable-file-cookies' flag.
 crbug.com/470482 fast/cookies/local-file-can-set-cookies.html [ Crash Failure Pass Timeout ]
 
-# Text::inDocument() returns false but should not.
-crbug.com/264138 dom/legacy_dom_conformance/xhtml/level3/core/nodecomparedocumentposition38.xhtml [ Failure ]
-
 crbug.com/411164 [ Win ] http/tests/security/powerfulFeatureRestrictions/serviceworker-on-insecure-origin.html [ Pass ]
 
 crbug.com/686118 http/tests/security/setDomainRelaxationForbiddenForURLScheme.html [ Crash Pass ]

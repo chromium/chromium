@@ -1413,7 +1413,7 @@
               "accessibility/virtual-node-build-parent-multiple.html",
               "accessibility/virtual-node-removed-from-document.html",
               "accessibility/virtual-node-repair-document.html",
-              "dom/legacy_dom_conformance/html/level2/core/createAttributeNS06.html",
+              "accessibility/createAttributeNS06-crash.html",
               "external/wpt/accessibility/",
               "external/wpt/dom/ranges/Range-deleteContents.html",
               "external/wpt/html/semantics/embedded-content/the-iframe-element/iframe-initially-empty-is-updated.html",
