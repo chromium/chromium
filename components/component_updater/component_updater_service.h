@@ -45,7 +45,7 @@ class ComponentInstaller;
 class Configurator;
 struct CrxComponent;
 struct CrxUpdateItem;
-}
+}  // namespace update_client
 
 namespace extensions {
 class AutotestPrivateLoadSmartDimComponentFunction;
@@ -93,7 +93,8 @@ struct ComponentRegistration {
       scoped_refptr<update_client::ActionHandler> action_handler,
       scoped_refptr<update_client::CrxInstaller> installer,
       bool requires_network_encryption,
-      bool supports_group_policy_enable_component_updates);
+      bool supports_group_policy_enable_component_updates,
+      bool allow_cached_copies);
   ComponentRegistration(const ComponentRegistration& other);
   ComponentRegistration& operator=(const ComponentRegistration& other);
   ComponentRegistration(ComponentRegistration&& other);
@@ -110,6 +111,7 @@ struct ComponentRegistration {
   scoped_refptr<update_client::CrxInstaller> installer;
   bool requires_network_encryption;
   bool supports_group_policy_enable_component_updates;
+  bool allow_cached_copies;
 };
 
 // The component update service is in charge of installing or upgrading select

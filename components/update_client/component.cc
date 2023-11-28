@@ -29,6 +29,7 @@
 #include "components/update_client/action_runner.h"
 #include "components/update_client/component_unpacker.h"
 #include "components/update_client/configurator.h"
+#include "components/update_client/crx_cache.h"
 #include "components/update_client/crx_downloader_factory.h"
 #include "components/update_client/features.h"
 #include "components/update_client/network.h"
@@ -1292,7 +1293,9 @@ void Component::StateUpdating::DoHandle() {
               component.next_fp_, component.install_params(),
               component.crx_component()->installer,
               update_context.config->GetUnzipperFactory()->Create(),
-              update_context.crx_cache_,
+              component.crx_component()->allow_cached_copies
+                  ? update_context.crx_cache_
+                  : absl::nullopt,
               component.crx_component()->crx_format_requirement,
               base::BindRepeating(&Component::StateUpdating::InstallProgress,
                                   base::Unretained(this)),
@@ -1323,6 +1326,16 @@ void Component::StateUpdating::InstallComplete(
   component.error_code_ = error_code;
   component.extra_code1_ = extra_code1;
   component.installer_result_ = installer_result;
+
+  CHECK(component.crx_component_);
+  if (!component.crx_component_->allow_cached_copies &&
+      component.update_context_->crx_cache_) {
+    base::ThreadPool::CreateSequencedTaskRunner(kTaskTraits)
+        ->PostTask(FROM_HERE,
+                   base::BindOnce(&CrxCache::RemoveAll,
+                                  component.update_context_->crx_cache_->get(),
+                                  component.crx_component()->app_id));
+  }
 
   if (component.error_code_ != 0) {
     TransitionState(std::make_unique<StateUpdateError>(&component));

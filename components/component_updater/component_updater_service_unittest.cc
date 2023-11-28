@@ -305,8 +305,8 @@ TEST_F(ComponentUpdaterTest, RegisterComponent) {
       base::MakeRefCounted<MockInstaller>();
   EXPECT_CALL(*installer, Uninstall()).WillOnce(Return(true));
 
-  using update_client::jebg_hash;
   using update_client::abag_hash;
+  using update_client::jebg_hash;
 
   const std::string id1 = "abagagagagagagagagagagagagagagag";
   const std::string id2 = "jebgalgnebhfojomionfpkfelancnnkf";
@@ -317,11 +317,11 @@ TEST_F(ComponentUpdaterTest, RegisterComponent) {
   std::vector<uint8_t> hash;
   hash.assign(std::begin(abag_hash), std::end(abag_hash));
   ComponentRegistration component1(id1, {}, hash, base::Version("1.0"), {}, {},
-                                   nullptr, installer, false, true);
+                                   nullptr, installer, false, true, true);
 
   hash.assign(std::begin(jebg_hash), std::end(jebg_hash));
   ComponentRegistration component2(id2, {}, hash, base::Version("0.9"), {}, {},
-                                   nullptr, installer, false, true);
+                                   nullptr, installer, false, true, true);
 
   // Quit after two update checks have fired.
   LoopHandler loop_handler(2, quit_closure());
@@ -381,7 +381,8 @@ TEST_F(ComponentUpdaterTest, OnDemandUpdate) {
     hash.assign(std::begin(jebg_hash), std::end(jebg_hash));
     EXPECT_TRUE(cus.RegisterComponent(ComponentRegistration(
         "jebgalgnebhfojomionfpkfelancnnkf", {}, hash, base::Version("0.9"), {},
-        {}, nullptr, base::MakeRefCounted<MockInstaller>(), false, true)));
+        {}, nullptr, base::MakeRefCounted<MockInstaller>(), false, true,
+        true)));
   }
   {
     using update_client::abag_hash;
@@ -389,7 +390,8 @@ TEST_F(ComponentUpdaterTest, OnDemandUpdate) {
     hash.assign(std::begin(abag_hash), std::end(abag_hash));
     EXPECT_TRUE(cus.RegisterComponent(ComponentRegistration(
         "abagagagagagagagagagagagagagagag", {}, hash, base::Version("0.9"), {},
-        {}, nullptr, base::MakeRefCounted<MockInstaller>(), false, true)));
+        {}, nullptr, base::MakeRefCounted<MockInstaller>(), false, true,
+        true)));
   }
 
   OnDemandTester ondemand_tester;
@@ -428,7 +430,7 @@ TEST_F(ComponentUpdaterTest, MaybeThrottle) {
 
   EXPECT_TRUE(component_updater().RegisterComponent(ComponentRegistration(
       "jebgalgnebhfojomionfpkfelancnnkf", {}, hash, base::Version("0.9"), {},
-      {}, nullptr, base::MakeRefCounted<MockInstaller>(), false, true)));
+      {}, nullptr, base::MakeRefCounted<MockInstaller>(), false, true, true)));
   component_updater().MaybeThrottle("jebgalgnebhfojomionfpkfelancnnkf",
                                     base::DoNothing());
 

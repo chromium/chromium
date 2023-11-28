@@ -374,6 +374,10 @@ struct CrxComponent {
   // An indicator sent to the server to advise whether it may perform an
   // over-install on this item.
   bool same_version_update_allowed = false;
+
+  // Specifies that this CRX can be cached for differential updates.
+  // The default for this value is |true|.
+  bool allow_cached_copies = true;
 };
 
 // Called when a non-blocking call of UpdateClient completes.

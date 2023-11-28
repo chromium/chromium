@@ -279,7 +279,7 @@ void RecoveryRegisterHelper(ComponentUpdateService* cus, PrefService* prefs) {
   if (!cus->RegisterComponent(ComponentRegistration(
           update_client::GetCrxIdFromPublicKeyHash(public_key_hash), "recovery",
           public_key_hash, version, {}, {}, nullptr,
-          new RecoveryComponentInstaller(version, prefs), false, true))) {
+          new RecoveryComponentInstaller(version, prefs), false, true, true))) {
     NOTREACHED() << "Recovery component registration failed.";
   }
 }

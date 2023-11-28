@@ -88,6 +88,10 @@ PayloadTestComponentInstallerPolicy::GetInstallerAttributes() const {
   return update_client::InstallerAttributes();
 }
 
+bool PayloadTestComponentInstallerPolicy::AllowCachedCopies() const {
+  return false;
+}
+
 void RegisterPayloadTestComponent(ComponentUpdateService* cus) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   base::MakeRefCounted<ComponentInstaller>(
