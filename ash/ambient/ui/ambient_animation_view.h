@@ -84,6 +84,7 @@ class ASH_EXPORT AmbientAnimationView : public views::View,
   const std::unique_ptr<const AmbientAnimationStaticResources>
       static_resources_;
   const raw_ptr<AmbientAnimationFrameRateController> frame_rate_controller_;
+  const bool add_glanceable_info_text_shadow_;
   AmbientAnimationPhotoProvider animation_photo_provider_;
   std::unique_ptr<AmbientAnimationAttributionProvider>
       animation_attribution_provider_;
