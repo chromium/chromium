@@ -8,7 +8,6 @@
 #include <netinet/in.h>
 
 #import <MaterialComponents/MDCAppBarViewController.h>
-#import <MaterialComponents/MaterialAnimationTiming.h>
 #import <MaterialComponents/MaterialDialogs.h>
 #import <MaterialComponents/MaterialShadowElevations.h>
 #import <MaterialComponents/MaterialShadowLayer.h>
