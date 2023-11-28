@@ -4,15 +4,17 @@
 
 #include "chrome/browser/component_updater/zxcvbn_data_component_installer.h"
 
-#include <stdint.h>
 
 #include <array>
+#include <bit>
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
@@ -57,6 +59,12 @@ namespace {
 
 constexpr char kFirstMemoryMappedVersion[] = "2";
 
+// The size (in bytes) of the marker at the beginning of the (memory mapped)
+// combined ranked dictionaries file.
+constexpr int kNumMarkerBytes = 1;
+// The marker bit - see also `zxcvbn::MarkedBigEndianU15::MARKER_BIT`.
+constexpr uint8_t kMarkerBit = 0x80;
+
 zxcvbn::RankedDicts MemoryMapRankedDictionaries(
     const base::FilePath& install_dir) {
   base::FilePath dictionary_path = install_dir.Append(
@@ -99,11 +107,27 @@ bool ZxcvbnDataComponentInstallerPolicy::VerifyInstallation(
     return false;
   }
 
+  if (version < base::Version(kFirstMemoryMappedVersion)) {
+    return false;
+  }
+
   // If the version supports memory mapping, then the binary file that contains
   // the combined ranked dictionaries must exist, too.
-  return version >= base::Version(kFirstMemoryMappedVersion) &&
-         base::PathExists(install_dir.Append(
-             ZxcvbnDataComponentInstallerPolicy::kCombinedRankedDictsFileName));
+  const base::FilePath combined_ranked_dicts_path = install_dir.Append(
+      ZxcvbnDataComponentInstallerPolicy::kCombinedRankedDictsFileName);
+  if (!base::PathExists(combined_ranked_dicts_path)) {
+    return false;
+  }
+
+  // Perform a minimal check that the file has not been corrupted - otherwise
+  // the client will run into a failing CHECK when using the library.
+  // See (crbug.com/1505352) for instances where this occurred.
+  char local_buffer[kNumMarkerBytes] = {};
+  if (base::ReadFile(combined_ranked_dicts_path, local_buffer,
+                     /*max_size=*/kNumMarkerBytes) != kNumMarkerBytes) {
+    return false;
+  }
+  return std::bit_cast<uint8_t>(local_buffer[0]) & kMarkerBit;
 }
 
 bool ZxcvbnDataComponentInstallerPolicy::
