@@ -420,21 +420,13 @@ BASE_FEATURE(kAutofillLabelAffixRemoval,
 
 // When enabled, all behaviours related to the on-device machine learning
 // model for field type predictions will be guarded.
+// TODO(crbug.com/1465926): Remove when launched.
 BASE_FEATURE(kAutofillModelPredictions,
              "AutofillModelPredictions",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// The dictionary will be used for creating a new `AutofillModelVectorizer`
-// for vectorizing the model input. The `AutofillModelExecutor` will use
-// that dictionary path to initialize the vectorizer.
-// TODO(crbug.com/1465926): Remove once model is replaced with bigger model
-// and store dictionary path in the metadata's additional files.
-const base::FeatureParam<std::string> kAutofillModelDictionaryFilePath{
-    &kAutofillModelPredictions, "dictionary_path", "default"};
-
 // When true, use the machine learning model as the active `HeuristicSource`,
 // else use the source provided by `kAutofillParsingPatternActiveSource`.
-// TODO(crbug.com/1465926): Remove when launched.
 const base::FeatureParam<bool> kAutofillModelPredictionsAreActive{
     &kAutofillModelPredictions, "model_active", false};
 
