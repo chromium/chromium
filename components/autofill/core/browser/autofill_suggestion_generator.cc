@@ -130,6 +130,23 @@ bool ShouldSplitCardNameAndLastFourDigits() {
 #endif
 }
 
+// In addition to just getting the values out of the profile, this function
+// handles type-specific formatting.
+std::u16string GetProfileSuggestionMainText(
+    const AutofillProfile& profile,
+    const std::string& app_locale,
+    ServerFieldType trigger_field_type) {
+  if (trigger_field_type == ADDRESS_HOME_STREET_ADDRESS) {
+    std::string street_address_line;
+    ::i18n::addressinput::GetStreetAddressLinesAsSingleLine(
+        *i18n::CreateAddressDataFromAutofillProfile(profile, app_locale),
+        &street_address_line);
+    return base::UTF8ToUTF16(street_address_line);
+  }
+
+  return profile.GetInfo(trigger_field_type, app_locale);
+}
+
 Suggestion GetEditAddressProfileSuggestion(Suggestion::BackendId backend_id) {
   Suggestion suggestion(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_EDIT_ADDRESS_PROFILE_POPUP_OPTION_SELECTED));
@@ -203,19 +220,16 @@ bool AddFieldByFieldSuggestions(const std::vector<ServerFieldType>& field_types,
                                 std::vector<Suggestion>& suggestions) {
   bool any_suggestion_added = false;
   for (auto field_type : field_types) {
+    // Field-by-field suggestions are never generated for
+    // `ADDRESS_HOME_STREET_ADDRESS` field type.
+    CHECK(field_type != ADDRESS_HOME_STREET_ADDRESS);
     std::u16string main_text;
     if (field_type == PHONE_HOME_WHOLE_NUMBER) {
       main_text = GetFormattedPhoneNumberForGranularFillingSuggestion(
           profile, app_locale,
           /*should_use_national_format=*/false);
     } else {
-      // This is not how suggestion main text is built in general.
-      // (See `AutofillSuggestionGenerator::GetProfileSuggestionMainText()`)
-      // However, since the only special case is ADDRESS_HOME_STREET_ADDRESS
-      // we can safely replace the function call by the line below, since field
-      // by field suggestions are not generated for that type.
-      CHECK(field_type != ADDRESS_HOME_STREET_ADDRESS);
-      main_text = profile.GetInfo(field_type, app_locale);
+      main_text = GetProfileSuggestionMainText(profile, app_locale, field_type);
     }
     if (!main_text.empty()) {
       suggestions.emplace_back(main_text, PopupItemId::kFieldByFieldFilling);
@@ -828,7 +842,7 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
   for (const AutofillProfile* profile : profiles) {
     // Compute the main text to be displayed in the suggestion bubble.
     std::u16string main_text =
-        GetProfileSuggestionMainText(profile, trigger_field_type);
+        GetProfileSuggestionMainText(*profile, app_locale, trigger_field_type);
     if (trigger_field_type_group == FieldTypeGroup::kPhone) {
       main_text = GetPhoneNumberValueForInput(
           trigger_field_max_length, main_text,
@@ -912,8 +926,8 @@ AutofillSuggestionGenerator::DeduplicatedProfilesForSuggestions(
   // `kAutofillUseAddressRewriterInProfileSubsetComparison` launches.
   std::vector<std::u16string> suggestion_main_text;
   for (const AutofillProfile* profile : matched_profiles) {
-    suggestion_main_text.push_back(
-        GetProfileSuggestionMainText(profile, trigger_field_type));
+    suggestion_main_text.push_back(GetProfileSuggestionMainText(
+        *profile, personal_data_->app_locale(), trigger_field_type));
   }
 
   std::vector<const AutofillProfile*> unique_matched_profiles;
@@ -993,8 +1007,8 @@ AutofillSuggestionGenerator::GetPrefixMatchedProfiles(
     }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    std::u16string main_text =
-        GetProfileSuggestionMainText(profile, trigger_field_type);
+    std::u16string main_text = GetProfileSuggestionMainText(
+        *profile, personal_data_->app_locale(), trigger_field_type);
 
     // Discard profiles that do not have a value for the trigger field.
     if (main_text.empty()) {
@@ -1022,21 +1036,6 @@ void AutofillSuggestionGenerator::RemoveProfilesNotUsedSinceTimestamp(
   const size_t num_profiles_suppressed = original_size - profiles.size();
   AutofillMetrics::LogNumberOfAddressesSuppressedForDisuse(
       num_profiles_suppressed);
-}
-
-std::u16string AutofillSuggestionGenerator::GetProfileSuggestionMainText(
-    const AutofillProfile* profile,
-    ServerFieldType trigger_field_type) {
-  std::string app_locale = personal_data_->app_locale();
-  if (trigger_field_type == ADDRESS_HOME_STREET_ADDRESS) {
-    std::string street_address_line;
-    ::i18n::addressinput::GetStreetAddressLinesAsSingleLine(
-        *i18n::CreateAddressDataFromAutofillProfile(*profile, app_locale),
-        &street_address_line);
-    return base::UTF8ToUTF16(street_address_line);
-  }
-
-  return profile->GetInfo(trigger_field_type, app_locale);
 }
 
 void AutofillSuggestionGenerator::AddGranularFillingChildSuggestions(

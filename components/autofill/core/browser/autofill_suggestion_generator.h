@@ -201,12 +201,6 @@ class AutofillSuggestionGenerator {
       base::Time min_last_used,
       std::vector<AutofillProfile*>& profiles);
 
-  // In addition to just getting the values out of the profile, this function
-  // handles type-specific formatting.
-  std::u16string GetProfileSuggestionMainText(
-      const AutofillProfile* profile,
-      ServerFieldType trigger_field_type);
-
   // Creates nested/child suggestions for `suggestion` with the `profile`
   // information. Uses `trigger_field_type` to define what group filling
   // suggestion to add (name, address or phone). The existence of child
