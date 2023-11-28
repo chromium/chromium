@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/login/signin/signin_error_notifier.h"
 #include "chrome/browser/ash/login/signin/token_handle_util.h"
 #include "chrome/browser/ash/login/signin_specifics.h"
+#include "chrome/browser/ash/login/test/auth_ui_utils.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
@@ -68,18 +69,6 @@ constexpr char kGaiaID[] = "111111";
 constexpr char kTokenHandle[] = "test_token_handle";
 constexpr char kTestingFileName[] = "testing-file.txt";
 
-const test::UIPath kPasswordStep = {"gaia-password-changed", "passwordStep"};
-const test::UIPath kForgotPasswordStep = {"gaia-password-changed",
-                                          "forgotPassword"};
-const test::UIPath kOldPasswordInput = {"gaia-password-changed",
-                                        "oldPasswordInput"};
-const test::UIPath kSendPasswordButton = {"gaia-password-changed", "next"};
-const test::UIPath kForgotPasswordButton = {"gaia-password-changed",
-                                            "forgotPasswordButton"};
-const test::UIPath kTryAgainRecovery = {"gaia-password-changed", "backButton"};
-const test::UIPath kProceedAnyway = {"gaia-password-changed", "proceedAnyway"};
-const test::UIPath kForgotCancel = {"gaia-password-changed", "cancelForgot"};
-
 const test::UIPath kFirstOnboardingScreen = {"consolidated-consent"};
 
 using AuthOp = FakeUserDataAuthClient::Operation;
@@ -100,10 +89,7 @@ class PasswordChangeTestBase : public LoginManagerTest {
     EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
   }
 
-  void WaitForPasswordChangeScreen() {
-    OobeScreenWaiter(GaiaPasswordChangedView::kScreenId).Wait();
-    OobeWindowVisibilityWaiter(true).Wait();
-
+  void ExpectButtonsState() {
     EXPECT_FALSE(LoginScreenTestApi::IsShutdownButtonShown());
     EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
     EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
@@ -179,21 +165,22 @@ class PasswordChangeTest : public PasswordChangeTestBase {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(PasswordChangeTest, MigrateOldCryptohome) {
+IN_PROC_BROWSER_TEST_F(PasswordChangeTest, UpdateGaiaPassword) {
   AddFakeUser("old user password");
   OpenGaiaDialog(test_account_id_);
 
   base::HistogramTester histogram_tester;
   SetGaiaScreenCredentials(test_account_id_, "new user password");
-  WaitForPasswordChangeScreen();
+
+  test::CreateOldPasswordEnterPageWaiter()->Wait();
+  ExpectButtonsState();
+
   histogram_tester.ExpectBucketCount("Login.PasswordChanged.ReauthReason",
                                      ReauthReason::kOther, 1);
 
-  test::OobeJS().CreateVisibilityWaiter(true, kPasswordStep)->Wait();
-
   // Fill out and submit the old password.
-  test::OobeJS().TypeIntoPath("old user password", kOldPasswordInput);
-  test::OobeJS().ClickOnPath(kSendPasswordButton);
+  test::PasswordChangedTypeOldPassword("old user password");
+  test::PasswordChangedSubmitOldPassword();
 
   // User session should start, and whole OOBE screen is expected to be hidden.
   OobeWindowVisibilityWaiter(false).Wait();
@@ -208,14 +195,14 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeTest, SubmitOnEnterKeyPressed) {
 
   base::HistogramTester histogram_tester;
   SetGaiaScreenCredentials(test_account_id_, "new user password");
-  WaitForPasswordChangeScreen();
+  test::CreateOldPasswordEnterPageWaiter()->Wait();
+  ExpectButtonsState();
+
   histogram_tester.ExpectBucketCount("Login.PasswordChanged.ReauthReason",
                                      ReauthReason::kOther, 1);
 
-  test::OobeJS().CreateVisibilityWaiter(true, kPasswordStep)->Wait();
-
   // Fill out and submit the old password, using "ENTER" key.
-  test::OobeJS().TypeIntoPath("old user password", kOldPasswordInput);
+  test::PasswordChangedTypeOldPassword("old user password");
   ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
       nullptr, ui::VKEY_RETURN, false /* control */, false /* shift */,
       false /* alt */, false /* command */));
@@ -234,21 +221,20 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeTest, RetryOnWrongPassword) {
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
   SetGaiaScreenCredentials(test_account_id_, "new password");
 
-  WaitForPasswordChangeScreen();
-  test::OobeJS().CreateVisibilityWaiter(true, kPasswordStep)->Wait();
+  test::CreateOldPasswordEnterPageWaiter()->Wait();
+  ExpectButtonsState();
 
   // Fill out and submit the old password passed to the fake userdataauth.
-  test::OobeJS().TypeIntoPath("incorrect old user password", kOldPasswordInput);
-  test::OobeJS().ClickOnPath(kSendPasswordButton);
-  // Expect the UI to report failure.
-  test::OobeJS()
-      .CreateWaiter(test::GetOobeElementPath(kOldPasswordInput) + ".invalid")
-      ->Wait();
-  test::OobeJS().ExpectEnabledPath(kPasswordStep);
+  test::PasswordChangedTypeOldPassword("incorrect old user password");
+  test::PasswordChangedSubmitOldPassword();
+  // Expect the UI to report failure, but stay on the same page.
+  test::PasswordChangedInvalidPasswordFeedback()->Wait();
+  test::CreateOldPasswordEnterPageWaiter()->Wait();
+  ExpectButtonsState();
 
   // Submit the correct password.
-  test::OobeJS().TypeIntoPath("old user password", kOldPasswordInput);
-  test::OobeJS().ClickOnPath(kSendPasswordButton);
+  test::PasswordChangedTypeOldPassword("old user password");
+  test::PasswordChangedSubmitOldPassword();
 
   // User session should start, and whole OOBE screen is expected to be hidden.
   OobeWindowVisibilityWaiter(false).Wait();
@@ -260,19 +246,19 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeTest, SkipDataRecovery) {
   AddFakeUser("old user password");
   OpenGaiaDialog(test_account_id_);
   SetGaiaScreenCredentials(test_account_id_, "new password");
-  WaitForPasswordChangeScreen();
-  test::OobeJS().CreateVisibilityWaiter(true, kPasswordStep)->Wait();
+
+  test::CreateOldPasswordEnterPageWaiter()->Wait();
+  ExpectButtonsState();
 
   // Click forgot password button.
-  test::OobeJS().ClickOnPath(kForgotPasswordButton);
+  test::PasswordChangedForgotPasswordAction();
+  test::LocalDataLossWarningPageWaiter()->Wait();
 
-  test::OobeJS().CreateDisplayedWaiter(false, kPasswordStep)->Wait();
-
-  test::OobeJS().ExpectVisiblePath(kTryAgainRecovery);
-  test::OobeJS().ExpectVisiblePath(kProceedAnyway);
+  test::LocalDataLossWarningPageExpectGoBack();
+  test::LocalDataLossWarningPageExpectProceed();
 
   // Click "Proceed anyway".
-  test::OobeJS().ClickOnPath(kProceedAnyway);
+  test::LocalDataLossWarningPageProceedAction();
 
   // With cryptohome recovery we re-create session and re-run onboarding.
   OobeWindowVisibilityWaiter(true).Wait();
@@ -285,26 +271,26 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeTest, TryAgainAfterForgetLinkClick) {
   AddFakeUser("old user password");
   OpenGaiaDialog(test_account_id_);
   SetGaiaScreenCredentials(test_account_id_, "new password");
-  WaitForPasswordChangeScreen();
 
-  test::OobeJS().CreateDisplayedWaiter(true, kPasswordStep)->Wait();
+  test::CreateOldPasswordEnterPageWaiter()->Wait();
+  ExpectButtonsState();
 
   // Click forgot password button.
-  test::OobeJS().ClickOnPath(kForgotPasswordButton);
+  test::PasswordChangedForgotPasswordAction();
+  test::LocalDataLossWarningPageWaiter()->Wait();
 
-  test::OobeJS().CreateDisplayedWaiter(false, kPasswordStep)->Wait();
-
-  test::OobeJS().ExpectVisiblePath(kTryAgainRecovery);
-  test::OobeJS().ExpectVisiblePath(kProceedAnyway);
+  test::LocalDataLossWarningPageExpectGoBack();
+  test::LocalDataLossWarningPageExpectProceed();
 
   // Go back to old password input by clicking Try Again.
-  test::OobeJS().ClickOnPath(kTryAgainRecovery);
+  test::LocalDataLossWarningPageGoBackAction();
 
-  test::OobeJS().CreateDisplayedWaiter(true, kPasswordStep)->Wait();
+  test::CreateOldPasswordEnterPageWaiter()->Wait();
+  ExpectButtonsState();
 
   // Enter and submit the correct password.
-  test::OobeJS().TypeIntoPath("old user password", kOldPasswordInput);
-  test::OobeJS().ClickOnPath(kSendPasswordButton);
+  test::PasswordChangedTypeOldPassword("old user password");
+  test::PasswordChangedSubmitOldPassword();
 
   // User session should start, and whole OOBE screen is expected to be hidden,
   OobeWindowVisibilityWaiter(false).Wait();
@@ -318,17 +304,18 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeTest, ClosePasswordChangedDialog) {
   AddFakeUser("old user password");
   OpenGaiaDialog(test_account_id_);
   SetGaiaScreenCredentials(test_account_id_, "new password");
-  WaitForPasswordChangeScreen();
 
-  test::OobeJS().CreateVisibilityWaiter(true, kPasswordStep)->Wait();
+  test::CreateOldPasswordEnterPageWaiter()->Wait();
+  ExpectButtonsState();
 
-  test::OobeJS().TypeIntoPath("old user password", kOldPasswordInput);
+  test::PasswordChangedTypeOldPassword("old user password");
 
   // Switch to "Forgot password" step.
-  test::OobeJS().ClickOnPath(kForgotPasswordButton);
-  test::OobeJS().CreateDisplayedWaiter(true, kForgotPasswordStep)->Wait();
+  test::PasswordChangedForgotPasswordAction();
+
+  test::LocalDataLossWarningPageWaiter()->Wait();
+  test::LocalDataLossWarningPageCancelAction();
   // Click the close button.
-  test::OobeJS().ClickOnPath(kForgotCancel);
 
   OobeWindowVisibilityWaiter(false).Wait();
   EXPECT_FALSE(
@@ -382,7 +369,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeTokenCheck, LoginScreenPasswordChange) {
   base::HistogramTester histogram_tester;
 
   SetGaiaScreenCredentials(user_with_invalid_token_, "new password");
-  WaitForPasswordChangeScreen();
+
+  test::CreateOldPasswordEnterPageWaiter()->Wait();
 
   histogram_tester.ExpectBucketCount("Login.PasswordChanged.ReauthReason",
                                      ReauthReason::kInvalidTokenHandle, 1);
@@ -472,7 +460,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeTokenCheck, Session) {
   base::HistogramTester histogram_tester;
 
   SetGaiaScreenCredentials(user_with_invalid_token_, "new password");
-  WaitForPasswordChangeScreen();
+
+  test::CreateOldPasswordEnterPageWaiter()->Wait();
 
   histogram_tester.ExpectBucketCount("Login.PasswordChanged.ReauthReason",
                                      ReauthReason::kInvalidTokenHandle, 1);
