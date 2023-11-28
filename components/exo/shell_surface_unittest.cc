@@ -10,6 +10,7 @@
 #include "ash/capture_mode/capture_mode_test_util.h"
 #include "ash/constants/app_types.h"
 #include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
@@ -3403,6 +3404,25 @@ TEST_F(ShellSurfaceTest, ThrottleFrameRate) {
   window->SetProperty(ash::kFrameRateThrottleKey, false);
 
   shell_surface->root_surface()->RemoveSurfaceObserver(&observer);
+}
+
+TEST_F(ShellSurfaceTest, ThrottleFrameRateViaController) {
+  // Set app type to lacros so we can check ash::kFrameRateThrottleKey property
+  // as well.
+  auto shell_surface = test::ShellSurfaceBuilder({20, 20})
+                           .SetAppType(ash::AppType::LACROS)
+                           .BuildShellSurface();
+  aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
+
+  ash::FrameThrottlingController* frame_throttling_controller =
+      ash::Shell::Get()->frame_throttling_controller();
+  frame_throttling_controller->StartThrottling({window});
+
+  EXPECT_THAT(frame_throttling_controller->GetFrameSinkIdsToThrottle(),
+              testing::UnorderedElementsAreArray(
+                  {shell_surface->GetSurfaceId().frame_sink_id()}));
+
+  EXPECT_TRUE(window->GetProperty(ash::kFrameRateThrottleKey));
 }
 
 namespace {
