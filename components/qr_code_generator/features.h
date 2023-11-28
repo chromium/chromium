@@ -6,7 +6,6 @@
 #define COMPONENTS_QR_CODE_GENERATOR_FEATURES_H_
 
 #include "base/feature_list.h"
-#include "components/qr_code_generator/rust_buildflags.h"
 
 namespace qr_code_generator {
 
@@ -14,10 +13,8 @@ namespace qr_code_generator {
 // but product code should instead use `IsRustyQrCodeGeneratorFeatureEnabled`.
 BASE_DECLARE_FEATURE(kRustyQrCodeGeneratorFeature);
 
-// Returns true if Rust should be used for QR code generation:
-// 1) the GN-level `enable_rust_qr` is true.
-// *and*
-// 2) the `"RustyQrCodeGenerator"` base::Feature has been enabled.
+// Returns true if Rust should be used for QR code generation - i.e. if
+// the `"RustyQrCodeGenerator"` base::Feature has been enabled.
 //
 // If Rust is used for QR code generation then:
 // 1) //components/qr_code_generator becomes a thin wrapper around a 3rd-party
@@ -29,11 +26,7 @@ BASE_DECLARE_FEATURE(kRustyQrCodeGeneratorFeature);
 // See https://crbug.com/1431991 for more details about the feature and the
 // Rust QR Code Generator project.
 inline bool IsRustyQrCodeGeneratorFeatureEnabled() {
-#if BUILDFLAG(ENABLE_RUST_QR)
   return base::FeatureList::IsEnabled(kRustyQrCodeGeneratorFeature);
-#else
-  return false;
-#endif
 }
 
 }  // namespace qr_code_generator

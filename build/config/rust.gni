@@ -92,9 +92,6 @@ declare_args() {
   # Support for chrome://crash-rust to check crash dump collection works.
   enable_rust_crash = enable_rust
 
-  # Support for QR code generation - see https://crbug.com/1431991.
-  enable_rust_qr = enable_rust
-
   # Support for Rust mojo bindings.
   enable_rust_mojo = enable_rust && enable_all_rust_features
 

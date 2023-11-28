@@ -11,11 +11,6 @@ declare_args() {
   enable_qr_print = false
 }
 
-buildflag_header("rust_buildflags") {
-  header = "rust_buildflags.h"
-  flags = [ "ENABLE_RUST_QR=$enable_rust_qr" ]
-}
-
 # Separate target to:
 # - Limit `visibility` (stricter than dir-level `DEPS` would allow)
 # - Allow `//chrome/services/qr_code_generator_service/public/cpp` to check the
@@ -28,10 +23,7 @@ source_set("qr_code_generator_features") {
     "features.cc",
     "features.h",
   ]
-  deps = [
-    ":rust_buildflags",
-    "//base",
-  ]
+  deps = [ "//base" ]
   visibility = [
     ":qr_code_generator",
     ":unit_tests",
@@ -47,27 +39,19 @@ source_set("qr_code_generator") {
   ]
   deps = [
     ":qr_code_generator_features",
-    ":rust_buildflags",
+    ":qr_code_generator_ffi_glue",
     "//base",
   ]
-  if (enable_rust_qr) {
-    deps += [
-      ":qr_code_generator_ffi_glue",
-      "//build/rust:cxx_cppdeps",
-    ]
-  }
   public_deps = [ "//base" ]
 }
 
-if (enable_rust_qr) {
-  rust_static_library("qr_code_generator_ffi_glue") {
-    allow_unsafe = true  # Needed for FFI that underpins the `cxx` crate.
-    crate_root = "qr_code_generator_ffi_glue.rs"
-    sources = [ "qr_code_generator_ffi_glue.rs" ]
-    cxx_bindings = [ "qr_code_generator_ffi_glue.rs" ]
-    visibility = [ ":qr_code_generator" ]
-    deps = [ "//third_party/rust/qr_code/v2:lib" ]
-  }
+rust_static_library("qr_code_generator_ffi_glue") {
+  allow_unsafe = true  # Needed for FFI that underpins the `cxx` crate.
+  crate_root = "qr_code_generator_ffi_glue.rs"
+  sources = [ "qr_code_generator_ffi_glue.rs" ]
+  cxx_bindings = [ "qr_code_generator_ffi_glue.rs" ]
+  visibility = [ ":qr_code_generator" ]
+  deps = [ "//third_party/rust/qr_code/v2:lib" ]
 }
 
 source_set("unit_tests") {
@@ -76,7 +60,6 @@ source_set("unit_tests") {
   deps = [
     ":qr_code_generator",
     ":qr_code_generator_features",
-    ":rust_buildflags",
     "//base",
     "//base/test:test_support",
     "//testing/gtest",
