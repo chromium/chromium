@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
 import org.chromium.chrome.browser.signin.services.SigninManager.DataWipeOption;
@@ -28,7 +29,7 @@ import org.chromium.components.sync.SyncService;
 import java.util.List;
 
 /** This class regroups sign-in checks when chrome starts up and when accounts change on device */
-public class SigninChecker implements AccountTrackerService.Observer {
+public class SigninChecker implements AccountTrackerService.Observer, Destroyable {
     private static final String TAG = "SigninChecker";
     private final SigninManager mSigninManager;
     private final AccountTrackerService mAccountTrackerService;
@@ -52,6 +53,11 @@ public class SigninChecker implements AccountTrackerService.Observer {
         mNumOfChildAccountChecksDone = 0;
 
         mAccountTrackerService.addObserver(this);
+    }
+
+    @Override
+    public void destroy() {
+        mAccountTrackerService.removeObserver(this);
     }
 
     private void validateAccountSettings() {

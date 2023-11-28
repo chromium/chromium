@@ -396,7 +396,8 @@ public class PrivacySettingsFragmentTest {
     @DisabledTest(message = "crbug.com/1437093")
     public void testPrivacyGuideNotDisplayedWhenUserIsChild() {
         // TODO(crbug.com/1433652): Remove once SigninChecker is automatically created.
-        TestThreadUtils.runOnUiThreadBlockingNoException(SigninCheckerProvider::get);
+        TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> SigninCheckerProvider.get(Profile.getLastUsedRegularProfile()));
         mSigninTestRule.addChildTestAccountThenWaitForSignin();
         mSettingsActivityTestRule.startSettingsActivity();
         onView(withText(R.string.privacy_guide_pref_summary)).check(doesNotExist());

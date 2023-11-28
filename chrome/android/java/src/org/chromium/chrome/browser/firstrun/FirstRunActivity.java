@@ -143,7 +143,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         //
         // TODO(b/245912657): explicitly sign in supervised users in {@link
         // SigninFirstRunMediator#handleContinueWithNative} rather than relying on SigninChecker.
-        SigninCheckerProvider.get();
+        SigninCheckerProvider.get(getProfileProviderSupplier().get().getOriginalProfile());
 
         mFirstRunFlowSequencer.updateFirstRunProperties(mFreProperties);
 

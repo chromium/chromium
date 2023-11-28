@@ -429,7 +429,8 @@ public class ProcessInitializationHandler {
                 new Runnable() {
                     @Override
                     public void run() {
-                        SigninCheckerProvider.get().onMainActivityStart();
+                        SigninCheckerProvider.get(Profile.getLastUsedRegularProfile())
+                                .onMainActivityStart();
                         RevenueStats.getInstance();
                     }
                 });
