@@ -114,8 +114,12 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
 
 // Tests that a signed-in user with Sync enabled will have an action sheet with
 // a sign-out title.
+// TODO(crbug.com/1462552): Remove this test once ConsentLevel::kSync does not
+// exist on iOS anymore.
 TEST_F(SignoutActionSheetCoordinatorTest, SignedInUserWithSync) {
   authentication_service()->SignIn(
+      identity_, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->GrantSyncConsent(
       identity_, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   ON_CALL(*sync_service_mock_->GetMockUserSettings(),
           IsInitialSyncFeatureSetupComplete())
@@ -129,7 +133,14 @@ TEST_F(SignoutActionSheetCoordinatorTest, SignedInUserWithSync) {
 
 // Tests that a signed-in user with Sync disabled will have an action sheet with
 // no title.
+// TODO(crbug.com/1462858): Remove this test once
+// kReplaceSyncPromosWithSignInPromos is launched - with that feature, signed-in
+// non-syncing users do *not* get a signout action sheet anymore.
 TEST_F(SignoutActionSheetCoordinatorTest, SignedInUserWithoutSync) {
+  base::test::ScopedFeatureList disable_sync_to_signin;
+  disable_sync_to_signin.InitAndDisableFeature(
+      syncer::kReplaceSyncPromosWithSignInPromos);
+
   authentication_service()->SignIn(
       identity_, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   ON_CALL(*sync_service_mock_->GetMockUserSettings(),
@@ -144,7 +155,14 @@ TEST_F(SignoutActionSheetCoordinatorTest, SignedInUserWithoutSync) {
 
 // Tests that a signed-in user with the forced sign-in policy enabled will have
 // an action sheet with a title and a message.
+// TODO(crbug.com/1462858): Remove this test once
+// kReplaceSyncPromosWithSignInPromos is launched - with that feature, signed-in
+// non-syncing users do *not* get a signout action sheet anymore.
 TEST_F(SignoutActionSheetCoordinatorTest, SignedInUserWithForcedSignin) {
+  base::test::ScopedFeatureList disable_sync_to_signin;
+  disable_sync_to_signin.InitAndDisableFeature(
+      syncer::kReplaceSyncPromosWithSignInPromos);
+
   // Enable forced sign-in.
   GetLocalState()->SetInteger(prefs::kBrowserSigninPolicy,
                               static_cast<int>(BrowserSigninMode::kForced));
@@ -164,8 +182,12 @@ TEST_F(SignoutActionSheetCoordinatorTest, SignedInUserWithForcedSignin) {
 
 // Tests that a signed-in managed user with Sync enabled will have an action
 // sheet with a sign-out title.
+// TODO(crbug.com/1462552): Remove this test once ConsentLevel::kSync does not
+// exist on iOS anymore.
 TEST_F(SignoutActionSheetCoordinatorTest, SignedInManagedUserWithSync) {
   authentication_service()->SignIn(
+      identity_, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->GrantSyncConsent(
       identity_, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   ON_CALL(*sync_service_mock_->GetMockUserSettings(),
           IsInitialSyncFeatureSetupComplete())
@@ -179,7 +201,14 @@ TEST_F(SignoutActionSheetCoordinatorTest, SignedInManagedUserWithSync) {
 
 // Tests that a signed-in managed user with Sync disabled will have an action
 // sheet with no title.
+// TODO(crbug.com/1462858): Remove this test once
+// kReplaceSyncPromosWithSignInPromos is launched - with that feature, signed-in
+// non-syncing users do *not* get a signout action sheet anymore.
 TEST_F(SignoutActionSheetCoordinatorTest, SignedInManagedUserWithoutSync) {
+  base::test::ScopedFeatureList disable_sync_to_signin;
+  disable_sync_to_signin.InitAndDisableFeature(
+      syncer::kReplaceSyncPromosWithSignInPromos);
+
   authentication_service()->SignIn(
       identity_, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   ON_CALL(*sync_service_mock_->GetMockUserSettings(),
