@@ -2345,8 +2345,7 @@ Unknown properties are collapsed to zero. -->
   <int value="1" label="Sync service throws a persistent auth error"/>
   <int value="2"
       label="Sync service missing AUTOFILL_WALLET_DATA active data type"/>
-  <int value="3"
-      label="Sync service missing AUTOFILL_PROFILE active data type"/>
+  <int value="3" label="kAutofill is not among the UserSelectableTypes"/>
   <int value="4"
       label="(Obsolete) Account wallet storage upload disabled (Deprecated in
              M78)."/>

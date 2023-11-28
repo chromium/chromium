@@ -124,22 +124,21 @@ bool IsCreditCardUploadEnabled(
   // Before address sync is available in transport mode, server card save is
   // offered in transport mode regardless of the setting. (The sync API exposes
   // the kAutofill type as disabled in this case.)
+  // TODO(crbug.com/1462552): Simplify once IsSyncFeatureActive() is deleted
+  // from the codebase.
   bool syncing_or_addresses_in_transport_mode =
       sync_service->IsSyncFeatureActive() ||
       base::FeatureList::IsEnabled(
           syncer::kSyncEnableContactInfoDataTypeInTransportMode);
-  bool has_autofill_sync_type =
-      base::FeatureList::IsEnabled(syncer::kSyncDecoupleAddressPaymentSettings)
-          ? sync_service->GetUserSettings()->GetSelectedTypes().Has(
-                syncer::UserSelectableType::kAutofill)
-          : sync_service->GetActiveDataTypes().Has(syncer::AUTOFILL_PROFILE);
-  if (syncing_or_addresses_in_transport_mode && !has_autofill_sync_type) {
+  if (syncing_or_addresses_in_transport_mode &&
+      !sync_service->GetUserSettings()->GetSelectedTypes().Has(
+          syncer::UserSelectableType::kAutofill)) {
     autofill_metrics::LogCardUploadEnabledMetric(
         autofill_metrics::CardUploadEnabled::
-            kSyncServiceMissingAutofillProfileActiveType,
+            kSyncServiceMissingAutofillSelectedType,
         signin_state_for_metrics);
-    LogCardUploadDisabled(
-        log_manager, "SYNC_SERVICE_MISSING_AUTOFILL_PROFILE_ACTIVE_DATA_TYPE");
+    LogCardUploadDisabled(log_manager,
+                          "SYNC_SERVICE_MISSING_AUTOFILL_SELECTED_TYPE");
     return false;
   }
 

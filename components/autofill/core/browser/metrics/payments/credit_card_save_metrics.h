@@ -85,7 +85,7 @@ enum class CardUploadEnabled {
   kSyncServiceNull = 0,
   kSyncServicePaused = 1,
   kSyncServiceMissingAutofillWalletDataActiveType = 2,
-  kSyncServiceMissingAutofillProfileActiveType = 3,
+  kSyncServiceMissingAutofillSelectedType = 3,
   // Deprecated: kAccountWalletStorageUploadDisabled = 4,
   kUsingExplicitSyncPassphrase = 5,
   kLocalSyncEnabled = 6,

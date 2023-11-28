@@ -148,38 +148,17 @@ TEST_F(AutofillExperimentsTest,
       1);
 }
 
-// Tests that when SyncDecoupleAddressPaymentSettings is disabled, but
-// AUTOFILL_PROFILE failed to start, credit card upload is disabled.
-TEST_F(AutofillExperimentsTest,
-       IsCardUploadEnabled_SyncDoesNotHaveAutofillProfileActiveType) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndDisableFeature(syncer::kSyncDecoupleAddressPaymentSettings);
+// Tests that for syncing users, credit card upload is offered only when
+// kAutofill (address autofill + autocomplete) is among the UserSelectableTypes.
+TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_Syncing_AutofillSelected) {
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/{syncer::UserSelectableType::kAutofill,
                  syncer::UserSelectableType::kPayments});
-  sync_service_.SetFailedDataTypes({syncer::AUTOFILL_PROFILE});
-  EXPECT_FALSE(IsCreditCardUploadEnabled(
+  EXPECT_TRUE(IsCreditCardUploadEnabled(
       AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.CardUploadEnabled",
-      autofill_metrics::CardUploadEnabled::
-          kSyncServiceMissingAutofillProfileActiveType,
-      1);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
-      autofill_metrics::CardUploadEnabled::
-          kSyncServiceMissingAutofillProfileActiveType,
-      1);
 }
-
-// Tests that when SyncDecoupleAddressPaymentSettings is enabled, and the
-// kPayments UserSelectableType is selected without kAutofill, credit card
-// upload is disabled.
-TEST_F(AutofillExperimentsTest,
-       IsCardUploadEnabled_AutofillSyncSettingNotSelected) {
-  base::test::ScopedFeatureList feature{
-      syncer::kSyncDecoupleAddressPaymentSettings};
+TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_Syncing_AutofillDisabled) {
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/{syncer::UserSelectableType::kPayments});
@@ -188,8 +167,73 @@ TEST_F(AutofillExperimentsTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled",
       autofill_metrics::CardUploadEnabled::
-          kSyncServiceMissingAutofillProfileActiveType,
+          kSyncServiceMissingAutofillSelectedType,
       1);
+}
+
+// Tests that for transport mode users, when CONTACT_INFO is available, credit
+// card upload is offered only when kAutofill (address autofill + autocomplete)
+// is among the UserSelectableTypes.
+TEST_F(AutofillExperimentsTest,
+       IsCardUploadEnabled_TransportWithAddresses_AutofillSelected) {
+  base::test::ScopedFeatureList feature{
+      syncer::kSyncEnableContactInfoDataTypeInTransportMode};
+  sync_service_.SetHasSyncConsent(false);
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/{syncer::UserSelectableType::kAutofill,
+                 syncer::UserSelectableType::kPayments});
+  EXPECT_TRUE(
+      IsCreditCardUploadEnabled(AutofillMetrics::PaymentsSigninState::
+                                    kSignedInAndWalletSyncTransportEnabled));
+}
+TEST_F(AutofillExperimentsTest,
+       IsCardUploadEnabled_TransportWithAddresses_AutofillDisabled) {
+  base::test::ScopedFeatureList features{
+      syncer::kSyncEnableContactInfoDataTypeInTransportMode};
+  sync_service_.SetHasSyncConsent(false);
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/{syncer::UserSelectableType::kPayments});
+  EXPECT_FALSE(
+      IsCreditCardUploadEnabled(AutofillMetrics::PaymentsSigninState::
+                                    kSignedInAndWalletSyncTransportEnabled));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.CardUploadEnabled",
+      autofill_metrics::CardUploadEnabled::
+          kSyncServiceMissingAutofillSelectedType,
+      1);
+}
+
+// Tests that for transport mode users, when CONTACT_INFO is unavailable, credit
+// card upload is offered independently of the kAutofill (address autofill +
+// autocomplete) UserSelectableType.
+TEST_F(AutofillExperimentsTest,
+       IsCardUploadEnabled_TransportWithoutAddresses_AutofillSelected) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndDisableFeature(
+      syncer::kSyncEnableContactInfoDataTypeInTransportMode);
+  sync_service_.SetHasSyncConsent(false);
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/{syncer::UserSelectableType::kAutofill,
+                 syncer::UserSelectableType::kPayments});
+  EXPECT_TRUE(
+      IsCreditCardUploadEnabled(AutofillMetrics::PaymentsSigninState::
+                                    kSignedInAndWalletSyncTransportEnabled));
+}
+TEST_F(AutofillExperimentsTest,
+       IsCardUploadEnabled_TransportWithoutAddresses_AutofillDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(
+      syncer::kSyncEnableContactInfoDataTypeInTransportMode);
+  sync_service_.SetHasSyncConsent(false);
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/{syncer::UserSelectableType::kPayments});
+  EXPECT_TRUE(
+      IsCreditCardUploadEnabled(AutofillMetrics::PaymentsSigninState::
+                                    kSignedInAndWalletSyncTransportEnabled));
 }
 
 TEST_F(AutofillExperimentsTest,
@@ -242,34 +286,6 @@ TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_TransportModeOnly) {
   EXPECT_TRUE(IsCreditCardUploadEnabled(
       "john.smith@gmail.com", AutofillMetrics::PaymentsSigninState::
                                   kSignedInAndWalletSyncTransportEnabled));
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.CardUploadEnabled",
-      autofill_metrics::CardUploadEnabled::kEnabledForCountry, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.CardUploadEnabled.SignedInAndWalletSyncTransportEnabled",
-      autofill_metrics::CardUploadEnabled::kEnabledForCountry, 1);
-}
-
-TEST_F(
-    AutofillExperimentsTest,
-    IsCardUploadEnabled_TransportSyncDoesNotHaveAutofillProfileActiveDataType) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      /*enabled_features=*/{}, /*disabled_features=*/{
-          syncer::kSyncEnableContactInfoDataTypeInTransportMode,
-          syncer::kSyncDecoupleAddressPaymentSettings});
-  // When we don't have Sync consent, Sync will start in Transport-only mode
-  // (if allowed).
-  sync_service_.SetHasSyncConsent(false);
-
-  sync_service_.GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/{syncer::UserSelectableType::kAutofill,
-                 syncer::UserSelectableType::kPayments});
-
-  EXPECT_TRUE(
-      IsCreditCardUploadEnabled(AutofillMetrics::PaymentsSigninState::
-                                    kSignedInAndWalletSyncTransportEnabled));
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled",
       autofill_metrics::CardUploadEnabled::kEnabledForCountry, 1);
