@@ -40,7 +40,6 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
-import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateAttributes;
@@ -141,7 +140,7 @@ public class TabPersistentStoreUnitTest {
                     }
                 };
 
-        TabImpl emptyNtpTab = mock(TabImpl.class);
+        Tab emptyNtpTab = mock(Tab.class);
         UserDataHost emptyNtpTabUserDataHost = new UserDataHost();
         when(emptyNtpTab.getUserDataHost()).thenReturn(emptyNtpTabUserDataHost);
         TabStateAttributes.createForTab(emptyNtpTab, TabCreationState.FROZEN_ON_RESTORE);
@@ -154,7 +153,7 @@ public class TabPersistentStoreUnitTest {
         mPersistentStore.addTabToSaveQueue(emptyNtpTab);
         assertFalse(mPersistentStore.isTabPendingSave(emptyNtpTab));
 
-        TabImpl ntpWithBackNavTab = mock(TabImpl.class);
+        Tab ntpWithBackNavTab = mock(Tab.class);
         UserDataHost ntpWithBackNavTabUserDataHost = new UserDataHost();
         when(ntpWithBackNavTab.getUserDataHost()).thenReturn(ntpWithBackNavTabUserDataHost);
         TabStateAttributes.createForTab(ntpWithBackNavTab, TabCreationState.FROZEN_ON_RESTORE);
@@ -167,7 +166,7 @@ public class TabPersistentStoreUnitTest {
         mPersistentStore.addTabToSaveQueue(ntpWithBackNavTab);
         assertTrue(mPersistentStore.isTabPendingSave(ntpWithBackNavTab));
 
-        TabImpl ntpWithForwardNavTab = mock(TabImpl.class);
+        Tab ntpWithForwardNavTab = mock(Tab.class);
         UserDataHost ntpWithForwardNavTabUserDataHost = new UserDataHost();
         when(ntpWithForwardNavTab.getUserDataHost()).thenReturn(ntpWithForwardNavTabUserDataHost);
         TabStateAttributes.createForTab(ntpWithForwardNavTab, TabCreationState.FROZEN_ON_RESTORE);
@@ -180,7 +179,7 @@ public class TabPersistentStoreUnitTest {
         mPersistentStore.addTabToSaveQueue(ntpWithForwardNavTab);
         assertTrue(mPersistentStore.isTabPendingSave(ntpWithForwardNavTab));
 
-        TabImpl ntpWithAllTheNavsTab = mock(TabImpl.class);
+        Tab ntpWithAllTheNavsTab = mock(Tab.class);
         UserDataHost ntpWithAllTheNavsTabUserDataHost = new UserDataHost();
         when(ntpWithAllTheNavsTab.getUserDataHost()).thenReturn(ntpWithAllTheNavsTabUserDataHost);
         TabStateAttributes.createForTab(ntpWithAllTheNavsTab, TabCreationState.FROZEN_ON_RESTORE);
@@ -242,7 +241,7 @@ public class TabPersistentStoreUnitTest {
         mPersistentStore.initializeRestoreVars(false);
 
         LoadUrlParamsUrlMatcher paramsMatcher = new LoadUrlParamsUrlMatcher(UrlConstants.NTP_URL);
-        TabImpl emptyNtp = mock(TabImpl.class);
+        Tab emptyNtp = mock(Tab.class);
         when(mNormalTabCreator.createNewTab(
                         argThat(paramsMatcher), eq(TabLaunchType.FROM_RESTORE), (Tab) isNull()))
                 .thenReturn(emptyNtp);
@@ -271,7 +270,7 @@ public class TabPersistentStoreUnitTest {
         mPersistentStore.initializeRestoreVars(false);
 
         LoadUrlParamsUrlMatcher paramsMatcher = new LoadUrlParamsUrlMatcher(UrlConstants.NTP_URL);
-        TabImpl emptyNtp = mock(TabImpl.class);
+        Tab emptyNtp = mock(Tab.class);
         when(mNormalTabCreator.createNewTab(
                         argThat(paramsMatcher), eq(TabLaunchType.FROM_RESTORE), (Tab) isNull()))
                 .thenReturn(emptyNtp);
@@ -325,7 +324,7 @@ public class TabPersistentStoreUnitTest {
         mPersistentStore.initializeRestoreVars(false);
 
         LoadUrlParamsUrlMatcher paramsMatcher = new LoadUrlParamsUrlMatcher(UrlConstants.NTP_URL);
-        TabImpl emptyNtp = mock(TabImpl.class);
+        Tab emptyNtp = mock(Tab.class);
         when(mIncognitoTabCreator.createNewTab(
                         argThat(paramsMatcher), eq(TabLaunchType.FROM_RESTORE), (Tab) isNull()))
                 .thenReturn(emptyNtp);
@@ -556,12 +555,12 @@ public class TabPersistentStoreUnitTest {
     private void setupSerializationTestMocks() {
         when(mNormalTabModel.getCount()).thenReturn(2);
         when(mNormalTabModel.index()).thenReturn(0);
-        TabImpl regularTab1 = mock(TabImpl.class);
+        Tab regularTab1 = mock(Tab.class);
         GURL gurl = new GURL(REGULAR_TAB_STRING_1);
         when(regularTab1.getUrl()).thenReturn(gurl);
         when(mNormalTabModel.getTabAt(0)).thenReturn(regularTab1);
 
-        TabImpl regularNtpTab1 = mock(TabImpl.class);
+        Tab regularNtpTab1 = mock(Tab.class);
         GURL ntpGurl = new GURL(UrlConstants.NTP_URL);
         when(regularNtpTab1.getUrl()).thenReturn(ntpGurl);
         when(regularNtpTab1.isNativePage()).thenReturn(true);
@@ -569,13 +568,13 @@ public class TabPersistentStoreUnitTest {
 
         when(mIncognitoTabModel.getCount()).thenReturn(2);
         when(mIncognitoTabModel.index()).thenReturn(1);
-        TabImpl incognitoTab1 = mock(TabImpl.class);
+        Tab incognitoTab1 = mock(Tab.class);
         gurl = new GURL(INCOGNITO_TAB_STRING_1);
         when(incognitoTab1.getUrl()).thenReturn(gurl);
         when(incognitoTab1.isIncognito()).thenReturn(true);
         when(mIncognitoTabModel.getTabAt(0)).thenReturn(incognitoTab1);
 
-        TabImpl incognitoTab2 = mock(TabImpl.class);
+        Tab incognitoTab2 = mock(Tab.class);
         gurl = new GURL(INCOGNITO_TAB_STRING_2);
         when(incognitoTab2.getUrl()).thenReturn(gurl);
         when(incognitoTab2.isIncognito()).thenReturn(true);
@@ -589,13 +588,13 @@ public class TabPersistentStoreUnitTest {
         // Sets a non active Ntp is the first Tab, and a regular Tab is the second one and the
         // current active Tab.
         when(mNormalTabModel.index()).thenReturn(1);
-        TabImpl regularNtpTab1 = mock(TabImpl.class);
+        Tab regularNtpTab1 = mock(Tab.class);
         GURL ntpGurl = new GURL(UrlConstants.NTP_URL);
         when(regularNtpTab1.getUrl()).thenReturn(ntpGurl);
         when(regularNtpTab1.isNativePage()).thenReturn(true);
         when(mNormalTabModel.getTabAt(0)).thenReturn(regularNtpTab1);
 
-        TabImpl regularTab1 = mock(TabImpl.class);
+        Tab regularTab1 = mock(Tab.class);
         GURL gurl = new GURL(REGULAR_TAB_STRING_1);
         when(regularTab1.getUrl()).thenReturn(gurl);
         when(mNormalTabModel.getTabAt(1)).thenReturn(regularTab1);

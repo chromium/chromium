@@ -48,7 +48,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
-import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -110,8 +109,8 @@ public class TabGridDialogMediatorUnitTest {
     @Mock Supplier<RecyclerViewPosition> mRecyclerViewPositionSupplier;
     @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
-    private TabImpl mTab1;
-    private TabImpl mTab2;
+    private Tab mTab1;
+    private Tab mTab2;
     private Activity mActivity;
     private PropertyModel mModel;
     private TabGridDialogMediator mMediator;
@@ -419,7 +418,7 @@ public class TabGridDialogMediatorUnitTest {
 
     @Test
     public void tabAddition() {
-        TabImpl newTab = prepareTab(TAB3_ID, TAB3_TITLE);
+        Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE);
         // Mock that the animation source view is not null, and the dialog is showing.
         mModel.set(TabGridPanelProperties.ANIMATION_SOURCE_VIEW, mView);
         mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, true);
@@ -533,7 +532,7 @@ public class TabGridDialogMediatorUnitTest {
     @Test
     public void tabClosure_NonRootTab_StillGroupAfterClosure_WithStoredTitle() {
         // Mock that tab1, tab2 and newTab are in the same group and tab1 is the root tab.
-        TabImpl newTab = prepareTab(TAB3_ID, TAB3_TITLE);
+        Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE);
         List<Tab> tabgroup = new ArrayList<>(Arrays.asList(mTab1, mTab2, newTab));
         createTabGroup(tabgroup, TAB1_ID);
 
@@ -561,7 +560,7 @@ public class TabGridDialogMediatorUnitTest {
     @Test
     public void tabClosure_RootTab_StillGroupAfterClosure_WithStoredTitle() {
         // Mock that tab1, tab2 and newTab are in the same group and newTab is the root tab.
-        TabImpl newTab = prepareTab(TAB3_ID, TAB3_TITLE);
+        Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE);
         List<Tab> tabgroup = new ArrayList<>(Arrays.asList(mTab1, mTab2, newTab));
         createTabGroup(tabgroup, TAB3_ID);
 
@@ -1218,7 +1217,7 @@ public class TabGridDialogMediatorUnitTest {
     @Test
     public void testScrollToTab() {
         // Mock that tab1, tab2 and newTab are in the same group and newTab is the root tab.
-        TabImpl newTab = prepareTab(TAB3_ID, TAB3_TITLE);
+        Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE);
         List<Tab> tabgroup = new ArrayList<>(Arrays.asList(mTab1, mTab2, newTab));
         createTabGroup(tabgroup, TAB2_ID);
 
@@ -1243,8 +1242,8 @@ public class TabGridDialogMediatorUnitTest {
                 .removeTabModelFilterObserver(mTabModelObserverCaptor.capture());
     }
 
-    private TabImpl prepareTab(int id, String title) {
-        TabImpl tab = TabUiUnitTestUtils.prepareTab(id, title, GURL.emptyGURL());
+    private Tab prepareTab(int id, String title) {
+        Tab tab = TabUiUnitTestUtils.prepareTab(id, title, GURL.emptyGURL());
         doReturn(true).when(tab).isIncognito();
         return tab;
     }

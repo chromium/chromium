@@ -30,7 +30,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -64,8 +63,8 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
 
     static class TestImplicitPriceDropSubscriptionsManager
             extends ImplicitPriceDropSubscriptionsManager {
-        private TabImpl mTab1;
-        private TabImpl mTab2;
+        private Tab mTab1;
+        private Tab mTab2;
         private String mMockTab1OfferId;
         private String mMockTab2OfferId;
 
@@ -86,7 +85,7 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
         }
 
         void setupForFetchOfferId(
-                TabImpl tab1, TabImpl tab2, String mockTab1OfferId, String mockTab2OfferId) {
+                Tab tab1, Tab tab2, String mockTab1OfferId, String mockTab2OfferId) {
             mTab1 = tab1;
             mTab2 = tab2;
             mMockTab1OfferId = mockTab1OfferId;
@@ -100,8 +99,8 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
     @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     @Captor ArgumentCaptor<CommerceSubscription> mSubscriptionCaptor;
 
-    private TabImpl mTab1;
-    private TabImpl mTab2;
+    private Tab mTab1;
+    private Tab mTab2;
     private CommerceSubscription mSubscription1;
     private CommerceSubscription mSubscription2;
     private TestImplicitPriceDropSubscriptionsManager mImplicitSubscriptionsManager;
@@ -248,8 +247,8 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
         verify(mTabModel).removeObserver(any(TabModelObserver.class));
     }
 
-    private TabImpl prepareTab(int id, String urlString, int position) {
-        TabImpl tab = mock(TabImpl.class);
+    private Tab prepareTab(int id, String urlString, int position) {
+        Tab tab = mock(Tab.class);
         doReturn(id).when(tab).getId();
         GURL gurl = new GURL(urlString);
         doReturn(gurl).when(tab).getUrl();

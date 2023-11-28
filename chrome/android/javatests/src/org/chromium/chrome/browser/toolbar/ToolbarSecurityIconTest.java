@@ -37,7 +37,7 @@ import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifierJni;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.TabImpl;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -76,7 +76,7 @@ public final class ToolbarSecurityIconTest {
 
     @Rule public JniMocker mocker = new JniMocker();
 
-    @Mock private TabImpl mTab;
+    @Mock private Tab mTab;
 
     @Mock SecurityStateModel.Natives mSecurityStateMocks;
 

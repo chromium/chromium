@@ -14,7 +14,7 @@ import org.mockito.Mockito;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.tab.TabImpl;
+import org.chromium.chrome.browser.tab.Tab;
 
 /** Unit tests for {@link CustomTabCountObserver}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -38,9 +38,9 @@ public class CustomTabCountObserverUnitTest {
 
     @Test
     public void observerMultipleTabs() {
-        TabImpl tab1 = newTabWithId(1);
-        TabImpl tab2 = newTabWithId(2);
-        TabImpl tab3 = newTabWithId(3);
+        Tab tab1 = newTabWithId(1);
+        Tab tab2 = newTabWithId(2);
+        Tab tab3 = newTabWithId(3);
 
         new CustomTabCountObserver(env.tabProvider);
         env.tabProvider.setInitialTab(tab1, TabCreationMode.DEFAULT);
@@ -79,8 +79,8 @@ public class CustomTabCountObserverUnitTest {
                 RecordHistogram.getHistogramValueCountForTesting(histogram, count));
     }
 
-    private TabImpl newTabWithId(int id) {
-        TabImpl tab = env.prepareTab();
+    private Tab newTabWithId(int id) {
+        Tab tab = env.prepareTab();
         Mockito.doReturn(id).when(tab).getId();
         return tab;
     }

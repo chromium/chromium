@@ -28,7 +28,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -68,10 +67,10 @@ public class TabGroupTitleEditorUnitTest {
     @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     @Captor ArgumentCaptor<TabGroupModelFilter.Observer> mTabGroupModelFilterObserverCaptor;
 
-    private TabImpl mTab1;
-    private TabImpl mTab2;
-    private TabImpl mTab3;
-    private TabImpl mTab4;
+    private Tab mTab1;
+    private Tab mTab2;
+    private Tab mTab3;
+    private Tab mTab4;
     private Map<String, String> mStorage;
     private TabGroupTitleEditor mTabGroupTitleEditor;
 
@@ -126,7 +125,7 @@ public class TabGroupTitleEditorUnitTest {
         assertThat(mStorage.size(), equalTo(1));
 
         // Mock that tab1, tab2, new tab are in the same group and group root id is TAB1_ID.
-        TabImpl newTab = TabUiUnitTestUtils.prepareTab(TAB3_ID, TAB3_TITLE);
+        Tab newTab = TabUiUnitTestUtils.prepareTab(TAB3_ID, TAB3_TITLE);
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2, newTab));
         createTabGroup(tabs, TAB1_ID);
 
@@ -145,7 +144,7 @@ public class TabGroupTitleEditorUnitTest {
         mTabGroupTitleEditor.storeTabGroupTitle(TAB1_ID, CUSTOMIZED_TITLE1);
 
         // Mock that tab1, tab2, new tab are in the same group and group root id is TAB1_ID.
-        TabImpl newTab = TabUiUnitTestUtils.prepareTab(TAB3_ID, TAB3_TITLE);
+        Tab newTab = TabUiUnitTestUtils.prepareTab(TAB3_ID, TAB3_TITLE);
         List<Tab> groupBeforeClosure = new ArrayList<>(Arrays.asList(mTab1, mTab2, newTab));
         createTabGroup(groupBeforeClosure, TAB1_ID);
 
@@ -247,7 +246,7 @@ public class TabGroupTitleEditorUnitTest {
         mTabGroupTitleEditor.storeTabGroupTitle(TAB1_ID, CUSTOMIZED_TITLE1);
 
         // Mock that tab1, tab2 and newTab are in the same group and group root id is TAB1_ID.
-        TabImpl newTab = TabUiUnitTestUtils.prepareTab(TAB3_ID, TAB3_TITLE);
+        Tab newTab = TabUiUnitTestUtils.prepareTab(TAB3_ID, TAB3_TITLE);
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2, newTab));
         createTabGroup(tabs, TAB1_ID);
 

@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
@@ -59,10 +58,10 @@ public class PseudoTabUnitTest {
     @Mock TabModelFilterProvider mTabModelFilterProvider;
     @Mock Profile mProfile;
 
-    private TabImpl mTab1;
-    private TabImpl mTab2;
-    private TabImpl mTab3;
-    private TabImpl mTab1Copy;
+    private Tab mTab1;
+    private Tab mTab2;
+    private Tab mTab3;
+    private Tab mTab1Copy;
 
     @Before
     public void setUp() {

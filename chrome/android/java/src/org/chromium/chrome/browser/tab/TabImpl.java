@@ -75,10 +75,10 @@ import org.chromium.url.GURL;
 import java.nio.ByteBuffer;
 
 /**
- * Implementation of the interface {@link Tab}. Contains and manages a {@link ContentView}.
- * This class is not intended to be extended.
+ * Implementation of the interface {@link Tab}. Contains and manages a {@link ContentView}. This
+ * class is not intended to be extended.
  */
-public class TabImpl implements Tab {
+class TabImpl implements Tab {
     /** Used for logging. */
     private static final String TAG = "Tab";
 
@@ -900,23 +900,24 @@ public class TabImpl implements Tab {
     }
 
     /**
-     * Initializes {@link Tab} with {@code webContents}.  If {@code webContents} is {@code null}
-     * a new {@link WebContents} will be created for this {@link Tab}.
+     * Initializes {@link Tab} with {@code webContents}. If {@code webContents} is {@code null} a
+     * new {@link WebContents} will be created for this {@link Tab}.
+     *
      * @param parent The tab that caused this tab to be opened.
      * @param creationState State in which the tab is created.
      * @param loadUrlParams Parameters used for a lazily loaded Tab or null if we initialize a tab
-     *         without an URL.
+     *     without an URL.
      * @param webContents A {@link WebContents} object or {@code null} if one should be created.
      * @param delegateFactory The {@link TabDelegateFactory} to be used for delegate creation.
-     * @param initiallyHidden Only used if {@code webContents} is {@code null}.  Determines
-     *        whether or not the newly created {@link WebContents} will be hidden or not.
+     * @param initiallyHidden Only used if {@code webContents} is {@code null}. Determines whether
+     *     or not the newly created {@link WebContents} will be hidden or not.
      * @param tabState State containing information about this Tab, if it was persisted.
      * @param initializeRenderer Determines whether or not we initialize renderer with {@link
-     *         WebContents} creation. The CREATE_NEW_TAB_INITIALIZE_RENDERER feature also controls
-     *         this parameter, which initializes the renderer when it is enabled.
+     *     WebContents} creation. The CREATE_NEW_TAB_INITIALIZE_RENDERER feature also controls this
+     *     parameter, which initializes the renderer when it is enabled.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public void initialize(
+    void initialize(
             Tab parent,
             @Nullable @TabCreationState Integer creationState,
             @Nullable LoadUrlParams loadUrlParams,
@@ -1732,7 +1733,7 @@ public class TabImpl implements Tab {
     }
 
     @VisibleForTesting
-    public void setWebContentsState(WebContentsState webContentsState) {
+    void setWebContentsState(WebContentsState webContentsState) {
         mWebContentsState = webContentsState;
     }
 

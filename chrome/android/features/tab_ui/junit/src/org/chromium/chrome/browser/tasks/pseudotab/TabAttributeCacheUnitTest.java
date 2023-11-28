@@ -31,7 +31,7 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.browser.tab.TabImpl;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
@@ -76,8 +76,8 @@ public class TabAttributeCacheUnitTest {
     @Captor ArgumentCaptor<TabModelSelectorTabObserver> mTabObserverCaptor;
     @Mock Profile.Natives mProfileJniMock;
 
-    private TabImpl mTab1;
-    private TabImpl mTab2;
+    private Tab mTab1;
+    private Tab mTab2;
     private TabAttributeCache mCache;
 
     @Before

@@ -35,8 +35,8 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
-import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.components.prefs.PrefService;
 
 /** Unit tests for {@link FeedSurfaceLifecycleManager}. */
@@ -44,7 +44,7 @@ import org.chromium.components.prefs.PrefService;
 @Config(manifest = Config.NONE)
 public class NtpFeedSurfaceLifecycleManagerTest {
     @Mock private Activity mActivity;
-    @Mock private TabImpl mTab;
+    @Mock private Tab mTab;
     @Mock private Stream mStream;
     @Mock private PrefService mPrefService;
     @Mock private FeedSurfaceCoordinator mCoordinator;

@@ -49,7 +49,6 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManagerFactory;
@@ -253,15 +252,15 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
         return webContents;
     }
 
-    public TabImpl prepareHiddenTab() {
+    public Tab prepareHiddenTab() {
         warmUp();
-        TabImpl hiddenTab = prepareTab();
+        Tab hiddenTab = prepareTab();
         when(connection.takeHiddenTab(any(), any(), any())).thenReturn(hiddenTab);
         return hiddenTab;
     }
 
-    public TabImpl prepareTab() {
-        TabImpl tab = mock(TabImpl.class);
+    public Tab prepareTab() {
+        Tab tab = mock(Tab.class);
         when(tab.getView()).thenReturn(mock(View.class));
         when(tab.getUserDataHost()).thenReturn(new UserDataHost());
         when(tab.getWebContents()).thenReturn(webContents);

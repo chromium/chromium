@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.state.PriceDropMetricsLogger.MetricsResult;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.util.browser.Features;
@@ -76,7 +75,7 @@ public class ShoppingPersistedTabDataTest {
     @Mock protected NavigationHandle mNavigationHandle;
 
     // For R8 optimizer - see b/303266326.
-    @Mock private TabImpl mDoNotUseTabImpl;
+    @Mock private Tab mDoNotUseTab;
 
     @Before
     public void setUp() {
@@ -775,7 +774,7 @@ public class ShoppingPersistedTabDataTest {
     @SmallTest
     @Test
     public void testIncognitoTabDisabled() throws TimeoutException {
-        TabImpl tab = mock(TabImpl.class);
+        Tab tab = mock(Tab.class);
         doReturn(true).when(tab).isIncognito();
         CallbackHelper callbackHelper = new CallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(
@@ -793,7 +792,7 @@ public class ShoppingPersistedTabDataTest {
     @SmallTest
     @Test
     public void testCustomTabsDisabled() throws TimeoutException {
-        TabImpl tab = mock(TabImpl.class);
+        Tab tab = mock(Tab.class);
         doReturn(true).when(tab).isCustomTab();
         CallbackHelper callbackHelper = new CallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(
@@ -1103,7 +1102,7 @@ public class ShoppingPersistedTabDataTest {
     @SmallTest
     @Test
     public void testDestroyedTab() throws TimeoutException {
-        TabImpl tab = mock(TabImpl.class);
+        Tab tab = mock(Tab.class);
         doReturn(true).when(tab).isDestroyed();
         CallbackHelper helper = new CallbackHelper();
         int count = helper.getCallCount();

@@ -54,7 +54,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
-import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
@@ -762,7 +761,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
     public void sendOnSessionEnded_HadInteraction() {
         initializeTabForTest();
         doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
-        Tab tab = mock(TabImpl.class);
+        Tab tab = mock(Tab.class);
         doReturn(mock(WebContents.class)).when(tab).getWebContents();
         doReturn(false).when(tab).isIncognito();
         mEngagementSignalObserver.onObservingDifferentTab(tab);
@@ -782,7 +781,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
     public void sendOnSessionEnded_HadNoInteraction() {
         initializeTabForTest();
         doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
-        Tab tab = mock(TabImpl.class);
+        Tab tab = mock(Tab.class);
         doReturn(mock(WebContents.class)).when(tab).getWebContents();
         doReturn(false).when(tab).isIncognito();
         mEngagementSignalObserver.onObservingDifferentTab(tab);

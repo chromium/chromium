@@ -39,7 +39,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.tab.TabImpl;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -86,31 +86,25 @@ public class ChromeTabbedActivityTest {
     @DisabledTest(message = "https://crbug.com/1347506")
     public void testTabVisibility() {
         // Create two tabs - tab[0] in the foreground and tab[1] in the background.
-        final TabImpl[] tabs = new TabImpl[2];
+        final Tab[] tabs = new Tab[2];
         sActivityTestRule.getTestServer(); // Triggers the lazy initialization of the test server.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Foreground tab.
                     ChromeTabCreator tabCreator = mActivity.getCurrentTabCreator();
                     tabs[0] =
-                            (TabImpl)
-                                    tabCreator.createNewTab(
-                                            new LoadUrlParams(
-                                                    sActivityTestRule
-                                                            .getTestServer()
-                                                            .getURL(FILE_PATH)),
-                                            TabLaunchType.FROM_CHROME_UI,
-                                            null);
+                            tabCreator.createNewTab(
+                                    new LoadUrlParams(
+                                            sActivityTestRule.getTestServer().getURL(FILE_PATH)),
+                                    TabLaunchType.FROM_CHROME_UI,
+                                    null);
                     // Background tab.
                     tabs[1] =
-                            (TabImpl)
-                                    tabCreator.createNewTab(
-                                            new LoadUrlParams(
-                                                    sActivityTestRule
-                                                            .getTestServer()
-                                                            .getURL(FILE_PATH)),
-                                            TabLaunchType.FROM_LONGPRESS_BACKGROUND,
-                                            null);
+                            tabCreator.createNewTab(
+                                    new LoadUrlParams(
+                                            sActivityTestRule.getTestServer().getURL(FILE_PATH)),
+                                    TabLaunchType.FROM_LONGPRESS_BACKGROUND,
+                                    null);
                 });
 
         // Verify that the front tab is in the 'visible' state.

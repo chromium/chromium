@@ -22,7 +22,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
-import org.chromium.chrome.browser.tab.TabImpl;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -138,7 +138,7 @@ public final class PlusAddressCreationMediatorTest {
 
     @Test
     public void testDidSelectTab_doesNotHideContent_whenIsSameTab() {
-        TabImpl tab1 = mock(TabImpl.class);
+        Tab tab1 = mock(Tab.class);
         doReturn(TAB1_ID).when(tab1).getId();
         mMediator.didSelectTab(tab1, TabSelectionType.FROM_USER, TAB1_ID);
 
@@ -148,7 +148,7 @@ public final class PlusAddressCreationMediatorTest {
 
     @Test
     public void testDidSelectTab_hidesContent_whenIsNotSameTab() {
-        TabImpl tab1 = mock(TabImpl.class);
+        Tab tab1 = mock(Tab.class);
         doReturn(TAB1_ID).when(tab1).getId();
         mMediator.didSelectTab(tab1, TabSelectionType.FROM_USER, TAB2_ID);
 

@@ -7,8 +7,14 @@ package org.chromium.chrome.browser.tab;
 import android.content.Context;
 import android.view.View;
 
+import androidx.annotation.Nullable;
+
+import org.mockito.Mockito;
+
 import org.chromium.base.ObserverList;
 import org.chromium.base.ObserverList.RewindableIterator;
+import org.chromium.base.test.util.JniMocker;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ResourceRequestBody;
@@ -21,6 +27,44 @@ public class TabTestUtils {
      */
     public static ObserverList.RewindableIterator<TabObserver> getTabObservers(Tab tab) {
         return ((TabImpl) tab).getTabObservers();
+    }
+
+    /**
+     * Initializes {@link Tab} with {@code webContents}. If {@code webContents} is {@code null} a
+     * new {@link WebContents} will be created for this {@link Tab}.
+     *
+     * @see TabImpl#initialize()
+     */
+    public static void initialize(
+            Tab tab,
+            Tab parent,
+            @Nullable @TabCreationState Integer creationState,
+            @Nullable LoadUrlParams loadUrlParams,
+            WebContents webContents,
+            @Nullable TabDelegateFactory delegateFactory,
+            boolean initiallyHidden,
+            TabState tabState,
+            boolean initializeRenderer) {
+        ((TabImpl) tab)
+                .initialize(
+                        parent,
+                        creationState,
+                        loadUrlParams,
+                        webContents,
+                        delegateFactory,
+                        initiallyHidden,
+                        tabState,
+                        initializeRenderer);
+    }
+
+    /** Set the last hidden timestamp. */
+    public static void setLastNavigationCommittedTimestampMillis(Tab tab, long ts) {
+        ((TabImpl) tab).setLastNavigationCommittedTimestampMillis(ts);
+    }
+
+    /** Set a new {@link WebContentsState} to a given tab. */
+    public static void setWebContentsState(Tab tab, WebContentsState webContentsState) {
+        ((TabImpl) tab).setWebContentsState(webContentsState);
     }
 
     /**
@@ -177,5 +221,11 @@ public class TabTestUtils {
      */
     public static void setIsShowingErrorPage(Tab tab, boolean isShowingErrorPage) {
         ((TabImpl) tab).setIsShowingErrorPage(isShowingErrorPage);
+    }
+
+    /** Mock Tab interface impl JNI for testing. */
+    public static void mockTabJni(JniMocker jniMocker) {
+        TabImpl.Natives tabImplJni = Mockito.mock(TabImpl.Natives.class);
+        jniMocker.mock(TabImplJni.TEST_HOOKS, tabImplJni);
     }
 }

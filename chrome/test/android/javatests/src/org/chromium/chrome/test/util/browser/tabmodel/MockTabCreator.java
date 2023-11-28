@@ -11,7 +11,6 @@ import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.MockTabAttributes;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
-import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabTestUtils;
@@ -51,7 +50,7 @@ public class MockTabCreator extends TabCreator {
                 new MockTab(
                         0, mSelector.getModel(mIsIncognito).getProfile(), TabLaunchType.FROM_LINK);
         tab.getUserDataHost().setUserData(MockTabAttributes.class, new MockTabAttributes(false));
-        ((TabImpl) tab).initialize(null, null, loadUrlParams, null, null, false, null, false);
+        TabTestUtils.initialize(tab, null, null, loadUrlParams, null, null, false, null, false);
         mSelector
                 .getModel(mIsIncognito)
                 .addTab(tab, position, type, TabCreationState.LIVE_IN_FOREGROUND);
@@ -68,7 +67,7 @@ public class MockTabCreator extends TabCreator {
                         TabLaunchType.FROM_RESTORE);
         tab.getUserDataHost().setUserData(MockTabAttributes.class, new MockTabAttributes(true));
         if (state != null) TabTestUtils.restoreFieldsFromState(tab, state);
-        ((TabImpl) tab).initialize(null, null, null, null, null, false, null, false);
+        TabTestUtils.initialize(tab, null, null, null, null, null, false, null, false);
         mSelector
                 .getModel(mIsIncognito)
                 .addTab(tab, index, TabLaunchType.FROM_RESTORE, TabCreationState.FROZEN_ON_RESTORE);
