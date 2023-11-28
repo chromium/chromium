@@ -11,6 +11,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/simple_test_clock.h"
 #include "build/build_config.h"
@@ -29,13 +31,30 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::AllOf;
+using ::testing::EndsWith;
 using ::testing::HasSubstr;
 using ::testing::SizeIs;
+using ::testing::StartsWith;
 
 JavaScriptErrorReport MakeErrorReport(const std::string& message) {
   JavaScriptErrorReport report;
   report.message = message;
   return report;
+}
+
+std::string JoinStringPairs(const base::StringPairs& pairs) {
+  std::string result;
+  bool first = true;
+  for (const auto& pair : pairs) {
+    if (first) {
+      first = false;
+    } else {
+      result += "; ";
+    }
+
+    base::StrAppend(&result, {"(", pair.first, ",", pair.second, ")"});
+  }
+  return result;
 }
 
 class ChromeJsErrorReportProcessorTest : public ::testing::Test {
@@ -275,6 +294,82 @@ TEST_F(ChromeJsErrorReportProcessorTest, RedactMessage) {
                         "(email%3A%202)"));
   // Redacted messages still need to be removed from stack trace.
   EXPECT_EQ(actual_report->content, "bad_func(1, 2)\nonclick()\n");
+}
+
+TEST_F(ChromeJsErrorReportProcessorTest, TruncateMessage) {
+  std::string long_error_message;
+  for (int i = 0; i <= 2000; i++) {
+    base::StrAppend(&long_error_message, {base::NumberToString(i), "~"});
+  }
+  auto report = MakeErrorReport(long_error_message);
+  report.url = "https://www.chromium.org/Home";
+
+  SendErrorReport(std::move(report));
+  EXPECT_TRUE(finish_callback_was_called_);
+
+  const absl::optional<MockCrashEndpoint::Report>& actual_report =
+      endpoint_->last_report();
+  ASSERT_TRUE(actual_report);
+
+  // Find the error message line.
+  base::StringPairs lines;
+  ASSERT_TRUE(base::SplitStringIntoKeyValuePairs(actual_report->query, '=', '&',
+                                                 &lines))
+      << "Failed to split '" << actual_report->query << "'; got "
+      << JoinStringPairs(lines);
+  bool found_error_message = false;
+  for (const auto& line : lines) {
+    if (line.first == "error_message") {
+      const std::string& error_message = line.second;
+      // Size will be 1004 because the [ and ] of --[TRUNCATED]-- are escaped.
+      EXPECT_THAT(error_message, SizeIs(1004));
+      EXPECT_THAT(error_message, StartsWith("0~1~2~3~4~5~6~7~8~9~10~11~12"));
+      EXPECT_THAT(error_message, EndsWith("1996~1997~1998~1999~2000~"));
+      EXPECT_THAT(error_message, HasSubstr("--%5BTRUNCATED%5D--"));
+      found_error_message = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(found_error_message)
+      << "Didn't find error_message in " << actual_report->query;
+}
+
+TEST_F(ChromeJsErrorReportProcessorTest, TruncateMessageWithEscapes) {
+  std::string long_error_message(2000, ' ');
+  auto report = MakeErrorReport(long_error_message);
+  report.url = "https://www.chromium.org/Home";
+
+  SendErrorReport(std::move(report));
+  EXPECT_TRUE(finish_callback_was_called_);
+
+  const absl::optional<MockCrashEndpoint::Report>& actual_report =
+      endpoint_->last_report();
+  ASSERT_TRUE(actual_report);
+
+  // Find the error message line.
+  base::StringPairs lines;
+  ASSERT_TRUE(base::SplitStringIntoKeyValuePairs(actual_report->query, '=', '&',
+                                                 &lines))
+      << "Failed to split '" << actual_report->query << "'; got "
+      << JoinStringPairs(lines);
+  bool found_error_message = false;
+  for (const auto& line : lines) {
+    if (line.first == "error_message") {
+      const std::string& error_message = line.second;
+      // Every character except the 24 -'s and letters of --[TRUNCATED]-- are
+      // escaped. So size is 13 + (3*(1000 - 13)) = 2974
+      EXPECT_THAT(error_message, SizeIs(2974));
+      EXPECT_THAT(error_message, StartsWith("%20%20%20%20%20"));
+      EXPECT_THAT(error_message, EndsWith("%20%20%20%20%20"));
+      // Truncation happens before escapes so it can't cut in the middle of an
+      // escape sequence:
+      EXPECT_THAT(error_message, HasSubstr("%20%20--%5BTRUNCATED%5D--%20%20"));
+      found_error_message = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(found_error_message)
+      << "Didn't find error_message in " << actual_report->query;
 }
 
 TEST_F(ChromeJsErrorReportProcessorTest, NoMoreThanOneDuplicatePerHour) {
