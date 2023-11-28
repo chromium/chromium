@@ -47,6 +47,8 @@
 
 namespace {
 
+enum class NameFormat { Regular, LongName, LongNameSingleWord };
+
 struct TestParam {
   std::string test_suffix = "";
   WebSigninInterceptor::SigninInterceptionType interception_type =
@@ -59,6 +61,7 @@ struct TestParam {
   SkColor4f intercepted_profile_color = SkColors::kLtGray;
   SkColor4f primary_profile_color = SkColors::kBlue;
   bool enable_webui_refresh = false;
+  NameFormat name_format = NameFormat::Regular;
 };
 
 // To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
@@ -146,11 +149,22 @@ const TestParam kTestParams[] = {
      .interception_type =
          WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
      .enable_webui_refresh = true},
+
     {.test_suffix = "ChromeSigninDarkModeWebUIRefresh",
      .interception_type =
          WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
      .use_dark_theme = true,
      .enable_webui_refresh = true},
+
+    {.test_suffix = "ChromeSigninLongName",
+     .interception_type =
+         WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
+     .name_format = NameFormat::LongName},
+
+    {.test_suffix = "ChromeSigninLongNameSingleWord",
+     .interception_type =
+         WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
+     .name_format = NameFormat::LongNameSingleWord},
 };
 
 // Returns the avatar button, which is the anchor view for the interception
@@ -230,13 +244,24 @@ class DiceWebSigninInterceptionBubblePixelTest
     observer.Wait();
   }
 
+  std::string GivenNameFromNameFormat() {
+    switch (GetParam().name_format) {
+      case NameFormat::Regular:
+        return "Sam";
+      case NameFormat::LongName:
+        return "Sam With A Very Very Very Long Name";
+      case NameFormat::LongNameSingleWord:
+        return "SamWithAVeryVeryVeryVeryLongName";
+    }
+  }
+
   // Generates bubble parameters for testing.
   WebSigninInterceptor::Delegate::BubbleParameters GetTestBubbleParameters() {
     AccountInfo intercepted_account;
     intercepted_account.account_id =
         CoreAccountId::FromGaiaId("intercepted_ID");
-    intercepted_account.given_name = "Sam";
-    intercepted_account.full_name = "Sam Sample";
+    intercepted_account.given_name = GivenNameFromNameFormat();
+    intercepted_account.full_name = intercepted_account.given_name + " Sample";
     intercepted_account.email = "sam.sample@intercepted.com";
     intercepted_account.hosted_domain =
         GetParam().is_intercepted_account_managed ? "intercepted.com"
