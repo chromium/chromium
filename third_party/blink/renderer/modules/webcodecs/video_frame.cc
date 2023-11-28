@@ -1098,15 +1098,11 @@ uint32_t VideoFrame::allocationSize(VideoFrameCopyToOptions* options,
   return dest_layout.Size();
 }
 
-bool VideoFrame::ConvertAndCopyToRGB(scoped_refptr<media::VideoFrame> frame,
+void VideoFrame::ConvertAndCopyToRGB(scoped_refptr<media::VideoFrame> frame,
                                      const gfx::Rect& src_rect,
                                      const VideoFrameLayout& dest_layout,
                                      base::span<uint8_t> buffer) {
-  if (!RuntimeEnabledFeatures::WebCodecsCopyToRGBEnabled() ||
-      !media::IsRGB(dest_layout.Format())) {
-    return false;
-  }
-
+  DCHECK(media::IsRGB(dest_layout.Format()));
   SkColorType skia_pixel_format = media::SkColorTypeForPlane(
       dest_layout.Format(), media::VideoFrame::kARGBPlane);
 
@@ -1138,7 +1134,6 @@ bool VideoFrame::ConvertAndCopyToRGB(scoped_refptr<media::VideoFrame> frame,
   auto context_provider = GetRasterContextProvider();
   renderer.Paint(std::move(frame), &canvas, gfx::RectF(src_rect.size()), flags,
                  media::kNoTransformation, context_provider.get());
-  return true;
 }
 
 ScriptPromiseResolver* VideoFrame::CopyToAsync(
@@ -1205,15 +1200,10 @@ ScriptPromise VideoFrame::copyTo(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  if (dest_layout.Format() != local_frame->format()) {
-    if (!ConvertAndCopyToRGB(local_frame, src_rect, dest_layout, buffer)) {
-      auto v8_format = ToV8VideoPixelFormat(dest_layout.Format());
-      auto message =
-          "Failed to convert to pixel format: " + v8_format->AsString();
-      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                        message);
-      return ScriptPromise();
-    }
+  if (RuntimeEnabledFeatures::WebCodecsCopyToRGBEnabled() &&
+      dest_layout.Format() != local_frame->format() &&
+      media::IsRGB(dest_layout.Format())) {
+    ConvertAndCopyToRGB(local_frame, src_rect, dest_layout, buffer);
   } else if (local_frame->IsMappable()) {
     CopyMappablePlanes(*local_frame, src_rect, dest_layout, buffer);
   } else if (local_frame->HasGpuMemoryBuffer()) {
