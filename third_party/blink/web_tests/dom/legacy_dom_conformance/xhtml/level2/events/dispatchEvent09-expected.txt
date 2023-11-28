@@ -1,3 +1,0 @@
-Test	http://www.w3.org/2001/DOM-Test-Suite/level2/events/dispatchEvent09
-Status	failure
-Message	atCount: assertEquals failed, actual 1, expected 0.
