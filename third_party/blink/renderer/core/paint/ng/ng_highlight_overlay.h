@@ -17,7 +17,7 @@ namespace blink {
 
 class HighlightRegistry;
 struct LayoutSelectionStatus;
-struct NGTextFragmentPaintInfo;
+struct TextFragmentPaintInfo;
 
 class CORE_EXPORT NGHighlightOverlay {
   STATIC_ONLY(NGHighlightOverlay);
@@ -177,7 +177,7 @@ class CORE_EXPORT NGHighlightOverlay {
   // The edges must not represent overlapping ranges. If the highlight is active
   // in overlapping ranges, those ranges must be merged before ComputeEdges.
   static Vector<HighlightPart> ComputeParts(
-      const NGTextFragmentPaintInfo& originating,
+      const TextFragmentPaintInfo& originating,
       const Vector<HighlightLayer>& layers,
       const Vector<HighlightEdge>& edges);
 };

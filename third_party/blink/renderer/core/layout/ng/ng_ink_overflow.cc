@@ -358,7 +358,7 @@ InkOverflow::Type InkOverflow::Set(Type type,
 InkOverflow::Type InkOverflow::SetTextInkOverflow(
     Type type,
     const InlineCursor& cursor,
-    const NGTextFragmentPaintInfo& text_info,
+    const TextFragmentPaintInfo& text_info,
     const ComputedStyle& style,
     const PhysicalRect& rect_in_container,
     const NGInlinePaintContext* inline_context,
@@ -380,7 +380,7 @@ InkOverflow::Type InkOverflow::SetTextInkOverflow(
 InkOverflow::Type InkOverflow::SetSvgTextInkOverflow(
     Type type,
     const InlineCursor& cursor,
-    const NGTextFragmentPaintInfo& text_info,
+    const TextFragmentPaintInfo& text_info,
     const ComputedStyle& style,
     const Font& scaled_font,
     const gfx::RectF& rect,
@@ -448,7 +448,7 @@ InkOverflow::Type InkOverflow::SetSvgTextInkOverflow(
 // static
 absl::optional<PhysicalRect> InkOverflow::ComputeTextInkOverflow(
     const InlineCursor& cursor,
-    const NGTextFragmentPaintInfo& text_info,
+    const TextFragmentPaintInfo& text_info,
     const ComputedStyle& style,
     const Font& scaled_font,
     const PhysicalRect& rect_in_container,

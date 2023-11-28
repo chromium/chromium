@@ -593,7 +593,7 @@ StringView FragmentItem::Text(const FragmentItems& items) const {
   return StringView();
 }
 
-NGTextFragmentPaintInfo FragmentItem::TextPaintInfo(
+TextFragmentPaintInfo FragmentItem::TextPaintInfo(
     const FragmentItems& items) const {
   if (Type() == kText) {
     return {items.Text(UsesFirstLineStyle()), text_.text_offset.start,
@@ -869,7 +869,7 @@ void FragmentItem::RecalcInkOverflow(const InlineCursor& cursor,
       return;
     }
 
-    NGTextFragmentPaintInfo paint_info = TextPaintInfo(cursor.Items());
+    TextFragmentPaintInfo paint_info = TextPaintInfo(cursor.Items());
     if (paint_info.shape_result) {
       if (Type() == kSvgText) {
         ink_overflow_type_ =

@@ -27,7 +27,7 @@ class FragmentItems;
 class InlineBreakToken;
 class NGInlinePaintContext;
 struct LogicalLineItem;
-struct NGTextFragmentPaintInfo;
+struct TextFragmentPaintInfo;
 
 // Data for SVG text in addition to FragmentItem.
 struct SvgFragmentData {
@@ -428,7 +428,7 @@ class CORE_EXPORT FragmentItem final {
     DCHECK_EQ(Type(), kGeneratedText);
     return generated_text_.text;
   }
-  NGTextFragmentPaintInfo TextPaintInfo(const FragmentItems& items) const;
+  TextFragmentPaintInfo TextPaintInfo(const FragmentItems& items) const;
 
   // Compute the inline position from text offset, in logical coordinate
   // relative to this fragment suitable for |LocalCaretRect|.

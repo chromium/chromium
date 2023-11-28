@@ -89,7 +89,7 @@ bool NGTextCombinePainter::ShouldPaint(const LayoutTextCombine& text_combine) {
          style.GetTextEmphasisMark() != TextEmphasisMark::kNone;
 }
 
-void NGTextCombinePainter::ClipDecorationsStripe(const NGTextFragmentPaintInfo&,
+void NGTextCombinePainter::ClipDecorationsStripe(const TextFragmentPaintInfo&,
                                                  float upper,
                                                  float stripe_width,
                                                  float dilation) {
@@ -105,7 +105,7 @@ void NGTextCombinePainter::PaintDecorations(const PaintInfo& paint_info,
   const TextDecorationOffset decoration_offset(style_);
 
   // Paint underline and overline text decorations
-  PaintUnderOrOverLineDecorations(NGTextFragmentPaintInfo{}, decoration_offset,
+  PaintUnderOrOverLineDecorations(TextFragmentPaintInfo{}, decoration_offset,
                                   decoration_info, ~TextDecorationLine::kNone,
                                   paint_info, text_style);
 

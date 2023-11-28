@@ -34,9 +34,9 @@ class NGTextPainter;
 class NGTextDecorationPainter;
 class Node;
 struct LayoutSelectionStatus;
-struct NGTextFragmentPaintInfo;
 struct PaintInfo;
 struct PhysicalOffset;
+struct TextFragmentPaintInfo;
 
 // Highlight overlay painter for LayoutNG. Operates on a FragmentItem that
 // IsText(). Delegates to NGTextPainter to paint the text itself.
@@ -91,14 +91,14 @@ class CORE_EXPORT NGHighlightPainter {
         const absl::optional<AffineTransform>& rotation);
 
     void PaintSelectedText(NGTextPainter& text_painter,
-                           const NGTextFragmentPaintInfo&,
+                           const TextFragmentPaintInfo&,
                            const TextPaintStyle& text_style,
                            DOMNodeId node_id,
                            const AutoDarkMode& auto_dark_mode);
 
     void PaintSuppressingTextProperWhereSelected(
         NGTextPainter& text_painter,
-        const NGTextFragmentPaintInfo&,
+        const TextFragmentPaintInfo&,
         const TextPaintStyle& text_style,
         DOMNodeId node_id,
         const AutoDarkMode& auto_dark_mode);
@@ -126,7 +126,7 @@ class CORE_EXPORT NGHighlightPainter {
   };
 
   NGHighlightPainter(
-      const NGTextFragmentPaintInfo& fragment_paint_info,
+      const TextFragmentPaintInfo& fragment_paint_info,
       NGTextPainter& text_painter,
       NGTextDecorationPainter& decoration_painter,
       const PaintInfo& paint_info,
@@ -282,7 +282,7 @@ class CORE_EXPORT NGHighlightPainter {
                           const PseudoId pseudo = PseudoId::kPseudoIdNone,
                           const AtomicString& pseudo_argument = g_empty_atom);
 
-  const NGTextFragmentPaintInfo& fragment_paint_info_;
+  const TextFragmentPaintInfo& fragment_paint_info_;
 
   // Offsets of the fragment in DOM space, or nullopt if |node_| is not Text or
   // the fragment is generated text (or there are no markers). Used to reject

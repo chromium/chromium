@@ -257,7 +257,7 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   if (style.Visibility() != EVisibility::kVisible)
     return;
 
-  const NGTextFragmentPaintInfo& fragment_paint_info =
+  const TextFragmentPaintInfo& fragment_paint_info =
       cursor_.Current()->TextPaintInfo(cursor_.Items());
   const LayoutObject* layout_object = text_item.GetLayoutObject();
   const Document& document = layout_object->GetDocument();

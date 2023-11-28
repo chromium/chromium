@@ -550,7 +550,7 @@ void GraphicsContext::DrawLineForText(const gfx::PointF& pt,
 }
 
 void GraphicsContext::DrawText(const Font& font,
-                               const NGTextFragmentPaintInfo& text_info,
+                               const TextFragmentPaintInfo& text_info,
                                const gfx::PointF& point,
                                const cc::PaintFlags& flags,
                                DOMNodeId node_id,
@@ -586,7 +586,7 @@ void GraphicsContext::DrawTextPasses(const DrawTextFunc& draw_text) {
 }
 
 void GraphicsContext::DrawText(const Font& font,
-                               const NGTextFragmentPaintInfo& text_info,
+                               const TextFragmentPaintInfo& text_info,
                                const gfx::PointF& point,
                                DOMNodeId node_id,
                                const AutoDarkMode& auto_dark_mode) {
@@ -616,12 +616,11 @@ void GraphicsContext::DrawEmphasisMarks(const Font& font,
   DrawEmphasisMarksInternal(font, text_info, mark, point, auto_dark_mode);
 }
 
-void GraphicsContext::DrawEmphasisMarks(
-    const Font& font,
-    const NGTextFragmentPaintInfo& text_info,
-    const AtomicString& mark,
-    const gfx::PointF& point,
-    const AutoDarkMode& auto_dark_mode) {
+void GraphicsContext::DrawEmphasisMarks(const Font& font,
+                                        const TextFragmentPaintInfo& text_info,
+                                        const AtomicString& mark,
+                                        const gfx::PointF& point,
+                                        const AutoDarkMode& auto_dark_mode) {
   DrawEmphasisMarksInternal(font, text_info, mark, point, auto_dark_mode);
 }
 

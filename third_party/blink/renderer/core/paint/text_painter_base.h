@@ -109,7 +109,7 @@ class CORE_EXPORT TextPainterBase {
   //   2. Paint text
   //   3. Paint line through text decoration
   void PaintUnderOrOverLineDecorations(
-      const NGTextFragmentPaintInfo& fragment_paint_info,
+      const TextFragmentPaintInfo& fragment_paint_info,
       const TextDecorationOffset& decoration_offset,
       TextDecorationInfo& decoration_info,
       TextDecorationLine lines_to_paint,
@@ -117,7 +117,7 @@ class CORE_EXPORT TextPainterBase {
       const TextPaintStyle& text_style,
       const cc::PaintFlags* flags = nullptr);
 
-  virtual void ClipDecorationsStripe(const NGTextFragmentPaintInfo&,
+  virtual void ClipDecorationsStripe(const TextFragmentPaintInfo&,
                                      float upper,
                                      float stripe_width,
                                      float dilation) = 0;
@@ -134,14 +134,14 @@ class CORE_EXPORT TextPainterBase {
 
  private:
   void PaintDecorationUnderOrOverLine(
-      const NGTextFragmentPaintInfo& fragment_paint_info,
+      const TextFragmentPaintInfo& fragment_paint_info,
       GraphicsContext& context,
       TextDecorationInfo& decoration_info,
       TextDecorationLine line,
       const cc::PaintFlags* flags = nullptr);
 
   void PaintUnderOrOverLineDecorationShadows(
-      const NGTextFragmentPaintInfo& fragment_paint_info,
+      const TextFragmentPaintInfo& fragment_paint_info,
       const TextDecorationOffset& decoration_offset,
       TextDecorationInfo& decoration_info,
       TextDecorationLine lines_to_paint,
@@ -150,7 +150,7 @@ class CORE_EXPORT TextPainterBase {
       GraphicsContext& context);
 
   void PaintUnderOrOverLineDecorations(
-      const NGTextFragmentPaintInfo& fragment_paint_info,
+      const TextFragmentPaintInfo& fragment_paint_info,
       const TextDecorationOffset& decoration_offset,
       TextDecorationInfo& decoration_info,
       TextDecorationLine lines_to_paint,

@@ -24,7 +24,7 @@ using HighlightEdge = NGHighlightOverlay::HighlightEdge;
 using HighlightDecoration = NGHighlightOverlay::HighlightDecoration;
 using HighlightPart = NGHighlightOverlay::HighlightPart;
 
-unsigned ClampOffset(unsigned offset, const NGTextFragmentPaintInfo& fragment) {
+unsigned ClampOffset(unsigned offset, const TextFragmentPaintInfo& fragment) {
   return std::min(std::max(offset, fragment.from), fragment.to);
 }
 
@@ -392,7 +392,7 @@ Vector<HighlightEdge> NGHighlightOverlay::ComputeEdges(
 }
 
 Vector<HighlightPart> NGHighlightOverlay::ComputeParts(
-    const NGTextFragmentPaintInfo& content_offsets,
+    const TextFragmentPaintInfo& content_offsets,
     const Vector<HighlightLayer>& layers,
     const Vector<HighlightEdge>& edges) {
   const HighlightLayer originating_layer{HighlightLayerType::kOriginating};

@@ -29,7 +29,7 @@ class NGTextCombinePainter final : public TextPainterBase {
   static bool ShouldPaint(const LayoutTextCombine& text_combine);
 
  protected:
-  void ClipDecorationsStripe(const NGTextFragmentPaintInfo&,
+  void ClipDecorationsStripe(const TextFragmentPaintInfo&,
                              float upper,
                              float stripe_width,
                              float dilation) override;

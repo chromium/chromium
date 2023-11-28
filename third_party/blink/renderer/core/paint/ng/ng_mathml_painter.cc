@@ -38,7 +38,7 @@ void NGMathMLPainter::PaintStretchyOrLargeOperator(
   const ComputedStyle& style = box_fragment_.Style();
   const MathMLPaintInfo& parameters = box_fragment_.GetMathMLPaintInfo();
   UChar operator_character = parameters.operator_character;
-  NGTextFragmentPaintInfo text_fragment_paint_info = {
+  TextFragmentPaintInfo text_fragment_paint_info = {
       StringView(&operator_character, 1), 0, 1,
       parameters.operator_shape_result_view.get()};
   GraphicsContextStateSaver state_saver(info.context);

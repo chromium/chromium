@@ -13,10 +13,10 @@ namespace blink {
 class ShapeResultView;
 
 // Bridge struct for painting text. Encapsulates info needed by the paint code.
-struct PLATFORM_EXPORT NGTextFragmentPaintInfo {
-  NGTextFragmentPaintInfo Slice(unsigned slice_from, unsigned slice_to) const;
-  NGTextFragmentPaintInfo WithStartOffset(unsigned start_from) const;
-  NGTextFragmentPaintInfo WithEndOffset(unsigned end_to) const;
+struct PLATFORM_EXPORT TextFragmentPaintInfo {
+  TextFragmentPaintInfo Slice(unsigned slice_from, unsigned slice_to) const;
+  TextFragmentPaintInfo WithStartOffset(unsigned start_from) const;
+  TextFragmentPaintInfo WithEndOffset(unsigned end_to) const;
   unsigned Length() const { return to - from; }
 
   // The string to paint. May include surrounding context.

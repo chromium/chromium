@@ -246,7 +246,7 @@ void TextPainterBase::PaintDecorationsOnlyLineThrough(
 //   2. Paint text
 //   3. Paint line through
 void TextPainterBase::PaintUnderOrOverLineDecorations(
-    const NGTextFragmentPaintInfo& fragment_paint_info,
+    const TextFragmentPaintInfo& fragment_paint_info,
     const TextDecorationOffset& decoration_offset,
     TextDecorationInfo& decoration_info,
     TextDecorationLine lines_to_paint,
@@ -281,7 +281,7 @@ void TextPainterBase::PaintUnderOrOverLineDecorations(
 }
 
 void TextPainterBase::PaintUnderOrOverLineDecorationShadows(
-    const NGTextFragmentPaintInfo& fragment_paint_info,
+    const TextFragmentPaintInfo& fragment_paint_info,
     const TextDecorationOffset& decoration_offset,
     TextDecorationInfo& decoration_info,
     TextDecorationLine lines_to_paint,
@@ -320,7 +320,7 @@ void TextPainterBase::PaintUnderOrOverLineDecorationShadows(
 }
 
 void TextPainterBase::PaintUnderOrOverLineDecorations(
-    const NGTextFragmentPaintInfo& fragment_paint_info,
+    const TextFragmentPaintInfo& fragment_paint_info,
     const TextDecorationOffset& decoration_offset,
     TextDecorationInfo& decoration_info,
     TextDecorationLine lines_to_paint,
@@ -360,7 +360,7 @@ void TextPainterBase::PaintUnderOrOverLineDecorations(
 }
 
 void TextPainterBase::PaintDecorationUnderOrOverLine(
-    const NGTextFragmentPaintInfo& fragment_paint_info,
+    const TextFragmentPaintInfo& fragment_paint_info,
     GraphicsContext& context,
     TextDecorationInfo& decoration_info,
     TextDecorationLine line,

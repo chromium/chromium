@@ -24,7 +24,7 @@ class InlineCursor;
 class NGInlinePaintContext;
 class Text;
 struct LogicalRect;
-struct NGTextFragmentPaintInfo;
+struct TextFragmentPaintInfo;
 
 // Represents an ink-overflow rectangle. Used for:
 // - Objects without children, such as text runs.
@@ -122,7 +122,7 @@ class CORE_EXPORT InkOverflow {
   // Compute and set ink overflow for text.
   Type SetTextInkOverflow(Type type,
                           const InlineCursor& cursor,
-                          const NGTextFragmentPaintInfo& text_info,
+                          const TextFragmentPaintInfo& text_info,
                           const ComputedStyle& style,
                           const PhysicalRect& rect_in_container,
                           const NGInlinePaintContext* inline_context,
@@ -133,7 +133,7 @@ class CORE_EXPORT InkOverflow {
   // unscaled rectangle.
   Type SetSvgTextInkOverflow(Type type,
                              const InlineCursor& cursor,
-                             const NGTextFragmentPaintInfo& text_info,
+                             const TextFragmentPaintInfo& text_info,
                              const ComputedStyle& style,
                              const Font& scaled_font,
                              const gfx::RectF& rect,
@@ -144,7 +144,7 @@ class CORE_EXPORT InkOverflow {
 
   static absl::optional<PhysicalRect> ComputeTextInkOverflow(
       const InlineCursor& cursor,
-      const NGTextFragmentPaintInfo& text_info,
+      const TextFragmentPaintInfo& text_info,
       const ComputedStyle& style,
       const Font& scaled_font,
       const PhysicalRect& rect_in_container,

@@ -400,12 +400,12 @@ class PLATFORM_EXPORT GraphicsContext {
                 SkClipOp = SkClipOp::kIntersect);
 
   void DrawText(const Font&,
-                const NGTextFragmentPaintInfo&,
+                const TextFragmentPaintInfo&,
                 const gfx::PointF&,
                 DOMNodeId,
                 const AutoDarkMode& auto_dark_mode);
   void DrawText(const Font&,
-                const NGTextFragmentPaintInfo&,
+                const TextFragmentPaintInfo&,
                 const gfx::PointF&,
                 const cc::PaintFlags&,
                 DOMNodeId,
@@ -417,7 +417,7 @@ class PLATFORM_EXPORT GraphicsContext {
                          const gfx::PointF&,
                          const AutoDarkMode& auto_dark_mode);
   void DrawEmphasisMarks(const Font&,
-                         const NGTextFragmentPaintInfo&,
+                         const TextFragmentPaintInfo&,
                          const AtomicString& mark,
                          const gfx::PointF&,
                          const AutoDarkMode& auto_dark_mode);

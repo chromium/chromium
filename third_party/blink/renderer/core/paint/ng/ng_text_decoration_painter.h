@@ -54,7 +54,7 @@ class CORE_EXPORT NGTextDecorationPainter {
 
   enum Phase { kOriginating, kSelection };
   void Begin(Phase phase);
-  void PaintExceptLineThrough(const NGTextFragmentPaintInfo&);
+  void PaintExceptLineThrough(const TextFragmentPaintInfo&);
   void PaintOnlyLineThrough();
 
  private:

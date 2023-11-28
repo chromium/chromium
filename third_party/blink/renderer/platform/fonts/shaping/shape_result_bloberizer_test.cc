@@ -433,8 +433,8 @@ TEST_F(ShapeResultBloberizerTest, CommonAccentRightToLeftFillGlyphBufferNG) {
 
   scoped_refptr<ShapeResultView> result_view =
       ShapeResultView::Create(result.get());
-  NGTextFragmentPaintInfo text_info{StringView(string), 1, string.length(),
-                                    result_view.get()};
+  TextFragmentPaintInfo text_info{StringView(string), 1, string.length(),
+                                  result_view.get()};
   ShapeResultBloberizer::FillGlyphsNG bloberizer_ng(
       font.GetFontDescription(), text_info.text, text_info.from, text_info.to,
       text_info.shape_result, ShapeResultBloberizer::Type::kEmitText);
@@ -459,8 +459,8 @@ TEST_F(ShapeResultBloberizerTest, FourByteUtf8CodepointsNG) {
 
   scoped_refptr<ShapeResultView> result_view =
       ShapeResultView::Create(result.get());
-  NGTextFragmentPaintInfo text_info{StringView(string), 0, string.length(),
-                                    result_view.get()};
+  TextFragmentPaintInfo text_info{StringView(string), 0, string.length(),
+                                  result_view.get()};
   ShapeResultBloberizer::FillGlyphsNG bloberizer_ng(
       font.GetFontDescription(), text_info.text, text_info.from, text_info.to,
       text_info.shape_result, ShapeResultBloberizer::Type::kEmitText);
@@ -486,8 +486,8 @@ TEST_F(ShapeResultBloberizerTest, OffsetIntoTrailingSurrogateNG) {
   scoped_refptr<ShapeResultView> result_view =
       ShapeResultView::Create(result.get());
   // Start at offset 1 into text at trailing surrogate.
-  NGTextFragmentPaintInfo text_info{StringView(string), 1, string.length(),
-                                    result_view.get()};
+  TextFragmentPaintInfo text_info{StringView(string), 1, string.length(),
+                                  result_view.get()};
   ShapeResultBloberizer::FillGlyphsNG bloberizer_ng(
       font.GetFontDescription(), text_info.text, text_info.from, text_info.to,
       text_info.shape_result, ShapeResultBloberizer::Type::kEmitText);
@@ -540,8 +540,8 @@ TEST_F(ShapeResultBloberizerTest, LatinMultRunNG) {
 
   scoped_refptr<ShapeResultView> result_view =
       ShapeResultView::Create(result.get());
-  NGTextFragmentPaintInfo text_info{StringView(string), 1, string.length(),
-                                    result_view.get()};
+  TextFragmentPaintInfo text_info{StringView(string), 1, string.length(),
+                                  result_view.get()};
   ShapeResultBloberizer::FillGlyphsNG bloberizer_ng(
       font.GetFontDescription(), text_info.text, text_info.from, text_info.to,
       text_info.shape_result, ShapeResultBloberizer::Type::kEmitText);
@@ -607,8 +607,8 @@ TEST_F(ShapeResultBloberizerTest, SupplementaryMultiRunNG) {
 
   scoped_refptr<ShapeResultView> result_view =
       ShapeResultView::Create(result.get());
-  NGTextFragmentPaintInfo text_info{StringView(string), 0, string.length(),
-                                    result_view.get()};
+  TextFragmentPaintInfo text_info{StringView(string), 0, string.length(),
+                                  result_view.get()};
   ShapeResultBloberizer::FillGlyphsNG bloberizer_ng(
       font.GetFontDescription(), text_info.text, text_info.from, text_info.to,
       text_info.shape_result, ShapeResultBloberizer::Type::kEmitText);

@@ -52,8 +52,8 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // BloberizeNG
   scoped_refptr<ShapeResultView> result_view =
       ShapeResultView::Create(result.get());
-  NGTextFragmentPaintInfo text_info{StringView(string), 0, string.length(),
-                                    result_view.get()};
+  TextFragmentPaintInfo text_info{StringView(string), 0, string.length(),
+                                  result_view.get()};
   ShapeResultBloberizer::FillGlyphsNG bloberizer_ng(
       font.GetFontDescription(), text_info.text, text_info.from, text_info.to,
       text_info.shape_result, ShapeResultBloberizer::Type::kEmitText);

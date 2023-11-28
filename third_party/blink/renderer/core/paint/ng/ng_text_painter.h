@@ -18,7 +18,7 @@ class FragmentItem;
 class LayoutObject;
 class LayoutSVGInlineText;
 struct AutoDarkMode;
-struct NGTextFragmentPaintInfo;
+struct TextFragmentPaintInfo;
 
 // Text painter for LayoutNG, logic shared between legacy layout and LayoutNG
 // is implemented in the TextPainterBase base class.
@@ -81,13 +81,13 @@ class CORE_EXPORT NGTextPainter : public TextPainterBase {
   }
   ~NGTextPainter() = default;
 
-  void Paint(const NGTextFragmentPaintInfo& fragment_paint_info,
+  void Paint(const TextFragmentPaintInfo& fragment_paint_info,
              const TextPaintStyle&,
              DOMNodeId,
              const AutoDarkMode& auto_dark_mode,
              ShadowMode = kBothShadowsAndTextProper);
 
-  void PaintSelectedText(const NGTextFragmentPaintInfo& fragment_paint_info,
+  void PaintSelectedText(const TextFragmentPaintInfo& fragment_paint_info,
                          unsigned selection_start,
                          unsigned selection_end,
                          const TextPaintStyle& text_style,
@@ -97,7 +97,7 @@ class CORE_EXPORT NGTextPainter : public TextPainterBase {
                          const AutoDarkMode& auto_dark_mode);
 
   void PaintDecorationsExceptLineThrough(
-      const NGTextFragmentPaintInfo& fragment_paint_info,
+      const TextFragmentPaintInfo& fragment_paint_info,
       const FragmentItem& text_item,
       const PaintInfo& paint_info,
       const ComputedStyle& style,
@@ -121,22 +121,22 @@ class CORE_EXPORT NGTextPainter : public TextPainterBase {
   SvgTextPaintState* GetSvgState();
 
  protected:
-  void ClipDecorationsStripe(const NGTextFragmentPaintInfo&,
+  void ClipDecorationsStripe(const TextFragmentPaintInfo&,
                              float upper,
                              float stripe_width,
                              float dilation) override;
 
  private:
   template <PaintInternalStep step>
-  void PaintInternalFragment(const NGTextFragmentPaintInfo&,
+  void PaintInternalFragment(const TextFragmentPaintInfo&,
                              DOMNodeId node_id,
                              const AutoDarkMode& auto_dark_mode);
 
-  void PaintSvgTextFragment(const NGTextFragmentPaintInfo&,
+  void PaintSvgTextFragment(const TextFragmentPaintInfo&,
                             DOMNodeId node_id,
                             const AutoDarkMode& auto_dark_mode);
   void PaintSvgDecorationsExceptLineThrough(
-      const NGTextFragmentPaintInfo&,
+      const TextFragmentPaintInfo&,
       const TextDecorationOffset& decoration_offset,
       TextDecorationInfo& decoration_info,
       TextDecorationLine lines_to_paint,

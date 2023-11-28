@@ -174,7 +174,7 @@ bool SetupPaintForSvgText(const NGTextPainter::SvgTextPaintState& state,
 
 }  // namespace
 
-void NGTextPainter::Paint(const NGTextFragmentPaintInfo& fragment_paint_info,
+void NGTextPainter::Paint(const TextFragmentPaintInfo& fragment_paint_info,
                           const TextPaintStyle& text_style,
                           DOMNodeId node_id,
                           const AutoDarkMode& auto_dark_mode,
@@ -203,7 +203,7 @@ void NGTextPainter::Paint(const NGTextFragmentPaintInfo& fragment_paint_info,
 //    outside using |text_style|.
 // 2. Paint parts of a ligature glyph.
 void NGTextPainter::PaintSelectedText(
-    const NGTextFragmentPaintInfo& fragment_paint_info,
+    const TextFragmentPaintInfo& fragment_paint_info,
     unsigned selection_start,
     unsigned selection_end,
     const TextPaintStyle& text_style,
@@ -265,7 +265,7 @@ void NGTextPainter::PaintSelectedText(
 }
 
 void NGTextPainter::PaintDecorationsExceptLineThrough(
-    const NGTextFragmentPaintInfo& fragment_paint_info,
+    const TextFragmentPaintInfo& fragment_paint_info,
     const FragmentItem& text_item,
     const PaintInfo& paint_info,
     const ComputedStyle& style,
@@ -322,7 +322,7 @@ void NGTextPainter::PaintDecorationsOnlyLineThrough(
 
 template <NGTextPainter::PaintInternalStep step>
 void NGTextPainter::PaintInternalFragment(
-    const NGTextFragmentPaintInfo& fragment_paint_info,
+    const TextFragmentPaintInfo& fragment_paint_info,
     DOMNodeId node_id,
     const AutoDarkMode& auto_dark_mode) {
   DCHECK(fragment_paint_info.from <= fragment_paint_info.text.length());
@@ -360,7 +360,7 @@ void NGTextPainter::PaintInternalFragment(
 }
 
 void NGTextPainter::ClipDecorationsStripe(
-    const NGTextFragmentPaintInfo& fragment_paint_info,
+    const TextFragmentPaintInfo& fragment_paint_info,
     float upper,
     float stripe_width,
     float dilation) {
@@ -377,7 +377,7 @@ void NGTextPainter::ClipDecorationsStripe(
 }
 
 void NGTextPainter::PaintSvgTextFragment(
-    const NGTextFragmentPaintInfo& fragment_paint_info,
+    const TextFragmentPaintInfo& fragment_paint_info,
     DOMNodeId node_id,
     const AutoDarkMode& auto_dark_mode) {
   const NGTextPainter::SvgTextPaintState& state = svg_text_paint_state_.value();
@@ -447,7 +447,7 @@ void NGTextPainter::PaintSvgTextFragment(
 }
 
 void NGTextPainter::PaintSvgDecorationsExceptLineThrough(
-    const NGTextFragmentPaintInfo& fragment_paint_info,
+    const TextFragmentPaintInfo& fragment_paint_info,
     const TextDecorationOffset& decoration_offset,
     TextDecorationInfo& decoration_info,
     TextDecorationLine lines_to_paint,

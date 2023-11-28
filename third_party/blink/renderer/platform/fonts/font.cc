@@ -238,7 +238,7 @@ void Font::DrawText(cc::PaintCanvas* canvas,
 }
 
 void Font::DrawText(cc::PaintCanvas* canvas,
-                    const NGTextFragmentPaintInfo& text_info,
+                    const TextFragmentPaintInfo& text_info,
                     const gfx::PointF& point,
                     cc::NodeId node_id,
                     const cc::PaintFlags& flags,
@@ -348,7 +348,7 @@ void Font::DrawEmphasisMarks(cc::PaintCanvas* canvas,
 }
 
 void Font::DrawEmphasisMarks(cc::PaintCanvas* canvas,
-                             const NGTextFragmentPaintInfo& text_info,
+                             const TextFragmentPaintInfo& text_info,
                              const AtomicString& mark,
                              const gfx::PointF& point,
                              const cc::PaintFlags& flags) const {
@@ -366,7 +366,7 @@ void Font::DrawEmphasisMarks(cc::PaintCanvas* canvas,
   DrawBlobs(canvas, flags, bloberizer.Blobs(), point);
 }
 
-gfx::RectF Font::TextInkBounds(const NGTextFragmentPaintInfo& text_info) const {
+gfx::RectF Font::TextInkBounds(const TextFragmentPaintInfo& text_info) const {
   // No need to compute bounds if using custom fonts that are in the process
   // of loading as it won't be painted.
   if (ShouldSkipDrawing())
@@ -452,7 +452,7 @@ void Font::GetTextIntercepts(const TextRunPaintInfo& run_info,
   GetTextInterceptsInternal(bloberizer.Blobs(), flags, bounds, intercepts);
 }
 
-void Font::GetTextIntercepts(const NGTextFragmentPaintInfo& text_info,
+void Font::GetTextIntercepts(const TextFragmentPaintInfo& text_info,
                              const cc::PaintFlags& flags,
                              const std::tuple<float, float>& bounds,
                              Vector<TextIntercept>& intercepts) const {

@@ -53,12 +53,12 @@ class PaintFlags;
 
 namespace blink {
 
-class NGShapeCache;
 class FontSelector;
+class NGShapeCache;
 class ShapeCache;
 class TextRun;
+struct TextFragmentPaintInfo;
 struct TextRunPaintInfo;
-struct NGTextFragmentPaintInfo;
 
 class PLATFORM_EXPORT Font {
   DISALLOW_NEW();
@@ -98,7 +98,7 @@ class PLATFORM_EXPORT Font {
                 const cc::PaintFlags&,
                 DrawType = DrawType::kGlyphsOnly) const;
   void DrawText(cc::PaintCanvas*,
-                const NGTextFragmentPaintInfo&,
+                const TextFragmentPaintInfo&,
                 const gfx::PointF&,
                 cc::NodeId node_id,
                 const cc::PaintFlags&,
@@ -115,12 +115,12 @@ class PLATFORM_EXPORT Font {
                          const gfx::PointF&,
                          const cc::PaintFlags&) const;
   void DrawEmphasisMarks(cc::PaintCanvas*,
-                         const NGTextFragmentPaintInfo&,
+                         const TextFragmentPaintInfo&,
                          const AtomicString& mark,
                          const gfx::PointF&,
                          const cc::PaintFlags&) const;
 
-  gfx::RectF TextInkBounds(const NGTextFragmentPaintInfo&) const;
+  gfx::RectF TextInkBounds(const TextFragmentPaintInfo&) const;
 
   struct TextIntercept {
     float begin_, end_;
@@ -136,7 +136,7 @@ class PLATFORM_EXPORT Font {
                          const cc::PaintFlags&,
                          const std::tuple<float, float>& bounds,
                          Vector<TextIntercept>&) const;
-  void GetTextIntercepts(const NGTextFragmentPaintInfo&,
+  void GetTextIntercepts(const TextFragmentPaintInfo&,
                          const cc::PaintFlags&,
                          const std::tuple<float, float>& bounds,
                          Vector<TextIntercept>&) const;

@@ -18,11 +18,11 @@ class DisplayItemClient;
 class InlineCursor;
 class LayoutObject;
 class NGInlinePaintContext;
-struct NGTextFragmentPaintInfo;
 struct PaintInfo;
 struct PhysicalOffset;
 struct PhysicalRect;
 struct PhysicalSize;
+struct TextFragmentPaintInfo;
 
 // Text fragment painter for LayoutNG. Operates on FragmentItem that IsText()
 // and handles clipping, selection, etc. Delegates to NGTextPainter to paint the
@@ -43,7 +43,7 @@ class NGTextFragmentPainter {
   void Paint(const PaintInfo&, const PhysicalOffset& paint_offset);
 
  private:
-  void Paint(const NGTextFragmentPaintInfo& fragment_paint_info,
+  void Paint(const TextFragmentPaintInfo& fragment_paint_info,
              const LayoutObject* layout_object,
              const DisplayItemClient& display_item_client,
              const ComputedStyle& style,

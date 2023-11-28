@@ -279,7 +279,7 @@ void NGHighlightPainter::SelectionPaintState::PaintSelectionBackground(
 // Paint the selected text only.
 void NGHighlightPainter::SelectionPaintState::PaintSelectedText(
     NGTextPainter& text_painter,
-    const NGTextFragmentPaintInfo& fragment_paint_info,
+    const TextFragmentPaintInfo& fragment_paint_info,
     const TextPaintStyle& text_style,
     DOMNodeId node_id,
     const AutoDarkMode& auto_dark_mode) {
@@ -294,7 +294,7 @@ void NGHighlightPainter::SelectionPaintState::PaintSelectedText(
 void NGHighlightPainter::SelectionPaintState::
     PaintSuppressingTextProperWhereSelected(
         NGTextPainter& text_painter,
-        const NGTextFragmentPaintInfo& fragment_paint_info,
+        const TextFragmentPaintInfo& fragment_paint_info,
         const TextPaintStyle& text_style,
         DOMNodeId node_id,
         const AutoDarkMode& auto_dark_mode) {
@@ -319,7 +319,7 @@ void NGHighlightPainter::SelectionPaintState::
 }
 
 NGHighlightPainter::NGHighlightPainter(
-    const NGTextFragmentPaintInfo& fragment_paint_info,
+    const TextFragmentPaintInfo& fragment_paint_info,
     NGTextPainter& text_painter,
     NGTextDecorationPainter& decoration_painter,
     const PaintInfo& paint_info,
