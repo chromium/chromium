@@ -479,12 +479,9 @@ export class DirectoryModel extends EventTarget {
     // If the change event have been already dispatched, dispatchNeeded is
     // false.
     if (dispatchNeeded) {
-      const event = new Event('change');
       // The selection status (selected or not) is not changed because
       // this event is caused by the change of selected item.
-      // @ts-ignore: error TS2339: Property 'changes' does not exist on type
-      // 'Event'.
-      event.changes = [];
+      const event = new CustomEvent('change', {detail: {changes: []}});
       selection.dispatchEvent(event);
     }
   }

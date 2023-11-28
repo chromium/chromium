@@ -7,7 +7,7 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/ev
 import {assert} from 'chrome://resources/js/assert.js';
 
 export type SelectionChangeEvent =
-    Event&{changes: Array<{index: number, selected: boolean}>};
+    CustomEvent<{changes: Array<{index: number, selected: boolean}>}>;
 
 interface ListSelectionModelEventMap {
   'change': SelectionChangeEvent;
@@ -285,13 +285,16 @@ export class ListSelectionModel extends EventTarget {
 
       const indexes = Object.keys(this.changedIndexes_!);
       if (indexes.length) {
-        const e = new Event('change') as SelectionChangeEvent;
-        e.changes = indexes.map((index: string) => {
-          return {
-            index: Number(index),
-            selected: this.changedIndexes_![Number(index)]!,
-          };
-        }, this);
+        const e = new CustomEvent('change', {
+          detail: {
+            changes: indexes.map((index: string) => {
+              return {
+                index: Number(index),
+                selected: this.changedIndexes_![Number(index)]!,
+              };
+            }),
+          },
+        });
         this.dispatchEvent(e);
       }
       this.changedIndexes_ = {};

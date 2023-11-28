@@ -267,9 +267,9 @@ export function testLeadAndAnchor2() {
 export function testSelectAll() {
   const sm = createSelectionModel(10);
 
-  let changes: SelectionChangeEvent['changes']|null = null;
+  let changes: SelectionChangeEvent['detail']['changes']|null = null;
   sm.addEventListener('change', function(e) {
-    changes = e.changes;
+    changes = e.detail.changes;
   });
 
   sm.selectAll();
@@ -278,17 +278,18 @@ export function testSelectAll() {
   assertArrayEquals(range(0, 9), sm.selectedIndexes);
   assertArrayEquals(
       range(0, 9),
-      (changes as SelectionChangeEvent['changes']).map(function(change) {
-        return change.index;
-      }));
+      (changes as SelectionChangeEvent['detail']['changes'])
+          .map(function(change) {
+            return change.index;
+          }));
 }
 
 export function testSelectAllOnEmptyList() {
   const sm = createSelectionModel(0);
 
-  let changes: SelectionChangeEvent['changes']|null = null;
+  let changes: SelectionChangeEvent['detail']['changes']|null = null;
   sm.addEventListener('change', function(e) {
-    changes = e.changes;
+    changes = e.detail.changes;
   });
 
   sm.selectAll();

@@ -5,8 +5,6 @@
 import {dispatchPropertyChange} from 'chrome://resources/ash/common/cr_deprecated.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
-import {SelectionChangeEvent} from './list_selection_model.js';
-
 /**
  * Creates a new selection model that is to be used with lists. This only
  * allows a single index to be selected.
@@ -150,33 +148,18 @@ export class ListSingleSelectionModel extends EventTarget {
     this.changeCount_!--;
     if (!this.changeCount_) {
       if (this.selectedIndexBefore_ !== this.selectedIndex_) {
-        const beforeChange = this.createChangeEvent('beforeChange');
-        if (this.dispatchEvent(beforeChange)) {
-          this.dispatchEvent(this.createChangeEvent('change'));
-        } else {
-          this.selectedIndex_ = this.selectedIndexBefore_;
-        }
+        const indexes = [this.selectedIndexBefore_, this.selectedIndex_];
+        this.dispatchEvent(new CustomEvent('change', {
+          detail: {
+            changes: indexes.filter(index => index !== -1)
+                         .map((index) => ({
+                                index: index,
+                                selected: index === this.selectedIndex_,
+                              })),
+          },
+        }));
       }
     }
-  }
-
-  /**
-   * Creates event with specified name and fills its {changes} property.
-   * @param eventName Event name.
-   */
-  createChangeEvent(eventName: string) {
-    const e = new Event(eventName) as SelectionChangeEvent;
-    const indexes = [this.selectedIndexBefore_, this.selectedIndex_];
-    e.changes =
-        indexes
-            .filter((index) => {
-              return index !== -1;
-            })
-            .map((index) => {
-              return {index: index, selected: index === this.selectedIndex_};
-            });
-
-    return e;
   }
 
   /**

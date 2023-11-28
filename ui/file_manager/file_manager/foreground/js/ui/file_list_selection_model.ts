@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ListSelectionModel, SelectionChangeEvent} from './list_selection_model.js';
+import {ListSelectionModel} from './list_selection_model.js';
 import {ListSingleSelectionModel} from './list_single_selection_model.js';
 
 export class FileListSelectionModel extends ListSelectionModel {
@@ -35,8 +35,7 @@ export class FileListSelectionModel extends ListSelectionModel {
     // Force change event when selecting all but with only 1 item, to update the
     // UI with select mode.
     if (this.isCheckSelectMode_ && this.selectedIndexes.length === 1) {
-      const e = new Event('change') as SelectionChangeEvent;
-      e.changes = [];
+      const e = new CustomEvent('change', {detail: {changes: []}});
       this.dispatchEvent(e);
 
       // If force lead index when there is no lead, because doesn't make sense

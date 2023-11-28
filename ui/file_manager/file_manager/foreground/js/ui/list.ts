@@ -10,7 +10,7 @@ import {boolAttrSetter, decorate, PropertyChangeEvent} from '../../../common/js/
 
 import {createListItem, ListItem} from './list_item.js';
 import {ListSelectionController} from './list_selection_controller.js';
-import {ListSelectionModel} from './list_selection_model.js';
+import {ListSelectionModel, SelectionChangeEvent} from './list_selection_model.js';
 import {ListSingleSelectionModel} from './list_single_selection_model.js';
 
 /**
@@ -27,14 +27,6 @@ interface Size {
 }
 
 type EventHandler = (event: Event) => void;
-
-// TODO: Move the event when list_selection_model is converted to TS.
-type SelectionModelChangeEvent = Event&{
-  changes: Array<{
-    index: number,
-    selected: boolean,
-  }>,
-};
 
 // TODO: Move ArrayDataModel event types when array_data_model is converted to
 // TS.
@@ -133,7 +125,7 @@ export class List extends HTMLUListElement {
 
   private boundHandleDataModelPermuted_: EventHandler|null = null;
   private boundHandleDataModelChange_: EventHandler|null = null;
-  private boundHandleOnChange_: EventHandler|null = null;
+  private boundHandleOnChange_: EventListenerOrEventListenerObject|null = null;
   private boundHandleLeadChange_: EventHandler|null = null;
   protected beforeFiller_: HTMLElement|null = null;
   protected afterFiller_: HTMLElement|null = null;
@@ -212,7 +204,8 @@ export class List extends HTMLUListElement {
     }
 
     if (!this.boundHandleOnChange_) {
-      this.boundHandleOnChange_ = this.handleOnChange_.bind(this);
+      this.boundHandleOnChange_ =
+          this.handleOnChange_.bind(this) as EventListenerOrEventListenerObject;
       this.boundHandleLeadChange_ = this.handleLeadChange.bind(this);
     }
 
@@ -648,9 +641,8 @@ export class List extends HTMLUListElement {
    * @param event Event with change info.
    * @private
    */
-  private handleOnChange_(event: Event) {
-    const ce = event as SelectionModelChangeEvent;
-    const changes = ce.changes || [];
+  private handleOnChange_(event: SelectionChangeEvent) {
+    const changes = event.detail.changes || [];
     for (const change of changes) {
       const listItem = this.getListItemByIndex(change.index);
       if (listItem) {
