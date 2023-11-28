@@ -144,6 +144,7 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
         kSameSiteSite("http://other.things.com"),
         kChromeURL("chrome://foo"),
         kExtensionURL("chrome-extension://deadbeef"),
+        kDevToolsURL(GURL("devtools://devtools")),
         kDomain("example.com"),
         kDotDomain(".example.com"),
         kSubDomain("www.example.com"),
@@ -161,6 +162,7 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
         kExtensionSiteForCookies(net::SiteForCookies::FromUrl(kExtensionURL)),
         kHttpSiteForCookies(net::SiteForCookies::FromUrl(kHttpSite)),
         kHttpsSiteForCookies(net::SiteForCookies::FromUrl(kHttpsSite)),
+        kDevToolsSiteForCookies(net::SiteForCookies::FromUrl(kDevToolsURL)),
         kAllHttpsSitesPattern(ContentSettingsPattern::FromString("https://*")) {
     std::vector<base::test::FeatureRefAndParams> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
@@ -349,6 +351,7 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
   const GURL kSameSiteSite;
   const GURL kChromeURL;
   const GURL kExtensionURL;
+  const GURL kDevToolsURL;
   const std::string kDomain;
   const std::string kDotDomain;
   const std::string kSubDomain;
@@ -365,6 +368,7 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
   const net::SiteForCookies kExtensionSiteForCookies;
   const net::SiteForCookies kHttpSiteForCookies;
   const net::SiteForCookies kHttpsSiteForCookies;
+  const net::SiteForCookies kDevToolsSiteForCookies;
   ContentSettingsPattern kAllHttpsSitesPattern;
   bool is_privacy_sandbox_v4_enabled_ = false;
 
@@ -754,6 +758,11 @@ TEST_P(CookieSettingsTest, TestThirdPartyCookiePhaseout) {
   EXPECT_TRUE(cookie_settings->IsFullCookieAccessAllowed(
       kBlockedSite, kFirstPartySiteForCookies,
       /*top_frame_origin=*/absl::nullopt, cookie_setting_overrides));
+
+  // Requests from DevTools panels added by extensions should get cookies.
+  EXPECT_TRUE(cookie_settings_->IsFullCookieAccessAllowed(
+      kHttpsSite, kDevToolsSiteForCookies,
+      /*top_frame_origin=*/absl::nullopt, GetCookieSettingOverrides()));
 }
 
 TEST_P(CookieSettingsTest, CookiesAllowThirdParty) {

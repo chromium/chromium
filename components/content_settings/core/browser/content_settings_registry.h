@@ -65,7 +65,7 @@ class ContentSettingsRegistry {
                 const std::string& name,
                 ContentSetting initial_default_value,
                 WebsiteSettingsInfo::SyncStatus sync_status,
-                const std::vector<std::string>& allowlisted_schemes,
+                const std::vector<std::string>& allowlisted_primary_schemes,
                 const std::set<ContentSetting>& valid_settings,
                 WebsiteSettingsInfo::ScopingType scoping_type,
                 Platforms platforms,
