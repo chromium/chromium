@@ -28,6 +28,7 @@ namespace supervised_user {
 class FamilyLiveTest : public signin::test::LiveTest {
  public:
   // Navigation will be allowed to extra hosts.
+  FamilyLiveTest();
   explicit FamilyLiveTest(std::vector<std::string> extra_enabled_hosts);
   ~FamilyLiveTest() override;
 
