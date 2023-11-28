@@ -135,7 +135,7 @@ import java.util.function.Function;
 
 /** A {@link RootUiCoordinator} variant that controls tabbed-mode specific UI. */
 public class TabbedRootUiCoordinator extends RootUiCoordinator {
-    private static boolean sDisableStatusIndicatorAnimationsForTesting;
+    private static boolean sDisableTopControlsAnimationForTesting;
     private final RootUiTabObserver mRootUiTabObserver;
     private TabbedSystemUiCoordinator mSystemUiCoordinator;
 
@@ -165,6 +165,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private final Function<Tab, Boolean> mBackButtonShouldCloseTabFn;
     private LayoutStateProvider.LayoutStateObserver mGestureNavLayoutObserver;
     private final ObservableSupplierImpl<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
+    private Callback<Integer> mOnTabStripHeightChangedCallback;
 
     private int mStatusIndicatorHeight;
 
@@ -381,6 +382,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (mToolbarManager != null) {
             mToolbarManager.getOmniboxStub().removeUrlFocusChangeListener(mUrlFocusChangeListener);
+            if (mOnTabStripHeightChangedCallback != null) {
+                mToolbarManager
+                        .getTabStripHeightSupplier()
+                        .removeObserver(mOnTabStripHeightChangedCallback);
+                mOnTabStripHeightChangedCallback = null;
+            }
         }
 
         if (mOfflineIndicatorInProductHelpController != null) {
@@ -595,6 +602,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         PwaBottomSheetControllerFactory.attach(mWindowAndroid, mPwaBottomSheetController);
         initCommerceSubscriptionsService();
         initUndoGroupSnackbarController();
+        initTabStripTransitionCoordinator();
     }
 
     /** Creates an instance of {@link IncognitoReauthCoordinatorFactory} for tabbed activity. */
@@ -940,11 +948,20 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
     }
 
-    private void updateTopControlsHeight(boolean animate) {
+    private void updateTopControlsHeight() {
+        if (mToolbarManager == null) return;
+
+        final boolean animate = !sDisableTopControlsAnimationForTesting;
         final BrowserControlsSizer browserControlsSizer = mBrowserControlsManager;
-        final int resourceId = mControlContainerHeightResource;
+        // This method can be called when the toolbar didn't go through a layout pass (e.g. when
+        // theme switches in settings, activity recreates), so getToolbar().getHeight() returns 0.
+        // TODO(crbug.com/1503029): Remove the reference to toolbar_height_no_shadow.
+        final int toolbarHeight =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
         final int topControlsNewHeight =
-                mActivity.getResources().getDimensionPixelSize(resourceId) + mStatusIndicatorHeight;
+                toolbarHeight
+                        + mToolbarManager.getToolbar().getTabStripHeight()
+                        + mStatusIndicatorHeight;
 
         browserControlsSizer.setAnimateBrowserControlsHeightChanges(animate);
         browserControlsSizer.setTopControlsHeight(topControlsNewHeight, mStatusIndicatorHeight);
@@ -987,8 +1004,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     @Override
                     public void onStatusIndicatorHeightChanged(int indicatorHeight) {
                         mStatusIndicatorHeight = indicatorHeight;
-                        boolean animate = !sDisableStatusIndicatorAnimationsForTesting;
-                        updateTopControlsHeight(animate);
+                        updateTopControlsHeight();
                     }
                 };
         mStatusIndicatorCoordinator.addObserver(mStatusIndicatorObserver);
@@ -1024,6 +1040,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (mToolbarManager.getOmniboxStub() != null) {
             mToolbarManager.getOmniboxStub().addUrlFocusChangeListener(mUrlFocusChangeListener);
         }
+    }
+
+    private void initTabStripTransitionCoordinator() {
+        mOnTabStripHeightChangedCallback = (height) -> updateTopControlsHeight();
+        mToolbarManager.getTabStripHeightSupplier().addObserver(mOnTabStripHeightChangedCallback);
     }
 
     @Override
@@ -1131,8 +1152,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mActivity, mModalDialogManagerSupplier, () -> ApplicationLifetime.terminate(true));
     }
 
-    public static void setDisableStatusIndicatorAnimationsForTesting(boolean disable) {
-        sDisableStatusIndicatorAnimationsForTesting = disable;
-        ResettersForTesting.register(() -> sDisableStatusIndicatorAnimationsForTesting = false);
+    public static void setDisableTopControlsAnimationsForTesting(boolean disable) {
+        sDisableTopControlsAnimationForTesting = disable;
+        ResettersForTesting.register(() -> sDisableTopControlsAnimationForTesting = false);
     }
 }

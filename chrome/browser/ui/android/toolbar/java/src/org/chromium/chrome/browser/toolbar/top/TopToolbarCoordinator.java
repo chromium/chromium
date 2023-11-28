@@ -18,9 +18,10 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.device.DeviceClassManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.layouts.LayoutManager;
@@ -41,6 +42,7 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.NavigationPopup.HistoryDelegate;
+import org.chromium.chrome.browser.toolbar.top.TabStripTransitionCoordinator.TabStripHeightObserver;
 import org.chromium.chrome.browser.toolbar.top.ToolbarTablet.OfflineDownloader;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
@@ -102,6 +104,9 @@ public class TopToolbarCoordinator implements Toolbar {
     private MenuButtonCoordinator mMenuButtonCoordinator;
     private ObservableSupplier<AppMenuButtonHelper> mAppMenuButtonHelperSupplier;
     private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+
+    /** Null until {@link #initializeWithNative} is called. * */
+    private @Nullable TabStripTransitionCoordinator mTabStripTransitionCoordinator;
 
     private ToolbarControlContainer mControlContainer;
     private Supplier<ResourceManager> mResourceManagerSupplier;
@@ -283,8 +288,8 @@ public class TopToolbarCoordinator implements Toolbar {
 
     /**
      * Initialize the coordinator with the components that have native initialization dependencies.
-     * <p>
-     * Calling this must occur after the native library have completely loaded.
+     *
+     * <p>Calling this must occur after the native library have completely loaded.
      *
      * @param layoutUpdater A {@link Runnable} used to request layout update upon scene change.
      * @param tabSwitcherClickHandler The click handler for the tab switcher button.
@@ -294,8 +299,8 @@ public class TopToolbarCoordinator implements Toolbar {
      * @param appMenuDelegate Allows interacting with the app menu.
      * @param layoutManager A {@link LayoutManager} used to watch for scene changes.
      * @param tabSupplier Supplier of the activity tab.
-     * @param browserControlsStateProvider {@link BrowserControlsStateProvider} to access browser
-     *                                     controls offsets.
+     * @param browserControlsVisibilityManager {@link BrowserControlsVisibilityManager} to access
+     *     browser controls offsets and visibility.
      * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
      */
     public void initializeWithNative(
@@ -307,7 +312,7 @@ public class TopToolbarCoordinator implements Toolbar {
             AppMenuDelegate appMenuDelegate,
             LayoutManager layoutManager,
             ObservableSupplier<Tab> tabSupplier,
-            BrowserControlsStateProvider browserControlsStateProvider,
+            BrowserControlsVisibilityManager browserControlsVisibilityManager,
             TopUiThemeColorProvider topUiThemeColorProvider) {
         assert mTabModelSelectorSupplier.get() != null;
         Callback<Integer> tabSwitcherLongClickCallback =
@@ -347,7 +352,7 @@ public class TopToolbarCoordinator implements Toolbar {
                             layoutManager,
                             mControlContainer::getProgressBarDrawingInfo,
                             tabSupplier,
-                            browserControlsStateProvider,
+                            browserControlsVisibilityManager,
                             mResourceManagerSupplier,
                             topUiThemeColorProvider,
                             LayoutType.BROWSING
@@ -356,6 +361,21 @@ public class TopToolbarCoordinator implements Toolbar {
                             false);
             layoutManager.addSceneOverlay(mOverlayCoordinator);
             mToolbarLayout.setOverlayCoordinator(mOverlayCoordinator);
+        }
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DYNAMIC_TOP_CHROME)) {
+            mTabStripTransitionCoordinator =
+                    new TabStripTransitionCoordinator(
+                            browserControlsVisibilityManager,
+                            mControlContainer,
+                            mToolbarLayout,
+                            mToolbarLayout.getTabStripHeightFromResource());
+            mToolbarLayout.getContext().registerComponentCallbacks(mTabStripTransitionCoordinator);
+            addTabStripHeightObserver(
+                    (height) ->
+                            // Invalid the snapshot to make sure the tab strip is rendering
+                            // correctly.
+                            mControlContainer.invalidateBitmap());
         }
     }
 
@@ -394,6 +414,18 @@ public class TopToolbarCoordinator implements Toolbar {
         mToolbarLayout.removeOnAttachStateChangeListener(listener);
     }
 
+    /** Add an observer that listens to tab strip height update. */
+    public void addTabStripHeightObserver(TabStripHeightObserver observer) {
+        if (mTabStripTransitionCoordinator == null) return;
+        mTabStripTransitionCoordinator.addObserver(observer);
+    }
+
+    /** Remove the observer that listens to tab strip height update. */
+    public void removeTabStripHeightObserver(TabStripHeightObserver observer) {
+        if (mTabStripTransitionCoordinator == null) return;
+        mTabStripTransitionCoordinator.removeObserver(observer);
+    }
+
     /** Cleans up any code as necessary. */
     public void destroy() {
         if (mOverlayCoordinator != null) {
@@ -420,6 +452,10 @@ public class TopToolbarCoordinator implements Toolbar {
         }
         if (mControlContainer != null) {
             mControlContainer = null;
+        }
+        if (mTabStripTransitionCoordinator != null) {
+            mTabStripTransitionCoordinator.destroy();
+            mTabStripTransitionCoordinator = null;
         }
     }
 
@@ -604,7 +640,9 @@ public class TopToolbarCoordinator implements Toolbar {
 
     @Override
     public int getTabStripHeight() {
-        return mToolbarLayout.getTabStripHeight();
+        return mTabStripTransitionCoordinator != null
+                ? mTabStripTransitionCoordinator.getTabStripHeight()
+                : mToolbarLayout.getTabStripHeightFromResource();
     }
 
     /** Triggered when the content view for the specified tab has changed. */

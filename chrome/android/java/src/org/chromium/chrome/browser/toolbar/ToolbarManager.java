@@ -129,6 +129,7 @@ import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonState;
 import org.chromium.chrome.browser.toolbar.top.ActionModeController;
 import org.chromium.chrome.browser.toolbar.top.ActionModeController.ActionBarDelegate;
+import org.chromium.chrome.browser.toolbar.top.TabStripTransitionCoordinator.TabStripHeightObserver;
 import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton;
 import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
@@ -309,6 +310,9 @@ public class ToolbarManager
     private OverlayPanelManagerObserver mOverlayPanelManagerObserver;
     private ObservableSupplierImpl<Boolean> mOverlayPanelVisibilitySupplier =
             new ObservableSupplierImpl<>();
+    private ObservableSupplierImpl<Integer> mTabStripHeightSupplier =
+            new ObservableSupplierImpl<>();
+    private TabStripHeightObserver mTabStripHeightObserver;
 
     private TabGroupUi mTabGroupUi;
 
@@ -739,9 +743,9 @@ public class ToolbarManager
                         initializeWithIncognitoColors,
                         startSurfaceLogoClickedCallback,
                         mConstraintsProxy);
+        mTabStripHeightSupplier.set(mToolbar.getTabStripHeight());
         mActionModeController =
                 new ActionModeController(mActivity, mActionBarDelegate, toolbarActionModeCallback);
-
         mActionModeController.setTabStripHeight(mToolbar.getTabStripHeight());
 
         tabObscuringHandler.addObserver(this);
@@ -1683,6 +1687,7 @@ public class ToolbarManager
                 mActivityTabProvider,
                 mBrowserControlsSizer,
                 mTopUiThemeColorProvider);
+        mTabStripHeightSupplier.set(mToolbar.getTabStripHeight());
 
         mAttachStateChangeListener =
                 new OnAttachStateChangeListener() {
@@ -1706,6 +1711,14 @@ public class ToolbarManager
         if (stripLayoutHelperManager != null) {
             mControlContainer.setToolbarContainerDragListener(
                     stripLayoutHelperManager.getDragListener());
+            stripLayoutHelperManager.setIsTabStripHidden(mToolbar.getTabStripHeight() == 0);
+            mTabStripHeightObserver =
+                    newHeight -> {
+                        if (mTabStripHeightSupplier == null) return;
+                        mTabStripHeightSupplier.set(newHeight);
+                        stripLayoutHelperManager.setIsTabStripHidden(newHeight == 0);
+                    };
+            mToolbar.addTabStripHeightObserver(mTabStripHeightObserver);
         }
 
         if (mMenuStateObserver != null) {
@@ -1860,6 +1873,11 @@ public class ToolbarManager
             mToolbar.removeOnAttachStateChangeListener(mAttachStateChangeListener);
             mAttachStateChangeListener = null;
         }
+        if (mTabStripHeightObserver != null) {
+            mToolbar.removeTabStripHeightObserver(mTabStripHeightObserver);
+            mTabStripHeightObserver = null;
+        }
+        mTabStripHeightSupplier = null;
         mToolbar.removeUrlExpansionObserver(mStatusBarColorController);
         mToolbar.destroy();
 
@@ -2040,6 +2058,11 @@ public class ToolbarManager
         mUrlFocusChangedCallback.onResult(hasFocus);
     }
 
+    /** Get the supplier for the current height of the tab strip. */
+    public ObservableSupplier<Integer> getTabStripHeightSupplier() {
+        return mTabStripHeightSupplier;
+    }
+
     /**
      * Updates the primary color used by the model to the given color.
      * @param color The primary color for the current tab.
@@ -2109,8 +2132,12 @@ public class ToolbarManager
     private int getToolbarExtraYOffset() {
         int toolbarHairlineHeight =
                 mControlContainer.findViewById(R.id.toolbar_hairline).getHeight();
-        return mBrowserControlsSizer.getTopControlsHeight()
-                - (mControlContainer.getHeight() - toolbarHairlineHeight);
+        int extraYOffset =
+                mBrowserControlsSizer.getTopControlsHeight()
+                        - (mControlContainer.getHeight() - toolbarHairlineHeight);
+        // There are cases where extraYOffset can be negative e.g. during tab strip transitioning
+        // from invisible -> visible.
+        return Math.max(0, extraYOffset);
     }
 
     /**
@@ -2540,7 +2567,8 @@ public class ToolbarManager
             }
             var msg =
                     String.format(
-                            "BottomCtrl %s %s; actTab %s %s; urlBarTab %s, sTab %s, layout %s, interval %s",
+                            "BottomCtrl %s %s; actTab %s %s; urlBarTab %s, sTab %s, layout %s,"
+                                + " interval %s",
                             bc,
                             bc != null
                                     && Boolean.TRUE.equals(

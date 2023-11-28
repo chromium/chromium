@@ -601,9 +601,10 @@ public abstract class ToolbarLayout extends FrameLayout
     }
 
     /**
-     * @return The height of the tab strip. Return 0 for toolbars that do not have a tabstrip.
+     * Return the height of the tab strip from the layout resource. Return 0 for toolbars that do
+     * not have a tab strip.
      */
-    protected int getTabStripHeight() {
+    protected int getTabStripHeightFromResource() {
         return getResources().getDimensionPixelSize(R.dimen.tab_strip_height);
     }
 

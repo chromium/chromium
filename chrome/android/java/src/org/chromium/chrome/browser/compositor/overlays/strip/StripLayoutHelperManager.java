@@ -145,6 +145,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
     private CompositorButton mModelSelectorButton;
     private Context mContext;
     private boolean mBrowserScrimShowing;
+    private boolean mIsHidden;
     private TabStripSceneLayer mTabStripTreeProvider;
     private TabStripEventHandler mTabStripEventHandler;
     private TabSwitcherLayoutObserver mTabSwitcherLayoutObserver;
@@ -498,6 +499,11 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         mTabDragSource = null;
     }
 
+    /** Mark whether tab strip |isHidden|. */
+    public void setIsTabStripHidden(boolean isHidden) {
+        mIsHidden = isHidden;
+    }
+
     @Override
     public void onResumeWithNative() {
         Tab currentTab = mTabModelSelector.getCurrentTab();
@@ -543,6 +549,11 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
                 getActiveStripLayoutHelper().getLastHoveredTab() == null
                         ? TabModel.INVALID_TAB_INDEX
                         : getActiveStripLayoutHelper().getLastHoveredTab().getId();
+        if (mIsHidden) {
+            // When tab strip is hidden, the stable offset of this scene layer should be a negative
+            // value.
+            yOffset -= mHeight;
+        }
         mTabStripTreeProvider.pushAndUpdateStrip(
                 this,
                 mLayerTitleCacheSupplier.get(),
