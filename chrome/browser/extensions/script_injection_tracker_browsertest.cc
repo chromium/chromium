@@ -891,18 +891,18 @@ IN_PROC_BROWSER_TEST_F(
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  // The test uses a long-running `unload` handler to postpone DidCommit in a
+  // The test uses a long-running `pagehide` handler to postpone DidCommit in a
   // same-process, cross-origin navigation that happens in the next test steps:
   // - "cross-origin" aspect is needed because we need to navigate from a page
   //   not covered by content scripts, into a page covered by content scripts +
   //   because ScriptInjectionTracker ignores the path part of URL patterns
   //   (e.g. calling `MatchesSecurityOrigin()`).
   // - "same-process" aspect is needed because we need a same-process navigation
-  //   in order to postpone DidCommit IPC (by having an long-running unload
+  //   in order to postpone DidCommit IPC (by having an long-running pagehide
   //   handler).  In a typical desktop setting same-site navigations should be
   //   same-process.
-  const char kUnloadHandlerInstallationScript[] = R"(
-      window.addEventListener('unload', function(event) {
+  const char kPagehideHandlerInstallationScript[] = R"(
+      window.addEventListener('pagehide', function(event) {
           // BAD CODE - please don't copy&paste.  See below for an explanation
           // why there doesn't seem to a better approach *here* (i.e. see the
           // comment in a section titled "Orchestrate the race condition").
@@ -913,7 +913,8 @@ IN_PROC_BROWSER_TEST_F(
           } while (now < (start + sleep_duration));
       });
   )";
-  ASSERT_TRUE(content::ExecJs(web_contents, kUnloadHandlerInstallationScript));
+  ASSERT_TRUE(
+      content::ExecJs(web_contents, kPagehideHandlerInstallationScript));
 
   // Prepare a test directory, but don't install an extension just yet.
   TestExtensionDir dir;
@@ -971,7 +972,7 @@ IN_PROC_BROWSER_TEST_F(
   //        This is a simplification - loading of content scripts is just *one*
   //        of multiple potential thread hops involved in loading an extension.
   //     *) Race step RENDERER.2: Commit IPC is received and handled:
-  //          *) RENDERER.2.1, `unload` handler runs
+  //          *) RENDERER.2.1, `pagehide` handler runs
   //          *) RENDERER.2.???, Renderer is notified about newly loaded
   //             extension and its content scripts
   //          *) RENDERER.2.8, `DidCommit` is sent back to the Browser
@@ -1001,9 +1002,10 @@ IN_PROC_BROWSER_TEST_F(
   // The test doesn't guarantee the ordering of UI.3a and UI.3b, but the desired
   // ordering does happen in practice when running this test (the time from UI.1
   // to UI.3a is around 30 milliseconds which is much shorter than 3000
-  // milliseconds used by the `unload` handler).  This is already sufficient and
-  // helpful for verifying the fix for the product code.  This is not ideal, but
-  // making the test more robust seems quite difficult - see the discussion in
+  // milliseconds used by the `pagehide` handler).  This is already sufficient
+  // and helpful for verifying the fix for the product code.  This is not ideal,
+  // but making the test more robust seems quite difficult - see the discussion
+  // in
   // https://chromium-review.googlesource.com/c/chromium/src/+/3587823/8#message-b4f0abdcc2a6cedf681d33dbe1ddbccc381ad932
   ASSERT_TRUE(navigation_manager.WaitForResponse());          // Step UI.1.1
   navigation_manager.ResumeNavigation();                      // Step UI.1.2
