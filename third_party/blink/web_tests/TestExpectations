@@ -7069,9 +7069,6 @@ crbug.com/1495422 [ Mac10.15 ] external/wpt/css/css-text/parsing/white-space-sho
 crbug.com/1495422 [ Mac10.15 ] external/wpt/html/semantics/popovers/popover-light-dismiss-flat-tree-nested.html [ Failure ]
 crbug.com/1495422 [ Mac10.15 ] external/wpt/css/css-typed-om/the-stylepropertymap/properties/white-space.html [ Failure ]
 
-# Gardener 2023-10-30
-crbug.com/1497325 [ Mac ] external/wpt/css/css-color/nested-color-mix-with-currentcolor.html [ Failure Pass ]
-
 # Gardener 2023-10-31
 crbug.com/1497825 [ Linux ] virtual/private-aggregation-developer-mode/wpt_internal/private-aggregation/shared-storage-aggregation-coordinator.https.html [ Pass Timeout ]
 

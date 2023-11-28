@@ -53,6 +53,10 @@ namespace {
 
 const RGBA32 kLightenedBlack = 0xFF545454;
 const RGBA32 kDarkenedWhite = 0xFFABABAB;
+// For lch/oklch colors, the value of chroma underneath which the color is
+// considered to be "achromatic", relevant for color conversions.
+// https://www.w3.org/TR/css-color-4/#lab-to-lch
+const float kAchromaticChromaThreshold = 1e-6;
 
 const int kCStartAlpha = 153;     // 60%
 const int kCEndAlpha = 204;       // 80%;
@@ -607,6 +611,7 @@ void Color::ConvertToColorSpace(ColorSpace destination_color_space,
     }
     case ColorSpace::kLch: {
       // Conversion to lch is done through lab.
+      // https://www.w3.org/TR/css-color-4/#lab-to-lch
       auto [l, a, b] = [&]() {
         if (color_space_ == ColorSpace::kLab) {
           return std::make_tuple(param0_, param1_, param2_);
@@ -619,8 +624,8 @@ void Color::ConvertToColorSpace(ColorSpace destination_color_space,
       std::tie(param0_, param1_, param2_) = gfx::LabToLch(l, a, b);
       param2_ = AngleToUnitCircleDegrees(param2_);
 
-      // Hue component is powerless for fully transparent colors.
-      if (IsFullyTransparent()) {
+      // Hue component is powerless for fully transparent or achromatic colors.
+      if (IsFullyTransparent() || param1_ <= kAchromaticChromaThreshold) {
         param2_is_none_ = true;
       }
 
@@ -631,26 +636,24 @@ void Color::ConvertToColorSpace(ColorSpace destination_color_space,
       if (color_space_ == ColorSpace::kOklab) {
         std::tie(param0_, param1_, param2_) =
             gfx::LabToLch(param0_, param1_, param2_);
-        color_space_ = ColorSpace::kOklch;
-        return;
+      } else {
+        // Conversion to Oklch is done through XYZD65.
+        auto [xd65, yd65, zd65] = [&]() {
+          if (color_space_ == ColorSpace::kXYZD65) {
+            return std::make_tuple(param0_, param1_, param2_);
+          } else {
+            auto [xd50, yd50, zd50] = ExportAsXYZD50Floats();
+            return gfx::XYZD50ToD65(xd50, yd50, zd50);
+          }
+        }();
+
+        auto [l, a, b] = gfx::XYZD65ToOklab(xd65, yd65, zd65);
+        std::tie(param0_, param1_, param2_) = gfx::LabToLch(l, a, b);
+        param2_ = AngleToUnitCircleDegrees(param2_);
       }
 
-      // Conversion to Oklch is done through XYZD65.
-      auto [xd65, yd65, zd65] = [&]() {
-        if (color_space_ == ColorSpace::kXYZD65) {
-          return std::make_tuple(param0_, param1_, param2_);
-        } else {
-          auto [xd50, yd50, zd50] = ExportAsXYZD50Floats();
-          return gfx::XYZD50ToD65(xd50, yd50, zd50);
-        }
-      }();
-
-      auto [l, a, b] = gfx::XYZD65ToOklab(xd65, yd65, zd65);
-      std::tie(param0_, param1_, param2_) = gfx::LabToLch(l, a, b);
-      param2_ = AngleToUnitCircleDegrees(param2_);
-
-      // Hue component is powerless for fully transparent colors.
-      if (IsFullyTransparent()) {
+      // Hue component is powerless for fully transparent or archromatic colors.
+      if (IsFullyTransparent() || param1_ <= kAchromaticChromaThreshold) {
         param2_is_none_ = true;
       }
 
