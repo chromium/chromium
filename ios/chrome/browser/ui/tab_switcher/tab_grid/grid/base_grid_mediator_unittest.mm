@@ -80,6 +80,18 @@ class BaseGridMediatorWithPriceDropIndicatorsTest
           {{kPriceTrackingWithOptimizationGuideParam, "true"}}}},
         {web::features::kEnableSessionSerializationOptimizations});
   }
+
+  void SetFakePriceDrop(web::WebState* web_state) {
+    ShoppingPersistedDataTabHelper::PriceDrop price_drop;
+    price_drop.current_price = @"$5";
+    price_drop.previous_price = @"$10";
+    price_drop.url = web_state->GetLastCommittedURL();
+    price_drop.timestamp = base::Time::Now();
+    ShoppingPersistedDataTabHelper::FromWebState(web_state)
+        ->SetPriceDropForTesting(
+            std::make_unique<ShoppingPersistedDataTabHelper::PriceDrop>(
+                std::move(price_drop)));
+  }
 };
 
 #pragma mark - Consumer tests
@@ -94,8 +106,7 @@ TEST_P(BaseGridMediatorTest, ConsumerPopulateItems) {
 // Tests that the consumer is notified when a web state is inserted.
 TEST_P(BaseGridMediatorTest, ConsumerInsertItem) {
   ASSERT_EQ(3UL, consumer_.items.size());
-  auto web_state = std::make_unique<web::FakeWebState>();
-  web_state->SetWebFramesManager(std::make_unique<web::FakeWebFramesManager>());
+  auto web_state = CreateFakeWebStateWithURL(GURL());
   web::WebStateID item_identifier = web_state.get()->GetUniqueIdentifier();
   browser_->GetWebStateList()->InsertWebState(1, std::move(web_state),
                                               WebStateList::INSERT_FORCE_INDEX,
@@ -131,9 +142,7 @@ TEST_P(BaseGridMediatorTest, ConsumerUpdateSelectedItem) {
 // The selected item is replaced, so the new selected item id should be the
 // id of the new item.
 TEST_P(BaseGridMediatorTest, ConsumerReplaceItem) {
-  auto new_web_state = std::make_unique<web::FakeWebState>();
-  new_web_state->SetWebFramesManager(
-      std::make_unique<web::FakeWebFramesManager>());
+  auto new_web_state = CreateFakeWebStateWithURL(GURL());
   web::WebStateID new_item_identifier = new_web_state->GetUniqueIdentifier();
   @autoreleasepool {
     browser_->GetWebStateList()->ReplaceWebStateAt(1, std::move(new_web_state));
@@ -334,9 +343,7 @@ TEST_P(BaseGridMediatorWithPriceDropIndicatorsTest,
        TestSelectItemWithNoPriceDrop) {
   web::WebState* web_state_to_select =
       browser_->GetWebStateList()->GetWebStateAt(2);
-  // No need to set a null price drop - it will be null by default. Simply
-  // need to create the helper.
-  ShoppingPersistedDataTabHelper::CreateForWebState(web_state_to_select);
+  // No need to set a null price drop - it will be null by default.
   [mediator_ selectItemWithID:web_state_to_select->GetUniqueIdentifier()];
   EXPECT_EQ(1, user_action_tester_.GetActionCount(kHasNoPriceDropUserAction));
   EXPECT_EQ(0, user_action_tester_.GetActionCount(kHasPriceDropUserAction));
@@ -346,19 +353,11 @@ TEST_P(BaseGridMediatorWithPriceDropIndicatorsTest,
        TestSelectItemWithPriceDrop) {
   web::WebState* web_state_to_select =
       browser_->GetWebStateList()->GetWebStateAt(2);
-  ShoppingPersistedDataTabHelper::CreateForWebState(web_state_to_select);
+  // Add a fake price drop.
   SetFakePriceDrop(web_state_to_select);
   [mediator_ selectItemWithID:web_state_to_select->GetUniqueIdentifier()];
   EXPECT_EQ(1, user_action_tester_.GetActionCount(kHasPriceDropUserAction));
   EXPECT_EQ(0, user_action_tester_.GetActionCount(kHasNoPriceDropUserAction));
-}
-
-TEST_P(BaseGridMediatorTest, TestSelectItemWithPriceDropExperimentOff) {
-  web::WebState* web_state_to_select =
-      browser_->GetWebStateList()->GetWebStateAt(2);
-  [mediator_ selectItemWithID:web_state_to_select->GetUniqueIdentifier()];
-  EXPECT_EQ(0, user_action_tester_.GetActionCount(kHasNoPriceDropUserAction));
-  EXPECT_EQ(0, user_action_tester_.GetActionCount(kHasPriceDropUserAction));
 }
 
 // Ensures that when there is web states in normal mode, the toolbar

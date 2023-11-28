@@ -114,6 +114,7 @@
 #import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
 #import "ios/web/common/annotations_utils.h"
 #import "ios/web/common/features.h"
+#import "ios/web/public/find_in_page/java_script_find_in_page_manager.h"
 #import "ios/web/public/web_state.h"
 
 void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
@@ -132,6 +133,7 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
   if (IsNativeFindInPageAvailable()) {
     FindTabHelper::CreateForWebState(web_state);
   } else {
+    web::JavaScriptFindInPageManager::CreateForWebState(web_state);
     JavaScriptFindTabHelper::CreateForWebState(web_state);
   }
   ITunesUrlsHandlerTabHelper::CreateForWebState(web_state);

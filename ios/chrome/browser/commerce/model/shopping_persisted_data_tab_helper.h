@@ -51,7 +51,7 @@ class ShoppingPersistedDataTabHelper
 
    private:
     friend class ShoppingPersistedDataTabHelper;
-    friend class GridMediatorTestClass;
+    friend class BaseGridMediatorWithPriceDropIndicatorsTest;
     // Offer ID for the price drop
     std::optional<int64_t> offer_id;
     // URL corresponding to the price drop.
@@ -71,7 +71,7 @@ class ShoppingPersistedDataTabHelper
   SEQUENCE_CHECKER(sequence_checker_);
   friend class web::WebStateUserData<ShoppingPersistedDataTabHelper>;
   friend class ShoppingPersistedDataTabHelperTest;
-  friend class GridMediatorTestClass;
+  friend class BaseGridMediatorWithPriceDropIndicatorsTest;
 
   explicit ShoppingPersistedDataTabHelper(web::WebState* web_state);
 

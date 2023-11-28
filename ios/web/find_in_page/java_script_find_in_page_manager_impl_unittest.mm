@@ -47,7 +47,7 @@ class JavaScriptFindInPageManagerImplTest : public WebTest {
 
     JavaScriptFeatureManager::FromBrowserState(GetBrowserState())
         ->ConfigureFeatures({feature});
-    JavaScriptFindInPageManagerImpl::CreateForWebState(fake_web_state_.get());
+    JavaScriptFindInPageManager::CreateForWebState(fake_web_state_.get());
     GetFindInPageManager()->SetDelegate(&fake_delegate_);
   }
 

@@ -29,11 +29,6 @@ class JavaScriptFindInPageManagerImpl : public JavaScriptFindInPageManager,
   explicit JavaScriptFindInPageManagerImpl(web::WebState* web_state);
   ~JavaScriptFindInPageManagerImpl() override;
 
-  // Need to overload FindInPageManager::CreateForWebState() as the default
-  // implementation inherited from WebStateUserData<FindInPageManager> would
-  // create a FindInPageManager which is a pure abstract class.
-  static void CreateForWebState(WebState* web_state);
-
   // FindInPageManager overrides
   void Find(NSString* query, FindInPageOptions options) override;
   void StopFinding() override;

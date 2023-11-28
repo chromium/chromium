@@ -133,6 +133,7 @@ source_set("tabs_internal") {
     "//ios/web/annotations",
     "//ios/web/common",
     "//ios/web/common:features",
+    "//ios/web/public/find_in_page",
     "//ios/web/public/security",
     "//ios/web/public/session",
     "//ui/base",

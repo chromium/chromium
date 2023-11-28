@@ -38,7 +38,7 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_api.h"
 #import "ios/web/common/uikit_ui_util.h"
-#import "ios/web/find_in_page/java_script_find_in_page_manager_impl.h"
+#import "ios/web/public/find_in_page/java_script_find_in_page_manager.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
@@ -290,7 +290,7 @@ TEST_F(KeyCommandsProviderTest, CanPerform_FindInPageActions) {
     web_state->SetWebFramesManager(
         web::ContentWorld::kIsolatedWorld,
         std::make_unique<web::FakeWebFramesManager>());
-    web::JavaScriptFindInPageManagerImpl::CreateForWebState(web_state);
+    web::JavaScriptFindInPageManager::CreateForWebState(web_state);
     JavaScriptFindTabHelper::CreateForWebState(web_state);
   }
 
@@ -922,7 +922,7 @@ TEST_F(KeyCommandsProviderTest, ValidateCommands) {
     web_state->SetWebFramesManager(
         web::ContentWorld::kIsolatedWorld,
         std::make_unique<web::FakeWebFramesManager>());
-    web::JavaScriptFindInPageManagerImpl::CreateForWebState(web_state);
+    web::JavaScriptFindInPageManager::CreateForWebState(web_state);
     JavaScriptFindTabHelper::CreateForWebState(web_state);
   }
 
