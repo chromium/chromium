@@ -1481,7 +1481,9 @@ TEST_F(FFmpegDemuxerTest, Read_Mp4_Multiple_Tracks) {
 
 TEST_F(FFmpegDemuxerTest, Read_Mp4_Crbug657437) {
   CreateDemuxer("crbug657437.mp4");
-  InitializeDemuxer();
+  WaitableMessageLoopEvent event;
+  demuxer_->Initialize(&host_, event.GetPipelineStatusCB());
+  event.RunAndWaitForStatus(DEMUXER_ERROR_COULD_NOT_OPEN);
 }
 
 TEST_F(FFmpegDemuxerTest, XHE_AAC) {
