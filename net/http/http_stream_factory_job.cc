@@ -793,10 +793,6 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
   server_ssl_config_.application_settings = session_->GetApplicationSettings();
   base_proxy_ssl_config.application_settings =
       session_->GetApplicationSettings();
-  server_ssl_config_.ignore_certificate_errors =
-      session_->params().ignore_certificate_errors;
-  base_proxy_ssl_config.ignore_certificate_errors =
-      session_->params().ignore_certificate_errors;
 
   // TODO(https://crbug.com/964642): Also enable 0-RTT for TLS proxies.
   server_ssl_config_.early_data_enabled = session_->params().enable_early_data;

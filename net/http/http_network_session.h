@@ -301,6 +301,9 @@ class NET_EXPORT HttpNetworkSession {
   // Disable QUIC for new streams.
   void DisableQuic();
 
+  // Ignores certificate errors on new connection attempts.
+  void IgnoreCertificateErrorsForTesting();
+
   // Clear the SSL session cache.
   void ClearSSLSessionCache();
 

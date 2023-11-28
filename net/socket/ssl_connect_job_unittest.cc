@@ -511,6 +511,24 @@ TEST_F(SSLConnectJobTest, DirectCertError) {
   CheckConnectTimesSet(ssl_connect_job->connect_timing());
 }
 
+TEST_F(SSLConnectJobTest, DirectIgnoreCertErrors) {
+  session_->IgnoreCertificateErrorsForTesting();
+
+  StaticSocketDataProvider data;
+  socket_factory_.AddSocketDataProvider(&data);
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  ssl.expected_ignore_certificate_errors = true;
+  socket_factory_.AddSSLSocketDataProvider(&ssl);
+
+  TestConnectJobDelegate test_delegate(
+      TestConnectJobDelegate::SocketExpected::ALWAYS);
+  std::unique_ptr<ConnectJob> ssl_connect_job =
+      CreateConnectJob(&test_delegate);
+
+  test_delegate.StartJobExpectingResult(ssl_connect_job.get(), OK,
+                                        /*expect_sync_result=*/false);
+}
+
 TEST_F(SSLConnectJobTest, DirectSSLError) {
   StaticSocketDataProvider data;
   socket_factory_.AddSocketDataProvider(&data);

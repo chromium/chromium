@@ -828,6 +828,10 @@ std::unique_ptr<SSLClientSocket> MockClientSocketFactory::CreateSSLClientSocket(
   if (next_ssl_data->expected_host_and_port) {
     EXPECT_EQ(*next_ssl_data->expected_host_and_port, host_and_port);
   }
+  if (next_ssl_data->expected_ignore_certificate_errors) {
+    EXPECT_EQ(*next_ssl_data->expected_ignore_certificate_errors,
+              ssl_config.ignore_certificate_errors);
+  }
   if (next_ssl_data->expected_network_anonymization_key) {
     EXPECT_EQ(*next_ssl_data->expected_network_anonymization_key,
               ssl_config.network_anonymization_key);

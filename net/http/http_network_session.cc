@@ -351,6 +351,10 @@ void HttpNetworkSession::DisableQuic() {
   params_.enable_quic = false;
 }
 
+void HttpNetworkSession::IgnoreCertificateErrorsForTesting() {
+  params_.ignore_certificate_errors = true;
+}
+
 void HttpNetworkSession::ClearSSLSessionCache() {
   ssl_client_session_cache_.Flush();
 }
