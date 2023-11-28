@@ -296,6 +296,7 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "mac13-arm64-rel-compilator",
     branch_selector = branches.selector.MAC_BRANCHES,
+    cpu = cpu.ARM64,
     # TODO (crbug.com/1245171): Revert when root issue is fixed
     grace_period = 4 * time.minute,
     main_list_view = "try",
