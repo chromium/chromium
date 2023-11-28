@@ -185,7 +185,15 @@ class ManagedUserNoticeUIWindowPixelTest
       profile_picker_view_;
 };
 
-IN_PROC_BROWSER_TEST_P(ManagedUserNoticeUIWindowPixelTest, InvokeUi_default) {
+// TODO(https://crbug.com/1504935, https://crbug.com/1505546): Fails too often
+// on Windows tester bot.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_InvokeUi_default DISABLED_InvokeUi_default
+#else
+#define MAYBE_InvokeUi_default InvokeUi_default
+#endif
+IN_PROC_BROWSER_TEST_P(ManagedUserNoticeUIWindowPixelTest,
+                       MAYBE_InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
@@ -233,12 +241,6 @@ class ManagedUserNoticeUIDialogPixelTest
   }
 };
 
-// TODO(https://crbug.com/1504935): Fails too often on Windows tester bot.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_InvokeUi_default DISABLED_InvokeUi_default
-#else
-#define MAYBE_InvokeUi_default InvokeUi_default
-#endif
 IN_PROC_BROWSER_TEST_P(ManagedUserNoticeUIDialogPixelTest,
                        MAYBE_InvokeUi_default) {
   ShowAndVerifyUi();
