@@ -27,7 +27,6 @@ namespace disk_cache {
 typedef uint32_t CacheAddr;
 
 const uint32_t kBlockVersion2 = 0x20000;        // Version 2.0.
-const uint32_t kBlockCurrentVersion = 0x30000;  // Version 3.0.
 
 const uint32_t kBlockMagic = 0xC104CAC3;
 const int kBlockHeaderSize = 8192;  // Two pages: almost 64k entries
