@@ -37,6 +37,7 @@
 #include "chrome/browser/extensions/api/identity/identity_get_profile_user_info_function.h"
 #include "chrome/browser/extensions/api/identity/identity_launch_web_auth_flow_function.h"
 #include "chrome/browser/extensions/api/identity/identity_remove_cached_auth_token_function.h"
+#include "chrome/browser/extensions/api/identity/launch_web_auth_flow_delegate.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -56,6 +57,7 @@
 #include "chrome/common/extensions/api/identity.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/crx_file/id_util.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
@@ -95,6 +97,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/idle/idle.h"
 #include "ui/base/idle/scoped_set_idle_state.h"
+#include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -3715,6 +3718,47 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTestWithBrowserTab,
   histogram_tester()->ExpectUniqueSample(
       kLaunchWebAuthFlowResultHistogramName,
       IdentityLaunchWebAuthFlowFunction::Error::kNone, 1);
+}
+
+class TestDelegate : public LaunchWebAuthFlowDelegate {
+ public:
+  // LaunchWebAuthFlowDelegate:
+  void GetOptionalWindowBounds(
+      Profile* profile,
+      const std::string& extension_id,
+      base::OnceCallback<void(absl::optional<gfx::Rect>)> callback) override {
+    std::move(callback).Run(kTestBounds);
+  }
+
+  static constexpr gfx::Rect kTestBounds = gfx::Rect(23, 27, 400, 400);
+};
+
+IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTestWithBrowserTab,
+                       PopupBoundsComeFromDelegate) {
+  std::unique_ptr<net::EmbeddedTestServer> https_server = LaunchHttpsServer();
+  GURL auth_url(https_server->GetURL("/interaction_required.html"));
+
+  scoped_refptr<IdentityLaunchWebAuthFlowFunction> function =
+      CreateLaunchWebAuthFlowFunction();
+  function->SetLaunchWebAuthFlowDelegateForTesting(
+      std::make_unique<TestDelegate>());
+
+  ui_test_utils::BrowserChangeObserver browser_opened(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+
+  std::string args =
+      "[{\"interactive\": true, \"url\": \"" + auth_url.spec() + "\"}]";
+  RunFunctionAsync(function.get(), args);
+
+  Browser* popup_browser = browser_opened.Wait();
+
+  gfx::Rect bounds = popup_browser->window()->GetBounds();
+  EXPECT_EQ(bounds.x(), TestDelegate::kTestBounds.x());
+  EXPECT_EQ(bounds.y(), TestDelegate::kTestBounds.y());
+  // The final width and height can contain platform-specific offsets for the
+  // window title bar, which we don't want to assert exactly here.
+  EXPECT_GE(bounds.width(), TestDelegate::kTestBounds.width());
+  EXPECT_GE(bounds.height(), TestDelegate::kTestBounds.height());
 }
 
 IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTestWithBrowserTab,

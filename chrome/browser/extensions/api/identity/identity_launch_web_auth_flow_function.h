@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "chrome/browser/extensions/api/identity/launch_web_auth_flow_delegate.h"
 #include "chrome/browser/extensions/api/identity/web_auth_flow.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
@@ -49,11 +50,22 @@ class IdentityLaunchWebAuthFlowFunction : public ExtensionFunction,
 
   WebAuthFlow* GetWebAuthFlowForTesting();
 
+  void SetLaunchWebAuthFlowDelegateForTesting(
+      std::unique_ptr<LaunchWebAuthFlowDelegate> delegate);
+
  private:
   // ExtensionFunction:
   ~IdentityLaunchWebAuthFlowFunction() override;
   ResponseAction Run() override;
   bool ShouldKeepWorkerAliveIndefinitely() override;
+
+  void StartAuthFlow(
+      Profile* profile,
+      GURL auth_url,
+      WebAuthFlow::Mode mode,
+      WebAuthFlow::AbortOnLoad abort_on_load_for_non_interactive,
+      absl::optional<base::TimeDelta> timeout_for_non_interactive,
+      absl::optional<gfx::Rect> popup_bounds);
 
   // WebAuthFlow::Delegate implementation.
   void OnAuthFlowFailure(WebAuthFlow::Failure failure) override;
@@ -66,6 +78,7 @@ class IdentityLaunchWebAuthFlowFunction : public ExtensionFunction,
 
   std::unique_ptr<WebAuthFlow> auth_flow_;
   std::vector<GURL> final_url_domains_;
+  std::unique_ptr<LaunchWebAuthFlowDelegate> delegate_;
 };
 
 }  // namespace extensions

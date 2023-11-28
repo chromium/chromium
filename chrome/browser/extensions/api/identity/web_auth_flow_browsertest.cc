@@ -19,6 +19,7 @@
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -79,14 +80,15 @@ class WebAuthFlowBrowserTest : public InProcessBrowserTest {
       WebAuthFlow::AbortOnLoad abort_on_load_for_non_interactive =
           WebAuthFlow::AbortOnLoad::kYes,
       absl::optional<base::TimeDelta> timeout_for_non_interactive =
-          absl::nullopt) {
+          absl::nullopt,
+      absl::optional<gfx::Rect> popup_bounds = absl::nullopt) {
     if (!profile)
       profile = browser()->profile();
 
     web_auth_flow_ = std::make_unique<WebAuthFlow>(
         &mock_web_auth_flow_delegate_, profile, url, mode,
         /*user_gesture=*/true, abort_on_load_for_non_interactive,
-        timeout_for_non_interactive);
+        timeout_for_non_interactive, popup_bounds);
 
     timeout_task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
     web_auth_flow_->SetClockForTesting(timeout_task_runner_->GetMockTickClock(),
@@ -702,6 +704,36 @@ IN_PROC_BROWSER_TEST_F(
               OnAuthFlowFailure(WebAuthFlow::Failure::CANNOT_CREATE_WINDOW));
   StartWebAuthFlow(auth_url, WebAuthFlow::Mode::INTERACTIVE);
   navigation_observer.Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest, PopupWindowOpened_WithBounds) {
+  size_t initial_browser_count = chrome::GetTotalBrowserCount();
+
+  const GURL auth_url = embedded_test_server()->GetURL("/title1.html");
+  content::TestNavigationObserver navigation_observer(auth_url);
+  navigation_observer.StartWatchingNewWebContents();
+
+  EXPECT_CALL(mock(), OnAuthFlowURLChange(auth_url));
+  const gfx::Rect test_bounds(35, 47, 400, 400);
+  StartWebAuthFlow(auth_url, WebAuthFlow::Mode::INTERACTIVE, nullptr,
+                   WebAuthFlow::AbortOnLoad::kYes, absl::nullopt, test_bounds);
+
+  navigation_observer.Wait();
+
+  // New popup window is a browser, browser count should increment by 1.
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), initial_browser_count + 1);
+
+  // Retrieve the browser used in the WebAuthFlow, the popup window.
+  Browser* popup_window_browser = chrome::FindBrowserWithTab(web_contents());
+  EXPECT_NE(popup_window_browser, browser());
+
+  gfx::Rect bounds = popup_window_browser->window()->GetBounds();
+  EXPECT_EQ(bounds.x(), test_bounds.x());
+  EXPECT_EQ(bounds.y(), test_bounds.y());
+  // The final width and height can contain platform-specific offsets for the
+  // window title bar, which we don't want to assert exactly here.
+  EXPECT_GE(bounds.width(), test_bounds.width());
+  EXPECT_GE(bounds.height(), test_bounds.height());
 }
 
 }  //  namespace extensions

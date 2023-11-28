@@ -3791,7 +3791,10 @@ if (!is_android) {
         deps +=
             [ "//chromeos/ash/components/network/portal_detector:test_support" ]
 
-        sources += [ "../browser/ui/views/extensions/web_file_handlers/web_file_handlers_file_launch_browsertest.cc" ]
+        sources += [
+          "../browser/extensions/api/identity/launch_web_auth_flow_delegate_ash_browsertest.cc",
+          "../browser/ui/views/extensions/web_file_handlers/web_file_handlers_file_launch_browsertest.cc",
+        ]
       }
 
       if (enable_background_mode) {

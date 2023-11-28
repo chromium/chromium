@@ -345,6 +345,10 @@ void GetODFSEntryMetadata(
 absl::optional<base::File::Error> GetFirstTaskError(
     const ::file_manager::io_task::ProgressStatus& status);
 
+// Use the most recent Files app window to calculate where the popup auth window
+// for OneDrive OAuth should display on the screen.
+absl::optional<gfx::Rect> CalculateAuthWindowBounds(Profile* profile);
+
 }  // namespace ash::cloud_upload
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_CLOUD_UPLOAD_CLOUD_UPLOAD_UTIL_H_
