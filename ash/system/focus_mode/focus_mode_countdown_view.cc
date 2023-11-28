@@ -118,7 +118,7 @@ FocusModeCountdownView::FocusModeCountdownView(bool include_end_button)
       AddChildView(std::make_unique<views::BoxLayoutView>());
   button_container->SetOrientation(views::BoxLayout::Orientation::kVertical);
   button_container->SetMainAxisAlignment(
-      views::BoxLayout::MainAxisAlignment::kStart);
+      views::BoxLayout::MainAxisAlignment::kCenter);
   button_container->SetCrossAxisAlignment(
       views::BoxLayout::CrossAxisAlignment::kStretch);
   button_container->SetBetweenChildSpacing(kSpaceBetweenButtons);
@@ -139,7 +139,8 @@ FocusModeCountdownView::FocusModeCountdownView(bool include_end_button)
                               base::Unretained(focus_mode_controller)),
           l10n_util::GetStringUTF16(
               IDS_ASH_STATUS_TRAY_FOCUS_MODE_EXTEND_TEN_MINUTES_BUTTON_LABEL),
-          PillButton::Type::kSecondaryWithoutIcon,
+          include_end_button_ ? PillButton::Type::kSecondaryWithoutIcon
+                              : PillButton::Type::kSecondaryLargeWithoutIcon,
           /*icon=*/nullptr));
 }
 
