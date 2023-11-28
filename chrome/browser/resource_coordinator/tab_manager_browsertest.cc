@@ -697,7 +697,9 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest,
 // - Discard(kUrgent): ACTIVE->DISCARDED
 // - Navigate: DISCARDED->ACTIVE
 //             window.document.wasDiscarded is true
-IN_PROC_BROWSER_TEST_F(TabManagerTestWithTwoTabs, TabUrgentDiscardAndNavigate) {
+// TODO(crbug.com/1505427): Flaky on multiple platforms
+IN_PROC_BROWSER_TEST_F(TabManagerTestWithTwoTabs,
+                       DISABLED_TabUrgentDiscardAndNavigate) {
   const char kDiscardedStateJS[] = "window.document.wasDiscarded;";
 
   GURL test_page(ui_test_utils::GetTestUrl(
