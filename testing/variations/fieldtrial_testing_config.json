@@ -17996,21 +17996,6 @@
             ]
         }
     ],
-    "SyncAndroidLimitNTPPromoImpressions": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SyncAndroidLimitNTPPromoImpressions"
-                    ]
-                }
-            ]
-        }
-    ],
     "SyncDecoupleAddressPaymentSettings": [
         {
             "platforms": [
