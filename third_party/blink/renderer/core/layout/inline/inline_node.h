@@ -185,8 +185,8 @@ class CORE_EXPORT InlineNode : public LayoutInputNode {
     return To<LayoutBlockFlow>(box_.Get())->GetInlineNodeData();
   }
   const InlineNodeData& Data() const {
-    DCHECK(IsPrepareLayoutFinished() &&
-           !GetLayoutBlockFlow()->NeedsCollectInlines());
+    DCHECK(IsPrepareLayoutFinished());
+    DCHECK(!GetLayoutBlockFlow()->NeedsCollectInlines());
     return *To<LayoutBlockFlow>(box_.Get())->GetInlineNodeData();
   }
   // Same as |Data()| but can access even when |NeedsCollectInlines()| is set.
