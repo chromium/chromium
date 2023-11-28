@@ -39,6 +39,7 @@ include_rules = [
     "+media/base/video_frame_metadata.h",
     "+media/base/video_transformation.h",
     "+mojo/public",
+    "+net/base/auth.h",
     "+net/base/host_port_pair.h",
     "+net/base/net_errors.h",
     "+net/base/ip_endpoint.h",

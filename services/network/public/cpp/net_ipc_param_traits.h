@@ -25,10 +25,9 @@
 #include "net/cert/signed_certificate_timestamp_and_status.h"
 #include "net/cert/x509_certificate.h"
 #include "net/dns/public/resolve_error_info.h"
+#include "net/http/http_connection_info.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
-#include "net/http/http_response_info.h"
-#include "net/http/http_version.h"
 #include "net/nqe/effective_connection_type.h"
 #include "net/ssl/ssl_info.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -274,8 +273,8 @@ IPC_STRUCT_TRAITS_BEGIN(net::RedirectInfo)
   IPC_STRUCT_TRAITS_MEMBER(critical_ch_restart_time)
 IPC_STRUCT_TRAITS_END()
 
-IPC_ENUM_TRAITS_MAX_VALUE(net::HttpResponseInfo::ConnectionInfo,
-                          net::HttpResponseInfo::NUM_OF_CONNECTION_INFOS - 1)
+IPC_ENUM_TRAITS_MAX_VALUE(net::HttpConnectionInfo,
+                          net::HttpConnectionInfo::kMaxValue)
 
 IPC_ENUM_TRAITS_MAX_VALUE(net::EffectiveConnectionType,
                           net::EFFECTIVE_CONNECTION_TYPE_LAST - 1)

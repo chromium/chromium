@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/domain_reliability/domain_reliability_export.h"
 #include "net/base/net_error_details.h"
 #include "net/base/network_anonymization_key.h"

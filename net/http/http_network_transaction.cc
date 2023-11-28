@@ -44,6 +44,7 @@
 #include "net/http/http_auth_handler_factory.h"
 #include "net/http/http_basic_stream.h"
 #include "net/http/http_chunked_decoder.h"
+#include "net/http/http_connection_info.h"
 #include "net/http/http_log_util.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_request_headers.h"
@@ -99,18 +100,16 @@ const size_t kMaxRetryAttempts = 2;
 const size_t kMaxRestarts = 32;
 
 // Returns true when Early Hints are allowed on the given protocol.
-bool EarlyHintsAreAllowedOn(HttpResponseInfo::ConnectionInfo connection_info) {
+bool EarlyHintsAreAllowedOn(HttpConnectionInfo connection_info) {
   switch (connection_info) {
-    case HttpResponseInfo::ConnectionInfo::CONNECTION_INFO_HTTP0_9:
-    case HttpResponseInfo::ConnectionInfo::CONNECTION_INFO_HTTP1_0:
+    case HttpConnectionInfo::kHTTP0_9:
+    case HttpConnectionInfo::kHTTP1_0:
       return false;
-    case HttpResponseInfo::ConnectionInfo::CONNECTION_INFO_HTTP1_1:
+    case HttpConnectionInfo::kHTTP1_1:
       return base::FeatureList::IsEnabled(features::kEnableEarlyHintsOnHttp11);
     default:
-      CHECK_NE(connection_info,
-               HttpResponseInfo::ConnectionInfo::NUM_OF_CONNECTION_INFOS);
-      // Implicitly allow CONNECTION_INFO_UNKNOWN because this is the default
-      // value and ConnectionInfo isn't always set.
+      // Implicitly allow HttpConnectionInfo::kUNKNOWN because this is the
+      // default value and ConnectionInfo isn't always set.
       return true;
   }
 }
@@ -129,10 +128,9 @@ enum class WebSocketFallbackResult {
 WebSocketFallbackResult CalculateWebSocketFallbackResult(
     int result,
     bool http_1_1_was_required,
-    HttpResponseInfo::ConnectionInfoCoarse connection_info) {
+    HttpConnectionInfoCoarse connection_info) {
   if (result == OK) {
-    if (connection_info ==
-        HttpResponseInfo::ConnectionInfoCoarse::CONNECTION_INFO_COARSE_HTTP2) {
+    if (connection_info == HttpConnectionInfoCoarse::kHTTP2) {
       return WebSocketFallbackResult::kSuccessHttp2;
     }
     return http_1_1_was_required
@@ -144,16 +142,13 @@ WebSocketFallbackResult CalculateWebSocketFallbackResult(
                                : WebSocketFallbackResult::kFailure;
 }
 
-void RecordWebSocketFallbackResult(
-    int result,
-    bool http_1_1_was_required,
-    HttpResponseInfo::ConnectionInfoCoarse connection_info) {
-  CHECK_NE(connection_info,
-           HttpResponseInfo::ConnectionInfoCoarse::CONNECTION_INFO_COARSE_QUIC);
+void RecordWebSocketFallbackResult(int result,
+                                   bool http_1_1_was_required,
+                                   HttpConnectionInfoCoarse connection_info) {
+  CHECK_NE(connection_info, HttpConnectionInfoCoarse::kQUIC);
 
-  // `connection_info` could be CONNECTION_INFO_COARSE_OTHER in tests.
-  if (connection_info ==
-      HttpResponseInfo::ConnectionInfoCoarse::CONNECTION_INFO_COARSE_OTHER) {
+  // `connection_info` could be kOTHER in tests.
+  if (connection_info == HttpConnectionInfoCoarse::kOTHER) {
     return;
   }
 
@@ -1218,7 +1213,7 @@ int HttpNetworkTransaction::DoReadHeadersComplete(int result) {
   if (ForWebSocketHandshake()) {
     RecordWebSocketFallbackResult(
         result, http_1_1_was_required_,
-        HttpResponseInfo::ConnectionInfoToCoarse(response_.connection_info));
+        HttpConnectionInfoToCoarse(response_.connection_info));
   }
 
   if (result < 0)
@@ -1261,8 +1256,8 @@ int HttpNetworkTransaction::DoReadHeadersComplete(int result) {
   // retry the request for HTTP/1.1 but not HTTP/2 or QUIC because those
   // multiplex requests and have no need for 408.
   if (response_.headers->response_code() == HTTP_REQUEST_TIMEOUT &&
-      HttpResponseInfo::ConnectionInfoToCoarse(response_.connection_info) ==
-          HttpResponseInfo::CONNECTION_INFO_COARSE_HTTP1 &&
+      HttpConnectionInfoToCoarse(response_.connection_info) ==
+          HttpConnectionInfoCoarse::kHTTP1 &&
       stream_->IsConnectionReused()) {
 #if BUILDFLAG(ENABLE_REPORTING)
     GenerateNetworkErrorLoggingReport(OK);

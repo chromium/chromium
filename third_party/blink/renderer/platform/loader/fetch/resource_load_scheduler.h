@@ -11,7 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
-#include "net/http/http_response_info.h"
+#include "net/http/http_connection_info.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -250,8 +250,7 @@ class PLATFORM_EXPORT ResourceLoadScheduler final
 
   // Updates the connection info of the given client. This function may initiate
   // a new resource loading.
-  void SetConnectionInfo(ClientId id,
-                         net::HttpResponseInfo::ConnectionInfo connection_info);
+  void SetConnectionInfo(ClientId id, net::HttpConnectionInfo connection_info);
 
   // Sets the HTTP RTT for testing.
   void SetHttpRttForTesting(base::TimeDelta http_rtt) {

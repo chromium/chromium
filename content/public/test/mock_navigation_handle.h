@@ -19,6 +19,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/isolation_info.h"
+#include "net/http/http_connection_info.h"
 #include "net/http/http_request_headers.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -154,7 +155,7 @@ class MockNavigationHandle : public NavigationHandle {
   MOCK_METHOD0(
       GetLCPPNavigationHint,
       const blink::mojom::LCPCriticalPathPredictorNavigationTimeHintPtr&());
-  MOCK_METHOD0(GetConnectionInfo, net::HttpResponseInfo::ConnectionInfo());
+  MOCK_METHOD0(GetConnectionInfo, net::HttpConnectionInfo());
   const absl::optional<net::SSLInfo>& GetSSLInfo() override {
     return ssl_info_;
   }

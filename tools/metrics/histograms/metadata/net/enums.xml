@@ -132,7 +132,7 @@ chromium-metrics-reviews@google.com.
 <enum name="ConnectionInfo">
   <summary>
     Application protocol used for HTTP response as defined in
-    net::HttpResponseInfo::ConnectionInfo.
+    net::HttpConnectionInfo.
   </summary>
   <int value="0" label="unknown"/>
   <int value="1" label="HTTP/1.1"/>

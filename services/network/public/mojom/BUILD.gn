@@ -53,7 +53,7 @@ mojom("mojom_ip_address") {
       types = [
         {
           mojom = "network.mojom.ConnectionInfo"
-          cpp = "::net::HttpResponseInfo::ConnectionInfo"
+          cpp = "::net::HttpConnectionInfo"
         },
       ]
       traits_headers = [

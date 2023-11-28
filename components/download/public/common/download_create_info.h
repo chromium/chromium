@@ -18,7 +18,7 @@
 #include "components/download/public/common/download_save_info.h"
 #include "components/download/public/common/download_source.h"
 #include "components/download/public/common/download_url_parameters.h"
-#include "net/http/http_response_info.h"
+#include "net/http/http_connection_info.h"
 #include "net/url_request/referrer_policy.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
@@ -157,7 +157,7 @@ struct COMPONENTS_DOWNLOAD_EXPORT DownloadCreateInfo {
   RangeRequestSupportType accept_range;
 
   // The HTTP connection type.
-  net::HttpResponseInfo::ConnectionInfo connection_info;
+  net::HttpConnectionInfo connection_info;
 
   // The HTTP request method.
   std::string method;
