@@ -529,41 +529,44 @@ wtf_size_t GridLayoutAlgorithm::BuildGridSizingSubtree(
     bool must_ignore_children) const {
   DCHECK(sizing_tree);
 
+  auto& sizing_node = sizing_tree->CreateSizingData(opt_subgrid_data);
+
   const auto& node = Node();
   const auto& style = node.Style();
-  const auto writing_mode = GetConstraintSpace().GetWritingMode();
   const auto subgrid_area = SubgriddedAreaInParent(opt_subgrid_data);
+  const auto writing_mode = GetConstraintSpace().GetWritingMode();
 
   const wtf_size_t column_auto_repetitions =
       ComputeAutomaticRepetitions(subgrid_area.columns, kForColumns);
   const wtf_size_t row_auto_repetitions =
       ComputeAutomaticRepetitions(subgrid_area.rows, kForRows);
 
-  // Initialize this grid's placement data.
-  // TODO(kschmi): Remove placement data from `GridPlacement`.
-  auto placement_data =
+  // Initialize this grid's line resolver.
+  const auto line_resolver =
       parent_line_resolver
-          ? GridPlacementData(style, *parent_line_resolver, subgrid_area,
-                              column_auto_repetitions, row_auto_repetitions)
-          : GridPlacementData(style, column_auto_repetitions,
-                              row_auto_repetitions);
+          ? GridLineResolver(style, *parent_line_resolver, subgrid_area,
+                             column_auto_repetitions, row_auto_repetitions)
+          : GridLineResolver(style, column_auto_repetitions,
+                             row_auto_repetitions);
 
+  wtf_size_t column_start_offset = 0;
+  wtf_size_t row_start_offset = 0;
   bool has_nested_subgrid = false;
-  auto& sizing_node = sizing_tree->CreateSizingData(opt_subgrid_data);
 
   if (!must_ignore_children) {
     // Construct grid items that are not subgridded.
     sizing_node.grid_items = node.ConstructGridItems(
-        placement_data, oof_children, &has_nested_subgrid);
+        line_resolver, oof_children, &has_nested_subgrid);
 
-    placement_data.column_start_offset =
-        node.CachedPlacementData().column_start_offset;
-    placement_data.row_start_offset =
-        node.CachedPlacementData().row_start_offset;
+    column_start_offset = node.CachedPlacementData().column_start_offset;
+    row_start_offset = node.CachedPlacementData().row_start_offset;
   }
 
   auto BuildSizingCollection = [&](GridTrackSizingDirection track_direction) {
-    GridRangeBuilder range_builder(style, placement_data, track_direction);
+    GridRangeBuilder range_builder(style, line_resolver, track_direction,
+                                   (track_direction == kForColumns)
+                                       ? column_start_offset
+                                       : row_start_offset);
 
     bool must_create_baselines = false;
     for (auto& grid_item : sizing_node.grid_items) {
@@ -657,7 +660,7 @@ wtf_size_t GridLayoutAlgorithm::BuildGridSizingSubtree(
     sizing_node.subtree_size += subgrid_algorithm.BuildGridSizingSubtree(
         sizing_tree, /* oof_children */ nullptr,
         SubgriddedItemData(grid_item, sizing_node.layout_data, writing_mode),
-        &placement_data.line_resolver);
+        &line_resolver);
 
     // After we accommodate subgridded items in their respective sizing track
     // collections, their placement indices might be incorrect, so we want to
@@ -691,7 +694,7 @@ GridSizingTree GridLayoutAlgorithm::BuildGridSizingTree(
 
     const auto& node = Node();
     grid_items =
-        node.ConstructGridItems(node.CachedPlacementData(), oof_children);
+        node.ConstructGridItems(node.CachedLineResolver(), oof_children);
     layout_data = layout_subtree->LayoutData();
 
     for (auto& grid_item : grid_items) {

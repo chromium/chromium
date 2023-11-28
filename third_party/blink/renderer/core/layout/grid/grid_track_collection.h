@@ -12,7 +12,7 @@
 
 namespace blink {
 
-struct GridPlacementData;
+class GridLineResolver;
 
 // |GridTrackCollectionBase| provides an implementation for some shared
 // functionality on grid collections, specifically binary search on the
@@ -88,8 +88,9 @@ class CORE_EXPORT GridRangeBuilder {
   GridRangeBuilder() = delete;
 
   GridRangeBuilder(const ComputedStyle& grid_style,
-                   const GridPlacementData& placement_data,
-                   GridTrackSizingDirection track_direction);
+                   const GridLineResolver& line_resolver,
+                   GridTrackSizingDirection track_direction,
+                   wtf_size_t start_offset);
 
   // Ensures that after FinalizeRanges is called, a range will start at the
   // |start_line|, a range will end at |start_line| + |span_length|.

@@ -36,8 +36,8 @@ AutoPlacementType AutoPlacement(const GridArea& position,
 }  // namespace
 
 GridPlacement::GridPlacement(const ComputedStyle& grid_style,
-                             const GridPlacementData& placement_data)
-    : placement_data_(placement_data),
+                             const GridLineResolver& line_resolver)
+    : placement_data_(line_resolver),
       packing_behavior_(grid_style.IsGridAutoFlowAlgorithmSparse()
                             ? PackingBehavior::kSparse
                             : PackingBehavior::kDense),
@@ -46,11 +46,7 @@ GridPlacement::GridPlacement(const ComputedStyle& grid_style,
       major_direction_(grid_style.IsGridAutoFlowDirectionRow() ? kForRows
                                                                : kForColumns),
       minor_direction_(grid_style.IsGridAutoFlowDirectionRow() ? kForColumns
-                                                               : kForRows) {
-#if DCHECK_IS_ON()
-  auto_placement_algorithm_called_ = false;
-#endif
-}
+                                                               : kForRows) {}
 
 // https://drafts.csswg.org/css-grid/#auto-placement-algo
 GridPlacementData GridPlacement::RunAutoPlacementAlgorithm(
@@ -253,7 +249,6 @@ void GridPlacement::PlaceGridItemsLockedToMajorAxis(
     wtf_size_t minor_end_line = placement_cursor.MinorLine() + minor_span_size;
     if (HasSparsePacking())
       minor_cursors.Set(major_start_line, minor_end_line);
-
     minor_max_end_line_ = std::max(minor_max_end_line_, minor_end_line);
 
     // Prevent intrinsic tracks from overflowing the subgrid.
@@ -364,6 +359,7 @@ void GridPlacement::ClampGridItemsToFitSubgridArea(
          !resolved_position.rows.IsTranslatedDefinite())) {
       continue;
     }
+
     int start_line =
         resolved_position.StartLine(track_direction) - start_offset;
     int end_line = resolved_position.EndLine(track_direction) - start_offset;
@@ -652,9 +648,10 @@ void GridPlacement::PlacedGridItemsList::AppendCurrentItemsToOrderedList() {
 // static
 void GridPlacement::ResolveOutOfFlowItemGridLines(
     const GridLayoutTrackCollection& track_collection,
-    const GridPlacementData& placement_data,
+    const GridLineResolver& line_resolver,
     const ComputedStyle& grid_style,
     const ComputedStyle& item_style,
+    wtf_size_t start_offset,
     wtf_size_t* start_line,
     wtf_size_t* end_line) {
   DCHECK(start_line && end_line);
@@ -665,15 +662,11 @@ void GridPlacement::ResolveOutOfFlowItemGridLines(
   const auto track_direction = track_collection.Direction();
   const bool is_for_columns = track_direction == kForColumns;
 
-  const auto span = placement_data.line_resolver.ResolveGridPositionsFromStyle(
-      item_style, track_direction);
+  const auto span =
+      line_resolver.ResolveGridPositionsFromStyle(item_style, track_direction);
 
   if (span.IsIndefinite())
     return;
-
-  const wtf_size_t start_offset = is_for_columns
-                                      ? placement_data.column_start_offset
-                                      : placement_data.row_start_offset;
 
   const int span_start_line = span.UntranslatedStartLine() + start_offset;
   const int span_end_line = span.UntranslatedEndLine() + start_offset;

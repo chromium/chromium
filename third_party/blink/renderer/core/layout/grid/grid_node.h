@@ -20,10 +20,16 @@ class CORE_EXPORT GridNode final : public BlockNode {
     DCHECK(box->IsLayoutGrid());
   }
 
-  const GridPlacementData& CachedPlacementData() const;
+  const GridPlacementData& CachedPlacementData() const {
+    return To<LayoutGrid>(box_.Get())->CachedPlacementData();
+  }
+
+  const GridLineResolver& CachedLineResolver() const {
+    return CachedPlacementData().line_resolver;
+  }
 
   // If |oof_children| is provided, aggregate any out of flow children.
-  GridItems ConstructGridItems(const GridPlacementData& placement_data,
+  GridItems ConstructGridItems(const GridLineResolver& line_resolver,
                                HeapVector<Member<LayoutBox>>* oof_children,
                                bool* has_nested_subgrid = nullptr) const;
 
@@ -31,7 +37,7 @@ class CORE_EXPORT GridNode final : public BlockNode {
 
  private:
   GridItems ConstructGridItems(
-      const GridPlacementData& placement_data,
+      const GridLineResolver& line_resolver,
       const ComputedStyle& root_grid_style,
       const ComputedStyle& parent_grid_style,
       bool must_consider_grid_items_for_column_sizing,
