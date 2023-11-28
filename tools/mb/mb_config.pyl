@@ -446,20 +446,6 @@
       'win-rust-x64-rel': 'release_rust_desktop_x64_reclient',
     },
 
-    'chromium.swangle': {
-      'linux-swangle-chromium-x64': 'gpu_tests_release_trybot_minimal_symbols_reclient',
-      'linux-swangle-chromium-x64-exp': 'gpu_tests_release_trybot_minimal_symbols_reclient',
-      'linux-swangle-tot-swiftshader-x64': 'angle_deqp_release_trybot_reclient',
-      'linux-swangle-x64': 'angle_deqp_release_trybot_reclient',
-      'linux-swangle-x64-exp': 'angle_deqp_release_trybot_reclient',
-      'mac-swangle-chromium-x64': 'gpu_tests_release_trybot_minimal_symbols_reclient',
-      'win-swangle-chromium-x86': 'gpu_tests_release_trybot_minimal_symbol_x86_resource_allowlisting_reclient',
-      'win-swangle-tot-swiftshader-x64': 'angle_deqp_release_trybot_reclient',
-      'win-swangle-tot-swiftshader-x86': 'angle_deqp_release_bot_dcheck_always_on_x86_reclient',
-      'win-swangle-x64': 'angle_deqp_release_trybot_reclient',
-      'win-swangle-x86': 'angle_deqp_release_bot_dcheck_always_on_x86_reclient',
-    },
-
     # TODO(crbug.com/818301): This group is going away.
     'chromium.webkit': {
       'WebKit Linux Trusty ASAN': 'asan_lsan_release_bot',
@@ -881,20 +867,6 @@
       'win-rust-x64-rel': 'release_rust_desktop_x64_reclient',
     },
 
-    'tryserver.chromium.swangle': {
-      'linux-swangle-chromium-try-x64': 'gpu_tests_release_trybot_reclient',
-      'linux-swangle-chromium-try-x64-exp': 'gpu_tests_release_trybot_reclient',
-      'linux-swangle-try-tot-swiftshader-x64': 'angle_deqp_release_trybot_reclient',
-      'linux-swangle-try-x64': 'angle_deqp_release_trybot_reclient',
-      'linux-swangle-try-x64-exp': 'angle_deqp_release_trybot_reclient',
-      'mac-swangle-chromium-try-x64': 'gpu_tests_release_trybot_reclient',
-      'win-swangle-chromium-try-x86': 'gpu_tests_release_trybot_x86_resource_allowlisting_reclient',
-      'win-swangle-try-tot-swiftshader-x64': 'angle_deqp_release_trybot_reclient',
-      'win-swangle-try-tot-swiftshader-x86': 'angle_deqp_release_trybot_x86_reclient',
-      'win-swangle-try-x64': 'angle_deqp_release_trybot_reclient',
-      'win-swangle-try-x86': 'angle_deqp_release_trybot_x86_reclient',
-    },
-
     'tryserver.chromium.tricium': {
       'android-clang-tidy-rel': 'android_release_trybot_reclient',
       'fuchsia-clang-tidy-rel': 'release_trybot_fuchsia_reclient',
@@ -1107,18 +1079,6 @@
 
     'android_without_codecs_release_trybot_reclient': [
       'android_without_codecs', 'release_trybot_reclient', 'strip_debug_info',
-    ],
-
-    'angle_deqp_release_bot_dcheck_always_on_x86_reclient': [
-      'angle_deqp_tests', 'shared_release_bot_dcheck_always_on_reclient', 'x86',
-    ],
-
-    'angle_deqp_release_trybot_reclient': [
-      'angle_deqp_tests', 'shared_release_bot_dcheck_always_on_reclient', 'use_dummy_lastchange',
-    ],
-
-    'angle_deqp_release_trybot_x86_reclient': [
-      'angle_deqp_tests', 'shared_release_trybot_reclient', 'x86',
     ],
 
     'asan_clang_fuzzer_static_v8_heap_minimal_symbols_release_reclient': [
@@ -1759,10 +1719,6 @@
 
     'gpu_tests_release_trybot_resource_allowlisting_reclient': [
       'gpu_tests', 'release_trybot_reclient', 'resource_allowlisting',
-    ],
-
-    'gpu_tests_release_trybot_x86_resource_allowlisting_reclient': [
-      'gpu_tests', 'release_trybot_reclient', 'x86', 'resource_allowlisting',
     ],
 
     'headless_shell_release_bot_reclient': [
@@ -2427,10 +2383,6 @@
       # android:debuggable="true" causes ART to run more slowly, so tests run
       # faster without it. https://crbug.com/1276429
       'gn_args': 'target_os="android" debuggable_apks=false',
-    },
-
-    'angle_deqp_tests': {
-      'gn_args': 'build_angle_deqp_tests=true',
     },
 
     'arm': {
@@ -3121,10 +3073,6 @@
 
     'shared': {
       'gn_args': 'is_component_build=true',
-    },
-
-    'shared_release_bot_dcheck_always_on_reclient': {
-      'mixins': ['shared_release_bot_reclient', 'minimal_symbols', 'dcheck_always_on'],
     },
 
     'shared_release_bot_reclient': {

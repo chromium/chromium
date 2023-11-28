@@ -8,6 +8,7 @@ load("//lib/builder_config.star", "builder_config")
 load("//lib/builder_health_indicators.star", "health_spec")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
 
 ci.defaults.set(
     executable = "recipe:angle_chromium",
@@ -65,6 +66,14 @@ ci.gpu.linux_builder(
         category = "Chromium|Linux",
         short_name = "x64",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
+    ),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -96,6 +105,14 @@ ci.gpu.linux_builder(
     #     short_name = "exp",
     # ),
     list_view = "chromium.gpu.experimental",
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
+    ),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -123,6 +140,17 @@ ci.gpu.linux_builder(
         category = "ToT SwiftShader|Linux",
         short_name = "x64",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "angle_deqp_tests",
+            "shared",
+            "release",
+            "reclient",
+            "minimal_symbols",
+            "dcheck_always_on",
+            "use_dummy_lastchange",
+        ],
+    ),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -147,6 +175,17 @@ ci.gpu.linux_builder(
     console_view_entry = consoles.console_view_entry(
         category = "DEPS|Linux",
         short_name = "x64",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "angle_deqp_tests",
+            "shared",
+            "release",
+            "reclient",
+            "minimal_symbols",
+            "dcheck_always_on",
+            "use_dummy_lastchange",
+        ],
     ),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
@@ -175,6 +214,17 @@ ci.gpu.linux_builder(
     #     short_name = "exp",
     # ),
     list_view = "chromium.gpu.experimental",
+    gn_args = gn_args.config(
+        configs = [
+            "angle_deqp_tests",
+            "shared",
+            "release",
+            "reclient",
+            "minimal_symbols",
+            "dcheck_always_on",
+            "use_dummy_lastchange",
+        ],
+    ),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -204,6 +254,14 @@ ci.gpu.mac_builder(
         category = "Chromium|Mac",
         short_name = "x64",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
+    ),
 )
 
 ci.gpu.windows_builder(
@@ -232,6 +290,16 @@ ci.gpu.windows_builder(
         category = "Chromium|Windows",
         short_name = "x86",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+            "x86",
+            "resource_allowlisting",
+        ],
+    ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 
@@ -258,6 +326,17 @@ ci.gpu.windows_builder(
     console_view_entry = consoles.console_view_entry(
         category = "ToT SwiftShader|Windows",
         short_name = "x64",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "angle_deqp_tests",
+            "shared",
+            "release",
+            "reclient",
+            "minimal_symbols",
+            "dcheck_always_on",
+            "use_dummy_lastchange",
+        ],
     ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
@@ -286,6 +365,17 @@ ci.gpu.windows_builder(
         category = "ToT SwiftShader|Windows",
         short_name = "x86",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "angle_deqp_tests",
+            "shared",
+            "release",
+            "reclient",
+            "minimal_symbols",
+            "dcheck_always_on",
+            "x86",
+        ],
+    ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 
@@ -311,6 +401,17 @@ ci.gpu.windows_builder(
         category = "DEPS|Windows",
         short_name = "x64",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "angle_deqp_tests",
+            "shared",
+            "release",
+            "reclient",
+            "minimal_symbols",
+            "dcheck_always_on",
+            "use_dummy_lastchange",
+        ],
+    ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 
@@ -335,6 +436,17 @@ ci.gpu.windows_builder(
     console_view_entry = consoles.console_view_entry(
         category = "DEPS|Windows",
         short_name = "x86",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "angle_deqp_tests",
+            "shared",
+            "release",
+            "reclient",
+            "minimal_symbols",
+            "dcheck_always_on",
+            "x86",
+        ],
     ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )

@@ -279,6 +279,19 @@
     "mac-arm64-rel reclient test": "reclient/mac-arm64-rel reclient test/gn-args.json",
     "mac-arm64-rel reclient test untrusted": "reclient/mac-arm64-rel reclient test untrusted/gn-args.json"
   },
+  "chromium.swangle": {
+    "linux-swangle-chromium-x64": "ci/linux-swangle-chromium-x64/gn-args.json",
+    "linux-swangle-chromium-x64-exp": "ci/linux-swangle-chromium-x64-exp/gn-args.json",
+    "linux-swangle-tot-swiftshader-x64": "ci/linux-swangle-tot-swiftshader-x64/gn-args.json",
+    "linux-swangle-x64": "ci/linux-swangle-x64/gn-args.json",
+    "linux-swangle-x64-exp": "ci/linux-swangle-x64-exp/gn-args.json",
+    "mac-swangle-chromium-x64": "ci/mac-swangle-chromium-x64/gn-args.json",
+    "win-swangle-chromium-x86": "ci/win-swangle-chromium-x86/gn-args.json",
+    "win-swangle-tot-swiftshader-x64": "ci/win-swangle-tot-swiftshader-x64/gn-args.json",
+    "win-swangle-tot-swiftshader-x86": "ci/win-swangle-tot-swiftshader-x86/gn-args.json",
+    "win-swangle-x64": "ci/win-swangle-x64/gn-args.json",
+    "win-swangle-x86": "ci/win-swangle-x86/gn-args.json"
+  },
   "chromium.updater": {
     "linux-updater-builder-dbg": "ci/linux-updater-builder-dbg/gn-args.json",
     "linux-updater-builder-rel": "ci/linux-updater-builder-rel/gn-args.json",
@@ -495,6 +508,19 @@
     "mac_chromium_compile_dbg_ng": "try/mac_chromium_compile_dbg_ng/gn-args.json",
     "mac_chromium_compile_rel_ng": "try/mac_chromium_compile_rel_ng/gn-args.json",
     "mac_chromium_dbg_ng": "try/mac_chromium_dbg_ng/gn-args.json"
+  },
+  "tryserver.chromium.swangle": {
+    "linux-swangle-chromium-try-x64": "try/linux-swangle-chromium-try-x64/gn-args.json",
+    "linux-swangle-chromium-try-x64-exp": "try/linux-swangle-chromium-try-x64-exp/gn-args.json",
+    "linux-swangle-try-tot-swiftshader-x64": "try/linux-swangle-try-tot-swiftshader-x64/gn-args.json",
+    "linux-swangle-try-x64": "try/linux-swangle-try-x64/gn-args.json",
+    "linux-swangle-try-x64-exp": "try/linux-swangle-try-x64-exp/gn-args.json",
+    "mac-swangle-chromium-try-x64": "try/mac-swangle-chromium-try-x64/gn-args.json",
+    "win-swangle-chromium-try-x86": "try/win-swangle-chromium-try-x86/gn-args.json",
+    "win-swangle-try-tot-swiftshader-x64": "try/win-swangle-try-tot-swiftshader-x64/gn-args.json",
+    "win-swangle-try-tot-swiftshader-x86": "try/win-swangle-try-tot-swiftshader-x86/gn-args.json",
+    "win-swangle-try-x64": "try/win-swangle-try-x64/gn-args.json",
+    "win-swangle-try-x86": "try/win-swangle-try-x86/gn-args.json"
   },
   "tryserver.chromium.updater": {
     "linux-updater-try-builder-dbg": "try/linux-updater-try-builder-dbg/gn-args.json",

@@ -5,6 +5,7 @@
 load("//lib/builders.star", "cpu", "os", "reclient")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
 load("//lib/try.star", "try_")
 
 try_.defaults.set(
@@ -57,6 +58,12 @@ swangle_linux_builder(
     ),
     pool = "luci.chromium.swangle.chromium.linux.x64.try",
     execution_timeout = 6 * time.hour,
+    gn_args = gn_args.config(
+        configs = [
+            "ci/linux-swangle-chromium-x64",
+            "no_symbols",
+        ],
+    ),
 )
 
 swangle_linux_builder(
@@ -70,6 +77,12 @@ swangle_linux_builder(
     ),
     pool = "luci.chromium.swangle.chromium.linux.x64.try",
     execution_timeout = 6 * time.hour,
+    gn_args = gn_args.config(
+        configs = [
+            "ci/linux-swangle-chromium-x64-exp",
+            "no_symbols",
+        ],
+    ),
 )
 
 swangle_linux_builder(
@@ -81,6 +94,7 @@ swangle_linux_builder(
         retry_failed_shards = False,
     ),
     pool = "luci.chromium.swangle.sws.linux.x64.try",
+    gn_args = "ci/linux-swangle-tot-swiftshader-x64",
 )
 
 swangle_linux_builder(
@@ -93,6 +107,7 @@ swangle_linux_builder(
         retry_failed_shards = False,
     ),
     pool = "luci.chromium.swangle.deps.linux.x64.try",
+    gn_args = "ci/linux-swangle-x64",
 )
 
 swangle_linux_builder(
@@ -105,6 +120,7 @@ swangle_linux_builder(
         retry_failed_shards = False,
     ),
     pool = "luci.chromium.swangle.deps.linux.x64.try",
+    gn_args = "ci/linux-swangle-x64-exp",
 )
 
 swangle_mac_builder(
@@ -118,6 +134,12 @@ swangle_mac_builder(
     ),
     pool = "luci.chromium.swangle.chromium.mac.x64.try",
     execution_timeout = 6 * time.hour,
+    gn_args = gn_args.config(
+        configs = [
+            "ci/mac-swangle-chromium-x64",
+            "no_symbols",
+        ],
+    ),
 )
 
 swangle_windows_builder(
@@ -131,6 +153,12 @@ swangle_windows_builder(
     ),
     pool = "luci.chromium.swangle.chromium.win.x86.try",
     execution_timeout = 6 * time.hour,
+    gn_args = gn_args.config(
+        configs = [
+            "ci/win-swangle-chromium-x86",
+            "no_symbols",
+        ],
+    ),
 )
 
 swangle_windows_builder(
@@ -142,6 +170,7 @@ swangle_windows_builder(
         retry_failed_shards = False,
     ),
     pool = "luci.chromium.swangle.win.x64.try",
+    gn_args = "ci/win-swangle-tot-swiftshader-x64",
 )
 
 swangle_windows_builder(
@@ -153,6 +182,13 @@ swangle_windows_builder(
         retry_failed_shards = False,
     ),
     pool = "luci.chromium.swangle.sws.win.x86.try",
+    gn_args = gn_args.config(
+        configs = [
+            "ci/win-swangle-tot-swiftshader-x86",
+            "no_symbols",
+            "use_dummy_lastchange",
+        ],
+    ),
 )
 
 swangle_windows_builder(
@@ -165,6 +201,7 @@ swangle_windows_builder(
         retry_failed_shards = False,
     ),
     pool = "luci.chromium.swangle.win.x64.try",
+    gn_args = "ci/win-swangle-x64",
 )
 
 swangle_windows_builder(
@@ -177,4 +214,11 @@ swangle_windows_builder(
         retry_failed_shards = False,
     ),
     pool = "luci.chromium.swangle.deps.win.x86.try",
+    gn_args = gn_args.config(
+        configs = [
+            "ci/win-swangle-x86",
+            "no_symbols",
+            "use_dummy_lastchange",
+        ],
+    ),
 )
