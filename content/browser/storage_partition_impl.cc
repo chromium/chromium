@@ -1648,15 +1648,15 @@ void StoragePartitionImpl::OnStorageServiceDisconnected() {
   }
 }
 
-const StoragePartitionConfig& StoragePartitionImpl::GetConfig() {
+const StoragePartitionConfig& StoragePartitionImpl::GetConfig() const {
   return config_;
 }
 
-base::FilePath StoragePartitionImpl::GetPath() {
+const base::FilePath& StoragePartitionImpl::GetPath() const {
   return partition_path_;
 }
 
-std::string StoragePartitionImpl::GetPartitionDomain() {
+const std::string& StoragePartitionImpl::GetPartitionDomain() const {
   return config_.partition_domain();
 }
 

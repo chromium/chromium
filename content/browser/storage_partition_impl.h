@@ -162,8 +162,8 @@ class CONTENT_EXPORT StoragePartitionImpl
           private_aggregation_manager);
 
   // StoragePartition interface.
-  const StoragePartitionConfig& GetConfig() override;
-  base::FilePath GetPath() override;
+  const StoragePartitionConfig& GetConfig() const override;
+  const base::FilePath& GetPath() const override;
   network::mojom::NetworkContext* GetNetworkContext() override;
   cert_verifier::mojom::CertVerifierServiceUpdater*
   GetCertVerifierServiceUpdater() override;
@@ -278,7 +278,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   AttributionManager* GetAttributionManager();
   void SetFontAccessManagerForTesting(
       std::unique_ptr<FontAccessManager> font_access_manager);
-  std::string GetPartitionDomain();
+  const std::string& GetPartitionDomain() const;
   AggregationService* GetAggregationService();
   FontAccessManager* GetFontAccessManager();
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)

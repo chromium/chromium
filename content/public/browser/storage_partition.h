@@ -96,9 +96,9 @@ class NavigationRequest;
 class CONTENT_EXPORT StoragePartition {
  public:
   // Returns the StoragePartitionConfig that represents this StoragePartition.
-  virtual const StoragePartitionConfig& GetConfig() = 0;
+  virtual const StoragePartitionConfig& GetConfig() const = 0;
 
-  virtual base::FilePath GetPath() = 0;
+  virtual const base::FilePath& GetPath() const = 0;
 
   // Returns a raw mojom::NetworkContext pointer. When network service crashes
   // or restarts, the raw pointer will not be valid or safe to use. Therefore,
