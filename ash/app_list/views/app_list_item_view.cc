@@ -2201,7 +2201,8 @@ void AppListItemView::UpdateProgressIndicatorState() {
     progress_indicator_->SetOuterRingTrackVisible(true);
   } else {
     progress_indicator_->SetHasRoundCap(true);
-    progress_indicator_->SetColorId(cros_tokens::kCrosSysPrimary);
+    progress_indicator_->SetColorId(
+        cros_tokens::kCrosSysSystemPrimaryContainer);
     progress_indicator_->SetOuterRingTrackVisible(false);
   }
 
