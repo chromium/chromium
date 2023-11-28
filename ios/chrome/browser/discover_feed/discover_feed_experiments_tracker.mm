@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/discover_feed/discover_feed_experiments_tracker.h"
 
 #import "components/variations/synthetic_trials.h"
-#import "ios/chrome/browser/metrics/ios_chrome_metrics_service_accessor.h"
+#import "ios/chrome/browser/metrics/model/ios_chrome_metrics_service_accessor.h"
 
 DiscoverFeedExperimentsTracker::DiscoverFeedExperimentsTracker(
     PrefService* pref_service)

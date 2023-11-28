@@ -80,7 +80,7 @@ source_set("tabs_internal") {
     "//ios/chrome/browser/lens/model",
     "//ios/chrome/browser/link_to_text/model",
     "//ios/chrome/browser/main/model",
-    "//ios/chrome/browser/metrics",
+    "//ios/chrome/browser/metrics/model",
     "//ios/chrome/browser/ntp",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/overscroll_actions/model",

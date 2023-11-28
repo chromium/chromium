@@ -49,7 +49,7 @@ source_set("user_activity_browser_agent") {
     "//ios/chrome/app/spotlight",
     "//ios/chrome/app/startup:startup_basic",
     "//ios/chrome/browser/intents:intent_type",
-    "//ios/chrome/browser/metrics:metrics_internal",
+    "//ios/chrome/browser/metrics/model:metrics_internal",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",

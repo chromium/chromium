@@ -8,7 +8,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/app/main_controller.h"
-#import "ios/chrome/browser/metrics/tab_usage_recorder_browser_agent.h"
+#import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/sessions/session_restoration_service.h"
 #import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"

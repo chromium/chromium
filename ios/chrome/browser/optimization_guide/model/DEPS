@@ -4,6 +4,6 @@ include_rules = [
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/push_notification/model",
   "+ios/chrome/browser/download/model/background_service",
-  "+ios/chrome/browser/metrics",
+  "+ios/chrome/browser/metrics/model",
   "+ios/web/public",
 ]

@@ -8,7 +8,7 @@
 
 #import "components/breadcrumbs/core/breadcrumb_manager.h"
 #import "ios/chrome/browser/crash_report/model/crash_report_helper.h"
-#import "ios/chrome/browser/metrics/ios_chrome_metrics_service_accessor.h"
+#import "ios/chrome/browser/metrics/model/ios_chrome_metrics_service_accessor.h"
 
 const char kBreadcrumbOrientation[] = "Orientation";
 

@@ -1,7 +1,7 @@
 include_rules = [
   "+ios/chrome/browser/first_run/model/first_run.h",
   "+ios/chrome/browser/memory/model/memory_debugger_manager.h",
-  "+ios/chrome/browser/metrics/ios_chrome_metrics_service_client.h",
+  "+ios/chrome/browser/metrics/model/ios_chrome_metrics_service_client.h",
   "+ios/chrome/browser/ntp/set_up_list_prefs.h",
   "+ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h",
   "+ios/chrome/browser/parcel_tracking/parcel_tracking_prefs.h",
@@ -19,7 +19,7 @@ specific_include_rules = {
   "^browser_prefs.mm": [
     "+ios/chrome/browser/ui",
     "+components/ntp_snippets",
-    "+ios/chrome/browser/metrics/constants.h",
+    "+ios/chrome/browser/metrics/model/constants.h",
   ],
 }
 

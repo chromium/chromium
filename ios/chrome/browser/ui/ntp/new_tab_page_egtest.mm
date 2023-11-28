@@ -8,7 +8,7 @@
 #import "components/policy/core/common/policy_test_utils.h"
 #import "components/policy/policy_constants.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/metrics/metrics_app_interface.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"

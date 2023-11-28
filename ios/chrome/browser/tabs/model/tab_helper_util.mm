@@ -56,7 +56,7 @@
 #import "ios/chrome/browser/itunes_urls/model/itunes_urls_handler_tab_helper.h"
 #import "ios/chrome/browser/lens/model/lens_tab_helper.h"
 #import "ios/chrome/browser/link_to_text/model/link_to_text_tab_helper.h"
-#import "ios/chrome/browser/metrics/pageload_foreground_duration_tab_helper.h"
+#import "ios/chrome/browser/metrics/model/pageload_foreground_duration_tab_helper.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_tab_helper.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_validation_tab_helper.h"

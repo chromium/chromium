@@ -14,7 +14,7 @@
 #import "components/bookmarks/common/bookmark_pref_names.h"
 #import "components/bookmarks/common/storage_type.h"
 #import "components/sync/base/features.h"
-#import "ios/chrome/browser/metrics/metrics_app_interface.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"

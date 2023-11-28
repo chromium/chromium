@@ -25,7 +25,7 @@
 #import "components/segmentation_platform/public/features.h"
 #import "components/segmentation_platform/public/model_provider.h"
 #import "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
-#import "ios/chrome/browser/metrics/ios_chrome_metrics_service_accessor.h"
+#import "ios/chrome/browser/metrics/model/ios_chrome_metrics_service_accessor.h"
 
 namespace segmentation_platform {
 

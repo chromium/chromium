@@ -13,7 +13,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/https_upgrades/model/https_upgrade_app_interface.h"
 #import "ios/chrome/browser/https_upgrades/model/https_upgrade_test_helper.h"
-#import "ios/chrome/browser/metrics/metrics_app_interface.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"

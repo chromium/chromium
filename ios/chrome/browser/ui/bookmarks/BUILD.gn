@@ -25,7 +25,7 @@ source_set("bookmarks") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/default_browser/model:utils",
-    "//ios/chrome/browser/metrics:metrics_internal",
+    "//ios/chrome/browser/metrics/model:metrics_internal",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",

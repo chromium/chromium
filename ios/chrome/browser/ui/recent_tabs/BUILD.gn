@@ -87,7 +87,7 @@ source_set("recent_tabs_ui") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/drag_and_drop/model",
     "//ios/chrome/browser/intents:intents_donation_helper",
-    "//ios/chrome/browser/metrics:metrics_internal",
+    "//ios/chrome/browser/metrics/model:metrics_internal",
     "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/sessions",

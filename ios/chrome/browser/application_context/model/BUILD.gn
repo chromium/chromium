@@ -35,7 +35,7 @@ source_set("model") {
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/gcm/model",
     "//ios/chrome/browser/history",
-    "//ios/chrome/browser/metrics",
+    "//ios/chrome/browser/metrics/model",
     "//ios/chrome/browser/policy",
     "//ios/chrome/browser/prefs/model",
     "//ios/chrome/browser/push_notification/model:push_notification_service",

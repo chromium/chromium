@@ -101,7 +101,7 @@ source_set("eg2_tests") {
     "//components/autofill/core/browser:test_support",
     "//components/url_formatter",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/metrics:eg_test_support+eg2",
+    "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/autofill:eg_test_support+eg2",
     "//ios/chrome/browser/ui/settings:settings_root_constants",

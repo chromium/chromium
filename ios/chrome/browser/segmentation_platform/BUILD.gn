@@ -30,7 +30,7 @@ source_set("segmentation_platform") {
     "//components/sync_device_info",
     "//components/variations",
     "//ios/chrome/browser/history",
-    "//ios/chrome/browser/metrics:accessor",
+    "//ios/chrome/browser/metrics/model:accessor",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",

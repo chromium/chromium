@@ -16,7 +16,7 @@ specific_include_rules = {
     "+ios/chrome/browser/infobars/overlays/browser_agent/infobar_overlay_browser_agent_util.h",
     "+ios/chrome/browser/intents/user_activity_browser_agent.h",
     "+ios/chrome/browser/lens/model/lens_browser_agent.h",
-    "+ios/chrome/browser/metrics/tab_usage_recorder_browser_agent.h",
+    "+ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h",
     "+ios/chrome/browser/policy/policy_watcher_browser_agent.h",
     "+ios/chrome/browser/reading_list/model/reading_list_browser_agent.h",
     "+ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_browser_agent.h",
