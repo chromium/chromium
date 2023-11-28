@@ -49,8 +49,6 @@ const char kUMABubbleReloadingTimeout[] =
     "CookieControls.Bubble.ReloadingTimeout";
 }  // namespace
 
-// TODO(http://b/306151669): Update tests to check different strings based
-// on 3PCD state rather than explicitly disabling 3PCD.
 class CookieControlsInteractiveUiTest : public InteractiveBrowserTest {
  public:
   CookieControlsInteractiveUiTest() {
@@ -167,6 +165,67 @@ class CookieControlsInteractiveUiTest : public InteractiveBrowserTest {
                   views::kEyeCrossedRefreshIcon));
   }
 
+  auto CheckTrackingProtectionLimitedState() {
+    return Steps(
+        CheckViewProperty(CookieControlsContentView::kToggleButton,
+                          &views::ToggleButton::GetIsOn, false),
+        CheckViewProperty(
+            CookieControlsContentView::kTitle, &views::Label::GetText,
+            l10n_util::GetStringUTF16(
+                IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_TITLE)),
+        CheckViewProperty(
+            CookieControlsContentView::kDescription, &views::Label::GetText,
+            l10n_util::GetStringUTF16(
+                IDS_TRACKING_PROTECTION_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_PERMANENT)),
+        CheckViewProperty(
+            CookieControlsContentView::kToggleLabel, &views::Label::GetText,
+            l10n_util::GetStringUTF16(
+                IDS_TRACKING_PROTECTION_BUBBLE_COOKIES_LIMITED_LABEL)),
+        CheckIcon(RichControlsContainerView::kIcon, views::kEyeCrossedIcon,
+                  views::kEyeCrossedRefreshIcon));
+  }
+
+  auto CheckTrackingProtectionAllowedState() {
+    return Steps(
+        CheckViewProperty(CookieControlsContentView::kToggleButton,
+                          &views::ToggleButton::GetIsOn, true),
+        CheckViewProperty(
+            CookieControlsContentView::kTitle, &views::Label::GetText,
+            l10n_util::GetPluralStringFUTF16(
+                IDS_TRACKING_PROTECTION_BUBBLE_LIMITING_RESTART_TITLE,
+                ExceptionDurationInDays())),
+        CheckViewProperty(
+            CookieControlsContentView::kDescription, &views::Label::GetText,
+            l10n_util::GetStringUTF16(
+                IDS_TRACKING_PROTECTION_BUBBLE_BLOCKING_RESTART_DESCRIPTION)),
+        CheckViewProperty(
+            CookieControlsContentView::kToggleLabel, &views::Label::GetText,
+            l10n_util::GetStringUTF16(
+                IDS_TRACKING_PROTECTION_BUBBLE_COOKIES_ALLOWED_LABEL)),
+        CheckIcon(RichControlsContainerView::kIcon, views::kEyeIcon,
+                  views::kEyeRefreshIcon));
+  }
+
+  auto CheckTrackingProtectionBlockedState() {
+    return Steps(
+        CheckViewProperty(CookieControlsContentView::kToggleButton,
+                          &views::ToggleButton::GetIsOn, false),
+        CheckViewProperty(
+            CookieControlsContentView::kTitle, &views::Label::GetText,
+            l10n_util::GetStringUTF16(
+                IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_TITLE)),
+        CheckViewProperty(
+            CookieControlsContentView::kDescription, &views::Label::GetText,
+            l10n_util::GetStringUTF16(
+                IDS_TRACKING_PROTECTION_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_PERMANENT)),
+        CheckViewProperty(
+            CookieControlsContentView::kToggleLabel, &views::Label::GetText,
+            l10n_util::GetStringUTF16(
+                IDS_TRACKING_PROTECTION_BUBBLE_COOKIES_BLOCKED_LABEL)),
+        CheckIcon(RichControlsContainerView::kIcon, views::kEyeCrossedIcon,
+                  views::kEyeCrossedRefreshIcon));
+  }
+
   auto CheckFeedbackButtonVisible(bool visible) {
     if (visible) {
       return Steps(EnsurePresent(CookieControlsContentView::kFeedbackButton));
@@ -179,6 +238,11 @@ class CookieControlsInteractiveUiTest : public InteractiveBrowserTest {
   int ExceptionDurationInDays() {
     return content_settings::features::kUserBypassUIExceptionExpiration.Get()
         .InDays();
+  }
+
+  void SetBlockAll3pcToggle(bool enabled) {
+    browser()->profile()->GetPrefs()->SetBoolean(
+        prefs::kBlockAll3pcToggleEnabled, enabled);
   }
 
   void BlockThirdPartyCookies(bool use_3pcd = false) {
@@ -664,4 +728,42 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, NoReloadView) {
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleSendFeedback), 0);
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingShown), 0);
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleReloadingTimeout), 0);
+}
+
+class CookieControlsInteractiveUi3pcdTest
+    : public CookieControlsInteractiveUiTest {};
+
+IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUi3pcdTest, AllowedView) {
+  BlockThirdPartyCookies(/*use_3pcd=*/true);
+  RunTestSequenceInContext(
+      context(), InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
+      PressButton(kCookieControlsIconElementId),
+      InAnyContext(WaitForShow(CookieControlsBubbleView::kContentView)),
+      PressButton(CookieControlsContentView::kToggleButton),
+      EnsureNotPresent(CookieControlsBubbleView::kReloadingView),
+      CheckTrackingProtectionAllowedState());
+}
+
+IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUi3pcdTest, BlockedView) {
+  BlockThirdPartyCookies(/*use_3pcd=*/true);
+  SetBlockAll3pcToggle(true);
+  RunTestSequenceInContext(
+      context(), InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
+      PressButton(kCookieControlsIconElementId),
+      InAnyContext(WaitForShow(CookieControlsBubbleView::kContentView)),
+      EnsureNotPresent(CookieControlsBubbleView::kReloadingView),
+      CheckTrackingProtectionBlockedState());
+}
+
+IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUi3pcdTest, LimitedView) {
+  BlockThirdPartyCookies(/*use_3pcd=*/true);
+  RunTestSequenceInContext(
+      context(), InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url()),
+      PressButton(kCookieControlsIconElementId),
+      InAnyContext(WaitForShow(CookieControlsBubbleView::kContentView)),
+      EnsureNotPresent(CookieControlsBubbleView::kReloadingView),
+      CheckTrackingProtectionLimitedState());
 }

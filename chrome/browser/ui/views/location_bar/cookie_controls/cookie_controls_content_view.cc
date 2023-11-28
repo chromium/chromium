@@ -61,6 +61,7 @@ std::unique_ptr<views::View> CreatePaddedSeparator() {
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CookieControlsContentView, kTitle);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CookieControlsContentView, kDescription);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CookieControlsContentView, kToggleButton);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CookieControlsContentView, kToggleLabel);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CookieControlsContentView,
                                       kFeedbackButton);
 
@@ -162,6 +163,7 @@ void CookieControlsContentView::AddToggleRow() {
 
   // The label will be provided via SetToggleLabel().
   toggle_label_ = toggle_row_->AddSecondaryLabel(u"");
+  toggle_label_->SetProperty(views::kElementIdentifierKey, kToggleLabel);
 
   enforced_icon_ =
       toggle_row_->AddControl(std::make_unique<views::ImageView>());
