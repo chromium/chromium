@@ -2783,16 +2783,16 @@
           Exclusive
         </message>
         <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_DIALOG_TITLE" desc="Title for the dialog confirming user's selection of auto dark mode for Time of Day wallpaper.">
-          Turn on auto dark mode?
+          Turn on dark mode automatically?
         </message>
         <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_DIALOG_CONTENT" desc="Content for the dialog confirming user's selection of auto dark mode for Time of Day wallpaper.">
-          For best results with this wallpaper, please turn on auto-dark mode. You can change it back in the app anytime.
+          Turn this on for best results with this wallpaper. You can turn off this setting at anytime.
         </message>
         <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_DIALOG_BACK_BUTTON" desc="Label for the button to close the dialog confirming user's selection of auto dark mode for Time of Day wallpaper">
           No thanks
         </message>
         <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_DIALOG_CONFIRM_BUTTON" desc="Label for the button to accept the dialog confirming user's selection of auto dark mode for Time of Day wallpaper.">
-          Turn on auto dark mode
+          Turn on
         </message>
 
         <!-- Personalization App Search Results -->

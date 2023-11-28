@@ -349,8 +349,6 @@ void AddStrings(content::WebUIDataSource* source) {
        IDS_PERSONALIZATION_APP_TIME_OF_DAY_BANNER_DESCRIPTION_NO_SCREENSAVER},
       {"timeOfDayWallpaperCollectionSublabel",
        IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_COLLECTION_SUBLABEL},
-
-      // TODO(b/309715996): Add finalized strings.
       {"timeOfDayWallpaperDialogTitle",
        IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_DIALOG_TITLE},
       {"timeOfDayWallpaperDialogContent",
