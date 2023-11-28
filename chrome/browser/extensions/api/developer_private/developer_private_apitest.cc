@@ -322,8 +322,8 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
   // Now open up an incognito browser window page and check the inspectable
   // views again. Waiting for the result catcher will wait for the incognito
   // service worker to have become active.
-  Browser* inconito_browser = CreateIncognitoBrowser(browser()->profile());
-  ASSERT_TRUE(inconito_browser);
+  Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
+  ASSERT_TRUE(incognito_browser);
   ASSERT_TRUE(result_catcher.GetNextResult());
   info = GetExtensionInfo(*extension);
   // The views should now have 2 entries, one for the main worker which will be
