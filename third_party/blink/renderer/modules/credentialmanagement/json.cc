@@ -79,6 +79,7 @@ AuthenticationExtensionsClientOutputsToJSON(
                             WebAuthnBase64UrlEncode(prf.results()->second()));
       }
     }
+    json->setPrf(builder.GetScriptValue());
   }
   return json;
 }
