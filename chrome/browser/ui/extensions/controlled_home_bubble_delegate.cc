@@ -120,10 +120,6 @@ void ControlledHomeBubbleDelegate::PendingShow() {
   GetPendingProfileSet().insert(profile_);
 }
 
-bool ControlledHomeBubbleDelegate::ShouldCloseOnDeactivate() {
-  return true;
-}
-
 std::u16string ControlledHomeBubbleDelegate::GetHeadingText() {
   return l10n_util::GetStringUTF16(
       IDS_EXTENSIONS_SETTINGS_API_TITLE_HOME_PAGE_BUBBLE);
@@ -164,10 +160,6 @@ std::u16string ControlledHomeBubbleDelegate::GetBodyText(
       IDS_EXTENSIONS_SETTINGS_API_THIRD_LINE_CONFIRMATION);
 
   return body;
-}
-
-std::u16string ControlledHomeBubbleDelegate::GetItemListText() {
-  return std::u16string();
 }
 
 std::u16string ControlledHomeBubbleDelegate::GetActionButtonText() {
