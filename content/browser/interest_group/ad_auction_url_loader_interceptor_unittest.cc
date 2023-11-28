@@ -399,6 +399,62 @@ TEST_F(AdAuctionURLLoaderInterceptorTest, RequestArrivedAfterCommit) {
       base64Decode(kLegitimateAdAuctionResponse)));
 }
 
+// Make sure that if a cloned pipe is created before the commit, but is used
+// after it, it still works.
+TEST_F(AdAuctionURLLoaderInterceptorTest, RequestOnClonedPipeBeforeCommit) {
+  NavigatePage(GURL("https://google.com"));
+
+  mojo::Remote<network::mojom::URLLoaderFactory> remote_url_loader_factory;
+  network::TestURLLoaderFactory proxied_url_loader_factory;
+  mojo::Remote<network::mojom::URLLoader> remote_loader;
+  mojo::PendingReceiver<network::mojom::URLLoaderClient> client;
+
+  base::WeakPtr<SubresourceProxyingURLLoaderService::BindContext> bind_context =
+      CreateFactory(proxied_url_loader_factory, remote_url_loader_factory);
+
+  mojo::Remote<network::mojom::URLLoaderFactory>
+      remote_url_loader_factory_clone;
+  remote_url_loader_factory->Clone(
+      remote_url_loader_factory_clone.BindNewPipeAndPassReceiver());
+  // Make sure the clone actually happens before the commit.
+  remote_url_loader_factory.FlushForTesting();
+
+  bind_context->OnDidCommitNavigation(
+      web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr());
+
+  // The request to `foo1.com` will add ad auction header value "?1".
+  remote_url_loader_factory_clone->CreateLoaderAndStart(
+      remote_loader.BindNewPipeAndPassReceiver(),
+      /*request_id=*/0, /*options=*/0,
+      CreateResourceRequest(GURL("https://foo1.com")),
+      client.InitWithNewPipeAndPassRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+  remote_url_loader_factory_clone.FlushForTesting();
+
+  EXPECT_EQ(1, proxied_url_loader_factory.NumPending());
+  network::TestURLLoaderFactory::PendingRequest* pending_request =
+      &proxied_url_loader_factory.pending_requests()->back();
+
+  std::string ad_auction_request_header_value;
+  bool has_ad_auction_request_header =
+      pending_request->request.headers.GetHeader(
+          "Sec-Ad-Auction-Fetch", &ad_auction_request_header_value);
+  EXPECT_TRUE(has_ad_auction_request_header);
+  EXPECT_EQ(ad_auction_request_header_value, "?1");
+
+  // The ad auction result from the response header will be stored in the page.
+  pending_request->client->OnReceiveResponse(
+      CreateResponseHead(
+          /*ad_auction_result_header_value=*/kLegitimateAdAuctionResponse,
+          /*ad_auction_signals_header_value=*/absl::nullopt),
+      /*body=*/{}, absl::nullopt);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(WitnessedAuctionResultForOrigin(
+      url::Origin::Create(GURL("https://foo1.com")),
+      base64Decode(kLegitimateAdAuctionResponse)));
+}
+
 TEST_F(AdAuctionURLLoaderInterceptorTest, RequestFromMainFrame) {
   NavigatePage(GURL("https://google.com"));
 
