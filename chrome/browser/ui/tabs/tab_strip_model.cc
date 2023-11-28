@@ -1189,10 +1189,6 @@ void TabStripModel::AddToReadLater(const std::vector<int>& indices) {
   AddToReadLaterImpl(indices);
 }
 
-Profile* TabStripModel::GetProfile() {
-  return profile();
-}
-
 void TabStripModel::CreateTabGroup(const tab_groups::TabGroupId& group) {
   if (!group_model_)
     return;

@@ -10,8 +10,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-class Profile;
-
 namespace tab_groups {
 class TabGroupId;
 }
@@ -27,7 +25,6 @@ class TabGroupController {
   virtual void MoveTabGroup(const tab_groups::TabGroupId& group) = 0;
   virtual void CloseTabGroup(const tab_groups::TabGroupId& group) = 0;
   virtual std::u16string GetTitleAt(int index) const = 0;
-  virtual Profile* GetProfile() = 0;
 
   // Methods from TabStripModel that are exposed to TabGroup.
   virtual absl::optional<tab_groups::TabGroupId> GetTabGroupForTab(

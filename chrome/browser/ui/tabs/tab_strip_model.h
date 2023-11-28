@@ -476,7 +476,6 @@ class TabStripModel : public TabGroupController {
   void UnfollowSites(const std::vector<int>& indices);
 
   // TabGroupController:
-  Profile* GetProfile() override;
   void CreateTabGroup(const tab_groups::TabGroupId& group) override;
   void OpenTabGroupEditor(const tab_groups::TabGroupId& group) override;
   void ChangeTabGroupContents(const tab_groups::TabGroupId& group) override;
