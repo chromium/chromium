@@ -546,7 +546,7 @@ export class Panel extends PanelInterface {
         break;
       case 'Enter':
       case ' ':
-        this.pendingCallback_ = this.getCallbackForCurrentItem_();
+        this.pendingCallback_ = this.menuManager_.getCallbackForCurrentItem();
         this.closeMenusAndRestoreFocus();
         break;
       default:
@@ -573,18 +573,6 @@ export class Panel extends PanelInterface {
     // to exit ChromeVox.
     this.ownerWindow_.location =
         chrome.extension.getURL('chromevox/panel/panel.html') + '#close';
-  }
-
-  /**
-   * Get the callback for whatever item is currently selected.
-   * @return {?Function} The callback for the current item.
-   * @private
-   */
-  getCallbackForCurrentItem_() {
-    if (this.menuManager_.activeMenu) {
-      return this.menuManager_.activeMenu.getCallbackForCurrentItem();
-    }
-    return null;
   }
 
   /** @override */

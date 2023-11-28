@@ -333,6 +333,17 @@ export class MenuManager {
   }
 
   /**
+   * Get the callback for whatever item is currently selected.
+   * @return {?Function} The callback for the current item.
+   */
+  getCallbackForCurrentItem() {
+    if (this.activeMenu_) {
+      return this.activeMenu_.getCallbackForCurrentItem();
+    }
+    return null;
+  }
+
+  /**
    * @param {string|undefined} opt_menuTitle
    * @return {!PanelMenu}
    */
