@@ -508,17 +508,6 @@ span(R&&)
     -> span<std::conditional_t<std::ranges::borrowed_range<R>, T, const T>,
             internal::ExtentV<R>>;
 
-// Fallback deduction guide for compatible ranges that currently don't satisfy
-// the contiguous_range concept.
-// TODO: https://crbug.com/1504998 - Remove in favor of the deduction guide
-// above and fix callsites.
-template <typename R,
-          typename T = std::remove_reference_t<
-              decltype(*std::ranges::data(std::declval<R&>()))>>
-  requires(!std::ranges::contiguous_range<R> &&
-           internal::LegacyCompatibleRange<T, R>)
-span(R&&) -> span<T>;
-
 // [span.objectrep], views of object representation
 template <typename T, size_t X>
 auto as_bytes(span<T, X> s) noexcept {

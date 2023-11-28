@@ -16,7 +16,6 @@
 
 #include "base/containers/adapters.h"
 #include "base/containers/checked_iterators.h"
-#include "base/memory/ref_counted_memory.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -146,15 +145,6 @@ namespace {
   static_assert(
       std::is_same_v<decltype(span(std::declval<std::array<float, 9>&&>())),
                      span<const float, 9>>);
-
-  // Tests for span(LegacyRange&&) deduction guide.
-
-  // base::RefCountedMemory is a type that is intended to be used with
-  // base::span, but doesn't satisfy the std::ranges::contiguous_range concept
-  // due to lacking begin() and end().
-  static_assert(
-      std::same_as<decltype(span(std::declval<base::RefCountedMemory&>())),
-                   span<const unsigned char>>);
 }
 
 }  // namespace
