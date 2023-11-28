@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/function_ref.h"
+#include "base/memory/safety_checks.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
@@ -127,6 +128,10 @@ class Page;
 // access it.
 class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
                                        public IPC::Sender {
+  // Do not remove this macro!
+  // The macro is maintained by the memory safety team.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   // Constant used to denote that a lookup of a FrameTreeNode ID has failed.
   enum { kNoFrameTreeNodeId = -1 };
