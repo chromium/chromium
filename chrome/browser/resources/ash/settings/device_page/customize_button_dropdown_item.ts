@@ -36,12 +36,19 @@ export class CustomizeButtonDropdownItemElement extends PolymerElement {
 
   static get properties(): PolymerElementProperties {
     return {
+      selected: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+
       option: {
         type: Object,
       },
     };
   }
 
+  selected: boolean;
   option: DropdownMenuOption;
 
   private onDropdownItemSelected_(): void {

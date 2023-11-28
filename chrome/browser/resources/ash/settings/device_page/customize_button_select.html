@@ -53,7 +53,8 @@
   <div id="menuContainer" slot="dropdown-content">
     <iron-list items="[[menu]]">
       <template>
-        <customize-button-dropdown-item option="[[item]]">
+        <customize-button-dropdown-item option="[[item]]"
+            selected="[[isItemSelected_(item, selectedItem)]]">
         </customize-button-dropdown-item>
       </template>
     </iron-list>

@@ -180,6 +180,7 @@ export class CustomizeButtonSelectElement extends
     this.addEventListener('blur', this.onBlur_);
     this.addEventListener(
         'customize-button-dropdown-selected', this.onDropdownItemSelected_);
+    this.addEventListener('keydown', this.onKeyDown_);
   }
 
   override disconnectedCallback(): void {
@@ -187,6 +188,7 @@ export class CustomizeButtonSelectElement extends
     this.removeEventListener('blur', this.onBlur_);
     this.removeEventListener(
         'customize-button-dropdown-selected', this.onDropdownItemSelected_);
+    this.removeEventListener('keydown', this.onKeyDown_);
   }
 
   override focus(): void {
@@ -408,6 +410,26 @@ export class CustomizeButtonSelectElement extends
     }
     const iconName = KeyToIconNameMap[key];
     return iconName ? `shortcut-input-keys:${iconName}` : null;
+  }
+
+  /**
+   * Return true if the item in the dropdown menu is selected.
+   */
+  private isItemSelected_(item: DropdownMenuOption): boolean {
+    if (item.value === OPEN_DIALOG_OPTION_VALUE &&
+        this.selectedValue === KEY_COMBINATION_OPTION_VALUE) {
+      return true;
+    }
+    return item.value === this.selectedValue;
+  }
+
+  private onKeyDown_(e: KeyboardEvent): void {
+    if (e.key === 'Enter') {
+      this.shouldShowDropdownMenu_ = !this.shouldShowDropdownMenu_;
+      return;
+    }
+
+    // TODO(yyhyyh@): Add case for ArrowUp and ArrowDown.
   }
 }
 
