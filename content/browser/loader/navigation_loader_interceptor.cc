@@ -26,8 +26,4 @@ bool NavigationLoaderInterceptor::MaybeCreateLoaderForResponse(
   return false;
 }
 
-bool NavigationLoaderInterceptor::ShouldBypassRedirectChecks() {
-  return false;
-}
-
 }  // namespace content

@@ -638,8 +638,6 @@ void NavigationURLLoaderImpl::MaybeStartLoader(
 
     subresource_loader_params_ =
         interceptor->MaybeCreateSubresourceLoaderParams();
-    if (interceptor->ShouldBypassRedirectChecks())
-      bypass_redirect_checks_ = true;
     return;
   }
 

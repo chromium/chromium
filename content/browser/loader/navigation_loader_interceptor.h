@@ -130,11 +130,6 @@ class CONTENT_EXPORT NavigationLoaderInterceptor {
       blink::ThrottlingURLLoader* url_loader,
       bool* skip_other_interceptors,
       bool* will_return_unsafe_redirect);
-
-  // Called when MaybeCreateLoader() has called the LoaderCallback with a valid
-  // loader factory. Returns true when this interceptor will return an unsafe
-  // redirect response and will handle the redirected request.
-  virtual bool ShouldBypassRedirectChecks();
 };
 
 }  // namespace content
