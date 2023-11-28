@@ -1,3 +1,0 @@
-Test	http://www.w3.org/2001/DOM-Test-Suite/level3/core/documentrenamenode20
-Status	failure
-Message	throw_NAMESPACE_ERR: assertTrue failed

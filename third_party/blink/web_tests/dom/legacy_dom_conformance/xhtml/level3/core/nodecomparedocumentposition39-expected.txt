@@ -1,3 +1,0 @@
-Test	http://www.w3.org/2001/DOM-Test-Suite/level3/core/nodecomparedocumentposition39
-Status	failure
-Message	isImplementationSpecific: assertEquals failed, actual 36, expected 32.
