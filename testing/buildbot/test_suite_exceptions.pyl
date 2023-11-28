@@ -135,6 +135,7 @@
           'dimensions': {
             'cores': '8', # crbug.com/1292221
           },
+          'shards': 3,
         },
       },
       # Keep this same as android-oreo-x86-rel above
