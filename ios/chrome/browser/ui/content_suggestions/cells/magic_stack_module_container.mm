@@ -184,7 +184,7 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
       [_subtitle setContentHuggingPriority:UILayoutPriorityRequired
                                    forAxis:UILayoutConstraintAxisHorizontal];
       [_subtitle
-          setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh
+          setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
                                           forAxis:
                                               UILayoutConstraintAxisHorizontal];
       _subtitle.textAlignment =
