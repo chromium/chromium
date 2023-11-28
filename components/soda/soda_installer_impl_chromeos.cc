@@ -50,6 +50,7 @@ SodaInstallerImplChromeOS::ConstructAvailableLanguages() const {
   if (!base::FeatureList::IsEnabled(kCrosExpandSodaLanguages)) {
     return available_languages;
   }
+
   available_languages.insert({"ja-JP", {"", LanguageCode::kJaJp}});
   available_languages.insert({"de-DE", {"", LanguageCode::kDeDe}});
   available_languages.insert({"es-ES", {"", LanguageCode::kEsEs}});
@@ -69,6 +70,21 @@ SodaInstallerImplChromeOS::ConstructAvailableLanguages() const {
   available_languages.insert({"de-BE", {"", LanguageCode::kDeBe}});
   available_languages.insert({"de-CH", {"", LanguageCode::kDeCh}});
   available_languages.insert({"es-US", {"", LanguageCode::kEsUs}});
+  available_languages.insert({"da-DK", {"", LanguageCode::kDaDk}});
+  available_languages.insert({"fr-CA", {"", LanguageCode::kFrCa}});
+  available_languages.insert({"hi-IN", {"", LanguageCode::kHiIn}});
+  available_languages.insert({"id-ID", {"", LanguageCode::kIdId}});
+  available_languages.insert({"ko-KR", {"", LanguageCode::kKoKr}});
+  available_languages.insert({"id-ID", {"", LanguageCode::kIdId}});
+  available_languages.insert({"nb-NO", {"", LanguageCode::kNbNo}});
+  available_languages.insert({"nl-NL", {"", LanguageCode::kNlNl}});
+  available_languages.insert({"pl-PL", {"", LanguageCode::kPlPl}});
+  available_languages.insert({"sv-SE", {"", LanguageCode::kSvSe}});
+  available_languages.insert({"th-TH", {"", LanguageCode::kThTh}});
+  available_languages.insert({"tr-TR", {"", LanguageCode::kTrTr}});
+  available_languages.insert({"zh-TW", {"", LanguageCode::kZhTw}});
+  available_languages.insert({"zh-CN", {"", LanguageCode::kZhCn}});
+
   // Add in from feature flags. the value is of the format:
   // "en-AU:libsoda-modelname,de-CH:libsoda-pizzaface"
   std::vector<std::string> langs =

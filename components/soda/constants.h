@@ -55,7 +55,13 @@ enum class LanguageCode {
   kTrTr = 26,
   kZhCn = 27,
   kZhTw = 28,
-  kMaxValue = kZhTw,
+  // TODO(evliu): Add Chrome LC Support for languages 29-33.
+  kDaDk = 29,
+  kFrCa = 30,
+  kNbNo = 31,
+  kNlNl = 32,
+  kSvSe = 33,
+  kMaxValue = kSvSe,
 };
 
 // Describes all metadata needed to dynamically install SODA language pack
