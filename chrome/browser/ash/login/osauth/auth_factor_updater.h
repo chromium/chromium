@@ -20,19 +20,19 @@ class UserContext;
 
 // This class encapsulates the logic that runs migrations by running
 // `AuthFactorMigrator` and applies policies by running `AuthPolicyEnforcer`.
-class AuthFactorUpdater : public AuthFactorMigration {
+class AuthFactorUpdater {
  public:
   AuthFactorUpdater(AuthPolicyConnector* connector,
                     UserDataAuthClient* user_data_auth,
                     PrefService* local_state);
-  ~AuthFactorUpdater() override;
+  ~AuthFactorUpdater();
 
   AuthFactorUpdater(const AuthFactorUpdater&) = delete;
   AuthFactorUpdater& operator=(const AuthFactorUpdater&) = delete;
 
   // Updates the configuration of auth factors.
   void Run(std::unique_ptr<UserContext> context,
-           AuthOperationCallback callback) override;
+           AuthOperationCallback callback);
 
  private:
   void OnMigratorRun(AuthOperationCallback callback,

@@ -179,6 +179,13 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Recording the microphone and system audio together"/>
 </enum>
 
+<enum name="AuthFactorMigrationResult">
+  <int value="0" label="Skipped"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Failed"/>
+  <int value="3" label="Not run"/>
+</enum>
+
 <enum name="AuthMethod">
   <int value="0" label="Password"/>
   <int value="1" label="PIN"/>

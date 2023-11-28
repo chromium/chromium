@@ -37,6 +37,18 @@ class AuthFactorMigrator {
   void Run(std::unique_ptr<UserContext> context,
            AuthOperationCallback callback);
 
+  // Enum used for UMA. Do NOT reorder or remove entry. Don't forget to
+  // update MigrationResult enum in enums.xml when adding new entries.
+  // Public for testing.
+  enum class MigrationResult {
+    kSkipped = 0,  // The migration was skipped because it wasn't required.
+    kSuccess,
+    kFailed,
+    kNotRun,  // The migration wasn't run at all because the previous migration
+              // failed.
+    kMaxValue = kNotRun,
+  };
+
  private:
   void RunImpl(std::unique_ptr<UserContext> context,
                AuthOperationCallback callback);

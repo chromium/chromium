@@ -54,6 +54,7 @@ void RecoveryFactorHsmPubkeyMigration::UpdateRecoveryFactor(
       cryptohome::AuthFactorType::kRecovery);
   if (!recovery) {
     // No recovery factor.
+    was_skipped_ = true;
     std::move(callback).Run(std::move(context), absl::nullopt);
     return;
   }
@@ -62,6 +63,7 @@ void RecoveryFactorHsmPubkeyMigration::UpdateRecoveryFactor(
       recovery->GetCryptohomeRecoveryMetadata().mediator_pub_key;
   if (mediator_key == GetRecoveryHsmPublicKey()) {
     // The latest public key was used for recovery, no need to update.
+    was_skipped_ = true;
     std::move(callback).Run(std::move(context), absl::nullopt);
     return;
   }
@@ -83,6 +85,14 @@ void RecoveryFactorHsmPubkeyMigration::OnRecoveryUpdated(
   }
   LOG(WARNING) << "Recovery factor updated";
   std::move(callback).Run(std::move(context), absl::nullopt);
+}
+
+bool RecoveryFactorHsmPubkeyMigration::WasSkipped() {
+  return was_skipped_;
+}
+
+AuthFactorMigration::MigrationName RecoveryFactorHsmPubkeyMigration::GetName() {
+  return MigrationName::kRecoveryFactorHsmPubkeyMigration;
 }
 
 }  // namespace ash

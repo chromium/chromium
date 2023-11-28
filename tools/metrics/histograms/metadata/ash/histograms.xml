@@ -4764,6 +4764,20 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Ash.OSAuth.Login.AuthFactorMigrationResult.{AuthFactorMigrationName}"
+    enum="AuthFactorMigrationResult" expires_after="2024-05-01">
+  <owner>anastasiian@chromium.org</owner>
+  <owner>cros-lurs@google.com</owner>
+  <summary>
+    The result of {AuthFactorMigrationName} migration. Reported on each login
+    after the migrations are run.
+  </summary>
+  <token key="AuthFactorMigrationName">
+    <variant name="RecoveryFactorHsmPubkeyMigration"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.OSAuth.Login.ConfiguredAuthFactors.{AuthFactor}"
     enum="Boolean" expires_after="2024-05-05">
   <owner>anastasiian@chromium.org</owner>

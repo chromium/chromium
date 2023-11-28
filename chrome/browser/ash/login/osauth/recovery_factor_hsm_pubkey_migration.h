@@ -35,6 +35,8 @@ class RecoveryFactorHsmPubkeyMigration : public AuthFactorMigration {
   // Updates the configuration of recovery factor factor.
   void Run(std::unique_ptr<UserContext> context,
            AuthOperationCallback callback) override;
+  bool WasSkipped() override;
+  MigrationName GetName() override;
 
  private:
   void OnAuthFactorConfigurationLoaded(
@@ -47,6 +49,7 @@ class RecoveryFactorHsmPubkeyMigration : public AuthFactorMigration {
                          std::unique_ptr<UserContext> context,
                          absl::optional<AuthenticationError> error);
 
+  bool was_skipped_ = false;
   std::unique_ptr<AuthFactorEditor> editor_;
   raw_ptr<UserDataAuthClient> user_data_auth_;
   // Must be the last member.
