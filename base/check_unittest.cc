@@ -28,6 +28,7 @@ class ScopedExpectDumpWithoutCrashing {
     g_dump_without_crashing_count = 0;
     base::debug::SetDumpWithoutCrashingFunction(&DumpWithoutCrashing);
   }
+
   ~ScopedExpectDumpWithoutCrashing() {
     EXPECT_EQ(1, g_dump_without_crashing_count);
     base::debug::SetDumpWithoutCrashingFunction(nullptr);
@@ -77,16 +78,19 @@ MATCHER_P2(LogErrorMatches, line, expected_msg, "") {
 // Macro which expects a DCHECK to fire if DCHECKs are enabled.
 //
 // Note: Please use the `CheckDeathTest` fixture when using this check.
-#define EXPECT_DCHECK(msg, check_expr)                                         \
-  do {                                                                         \
-    if (DCHECK_IS_ON() && logging::LOGGING_DCHECK == logging::LOGGING_FATAL) { \
-      EXPECT_DEATH_IF_SUPPORTED(check_expr, CHECK_MATCHER(__LINE__, msg));     \
-    } else if (DCHECK_IS_ON()) {                                               \
-      ScopedExpectDumpWithoutCrashing expect_dump;                             \
-      check_expr;                                                              \
-    } else {                                                                   \
-      check_expr;                                                              \
-    }                                                                          \
+// TODO(crbug.com/1505315) Port test to iOS if possible.
+#define EXPECT_DCHECK(msg, check_expr)                                     \
+  do {                                                                     \
+    if (DCHECK_IS_ON() &&                                                  \
+        (logging::LOGGING_DCHECK == logging::LOGGING_FATAL ||              \
+         BUILDFLAG(IS_IOS))) {                                             \
+      EXPECT_DEATH_IF_SUPPORTED(check_expr, CHECK_MATCHER(__LINE__, msg)); \
+    } else if (DCHECK_IS_ON()) {                                           \
+      ScopedExpectDumpWithoutCrashing expect_dump;                         \
+      check_expr;                                                          \
+    } else {                                                               \
+      check_expr;                                                          \
+    }                                                                      \
   } while (0)
 
 #define EXPECT_LOG_ERROR_WITH_FILENAME(expected_file, expected_line, expr,     \
@@ -130,7 +134,8 @@ MATCHER_P2(LogErrorMatches, line, expected_msg, "") {
     logging::SetLogMessageHandler(nullptr);                                    \
   } while (0)
 
-#if DCHECK_IS_ON()
+// TODO(crbug.com/1505315) Port test to iOS if possible.
+#if DCHECK_IS_ON() || BUILDFLAG(IS_IOS)
 #define EXPECT_DUMP_WILL_BE_CHECK EXPECT_DCHECK
 #else
 #define EXPECT_DUMP_WILL_BE_CHECK(expected_string, statement)               \
