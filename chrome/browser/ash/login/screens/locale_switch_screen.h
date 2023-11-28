@@ -26,13 +26,13 @@ class LocaleSwitchScreen : public BaseScreen,
                            public signin::IdentityManager::Observer {
  public:
   enum class Result {
-    LOCALE_FETCH_FAILED,
-    LOCALE_FETCH_TIMEOUT,
-    NO_SWITCH_NEEDED,
-    SWITCH_SUCCEDED,
-    SWITCH_FAILED,
-    SWITCH_DELEGATED,
-    NOT_APPLICABLE
+    kLocaleFetchFailed,
+    kLocaleFetchTimeout,
+    kNoSwitchNeeded,
+    kSwitchSucceded,
+    kSwitchFailed,
+    kSwitchDelegated,
+    kNotApplicable
   };
 
   static std::string GetResultString(Result result);
