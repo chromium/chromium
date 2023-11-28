@@ -4,6 +4,9 @@
 
 #include "components/qr_code_generator/qr_code_generator.h"
 
+#include <limits>
+#include <optional>
+
 #include "base/logging.h"
 #include "base/rand_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -284,6 +287,15 @@ TEST_P(QRCodeGeneratorTest, HugeInput) {
   std::vector<uint8_t> huge_input(QRCodeGenerator::kMaxInputSize + 1);
   QRCodeGenerator qr;
   ASSERT_FALSE(qr.Generate(huge_input));
+}
+
+TEST_P(QRCodeGeneratorTest, InvalidMinVersion) {
+  std::vector<uint8_t> huge_input(QRCodeGenerator::kMaxInputSize + 1);
+  QRCodeGenerator qr;
+  ASSERT_FALSE(qr.Generate(huge_input, std::make_optional(41)));
+  ASSERT_FALSE(qr.Generate(
+      huge_input, std::make_optional(std::numeric_limits<int>::max())));
+  ASSERT_FALSE(qr.Generate(huge_input, std::make_optional(-1)));
 }
 
 INSTANTIATE_TEST_SUITE_P(RustEnabled,

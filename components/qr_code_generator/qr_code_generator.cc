@@ -576,8 +576,11 @@ absl::optional<QRCodeGenerator::GeneratedCode> GenerateQrCodeUsingRust(
     base::span<const uint8_t> in,
     absl::optional<int> min_version) {
   rust::Slice<const uint8_t> rs_in = base::SpanToRustSlice(in);
+
+  // `min_version` might come from a fuzzer and therefore we use a lenient
+  // `saturated_cast` instead of a `checked_cast`.
   int16_t rs_min_version =
-      base::checked_cast<int16_t>(min_version.value_or(-1));
+      base::saturated_cast<int16_t>(min_version.value_or(0));
 
   std::vector<uint8_t> result_pixels;
   size_t result_width = 0;
