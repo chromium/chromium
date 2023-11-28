@@ -13,19 +13,27 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_object_objectarray.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_object_objectarray_string.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/css/resolver/font_style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_font_cache.h"
+#include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/style/filter_operation.h"
 #include "third_party/blink/renderer/core/style/shadow_data.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter_test_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/fonts/font.h"
+#include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 namespace {
 
+using ::blink_testing::GarbageCollectedIs;
 using ::blink_testing::ParseFilter;
 using ::testing::ByRef;
 using ::testing::Combine;
@@ -38,29 +46,6 @@ using ::testing::TestWithParam;
 using ::testing::Values;
 using ::testing::ValuesIn;
 
-// Matcher testing equality between garbage collected objects.
-//
-// To be compatible with parameterized tests, `GarbageCollectedIs` lazy creates
-// the expected garbage collected object. That's because GC objects can't be
-// created in the global scope and so, we can't call `MakeGarbageCollected`
-// inside of `INSTANTIATE_TEST_SUITE_P`. To circumvent this,
-// `GarbageCollectedIs` delays the creation of the garbage collected objects to
-// when the comparison is performed.
-//
-// Example use:
-//  Foo* gc_object = MakeGarbageCollected<Foo>(1, 2);
-//  EXPECTE_THAT(gc_object, GarbageCollectedIs<Foo>(1, 2));
-MATCHER_P(GarbageCollectedIsMatcher, matcher, "") {
-  return ExplainMatchResult(Eq(ByRef(*matcher.Run())), *arg, result_listener);
-}
-
-template <typename T, typename... Args>
-auto GarbageCollectedIs(const Args&... args) {
-  return GarbageCollectedIsMatcher(base::BindRepeating(
-      [](const Args&... args) { return MakeGarbageCollected<T>(args...); },
-      args...));
-}
-
 struct FilterTestParams {
   std::string testcase_name;
   std::string filter;
@@ -69,14 +54,15 @@ struct FilterTestParams {
 
 using FilterTest = TestWithParam<FilterTestParams>;
 
-TEST_P(FilterTest, CreatesFilterOperations) {
+TEST_P(FilterTest, CreatesFilterOperationsFromObject) {
   V8TestingScope scope;
-  EXPECT_THAT(
-      CanvasFilterOperationResolver::CreateFilterOperations(
-          CHECK_DEREF(ParseFilter(scope, GetParam().filter)),
-          CHECK_DEREF(scope.GetExecutionContext()), scope.GetExceptionState())
-          .Operations(),
-      ElementsAreArray(GetParam().expected_ops));
+  HeapVector<ScriptValue> filters = {
+      CHECK_DEREF(ParseFilter(scope, GetParam().filter)).GetAsObject()};
+  EXPECT_THAT(CanvasFilterOperationResolver::CreateFilterOperationsFromList(
+                  filters, CHECK_DEREF(scope.GetExecutionContext()),
+                  scope.GetExceptionState())
+                  .Operations(),
+              ElementsAreArray(GetParam().expected_ops));
   EXPECT_FALSE(scope.GetExceptionState().HadException());
 }
 
@@ -145,6 +131,170 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param.testcase_name;
     });
 
+using FilterArrayTest = TestWithParam<FilterTestParams>;
+
+TEST_P(FilterArrayTest, CreatesFilterOperationsFromObjectArray) {
+  V8TestingScope scope;
+  CHECK_DEREF(scope.GetExecutionContext());
+  HeapVector<ScriptValue> filters =
+      CHECK_DEREF(ParseFilter(scope, GetParam().filter)).GetAsObjectArray();
+  CHECK_DEREF(scope.GetExecutionContext());
+  EXPECT_THAT(CanvasFilterOperationResolver::CreateFilterOperationsFromList(
+                  filters, CHECK_DEREF(scope.GetExecutionContext()),
+                  scope.GetExceptionState())
+                  .Operations(),
+              ElementsAreArray(GetParam().expected_ops));
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    FilterArrayTests,
+    FilterArrayTest,
+    ValuesIn<FilterTestParams>({
+        {.testcase_name = "MultipleShadows",
+         .filter = R"js(([
+                    {
+                        "name": "dropShadow",
+                        "dx": 5,
+                        "dy": 5,
+                        "stdDeviation": 5,
+                        "floodColor": "blue",
+                        "floodOpacity": 0.5
+                    },
+                    {
+                        "name": "dropShadow",
+                        "dx": 10,
+                        "dy": 10,
+                        "stdDeviation": 10,
+                        "floodColor": "red",
+                        "floodOpacity": 0.7
+                    }
+                    ]))js",
+         .expected_ops =
+             {GarbageCollectedIs<DropShadowFilterOperation>(ShadowData(
+                  /*offset=*/{5, 5},
+                  /*blur=*/{5, 5},
+                  /*spread=*/0,
+                  ShadowStyle::kNormal,
+                  StyleColor(Color::FromRGBA(0, 0, 255, 255)),
+                  /*opacity=*/0.5)),
+              GarbageCollectedIs<DropShadowFilterOperation>(ShadowData(
+                  /*offset=*/{10, 10},
+                  /*blur=*/{10, 10},
+                  /*spread=*/0,
+                  ShadowStyle::kNormal,
+                  StyleColor(Color::FromRGBA(255, 0, 0, 255)),
+                  /*opacity=*/0.7))}},
+        {.testcase_name = "ShadowAndBlur",
+         .filter = R"js(([
+                    {
+                        "name": "dropShadow",
+                        "dx": 5,
+                        "dy": 5,
+                        "stdDeviation": 5,
+                        "floodColor": "blue",
+                        "floodOpacity": 0.5
+                    },
+                    {
+                        "name": "gaussianBlur",
+                        "stdDeviation": 12
+                    }
+                    ]))js",
+         .expected_ops =
+             {GarbageCollectedIs<DropShadowFilterOperation>(ShadowData(
+                  /*offset=*/{5, 5},
+                  /*blur=*/{5, 5},
+                  /*spread=*/0,
+                  ShadowStyle::kNormal,
+                  StyleColor(Color::FromRGBA(0, 0, 255, 255)),
+                  /*opacity=*/0.5)),
+              GarbageCollectedIs<BlurFilterOperation>(
+                  /*std_deviation=*/Length(12.0f, Length::Type::kFixed))}},
+    }),
+    [](const TestParamInfo<FilterTestParams>& info) {
+      return info.param.testcase_name;
+    });
+
+using CSSFilterTest = TestWithParam<FilterTestParams>;
+
+TEST_P(CSSFilterTest, CreatesFilterOperationsFromCSSFilter) {
+  V8TestingScope scope;
+  EXPECT_THAT(
+      CanvasFilterOperationResolver::CreateFilterOperationsFromCSSFilter(
+          String(GetParam().filter), CHECK_DEREF(scope.GetExecutionContext()),
+          /*style_resolution_host=*/nullptr, Font())
+          .Operations(),
+      ElementsAreArray(GetParam().expected_ops));
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    CSSFilterParamTests,
+    CSSFilterTest,
+    ValuesIn<FilterTestParams>({
+        {.testcase_name = "dropShadow",
+         .filter = "drop-shadow(20px 25px 10px cyan)",
+         .expected_ops = {GarbageCollectedIs<DropShadowFilterOperation>(
+             ShadowData(
+                 /*offset=*/{20, 25},
+                 /*blur=*/{10, 10},
+                 /*spread=*/0,
+                 ShadowStyle::kNormal,
+                 StyleColor(Color::FromRGBA(0, 255, 255, 255)),
+                 /*opacity=*/1.0))}},
+
+        {.testcase_name = "blur",
+         .filter = "blur(12px)",
+         .expected_ops = {GarbageCollectedIs<BlurFilterOperation>(
+             /*std_deviation=*/Length(12.0f, Length::Type::kFixed))}},
+    }),
+    [](const TestParamInfo<FilterTestParams>& info) {
+      return info.param.testcase_name;
+    });
+
+TEST(CSSResolutionTest,
+     CreatesFilterOperationsFromCSSFilterWithStyleResolution) {
+  V8TestingScope scope;
+  HTMLCanvasElement* canvas =
+      MakeGarbageCollected<HTMLCanvasElement>(scope.GetDocument());
+  // Pre-condition for using style resolution for fonts.
+  ASSERT_NE(canvas->GetDocument().GetFrame(), nullptr);
+  Font font(FontStyleResolver::ComputeFont(
+      *CSSParser::ParseFont("10px sans-serif", scope.GetExecutionContext()),
+      canvas->GetFontSelector()));
+  EXPECT_THAT(
+      CanvasFilterOperationResolver::CreateFilterOperationsFromCSSFilter(
+          String("drop-shadow(1em 1em 0 black)"),
+          CHECK_DEREF(scope.GetExecutionContext()), canvas, font)
+          .Operations(),
+      ElementsAreArray(
+          {GarbageCollectedIs<DropShadowFilterOperation>(ShadowData(
+              /*offset=*/{10, 10},
+              /*blur=*/{0, 0},
+              /*spread=*/0, ShadowStyle::kNormal, StyleColor(Color::kBlack),
+              /*opacity=*/1.0))}));
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+}
+
+TEST(CSSResolutionTest,
+     CreatesFilterOperationsFromCSSFilterWithNoStyleResolution) {
+  V8TestingScope scope;
+  EXPECT_THAT(
+      CanvasFilterOperationResolver::CreateFilterOperationsFromCSSFilter(
+          String("drop-shadow(1em 1em 0 black)"),
+          CHECK_DEREF(scope.GetExecutionContext()),
+          /*style_resolution_host=*/nullptr, Font())
+          .Operations(),
+      // Font sized is assumed to be 16px when no style resolution is available.
+      ElementsAreArray(
+          {GarbageCollectedIs<DropShadowFilterOperation>(ShadowData(
+              /*offset=*/{16, 16},
+              /*blur=*/{0, 0},
+              /*spread=*/0, ShadowStyle::kNormal, StyleColor(Color::kBlack),
+              /*opacity=*/1.0))}));
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+}
+
 using FilterApiTest = TestWithParam<
     std::tuple<std::string, std::string, std::string, ExceptionCode>>;
 
@@ -152,14 +302,17 @@ TEST_P(FilterApiTest, RaisesExceptionForInvalidType) {
   V8TestingScope scope;
   const auto& [filter_name, param_key, param_value, expected_error] =
       GetParam();
+  HeapVector<ScriptValue> filters = {
+      CHECK_DEREF(
+          ParseFilter(scope, base::StringPrintf(
+                                 "({name: '%s', %s: %s})", filter_name.c_str(),
+                                 param_key.c_str(), param_value.c_str())))
+          .GetAsObject()};
 
   EXPECT_THAT(
-      CanvasFilterOperationResolver::CreateFilterOperations(
-          CHECK_DEREF(ParseFilter(
-              scope,
-              base::StringPrintf("({name: '%s', %s: %s})", filter_name.c_str(),
-                                 param_key.c_str(), param_value.c_str()))),
-          CHECK_DEREF(scope.GetExecutionContext()), scope.GetExceptionState())
+      CanvasFilterOperationResolver::CreateFilterOperationsFromList(
+          filters, CHECK_DEREF(scope.GetExecutionContext()),
+          scope.GetExceptionState())
           .Operations(),
       SizeIs(expected_error == ToExceptionCode(DOMExceptionCode::kNoError)
                  ? 1

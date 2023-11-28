@@ -15,6 +15,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_begin_layer_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_canvasfilter_string.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/css/resolver/font_style_resolver.h"
+#include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/style/filter_operations.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter_test_utils.h"
@@ -43,6 +46,9 @@ using ::cc::TranslateOp;
 using ::testing::IsEmpty;
 using ::testing::Not;
 using ::testing::Pointee;
+using ::testing::TestParamInfo;
+using ::testing::TestWithParam;
+using ::testing::ValuesIn;
 
 // Test version of BaseRenderingContext2D. BaseRenderingContext2D can't be
 // tested directly because it's an abstract class. This test class essentially
@@ -56,7 +62,8 @@ class TestRenderingContext2D final
       : BaseRenderingContext2D(
             scheduler::GetSingleThreadTaskRunnerForTesting()),
         execution_context_(scope.GetExecutionContext()),
-        recorder_(this) {
+        recorder_(this),
+        host_canvas_element_(nullptr) {
     recorder_.beginRecording(gfx::Size(Width(), Height()));
   }
   ~TestRenderingContext2D() override = default;
@@ -111,11 +118,16 @@ class TestRenderingContext2D final
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(execution_context_);
+    visitor->Trace(host_canvas_element_);
     BaseRenderingContext2D::Trace(visitor);
   }
 
   void SetRestoreMatrixEnabled(bool enabled) {
     restore_matrix_enabled_ = enabled;
+  }
+
+  void SetHostHTMLCanvas(HTMLCanvasElement* host_canvas_element) {
+    host_canvas_element_ = host_canvas_element;
   }
 
  protected:
@@ -124,6 +136,10 @@ class TestRenderingContext2D final
   }
 
   void WillOverwriteCanvas() override {}
+
+  HTMLCanvasElement* HostAsHTMLCanvasElement() const override {
+    return host_canvas_element_;
+  }
 
  private:
   void InitializeForRecording(cc::PaintCanvas* canvas) const override {
@@ -136,10 +152,26 @@ class TestRenderingContext2D final
     return recorder_.finishRecordingAsPicture();
   }
 
+  bool ResolveFont(const String& new_font) override {
+    if (host_canvas_element_ == nullptr) {
+      return false;
+    }
+    auto* style = CSSParser::ParseFont(new_font, execution_context_);
+    if (style == nullptr) {
+      return false;
+    }
+    FontDescription font_description = FontStyleResolver::ComputeFont(
+        *style, host_canvas_element_->GetFontSelector());
+    GetState().SetFont(font_description,
+                       host_canvas_element_->GetFontSelector());
+    return true;
+  }
+
   Member<ExecutionContext> execution_context_;
   MemoryManagedPaintRecorder recorder_;
   bool context_lost_ = false;
   bool restore_matrix_enabled_ = true;
+  Member<HTMLCanvasElement> host_canvas_element_;
 };
 
 V8UnionCanvasFilterOrString* MakeBlurCanvasFilter(float std_deviation) {
@@ -1303,6 +1335,46 @@ TEST(BaseRenderingContextLayersCallOrderTests, BeginLayerSaveEndLayer) {
             DOMExceptionCode::kInvalidStateError);
   EXPECT_EQ(context->StateStackDepth(), 2);
   EXPECT_EQ(context->OpenedLayerCount(), 1);
+}
+
+TEST(BaseRenderingContextLayersCSSTests,
+     FilterOperationsWithStyleResolutionHost) {
+  ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  context->SetHostHTMLCanvas(
+      MakeGarbageCollected<HTMLCanvasElement>(scope.GetDocument()));
+  context->setFont("10px sans-serif");
+  NonThrowableExceptionState exception_state;
+  context->beginLayer(scope.GetScriptState(),
+                      FilterOption(scope, "'blur(1em)'"), exception_state);
+  context->endLayer(exception_state);
+
+  cc::PaintFlags flags;
+  flags.setImageFilter(
+      sk_make_sp<BlurPaintFilter>(10.0f, 10.0f, SkTileMode::kDecal, nullptr));
+  EXPECT_THAT(
+      context->FlushRecorder(),
+      RecordedOpsAre(PaintOpEq<SaveLayerOp>(flags), PaintOpEq<RestoreOp>()));
+}
+
+TEST(BaseRenderingContextLayersCSSTests,
+     FilterOperationsWithNoStyleResolutionHost) {
+  ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  NonThrowableExceptionState exception_state;
+  context->beginLayer(scope.GetScriptState(),
+                      FilterOption(scope, "'blur(1em)'"), exception_state);
+  context->endLayer(exception_state);
+
+  cc::PaintFlags flags;
+  // Font sized is assumed to be 16px when no style resolution is available.
+  flags.setImageFilter(
+      sk_make_sp<BlurPaintFilter>(16.0f, 16.0f, SkTileMode::kDecal, nullptr));
+  EXPECT_THAT(
+      context->FlushRecorder(),
+      RecordedOpsAre(PaintOpEq<SaveLayerOp>(flags), PaintOpEq<RestoreOp>()));
 }
 
 }  // namespace

@@ -106,6 +106,9 @@ class MODULES_EXPORT PaintRenderingContext2D
   bool IsPaint2D() const override { return true; }
   void WillOverwriteCanvas() override;
 
+  // PaintRenderingContext2D is unable to resolve fonts.
+  bool ResolveFont(const String& new_font) final { return false; }
+
  private:
   void InitializeForRecording(cc::PaintCanvas* canvas) const override;
 

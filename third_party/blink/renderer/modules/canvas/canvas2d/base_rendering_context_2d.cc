@@ -18,6 +18,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metrics.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_object_objectarray_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_begin_layer_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_canvasfilter_string.h"
 #include "third_party/blink/renderer/core/css/cssom/css_color_value.h"
@@ -35,6 +36,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/paint/filter_effect_builder.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_color_cache.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter_operation_resolver.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_pattern.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d_state.h"
@@ -203,10 +205,10 @@ void BaseRenderingContext2D::beginLayer(ScriptState* script_state,
   CanvasRenderingContext2DState& state = GetState();
   if (const V8CanvasFilterInput* filter_input = CHECK_DEREF(options).filter();
       filter_input != nullptr) {
-    FilterOperations filter_operations =
-        CanvasFilterOperationResolver::CreateFilterOperations(
-            *filter_input, CHECK_DEREF(ExecutionContext::From(script_state)),
-            exception_state);
+    HTMLCanvasElement* canvas_for_filter = HostAsHTMLCanvasElement();
+    FilterOperations filter_operations = CanvasFilter::CreateFilterOperations(
+        *filter_input, AccessFont(canvas_for_filter), canvas_for_filter,
+        CHECK_DEREF(ExecutionContext::From(script_state)), exception_state);
     if (exception_state.HadException()) {
       return;
     }
@@ -2596,11 +2598,6 @@ bool BaseRenderingContext2D::WillSetFont() const {
 
 bool BaseRenderingContext2D::CurrentFontResolvedAndUpToDate() const {
   return GetState().HasRealizedFont();
-}
-
-bool BaseRenderingContext2D::ResolveFont(const String& new_font) {
-  // Should only be called in unit tests
-  return false;
 }
 
 void BaseRenderingContext2D::setFont(const String& new_font) {

@@ -448,7 +448,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
 
   void WillUseCurrentFont() const;
   virtual bool WillSetFont() const;
-  virtual bool ResolveFont(const String& new_font);
+  virtual bool ResolveFont(const String& new_font) = 0;
   virtual bool CurrentFontResolvedAndUpToDate() const;
 
   explicit BaseRenderingContext2D(
