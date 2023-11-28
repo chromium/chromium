@@ -502,6 +502,11 @@ export class DirectoryModel extends EventTarget {
    * @private
    */
   onWatcherDirectoryChanged_(event) {
+    const customEvent =
+        /**
+           @type {import('./file_watcher.js').WatcherDirectoryChangedEvent}>}
+         */
+        (event);
     const directoryEntry = this.getCurrentDirEntry();
 
     if (!this.ignoreCurrentDirectoryDeletion_) {
@@ -518,18 +523,14 @@ export class DirectoryModel extends EventTarget {
           });
     }
 
-    // @ts-ignore: error TS2339: Property 'changedFiles' does not exist on type
-    // 'Event'.
-    if (event.changedFiles) {
+    if (customEvent.detail?.changedFiles) {
       // @ts-ignore: error TS7034: Variable 'addedOrUpdatedFileUrls' implicitly
       // has type 'any[]' in some locations where its type cannot be determined.
       const addedOrUpdatedFileUrls = [];
       // @ts-ignore: error TS7034: Variable 'deletedFileUrls' implicitly has
       // type 'any[]' in some locations where its type cannot be determined.
       let deletedFileUrls = [];
-      // @ts-ignore: error TS7006: Parameter 'change' implicitly has an 'any'
-      // type.
-      event.changedFiles.forEach(change => {
+      customEvent.detail.changedFiles.forEach(change => {
         if (change.changes.length === 1 && change.changes[0] === 'delete') {
           deletedFileUrls.push(change.url);
         } else {
