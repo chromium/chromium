@@ -46,19 +46,6 @@ namespace blink {
 
 namespace {
 
-int64_t GetEventLatencyMicros(base::TimeTicks event_timestamp,
-                              base::TimeTicks now) {
-  return (now - event_timestamp).InMicroseconds();
-}
-
-void LogInputEventLatencyUma(const WebInputEvent& event, base::TimeTicks now) {
-  UMA_HISTOGRAM_CUSTOM_COUNTS(
-      "Event.AggregatedLatency.Renderer2",
-      base::saturated_cast<base::HistogramBase::Sample>(
-          GetEventLatencyMicros(event.TimeStamp(), now)),
-      1, 10000000, 100);
-}
-
 void LogPassiveEventListenersUma(WebInputEventResult result,
                                  WebInputEvent::DispatchType dispatch_type) {
   // This enum is backing a histogram. Do not remove or reorder members.
@@ -319,10 +306,6 @@ void WidgetBaseInputHandler::HandleInputEvent(
   ImeEventGuard guard(widget_->GetWeakPtr());
 #endif
 
-  base::TimeTicks start_time;
-  if (base::TimeTicks::IsHighResolution())
-    start_time = base::TimeTicks::Now();
-
   TRACE_EVENT1("renderer,benchmark,rail",
                "WidgetBaseInputHandler::OnHandleInputEvent", "event",
                WebInputEvent::GetName(input_event.GetType()));
@@ -336,11 +319,6 @@ void WidgetBaseInputHandler::HandleInputEvent(
                 tracing::FillFlowEvent(ctx, TrackEvent::LegacyEvent::FLOW_INOUT,
                                        trace_id);
               });
-
-  // If we don't have a high res timer, these metrics won't be accurate enough
-  // to be worth collecting. Note that this does introduce some sampling bias.
-  if (!start_time.is_null())
-    LogInputEventLatencyUma(input_event, start_time);
 
   ui::LatencyInfo swap_latency_info(coalesced_event.latency_info());
   swap_latency_info.AddLatencyNumber(

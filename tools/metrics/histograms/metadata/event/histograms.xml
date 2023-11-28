@@ -53,23 +53,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".TopControlsMoved" summary="Top controls changed."/>
 </variants>
 
-<histogram name="Event.AggregatedLatency.Renderer2" units="microseconds"
-    expires_after="2022-04-24">
-  <owner>flackr@chromium.org</owner>
-  <summary>
-    Time between initiation of any input event and the renderer receiving and
-    starting to process it.
-
-    Team: input-dev@chromium.org.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
 <histogram name="Event.AndroidActionDown.ToolType" enum="MotionEventToolType"
     expires_after="never">
 <!-- expires-never: Needed for long-term usage tracking for different types of
