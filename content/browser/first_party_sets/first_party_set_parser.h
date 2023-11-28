@@ -25,8 +25,6 @@ namespace content {
 
 class CONTENT_EXPORT FirstPartySetParser {
  public:
-  enum class PolicySetType { kReplacement, kAddition };
-
   using PolicyParseResult = std::pair<
       base::expected<net::SetsMutation, FirstPartySetsHandler::ParseError>,
       std::vector<FirstPartySetsHandler::ParseWarning>>;

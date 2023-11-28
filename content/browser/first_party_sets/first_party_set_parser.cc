@@ -54,11 +54,13 @@ constexpr char kCCTLDsField[] = "ccTLDs";
 constexpr char kFirstPartySetPolicyReplacementsField[] = "replacements";
 constexpr char kFirstPartySetPolicyAdditionsField[] = "additions";
 
-const char* SetTypeToString(FirstPartySetParser::PolicySetType set_type) {
+enum class PolicySetType { kReplacement, kAddition };
+
+const char* SetTypeToString(PolicySetType set_type) {
   switch (set_type) {
-    case FirstPartySetParser::PolicySetType::kReplacement:
+    case PolicySetType::kReplacement:
       return kFirstPartySetPolicyReplacementsField;
-    case FirstPartySetParser::PolicySetType::kAddition:
+    case PolicySetType::kAddition:
       return kFirstPartySetPolicyAdditionsField;
   }
 }
@@ -277,7 +279,7 @@ class ParseContext {
   // Returns the parsed sets if successful; otherwise returns the first error.
   base::expected<std::vector<SingleSet>, ParseError> GetPolicySetsFromList(
       const base::Value::List* policy_sets,
-      FirstPartySetParser::PolicySetType set_type) {
+      PolicySetType set_type) {
     if (!policy_sets) {
       return {};
     }
