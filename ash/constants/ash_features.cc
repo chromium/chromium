@@ -1374,7 +1374,7 @@ BASE_FEATURE(kHelpAppAutoTriggerInstallDialog,
 // If enabled, the Help app will render with Cros components.
 BASE_FEATURE(kHelpAppCrosComponents,
              "HelpAppCrosComponents",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables the Help App Discover tab notifications on non-stable
 // ChromeOS channels. Used for testing.
