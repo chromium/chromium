@@ -122,6 +122,16 @@ def boot_device(target_id: Optional[str],
     Raises:
         StateTransitionError: When final state of device is not desired.
     """
+    # Avoid cycle dependency.
+    # This file will be replaced with serial_boot_device quite soon, later one
+    # should be much more reliable comparing to ffx target list and ssh. So
+    # changing the file structure is not necessary in the current situation.
+    # pylint: disable=cyclic-import, import-outside-toplevel
+    # pylint: disable=wrong-import-position
+    import serial_boot_device
+    if serial_boot_device.boot_device(target_id, serial_num, mode, must_boot):
+        return
+
     # Skip boot call if already in the state and not skipping check.
     state = _get_target_state(target_id, serial_num, num_attempts=3)
     wanted_state = _BOOTMODE_TO_STATE.get(mode)
