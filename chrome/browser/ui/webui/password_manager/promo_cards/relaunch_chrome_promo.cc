@@ -20,6 +20,10 @@ std::string RelaunchChromePromo::GetPromoID() const {
   return kRelauchChromeId;
 }
 
+password_manager::PromoCardType RelaunchChromePromo::GetPromoCardType() const {
+  return password_manager::PromoCardType::kRelauchChrome;
+}
+
 bool RelaunchChromePromo::ShouldShowPromo() const {
   if (OSCrypt::IsEncryptionAvailable()) {
     return false;

@@ -12,8 +12,8 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "ui/base/l10n/l10n_util.h"
 
-constexpr char kCheckupPromoId[] = "password_checkup_promo";
 constexpr base::TimeDelta kPasswordCheckupPromoPeriod = base::Days(7);
+constexpr char kCheckupPromoId[] = "password_checkup_promo";
 
 PasswordCheckupPromo::PasswordCheckupPromo(
     PrefService* prefs,
@@ -27,6 +27,10 @@ PasswordCheckupPromo::~PasswordCheckupPromo() = default;
 
 std::string PasswordCheckupPromo::GetPromoID() const {
   return kCheckupPromoId;
+}
+
+password_manager::PromoCardType PasswordCheckupPromo::GetPromoCardType() const {
+  return password_manager::PromoCardType::kCheckup;
 }
 
 bool PasswordCheckupPromo::ShouldShowPromo() const {

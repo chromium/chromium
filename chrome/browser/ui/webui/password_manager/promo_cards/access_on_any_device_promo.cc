@@ -7,12 +7,11 @@
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 
-constexpr char kAccessOnAnyDevicePromoId[] = "access_on_any_device_promo";
-
 extern const char16_t kGetStartedOnAndroid[] =
     u"https://support.google.com/chrome/?p=gpm_desktop_promo_android";
 extern const char16_t kGetStartedOnIOS[] =
     u"https://support.google.com/chrome/?p=gpm_desktop_promo_ios";
+constexpr char kAccessOnAnyDevicePromoId[] = "access_on_any_device_promo";
 
 AccessOnAnyDevicePromo::AccessOnAnyDevicePromo(PrefService* prefs)
     : password_manager::PasswordPromoCardBase(kAccessOnAnyDevicePromoId,
@@ -20,6 +19,11 @@ AccessOnAnyDevicePromo::AccessOnAnyDevicePromo(PrefService* prefs)
 
 std::string AccessOnAnyDevicePromo::GetPromoID() const {
   return kAccessOnAnyDevicePromoId;
+}
+
+password_manager::PromoCardType AccessOnAnyDevicePromo::GetPromoCardType()
+    const {
+  return password_manager::PromoCardType::kAccessOnAnyDevice;
 }
 
 bool AccessOnAnyDevicePromo::ShouldShowPromo() const {
