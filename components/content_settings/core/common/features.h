@@ -114,6 +114,11 @@ BASE_DECLARE_FEATURE(kTpcdHeuristicsGrants);
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 extern const base::FeatureParam<bool> kTpcdReadHeuristicsGrants;
 
+// Whether we should partition content settings (by StoragePartitions for
+// non-ios platforms).
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+BASE_DECLARE_FEATURE(kContentSettingsPartitioning);
+
 }  // namespace features
 }  // namespace content_settings
 

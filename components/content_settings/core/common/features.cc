@@ -87,5 +87,9 @@ BASE_FEATURE(kTpcdHeuristicsGrants,
 const base::FeatureParam<bool> kTpcdReadHeuristicsGrants{
     &kTpcdHeuristicsGrants, kTpcdReadHeuristicsGrantsName, false};
 
+BASE_FEATURE(kContentSettingsPartitioning,
+             "ContentSettingsPartitioning",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace content_settings

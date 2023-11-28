@@ -186,6 +186,10 @@ const char kContentLanguagesInLanguagePickerDescription[] =
     "Enables bringing user's content languages that are translatable to the "
     "top of the list with all languages shown in the translate menu";
 
+const char kContentSettingsPartitioningName[] = "Content Settings Partitioning";
+const char kContentSettingsPartitioningDescription[] =
+    "Partition content settings by StoragePartitions";
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kCoralFeatureKeyName[] = "Secret key for Coral feature.";
 const char kCoralFeatureKeyDescription[] =

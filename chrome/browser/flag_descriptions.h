@@ -134,6 +134,9 @@ extern const char kComputePressureBreakCalibrationMitigationDescription[];
 extern const char kContentLanguagesInLanguagePickerName[];
 extern const char kContentLanguagesInLanguagePickerDescription[];
 
+extern const char kContentSettingsPartitioningName[];
+extern const char kContentSettingsPartitioningDescription[];
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kCoralFeatureKeyName[];
 extern const char kCoralFeatureKeyDescription[];
