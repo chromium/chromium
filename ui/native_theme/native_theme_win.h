@@ -72,7 +72,15 @@ class NATIVE_THEME_EXPORT NativeThemeWin : public NativeTheme,
   gfx::Size GetNinePatchCanvasSize(Part part) const override;
   gfx::Rect GetNinePatchAperture(Part part) const override;
   bool ShouldUseDarkColors() const override;
+
+  // On Windows, we look at the high contrast setting to calculate the color
+  // scheme. If high contrast is enabled, the preferred color scheme calculation
+  // will ignore the state of dark mode. Instead, preferred color scheme will be
+  // light or dark depending on the OS high contrast theme. If high contrast is
+  // off, the preferred color scheme calculation will be based of the state of
+  // dark mode.
   PreferredColorScheme CalculatePreferredColorScheme() const override;
+
   PreferredContrast CalculatePreferredContrast() const override;
   ColorScheme GetDefaultSystemColorScheme() const override;
 
