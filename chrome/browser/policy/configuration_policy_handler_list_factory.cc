@@ -299,6 +299,11 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kPrintingEnabled,
     base::Value::Type::BOOLEAN },
 #endif // BUILDFLAG(ENABLE_PRINTING)
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  { key::kOopPrintDriversAllowed,
+    prefs::kOopPrintDriversAllowedByPolicy,
+    base::Value::Type::BOOLEAN },
+#endif
   { key::kSafeBrowsingEnabled,
     prefs::kSafeBrowsingEnabled,
     base::Value::Type::BOOLEAN },

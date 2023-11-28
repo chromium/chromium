@@ -1559,6 +1559,14 @@ inline constexpr char kPrintingPaperSizeDefault[] =
 inline constexpr char kPrintingEnabled[] = "printing.enabled";
 #endif  // BUILDFLAG(ENABLE_PRINTING)
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+// Boolean controlling whether making platform printing calls from a
+// PrintBackend service instead of from the browser process is allowed by
+// policy.
+inline constexpr char kOopPrintDriversAllowedByPolicy[] =
+    "printing.oop_print_drivers_allowed_by_policy";
+#endif
+
 // Boolean controlling whether print preview is disabled.
 inline constexpr char kPrintPreviewDisabled[] =
     "printing.print_preview_disabled";

@@ -1616,6 +1616,15 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   SearchEngineChoiceService::RegisterLocalStatePrefs(registry);
 #endif
 
+  // Platform-specific and compile-time conditional individual preferences.
+  // If you have multiple preferences that should clearly be grouped together,
+  // please group them together into a helper function called above. Please
+  // keep this list alphabetized.
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  registry->RegisterBooleanPref(prefs::kOopPrintDriversAllowedByPolicy, true);
+#endif
+
   // This is intentionally last.
   RegisterLocalStatePrefsForMigration(registry);
 }
