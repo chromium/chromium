@@ -116,9 +116,8 @@ void DismissChoiceScreenIfNecessary() {
       assertWithMatcher:grey_notNil()] performAction:grey_tap()];
 }
 
-// Dismisses the remaining screens in FRE after sign-in and sync.
-void DismissScreensAfterSigninAndSync() {
-  DismissChoiceScreenIfNecessary();
+// Dismisses the remaining screens in FRE after the search engine choice screen.
+void DismissScreensAfterChoiceScreen() {
   id<GREYMatcher> buttonMatcher = grey_allOf(
       grey_ancestor(grey_accessibilityID(
           first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)),
@@ -141,6 +140,12 @@ void DismissScreensAfterSigninAndSync() {
     [[[EarlGrey selectElementWithMatcher:omniboxPositionScreenPrimaryButton]
         assertWithMatcher:grey_notNil()] performAction:grey_tap()];
   }
+}
+
+// Dismisses the remaining screens in FRE after sign-in and sync.
+void DismissScreensAfterSigninAndSync() {
+  DismissChoiceScreenIfNecessary();
+  DismissScreensAfterChoiceScreen();
 }
 
 }  // namespace
@@ -1243,6 +1248,50 @@ void DismissScreensAfterSigninAndSync() {
                   @"history_sync_opt_in_background"),
               grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_notNil()];
+}
+
+// Tests that the Search Engine Choice screen is displayed and that it correctly
+// sets the default search engine.
+- (void)testSearchEngineChoiceScreen {
+  if (![ChromeEarlGreyAppInterface IsSearchEngineChoiceScreenEnabledFre]) {
+    // Do not run this test if the choice screen is not enabled.
+    return;
+  }
+  // Skips sign-in.
+  [[self elementInteractionWithGreyMatcher:
+             chrome_test_util::PromoStyleSecondaryActionButtonMatcher()
+                      scrollViewIdentifier:
+                          kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
+  // Checks that the choice screen is shown
+  [self verifyChoiceScreenOrDefaultBrowserIsDisplayed];
+  // Verifies that the primary button is initially disabled.
+  id<GREYMatcher> primaryButtonMatcher = grey_buttonTitle(
+      l10n_util::GetNSString(IDS_SEARCH_ENGINE_CHOICE_BUTTON_TITLE));
+  [[EarlGrey selectElementWithMatcher:primaryButtonMatcher]
+      assertWithMatcher:grey_allOf(grey_not(grey_enabled()), grey_notNil(),
+                                   nil)];
+  // Selects a search engine.
+  id<GREYMatcher> bingRowMatcher = grey_allOf(
+      grey_userInteractionEnabled(), grey_accessibilityLabel(@"Bing"), nil);
+  [[[EarlGrey selectElementWithMatcher:bingRowMatcher]
+      assertWithMatcher:grey_notNil()] performAction:grey_tap()];
+  // Taps the primary button again.
+  [[[EarlGrey
+      selectElementWithMatcher:grey_buttonTitle(l10n_util::GetNSString(
+                                   IDS_SEARCH_ENGINE_CHOICE_BUTTON_TITLE))]
+      assertWithMatcher:grey_notNil()] performAction:grey_tap()];
+
+  DismissScreensAfterChoiceScreen();
+
+  // Opens the default search engine settings menu.
+  [ChromeEarlGreyUI openSettingsMenu];
+  // Verifies that the correct search engine is selected. The default engine's
+  // name appears in the name of the selected row.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsSearchEngineButton()]
+      assertWithMatcher:grey_allOf(grey_accessibilityValue(@"Bing"),
+                                   grey_notNil(), nil)];
 }
 
 #pragma mark - Helper
