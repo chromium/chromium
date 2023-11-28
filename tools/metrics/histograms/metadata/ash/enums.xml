@@ -1250,6 +1250,7 @@ chromium-metrics-reviews@google.com.
   <int value="20" label="Multitask Menu Clamshell"/>
   <int value="21" label="Multitask Menu Tablet"/>
   <int value="22" label="Capture Mode Education Shortcut Nudge"/>
+  <int value="23" label="Capture Mode Education Shortcut Tutorial"/>
 </enum>
 
 <enum name="OnDeviceToServerSpeechRecognitionFallbackReason">

@@ -328,6 +328,14 @@ void SystemDialogDelegateView::SetMiddleContentAlignment(
   SetViewCrossAxisAlignment(contents_[ContentType::kMiddle], alignment);
 }
 
+void SystemDialogDelegateView::SetAcceptButtonVisible(bool visible) {
+  button_container_->accept_button()->SetVisible(visible);
+}
+
+void SystemDialogDelegateView::SetTitleMargins(const gfx::Insets& margins) {
+  SetViewLayoutSpecs(title_, margins);
+}
+
 gfx::Size SystemDialogDelegateView::CalculatePreferredSize() const {
   auto* host_window = GetDialogHostWindow(GetWidget());
   // If the delegate view is not added to a widget or parented to a host window,

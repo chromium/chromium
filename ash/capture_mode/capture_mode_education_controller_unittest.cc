@@ -36,6 +36,8 @@ constexpr char kNudgeTimeToActionWithin1h[] =
 constexpr char kNudgeTimeToActionWithinSession[] =
     "Ash.NotifierFramework.Nudge.TimeToAction.WithinSession";
 
+constexpr float kKeyboardImageWidth = 448;
+
 PrefService* GetPrefService() {
   return Shell::Get()->session_controller()->GetActivePrefService();
 }
@@ -314,6 +316,50 @@ TEST_F(CaptureModeEducationShortcutNudgeTest, ShortcutNudgeMetrics) {
   histogram_tester.ExpectBucketCount(
       kNudgeTimeToActionWithinSession,
       NudgeCatalogName::kCaptureModeEducationShortcutNudge, 1);
+}
+
+// Test fixture to verify the behaviour of Arm 2, the shortcut tutorial.
+class CaptureModeEducationShortcutTutorialTest
+    : public CaptureModeEducationControllerTest {
+ public:
+  CaptureModeEducationShortcutTutorialTest()
+      : CaptureModeEducationControllerTest("ShortcutTutorial") {}
+  CaptureModeEducationShortcutTutorialTest(
+      const CaptureModeEducationShortcutTutorialTest&) = delete;
+  CaptureModeEducationShortcutTutorialTest& operator=(
+      const CaptureModeEducationShortcutTutorialTest&) = delete;
+  ~CaptureModeEducationShortcutTutorialTest() override = default;
+};
+
+TEST_F(CaptureModeEducationShortcutTutorialTest, DialogShowsOnButtonPressed) {
+  base::SimpleTestClock test_clock;
+  CaptureModeEducationControllerTest::SetOverrideClock(&test_clock);
+
+  // Advance clock so we aren't at zero time.
+  test_clock.Advance(base::Hours(25));
+
+  // Attempt to use the Windows Snipping Tool (capture bar) shortcut.
+  PressAndReleaseKey(ui::VKEY_S, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN);
+
+  // Click the "Show me how" button on the nudge.
+  AnchoredNudgeManagerImpl* nudge_manager =
+      Shell::Get()->anchored_nudge_manager();
+  LeftClickOn(nudge_manager->GetNudgePrimaryButtonForTest(kCaptureModeNudgeId));
+
+  // The nudge should not be visible.
+  EXPECT_FALSE(nudge_manager->GetNudgeIfShown(kCaptureModeNudgeId));
+
+  // The tutorial widget should be visible.
+  auto* tutorial_widget = CaptureModeController::Get()
+                              ->education_controller()
+                              ->tutorial_widget_for_test();
+  ASSERT_TRUE(tutorial_widget);
+
+  // The keyboard image should be scaled to the the correct width.
+  auto* image_view = tutorial_widget->GetContentsView()->GetViewByID(
+      VIEW_ID_SCREEN_CAPTURE_EDUCATION_KEYBOARD_IMAGE);
+  ASSERT_TRUE(image_view);
+  EXPECT_EQ(kKeyboardImageWidth, image_view->width());
 }
 
 }  // namespace ash

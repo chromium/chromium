@@ -7,11 +7,15 @@
 
 #include "ash/ash_export.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 
 class PrefRegistrySimple;
 
 namespace ash {
+
+// TODO(hewer): Close tutorial when a capture session is started.
 
 // Controller for showing the different forms of user education for Screen
 // Capture entry points. Education is split into three different arms:
@@ -52,6 +56,8 @@ class ASH_EXPORT CaptureModeEducationController {
   // education based on the enabled arm/feature param.
   void MaybeShowEducation();
 
+  views::Widget* tutorial_widget_for_test() { return tutorial_widget_.get(); }
+
  private:
   friend class CaptureModeEducationControllerTest;
 
@@ -62,8 +68,24 @@ class ASH_EXPORT CaptureModeEducationController {
   // take a screenshot.
   void ShowShortcutNudge();
 
+  // Shows Arm 2, an unanchored system nudge indicating the keyboard shortcut to
+  // take a screenshot, with a button to open a new tutorial widget.
+  void ShowTutorialNudge();
+
+  // Creates and shows the system dialog displaying the keyboard shortcut and
+  // illustration for taking a screenshot.
+  void CreateAndShowTutorialDialog();
+
+  // Closes the nudge and shows the tutorial dialog for Arm 2.
+  void OnShowMeHowButtonPressed();
+
   // If set to true, ignores the 3 times/24 hours show limit for testing.
   bool skip_prefs_for_test_ = false;
+
+  // The widget that contains the tutorial dialog view for Arm 2.
+  views::UniqueWidgetPtr tutorial_widget_;
+
+  base::WeakPtrFactory<CaptureModeEducationController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
