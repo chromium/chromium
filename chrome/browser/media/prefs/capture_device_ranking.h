@@ -13,6 +13,7 @@
 #include "media/audio/audio_device_description.h"
 #include "media/capture/video/video_capture_device_info.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
+#include "third_party/blink/public/common/mediastream/media_stream_request.h"
 
 #include <string>
 
@@ -25,6 +26,7 @@ std::string DeviceInfoToStableId(
 std::string DeviceInfoToStableId(
     const media::AudioDeviceDescription& device_info);
 std::string DeviceInfoToStableId(const blink::WebMediaDeviceInfo& device_info);
+std::string DeviceInfoToStableId(const blink::MediaStreamDevice& device_info);
 
 // Returns a unique id given `device_info`. This is unique for the current
 // session, but isn't guaranteed to be stable through reboots or device
@@ -34,6 +36,7 @@ std::string DeviceInfoToUniqueId(
 std::string DeviceInfoToUniqueId(
     const media::AudioDeviceDescription& device_info);
 std::string DeviceInfoToUniqueId(const blink::WebMediaDeviceInfo& device_info);
+std::string DeviceInfoToUniqueId(const blink::MediaStreamDevice& device_info);
 
 }  // namespace media_prefs::internal
 
@@ -275,7 +278,8 @@ template <typename T>
 void PreferenceRankAudioDeviceInfos(PrefService& prefs,
                                     std::vector<T>& device_infos) {
   static_assert(std::is_same_v<media::AudioDeviceDescription, T> ||
-                std::is_same_v<blink::WebMediaDeviceInfo, T>);
+                std::is_same_v<blink::WebMediaDeviceInfo, T> ||
+                std::is_same_v<blink::MediaStreamDevice, T>);
   PreferenceRankDeviceInfos(prefs, kAudioInputUserPreferenceRanking,
                             device_infos);
 }
@@ -284,7 +288,8 @@ template <typename T>
 void PreferenceRankVideoDeviceInfos(PrefService& prefs,
                                     std::vector<T>& device_infos) {
   static_assert(std::is_same_v<media::VideoCaptureDeviceInfo, T> ||
-                std::is_same_v<blink::WebMediaDeviceInfo, T>);
+                std::is_same_v<blink::WebMediaDeviceInfo, T> ||
+                std::is_same_v<blink::MediaStreamDevice, T>);
   PreferenceRankDeviceInfos(prefs, kVideoInputUserPreferenceRanking,
                             device_infos);
 }
@@ -295,7 +300,8 @@ void UpdateAudioDevicePreferenceRanking(
     const typename std::vector<T>::const_iterator preferred_device_iter,
     const std::vector<T>& current_device_infos) {
   static_assert(std::is_same_v<media::AudioDeviceDescription, T> ||
-                std::is_same_v<blink::WebMediaDeviceInfo, T>);
+                std::is_same_v<blink::WebMediaDeviceInfo, T> ||
+                std::is_same_v<blink::MediaStreamDevice, T>);
   UpdateDevicePreferenceRanking(prefs, kAudioInputUserPreferenceRanking,
                                 preferred_device_iter, current_device_infos);
 }
@@ -306,7 +312,8 @@ void UpdateVideoDevicePreferenceRanking(
     const typename std::vector<T>::const_iterator preferred_device_iter,
     const std::vector<T>& current_device_infos) {
   static_assert(std::is_same_v<media::VideoCaptureDeviceInfo, T> ||
-                std::is_same_v<blink::WebMediaDeviceInfo, T>);
+                std::is_same_v<blink::WebMediaDeviceInfo, T> ||
+                std::is_same_v<blink::MediaStreamDevice, T>);
   UpdateDevicePreferenceRanking(prefs, kVideoInputUserPreferenceRanking,
                                 preferred_device_iter, current_device_infos);
 }

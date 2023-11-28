@@ -9,7 +9,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
-#include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/mediastream/media_devices.h"
 
 namespace settings {
 
@@ -35,12 +35,9 @@ class MediaDevicesSelectionHandler
   void OnUpdateAudioDevices(const blink::MediaStreamDevices& devices) override;
   void OnUpdateVideoDevices(const blink::MediaStreamDevices& devices) override;
 
- private:
-  enum DeviceType {
-    AUDIO,
-    VIDEO,
-  };
+  void SetWebUiForTest(content::WebUI* web_ui);
 
+ private:
   // Fetches the list of default capture devices.
   void GetDefaultCaptureDevices(const base::Value::List& args);
 
@@ -50,8 +47,7 @@ class MediaDevicesSelectionHandler
   void SetDefaultCaptureDevice(const base::Value::List& args);
 
   // Helpers methods to update the device menus.
-  void UpdateDevicesMenuForType(DeviceType type);
-  void UpdateDevicesMenu(DeviceType type,
+  void UpdateDevicesMenu(std::string type,
                          const blink::MediaStreamDevices& devices);
 
   // Gets the human readable name of the device.
@@ -63,6 +59,9 @@ class MediaDevicesSelectionHandler
   base::ScopedObservation<MediaCaptureDevicesDispatcher,
                           MediaCaptureDevicesDispatcher::Observer>
       observation_{this};
+
+  blink::MediaStreamDevices audio_device_infos_;
+  blink::MediaStreamDevices video_device_infos_;
 };
 
 }  // namespace settings

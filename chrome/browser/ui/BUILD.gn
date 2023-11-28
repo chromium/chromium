@@ -1983,6 +1983,7 @@ static_library("ui") {
       "//chrome/browser/headless:command_processor",
       "//chrome/browser/image_editor",
       "//chrome/browser/image_editor:image_editor_component_util",
+      "//chrome/browser/media/prefs:prefs",
       "//chrome/browser/media/router",
       "//chrome/browser/media/router/discovery:discovery",
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
