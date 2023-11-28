@@ -707,15 +707,6 @@ void VariationsHttpHeadersBrowserTest::GoogleWebVisibilityTopFrameTest(
                 variations::mojom::GoogleWebVisibility::FIRST_PARTY)
           : signed_out_headers->headers_map.at(
                 variations::mojom::GoogleWebVisibility::ANY);
-  // TODO(crbug.com/906991): Fix this before starting the field experiment.
-  // If PlzDedicatedWorker is enabled, Document's context will not be
-  // inherited for loading the worker script, which is out of the metrics
-  // team expecation.
-  const std::string expected_header_value_for_worker =
-      IsPlzDedicatedWorkerEnabled()
-          ? signed_out_headers->headers_map.at(
-                variations::mojom::GoogleWebVisibility::ANY)
-          : expected_header_value;
 
   // Load a top frame.
   const GURL top_frame_url =
@@ -749,7 +740,7 @@ void VariationsHttpHeadersBrowserTest::GoogleWebVisibilityTopFrameTest(
       GetGoogleSubresourceFetchingWorkerUrl(), GetGoogleSubresourceUrl()));
   EXPECT_EQ(GetReceivedHeader(GetGoogleSubresourceFetchingWorkerUrl(),
                               "X-Client-Data"),
-            expected_header_value_for_worker);
+            expected_header_value);
   EXPECT_EQ(GetReceivedHeader(GetGoogleSubresourceUrl(), "X-Client-Data"),
             expected_header_value);
 }

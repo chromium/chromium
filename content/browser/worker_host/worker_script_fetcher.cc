@@ -285,6 +285,10 @@ void WorkerScriptFetcher::CreateAndStart(
       outside_fetch_client_settings_object->referrer_policy);
   resource_request->destination = request_destination;
   resource_request->credentials_mode = credentials_mode;
+  // To be used for the first party context check.
+  resource_request->trusted_params = network::ResourceRequest::TrustedParams();
+  resource_request->trusted_params->isolation_info =
+      ancestor_render_frame_host->GetStorageKey().ToPartialNetIsolationInfo();
 
   // For a classic worker script request:
   // https://html.spec.whatwg.org/C/#fetch-a-classic-worker-script
@@ -416,6 +420,10 @@ void WorkerScriptFetcher::CreateScriptLoader(
             std::move(url_loader_network_observer),
             std::move(devtools_observer), client_security_state.Clone(),
             /*debug_tag=*/"CreateScriptLoader");
+    // We are sure the URLLoaderFactory made with the param is only used within
+    // `WorkerScriptFetcher` in the browser process. We can mark this trusted
+    // safely.
+    factory_params->is_trusted = true;
 
     mojo::PendingReceiver<network::mojom::URLLoaderFactory>
         default_factory_receiver =
