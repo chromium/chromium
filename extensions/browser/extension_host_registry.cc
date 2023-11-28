@@ -184,4 +184,10 @@ void ExtensionHostRegistry::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void ExtensionHostRegistry::Shutdown() {
+  for (Observer& observer : observers_) {
+    observer.OnExtensionHostRegistryShutdown(this);
+  }
+}
+
 }  // namespace extensions

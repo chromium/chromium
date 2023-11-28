@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -17,10 +18,16 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "extensions/browser/extension_host_registry.h"
 
 namespace content {
+class BrowserContext;
 class WebContents;
 }  // namespace content
+
+namespace extensions {
+class ExtensionHost;
+}  // namespace extensions
 
 // While active, this class suppresses custom cursors exceeding a given size
 // limit on all the active `WebContents` or all `Browser`s of the current
@@ -31,8 +38,10 @@ class WebContents;
 // navigations or of `WebContents` that are no longer active.
 // Should the class become used in a wider context, additional logic to remove
 // such stale entries should be added.
-class CustomCursorSuppressor : public BrowserListObserver,
-                               public TabStripModelObserver {
+class CustomCursorSuppressor
+    : public BrowserListObserver,
+      public TabStripModelObserver,
+      public extensions::ExtensionHostRegistry::Observer {
  public:
   CustomCursorSuppressor();
   CustomCursorSuppressor(const CustomCursorSuppressor&) = delete;
@@ -57,6 +66,11 @@ class CustomCursorSuppressor : public BrowserListObserver,
   SuppressedRenderFrameHostIdsForTesting() const;
 
  private:
+  // Starts observing the `ExtensionHostRegistry` for profile and suppresses
+  // all custom cursors in its extensions. This is a no-op if the profile
+  // custom cursors for the extensions of this profile are already suppressed.
+  void ObserveAndSuppressExtensionsForProfile(Profile& profile);
+
   // Disallows custom cursors beyond the permitted size on `web_contents`. If
   // `this` is already disallowing custom cursors on `web_contents`, this is a
   // no-op.
@@ -78,6 +92,13 @@ class CustomCursorSuppressor : public BrowserListObserver,
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
+
+  // extensions::ExtensionHostRegistry::Observer:
+  void OnExtensionHostDocumentElementAvailable(
+      content::BrowserContext* browser_context,
+      extensions::ExtensionHost* extension_host) override;
+  void OnExtensionHostRegistryShutdown(
+      extensions::ExtensionHostRegistry* registry) override;
 
   // A helper to filter and forward `RenderFrameHostChanged` events of a single
   // `WebContents`. Used to allow `CustomCursorSuppressor` to effectively
@@ -101,6 +122,13 @@ class CustomCursorSuppressor : public BrowserListObserver,
 
   base::ScopedObservation<BrowserList, BrowserListObserver>
       browser_list_observation_{this};
+
+  // Observes when new `ExtensionHost`s load their documents and when
+  // `ExtensionHostRegistry`s shut down.
+  base::ScopedMultiSourceObservation<
+      extensions::ExtensionHostRegistry,
+      extensions::ExtensionHostRegistry::Observer>
+      extension_host_registry_observation_{this};
 
   int max_dimension_dips_ = 0;
 

@@ -514,6 +514,15 @@ BASE_FEATURE(kAutofillPopupDoesNotOverlapWithContextMenu,
              "AutofillPopupDoesNotOverlapWithContextMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If the feature is enabled, then custom cursor exceeding the (24 dips)
+// dimension limit are disallowed in extension-hosted content. This feature is
+// dependent on `kAutofillPopupMultiWindowCursorSuppression` - if the latter is
+// disabled, so is this.
+COMPONENT_EXPORT(AUTOFILL)
+BASE_FEATURE(kAutofillPopupExtensionCursorSuppression,
+             "AutofillPopupExtensionCursorSuppression",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // If the feature is enabled, custom cursors exceeding the (24 dips) dimension
 // limit are disallowed for all active tabs in all active windows.
 COMPONENT_EXPORT(AUTOFILL)
