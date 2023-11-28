@@ -78,6 +78,10 @@ export class MetricsInternalsAppElement extends CustomElement {
     // TODO: Implement a push model as new events are recorded.
     await this.updateStructuredMetricsEvents_();
     setInterval(() => this.updateStructuredMetricsSummary_(), 5000);
+
+    const eventRefreshButton = this.$('#sm-refresh-events') as HTMLElement;
+    eventRefreshButton.addEventListener(
+        'click', () => this.updateStructuredMetricsEvents_());
     //  </if>
 
     // Set up the UMA table caption.
