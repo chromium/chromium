@@ -4,6 +4,7 @@
 package org.chromium.chrome.browser.readaloud.player;
 
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
@@ -163,6 +164,17 @@ public class PlayerCoordinatorUnitTest {
     }
 
     @Test
+    public void testPlayTabRequested_withExpandedPlayerVisible() {
+        doReturn(VisibilityState.VISIBLE).when(mExpandedPlayer).getVisibility();
+        mPlayerCoordinator.playTabRequested();
+
+        // Mini player is not shown.
+        verify(mMediator).setPlayback(eq(null));
+        verify(mMediator).setPlaybackState(eq(PlaybackListener.State.BUFFERING));
+        verify(mMiniPlayer, never()).show(anyBoolean());
+    }
+
+    @Test
     public void testPlaybackReady() {
         mPlayerCoordinator.playTabRequested();
         verify(mMediator).setPlayback(eq(null));
@@ -191,6 +203,12 @@ public class PlayerCoordinatorUnitTest {
         mPlayerCoordinator.playbackReady(mPlayback, PlaybackListener.State.PLAYING);
         mPlayerCoordinator.expand();
         verify(mExpandedPlayer).show();
+    }
+
+    @Test
+    public void testRestoreMiniPlayer() {
+        mPlayerCoordinator.restoreMiniPlayer();
+        verify(mMiniPlayer).show(eq(true));
     }
 
     @Test

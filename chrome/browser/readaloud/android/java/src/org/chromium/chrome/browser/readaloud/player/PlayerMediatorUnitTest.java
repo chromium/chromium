@@ -380,6 +380,12 @@ public class PlayerMediatorUnitTest {
         verify(mPlayerCoordinator).voiceMenuClosed();
     }
 
+    @Test
+    public void testCloseExpandedPlayer() {
+        mMediator.onExpandedPlayerClose();
+        verify(mPlayerCoordinator).restoreMiniPlayer();
+    }
+
     private void resetPlayback() {
         reset(mPlayback);
         doReturn(mPlaybackMetadata).when(mPlayback).getMetadata();

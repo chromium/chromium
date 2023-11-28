@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -24,6 +25,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.PlayerCoordinator;
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
@@ -45,6 +47,7 @@ public class ExpandedPlayerCoordinatorUnitTest {
     @Mock private Playback mPlayback;
     @Mock private PlayerCoordinator.Delegate mDelegate;
     private PropertyModel mModel;
+    @Mock private InteractionHandler mHandler;
     @Mock private ExpandedPlayerMediator mMediator;
     @Mock private ExpandedPlayerSheetContent mSheetContent;
     @Mock private VoiceMenuSheetContent mVoiceMenu;
@@ -56,7 +59,10 @@ public class ExpandedPlayerCoordinatorUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         when(mDelegate.getBottomSheetController()).thenReturn(mBottomSheetController);
-        mModel = new PropertyModel.Builder(PlayerProperties.ALL_KEYS).build();
+        mModel =
+                new PropertyModel.Builder(PlayerProperties.ALL_KEYS)
+                        .with(PlayerProperties.INTERACTION_HANDLER, mHandler)
+                        .build();
         mCoordinator =
                 new ExpandedPlayerCoordinator(
                         ApplicationProvider.getApplicationContext(),
@@ -104,10 +110,19 @@ public class ExpandedPlayerCoordinatorUnitTest {
     }
 
     @Test
-    public void testOnSheetClosed() {
+    public void testOnSheetClosed_reasonNone() {
         when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mSheetContent);
-        mBottomSheetObserver.onSheetClosed(StateChangeReason.NAVIGATION);
+        mBottomSheetObserver.onSheetClosed(StateChangeReason.NONE);
         verify(mSheetContent).notifySheetClosed(eq(mSheetContent));
+        verify(mHandler, never()).onExpandedPlayerClose();
+    }
+
+    @Test
+    public void testOnSheetClosed_backPress() {
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mSheetContent);
+        mBottomSheetObserver.onSheetClosed(StateChangeReason.BACK_PRESS);
+        verify(mSheetContent).notifySheetClosed(eq(mSheetContent));
+        verify(mHandler).onExpandedPlayerClose();
     }
 
     @Test

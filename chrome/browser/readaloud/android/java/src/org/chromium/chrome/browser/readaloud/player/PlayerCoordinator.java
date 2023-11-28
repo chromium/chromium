@@ -103,7 +103,10 @@ public class PlayerCoordinator implements Player {
     public void playTabRequested() {
         mMediator.setPlayback(null);
         mMediator.setPlaybackState(PlaybackListener.State.BUFFERING);
-        mMiniPlayer.show(shouldAnimateMiniPlayer());
+        if (mExpandedPlayer.getVisibility() != VisibilityState.SHOWING
+                && mExpandedPlayer.getVisibility() != VisibilityState.VISIBLE) {
+            mMiniPlayer.show(true);
+        }
     }
 
     @Override
@@ -122,6 +125,11 @@ public class PlayerCoordinator implements Player {
     /** Show expanded player. */
     void expand() {
         mExpandedPlayer.show();
+        mMiniPlayer.dismiss(true);
+    }
+
+    void restoreMiniPlayer() {
+        mMiniPlayer.show(true);
     }
 
     @Override
@@ -130,7 +138,7 @@ public class PlayerCoordinator implements Player {
         // dismissed when stopping the playback.
         mMediator.setPlayback(null);
         mMediator.setPlaybackState(PlaybackListener.State.STOPPED);
-        mMiniPlayer.dismiss(shouldAnimateMiniPlayer());
+        mMiniPlayer.dismiss(true);
         mExpandedPlayer.dismiss();
     }
 
@@ -145,12 +153,5 @@ public class PlayerCoordinator implements Player {
         for (Observer o : mObserverList) {
             o.onVoiceMenuClosed();
         }
-    }
-
-    private boolean shouldAnimateMiniPlayer() {
-        // If the expanded player is definitely covering the mini player, we can skip
-        // animating the mini player show and hide.
-        // TODO return !mExpandedPlayer.isVisible();
-        return true;
     }
 }

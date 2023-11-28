@@ -199,6 +199,11 @@ class PlayerMediator implements InteractionHandler {
         mCoordinator.expand();
     }
 
+    @Override
+    public void onExpandedPlayerClose() {
+        mCoordinator.restoreMiniPlayer();
+    }
+
     private void maybeSeekRelative(long nanos) {
         if (mPlayback == null) {
             return;
