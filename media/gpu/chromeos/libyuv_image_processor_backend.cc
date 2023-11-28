@@ -216,7 +216,8 @@ LibYUVImageProcessorBackend::CreateWithTaskRunner(
     intermediate_frame = VideoFrame::CreateFrame(
         res == SupportResult::SupportedWithI420Pivot ? PIXEL_FORMAT_I420
                                                      : PIXEL_FORMAT_NV12,
-        input_config.size, gfx::Rect(input_config.visible_rect.size()),
+        input_config.visible_rect.size(),
+        gfx::Rect(input_config.visible_rect.size()),
         input_config.visible_rect.size(), base::TimeDelta());
     if (!intermediate_frame) {
       VLOGF(1) << "Failed to create intermediate frame";
@@ -231,17 +232,20 @@ LibYUVImageProcessorBackend::CreateWithTaskRunner(
   // format that can be easily cropped.
   scoped_refptr<VideoFrame> crop_intermediate_frame;
   if (input_config.visible_rect.origin() != gfx::Point(0, 0) &&
-      transform != Transform::kScaling) {
-    crop_intermediate_frame = VideoFrame::CreateFrame(
-        output_config.fourcc.ToVideoPixelFormat(), input_config.size,
-        input_config.visible_rect, input_config.size, base::TimeDelta());
-    if (!crop_intermediate_frame) {
-      VLOGF(1) << "Failed to create cropping intermediate frame";
+      input_config.fourcc == Fourcc(Fourcc::MM21)) {
+    if (transform != Transform::kScaling) {
+      crop_intermediate_frame = VideoFrame::CreateFrame(
+          output_config.fourcc.ToVideoPixelFormat(), input_config.size,
+          input_config.visible_rect, input_config.size, base::TimeDelta());
+      if (!crop_intermediate_frame) {
+        VLOGF(1) << "Failed to create cropping intermediate frame";
+        return nullptr;
+      }
+    } else {
+      VLOGF(1)
+          << "Scaling and cropping simultaneously are not supported for MM21.";
       return nullptr;
     }
-  } else if (input_config.visible_rect.origin() != gfx::Point(0, 0)) {
-    VLOGF(1) << "Scaling and cropping simultaneously are not supported";
-    return nullptr;
   }
 
   auto processor =
@@ -331,7 +335,8 @@ void LibYUVImageProcessorBackend::Process(
                  input_frame->AsHumanReadableString(), "output_frame",
                  mapped_frame->AsHumanReadableString());
     SCOPED_UMA_HISTOGRAM_TIMER("LibYUVImageProcessorBackend::Process");
-    if (input_config_.visible_rect.origin() == gfx::Point(0, 0)) {
+    if (input_config_.visible_rect.origin() == gfx::Point(0, 0) ||
+        input_config_.fourcc != Fourcc(Fourcc::MM21)) {
       res = DoConversion(input_frame.get(), mapped_frame.get());
     } else {
       res = DoConversion(input_frame.get(), crop_intermediate_frame_.get());
