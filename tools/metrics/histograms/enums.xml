@@ -36894,6 +36894,7 @@ from previous Chrome versions.
   <int value="-337655793" label="OmniboxRedoCurrentMatch:enabled"/>
   <int value="-337308250" label="AutofillMoreProminentPopup:enabled"/>
   <int value="-336768659" label="NtpPhotosModule:enabled"/>
+  <int value="-336647248" label="VerticalAutomotiveBackButtonToolbar:disabled"/>
   <int value="-335331552" label="TabGroupsForTablets:disabled"/>
   <int value="-334873793" label="MediaSessionNotification:enabled"/>
   <int value="-332010491" label="RetailCoupons:enabled"/>
@@ -37684,6 +37685,7 @@ from previous Chrome versions.
   <int value="39035791"
       label="AutofillTouchToFillForCreditCardsAndroid:enabled"/>
   <int value="39822765" label="ShimlessRMADiagnosticPage:disabled"/>
+  <int value="40990107" label="VerticalAutomotiveBackButtonToolbar:enabled"/>
   <int value="41881657" label="MessagesForAndroidAdsBlocked:enabled"/>
   <int value="41990393" label="ContextMenuGoogleLensChip:enabled"/>
   <int value="42098736" label="TranslateAndroidManualTrigger:disabled"/>

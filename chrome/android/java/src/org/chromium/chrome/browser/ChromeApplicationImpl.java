@@ -21,9 +21,11 @@ import org.chromium.chrome.browser.dependency_injection.ChromeAppComponent;
 import org.chromium.chrome.browser.dependency_injection.ChromeAppModule;
 import org.chromium.chrome.browser.dependency_injection.DaggerChromeAppComponent;
 import org.chromium.chrome.browser.dependency_injection.ModuleFactoryOverrides;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fonts.FontPreloader;
 import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
 import org.chromium.chrome.browser.profiles.ProfileResolver;
+import org.chromium.components.browser_ui.util.BrowserUiUtilsCachedFlags;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.embedder_support.browser_context.PartitionResolverSupplier;
 import org.chromium.components.module_installer.util.ModuleUtil;
@@ -52,6 +54,9 @@ public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
 
         if (SplitCompatApplication.isBrowserProcess()) {
             FontPreloader.getInstance().load(getApplication());
+            BrowserUiUtilsCachedFlags.getInstance()
+                    .setVerticalAutomotiveBackButtonToolbarFlag(
+                            ChromeFeatureList.sVerticalAutomotiveBackButtonToolbar.isEnabled());
 
             // Only load the native library early for bundle builds since some tests use the
             // "--disable-native-initialization" switch, and the CommandLine is not initialized at
