@@ -2285,12 +2285,12 @@ void WizardController::OnRecommendAppsScreenExit(
                RecommendAppsScreen::GetResultString(result));
 
   switch (result) {
-    case RecommendAppsScreen::Result::SELECTED:
+    case RecommendAppsScreen::Result::kSelected:
       ShowAppDownloadingScreen();
       break;
-    case RecommendAppsScreen::Result::SKIPPED:
-    case RecommendAppsScreen::Result::NOT_APPLICABLE:
-    case RecommendAppsScreen::Result::LOAD_ERROR:
+    case RecommendAppsScreen::Result::kSkipped:
+    case RecommendAppsScreen::Result::kNotApplicable:
+    case RecommendAppsScreen::Result::kLoadError:
       ShowAssistantOptInFlowScreen();
       break;
   }

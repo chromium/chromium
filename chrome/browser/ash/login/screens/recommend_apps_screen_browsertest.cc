@@ -255,7 +255,7 @@ IN_PROC_BROWSER_TEST_F(RecommendAppsScreenTest, BasicSelection) {
   test::OobeJS().TapOnPath(kInstallButton);
 
   WaitForScreenExit();
-  EXPECT_EQ(RecommendAppsScreen::Result::SELECTED, screen_result_.value());
+  EXPECT_EQ(RecommendAppsScreen::Result::kSelected, screen_result_.value());
 
   const base::Value::List& fast_reinstall_packages =
       ProfileManager::GetActiveUserProfile()->GetPrefs()->GetList(
@@ -289,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(RecommendAppsScreenTest, SelectionChange) {
   test::OobeJS().TapOnPath(kInstallButton);
 
   WaitForScreenExit();
-  EXPECT_EQ(RecommendAppsScreen::Result::SELECTED, screen_result_.value());
+  EXPECT_EQ(RecommendAppsScreen::Result::kSelected, screen_result_.value());
 
   const base::Value::List& fast_reinstall_packages =
       ProfileManager::GetActiveUserProfile()->GetPrefs()->GetList(
@@ -321,7 +321,7 @@ IN_PROC_BROWSER_TEST_F(RecommendAppsScreenTest, SkipWithSelectedApps) {
   test::OobeJS().TapOnPath(kSkipButton);
 
   WaitForScreenExit();
-  EXPECT_EQ(RecommendAppsScreen::Result::SKIPPED, screen_result_.value());
+  EXPECT_EQ(RecommendAppsScreen::Result::kSkipped, screen_result_.value());
 
   const base::Value::List& fast_reinstall_packages =
       ProfileManager::GetActiveUserProfile()->GetPrefs()->GetList(
@@ -353,7 +353,7 @@ IN_PROC_BROWSER_TEST_F(RecommendAppsScreenTest, SkipWithNoAppsSelected) {
   test::OobeJS().TapOnPath(kSkipButton);
 
   WaitForScreenExit();
-  EXPECT_EQ(RecommendAppsScreen::Result::SKIPPED, screen_result_.value());
+  EXPECT_EQ(RecommendAppsScreen::Result::kSkipped, screen_result_.value());
 
   const base::Value::List& fast_reinstall_packages =
       ProfileManager::GetActiveUserProfile()->GetPrefs()->GetList(
@@ -381,7 +381,7 @@ IN_PROC_BROWSER_TEST_F(RecommendAppsScreenTest, NoRecommendedApps) {
   recommend_apps_fetcher_->SimulateSuccess(/*bad_response=*/true);
 
   WaitForScreenExit();
-  EXPECT_EQ(RecommendAppsScreen::Result::SKIPPED, screen_result_.value());
+  EXPECT_EQ(RecommendAppsScreen::Result::kSkipped, screen_result_.value());
 
   const base::Value::List& fast_reinstall_packages =
       ProfileManager::GetActiveUserProfile()->GetPrefs()->GetList(
@@ -395,7 +395,7 @@ IN_PROC_BROWSER_TEST_F(RecommendAppsScreenTest, ParseError) {
   recommend_apps_fetcher_->SimulateParseError();
 
   ASSERT_TRUE(screen_result_.has_value());
-  EXPECT_EQ(RecommendAppsScreen::Result::SKIPPED, screen_result_.value());
+  EXPECT_EQ(RecommendAppsScreen::Result::kSkipped, screen_result_.value());
 }
 
 class RecommendAppsScreenManagedTest : public RecommendAppsScreenTest {
@@ -422,7 +422,7 @@ IN_PROC_BROWSER_TEST_F(RecommendAppsScreenManagedTest, SkipDueToManagedUser) {
     WaitForScreenExit();
   }
   EXPECT_EQ(screen_result_.value(),
-            RecommendAppsScreen::Result::NOT_APPLICABLE);
+            RecommendAppsScreen::Result::kNotApplicable);
 }
 
 }  // namespace

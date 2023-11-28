@@ -27,7 +27,7 @@ class RecommendAppsScreen : public BaseScreen {
  public:
   using TView = RecommendAppsScreenView;
 
-  enum class Result { SELECTED, SKIPPED, NOT_APPLICABLE, LOAD_ERROR };
+  enum class Result { kSelected, kSkipped, kNotApplicable, kLoadError };
 
   static std::string GetResultString(Result result);
 
