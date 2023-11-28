@@ -608,7 +608,8 @@ TEST_F(AuthenticationFlowTest,
        TestUserPolicyForManagedAccountForSigninConsentLevelWhenEligible) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {policy::kUserPolicyForSigninAndNoSyncConsentLevel}, {});
+      {policy::kUserPolicyForSigninAndNoSyncConsentLevel},
+      {syncer::kReplaceSyncPromosWithSignInPromos});
 
   CreateAuthenticationFlow(
       PostSignInAction::kNone, managed_identity_,
