@@ -30,7 +30,8 @@ void WebEngineRenderFrameObserver::OnDestruct() {
   NOTREACHED();
 }
 
-void WebEngineRenderFrameObserver::WillDetach() {
+void WebEngineRenderFrameObserver::WillDetach(
+    blink::DetachReason detach_reason) {
   std::move(on_render_frame_deleted_callback_)
       .Run(render_frame()->GetWebFrame()->GetLocalFrameToken());
 }

@@ -311,7 +311,7 @@ void MetricsRenderFrameObserver::DidLoadResourceFromMemoryCache(
   }
 }
 
-void MetricsRenderFrameObserver::WillDetach() {
+void MetricsRenderFrameObserver::WillDetach(blink::DetachReason detach_reason) {
   if (page_timing_metrics_sender_) {
     page_timing_metrics_sender_->SendLatest();
     page_timing_metrics_sender_.reset();
@@ -468,7 +468,7 @@ void MetricsRenderFrameObserver::OnMainFrameImageAdRectangleChanged(
 }
 
 void MetricsRenderFrameObserver::OnFrameDetached() {
-  WillDetach();
+  WillDetach(blink::DetachReason::kNavigation);
 }
 
 bool MetricsRenderFrameObserver::SetUpSmoothnessReporting(

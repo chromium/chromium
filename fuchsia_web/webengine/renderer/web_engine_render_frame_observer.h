@@ -38,7 +38,7 @@ class WebEngineRenderFrameObserver final : public content::RenderFrameObserver {
  private:
   // content::RenderFrameObserver implementation.
   void OnDestruct() override;
-  void WillDetach() override;
+  void WillDetach(blink::DetachReason detach_reason) override;
 
   url_rewrite::UrlRequestRulesReceiver url_request_rules_receiver_;
 

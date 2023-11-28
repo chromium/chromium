@@ -154,6 +154,18 @@ enum class SyncCondition {
   kForced,     // Force a sync even if the value is unchanged.
 };
 
+// The reason a WebLocalFrame is being detached. See
+// `WebLocalFrameClient::WillDetach()` for more details.
+enum class DetachReason {
+  // The WebLocalFrame is detached because the browsing context that contains it
+  // is getting deleted (e.g. <iframe> element getting detached)
+  kFrameDeletion,
+  // The WebLocalFrame is detached because of a navigation, which will create a
+  // new WebLocalFrame (possibly in a different renderer process) that will
+  // replace the current one and takes its place in the same browsing context.
+  kNavigation,
+};
+
 class BLINK_EXPORT WebLocalFrameClient {
  public:
   virtual ~WebLocalFrameClient() = default;
@@ -276,13 +288,16 @@ class BLINK_EXPORT WebLocalFrameClient {
   // from outside of the browsing instance.
   virtual WebFrame* FindFrame(const WebString& name) { return nullptr; }
 
-  // Notification that the frame will be swapped out and replaced by another
-  // frame.
-  virtual void WillSwap() {}
-
   // Notification that the frame is being detached and sends the current frame's
-  // navigation state to the browser.
-  virtual void WillDetach() {}
+  // navigation state to the browser. Note that WebLocalFrame lifetime is not
+  // identical to the lifetime of a "browsing context" in the HTML standard.
+  // A WebLocalFrame can be detached for two reasons:
+  // - a cross-document navigation, in which case, it will be replaced by a new
+  // local or remote frame. In this case, the "browsing context" itself remains.
+  // - destruction, e.g. the frame owner element is removed from the DOM, or
+  // the window is closed. In this case, the "browsing context" itself is
+  // gone.
+  virtual void WillDetach(DetachReason detach_reason) {}
 
   // This frame has been detached. Embedders should release any resources
   // associated with this frame.

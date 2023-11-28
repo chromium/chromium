@@ -18,6 +18,7 @@
 #include "third_party/blink/public/web/web_form_element.h"
 #include "third_party/blink/public/web/web_input_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_local_frame_client.h"
 #include "ui/base/page_transition_types.h"
 
 using blink::WebDocumentLoader;
@@ -272,9 +273,15 @@ void FormTracker::DidStartNavigation(
   }
 }
 
-void FormTracker::WillDetach() {
+void FormTracker::WillDetach(blink::DetachReason detach_reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
-  FireInferredFormSubmission(SubmissionSource::FRAME_DETACHED);
+  if (detach_reason == blink::DetachReason::kFrameDeletion) {
+    // Exclude cases where the previous RenderFrame gets deleted only to be
+    // replaced by a new RenderFrame, which happens on navigations. This is so
+    // that we only trigger inferred form submission if the actual frame
+    // (<iframe> element etc) gets detached.
+    FireInferredFormSubmission(SubmissionSource::FRAME_DETACHED);
+  }
 }
 
 void FormTracker::WillSendSubmitEvent(const WebFormElement& form) {

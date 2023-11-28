@@ -127,7 +127,7 @@ class MetricsRenderFrameObserver
 
   // Invoked when a frame is going away. This is our last chance to send IPCs
   // before being destroyed.
-  void WillDetach() override;
+  void WillDetach(blink::DetachReason detach_reason) override;
 
   // Set the ad resource tracker that |this| observes.
   void SetAdResourceTracker(

@@ -3695,24 +3695,24 @@ RenderFrameImpl::PreviousWidgetForLazyCompositorInitialization(
   return previous_web_frame->ToWebLocalFrame()->FrameWidget();
 }
 
-void RenderFrameImpl::WillSwap() {
-  if (navigation_client_impl_ &&
-      ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
-    navigation_client_impl_->ResetWithoutCancelling();
+void RenderFrameImpl::WillDetach(blink::DetachReason detach_reason) {
+  if (detach_reason == blink::DetachReason::kNavigation) {
+    if (navigation_client_impl_ &&
+        ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
+      navigation_client_impl_->ResetWithoutCancelling();
+    }
+
+    // Defer initializing the new widget until the previous Document has been
+    // torn down. Script handles like unload dispatched during tear down can
+    // access the compositor.
+    if (provisional_frame_for_local_root_swap_) {
+      provisional_frame_for_local_root_swap_->EnsureWidgetInitialized();
+      provisional_frame_for_local_root_swap_ = nullptr;
+    }
   }
 
-  // Defer initializing the new widget until the previous Document has been torn
-  // down. Script handles like unload dispatched during tear down can access
-  // the compositor.
-  if (provisional_frame_for_local_root_swap_) {
-    provisional_frame_for_local_root_swap_->EnsureWidgetInitialized();
-    provisional_frame_for_local_root_swap_ = nullptr;
-  }
-}
-
-void RenderFrameImpl::WillDetach() {
   for (auto& observer : observers_)
-    observer.WillDetach();
+    observer.WillDetach(detach_reason);
 
   // blink::AudioOutputIPCFactory::io_task_runner_ may be null in tests.
   auto& factory = blink::AudioOutputIPCFactory::GetInstance();

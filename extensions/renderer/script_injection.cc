@@ -64,7 +64,9 @@ class ScriptInjection::FrameWatcher : public content::RenderFrameObserver {
   ~FrameWatcher() override {}
 
  private:
-  void WillDetach() override { injection_->invalidate_render_frame(); }
+  void WillDetach(blink::DetachReason detach_reason) override {
+    injection_->invalidate_render_frame();
+  }
   void OnDestruct() override { injection_->invalidate_render_frame(); }
 
   raw_ptr<ScriptInjection, ExperimentalRenderer> injection_;

@@ -343,7 +343,7 @@ void ChromeRenderFrameObserver::OnDestruct() {
   delete this;
 }
 
-void ChromeRenderFrameObserver::WillDetach() {
+void ChromeRenderFrameObserver::WillDetach(blink::DetachReason detach_reason) {
 #if BUILDFLAG(IS_ANDROID)
   base::AutoLock auto_lock(GetFrameHeaderMapLock());
   GetFrameHeaderMap().erase(

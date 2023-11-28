@@ -45,6 +45,7 @@ class WebSecurityOrigin;
 class WebString;
 class WebURLRequest;
 class WebWorkerFetchContext;
+enum class DetachReason;
 struct JavaScriptFrameworkDetectionResult;
 }  // namespace blink
 
@@ -169,10 +170,15 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
   // as same-document.
   virtual void DidFinishSameDocumentNavigation() {}
 
-  // Called when this frame has been detached from the view. This *will* be
-  // called for child frames when a parent frame is detached. Since the frame is
-  // already detached from the DOM at this time, it should not be inspected.
-  virtual void WillDetach() {}
+  // Called when this RenderFrame has been detached from the view.  Note that
+  // this refers to the detachment of the RenderFrame object, not the "browsing
+  // context". This means that WillDetach can fire as a result of navigating
+  // within the same browsingcontext that creates a new RenderFrame (either in
+  // this process or a different process), on top of being fired when the
+  // browsing context is actually detached (including when the parent
+  // RenderFrame is being detached). See comments for blink::DetachReason for
+  // more details.
+  virtual void WillDetach(blink::DetachReason detach_reason) {}
 
   // Called when we receive a console message from Blink for which we requested
   // extra details (like the stack trace). |message| is the error message,
