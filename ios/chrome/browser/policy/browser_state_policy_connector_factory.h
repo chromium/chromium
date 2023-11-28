@@ -5,19 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_POLICY_BROWSER_STATE_POLICY_CONNECTOR_FACTORY_H_
 #define IOS_CHROME_BROWSER_POLICY_BROWSER_STATE_POLICY_CONNECTOR_FACTORY_H_
 
-#include <memory>
+#import <memory>
 
 class BrowserPolicyConnectorIOS;
 class BrowserStatePolicyConnector;
 
 namespace policy {
 class SchemaRegistry;
-class ConfigurationPolicyProvider;
+class UserCloudPolicyManager;
 }  // namespace policy
 
 std::unique_ptr<BrowserStatePolicyConnector> BuildBrowserStatePolicyConnector(
     policy::SchemaRegistry* schema_registry,
     BrowserPolicyConnectorIOS* browser_policy_connector,
-    policy::ConfigurationPolicyProvider* user_policy_provider);
+    policy::UserCloudPolicyManager* user_policy_manager);
 
 #endif  // IOS_CHROME_BROWSER_POLICY_BROWSER_STATE_POLICY_CONNECTOR_FACTORY_H_

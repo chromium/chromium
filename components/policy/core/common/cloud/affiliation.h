@@ -13,6 +13,8 @@
 
 namespace policy {
 
+class CloudPolicyCore;
+
 // Returns true if the user and browser are managed by the same customer
 // (affiliated). This is determined by comparing affiliation IDs obtained in the
 // policy fetching response. If either policies has no affiliation IDs, this
@@ -29,6 +31,12 @@ POLICY_EXPORT bool IsUserAffiliated(
     const base::flat_set<std::string>& user_affiliation_ids,
     const base::flat_set<std::string>& device_affiliation_ids,
     base::StringPiece email);
+
+// Get affiliations ids from the core's store if possible. Returns an empty set
+// if not possible.
+POLICY_EXPORT base::flat_set<std::string> GetAffiliationIdsFromCore(
+    const policy::CloudPolicyCore& core,
+    bool for_device);
 
 }  // namespace policy
 

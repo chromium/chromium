@@ -55,6 +55,8 @@ source_set("policy") {
     "restrict_accounts_policy_handler.h",
     "schema_registry_factory.h",
     "schema_registry_factory.mm",
+    "status_provider/user_cloud_policy_status_provider.h",
+    "status_provider/user_cloud_policy_status_provider.mm",
   ]
 
   deps = [
@@ -195,6 +197,7 @@ source_set("unit_tests") {
     "reporting/report_generator_ios_unittest.mm",
     "reporting/report_scheduler_ios_unittest.mm",
     "restrict_accounts_policy_handler_unittest.cc",
+    "status_provider/user_cloud_policy_status_provider_unittest.mm",
   ]
   deps = [
     ":constants",
@@ -209,9 +212,12 @@ source_set("unit_tests") {
     "//components/enterprise:test_support",
     "//components/policy/core/browser:test_support",
     "//components/policy/core/common",
+    "//components/policy/proto",
     "//components/pref_registry",
     "//components/prefs",
+    "//components/prefs:test_support",
     "//components/signin/public/identity_manager:test_support",
+    "//components/strings",
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",
     "//google_apis",

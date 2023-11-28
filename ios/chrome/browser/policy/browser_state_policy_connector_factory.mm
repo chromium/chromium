@@ -5,12 +5,13 @@
 #import "ios/chrome/browser/policy/browser_state_policy_connector_factory.h"
 
 #import "base/check.h"
+#import "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #import "ios/chrome/browser/policy/browser_state_policy_connector.h"
 
 std::unique_ptr<BrowserStatePolicyConnector> BuildBrowserStatePolicyConnector(
     policy::SchemaRegistry* schema_registry,
     BrowserPolicyConnectorIOS* browser_policy_connector,
-    policy::ConfigurationPolicyProvider* user_policy_provider) {
+    policy::UserCloudPolicyManager* user_policy_manager) {
   auto connector = std::make_unique<BrowserStatePolicyConnector>();
 
   // Since extensions are not supported on iOS, the `schema_registry` here has
@@ -19,6 +20,6 @@ std::unique_ptr<BrowserStatePolicyConnector> BuildBrowserStatePolicyConnector(
   // levels of registry (owned by ApplicationContext vs owned by BrowserState)
   // are maintained to keep a parallel structure with Desktop.
   connector->Init(schema_registry, browser_policy_connector,
-                  user_policy_provider);
+                  user_policy_manager);
   return connector;
 }
