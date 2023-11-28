@@ -30,9 +30,11 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
+#include "chrome/browser/ui/page_info/page_info_infobar_delegate.h"
 #include "chrome/browser/ui/session_crashed_bubble.h"
 #include "chrome/common/chrome_switches.h"
-#include "components/headless/clipboard/headless_clipboard.h"  // nogncheck
+#include "components/headless/clipboard/headless_clipboard.h"     // nogncheck
+#include "components/infobars/content/content_infobar_manager.h"  // nogncheck
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -92,6 +94,10 @@ void HeadlessModeBrowserTest::AppendHeadlessCommandLineSwitches(
   }
 }
 
+content::WebContents* HeadlessModeBrowserTest::GetActiveWebContents() {
+  return browser()->tab_strip_model()->GetActiveWebContents();
+}
+
 void HeadlessModeBrowserTestWithUserDataDir::SetUpCommandLine(
     base::CommandLine* command_line) {
   ASSERT_TRUE(user_data_dir_.CreateUniqueTempDir());
@@ -147,6 +153,21 @@ namespace {
 IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest, BrowserWindowIsActive) {
   EXPECT_TRUE(browser()->window()->IsActive());
 }
+
+IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest, NoInfoBarInHeadless) {
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
+  ASSERT_TRUE(infobar_manager);
+
+  PageInfoInfoBarDelegate::Create(infobar_manager);
+
+  EXPECT_THAT(infobar_manager->infobars(), testing::IsEmpty());
+}
+
+// UserAgent tests -----------------------------------------------------------
 
 class HeadlessModeUserAgentBrowserTest : public HeadlessModeBrowserTest {
  public:

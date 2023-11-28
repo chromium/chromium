@@ -116,6 +116,7 @@ if (!is_android) {
         "//components/headless/command_handler:switches",
         "//components/headless/select_file_dialog",
         "//components/headless/test",
+        "//components/infobars/content",
         "//content/public/browser",
         "//ui/display",
         "//ui/gfx",
