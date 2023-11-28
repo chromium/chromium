@@ -54,6 +54,9 @@ public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
 
         if (SplitCompatApplication.isBrowserProcess()) {
             FontPreloader.getInstance().load(getApplication());
+
+            // TODO(crbug.com/1442347): Remove this after code changes allow for //components to
+            // access cached flags.
             BrowserUiUtilsCachedFlags.getInstance()
                     .setVerticalAutomotiveBackButtonToolbarFlag(
                             ChromeFeatureList.sVerticalAutomotiveBackButtonToolbar.isEnabled());
