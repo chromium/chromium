@@ -17,12 +17,8 @@
 namespace ash {
 
 AmbientSlideshowUiLauncher::AmbientSlideshowUiLauncher(
-    AmbientPhotoCache& photo_cache,
-    AmbientPhotoCache& backup_photo_cache,
     AmbientViewDelegateImpl* view_delegate)
-    : photo_controller_(photo_cache,
-                        backup_photo_cache,
-                        *view_delegate,
+    : photo_controller_(*view_delegate,
                         CreateAmbientSlideshowPhotoConfig(),
                         std::make_unique<AmbientTopicQueueSlideshowDelegate>()),
       view_delegate_(view_delegate) {}

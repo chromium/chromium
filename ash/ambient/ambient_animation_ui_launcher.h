@@ -31,10 +31,8 @@ class AmbientAnimationUiLauncher : public AmbientUiLauncher,
                                    public AmbientBackendModelObserver,
                                    public SessionObserver {
  public:
-  explicit AmbientAnimationUiLauncher(AmbientPhotoCache& photo_cache,
-                                      AmbientPhotoCache& backup_photo_cache,
-                                      AmbientUiSettings current_ui_settings,
-                                      AmbientViewDelegateImpl* view_delegate);
+  AmbientAnimationUiLauncher(AmbientUiSettings current_ui_settings,
+                             AmbientViewDelegateImpl* view_delegate);
   AmbientAnimationUiLauncher(const AmbientAnimationUiLauncher&) = delete;
   AmbientAnimationUiLauncher& operator=(const AmbientAnimationUiLauncher&) =
       delete;

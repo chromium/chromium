@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "ash/ambient/ambient_constants.h"
-#include "ash/ambient/ambient_photo_cache.h"
 #include "ash/ambient/model/ambient_backend_model.h"
 #include "ash/ambient/model/ambient_photo_config.h"
 #include "ash/ambient/model/ambient_topic_queue.h"
@@ -111,8 +110,6 @@ class AmbientAccessTokenController;
 class ASH_EXPORT AmbientPhotoController : public AmbientViewDelegateObserver {
  public:
   AmbientPhotoController(
-      AmbientPhotoCache& photo_cache,
-      AmbientPhotoCache& backup_photo_cache,
       AmbientViewDelegate& view_delegate,
       AmbientPhotoConfig photo_config,
       std::unique_ptr<AmbientTopicQueue::Delegate> topic_queue_delegate);
@@ -239,8 +236,6 @@ class ASH_EXPORT AmbientPhotoController : public AmbientViewDelegateObserver {
   // Backoff to resume fetch images.
   net::BackoffEntry resume_fetch_image_backoff_;
 
-  const raw_ptr<AmbientPhotoCache> photo_cache_;
-  const raw_ptr<AmbientPhotoCache> backup_photo_cache_;
   const raw_ptr<AmbientAccessTokenController> access_token_controller_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

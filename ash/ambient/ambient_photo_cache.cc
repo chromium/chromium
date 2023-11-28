@@ -23,8 +23,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -136,11 +134,11 @@ bool WriteOrDeleteFile(const base::FilePath& path,
   return true;
 }
 
-const base::FilePath& GetCacheRootDir(AmbientPhotoCache::Store store) {
+const base::FilePath& GetCacheRootDir(ambient_photo_cache::Store store) {
   switch (store) {
-    case AmbientPhotoCache::Store::kPrimary:
+    case ambient_photo_cache::Store::kPrimary:
       return GetAmbientPhotoCacheRootDir();
-    case AmbientPhotoCache::Store::kBackup:
+    case ambient_photo_cache::Store::kBackup:
       return GetAmbientBackupPhotoCacheRootDir();
   }
   NOTREACHED_NORETURN() << "Unknown cache store: " << static_cast<int>(store);
@@ -148,14 +146,6 @@ const base::FilePath& GetCacheRootDir(AmbientPhotoCache::Store store) {
 
 base::FilePath GetCachePath(int cache_index, const base::FilePath& root_path) {
   return root_path.Append(base::NumberToString(cache_index) + kPhotoCacheExt);
-}
-
-base::RepeatingCallback<std::unique_ptr<AmbientPhotoCache>()>&
-GetCustomFactoryFunction() {
-  static base::NoDestructor<
-      base::RepeatingCallback<std::unique_ptr<AmbientPhotoCache>()>>
-      g_custom_factory;
-  return *g_custom_factory;
 }
 
 scoped_refptr<base::SequencedTaskRunner>& GetFileTaskRunner() {
@@ -278,77 +268,27 @@ void DownloadPhotoToFileInternal(
       temp_path);
 }
 
-// -----------------AmbientPhotoCacheImpl---------------------------------------
-
-class AmbientPhotoCacheImpl : public AmbientPhotoCache {
- public:
-  AmbientPhotoCacheImpl(base::FilePath path,
-                        AmbientClient& ambient_client,
-                        AmbientAccessTokenController& access_token_controller)
-      : root_directory_(path),
-        task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-            {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-             base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})),
-        ambient_client_(ambient_client),
-        access_token_controller_(access_token_controller) {}
-
-  ~AmbientPhotoCacheImpl() override = default;
-
- private:
-  const base::FilePath root_directory_;
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  // raw_refs are unused, and this class will be deleted imminently
-  // (b/298502323).
-  const raw_ref<AmbientClient, DisableDanglingPtrDetection> ambient_client_;
-  const raw_ref<AmbientAccessTokenController, DisableDanglingPtrDetection>
-      access_token_controller_;
-  base::WeakPtrFactory<AmbientPhotoCacheImpl> weak_factory_{this};
-};
-
 }  // namespace
 
-// -------------- AmbientPhotoCache --------------------------------------------
+namespace ambient_photo_cache {
 
-// static
-std::unique_ptr<AmbientPhotoCache> AmbientPhotoCache::Create(
-    base::FilePath root_path,
-    AmbientClient& ambient_client,
-    AmbientAccessTokenController& access_token_controller) {
-  return GetCustomFactoryFunction()
-             ? GetCustomFactoryFunction().Run()
-             : std::make_unique<AmbientPhotoCacheImpl>(
-                   root_path, ambient_client, access_token_controller);
-}
-
-// static
-void AmbientPhotoCache::SetFactoryForTesting(
-    base::RepeatingCallback<std::unique_ptr<AmbientPhotoCache>()> create_cb) {
-  GetCustomFactoryFunction() = std::move(create_cb);
-}
-
-// static
-void AmbientPhotoCache::SetFileTaskRunner(
-    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+void SetFileTaskRunner(scoped_refptr<base::SequencedTaskRunner> task_runner) {
   GetFileTaskRunner() = std::move(task_runner);
 }
 
-// static
-void AmbientPhotoCache::DownloadPhoto(
-    const std::string& url,
-    AmbientAccessTokenController& access_token_controller,
-    base::OnceCallback<void(std::string&&)> callback) {
+void DownloadPhoto(const std::string& url,
+                   AmbientAccessTokenController& access_token_controller,
+                   base::OnceCallback<void(std::string&&)> callback) {
   access_token_controller.RequestAccessToken(base::BindOnce(
       &DownloadPhotoInternal, url, AmbientClient::Get()->GetURLLoaderFactory(),
       std::move(callback)));
 }
 
-// static
-void AmbientPhotoCache::DownloadPhotoToFile(
-    Store store,
-    const std::string& url,
-    AmbientAccessTokenController& access_token_controller,
-    int cache_index,
-    base::OnceCallback<void(bool)> callback) {
+void DownloadPhotoToFile(Store store,
+                         const std::string& url,
+                         AmbientAccessTokenController& access_token_controller,
+                         int cache_index,
+                         base::OnceCallback<void(bool)> callback) {
   auto file_path = GetCachePath(cache_index, GetCacheRootDir(store));
   base::OnceClosure download_callback;
   download_callback = base::BindOnce(
@@ -377,12 +317,10 @@ void AmbientPhotoCache::DownloadPhotoToFile(
       std::move(download_callback));
 }
 
-// static
-void AmbientPhotoCache::WritePhotoCache(
-    Store store,
-    int cache_index,
-    const ambient::PhotoCacheEntry& cache_entry,
-    base::OnceClosure callback) {
+void WritePhotoCache(Store store,
+                     int cache_index,
+                     const ambient::PhotoCacheEntry& cache_entry,
+                     base::OnceClosure callback) {
   DCHECK_LT(cache_index, kMaxNumberOfCachedImages);
   GetFileTaskRunner()->PostTaskAndReply(
       FROM_HERE,
@@ -396,8 +334,7 @@ void AmbientPhotoCache::WritePhotoCache(
       std::move(callback));
 }
 
-// static
-void AmbientPhotoCache::ReadPhotoCache(
+void ReadPhotoCache(
     Store store,
     int cache_index,
     base::OnceCallback<void(::ambient::PhotoCacheEntry)> callback) {
@@ -422,8 +359,7 @@ void AmbientPhotoCache::ReadPhotoCache(
       std::move(callback));
 }
 
-// static
-void AmbientPhotoCache::Clear(Store store) {
+void Clear(Store store) {
   GetFileTaskRunner()->PostTask(FROM_HERE,
                                 base::BindOnce(
                                     [](const base::FilePath& file_path) {
@@ -432,4 +368,5 @@ void AmbientPhotoCache::Clear(Store store) {
                                     GetCacheRootDir(store)));
 }
 
+}  // namespace ambient_photo_cache
 }  // namespace ash

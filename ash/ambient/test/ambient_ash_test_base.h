@@ -236,8 +236,6 @@ class AmbientAshTestBase : public AshTestBase {
 
   ScreensaverImagesPolicyHandler* managed_policy_handler();
 
-  AmbientPhotoCache* photo_cache();
-
   AmbientWeatherController* weather_controller();
 
   // Returns the top-level views which contains all the ambient components.

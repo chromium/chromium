@@ -141,9 +141,9 @@ class AmbientPhotoControllerTest : public AmbientAshTestBase {
       cache_entry.mutable_related_photo()->set_details(*related_details);
 
     base::RunLoop loop;
-    AmbientPhotoCache::WritePhotoCache(AmbientPhotoCache::Store::kPrimary,
-                                       /*cache_index=*/cache_index, cache_entry,
-                                       loop.QuitClosure());
+    ambient_photo_cache::WritePhotoCache(ambient_photo_cache::Store::kPrimary,
+                                         /*cache_index=*/cache_index,
+                                         cache_entry, loop.QuitClosure());
     loop.Run();
   }
 
@@ -692,7 +692,7 @@ TEST_F(AmbientPhotoControllerTest, UsesBackupCacheAfterPrimaryCacheCleared) {
   // photos from the last "screen update". ClearCache() should only clear the
   // primary cache, leaving photos in the backup cache to use.
   ASSERT_FALSE(GetBackupCachedFiles().empty());
-  AmbientPhotoCache::Clear(AmbientPhotoCache::Store::kPrimary);
+  ambient_photo_cache::Clear(ambient_photo_cache::Store::kPrimary);
   // Simulate an IMAX failure to leave the photo controller no choice but to
   // resort to the backup cache.
   backend_controller()->SetFetchScreenUpdateInfoResponseSize(0);

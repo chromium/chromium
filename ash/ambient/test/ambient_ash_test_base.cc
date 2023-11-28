@@ -69,11 +69,11 @@ namespace {
 constexpr base::TimeDelta kWaitForWidgetsTimeout = base::Seconds(10);
 
 std::map<int, ::ambient::PhotoCacheEntry> GetCachedFilesFromStore(
-    AmbientPhotoCache::Store store) {
+    ambient_photo_cache::Store store) {
   std::map<int, ::ambient::PhotoCacheEntry> cached_files;
   for (int i = 0; i < kMaxNumberOfCachedImages; ++i) {
     base::test::TestFuture<::ambient::PhotoCacheEntry> future;
-    AmbientPhotoCache::ReadPhotoCache(store, i, future.GetCallback());
+    ambient_photo_cache::ReadPhotoCache(store, i, future.GetCallback());
     ::ambient::PhotoCacheEntry entry = future.Get();
     if (!entry.primary_photo().image().empty()) {
       cached_files[i] = std::move(entry);
@@ -232,7 +232,6 @@ void AmbientAshTestBase::SetUp() {
 void AmbientAshTestBase::TearDown() {
   fake_photo_download_server_.reset();
   AshTestBase::TearDown();
-  AmbientPhotoCache::SetFactoryForTesting(base::NullCallback());
 }
 
 void AmbientAshTestBase::SetAmbientModeEnabled(bool enabled) {
@@ -615,12 +614,12 @@ base::TimeDelta AmbientAshTestBase::GetRefreshTokenDelay() {
 }
 
 std::map<int, ::ambient::PhotoCacheEntry> AmbientAshTestBase::GetCachedFiles() {
-  return GetCachedFilesFromStore(AmbientPhotoCache::Store::kPrimary);
+  return GetCachedFilesFromStore(ambient_photo_cache::Store::kPrimary);
 }
 
 std::map<int, ::ambient::PhotoCacheEntry>
 AmbientAshTestBase::GetBackupCachedFiles() {
-  return GetCachedFilesFromStore(AmbientPhotoCache::Store::kBackup);
+  return GetCachedFilesFromStore(ambient_photo_cache::Store::kBackup);
 }
 
 AmbientController* AmbientAshTestBase::ambient_controller() {
@@ -650,10 +649,6 @@ ScreensaverImagesPolicyHandler* AmbientAshTestBase::managed_policy_handler() {
   }
 
   return ambient_controller()->screensaver_images_policy_handler_.get();
-}
-
-AmbientPhotoCache* AmbientAshTestBase::photo_cache() {
-  return ambient_controller()->ambient_photo_cache();
 }
 
 AmbientWeatherController* AmbientAshTestBase::weather_controller() {

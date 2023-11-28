@@ -71,16 +71,12 @@ const std::array<const char*, 2>& GetBackupPhotoUrls() {
 }  // namespace
 
 AmbientPhotoController::AmbientPhotoController(
-    AmbientPhotoCache& photo_cache,
-    AmbientPhotoCache& backup_photo_cache,
     AmbientViewDelegate& view_delegate,
     AmbientPhotoConfig photo_config,
     std::unique_ptr<AmbientTopicQueue::Delegate> topic_queue_delegate)
     : topic_queue_delegate_(std::move(topic_queue_delegate)),
       ambient_backend_model_(std::move(photo_config)),
       resume_fetch_image_backoff_(&kResumeFetchImageBackoffPolicy),
-      photo_cache_(&photo_cache),
-      backup_photo_cache_(&backup_photo_cache),
       access_token_controller_(
           Shell::Get()->ambient_controller()->access_token_controller()),
       task_runner_(
@@ -187,8 +183,8 @@ void AmbientPhotoController::FetchBackupImages() {
   const auto& backup_photo_urls = GetBackupPhotoUrls();
   backup_retries_to_read_from_cache_ = backup_photo_urls.size();
   for (size_t i = 0; i < backup_photo_urls.size(); i++) {
-    AmbientPhotoCache::DownloadPhotoToFile(
-        AmbientPhotoCache::Store::kBackup, backup_photo_urls.at(i),
+    ambient_photo_cache::DownloadPhotoToFile(
+        ambient_photo_cache::Store::kBackup, backup_photo_urls.at(i),
         *access_token_controller_,
         /*cache_index=*/i,
         base::BindOnce(&AmbientPhotoController::OnBackupImageFetched,
@@ -246,7 +242,7 @@ void AmbientPhotoController::ReadPhotoFromTopicQueue() {
       base::BindOnce(&AmbientPhotoController::OnAllPhotoRawDataDownloaded,
                      weak_factory_.GetWeakPtr()));
 
-  AmbientPhotoCache::DownloadPhoto(
+  ambient_photo_cache::DownloadPhoto(
       topic.url, *access_token_controller_,
       base::BindOnce(&AmbientPhotoController::OnPhotoRawDataDownloaded,
                      weak_factory_.GetWeakPtr(),
@@ -258,7 +254,7 @@ void AmbientPhotoController::ReadPhotoFromTopicQueue() {
     related_photo->set_is_portrait(topic.is_portrait);
     related_photo->set_type(topic.topic_type);
 
-    AmbientPhotoCache::DownloadPhoto(
+    ambient_photo_cache::DownloadPhoto(
         topic.related_image_url, *access_token_controller_,
         base::BindOnce(&AmbientPhotoController::OnPhotoRawDataDownloaded,
                        weak_factory_.GetWeakPtr(),
@@ -300,8 +296,8 @@ void AmbientPhotoController::TryReadPhotoFromCache() {
     DVLOG(3) << "Read from backup cache index: "
              << backup_cache_index_for_display_;
     // Try to read a backup image.
-    AmbientPhotoCache::ReadPhotoCache(
-        AmbientPhotoCache::Store::kBackup,
+    ambient_photo_cache::ReadPhotoCache(
+        ambient_photo_cache::Store::kBackup,
         /*cache_index=*/backup_cache_index_for_display_,
         base::BindOnce(&AmbientPhotoController::OnPhotoCacheReadComplete,
                        weak_factory_.GetWeakPtr()));
@@ -320,8 +316,8 @@ void AmbientPhotoController::TryReadPhotoFromCache() {
     cache_index_for_display_ = 0;
 
   DVLOG(3) << "Read from cache index: " << current_cache_index;
-  AmbientPhotoCache::ReadPhotoCache(
-      AmbientPhotoCache::Store::kPrimary, current_cache_index,
+  ambient_photo_cache::ReadPhotoCache(
+      ambient_photo_cache::Store::kPrimary, current_cache_index,
       base::BindOnce(&AmbientPhotoController::OnPhotoCacheReadComplete,
                      weak_factory_.GetWeakPtr()));
 }
@@ -392,8 +388,8 @@ void AmbientPhotoController::SaveCurrentPhotoToCache() {
     cache_index_for_store_ = 0;
   }
 
-  AmbientPhotoCache::WritePhotoCache(
-      AmbientPhotoCache::Store::kPrimary,
+  ambient_photo_cache::WritePhotoCache(
+      ambient_photo_cache::Store::kPrimary,
       /*cache_index=*/current_cache_index, cache_entry_,
       base::BindOnce(
           [](int cache_index) {

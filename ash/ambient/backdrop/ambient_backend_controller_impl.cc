@@ -423,10 +423,8 @@ void AmbientBackendControllerImpl::UpdateSettings(
   // Clear disk cache when Settings changes.
   // TODO(wutao): Use observer pattern. Need to future narrow down
   // the clear up only on albums changes, not on temperature unit
-  // changes. Do this synchronously and not in |OnUpdateSettings| to avoid
-  // race condition with |AmbientPhotoCache| possibly being destructed if
-  // |kAmbientModeEnabled| pref is toggled off.
-  AmbientPhotoCache::Clear(AmbientPhotoCache::Store::kPrimary);
+  // changes.
+  ambient_photo_cache::Clear(ambient_photo_cache::Store::kPrimary);
 
   ambient_controller->RequestAccessToken(base::BindOnce(
       &AmbientBackendControllerImpl::StartToUpdateSettings,
