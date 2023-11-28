@@ -47,13 +47,12 @@ bool GpuMemoryBufferImageCopy::EnsureDestImage(const gfx::Size& size) {
 
     dest_image_size_ = size;
 
-    auto client_shared_image = sii_->CreateSharedImage(
+    dest_shared_image_ = sii_->CreateSharedImage(
         viz::SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace(),
         kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
         gpu::SHARED_IMAGE_USAGE_GLES2, "GpuMemoryBufferImageCopy",
         gpu_memory_buffer_->CloneHandle());
-    CHECK(client_shared_image);
-    dest_mailbox_ = client_shared_image->mailbox();
+    CHECK(dest_shared_image_);
     gl_->WaitSyncTokenCHROMIUM(sii_->GenUnverifiedSyncToken().GetConstData());
   }
   return true;
@@ -71,8 +70,8 @@ GpuMemoryBufferImageCopy::CopyImage(Image* image) {
     return {};
 
   // Bind the write framebuffer to copy image.
-  GLuint dest_texture_id =
-      gl_->CreateAndTexStorage2DSharedImageCHROMIUM(dest_mailbox_.name);
+  GLuint dest_texture_id = gl_->CreateAndTexStorage2DSharedImageCHROMIUM(
+      dest_shared_image_->mailbox().name);
   gl_->BeginSharedImageAccessDirectCHROMIUM(
       dest_texture_id, GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
 
@@ -123,14 +122,14 @@ GpuMemoryBufferImageCopy::CopyImage(Image* image) {
 void GpuMemoryBufferImageCopy::CleanupDestImage() {
   gpu_memory_buffer_.reset();
 
-  if (dest_mailbox_.IsZero())
+  if (!dest_shared_image_) {
     return;
+  }
 
   gpu::SyncToken sync_token;
   gl_->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
 
-  sii_->DestroySharedImage(sync_token, dest_mailbox_);
-  dest_mailbox_.SetZero();
+  sii_->DestroySharedImage(sync_token, std::move(dest_shared_image_));
 }
 
 }  // namespace blink
