@@ -101,7 +101,8 @@ std::string GetScanSettingsMapKey(const lorgnette::ScanSettings& settings) {
 // same output.
 static constexpr auto kScanSettingsToAlphaMap =
     base::MakeFixedFlatMap<base::StringPiece, int>(
-        {{"flatbed_jpeg_color_letter_300_dpi", /*alpha=*/1}});
+        {{"flatbed_jpeg_color_letter_300_dpi", /*alpha=*/1},
+         {"adf_simplex_jpeg_grayscale_max_150_dpi", /*alpha=*/2}});
 
 // Returns a manually generated JPEG image. `alpha` is used to make them unique.
 std::string CreateJpeg(const int alpha = 255) {
