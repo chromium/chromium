@@ -794,6 +794,22 @@ BUILD_ELEMENTWISE_UNARY_OP(reciprocal,
                            webnn::DataTypeConstraint::kFloat)
 BUILD_ELEMENTWISE_UNARY_OP(sqrt, kSqrt, webnn::DataTypeConstraint::kFloat)
 
+MLOperand* MLGraphBuilder::cast(const MLOperand* input,
+                                const V8MLOperandDataType output_data_type,
+                                ExceptionState& exception_state) {
+  auto* cast =
+      MakeGarbageCollected<MLOperator>(this, MLOperator::OperatorKind::kCast);
+  auto output = MLOperand::ValidateAndCreateOutput(
+      this, output_data_type.AsEnum(), input->Dimensions(), cast);
+  if (!output.has_value()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      output.error());
+    return nullptr;
+  }
+  cast->Connect({input}, {output.value()});
+  return output.value();
+}
+
 #define BUILD_REDUCE_OP(op, op_kind)                                   \
   MLOperand* MLGraphBuilder::op(const MLOperand* input,                \
                                 const MLReduceOptions* options,        \

@@ -3843,6 +3843,27 @@ TEST_F(MLGraphBuilderTest, ElementWiseUnaryTest) {
   }
 }
 
+TEST_F(MLGraphBuilderTest, Cast) {
+  V8TestingScope scope;
+  auto* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
+  auto int8_datatype = V8MLOperandDataType::Create("int8");
+  auto* input = BuildInput(builder, "input", {8, 6, 2},
+                           V8MLOperandDataType::Enum::kFloat32,
+                           scope.GetExceptionState());
+  MLOperand* output =
+      builder->cast(input, int8_datatype.value(), scope.GetExceptionState());
+  EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+  EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kInt8);
+  EXPECT_EQ(output->Dimensions(), input->Dimensions());
+  auto* op = output->Operator();
+  EXPECT_NE(op, nullptr);
+  EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kCast);
+  EXPECT_EQ(op->IsConnected(), true);
+  EXPECT_EQ(op->Options(), nullptr);
+}
+
 MLOperand* BuildReduce(V8TestingScope& scope,
                        MLGraphBuilder* builder,
                        ReduceKind kind,

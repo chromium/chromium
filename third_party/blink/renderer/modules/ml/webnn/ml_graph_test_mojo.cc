@@ -3544,6 +3544,281 @@ TEST_P(MLGraphTestMojo, SplitTest) {
   }
 }
 
+struct CastTester {
+  OperandInfoBlink input;
+  V8MLOperandDataType::Enum output_data_type;
+  OperandInfoMojo expected_operand;
+
+  void Test(MLGraphTestMojo& helper,
+            V8TestingScope& scope,
+            MLGraphBuilder* builder) {
+    // Build the graph.
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
+    auto* output_operand =
+        builder->cast(input_operand, V8MLOperandDataType(output_data_type),
+                      scope.GetExceptionState());
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    ASSERT_NE(graph, nullptr);
+
+    auto graph_info = helper.GetGraphInfo();
+    // Verify the graph information of mojo are as expected.
+    ASSERT_EQ(graph_info->operations.size(), 1u);
+    auto& operation = graph_info->operations[0];
+    EXPECT_EQ(operation->is_element_wise_unary(), true);
+    webnn::mojom::blink::ElementWiseUnaryPtr& element_wise_unary =
+        operation->get_element_wise_unary();
+    EXPECT_EQ(element_wise_unary->kind,
+              blink_mojom::ElementWiseUnary::Kind::kCast);
+    EXPECT_EQ(graph_info->output_operands.size(), 1u);
+    auto output_operand_id = graph_info->output_operands[0];
+    auto output_operand_iter =
+        graph_info->id_to_operand_map.find(output_operand_id);
+    ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(output_operand_iter->value->data_type,
+              expected_operand.data_type);
+    EXPECT_EQ(output_operand_iter->value->dimensions,
+              expected_operand.dimensions);
+  }
+};
+
+TEST_P(MLGraphTestMojo, CastTester) {
+  V8TestingScope scope;
+  // Bind fake WebNN Context in the service for testing.
+  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      webnn::features::kEnableMachineLearningNeuralNetworkService);
+  auto* options = MLContextOptions::Create();
+  // Create WebNN Context with GPU device type.
+  options->setDeviceType(V8MLDeviceType::Enum::kGpu);
+  auto* builder = CreateGraphBuilder(scope, options);
+  {
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                         .dimensions = {2, 2}},
+               .output_data_type = V8MLOperandDataType::Enum::kInt32,
+               .expected_operand = {.data_type =
+                                        blink_mojom::Operand::DataType::kInt32,
+                                    .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {2, 2}},
+        .output_data_type = V8MLOperandDataType::Enum::kFloat16,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat16,
+                             .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                         .dimensions = {2, 2}},
+               .output_data_type = V8MLOperandDataType::Enum::kUint32,
+               .expected_operand = {.data_type =
+                                        blink_mojom::Operand::DataType::kUint32,
+                                    .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {2, 2}},
+        .output_data_type = V8MLOperandDataType::Enum::kInt8,
+        .expected_operand = {.data_type = blink_mojom::Operand::DataType::kInt8,
+                             .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                         .dimensions = {2, 2}},
+               .output_data_type = V8MLOperandDataType::Enum::kUint8,
+               .expected_operand = {.data_type =
+                                        blink_mojom::Operand::DataType::kUint8,
+                                    .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                  .dimensions = {2, 2}},
+        .output_data_type = V8MLOperandDataType::Enum::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                         .dimensions = {2, 2}},
+               .output_data_type = V8MLOperandDataType::Enum::kInt32,
+               .expected_operand = {.data_type =
+                                        blink_mojom::Operand::DataType::kInt32,
+                                    .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                         .dimensions = {2, 2}},
+               .output_data_type = V8MLOperandDataType::Enum::kUint32,
+               .expected_operand = {.data_type =
+                                        blink_mojom::Operand::DataType::kUint32,
+                                    .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                  .dimensions = {2, 2}},
+        .output_data_type = V8MLOperandDataType::Enum::kInt8,
+        .expected_operand = {.data_type = blink_mojom::Operand::DataType::kInt8,
+                             .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                         .dimensions = {2, 2}},
+               .output_data_type = V8MLOperandDataType::Enum::kUint8,
+               .expected_operand = {.data_type =
+                                        blink_mojom::Operand::DataType::kUint8,
+                                    .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kInt32,
+                  .dimensions = {2, 2}},
+        .output_data_type = V8MLOperandDataType::Enum::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kInt32,
+                  .dimensions = {2, 2}},
+        .output_data_type = V8MLOperandDataType::Enum::kFloat16,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat16,
+                             .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kInt32,
+                         .dimensions = {2, 2}},
+               .output_data_type = V8MLOperandDataType::Enum::kUint32,
+               .expected_operand = {.data_type =
+                                        blink_mojom::Operand::DataType::kUint32,
+                                    .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kInt32,
+                  .dimensions = {2, 2}},
+        .output_data_type = V8MLOperandDataType::Enum::kInt8,
+        .expected_operand = {.data_type = blink_mojom::Operand::DataType::kInt8,
+                             .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kInt32,
+                         .dimensions = {2, 2}},
+               .output_data_type = V8MLOperandDataType::Enum::kUint8,
+               .expected_operand = {.data_type =
+                                        blink_mojom::Operand::DataType::kUint8,
+                                    .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kUint32,
+                  .dimensions = {2, 2}},
+        .output_data_type = V8MLOperandDataType::Enum::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kUint32,
+                  .dimensions = {2, 2}},
+        .output_data_type = V8MLOperandDataType::Enum::kFloat16,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat16,
+                             .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kUint32,
+                         .dimensions = {2, 2}},
+               .output_data_type = V8MLOperandDataType::Enum::kInt32,
+               .expected_operand = {.data_type =
+                                        blink_mojom::Operand::DataType::kInt32,
+                                    .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kUint32,
+                  .dimensions = {2, 2}},
+        .output_data_type = V8MLOperandDataType::Enum::kInt8,
+        .expected_operand = {.data_type = blink_mojom::Operand::DataType::kInt8,
+                             .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kUint32,
+                         .dimensions = {2, 2}},
+               .output_data_type = V8MLOperandDataType::Enum::kUint8,
+               .expected_operand = {.data_type =
+                                        blink_mojom::Operand::DataType::kUint8,
+                                    .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kInt8,
+                  .dimensions = {2, 2}},
+        .output_data_type = V8MLOperandDataType::Enum::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kInt8,
+                  .dimensions = {2, 2}},
+        .output_data_type = V8MLOperandDataType::Enum::kFloat16,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat16,
+                             .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kInt8,
+                         .dimensions = {2, 2}},
+               .output_data_type = V8MLOperandDataType::Enum::kUint32,
+               .expected_operand = {.data_type =
+                                        blink_mojom::Operand::DataType::kUint32,
+                                    .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kInt8,
+                         .dimensions = {2, 2}},
+               .output_data_type = V8MLOperandDataType::Enum::kUint8,
+               .expected_operand = {.data_type =
+                                        blink_mojom::Operand::DataType::kUint8,
+                                    .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kInt8,
+                         .dimensions = {2, 2}},
+               .output_data_type = V8MLOperandDataType::Enum::kInt32,
+               .expected_operand = {.data_type =
+                                        blink_mojom::Operand::DataType::kInt32,
+                                    .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kUint8,
+                  .dimensions = {2, 2}},
+        .output_data_type = V8MLOperandDataType::Enum::kFloat32,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kUint8,
+                  .dimensions = {2, 2}},
+        .output_data_type = V8MLOperandDataType::Enum::kFloat16,
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat16,
+                             .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kUint8,
+                         .dimensions = {2, 2}},
+               .output_data_type = V8MLOperandDataType::Enum::kInt32,
+               .expected_operand = {.data_type =
+                                        blink_mojom::Operand::DataType::kInt32,
+                                    .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kUint8,
+                  .dimensions = {2, 2}},
+        .output_data_type = V8MLOperandDataType::Enum::kInt8,
+        .expected_operand = {.data_type = blink_mojom::Operand::DataType::kInt8,
+                             .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kUint8,
+                         .dimensions = {2, 2}},
+               .output_data_type = V8MLOperandDataType::Enum::kInt32,
+               .expected_operand = {.data_type =
+                                        blink_mojom::Operand::DataType::kInt32,
+                                    .dimensions = {2, 2}}}
+        .Test(*this, scope, builder);
+  }
+}
+
 TEST_P(MLGraphTestMojo, WebNNGraphComputeTest) {
   V8TestingScope scope;
   // Bind fake WebNN Context in the service for testing.

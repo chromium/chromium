@@ -10,6 +10,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_auto_pad.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_data_type.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operator.h"
@@ -141,6 +142,10 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   MLOperand* reciprocal(const MLOperand* input,
                         ExceptionState& exception_state);
   MLOperand* sqrt(const MLOperand* input, ExceptionState& exception_state);
+
+  MLOperand* cast(const MLOperand* input,
+                  const V8MLOperandDataType output_data_type,
+                  ExceptionState& exception_state);
 
   MLOperand* elu(const MLOperand* input,
                  const MLEluOptions* options,

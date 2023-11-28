@@ -168,6 +168,8 @@ dictionary MLSplitOptions {
   [RaisesException] MLOperand reciprocal(MLOperand x);
   [RaisesException] MLOperand sqrt(MLOperand x);
 
+  [RaisesException] MLOperand cast(MLOperand input, MLOperandDataType outputDataType);
+
   [RaisesException] MLOperand elu(MLOperand x, optional MLEluOptions options = {});
   [RaisesException] MLActivation elu(optional MLEluOptions options = {});
 

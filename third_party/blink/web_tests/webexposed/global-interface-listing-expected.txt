@@ -5624,6 +5624,7 @@ interface MLGraphBuilder
     method averagePool2d
     method batchNormalization
     method build
+    method cast
     method ceil
     method clamp
     method concat

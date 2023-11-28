@@ -507,6 +507,9 @@ OperationPtr CreateElementWiseUnaryOperator(
     case MLOperator::OperatorKind::kReciprocal:
       operator_mojo->kind = ElementWiseUnary::Kind::kReciprocal;
       break;
+    case MLOperator::OperatorKind::kCast:
+      operator_mojo->kind = ElementWiseUnary::Kind::kCast;
+      break;
     default:
       NOTREACHED_NORETURN();
   }
@@ -911,6 +914,8 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
     case MLOperator::OperatorKind::kErf:
       [[fallthrough]];
     case MLOperator::OperatorKind::kReciprocal:
+      [[fallthrough]];
+    case MLOperator::OperatorKind::kCast:
       return CreateElementWiseUnaryOperator(operand_to_id_map, op);
     case MLOperator::OperatorKind::kElu:
       return blink_mojom::Operation::NewElu(

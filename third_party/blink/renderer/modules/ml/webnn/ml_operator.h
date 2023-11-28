@@ -44,6 +44,7 @@ class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
     kLogicalNot,
     kReciprocal,
     kSqrt,
+    kCast,
     kLeakyRelu,
     kMax,
     kMin,
