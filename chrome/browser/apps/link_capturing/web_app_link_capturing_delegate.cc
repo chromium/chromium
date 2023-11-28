@@ -74,6 +74,15 @@ WebAppLinkCapturingDelegate::CreateLinkCaptureLaunchClosure(
                              &app_id)) {
     return absl::nullopt;
   }
+
+  // Don't capture if already inside a window for the target app. If the
+  // previous early return didn't trigger, this means we are in an app window
+  // but out of scope of the original app, and navigating will put us back in
+  // scope.
+  if (base::ValuesEquivalent(
+          provider->ui_manager().GetAppIdForWindow(web_contents), &app_id)) {
+    return absl::nullopt;
+  }
   // Note: The launch can occur after this object is destroyed, so bind to a
   // static function.
   // TODO(b/297256243): Investigate possible reparenting instead of relaunching.

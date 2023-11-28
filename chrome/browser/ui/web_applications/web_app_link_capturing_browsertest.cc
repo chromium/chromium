@@ -556,6 +556,23 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
+                       NoLinkCaptureOutOfScopeInAppWindow) {
+  const auto [app_id, in_scope_1, _, scope] =
+      InstallTestApp("/web_apps/basic.html");
+
+  ASSERT_EQ(apps::test::EnableLinkCapturingByUser(profile(), app_id),
+            base::ok());
+
+  content::WebContents* test_app = OpenApplication(app_id);
+
+  ClickLinkAndWait(test_app, out_of_scope_, LinkTarget::SELF, /*rel=*/"");
+
+  ClickLinkAndWait(test_app, in_scope_1, LinkTarget::SELF, /*rel=*/"");
+
+  ExpectTabs(chrome::FindBrowserWithTab(test_app), {in_scope_1});
+}
+
 INSTANTIATE_TEST_SUITE_P(,
                          WebAppLinkCapturingBrowserTest,
 #if BUILDFLAG(IS_CHROMEOS)
