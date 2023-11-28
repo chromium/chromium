@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -30,7 +31,6 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/vector_icons/vector_icons.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -87,7 +87,7 @@ AppListSearchView::AppListSearchView(
   scroll_view_->SetAllowKeyboardScrolling(false);
 
   // Don't paint a background. The bubble already has one.
-  scroll_view_->SetBackgroundColor(absl::nullopt);
+  scroll_view_->SetBackgroundColor(std::nullopt);
 
   // Set up scroll bars.
   scroll_view_->SetHorizontalScrollBarMode(
@@ -166,7 +166,7 @@ AppListSearchView::AppListSearchView(
   auto* answer_card_container =
       scroll_contents->AddChildView(std::make_unique<SearchResultListView>(
           view_delegate, dialog_controller_,
-          SearchResultView::SearchResultViewType::kAnswerCard, absl::nullopt));
+          SearchResultView::SearchResultViewType::kAnswerCard, std::nullopt));
   answer_card_container->SetListType(
       SearchResultListView::SearchResultListType::kAnswerCard);
   add_result_container(answer_card_container);
@@ -175,7 +175,7 @@ AppListSearchView::AppListSearchView(
   auto* best_match_container =
       scroll_contents->AddChildView(std::make_unique<SearchResultListView>(
           view_delegate, dialog_controller_,
-          SearchResultView::SearchResultViewType::kDefault, absl::nullopt));
+          SearchResultView::SearchResultViewType::kDefault, std::nullopt));
   best_match_container->SetListType(
       SearchResultListView::SearchResultListType::kBestMatch);
   add_result_container(best_match_container);
@@ -278,7 +278,7 @@ void AppListSearchView::OnSearchResultContainerResultsChanged() {
         first_animated_result_view_index;
 
     for (SearchResultContainerView* view : result_container_views_) {
-      absl::optional<AnimationInfo> container_animation_info =
+      std::optional<AnimationInfo> container_animation_info =
           view->ScheduleResultAnimations(aggregate_animation_info);
       if (container_animation_info) {
         aggregate_animation_info.total_views +=
@@ -518,14 +518,14 @@ void AppListSearchView::MaybeNotifySelectedResultChanged() {
   }
 
   if (!result_selection_controller_->selected_result()) {
-    search_box_view_->SetA11yActiveDescendant(absl::nullopt);
+    search_box_view_->SetA11yActiveDescendant(std::nullopt);
     return;
   }
 
   views::View* selected_view =
       result_selection_controller_->selected_result()->GetSelectedView();
   if (!selected_view) {
-    search_box_view_->SetA11yActiveDescendant(absl::nullopt);
+    search_box_view_->SetA11yActiveDescendant(std::nullopt);
     return;
   }
 

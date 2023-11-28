@@ -194,7 +194,7 @@ TEST_F(FastPairScannerImplTest, FactoryCreate) {
 
 TEST_F(FastPairScannerImplTest, SessionStartedSuccessfully) {
   delegate_->OnSessionStarted(mock_scan_session_,
-                              /*error_code=*/absl::nullopt);
+                              /*error_code=*/std::nullopt);
   TriggerOnDeviceFound(kTestBleDeviceAddress1);
   EXPECT_TRUE(scanner_observer().DoesDeviceListContainTestDevice(
       kTestBleDeviceAddress1));

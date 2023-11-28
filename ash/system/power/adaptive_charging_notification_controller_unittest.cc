@@ -68,7 +68,7 @@ class AdaptiveChargingNotificationControllerTest : public AshTestBase {
     message_center::Notification* notification =
         message_center::MessageCenter::Get()->FindVisibleNotificationById(
             /*id=*/"adaptive-charging-notify-info");
-    notification->delegate()->Click(button_index, absl::nullopt);
+    notification->delegate()->Click(button_index, std::nullopt);
   }
 
  private:

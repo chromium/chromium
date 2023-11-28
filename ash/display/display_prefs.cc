@@ -82,10 +82,10 @@ constexpr double kDefaultDisplayZoomValue = 1.0;
 bool ValueToInsets(const base::Value::Dict& dict, gfx::Insets* insets) {
   DCHECK(insets);
 
-  absl::optional<int> top = dict.FindInt(kInsetsTopKey);
-  absl::optional<int> left = dict.FindInt(kInsetsLeftKey);
-  absl::optional<int> bottom = dict.FindInt(kInsetsBottomKey);
-  absl::optional<int> right = dict.FindInt(kInsetsRightKey);
+  std::optional<int> top = dict.FindInt(kInsetsTopKey);
+  std::optional<int> left = dict.FindInt(kInsetsLeftKey);
+  std::optional<int> bottom = dict.FindInt(kInsetsBottomKey);
+  std::optional<int> right = dict.FindInt(kInsetsRightKey);
   if (top && left && bottom && right) {
     *insets = gfx::Insets::TLBR(*top, *left, *bottom, *right);
     return true;
@@ -145,8 +145,8 @@ bool ValueToTouchData(const base::Value::Dict& dict,
     return false;
   }
 
-  absl::optional<int> width = dict.FindInt(kTouchCalibrationWidth);
-  absl::optional<int> height = dict.FindInt(kTouchCalibrationHeight);
+  std::optional<int> width = dict.FindInt(kTouchCalibrationWidth);
+  std::optional<int> height = dict.FindInt(kTouchCalibrationHeight);
   if (!width || !height) {
     return false;
   }
@@ -244,7 +244,7 @@ void LoadDisplayProperties(PrefService* local_state) {
     const gfx::Insets* insets_to_set = nullptr;
 
     display::Display::Rotation rotation = display::Display::ROTATE_0;
-    if (absl::optional<int> rotation_value = dict_value->FindInt("rotation")) {
+    if (std::optional<int> rotation_value = dict_value->FindInt("rotation")) {
       rotation = static_cast<display::Display::Rotation>(*rotation_value);
     }
 
@@ -253,7 +253,7 @@ void LoadDisplayProperties(PrefService* local_state) {
     gfx::Size resolution_in_pixels(width, height);
 
     float device_scale_factor = 1.0;
-    if (absl::optional<int> dsf_value =
+    if (std::optional<int> dsf_value =
             dict_value->FindInt("device-scale-factor")) {
       device_scale_factor = static_cast<float>(*dsf_value) / 1000.0f;
     }
@@ -266,7 +266,7 @@ void LoadDisplayProperties(PrefService* local_state) {
     if (display::features::IsListAllDisplayModesEnabled()) {
       refresh_rate =
           dict_value->FindDouble("refresh-rate").value_or(refresh_rate);
-      absl::optional<bool> is_interlaced_opt =
+      std::optional<bool> is_interlaced_opt =
           dict_value->FindBool("interlaced");
       is_interlaced = is_interlaced_opt.value_or(false);
     }
@@ -286,13 +286,12 @@ void LoadDisplayProperties(PrefService* local_state) {
 
     display::VariableRefreshRateState variable_refresh_rate_state =
         display::kVrrNotCapable;
-    if (absl::optional<int> vrr_state_value =
+    if (std::optional<int> vrr_state_value =
             dict_value->FindInt(kVariableRefreshRateState)) {
       variable_refresh_rate_state =
           static_cast<display::VariableRefreshRateState>(*vrr_state_value);
     }
-    absl::optional<float> vsync_rate_min =
-        dict_value->FindDouble(kVsyncRateMin);
+    std::optional<float> vsync_rate_min = dict_value->FindDouble(kVsyncRateMin);
 
     const double display_zoom =
         dict_value->FindDouble(kDisplayZoom).value_or(kDefaultDisplayZoomValue);
@@ -307,12 +306,12 @@ void LoadDisplayProperties(PrefService* local_state) {
 void LoadDisplayRotationState(PrefService* local_state) {
   const base::Value::Dict& properties =
       local_state->GetDict(prefs::kDisplayRotationLock);
-  const absl::optional<bool> rotation_lock = properties.FindBool("lock");
+  const std::optional<bool> rotation_lock = properties.FindBool("lock");
   if (!rotation_lock) {
     return;
   }
 
-  const absl::optional<int> rotation = properties.FindInt("orientation");
+  const std::optional<int> rotation = properties.FindInt("orientation");
   if (!rotation) {
     return;
   }
@@ -341,7 +340,7 @@ void LoadDisplayTouchAssociations(PrefService* local_state) {
       if (!base::StringToInt64(association_info_item.first, &display_id)) {
         continue;
       }
-      absl::optional<double> value =
+      std::optional<double> value =
           association_info_item.second.GetDict().FindDouble(
               kTouchAssociationTimestamp);
       if (!value) {
@@ -497,8 +496,8 @@ void LoadDisplayMixedMirrorModeParams(PrefService* local_state) {
   }
 
   GetDisplayManager()->set_mixed_mirror_mode_params(
-      absl::optional<display::MixedMirrorModeParams>(
-          absl::in_place, mirroring_source_id, mirroring_destination_ids));
+      std::optional<display::MixedMirrorModeParams>(
+          std::in_place, mirroring_source_id, mirroring_destination_ids));
 }
 
 void StoreDisplayLayoutPref(PrefService* pref_service,
@@ -574,7 +573,7 @@ void StoreCurrentDisplayProperties(PrefService* pref_service) {
       const base::Value::Dict* original_property =
           pref_data.FindDict(base::NumberToString(id));
       if (original_property) {
-        absl::optional<int> original_rotation =
+        std::optional<int> original_rotation =
             original_property->FindInt("rotation");
         if (original_rotation) {
           property_value.Set("rotation", *original_rotation);
@@ -619,7 +618,7 @@ void StoreCurrentDisplayProperties(PrefService* pref_service) {
 
     property_value.Set(kVariableRefreshRateState,
                        info.variable_refresh_rate_state());
-    if (const absl::optional<float>& vsync_rate_min = info.vsync_rate_min()) {
+    if (const std::optional<float>& vsync_rate_min = info.vsync_rate_min()) {
       property_value.Set(kVsyncRateMin, vsync_rate_min.value());
     }
 
@@ -784,7 +783,7 @@ void StoreExternalDisplayMirrorInfo(PrefService* pref_service) {
 // |mixed_mirror_mode_params| is null.
 void StoreDisplayMixedMirrorModeParams(
     PrefService* pref_service,
-    const absl::optional<display::MixedMirrorModeParams>& mixed_params) {
+    const std::optional<display::MixedMirrorModeParams>& mixed_params) {
   ScopedDictPrefUpdate update(pref_service,
                               prefs::kDisplayMixedMirrorModeParams);
   base::Value::Dict& pref_data = update.Get();
@@ -964,7 +963,7 @@ bool DisplayPrefs::ParseTouchCalibrationStringForTest(
 }
 
 void DisplayPrefs::StoreDisplayMixedMirrorModeParamsForTest(
-    const absl::optional<display::MixedMirrorModeParams>& mixed_params) {
+    const std::optional<display::MixedMirrorModeParams>& mixed_params) {
   StoreDisplayMixedMirrorModeParams(local_state_, mixed_params);
 }
 

@@ -248,7 +248,7 @@ class ASH_EXPORT WindowTreeHostManager
   int64_t cursor_display_id_for_restore_;
 
   // Receive DisplayObserver callbacks between Start and Shutdown.
-  absl::optional<display::ScopedDisplayObserver> display_observer_;
+  std::optional<display::ScopedDisplayObserver> display_observer_;
 
   // A repeating timer to trigger sending UMA metrics for primary display's
   // effective resolution at fixed intervals.

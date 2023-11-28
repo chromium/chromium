@@ -52,7 +52,7 @@ class ASH_EXPORT PowerEventObserver
 
   // Called by D-Bus when the current switches state is successfully obtained.
   void OnGetSwitchStates(
-      absl::optional<chromeos::PowerManagerClient::SwitchStates> result);
+      std::optional<chromeos::PowerManagerClient::SwitchStates> result);
 
   // Called by the WebUIScreenLocker when all the lock screen animations have
   // completed.  This really should be implemented via an observer but since

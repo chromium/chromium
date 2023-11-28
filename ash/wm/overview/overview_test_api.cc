@@ -68,10 +68,10 @@ void OverviewTestApi::WaitForOverviewState(
   new OverviewAnimationStateWaiter(expected_state, std::move(callback));
 }
 
-absl::optional<OverviewInfo> OverviewTestApi::GetOverviewInfo() const {
+std::optional<OverviewInfo> OverviewTestApi::GetOverviewInfo() const {
   auto* overview_controller = OverviewController::Get();
   if (!overview_controller->InOverviewSession())
-    return absl::nullopt;
+    return std::nullopt;
 
   OverviewInfo info;
   for (const auto& grid :

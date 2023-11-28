@@ -4,6 +4,7 @@
 
 #include "ash/system/network/network_list_network_item_view.h"
 
+#include <optional>
 #include <string>
 
 #include "ash/constants/ash_features.h"
@@ -29,7 +30,6 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -361,7 +361,7 @@ void NetworkListNetworkItemView::SetupNetworkSubtext() {
     return;
   }
 
-  absl::optional<std::u16string> portal_subtext =
+  std::optional<std::u16string> portal_subtext =
       GetPortalStateSubtext(network_properties()->portal_state);
   if (portal_subtext) {
     SetWarningSubText(this, *portal_subtext);
@@ -417,7 +417,7 @@ void NetworkListNetworkItemView::AddPolicyView() {
 
 std::u16string NetworkListNetworkItemView::GenerateAccessibilityLabel(
     const std::u16string& label) {
-  absl::optional<std::u16string> portal_subtext =
+  std::optional<std::u16string> portal_subtext =
       GetPortalStateSubtext(network_properties()->portal_state);
   if (portal_subtext) {
     return l10n_util::GetStringFUTF16(
@@ -452,7 +452,7 @@ std::u16string NetworkListNetworkItemView::GenerateAccessibilityDescription() {
   std::u16string connection_status;
 
   if (StateIsConnected(network_properties()->connection_state)) {
-    absl::optional<std::u16string> portal_subtext =
+    std::optional<std::u16string> portal_subtext =
         GetPortalStateSubtext(network_properties()->portal_state);
     if (portal_subtext) {
       connection_status = *portal_subtext;

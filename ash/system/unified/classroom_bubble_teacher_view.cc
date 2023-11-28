@@ -83,7 +83,7 @@ class ClassroomTeacherComboboxModel : public ui::ComboboxModel {
     return GetAssignmentListName(index);
   }
 
-  absl::optional<size_t> GetDefaultIndex() const override { return 0; }
+  std::optional<size_t> GetDefaultIndex() const override { return 0; }
 };
 
 }  // namespace

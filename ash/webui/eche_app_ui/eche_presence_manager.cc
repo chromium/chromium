@@ -113,9 +113,9 @@ void EchePresenceManager::StartMonitoring() {
     return;
   }
 
-  const absl::optional<multidevice::RemoteDeviceRef> remote_device_ref =
+  const std::optional<multidevice::RemoteDeviceRef> remote_device_ref =
       multidevice_setup_client_->GetHostStatus().second;
-  const absl::optional<multidevice::RemoteDeviceRef> local_device_ref =
+  const std::optional<multidevice::RemoteDeviceRef> local_device_ref =
       device_sync_client_->GetLocalDeviceMetadata();
   if (!remote_device_ref || !local_device_ref) {
     return;

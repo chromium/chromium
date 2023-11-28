@@ -87,7 +87,7 @@ void ScreenSecurityController::CreateNotification(
           base::BindRepeating(
               [](base::WeakPtr<ScreenSecurityController> controller,
                  bool is_screen_access_notification,
-                 absl::optional<int> button_index) {
+                 std::optional<int> button_index) {
                 if (!button_index)
                   return;
 

@@ -228,8 +228,8 @@ class PhoneHubNotificationController::NotificationDelegate
     controller_->DismissNotification(phone_hub_id_);
   }
 
-  void Click(const absl::optional<int>& button_index,
-             const absl::optional<std::u16string>& reply) override {
+  void Click(const std::optional<int>& button_index,
+             const std::optional<std::u16string>& reply) override {
     if (!controller_)
       return;
 
@@ -408,7 +408,7 @@ void PhoneHubNotificationController::OnAttemptConnectionScanFailed() {
   // Add a notification if tether failed.
   scoped_refptr<message_center::NotificationDelegate> delegate =
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-          base::BindRepeating([](absl::optional<int> button_index) {
+          base::BindRepeating([](std::optional<int> button_index) {
             // When clicked, open Tether Settings page if we can open WebUI
             // settings, otherwise do nothing.
             if (TrayPopupUtils::CanOpenWebUISettings()) {
@@ -468,7 +468,7 @@ PhoneHubNotificationController::CreateCameraRollGenericNotification(
           base::BindRepeating(
               [](phonehub::CameraRollManager* manager,
                  const CameraRollItemMetadata& metadata,
-                 absl::optional<int> button_index) {
+                 std::optional<int> button_index) {
                 // When button is clicked, close notification and retry the
                 // download
                 if (button_index.has_value()) {
@@ -504,7 +504,7 @@ PhoneHubNotificationController::CreateCameraRollStorageNotification(
     const CameraRollItemMetadata& metadata) {
   scoped_refptr<message_center::NotificationDelegate> delegate =
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-          base::BindRepeating([](absl::optional<int> button_index) {
+          base::BindRepeating([](std::optional<int> button_index) {
             // When button is clicked, close notification and open Storage
             // Management Settings page if we can open WebUI settings.
             if (button_index.has_value()) {
@@ -548,7 +548,7 @@ PhoneHubNotificationController::CreateCameraRollNetworkNotification(
     const CameraRollItemMetadata& metadata) {
   scoped_refptr<message_center::NotificationDelegate> delegate =
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-          base::BindRepeating([](absl::optional<int> button_index) {
+          base::BindRepeating([](std::optional<int> button_index) {
             // When button is clicked, close notification and open Network
             // Settings page if we can open WebUI settings.
             if (button_index.has_value()) {

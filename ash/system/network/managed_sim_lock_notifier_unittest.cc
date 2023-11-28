@@ -79,7 +79,7 @@ class ManagedSimLockNotifierTest : public NoSessionAshTestBase {
 
   void SetCellularSimLockEnabled(
       bool enable,
-      const absl::optional<std::string>& lock_type = absl::nullopt) {
+      const std::optional<std::string>& lock_type = std::nullopt) {
     // Simulate a locked SIM.
     base::Value::Dict sim_lock_status;
     sim_lock_status.Set(shill::kSIMLockEnabledProperty, enable);

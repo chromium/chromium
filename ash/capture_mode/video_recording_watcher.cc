@@ -5,6 +5,7 @@
 #include "ash/capture_mode/video_recording_watcher.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/capture_mode/capture_mode_behavior.h"
@@ -27,7 +28,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/aura/client/cursor_shape_client.h"
 #include "ui/aura/window_tree_host.h"
@@ -838,7 +838,7 @@ void VideoRecordingWatcher::UpdateCursorOverlayNow(
   const gfx::NativeCursor cursor = GetCurrentCursor();
   DCHECK_NE(cursor.type(), ui::mojom::CursorType::kNull);
 
-  absl::optional<ui::CursorData> cursor_data =
+  std::optional<ui::CursorData> cursor_data =
       aura::client::GetCursorShapeClient().GetCursorData(cursor);
   if (!cursor_data)
     return;

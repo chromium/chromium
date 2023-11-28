@@ -5,6 +5,8 @@
 #ifndef ASH_CAPTURE_MODE_VIDEO_RECORDING_WATCHER_H_
 #define ASH_CAPTURE_MODE_VIDEO_RECORDING_WATCHER_H_
 
+#include <optional>
+
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_behavior.h"
 #include "ash/capture_mode/capture_mode_types.h"
@@ -15,7 +17,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/scoped_window_capture_request.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/cursor/cursor.h"
@@ -280,7 +281,7 @@ class ASH_EXPORT VideoRecordingWatcher
   // Stores the location of the most recent throttled mouse event (i.e. received
   // while the |cursor_events_throttle_timer_| was running). The location is in
   // the |window_being_recorded_| coordinates.
-  absl::optional<gfx::PointF> throttled_cursor_location_;
+  std::optional<gfx::PointF> throttled_cursor_location_;
 
   // Resizing a window can generate many intermediate steps, and it would be
   // inefficient to push all of them to the recording service, causing a

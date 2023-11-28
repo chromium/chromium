@@ -5,6 +5,8 @@
 #ifndef ASH_AMBIENT_METRICS_AMBIENT_ANIMATION_METRICS_RECORDER_H_
 #define ASH_AMBIENT_METRICS_AMBIENT_ANIMATION_METRICS_RECORDER_H_
 
+#include <optional>
+
 #include "ash/ambient/ambient_ui_settings.h"
 #include "ash/ash_export.h"
 #include "base/containers/flat_set.h"
@@ -12,7 +14,6 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/lottie/animation.h"
 #include "ui/lottie/animation_observer.h"
 
@@ -44,14 +45,14 @@ class ASH_EXPORT AmbientAnimationMetricsRecorder
       base::Minutes(1);
 
   static bool IsPlaybackConfigValid(
-      const absl::optional<lottie::Animation::PlaybackConfig>& playback_config);
+      const std::optional<lottie::Animation::PlaybackConfig>& playback_config);
 
   // lottie::AnimationObserver implementation:
   void AnimationFramePainted(const lottie::Animation* animation,
                              float t) override;
   void AnimationIsDeleting(const lottie::Animation* animation) override;
 
-  absl::optional<base::TimeDelta> GetOffsetBetweenAnimations(
+  std::optional<base::TimeDelta> GetOffsetBetweenAnimations(
       const lottie::Animation& animation_l,
       const lottie::Animation& animation_r) const;
 

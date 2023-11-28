@@ -720,7 +720,7 @@ void CaptureModeSession::MaybeUpdateSettingsBounds() {
 }
 
 void CaptureModeSession::MaybeUpdateCaptureUisOpacity(
-    absl::optional<gfx::Point> cursor_screen_location) {
+    std::optional<gfx::Point> cursor_screen_location) {
   if (is_shutting_down_) {
     return;
   }
@@ -2595,7 +2595,7 @@ void CaptureModeSession::ClampCaptureRegionToRootWindowSize() {
 }
 
 void CaptureModeSession::EndSelection(
-    absl::optional<gfx::Point> cursor_screen_location) {
+    std::optional<gfx::Point> cursor_screen_location) {
   fine_tune_position_ = FineTunePosition::kNone;
   anchor_points_.clear();
 

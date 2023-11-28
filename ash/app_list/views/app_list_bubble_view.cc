@@ -617,7 +617,7 @@ void AppListBubbleView::UpdateContinueSectionVisibility() {
 }
 
 void AppListBubbleView::UpdateForNewSortingOrder(
-    const absl::optional<AppListSortOrder>& new_order,
+    const std::optional<AppListSortOrder>& new_order,
     bool animate,
     base::OnceClosure update_position_closure) {
   // If app list sort order change is animated, hide any open folders as part of

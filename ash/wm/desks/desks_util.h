@@ -87,7 +87,7 @@ ASH_EXPORT bool IsZOrderTracked(aura::Window* window);
 // Get the position of `window` in `windows` (as filtered by `IsZOrderTracked`)
 // in reverse order. If `window` is not in the list (or isn't z-order tracked),
 // then nullopt is returned.
-ASH_EXPORT absl::optional<size_t> GetWindowZOrder(
+ASH_EXPORT std::optional<size_t> GetWindowZOrder(
     const std::vector<aura::Window*>& windows,
     aura::Window* window);
 

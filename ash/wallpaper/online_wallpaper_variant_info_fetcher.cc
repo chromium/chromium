@@ -36,7 +36,7 @@ class VariantMatches {
   ~VariantMatches() = default;
 
   // Filters |images| to only the entries that match |location|.
-  static absl::optional<VariantMatches> FromImages(
+  static std::optional<VariantMatches> FromImages(
       const std::string& location,
       const std::vector<backdrop::Image>& images) {
     // Find the exact image in the |images| collection.
@@ -44,7 +44,7 @@ class VariantMatches {
         base::ranges::find(images, location, &backdrop::Image::image_url);
 
     if (image_iter == images.end()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     uint64_t unit_id = image_iter->unit_id();
@@ -53,7 +53,7 @@ class VariantMatches {
 
   // Same semantic as the method above but instead of matching against
   // `location`, `unit_id` is used instead.
-  static absl::optional<VariantMatches> FromImages(
+  static std::optional<VariantMatches> FromImages(
       uint64_t unit_id,
       const std::vector<backdrop::Image>& images) {
     std::vector<OnlineWallpaperVariant> variants;
@@ -66,7 +66,7 @@ class VariantMatches {
       }
     }
     if (variants.empty()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     return VariantMatches(unit_id, std::move(variants));
   }
@@ -139,7 +139,7 @@ void OnlineWallpaperVariantInfoFetcher::FetchOnlineWallpaper(
            "very old wallpapers.";
     base::UmaHistogramEnumeration("Ash.Wallpaper.Online.Result",
                                   SetWallpaperResult::kInvalidState);
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -201,7 +201,7 @@ void OnlineWallpaperVariantInfoFetcher::OnSingleFetch(
     bool success,
     const backdrop::Image& image) {
   if (!success) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -226,15 +226,15 @@ void OnlineWallpaperVariantInfoFetcher::FindAndSetOnlineWallpaperVariants(
     const std::vector<backdrop::Image>& images) {
   if (!success) {
     LOG(WARNING) << "Failed to fetch online wallpapers";
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
-  absl::optional<VariantMatches> matches =
+  std::optional<VariantMatches> matches =
       VariantMatches::FromImages(location, images);
   if (!matches) {
     LOG(ERROR) << "No valid variants";
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -252,15 +252,15 @@ void OnlineWallpaperVariantInfoFetcher::OnTimeOfDayWallpapersFetched(
     const std::vector<backdrop::Image>& images) {
   if (!success) {
     LOG(WARNING) << "Failed to fetch online wallpapers";
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
-  absl::optional<VariantMatches> matches =
+  std::optional<VariantMatches> matches =
       VariantMatches::FromImages(unit_id, images);
   if (!matches) {
     LOG(ERROR) << "No valid variants";
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 

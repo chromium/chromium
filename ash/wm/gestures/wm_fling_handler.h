@@ -6,11 +6,11 @@
 #define ASH_WM_GESTURES_WM_FLING_HANDLER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/compositor_animation_observer.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -58,7 +58,7 @@ class WmFlingHandler : public ui::CompositorAnimationObserver {
 
   // Cached value of an earlier offset that determines values to scroll through
   // by being compared to an updated offset.
-  absl::optional<gfx::Vector2dF> fling_last_offset_;
+  std::optional<gfx::Vector2dF> fling_last_offset_;
 
   // The compositor we are observing.
   raw_ptr<ui::Compositor, ExperimentalAsh> observed_compositor_ = nullptr;

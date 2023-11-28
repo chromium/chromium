@@ -5,9 +5,9 @@
 #include "ash/assistant/ui/base/assistant_scroll_view.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/scrollbar/overlay_scroll_bar.h"
@@ -80,7 +80,7 @@ void AssistantScrollView::RemoveScrollViewObserver(Observer* observer) {
 }
 
 void AssistantScrollView::InitLayout() {
-  SetBackgroundColor(absl::nullopt);
+  SetBackgroundColor(std::nullopt);
   SetDrawOverflowIndicator(false);
 
   // Content view.

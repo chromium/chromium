@@ -173,7 +173,7 @@ class ASH_EXPORT UnifiedSystemTray
   views::Widget* GetBubbleWidget() const override;
   TrayBubbleView* GetBubbleView() override;
   const char* GetClassName() const override;
-  absl::optional<AcceleratorAction> GetAcceleratorAction() const override;
+  std::optional<AcceleratorAction> GetAcceleratorAction() const override;
 
   // ShelfConfig::Observer:
   void OnShelfConfigUpdated() override;

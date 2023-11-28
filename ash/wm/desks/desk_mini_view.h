@@ -104,7 +104,7 @@ class ASH_EXPORT DeskMiniView : public views::View,
   // Returns the expected focus color of `DeskPreviewView` based on the
   // activation state of the corresponding desk and whether the saved desk
   // library is visible.
-  absl::optional<ui::ColorId> GetFocusColor() const;
+  std::optional<ui::ColorId> GetFocusColor() const;
 
   // Updates the focus color of `DeskPreviewView`.
   void UpdateFocusColor();

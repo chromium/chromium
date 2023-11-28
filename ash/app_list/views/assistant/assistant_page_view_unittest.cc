@@ -39,19 +39,19 @@ namespace {
 using assistant::AssistantInteractionMetadata;
 using assistant::AssistantInteractionType;
 
-#define EXPECT_INTERACTION_OF_TYPE(type_)                      \
-  ({                                                           \
-    absl::optional<AssistantInteractionMetadata> interaction = \
-        current_interaction();                                 \
-    ASSERT_TRUE(interaction.has_value());                      \
-    EXPECT_EQ(interaction->type, type_);                       \
+#define EXPECT_INTERACTION_OF_TYPE(type_)                     \
+  ({                                                          \
+    std::optional<AssistantInteractionMetadata> interaction = \
+        current_interaction();                                \
+    ASSERT_TRUE(interaction.has_value());                     \
+    EXPECT_EQ(interaction->type, type_);                      \
   })
 
-#define EXPECT_NO_INTERACTION()                                \
-  ({                                                           \
-    absl::optional<AssistantInteractionMetadata> interaction = \
-        current_interaction();                                 \
-    ASSERT_FALSE(interaction.has_value());                     \
+#define EXPECT_NO_INTERACTION()                               \
+  ({                                                          \
+    std::optional<AssistantInteractionMetadata> interaction = \
+        current_interaction();                                \
+    ASSERT_FALSE(interaction.has_value());                    \
   })
 
 // Ensures that the given view has the focus. If it doesn't, this will print a

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <set>
 
 #include "ash/public/cpp/window_finder.h"
@@ -17,7 +18,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chromeos/ui/base/window_state_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/display/screen.h"
@@ -167,7 +167,7 @@ void ResizeWindow(aura::Window* window, const gfx::Rect& screen_bounds) {
       display::Screen::GetScreen()->GetDisplayMatching(screen_bounds));
 }
 
-absl::optional<SplitWindowInfo> WindowSplitter::MaybeSplitWindow(
+std::optional<SplitWindowInfo> WindowSplitter::MaybeSplitWindow(
     aura::Window* topmost_window,
     aura::Window* dragged_window,
     const gfx::PointF& screen_location) {
@@ -175,12 +175,12 @@ absl::optional<SplitWindowInfo> WindowSplitter::MaybeSplitWindow(
   // This gets around some corner cases, where the split window may end up
   // entirely off screen.
   if (!ContainedInWorkArea(topmost_window)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const auto split_region = GetSplitRegion(topmost_window, screen_location);
   if (!IsRegionSplittable(split_region)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   SplitWindowInfo split_info{
@@ -191,13 +191,13 @@ absl::optional<SplitWindowInfo> WindowSplitter::MaybeSplitWindow(
       GetBoundsForSplitRegion(split_info.topmost_window_bounds, split_region);
 
   if (!FitsMinimumSize(dragged_window, split_info.dragged_window_bounds)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   split_info.topmost_window_bounds.Subtract(split_info.dragged_window_bounds);
 
   if (!FitsMinimumSize(topmost_window, split_info.topmost_window_bounds)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return split_info;

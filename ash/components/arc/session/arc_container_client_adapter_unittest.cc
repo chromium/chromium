@@ -44,14 +44,14 @@ class ArcContainerClientAdapterTest : public testing::Test,
  protected:
   ArcClientAdapter* client_adapter() { return client_adapter_.get(); }
 
-  const absl::optional<bool>& is_system_shutdown() const {
+  const std::optional<bool>& is_system_shutdown() const {
     return is_system_shutdown_;
   }
 
  private:
   std::unique_ptr<ArcClientAdapter> client_adapter_;
   content::BrowserTaskEnvironment browser_task_environment_;
-  absl::optional<bool> is_system_shutdown_;
+  std::optional<bool> is_system_shutdown_;
 };
 
 void OnMiniInstanceStarted(bool result) {

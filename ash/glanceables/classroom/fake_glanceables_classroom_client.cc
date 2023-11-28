@@ -29,7 +29,7 @@ CreateAssignmentsWithStringForStudents(
         GURL(base::StringPrintf(
             "https://classroom.google.com/c/test/a/test_course_id_%d/details",
             i)),
-        absl::nullopt, base::Time(), absl::nullopt));
+        std::nullopt, base::Time(), std::nullopt));
   }
   return assignments;
 }

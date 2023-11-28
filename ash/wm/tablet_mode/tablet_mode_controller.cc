@@ -552,8 +552,7 @@ bool TabletModeController::InTabletMode() const {
   return display::Screen::GetScreen()->InTabletMode();
 }
 
-bool TabletModeController::ForceUiTabletModeState(
-    absl::optional<bool> enabled) {
+bool TabletModeController::ForceUiTabletModeState(std::optional<bool> enabled) {
   if (!enabled.has_value()) {
     tablet_mode_behavior_ = kDefault;
     AccelerometerReader::GetInstance()->SetEnabled(true);
@@ -1030,7 +1029,7 @@ void TabletModeController::HandleHingeRotation(
 }
 
 void TabletModeController::OnGetSwitchStates(
-    absl::optional<chromeos::PowerManagerClient::SwitchStates> result) {
+    std::optional<chromeos::PowerManagerClient::SwitchStates> result) {
   if (!result.has_value())
     return;
 

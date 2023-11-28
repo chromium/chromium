@@ -145,7 +145,7 @@ class ASH_EXPORT TrayDetailedView : public views::View,
       nullptr;
 
   // The accessible name for the `progress_bar_`.
-  absl::optional<std::u16string> progress_bar_accessible_name_;
+  std::optional<std::u16string> progress_bar_accessible_name_;
 };
 
 }  // namespace ash

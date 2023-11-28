@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/login/ui/access_code_input.h"
 #include "ash/test/ash_test_base.h"
 #include "base/strings/string_number_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/views/controls/textfield/textfield.h"
 
@@ -77,7 +77,7 @@ TEST_F(FixedLengthCodeInputTest, ContentsChangedWithDigits) {
     EXPECT_EQ(on_input_change_complete_count,
               (index == fixed_pin_length ? 1 : 0));
   }
-  absl::optional<std::string> code = test_api.GetCode();
+  std::optional<std::string> code = test_api.GetCode();
   EXPECT_TRUE(code.has_value());
   EXPECT_EQ(code.value(), "123456");
   EXPECT_EQ(on_enter_count, 0);
@@ -94,7 +94,7 @@ TEST_F(FixedLengthCodeInputTest, ContentsChangedWithMultipleDigits) {
   EXPECT_EQ(on_input_change_count, 0);
 
   auto CheckInsertIgnored = [&]() {
-    absl::optional<std::string> code = test_api.GetCode();
+    std::optional<std::string> code = test_api.GetCode();
     EXPECT_FALSE(code.has_value());
     EXPECT_EQ(test_api.GetActiveIndex(), 0);
     EXPECT_EQ(on_input_change_count, 0);
@@ -135,7 +135,7 @@ TEST_F(FixedLengthCodeInputTest, ContentsChangedWithNonNumericalStrings) {
   EXPECT_EQ(on_input_change_count, 0);
 
   auto CheckInsertIgnored = [&]() {
-    absl::optional<std::string> code = test_api.GetCode();
+    std::optional<std::string> code = test_api.GetCode();
     EXPECT_FALSE(code.has_value());
     EXPECT_EQ(test_api.GetActiveIndex(), 0);
     EXPECT_EQ(on_input_change_count, 0);

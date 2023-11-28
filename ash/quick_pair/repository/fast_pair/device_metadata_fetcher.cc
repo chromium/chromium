@@ -98,7 +98,7 @@ void DeviceMetadataFetcher::OnFetchComplete(
 
   if (!http_result) {
     CD_LOG(WARNING, Feature::FP) << __func__ << "Unable to make request.";
-    std::move(callback).Run(absl::nullopt, /*has_retryable_error=*/true);
+    std::move(callback).Run(std::nullopt, /*has_retryable_error=*/true);
     return;
   }
 
@@ -108,7 +108,7 @@ void DeviceMetadataFetcher::OnFetchComplete(
     CD_LOG(WARNING, Feature::FP) << "No response.";
     // Only suggest retrying when the actual request failed, otherwise there is
     // no matching metadata for the given model_id.
-    std::move(callback).Run(absl::nullopt,
+    std::move(callback).Run(std::nullopt,
                             /*has_retryable_error=*/!http_result->IsSuccess());
     return;
   }
@@ -116,7 +116,7 @@ void DeviceMetadataFetcher::OnFetchComplete(
   nearby::fastpair::GetObservedDeviceResponse device_metadata;
   if (!device_metadata.ParseFromString(*response_body)) {
     CD_LOG(WARNING, Feature::FP) << "Failed to parse.";
-    std::move(callback).Run(absl::nullopt, /*has_retryable_error=*/true);
+    std::move(callback).Run(std::nullopt, /*has_retryable_error=*/true);
     return;
   }
 

@@ -6,6 +6,7 @@
 
 #include <iterator>
 #include <limits>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "cc/paint/skottie_marker.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace ash {
@@ -44,7 +44,7 @@ bool IsFrameRateMarker(const std::string& marker_name, int& parsed_fps) {
 
 // Returns a new AmbientAnimationFrameRateSection, or nullopt if the |marker| or
 // |fps| are invalid.
-absl::optional<AmbientAnimationFrameRateSection>
+std::optional<AmbientAnimationFrameRateSection>
 BuildAmbientAnimationFrameRateSection(const cc::SkottieMarker& marker,
                                       int fps) {
   // Requesting a frame rate over 60 fps will not break the graphics pipeline.
@@ -55,7 +55,7 @@ BuildAmbientAnimationFrameRateSection(const cc::SkottieMarker& marker,
   static constexpr int kMaxFrameRateFps = 60;
   if (fps <= 0 || fps > kMaxFrameRateFps) {
     LOG(ERROR) << "Invalid frame rate (fps) specified: " << fps;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (marker.begin_time < kMinNormalizedTimestamp ||
@@ -63,7 +63,7 @@ BuildAmbientAnimationFrameRateSection(const cc::SkottieMarker& marker,
       marker.end_time <= marker.begin_time) {
     LOG(ERROR) << "Frame rate marker has invalid timestamps ["
                << marker.begin_time << ", " << marker.end_time << ")";
-    return absl::nullopt;
+    return std::nullopt;
   }
   return AmbientAnimationFrameRateSection(marker.begin_time, marker.end_time,
                                           base::Hertz(fps));
@@ -107,7 +107,7 @@ AmbientAnimationFrameRateSchedule BuildAmbientAnimationFrameRateSchedule(
     if (!IsFrameRateMarker(marker.name, fps))
       continue;
 
-    absl::optional<AmbientAnimationFrameRateSection> section =
+    std::optional<AmbientAnimationFrameRateSection> section =
         BuildAmbientAnimationFrameRateSection(marker, fps);
     if (section) {
       frame_rate_schedule.push_back(*section);

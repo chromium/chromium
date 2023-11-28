@@ -75,7 +75,7 @@ void AshNotificationDragController::WriteDragDataForView(
 
   AshNotificationView* notification_view =
       static_cast<AshNotificationView*>(sender);
-  const absl::optional<gfx::ImageSkia> drag_image =
+  const std::optional<gfx::ImageSkia> drag_image =
       notification_view->GetDragImage();
   DCHECK(drag_image);
 
@@ -97,7 +97,7 @@ int AshNotificationDragController::GetDragOperationsForView(
     return ui::DragDropTypes::DRAG_NONE;
   }
 
-  const absl::optional<gfx::Rect> drag_area =
+  const std::optional<gfx::Rect> drag_area =
       static_cast<AshNotificationView*>(sender)->GetDragAreaBounds();
 
   // Use `DRAG_COPY` if:
@@ -122,7 +122,7 @@ bool AshNotificationDragController::CanStartDragForView(
 
   const AshNotificationView* const notification_view =
       static_cast<AshNotificationView*>(sender);
-  const absl::optional<gfx::Rect> drag_area =
+  const std::optional<gfx::Rect> drag_area =
       notification_view->GetDragAreaBounds();
 
   // Enable dragging `notification_view_` if:

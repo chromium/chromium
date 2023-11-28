@@ -5,13 +5,14 @@
 #ifndef ASH_WEBUI_ECHE_APP_UI_LAUNCH_APP_HELPER_H_
 #define ASH_WEBUI_ECHE_APP_UI_LAUNCH_APP_HELPER_H_
 
+#include <optional>
+
 #include "ash/webui/eche_app_ui/feature_status.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace gfx {
@@ -62,17 +63,17 @@ class LaunchAppHelper {
     absl::variant<NotificationType, mojom::WebNotificationType> type_;
   };
 
-  using LaunchNotificationFunction = base::RepeatingCallback<void(
-      const absl::optional<std::u16string>& title,
-      const absl::optional<std::u16string>& message,
-      std::unique_ptr<NotificationInfo> info)>;
+  using LaunchNotificationFunction =
+      base::RepeatingCallback<void(const std::optional<std::u16string>& title,
+                                   const std::optional<std::u16string>& message,
+                                   std::unique_ptr<NotificationInfo> info)>;
   using CloseNotificationFunction =
       base::RepeatingCallback<void(const std::string& notification_id)>;
   using LaunchEcheAppFunction = base::RepeatingCallback<void(
-      const absl::optional<int64_t>& notification_id,
+      const std::optional<int64_t>& notification_id,
       const std::string& package_name,
       const std::u16string& visible_name,
-      const absl::optional<int64_t>& user_id,
+      const std::optional<int64_t>& user_id,
       const gfx::Image& icon,
       const std::u16string& phone_name,
       AppsLaunchInfoProvider* apps_launch_info_provider)>;
@@ -103,8 +104,8 @@ class LaunchAppHelper {
   // Exposed virtual for testing.
   // The notification could be generated from webUI or native layer, for the
   // latter it doesn't carry title and message.
-  virtual void ShowNotification(const absl::optional<std::u16string>& title,
-                                const absl::optional<std::u16string>& message,
+  virtual void ShowNotification(const std::optional<std::u16string>& title,
+                                const std::optional<std::u16string>& message,
                                 std::unique_ptr<NotificationInfo> info) const;
 
   // Exposed virtual for testing.
@@ -115,10 +116,10 @@ class LaunchAppHelper {
   // Show the native toast message.
   virtual void ShowToast(const std::u16string& text) const;
 
-  void LaunchEcheApp(absl::optional<int64_t> notification_id,
+  void LaunchEcheApp(std::optional<int64_t> notification_id,
                      const std::string& package_name,
                      const std::u16string& visible_name,
-                     const absl::optional<int64_t>& user_id,
+                     const std::optional<int64_t>& user_id,
                      const gfx::Image& icon,
                      const std::u16string& phone_name,
                      AppsLaunchInfoProvider* apps_launch_info_provider);

@@ -49,7 +49,7 @@ class ASH_EXPORT LoginPinInputView : public views::View,
     ~TestApi();
 
     views::View* code_input();
-    absl::optional<std::string> GetCode();
+    std::optional<std::string> GetCode();
     bool IsEmpty();
 
    private:

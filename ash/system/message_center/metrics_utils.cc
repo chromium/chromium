@@ -4,13 +4,14 @@
 
 #include "ash/system/message_center/metrics_utils.h"
 
+#include <optional>
+
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
@@ -138,9 +139,9 @@ NotificationTypeDetailed GetNotificationTypeForCrosSystemPriority(
     const message_center::Notification& notification) {
   // The warning level is not stored in the notification data, so we need to
   // infer it from the accent color.
-  absl::optional<SkColor> accent_color =
+  std::optional<SkColor> accent_color =
       notification.rich_notification_data().accent_color;
-  absl::optional<ui::ColorId> accent_color_id =
+  std::optional<ui::ColorId> accent_color_id =
       notification.rich_notification_data().accent_color_id;
   message_center::SystemNotificationWarningLevel warning_level =
       message_center::SystemNotificationWarningLevel::NORMAL;
@@ -274,9 +275,9 @@ NotificationTypeDetailed GetNotificationType(
   }
 }
 
-absl::optional<NotificationViewType> GetNotificationViewType(
+std::optional<NotificationViewType> GetNotificationViewType(
     message_center::Notification* notification) {
-  absl::optional<NotificationViewType> type;
+  std::optional<NotificationViewType> type;
 
   // Ignore ARC notification since its view is rendered through Android, and
   // its notification metadata for image and buttons is empty. Also ignore group
@@ -332,9 +333,9 @@ absl::optional<NotificationViewType> GetNotificationViewType(
   }
 }
 
-absl::optional<NotificationTypeDetailed> GetNotificationType(
+std::optional<NotificationTypeDetailed> GetNotificationType(
     const std::string& notification_id) {
-  absl::optional<NotificationTypeDetailed> type;
+  std::optional<NotificationTypeDetailed> type;
   auto* notification =
       message_center::MessageCenter::Get()->FindVisibleNotificationById(
           notification_id);

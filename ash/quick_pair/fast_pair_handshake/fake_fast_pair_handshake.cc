@@ -39,8 +39,7 @@ void FakeFastPairHandshake::SetUpHandshake(
 
 void FakeFastPairHandshake::Reset() {}
 
-void FakeFastPairHandshake::InvokeCallback(
-    absl::optional<PairFailure> failure) {
+void FakeFastPairHandshake::InvokeCallback(std::optional<PairFailure> failure) {
   completed_successfully_ = !failure.has_value();
   std::move(on_complete_callback_).Run(device_, failure);
 }

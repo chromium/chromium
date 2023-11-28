@@ -61,8 +61,8 @@ class ASH_EXPORT InnerExpandedDesksBarButton : public DeskButtonBase {
       delete;
   ~InnerExpandedDesksBarButton() override = default;
 
-  absl::optional<ui::ColorId> focus_color_id() { return focus_color_id_; }
-  void set_focus_color_id(absl::optional<ui::ColorId> focus_color_id) {
+  std::optional<ui::ColorId> focus_color_id() { return focus_color_id_; }
+  void set_focus_color_id(std::optional<ui::ColorId> focus_color_id) {
     focus_color_id_ = focus_color_id;
   }
 
@@ -107,7 +107,7 @@ class ASH_EXPORT InnerExpandedDesksBarButton : public DeskButtonBase {
 
  private:
   raw_ptr<ExpandedDesksBarButton, ExperimentalAsh> outer_button_;
-  absl::optional<ui::ColorId> focus_color_id_;
+  std::optional<ui::ColorId> focus_color_id_;
 };
 
 BEGIN_METADATA(InnerExpandedDesksBarButton, views::LabelButton)
@@ -186,7 +186,7 @@ bool ExpandedDesksBarButton::IsPointOnButton(
 void ExpandedDesksBarButton::UpdateFocusColor() const {
   DCHECK(inner_button_);
   auto* inner_button_focus_ring = views::FocusRing::Get(inner_button_);
-  absl::optional<ui::ColorId> new_focus_color_id;
+  std::optional<ui::ColorId> new_focus_color_id;
 
   if (inner_button_->is_focused() ||
       (bar_view_->dragged_item_over_bar() &&
@@ -195,7 +195,7 @@ void ExpandedDesksBarButton::UpdateFocusColor() const {
   } else if (active_) {
     new_focus_color_id = kColorAshCurrentDeskColor;
   } else {
-    new_focus_color_id = absl::nullopt;
+    new_focus_color_id = std::nullopt;
   }
 
   if (inner_button_->focus_color_id() == new_focus_color_id)
@@ -249,8 +249,7 @@ gfx::Size ExpandedDesksBarButton::CalculatePreferredSize() const {
   return inner_button_->GetPreferredSize();
 }
 
-absl::optional<ui::ColorId>
-ExpandedDesksBarButton::GetFocusColorIdForTesting() {
+std::optional<ui::ColorId> ExpandedDesksBarButton::GetFocusColorIdForTesting() {
   return inner_button_->focus_color_id();
 }
 

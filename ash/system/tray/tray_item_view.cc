@@ -4,13 +4,14 @@
 
 #include "ash/system/tray/tray_item_view.h"
 
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/shelf/shelf.h"
 #include "ash/system/status_area_animation_controller.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/metrics/histogram_functions.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -51,7 +52,7 @@ void RecordAnimationSmoothness(const std::string& histogram_name,
 
 void SetupThroughputTrackerForAnimationSmoothness(
     views::Widget* widget,
-    absl::optional<ui::ThroughputTracker>& tracker,
+    std::optional<ui::ThroughputTracker>& tracker,
     const char* histogram_name) {
   // Return if `tracker` is already running; `widget` may not exist in tests.
   if (tracker || !widget)

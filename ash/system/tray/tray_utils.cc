@@ -40,11 +40,11 @@ void SetupLabelForTray(views::Label* label) {
 }
 
 void SetupConnectedScrollListItem(HoverHighlightView* view) {
-  SetupConnectedScrollListItem(view, absl::nullopt /* battery_percentage */);
+  SetupConnectedScrollListItem(view, std::nullopt /* battery_percentage */);
 }
 
 void SetupConnectedScrollListItem(HoverHighlightView* view,
-                                  absl::optional<uint8_t> battery_percentage) {
+                                  std::optional<uint8_t> battery_percentage) {
   DCHECK(view->is_populated());
 
   std::u16string status;

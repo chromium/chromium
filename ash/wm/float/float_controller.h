@@ -216,7 +216,7 @@ class ASH_EXPORT FloatController : public TabletModeObserver,
   base::ScopedObservation<DesksController, DesksController::Observer>
       desks_controller_observation_{this};
 
-  absl::optional<display::ScopedOptionalDisplayObserver> display_observer_;
+  std::optional<display::ScopedOptionalDisplayObserver> display_observer_;
   base::ScopedObservation<Shell, ShellObserver> shell_observation_{this};
 };
 

@@ -48,7 +48,7 @@ class ASH_EXPORT EcheIconLoadingIndicatorView : public views::View,
   void AnimationProgressed(const gfx::Animation* animation) override;
 
  private:
-  absl::optional<base::TimeTicks> throbber_start_time_;
+  std::optional<base::TimeTicks> throbber_start_time_;
 
   raw_ptr<views::View, ExperimentalAsh> parent_ = nullptr;  // Unowned.
 

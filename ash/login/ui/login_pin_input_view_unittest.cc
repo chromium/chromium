@@ -3,13 +3,15 @@
 // found in the LICENSE file.
 
 #include "ash/login/ui/login_pin_input_view.h"
+
 #include <memory>
+#include <optional>
 #include <string>
+
 #include "ash/login/ui/login_test_base.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/events/test/event_generator.h"
@@ -44,11 +46,11 @@ class LoginPinInputViewTest
   }
 
   void OnPinSubmit(const std::u16string& pin) {
-    submitted_pin_ = absl::make_optional(pin);
+    submitted_pin_ = std::make_optional(pin);
   }
 
   void OnPinChanged(const bool is_empty) {
-    is_empty_ = absl::make_optional(is_empty);
+    is_empty_ = std::make_optional(is_empty);
   }
 
   void PressKeyHelper(ui::KeyboardCode key) {
@@ -78,8 +80,8 @@ class LoginPinInputViewTest
   int length_ = 0;
 
   // Generated during the callback response.
-  absl::optional<std::u16string> submitted_pin_;
-  absl::optional<bool> is_empty_;
+  std::optional<std::u16string> submitted_pin_;
+  std::optional<bool> is_empty_;
 };
 
 // Verifies that pressing 'Return' on the PIN input field triggers an

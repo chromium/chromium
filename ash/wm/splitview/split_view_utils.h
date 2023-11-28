@@ -5,12 +5,12 @@
 #ifndef ASH_WM_SPLITVIEW_SPLIT_VIEW_UTILS_H_
 #define ASH_WM_SPLITVIEW_SPLIT_VIEW_UTILS_H_
 
+#include <optional>
 #include <vector>
 
 #include "ash/ash_export.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/gfx/geometry/transform.h"
@@ -151,7 +151,7 @@ void ShowAppCannotSnapToast();
 SplitViewController::SnapPosition GetSnapPositionForLocation(
     aura::Window* root_window,
     const gfx::Point& location_in_screen,
-    const absl::optional<gfx::Point>& initial_location_in_screen,
+    const std::optional<gfx::Point>& initial_location_in_screen,
     int snap_distance_from_edge,
     int minimum_drag_distance,
     int horizontal_edge_inset,

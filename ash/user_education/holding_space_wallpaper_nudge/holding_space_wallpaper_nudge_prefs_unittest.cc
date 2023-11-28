@@ -4,13 +4,14 @@
 
 #include "ash/user_education/holding_space_wallpaper_nudge/holding_space_wallpaper_nudge_prefs.h"
 
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_prefs.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::holding_space_wallpaper_nudge_prefs {
 namespace {
@@ -50,7 +51,7 @@ class HoldingSpaceWallpaperNudgePrefsTest : public testing::Test {
 // `MarkNudgeShown()` is called.
 TEST_F(HoldingSpaceWallpaperNudgePrefsTest, MarkNudgeShown) {
   // Case: Initialized to default values
-  EXPECT_EQ(GetLastTimeNudgeWasShown(pref_service()), absl::nullopt);
+  EXPECT_EQ(GetLastTimeNudgeWasShown(pref_service()), std::nullopt);
   EXPECT_EQ(GetNudgeShownCount(pref_service()), 0u);
 
   // Case: Called the first time.
@@ -59,7 +60,7 @@ TEST_F(HoldingSpaceWallpaperNudgePrefsTest, MarkNudgeShown) {
   auto after = base::Time::Now();
 
   EXPECT_THAT(GetLastTimeNudgeWasShown(pref_service()),
-              AllOf(Ne(absl::nullopt), Ge(before), Le(after)));
+              AllOf(Ne(std::nullopt), Ge(before), Le(after)));
   EXPECT_EQ(GetNudgeShownCount(pref_service()), 1u);
 
   // Case: Called again.
@@ -68,7 +69,7 @@ TEST_F(HoldingSpaceWallpaperNudgePrefsTest, MarkNudgeShown) {
   after = base::Time::Now();
 
   EXPECT_THAT(GetLastTimeNudgeWasShown(pref_service()),
-              AllOf(Ne(absl::nullopt), Ge(before), Le(after)));
+              AllOf(Ne(std::nullopt), Ge(before), Le(after)));
   EXPECT_EQ(GetNudgeShownCount(pref_service()), 2u);
 }
 
@@ -81,7 +82,7 @@ TEST_F(HoldingSpaceWallpaperNudgePrefsTest, CounterfactualPrefIsSeparate) {
     counterfactual_feature_list.InitAndEnableFeatureWithParameters(
         features::kHoldingSpaceWallpaperNudge, {{"is-counterfactual", "true"}});
 
-    EXPECT_EQ(GetLastTimeNudgeWasShown(pref_service()), absl::nullopt);
+    EXPECT_EQ(GetLastTimeNudgeWasShown(pref_service()), std::nullopt);
     EXPECT_EQ(GetNudgeShownCount(pref_service()), 0u);
 
     before = base::Time::Now();
@@ -89,7 +90,7 @@ TEST_F(HoldingSpaceWallpaperNudgePrefsTest, CounterfactualPrefIsSeparate) {
     after = base::Time::Now();
 
     EXPECT_THAT(GetLastTimeNudgeWasShown(pref_service()),
-                AllOf(Ne(absl::nullopt), Ge(before), Le(after)));
+                AllOf(Ne(std::nullopt), Ge(before), Le(after)));
     EXPECT_EQ(GetNudgeShownCount(pref_service()), 1u);
   }
 
@@ -98,7 +99,7 @@ TEST_F(HoldingSpaceWallpaperNudgePrefsTest, CounterfactualPrefIsSeparate) {
     base::test::ScopedFeatureList disabled_feature_list;
     disabled_feature_list.InitAndDisableFeature(
         features::kHoldingSpaceWallpaperNudge);
-    EXPECT_EQ(GetLastTimeNudgeWasShown(pref_service()), absl::nullopt);
+    EXPECT_EQ(GetLastTimeNudgeWasShown(pref_service()), std::nullopt);
     EXPECT_EQ(GetNudgeShownCount(pref_service()), 0u);
   }
 
@@ -109,7 +110,7 @@ TEST_F(HoldingSpaceWallpaperNudgePrefsTest, CounterfactualPrefIsSeparate) {
         features::kHoldingSpaceWallpaperNudge,
         {{"is-counterfactual", "false"}});
 
-    EXPECT_EQ(GetLastTimeNudgeWasShown(pref_service()), absl::nullopt);
+    EXPECT_EQ(GetLastTimeNudgeWasShown(pref_service()), std::nullopt);
     EXPECT_EQ(GetNudgeShownCount(pref_service()), 0u);
 
     before = base::Time::Now();
@@ -117,7 +118,7 @@ TEST_F(HoldingSpaceWallpaperNudgePrefsTest, CounterfactualPrefIsSeparate) {
     after = base::Time::Now();
 
     EXPECT_THAT(GetLastTimeNudgeWasShown(pref_service()),
-                AllOf(Ne(absl::nullopt), Ge(before), Le(after)));
+                AllOf(Ne(std::nullopt), Ge(before), Le(after)));
     EXPECT_EQ(GetNudgeShownCount(pref_service()), 1u);
   }
 
@@ -126,7 +127,7 @@ TEST_F(HoldingSpaceWallpaperNudgePrefsTest, CounterfactualPrefIsSeparate) {
     base::test::ScopedFeatureList feature_list(
         features::kHoldingSpaceWallpaperNudge);
 
-    EXPECT_NE(GetLastTimeNudgeWasShown(pref_service()), absl::nullopt);
+    EXPECT_NE(GetLastTimeNudgeWasShown(pref_service()), std::nullopt);
     EXPECT_EQ(GetNudgeShownCount(pref_service()), 1u);
 
     before = base::Time::Now();
@@ -134,7 +135,7 @@ TEST_F(HoldingSpaceWallpaperNudgePrefsTest, CounterfactualPrefIsSeparate) {
     after = base::Time::Now();
 
     EXPECT_THAT(GetLastTimeNudgeWasShown(pref_service()),
-                AllOf(Ne(absl::nullopt), Ge(before), Le(after)));
+                AllOf(Ne(std::nullopt), Ge(before), Le(after)));
     EXPECT_EQ(GetNudgeShownCount(pref_service()), 2u);
   }
 
@@ -144,7 +145,7 @@ TEST_F(HoldingSpaceWallpaperNudgePrefsTest, CounterfactualPrefIsSeparate) {
     disabled_feature_list.InitAndDisableFeature(
         features::kHoldingSpaceWallpaperNudge);
     EXPECT_THAT(GetLastTimeNudgeWasShown(pref_service()),
-                AllOf(Ne(absl::nullopt), Ge(before), Le(after)));
+                AllOf(Ne(std::nullopt), Ge(before), Le(after)));
     EXPECT_EQ(GetNudgeShownCount(pref_service()), 2u);
   }
 }

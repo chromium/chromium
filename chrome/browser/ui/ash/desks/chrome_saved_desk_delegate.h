@@ -42,7 +42,7 @@ class ChromeSavedDeskDelegate : public ash::SavedDeskDelegate {
   desks_storage::DeskModel* GetDeskModel() override;
   desks_storage::AdminTemplateService* GetAdminTemplateService() override;
   bool IsWindowPersistable(aura::Window* window) const override;
-  absl::optional<gfx::ImageSkia> MaybeRetrieveIconForSpecialIdentifier(
+  std::optional<gfx::ImageSkia> MaybeRetrieveIconForSpecialIdentifier(
       const std::string& identifier,
       const ui::ColorProvider* color_provider) const override;
   void GetFaviconForUrl(

@@ -92,7 +92,7 @@ HelpBubbleViewAsh* HelpBubbleViewAshTestBase::CreateHelpBubbleView(
 }
 
 HelpBubbleViewAsh* HelpBubbleViewAshTestBase::CreateHelpBubbleView(
-    const absl::optional<HelpBubbleStyle>& style) {
+    const std::optional<HelpBubbleStyle>& style) {
   HelpBubbleParams params;
   params.arrow = HelpBubbleArrow::kNone;
 

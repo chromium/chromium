@@ -5,6 +5,7 @@
 #include "ash/ambient/ambient_weather_controller.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "ash/ambient/ambient_constants.h"
@@ -22,7 +23,6 @@
 #include "base/memory/ptr_util.h"
 #include "components/account_id/account_id.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace {
@@ -106,7 +106,7 @@ void AmbientWeatherController::FetchWeather() {
 }
 
 void AmbientWeatherController::StartDownloadingWeatherConditionIcon(
-    const absl::optional<WeatherInfo>& weather_info) {
+    const std::optional<WeatherInfo>& weather_info) {
   if (!weather_info) {
     LOG(WARNING) << "No weather info included in the response.";
     return;

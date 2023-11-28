@@ -6,11 +6,11 @@
 #define ASH_APP_LIST_APP_LIST_METRICS_H_
 
 #include <map>
+#include <optional>
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/event.h"
 
 namespace ash {
@@ -217,7 +217,7 @@ struct AppLaunchedMetricParams {
   AppListViewState app_list_view_state = AppListViewState::kClosed;
   bool is_tablet_mode = false;
   bool app_list_shown = false;
-  absl::optional<base::TimeTicks> launcher_show_timestamp;
+  std::optional<base::TimeTicks> launcher_show_timestamp;
 };
 
 void AppListRecordPageSwitcherSourceByEventType(ui::EventType type);
@@ -241,7 +241,7 @@ ASH_EXPORT void RecordAppListAppLaunched(AppListLaunchedFrom launched_from,
 ASH_EXPORT void RecordLauncherWorkflowMetrics(
     AppListUserAction action,
     bool is_tablet_mode,
-    absl::optional<base::TimeTicks> launcher_show_time);
+    std::optional<base::TimeTicks> launcher_show_time);
 
 ASH_EXPORT bool IsCommandIdAnAppLaunch(int command_id);
 

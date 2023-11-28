@@ -5,6 +5,7 @@
 #include "ash/app_list/app_list_presenter_event_filter.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "ash/app_list/app_list_controller_impl.h"
@@ -23,7 +24,6 @@
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
 #include "base/check.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/point.h"

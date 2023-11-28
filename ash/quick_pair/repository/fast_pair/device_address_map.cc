@@ -96,7 +96,7 @@ bool DeviceAddressMap::EvictMacAddressRecord(const std::string& mac_address) {
   return true;
 }
 
-absl::optional<const std::string> DeviceAddressMap::GetModelIdForMacAddress(
+std::optional<const std::string> DeviceAddressMap::GetModelIdForMacAddress(
     const std::string& mac_address) {
   // Lazily load saved records from prefs the first time we get a model ID.
   if (!loaded_records_from_prefs_) {
@@ -106,7 +106,7 @@ absl::optional<const std::string> DeviceAddressMap::GetModelIdForMacAddress(
 
   std::string& saved_model_id = mac_address_to_model_id_[mac_address];
   if (saved_model_id.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return saved_model_id;
 }

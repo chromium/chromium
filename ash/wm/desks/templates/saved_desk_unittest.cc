@@ -143,7 +143,7 @@ class SavedDeskTest : public OverviewTestBase,
 
         app_restore::WindowInfo window_info;
         window_info.activation_index =
-            absl::make_optional<int32_t>(activation_index_counter++);
+            std::make_optional<int32_t>(activation_index_counter++);
 
         restore_data->ModifyWindowInfo(app_id, window_id, window_info);
       }
@@ -1416,7 +1416,7 @@ TEST_F(SavedDeskTest, IconsOrderWithInactiveTabs) {
   app_launch_info_1->urls = kTabs1;
   restore_data->AddAppLaunchInfo(std::move(app_launch_info_1));
   app_restore::WindowInfo window_info_1;
-  window_info_1.activation_index = absl::make_optional<int32_t>(kWindowId1);
+  window_info_1.activation_index = std::make_optional<int32_t>(kWindowId1);
   restore_data->ModifyWindowInfo(kAppId1, kWindowId1, window_info_1);
 
   // Add app launch info for the second browser instance.
@@ -1426,7 +1426,7 @@ TEST_F(SavedDeskTest, IconsOrderWithInactiveTabs) {
   app_launch_info_2->urls = kTabs2;
   restore_data->AddAppLaunchInfo(std::move(app_launch_info_2));
   app_restore::WindowInfo window_info_2;
-  window_info_2.activation_index = absl::make_optional<int32_t>(kWindowId2);
+  window_info_2.activation_index = std::make_optional<int32_t>(kWindowId2);
   restore_data->ModifyWindowInfo(kAppId2, kWindowId2, window_info_2);
 
   AddEntry(base::Uuid::GenerateRandomV4(), "template_1", base::Time::Now(),
@@ -1476,7 +1476,7 @@ TEST_F(SavedDeskTest, IdenticalURL) {
   app_launch_info->urls = kTabs;
   restore_data->AddAppLaunchInfo(std::move(app_launch_info));
   app_restore::WindowInfo window_info;
-  window_info.activation_index = absl::make_optional<int32_t>(kWindowId);
+  window_info.activation_index = std::make_optional<int32_t>(kWindowId);
   restore_data->ModifyWindowInfo(kAppId, kWindowId, window_info);
 
   AddEntry(base::Uuid::GenerateRandomV4(), "template", base::Time::Now(),
@@ -3106,7 +3106,7 @@ TEST_F(SavedDeskTest, SaveDeskRecordsWindowAndTabCountMetrics) {
   app_launch_info_1->urls = kTabs1;
   restore_data->AddAppLaunchInfo(std::move(app_launch_info_1));
   app_restore::WindowInfo window_info_1;
-  window_info_1.activation_index = absl::make_optional<int32_t>(kWindowId1);
+  window_info_1.activation_index = std::make_optional<int32_t>(kWindowId1);
   restore_data->ModifyWindowInfo(kAppId1, kWindowId1, window_info_1);
 
   // Add app launch info for the second browser instance.
@@ -3116,7 +3116,7 @@ TEST_F(SavedDeskTest, SaveDeskRecordsWindowAndTabCountMetrics) {
   app_launch_info_2->urls = kTabs2;
   restore_data->AddAppLaunchInfo(std::move(app_launch_info_2));
   app_restore::WindowInfo window_info_2;
-  window_info_2.activation_index = absl::make_optional<int32_t>(kWindowId2);
+  window_info_2.activation_index = std::make_optional<int32_t>(kWindowId2);
   restore_data->ModifyWindowInfo(kAppId2, kWindowId2, window_info_2);
 
   auto desk_template = std::make_unique<DeskTemplate>(

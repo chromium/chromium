@@ -29,7 +29,7 @@ constexpr int kHighlightScreenRoundRectRadius = 12;
 class ClippingObserver : public ui::ImplicitAnimationObserver,
                          public views::ViewObserver {
  public:
-  ClippingObserver(views::View* view, absl::optional<gfx::Rect> bounds)
+  ClippingObserver(views::View* view, std::optional<gfx::Rect> bounds)
       : view_(view), bounds_(bounds) {
     view_->AddObserver(this);
   }
@@ -51,7 +51,7 @@ class ClippingObserver : public ui::ImplicitAnimationObserver,
 
  private:
   const raw_ptr<views::View, ExperimentalAsh> view_;
-  absl::optional<gfx::Rect> bounds_;
+  std::optional<gfx::Rect> bounds_;
 };
 
 }  // namespace
@@ -73,7 +73,7 @@ SplitViewHighlightView::~SplitViewHighlightView() = default;
 
 void SplitViewHighlightView::SetBounds(
     const gfx::Rect& bounds,
-    const absl::optional<SplitviewAnimationType>& animation_type) {
+    const std::optional<SplitviewAnimationType>& animation_type) {
   if (bounds == this->bounds())
     return;
 
@@ -129,7 +129,7 @@ void SplitViewHighlightView::SetBounds(
   DoSplitviewClipRectAnimation(
       layer(), *animation_type, gfx::Rect(end_origin, bounds.size()),
       std::make_unique<ClippingObserver>(
-          this, grows ? absl::nullopt : absl::make_optional(bounds)));
+          this, grows ? std::nullopt : std::make_optional(bounds)));
 }
 
 void SplitViewHighlightView::OnWindowDraggingStateChanged(

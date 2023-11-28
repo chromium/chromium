@@ -92,8 +92,8 @@ void SlideOutView(views::View* view,
                   const std::string& animation_histogram_name = std::string());
 
 // Returns the resized image if the binary size of `input_image` is greater than
-// `size_limit_in_byte`. Otherwise, returns `absl::nullopt`.
-[[nodiscard]] ASH_EXPORT absl::optional<gfx::ImageSkia>
+// `size_limit_in_byte`. Otherwise, returns `std::nullopt`.
+[[nodiscard]] ASH_EXPORT std::optional<gfx::ImageSkia>
 ResizeImageIfExceedSizeLimit(const gfx::ImageSkia& input_image,
                              size_t size_limit_in_byte);
 

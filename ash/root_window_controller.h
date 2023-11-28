@@ -6,6 +6,7 @@
 #define ASH_ROOT_WINDOW_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "ash/ash_export.h"
@@ -15,7 +16,6 @@
 #include "ash/wm/splitview/split_view_overview_session.h"
 #include "ash/wm/wm_metrics.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_tree_host.h"
 
 namespace aura {
@@ -266,8 +266,8 @@ class ASH_EXPORT RootWindowController {
   // Starts a split view overview session for this root window with `window`
   // snapped on one side and overview on the other side.
   void StartSplitViewOverviewSession(aura::Window* window,
-                                     absl::optional<OverviewStartAction> action,
-                                     absl::optional<OverviewEnterExitType> type,
+                                     std::optional<OverviewStartAction> action,
+                                     std::optional<OverviewEnterExitType> type,
                                      WindowSnapActionSource snap_action_source);
 
   // Ends the split view overview session and reports the uma metrics if it is

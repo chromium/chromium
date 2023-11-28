@@ -268,9 +268,9 @@ class AshTestBase : public testing::Test {
   static display::Display::Rotation GetCurrentInternalDisplayRotation();
 
   // Creates init params to set up a pixel test. If the test is not pixel
-  // related, returns `absl::nullopt`. This function should be overridden by ash
+  // related, returns `std::nullopt`. This function should be overridden by ash
   // pixel tests.
-  virtual absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  virtual std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const;
 
   void set_start_session(bool start_session) { start_session_ = start_session; }

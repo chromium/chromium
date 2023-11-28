@@ -544,7 +544,7 @@ void ShelfNavigationWidget::UpdateLayout(bool animate) {
     nav_animation_setter.SetPreemptionStrategy(
         ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
 
-    absl::optional<ui::AnimationThroughputReporter> reporter;
+    std::optional<ui::AnimationThroughputReporter> reporter;
     if (animate) {
       reporter.emplace(nav_animation_setter.GetAnimator(),
                        shelf_->GetNavigationWidgetAnimationReportCallback(
@@ -663,7 +663,7 @@ void ShelfNavigationWidget::UpdateButtonVisibility(
   opacity_settings.SetPreemptionStrategy(
       ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
 
-  absl::optional<ui::AnimationThroughputReporter> reporter;
+  std::optional<ui::AnimationThroughputReporter> reporter;
   if (animate) {
     reporter.emplace(opacity_settings.GetAnimator(),
                      metrics_reporter->GetReportCallback(target_hotseat_state));

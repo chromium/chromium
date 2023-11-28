@@ -97,7 +97,7 @@ const char PeripheralBatteryNotifier::kStylusNotificationId[] =
 PeripheralBatteryNotifier::NotificationInfo::NotificationInfo() = default;
 
 PeripheralBatteryNotifier::NotificationInfo::NotificationInfo(
-    absl::optional<uint8_t> level,
+    std::optional<uint8_t> level,
     base::TimeTicks last_notification_timestamp)
     : level(level),
       last_notification_timestamp(last_notification_timestamp),
@@ -173,7 +173,7 @@ void PeripheralBatteryNotifier::UpdateBattery(
     battery_notifications_[map_key] = new_notification_info;
   } else {
     NotificationInfo& existing_notification_info = it->second;
-    absl::optional<uint8_t> old_level = existing_notification_info.level;
+    std::optional<uint8_t> old_level = existing_notification_info.level;
     was_old_battery_level_low = old_level && *old_level <= kLowBatteryLevel;
     existing_notification_info.level = battery_info.level;
   }

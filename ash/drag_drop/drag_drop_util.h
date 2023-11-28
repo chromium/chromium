@@ -5,7 +5,8 @@
 #ifndef ASH_DRAG_DROP_DRAG_DROP_UTIL_H_
 #define ASH_DRAG_DROP_DRAG_DROP_UTIL_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+
 #include "ui/color/color_id.h"
 
 namespace gfx {
@@ -18,9 +19,9 @@ namespace ash::drag_drop {
 extern const ui::ColorId kDragImageBackgroundColor;
 
 // Returns the shadow details of the drag image with `corner_radius`. If the
-// drag image has no rounded corners, `corner_radius` is `absl::nullopt`.
+// drag image has no rounded corners, `corner_radius` is `std::nullopt`.
 const gfx::ShadowDetails& GetDragImageShadowDetails(
-    const absl::optional<size_t>& corner_radius);
+    const std::optional<size_t>& corner_radius);
 
 }  // namespace ash::drag_drop
 

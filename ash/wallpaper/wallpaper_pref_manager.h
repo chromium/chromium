@@ -5,6 +5,7 @@
 #ifndef ASH_WALLPAPER_WALLPAPER_PREF_MANAGER_H_
 #define ASH_WALLPAPER_WALLPAPER_PREF_MANAGER_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/ash_export.h"
@@ -21,7 +22,6 @@
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
 #include "components/account_id/account_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 class PrefRegistrySimple;
@@ -130,7 +130,7 @@ class ASH_EXPORT WallpaperPrefManager : public SessionObserver {
   // Returns a WallpaperCalculatedColors for a wallpaper with the corresponding
   // `location`, if one can be found. The result is synthesized from Prominent
   // and KMean colors.
-  virtual absl::optional<WallpaperCalculatedColors> GetCachedWallpaperColors(
+  virtual std::optional<WallpaperCalculatedColors> GetCachedWallpaperColors(
       base::StringPiece location) const = 0;
 
   // DEPRECATED: Will be removed soon.
@@ -140,7 +140,7 @@ class ASH_EXPORT WallpaperPrefManager : public SessionObserver {
                                SkColor k_mean_color) = 0;
 
   // Returns the cached KMeans color value for the wallpaper at `location`.
-  virtual absl::optional<SkColor> GetCachedKMeanColor(
+  virtual std::optional<SkColor> GetCachedKMeanColor(
       const base::StringPiece location) const = 0;
 
   virtual void RemoveKMeanColor(const AccountId& account_id) = 0;
@@ -149,7 +149,7 @@ class ASH_EXPORT WallpaperPrefManager : public SessionObserver {
   virtual void CacheCelebiColor(base::StringPiece location,
                                 SkColor celebi_color) = 0;
   // Returns the cached celebi color for the wallpaper at `location`.
-  virtual absl::optional<SkColor> GetCelebiColor(
+  virtual std::optional<SkColor> GetCelebiColor(
       const base::StringPiece location) const = 0;
   virtual void RemoveCelebiColor(const AccountId& account_id) = 0;
 

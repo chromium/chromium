@@ -160,11 +160,11 @@ base::WeakPtr<TrayBubbleView::Delegate> TrayBubbleView::Delegate::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-absl::optional<AcceleratorAction>
+std::optional<AcceleratorAction>
 TrayBubbleView::Delegate::GetAcceleratorAction() const {
   // TODO(crbug/1234891) Make this a pure virtual function so all
   // bubble delegates need to specify accelerator actions.
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 TrayBubbleView::InitParams::InitParams() = default;
@@ -398,7 +398,7 @@ gfx::Insets TrayBubbleView::GetBorderInsets() const {
   return bubble_border ? bubble_border->GetInsets() : gfx::Insets();
 }
 
-absl::optional<AcceleratorAction> TrayBubbleView::GetAcceleratorAction() const {
+std::optional<AcceleratorAction> TrayBubbleView::GetAcceleratorAction() const {
   return delegate_->GetAcceleratorAction();
 }
 

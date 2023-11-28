@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "ash/accelerators/accelerator_alias_converter.h"
 #include "ash/accelerators/accelerator_prefs.h"
@@ -27,7 +28,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator_map.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/events/ash/keyboard_capability.h"
@@ -242,7 +242,7 @@ class AcceleratorConfigurationProvider
 
   // Returns a non-null value if there was an error with pre-processing the
   // accelerator to be added.
-  absl::optional<shortcut_customization::mojom::AcceleratorResultDataPtr>
+  std::optional<shortcut_customization::mojom::AcceleratorResultDataPtr>
   PreprocessAddAccelerator(mojom::AcceleratorSource source,
                            AcceleratorActionId action_id,
                            const ui::Accelerator& accelerator);

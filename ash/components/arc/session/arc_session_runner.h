@@ -6,6 +6,7 @@
 #define ASH_COMPONENTS_ARC_SESSION_ARC_SESSION_RUNNER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/components/arc/session/arc_client_adapter.h"
@@ -19,7 +20,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
@@ -168,7 +168,7 @@ class ArcSessionRunner : public ArcSession::Observer {
 
   // Target ARC instance running mode. If nullopt, it means the ARC instance
   // should stop eventually.
-  absl::optional<ArcInstanceMode> target_mode_;
+  std::optional<ArcInstanceMode> target_mode_;
 
   // Instead of immediately trying to restart the container, give it some time
   // to finish tearing down in case it is still in the process of stopping.

@@ -332,7 +332,7 @@ void ViewTreeHostRootViewFrameFactory::AppendQuad(
                      /*layer_rect=*/output_rect,
                      /*visible_layer_rect=*/output_rect,
                      /*filter_info=*/gfx::MaskFilterInfo(),
-                     /*clip=*/absl::nullopt, /*contents_opaque=*/false,
+                     /*clip=*/std::nullopt, /*contents_opaque=*/false,
                      /*opacity_f=*/1.f,
                      /*blend=*/SkBlendMode::kSrcOver,
                      /*sorting_context=*/0,

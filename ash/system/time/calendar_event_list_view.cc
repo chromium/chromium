@@ -107,7 +107,7 @@ class CalendarEmptyEventListView : public PillButton {
 
     // Open Google calendar and land on the local day/month/year.
     Shell::Get()->system_tray_model()->client()->ShowCalendarEvent(
-        absl::nullopt, controller_->selected_date_midnight(), opened_pwa,
+        std::nullopt, controller_->selected_date_midnight(), opened_pwa,
         finalized_url);
   }
 
@@ -152,7 +152,7 @@ CalendarEventListView::CalendarEventListView(
           IDS_ASH_CLOSE_BUTTON_ACCESSIBLE_DESCRIPTION));
 
   scroll_view_->SetAllowKeyboardScrolling(false);
-  scroll_view_->SetBackgroundColor(absl::nullopt);
+  scroll_view_->SetBackgroundColor(std::nullopt);
   // Gives a min height so the background color can be filled to all the spaces
   // in the available expanded area.
   scroll_view_->ClipHeightTo(
@@ -194,7 +194,7 @@ void CalendarEventListView::Layout() {
     gradient_helper_->UpdateGradientMask();
   }
 
-  const absl::optional<base::Time> selected_date =
+  const std::optional<base::Time> selected_date =
       calendar_view_controller_->selected_date();
 
   // If the selected date is not today, do not auto scroll and reset the
@@ -337,7 +337,7 @@ void CalendarEventListView::UpdateListItems() {
               calendar_view_controller_));
 
   // There is a corner case when user closes the event list view before this
-  // line of code is executed. Then `selected_date_` is absl::nullopt and
+  // line of code is executed. Then `selected_date_` is std::nullopt and
   // getting its value leads to a crash. Only set accessible name when
   // `selected_date_` has value, since if `event_list_view_` is closed, there'll
   // be no need to set the accessible name.

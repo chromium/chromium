@@ -243,7 +243,7 @@ void AppListToastContainerView::UpdateVisibilityState(VisibilityState state) {
 }
 
 void AppListToastContainerView::OnTemporarySortOrderChanged(
-    const absl::optional<AppListSortOrder>& new_order) {
+    const std::optional<AppListSortOrder>& new_order) {
   // Remove `toast_view_` when the temporary sorting order is cleared.
   if (!GetVisibilityForSortOrder(new_order)) {
     if (committing_sort_order_) {
@@ -304,7 +304,7 @@ void AppListToastContainerView::OnTemporarySortOrderChanged(
 }
 
 bool AppListToastContainerView::GetVisibilityForSortOrder(
-    const absl::optional<AppListSortOrder>& new_order) const {
+    const std::optional<AppListSortOrder>& new_order) const {
   return new_order && *new_order != AppListSortOrder::kCustom &&
          *new_order != AppListSortOrder::kAlphabeticalEphemeralAppFirst;
 }

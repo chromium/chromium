@@ -151,7 +151,7 @@ IconButton* GetCloseButton();
 const message_center::Notification* GetPreviewNotification();
 
 // Clicks on the area in the notification specified by the `button_index`.
-void ClickOnNotification(absl::optional<int> button_index);
+void ClickOnNotification(std::optional<int> button_index);
 
 // Test util APIs to simulate the camera adding and removing operations.
 void AddFakeCamera(

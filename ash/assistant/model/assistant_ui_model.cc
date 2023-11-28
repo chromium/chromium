@@ -34,17 +34,17 @@ void AssistantUiModel::RemoveObserver(
 
 void AssistantUiModel::SetVisible(AssistantEntryPoint entry_point) {
   SetVisibility(AssistantVisibility::kVisible, entry_point,
-                /*exit_point=*/absl::nullopt);
+                /*exit_point=*/std::nullopt);
 }
 
 void AssistantUiModel::SetClosing(AssistantExitPoint exit_point) {
   SetVisibility(AssistantVisibility::kClosing,
-                /*entry_point=*/absl::nullopt, exit_point);
+                /*entry_point=*/std::nullopt, exit_point);
 }
 
 void AssistantUiModel::SetClosed(AssistantExitPoint exit_point) {
   SetVisibility(AssistantVisibility::kClosed,
-                /*entry_point=*/absl::nullopt, exit_point);
+                /*entry_point=*/std::nullopt, exit_point);
 }
 
 void AssistantUiModel::SetUsableWorkArea(const gfx::Rect& usable_work_area) {
@@ -69,8 +69,8 @@ void AssistantUiModel::SetAppListBubbleWidth(int width) {
 
 void AssistantUiModel::SetVisibility(
     AssistantVisibility visibility,
-    absl::optional<AssistantEntryPoint> entry_point,
-    absl::optional<AssistantExitPoint> exit_point) {
+    std::optional<AssistantEntryPoint> entry_point,
+    std::optional<AssistantExitPoint> exit_point) {
   if (visibility == visibility_)
     return;
 
@@ -97,8 +97,8 @@ void AssistantUiModel::NotifyKeyboardTraversalModeChanged() {
 
 void AssistantUiModel::NotifyUiVisibilityChanged(
     AssistantVisibility old_visibility,
-    absl::optional<AssistantEntryPoint> entry_point,
-    absl::optional<AssistantExitPoint> exit_point) {
+    std::optional<AssistantEntryPoint> entry_point,
+    std::optional<AssistantExitPoint> exit_point) {
   for (AssistantUiModelObserver& observer : observers_)
     observer.OnUiVisibilityChanged(visibility_, old_visibility, entry_point,
                                    exit_point);

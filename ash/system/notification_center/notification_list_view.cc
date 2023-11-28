@@ -69,7 +69,7 @@ void RecordAnimationSmoothness(const std::string& histogram_name,
 
 void SetupThroughputTrackerForAnimationSmoothness(
     views::Widget* widget,
-    absl::optional<ui::ThroughputTracker>& tracker,
+    std::optional<ui::ThroughputTracker>& tracker,
     const char* histogram_name) {
   // `widget` may not exist in tests.
   if (!widget) {
@@ -278,7 +278,7 @@ class NotificationListView::MessageViewContainer : public MessageView::Observer,
       return;
     }
 
-    absl::optional<size_t> index = list_view_->GetIndexOf(this);
+    std::optional<size_t> index = list_view_->GetIndexOf(this);
     if (!index.has_value()) {
       return;
     }

@@ -449,27 +449,27 @@ void DeleteLoginScreenSettingsPrefWhenInputDeviceSettingsSplitDisabled(
       Shell::Get()->session_controller()->GetActiveAccountId();
 
   known_user.SetPath(account_id, prefs::kMouseLoginScreenInternalSettingsPref,
-                     absl::nullopt);
+                     std::nullopt);
   known_user.SetPath(account_id, prefs::kMouseLoginScreenExternalSettingsPref,
-                     absl::nullopt);
+                     std::nullopt);
   known_user.SetPath(account_id,
                      prefs::kKeyboardLoginScreenInternalSettingsPref,
-                     absl::nullopt);
+                     std::nullopt);
   known_user.SetPath(account_id,
                      prefs::kKeyboardLoginScreenExternalSettingsPref,
-                     absl::nullopt);
+                     std::nullopt);
   known_user.SetPath(account_id,
                      prefs::kPointingStickLoginScreenInternalSettingsPref,
-                     absl::nullopt);
+                     std::nullopt);
   known_user.SetPath(account_id,
                      prefs::kPointingStickLoginScreenExternalSettingsPref,
-                     absl::nullopt);
+                     std::nullopt);
   known_user.SetPath(account_id,
                      prefs::kTouchpadLoginScreenInternalSettingsPref,
-                     absl::nullopt);
+                     std::nullopt);
   known_user.SetPath(account_id,
                      prefs::kTouchpadLoginScreenExternalSettingsPref,
-                     absl::nullopt);
+                     std::nullopt);
 }
 
 void DeleteLoginScreenButtonRemappingListPrefWhenPeripheralCustomizationDisabled(
@@ -485,13 +485,13 @@ void DeleteLoginScreenButtonRemappingListPrefWhenPeripheralCustomizationDisabled
   known_user.SetPath(
       account_id,
       prefs::kGraphicsTabletLoginScreenTabletButtonRemappingListPref,
-      absl::nullopt);
+      std::nullopt);
   known_user.SetPath(
       account_id, prefs::kGraphicsTabletLoginScreenPenButtonRemappingListPref,
-      absl::nullopt);
+      std::nullopt);
   known_user.SetPath(account_id,
                      prefs::kMouseLoginScreenButtonRemappingListPref,
-                     absl::nullopt);
+                     std::nullopt);
 }
 
 InputDeviceSettingsControllerImpl::InputDeviceSettingsControllerImpl(

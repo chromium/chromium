@@ -231,7 +231,7 @@ void ArcPowerBridge::OnAndroidSuspendReady(base::UnguessableToken token) {
 
 void ArcPowerBridge::OnConciergeSuspendVmResponse(
     base::UnguessableToken token,
-    absl::optional<vm_tools::concierge::SuspendVmResponse> reply) {
+    std::optional<vm_tools::concierge::SuspendVmResponse> reply) {
   if (!reply.has_value())
     LOG(ERROR) << "Failed to suspend arcvm, no reply received.";
   else if (!reply.value().success())
@@ -255,7 +255,7 @@ void ArcPowerBridge::SuspendDone(base::TimeDelta sleep_duration) {
 }
 
 void ArcPowerBridge::OnConciergeResumeVmResponse(
-    absl::optional<vm_tools::concierge::ResumeVmResponse> reply) {
+    std::optional<vm_tools::concierge::ResumeVmResponse> reply) {
   if (!reply.has_value()) {
     LOG(ERROR) << "Failed to resume arcvm, no reply received.";
     return;
@@ -439,7 +439,7 @@ ArcPowerBridge::WakeLockRequestor* ArcPowerBridge::GetWakeLockRequestor(
 }
 
 void ArcPowerBridge::OnGetScreenBrightnessPercent(
-    absl::optional<double> percent) {
+    std::optional<double> percent) {
   if (!percent.has_value()) {
     LOG(ERROR)
         << "PowerManagerClient::GetScreenBrightnessPercent reports an error";
@@ -472,7 +472,7 @@ void ArcPowerBridge::GetBatterySaverModeState(
 
 void ArcPowerBridge::OnBatterySaverModeStateReceived(
     GetBatterySaverModeStateCallback callback,
-    absl::optional<power_manager::BatterySaverModeState> state) {
+    std::optional<power_manager::BatterySaverModeState> state) {
   mojom::BatterySaverModeStatePtr mojo_state =
       mojom::BatterySaverModeState::New();
   if (state.has_value()) {

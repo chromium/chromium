@@ -54,13 +54,13 @@ AppLoadingIcon::AppLoadingIcon(int size)
 AppLoadingIcon::~AppLoadingIcon() = default;
 
 void AppLoadingIcon::StartLoadingAnimation(
-    absl::optional<base::TimeDelta> initial_delay) {
+    std::optional<base::TimeDelta> initial_delay) {
   if (initial_delay) {
     animation_initial_delay_timer_.Start(
         FROM_HERE, *initial_delay,
         base::BindOnce(&AppLoadingIcon::StartLoadingAnimation,
                        base::Unretained(this),
-                       /*initial_delay=*/absl::nullopt));
+                       /*initial_delay=*/std::nullopt));
     return;
   }
 

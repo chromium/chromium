@@ -35,7 +35,7 @@ class ASH_PUBLIC_EXPORT AcceleratorKeycodeLookupCache
                           Profile* profile,
                           bool show_message) override;
 
-  absl::optional<std::u16string> Find(ui::KeyboardCode key_code);
+  std::optional<std::u16string> Find(ui::KeyboardCode key_code);
 
   void InsertOrAssign(ui::KeyboardCode key_code, std::u16string description);
 

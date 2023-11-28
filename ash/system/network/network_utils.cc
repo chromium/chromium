@@ -103,14 +103,14 @@ void RecordNetworkTypeToggled(NetworkType network_type, bool new_state) {
       new_state);
 }
 
-absl::optional<std::u16string> GetPortalStateSubtext(
+std::optional<std::u16string> GetPortalStateSubtext(
     const chromeos::network_config::mojom::PortalState& portal_state) {
   using chromeos::network_config::mojom::PortalState;
   switch (portal_state) {
     case PortalState::kUnknown:
       [[fallthrough]];
     case PortalState::kOnline:
-      return absl::nullopt;
+      return std::nullopt;
     case PortalState::kPortalSuspected:
       [[fallthrough]];
     case PortalState::kNoInternet:

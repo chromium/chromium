@@ -6,6 +6,7 @@
 #define ASH_WM_WINDOW_STATE_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "ash/ash_export.h"
@@ -20,7 +21,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ui/base/window_state_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/display.h"
@@ -139,7 +139,7 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
     is_moving_to_another_display_ = moving;
   }
 
-  absl::optional<float> snap_ratio() const { return snap_ratio_; }
+  std::optional<float> snap_ratio() const { return snap_ratio_; }
 
   // True if the window should be unminimized to the restore bounds, as
   // opposed to the window's current bounds. |unminimized_to_restore_bounds_| is
@@ -164,19 +164,19 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
 
   // Gets/Sets the bounds of the window before it was moved by the auto window
   // management. As long as it was not auto-managed, it will return NULL.
-  const absl::optional<gfx::Rect> pre_auto_manage_window_bounds() {
+  const std::optional<gfx::Rect> pre_auto_manage_window_bounds() {
     return pre_auto_manage_window_bounds_;
   }
   void set_pre_auto_manage_window_bounds(const gfx::Rect& bounds) {
-    pre_auto_manage_window_bounds_ = absl::make_optional(bounds);
+    pre_auto_manage_window_bounds_ = std::make_optional(bounds);
   }
 
   // Gets/Sets the property that is used on window added to workspace event.
-  const absl::optional<gfx::Rect> pre_added_to_workspace_window_bounds() {
+  const std::optional<gfx::Rect> pre_added_to_workspace_window_bounds() {
     return pre_added_to_workspace_window_bounds_;
   }
   void set_pre_added_to_workspace_window_bounds(const gfx::Rect& bounds) {
-    pre_added_to_workspace_window_bounds_ = absl::make_optional(bounds);
+    pre_added_to_workspace_window_bounds_ = std::make_optional(bounds);
   }
 
   // Gets the persistent window info that is used on restoring persistent
@@ -529,9 +529,8 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   // Sets the window's `bounds` and transition to the new bounds with
   // a cross fade animation. If `float_state` has a value, sets a custom
   // float/unfloat cross fade animation.
-  void SetBoundsDirectCrossFade(
-      const gfx::Rect& bounds,
-      absl::optional<bool> float_state = absl::nullopt);
+  void SetBoundsDirectCrossFade(const gfx::Rect& bounds,
+                                std::optional<bool> float_state = std::nullopt);
 
   // Called before the state change and update PIP related state, such as next
   // window animation type, upon state change.
@@ -622,16 +621,16 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   // desired snapped window bounds for a WMEvent, or adjust the window's bounds
   // when display or workarea changes, or decide what the window bounds should
   // be if restoring the window back to a snapped window state, etc.
-  absl::optional<float> snap_ratio_;
+  std::optional<float> snap_ratio_;
 
   // A property to remember the window position which was set before the
   // auto window position manager changed the window bounds, so that it can
   // get restored when only this one window gets shown.
-  absl::optional<gfx::Rect> pre_auto_manage_window_bounds_;
+  std::optional<gfx::Rect> pre_auto_manage_window_bounds_;
 
   // A property which resets when bounds is changed by user and sets when it
   // is nullptr, and window is removing from a workspace.
-  absl::optional<gfx::Rect> pre_added_to_workspace_window_bounds_;
+  std::optional<gfx::Rect> pre_added_to_workspace_window_bounds_;
 
   // A property to remember the persistent window info used in multi-displays
   // scenario to attempt to restore windows to their original bounds when

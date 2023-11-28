@@ -190,7 +190,7 @@ class ASH_EXPORT AppListSearchView : public views::View,
   raw_ptr<views::AXVirtualView> search_notifier_guide_ = nullptr;
 
   // Stores the last time fast search result update animations were used.
-  absl::optional<base::TimeTicks> search_result_fast_update_time_;
+  std::optional<base::TimeTicks> search_result_fast_update_time_;
 
   // The last reported number of search results shown by all containers.
   int last_search_result_count_ = 0;

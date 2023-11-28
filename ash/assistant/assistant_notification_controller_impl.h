@@ -69,8 +69,8 @@ class ASH_EXPORT AssistantNotificationControllerImpl
   void OnNotificationAdded(const std::string& id) override {}
   void OnNotificationClicked(
       const std::string& id,
-      const absl::optional<int>& button_index,
-      const absl::optional<std::u16string>& reply) override;
+      const std::optional<int>& button_index,
+      const std::optional<std::u16string>& reply) override;
   void OnNotificationUpdated(const std::string& notification) override {}
   void OnNotificationRemoved(const std::string& notification_id,
                              bool by_user) override;

@@ -409,7 +409,7 @@ class FilterMenuAdapter : public views::MenuModelAdapter {
   // `category` button. This should only be called when the menu is opened.
   views::MenuItemView* GetFilterMenuItemByCategory(
       AppListSearchControlCategory category) {
-    absl::optional<size_t> index =
+    std::optional<size_t> index =
         model_->GetIndexOfCommandId(base::to_underlying(category));
     CHECK(index.has_value());
     return GetFilterMenuItemByIdx(index.value());
@@ -1325,7 +1325,7 @@ bool SearchBoxView::HasAutocompleteText() {
 
 void SearchBoxView::OnBeforeUserAction(views::Textfield* sender) {
   if (a11y_active_descendant_)
-    SetA11yActiveDescendant(absl::nullopt);
+    SetA11yActiveDescendant(std::nullopt);
 }
 
 void SearchBoxView::SetAutocompleteText(
@@ -1414,7 +1414,7 @@ void SearchBoxView::ClearSearchAndDeactivateSearchBox() {
   if (!is_search_box_active())
     return;
 
-  SetA11yActiveDescendant(absl::nullopt);
+  SetA11yActiveDescendant(std::nullopt);
   // Set search box as inactive first, because ClearSearch() eventually calls
   // into AppListMainView::QueryChanged() which will hide search results based
   // on `is_search_box_active_`.
@@ -1424,7 +1424,7 @@ void SearchBoxView::ClearSearchAndDeactivateSearchBox() {
 }
 
 void SearchBoxView::SetA11yActiveDescendant(
-    const absl::optional<int32_t>& active_descendant) {
+    const std::optional<int32_t>& active_descendant) {
   a11y_active_descendant_ = active_descendant;
   search_box()->NotifyAccessibilityEvent(
       ax::mojom::Event::kActiveDescendantChanged, true);
@@ -1564,7 +1564,7 @@ bool SearchBoxView::HandleKeyEvent(views::Textfield* sender,
         close_button()->RequestFocus();
       }
 
-      SetA11yActiveDescendant(absl::nullopt);
+      SetA11yActiveDescendant(std::nullopt);
       break;
     case ResultSelectionController::MoveResult::kSelectionCycleAfterLastResult:
       // If move was about to cycle, clear the selection and move the focus to
@@ -1580,7 +1580,7 @@ bool SearchBoxView::HandleKeyEvent(views::Textfield* sender,
       } else {
         close_button()->RequestFocus();
       }
-      SetA11yActiveDescendant(absl::nullopt);
+      SetA11yActiveDescendant(std::nullopt);
       break;
     case ResultSelectionController::MoveResult::kResultChanged:
       UpdateSearchBoxForSelectedResult(

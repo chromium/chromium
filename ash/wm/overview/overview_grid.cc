@@ -907,9 +907,9 @@ void OverviewGrid::RemoveItem(OverviewItemBase* overview_item,
     const gfx::Rect grid_bounds = GetGridBoundsInScreen(
         root_window_,
         split_view_drag_indicators_
-            ? absl::make_optional(
+            ? std::make_optional(
                   split_view_drag_indicators_->current_window_dragging_state())
-            : absl::nullopt,
+            : std::nullopt,
         /*divider_changed=*/false,
         /*account_for_hotseat=*/true);
     SetBoundsAndUpdatePositions(grid_bounds, ignored_items, /*animate=*/true);
@@ -1000,7 +1000,7 @@ void OverviewGrid::RearrangeDuringDrag(
 
   // Update the grid's bounds.
   const gfx::Rect wanted_grid_bounds = GetGridBoundsInScreen(
-      root_window_, absl::make_optional(window_dragging_state),
+      root_window_, std::make_optional(window_dragging_state),
       /*divider_changed=*/false, /*account_for_hotseat=*/true);
   if (bounds_ != wanted_grid_bounds) {
     base::flat_set<OverviewItemBase*> ignored_items;
@@ -1657,7 +1657,7 @@ bool OverviewGrid::UpdateScrollOffset(float delta) {
 
   // Update the bounds of the items which are currently visible on screen.
   for (const auto& item : window_list_) {
-    absl::optional<gfx::RectF> scrolling_bounds_optional =
+    std::optional<gfx::RectF> scrolling_bounds_optional =
         item->scrolling_bounds();
     // Scrolling bounds may not be set if the item was added after scrolling
     // started (i.e. another desk was combined into the active desk).
@@ -1685,7 +1685,7 @@ void OverviewGrid::EndScroll() {
   OverviewController::Get()->UnpauseOcclusionTracker(
       kOcclusionUnpauseDurationForScroll);
   for (const auto& item : window_list_)
-    item->set_scrolling_bounds(absl::nullopt);
+    item->set_scrolling_bounds(std::nullopt);
   presentation_time_recorder_.reset();
 
   if (!overview_session_->is_shutting_down())
@@ -1761,10 +1761,10 @@ int OverviewGrid::CalculateWidthAndMaybeSetUnclippedBounds(
   // Get the bounds of the item if there is a snapped window or a window
   // about to be snapped. If the height is less than that of the header, there
   // is nothing from the original window to be shown and nothing to be clipped.
-  absl::optional<gfx::RectF> split_view_bounds =
+  std::optional<gfx::RectF> split_view_bounds =
       GetSplitviewBoundsMaintainingAspectRatio();
   if (!split_view_bounds || split_view_bounds->height() < kHeaderHeightDp) {
-    item->set_unclipped_size(absl::nullopt);
+    item->set_unclipped_size(std::nullopt);
     return width;
   }
 
@@ -1803,7 +1803,7 @@ int OverviewGrid::CalculateWidthAndMaybeSetUnclippedBounds(
   }
 
   DCHECK(!unclipped_size.IsEmpty());
-  item->set_unclipped_size(absl::make_optional(unclipped_size));
+  item->set_unclipped_size(std::make_optional(unclipped_size));
   return width;
 }
 
@@ -2312,7 +2312,7 @@ void OverviewGrid::OnSplitViewDividerPositionChanged() {
 
   SetBoundsAndUpdatePositions(
       GetGridBoundsInScreen(root_window_,
-                            /*window_dragging_state=*/absl::nullopt,
+                            /*window_dragging_state=*/std::nullopt,
                             /*divider_changed=*/true,
                             /*account_for_hotseat=*/true),
       /*ignored_items=*/{}, /*animate=*/false);

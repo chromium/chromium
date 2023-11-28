@@ -212,7 +212,7 @@ class AshNotificationViewTestBase : public AshTestBase,
       bool has_message = true,
       message_center::NotificationType notification_type =
           message_center::NOTIFICATION_TYPE_SIMPLE,
-      const absl::optional<base::FilePath>& image_path = absl::nullopt) {
+      const std::optional<base::FilePath>& image_path = std::nullopt) {
     message_center::RichNotificationData data;
     data.settings_button_handler =
         message_center::SettingsButtonHandler::INLINE;
@@ -246,7 +246,7 @@ class AshNotificationViewTestBase : public AshTestBase,
   // will belong to the same group.
   std::unique_ptr<Notification> CreateTestNotificationInAGroup(
       bool has_image = false,
-      const absl::optional<base::FilePath>& image_path = absl::nullopt) {
+      const std::optional<base::FilePath>& image_path = std::nullopt) {
     message_center::NotifierId notifier_id;
     notifier_id.profile_id = "abc@gmail.com";
     notifier_id.type = message_center::NotifierType::WEB_PAGE;
@@ -1396,7 +1396,7 @@ class AshNotificationViewDragTestBase : public AshNotificationViewTestBase {
   // coordinates.
   gfx::Point GetDragAreaCenterInScreen(
       const AshNotificationView& notification_view) {
-    const absl::optional<gfx::Rect> drag_area_bounds =
+    const std::optional<gfx::Rect> drag_area_bounds =
         notification_view.GetDragAreaBounds();
     EXPECT_TRUE(drag_area_bounds);
     gfx::Rect drag_area_in_screen = *drag_area_bounds;
@@ -1543,7 +1543,7 @@ INSTANTIATE_TEST_SUITE_P(
 // Verifies the drag-and-drop of an orindary notification view.
 TEST_P(AshNotificationViewDragTest, Basics) {
   // Add an image notification.
-  absl::optional<base::FilePath> image_file_path;
+  std::optional<base::FilePath> image_file_path;
   if (IsImageFileBacked()) {
     // Use a dummy file path for the file-backed image notification.
     image_file_path.emplace("dummy_path.png");
@@ -1604,7 +1604,7 @@ TEST_P(AshNotificationViewDragTest, Basics) {
 // Verifies the drag-and-drop of a grouped notification view.
 TEST_P(AshNotificationViewDragTest, GroupedNotification) {
   // Add two image notification views belonging to the same group.
-  absl::optional<base::FilePath> image_file_path;
+  std::optional<base::FilePath> image_file_path;
   if (IsImageFileBacked()) {
     // Use a dummy file path for the file-backed image notification.
     image_file_path.emplace("dummy_path.png");
@@ -1949,7 +1949,7 @@ TEST_F(DragAfterNotificationRemovalTest, Basics) {
   std::unique_ptr<Notification> notification = CreateTestNotification(
       /*has_image=*/true, /*show_snooze_button=*/false, /*has_message=*/false,
       message_center::NOTIFICATION_TYPE_SIMPLE,
-      absl::make_optional<base::FilePath>("dummy_file_path"));
+      std::make_optional<base::FilePath>("dummy_file_path"));
 
   // Wait until the notification popup shows.
   MessagePopupAnimationWaiter(

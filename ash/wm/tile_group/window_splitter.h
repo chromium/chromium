@@ -6,11 +6,11 @@
 #define ASH_WM_TILE_GROUP_WINDOW_SPLITTER_H_
 
 #include <memory>
+#include <optional>
 
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_observer.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
@@ -68,7 +68,7 @@ class ASH_EXPORT WindowSplitter : public aura::WindowObserver {
   // within the `topmost_window`.
   // Returns nullopt if window can't be split, e.g. the location is not within
   // any trigger area, or the resulting size is smaller than minimum size, etc.
-  static absl::optional<SplitWindowInfo> MaybeSplitWindow(
+  static std::optional<SplitWindowInfo> MaybeSplitWindow(
       aura::Window* topmost_window,
       aura::Window* dragged_window,
       const gfx::PointF& screen_location);

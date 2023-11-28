@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <queue>
 #include <set>
 #include <sstream>
@@ -27,7 +28,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/throughput_tracker.h"
@@ -422,7 +422,7 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Returns the max number of rows the grid can have on a page. Returns nullopt
   // if apps grid does not have limit on number of rows (which currently implies
   // scrollable, single-page apps grid).
-  virtual absl::optional<int> GetMaxRowsInPage(int page) const = 0;
+  virtual std::optional<int> GetMaxRowsInPage(int page) const = 0;
 
   // Calculates the offset distance to center the grid in the container.
   virtual gfx::Vector2d GetGridCenteringOffset(int page) const = 0;
@@ -482,7 +482,7 @@ class ASH_EXPORT AppsGridView : public views::View,
   virtual void SetFocusAfterEndDrag(AppListItem* drag_item) = 0;
 
   // Calculates the index range of the visible item views.
-  virtual absl::optional<VisibleItemIndexRange> GetVisibleItemIndexRange()
+  virtual std::optional<VisibleItemIndexRange> GetVisibleItemIndexRange()
       const = 0;
 
   // Makes sure that the background cards render behind everything
@@ -516,7 +516,7 @@ class ASH_EXPORT AppsGridView : public views::View,
   // argument as the first page might have less apps shown.
   // Returns nullopt if number of tiles per page is not limited (which currently
   // implies scrollable, single-page apps grid).
-  absl::optional<int> TilesPerPage(int page) const;
+  std::optional<int> TilesPerPage(int page) const;
 
   // Converts an app list item position in app list grid to its index in the
   // apps grid `view_model_`.
@@ -1125,12 +1125,12 @@ class ASH_EXPORT AppsGridView : public views::View,
   // grid slot, to prevent folder UI from jumping, or empty slots from appearing
   // behind a folder when the gird item list changes (e.g. if another item gets
   // added by sync, or the folder item moves as a result of folder rename).
-  absl::optional<OpenFolderInfo> open_folder_info_;
+  std::optional<OpenFolderInfo> open_folder_info_;
 
   // Folder item view that is being animated into it's target position. The
   // animation runs after a folder gets closed if the folder intended position
   // in the grid changed while the folder was open.
-  absl::optional<AppListItemView*> reordering_folder_view_;
+  std::optional<AppListItemView*> reordering_folder_view_;
 
   // A view which is hidden for testing purposes.
   raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh>
@@ -1151,7 +1151,7 @@ class ASH_EXPORT AppsGridView : public views::View,
   bool enable_item_move_animation_ = true;
 
   // Tracks the reorder animation triggered by the sort order change.
-  absl::optional<ui::ThroughputTracker> reorder_animation_tracker_;
+  std::optional<ui::ThroughputTracker> reorder_animation_tracker_;
 
   // A queue of callbacks that run at the end of app list reorder. A reorder
   // ends if:
@@ -1172,7 +1172,7 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Tracks the animation smoothness of item reorders during drag. Gets
   // triggered by AnimateToIdealBounds(), which is mainly caused
   // by app dragging reorders. This does not track reorders due to sort.
-  absl::optional<ui::ThroughputTracker> item_reorder_animation_tracker_;
+  std::optional<ui::ThroughputTracker> item_reorder_animation_tracker_;
 
   // Whether an ideal bounds animation is being setup. Used to prevent item
   // layers from being deleted during setup.

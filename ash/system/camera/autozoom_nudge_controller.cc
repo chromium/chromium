@@ -85,7 +85,7 @@ int AutozoomNudgeController::GetShownCount(PrefService* prefs) {
 
 base::Time AutozoomNudgeController::GetLastShownTime(PrefService* prefs) {
   const base::Value::Dict& dictionary = prefs->GetDict(prefs::kAutozoomNudges);
-  absl::optional<base::Time> last_shown_time =
+  std::optional<base::Time> last_shown_time =
       base::ValueToTime(dictionary.Find(kLastTimeShown));
   return last_shown_time.value_or(base::Time());
 }

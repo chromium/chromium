@@ -4,6 +4,7 @@
 
 #include "ash/system/power/adaptive_charging_notification_controller.h"
 
+#include <optional>
 #include <string>
 
 #include "ash/constants/ash_pref_names.h"
@@ -16,7 +17,6 @@
 #include "base/notreached.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/message_center/message_center.h"
@@ -38,7 +38,7 @@ AdaptiveChargingNotificationController::
     ~AdaptiveChargingNotificationController() = default;
 
 void AdaptiveChargingNotificationController::ShowAdaptiveChargingNotification(
-    absl::optional<base::TimeDelta> time_to_full) {
+    std::optional<base::TimeDelta> time_to_full) {
   if (!ShouldShowNotification())
     return;
 
@@ -97,8 +97,8 @@ bool AdaptiveChargingNotificationController::ShouldShowNotification() {
 }
 
 void AdaptiveChargingNotificationController::Click(
-    const absl::optional<int>& button_index,
-    const absl::optional<std::u16string>& reply) {
+    const std::optional<int>& button_index,
+    const std::optional<std::u16string>& reply) {
   if (!button_index.has_value())
     return;
   if (button_index.value() == 0) {

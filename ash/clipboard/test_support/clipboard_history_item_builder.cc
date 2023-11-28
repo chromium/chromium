@@ -46,15 +46,15 @@ ui::ClipboardData ClipboardHistoryItemBuilder::BuildData() const {
 }
 
 ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::Clear() {
-  text_ = absl::nullopt;
-  markup_ = absl::nullopt;
-  rtf_ = absl::nullopt;
+  text_ = std::nullopt;
+  markup_ = std::nullopt;
+  rtf_ = std::nullopt;
   filenames_.clear();
-  bookmark_title_ = absl::nullopt;
-  png_ = absl::nullopt;
-  custom_format_ = absl::nullopt;
-  custom_data_ = absl::nullopt;
-  web_smart_paste_ = absl::nullopt;
+  bookmark_title_ = std::nullopt;
+  png_ = std::nullopt;
+  custom_format_ = std::nullopt;
+  custom_data_ = std::nullopt;
+  web_smart_paste_ = std::nullopt;
   return *this;
 }
 
@@ -117,7 +117,7 @@ ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetText(
 }
 
 ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::ClearText() {
-  text_ = absl::nullopt;
+  text_ = std::nullopt;
   return *this;
 }
 
@@ -128,7 +128,7 @@ ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetMarkup(
 }
 
 ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::ClearMarkup() {
-  markup_ = absl::nullopt;
+  markup_ = std::nullopt;
   return *this;
 }
 
@@ -139,7 +139,7 @@ ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetSvg(
 }
 
 ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::ClearSvg() {
-  svg_ = absl::nullopt;
+  svg_ = std::nullopt;
   return *this;
 }
 
@@ -150,7 +150,7 @@ ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetRtf(
 }
 
 ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::ClearRtf() {
-  rtf_ = absl::nullopt;
+  rtf_ = std::nullopt;
   return *this;
 }
 
@@ -172,7 +172,7 @@ ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetBookmarkTitle(
 }
 
 ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::ClearBookmarkTitle() {
-  bookmark_title_ = absl::nullopt;
+  bookmark_title_ = std::nullopt;
   return *this;
 }
 
@@ -189,7 +189,7 @@ ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetPng(
 }
 
 ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::ClearPng() {
-  png_ = absl::nullopt;
+  png_ = std::nullopt;
   return *this;
 }
 
@@ -202,8 +202,8 @@ ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetCustomData(
 }
 
 ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::ClearCustomData() {
-  custom_format_ = absl::nullopt;
-  custom_data_ = absl::nullopt;
+  custom_format_ = std::nullopt;
+  custom_data_ = std::nullopt;
   return *this;
 }
 
@@ -229,7 +229,7 @@ ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetWebSmartPaste(
 }
 
 ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::ClearWebSmartPaste() {
-  web_smart_paste_ = absl::nullopt;
+  web_smart_paste_ = std::nullopt;
   return *this;
 }
 

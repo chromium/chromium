@@ -1261,7 +1261,7 @@ class TabletWindowFloatTest : public WindowFloatTest,
   base::RepeatingCallback<void(display::TabletState)>
       on_tablet_state_changed_callback_;
 
-  absl::optional<display::ScopedDisplayObserver> display_observer_;
+  std::optional<display::ScopedDisplayObserver> display_observer_;
 };
 
 // Test class used to keep track of the amount of times the tuck education nudge

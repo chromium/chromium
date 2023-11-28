@@ -4,12 +4,12 @@
 
 #include "ash/ambient/ui/ambient_animation_progress_tracker.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 

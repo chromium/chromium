@@ -110,7 +110,7 @@ std::vector<base::OnceClosure> GetEventGeneratorCallbacks(
 
   event_callbacks.push_back(
       base::BindOnce(&ui::test::EventGenerator::PressTouch,
-                     base::Unretained(event_generator), absl::nullopt));
+                     base::Unretained(event_generator), std::nullopt));
 
   return event_callbacks;
 }
@@ -1735,7 +1735,7 @@ class AmbientControllerForManagedScreensaverTest : public AmbientAshTestBase {
   void SimulateScreensaverStart() {
     LockScreen();
     FastForwardByLockScreenInactivityTimeout();
-    EXPECT_EQ(absl::nullopt, GetRemainingLockScreenTimeoutFraction());
+    EXPECT_EQ(std::nullopt, GetRemainingLockScreenTimeoutFraction());
     EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());
   }
 

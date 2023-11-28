@@ -8,6 +8,7 @@
 #include <cmath>
 #include <cstdint>
 #include <limits>
+#include <optional>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/constants/app_types.h"
@@ -62,7 +63,6 @@
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "components/app_restore/desk_template_read_handler.h"
 #include "components/app_restore/window_properties.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/base/ime/ash/ime_bridge.h"
@@ -350,7 +350,7 @@ class SplitViewController::DividerSnapAnimation
   raw_ptr<SplitViewController, ExperimentalAsh> split_view_controller_;
   int starting_position_;
   int ending_position_;
-  absl::optional<ui::ThroughputTracker> tracker_;
+  std::optional<ui::ThroughputTracker> tracker_;
 };
 
 // -----------------------------------------------------------------------------
@@ -413,7 +413,7 @@ class SplitViewController::ToBeSnappedWindowsObserver
       split_view_controller_->AttachSnappingWindow(window, snap_position,
                                                    snap_action_source);
       split_view_controller_->OnWindowSnapped(window,
-                                              /*previous_state=*/absl::nullopt,
+                                              /*previous_state=*/std::nullopt,
                                               snap_action_source);
     } else {
       to_be_snapped_windows_[snap_position] =
@@ -626,18 +626,18 @@ bool SplitViewController::CanSnapWindow(aura::Window* window,
              kSplitviewDividerShortSideLength / 2;
 }
 
-absl::optional<float> SplitViewController::ComputeSnapRatio(
+std::optional<float> SplitViewController::ComputeSnapRatio(
     aura::Window* window) {
   // If there is no default snapped window, or it doesn't have a stored snap
   // ratio try snapping it to 1/2.
   aura::Window* default_window = GetDefaultSnappedWindow();
-  absl::optional<float> default_window_snap_ratio =
+  std::optional<float> default_window_snap_ratio =
       default_window ? WindowState::Get(default_window)->snap_ratio()
-                     : absl::nullopt;
+                     : std::nullopt;
   if (!default_window_snap_ratio) {
     return CanSnapWindow(window)
-               ? absl::make_optional(chromeos::kDefaultSnapRatio)
-               : absl::nullopt;
+               ? std::make_optional(chromeos::kDefaultSnapRatio)
+               : std::nullopt;
   }
 
   // Maps the snap ratio of the default window to the snap ratio of the opposite
@@ -652,8 +652,8 @@ absl::optional<float> SplitViewController::ComputeSnapRatio(
   // rounding errors (i.e. 2/3 may be 0.67).
   if (it == kOppositeRatiosMap.end()) {
     return CanSnapWindow(window)
-               ? absl::make_optional(chromeos::kDefaultSnapRatio)
-               : absl::nullopt;
+               ? std::make_optional(chromeos::kDefaultSnapRatio)
+               : std::nullopt;
   }
 
   // If `window` can be snapped to the ideal snap ratio, we are done.
@@ -670,7 +670,7 @@ absl::optional<float> SplitViewController::ComputeSnapRatio(
     return chromeos::kDefaultSnapRatio;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool SplitViewController::WillStartOverview() const {
@@ -823,8 +823,8 @@ void SplitViewController::AttachSnappingWindow(
         // started and we are dragging `window` into split view.
         // TODO(b/294580642): Move this to SnapGroupController.
         root_window_controller->StartSplitViewOverviewSession(
-            window, /*action=*/absl::nullopt,
-            /*type=*/absl::nullopt, snap_action_source);
+            window, /*action=*/std::nullopt,
+            /*type=*/std::nullopt, snap_action_source);
       }
     }
 
@@ -1574,7 +1574,7 @@ void SplitViewController::OnOverviewModeEnding(
         continue;
       }
 
-      absl::optional<float> snap_ratio = ComputeSnapRatio(window);
+      std::optional<float> snap_ratio = ComputeSnapRatio(window);
       if (!snap_ratio.has_value()) {
         continue;
       }
@@ -2358,7 +2358,7 @@ int SplitViewController::GetDividerPositionUpperLimit() const {
 
 void SplitViewController::OnWindowSnapped(
     aura::Window* window,
-    absl::optional<chromeos::WindowStateType> previous_state,
+    std::optional<chromeos::WindowStateType> previous_state,
     WindowSnapActionSource snap_action_source) {
   RestoreTransformIfApplicable(window);
   UpdateStateAndNotifyObservers();

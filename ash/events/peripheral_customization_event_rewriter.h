@@ -99,7 +99,7 @@ class ASH_EXPORT PeripheralCustomizationEventRewriter
   ui::EventDispatchDetails RewriteKeyEvent(const ui::KeyEvent& key_event,
                                            const Continuation continuation);
 
-  absl::optional<DeviceType> GetDeviceTypeToObserve(int device_id);
+  std::optional<DeviceType> GetDeviceTypeToObserve(int device_id);
 
   const mojom::RemappingAction* GetRemappingAction(int device_id,
                                                    const mojom::Button& button);

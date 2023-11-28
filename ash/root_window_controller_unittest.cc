@@ -311,7 +311,7 @@ TEST_F(RootWindowControllerTest, MoveWindows_LockWindowsInUnified) {
   EXPECT_EQ("0,0 500x400", lock_screen->GetNativeWindow()->bounds().ToString());
 
   // Switch to mirror.
-  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, absl::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, std::nullopt);
   EXPECT_TRUE(display_manager()->IsInMirrorMode());
 
   controller = Shell::GetPrimaryRootWindowController();
@@ -320,7 +320,7 @@ TEST_F(RootWindowControllerTest, MoveWindows_LockWindowsInUnified) {
   EXPECT_EQ("0,0 500x400", lock_screen->GetNativeWindow()->bounds().ToString());
 
   // Switch to unified.
-  display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
   EXPECT_TRUE(display_manager()->IsInUnifiedMode());
 
   controller = Shell::GetPrimaryRootWindowController();

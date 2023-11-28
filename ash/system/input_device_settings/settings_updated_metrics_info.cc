@@ -55,17 +55,17 @@ SettingsUpdatedMetricsInfo::SettingsUpdatedMetricsInfo(
     const SettingsUpdatedMetricsInfo&) = default;
 
 // static
-absl::optional<SettingsUpdatedMetricsInfo> SettingsUpdatedMetricsInfo::FromDict(
+std::optional<SettingsUpdatedMetricsInfo> SettingsUpdatedMetricsInfo::FromDict(
     const base::Value::Dict& dict) {
   auto category_int = dict.FindInt(kCategoryKey);
   if (!category_int || !IsValidCategory(*category_int)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto initial_connection_time_ =
       base::ValueToTime(dict.Find(kLocalFirstConnectionKey));
   if (!initial_connection_time_) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   SettingsUpdatedMetricsInfo metric_info(static_cast<Category>(*category_int),
@@ -78,7 +78,7 @@ absl::optional<SettingsUpdatedMetricsInfo> SettingsUpdatedMetricsInfo::FromDict(
   return metric_info;
 }
 
-absl::optional<TimePeriod> SettingsUpdatedMetricsInfo::RecordSettingsUpdate(
+std::optional<TimePeriod> SettingsUpdatedMetricsInfo::RecordSettingsUpdate(
     base::Time update_time) {
   CHECK(update_time >= initial_connection_time_);
   const base::TimeDelta time_since_initial_connection =
@@ -91,7 +91,7 @@ absl::optional<TimePeriod> SettingsUpdatedMetricsInfo::RecordSettingsUpdate(
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 base::Value::Dict SettingsUpdatedMetricsInfo::ToDict() const {

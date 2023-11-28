@@ -223,7 +223,7 @@ class CalendarViewTest : public AshTestBase {
   }
   views::View* event_list_view() { return calendar_view_->event_list_view_; }
 
-  absl::optional<base::Time> selected_date() {
+  std::optional<base::Time> selected_date() {
     return calendar_view_->event_list_view_->calendar_view_controller_
         ->selected_date_;
   }
@@ -1448,7 +1448,7 @@ class CalendarViewAnimationTest : public AshTestBase {
     event_generator->ClickLeftButton();
   }
 
-  absl::optional<base::Time> GetSelectedDate() {
+  std::optional<base::Time> GetSelectedDate() {
     return calendar_view_->calendar_view_controller()->selected_date_;
   }
 

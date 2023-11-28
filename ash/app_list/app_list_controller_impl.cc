@@ -239,11 +239,11 @@ void LogAppListShowSource(AppListShowSource show_source, bool app_list_bubble) {
   UMA_HISTOGRAM_ENUMERATION("Apps.AppListShowSource", show_source);
 }
 
-absl::optional<TabletModeAnimationTransition>
+std::optional<TabletModeAnimationTransition>
 GetTransitionFromMetricsAnimationInfo(
-    absl::optional<HomeLauncherAnimationInfo> animation_info) {
+    std::optional<HomeLauncherAnimationInfo> animation_info) {
   if (!animation_info.has_value())
-    return absl::nullopt;
+    return std::nullopt;
 
   return CalculateAnimationTransitionForMetrics(animation_info->trigger,
                                                 animation_info->showing);
@@ -404,13 +404,13 @@ aura::Window* AppListControllerImpl::GetWindow() {
 }
 
 bool AppListControllerImpl::IsVisible(
-    const absl::optional<int64_t>& display_id) {
+    const std::optional<int64_t>& display_id) {
   return last_visible_ && (!display_id.has_value() ||
                            display_id.value() == last_visible_display_id_);
 }
 
 bool AppListControllerImpl::IsVisible() {
-  return IsVisible(absl::nullopt);
+  return IsVisible(std::nullopt);
 }
 
 bool AppListControllerImpl::IsImageSearchToggleable() {
@@ -490,7 +490,7 @@ void AppListControllerImpl::OnUserSessionAdded(const AccountId& account_id) {
 // Methods used in Ash
 
 bool AppListControllerImpl::GetTargetVisibility(
-    const absl::optional<int64_t>& display_id) const {
+    const std::optional<int64_t>& display_id) const {
   return last_target_visible_ &&
          (!display_id.has_value() ||
           display_id.value() == last_target_visible_display_id_);
@@ -521,7 +521,7 @@ void AppListControllerImpl::Show(int64_t display_id,
 }
 
 void AppListControllerImpl::UpdateAppListWithNewTemporarySortOrder(
-    const absl::optional<AppListSortOrder>& new_order,
+    const std::optional<AppListSortOrder>& new_order,
     bool animate,
     base::OnceClosure update_position_closure) {
   TRACE_EVENT0("ui",
@@ -770,8 +770,7 @@ void AppListControllerImpl::OnOverviewModeEnding(OverviewSession* session) {
   // The launcher will be shown after overview mode finishes animating, in
   // OnOverviewModeEndingAnimationComplete(). Overview however is nullptr by
   // the time the animations are finished, so cache the exit type here.
-  overview_exit_type_ =
-      absl::make_optional(session->enter_exit_overview_type());
+  overview_exit_type_ = std::make_optional(session->enter_exit_overview_type());
 
   // If the overview is fading out, start the home launcher animation in
   // parallel. Otherwise the transition will be initiated in
@@ -817,13 +816,13 @@ void AppListControllerImpl::OnOverviewModeEndingAnimationComplete(
   // For kFadeOutExit OverviewEnterExitType, the home animation is scheduled in
   // OnOverviewModeEnding(), so there is nothing else to do at this point.
   if (canceled || *overview_exit_type_ == OverviewEnterExitType::kFadeOutExit) {
-    overview_exit_type_ = absl::nullopt;
+    overview_exit_type_ = std::nullopt;
     return;
   }
 
   const bool animate =
       *overview_exit_type_ == OverviewEnterExitType::kFadeOutExit;
-  overview_exit_type_ = absl::nullopt;
+  overview_exit_type_ = std::nullopt;
 
   UpdateForOverviewModeChange(/*show_home_launcher=*/true, animate);
 
@@ -967,8 +966,8 @@ void AppListControllerImpl::OnAssistantReady() {
 void AppListControllerImpl::OnUiVisibilityChanged(
     AssistantVisibility new_visibility,
     AssistantVisibility old_visibility,
-    absl::optional<AssistantEntryPoint> entry_point,
-    absl::optional<AssistantExitPoint> exit_point) {
+    std::optional<AssistantEntryPoint> entry_point,
+    std::optional<AssistantExitPoint> exit_point) {
   const bool is_old_visibility_closing =
       (old_visibility == AssistantVisibility::kClosing);
 
@@ -976,7 +975,7 @@ void AppListControllerImpl::OnUiVisibilityChanged(
     case AssistantVisibility::kVisible:
       DVLOG(1) << "Assistant becoming visible";
       if (!IsVisible() || is_old_visibility_closing) {
-        absl::optional<AppListView::ScopedContentsResetDisabler> disabler;
+        std::optional<AppListView::ScopedContentsResetDisabler> disabler;
         if (is_old_visibility_closing) {
           // Avoid resetting the contents view when the transition to close the
           // Assistant ui is going to be reversed.
@@ -1015,7 +1014,7 @@ void AppListControllerImpl::OnUiVisibilityChanged(
       // |ShowEmbeddedAssistantUI(false)|, which will show previous state page
       // in Launcher and make the UI flash.
       if (IsInTabletMode()) {
-        absl::optional<ContentsView::ScopedSetActiveStateAnimationDisabler>
+        std::optional<ContentsView::ScopedSetActiveStateAnimationDisabler>
             set_active_state_animation_disabler;
         // When taking a screenshot by Assistant, we do not want to animate to
         // the final state. Otherwise the screenshot may have transient state
@@ -1083,7 +1082,7 @@ aura::Window* AppListControllerImpl::GetHomeScreenWindow() const {
 void AppListControllerImpl::UpdateScaleAndOpacityForHomeLauncher(
     float scale,
     float opacity,
-    absl::optional<HomeLauncherAnimationInfo> animation_info,
+    std::optional<HomeLauncherAnimationInfo> animation_info,
     UpdateAnimationSettingsCallback callback) {
   DCHECK(!animation_info.has_value() || !callback.is_null());
 
@@ -1161,8 +1160,8 @@ void AppListControllerImpl::RecordShelfAppLaunched() {
       AppListLaunchedFrom::kLaunchedFromShelf,
       recorded_app_list_view_state_.value_or(GetAppListViewState()),
       IsInTabletMode(), recorded_app_list_visibility_.value_or(last_visible_));
-  recorded_app_list_view_state_ = absl::nullopt;
-  recorded_app_list_visibility_ = absl::nullopt;
+  recorded_app_list_view_state_ = std::nullopt;
+  recorded_app_list_visibility_ = std::nullopt;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1423,7 +1422,7 @@ void AppListControllerImpl::ScheduleCloseAssistant() {
       (AssistantUiController::Get()->GetModel()->visibility() ==
        AssistantVisibility::kVisible);
   if (is_assistant_ui_visible) {
-    absl::optional<base::ScopedClosureRunner> runner =
+    std::optional<base::ScopedClosureRunner> runner =
         AssistantUiController::Get()->CloseUi(
             AssistantExitPoint::kLauncherClose);
     DCHECK(runner);
@@ -1810,7 +1809,7 @@ void AppListControllerImpl::UpdateForOverviewModeChange(bool show_home_launcher,
   if (animate && show_home_launcher) {
     UpdateScaleAndOpacityForHomeLauncher(kOverviewFadeAnimationScale,
                                          /*opacity=*/0.0f,
-                                         /*animation_info=*/absl::nullopt,
+                                         /*animation_info=*/std::nullopt,
                                          /*callback=*/base::NullCallback());
   }
 
@@ -1828,11 +1827,11 @@ void AppListControllerImpl::UpdateForOverviewModeChange(bool show_home_launcher,
     }
   }
 
-  absl::optional<HomeLauncherAnimationInfo> animation_info =
-      animate ? absl::make_optional<HomeLauncherAnimationInfo>(
+  std::optional<HomeLauncherAnimationInfo> animation_info =
+      animate ? std::make_optional<HomeLauncherAnimationInfo>(
                     HomeLauncherAnimationTrigger::kOverviewModeFade,
                     show_home_launcher)
-              : absl::nullopt;
+              : std::nullopt;
   UpdateAnimationSettingsCallback animation_settings_updater =
       animate ? base::BindRepeating(&UpdateOverviewSettings,
                                     kOverviewFadeAnimationDuration)
@@ -1846,7 +1845,7 @@ void AppListControllerImpl::UpdateForOverviewModeChange(bool show_home_launcher,
 }
 
 void AppListControllerImpl::UpdateFullscreenLauncherContainer(
-    absl::optional<int64_t> display_id) {
+    std::optional<int64_t> display_id) {
   aura::Window* window = fullscreen_presenter_->GetWindow();
   if (!window)
     return;
@@ -1867,7 +1866,7 @@ void AppListControllerImpl::UpdateFullscreenLauncherContainer(
 }
 
 aura::Window* AppListControllerImpl::GetFullscreenLauncherContainerForDisplayId(
-    absl::optional<int64_t> display_id) {
+    std::optional<int64_t> display_id) {
   aura::Window* root_window = nullptr;
   if (display_id.has_value()) {
     root_window = Shell::GetRootWindowForDisplayId(display_id.value());

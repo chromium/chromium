@@ -83,7 +83,7 @@ void FastPairHandshakeImplNew::Reset() {
 }
 
 void FastPairHandshakeImplNew::OnGattClientInitializedCallback(
-    absl::optional<PairFailure> failure) {
+    std::optional<PairFailure> failure) {
   if (failure) {
     CD_LOG(WARNING, Feature::FP)
         << __func__
@@ -154,7 +154,7 @@ void FastPairHandshakeImplNew::OnDataEncryptorCreateAsync(
 
 void FastPairHandshakeImplNew::OnKeybasedPairingWriteResponse(
     std::vector<uint8_t> response_bytes,
-    absl::optional<PairFailure> failure) {
+    std::optional<PairFailure> failure) {
   RecordWriteKeyBasedCharacteristicResult(/*success=*/!failure.has_value());
 
   if (failure) {
@@ -182,7 +182,7 @@ void FastPairHandshakeImplNew::OnKeybasedPairingWriteResponse(
 
 void FastPairHandshakeImplNew::OnParseKeybasedPairingDecryptedResponse(
     base::TimeTicks decrypt_start_time,
-    const absl::optional<DecryptedResponse>& response) {
+    const std::optional<DecryptedResponse>& response) {
   if (!response) {
     CD_LOG(WARNING, Feature::FP)
         << __func__ << ": Missing decrypted response from parse.";

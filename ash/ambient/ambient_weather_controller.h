@@ -6,12 +6,12 @@
 #define ASH_AMBIENT_AMBIENT_WEATHER_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gfx {
 class ImageSkia;
@@ -61,7 +61,7 @@ class ASH_EXPORT AmbientWeatherController {
   void FetchWeather();
 
   void StartDownloadingWeatherConditionIcon(
-      const absl::optional<WeatherInfo>& weather_info);
+      const std::optional<WeatherInfo>& weather_info);
 
   // Invoked upon completion of the weather icon download, |icon| can be a null
   // image if the download attempt from the url failed.

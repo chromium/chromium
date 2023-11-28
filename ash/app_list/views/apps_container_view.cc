@@ -685,7 +685,7 @@ void AppsContainerView::OnNudgeRemoved() {
 }
 
 void AppsContainerView::UpdateForNewSortingOrder(
-    const absl::optional<AppListSortOrder>& new_order,
+    const std::optional<AppListSortOrder>& new_order,
     bool animate,
     base::OnceClosure update_position_closure,
     base::OnceClosure animation_done_closure) {
@@ -1414,7 +1414,7 @@ void AppsContainerView::UpdateGradientMaskBounds() {
 }
 
 void AppsContainerView::OnAppsGridViewFadeOutAnimationEnded(
-    const absl::optional<AppListSortOrder>& new_order,
+    const std::optional<AppListSortOrder>& new_order,
     bool abort) {
   // Update item positions after the fade out animation but before the fade in
   // animation. NOTE: `update_position_closure_` can be empty in some edge

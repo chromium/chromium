@@ -311,7 +311,7 @@ bool IsSigninPrefService(PrefService* pref_service) {
 
 // Returns true if the current session is the guest session.
 bool IsCurrentSessionGuest() {
-  const absl::optional<user_manager::UserType> user_type =
+  const std::optional<user_manager::UserType> user_type =
       Shell::Get()->session_controller()->GetUserType();
   return user_type && *user_type == user_manager::USER_TYPE_GUEST;
 }
@@ -2921,8 +2921,8 @@ void AccessibilityControllerImpl::UpdateFeatureFromPref(FeatureType feature) {
 void AccessibilityControllerImpl::UpdateDictationBubble(
     bool visible,
     DictationBubbleIconType icon,
-    const absl::optional<std::u16string>& text,
-    const absl::optional<std::vector<DictationBubbleHintType>>& hints) {
+    const std::optional<std::u16string>& text,
+    const std::optional<std::vector<DictationBubbleHintType>>& hints) {
   DCHECK(dictation().enabled());
   DCHECK(dictation_bubble_controller_);
 

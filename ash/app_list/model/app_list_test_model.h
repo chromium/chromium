@@ -123,7 +123,7 @@ class AppListTestModel : public AppListModel, public AppListModelDelegate {
   int naming_index_ = 0;
 
   // The last sort order requested using `RequestAppListSort()`.
-  absl::optional<AppListSortOrder> requested_sort_order_;
+  std::optional<AppListSortOrder> requested_sort_order_;
 };
 
 }  // namespace test

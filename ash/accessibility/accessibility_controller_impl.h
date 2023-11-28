@@ -464,8 +464,8 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   void UpdateDictationBubble(
       bool visible,
       DictationBubbleIconType icon,
-      const absl::optional<std::u16string>& text,
-      const absl::optional<std::vector<DictationBubbleHintType>>& hints)
+      const std::optional<std::u16string>& text,
+      const std::optional<std::vector<DictationBubbleHintType>>& hints)
       override;
   void SilenceSpokenFeedback() override;
   void ShowToast(AccessibilityToastType type) override;

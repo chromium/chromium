@@ -147,7 +147,7 @@ class ClipboardHistoryTest : public AshTestBase {
       return;
     }
 
-    absl::optional<std::unordered_map<std::u16string, std::u16string>>
+    std::optional<std::unordered_map<std::u16string, std::u16string>>
         actual_data = ui::ReadCustomDataIntoMap(base::as_bytes(
             base::span(items.front().data().custom_data_data())));
 

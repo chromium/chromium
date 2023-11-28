@@ -83,7 +83,7 @@ class ASH_EXPORT AppListPresenterImpl
   void Show(AppListViewState preferred_state,
             int64_t display_id,
             base::TimeTicks event_time_stamp,
-            absl::optional<AppListShowSource> show_source);
+            std::optional<AppListShowSource> show_source);
 
   // Hide the open app list window. This may leave the view open but hidden.
   // If |event_time_stamp| is not 0, it means |Dismiss()| was triggered by
@@ -101,7 +101,7 @@ class ASH_EXPORT AppListPresenterImpl
   // Handles `AppListController::UpdateAppListWithNewSortingOrder()` for the
   // app list presenter.
   void UpdateForNewSortingOrder(
-      const absl::optional<AppListSortOrder>& new_order,
+      const std::optional<AppListSortOrder>& new_order,
       bool animate,
       base::OnceClosure update_position_closure);
 
@@ -130,7 +130,7 @@ class ASH_EXPORT AppListPresenterImpl
   void UpdateScaleAndOpacityForHomeLauncher(
       float scale,
       float opacity,
-      absl::optional<TabletModeAnimationTransition> transition,
+      std::optional<TabletModeAnimationTransition> transition,
       UpdateHomeLauncherAnimationSettingsCallback callback);
 
   // Shows or hides the Assistant page.

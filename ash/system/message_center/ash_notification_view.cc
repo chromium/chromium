@@ -282,8 +282,8 @@ void ScaleAndTranslateView(views::View* view,
 }
 
 // Returns the HTML snippet that contains the binary data of `bitmap`. Returns
-// `absl::nullopt` if having any error.
-absl::optional<std::u16string> GetHtmlForBitmap(const SkBitmap& bitmap) {
+// `std::nullopt` if having any error.
+std::optional<std::u16string> GetHtmlForBitmap(const SkBitmap& bitmap) {
   std::vector<unsigned char> image_data;
   if (gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false,
                                         &image_data)) {
@@ -298,7 +298,7 @@ absl::optional<std::u16string> GetHtmlForBitmap(const SkBitmap& bitmap) {
       return html_in_u16;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace
@@ -645,7 +645,7 @@ AshNotificationView::AshNotificationView(
     AddChildView(
         views::Builder<views::ScrollView>()
             .CopyAddressTo(&grouped_notifications_scroll_view_)
-            .SetBackgroundColor(absl::nullopt)
+            .SetBackgroundColor(std::nullopt)
             .SetDrawOverflowIndicator(false)
             .ClipHeightTo(0, std::numeric_limits<int>::max())
             .SetContents(
@@ -904,10 +904,10 @@ void AshNotificationView::GroupedNotificationsPreferredSizeChanged() {
   PreferredSizeChanged();
 }
 
-absl::optional<gfx::Rect> AshNotificationView::GetDragAreaBounds() const {
+std::optional<gfx::Rect> AshNotificationView::GetDragAreaBounds() const {
   DCHECK(features::IsNotificationImageDragEnabled());
   if (!IsDraggable()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const views::View* large_image_view =
@@ -918,10 +918,10 @@ absl::optional<gfx::Rect> AshNotificationView::GetDragAreaBounds() const {
   return gfx::ToEnclosedRect(larget_image_bounds);
 }
 
-absl::optional<gfx::ImageSkia> AshNotificationView::GetDragImage() {
+std::optional<gfx::ImageSkia> AshNotificationView::GetDragImage() {
   DCHECK(features::IsNotificationImageDragEnabled());
   if (!IsDraggable()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Assume that an Ash notification has at most one large image view. Fetch the
@@ -932,7 +932,7 @@ absl::optional<gfx::ImageSkia> AshNotificationView::GetDragImage() {
           ->drawn_image();
 
   // Add the background color.
-  const absl::optional<size_t> radius =
+  const std::optional<size_t> radius =
       message_center::notification_view_util::GetLargeImageCornerRadius();
   const gfx::ImageSkia drag_image_with_background =
       gfx::ImageSkiaOperations::CreateImageWithRoundRectBackground(
@@ -951,7 +951,7 @@ void AshNotificationView::AttachDropData(ui::OSExchangeData* data) {
 
   // If the notification large image is file-backed, attach the image file path
   // to `data`; otherwise, attach the large image's binary data.
-  if (const absl::optional<base::FilePath>& image_path =
+  if (const std::optional<base::FilePath>& image_path =
           message_center::MessageCenter::Get()
               ->FindNotificationById(notification_id())
               ->rich_notification_data()
@@ -1885,7 +1885,7 @@ SkColor AshNotificationView::CalculateIconAndButtonsColor(
   }
 
   auto color_id = notification->accent_color_id();
-  absl::optional<SkColor> accent_color = notification->accent_color();
+  std::optional<SkColor> accent_color = notification->accent_color();
 
   if ((!color_id || !GetWidget()) && !accent_color.has_value()) {
     return default_color;
@@ -1914,7 +1914,7 @@ SkColor AshNotificationView::CalculateIconAndButtonsColor(
                      : gfx::kPlaceholderColor;
   return color_utils::BlendForMinContrast(
              fg_color, bg_color,
-             /*high_contrast_foreground=*/absl::nullopt, minContrastRatio)
+             /*high_contrast_foreground=*/std::nullopt, minContrastRatio)
       .color;
 }
 
@@ -2310,12 +2310,12 @@ void AshNotificationView::AttachBinaryImageAsDropData(
   DCHECK(!image.size().IsEmpty());
 
   // Resize `image` if necessary.
-  absl::optional<gfx::ImageSkia> resized_image =
+  std::optional<gfx::ImageSkia> resized_image =
       message_center_utils::ResizeImageIfExceedSizeLimit(image,
                                                          kMaxImageSizeInByte);
 
   // Add the drop data in the format of HTML.
-  if (const absl::optional<std::u16string> html_snippet = GetHtmlForBitmap(
+  if (const std::optional<std::u16string> html_snippet = GetHtmlForBitmap(
           resized_image ? *resized_image->bitmap() : *image.bitmap())) {
     data->SetHtml(*html_snippet, /*base_url=*/GURL());
   }

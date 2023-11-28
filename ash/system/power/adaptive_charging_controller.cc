@@ -32,7 +32,7 @@ bool AdaptiveChargingController::IsAdaptiveChargingSupported() {
   if (is_adaptive_charging_supported_)
     return true;
 
-  const absl::optional<power_manager::PowerSupplyProperties>&
+  const std::optional<power_manager::PowerSupplyProperties>&
       power_supply_proto = chromeos::PowerManagerClient::Get()->GetLastStatus();
 
   is_adaptive_charging_supported_ =

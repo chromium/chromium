@@ -153,7 +153,7 @@ void PowerTrayView::UpdateImage(bool icon_color_changed) {
     // Note: The icon color changes when the UI is in OOBE mode.
     const SkColor icon_fg_color =
         GetColorProvider()->GetColor(kColorAshIconColorPrimary);
-    absl::optional<SkColor> badge_color;
+    std::optional<SkColor> badge_color;
 
     if (features::IsBatterySaverAvailable() &&
         PowerStatus::Get()->IsBatterySaverActive()) {

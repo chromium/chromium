@@ -382,7 +382,7 @@ void SavedDeskPresenter::UpdateUIForSavedDeskLibrary() {
 
 void SavedDeskPresenter::DeleteEntry(
     const base::Uuid& uuid,
-    absl::optional<DeskTemplateType> record_for_type) {
+    std::optional<DeskTemplateType> record_for_type) {
   weak_ptr_factory_.InvalidateWeakPtrs();
   GetDeskModel()->DeleteEntry(
       uuid,
@@ -527,7 +527,7 @@ void SavedDeskPresenter::GetAllEntries(const base::Uuid& item_to_focus,
 
 void SavedDeskPresenter::OnDeleteEntry(
     const base::Uuid& uuid,
-    absl::optional<DeskTemplateType> record_for_type,
+    std::optional<DeskTemplateType> record_for_type,
     desks_storage::DeskModel::DeleteEntryStatus status) {
   if (status != desks_storage::DeskModel::DeleteEntryStatus::kOk)
     return;
@@ -611,7 +611,7 @@ void SavedDeskPresenter::LaunchSavedDeskIntoNewDesk(
   if (saved_desk_type == DeskTemplateType::kSaveAndRecall) {
     // Passing nullopt as type since this indicates that we don't want to record
     // the `delete` metric for this operation.
-    DeleteEntry(uuid, /*record_for_type=*/absl::nullopt);
+    DeleteEntry(uuid, /*record_for_type=*/std::nullopt);
     RecordTimeBetweenSaveAndRecall(base::Time::Now() -
                                    saved_desk_creation_time);
   }

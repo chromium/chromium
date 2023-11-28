@@ -167,7 +167,7 @@ void GlanceableTrayBubbleView::InitializeContents() {
   scroll_view_->SetPaintToLayer();
   scroll_view_->layer()->SetFillsBoundsOpaquely(false);
   scroll_view_->ClipHeightTo(0, std::numeric_limits<int>::max());
-  scroll_view_->SetBackgroundColor(absl::nullopt);
+  scroll_view_->SetBackgroundColor(std::nullopt);
   scroll_view_->layer()->SetIsFastRoundedCorner(true);
   scroll_view_->SetDrawOverflowIndicator(false);
   scroll_view_->SetVerticalScrollBarMode(

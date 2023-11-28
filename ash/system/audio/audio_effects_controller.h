@@ -5,6 +5,8 @@
 #ifndef ASH_SYSTEM_AUDIO_AUDIO_EFFECTS_CONTROLLER_H_
 #define ASH_SYSTEM_AUDIO_AUDIO_EFFECTS_CONTROLLER_H_
 
+#include <optional>
+
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/public/cpp/session/session_observer.h"
@@ -12,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -34,9 +35,9 @@ class ASH_EXPORT AudioEffectsController
   bool IsEffectSupported(VcEffectId effect_id);
 
   // VcEffectsDelegate:
-  absl::optional<int> GetEffectState(VcEffectId effect_id) override;
+  std::optional<int> GetEffectState(VcEffectId effect_id) override;
   void OnEffectControlActivated(VcEffectId effect_id,
-                                absl::optional<int> state) override;
+                                std::optional<int> state) override;
 
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;

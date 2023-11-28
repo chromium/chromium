@@ -5,6 +5,7 @@
 #ifndef ASH_STYLE_COLOR_PALETTE_CONTROLLER_H_
 #define ASH_STYLE_COLOR_PALETTE_CONTROLLER_H_
 
+#include <optional>
 #include <tuple>
 
 #include "ash/ash_export.h"
@@ -17,7 +18,6 @@
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/gfx/color_palette.h"
@@ -115,11 +115,11 @@ class ASH_EXPORT ColorPaletteController : public SessionObserver,
                               base::OnceClosure on_complete) = 0;
 
   // Returns the most recently used ColorPaletteSeed.
-  virtual absl::optional<ColorPaletteSeed> GetColorPaletteSeed(
+  virtual std::optional<ColorPaletteSeed> GetColorPaletteSeed(
       const AccountId& account_id) const = 0;
 
   // Returns the current seed for the current user.
-  virtual absl::optional<ColorPaletteSeed> GetCurrentSeed() const = 0;
+  virtual std::optional<ColorPaletteSeed> GetCurrentSeed() const = 0;
 
   // Returns true if using a color scheme based on the current wallpaper.
   virtual bool UsesWallpaperSeedColor(const AccountId& account_id) const = 0;
@@ -128,7 +128,7 @@ class ASH_EXPORT ColorPaletteController : public SessionObserver,
       const AccountId& account_id) const = 0;
 
   // Iff a static color is the currently selected scheme, returns that color.
-  virtual absl::optional<SkColor> GetStaticColor(
+  virtual std::optional<SkColor> GetStaticColor(
       const AccountId& account_id) const = 0;
 
   virtual bool GetUseKMeansPref(const AccountId& account_id) const = 0;

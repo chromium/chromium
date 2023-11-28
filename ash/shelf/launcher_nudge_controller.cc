@@ -52,7 +52,7 @@ PrefService* GetPrefs() {
 base::Time GetLastShownTime(PrefService* prefs) {
   const base::Value::Dict& dictionary =
       prefs->GetDict(prefs::kShelfLauncherNudge);
-  absl::optional<base::Time> last_shown_time =
+  std::optional<base::Time> last_shown_time =
       base::ValueToTime(dictionary.Find(kLastShownTime));
   return last_shown_time.value_or(base::Time());
 }
@@ -63,7 +63,7 @@ base::Time GetLastShownTime(PrefService* prefs) {
 base::Time GetFirstLoginTime(PrefService* prefs) {
   const base::Value::Dict& dictionary =
       prefs->GetDict(prefs::kShelfLauncherNudge);
-  absl::optional<base::Time> first_login_time =
+  std::optional<base::Time> first_login_time =
       base::ValueToTime(dictionary.Find(kFirstLoginTime));
   return first_login_time.value_or(base::Time());
 }

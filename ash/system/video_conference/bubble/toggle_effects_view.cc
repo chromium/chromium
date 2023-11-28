@@ -166,7 +166,7 @@ ToggleEffectsButton::ToggleEffectsButton(
     bool toggle_state,
     const std::u16string& label_text,
     const int accessible_name_id,
-    absl::optional<int> container_id,
+    std::optional<int> container_id,
     const VcEffectId effect_id,
     int num_button_per_row)
     : callback_(callback),
@@ -309,7 +309,7 @@ ToggleEffectsView::ToggleEffectsView(
       // (represented by `tile`) cannot be obtained. This can happen if the
       // `VcEffectsDelegate` hosting the effect has encountered an error or is
       // in some bad state. In this case its controls are not presented.
-      absl::optional<int> current_state = tile->get_state_callback().Run();
+      std::optional<int> current_state = tile->get_state_callback().Run();
       if (!current_state.has_value()) {
         continue;
       }

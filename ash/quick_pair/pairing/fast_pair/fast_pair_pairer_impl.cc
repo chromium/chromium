@@ -249,7 +249,7 @@ void FastPairPairerImpl::StartPairing() {
                       PAIRING_DELEGATE_PRIORITY_HIGH);
         adapter_->ConnectDevice(
             device_address,
-            /*address_type=*/absl::nullopt,
+            /*address_type=*/std::nullopt,
             base::BindOnce(&FastPairPairerImpl::OnConnectDevice,
                            weak_ptr_factory_.GetWeakPtr()),
             base::BindOnce(&FastPairPairerImpl::OnConnectError,
@@ -338,9 +338,8 @@ void FastPairPairerImpl::ConfirmPasskey(device::BluetoothDevice* device,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void FastPairPairerImpl::OnPasskeyResponse(
-    std::vector<uint8_t> response_bytes,
-    absl::optional<PairFailure> failure) {
+void FastPairPairerImpl::OnPasskeyResponse(std::vector<uint8_t> response_bytes,
+                                           std::optional<PairFailure> failure) {
   CD_LOG(VERBOSE, Feature::FP) << __func__;
   RecordWritePasskeyCharacteristicResult(/*success=*/!failure.has_value());
   RecordProtocolPairingStep(
@@ -367,7 +366,7 @@ void FastPairPairerImpl::OnPasskeyResponse(
 
 void FastPairPairerImpl::OnParseDecryptedPasskey(
     base::TimeTicks decrypt_start_time,
-    const absl::optional<DecryptedPasskey>& passkey) {
+    const std::optional<DecryptedPasskey>& passkey) {
   if (!passkey) {
     CD_LOG(WARNING, Feature::FP) << "Missing decrypted passkey from parse.";
 
@@ -616,7 +615,7 @@ void FastPairPairerImpl::WriteAccountKey() {
 
 void FastPairPairerImpl::OnWriteAccountKey(
     std::array<uint8_t, 16> account_key,
-    absl::optional<AccountKeyFailure> failure) {
+    std::optional<AccountKeyFailure> failure) {
   RecordWriteAccountKeyCharacteristicResult(/*success=*/!failure.has_value());
 
   if (failure) {
@@ -787,7 +786,7 @@ void FastPairPairerImpl::DevicePairedChanged(device::BluetoothAdapter* adapter,
 }
 
 void FastPairPairerImpl::OnPairConnected(
-    absl::optional<device::BluetoothDevice::ConnectErrorCode> error) {
+    std::optional<device::BluetoothDevice::ConnectErrorCode> error) {
   // Check that the timer is still running before continuing. If the timer has
   // expired, then we already have surface an error through
   // `OnCreateBondTimeout` and we should not continue here. This handles the
@@ -839,7 +838,7 @@ void FastPairPairerImpl::OnPairConnected(
     // On Floss, Pair is exactly the same as Connect. Therefore we skip calling
     // Connect().
     CD_LOG(VERBOSE, Feature::FP) << __func__ << ": Skipping Connect on Floss";
-    OnConnected(absl::nullopt);
+    OnConnected(std::nullopt);
     return;
   }
 
@@ -855,7 +854,7 @@ void FastPairPairerImpl::OnPairConnected(
 }
 
 void FastPairPairerImpl::OnConnected(
-    absl::optional<device::BluetoothDevice::ConnectErrorCode> error) {
+    std::optional<device::BluetoothDevice::ConnectErrorCode> error) {
   // Terminal state for `Pair` flow, so we stop the timer here for this path.
   // We don't need to check which flow we are in here, since we can only
   // reach this point with `Pair`.

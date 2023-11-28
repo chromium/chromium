@@ -141,7 +141,7 @@ AuthFactorModel* GetHighestPriorityAuthFactor(
 
 std::unique_ptr<lottie::Animation> GetCheckmarkAnimation(
     ui::ColorProvider* color_provider) {
-  absl::optional<std::vector<uint8_t>> lottie_data =
+  std::optional<std::vector<uint8_t>> lottie_data =
       ui::ResourceBundle::GetSharedInstance().GetLottieData(
           IDR_LOGIN_ARROW_CHECKMARK_ANIMATION);
   CHECK(lottie_data.has_value());

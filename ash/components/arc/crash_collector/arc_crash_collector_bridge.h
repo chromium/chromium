@@ -42,7 +42,7 @@ class ArcCrashCollectorBridge : public KeyedService,
   // mojom::CrashCollectorHost overrides.
   void DumpCrash(const std::string& type,
                  mojo::ScopedHandle pipe,
-                 absl::optional<base::TimeDelta> uptime) override;
+                 std::optional<base::TimeDelta> uptime) override;
   void DumpNativeCrash(const std::string& exec_name,
                        int32_t pid,
                        int64_t timestamp,
@@ -52,7 +52,7 @@ class ArcCrashCollectorBridge : public KeyedService,
       const std::string& device,
       const std::string& board,
       const std::string& cpu_abi,
-      const absl::optional<std::string>& fingerprint) override;
+      const std::optional<std::string>& fingerprint) override;
 
   static void EnsureFactoryBuilt();
 
@@ -65,7 +65,7 @@ class ArcCrashCollectorBridge : public KeyedService,
   std::string device_;
   std::string board_;
   std::string cpu_abi_;
-  absl::optional<std::string> fingerprint_;
+  std::optional<std::string> fingerprint_;
 };
 
 }  // namespace arc

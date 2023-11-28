@@ -5361,11 +5361,11 @@ class DesksAcceleratorsTest : public DesksTest,
     return true;
   }
   void SuppressMetaTopRowKeyComboRewrites(bool should_suppress) override {}
-  absl::optional<ui::mojom::ModifierKey> GetKeyboardRemappedModifierValue(
+  std::optional<ui::mojom::ModifierKey> GetKeyboardRemappedModifierValue(
       int device_id,
       ui::mojom::ModifierKey modifier_key,
       const std::string& pref_name) const override {
-    return absl::nullopt;
+    return std::nullopt;
   }
   bool TopRowKeysAreFunctionKeys(int device_id) const override { return false; }
   bool IsExtensionCommandRegistered(ui::KeyboardCode key_code,
@@ -5380,15 +5380,15 @@ class DesksAcceleratorsTest : public DesksTest,
   void RecordEventRemappedToRightClick(bool alt_based_right_click) override {}
   void RecordSixPackEventRewrite(ui::KeyboardCode key_code,
                                  bool alt_based) override {}
-  absl::optional<ui::mojom::SimulateRightClickModifier>
+  std::optional<ui::mojom::SimulateRightClickModifier>
   GetRemapRightClickModifier(int device_id) override {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<ui::mojom::SixPackShortcutModifier>
+  std::optional<ui::mojom::SixPackShortcutModifier>
   GetShortcutModifierForSixPackKey(int device_id,
                                    ui::KeyboardCode key_code) override {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   void NotifyRightClickRewriteBlockedBySetting(
@@ -5401,10 +5401,10 @@ class DesksAcceleratorsTest : public DesksTest,
       ui::mojom::SixPackShortcutModifier active_modifier,
       int device_id) override {}
 
-  absl::optional<ui::mojom::ExtendedFkeysModifier> GetExtendedFkeySetting(
+  std::optional<ui::mojom::ExtendedFkeysModifier> GetExtendedFkeySetting(
       int device_id,
       ui::KeyboardCode key_code) override {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   void SendAccelerator(ui::KeyboardCode key_code, int flags) {

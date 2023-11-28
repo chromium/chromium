@@ -73,7 +73,7 @@ class NetworkDetailedNetworkViewPixelTest : public AshTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }

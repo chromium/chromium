@@ -513,8 +513,8 @@ void NightLightControllerImpl::Close(bool by_user) {
 }
 
 void NightLightControllerImpl::Click(
-    const absl::optional<int>& button_index,
-    const absl::optional<std::u16string>& reply) {
+    const std::optional<int>& button_index,
+    const std::optional<std::u16string>& reply) {
   auto* shell = Shell::Get();
 
   DCHECK(!button_index.has_value());

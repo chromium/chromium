@@ -210,7 +210,7 @@ void CalendarViewController::OnEventListOpened() {
 
 void CalendarViewController::OnEventListClosed() {
   is_event_list_showing_ = false;
-  selected_date_ = absl::nullopt;
+  selected_date_ = std::nullopt;
 }
 
 void CalendarViewController::CalendarLoaded() {

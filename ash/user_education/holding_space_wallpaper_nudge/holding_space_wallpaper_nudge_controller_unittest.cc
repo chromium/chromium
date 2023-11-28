@@ -135,7 +135,7 @@ std::unique_ptr<views::Widget> CreateTestWidgetForDisplayId(
 }
 
 bool HasHelpBubble(HoldingSpaceTray* tray) {
-  absl::optional<HelpBubbleId> help_bubble_id =
+  std::optional<HelpBubbleId> help_bubble_id =
       UserEducationHelpBubbleController::Get()->GetHelpBubbleId(
           kHoldingSpaceTrayElementId,
           views::ElementTrackerViews::GetContextForView(tray));
@@ -148,7 +148,7 @@ bool HasHelpBubble(HoldingSpaceTray* tray) {
 }
 
 bool HasPing(HoldingSpaceTray* tray) {
-  absl::optional<PingId> ping_id =
+  std::optional<PingId> ping_id =
       UserEducationPingController::Get()->GetPingId(tray);
 
   // Add failures if the ping is not the one that's expected.
@@ -263,8 +263,8 @@ class HoldingSpaceWallpaperNudgeControllerTestBase
     : public UserEducationAshTestBase {
  public:
   HoldingSpaceWallpaperNudgeControllerTestBase(
-      absl::optional<bool> counterfactual_enabled,
-      absl::optional<bool> drop_to_pin_enabled,
+      std::optional<bool> counterfactual_enabled,
+      std::optional<bool> drop_to_pin_enabled,
       bool rate_limiting_enabled,
       base::test::TaskEnvironment::TimeSource time_source)
       : UserEducationAshTestBase(time_source) {
@@ -538,7 +538,7 @@ TEST_F(HoldingSpaceWallpaperNudgeControllerTest, HideBubbleOnHoldingSpaceOpen) {
 class HoldingSpaceWallpaperNudgeControllerDragAndDropTest
     : public HoldingSpaceWallpaperNudgeControllerTestBase,
       public testing::WithParamInterface<
-          std::tuple</*drop_to_pin_enabled=*/absl::optional<bool>,
+          std::tuple</*drop_to_pin_enabled=*/std::optional<bool>,
                      /*drag_files_app_data=*/bool,
                      /*complete_drop=*/bool>> {
  public:
@@ -550,7 +550,7 @@ class HoldingSpaceWallpaperNudgeControllerDragAndDropTest
             base::test::TaskEnvironment::TimeSource::SYSTEM_TIME) {}
 
   // Whether the drop-to-pin feature param is enabled.
-  absl::optional<bool> drop_to_pin_enabled() const {
+  std::optional<bool> drop_to_pin_enabled() const {
     return std::get<0>(GetParam());
   }
 
@@ -566,7 +566,7 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     HoldingSpaceWallpaperNudgeControllerDragAndDropTest,
     testing::Combine(
-        /*drop_to_pin_enabled=*/testing::Values(absl::nullopt, false, true),
+        /*drop_to_pin_enabled=*/testing::Values(std::nullopt, false, true),
         /*drag_files_app_data=*/testing::Bool(),
         /*complete_drop=*/testing::Bool()));
 
@@ -819,7 +819,7 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerDragAndDropTest, DragAndDrop) {
 class HoldingSpaceWallpaperNudgeControllerRateLimitingTest
     : public HoldingSpaceWallpaperNudgeControllerTestBase,
       public testing::WithParamInterface<
-          /*drop_to_pin_enabled=*/absl::optional<bool>> {
+          /*drop_to_pin_enabled=*/std::optional<bool>> {
  public:
   HoldingSpaceWallpaperNudgeControllerRateLimitingTest()
       : HoldingSpaceWallpaperNudgeControllerTestBase(
@@ -829,12 +829,12 @@ class HoldingSpaceWallpaperNudgeControllerRateLimitingTest
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   // Whether the drop-to-pin feature param is enabled.
-  absl::optional<bool> drop_to_pin_enabled() const { return GetParam(); }
+  std::optional<bool> drop_to_pin_enabled() const { return GetParam(); }
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
                          HoldingSpaceWallpaperNudgeControllerRateLimitingTest,
-                         testing::Values(absl::nullopt, false, true));
+                         testing::Values(std::nullopt, false, true));
 
 // Tests -----------------------------------------------------------------------
 
@@ -974,8 +974,8 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerRateLimitingTest, RateLimiting) {
 class HoldingSpaceWallpaperNudgeControllerCounterfactualTest
     : public HoldingSpaceWallpaperNudgeControllerTestBase,
       public ::testing::WithParamInterface<
-          std::tuple</*counterfactual_enabled=*/absl::optional<bool>,
-                     /*drop_to_pin_enabled=*/absl::optional<bool>>> {
+          std::tuple</*counterfactual_enabled=*/std::optional<bool>,
+                     /*drop_to_pin_enabled=*/std::optional<bool>>> {
  public:
   HoldingSpaceWallpaperNudgeControllerCounterfactualTest()
       : HoldingSpaceWallpaperNudgeControllerTestBase(
@@ -985,12 +985,12 @@ class HoldingSpaceWallpaperNudgeControllerCounterfactualTest
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   // Whether the is-counterfactual feature parameter is enabled.
-  absl::optional<bool> counterfactual_enabled() const {
+  std::optional<bool> counterfactual_enabled() const {
     return std::get<1>(GetParam());
   }
 
   // Whether the drop-to-pin feature parameter is enabled.
-  absl::optional<bool> drop_to_pin_enabled() const {
+  std::optional<bool> drop_to_pin_enabled() const {
     return std::get<0>(GetParam());
   }
 };
@@ -999,13 +999,13 @@ INSTANTIATE_TEST_SUITE_P(All,
                          HoldingSpaceWallpaperNudgeControllerCounterfactualTest,
                          testing::Combine(
                              /*counterfactual_enabled=*/
-                             ::testing::Values(absl::make_optional(true),
-                                               absl::make_optional(false),
-                                               absl::nullopt),
+                             ::testing::Values(std::make_optional(true),
+                                               std::make_optional(false),
+                                               std::nullopt),
                              /*drop_to_pin_enabled=*/
-                             ::testing::Values(absl::make_optional(true),
-                                               absl::make_optional(false),
-                                               absl::nullopt)));
+                             ::testing::Values(std::make_optional(true),
+                                               std::make_optional(false),
+                                               std::nullopt)));
 
 // Tests -----------------------------------------------------------------------
 

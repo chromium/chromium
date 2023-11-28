@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_PRIVACY_HUB_PRIVACY_HUB_NOTIFICATION_H_
 #define ASH_SYSTEM_PRIVACY_HUB_PRIVACY_HUB_NOTIFICATION_H_
 
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -12,7 +13,6 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/system_notification_builder.h"
 #include "ash/system/privacy_hub/sensor_disabled_notification_delegate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/message_center_observer.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
@@ -29,8 +29,8 @@ class ASH_EXPORT PrivacyHubNotificationClickDelegate
       base::RepeatingClosure button_click);
 
   // message_center::NotificationDelegate:
-  void Click(const absl::optional<int>& button_index,
-             const absl::optional<std::u16string>& reply) override;
+  void Click(const std::optional<int>& button_index,
+             const std::optional<std::u16string>& reply) override;
 
   // When clicking on the notification message execute this `callback`.
   void SetMessageClickCallback(base::RepeatingClosure callback);

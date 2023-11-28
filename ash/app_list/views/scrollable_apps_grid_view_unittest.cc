@@ -160,7 +160,7 @@ class ScrollableAppsGridViewTest : public AshTestBase,
 
   // Verifies the visible item index range.
   bool IsIndexRangeExpected(size_t first_index, size_t last_index) {
-    const absl::optional<AppsGridView::VisibleItemIndexRange> index_range =
+    const std::optional<AppsGridView::VisibleItemIndexRange> index_range =
         apps_grid_view_->GetVisibleItemIndexRange();
 
     return index_range->first_index == first_index &&

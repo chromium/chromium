@@ -569,7 +569,7 @@ void ArcSessionImpl::DoUpgrade() {
                                              weak_factory_.GetWeakPtr()));
 }
 
-void ArcSessionImpl::OnFreeDiskSpace(absl::optional<int64_t> space) {
+void ArcSessionImpl::OnFreeDiskSpace(std::optional<int64_t> space) {
   // Ensure there's sufficient space on disk for the container.
   if (!space.has_value()) {
     LOG(ERROR) << "Could not determine free disk space";

@@ -59,17 +59,17 @@ class ASH_EXPORT VcEffectsDelegate {
   // Invoked when the UI controls are being constructed, to get the actual
   // effect state. `effect_id` specifies the effect whose state is requested,
   // and can be ignored if only one effect is being hosted. If no state can be
-  // determined for `effect_id`, this function should return `absl::nullopt`.
-  virtual absl::optional<int> GetEffectState(VcEffectId effect_id) = 0;
+  // determined for `effect_id`, this function should return `std::nullopt`.
+  virtual std::optional<int> GetEffectState(VcEffectId effect_id) = 0;
 
   // Invoked anytime the user makes an adjustment to an effect state. For
   // delegates that host more than a single effect, `effect_id` is the unique ID
   // of the activated effect. If only one effect is hosted, `effect_id` is
-  // ignored and `absl::nullopt` should be passed. Similarly, `state` should be
-  // `absl::nullopt` in cases (like toggle effects) where no specific state is
+  // ignored and `std::nullopt` should be passed. Similarly, `state` should be
+  // `std::nullopt` in cases (like toggle effects) where no specific state is
   // being set, an integer value otherwise.
   virtual void OnEffectControlActivated(VcEffectId effect_id,
-                                        absl::optional<int> state) = 0;
+                                        std::optional<int> state) = 0;
 
   // This function will only be used for set-value effects, not for togglable
   // effects. Invoked when the user chooses a new value for the set-value effect

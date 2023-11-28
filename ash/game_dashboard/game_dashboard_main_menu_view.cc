@@ -79,7 +79,7 @@ std::unique_ptr<FeatureTile> CreateFeatureTile(
     int id,
     const gfx::VectorIcon& icon,
     const std::u16string& text,
-    const absl::optional<std::u16string>& sub_label) {
+    const std::optional<std::u16string>& sub_label) {
   auto tile =
       std::make_unique<FeatureTile>(std::move(callback), is_togglable, type);
   tile->SetID(id);
@@ -461,7 +461,7 @@ void GameDashboardMainMenuView::AddShortcutTilesRow() {
         VIEW_ID_GD_RECORD_GAME_TILE, kGdRecordGameIcon,
         l10n_util::GetStringUTF16(
             IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_BUTTON_TITLE),
-        /*sub_label=*/absl::nullopt));
+        /*sub_label=*/std::nullopt));
     record_game_tile_->SetBackgroundColorId(
         cros_tokens::kCrosSysSystemOnBaseOpaque);
     record_game_tile_->SetForegroundColorId(cros_tokens::kCrosSysOnSurface);
@@ -480,7 +480,7 @@ void GameDashboardMainMenuView::AddShortcutTilesRow() {
       VIEW_ID_GD_SCREENSHOT_TILE, kGdScreenshotIcon,
       l10n_util::GetStringUTF16(
           IDS_ASH_GAME_DASHBOARD_SCREENSHOT_TILE_BUTTON_TITLE),
-      /*sub_label=*/absl::nullopt));
+      /*sub_label=*/std::nullopt));
 }
 
 void GameDashboardMainMenuView::AddFeatureDetailsRows() {
@@ -520,7 +520,7 @@ void GameDashboardMainMenuView::MaybeAddGameControlsTile(
       VIEW_ID_GD_CONTROLS_TILE, kGdGameControlsIcon,
       l10n_util::GetStringUTF16(
           IDS_ASH_GAME_DASHBOARD_CONTROLS_TILE_BUTTON_TITLE),
-      /*sub_label=*/absl::nullopt));
+      /*sub_label=*/std::nullopt));
 
   UpdateGameControlsTile();
 }

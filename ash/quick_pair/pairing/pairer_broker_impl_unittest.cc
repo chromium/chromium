@@ -176,7 +176,7 @@ class FakeFastPairGattServiceClientImplFactory
   std::unique_ptr<ash::quick_pair::FastPairGattServiceClient> CreateInstance(
       device::BluetoothDevice* device,
       scoped_refptr<device::BluetoothAdapter> adapter,
-      base::OnceCallback<void(absl::optional<ash::quick_pair::PairFailure>)>
+      base::OnceCallback<void(std::optional<ash::quick_pair::PairFailure>)>
           on_initialized_callback) override {
     auto fake_fast_pair_gatt_service_client =
         std::make_unique<ash::quick_pair::FakeFastPairGattServiceClient>(
@@ -254,7 +254,7 @@ class PairerBrokerImplTest : public AshTestBase, public PairerBroker::Observer {
 
   void InvokeHandshakeLookupCallbackSuccess() {
     FakeFastPairHandshakeLookup::GetFakeInstance()->InvokeCallbackForTesting(
-        device_, absl::nullopt);
+        device_, std::nullopt);
   }
 
   void InvokeHandshakeLookupCallbackFailure(PairFailure failure) {
@@ -288,7 +288,7 @@ class PairerBrokerImplTest : public AshTestBase, public PairerBroker::Observer {
   }
 
   void OnAccountKeyWrite(scoped_refptr<Device> device,
-                         absl::optional<AccountKeyFailure> error) override {
+                         std::optional<AccountKeyFailure> error) override {
     ++account_key_write_count_;
   }
 

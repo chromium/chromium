@@ -881,15 +881,15 @@ void ArcNetHostImpl::TranslateEapCredentialsToDict(
     return;
   }
   std::move(continue_callback)
-      .Run(/*cert_id=*/absl::nullopt,
-           /*slot_id=*/absl::nullopt);
+      .Run(/*cert_id=*/std::nullopt,
+           /*slot_id=*/std::nullopt);
 }
 
 void ArcNetHostImpl::TranslateEapCredentialsToOncDictWithCertID(
     const mojom::EapCredentialsPtr& eap,
     base::OnceCallback<void(base::Value::Dict)> callback,
-    const absl::optional<std::string>& cert_id,
-    const absl::optional<int>& slot_id) {
+    const std::optional<std::string>& cert_id,
+    const std::optional<int>& slot_id) {
   base::Value::Dict eap_dict;
 
   if (cert_id.has_value() && slot_id.has_value()) {
@@ -947,8 +947,8 @@ void ArcNetHostImpl::TranslateEapCredentialsToOncDictWithCertID(
 void ArcNetHostImpl::TranslateEapCredentialsToShillDictWithCertID(
     mojom::EapCredentialsPtr cred,
     base::OnceCallback<void(base::Value::Dict)> callback,
-    const absl::optional<std::string>& cert_id,
-    const absl::optional<int>& slot_id) {
+    const std::optional<std::string>& cert_id,
+    const std::optional<int>& slot_id) {
   if (!cred) {
     NET_LOG(ERROR) << __func__ << ": Empty EAP credentials";
     return;
@@ -1280,7 +1280,7 @@ void ArcNetHostImpl::NetworkPropertiesUpdated(
 
 void ArcNetHostImpl::ReceiveShillProperties(
     const std::string& service_path,
-    absl::optional<base::Value::Dict> shill_properties) {
+    std::optional<base::Value::Dict> shill_properties) {
   if (!shill_properties) {
     NET_LOG(ERROR) << __func__
                    << ": Failed to get shill Service properties for "

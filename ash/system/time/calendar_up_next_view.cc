@@ -234,7 +234,7 @@ CalendarUpNextView::CalendarUpNextView(
 
   // Scroll view.
   scroll_view_->SetAllowKeyboardScrolling(false);
-  scroll_view_->SetBackgroundColor(absl::nullopt);
+  scroll_view_->SetBackgroundColor(std::nullopt);
   scroll_view_->SetDrawOverflowIndicator(false);
   scroll_view_->SetViewportRoundedCornerRadius(
       gfx::RoundedCornersF(kScrollViewportCornerRadius));
@@ -430,7 +430,7 @@ void CalendarUpNextView::ToggleScrollButtonState() {
 }
 
 void CalendarUpNextView::ScrollViewByOffset(int offset) {
-  absl::optional<gfx::Rect> visible_content_rect =
+  std::optional<gfx::Rect> visible_content_rect =
       scroll_view_->GetVisibleRect();
   if (!visible_content_rect.has_value() || offset == 0) {
     return;

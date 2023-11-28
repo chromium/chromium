@@ -89,9 +89,9 @@ class BluetoothFeaturePodControllerTest : public AshTestBase {
   }
 
   DeviceBatteryInfoPtr CreateMultipleBatteryInfo(
-      absl::optional<int> left_bud_battery,
-      absl::optional<int> case_battery,
-      absl::optional<int> right_bud_battery) {
+      std::optional<int> left_bud_battery,
+      std::optional<int> case_battery,
+      std::optional<int> right_bud_battery) {
     DeviceBatteryInfoPtr battery_info = DeviceBatteryInfo::New();
 
     if (left_bud_battery) {
@@ -380,7 +380,7 @@ TEST_F(BluetoothFeaturePodControllerTest,
             GetButtonSubLabelText());
 
   paired_device->device_properties->battery_info =
-      CreateMultipleBatteryInfo(/*left_bud_battery=*/absl::nullopt,
+      CreateMultipleBatteryInfo(/*left_bud_battery=*/std::nullopt,
                                 /*case_battery=*/kCaseBatteryPercentage,
                                 /*right_battery=*/kRightBudBatteryPercentage);
   SetConnectedDevice(paired_device);
@@ -390,8 +390,8 @@ TEST_F(BluetoothFeaturePodControllerTest,
             GetButtonSubLabelText());
 
   paired_device->device_properties->battery_info = CreateMultipleBatteryInfo(
-      /*left_bud_battery=*/absl::nullopt,
-      /*case_battery=*/kCaseBatteryPercentage, /*right_battery=*/absl::nullopt);
+      /*left_bud_battery=*/std::nullopt,
+      /*case_battery=*/kCaseBatteryPercentage, /*right_battery=*/std::nullopt);
   SetConnectedDevice(paired_device);
   EXPECT_EQ(l10n_util::GetStringFUTF16(
                 IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_BATTERY_PERCENTAGE_LABEL,

@@ -5,6 +5,7 @@
 #ifndef ASH_USER_EDUCATION_USER_EDUCATION_UTIL_H_
 #define ASH_USER_EDUCATION_USER_EDUCATION_UTIL_H_
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -12,7 +13,6 @@
 #include "base/values.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/user_manager/user_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/ui_base_types.h"
 
@@ -81,7 +81,7 @@ ASH_EXPORT const AccountId& GetAccountId(const UserSession* user_session);
 // Returns help bubble body icon from the specified `external_properties`. If
 // the specified `external_properties` does not contain a help bubble body icon,
 // an absent value is returned.
-ASH_EXPORT absl::optional<std::reference_wrapper<const gfx::VectorIcon>>
+ASH_EXPORT std::optional<std::reference_wrapper<const gfx::VectorIcon>>
 GetHelpBubbleBodyIcon(
     const user_education::HelpBubbleParams::ExtendedProperties&
         extended_properties);
@@ -99,7 +99,7 @@ ASH_EXPORT ui::ModalType GetHelpBubbleModalType(
 // Returns help bubble style from the specified `extended_properties`. If the
 // specified `extended_properties` does not contain help bubble style, an
 // absent value is returned.
-ASH_EXPORT absl::optional<HelpBubbleStyle> GetHelpBubbleStyle(
+ASH_EXPORT std::optional<HelpBubbleStyle> GetHelpBubbleStyle(
     const user_education::HelpBubbleParams::ExtendedProperties&
         extended_properties);
 
@@ -112,8 +112,8 @@ ASH_EXPORT views::View* GetMatchingViewInRootWindow(
     ui::ElementIdentifier element_id);
 
 // Returns the user type associated with the specified `account_id`, or
-// `absl::nullopt` if type cannot be determined.
-ASH_EXPORT absl::optional<user_manager::UserType> GetUserType(
+// `std::nullopt` if type cannot be determined.
+ASH_EXPORT std::optional<user_manager::UserType> GetUserType(
     const AccountId& account_id);
 
 // Returns whether the primary user account is active.

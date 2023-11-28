@@ -370,7 +370,7 @@ class ArcVmClientAdapterTest : public testing::Test,
     GetTestConciergeClient()->set_start_vm_response(start_vm_response);
 
     // Reset to the original behavior.
-    SetArcVmBootNotificationServerFdForTesting(absl::nullopt);
+    SetArcVmBootNotificationServerFdForTesting(std::nullopt);
 
     const std::string abstract_addr(GenerateAbstractAddress());
     boot_server_ = std::make_unique<TestArcVmBootNotificationServer>();
@@ -596,10 +596,10 @@ class ArcVmClientAdapterTest : public testing::Test,
   base::RunLoop* run_loop() { return run_loop_.get(); }
   ArcClientAdapter* adapter() { return adapter_.get(); }
 
-  const absl::optional<bool>& is_system_shutdown() const {
+  const std::optional<bool>& is_system_shutdown() const {
     return is_system_shutdown_;
   }
-  void reset_is_system_shutdown() { is_system_shutdown_ = absl::nullopt; }
+  void reset_is_system_shutdown() { is_system_shutdown_ = std::nullopt; }
   TestConciergeClient* GetTestConciergeClient() {
     return static_cast<TestConciergeClient*>(ash::ConciergeClient::Get());
   }
@@ -638,7 +638,7 @@ class ArcVmClientAdapterTest : public testing::Test,
 
   std::unique_ptr<base::RunLoop> run_loop_;
   std::unique_ptr<ArcClientAdapter> adapter_;
-  absl::optional<bool> is_system_shutdown_;
+  std::optional<bool> is_system_shutdown_;
 
   content::BrowserTaskEnvironment browser_task_environment_;
   base::ScopedTempDir dir_;
@@ -1158,7 +1158,7 @@ TEST_F(ArcVmClientAdapterTest, StartMiniArc_StopExistingVmFailure) {
 
 TEST_F(ArcVmClientAdapterTest, StartMiniArc_StopExistingVmFailureEmptyReply) {
   // Inject failure.
-  GetTestConciergeClient()->set_stop_vm_response(absl::nullopt);
+  GetTestConciergeClient()->set_stop_vm_response(std::nullopt);
 
   StartMiniArcWithParams(false, {});
 
@@ -1193,7 +1193,7 @@ TEST_F(ArcVmClientAdapterTest, StartMiniArc_StartArcVmFailure) {
 
 TEST_F(ArcVmClientAdapterTest, StartMiniArc_StartArcVmFailureEmptyReply) {
   // Inject failure to StartArcVm(). This emulates D-Bus timeout situations.
-  GetTestConciergeClient()->set_start_vm_response(absl::nullopt);
+  GetTestConciergeClient()->set_start_vm_response(std::nullopt);
 
   StartMiniArcWithParams(false, {});
 
@@ -1524,7 +1524,7 @@ TEST_F(ArcVmClientAdapterTest, VirtioBlkForData_Disabled) {
 
 TEST_F(ArcVmClientAdapterTest, VirtioBlkForData_CreateDiskimageResponseEmpty) {
   // CreateDiskImage() returns an empty response.
-  GetTestConciergeClient()->set_create_disk_image_response(absl::nullopt);
+  GetTestConciergeClient()->set_create_disk_image_response(std::nullopt);
 
   // StartArcVm should NOT be called.
   StartParams start_params(GetPopulatedStartParams());
@@ -2246,7 +2246,7 @@ TEST_F(ArcVmClientAdapterTest, OnConnectionReady_ArcVmCompleteBootFailure) {
   UpgradeArc(true);
 
   // Inject the failure.
-  absl::optional<vm_tools::concierge::ArcVmCompleteBootResponse> response;
+  std::optional<vm_tools::concierge::ArcVmCompleteBootResponse> response;
   response.emplace();
   response->set_result(
       vm_tools::concierge::ArcVmCompleteBootResult::BAD_REQUEST);
@@ -2267,7 +2267,7 @@ TEST_F(ArcVmClientAdapterTest,
   UpgradeArc(true);
 
   // Inject the failure.
-  GetTestConciergeClient()->set_arcvm_complete_boot_response(absl::nullopt);
+  GetTestConciergeClient()->set_arcvm_complete_boot_response(std::nullopt);
 
   // This calls ArcVmClientAdapter::OnConnectionReady().
   arc_bridge_service()->app()->SetInstance(app_instance());

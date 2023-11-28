@@ -57,6 +57,7 @@
 #include <algorithm>
 #include <functional>
 #include <iterator>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -76,7 +77,6 @@
 #include "base/rand_util.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/skottie_frame_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
@@ -144,7 +144,7 @@ class DynamicImageProvider {
   }
 
   const PhotoWithDetails& GetTopicForAssetSize(
-      const absl::optional<gfx::Size>& asset_size) {
+      const std::optional<gfx::Size>& asset_size) {
     const PhotoWithDetails* topic = nullptr;
     // If the |asset_size| is unavailable, this is unexpected but not fatal. The
     // choice to default to portrait is arbitrary.
@@ -243,7 +243,7 @@ class AmbientAnimationPhotoProvider::DynamicImageAssetImpl
  public:
   DynamicImageAssetImpl(
       base::StringPiece asset_id,
-      absl::optional<gfx::Size> size,
+      std::optional<gfx::Size> size,
       const base::WeakPtr<AmbientAnimationPhotoProvider>& provider)
       : asset_id_(asset_id), size_(std::move(size)), provider_(provider) {
     DCHECK(provider_);
@@ -293,7 +293,7 @@ class AmbientAnimationPhotoProvider::DynamicImageAssetImpl
 
   bool HasAssignedTopic() const { return !current_topic_.photo.isNull(); }
 
-  const absl::optional<gfx::Size>& size() const { return size_; }
+  const std::optional<gfx::Size>& size() const { return size_; }
 
   const std::string& asset_id() const { return asset_id_; }
   const ambient::util::ParsedDynamicAssetId& parsed_asset_id() const {
@@ -350,7 +350,7 @@ class AmbientAnimationPhotoProvider::DynamicImageAssetImpl
 
   const std::string asset_id_;
   ambient::util::ParsedDynamicAssetId parsed_asset_id_;
-  const absl::optional<gfx::Size> size_;
+  const std::optional<gfx::Size> size_;
   const base::WeakPtr<AmbientAnimationPhotoProvider> provider_;
   // Last animation frame timestamp that was observed.
   float last_observed_animation_timestamp_ = kAnimationTimestampInvalid;
@@ -386,7 +386,7 @@ scoped_refptr<cc::SkottieFrameDataProvider::ImageAsset>
 AmbientAnimationPhotoProvider::LoadImageAsset(
     base::StringPiece asset_id,
     const base::FilePath& resource_path,
-    const absl::optional<gfx::Size>& size) {
+    const std::optional<gfx::Size>& size) {
   // Note in practice, all of the image assets are loaded one time by Skottie
   // when the animation is initially loaded. So the set of assets does not
   // change once the animation starts rendering.

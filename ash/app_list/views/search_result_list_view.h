@@ -6,6 +6,8 @@
 #define ASH_APP_LIST_VIEWS_SEARCH_RESULT_LIST_VIEW_H_
 
 #include <stddef.h>
+
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -15,7 +17,6 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -78,7 +79,7 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
       AppListViewDelegate* view_delegate,
       SearchResultPageDialogController* dialog_controller,
       SearchResultView::SearchResultViewType search_result_view_type,
-      absl::optional<size_t> productivity_launcher_index);
+      std::optional<size_t> productivity_launcher_index);
 
   SearchResultListView(const SearchResultListView&) = delete;
   SearchResultListView& operator=(const SearchResultListView&) = delete;
@@ -150,7 +151,7 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
   std::vector<SearchResultView*> search_result_views_;  // Not owned.
 
   // The SearchResultListViewType dictates what kinds of results will be shown.
-  absl::optional<SearchResultListType> list_type_ =
+  std::optional<SearchResultListType> list_type_ =
       SearchResultListType::kBestMatch;
   raw_ptr<views::Label, ExperimentalAsh> title_label_ =
       nullptr;  // Owned by view hierarchy.
@@ -159,7 +160,7 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
   // productivity_launcher_search_view_'s list of 'search_result_list_view_'.
   // Not set if productivity_launcher is disabled or if the position of the
   // category is const as for kBestMatch.
-  const absl::optional<size_t> productivity_launcher_index_;
+  const std::optional<size_t> productivity_launcher_index_;
 
   const SearchResultView::SearchResultViewType search_result_view_type_;
 

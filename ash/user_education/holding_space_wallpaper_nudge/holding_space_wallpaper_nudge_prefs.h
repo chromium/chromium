@@ -5,8 +5,9 @@
 #ifndef ASH_USER_EDUCATION_HOLDING_SPACE_WALLPAPER_NUDGE_HOLDING_SPACE_WALLPAPER_NUDGE_PREFS_H_
 #define ASH_USER_EDUCATION_HOLDING_SPACE_WALLPAPER_NUDGE_HOLDING_SPACE_WALLPAPER_NUDGE_PREFS_H_
 
+#include <optional>
+
 #include "ash/ash_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -19,8 +20,8 @@ namespace ash::holding_space_wallpaper_nudge_prefs {
 
 // Returns the time the nudge was last shown. If on the counterfactual arm, it
 // will be the last time the nudge would have been shown. If the nudge has never
-// been shown, returns `absl::nullopt`.
-ASH_EXPORT absl::optional<base::Time> GetLastTimeNudgeWasShown(
+// been shown, returns `std::nullopt`.
+ASH_EXPORT std::optional<base::Time> GetLastTimeNudgeWasShown(
     PrefService* prefs);
 
 // Returns the number of times the nudge has been shown.

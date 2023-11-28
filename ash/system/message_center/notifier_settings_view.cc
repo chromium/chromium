@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -29,7 +30,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/prefs/pref_service.h"
 #include "skia/ext/image_operations.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -657,7 +657,7 @@ NotifierSettingsView::NotifierSettingsView() {
     header_view_ = AddChildView(std::move(header_view));
 
     auto scroller = std::make_unique<views::ScrollView>();
-    scroller->SetBackgroundColor(absl::nullopt);
+    scroller->SetBackgroundColor(std::nullopt);
     scroll_bar_ = scroller->SetVerticalScrollBar(
         std::make_unique<views::OverlayScrollBar>(/*horizontal=*/false));
     scroller->SetDrawOverflowIndicator(false);

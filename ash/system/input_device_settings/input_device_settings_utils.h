@@ -74,7 +74,7 @@ ASH_EXPORT bool ShouldPersistSetting(
 ASH_EXPORT bool ShouldPersistFkeySetting(
     const mojom::InputDeviceSettingsFkeyPolicyPtr& policy,
     base::StringPiece setting_key,
-    absl::optional<ui::mojom::ExtendedFkeysModifier> new_value,
+    std::optional<ui::mojom::ExtendedFkeysModifier> new_value,
     ui::mojom::ExtendedFkeysModifier default_value,
     const base::Value::Dict* existing_settings_dict);
 

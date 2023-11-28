@@ -282,7 +282,7 @@ class ASH_EXPORT AppListFolderView : public views::View,
   std::vector<std::unique_ptr<Animation>> folder_visibility_animations_;
 
   // Records smoothness of the folder show/hide animation.
-  absl::optional<ui::ThroughputTracker> show_hide_metrics_tracker_;
+  std::optional<ui::ThroughputTracker> show_hide_metrics_tracker_;
 
   base::ScopedObservation<AppListModel, AppListModelObserver>
       model_observation_{this};

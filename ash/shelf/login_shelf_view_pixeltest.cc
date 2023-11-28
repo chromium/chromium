@@ -63,7 +63,7 @@ class LoginShelfViewPixelTestBase : public LoginTestBase {
 class LoginShelfViewPixelTest : public LoginShelfViewPixelTestBase {
  public:
   // LoginShelfViewPixelTestBase:
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }
@@ -135,7 +135,7 @@ class LoginShelfWithPolicyWallpaperPixelTestWithRTL
       public testing::WithParamInterface<bool /*is_rtl=*/> {
  public:
   // LoginShelfViewPixelTestBase:
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     pixel_test::InitParams init_params;
     init_params.wallpaper_init_type = pixel_test::WallpaperInitType::kPolicy;

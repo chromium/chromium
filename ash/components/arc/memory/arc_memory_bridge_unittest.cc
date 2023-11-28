@@ -4,6 +4,8 @@
 
 #include "ash/components/arc/memory/arc_memory_bridge.h"
 
+#include <optional>
+
 #include "ash/components/arc/mojom/memory.mojom-shared.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
@@ -14,7 +16,6 @@
 #include "components/user_prefs/test/test_browser_context_with_prefs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 namespace {
@@ -52,7 +53,7 @@ TEST_F(ArcMemoryBridgeTest, ConstructDestruct) {
 
 // Tests that DropCaches runs the callback passed.
 TEST_F(ArcMemoryBridgeTest, DropCaches) {
-  absl::optional<bool> opt_result;
+  std::optional<bool> opt_result;
   bridge()->DropCaches(base::BindLambdaForTesting(
       [&opt_result](bool result) { opt_result = result; }));
   ASSERT_TRUE(opt_result);
@@ -64,7 +65,7 @@ TEST_F(ArcMemoryBridgeTest, DropCaches_Fail) {
   // Inject failure.
   memory_instance()->set_drop_caches_result(false);
 
-  absl::optional<bool> opt_result;
+  std::optional<bool> opt_result;
   bridge()->DropCaches(base::BindLambdaForTesting(
       [&opt_result](bool result) { opt_result = result; }));
   ASSERT_TRUE(opt_result);
@@ -77,7 +78,7 @@ TEST_F(ArcMemoryBridgeTest, DropCaches_NoInstance) {
   ArcServiceManager::Get()->arc_bridge_service()->memory()->CloseInstance(
       memory_instance());
 
-  absl::optional<bool> opt_result;
+  std::optional<bool> opt_result;
   bridge()->DropCaches(base::BindLambdaForTesting(
       [&opt_result](bool result) { opt_result = result; }));
   ASSERT_TRUE(opt_result);
@@ -89,8 +90,8 @@ TEST_F(ArcMemoryBridgeTest, DropCaches_NoInstance) {
 TEST_F(ArcMemoryBridgeTest, Reclaim_All_Success) {
   memory_instance()->set_reclaim_all_result(100, 0);
 
-  absl::optional<uint32_t> reclaimed_result;
-  absl::optional<uint32_t> unreclaimed_result;
+  std::optional<uint32_t> reclaimed_result;
+  std::optional<uint32_t> unreclaimed_result;
   bridge()->Reclaim(
       mojom::ReclaimRequest::New(mojom::ReclaimType::ALL),
       base::BindLambdaForTesting([&](mojom::ReclaimResultPtr result) {
@@ -109,8 +110,8 @@ TEST_F(ArcMemoryBridgeTest, Reclaim_All_Success) {
 TEST_F(ArcMemoryBridgeTest, Reclaim_Partial_Success) {
   memory_instance()->set_reclaim_all_result(50, 50);
 
-  absl::optional<uint32_t> reclaimed_result;
-  absl::optional<uint32_t> unreclaimed_result;
+  std::optional<uint32_t> reclaimed_result;
+  std::optional<uint32_t> unreclaimed_result;
   bridge()->Reclaim(
       mojom::ReclaimRequest::New(mojom::ReclaimType::ALL),
       base::BindLambdaForTesting([&](mojom::ReclaimResultPtr result) {
@@ -129,8 +130,8 @@ TEST_F(ArcMemoryBridgeTest, Reclaim_Partial_Success) {
 TEST_F(ArcMemoryBridgeTest, Reclaim_Anon_Partial_Success) {
   memory_instance()->set_reclaim_anon_result(10, 10);
 
-  absl::optional<uint32_t> reclaimed_result;
-  absl::optional<uint32_t> unreclaimed_result;
+  std::optional<uint32_t> reclaimed_result;
+  std::optional<uint32_t> unreclaimed_result;
   bridge()->Reclaim(
       mojom::ReclaimRequest::New(mojom::ReclaimType::ANON),
       base::BindLambdaForTesting([&](mojom::ReclaimResultPtr result) {
@@ -150,8 +151,8 @@ TEST_F(ArcMemoryBridgeTest, Reclaim_NoInstance) {
   ArcServiceManager::Get()->arc_bridge_service()->memory()->CloseInstance(
       memory_instance());
 
-  absl::optional<uint32_t> reclaimed_result;
-  absl::optional<uint32_t> unreclaimed_result;
+  std::optional<uint32_t> reclaimed_result;
+  std::optional<uint32_t> unreclaimed_result;
   bridge()->Reclaim(
       mojom::ReclaimRequest::New(mojom::ReclaimType::ALL),
       base::BindLambdaForTesting([&](mojom::ReclaimResultPtr result) {

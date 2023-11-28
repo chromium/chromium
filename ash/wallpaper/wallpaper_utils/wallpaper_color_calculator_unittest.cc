@@ -5,6 +5,7 @@
 #include "ash/wallpaper/wallpaper_utils/wallpaper_color_calculator.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
@@ -16,7 +17,6 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/canvas.h"

@@ -5,6 +5,7 @@
 #ifndef ASH_COMPONENTS_ARC_VIDEO_ACCELERATOR_GPU_ARC_VIDEO_FRAME_POOL_H_
 #define ASH_COMPONENTS_ARC_VIDEO_ACCELERATOR_GPU_ARC_VIDEO_FRAME_POOL_H_
 
+#include <optional>
 #include <vector>
 
 #include "ash/components/arc/mojom/video_frame_pool.mojom.h"
@@ -21,7 +22,6 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
 namespace arc {
@@ -67,7 +67,7 @@ class GpuArcVideoFramePool : public mojom::VideoFramePool,
                      ImportFrameCb import_frame_cb) override;
 
   // Get the id associated with the specified |video_frame|.
-  absl::optional<int32_t> GetVideoFrameId(const media::VideoFrame* video_frame);
+  std::optional<int32_t> GetVideoFrameId(const media::VideoFrame* video_frame);
 
   // Called when all references to a video frame have been dropped.
   void OnFrameReleased(scoped_refptr<media::VideoFrame> origin_frame);
@@ -107,7 +107,7 @@ class GpuArcVideoFramePool : public mojom::VideoFramePool,
   // The coded size currently used for video frames.
   gfx::Size coded_size_;
   // The current video frame layout.
-  absl::optional<media::VideoFrameLayout> video_frame_layout_;
+  std::optional<media::VideoFrameLayout> video_frame_layout_;
 
   // Map of video frame buffer ids to the associated video frame ids.
   std::map<gfx::GpuMemoryBufferId, int32_t> buffer_id_to_video_frame_id_;
@@ -115,7 +115,7 @@ class GpuArcVideoFramePool : public mojom::VideoFramePool,
   // The protected buffer manager, used when decoding an encrypted video.
   scoped_refptr<ProtectedBufferManager> protected_buffer_manager_;
   // Whether we're decoding an encrypted video.
-  absl::optional<bool> secure_mode_;
+  std::optional<bool> secure_mode_;
 
   // The client task runner and its sequence checker. All methods should be run
   // on this task runner.

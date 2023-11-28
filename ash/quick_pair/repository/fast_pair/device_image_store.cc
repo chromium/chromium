@@ -125,7 +125,7 @@ bool DeviceImageStore::EvictDeviceImages(const std::string& model_id) {
   return true;
 }
 
-absl::optional<DeviceImageInfo> DeviceImageStore::GetImagesForDeviceModel(
+std::optional<DeviceImageInfo> DeviceImageStore::GetImagesForDeviceModel(
     const std::string& model_id) {
   // Lazily load saved images from prefs the first time we get an image.
   if (!loaded_images_from_prefs_) {
@@ -136,7 +136,7 @@ absl::optional<DeviceImageInfo> DeviceImageStore::GetImagesForDeviceModel(
   DeviceImageInfo& images = model_id_to_images_[model_id];
 
   if (!DeviceImageInfoHasImages(images)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return images;
 }
@@ -151,7 +151,7 @@ void DeviceImageStore::LoadPersistedImagesFromPrefs() {
   const base::Value::Dict& device_image_store =
       local_state->GetDict(kDeviceImageStorePref);
   for (auto [model_id, image_dict] : device_image_store) {
-    absl::optional<DeviceImageInfo> images;
+    std::optional<DeviceImageInfo> images;
     if (image_dict.is_dict()) {
       images = DeviceImageInfo::FromDictionaryValue(image_dict.GetDict());
     }

@@ -62,7 +62,7 @@ SetValueEffectSlider::SetValueEffectSlider(const VcHostedEffect* effect)
 
   // `effect` is expected to provide the current state of the effect, and
   // a `current_state` with no value means it couldn't be obtained.
-  absl::optional<int> current_state = effect->get_state_callback().Run();
+  std::optional<int> current_state = effect->get_state_callback().Run();
   DCHECK(current_state.has_value());
 
   const int num_states = effect->GetNumStates();

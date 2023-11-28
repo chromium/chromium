@@ -6,11 +6,11 @@
 #define ASH_QUICK_PAIR_FAST_PAIR_HANDSHAKE_FAST_PAIR_HANDSHAKE_H_
 
 #include <memory>
+#include <optional>
 
 #include "ash/quick_pair/common/pair_failure.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 class BluetoothAdapter;
@@ -41,10 +41,10 @@ class FastPairHandshake {
  public:
   using OnCompleteCallback =
       base::OnceCallback<void(scoped_refptr<Device>,
-                              absl::optional<PairFailure>)>;
+                              std::optional<PairFailure>)>;
   using OnCompleteCallbackNew = base::OnceCallback<void(scoped_refptr<Device>)>;
   using OnFailureCallback =
-      base::OnceCallback<void(absl::optional<PairFailure>)>;
+      base::OnceCallback<void(std::optional<PairFailure>)>;
   using OnBleAddressRotationCallback = base::OnceClosure;
 
   // TODO(b/265853116): After the Fast Pair Handshake code is refactored remove

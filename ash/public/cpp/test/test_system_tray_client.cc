@@ -26,7 +26,7 @@ void TestSystemTrayClient::ShowBluetoothSettings(const std::string& device_id) {
 }
 
 void TestSystemTrayClient::ShowBluetoothPairingDialog(
-    absl::optional<base::StringPiece> device_address) {
+    std::optional<base::StringPiece> device_address) {
   show_bluetooth_pairing_dialog_count_++;
 }
 
@@ -148,7 +148,7 @@ void TestSystemTrayClient::ShowAccessCodeCastingDialog(
 }
 
 void TestSystemTrayClient::ShowCalendarEvent(
-    const absl::optional<GURL>& event_url,
+    const std::optional<GURL>& event_url,
     const base::Time& date,
     bool& opened_pwa,
     GURL& final_event_url) {

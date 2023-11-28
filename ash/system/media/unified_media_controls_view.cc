@@ -249,7 +249,7 @@ void UnifiedMediaControlsView::SetIsPlaying(bool playing) {
 }
 
 void UnifiedMediaControlsView::SetArtwork(
-    absl::optional<gfx::ImageSkia> artwork) {
+    std::optional<gfx::ImageSkia> artwork) {
   if (!artwork.has_value()) {
     artwork_view_->SetImage(nullptr);
     artwork_view_->SetVisible(false);

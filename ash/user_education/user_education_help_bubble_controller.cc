@@ -141,7 +141,7 @@ UserEducationHelpBubbleController::CreateScopedHelpBubble(
   return scoped_help_bubble_closer;
 }
 
-absl::optional<HelpBubbleId> UserEducationHelpBubbleController::GetHelpBubbleId(
+std::optional<HelpBubbleId> UserEducationHelpBubbleController::GetHelpBubbleId(
     ui::ElementIdentifier element_id,
     ui::ElementContext element_context) const {
   if (help_bubble_ && help_bubble_->IsA<HelpBubbleViewsAsh>()) {
@@ -162,7 +162,7 @@ absl::optional<HelpBubbleId> UserEducationHelpBubbleController::GetHelpBubbleId(
       }
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 base::CallbackListSubscription

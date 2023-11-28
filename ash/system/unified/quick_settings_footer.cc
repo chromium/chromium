@@ -72,7 +72,7 @@ bool ShouldShowSignOutButton() {
     return false;
   }
 
-  absl::optional<int> number_of_users_that_could_be_logged_in =
+  std::optional<int> number_of_users_that_could_be_logged_in =
       session_controller->GetExistingUsersCount();
   const bool multiple_past_accounts =
       number_of_users_that_could_be_logged_in.has_value() &&
@@ -193,10 +193,10 @@ void QsBatteryInfoViewBase::ConfigureIcon(bool bsm_active) {
   const SkColor battery_icon_color = GetColorProvider()->GetColor(
       bsm_active ? cros_tokens::kCrosSysSystemOnWarningContainer
                  : cros_tokens::kCrosSysOnPositiveContainer);
-  const absl::optional<SkColor> battery_badge_color =
-      bsm_active ? absl::optional<SkColor>(GetColorProvider()->GetColor(
+  const std::optional<SkColor> battery_badge_color =
+      bsm_active ? std::optional<SkColor>(GetColorProvider()->GetColor(
                        cros_tokens::kCrosSysSystemWarningContainer))
-                 : absl::nullopt;
+                 : std::nullopt;
 
   PowerStatus::BatteryImageInfo info =
       PowerStatus::Get()->GenerateBatteryImageInfo(battery_icon_color,

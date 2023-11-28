@@ -549,8 +549,8 @@ void CaptureModeCameraController::MaybeUpdatePreviewWidget(bool animate) {
   const bool did_visibility_change = capture_mode_util::SetWidgetVisibility(
       camera_preview_widget_.get(), size_specs.should_be_visible,
       !should_animate_visibility
-          ? absl::nullopt
-          : absl::make_optional<capture_mode_util::AnimationParams>(
+          ? std::nullopt
+          : std::make_optional<capture_mode_util::AnimationParams>(
                 BuildCameraVisibilityAnimationParams(
                     /*target_visibility=*/size_specs.should_be_visible,
                     /*apply_scale_up_animation=*/is_first_bounds_update_)));

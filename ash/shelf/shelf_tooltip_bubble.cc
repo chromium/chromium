@@ -35,7 +35,7 @@ ShelfTooltipBubble::ShelfTooltipBubble(
     views::View* anchor,
     ShelfAlignment alignment,
     const std::u16string& text,
-    absl::optional<views::BubbleBorder::Arrow> arrow_position)
+    std::optional<views::BubbleBorder::Arrow> arrow_position)
     : ShelfBubble(anchor, alignment, /*for_tooltip=*/true, arrow_position) {
   set_close_on_deactivate(false);
   SetCanActivate(false);

@@ -6,6 +6,7 @@
 #define ASH_COMPONENTS_ARC_IME_ARC_IME_SERVICE_H_
 
 #include <memory>
+#include <optional>
 
 #include "ash/components/arc/ime/arc_ime_bridge.h"
 #include "ash/components/arc/ime/key_event_result_receiver.h"
@@ -13,7 +14,6 @@
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window_observer.h"
@@ -154,23 +154,23 @@ class ArcImeService : public KeyedService,
   gfx::Range GetAutocorrectRange() const override;
   gfx::Rect GetAutocorrectCharacterBounds() const override;
   bool SetAutocorrectRange(const gfx::Range& range) override;
-  absl::optional<ui::GrammarFragment> GetGrammarFragmentAtCursor()
+  std::optional<ui::GrammarFragment> GetGrammarFragmentAtCursor()
       const override;
   bool ClearGrammarFragments(const gfx::Range& range) override;
   bool AddGrammarFragments(
       const std::vector<ui::GrammarFragment>& fragments) override;
   void OnDispatchingKeyEventPostIME(ui::KeyEvent* event) override;
   void GetActiveTextInputControlLayoutBounds(
-      absl::optional<gfx::Rect>* control_bounds,
-      absl::optional<gfx::Rect>* selection_bounds) override {}
+      std::optional<gfx::Rect>* control_bounds,
+      std::optional<gfx::Rect>* selection_bounds) override {}
 
   // Normally, the default device scale factor is used to convert from DPI to
   // physical pixels. This method provides a way to override it for testing.
   static void SetOverrideDefaultDeviceScaleFactorForTesting(
-      absl::optional<double> scale_factor);
+      std::optional<double> scale_factor);
 
   static void SetOverrideDisplayOriginForTesting(
-      absl::optional<gfx::Point> origin);
+      std::optional<gfx::Point> origin);
 
   static void EnsureFactoryBuilt();
 

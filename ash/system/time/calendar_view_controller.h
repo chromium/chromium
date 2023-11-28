@@ -9,6 +9,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 
 #include "ash/ash_export.h"
@@ -18,7 +19,6 @@
 #include "base/time/time.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "google_apis/common/api_error_codes.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/event.h"
 
 namespace ash {
@@ -156,7 +156,7 @@ class ASH_EXPORT CalendarViewController {
   base::Time currently_shown_date() { return currently_shown_date_; }
 
   // The currently selected date to show the event list.
-  absl::optional<base::Time> selected_date() { return selected_date_; }
+  std::optional<base::Time> selected_date() { return selected_date_; }
 
   // The midnight of the currently selected date adjusted to the local timezone.
   base::Time selected_date_midnight() { return selected_date_midnight_; }
@@ -245,7 +245,7 @@ class ASH_EXPORT CalendarViewController {
   bool events_shown_to_user_recorded_ = false;
 
   // The currently selected date.
-  absl::optional<base::Time> selected_date_;
+  std::optional<base::Time> selected_date_;
 
   // The currently selected CalendarDateCellView
   raw_ptr<CalendarDateCellView, ExperimentalAsh> selected_date_cell_view_ =

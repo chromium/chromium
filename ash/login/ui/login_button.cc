@@ -58,7 +58,7 @@ LoginButton::LoginButton(PressedCallback callback)
   SetInstallFocusRingOnFocus(true);
   views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
   login_views_utils::ConfigureRectFocusRingCircleInkDrop(
-      this, views::FocusRing::Get(this), absl::nullopt);
+      this, views::FocusRing::Get(this), std::nullopt);
 }
 
 LoginButton::~LoginButton() = default;

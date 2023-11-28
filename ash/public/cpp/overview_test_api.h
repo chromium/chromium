@@ -6,12 +6,12 @@
 #define ASH_PUBLIC_CPP_OVERVIEW_TEST_API_H_
 
 #include <cstdint>
+#include <optional>
 
 #include "ash/ash_export.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace aura {
@@ -65,8 +65,8 @@ class ASH_EXPORT OverviewTestApi {
                             DoneCallback callback);
 
   // Returns overview info for the current overview items if overview is
-  // started. Otherwise, returns absl::nullopt;
-  absl::optional<OverviewInfo> GetOverviewInfo() const;
+  // started. Otherwise, returns std::nullopt;
+  std::optional<OverviewInfo> GetOverviewInfo() const;
 };
 
 }  // namespace ash

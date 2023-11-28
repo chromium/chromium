@@ -5,13 +5,13 @@
 #ifndef ASH_CAPTURE_MODE_CAPTURE_MODE_BEHAVIOR_H_
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_BEHAVIOR_H_
 
+#include <optional>
 #include <vector>
 
 #include "ash/capture_mode/capture_mode_types.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace aura {
@@ -141,7 +141,7 @@ class CaptureModeBehavior {
 
   // Can be used to cache the old capture mode session configs before this
   // behavior is attached to a new session.
-  absl::optional<CaptureModeSessionConfigs> cached_configs_;
+  std::optional<CaptureModeSessionConfigs> cached_configs_;
 
  private:
   const BehaviorType behavior_type_;

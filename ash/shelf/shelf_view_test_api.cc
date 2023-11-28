@@ -159,7 +159,7 @@ void ShelfViewTestAPI::SetShelfContextMenuCallback(
   shelf_view_->context_menu_shown_callback_ = std::move(closure);
 }
 
-absl::optional<size_t> ShelfViewTestAPI::GetSeparatorIndex() const {
+std::optional<size_t> ShelfViewTestAPI::GetSeparatorIndex() const {
   return shelf_view_->separator_index_;
 }
 

@@ -74,7 +74,7 @@ TEST(VideoEncodeAcceleratorConfigStructTraitTest, RoundTrip) {
 
   ::media::VideoEncodeAccelerator::Config input_config(
       ::media::PIXEL_FORMAT_NV12, kBaseSize, ::media::VP9PROFILE_PROFILE0,
-      kBitrate, kBaseFramerate, absl::nullopt, absl::nullopt, false,
+      kBitrate, kBaseFramerate, std::nullopt, std::nullopt, false,
       ::media::VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer,
       ::media::VideoEncodeAccelerator::Config::ContentType::kCamera,
       input_spatial_layers, ::media::SVCInterLayerPredMode::kOnKeyPic);

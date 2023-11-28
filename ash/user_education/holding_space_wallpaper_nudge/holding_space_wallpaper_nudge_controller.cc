@@ -5,6 +5,7 @@
 #include "ash/user_education/holding_space_wallpaper_nudge/holding_space_wallpaper_nudge_controller.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -35,7 +36,6 @@
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/files/file_path.h"
 #include "base/scoped_observation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/custom_data_helper.h"
@@ -359,7 +359,7 @@ class DragDropDelegate : public WallpaperDragDropDelegate,
     // wallpaper.
     CHECK(drag_drop_observer_);
 
-    absl::optional<gfx::Point> location_in_screen;
+    std::optional<gfx::Point> location_in_screen;
 
     if (event_type == ScopedDragDropObserver::EventType::kDragUpdated) {
       location_in_screen = event->root_location();
@@ -371,7 +371,7 @@ class DragDropDelegate : public WallpaperDragDropDelegate,
     OnDragOrDropEvent(std::move(location_in_screen));
   }
 
-  void OnDragOrDropEvent(absl::optional<gfx::Point> location_in_screen) {
+  void OnDragOrDropEvent(std::optional<gfx::Point> location_in_screen) {
     // This code should only be reached if we are observing a drag-and-drop
     // sequence due to the user dragging a file from the Files app over the
     // wallpaper.

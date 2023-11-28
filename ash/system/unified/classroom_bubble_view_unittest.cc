@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -29,7 +30,6 @@
 #include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/progress_bar.h"
@@ -99,7 +99,7 @@ std::vector<std::unique_ptr<GlanceablesClassroomAssignment>> CreateAssignments(
         "Course title", base::StringPrintf("Course work title %d", i + 1),
         GURL(base::StringPrintf("https://classroom.google.com/test-link-%d",
                                 i + 1)),
-        absl::nullopt, base::Time(), absl::nullopt));
+        std::nullopt, base::Time(), std::nullopt));
   }
   return assignments;
 }

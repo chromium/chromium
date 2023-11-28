@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_POWER_POWER_STATUS_H_
 #define ASH_SYSTEM_POWER_POWER_STATUS_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "base/time/time.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia.h"
@@ -42,7 +42,7 @@ struct BatteryColorTemplate {
   }
 
   SkColor foreground_color;
-  absl::optional<SkColor> badge_color;
+  std::optional<SkColor> badge_color;
 };
 
 struct BatteryColors {
@@ -95,7 +95,7 @@ class ASH_EXPORT PowerStatus : public chromeos::PowerManagerClient::Observer {
   struct BatteryImageInfo {
     explicit BatteryImageInfo(
         const SkColor fg_color,
-        const absl::optional<SkColor> badge_color = absl::nullopt)
+        const std::optional<SkColor> badge_color = std::nullopt)
         : icon_badge(nullptr),
           badge_outline(nullptr),
           alert_if_low(false),
@@ -203,8 +203,8 @@ class ASH_EXPORT PowerStatus : public chromeos::PowerManagerClient::Observer {
   // Irrespective of IsBatteryTimeBeingCalculated(), estimates may be
   // unavailable if powerd didn't provide them because the battery current was
   // close to zero (resulting in time estimates approaching infinity).
-  absl::optional<base::TimeDelta> GetBatteryTimeToEmpty() const;
-  absl::optional<base::TimeDelta> GetBatteryTimeToFull() const;
+  std::optional<base::TimeDelta> GetBatteryTimeToEmpty() const;
+  std::optional<base::TimeDelta> GetBatteryTimeToFull() const;
 
   // Returns true if line power (including a charger of any type) is connected.
   bool IsLinePowerConnected() const;
@@ -235,7 +235,7 @@ class ASH_EXPORT PowerStatus : public chromeos::PowerManagerClient::Observer {
   // used to draw the battery icon, the charge percent of the battery, etc).
   BatteryImageInfo GenerateBatteryImageInfo(
       const SkColor foreground_color,
-      const absl::optional<SkColor> badge_color = absl::nullopt) const;
+      const std::optional<SkColor> badge_color = std::nullopt) const;
 
   // Creates a new image that should be shown for the battery's current state.
   static ui::ImageModel GetBatteryImageModel(const BatteryImageInfo& info,
@@ -290,7 +290,7 @@ class ASH_EXPORT PowerStatus : public chromeos::PowerManagerClient::Observer {
   // Callback used to query battery saver state from PowerManagerClient on
   // startup.
   void OnGotBatterySaverState(
-      absl::optional<power_manager::BatterySaverModeState> state);
+      std::optional<power_manager::BatterySaverModeState> state);
 
   base::ObserverList<Observer>::Unchecked observers_;
 

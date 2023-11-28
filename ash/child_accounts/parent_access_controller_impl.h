@@ -5,6 +5,7 @@
 #ifndef ASH_CHILD_ACCOUNTS_PARENT_ACCESS_CONTROLLER_IMPL_H_
 #define ASH_CHILD_ACCOUNTS_PARENT_ACCESS_CONTROLLER_IMPL_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/login/ui/pin_request_view.h"
@@ -13,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/account_id/account_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -70,7 +70,7 @@ class ASH_EXPORT ParentAccessControllerImpl : public ParentAccessController,
   // validation result for a given |action|. If no |action| specified, returns
   // the name of the aggregated histogram.
   static std::string GetUMAParentCodeValidationResultHistorgam(
-      absl::optional<SupervisedAction> action);
+      std::optional<SupervisedAction> action);
 
   ParentAccessControllerImpl();
   ParentAccessControllerImpl(const ParentAccessControllerImpl&) = delete;

@@ -72,7 +72,7 @@ class ASH_EXPORT WindowMiniViewHeaderView : public views::BoxLayoutView {
   raw_ptr<views::Label, ExperimentalAsh> title_label_ = nullptr;
   raw_ptr<views::ImageView, ExperimentalAsh> icon_view_ = nullptr;
 
-  absl::optional<gfx::RoundedCornersF> header_view_rounded_corners_;
+  std::optional<gfx::RoundedCornersF> header_view_rounded_corners_;
 };
 
 }  // namespace ash

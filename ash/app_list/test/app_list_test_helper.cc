@@ -139,7 +139,7 @@ void AppListTestHelper::StartSlideAnimationOnBubbleAppsPage(
 
 void AppListTestHelper::CheckVisibility(bool visible) {
   EXPECT_EQ(visible, app_list_controller_->IsVisible());
-  EXPECT_EQ(visible, app_list_controller_->GetTargetVisibility(absl::nullopt));
+  EXPECT_EQ(visible, app_list_controller_->GetTargetVisibility(std::nullopt));
 }
 
 void AppListTestHelper::CheckState(AppListViewState state) {
@@ -160,7 +160,7 @@ void AppListTestHelper::AddAppItemsWithColorAndName(int num_apps,
     const std::string id(
         test::AppListTestModel::GetItemName(i + num_apps_already_added));
     auto item = std::make_unique<AppListItem>(id);
-    absl::optional<SkColor> solid_color;
+    std::optional<SkColor> solid_color;
     switch (color_type) {
       case IconColorType::kDefaultColor:
         solid_color = icon_color_generator_.default_color();

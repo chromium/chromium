@@ -4,6 +4,8 @@
 
 #include "ash/wm/splitview/split_view_overview_session.h"
 
+#include <optional>
+
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -17,7 +19,6 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 
@@ -90,9 +91,8 @@ SplitViewOverviewSession::~SplitViewOverviewSession() {
   }
 }
 
-void SplitViewOverviewSession::Init(
-    absl::optional<OverviewStartAction> action,
-    absl::optional<OverviewEnterExitType> type) {
+void SplitViewOverviewSession::Init(std::optional<OverviewStartAction> action,
+                                    std::optional<OverviewEnterExitType> type) {
   // Overview may already be in session, if a window was dragged to split view
   // from overview in clamshell mode.
   if (IsInOverviewSession()) {

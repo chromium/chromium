@@ -277,7 +277,7 @@ GeolocationController::GetSunRiseSet(bool sunrise) const {
   if (!geoposition_) {
     VLOG(1) << "Invalid geoposition. Using default time for "
             << (sunrise ? "sunrise." : "sunset.");
-    const absl::optional<base::Time> default_value =
+    const std::optional<base::Time> default_value =
         TimeOfDay(sunrise ? kDefaultSunriseTimeOffsetMinutes
                           : kDefaultSunsetTimeOffsetMinutes)
             .SetClock(clock_)
@@ -295,7 +295,7 @@ GeolocationController::GetSunRiseSet(bool sunrise) const {
   // icu::CalendarAstronomer object should be set to a time near local noon.
   // This avoids having the computation flopping over into an adjacent day.
   // See the documentation of icu::CalendarAstronomer::getSunRiseSet().
-  const absl::optional<base::Time> midday_today =
+  const std::optional<base::Time> midday_today =
       TimeOfDay(12 * 60)
           .SetClock(clock_)
           .SetLocalTimeConverter(local_time_converter_)

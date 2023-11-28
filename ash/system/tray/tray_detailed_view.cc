@@ -180,7 +180,7 @@ void TrayDetailedView::CreateScrollableList() {
       gfx::RoundedCornersF(kScrollViewCornerRadius));
 
   // Override the default theme-based color to remove the background.
-  scroller_->SetBackgroundColor(absl::nullopt);
+  scroller_->SetBackgroundColor(std::nullopt);
 
   box_layout_->SetFlexForView(scroller_, 1);
 }

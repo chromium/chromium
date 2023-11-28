@@ -318,7 +318,7 @@ void PointingStickPrefHandlerImpl::UpdateLoginScreenPointingStickSettings(
 
   user_manager::KnownUser(local_state)
       .SetPath(account_id, pref_name,
-               absl::make_optional<base::Value>(ConvertSettingsToDict(
+               std::make_optional<base::Value>(ConvertSettingsToDict(
                    pointing_stick, /*force_persistence=*/{}, settings_dict)));
 }
 

@@ -6,6 +6,7 @@
 #define ASH_PUBLIC_CPP_WALLPAPER_WALLPAPER_CONTROLLER_H_
 
 #include <cstdint>
+#include <optional>
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
@@ -20,7 +21,6 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/time/time.h"
 #include "components/user_manager/user_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountId;
 
@@ -353,7 +353,7 @@ class ASH_PUBLIC_EXPORT WallpaperController {
 
   // Returns a struct with info about the active user's wallpaper if there is an
   // active user.
-  virtual absl::optional<WallpaperInfo> GetActiveUserWallpaperInfo() const = 0;
+  virtual std::optional<WallpaperInfo> GetActiveUserWallpaperInfo() const = 0;
 
   // Returns true if the wallpaper setting (used to open the wallpaper picker)
   // should be visible.

@@ -108,7 +108,7 @@ PagedAppsGridView* GetAppsGridView() {
 void ShowAppListNow(AppListViewState state) {
   Shell::Get()->app_list_controller()->fullscreen_presenter()->Show(
       state, display::Screen::GetScreen()->GetPrimaryDisplay().id(),
-      base::TimeTicks::Now(), /*show_source*/ absl::nullopt);
+      base::TimeTicks::Now(), /*show_source*/ std::nullopt);
 }
 
 void DismissAppListNow() {

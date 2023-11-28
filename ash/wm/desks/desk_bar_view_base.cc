@@ -482,7 +482,7 @@ DeskBarViewBase::DeskBarViewBase(aura::Window* root, Type type)
       views::ScrollView::ScrollWithLayers::kEnabled));
   scroll_view_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
   scroll_view_->layer()->SetMasksToBounds(true);
-  scroll_view_->SetBackgroundColor(absl::nullopt);
+  scroll_view_->SetBackgroundColor(std::nullopt);
   scroll_view_->SetDrawOverflowIndicator(false);
   scroll_view_->SetHorizontalScrollBarMode(
       views::ScrollView::ScrollBarMode::kHiddenButEnabled);

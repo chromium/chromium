@@ -357,10 +357,10 @@ const message_center::Notification* GetPreviewNotification() {
   return nullptr;
 }
 
-void ClickOnNotification(absl::optional<int> button_index) {
+void ClickOnNotification(std::optional<int> button_index) {
   const message_center::Notification* notification = GetPreviewNotification();
   CHECK(notification);
-  notification->delegate()->Click(button_index, absl::nullopt);
+  notification->delegate()->Click(button_index, std::nullopt);
 }
 
 void AddFakeCamera(const std::string& device_id,

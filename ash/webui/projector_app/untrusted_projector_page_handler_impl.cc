@@ -193,11 +193,11 @@ void UntrustedProjectorPageHandlerImpl::StartProjectorSession(
 void UntrustedProjectorPageHandlerImpl::SendXhr(
     const GURL& url,
     projector::mojom::RequestType method,
-    const absl::optional<std::string>& request_body,
+    const std::optional<std::string>& request_body,
     bool use_credentials,
     bool use_api_key,
-    const absl::optional<base::flat_map<std::string, std::string>>& headers,
-    const absl::optional<std::string>& account_email,
+    const std::optional<base::flat_map<std::string, std::string>>& headers,
+    const std::optional<std::string>& account_email,
     SendXhrCallback callback) {
   CHECK(url.is_valid());
   xhr_sender_.Send(
@@ -229,7 +229,7 @@ void UntrustedProjectorPageHandlerImpl::GetAccounts(
 
 void UntrustedProjectorPageHandlerImpl::GetVideo(
     const std::string& video_file_id,
-    const absl::optional<std::string>& resource_key,
+    const std::optional<std::string>& resource_key,
     GetVideoCallback callback) {
   ProjectorAppClient::Get()->GetVideo(
       video_file_id, resource_key,

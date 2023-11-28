@@ -87,7 +87,7 @@ struct TestContainerParams {
 
   // If set, the container will contain TestResultViewWithActions that
   // have |actions_per_result| actions each.
-  absl::optional<int> actions_per_result;
+  std::optional<int> actions_per_result;
 };
 
 class TestContainer : public SearchResultContainerView {

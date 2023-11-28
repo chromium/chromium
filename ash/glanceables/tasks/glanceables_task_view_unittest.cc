@@ -5,6 +5,7 @@
 #include "ash/glanceables/tasks/glanceables_task_view.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/api/tasks/tasks_client.h"
@@ -21,7 +22,6 @@
 #include "base/time/time_override.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chromeos/ash/components/settings/scoped_timezone_settings.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/controls/button/image_button.h"
@@ -85,7 +85,7 @@ TEST_F(GlanceablesTaskViewTest, EntersAndExitsEditState) {
       features::kGlanceablesTimeManagementStableLaunch};
 
   const auto task = api::Task("task-id", "Task title", /*completed=*/false,
-                              /*due=*/absl::nullopt,
+                              /*due=*/std::nullopt,
                               /*has_subtasks=*/false, /*has_email_link=*/false,
                               /*has_notes=*/false, /*updated=*/base::Time());
 
@@ -148,7 +148,7 @@ TEST_F(GlanceablesTaskViewTest, EntersAndExitsEditState) {
 TEST_F(GlanceablesTaskViewTest,
        AppliesStrikeThroughStyleAfterMarkingAsComplete) {
   const auto task = api::Task("task-id", "Task title", /*completed=*/false,
-                              /*due=*/absl::nullopt,
+                              /*due=*/std::nullopt,
                               /*has_subtasks=*/false, /*has_email_link=*/false,
                               /*has_notes=*/false, /*updated=*/base::Time());
 
@@ -183,7 +183,7 @@ TEST_F(GlanceablesTaskViewTest,
 
 TEST_F(GlanceablesTaskViewTest, InvokesMarkAsCompletedCallback) {
   const auto task = api::Task("task-id", "Task title", /*completed=*/false,
-                              /*due=*/absl::nullopt,
+                              /*due=*/std::nullopt,
                               /*has_subtasks=*/false, /*has_email_link=*/false,
                               /*has_notes=*/false, /*updated=*/base::Time());
 
@@ -248,7 +248,7 @@ TEST_F(GlanceablesTaskViewTest, InvokesSaveCallbackAfterAdding) {
 
 TEST_F(GlanceablesTaskViewTest, InvokesSaveCallbackAfterEditing) {
   const auto task = api::Task("task-id", "Task title", /*completed=*/false,
-                              /*due=*/absl::nullopt,
+                              /*due=*/std::nullopt,
                               /*has_subtasks=*/false, /*has_email_link=*/false,
                               /*has_notes=*/false, /*updated=*/base::Time());
 

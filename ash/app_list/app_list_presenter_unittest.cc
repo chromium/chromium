@@ -618,7 +618,7 @@ class PopulatedAppListTest : public AshTestBase,
         Shell::Get()->app_list_controller()->fullscreen_presenter();
     presenter->Show(AppListViewState::kFullscreenAllApps,
                     GetPrimaryDisplay().id(), base::TimeTicks::Now(),
-                    /*show_source=*/absl::nullopt);
+                    /*show_source=*/std::nullopt);
     app_list_view_ = presenter->GetView();
   }
 
@@ -3936,7 +3936,7 @@ class AppListPresenterHomeLauncherTest
   bool IsAppListVisible() {
     auto* app_list_controller = Shell::Get()->app_list_controller();
     return app_list_controller->IsVisible() &&
-           app_list_controller->GetTargetVisibility(absl::nullopt);
+           app_list_controller->GetTargetVisibility(std::nullopt);
   }
 
  protected:

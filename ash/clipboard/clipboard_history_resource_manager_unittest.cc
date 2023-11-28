@@ -427,8 +427,8 @@ INSTANTIATE_TEST_SUITE_P(All,
 TEST_P(ClipboardHistoryResourceManagerUrlTitlesTest, SecondaryDisplayText) {
   struct {
     const std::u16string text;
-    const absl::optional<std::u16string> returned_title;
-    const absl::optional<std::u16string> expected_secondary_display_text;
+    const std::optional<std::u16string> returned_title;
+    const std::optional<std::u16string> expected_secondary_display_text;
   } test_cases[]{
       // Test that copying a visited URL sets the item's secondary display text
       // with the page's title.
@@ -438,13 +438,13 @@ TEST_P(ClipboardHistoryResourceManagerUrlTitlesTest, SecondaryDisplayText) {
       {u"https://visited.com", u" Title ", u"Title"},
       // Test that a whitespace-only title is not treated as text an item should
       // display.
-      {u"https://visited.com", u" ", absl::nullopt},
+      {u"https://visited.com", u" ", std::nullopt},
       // Test that copying an unvisited URL triggers a history query but does
       // not set the item's secondary display text.
-      {u"https://unvisited.com", absl::nullopt, absl::nullopt},
+      {u"https://unvisited.com", std::nullopt, std::nullopt},
       // Test that copying non-URL text does not trigger a history query or set
       // the item's secondary display text.
-      {u"Not a URL", absl::nullopt, absl::nullopt},
+      {u"Not a URL", std::nullopt, std::nullopt},
   };
 
   for (const auto& [text, returned_title, expected_secondary_display_text] :
@@ -462,7 +462,7 @@ TEST_P(ClipboardHistoryResourceManagerUrlTitlesTest, SecondaryDisplayText) {
     const auto& item = clipboard_history()->GetItems().front();
     EXPECT_EQ(
         item.secondary_display_text(),
-        should_fetch_title ? expected_secondary_display_text : absl::nullopt);
+        should_fetch_title ? expected_secondary_display_text : std::nullopt);
   }
 }
 

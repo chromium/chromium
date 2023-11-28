@@ -278,7 +278,7 @@ WindowRestoreController::GetWindowToInsertBefore(
 }
 
 void WindowRestoreController::SaveWindow(WindowState* window_state) {
-  SaveWindowImpl(window_state, /*activation_index=*/absl::nullopt);
+  SaveWindowImpl(window_state, /*activation_index=*/std::nullopt);
 }
 
 void WindowRestoreController::SaveAllWindows() {
@@ -516,7 +516,7 @@ void WindowRestoreController::MaybeStartInformedRestore() {
 
 void WindowRestoreController::SaveWindowImpl(
     WindowState* window_state,
-    absl::optional<int> activation_index) {
+    std::optional<int> activation_index) {
   DCHECK(window_state);
   aura::Window* window = window_state->window();
 

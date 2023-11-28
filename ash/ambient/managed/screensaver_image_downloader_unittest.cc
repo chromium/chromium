@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include "ash/ambient/managed/screensaver_image_downloader.h"
-#include "build/build_config.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/ambient/metrics/managed_screensaver_metrics.h"
 #include "base/files/file_path.h"
@@ -19,10 +19,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 

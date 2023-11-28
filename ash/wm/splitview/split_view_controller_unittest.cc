@@ -1006,7 +1006,7 @@ TEST_F(SplitViewControllerTest,
 
   // Turn off the display mirror mode.
   Shell::Get()->display_manager()->SetMirrorMode(display::MirrorMode::kOff,
-                                                 absl::nullopt);
+                                                 std::nullopt);
 
   std::unique_ptr<aura::Window> w1(
       CreateTestWindowInShellWithBounds(gfx::Rect(0, 0, 100, 100)));
@@ -1041,7 +1041,7 @@ TEST_F(SplitViewControllerTest,
 
   // Turn off the display mirror mode.
   Shell::Get()->display_manager()->SetMirrorMode(display::MirrorMode::kOff,
-                                                 absl::nullopt);
+                                                 std::nullopt);
 
   // Create a window on the secondary display.
   std::unique_ptr<aura::Window> w(

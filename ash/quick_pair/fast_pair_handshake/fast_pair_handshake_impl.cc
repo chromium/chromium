@@ -84,7 +84,7 @@ void FastPairHandshakeImpl::SetUpHandshake(
 void FastPairHandshakeImpl::Reset() {}
 
 void FastPairHandshakeImpl::OnGattClientInitializedCallback(
-    absl::optional<PairFailure> failure) {
+    std::optional<PairFailure> failure) {
   if (failure) {
     CD_LOG(WARNING, Feature::FP)
         << __func__
@@ -158,7 +158,7 @@ void FastPairHandshakeImpl::OnDataEncryptorCreateAsync(
 
 void FastPairHandshakeImpl::OnWriteResponse(
     std::vector<uint8_t> response_bytes,
-    absl::optional<PairFailure> failure) {
+    std::optional<PairFailure> failure) {
   RecordWriteKeyBasedCharacteristicResult(/*success=*/!failure.has_value());
 
   if (failure) {
@@ -185,7 +185,7 @@ void FastPairHandshakeImpl::OnWriteResponse(
 
 void FastPairHandshakeImpl::OnParseDecryptedResponse(
     base::TimeTicks decrypt_start_time,
-    const absl::optional<DecryptedResponse>& response) {
+    const std::optional<DecryptedResponse>& response) {
   if (!response) {
     CD_LOG(WARNING, Feature::FP)
         << __func__ << ": Missing decrypted response from parse.";
@@ -220,7 +220,7 @@ void FastPairHandshakeImpl::OnParseDecryptedResponse(
   completed_successfully_ = true;
   RecordHandshakeResult(/*success=*/true);
   RecordHandshakeStep(FastPairHandshakeSteps::kHandshakeComplete, *device_);
-  std::move(on_complete_callback_).Run(device_, absl::nullopt);
+  std::move(on_complete_callback_).Run(device_, std::nullopt);
 }
 
 }  // namespace quick_pair

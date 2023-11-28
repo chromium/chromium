@@ -5,11 +5,12 @@
 #ifndef ASH_LOGIN_UI_SMART_LOCK_AUTH_FACTOR_MODEL_H_
 #define ASH_LOGIN_UI_SMART_LOCK_AUTH_FACTOR_MODEL_H_
 
+#include <optional>
+
 #include "ash/ash_export.h"
 #include "ash/login/ui/auth_factor_model.h"
 #include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/smartlock_state.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -70,7 +71,7 @@ class ASH_EXPORT SmartLockAuthFactorModel : public AuthFactorModel {
 
   base::RepeatingCallback<void()> arrow_button_tap_callback_;
 
-  absl::optional<bool> auth_result_;
+  std::optional<bool> auth_result_;
 };
 
 }  // namespace ash

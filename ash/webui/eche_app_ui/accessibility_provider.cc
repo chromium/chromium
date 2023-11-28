@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <optional>
 
 #include "ash/public/cpp/ash_web_view.h"
 #include "ash/public/cpp/window_properties.h"
@@ -21,7 +22,6 @@
 #include "base/logging.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "services/accessibility/android/public/mojom/accessibility_helper.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/aura/aura_window_properties.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
@@ -196,9 +196,8 @@ void AccessibilityProvider::HandleHitTest(const ui::AXActionData& data) const {
 
 void AccessibilityProvider::OnGetTextLocationDataResult(
     const ui::AXActionData& action,
-    const absl::optional<std::vector<uint8_t>>& serialized_text_location)
-    const {
-  absl::optional<gfx::Rect> result_rect;
+    const std::optional<std::vector<uint8_t>>& serialized_text_location) const {
+  std::optional<gfx::Rect> result_rect;
   // There was a rect returned. Parse and validate it.
   if (serialized_text_location.has_value()) {
     proto::Rect proto_rect;

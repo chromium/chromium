@@ -67,7 +67,7 @@ class AppListPresenterImplTest : public AshTestBase {
   void ShowAppList() {
     presenter()->Show(AppListViewState::kFullscreenAllApps,
                       GetPrimaryDisplay().id(), base::TimeTicks(),
-                      /*show_source=*/absl::nullopt);
+                      /*show_source=*/std::nullopt);
   }
 
   // Shows the Assistant UI.

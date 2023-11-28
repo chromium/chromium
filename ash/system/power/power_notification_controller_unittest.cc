@@ -766,7 +766,7 @@ TEST_P(PowerNotificationControllerWithBatterySaverTest,
     EXPECT_EQ(static_cast<int>(buttons.size()), 1);
 
     // Simulate Clicking Opt-Out/In
-    notification->delegate()->Click(0, absl::nullopt);
+    notification->delegate()->Click(0, std::nullopt);
   }
 
   // Plug in charger.

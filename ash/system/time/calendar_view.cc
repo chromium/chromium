@@ -546,7 +546,7 @@ CalendarView::CalendarView(bool for_glanceables_container)
   // Add scroll view.
   scroll_view_ = AddChildView(std::make_unique<views::ScrollView>());
   scroll_view_->SetAllowKeyboardScrolling(false);
-  scroll_view_->SetBackgroundColor(absl::nullopt);
+  scroll_view_->SetBackgroundColor(std::nullopt);
   ClipScrollViewHeight(ScrollViewState::FULL_HEIGHT);
   scroll_view_->SetDrawOverflowIndicator(false);
   scroll_view_->SetVerticalScrollBarMode(
@@ -1293,7 +1293,7 @@ void CalendarView::OpenEventList() {
       views::ScrollView::ScrollBarMode::kDisabled);
 
   // Updates `scroll_view_`'s accessible name with the selected date.
-  absl::optional<base::Time> selected_date =
+  std::optional<base::Time> selected_date =
       calendar_view_controller_->selected_date();
   scroll_view_->GetViewAccessibility().OverrideName(l10n_util::GetStringFUTF16(
       IDS_ASH_CALENDAR_CONTENT_ACCESSIBLE_DESCRIPTION,

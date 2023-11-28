@@ -191,7 +191,7 @@ void VirtualKeyboardController::OnBluetoothAdapterOrDeviceChanged(
   }
 }
 
-const absl::optional<std::string>&
+const std::optional<std::string>&
 VirtualKeyboardController::GetInternalKeyboardName() const {
   return internal_keyboard_name_;
 }

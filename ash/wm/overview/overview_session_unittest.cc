@@ -1526,7 +1526,7 @@ TEST_P(OverviewSessionTest, DropTargetOnCorrectDisplayForDraggingFromOverview) {
   EnterTabletMode();
   // DisplayConfigurationObserver enables mirror mode when tablet mode is
   // enabled. Disable mirror mode to test multiple displays.
-  display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   const aura::Window::Windows root_windows = Shell::Get()->GetAllRootWindows();
@@ -8756,8 +8756,8 @@ TEST_F(SplitViewOverviewSessionTest,
   ToggleOverview();
   split_view_controller()->SnapWindow(
       window.get(), SplitViewController::SnapPosition::kPrimary);
-  display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
-  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, absl::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, std::nullopt);
 }
 
 // Tests that there is no crash when dragging the divider in portrait mode.

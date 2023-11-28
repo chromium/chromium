@@ -1531,10 +1531,10 @@ AppListItemView* AppsGridView::GetViewAtIndex(const GridIndex& index) const {
   return GetItemViewAt(model_index);
 }
 
-absl::optional<int> AppsGridView::TilesPerPage(int page) const {
-  const absl::optional<int> max_rows = GetMaxRowsInPage(page);
+std::optional<int> AppsGridView::TilesPerPage(int page) const {
+  const std::optional<int> max_rows = GetMaxRowsInPage(page);
   if (!max_rows.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return *max_rows * cols();
 }
@@ -2492,8 +2492,7 @@ views::AnimationBuilder AppsGridView::FadeInVisibleItemsForReorder(
   }
 
   grid_animation_status_ = AppListGridAnimationStatus::kReorderFadeIn;
-  const absl::optional<VisibleItemIndexRange> range =
-      GetVisibleItemIndexRange();
+  const std::optional<VisibleItemIndexRange> range = GetVisibleItemIndexRange();
 
   views::AnimationBuilder animation_builder;
 
@@ -2556,7 +2555,7 @@ views::AnimationBuilder AppsGridView::FadeInVisibleItemsForReorder(
     // existing time duration.
     SlideViewIntoPositionWithSequenceBlock(
         animated_view, offset,
-        /*time_delta=*/absl::nullopt, gfx::Tween::ACCEL_5_70_DECEL_90,
+        /*time_delta=*/std::nullopt, gfx::Tween::ACCEL_5_70_DECEL_90,
         &animation_builder.GetCurrentSequence());
   }
 
@@ -2570,8 +2569,7 @@ void AppsGridView::SlideVisibleItemsForHideContinueSection(int base_offset) {
     Layout();
   }
 
-  const absl::optional<VisibleItemIndexRange> range =
-      GetVisibleItemIndexRange();
+  const std::optional<VisibleItemIndexRange> range = GetVisibleItemIndexRange();
 
   // Safety check, unlikely in production.
   if (!range) {
@@ -2616,7 +2614,7 @@ void AppsGridView::SlideVisibleItemsForHideContinueSection(int base_offset) {
 
     // Slide each icon into position.
     SlideViewIntoPositionWithSequenceBlock(
-        icon, vertical_offset, /*time_delta=*/absl::nullopt,
+        icon, vertical_offset, /*time_delta=*/std::nullopt,
         gfx::Tween::ACCEL_LIN_DECEL_100_3,
         &animation_builder.GetCurrentSequence());
   }
@@ -2888,7 +2886,7 @@ void AppsGridView::CancelContextMenusOnCurrentPage() {
     return;
   }
   const size_t start = GetIndexInViewModel(start_index);
-  const absl::optional<int> tiles_per_page = TilesPerPage(start_index.page);
+  const std::optional<int> tiles_per_page = TilesPerPage(start_index.page);
   const size_t end = tiles_per_page ? std::min(view_model_.view_size(),
                                                start + *tiles_per_page)
                                     : view_model_.view_size();
@@ -3176,7 +3174,7 @@ GridIndex AppsGridView::GetNearestTileIndexForPoint(
   DCHECK_GT(total_tile_size.height(), 0);
   const int ideal_row =
       (point.y() - bounds.y() - grid_offset.y()) / total_tile_size.height();
-  const absl::optional<int> tiles_per_page = TilesPerPage(current_page);
+  const std::optional<int> tiles_per_page = TilesPerPage(current_page);
   const int row = tiles_per_page
                       ? std::clamp(ideal_row, 0, *tiles_per_page / cols_ - 1)
                       : std::max(ideal_row, 0);
@@ -3356,8 +3354,7 @@ GridIndex AppsGridView::GetTargetGridIndexForKeyboardReparent(
   }
 
   if (target_index.page > folder_index.page) {
-    const absl::optional<int> folder_page_size =
-        TilesPerPage(folder_index.page);
+    const std::optional<int> folder_page_size = TilesPerPage(folder_index.page);
     // Target index page being at least 1 indicates paged apps grid, so number
     // of tiles per page should be bounded.
     DCHECK(folder_page_size);
@@ -3416,7 +3413,7 @@ void AppsGridView::HandleKeyboardMove(ui::KeyboardCode key_code) {
 }
 
 bool AppsGridView::IsValidIndex(const GridIndex& index) const {
-  const absl::optional<int> tiles_per_page = TilesPerPage(index.page);
+  const std::optional<int> tiles_per_page = TilesPerPage(index.page);
   const int extra_valid_slots = HasExtraSlotForReorderPlaceholder() ? 1 : 0;
   return index.page >= 0 && index.page < GetTotalPages() && index.slot >= 0 &&
          (!tiles_per_page || index.slot < *tiles_per_page) &&
@@ -3446,7 +3443,7 @@ int AppsGridView::GetNumberOfItemsOnPage(int page) const {
   size_t item_count = view_model_.view_size();
   int current_page = 0;
   while (current_page < GetTotalPages() - 1) {
-    absl::optional<int> tiles_per_page = TilesPerPage(current_page);
+    std::optional<int> tiles_per_page = TilesPerPage(current_page);
     // `current_page` not being the last page implies a paged apps grid view,
     // as the grid has more than one page. For paged apps grid view,
     // `TilesPerPage()` should be defined.

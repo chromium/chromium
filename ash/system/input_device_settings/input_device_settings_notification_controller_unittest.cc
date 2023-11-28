@@ -58,7 +58,7 @@ class TestMessageCenter : public message_center::FakeMessageCenter {
     message_center::Notification* notification =
         FindVisibleNotificationById(id);
     CHECK(notification);
-    notification->delegate()->Click(absl::nullopt, absl::nullopt);
+    notification->delegate()->Click(std::nullopt, std::nullopt);
   }
 
   void ClickOnNotificationButton(const std::string& id,
@@ -66,7 +66,7 @@ class TestMessageCenter : public message_center::FakeMessageCenter {
     message_center::Notification* notification =
         FindVisibleNotificationById(id);
     CHECK(notification);
-    notification->delegate()->Click(button_index, absl::nullopt);
+    notification->delegate()->Click(button_index, std::nullopt);
   }
 };
 

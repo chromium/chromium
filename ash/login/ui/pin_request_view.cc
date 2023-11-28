@@ -467,7 +467,7 @@ void PinRequestView::OnDisplayTabletStateChanged(display::TabletState state) {
 }
 
 void PinRequestView::SubmitCode() {
-  absl::optional<std::string> code = access_code_view_->GetCode();
+  std::optional<std::string> code = access_code_view_->GetCode();
   DCHECK(code.has_value());
 
   SubmissionResult result = delegate_->OnPinSubmitted(*code);

@@ -6,6 +6,7 @@
 #define ASH_APP_LIST_VIEWS_ASSISTANT_ASSISTANT_PAGE_VIEW_H_
 
 #include <memory>
+#include <optional>
 
 #include "ash/app_list/views/app_list_page.h"
 #include "ash/ash_export.h"
@@ -15,7 +16,6 @@
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/screen.h"
@@ -71,8 +71,8 @@ class ASH_EXPORT AssistantPageView : public AppListPage,
   void OnUiVisibilityChanged(
       AssistantVisibility new_visibility,
       AssistantVisibility old_visibility,
-      absl::optional<AssistantEntryPoint> entry_point,
-      absl::optional<AssistantExitPoint> exit_point) override;
+      std::optional<AssistantEntryPoint> entry_point,
+      std::optional<AssistantExitPoint> exit_point) override;
 
   // display::DisplayObserver:
   void OnDisplayTabletStateChanged(display::TabletState state) override;

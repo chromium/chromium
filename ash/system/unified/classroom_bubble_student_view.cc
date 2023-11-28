@@ -89,7 +89,7 @@ class ClassroomStudentComboboxModel : public ui::ComboboxModel {
     return GetAssignmentListName(index);
   }
 
-  absl::optional<size_t> GetDefaultIndex() const override {
+  std::optional<size_t> GetDefaultIndex() const override {
     const auto selected_list_type = static_cast<StudentAssignmentsListType>(
         Shell::Get()->session_controller()->GetActivePrefService()->GetInteger(
             kLastSelectedAssignmentsListPref));

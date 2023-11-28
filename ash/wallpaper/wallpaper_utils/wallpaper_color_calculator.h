@@ -5,12 +5,13 @@
 #ifndef ASH_WALLPAPER_WALLPAPER_UTILS_WALLPAPER_COLOR_CALCULATOR_H_
 #define ASH_WALLPAPER_WALLPAPER_UTILS_WALLPAPER_COLOR_CALCULATOR_H_
 
+#include <optional>
+
 #include "ash/ash_export.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_calculated_colors.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace base {
@@ -38,7 +39,7 @@ class ASH_EXPORT WallpaperColorCalculator {
   // Callers should be aware that this will make |image_| read-only.
   [[nodiscard]] bool StartCalculation(WallpaperColorCallback callback);
 
-  absl::optional<const WallpaperCalculatedColors> get_calculated_colors() {
+  std::optional<const WallpaperCalculatedColors> get_calculated_colors() {
     return calculated_colors_;
   }
 
@@ -59,7 +60,7 @@ class ASH_EXPORT WallpaperColorCalculator {
       const WallpaperCalculatedColors& calculated_colors);
 
   // The result of the color calculation.
-  absl::optional<WallpaperCalculatedColors> calculated_colors_;
+  std::optional<WallpaperCalculatedColors> calculated_colors_;
 
   // The image to calculate colors from.
   gfx::ImageSkia image_;

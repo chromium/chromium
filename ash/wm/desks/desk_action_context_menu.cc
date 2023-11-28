@@ -13,7 +13,7 @@
 namespace ash {
 
 DeskActionContextMenu::DeskActionContextMenu(
-    const absl::optional<std::u16string>& combine_desks_target_name,
+    const std::optional<std::u16string>& combine_desks_target_name,
     const views::MenuAnchorPosition anchor_position,
     base::RepeatingClosure combine_desks_callback,
     base::RepeatingClosure close_all_callback,

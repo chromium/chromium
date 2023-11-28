@@ -413,7 +413,7 @@ void PowerButtonController::OnLoginStatusChanged(LoginStatus status) {
 }
 
 void PowerButtonController::OnGetSwitchStates(
-    absl::optional<chromeos::PowerManagerClient::SwitchStates> result) {
+    std::optional<chromeos::PowerManagerClient::SwitchStates> result) {
   if (!result.has_value()) {
     return;
   }
@@ -567,7 +567,7 @@ void PowerButtonController::ParsePowerButtonPositionSwitch() {
     return;
   }
 
-  absl::optional<base::Value> parsed_json = base::JSONReader::Read(
+  std::optional<base::Value> parsed_json = base::JSONReader::Read(
       cl->GetSwitchValueASCII(switches::kAshPowerButtonPosition));
   if (!parsed_json || !parsed_json->is_dict()) {
     LOG(ERROR) << switches::kAshPowerButtonPosition << " flag has no value";
@@ -576,7 +576,7 @@ void PowerButtonController::ParsePowerButtonPositionSwitch() {
 
   const base::Value::Dict& position_info = parsed_json->GetDict();
   const std::string* edge = position_info.FindString(kEdgeField);
-  absl::optional<double> position = position_info.FindDouble(kPositionField);
+  std::optional<double> position = position_info.FindDouble(kPositionField);
 
   if (!edge || !position) {
     LOG(ERROR) << "Both " << kEdgeField << " field and " << kPositionField

@@ -170,7 +170,7 @@ class ASH_EXPORT IconButton : public views::ImageButton {
   ColorVariant icon_toggled_color_ = gfx::kPlaceholderColor;
 
   // Custom value for icon size (usually used to make the icon smaller).
-  absl::optional<int> icon_size_;
+  std::optional<int> icon_size_;
 
   // Called to update background color when the button is enabled/disabled.
   base::CallbackListSubscription enabled_changed_subscription_;

@@ -104,7 +104,7 @@ class HighlightPathGenerator : public views::HighlightPathGenerator {
 
  private:
   // HighlightPathGenerator:
-  absl::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
+  std::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
     gfx::RectF bounds(power_button_->GetLocalBounds());
     gfx::RoundedCornersF rounded = kAllRoundedCorners;
     if (power_button_->IsMenuShowing()) {

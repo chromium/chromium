@@ -381,7 +381,7 @@ PeripheralCustomizationEventRewriter::PeripheralCustomizationEventRewriter(
 PeripheralCustomizationEventRewriter::~PeripheralCustomizationEventRewriter() =
     default;
 
-absl::optional<PeripheralCustomizationEventRewriter::DeviceType>
+std::optional<PeripheralCustomizationEventRewriter::DeviceType>
 PeripheralCustomizationEventRewriter::GetDeviceTypeToObserve(int device_id) {
   if (mice_to_observe_.contains(device_id)) {
     return DeviceType::kMouse;
@@ -389,7 +389,7 @@ PeripheralCustomizationEventRewriter::GetDeviceTypeToObserve(int device_id) {
   if (graphics_tablets_to_observe_.contains(device_id)) {
     return DeviceType::kGraphicsTablet;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void PeripheralCustomizationEventRewriter::StartObservingMouse(

@@ -43,7 +43,7 @@ class PowerTrayView : public TrayItemView, public PowerStatus::Observer {
   void UpdateImage(bool icon_color_changed);
 
   std::u16string tooltip_;
-  absl::optional<PowerStatus::BatteryImageInfo> info_;
+  std::optional<PowerStatus::BatteryImageInfo> info_;
   bool previous_battery_saver_state_ = false;
 };
 

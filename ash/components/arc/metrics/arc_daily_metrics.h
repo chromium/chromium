@@ -6,6 +6,7 @@
 #define ASH_COMPONENTS_ARC_METRICS_ARC_DAILY_METRICS_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_set>
 
@@ -15,7 +16,6 @@
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "components/metrics/daily_event.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -37,7 +37,7 @@ class ArcDailyMetrics {
 
   // Receives the number of kills by priority since the last call.
   void OnLowMemoryKillCounts(
-      absl::optional<vm_tools::concierge::ListVmsResponse> vms_list,
+      std::optional<vm_tools::concierge::ListVmsResponse> vms_list,
       int oom,
       int foreground,
       int perceptible,

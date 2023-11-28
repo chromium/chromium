@@ -169,7 +169,7 @@ class VIEWS_EXPORT RoundedCornerHighlightPathGenerator
       const RoundedCornerHighlightPathGenerator&) = delete;
 
   // views::HighlightPathGenerator:
-  absl::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
+  std::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
     return gfx::RRectF(rect, corners_);
   }
 

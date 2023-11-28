@@ -4,6 +4,7 @@
 
 #include "ash/wm/workspace/workspace_layout_manager.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -64,7 +65,6 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/audio/sounds.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/client/window_parenting_client.h"
@@ -1639,7 +1639,7 @@ class WorkspaceLayoutManagerBackdropTest : public AshTestBase {
   raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> default_container_;
 };
 
-constexpr absl::optional<Sound> kNoSoundKey = absl::nullopt;
+constexpr std::optional<Sound> kNoSoundKey = std::nullopt;
 
 }  // namespace
 

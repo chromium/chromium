@@ -191,9 +191,8 @@ void PairerBrokerImpl::CreateHandshake(scoped_refptr<Device> device) {
                      weak_pointer_factory_.GetWeakPtr()));
 }
 
-void PairerBrokerImpl::OnHandshakeComplete(
-    scoped_refptr<Device> device,
-    absl::optional<PairFailure> failure) {
+void PairerBrokerImpl::OnHandshakeComplete(scoped_refptr<Device> device,
+                                           std::optional<PairFailure> failure) {
   if (failure.has_value()) {
     CD_LOG(WARNING, Feature::FP) << __func__ << ": Handshake failed with "
                                  << device << " because: " << failure.value();
@@ -382,7 +381,7 @@ void PairerBrokerImpl::OnFastPairProcedureComplete(
       (device->protocol() == Protocol::kFastPairInitial ||
        device->protocol() == Protocol::kFastPairRetroactive)) {
     for (auto& observer : observers_) {
-      observer.OnAccountKeyWrite(device, /*error=*/absl::nullopt);
+      observer.OnAccountKeyWrite(device, /*error=*/std::nullopt);
     }
   }
 

@@ -814,7 +814,7 @@ TEST_P(PrivacyHubCameraControllerTest,
   for (const bool previous_value : {true, false}) {
     SetUserPref(previous_value);
 
-    absl::optional<CameraPrivacySwitchController> controller;
+    std::optional<CameraPrivacySwitchController> controller;
 
     // Create the controller.
     controller.emplace();
@@ -869,7 +869,7 @@ TEST_P(PrivacyHubCameraControllerTest,
   for (const bool previous_value : {true, false}) {
     SetUserPref(previous_value);
 
-    absl::optional<CameraPrivacySwitchController> controller;
+    std::optional<CameraPrivacySwitchController> controller;
 
     // Create the controller.
     controller.emplace();

@@ -5,6 +5,7 @@
 #include "ash/wm/window_cycle/window_cycle_view.h"
 
 #include <algorithm>
+#include <optional>
 #include <vector>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
@@ -27,7 +28,6 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -663,7 +663,7 @@ void WindowCycleView::Layout() {
   // the cycle view is already being animated or just finished animating for
   // mode switch.
   std::unique_ptr<ui::ScopedLayerAnimationSettings> settings;
-  absl::optional<ui::AnimationThroughputReporter> reporter;
+  std::optional<ui::AnimationThroughputReporter> reporter;
   if (!first_layout && !this->layer()->GetAnimator()->is_animating() &&
       !defer_widget_bounds_update_ &&
       mirror_container_->bounds() != content_container_bounds) {

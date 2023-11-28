@@ -117,7 +117,7 @@ void SetDisplayPropertiesOnHost(AshWindowTreeHost* ash_host,
 
   const display::ManagedDisplayInfo& display_info =
       GetDisplayManager()->GetDisplayInfo(display.id());
-  absl::optional<base::TimeDelta> max_vrr_interval = absl::nullopt;
+  std::optional<base::TimeDelta> max_vrr_interval = std::nullopt;
   if (display_info.variable_refresh_rate_state() == display::kVrrEnabled &&
       display_info.vsync_rate_min().has_value() &&
       display_info.vsync_rate_min() > 0) {
@@ -154,12 +154,12 @@ int GetEffectiveResolutionUMAIndex(const display::Display& display) {
 
 // Returns active effective dpi for a given active display. Returns 0 if the
 // dpi is not available.
-absl::optional<float> GetEffectiveDPI(const display::Display& display) {
+std::optional<float> GetEffectiveDPI(const display::Display& display) {
   const display::ManagedDisplayInfo& display_info =
       GetDisplayManager()->GetDisplayInfo(display.id());
   float dpi = display_info.device_dpi();
   if (!dpi) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Apply device effective scale factor.
@@ -188,7 +188,7 @@ void RepeatingEffectiveResolutionUMA(base::RepeatingTimer* timer,
       session_controller->GetSessionState() ==
           session_manager::SessionState::ACTIVE) {
     for (const auto& display : GetDisplayManager()->active_display_list()) {
-      absl::optional<float> effective_dpi = GetEffectiveDPI(display);
+      std::optional<float> effective_dpi = GetEffectiveDPI(display);
 
       // Only emit event when the dpi is valid.
       if (effective_dpi.has_value()) {

@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "ash/system/phonehub/phone_hub_ui_controller.h"
+
 #include <memory>
+#include <optional>
 
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
@@ -21,7 +23,6 @@
 #include "chromeos/ash/components/phonehub/fake_tether_controller.h"
 #include "chromeos/ash/components/phonehub/phone_model_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -53,7 +54,7 @@ class PhoneHubUiControllerTest : public AshTestBase,
     AshTestBase::SetUp();
 
     handler_ = std::make_unique<eche_app::EcheConnectionStatusHandler>();
-    phone_hub_manager_.set_host_last_seen_timestamp(absl::nullopt);
+    phone_hub_manager_.set_host_last_seen_timestamp(std::nullopt);
     phone_hub_manager_.set_eche_connection_handler(handler_.get());
 
     // Create user 1 session and simulate its login.
@@ -91,7 +92,7 @@ class PhoneHubUiControllerTest : public AshTestBase,
   }
 
   void SetPhoneStatusModel(
-      const absl::optional<phonehub::PhoneStatusModel>& phone_status_model) {
+      const std::optional<phonehub::PhoneStatusModel>& phone_status_model) {
     phone_hub_manager_.mutable_phone_model()->SetPhoneStatusModel(
         phone_status_model);
   }
@@ -263,7 +264,7 @@ TEST_F(PhoneHubUiControllerTest, TetherConnectionPending) {
   // Tether status is connected, the feature status is |kEnabledAndConnected|,
   // but there is no phone model. The UiState should still be
   // kTetherConnectionPending.
-  SetPhoneStatusModel(absl::nullopt);
+  SetPhoneStatusModel(std::nullopt);
   GetFeatureStatusProvider()->SetStatus(FeatureStatus::kEnabledAndConnected);
   EXPECT_EQ(PhoneHubUiController::UiState::kTetherConnectionPending,
             controller_->ui_state());
@@ -317,7 +318,7 @@ TEST_F(PhoneHubUiControllerTest, ConnectedViewDelayed) {
   base::HistogramTester histograms;
   // Since there is no phone model, expect that we stay at the connecting screen
   // even though the feature status is kEnabledAndConnected.
-  SetPhoneStatusModel(absl::nullopt);
+  SetPhoneStatusModel(std::nullopt);
   GetFeatureStatusProvider()->SetStatus(FeatureStatus::kEnabledAndConnected);
   EXPECT_EQ(PhoneHubUiController::UiState::kPhoneConnecting,
             controller_->ui_state());

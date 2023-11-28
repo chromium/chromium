@@ -155,7 +155,7 @@ class ASH_EXPORT DeskButton : public views::Button,
 
   // Updates the shelf auto-hide disabler given `should_enable_shelf_auto_hide`.
   void UpdateShelfAutoHideDisabler(
-      absl::optional<Shelf::ScopedDisableAutoHide>& disabler,
+      std::optional<Shelf::ScopedDisableAutoHide>& disabler,
       bool should_enable_shelf_auto_hide);
 
   // Set up the focus ring, focus behavior, and highlight path for the buttons.
@@ -197,9 +197,9 @@ class ASH_EXPORT DeskButton : public views::Button,
 
   // Used to suspend the shelf from audo-hiding when the button is activated or
   // hovered.
-  absl::optional<Shelf::ScopedDisableAutoHide>
+  std::optional<Shelf::ScopedDisableAutoHide>
       disable_shelf_auto_hide_activation_;
-  absl::optional<Shelf::ScopedDisableAutoHide> disable_shelf_auto_hide_hover_;
+  std::optional<Shelf::ScopedDisableAutoHide> disable_shelf_auto_hide_hover_;
 };
 
 }  // namespace ash

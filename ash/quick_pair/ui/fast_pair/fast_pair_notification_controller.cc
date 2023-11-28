@@ -109,8 +109,8 @@ class NotificationDelegate : public message_center::NotificationDelegate {
   ~NotificationDelegate() override = default;
 
   // message_center::NotificationDelegate override:
-  void Click(const absl::optional<int>& button_index,
-             const absl::optional<std::u16string>& reply) override {
+  void Click(const std::optional<int>& button_index,
+             const std::optional<std::u16string>& reply) override {
     if (!button_index)
       return;
 

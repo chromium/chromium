@@ -4,6 +4,8 @@
 
 #include "ash/public/cpp/shelf_config.h"
 
+#include <optional>
+
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/app_list/app_list_controller_impl.h"
@@ -18,7 +20,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/display/tablet_state.h"
 
@@ -238,7 +239,7 @@ void ShelfConfig::OnDisplayTabletStateChanged(display::TabletState state) {
 
       UpdateConfig(is_app_list_visible_, /*tablet_mode_changed=*/true);
 
-      has_shown_elevated_app_bar_ = absl::nullopt;
+      has_shown_elevated_app_bar_ = std::nullopt;
       break;
   }
 }

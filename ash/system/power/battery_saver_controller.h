@@ -5,6 +5,8 @@
 #ifndef ASH_SYSTEM_POWER_BATTERY_SAVER_CONTROLLER_H_
 #define ASH_SYSTEM_POWER_BATTERY_SAVER_CONTROLLER_H_
 
+#include <optional>
+
 #include "ash/ash_export.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/system/power/power_status.h"
@@ -15,7 +17,6 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -73,7 +74,7 @@ class ASH_EXPORT BatterySaverController : public PowerStatus::Observer {
   void ShowBatterySaverModeToastHelper(const ToastCatalogName catalog_name,
                                        const std::u16string& toast_text);
 
-  absl::optional<int> GetRemainingMinutes(const PowerStatus* status);
+  std::optional<int> GetRemainingMinutes(const PowerStatus* status);
 
   raw_ptr<PrefService, ExperimentalAsh> local_state_;  // Non-owned and must
                                                        // out-live this.
@@ -94,7 +95,7 @@ class ASH_EXPORT BatterySaverController : public PowerStatus::Observer {
   // Whether OnSettingsPrefChanged() was called from `SetState`.
   bool in_set_state_ = false;
 
-  absl::optional<EnableRecord> enable_record_{absl::nullopt};
+  std::optional<EnableRecord> enable_record_{std::nullopt};
 
   base::WeakPtrFactory<BatterySaverController> weak_ptr_factory_{this};
 };

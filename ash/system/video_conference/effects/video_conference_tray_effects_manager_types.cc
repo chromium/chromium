@@ -13,7 +13,7 @@ VcEffectState::VcEffectState(const gfx::VectorIcon* icon,
                              const std::u16string& label_text,
                              int accessible_name_id,
                              views::Button::PressedCallback button_callback,
-                             absl::optional<int> state_value)
+                             std::optional<int> state_value)
     : icon_(icon),
       label_text_(label_text),
       accessible_name_id_(accessible_name_id),

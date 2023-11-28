@@ -287,7 +287,7 @@ class WelcomeTourControllerTest : public UserEducationAshTestBase {
     // returns that the given user is "new" on invocation. "New"-ness is
     // required for the user to be eligible for the Welcome Tour.
     ON_CALL(*user_education_delegate(), IsNewUser)
-        .WillByDefault(ReturnRefOfCopy(absl::make_optional(true)));
+        .WillByDefault(ReturnRefOfCopy(std::make_optional(true)));
   }
 
  private:
@@ -582,7 +582,7 @@ TEST_F(WelcomeTourControllerTest, PreventTourFromStartingIfChromeVoxEnabled) {
 class WelcomeTourControllerCounterfactualTest
     : public WelcomeTourControllerTest,
       public ::testing::WithParamInterface<
-          /*is_counterfactual=*/absl::optional<bool>> {
+          /*is_counterfactual=*/std::optional<bool>> {
  public:
   WelcomeTourControllerCounterfactualTest() {
     if (const auto& is_counterfactual = IsCounterfactual()) {
@@ -594,7 +594,7 @@ class WelcomeTourControllerCounterfactualTest
 
   // Returns whether the Welcome Tour is enabled counterfactually as part of an
   // experiment arm given test parameterization.
-  const absl::optional<bool>& IsCounterfactual() const { return GetParam(); }
+  const std::optional<bool>& IsCounterfactual() const { return GetParam(); }
 
  private:
   // Used to conditionally enable the Welcome Tour counterfactually as part of
@@ -605,9 +605,9 @@ class WelcomeTourControllerCounterfactualTest
 INSTANTIATE_TEST_SUITE_P(All,
                          WelcomeTourControllerCounterfactualTest,
                          /*is_counterfactual=*/
-                         ::testing::Values(absl::make_optional(true),
-                                           absl::make_optional(false),
-                                           absl::nullopt));
+                         ::testing::Values(std::make_optional(true),
+                                           std::make_optional(false),
+                                           std::nullopt));
 
 // Tests -----------------------------------------------------------------------
 
@@ -653,7 +653,7 @@ class WelcomeTourControllerUserEligibilityTest
     : public WelcomeTourControllerTest,
       public ::testing::WithParamInterface<std::tuple<
           /*force_user_eligibility=*/bool,
-          /*is_new_user_cross_device=*/absl::optional<bool>,
+          /*is_new_user_cross_device=*/std::optional<bool>,
           /*is_new_user_locally=*/bool,
           /*is_managed_user=*/bool,
           user_manager::UserType>> {
@@ -678,7 +678,7 @@ class WelcomeTourControllerUserEligibilityTest
 
   // Returns whether the user should be considered "new" cross-device based on
   // test parameterization.
-  const absl::optional<bool>& IsNewUserCrossDevice() const {
+  const std::optional<bool>& IsNewUserCrossDevice() const {
     return std::get<1>(GetParam());
   }
 
@@ -721,9 +721,9 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Combine(
         /*force_user_eligibility=*/::testing::Bool(),
         /*is_new_user_cross_device=*/
-        ::testing::Values(absl::make_optional(true),
-                          absl::make_optional(false),
-                          absl::nullopt),
+        ::testing::Values(std::make_optional(true),
+                          std::make_optional(false),
+                          std::nullopt),
         /*is_new_user_locally=*/::testing::Bool(),
         /*is_managed_user=*/::testing::Bool(),
         ::testing::Values(user_manager::UserType::USER_TYPE_ARC_KIOSK_APP,

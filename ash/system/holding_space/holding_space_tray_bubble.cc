@@ -411,7 +411,7 @@ class HoldingSpaceTrayBubble::ChildBubbleContainer
   mutable views::ProposedLayout target_layout_;   // Layout being animated to.
 
   std::unique_ptr<gfx::SlideAnimation> layout_animation_;
-  absl::optional<ui::ThroughputTracker> layout_animation_throughput_tracker_;
+  std::optional<ui::ThroughputTracker> layout_animation_throughput_tracker_;
 
   // Mapping of view bounds changed observers to the views which they observe.
   // This is used when UI refresh is enabled to ensure that separators are

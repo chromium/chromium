@@ -4,11 +4,12 @@
 
 #include "ash/user_education/holding_space_wallpaper_nudge/holding_space_wallpaper_nudge_prefs.h"
 
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "base/json/values_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::holding_space_wallpaper_nudge_prefs {
 namespace {
@@ -47,9 +48,9 @@ std::string GetNudgeTimePrefName() {
 
 // Utilities -------------------------------------------------------------------
 
-absl::optional<base::Time> GetLastTimeNudgeWasShown(PrefService* prefs) {
+std::optional<base::Time> GetLastTimeNudgeWasShown(PrefService* prefs) {
   auto* pref = prefs->FindPreference(GetNudgeTimePrefName());
-  return pref->IsDefaultValue() ? absl::nullopt
+  return pref->IsDefaultValue() ? std::nullopt
                                 : base::ValueToTime(pref->GetValue());
 }
 

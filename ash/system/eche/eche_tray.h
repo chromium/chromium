@@ -380,7 +380,7 @@ class ASH_EXPORT EcheTray
 
   // The time a stream is initializing. Used to record the elapsed time from
   // when the stream is initializing to when the stream is closed by user.
-  absl::optional<base::TimeTicks> init_stream_timestamp_;
+  std::optional<base::TimeTicks> init_stream_timestamp_;
 
   // The orientation of the stream (portrait vs landscape). The default
   // orientation is portrait.

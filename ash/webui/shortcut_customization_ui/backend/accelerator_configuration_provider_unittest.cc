@@ -94,8 +94,8 @@ class FakeDeviceManager {
     std::map<std::string, std::string> sysfs_attributes;
     sysfs_properties[kKbdTopRowPropertyName] = layout;
     fake_udev_.AddFakeDevice(fake_keyboard.name, fake_keyboard.sys_path.value(),
-                             /*subsystem=*/"input", /*devnode=*/absl::nullopt,
-                             /*devtype=*/absl::nullopt,
+                             /*subsystem=*/"input", /*devnode=*/std::nullopt,
+                             /*devtype=*/std::nullopt,
                              std::move(sysfs_attributes),
                              std::move(sysfs_properties));
   }
@@ -1077,7 +1077,7 @@ TEST_F(AcceleratorConfigurationProviderTest, AliasWithOriginalAccelerator) {
   EXPECT_EQ(1u, accelerator_infos.size());
   // Verify that the generated alias accelerator has `original_accelerator`
   // populated correctly.
-  absl::optional<ui::Accelerator> original_accelerator =
+  std::optional<ui::Accelerator> original_accelerator =
       accelerator_infos[0]
           ->layout_properties->get_standard_accelerator()
           ->original_accelerator;

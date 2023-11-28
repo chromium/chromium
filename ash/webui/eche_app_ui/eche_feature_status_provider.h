@@ -74,7 +74,7 @@ class EcheFeatureStatusProvider
   raw_ptr<EcheConnectionStatusHandler, DanglingUntriaged | ExperimentalAsh>
       eche_connection_status_handler_;
   phonehub::FeatureStatus current_phone_hub_feature_status_;
-  absl::optional<FeatureStatus> status_;
+  std::optional<FeatureStatus> status_;
   base::WeakPtrFactory<EcheFeatureStatusProvider> weak_ptr_factory_{this};
 };
 

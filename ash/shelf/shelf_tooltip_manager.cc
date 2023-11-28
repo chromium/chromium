@@ -76,7 +76,7 @@ void ShelfTooltipManager::ShowTooltip(views::View* view) {
 
   // In vertical shelf, the desk button tooltip bubble should still be centered
   // above the respective view.
-  absl::optional<views::BubbleBorder::Arrow> forced_arrow_position;
+  std::optional<views::BubbleBorder::Arrow> forced_arrow_position;
   if (DeskButtonWidget* desk_button_widget = shelf_->desk_button_widget()) {
     DeskButton* desk_button = desk_button_widget->GetDeskButton();
     if (view == desk_button || view->parent() == desk_button) {

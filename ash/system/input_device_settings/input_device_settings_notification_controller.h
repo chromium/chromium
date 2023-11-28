@@ -79,12 +79,12 @@ class ASH_EXPORT InputDeviceSettingsNotificationController {
 
  private:
   void HandleRightClickNotificationClicked(const std::string& notification_id,
-                                           absl::optional<int> button_index);
+                                           std::optional<int> button_index);
 
   void HandleSixPackNotificationClicked(int device_id,
                                         const char* pref_name,
                                         const std::string& notification_id,
-                                        absl::optional<int> button_index);
+                                        std::optional<int> button_index);
   // MessageCenter for adding notifications.
   const raw_ptr<message_center::MessageCenter,
                 DanglingUntriaged | ExperimentalAsh>

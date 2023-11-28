@@ -50,7 +50,7 @@ class PublicAccountComboboxModel : public ui::ComboboxModel {
   }
 
   // ui::ComboboxModel:
-  absl::optional<size_t> GetDefaultIndex() const override {
+  std::optional<size_t> GetDefaultIndex() const override {
     return default_index_;
   }
 

@@ -4,6 +4,8 @@
 
 #include "ash/user_education/welcome_tour/welcome_tour_prefs.h"
 
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_prefs.h"
 #include "ash/user_education/welcome_tour/welcome_tour_metrics.h"
@@ -12,7 +14,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::welcome_tour_prefs {
 namespace {
@@ -37,13 +38,13 @@ static constexpr char kReasonForFirstTourPrevention[] =
 // Helpers ---------------------------------------------------------------------
 
 // Fetches the time pref associated with the first time of a given interaction.
-absl::optional<base::Time> GetTimeOfFirstInteraction(PrefService* prefs,
-                                                     Interaction interaction) {
+std::optional<base::Time> GetTimeOfFirstInteraction(PrefService* prefs,
+                                                    Interaction interaction) {
   auto pref_name = base::StrCat({kTimeOfFirstInteractionPrefPrefix,
                                  welcome_tour_metrics::ToString(interaction),
                                  ".first_time"});
   auto* pref = prefs->FindPreference(pref_name);
-  return pref->IsDefaultValue() ? absl::nullopt
+  return pref->IsDefaultValue() ? std::nullopt
                                 : base::ValueToTime(pref->GetValue());
 }
 
@@ -75,7 +76,7 @@ TEST_F(WelcomeTourPrefsTest, FirstInteraction) {
   for (auto interaction : kAllInteractionsSet) {
     // Should be unset by default.
     EXPECT_EQ(GetTimeOfFirstInteraction(pref_service(), interaction),
-              absl::nullopt);
+              std::nullopt);
 
     // The first time the mark method is called, it should succeed and mark the
     // time as now.
@@ -100,7 +101,7 @@ TEST_F(WelcomeTourPrefsTest, FirstInteraction) {
 // Expects the first tour completion time pref can be set exactly once.
 TEST_F(WelcomeTourPrefsTest, FirstTourCompletion) {
   // Should be unset by default.
-  EXPECT_EQ(GetTimeOfFirstTourCompletion(pref_service()), absl::nullopt);
+  EXPECT_EQ(GetTimeOfFirstTourCompletion(pref_service()), std::nullopt);
 
   // The first time the mark method is called, it should succeed and mark the
   // time as now.
@@ -123,8 +124,8 @@ TEST_F(WelcomeTourPrefsTest, FirstTourCompletion) {
 // exactly once.
 TEST_F(WelcomeTourPrefsTest, FirstTourPrevention) {
   // Should be unset by default.
-  EXPECT_EQ(GetReasonForFirstTourPrevention(pref_service()), absl::nullopt);
-  EXPECT_EQ(GetTimeOfFirstTourPrevention(pref_service()), absl::nullopt);
+  EXPECT_EQ(GetReasonForFirstTourPrevention(pref_service()), std::nullopt);
+  EXPECT_EQ(GetTimeOfFirstTourPrevention(pref_service()), std::nullopt);
 
   // The first time the mark method is called, it should succeed and mark the
   // time as now and the given reason as the reason.
@@ -154,7 +155,7 @@ TEST_F(WelcomeTourPrefsTest, FirstTourPrevention) {
 // work for all valid values, and handle invalid ones properly.
 TEST_F(WelcomeTourPrefsTest, ReasonForFirstTourPrevention) {
   // The reason should by default be absent.
-  EXPECT_EQ(GetReasonForFirstTourPrevention(pref_service()), absl::nullopt);
+  EXPECT_EQ(GetReasonForFirstTourPrevention(pref_service()), std::nullopt);
 
   // Expect that all valid values for `PreventedReason` can be set and fetched.
   for (auto reason : kAllPreventedReasonsSet) {

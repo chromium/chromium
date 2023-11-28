@@ -302,9 +302,9 @@ class ASH_EXPORT RootWindowDeskSwitchAnimator
   // units and then used to shift the animation layer. If the animation layer is
   // near its boundaries, this will return an index for the desk we should take
   // a screenshot for. If we are not near the boundaries, or if there is no next
-  // adjacent desk in the direction we are heading, return absl::nullopt. The
+  // adjacent desk in the direction we are heading, return std::nullopt. The
   // delegate is responsible for requesting the screenshot.
-  absl::optional<int> UpdateSwipeAnimation(float scroll_delta_x);
+  std::optional<int> UpdateSwipeAnimation(float scroll_delta_x);
 
   // Maybe called after UpdateSwipeAnimation() if we need a new screenshot.
   // Updates |ending_desk_index_| and resets some other internal state related

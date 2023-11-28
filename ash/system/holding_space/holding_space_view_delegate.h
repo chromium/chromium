@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_VIEW_DELEGATE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/scoped_observation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/drag_controller.h"
@@ -59,8 +59,8 @@ class ASH_EXPORT HoldingSpaceViewDelegate
    private:
     const raw_ptr<HoldingSpaceViewDelegate, ExperimentalAsh> delegate_;
     std::vector<std::string> selected_item_ids_;
-    absl::optional<std::string> selected_range_start_item_id_;
-    absl::optional<std::string> selected_range_end_item_id_;
+    std::optional<std::string> selected_range_start_item_id_;
+    std::optional<std::string> selected_range_end_item_id_;
   };
 
   explicit HoldingSpaceViewDelegate(HoldingSpaceTrayBubble* bubble);

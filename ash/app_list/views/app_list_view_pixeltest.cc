@@ -79,7 +79,7 @@ class AppListViewPixelRTLTest
     : public AshTestBase,
       public testing::WithParamInterface<std::tuple<bool /*is_rtl=*/>> {
  public:
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     pixel_test::InitParams init_params;
     init_params.under_rtl = IsRtl();
@@ -300,7 +300,7 @@ class AppListViewLauncherSearchIphTest
     : public AssistantAshTestBase,
       public testing::WithParamInterface<TestVariantsParam> {
  public:
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     pixel_test::InitParams init_params;
     init_params.under_rtl = IsRtl(GetParam());
@@ -361,7 +361,7 @@ class AppListViewTabletPixelTest
       public testing::WithParamInterface<std::tuple</*rtl=*/bool>> {
  public:
   // AshTestBase:
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     pixel_test::InitParams init_params;
     init_params.under_rtl = IsRtl();
@@ -453,7 +453,7 @@ class AppListViewAssistantZeroStateTest
     : public AssistantAshTestBase,
       public testing::WithParamInterface<TestVariantsParam> {
  public:
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     pixel_test::InitParams init_params;
     init_params.under_rtl = IsRtl(GetParam());

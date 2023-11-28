@@ -4,6 +4,8 @@
 
 #include "ash/system/phonehub/phone_status_view.h"
 
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "ash/style/icon_button.h"
 #include "ash/test/ash_test_base.h"
@@ -11,7 +13,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/phonehub/mutable_phone_model.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/test/test_event.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -99,7 +100,7 @@ TEST_F(PhoneStatusViewTest, PhoneStatusLabelsContent) {
   EXPECT_EQ(expected_battery_text, status_view_->battery_label_->GetText());
 
   // Simulate phone disconnected with a null |PhoneStatusModel| returned.
-  phone_model_.SetPhoneStatusModel(absl::nullopt);
+  phone_model_.SetPhoneStatusModel(std::nullopt);
 
   // Existing phone status will be cleared to reflect the model change.
   EXPECT_TRUE(status_view_->battery_label_->GetText().empty());

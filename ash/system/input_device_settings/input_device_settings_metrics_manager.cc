@@ -124,14 +124,14 @@ ui::mojom::ModifierKey GetModifierRemappingTo(
   return modifier_key;
 }
 
-absl::optional<std::string> GetModifierKeyName(
+std::optional<std::string> GetModifierKeyName(
     ui::mojom::ModifierKey modifier_key) {
   for (ssize_t i = kNumModifiers - 1; i >= 0; i--) {
     if (kModifierNames[i].modifier_key == modifier_key) {
-      return absl::make_optional<std::string>(kModifierNames[i].key_name);
+      return std::make_optional<std::string>(kModifierNames[i].key_name);
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 int GetNumberOfNonDefaultRemappings(
@@ -340,7 +340,7 @@ void HandleSettingsUpdatedMetric(const T& device) {
     return;
   }
 
-  absl::optional<SettingsUpdatedMetricsInfo> metrics_info_optional =
+  std::optional<SettingsUpdatedMetricsInfo> metrics_info_optional =
       SettingsUpdatedMetricsInfo::FromDict(*device_settings_update_info_dict);
   if (!metrics_info_optional) {
     return;

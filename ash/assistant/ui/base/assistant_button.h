@@ -6,11 +6,11 @@
 #define ASH_ASSISTANT_UI_BASE_ASSISTANT_BUTTON_H_
 
 #include <memory>
+#include <optional>
 
 #include "ash/public/cpp/style/color_provider.h"
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/color/color_id.h"
@@ -54,13 +54,13 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantButton
     SkColor icon_color = gfx::kGoogleGrey700;
     // If both icon_color and icon_color_type are specified, icon_color_type
     // will be used.
-    absl::optional<ui::ColorId> icon_color_type;
+    std::optional<ui::ColorId> icon_color_type;
 
     // ID of the localization string for the button's accessible name.
-    absl::optional<int> accessible_name_id;
+    std::optional<int> accessible_name_id;
 
     // ID of the localization string for the button's tooltip text.
-    absl::optional<int> tooltip_id;
+    std::optional<int> tooltip_id;
   };
 
   AssistantButton(AssistantButtonListener* listener,
@@ -95,8 +95,8 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantButton
 
   // |icon_color_type_| and |icon_description_| are stored only when
   // icon_color_type is specified in InitParams.
-  absl::optional<ui::ColorId> icon_color_type_;
-  absl::optional<gfx::IconDescription> icon_description_;
+  std::optional<ui::ColorId> icon_color_type_;
+  std::optional<gfx::IconDescription> icon_description_;
 };
 
 }  // namespace ash

@@ -152,7 +152,7 @@ gfx::Size CrOSNextDeskIconButton::CalculatePreferredSize() const {
 }
 
 void CrOSNextDeskIconButton::UpdateFocusState() {
-  absl::optional<ui::ColorId> new_focus_color_id;
+  std::optional<ui::ColorId> new_focus_color_id;
 
   if (is_focused() ||
       (state_ == State::kActive && bar_view_->dragged_item_over_bar() &&
@@ -161,7 +161,7 @@ void CrOSNextDeskIconButton::UpdateFocusState() {
   } else if (state_ == State::kActive && paint_as_active_) {
     new_focus_color_id = cros_tokens::kCrosSysTertiary;
   } else {
-    new_focus_color_id = absl::nullopt;
+    new_focus_color_id = std::nullopt;
   }
 
   if (focus_color_id_ == new_focus_color_id) {

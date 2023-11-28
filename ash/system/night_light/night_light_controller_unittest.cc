@@ -4,6 +4,7 @@
 
 #include <cmath>
 #include <limits>
+#include <optional>
 #include <sstream>
 #include <string>
 
@@ -40,7 +41,6 @@
 #include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/manager/display_change_observer.h"
 #include "ui/display/manager/display_manager.h"
@@ -436,13 +436,13 @@ TEST_F(NightLightTest, TestNightLightWithDisplayConfigurationChanges) {
 
   // While we have the second display, enable mirror mode, the compositors
   // should still have the same temperature.
-  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, absl::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, std::nullopt);
   EXPECT_TRUE(display_manager()->IsInMirrorMode());
   base::RunLoop().RunUntilIdle();
   TestCompositorsTemperature(temperature);
 
   // Exit mirror mode, temperature is still applied.
-  display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
   EXPECT_FALSE(display_manager()->IsInMirrorMode());
   base::RunLoop().RunUntilIdle();
   TestCompositorsTemperature(temperature);
@@ -1645,7 +1645,7 @@ TEST_F(AutoNightLightTest, Notification) {
   // Simulate the user clicking the notification body to go to settings, and
   // turning off Night Light manually for tonight. The notification should be
   // dismissed.
-  notification->delegate()->Click(absl::nullopt, absl::nullopt);
+  notification->delegate()->Click(std::nullopt, std::nullopt);
   controller->SetEnabled(false);
   EXPECT_FALSE(controller->IsNightLightEnabled());
   EXPECT_FALSE(controller->GetAutoNightLightNotificationForTesting());

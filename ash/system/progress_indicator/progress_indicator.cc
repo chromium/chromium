@@ -112,7 +112,7 @@ float GetInnerRingStrokeWidth(const ui::Layer* layer) {
 }
 
 // Returns the opacity for the outer ring given the current `progress`.
-float GetOuterRingOpacity(const absl::optional<float>& progress) {
+float GetOuterRingOpacity(const std::optional<float>& progress) {
   return progress != ProgressIndicator::kProgressComplete ? kOuterRingOpacity
                                                           : 1.f;
 }
@@ -120,7 +120,7 @@ float GetOuterRingOpacity(const absl::optional<float>& progress) {
 // Returns the stroke width for the outer ring given `layer` dimensions and
 // the current `progress`.
 float GetOuterRingStrokeWidth(const ui::Layer* layer,
-                              const absl::optional<float>& progress) {
+                              const std::optional<float>& progress) {
   if (progress != ProgressIndicator::kProgressComplete) {
     const gfx::Size& size = layer->size();
     return kOuterRingStrokeWidthScaleFactor *
@@ -159,7 +159,7 @@ class DefaultProgressIndicatorAnimationRegistry
  private:
   // Invoked on changes to `progress_indicator_` progress.
   void OnProgressChanged() {
-    const absl::optional<float>& progress = progress_indicator_->progress();
+    const std::optional<float>& progress = progress_indicator_->progress();
     if (!progress.has_value()) {
       // Progress is indeterminate.
       EnsureProgressIconAnimation();
@@ -249,7 +249,7 @@ class DefaultProgressIndicatorAnimationRegistry
 
   // Instantiate `previous_progress_` to completion to avoid starting a pulse
   // animation on first progress update.
-  absl::optional<float> previous_progress_ =
+  std::optional<float> previous_progress_ =
       ProgressIndicator::kProgressComplete;
 
   base::WeakPtrFactory<DefaultProgressIndicatorAnimationRegistry>
@@ -266,7 +266,7 @@ class DefaultProgressIndicator : public ProgressIndicator {
  public:
   DefaultProgressIndicator(
       std::unique_ptr<DefaultProgressIndicatorAnimationRegistry> registry,
-      base::RepeatingCallback<absl::optional<float>()> progress_callback)
+      base::RepeatingCallback<std::optional<float>()> progress_callback)
       : ProgressIndicator(
             registry.get(),
             ProgressIndicatorAnimationRegistry::AsAnimationKey(this)),
@@ -281,12 +281,12 @@ class DefaultProgressIndicator : public ProgressIndicator {
 
  private:
   // ProgressIndicator:
-  absl::optional<float> CalculateProgress() const override {
+  std::optional<float> CalculateProgress() const override {
     return progress_callback_.Run();
   }
 
   std::unique_ptr<DefaultProgressIndicatorAnimationRegistry> registry_;
-  base::RepeatingCallback<absl::optional<float>()> progress_callback_;
+  base::RepeatingCallback<std::optional<float>()> progress_callback_;
 };
 
 }  // namespace
@@ -343,7 +343,7 @@ ProgressIndicator::~ProgressIndicator() = default;
 
 // static
 std::unique_ptr<ProgressIndicator> ProgressIndicator::CreateDefaultInstance(
-    base::RepeatingCallback<absl::optional<float>()> progress_callback) {
+    base::RepeatingCallback<std::optional<float>()> progress_callback) {
   return std::make_unique<DefaultProgressIndicator>(
       std::make_unique<DefaultProgressIndicatorAnimationRegistry>(),
       std::move(progress_callback));
@@ -381,8 +381,7 @@ void ProgressIndicator::InvalidateLayer() {
     layer()->SchedulePaint(gfx::Rect(layer()->size()));
 }
 
-void ProgressIndicator::SetColorId(
-    const absl::optional<ui::ColorId>& color_id) {
+void ProgressIndicator::SetColorId(const std::optional<ui::ColorId>& color_id) {
   if (color_id_ == color_id) {
     return;
   }

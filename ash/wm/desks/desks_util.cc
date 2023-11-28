@@ -213,9 +213,8 @@ bool IsZOrderTracked(aura::Window* window) {
              ui::ZOrderLevel::kNormal;
 }
 
-absl::optional<size_t> GetWindowZOrder(
-    const std::vector<aura::Window*>& windows,
-    aura::Window* window) {
+std::optional<size_t> GetWindowZOrder(const std::vector<aura::Window*>& windows,
+                                      aura::Window* window) {
   size_t position = 0;
   for (aura::Window* w : base::Reversed(windows)) {
     if (IsZOrderTracked(w)) {
@@ -225,7 +224,7 @@ absl::optional<size_t> GetWindowZOrder(
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace desks_util

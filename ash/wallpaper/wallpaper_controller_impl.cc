@@ -200,7 +200,7 @@ void DeleteWallpaperInList(std::vector<base::FilePath> file_list) {
 // Checks if kiosk app is running. Note: it returns false either when there's
 // no active user (e.g. at login screen), or the active user is not kiosk.
 bool IsInKioskMode() {
-  absl::optional<user_manager::UserType> active_user_type =
+  std::optional<user_manager::UserType> active_user_type =
       Shell::Get()->session_controller()->GetUserType();
   // |active_user_type| is empty when there's no active user.
   return active_user_type &&
@@ -395,7 +395,7 @@ SkColor WallpaperControllerImpl::GetKMeanColor() const {
                             : kInvalidWallpaperColor;
 }
 
-absl::optional<SkColor> WallpaperControllerImpl::GetCachedWallpaperColorForUser(
+std::optional<SkColor> WallpaperControllerImpl::GetCachedWallpaperColorForUser(
     const AccountId& account_id,
     bool should_use_k_means) const {
   WallpaperInfo info;
@@ -1472,13 +1472,13 @@ bool WallpaperControllerImpl::IsWallpaperControlledByPolicy(
          info.type == WallpaperType::kPolicy;
 }
 
-absl::optional<WallpaperInfo>
+std::optional<WallpaperInfo>
 WallpaperControllerImpl::GetActiveUserWallpaperInfo() const {
   WallpaperInfo info;
   const UserSession* const active_user_session = GetActiveUserSession();
   if (!active_user_session ||
       !GetUserWallpaperInfo(active_user_session->user_info.account_id, &info)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return info;
 }
@@ -1952,7 +1952,7 @@ bool WallpaperControllerImpl::SetDefaultWallpaperInfo(
 void WallpaperControllerImpl::OnWallpaperVariantsFetched(
     WallpaperType type,
     SetWallpaperCallback callback,
-    absl::optional<OnlineWallpaperParams> params) {
+    std::optional<OnlineWallpaperParams> params) {
   DCHECK(IsOnlineWallpaper(type));
   if (params) {
     SetOnlineWallpaper(*params, std::move(callback));
@@ -1968,7 +1968,7 @@ void WallpaperControllerImpl::OnWallpaperVariantsFetched(
 }
 
 void WallpaperControllerImpl::RepaintOnlineWallpaper(
-    absl::optional<OnlineWallpaperParams> params) {
+    std::optional<OnlineWallpaperParams> params) {
   if (!params) {
     LOG(ERROR) << "Fetching online variant failed";
     return;
@@ -2191,7 +2191,7 @@ void WallpaperControllerImpl::OnDailyGooglePhotosWallpaperDecoded(
     const AccountId& account_id,
     const std::string& photo_id,
     const std::string& album_id,
-    absl::optional<std::string> dedup_key,
+    std::optional<std::string> dedup_key,
     RefreshWallpaperCallback callback,
     const gfx::ImageSkia& image) {
   DCHECK(callback);
@@ -2211,7 +2211,7 @@ void WallpaperControllerImpl::OnDailyGooglePhotosWallpaperDecoded(
   WallpaperInfo wallpaper_info(
       {account_id, album_id, /*daily_refresh_enabled=*/true,
        ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
-       /*preview_mode=*/false, /*dedup_key=*/absl::nullopt});
+       /*preview_mode=*/false, /*dedup_key=*/std::nullopt});
   wallpaper_info.location = photo_id;
   wallpaper_info.dedup_key = dedup_key;
 
@@ -2553,7 +2553,7 @@ void WallpaperControllerImpl::CalculateWallpaperColors() {
     return;
   }
 
-  absl::optional<WallpaperCalculatedColors> colors =
+  std::optional<WallpaperCalculatedColors> colors =
       pref_manager_->GetCachedWallpaperColors(
           current_wallpaper_->wallpaper_info().location);
   if (colors) {
@@ -2876,7 +2876,7 @@ void WallpaperControllerImpl::UpdateDailyRefreshWallpaper(
           GooglePhotosWallpaperParams(
               account_id, info.collection_id,
               /*daily_refresh_enabled=*/true, info.layout,
-              /*preview_mode=*/false, /*dedup_key=*/absl::nullopt),
+              /*preview_mode=*/false, /*dedup_key=*/std::nullopt),
           std::move(on_done));
     } else {
       DCHECK_EQ(info.type, WallpaperType::kDaily);
@@ -3029,7 +3029,7 @@ void WallpaperControllerImpl::HandleGooglePhotosWallpaperInfoSyncedIn(
           GooglePhotosWallpaperParams(
               account_id, info.collection_id,
               /*daily_refresh_enabled=*/true, info.layout,
-              /*preview_mode=*/false, /*dedup_key=*/absl::nullopt),
+              /*preview_mode=*/false, /*dedup_key=*/std::nullopt),
           base::DoNothing());
     }
   } else {

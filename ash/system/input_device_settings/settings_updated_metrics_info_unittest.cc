@@ -180,7 +180,7 @@ TEST(SettingsUpdatedMetricsInfoTest, ConversionCheckPeriodCountsAllZero) {
 TEST(SettingsUpdatedMetricsInfoTest, CheckCountUpdates) {
   const base::Time start_time =
       base::Time::FromDeltaSinceWindowsEpoch(base::Days(10000));
-  absl::optional<TimePeriod> optional_period;
+  std::optional<TimePeriod> optional_period;
   SettingsUpdatedMetricsInfo metrics_info(
       SettingsUpdatedMetricsInfo::Category::kFirstEver, start_time);
 
@@ -248,7 +248,7 @@ TEST(SettingsUpdatedMetricsInfoTest, CheckCountUpdates) {
   EXPECT_EQ(1, metrics_info.GetCount(TimePeriod::kThreeDays));
   EXPECT_EQ(2, metrics_info.GetCount(TimePeriod::kOneWeek));
 
-  // If >1week, nothing changes and return absl::nullopt.
+  // If >1week, nothing changes and return std::nullopt.
   optional_period =
       metrics_info.RecordSettingsUpdate(start_time + base::Days(7));
   EXPECT_FALSE(optional_period);

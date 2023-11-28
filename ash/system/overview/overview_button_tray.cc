@@ -218,7 +218,7 @@ void OverviewButtonTray::OnButtonPressed(const ui::Event& event) {
       views::InkDrop::Get(this)->AnimateToState(
           views::InkDropState::DEACTIVATED, nullptr);
       wm::ActivateWindow(new_active_window);
-      last_press_event_time_ = absl::nullopt;
+      last_press_event_time_ = std::nullopt;
       return;
     }
   }
@@ -226,8 +226,8 @@ void OverviewButtonTray::OnButtonPressed(const ui::Event& event) {
   // If not in overview mode record the time of this tap. A subsequent tap will
   // be checked against this to see if we should quick switch.
   last_press_event_time_ = overview_controller->InOverviewSession()
-                               ? absl::nullopt
-                               : absl::make_optional(event.time_stamp());
+                               ? std::nullopt
+                               : std::make_optional(event.time_stamp());
 
   if (overview_controller->InOverviewSession())
     overview_controller->EndOverview(OverviewEndAction::kOverviewButton);

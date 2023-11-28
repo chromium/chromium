@@ -5,6 +5,7 @@
 #ifndef ASH_PUBLIC_CPP_DESK_TEMPLATE_H_
 #define ASH_PUBLIC_CPP_DESK_TEMPLATE_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
@@ -13,7 +14,6 @@
 #include "base/values.h"
 #include "components/app_restore/restore_data.h"
 #include "components/sync_device_info/device_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace aura {
 class Window;

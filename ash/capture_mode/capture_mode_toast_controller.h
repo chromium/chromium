@@ -5,10 +5,11 @@
 #ifndef ASH_CAPTURE_MODE_CAPTURE_MODE_TOAST_CONTROLLER_H_
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_TOAST_CONTROLLER_H_
 
+#include <optional>
+
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
 namespace gfx {
@@ -88,7 +89,7 @@ class ASH_EXPORT CaptureModeToastController {
       toast_contents_view_ = nullptr;
 
   // Stores the toast type of the `capture_toast_widget_` after it's created.
-  absl::optional<CaptureToastType> current_toast_type_;
+  std::optional<CaptureToastType> current_toast_type_;
 
   // Started when `capture_toast_widget_` is shown for `kCameraPreview`. Runs
   // MaybeDismissCaptureToast() to fade out the capture toast if possible.

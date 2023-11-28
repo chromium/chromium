@@ -67,7 +67,7 @@ class CompatModeButtonControllerTest : public CompatModeTestBase {
   // CompatModeTestBase:
   void SetUp() override {
     CompatModeTestBase::SetUp();
-    widget_ = CreateArcWidget(/*app_id=*/absl::nullopt);
+    widget_ = CreateArcWidget(/*app_id=*/std::nullopt);
     controller_.set_frame_header(
         std::make_unique<FakeFrameHeader>(widget_.get()));
     controller_.SetPrefDelegate(pref_delegate());

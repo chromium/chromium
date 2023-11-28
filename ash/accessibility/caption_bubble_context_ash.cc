@@ -22,7 +22,7 @@ CaptionBubbleContextAsh::CaptionBubbleContextAsh() = default;
 CaptionBubbleContextAsh::~CaptionBubbleContextAsh() = default;
 
 void CaptionBubbleContextAsh::GetBounds(GetBoundsCallback callback) const {
-  const absl::optional<gfx::Rect> bounds =
+  const std::optional<gfx::Rect> bounds =
       WorkAreaInsets::ForWindow(Shell::GetRootWindowForNewWindows())
           ->user_work_area_bounds();
   if (!bounds.has_value()) {

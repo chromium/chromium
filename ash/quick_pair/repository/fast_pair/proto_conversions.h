@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "ash/quick_pair/proto/fastpair.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #ifndef ASH_QUICK_PAIR_REPOSITORY_FAST_PAIR_PROTO_CONVERSIONS_H_
 #define ASH_QUICK_PAIR_REPOSITORY_FAST_PAIR_PROTO_CONVERSIONS_H_
@@ -17,7 +18,7 @@ nearby::fastpair::FastPairInfo BuildFastPairInfo(
     const std::string& hex_model_id,
     const std::vector<uint8_t>& account_key,
     const std::string& mac_address,
-    const absl::optional<std::string>& display_name,
+    const std::optional<std::string>& display_name,
     DeviceMetadata* metadata);
 
 nearby::fastpair::FastPairInfo BuildFastPairInfoForOptIn(

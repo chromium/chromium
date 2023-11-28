@@ -60,7 +60,7 @@ class ASH_EXPORT GooglePhotosWallpaperManager {
       ash::personalization_app::mojom::GooglePhotosPhotoPtr photo,
       const AccountId& account_id,
       LoadGooglePhotosWallpaperCallback callback,
-      const absl::optional<std::string>& access_token);
+      const std::optional<std::string>& access_token);
 
   void OnGooglePhotosWallpaperDownloaded(
       const WallpaperType type,

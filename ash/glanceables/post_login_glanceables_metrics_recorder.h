@@ -5,9 +5,10 @@
 #ifndef ASH_GLANCEABLES_POST_LOGIN_GLANCEABLES_METRICS_RECORDER_H_
 #define ASH_GLANCEABLES_POST_LOGIN_GLANCEABLES_METRICS_RECORDER_H_
 
+#include <optional>
+
 #include "ash/wm/overview/overview_controller.h"
 #include "base/scoped_observation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -39,8 +40,8 @@ class ASH_EXPORT PostLoginGlanceablesMetricsRecorder : public OverviewObserver {
  private:
   void RecordHypotheticalFetchEvent(DataFetchEventSource source);
 
-  absl::optional<base::Time> fifteen_second_timestamp_;
-  absl::optional<base::Time> thirty_second_timestamp_;
+  std::optional<base::Time> fifteen_second_timestamp_;
+  std::optional<base::Time> thirty_second_timestamp_;
 
   base::ScopedObservation<OverviewController, OverviewObserver>
       overview_observation_{this};

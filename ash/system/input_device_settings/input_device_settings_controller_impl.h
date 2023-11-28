@@ -248,7 +248,7 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
       notification_controller_;
 
   raw_ptr<PrefService> active_pref_service_ = nullptr;  // Not owned.
-  absl::optional<AccountId> active_account_id_;
+  std::optional<AccountId> active_account_id_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   // Boolean which notes whether or not there is a settings update in progress.

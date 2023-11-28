@@ -60,16 +60,14 @@ class TestOsFeedbackDelegate : public OsFeedbackDelegate {
 
   bool IsChildAccount() override { return false; }
 
-  absl::optional<GURL> GetLastActivePageUrl() override {
-    return GURL(kPageUrl);
+  std::optional<GURL> GetLastActivePageUrl() override { return GURL(kPageUrl); }
+
+  std::optional<std::string> GetLinkedPhoneMacAddress() override {
+    return kHasLinkedCrossDevicePhone ? std::make_optional(kTestMacAddress)
+                                      : std::nullopt;
   }
 
-  absl::optional<std::string> GetLinkedPhoneMacAddress() override {
-    return kHasLinkedCrossDevicePhone ? absl::make_optional(kTestMacAddress)
-                                      : absl::nullopt;
-  }
-
-  absl::optional<std::string> GetSignedInUserEmail() const override {
+  std::optional<std::string> GetSignedInUserEmail() const override {
     return kUseInternalUserEmail ? kSignedInInternalUserEmail
                                  : kSignedInUserEmail;
   }

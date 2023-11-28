@@ -189,7 +189,7 @@ TEST_F(PeripheralBatteryNotifierListenerTest, Basic) {
   const PeripheralBatteryNotifier::NotificationInfo& info =
       battery_notifier_->battery_notifications_[kTestBatteryId];
 
-  EXPECT_EQ(absl::nullopt, info.level);
+  EXPECT_EQ(std::nullopt, info.level);
   EXPECT_EQ(GetTestingClock(), info.last_notification_timestamp);
   EXPECT_FALSE(
       message_center_->FindVisibleNotificationById(kTestBatteryNotificationId));
@@ -214,7 +214,7 @@ TEST_F(PeripheralBatteryNotifierListenerTest, Basic) {
   // Level -1 at time 115, cancel previous notification
   ClockAdvance(base::Seconds(5));
   SendBatteryUpdate(kTestBatteryPath, kTestDeviceName, -1);
-  EXPECT_EQ(absl::nullopt, info.level);
+  EXPECT_EQ(std::nullopt, info.level);
   EXPECT_EQ(GetTestingClock() - base::Seconds(5),
             info.last_notification_timestamp);
   EXPECT_FALSE(
@@ -223,7 +223,7 @@ TEST_F(PeripheralBatteryNotifierListenerTest, Basic) {
   // Level 50 at time 120, no low-battery notification.
   ClockAdvance(base::Seconds(5));
   SendBatteryUpdate(kTestBatteryPath, kTestDeviceName, 50);
-  EXPECT_EQ(absl::nullopt, info.level);
+  EXPECT_EQ(std::nullopt, info.level);
   EXPECT_EQ(GetTestingClock() - base::Seconds(10),
             info.last_notification_timestamp);
   EXPECT_FALSE(

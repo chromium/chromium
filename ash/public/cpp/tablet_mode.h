@@ -5,10 +5,11 @@
 #ifndef ASH_PUBLIC_CPP_TABLET_MODE_H_
 #define ASH_PUBLIC_CPP_TABLET_MODE_H_
 
+#include <optional>
+
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/run_loop.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display_observer.h"
 
 namespace display {
@@ -75,7 +76,7 @@ class ASH_PUBLIC_EXPORT TabletMode {
   //   nullopt: reset the forcing, UI in the default behavior (i.e. checking the
   //   physical state).
   // Returns true if it actually initiates the change of the tablet mode state.
-  virtual bool ForceUiTabletModeState(absl::optional<bool> enabled) = 0;
+  virtual bool ForceUiTabletModeState(std::optional<bool> enabled) = 0;
 
   // Enable/disable the tablet mode. Used only by test cases.
   virtual void SetEnabledForTest(bool enabled) = 0;

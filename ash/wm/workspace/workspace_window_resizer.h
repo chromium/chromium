@@ -211,7 +211,7 @@ class ASH_EXPORT WorkspaceWindowResizer : public WindowResizer {
   // Timer for dwell time countdown.
   base::OneShotTimer dwell_countdown_timer_;
   // The location for drag maximize in screen.
-  absl::optional<gfx::PointF> dwell_location_in_screen_;
+  std::optional<gfx::PointF> dwell_location_in_screen_;
 
   // The latest location passed to `Drag()` in screen coordinates.
   gfx::PointF last_location_in_screen_;

@@ -58,7 +58,7 @@ class MockMessageView : public message_center::MessageView {
 
  private:
   std::unique_ptr<message_center::NotificationControlButtonsView> buttons_view_;
-  absl::optional<float> slide_amount_;
+  std::optional<float> slide_amount_;
 };
 
 }  // namespace

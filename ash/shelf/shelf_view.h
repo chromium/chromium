@@ -6,6 +6,7 @@
 #define ASH_SHELF_SHELF_VIEW_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -27,7 +28,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/layer_tree_owner.h"
@@ -353,7 +353,7 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
     return shelf_menu_model_adapter_.get();
   }
 
-  absl::optional<size_t> current_ghost_view_index() const {
+  std::optional<size_t> current_ghost_view_index() const {
     return current_ghost_view_index_;
   }
 
@@ -476,7 +476,7 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
 
   // If there is a drag operation in progress it's canceled. If |modified_index|
   // is valid, the new position of the corresponding item is returned.
-  absl::optional<size_t> CancelDrag(absl::optional<size_t> modified_index);
+  std::optional<size_t> CancelDrag(std::optional<size_t> modified_index);
 
   // Returns rectangle bounds used for drag insertion.
   gfx::Rect GetBoundsForDragInsertInScreen();
@@ -663,7 +663,7 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   raw_ptr<views::Separator, ExperimentalAsh> separator_ = nullptr;
 
   // Index of |separator_|. It is set to nullopt if it is invisible.
-  absl::optional<size_t> separator_index_ = absl::nullopt;
+  std::optional<size_t> separator_index_ = std::nullopt;
 
   // Used in |drag_view_relative_to_ideal_bounds_| to represent the relative
   // position between |drag_view_| and its ideal bounds in shelf.
@@ -685,7 +685,7 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   gfx::Point drag_origin_;
 
   // Index |drag_view_| was initially at.
-  absl::optional<size_t> start_drag_index_ = absl::nullopt;
+  std::optional<size_t> start_drag_index_ = std::nullopt;
 
   // Used for the context menu of a particular item.
   ShelfID context_menu_id_;
@@ -743,7 +743,7 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // Record the index for the last pressed shelf item. This variable is used to
   // check if a repost event occurs on the same shelf item as previous one. If
   // so, the repost event should be ignored.
-  absl::optional<size_t> last_pressed_index_ = absl::nullopt;
+  std::optional<size_t> last_pressed_index_ = std::nullopt;
 
   // Tracks UMA metrics based on shelf button press actions.
   ShelfButtonPressedMetricTracker shelf_button_pressed_metric_tracker_;
@@ -793,7 +793,7 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   raw_ptr<GhostImageView, ExperimentalAsh> last_ghost_view_ = nullptr;
 
   // The index in the shelf app icons where the |current_ghost_view_| will show.
-  absl::optional<size_t> current_ghost_view_index_ = absl::nullopt;
+  std::optional<size_t> current_ghost_view_index_ = std::nullopt;
 
   // When the scrollable shelf is enabled, |shelf_button_delegate_| should
   // be ScrollableShelfView.
@@ -807,10 +807,10 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   std::unique_ptr<FadeInAnimationDelegate> fade_in_animation_delegate_;
 
   // Tracks the icon move animation.
-  absl::optional<ui::ThroughputTracker> move_animation_tracker_;
+  std::optional<ui::ThroughputTracker> move_animation_tracker_;
 
   // Tracks the icon fade-out animation.
-  absl::optional<ui::ThroughputTracker> fade_out_animation_tracker_;
+  std::optional<ui::ThroughputTracker> fade_out_animation_tracker_;
 
   // Called when showing shelf context menu.
   base::RepeatingClosure context_menu_shown_callback_;

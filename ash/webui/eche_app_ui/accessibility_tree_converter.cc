@@ -5,6 +5,7 @@
 #include "ash/webui/eche_app_ui/accessibility_tree_converter.h"
 
 #include <algorithm>
+#include <optional>
 #include <vector>
 
 #include "ash/webui/eche_app_ui/proto/accessibility_mojom.pb.h"
@@ -14,7 +15,6 @@
 #include "base/functional/callback_forward.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "services/accessibility/android/public/mojom/accessibility_helper.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 
 namespace ash::eche_app {
@@ -25,7 +25,7 @@ AccessibilityTreeConverter::~AccessibilityTreeConverter() = default;
 template <class ProtoType, class MojomType>
 void AccessibilityTreeConverter::CopyRepeatedPtrFieldToOptionalVector(
     const ::google::protobuf::RepeatedPtrField<ProtoType>& in_data,
-    absl::optional<std::vector<MojomType>>& out_data,
+    std::optional<std::vector<MojomType>>& out_data,
     base::RepeatingCallback<MojomType(ProtoType)> transform) {
   if (!in_data.empty()) {
     auto out = std::vector<MojomType>();
@@ -40,7 +40,7 @@ void AccessibilityTreeConverter::CopyRepeatedPtrFieldToOptionalVector(
 template <class SharedType>
 void AccessibilityTreeConverter::CopyRepeatedPtrFieldToOptionalVector(
     const ::google::protobuf::RepeatedPtrField<SharedType>& in_data,
-    absl::optional<std::vector<SharedType>>& out_data) {
+    std::optional<std::vector<SharedType>>& out_data) {
   CopyRepeatedPtrFieldToOptionalVector(
       in_data, out_data, base::BindRepeating([](SharedType in) { return in; }));
 }
@@ -48,7 +48,7 @@ void AccessibilityTreeConverter::CopyRepeatedPtrFieldToOptionalVector(
 template <class ProtoPairType, class MojomKeyType, class MojomValueType>
 void AccessibilityTreeConverter::ConvertProperties(
     const ::google::protobuf::RepeatedPtrField<ProtoPairType>& in_properties,
-    absl::optional<base::flat_map<MojomKeyType, MojomValueType>>&
+    std::optional<base::flat_map<MojomKeyType, MojomValueType>>&
         out_properties) {
   if (in_properties.empty()) {
     return;
@@ -56,7 +56,7 @@ void AccessibilityTreeConverter::ConvertProperties(
   out_properties = base::flat_map<MojomKeyType, MojomValueType>();
   for (const ProtoPairType& pair : in_properties) {
     // There is a ToMojomProperty function for various mojom types.
-    absl::optional<MojomKeyType> key =
+    std::optional<MojomKeyType> key =
         AccessibilityTreeConverter::ToMojomProperty(pair.key());
     if (!key.has_value()) {
       continue;
@@ -72,16 +72,16 @@ template <class ProtoPropertyPairType,
 bool AccessibilityTreeConverter::ConvertListProperties(
     const ::google::protobuf::RepeatedPtrField<ProtoPropertyPairType>&
         in_properties,
-    absl::optional<base::flat_map<MojomKeyType, std::vector<MojomValueType>>>&
+    std::optional<base::flat_map<MojomKeyType, std::vector<MojomValueType>>>&
         out_properties,
     base::RepeatingCallback<bool(ProtoValueType,
-                                 absl::optional<MojomValueType>&)> transform) {
+                                 std::optional<MojomValueType>&)> transform) {
   if (in_properties.empty()) {
     return true;
   }
   out_properties = base::flat_map<MojomKeyType, std::vector<MojomValueType>>();
   for (const ProtoPropertyPairType& pair : in_properties) {
-    absl::optional<MojomKeyType> key =
+    std::optional<MojomKeyType> key =
         AccessibilityTreeConverter::ToMojomProperty(pair.key());
     if (!key.has_value()) {
       continue;
@@ -90,7 +90,7 @@ bool AccessibilityTreeConverter::ConvertListProperties(
 
     (*out_properties)[*key] = std::vector<MojomValueType>();
     for (const ProtoValueType& value : list) {
-      absl::optional<MojomValueType> converted;
+      std::optional<MojomValueType> converted;
       bool success = transform.Run(value, converted);
       if (success && converted.has_value()) {
         (*out_properties)[*key].emplace_back(std::move(*converted));
@@ -108,12 +108,12 @@ template <class ProtoPropertyPairType,
 bool AccessibilityTreeConverter::ConvertListProperties(
     const ::google::protobuf::RepeatedPtrField<ProtoPropertyPairType>&
         in_properties,
-    absl::optional<base::flat_map<MojomKeyType, std::vector<SharedValueType>>>&
+    std::optional<base::flat_map<MojomKeyType, std::vector<SharedValueType>>>&
         out_properties) {
   return ConvertListProperties(
       in_properties, out_properties,
       base::BindRepeating(
-          [](SharedValueType in, absl::optional<SharedValueType>& out) {
+          [](SharedValueType in, std::optional<SharedValueType>& out) {
             out = std::move(in);
             return true;
           }));
@@ -172,7 +172,7 @@ AccessibilityTreeConverter::ConvertEventDataProtoToMojom(
   return out_data;
 }
 
-absl::optional<proto::AccessibilityActionType> ConvertType(
+std::optional<proto::AccessibilityActionType> ConvertType(
     ax::mojom::Action action_type) {
   switch (action_type) {
     case ax::mojom::Action::kDoDefault:
@@ -216,7 +216,7 @@ absl::optional<proto::AccessibilityActionType> ConvertType(
     case ax::mojom::Action::kLongClick:
       return proto::AccessibilityActionType::ACTION_LONG_CLICK;
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
@@ -277,7 +277,7 @@ void PopulateActionParameters(const ui::AXActionData& chrome_data,
   }
 }
 
-absl::optional<proto::AccessibilityActionData>
+std::optional<proto::AccessibilityActionData>
 AccessibilityTreeConverter::ConvertActionDataToProto(
     const ui::AXActionData& data,
     int32_t window_id) {
@@ -285,7 +285,7 @@ AccessibilityTreeConverter::ConvertActionDataToProto(
 
   auto action_type = ConvertType(data.action);
   if (!action_type.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   action_data.set_window_id(window_id);
@@ -370,7 +370,7 @@ mojo::StructPtr<AXNodeData> AccessibilityTreeConverter::ToMojomNodeData(
       mojom_out->spannable_string_properties,
       base::BindRepeating(
           [](AccessibilityTreeConverter* converter, proto::SpanEntry entry,
-             absl::optional<ax::android::mojom::SpanEntryPtr>& out_entry) {
+             std::optional<ax::android::mojom::SpanEntryPtr>& out_entry) {
             auto result_ptr = ax::android::mojom::SpanEntry::New();
             if (entry.start() >= entry.end()) {
               return false;
@@ -470,7 +470,7 @@ mojo::StructPtr<AXNodeData> AccessibilityTreeConverter::ToMojomNodeData(
 }
 
 // Enum converters
-absl::optional<AXEventType> AccessibilityTreeConverter::ToMojomEventType(
+std::optional<AXEventType> AccessibilityTreeConverter::ToMojomEventType(
     const proto::AccessibilityEventType& event_type) {
   switch (event_type) {
     case proto::TYPE_VIEW_FOCUSED:
@@ -526,10 +526,10 @@ absl::optional<AXEventType> AccessibilityTreeConverter::ToMojomEventType(
     case proto::AccessibilityEventType_INT_MAX_SENTINEL_DO_NOT_USE_:
       break;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<AXRangeType> AccessibilityTreeConverter::ToMojomRangeType(
+std::optional<AXRangeType> AccessibilityTreeConverter::ToMojomRangeType(
     const proto::AccessibilityRangeType range_type) {
   switch (range_type) {
     case proto::TYPE_INT:
@@ -542,11 +542,10 @@ absl::optional<AXRangeType> AccessibilityTreeConverter::ToMojomRangeType(
     case proto::AccessibilityRangeType_INT_MAX_SENTINEL_DO_NOT_USE_:
       break;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<AXSelectionMode>
-AccessibilityTreeConverter::ToMojomSelectionMode(
+std::optional<AXSelectionMode> AccessibilityTreeConverter::ToMojomSelectionMode(
     const proto::AccessibilitySelectionMode& selection_mode) {
   switch (selection_mode) {
     case proto::MODE_ACCESSIBILITY_SELECTION_MODE_NONE:
@@ -559,9 +558,9 @@ AccessibilityTreeConverter::ToMojomSelectionMode(
     case proto::AccessibilitySelectionMode_INT_MAX_SENTINEL_DO_NOT_USE_:
       break;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
-absl::optional<AXWindowType> AccessibilityTreeConverter::ToMojomWindowType(
+std::optional<AXWindowType> AccessibilityTreeConverter::ToMojomWindowType(
     const proto::AccessibilityWindowType& window_type) {
   switch (window_type) {
     case proto::TYPE_ACCESSIBILITY_OVERLAY:
@@ -577,10 +576,10 @@ absl::optional<AXWindowType> AccessibilityTreeConverter::ToMojomWindowType(
     case proto::AccessibilityWindowType_INT_MAX_SENTINEL_DO_NOT_USE_:
       break;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<AXSpanType> AccessibilityTreeConverter::ToMojomSpanType(
+std::optional<AXSpanType> AccessibilityTreeConverter::ToMojomSpanType(
     const proto::SpanType& span_type) {
   switch (span_type) {
     case proto::TYPE_URL:
@@ -591,11 +590,11 @@ absl::optional<AXSpanType> AccessibilityTreeConverter::ToMojomSpanType(
     case proto::SpanType_INT_MAX_SENTINEL_DO_NOT_USE_:
       break;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Property Converters
-absl::optional<AXEventIntProperty> AccessibilityTreeConverter::ToMojomProperty(
+std::optional<AXEventIntProperty> AccessibilityTreeConverter::ToMojomProperty(
     const proto::AccessibilityEventIntProperty& property) {
   switch (property) {
     case proto::PROPERTY_ACTION:
@@ -624,9 +623,9 @@ absl::optional<AXEventIntProperty> AccessibilityTreeConverter::ToMojomProperty(
     case proto::AccessibilityEventIntProperty_INT_MAX_SENTINEL_DO_NOT_USE_:
       break;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
-absl::optional<AXEventIntListProperty>
+std::optional<AXEventIntListProperty>
 AccessibilityTreeConverter::ToMojomProperty(
     const proto::AccessibilityEventIntListProperty& property) {
   switch (property) {
@@ -636,9 +635,9 @@ AccessibilityTreeConverter::ToMojomProperty(
     case proto::AccessibilityEventIntListProperty_INT_MAX_SENTINEL_DO_NOT_USE_:
       break;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
-absl::optional<AXEventStringProperty>
+std::optional<AXEventStringProperty>
 AccessibilityTreeConverter::ToMojomProperty(
     const proto::AccessibilityEventStringProperty& property) {
   switch (property) {
@@ -652,9 +651,9 @@ AccessibilityTreeConverter::ToMojomProperty(
     case proto::AccessibilityEventStringProperty_INT_MAX_SENTINEL_DO_NOT_USE_:
       break;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
-absl::optional<AXIntProperty> AccessibilityTreeConverter::ToMojomProperty(
+std::optional<AXIntProperty> AccessibilityTreeConverter::ToMojomProperty(
     const proto::AccessibilityIntProperty& property) {
   switch (property) {
     case proto::PROPERTY_LABEL_FOR:
@@ -679,9 +678,9 @@ absl::optional<AXIntProperty> AccessibilityTreeConverter::ToMojomProperty(
     case proto::AccessibilityIntProperty_INT_MAX_SENTINEL_DO_NOT_USE_:
       break;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
-absl::optional<AXIntListProperty> AccessibilityTreeConverter::ToMojomProperty(
+std::optional<AXIntListProperty> AccessibilityTreeConverter::ToMojomProperty(
     const proto::AccessibilityIntListProperty& property) {
   switch (property) {
     case proto::PROPERTY_CHILD_NODE_IDS:
@@ -690,9 +689,9 @@ absl::optional<AXIntListProperty> AccessibilityTreeConverter::ToMojomProperty(
     case proto::AccessibilityIntListProperty_INT_MAX_SENTINEL_DO_NOT_USE_:
       break;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
-absl::optional<AXStringProperty> AccessibilityTreeConverter::ToMojomProperty(
+std::optional<AXStringProperty> AccessibilityTreeConverter::ToMojomProperty(
     const proto::AccessibilityStringProperty& property) {
   switch (property) {
     case proto::PROPERTY_ACCESSIBILITY_PACKAGE_NAME:
@@ -721,9 +720,9 @@ absl::optional<AXStringProperty> AccessibilityTreeConverter::ToMojomProperty(
     case proto::AccessibilityStringProperty_INT_MAX_SENTINEL_DO_NOT_USE_:
       break;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
-absl::optional<AXBoolProperty> AccessibilityTreeConverter::ToMojomProperty(
+std::optional<AXBoolProperty> AccessibilityTreeConverter::ToMojomProperty(
     const proto::AccessibilityBooleanProperty& property) {
   switch (property) {
     case proto::PROPERTY_CHECKABLE:
@@ -776,10 +775,10 @@ absl::optional<AXBoolProperty> AccessibilityTreeConverter::ToMojomProperty(
     case proto::AccessibilityBooleanProperty_INT_MAX_SENTINEL_DO_NOT_USE_:
       break;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<AXWindowIntProperty> AccessibilityTreeConverter::ToMojomProperty(
+std::optional<AXWindowIntProperty> AccessibilityTreeConverter::ToMojomProperty(
     const proto::AccessibilityWindowIntProperty& property) {
   switch (property) {
     case proto::PROPERTY_ANCHOR_NODE_ID:
@@ -792,9 +791,9 @@ absl::optional<AXWindowIntProperty> AccessibilityTreeConverter::ToMojomProperty(
     case proto::AccessibilityWindowIntProperty_INT_MAX_SENTINEL_DO_NOT_USE_:
       break;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
-absl::optional<AXWindowIntListProperty>
+std::optional<AXWindowIntListProperty>
 AccessibilityTreeConverter::ToMojomProperty(
     const proto::AccessibilityWindowIntListProperty& property) {
   switch (property) {
@@ -804,9 +803,9 @@ AccessibilityTreeConverter::ToMojomProperty(
     case proto::AccessibilityWindowIntListProperty_INT_MAX_SENTINEL_DO_NOT_USE_:
       break;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
-absl::optional<AXWindowStringProperty>
+std::optional<AXWindowStringProperty>
 AccessibilityTreeConverter::ToMojomProperty(
     const proto::AccessibilityWindowStringProperty& property) {
   switch (property) {
@@ -816,10 +815,9 @@ AccessibilityTreeConverter::ToMojomProperty(
     case proto::AccessibilityWindowStringProperty_INT_MAX_SENTINEL_DO_NOT_USE_:
       break;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
-absl::optional<AXWindowBoolProperty>
-AccessibilityTreeConverter::ToMojomProperty(
+std::optional<AXWindowBoolProperty> AccessibilityTreeConverter::ToMojomProperty(
     const proto::AccessibilityWindowBooleanProperty& property) {
   switch (property) {
     case proto::PROPERTY_ACCESSIBILITY_FOCUSED:
@@ -834,7 +832,7 @@ AccessibilityTreeConverter::ToMojomProperty(
     case proto::AccessibilityWindowBooleanProperty_INT_MAX_SENTINEL_DO_NOT_USE_:
       break;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace ash::eche_app

@@ -43,7 +43,7 @@ gfx::RoundedCornersF GetRoundedCornersForPreviewView(
     const gfx::Rect& preview_bounds_in_screen,
     float scale,
     bool show,
-    absl::optional<gfx::RoundedCornersF> preview_view_rounded_corners) {
+    std::optional<gfx::RoundedCornersF> preview_view_rounded_corners) {
   if (!show) {
     return gfx::RoundedCornersF();
   }

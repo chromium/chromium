@@ -995,8 +995,8 @@ RootWindowController::security_curtain_widget_controller() {
 
 void RootWindowController::StartSplitViewOverviewSession(
     aura::Window* window,
-    absl::optional<OverviewStartAction> action,
-    absl::optional<OverviewEnterExitType> type,
+    std::optional<OverviewStartAction> action,
+    std::optional<OverviewEnterExitType> type,
     WindowSnapActionSource snap_action_source) {
   if (split_view_overview_session_ ||
       !OverviewController::Get()->CanEnterOverview()) {

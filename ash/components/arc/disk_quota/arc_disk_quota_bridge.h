@@ -5,13 +5,14 @@
 #ifndef ASH_COMPONENTS_ARC_DISK_QUOTA_ARC_DISK_QUOTA_BRIDGE_H_
 #define ASH_COMPONENTS_ARC_DISK_QUOTA_ARC_DISK_QUOTA_BRIDGE_H_
 
+#include <optional>
+
 #include "ash/components/arc/mojom/disk_quota.mojom.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/cryptohome/dbus-constants.h"
 
 namespace content {
@@ -108,7 +109,7 @@ class ArcDiskQuotaBridge : public KeyedService, public mojom::DiskQuotaHost {
 
  private:
   void OnGetFreeDiskSpace(GetFreeDiskSpaceCallback callback,
-                          absl::optional<int64_t> reply);
+                          std::optional<int64_t> reply);
 
   const raw_ptr<ArcBridgeService, ExperimentalAsh>
       arc_bridge_service_;  // Owned by ArcServiceManager.

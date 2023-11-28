@@ -73,7 +73,7 @@ void AddNotification(const std::string& notification_id,
                 message_center::NotifierType::SYSTEM_COMPONENT, "system",
                 NotificationCatalogName::kHPSNotify)
           : message_center::NotifierId(/*url=*/GURL(), notifier_title,
-                                       /*web_app_id=*/absl::nullopt);
+                                       /*web_app_id=*/std::nullopt);
 
   message_center::MessageCenter::Get()->AddNotification(
       std::make_unique<message_center::Notification>(
@@ -245,7 +245,7 @@ class SnoopingProtectionNotificationBlockerTest : public AshTestBase {
     message_center::Notification* notification =
         message_center::MessageCenter::Get()->FindVisibleNotificationById(
             SnoopingProtectionNotificationBlocker::kInfoNotificationId);
-    notification->delegate()->Click(button_index, absl::nullopt);
+    notification->delegate()->Click(button_index, std::nullopt);
   }
 
   int GetNumOsSmartPrivacySettingsOpened() {
@@ -520,7 +520,7 @@ TEST(SnoopingProtectionNotificationBlockerInternalTest, WebsiteNotifierTitles) {
   // Website with a trusted title uses the title.
   const message_center::NotifierId trusted_notifier(
       GURL("https://trusted.com:443"), u"Trusted",
-      /*web_app_id=*/absl::nullopt);
+      /*web_app_id=*/std::nullopt);
   const std::u16string trusted_title =
       hps_internal::GetNotifierTitle<FakeAppRegistryCache>(trusted_notifier,
                                                            AccountId());

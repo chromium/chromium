@@ -33,8 +33,8 @@ class SimpleToggleEffect : public VcEffectsDelegate {
   // Allows setting `icon` and `accessible_name_id` if desired, for unit tests
   // or the emulator.
   SimpleToggleEffect(const std::u16string& label_text,
-                     absl::optional<const gfx::VectorIcon*> icon,
-                     absl::optional<int> accessible_name_id);
+                     std::optional<const gfx::VectorIcon*> icon,
+                     std::optional<int> accessible_name_id);
 
   SimpleToggleEffect(const SimpleToggleEffect&) = delete;
   SimpleToggleEffect& operator=(const SimpleToggleEffect&) = delete;
@@ -42,9 +42,9 @@ class SimpleToggleEffect : public VcEffectsDelegate {
   ~SimpleToggleEffect() override;
 
   // VcEffectsDelegate:
-  absl::optional<int> GetEffectState(VcEffectId effect_id) override;
+  std::optional<int> GetEffectState(VcEffectId effect_id) override;
   void OnEffectControlActivated(VcEffectId effect_id,
-                                absl::optional<int> state) override;
+                                std::optional<int> state) override;
 
   int num_activations_for_testing() { return num_activations_for_testing_; }
 
@@ -150,9 +150,9 @@ class ASH_EXPORT ShaggyFurEffect : public VcEffectsDelegate {
   ~ShaggyFurEffect() override;
 
   // VcEffectsDelegate:
-  absl::optional<int> GetEffectState(VcEffectId effect_id) override;
+  std::optional<int> GetEffectState(VcEffectId effect_id) override;
   void OnEffectControlActivated(VcEffectId effect_id,
-                                absl::optional<int> state) override;
+                                std::optional<int> state) override;
 
   // Returns the number of times the button for `state_value` has been
   // activated.
@@ -188,9 +188,9 @@ class ASH_EXPORT SuperCutnessEffect : public VcEffectsDelegate {
   ~SuperCutnessEffect() override;
 
   // VcEffectsDelegate:
-  absl::optional<int> GetEffectState(VcEffectId effect_id) override;
+  std::optional<int> GetEffectState(VcEffectId effect_id) override;
   void OnEffectControlActivated(VcEffectId effect_id,
-                                absl::optional<int> state) override;
+                                std::optional<int> state) override;
 
   // Returns the number of times the button for `state` has been activated.
   int GetNumActivationsForTesting(int state);

@@ -76,8 +76,8 @@ class RecentAppButtonsViewTest : public AshTestBase {
   void NotifyRecentAppAddedOrUpdated() {
     auto app_metadata = phonehub::Notification::AppMetadata(
         kAppName, kPackageName,
-        /*color_icon=*/gfx::Image(), /*monochrome_icon_mask=*/absl::nullopt,
-        /*icon_color=*/absl::nullopt,
+        /*color_icon=*/gfx::Image(), /*monochrome_icon_mask=*/std::nullopt,
+        /*icon_color=*/std::nullopt,
         /*icon_is_monochrome=*/true, kUserId,
         phonehub::proto::AppStreamabilityStatus::STREAMABLE);
 

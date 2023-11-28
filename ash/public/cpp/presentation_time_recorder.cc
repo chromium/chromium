@@ -47,7 +47,7 @@ std::unique_ptr<PresentationTimeRecorder>
 PresentationTimeRecorder::CreateCompositorRecorder(
     aura::Window* window,
     const char* latency_histogram_name,
-    absl::optional<const char*> max_latency_histogram_name) {
+    std::optional<const char*> max_latency_histogram_name) {
   return std::make_unique<CompositorPresentationTimeRecorder>(
       window, latency_histogram_name,
       max_latency_histogram_name.has_value()

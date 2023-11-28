@@ -173,7 +173,7 @@ void ShowDisplayErrorNotification(const std::u16string& message,
               kNotifierDisplayError, NotificationCatalogName::kDisplayError),
           data,
           base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-              base::BindRepeating([](absl::optional<int> button_index) {
+              base::BindRepeating([](std::optional<int> button_index) {
                 if (button_index) {
                   NewWindowDelegate::GetInstance()->OpenFeedbackPage();
                 }

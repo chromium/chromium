@@ -58,7 +58,7 @@ class LocalAuthenticationRequestControllerImplPixelTest : public AshTestBase {
   LocalAuthenticationRequestControllerImplPixelTest() = default;
   ~LocalAuthenticationRequestControllerImplPixelTest() override = default;
 
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }

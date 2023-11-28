@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -73,7 +74,6 @@
 #include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
 #include "components/user_manager/user_type.h"
 #include "media/base/media_switches.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -143,7 +143,7 @@ void FocusFirstOrLastFocusableChild(views::View* root, bool reverse) {
 // |bold_length|: The length of bold text.
 void MakeSectionBold(views::StyledLabel* label,
                      const std::u16string& text,
-                     const absl::optional<int>& bold_start,
+                     const std::optional<int>& bold_start,
                      int bold_length) {
   auto create_style = [&](bool is_bold) {
     views::StyledLabel::RangeStyleInfo style;
@@ -1012,7 +1012,7 @@ void LockContentsView::OnSetTpmLockedState(const AccountId& user,
   }
 
   state->time_until_tpm_unlock =
-      is_locked ? absl::make_optional(time_left) : absl::nullopt;
+      is_locked ? std::make_optional(time_left) : std::nullopt;
 
   LoginBigUserView* big_user =
       TryToFindBigUser(user, true /*require_auth_active*/);
@@ -1107,7 +1107,7 @@ void LockContentsView::OnSystemInfoChanged(
   if (enforced) {
     enable_system_info_enforced_ = show;
   } else {
-    enable_system_info_enforced_ = absl::nullopt;
+    enable_system_info_enforced_ = std::nullopt;
     enable_system_info_if_possible_ |= show;
   }
 
@@ -1442,7 +1442,7 @@ void LockContentsView::ToggleDisableTpmForUserForDebug(const AccountId& user) {
     return;
   }
   if (state->time_until_tpm_unlock.has_value()) {
-    state->time_until_tpm_unlock = absl::nullopt;
+    state->time_until_tpm_unlock = std::nullopt;
   } else {
     state->time_until_tpm_unlock = base::Minutes(5);
   }
@@ -2178,7 +2178,7 @@ void LockContentsView::ShowAuthErrorMessage() {
         {u" ", l10n_util::GetStringUTF16(IDS_ASH_LOGIN_ERROR_CAPS_LOCK_HINT)});
   }
 
-  absl::optional<int> bold_start;
+  std::optional<int> bold_start;
   int bold_length = 0;
   // Display a hint to switch keyboards if there are other active input
   // methods in clamshell mode.

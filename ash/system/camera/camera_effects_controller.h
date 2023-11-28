@@ -91,9 +91,9 @@ class ASH_EXPORT CameraEffectsController : public AutozoomObserver,
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
   // VcEffectsDelegate:
-  absl::optional<int> GetEffectState(VcEffectId effect_id) override;
+  std::optional<int> GetEffectState(VcEffectId effect_id) override;
   void OnEffectControlActivated(VcEffectId effect_id,
-                                absl::optional<int> state) override;
+                                std::optional<int> state) override;
   void RecordMetricsForSetValueEffectOnClick(VcEffectId effect_id,
                                              int state_value) const override;
   void RecordMetricsForSetValueEffectOnStartup(VcEffectId effect_id,

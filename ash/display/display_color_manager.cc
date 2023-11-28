@@ -166,7 +166,7 @@ ParseDisplayProfileFile(const base::FilePath& path,
 
 std::unique_ptr<DisplayColorManager::ColorCalibrationData> ParseVpdEntry(
     bool has_color_correction_matrix) {
-  absl::optional<std::string_view> display_profile_string =
+  std::optional<std::string_view> display_profile_string =
       system::StatisticsProvider::GetInstance()->GetMachineStatistic(
           system::kDisplayProfilesKey);
   DCHECK(display_profile_string);
@@ -366,7 +366,7 @@ bool DisplayColorManager::LoadCalibrationForDisplay(
 
 bool DisplayColorManager::HasVpdDisplayProfilesEntry(
     int64_t product_code) const {
-  absl::optional<std::string_view> display_profile_string =
+  std::optional<std::string_view> display_profile_string =
       system::StatisticsProvider::GetInstance()->GetMachineStatistic(
           system::kDisplayProfilesKey);
   if (!display_profile_string)

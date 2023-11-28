@@ -5,6 +5,7 @@
 #ifndef ASH_METRICS_UI_METRICS_RECORDER_H_
 #define ASH_METRICS_UI_METRICS_RECORDER_H_
 
+#include <optional>
 #include <vector>
 
 #include "ash/ash_export.h"
@@ -12,7 +13,6 @@
 #include "base/time/time.h"
 #include "cc/metrics/custom_metrics_recorder.h"
 #include "cc/metrics/event_latency_tracker.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -46,10 +46,10 @@ class ASH_EXPORT UiMetricsRecorder : public cc::CustomMetricRecorder {
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Login time and session start time of the primary user.
-  absl::optional<base::TimeTicks> user_logged_in_time_;
-  absl::optional<base::TimeTicks> user_session_start_time_;
+  std::optional<base::TimeTicks> user_logged_in_time_;
+  std::optional<base::TimeTicks> user_session_start_time_;
 
-  absl::optional<base::TimeTicks> last_good_dropped_frame_time_;
+  std::optional<base::TimeTicks> last_good_dropped_frame_time_;
 };
 
 }  // namespace ash

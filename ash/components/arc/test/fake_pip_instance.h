@@ -21,7 +21,7 @@ class FakePipInstance : public mojom::PipInstance {
   ~FakePipInstance() override;
 
   int num_closed() { return num_closed_; }
-  absl::optional<bool> suppressed() const { return suppressed_; }
+  std::optional<bool> suppressed() const { return suppressed_; }
 
   // mojom::PipInstance overrides:
   void Init(mojo::PendingRemote<mojom::PipHost> host_remote,
@@ -32,7 +32,7 @@ class FakePipInstance : public mojom::PipInstance {
  private:
   mojo::Remote<mojom::PipHost> host_remote_;
   int num_closed_ = 0;
-  absl::optional<bool> suppressed_;
+  std::optional<bool> suppressed_;
 };
 
 }  // namespace arc

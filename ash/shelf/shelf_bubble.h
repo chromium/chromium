@@ -25,7 +25,7 @@ class ASH_EXPORT ShelfBubble : public views::BubbleDialogDelegateView,
   ShelfBubble(views::View* anchor,
               ShelfAlignment alignment,
               bool for_tooltip,
-              absl::optional<views::BubbleBorder::Arrow> arrow_position);
+              std::optional<views::BubbleBorder::Arrow> arrow_position);
 
   ShelfBubble(const ShelfBubble&) = delete;
   ShelfBubble& operator=(const ShelfBubble&) = delete;

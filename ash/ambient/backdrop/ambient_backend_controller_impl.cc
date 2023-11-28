@@ -5,6 +5,7 @@
 #include "ash/ambient/backdrop/ambient_backend_controller_impl.h"
 
 #include <array>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -43,7 +44,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
@@ -173,34 +173,34 @@ std::string BuildBackdropTopicDetails(
   }
 }
 
-absl::optional<std::string> GetStringValue(const base::Value::List& values,
-                                           size_t field_number) {
+std::optional<std::string> GetStringValue(const base::Value::List& values,
+                                          size_t field_number) {
   if (values.empty() || values.size() < field_number)
-    return absl::nullopt;
+    return std::nullopt;
 
   const base::Value& v = values[field_number - 1];
   if (!v.is_string())
-    return absl::nullopt;
+    return std::nullopt;
 
   return v.GetString();
 }
 
-absl::optional<double> GetDoubleValue(const base::Value::List& values,
-                                      size_t field_number) {
+std::optional<double> GetDoubleValue(const base::Value::List& values,
+                                     size_t field_number) {
   if (values.empty() || values.size() < field_number)
-    return absl::nullopt;
+    return std::nullopt;
 
   const base::Value& v = values[field_number - 1];
   if (!v.is_double() && !v.is_int())
-    return absl::nullopt;
+    return std::nullopt;
 
   return v.GetDouble();
 }
 
-absl::optional<bool> GetBoolValue(const base::Value::List& values,
-                                  size_t field_number) {
+std::optional<bool> GetBoolValue(const base::Value::List& values,
+                                 size_t field_number) {
   if (values.empty() || values.size() < field_number)
-    return absl::nullopt;
+    return std::nullopt;
 
   const base::Value& v = values[field_number - 1];
   if (v.is_bool())
@@ -209,13 +209,13 @@ absl::optional<bool> GetBoolValue(const base::Value::List& values,
   if (v.is_int())
     return v.GetInt() > 0;
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<WeatherInfo> ToWeatherInfo(const base::Value& result) {
+std::optional<WeatherInfo> ToWeatherInfo(const base::Value& result) {
   DCHECK(result.is_list());
   if (!result.is_list())
-    return absl::nullopt;
+    return std::nullopt;
 
   WeatherInfo weather_info;
   const auto& list_result = result.GetList();
@@ -328,7 +328,7 @@ class BackdropURLLoader {
   // will be used as the upload body if it is a POST request.
   void Start(
       std::unique_ptr<network::ResourceRequest> resource_request,
-      const absl::optional<std::string>& request_body,
+      const std::optional<std::string>& request_body,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       network::SimpleURLLoader::BodyAsStringCallbackDeprecated callback) {
     // No ongoing downloading task.
@@ -460,7 +460,7 @@ void AmbientBackendControllerImpl::FetchWeather(FetchWeatherCallback callback) {
                   std::move(callback).Run(ToWeatherInfo(*result));
                 } else {
                   DVLOG(1) << "Failed to parse weather json.";
-                  std::move(callback).Run(absl::nullopt);
+                  std::move(callback).Run(std::nullopt);
                 }
               };
 
@@ -468,7 +468,7 @@ void AmbientBackendControllerImpl::FetchWeather(FetchWeatherCallback callback) {
               response->substr(strlen(kJsonPrefix)),
               base::BindOnce(json_handler, std::move(callback)));
         } else {
-          std::move(callback).Run(absl::nullopt);
+          std::move(callback).Run(std::nullopt);
         }
       };
 
@@ -481,7 +481,7 @@ void AmbientBackendControllerImpl::FetchWeather(FetchWeatherCallback callback) {
       CreateResourceRequest(request);
   auto backdrop_url_loader = std::make_unique<BackdropURLLoader>();
   auto* loader_ptr = backdrop_url_loader.get();
-  loader_ptr->Start(std::move(resource_request), /*request_body=*/absl::nullopt,
+  loader_ptr->Start(std::move(resource_request), /*request_body=*/std::nullopt,
                     kAmbientBackendControllerNetworkTag,
                     base::BindOnce(response_handler, std::move(callback),
                                    std::move(backdrop_url_loader)));
@@ -569,7 +569,7 @@ void AmbientBackendControllerImpl::StartToGetSettings(
     const std::string& gaia_id,
     const std::string& access_token) {
   if (gaia_id.empty() || access_token.empty()) {
-    std::move(callback).Run(/*topic_source=*/absl::nullopt);
+    std::move(callback).Run(/*topic_source=*/std::nullopt);
     return;
   }
 
@@ -598,7 +598,7 @@ void AmbientBackendControllerImpl::OnGetSettings(
   auto settings = BackdropClientConfig::ParseGetSettingsResponse(*response);
   // |art_settings| should not be empty if parsed successfully.
   if (settings.art_settings.empty()) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
   } else {
     for (auto& art_setting : settings.art_settings) {
       art_setting.visible = IsArtSettingVisible(art_setting);
@@ -679,7 +679,7 @@ void AmbientBackendControllerImpl::FetchPersonalAlbumsInternal(
   auto backdrop_url_loader = std::make_unique<BackdropURLLoader>();
   auto* loader_ptr = backdrop_url_loader.get();
   loader_ptr->Start(
-      std::move(resource_request), /*request_body=*/absl::nullopt,
+      std::move(resource_request), /*request_body=*/std::nullopt,
       kAmbientBackendControllerNetworkTag,
       base::BindOnce(&AmbientBackendControllerImpl::OnPersonalAlbumsFetched,
                      weak_factory_.GetWeakPtr(), std::move(callback),
@@ -721,7 +721,7 @@ void AmbientBackendControllerImpl::FetchSettingsAndAlbums(
 
 void AmbientBackendControllerImpl::OnSettingsFetched(
     base::RepeatingClosure on_done,
-    const absl::optional<ash::AmbientSettings>& settings) {
+    const std::optional<ash::AmbientSettings>& settings) {
   settings_ = settings;
   std::move(on_done).Run();
 }

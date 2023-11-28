@@ -75,7 +75,7 @@ class AssistantAlarmTimerControllerImpl
  private:
   void PerformAlarmTimerAction(const assistant::util::AlarmTimerAction& action,
                                const std::string& alarm_timer_id,
-                               const absl::optional<base::TimeDelta>& duration);
+                               const std::optional<base::TimeDelta>& duration);
 
   void ScheduleNextTick(const assistant::AssistantTimer& timer);
   void Tick(const std::string& timer_id);

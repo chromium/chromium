@@ -260,7 +260,7 @@ TEST_F(OverviewButtonTrayTest, DisplaysOnBothDisplays) {
   base::RunLoop().RunUntilIdle();
   // DisplayConfigurationObserver enables mirror mode when tablet mode is
   // enabled. Disable mirror mode to test tablet mode with multiple displays.
-  display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(GetTray()->GetVisible());
   EXPECT_TRUE(GetSecondaryTray()->GetVisible());

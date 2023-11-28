@@ -110,7 +110,7 @@ class ASH_EXPORT SearchResultContainerView : public views::View,
   // search result containers that appear in the search results UI before this
   // container.
   // Returns the animation info for this container.
-  virtual absl::optional<ResultsAnimationInfo> ScheduleResultAnimations(
+  virtual std::optional<ResultsAnimationInfo> ScheduleResultAnimations(
       const ResultsAnimationInfo& aggregate_animation_info);
 
   // Appends search result IDs of the search results shown by the container

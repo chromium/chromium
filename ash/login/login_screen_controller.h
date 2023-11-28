@@ -5,6 +5,7 @@
 #ifndef ASH_LOGIN_LOGIN_SCREEN_CONTROLLER_H_
 #define ASH_LOGIN_LOGIN_SCREEN_CONTROLLER_H_
 
+#include <optional>
 #include <vector>
 
 #include "ash/ash_export.h"
@@ -16,7 +17,6 @@
 #include "ash/system/tray/system_tray_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
 
 class PrefRegistrySimple;
@@ -42,7 +42,7 @@ class ASH_EXPORT LoginScreenController : public LoginScreen,
   // authentication check did not run, otherwise it is true/false if auth
   // succeeded/failed.
   using OnAuthenticateCallback =
-      base::OnceCallback<void(absl::optional<bool> success)>;
+      base::OnceCallback<void(std::optional<bool> success)>;
 
   explicit LoginScreenController(SystemTrayNotifier* system_tray_notifier);
 

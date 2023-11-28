@@ -269,7 +269,7 @@ void GpuArcVideoDecoder::OnFrameReady(scoped_refptr<media::VideoFrame> frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(frame);
 
-  absl::optional<int32_t> video_frame_id =
+  std::optional<int32_t> video_frame_id =
       video_frame_pool_->GetVideoFrameId(frame.get());
   if (!video_frame_id) {
     VLOGF(1) << "Failed to get video frame id.";

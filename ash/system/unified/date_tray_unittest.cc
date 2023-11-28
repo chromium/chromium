@@ -56,7 +56,7 @@ CreateAssignmentsForTeachers(int count) {
   for (int i = 0; i < count; ++i) {
     assignments.push_back(std::make_unique<GlanceablesClassroomAssignment>(
         base::StringPrintf("Course %d", i),
-        base::StringPrintf("Course work %d", i), GURL(), absl::nullopt,
+        base::StringPrintf("Course work %d", i), GURL(), std::nullopt,
         base::Time(), GlanceablesClassroomAggregatedSubmissionsState(2, 2, 0)));
   }
   return assignments;
@@ -68,8 +68,8 @@ CreateAssignmentsForStudents(int count) {
   for (int i = 0; i < count; ++i) {
     assignments.push_back(std::make_unique<GlanceablesClassroomAssignment>(
         base::StringPrintf("Course %d", i),
-        base::StringPrintf("Course work %d", i), GURL(), absl::nullopt,
-        base::Time(), absl::nullopt));
+        base::StringPrintf("Course work %d", i), GURL(), std::nullopt,
+        base::Time(), std::nullopt));
   }
   return assignments;
 }

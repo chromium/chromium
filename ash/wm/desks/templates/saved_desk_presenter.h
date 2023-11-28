@@ -65,7 +65,7 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
   // Calls the DeskModel to delete the saved desk with the provided `uuid`. Will
   // record histogram if `record_for_type` is specified.
   void DeleteEntry(const base::Uuid& uuid,
-                   absl::optional<DeskTemplateType> record_for_type);
+                   std::optional<DeskTemplateType> record_for_type);
 
   // Launches `saved_desk` into a new desk.
   void LaunchSavedDesk(std::unique_ptr<DeskTemplate> saved_desk,
@@ -101,7 +101,7 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
   // Callback after deleting an entry. Will then call `RemoveUIEntries` to
   // update the UI by removing the deleted saved desk.
   void OnDeleteEntry(const base::Uuid& uuid,
-                     absl::optional<DeskTemplateType> record_for_type,
+                     std::optional<DeskTemplateType> record_for_type,
                      desks_storage::DeskModel::DeleteEntryStatus status);
 
   // Callback after adding or updating an entry. Will then call

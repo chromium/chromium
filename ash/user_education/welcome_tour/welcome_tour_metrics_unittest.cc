@@ -41,7 +41,7 @@ void ClearPref(const std::string& pref_name) {
 // properly submitted.
 class WelcomeTourInteractionMetricsTest
     : public UserEducationAshTestBase,
-      public ::testing::WithParamInterface<absl::optional<PreventedReason>> {
+      public ::testing::WithParamInterface<std::optional<PreventedReason>> {
  public:
   WelcomeTourInteractionMetricsTest() {
     scoped_feature_list.InitAndEnableFeatureWithParameters(
@@ -72,7 +72,7 @@ class WelcomeTourInteractionMetricsTest
                          ".Interaction.FirstTime.", ToString(interaction)});
   }
 
-  absl::optional<PreventedReason> GetPreventedReason() const {
+  std::optional<PreventedReason> GetPreventedReason() const {
     return GetParam();
   }
 
@@ -94,9 +94,9 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     WelcomeTourInteractionMetricsTest,
     ::testing::Values(
-        absl::nullopt,
-        absl::make_optional(PreventedReason::kCounterfactualExperimentArm),
-        absl::make_optional(PreventedReason::kUnknown)));
+        std::nullopt,
+        std::make_optional(PreventedReason::kCounterfactualExperimentArm),
+        std::make_optional(PreventedReason::kUnknown)));
 
 // Tests -----------------------------------------------------------------------
 

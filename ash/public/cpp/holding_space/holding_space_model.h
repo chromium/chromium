@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -18,7 +19,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/color/color_id.h"
 
 namespace base {
@@ -56,7 +56,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
     // Sets the accessible name that should be used for the item and returns a
     // reference to `this`.
     ScopedItemUpdate& SetAccessibleName(
-        const absl::optional<std::u16string>& accessible_name);
+        const std::optional<std::u16string>& accessible_name);
 
     // Sets the backing file for the item and returns a reference to `this`.
     ScopedItemUpdate& SetBackingFile(const HoldingSpaceFile& file);
@@ -78,17 +78,17 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
     // Sets the secondary text that should be shown for the item and returns a
     // reference to `this`.
     ScopedItemUpdate& SetSecondaryText(
-        const absl::optional<std::u16string>& secondary_text);
+        const std::optional<std::u16string>& secondary_text);
 
     // Sets the color id for the secondary text that should be shown for the
     // item and returns a reference to `this`.
     ScopedItemUpdate& SetSecondaryTextColorId(
-        const absl::optional<ui::ColorId>& secondary_text_color);
+        const std::optional<ui::ColorId>& secondary_text_color);
 
     // Sets the text that should be shown for the item and returns a reference
     // to `this`. If absent, the lossy display name of the backing file will be
     // used.
-    ScopedItemUpdate& SetText(const absl::optional<std::u16string>& text);
+    ScopedItemUpdate& SetText(const std::optional<std::u16string>& text);
 
    private:
     friend class HoldingSpaceModel;
@@ -97,14 +97,14 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
     const raw_ptr<HoldingSpaceModel, ExperimentalAsh> model_;
     const raw_ptr<HoldingSpaceItem, ExperimentalAsh> item_;
 
-    absl::optional<absl::optional<std::u16string>> accessible_name_;
-    absl::optional<HoldingSpaceFile> file_;
-    absl::optional<std::vector<HoldingSpaceItem::InProgressCommand>>
+    std::optional<std::optional<std::u16string>> accessible_name_;
+    std::optional<HoldingSpaceFile> file_;
+    std::optional<std::vector<HoldingSpaceItem::InProgressCommand>>
         in_progress_commands_;
-    absl::optional<HoldingSpaceProgress> progress_;
-    absl::optional<absl::optional<std::u16string>> secondary_text_;
-    absl::optional<absl::optional<ui::ColorId>> secondary_text_color_id_;
-    absl::optional<absl::optional<std::u16string>> text_;
+    std::optional<HoldingSpaceProgress> progress_;
+    std::optional<std::optional<std::u16string>> secondary_text_;
+    std::optional<std::optional<ui::ColorId>> secondary_text_color_id_;
+    std::optional<std::optional<std::u16string>> text_;
     bool invalidate_image_ = false;
   };
 

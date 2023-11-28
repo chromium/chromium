@@ -373,7 +373,7 @@ constexpr char kCompleteMetadataV2MultipleSentenceTemplate[] = R"({
 
 void AssertSerializedString(const std::string& expected,
                             const std::string& actual) {
-  absl::optional<base::Value> expected_value = base::JSONReader::Read(expected);
+  std::optional<base::Value> expected_value = base::JSONReader::Read(expected);
   ASSERT_TRUE(expected_value);
   std::string expected_serialized_value;
   base::JSONWriter::Write(expected_value.value(), &expected_serialized_value);

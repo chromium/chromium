@@ -92,8 +92,7 @@ class ASH_EXPORT WindowMirrorView : public views::View,
 
   // While a window is mirrored, apply dynamic raster scale to the underlying
   // window. This is used in e.g. alt-tab and overview mode.
-  absl::optional<ScopedRasterScaleLayerObserverLock>
-      raster_scale_observer_lock_;
+  std::optional<ScopedRasterScaleLayerObserverLock> raster_scale_observer_lock_;
 };
 
 }  // namespace ash

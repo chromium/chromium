@@ -43,14 +43,14 @@ class ASH_EXPORT VcEffectState {
                 const std::u16string& label_text,
                 int accessible_name_id,
                 views::Button::PressedCallback button_callback,
-                absl::optional<int> state_value = absl::nullopt);
+                std::optional<int> state_value = std::nullopt);
 
   VcEffectState(const VcEffectState&) = delete;
   VcEffectState& operator=(const VcEffectState&) = delete;
 
   ~VcEffectState();
 
-  absl::optional<int> state_value() const { return state_value_; }
+  std::optional<int> state_value() const { return state_value_; }
   const gfx::VectorIcon* icon() const { return icon_; }
   const std::u16string& label_text() const { return label_text_; }
   int accessible_name_id() const { return accessible_name_id_; }
@@ -75,7 +75,7 @@ class ASH_EXPORT VcEffectState {
   views::Button::PressedCallback button_callback_;
 
   // The state value.
-  absl::optional<int> state_value_;
+  std::optional<int> state_value_;
 };
 
 // Designates the type of user-adjustments made to this effect.
@@ -121,7 +121,7 @@ class ASH_EXPORT VcHostedEffect {
   // Callback for obtaining the current state of the effect. The callback must
   // have the effect ID bound as an argument.
   using GetEffectStateCallback =
-      base::RepeatingCallback<absl::optional<int>(void)>;
+      base::RepeatingCallback<std::optional<int>(void)>;
 
   // `type` is the type of value adjustment allowed.
   // `get_state_callback` is invoked to obtain the current state of the effect.
@@ -166,8 +166,8 @@ class ASH_EXPORT VcHostedEffect {
   }
   VcEffectsDelegate* delegate() const { return delegate_; }
 
-  absl::optional<int> container_id() const { return container_id_; }
-  void set_container_id(absl::optional<int> id) { container_id_ = id; }
+  std::optional<int> container_id() const { return container_id_; }
+  void set_container_id(std::optional<int> id) { container_id_ = id; }
 
  private:
   // The type of value adjustment of this effect,
@@ -196,7 +196,7 @@ class ASH_EXPORT VcHostedEffect {
   // Optional ID assigned to the outermost container view for this effect's
   // toggle control. For testing only, this facilitates easy lookup of the
   // outermost container that houses the UI controls for this effect.
-  absl::optional<int> container_id_;
+  std::optional<int> container_id_;
 
   // The effects delegate associated with this effect.
   raw_ptr<VcEffectsDelegate, ExperimentalAsh> delegate_ = nullptr;

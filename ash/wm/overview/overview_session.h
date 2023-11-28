@@ -531,7 +531,7 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // such as scrolling and dragging.
   std::unique_ptr<ScopedFloatContainerStacker> float_container_stacker_;
 
-  absl::optional<display::ScopedDisplayObserver> display_observer_;
+  std::optional<display::ScopedDisplayObserver> display_observer_;
 
   // Boolean to indicate whether chromeVox is enabled or not.
   bool chromevox_enabled_;

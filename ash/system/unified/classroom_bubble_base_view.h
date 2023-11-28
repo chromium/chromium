@@ -100,7 +100,7 @@ class ASH_EXPORT ClassroomBubbleBaseView : public GlanceableTrayChildBubble,
   base::TimeTicks assignments_requested_time_;
 
   // The start time that a selected assignment list is shown.
-  absl::optional<base::TimeTicks> list_shown_start_time_;
+  std::optional<base::TimeTicks> list_shown_start_time_;
 
   // Whether the first assignment list has been shown in this view's lifetime.
   bool first_assignment_list_shown_ = false;

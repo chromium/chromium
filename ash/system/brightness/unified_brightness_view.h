@@ -26,8 +26,8 @@ class ASH_EXPORT UnifiedBrightnessView
 
   UnifiedBrightnessView(UnifiedBrightnessSliderController* controller,
                         scoped_refptr<UnifiedSystemTrayModel> model,
-                        absl::optional<views::Button::PressedCallback>
-                            detailed_button_callback = absl::nullopt);
+                        std::optional<views::Button::PressedCallback>
+                            detailed_button_callback = std::nullopt);
   UnifiedBrightnessView(const UnifiedBrightnessView&) = delete;
   UnifiedBrightnessView& operator=(const UnifiedBrightnessView&) = delete;
   ~UnifiedBrightnessView() override;

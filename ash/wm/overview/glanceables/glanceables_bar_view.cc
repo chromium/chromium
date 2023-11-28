@@ -151,8 +151,8 @@ void GlanceablesBarView::AddChip(
     const std::u16string& title,
     const std::u16string& sub_title,
     views::Button::PressedCallback callback,
-    absl::optional<std::u16string> button_title,
-    absl::optional<views::Button::PressedCallback> button_callback) {
+    std::optional<std::u16string> button_title,
+    std::optional<views::Button::PressedCallback> button_callback) {
   auto chip = views::Builder<GlanceablesChipButton>()
                   .SetIconImage(icon)
                   .SetTitleText(title)

@@ -167,7 +167,7 @@ class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
   // after moving or deleting `item`.
   void ReparentOrDeleteItemInFolder(
       AppListItem* item,
-      absl::optional<std::string> destination_folder_id);
+      std::optional<std::string> destination_folder_id);
 
   // Removes `item` from `folder` then returns a unique pointer to the removed
   // item.

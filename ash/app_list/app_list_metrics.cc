@@ -338,7 +338,7 @@ void RecordAppListAppLaunched(AppListLaunchedFrom launched_from,
 ASH_EXPORT void RecordLauncherWorkflowMetrics(
     AppListUserAction action,
     bool is_tablet_mode,
-    absl::optional<base::TimeTicks> launcher_show_time) {
+    std::optional<base::TimeTicks> launcher_show_time) {
   if (is_tablet_mode) {
     base::UmaHistogramEnumeration(kLauncherUserActionInTablet, action);
 

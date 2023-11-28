@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -52,7 +53,6 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -109,16 +109,16 @@ PrefService* GetLastActiveUserPrefService() {
 }
 
 // Returns the time when the menu was last shown for the user associated with
-// the last active user pref service, or `absl::nullopt` if the menu was not
+// the last active user pref service, or `std::nullopt` if the menu was not
 // previously marked as having been shown.
-absl::optional<base::Time> GetMenuLastTimeShown() {
+std::optional<base::Time> GetMenuLastTimeShown() {
   if (auto* prefs = GetLastActiveUserPrefService()) {
     if (auto* pref = prefs->FindPreference(prefs::kMultipasteMenuLastTimeShown);
         pref && !pref->IsDefaultValue()) {
       return base::ValueToTime(pref->GetValue());
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Marks the time when the menu was last shown for the user associated with the

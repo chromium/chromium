@@ -277,7 +277,7 @@ TEST_F(CursorWindowControllerTest, DSF) {
                                     << " and size " << size);
 
     cursor_window_controller()->SetCursor(cursor);
-    const absl::optional<ui::CursorData> cursor_data =
+    const std::optional<ui::CursorData> cursor_data =
         cursor_shape_client.GetCursorData(cursor);
     DCHECK(cursor_data);
 

@@ -78,15 +78,15 @@ bool HasExternalScreen() {
   return false;
 }
 
-absl::optional<uint32_t> ParseIntentIdFromUrl(const GURL& url) {
+std::optional<uint32_t> ParseIntentIdFromUrl(const GURL& url) {
   std::string id_str;
   if (!net::GetValueForKeyInQuery(url, "intentId", &id_str)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   uint32_t intent_id;
   if (!base::StringToUint(id_str, &intent_id)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return intent_id;
 }
@@ -116,7 +116,7 @@ CameraAppHelperImpl::CameraAppHelperImpl(
       camera_result_callback_(std::move(camera_result_callback)),
       send_broadcast_callback_(std::move(send_broadcast_callback)),
       has_external_screen_(HasExternalScreen()),
-      pending_intent_id_(absl::nullopt),
+      pending_intent_id_(std::nullopt),
       window_(window),
       document_scanner_service_(DocumentScannerServiceClient::Create()),
       holding_space_client_(holding_space_client) {
@@ -153,7 +153,7 @@ void CameraAppHelperImpl::HandleCameraResult(
   if (pending_intent_id_.has_value() && *pending_intent_id_ == intent_id &&
       (action == arc::mojom::CameraIntentAction::FINISH ||
        action == arc::mojom::CameraIntentAction::CANCEL)) {
-    pending_intent_id_ = absl::nullopt;
+    pending_intent_id_ = std::nullopt;
   }
   camera_result_callback_.Run(intent_id, action, data, std::move(callback));
 }

@@ -71,7 +71,7 @@ int GetButtonSizeOnType(IconButton::Type type) {
   }
 }
 
-absl::optional<ui::ColorId> GetDefaultBackgroundColorId(IconButton::Type type) {
+std::optional<ui::ColorId> GetDefaultBackgroundColorId(IconButton::Type type) {
   switch (type) {
     case IconButton::Type::kXSmall:
     case IconButton::Type::kSmall:
@@ -85,7 +85,7 @@ absl::optional<ui::ColorId> GetDefaultBackgroundColorId(IconButton::Type type) {
       return cros_tokens::kCrosSysSystemPrimaryContainer;
     default:
       NOTREACHED() << "Floating type button does not have a background";
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 

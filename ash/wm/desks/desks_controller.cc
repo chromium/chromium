@@ -758,7 +758,7 @@ void DesksController::ActivateDesk(const Desk* desk, DesksSwitchSource source) {
   // If we are switching users, we don't want to notify desks of content changes
   // until the user switch animation has shown the new user's windows.
   const bool is_user_switch = source == DesksSwitchSource::kUserSwitch;
-  absl::optional<Desk::ScopedContentUpdateNotificationDisabler>
+  std::optional<Desk::ScopedContentUpdateNotificationDisabler>
       desks_scoped_notify_disabler;
   if (is_user_switch) {
     desks_scoped_notify_disabler.emplace(/*desks=*/desks_,

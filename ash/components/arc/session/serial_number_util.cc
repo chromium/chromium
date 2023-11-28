@@ -78,7 +78,7 @@ std::string GetOrCreateSerialNumber(PrefService* local_state,
   return GenerateFakeSerialNumber(chromeos_user, decoded_salt);
 }
 
-absl::optional<std::string> ReadSaltOnDisk(const base::FilePath& salt_path) {
+std::optional<std::string> ReadSaltOnDisk(const base::FilePath& salt_path) {
   if (!base::PathExists(salt_path)) {
     VLOG(2) << "ARC salt file doesn't exist: " << salt_path;
     return std::string();
@@ -86,7 +86,7 @@ absl::optional<std::string> ReadSaltOnDisk(const base::FilePath& salt_path) {
   std::string salt;
   if (!base::ReadFileToString(salt_path, &salt)) {
     PLOG(ERROR) << "Failed to read " << salt_path;
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (salt.size() != kArcSaltFileSize) {
     LOG(WARNING) << "Ignoring invalid ARC salt on disk. size=" << salt.size();

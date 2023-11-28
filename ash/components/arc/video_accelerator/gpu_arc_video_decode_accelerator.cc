@@ -426,7 +426,7 @@ void GpuArcVideoDecodeAccelerator::InitializeTask(
       "Media.GpuArcVideoDecodeAccelerator.InstanceCount.Initialized",
       initialized_instance_count_, /*exclusive_max=*/50);
 
-  secure_mode_ = absl::nullopt;
+  secure_mode_ = std::nullopt;
   error_state_ = false;
   pending_requests_ = {};
   pending_flush_callbacks_ = {};

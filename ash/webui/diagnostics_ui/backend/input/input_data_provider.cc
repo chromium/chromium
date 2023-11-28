@@ -253,7 +253,7 @@ void InputDataProvider::LidEventReceived(
 }
 
 void InputDataProvider::OnReceiveSwitchStates(
-    absl::optional<chromeos::PowerManagerClient::SwitchStates> switch_states) {
+    std::optional<chromeos::PowerManagerClient::SwitchStates> switch_states) {
   if (switch_states.has_value()) {
     LidEventReceived(switch_states->lid_state, /*time=*/{});
   }

@@ -327,7 +327,7 @@ bool TestSessionControllerClient::IsEnterpriseManaged() const {
   return is_enterprise_managed_;
 }
 
-absl::optional<int> TestSessionControllerClient::GetExistingUsersCount() const {
+std::optional<int> TestSessionControllerClient::GetExistingUsersCount() const {
   return existing_users_count_;
 }
 

@@ -50,7 +50,7 @@ void ParseJson(const std::string& json,
                bool& disable_stun_server,
                bool& check_android_network_info,
                bool& process_android_accessibility_tree) {
-  absl::optional<base::Value> message_value = base::JSONReader::Read(json);
+  std::optional<base::Value> message_value = base::JSONReader::Read(json);
   base::Value::Dict* message_dictionary = message_value->GetIfDict();
   const std::string* device_name_ptr =
       message_dictionary->FindString(kJsonDeviceNameKey);
@@ -60,7 +60,7 @@ void ParseJson(const std::string& json,
       message_dictionary->FindString(kJsonBoardNameKey);
   if (board_name_ptr)
     board_name = *board_name_ptr;
-  absl::optional<bool> tablet_mode_opt =
+  std::optional<bool> tablet_mode_opt =
       message_dictionary->FindBool(kJsonTabletModeKey);
   if (tablet_mode_opt.has_value())
     tablet_mode = tablet_mode_opt.value();
@@ -68,7 +68,7 @@ void ParseJson(const std::string& json,
       message_dictionary->FindString(kJsonWifiConnectionStateKey);
   if (wifi_connection_state_ptr)
     wifi_connection_state = *wifi_connection_state_ptr;
-  absl::optional<bool> debug_mode_opt =
+  std::optional<bool> debug_mode_opt =
       message_dictionary->FindBool(kJsonDebugModeKey);
   if (debug_mode_opt.has_value())
     debug_mode = debug_mode_opt.value();
@@ -90,23 +90,23 @@ void ParseJson(const std::string& json,
   if (channel_ptr) {
     channel = *channel_ptr;
   }
-  absl::optional<bool> measure_latency_opt =
+  std::optional<bool> measure_latency_opt =
       message_dictionary->FindBool(kJsonMeasureLatencyKey);
   if (measure_latency_opt.has_value())
     measure_latency = measure_latency_opt.value();
-  absl::optional<bool> send_start_signaling_opt =
+  std::optional<bool> send_start_signaling_opt =
       message_dictionary->FindBool(kJsonSendStartSignalingKey);
   if (send_start_signaling_opt.has_value())
     send_start_signaling = send_start_signaling_opt.value();
-  absl::optional<bool> disable_stun_server_opt =
+  std::optional<bool> disable_stun_server_opt =
       message_dictionary->FindBool(kJsonDisableStunServerKey);
   if (disable_stun_server_opt.has_value())
     disable_stun_server = disable_stun_server_opt.value();
-  absl::optional<bool> check_android_network_info_opt =
+  std::optional<bool> check_android_network_info_opt =
       message_dictionary->FindBool(kJsonCheckAndroidNetworkInfoKey);
   if (check_android_network_info_opt.has_value())
     check_android_network_info = check_android_network_info_opt.value();
-  absl::optional<bool> process_android_accessibility_tree_opt =
+  std::optional<bool> process_android_accessibility_tree_opt =
       message_dictionary->FindBool(kJsonProcessAndroidAccessibilityTreeKey);
   if (process_android_accessibility_tree_opt.has_value())
     process_android_accessibility_tree = process_android_accessibility_tree_opt.value();
@@ -148,7 +148,7 @@ class FakeTabletMode : public ash::TabletMode {
     return in_tablet_mode;
   }
 
-  bool ForceUiTabletModeState(absl::optional<bool> enabled) override {
+  bool ForceUiTabletModeState(std::optional<bool> enabled) override {
     return false;
   }
 
@@ -325,12 +325,12 @@ class SystemInfoProviderTest : public testing::Test {
         /*connect_requested=*/false,
         /*connection_state=*/
         kFakeWifiConnectionState,
-        /*error_state=*/absl::nullopt,
+        /*error_state=*/std::nullopt,
         /*guid=*/"some_guid",
         /*name=*/"some_name",
         /*portal_state=*/
         network_config::mojom::PortalState::kUnknown,
-        /*portal_probe_url=*/absl::nullopt,
+        /*portal_probe_url=*/std::nullopt,
         /*priority=*/1,
         /*proxy_mode=*/network_config::mojom::ProxyMode::kDirect,
         /*prohibited_by_policy=*/false,

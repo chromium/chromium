@@ -115,7 +115,7 @@ class ASH_EXPORT TopRowView : public views::View {
   // Updates the visibility of all child views. Also updates the text content
   // of `label_` and updates the size of this view.
   void Update(DictationBubbleIconType icon,
-              const absl::optional<std::u16string>& text) {
+              const std::optional<std::u16string>& text) {
     // Update visibility.
     bool is_standby = icon == DictationBubbleIconType::kStandby;
     if (use_standby_animation_) {
@@ -153,7 +153,7 @@ class ASH_EXPORT TopRowView : public views::View {
   // can successfully be loaded. Otherwise, returns a std::unique_ptr<ImageView>
   // as a fallback.
   std::unique_ptr<views::View> CreateStandbyView() {
-    absl::optional<std::string> json =
+    std::optional<std::string> json =
         ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
             IDR_DICTATION_BUBBLE_ANIMATION);
     if (json.has_value()) {
@@ -205,8 +205,8 @@ DictationBubbleView::~DictationBubbleView() = default;
 
 void DictationBubbleView::Update(
     DictationBubbleIconType icon,
-    const absl::optional<std::u16string>& text,
-    const absl::optional<std::vector<DictationBubbleHintType>>& hints) {
+    const std::optional<std::u16string>& text,
+    const std::optional<std::vector<DictationBubbleHintType>>& hints) {
   top_row_view_->Update(icon, text);
   hint_view_->Update(hints);
   SizeToContents();
@@ -296,7 +296,7 @@ DictationHintView::DictationHintView() {
 DictationHintView::~DictationHintView() = default;
 
 void DictationHintView::Update(
-    const absl::optional<std::vector<DictationBubbleHintType>>& hints) {
+    const std::optional<std::vector<DictationBubbleHintType>>& hints) {
   int num_visible_hints = 0;
   if (hints.has_value()) {
     DCHECK(hints.value().size() <= kMaxNumHints);

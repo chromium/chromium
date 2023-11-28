@@ -51,7 +51,7 @@ class AccessibilityProvider
   void HandleStreamClosed();
   // Handles the result of a refreshWithExtraData call.
   void OnGetTextLocationDataResult(const ui::AXActionData& action,
-                                   const absl::optional<std::vector<uint8_t>>&
+                                   const std::optional<std::vector<uint8_t>>&
                                        serialized_text_location) const;
 
   // mojom::AccessibilityProvider overrides.

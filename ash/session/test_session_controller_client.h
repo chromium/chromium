@@ -147,7 +147,7 @@ class TestSessionControllerClient : public SessionControllerClient {
   PrefService* GetSigninScreenPrefService() override;
   PrefService* GetUserPrefService(const AccountId& account_id) override;
   bool IsEnterpriseManaged() const override;
-  absl::optional<int> GetExistingUsersCount() const override;
+  std::optional<int> GetExistingUsersCount() const override;
 
   // By default `LockScreen()` only changes the session state but no UI views
   // will be created.  If your tests requires the lock screen to be created,

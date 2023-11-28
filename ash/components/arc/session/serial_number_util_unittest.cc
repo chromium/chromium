@@ -243,7 +243,7 @@ TEST_F(SerialNumberUtilTest, ReadSaltOnDisk) {
   constexpr int kSaltLen = 16;
 
   // Verify the function returns a non-null result when the file doesn't exist.
-  absl::optional<std::string> salt =
+  std::optional<std::string> salt =
       ReadSaltOnDisk(base::FilePath("/nonexistent/path"));
   EXPECT_TRUE(salt.has_value());
 

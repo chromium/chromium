@@ -410,7 +410,7 @@ class ASH_EXPORT CaptureModeCameraController
 
   // Valid only during recording to track the number of camera disconnections
   // while recording is in progress.
-  absl::optional<int> in_recording_camera_disconnections_;
+  std::optional<int> in_recording_camera_disconnections_;
 
   // Will be set to true the first time the number of connected cameras is
   // reported.

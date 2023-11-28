@@ -44,7 +44,7 @@ TimeOfDay& TimeOfDay::SetLocalTimeConverter(
   return *this;
 }
 
-absl::optional<base::Time> TimeOfDay::ToTimeToday() const {
+std::optional<base::Time> TimeOfDay::ToTimeToday() const {
   base::Time::Exploded now;
   GetLocalTimeConverter().LocalExplode(GetNow(), &now);
   // Per the `LocalExplode()` API:
@@ -52,7 +52,7 @@ absl::optional<base::Time> TimeOfDay::ToTimeToday() const {
   // assigned invalid values. Use Exploded::HasValidValues() to confirm a
   // successful conversion."
   if (!now.HasValidValues()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   now.hour = (offset_minutes_from_zero_hour_ / 60) % 24;
   now.minute = offset_minutes_from_zero_hour_ % 60;
@@ -69,11 +69,11 @@ absl::optional<base::Time> TimeOfDay::ToTimeToday() const {
   // instantaneously from 1:59 AM 3:00 AM. In this very rare case, it's OK for
   // this function to fail.
   // 2) crbug.com/1307913.
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::string TimeOfDay::ToString() const {
-  const absl::optional<base::Time> time_today = ToTimeToday();
+  const std::optional<base::Time> time_today = ToTimeToday();
   return time_today ? base::UTF16ToUTF8(base::TimeFormatTimeOfDay(*time_today))
                     : "unknown";
 }

@@ -100,28 +100,28 @@ bool SavedDeviceRegistry::DeleteAccountKey(
   return false;
 }
 
-absl::optional<const std::vector<uint8_t>> SavedDeviceRegistry::GetAccountKey(
+std::optional<const std::vector<uint8_t>> SavedDeviceRegistry::GetAccountKey(
     const std::string& mac_address) {
   PrefService* pref_service =
       QuickPairBrowserDelegate::Get()->GetActivePrefService();
   if (!pref_service) {
     CD_LOG(WARNING, Feature::FP)
         << __func__ << ": No user pref service available.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const std::string* result = pref_service->GetValue(kFastPairSavedDevicesPref)
                                   .GetDict()
                                   .FindString(mac_address);
   if (!result) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::string decoded;
   if (!base::Base64Decode(*result, &decoded)) {
     CD_LOG(WARNING, Feature::FP)
         << __func__ << ": Failed to decode the account key from Base64.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return std::vector<uint8_t>(decoded.begin(), decoded.end());

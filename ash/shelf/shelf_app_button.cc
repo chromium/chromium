@@ -860,7 +860,7 @@ gfx::Rect ShelfAppButton::CalculateSmallRippleArea() const {
     // Note that `current_index` may be nullopt while the button is fading out
     // after it's been removed from the model - for example, see
     // https://crbug.com/1355561.
-    const absl::optional<size_t> current_index =
+    const std::optional<size_t> current_index =
         shelf_view_->view_model()->GetIndexOfView(this);
     int left_padding =
         (shelf_view_->visible_views_indices().front() == current_index)
@@ -1399,7 +1399,7 @@ void ShelfAppButton::UpdateProgressRingBounds() {
   if (!progress_indicator_) {
     progress_indicator_ =
         ProgressIndicator::CreateDefaultInstance(base::BindRepeating(
-            [](ShelfAppButton* view) -> absl::optional<float> {
+            [](ShelfAppButton* view) -> std::optional<float> {
               if (view->forced_progress_indicator_value_) {
                 return *view->forced_progress_indicator_value_;
               }

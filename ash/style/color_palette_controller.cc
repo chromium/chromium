@@ -223,10 +223,10 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
         FROM_HERE, std::move(on_complete));
   }
 
-  absl::optional<ColorPaletteSeed> GetColorPaletteSeed(
+  std::optional<ColorPaletteSeed> GetColorPaletteSeed(
       const AccountId& account_id) const override {
     ColorPaletteSeed seed;
-    absl::optional<SkColor> seed_color =
+    std::optional<SkColor> seed_color =
         UsesWallpaperSeedColor(account_id)
             ? GetWallpaperColorForUser(account_id)
             : GetStaticSeedColor(account_id);
@@ -243,14 +243,14 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
     return seed;
   }
 
-  absl::optional<SkColor> GetWallpaperColorForUser(
+  std::optional<SkColor> GetWallpaperColorForUser(
       const AccountId& account_id) const {
     if (GetActiveUserSession()) {
       return CurrentWallpaperColor(
           dark_light_mode_controller_->IsDarkModeEnabled());
     }
     const bool should_use_k_means = ShouldUseKMeans(account_id);
-    absl::optional<SkColor> seed_color =
+    std::optional<SkColor> seed_color =
         wallpaper_controller_->GetCachedWallpaperColorForUser(
             account_id, should_use_k_means);
     if (seed_color.has_value()) {
@@ -265,7 +265,7 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
     return kDefaultWallpaperColor;
   }
 
-  absl::optional<ColorPaletteSeed> GetCurrentSeed() const override {
+  std::optional<ColorPaletteSeed> GetCurrentSeed() const override {
     const auto* session = GetActiveUserSession();
     if (!session) {
       return {};
@@ -309,20 +309,20 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
                : style::mojom::ColorScheme::kTonalSpot;
   }
 
-  absl::optional<SkColor> GetStaticColor(
+  std::optional<SkColor> GetStaticColor(
       const AccountId& account_id) const override {
     if (GetColorScheme(account_id) == style::mojom::ColorScheme::kStatic) {
       return GetStaticSeedColor(account_id);
     }
 
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   void GenerateSampleColorSchemes(
       base::span<const style::mojom::ColorScheme> color_scheme_buttons,
       SampleColorSchemeCallback callback) const override {
     bool dark = dark_light_mode_controller_->IsDarkModeEnabled();
-    absl::optional<SkColor> celebi_seed_color = GetCurrentCelebiColor();
+    std::optional<SkColor> celebi_seed_color = GetCurrentCelebiColor();
     if (!celebi_seed_color) {
       LOG(WARNING) << "Using default color due to missing wallpaper sample";
       celebi_seed_color.emplace(kDefaultWallpaperColor);
@@ -445,7 +445,7 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
       return ColorUtil::AdjustKMeansColor(default_color, dark_mode);
     }
 
-    absl::optional<AccountId> account_id;
+    std::optional<AccountId> account_id;
     auto* session = GetActiveUserSession();
     if (session) {
       account_id = AccountFromSession(session);
@@ -485,8 +485,8 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
  private:
   // Gets the user's current wallpaper color.
   // TODO(b/289106519): Combine this function with |GetUserWallpaperColor|.
-  absl::optional<SkColor> CurrentWallpaperColor(bool dark) const {
-    const absl::optional<WallpaperCalculatedColors>& calculated_colors =
+  std::optional<SkColor> CurrentWallpaperColor(bool dark) const {
+    const std::optional<WallpaperCalculatedColors>& calculated_colors =
         wallpaper_controller_->calculated_colors();
     if (!calculated_colors) {
       return {};
@@ -501,8 +501,8 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
     return GetCurrentCelebiColor();
   }
 
-  absl::optional<SkColor> GetCurrentCelebiColor() const {
-    const absl::optional<WallpaperCalculatedColors>& calculated_colors =
+  std::optional<SkColor> GetCurrentCelebiColor() const {
+    const std::optional<WallpaperCalculatedColors>& calculated_colors =
         wallpaper_controller_->calculated_colors();
     if (!calculated_colors) {
       return {};
@@ -555,7 +555,7 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
 
   // Returns the seed for `session` if it's present.  Otherwise, returns a seed
   // for backward compatibility with just dark/light and seed color filled.
-  absl::optional<ColorPaletteSeed> BestEffortSeed(const UserSession* session) {
+  std::optional<ColorPaletteSeed> BestEffortSeed(const UserSession* session) {
     if (session) {
       return GetColorPaletteSeed(AccountFromSession(session));
     }
@@ -579,7 +579,7 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
     ColorPaletteSeed seed;
     bool dark = dark_light_mode_controller_->IsDarkModeEnabled();
     // The user is in OOBE and should see the celebi color.
-    absl::optional<SkColor> seed_color = GetCurrentCelebiColor();
+    std::optional<SkColor> seed_color = GetCurrentCelebiColor();
     if (!seed_color) {
       // If `seed_color` is not available, we expect to have it shortly
       // the color computation is done and this will be called again.
@@ -593,7 +593,7 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
     return seed;
   }
 
-  void NotifyObservers(const absl::optional<ColorPaletteSeed>& seed) {
+  void NotifyObservers(const std::optional<ColorPaletteSeed>& seed) {
     if (!seed) {
       // If the seed wasn't valid, skip notifications.
       return;

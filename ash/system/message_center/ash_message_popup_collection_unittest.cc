@@ -528,8 +528,8 @@ class NotificationDestructingNotificationDelegate
   ~NotificationDestructingNotificationDelegate() override = default;
 
   // NotificationObserver:
-  void Click(const absl::optional<int>& button_index,
-             const absl::optional<std::u16string>& reply) override {
+  void Click(const std::optional<int>& button_index,
+             const std::optional<std::u16string>& reply) override {
     // Show the UnifiedSystemTrayBubble, which will force all popups to be
     // destroyed.
     Shell::Get()

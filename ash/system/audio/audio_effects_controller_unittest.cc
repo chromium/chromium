@@ -255,7 +255,7 @@ TEST_F(AudioEffectsControllerTest, NoiseCancellationNotEnabled) {
       CrasAudioHandler::AudioSettingsChangeSource::kVideoConferenceTray, 1);
 
   // Noise cancellation effect state is disabled.
-  absl::optional<int> effect_state = audio_effects_controller()->GetEffectState(
+  std::optional<int> effect_state = audio_effects_controller()->GetEffectState(
       VcEffectId::kNoiseCancellation);
   EXPECT_TRUE(effect_state.has_value());
   EXPECT_EQ(effect_state, 0);
@@ -286,7 +286,7 @@ TEST_F(AudioEffectsControllerTest, NoiseCancellationEnabled) {
       CrasAudioHandler::AudioSettingsChangeSource::kVideoConferenceTray, 1);
 
   // Noise cancellation effect state is disabled.
-  absl::optional<int> effect_state = audio_effects_controller()->GetEffectState(
+  std::optional<int> effect_state = audio_effects_controller()->GetEffectState(
       VcEffectId::kNoiseCancellation);
   EXPECT_TRUE(effect_state.has_value());
   EXPECT_EQ(effect_state, 1);
@@ -308,7 +308,7 @@ TEST_F(AudioEffectsControllerTest, NoiseCancellationSetNotEnabled) {
 
   // User pressed the noise cancellation toggle.
   audio_effects_controller()->OnEffectControlActivated(
-      VcEffectId::kNoiseCancellation, absl::nullopt);
+      VcEffectId::kNoiseCancellation, std::nullopt);
 
   // State should now be disabled.
   EXPECT_FALSE(cras_audio_handler()->GetNoiseCancellationState());
@@ -330,7 +330,7 @@ TEST_F(AudioEffectsControllerTest, NoiseCancellationSetEnabled) {
 
   // User pressed the noise cancellation toggle.
   audio_effects_controller()->OnEffectControlActivated(
-      VcEffectId::kNoiseCancellation, absl::nullopt);
+      VcEffectId::kNoiseCancellation, std::nullopt);
 
   // State should now be enabled.
   EXPECT_TRUE(cras_audio_handler()->GetNoiseCancellationState());
@@ -524,7 +524,7 @@ TEST_F(AudioEffectsControllerTest, LiveCaptionNotEnabled) {
   EXPECT_FALSE(controller->live_caption().enabled());
 
   // Live caption effect state is disabled.
-  absl::optional<int> state =
+  std::optional<int> state =
       audio_effects_controller()->GetEffectState(VcEffectId::kLiveCaption);
   EXPECT_TRUE(state.has_value());
   EXPECT_FALSE(state.value());
@@ -547,7 +547,7 @@ TEST_F(AudioEffectsControllerTest, LiveCaptionEnabled) {
   EXPECT_TRUE(controller->live_caption().enabled());
 
   // Live caption effect state is enabled.
-  absl::optional<int> state =
+  std::optional<int> state =
       audio_effects_controller()->GetEffectState(VcEffectId::kLiveCaption);
   EXPECT_TRUE(state.has_value());
   EXPECT_TRUE(state.value());
@@ -571,7 +571,7 @@ TEST_F(AudioEffectsControllerTest, LiveCaptionSetNotEnabled) {
 
   // User pressed the live caption toggle.
   audio_effects_controller()->OnEffectControlActivated(VcEffectId::kLiveCaption,
-                                                       absl::nullopt);
+                                                       std::nullopt);
 
   // Live caption is now disabled.
   EXPECT_FALSE(controller->live_caption().enabled());
@@ -595,7 +595,7 @@ TEST_F(AudioEffectsControllerTest, LiveCaptionSetEnabled) {
 
   // User pressed the live caption toggle.
   audio_effects_controller()->OnEffectControlActivated(VcEffectId::kLiveCaption,
-                                                       absl::nullopt);
+                                                       std::nullopt);
 
   // Live caption is now enabled.
   EXPECT_TRUE(controller->live_caption().enabled());

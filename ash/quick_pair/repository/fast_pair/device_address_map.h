@@ -5,6 +5,7 @@
 #ifndef ASH_QUICK_PAIR_REPOSITORY_FAST_PAIR_DEVICE_ADDRESS_MAP_H_
 #define ASH_QUICK_PAIR_REPOSITORY_FAST_PAIR_DEVICE_ADDRESS_MAP_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/quick_pair/common/device.h"
@@ -12,7 +13,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 
@@ -49,9 +49,9 @@ class DeviceAddressMap {
   // there was no |mac_address| record to evict.
   bool EvictMacAddressRecord(const std::string& mac_address);
 
-  // Returns the model ID for |mac_address|, or absl::nullopt if a matching
+  // Returns the model ID for |mac_address|, or std::nullopt if a matching
   // model ID isn't found.
-  absl::optional<const std::string> GetModelIdForMacAddress(
+  std::optional<const std::string> GetModelIdForMacAddress(
       const std::string& mac_address);
 
   // Returns true if there are mac address -> |model_id| records in

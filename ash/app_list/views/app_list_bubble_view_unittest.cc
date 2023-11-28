@@ -498,7 +498,7 @@ TEST_F(AppListBubbleViewTest, AssistantScreenshotClosesBubbleWithoutAnimation) {
   // Simulate the app list being closed by taking a screenshot with assistant.
   // This makes AppListControllerImpl::ShouldDismissImmediately() return true.
   AssistantUiController::Get()->ToggleUi(
-      absl::nullopt, assistant::AssistantExitPoint::kScreenshot);
+      std::nullopt, assistant::AssistantExitPoint::kScreenshot);
 
   // The bubble dismissed immediately so it is not animating.
   ui::Layer* bubble_layer = GetAppListTestHelper()->GetBubbleView()->layer();

@@ -4,6 +4,7 @@
 
 #include "ash/assistant/assistant_interaction_controller_impl.h"
 
+#include <optional>
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
@@ -37,7 +38,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "net/base/url_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
@@ -159,7 +159,7 @@ void AssistantInteractionControllerImpl::OnDeepLinkReceived(
 
   if (type == DeepLinkType::kReminders) {
     using ReminderAction = assistant::util::ReminderAction;
-    const absl::optional<ReminderAction>& action =
+    const std::optional<ReminderAction>& action =
         GetDeepLinkParamAsRemindersAction(params, DeepLinkParam::kAction);
 
     // We treat reminders deeplinks without an action as web deep links.
@@ -175,7 +175,7 @@ void AssistantInteractionControllerImpl::OnDeepLinkReceived(
         break;
 
       case ReminderAction::kEdit:
-        const absl::optional<std::string>& client_id =
+        const std::optional<std::string>& client_id =
             GetDeepLinkParam(params, DeepLinkParam::kClientId);
         if (client_id && !client_id.value().empty()) {
           model_.SetPendingQuery(std::make_unique<AssistantTextQuery>(
@@ -192,7 +192,7 @@ void AssistantInteractionControllerImpl::OnDeepLinkReceived(
   if (type != DeepLinkType::kQuery)
     return;
 
-  const absl::optional<std::string>& query =
+  const std::optional<std::string>& query =
       GetDeepLinkParam(params, DeepLinkParam::kQuery);
 
   if (!query.has_value())
@@ -233,8 +233,8 @@ void AssistantInteractionControllerImpl::OnDeepLinkReceived(
 void AssistantInteractionControllerImpl::OnUiVisibilityChanged(
     AssistantVisibility new_visibility,
     AssistantVisibility old_visibility,
-    absl::optional<AssistantEntryPoint> entry_point,
-    absl::optional<AssistantExitPoint> exit_point) {
+    std::optional<AssistantEntryPoint> entry_point,
+    std::optional<AssistantExitPoint> exit_point) {
   switch (new_visibility) {
     case AssistantVisibility::kClosed:
       // When the UI is closed we need to stop any active interaction. We also

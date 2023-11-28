@@ -347,18 +347,18 @@ bool IsAcceleratorHidden(AcceleratorActionId action_id,
                    accelerator) != hidden_accelerators.end();
 }
 
-absl::optional<std::u16string> GetReservedAcceleratorName(
+std::optional<std::u16string> GetReservedAcceleratorName(
     ui::Accelerator accelerator) {
   const auto* iter = kReservedAccelerators.find(accelerator);
   if (iter == kReservedAccelerators.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return l10n_util::GetStringUTF16(iter->second);
 }
 
 mojom::StandardAcceleratorPropertiesPtr CreateStandardAcceleratorProps(
     const ui::Accelerator& accelerator,
-    absl::optional<ui::Accelerator> original_accelerator) {
+    std::optional<ui::Accelerator> original_accelerator) {
   return mojom::StandardAcceleratorProperties::New(
       accelerator, ash::GetKeyDisplay(accelerator.key_code()),
       original_accelerator);
@@ -394,7 +394,7 @@ mojom::AcceleratorInfoPtr CreateStandardAcceleratorInfo(
     bool locked,
     mojom::AcceleratorType type,
     mojom::AcceleratorState state,
-    absl::optional<ui::Accelerator> original_accelerator = absl::nullopt) {
+    std::optional<ui::Accelerator> original_accelerator = std::nullopt) {
   mojom::AcceleratorInfoPtr info_mojom = mojom::AcceleratorInfo::New();
   info_mojom->locked = locked;
   info_mojom->type = type;
@@ -409,7 +409,7 @@ mojom::AcceleratorInfoPtr CreateStandardAcceleratorInfo(
 
 // Returns a non-null value if there was an error detected with validating
 // the `source` or `action_id`.
-absl::optional<AcceleratorConfigResult> ValidateSourceAndAction(
+std::optional<AcceleratorConfigResult> ValidateSourceAndAction(
     mojom::AcceleratorSource source,
     AcceleratorActionId action_id,
     AshAcceleratorConfiguration* ash_accelerator_configuration) {
@@ -424,12 +424,12 @@ absl::optional<AcceleratorConfigResult> ValidateSourceAndAction(
     return AcceleratorConfigResult::kNotFound;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Returns a non-null value if there was an error with validating the
 // accelerator.
-absl::optional<AcceleratorConfigResult> ValidateAccelerator(
+std::optional<AcceleratorConfigResult> ValidateAccelerator(
     const ui::Accelerator& accelerator) {
   // TODO(jimmyxgong): The following cases are not finalized, we still need to
   // validate if the key is present in connected keyboards.
@@ -457,7 +457,7 @@ absl::optional<AcceleratorConfigResult> ValidateAccelerator(
   }
 
   // Case: Top-row action keys cannot be part of the accelerator.
-  absl::optional<ui::TopRowActionKey> top_row_action_key =
+  std::optional<ui::TopRowActionKey> top_row_action_key =
       ui::KeyboardCapability::ConvertToTopRowActionKey(accelerator.key_code());
   if (top_row_action_key.has_value() &&
       Shell::Get()->keyboard_capability()->HasTopRowActionKeyOnAnyKeyboard(
@@ -488,7 +488,7 @@ absl::optional<AcceleratorConfigResult> ValidateAccelerator(
   }
 
   // No errors with the accelerator.
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::string GetUuid(mojom::AcceleratorSource source,
@@ -717,9 +717,8 @@ void AcceleratorConfigurationProvider::GetConflictAccelerator(
   AcceleratorResultDataPtr result_data = AcceleratorResultData::New();
 
   // Validate the source and action.
-  absl::optional<AcceleratorConfigResult> error_result =
-      ValidateSourceAndAction(source, action_id,
-                              ash_accelerator_configuration_);
+  std::optional<AcceleratorConfigResult> error_result = ValidateSourceAndAction(
+      source, action_id, ash_accelerator_configuration_);
   // `kActionLocked` from `ValidateSourceAndAction` indicates a non-ash source.
   // We still want to check the conflict in the case its from a non-ash source.
   if (error_result.has_value() &&
@@ -734,7 +733,7 @@ void AcceleratorConfigurationProvider::GetConflictAccelerator(
   }
 
   // Check if the accelerator is reserved. If so return an error.
-  const absl::optional<std::u16string> reserved_accelerator_name =
+  const std::optional<std::u16string> reserved_accelerator_name =
       GetReservedAcceleratorName(accelerator);
   if (reserved_accelerator_name.has_value()) {
     result_data->result = AcceleratorConfigResult::kConflict;
@@ -920,9 +919,8 @@ void AcceleratorConfigurationProvider::AddAccelerator(
   AcceleratorResultDataPtr result_data = AcceleratorResultData::New();
 
   // Validate the source and action, if no errors then validate the accelerator.
-  absl::optional<AcceleratorConfigResult> error_result =
-      ValidateSourceAndAction(source, action_id,
-                              ash_accelerator_configuration_);
+  std::optional<AcceleratorConfigResult> error_result = ValidateSourceAndAction(
+      source, action_id, ash_accelerator_configuration_);
   if (!error_result.has_value()) {
     error_result = ValidateAccelerator(accelerator);
   }
@@ -953,7 +951,7 @@ void AcceleratorConfigurationProvider::AddAccelerator(
     return;
   }
 
-  absl::optional<AcceleratorResultDataPtr> result_data_ptr =
+  std::optional<AcceleratorResultDataPtr> result_data_ptr =
       PreprocessAddAccelerator(source, action_id, accelerator);
   // Check if there was an error during processing the accelerator, if so return
   // early with the error.
@@ -1002,7 +1000,7 @@ void AcceleratorConfigurationProvider::RemoveAccelerator(
       ModifyKeyStateConditionally(accelerator);
   AcceleratorResultDataPtr result_data = AcceleratorResultData::New();
 
-  absl::optional<AcceleratorConfigResult> validated_source_action_result =
+  std::optional<AcceleratorConfigResult> validated_source_action_result =
       ValidateSourceAndAction(source, action_id,
                               ash_accelerator_configuration_);
   if (validated_source_action_result.has_value()) {
@@ -1028,7 +1026,7 @@ void AcceleratorConfigurationProvider::RemoveAccelerator(
 
   // Only record this metric if the removed accelerator is a default accelerator
   // for `action_id`.
-  absl::optional<AcceleratorAction> default_id =
+  std::optional<AcceleratorAction> default_id =
       ash_accelerator_configuration_->GetIdForDefaultAccelerator(accelerator);
   if (default_id == action_id) {
     RecordEncodedAcceleratorHistogram(kRemoveDefaultAcceleratorHistogramName,
@@ -1050,9 +1048,8 @@ void AcceleratorConfigurationProvider::ReplaceAccelerator(
 
   AcceleratorResultDataPtr result_data = AcceleratorResultData::New();
 
-  absl::optional<AcceleratorConfigResult> error_result =
-      ValidateSourceAndAction(source, action_id,
-                              ash_accelerator_configuration_);
+  std::optional<AcceleratorConfigResult> error_result = ValidateSourceAndAction(
+      source, action_id, ash_accelerator_configuration_);
   if (!error_result.has_value()) {
     error_result = ValidateAccelerator(new_accelerator);
   }
@@ -1079,7 +1076,7 @@ void AcceleratorConfigurationProvider::ReplaceAccelerator(
 
   // Check if there was an error during processing the accelerator, if so return
   // early with the error.
-  absl::optional<AcceleratorResultDataPtr> result_data_ptr =
+  std::optional<AcceleratorResultDataPtr> result_data_ptr =
       PreprocessAddAccelerator(source, action_id, new_accelerator);
   if (result_data_ptr.has_value()) {
     LogReplaceAccelerator(source, accelerator_to_replace, new_accelerator,
@@ -1124,7 +1121,7 @@ void AcceleratorConfigurationProvider::RestoreDefault(
     RestoreDefaultCallback callback) {
   AcceleratorResultDataPtr result_data = AcceleratorResultData::New();
 
-  absl::optional<AcceleratorConfigResult> validated_source_action_result =
+  std::optional<AcceleratorConfigResult> validated_source_action_result =
       ValidateSourceAndAction(source, action_id,
                               ash_accelerator_configuration_);
   if (validated_source_action_result.has_value()) {
@@ -1314,7 +1311,7 @@ void AcceleratorConfigurationProvider::CreateAndAppendAliasedAccelerators(
   }
 }
 
-absl::optional<AcceleratorResultDataPtr>
+std::optional<AcceleratorResultDataPtr>
 AcceleratorConfigurationProvider::PreprocessAddAccelerator(
     mojom::AcceleratorSource source,
     AcceleratorActionId action_id,
@@ -1322,7 +1319,7 @@ AcceleratorConfigurationProvider::PreprocessAddAccelerator(
   AcceleratorResultDataPtr result_data = AcceleratorResultData::New();
 
   // Check if the accelerator is reserved. If so return an error.
-  const absl::optional<std::u16string> reserved_accelerator_name =
+  const std::optional<std::u16string> reserved_accelerator_name =
       GetReservedAcceleratorName(accelerator);
   if (reserved_accelerator_name.has_value()) {
     pending_accelerator_.reset();
@@ -1353,12 +1350,12 @@ AcceleratorConfigurationProvider::PreprocessAddAccelerator(
 
   // Accelerator does not exist, can add this accelerator.
   if (!found_ash_action) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Always allow using deprecated accelerators.
   if (ash_accelerator_configuration_->IsDeprecated(accelerator)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Check that the new accelerator is not already an existing accelerator of
@@ -1379,7 +1376,7 @@ AcceleratorConfigurationProvider::PreprocessAddAccelerator(
   // with it, this indicates a hidden accelerator not displayed in the
   // shortcuts app. Allow this accelerator to be used for the new action.
   if (layout_iter == accelerator_layout_lookup_.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // The accelerator is not hidden and appears in the app, go through conflict
@@ -1417,7 +1414,7 @@ AcceleratorConfigurationProvider::PreprocessAddAccelerator(
           AcceleratorConflictErrorState::kAwaitingConflictResolution) {
     conflict_error_state_ = AcceleratorConflictErrorState::kConflictResolved;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 AcceleratorConfigurationProvider::AcceleratorConflictErrorState

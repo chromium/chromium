@@ -30,7 +30,7 @@ class FakeFastPairHandshake : public FastPairHandshake {
                       OnCompleteCallbackNew on_success_callback) override;
   void Reset() override;
 
-  void InvokeCallback(absl::optional<PairFailure> failure = absl::nullopt);
+  void InvokeCallback(std::optional<PairFailure> failure = std::nullopt);
 
   void set_completed_successfully(bool completed_successfully) {
     completed_successfully_ = completed_successfully;

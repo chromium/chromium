@@ -136,7 +136,7 @@ void BubbleView::AddedToWidget() {
   // `ShowBubble` in `VideoConferenceTray::ToggleBubble`.
   auto* scroll_view = AddChildView(std::make_unique<views::ScrollView>());
   scroll_view->SetAllowKeyboardScrolling(false);
-  scroll_view->SetBackgroundColor(absl::nullopt);
+  scroll_view->SetBackgroundColor(std::nullopt);
 
   // TODO(b/262930924): Use the correct max_height.
   scroll_view->ClipHeightTo(/*min_height=*/0, /*max_height=*/300);

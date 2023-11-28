@@ -53,7 +53,7 @@ class AuthDialogContentsViewPixelTest
   ~AuthDialogContentsViewPixelTest() override = default;
 
   // AshTestBase
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override;
   void SetUp() override;
   void TearDown() override;
@@ -70,7 +70,7 @@ class AuthDialogContentsViewPixelTest
   base::test::ScopedFeatureList scoped_features_;
 };
 
-absl::optional<pixel_test::InitParams>
+std::optional<pixel_test::InitParams>
 AuthDialogContentsViewPixelTest::CreatePixelTestInitParams() const {
   return pixel_test::InitParams();
 }

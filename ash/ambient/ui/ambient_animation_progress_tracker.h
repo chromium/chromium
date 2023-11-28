@@ -5,10 +5,11 @@
 #ifndef ASH_AMBIENT_UI_AMBIENT_ANIMATION_PROGRESS_TRACKER_H_
 #define ASH_AMBIENT_UI_AMBIENT_ANIMATION_PROGRESS_TRACKER_H_
 
+#include <optional>
+
 #include "ash/ash_export.h"
 #include "base/containers/flat_set.h"
 #include "base/scoped_multi_source_observation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/lottie/animation.h"
 #include "ui/lottie/animation_observer.h"
 

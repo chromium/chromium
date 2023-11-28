@@ -90,7 +90,7 @@ class ASH_EXPORT PowerNotificationController : public PowerStatus::Observer {
   // Determines whether a Battery Saver Notification should be shown. Returns
   // true if a notification should be shown, or nullopt if none of the bsm
   // branches were triggered.
-  absl::optional<bool> HandleBatterySaverNotifications();
+  std::optional<bool> HandleBatterySaverNotifications();
 
   // Sets |notification_state_|. Returns true if a notification should be shown.
   bool UpdateNotificationState();

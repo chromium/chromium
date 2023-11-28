@@ -16,7 +16,7 @@ constexpr int kShadowElevation = 2;
 const ui::ColorId kDragImageBackgroundColor = kColorAshShieldAndBaseOpaque;
 
 const gfx::ShadowDetails& GetDragImageShadowDetails(
-    const absl::optional<size_t>& corner_radius) {
+    const std::optional<size_t>& corner_radius) {
   return gfx::ShadowDetails::Get(kShadowElevation, corner_radius.value_or(0));
 }
 

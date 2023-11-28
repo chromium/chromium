@@ -93,7 +93,7 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
   // that the `SavedDeskItemView` can be animated up to the desk bar view.
   // It takes animation into consideration and will return the position where
   // the desk preview will end up, rather than where it currently is.
-  absl::optional<gfx::Rect> GetDeskPreviewBoundsForLaunch(
+  std::optional<gfx::Rect> GetDeskPreviewBoundsForLaunch(
       const DeskMiniView* mini_view);
 
   // views::View:

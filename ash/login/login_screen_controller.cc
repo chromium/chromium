@@ -109,7 +109,7 @@ void LoginScreenController::AuthenticateUserWithPasswordOrPin(
       << static_cast<int>(authentication_stage_);
 
   if (!client_) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -166,7 +166,7 @@ void LoginScreenController::AuthenticateUserWithChallengeResponse(
       << static_cast<int>(authentication_stage_);
 
   if (!client_) {
-    std::move(callback).Run(/*success=*/absl::nullopt);
+    std::move(callback).Run(/*success=*/std::nullopt);
     return;
   }
 
@@ -488,7 +488,7 @@ void LoginScreenController::OnAuthenticateComplete(
     bool success) {
   LOG(WARNING) << "crbug.com/1339004 : authentication complete";
   SetAuthenticationStage(AuthenticationStage::kUserCallback);
-  std::move(callback).Run(absl::make_optional<bool>(success));
+  std::move(callback).Run(std::make_optional<bool>(success));
   LOG(WARNING) << "crbug.com/1339004 : triggered callback";
   SetAuthenticationStage(AuthenticationStage::kIdle);
 

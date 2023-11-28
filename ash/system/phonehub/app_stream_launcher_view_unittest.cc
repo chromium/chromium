@@ -134,8 +134,8 @@ TEST_F(AppStreamLauncherViewTest, AddItems) {
 
   auto app1 = phonehub::Notification::AppMetadata(
       app_visible_name, package_name, /*color_icon=*/CreateTestImage(),
-      /*monochrome_icon_mask=*/absl::nullopt,
-      /*icon_color=*/absl::nullopt, /*icon_is_monochrome=*/true, user_id,
+      /*monochrome_icon_mask=*/std::nullopt,
+      /*icon_color=*/std::nullopt, /*icon_is_monochrome=*/true, user_id,
       phonehub::proto::AppStreamabilityStatus::STREAMABLE);
   std::vector<phonehub::Notification::AppMetadata> apps;
   apps.push_back(app1);
@@ -165,8 +165,8 @@ TEST_F(AppStreamLauncherViewTest, AddItemsListView) {
   const char package_name[] = "com.fakeapp";
   auto app1 = phonehub::Notification::AppMetadata(
       app_visible_name, package_name, /*color_icon=*/CreateTestImage(),
-      /*monochrome_icon_mask=*/absl::nullopt,
-      /*icon_color=*/absl::nullopt, /*icon_is_monochrome=*/true, user_id,
+      /*monochrome_icon_mask=*/std::nullopt,
+      /*icon_color=*/std::nullopt, /*icon_is_monochrome=*/true, user_id,
       phonehub::proto::AppStreamabilityStatus::STREAMABLE);
   std::vector<phonehub::Notification::AppMetadata> apps;
   apps.push_back(app1);
@@ -191,8 +191,8 @@ TEST_F(AppStreamLauncherViewTest, RemoveItem) {
 
   auto app1 = phonehub::Notification::AppMetadata(
       app_visible_name, package_name, /*color_icon=*/CreateTestImage(),
-      /*monochrome_icon_mask=*/absl::nullopt,
-      /*icon_color=*/absl::nullopt, /*icon_is_monochrome=*/true, user_id,
+      /*monochrome_icon_mask=*/std::nullopt,
+      /*icon_color=*/std::nullopt, /*icon_is_monochrome=*/true, user_id,
       phonehub::proto::AppStreamabilityStatus::STREAMABLE);
   std::vector<phonehub::Notification::AppMetadata> apps;
   apps.push_back(app1);
@@ -231,8 +231,8 @@ TEST_F(AppStreamLauncherViewTest, RemoveItemListView) {
 
   auto app1 = phonehub::Notification::AppMetadata(
       app_visible_name, package_name, /*color_icon=*/CreateTestImage(),
-      /*monochrome_icon_mask=*/absl::nullopt,
-      /*icon_color=*/absl::nullopt, /*icon_is_monochrome=*/true, user_id,
+      /*monochrome_icon_mask=*/std::nullopt,
+      /*icon_color=*/std::nullopt, /*icon_is_monochrome=*/true, user_id,
       phonehub::proto::AppStreamabilityStatus::STREAMABLE);
   std::vector<phonehub::Notification::AppMetadata> apps;
   apps.push_back(app1);
@@ -265,8 +265,8 @@ TEST_F(AppStreamLauncherViewTest, ClickOnItem) {
 
   auto app1 = phonehub::Notification::AppMetadata(
       app_visible_name, package_name, /*color_icon=*/CreateTestImage(),
-      /*monochrome_icon_mask=*/absl::nullopt,
-      /*icon_color=*/absl::nullopt, /*icon_is_monochrome=*/true, user_id,
+      /*monochrome_icon_mask=*/std::nullopt,
+      /*icon_color=*/std::nullopt, /*icon_is_monochrome=*/true, user_id,
       phonehub::proto::AppStreamabilityStatus::STREAMABLE);
   std::vector<phonehub::Notification::AppMetadata> apps;
   apps.push_back(app1);
@@ -312,8 +312,8 @@ TEST_F(AppStreamLauncherViewTest, ClickOnItemListView) {
 
   auto app1 = phonehub::Notification::AppMetadata(
       app_visible_name, package_name, /*color_icon=*/CreateTestImage(),
-      /*monochrome_icon_mask=*/absl::nullopt,
-      /*icon_color=*/absl::nullopt, /*icon_is_monochrome=*/true, user_id,
+      /*monochrome_icon_mask=*/std::nullopt,
+      /*icon_color=*/std::nullopt, /*icon_is_monochrome=*/true, user_id,
       phonehub::proto::AppStreamabilityStatus::STREAMABLE);
   std::vector<phonehub::Notification::AppMetadata> apps;
   apps.push_back(app1);
@@ -352,8 +352,8 @@ TEST_F(AppStreamLauncherViewTest, DisabledItem) {
 
   auto app1 = phonehub::Notification::AppMetadata(
       app_visible_name, package_name, /*color_icon=*/CreateTestImage(),
-      /*monochrome_icon_mask=*/absl::nullopt,
-      /*icon_color=*/absl::nullopt, /*icon_is_monochrome=*/true, user_id,
+      /*monochrome_icon_mask=*/std::nullopt,
+      /*icon_color=*/std::nullopt, /*icon_is_monochrome=*/true, user_id,
       phonehub::proto::AppStreamabilityStatus::BLOCK_LISTED);
   std::vector<phonehub::Notification::AppMetadata> apps;
   apps.push_back(app1);
@@ -392,8 +392,8 @@ TEST_F(AppStreamLauncherViewTest, DisabledItemListView) {
 
   auto app1 = phonehub::Notification::AppMetadata(
       app_visible_name, package_name, /*color_icon=*/CreateTestImage(),
-      /*monochrome_icon_mask=*/absl::nullopt,
-      /*icon_color=*/absl::nullopt, /*icon_is_monochrome=*/true, user_id,
+      /*monochrome_icon_mask=*/std::nullopt,
+      /*icon_color=*/std::nullopt, /*icon_is_monochrome=*/true, user_id,
       phonehub::proto::AppStreamabilityStatus::BLOCK_LISTED);
   std::vector<phonehub::Notification::AppMetadata> apps;
   apps.push_back(app1);

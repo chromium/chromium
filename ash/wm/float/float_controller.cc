@@ -1039,7 +1039,7 @@ void FloatController::FloatForTablet(aura::Window* window,
   // Update the magnetism if we are coming from a state that can restore to
   // float state, or from snap state. The bounds will be updated later based on
   // the magnetism and account for work area.
-  absl::optional<MagnetismCorner> magnetism_corner;
+  std::optional<MagnetismCorner> magnetism_corner;
   if (chromeos::IsMinimizedWindowStateType(old_state_type)) {
     magnetism_corner = GetMagnetismCornerForBounds(window->GetBoundsInScreen());
   } else if (chromeos::IsSnappedWindowStateType(old_state_type)) {

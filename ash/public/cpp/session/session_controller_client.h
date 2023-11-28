@@ -58,7 +58,7 @@ class ASH_PUBLIC_EXPORT SessionControllerClient {
   // Return the number of users that have previously logged in on the device.
   // Returns nullopt in the event where we cannot query the number of existing
   // users, for instance, when `UserManager` is uninitialized.
-  virtual absl::optional<int> GetExistingUsersCount() const = 0;
+  virtual std::optional<int> GetExistingUsersCount() const = 0;
 
  protected:
   virtual ~SessionControllerClient() = default;

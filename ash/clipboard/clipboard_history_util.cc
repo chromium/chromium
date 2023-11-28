@@ -99,14 +99,14 @@ class UnrenderedHtmlPlaceholderImage : public gfx::CanvasImageSource {
 
 }  // namespace
 
-absl::optional<ui::ClipboardInternalFormat> CalculateMainFormat(
+std::optional<ui::ClipboardInternalFormat> CalculateMainFormat(
     const ui::ClipboardData& data) {
   for (const auto& format : kPrioritizedFormats) {
     if (ContainsFormat(data, format)) {
       return format;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool ContainsFormat(const ui::ClipboardData& data,
@@ -177,7 +177,7 @@ std::u16string GetFileSystemSources(const ui::ClipboardData& data) {
     return std::u16string();
 
   // Attempt to read file system sources in the custom data.
-  if (absl::optional<std::u16string> maybe_sources = ui::ReadCustomDataForType(
+  if (std::optional<std::u16string> maybe_sources = ui::ReadCustomDataForType(
           base::as_bytes(base::span(data.custom_data_data())),
           kFileSystemSourcesType);
       maybe_sources) {
@@ -211,7 +211,7 @@ std::u16string GetShortcutKeyName() {
 }
 
 bool IsSupported(const ui::ClipboardData& data) {
-  const absl::optional<ui::ClipboardInternalFormat> format =
+  const std::optional<ui::ClipboardInternalFormat> format =
       CalculateMainFormat(data);
 
   // Empty `data` is not supported.

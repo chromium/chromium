@@ -129,7 +129,7 @@ void SetBoundsAnimated(aura::Window* window,
 void AutoPlaceSingleWindow(aura::Window* window, bool animated) {
   gfx::Rect work_area = screen_util::GetDisplayWorkAreaBoundsInParent(window);
   gfx::Rect bounds = window->bounds();
-  const absl::optional<gfx::Rect> user_defined_area =
+  const std::optional<gfx::Rect> user_defined_area =
       WindowState::Get(window)->pre_auto_manage_window_bounds();
   if (user_defined_area) {
     bounds = *user_defined_area;

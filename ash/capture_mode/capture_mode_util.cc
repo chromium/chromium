@@ -468,7 +468,7 @@ bool GetWidgetCurrentVisibility(views::Widget* widget) {
 
 bool SetWidgetVisibility(views::Widget* widget,
                          bool target_visibility,
-                         absl::optional<AnimationParams> animation_params) {
+                         std::optional<AnimationParams> animation_params) {
   DCHECK(widget);
   if (target_visibility == GetWidgetCurrentVisibility(widget))
     return false;
@@ -488,7 +488,7 @@ bool SetWidgetVisibility(views::Widget* widget,
 }
 
 aura::Window* GetPreferredRootWindow(
-    absl::optional<gfx::Point> location_in_screen) {
+    std::optional<gfx::Point> location_in_screen) {
   const int64_t display_id =
       (location_in_screen
            ? display::Screen::GetScreen()->GetDisplayNearestPoint(

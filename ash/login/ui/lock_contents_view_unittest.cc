@@ -1115,7 +1115,7 @@ TEST_F(LockContentsViewUnitTest, AuthErrorLoginScreenRecoverUserButton) {
   // The error bubble should be hidden because of the button press.
   EXPECT_FALSE(test_api.auth_error_bubble()->GetVisible());
 
-  absl::optional<int> reauth_reason =
+  std::optional<int> reauth_reason =
       user_manager::KnownUser(Shell::Get()->local_state())
           .FindReauthReason(users()[0].basic_user_info.account_id);
   EXPECT_EQ(reauth_reason, static_cast<int>(ReauthReason::kForgotPassword));
@@ -2843,7 +2843,7 @@ TEST_F(LockContentsViewUnitTest, LockScreenMediaControlsHiddenAfterDelay) {
       media_session::mojom::MediaPlaybackState::kPlaying);
 
   // Simulate media session stopping and delay.
-  lock_contents.media_controls_view()->MediaSessionChanged(absl::nullopt);
+  lock_contents.media_controls_view()->MediaSessionChanged(std::nullopt);
   mock_timer->Fire();
   base::RunLoop().RunUntilIdle();
 
@@ -2892,7 +2892,7 @@ TEST_F(LockContentsViewUnitTest, KeepMediaControlsShownWithinDelay) {
       media_session::mojom::MediaPlaybackState::kPlaying);
 
   // Simulate media session stopping.
-  lock_contents.media_controls_view()->MediaSessionChanged(absl::nullopt);
+  lock_contents.media_controls_view()->MediaSessionChanged(std::nullopt);
 
   // Simulate new media session starting within timer delay.
   SimulateMediaSessionChanged(

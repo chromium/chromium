@@ -337,7 +337,7 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
   // state to prevent app icon changes mid animation.
   bool force_fallback_icon_ = false;
 
-  absl::optional<float> forced_progress_indicator_value_;
+  std::optional<float> forced_progress_indicator_value_;
 
   // Whether the non-placeholder app icon has been loaded for the app.
   bool has_icon_image_ = false;

@@ -6,6 +6,7 @@
 #define ASH_AMBIENT_AMBIENT_PHOTO_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <utility>
@@ -29,7 +30,6 @@
 #include "net/base/backoff_entry.h"
 #include "services/data_decoder/public/mojom/image_decoder.mojom-shared.h"
 #include "services/network/public/cpp/simple_url_loader.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gfx {
 class ImageSkia;

@@ -527,7 +527,7 @@ void WindowState::OnWMEvent(const WMEvent* event) {
   if (snap_event) {
     // Save `event` requested snap ratio.
     const float target_snap_ratio = snap_event->snap_ratio();
-    snap_ratio_ = absl::make_optional(target_snap_ratio);
+    snap_ratio_ = std::make_optional(target_snap_ratio);
     if (IsPartial(target_snap_ratio)) {
       partial_start_time_ = base::TimeTicks::Now();
     } else {
@@ -677,7 +677,7 @@ std::unique_ptr<WindowState::State> WindowState::SetStateObject(
 void WindowState::UpdateSnapRatio() {
   if (!IsSnapped())
     return;
-  snap_ratio_ = absl::make_optional(GetCurrentSnapRatio(window_));
+  snap_ratio_ = std::make_optional(GetCurrentSnapRatio(window_));
   // If the snap ratio was adjusted, partial may have ended.
   MaybeRecordPartialDuration();
 }
@@ -1050,7 +1050,7 @@ void WindowState::SetBoundsDirectAnimated(const gfx::Rect& bounds,
 }
 
 void WindowState::SetBoundsDirectCrossFade(const gfx::Rect& new_bounds,
-                                           absl::optional<bool> float_state) {
+                                           std::optional<bool> float_state) {
   // Some test results in invoking CrossFadeToBounds when window is not visible.
   // No animation is necessary in that case, thus just change the bounds and
   // quit.

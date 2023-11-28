@@ -6,6 +6,7 @@
 
 #include <array>
 #include <map>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -29,7 +30,6 @@
 #include "components/user_prefs/test/test_browser_context_with_prefs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
@@ -334,7 +334,7 @@ TEST_F(ArcMetricsServiceTest, GetArcStartTimeFromEvents) {
   events.emplace_back(
       mojom::BootProgressEvent::New(kBootProgressArcUpgraded, kArcStartTimeMs));
 
-  absl::optional<base::TimeTicks> arc_start_time =
+  std::optional<base::TimeTicks> arc_start_time =
       service()->GetArcStartTimeFromEvents(events);
   EXPECT_TRUE(arc_start_time.has_value());
   EXPECT_EQ(*arc_start_time, base::Milliseconds(10) + base::TimeTicks());
@@ -351,7 +351,7 @@ TEST_F(ArcMetricsServiceTest, GetArcStartTimeFromEvents_NoArcUpgradedEvent) {
   std::vector<mojom::BootProgressEventPtr> events(
       GetBootProgressEvents(kArcStartTimeMs, 1 /* step_in_ms */));
 
-  absl::optional<base::TimeTicks> arc_start_time =
+  std::optional<base::TimeTicks> arc_start_time =
       service()->GetArcStartTimeFromEvents(events);
   EXPECT_FALSE(arc_start_time.has_value());
 }
@@ -362,7 +362,7 @@ TEST_F(ArcMetricsServiceTest, UserInteractionObserver) {
     void OnUserInteraction(UserInteractionType interaction_type) override {
       type = interaction_type;
     }
-    absl::optional<UserInteractionType> type;
+    std::optional<UserInteractionType> type;
   } observer;
 
   service()->AddUserInteractionObserver(&observer);
@@ -383,7 +383,7 @@ TEST_F(ArcMetricsServiceTest, BootTypeObserver) {
    public:
     void OnBootTypeRetrieved(mojom::BootType type) override { type_ = type; }
 
-    absl::optional<mojom::BootType> type_;
+    std::optional<mojom::BootType> type_;
   } observer;
 
   service()->AddBootTypeObserver(&observer);
@@ -451,7 +451,7 @@ TEST_F(ArcMetricsServiceTest, ReportVpnServiceBuilderCompatApiUsage) {
 class ArcVmArcMetricsServiceTest
     : public ArcMetricsServiceTest,
       public testing::WithParamInterface<
-          absl::optional<vm_tools::concierge::ListVmsResponse>> {
+          std::optional<vm_tools::concierge::ListVmsResponse>> {
  public:
   ArcVmArcMetricsServiceTest(const ArcVmArcMetricsServiceTest&) = delete;
   ArcVmArcMetricsServiceTest& operator=(const ArcVmArcMetricsServiceTest&) =
@@ -462,7 +462,7 @@ class ArcVmArcMetricsServiceTest
 
   void RequestKillCountsAndRespond(
       mojom::LowMemoryKillCountsPtr counts,
-      absl::optional<vm_tools::concierge::ListVmsResponse> list_vms_response) {
+      std::optional<vm_tools::concierge::ListVmsResponse> list_vms_response) {
     ash::FakeConciergeClient::Get()->set_list_vms_response(
         std::move(list_vms_response));
     process_instance().set_request_low_memory_kill_counts_response(
@@ -487,7 +487,7 @@ class ArcVmArcMetricsServiceTest
 
 // Create a ListVmsResponse used to create the VM specific memory counters.
 // See LogVmSpecificLowMemoryKillCounts.
-static absl::optional<vm_tools::concierge::ListVmsResponse> VmsList(
+static std::optional<vm_tools::concierge::ListVmsResponse> VmsList(
     std::initializer_list<vm_tools::concierge::VmInfo_VmType> types) {
   // ArcMetricsService only uses the vm_type field and ignores everything else,
   // so that's the only thing we need to set.
@@ -553,7 +553,7 @@ static const char* VmKillCounterPrefix(VmType vm) {
 INSTANTIATE_TEST_SUITE_P(
     MultiVm,
     ArcVmArcMetricsServiceTest,
-    testing::Values(absl::nullopt,
+    testing::Values(std::nullopt,
                     VmsList({}),
                     VmsList({VmType_ARC_VM}),
                     VmsList({VmType_ARC_VM, VmType_BOREALIS}),
@@ -597,7 +597,7 @@ void ExpectOneSampleAppKillCountsForVm(
 
 void ExpectOneSampleAppKillCounts(
     base::HistogramTester& tester,
-    absl::optional<vm_tools::concierge::ListVmsResponse> vms,
+    std::optional<vm_tools::concierge::ListVmsResponse> vms,
     const mojom::LowMemoryKillCountsPtr& c0,
     const mojom::LowMemoryKillCountsPtr& c1) {
   // No VM prefix for general counters.
@@ -708,7 +708,7 @@ static void ExpectOneSampleAppKillDailyCountsForVm(
 
 static void ExpectOneSampleAppKillDailyCounts(
     base::HistogramTester& tester,
-    absl::optional<vm_tools::concierge::ListVmsResponse> vms,
+    std::optional<vm_tools::concierge::ListVmsResponse> vms,
     int oom,
     int foreground,
     int perceptible,
@@ -796,9 +796,9 @@ TEST_P(ArcVmArcMetricsServiceTest, AppLowMemoryDailyKills) {
                                             18,   // pressure_perceptible.
                                             18);  // pressure_cached.
 
-  RequestKillCountsAndRespond(c0->Clone(), absl::nullopt);
+  RequestKillCountsAndRespond(c0->Clone(), std::nullopt);
   RequestKillCountsAndRespond(c1->Clone(), GetParam());
-  RequestKillCountsAndRespond(c2->Clone(), absl::nullopt);
+  RequestKillCountsAndRespond(c2->Clone(), std::nullopt);
   // Reset daily events to make sure we restore values from prefs.
   // NB: We make a new ArcDailyMetrics for the passed prefs in SetPrefService.
   service()->SetPrefService(prefs());

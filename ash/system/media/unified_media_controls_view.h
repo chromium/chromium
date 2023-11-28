@@ -5,12 +5,13 @@
 #ifndef ASH_SYSTEM_MEDIA_UNIFIED_MEDIA_CONTROLS_VIEW_H_
 #define ASH_SYSTEM_MEDIA_UNIFIED_MEDIA_CONTROLS_VIEW_H_
 
+#include <optional>
+
 #include "ash/ash_export.h"
 #include "ash/style/icon_button.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 
@@ -36,7 +37,7 @@ class ASH_EXPORT UnifiedMediaControlsView : public views::Button {
   ~UnifiedMediaControlsView() override = default;
 
   void SetIsPlaying(bool playing);
-  void SetArtwork(absl::optional<gfx::ImageSkia> artwork);
+  void SetArtwork(std::optional<gfx::ImageSkia> artwork);
   void SetTitle(const std::u16string& title);
   void SetArtist(const std::u16string& artist);
   void UpdateActionButtonAvailability(

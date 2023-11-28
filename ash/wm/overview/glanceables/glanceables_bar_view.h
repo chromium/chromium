@@ -43,9 +43,9 @@ class GlanceablesBarView : public views::View,
                const std::u16string& title,
                const std::u16string& sub_title,
                views::Button::PressedCallback callback,
-               absl::optional<std::u16string> button_title = absl::nullopt,
-               absl::optional<views::Button::PressedCallback> button_callback =
-                   absl::nullopt);
+               std::optional<std::u16string> button_title = std::nullopt,
+               std::optional<views::Button::PressedCallback> button_callback =
+                   std::nullopt);
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;

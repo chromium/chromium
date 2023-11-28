@@ -45,7 +45,7 @@ class AppListItemViewPixelTest
                      /*has_notification=*/bool>> {
  public:
   // AshTestBase:
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     pixel_test::InitParams init_params;
     init_params.under_rtl = use_rtl();

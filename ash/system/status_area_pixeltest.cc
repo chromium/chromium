@@ -46,7 +46,7 @@ const std::string GetNameForShelfAlignment(ShelfAlignment alignment) {
 class StatusAreaPixelTest : public AshTestBase {
  public:
   // AshTestBase:
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }

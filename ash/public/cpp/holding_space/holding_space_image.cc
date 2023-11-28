@@ -77,8 +77,8 @@ HoldingSpaceImage::HoldingSpaceImage(
       async_bitmap_resolver_(async_bitmap_resolver),
       placeholder_image_skia_resolver_(placeholder_image_skia_resolver) {
   placeholder_ = placeholder_image_skia_resolver_.Run(
-      backing_file_path_, max_size_, /*dark_background=*/absl::nullopt,
-      /*is_folder=*/absl::nullopt);
+      backing_file_path_, max_size_, /*dark_background=*/std::nullopt,
+      /*is_folder=*/std::nullopt);
   CreateImageSkia();
 }
 
@@ -91,8 +91,8 @@ HoldingSpaceImage::CreateDefaultPlaceholderImageSkiaResolver(
   return base::BindRepeating(
       [](bool use_light_mode_as_default,
          const base::FilePath& backing_file_path, const gfx::Size& size,
-         const absl::optional<bool>& dark_background,
-         const absl::optional<bool>& is_folder) {
+         const std::optional<bool>& dark_background,
+         const std::optional<bool>& is_folder) {
         // The requested image `size` should be >= `kFileTypeIconSize` to
         // give the `file_type_icon` generated below enough space to fully
         // paint.
@@ -176,7 +176,7 @@ void HoldingSpaceImage::OnBitmapLoaded(const base::FilePath& file_path,
 }
 
 gfx::ImageSkia HoldingSpaceImage::GetImageSkia(
-    const absl::optional<gfx::Size>& opt_size,
+    const std::optional<gfx::Size>& opt_size,
     bool dark_background) const {
   const gfx::Size size = opt_size.value_or(max_size_);
 

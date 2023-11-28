@@ -99,7 +99,7 @@ class ASH_EXPORT WindowDimmer : public aura::WindowObserver,
 
   // Used to get the color for the dimming `window_`'s layer. It's updated
   // through `SetDimColor`. It will be reset when SetDimOpacity() is called.
-  absl::optional<ui::ColorId> dim_color_type_;
+  std::optional<ui::ColorId> dim_color_type_;
 };
 
 }  // namespace ash

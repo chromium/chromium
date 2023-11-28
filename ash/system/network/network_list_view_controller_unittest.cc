@@ -314,7 +314,7 @@ class NetworkListViewControllerTest : public AshTestBase,
     // ethernet network.
     for (int i = 0; i < ethernet_network_count; i++) {
       CheckNetworkListItem(NetworkType::kEthernet, index++,
-                           /*guid=*/absl::nullopt);
+                           /*guid=*/std::nullopt);
     }
 
     // Expect that the view at `index` is a network item, and that it is an
@@ -326,7 +326,7 @@ class NetworkListViewControllerTest : public AshTestBase,
     index = 0;
     for (int i = 0; i < wifi_network_count; i++) {
       CheckNetworkListItem(NetworkType::kWiFi, 1 + index++,
-                           /*guid=*/absl::nullopt);
+                           /*guid=*/std::nullopt);
     }
 
     if (cellular_network_count == -1 && tether_network_count == -1) {
@@ -345,7 +345,7 @@ class NetworkListViewControllerTest : public AshTestBase,
         (IsInstantHotspotRebrandEnabled() ? 0 : tether_network_count);
     for (unsigned long i = 0; i < count; i++) {
       CheckNetworkListItem(type, index++,
-                           /*guid=*/absl::nullopt);
+                           /*guid=*/std::nullopt);
     }
 
     if (IsInstantHotspotRebrandEnabled()) {
@@ -354,14 +354,14 @@ class NetworkListViewControllerTest : public AshTestBase,
       // tether network.
       for (int i = 0; i < tether_network_count; i++) {
         CheckNetworkListItem(NetworkType::kMobile, index++,
-                             /*guid=*/absl::nullopt);
+                             /*guid=*/std::nullopt);
       }
     }
   }
 
   void CheckNetworkListItem(NetworkType type,
                             size_t index,
-                            const absl::optional<std::string>& guid) {
+                            const std::optional<std::string>& guid) {
     ASSERT_GT(network_list(type)->children().size(), index);
     EXPECT_STREQ(network_list(type)->children().at(index)->GetClassName(),
                  kNetworkListNetworkItemView);

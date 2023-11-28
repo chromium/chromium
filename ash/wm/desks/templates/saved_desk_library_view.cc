@@ -249,7 +249,7 @@ SavedDeskLibraryView::SavedDeskLibraryView() {
   scroll_view_->ClipHeightTo(0, std::numeric_limits<int>::max());
   scroll_view_->SetDrawOverflowIndicator(false);
   // Don't paint a background. The overview grid already has one.
-  scroll_view_->SetBackgroundColor(absl::nullopt);
+  scroll_view_->SetBackgroundColor(std::nullopt);
   scroll_view_->SetAllowKeyboardScrolling(true);
 
   // Scroll view will have a gradient mask layer.
@@ -365,7 +365,7 @@ void SavedDeskLibraryView::AnimateDeskLaunch(const base::Uuid& uuid,
 
   // If we can't the get bounds, then we just bail. The item will be deleted
   // automatically later through desk model observation.
-  absl::optional<gfx::Rect> target_screen_bounds =
+  std::optional<gfx::Rect> target_screen_bounds =
       GetDeskPreviewBoundsForLaunch(mini_view);
   if (!target_screen_bounds)
     return;
@@ -501,16 +501,16 @@ void SavedDeskLibraryView::OnLocatedEvent(ui::LocatedEvent* event,
   }
 }
 
-absl::optional<gfx::Rect> SavedDeskLibraryView::GetDeskPreviewBoundsForLaunch(
+std::optional<gfx::Rect> SavedDeskLibraryView::GetDeskPreviewBoundsForLaunch(
     const DeskMiniView* mini_view) {
   gfx::Rect desk_preview_bounds =
       mini_view->desk_preview()->GetBoundsInScreen();
-  if (absl::optional<gfx::Point> desk_preview_origin =
+  if (std::optional<gfx::Point> desk_preview_origin =
           mini_view->layer()->transform().InverseMapPoint(
               desk_preview_bounds.origin())) {
     return gfx::Rect(*desk_preview_origin, desk_preview_bounds.size());
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void SavedDeskLibraryView::AddedToWidget() {

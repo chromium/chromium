@@ -6,6 +6,7 @@
 #define ASH_LOGIN_UI_LOCAL_AUTHENTICATION_REQUEST_VIEW_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/ash_export.h"
@@ -21,7 +22,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -108,7 +108,7 @@ class ASH_EXPORT LocalAuthenticationRequestView
   void OnAuthSubmit(bool authenticated_by_pin, const std::u16string& password);
 
   void OnAuthComplete(std::unique_ptr<UserContext> user_context,
-                      absl::optional<AuthenticationError> authentication_error);
+                      std::optional<AuthenticationError> authentication_error);
 
   void OnInputTextChanged(bool is_empty);
 

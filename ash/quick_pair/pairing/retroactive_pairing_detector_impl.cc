@@ -286,7 +286,7 @@ void RetroactivePairingDetectorImpl::CreateGattConnection(
 
 void RetroactivePairingDetectorImpl::OnGattClientInitializedCallback(
     device::BluetoothDevice* device,
-    absl::optional<PairFailure> failure) {
+    std::optional<PairFailure> failure) {
   if (failure) {
     CD_LOG(WARNING, Feature::FP)
         << __func__
@@ -320,7 +320,7 @@ void RetroactivePairingDetectorImpl::OnGattClientInitializedCallback(
 
 void RetroactivePairingDetectorImpl::OnReadModelId(
     const std::string& address,
-    absl::optional<device::BluetoothGattService::GattErrorCode> error_code,
+    std::optional<device::BluetoothGattService::GattErrorCode> error_code,
     const std::vector<uint8_t>& value) {
   if (error_code) {
     CD_LOG(WARNING, Feature::FP)
@@ -648,7 +648,7 @@ void RetroactivePairingDetectorImpl::OnPairFailure(scoped_refptr<Device> device,
 
 void RetroactivePairingDetectorImpl::OnAccountKeyWrite(
     scoped_refptr<Device> device,
-    absl::optional<AccountKeyFailure> error) {}
+    std::optional<AccountKeyFailure> error) {}
 
 }  // namespace quick_pair
 }  // namespace ash

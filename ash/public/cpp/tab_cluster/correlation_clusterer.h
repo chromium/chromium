@@ -6,12 +6,12 @@
 #define ASH_PUBLIC_CPP_TAB_CLUSTER_CORRELATION_CLUSTERER_H_
 
 #include <map>
+#include <optional>
 #include <set>
 #include <vector>
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/tab_cluster/undirected_graph.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -80,14 +80,14 @@ class ASH_PUBLIC_EXPORT CorrelationClusterer {
   // Moves node from its current cluster to a new cluster.
   void MoveNodeToCluster(const int node, const int new_cluster);
   void MoveNodesToCluster(const std::set<int>& nodes,
-                          absl::optional<int> new_cluster);
+                          std::optional<int> new_cluster);
   // Returns a pair of:
   //  * The best cluster to move `moving_nodes` to according to the correlation
   //    clustering objective function. Null optional means create a new cluster.
   //  * The change in objective function achieved by that move. May be positive
   //    or negative.
   // The runtime is linear in the number of edges incident to `moving_nodes`.
-  std::pair<absl::optional<int>, double> BestMove(
+  std::pair<std::optional<int>, double> BestMove(
       const std::set<int>& moving_nodes);
   // Computes the best move given certain pre-computed sums of edge weights of
   // the following classes of vertices in relation to a fixed set of
@@ -114,7 +114,7 @@ class ASH_PUBLIC_EXPORT CorrelationClusterer {
   //     -resolution. To do so we subtract the number of edges we see in each
   //     category from the max possible number of edges (i.e. the number of
   //     edges we'd have if the graph was complete).
-  std::pair<absl::optional<int>, double> BestMoveFromStats(
+  std::pair<std::optional<int>, double> BestMoveFromStats(
       double moving_nodes_weight,
       std::map<int, double>& cluster_moving_weights,
       const EdgeSum& class_2_currently_separate,

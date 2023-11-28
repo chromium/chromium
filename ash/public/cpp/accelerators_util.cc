@@ -161,7 +161,7 @@ std::u16string KeycodeToKeyString(ui::KeyboardCode key_code,
     }
   }
 
-  const absl::optional<std::u16string> cached_key_string =
+  const std::optional<std::u16string> cached_key_string =
       AcceleratorKeycodeLookupCache::Get()->Find(key_code);
   // Cache hit, return immediately.
   if (cached_key_string.has_value()) {

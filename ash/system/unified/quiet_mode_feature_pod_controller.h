@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_UNIFIED_QUIET_MODE_FEATURE_POD_CONTROLLER_H_
 #define ASH_SYSTEM_UNIFIED_QUIET_MODE_FEATURE_POD_CONTROLLER_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/ash_export.h"
@@ -13,7 +14,6 @@
 #include "ash/system/unified/feature_pod_controller_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/message_center_observer.h"
 
 namespace ash {
@@ -64,7 +64,7 @@ class ASH_EXPORT QuietModeFeaturePodController
   // Owned by the views hierarchy.
   raw_ptr<FeatureTile, DanglingUntriaged | ExperimentalAsh> tile_ = nullptr;
 
-  absl::optional<int> last_disabled_count_;
+  std::optional<int> last_disabled_count_;
 
   base::WeakPtrFactory<QuietModeFeaturePodController> weak_ptr_factory_{this};
 };

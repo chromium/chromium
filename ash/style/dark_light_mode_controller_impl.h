@@ -81,15 +81,15 @@ class ASH_EXPORT DarkLightModeControllerImpl
   void NotifyIfDarkModeChanged(bool old_is_dark_mode_enabled);
 
   // Temporary field for testing purposes while OOBE WebUI is being migrated.
-  absl::optional<bool> is_dark_mode_enabled_in_oobe_for_testing_;
+  std::optional<bool> is_dark_mode_enabled_in_oobe_for_testing_;
 
   OobeDialogState oobe_state_ = OobeDialogState::HIDDEN;
 
   // Keep track of the last value that was sent to avoid multiple notifications.
-  absl::optional<bool> last_value_;
+  std::optional<bool> last_value_;
 
-  // absl::nullopt in case no user pod is focused.
-  absl::optional<bool> is_dark_mode_enabled_for_focused_pod_;
+  // std::nullopt in case no user pod is focused.
+  std::optional<bool> is_dark_mode_enabled_for_focused_pod_;
 
   base::ObserverList<ColorModeObserver> observers_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;

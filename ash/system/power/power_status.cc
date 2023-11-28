@@ -196,22 +196,22 @@ bool PowerStatus::IsBatteryTimeBeingCalculated() const {
   return proto_.is_calculating_battery_time();
 }
 
-absl::optional<base::TimeDelta> PowerStatus::GetBatteryTimeToEmpty() const {
+std::optional<base::TimeDelta> PowerStatus::GetBatteryTimeToEmpty() const {
   // powerd omits the field if no battery is present and sends -1 if it couldn't
   // compute a reasonable estimate.
   if (!proto_.has_battery_time_to_empty_sec() ||
       proto_.battery_time_to_empty_sec() < 0) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return base::Seconds(proto_.battery_time_to_empty_sec());
 }
 
-absl::optional<base::TimeDelta> PowerStatus::GetBatteryTimeToFull() const {
+std::optional<base::TimeDelta> PowerStatus::GetBatteryTimeToFull() const {
   // powerd omits the field if no battery is present and sends -1 if it couldn't
   // compute a reasonable estimate.
   if (!proto_.has_battery_time_to_full_sec() ||
       proto_.battery_time_to_full_sec() < 0) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return base::Seconds(proto_.battery_time_to_full_sec());
 }
@@ -266,7 +266,7 @@ std::string PowerStatus::GetCurrentPowerSourceID() const {
 
 PowerStatus::BatteryImageInfo PowerStatus::GenerateBatteryImageInfo(
     const SkColor foreground_color,
-    absl::optional<SkColor> badge_color) const {
+    std::optional<SkColor> badge_color) const {
   BatteryImageInfo info(foreground_color, badge_color);
   CalculateBatteryImageInfo(&info);
   return info;
@@ -365,7 +365,7 @@ std::u16string PowerStatus::GetAccessibleNameString(
     return battery_percentage_accessible;
 
   std::u16string battery_time_accessible = std::u16string();
-  const absl::optional<base::TimeDelta> time =
+  const std::optional<base::TimeDelta> time =
       IsBatteryCharging() ? GetBatteryTimeToFull() : GetBatteryTimeToEmpty();
 
   if (IsUsbChargerConnected()) {
@@ -406,9 +406,9 @@ std::pair<std::u16string, std::u16string> PowerStatus::GetStatusStrings()
       status =
           l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BATTERY_CALCULATING);
     } else {
-      absl::optional<base::TimeDelta> time = IsBatteryCharging()
-                                                 ? GetBatteryTimeToFull()
-                                                 : GetBatteryTimeToEmpty();
+      std::optional<base::TimeDelta> time = IsBatteryCharging()
+                                                ? GetBatteryTimeToFull()
+                                                : GetBatteryTimeToEmpty();
       if (time && power_utils::ShouldDisplayBatteryTime(*time) &&
           !IsBatteryDischargingOnLinePower()) {
         std::u16string duration;
@@ -498,7 +498,7 @@ void PowerStatus::BatterySaverModeStateChanged(
 }
 
 void PowerStatus::OnGotBatterySaverState(
-    absl::optional<power_manager::BatterySaverModeState> state) {
+    std::optional<power_manager::BatterySaverModeState> state) {
   if (state) {
     BatterySaverModeStateChanged(*state);
   }

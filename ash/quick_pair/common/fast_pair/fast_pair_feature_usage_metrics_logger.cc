@@ -51,7 +51,7 @@ bool FastPairFeatureUsageMetricsLogger::IsEligible() const {
                   LowEnergyScanSessionHardwareOffloadingStatus::kSupported);
 }
 
-absl::optional<bool> FastPairFeatureUsageMetricsLogger::IsAccessible() const {
+std::optional<bool> FastPairFeatureUsageMetricsLogger::IsAccessible() const {
   if (!IsEligible())
     return false;
 

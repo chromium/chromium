@@ -217,7 +217,7 @@ bool HoldingSpaceItem::IsSuggestionType(HoldingSpaceItem::Type type) {
 std::unique_ptr<HoldingSpaceItem> HoldingSpaceItem::Deserialize(
     const base::Value::Dict& dict,
     ImageResolver image_resolver) {
-  const absl::optional<int> version = dict.FindInt(kVersionPath);
+  const std::optional<int> version = dict.FindInt(kVersionPath);
   DCHECK(version.has_value() && version.value() == kVersion);
 
   const Type type = DeserializeType(dict);
@@ -236,7 +236,7 @@ std::unique_ptr<HoldingSpaceItem> HoldingSpaceItem::Deserialize(
 // serialization versions are supported, care must be taken to handle each.
 const std::string& HoldingSpaceItem::DeserializeId(
     const base::Value::Dict& dict) {
-  const absl::optional<int> version = dict.FindInt(kVersionPath);
+  const std::optional<int> version = dict.FindInt(kVersionPath);
   DCHECK(version.has_value() && version.value() == kVersion);
 
   const std::string* id = dict.FindString(kIdPath);
@@ -250,10 +250,10 @@ const std::string& HoldingSpaceItem::DeserializeId(
 // serialization versions are supported, care must be taken to handle each.
 base::FilePath HoldingSpaceItem::DeserializeFilePath(
     const base::Value::Dict& dict) {
-  const absl::optional<int> version = dict.FindInt(kVersionPath);
+  const std::optional<int> version = dict.FindInt(kVersionPath);
   DCHECK(version.has_value() && version.value() == kVersion);
 
-  const absl::optional<base::FilePath> file_path =
+  const std::optional<base::FilePath> file_path =
       base::ValueToFilePath(dict.Find(kFilePathPath));
   DCHECK(file_path.has_value());
 
@@ -265,7 +265,7 @@ base::FilePath HoldingSpaceItem::DeserializeFilePath(
 // serialization versions are supported, care must be taken to handle each.
 HoldingSpaceItem::Type HoldingSpaceItem::DeserializeType(
     const base::Value::Dict& dict) {
-  const absl::optional<int> version = dict.FindInt(kVersionPath);
+  const std::optional<int> version = dict.FindInt(kVersionPath);
   DCHECK(version.has_value() && version.value() == kVersion);
 
   return static_cast<Type>(dict.FindInt(kTypePath).value());
@@ -313,7 +313,7 @@ std::u16string HoldingSpaceItem::GetText() const {
   return text_.value_or(file_.file_path.BaseName().LossyDisplayName());
 }
 
-bool HoldingSpaceItem::SetText(const absl::optional<std::u16string>& text) {
+bool HoldingSpaceItem::SetText(const std::optional<std::u16string>& text) {
   if (text_ == text)
     return false;
 
@@ -322,7 +322,7 @@ bool HoldingSpaceItem::SetText(const absl::optional<std::u16string>& text) {
 }
 
 bool HoldingSpaceItem::SetSecondaryText(
-    const absl::optional<std::u16string>& secondary_text) {
+    const std::optional<std::u16string>& secondary_text) {
   if (secondary_text_ == secondary_text)
     return false;
 
@@ -331,7 +331,7 @@ bool HoldingSpaceItem::SetSecondaryText(
 }
 
 bool HoldingSpaceItem::SetSecondaryTextColorId(
-    const absl::optional<ui::ColorId>& secondary_text_color_id) {
+    const std::optional<ui::ColorId>& secondary_text_color_id) {
   if (secondary_text_color_id_ == secondary_text_color_id)
     return false;
 
@@ -354,7 +354,7 @@ std::u16string HoldingSpaceItem::GetAccessibleName() const {
 }
 
 bool HoldingSpaceItem::SetAccessibleName(
-    const absl::optional<std::u16string>& accessible_name) {
+    const std::optional<std::u16string>& accessible_name) {
   if (accessible_name_ == accessible_name)
     return false;
 

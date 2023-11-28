@@ -4,6 +4,7 @@
 
 #include "ash/ambient/ui/ambient_animation_player.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -18,19 +19,18 @@
 #include "base/time/time.h"
 #include "cc/paint/skottie_marker.h"
 #include "cc/paint/skottie_wrapper.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/controls/animated_image_view.h"
 
 namespace ash {
 
 namespace {
 
-absl::optional<base::TimeDelta> FindCycleRestartTimestamp(
+std::optional<base::TimeDelta> FindCycleRestartTimestamp(
     const cc::SkottieWrapper& skottie) {
   static const base::NoDestructor<std::string> kRestartMarkerName(
       base::StrCat({kLottieCustomizableIdPrefix, "_Marker_CycleRestart"}));
   DCHECK(skottie.is_valid());
-  absl::optional<base::TimeDelta> restart_timestamp;
+  std::optional<base::TimeDelta> restart_timestamp;
   for (const cc::SkottieMarker& marker : skottie.GetAllMarkers()) {
     if (marker.name != *kRestartMarkerName) {
       continue;
@@ -78,7 +78,7 @@ AmbientAnimationPlayer::AmbientAnimationPlayer(
         global_progress.current_timestamp * immutable_params.total_duration,
         global_progress.num_completed_cycles, immutable_params.style};
   } else {
-    absl::optional<base::TimeDelta> cycle_restart_timestamp_found =
+    std::optional<base::TimeDelta> cycle_restart_timestamp_found =
         FindCycleRestartTimestamp(*animation->skottie());
     if (cycle_restart_timestamp_found.has_value()) {
       cycle_restart_timestamp_ = *cycle_restart_timestamp_found;

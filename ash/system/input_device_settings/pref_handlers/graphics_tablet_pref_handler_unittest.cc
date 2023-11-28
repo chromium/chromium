@@ -162,12 +162,12 @@ TEST_F(GraphicsTabletPrefHandlerTest,
   known_user().SetPath(
       account_id_1,
       prefs::kGraphicsTabletLoginScreenTabletButtonRemappingListPref,
-      absl::optional<base::Value>(ConvertButtonRemappingArrayToList(
+      std::optional<base::Value>(ConvertButtonRemappingArrayToList(
           tablet_button_remappings,
           mojom::CustomizationRestriction::kAllowCustomizations)));
   known_user().SetPath(
       account_id_1, prefs::kGraphicsTabletLoginScreenPenButtonRemappingListPref,
-      absl::optional<base::Value>(ConvertButtonRemappingArrayToList(
+      std::optional<base::Value>(ConvertButtonRemappingArrayToList(
           pen_button_remappings,
           mojom::CustomizationRestriction::kAllowCustomizations)));
 

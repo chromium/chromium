@@ -395,7 +395,7 @@ void LocalAuthenticationRequestView::OnAuthSubmit(
 
 void LocalAuthenticationRequestView::OnAuthComplete(
     std::unique_ptr<UserContext> user_context,
-    absl::optional<AuthenticationError> authentication_error) {
+    std::optional<AuthenticationError> authentication_error) {
   if (authentication_error.has_value()) {
     LOG(ERROR) << "An error happened during the attempt to validate "
                   "the password: "

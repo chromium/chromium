@@ -222,7 +222,7 @@ gfx::Point CalculateBubblePositionAfterBeforeStrategy(gfx::Rect anchor,
 
 void ConfigureRectFocusRingCircleInkDrop(views::View* view,
                                          views::FocusRing* focus_ring,
-                                         absl::optional<int> radius) {
+                                         std::optional<int> radius) {
   DCHECK(view);
   DCHECK(focus_ring);
   focus_ring->SetPathGenerator(

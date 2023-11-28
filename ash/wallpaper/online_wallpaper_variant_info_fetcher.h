@@ -43,7 +43,7 @@ class ASH_EXPORT OnlineWallpaperVariantInfoFetcher {
   // Callback for Fetch* methods which populates the |unit_id| and |variants|
   // fields in OnlineWallpaperParams.
   using FetchParamsCallback =
-      base::OnceCallback<void(absl::optional<OnlineWallpaperParams>)>;
+      base::OnceCallback<void(std::optional<OnlineWallpaperParams>)>;
 
   // Fetches the wallpaper variants for |info| to produce a fully populated
   // OnlineWallpaperParams in |callback|.

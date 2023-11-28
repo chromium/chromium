@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_TRAY_TRAY_BUBBLE_VIEW_H_
 
 #include <memory>
+#include <optional>
 
 #include "ash/ash_export.h"
 #include "ash/bubble/bubble_constants.h"
@@ -14,7 +15,6 @@
 #include "ash/system/status_area_widget.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event.h"
@@ -94,7 +94,7 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
 
     // Returns the accelerator action associated with the delegate's bubble
     // view.
-    virtual absl::optional<AcceleratorAction> GetAcceleratorAction() const;
+    virtual std::optional<AcceleratorAction> GetAcceleratorAction() const;
 
     // Return a WeakPtr to `this`.
     base::WeakPtr<Delegate> GetWeakPtr();
@@ -138,8 +138,8 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
     // Indicates whether tray bubble view should add a pre target event handler.
     bool reroute_event_handler = false;
     int corner_radius = kBubbleCornerRadius;
-    absl::optional<gfx::Insets> insets;
-    absl::optional<gfx::Insets> margin;
+    std::optional<gfx::Insets> insets;
+    std::optional<gfx::Insets> margin;
     // If the view has a large corner radius(e.g. slider bubble), we should
     // paint the shadow on texture layer since `SystemShadowOnNinePatchLayer`
     // has geometry limitations. See `SystemShadowOnTextureLayer` for details.
@@ -181,7 +181,7 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   gfx::Insets GetBorderInsets() const;
 
   // Returns the accelerator action associated with this bubble view.
-  absl::optional<AcceleratorAction> GetAcceleratorAction() const;
+  std::optional<AcceleratorAction> GetAcceleratorAction() const;
 
   // Called when the delegate is destroyed. This must be called before the
   // delegate is actually destroyed. TrayBubbleView will do clean up in

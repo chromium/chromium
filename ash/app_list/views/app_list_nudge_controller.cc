@@ -118,7 +118,7 @@ bool AppListNudgeController::ShouldShowReorderNudge() const {
 }
 
 void AppListNudgeController::OnTemporarySortOrderChanged(
-    const absl::optional<AppListSortOrder>& new_order) {
+    const std::optional<AppListSortOrder>& new_order) {
   PrefService* prefs = GetPrefs();
   if (!prefs)
     return;

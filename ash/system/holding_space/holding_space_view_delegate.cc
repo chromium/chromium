@@ -571,11 +571,11 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
   // A value for `is_pinnable` will only be present if the `selection` contains
   // at least one holding space item which is *not* in-progress. In-progress
   // items are ignored with respect to pin-/unpin-ability.
-  absl::optional<bool> is_pinnable;
+  std::optional<bool> is_pinnable;
 
   // A value for `in_progress_commands` will only be present if the `selection`
   // does *not* contain any items which are complete.
-  absl::optional<std::vector<HoldingSpaceItem::InProgressCommand>>
+  std::optional<std::vector<HoldingSpaceItem::InProgressCommand>>
       in_progress_commands;
 
   HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
@@ -597,7 +597,7 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
                       });
       }
     } else {
-      in_progress_commands = absl::nullopt;
+      in_progress_commands = std::nullopt;
       is_any_item_complete = true;
     }
 

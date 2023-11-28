@@ -5,6 +5,7 @@
 #include "ash/user_education/user_education_util.h"
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -20,7 +21,6 @@
 #include "components/user_education/common/help_bubble_params.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/metadata/view_factory.h"
@@ -83,7 +83,7 @@ TEST_F(UserEducationUtilTest, CreateExtendedPropertiesWithBodyIcon) {
 
   // It is permissible to query help bubble body icon even when absent.
   EXPECT_EQ(GetHelpBubbleBodyIcon(HelpBubbleParams::ExtendedProperties()),
-            absl::nullopt);
+            std::nullopt);
 }
 
 // Verifies that `CreateExtendedProperties()` can be used to create extended
@@ -118,7 +118,7 @@ TEST_F(UserEducationUtilTest, ExtendedPropertiesWithStyle) {
 
   // It is permissible to query help bubble style even when absent.
   EXPECT_EQ(GetHelpBubbleStyle(HelpBubbleParams::ExtendedProperties()),
-            absl::nullopt);
+            std::nullopt);
 }
 
 // Verifies that `ToString()` is working as intended.

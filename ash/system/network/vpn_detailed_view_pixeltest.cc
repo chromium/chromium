@@ -65,7 +65,7 @@ class VpnDetailedViewPixelTest : public AshTestBase {
     vpn_detailed_view_ = static_cast<VpnDetailedView*>(detailed_view);
   }
 
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }

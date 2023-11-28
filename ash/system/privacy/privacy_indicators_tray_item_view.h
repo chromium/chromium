@@ -186,7 +186,7 @@ class ASH_EXPORT PrivacyIndicatorsTrayItemView : public TrayItemView,
   base::Time start_showing_time_;
 
   // Measure animation smoothness metrics for all the animations.
-  absl::optional<ui::ThroughputTracker> throughput_tracker_;
+  std::optional<ui::ThroughputTracker> throughput_tracker_;
 };
 
 }  // namespace ash

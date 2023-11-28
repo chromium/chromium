@@ -79,9 +79,9 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
 
   ui::Layer* layer() { return layer_owner_.layer(); }
 
-  const absl::optional<size_t>& index() const { return index_; }
+  const std::optional<size_t>& index() const { return index_; }
 
-  const absl::optional<size_t>& pending_index() const { return pending_index_; }
+  const std::optional<size_t>& pending_index() const { return pending_index_; }
   void set_pending_index(size_t index) { pending_index_ = index; }
 
  private:
@@ -166,11 +166,11 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
 
   // If set, the preview index within the holding space tray icon. May be unset
   // during icon update transition before the preview is animated in.
-  absl::optional<size_t> index_;
+  std::optional<size_t> index_;
 
   // If set, the index within the holding space tray icon to which the preview
   // is about to move. Set while the holding space tray icon is updating.
-  absl::optional<size_t> pending_index_;
+  std::optional<size_t> pending_index_;
 
   // The `layer()` for this preview is parented by `container_`'s layer. It is
   // necessary to observe and react to bounds changes in `container_` to keep

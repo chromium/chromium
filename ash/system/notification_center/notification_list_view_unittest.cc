@@ -68,7 +68,7 @@ class TestNotificationView : public AshNotificationView {
   int top_radius_ = 0;
   int bottom_radius_ = 0;
 
-  absl::optional<float> slide_amount_;
+  std::optional<float> slide_amount_;
 };
 
 class TestNotificationListView : public NotificationListView {

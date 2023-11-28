@@ -304,9 +304,9 @@ const char* UnifiedSystemTray::GetClassName() const {
   return "UnifiedSystemTray";
 }
 
-absl::optional<AcceleratorAction> UnifiedSystemTray::GetAcceleratorAction()
+std::optional<AcceleratorAction> UnifiedSystemTray::GetAcceleratorAction()
     const {
-  return absl::make_optional(AcceleratorAction::kToggleSystemTrayBubble);
+  return std::make_optional(AcceleratorAction::kToggleSystemTrayBubble);
 }
 
 void UnifiedSystemTray::OnShelfConfigUpdated() {

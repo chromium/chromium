@@ -551,7 +551,7 @@ TEST_F(MessageCenterMetricsUtilsTest, RecordPopupUserJourneyTime) {
   // Add notification to message center. Use the normal duration for adding the
   // notification so that the recorded popup duration is expected.
   auto* message_center = message_center::MessageCenter::Get();
-  absl::optional<ui::ScopedAnimationDurationScaleMode> mode(
+  std::optional<ui::ScopedAnimationDurationScaleMode> mode(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   message_center->AddNotification(
       std::make_unique<message_center::Notification>(*notification));

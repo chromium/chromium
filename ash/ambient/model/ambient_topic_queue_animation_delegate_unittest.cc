@@ -4,6 +4,7 @@
 
 #include "ash/ambient/model/ambient_topic_queue_animation_delegate.h"
 
+#include <optional>
 #include <utility>
 
 #include "ash/ambient/test/ambient_test_util.h"
@@ -13,7 +14,6 @@
 #include "cc/paint/skottie_resource_metadata.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace ash {
@@ -26,7 +26,7 @@ using ::testing::UnorderedElementsAre;
 class AmbientTopicQueueAnimationDelegateTest : public ::testing::Test {
  protected:
   void RegisterAsset(base::StringPiece resource_id,
-                     absl::optional<gfx::Size> size) {
+                     std::optional<gfx::Size> size) {
     CHECK(resource_metadata_.RegisterAsset("test-path", "test-name",
                                            resource_id, std::move(size)))
         << "Asset " << resource_id << " already registered";
@@ -118,7 +118,7 @@ TEST_F(AmbientTopicQueueAnimationDelegateTest, HandlesMissingAssetSize) {
       gfx::Size(120, 40));
   RegisterAsset(
       GenerateLottieDynamicAssetIdForTesting(/*position=*/"C", /*idx=*/1),
-      absl::nullopt);
+      std::nullopt);
   AmbientTopicQueueAnimationDelegate delegate(resource_metadata_);
   EXPECT_THAT(delegate.GetTopicSizes(),
               UnorderedElementsAre(gfx::Size(250, 100)));

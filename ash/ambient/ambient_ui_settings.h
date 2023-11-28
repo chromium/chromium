@@ -5,6 +5,7 @@
 #ifndef ASH_AMBIENT_AMBIENT_UI_SETTINGS_H_
 #define ASH_AMBIENT_AMBIENT_UI_SETTINGS_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/ambient/ambient_constants.h"
@@ -12,7 +13,6 @@
 #include "ash/constants/ambient_video.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -28,16 +28,15 @@ class ASH_EXPORT AmbientUiSettings {
   // Creates the default ui settings. This is guaranteed to be valid.
   AmbientUiSettings();
   // Fatal error occurs if an invalid combination of settings is provided.
-  explicit AmbientUiSettings(
-      personalization_app::mojom::AmbientTheme theme,
-      absl::optional<AmbientVideo> video = absl::nullopt);
+  explicit AmbientUiSettings(personalization_app::mojom::AmbientTheme theme,
+                             std::optional<AmbientVideo> video = std::nullopt);
   AmbientUiSettings(const AmbientUiSettings&);
   AmbientUiSettings& operator=(const AmbientUiSettings&);
   ~AmbientUiSettings();
 
   personalization_app::mojom::AmbientTheme theme() const { return theme_; }
   // Must be set if |theme()| is |kVideo|. Otherwise, may be nullopt.
-  const absl::optional<AmbientVideo>& video() const { return video_; }
+  const std::optional<AmbientVideo>& video() const { return video_; }
 
   bool operator==(const AmbientUiSettings& other) const;
   bool operator!=(const AmbientUiSettings& other) const;
@@ -49,7 +48,7 @@ class ASH_EXPORT AmbientUiSettings {
 
  private:
   // Returns nullopt if the |dict| contains an invalid group of settings.
-  static absl::optional<AmbientUiSettings> CreateFromDict(
+  static std::optional<AmbientUiSettings> CreateFromDict(
       const base::Value::Dict& dict);
 
   // This is private because the caller by design should never be working with
@@ -57,7 +56,7 @@ class ASH_EXPORT AmbientUiSettings {
   bool IsValid() const;
 
   personalization_app::mojom::AmbientTheme theme_ = kDefaultAmbientTheme;
-  absl::optional<AmbientVideo> video_;
+  std::optional<AmbientVideo> video_;
 };
 
 }  // namespace ash

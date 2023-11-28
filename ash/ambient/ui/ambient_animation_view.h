@@ -6,6 +6,7 @@
 #define ASH_AMBIENT_UI_AMBIENT_ANIMATION_VIEW_H_
 
 #include <memory>
+#include <optional>
 
 #include "ash/ambient/model/ambient_animation_photo_provider.h"
 #include "ash/ambient/ui/glanceable_info_view.h"
@@ -17,7 +18,6 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/lottie/animation.h"
 #include "ui/lottie/animation_observer.h"
@@ -101,7 +101,7 @@ class ASH_EXPORT AmbientAnimationView : public views::View,
   base::ScopedObservation<lottie::Animation, lottie::AnimationObserver>
       animation_observer_{this};
 
-  absl::optional<ui::ThroughputTracker> throughput_tracker_;
+  std::optional<ui::ThroughputTracker> throughput_tracker_;
   base::RepeatingTimer throughput_tracker_restart_timer_;
 
   JitterCalculator animation_jitter_calculator_;

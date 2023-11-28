@@ -94,7 +94,7 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   // Handles `AppListController::UpdateAppListWithNewSortingOrder()` for the
   // app list bubble view.
   void UpdateForNewSortingOrder(
-      const absl::optional<AppListSortOrder>& new_order,
+      const std::optional<AppListSortOrder>& new_order,
       bool animate,
       base::OnceClosure update_position_closure);
 

@@ -218,7 +218,7 @@ bool AutoSnapController::AutoSnapWindowIfNeeded(aura::Window* window) {
     return false;
   }
 
-  absl::optional<float> snap_ratio =
+  std::optional<float> snap_ratio =
       split_view_controller->ComputeSnapRatio(window);
 
   // If it's a user positionable window but can't be snapped, end split view

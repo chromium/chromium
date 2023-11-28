@@ -98,7 +98,7 @@ class BatteryNotificationTest : public AshTestBase {
       bool expected_bsm_state_after_click) {
     auto VerifyBatterySaverModeState =
         [](base::RunLoop* run_loop, bool active,
-           absl::optional<power_manager::BatterySaverModeState> state) {
+           std::optional<power_manager::BatterySaverModeState> state) {
           ASSERT_TRUE(state);
           EXPECT_EQ(state->enabled(), active);
           run_loop->Quit();
@@ -119,7 +119,7 @@ class BatteryNotificationTest : public AshTestBase {
 
     // Click the button to turn off/on battery saver mode depending on
     // NotificationState.
-    notification->delegate()->Click(0, absl::nullopt);
+    notification->delegate()->Click(0, std::nullopt);
 
     // Test that notification is dismissed after button is pressed.
     EXPECT_EQ(GetBatteryNotification(), nullptr);

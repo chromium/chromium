@@ -5,6 +5,7 @@
 #include "ash/shelf/login_shelf_view.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "ash/app_list/app_list_controller_impl.h"
@@ -44,7 +45,6 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/manager/display_configurator.h"
 #include "ui/display/manager/test/action_logger.h"
 #include "ui/display/manager/test/test_native_display_delegate.h"
@@ -71,7 +71,7 @@ std::vector<KioskAppMenuEntry> GetNFakeKioskApps(int n) {
   return std::vector<KioskAppMenuEntry>(
       n, KioskAppMenuEntry(KioskAppMenuEntry::AppType::kWebApp,
                            AccountId::FromUserEmail("fake@email.com"),
-                           /*chrome_app_id=*/absl::nullopt,
+                           /*chrome_app_id=*/std::nullopt,
                            /*name=*/u"Fake App",
                            /*icon=*/gfx::ImageSkia()));
 }

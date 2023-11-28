@@ -146,7 +146,7 @@ std::u16string GetLowBatteryMessage(
                                     base::NumberToString16(battery_percentage));
 }
 
-absl::optional<int> CalculateNotificationButtonToken(
+std::optional<int> CalculateNotificationButtonToken(
     const PowerStatus& status,
     PowerNotificationController::NotificationState notification_state) {
   const bool no_notification =
@@ -162,7 +162,7 @@ absl::optional<int> CalculateNotificationButtonToken(
   // battery is a generic low power or critical notification.
   if (!features::IsBatterySaverAvailable() || no_notification ||
       generic_low_power_notification || critical_battery_notification) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Note: At this point, the Notification State could be OPT_OUT, or OPT_IN.
@@ -179,9 +179,9 @@ void CalculateNotificationButtons(
     const PowerStatus& status,
     PowerNotificationController::NotificationState notification_state,
     message_center::RichNotificationData& rich_notification_data) {
-  absl::optional<int> enable_disable_bsm_token_optional =
+  std::optional<int> enable_disable_bsm_token_optional =
       CalculateNotificationButtonToken(status, notification_state);
-  if (enable_disable_bsm_token_optional == absl::nullopt) {
+  if (enable_disable_bsm_token_optional == std::nullopt) {
     return;
   }
 
@@ -194,10 +194,10 @@ void CalculateNotificationButtons(
 }
 
 void HandlePowerNotificationButtonClick(
-    absl::optional<int> token,
+    std::optional<int> token,
     PowerNotificationController* power_notification_controller,
-    const absl::optional<int> button_index) {
-  if (token == absl::nullopt || button_index == absl::nullopt) {
+    const std::optional<int> button_index) {
+  if (token == std::nullopt || button_index == std::nullopt) {
     return;
   }
 
@@ -246,7 +246,7 @@ std::unique_ptr<Notification> CreateNotification(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BATTERY_PERCENT),
       battery_percentage / 100.0);
 
-  const absl::optional<base::TimeDelta> time =
+  const std::optional<base::TimeDelta> time =
       status.IsBatteryCharging() ? status.GetBatteryTimeToFull()
                                  : status.GetBatteryTimeToEmpty();
 

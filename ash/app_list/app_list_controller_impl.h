@@ -6,6 +6,7 @@
 #define ASH_APP_LIST_APP_LIST_CONTROLLER_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -38,7 +39,6 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/types/display_constants.h"
@@ -112,7 +112,7 @@ class ASH_EXPORT AppListControllerImpl
   void ShowAppList(AppListShowSource source) override;
   AppListShowSource LastAppListShowSource() override;
   aura::Window* GetWindow() override;
-  bool IsVisible(const absl::optional<int64_t>& display_id) override;
+  bool IsVisible(const std::optional<int64_t>& display_id) override;
   bool IsVisible() override;
   bool IsImageSearchToggleable() override;
 
@@ -122,7 +122,7 @@ class ASH_EXPORT AppListControllerImpl
   void OnUserSessionAdded(const AccountId& account_id) override;
 
   // Methods used in ash:
-  bool GetTargetVisibility(const absl::optional<int64_t>& display_id) const;
+  bool GetTargetVisibility(const std::optional<int64_t>& display_id) const;
   // 'should_record_metrics' is false when transitioning to tablet mode with a
   // visible window which is shown over, and thus hides, the app list.
   void Show(int64_t display_id,
@@ -130,7 +130,7 @@ class ASH_EXPORT AppListControllerImpl
             base::TimeTicks event_time_stamp,
             bool should_record_metrics);
   void UpdateAppListWithNewTemporarySortOrder(
-      const absl::optional<AppListSortOrder>& new_order,
+      const std::optional<AppListSortOrder>& new_order,
       bool animate,
       base::OnceClosure update_position_closure) override;
 
@@ -262,8 +262,8 @@ class ASH_EXPORT AppListControllerImpl
   void OnUiVisibilityChanged(
       AssistantVisibility new_visibility,
       AssistantVisibility old_visibility,
-      absl::optional<AssistantEntryPoint> entry_point,
-      absl::optional<AssistantExitPoint> exit_point) override;
+      std::optional<AssistantEntryPoint> entry_point,
+      std::optional<AssistantExitPoint> exit_point) override;
 
   // Gets the home screen window, if available, or null if the home screen
   // window is being hidden for effects (e.g. when dragging windows or
@@ -281,7 +281,7 @@ class ASH_EXPORT AppListControllerImpl
   void UpdateScaleAndOpacityForHomeLauncher(
       float scale,
       float opacity,
-      absl::optional<HomeLauncherAnimationInfo> animation_info,
+      std::optional<HomeLauncherAnimationInfo> animation_info,
       UpdateAnimationSettingsCallback callback);
 
   // Called when the HomeLauncher positional animation has completed.
@@ -338,11 +338,11 @@ class ASH_EXPORT AppListControllerImpl
 
   // Updates which container the fullscreen launcher window should be in.
   void UpdateFullscreenLauncherContainer(
-      absl::optional<int64_t> display_id = absl::nullopt);
+      std::optional<int64_t> display_id = std::nullopt);
 
   // Returns the parent window of the `AppListView` for a |display_id|.
   aura::Window* GetFullscreenLauncherContainerForDisplayId(
-      absl::optional<int64_t> display_id = absl::nullopt);
+      std::optional<int64_t> display_id = std::nullopt);
 
   // Methods for recording the state of the app list before it changes in order
   // to record metrics.
@@ -434,7 +434,7 @@ class ASH_EXPORT AppListControllerImpl
   raw_ptr<AppListClient, ExperimentalAsh> client_ = nullptr;
 
   // Tracks the most recent show source for the app list.
-  absl::optional<AppListShowSource> last_open_source_;
+  std::optional<AppListShowSource> last_open_source_;
 
   // Tracks active app list and search models to app list UI stack. It can be
   // accessed outside AppListModelControllerImpl using
@@ -500,15 +500,15 @@ class ASH_EXPORT AppListControllerImpl
   // The AppListViewState at the moment it was recorded, used to record app
   // launching metrics. This allows an accurate AppListViewState to be recorded
   // before AppListViewState changes.
-  absl::optional<AppListViewState> recorded_app_list_view_state_;
+  std::optional<AppListViewState> recorded_app_list_view_state_;
 
   // Whether the applist was shown at the moment it was recorded, used to record
   // app launching metrics. This is recorded because AppList visibility can
   // change before the metric is recorded.
-  absl::optional<bool> recorded_app_list_visibility_;
+  std::optional<bool> recorded_app_list_visibility_;
 
   // The last time the app list was shown.
-  absl::optional<base::TimeTicks> last_show_timestamp_;
+  std::optional<base::TimeTicks> last_show_timestamp_;
 
   base::ObserverList<AppListControllerObserver> observers_;
 
@@ -530,11 +530,11 @@ class ASH_EXPORT AppListControllerImpl
   // it can be used to decide how to update home screen when overview mode exit
   // animations are finished (at which point this information will not be
   // available).
-  absl::optional<OverviewEnterExitType> overview_exit_type_;
+  std::optional<OverviewEnterExitType> overview_exit_type_;
 
   // Responsible for recording smoothness related UMA stats for home screen
   // animations.
-  absl::optional<ui::ThroughputTracker> smoothness_tracker_;
+  std::optional<ui::ThroughputTracker> smoothness_tracker_;
 
   // Used for closing the Assistant ui in the asynchronous way.
   base::ScopedClosureRunner close_assistant_ui_runner_;

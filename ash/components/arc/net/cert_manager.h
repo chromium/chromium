@@ -5,10 +5,10 @@
 #ifndef ASH_COMPONENTS_ARC_NET_CERT_MANAGER_H_
 #define ASH_COMPONENTS_ARC_NET_CERT_MANAGER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
@@ -17,8 +17,8 @@ namespace arc {
 class CertManager {
  public:
   using ImportPrivateKeyAndCertCallback =
-      base::OnceCallback<void(const absl::optional<std::string>& cert_id,
-                              const absl::optional<int>& slot_id)>;
+      base::OnceCallback<void(const std::optional<std::string>& cert_id,
+                              const std::optional<int>& slot_id)>;
 
   virtual ~CertManager() = default;
 

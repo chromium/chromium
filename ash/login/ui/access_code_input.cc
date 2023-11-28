@@ -115,10 +115,10 @@ void FlexCodeInput::Backspace() {
   // This triggers ContentsChanged(), which calls |on_input_change_|.
 }
 
-absl::optional<std::string> FlexCodeInput::GetCode() const {
+std::optional<std::string> FlexCodeInput::GetCode() const {
   std::u16string code = code_field_->GetText();
   if (!code.length()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return base::UTF16ToUTF8(code);
 }
@@ -322,13 +322,13 @@ void FixedLengthCodeInput::Backspace() {
 }
 
 // Returns access code as string if all fields contain input.
-absl::optional<std::string> FixedLengthCodeInput::GetCode() const {
+std::optional<std::string> FixedLengthCodeInput::GetCode() const {
   std::string result;
   size_t length;
   for (auto* field : input_fields_) {
     length = field->GetText().length();
     if (!length) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     DCHECK_EQ(1u, length);

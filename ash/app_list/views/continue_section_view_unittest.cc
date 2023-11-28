@@ -5,6 +5,7 @@
 #include "ash/app_list/views/continue_section_view.h"
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -36,7 +37,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
@@ -305,7 +305,7 @@ class ContinueSectionViewTestBase : public AshTestBase {
  private:
   bool tablet_mode_ = false;
 
-  absl::optional<ui::ScopedAnimationDurationScaleMode> animation_duration_;
+  std::optional<ui::ScopedAnimationDurationScaleMode> animation_duration_;
   std::unique_ptr<test::AppsGridViewTestApi> test_api_;
 };
 

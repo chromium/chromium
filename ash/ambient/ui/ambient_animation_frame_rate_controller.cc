@@ -107,7 +107,7 @@ void AmbientAnimationFrameRateController::AddWindowToThrottle(
 AmbientAnimationFrameRateScheduleIterator
 AmbientAnimationFrameRateController::FindCurrentSection() const {
   DCHECK(tracking_animation_);
-  absl::optional<float> current_progress =
+  std::optional<float> current_progress =
       tracking_animation_->GetCurrentProgress();
   if (!current_progress) {
     DVLOG(1) << "Animation is not playing currently. Cannot map timestamp to "

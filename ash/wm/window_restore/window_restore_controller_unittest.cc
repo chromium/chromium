@@ -110,7 +110,7 @@ class WindowRestoreControllerTest : public AshTestBase,
     app_restore::WindowInfo* window_info = GetWindowInfo(window);
     if (!window_info)
       return -1;
-    absl::optional<int32_t> activation_index = window_info->activation_index;
+    std::optional<int32_t> activation_index = window_info->activation_index;
     return activation_index.value_or(-1);
   }
 

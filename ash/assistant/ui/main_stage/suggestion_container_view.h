@@ -59,8 +59,8 @@ class COMPONENT_EXPORT(ASSISTANT_UI) SuggestionContainerView
   void OnUiVisibilityChanged(
       AssistantVisibility new_visibility,
       AssistantVisibility old_visibility,
-      absl::optional<AssistantEntryPoint> entry_point,
-      absl::optional<AssistantExitPoint> exit_point) override;
+      std::optional<AssistantEntryPoint> entry_point,
+      std::optional<AssistantExitPoint> exit_point) override;
 
   void InitializeUIForBubbleView();
 

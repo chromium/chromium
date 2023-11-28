@@ -6,11 +6,11 @@
 #define ASH_ASSISTANT_UTIL_DEEP_LINK_UTIL_H_
 
 #include <map>
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
 #include "base/timer/timer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -87,10 +87,10 @@ GURL AppendOrReplaceQuerySourceParam(const GURL& deep_link,
 
 // Returns a deep link to perform an alarm/timer action.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
-absl::optional<GURL> CreateAlarmTimerDeepLink(
+std::optional<GURL> CreateAlarmTimerDeepLink(
     AlarmTimerAction action,
-    absl::optional<std::string> alarm_timer_id,
-    absl::optional<base::TimeDelta> duration = absl::nullopt);
+    std::optional<std::string> alarm_timer_id,
+    std::optional<base::TimeDelta> duration = std::nullopt);
 
 // Returns a deep link to send an Assistant query.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
@@ -108,7 +108,7 @@ std::map<std::string, std::string> GetDeepLinkParams(const GURL& deep_link);
 // Returns a specific string |param| from the given parameters. If the desired
 // parameter is not found, and empty value is returned.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
-absl::optional<std::string> GetDeepLinkParam(
+std::optional<std::string> GetDeepLinkParam(
     const std::map<std::string, std::string>& params,
     DeepLinkParam param);
 
@@ -116,13 +116,13 @@ absl::optional<std::string> GetDeepLinkParam(
 // parameter is not found or is not an AlarmTimerAction, an empty value is
 // returned.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
-absl::optional<AlarmTimerAction> GetDeepLinkParamAsAlarmTimerAction(
+std::optional<AlarmTimerAction> GetDeepLinkParamAsAlarmTimerAction(
     const std::map<std::string, std::string>& params);
 
 // Returns a specific bool |param| from the given parameters. If the desired
 // parameter is not found or is not a bool, an empty value is returned.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
-absl::optional<bool> GetDeepLinkParamAsBool(
+std::optional<bool> GetDeepLinkParamAsBool(
     const std::map<std::string, std::string>& params,
     DeepLinkParam param);
 
@@ -130,28 +130,28 @@ absl::optional<bool> GetDeepLinkParamAsBool(
 // desired parameter is not found or is not mappable to an Assistant entry
 // point, an empty value is returned.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
-absl::optional<AssistantEntryPoint> GetDeepLinkParamAsEntryPoint(
+std::optional<AssistantEntryPoint> GetDeepLinkParamAsEntryPoint(
     const std::map<std::string, std::string>& params,
     DeepLinkParam param);
 
 // Returns a specific GURL |param| from the given parameters. If the desired
 // parameter is not found, an absent value is returned.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
-absl::optional<GURL> GetDeepLinkParamAsGURL(
+std::optional<GURL> GetDeepLinkParamAsGURL(
     const std::map<std::string, std::string>& params,
     DeepLinkParam param);
 
 // Returns a specific int |param| from the given parameters. If the desired
 // parameter is not found or is not an int, an empty value is returned.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
-absl::optional<int32_t> GetDeepLinkParamAsInt(
+std::optional<int32_t> GetDeepLinkParamAsInt(
     const std::map<std::string, std::string>& params,
     DeepLinkParam param);
 
 // Returns a specific int64 |param| from the given parameters. If the desired
 // parameter is not found or is not an int64, an empty value is returned.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
-absl::optional<int64_t> GetDeepLinkParamAsInt64(
+std::optional<int64_t> GetDeepLinkParamAsInt64(
     const std::map<std::string, std::string>& params,
     DeepLinkParam param);
 
@@ -159,14 +159,14 @@ absl::optional<int64_t> GetDeepLinkParamAsInt64(
 // desired parameter is not found or is not mappable to an Assistant query
 // source, an empty value is returned.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
-absl::optional<AssistantQuerySource> GetDeepLinkParamAsQuerySource(
+std::optional<AssistantQuerySource> GetDeepLinkParamAsQuerySource(
     const std::map<std::string, std::string>& params,
     DeepLinkParam param);
 
 // Returns a specific ReminderAction |param| from the given parameters. If the
 // desired parameter is not found, an empty value is returned.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
-absl::optional<ReminderAction> GetDeepLinkParamAsRemindersAction(
+std::optional<ReminderAction> GetDeepLinkParamAsRemindersAction(
     const std::map<std::string, std::string> params,
     DeepLinkParam param);
 
@@ -174,7 +174,7 @@ absl::optional<ReminderAction> GetDeepLinkParamAsRemindersAction(
 // found, can't convert to TimeDelta or not a time type parameter, an empty
 // value is returned.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
-absl::optional<base::TimeDelta> GetDeepLinkParamAsTimeDelta(
+std::optional<base::TimeDelta> GetDeepLinkParamAsTimeDelta(
     const std::map<std::string, std::string>& params,
     DeepLinkParam param);
 
@@ -195,28 +195,27 @@ COMPONENT_EXPORT(ASSISTANT_UTIL) bool IsDeepLinkUrl(const GURL& url);
 // be for the top-level Assistant URL. Otherwise, the URL will correspond to
 // the resource identified by |id|.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
-absl::optional<GURL> GetAssistantUrl(
+std::optional<GURL> GetAssistantUrl(
     DeepLinkType type,
     const std::map<std::string, std::string>& params);
 
 // Returns the URL for the specified Chrome Settings |page|. If page is absent
 // or not allowed, the URL will be for top-level Chrome Settings.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
-GURL GetChromeSettingsUrl(const absl::optional<std::string>& page);
+GURL GetChromeSettingsUrl(const std::optional<std::string>& page);
 
 // Returns the web URL for the specified |deep_link|. A return value will only
 // be present if |deep_link| is a web deep link as identified by the
 // IsWebDeepLink(GURL) API.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
-absl::optional<GURL> GetWebUrl(const GURL& deep_link);
+std::optional<GURL> GetWebUrl(const GURL& deep_link);
 
 // Returns the web URL for a deep link of the specified |type| with the given
 // |params|. A return value will only be present if the deep link type is a web
 // deep link type as identified by the IsWebDeepLinkType(DeepLinkType) API.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
-absl::optional<GURL> GetWebUrl(
-    DeepLinkType type,
-    const std::map<std::string, std::string>& params);
+std::optional<GURL> GetWebUrl(DeepLinkType type,
+                              const std::map<std::string, std::string>& params);
 
 // Returns true if the specified |deep_link| is a web deep link.
 COMPONENT_EXPORT(ASSISTANT_UTIL) bool IsWebDeepLink(const GURL& deep_link);

@@ -123,7 +123,7 @@ void PowerSoundsController::LidEventReceived(
 }
 
 void PowerSoundsController::OnReceiveSwitchStates(
-    absl::optional<chromeos::PowerManagerClient::SwitchStates> switch_states) {
+    std::optional<chromeos::PowerManagerClient::SwitchStates> switch_states) {
   if (switch_states.has_value()) {
     lid_state_ = switch_states->lid_state;
   }
@@ -140,7 +140,7 @@ void PowerSoundsController::SetPowerStatus(
     int battery_level,
     bool is_calculating_battery_time,
     ExternalPower external_power,
-    absl::optional<base::TimeDelta> remaining_time) {
+    std::optional<base::TimeDelta> remaining_time) {
   battery_level_ = battery_level;
 
   const bool old_ac_charger_connected = is_ac_charger_connected_;
@@ -192,7 +192,7 @@ bool PowerSoundsController::ShouldPlayLowBatterySound() const {
 bool PowerSoundsController::UpdateBatteryState(
     bool is_calculating_battery_time,
     ExternalPower external_power,
-    absl::optional<base::TimeDelta> remaining_time) {
+    std::optional<base::TimeDelta> remaining_time) {
   const auto new_state = CalculateBatteryState(is_calculating_battery_time,
                                                external_power, remaining_time);
   if (new_state == current_state_) {
@@ -207,7 +207,7 @@ PowerSoundsController::BatteryState
 PowerSoundsController::CalculateBatteryState(
     bool is_calculating_battery_time,
     ExternalPower external_power,
-    absl::optional<base::TimeDelta> remaining_time) const {
+    std::optional<base::TimeDelta> remaining_time) const {
   const bool is_battery_saver_available = features::IsBatterySaverAvailable();
 
   if ((is_calculating_battery_time && !is_battery_saver_available) ||
@@ -250,7 +250,7 @@ PowerSoundsController::GetBatteryStateFromBatteryLevel() const {
 
 PowerSoundsController::BatteryState
 PowerSoundsController::GetBatteryStateFromRemainingTime(
-    absl::optional<base::TimeDelta> remaining_time) const {
+    std::optional<base::TimeDelta> remaining_time) const {
   if (!remaining_time) {
     return BatteryState::kNone;
   }

@@ -186,7 +186,7 @@ class ASH_EXPORT ReturnToAppPanel : public views::View,
     bool expanded_target_ = false;
 
     // Measure animation smoothness metrics for all the animations.
-    absl::optional<ui::ThroughputTracker> throughput_tracker_;
+    std::optional<ui::ThroughputTracker> throughput_tracker_;
   };
 
   // ReturnToAppButton::Observer:

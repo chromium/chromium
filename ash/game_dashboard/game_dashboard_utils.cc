@@ -30,17 +30,17 @@ ArcGameControlsFlag UpdateFlag(ArcGameControlsFlag flags,
                                                       : flags & ~flag);
 }
 
-absl::optional<ArcGameControlsFlag> GetGameControlsFlag(aura::Window* window) {
+std::optional<ArcGameControlsFlag> GetGameControlsFlag(aura::Window* window) {
   if (!IsArcWindow(window)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   ArcGameControlsFlag flags = window->GetProperty(kArcGameControlsFlagsKey);
   CHECK(game_dashboard_utils::IsFlagSet(flags, ArcGameControlsFlag::kKnown));
 
   return game_dashboard_utils::IsFlagSet(flags, ArcGameControlsFlag::kAvailable)
-             ? absl::make_optional<ArcGameControlsFlag>(flags)
-             : absl::nullopt;
+             ? std::make_optional<ArcGameControlsFlag>(flags)
+             : std::nullopt;
 }
 
 void UpdateGameControlsHintButtonToolTipText(views::Button* button,

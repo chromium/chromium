@@ -118,9 +118,9 @@ const LayerData GetLayerDataEntry(
 // Get the z-order of all-desk `window` in `desk` for `root`. If it does not
 // exist, then nullopt is returned. Please note, the z-order information is
 // retrieved from the stored stacking data of `desk` for all-desk windows.
-absl::optional<size_t> GetWindowZOrderForDeskAndRoot(const aura::Window* window,
-                                                     const Desk* desk,
-                                                     const aura::Window* root) {
+std::optional<size_t> GetWindowZOrderForDeskAndRoot(const aura::Window* window,
+                                                    const Desk* desk,
+                                                    const aura::Window* root) {
   const auto& adw_by_root = desk->all_desk_window_stacking();
 
   if (auto it = adw_by_root.find(root); it != adw_by_root.end()) {
@@ -130,7 +130,7 @@ absl::optional<size_t> GetWindowZOrderForDeskAndRoot(const aura::Window* window,
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Recursively mirrors `source_layer` and its children and adds them as children
@@ -206,9 +206,9 @@ void MirrorLayerTree(
       // Find z order of `window`. If `features::IsPerDeskZOrderEnabled()` is
       // not on, default value of zero will be used so `window` would be put
       // on top.
-      absl::optional<size_t> target_desk_order =
+      std::optional<size_t> target_desk_order =
           GetWindowZOrderForDeskAndRoot(window, desk, root);
-      absl::optional<size_t> active_desk_order = GetWindowZOrderForDeskAndRoot(
+      std::optional<size_t> active_desk_order = GetWindowZOrderForDeskAndRoot(
           window, DesksController::Get()->active_desk(), root);
       layer_orders.push_back({.layer = window->layer(),
                               .primary_key = target_desk_order.value_or(0),

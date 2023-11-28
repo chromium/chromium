@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_UNIFIED_UNIFIED_SYSTEM_TRAY_BUBBLE_H_
 
 #include <memory>
+#include <optional>
 
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/shelf/shelf_observer.h"
@@ -16,7 +17,6 @@
 #include "ash/system/unified/quick_settings_view.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/widget/widget_observer.h"
@@ -147,7 +147,7 @@ class ASH_EXPORT UnifiedSystemTrayBubble : public TrayBubbleBase,
   std::unique_ptr<TimeToClickRecorder> time_to_click_recorder_;
 
   // The time the bubble is created.
-  absl::optional<base::TimeTicks> time_opened_;
+  std::optional<base::TimeTicks> time_opened_;
 
   raw_ptr<TrayBubbleView, ExperimentalAsh> bubble_view_ = nullptr;
 

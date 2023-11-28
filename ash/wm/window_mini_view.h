@@ -87,9 +87,9 @@ class WindowMiniViewBase : public views::View {
 
   // If these optional values are set, the preset rounded corners will be used
   // otherwise the default rounded corners will be used.
-  absl::optional<gfx::RoundedCornersF> exposed_rounded_corners_;
-  absl::optional<gfx::RoundedCornersF> header_view_rounded_corners_;
-  absl::optional<gfx::RoundedCornersF> preview_view_rounded_corners_;
+  std::optional<gfx::RoundedCornersF> exposed_rounded_corners_;
+  std::optional<gfx::RoundedCornersF> header_view_rounded_corners_;
+  std::optional<gfx::RoundedCornersF> preview_view_rounded_corners_;
 
   // True if `this` is focused when using keyboard navigation.
   bool is_focused_ = false;

@@ -354,7 +354,7 @@ class MonitoringWarningView : public NonAccessibleView {
   friend class LoginExpandedPublicAccountView::TestApi;
 
   WarningType warning_type_;
-  absl::optional<std::string> device_manager_;
+  std::optional<std::string> device_manager_;
   raw_ptr<views::ImageView, ExperimentalAsh> image_;
   raw_ptr<views::Label, ExperimentalAsh> label_;
 };
@@ -984,7 +984,7 @@ void LoginExpandedPublicAccountView::UseLandscapeLayout() {
 void LoginExpandedPublicAccountView::UsePortraitLayout() {
   layout_->SetOrientation(views::BoxLayout::Orientation::kVertical);
 
-  left_pane_->SetPreferredSize(absl::nullopt);
+  left_pane_->SetPreferredSize(std::nullopt);
   left_pane_->SetProperty(views::kMarginsKey,
                           gfx::Insets::TLBR(kPaddingDp, kPaddingDp,
                                             kPortraitPaneSpacing, kPaddingDp));

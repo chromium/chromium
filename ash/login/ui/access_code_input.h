@@ -5,11 +5,11 @@
 #ifndef ASH_LOGIN_UI_ACCESS_CODE_INPUT_H_
 #define ASH_LOGIN_UI_ACCESS_CODE_INPUT_H_
 
+#include <optional>
 #include <string>
 
 #include "ash/style/system_textfield.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -40,7 +40,7 @@ class AccessCodeInput : public views::View, public views::TextfieldController {
   virtual void InsertDigit(int value) = 0;
 
   // Returns access code as string.
-  virtual absl::optional<std::string> GetCode() const = 0;
+  virtual std::optional<std::string> GetCode() const = 0;
 
   // Sets the color of the input text.
   virtual void SetInputColorId(ui::ColorId color_id) = 0;
@@ -86,7 +86,7 @@ class FlexCodeInput : public AccessCodeInput {
   void Backspace() override;
 
   // Returns access code as string if field contains input.
-  absl::optional<std::string> GetCode() const override;
+  std::optional<std::string> GetCode() const override;
 
   // Sets the color of the input text.
   void SetInputColorId(ui::ColorId color_id) override;
@@ -168,7 +168,7 @@ class FixedLengthCodeInput : public AccessCodeInput {
       return fixed_length_code_input_->input_fields_[index];
     }
 
-    absl::optional<std::string> GetCode() const {
+    std::optional<std::string> GetCode() const {
       return fixed_length_code_input_->GetCode();
     }
 
@@ -206,7 +206,7 @@ class FixedLengthCodeInput : public AccessCodeInput {
   void Backspace() override;
 
   // Returns access code as string if all fields contain input.
-  absl::optional<std::string> GetCode() const override;
+  std::optional<std::string> GetCode() const override;
 
   // Sets the color of the input text.
   void SetInputColorId(ui::ColorId color_id) override;

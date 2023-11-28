@@ -464,7 +464,7 @@ void InputDeviceSettingsNotificationController::
     HandleSixPackNotificationClicked(int device_id,
                                      const char* pref_name,
                                      const std::string& notification_id,
-                                     absl::optional<int> button_index) {
+                                     std::optional<int> button_index) {
   // Clicked on body.
   if (!button_index) {
     ShowRemapKeysSubpage(device_id);
@@ -487,7 +487,7 @@ void InputDeviceSettingsNotificationController::
 
 void InputDeviceSettingsNotificationController::
     HandleRightClickNotificationClicked(const std::string& notification_id,
-                                        absl::optional<int> button_index) {
+                                        std::optional<int> button_index) {
   // Clicked on body.
   if (!button_index) {
     ShowTouchpadSettings();
@@ -512,7 +512,7 @@ void InputDeviceSettingsNotificationController::
 
 void HandleMouseCustomizationNotificationClicked(
     const std::string& notification_id,
-    absl::optional<int> button_index) {
+    std::optional<int> button_index) {
   ShowMouseSettings();
   RemoveNotification(notification_id);
   return;
@@ -520,7 +520,7 @@ void HandleMouseCustomizationNotificationClicked(
 
 void HandleGraphicsTabletCustomizationNotificationClicked(
     const std::string& notification_id,
-    absl::optional<int> button_index) {
+    std::optional<int> button_index) {
   ShowGraphicsTabletSettings();
   RemoveNotification(notification_id);
   return;

@@ -4,12 +4,13 @@
 
 #include "ash/system/bluetooth/bluetooth_device_list_item_multiple_battery_view.h"
 
+#include <optional>
+
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -27,9 +28,9 @@ using bluetooth_config::mojom::DeviceBatteryInfo;
 using bluetooth_config::mojom::DeviceBatteryInfoPtr;
 
 DeviceBatteryInfoPtr CreateBatteryInfo(
-    absl::optional<uint8_t> left_battery_percentage,
-    absl::optional<uint8_t> case_battery_percentage,
-    absl::optional<uint8_t> right_battery_percentage) {
+    std::optional<uint8_t> left_battery_percentage,
+    std::optional<uint8_t> case_battery_percentage,
+    std::optional<uint8_t> right_battery_percentage) {
   DeviceBatteryInfoPtr battery_info = DeviceBatteryInfo::New();
 
   if (left_battery_percentage) {
@@ -112,8 +113,8 @@ TEST_F(BluetoothDeviceListItemMultipleBatteryViewTest,
 
   DeviceBatteryInfoPtr battery_info =
       CreateBatteryInfo(/*left_battery_percentage=*/100,
-                        /*case_battery_percentage=*/absl::nullopt,
-                        /*right_battery_percentage=*/absl::nullopt);
+                        /*case_battery_percentage=*/std::nullopt,
+                        /*right_battery_percentage=*/std::nullopt);
   bluetooth_device_list_multiple_battery_item()->UpdateBatteryInfo(
       battery_info);
 
@@ -129,7 +130,7 @@ TEST_F(BluetoothDeviceListItemMultipleBatteryViewTest,
 
   DeviceBatteryInfoPtr battery_info = CreateBatteryInfo(
       /*left_battery_percentage=*/100, /*case_battery_percentage=*/100,
-      /*right_battery_percentage=*/absl::nullopt);
+      /*right_battery_percentage=*/std::nullopt);
   bluetooth_device_list_multiple_battery_item()->UpdateBatteryInfo(
       battery_info);
 
@@ -175,7 +176,7 @@ TEST_F(BluetoothDeviceListItemMultipleBatteryViewTest,
       GetLabel(/*index=*/2)->GetText());
 
   DeviceBatteryInfoPtr battery_info2 = CreateBatteryInfo(
-      /*left_battery_percentage=*/absl::nullopt,
+      /*left_battery_percentage=*/std::nullopt,
       /*case_battery_percentage=*/100, /*right_battery_percentage=*/100);
   bluetooth_device_list_multiple_battery_item()->UpdateBatteryInfo(
       battery_info2);

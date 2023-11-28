@@ -666,7 +666,7 @@ TEST_P(SearchResultImageViewTest, SearchCategoryMenuItemToggleTest) {
   LeftClickOn(GetSearchBoxView()->GetFilterMenuItemByCategory(
       AppListSearchControlCategory::kApps));
   EXPECT_TRUE(GetSearchBoxView()->IsFilterMenuOpen());
-  absl::optional apps_search_enabled =
+  std::optional apps_search_enabled =
       prefs->GetDict(prefs::kLauncherSearchCategoryControlStatus)
           .FindBool(GetAppListControlCategoryName(
               AppListSearchControlCategory::kApps));
@@ -679,7 +679,7 @@ TEST_P(SearchResultImageViewTest, SearchCategoryMenuItemToggleTest) {
   LeftClickOn(GetSearchBoxView()->GetFilterMenuItemByCategory(
       AppListSearchControlCategory::kWeb));
   EXPECT_TRUE(GetSearchBoxView()->IsFilterMenuOpen());
-  absl::optional web_search_enabled =
+  std::optional web_search_enabled =
       prefs->GetDict(prefs::kLauncherSearchCategoryControlStatus)
           .FindBool(GetAppListControlCategoryName(
               AppListSearchControlCategory::kWeb));

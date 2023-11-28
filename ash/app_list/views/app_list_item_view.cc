@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -47,7 +48,6 @@
 #include "base/time/time.h"
 #include "cc/paint/paint_flags.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -313,11 +313,11 @@ class AppListItemView::FolderIconView : public views::View,
   // The count shows on the item counter is the number of items that aren't
   // drawn on the folder icon. Returns nullopt if the counter should not be
   // drawn.
-  absl::optional<size_t> GetItemCounterCount() const {
+  std::optional<size_t> GetItemCounterCount() const {
     size_t item_count = folder_item_->item_list()->item_count();
     size_t icons_in_folder = GetDraggedItem() ? item_count - 1 : item_count;
     if (icons_in_folder <= FolderImage::kNumFolderTopItems) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     size_t count = icons_in_folder - (FolderImage::kNumFolderTopItems - 1);
@@ -662,7 +662,7 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
   preview_circle_radius_ = 0;
 
   if (features::IsUserEducationEnabled() && context == Context::kAppsGridView) {
-    if (absl::optional<ui::ElementIdentifier> element_identifier =
+    if (std::optional<ui::ElementIdentifier> element_identifier =
             UserEducationController::Get()->GetElementIdentifierForAppId(
                 item->id())) {
       // NOTE: Set `kHelpBubbleContextKey` before `views::kElementIdentifierKey`
@@ -1936,7 +1936,7 @@ void AppListItemView::OnAnimatedInFromPromiseApp(
   callback.Run();
 }
 
-absl::optional<size_t> AppListItemView::item_counter_count_for_test() const {
+std::optional<size_t> AppListItemView::item_counter_count_for_test() const {
   DCHECK(!use_item_icon_);
   return folder_icon_->GetItemCounterCount();
 }
@@ -2163,7 +2163,7 @@ void AppListItemView::UpdateProgressIndicatorState() {
   if (!progress_indicator_) {
     progress_indicator_ =
         ProgressIndicator::CreateDefaultInstance(base::BindRepeating(
-            [](AppListItemView* view) -> absl::optional<float> {
+            [](AppListItemView* view) -> std::optional<float> {
               if (view->forced_progress_indicator_value_) {
                 return *view->forced_progress_indicator_value_;
               }

@@ -72,7 +72,7 @@ class CameraEffectsControllerTest : public NoSessionAshTestBase {
   }
 
   // Sets background blur state.
-  void SetBackgroundBlurEffectState(absl::optional<int> state) {
+  void SetBackgroundBlurEffectState(std::optional<int> state) {
     camera_effects_controller_->OnEffectControlActivated(
         VcEffectId::kBackgroundBlur, state);
   }
@@ -80,7 +80,7 @@ class CameraEffectsControllerTest : public NoSessionAshTestBase {
   // Gets the state of the background blur effect from the effect's host,
   // `camera_effects_controller_`.
   int GetBackgroundBlurEffectState() {
-    absl::optional<int> effect_state =
+    std::optional<int> effect_state =
         camera_effects_controller_->GetEffectState(VcEffectId::kBackgroundBlur);
     DCHECK(effect_state.has_value());
     return effect_state.value();
@@ -107,20 +107,20 @@ class CameraEffectsControllerTest : public NoSessionAshTestBase {
   // argument doesn't matter for toggle effects.
   void TogglePortraitRelightingEffectState() {
     camera_effects_controller_->OnEffectControlActivated(
-        VcEffectId::kPortraitRelighting, /*state=*/absl::nullopt);
+        VcEffectId::kPortraitRelighting, /*state=*/std::nullopt);
   }
 
   // Simulates toggling camera framing effect state. Note that the `state`
   // argument doesn't matter for toggle effects.
   void ToggleCameraFramingEffectState() {
     camera_effects_controller_->OnEffectControlActivated(
-        VcEffectId::kCameraFraming, /*state=*/absl::nullopt);
+        VcEffectId::kCameraFraming, /*state=*/std::nullopt);
   }
 
   // Gets the state of the portrait relighting effect from the effect's host,
   // `camera_effects_controller_`.
   bool GetPortraitRelightingEffectState() {
-    absl::optional<int> effect_state =
+    std::optional<int> effect_state =
         camera_effects_controller_->GetEffectState(
             VcEffectId::kPortraitRelighting);
     DCHECK(effect_state.has_value());
@@ -250,7 +250,7 @@ TEST_F(CameraEffectsControllerTest, BackgroundBlurOnEffectControlActivated) {
       CameraEffectsController::BackgroundBlurPrefValue::kMaximum);
   // Setting the background blur state to null will reset the effects as
   // kOff.
-  SetBackgroundBlurEffectState(absl::nullopt);
+  SetBackgroundBlurEffectState(std::nullopt);
   EXPECT_EQ(GetBackgroundBlurPref(),
             CameraEffectsController::BackgroundBlurPrefValue::kOff);
   EXPECT_EQ(GetBackgroundBlurEffectState(),

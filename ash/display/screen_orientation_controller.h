@@ -6,6 +6,7 @@
 #define ASH_DISPLAY_SCREEN_ORIENTATION_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <unordered_map>
 
 #include "ash/accelerometer/accelerometer_reader.h"
@@ -19,7 +20,6 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ui/base/display_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"
@@ -280,8 +280,8 @@ class ASH_EXPORT ScreenOrientationController
       chromeos::OrientationType::kAny;
 
   // The currently applied orientation lock that was requested by an app if any.
-  absl::optional<chromeos::OrientationType>
-      current_app_requested_orientation_lock_ = absl::nullopt;
+  std::optional<chromeos::OrientationType>
+      current_app_requested_orientation_lock_ = std::nullopt;
 
   // Rotation Lock observers.
   base::ObserverList<Observer>::Unchecked observers_;

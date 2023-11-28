@@ -132,7 +132,7 @@ class ASH_EXPORT WindowRestoreController
   // the MRU tracker list, so we can pass the activation index during that loop
   // instead of building the MRU list again for each window.
   void SaveWindowImpl(WindowState* window_state,
-                      absl::optional<int> activation_index);
+                      std::optional<int> activation_index);
 
   // Retrieves the saved `WindowInfo` of `window` and restores its
   // `WindowStateType`. Also creates a post task to clear `window`s

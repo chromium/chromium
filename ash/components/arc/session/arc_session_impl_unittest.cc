@@ -9,6 +9,7 @@
 #include <sys/types.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "ash/components/arc/arc_features.h"
@@ -30,7 +31,6 @@
 #include "chromeos/ash/components/system/scheduler_configuration_manager_base.h"
 #include "components/version_info/channel.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cryptohome {
 class Identification;
@@ -230,7 +230,7 @@ class TestArcSessionObserver : public ArcSession::Observer {
 
   ~TestArcSessionObserver() override { arc_session_->RemoveObserver(this); }
 
-  const absl::optional<OnSessionStoppedArgs>& on_session_stopped_args() const {
+  const std::optional<OnSessionStoppedArgs>& on_session_stopped_args() const {
     return on_session_stopped_args_;
   }
 
@@ -249,7 +249,7 @@ class TestArcSessionObserver : public ArcSession::Observer {
   const raw_ptr<ArcSession, ExperimentalAsh> arc_session_;  // Not owned.
   const raw_ptr<base::RunLoop, ExperimentalAsh> run_loop_ =
       nullptr;  // Not owned.
-  absl::optional<OnSessionStoppedArgs> on_session_stopped_args_;
+  std::optional<OnSessionStoppedArgs> on_session_stopped_args_;
 };
 
 // Custom deleter for ArcSession testing.
@@ -280,12 +280,12 @@ class FakeSchedulerConfigurationManager
       obs.OnConfigurationSet(reply_->first, reply_->second);
   }
 
-  absl::optional<std::pair<bool, size_t>> GetLastReply() const override {
+  std::optional<std::pair<bool, size_t>> GetLastReply() const override {
     return reply_;
   }
 
  private:
-  absl::optional<std::pair<bool, size_t>> reply_;
+  std::optional<std::pair<bool, size_t>> reply_;
 };
 
 class FakeAdbSideloadingAvailabilityDelegate

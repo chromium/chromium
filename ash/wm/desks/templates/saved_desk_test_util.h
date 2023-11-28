@@ -206,8 +206,8 @@ void WaitForSavedDeskUI();
 // matching data is not found.
 const app_restore::AppRestoreData* QueryRestoreData(
     const DeskTemplate& saved_desk,
-    absl::optional<std::string> app_id,
-    absl::optional<int32_t> window_id = {});
+    std::optional<std::string> app_id,
+    std::optional<int32_t> window_id = {});
 
 // Adds a captured desk entry to the desks model.
 void AddSavedDeskEntry(desks_storage::DeskModel* desk_model,

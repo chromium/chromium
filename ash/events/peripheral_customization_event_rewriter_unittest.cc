@@ -132,23 +132,23 @@ class TestAcceleratorObserver : public AcceleratorController::Observer {
   void reset() { action_performed_.reset(); }
 
  private:
-  absl::optional<AcceleratorAction> action_performed_;
+  std::optional<AcceleratorAction> action_performed_;
 };
 
 using EventTypeVariant = absl::variant<ui::MouseEvent, ui::KeyEvent>;
 struct EventRewriterTestData {
   EventTypeVariant incoming_event;
-  absl::optional<EventTypeVariant> rewritten_event;
-  absl::optional<mojom::Button> pressed_button;
+  std::optional<EventTypeVariant> rewritten_event;
+  std::optional<mojom::Button> pressed_button;
 
   EventRewriterTestData(EventTypeVariant incoming_event,
-                        absl::optional<EventTypeVariant> rewritten_event)
+                        std::optional<EventTypeVariant> rewritten_event)
       : incoming_event(incoming_event),
         rewritten_event(rewritten_event),
-        pressed_button(absl::nullopt) {}
+        pressed_button(std::nullopt) {}
 
   EventRewriterTestData(EventTypeVariant incoming_event,
-                        absl::optional<EventTypeVariant> rewritten_event,
+                        std::optional<EventTypeVariant> rewritten_event,
                         mojom::CustomizableButton button)
       : incoming_event(incoming_event), rewritten_event(rewritten_event) {
     pressed_button = mojom::Button();
@@ -156,7 +156,7 @@ struct EventRewriterTestData {
   }
 
   EventRewriterTestData(EventTypeVariant incoming_event,
-                        absl::optional<EventTypeVariant> rewritten_event,
+                        std::optional<EventTypeVariant> rewritten_event,
                         ui::KeyboardCode key_code)
       : incoming_event(incoming_event), rewritten_event(rewritten_event) {
     pressed_button = mojom::Button();
@@ -492,21 +492,21 @@ INSTANTIATE_TEST_SUITE_P(
             CreateMouseButtonEvent(ui::ET_MOUSE_PRESSED,
                                    ui::EF_BACK_MOUSE_BUTTON,
                                    ui::EF_BACK_MOUSE_BUTTON),
-            absl::nullopt,
+            std::nullopt,
             mojom::CustomizableButton::kBack,
         },
         {
             CreateMouseButtonEvent(ui::ET_MOUSE_PRESSED,
                                    ui::EF_FORWARD_MOUSE_BUTTON,
                                    ui::EF_FORWARD_MOUSE_BUTTON),
-            absl::nullopt,
+            std::nullopt,
             mojom::CustomizableButton::kForward,
         },
         {
             CreateMouseButtonEvent(ui::ET_MOUSE_PRESSED,
                                    ui::EF_MIDDLE_MOUSE_BUTTON,
                                    ui::EF_MIDDLE_MOUSE_BUTTON),
-            absl::nullopt,
+            std::nullopt,
             mojom::CustomizableButton::kMiddle,
         },
         {
@@ -514,7 +514,7 @@ INSTANTIATE_TEST_SUITE_P(
                                    ui::EF_MIDDLE_MOUSE_BUTTON |
                                        ui::EF_LEFT_MOUSE_BUTTON,
                                    ui::EF_MIDDLE_MOUSE_BUTTON),
-            absl::nullopt,
+            std::nullopt,
             mojom::CustomizableButton::kMiddle,
         },
 
@@ -522,7 +522,7 @@ INSTANTIATE_TEST_SUITE_P(
         {CreateMouseButtonEvent(ui::ET_MOUSE_RELEASED,
                                 ui::EF_BACK_MOUSE_BUTTON,
                                 ui::EF_BACK_MOUSE_BUTTON),
-         /*rewritten_event=*/absl::nullopt},
+         /*rewritten_event=*/std::nullopt},
 
         // Left click ignored for buttons from a mouse.
         {CreateMouseButtonEvent(ui::ET_MOUSE_PRESSED,
@@ -564,19 +564,19 @@ INSTANTIATE_TEST_SUITE_P(
             CreateKeyButtonEvent(ui::ET_KEY_PRESSED,
                                  ui::VKEY_A,
                                  ui::EF_COMMAND_DOWN),
-            absl::nullopt,
+            std::nullopt,
             ui::VKEY_A,
         },
         {
             CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_B, ui::EF_NONE),
-            absl::nullopt,
+            std::nullopt,
             ui::VKEY_B,
         },
 
         // Test that key releases are consumed, but not sent to observers.
         {
             CreateKeyButtonEvent(ui::ET_KEY_RELEASED, ui::VKEY_A),
-            absl::nullopt,
+            std::nullopt,
         },
     }),
     [](const testing::TestParamInfo<EventRewriterTestData>& info) {
@@ -772,28 +772,28 @@ INSTANTIATE_TEST_SUITE_P(
             CreateMouseButtonEvent(ui::ET_MOUSE_PRESSED,
                                    ui::EF_RIGHT_MOUSE_BUTTON,
                                    ui::EF_RIGHT_MOUSE_BUTTON),
-            absl::nullopt,
+            std::nullopt,
             mojom::CustomizableButton::kRight,
         },
         {
             CreateMouseButtonEvent(ui::ET_MOUSE_PRESSED,
                                    ui::EF_BACK_MOUSE_BUTTON,
                                    ui::EF_BACK_MOUSE_BUTTON),
-            absl::nullopt,
+            std::nullopt,
             mojom::CustomizableButton::kBack,
         },
         {
             CreateMouseButtonEvent(ui::ET_MOUSE_PRESSED,
                                    ui::EF_FORWARD_MOUSE_BUTTON,
                                    ui::EF_FORWARD_MOUSE_BUTTON),
-            absl::nullopt,
+            std::nullopt,
             mojom::CustomizableButton::kForward,
         },
         {
             CreateMouseButtonEvent(ui::ET_MOUSE_PRESSED,
                                    ui::EF_MIDDLE_MOUSE_BUTTON,
                                    ui::EF_MIDDLE_MOUSE_BUTTON),
-            absl::nullopt,
+            std::nullopt,
             mojom::CustomizableButton::kMiddle,
         },
         {
@@ -801,7 +801,7 @@ INSTANTIATE_TEST_SUITE_P(
                                    ui::EF_MIDDLE_MOUSE_BUTTON |
                                        ui::EF_LEFT_MOUSE_BUTTON,
                                    ui::EF_MIDDLE_MOUSE_BUTTON),
-            absl::nullopt,
+            std::nullopt,
             mojom::CustomizableButton::kMiddle,
         },
 
@@ -810,7 +810,7 @@ INSTANTIATE_TEST_SUITE_P(
             CreateMouseButtonEvent(ui::ET_MOUSE_RELEASED,
                                    ui::EF_BACK_MOUSE_BUTTON,
                                    ui::EF_BACK_MOUSE_BUTTON),
-            absl::nullopt,
+            std::nullopt,
         },
 
         // Left click ignored for buttons from a graphics tablet.
@@ -849,19 +849,19 @@ INSTANTIATE_TEST_SUITE_P(
             CreateKeyButtonEvent(ui::ET_KEY_PRESSED,
                                  ui::VKEY_A,
                                  ui::EF_COMMAND_DOWN),
-            absl::nullopt,
+            std::nullopt,
             ui::VKEY_A,
         },
         {
             CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_B, ui::EF_NONE),
-            absl::nullopt,
+            std::nullopt,
             ui::VKEY_B,
         },
 
         // Test that key releases are consumed, but not sent to observers.
         {
             CreateKeyButtonEvent(ui::ET_KEY_RELEASED, ui::VKEY_A),
-            absl::nullopt,
+            std::nullopt,
         },
     }),
     [](const testing::TestParamInfo<EventRewriterTestData>& info) {

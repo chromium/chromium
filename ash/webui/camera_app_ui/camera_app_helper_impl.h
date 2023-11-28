@@ -5,6 +5,7 @@
 #ifndef ASH_WEBUI_CAMERA_APP_UI_CAMERA_APP_HELPER_IMPL_H_
 #define ASH_WEBUI_CAMERA_APP_UI_CAMERA_APP_HELPER_IMPL_H_
 
+#include <optional>
 #include <vector>
 
 #include "ash/public/cpp/screen_backlight.h"
@@ -18,7 +19,6 @@
 #include "chromeos/services/machine_learning/public/mojom/document_scanner.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/screen.h"
@@ -141,7 +141,7 @@ class CameraAppHelperImpl : public TabletModeObserver,
 
   bool has_external_screen_;
 
-  absl::optional<uint32_t> pending_intent_id_;
+  std::optional<uint32_t> pending_intent_id_;
 
   raw_ptr<aura::Window, ExperimentalAsh> window_;
 

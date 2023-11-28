@@ -82,7 +82,7 @@ class AshTestHelper : public aura::test::AuraTestHelper {
     raw_ptr<PrefService, ExperimentalAsh> local_state = nullptr;
 
     // Used only when setting up a pixel diff test.
-    absl::optional<pixel_test::InitParams> pixel_test_init_params;
+    std::optional<pixel_test::InitParams> pixel_test_init_params;
 
     // True if a fake global `CrasAudioHandler` should be created.
     bool create_global_cras_audio_handler = true;

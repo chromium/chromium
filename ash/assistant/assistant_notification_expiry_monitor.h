@@ -6,13 +6,13 @@
 #define ASH_ASSISTANT_ASSISTANT_NOTIFICATION_EXPIRY_MONITOR_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "ash/assistant/model/assistant_notification_model_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -46,8 +46,8 @@ class AssistantNotificationExpiryMonitor {
   // (new) expiry time that will expire first.
   void UpdateTimer();
 
-  absl::optional<base::TimeDelta> GetTimerTimeout() const;
-  absl::optional<base::Time> GetTimerEndTime() const;
+  std::optional<base::TimeDelta> GetTimerTimeout() const;
+  std::optional<base::Time> GetTimerEndTime() const;
   void RemoveExpiredNotifications();
   std::vector<NotificationId> GetExpiredNotifications() const;
   std::vector<const AssistantNotification*> GetNotifications() const;

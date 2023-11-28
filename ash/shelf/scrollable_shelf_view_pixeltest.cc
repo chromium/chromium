@@ -33,7 +33,7 @@ class ScrollableShelfViewPixelRTLTest
       public testing::WithParamInterface<bool /*is_rtl=*/> {
  public:
   // ScrollableShelfViewPixelRTLTestBase:
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     pixel_test::InitParams init_params;
     init_params.under_rtl = GetParam();
@@ -78,7 +78,7 @@ class ScrollableShelfViewWithGuestModePixelTest
       public testing::WithParamInterface<bool /*use_guest_mode=*/> {
  public:
   // ScrollableShelfTestBase:
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }

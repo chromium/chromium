@@ -5,6 +5,7 @@
 #include "ash/events/accessibility_event_rewriter.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
@@ -14,7 +15,6 @@
 #include "ash/test/ash_test_base.h"
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -188,13 +188,13 @@ class ChromeVoxAccessibilityEventRewriterTest
   }
   void SuppressMetaTopRowKeyComboRewrites(bool should_suppress) override {}
 
-  absl::optional<ui::mojom::ModifierKey> GetKeyboardRemappedModifierValue(
+  std::optional<ui::mojom::ModifierKey> GetKeyboardRemappedModifierValue(
       int device_id,
       ui::mojom::ModifierKey modifier_key,
       const std::string& pref_name) const override {
     auto it = modifier_remapping_.find(pref_name);
     if (it == modifier_remapping_.end())
-      return absl::nullopt;
+      return std::nullopt;
 
     return it->second;
   }
@@ -215,15 +215,15 @@ class ChromeVoxAccessibilityEventRewriterTest
   void RecordEventRemappedToRightClick(bool alt_based_right_click) override {}
   void RecordSixPackEventRewrite(ui::KeyboardCode key_code,
                                  bool alt_based) override {}
-  absl::optional<ui::mojom::SimulateRightClickModifier>
+  std::optional<ui::mojom::SimulateRightClickModifier>
   GetRemapRightClickModifier(int device_id) override {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<ui::mojom::SixPackShortcutModifier>
+  std::optional<ui::mojom::SixPackShortcutModifier>
   GetShortcutModifierForSixPackKey(int device_id,
                                    ui::KeyboardCode key_code) override {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   void NotifyRightClickRewriteBlockedBySetting(
@@ -236,10 +236,10 @@ class ChromeVoxAccessibilityEventRewriterTest
       ui::mojom::SixPackShortcutModifier active_modifier,
       int device_id) override {}
 
-  absl::optional<ui::mojom::ExtendedFkeysModifier> GetExtendedFkeySetting(
+  std::optional<ui::mojom::ExtendedFkeysModifier> GetExtendedFkeySetting(
       int device_id,
       ui::KeyboardCode key_code) override {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::map<std::string, ui::mojom::ModifierKey> modifier_remapping_;
@@ -617,13 +617,13 @@ class SwitchAccessAccessibilityEventRewriterTest
   }
   void SuppressMetaTopRowKeyComboRewrites(bool should_suppress) override {}
 
-  absl::optional<ui::mojom::ModifierKey> GetKeyboardRemappedModifierValue(
+  std::optional<ui::mojom::ModifierKey> GetKeyboardRemappedModifierValue(
       int device_id,
       ui::mojom::ModifierKey modifier_key,
       const std::string& pref_name) const override {
     auto it = modifier_remapping_.find(pref_name);
     if (it == modifier_remapping_.end())
-      return absl::nullopt;
+      return std::nullopt;
 
     return it->second;
   }
@@ -645,15 +645,15 @@ class SwitchAccessAccessibilityEventRewriterTest
   void RecordEventRemappedToRightClick(bool alt_based_right_click) override {}
   void RecordSixPackEventRewrite(ui::KeyboardCode key_code,
                                  bool alt_based) override {}
-  absl::optional<ui::mojom::SimulateRightClickModifier>
+  std::optional<ui::mojom::SimulateRightClickModifier>
   GetRemapRightClickModifier(int device_id) override {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<ui::mojom::SixPackShortcutModifier>
+  std::optional<ui::mojom::SixPackShortcutModifier>
   GetShortcutModifierForSixPackKey(int device_id,
                                    ui::KeyboardCode key_code) override {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   void NotifyRightClickRewriteBlockedBySetting(
@@ -666,10 +666,10 @@ class SwitchAccessAccessibilityEventRewriterTest
       ui::mojom::SixPackShortcutModifier active_modifier,
       int device_id) override {}
 
-  absl::optional<ui::mojom::ExtendedFkeysModifier> GetExtendedFkeySetting(
+  std::optional<ui::mojom::ExtendedFkeysModifier> GetExtendedFkeySetting(
       int device_id,
       ui::KeyboardCode key_code) override {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::map<std::string, ui::mojom::ModifierKey> modifier_remapping_;

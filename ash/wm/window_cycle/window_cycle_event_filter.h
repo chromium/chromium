@@ -5,11 +5,12 @@
 #ifndef ASH_WM_WINDOW_CYCLE_WINDOW_CYCLE_EVENT_FILTER_H_
 #define ASH_WM_WINDOW_CYCLE_WINDOW_CYCLE_EVENT_FILTER_H_
 
+#include <optional>
+
 #include "ash/ash_export.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/point.h"
 
@@ -129,7 +130,7 @@ class ASH_EXPORT WindowCycleEventFilter : public ui::EventHandler {
 
   // Stores the current scroll session data. If it does not exist, there is no
   // active scroll session.
-  absl::optional<ScrollData> scroll_data_;
+  std::optional<ScrollData> scroll_data_;
 
   // When a user taps on a preview item it should move the focus ring to it.
   // However, the focus ring should not move if the user is scrolling. Store

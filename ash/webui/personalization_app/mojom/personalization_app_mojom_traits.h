@@ -5,6 +5,7 @@
 #ifndef ASH_WEBUI_PERSONALIZATION_APP_MOJOM_PERSONALIZATION_APP_MOJOM_TRAITS_H_
 #define ASH_WEBUI_PERSONALIZATION_APP_MOJOM_PERSONALIZATION_APP_MOJOM_TRAITS_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -20,7 +21,6 @@
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace mojo {
@@ -118,7 +118,7 @@ struct StructTraits<ash::personalization_app::mojom::DefaultUserImageDataView,
       const ash::default_user_image::DefaultUserImage& default_user_image);
   static const GURL& url(
       const ash::default_user_image::DefaultUserImage& default_user_image);
-  static const absl::optional<ash::default_user_image::DeprecatedSourceInfo>&
+  static const std::optional<ash::default_user_image::DeprecatedSourceInfo>&
   source_info(
       const ash::default_user_image::DefaultUserImage& default_user_image);
   static bool Read(

@@ -200,7 +200,7 @@ class ASH_EXPORT TabletModeWindowManager : public aura::WindowObserver,
   std::unique_ptr<TabletModeMultitaskMenuController>
       tablet_mode_multitask_menu_controller_;
 
-  absl::optional<display::ScopedDisplayObserver> display_observer_;
+  std::optional<display::ScopedDisplayObserver> display_observer_;
 
   // True when tablet mode is about to end.
   bool is_exiting_ = false;

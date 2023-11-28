@@ -528,7 +528,7 @@ void QuickPairMetricsLogger::OnAssociateAccountAction(
 
 void QuickPairMetricsLogger::OnAccountKeyWrite(
     scoped_refptr<Device> device,
-    absl::optional<AccountKeyFailure> error) {
+    std::optional<AccountKeyFailure> error) {
   switch (device->protocol()) {
     case Protocol::kFastPairSubsequent:
       // TODO(b/259443372): Record this case once we implement account key

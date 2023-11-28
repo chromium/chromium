@@ -5,6 +5,7 @@
 #include "ash/quick_pair/keyed_service/quick_pair_metrics_logger.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/ash_prefs.h"
@@ -42,7 +43,6 @@
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -368,7 +368,7 @@ class QuickPairMetricsLoggerTest : public NoSessionAshTestBase {
         mock_pairer_broker_->NotifyHandshakeComplete(initial_device_);
         mock_pairer_broker_->NotifyDevicePaired(initial_device_);
         mock_pairer_broker_->NotifyAccountKeyWrite(initial_device_,
-                                                   /*error=*/absl::nullopt);
+                                                   /*error=*/std::nullopt);
         mock_pairer_broker_->NotifyPairComplete(initial_device_);
         break;
       case Protocol::kFastPairRetroactive:
@@ -379,7 +379,7 @@ class QuickPairMetricsLoggerTest : public NoSessionAshTestBase {
         mock_pairer_broker_->NotifyPairingStart(retroactive_device_);
         mock_pairer_broker_->NotifyHandshakeComplete(retroactive_device_);
         mock_pairer_broker_->NotifyAccountKeyWrite(retroactive_device_,
-                                                   /*error=*/absl::nullopt);
+                                                   /*error=*/std::nullopt);
         break;
     }
   }
@@ -463,13 +463,13 @@ class QuickPairMetricsLoggerTest : public NoSessionAshTestBase {
     switch (protocol) {
       case Protocol::kFastPairInitial:
         mock_pairer_broker_->NotifyAccountKeyWrite(initial_device_,
-                                                   absl::nullopt);
+                                                   std::nullopt);
         break;
       case Protocol::kFastPairSubsequent:
         break;
       case Protocol::kFastPairRetroactive:
         mock_pairer_broker_->NotifyAccountKeyWrite(retroactive_device_,
-                                                   absl::nullopt);
+                                                   std::nullopt);
         break;
     }
   }

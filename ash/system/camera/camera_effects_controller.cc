@@ -258,7 +258,7 @@ void CameraEffectsController::OnActiveUserPrefServiceChanged(
   InitializeEffectControls();
 }
 
-absl::optional<int> CameraEffectsController::GetEffectState(
+std::optional<int> CameraEffectsController::GetEffectState(
     VcEffectId effect_id) {
   switch (effect_id) {
     case VcEffectId::kBackgroundBlur:
@@ -273,13 +273,13 @@ absl::optional<int> CameraEffectsController::GetEffectState(
     case VcEffectId::kLiveCaption:
     case VcEffectId::kTestEffect:
       NOTREACHED();
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
 void CameraEffectsController::OnEffectControlActivated(
     VcEffectId effect_id,
-    absl::optional<int> state) {
+    std::optional<int> state) {
   cros::mojom::EffectsConfigPtr new_effects = current_effects_.Clone();
 
   switch (effect_id) {
@@ -391,7 +391,7 @@ void CameraEffectsController::OnAutozoomControlEnabledChanged(bool enabled) {
       base::BindRepeating(&CameraEffectsController::OnEffectControlActivated,
                           base::Unretained(this),
                           /*effect_id=*/VcEffectId::kCameraFraming,
-                          /*value=*/absl::nullopt));
+                          /*value=*/std::nullopt));
   effect->AddState(std::move(effect_state));
 
   effect->set_dependency_flags(VcHostedEffect::ResourceDependency::kCamera);
@@ -584,7 +584,7 @@ void CameraEffectsController::InitializeEffectControls() {
         base::BindRepeating(&CameraEffectsController::OnEffectControlActivated,
                             base::Unretained(this),
                             /*effect_id=*/VcEffectId::kPortraitRelighting,
-                            /*value=*/absl::nullopt));
+                            /*value=*/std::nullopt));
     effect->AddState(std::move(effect_state));
 
     effect->set_dependency_flags(VcHostedEffect::ResourceDependency::kCamera);

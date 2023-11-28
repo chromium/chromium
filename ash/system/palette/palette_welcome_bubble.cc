@@ -123,7 +123,7 @@ void PaletteWelcomeBubble::ShowIfNeeded() {
     return;
   }
 
-  absl::optional<user_manager::UserType> user_type =
+  std::optional<user_manager::UserType> user_type =
       session_controller->GetUserType();
   if (user_type && (*user_type == user_manager::USER_TYPE_GUEST ||
                     *user_type == user_manager::USER_TYPE_PUBLIC_ACCOUNT)) {

@@ -64,7 +64,7 @@ class ASH_EXPORT AmbientAnimationPhotoProvider
   scoped_refptr<ImageAsset> LoadImageAsset(
       base::StringPiece resource_id,
       const base::FilePath& resource_path,
-      const absl::optional<gfx::Size>& size) override;
+      const std::optional<gfx::Size>& size) override;
 
   void AddObserver(Observer* obs);
   void RemoveObserver(Observer* obs);

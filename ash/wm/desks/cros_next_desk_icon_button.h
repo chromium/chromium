@@ -89,7 +89,7 @@ class ASH_EXPORT CrOSNextDeskIconButton : public CrOSNextDeskButtonBase {
   void OnThemeChanged() override;
   void StateChanged(ButtonState old_state) override;
 
-  absl::optional<ui::ColorId> GetFocusColorIdForTesting() const {
+  std::optional<ui::ColorId> GetFocusColorIdForTesting() const {
     return focus_color_id_;
   }
 
@@ -111,7 +111,7 @@ class ASH_EXPORT CrOSNextDeskIconButton : public CrOSNextDeskButtonBase {
   const ui::ColorId icon_color_id_;
   const ui::ColorId background_color_id_;
 
-  absl::optional<ui::ColorId> focus_color_id_;
+  std::optional<ui::ColorId> focus_color_id_;
 
   std::unique_ptr<views::AnimationAbortHandle> animation_abort_handle_;
 };

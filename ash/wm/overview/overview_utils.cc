@@ -168,14 +168,14 @@ void MaximizeIfSnapped(aura::Window* window) {
 
 gfx::Rect GetGridBoundsInScreen(aura::Window* target_root) {
   return GetGridBoundsInScreen(target_root,
-                               /*window_dragging_state=*/absl::nullopt,
+                               /*window_dragging_state=*/std::nullopt,
                                /*divider_changed=*/false,
                                /*account_for_hotseat=*/true);
 }
 
 gfx::Rect GetGridBoundsInScreen(
     aura::Window* target_root,
-    absl::optional<SplitViewDragIndicators::WindowDraggingState>
+    std::optional<SplitViewDragIndicators::WindowDraggingState>
         window_dragging_state,
     bool divider_changed,
     bool account_for_hotseat) {
@@ -201,7 +201,7 @@ gfx::Rect GetGridBoundsInScreen(
   gfx::Rect bounds;
   gfx::Rect work_area =
       WorkAreaInsets::ForWindow(target_root)->ComputeStableWorkArea();
-  absl::optional<SplitViewController::SnapPosition> opposite_position;
+  std::optional<SplitViewController::SnapPosition> opposite_position;
 
   // We should show partial overview for the following use cases:
   // 1. In tablet split view mode;
@@ -306,11 +306,11 @@ gfx::Rect GetGridBoundsInScreen(
   return bounds;
 }
 
-absl::optional<gfx::RectF> GetSplitviewBoundsMaintainingAspectRatio() {
+std::optional<gfx::RectF> GetSplitviewBoundsMaintainingAspectRatio() {
   if (!ShouldAllowSplitView())
-    return absl::nullopt;
+    return std::nullopt;
   if (!Shell::Get()->tablet_mode_controller()->InTabletMode())
-    return absl::nullopt;
+    return std::nullopt;
   auto* overview_session = OverviewController::Get()->overview_session();
   DCHECK(overview_session);
   aura::Window* root_window = Shell::GetPrimaryRootWindow();
@@ -323,7 +323,7 @@ absl::optional<gfx::RectF> GetSplitviewBoundsMaintainingAspectRatio() {
   if (!SplitViewController::Get(root_window)->InSplitViewMode() &&
       SplitViewDragIndicators::GetSnapPosition(window_dragging_state) ==
           SplitViewController::SnapPosition::kNone) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // The hotseat bounds do not affect splitview after a window is snapped, so

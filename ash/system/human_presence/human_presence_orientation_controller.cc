@@ -89,7 +89,7 @@ void HumanPresenceOrientationController::LidEventReceived(
 }
 
 void HumanPresenceOrientationController::OnReceiveSwitchStates(
-    absl::optional<chromeos::PowerManagerClient::SwitchStates> switch_states) {
+    std::optional<chromeos::PowerManagerClient::SwitchStates> switch_states) {
   if (switch_states.has_value()) {
     const bool lid_closed = switch_states->lid_state !=
                             chromeos::PowerManagerClient::LidState::OPEN;

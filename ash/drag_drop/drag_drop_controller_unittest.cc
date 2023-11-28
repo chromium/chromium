@@ -5,6 +5,7 @@
 #include "ash/drag_drop/drag_drop_controller.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/constants/ash_features.h"
 #include "ash/drag_drop/drag_image_view.h"
@@ -28,7 +29,6 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/drag_drop_client_observer.h"
 #include "ui/aura/client/drag_drop_delegate.h"
@@ -383,7 +383,7 @@ class TestToplevelWindowDragDelegate : public ToplevelWindowDragDelegate {
   State state() const { return state_; }
   int events_forwarded() const { return events_forwarded_; }
   ui::mojom::DragEventSource source() const { return source_; }
-  absl::optional<gfx::PointF> current_location() const {
+  std::optional<gfx::PointF> current_location() const {
     return current_location_;
   }
 
@@ -422,7 +422,7 @@ class TestToplevelWindowDragDelegate : public ToplevelWindowDragDelegate {
  private:
   State state_ = State::kNotInvoked;
   int events_forwarded_ = 0;
-  absl::optional<gfx::PointF> current_location_;
+  std::optional<gfx::PointF> current_location_;
   ui::mojom::DragEventSource source_;
 };
 

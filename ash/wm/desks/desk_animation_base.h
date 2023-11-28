@@ -146,7 +146,7 @@ class ASH_EXPORT DeskAnimationBase
   base::TimeTicks launch_time_;
 
   // ThroughputTracker used for measuring this animation smoothness.
-  absl::optional<ui::ThroughputTracker> throughput_tracker_;
+  std::optional<ui::ThroughputTracker> throughput_tracker_;
 
   // If true, do not notify |controller_| when
   // OnDeskSwitchAnimationFinished() is called. This class and

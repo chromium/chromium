@@ -121,7 +121,7 @@ class ASH_EXPORT PhoneHubUiController
 
   void RecordStatusOnBubbleOpened();
   void OnGetHostLastSeenTimestamp(UiState ui_state_when_opened,
-                                  absl::optional<base::Time> timestamp);
+                                  std::optional<base::Time> timestamp);
 
   // The PhoneHubManager that provides data for the UI.
   raw_ptr<phonehub::PhoneHubManager, ExperimentalAsh> phone_hub_manager_ =

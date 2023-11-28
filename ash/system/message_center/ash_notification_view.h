@@ -78,12 +78,12 @@ class ASH_EXPORT AshNotificationView
 
   // Returns the bounds of the area where the drag can be initiated. The
   // returned bounds are in `AshNotificationView` local coordinates. Returns
-  // `absl::nullopt` if the notification view is not draggable.
-  absl::optional<gfx::Rect> GetDragAreaBounds() const;
+  // `std::nullopt` if the notification view is not draggable.
+  std::optional<gfx::Rect> GetDragAreaBounds() const;
 
   // Returns the drag image shown when the ash notification is under drag.
-  // Returns `absl::nullopt` if the notification view is not draggable.
-  absl::optional<gfx::ImageSkia> GetDragImage();
+  // Returns `std::nullopt` if the notification view is not draggable.
+  std::optional<gfx::ImageSkia> GetDragImage();
 
   // Attaches the drop data. This method should be called only if this
   // notification view is draggable.
@@ -234,7 +234,7 @@ class ASH_EXPORT AshNotificationView
 
     // Timer that updates the timestamp over time.
     base::OneShotTimer timestamp_update_timer_;
-    absl::optional<base::Time> timestamp_;
+    std::optional<base::Time> timestamp_;
   };
 
   // message_center::MessageCenterObserver:

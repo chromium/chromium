@@ -143,7 +143,7 @@ std::unique_ptr<views::View> AppStreamLauncherView::CreateAppListView() {
   scroll_view->ClipHeightTo(0, std::numeric_limits<int>::max());
   scroll_view->SetDrawOverflowIndicator(false);
   // Don't paint a background. The bubble already has one.
-  scroll_view->SetBackgroundColor(absl::nullopt);
+  scroll_view->SetBackgroundColor(std::nullopt);
   // Arrow keys are used to select app icons.
   scroll_view->SetAllowKeyboardScrolling(false);
 

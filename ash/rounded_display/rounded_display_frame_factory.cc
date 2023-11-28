@@ -368,7 +368,7 @@ void RoundedDisplayFrameFactory::AppendQuad(
                      /*layer_rect=*/layer_rect,
                      /*visible_layer_rect=*/layer_rect,
                      /*filter_info=*/gfx::MaskFilterInfo(),
-                     /*clip=*/absl::nullopt, /*contents_opaque=*/false,
+                     /*clip=*/std::nullopt, /*contents_opaque=*/false,
                      /*opacity_f=*/1.f,
                      /*blend=*/SkBlendMode::kSrcOver,
                      /*sorting_context=*/0,

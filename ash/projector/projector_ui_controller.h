@@ -5,13 +5,14 @@
 #ifndef ASH_PROJECTOR_PROJECTOR_UI_CONTROLLER_H_
 #define ASH_PROJECTOR_PROJECTOR_UI_CONTROLLER_H_
 
+#include <optional>
+
 #include "ash/ash_export.h"
 #include "ash/projector/projector_metrics.h"
 #include "ash/public/cpp/projector/projector_session.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace aura {
@@ -79,7 +80,7 @@ class ASH_EXPORT ProjectorUiController : public ProjectorSessionObserver {
   // True if the canvas is initialized successfully, false if it failed to
   // initialize. An absent value indicates that the initialization has not
   // completed.
-  absl::optional<bool> canvas_initialized_state_;
+  std::optional<bool> canvas_initialized_state_;
 
   base::ScopedObservation<ProjectorSession, ProjectorSessionObserver>
       projector_session_observation_{this};

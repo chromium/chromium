@@ -35,8 +35,8 @@ class ArcNotificationDelegate : public message_center::NotificationDelegate {
 
   // message_center::NotificationDelegate overrides:
   void Close(bool by_user) override;
-  void Click(const absl::optional<int>& button_index,
-             const absl::optional<std::u16string>& reply) override;
+  void Click(const std::optional<int>& button_index,
+             const std::optional<std::u16string>& reply) override;
   void SettingsClick() override;
   void ExpandStateChanged(bool expanded) override;
   void SnoozeButtonClicked() override;

@@ -219,7 +219,7 @@ class AmbientPhotoControllerAnimationTest : public AmbientPhotoControllerTest {
         GenerateLottieDynamicAssetIdForTesting(/*position=*/"B", /*idx=*/2)};
     for (const std::string& asset_id : all_dynamic_asset_ids) {
       CHECK(resource_metadata.RegisterAsset("test-path", "test-name", asset_id,
-                                            /*size=*/absl::nullopt));
+                                            /*size=*/std::nullopt));
     }
 
     photo_controller()->ambient_backend_model()->SetPhotoConfig(

@@ -255,7 +255,7 @@ TEST_F(PowerStatusTest, PositiveBatteryTimeEstimates) {
   prop.set_battery_state(PowerSupplyProperties::CHARGING);
   prop.set_battery_time_to_full_sec(kTime.InSeconds());
   power_status_->SetProtoForTesting(prop);
-  absl::optional<base::TimeDelta> time = power_status_->GetBatteryTimeToFull();
+  std::optional<base::TimeDelta> time = power_status_->GetBatteryTimeToFull();
   ASSERT_TRUE(time);
   EXPECT_EQ(kTime, *time);
 
@@ -279,7 +279,7 @@ TEST_F(PowerStatusTest, MissingBatteryTimeEstimates) {
   prop.set_external_power(PowerSupplyProperties::AC);
   prop.set_battery_state(PowerSupplyProperties::NOT_PRESENT);
   power_status_->SetProtoForTesting(prop);
-  absl::optional<base::TimeDelta> time = power_status_->GetBatteryTimeToFull();
+  std::optional<base::TimeDelta> time = power_status_->GetBatteryTimeToFull();
   EXPECT_FALSE(time) << *time << " returned despite missing battery";
   time = power_status_->GetBatteryTimeToEmpty();
   EXPECT_FALSE(time) << *time << " returned despite missing battery";

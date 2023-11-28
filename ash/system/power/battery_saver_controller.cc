@@ -164,7 +164,7 @@ void BatterySaverController::ShowBatterySaverModeEnabledToast() {
 
 void BatterySaverController::SetState(bool active, UpdateReason reason) {
   auto* power_status = PowerStatus::Get();
-  absl::optional<base::TimeDelta> time_to_empty =
+  std::optional<base::TimeDelta> time_to_empty =
       power_status->GetBatteryTimeToEmpty();
   double battery_percent = power_status->GetBatteryPercent();
 
@@ -227,7 +227,7 @@ void BatterySaverController::SetState(bool active, UpdateReason reason) {
                                     duration);
         break;
     }
-    enable_record_ = absl::nullopt;
+    enable_record_ = std::nullopt;
 
     // Disabled reason metrics.
     switch (reason) {
@@ -303,7 +303,7 @@ void BatterySaverController::SetState(bool active, UpdateReason reason) {
 }
 
 bool BatterySaverController::IsBatterySaverSupported() const {
-  const absl::optional<power_manager::PowerSupplyProperties>& proto =
+  const std::optional<power_manager::PowerSupplyProperties>& proto =
       chromeos::PowerManagerClient::Get()->GetLastStatus();
   if (!proto) {
     return false;

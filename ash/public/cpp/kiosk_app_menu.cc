@@ -4,9 +4,10 @@
 
 #include "ash/public/cpp/kiosk_app_menu.h"
 
+#include <optional>
+
 #include "base/check.h"
 #include "base/check_op.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -19,7 +20,7 @@ KioskAppMenu* g_instance = nullptr;
 KioskAppMenuEntry::KioskAppMenuEntry(
     AppType type,
     const AccountId& account_id,
-    const absl::optional<std::string>& chrome_app_id,
+    const std::optional<std::string>& chrome_app_id,
     std::u16string name,
     gfx::ImageSkia icon)
     : type(type),

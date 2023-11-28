@@ -6,11 +6,11 @@
 #define ASH_AMBIENT_METRICS_AMBIENT_SESSION_METRICS_RECORDER_H_
 
 #include <memory>
+#include <optional>
 
 #include "ash/ambient/ambient_ui_settings.h"
 #include "ash/ash_export.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -68,7 +68,7 @@ class ASH_EXPORT AmbientSessionMetricsRecorder {
   const std::unique_ptr<Delegate> delegate_;
   const base::TimeTicks session_start_time_;
   int num_registered_screens_ = 0;
-  absl::optional<bool> session_init_status_;
+  std::optional<bool> session_init_status_;
 };
 
 }  // namespace ash

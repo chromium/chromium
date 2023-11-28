@@ -79,7 +79,7 @@ SearchResultListView::SearchResultListView(
     AppListViewDelegate* view_delegate,
     SearchResultPageDialogController* dialog_controller,
     SearchResultView::SearchResultViewType search_result_view_type,
-    absl::optional<size_t> productivity_launcher_index)
+    std::optional<size_t> productivity_launcher_index)
     : SearchResultContainerView(view_delegate),
       results_container_(new views::View),
       productivity_launcher_index_(productivity_launcher_index),

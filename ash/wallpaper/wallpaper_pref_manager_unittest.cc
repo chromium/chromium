@@ -423,7 +423,7 @@ TEST_F(WallpaperPrefManagerTest, CacheCelebiColor) {
   const SkColor expected_color = SkColorSetRGB(0xAB, 0xBC, 0xEF);
   pref_manager_->CacheCelebiColor(location, expected_color);
 
-  absl::optional<SkColor> color = pref_manager_->GetCelebiColor(location);
+  std::optional<SkColor> color = pref_manager_->GetCelebiColor(location);
   ASSERT_TRUE(color);
   EXPECT_EQ(expected_color, *color);
 }
@@ -449,7 +449,7 @@ TEST_F(WallpaperPrefManagerTest, CalculatedColors) {
   const SkColor celebi_color = SkColorSetRGB(0xFF, 0xCC, 0x22);
   pref_manager_->CacheCelebiColor(location, celebi_color);
 
-  absl::optional<WallpaperCalculatedColors> actual_colors =
+  std::optional<WallpaperCalculatedColors> actual_colors =
       pref_manager_->GetCachedWallpaperColors(location);
   ASSERT_TRUE(actual_colors);
   EXPECT_EQ(k_mean_color, actual_colors->k_mean_color);

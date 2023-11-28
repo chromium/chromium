@@ -46,7 +46,7 @@ void EmitTimeOnEachPageMetrics(
   }
 }
 
-bool IsInternalAccount(const absl::optional<std::string>& email) {
+bool IsInternalAccount(const std::optional<std::string>& email) {
   return email.has_value() && gaia::IsGoogleInternalAccountEmail(email.value());
 }
 

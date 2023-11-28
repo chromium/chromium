@@ -40,8 +40,8 @@ void NotificationMetricsRecorder::OnNotificationAdded(
 
 void NotificationMetricsRecorder::OnNotificationClicked(
     const std::string& notification_id,
-    const absl::optional<int>& button_index,
-    const absl::optional<std::u16string>& reply) {
+    const std::optional<int>& button_index,
+    const std::optional<std::u16string>& reply) {
   bool is_popup = !IsNotificationCenterVisible();
   if (reply.has_value()) {
     metrics_utils::LogInlineReplySent(notification_id, is_popup);

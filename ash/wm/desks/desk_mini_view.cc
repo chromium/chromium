@@ -325,7 +325,7 @@ void DeskMiniView::OnWidgetGestureTap(const gfx::Rect& screen_rect,
     UpdateDeskButtonVisibility();
 }
 
-absl::optional<ui::ColorId> DeskMiniView::GetFocusColor() const {
+std::optional<ui::ColorId> DeskMiniView::GetFocusColor() const {
   CHECK(desk_);
   const ui::ColorId focused_desk_color_id = ui::kColorAshFocusRing;
   const ui::ColorId active_desk_color_id = cros_tokens::kCrosSysTertiary;
@@ -351,11 +351,11 @@ absl::optional<ui::ColorId> DeskMiniView::GetFocusColor() const {
       break;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void DeskMiniView::UpdateFocusColor() {
-  absl::optional<ui::ColorId> new_focus_color_id = GetFocusColor();
+  std::optional<ui::ColorId> new_focus_color_id = GetFocusColor();
 
   if (desk_preview_->focus_color_id() == new_focus_color_id) {
     return;
@@ -407,9 +407,9 @@ void DeskMiniView::OpenContextMenu(ui::MenuSourceType source) {
 
   context_menu_ = std::make_unique<DeskActionContextMenu>(
       ContainsAppWindows(desk_)
-          ? absl::make_optional(
+          ? std::make_optional(
                 desk_controller->GetCombineDesksTargetName(desk_))
-          : absl::nullopt,
+          : std::nullopt,
       show_on_top ? views::MenuAnchorPosition::kBubbleTopRight
                   : views::MenuAnchorPosition::kBubbleBottomRight,
       /*combine_desks_callback=*/

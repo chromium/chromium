@@ -366,7 +366,7 @@ TEST_F(MousePrefHandlerTest, InitializeLoginScreenMouseSettings) {
   button_remappings.push_back(button_remapping2.Clone());
   known_user().SetPath(
       account_id_1, prefs::kMouseLoginScreenButtonRemappingListPref,
-      absl::optional<base::Value>(ConvertButtonRemappingArrayToList(
+      std::optional<base::Value>(ConvertButtonRemappingArrayToList(
           button_remappings,
           mojom::CustomizationRestriction::kAllowCustomizations)));
 

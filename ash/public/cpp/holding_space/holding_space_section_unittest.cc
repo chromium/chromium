@@ -61,8 +61,8 @@ void ExpectSection(const HoldingSpaceSection* section,
       EXPECT_THAT(
           section->supported_types,
           testing::UnorderedElementsAre(HoldingSpaceItem::Type::kPinnedFile));
-      EXPECT_EQ(section->max_item_count, absl::nullopt);
-      EXPECT_EQ(section->max_visible_item_count, absl::nullopt);
+      EXPECT_EQ(section->max_item_count, std::nullopt);
+      EXPECT_EQ(section->max_visible_item_count, std::nullopt);
       break;
     case HoldingSpaceSectionId::kScreenCaptures:
       EXPECT_EQ(section->id, HoldingSpaceSectionId::kScreenCaptures);
@@ -80,7 +80,7 @@ void ExpectSection(const HoldingSpaceSection* section,
                   testing::UnorderedElementsAre(
                       HoldingSpaceItem::Type::kLocalSuggestion,
                       HoldingSpaceItem::Type::kDriveSuggestion));
-      EXPECT_EQ(section->max_item_count, absl::nullopt);
+      EXPECT_EQ(section->max_item_count, std::nullopt);
       EXPECT_EQ(section->max_visible_item_count, 4u);
       break;
   }
@@ -104,7 +104,7 @@ TEST_F(HoldingSpaceSectionTest, GetHoldingSpaceSectionById) {
 TEST_F(HoldingSpaceSectionTest, GetHoldingSpaceSectionByType) {
   for (const auto& type : GetHoldingSpaceItemTypes()) {
     SCOPED_TRACE(testing::Message() << "Type: " << static_cast<size_t>(type));
-    absl::optional<HoldingSpaceSectionId> id;
+    std::optional<HoldingSpaceSectionId> id;
     switch (type) {
       case HoldingSpaceItem::Type::kArcDownload:
       case HoldingSpaceItem::Type::kCameraAppPhoto:

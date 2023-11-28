@@ -368,7 +368,7 @@ void WelcomeTourController::MaybeStartWelcomeTour() {
       return;
     }
 
-    const absl::optional<bool>& is_new_user =
+    const std::optional<bool>& is_new_user =
         UserEducationController::Get()->IsNewUser(UserEducationPrivateApiKey());
 
     // If it is not known whether the user is "new" or "existing" when this code
@@ -539,7 +539,7 @@ void WelcomeTourController::OnWelcomeTourEnded(
     SetCurrentStep(welcome_tour_metrics::Step::kExploreAppWindow);
   }
 
-  SetCurrentStep(absl::nullopt);
+  SetCurrentStep(std::nullopt);
 
   welcome_tour_metrics::RecordTourDuration(time_since_start.Elapsed(),
                                            completed);
@@ -550,7 +550,7 @@ void WelcomeTourController::OnWelcomeTourEnded(
 }
 
 void WelcomeTourController::SetCurrentStep(
-    absl::optional<welcome_tour_metrics::Step> step) {
+    std::optional<welcome_tour_metrics::Step> step) {
   if (current_step_) {
     welcome_tour_metrics::RecordStepDuration(current_step_.value(),
                                              current_step_timer_.Elapsed());

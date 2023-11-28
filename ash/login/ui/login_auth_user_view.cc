@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "ash/login/login_screen_controller.h"
@@ -54,7 +55,6 @@
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
 #include "components/user_manager/user.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -1078,7 +1078,7 @@ void LoginAuthUserView::OnAuthSubmit(const std::u16string& password) {
 }
 
 void LoginAuthUserView::OnAuthComplete(bool authenticated_by_pin,
-                                       absl::optional<bool> auth_success) {
+                                       std::optional<bool> auth_success) {
   AuthEventsRecorder::Get()->OnAuthComplete(auth_success);
   bool failed = !auth_success.value_or(false);
   LOG(WARNING) << "crbug.com/1339004 : OnAuthComplete " << failed;
@@ -1099,7 +1099,7 @@ void LoginAuthUserView::OnAuthComplete(bool authenticated_by_pin,
 }
 
 void LoginAuthUserView::OnChallengeResponseAuthComplete(
-    absl::optional<bool> auth_success) {
+    std::optional<bool> auth_success) {
   if (!auth_success.has_value() || !auth_success.value()) {
     password_view_->Reset();
     password_view_->SetReadOnly(false);

@@ -6,6 +6,7 @@
 #define ASH_WEBUI_DIAGNOSTICS_UI_BACKEND_SYSTEM_SYSTEM_DATA_PROVIDER_H_
 
 #include <memory>
+#include <optional>
 
 #include "ash/webui/diagnostics_ui/backend/system/cpu_usage_data.h"
 #include "ash/webui/diagnostics_ui/mojom/system_data_provider.mojom.h"
@@ -17,7 +18,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class RepeatingTimer;
@@ -98,7 +98,7 @@ class SystemDataProvider : public mojom::SystemDataProvider,
   void NotifyCpuUsageObservers(const mojom::CpuUsagePtr& cpu_usage);
 
   void OnBatteryChargeStatusUpdated(
-      const absl::optional<power_manager::PowerSupplyProperties>&
+      const std::optional<power_manager::PowerSupplyProperties>&
           power_supply_properties,
       cros_healthd::mojom::TelemetryInfoPtr info_ptr);
 

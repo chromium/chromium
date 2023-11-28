@@ -21,7 +21,7 @@ namespace {
 
 void IsFileURLBrowserWritable(
     MediaAppPageHandler::IsFileBrowserWritableCallback callback,
-    absl::optional<storage::FileSystemURL> url) {
+    std::optional<storage::FileSystemURL> url) {
   if (!url.has_value()) {
     std::move(callback).Run(false);
     return;

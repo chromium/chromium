@@ -6,6 +6,7 @@
 #define ASH_WM_OVERVIEW_OVERVIEW_ITEM_BASE_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "ash/ash_export.h"
@@ -13,7 +14,6 @@
 #include "ash/wm/overview/event_handler_delegate.h"
 #include "ash/wm/overview/overview_types.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/events/event.h"
 #include "ui/views/widget/widget.h"
@@ -112,15 +112,15 @@ class ASH_EXPORT OverviewItemBase : public EventHandlerDelegate {
 
   bool animating_to_close() const { return animating_to_close_; }
 
-  void set_unclipped_size(absl::optional<gfx::Size> unclipped_size) {
+  void set_unclipped_size(std::optional<gfx::Size> unclipped_size) {
     unclipped_size_ = unclipped_size;
   }
 
-  void set_scrolling_bounds(absl::optional<gfx::RectF> scrolling_bounds) {
+  void set_scrolling_bounds(std::optional<gfx::RectF> scrolling_bounds) {
     scrolling_bounds_ = scrolling_bounds;
   }
 
-  absl::optional<gfx::RectF> scrolling_bounds() const {
+  std::optional<gfx::RectF> scrolling_bounds() const {
     return scrolling_bounds_;
   }
 
@@ -389,11 +389,11 @@ class ASH_EXPORT OverviewItemBase : public EventHandlerDelegate {
   // bounds are not set to split view size. In `OverviewItem::SetItemBounds()`,
   // to this value instead of `target_bounds_`, and then apply clipping on the
   // window to `target_bounds_`.
-  absl::optional<gfx::Size> unclipped_size_ = absl::nullopt;
+  std::optional<gfx::Size> unclipped_size_ = std::nullopt;
 
   // Cached bounds of `this` to avoid being calculated on each scroll update.
   // Will be nullopt unless a grid scroll is underway.
-  absl::optional<gfx::RectF> scrolling_bounds_ = absl::nullopt;
+  std::optional<gfx::RectF> scrolling_bounds_ = std::nullopt;
 
   // True if `this` should be added to an active overview session using the
   // spawn animation on its first update, which implies an animation type of

@@ -5,6 +5,8 @@
 #ifndef ASH_USER_EDUCATION_VIEWS_HELP_BUBBLE_FACTORY_VIEWS_ASH_H_
 #define ASH_USER_EDUCATION_VIEWS_HELP_BUBBLE_FACTORY_VIEWS_ASH_H_
 
+#include <optional>
+
 #include "ash/ash_export.h"
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
@@ -13,7 +15,6 @@
 #include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/help_bubble_factory.h"
 #include "components/user_education/common/help_bubble_params.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"

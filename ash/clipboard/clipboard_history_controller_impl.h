@@ -147,7 +147,7 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   }
 
   void set_buffer_restoration_delay_for_test(
-      absl::optional<base::TimeDelta> delay) {
+      std::optional<base::TimeDelta> delay) {
     buffer_restoration_delay_for_test_ = delay;
   }
 
@@ -322,7 +322,7 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
 
   // The delay interval for restoring the clipboard buffer to its original
   // state following a paste event.
-  absl::optional<base::TimeDelta> buffer_restoration_delay_for_test_;
+  std::optional<base::TimeDelta> buffer_restoration_delay_for_test_;
 
   // Called when the first item view is selected after the clipboard history
   // menu opens.

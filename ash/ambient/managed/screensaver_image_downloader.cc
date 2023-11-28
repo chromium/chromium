@@ -302,7 +302,7 @@ void ScreensaverImageDownloader::ClearRequestQueue() {
   while (!buffer_queue.empty()) {
     FinishImageDownload(buffer_queue.front(),
                         ScreensaverImageDownloadResult::kCancelled,
-                        absl::nullopt);
+                        std::nullopt);
     buffer_queue.pop();
   }
 }
@@ -332,7 +332,7 @@ void ScreensaverImageDownloader::OnVerifyDownloadDirectoryCompleted(
   if (!can_download_file) {
     FinishImageDownload(image_url,
                         ScreensaverImageDownloadResult::kFileSystemWriteError,
-                        absl::nullopt);
+                        std::nullopt);
     return;
   }
 
@@ -388,9 +388,8 @@ void ScreensaverImageDownloader::OnUrlDownloadedToTempFile(
           FROM_HERE,
           base::BindOnce(base::IgnoreResult(&base::DeleteFile), temp_path));
     }
-    FinishImageDownload(image_url,
-                        ScreensaverImageDownloadResult::kNetworkError,
-                        absl::nullopt);
+    FinishImageDownload(
+        image_url, ScreensaverImageDownloadResult::kNetworkError, std::nullopt);
     return;
   }
 
@@ -409,7 +408,7 @@ void ScreensaverImageDownloader::OnUrlDownloadToFileComplete(
     DLOG(WARNING) << "Could not save the downloaded file to " << path;
     FinishImageDownload(image_url,
                         ScreensaverImageDownloadResult::kFileSaveError,
-                        absl::nullopt);
+                        std::nullopt);
     return;
   }
 
@@ -420,7 +419,7 @@ void ScreensaverImageDownloader::OnUrlDownloadToFileComplete(
 void ScreensaverImageDownloader::FinishImageDownload(
     const std::string& image_url,
     ScreensaverImageDownloadResult result,
-    absl::optional<base::FilePath> path) {
+    std::optional<base::FilePath> path) {
   RecordManagedScreensaverImageDownloadResult(result);
 
   if (result == ScreensaverImageDownloadResult::kSuccess) {

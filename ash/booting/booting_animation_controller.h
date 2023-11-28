@@ -54,7 +54,7 @@ class ASH_EXPORT BootingAnimationController
 
   std::string animation_data_;
   std::unique_ptr<views::Widget> widget_;
-  absl::optional<bool> data_fetch_failed_;
+  std::optional<bool> data_fetch_failed_;
   bool was_shown_ = false;
   bool is_gpu_ready_ = false;
   base::OnceClosure animation_played_callback_;

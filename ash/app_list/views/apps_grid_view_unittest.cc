@@ -5,7 +5,6 @@
 #include "ash/app_list/views/apps_grid_view.h"
 
 #include <stddef.h>
-
 #include <algorithm>
 #include <list>
 #include <memory>
@@ -112,8 +111,8 @@ gfx::RectF GetViewBoundsWithCurrentTransform(views::View* view) {
       gfx::RectF(view->GetMirroredBounds()));
 }
 
-absl::optional<gfx::Vector2d> GetOffsetBetweenLayers(ui::Layer* source,
-                                                     ui::Layer* target) {
+std::optional<gfx::Vector2d> GetOffsetBetweenLayers(ui::Layer* source,
+                                                    ui::Layer* target) {
   gfx::Vector2d offset;
   for (auto* current = source; current; current = current->parent()) {
     if (current == target) {
@@ -121,7 +120,7 @@ absl::optional<gfx::Vector2d> GetOffsetBetweenLayers(ui::Layer* source,
     }
     offset += current->bounds().OffsetFromOrigin();
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 float CalculateManhattanDistance(gfx::Point p1, gfx::Point p2) {
@@ -1925,8 +1924,8 @@ TEST_P(AppsGridViewFolderIconRefreshTest, FolderIconItemCounter) {
   // 2. The counter shows how many items are not drawn on the icon, which is
   // (the number of items - 3).
   // 3. The maximum number that can be shown is 100.
-  std::vector<absl::optional<size_t>> expected_counts = {absl::nullopt,
-                                                         absl::nullopt, 7, 100};
+  std::vector<std::optional<size_t>> expected_counts = {std::nullopt,
+                                                        std::nullopt, 7, 100};
   UpdateLayout();
 
   for (int i = 0; i < 4; ++i) {
@@ -2151,7 +2150,7 @@ TEST_P(AppsGridViewDragTest, DragIconAnimatesToTargetItemBounds) {
     // host the drag icon.
     aura::Window* const root_window =
         item_view->GetWidget()->GetNativeWindow()->GetRootWindow();
-    const absl::optional<gfx::Vector2d> offset_to_root_window =
+    const std::optional<gfx::Vector2d> offset_to_root_window =
         GetOffsetBetweenLayers(drag_icon_layer, root_window->layer());
     ASSERT_TRUE(offset_to_root_window);
     drag_icon_target_bounds.Offset(*offset_to_root_window);
@@ -2213,7 +2212,7 @@ TEST_P(AppsGridViewDragTest,
     // host the drag icon.
     aura::Window* const root_window =
         item_view->GetWidget()->GetNativeWindow()->GetRootWindow();
-    const absl::optional<gfx::Vector2d> offset_to_root_window =
+    const std::optional<gfx::Vector2d> offset_to_root_window =
         GetOffsetBetweenLayers(drag_icon_layer, root_window->layer());
     ASSERT_TRUE(offset_to_root_window);
     drag_icon_target_bounds.Offset(*offset_to_root_window);

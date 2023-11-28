@@ -28,15 +28,15 @@ class FastPairHandshakeImpl : public FastPairHandshake {
   void Reset() override;
 
  private:
-  void OnGattClientInitializedCallback(absl::optional<PairFailure> failure);
+  void OnGattClientInitializedCallback(std::optional<PairFailure> failure);
   void OnDataEncryptorCreateAsync(
       base::TimeTicks encryptor_create_start_time,
       std::unique_ptr<FastPairDataEncryptor> fast_pair_data_encryptor);
   void OnWriteResponse(std::vector<uint8_t> response_bytes,
-                       absl::optional<PairFailure> failure);
+                       std::optional<PairFailure> failure);
   void OnParseDecryptedResponse(
       base::TimeTicks decrypt_start_time,
-      const absl::optional<DecryptedResponse>& response);
+      const std::optional<DecryptedResponse>& response);
 
   base::TimeTicks encryptor_create_start_time_;
 

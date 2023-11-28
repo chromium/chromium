@@ -70,13 +70,13 @@ void DisplayConfigurationObserver::StartMirrorMode() {
   display::DisplayManager* display_manager = Shell::Get()->display_manager();
   was_in_mirror_mode_ = display_manager->IsInMirrorMode();
   display_manager->layout_store()->set_forced_mirror_mode_for_tablet(true);
-  display_manager->SetMirrorMode(display::MirrorMode::kNormal, absl::nullopt);
+  display_manager->SetMirrorMode(display::MirrorMode::kNormal, std::nullopt);
 }
 
 void DisplayConfigurationObserver::EndMirrorMode() {
   if (!was_in_mirror_mode_) {
     Shell::Get()->display_manager()->SetMirrorMode(display::MirrorMode::kOff,
-                                                   absl::nullopt);
+                                                   std::nullopt);
   }
   display::DisplayManager* display_manager = Shell::Get()->display_manager();
   display_manager->layout_store()->set_forced_mirror_mode_for_tablet(false);

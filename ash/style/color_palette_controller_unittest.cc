@@ -156,7 +156,7 @@ class ColorPaletteControllerTest : public NoSessionAshTestBase {
 TEST_F(ColorPaletteControllerTest, ExpectedEmptyValues) {
   EXPECT_EQ(kDefaultColorScheme,
             color_palette_controller()->GetColorScheme(kAccountId));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             color_palette_controller()->GetStaticColor(kAccountId));
 }
 
@@ -184,7 +184,7 @@ TEST_F(ColorPaletteControllerTest, SetColorScheme) {
 
   EXPECT_EQ(color_scheme,
             color_palette_controller()->GetColorScheme(kAccountId));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             color_palette_controller()->GetStaticColor(kAccountId));
   auto color_palette_seed =
       color_palette_controller()->GetColorPaletteSeed(kAccountId);
@@ -637,7 +637,7 @@ class ColorPaletteControllerLocalPrefTest : public ColorPaletteControllerTest {
     return static_cast<style::mojom::ColorScheme>(local_color_scheme.value());
   }
 
-  absl::optional<bool> GetLocalUseKMeans() {
+  std::optional<bool> GetLocalUseKMeans() {
     const base::Value* local_color_scheme =
         user_manager::KnownUser(local_state())
             .FindPath(kAccountId, prefs::kDynamicColorUseKMeans);

@@ -96,7 +96,7 @@ class Mediator final
   void OnPairFailure(scoped_refptr<Device> device,
                      PairFailure failure) override;
   void OnAccountKeyWrite(scoped_refptr<Device> device,
-                         absl::optional<AccountKeyFailure> error) override;
+                         std::optional<AccountKeyFailure> error) override;
 
   // UIBroker::Observer
   void OnDiscoveryAction(scoped_refptr<Device> device,
@@ -162,7 +162,7 @@ class Mediator final
   // std::pair<std::string, Protocol> represents the block-list key of the
   // device’s model ID and the pairing protocol corresponding (either initial
   // or subsequent), and the value is
-  // std::pair<DiscoveryNotificationDismissalState, absl::optional<base::Time>
+  // std::pair<DiscoveryNotificationDismissalState, std::optional<base::Time>
   // representing the current state of the device and the timestamp of when it
   // is set to expire. It is optional because `kLongBan` does not have an expire
   // timeout. This block-list bans a device model (by model ID), which means
@@ -176,9 +176,9 @@ class Mediator final
   // Fast Pair shows the discovery notifications, it does not yet have the
   // classic mac address to unique identify a device (this is given as part of
   // the FastPairHandshake).
-  base::flat_map<std::pair<std::string, Protocol>,
-                 std::pair<DiscoveryNotificationDismissalState,
-                           absl::optional<base::Time>>>
+  base::flat_map<
+      std::pair<std::string, Protocol>,
+      std::pair<DiscoveryNotificationDismissalState, std::optional<base::Time>>>
       discovery_notification_block_list_;
 
   std::unique_ptr<FeatureStatusTracker> feature_status_tracker_;

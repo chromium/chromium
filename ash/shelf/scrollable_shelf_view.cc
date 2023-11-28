@@ -1036,11 +1036,11 @@ void ScrollableShelfView::OnButtonWillBeRemoved() {
   // both `first_tappable_app_index_` and `last_tappable_app_index_` are reset
   // to invalid values (see https://crbug.com/1300561).
   if (view_size_before_removal < 2) {
-    last_tappable_app_index_ = absl::nullopt;
+    last_tappable_app_index_ = std::nullopt;
   } else {
     last_tappable_app_index_ = std::min(
         last_tappable_app_index_,
-        absl::make_optional(static_cast<size_t>(view_size_before_removal - 2)));
+        std::make_optional(static_cast<size_t>(view_size_before_removal - 2)));
   }
   first_tappable_app_index_ =
       std::min(first_tappable_app_index_, last_tappable_app_index_);
@@ -1815,14 +1815,14 @@ void ScrollableShelfView::UpdateTappableIconIndices() {
   last_tappable_app_index_ = tappable_indices.second;
 }
 
-std::pair<absl::optional<size_t>, absl::optional<size_t>>
+std::pair<std::optional<size_t>, std::optional<size_t>>
 ScrollableShelfView::CalculateTappableIconIndices(
     ScrollableShelfView::LayoutStrategy layout_strategy,
     int scroll_distance_on_main_axis) const {
   const auto& visible_views_indices = shelf_view_->visible_views_indices();
 
   if (visible_views_indices.empty() || visible_space_.IsEmpty())
-    return {absl::nullopt, absl::nullopt};
+    return {std::nullopt, std::nullopt};
 
   if (layout_strategy == ScrollableShelfView::kNotShowArrowButtons) {
     return {visible_views_indices.front(), visible_views_indices.back()};

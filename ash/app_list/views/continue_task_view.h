@@ -110,7 +110,7 @@ class ASH_EXPORT ContinueTaskView : public views::Button,
   void LogMetricsOnResultRemoved();
 
   // The index of this view within a |SearchResultContainerView| that holds it.
-  absl::optional<int> index_in_container_;
+  std::optional<int> index_in_container_;
 
   const raw_ptr<AppListViewDelegate, ExperimentalAsh> view_delegate_;
   raw_ptr<views::Label, ExperimentalAsh> title_ = nullptr;

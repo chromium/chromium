@@ -193,7 +193,7 @@ void GpuArcVideoEncodeAccelerator::Encode(
     return;
   }
 
-  absl::optional<gfx::BufferFormat> buffer_format =
+  std::optional<gfx::BufferFormat> buffer_format =
       VideoPixelFormatToGfxBufferFormat(format);
   if (!format) {
     DLOG(ERROR) << "Unexpected format: " << format;

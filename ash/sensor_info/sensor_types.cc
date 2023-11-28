@@ -32,8 +32,7 @@ SensorUpdate& SensorUpdate::operator=(const SensorUpdate& update) = default;
 SensorUpdate::~SensorUpdate() = default;
 
 std::vector<float> SensorUpdate::GetReadingAsVector(SensorType source) const {
-  const absl::optional<SensorReading>& reading =
-      data_[static_cast<int>(source)];
+  const std::optional<SensorReading>& reading = data_[static_cast<int>(source)];
   if (source == SensorType::kLidAngle) {
     return reading.has_value() ? std::vector<float>{reading->x}
                                : std::vector<float>{0.0};
@@ -55,7 +54,7 @@ void SensorUpdate::Set(SensorType source, float x) {
 
 void SensorUpdate::Reset() {
   for (auto& i : data_) {
-    i = absl::nullopt;
+    i = std::nullopt;
   }
 }
 

@@ -44,7 +44,7 @@ class BluetoothDetailedViewImplPixelTest : public AshTestBase {
   BluetoothDetailedViewImplPixelTest() = default;
 
   // AshTestBase:
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }

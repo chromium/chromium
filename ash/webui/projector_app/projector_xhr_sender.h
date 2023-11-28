@@ -66,21 +66,21 @@ class ProjectorXhrSender {
   virtual void Send(
       const GURL& url,
       projector::mojom::RequestType method,
-      const absl::optional<std::string>& request_body,
+      const std::optional<std::string>& request_body,
       bool use_credentials,
       bool use_api_key,
       SendRequestCallback callback,
-      const absl::optional<base::flat_map<std::string, std::string>>& headers =
-          absl::nullopt,
-      const absl::optional<std::string>& account_email = absl::nullopt);
+      const std::optional<base::flat_map<std::string, std::string>>& headers =
+          std::nullopt,
+      const std::optional<std::string>& account_email = std::nullopt);
 
  private:
   // Triggered when an OAuth token fetch completed.
   void OnAccessTokenRequestCompleted(
       const GURL& url,
       projector::mojom::RequestType method,
-      const absl::optional<std::string>& request_body,
-      const absl::optional<base::flat_map<std::string, std::string>>& headers,
+      const std::optional<std::string>& request_body,
+      const std::optional<base::flat_map<std::string, std::string>>& headers,
       bool use_credentials,
       SendRequestCallback callback,
       const std::string& email,
@@ -90,9 +90,9 @@ class ProjectorXhrSender {
   void SendRequest(
       const GURL& url,
       projector::mojom::RequestType method,
-      const absl::optional<std::string>& request_body,
+      const std::optional<std::string>& request_body,
       const std::string& token,
-      const absl::optional<base::flat_map<std::string, std::string>>& headers,
+      const std::optional<base::flat_map<std::string, std::string>>& headers,
       bool allow_cookie,
       SendRequestCallback callback);
 
@@ -103,7 +103,7 @@ class ProjectorXhrSender {
                                  std::unique_ptr<std::string> response_body);
 
   // Validate the email address provided with xhr request
-  bool IsValidEmail(const absl::optional<std::string>& email_check);
+  bool IsValidEmail(const std::optional<std::string>& email_check);
 
   ProjectorOAuthTokenFetcher oauth_token_fetcher_;
   raw_ptr<network::mojom::URLLoaderFactory, ExperimentalAsh>

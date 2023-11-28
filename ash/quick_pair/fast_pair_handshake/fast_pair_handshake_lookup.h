@@ -6,6 +6,7 @@
 #define ASH_QUICK_PAIR_FAST_PAIR_HANDSHAKE_FAST_PAIR_HANDSHAKE_LOOKUP_H_
 
 #include <memory>
+#include <optional>
 
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/pair_failure.h"
@@ -15,7 +16,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 class BluetoothAdapter;
@@ -29,7 +29,7 @@ class FastPairHandshakeLookup {
  public:
   using OnCompleteCallback =
       base::OnceCallback<void(scoped_refptr<Device>,
-                              absl::optional<PairFailure>)>;
+                              std::optional<PairFailure>)>;
 
   using CreateFunction =
       base::RepeatingCallback<std::unique_ptr<FastPairHandshake>(

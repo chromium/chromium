@@ -63,8 +63,8 @@ bool CoralController::IsSecretKeyMatched() {
   return coral_key_matched;
 }
 
-void CoralController::Click(const absl::optional<int>& button_index,
-                            const absl::optional<std::u16string>& reply) {
+void CoralController::Click(const std::optional<int>& button_index,
+                            const std::optional<std::u16string>& reply) {
   if (!button_index) {
     return;
   }

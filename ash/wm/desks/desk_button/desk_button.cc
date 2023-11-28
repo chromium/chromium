@@ -541,7 +541,7 @@ void DeskButton::MaybeShowContextMenuForEvent(ui::LocatedEvent* event) {
 }
 
 void DeskButton::UpdateShelfAutoHideDisabler(
-    absl::optional<Shelf::ScopedDisableAutoHide>& disabler,
+    std::optional<Shelf::ScopedDisableAutoHide>& disabler,
     bool should_enable_shelf_auto_hide) {
   if (should_enable_shelf_auto_hide) {
     disabler.reset();

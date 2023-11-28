@@ -5,11 +5,11 @@
 #ifndef ASH_SYSTEM_PHONEHUB_PHONE_HUB_MORE_APPS_BUTTON_H_
 #define ASH_SYSTEM_PHONEHUB_PHONE_HUB_MORE_APPS_BUTTON_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/phonehub/app_stream_launcher_data_model.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/layout/table_layout.h"
 
@@ -37,7 +37,7 @@ class VIEWS_EXPORT PhoneHubMoreAppsButton
   PhoneHubMoreAppsButton& operator=(const PhoneHubMoreAppsButton&) = delete;
   ~PhoneHubMoreAppsButton() override;
 
-  void StartLoadingAnimation(absl::optional<base::TimeDelta> initial_delay);
+  void StartLoadingAnimation(std::optional<base::TimeDelta> initial_delay);
   void StopLoadingAnimation();
 
   // phonehub::AppStreamLauncherDataModel::Observer:

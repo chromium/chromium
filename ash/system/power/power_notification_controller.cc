@@ -211,7 +211,7 @@ void PowerNotificationController::MaybeShowDualRoleNotification() {
   dual_role_notification_->Update();
 }
 
-absl::optional<bool>
+std::optional<bool>
 PowerNotificationController::HandleBatterySaverNotifications() {
   const PowerStatus& status = *PowerStatus::Get();
 
@@ -319,7 +319,7 @@ PowerNotificationController::HandleBatterySaverNotifications() {
       break;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool PowerNotificationController::UpdateNotificationState() {
@@ -357,8 +357,8 @@ bool PowerNotificationController::UpdateNotificationState() {
     }
 
     // Check if we are supposed to send a battery saver notification.
-    absl::optional<bool> should_update = HandleBatterySaverNotifications();
-    return should_update != absl::nullopt
+    std::optional<bool> should_update = HandleBatterySaverNotifications();
+    return should_update != std::nullopt
                ? should_update.value()
                : UpdateNotificationStateForRemainingPercentageBatterySaver();
   }
@@ -369,7 +369,7 @@ bool PowerNotificationController::UpdateNotificationState() {
 }
 
 bool PowerNotificationController::UpdateNotificationStateForRemainingTime() {
-  const absl::optional<base::TimeDelta> remaining_time =
+  const std::optional<base::TimeDelta> remaining_time =
       PowerStatus::Get()->GetBatteryTimeToEmpty();
 
   // Check that powerd actually provided an estimate. It doesn't if the battery

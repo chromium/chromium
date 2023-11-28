@@ -70,7 +70,7 @@ void StartReportLayerAnimationSmoothness(
 
 void StartRecordAnimationSmoothness(
     views::Widget* widget,
-    absl::optional<ui::ThroughputTracker>& tracker) {
+    std::optional<ui::ThroughputTracker>& tracker) {
   // `widget` may not exist in tests.
   if (!widget) {
     return;

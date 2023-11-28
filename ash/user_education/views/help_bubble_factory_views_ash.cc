@@ -5,6 +5,7 @@
 #include "ash/user_education/views/help_bubble_factory_views_ash.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/user_education/user_education_class_properties.h"
 #include "ash/user_education/user_education_util.h"
@@ -18,7 +19,6 @@
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/user_education/common/user_education_class_properties.h"
 #include "components/user_education/views/help_bubble_delegate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/accessible_pane_view.h"

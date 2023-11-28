@@ -48,7 +48,7 @@ class MediaScrollView : public views::ScrollView,
     SetContents(std::make_unique<views::BoxLayoutView>());
 
     // Remove the default background color.
-    SetBackgroundColor(absl::nullopt);
+    SetBackgroundColor(std::nullopt);
 
     // The scroll view does not accept any scroll event.
     SetHorizontalScrollBarMode(views::ScrollView::ScrollBarMode::kDisabled);

@@ -189,7 +189,7 @@ void ExternalAppDialog::OnDidAddMessageToConsole(
     const std::u16string& message,
     int32_t line_no,
     const std::u16string& source_id,
-    const absl::optional<std::u16string>& untrusted_stack_trace) {
+    const std::optional<std::u16string>& untrusted_stack_trace) {
   if (ash::features::IsShimlessRMA3pDiagnosticsDevModeEnabled()) {
     LOG(WARNING) << "[CONSOLE " << ConsoleMessageLevelToString(log_level)
                  << "] \"" << message << "\", source: " << source_id << " ("

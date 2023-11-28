@@ -103,7 +103,7 @@ class ASH_EXPORT OverviewButtonTray : public TrayBackgroundView,
 
   // Stores the timestamp of the last tap event time that happened while not
   // in overview mode. Used to check for double taps, which invoke quick switch.
-  absl::optional<base::TimeTicks> last_press_event_time_;
+  std::optional<base::TimeTicks> last_press_event_time_;
 };
 
 }  // namespace ash

@@ -33,7 +33,7 @@ FakeVideoConferenceTrayController::FakeVideoConferenceTrayController()
       /*last_activity_time=*/base::Time::Now(),
       /*is_capturing_camera=*/false, /*is_capturing_microphone=*/true,
       /*is_capturing_screen=*/true, /*title=*/u"Zoom",
-      /*url=*/absl::nullopt));
+      /*url=*/std::nullopt));
 }
 
 FakeVideoConferenceTrayController::~FakeVideoConferenceTrayController() {

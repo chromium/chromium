@@ -247,7 +247,7 @@ class ProgressIndicatorWaiter {
   // Waits for `progress_indicator` to reach the specified `progress`. If the
   // `progress_indicator` is already at `progress`, this method no-ops.
   void WaitForProgress(ProgressIndicator* progress_indicator,
-                       const absl::optional<float>& progress) {
+                       const std::optional<float>& progress) {
     if (progress_indicator->progress() == progress) {
       return;
     }
@@ -1003,7 +1003,7 @@ TEST_F(ShelfViewTest, DragAppsToPin) {
 
   // After pinning the last unpinned app by dragging, the separator is removed
   // as there is no unpinned app on the shelf.
-  EXPECT_EQ(test_api_->GetSeparatorIndex(), absl::nullopt);
+  EXPECT_EQ(test_api_->GetSeparatorIndex(), std::nullopt);
 }
 
 // Ensure that the unpinnable apps can not be pinned by dragging.

@@ -5,13 +5,13 @@
 #ifndef ASH_SEARCH_BOX_SEARCH_BOX_VIEW_BASE_H_
 #define ASH_SEARCH_BOX_SEARCH_BOX_VIEW_BASE_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "ash/search_box/search_box_constants.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/font_list.h"
@@ -177,7 +177,7 @@ class SearchBoxViewBase : public views::View,
     bool increase_child_view_padding = false;
 
     // If set, the margins that should be used for the search box text field.
-    absl::optional<gfx::Insets> textfield_margins;
+    std::optional<gfx::Insets> textfield_margins;
   };
 
   void Init(const InitParams& params);

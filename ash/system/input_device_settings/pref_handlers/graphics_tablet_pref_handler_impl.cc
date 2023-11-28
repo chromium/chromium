@@ -133,14 +133,14 @@ void GraphicsTabletPrefHandlerImpl::UpdateLoginScreenGraphicsTabletSettings(
       .SetPath(
           account_id,
           prefs::kGraphicsTabletLoginScreenTabletButtonRemappingListPref,
-          absl::make_optional<base::Value>(ConvertButtonRemappingArrayToList(
+          std::make_optional<base::Value>(ConvertButtonRemappingArrayToList(
               graphics_tablet.settings->tablet_button_remappings,
               mojom::CustomizationRestriction::kAllowCustomizations)));
   user_manager::KnownUser(local_state)
       .SetPath(
           account_id,
           prefs::kGraphicsTabletLoginScreenPenButtonRemappingListPref,
-          absl::make_optional<base::Value>(ConvertButtonRemappingArrayToList(
+          std::make_optional<base::Value>(ConvertButtonRemappingArrayToList(
               graphics_tablet.settings->pen_button_remappings,
               mojom::CustomizationRestriction::kAllowCustomizations)));
 }

@@ -4,6 +4,7 @@
 
 #include "ash/system/time/calendar_utils.h"
 
+#include <optional>
 #include <string>
 
 #include "ash/constants/ash_features.h"
@@ -18,7 +19,6 @@
 #include "base/time/time.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/layout/table_layout.h"
 
 namespace ash {
@@ -34,8 +34,8 @@ bool IsToday(const base::Time selected_date) {
   return IsTheSameDay(selected_date, base::Time::Now());
 }
 
-bool IsTheSameDay(absl::optional<base::Time> date_a,
-                  absl::optional<base::Time> date_b) {
+bool IsTheSameDay(std::optional<base::Time> date_a,
+                  std::optional<base::Time> date_b) {
   if (!date_a.has_value() || !date_b.has_value()) {
     return false;
   }
@@ -258,7 +258,7 @@ ASH_EXPORT bool ShouldFetchEvents() {
 }
 
 ASH_EXPORT bool IsActiveUser() {
-  absl::optional<user_manager::UserType> user_type =
+  std::optional<user_manager::UserType> user_type =
       Shell::Get()->session_controller()->GetUserType();
   return (user_type && (*user_type == user_manager::USER_TYPE_REGULAR ||
                         *user_type == user_manager::USER_TYPE_CHILD)) &&

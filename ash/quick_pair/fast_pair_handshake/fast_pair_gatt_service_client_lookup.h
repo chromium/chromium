@@ -5,6 +5,8 @@
 #ifndef ASH_QUICK_PAIR_FAST_PAIR_HANDSHAKE_FAST_PAIR_GATT_SERVICE_CLIENT_LOOKUP_H_
 #define ASH_QUICK_PAIR_FAST_PAIR_HANDSHAKE_FAST_PAIR_GATT_SERVICE_CLIENT_LOOKUP_H_
 
+#include <optional>
+
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/pair_failure.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client.h"
@@ -13,7 +15,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 class BluetoothAdapter;
@@ -26,7 +27,7 @@ namespace quick_pair {
 class FastPairGattServiceClientLookup {
  public:
   using OnCompleteCallback =
-      base::OnceCallback<void(absl::optional<PairFailure>)>;
+      base::OnceCallback<void(std::optional<PairFailure>)>;
 
   static FastPairGattServiceClientLookup* GetInstance();
 

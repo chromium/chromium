@@ -30,8 +30,8 @@ void FakeAppHost::OnPackageRemoved(const std::string& package_name) {}
 void FakeAppHost::OnTaskCreated(int32_t task_id,
                                 const std::string& package_name,
                                 const std::string& activity,
-                                const absl::optional<std::string>& name,
-                                const absl::optional<std::string>& intent,
+                                const std::optional<std::string>& name,
+                                const std::optional<std::string>& intent,
                                 int32_t session_id) {}
 void FakeAppHost::OnTaskDescriptionUpdated(
     int32_t task_id,
@@ -52,7 +52,7 @@ void FakeAppHost::OnPackageModified(
 void FakeAppHost::OnPackageListRefreshed(
     std::vector<arc::mojom::ArcPackageInfoPtr> packages) {}
 void FakeAppHost::OnInstallationStarted(
-    const absl::optional<std::string>& package_name) {}
+    const std::optional<std::string>& package_name) {}
 void FakeAppHost::OnInstallationFinished(
     arc::mojom::InstallationResultPtr result) {}
 void FakeAppHost::OnInstallationProgressChanged(const std::string& package_name,

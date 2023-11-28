@@ -326,9 +326,9 @@ TEST_F(DisplayPrefsTest, ListedLayoutOverrides) {
   LoadDisplayPreferences();
 
   // requested_power_state_ should be chromeos::DISPLAY_POWER_ALL_ON at boot
-  const absl::optional<chromeos::DisplayPowerState> requested_power_state =
+  const std::optional<chromeos::DisplayPowerState> requested_power_state =
       display_configurator()->GetRequestedPowerStateForTest();
-  ASSERT_NE(absl::nullopt, requested_power_state);
+  ASSERT_NE(std::nullopt, requested_power_state);
   EXPECT_EQ(chromeos::DISPLAY_POWER_ALL_ON, *requested_power_state);
   // DisplayPowerState should be ignored at boot.
   EXPECT_EQ(chromeos::DISPLAY_POWER_ALL_ON,
@@ -466,14 +466,14 @@ TEST_F(DisplayPrefsTest, BasicStores) {
   EXPECT_TRUE(property);
   EXPECT_EQ(1, property->FindInt("rotation"));
 
-  absl::optional<double> display_zoom_1 =
+  std::optional<double> display_zoom_1 =
       property->FindDouble("display_zoom_factor");
   ASSERT_TRUE(display_zoom_1);
   EXPECT_NEAR(*display_zoom_1, zoom_factor_1, 0.0001);
 
   const base::Value::Dict* display_zoom_dict_1 =
       property->FindDict("display_zoom_factor_map");
-  absl::optional<double> display_zoom_from_map_1 =
+  std::optional<double> display_zoom_from_map_1 =
       display_zoom_dict_1->FindDouble("300x200");
   ASSERT_TRUE(display_zoom_from_map_1);
   EXPECT_NEAR(*display_zoom_from_map_1, zoom_factor_1, 0.0001);
@@ -516,14 +516,14 @@ TEST_F(DisplayPrefsTest, BasicStores) {
   ASSERT_TRUE(property);
   EXPECT_EQ(0, property->FindInt("rotation"));
 
-  absl::optional<double> display_zoom_2 =
+  std::optional<double> display_zoom_2 =
       property->FindDouble("display_zoom_factor");
   ASSERT_TRUE(display_zoom_2);
   EXPECT_NEAR(*display_zoom_2, zoom_factor_2, 0.0001);
 
   const base::Value::Dict* display_zoom_dict_2 =
       property->FindDict("display_zoom_factor_map");
-  absl::optional<double> display_zoom_from_map_2 =
+  std::optional<double> display_zoom_from_map_2 =
       display_zoom_dict_2->FindDouble("500x400");
   ASSERT_TRUE(display_zoom_from_map_2);
   EXPECT_NEAR(*display_zoom_from_map_2, zoom_factor_2, 0.0001);
@@ -622,7 +622,7 @@ TEST_F(DisplayPrefsTest, BasicStores) {
       /*display_zoom_factor_map=*/{}, /*refresh_rate=*/60.f,
       /*is_interlaced=*/false,
       /*variable_refresh_rate_state=*/display::kVrrNotCapable,
-      /*vsync_rate_min=*/absl::nullopt);
+      /*vsync_rate_min=*/std::nullopt);
 
   UpdateDisplay("300x200*2, 600x500#600x500|500x400");
   EXPECT_FALSE(display_manager()->IsInMirrorMode());
@@ -656,7 +656,7 @@ TEST_F(DisplayPrefsTest, BasicStores) {
       /*display_zoom_factor_map=*/{}, /*refresh_rate=*/60.f,
       /*is_interlaced=*/false,
       /*variable_refresh_rate_state=*/display::kVrrNotCapable,
-      /*vsync_rate_min=*/absl::nullopt);
+      /*vsync_rate_min=*/std::nullopt);
   // Disconnect 2nd display first to generate new id for external display.
   UpdateDisplay("300x200*2");
   UpdateDisplay("300x200*2, 500x400#600x500|500x400%60.0f");
@@ -972,7 +972,7 @@ TEST_F(DisplayPrefsTest, DontSaveAndRestoreAllOff) {
   local_state()->SetString(prefs::kDisplayPowerState, "all_off");
   display_configurator()->reset_requested_power_state_for_test();
   LoadDisplayPreferences();
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             display_configurator()->GetRequestedPowerStateForTest());
 }
 
@@ -1039,7 +1039,7 @@ TEST_F(DisplayPrefsTest, StoreRotationStateNoLogin) {
 
   const base::Value::Dict& properties =
       local_state()->GetDict(prefs::kDisplayRotationLock);
-  absl::optional<bool> rotation_lock = properties.FindBool("lock");
+  std::optional<bool> rotation_lock = properties.FindBool("lock");
   ASSERT_TRUE(rotation_lock.has_value());
   EXPECT_EQ(current_rotation_lock, rotation_lock.value());
 
@@ -1062,7 +1062,7 @@ TEST_F(DisplayPrefsTest, StoreRotationStateGuest) {
 
   const base::Value::Dict& properties =
       local_state()->GetDict(prefs::kDisplayRotationLock);
-  absl::optional<bool> rotation_lock = properties.FindBool("lock");
+  std::optional<bool> rotation_lock = properties.FindBool("lock");
   ASSERT_TRUE(rotation_lock.has_value());
   EXPECT_EQ(current_rotation_lock, rotation_lock.value());
 
@@ -1085,7 +1085,7 @@ TEST_F(DisplayPrefsTest, StoreRotationStateNormalUser) {
 
   const base::Value::Dict& properties =
       local_state()->GetDict(prefs::kDisplayRotationLock);
-  absl::optional<bool> rotation_lock = properties.FindBool("lock");
+  std::optional<bool> rotation_lock = properties.FindBool("lock");
   ASSERT_TRUE(rotation_lock.has_value());
   EXPECT_EQ(current_rotation_lock, rotation_lock.value());
 
@@ -1158,7 +1158,7 @@ TEST_F(DisplayPrefsTest, RotationLockTriggersStore) {
 
   const base::Value::Dict& properties =
       local_state()->GetDict(prefs::kDisplayRotationLock);
-  absl::optional<bool> rotation_lock = properties.FindBool("lock");
+  std::optional<bool> rotation_lock = properties.FindBool("lock");
   EXPECT_TRUE(rotation_lock.has_value());
 }
 
@@ -1194,13 +1194,13 @@ TEST_F(DisplayPrefsTest, SaveUnifiedMode) {
   EXPECT_FALSE(displays.FindDict(base::NumberToString(unified_id)));
 
   // Mirror mode should remember if the default mode was unified.
-  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, absl::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, std::nullopt);
   new_value = secondary_displays.FindDict(display::DisplayIdListToString(list));
   ASSERT_TRUE(new_value);
   EXPECT_TRUE(display::JsonToDisplayLayout(*new_value, &stored_layout));
   EXPECT_TRUE(stored_layout.default_unified);
 
-  display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
   new_value = secondary_displays.FindDict(display::DisplayIdListToString(list));
   ASSERT_TRUE(new_value);
   EXPECT_TRUE(display::JsonToDisplayLayout(*new_value, &stored_layout));
@@ -1265,7 +1265,7 @@ TEST_F(DisplayPrefsTest, RestoreUnifiedMode) {
   display_manager()->OnNativeDisplaysChanged(display_info_list);
   EXPECT_TRUE(display_manager()->IsInMirrorMode());
 
-  display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
   EXPECT_TRUE(display_manager()->IsInUnifiedMode());
 
   // Remove the second display.
@@ -1537,7 +1537,7 @@ TEST_F(DisplayPrefsTest, ExternalDisplayConnectedBeforeLoadingPrefs) {
   // reconfiguring after the prefs have been loaded. Make sure that the external
   // display mirror configs are not overwritten, and the loaded prefs will be
   // applied.
-  display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
 
   display_manager()->OnNativeDisplaysChanged(display_info_list);
   EXPECT_TRUE(display_manager()->IsInMirrorMode());
@@ -1563,8 +1563,8 @@ TEST_F(DisplayPrefsTest, DisplayMixedMirrorMode) {
   // internal display to the first external display.
   display::DisplayIdList dst_ids;
   dst_ids.emplace_back(first_display_id);
-  absl::optional<display::MixedMirrorModeParams> mixed_params(
-      absl::in_place, internal_display_id, dst_ids);
+  std::optional<display::MixedMirrorModeParams> mixed_params(
+      std::in_place, internal_display_id, dst_ids);
   display_prefs()->StoreDisplayMixedMirrorModeParamsForTest(mixed_params);
   LoadDisplayPreferences();
 
@@ -1593,8 +1593,8 @@ TEST_F(DisplayPrefsTest, DisplayMixedMirrorMode) {
   // the first external display to the second external display)
   dst_ids.clear();
   dst_ids.emplace_back(second_display_id);
-  absl::optional<display::MixedMirrorModeParams> new_mixed_params(
-      absl::in_place, first_display_id, dst_ids);
+  std::optional<display::MixedMirrorModeParams> new_mixed_params(
+      std::in_place, first_display_id, dst_ids);
   display_manager()->SetMirrorMode(display::MirrorMode::kMixed,
                                    new_mixed_params);
   EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
@@ -1613,7 +1613,7 @@ TEST_F(DisplayPrefsTest, DisplayMixedMirrorMode) {
             (*destination_ids_list)[0].GetString());
 
   // Turn off mirror mode.
-  display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
   EXPECT_FALSE(display_manager()->IsInMirrorMode());
 
   // Check the preferences.
@@ -1738,7 +1738,7 @@ TEST_F(DisplayPrefsTest, SaveTabletModeWithMixedExternalDisplays) {
   EXPECT_THAT(display_manager()->GetMirroringDestinationDisplayIdList(),
               ElementsAre(ids[1], ids[2]));
   // Tablet mode forces normal mirror mode, so mixed params is empty.
-  EXPECT_EQ(display_manager()->mixed_mirror_mode_params(), absl::nullopt);
+  EXPECT_EQ(display_manager()->mixed_mirror_mode_params(), std::nullopt);
   EXPECT_EQ(display_manager()->external_display_mirror_info(),
             old_ext_mirror_info);
   // Mixed mirror mode params pref should remain at the original value.

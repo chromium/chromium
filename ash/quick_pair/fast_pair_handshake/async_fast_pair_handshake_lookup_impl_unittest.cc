@@ -44,7 +44,7 @@ class FakeFastPairGattServiceClientImplFactory
   std::unique_ptr<FastPairGattServiceClient> CreateInstance(
       device::BluetoothDevice* device,
       scoped_refptr<device::BluetoothAdapter> adapter,
-      base::OnceCallback<void(absl::optional<PairFailure>)>
+      base::OnceCallback<void(std::optional<PairFailure>)>
           on_initialized_callback) override {
     auto fake_fast_pair_gatt_service_client =
         std::make_unique<FakeFastPairGattServiceClient>(
@@ -149,7 +149,7 @@ class AsyncFastPairHandshakeLookupImplTest : public testing::Test {
   void RunHandshakeSetupCallbacksNoFailures() {
     fake_fast_pair_gatt_service_client()->RunOnGattClientInitializedCallback();
 
-    data_encryptor()->response(absl::make_optional(DecryptedResponse(
+    data_encryptor()->response(std::make_optional(DecryptedResponse(
         FastPairMessageType::kKeyBasedPairingResponse,
         std::array<uint8_t, kDecryptedResponseAddressByteSize>(),
         std::array<uint8_t, kDecryptedResponseSaltByteSize>())));
@@ -163,7 +163,7 @@ class AsyncFastPairHandshakeLookupImplTest : public testing::Test {
 
  protected:
   void OnCompleteCallback(scoped_refptr<Device> device,
-                          absl::optional<PairFailure> failure) {
+                          std::optional<PairFailure> failure) {
     EXPECT_EQ(device, device_);
     EXPECT_FALSE(is_complete_);
     is_complete_ = true;
@@ -174,7 +174,7 @@ class AsyncFastPairHandshakeLookupImplTest : public testing::Test {
   std::unique_ptr<device::MockBluetoothDevice> mock_device_;
   scoped_refptr<Device> device_;
   bool is_complete_ = false;
-  absl::optional<PairFailure> failure_;
+  std::optional<PairFailure> failure_;
 
   base::WeakPtrFactory<AsyncFastPairHandshakeLookupImplTest>
       weak_pointer_factory_{this};
@@ -206,7 +206,7 @@ TEST_F(AsyncFastPairHandshakeLookupImplTest,
                    ->fast_pair_handshake_attempt_counts_[device_]);
   fake_fast_pair_gatt_service_client()->RunOnGattClientInitializedCallback();
 
-  data_encryptor()->response(absl::make_optional(DecryptedResponse(
+  data_encryptor()->response(std::make_optional(DecryptedResponse(
       FastPairMessageType::kKeyBasedPairingResponse,
       std::array<uint8_t, kDecryptedResponseAddressByteSize>(),
       std::array<uint8_t, kDecryptedResponseSaltByteSize>())));

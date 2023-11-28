@@ -80,7 +80,7 @@ void SearchResultContainerView::ResetAndHide() {
   num_results_ = 0;
 }
 
-absl::optional<SearchResultContainerView::ResultsAnimationInfo>
+std::optional<SearchResultContainerView::ResultsAnimationInfo>
 SearchResultContainerView::ScheduleResultAnimations(
     const ResultsAnimationInfo& aggregate_animation_info) {
   // Collect current container animation info.

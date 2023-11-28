@@ -123,7 +123,7 @@ TEST_P(HoldingSpaceItemTest, AccessibleName) {
   EXPECT_EQ(holding_space_item->GetAccessibleName(), u"Accessible name");
 
   // It should be possible to remove the accessible name override.
-  EXPECT_TRUE(holding_space_item->SetAccessibleName(absl::nullopt));
+  EXPECT_TRUE(holding_space_item->SetAccessibleName(std::nullopt));
   EXPECT_EQ(holding_space_item->GetAccessibleName(),
             u"Primary text, Secondary text");
 }
@@ -252,7 +252,7 @@ TEST_P(HoldingSpaceItemTest, Progress) {
 
   // It should be possible to set indeterminate progress.
   EXPECT_TRUE(holding_space_item->SetProgress(HoldingSpaceProgress(
-      /*current_bytes=*/absl::nullopt, /*total_bytes=*/100)));
+      /*current_bytes=*/std::nullopt, /*total_bytes=*/100)));
   EXPECT_TRUE(holding_space_item->progress().IsIndeterminate());
 
   // It should be possible to set progress complete.
@@ -304,7 +304,7 @@ TEST_P(HoldingSpaceItemTest, SecondaryText) {
   EXPECT_EQ(holding_space_item->secondary_text().value(), u"secondary_text");
 
   // It should be possible to unset secondary text.
-  EXPECT_TRUE(holding_space_item->SetSecondaryText(absl::nullopt));
+  EXPECT_TRUE(holding_space_item->SetSecondaryText(std::nullopt));
   EXPECT_FALSE(holding_space_item->secondary_text());
 }
 
@@ -335,7 +335,7 @@ TEST_P(HoldingSpaceItemTest, SecondaryTextColor) {
             cros_tokens::kTextColorAlert);
 
   // It should be possible to unset secondary text color id.
-  EXPECT_TRUE(holding_space_item->SetSecondaryTextColorId(absl::nullopt));
+  EXPECT_TRUE(holding_space_item->SetSecondaryTextColorId(std::nullopt));
   EXPECT_FALSE(holding_space_item->secondary_text_color_id());
 }
 
@@ -362,7 +362,7 @@ TEST_P(HoldingSpaceItemTest, Text) {
 
   // It should be possible to unset text which will once again cause text to
   // reflect the backing file.
-  EXPECT_TRUE(holding_space_item->SetText(absl::nullopt));
+  EXPECT_TRUE(holding_space_item->SetText(std::nullopt));
   EXPECT_EQ(holding_space_item->GetText(), u"file_path");
 }
 

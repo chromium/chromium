@@ -650,7 +650,7 @@ void ScreenOrientationController::ApplyLockForTopMostWindowOnInternalDisplay() {
     return;
   }
 
-  current_app_requested_orientation_lock_ = absl::nullopt;
+  current_app_requested_orientation_lock_ = std::nullopt;
   if (!display::HasInternalDisplay())
     return;
 
@@ -735,7 +735,7 @@ bool ScreenOrientationController::ApplyLockForWindowIfPossible(
         }
       }
       current_app_requested_orientation_lock_ =
-          absl::make_optional<chromeos::OrientationType>(
+          std::make_optional<chromeos::OrientationType>(
               lock_info.orientation_lock);
       return true;
     }

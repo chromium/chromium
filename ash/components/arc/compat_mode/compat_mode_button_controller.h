@@ -40,7 +40,7 @@ class CompatModeButtonController {
     ~ButtonState();
 
     bool enable;  // Whether to enable the button.
-    absl::optional<std::u16string> tooltip_text;  // The button's tooltip text.
+    std::optional<std::u16string> tooltip_text;  // The button's tooltip text.
   };
 
   CompatModeButtonController();

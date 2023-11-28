@@ -5,6 +5,7 @@
 #include "ash/system/bluetooth/bluetooth_detailed_view_controller.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "ash/public/cpp/fake_hats_bluetooth_revamp_trigger_impl.h"
@@ -30,7 +31,6 @@
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "chromeos/ash/services/bluetooth_config/scoped_bluetooth_config_test_helper.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 

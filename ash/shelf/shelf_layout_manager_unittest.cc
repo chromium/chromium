@@ -5,6 +5,7 @@
 #include "ash/shelf/shelf_layout_manager.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "ash/accelerators/accelerator_controller_impl.h"
@@ -85,7 +86,6 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/client/window_parenting_client.h"

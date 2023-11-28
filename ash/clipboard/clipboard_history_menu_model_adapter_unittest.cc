@@ -245,8 +245,8 @@ class ClipboardHistoryMenuModelAdapterMenuItemTest
     : public AshTestBase,
       public WithParamInterface<
           std::tuple<ClipboardHistoryControllerShowSource,
-                     /*time_since_menu_shown=*/absl::optional<base::TimeDelta>,
-                     /*time_since_nudge_shown=*/absl::optional<base::TimeDelta>,
+                     /*time_since_menu_shown=*/std::optional<base::TimeDelta>,
+                     /*time_since_nudge_shown=*/std::optional<base::TimeDelta>,
                      /*enable_footer=*/bool,
                      /*enable_refresh=*/bool>> {
  public:
@@ -295,11 +295,11 @@ class ClipboardHistoryMenuModelAdapterMenuItemTest
     return std::get<0>(GetParam());
   }
 
-  const absl::optional<base::TimeDelta>& GetTimeSinceMenuShown() const {
+  const std::optional<base::TimeDelta>& GetTimeSinceMenuShown() const {
     return std::get<1>(GetParam());
   }
 
-  const absl::optional<base::TimeDelta>& GetTimeSinceNudgeShown() const {
+  const std::optional<base::TimeDelta>& GetTimeSinceNudgeShown() const {
     return std::get<2>(GetParam());
   }
 
@@ -324,13 +324,13 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ClipboardHistoryMenuModelAdapterMenuItemTest,
                          Combine(ValuesIn(GetClipboardHistoryShowSources()),
                                  /*time_since_menu_shown=*/
-                                 Values(absl::make_optional(base::Days(60)),
-                                        absl::make_optional(base::Days(59)),
-                                        absl::nullopt),
+                                 Values(std::make_optional(base::Days(60)),
+                                        std::make_optional(base::Days(59)),
+                                        std::nullopt),
                                  /*time_since_nudge_shown=*/
-                                 Values(absl::make_optional(base::Seconds(61)),
-                                        absl::make_optional(base::Seconds(60)),
-                                        absl::nullopt),
+                                 Values(std::make_optional(base::Seconds(61)),
+                                        std::make_optional(base::Seconds(60)),
+                                        std::nullopt),
                                  /*enable_footer=*/Bool(),
                                  /*enable_refresh=*/Bool()));
 

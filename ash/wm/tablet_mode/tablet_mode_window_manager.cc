@@ -107,7 +107,7 @@ void DoSplitViewTransition(
     // Preserve the current snap ratio before transition, since
     // `SplitViewController::SnapWindow()` will send a new snap event with
     // `snap_ratio`.
-    absl::optional<float> snap_ratio =
+    std::optional<float> snap_ratio =
         WindowState::Get(iter.first)->snap_ratio();
     split_view_controller->SnapWindow(
         /*window=*/iter.first,

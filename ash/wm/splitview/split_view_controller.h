@@ -7,6 +7,7 @@
 
 #include <limits>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "ash/accessibility/accessibility_observer.h"
@@ -27,7 +28,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"
@@ -241,7 +241,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // if `window` can be snapped opposite of the default window. If default
   // window is 2/3 and `window` cannot be snapped 1/3 but can be snapped 1/2, it
   // will be snapped 1/2 unless default window cannot be snapped 1/2.
-  absl::optional<float> ComputeSnapRatio(aura::Window* window);
+  std::optional<float> ComputeSnapRatio(aura::Window* window);
 
   // Snap `window` in the split view at `snap_position`. It will send snap
   // WMEvent to `window` and rely on WindowState to do the actual work to
@@ -571,7 +571,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // next MRU window if possible. `snap_action_source` specifies the source for
   // this snap event.
   void OnWindowSnapped(aura::Window* window,
-                       absl::optional<chromeos::WindowStateType> previous_state,
+                       std::optional<chromeos::WindowStateType> previous_state,
                        WindowSnapActionSource snap_action_source);
 
   // If there are two snapped windows, closing/minimizing/tab-dragging one of
@@ -743,8 +743,8 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   EndReason end_reason_ = EndReason::kNormal;
 
   // Stores the overview start and enter/exit type.
-  absl::optional<OverviewStartAction> overview_start_action_;
-  absl::optional<OverviewEnterExitType> enter_exit_overview_type_;
+  std::optional<OverviewStartAction> overview_start_action_;
+  std::optional<OverviewEnterExitType> enter_exit_overview_type_;
 
   // The split view type. See SplitViewType for the differences between tablet
   // split view and clamshell split view.

@@ -70,7 +70,7 @@ std::u16string GetDisplaySize(int64_t display_id) {
 }
 
 // Callback to handle a user selecting the notification view.
-void OnNotificationClicked(absl::optional<int> button_index) {
+void OnNotificationClicked(std::optional<int> button_index) {
   DCHECK(!button_index);
 
   // Settings may be blocked, e.g. at the lock screen.

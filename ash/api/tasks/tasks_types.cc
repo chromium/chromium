@@ -4,7 +4,7 @@
 
 #include "ash/api/tasks/tasks_types.h"
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
 
 namespace ash::api {
 
@@ -24,7 +24,7 @@ TaskList::~TaskList() = default;
 Task::Task(const std::string& id,
            const std::string& title,
            bool completed,
-           const absl::optional<base::Time>& due,
+           const std::optional<base::Time>& due,
            bool has_subtasks,
            bool has_email_link,
            bool has_notes,

@@ -5,6 +5,7 @@
 #include "ash/quick_pair/keyed_service/battery_update_message_handler.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/quick_pair/common/constants.h"
 #include "ash/quick_pair/common/device.h"
@@ -31,7 +32,6 @@
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -159,13 +159,13 @@ class BatteryUpdateMessageHandlerTest : public testing::Test {
 };
 
 TEST_F(BatteryUpdateMessageHandlerTest, BatteryUpdate_GetMessages) {
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kLeftBudTrueWireless));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kRightBudTrueWireless));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kCaseTrueWireless));
 
@@ -175,25 +175,25 @@ TEST_F(BatteryUpdateMessageHandlerTest, BatteryUpdate_GetMessages) {
   NotifyMessageStreamConnected(kTestDeviceAddress);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_NE(absl::nullopt,
+  EXPECT_NE(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kLeftBudTrueWireless));
-  EXPECT_NE(absl::nullopt,
+  EXPECT_NE(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kRightBudTrueWireless));
-  EXPECT_NE(absl::nullopt,
+  EXPECT_NE(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kCaseTrueWireless));
 }
 
 TEST_F(BatteryUpdateMessageHandlerTest, BatteryUpdate_Observation) {
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kLeftBudTrueWireless));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kRightBudTrueWireless));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kCaseTrueWireless));
 
@@ -204,25 +204,25 @@ TEST_F(BatteryUpdateMessageHandlerTest, BatteryUpdate_Observation) {
   fake_socket_->TriggerReceiveCallback();
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_NE(absl::nullopt,
+  EXPECT_NE(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kLeftBudTrueWireless));
-  EXPECT_NE(absl::nullopt,
+  EXPECT_NE(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kRightBudTrueWireless));
-  EXPECT_NE(absl::nullopt,
+  EXPECT_NE(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kCaseTrueWireless));
 }
 
 TEST_F(BatteryUpdateMessageHandlerTest, BatteryUpdate_MultipleMessages) {
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kLeftBudTrueWireless));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kRightBudTrueWireless));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kCaseTrueWireless));
 
@@ -294,13 +294,13 @@ TEST_F(BatteryUpdateMessageHandlerTest, BatteryUpdate_MultipleMessages) {
 }
 
 TEST_F(BatteryUpdateMessageHandlerTest, NoBatteryUpdate_GetMessages) {
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kLeftBudTrueWireless));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kRightBudTrueWireless));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kCaseTrueWireless));
 
@@ -310,25 +310,25 @@ TEST_F(BatteryUpdateMessageHandlerTest, NoBatteryUpdate_GetMessages) {
   NotifyMessageStreamConnected(kTestDeviceAddress);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kLeftBudTrueWireless));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kRightBudTrueWireless));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kCaseTrueWireless));
 }
 
 TEST_F(BatteryUpdateMessageHandlerTest, NoBatteryUpdate_Observation) {
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kLeftBudTrueWireless));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kRightBudTrueWireless));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kCaseTrueWireless));
 
@@ -339,25 +339,25 @@ TEST_F(BatteryUpdateMessageHandlerTest, NoBatteryUpdate_Observation) {
   fake_socket_->TriggerReceiveCallback();
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kLeftBudTrueWireless));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kRightBudTrueWireless));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kCaseTrueWireless));
 }
 
 TEST_F(BatteryUpdateMessageHandlerTest, MessageStreamRemovedOnDestroyed) {
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kLeftBudTrueWireless));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kRightBudTrueWireless));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kCaseTrueWireless));
 
@@ -369,25 +369,25 @@ TEST_F(BatteryUpdateMessageHandlerTest, MessageStreamRemovedOnDestroyed) {
   fake_socket_->TriggerReceiveCallback();
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kLeftBudTrueWireless));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kRightBudTrueWireless));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kCaseTrueWireless));
 }
 
 TEST_F(BatteryUpdateMessageHandlerTest, MessageStreamRemovedOnDisconnect) {
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kLeftBudTrueWireless));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kRightBudTrueWireless));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kCaseTrueWireless));
 
@@ -401,26 +401,26 @@ TEST_F(BatteryUpdateMessageHandlerTest, MessageStreamRemovedOnDisconnect) {
   fake_socket_->TriggerReceiveCallback();
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kLeftBudTrueWireless));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kRightBudTrueWireless));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kCaseTrueWireless));
 }
 
 TEST_F(BatteryUpdateMessageHandlerTest,
        MessageStreamRemovedOnDisconnect_MessageStreamDestroted) {
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kLeftBudTrueWireless));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kRightBudTrueWireless));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kCaseTrueWireless));
 
@@ -434,13 +434,13 @@ TEST_F(BatteryUpdateMessageHandlerTest,
   fake_socket_->TriggerReceiveCallback();
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kLeftBudTrueWireless));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kRightBudTrueWireless));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kCaseTrueWireless));
 
@@ -452,25 +452,25 @@ TEST_F(BatteryUpdateMessageHandlerTest,
   fake_socket_->TriggerReceiveCallback();
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kLeftBudTrueWireless));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kRightBudTrueWireless));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kCaseTrueWireless));
 }
 
 TEST_F(BatteryUpdateMessageHandlerTest, DeviceLost) {
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kLeftBudTrueWireless));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kRightBudTrueWireless));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device_->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kCaseTrueWireless));
 
@@ -482,13 +482,13 @@ TEST_F(BatteryUpdateMessageHandlerTest, DeviceLost) {
   NotifyMessageStreamConnected(kTestDeviceAddress);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kLeftBudTrueWireless));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kRightBudTrueWireless));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             bluetooth_device->GetBatteryInfo(
                 device::BluetoothDevice::BatteryType::kCaseTrueWireless));
 }

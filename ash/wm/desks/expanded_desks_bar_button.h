@@ -64,7 +64,7 @@ class ASH_EXPORT ExpandedDesksBarButton : public views::View {
   void OnThemeChanged() override;
   gfx::Size CalculatePreferredSize() const override;
 
-  absl::optional<ui::ColorId> GetFocusColorIdForTesting();
+  std::optional<ui::ColorId> GetFocusColorIdForTesting();
 
  private:
   const raw_ptr<DeskBarViewBase, ExperimentalAsh> bar_view_;  // Not owned.

@@ -4,6 +4,7 @@
 
 #include "ash/user_education/views/help_bubble_view_ash.h"
 
+#include <optional>
 #include <vector>
 
 #include "ash/public/cpp/shell_window_ids.h"
@@ -15,7 +16,6 @@
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -61,9 +61,9 @@ ui::MouseEvent CreateMouseMovedEvent(aura::Window* target,
   return mouse_moved_event;
 }
 
-std::vector<absl::optional<HelpBubbleStyle>> GetHelpBubbleStyles() {
-  std::vector<absl::optional<HelpBubbleStyle>> styles;
-  styles.emplace_back(absl::nullopt);
+std::vector<std::optional<HelpBubbleStyle>> GetHelpBubbleStyles() {
+  std::vector<std::optional<HelpBubbleStyle>> styles;
+  styles.emplace_back(std::nullopt);
   for (size_t i = static_cast<size_t>(HelpBubbleStyle::kMinValue);
        i <= static_cast<size_t>(HelpBubbleStyle::kMaxValue); ++i) {
     styles.emplace_back(static_cast<HelpBubbleStyle>(i));
@@ -106,19 +106,19 @@ TEST_F(HelpBubbleViewAshTest, ParentWindow) {
 class HelpBubbleViewAshBodyIconTest
     : public HelpBubbleViewAshTestBase,
       public ::testing::WithParamInterface<
-          std::tuple</*body_icon_from_params=*/absl::optional<
+          std::tuple</*body_icon_from_params=*/std::optional<
                          std::reference_wrapper<const gfx::VectorIcon>>,
-                     /*body_icon_from_extended_properties=*/absl::optional<
+                     /*body_icon_from_extended_properties=*/std::optional<
                          std::reference_wrapper<const gfx::VectorIcon>>>> {
  public:
   // Returns the body icon from help bubble params given test parameterization.
-  const absl::optional<std::reference_wrapper<const gfx::VectorIcon>>
+  const std::optional<std::reference_wrapper<const gfx::VectorIcon>>
   body_icon_from_params() const {
     return std::get<0>(GetParam());
   }
 
   // Returns the body icon from extended properties given test parameterization.
-  const absl::optional<std::reference_wrapper<const gfx::VectorIcon>>
+  const std::optional<std::reference_wrapper<const gfx::VectorIcon>>
   body_icon_from_extended_properties() const {
     return std::get<1>(GetParam());
   }
@@ -129,15 +129,15 @@ INSTANTIATE_TEST_SUITE_P(
     HelpBubbleViewAshBodyIconTest,
     ::testing::Combine(
         /*body_icon_from_params=*/::testing::Values(
-            absl::make_optional(std::cref(gfx::kNoneIcon)),
-            absl::make_optional(std::cref(vector_icons::kCelebrationIcon)),
-            absl::make_optional(std::cref(vector_icons::kHelpIcon)),
-            absl::nullopt),
+            std::make_optional(std::cref(gfx::kNoneIcon)),
+            std::make_optional(std::cref(vector_icons::kCelebrationIcon)),
+            std::make_optional(std::cref(vector_icons::kHelpIcon)),
+            std::nullopt),
         /*body_icon_from_extended_properties=*/::testing::Values(
-            absl::make_optional(std::cref(gfx::kNoneIcon)),
-            absl::make_optional(std::cref(vector_icons::kCelebrationIcon)),
-            absl::make_optional(std::cref(vector_icons::kHelpIcon)),
-            absl::nullopt)));
+            std::make_optional(std::cref(gfx::kNoneIcon)),
+            std::make_optional(std::cref(vector_icons::kCelebrationIcon)),
+            std::make_optional(std::cref(vector_icons::kHelpIcon)),
+            std::nullopt)));
 
 // Tests -----------------------------------------------------------------------
 
@@ -190,10 +190,10 @@ TEST_P(HelpBubbleViewAshBodyIconTest, BodyIcon) {
 // Base class for tests of `HelpBubbleViewAsh` parameterized by style.
 class HelpBubbleViewAshStyleTest
     : public HelpBubbleViewAshTestBase,
-      public ::testing::WithParamInterface<absl::optional<HelpBubbleStyle>> {
+      public ::testing::WithParamInterface<std::optional<HelpBubbleStyle>> {
  public:
   // Returns the help bubble style to use given test parameterization.
-  const absl::optional<HelpBubbleStyle>& style() const { return GetParam(); }
+  const std::optional<HelpBubbleStyle>& style() const { return GetParam(); }
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

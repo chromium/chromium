@@ -58,7 +58,7 @@ ShelfBubble::ShelfBubble(
     views::View* anchor,
     ShelfAlignment alignment,
     bool for_tooltip,
-    absl::optional<views::BubbleBorder::Arrow> arrow_position)
+    std::optional<views::BubbleBorder::Arrow> arrow_position)
     : views::BubbleDialogDelegateView(
           anchor,
           arrow_position.value_or(GetArrow(alignment))),

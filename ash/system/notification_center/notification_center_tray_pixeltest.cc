@@ -30,7 +30,7 @@ class NotificationCenterTrayPixelTest : public AshTestBase {
   NotificationCenterTestApi* test_api() { return test_api_.get(); }
 
   // AshTestBase:
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }

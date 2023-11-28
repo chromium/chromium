@@ -95,7 +95,7 @@ class ASH_EXPORT KeyboardControllerImpl
   bool ShouldOverscroll() override;
   void AddObserver(KeyboardControllerObserver* observer) override;
   void RemoveObserver(KeyboardControllerObserver* observer) override;
-  absl::optional<KeyRepeatSettings> GetKeyRepeatSettings() override;
+  std::optional<KeyRepeatSettings> GetKeyRepeatSettings() override;
   bool AreTopRowKeysFunctionKeys() override;
 
   // keyboard::KeyboardLayoutDelegate:

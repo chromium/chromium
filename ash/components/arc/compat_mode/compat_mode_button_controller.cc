@@ -118,7 +118,7 @@ void CompatModeButtonController::SetPrefDelegate(
   pref_delegate_ = pref_delegate;
 }
 
-absl::optional<CompatModeButtonController::ButtonState>
+std::optional<CompatModeButtonController::ButtonState>
 CompatModeButtonController::GetButtonState(aura::Window* window) {
   const auto resize_lock_type = window->GetProperty(ash::kArcResizeLockTypeKey);
   switch (resize_lock_type) {

@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -57,7 +58,6 @@
 #include "services/data_decoder/public/mojom/image_decoder.mojom-shared.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/test/test_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/label.h"
@@ -192,8 +192,8 @@ class AmbientAshTestBase::FakePhotoDownloadServer {
 
   // If not specified, the size is automatically generated using
   // `test_image_size_`.
-  absl::optional<gfx::Size> custom_image_size_;
-  absl::optional<SkColor> custom_image_color_;
+  std::optional<gfx::Size> custom_image_size_;
+  std::optional<SkColor> custom_image_color_;
 
   data_decoder::mojom::ImageCodec image_codec_ =
       data_decoder::mojom::ImageCodec::kDefault;
@@ -506,11 +506,11 @@ void AmbientAshTestBase::FastForwardByPhotoRefreshInterval(float factor) {
       ambient_controller()->ambient_ui_model()->photo_refresh_interval());
 }
 
-absl::optional<float>
+std::optional<float>
 AmbientAshTestBase::GetRemainingLockScreenTimeoutFraction() {
   const auto& inactivity_timer = ambient_controller()->inactivity_timer_;
   if (!inactivity_timer.IsRunning()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return (inactivity_timer.desired_run_time() - base::TimeTicks::Now()) /

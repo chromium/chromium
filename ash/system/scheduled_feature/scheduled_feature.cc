@@ -379,8 +379,8 @@ void ScheduledFeature::OnCustomSchedulePrefsChanged() {
 
 void ScheduledFeature::Refresh(RefreshReason reason,
                                bool keep_manual_toggles_during_schedules) {
-  absl::optional<base::Time> start_time;
-  absl::optional<base::Time> end_time;
+  std::optional<base::Time> start_time;
+  std::optional<base::Time> end_time;
   const ScheduleType schedule_type = GetScheduleType();
   switch (schedule_type) {
     case ScheduleType::kNone:

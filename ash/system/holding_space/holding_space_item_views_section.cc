@@ -161,7 +161,7 @@ void HoldingSpaceItemViewsSection::Init() {
     container_ = AddChildView(CreateContainer());
   } else {
     auto* scroll = AddChildView(std::make_unique<HoldingSpaceScrollView>());
-    scroll->SetBackgroundColor(absl::nullopt);
+    scroll->SetBackgroundColor(std::nullopt);
     scroll->ClipHeightTo(0, INT_MAX);
     scroll->SetDrawOverflowIndicator(false);
     scroll->SetVerticalScrollBarMode(ScrollBarMode::kHiddenButEnabled);
@@ -511,7 +511,7 @@ void HoldingSpaceItemViewsSection::OnAnimateOutCompleted(
   if (!model)
     return;
 
-  const absl::optional<size_t>& max_visible_item_count =
+  const std::optional<size_t>& max_visible_item_count =
       section_->max_visible_item_count;
 
   for (const auto& item : model->items()) {

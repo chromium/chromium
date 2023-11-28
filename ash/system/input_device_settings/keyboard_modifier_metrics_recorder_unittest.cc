@@ -281,7 +281,7 @@ TEST_P(KeyboardModifierMetricsRecorderPrefStartedTest, InitializeTest) {
 // expected.
 struct KeyboardModifierMetricsRecorderHashTestData {
   base::flat_map<std::string, ui::mojom::ModifierKey> modifier_remappings;
-  absl::optional<int32_t> expected_value;
+  std::optional<int32_t> expected_value;
 };
 
 class KeyboardModifierMetricsRecorderHashTest
@@ -305,7 +305,7 @@ INSTANTIATE_TEST_SUITE_P(
     KeyboardModifierMetricsRecorderHashTest,
     testing::ValuesIn(std::vector<KeyboardModifierMetricsRecorderHashTestData>{
         // With only default remappings, no metric is expected.
-        {{}, absl::nullopt},
+        {{}, std::nullopt},
 
         // All keys remapped to `ui::mojom::ModifierKey::kMeta` should hash to
         // 0.

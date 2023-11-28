@@ -213,7 +213,7 @@ class ASH_EXPORT AshMessagePopupCollection
 
   std::unique_ptr<NotifierCollisionHandler> notifier_collision_handler_;
 
-  absl::optional<display::ScopedDisplayObserver> display_observer_;
+  std::optional<display::ScopedDisplayObserver> display_observer_;
 
   raw_ptr<display::Screen, ExperimentalAsh> screen_;
   gfx::Rect work_area_;
@@ -222,7 +222,7 @@ class ASH_EXPORT AshMessagePopupCollection
   std::set<views::Widget*> tracked_widgets_;
 
   // Tracks the smoothness of popup animation.
-  absl::optional<ui::ThroughputTracker> animation_tracker_;
+  std::optional<ui::ThroughputTracker> animation_tracker_;
 
   // Keeps track of number of items that are animating. This is used when we
   // have more than one popup appear in the screen and different animations are

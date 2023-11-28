@@ -680,7 +680,7 @@ bool CaptureModeController::CanShowUserNudge() const {
   auto* session_controller = Shell::Get()->session_controller();
   DCHECK(session_controller->IsActiveUserSessionStarted());
 
-  absl::optional<user_manager::UserType> user_type =
+  std::optional<user_manager::UserType> user_type =
       session_controller->GetUserType();
   // This can only be called while a user is logged in, so `user_type` should
   // never be empty.
@@ -785,7 +785,7 @@ void CaptureModeController::PerformCapture() {
   if (pending_dlp_check_)
     return;
 
-  const absl::optional<CaptureParams> capture_params = GetCaptureParams();
+  const std::optional<CaptureParams> capture_params = GetCaptureParams();
   if (!capture_params)
     return;
 
@@ -1037,7 +1037,7 @@ void CaptureModeController::GetMediaApps(GetMediaAppsCallback callback) {
         /*is_capturing_screen=*/false,
         /*title=*/
         l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_DISPLAY_SOURCE),
-        /*url=*/absl::nullopt,
+        /*url=*/std::nullopt,
         /*app_type=*/crosapi::mojom::VideoConferenceAppType::kAshCaptureMode));
   }
 
@@ -1219,7 +1219,7 @@ void CaptureModeController::EndSessionOrRecording(EndRecordingReason reason) {
   EndVideoRecording(reason);
 }
 
-absl::optional<CaptureModeController::CaptureParams>
+std::optional<CaptureModeController::CaptureParams>
 CaptureModeController::GetCaptureParams() const {
   DCHECK(IsActive());
 
@@ -1238,7 +1238,7 @@ CaptureModeController::GetCaptureParams() const {
       if (!window) {
         // TODO(afakhry): Consider showing a toast or a notification that no
         // window was selected.
-        return absl::nullopt;
+        return std::nullopt;
       }
       // window->bounds() are in root coordinates, but we want to get the
       // capture area in |window|'s coordinates.
@@ -1252,7 +1252,7 @@ CaptureModeController::GetCaptureParams() const {
       if (user_capture_region_.IsEmpty()) {
         // TODO(afakhry): Consider showing a toast or a notification that no
         // region was selected.
-        return absl::nullopt;
+        return std::nullopt;
       }
       // TODO(afakhry): Consider any special handling of display scale changes
       // while video recording is in progress.
@@ -1648,7 +1648,7 @@ void CaptureModeController::HandleNotificationClicked(
     const base::FilePath& screen_capture_path,
     const CaptureModeType type,
     const BehaviorType behavior_type,
-    absl::optional<int> button_index) {
+    std::optional<int> button_index) {
   if (!button_index.has_value()) {
     // Show the item in the folder.
     delegate_->ShowScreenCaptureItemInFolder(screen_capture_path);
@@ -1773,7 +1773,7 @@ void CaptureModeController::OnVideoRecordCountDownFinished() {
   if (!IsActive())
     return;
 
-  const absl::optional<CaptureParams> capture_params = GetCaptureParams();
+  const std::optional<CaptureParams> capture_params = GetCaptureParams();
   if (!capture_params) {
     // There's nothing to capture, so we'll stop the session and skip the rest.
     Stop();
@@ -1928,7 +1928,7 @@ void CaptureModeController::OnDlpRestrictionCheckedAtPerformingCapture(
     return;
   }
 
-  const absl::optional<CaptureParams> capture_params = GetCaptureParams();
+  const std::optional<CaptureParams> capture_params = GetCaptureParams();
   CHECK(capture_params);
 
   if (!delegate_->IsCaptureAllowedByPolicy()) {
@@ -1973,7 +1973,7 @@ void CaptureModeController::OnDlpRestrictionCheckedAtCountDownFinished(
     return;
   }
 
-  const absl::optional<CaptureParams> capture_params = GetCaptureParams();
+  const std::optional<CaptureParams> capture_params = GetCaptureParams();
   if (!capture_params) {
     Stop();
     return;

@@ -292,7 +292,7 @@ void SystemTextfield::OnEnabledStateChanged() {
   SchedulePaint();
 }
 
-void SystemTextfield::UpdateColorId(absl::optional<ui::ColorId>& src,
+void SystemTextfield::UpdateColorId(std::optional<ui::ColorId>& src,
                                     ui::ColorId dst,
                                     bool is_background_color) {
   if (src && *src == dst) {

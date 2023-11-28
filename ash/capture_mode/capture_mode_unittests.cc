@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -86,7 +87,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/capture_client_observer.h"
@@ -247,7 +247,7 @@ class CaptureModeTest : public AshTestBase {
     return widget ? widget->GetNativeWindow() : nullptr;
   }
 
-  absl::optional<gfx::Point> GetMagnifierGlassCenterPoint() const {
+  std::optional<gfx::Point> GetMagnifierGlassCenterPoint() const {
     auto* controller = CaptureModeController::Get();
     DCHECK(controller->IsActive());
     auto& magnifier =
@@ -258,7 +258,7 @@ class CaptureModeTest : public AshTestBase {
           ->GetWindowBoundsInScreen()
           .CenterPoint();
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Start Capture Mode with source region and type image.
@@ -797,7 +797,7 @@ TEST_F(CaptureModeTest, CaptureRegionMagnifierWhenFineTuning) {
   // visible yet.
   gfx::Rect capture_region{200, 200, 400, 400};
   SelectRegion(capture_region);
-  EXPECT_EQ(absl::nullopt, GetMagnifierGlassCenterPoint());
+  EXPECT_EQ(std::nullopt, GetMagnifierGlassCenterPoint());
 
   auto check_magnifier_shows_properly = [this](const gfx::Point& origin,
                                                const gfx::Point& destination,
@@ -807,11 +807,10 @@ TEST_F(CaptureModeTest, CaptureRegionMagnifierWhenFineTuning) {
     // If not |should_show_magnifier|, check that the magnifying glass never
     // shows. Should always be not visible when mouse button is released.
     auto* event_generator = GetEventGenerator();
-    absl::optional<gfx::Point> expected_origin =
-        should_show_magnifier ? absl::make_optional(origin) : absl::nullopt;
-    absl::optional<gfx::Point> expected_destination =
-        should_show_magnifier ? absl::make_optional(destination)
-                              : absl::nullopt;
+    std::optional<gfx::Point> expected_origin =
+        should_show_magnifier ? std::make_optional(origin) : std::nullopt;
+    std::optional<gfx::Point> expected_destination =
+        should_show_magnifier ? std::make_optional(destination) : std::nullopt;
 
     auto* cursor_manager = Shell::Get()->cursor_manager();
     EXPECT_TRUE(cursor_manager->IsCursorVisible());
@@ -834,7 +833,7 @@ TEST_F(CaptureModeTest, CaptureRegionMagnifierWhenFineTuning) {
 
     // Release left button.
     event_generator->ReleaseLeftButton();
-    EXPECT_EQ(absl::nullopt, GetMagnifierGlassCenterPoint());
+    EXPECT_EQ(std::nullopt, GetMagnifierGlassCenterPoint());
     EXPECT_TRUE(cursor_manager->IsCursorVisible());
   };
 
@@ -4440,7 +4439,7 @@ TEST_F(CaptureModeTest, QuickActionHistograms) {
     waiter.Wait();
   }
   // Click on the notification body. This should take us to the files app.
-  ClickOnNotification(absl::nullopt);
+  ClickOnNotification(std::nullopt);
   EXPECT_FALSE(GetPreviewNotification());
   histogram_tester.ExpectBucketCount(kQuickActionHistogramName,
                                      CaptureQuickAction::kFiles, 1);
@@ -5192,9 +5191,9 @@ class FakeCursorShapeClient : public aura::client::CursorShapeClient {
   ~FakeCursorShapeClient() override = default;
 
   // aura::client::CursorShapeClient:
-  absl::optional<ui::CursorData> GetCursorData(
+  std::optional<ui::CursorData> GetCursorData(
       const ui::Cursor& cursor) const override {
-    return absl::nullopt;
+    return std::nullopt;
   }
 };
 

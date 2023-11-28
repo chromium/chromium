@@ -5,6 +5,8 @@
 #ifndef ASH_PUBLIC_CPP_SHELF_CONFIG_H_
 #define ASH_PUBLIC_CPP_SHELF_CONFIG_H_
 
+#include <optional>
+
 #include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_controller_observer.h"
 #include "ash/public/cpp/session/session_observer.h"
@@ -15,7 +17,6 @@
 #include "ash/wm/splitview/split_view_observer.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
 #include "ui/display/display_observer.h"
@@ -291,7 +292,7 @@ class ASH_EXPORT ShelfConfig : public SessionObserver,
 
   // Whether an elevated app bar has been rendered (stacked hotseat). This
   // boolean is used for logging UMA metrics.
-  absl::optional<bool> has_shown_elevated_app_bar_;
+  std::optional<bool> has_shown_elevated_app_bar_;
 
   // Whether tablet mode homecher should use elevated app bar.
   bool elevate_tablet_mode_app_bar_ = false;

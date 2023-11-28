@@ -283,12 +283,12 @@ void SlideOutView(views::View* view,
       .SetTransform(view->layer(), transform);
 }
 
-absl::optional<gfx::ImageSkia> ResizeImageIfExceedSizeLimit(
+std::optional<gfx::ImageSkia> ResizeImageIfExceedSizeLimit(
     const gfx::ImageSkia& input_image,
     size_t size_limit_in_byte) {
   const size_t image_size_in_bytes = input_image.bitmap()->computeByteSize();
   if (image_size_in_bytes <= size_limit_in_byte) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Calculate the image size after resize.

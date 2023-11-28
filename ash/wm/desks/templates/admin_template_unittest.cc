@@ -35,7 +35,7 @@ class MockSavedDeskDelegate : public SavedDeskDelegate {
               (),
               (override));
   MOCK_METHOD(bool, IsWindowPersistable, (aura::Window*), (const override));
-  MOCK_METHOD(absl::optional<gfx::ImageSkia>,
+  MOCK_METHOD(std::optional<gfx::ImageSkia>,
               MaybeRetrieveIconForSpecialIdentifier,
               (const std::string&, const ui::ColorProvider*),
               (const override));
@@ -134,7 +134,7 @@ TEST_F(AdminTemplateTest, MergeAdminTemplateWindowUpdate) {
       *admin_template, {.template_rwid = 1, .bounds = new_bounds}));
   EXPECT_THAT(app_restore_data->current_bounds, Optional(new_bounds));
 
-  EXPECT_THAT(app_restore_data->display_id, Eq(absl::nullopt));
+  EXPECT_THAT(app_restore_data->display_id, Eq(std::nullopt));
   EXPECT_TRUE(MergeAdminTemplateWindowUpdate(
       *admin_template, {.template_rwid = 1, .display_id = 123456}));
   EXPECT_THAT(app_restore_data->display_id, Optional(123456));

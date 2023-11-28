@@ -266,8 +266,8 @@ void WaitForSavedDeskUI() {
 
 const app_restore::AppRestoreData* QueryRestoreData(
     const DeskTemplate& saved_desk,
-    absl::optional<std::string> app_id,
-    absl::optional<int32_t> window_id) {
+    std::optional<std::string> app_id,
+    std::optional<int32_t> window_id) {
   const auto& app_id_to_launch_list =
       saved_desk.desk_restore_data()->app_id_to_launch_list();
 

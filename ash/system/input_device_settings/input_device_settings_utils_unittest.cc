@@ -5,6 +5,7 @@
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
 
 #include <cstdint>
+#include <optional>
 
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
@@ -16,7 +17,6 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/known_user.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/devices/input_device.h"
 
 namespace ash {
@@ -97,7 +97,7 @@ TEST(GetLoginScreenSettingsDictTest, RetrieveSettingsDict) {
       GetLoginScreenSettingsDict(local_state.get(), account_id, kTestPrefKey);
   EXPECT_EQ(nullptr, settings);
   known_user.SetPath(account_id, kTestPrefKey,
-                     absl::make_optional<base::Value>(base::Value::Dict()));
+                     std::make_optional<base::Value>(base::Value::Dict()));
   const base::Value::Dict* valid_settings =
       GetLoginScreenSettingsDict(local_state.get(), account_id, kTestPrefKey);
   EXPECT_NE(nullptr, valid_settings);
@@ -112,7 +112,7 @@ TEST(GetLoginScreenButtonRemappingListTest, RetrieveButtonRemappingList) {
                                         kTestPrefKey);
   EXPECT_EQ(nullptr, button_remapping_list);
   known_user.SetPath(account_id, kTestPrefKey,
-                     absl::make_optional<base::Value>(base::Value::List()));
+                     std::make_optional<base::Value>(base::Value::List()));
   const base::Value::List* valid_button_remapping_list =
       GetLoginScreenButtonRemappingList(local_state.get(), account_id,
                                         kTestPrefKey);
@@ -189,7 +189,7 @@ TEST_F(ButtonRemappingConversionTest, ConvertButtonRemappingToDict) {
   EXPECT_EQ(static_cast<int>(button_remapping4.button->get_vkey()),
             *dict4.FindInt(prefs::kButtonRemappingKeyboardCode));
   EXPECT_EQ(nullptr, dict4.FindDict(prefs::kButtonRemappingKeyEvent));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             dict4.FindInt(prefs::kButtonRemappingAcceleratorAction));
 
   const base::Value::Dict dict5 = ConvertButtonRemappingToDict(
@@ -199,7 +199,7 @@ TEST_F(ButtonRemappingConversionTest, ConvertButtonRemappingToDict) {
   EXPECT_EQ(static_cast<int>(button_remapping5.button->get_vkey()),
             *dict5.FindInt(prefs::kButtonRemappingKeyboardCode));
   EXPECT_EQ(nullptr, dict5.FindDict(prefs::kButtonRemappingKeyEvent));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             dict5.FindInt(prefs::kButtonRemappingAcceleratorAction));
   EXPECT_EQ(
       static_cast<int>(
@@ -353,7 +353,7 @@ TEST_F(ButtonRemappingConversionTest, ConvertDictToButtonRemapping) {
   EXPECT_EQ(static_cast<::ui::KeyboardCode>(
                 *dict4.FindInt(prefs::kButtonRemappingKeyboardCode)),
             remapping4->button->get_vkey());
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             dict4.FindInt(prefs::kButtonRemappingAcceleratorAction));
   EXPECT_EQ(nullptr, dict4.FindDict(prefs::kButtonRemappingKeyEvent));
 
@@ -496,7 +496,7 @@ TEST_F(ButtonRemappingConversionTest, ConvertButtonRemappingArrayToList) {
   EXPECT_EQ(static_cast<int>(button_remapping4.button->get_vkey()),
             *dict3.FindInt(prefs::kButtonRemappingKeyboardCode));
   EXPECT_EQ(nullptr, dict3.FindDict(prefs::kButtonRemappingKeyEvent));
-  EXPECT_EQ(absl::nullopt,
+  EXPECT_EQ(std::nullopt,
             dict3.FindInt(prefs::kButtonRemappingAcceleratorAction));
 
   base::Value::List list2 = ConvertButtonRemappingArrayToList(

@@ -2,18 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/system/unified/tasks_combobox_model.h"
+
 #include <algorithm>
+#include <optional>
 #include <string>
 
 #include "ash/api/tasks/tasks_types.h"
 #include "ash/shell.h"
-#include "ash/system/unified/tasks_combobox_model.h"
 #include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/list_model.h"
 
 namespace ash {
@@ -53,7 +54,7 @@ std::u16string TasksComboboxModel::GetItemAt(size_t index) const {
   return base::UTF8ToUTF16(task_lists_->GetItemAt(index)->title);
 }
 
-absl::optional<size_t> TasksComboboxModel::GetDefaultIndex() const {
+std::optional<size_t> TasksComboboxModel::GetDefaultIndex() const {
   const auto most_recently_updated_task_list_iter = std::max_element(
       task_lists_->begin(), task_lists_->end(),
       [](const auto& x1, const auto& x2) { return x1->updated < x2->updated; });

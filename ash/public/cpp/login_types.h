@@ -192,7 +192,7 @@ struct ASH_PUBLIC_EXPORT LocaleItem {
   std::string title;
 
   // Group name of the locale.
-  absl::optional<std::string> group_name;
+  std::optional<std::string> group_name;
 };
 
 // Information about a public account user.
@@ -208,7 +208,7 @@ struct ASH_PUBLIC_EXPORT PublicAccountInfo {
   // The name of the device manager displayed in the login screen UI for
   // device-level management. May be either a domain (foo.com) or an email
   // address (user@foo.com).
-  absl::optional<std::string> device_enterprise_manager;
+  std::optional<std::string> device_enterprise_manager;
 
   // A list of available user locales.
   std::vector<LocaleItem> available_locales;
@@ -284,10 +284,10 @@ struct ASH_PUBLIC_EXPORT LoginUserInfo {
   // login screen UI for user-level management. Will be either a domain name
   // (foo.com) or the email address of the admin (some_user@foo.com).
   // This is only set if the relevant user is managed.
-  absl::optional<std::string> user_account_manager;
+  std::optional<std::string> user_account_manager;
 
   // Contains the public account information if user type is PUBLIC_ACCOUNT.
-  absl::optional<PublicAccountInfo> public_account_info;
+  std::optional<PublicAccountInfo> public_account_info;
 
   // True if this user chooses to use 24 hour clock in preference.
   bool use_24hour_clock = false;
