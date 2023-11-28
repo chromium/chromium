@@ -16,12 +16,14 @@
 #include "third_party/blink/renderer/platform/graphics/test/fake_gles2_interface.h"
 #include "third_party/blink/renderer/platform/graphics/test/fake_web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_memory_buffer_test_platform.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/skia/include/core/SkSurface.h"
 
 namespace blink {
 
 TEST(CanvasResourceTest, PrepareTransferableResource_SharedBitmap) {
+  test::TaskEnvironment task_environment;
   scoped_refptr<CanvasResource> canvas_resource =
       CanvasResourceSharedBitmap::Create(SkImageInfo::MakeN32Premul(10, 10),
                                          nullptr,  // CanvasResourceProvider

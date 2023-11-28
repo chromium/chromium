@@ -1860,6 +1860,8 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "graphics/color_correction_test_utils.cc",
+    "graphics/color_correction_test_utils.h",
     "graphics/gpu/drawing_buffer_test_helpers.h",
     "graphics/paint/paint_controller_test.h",
     "graphics/test/fake_canvas_resource_host.h",
@@ -1874,6 +1876,7 @@ static_library("test_support") {
     "graphics/test/mock_frame_sink_bundle.h",
     "graphics/test/mock_image_decoder.h",
     "graphics/test/mock_paint_canvas.h",
+    "graphics/test/stub_image.h",
     "testing/compositor_test.cc",
     "testing/compositor_test.h",
     "testing/empty_web_media_player.cc",
@@ -1973,6 +1976,7 @@ static_library("test_support") {
     "//mojo/public/cpp/bindings",
     "//services/service_manager/public/cpp",
     "//skia",
+    "//skia:skcms",
     "//third_party/blink/public/common:common",
     "//third_party/blink/renderer/platform/network:test_support",
   ]
@@ -2712,7 +2716,6 @@ source_set("unit_tests") {
     "graphics/canvas_resource_host_test.cc",
     "graphics/canvas_resource_provider_test.cc",
     "graphics/canvas_resource_test.cc",
-    "graphics/color_correction_test_utils.cc",
     "graphics/deferred_image_decoder_test.cc",
     "graphics/gpu/drawing_buffer_software_rendering_test.cc",
     "graphics/image_decoding_store_test.cc",
@@ -2720,7 +2723,6 @@ source_set("unit_tests") {
     "graphics/offscreen_canvas_placeholder_test.cc",
     "graphics/paint_worklet_paint_dispatcher_test.cc",
     "graphics/scoped_raster_timer_test.cc",
-    "graphics/test/stub_image.h",
 
     # Tests migrated from the web/tests directory.
     "exported/web_url_request_extra_data_test.cc",
@@ -2741,6 +2743,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//cc",
     "//components/viz/test:test_support",
+    "//skia:skcms",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/public:test_headers",

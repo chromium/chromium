@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/test/fake_canvas_resource_host.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -30,6 +31,7 @@ class AcceleratedCompositingTestPlatform
 };
 
 TEST(CanvasResourceHostTest, ReleaseResourcesAfterHostDestroyed) {
+  test::TaskEnvironment task_environment;
   ScopedTestingPlatformSupport<AcceleratedCompositingTestPlatform>
       accelerated_compositing_scope;
   scoped_refptr<TestContextProvider> context = TestContextProvider::Create();
@@ -54,6 +56,7 @@ TEST(CanvasResourceHostTest, ReleaseResourcesAfterHostDestroyed) {
   EXPECT_EQ(context->TestContextGL()->NumTextures(), 1u);
   std::move(release_callback).Run(gpu::SyncToken(), /*is_lost=*/false);
   EXPECT_EQ(context->TestContextGL()->NumTextures(), 0u);
+  SharedGpuContext::ResetForTesting();
 }
 
 }  // namespace

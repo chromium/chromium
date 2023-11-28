@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -63,6 +64,8 @@ class CanvasHibernationHandlerTest : public Test {
   }
 
  protected:
+  test::TaskEnvironment task_environment_{
+      test::TaskEnvironment::RealMainThreadScheduler{}};
   scoped_refptr<viz::TestContextProvider> test_context_provider_;
   std::unique_ptr<FakeCanvasResourceHost> host_;
 };

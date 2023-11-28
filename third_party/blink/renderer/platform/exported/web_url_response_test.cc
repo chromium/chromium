@@ -34,22 +34,26 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
 
 TEST(WebURLResponseTest, NewInstanceIsNull) {
+  test::TaskEnvironment task_environment;
   WebURLResponse instance;
   EXPECT_TRUE(instance.IsNull());
 }
 
 TEST(WebURLResponseTest, NotNullAfterSetURL) {
+  test::TaskEnvironment task_environment;
   WebURLResponse instance;
   instance.SetCurrentRequestUrl(KURL("http://localhost/"));
   EXPECT_FALSE(instance.IsNull());
 }
 
 TEST(WebURLResponseTest, DnsAliasesCanBeAccessed) {
+  test::TaskEnvironment task_environment;
   WebURLResponse instance;
   instance.SetCurrentRequestUrl(KURL("http://localhost/"));
   EXPECT_FALSE(instance.IsNull());
