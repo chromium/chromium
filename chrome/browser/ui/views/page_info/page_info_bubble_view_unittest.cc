@@ -217,6 +217,13 @@ class PageInfoBubbleViewTestApi {
     return GetPermissionToggleRowAt(index)->state_label_;
   }
 
+  std::u16string GetTrackingProtectionSubpageTitle() {
+    navigation_handler()->OpenCookiesPage();
+    auto* title_label = bubble_delegate_->GetViewByID(
+        PageInfoViewFactory::VIEW_ID_PAGE_INFO_SUBPAGE_TITLE);
+    return static_cast<views::Label*>(title_label)->GetText();
+  }
+
   // Returns the text shown on the view.
   std::u16string GetTextOnView(views::View* view) {
     EXPECT_TRUE(view);
@@ -1237,6 +1244,44 @@ TEST_P(
 INSTANTIATE_TEST_SUITE_P(All,
                          PageInfoBubbleViewCookies3pcdButtonTest,
                          /*is_otr*/ testing::Bool());
+
+class PageInfoBubbleViewTrackingProtectionSubpageTitleTest
+    : public PageInfoBubbleViewTest,
+      public testing::WithParamInterface<
+          testing::tuple<CookieControlsStatus,
+                         CookieBlocking3pcdStatus,
+                         /*is_otr*/ bool>> {
+ public:
+  PageInfoBubbleViewTrackingProtectionSubpageTitleTest() {
+    feature_list_.InitWithFeatures(
+        {content_settings::features::kTrackingProtection3pcd}, {});
+    web_contents_helper_ = std::make_unique<ScopedWebContentsTestHelper>(
+        testing::get<2>(GetParam()));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(PageInfoBubbleViewTrackingProtectionSubpageTitleTest,
+       DisplaysTrackingProtectionTitle) {
+  PageInfoUI::CookiesNewInfo cookie_info;
+  cookie_info.status = testing::get<0>(GetParam());
+  cookie_info.blocking_status = testing::get<1>(GetParam());
+  api_->SetCookieInfo(cookie_info);
+  EXPECT_EQ(api_->GetTrackingProtectionSubpageTitle(),
+            l10n_util::GetStringUTF16(
+                IDS_PAGE_INFO_SUB_PAGE_VIEW_TRACKING_PROTECTION_HEADER));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PageInfoBubbleViewTrackingProtectionSubpageTitleTest,
+    testing::Combine(testing::Values(CookieControlsStatus::kEnabled,
+                                     CookieControlsStatus::kDisabledForSite),
+                     testing::Values(CookieBlocking3pcdStatus::kNotIn3pcd,
+                                     CookieBlocking3pcdStatus::kAll),
+                     /*is_otr*/ testing::Bool()));
 
 namespace {
 class PageInfoBubbleViewCookiesSubpageTest : public PageInfoBubbleViewTest {

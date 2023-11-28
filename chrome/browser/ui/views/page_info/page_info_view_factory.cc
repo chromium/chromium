@@ -224,6 +224,7 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpageHeader(
     title_label->SetTextStyle(views::style::STYLE_HEADLINE_4);
   }
   title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  title_label->SetID(VIEW_ID_PAGE_INFO_SUBPAGE_TITLE);
 
   if (!subtitle.empty()) {
     auto* subtitle_label =
