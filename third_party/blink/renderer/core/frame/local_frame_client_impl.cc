@@ -742,9 +742,10 @@ void LocalFrameClientImpl::DidChangePerformanceTiming() {
 void LocalFrameClientImpl::DidObserveUserInteraction(
     base::TimeTicks max_event_start,
     base::TimeTicks max_event_end,
-    UserInteractionType interaction_type) {
+    UserInteractionType interaction_type,
+    uint64_t interaction_offset) {
   web_frame_->Client()->DidObserveUserInteraction(
-      max_event_start, max_event_end, interaction_type);
+      max_event_start, max_event_end, interaction_type, interaction_offset);
 }
 
 void LocalFrameClientImpl::DidChangeCpuTiming(base::TimeDelta time) {

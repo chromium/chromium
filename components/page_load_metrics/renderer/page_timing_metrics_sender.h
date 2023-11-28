@@ -89,7 +89,8 @@ class PageTimingMetricsSender {
 
   void DidObserveUserInteraction(base::TimeTicks max_event_start,
                                  base::TimeTicks max_event_end,
-                                 blink::UserInteractionType interaction_type);
+                                 blink::UserInteractionType interaction_type,
+                                 uint64_t interaction_offset);
   // Updates the timing information. Buffers |timing| to be sent over mojo
   // sometime 'soon'.
   void Update(

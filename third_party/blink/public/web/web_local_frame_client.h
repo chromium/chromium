@@ -582,8 +582,8 @@ class BLINK_EXPORT WebLocalFrameClient {
   // detailed motivation and explanation.
   virtual void DidObserveUserInteraction(base::TimeTicks max_event_start,
                                          base::TimeTicks max_event_end,
-                                         UserInteractionType interaction_type) {
-  }
+                                         UserInteractionType interaction_type,
+                                         uint64_t interaction_offset) {}
 
   // The first scroll delay, which measures the time between the user's first
   // scrolling and the resultant display update, has been observed.

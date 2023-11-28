@@ -17361,6 +17361,18 @@ be describing additional metrics about the same event.
       exponential bucket.
     </summary>
   </metric>
+  <metric name="InteractiveTiming.INPOffset">
+    <summary>
+      The one-based offset of the interaction in the list of all interactions in
+      this page load which was the INP (https://web.dev/inp).
+    </summary>
+  </metric>
+  <metric name="InteractiveTiming.INPTime">
+    <summary>
+      The time (in milliseconds from navigation start) of the interaction which
+      was the INP (https://web.dev/inp).
+    </summary>
+  </metric>
   <metric name="InteractiveTiming.LongestInputDelay">
     <obsolete>
       Deprecated on January 2019 in favor of
@@ -17703,6 +17715,19 @@ be describing additional metrics about the same event.
       Responsiveness.UserInteraction.TotalEventDuration and we reduct a budget
       from the original value. If the latency value is below the budget, it will
       be treated as 0 ms. Each type of interaction has its own budget.
+    </summary>
+  </metric>
+  <metric name="InteractiveTimingBeforeSoftNavigation.INPOffset">
+    <summary>
+      The one-based offset of the interaction in the list of all interactions in
+      this page load which was the INP before the first soft navigation
+      (https://web.dev/inp).
+    </summary>
+  </metric>
+  <metric name="InteractiveTimingBeforeSoftNavigation.INPTime">
+    <summary>
+      The time (in milliseconds from navigation starte) of the interaction which
+      was the INP before the first soft navigation (https://web.dev/inp).
     </summary>
   </metric>
   <metric name="InteractiveTimingBeforeSoftNavigation.NumInteractions">
@@ -24070,6 +24095,18 @@ be describing additional metrics about the same event.
     Soft navigation metrics like LCP are equivalent to their counterpart of the
     PageLoad event.
   </summary>
+  <metric name="InteractiveTiming.INPOffset">
+    <summary>
+      One-based offset in the list of all user interactions of the interaction
+      which was the INP (https://web.dev/inp).
+    </summary>
+  </metric>
+  <metric name="InteractiveTiming.INPTime">
+    <summary>
+      The time (in milliseconds from navigation start) of the interaction which
+      was the INP (https://web.dev/inp).
+    </summary>
+  </metric>
   <metric name="InteractiveTiming.NumInteractions">
     <summary>
       The number of distinct user interactions from the time when the soft

@@ -523,6 +523,11 @@ union UserInteractionLatencies {
 struct UserInteractionLatency {
   mojo_base.mojom.TimeDelta interaction_latency;
   UserInteractionType interaction_type;
+  // The one-based offset of the interaction in time-based order; 1 for the
+  // first interaction, 2 for the second, etc.
+  uint64 interaction_offset;
+  // The time the interaction occurred, relative to navigation start.
+  mojo_base.mojom.TimeTicks interaction_time;
 };
 
 // The type of a user interaction, including keyboard, click or tap and drag.

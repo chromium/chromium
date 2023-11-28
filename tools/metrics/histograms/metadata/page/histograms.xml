@@ -2238,6 +2238,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PageLoad.InteractiveTiming.INPOffset" units="offset"
+    expires_after="2024-11-15">
+  <owner>sullivan@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    The one-based offset of the interction that is the INP
+    (https://web.dev/inp).
+  </summary>
+</histogram>
+
+<histogram name="PageLoad.InteractiveTiming.INPTime" units="ms"
+    expires_after="2024-11-15">
+  <owner>sullivan@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    The time, relative to navigation start, of the interction that is the INP
+    (https://web.dev/inp).
+  </summary>
+</histogram>
+
 <histogram name="PageLoad.InteractiveTiming.InputDelay3" units="ms"
     expires_after="never">
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->

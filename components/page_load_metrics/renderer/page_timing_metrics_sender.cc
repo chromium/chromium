@@ -389,14 +389,16 @@ void PageTimingMetricsSender::InitiateUserInteractionTiming() {
 void PageTimingMetricsSender::DidObserveUserInteraction(
     base::TimeTicks max_event_start,
     base::TimeTicks max_event_end,
-    blink::UserInteractionType interaction_type) {
+    blink::UserInteractionType interaction_type,
+    uint64_t interaction_offset) {
   input_timing_delta_->num_interactions++;
   metadata_recorder_.AddInteractionDurationMetadata(max_event_start,
                                                     max_event_end);
   base::TimeDelta max_event_duration = max_event_end - max_event_start;
   input_timing_delta_->max_event_durations->get_user_interaction_latencies()
       .emplace_back(mojom::UserInteractionLatency::New(
-          max_event_duration, UserInteractionTypeForMojom(interaction_type)));
+          max_event_duration, UserInteractionTypeForMojom(interaction_type),
+          interaction_offset, max_event_start));
   EnsureSendTimer();
 }
 }  // namespace page_load_metrics

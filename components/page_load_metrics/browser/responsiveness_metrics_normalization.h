@@ -34,11 +34,12 @@ class ResponsivenessMetricsNormalization {
   void ClearAllUserInteractionLatencies();
 
   // Approximate a high percentile of user interaction latency.
-  absl::optional<base::TimeDelta> ApproximateHighPercentile() const;
+  absl::optional<mojom::UserInteractionLatency> ApproximateHighPercentile()
+      const;
 
   uint64_t num_user_interactions() const { return num_user_interactions_; }
 
-  absl::optional<base::TimeDelta> worst_latency() const;
+  absl::optional<mojom::UserInteractionLatency> worst_latency() const;
 
  private:
   void NormalizeUserInteractionLatencies(
@@ -46,7 +47,7 @@ class ResponsivenessMetricsNormalization {
 
   // A sorted list of the worst ten latencies, used to approximate a high
   // percentile.
-  std::vector<base::TimeDelta> worst_ten_latencies_;
+  std::vector<mojom::UserInteractionLatency> worst_ten_latencies_;
   uint64_t num_user_interactions_ = 0;
 };
 

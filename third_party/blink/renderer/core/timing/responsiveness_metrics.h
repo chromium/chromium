@@ -130,7 +130,7 @@ class ResponsivenessMetrics : public GarbageCollected<ResponsivenessMetrics> {
   // stored them.
   void FlushKeydown();
 
-  uint64_t GetInteractionCount() const;
+  uint32_t GetInteractionCount() const;
 
   void Trace(Visitor*) const;
 
@@ -147,12 +147,14 @@ class ResponsivenessMetrics : public GarbageCollected<ResponsivenessMetrics> {
   void RecordUserInteractionUKM(
       LocalDOMWindow* window,
       UserInteractionType interaction_type,
-      const WTF::Vector<ResponsivenessMetrics::EventTimestamps>& timestamps);
+      const WTF::Vector<ResponsivenessMetrics::EventTimestamps>& timestamps,
+      uint32_t interaction_offset);
 
   void RecordDragTapOrClickUKM(LocalDOMWindow*, PointerEntryAndInfo&);
 
   void RecordKeyboardUKM(LocalDOMWindow* window,
-                         const WTF::Vector<EventTimestamps>& event_timestamps);
+                         const WTF::Vector<EventTimestamps>& event_timestamps,
+                         uint32_t interaction_offset);
 
   // Updates the interactionId counter which is used by Event Timing.
   void UpdateInteractionId();
@@ -207,7 +209,7 @@ class ResponsivenessMetrics : public GarbageCollected<ResponsivenessMetrics> {
   absl::optional<PointerId> last_pointer_id_;
 
   uint32_t current_interaction_id_for_event_timing_;
-  uint64_t interaction_count_ = 0;
+  uint32_t interaction_count_ = 0;
 
   // Whether to perform UKM sampling.
   bool sampling_ = true;

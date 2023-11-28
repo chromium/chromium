@@ -4486,10 +4486,11 @@ void RenderFrameImpl::DidChangePerformanceTiming() {
 void RenderFrameImpl::DidObserveUserInteraction(
     base::TimeTicks max_event_start,
     base::TimeTicks max_event_end,
-    blink::UserInteractionType interaction_type) {
+    blink::UserInteractionType interaction_type,
+    uint64_t interaction_offset) {
   for (auto& observer : observers_)
     observer.DidObserveUserInteraction(max_event_start, max_event_end,
-                                       interaction_type);
+                                       interaction_type, interaction_offset);
 }
 
 void RenderFrameImpl::DidChangeCpuTiming(base::TimeDelta time) {

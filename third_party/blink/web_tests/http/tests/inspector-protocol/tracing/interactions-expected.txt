@@ -9,6 +9,7 @@ Object: {
 			duration: number
 			frame: string
 			interactionId: number
+			interactionOffset: number
 			nodeId: number
 			processingEnd: number
 			processingStart: number

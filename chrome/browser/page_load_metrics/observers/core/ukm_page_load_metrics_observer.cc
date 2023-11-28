@@ -675,13 +675,34 @@ void UkmPageLoadMetricsObserver::RecordSoftNavigationMetrics(
           GetDelegate()
               .GetSoftNavigationIntervalResponsivenessMetricsNormalization();
 
-  if (soft_nav_responsiveness_metrics_normalization.num_user_interactions()) {
+  absl::optional<page_load_metrics::mojom::UserInteractionLatency> inp =
+      soft_nav_responsiveness_metrics_normalization.ApproximateHighPercentile();
+  if (inp.has_value()) {
     builder
         .SetInteractiveTiming_UserInteractionLatency_HighPercentile2_MaxEventDuration(
-            soft_nav_responsiveness_metrics_normalization
-                .ApproximateHighPercentile()
-                .value()
-                .InMilliseconds());
+            inp->interaction_latency.InMilliseconds());
+
+    // For soft navigations, the interaction offset is the offset _after_ the
+    // soft navigation occurred. So we want to start the offset at the number
+    // of interactions which had occurred before this soft navigation.
+    const page_load_metrics::ResponsivenessMetricsNormalization&
+        responsiveness_metrics_normalization =
+            GetDelegate().GetResponsivenessMetricsNormalization();
+    uint64_t previous_interaction_count =
+        (responsiveness_metrics_normalization.num_user_interactions() -
+         soft_nav_responsiveness_metrics_normalization.num_user_interactions());
+    builder.SetInteractiveTiming_INPOffset(inp->interaction_offset -
+                                           previous_interaction_count);
+    // For soft navigations, the interaction time should be reported as the
+    // TimeDelta between the interaction and the soft navigation start. Since
+    // the interaction time is a TimeTicks and the soft navigation start_time is
+    // a TimeDelta from navigation_start, we need to add the navigation start
+    // TimeTicks to the soft_navigation start_time TimeDeltat and then subtract
+    // that from the interaction_time TimeTicks.
+    base::TimeDelta interaction_time =
+        inp->interaction_time - (GetDelegate().GetNavigationStart() +
+                                 soft_navigation_metrics.start_time);
+    builder.SetInteractiveTiming_INPTime(interaction_time.InMilliseconds());
     builder.SetInteractiveTiming_NumInteractions(
         ukm::GetExponentialBucketMinForCounts1000(
             soft_nav_responsiveness_metrics_normalization
@@ -709,14 +730,19 @@ void UkmPageLoadMetricsObserver::
       responsiveness_metrics_normalization_before_soft_nav =
           GetDelegate()
               .GetSoftNavigationIntervalResponsivenessMetricsNormalization();
-  if (responsiveness_metrics_normalization_before_soft_nav
-          .num_user_interactions()) {
+  absl::optional<page_load_metrics::mojom::UserInteractionLatency> inp =
+      responsiveness_metrics_normalization_before_soft_nav
+          .ApproximateHighPercentile();
+  if (inp.has_value()) {
     builder
         .SetInteractiveTimingBeforeSoftNavigation_UserInteractionLatency_HighPercentile2_MaxEventDuration(
-            responsiveness_metrics_normalization_before_soft_nav
-                .ApproximateHighPercentile()
-                .value()
-                .InMilliseconds());
+            inp->interaction_latency.InMilliseconds());
+    builder.SetInteractiveTimingBeforeSoftNavigation_INPOffset(
+        inp->interaction_offset);
+    base::TimeDelta interaction_time =
+        inp->interaction_time - GetDelegate().GetNavigationStart();
+    builder.SetInteractiveTimingBeforeSoftNavigation_INPTime(
+        interaction_time.InMilliseconds());
     builder.SetInteractiveTimingBeforeSoftNavigation_NumInteractions(
         ukm::GetExponentialBucketMinForCounts1000(
             responsiveness_metrics_normalization_before_soft_nav
@@ -1334,20 +1360,24 @@ void UkmPageLoadMetricsObserver::ReportResponsivenessAfterFirstForeground() {
   const page_load_metrics::ResponsivenessMetricsNormalization&
       responsiveness_metrics_normalization =
           GetDelegate().GetResponsivenessMetricsNormalization();
-  if (responsiveness_metrics_normalization.num_user_interactions()) {
+
+  absl::optional<page_load_metrics::mojom::UserInteractionLatency> inp =
+      responsiveness_metrics_normalization.ApproximateHighPercentile();
+  if (inp.has_value()) {
     builder
         .SetInteractiveTiming_UserInteractionLatencyAtFirstOnHidden_HighPercentile2_MaxEventDuration(
-            responsiveness_metrics_normalization.ApproximateHighPercentile()
-                .value()
-                .InMilliseconds());
+            inp->interaction_latency.InMilliseconds());
+
+    builder.SetInteractiveTiming_INPOffset(inp->interaction_offset);
+    base::TimeDelta interaction_time =
+        inp->interaction_time - GetDelegate().GetNavigationStart();
+    builder.SetInteractiveTiming_INPTime(interaction_time.InMilliseconds());
 
     UmaHistogramCustomTimes(
         "PageLoad.InteractiveTiming.UserInteractionLatencyAtFirstOnHidden."
         "HighPercentile2."
         "MaxEventDuration",
-        responsiveness_metrics_normalization.ApproximateHighPercentile()
-            .value(),
-        base::Milliseconds(1), base::Seconds(60), 50);
+        inp->interaction_latency, base::Milliseconds(1), base::Seconds(60), 50);
   }
   builder.Record(ukm::UkmRecorder::Get());
 }
@@ -1539,16 +1569,22 @@ void UkmPageLoadMetricsObserver::RecordResponsivenessMetrics() {
   const page_load_metrics::ResponsivenessMetricsNormalization&
       responsiveness_metrics_normalization =
           GetDelegate().GetResponsivenessMetricsNormalization();
-  if (responsiveness_metrics_normalization.num_user_interactions()) {
+  absl::optional<page_load_metrics::mojom::UserInteractionLatency> inp =
+      responsiveness_metrics_normalization.ApproximateHighPercentile();
+  if (inp.has_value()) {
     builder.SetInteractiveTiming_WorstUserInteractionLatency_MaxEventDuration(
         responsiveness_metrics_normalization.worst_latency()
             .value()
-            .InMilliseconds());
+            .interaction_latency.InMilliseconds());
     builder
         .SetInteractiveTiming_UserInteractionLatency_HighPercentile2_MaxEventDuration(
-            responsiveness_metrics_normalization.ApproximateHighPercentile()
-                .value()
-                .InMilliseconds());
+            inp->interaction_latency.InMilliseconds());
+
+    builder.SetInteractiveTiming_INPOffset(inp->interaction_offset);
+    base::TimeDelta interaction_time =
+        inp->interaction_time - GetDelegate().GetNavigationStart();
+    builder.SetInteractiveTiming_INPTime(interaction_time.InMilliseconds());
+
     builder.SetInteractiveTiming_NumInteractions(
         ukm::GetExponentialBucketMinForCounts1000(
             responsiveness_metrics_normalization.num_user_interactions()));

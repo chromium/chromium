@@ -407,11 +407,15 @@ void PrerenderPageLoadMetricsObserver::RecordNormalizedResponsivenessMetrics() {
   }
 
   base::TimeDelta high_percentile2_max_event_duration =
-      responsiveness_metrics_normalization.ApproximateHighPercentile().value();
+      responsiveness_metrics_normalization.ApproximateHighPercentile()
+          .value()
+          .interaction_latency;
 
   UmaHistogramCustomTimes(
       internal::kHistogramPrerenderWorstUserInteractionLatencyMaxEventDuration,
-      responsiveness_metrics_normalization.worst_latency().value(),
+      responsiveness_metrics_normalization.worst_latency()
+          .value()
+          .interaction_latency,
       base::Milliseconds(1), base::Seconds(60), 50);
   UmaHistogramCustomTimes(
       internal::
@@ -426,7 +430,7 @@ void PrerenderPageLoadMetricsObserver::RecordNormalizedResponsivenessMetrics() {
   builder.SetInteractiveTiming_WorstUserInteractionLatency_MaxEventDuration(
       responsiveness_metrics_normalization.worst_latency()
           .value()
-          .InMilliseconds());
+          .interaction_latency.InMilliseconds());
 
   builder
       .SetInteractiveTiming_UserInteractionLatency_HighPercentile2_MaxEventDuration(

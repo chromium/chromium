@@ -28,11 +28,11 @@ class ResponsivenessMetricsNormalizationTest : public testing::Test {
     return responsiveness_metrics_normalization_.num_user_interactions();
   }
 
-  base::TimeDelta GetWorstInteraction() {
+  UserInteractionLatency GetWorstInteraction() {
     return responsiveness_metrics_normalization_.worst_latency().value();
   }
 
-  base::TimeDelta GetHighPercentileInteraction() {
+  UserInteractionLatency GetHighPercentileInteraction() {
     return responsiveness_metrics_normalization_.ApproximateHighPercentile()
         .value();
   }
@@ -49,57 +49,92 @@ TEST_F(ResponsivenessMetricsNormalizationTest, SendAllInteractions) {
       UserInteractionLatencies::NewUserInteractionLatencies({});
   auto& user_interaction_latencies =
       user_interaction_latencies_ptr->get_user_interaction_latencies();
+  base::TimeTicks current_time = base::TimeTicks::Now();
   user_interaction_latencies.emplace_back(UserInteractionLatency::New(
-      base::Milliseconds(3000), UserInteractionType::kTapOrClick));
+      base::Milliseconds(3000), UserInteractionType::kTapOrClick, 0,
+      current_time + base::Milliseconds(1000)));
   user_interaction_latencies.emplace_back(UserInteractionLatency::New(
-      base::Milliseconds(3500), UserInteractionType::kTapOrClick));
+      base::Milliseconds(3500), UserInteractionType::kTapOrClick, 1,
+      current_time + base::Milliseconds(2000)));
   user_interaction_latencies.emplace_back(UserInteractionLatency::New(
-      base::Milliseconds(2000), UserInteractionType::kTapOrClick));
+      base::Milliseconds(2000), UserInteractionType::kTapOrClick, 2,
+      current_time + base::Milliseconds(3000)));
   AddNewUserInteractions(3, *user_interaction_latencies_ptr);
   EXPECT_EQ(GetNumInteractions(), 3u);
-  EXPECT_EQ(GetWorstInteraction(), base::Milliseconds(3500));
-  EXPECT_EQ(GetHighPercentileInteraction(), base::Milliseconds(3500));
+  EXPECT_EQ(GetWorstInteraction().interaction_latency,
+            base::Milliseconds(3500));
+  EXPECT_EQ(GetWorstInteraction().interaction_offset, 1u);
+  EXPECT_EQ(GetWorstInteraction().interaction_time,
+            current_time + base::Milliseconds(2000));
+  EXPECT_EQ(GetHighPercentileInteraction().interaction_latency,
+            base::Milliseconds(3500));
+  EXPECT_EQ(GetHighPercentileInteraction().interaction_offset, 1u);
+  EXPECT_EQ(GetHighPercentileInteraction().interaction_time,
+            current_time + base::Milliseconds(2000));
 
   // After adding 50 additional interactions, the high percentile should shift
   // to the second highest interaction duration.
   user_interaction_latencies.clear();
   for (uint64_t i = 0; i < 50; i++) {
     user_interaction_latencies.emplace_back(UserInteractionLatency::New(
-        base::Milliseconds(i + 100), UserInteractionType::kTapOrClick));
+        base::Milliseconds(i + 100), UserInteractionType::kTapOrClick, i + 3,
+        current_time + base::Milliseconds(4000 + (1000 * i))));
   }
   AddNewUserInteractions(50, *user_interaction_latencies_ptr);
   EXPECT_EQ(GetNumInteractions(), 53u);
-  EXPECT_EQ(GetWorstInteraction(), base::Milliseconds(3500));
-  EXPECT_EQ(GetHighPercentileInteraction(), base::Milliseconds(3000));
+  EXPECT_EQ(GetWorstInteraction().interaction_latency,
+            base::Milliseconds(3500));
+  EXPECT_EQ(GetWorstInteraction().interaction_offset, 1u);
+  EXPECT_EQ(GetWorstInteraction().interaction_time,
+            current_time + base::Milliseconds(2000));
+  EXPECT_EQ(GetHighPercentileInteraction().interaction_latency,
+            base::Milliseconds(3000));
+  EXPECT_EQ(GetHighPercentileInteraction().interaction_offset, 0u);
+  EXPECT_EQ(GetHighPercentileInteraction().interaction_time,
+            current_time + base::Milliseconds(1000));
 
   // After adding 50 more interactions, the high percentile should shift
   // to the third highest interaction duration.
   user_interaction_latencies.clear();
   for (uint64_t i = 0; i < 50; i++) {
     user_interaction_latencies.emplace_back(UserInteractionLatency::New(
-        base::Milliseconds(300 - i), UserInteractionType::kTapOrClick));
+        base::Milliseconds(300 - i), UserInteractionType::kTapOrClick, i + 53,
+        current_time + base::Milliseconds(53000 + (1000 * i))));
   }
   AddNewUserInteractions(50, *user_interaction_latencies_ptr);
   EXPECT_EQ(GetNumInteractions(), 103u);
-  EXPECT_EQ(GetWorstInteraction(), base::Milliseconds(3500));
-  EXPECT_EQ(GetHighPercentileInteraction(), base::Milliseconds(2000));
+  EXPECT_EQ(GetWorstInteraction().interaction_latency,
+            base::Milliseconds(3500));
+  EXPECT_EQ(GetWorstInteraction().interaction_offset, 1u);
+  EXPECT_EQ(GetWorstInteraction().interaction_time,
+            current_time + base::Milliseconds(2000));
+  EXPECT_EQ(GetHighPercentileInteraction().interaction_latency,
+            base::Milliseconds(2000));
+  EXPECT_EQ(GetHighPercentileInteraction().interaction_offset, 2u);
+  EXPECT_EQ(GetHighPercentileInteraction().interaction_time,
+            current_time + base::Milliseconds(3000));
 }
 
 TEST_F(ResponsivenessMetricsNormalizationTest, TooManyInteractions) {
   // Test what happens when there are so many interactions that the INP index
   // goes out of the worst_ten_latencies_ bounds.
+  base::TimeTicks current_time = base::TimeTicks::Now();
   for (uint64_t i = 0; i < 500; i++) {
     UserInteractionLatenciesPtr user_interaction_latencies_ptr =
         UserInteractionLatencies::NewUserInteractionLatencies({});
     auto& user_interaction_latencies =
         user_interaction_latencies_ptr->get_user_interaction_latencies();
     user_interaction_latencies.emplace_back(UserInteractionLatency::New(
-        base::Milliseconds(3000 - i), UserInteractionType::kTapOrClick));
+        base::Milliseconds(3000 - i), UserInteractionType::kTapOrClick, i * 2,
+        current_time + base::Milliseconds(1000)));
     user_interaction_latencies.emplace_back(UserInteractionLatency::New(
-        base::Milliseconds(2000 - (i)), UserInteractionType::kTapOrClick));
+        base::Milliseconds(2000 - (i)), UserInteractionType::kTapOrClick,
+        (i * 2) + i, current_time + base::Milliseconds(1100)));
     AddNewUserInteractions(2, *user_interaction_latencies_ptr);
   }
   EXPECT_EQ(GetNumInteractions(), 1000u);
-  EXPECT_EQ(GetWorstInteraction(), base::Milliseconds(3000));
-  EXPECT_EQ(GetHighPercentileInteraction(), base::Milliseconds(2991));
+  EXPECT_EQ(GetWorstInteraction().interaction_latency,
+            base::Milliseconds(3000));
+  EXPECT_EQ(GetHighPercentileInteraction().interaction_latency,
+            base::Milliseconds(2991));
 }

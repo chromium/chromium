@@ -80,7 +80,9 @@ class FakePageTimingSender : public PageTimingSender {
 
     void UpdateExpectedInteractionTiming(
         const base::TimeDelta interaction_duration,
-        mojom::UserInteractionType interaction_type);
+        mojom::UserInteractionType interaction_type,
+        uint64_t interaction_offset,
+        const base::TimeTicks interaction_time);
 
     void UpdateExpectedSubresourceLoadMetrics(
         const blink::SubresourceLoadMetrics& subresource_load_metrics);

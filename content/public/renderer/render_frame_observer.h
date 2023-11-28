@@ -214,7 +214,8 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
   virtual void DidObserveUserInteraction(
       base::TimeTicks max_event_start,
       base::TimeTicks max_event_end,
-      blink::UserInteractionType interaction_type) {}
+      blink::UserInteractionType interaction_type,
+      uint64_t interaction_offset) {}
 
   // Notification when the First Scroll Delay becomes available.
   virtual void DidObserveFirstScrollDelay(base::TimeDelta first_scroll_delay) {}

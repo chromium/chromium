@@ -123,6 +123,8 @@ const char kHistogramNumInteractions[] =
 const char kHistogramUserInteractionLatencyHighPercentile2MaxEventDuration[] =
     "PageLoad.InteractiveTiming.UserInteractionLatency.HighPercentile2."
     "MaxEventDuration";
+const char kHistogramInpOffset[] = "PageLoad.InteractiveTiming.INPOffset";
+const char kHistogramInpTime[] = "PageLoad.InteractiveTiming.INPTime";
 const char kHistogramWorstUserInteractionLatencyMaxEventDuration[] =
     "PageLoad.InteractiveTiming.WorstUserInteractionLatency.MaxEventDuration";
 
@@ -901,18 +903,27 @@ void UmaPageLoadMetricsObserver::RecordNormalizedResponsivenessMetrics() {
   const page_load_metrics::ResponsivenessMetricsNormalization&
       responsiveness_metrics_normalization =
           GetDelegate().GetResponsivenessMetricsNormalization();
-  if (!responsiveness_metrics_normalization.num_user_interactions()) {
+  absl::optional<page_load_metrics::mojom::UserInteractionLatency> inp =
+      responsiveness_metrics_normalization.ApproximateHighPercentile();
+  if (!inp.has_value()) {
     return;
   }
 
   UmaHistogramCustomTimes(
       internal::kHistogramWorstUserInteractionLatencyMaxEventDuration,
-      responsiveness_metrics_normalization.worst_latency().value(),
+      responsiveness_metrics_normalization.worst_latency()
+          .value()
+          .interaction_latency,
       base::Milliseconds(1), base::Seconds(60), 50);
   UmaHistogramCustomTimes(
       internal::kHistogramUserInteractionLatencyHighPercentile2MaxEventDuration,
-      responsiveness_metrics_normalization.ApproximateHighPercentile().value(),
-      base::Milliseconds(1), base::Seconds(60), 50);
+      inp->interaction_latency, base::Milliseconds(1), base::Seconds(60), 50);
+  base::TimeDelta interaction_time =
+      inp->interaction_time - GetDelegate().GetNavigationStart();
+  UmaHistogramCustomTimes(internal::kHistogramInpTime, interaction_time,
+                          base::Milliseconds(1), base::Seconds(3600), 100);
+  base::UmaHistogramCounts1000(internal::kHistogramInpOffset,
+                               inp->interaction_offset);
   base::UmaHistogramCounts1000(
       internal::kHistogramNumInteractions,
       responsiveness_metrics_normalization.num_user_interactions());
