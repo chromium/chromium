@@ -118,6 +118,18 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     private final Handler mHandler;
     private final Runnable mAutoTriggerTimerRunnable = this::onAutoTriggerTimerFinished;
     private final Callback<Boolean> mInMotionCallback = inMotion -> maybeAutoTrigger();
+    private final PageInsightsSheetContent.OnBottomSheetTouchHandler mOnBottomSheetTouchHandler =
+            new PageInsightsSheetContent.OnBottomSheetTouchHandler() {
+                @Override
+                public boolean handleTap() {
+                    return handleBottomSheetTap();
+                }
+
+                @Override
+                public boolean shouldInterceptTouchEvents() {
+                    return shouldInterceptBottomSheetTouchEvents();
+                }
+            };
     private final HashMap<String, Object> mSurfaceRendererContextValues;
     private final ObservableSupplier<Tab> mTabObservable;
     private final Supplier<Profile> mProfileSupplier;
@@ -233,7 +245,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
                         view -> loadMyActivityUrl(tabObservable),
                         this::handleBackPress,
                         mWillHandleBackPressSupplier,
-                        this::handleBottomSheetTap);
+                        mOnBottomSheetTouchHandler);
         mSheetController = bottomSheetController;
         mBottomUiController = bottomUiController;
         mExpandedSheetHelper = expandedSheetHelper;
@@ -353,6 +365,10 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
             return true;
         }
         return false;
+    }
+
+    private boolean shouldInterceptBottomSheetTouchEvents() {
+        return mSheetController.getSheetState() == BottomSheetController.SheetState.PEEK;
     }
 
     private boolean handleBackPress() {

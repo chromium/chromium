@@ -15,7 +15,7 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingTop="@dimen/page_insights_toolbar_height">
-    <org.chromium.chrome.browser.page_insights.TapInterceptingLinearLayout
+    <org.chromium.chrome.browser.page_insights.TouchInterceptingLinearLayout
         android:id="@+id/page_insights_content_container"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -107,5 +107,5 @@ found in the LICENSE file.
             android:contentDescription="@string/page_insights_loading_indicator_description"
             android:visibility="visible"/>
 
-    </org.chromium.chrome.browser.page_insights.TapInterceptingLinearLayout>
+    </org.chromium.chrome.browser.page_insights.TouchInterceptingLinearLayout>
 </FrameLayout>
