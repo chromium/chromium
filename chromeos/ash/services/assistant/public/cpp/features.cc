@@ -60,10 +60,6 @@ BASE_FEATURE(kEnableAssistantOnboarding,
              "AssistantOnboarding",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableAssistantRelatedInfoStringUpdate,
-             "AssistantRelatedInfoStringUpdate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 bool IsAppSupportEnabled() {
   return base::FeatureList::IsEnabled(
       assistant::features::kAssistantAppSupport);
@@ -118,10 +114,6 @@ bool IsAssistantLearnMoreEnabled() {
 
 bool IsOnboardingEnabled() {
   return base::FeatureList::IsEnabled(kEnableAssistantOnboarding);
-}
-
-bool IsRelatedInfoStringUpdateEnabled() {
-  return base::FeatureList::IsEnabled(kEnableAssistantRelatedInfoStringUpdate);
 }
 
 }  // namespace ash::assistant::features
