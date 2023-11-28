@@ -832,6 +832,12 @@ def _read_configuration_from_gn(fs, options):
         if re.match(r'^\s*is_debug\s*=\s*false(\s*$|\s*#.*$)', line):
             return 'Release'
 
+    # If is_debug is not set, the default is based on if is_official_build
+    # is set to true.
+    for line in args.splitlines():
+        if re.match(r'^\s*is_official_build\s*=\s*true(\s*$|\s*#.*$)', line):
+            return 'Release'
+
     # If is_debug is set to anything other than false, or if it
     # does not exist at all, we should use the default value (True).
     return 'Debug'
