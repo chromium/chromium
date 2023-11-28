@@ -70,13 +70,14 @@ class AppBannerManagerTest : public AppBannerManager {
 
   bool TriggeringDisabledForTesting() const override { return false; }
 
-  void RequestAppBanner(const GURL& validated_url) override {
+  void RequestAppBanner() override {
     // Filter out about:blank navigations - we use these in testing to force
     // Stop() to be called.
-    if (validated_url == GURL("about:blank"))
+    if (validated_url_ == GURL("about:blank")) {
       return;
+    }
 
-    AppBannerManager::RequestAppBanner(validated_url);
+    AppBannerManager::RequestAppBanner();
   }
 
   bool banner_shown() { return banner_shown_.get() && *banner_shown_; }

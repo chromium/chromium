@@ -115,14 +115,13 @@ bool AppBannerManagerAndroid::OnAppDetailsRetrieved(
                      weak_factory_.GetWeakPtr()));
 }
 
-void AppBannerManagerAndroid::RequestAppBanner(const GURL& validated_url) {
+void AppBannerManagerAndroid::RequestAppBanner() {
   JNIEnv* env = base::android::AttachCurrentThread();
   if (!Java_AppBannerManager_isSupported(env) ||
       !WebappsClient::Get()->CanShowAppBanners(web_contents())) {
     return;
   }
-
-  AppBannerManager::RequestAppBanner(validated_url);
+  AppBannerManager::RequestAppBanner();
 }
 
 void AppBannerManagerAndroid::ShowBannerFromBadge() {

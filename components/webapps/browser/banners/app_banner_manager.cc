@@ -191,7 +191,7 @@ void AppBannerManager::SetTimeDeltaForTesting(int days) {
   gTimeDeltaInDaysForTesting = days;
 }
 
-void AppBannerManager::RequestAppBanner(const GURL& validated_url) {
+void AppBannerManager::RequestAppBanner() {
   DCHECK_EQ(State::INACTIVE, state_);
 
   UpdateState(State::ACTIVE);
@@ -202,7 +202,7 @@ void AppBannerManager::RequestAppBanner(const GURL& validated_url) {
   if (!has_sufficient_engagement_ &&
       (AppBannerSettingsHelper::HasSufficientEngagement(0) ||
        AppBannerSettingsHelper::HasSufficientEngagement(
-           GetSiteEngagementService()->GetScore(validated_url)))) {
+           GetSiteEngagementService()->GetScore(validated_url_)))) {
     has_sufficient_engagement_ = true;
   }
 
@@ -210,9 +210,6 @@ void AppBannerManager::RequestAppBanner(const GURL& validated_url) {
     status_reporter_ = std::make_unique<ConsoleStatusReporter>(web_contents());
   else
     status_reporter_ = std::make_unique<TrackingStatusReporter>();
-
-  if (validated_url_.is_empty())
-    validated_url_ = validated_url;
 
   UpdateState(State::FETCHING_MANIFEST);
   manager_->GetData(ParamsToGetManifest(),
@@ -647,7 +644,7 @@ void AppBannerManager::RecheckInstallabilityForLoadedPage() {
   }
 
   UpdateState(State::INACTIVE);
-  RequestAppBanner(validated_url_);
+  RequestAppBanner();
 }
 
 void AppBannerManager::TrackInstallPath(bool bottom_sheet,
@@ -710,7 +707,7 @@ void AppBannerManager::DidFinishNavigation(content::NavigationHandle* handle) {
   ResetCurrentPageData();
 
   if (handle->IsServedFromBackForwardCache()) {
-    RequestAppBanner(validated_url_);
+    RequestAppBanner();
   }
 }
 
@@ -731,7 +728,7 @@ void AppBannerManager::DidFinishLoad(
 
   // Start the pipeline immediately if we haven't already started it.
   if (state_ == State::INACTIVE)
-    RequestAppBanner(validated_url);
+    RequestAppBanner();
 }
 
 void AppBannerManager::DidUpdateWebManifestURL(
@@ -744,7 +741,7 @@ void AppBannerManager::DidUpdateWebManifestURL(
     case State::FETCHING_MANIFEST:
     case State::PENDING_INSTALLABLE_CHECK:
       UpdateState(State::INACTIVE);
-      RequestAppBanner(validated_url_);
+      RequestAppBanner();
       return;
     case State::ACTIVE:
     case State::FETCHING_NATIVE_DATA:
@@ -806,7 +803,7 @@ void AppBannerManager::OnEngagementEvent(
       // This performs some simple tests and starts async checks to test
       // installability. It should be safe to start in response to user input.
       // Don't call if we're already working on processing a banner request.
-      RequestAppBanner(url);
+      RequestAppBanner();
     }
   }
 }

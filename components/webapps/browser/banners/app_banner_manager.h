@@ -177,7 +177,7 @@ class AppBannerManager : public content::WebContentsObserver,
   bool MaybeConsumeInstallAnimation();
 
   // Requests an app banner.
-  virtual void RequestAppBanner(const GURL& validated_url);
+  virtual void RequestAppBanner();
 
   // Informs the page that it has been installed with appinstalled event and
   // performs logging related to the app installation. Appinstalled event is
