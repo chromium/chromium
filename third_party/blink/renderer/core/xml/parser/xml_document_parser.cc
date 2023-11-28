@@ -1635,7 +1635,7 @@ xmlDocPtr XmlDocPtrForString(Document* document,
   XMLDocumentParserScope scope(document, ErrorFunc, nullptr);
   XMLParserInput input(source);
   return xmlReadMemory(input.Data(), input.size(), url.Latin1().c_str(),
-                       input.Encoding(), XSLT_PARSE_OPTIONS);
+                       input.Encoding(), XSLT_PARSE_OPTIONS | XML_PARSE_HUGE);
 }
 
 OrdinalNumber XMLDocumentParser::LineNumber() const {
