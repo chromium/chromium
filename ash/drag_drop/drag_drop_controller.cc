@@ -852,9 +852,8 @@ void DragDropController::PerformDrop(
     observer.OnDropCompleted(operation_);
   }
 
-  // Replace `cancel_drag_callback` with an empty closure. Drop completed, so no
-  // need to cancel the drop.
-  cancel_drag_callback.ReplaceClosure(base::DoNothing());
+  // Drop completed, so no need to cancel the drop.
+  std::ignore = cancel_drag_callback.Release();
 }
 
 void DragDropController::CancelIfInProgress() {
