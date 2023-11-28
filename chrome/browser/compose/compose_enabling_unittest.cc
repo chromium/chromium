@@ -212,6 +212,22 @@ TEST_F(ComposeEnablingTest, NotSignedInTest) {
   CheckIsEnabledError(compose_enabling, compose::ComposeShowStatus::kSignedOut);
 }
 
+TEST_F(ComposeEnablingTest, SignedInErrorTest) {
+  ComposeEnabling compose_enabling(&mock_translate_language_provider_);
+
+  // Sign in, with error.
+  AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
+      kEmail, signin::ConsentLevel::kSync);
+  identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
+      account_info.account_id,
+      GoogleServiceAuthError(
+          GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
+
+  // Turn on MSBB.
+  SetMsbbState(true);
+  CheckIsEnabledError(compose_enabling, compose::ComposeShowStatus::kSignedOut);
+}
+
 TEST_F(ComposeEnablingTest, EverythingEnabledTest) {
   ComposeEnabling compose_enabling(&mock_translate_language_provider_);
   // Sign in, with sync turned on.

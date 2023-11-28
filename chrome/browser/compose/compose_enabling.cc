@@ -123,7 +123,9 @@ base::expected<void, compose::ComposeShowStatus> ComposeEnabling::IsEnabled(
   // Check signin status.
   CoreAccountInfo core_account_info =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  if (core_account_info.IsEmpty()) {
+  if (core_account_info.IsEmpty() ||
+      identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+          core_account_info.account_id)) {
     DVLOG(2) << "user not signed in " << __func__;
     return base::unexpected(compose::ComposeShowStatus::kSignedOut);
   }
