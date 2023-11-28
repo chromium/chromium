@@ -183,11 +183,6 @@ EGLConfig ChooseConfig(EGLDisplay display,
   bool want_rgb565 = format.IsRGB565();
   EGLint buffer_size = want_rgb565 ? 16 : 32;
 
-  // TODO(vasilyt): We don't need to pass these, as they are always -1.
-  EGLint depth_size = -1;
-  EGLint stencil_size = -1;
-  EGLint samples = -1;
-
   // Some platforms (eg. X11) may want to set custom values for alpha and buffer
   // sizes.
   GLDisplayEglUtil::GetInstance()->ChoosePlatformCustomAlphaAndBufferSize(
@@ -209,12 +204,6 @@ EGLConfig ChooseConfig(EGLDisplay display,
                                     8,
                                     EGL_RED_SIZE,
                                     8,
-                                    EGL_SAMPLES,
-                                    samples,
-                                    EGL_DEPTH_SIZE,
-                                    depth_size,
-                                    EGL_STENCIL_SIZE,
-                                    stencil_size,
                                     EGL_RENDERABLE_TYPE,
                                     renderable_type,
                                     EGL_SURFACE_TYPE,
@@ -229,12 +218,6 @@ EGLConfig ChooseConfig(EGLDisplay display,
                                    6,
                                    EGL_RED_SIZE,
                                    5,
-                                   EGL_SAMPLES,
-                                   samples,
-                                   EGL_DEPTH_SIZE,
-                                   depth_size,
-                                   EGL_STENCIL_SIZE,
-                                   stencil_size,
                                    EGL_RENDERABLE_TYPE,
                                    renderable_type,
                                    EGL_SURFACE_TYPE,
