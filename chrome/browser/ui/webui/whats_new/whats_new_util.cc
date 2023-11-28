@@ -30,6 +30,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/reduce_accept_language_controller_delegate.h"
 #include "net/base/url_util.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -232,6 +233,20 @@ class WhatsNewFetcher : public BrowserListObserver {
         g_browser_process->system_network_context_manager()
             ->GetURLLoaderFactory();
     auto request = std::make_unique<network::ResourceRequest>();
+
+    // Inform the server of the top browser language via the
+    // Accept-Language header.
+    if (auto* profile = browser->profile()) {
+      if (auto* delegate =
+              profile->GetReduceAcceptLanguageControllerDelegate()) {
+        auto languages = delegate->GetUserAcceptLanguages();
+        if (!languages.empty()) {
+          request->headers.SetHeader(request->headers.kAcceptLanguage,
+                                     languages.front());
+        }
+      }
+    }
+
     // Don't allow redirects when checking if the page is valid for the current
     // milestone.
     request->url = server_url;
