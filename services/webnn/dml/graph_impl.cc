@@ -4,6 +4,7 @@
 
 #include "services/webnn/dml/graph_impl.h"
 
+#include <string.h>
 #include <array>
 
 #include "base/bits.h"
@@ -337,8 +338,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForClamp(
   const OperatorNode* clamp_node = graph_builder.CreateOperatorNode(
       DML_OPERATOR_ELEMENT_WISE_CLIP, &clamp_operator_desc, inputs);
   if (!clamp_node) {
-    return base::unexpected(mojom::Error::New(
-        mojom::Error::Code::kUnknownError, "Failed to create clamp operator."));
+    return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
+                                        "Failed to create clamp operator."));
   }
 
   const NodeOutput* output = graph_builder.CreateNodeOutput(
@@ -382,9 +383,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConcat(
   const OperatorNode* concat_node = graph_builder.CreateOperatorNode(
       DML_OPERATOR_JOIN, &concat_operator_desc, inputs);
   if (!concat_node) {
-    return base::unexpected(
-        mojom::Error::New(mojom::Error::Code::kUnknownError,
-                          "Failed to create concat operator."));
+    return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
+                                        "Failed to create concat operator."));
   }
 
   const NodeOutput* output = graph_builder.CreateNodeOutput(
@@ -454,8 +454,8 @@ CreateActivationOperatorDesc(const mojom::ActivationPtr& activation) {
                                         DML_ACTIVATION_TANH_OPERATOR_DESC{}};
     default:
       return base::unexpected(
-          mojom::Error::New(mojom::Error::Code::kUnknownError,
-                            "The fused activation type is not supported."));
+          CreateError(mojom::Error::Code::kNotSupportedError,
+                      "The fused activation type is not supported."));
   }
 }
 
@@ -591,9 +591,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConv2d(
   const OperatorNode* conv2d_node = graph_builder.CreateOperatorNode(
       DML_OPERATOR_CONVOLUTION, &conv2d_operator_desc, inputs);
   if (!conv2d_node) {
-    return base::unexpected(
-        mojom::Error::New(mojom::Error::Code::kUnknownError,
-                          "Failed to create conv2d operator."));
+    return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
+                                        "Failed to create conv2d operator."));
   }
 
   if (conv2d->input_layout == mojom::InputOperandLayout::kChannelsLast) {
@@ -723,9 +722,10 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBinary(
     }
   }
   if (!binary_node) {
-    return base::unexpected(mojom::Error::New(
-        mojom::Error::Code::kUnknownError,
-        "Failed to create " + OpKindToString(operation->kind) + " operator."));
+    std::string error_message =
+        "Failed to create " + OpKindToString(operation->kind) + " operator.";
+    return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
+                                        std::move(error_message)));
   }
 
   const NodeOutput* output = graph_builder.CreateNodeOutput(
@@ -785,8 +785,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPad(
   const OperatorNode* pad_node = graph_builder.CreateOperatorNode(
       DML_OPERATOR_PADDING, &pad_operator_desc, {inputs});
   if (!pad_node) {
-    return base::unexpected(mojom::Error::New(
-        mojom::Error::Code::kUnknownError, "Failed to create pad operator."));
+    return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
+                                        "Failed to create pad operator."));
   }
 
   const NodeOutput* output =
@@ -864,7 +864,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPool2d(
       if (dilations[0] != 1 || dilations[1] != 1) {
         DLOG(ERROR)
             << "Dilations are not supported for average pooling operator.";
-        return base::unexpected(mojom::Error::New(
+        return base::unexpected(CreateError(
             mojom::Error::Code::kNotSupportedError,
             "Dilations are not supported for average pooling operator."));
       }
@@ -906,9 +906,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPool2d(
   }
 
   if (!pool2d_node) {
-    return base::unexpected(
-        mojom::Error::New(mojom::Error::Code::kUnknownError,
-                          "Failed to create pooling operator."));
+    return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
+                                        "Failed to create pooling operator."));
   }
   if (pool2d->layout == mojom::InputOperandLayout::kChannelsLast) {
     // Transpose the output tensor from nchw to nhwc layout.
@@ -953,8 +952,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPrelu(
   const OperatorNode* prelu_node = graph_builder.CreateOperatorNode(
       DML_OPERATOR_ACTIVATION_PARAMETERIZED_RELU, &prelu_desc, inputs);
   if (!prelu_node) {
-    return base::unexpected(mojom::Error::New(
-        mojom::Error::Code::kUnknownError, "Failed to create prelu operator."));
+    return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
+                                        "Failed to create prelu operator."));
   }
 
   const NodeOutput* node_output =
@@ -1006,8 +1005,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForSlice(
   const OperatorNode* slice_node = graph_builder.CreateOperatorNode(
       DML_OPERATOR_SLICE, &slice_operator_desc, input_node_output);
   if (!slice_node) {
-    return base::unexpected(mojom::Error::New(
-        mojom::Error::Code::kUnknownError, "Failed to create slice operator."));
+    return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
+                                        "Failed to create slice operator."));
   }
 
   const auto* slice_output =
@@ -1051,8 +1050,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForSplit(
       graph_builder.CreateOperatorNode(DML_OPERATOR_SPLIT, &split_desc, inputs);
 
   if (!split_node) {
-    return base::unexpected(mojom::Error::New(
-        mojom::Error::Code::kUnknownError, "Failed to create split operator."));
+    return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
+                                        "Failed to create split operator."));
   }
 
   for (uint32_t i = 0; i < output_count; ++i) {
@@ -1098,8 +1097,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForUnary(
       CreateUnaryOperator<OperatorDesc, operator_type>(
           input_tensor_desc, output_tensor_desc, input, graph_builder);
   if (!unary_node) {
-    return base::unexpected(mojom::Error::New(
-        mojom::Error::Code::kUnknownError, "Failed to create unary operator."));
+    return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
+                                        "Failed to create unary operator."));
   }
 
   const NodeOutput* output = graph_builder.CreateNodeOutput(
@@ -1299,8 +1298,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForResample2d(
       DML_OPERATOR_RESAMPLE, &resample2d_operator_desc, inputs);
   if (!resample2d_node) {
     return base::unexpected(
-        mojom::Error::New(mojom::Error::Code::kUnknownError,
-                          "Failed to create resample2d operator."));
+        CreateError(mojom::Error::Code::kUnknownError,
+                    "Failed to create resample2d operator."));
   }
 
   const NodeOutput* output = graph_builder.CreateNodeOutput(
@@ -1345,10 +1344,10 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForReduce(
   const OperatorNode* reduce_node = graph_builder.CreateOperatorNode(
       DML_OPERATOR_REDUCE, &operator_desc, inputs);
   if (!reduce_node) {
-    return base::unexpected(mojom::Error::New(
-        mojom::Error::Code::kUnknownError,
-        "Failed to create " + ReduceOpKindToString(reduce->kind) +
-            " operator."));
+    std::string error_message =
+        "Failed to create " + ReduceOpKindToString(reduce->kind) + " operator.";
+    return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
+                                        std::move(error_message)));
   }
 
   const NodeOutput* output =
@@ -1409,8 +1408,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForElu(
   const OperatorNode* elu_node = graph_builder.CreateOperatorNode(
       DML_OPERATOR_ACTIVATION_ELU, &elu_desc, inputs);
   if (!elu_node) {
-    return base::unexpected(mojom::Error::New(
-        mojom::Error::Code::kUnknownError, "Failed to create elu operator."));
+    return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
+                                        "Failed to create elu operator."));
   }
 
   const NodeOutput* node_output =
@@ -1524,8 +1523,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGemm(
   const OperatorNode* gemm_node = graph_builder.CreateOperatorNode(
       DML_OPERATOR_GEMM, &gemm_operator_desc, inputs);
   if (!gemm_node) {
-    return base::unexpected(mojom::Error::New(
-        mojom::Error::Code::kUnknownError, "Failed to create gemm operator."));
+    return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
+                                        "Failed to create gemm operator."));
   }
 
   const NodeOutput* output = graph_builder.CreateNodeOutput(
@@ -1559,8 +1558,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLeakyRelu(
       DML_OPERATOR_ACTIVATION_LEAKY_RELU, &leaky_relu_desc, inputs);
   if (!leaky_relu_node) {
     return base::unexpected(
-        mojom::Error::New(mojom::Error::Code::kUnknownError,
-                          "Failed to create leakyRelu operator."));
+        CreateError(mojom::Error::Code::kUnknownError,
+                    "Failed to create leakyRelu operator."));
   }
 
   const NodeOutput* node_output = graph_builder.CreateNodeOutput(
@@ -1618,9 +1617,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForMatmul(
   const OperatorNode* matmul_node = graph_builder.CreateOperatorNode(
       DML_OPERATOR_GEMM, &matmul_operator_desc, inputs);
   if (!matmul_node) {
-    return base::unexpected(
-        mojom::Error::New(mojom::Error::Code::kUnknownError,
-                          "Failed to create matmul operator."));
+    return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
+                                        "Failed to create matmul operator."));
   }
 
   const NodeOutput* output = graph_builder.CreateNodeOutput(
@@ -1659,9 +1657,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForTranspose(
                           DML_OPERATOR_ELEMENT_WISE_IDENTITY>(
           remapped_input_tensor_desc, output_tensor_desc, input, graph_builder);
   if (!identity_node) {
-    return base::unexpected(
-        mojom::Error::New(mojom::Error::Code::kUnknownError,
-                          "Failed to create identity operator."));
+    return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
+                                        "Failed to create identity operator."));
   }
 
   const NodeOutput* output = graph_builder.CreateNodeOutput(
@@ -1853,8 +1850,8 @@ void GraphImpl::OnCompilationComplete(
   TRACE_EVENT0("gpu", "dml::GraphImpl::OnCompilationComplete");
   if (!compiled_operator) {
     DLOG(ERROR) << "Failed to compile the graph.";
-    std::move(callback).Run(ToError<mojom::CreateGraphResult>(
-        mojom::Error::Code::kUnknownError, "Failed to compile the graph."));
+    std::move(callback).Run(mojom::CreateGraphResult::NewError(CreateError(
+        mojom::Error::Code::kUnknownError, "Failed to compile the graph.")));
     return;
   }
 
@@ -1862,9 +1859,9 @@ void GraphImpl::OnCompilationComplete(
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to open the command recorder: "
                 << logging::SystemErrorCodeToString(hr);
-    std::move(callback).Run(ToError<mojom::CreateGraphResult>(
-        mojom::Error::Code::kUnknownError,
-        "Failed to open the command recorder."));
+    std::move(callback).Run(mojom::CreateGraphResult::NewError(
+        CreateError(mojom::Error::Code::kUnknownError,
+                    "Failed to open the command recorder.")));
     return;
   }
 
@@ -1895,9 +1892,9 @@ void GraphImpl::OnCompilationComplete(
     if (!aligned_byte_length_of_constants) {
       DLOG(ERROR)
           << "Failed to calculate the aligned byte length of constants.";
-      std::move(callback).Run(ToError<mojom::CreateGraphResult>(
+      std::move(callback).Run(mojom::CreateGraphResult::NewError(CreateError(
           mojom::Error::Code::kUnknownError,
-          "Failed to calculate the aligned byte length of constants."));
+          "Failed to calculate the aligned byte length of constants.")));
       return;
     }
 
@@ -1912,9 +1909,9 @@ void GraphImpl::OnCompilationComplete(
     if (FAILED(hr)) {
       DLOG(ERROR) << "Failed to create upload buffer for constants: "
                   << logging::SystemErrorCodeToString(hr);
-      std::move(callback).Run(ToError<mojom::CreateGraphResult>(
-          mojom::Error::Code::kUnknownError,
-          "Failed to create upload buffer for constants."));
+      std::move(callback).Run(mojom::CreateGraphResult::NewError(
+          CreateError(mojom::Error::Code::kUnknownError,
+                      "Failed to create upload buffer for constants.")));
       return;
     }
     // Create the default heap that only can be accessed by GPU not provide CPU
@@ -1926,9 +1923,9 @@ void GraphImpl::OnCompilationComplete(
     if (FAILED(hr)) {
       DLOG(ERROR) << "Failed to create default input buffer for constants: "
                   << logging::SystemErrorCodeToString(hr);
-      std::move(callback).Run(ToError<mojom::CreateGraphResult>(
-          mojom::Error::Code::kUnknownError,
-          "Failed to create default input buffer for constants."));
+      std::move(callback).Run(mojom::CreateGraphResult::NewError(
+          CreateError(mojom::Error::Code::kUnknownError,
+                      "Failed to create default input buffer for constants.")));
       return;
     }
     auto constant_buffer_binding = UploadAndCreateBufferBinding<uint64_t>(
@@ -1937,9 +1934,9 @@ void GraphImpl::OnCompilationComplete(
         std::move(default_buffer));
     if (!constant_buffer_binding) {
       DLOG(ERROR) << "Failed to upload constant weight data.";
-      std::move(callback).Run(ToError<mojom::CreateGraphResult>(
-          mojom::Error::Code::kUnknownError,
-          "Failed to upload constant weight data."));
+      std::move(callback).Run(mojom::CreateGraphResult::NewError(
+          CreateError(mojom::Error::Code::kUnknownError,
+                      "Failed to upload constant weight data.")));
       return;
     }
     // The constant tensor must be bound to the binding table during operator
@@ -1976,9 +1973,9 @@ void GraphImpl::OnCompilationComplete(
     if (FAILED(hr)) {
       DLOG(ERROR) << "Failed to create the default buffer: "
                   << logging::SystemErrorCodeToString(hr);
-      std::move(callback).Run(ToError<mojom::CreateGraphResult>(
-          mojom::Error::Code::kUnknownError,
-          "Failed to create the default buffer."));
+      std::move(callback).Run(mojom::CreateGraphResult::NewError(
+          CreateError(mojom::Error::Code::kUnknownError,
+                      "Failed to create the default buffer.")));
       return;
     }
 
@@ -1998,9 +1995,9 @@ void GraphImpl::OnCompilationComplete(
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to initialize the operator: "
                 << logging::SystemErrorCodeToString(hr);
-    std::move(callback).Run(ToError<mojom::CreateGraphResult>(
-        mojom::Error::Code::kUnknownError,
-        "Failed to initialize the operator."));
+    std::move(callback).Run(mojom::CreateGraphResult::NewError(
+        CreateError(mojom::Error::Code::kUnknownError,
+                    "Failed to initialize the operator.")));
     return;
   }
 
@@ -2008,9 +2005,9 @@ void GraphImpl::OnCompilationComplete(
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to close and execute the command list: "
                 << logging::SystemErrorCodeToString(hr);
-    std::move(callback).Run(ToError<mojom::CreateGraphResult>(
-        mojom::Error::Code::kUnknownError,
-        "Failed to close and execute the command list."));
+    std::move(callback).Run(mojom::CreateGraphResult::NewError(
+        CreateError(mojom::Error::Code::kUnknownError,
+                    "Failed to close and execute the command list.")));
     return;
   }
 
@@ -2037,9 +2034,9 @@ void GraphImpl::OnInitializationComplete(
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to wait for the initialization to complete: "
                 << logging::SystemErrorCodeToString(hr);
-    std::move(callback).Run(ToError<mojom::CreateGraphResult>(
-        mojom::Error::Code::kUnknownError,
-        "Failed to wait for the initialization to complete."));
+    std::move(callback).Run(mojom::CreateGraphResult::NewError(
+        CreateError(mojom::Error::Code::kUnknownError,
+                    "Failed to wait for the initialization to complete.")));
     return;
   }
 
@@ -2047,9 +2044,9 @@ void GraphImpl::OnInitializationComplete(
       AllocateComputeResources(command_recorder.get(), compiled_operator.Get(),
                                compute_resource_info);
   if (!compute_resources) {
-    std::move(callback).Run(ToError<mojom::CreateGraphResult>(
-        mojom::Error::Code::kUnknownError,
-        "Failed to allocate compute resource."));
+    std::move(callback).Run(mojom::CreateGraphResult::NewError(
+        CreateError(mojom::Error::Code::kUnknownError,
+                    "Failed to allocate compute resource.")));
     return;
   }
 
@@ -2081,9 +2078,9 @@ void GraphImpl::CreateAndBuild(
       CommandRecorder::Create(command_queue, dml_device);
   if (!command_recorder) {
     DLOG(ERROR) << "Failed to open the command recorder.";
-    std::move(callback).Run(ToError<mojom::CreateGraphResult>(
-        mojom::Error::Code::kUnknownError,
-        "Failed to open the command recorder."));
+    std::move(callback).Run(mojom::CreateGraphResult::NewError(
+        CreateError(mojom::Error::Code::kUnknownError,
+                    "Failed to open the command recorder.")));
     return;
   }
 
@@ -2268,13 +2265,12 @@ void GraphImpl::CreateAndBuild(
         break;
       }
       default: {
-        DLOG(ERROR) << "This operator kind (" +
-                           OpTagToString(operation->which()) +
-                           ") is not supported.";
-        create_operator_result = base::unexpected(mojom::Error::New(
-            mojom::Error::Code::kNotSupportedError,
-            "This operator (" + OpTagToString(operation->which()) +
-                ") is not supported."));
+        std::string error_message = "This operator (" +
+                                    OpTagToString(operation->which()) +
+                                    ") is not supported.";
+        DLOG(ERROR) << error_message;
+        create_operator_result = base::unexpected(CreateError(
+            mojom::Error::Code::kNotSupportedError, std::move(error_message)));
       }
     }
     if (!create_operator_result.has_value()) {
@@ -2312,8 +2308,8 @@ void GraphImpl::CreateAndBuild(
               output_tensor_desc, identity_tensor_desc, output, graph_builder);
       if (!identity_node) {
         std::move(callback).Run(mojom::CreateGraphResult::NewError(
-            mojom::Error::New(mojom::Error::Code::kUnknownError,
-                              "Failed to create identity operator.")));
+            CreateError(mojom::Error::Code::kUnknownError,
+                        "Failed to create identity operator.")));
         return;
       }
 

@@ -4,6 +4,7 @@
 
 #include "services/webnn/dml/utils.h"
 
+#include <string.h>
 #include <set>
 
 #include "base/bits.h"
@@ -18,6 +19,8 @@
 namespace webnn::dml {
 
 namespace {
+
+const char kBackendName[] = "DirectML: ";
 
 // Note that the element count is considered as 1 when the give dimensions is
 // empty.
@@ -196,6 +199,12 @@ void UploadBufferWithBarrier(CommandRecorder* command_recorder,
       CreateTransitionBarrier(dst_buffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST,
                               D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
   command_recorder->ResourceBarrier(barriers);
+}
+
+mojom::ErrorPtr CreateError(mojom::Error::Code error_code,
+                            std::string error_messages) {
+  return mojom::Error::New(error_code,
+                           kBackendName + std::move(error_messages));
 }
 
 }  // namespace webnn::dml

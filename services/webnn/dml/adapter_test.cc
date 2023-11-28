@@ -33,31 +33,31 @@ TEST_F(WebNNAdapterTest, CreateAdapterFromAngle) {
   ComPtr<IDXGIAdapter> dxgi_adapter;
   dxgi_device->GetAdapter(&dxgi_adapter);
   ASSERT_NE(dxgi_adapter.Get(), nullptr);
-  EXPECT_NE(Adapter::Create(dxgi_adapter, DML_FEATURE_LEVEL_1_0).get(),
-            nullptr);
+  EXPECT_TRUE(Adapter::Create(dxgi_adapter, DML_FEATURE_LEVEL_1_0).has_value());
 }
 
 TEST_F(WebNNAdapterTest, GetInstance) {
   // Test creating Adapter instance upon `GetInstance()` and release it if there
   // are no references anymore.
-  {
-    auto adapter = Adapter::GetInstanceForTesting();
-    EXPECT_NE(adapter.get(), nullptr);
-  }
+  { EXPECT_TRUE(Adapter::GetInstanceForTesting().has_value()); }
   EXPECT_EQ(Adapter::instance_, nullptr);
 
   // Test two Adapters should share one instance.
   {
-    auto adapter1 = Adapter::GetInstanceForTesting();
-    auto adapter2 = Adapter::GetInstanceForTesting();
-    EXPECT_EQ(adapter1.get(), adapter2.get());
+    auto adapter1_creation_result = Adapter::GetInstanceForTesting();
+    auto adapter2_creation_result = Adapter::GetInstanceForTesting();
+    ASSERT_TRUE(adapter1_creation_result.has_value());
+    ASSERT_TRUE(adapter2_creation_result.has_value());
+    EXPECT_EQ(adapter1_creation_result.value(),
+              adapter2_creation_result.value());
   }
   EXPECT_EQ(Adapter::instance_, nullptr);
 }
 
 TEST_F(WebNNAdapterTest, CheckAdapterAccessors) {
-  auto adapter = Adapter::GetInstanceForTesting();
-  ASSERT_NE(adapter.get(), nullptr);
+  auto adapter_creation_result = Adapter::GetInstanceForTesting();
+  ASSERT_TRUE(adapter_creation_result.has_value());
+  auto adapter = adapter_creation_result.value();
   EXPECT_NE(adapter->dxgi_adapter(), nullptr);
   EXPECT_NE(adapter->d3d12_device(), nullptr);
   EXPECT_NE(adapter->dml_device(), nullptr);
@@ -65,28 +65,43 @@ TEST_F(WebNNAdapterTest, CheckAdapterAccessors) {
 }
 
 TEST_F(WebNNAdapterTest, CreateAdapterMinRequiredFeatureLevel) {
-  SKIP_TEST_IF(!Adapter::GetInstance(DML_FEATURE_LEVEL_4_0));
-  EXPECT_NE(Adapter::GetInstance(DML_FEATURE_LEVEL_4_0), nullptr);
-  EXPECT_NE(Adapter::GetInstance(DML_FEATURE_LEVEL_2_0), nullptr);
-  EXPECT_EQ(Adapter::GetInstance(DML_FEATURE_LEVEL_4_0),
-            Adapter::GetInstance(DML_FEATURE_LEVEL_2_0));
+  SKIP_TEST_IF(!Adapter::GetInstance(DML_FEATURE_LEVEL_4_0).has_value());
+  ASSERT_TRUE(Adapter::GetInstance(DML_FEATURE_LEVEL_4_0).has_value());
+  ASSERT_TRUE(Adapter::GetInstance(DML_FEATURE_LEVEL_2_0).has_value());
+  EXPECT_EQ(Adapter::GetInstance(DML_FEATURE_LEVEL_4_0).value(),
+            Adapter::GetInstance(DML_FEATURE_LEVEL_2_0).value());
 }
 
 TEST_F(WebNNAdapterTest, CheckAdapterMinFeatureLevel) {
   // Check adapter feature level requested is supported.
   // All DML adapters must support DML_FEATURE_LEVEL_1_0.
-  auto adapter = Adapter::GetInstance(DML_FEATURE_LEVEL_1_0);
-  ASSERT_NE(adapter.get(), nullptr);
-  EXPECT_TRUE(adapter->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_1_0));
+  auto adapter_creation_result = Adapter::GetInstance(DML_FEATURE_LEVEL_1_0);
+  ASSERT_TRUE(adapter_creation_result.has_value());
+  EXPECT_TRUE(adapter_creation_result.value()->IsDMLFeatureLevelSupported(
+      DML_FEATURE_LEVEL_1_0));
 }
 
 TEST_F(WebNNAdapterTest, CheckAdapterMinRequiredFeatureLevel) {
   // Check adapter feature level, if DML_FEATURE_LEVEL_4_0 is supported.
-  SKIP_TEST_IF(!Adapter::GetInstance(DML_FEATURE_LEVEL_4_0));
-  auto adapter = Adapter::GetInstance(DML_FEATURE_LEVEL_4_0);
-  ASSERT_NE(adapter.get(), nullptr);
-  EXPECT_TRUE(adapter->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_4_0));
-  EXPECT_TRUE(adapter->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_3_0));
+  SKIP_TEST_IF(!Adapter::GetInstance(DML_FEATURE_LEVEL_4_0).has_value());
+  auto adapter_creation_result = Adapter::GetInstance(DML_FEATURE_LEVEL_4_0);
+  ASSERT_TRUE(adapter_creation_result.has_value());
+  EXPECT_TRUE(adapter_creation_result.value()->IsDMLFeatureLevelSupported(
+      DML_FEATURE_LEVEL_4_0));
+  EXPECT_TRUE(adapter_creation_result.value()->IsDMLFeatureLevelSupported(
+      DML_FEATURE_LEVEL_3_0));
+}
+
+TEST_F(WebNNAdapterTest,
+       CheckAdapterWithPlatformFeatureLevelLowerThanRequired) {
+  // Currently, DML_FEATURE_LEVEL_5_0 is not supported.
+  auto adapter_creation_result = Adapter::GetInstance(DML_FEATURE_LEVEL_5_0);
+  EXPECT_FALSE(adapter_creation_result.has_value());
+  EXPECT_EQ(adapter_creation_result.error()->error_code,
+            mojom::Error::Code::kNotSupportedError);
+  EXPECT_EQ(adapter_creation_result.error()->error_message,
+            "DirectML: The DirectML feature level on this platform is lower "
+            "than the minimum required one.");
 }
 
 }  // namespace webnn::dml

@@ -12,6 +12,7 @@
 
 #include "base/containers/span.h"
 #include "services/webnn/dml/command_recorder.h"
+#include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 
 namespace webnn::dml {
 
@@ -50,6 +51,9 @@ void UploadBufferWithBarrier(CommandRecorder* command_recorder,
                              ComPtr<ID3D12Resource> dst_buffer,
                              ComPtr<ID3D12Resource> src_buffer,
                              size_t buffer_size);
+
+mojom::ErrorPtr CreateError(mojom::Error::Code error_code,
+                            std::string error_messages);
 
 }  // namespace webnn::dml
 
