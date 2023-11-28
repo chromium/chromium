@@ -782,6 +782,10 @@ public final class ProductionSupportedFlagList {
                 NetworkServiceFeatures.REDUCE_TRANSFER_SIZE_UPDATED_IPC,
                 "When enabled, the network service will send TransferSizeUpdatedIPC IPC only when"
                         + " DevTools is attached or the request is for an ad request."),
+        Flag.baseFeature(
+                BaseFeatures.USE_NEW_JOB_IMPLEMENTATION,
+                "Uses a thread pool job implementation which leverages atomics to minimize lock"
+                        + " contention."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
