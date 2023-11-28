@@ -141,6 +141,12 @@ class GuestOsRegistryService : public KeyedService {
         const std::vector<std::string>& removed_apps,
         const std::vector<std::string>& inserted_apps) {}
 
+    // Called at the end of AppLaunched().
+    virtual void OnAppLastLaunchTimeUpdated(
+        VmType vm_type,
+        const std::string& app_id,
+        const base::Time& last_launch_time) {}
+
    protected:
     virtual ~Observer() = default;
   };

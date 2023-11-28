@@ -1096,6 +1096,18 @@ void GuestOsRegistryService::AppLaunched(const std::string& app_id) {
   ScopedDictPrefUpdate update(prefs_, guest_os::prefs::kGuestOsRegistry);
   base::Value::Dict& app = update->Find(app_id)->GetDict();
   SetCurrentTime(app, guest_os::prefs::kAppLastLaunchTimeKey);
+
+  auto vm_type = app.FindInt(guest_os::prefs::kVmTypeKey);
+  if (!vm_type.has_value()) {
+    LOG(ERROR) << "Failed to find " << guest_os::prefs::kVmTypeKey
+               << " for app " << app_id;
+    return;
+  }
+
+  for (Observer& obs : observers_) {
+    obs.OnAppLastLaunchTimeUpdated(static_cast<VmType>(vm_type.value()), app_id,
+                                   clock_->Now());
+  }
 }
 
 void GuestOsRegistryService::SetCurrentTime(base::Value::Dict& dictionary,

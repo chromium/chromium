@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/test/simple_test_clock.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
@@ -71,6 +72,7 @@ class GuestOSAppsTest : public testing::Test {
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile_.get());
     registry_ =
         guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_.get());
+    registry_->SetClockForTesting(&test_clock_);
     publisher_ = std::make_unique<TestPublisher>(app_service_proxy());
     publisher_->InitializeForTesting();
   }
@@ -137,6 +139,8 @@ class GuestOSAppsTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
+  base::SimpleTestClock& test_clock() { return test_clock_; }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
@@ -144,6 +148,7 @@ class GuestOSAppsTest : public testing::Test {
   raw_ptr<guest_os::GuestOsRegistryService, DanglingUntriaged> registry_ =
       nullptr;
   std::unique_ptr<TestPublisher> publisher_;
+  base::SimpleTestClock test_clock_;
 };
 
 TEST_F(GuestOSAppsTest, CreateApp) {
@@ -173,6 +178,32 @@ TEST_F(GuestOSAppsTest, CreateApp) {
         EXPECT_TRUE(update.ShowInShelf());
       });
   EXPECT_TRUE(seen) << "Couldn't find test app in registry.";
+}
+
+TEST_F(GuestOSAppsTest, OnAppLastLaunchTimeUpdated) {
+  // Create a test app.
+  vm_tools::apps::App app;
+  app.add_mime_types("text/plain");
+  app.set_desktop_file_id("desktop_file_id");
+  vm_tools::apps::App::LocaleString::Entry* entry =
+      app.mutable_name()->add_values();
+  entry->set_value("app_name");
+  const std::string app_id = AddApp(app);
+
+  // Get the AppUpdate from the registry and check its contents.
+  app_service_proxy()->AppRegistryCache().ForOneApp(
+      app_id, [](const AppUpdate& update) {
+        EXPECT_EQ(update.LastLaunchTime(), base::Time());
+      });
+
+  test_clock().Advance(base::Hours(1));
+  registry()->AppLaunched(app_id);
+
+  // Get LastLaunchTime from the registry and check its contents.
+  app_service_proxy()->AppRegistryCache().ForOneApp(
+      app_id, [](const AppUpdate& update) {
+        EXPECT_EQ(update.LastLaunchTime(), base::Time() + base::Hours(1));
+      });
 }
 
 TEST_F(GuestOSAppsTest, AppServiceHasIntentFilters) {

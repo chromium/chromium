@@ -79,6 +79,23 @@ void GuestOSApps::GetCompressedIconData(const std::string& app_id,
                                   std::move(callback));
 }
 
+void GuestOSApps::LaunchAppWithParams(AppLaunchParams&& params,
+                                      LaunchCallback callback) {
+  auto event_flags = apps::GetEventFlags(params.disposition,
+                                         /*prefer_container=*/false);
+  if (params.intent) {
+    LaunchAppWithIntent(params.app_id, event_flags, std::move(params.intent),
+                        params.launch_source,
+                        std::make_unique<WindowInfo>(params.display_id),
+                        std::move(callback));
+  } else {
+    Launch(params.app_id, event_flags, params.launch_source,
+           std::make_unique<WindowInfo>(params.display_id));
+    // TODO(crbug.com/1244506): Add launch return value.
+    std::move(callback).Run(LaunchResult());
+  }
+}
+
 void GuestOSApps::OnRegistryUpdated(
     guest_os::GuestOsRegistryService* registry_service,
     guest_os::VmType vm_type,
@@ -109,21 +126,20 @@ void GuestOSApps::OnRegistryUpdated(
   }
 }
 
-void GuestOSApps::LaunchAppWithParams(AppLaunchParams&& params,
-                                      LaunchCallback callback) {
-  auto event_flags = apps::GetEventFlags(params.disposition,
-                                         /*prefer_container=*/false);
-  if (params.intent) {
-    LaunchAppWithIntent(params.app_id, event_flags, std::move(params.intent),
-                        params.launch_source,
-                        std::make_unique<WindowInfo>(params.display_id),
-                        std::move(callback));
-  } else {
-    Launch(params.app_id, event_flags, params.launch_source,
-           std::make_unique<WindowInfo>(params.display_id));
-    // TODO(crbug.com/1244506): Add launch return value.
-    std::move(callback).Run(LaunchResult());
+void GuestOSApps::OnAppLastLaunchTimeUpdated(
+    guest_os::VmType vm_type,
+    const std::string& app_id,
+    const base::Time& last_launch_time) {
+  if (vm_type != VmType()) {
+    return;
   }
+
+  auto app = std::make_unique<App>(AppType(), app_id);
+  app->last_launch_time = last_launch_time;
+  std::vector<AppPtr> apps;
+  apps.push_back(std::move(app));
+  AppPublisher::Publish(std::move(apps), AppType(),
+                        /*should_notify_initialized=*/false);
 }
 
 AppPtr GuestOSApps::CreateApp(
