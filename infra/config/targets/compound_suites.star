@@ -1279,6 +1279,14 @@ targets.legacy_compound_suite(
     ],
 )
 
+targets.legacy_compound_suite(
+    name = "linux_chromeos_isolated_scripts",
+    basic_suites = [
+        "blink_web_tests_ppapi_isolated_scripts",
+        "chrome_sizes",
+    ],
+)
+
 # This is:
 #   linux_chromeos_gtests
 #   + 'linux_chromeos_browser_tests_require_lacros'

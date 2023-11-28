@@ -373,6 +373,33 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
+    name = "blink_web_tests_ppapi_isolated_scripts",
+    tests = {
+        "ppapi_blink_web_tests": targets.legacy_test_config(
+            test = "blink_web_tests",
+            results_handler = "layout tests",
+            mixins = [
+                "has_native_resultdb_integration",
+                "blink_tests_write_run_histories",
+            ],
+            args = [
+                # layout test failures are retried 3 times when '--test-list' is not
+                # passed, but 0 times when '--test-list' is passed. We want to always
+                # retry 3 times, so we explicitly specify it.
+                "--num-retries=3",
+                "--test-list=../../third_party/blink/web_tests/TestLists/ppapi",
+            ],
+            merge = targets.merge(
+                script = "//third_party/blink/tools/merge_web_test_results.py",
+                args = [
+                    "--verbose",
+                ],
+            ),
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
     name = "cast_audio_specific_chromium_gtests",
     tests = {
         "cast_audio_backend_unittests": None,
