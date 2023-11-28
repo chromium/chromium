@@ -10,7 +10,6 @@
 #include <set>
 #include <type_traits>
 #include <unordered_set>
-#include <vector>
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr_exclusion.h"
