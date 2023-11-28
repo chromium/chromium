@@ -30,7 +30,8 @@ concept UnsignedInteger =
 // Returns true iff |value| is a power of 2.
 //
 // TODO(https://crbug.com/1414634): Replace with std::has_single_bit().
-template <UnsignedInteger T>
+template <typename T>
+  requires UnsignedInteger<T>
 constexpr bool IsPowerOfTwo(T value) {
   // From "Hacker's Delight": Section 2.1 Manipulating Rightmost Bits.
   //
@@ -42,7 +43,8 @@ constexpr bool IsPowerOfTwo(T value) {
 }
 
 // Round down |size| to a multiple of alignment, which must be a power of two.
-template <UnsignedInteger T>
+template <typename T>
+  requires UnsignedInteger<T>
 inline constexpr T AlignDown(T size, T alignment) {
   PA_BASE_DCHECK(IsPowerOfTwo(alignment));
   return size & ~(alignment - 1);
@@ -58,7 +60,8 @@ inline T* AlignDown(T* ptr, size_t alignment) {
 }
 
 // Round up |size| to a multiple of alignment, which must be a power of two.
-template <UnsignedInteger T>
+template <typename T>
+  requires UnsignedInteger<T>
 inline constexpr T AlignUp(T size, T alignment) {
   PA_BASE_DCHECK(IsPowerOfTwo(alignment));
   return (size + alignment - 1) & ~(alignment - 1);
@@ -103,7 +106,8 @@ constexpr int Log2Ceiling(uint32_t n) {
 // Returns a value of type T with a single bit set in the left-most position.
 // Can be used instead of manually shifting a 1 to the left. Unlike the other
 // functions in this file, usable for any integral type.
-template <std::integral T>
+template <typename T>
+  requires std::integral<T>
 constexpr T LeftmostBit() {
   T one(1u);
   return one << (8 * sizeof(T) - 1);
