@@ -8,6 +8,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "content/browser/media/cdm_storage_database.h"
 #include "media/cdm/cdm_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,6 +47,8 @@ class CdmStorageDatabaseTest : public testing::Test {
   }
 
   base::ScopedTempDir profile_path_;
+
+  base::HistogramTester histogram_tester_;
 };
 
 // This class is to test for when db_.Open() fails.
@@ -190,6 +193,21 @@ TEST_F(CdmStorageDatabaseInMemoryTest, DeleteForStorageKeyWithNoData) {
           ->empty());
 }
 
+TEST_F(CdmStorageDatabaseInMemoryTest, WriteFileForBigData) {
+  std::vector<uint8_t> big_data;
+  big_data.resize(1000000);
+
+  EXPECT_TRUE(cdm_storage_database_->WriteFile(kTestStorageKey, kCdmType,
+                                               kFileName, big_data));
+
+  histogram_tester_.ExpectTotalCount(
+      "Media.EME.CdmStorageDatabase.WriteFileForBigData", 1);
+
+  EXPECT_EQ(
+      cdm_storage_database_->ReadFile(kTestStorageKey, kCdmType, kFileName),
+      big_data);
+}
+
 TEST_F(CdmStorageDatabaseValidPathTest, EnsureOpenWithoutErrors) {
   auto error = cdm_storage_database_->EnsureOpen();
 
@@ -288,6 +306,22 @@ TEST_F(CdmStorageDatabaseValidPathTest, DeleteForStorageKeyWithNoData) {
   EXPECT_TRUE(
       cdm_storage_database_->ReadFile(kTestStorageKey, kCdmType, kFileName)
           ->empty());
+}
+
+TEST_F(CdmStorageDatabaseValidPathTest, WriteFileForBigData) {
+  std::vector<uint8_t> big_data;
+  big_data.resize(1000000);
+
+  EXPECT_TRUE(cdm_storage_database_->WriteFile(kTestStorageKey, kCdmType,
+                                               kFileName, big_data));
+
+  const char uma_name[] = "Media.EME.CdmStorageDatabase.WriteFileForBigData";
+  histogram_tester_.ExpectTotalCount(uma_name, 1);
+  histogram_tester_.ExpectBucketCount(uma_name, true, 1);
+
+  EXPECT_EQ(
+      cdm_storage_database_->ReadFile(kTestStorageKey, kCdmType, kFileName),
+      big_data);
 }
 
 }  // namespace content

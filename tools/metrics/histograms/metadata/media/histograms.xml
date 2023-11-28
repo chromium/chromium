@@ -2327,6 +2327,16 @@ chromium-metrics-reviews@google.com.
   <summary>The time spent to load a library CDM.</summary>
 </histogram>
 
+<histogram name="Media.EME.CdmStorageDatabase.WriteFileForBigData"
+    enum="Boolean" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA records when the data being written to the CdmStorageDatabase
+    exceeds 15 KB. This UMA is recorded on every write over 15KB that succeeds.
+  </summary>
+</histogram>
+
 <histogram name="Media.EME.CdmStorageDatabaseSQLiteError"
     enum="SqliteLoggedResultCode" expires_after="2024-04-11">
   <owner>vpasupathy@chromium.org</owner>
@@ -2843,6 +2853,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Media.EME.MediaLicenseDatabase.WriteFile.FullDiskDataSizeBytes"
+    units="bytes" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA records the bytes of the data that fail to be written to the
+    MediaLicenseDatabase during a full disk error. This histogram is logged when
+    a write fails with a full disk error.
+  </summary>
+</histogram>
+
 <histogram name="Media.EME.MediaLicenseDatabaseCreateDirectoryError"
     enum="PlatformFileError" expires_after="2024-04-11">
   <owner>vpasupathy@chromium.org</owner>
@@ -2880,6 +2902,39 @@ chromium-metrics-reviews@google.com.
   <summary>
     SQLite specific errors reported while opening and using the Media License
     Database.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.MediaLicenseDatabaseSQLiteError.DeleteFile"
+    enum="SqliteLoggedResultCode" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA records SQLite specific errors that occur when deleting a file from
+    the Media License Database. This UMA is recorded on every error for this
+    operation.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.MediaLicenseDatabaseSQLiteError.ReadFile"
+    enum="SqliteLoggedResultCode" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA records SQLite specific errors that occur when reading a file from
+    the Media License Database. This UMA is recorded on every error for this
+    operation.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.MediaLicenseDatabaseSQLiteError.WriteFile"
+    enum="SqliteLoggedResultCode" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA records SQLite specific errors that occur when writing a file to
+    the Media License Database. This UMA is recorded on every error for this
+    operation.
   </summary>
 </histogram>
 

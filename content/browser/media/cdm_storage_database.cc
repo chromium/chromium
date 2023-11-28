@@ -117,6 +117,12 @@ bool CdmStorageDatabase::WriteFile(const blink::StorageKey& storage_key,
 
   DVLOG_IF(1, !success) << "Error writing Cdm storage data.";
 
+  if (success) {
+    bool large_write = data.size() > (15 * 1024);
+    base::UmaHistogramBoolean(
+        "Media.EME.CdmStorageDatabase.WriteFileForBigData", large_write);
+  }
+
   return success;
 }
 
