@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/download/download_manager_consumer.h"
+#import "ios/chrome/browser/ui/download/download_manager_view_controller_protocol.h"
 
 @class DownloadManagerStateView;
 @protocol DownloadManagerViewControllerDelegate;
@@ -16,19 +17,17 @@
 
 // Presents bottom bar UI for a single download task.
 @interface LegacyDownloadManagerViewController
-    : UIViewController<DownloadManagerConsumer>
+    : UIViewController <DownloadManagerConsumer,
+                        DownloadManagerViewControllerProtocol>
 
+// DownloadManagerViewControllerProtocol overrides.
 @property(nonatomic, weak) id<DownloadManagerViewControllerDelegate> delegate;
-
-// The layout guide center to use to retrieve the bottom margin.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
-
-// Whether the download prompt is displaying in Incognito mode.
 @property(nonatomic, assign) BOOL incognito;
 
 @end
 
-// All UI elements presend in view controller's view.
+// All UI elements present in view controller's view.
 @interface LegacyDownloadManagerViewController (UIElements)
 
 // Button to dismiss the download toolbar.

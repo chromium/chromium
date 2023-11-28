@@ -330,6 +330,10 @@ NSString* GetSizeString(long long size_in_bytes) {
 
 #pragma mark - Public
 
+- (UIView*)openInSourceView {
+  return self.actionButton;
+}
+
 - (void)setIncognito:(BOOL)incognito {
   _incognito = incognito;
   self.overrideUserInterfaceStyle =

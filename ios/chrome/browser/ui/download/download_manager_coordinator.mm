@@ -13,6 +13,7 @@
 
 #import "base/apple/scoped_cftyperef.h"
 #import "base/check_op.h"
+#import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
@@ -37,11 +38,14 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/store_kit/model/store_kit_coordinator.h"
 #import "ios/chrome/browser/store_kit/model/store_kit_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/download/activities/open_downloads_folder_activity.h"
 #import "ios/chrome/browser/ui/download/download_manager_mediator.h"
+#import "ios/chrome/browser/ui/download/download_manager_view_controller.h"
 #import "ios/chrome/browser/ui/download/download_manager_view_controller_delegate.h"
+#import "ios/chrome/browser/ui/download/download_manager_view_controller_protocol.h"
 #import "ios/chrome/browser/ui/download/legacy_download_manager_view_controller.h"
 #import "ios/chrome/browser/ui/download/unopened_downloads_tracker.h"
 #import "ios/chrome/browser/ui/presenters/contained_presenter.h"
@@ -57,7 +61,8 @@
                                           DownloadManagerViewControllerDelegate,
                                           StoreKitCoordinatorDelegate> {
   // View controller for presenting Download Manager UI.
-  LegacyDownloadManagerViewController* _viewController;
+  UIViewController<DownloadManagerConsumer,
+                   DownloadManagerViewControllerProtocol>* _viewController;
   // View controller for presenting "Open In.." dialog.
   UIActivityViewController* _openInController;
   DownloadManagerMediator _mediator;
@@ -85,7 +90,9 @@
                       object:nil];
 
   BOOL isIncognito = self.browser->GetBrowserState()->IsOffTheRecord();
-  _viewController = [[LegacyDownloadManagerViewController alloc] init];
+  _viewController = base::FeatureList::IsEnabled(kIOSSaveToDrive)
+                        ? [[DownloadManagerViewController alloc] init]
+                        : [[LegacyDownloadManagerViewController alloc] init];
   _viewController.delegate = self;
   _viewController.layoutGuideCenter = LayoutGuideCenterForBrowser(self.browser);
   _viewController.incognito = isIncognito;
@@ -289,9 +296,9 @@
 
   // UIActivityViewController is presented in a popover on iPad.
   _openInController.popoverPresentationController.sourceView =
-      _viewController.actionButton;
+      _viewController.openInSourceView;
   _openInController.popoverPresentationController.sourceRect =
-      _viewController.actionButton.bounds;
+      _viewController.openInSourceView.bounds;
   [_viewController presentViewController:_openInController
                                 animated:YES
                               completion:nil];
@@ -347,7 +354,11 @@
     };
   }
   [_storeKitCoordinator start];
-  [_viewController setInstallDriveButtonVisible:NO animated:YES];
+  if (!base::FeatureList::IsEnabled(kIOSSaveToDrive) &&
+      [_viewController respondsToSelector:@selector
+                       (setInstallDriveButtonVisible:animated:)]) {
+    [_viewController setInstallDriveButtonVisible:NO animated:YES];
+  }
 
   [[InstallationNotifier sharedInstance]
       registerForInstallationNotifications:self

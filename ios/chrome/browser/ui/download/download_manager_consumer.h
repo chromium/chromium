@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/ui/download/download_manager_state.h"
 
 // Consumer for the download manager mediator.
-@protocol DownloadManagerConsumer
+@protocol DownloadManagerConsumer <NSObject>
 
 // Sets name of the file being downloaded.
 - (void)setFileName:(NSString*)fileName;
@@ -28,6 +28,7 @@
 // kDownloadManagerStateNotStarted.
 - (void)setState:(DownloadManagerState)state;
 
+@optional
 // Sets visible state to Install Google Drive button.
 - (void)setInstallDriveButtonVisible:(BOOL)visible animated:(BOOL)animated;
 
