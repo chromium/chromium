@@ -520,6 +520,7 @@ ios_builder(
     mirrors = [
         "ci/ios-device",
     ],
+    cpu = cpu.ARM64,
     gn_args = "ci/ios-device",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
