@@ -43,13 +43,13 @@ const std::vector<SearchConcept>& GetDefaultSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_INPUT,
        mojom::kInputSubpagePath,
-       mojom::SearchResultIcon::kGlobe,
+       mojom::SearchResultIcon::kLanguage,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kInput}},
       {IDS_OS_SETTINGS_TAG_LANGUAGES_INPUT_INPUT_OPTIONS_SHELF,
        mojom::kInputSubpagePath,
-       mojom::SearchResultIcon::kGlobe,
+       mojom::SearchResultIcon::kLanguage,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kShowInputOptionsInShelf},
@@ -57,13 +57,13 @@ const std::vector<SearchConcept>& GetDefaultSearchConcepts() {
         SearchConcept::kAltTagEnd}},
       {IDS_OS_SETTINGS_TAG_LANGUAGES_ADD_INPUT_METHOD,
        mojom::kInputSubpagePath,
-       mojom::SearchResultIcon::kGlobe,
+       mojom::SearchResultIcon::kLanguage,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kAddInputMethod}},
       {IDS_OS_SETTINGS_TAG_LANGUAGES_SPELL_CHECK,
        mojom::kInputSubpagePath,
-       mojom::SearchResultIcon::kGlobe,
+       mojom::SearchResultIcon::kLanguage,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kSpellCheck}},
@@ -75,7 +75,7 @@ const std::vector<SearchConcept>& GetSuggestionsSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_LANGUAGES_SUGGESTIONS,
        mojom::kInputSubpagePath,
-       mojom::SearchResultIcon::kGlobe,
+       mojom::SearchResultIcon::kLanguage,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kInput}},
@@ -87,7 +87,7 @@ const std::vector<SearchConcept>& GetEmojiSuggestionSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_LANGUAGES_EMOJI_SUGGESTIONS,
        mojom::kInputSubpagePath,
-       mojom::SearchResultIcon::kGlobe,
+       mojom::SearchResultIcon::kLanguage,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kShowEmojiSuggestions}},
@@ -99,7 +99,7 @@ const std::vector<SearchConcept>& GetSpellCheckSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_LANGUAGES_EDIT_DICTIONARY,
        mojom::kEditDictionarySubpagePath,
-       mojom::SearchResultIcon::kGlobe,
+       mojom::SearchResultIcon::kLanguage,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kEditDictionary}},
@@ -111,7 +111,7 @@ const std::vector<SearchConcept>& GetAutoCorrectionSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_LANGUAGES_AUTO_CORRECTION,
        mojom::kInputMethodOptionsSubpagePath,
-       mojom::SearchResultIcon::kGlobe,
+       mojom::SearchResultIcon::kLanguage,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kShowPKAutoCorrection}},
@@ -516,7 +516,7 @@ mojom::Section InputsSection::GetSection() const {
 }
 
 mojom::SearchResultIcon InputsSection::GetSectionIcon() const {
-  return mojom::SearchResultIcon::kGlobe;
+  return mojom::SearchResultIcon::kLanguage;
 }
 
 const char* InputsSection::GetSectionPath() const {
@@ -534,8 +534,8 @@ bool InputsSection::LogMetric(mojom::Setting setting,
 void InputsSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   generator->RegisterTopLevelSubpage(
       IDS_OS_SETTINGS_LANGUAGES_INPUT_PAGE_TITLE_V2, mojom::Subpage::kInput,
-      mojom::SearchResultIcon::kGlobe, mojom::SearchResultDefaultRank::kMedium,
-      mojom::kInputSubpagePath);
+      mojom::SearchResultIcon::kLanguage,
+      mojom::SearchResultDefaultRank::kMedium, mojom::kInputSubpagePath);
   static constexpr mojom::Setting kInputSubpageSettings[] = {
       mojom::Setting::kAddInputMethod,
       mojom::Setting::kShowEmojiSuggestions,
@@ -550,21 +550,24 @@ void InputsSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   generator->RegisterNestedSubpage(
       IDS_OS_SETTINGS_LANGUAGES_EDIT_DICTIONARY_LABEL,
       mojom::Subpage::kEditDictionary, mojom::Subpage::kInput,
-      mojom::SearchResultIcon::kGlobe, mojom::SearchResultDefaultRank::kMedium,
+      mojom::SearchResultIcon::kLanguage,
+      mojom::SearchResultDefaultRank::kMedium,
       mojom::kEditDictionarySubpagePath);
 
   // Japanese Manage User Dictionary subpage
   generator->RegisterNestedSubpage(
       IDS_OS_SETTINGS_LANGUAGES_JAPANESE_MANAGE_USER_DICTIONARY_LABEL,
       mojom::Subpage::kJapaneseManageUserDictionary, mojom::Subpage::kInput,
-      mojom::SearchResultIcon::kGlobe, mojom::SearchResultDefaultRank::kMedium,
+      mojom::SearchResultIcon::kLanguage,
+      mojom::SearchResultDefaultRank::kMedium,
       mojom::kJapaneseManageUserDictionarySubpagePath);
 
   // Input method options subpage
   generator->RegisterNestedSubpage(
       IDS_SETTINGS_LANGUAGES_INPUT_METHOD_OPTIONS_TITLE,
       mojom::Subpage::kInputMethodOptions, mojom::Subpage::kInput,
-      mojom::SearchResultIcon::kGlobe, mojom::SearchResultDefaultRank::kMedium,
+      mojom::SearchResultIcon::kLanguage,
+      mojom::SearchResultDefaultRank::kMedium,
       mojom::kInputMethodOptionsSubpagePath);
   static constexpr mojom::Setting kInputMethodOptionsSubpageSettings[] = {
       mojom::Setting::kShowPKAutoCorrection,

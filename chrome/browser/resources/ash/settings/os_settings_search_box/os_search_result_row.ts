@@ -726,8 +726,6 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
         return 'os-settings:fullscreen-magnifier';
       case SearchResultIcon.kGeolocation:
         return 'os-settings:geolocation';
-      case SearchResultIcon.kGlobe:
-        return 'os-settings:language';
       case SearchResultIcon.kGooglePlay:
         return 'os-settings:google-play';
       case SearchResultIcon.kHotspot:
@@ -736,6 +734,9 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
         return 'os-settings:magic-tethering';
       case SearchResultIcon.kKeyboard:
         return 'os-settings:keyboard';
+      case SearchResultIcon.kLanguage:
+        return isRevampEnabled ? 'os-settings:language-revamp' :
+                                 'os-settings:language';
       case SearchResultIcon.kLaptop:
         return 'os-settings:laptop-chromebook';
       case SearchResultIcon.kLock:

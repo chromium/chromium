@@ -42,25 +42,25 @@ const std::vector<SearchConcept>& GetLanguagesPageSearchConceptsV2() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_LANGUAGES,
        mojom::kLanguagesSubpagePath,
-       mojom::SearchResultIcon::kGlobe,
+       mojom::SearchResultIcon::kLanguage,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kLanguages}},
       {IDS_OS_SETTINGS_TAG_LANGUAGES_CHANGE_DEVICE_LANGUAGE,
        mojom::kLanguagesSubpagePath,
-       mojom::SearchResultIcon::kGlobe,
+       mojom::SearchResultIcon::kLanguage,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kChangeDeviceLanguage}},
       {IDS_OS_SETTINGS_TAG_LANGUAGES_INPUT_ADD_LANGUAGE,
        mojom::kLanguagesSubpagePath,
-       mojom::SearchResultIcon::kGlobe,
+       mojom::SearchResultIcon::kLanguage,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kAddLanguage}},
       {IDS_OS_SETTINGS_TAG_LANGUAGES_OFFER_TRANSLATION,
        mojom::kLanguagesSubpagePath,
-       mojom::SearchResultIcon::kGlobe,
+       mojom::SearchResultIcon::kLanguage,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kOfferTranslation}},
@@ -193,7 +193,7 @@ mojom::Section LanguagesSection::GetSection() const {
 }
 
 mojom::SearchResultIcon LanguagesSection::GetSectionIcon() const {
-  return mojom::SearchResultIcon::kGlobe;
+  return mojom::SearchResultIcon::kLanguage;
 }
 
 const char* LanguagesSection::GetSectionPath() const {
@@ -212,7 +212,7 @@ void LanguagesSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   // Languages.
   generator->RegisterTopLevelSubpage(
       IDS_OS_SETTINGS_LANGUAGES_LANGUAGES_PAGE_TITLE,
-      mojom::Subpage::kLanguages, mojom::SearchResultIcon::kGlobe,
+      mojom::Subpage::kLanguages, mojom::SearchResultIcon::kLanguage,
       mojom::SearchResultDefaultRank::kMedium, mojom::kLanguagesSubpagePath);
   static constexpr mojom::Setting kLanguagesPageSettings[] = {
       mojom::Setting::kAddLanguage,
