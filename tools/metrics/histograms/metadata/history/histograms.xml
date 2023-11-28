@@ -58,17 +58,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.Backend.TransactionBeginError"
-    enum="SqliteLoggedResultCode" expires_after="2023-10-01">
-  <owner>tommycli@chromium.org</owner>
-  <owner>asully@chromium.org</owner>
-  <component>UI&gt;Browser&gt;History</component>
-  <summary>
-    The exact database error encountered when beginning a transaction, if it
-    failed.
-  </summary>
-</histogram>
-
 <histogram name="History.Backend.TransactionBeginSuccess" enum="BooleanSuccess"
     expires_after="2023-10-01">
   <owner>tommycli@chromium.org</owner>

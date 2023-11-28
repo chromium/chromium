@@ -3260,8 +3260,6 @@ void HistoryBackend::BeginSingletonTransaction() {
     // start another transaction again at the next commit interval. Clear out
     // the `singleton_transaction_` pointer, because it's only kept around if
     // it was successfully begun.
-    sql::UmaHistogramSqliteResult("History.Backend.TransactionBeginError",
-                                  diagnostics_.reported_sqlite_error_code);
     singleton_transaction_.reset();
   }
 }
