@@ -49,14 +49,6 @@ class PasswordEditDialogCoordinator {
         void onDialogAccepted(String username, String password);
 
         /**
-         * Called when the user taps the dialog Continue button.
-         * Used when PasswordEditDialogWithDetails feature is disabled.
-         *
-         * @param usernameIndex Selected username index from the list.
-         */
-        void onLegacyDialogAccepted(int usernameIndex);
-
-        /**
          * Called when the dialog is dismissed.
          *
          * @param dialogAccepted Indicates whether the dialog was accepted or cancelled by the user.

@@ -8,7 +8,6 @@ import android.content.res.Resources;
 
 import androidx.annotation.StringRes;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -87,14 +86,9 @@ class PasswordEditDialogMediator implements ModalDialogProperties.Controller {
     @Override
     public void onClick(PropertyModel model, @ButtonType int buttonType) {
         if (buttonType == ButtonType.POSITIVE) {
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)) {
-                mDialogInteractions.onDialogAccepted(
-                        mDialogViewModel.get(PasswordEditDialogProperties.USERNAME),
-                        mDialogViewModel.get(PasswordEditDialogProperties.PASSWORD));
-            } else {
-                mDialogInteractions.onLegacyDialogAccepted(
-                        mDialogViewModel.get(PasswordEditDialogProperties.USERNAME_INDEX));
-            }
+            mDialogInteractions.onDialogAccepted(
+                    mDialogViewModel.get(PasswordEditDialogProperties.USERNAME),
+                    mDialogViewModel.get(PasswordEditDialogProperties.PASSWORD));
         }
         mModalDialogManager.dismissDialog(
                 model,

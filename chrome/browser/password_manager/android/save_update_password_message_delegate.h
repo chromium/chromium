@@ -61,7 +61,6 @@ class SaveUpdatePasswordMessageDelegate {
       base::RepeatingCallback<std::unique_ptr<PasswordEditDialog>(
           content::WebContents*,
           PasswordEditDialog::DialogAcceptedCallback,
-          PasswordEditDialog::LegacyDialogAcceptedCallback,
           PasswordEditDialog::DialogDismissedCallback)>;
 
   SaveUpdatePasswordMessageDelegate();
@@ -114,9 +113,6 @@ class SaveUpdatePasswordMessageDelegate {
   void CreateMessage(bool update_password);
   void SetupCogMenu(std::unique_ptr<messages::MessageWrapper>& message,
                     bool update_password);
-  void SetupCogMenuForDialogWithDetails(
-      std::unique_ptr<messages::MessageWrapper>& message,
-      bool update_password);
   void HandleSaveMessageMenuItemClick(int item_id);
 
   // Returns the message description depending on whether the password is being
@@ -148,7 +144,6 @@ class SaveUpdatePasswordMessageDelegate {
   void HandleDialogDismissed(bool dialogAccepted);
   void HandleSavePasswordFromDialog(const std::u16string& username,
                                     const std::u16string& password);
-  void HandleSavePasswordFromLegacyDialog(int username_index);
 
   void ClearState();
 

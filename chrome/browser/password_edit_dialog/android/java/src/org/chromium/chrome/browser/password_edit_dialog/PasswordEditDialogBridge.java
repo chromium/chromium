@@ -40,15 +40,6 @@ public class PasswordEditDialogBridge implements PasswordEditDialogCoordinator.D
             @Nullable String account) {
         mDialogCoordinator.showPasswordEditDialog(savedUsernames, username, password, account);
     }
-
-    /** Called when PasswordEditDialogWithDetails feature flag is disabled */
-    @CalledByNative
-    void showLegacyPasswordEditDialog(
-            @NonNull String[] savedUsernames, int selectedUsernameIndex, @Nullable String account) {
-        mDialogCoordinator.showLegacyPasswordEditDialog(
-                savedUsernames, selectedUsernameIndex, account);
-    }
-
     @CalledByNative
     void dismiss() {
         mDialogCoordinator.dismiss();
@@ -58,12 +49,6 @@ public class PasswordEditDialogBridge implements PasswordEditDialogCoordinator.D
     public void onDialogAccepted(String username, String password) {
         assert mNativeDialog != 0;
         PasswordEditDialogBridgeJni.get().onDialogAccepted(mNativeDialog, username, password);
-    }
-
-    @Override
-    public void onLegacyDialogAccepted(int usernameIndex) {
-        assert mNativeDialog != 0;
-        PasswordEditDialogBridgeJni.get().onLegacyDialogAccepted(mNativeDialog, usernameIndex);
     }
 
     @Override
@@ -77,8 +62,6 @@ public class PasswordEditDialogBridge implements PasswordEditDialogCoordinator.D
     interface Natives {
         void onDialogAccepted(
                 long nativePasswordEditDialogBridge, String username, String password);
-
-        void onLegacyDialogAccepted(long nativePasswordEditDialogBridge, int usernameIndex);
 
         void onDialogDismissed(long nativePasswordEditDialogBridge, boolean dialogAccepted);
     }

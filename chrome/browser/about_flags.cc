@@ -9940,12 +9940,6 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::kAutofillEnableVirtualCardMetadata)},
 
 #if BUILDFLAG(IS_ANDROID)
-    {"password-edit-dialog-with-details",
-     flag_descriptions::kPasswordEditDialogWithDetailsName,
-     flag_descriptions::kPasswordEditDialogWithDetailsDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kPasswordEditDialogWithDetails)},
-
     {"password-suggestion-bottom-sheet-v2",
      flag_descriptions::kPasswordSuggestionBottomSheetV2Name,
      flag_descriptions::kPasswordSuggestionBottomSheetV2Description, kOsAndroid,

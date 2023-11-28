@@ -4712,12 +4712,6 @@ const char kXsurfaceMetricsReportingName[] = "Xsurface Metrics Reporting";
 const char kXsurfaceMetricsReportingDescription[] =
     "Allows metrics reporting state to be passed to Xsurface";
 
-const char kPasswordEditDialogWithDetailsName[] =
-    "Password edit dialog with details UI";
-const char kPasswordEditDialogWithDetailsDescription[] =
-    "Enables UI which shows the dialog after clicking on save/update password"
-    " with the functionality to choose user account and edit the password.";
-
 const char kPasswordSuggestionBottomSheetV2Name[] =
     "Refactored password suggestions bottom sheet";
 const char kPasswordSuggestionBottomSheetV2Description[] =
