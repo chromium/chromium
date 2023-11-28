@@ -61,12 +61,22 @@ void ChromeComposeDialogController::ShowComposeDialog(
   bubble_wrapper->GetWebUIController()->set_triggering_web_contents(
       web_contents_.get());
 
+  // The element will not be visible if it is outside the Browser View bounds,
+  // so clamp the element bounds to be within them.
+  gfx::Rect clamped_element_bounds =
+      gfx::ToRoundedRect(element_bounds_in_screen);
+  clamped_element_bounds.Intersect(anchor_view->GetBoundsInScreen());
+
   auto compose_dialog_view = std::make_unique<ComposeDialogView>(
-      anchor_view, std::move(bubble_wrapper),
-      gfx::ToRoundedRect(element_bounds_in_screen),
+      anchor_view, std::move(bubble_wrapper), clamped_element_bounds,
       views::BubbleBorder::Arrow::NONE);
   bubble_ = compose_dialog_view->GetWeakPtr();
   views::BubbleDialogDelegateView::CreateBubble(std::move(compose_dialog_view));
+  if (bubble_) {
+    // This must be called after CreateBubble, as that resets the
+    // |adjust_if_offscreen| field to the platform-dependent default.
+    bubble_->set_adjust_if_offscreen(true);
+  }
 }
 
 BubbleContentsWrapperT<ComposeUI>*

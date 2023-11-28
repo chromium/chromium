@@ -21,7 +21,6 @@ ComposeDialogView::ComposeDialogView(
                             anchor_position),
       bubble_wrapper_(std::move(bubble_wrapper)) {
   set_has_parent(false);
-  set_adjust_if_offscreen(true);
 }
 
 base::WeakPtr<ComposeDialogView> ComposeDialogView::GetWeakPtr() {
