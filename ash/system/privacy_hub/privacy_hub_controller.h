@@ -63,7 +63,7 @@ class ASH_EXPORT PrivacyHubController {
   // Gets the speak-on-mute controller if available.
   SpeakOnMuteDetectionPrivacySwitchController* speak_on_mute_controller();
 
-  // Gets the geolocation controller if available.
+  // Gets the geolocation controller.
   GeolocationPrivacySwitchController* geolocation_controller();
 
   CameraPrivacySwitchSynchronizer* CameraSynchronizerForTest();

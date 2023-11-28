@@ -68,7 +68,8 @@ void SetUpCameraCountObserver() {
 
 // Notifies the Privacy Hub controller.
 void TrackGeolocationAttempted(const std::string& name) {
-  if (!features::IsCrosPrivacyHubEnabled()) {
+  if (!features::IsCrosPrivacyHubEnabled() ||
+      !features::IsCrosPrivacyHubLocationEnabled()) {
     return;
   }
   GeolocationPrivacySwitchController* controller =
@@ -81,7 +82,8 @@ void TrackGeolocationAttempted(const std::string& name) {
 
 // Notifies the Privacy Hub controller.
 void TrackGeolocationRelinquished(const std::string& name) {
-  if (!features::IsCrosPrivacyHubEnabled()) {
+  if (!features::IsCrosPrivacyHubEnabled() ||
+      !features::IsCrosPrivacyHubLocationEnabled()) {
     return;
   }
   GeolocationPrivacySwitchController* controller =

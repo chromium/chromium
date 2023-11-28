@@ -4,21 +4,25 @@
 
 #include "chrome/browser/lacros/geolocation/system_geolocation_source_lacros.h"
 
+#include "ash/constants/geolocation_access_level.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "chrome/grit/branded_strings.h"
+#include "chromeos/lacros/crosapi_pref_observer.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 
 SystemGeolocationSourceLacros::SystemGeolocationSourceLacros()
     : permission_update_callback_(base::DoNothing()) {
-  // binding to remote
-  // The following was removed to fix b/293398125
-  // TODO(b/293398125): Replace with a crosapi call that doesn't read the pref
-  // directly
+  // Binding to remote for pref observation.
+  crosapi_pref_observer_ = std::make_unique<CrosapiPrefObserver>(
+      crosapi::mojom::PrefPath::kUserGeolocationAccessLevel,
+      base::BindRepeating(&SystemGeolocationSourceLacros::OnPrefChanged,
+                          weak_factory_.GetWeakPtr()));
 }
 
 SystemGeolocationSourceLacros::~SystemGeolocationSourceLacros() = default;
@@ -56,9 +60,11 @@ void SystemGeolocationSourceLacros::TrackGeolocationAttempted() {
 
   // Service may not be available in older versions of Ash
   if (!lacros_service->IsRegistered<crosapi::mojom::GeolocationService>()) {
+    LOG(WARNING) << "crosapi: GeolocationService API not registered";
     return;
   }
   if (!lacros_service->IsAvailable<crosapi::mojom::GeolocationService>()) {
+    LOG(WARNING) << "crosapi: GeolocationService API not available";
     return;
   }
   if (lacros_service
@@ -83,9 +89,11 @@ void SystemGeolocationSourceLacros::TrackGeolocationRelinquished() {
 
   // Service may not be available in older versions of Ash
   if (!lacros_service->IsRegistered<crosapi::mojom::GeolocationService>()) {
+    LOG(WARNING) << "crosapi: GeolocationService API not registered";
     return;
   }
   if (!lacros_service->IsAvailable<crosapi::mojom::GeolocationService>()) {
+    LOG(WARNING) << "crosapi: GeolocationService API not available";
     return;
   }
   if (lacros_service
@@ -104,14 +112,24 @@ void SystemGeolocationSourceLacros::TrackGeolocationRelinquished() {
 }
 
 void SystemGeolocationSourceLacros::OnPrefChanged(base::Value value) {
-  const bool value_is_bool = value.is_bool();
-  LOG_IF(ERROR, !value_is_bool)
-      << "GeolocationSourceLacros received a non-bool value";
-  if (value_is_bool) {
-    current_status_ = value.GetBool()
-                          ? device::LocationSystemPermissionStatus::kAllowed
-                          : device::LocationSystemPermissionStatus::kDenied;
-
-    permission_update_callback_.Run(current_status_);
+  if (!value.is_int()) {
+    LOG(ERROR) << "GeolocationSourceLacros received a non-integral value";
+    return;
   }
+  switch (static_cast<ash::GeolocationAccessLevel>(value.GetInt())) {
+    case ash::GeolocationAccessLevel::kDisallowed:
+      current_status_ = device::LocationSystemPermissionStatus::kDenied;
+      break;
+    case ash::GeolocationAccessLevel::kAllowed:
+      current_status_ = device::LocationSystemPermissionStatus::kAllowed;
+      break;
+    case ash::GeolocationAccessLevel::kOnlyAllowedForSystem:
+      current_status_ = device::LocationSystemPermissionStatus::kDenied;
+      break;
+    default:
+      LOG(ERROR) << "Incorrect GeolocationAccessLevel: " << value.GetInt();
+      return;
+  }
+
+  permission_update_callback_.Run(current_status_);
 }

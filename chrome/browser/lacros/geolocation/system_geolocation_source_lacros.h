@@ -12,6 +12,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/crosapi/mojom/geolocation.mojom.h"
 #include "chromeos/crosapi/mojom/prefs.mojom.h"
+#include "chromeos/lacros/crosapi_pref_observer.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -69,7 +70,7 @@ class SystemGeolocationSourceLacros : public device::SystemGeolocationSource,
   device::LocationSystemPermissionStatus current_status_ =
       device::LocationSystemPermissionStatus::kNotDetermined;
   // Receives mojo messages from ash.
-  mojo::Receiver<crosapi::mojom::PrefObserver> pref_receiver_{this};
+  std::unique_ptr<CrosapiPrefObserver> crosapi_pref_observer_;
   base::WeakPtrFactory<SystemGeolocationSourceLacros> weak_factory_{this};
 };
 

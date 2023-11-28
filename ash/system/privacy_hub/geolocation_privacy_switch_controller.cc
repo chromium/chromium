@@ -7,24 +7,26 @@
 #include <string>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/geolocation_access_level.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_metrics.h"
 #include "ash/system/privacy_hub/privacy_hub_notification_controller.h"
+#include "base/notreached.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {
 
-GeolocationPrivacySwitchController::GeolocationPrivacySwitchController() {
-  Shell::Get()->session_controller()->AddObserver(this);
+GeolocationPrivacySwitchController::GeolocationPrivacySwitchController()
+    : session_observation_(this) {
+  session_observation_.Observe(Shell::Get()->session_controller());
 }
 
-GeolocationPrivacySwitchController::~GeolocationPrivacySwitchController() {
-  Shell::Get()->session_controller()->RemoveObserver(this);
-}
+GeolocationPrivacySwitchController::~GeolocationPrivacySwitchController() =
+    default;
 
 // static
 GeolocationPrivacySwitchController* GeolocationPrivacySwitchController::Get() {
@@ -44,7 +46,29 @@ void GeolocationPrivacySwitchController::OnActiveUserPrefServiceChanged(
       base::BindRepeating(
           &GeolocationPrivacySwitchController::OnPreferenceChanged,
           base::Unretained(this)));
-  UpdateNotification();
+
+  if (features::IsCrosPrivacyHubEnabled() &&
+      features::IsCrosPrivacyHubLocationEnabled()) {
+    UpdateNotification();
+  } else {
+    // Feature disabled means geolocation is always allowed.
+    OnPreferenceChanged();
+  }
+}
+
+void GeolocationPrivacySwitchController::OnPreferenceChanged() {
+  VLOG(1) << "Privacy Hub: Geolocation switch state = "
+          << static_cast<int>(AccessLevel());
+  if (features::IsCrosPrivacyHubEnabled() &&
+      features::IsCrosPrivacyHubLocationEnabled()) {
+    UpdateNotification();
+  } else {
+    // Feature disabled means geolocation is always allowed
+    CHECK(pref_change_registrar_);
+    pref_change_registrar_->prefs()->SetInteger(
+        prefs::kUserGeolocationAccessLevel,
+        static_cast<int>(GeolocationAccessLevel::kAllowed));
+  }
 }
 
 void GeolocationPrivacySwitchController::TrackGeolocationAttempted(
@@ -68,6 +92,16 @@ void GeolocationPrivacySwitchController::TrackGeolocationRelinquished(
   UpdateNotification();
 }
 
+bool GeolocationPrivacySwitchController::IsGeolocationUsageAllowedForApps() {
+  switch (AccessLevel()) {
+    case GeolocationAccessLevel::kAllowed:
+      return true;
+    case GeolocationAccessLevel::kOnlyAllowedForSystem:
+    case GeolocationAccessLevel::kDisallowed:
+      return false;
+  }
+}
+
 std::vector<std::u16string> GeolocationPrivacySwitchController::GetActiveApps(
     size_t max_count) const {
   std::vector<std::u16string> apps;
@@ -82,36 +116,14 @@ std::vector<std::u16string> GeolocationPrivacySwitchController::GetActiveApps(
   return apps;
 }
 
-void GeolocationPrivacySwitchController::OnPreferenceChanged() {
-  const GeolocationAccessLevel geolocation_state =
-      static_cast<GeolocationAccessLevel>(
-          pref_change_registrar_->prefs()->GetInteger(
-              prefs::kUserGeolocationAccessLevel));
-  VLOG(1) << "Privacy Hub: Geolocation switch state = "
-          << static_cast<int>(geolocation_state);
-  UpdateNotification();
-}
-
-bool GeolocationPrivacySwitchController::IsGeolocationUsageAllowedForApps() {
-  GeolocationAccessLevel geolocation_access_level =
-      static_cast<GeolocationAccessLevel>(
-          pref_change_registrar_->prefs()->GetInteger(
-              prefs::kUserGeolocationAccessLevel));
-
-  switch (geolocation_access_level) {
-    case GeolocationAccessLevel::kAllowed:
-      return true;
-    case GeolocationAccessLevel::kOnlyAllowedForSystem:
-    case GeolocationAccessLevel::kDisallowed:
-      return false;
-  }
+GeolocationAccessLevel GeolocationPrivacySwitchController::AccessLevel() const {
+  CHECK(pref_change_registrar_);
+  return static_cast<GeolocationAccessLevel>(
+      pref_change_registrar_->prefs()->GetInteger(
+          prefs::kUserGeolocationAccessLevel));
 }
 
 void GeolocationPrivacySwitchController::UpdateNotification() {
-  if (!pref_change_registrar_ || !pref_change_registrar_->prefs()) {
-    return;
-  }
-
   PrivacyHubNotificationController* notification_controller =
       PrivacyHubNotificationController::Get();
   if (!notification_controller) {

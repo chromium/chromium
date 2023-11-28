@@ -11,21 +11,23 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/constants/geolocation_access_level.h"
+#include "ash/public/cpp/session/session_controller.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "base/scoped_observation.h"
 
 class PrefChangeRegistrar;
 
 namespace ash {
 
+// Implements the logic for the geolocation privacy switch.
 class ASH_EXPORT GeolocationPrivacySwitchController : public SessionObserver {
  public:
   GeolocationPrivacySwitchController();
-
   GeolocationPrivacySwitchController(
       const GeolocationPrivacySwitchController&) = delete;
   GeolocationPrivacySwitchController& operator=(
       const GeolocationPrivacySwitchController&) = delete;
-
   ~GeolocationPrivacySwitchController() override;
 
   // Gets the singleton instance that lives within `Shell` if available.
@@ -33,6 +35,9 @@ class ASH_EXPORT GeolocationPrivacySwitchController : public SessionObserver {
 
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
+
+  // Called when the preference value is changed.
+  void OnPreferenceChanged();
 
   // Apps that want to actively use geolocation should register and deregister
   // using the following methods. They are used to decide whether a notification
@@ -50,16 +55,19 @@ class ASH_EXPORT GeolocationPrivacySwitchController : public SessionObserver {
   // returned ).
   std::vector<std::u16string> GetActiveApps(size_t max_count) const;
 
- private:
-  // Called when the preference value is changed.
-  void OnPreferenceChanged();
+  GeolocationAccessLevel AccessLevel() const;
+
   // Called when the notification should be updated (either preference changed
   // or apps started/stopped attempting to use geolocation).
   void UpdateNotification();
 
-  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+ private:
   int usage_cnt_{};
   std::map<std::string, int> usage_per_app_;
+  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+  base::ScopedObservation<ash::SessionController,
+                          GeolocationPrivacySwitchController>
+      session_observation_;
 };
 
 }  // namespace ash

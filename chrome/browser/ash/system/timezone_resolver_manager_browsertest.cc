@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/system/timezone_resolver_manager.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/geolocation_access_level.h"
@@ -184,7 +185,15 @@ class TimeZoneResolverManagerEnrolledDeviceTest
 
 class TimeZoneResolverManagerUnenrolledDeviceTest
     : public TimeZoneResolverManagerTestBase {
+ protected:
+  TimeZoneResolverManagerUnenrolledDeviceTest() {
+    // Enabling Privacy Hub with location switch
+    scoped_feature_list_.InitWithFeatures(
+        {ash::features::kCrosPrivacyHubV0, ash::features::kCrosPrivacyHub}, {});
+  }
+
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED};
 };

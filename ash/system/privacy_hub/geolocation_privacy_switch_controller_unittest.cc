@@ -83,6 +83,7 @@ class PrivacyHubGeolocationControllerTest : public AshTestBase {
 };
 
 TEST_F(PrivacyHubGeolocationControllerTest, GetActiveAppsTest) {
+  EXPECT_TRUE(features::IsCrosPrivacyHubLocationEnabled());
   const std::vector<std::string> app_names{"App1", "App2", "App3"};
   const std::vector<std::u16string> app_names_u16{u"App1", u"App2", u"App3"};
   EXPECT_EQ(controller_->GetActiveApps(3), (std::vector<std::u16string>{}));
@@ -135,6 +136,8 @@ TEST_F(PrivacyHubGeolocationControllerTest,
 TEST_F(PrivacyHubGeolocationControllerTest, ClickOnNotificationTest) {
   const std::string app_name = "app";
   SetUserPref(false);
+  EXPECT_TRUE(features::IsCrosPrivacyHubLocationEnabled());
+  EXPECT_TRUE(controller_);
   controller_->TrackGeolocationAttempted(app_name);
   // We didn't log any notification clicks so far.
   EXPECT_EQ(histogram_tester_.GetBucketCount(

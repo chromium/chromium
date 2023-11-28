@@ -84,7 +84,8 @@ void SystemGeolocationSource::OnPrefChanged(const std::string& pref_name) {
   device::LocationSystemPermissionStatus status =
       device::LocationSystemPermissionStatus::kNotDetermined;
 
-  if (ash::features::IsCrosPrivacyHubLocationEnabled()) {
+  if (ash::features::IsCrosPrivacyHubEnabled() &&
+      ash::features::IsCrosPrivacyHubLocationEnabled()) {
     PrefService* pref_service = pref_change_registrar_->prefs();
     if (pref_service) {
       status = (static_cast<GeolocationAccessLevel>(pref_service->GetInteger(

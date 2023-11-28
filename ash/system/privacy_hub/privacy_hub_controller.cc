@@ -18,6 +18,7 @@
 #include "base/types/pass_key.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 
 namespace ash {
 
@@ -38,6 +39,9 @@ PrivacyHubController::CreatePrivacyHubController() {
   auto privacy_hub_controller = std::make_unique<PrivacyHubController>(
       base::PassKey<PrivacyHubController>());
 
+  privacy_hub_controller->geolocation_switch_controller_ =
+      std::make_unique<GeolocationPrivacySwitchController>();
+
   if (features::IsCrosPrivacyHubEnabled()) {
     privacy_hub_controller->camera_controller_ =
         std::make_unique<CameraPrivacySwitchController>();
@@ -45,8 +49,7 @@ PrivacyHubController::CreatePrivacyHubController() {
         std::make_unique<MicrophonePrivacySwitchController>();
     privacy_hub_controller->speak_on_mute_controller_ =
         std::make_unique<SpeakOnMuteDetectionPrivacySwitchController>();
-    privacy_hub_controller->geolocation_switch_controller_ =
-        std::make_unique<GeolocationPrivacySwitchController>();
+
     return privacy_hub_controller;
   }
 
