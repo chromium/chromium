@@ -1293,7 +1293,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.AppList.SystemInfoProvider.CrosHealthdProbeError.{ProbeErrorSourceStruct}"
-    enum="CrosDiagnosticsCrosHealthdProbeError" expires_after="2024-02-25">
+    enum="CrosDiagnosticsCrosHealthdProbeError" expires_after="2024-05-26">
   <owner>laurencom@google.com</owner>
   <owner>tby@google.com</owner>
   <summary>

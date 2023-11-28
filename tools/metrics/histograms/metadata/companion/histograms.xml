@@ -98,7 +98,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Companion.PHFeedback.Result" enum="Companion.PhFeedback"
-    expires_after="2024-01-14">
+    expires_after="2024-05-26">
   <owner>mcrouse@chromium.org</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>
   <summary>

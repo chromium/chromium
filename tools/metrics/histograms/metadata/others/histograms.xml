@@ -1803,7 +1803,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cast.Sender.RemotePlayback.InitiationLocation"
-    enum="RemotePlaybackInitiationLocation" expires_after="2024-03-24">
+    enum="RemotePlaybackInitiationLocation" expires_after="2024-05-26">
   <owner>muyaoxu@google.com</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -5431,7 +5431,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FirstRun.NewUserExperience.GoogleAppsInteraction"
-    enum="NuxGoogleAppsInteractions" expires_after="2024-03-24">
+    enum="NuxGoogleAppsInteractions" expires_after="2024-05-26">
   <owner>johntlee@chromium.org</owner>
   <owner>dpapad@chromium.org</owner>
   <summary>
@@ -5498,7 +5498,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FirstRun.NewUserExperience.SignInInterstitialInteraction"
-    enum="NuxSignInInterstitialInteractions" expires_after="2024-03-24">
+    enum="NuxSignInInterstitialInteractions" expires_after="2024-05-26">
   <owner>johntlee@chromium.org</owner>
   <owner>dpapad@chromium.org</owner>
   <summary>
@@ -8634,7 +8634,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Rollback.RollbackSaveResult"
-    enum="Rollback_RollbackSaveResult" expires_after="2024-03-24">
+    enum="Rollback_RollbackSaveResult" expires_after="2024-05-26">
   <owner>mpolzer@google.com</owner>
   <owner>crisguerrero@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -10432,7 +10432,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="Tracing.Background.CompressedTraceSizeInKB" units="KB"
-    expires_after="2024-03-24">
+    expires_after="2024-05-26">
   <owner>etiennep@chromium.org</owner>
   <owner>tracing@chromium.org</owner>
   <owner>chrometto-team@google.com</owner>
@@ -10486,7 +10486,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="Tracing.SharedBufferIsValid" enum="BooleanSuccess"
-    expires_after="2024-03-24">
+    expires_after="2024-05-26">
   <owner>eseckler@chromium.org</owner>
   <owner>tracing@chromium.org</owner>
   <summary>
@@ -10495,7 +10495,7 @@ features through Chrome Labs. -->
   </summary>
 </histogram>
 
-<histogram name="UI.DeviceScale" units="%" expires_after="2024-03-24">
+<histogram name="UI.DeviceScale" units="%" expires_after="2024-05-26">
   <owner>bsep@chromium.org</owner>
   <summary>
     The device scales available on the system at startup. A system may report
