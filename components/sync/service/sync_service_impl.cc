@@ -352,8 +352,7 @@ void SyncServiceImpl::Initialize() {
     const bool force_immediate_start =
         !sync_client_->GetSyncApiComponentFactory()
              ->HasTransportDataIncludingFirstSync() &&
-        ShouldAutoStartSyncFeature() &&
-        (IsLocalSyncEnabled() || IsSyncFeatureConsideredRequested());
+        ShouldAutoStartSyncFeature();
 
     if (force_immediate_start) {
       // Sync never initialized before on this profile, so let's try immediately
@@ -1064,7 +1063,9 @@ void SyncServiceImpl::OnActionableProtocolError(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       // On Ash, the primary account is always set and sync the feature
       // turned on, so a dedicated bit is needed to ensure that
-      // Sync-the-feature remains off.
+      // Sync-the-feature remains off. Note that sync-the-transport will restart
+      // immediately because IsEngineAllowedToRun() is almost certainly true at
+      // this point and StopAndClear() leads to TryStart().
       user_settings_->SetSyncFeatureDisabledViaDashboard();
 #else  // !BUILDFLAG(IS_CHROMEOS_ASH)
       // On every platform except ash, revoke the Sync consent/Clear primary
