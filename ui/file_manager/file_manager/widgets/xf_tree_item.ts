@@ -20,15 +20,6 @@ export const TREE_ITEM_INDENT = 20;
  */
 @customElement('xf-tree-item')
 export class XfTreeItem extends XfBase {
-  // "delegatesFocus = true" will make sure when the tree item is focused, <li>
-  // element inside the shadow DOM will get the focus.
-  static override get shadowRootOptions() {
-    return {
-      ...XfBase.shadowRootOptions,
-      delegatesFocus: true,
-    };
-  }
-
   /**
    * `separator` attribute will show a top border for the tree item. It's
    * mainly used to identify this tree item is a start of the new section.
@@ -102,7 +93,9 @@ export class XfTreeItem extends XfBase {
   }
 
   /**
-   * Toggle the focusable for the item.
+   * Toggle the focusable for the item. We put the tabindex on the <li> element
+   * instead of the whole <xf-tree-item> because <xf-tree-item> also includes
+   * all children slots.
    *
    * We are delegate the focus to the <li> element in the shadow DOM, to make
    * sure the update is synchronous, we are operating on the DOM directly here
@@ -120,6 +113,23 @@ export class XfTreeItem extends XfBase {
     } else {
       this.$treeItem_.removeAttribute('tabindex');
     }
+  }
+
+  /**
+   * Override focus() so we can manually focus the tree row element inside
+   * shadow DOM.
+   */
+  override focus() {
+    console.assert(
+        !this.disabled,
+        'Called focus() on a disabled XfTreeItem() isn\'t allowed');
+
+    // Make sure this is the only focusable item in the tree before calling
+    // focus().
+    if (this.tree) {
+      this.tree.focusedItem = this;
+    }
+    this.$treeItem_.focus();
   }
 
   /**
