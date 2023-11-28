@@ -96,12 +96,9 @@ void FirstPartySetsLoader::OnReadSetsFile(base::Version version,
   DCHECK_EQ(component_sets_parse_progress_, Progress::kStarted);
 
   std::istringstream stream(raw_sets);
-  FirstPartySetParser::SetsAndAliases public_sets =
-      FirstPartySetParser::ParseSetsFromStream(stream, /*emit_errors=*/false,
-                                               /*emit_metrics=*/true);
-  sets_ = net::GlobalFirstPartySets(std::move(version),
-                                    std::move(public_sets.first),
-                                    std::move(public_sets.second));
+  sets_ = FirstPartySetParser::ParseSetsFromStream(stream, std::move(version),
+                                                   /*emit_errors=*/false,
+                                                   /*emit_metrics=*/true);
 
   component_sets_parse_progress_ = Progress::kFinished;
   UmaHistogramTimes(

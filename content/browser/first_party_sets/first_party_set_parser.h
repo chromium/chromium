@@ -16,6 +16,7 @@
 #include "content/public/browser/first_party_sets_handler.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
+#include "net/first_party_sets/global_first_party_sets.h"
 #include "net/first_party_sets/local_set_declaration.h"
 #include "net/first_party_sets/sets_mutation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -24,12 +25,6 @@ namespace content {
 
 class CONTENT_EXPORT FirstPartySetParser {
  public:
-  using SetsMap = base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>;
-  // Keys are alias sites, values are their canonical representatives.
-  using Aliases = base::flat_map<net::SchemefulSite, net::SchemefulSite>;
-  using SingleSet = SetsMap;
-  using SetsAndAliases = std::pair<SetsMap, Aliases>;
-
   enum class PolicySetType { kReplacement, kAddition };
 
   using PolicyParseResult = std::pair<
@@ -48,11 +43,13 @@ class CONTENT_EXPORT FirstPartySetParser {
   // not check versions or assertions, since it is intended only for sets
   // received by Component Updater.
   //
-  // Returns an empty map if parsing or validation of any set failed. Must not
-  // be called before field trial state has been initialized.
-  static SetsAndAliases ParseSetsFromStream(std::istream& input,
-                                            bool emit_errors,
-                                            bool emit_metrics);
+  // Returns an empty GlobalFirstPartySets instance if parsing or validation of
+  // any set failed. Must not be called before field trial state has been
+  // initialized.
+  static net::GlobalFirstPartySets ParseSetsFromStream(std::istream& input,
+                                                       base::Version version,
+                                                       bool emit_errors,
+                                                       bool emit_metrics);
 
   // Canonicalizes the passed in origin to a registered domain. In particular,
   // this ensures that the origin is non-opaque, is HTTPS, and has a registered
