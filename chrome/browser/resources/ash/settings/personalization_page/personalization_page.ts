@@ -68,6 +68,12 @@ export class SettingsPersonalizationPageElement extends
         this.i18n('personalizationHubSubtitle');
   }
 
+  private getPersonalizationRowIcon_(): string {
+    return this.isRevampWayfindingEnabled_ ?
+        'os-settings:personalization-revamp' :
+        '';
+  }
+
   private openPersonalizationHub_(): void {
     this.personalizationHubBrowserProxy_.openPersonalizationHub();
   }

@@ -665,11 +665,12 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
    * @return The name of the icon to use.
    */
   private getResultIcon_(): string {
+    const isRevampEnabled = isRevampWayfindingEnabled();
     if (isPersonalizationSearchResult(this.searchResult)) {
-      return 'os-settings:paint-brush';
+      return isRevampEnabled ? 'os-settings:personalization-revamp' :
+                               'os-settings:paint-brush';
     }
 
-    const isRevampEnabled = isRevampWayfindingEnabled();
     const settingsSearchResult = this.searchResult as SettingsSearchResult;
     switch (settingsSearchResult.icon) {
       case SearchResultIcon.kA11y:
@@ -757,7 +758,8 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       case SearchResultIcon.kOnScreenKeyboard:
         return 'os-settings:on-screen-keyboard';
       case SearchResultIcon.kPaintbrush:
-        return 'os-settings:paint-brush';
+        return isRevampEnabled ? 'os-settings:personalization-revamp' :
+                                 'os-settings:paint-brush';
       case SearchResultIcon.kPenguin:
         return 'os-settings:crostini-mascot';
       case SearchResultIcon.kPhone:
