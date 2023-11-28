@@ -344,7 +344,7 @@ void SpellCheckProvider::OnRespondSpellingService(
 
   // Cache the request and the converted results.
   last_request_ = line;
-  last_results_.Swap(textcheck_results);
+  last_results_.swap(textcheck_results);
 }
 #endif
 
@@ -405,7 +405,7 @@ void SpellCheckProvider::OnRespondTextCheck(
 
   // Cache the request and the converted results.
   last_request_ = line;
-  last_results_.Swap(textcheck_results);
+  last_results_.swap(textcheck_results);
 }
 #endif  // BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 

@@ -315,8 +315,8 @@ void AppendParams(
         WebString::FromUTF16(additional_params[i].value);
   }
 
-  existing_names->Swap(names);
-  existing_values->Swap(values);
+  existing_names->swap(names);
+  existing_values->swap(values);
 }
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 

@@ -121,9 +121,9 @@ class WebContentCaptureClientTestHelper : public WebContentCaptureClient {
 
   void ResetResults() {
     first_data_ = false;
-    data_.Clear();
-    updated_data_.Clear();
-    removed_data_.Clear();
+    data_.clear();
+    updated_data_.clear();
+    removed_data_.clear();
     captured_text_.clear();
   }
 

@@ -2741,8 +2741,8 @@ void DocumentLoader::CommitNavigation() {
         navigation_api_forward_entries_, navigation_api_previous_entry_);
     // Now that the navigation API's entries array is initialized, we don't need
     // to retain the state from which it was initialized.
-    navigation_api_back_entries_.Clear();
-    navigation_api_forward_entries_.Clear();
+    navigation_api_back_entries_.clear();
+    navigation_api_forward_entries_.clear();
     navigation_api_previous_entry_ = WebHistoryItem();
   }
 

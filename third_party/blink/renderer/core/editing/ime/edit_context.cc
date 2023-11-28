@@ -242,7 +242,7 @@ void EditContext::updateCharacterBounds(
                std::to_string(range_start) + ", " +
                    std::to_string(character_bounds.size()));
 
-  character_bounds_.Clear();
+  character_bounds_.clear();
   base::ranges::for_each(character_bounds, [this](const auto& bounds) {
     auto result_bounds = bounds->ToEnclosingRect();
     TRACE_EVENT1("ime", "EditContext::updateCharacterBounds", "charBounds",
@@ -719,7 +719,7 @@ bool EditContext::GetCompositionCharacterBounds(WebVector<gfx::Rect>& bounds) {
   TRACE_EVENT1("ime", "EditContext::GetCompositionCharacterBounds", "size",
                std::to_string(character_bounds_.size()));
 
-  bounds.Clear();
+  bounds.clear();
   base::ranges::for_each(
       character_bounds_, [&bounds, this](auto& bound_in_css_pixels) {
         // EditContext's coordinates are in CSS pixels, which need to be

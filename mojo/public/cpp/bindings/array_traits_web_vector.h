@@ -23,17 +23,17 @@ struct ArrayTraits<blink::WebVector<U>> {
 
   static void SetToNull(blink::WebVector<U>* output) {
     // blink::WebVector<> doesn't support null state. Set it to empty instead.
-    output->Clear();
+    output->clear();
   }
 
   static size_t GetSize(const blink::WebVector<U>& input) {
     return input.size();
   }
 
-  static U* GetData(blink::WebVector<U>& input) { return input.Data(); }
+  static U* GetData(blink::WebVector<U>& input) { return input.data(); }
 
   static const U* GetData(const blink::WebVector<U>& input) {
-    return input.Data();
+    return input.data();
   }
 
   static U& GetAt(blink::WebVector<U>& input, size_t index) {

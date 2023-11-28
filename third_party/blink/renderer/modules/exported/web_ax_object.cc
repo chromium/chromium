@@ -875,8 +875,8 @@ void WebAXObject::GetWordBoundaries(WebVector<int>& starts,
     word_end_offsets[i] = src_ends[i];
   }
 
-  starts.Swap(word_start_offsets);
-  ends.Swap(word_end_offsets);
+  starts.swap(word_start_offsets);
+  ends.swap(word_end_offsets);
 }
 
 gfx::Point WebAXObject::GetScrollOffset() const {

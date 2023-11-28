@@ -487,7 +487,7 @@ void MojoURLLoaderClient::FlushDeferredMessages() {
     return;
   }
   WebVector<std::unique_ptr<DeferredMessage>> messages;
-  messages.Swap(deferred_messages_);
+  messages.swap(deferred_messages_);
   bool has_completion_message = false;
   base::WeakPtr<MojoURLLoaderClient> weak_this = weak_factory_.GetWeakPtr();
   // First, dispatch all messages excluding the followings:
