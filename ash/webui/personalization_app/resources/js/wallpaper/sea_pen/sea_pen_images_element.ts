@@ -13,8 +13,8 @@ import '../../../css/common.css.js';
 import {SeaPenThumbnail} from '../../../sea_pen.mojom-webui.js';
 import {WithPersonalizationStore} from '../../personalization_store.js';
 import {getZerosArray, isNonEmptyArray, isSelectionEvent} from '../../utils.js';
-import {selectSeaPenWallpaper} from '../wallpaper_controller.js';
 
+import {selectSeaPenWallpaper} from './sea_pen_controller.js';
 import {getTemplate} from './sea_pen_images_element.html.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 

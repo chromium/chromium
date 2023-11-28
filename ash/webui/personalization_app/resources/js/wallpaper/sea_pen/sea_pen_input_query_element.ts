@@ -21,8 +21,8 @@ import {MAXIMUM_SEARCH_WALLPAPER_TEXT_BYTES} from '../../../sea_pen.mojom-webui.
 import {Paths, PersonalizationRouterElement} from '../../personalization_router_element.js';
 import {WithPersonalizationStore} from '../../personalization_store.js';
 import {QUERY} from '../utils.js';
-import {searchWallpaperThumbnails} from '../wallpaper_controller.js';
 
+import {searchSeaPenThumbnails} from './sea_pen_controller.js';
 import {getTemplate} from './sea_pen_input_query_element.html.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 
@@ -65,7 +65,7 @@ export class SeaPenInputQueryElement extends WithPersonalizationStore {
 
   private onClickInputQuerySearchButton_() {
     assert(this.textValue_, 'input query should not be empty.');
-    searchWallpaperThumbnails(
+    searchSeaPenThumbnails(
         this.textValue_, getSeaPenProvider(), this.getStore());
     PersonalizationRouterElement.instance().goToRoute(
         Paths.SEA_PEN_RESULTS, {seaPenTemplateId: QUERY});

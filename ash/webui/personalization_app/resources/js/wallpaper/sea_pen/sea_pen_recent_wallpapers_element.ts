@@ -19,9 +19,9 @@ import {WithPersonalizationStore} from '../../personalization_store.js';
 import {isNonEmptyArray} from '../../utils.js';
 import {DisplayableImage, SeaPenWallpaper} from '../constants.js';
 import {isImageAMatchForKey, isImageEqualToSelected, isSeaPenWallpaper} from '../utils.js';
-import {getRecentWallpaperImages, selectRecentSeaPenImage} from '../wallpaper_controller.js';
 import {WallpaperGridItemSelectedEvent} from '../wallpaper_grid_item_element.js';
 
+import {getRecentSeaPenImages, selectRecentSeaPenImage} from './sea_pen_controller.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {getTemplate} from './sea_pen_recent_wallpapers_element.html.js';
 
@@ -63,7 +63,7 @@ export class SeaPenRecentWallpapersElement extends WithPersonalizationStore {
         'pendingSelected_', state => state.wallpaper.pendingSelected);
     this.updateFromStore();
     // TODO(b/304576846): remove the function and use sea pen observer instead.
-    getRecentWallpaperImages(this.getStore());
+    getRecentSeaPenImages(this.getStore());
   }
 
   private getAriaIndex_(i: number): number {
