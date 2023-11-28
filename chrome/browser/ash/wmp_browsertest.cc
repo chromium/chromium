@@ -1,0 +1,99 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ash/shell.h"
+#include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/test/browser_test.h"
+#include "ui/events/test/event_generator.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/vector2d.h"
+#include "ui/wm/public/activation_change_observer.h"
+#include "ui/wm/public/activation_client.h"
+
+namespace ash {
+namespace {
+
+// Waits for a window to be activated on the primary display. Returns the window
+// via the Wait() method.
+class ActiveWindowWaiter : public wm::ActivationChangeObserver {
+ public:
+  ActiveWindowWaiter() {
+    auto* activation_client =
+        wm::GetActivationClient(Shell::GetPrimaryRootWindow());
+    observation_.Observe(activation_client);
+  }
+
+  ~ActiveWindowWaiter() override = default;
+
+  aura::Window* Wait() {
+    run_loop_.Run();
+    return found_window_;
+  }
+
+  // wm::ActivationChangeObserver:
+  void OnWindowActivated(wm::ActivationChangeObserver::ActivationReason reason,
+                         aura::Window* gained_active,
+                         aura::Window* lost_active) override {
+    if (gained_active) {
+      found_window_ = gained_active;
+      observation_.Reset();
+      run_loop_.Quit();
+    }
+  }
+
+ private:
+  base::RunLoop run_loop_;
+  raw_ptr<aura::Window, ExperimentalAsh> found_window_ = nullptr;
+  base::ScopedObservation<wm::ActivationClient, wm::ActivationChangeObserver>
+      observation_{this};
+};
+
+class WmpBrowserTest : public InProcessBrowserTest {
+ public:
+  WmpBrowserTest() {
+    // No need for a browser window.
+    set_launch_browser_for_testing(nullptr);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(WmpBrowserTest, DragAndDropWindow) {
+  // Ensure the OS Settings app is installed.
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  ASSERT_TRUE(profile);
+  SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
+
+  // Launch the OS Settings app.
+  ActiveWindowWaiter window_waiter;
+  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(profile);
+  aura::Window* window = window_waiter.Wait();
+  ASSERT_TRUE(window);
+
+  // Starting in the window caption area, drag down and to the right.
+  gfx::Rect original_bounds = window->GetBoundsInScreen();
+  gfx::Point start = original_bounds.top_center() + gfx::Vector2d(0, 10);
+  const gfx::Vector2d kDragOffset(50, 50);
+  gfx::Point end = start + kDragOffset;
+
+  // Drag the window with the mouse, using several mouse move steps to better
+  // simulate production.
+  ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
+  generator.MoveMouseTo(start);
+  generator.PressLeftButton();
+  generator.MoveMouseTo(end, /*count=*/5);
+  generator.ReleaseLeftButton();
+
+  // Window bounds should have changed by the offset of the drag.
+  gfx::Rect new_bounds = window->GetBoundsInScreen();
+  gfx::Rect expected_bounds = original_bounds + kDragOffset;
+  EXPECT_EQ(new_bounds, expected_bounds);
+}
+
+}  // namespace
+}  // namespace ash
