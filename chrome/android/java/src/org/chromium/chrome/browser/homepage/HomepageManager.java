@@ -104,14 +104,6 @@ public class HomepageManager
     }
 
     /**
-     * @return Whether or not current homepage is customized.
-     */
-    public static boolean isHomepageCustomized() {
-        return !HomepagePolicyManager.isHomepageManagedByPolicy()
-                && !getInstance().getPrefHomepageUseDefaultUri();
-    }
-
-    /**
      * @return Whether to close the app when the user has zero tabs.
      */
     public static boolean shouldCloseAppWithZeroTabs() {
@@ -374,7 +366,7 @@ public class HomepageManager
                     ? HomepageLocationType.PARTNER_PROVIDED_NTP
                     : HomepageLocationType.PARTNER_PROVIDED_OTHER;
         }
-        // If user type NTP URI as their customized homepage, we'll record user is using NTP
+        // If user type NTP URI as their customized homepage, we'll record user is using NTP.
         return UrlUtilities.isNTPUrl(getPrefHomepageCustomGurl())
                 ? HomepageLocationType.USER_CUSTOMIZED_NTP
                 : HomepageLocationType.USER_CUSTOMIZED_OTHER;
