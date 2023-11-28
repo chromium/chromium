@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -204,6 +205,12 @@ void DelegatedFrameHost::CopyFromCompositingSurfaceInternal(
         gfx::Vector2d(area.width(), area.height()),
         gfx::Vector2d(output_size.width(), output_size.height()));
   }
+
+  // Run result callback on the current thread in case `callback` needs to run
+  // on the current thread. See http://crbug.com/1431363.
+  request->set_result_task_runner(
+      base::SingleThreadTaskRunner::GetCurrentDefault());
+
   DCHECK(host_frame_sink_manager_);
   host_frame_sink_manager_->RequestCopyOfOutput(
       viz::SurfaceId(frame_sink_id_, local_surface_id_), std::move(request));
