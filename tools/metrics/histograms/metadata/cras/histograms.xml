@@ -154,6 +154,7 @@ chromium-metrics-reviews@google.com.
   <token key="PeripheralCapability">
     <variant name="" summary="aggregated across all breakdowns"/>
     <variant name=".NarrowBandMic"/>
+    <variant name=".SuperWideBandMic"/>
     <variant name=".WideBandMic"/>
   </token>
 </histogram>
@@ -247,6 +248,7 @@ chromium-metrics-reviews@google.com.
   <token key="PeripheralCapability">
     <variant name="" summary="aggregated across all breakdowns"/>
     <variant name=".NarrowBandMic"/>
+    <variant name=".SuperWideBandMic"/>
     <variant name=".WideBandMic"/>
   </token>
 </histogram>
