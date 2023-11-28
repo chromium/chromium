@@ -4352,7 +4352,7 @@ void AXNodeObject::LoadInlineTextBoxesHelper() {
     // If inline text box children were added, mark the node dirty so that the
     // results are serialized.
     if (!CachedChildrenIncludingIgnored().empty()) {
-      AXObjectCache().AddDirtyObjectToSerializationQueue(
+      AXObjectCache().MarkAXObjectDirtyWithDetails(
           this, /*subtree*/ false, ax::mojom::blink::EventFrom::kNone,
           ax::mojom::blink::Action::kNone, {});
     }

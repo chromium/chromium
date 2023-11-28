@@ -1301,7 +1301,7 @@ TEST_F(AXImageAnnotatorTest, MAYBE_OnImageAdded) {
   // Show node "B".
   ExecuteJavaScriptForTests(
       "document.getElementById('B').style.visibility = 'visible';");
-  SendPendingAccessibilityEvents();
+  GetRenderAccessibilityImpl()->GetAXContext()->UpdateAXForAllDocuments();
   ClearHandledUpdates();
 
   // This should update the annotations of all images on the page, including the
@@ -1309,6 +1309,7 @@ TEST_F(AXImageAnnotatorTest, MAYBE_OnImageAdded) {
   GetRenderAccessibilityImpl()->MarkWebAXObjectDirty(root_obj,
                                                      true /* subtree */);
   SendPendingAccessibilityEvents();
+  task_environment_.RunUntilIdle();
 
   EXPECT_THAT(mock_annotator().image_ids_,
               ElementsAre("test1.jpg", "test2.jpg", "test1.jpg", "test2.jpg"));
@@ -1347,6 +1348,7 @@ TEST_F(AXImageAnnotatorTest, OnImageUpdated) {
   GetRenderAccessibilityImpl()->MarkWebAXObjectDirty(root_obj,
                                                      true /* subtree */);
   SendPendingAccessibilityEvents();
+  task_environment_.RunUntilIdle();
 
   EXPECT_THAT(mock_annotator().image_ids_,
               ElementsAre("test1.jpg", "test1.jpg"));
@@ -1357,7 +1359,7 @@ TEST_F(AXImageAnnotatorTest, OnImageUpdated) {
 
   // Update node "A".
   ExecuteJavaScriptForTests("document.querySelector('img').src = 'test2.jpg';");
-  SendPendingAccessibilityEvents();
+  GetRenderAccessibilityImpl()->GetAXContext()->UpdateAXForAllDocuments();
 
   ClearHandledUpdates();
   // This should update the annotations of all images on the page, including the
@@ -1365,6 +1367,7 @@ TEST_F(AXImageAnnotatorTest, OnImageUpdated) {
   GetRenderAccessibilityImpl()->MarkWebAXObjectDirty(root_obj,
                                                      true /* subtree */);
   SendPendingAccessibilityEvents();
+  task_environment_.RunUntilIdle();
 
   EXPECT_THAT(mock_annotator().image_ids_,
               ElementsAre("test1.jpg", "test1.jpg", "test2.jpg"));

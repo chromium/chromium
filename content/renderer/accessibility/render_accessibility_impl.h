@@ -328,6 +328,19 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   };
   LoadingStage loading_stage_ = LoadingStage::kPreload;
 
+  // This stores the last time a serialization was ACK'ed after being sent to
+  // the browser, so that serializations can be skipped if the time since the
+  // last serialization is less than GetDeferredEventsDelay(). Setting to
+  // "beginning of time" causes the upcoming serialization to occur at the next
+  // available opportunity.  Batching is used to reduce the number of
+  // serializations, in order to provide overall faster content updates while
+  // using less CPU, because nodes that change multiple times in a short time
+  // period only need to be serialized once, e.g. during page loads or
+  // animations.
+  static constexpr base::Time kSerializeAtNextOpportunity =
+      base::Time::UnixEpoch();
+  base::Time last_serialization_timestamp_ = kSerializeAtNextOpportunity;
+
   // The amount of time since the last UKM upload.
   std::unique_ptr<base::ElapsedTimer> ukm_timer_;
 
@@ -350,6 +363,16 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // A set of IDs for which we should always load inline text boxes.
   std::set<int32_t> load_inline_text_boxes_ids_;
 
+  // This will flip to true when we initiate the process of sending AX data to
+  // the browser, and will flip back to false once we receive back an ACK.
+  bool serialization_in_flight_ = false;
+
+  // This flips to true if a request for an immediate update was not honored
+  // because serialization_in_flight_ was true. It flips back to false once
+  // serialization_in_flight_ has flipped to false and an immediate update has
+  // been requested.
+  bool immediate_update_required_after_ack_ = false;
+
   // Controls whether serialization should be run synchronously at the end of a
   // main frame update, or scheduled as an asynchronous task.
   bool serialize_post_lifecycle_;
@@ -365,6 +388,11 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // We defer events to improve performance during the initial page load.
   LegacyEventScheduleMode legacy_event_schedule_mode_ =
       LegacyEventScheduleMode::kDeferEvents;
+
+  // So we can ensure the serialization pipeline never stalls with dirty objects
+  // remaining to be serialized.
+  base::WeakPtrFactory<RenderAccessibilityImpl>
+      weak_factory_for_serialization_pipeline_{this};
 
   // So we can queue up tasks to be executed later.
   base::WeakPtrFactory<RenderAccessibilityImpl>

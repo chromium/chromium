@@ -131,57 +131,19 @@ void WebAXContext::UpdateAXForAllDocuments() {
   return private_->GetAXObjectCache().UpdateAXForAllDocuments();
 }
 
-void WebAXContext::ScheduleImmediateSerialization() {
+void WebAXContext::ScheduleAXUpdate() {
   if (!HasActiveDocument()) {
     return;
-  }
-
-  auto& cache = private_->GetAXObjectCache();
-  cache.ScheduleImmediateSerialization();
-}
-
-void WebAXContext::AddEventToSerializationQueue(const ui::AXEvent& event,
-                                                bool immediate_serialization) {
-  if (!HasActiveDocument()) {
-    return;
-  }
-
-  auto& cache = private_->GetAXObjectCache();
-  cache.AddEventToSerializationQueue(event, immediate_serialization);
-}
-
-void WebAXContext::OnSerializationCancelled() {
-  if (!HasActiveDocument()) {
-    return;
-  }
-
-  auto& cache = private_->GetAXObjectCache();
-  cache.OnSerializationCancelled();
-}
-
-void WebAXContext::OnSerializationStartSend() {
-  if (!HasActiveDocument()) {
-    return;
-  }
-
-  auto& cache = private_->GetAXObjectCache();
-  cache.OnSerializationStartSend();
-}
-
-bool WebAXContext::IsSerializationInFlight() const {
-  if (!HasActiveDocument()) {
-    return false;
   }
 
   const auto& cache = private_->GetAXObjectCache();
-  return cache.IsSerializationInFlight();
-}
 
-void WebAXContext::OnSerializationReceived() {
-  if (!HasActiveDocument()) {
+  // If no dirty objects are queued, it's not necessary to schedule an extra
+  // visual update.
+  if (!cache.HasDirtyObjects())
     return;
-  }
-  return private_->GetAXObjectCache().OnSerializationReceived();
+
+  return cache.ScheduleAXUpdate();
 }
 
 void WebAXContext::FireLoadCompleteIfLoaded() {
