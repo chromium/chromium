@@ -122,8 +122,7 @@ BOOL UserActivityBrowserAgent::ContinueUserActivity(
     NSString* origin_string = base::apple::ObjCCast<NSString>(
         user_activity.userInfo[handoff::kOriginKey]);
     handoff::Origin origin = handoff::OriginFromString(origin_string);
-    base::UmaHistogramEnumeration("IOS.Handoff.Origin", origin,
-                                  handoff::ORIGIN_COUNT);
+    base::UmaHistogramEnumeration("IOS.Handoff.Origin", origin);
     base::UmaHistogramEnumeration(kAppLaunchSource, AppLaunchSource::HANDOFF);
   } else if (spotlight::IsSpotlightAvailable() &&
              [user_activity.activityType
@@ -133,8 +132,7 @@ BOOL UserActivityBrowserAgent::ContinueUserActivity(
     NSString* item_id = [user_activity.userInfo
         objectForKey:CSSearchableItemActivityIdentifier];
     spotlight::Domain domain = spotlight::SpotlightDomainFromString(item_id);
-    base::UmaHistogramEnumeration("IOS.Spotlight.Origin", domain,
-                                  spotlight::DOMAIN_COUNT);
+    base::UmaHistogramEnumeration("IOS.Spotlight.Origin", domain);
 
     base::UmaHistogramEnumeration(kAppLaunchSource,
                                   AppLaunchSource::SPOTLIGHT_CHROME);

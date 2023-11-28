@@ -29,7 +29,7 @@ enum Origin {
   ORIGIN_UNKNOWN = 0,
   ORIGIN_IOS = 1,
   ORIGIN_MAC = 2,
-  ORIGIN_COUNT
+  kMaxValue = ORIGIN_MAC
 };
 
 // Returns ORIGIN_UNKNOWN if |string| is nil or unrecognized.
