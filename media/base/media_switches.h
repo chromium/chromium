@@ -29,8 +29,6 @@ MEDIA_EXPORT extern const char kAudioBufferSize[];
 MEDIA_EXPORT extern const char kAudioCodecsFromEDID[];
 #endif  // BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
 
-MEDIA_EXPORT extern const char kAudioServiceQuitTimeoutMs[];
-
 MEDIA_EXPORT extern const char kAutoplayPolicy[];
 
 MEDIA_EXPORT extern const char kDisableAudioInput[];
