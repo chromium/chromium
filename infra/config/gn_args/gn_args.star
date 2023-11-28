@@ -92,6 +92,18 @@ gn_args.config(
     },
 )
 
+# TODO(https://crbug.com/1020714): This is temporary. We'd like to run a
+# smoke test on android_binary_sizes to ensure coverage of proguard, at
+# which point we can merge this into android_fastbuild. Until then, only
+# disable proguard on a few bots to gather metrics on the effect on build
+# times.
+gn_args.config(
+    "android_no_proguard",
+    args = {
+        "is_java_debug": True,
+    },
+)
+
 gn_args.config(
     "angle_deqp_tests",
     args = {
@@ -783,6 +795,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    "optimize_webui_off",
+    args = {
+        "optimize_webui": False,
+    },
+)
+
+gn_args.config(
     "ozone_headless",
     args = {
         "ozone_platform_headless": True,
@@ -1029,6 +1048,13 @@ gn_args.config(
     "use_java_coverage",
     args = {
         "use_jacoco_coverage": True,
+    },
+)
+
+gn_args.config(
+    "use_javascript_coverage",
+    args = {
+        "use_javascript_coverage": True,
     },
 )
 

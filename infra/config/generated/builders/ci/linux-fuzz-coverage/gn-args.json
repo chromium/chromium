@@ -1,0 +1,14 @@
+{
+  "gn_args": {
+    "dcheck_always_on": false,
+    "enable_mojom_fuzzer": true,
+    "enable_nacl": false,
+    "ffmpeg_branding": "ChromeOS",
+    "is_component_build": false,
+    "pdf_enable_xfa": true,
+    "proprietary_codecs": true,
+    "use_clang_coverage": true,
+    "use_libfuzzer": true,
+    "use_remoteexec": true
+  }
+}

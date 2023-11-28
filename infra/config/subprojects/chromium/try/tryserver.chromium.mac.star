@@ -487,6 +487,7 @@ try_.builder(
     name = "mac-code-coverage",
     mirrors = ["ci/mac-code-coverage"],
     execution_timeout = 20 * time.hour,
+    gn_args = "ci/mac-code-coverage",
 )
 
 ios_builder(
@@ -719,6 +720,12 @@ ios_builder(
     mirrors = ["ci/ios-simulator-code-coverage"],
     builderless = True,
     execution_timeout = 20 * time.hour,
+    gn_args = gn_args.config(
+        configs = [
+            "ci/ios-simulator-code-coverage",
+            "ios_simulator",
+        ],
+    ),
 )
 
 try_.gpu.optional_tests_builder(

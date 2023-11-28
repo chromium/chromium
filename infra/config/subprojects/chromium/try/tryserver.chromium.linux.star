@@ -906,6 +906,12 @@ try_.builder(
     mirrors = ["ci/linux-js-code-coverage"],
     check_for_flakiness = False,
     check_for_flakiness_with_resultdb = False,
+    gn_args = gn_args.config(
+        configs = [
+            "ci/linux-js-code-coverage",
+            "use_dummy_lastchange",
+        ],
+    ),
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = [
@@ -923,6 +929,12 @@ try_.builder(
 try_.builder(
     name = "chromeos-js-coverage-rel",
     mirrors = ["ci/chromeos-js-code-coverage"],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/chromeos-js-code-coverage",
+            "use_dummy_lastchange",
+        ],
+    ),
     main_list_view = "try",
     tryjob = try_.job(
         experiment_percentage = 50,
@@ -938,18 +950,21 @@ try_.builder(
     name = "linux-code-coverage",
     mirrors = ["ci/linux-code-coverage"],
     execution_timeout = 20 * time.hour,
+    gn_args = "ci/linux-code-coverage",
 )
 
 try_.builder(
     name = "linux-chromeos-code-coverage",
     mirrors = ["ci/linux-chromeos-code-coverage"],
     execution_timeout = 20 * time.hour,
+    gn_args = "ci/linux-chromeos-code-coverage",
 )
 
 try_.builder(
     name = "linux-lacros-code-coverage",
     mirrors = ["ci/linux-lacros-code-coverage"],
     execution_timeout = 20 * time.hour,
+    gn_args = "ci/linux-lacros-code-coverage",
 )
 
 # This builder serves a different purpose than try/linux-js-coverage-rel
@@ -958,6 +973,7 @@ try_.builder(
     name = "linux-js-code-coverage",
     mirrors = ["ci/linux-js-code-coverage"],
     execution_timeout = 20 * time.hour,
+    gn_args = "ci/linux-js-code-coverage",
     use_javascript_coverage = True,
 )
 
@@ -965,6 +981,7 @@ try_.builder(
     name = "chromeos-js-code-coverage",
     mirrors = ["ci/chromeos-js-code-coverage"],
     execution_timeout = 20 * time.hour,
+    gn_args = "ci/chromeos-js-code-coverage",
     use_javascript_coverage = True,
 )
 ############### Coverage Builders End ##################

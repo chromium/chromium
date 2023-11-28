@@ -7,6 +7,7 @@ load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "os", "reclient", "xcode")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
 load("//project.star", "settings")
 
 # crbug/1408581 - The code coverage CI builders are expected to be triggered
@@ -83,6 +84,22 @@ coverage_builder(
     coverage_test_types = ["overall", "unit"],
     export_coverage_to_zoss = True,
     generate_blame_list = True,
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "android_builder",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "arm64",
+            "resource_allowlisting",
+            "static_angle",
+            "android_fastbuild",
+            "webview_google",
+            "android_no_proguard",
+            "use_java_coverage",
+        ],
+    ),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     use_java_coverage = True,
 )
@@ -114,6 +131,20 @@ coverage_builder(
     ],
     coverage_test_types = ["overall", "unit"],
     export_coverage_to_zoss = True,
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "x86",
+            "strip_debug_info",
+            "android_fastbuild",
+            "webview_monochrome",
+            "webview_shell",
+            "use_java_coverage",
+        ],
+    ),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     use_java_coverage = True,
 )
@@ -150,6 +181,23 @@ coverage_builder(
     ],
     coverage_test_types = ["overall", "unit"],
     export_coverage_to_zoss = True,
+    # No symbols to prevent linker file too large error on
+    # android_webview_unittests target.
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "android_builder",
+            "release_builder",
+            "reclient",
+            "arm64",
+            "resource_allowlisting",
+            "static_angle",
+            "android_fastbuild",
+            "webview_google",
+            "android_no_proguard",
+            "use_clang_coverage",
+        ],
+    ),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     use_clang_coverage = True,
 )
@@ -188,6 +236,17 @@ coverage_builder(
         ),
     ],
     coverage_test_types = ["overall", "unit"],
+    gn_args = gn_args.config(
+        configs = [
+            "clang",
+            "fuchsia",
+            "fuchsia_code_coverage",
+            "no_symbols",
+            "release_builder",
+            "reclient",
+            "use_clang_coverage",
+        ],
+    ),
     use_clang_coverage = True,
 )
 
@@ -222,6 +281,16 @@ coverage_builder(
     coverage_exclude_sources = "ios_test_files_and_test_utils",
     coverage_test_types = ["overall", "unit"],
     export_coverage_to_zoss = True,
+    gn_args = gn_args.config(
+        configs = [
+            "use_clang_coverage",
+            "debug_static_builder",
+            "reclient",
+            "x64",
+            "ios",
+            "xctest",
+        ],
+    ),
     use_clang_coverage = True,
     xcode = xcode.x15main,
 )
@@ -254,6 +323,14 @@ coverage_builder(
     ],
     coverage_test_types = ["overall", "unit"],
     export_coverage_to_zoss = True,
+    gn_args = gn_args.config(
+        configs = [
+            "chromeos_with_codecs",
+            "release_builder",
+            "reclient",
+            "use_clang_coverage",
+        ],
+    ),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     use_clang_coverage = True,
 )
@@ -283,6 +360,16 @@ coverage_builder(
         ),
     ],
     export_coverage_to_zoss = True,
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "clang",
+            "no_symbols",
+            "use_javascript_coverage",
+            "optimize_webui_off",
+        ],
+    ),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     use_javascript_coverage = True,
 )
@@ -315,6 +402,15 @@ coverage_builder(
         ),
     ],
     export_coverage_to_zoss = True,
+    gn_args = gn_args.config(
+        configs = [
+            "chromeos_with_codecs",
+            "release_builder",
+            "reclient",
+            "use_javascript_coverage",
+            "optimize_webui_off",
+        ],
+    ),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     use_javascript_coverage = True,
 )
@@ -331,6 +427,19 @@ coverage_builder(
             short_name = "lnx-fuzz",
         ),
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "use_clang_coverage",
+            "static",
+            "mojo_fuzzer",
+            "libfuzzer",
+            "dcheck_off",
+            "disable_nacl",
+            "reclient",
+            "chromeos_codecs",
+            "pdf_xfa",
+        ],
+    ),
 )
 
 coverage_builder(
@@ -357,6 +466,16 @@ coverage_builder(
     ],
     coverage_test_types = ["overall", "unit"],
     export_coverage_to_zoss = True,
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "clang",
+            "use_clang_coverage",
+            "no_symbols",
+            "chrome_with_codecs",
+        ],
+    ),
     use_clang_coverage = True,
 )
 
@@ -386,6 +505,17 @@ coverage_builder(
         ),
     ],
     coverage_test_types = ["overall", "unit"],
+    gn_args = gn_args.config(
+        configs = [
+            "lacros_on_linux",
+            "release_builder",
+            "reclient",
+            "also_build_ash_chrome",
+            "clang",
+            "use_clang_coverage",
+            "no_symbols",
+        ],
+    ),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     use_clang_coverage = True,
 )
@@ -416,6 +546,16 @@ coverage_builder(
     ],
     coverage_test_types = ["overall", "unit"],
     export_coverage_to_zoss = True,
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "clang",
+            "use_clang_coverage",
+            "no_symbols",
+            "chrome_with_codecs",
+        ],
+    ),
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     use_clang_coverage = True,
 )
@@ -445,5 +585,15 @@ coverage_builder(
     ],
     coverage_test_types = ["overall", "unit"],
     export_coverage_to_zoss = True,
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "clang",
+            "use_clang_coverage",
+            "no_symbols",
+            "chrome_with_codecs",
+        ],
+    ),
     use_clang_coverage = True,
 )
