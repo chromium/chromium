@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
 #include "net/http/http_transaction.h"
+#include "net/socket/next_proto.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
@@ -170,6 +171,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryNetworkTransaction
   ConnectedCallback connected_callback_;
 
   bool cert_is_issued_by_known_root_ = false;
+  net::NextProto negotiated_protocol_ = net::kProtoUnknown;
 
   base::WeakPtrFactory<SharedDictionaryNetworkTransaction> weak_factory_{this};
 };

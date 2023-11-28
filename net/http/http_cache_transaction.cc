@@ -3219,7 +3219,7 @@ int HttpCache::Transaction::DoConnectedCallback() {
                                               : TransportType::kCached;
   return connected_callback_.Run(
       TransportInfo(type, response_.remote_endpoint, /*accept_ch_frame_arg=*/"",
-                    /*cert_is_issued_by_known_root=*/false),
+                    /*cert_is_issued_by_known_root=*/false, kProtoUnknown),
       io_callback_);
 }
 

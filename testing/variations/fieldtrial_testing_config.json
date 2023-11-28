@@ -4164,6 +4164,26 @@
             ]
         }
     ],
+    "CompressionDictionaryTransportOverHttp1": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CompressionDictionaryTransportOverHttp1"
+                    ]
+                }
+            ]
+        }
+    ],
     "ConfigurableV8CodeCacheHotHours": [
         {
             "platforms": [

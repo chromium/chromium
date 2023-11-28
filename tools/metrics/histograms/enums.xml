@@ -33841,6 +33841,8 @@ from previous Chrome versions.
   <int value="-1797739460" label="brotli-encoding:disabled"/>
   <int value="-1797183993" label="LacrosMergeIcuDataFile:enabled"/>
   <int value="-1794783272" label="PdfViewerDocumentProperties:disabled"/>
+  <int value="-1793587118"
+      label="CompressionDictionaryTransportOverHttp1:enabled"/>
   <int value="-1793010019" label="DesktopPWAsKeepAlive:enabled"/>
   <int value="-1792162033" label="WebID:enabled"/>
   <int value="-1791226955" label="BreakingNewsPush:enabled"/>
@@ -34584,6 +34586,8 @@ from previous Chrome versions.
   <int value="-1437091873" label="ArcInputOverlayAlphaV2:disabled"/>
   <int value="-1436892902" label="FastPairSavedDevices:disabled"/>
   <int value="-1436885151" label="OsSettingsAppBadgingToggle:disabled"/>
+  <int value="-1436806625"
+      label="CompressionDictionaryTransportOverHttp1:disabled"/>
   <int value="-1436251034" label="VoiceSearchOnLocalNtp:disabled"/>
   <int value="-1435804236" label="ThrottleIntersectionObserverUMA:enabled"/>
   <int value="-1434168619" label="StartSurfaceWithAccessibility:enabled"/>

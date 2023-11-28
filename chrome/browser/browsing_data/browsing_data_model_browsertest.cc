@@ -275,7 +275,12 @@ class BrowsingDataModelBrowserTest
         {blink::features::kWebSQLAccess, {}},
         {net::features::kThirdPartyStoragePartitioning, {}},
         {network::features::kCompressionDictionaryTransportBackend, {}},
-        {network::features::kCompressionDictionaryTransport, {}}};
+        {network::features::kCompressionDictionaryTransport, {}},
+        // Need to enable CompressionDictionaryTransportOverHttp1 because
+        // EmbeddedTestServer uses HTTP/1.1 by default.
+        {network::features::kCompressionDictionaryTransportOverHttp1, {}},
+    };
+
     std::vector<FeatureRef> disabled_features = {};
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)

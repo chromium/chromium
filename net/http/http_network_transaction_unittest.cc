@@ -3761,6 +3761,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthProxyNoKeepAliveHttp10) {
   TransportInfo expected_transport;
   expected_transport.type = TransportType::kProxied;
   expected_transport.endpoint = IPEndPoint(IPAddress::IPv4Localhost(), 70);
+  expected_transport.negotiated_protocol = kProtoUnknown;
   EXPECT_THAT(connected_handler.transports(), ElementsAre(expected_transport));
 
   // Check that credentials were successfully cached, with the right target.
@@ -3913,6 +3914,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthProxyNoKeepAliveHttp11) {
   TransportInfo expected_transport;
   expected_transport.type = TransportType::kProxied;
   expected_transport.endpoint = IPEndPoint(IPAddress::IPv4Localhost(), 70);
+  expected_transport.negotiated_protocol = kProtoUnknown;
   EXPECT_THAT(connected_handler.transports(), ElementsAre(expected_transport));
 
   // The password prompt info should not be set.
@@ -6212,6 +6214,7 @@ TEST_P(HttpNetworkTransactionTest, SameDestinationForDifferentProxyTypes) {
     expected_transport.endpoint =
         IPEndPoint(IPAddress::IPv4Localhost(),
                    SameProxyWithDifferentSchemesProxyResolver::kProxyPort);
+    expected_transport.negotiated_protocol = kProtoUnknown;
     EXPECT_THAT(connected_handler.transports(),
                 ElementsAre(expected_transport));
 
@@ -6622,6 +6625,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxyGet) {
   TransportInfo expected_transport;
   expected_transport.type = TransportType::kProxied;
   expected_transport.endpoint = IPEndPoint(IPAddress::IPv4Localhost(), 70);
+  expected_transport.negotiated_protocol = kProtoUnknown;
   EXPECT_THAT(connected_handler.transports(), ElementsAre(expected_transport));
 
   // The password prompt info should not be set.
@@ -6802,6 +6806,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxySpdyGet) {
   TransportInfo expected_transport;
   expected_transport.type = TransportType::kProxied;
   expected_transport.endpoint = IPEndPoint(IPAddress::IPv4Localhost(), 70);
+  expected_transport.negotiated_protocol = kProtoHTTP2;
   EXPECT_THAT(connected_handler.transports(), ElementsAre(expected_transport));
 
   std::string response_data;
@@ -6930,6 +6935,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySpdyGet) {
   TransportInfo expected_transport;
   expected_transport.type = TransportType::kProxied;
   expected_transport.endpoint = IPEndPoint(IPAddress::IPv4Localhost(), 70);
+  expected_transport.negotiated_protocol = kProtoHTTP2;
   EXPECT_THAT(connected_handler.transports(), ElementsAre(expected_transport));
 
   std::string response_data;
@@ -7057,6 +7063,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySameProxyTwiceSpdyGet) {
   TransportInfo expected_transport;
   expected_transport.type = TransportType::kProxied;
   expected_transport.endpoint = IPEndPoint(IPAddress::IPv4Localhost(), 70);
+  expected_transport.negotiated_protocol = kProtoHTTP2;
   EXPECT_THAT(connected_handler.transports(), ElementsAre(expected_transport));
 
   std::string response_data;
@@ -17270,9 +17277,18 @@ TEST_P(HttpNetworkTransactionTest,
   trans =
       std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
 
+  ConnectedHandler connected_handler;
+  trans->SetConnectedCallback(connected_handler.Callback());
+
   rv = trans->Start(&request, callback.callback(), NetLogWithSource());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   EXPECT_THAT(callback.WaitForResult(), IsOk());
+
+  TransportInfo expected_transport;
+  expected_transport.type = TransportType::kDirect;
+  expected_transport.endpoint = IPEndPoint(IPAddress::IPv4Localhost(), 443);
+  expected_transport.negotiated_protocol = kProtoHTTP2;
+  EXPECT_THAT(connected_handler.transports(), ElementsAre(expected_transport));
 
   response = trans->GetResponseInfo();
   ASSERT_TRUE(response);
@@ -18696,6 +18712,7 @@ TEST_P(HttpNetworkTransactionTest, ProxyGet) {
   TransportInfo expected_transport;
   expected_transport.type = TransportType::kProxied;
   expected_transport.endpoint = IPEndPoint(IPAddress::IPv4Localhost(), 70);
+  expected_transport.negotiated_protocol = kProtoUnknown;
   EXPECT_THAT(connected_handler.transports(), ElementsAre(expected_transport));
 
   LoadTimingInfo load_timing_info;
@@ -18780,6 +18797,7 @@ TEST_P(HttpNetworkTransactionTest, ProxyTunnelGet) {
   TransportInfo expected_transport;
   expected_transport.type = TransportType::kProxied;
   expected_transport.endpoint = IPEndPoint(IPAddress::IPv4Localhost(), 70);
+  expected_transport.negotiated_protocol = kProtoUnknown;
   EXPECT_THAT(connected_handler.transports(), ElementsAre(expected_transport));
 
   LoadTimingInfo load_timing_info;

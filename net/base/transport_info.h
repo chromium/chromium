@@ -11,6 +11,7 @@
 
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
+#include "net/socket/next_proto.h"
 
 namespace net {
 
@@ -36,7 +37,8 @@ struct NET_EXPORT TransportInfo {
   TransportInfo(TransportType type_arg,
                 IPEndPoint endpoint_arg,
                 std::string accept_ch_frame_arg,
-                bool cert_is_issued_by_known_root);
+                bool cert_is_issued_by_known_root,
+                NextProto negotiated_protocol);
   TransportInfo(const TransportInfo&);
   ~TransportInfo();
 
@@ -69,6 +71,12 @@ struct NET_EXPORT TransportInfo {
   // Invariant: if `type` is `kCached` or `kCachedFromProxy`, then this is
   // always false.
   bool cert_is_issued_by_known_root = false;
+
+  // The negotiated protocol info for the transport layer.
+  //
+  // Invariant: if `type` is `kCached` or `kCachedFromProxy`, then this is
+  // always kProtoUnknown.
+  NextProto negotiated_protocol = kProtoUnknown;
 };
 
 // Instances of these types are streamable for easier debugging.

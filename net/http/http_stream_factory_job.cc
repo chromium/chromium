@@ -856,6 +856,8 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
       if (job_type_ == PRECONNECT)
         return OK;
       using_spdy_ = true;
+      was_alpn_negotiated_ = true;
+      negotiated_protocol_ = kProtoHTTP2;
       next_state_ = STATE_CREATE_STREAM;
       return OK;
     }

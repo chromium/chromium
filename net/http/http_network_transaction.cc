@@ -993,7 +993,8 @@ int HttpNetworkTransaction::DoConnectedCallback() {
   return connected_callback_.Run(
       TransportInfo(type, remote_endpoint_,
                     std::string{stream_->GetAcceptChViaAlps()},
-                    is_issued_by_known_root),
+                    is_issued_by_known_root,
+                    NextProtoFromString(response_.alpn_negotiated_protocol)),
       base::BindOnce(&HttpNetworkTransaction::ResumeAfterConnected,
                      base::Unretained(this)));
 }

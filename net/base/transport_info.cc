@@ -37,11 +37,13 @@ TransportInfo::TransportInfo() = default;
 TransportInfo::TransportInfo(TransportType type_arg,
                              IPEndPoint endpoint_arg,
                              std::string accept_ch_frame_arg,
-                             bool cert_is_issued_by_known_root)
+                             bool cert_is_issued_by_known_root,
+                             NextProto negotiated_protocol)
     : type(type_arg),
       endpoint(std::move(endpoint_arg)),
       accept_ch_frame(std::move(accept_ch_frame_arg)),
-      cert_is_issued_by_known_root(cert_is_issued_by_known_root) {
+      cert_is_issued_by_known_root(cert_is_issued_by_known_root),
+      negotiated_protocol(negotiated_protocol) {
   switch (type) {
     case TransportType::kCached:
     case TransportType::kCachedFromProxy:
@@ -72,6 +74,8 @@ std::string TransportInfo::ToString() const {
       accept_ch_frame,
       ", cert_is_issued_by_known_root = ",
       cert_is_issued_by_known_root ? "true" : "false",
+      ", negotiated_protocol = ",
+      NextProtoToString(negotiated_protocol),
       " }",
   });
 }
