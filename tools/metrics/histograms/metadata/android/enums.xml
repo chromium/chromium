@@ -298,6 +298,12 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="RemoteException"/>
 </enum>
 
+<enum name="AndroidWebViewMediaIntegrityApiStatus">
+  <int value="0" label="DISABLED"/>
+  <int value="1" label="ENABLED_WITHOUT_APP_IDENTITY"/>
+  <int value="2" label="ENABLED"/>
+</enum>
+
 <enum name="AndroidWebViewMediaIntegrityInvalidInteraction">
   <int value="0" label="INVALID_PROVIDER_REQUEST"/>
   <int value="1" label="INVALID_TOKEN_REQUEST"/>

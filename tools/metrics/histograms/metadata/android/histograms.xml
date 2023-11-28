@@ -4933,6 +4933,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.MediaIntegrity.ApiStatus"
+    enum="AndroidWebViewMediaIntegrityApiStatus" expires_after="2024-11-27">
+  <owner>aashnajena@chromium.org</owner>
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the Media Integrity API Status set by the embedding application.
+    This status can be different for different URLs, but this histogram just
+    records the reported API status without any URL information.
+
+    This metric is logged when the API status for a top level origin is checked.
+    This is done during the initial call to supply a token provider to the
+    JavaScript implementation.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.MediaIntegrity.ContentBindingSizeLog2"
     units="log2(bytes)" expires_after="2024-11-01">
   <owner>pbirk@chromium.org</owner>
