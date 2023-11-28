@@ -164,16 +164,6 @@ void RecordPrefetchProxyPrefetchMainframeRespCode(int response_code) {
                            response_code);
 }
 
-void RecordPrefetchProxyPrefetchMainframeNetError(int net_error) {
-  base::UmaHistogramSparse("PrefetchProxy.Prefetch.Mainframe.NetError",
-                           std::abs(net_error));
-}
-
-void RecordPrefetchProxyPrefetchMainframeBodyLength(int64_t body_length) {
-  UMA_HISTOGRAM_COUNTS_10M("PrefetchProxy.Prefetch.Mainframe.BodyLength",
-                           body_length);
-}
-
 void RecordPrefetchProxyPrefetchMainframeCookiesToCopy(
     size_t cookie_list_size) {
   UMA_HISTOGRAM_COUNTS_100("PrefetchProxy.Prefetch.Mainframe.CookiesToCopy",
@@ -1271,67 +1261,16 @@ void PrefetchService::OnPrefetchResponseCompleted(
   if (!prefetch_container) {
     return;
   }
-  DVLOG(1) << "PrefetchService::OnPrefetchResponseCompleted::"
-           << "PrefetchUrl = " << prefetch_container->GetURL();
 
   DCHECK(
       active_prefetches_.find(prefetch_container->GetPrefetchContainerKey()) !=
       active_prefetches_.end());
   active_prefetches_.erase(prefetch_container->GetPrefetchContainerKey());
 
-  prefetch_container->OnPrefetchComplete();
+  prefetch_container->OnPrefetchComplete(completion_status);
 
   if (on_prefetch_response_completed_for_testing_) {
     on_prefetch_response_completed_for_testing_.Run(prefetch_container);
-  }
-
-  if (prefetch_container->IsDecoy()) {
-    prefetch_container->SetPrefetchStatus(
-        PrefetchStatus::kPrefetchIsPrivacyDecoy);
-    Prefetch();
-    return;
-  }
-
-  // TODO(https://crbug.com/1399956): Call
-  // SpeculationHostDevToolsObserver::OnPrefetchBodyDataReceived with body of
-  // the response.
-  const auto& devtools_observer = prefetch_container->GetDevToolsObserver();
-  if (devtools_observer) {
-    devtools_observer->OnPrefetchRequestComplete(
-        prefetch_container->RequestId(), completion_status);
-  }
-
-  int net_error = completion_status.error_code;
-  int64_t body_length = completion_status.decoded_body_length;
-
-  DVLOG(1) << "PrefetchService::OnPrefetchResponseCompleted::"
-           << "PrefetchUrl = " << prefetch_container->GetURL()
-           << ", RecordPrefetchMainframeNetError";
-  RecordPrefetchProxyPrefetchMainframeNetError(net_error);
-
-  // Updates the prefetch's status if it hasn't been updated since the request
-  // first started. For the prefetch to reach the network stack, it must have
-  // `PrefetchStatus::kPrefetchAllowed` or beyond.
-  DCHECK(prefetch_container->HasPrefetchStatus());
-  if (prefetch_container->GetPrefetchStatus() ==
-      PrefetchStatus::kPrefetchNotFinishedInTime) {
-    prefetch_container->SetPrefetchStatus(
-        net_error == net::OK ? PrefetchStatus::kPrefetchSuccessful
-                             : PrefetchStatus::kPrefetchFailedNetError);
-    prefetch_container->UpdateServingPageMetrics();
-  }
-
-  if (net_error == net::OK) {
-    RecordPrefetchProxyPrefetchMainframeBodyLength(body_length);
-  }
-
-  if (prefetch_container->GetPrefetchStatus() ==
-      PrefetchStatus::kPrefetchSuccessful) {
-    PrefetchDocumentManager* prefetch_document_manager =
-        prefetch_container->GetPrefetchDocumentManager();
-    if (prefetch_document_manager) {
-      prefetch_document_manager->OnPrefetchSuccessful(prefetch_container.get());
-    }
   }
 
   Prefetch();

@@ -305,6 +305,16 @@ ukm::SourceId GetUkmSourceId(
   return prefetch_document_manager->render_frame_host().GetPageUkmSourceId();
 }
 
+void RecordPrefetchProxyPrefetchMainframeNetError(int net_error) {
+  base::UmaHistogramSparse("PrefetchProxy.Prefetch.Mainframe.NetError",
+                           std::abs(net_error));
+}
+
+void RecordPrefetchProxyPrefetchMainframeBodyLength(int64_t body_length) {
+  UMA_HISTOGRAM_COUNTS_10M("PrefetchProxy.Prefetch.Mainframe.BodyLength",
+                           body_length);
+}
+
 }  // namespace
 
 // Holds the state for the request for a single URL in the context of the
@@ -912,20 +922,62 @@ void PrefetchContainer::StartTimeoutTimer(
   timeout_timer_->Start(FROM_HERE, timeout, std::move(on_timeout_callback));
 }
 
-void PrefetchContainer::OnPrefetchComplete() {
+void PrefetchContainer::OnPrefetchComplete(
+    const network::URLLoaderCompletionStatus& completion_status) {
+  DVLOG(1) << *this << "::OnPrefetchComplete";
+
   UMA_HISTOGRAM_COUNTS_100("PrefetchProxy.Prefetch.RedirectChainSize",
                            redirect_chain_.size());
-  DVLOG(1) << *this << "::OnPrefetchComplete";
-  if (!GetNonRedirectResponseReader()) {
+
+  if (GetNonRedirectResponseReader()) {
+    UpdatePrefetchRequestMetrics(
+        GetNonRedirectResponseReader()->GetCompletionStatus(),
+        GetNonRedirectResponseReader()->GetHead());
+    UpdateServingPageMetrics();
+  } else {
     DVLOG(1) << *this << "::OnPrefetchComplete:"
              << "no non redirect response reader";
+  }
+
+  if (IsDecoy()) {
+    SetPrefetchStatus(PrefetchStatus::kPrefetchIsPrivacyDecoy);
     return;
   }
 
-  UpdatePrefetchRequestMetrics(
-      GetNonRedirectResponseReader()->GetCompletionStatus(),
-      GetNonRedirectResponseReader()->GetHead());
-  UpdateServingPageMetrics();
+  // TODO(https://crbug.com/1399956): Call
+  // SpeculationHostDevToolsObserver::OnPrefetchBodyDataReceived with body of
+  // the response.
+  const auto& devtools_observer = GetDevToolsObserver();
+  if (devtools_observer) {
+    devtools_observer->OnPrefetchRequestComplete(RequestId(),
+                                                 completion_status);
+  }
+
+  int net_error = completion_status.error_code;
+  int64_t body_length = completion_status.decoded_body_length;
+
+  RecordPrefetchProxyPrefetchMainframeNetError(net_error);
+
+  // Updates the prefetch's status if it hasn't been updated since the request
+  // first started. For the prefetch to reach the network stack, it must have
+  // `PrefetchStatus::kPrefetchAllowed` or beyond.
+  DCHECK(HasPrefetchStatus());
+  if (GetPrefetchStatus() == PrefetchStatus::kPrefetchNotFinishedInTime) {
+    SetPrefetchStatus(net_error == net::OK
+                          ? PrefetchStatus::kPrefetchSuccessful
+                          : PrefetchStatus::kPrefetchFailedNetError);
+    UpdateServingPageMetrics();
+  }
+
+  if (net_error == net::OK) {
+    RecordPrefetchProxyPrefetchMainframeBodyLength(body_length);
+  }
+
+  if (GetPrefetchStatus() == PrefetchStatus::kPrefetchSuccessful) {
+    if (prefetch_document_manager_) {
+      prefetch_document_manager_->OnPrefetchSuccessful(this);
+    }
+  }
 }
 
 void PrefetchContainer::UpdatePrefetchRequestMetrics(

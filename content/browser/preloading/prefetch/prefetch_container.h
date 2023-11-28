@@ -332,7 +332,8 @@ class CONTENT_EXPORT PrefetchContainer {
   // Called when |PrefetchService::OnPrefetchComplete| is called for the
   // prefetch. This happens when |loader_| fully downloads the requested
   // resource.
-  void OnPrefetchComplete();
+  void OnPrefetchComplete(
+      const network::URLLoaderCompletionStatus& completion_status);
 
   // Allows for a timer to be used to limit the maximum amount of time that a
   // navigation can be blocked waiting for the head of this prefetch to be
