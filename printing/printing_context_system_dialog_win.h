@@ -20,7 +20,8 @@ namespace printing {
 class COMPONENT_EXPORT(PRINTING) PrintingContextSystemDialogWin
     : public PrintingContextWin {
  public:
-  explicit PrintingContextSystemDialogWin(Delegate* delegate);
+  PrintingContextSystemDialogWin(Delegate* delegate,
+                                 ProcessBehavior process_behavior);
   PrintingContextSystemDialogWin(const PrintingContextSystemDialogWin&) =
       delete;
   PrintingContextSystemDialogWin& operator=(

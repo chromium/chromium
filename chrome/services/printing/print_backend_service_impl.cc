@@ -624,7 +624,8 @@ void PrintBackendServiceImpl::EstablishPrintingContext(uint32_t context_id
 #endif
 
   context_container->context = PrintingContext::Create(
-      context_container->delegate.get(), /*skip_system_calls=*/false);
+      context_container->delegate.get(),
+      PrintingContext::ProcessBehavior::kOopEnabledPerformSystemCalls);
 
   bool inserted = persistent_printing_contexts_
                       .insert({context_id, std::move(context_container)})

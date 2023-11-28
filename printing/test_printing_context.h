@@ -45,7 +45,7 @@ class TestPrintingContext : public PrintingContext {
 #endif
       const PrintSettings&)>;
 
-  TestPrintingContext(Delegate* delegate, bool skip_system_calls);
+  TestPrintingContext(Delegate* delegate, ProcessBehavior process_behavior);
   TestPrintingContext(const TestPrintingContext&) = delete;
   TestPrintingContext& operator=(const TestPrintingContext&) = delete;
   ~TestPrintingContext() override;

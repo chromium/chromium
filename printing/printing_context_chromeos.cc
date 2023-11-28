@@ -280,34 +280,33 @@ ScopedIppPtr SettingsToIPPOptions(const PrintSettings& settings,
 // static
 std::unique_ptr<PrintingContext> PrintingContext::CreateImpl(
     Delegate* delegate,
-    bool skip_system_calls) {
-  auto context = std::make_unique<PrintingContextChromeos>(delegate);
-#if BUILDFLAG(ENABLE_OOP_PRINTING)
-  if (skip_system_calls)
-    context->set_skip_system_calls();
-#endif
-  return context;
+    ProcessBehavior process_behavior) {
+  return std::make_unique<PrintingContextChromeos>(delegate, process_behavior);
 }
 
 // static
 std::unique_ptr<PrintingContextChromeos>
 PrintingContextChromeos::CreateForTesting(
     Delegate* delegate,
+    ProcessBehavior process_behavior,
     std::unique_ptr<CupsConnection> connection) {
   // Private ctor.
-  return base::WrapUnique(
-      new PrintingContextChromeos(delegate, std::move(connection)));
+  return base::WrapUnique(new PrintingContextChromeos(
+      delegate, process_behavior, std::move(connection)));
 }
 
-PrintingContextChromeos::PrintingContextChromeos(Delegate* delegate)
-    : PrintingContext(delegate),
+PrintingContextChromeos::PrintingContextChromeos(
+    Delegate* delegate,
+    ProcessBehavior process_behavior)
+    : PrintingContext(delegate, process_behavior),
       connection_(CupsConnection::Create()),
       ipp_options_(WrapIpp(nullptr)) {}
 
 PrintingContextChromeos::PrintingContextChromeos(
     Delegate* delegate,
+    ProcessBehavior process_behavior,
     std::unique_ptr<CupsConnection> connection)
-    : PrintingContext(delegate),
+    : PrintingContext(delegate, process_behavior),
       connection_(std::move(connection)),
       ipp_options_(WrapIpp(nullptr)) {}
 
@@ -447,8 +446,11 @@ mojom::ResultCode PrintingContextChromeos::NewDocument(
   DCHECK(!in_print_job_);
   in_print_job_ = true;
 
-  if (skip_system_calls())
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  if (process_behavior() == ProcessBehavior::kOopEnabledSkipSystemCalls) {
     return mojom::ResultCode::kSuccess;
+  }
+#endif
 
   std::string converted_name;
   if (send_user_info_) {

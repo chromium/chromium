@@ -396,9 +396,9 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
    public:
     std::unique_ptr<PrintingContext> CreatePrintingContext(
         PrintingContext::Delegate* delegate,
-        bool skip_system_calls) override {
+        PrintingContext::ProcessBehavior process_behavior) override {
       auto context =
-          std::make_unique<TestPrintingContext>(delegate, skip_system_calls);
+          std::make_unique<TestPrintingContext>(delegate, process_behavior);
 
       auto settings = std::make_unique<PrintSettings>();
       settings->set_copies(kPrintSettingsCopies);

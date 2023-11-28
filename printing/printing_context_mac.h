@@ -21,7 +21,7 @@ namespace printing {
 
 class COMPONENT_EXPORT(PRINTING) PrintingContextMac : public PrintingContext {
  public:
-  explicit PrintingContextMac(Delegate* delegate);
+  PrintingContextMac(Delegate* delegate, ProcessBehavior process_behavior);
   PrintingContextMac(const PrintingContextMac&) = delete;
   PrintingContextMac& operator=(const PrintingContextMac&) = delete;
   ~PrintingContextMac() override;

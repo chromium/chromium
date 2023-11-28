@@ -89,10 +89,12 @@ const AccountId& GetAccountId(Profile* profile) {
 
 gfx::Size GetDefaultPdfMediaSizeMicrons() {
   PrintingContextDelegate delegate;
-  // The `PrintingContext` for "Save as PDF" does need to make system printing
-  // calls.
-  auto printing_context(
-      PrintingContext::Create(&delegate, /*skip_system_calls=*/false));
+  // The `PrintingContext` for "Save as PDF" does not need to make system
+  // printing calls, it just relies on localization plus hardcoded defaults
+  // from `PrintingContext::UsePdfSettings()`.  This means that OOP support
+  // is unnecessary in this case.
+  auto printing_context(PrintingContext::Create(
+      &delegate, PrintingContext::ProcessBehavior::kOopDisabled));
   printing_context->UsePdfSettings();
   gfx::Size pdf_media_size = printing_context->GetPdfPaperSizeDeviceUnits();
   float device_microns_per_device_unit =

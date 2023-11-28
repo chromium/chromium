@@ -22,9 +22,10 @@ class COMPONENT_EXPORT(PRINTING) PrintingContextChromeos
  public:
   static std::unique_ptr<PrintingContextChromeos> CreateForTesting(
       Delegate* delegate,
+      ProcessBehavior process_behavior,
       std::unique_ptr<CupsConnection> connection);
 
-  explicit PrintingContextChromeos(Delegate* delegate);
+  PrintingContextChromeos(Delegate* delegate, ProcessBehavior process_behavior);
   PrintingContextChromeos(const PrintingContextChromeos&) = delete;
   PrintingContextChromeos& operator=(const PrintingContextChromeos&) = delete;
   ~PrintingContextChromeos() override;
@@ -52,6 +53,7 @@ class COMPONENT_EXPORT(PRINTING) PrintingContextChromeos
  private:
   // For testing. Use CreateForTesting() to create.
   PrintingContextChromeos(Delegate* delegate,
+                          ProcessBehavior process_behavior,
                           std::unique_ptr<CupsConnection> connection);
 
   // Lazily initializes `printer_`.

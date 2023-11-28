@@ -24,7 +24,7 @@ class BrowserPrintingContextFactoryForTest
 
   std::unique_ptr<PrintingContext> CreatePrintingContext(
       PrintingContext::Delegate* delegate,
-      bool skip_system_calls) override;
+      PrintingContext::ProcessBehavior process_behavior) override;
 
   void SetPrinterNameForSubsequentContexts(const std::string& printer_name);
   void SetCancelErrorOnNewDocument(bool cause_errors);
