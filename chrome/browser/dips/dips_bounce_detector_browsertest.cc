@@ -1669,16 +1669,9 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
 // Tests setting different metrics for the RedirectHeuristic_CookieAccess UKM
 // event.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-// TODO(https://crbug.com/1489241): Flaky on Mac.
-#define MAYBE_RedirectHeuristicCookieAccessEvent_AllMetrics \
-  DISABLED_RedirectHeuristicCookieAccessEvent_AllMetrics
-#else
-#define MAYBE_RedirectHeuristicCookieAccessEvent_AllMetrics \
-  RedirectHeuristicCookieAccessEvent_AllMetrics
-#endif
+// TODO(https://crbug.com/1489241): Flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
-                       MAYBE_RedirectHeuristicCookieAccessEvent_AllMetrics) {
+                       DISABLED_RedirectHeuristicCookieAccessEvent_AllMetrics) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   WebContents* web_contents = GetActiveWebContents();
 
