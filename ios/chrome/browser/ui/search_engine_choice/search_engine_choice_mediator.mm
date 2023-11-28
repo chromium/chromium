@@ -39,7 +39,7 @@
             updateFakeOmniboxWithFavicon:[[UIImageView alloc]
                                              initWithImage:attributes
                                                                .faviconImage]
-                        SearchEngineName:item.text];
+                        SearchEngineName:item.name];
       });
 }
 

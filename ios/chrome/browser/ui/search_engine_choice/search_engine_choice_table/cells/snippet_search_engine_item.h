@@ -11,16 +11,13 @@
 
 class GURL;
 
-// SearchEngineItem contains the model data for a TableViewURLCell.
+// SearchEngineItem contains the model data for a SnippetSearchEngineCell.
 @interface SnippetSearchEngineItem : TableViewItem
 
-// The enabled/disabled state. If disabled, user interaction will be forbidden
-// and cell's alpha will be reduced.
-@property(nonatomic, assign) BOOL enabled;
-// The text for the title.
-@property(nonatomic, readwrite, copy) NSString* text;
-// The text for the subtitle.
-@property(nonatomic, readwrite, copy) NSString* detailText;
+// The name of the search engine.
+@property(nonatomic, readwrite, copy) NSString* name;
+// The text for the search engine snippet.
+@property(nonatomic, readwrite, copy) NSString* snippet;
 // The URL to fetch the favicon. This can be the favicon's URL, or a "fake" web
 // page URL created by filling empty query word into the search engine's
 // searchable URL template(e.g. "http://www.google.com/?q=").

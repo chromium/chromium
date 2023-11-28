@@ -8,9 +8,9 @@
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table/cells/snippet_search_engine_cell.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table/cells/snippet_search_engine_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
@@ -154,8 +154,8 @@ UIImageView* CreateCheckedCircle() {
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
   SnippetSearchEngineItem* engineItem =
       base::apple::ObjCCastStrict<SnippetSearchEngineItem>(item);
-  TableViewURLCell* urlCell =
-      base::apple::ObjCCastStrict<TableViewURLCell>(cell);
+  SnippetSearchEngineCell* urlCell =
+      base::apple::ObjCCastStrict<SnippetSearchEngineCell>(cell);
 
   NSString* itemIdentifier = engineItem.uniqueIdentifier;
   _faviconLoader->FaviconForPageUrl(
@@ -166,8 +166,6 @@ UIImageView* CreateCheckedCircle() {
           [urlCell.faviconView configureWithAttributes:attributes];
         }
       });
-  [urlCell
-      setFaviconContainerBackgroundColor:[UIColor colorNamed:kBackgroundColor]];
 
   UIImageView* circleView;
   if (_selectedRow >= 0 && indexPath.row == _selectedRow) {

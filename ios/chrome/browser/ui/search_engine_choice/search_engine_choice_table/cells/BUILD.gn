@@ -4,6 +4,8 @@
 
 source_set("cells") {
   sources = [
+    "snippet_search_engine_cell.h",
+    "snippet_search_engine_cell.mm",
     "snippet_search_engine_item.h",
     "snippet_search_engine_item.mm",
   ]
@@ -15,6 +17,8 @@ source_set("cells") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/settings/cells:public",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/table_view",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//url",
   ]

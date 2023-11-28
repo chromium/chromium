@@ -96,7 +96,7 @@ TEST_F(SearchEngineChoiceTableMediatorTest, SavesDefaultSearchEngine) {
   [mediator_ saveDefaultSearchEngine];
 
   NSString* expected_default_engine_name =
-      consumer_.searchEngines[mediator_.selectedRow].text;
+      consumer_.searchEngines[mediator_.selectedRow].name;
   NSString* default_search_engine_name = base::SysUTF16ToNSString(
       template_url_service_->GetDefaultSearchProvider()->short_name());
   ASSERT_TRUE([expected_default_engine_name
@@ -118,7 +118,7 @@ TEST_F(SearchEngineChoiceTableMediatorTest, SearchEngineListCorrectlyCreated) {
   ASSERT_EQ([consumer_.searchEngines count], search_engines.size());
   for (SnippetSearchEngineItem* item in consumer_.searchEngines) {
     ASSERT_TRUE(
-        base::ranges::find(search_engines, base::SysNSStringToUTF16(item.text),
+        base::ranges::find(search_engines, base::SysNSStringToUTF16(item.name),
                            &TemplateURL::short_name) != search_engines.end());
   }
 }

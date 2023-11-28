@@ -38,7 +38,7 @@ SnippetSearchEngineItem* CreateSnippetSearchEngineItemFromTemplateURL(
     // Use icon URL for favicons of custom search engines.
     item.URL = template_url->favicon_url();
   }
-  item.text = base::SysUTF16ToNSString(template_url->short_name());
+  item.name = base::SysUTF16ToNSString(template_url->short_name());
   return item;
 }
 
