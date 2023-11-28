@@ -8009,9 +8009,8 @@ bool NavigationRequest::DidEncounterError() const {
   return net_error_ != net::OK;
 }
 
-net::HttpResponseInfo::ConnectionInfo NavigationRequest::GetConnectionInfo() {
-  return response() ? response()->connection_info
-                    : net::HttpResponseInfo::ConnectionInfo();
+net::HttpConnectionInfo NavigationRequest::GetConnectionInfo() {
+  return response() ? response()->connection_info : net::HttpConnectionInfo();
 }
 
 bool NavigationRequest::IsInMainFrame() const {

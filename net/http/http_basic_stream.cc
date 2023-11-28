@@ -194,7 +194,7 @@ void HttpBasicStream::Drain(HttpNetworkSession* session) {
 void HttpBasicStream::PopulateNetErrorDetails(NetErrorDetails* details) {
   // TODO(mmenke):  Consumers don't actually care about HTTP version, but seems
   // like the right version should be reported, if headers were received.
-  details->connection_info = HttpResponseInfo::CONNECTION_INFO_HTTP1_1;
+  details->connection_info = HttpConnectionInfo::kHTTP1_1;
   return;
 }
 

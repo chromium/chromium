@@ -141,69 +141,6 @@ enum {
   RESPONSE_EXTRA_INFO_DID_USE_SHARED_DICTIONARY = 1,
 };
 
-HttpResponseInfo::ConnectionInfoCoarse HttpResponseInfo::ConnectionInfoToCoarse(
-    ConnectionInfo info) {
-  switch (info) {
-    case CONNECTION_INFO_HTTP0_9:
-    case CONNECTION_INFO_HTTP1_0:
-    case CONNECTION_INFO_HTTP1_1:
-      return CONNECTION_INFO_COARSE_HTTP1;
-
-    case CONNECTION_INFO_HTTP2:
-    case CONNECTION_INFO_DEPRECATED_SPDY2:
-    case CONNECTION_INFO_DEPRECATED_SPDY3:
-    case CONNECTION_INFO_DEPRECATED_HTTP2_14:
-    case CONNECTION_INFO_DEPRECATED_HTTP2_15:
-      return CONNECTION_INFO_COARSE_HTTP2;
-
-    case CONNECTION_INFO_QUIC_UNKNOWN_VERSION:
-    case CONNECTION_INFO_QUIC_32:
-    case CONNECTION_INFO_QUIC_33:
-    case CONNECTION_INFO_QUIC_34:
-    case CONNECTION_INFO_QUIC_35:
-    case CONNECTION_INFO_QUIC_36:
-    case CONNECTION_INFO_QUIC_37:
-    case CONNECTION_INFO_QUIC_38:
-    case CONNECTION_INFO_QUIC_39:
-    case CONNECTION_INFO_QUIC_40:
-    case CONNECTION_INFO_QUIC_41:
-    case CONNECTION_INFO_QUIC_42:
-    case CONNECTION_INFO_QUIC_43:
-    case CONNECTION_INFO_QUIC_44:
-    case CONNECTION_INFO_QUIC_45:
-    case CONNECTION_INFO_QUIC_46:
-    case CONNECTION_INFO_QUIC_47:
-    case CONNECTION_INFO_QUIC_Q048:
-    case CONNECTION_INFO_QUIC_T048:
-    case CONNECTION_INFO_QUIC_Q049:
-    case CONNECTION_INFO_QUIC_T049:
-    case CONNECTION_INFO_QUIC_Q050:
-    case CONNECTION_INFO_QUIC_T050:
-    case CONNECTION_INFO_QUIC_Q099:
-    case CONNECTION_INFO_QUIC_T099:
-    case CONNECTION_INFO_QUIC_999:
-    case CONNECTION_INFO_QUIC_DRAFT_25:
-    case CONNECTION_INFO_QUIC_DRAFT_27:
-    case CONNECTION_INFO_QUIC_DRAFT_28:
-    case CONNECTION_INFO_QUIC_DRAFT_29:
-    case CONNECTION_INFO_QUIC_T051:
-    case CONNECTION_INFO_QUIC_RFC_V1:
-    case CONNECTION_INFO_DEPRECATED_QUIC_2_DRAFT_1:
-    case CONNECTION_INFO_QUIC_2_DRAFT_8:
-      return CONNECTION_INFO_COARSE_QUIC;
-
-    case CONNECTION_INFO_UNKNOWN:
-      return CONNECTION_INFO_COARSE_OTHER;
-
-    case NUM_OF_CONNECTION_INFOS:
-      NOTREACHED();
-      return CONNECTION_INFO_COARSE_OTHER;
-  }
-
-  NOTREACHED();
-  return CONNECTION_INFO_COARSE_OTHER;
-}
-
 HttpResponseInfo::HttpResponseInfo() = default;
 
 HttpResponseInfo::HttpResponseInfo(const HttpResponseInfo& rhs) = default;
@@ -333,9 +270,9 @@ bool HttpResponseInfo::InitFromPickle(const base::Pickle& pickle,
     if (!iter.ReadInt(&value))
       return false;
 
-    if (value > static_cast<int>(CONNECTION_INFO_UNKNOWN) &&
-        value < static_cast<int>(NUM_OF_CONNECTION_INFOS)) {
-      connection_info = static_cast<ConnectionInfo>(value);
+    if (value > static_cast<int>(HttpConnectionInfo::kUNKNOWN) &&
+        value <= static_cast<int>(HttpConnectionInfo::kMaxValue)) {
+      connection_info = static_cast<HttpConnectionInfo>(value);
     }
   }
 
@@ -446,8 +383,9 @@ void HttpResponseInfo::Persist(base::Pickle* pickle,
   }
   if (was_fetched_via_proxy)
     flags |= RESPONSE_INFO_WAS_PROXY;
-  if (connection_info != CONNECTION_INFO_UNKNOWN)
+  if (connection_info != HttpConnectionInfo::kUNKNOWN) {
     flags |= RESPONSE_INFO_HAS_CONNECTION_INFO;
+  }
   if (did_use_http_auth)
     flags |= RESPONSE_INFO_USE_HTTP_AUTHENTICATION;
   if (unused_since_prefetch)
@@ -511,8 +449,9 @@ void HttpResponseInfo::Persist(base::Pickle* pickle,
   if (was_alpn_negotiated)
     pickle->WriteString(alpn_negotiated_protocol);
 
-  if (connection_info != CONNECTION_INFO_UNKNOWN)
+  if (connection_info != HttpConnectionInfo::kUNKNOWN) {
     pickle->WriteInt(static_cast<int>(connection_info));
+  }
 
   if (ssl_info.is_valid() && ssl_info.key_exchange_group != 0)
     pickle->WriteInt(ssl_info.key_exchange_group);
@@ -538,157 +477,52 @@ void HttpResponseInfo::Persist(base::Pickle* pickle,
 
 bool HttpResponseInfo::DidUseQuic() const {
   switch (connection_info) {
-    case CONNECTION_INFO_UNKNOWN:
-    case CONNECTION_INFO_HTTP1_1:
-    case CONNECTION_INFO_DEPRECATED_SPDY2:
-    case CONNECTION_INFO_DEPRECATED_SPDY3:
-    case CONNECTION_INFO_HTTP2:
-    case CONNECTION_INFO_DEPRECATED_HTTP2_14:
-    case CONNECTION_INFO_DEPRECATED_HTTP2_15:
-    case CONNECTION_INFO_HTTP0_9:
-    case CONNECTION_INFO_HTTP1_0:
+    case HttpConnectionInfo::kUNKNOWN:
+    case HttpConnectionInfo::kHTTP1_1:
+    case HttpConnectionInfo::kDEPRECATED_SPDY2:
+    case HttpConnectionInfo::kDEPRECATED_SPDY3:
+    case HttpConnectionInfo::kHTTP2:
+    case HttpConnectionInfo::kDEPRECATED_HTTP2_14:
+    case HttpConnectionInfo::kDEPRECATED_HTTP2_15:
+    case HttpConnectionInfo::kHTTP0_9:
+    case HttpConnectionInfo::kHTTP1_0:
       return false;
-    case CONNECTION_INFO_QUIC_UNKNOWN_VERSION:
-    case CONNECTION_INFO_QUIC_32:
-    case CONNECTION_INFO_QUIC_33:
-    case CONNECTION_INFO_QUIC_34:
-    case CONNECTION_INFO_QUIC_35:
-    case CONNECTION_INFO_QUIC_36:
-    case CONNECTION_INFO_QUIC_37:
-    case CONNECTION_INFO_QUIC_38:
-    case CONNECTION_INFO_QUIC_39:
-    case CONNECTION_INFO_QUIC_40:
-    case CONNECTION_INFO_QUIC_41:
-    case CONNECTION_INFO_QUIC_42:
-    case CONNECTION_INFO_QUIC_43:
-    case CONNECTION_INFO_QUIC_44:
-    case CONNECTION_INFO_QUIC_45:
-    case CONNECTION_INFO_QUIC_46:
-    case CONNECTION_INFO_QUIC_47:
-    case CONNECTION_INFO_QUIC_Q048:
-    case CONNECTION_INFO_QUIC_T048:
-    case CONNECTION_INFO_QUIC_Q049:
-    case CONNECTION_INFO_QUIC_T049:
-    case CONNECTION_INFO_QUIC_Q050:
-    case CONNECTION_INFO_QUIC_T050:
-    case CONNECTION_INFO_QUIC_Q099:
-    case CONNECTION_INFO_QUIC_T099:
-    case CONNECTION_INFO_QUIC_999:
-    case CONNECTION_INFO_QUIC_DRAFT_25:
-    case CONNECTION_INFO_QUIC_DRAFT_27:
-    case CONNECTION_INFO_QUIC_DRAFT_28:
-    case CONNECTION_INFO_QUIC_DRAFT_29:
-    case CONNECTION_INFO_QUIC_T051:
-    case CONNECTION_INFO_QUIC_RFC_V1:
-    case CONNECTION_INFO_DEPRECATED_QUIC_2_DRAFT_1:
-    case CONNECTION_INFO_QUIC_2_DRAFT_8:
+    case HttpConnectionInfo::kQUIC_UNKNOWN_VERSION:
+    case HttpConnectionInfo::kQUIC_32:
+    case HttpConnectionInfo::kQUIC_33:
+    case HttpConnectionInfo::kQUIC_34:
+    case HttpConnectionInfo::kQUIC_35:
+    case HttpConnectionInfo::kQUIC_36:
+    case HttpConnectionInfo::kQUIC_37:
+    case HttpConnectionInfo::kQUIC_38:
+    case HttpConnectionInfo::kQUIC_39:
+    case HttpConnectionInfo::kQUIC_40:
+    case HttpConnectionInfo::kQUIC_41:
+    case HttpConnectionInfo::kQUIC_42:
+    case HttpConnectionInfo::kQUIC_43:
+    case HttpConnectionInfo::kQUIC_44:
+    case HttpConnectionInfo::kQUIC_45:
+    case HttpConnectionInfo::kQUIC_46:
+    case HttpConnectionInfo::kQUIC_47:
+    case HttpConnectionInfo::kQUIC_Q048:
+    case HttpConnectionInfo::kQUIC_T048:
+    case HttpConnectionInfo::kQUIC_Q049:
+    case HttpConnectionInfo::kQUIC_T049:
+    case HttpConnectionInfo::kQUIC_Q050:
+    case HttpConnectionInfo::kQUIC_T050:
+    case HttpConnectionInfo::kQUIC_Q099:
+    case HttpConnectionInfo::kQUIC_T099:
+    case HttpConnectionInfo::kQUIC_999:
+    case HttpConnectionInfo::kQUIC_DRAFT_25:
+    case HttpConnectionInfo::kQUIC_DRAFT_27:
+    case HttpConnectionInfo::kQUIC_DRAFT_28:
+    case HttpConnectionInfo::kQUIC_DRAFT_29:
+    case HttpConnectionInfo::kQUIC_T051:
+    case HttpConnectionInfo::kQUIC_RFC_V1:
+    case HttpConnectionInfo::kDEPRECATED_QUIC_2_DRAFT_1:
+    case HttpConnectionInfo::kQUIC_2_DRAFT_8:
       return true;
-    case NUM_OF_CONNECTION_INFOS:
-      NOTREACHED();
-      return false;
   }
-  NOTREACHED();
-  return false;
-}
-
-// static
-std::string HttpResponseInfo::ConnectionInfoToString(
-    ConnectionInfo connection_info) {
-  switch (connection_info) {
-    case CONNECTION_INFO_UNKNOWN:
-      return "unknown";
-    case CONNECTION_INFO_HTTP1_1:
-      return "http/1.1";
-    case CONNECTION_INFO_DEPRECATED_SPDY2:
-      NOTREACHED();
-      return "";
-    case CONNECTION_INFO_DEPRECATED_SPDY3:
-      return "spdy/3";
-    // Since ConnectionInfo is persisted to disk, deprecated values have to be
-    // handled. Note that h2-14 and h2-15 are essentially wire compatible with
-    // h2.
-    // Intentional fallthrough.
-    case CONNECTION_INFO_DEPRECATED_HTTP2_14:
-    case CONNECTION_INFO_DEPRECATED_HTTP2_15:
-    case CONNECTION_INFO_HTTP2:
-      return "h2";
-    case CONNECTION_INFO_QUIC_UNKNOWN_VERSION:
-      return "http/2+quic";
-    case CONNECTION_INFO_QUIC_32:
-      return "http/2+quic/32";
-    case CONNECTION_INFO_QUIC_33:
-      return "http/2+quic/33";
-    case CONNECTION_INFO_QUIC_34:
-      return "http/2+quic/34";
-    case CONNECTION_INFO_QUIC_35:
-      return "http/2+quic/35";
-    case CONNECTION_INFO_QUIC_36:
-      return "http/2+quic/36";
-    case CONNECTION_INFO_QUIC_37:
-      return "http/2+quic/37";
-    case CONNECTION_INFO_QUIC_38:
-      return "http/2+quic/38";
-    case CONNECTION_INFO_QUIC_39:
-      return "http/2+quic/39";
-    case CONNECTION_INFO_QUIC_40:
-      return "http/2+quic/40";
-    case CONNECTION_INFO_QUIC_41:
-      return "http/2+quic/41";
-    case CONNECTION_INFO_QUIC_42:
-      return "http/2+quic/42";
-    case CONNECTION_INFO_QUIC_43:
-      return "http/2+quic/43";
-    case CONNECTION_INFO_QUIC_44:
-      return "http/2+quic/44";
-    case CONNECTION_INFO_QUIC_45:
-      return "http/2+quic/45";
-    case CONNECTION_INFO_QUIC_46:
-      return "http/2+quic/46";
-    case CONNECTION_INFO_QUIC_47:
-      return "http/2+quic/47";
-    case CONNECTION_INFO_QUIC_Q048:
-      return "h3-Q048";
-    case CONNECTION_INFO_QUIC_T048:
-      return "h3-T048";
-    case CONNECTION_INFO_QUIC_Q049:
-      return "h3-Q049";
-    case CONNECTION_INFO_QUIC_T049:
-      return "h3-T049";
-    case CONNECTION_INFO_QUIC_Q050:
-      return "h3-Q050";
-    case CONNECTION_INFO_QUIC_T050:
-      return "h3-T050";
-    case CONNECTION_INFO_QUIC_Q099:
-      return "h3-Q099";
-    case CONNECTION_INFO_QUIC_DRAFT_25:
-      return "h3-25";
-    case CONNECTION_INFO_QUIC_DRAFT_27:
-      return "h3-27";
-    case CONNECTION_INFO_QUIC_DRAFT_28:
-      return "h3-28";
-    case CONNECTION_INFO_QUIC_DRAFT_29:
-      return "h3-29";
-    case CONNECTION_INFO_QUIC_T099:
-      return "h3-T099";
-    case CONNECTION_INFO_HTTP0_9:
-      return "http/0.9";
-    case CONNECTION_INFO_HTTP1_0:
-      return "http/1.0";
-    case CONNECTION_INFO_QUIC_999:
-      return "http2+quic/999";
-    case CONNECTION_INFO_QUIC_T051:
-      return "h3-T051";
-    case CONNECTION_INFO_QUIC_RFC_V1:
-      return "h3";
-    case CONNECTION_INFO_DEPRECATED_QUIC_2_DRAFT_1:
-      return "h3/quic2draft01";
-    case CONNECTION_INFO_QUIC_2_DRAFT_8:
-      return "h3/quic2draft08";
-    case NUM_OF_CONNECTION_INFOS:
-      break;
-  }
-  NOTREACHED();
-  return "";
 }
 
 }  // namespace net

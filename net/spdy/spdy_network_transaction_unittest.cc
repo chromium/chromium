@@ -38,6 +38,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_auth_scheme.h"
+#include "net/http/http_connection_info.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_network_session_peer.h"
 #include "net/http/http_network_transaction.h"
@@ -199,8 +200,7 @@ class SpdyNetworkTransactionTest : public TestWithTaskEnvironment,
       const HttpResponseInfo* response = trans_->GetResponseInfo();
       ASSERT_TRUE(response);
       ASSERT_TRUE(response->headers);
-      EXPECT_EQ(HttpResponseInfo::CONNECTION_INFO_HTTP2,
-                response->connection_info);
+      EXPECT_EQ(HttpConnectionInfo::kHTTP2, response->connection_info);
       EXPECT_EQ("HTTP/1.1 200", response->headers->GetStatusLine());
       EXPECT_TRUE(response->was_fetched_via_spdy);
       EXPECT_TRUE(response->was_alpn_negotiated);
@@ -639,8 +639,7 @@ TEST_P(SpdyNetworkTransactionTest, SetPriorityOnExistingStream) {
   const HttpResponseInfo* response2 = trans2.GetResponseInfo();
   ASSERT_TRUE(response2);
   ASSERT_TRUE(response2->headers);
-  EXPECT_EQ(HttpResponseInfo::CONNECTION_INFO_HTTP2,
-            response2->connection_info);
+  EXPECT_EQ(HttpConnectionInfo::kHTTP2, response2->connection_info);
   EXPECT_EQ("HTTP/1.1 200", response2->headers->GetStatusLine());
 }
 
@@ -714,8 +713,7 @@ TEST_P(SpdyNetworkTransactionTest, RequestsOrderedByPriority) {
   const HttpResponseInfo* response2 = trans2.GetResponseInfo();
   ASSERT_TRUE(response2);
   ASSERT_TRUE(response2->headers);
-  EXPECT_EQ(HttpResponseInfo::CONNECTION_INFO_HTTP2,
-            response2->connection_info);
+  EXPECT_EQ(HttpConnectionInfo::kHTTP2, response2->connection_info);
   EXPECT_EQ("HTTP/1.1 200", response2->headers->GetStatusLine());
   std::string response_data;
   ReadTransaction(&trans2, &response_data);
@@ -815,8 +813,7 @@ TEST_P(SpdyNetworkTransactionTest, QueuedFramesReorderedOnPriorityChange) {
   const HttpResponseInfo* response2 = trans2.GetResponseInfo();
   ASSERT_TRUE(response2);
   ASSERT_TRUE(response2->headers);
-  EXPECT_EQ(HttpResponseInfo::CONNECTION_INFO_HTTP2,
-            response2->connection_info);
+  EXPECT_EQ(HttpConnectionInfo::kHTTP2, response2->connection_info);
   EXPECT_EQ("HTTP/1.1 200", response2->headers->GetStatusLine());
   std::string response_data;
   ReadTransaction(&trans2, &response_data);
@@ -827,8 +824,7 @@ TEST_P(SpdyNetworkTransactionTest, QueuedFramesReorderedOnPriorityChange) {
   const HttpResponseInfo* response3 = trans3.GetResponseInfo();
   ASSERT_TRUE(response3);
   ASSERT_TRUE(response3->headers);
-  EXPECT_EQ(HttpResponseInfo::CONNECTION_INFO_HTTP2,
-            response3->connection_info);
+  EXPECT_EQ(HttpConnectionInfo::kHTTP2, response3->connection_info);
   EXPECT_EQ("HTTP/1.1 200", response3->headers->GetStatusLine());
   ReadTransaction(&trans3, &response_data);
   EXPECT_EQ("stream 3", response_data);
@@ -4083,7 +4079,7 @@ TEST_P(SpdyNetworkTransactionTest, GracefulGoaway) {
   // Verify second response.
   const HttpResponseInfo* response = trans2.GetResponseInfo();
   ASSERT_TRUE(response);
-  EXPECT_EQ(HttpResponseInfo::CONNECTION_INFO_HTTP2, response->connection_info);
+  EXPECT_EQ(HttpConnectionInfo::kHTTP2, response->connection_info);
   ASSERT_TRUE(response->headers);
   EXPECT_EQ("HTTP/1.1 200", response->headers->GetStatusLine());
   EXPECT_TRUE(response->was_fetched_via_spdy);
@@ -4266,8 +4262,7 @@ TEST_P(SpdyNetworkTransactionTest, HTTP11RequiredRetry) {
   ASSERT_TRUE(response->headers);
   EXPECT_EQ("HTTP/1.1 200 OK", response->headers->GetStatusLine());
   EXPECT_FALSE(response->was_fetched_via_spdy);
-  EXPECT_EQ(HttpResponseInfo::CONNECTION_INFO_HTTP1_1,
-            response->connection_info);
+  EXPECT_EQ(HttpConnectionInfo::kHTTP1_1, response->connection_info);
   EXPECT_TRUE(response->was_alpn_negotiated);
   EXPECT_TRUE(request_.url.SchemeIs("https"));
   EXPECT_EQ("127.0.0.1", response->remote_endpoint.ToStringWithoutPort());
@@ -4370,8 +4365,7 @@ TEST_P(SpdyNetworkTransactionTest,
     ASSERT_TRUE(response->headers);
     EXPECT_EQ("HTTP/1.1 200 OK", response->headers->GetStatusLine());
     EXPECT_FALSE(response->was_fetched_via_spdy);
-    EXPECT_EQ(HttpResponseInfo::CONNECTION_INFO_HTTP1_1,
-              response->connection_info);
+    EXPECT_EQ(HttpConnectionInfo::kHTTP1_1, response->connection_info);
     EXPECT_TRUE(response->was_alpn_negotiated);
     EXPECT_TRUE(request_.url.SchemeIs("https"));
     EXPECT_EQ("127.0.0.1", response->remote_endpoint.ToStringWithoutPort());
@@ -4480,8 +4474,7 @@ TEST_P(SpdyNetworkTransactionTest, HTTP11RequiredProxyRetry) {
   ASSERT_TRUE(response->headers);
   EXPECT_EQ("HTTP/1.1 200 OK", response->headers->GetStatusLine());
   EXPECT_FALSE(response->was_fetched_via_spdy);
-  EXPECT_EQ(HttpResponseInfo::CONNECTION_INFO_HTTP1_1,
-            response->connection_info);
+  EXPECT_EQ(HttpConnectionInfo::kHTTP1_1, response->connection_info);
   EXPECT_FALSE(response->was_alpn_negotiated);
   EXPECT_TRUE(request_.url.SchemeIs("https"));
   EXPECT_EQ("127.0.0.1", response->remote_endpoint.ToStringWithoutPort());
@@ -4603,8 +4596,7 @@ TEST_P(SpdyNetworkTransactionTest,
     ASSERT_TRUE(response->headers);
     EXPECT_EQ("HTTP/1.1 200 OK", response->headers->GetStatusLine());
     EXPECT_FALSE(response->was_fetched_via_spdy);
-    EXPECT_EQ(HttpResponseInfo::CONNECTION_INFO_HTTP1_1,
-              response->connection_info);
+    EXPECT_EQ(HttpConnectionInfo::kHTTP1_1, response->connection_info);
     EXPECT_FALSE(response->was_alpn_negotiated);
     EXPECT_TRUE(request_.url.SchemeIs("https"));
     EXPECT_EQ("127.0.0.1", response->remote_endpoint.ToStringWithoutPort());
@@ -7848,8 +7840,7 @@ TEST_P(SpdyNetworkTransactionTest, SecureWebSocketOverHttp2Proxy) {
   EXPECT_THAT(helper.output().rv, IsOk());
   const HttpResponseInfo* response = trans->GetResponseInfo();
   ASSERT_TRUE(response);
-  EXPECT_EQ(HttpResponseInfo::CONNECTION_INFO_HTTP1_1,
-            response->connection_info);
+  EXPECT_EQ(HttpConnectionInfo::kHTTP1_1, response->connection_info);
   EXPECT_TRUE(response->was_alpn_negotiated);
   EXPECT_FALSE(response->was_fetched_via_spdy);
   EXPECT_EQ(70, response->remote_endpoint.port());
@@ -8080,8 +8071,7 @@ TEST_P(SpdyNetworkTransactionTest, ZeroRTTConfirmMultipleStreams) {
   const HttpResponseInfo* response1 = trans1.GetResponseInfo();
   ASSERT_TRUE(response1);
   ASSERT_TRUE(response1->headers);
-  EXPECT_EQ(HttpResponseInfo::CONNECTION_INFO_HTTP2,
-            response1->connection_info);
+  EXPECT_EQ(HttpConnectionInfo::kHTTP2, response1->connection_info);
   EXPECT_EQ("HTTP/1.1 200", response1->headers->GetStatusLine());
   std::string response_data;
   ReadTransaction(&trans1, &response_data);
@@ -8090,8 +8080,7 @@ TEST_P(SpdyNetworkTransactionTest, ZeroRTTConfirmMultipleStreams) {
   const HttpResponseInfo* response2 = trans2.GetResponseInfo();
   ASSERT_TRUE(response2);
   ASSERT_TRUE(response2->headers);
-  EXPECT_EQ(HttpResponseInfo::CONNECTION_INFO_HTTP2,
-            response2->connection_info);
+  EXPECT_EQ(HttpConnectionInfo::kHTTP2, response2->connection_info);
   EXPECT_EQ("HTTP/1.1 200", response2->headers->GetStatusLine());
   ReadTransaction(&trans2, &response_data);
   EXPECT_EQ("hello!", response_data);
@@ -8173,8 +8162,7 @@ TEST_P(SpdyNetworkTransactionTest, ZeroRTTConfirmNoConfirmStreams) {
   const HttpResponseInfo* response1 = trans1.GetResponseInfo();
   ASSERT_TRUE(response1);
   ASSERT_TRUE(response1->headers);
-  EXPECT_EQ(HttpResponseInfo::CONNECTION_INFO_HTTP2,
-            response1->connection_info);
+  EXPECT_EQ(HttpConnectionInfo::kHTTP2, response1->connection_info);
   EXPECT_EQ("HTTP/1.1 200", response1->headers->GetStatusLine());
   std::string response_data;
   ReadTransaction(&trans1, &response_data);
@@ -8183,8 +8171,7 @@ TEST_P(SpdyNetworkTransactionTest, ZeroRTTConfirmNoConfirmStreams) {
   const HttpResponseInfo* response2 = trans2.GetResponseInfo();
   ASSERT_TRUE(response2);
   ASSERT_TRUE(response2->headers);
-  EXPECT_EQ(HttpResponseInfo::CONNECTION_INFO_HTTP2,
-            response2->connection_info);
+  EXPECT_EQ(HttpConnectionInfo::kHTTP2, response2->connection_info);
   EXPECT_EQ("HTTP/1.1 200", response2->headers->GetStatusLine());
   ReadTransaction(&trans2, &response_data);
   EXPECT_EQ("hello!", response_data);
@@ -8266,8 +8253,7 @@ TEST_P(SpdyNetworkTransactionTest, ZeroRTTNoConfirmConfirmStreams) {
   const HttpResponseInfo* response1 = trans1.GetResponseInfo();
   ASSERT_TRUE(response1);
   ASSERT_TRUE(response1->headers);
-  EXPECT_EQ(HttpResponseInfo::CONNECTION_INFO_HTTP2,
-            response1->connection_info);
+  EXPECT_EQ(HttpConnectionInfo::kHTTP2, response1->connection_info);
   EXPECT_EQ("HTTP/1.1 200", response1->headers->GetStatusLine());
   std::string response_data;
   ReadTransaction(&trans1, &response_data);
@@ -8276,8 +8262,7 @@ TEST_P(SpdyNetworkTransactionTest, ZeroRTTNoConfirmConfirmStreams) {
   const HttpResponseInfo* response2 = trans2.GetResponseInfo();
   ASSERT_TRUE(response2);
   ASSERT_TRUE(response2->headers);
-  EXPECT_EQ(HttpResponseInfo::CONNECTION_INFO_HTTP2,
-            response2->connection_info);
+  EXPECT_EQ(HttpConnectionInfo::kHTTP2, response2->connection_info);
   EXPECT_EQ("HTTP/1.1 200", response2->headers->GetStatusLine());
   ReadTransaction(&trans2, &response_data);
   EXPECT_EQ("hello!", response_data);
@@ -8852,8 +8837,7 @@ TEST_P(SpdyNetworkTransactionTest, DoNotGreaseFrameTypeWithConnect) {
   ASSERT_TRUE(response->headers);
   EXPECT_EQ("HTTP/1.1 200 OK", response->headers->GetStatusLine());
   EXPECT_FALSE(response->was_fetched_via_spdy);
-  EXPECT_EQ(HttpResponseInfo::CONNECTION_INFO_HTTP1_1,
-            response->connection_info);
+  EXPECT_EQ(HttpConnectionInfo::kHTTP1_1, response->connection_info);
   EXPECT_TRUE(response->was_alpn_negotiated);
   EXPECT_TRUE(request_.url.SchemeIs("https"));
   EXPECT_EQ("127.0.0.1", response->remote_endpoint.ToStringWithoutPort());

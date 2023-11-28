@@ -20,6 +20,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/upload_data_stream.h"
 #include "net/http/http_chunked_decoder.h"
+#include "net/http/http_connection_info.h"
 #include "net/http/http_log_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_request_info.h"
@@ -1032,11 +1033,11 @@ int HttpStreamParser::ParseResponseHeaders(int end_offset) {
 
   response_->headers = headers;
   if (headers->GetHttpVersion() == HttpVersion(0, 9)) {
-    response_->connection_info = HttpResponseInfo::CONNECTION_INFO_HTTP0_9;
+    response_->connection_info = HttpConnectionInfo::kHTTP0_9;
   } else if (headers->GetHttpVersion() == HttpVersion(1, 0)) {
-    response_->connection_info = HttpResponseInfo::CONNECTION_INFO_HTTP1_0;
+    response_->connection_info = HttpConnectionInfo::kHTTP1_0;
   } else if (headers->GetHttpVersion() == HttpVersion(1, 1)) {
-    response_->connection_info = HttpResponseInfo::CONNECTION_INFO_HTTP1_1;
+    response_->connection_info = HttpConnectionInfo::kHTTP1_1;
   }
   DVLOG(1) << __func__ << "() content_length = \""
            << response_->headers->GetContentLength() << "\n\""

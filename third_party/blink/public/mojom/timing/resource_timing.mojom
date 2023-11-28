@@ -58,9 +58,8 @@ struct ResourceTimingInfo {
   // (http://www.w3.org/TR/resource-timing-2/).
   string alpn_negotiated_protocol;
 
-  // Corresponds to the result of calling
-  // HttpResponseInfo::ConnectionInfoToString on the associated response
-  // object.
+  // Corresponds to the result of calling HttpConnectionInfoToString on
+  // the associated response object.
   string connection_info;
 
   // The load timing data.

@@ -37,9 +37,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "net/base/auth.h"
 #include "net/base/ip_endpoint.h"
 #include "net/cert/ct_policy_status.h"
-#include "net/http/http_response_info.h"
+#include "net/http/alternate_protocol_usage.h"
+#include "net/http/http_connection_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/security/security_style.h"
 #include "third_party/blink/public/platform/web_common.h"
@@ -256,8 +258,8 @@ class BLINK_PLATFORM_EXPORT WebURLResponse {
   void SetWasAlternateProtocolAvailable(bool);
 
   // Information about the type of connection used to fetch this resource.
-  net::HttpResponseInfo::ConnectionInfo ConnectionInfo() const;
-  void SetConnectionInfo(net::HttpResponseInfo::ConnectionInfo);
+  net::HttpConnectionInfo ConnectionInfo() const;
+  void SetConnectionInfo(net::HttpConnectionInfo);
 
   // Whether the response was cached and validated over the network.
   void SetIsValidated(bool);

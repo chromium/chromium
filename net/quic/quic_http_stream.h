@@ -79,7 +79,7 @@ class NET_EXPORT_PRIVATE QuicHttpStream : public MultiplexedHttpStream {
   absl::optional<quic::QuicRstStreamErrorCode> GetQuicRstStreamErrorCode()
       const override;
 
-  static HttpResponseInfo::ConnectionInfo ConnectionInfoFromQuicVersion(
+  static HttpConnectionInfo ConnectionInfoFromQuicVersion(
       quic::ParsedQuicVersion quic_version);
 
  private:

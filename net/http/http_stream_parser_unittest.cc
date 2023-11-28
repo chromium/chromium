@@ -29,6 +29,7 @@
 #include "net/base/test_completion_callback.h"
 #include "net/base/upload_bytes_element_reader.h"
 #include "net/base/upload_file_element_reader.h"
+#include "net/http/http_connection_info.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_request_info.h"
 #include "net/http/http_response_headers.h"
@@ -1364,7 +1365,7 @@ TEST(HttpStreamParser, Http09PortTests) {
     get_runner.ReadBody(kResponse.size(), read_lengths);
     EXPECT_EQ(kResponse.size(),
               static_cast<size_t>(get_runner.parser()->received_bytes()));
-    EXPECT_EQ(HttpResponseInfo::CONNECTION_INFO_HTTP0_9,
+    EXPECT_EQ(HttpConnectionInfo::kHTTP0_9,
               get_runner.response_info()->connection_info);
   }
 
@@ -1389,7 +1390,7 @@ TEST(HttpStreamParser, Http09PortTests) {
     get_runner.ReadBody(kShoutcastResponse.size(), read_lengths);
     EXPECT_EQ(kShoutcastResponse.size(),
               static_cast<size_t>(get_runner.parser()->received_bytes()));
-    EXPECT_EQ(HttpResponseInfo::CONNECTION_INFO_HTTP0_9,
+    EXPECT_EQ(HttpConnectionInfo::kHTTP0_9,
               get_runner.response_info()->connection_info);
   }
 }
@@ -1502,7 +1503,7 @@ TEST(HttpStreamParser, ReceivedBytesNormal) {
   get_runner.ReadBody(body_size, read_lengths);
   int64_t response_size = response.size();
   EXPECT_EQ(response_size, get_runner.parser()->received_bytes());
-  EXPECT_EQ(HttpResponseInfo::CONNECTION_INFO_HTTP1_0,
+  EXPECT_EQ(HttpConnectionInfo::kHTTP1_0,
             get_runner.response_info()->connection_info);
 }
 
@@ -1530,7 +1531,7 @@ TEST(HttpStreamParser, ReceivedBytesExcludesNextResponse) {
   EXPECT_EQ(response_size, get_runner.parser()->received_bytes());
   int64_t next_response_size = next_response.size();
   EXPECT_EQ(next_response_size, get_runner.read_buffer()->offset());
-  EXPECT_EQ(HttpResponseInfo::CONNECTION_INFO_HTTP1_1,
+  EXPECT_EQ(HttpConnectionInfo::kHTTP1_1,
             get_runner.response_info()->connection_info);
 }
 

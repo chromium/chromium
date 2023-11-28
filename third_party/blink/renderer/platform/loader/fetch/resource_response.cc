@@ -447,8 +447,8 @@ void ResourceResponse::SetResourceLoadTiming(
 }
 
 AtomicString ResourceResponse::ConnectionInfoString() const {
-  std::string connection_info_string =
-      net::HttpResponseInfo::ConnectionInfoToString(connection_info_);
+  std::string_view connection_info_string =
+      net::HttpConnectionInfoToString(connection_info_);
   return AtomicString(
       reinterpret_cast<const LChar*>(connection_info_string.data()),
       connection_info_string.length());

@@ -53,6 +53,7 @@
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/isolation_info.h"
 #include "net/dns/public/resolve_error_info.h"
+#include "net/http/http_connection_info.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/content_security_policy/csp_context.h"
 #include "services/network/public/mojom/blocked_by_response_reason.mojom-shared.h"
@@ -377,7 +378,7 @@ class CONTENT_EXPORT NavigationRequest
   const blink::mojom::LCPCriticalPathPredictorNavigationTimeHintPtr&
   GetLCPPNavigationHint() override;
   const net::HttpResponseHeaders* GetResponseHeaders() override;
-  net::HttpResponseInfo::ConnectionInfo GetConnectionInfo() override;
+  net::HttpConnectionInfo GetConnectionInfo() override;
   const absl::optional<net::SSLInfo>& GetSSLInfo() override;
   const absl::optional<net::AuthChallengeInfo>& GetAuthChallengeInfo() override;
   net::ResolveErrorInfo GetResolveErrorInfo() override;
