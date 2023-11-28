@@ -19,6 +19,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -35,7 +36,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/login/login_handler.h"
-#include "chrome/browser/ui/login/login_handler_test_utils.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -1560,16 +1560,12 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, NoLastLoadGoodLastLoad) {
               .get());
   ASSERT_TRUE(password_store->IsEmpty());
 
-  content::NavigationController* nav_controller =
-      &WebContents()->GetController();
-  WindowedAuthNeededObserver auth_needed_observer(nav_controller);
-
   // Navigate to a page requiring HTTP auth.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), http_test_server.GetURL("/basic_auth")));
-  auth_needed_observer.Wait();
+  ASSERT_TRUE(base::test::RunUntil(
+      []() { return LoginHandler::GetAllLoginHandlersForTest().size() == 1; }));
 
-  WindowedAuthSuppliedObserver auth_supplied_observer(nav_controller);
   // Offer valid credentials on the auth challenge.
   ASSERT_EQ(1u, LoginHandler::GetAllLoginHandlersForTest().size());
   LoginHandler* handler = LoginHandler::GetAllLoginHandlersForTest().front();
@@ -1577,7 +1573,6 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, NoLastLoadGoodLastLoad) {
   PasswordsNavigationObserver nav_observer(WebContents());
   // Any username/password will work.
   handler->SetAuth(u"user", u"pwd");
-  auth_supplied_observer.Wait();
 
   // The password manager should be working correctly.
   ASSERT_TRUE(nav_observer.Wait());
@@ -2836,12 +2831,10 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, BasicAuthSeparateRealms) {
 
   // Now wait until the navigation to the test server causes a HTTP auth dialog
   // to appear.
-  content::NavigationController* nav_controller =
-      &WebContents()->GetController();
-  WindowedAuthNeededObserver auth_needed_observer(nav_controller);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), http_test_server.GetURL("/basic_auth")));
-  auth_needed_observer.Wait();
+  ASSERT_TRUE(base::test::RunUntil(
+      []() { return LoginHandler::GetAllLoginHandlersForTest().size() == 1; }));
 
   // The auth dialog caused a query to PasswordStore, make sure it was
   // processed.
@@ -2867,10 +2860,9 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, ProxyAuthFilling) {
   creds.username_value = u"temp";
   password_store->AddLogin(creds);
 
-  content::NavigationController* controller = &WebContents()->GetController();
-  WindowedAuthNeededObserver auth_needed_waiter(controller);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page));
-  auth_needed_waiter.Wait();
+  ASSERT_TRUE(base::test::RunUntil(
+      []() { return LoginHandler::GetAllLoginHandlersForTest().size() == 1; }));
 
   BubbleObserver(WebContents()).WaitForManagementState();
 }
@@ -3528,32 +3520,23 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, CorrectEntryForHttpAuth) {
       base::BindRepeating(&HandleTestAuthRequest));
   ASSERT_TRUE(http_test_server.Start());
 
-  LoginPromptBrowserTestObserver login_observer;
-  login_observer.Register(content::Source<content::NavigationController>(
-      &WebContents()->GetController()));
-
   // Navigate to about:blank first. This is a page where password manager
   // should not work.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
-  content::NavigationController* nav_controller =
-      &WebContents()->GetController();
-  WindowedAuthNeededObserver auth_needed_observer(nav_controller);
   // Navigate to a page requiring HTTP auth
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), http_test_server.GetURL("/basic_auth")));
-
-  auth_needed_observer.Wait();
+  ASSERT_TRUE(base::test::RunUntil(
+      []() { return LoginHandler::GetAllLoginHandlersForTest().size() == 1; }));
 
   PasswordsNavigationObserver nav_observer(WebContents());
-  WindowedAuthSuppliedObserver auth_supplied_observer(nav_controller);
   // Offer valid credentials on the auth challenge.
-  ASSERT_EQ(1u, login_observer.handlers().size());
-  LoginHandler* handler = *login_observer.handlers().begin();
+  ASSERT_EQ(1u, LoginHandler::GetAllLoginHandlersForTest().size());
+  LoginHandler* handler = *LoginHandler::GetAllLoginHandlersForTest().begin();
   ASSERT_TRUE(handler);
   // Any username/password will work.
   handler->SetAuth(u"user", u"pwd");
-  auth_supplied_observer.Wait();
 
   // The password manager should be working correctly.
   ASSERT_TRUE(nav_observer.Wait());
@@ -3578,10 +3561,6 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       base::BindRepeating(&HandleTestAuthRequest));
   ASSERT_TRUE(http_test_server.Start());
 
-  LoginPromptBrowserTestObserver login_observer;
-  login_observer.Register(content::Source<content::NavigationController>(
-      &WebContents()->GetController()));
-
   password_manager::PasswordStoreInterface* password_store =
       ProfilePasswordStoreFactory::GetForProfile(
           browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
@@ -3594,23 +3573,19 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   blocked_form.blocked_by_user = true;
   password_store->AddLogin(blocked_form);
 
-  content::NavigationController* nav_controller =
-      &WebContents()->GetController();
-  WindowedAuthNeededObserver auth_needed_observer(nav_controller);
   // Navigate to a page requiring HTTP auth.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), http_test_server.GetURL("/basic_auth")));
-  auth_needed_observer.Wait();
+  ASSERT_TRUE(base::test::RunUntil(
+      []() { return LoginHandler::GetAllLoginHandlersForTest().size() == 1; }));
 
   PasswordsNavigationObserver nav_observer(WebContents());
-  WindowedAuthSuppliedObserver auth_supplied_observer(nav_controller);
 
-  ASSERT_EQ(1u, login_observer.handlers().size());
-  LoginHandler* handler = *login_observer.handlers().begin();
+  ASSERT_EQ(1u, LoginHandler::GetAllLoginHandlersForTest().size());
+  LoginHandler* handler = *LoginHandler::GetAllLoginHandlersForTest().begin();
   ASSERT_TRUE(handler);
   // Any username/password will work.
   handler->SetAuth(u"user", u"pwd");
-  auth_supplied_observer.Wait();
   ASSERT_TRUE(nav_observer.Wait());
   WaitForPasswordStore();
   EXPECT_TRUE(BubbleObserver(WebContents()).IsSavePromptShownAutomatically());
@@ -4528,11 +4503,6 @@ class PasswordManagerPrerenderBrowserTest : public PasswordManagerBrowserTest {
 // prerender.
 IN_PROC_BROWSER_TEST_F(PasswordManagerPrerenderBrowserTest,
                        ChromePasswordManagerClientInPrerender) {
-  content::NavigationController* nav_controller =
-      &WebContents()->GetController();
-  LoginPromptBrowserTestObserver login_observer;
-  login_observer.Register(
-      content::Source<content::NavigationController>(nav_controller));
   MockPrerenderPasswordManagerDriverInjector injector(WebContents());
 
   GURL url = embedded_test_server()->GetURL("/empty.html");
@@ -4558,20 +4528,18 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerPrerenderBrowserTest,
   BubbleObserver bubble_observer(WebContents());
   EXPECT_FALSE(bubble_observer.IsSavePromptShownAutomatically());
 
-  WindowedAuthNeededObserver auth_needed_observer(nav_controller);
   // Navigates the primary page to the URL.
   prerender_helper()->NavigatePrimaryPage(prerender_url);
-  auth_needed_observer.Wait();
+  ASSERT_TRUE(base::test::RunUntil(
+      []() { return LoginHandler::GetAllLoginHandlersForTest().size() == 1; }));
 
   PasswordsNavigationObserver nav_observer(WebContents());
-  WindowedAuthSuppliedObserver auth_supplied_observer(nav_controller);
   // Offer valid credentials on the auth challenge.
-  EXPECT_EQ(1u, login_observer.handlers().size());
-  LoginHandler* handler = *login_observer.handlers().begin();
+  ASSERT_EQ(1u, LoginHandler::GetAllLoginHandlersForTest().size());
+  LoginHandler* handler = *LoginHandler::GetAllLoginHandlersForTest().begin();
   EXPECT_TRUE(handler);
   // Any username/password will work.
   handler->SetAuth(u"user", u"pwd");
-  auth_supplied_observer.Wait();
 
   // The password manager should be working correctly.
   ASSERT_TRUE(nav_observer.Wait());
