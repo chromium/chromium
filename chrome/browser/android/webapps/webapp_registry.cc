@@ -80,3 +80,7 @@ WebappRegistry::GetWebApkSpecifics() const {
 
   return webapk_specifics;
 }
+
+void WebappRegistry::SetNeedsPwaRestore() {
+  Java_WebappRegistry_setNeedsPwaRestore(base::android::AttachCurrentThread());
+}

@@ -109,7 +109,11 @@ class WebApkSyncBridge : public syncer::ModelTypeSyncBridge {
   //
   // |sync_update_from_installed| and |sync_changes| are inputs, and
   // |registry_update_from_installed_and_sync| is the output.
-  void PrepareRegistryUpdateFromInstalledAndSyncApps(
+  //
+  // The return value indicates whether or not there were new apps from Sync
+  // that were not already installed on the device (and therefore are candidates
+  // to be Restored from backup).
+  bool PrepareRegistryUpdateFromInstalledAndSyncApps(
       const std::vector<const sync_pb::WebApkSpecifics*>&
           sync_update_from_installed,
       const syncer::EntityChangeList& sync_changes,

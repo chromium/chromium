@@ -339,9 +339,19 @@ public class WebappRegistry {
     }
 
     /**
+     * Sets an Android Shared Preference bit to indicate that there are WebAPKs that need to be
+     * restored from Sync on Chrome's 2nd run.
+     */
+    @CalledByNative
+    public static void setNeedsPwaRestore() {
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.PWA_RESTORE_APPS_AVAILABLE, true);
+    }
+
+    /**
      * Returns the list of WebAPK IDs with pending updates. Filters out WebAPKs which have been
      * uninstalled.
-     * */
+     */
     public List<String> findWebApksWithPendingUpdate() {
         List<String> webApkIdsWithPendingUpdate = new ArrayList<>();
         for (HashMap.Entry<String, WebappDataStorage> entry : mStorages.entrySet()) {
