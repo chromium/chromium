@@ -566,7 +566,6 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
   _setUpOnDeviceEncryptionItem.accessibilityTraits = UIAccessibilityTraitButton;
   _setUpOnDeviceEncryptionItem.accessibilityIdentifier =
       kPasswordSettingsOnDeviceEncryptionSetUpId;
-  _setUpOnDeviceEncryptionItem.accessibilityTraits |= UIAccessibilityTraitLink;
   return _setUpOnDeviceEncryptionItem;
 }
 
