@@ -21,17 +21,41 @@ class ToolbarController : public ui::SimpleMenuModel::Delegate {
  public:
   // Data structure to store information of responsive elements.
   struct ResponsiveElementInfo {
+    // Overflow menu structure:
+    // -------------------
+    // | Forward         |
+    // |-----------------|
+    // | Home            | -> section end
+    // |=================| -> potential separator
+    // | Reading list    |
+    // |-----------------|
+    // | Bookmarks       | -> section end
+    // |=================| -> potential separator
+    // | Labs            |
+    // |-----------------|
+    // | Cast            |
+    // |-----------------|
+    // | Media controls  |
+    // |-----------------|
+    // | Downloads       | -> section end
+    // |=================| -> potential separator
+    // | Profile         |
+    // |-----------------|
+
     // The toolbar element that potentially overflows.
     ui::ElementIdentifier overflow_identifier;
 
     // Menu text when the element is overflow to the overflow menu.
-    int menu_text_id;
+    int menu_text_id = 0;
 
     // The toolbar button to be activated with menu text pressed. This is not
     // necessarily the same as the element that overflows. E.g. when the
     // overflowed element is kToolbarExtensionsContainerElementId the
     // `activate_identifier` should be kExtensionsMenuButtonElementId.
     ui::ElementIdentifier activate_identifier;
+
+    // True if current element is a section end in overflow menu structure.
+    bool is_section_end = false;
 
     // Pop out button when `observed_identifier` is shown. End pop out when it's
     // hidden.
