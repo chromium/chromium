@@ -5,11 +5,8 @@
 #ifndef CHROMEOS_COMPONENTS_SENSORS_ASH_SENSOR_HAL_DISPATCHER_H_
 #define CHROMEOS_COMPONENTS_SENSORS_ASH_SENSOR_HAL_DISPATCHER_H_
 
-#include <set>
-
 #include "base/component_export.h"
 #include "base/sequence_checker.h"
-#include "base/unguessable_token.h"
 #include "chromeos/ash/components/mojo_service_manager/mojom/mojo_service_manager.mojom.h"
 #include "chromeos/components/sensors/mojom/cros_sensor_service.mojom.h"
 #include "chromeos/components/sensors/mojom/sensor.mojom.h"
@@ -43,15 +40,6 @@ class COMPONENT_EXPORT(CHROMEOS_SENSORS) SensorHalDispatcher
   // Register a sensor client's mojo remote to this dispatcher.
   void RegisterClient(mojo::PendingRemote<mojom::SensorHalClient> remote);
 
-  // Get a token for a trusted client, which will be used in
-  // |AuthenticateClient|.
-  base::UnguessableToken GetTokenForTrustedClient();
-
-  // Authenticate the client with |token|. If the caller get true in the
-  // callback, it can further register the client's mojo channel with
-  // |RegisterClient|.
-  bool AuthenticateClient(const base::UnguessableToken& token);
-
   // Query IioSensor service via Mojo Service Manager to establish mojo
   // channels between iioservice and sensor clients.
   // Should only be called once after CrOS Mojo Service Manager is connected.
@@ -76,8 +64,6 @@ class COMPONENT_EXPORT(CHROMEOS_SENSORS) SensorHalDispatcher
 
   mojo::Remote<mojom::SensorHalServer> sensor_hal_server_;
   mojo::RemoteSet<mojom::SensorHalClient> sensor_hal_clients_;
-
-  std::set<base::UnguessableToken> client_token_set_;
 
   mojo::Receiver<mojo_service_manager::mojom::ServiceObserver> receiver_;
   bool iio_sensor_available_ = false;

@@ -28,7 +28,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
-#include "chromeos/components/sensors/sensor_util.h"
 #include "components/device_event_log/device_event_log.h"
 #include "media/capture/video/chromeos/mojom/camera_common.mojom.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_client.mojom.h"
@@ -238,7 +237,6 @@ void CameraHalDispatcherImpl::BindCameraServiceOnProxyThread(
 }
 
 void CameraHalDispatcherImpl::TryConnectToCameraService() {
-  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   CHECK(ash::mojo_service_manager::IsServiceManagerBound());
 
   mojo::PendingRemote<cros::mojom::CrosCameraService> camera_service;
@@ -288,10 +286,6 @@ bool CameraHalDispatcherImpl::Start() {
   if (HasCrosCameraTest() && !token_manager_.GenerateTestClientToken()) {
     LOG(ERROR) << "Failed to generate token for test client";
     return false;
-  }
-  if (!token_manager_.GenerateServerSensorClientToken()) {
-    LOG(ERROR) << "Failed to generate authentication token for server as a "
-                  "sensor client";
   }
 
   // TODO(b/228238413): In VCD unittests, the endpoint of mojo service
@@ -443,7 +437,6 @@ CameraHalDispatcherImpl::CameraHalDispatcherImpl()
     : is_service_loop_running_(false),
       proxy_thread_("CameraProxyThread"),
       blocking_io_thread_("CameraBlockingIOThread"),
-      main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       camera_service_observer_receiver_(this),
       active_client_observers_(
           new base::ObserverListThreadSafe<CameraActiveClientObserver>()),

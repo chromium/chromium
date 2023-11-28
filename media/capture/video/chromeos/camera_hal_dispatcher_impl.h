@@ -126,12 +126,6 @@ class CAPTURE_EXPORT CameraEffectObserver : public base::CheckedObserver {
 //
 // For general documentation about the CameraHalDispatcher Mojo interface see
 // the comments in mojo/cros_camera_service.mojom.
-//
-// On ChromeOS the video capture service must run in the browser process,
-// because parts of the code depend on global objects that are only available in
-// the Browser process. Therefore, CameraHalDispatcherImpl must run in the
-// browser process as well.
-// See https://crbug.com/891961.
 class CAPTURE_EXPORT CameraHalDispatcherImpl final
     : public cros::mojom::CameraHalDispatcher,
       public cros::mojom::CrosCameraServiceObserver,
@@ -353,7 +347,6 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
 
   base::Thread proxy_thread_;
   base::Thread blocking_io_thread_;
-  scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> proxy_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> blocking_io_task_runner_;
 

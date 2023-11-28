@@ -6,7 +6,6 @@
 
 module cros.mojom;
 
-import "chromeos/components/sensors/mojom/cros_sensor_service.mojom";
 import "components/chromeos_camera/common/jpeg_encode_accelerator.mojom";
 import "components/chromeos_camera/common/mjpeg_decode_accelerator.mojom";
 import "media/capture/video/chromeos/mojom/camera_common.mojom";
