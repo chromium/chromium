@@ -79,7 +79,17 @@ scoped_refptr<ClientSocketPool::SocketParams> CreateSocketParams(
     const SSLConfig& ssl_config_for_origin,
     const SSLConfig& base_ssl_config_for_proxies) {
   bool using_ssl = GURL::SchemeIsCryptographic(group_id.destination().scheme());
-  bool using_proxy_ssl = proxy_chain.proxy_server().is_secure_http_like();
+
+  // If there is a proxy chain and any server in that chain is using SSL,
+  // then this socket will need to use SSL.
+  bool using_proxy_ssl =
+      !proxy_chain.is_direct() &&
+      std::any_of(proxy_chain.proxy_servers().begin(),
+                  proxy_chain.proxy_servers().end(),
+                  [](const ProxyServer& proxy_server) {
+                    return proxy_server.is_secure_http_like();
+                  });
+
   return base::MakeRefCounted<ClientSocketPool::SocketParams>(
       using_ssl ? std::make_unique<SSLConfig>(ssl_config_for_origin) : nullptr,
       using_proxy_ssl ? std::make_unique<SSLConfig>(base_ssl_config_for_proxies)

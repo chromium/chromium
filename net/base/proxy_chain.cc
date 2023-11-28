@@ -64,6 +64,9 @@ const ProxyServer& ProxyChain::proxy_server() const {
                                                   HostPortPair());
     return *direct;
   }
+  CHECK_EQ(1u, proxy_server_list_->size())
+      << "Cannot call `proxy_server() on a ProxyChain with multiple proxies: "
+      << ToDebugString();
   return proxy_server_list_.value().at(0);
 }
 

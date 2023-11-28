@@ -6334,7 +6334,8 @@ TEST_P(HttpNetworkTransactionTest, HttpProxyLoadTimingNoPacTwoRequests) {
 
   const HttpResponseInfo* response1 = trans1->GetResponseInfo();
   ASSERT_TRUE(response1);
-  EXPECT_TRUE(response1->proxy_chain.proxy_server().is_http());
+  ASSERT_EQ(1u, response1->proxy_chain.length());
+  EXPECT_TRUE(response1->proxy_chain.GetProxyServer(0).is_http());
   ASSERT_TRUE(response1->headers);
   EXPECT_EQ(1, response1->headers->GetContentLength());
 
@@ -6356,7 +6357,8 @@ TEST_P(HttpNetworkTransactionTest, HttpProxyLoadTimingNoPacTwoRequests) {
 
   const HttpResponseInfo* response2 = trans2->GetResponseInfo();
   ASSERT_TRUE(response2);
-  EXPECT_TRUE(response2->proxy_chain.proxy_server().is_http());
+  ASSERT_EQ(1u, response2->proxy_chain.length());
+  EXPECT_TRUE(response2->proxy_chain.GetProxyServer(0).is_http());
   ASSERT_TRUE(response2->headers);
   EXPECT_EQ(2, response2->headers->GetContentLength());
 
@@ -6616,7 +6618,8 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxyGet) {
   const HttpResponseInfo* response = trans.GetResponseInfo();
   ASSERT_TRUE(response);
 
-  EXPECT_TRUE(response->proxy_chain.proxy_server().is_https());
+  ASSERT_EQ(1u, response->proxy_chain.length());
+  EXPECT_TRUE(response->proxy_chain.GetProxyServer(0).is_https());
   EXPECT_TRUE(response->headers->IsKeepAlive());
   EXPECT_EQ(200, response->headers->response_code());
   EXPECT_EQ(100, response->headers->GetContentLength());
@@ -6716,7 +6719,9 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxyGet) {
   const HttpResponseInfo* response = trans.GetResponseInfo();
   ASSERT_TRUE(response);
 
-  EXPECT_TRUE(response->proxy_chain.proxy_server().is_https());
+  EXPECT_EQ(2u, response->proxy_chain.length());
+  EXPECT_TRUE(response->proxy_chain.GetProxyServer(0).is_https());
+  EXPECT_TRUE(response->proxy_chain.GetProxyServer(1).is_https());
   EXPECT_TRUE(response->headers->IsKeepAlive());
   EXPECT_EQ(200, response->headers->response_code());
   EXPECT_EQ(100, response->headers->GetContentLength());
@@ -6799,7 +6804,8 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxySpdyGet) {
 
   const HttpResponseInfo* response = trans.GetResponseInfo();
   ASSERT_TRUE(response);
-  EXPECT_TRUE(response->proxy_chain.proxy_server().is_https());
+  EXPECT_EQ(1u, response->proxy_chain.length());
+  EXPECT_TRUE(response->proxy_chain.GetProxyServer(0).is_https());
   ASSERT_TRUE(response->headers);
   EXPECT_EQ("HTTP/1.1 200", response->headers->GetStatusLine());
 
@@ -13613,7 +13619,8 @@ TEST_P(HttpNetworkTransactionTest, HTTPSViaHttpsProxy) {
 
   ASSERT_TRUE(response);
 
-  EXPECT_TRUE(response->proxy_chain.proxy_server().is_https());
+  ASSERT_EQ(1u, response->proxy_chain.length());
+  EXPECT_TRUE(response->proxy_chain.GetProxyServer(0).is_https());
   EXPECT_TRUE(response->headers->IsKeepAlive());
   EXPECT_EQ(200, response->headers->response_code());
   EXPECT_EQ(100, response->headers->GetContentLength());
@@ -14643,8 +14650,9 @@ TEST_P(HttpNetworkTransactionTest, SOCKS4_HTTP_GET) {
   const HttpResponseInfo* response = trans.GetResponseInfo();
   ASSERT_TRUE(response);
 
+  ASSERT_EQ(1u, response->proxy_chain.length());
   EXPECT_EQ(ProxyServer::SCHEME_SOCKS4,
-            response->proxy_chain.proxy_server().scheme());
+            response->proxy_chain.GetProxyServer(0).scheme());
   LoadTimingInfo load_timing_info;
   EXPECT_TRUE(trans.GetLoadTimingInfo(&load_timing_info));
   TestLoadTimingNotReusedWithPac(load_timing_info,
@@ -14709,8 +14717,9 @@ TEST_P(HttpNetworkTransactionTest, SOCKS4_SSL_GET) {
 
   const HttpResponseInfo* response = trans.GetResponseInfo();
   ASSERT_TRUE(response);
+  ASSERT_EQ(1u, response->proxy_chain.length());
   EXPECT_EQ(ProxyServer::SCHEME_SOCKS4,
-            response->proxy_chain.proxy_server().scheme());
+            response->proxy_chain.GetProxyServer(0).scheme());
 
   std::string response_text;
   rv = ReadTransaction(&trans, &response_text);
@@ -14828,8 +14837,9 @@ TEST_P(HttpNetworkTransactionTest, SOCKS5_HTTP_GET) {
 
   const HttpResponseInfo* response = trans.GetResponseInfo();
   ASSERT_TRUE(response);
+  ASSERT_EQ(1u, response->proxy_chain.length());
   EXPECT_EQ(ProxyServer::SCHEME_SOCKS5,
-            response->proxy_chain.proxy_server().scheme());
+            response->proxy_chain.GetProxyServer(0).scheme());
 
   LoadTimingInfo load_timing_info;
   EXPECT_TRUE(trans.GetLoadTimingInfo(&load_timing_info));
@@ -14903,8 +14913,9 @@ TEST_P(HttpNetworkTransactionTest, SOCKS5_SSL_GET) {
 
   const HttpResponseInfo* response = trans.GetResponseInfo();
   ASSERT_TRUE(response);
+  ASSERT_EQ(1u, response->proxy_chain.length());
   EXPECT_EQ(ProxyServer::SCHEME_SOCKS5,
-            response->proxy_chain.proxy_server().scheme());
+            response->proxy_chain.GetProxyServer(0).scheme());
 
   LoadTimingInfo load_timing_info;
   EXPECT_TRUE(trans.GetLoadTimingInfo(&load_timing_info));
