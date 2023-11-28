@@ -110,7 +110,10 @@ enum class SaveCardPromptOffer {
   // The prompt is not shown because the prompt has been declined by the user
   // too many times.
   kNotShownMaxStrikesReached = 1,
-  kMaxValue = kNotShownMaxStrikesReached,
+  // The prompt is not shown because the required delay since last strike has
+  // not passed.
+  kNotShownRequiredDelay = 2,
+  kMaxValue = kNotShownRequiredDelay,
 };
 
 enum class SaveCardPromptResult {

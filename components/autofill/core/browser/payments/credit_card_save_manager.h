@@ -201,6 +201,10 @@ class CreditCardSaveManager {
   // Returns the CvcStorageStrikeDatabase for `client_`.
   CvcStorageStrikeDatabase* GetCvcStorageStrikeDatabase();
 
+  // Query the CvcStorageStrikeDatabase to check if the offer-to-save prompt for
+  // this CVC should be blocked.
+  bool DetermineAndLogCvcSaveStrikeDatabaseBlockDecision();
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Returns the GetLocalCardMigrationStrikeDatabase for |client_|.
   LocalCardMigrationStrikeDatabase* GetLocalCardMigrationStrikeDatabase();

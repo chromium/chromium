@@ -123,14 +123,9 @@ bool CreditCardSaveManager::AttemptToOfferCvcLocalSave(const CreditCard& card) {
   card_save_candidate_ = card;
   show_save_prompt_.reset();
 
-  // Query the CvcStorageStrikeDatabase if we should pop up the offer-to-save
-  // prompt for this CVC.
-  if (auto* cvc_storage_strike_db = GetCvcStorageStrikeDatabase()) {
-    show_save_prompt_ =
-        !cvc_storage_strike_db->ShouldBlockFeature(card_save_candidate_.guid());
-  }
+  show_save_prompt_ = !DetermineAndLogCvcSaveStrikeDatabaseBlockDecision();
   OfferCvcLocalSave();
-  return show_save_prompt_.value_or(false);
+  return show_save_prompt_.value();
 }
 
 bool CreditCardSaveManager::ShouldOfferCvcSave(
@@ -388,18 +383,13 @@ void CreditCardSaveManager::AttemptToOfferCvcUploadSave(
   card_save_candidate_ = card;
   show_save_prompt_.reset();
 
-  // Query the CvcStorageStrikeDatabase if we should pop up the offer-to-save
-  // prompt for this CVC.
-  if (auto* cvc_storage_strike_db = GetCvcStorageStrikeDatabase()) {
-    show_save_prompt_ = !cvc_storage_strike_db->ShouldBlockFeature(
-        base::NumberToString(card_save_candidate_.instrument_id()));
-  }
+  show_save_prompt_ = !DetermineAndLogCvcSaveStrikeDatabaseBlockDecision();
   // TODO(crbug.com/1481933): Refactor ConfirmSaveCreditCardToCloud to change
   // legal_message_lines_ to optional.
   client_->ConfirmSaveCreditCardToCloud(
       card_save_candidate_, legal_message_lines_,
       AutofillClient::SaveCreditCardOptions()
-          .with_show_prompt(show_save_prompt_.value_or(false))
+          .with_show_prompt(show_save_prompt_.value())
           .with_card_save_type(AutofillClient::CardSaveType::kCvcSaveOnly),
       base::BindOnce(&CreditCardSaveManager::OnUserDidDecideOnCvcUploadSave,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -536,6 +526,35 @@ CvcStorageStrikeDatabase* CreditCardSaveManager::GetCvcStorageStrikeDatabase() {
         CvcStorageStrikeDatabase(client_->GetStrikeDatabase()));
   }
   return cvc_storage_strike_database_.get();
+}
+
+bool CreditCardSaveManager::
+    DetermineAndLogCvcSaveStrikeDatabaseBlockDecision() {
+  auto* cvc_storage_strike_db = GetCvcStorageStrikeDatabase();
+  CHECK(cvc_storage_strike_db);
+  bool is_upload_save = card_save_candidate_.record_type() ==
+                        CreditCard::RecordType::kMaskedServerCard;
+  std::string id =
+      is_upload_save
+          ? base::NumberToString(card_save_candidate_.instrument_id())
+          : card_save_candidate_.guid();
+  CvcStorageStrikeDatabase::BlockedReason reason =
+      CvcStorageStrikeDatabase::kUnknown;
+  bool should_block = cvc_storage_strike_db->ShouldBlockFeature(id, &reason);
+  if (should_block) {
+    if (reason == CvcStorageStrikeDatabase::kMaxStrikeLimitReached) {
+      autofill_metrics::LogSaveCvcPromptOfferMetric(
+          autofill_metrics::SaveCardPromptOffer::kNotShownMaxStrikesReached,
+          is_upload_save,
+          /*is_reshow=*/false);
+    } else if (reason == CvcStorageStrikeDatabase::kRequiredDelayNotPassed) {
+      autofill_metrics::LogSaveCvcPromptOfferMetric(
+          autofill_metrics::SaveCardPromptOffer::kNotShownRequiredDelay,
+          is_upload_save,
+          /*is_reshow=*/false);
+    }
+  }
+  return should_block;
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
