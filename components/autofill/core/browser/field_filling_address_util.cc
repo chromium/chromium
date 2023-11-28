@@ -314,7 +314,7 @@ std::optional<std::u16string> GetPhoneCountryCodeSelectControlForInput(
     base::span<const SelectOption> field_options,
     std::string* failure_to_fill) {
   if (country_code.empty()) {
-    return {};
+    return std::nullopt;
   }
   // Find the option that exactly matches the |country_code|.
   if (std::optional<std::u16string> select_control_value =

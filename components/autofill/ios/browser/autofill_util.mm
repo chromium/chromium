@@ -96,7 +96,7 @@ std::optional<base::UnguessableToken> DeserializeJavaScriptFrameId(
     const std::string& frame_id) {
   // A valid ID is 128 bits, or 32 hex digits.
   if (frame_id.length() != 32) {
-    return {};
+    return std::nullopt;
   }
 
   // Break string into first and last 16 hex digits.
@@ -106,7 +106,7 @@ std::optional<base::UnguessableToken> DeserializeJavaScriptFrameId(
   uint64_t high, low;
   if (!base::HexStringToUInt64(high_hex, &high) ||
       !base::HexStringToUInt64(low_hex, &low)) {
-    return {};
+    return std::nullopt;
   }
 
   return base::UnguessableToken::Deserialize(high, low);
