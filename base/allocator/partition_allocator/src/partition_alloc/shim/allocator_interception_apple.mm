@@ -28,12 +28,12 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <bit>
 #include <new>
 
 #include "build/build_config.h"
 #include "partition_alloc/oom.h"
 #include "partition_alloc/partition_alloc_base/apple/mach_logging.h"
-#include "partition_alloc/partition_alloc_base/bits.h"
 #include "partition_alloc/partition_alloc_base/logging.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/shim/malloc_zone_functions_apple.h"
@@ -182,7 +182,7 @@ void* oom_killer_memalign(struct _malloc_zone_t* zone,
   // other reasons why null might be returned. See posix_memalign() in 10.15's
   // https://opensource.apple.com/source/libmalloc/libmalloc-283/src/malloc.c .
   if (!result && size && alignment >= sizeof(void*) &&
-      partition_alloc::internal::base::bits::IsPowerOfTwo(alignment)) {
+      std::has_single_bit(alignment)) {
     partition_alloc::TerminateBecauseOutOfMemory(size);
   }
   return result;
@@ -238,7 +238,7 @@ void* oom_killer_memalign_purgeable(struct _malloc_zone_t* zone,
   // other reasons why null might be returned. See posix_memalign() in 10.15's
   // https://opensource.apple.com/source/libmalloc/libmalloc-283/src/malloc.c .
   if (!result && size && alignment >= sizeof(void*) &&
-      partition_alloc::internal::base::bits::IsPowerOfTwo(alignment)) {
+      std::has_single_bit(alignment)) {
     partition_alloc::TerminateBecauseOutOfMemory(size);
   }
   return result;

@@ -5,6 +5,7 @@
 #include "partition_alloc/partition_address_space.h"
 
 #include <array>
+#include <bit>
 #include <cstddef>
 #include <cstdint>
 #include <ostream>
@@ -14,7 +15,6 @@
 #include "partition_alloc/address_pool_manager.h"
 #include "partition_alloc/compressed_pointer.h"
 #include "partition_alloc/page_allocator.h"
-#include "partition_alloc/partition_alloc_base/bits.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/debug/alias.h"
 #include "partition_alloc/partition_alloc_buildflags.h"
@@ -301,7 +301,7 @@ void PartitionAddressSpace::InitConfigurablePool(uintptr_t pool_base,
   PA_CHECK(pool_base);
   PA_CHECK(size <= kConfigurablePoolMaxSize);
   PA_CHECK(size >= kConfigurablePoolMinSize);
-  PA_CHECK(base::bits::IsPowerOfTwo(size));
+  PA_CHECK(std::has_single_bit(size));
   PA_CHECK(pool_base % size == 0);
 
   setup_.configurable_pool_base_address_ = pool_base;

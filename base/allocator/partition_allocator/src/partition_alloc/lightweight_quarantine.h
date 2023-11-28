@@ -21,11 +21,11 @@
 #include <stdint.h>
 #include <array>
 #include <atomic>
+#include <bit>
 #include <limits>
 #include <numeric>
 #include <type_traits>
 
-#include "partition_alloc/partition_alloc_base/bits.h"
 #include "partition_alloc/partition_alloc_base/export_template.h"
 #include "partition_alloc/partition_alloc_base/rand_util.h"
 #include "partition_alloc/partition_alloc_base/thread_annotations.h"
@@ -53,7 +53,7 @@ class LightweightQuarantineList {
  public:
   // `CapacityCount` must be power of two.
   static constexpr uint32_t kCapacityCount = CapacityCount;
-  static_assert(base::bits::IsPowerOfTwo(kCapacityCount));
+  static_assert(std::has_single_bit(kCapacityCount));
 
   // "Entry" is an object that holds free-time information, created for each
   // quarantined object.

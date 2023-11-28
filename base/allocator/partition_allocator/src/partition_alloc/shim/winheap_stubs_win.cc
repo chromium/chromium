@@ -12,7 +12,9 @@
 #include <malloc.h>
 #include <new.h>
 #include <windows.h>
+
 #include <algorithm>
+#include <bit>
 #include <limits>
 
 #include "partition_alloc/partition_alloc_base/bits.h"
@@ -155,7 +157,7 @@ void* UnalignAllocation(void* ptr) {
 }  // namespace
 
 void* WinHeapAlignedMalloc(size_t size, size_t alignment) {
-  PA_CHECK(partition_alloc::internal::base::bits::IsPowerOfTwo(alignment));
+  PA_CHECK(std::has_single_bit(alignment));
 
   size_t adjusted = AdjustedSize(size, alignment);
   if (adjusted >= kMaxWindowsAllocation) {
@@ -171,7 +173,7 @@ void* WinHeapAlignedMalloc(size_t size, size_t alignment) {
 }
 
 void* WinHeapAlignedRealloc(void* ptr, size_t size, size_t alignment) {
-  PA_CHECK(partition_alloc::internal::base::bits::IsPowerOfTwo(alignment));
+  PA_CHECK(std::has_single_bit(alignment));
 
   if (!ptr) {
     return WinHeapAlignedMalloc(size, alignment);

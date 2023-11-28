@@ -63,13 +63,13 @@ class StateBitmap final {
     kQuarantined1 = 0b01,
     kQuarantined2 = 0b10,
     kAlloced = 0b11,
-    kNumOfStates = 4,
+    kMaxValue = kAlloced,
   };
 
   using CellType = uintptr_t;
   static constexpr size_t kBitsPerCell = sizeof(CellType) * CHAR_BIT;
   static constexpr size_t kBitsNeededForAllocation =
-      base::bits::Log2Floor(static_cast<size_t>(State::kNumOfStates));
+      std::bit_width(static_cast<uint8_t>(State::kMaxValue));
   static constexpr CellType kStateMask = (1 << kBitsNeededForAllocation) - 1;
 
   static constexpr size_t kBitmapSize =

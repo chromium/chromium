@@ -5,13 +5,13 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ADDRESS_SPACE_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ADDRESS_SPACE_H_
 
+#include <bit>
 #include <cstddef>
 #include <utility>
 
 #include "build/build_config.h"
 #include "partition_alloc/address_pool_manager_types.h"
 #include "partition_alloc/page_allocator_constants.h"
-#include "partition_alloc/partition_alloc_base/bits.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
 #include "partition_alloc/partition_alloc_base/notreached.h"
@@ -270,17 +270,17 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   // ArrayBuffers be located inside of it.
   static constexpr size_t kRegularPoolSize = kPoolMaxSize;
   static constexpr size_t kBRPPoolSize = kPoolMaxSize;
-  static_assert(base::bits::IsPowerOfTwo(kRegularPoolSize));
-  static_assert(base::bits::IsPowerOfTwo(kBRPPoolSize));
+  static_assert(std::has_single_bit(kRegularPoolSize));
+  static_assert(std::has_single_bit(kBRPPoolSize));
 #if BUILDFLAG(ENABLE_THREAD_ISOLATION)
   static constexpr size_t kThreadIsolatedPoolSize = kGiB / 4;
-  static_assert(base::bits::IsPowerOfTwo(kThreadIsolatedPoolSize));
+  static_assert(std::has_single_bit(kThreadIsolatedPoolSize));
 #endif
   static constexpr size_t kConfigurablePoolMaxSize = kPoolMaxSize;
   static constexpr size_t kConfigurablePoolMinSize = 1 * kGiB;
   static_assert(kConfigurablePoolMinSize <= kConfigurablePoolMaxSize);
-  static_assert(base::bits::IsPowerOfTwo(kConfigurablePoolMaxSize));
-  static_assert(base::bits::IsPowerOfTwo(kConfigurablePoolMinSize));
+  static_assert(std::has_single_bit(kConfigurablePoolMaxSize));
+  static_assert(std::has_single_bit(kConfigurablePoolMinSize));
 
 #if BUILDFLAG(IS_IOS)
 
@@ -295,8 +295,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   static constexpr size_t kBRPPoolSizeForIOSTestProcess = kGiB / 4;
   static_assert(kRegularPoolSizeForIOSTestProcess < kRegularPoolSize);
   static_assert(kBRPPoolSizeForIOSTestProcess < kBRPPoolSize);
-  static_assert(base::bits::IsPowerOfTwo(kRegularPoolSizeForIOSTestProcess));
-  static_assert(base::bits::IsPowerOfTwo(kBRPPoolSizeForIOSTestProcess));
+  static_assert(std::has_single_bit(kRegularPoolSizeForIOSTestProcess));
+  static_assert(std::has_single_bit(kBRPPoolSizeForIOSTestProcess));
 #endif  // BUILDFLAG(IOS_IOS)
 
 #if !PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)

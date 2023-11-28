@@ -27,26 +27,11 @@ concept UnsignedInteger =
     !std::same_as<T, char16_t> && !std::same_as<T, char32_t> &&
     !std::same_as<T, wchar_t>;
 
-// Returns true iff |value| is a power of 2.
-//
-// TODO(https://crbug.com/1414634): Replace with std::has_single_bit().
-template <typename T>
-  requires UnsignedInteger<T>
-constexpr bool IsPowerOfTwo(T value) {
-  // From "Hacker's Delight": Section 2.1 Manipulating Rightmost Bits.
-  //
-  // Only positive integers with a single bit set are powers of two. If only one
-  // bit is set in x (e.g. 0b00000100000000) then |x-1| will have that bit set
-  // to zero and all bits to its right set to 1 (e.g. 0b00000011111111). Hence
-  // |x & (x-1)| is 0 iff x is a power of two.
-  return value > 0 && (value & (value - 1)) == 0;
-}
-
 // Round down |size| to a multiple of alignment, which must be a power of two.
 template <typename T>
   requires UnsignedInteger<T>
 inline constexpr T AlignDown(T size, T alignment) {
-  PA_BASE_DCHECK(IsPowerOfTwo(alignment));
+  PA_BASE_DCHECK(std::has_single_bit(alignment));
   return size & ~(alignment - 1);
 }
 
@@ -63,7 +48,7 @@ inline T* AlignDown(T* ptr, size_t alignment) {
 template <typename T>
   requires UnsignedInteger<T>
 inline constexpr T AlignUp(T size, T alignment) {
-  PA_BASE_DCHECK(IsPowerOfTwo(alignment));
+  PA_BASE_DCHECK(std::has_single_bit(alignment));
   return (size + alignment - 1) & ~(alignment - 1);
 }
 
@@ -81,9 +66,8 @@ inline T* AlignUp(T* ptr, size_t alignment) {
 // A common use for this function is to measure the number of bits required to
 // contain a value; for that case use std::bit_width().
 //
-// A common use for this function is to shift a bit by its result; instead of
-// doing so, use std::bit_floor(). TODO(https://crbug.com/1414634): Replace
-// existing uses that do that.
+// A common use for this function is to take its result and use it to left-shift
+// a bit; instead of doing so, use std::bit_floor().
 constexpr int Log2Floor(uint32_t n) {
   return 31 - std::countl_zero(n);
 }
@@ -93,9 +77,8 @@ constexpr int Log2Floor(uint32_t n) {
 // A common use for this function is to measure the number of bits required to
 // contain a value; for that case use std::bit_width().
 //
-// A common use for this function is to shift a bit by its result; instead of
-// doing so, use std::bit_ceil(). TODO(https://crbug.com/1414634): Replace
-// existing uses that do that.
+// A common use for this function is to take its result and use it to left-shift
+// a bit; instead of doing so, use std::bit_ceil().
 constexpr int Log2Ceiling(uint32_t n) {
   // When n == 0, we want the function to return -1.
   // When n == 0, (n - 1) will underflow to 0xFFFFFFFF, which is

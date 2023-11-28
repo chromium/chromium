@@ -208,14 +208,8 @@ class BucketIndexLookup final {
       bucket_index_lookup_[((kBitsPerSizeT + 1) * kNumBucketsPerOrder) + 1]{};
 };
 
-PA_ALWAYS_INLINE constexpr size_t RoundUpToPowerOfTwo(size_t size) {
-  const size_t n = 1 << base::bits::Log2Ceiling(static_cast<uint32_t>(size));
-  PA_DCHECK(size <= n);
-  return n;
-}
-
 PA_ALWAYS_INLINE constexpr size_t RoundUpSize(size_t size) {
-  const size_t next_power = RoundUpToPowerOfTwo(size);
+  const size_t next_power = std::bit_ceil(size);
   const size_t prev_power = next_power >> 1;
   PA_DCHECK(size <= next_power);
   PA_DCHECK(prev_power < size);
