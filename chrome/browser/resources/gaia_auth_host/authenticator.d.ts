@@ -84,5 +84,6 @@ export enum AuthFlow {
 export class Authenticator extends EventTarget {
   constructor(webview: HTMLElement|string);
   getAccountsResponse(accounts: string[]): void;
+  getDeviceIdResponse(deviceId: string): void;
   load(authMode: AuthMode, data: AuthParams): void;
 }

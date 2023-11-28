@@ -13,7 +13,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 
-import {fakeAuthenticationData, getFakeAccountsList, TestAuthenticator, TestInlineLoginBrowserProxy} from './inline_login_test_util.js';
+import {fakeAuthenticationData, getFakeAccountsList, getFakeDeviceId, TestAuthenticator, TestInlineLoginBrowserProxy} from './inline_login_test_util.js';
 
 suite('InlineLoginTest', () => {
   let inlineLoginComponent: InlineLoginAppElement;
@@ -119,10 +119,18 @@ suite('InlineLoginTest', () => {
 
     testAuthenticator.dispatchEvent(new Event('getAccounts'));
     assertEquals(1, testBrowserProxy.getCallCount('getAccounts'));
-    return testBrowserProxy.whenCalled('getAccounts').then(function() {
+    await testBrowserProxy.whenCalled('getAccounts').then(function() {
       assertEquals(1, testAuthenticator.getAccountsResponseCalls);
       assertDeepEquals(
           getFakeAccountsList(), testAuthenticator.getAccountsResponseResult);
+    });
+
+    testAuthenticator.dispatchEvent(new Event('getDeviceId'));
+    assertEquals(1, testBrowserProxy.getCallCount('getDeviceId'));
+    await testBrowserProxy.whenCalled('getDeviceId').then(function() {
+      assertEquals(1, testAuthenticator.getDeviceIdResponseCalls);
+      assertDeepEquals(
+          getFakeDeviceId(), testAuthenticator.getDeviceIdResponseResult);
     });
   });
 

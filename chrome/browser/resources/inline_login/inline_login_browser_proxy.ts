@@ -48,6 +48,12 @@ export interface InlineLoginBrowserProxy {
    */
   getAccounts(): Promise<string[]>;
 
+  /**
+   * Sends 'getDeviceId' message to the handler. The promise will be resolved
+   * with the device identifier for this user.
+   */
+  getDeviceId(): Promise<string>;
+
   /** Send 'dialogClose' message to close the login dialog. */
   dialogClose(): void;
 
@@ -99,6 +105,10 @@ export class InlineLoginBrowserProxyImpl implements InlineLoginBrowserProxy {
 
   getAccounts() {
     return sendWithPromise('getAccounts');
+  }
+
+  getDeviceId() {
+    return sendWithPromise('getDeviceId');
   }
 
   dialogClose() {

@@ -34,6 +34,12 @@ export interface EduCoexistenceBrowserProxy {
   getAccounts(): Promise<string[]>;
 
   /**
+   * Sends 'getDeviceId' message to the handler. The promise will be resolved
+   * with the device identifier for this user.
+   */
+  getDeviceId(): Promise<string>;
+
+  /**
    * Sends 'consentValid' message to the handler to notify the handler that
    * the parental consent is valid.
    */
@@ -82,6 +88,10 @@ export class EduCoexistenceBrowserProxyImpl implements
 
   getAccounts() {
     return sendWithPromise('getAccounts');
+  }
+
+  getDeviceId() {
+    return sendWithPromise('getDeviceId');
   }
 
   consentValid() {
