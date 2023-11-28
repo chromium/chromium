@@ -229,6 +229,21 @@ class BundleJsTest(unittest.TestCase):
     depfile_d = self._read_out_file('depfile.d')
     self._check_dep_file(['src/foo.js', 'src/subdir/baz.js'], depfile_d)
 
+  def testSimpleBundleWithCustomConfig(self):
+    args = [
+        '--host',
+        'fake-host',
+        '--js_module_in_files',
+        'bar_wrapper.js',
+        '--rollup_config',
+        os.path.join('tests', 'bundle_js', 'dummy.config.mjs')
+    ]
+    self._run_bundle(args)
+
+    self._check_bundle_output('bar_wrapper.rollup.js', 'bar_wrapper.rollup.js')
+    depfile_d = self._read_out_file('depfile.d')
+    self._check_dep_file(['src/bar.js'], depfile_d)
+
 
 if __name__ == '__main__':
   unittest.main()

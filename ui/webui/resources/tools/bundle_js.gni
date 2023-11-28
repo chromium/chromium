@@ -23,7 +23,6 @@ template("bundle_js") {
       out_folder = invoker.out_folder
     }
 
-    inputs = [ "//ui/webui/resources/tools/rollup_plugin.mjs" ]
     outputs = []
     input_count = 0
     foreach(f, invoker.js_module_in_files) {
@@ -43,10 +42,7 @@ template("bundle_js") {
       }
     }
 
-    outputs += [
-      "$out_folder/rollup.config.mjs",
-      "$out_folder/${target_name}_requestlist.txt",
-    ]
+    outputs += [ "$out_folder/${target_name}_requestlist.txt" ]
 
     # Note that we have to manually pass the sources to our script if the
     # script needs them as inputs.
@@ -62,6 +58,18 @@ template("bundle_js") {
       "--target_name",
       target_name,
     ]
+
+    inputs = []
+    if (defined(invoker.rollup_config)) {
+      inputs += [ invoker.rollup_config ]
+      args += [
+        "--rollup_config",
+        rebase_path(invoker.rollup_config, root_build_dir),
+      ]
+    } else {
+      inputs += [ "//ui/webui/resources/tools/rollup_plugin.mjs" ]
+      outputs += [ "$out_folder/rollup.config.mjs" ]
+    }
 
     if (defined(invoker.excludes)) {
       args += [ "--exclude" ] + invoker.excludes
