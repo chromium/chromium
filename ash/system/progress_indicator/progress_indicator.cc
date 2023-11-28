@@ -390,20 +390,6 @@ void ProgressIndicator::SetColorId(const std::optional<ui::ColorId>& color_id) {
   InvalidateLayer();
 }
 
-void ProgressIndicator::SetHasRoundCap(bool has_round_cap) {
-  if (has_round_cap_ == has_round_cap) {
-    return;
-  }
-
-  has_round_cap_ = has_round_cap;
-
-  // It's not necessary to invalidate the `layer()` if progress is complete
-  // since the inner icon is only painted while progress is incomplete.
-  if (progress_ != kProgressComplete) {
-    InvalidateLayer();
-  }
-}
-
 void ProgressIndicator::SetInnerIconVisible(bool visible) {
   if (inner_icon_visible_ == visible)
     return;
@@ -521,8 +507,7 @@ void ProgressIndicator::OnPaintLayer(const ui::PaintContext& context) {
 
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  flags.setStrokeCap(has_round_cap_ ? cc::PaintFlags::Cap::kRound_Cap
-                                    : cc::PaintFlags::Cap::kDefault_Cap);
+  flags.setStrokeCap(cc::PaintFlags::Cap::kRound_Cap);
   flags.setStrokeWidth(outer_ring_stroke_width);
   flags.setStyle(cc::PaintFlags::Style::kStroke_Style);
 
@@ -539,19 +524,22 @@ void ProgressIndicator::OnPaintLayer(const ui::PaintContext& context) {
 
   // Outer ring track.
   if (outer_ring_track_visible_) {
-    canvas->DrawPath(CreatePathSegment(path, 0.f, 1.0f), flags);
+    canvas->DrawPath(path, flags);
   }
 
   // Outer ring.
-  if (start <= end) {
+  if (start == end) {
+    // If `start` == `end`, prevent the canvas from drawing the caps.
+  } else if (start < end) {
     // If `start` <= `end`, only a single path segment is necessary.
     canvas->DrawPath(CreatePathSegment(path, start, end), flags);
   } else {
-    // If `start` > `end`, two path segments are used to give the illusion of a
-    // single progress ring. This works around limitations of `SkPathMeasure`
-    // which require that `start` be <= `end`.
-    canvas->DrawPath(CreatePathSegment(path, start, 1.f), flags);
-    canvas->DrawPath(CreatePathSegment(path, 0.f, end), flags);
+    // If `start` > `end`, join two path segments as a single path and use that
+    // to draw the progress ring. This works around limitations of
+    // `SkPathMeasure` which require that `start` be <= `end`.
+    SkPath joined_path(CreatePathSegment(path, start, 1.0f));
+    joined_path.addPath(CreatePathSegment(path, 0.f, end));
+    canvas->DrawPath(joined_path, flags);
   }
 
   // The inner ring and inner icon should be absent once progress completes.

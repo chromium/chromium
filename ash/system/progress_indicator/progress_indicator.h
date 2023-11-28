@@ -62,11 +62,6 @@ class ASH_EXPORT ProgressIndicator : public ui::LayerOwner,
   // indication. If `color_id` is absent, default colors are used.
   void SetColorId(const std::optional<ui::ColorId>& color_id);
 
-  // Sets a round cap for the progress ring of this progress indicator. Note
-  // that the ring is only painted when `progress_` is greater than 0 and is
-  // incomplete.
-  void SetHasRoundCap(bool has_round_cap);
-
   // Sets the visibility for this progress indicator's inner icon. Note that
   // the inner icon will only be painted while `progress_` is incomplete,
   // regardless of the value of `visible` provided.
@@ -189,11 +184,6 @@ class ASH_EXPORT ProgressIndicator : public ui::LayerOwner,
 
   // The list of callbacks for which to notify `progress_` changes.
   base::RepeatingClosureList progress_changed_callback_list_;
-
-  // Whether this progress indicator's outer ring has a round cap. Note that the
-  // outer ring will only be painted if the item has `progress_` greater than 0
-  // and is incomplete.
-  bool has_round_cap_ = false;
 
   // Whether this progress indicator's inner icon is visible. Note that the
   // inner icon will only be painted while `progress_` is incomplete, regardless

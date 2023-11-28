@@ -2194,13 +2194,9 @@ void AppListItemView::UpdateProgressIndicatorState() {
   EnsureLayer();
 
   if (item()->app_status() == AppStatus::kPending) {
-    // TODO(b/311460259): Set rounded caps by default after improving the
-    // drawing algorithm for the progress indicator.
-    progress_indicator_->SetHasRoundCap(false);
     progress_indicator_->SetColorId(cros_tokens::kCrosSysHighlightShape);
     progress_indicator_->SetOuterRingTrackVisible(true);
   } else {
-    progress_indicator_->SetHasRoundCap(true);
     progress_indicator_->SetColorId(
         cros_tokens::kCrosSysSystemPrimaryContainer);
     progress_indicator_->SetOuterRingTrackVisible(false);
