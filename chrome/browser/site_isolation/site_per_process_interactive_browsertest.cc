@@ -288,9 +288,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
 //
 // The test then presses <tab> six times to cycle through focused elements 1-6.
 // The test then repeats this with <shift-tab> to cycle in reverse order.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_MAC)
 // TODO(crbug.com/1295296): Fails on Mac 10.11.
-// TODO(crbug.com/1469621): Flakes on Lacros.
 #define MAYBE_SequentialFocusNavigation DISABLED_SequentialFocusNavigation
 #else
 #define MAYBE_SequentialFocusNavigation SequentialFocusNavigation
