@@ -1130,18 +1130,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Event.Touch.GestureTarget" enum="BrowserGestureActionType"
-    expires_after="2020-06-28">
-  <owner>kuscher@google.com</owner>
-  <owner>rbyers@chromium.org</owner>
-  <summary>
-    The gesture-events recognized and dispatched for UI components owned by the
-    browser. This histogram was created as part of separating gesture events
-    between the browser and Ash (crbug.com/826476). The enums are extracted from
-    Ash.GestureTarget.
-  </summary>
-</histogram>
-
 <histogram name="Event.Touch.TimedOutOnDesktopSite" enum="BooleanTimedOut"
     expires_after="2023-10-31">
   <owner>flackr@chromium.org</owner>

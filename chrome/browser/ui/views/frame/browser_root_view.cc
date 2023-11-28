@@ -27,7 +27,6 @@
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/browser/ui/views/touch_uma/touch_uma.h"
 #include "chrome/common/chrome_features.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -373,19 +372,6 @@ void BrowserRootView::PaintChildren(const views::PaintInfo& paint_info) {
     flags.setAntiAlias(true);
     canvas->DrawRect(gfx::RectF(x, bottom - scale, width, scale), flags);
   }
-}
-
-void BrowserRootView::OnEventProcessingStarted(ui::Event* event) {
-  if (event->IsGestureEvent()) {
-    ui::GestureEvent* gesture_event = event->AsGestureEvent();
-    if (gesture_event->type() == ui::ET_GESTURE_TAP &&
-        gesture_event->location().y() <= 0 &&
-        gesture_event->location().x() <= browser_view_->GetBounds().width()) {
-      TouchUMA::RecordGestureAction(TouchUMA::kGestureRootViewTopTap);
-    }
-  }
-
-  RootView::OnEventProcessingStarted(event);
 }
 
 BrowserRootView::DropTarget* BrowserRootView::GetDropTarget(

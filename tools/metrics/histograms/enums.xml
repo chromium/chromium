@@ -7122,14 +7122,6 @@ Called by update_autofill_enums.py.-->
   <int value="36" label="UNREACHABLE_6"/>
 </enum>
 
-<enum name="BrowserGestureActionType">
-  <int value="0" label="Tab switched tap"/>
-  <int value="1" label="Active tab tap"/>
-  <int value="2" label="Tab close button tap"/>
-  <int value="3" label="New tab button tap"/>
-  <int value="4" label="Top edge of browser window tap"/>
-</enum>
-
 <enum name="BrowserProfileType">
   <int value="0" label="Regular"/>
   <int value="1" label="Incognito"/>

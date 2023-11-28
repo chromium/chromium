@@ -67,7 +67,6 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_observer.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "chrome/browser/ui/views/tabs/z_orderable_tab_container_element.h"
-#include "chrome/browser/ui/views/touch_uma/touch_uma.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
@@ -1916,8 +1915,6 @@ void TabStrip::NewTabButtonPressed(const ui::Event& event) {
   }
   const int tab_count = GetTabCount();
   controller_->CreateNewTab();
-  if (event.type() == ui::ET_GESTURE_TAP)
-    TouchUMA::RecordGestureAction(TouchUMA::kGestureNewTabTap);
 
   if (GetTabCount() != tab_count + 1) {
     UMA_HISTOGRAM_ENUMERATION("TabStrip.Failures.Action",
@@ -2198,16 +2195,6 @@ void TabStrip::OnGestureEvent(ui::GestureEvent* event) {
   switch (event->type()) {
     case ui::ET_GESTURE_LONG_TAP: {
       tab_container_->HandleLongTap(event);
-      break;
-    }
-
-    case ui::ET_GESTURE_TAP: {
-      const absl::optional<int> active_index = GetActiveIndex();
-      Tab* active_tab = tab_at(active_index.value());
-      TouchUMA::GestureActionType action = TouchUMA::kGestureTabNoSwitchTap;
-      if (active_tab->tab_activated_with_last_tap_down())
-        action = TouchUMA::kGestureTabSwitchTap;
-      TouchUMA::RecordGestureAction(action);
       break;
     }
 

@@ -5940,8 +5940,6 @@ static_library("ui") {
       "views/toolbar/toolbar_ink_drop_util.h",
       "views/toolbar/toolbar_view.cc",
       "views/toolbar/toolbar_view.h",
-      "views/touch_uma/touch_uma.cc",
-      "views/touch_uma/touch_uma.h",
       "views/translate/partial_translate_bubble_view.cc",
       "views/translate/partial_translate_bubble_view.h",
       "views/translate/translate_bubble_controller.cc",

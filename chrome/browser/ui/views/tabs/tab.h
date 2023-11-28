@@ -159,14 +159,6 @@ class Tab : public gfx::AnimationDelegate,
   // user to click to select/activate the tab.
   int GetWidthOfLargestSelectableRegion() const;
 
-  // Returns true if this tab became the active tab selected in
-  // response to the last ui::ET_TAP_DOWN gesture dispatched to
-  // this tab. Only used for collecting UMA metrics.
-  // See ash/touch/touch_uma.cc.
-  bool tab_activated_with_last_tap_down() const {
-    return tab_activated_with_last_tap_down_;
-  }
-
   bool mouse_hovered() const { return mouse_hovered_; }
 
   // Returns the TabStyle associated with this tab.
@@ -254,8 +246,6 @@ class Tab : public gfx::AnimationDelegate,
   gfx::Rect start_title_bounds_;
   gfx::Rect target_title_bounds_;
   gfx::LinearAnimation title_animation_;
-
-  bool tab_activated_with_last_tap_down_ = false;
 
   // For narrow tabs, we show the alert icon or, if there is no alert icon, the
   // favicon even if it won't completely fit. In this case, we need to center

@@ -108,9 +108,6 @@ class BrowserRootView : public views::internal::RootView {
     bool file_supported = true;
   };
 
-  // ui::EventProcessor:
-  void OnEventProcessingStarted(ui::Event* event) override;
-
   // Converts the event from the hosts coordinate system to the view's
   // coordinate system.
   DropIndex GetDropIndexForEvent(const ui::DropTargetEvent& event,

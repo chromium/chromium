@@ -46,7 +46,6 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_layout.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
-#include "chrome/browser/ui/views/touch_uma/touch_uma.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
@@ -652,7 +651,6 @@ void Tab::OnGestureEvent(ui::GestureEvent* event) {
                                        parent());
       ui::ListSelectionModel original_selection;
       original_selection = controller_->GetSelectionModel();
-      tab_activated_with_last_tap_down_ = !IsActive();
       if (!IsSelected())
         controller_->SelectTab(this, *event);
       gfx::Point loc(event->location());
@@ -1146,8 +1144,6 @@ void Tab::CloseButtonPressed(const ui::Event& event) {
                           !(event.flags() & ui::EF_FROM_TOUCH);
   controller_->CloseTab(
       this, from_mouse ? CLOSE_TAB_FROM_MOUSE : CLOSE_TAB_FROM_TOUCH);
-  if (event.type() == ui::ET_GESTURE_TAP)
-    TouchUMA::RecordGestureAction(TouchUMA::kGestureTabCloseTap);
 }
 
 BEGIN_METADATA(Tab, TabSlotView)
