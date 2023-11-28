@@ -723,4 +723,38 @@ TEST_F(FloatingAccessibilityControllerTest,
   EXPECT_FALSE(IsFloatingMenuVisible());
 }
 
+TEST_F(FloatingAccessibilityControllerTest, DictationButtonFocus) {
+  accessibility_controller()->dictation().SetEnabled(true);
+  SetSingleAvailableIme();
+  SetUpVisibleMenu();
+
+  EXPECT_TRUE(IsFloatingMenuVisible());
+
+  ASSERT_TRUE(widget());
+  views::FocusManager* focus_manager = widget()->GetFocusManager();
+
+  views::View* settings_button =
+      GetMenuButton(FloatingAccessibilityView::ButtonId::kSettingsList);
+  ASSERT_TRUE(settings_button) << "No settings list button found.";
+  EXPECT_TRUE(settings_button->GetVisible());
+
+  views::View* dictation_button =
+      GetMenuButton(FloatingAccessibilityView::ButtonId::kDictation);
+  ASSERT_TRUE(dictation_button) << "No dictation button found.";
+  EXPECT_TRUE(dictation_button->GetVisible());
+
+  // The floating menu stays inactive during touches/clicks.
+  // Dictation button click shouldn't take the focus.
+  GestureTapOn(dictation_button);
+  EXPECT_EQ(focus_manager->GetFocusedView(), nullptr);
+
+  // The floating menu should activate for a 'focus on shelf' keyboard shortcut
+  // and take the focus.
+  // Dictation button is visible but disabled when we are not in text input.
+  dictation_button->SetEnabled(false);
+  Shell::Get()->accelerator_controller()->PerformActionIfEnabled(
+      AcceleratorAction::kFocusShelf, {});
+  EXPECT_EQ(focus_manager->GetFocusedView(), settings_button);
+}
+
 }  // namespace ash
