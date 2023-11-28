@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_FOLLOW_FOLLOW_JAVA_SCRIPT_FEATURE_H_
-#define IOS_CHROME_BROWSER_FOLLOW_FOLLOW_JAVA_SCRIPT_FEATURE_H_
+#ifndef IOS_CHROME_BROWSER_FOLLOW_MODEL_FOLLOW_JAVA_SCRIPT_FEATURE_H_
+#define IOS_CHROME_BROWSER_FOLLOW_MODEL_FOLLOW_JAVA_SCRIPT_FEATURE_H_
 
 #import "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/values.h"
-#import "ios/chrome/browser/follow/web_page_urls.h"
+#import "ios/chrome/browser/follow/model/web_page_urls.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 #include "url/gurl.h"
 
@@ -43,4 +43,4 @@ class FollowJavaScriptFeature : public web::JavaScriptFeature {
   base::WeakPtrFactory<FollowJavaScriptFeature> weak_ptr_factory_;
 };
 
-#endif  // IOS_CHROME_BROWSER_FOLLOW_FOLLOW_JAVA_SCRIPT_FEATURE_H_
+#endif  // IOS_CHROME_BROWSER_FOLLOW_MODEL_FOLLOW_JAVA_SCRIPT_FEATURE_H_

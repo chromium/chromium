@@ -218,7 +218,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/feature_engagement/model:unit_tests",
     "//ios/chrome/browser/find_in_page/model:unit_tests",
     "//ios/chrome/browser/flags:unit_tests",
-    "//ios/chrome/browser/follow:unit_tests",
+    "//ios/chrome/browser/follow/model:unit_tests",
     "//ios/chrome/browser/history:unit_tests",
     "//ios/chrome/browser/https_upgrades/model:unit_tests",
     "//ios/chrome/browser/infobars:unit_tests",

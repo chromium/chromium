@@ -90,7 +90,7 @@ source_set("model") {
     "//ios/chrome/browser/enterprise/model/idle",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/feature_engagement/model",
-    "//ios/chrome/browser/follow:service_factory",
+    "//ios/chrome/browser/follow/model:service_factory",
     "//ios/chrome/browser/gcm/model",
     "//ios/chrome/browser/google:google_logo",
     "//ios/chrome/browser/history",

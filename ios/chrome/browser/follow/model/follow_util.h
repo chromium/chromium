@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_FOLLOW_FOLLOW_UTIL_H_
-#define IOS_CHROME_BROWSER_FOLLOW_FOLLOW_UTIL_H_
+#ifndef IOS_CHROME_BROWSER_FOLLOW_MODEL_FOLLOW_UTIL_H_
+#define IOS_CHROME_BROWSER_FOLLOW_MODEL_FOLLOW_UTIL_H_
 
-#import "ios/chrome/browser/follow/follow_action_state.h"
+#import "ios/chrome/browser/follow/model/follow_action_state.h"
 
 namespace web {
 class WebState;
@@ -34,4 +34,4 @@ void StoreFollowIPHDisplayEvent(NSString* host);
 // experimental setting.
 void RemoveLastFollowIPHDisplayEvent();
 
-#endif  // IOS_CHROME_BROWSER_FOLLOW_FOLLOW_UTIL_H_
+#endif  // IOS_CHROME_BROWSER_FOLLOW_MODEL_FOLLOW_UTIL_H_

@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_FOLLOW_FOLLOW_BROWSER_AGENT_H_
-#define IOS_CHROME_BROWSER_FOLLOW_FOLLOW_BROWSER_AGENT_H_
+#ifndef IOS_CHROME_BROWSER_FOLLOW_MODEL_FOLLOW_BROWSER_AGENT_H_
+#define IOS_CHROME_BROWSER_FOLLOW_MODEL_FOLLOW_BROWSER_AGENT_H_
 
 #import <Foundation/Foundation.h>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "ios/chrome/browser/follow/follow_service.h"
-#include "ios/chrome/browser/follow/follow_service_observer.h"
+#include "ios/chrome/browser/follow/model/follow_service.h"
+#include "ios/chrome/browser/follow/model/follow_service_observer.h"
 #include "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 
 @class FeedMetricsRecorder;
@@ -133,4 +133,4 @@ class FollowBrowserAgent final : public BrowserUserData<FollowBrowserAgent> {
   BROWSER_USER_DATA_KEY_DECL();
 };
 
-#endif  // IOS_CHROME_BROWSER_FOLLOW_FOLLOW_BROWSER_AGENT_H_
+#endif  // IOS_CHROME_BROWSER_FOLLOW_MODEL_FOLLOW_BROWSER_AGENT_H_

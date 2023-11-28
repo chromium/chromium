@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/follow/follow_browser_agent_observer_bridge.h"
+#import "ios/chrome/browser/follow/model/follow_browser_agent_observer_bridge.h"
 
-#import "ios/chrome/browser/follow/follow_browser_agent_observing.h"
-#import "ios/chrome/browser/follow/followed_web_site.h"
+#import "ios/chrome/browser/follow/model/follow_browser_agent_observing.h"
+#import "ios/chrome/browser/follow/model/followed_web_site.h"
 
 FollowBrowserAgentObserverBridge::FollowBrowserAgentObserverBridge(
     id<FollowBrowserAgentObserving> observing,

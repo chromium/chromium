@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/follow/follow_tab_helper.h"
+#import "ios/chrome/browser/follow/model/follow_tab_helper.h"
 
 #import "base/functional/callback.h"
 #import "base/memory/ptr_util.h"
@@ -19,14 +19,14 @@
 #import "components/history/core/browser/history_types.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
-#import "ios/chrome/browser/follow/follow_action_state.h"
-#import "ios/chrome/browser/follow/follow_features.h"
-#import "ios/chrome/browser/follow/follow_iph_presenter.h"
-#import "ios/chrome/browser/follow/follow_java_script_feature.h"
-#import "ios/chrome/browser/follow/follow_menu_updater.h"
-#import "ios/chrome/browser/follow/follow_service.h"
-#import "ios/chrome/browser/follow/follow_service_factory.h"
-#import "ios/chrome/browser/follow/follow_util.h"
+#import "ios/chrome/browser/follow/model/follow_action_state.h"
+#import "ios/chrome/browser/follow/model/follow_features.h"
+#import "ios/chrome/browser/follow/model/follow_iph_presenter.h"
+#import "ios/chrome/browser/follow/model/follow_java_script_feature.h"
+#import "ios/chrome/browser/follow/model/follow_menu_updater.h"
+#import "ios/chrome/browser/follow/model/follow_service.h"
+#import "ios/chrome/browser/follow/model/follow_service_factory.h"
+#import "ios/chrome/browser/follow/model/follow_util.h"
 #import "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"

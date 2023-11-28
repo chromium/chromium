@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_FOLLOW_FOLLOW_BROWSER_AGENT_OBSERVER_BRIDGE_H_
-#define IOS_CHROME_BROWSER_FOLLOW_FOLLOW_BROWSER_AGENT_OBSERVER_BRIDGE_H_
+#ifndef IOS_CHROME_BROWSER_FOLLOW_MODEL_FOLLOW_BROWSER_AGENT_OBSERVER_BRIDGE_H_
+#define IOS_CHROME_BROWSER_FOLLOW_MODEL_FOLLOW_BROWSER_AGENT_OBSERVER_BRIDGE_H_
 
 #include "base/scoped_observation.h"
-#include "ios/chrome/browser/follow/follow_browser_agent.h"
+#include "ios/chrome/browser/follow/model/follow_browser_agent.h"
 
 @protocol FollowBrowserAgentObserving;
 
@@ -29,4 +29,4 @@ class FollowBrowserAgentObserverBridge final
       observation_{this};
 };
 
-#endif  // IOS_CHROME_BROWSER_FOLLOW_FOLLOW_BROWSER_AGENT_OBSERVER_BRIDGE_H_
+#endif  // IOS_CHROME_BROWSER_FOLLOW_MODEL_FOLLOW_BROWSER_AGENT_OBSERVER_BRIDGE_H_

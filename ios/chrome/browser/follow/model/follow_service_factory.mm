@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/follow/follow_service_factory.h"
+#import "ios/chrome/browser/follow/model/follow_service_factory.h"
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
-#import "ios/chrome/browser/follow/follow_configuration.h"
-#import "ios/chrome/browser/follow/follow_service.h"
+#import "ios/chrome/browser/follow/model/follow_configuration.h"
+#import "ios/chrome/browser/follow/model/follow_service.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/public/provider/chrome/browser/follow/follow_api.h"

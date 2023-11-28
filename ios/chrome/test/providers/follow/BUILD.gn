@@ -7,7 +7,7 @@ source_set("follow") {
   sources = [ "test_follow.mm" ]
   deps = [
     "//base",
-    "//ios/chrome/browser/follow:service",
+    "//ios/chrome/browser/follow/model:service",
     "//ios/public/provider/chrome/browser/follow:follow_api",
   ]
 }

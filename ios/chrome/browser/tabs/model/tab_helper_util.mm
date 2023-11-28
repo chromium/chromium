@@ -40,7 +40,7 @@
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
 #import "ios/chrome/browser/find_in_page/model/java_script_find_tab_helper.h"
 #import "ios/chrome/browser/find_in_page/model/util.h"
-#import "ios/chrome/browser/follow/follow_tab_helper.h"
+#import "ios/chrome/browser/follow/model/follow_tab_helper.h"
 #import "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/history/history_tab_helper.h"
 #import "ios/chrome/browser/history/top_sites_factory.h"

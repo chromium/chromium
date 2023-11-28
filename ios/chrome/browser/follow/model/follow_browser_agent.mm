@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/follow/follow_browser_agent.h"
+#import "ios/chrome/browser/follow/model/follow_browser_agent.h"
 
 #import "base/check.h"
 #import "base/functional/bind.h"
@@ -15,9 +15,9 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/discover_feed/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
-#import "ios/chrome/browser/follow/follow_service.h"
-#import "ios/chrome/browser/follow/follow_service_factory.h"
-#import "ios/chrome/browser/follow/web_page_urls.h"
+#import "ios/chrome/browser/follow/model/follow_service.h"
+#import "ios/chrome/browser/follow/model/follow_service_factory.h"
+#import "ios/chrome/browser/follow/model/web_page_urls.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"

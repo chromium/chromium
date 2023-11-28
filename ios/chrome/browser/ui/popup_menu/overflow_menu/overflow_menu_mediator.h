@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/follow/follow_action_state.h"
+#import "ios/chrome/browser/follow/model/follow_action_state.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_consumer.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
 
