@@ -22,12 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<variants name="InstallerDownloadSources">
-  <variant name="HttpPeer" summary="Download Source: HTTP Peer"/>
-  <variant name="HttpServer" summary="Download Source: HTTP Server"/>
-  <variant name="HttpsServer" summary="Download Source: HTTPS Server"/>
-</variants>
-
 <histogram name="Installer.DevModeErrorCodes" enum="UpdateEngineErrorCode"
     expires_after="M85">
   <owner>zeuthen@chromium.org</owner>

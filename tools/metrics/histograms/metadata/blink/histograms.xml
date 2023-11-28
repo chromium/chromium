@@ -22,17 +22,9 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<variants name="BlinkIncrementalDecodeImageTypes">
-  <variant name=".Jpeg"
-      summary="Byte size of JPEG images that fall into this category."/>
-  <variant name=".WebP"
-      summary="Byte size of WebP images that fall into this category."/>
-</variants>
-
 <variants name="BlinkRequestDestination">
 <!-- Should be kept in sync with variants RequestDestination in
-  tools/metrics/histograms/metadata/page/histograms.xml and NetworkRequestDestination
-  in tools/metrics/histograms/metadata/network/histograms.xml.
+  tools/metrics/histograms/metadata/page/histograms.xml.
 -->
 
   <variant name="audio"/>

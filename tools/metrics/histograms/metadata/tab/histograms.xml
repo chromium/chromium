@@ -51,14 +51,6 @@ chromium-metrics-reviews@google.com.
                condition"/>
 </variants>
 
-<variants name="Tabs_SwitchLatency">
-  <variant name="_Actual"
-      summary="The time it takes to show a real live frame from the renderer
-               on the screen after the user selects a tab. This doesn not
-               include fake snapshots or other tricks, but the actual time to
-               get real interactable content displayed."/>
-</variants>
-
 <histogram name="Discarding.DailyDiscards{TabDiscardReason}" units="tabs"
     expires_after="2024-04-28">
   <owner>vovoy@chromium.org</owner>

@@ -150,17 +150,6 @@ chromium-metrics-reviews@google.com.
   <variant name="Launch" summary="launch"/>
 </variants>
 
-<variants name="SearchCategory">
-  <variant name="Apps" summary="installed apps"/>
-  <variant name="AppShortcut" summary="shortcut for installed apps"/>
-  <variant name="Files" summary="local and Google Drive files"/>
-  <variant name="Games" summary="system settings"/>
-  <variant name="Helps" summary="help articles"/>
-  <variant name="Images" summary="image results"/>
-  <variant name="PlayStore" summary="play store suggestions"/>
-  <variant name="Web" summary="webpages"/>
-</variants>
-
 <variants name="SearchView">
   <variant name="AnswerCard" summary="answer card"/>
   <variant name="AppsSearch" summary="app tiles search"/>

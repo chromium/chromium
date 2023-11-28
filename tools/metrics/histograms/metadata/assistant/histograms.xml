@@ -22,18 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<variants name="UserEligibilityTiming">
-<!--
-    Before M90, the base ("") variant was reported multiple times per search
-    and at other random points in time.
-
-    From M90 onwards, this is reported to exactly once per mic click.
-  -->
-
-  <variant name="" summary="when the mic button is pressed"/>
-  <variant name=".Startup" summary="on browser startup"/>
-</variants>
-
 <histogram name="Assistant.BetterOnboarding.Click"
     enum="AssistantBetterOnboardingType" expires_after="2024-05-19">
   <owner>xiaohuic@chromium.org</owner>

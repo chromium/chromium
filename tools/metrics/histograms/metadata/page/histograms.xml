@@ -56,8 +56,7 @@ chromium-metrics-reviews@google.com.
 
 <variants name="RequestDestination">
 <!-- Should be kept in sync with variants BlinkRequestDestination in
-  tools/metrics/histograms/metadata/blink/histograms.xml and NetworkRequestDestination
-  in tools/metrics/histograms/metadata/network/histograms.xml.
+  tools/metrics/histograms/metadata/blink/histograms.xml.
 -->
 
   <variant name="audio"/>

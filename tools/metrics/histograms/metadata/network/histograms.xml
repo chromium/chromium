@@ -54,37 +54,6 @@ chromium-metrics-reviews@google.com.
   <variant name="L2tpIpsec" summary="L2TP/IPsec"/>
 </variants>
 
-<variants name="NetworkRequestDestination">
-<!-- Should be kept in sync with variants RequestDestination in
-  tools/metrics/histograms/metadata/page/histograms.xml and BlinkRequestDestination
-  in tools/metrics/histograms/metadata/blink/histograms.xml.
--->
-
-  <variant name="audio"/>
-  <variant name="audioworklet"/>
-  <variant name="document"/>
-  <variant name="embed"/>
-  <variant name="empty"/>
-  <variant name="fencedframe"/>
-  <variant name="font"/>
-  <variant name="frame"/>
-  <variant name="iframe"/>
-  <variant name="image"/>
-  <variant name="manifest"/>
-  <variant name="object"/>
-  <variant name="paintworklet"/>
-  <variant name="report"/>
-  <variant name="script"/>
-  <variant name="serviceworker"/>
-  <variant name="sharedworker"/>
-  <variant name="style"/>
-  <variant name="track"/>
-  <variant name="video"/>
-  <variant name="webbundle"/>
-  <variant name="worker"/>
-  <variant name="xslt"/>
-</variants>
-
 <variants name="PhysicalTechnology">
   <variant name="Cellular" summary="Cellular"/>
   <variant name="Ethernet" summary="Ethernet"/>
