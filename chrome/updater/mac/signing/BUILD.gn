@@ -53,7 +53,7 @@ process_version("postinstall") {
   ]
   process_only = true
   template_file = "postinstall.in"
-  output = "$_packaging_dir/signing/postinstall"
+  output = "$_packaging_dir/signing/pkg/postinstall"
 }
 
 copy("copy_signing") {

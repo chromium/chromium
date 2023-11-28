@@ -101,6 +101,9 @@ def _package_and_sign_pkg(paths, config):
     """
     pkg_path = os.path.join(paths.output,
                             '{}.pkg'.format(config.packaging_basename))
+    script_path = os.path.join(paths.input, config.packaging_dir, 'signing',
+                               'pkg')
+    os.chmod(os.path.join(script_path, 'postinstall'), 0o755)
     commands.run_command([
         'pkgbuild',
         '--component',
@@ -108,11 +111,9 @@ def _package_and_sign_pkg(paths, config):
         '--install-location',
         '/tmp',
         '--scripts',
-        os.path.join(paths.input, config.packaging_dir, 'signing'),
+        script_path,
         '--sign',
         config.installer_identity,
-        '--keychain',
-        os.environ["INSTALLER_KEYCHAIN"],
         '--timestamp',
         pkg_path,
     ])
