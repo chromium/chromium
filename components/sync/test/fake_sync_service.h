@@ -90,9 +90,6 @@ class FakeSyncService : public SyncService {
   // KeyedService implementation.
   void Shutdown() override;
 
- protected:
-  bool IsSyncFeatureConsideredRequested() const override;
-
  private:
   GURL sync_service_url_;
 };

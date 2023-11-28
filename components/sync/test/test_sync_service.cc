@@ -353,10 +353,6 @@ void TestSyncService::RecordReasonIfWaitingForUpdates(
 
 void TestSyncService::SetInvalidationsForSessionsEnabled(bool enabled) {}
 
-bool TestSyncService::IsSyncFeatureConsideredRequested() const {
-  return HasSyncConsent();
-}
-
 void TestSyncService::Shutdown() {
   for (SyncServiceObserver& observer : observers_)
     observer.OnSyncShutdown(this);

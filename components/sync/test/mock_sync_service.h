@@ -136,7 +136,6 @@ class MockSyncService : public SyncService {
               GetAllNodesForDebugging,
               (base::OnceCallback<void(base::Value::List)> callback),
               (override));
-  MOCK_METHOD(bool, IsSyncFeatureConsideredRequested, (), (const override));
   MOCK_METHOD(ModelTypeDownloadStatus,
               GetDownloadStatusFor,
               (ModelType type),

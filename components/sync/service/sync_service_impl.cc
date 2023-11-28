@@ -317,14 +317,20 @@ void SyncServiceImpl::Initialize() {
 #endif
   }
 
+  const bool is_sync_feature_requested_for_metrics =
+      IsLocalSyncEnabled() ||
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      !user_settings_->IsSyncFeatureDisabledViaDashboard();
+#else
+      HasSyncConsent();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   // Note: We need to record the initial state *after* calling
   // RegisterForAuthNotifications(), because before that the authenticated
   // account isn't initialized.
-  RecordSyncInitialState(
-      GetDisableReasons(),
-      /*is_sync_feature_requested=*/
-      IsLocalSyncEnabled() || IsSyncFeatureConsideredRequested(),
-      user_settings_->IsInitialSyncFeatureSetupComplete());
+  RecordSyncInitialState(GetDisableReasons(),
+                         is_sync_feature_requested_for_metrics,
+                         user_settings_->IsInitialSyncFeatureSetupComplete());
 
   ModelTypeSet data_types_to_track =
       Intersection(GetRegisteredDataTypes(), ProtocolTypes());
@@ -1407,24 +1413,6 @@ void SyncServiceImpl::OnPreferredDataTypesPrefChange(
 SyncClient* SyncServiceImpl::GetSyncClientForTest() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return sync_client_.get();
-}
-
-bool SyncServiceImpl::IsSyncFeatureConsideredRequested() const {
-  CHECK(!IsLocalSyncEnabled());
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // On Ash, `has_sync_consent` should always be true, and what actually matters
-  // is whether sync was disabled via dashboard, which is detected when the
-  // server responds with DISABLE_SYNC_ON_CLIENT.
-  return !user_settings_->IsSyncFeatureDisabledViaDashboard();
-#else
-  // On all platforms except Chrome Ash, IdentityManager determines via
-  // consent level whether or not sync is condered requested.
-  // TODO(crbug.com/1462552): Simplify once kSync becomes unreachable or is
-  // deleted from the codebase. See ConsentLevel::kSync documentation for
-  // details.
-  return HasSyncConsent();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void SyncServiceImpl::AddObserver(SyncServiceObserver* observer) {

@@ -35,11 +35,11 @@ bool SyncService::IsSyncFeatureEnabled() const {
 }
 
 bool SyncService::CanSyncFeatureStart() const {
-  return GetDisableReasons().Empty() && HasSyncConsent() &&
+  return GetDisableReasons().Empty() &&
 #if BUILDFLAG(IS_CHROMEOS_ASH)
          !GetUserSettings()->IsSyncFeatureDisabledViaDashboard() &&
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-         IsSyncFeatureConsideredRequested();
+         HasSyncConsent();
 }
 
 bool SyncService::IsEngineInitialized() const {
