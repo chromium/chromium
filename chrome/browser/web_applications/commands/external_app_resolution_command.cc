@@ -639,10 +639,13 @@ void ExternalAppResolutionCommand::OnInstallFromInfoCompleted(
     const webapps::AppId& app_id,
     webapps::InstallResultCode code,
     OsHooksErrors os_hook_errors) {
-  if (!webapps::IsSuccess(code)) {
+  bool successful_install_from_info = webapps::IsSuccess(code);
+  if (!successful_install_from_info) {
     Abort(code);
     return;
   }
+
+  webapps::InstallableMetrics::TrackInstallResult(successful_install_from_info);
 
   uninstall_and_replace_job_.emplace(
       &profile_.get(), *apps_lock_, install_options_.uninstall_and_replace,
