@@ -115,7 +115,7 @@ void AshEventStorage::AddBatchEvents(
     if (event_store) {
       *event_store->get()->add_non_uma_events() = event;
       event_store->StartWrite();
-      return;
+      continue;
     }
 
     if (!is_initialized_) {

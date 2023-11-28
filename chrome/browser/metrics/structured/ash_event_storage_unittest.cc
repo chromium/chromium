@@ -194,4 +194,23 @@ TEST_F(AshEventStorageTest, EventsPreProfilePersistedCorrectly) {
   ExpectNoErrors();
 }
 
+TEST_F(AshEventStorageTest, AddBatchEvents) {
+  std::unique_ptr<AshEventStorage> storage = BuildTestStorage();
+  Wait();
+
+  storage->OnProfileAdded(GetUserDirectory());
+  Wait();
+
+  EventsProto proto;
+  *proto.add_non_uma_events() = BuildTestEvent();
+  *proto.add_non_uma_events() = BuildTestEvent();
+  *proto.add_non_uma_events() = BuildTestEvent();
+  storage->AddBatchEvents(proto.non_uma_events());
+
+  const auto data = GetReport(storage.get());
+  ASSERT_EQ(data.events_size(), 3);
+
+  ExpectNoErrors();
+}
+
 }  // namespace metrics::structured
