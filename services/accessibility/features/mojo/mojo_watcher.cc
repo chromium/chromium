@@ -202,6 +202,9 @@ void MojoWatcher::OnIsolateWillDestroy() {
     persistent_wrap_->OnIsolateWillDestroy();
   }
   Cancel(nullptr);
+  // Stop observing the V8 isolate. Cancel() will clear `persistent_wrap_` and
+  // allow garbage collection to clear this instance.
+  StopObserving();
 }
 
 gin::ObjectTemplateBuilder MojoWatcher::GetObjectTemplateBuilder(
