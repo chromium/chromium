@@ -565,7 +565,7 @@ void InlineNode::PrepareLayout(InlineNodeData* previous_data) const {
     AdjustFontForTextCombineUprightAll();
   }
 
-#if DCHECK_IS_ON()
+#if EXPENSIVE_DCHECKS_ARE_ON()
   // ComputeOffsetMappingIfNeeded() runs some integrity checks as part of
   // creating offset mapping. Run the check, and discard the result.
   DCHECK(!data->offset_mapping);
