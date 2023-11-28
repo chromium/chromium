@@ -1352,7 +1352,7 @@
   {
     "name": "credential-provider-extension-promo",
     "owners": [ "huitingyu@chromium.org", "hiramahmood@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 114
+    "expiry_milestone": 130
   },
   {
     "name": "cros-apps-background-event-handling",
