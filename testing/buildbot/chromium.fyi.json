@@ -5358,6 +5358,8 @@
       },
       {
         "args": [
+          "--test-launcher-bot-mode",
+          "--test-launcher-filter-file=testing/buildbot/filters/ios.use_blink.components_unittests.filter",
           "--platform",
           "iPhone 14",
           "--version",

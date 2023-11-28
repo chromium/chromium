@@ -1,0 +1,4 @@
+# TODO(crbug.com/1505584): currently fail with use_blink.
+-AutofillAcrossIframesTest.FeatureDisabled
+-AutofillAcrossIframesTest.NoChildFrames
+-AutofillAcrossIframesTest.WithChildFrames

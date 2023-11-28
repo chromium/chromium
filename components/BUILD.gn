@@ -509,8 +509,11 @@ test("components_unittests") {
   }
 
   if (is_ios) {
+    bundle_deps = [ ":components_tests_pak_bundle_data" ]
+    if (use_blink) {
+      bundle_deps += [ "//testing/buildbot/filters:components_unittests_use_blink_filters_bundle_data" ]
+    }
     deps += [
-      ":components_tests_pak_bundle_data",
       "//components/autofill/ios/browser:unit_tests",
       "//components/autofill/ios/form_util:unit_tests",
       "//components/commerce/ios/browser:unit_tests",

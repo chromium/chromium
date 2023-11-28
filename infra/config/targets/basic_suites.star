@@ -4560,7 +4560,13 @@ targets.legacy_basic_suite(
             ],
         ),
         "components_browsertests": None,
-        "components_unittests": None,
+        "components_unittests": targets.legacy_test_config(
+            test = "components_unittests",
+            args = [
+                "--test-launcher-bot-mode",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.use_blink.components_unittests.filter",
+            ],
+        ),
         "compositor_unittests": targets.legacy_test_config(
             test = "compositor_unittests",
             args = [
