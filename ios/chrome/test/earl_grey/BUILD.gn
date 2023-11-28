@@ -196,6 +196,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/test/app:test_support",
     "//ios/chrome/test/variations_smoke_test:eg_app_support+eg2",
     "//ios/public/provider/chrome/browser/lens:lens_api",
+    "//ios/public/provider/chrome/browser/signin:choice_api",
     "//ios/testing:block_swizzler",
     "//ios/testing:hardware_keyboard_support",
     "//ios/testing:nserror_support",

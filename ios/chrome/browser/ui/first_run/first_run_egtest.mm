@@ -9,9 +9,12 @@
 #import "build/branding_buildflags.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
+#import "components/search_engines/search_engines_pref_names.h"
 #import "components/search_engines/search_engines_switches.h"
 #import "components/signin/ios/browser/features.h"
 #import "components/signin/public/base/consent_level.h"
+#import "components/signin/public/base/signin_switches.h"
+#import "components/strings/grit/components_strings.h"
 #import "components/sync/base/features.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_prefs.h"
@@ -93,8 +96,29 @@ id<GREYMatcher> GetSyncSettings() {
                     grey_ancestor(disclaimer), grey_sufficientlyVisible(), nil);
 }
 
+// Dismisses the choice screen if it appears
+void DismissChoiceScreenIfNecessary() {
+  if (![ChromeEarlGreyAppInterface isChoiceEnabled]) {
+    return;
+  }
+  // Selects a search engine. The list of search engines varies from country to
+  // country and is refreshed periodically. Google should always be proposed in
+  // the countries selected by test settings.
+  id<GREYMatcher> googleRowMatcher = grey_allOf(
+      grey_userInteractionEnabled(), grey_accessibilityLabel(@"Google"), nil);
+  [[[EarlGrey selectElementWithMatcher:googleRowMatcher]
+      assertWithMatcher:grey_notNil()] performAction:grey_tap()];
+
+  // Taps the "set as default" button.
+  id<GREYMatcher> primaryButtonMatcher = grey_accessibilityLabel(
+      l10n_util::GetNSString(IDS_SEARCH_ENGINE_CHOICE_BUTTON_TITLE));
+  [[[EarlGrey selectElementWithMatcher:primaryButtonMatcher]
+      assertWithMatcher:grey_notNil()] performAction:grey_tap()];
+}
+
 // Dismisses the remaining screens in FRE after sign-in and sync.
 void DismissScreensAfterSigninAndSync() {
+  DismissChoiceScreenIfNecessary();
   id<GREYMatcher> buttonMatcher = grey_allOf(
       grey_ancestor(grey_accessibilityID(
           first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)),
@@ -165,21 +189,28 @@ void DismissScreensAfterSigninAndSync() {
                                 unified_consent::prefs::
                                     kUrlKeyedAnonymizedDataCollectionEnabled)];
 
+  // Clear the "choice was made" timestamp pref.
+  [ChromeEarlGreyAppInterface
+      clearUserPrefWithName:
+          base::SysUTF8ToNSString(
+              prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp)];
+
   [super tearDown];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  // Disable the search engine choice at the end of FRE.
-  // TODO(b/289998773): Re-enable it. Update EG test so that they
-  // close this view if they need to interact more after the FRE.
-  config.additional_args.push_back(std::string("--") +
-                                   switches::kDisableSearchEngineChoiceScreen);
+  // Enable the choice screen feature flag.
+  config.features_enabled.push_back(switches::kSearchEngineChoiceFre);
+  // Set the country to one that is eligible for the choice screen (in this
+  // case, France).
+  config.additional_args.push_back("--search-engine-choice-country=FR");
+
   config.additional_args.push_back(std::string("-") +
                                    test_switches::kSignInAtStartup);
   config.additional_args.push_back("-FirstRunForceEnabled");
   config.additional_args.push_back("true");
-  // Relaunch app at each test to rewind the startup state.
+  // Relaunches the app at each test to rewind the startup state.
   config.relaunch_policy = ForceRelaunchByKilling;
 
   if ([self isRunningTest:@selector(testSignInWithNoAccount)] ||
@@ -930,12 +961,8 @@ void DismissScreensAfterSigninAndSync() {
       selectElementWithMatcher:grey_accessibilityID(
                                    kHistorySyncViewAccessibilityIdentifier)]
       assertWithMatcher:grey_nil()];
-  // Verify that the default browser choice screen is shown.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(
-              first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  // Verify that the search engine choice screen is shown.
+  [self verifyChoiceScreenOrDefaultBrowserIsDisplayed];
 }
 
 // Tests if the user signs in with the first screen, the History Sync Opt-In
@@ -1023,12 +1050,8 @@ void DismissScreensAfterSigninAndSync() {
       selectElementWithMatcher:grey_accessibilityID(
                                    kHistorySyncViewAccessibilityIdentifier)]
       assertWithMatcher:grey_nil()];
-  // Verify that the default browser choice screen is shown.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(
-              first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  // Verify that the search engine choice screen is shown.
+  [self verifyChoiceScreenOrDefaultBrowserIsDisplayed];
 }
 
 // Tests that the standard subtitle is shown in the FRE sign-in screen, and that
@@ -1067,12 +1090,8 @@ void DismissScreensAfterSigninAndSync() {
       selectElementWithMatcher:grey_accessibilityID(
                                    kHistorySyncViewAccessibilityIdentifier)]
       assertWithMatcher:grey_nil()];
-  // Verify that the default browser choice screen is shown.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(
-              first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  // Verify that the search engine choice screen is shown.
+  [self verifyChoiceScreenOrDefaultBrowserIsDisplayed];
 }
 
 // Tests that the standard subtitle is shown in the FRE sign-in screen, and
@@ -1131,12 +1150,8 @@ void DismissScreensAfterSigninAndSync() {
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
-  // Verify that the default browser choice screen is shown.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(
-              first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  // Verify that the search engine choice screen is shown.
+  [self verifyChoiceScreenOrDefaultBrowserIsDisplayed];
   // Verify that the history sync is enabled.
   GREYAssertTrue(
       [SigninEarlGreyAppInterface
@@ -1174,12 +1189,8 @@ void DismissScreensAfterSigninAndSync() {
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
-  // Verify that the default browser choice screen is shown.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(
-              first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  // Verify that the search engine choice screen is shown.
+  [self verifyChoiceScreenOrDefaultBrowserIsDisplayed];
   // Verify that the history sync is disabled.
   GREYAssertFalse(
       [SigninEarlGreyAppInterface
@@ -1403,6 +1414,25 @@ void DismissScreensAfterSigninAndSync() {
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       assertWithMatcher:grey_notNil()];
+}
+
+// Checks that the search engine choice screen is being displayed when the
+// feature is enabled. If the feature is not enabled, checks that the default
+// browser screen is displayed.
+- (void)verifyChoiceScreenOrDefaultBrowserIsDisplayed {
+  if ([ChromeEarlGreyAppInterface isChoiceEnabled]) {
+    [[EarlGrey
+        selectElementWithMatcher:
+            grey_accessibilityID(
+                first_run::kSearchEngineChoiceTitleAccessibilityIdentifier)]
+        assertWithMatcher:grey_sufficientlyVisible()];
+    return;
+  }
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(
+              first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 - (void)acceptSyncOrHistory {

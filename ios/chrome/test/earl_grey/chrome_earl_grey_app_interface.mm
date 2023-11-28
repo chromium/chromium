@@ -69,6 +69,7 @@
 #import "ios/chrome/test/app/window_test_util.h"
 #import "ios/chrome/test/earl_grey/accessibility_util.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
+#import "ios/public/provider/chrome/browser/signin/choice_api.h"
 #import "ios/testing/hardware_keyboard_util.h"
 #import "ios/testing/nserror_util.h"
 #import "ios/testing/open_url_context.h"
@@ -1502,6 +1503,12 @@ int watchRunNumber = 0;
 + (void)copyURLToPasteBoard {
   UIPasteboard* pasteboard = UIPasteboard.generalPasteboard;
   pasteboard.URL = [NSURL URLWithString:@"chrome://version"];
+}
+
+#pragma mark - Default Search Engine Choice Screen Utilities
+
++ (BOOL)isChoiceEnabled {
+  return ios::provider::IsChoiceEnabled();
 }
 
 #pragma mark - First Run Utilities

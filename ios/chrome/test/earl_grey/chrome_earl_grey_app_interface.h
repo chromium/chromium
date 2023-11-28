@@ -691,6 +691,11 @@
 // Copies a chrome:// URL that doesn't require internet connection.
 + (void)copyURLToPasteBoard;
 
+#pragma mark - Default Search Engine Choice Screen Utilities
+
+// Returns YES if the search engine choice screen will be shown.
++ (BOOL)isChoiceEnabled;
+
 #pragma mark - First Run Utilities
 
 // Writes the First Run Sentinel file, used to record that First Run has
