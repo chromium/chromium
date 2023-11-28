@@ -5,7 +5,6 @@
 #import "remoting/ios/mdc/MDCActionImageView.h"
 
 #import <Foundation/Foundation.h>
-#import <MaterialComponents/MaterialAnimationTiming.h>
 
 static const CGFloat kIconRotationRadians = 0.375f * 2 * M_PI;
 static const CGFloat kIconShrinkScale = 0.4f;
