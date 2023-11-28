@@ -6204,7 +6204,7 @@
   {
     "name": "overflow-menu-customization",
     "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 124
   },
   {
     "name": "overlay-scrollbars",
