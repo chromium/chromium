@@ -39,6 +39,10 @@ namespace memory_instrumentation {
 class GlobalMemoryDump;
 }
 
+namespace net {
+class HttpResponseHeaders;
+}
+
 namespace network {
 class SimpleURLLoader;
 }  // namespace network

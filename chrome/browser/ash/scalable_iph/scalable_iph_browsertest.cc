@@ -60,6 +60,8 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/common/constants.h"
 #include "net/http/http_response_headers.h"
+#include "net/http/http_status_code.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/event_generator_delegate_aura.h"
@@ -980,8 +982,11 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, Log) {
   content::RenderFrameHost* render_frame_host = ui_test_utils::NavigateToURL(
       browser(), GURL(kScalableIphDebugLogTextUrl));
   ASSERT_TRUE(render_frame_host);
-  ASSERT_TRUE(render_frame_host->GetLastResponseHeaders());
-  EXPECT_EQ(200, render_frame_host->GetLastResponseHeaders()->response_code());
+  const network::mojom::URLResponseHead* head =
+      render_frame_host->GetLastResponseHead();
+  ASSERT_TRUE(head);
+  ASSERT_TRUE(head->headers);
+  EXPECT_EQ(net::HTTP_OK, head->headers->response_code());
 }
 
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestDebugOff, NoLog) {
@@ -1013,9 +1018,9 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestDebugOff, NoLog) {
   content::RenderFrameHost* render_frame_host = ui_test_utils::NavigateToURL(
       browser(), GURL(kScalableIphDebugLogTextUrl));
   ASSERT_TRUE(render_frame_host);
-  // Last response headers is nullptr if there is no response. See the comment
-  // of `RenderFrameHost::GetLastResponseHeaders` for details.
-  EXPECT_FALSE(render_frame_host->GetLastResponseHeaders());
+  // Last response head is nullptr if there is no response. See the comment
+  // of `RenderFrameHost::GetLastResponseHead` for details.
+  EXPECT_FALSE(render_frame_host->GetLastResponseHead());
 }
 
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestFeatureOffDebugOn,
@@ -1023,8 +1028,11 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestFeatureOffDebugOn,
   content::RenderFrameHost* render_frame_host = ui_test_utils::NavigateToURL(
       browser(), GURL(kScalableIphDebugLogTextUrl));
   ASSERT_TRUE(render_frame_host);
-  ASSERT_TRUE(render_frame_host->GetLastResponseHeaders());
-  EXPECT_EQ(200, render_frame_host->GetLastResponseHeaders()->response_code())
+  const network::mojom::URLResponseHead* head =
+      render_frame_host->GetLastResponseHead();
+  ASSERT_TRUE(head);
+  ASSERT_TRUE(head->headers);
+  EXPECT_EQ(net::HTTP_OK, head->headers->response_code())
       << "Debug log page is expected to be available even if ScalableIph "
          "feature itself is off.";
 }

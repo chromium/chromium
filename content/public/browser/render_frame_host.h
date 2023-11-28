@@ -78,12 +78,12 @@ class PendingReceiver;
 namespace net {
 class IsolationInfo;
 class NetworkIsolationKey;
-class HttpResponseHeaders;
 }  // namespace net
 
 namespace network {
 namespace mojom {
 class URLLoaderFactory;
+class URLResponseHead;
 }
 }  // namespace network
 
@@ -232,14 +232,14 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // Associated BrowserContext never changes.
   virtual BrowserContext* GetBrowserContext() = 0;
 
-  // Returns the current document's HTTP response headers. Note that this value
-  // will change when a cross-document navigation reuses RenderFrameHost and
-  // commits a new document in existing RenderFrameHost. Must not be called
-  // in LifecycleState::kPendingCommit before committing a document.
+  // Returns the current document's response head. Note that this value will
+  // change when a cross-document navigation reuses RenderFrameHost and commits
+  // a new document in existing RenderFrameHost. Must not be called in
+  // LifecycleState::kPendingCommit before committing a document.
   //
   // This is null if there was no response: the initial empty document,
   // about:blank, about:srcdoc, and MHTML iframes.
-  virtual const net::HttpResponseHeaders* GetLastResponseHeaders() = 0;
+  virtual const network::mojom::URLResponseHead* GetLastResponseHead() = 0;
 
   // Returns the RenderWidgetHostView for this frame or the nearest ancestor
   // frame, which can be used to control input, focus, rendering and visibility

@@ -10,6 +10,7 @@
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "net/http/http_response_headers.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
 namespace embedder_support {
@@ -56,8 +57,9 @@ GURL GetPublisherURL(content::RenderFrameHost* rfh) {
     return GURL();
   }
 
-  const net::HttpResponseHeaders* headers = rfh->GetLastResponseHeaders();
-  if (!headers) {
+  const network::mojom::URLResponseHead* response_head =
+      rfh->GetLastResponseHead();
+  if (!response_head || !response_head->headers) {
     // TODO(https://crbug.com/829323): In some cases other than offline pages
     // we don't have headers.
     LOG(WARNING) << "No headers for navigation to "
@@ -66,8 +68,10 @@ GURL GetPublisherURL(content::RenderFrameHost* rfh) {
   }
 
   std::string publisher_url;
-  if (!headers->GetNormalizedHeader("x-amp-cache", &publisher_url))
+  if (!response_head->headers->GetNormalizedHeader("x-amp-cache",
+                                                   &publisher_url)) {
     return GURL();
+  }
 
   return GURL(publisher_url);
 }

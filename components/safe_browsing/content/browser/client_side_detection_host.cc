@@ -46,6 +46,7 @@
 #include "content/public/common/url_constants.h"
 #include "net/base/ip_endpoint.h"
 #include "net/http/http_response_headers.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
@@ -111,13 +112,15 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
           ClientSideDetectionHost::ShouldClassifyUrlRequest> {
  public:
   ShouldClassifyUrlRequest(
-      content::NavigationHandle* navigation_handle,
+      const GURL& url,
+      const network::mojom::URLResponseHead* response_head,
       ShouldClassifyUrlCallback start_phishing_classification,
       WebContents* web_contents,
       base::WeakPtr<ClientSideDetectionService> csd_service,
       SafeBrowsingDatabaseManager* database_manager,
       base::WeakPtr<ClientSideDetectionHost> host)
-      : web_contents_(web_contents),
+      : url_(url),
+        web_contents_(web_contents),
         csd_service_(csd_service),
         database_manager_(database_manager),
         host_(host),
@@ -128,11 +131,12 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
     DCHECK(csd_service_);
     DCHECK(database_manager_.get());
     DCHECK(host_);
-    url_ = navigation_handle->GetURL();
-    if (navigation_handle->GetResponseHeaders()) {
-      navigation_handle->GetResponseHeaders()->GetMimeType(&mime_type_);
+    if (response_head) {
+      if (response_head->headers) {
+        response_head->headers->GetMimeType(&mime_type_);
+      }
+      remote_endpoint_ = response_head->remote_endpoint;
     }
-    remote_endpoint_ = navigation_handle->GetSocketAddress();
   }
 
   ShouldClassifyUrlRequest(const ShouldClassifyUrlRequest&) = delete;
@@ -250,7 +254,7 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
   };
 
   // The destructor can be called either from the UI or the IO thread.
-  virtual ~ShouldClassifyUrlRequest() = default;
+  ~ShouldClassifyUrlRequest() = default;
 
   bool ShouldClassifyForPhishing() const {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -376,7 +380,7 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
     }
   }
 
-  GURL url_;
+  const GURL url_;
   std::string mime_type_;
   net::IPEndPoint remote_endpoint_;
   raw_ptr<WebContents> web_contents_;
@@ -444,13 +448,7 @@ ClientSideDetectionHost::~ClientSideDetectionHost() {
   }
 }
 
-void ClientSideDetectionHost::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      !navigation_handle->HasCommitted()) {
-    return;
-  }
-
+void ClientSideDetectionHost::PrimaryPageChanged(content::Page& page) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     return;
   }
@@ -458,35 +456,28 @@ void ClientSideDetectionHost::DidFinishNavigation(
   // TODO(noelutz): move this DCHECK to WebContents and fix all the unit tests
   // that don't call this method on the UI thread.
   // DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (navigation_handle->IsSameDocument()) {
-    // If the navigation is within the same document, the user isn't really
-    // navigating away.  We don't need to cancel a pending callback or
-    // begin a new classification.
-    return;
-  }
+
   // Cancel any pending classification request.
   if (classification_request_.get()) {
     classification_request_->Cancel();
   }
-  // If we navigate away and there currently is a pending phishing
-  // report request we have to cancel it to make sure we don't display
-  // an interstitial for the wrong page.  Note that this won't cancel
-  // the server ping back but only cancel the showing of the
-  // interstitial.
+  // If we navigate away and there currently is a pending phishing report
+  // request we have to cancel it to make sure we don't display an interstitial
+  // for the wrong page.  Note that this won't cancel the server ping back but
+  // only cancel the showing of the interstitial.
   weak_factory_.InvalidateWeakPtrs();
 
   if (!csd_service_) {
     return;
   }
 
-  current_url_ = navigation_handle->GetURL();
-  current_outermost_main_frame_id_ = navigation_handle->GetRenderFrameHost()
-                                         ->GetOutermostMainFrame()
-                                         ->GetGlobalId();
+  content::RenderFrameHost& rfh = page.GetMainDocument();
+  current_url_ = rfh.GetLastCommittedURL();
+  current_outermost_main_frame_id_ = rfh.GetGlobalId();
 
   // Check whether we can cassify the current URL for phishing.
   classification_request_ = new ShouldClassifyUrlRequest(
-      navigation_handle,
+      rfh.GetLastCommittedURL(), rfh.GetLastResponseHead(),
       base::BindOnce(&ClientSideDetectionHost::OnPhishingPreClassificationDone,
                      weak_factory_.GetWeakPtr()),
       web_contents(), csd_service_, database_manager_.get(),
