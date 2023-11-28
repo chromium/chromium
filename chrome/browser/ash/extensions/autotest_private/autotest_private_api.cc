@@ -6778,13 +6778,15 @@ AutotestPrivateSetArcInteractiveStateFunction::Run() {
   }
 
   arc::mojom::PowerInstance* power_instance =
-      ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service->power(), SetInteractive);
+      ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service->power(), SetIdleState);
 
   if (!power_instance) {
     return RespondNow(Error("ARC power service is not available"));
   }
 
-  power_instance->SetInteractive(params->enabled);
+  power_instance->SetIdleState(params->enabled
+                                   ? arc::mojom::IdleState::ACTIVE
+                                   : arc::mojom::IdleState::INACTIVE);
 
   return RespondNow(NoArguments());
 }
@@ -6846,7 +6848,7 @@ AutotestPrivateGetArcWakefulnessModeFunction::Run() {
   }
 
   arc::mojom::PowerInstance* power_instance =
-      ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service->power(), SetInteractive);
+      ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service->power(), SetIdleState);
 
   if (!power_instance) {
     return RespondNow(

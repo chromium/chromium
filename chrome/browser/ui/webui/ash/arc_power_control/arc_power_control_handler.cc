@@ -223,15 +223,15 @@ void ArcPowerControlHandler::HandleSetWakefulnessMode(
         power_instance->Resume();
     } else {
       arc::mojom::PowerInstance* const power_instance =
-          ARC_GET_INSTANCE_FOR_METHOD(power, SetInteractive);
+          ARC_GET_INSTANCE_FOR_METHOD(power, SetIdleState);
       if (power_instance)
-        power_instance->SetInteractive(true);
+        power_instance->SetIdleState(arc::mojom::IdleState::ACTIVE);
     }
   } else if (mode == kWakenessfullDoze) {
     arc::mojom::PowerInstance* const power_instance =
-        ARC_GET_INSTANCE_FOR_METHOD(power, SetInteractive);
+        ARC_GET_INSTANCE_FOR_METHOD(power, SetIdleState);
     if (power_instance)
-      power_instance->SetInteractive(false);
+      power_instance->SetIdleState(arc::mojom::IdleState::INACTIVE);
   } else if (mode == kWakenessfullSleep) {
     arc::mojom::PowerInstance* const power_instance =
         ARC_GET_INSTANCE_FOR_METHOD(power, Suspend);

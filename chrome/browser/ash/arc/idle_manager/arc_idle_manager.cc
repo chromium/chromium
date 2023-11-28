@@ -38,7 +38,10 @@ class DefaultDelegateImpl : public ArcIdleManager::Delegate {
     if (!arc_power_bridge) {
       return;
     }
-    arc_power_bridge->NotifyAndroidInteractiveState(bridge, enable);
+    // Convert the "interactive mode" to Android "idle state".
+    arc_power_bridge->NotifyAndroidIdleState(
+        bridge, enable ? arc::mojom::IdleState::ACTIVE
+                       : arc::mojom::IdleState::INACTIVE);
   }
 };
 
