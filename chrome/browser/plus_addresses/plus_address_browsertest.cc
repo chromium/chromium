@@ -64,3 +64,28 @@ IN_PROC_BROWSER_TEST_F(PlusAddressServiceBrowserTest,
       url::Origin::Create(GURL("https://test.example")),
       /*is_off_the_record=*/false));
 }
+
+// Tests that exercise code paths when the plus_address feature is disabled.
+class PlusAddressServiceDisabledBrowserTest : public PlatformBrowserTest {
+ protected:
+  void SetUp() override {
+    scoped_feature_list_.InitAndDisableFeature(plus_addresses::kFeature);
+    PlatformBrowserTest::SetUp();
+  }
+
+  content::WebContents* GetActiveWebContents() {
+    return chrome_test_utils::GetActiveWebContents(this);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Ensure that the service is not created when the feature is disabled.
+IN_PROC_BROWSER_TEST_F(PlusAddressServiceDisabledBrowserTest,
+                       VerifyNullService) {
+  plus_addresses::PlusAddressService* plus_address_service =
+      PlusAddressServiceFactory::GetForBrowserContext(
+          GetActiveWebContents()->GetBrowserContext());
+  EXPECT_EQ(plus_address_service, nullptr);
+}
