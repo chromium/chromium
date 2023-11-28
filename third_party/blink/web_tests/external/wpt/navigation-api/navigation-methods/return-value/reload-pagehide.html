@@ -17,11 +17,11 @@ promise_test(async t => {
   i.contentWindow.navigation.navigate("?1");
 
   await new Promise(resolve => {
-    i.contentWindow.onunload = t.step_func(async () => {
+    i.contentWindow.onpagehide = t.step_func(async () => {
       await assertBothRejectDOM(t, i.contentWindow.navigation.reload(), "InvalidStateError", i.contentWindow);
       assert_equals(navigateEventCount, 1);
       resolve();
     });
   });
-}, `reload() inside onunload`);
+}, `reload() inside onpagehide`);
 </script>

@@ -17,11 +17,11 @@ promise_test(async t => {
   i.contentWindow.navigation.navigate("?1");
 
   await new Promise(resolve => {
-    i.contentWindow.onunload = t.step_func(async () => {
+    i.contentWindow.onpagehide = t.step_func(async () => {
       await assertBothRejectDOM(t, i.contentWindow.navigation.navigate("?2", { state: document.body }), "DataCloneError", i.contentWindow);
       assert_equals(navigateEventCount, 1);
       resolve();
     });
   });
-}, `navigate() with an unserializable state inside onunload throws "DataCloneError", not "InvalidStateError"`);
+}, `navigate() with an unserializable state inside onpagehide throws "DataCloneError", not "InvalidStateError"`);
 </script>

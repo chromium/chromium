@@ -17,11 +17,11 @@ promise_test(async t => {
   i.contentWindow.navigation.navigate("?1");
 
   await new Promise(resolve => {
-    i.contentWindow.onunload = t.step_func(async () => {
-      await assertBothRejectDOM(t, i.contentWindow.navigation.navigate("https://example.com\u0000mozilla.org"), "SyntaxError", i.contentWindow);
+    i.contentWindow.onpagehide = t.step_func(async () => {
+      await assertBothRejectDOM(t, i.contentWindow.navigation.navigate("?2"), "InvalidStateError", i.contentWindow);
       assert_equals(navigateEventCount, 1);
       resolve();
     });
   });
-}, `navigate() with an invalid URL inside onunload throws "SyntaxError", not "InvalidStateError"`);
+}, `navigate() inside onpagehide`);
 </script>

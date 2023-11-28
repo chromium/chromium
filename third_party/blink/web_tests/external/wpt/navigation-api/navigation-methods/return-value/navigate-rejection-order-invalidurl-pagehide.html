@@ -16,17 +16,12 @@ promise_test(async t => {
 
   i.contentWindow.navigation.navigate("?1");
 
-  let assertionPromise;
   await new Promise(resolve => {
-    i.contentWindow.onunload = t.step_func(() => {
-      assertionPromise = assertBothRejectDOM(t, i.contentWindow.navigation.reload({ state: document.body }), "DataCloneError", i.contentWindow);
+    i.contentWindow.onpagehide = t.step_func(async () => {
+      await assertBothRejectDOM(t, i.contentWindow.navigation.navigate("https://example.com\u0000mozilla.org"), "SyntaxError", i.contentWindow);
       assert_equals(navigateEventCount, 1);
       resolve();
     });
   });
-
-  assert_not_equals(assertionPromise, undefined);
-  await assertionPromise;
-
-}, `reload() with an unserializable state inside onunload throws "DataCloneError", not "InvalidStateError"`);
+}, `navigate() with an invalid URL inside onpagehide throws "SyntaxError", not "InvalidStateError"`);
 </script>
