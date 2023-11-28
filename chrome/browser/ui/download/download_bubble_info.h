@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_UI_DOWNLOAD_DOWNLOAD_BUBBLE_INFO_H_
 #define CHROME_BROWSER_UI_DOWNLOAD_DOWNLOAD_BUBBLE_INFO_H_
 
+#include <functional>
 #include <vector>
 
-#include "base/functional/invoke.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 
@@ -39,7 +39,7 @@ class DownloadBubbleInfo {
   template <typename ObserverMethod, typename... Args>
   void NotifyObservers(ObserverMethod&& method, Args&&... args) {
     for (Observer& obs : observers_) {
-      base::invoke(method, obs, std::forward<Args>(args)...);
+      std::invoke(method, obs, std::forward<Args>(args)...);
     }
   }
 

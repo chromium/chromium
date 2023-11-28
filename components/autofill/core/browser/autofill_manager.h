@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_MANAGER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_MANAGER_H_
 
+#include <functional>
 #include <map>
 #include <memory>
 #include <string>
@@ -357,7 +358,7 @@ class AutofillManager
   template <typename Functor, typename... Args>
   void NotifyObservers(const Functor& functor, const Args&... args) {
     for (Observer& observer : observers_) {
-      base::invoke(functor, observer, *this, args...);
+      std::invoke(functor, observer, *this, args...);
     }
   }
 

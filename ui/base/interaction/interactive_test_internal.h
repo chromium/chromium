@@ -5,6 +5,7 @@
 #ifndef UI_BASE_INTERACTION_INTERACTIVE_TEST_INTERNAL_H_
 #define UI_BASE_INTERACTION_INTERACTIVE_TEST_INTERNAL_H_
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <tuple>
@@ -13,7 +14,6 @@
 #include "base/callback_list.h"
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
-#include "base/functional/invoke.h"
 #include "base/gtest_prod_util.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"

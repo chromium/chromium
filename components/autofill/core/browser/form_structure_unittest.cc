@@ -8,6 +8,7 @@
 #include <cstdint>
 
 #include <algorithm>
+#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
@@ -15,7 +16,6 @@
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/functional/invoke.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -6787,7 +6787,7 @@ TEST_F(FormStructureTestImpl, DetermineRanks) {
   auto extract = [&form_structure](size_t (AutofillField::*fun)() const) {
     std::vector<size_t> result;
     for (const auto& field : form_structure.fields()) {
-      result.push_back(base::invoke(fun, *field));
+      result.push_back(std::invoke(fun, *field));
     }
     return result;
   };

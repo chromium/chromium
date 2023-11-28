@@ -1707,25 +1707,10 @@ TEST(RangesTest, PrevPermutation) {
 }
 
 namespace internal {
-const auto predicate = [](int value) { return value; };
 struct TestPair {
   int a;
   int b;
 };
 }  // namespace internal
-
-// This is a compilation test that checks that using predicates and projections
-// from the base::internal namespace in range algorithms doesn't result in
-// ambiguous calls to base::invoke.
-TEST(RangesTest, DontClashWithPredicateFromInternalInvoke) {
-  {
-    int input[] = {0, 1, 2};
-    ranges::any_of(input, internal::predicate);
-  }
-  {
-    internal::TestPair input[] = {{1, 2}, {3, 4}};
-    ranges::any_of(input, base::identity{}, &internal::TestPair::a);
-  }
-}
 
 }  // namespace base

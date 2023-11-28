@@ -7,6 +7,7 @@
 
 // IWYU pragma: private, include "base/types/expected.h"
 #include <concepts>
+#include <functional>
 #include <type_traits>
 #include <utility>
 

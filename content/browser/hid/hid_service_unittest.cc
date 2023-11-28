@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "base/barrier_closure.h"
-#include "base/functional/invoke.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"

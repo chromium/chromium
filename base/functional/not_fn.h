@@ -5,10 +5,9 @@
 #ifndef BASE_FUNCTIONAL_NOT_FN_H_
 #define BASE_FUNCTIONAL_NOT_FN_H_
 
+#include <functional>
 #include <type_traits>
 #include <utility>
-
-#include "base/functional/invoke.h"
 
 namespace base {
 
@@ -20,22 +19,22 @@ struct NotFnImpl {
 
   template <typename... Args>
   constexpr decltype(auto) operator()(Args&&... args) & noexcept {
-    return !base::invoke(f, std::forward<Args>(args)...);
+    return !std::invoke(f, std::forward<Args>(args)...);
   }
 
   template <typename... Args>
   constexpr decltype(auto) operator()(Args&&... args) const& noexcept {
-    return !base::invoke(f, std::forward<Args>(args)...);
+    return !std::invoke(f, std::forward<Args>(args)...);
   }
 
   template <typename... Args>
   constexpr decltype(auto) operator()(Args&&... args) && noexcept {
-    return !base::invoke(std::move(f), std::forward<Args>(args)...);
+    return !std::invoke(std::move(f), std::forward<Args>(args)...);
   }
 
   template <typename... Args>
   constexpr decltype(auto) operator()(Args&&... args) const&& noexcept {
-    return !base::invoke(std::move(f), std::forward<Args>(args)...);
+    return !std::invoke(std::move(f), std::forward<Args>(args)...);
   }
 };
 

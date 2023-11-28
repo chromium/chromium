@@ -5,9 +5,10 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_FOREST_UTIL_INL_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_FOREST_UTIL_INL_H_
 
+#include <functional>
 #include <iterator>
+
 #include "base/functional/identity.h"
-#include "base/functional/invoke.h"
 
 namespace autofill {
 namespace internal {
@@ -46,7 +47,7 @@ void for_each_in_set_difference(Range1&& r1,
     size_t size = std::distance(r.begin(), r.end());
     for (size_t num = 0; num < size; ++num) {
       size_t index = (offset + num) % size;
-      auto& y = base::invoke(proj, *(r.begin() + index));
+      auto& y = std::invoke(proj, *(r.begin() + index));
       if (x == y) {
         offset = index + 1;
         return true;
@@ -56,9 +57,9 @@ void for_each_in_set_difference(Range1&& r1,
   };
 
   for (auto& x1 : r1) {
-    auto& x = base::invoke(proj, x1);
+    auto& x = std::invoke(proj, x1);
     if (!Contains(r2, x)) {
-      base::invoke(fun, x);
+      std::invoke(fun, x);
     }
   }
 }

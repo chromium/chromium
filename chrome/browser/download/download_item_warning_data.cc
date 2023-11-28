@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <functional>
+
 #include "chrome/browser/download/download_item_warning_data.h"
 
 #include "base/metrics/histogram_functions.h"
@@ -69,7 +71,7 @@ V DownloadItemWarningData::GetWithDefault(const DownloadItem* download,
   if (!data) {
     return default_value;
   }
-  return base::invoke(std::forward<F>(f), *data);
+  return std::invoke(std::forward<F>(f), *data);
 }
 
 // static

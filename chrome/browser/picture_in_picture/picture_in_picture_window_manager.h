@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_WINDOW_MANAGER_H_
 #define CHROME_BROWSER_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_WINDOW_MANAGER_H_
 
+#include <functional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -229,7 +230,7 @@ class PictureInPictureWindowManager {
   template <typename Functor>
   void NotifyObservers(const Functor& functor) {
     for (Observer& observer : observers_) {
-      base::invoke(functor, observer);
+      std::invoke(functor, observer);
     }
   }
 

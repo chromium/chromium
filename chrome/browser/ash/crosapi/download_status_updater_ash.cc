@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ash/crosapi/download_status_updater_ash.h"
 
+#include <functional>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "base/barrier_callback.h"
 #include "base/functional/callback.h"
 #include "base/functional/identity.h"
-#include "base/functional/invoke.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/ash/download_status/display_manager.h"
@@ -91,10 +91,10 @@ void DownloadStatusUpdaterAsh::Invoke(DownloadStatusUpdaterClientFunction func,
           }).Then(std::move(callback)));
 
   for (auto& client : clients_) {
-    base::invoke(func, client.get(), guid,
-                 mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-                     base::BindOnce(handled_by_client_callback),
-                     /*handled_by_client=*/false));
+    std::invoke(func, client.get(), guid,
+                mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+                    base::BindOnce(handled_by_client_callback),
+                    /*handled_by_client=*/false));
   }
 }
 
