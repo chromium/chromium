@@ -397,13 +397,22 @@ BluetoothDeviceFloss::CreateBluetoothGattConnectionObject() {
 }
 
 void BluetoothDeviceFloss::SetGattServicesDiscoveryComplete(bool complete) {
-  NOTIMPLEMENTED();
-  // This is not necessary for Floss which already knows of discovery complete.
+  // This API actually refers to all services including SDP, not just GATT.
+  // This function is called by BluetoothSocketFloss because a connected socket
+  // implies SDP is completed, but Floss doesn't emit the UUIDs to the clients.
+  if (complete && !svc_resolved_) {
+    svc_resolved_ = true;
+    adapter()->NotifyGattServicesDiscovered(this);
+  } else if (!complete) {
+    svc_resolved_ = false;
+  }
 }
 
 bool BluetoothDeviceFloss::IsGattServicesDiscoveryComplete() const {
-  // Services are only considered resolved if connection was established without
-  // a specific search uuid or was subsequently upgraded to full discovery.
+  // This API actually refers to all services including SDP, not just GATT.
+  // In GATT case, services are only considered resolved if connection was
+  // established without a specific search uuid or was subsequently upgraded to
+  // full discovery.
   return svc_resolved_ && !search_uuid.has_value();
 }
 

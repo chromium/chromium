@@ -545,6 +545,14 @@ void BluetoothAdapterFloss::OnInitializeDeviceProperties(
     observer.DeviceAdded(this, device_ptr);
 }
 
+void BluetoothAdapterFloss::OnDeviceUuidsChanged(
+    BluetoothDeviceFloss* device_ptr) {
+  // SDP done. Calling |SetGattServicesDiscoveryComplete| because it actually
+  // refers to all services including SDP, not just GATT.
+  device_ptr->SetGattServicesDiscoveryComplete(true);
+  NotifyDeviceChanged(device_ptr);
+}
+
 void BluetoothAdapterFloss::OnGetConnectionState(const FlossDeviceId& device_id,
                                                  DBusResult<uint32_t> ret) {
   BluetoothDeviceFloss* device =
@@ -899,7 +907,7 @@ void BluetoothAdapterFloss::AdapterDevicePropertyChanged(
       break;
     case FlossAdapterClient::BtPropertyType::kUuids:
       device_ptr->FetchRemoteUuids(
-          base::BindOnce(&BluetoothAdapterFloss::NotifyDeviceChanged,
+          base::BindOnce(&BluetoothAdapterFloss::OnDeviceUuidsChanged,
                          weak_ptr_factory_.GetWeakPtr(), device_ptr));
       break;
     case FlossAdapterClient::BtPropertyType::kAppearance:
