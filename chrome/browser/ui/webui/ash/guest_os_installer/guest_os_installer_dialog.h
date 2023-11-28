@@ -18,11 +18,6 @@ class GuestOSInstallerDialog : public SystemWebDialogDelegate {
   ~GuestOSInstallerDialog() override;
 
   // SystemWebDialogDelegate:
-  void GetDialogSize(gfx::Size* size) const override;
-  std::u16string GetDialogTitle() const override;
-  bool ShouldShowCloseButton() const override;
-  bool ShouldShowDialogTitle() const override;
-  bool ShouldCloseDialogOnEscape() const override;
   void AdjustWidgetInitParams(views::Widget::InitParams* params) override;
 };
 

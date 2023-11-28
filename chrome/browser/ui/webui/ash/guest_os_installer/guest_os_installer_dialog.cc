@@ -11,8 +11,7 @@
 namespace {
 // The dialog content area size. Note that the height is less than the design
 // spec to compensate for title bar height.
-constexpr int kDialogWidth = 768;
-constexpr int kDialogHeight = 608;
+constexpr gfx::Size kDialogSize{768, 608};
 
 }  // namespace
 
@@ -30,30 +29,14 @@ void GuestOSInstallerDialog::Show(const GURL& page_url) {
 }
 
 GuestOSInstallerDialog::GuestOSInstallerDialog(const GURL& url)
-    : SystemWebDialogDelegate(url, /*title=*/{}) {}
+    : SystemWebDialogDelegate(url, /*title=*/{}) {
+  set_dialog_size(kDialogSize);
+  set_show_close_button(true);
+  set_close_dialog_on_escape(false);
+  set_show_dialog_title(false);
+}
 
 GuestOSInstallerDialog::~GuestOSInstallerDialog() = default;
-
-void GuestOSInstallerDialog::GetDialogSize(gfx::Size* size) const {
-  size->SetSize(::kDialogWidth, ::kDialogHeight);
-}
-
-std::u16string GuestOSInstallerDialog::GetDialogTitle() const {
-  // Set GuestOS specific title here
-  return {};
-}
-
-bool GuestOSInstallerDialog::ShouldShowCloseButton() const {
-  return true;
-}
-
-bool GuestOSInstallerDialog::ShouldShowDialogTitle() const {
-  return false;
-}
-
-bool GuestOSInstallerDialog::ShouldCloseDialogOnEscape() const {
-  return false;
-}
 
 void GuestOSInstallerDialog::AdjustWidgetInitParams(
     views::Widget::InitParams* params) {
