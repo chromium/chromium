@@ -832,6 +832,7 @@ static_library("test_support") {
       "//ash/public/cpp:test_support",
       "//ash/webui/firmware_update_ui:url_constants",
       "//ash/webui/personalization_app:test_support",
+      "//ash/webui/scanning:url_constants",
       "//chrome/browser/ash",
       "//chrome/browser/ash/crosapi:fake_device_ownership_waiter",
       "//chrome/browser/ash/system_web_apps",

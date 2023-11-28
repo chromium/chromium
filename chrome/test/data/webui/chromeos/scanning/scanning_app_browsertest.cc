@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/webui/scanning/url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "content/public/test/browser_test.h"
 
@@ -17,11 +18,11 @@
 namespace ash {
 namespace {
 
-constexpr char kScanningHost[] = "scanning";
-
 class ScanningAppBrowserTest : public WebUIMochaBrowserTest {
  protected:
-  ScanningAppBrowserTest() { set_test_loader_host(kScanningHost); }
+  ScanningAppBrowserTest() {
+    set_test_loader_host(::ash::kChromeUIScanningAppHost);
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(ScanningAppBrowserTest, ActionToolbar) {

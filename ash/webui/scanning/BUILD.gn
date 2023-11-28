@@ -18,9 +18,9 @@ static_library("scanning") {
     "scanning_ui.h",
     "scanning_uma.cc",
     "scanning_uma.h",
-    "url_constants.cc",
-    "url_constants.h",
   ]
+
+  public_deps = [ ":url_constants" ]
 
   deps = [
     "//ash/constants",
@@ -37,6 +37,15 @@ static_library("scanning") {
     "//ui/resources",
     "//ui/shell_dialogs",
     "//ui/webui",
+  ]
+}
+
+# Url constants pulled out to enable depending on production url constants in
+# browser tests.
+source_set("url_constants") {
+  sources = [
+    "url_constants.cc",
+    "url_constants.h",
   ]
 }
 
