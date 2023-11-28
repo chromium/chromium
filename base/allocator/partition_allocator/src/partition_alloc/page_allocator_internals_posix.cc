@@ -10,8 +10,11 @@
 
 // PA_PROT_BTI requests a page that supports BTI landing pads.
 #define PA_PROT_BTI 0x10
+
 // PA_PROT_MTE requests a page that's suitable for memory tagging.
+#if defined(ARCH_CPU_ARM64)
 #define PA_PROT_MTE 0x20
+#endif  // defined(ARCH_CPU_ARM64)
 
 namespace partition_alloc::internal {
 

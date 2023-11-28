@@ -23,11 +23,17 @@
 
 // Temporary definitions until a new hwcap.h is pulled in everywhere.
 // https://crbug.com/1265965
+#if defined(ARCH_CPU_ARM64)
 #ifndef HWCAP2_MTE
 #define HWCAP2_MTE (1 << 18)
+#endif
+#ifndef HWCAP2_BTI
 #define HWCAP2_BTI (1 << 17)
 #endif
-#endif
+#endif  // # defined(ARCH_CPU_ARM64)
+
+#endif  // defined(ARCH_CPU_ARM_FAMILY) && (BUILDFLAG(IS_ANDROID) ||
+        // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
 
 #if defined(ARCH_CPU_X86_FAMILY)
 #if defined(COMPILER_MSVC)

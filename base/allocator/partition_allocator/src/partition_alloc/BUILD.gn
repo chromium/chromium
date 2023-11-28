@@ -79,7 +79,6 @@ config("dependants_extra_warnings") {
     # This is blocking using PartitionAlloc in Dawn. Most fixes have been
     # prototyped in:
     # https://chromium-review.googlesource.com/c/chromium/src/+/5057762
-    cflags -= [ "-Wunused-macros" ]
     cflags += [
       # Those are compiler extension banned by -pedantic.
       "-Wno-import-preprocessor-directive-pedantic",
@@ -698,6 +697,10 @@ if (is_clang_or_gcc) {
         sources += [ "partition_alloc_base/time/time_android.cc" ]
       }
       if (is_apple) {
+        # Request <dlfcn.h> to provide the `dladdr()` function. This is used to
+        # translate address to symbolic information.
+        defines = [ "HAVE_DLADDR" ]
+
         sources += [
           "partition_alloc_base/debug/stack_trace_mac.cc",
           "partition_alloc_base/time/time_apple.mm",

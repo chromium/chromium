@@ -25,10 +25,6 @@
 
 #include <io.h>
 #include <windows.h>
-// Windows warns on using write().  It prefers _write().
-#define write(fd, buf, count) _write(fd, buf, static_cast<unsigned int>(count))
-// Windows doesn't define STDERR_FILENO.  Define it here.
-#define STDERR_FILENO 2
 
 #endif
 
@@ -116,8 +112,5 @@ void RawLog(int level, const char* message) {
     }
   }
 }
-
-// This was defined at the beginning of this file.
-#undef write
 
 }  // namespace partition_alloc::internal::logging

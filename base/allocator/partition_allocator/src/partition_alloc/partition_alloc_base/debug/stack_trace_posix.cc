@@ -17,7 +17,6 @@
 #endif
 
 #if BUILDFLAG(IS_APPLE)
-#define HAVE_DLADDR
 #include <dlfcn.h>
 #endif
 
