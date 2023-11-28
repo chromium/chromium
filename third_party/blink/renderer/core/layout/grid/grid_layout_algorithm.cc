@@ -1110,9 +1110,7 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
   // size for its contribution, such that we can then do the 2nd pass on the
   // track-sizing algorithm.
   const auto space =
-      grid_item->IsSubgrid()
-          ? CreateConstraintSpaceForSubgridAlgorithm(subgridded_item)
-          : CreateConstraintSpaceForMeasure(subgridded_item, track_direction);
+      CreateConstraintSpaceForMeasure(subgridded_item, track_direction);
 
   LayoutUnit baseline_shim;
   auto CalculateBaselineShim = [&](LayoutUnit baseline) -> void {
@@ -1212,9 +1210,7 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
       // set our inline size to our max-content contribution size.
       const auto fallback_space = CreateConstraintSpaceForMeasure(
           subgridded_item, track_direction,
-          grid_item->is_parallel_with_root_grid
-              ? LogicalSize(MaxContentSize(), kIndefiniteSize)
-              : LogicalSize(kIndefiniteSize, MaxContentSize()));
+          /* opt_fixed_inline_size */ MaxContentSize());
 
       result = LayoutGridItemForMeasure(*grid_item, fallback_space,
                                         sizing_constraint);
@@ -1615,7 +1611,7 @@ void GridLayoutAlgorithm::ComputeGridItemBaselines(
             ? CreateConstraintSpace(
                   LayoutResultCacheSlot::kMeasure, *subgridded_item,
                   containing_grid_area_size,
-                  /* fixed_available_size */ {kIndefiniteSize, kIndefiniteSize},
+                  /* fixed_available_size */ kIndefiniteLogicalSize,
                   std::move(subgrid_layout_subtree))
             : CreateConstraintSpaceForLayout(*subgridded_item,
                                              subgridded_item.ParentLayoutData(),
@@ -3325,7 +3321,7 @@ ConstraintSpace GridLayoutAlgorithm::CreateConstraintSpaceForLayout(
     DCHECK_GE(containing_grid_area_size.block_size, LayoutUnit());
   }
 
-  LogicalSize fixed_available_size(kIndefiniteSize, kIndefiniteSize);
+  auto fixed_available_size = kIndefiniteLogicalSize;
 
   if (grid_item.IsSubgrid()) {
     const auto [fixed_inline_size, fixed_block_size] = ShrinkLogicalSize(
@@ -3349,10 +3345,8 @@ ConstraintSpace GridLayoutAlgorithm::CreateConstraintSpaceForLayout(
 ConstraintSpace GridLayoutAlgorithm::CreateConstraintSpaceForMeasure(
     const SubgriddedItemData& subgridded_item,
     GridTrackSizingDirection track_direction,
-    const LogicalSize& fixed_available_size) const {
-  DCHECK(!subgridded_item.IsSubgrid());
-
-  LogicalSize containing_grid_area_size(kIndefiniteSize, kIndefiniteSize);
+    absl::optional<LayoutUnit> opt_fixed_inline_size) const {
+  auto containing_grid_area_size = kIndefiniteLogicalSize;
   const auto writing_mode = GetConstraintSpace().GetWritingMode();
 
   if (track_direction == kForColumns) {
@@ -3363,31 +3357,29 @@ ConstraintSpace GridLayoutAlgorithm::CreateConstraintSpaceForMeasure(
         *subgridded_item, subgridded_item.Columns(writing_mode));
   }
 
+  auto fixed_available_size =
+      subgridded_item.IsSubgrid()
+          ? ShrinkLogicalSize(
+                containing_grid_area_size,
+                ComputeMarginsFor(subgridded_item->node.Style(),
+                                  containing_grid_area_size.inline_size,
+                                  GetConstraintSpace().GetWritingDirection()))
+          : kIndefiniteLogicalSize;
+
+  if (opt_fixed_inline_size) {
+    const auto item_writing_mode =
+        subgridded_item->node.Style().GetWritingMode();
+    auto& fixed_size = IsParallelWritingMode(item_writing_mode, writing_mode)
+                           ? fixed_available_size.inline_size
+                           : fixed_available_size.block_size;
+
+    DCHECK_EQ(fixed_size, kIndefiniteSize);
+    fixed_size = *opt_fixed_inline_size;
+  }
+
   return CreateConstraintSpace(LayoutResultCacheSlot::kMeasure,
                                *subgridded_item, containing_grid_area_size,
                                fixed_available_size);
-}
-
-ConstraintSpace GridLayoutAlgorithm::CreateConstraintSpaceForSubgridAlgorithm(
-    const SubgriddedItemData& subgrid_data) const {
-  DCHECK(subgrid_data.IsSubgrid());
-
-  const auto writing_mode = GetConstraintSpace().GetWritingMode();
-
-  const LogicalSize containing_grid_area_size(
-      ComputeGridItemAvailableSize(*subgrid_data,
-                                   subgrid_data.Columns(writing_mode)),
-      ComputeGridItemAvailableSize(*subgrid_data,
-                                   subgrid_data.Rows(writing_mode)));
-
-  const auto fixed_available_size = ShrinkLogicalSize(
-      containing_grid_area_size,
-      ComputeMarginsFor(subgrid_data->node.Style(),
-                        containing_grid_area_size.inline_size,
-                        GetConstraintSpace().GetWritingDirection()));
-
-  return CreateConstraintSpace(LayoutResultCacheSlot::kMeasure, *subgrid_data,
-                               containing_grid_area_size, fixed_available_size);
 }
 
 namespace {

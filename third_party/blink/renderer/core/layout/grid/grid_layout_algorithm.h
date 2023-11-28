@@ -234,10 +234,7 @@ class CORE_EXPORT GridLayoutAlgorithm
   ConstraintSpace CreateConstraintSpaceForMeasure(
       const SubgriddedItemData& subgridded_item,
       GridTrackSizingDirection track_direction,
-      const LogicalSize& fixed_available_size = kIndefiniteLogicalSize) const;
-
-  ConstraintSpace CreateConstraintSpaceForSubgridAlgorithm(
-      const SubgriddedItemData& subgrid_data) const;
+      absl::optional<LayoutUnit> opt_fixed_inline_size = absl::nullopt) const;
 
   // Layout the |grid_items|, and add them to the builder.
   //
