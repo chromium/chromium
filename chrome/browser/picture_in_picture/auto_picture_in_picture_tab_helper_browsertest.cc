@@ -505,24 +505,32 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
                        DoesNotAutopipWhenPaused) {
   // Load a page that registers for autopip and start video playback.
+  LOG(ERROR) << "DEBUG: loading video page";
   LoadAutoVideoPipPage(browser());
   auto* original_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
+  LOG(ERROR) << "DEBUG: starting playback";
   PlayVideo(original_web_contents);
+  LOG(ERROR) << "DEBUG: waiting for audio focus";
   WaitForAudioFocusGained();
 
   // Pause the video.
+  LOG(ERROR) << "DEBUG: pausing playback";
   PauseVideo(original_web_contents);
+  LOG(ERROR) << "DEBUG: waiting for mediasession pause";
   WaitForMediaSessionPaused(original_web_contents);
 
   // There should not currently be a picture-in-picture window.
+  LOG(ERROR) << "DEBUG: checking in on expectations";
   EXPECT_FALSE(original_web_contents->HasPictureInPictureVideo());
   EXPECT_FALSE(original_web_contents->HasPictureInPictureDocument());
 
   // Open and switch to a new tab.
+  LOG(ERROR) << "DEBUG: opening a new tab";
   OpenNewTab(browser());
 
   // There should not be a picture-in-picture window.
+  LOG(ERROR) << "DEBUG: again checking in on expectations";
   EXPECT_FALSE(original_web_contents->HasPictureInPictureVideo());
   EXPECT_FALSE(original_web_contents->HasPictureInPictureDocument());
 }
