@@ -1154,7 +1154,7 @@ void ChromeAuthenticatorRequestDelegate::ConfigureEnclaveDiscovery(
 
   std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
       passkey_model->GetPasskeysForRelyingPartyId(rp_id);
-  discovery_factory->SetEnclavePasskeys(std::move(passkeys));
+  discovery_factory->set_enclave_passkeys(std::move(passkeys));
 }
 
 #if BUILDFLAG(IS_MAC)

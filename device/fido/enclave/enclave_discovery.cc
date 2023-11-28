@@ -52,9 +52,12 @@ std::vector<uint8_t> Sign(crypto::ECPrivateKey* signing_key,
 
 EnclaveAuthenticatorDiscovery::EnclaveAuthenticatorDiscovery(
     std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys,
+    base::RepeatingCallback<void(sync_pb::WebauthnCredentialSpecifics)>
+        save_passkey_callback,
     raw_ptr<network::mojom::NetworkContext> network_context)
     : FidoDiscoveryBase(FidoTransportProtocol::kInternal),
       passkeys_(std::move(passkeys)),
+      save_passkey_callback_(std::move(save_passkey_callback)),
       network_context_(network_context) {}
 
 EnclaveAuthenticatorDiscovery::~EnclaveAuthenticatorDiscovery() = default;
@@ -72,9 +75,6 @@ void EnclaveAuthenticatorDiscovery::Start() {
 }
 
 void EnclaveAuthenticatorDiscovery::AddAuthenticator() {
-  // TODO(https://crbug.com/1459620): This will depend on whether the device
-  // has been enrolled with the enclave.
-
   // TODO(kenrb): These temporary hard-coded values will be replaced by real
   // values, plumbed from chrome layer.
   const GURL local_url = GURL(kTestWebSocketUrl);
@@ -92,9 +92,9 @@ void EnclaveAuthenticatorDiscovery::AddAuthenticator() {
   CHECK(signing_key_);
   std::vector<uint8_t> device_id = {0x02};
   authenticator_ = std::make_unique<EnclaveAuthenticator>(
-      local_url, peer_public_key, std::move(passkeys_), std::move(device_id),
-      kTestUsername, network_context_,
-      base::BindRepeating(&Sign, signing_key_.get()));
+      local_url, peer_public_key, std::move(passkeys_),
+      std::move(save_passkey_callback_), std::move(device_id), kTestUsername,
+      network_context_, base::BindRepeating(&Sign, signing_key_.get()));
   observer()->DiscoveryStarted(this, /*success=*/true, {authenticator_.get()});
 }
 
