@@ -11,11 +11,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <concepts>
 #include <initializer_list>
 #include <memory>
 #include <string>
 #include <string_view>
-#include <type_traits>
 #include <vector>
 
 #include "base/base_export.h"
@@ -115,16 +115,16 @@ constexpr std::wstring_view MakeWStringView(Iter begin, Iter end) {
 
 // ASCII-specific tolower.  The standard library's tolower is locale sensitive,
 // so we don't want to use it here.
-template <typename CharT,
-          typename = std::enable_if_t<std::is_integral_v<CharT>>>
+template <typename CharT>
+  requires(std::integral<CharT>)
 constexpr CharT ToLowerASCII(CharT c) {
   return internal::ToLowerASCII(c);
 }
 
 // ASCII-specific toupper.  The standard library's toupper is locale sensitive,
 // so we don't want to use it here.
-template <typename CharT,
-          typename = std::enable_if_t<std::is_integral_v<CharT>>>
+template <typename CharT>
+  requires(std::integral<CharT>)
 CharT ToUpperASCII(CharT c) {
   return (c >= 'a' && c <= 'z') ? static_cast<CharT>(c + 'A' - 'a') : c;
 }
@@ -465,7 +465,8 @@ inline char HexDigitToInt(char16_t c) {
 // should call IsAsciiWhitespace(), and if they are from a UTF-8 string they may
 // be individual units of a multi-unit code point.  Convert to 16- or 32-bit
 // values known to hold the full code point before calling this.
-template <typename Char, typename = std::enable_if_t<(sizeof(Char) > 1)>>
+template <typename Char>
+  requires(sizeof(Char) > 1)
 inline bool IsUnicodeWhitespace(Char c) {
   // kWhitespaceWide is a null-terminated string.
   for (const auto* cur = kWhitespaceWide; *cur; ++cur) {

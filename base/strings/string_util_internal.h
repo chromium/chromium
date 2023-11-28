@@ -5,6 +5,7 @@
 #ifndef BASE_STRINGS_STRING_UTIL_INTERNAL_H_
 #define BASE_STRINGS_STRING_UTIL_INTERNAL_H_
 
+#include <concepts>
 #include <type_traits>
 
 #include "base/ranges/algorithm.h"
@@ -14,19 +15,19 @@ namespace base::internal {
 
 // ASCII-specific tolower.  The standard library's tolower is locale sensitive,
 // so we don't want to use it here.
-template <typename CharT,
-          typename = std::enable_if_t<std::is_integral_v<CharT>>>
+template <typename CharT>
+  requires(std::integral<CharT>)
 constexpr CharT ToLowerASCII(CharT c) {
   return (c >= 'A' && c <= 'Z') ? (c + ('a' - 'A')) : c;
 }
 
 template <typename T>
+  requires(std::integral<typename T::value_type>)
 constexpr int CompareCaseInsensitiveASCIIT(T a, T b) {
   // Find the first characters that aren't equal and compare them.  If the end
   // of one of the strings is found before a nonequal character, the lengths
   // of the strings are compared. Compare using the unsigned type so the sort
   // order is independent of the signedness of `char`.
-  static_assert(std::is_integral_v<typename T::value_type>);
   using UCharT = std::make_unsigned_t<typename T::value_type>;
   size_t i = 0;
   while (i < a.length() && i < b.length()) {

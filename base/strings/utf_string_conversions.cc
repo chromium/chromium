@@ -7,6 +7,7 @@
 #include <limits.h>
 #include <stdint.h>
 
+#include <concepts>
 #include <ostream>
 #include <string_view>
 #include <type_traits>
@@ -68,25 +69,26 @@ constexpr int size_coefficient_v =
 // Convenience typedef that checks whether the passed in type is integral (i.e.
 // bool, char, int or their extended versions) and is of the correct size.
 template <typename Char, size_t N>
-using EnableIfBitsAre =
-    std::enable_if_t<std::is_integral_v<Char> && CHAR_BIT * sizeof(Char) == N,
-                     bool>;
+concept BitsAre = std::integral<Char> && CHAR_BIT * sizeof(Char) == N;
 
-template <typename Char, EnableIfBitsAre<Char, 8> = true>
+template <typename Char>
+  requires(BitsAre<Char, 8>)
 void UnicodeAppendUnsafe(Char* out,
                          size_t* size,
                          base_icu::UChar32 code_point) {
   CBU8_APPEND_UNSAFE(reinterpret_cast<uint8_t*>(out), *size, code_point);
 }
 
-template <typename Char, EnableIfBitsAre<Char, 16> = true>
+template <typename Char>
+  requires(BitsAre<Char, 16>)
 void UnicodeAppendUnsafe(Char* out,
                          size_t* size,
                          base_icu::UChar32 code_point) {
   CBU16_APPEND_UNSAFE(out, *size, code_point);
 }
 
-template <typename Char, EnableIfBitsAre<Char, 32> = true>
+template <typename Char>
+  requires(BitsAre<Char, 32>)
 void UnicodeAppendUnsafe(Char* out,
                          size_t* size,
                          base_icu::UChar32 code_point) {
