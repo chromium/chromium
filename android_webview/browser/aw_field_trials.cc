@@ -10,6 +10,7 @@
 #include "base/path_service.h"
 #include "components/metrics/persistent_histograms.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "content/public/common/content_features.h"
 #include "net/base/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/android/ui_android_features.h"
@@ -97,6 +98,10 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
 
   // Disable scrollbar-width on WebView.
   aw_feature_overrides.DisableFeature(blink::features::kScrollbarWidth);
+
+  // Disable the new prefetch limits policy on WebView (it is enabled by
+  // default on Android, but we need a slower ramp up on WebView).
+  aw_feature_overrides.DisableFeature(::features::kPrefetchNewLimits);
 
   aw_feature_overrides.RegisterOverrides(feature_list);
 }
