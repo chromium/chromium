@@ -29,7 +29,7 @@ namespace mojo {
 //
 //   static mojo::OptionalAsPointer<std::string> nullable_field_getter(
 //       const MyType& input) {
-//     return mojo::MakeOptionalAsPointer(
+//     return mojo::OptionalAsPointer(
 //         input.has_valid_data() ? &input.data() : nullptr);
 //   }
 //
@@ -52,7 +52,8 @@ class OptionalAsPointer {
   OptionalAsPointer(const OptionalAsPointer<U>& other) : value_(other.value_) {}
 
   bool has_value() const { return value_ != nullptr; }
-  T* value() const { return value_; }
+  T& value() { return *value_; }
+  const T& value() const { return *value_; }
 
  private:
   template <typename U>
@@ -61,12 +62,8 @@ class OptionalAsPointer {
   raw_ptr<T> value_ = nullptr;
 };
 
-// Type-deducing helpers for constructing a `OptionalAsPointer`.
-// TODO(dcheng): Remove this when we have C++20.
-template <int&... ExplicitArgumentBarrier, typename T>
-OptionalAsPointer<T> MakeOptionalAsPointer(T* ptr) {
-  return OptionalAsPointer<T>(ptr);
-}
+template <typename T>
+OptionalAsPointer(T*) -> OptionalAsPointer<T>;
 
 }  // namespace mojo
 

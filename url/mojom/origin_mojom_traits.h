@@ -29,7 +29,7 @@ struct COMPONENT_EXPORT(URL_MOJOM_TRAITS)
   }
   static mojo::OptionalAsPointer<const base::UnguessableToken> nonce_if_opaque(
       const url::Origin& r) {
-    return mojo::MakeOptionalAsPointer(r.GetNonceForSerialization());
+    return mojo::OptionalAsPointer(r.GetNonceForSerialization());
   }
   static bool Read(url::mojom::OriginDataView data, url::Origin* out);
 };

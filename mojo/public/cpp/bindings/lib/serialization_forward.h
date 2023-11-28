@@ -47,7 +47,7 @@ void Serialize(InputUserType&& input, Args&&... args) {
   } else if constexpr (IsOptionalAsPointer<InputUserType>::value) {
     if (!input.has_value())
       return;
-    Serialize<MojomType>(*input.value(), std::forward<Args>(args)...);
+    Serialize<MojomType>(input.value(), std::forward<Args>(args)...);
   } else {
     Serializer<MojomType, std::remove_reference_t<InputUserType>>::Serialize(
         std::forward<InputUserType>(input), std::forward<Args>(args)...);

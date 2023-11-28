@@ -1160,7 +1160,7 @@ mojo::OptionalAsPointer<const media::internal::StatusData> StructTraits<
 
   CHECK(input.data_ || input.is_ok());
 
-  return MakeOptionalAsPointer(input.data_.get());
+  return mojo::OptionalAsPointer(input.data_.get());
 }
 
 // static

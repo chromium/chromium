@@ -40,7 +40,7 @@ struct StructTraits<media::mojom::StatusDataDataView,
 
   static mojo::OptionalAsPointer<const media::internal::StatusData> cause(
       const media::internal::StatusData& input) {
-    return mojo::MakeOptionalAsPointer(input.cause.get());
+    return mojo::OptionalAsPointer(input.cause.get());
   }
 
   static const base::Value& data(const media::internal::StatusData& input) {
@@ -60,7 +60,7 @@ template <typename StatusEnum, typename DataView>
 struct StructTraits<DataView, media::TypedStatus<StatusEnum>> {
   static mojo::OptionalAsPointer<const media::internal::StatusData> internal(
       const media::TypedStatus<StatusEnum>& input) {
-    return mojo::MakeOptionalAsPointer(input.data_.get());
+    return mojo::OptionalAsPointer(input.data_.get());
   }
 
   static bool Read(DataView data, media::TypedStatus<StatusEnum>* output) {
