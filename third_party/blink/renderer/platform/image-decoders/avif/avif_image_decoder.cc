@@ -1235,8 +1235,8 @@ bool AVIFImageDecoder::GetGainmapInfoAndData(
 
   // If libavif detected a gain map, it already parsed the metadata from the
   // 'tmap' box.
-  if (decoder_->gainMapPresent) {
-    const avifGainMapMetadata& metadata = decoder_->image->gainMap.metadata;
+  if (decoder_->gainMapPresent && decoder_->image->gainMap) {
+    const avifGainMapMetadata& metadata = decoder_->image->gainMap->metadata;
     if (metadata.baseHdrHeadroomD == 0 || metadata.alternateHdrHeadroomD == 0) {
       DVLOG(1) << "Invalid gainmap metadata: a denominator value is zero";
       return false;
