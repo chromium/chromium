@@ -27,9 +27,9 @@ namespace supervised_user {
 // * child.
 class FamilyLiveTest : public signin::test::LiveTest {
  public:
-  // Navigation will be allowed to extra hosts.
   FamilyLiveTest();
-  explicit FamilyLiveTest(std::vector<std::string> extra_enabled_hosts);
+  // Navigation will be allowed to extra hosts.
+  explicit FamilyLiveTest(const std::vector<std::string>& extra_enabled_hosts);
   ~FamilyLiveTest() override;
 
   // Turns on sync and closes auxiliary tabs.
