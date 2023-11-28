@@ -42,6 +42,13 @@ crbug.com/1499775 external/wpt/media-capabilities/encodingInfo.any.worker.html [
 crbug.com/1499775 external/wpt/navigation-api/navigate-event/navigate-history-back-bfcache.html [ Failure ]
 crbug.com/1499775 external/wpt/storage-access-api/requestStorageAccess-cross-origin-iframe-navigation.sub.https.window.html [ Failure Timeout ]
 crbug.com/1499775 external/wpt/url/failure.html [ Pass Timeout ]
+crbug.com/1499775 external/wpt/credential-management/fedcm-error-basic.https.html [ Crash Timeout ]
+crbug.com/1499775 external/wpt/credential-management/fedcm-token-returned-with-http-error.https.html [ Crash Timeout ]
+crbug.com/1499775 external/wpt/css/css-properties-values-api/animation/custom-property-animation-used-in-shorthand.html [ Failure Pass ]
+crbug.com/1499775 external/wpt/html/browsers/the-window-object/open-close/open-features-is-popup-condition.html?single-2 [ Pass Timeout ]
+crbug.com/1499775 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-enter-seeking.html [ Failure Pass ]
+crbug.com/1499775 external/wpt/pointerevents/pointerevent_touch-action-modified_touch.html [ Failure ]
+crbug.com/1499775 external/wpt/screen-capture/getdisplaymedia.https.html [ Crash Failure Pass ]
 
 # Chrome specific failures
 crbug.com/1499775 external/wpt/css/css-text/text-transform/text-transform-capitalize-014.html [ Failure Pass ]
@@ -102,7 +109,6 @@ crbug.com/1499775 external/wpt/credential-management/fedcm-client-metadata-not-c
 crbug.com/1499775 external/wpt/credential-management/fedcm-cross-origin-policy.https.html [ Timeout ]
 crbug.com/1499775 external/wpt/credential-management/fedcm-domainhint.https.html [ Timeout ]
 crbug.com/1499775 external/wpt/credential-management/fedcm-endpoint-redirects.https.html [ Timeout ]
-crbug.com/1499775 external/wpt/credential-management/fedcm-error-basic.https.html [ Timeout ]
 crbug.com/1499775 external/wpt/credential-management/fedcm-iframe.https.html [ Skip Timeout ]
 crbug.com/1499775 external/wpt/credential-management/fedcm-loginhint.https.html [ Timeout ]
 crbug.com/1499775 external/wpt/credential-management/fedcm-manifest-not-in-list.https.html [ Timeout ]
@@ -114,7 +120,6 @@ crbug.com/1499775 external/wpt/credential-management/fedcm-returning-account-aut
 crbug.com/1499775 external/wpt/credential-management/fedcm-disconnect.sub.https.html [ Timeout ]
 crbug.com/1499775 external/wpt/credential-management/fedcm-disconnect-iframe.sub.https.html [ Timeout ]
 crbug.com/1499775 external/wpt/credential-management/fedcm-store.https.html [ Timeout ]
-crbug.com/1499775 external/wpt/credential-management/fedcm-token-returned-with-http-error.https.html [ Timeout ]
 crbug.com/1499775 external/wpt/css/CSS2/floats/float-nowrap-2.html [ Failure ]  # Reftest image failure
 crbug.com/1499775 external/wpt/css/CSS2/linebox/inline-formatting-context-003.xht [ Failure ]  # Reftest image failure
 crbug.com/1499775 external/wpt/css/CSS2/linebox/inline-formatting-context-004.xht [ Failure ]  # Reftest image failure
