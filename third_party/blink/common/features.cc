@@ -1028,7 +1028,7 @@ const base::FeatureParam<IsolateSandboxedIframesGrouping>::Option
 const base::FeatureParam<IsolateSandboxedIframesGrouping>
     kIsolateSandboxedIframesGroupingParam{
         &kIsolateSandboxedIframes, "grouping",
-        IsolateSandboxedIframesGrouping::kPerSite,
+        IsolateSandboxedIframesGrouping::kPerOrigin,
         &isolated_sandboxed_iframes_grouping_types};
 
 BASE_FEATURE(kKalmanDirectionCutOff,
