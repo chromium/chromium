@@ -312,10 +312,9 @@ TEST_F(PdfViewerStreamManagerTest, ReadyToCommitNavigationSubresourceOverride) {
   EXPECT_CALL(navigation_handle, RegisterSubresourceOverride).Times(1);
   manager->ReadyToCommitNavigation(&navigation_handle);
 
-  // The stream should persist after the PDF load to provide postMessage support
-  // and PDF saving.
-  ASSERT_EQ(manager, pdf_viewer_stream_manager());
-  EXPECT_TRUE(manager->GetStreamContainer(embedder_host));
+  // There are no remaining streams, so `PdfViewerStreamManager` should be
+  // deleted after registering the subresource override.
+  EXPECT_FALSE(pdf_viewer_stream_manager());
 }
 
 // `PdfViewerStreamManager` should be able to handle registering multiple
@@ -358,15 +357,17 @@ TEST_F(PdfViewerStreamManagerTest,
   EXPECT_CALL(navigation_handle, RegisterSubresourceOverride).Times(2);
   manager->ReadyToCommitNavigation(&navigation_handle);
 
+  // The first subresource override shouldn't affect the other stream.
+  EXPECT_FALSE(manager->GetStreamContainer(main_rfh()));
+  EXPECT_TRUE(manager->GetStreamContainer(embedder_host2));
+
   navigation_handle.set_render_frame_host(pdf_host2);
 
   manager->ReadyToCommitNavigation(&navigation_handle);
 
-  // The streams should persist after the PDF load to provide postMessage
-  // support and PDF saving.
-  ASSERT_EQ(manager, pdf_viewer_stream_manager());
-  EXPECT_TRUE(manager->GetStreamContainer(embedder_host1));
-  EXPECT_TRUE(manager->GetStreamContainer(embedder_host2));
+  // There are no remaining streams, so `PdfViewerStreamManager` should be
+  // deleted after registering the subresource override.
+  EXPECT_FALSE(pdf_viewer_stream_manager());
 }
 
 // The initial load should claim the stream. If the top level frame is
