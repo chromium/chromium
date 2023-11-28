@@ -444,7 +444,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.ProfilesOrderChanged" enum="BooleanHit"
-    expires_after="2023-12-31">
+    expires_after="2024-03-31">
   <owner>rsult@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
