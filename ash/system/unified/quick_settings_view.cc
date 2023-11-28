@@ -55,7 +55,6 @@ class AccessibilityFocusHelperView : public views::View {
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override {
     GetFocusManager()->ClearFocus();
     GetFocusManager()->SetStoredFocusView(nullptr);
-    controller_->FocusOut(false);
     return true;
   }
 

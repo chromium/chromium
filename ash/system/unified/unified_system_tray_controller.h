@@ -126,10 +126,6 @@ class ASH_EXPORT UnifiedSystemTrayController
   // Close the bubble. Called from a detailed view controller.
   void CloseBubble();
 
-  // Inform `UnifiedSystemTrayBubble` that `QuickSettingsView` is requesting to
-  // relinquish focus.
-  bool FocusOut(bool reverse);
-
   // Return whether a detailed view is currently being shown.
   bool IsDetailedViewShown() const;
 

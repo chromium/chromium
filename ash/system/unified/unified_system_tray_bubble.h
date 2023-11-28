@@ -84,9 +84,6 @@ class ASH_EXPORT UnifiedSystemTrayBubble : public TrayBubbleBase,
   // collapsed / expanded.
   int GetCurrentTrayHeight() const;
 
-  // Relinquish focus and transfer it to the message center widget.
-  bool FocusOut(bool reverse);
-
   // Fire a notification that an accessibility event has occured on this object.
   void NotifyAccessibilityEvent(ax::mojom::Event event, bool send_native_event);
 

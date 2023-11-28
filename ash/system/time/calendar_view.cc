@@ -1741,27 +1741,6 @@ void CalendarView::OnEvent(ui::Event* event) {
   }
 
   if (!IsDateCellViewFocused()) {
-    if (is_tab_key_pressed) {
-      // If the current focused view is the last focusable view in the focus
-      // list, then make an attempt to navigate to the previous widget (most
-      // likely to the message center). Stop the propagation of the event if
-      // the attempt was successful.
-      const auto* next_view = focus_manager->GetNextFocusableView(
-          focus_manager->GetFocusedView(), GetWidget(),
-          /*reverse=*/key_event->IsShiftDown(),
-          /*dont_loop=*/true);
-      auto* unified_system_tray_bubble =
-          RootWindowController::ForWindow(GetWidget()->GetNativeWindow())
-              ->GetStatusAreaWidget()
-              ->unified_system_tray()
-              ->bubble();
-
-      if (!next_view && unified_system_tray_bubble &&
-          unified_system_tray_bubble->unified_system_tray_controller()
-              ->FocusOut(/*reverse=*/true)) {
-        event->StopPropagation();
-      }
-    }
     GlanceableTrayChildBubble::OnEvent(event);
     return;
   }

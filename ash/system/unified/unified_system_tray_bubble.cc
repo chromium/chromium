@@ -208,11 +208,6 @@ int UnifiedSystemTrayBubble::GetCurrentTrayHeight() const {
   return quick_settings_view_->GetCurrentHeight();
 }
 
-bool UnifiedSystemTrayBubble::FocusOut(bool reverse) {
-  // TODO(b/309529593) Remove this method and clean up the related code.
-  return false;
-}
-
 void UnifiedSystemTrayBubble::OnDisplayConfigurationChanged() {
   UpdateBubbleBounds();
 }

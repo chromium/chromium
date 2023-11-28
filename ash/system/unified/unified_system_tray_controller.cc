@@ -359,10 +359,6 @@ void UnifiedSystemTrayController::CloseBubble() {
   }
 }
 
-bool UnifiedSystemTrayController::FocusOut(bool reverse) {
-  return bubble_->FocusOut(reverse);
-}
-
 void UnifiedSystemTrayController::OnAudioSettingsButtonClicked() {
   ShowAudioDetailedView();
 }
