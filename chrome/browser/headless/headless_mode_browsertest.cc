@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
+#include "chrome/browser/ui/session_crashed_bubble.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/headless/clipboard/headless_clipboard.h"  // nogncheck
 #include "content/public/browser/browser_context.h"
@@ -47,8 +48,13 @@
 #include "ui/base/clipboard/clipboard_sequence_number_token.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/display/display_switches.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/switches.h"
+#include "ui/views/widget/widget.h"
 #include "url/gurl.h"
+
+using testing::Ge;
+using testing::SizeIs;
 
 namespace headless {
 
@@ -220,6 +226,37 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeUserAgentBrowserTest, UserAgentHasHeadless) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_THAT(headers_.at("User-Agent"), testing::HasSubstr("HeadlessChrome/"));
+}
+
+IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
+                       SessionCrashedBubbleVisibility) {
+  SessionCrashedBubble::ShowIfNotOffTheRecordProfile(
+      browser(), /*skip_tab_checking=*/true);
+
+  gfx::NativeWindow native_window = browser()->window()->GetNativeWindow();
+  auto* widget = views::Widget::GetWidgetForNativeWindow(native_window);
+  ASSERT_TRUE(widget);
+  EXPECT_TRUE(widget->is_headless());
+
+  views::Widget::Widgets child_widgets;
+  views::Widget::GetAllChildWidgets(widget->GetNativeView(), &child_widgets);
+  EXPECT_THAT(child_widgets, SizeIs(Ge(1lu)));
+
+  for (auto* child_widget : child_widgets) {
+    EXPECT_TRUE(child_widget->is_headless());
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+    // On Windows and Mac in headless mode we still have actual platform
+    // windows which are always hidden, so verify that they are not visible.
+    EXPECT_FALSE(IsPlatformWindowVisible(child_widget));
+#elif BUILDFLAG(IS_LINUX)
+    // On Linux headless mode uses Ozone/Headless where platform windows are not
+    // backed up by any real windows, so verify that their visibility state
+    // matches the widget's visibility state.
+    EXPECT_EQ(IsPlatformWindowVisible(child_widget), child_widget->IsVisible());
+#else
+#error Unsupported platform
+#endif
+  }
 }
 
 // Incognito mode tests ------------------------------------------------------

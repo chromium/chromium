@@ -435,6 +435,7 @@ void NativeWidgetMacNSWindowHost::InitWindow(
   bool is_tooltip = params.type == Widget::InitParams::TYPE_TOOLTIP;
   if (!is_tooltip)
     tooltip_manager_ = std::make_unique<TooltipManagerMac>(GetNSWindowMojo());
+  is_headless_mode_window_ = params.ShouldInitAsHeadless();
 
   if (params.workspace.length()) {
     std::string restoration_data;
@@ -452,9 +453,8 @@ void NativeWidgetMacNSWindowHost::InitWindow(
     window_params->modal_type = widget->widget_delegate()->GetModalType();
     window_params->is_translucent =
         params.opacity == Widget::InitParams::WindowOpacity::kTranslucent;
-    window_params->is_headless_mode_window = params.headless_mode;
+    window_params->is_headless_mode_window = is_headless_mode_window_;
     window_params->is_tooltip = is_tooltip;
-    is_headless_mode_window_ = params.headless_mode;
 
     // macOS likes to put shadows on most things. However, frameless windows
     // (with styleMask = NSWindowStyleMaskBorderless) default to no shadow. So

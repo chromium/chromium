@@ -254,6 +254,11 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // taking into account special levels due to |type|.
     ui::ZOrderLevel EffectiveZOrderLevel() const;
 
+    // Returns whether the widget should be initialized as headless by checking
+    // if |headless_mode| or the associated top level widget's |is_headless_|
+    // are set.
+    bool ShouldInitAsHeadless() const;
+
     Type type = TYPE_WINDOW;
 
     // If null, a default implementation will be constructed. The default
@@ -1040,6 +1045,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // with it. TYPE_CONTROL and TYPE_TOOLTIP is not considered top level.
   bool is_top_level() const { return is_top_level_; }
 
+  // True if widget was created in headless mode.
+  bool is_headless() const { return is_headless_; }
+
   // True when window movement via mouse interaction with the frame is disabled.
   bool movement_disabled() const { return movement_disabled_; }
   void set_movement_disabled(bool disabled) { movement_disabled_ = disabled; }
@@ -1407,6 +1415,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // TODO(beng): Remove NativeWidgetGtk's dependence on these:
   // If true, the mouse is currently down.
   bool is_mouse_button_pressed_ = false;
+
+  // If set, the widget was created in headless mode.
+  bool is_headless_ = false;
 
   // True if capture losses should be ignored.
   bool ignore_capture_loss_ = false;

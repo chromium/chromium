@@ -8,11 +8,31 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/aura/window_tree_host_platform.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_win.h"
+#include "ui/views/widget/widget.h"
 
 namespace headless {
+
+// static
+bool HeadlessModeBrowserTest::IsPlatformWindowVisible(views::Widget* widget) {
+  CHECK(widget);
+
+  gfx::NativeWindow native_window = widget->GetNativeWindow();
+  CHECK(native_window);
+
+  aura::WindowTreeHostPlatform* host =
+      static_cast<aura::WindowTreeHostPlatform*>(native_window->GetHost());
+  CHECK(host);
+
+  gfx::AcceleratedWidget accelerated_widget = host->GetAcceleratedWidget();
+  CHECK(::IsWindow(accelerated_widget));
+
+  return !!::IsWindowVisible(accelerated_widget);
+}
 
 namespace {
 
