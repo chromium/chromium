@@ -323,7 +323,7 @@ suite('fileAttachmentTestSuite', () => {
     const imageUrl = getElement('#selectedFileImage').src;
     assertTrue(imageUrl.length > 0);
     // There should be a preview image.
-    page.selectedImageUrl_ = imageUrl;
+    page.selectedImageUrl = imageUrl;
     const selectedImage = getElement('#selectedFileImage');
     assertTrue(!!selectedImage.src);
     assertEquals(imageUrl, selectedImage.src);
@@ -333,7 +333,7 @@ suite('fileAttachmentTestSuite', () => {
     assertTrue(isVisible(selectedImageButton));
   });
 
-  // Test that clicking the image will open preview dialog.
+  /** Test that clicking the image will open preview dialog. */
   test('selectedImagePreviewDialog', async () => {
     await initializePage();
     verifyRecordPreSubmitActionCallCount(
@@ -351,7 +351,7 @@ suite('fileAttachmentTestSuite', () => {
     });
 
     page.setSelectedFileForTesting(fakeImageFile);
-    page.selectedImageUrl_ = fakeImageUrl;
+    page.selectedImageUrl = fakeImageUrl;
     assertEquals(fakeImageUrl, getElement('#selectedFileImage').src);
 
     const closeDialogButton = getElement('#closeDialogButton');

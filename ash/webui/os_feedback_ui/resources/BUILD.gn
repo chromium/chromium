@@ -22,7 +22,7 @@ build_webui("build") {
   web_component_files = [
     "confirmation_page.ts",
     "feedback_flow.js",
-    "file_attachment.js",
+    "file_attachment.ts",
     "help_content.js",
     "search_page.js",
     "share_data_page.js",

@@ -135,40 +135,40 @@
     width: 206px;
   }
 </style>
-<div id="addFileContainer" hidden="[[hasSelectedAFile_]]">
+<div id="addFileContainer" hidden="[[hasSelectedAFile]]">
   <!-- On tablets, touching the addFileLabel button will not open the file input
         dialog, although it will trigger the click event. This seems to be an
         CrOS issue. As a workaround, wiring the same event handler to the
         touchend event fixes the issue.
       -->
   <button id="addFileLabel" class="file-input" aria-hidden="true"
-      on-touchend="handleOpenFileInputClick_"
-      on-click="handleOpenFileInputClick_" tabindex="-1">
+      on-touchend="handleOpenFileInputClick"
+      on-click="handleOpenFileInputClick" tabindex="-1">
     <cr-icon-button id="addFileIcon" iron-icon="attachment:add-file"
         aria-label="[[i18n('addFileLabel')]]" title="[[i18n('addFileLabel')]]">
     </cr-icon-button>
     [[i18n('addFileLabel')]]
   </button>
 </div>
-<input id="selectFileDialog" type="file" on-change="handleFileSelectChange_"
+<input id="selectFileDialog" type="file" on-change="handleFileSelectChange"
     tabindex="-1">
-<div id="replaceFileContainer" hidden="[[!hasSelectedAFile_]]">
+<div id="replaceFileContainer" hidden="[[!hasSelectedAFile]]">
   <cr-checkbox id="selectFileCheckbox" class="no-label"
       title="[[i18n('attachFileCheckboxArialLabel')]]">
   </cr-checkbox>
   <div id="selectedFileContainer">
-    <button id="selectedImageButton" on-click="handleSelectedImageClick_"
-        hidden="[[!selectedImageUrl_]]" class="focusable">
-      <img id="selectedFileImage" src="[[selectedImageUrl_]]">
+    <button id="selectedImageButton" on-click="handleSelectedImageClick"
+        hidden="[[!selectedImageUrl]]" class="focusable">
+      <img id="selectedFileImage" src="[[selectedImageUrl]]">
     </button>
     <div id="replaceFileInfo">
       <div id="selectedFileName" class="overflow-text">
-        [[selectedFileName_]]
+        [[selectedFileName]]
       </div>
       <button id="replaceFileButton" class="file-input focusable"
           aria-label="[[i18n('replaceFileLabel')]]"
-          on-touchend="handleOpenFileInputClick_"
-          on-click="handleOpenFileInputClick_" tabindex="0">
+          on-touchend="handleOpenFileInputClick"
+          on-click="handleOpenFileInputClick" tabindex="0">
         [[i18n('replaceFileLabel')]]
       </button>
     </div>
@@ -185,15 +185,15 @@
         class="close-dialog-button"
         title="[[i18n('dialogBackButtonAriaLabel')]]"
         aria-label="[[i18n('dialogBackButtonAriaLabel')]]"
-        on-click="handleSelectedImageDialogCloseClick_">
+        on-click="handleSelectedImageDialogCloseClick">
       <iron-icon id="backArrow" class="dialog-back-arrow"
           icon="cr:arrow-back"></iron-icon>
     </cr-button>
-    <div id="modalDialogTitleText">[[selectedFileName_]]</div>
+    <div id="modalDialogTitleText">[[selectedFileName]]</div>
   </div>
   <div id="mainPanel" class="dialog-main-panel">
     <div id="innerContentPanel" class="dialog-content-panel">
-      <img src="[[selectedImageUrl_]]" class="image-preview">
+      <img src="[[selectedImageUrl]]" class="image-preview">
     </div>
   </div>
 </dialog>
