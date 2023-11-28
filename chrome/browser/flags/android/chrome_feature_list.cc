@@ -113,7 +113,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kBackForwardCache,
     &features::kBackForwardTransitions,
     &features::kBlockMidiByDefault,
-    &features::kMetricsSettingsAndroid,
     &features::kNetworkServiceInProcess,
     &shared_highlighting::kPreemptiveLinkToTextGeneration,
     &features::kElasticOverscroll,

@@ -949,13 +949,6 @@ BASE_FEATURE(kShowHiddenNetworkToggle,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-// Enables the new design of metrics settings.
-BASE_FEATURE(kMetricsSettingsAndroid,
-             "MetricsSettingsAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 BASE_FEATURE(kMoveWebApp,
              "MoveWebApp",
              base::FeatureState::FEATURE_DISABLED_BY_DEFAULT);

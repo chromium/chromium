@@ -366,7 +366,6 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/language/android:java",
       "//chrome/browser/lens:java",
       "//chrome/browser/locale:java",
-      "//chrome/browser/metrics_settings/android:java",
       "//chrome/browser/notifications/chime/android:java",
       "//chrome/browser/omaha/android:java",
       "//chrome/browser/optimization_guide/android:java",

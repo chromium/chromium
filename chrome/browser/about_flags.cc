@@ -2925,22 +2925,6 @@ const FeatureEntry::Choice kCrostiniContainerChoices[] = {
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_ANDROID)
-// The variations of --metrics-settings-android.
-const FeatureEntry::FeatureParam kMetricsSettingsAndroidAlternativeOne[] = {
-    {"fre", "1"}};
-
-const FeatureEntry::FeatureParam kMetricsSettingsAndroidAlternativeTwo[] = {
-    {"fre", "2"}};
-
-const FeatureEntry::FeatureVariation kMetricsSettingsAndroidVariations[] = {
-    {"Alternative FRE 1", kMetricsSettingsAndroidAlternativeOne,
-     std::size(kMetricsSettingsAndroidAlternativeOne), nullptr},
-    {"Alternative FRE 2", kMetricsSettingsAndroidAlternativeTwo,
-     std::size(kMetricsSettingsAndroidAlternativeTwo), nullptr},
-};
-#endif  // BUILDFLAG(IS_ANDROID)
-
 #if !BUILDFLAG(IS_ANDROID)
 // SCT Auditing feature variations.
 const FeatureEntry::FeatureParam kSCTAuditingSamplingRateNone[] = {
@@ -8053,14 +8037,6 @@ const FeatureEntry kFeatureEntries[] = {
          kAutofillUseMobileLabelDisambiguationVariations,
          "AutofillUseMobileLabelDisambiguation")},
 #endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
-    {"metrics-settings-android", flag_descriptions::kMetricsSettingsAndroidName,
-     flag_descriptions::kMetricsSettingsAndroidDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kMetricsSettingsAndroid,
-                                    kMetricsSettingsAndroidVariations,
-                                    "MetricsSettingsAndroid")},
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"gesture-properties-dbus-service",

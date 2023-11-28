@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.sync.settings.GoogleServicesSettings;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
@@ -157,38 +156,6 @@ public class GoogleServicesSettingsTest {
                                 UserPrefs.get(Profile.getLastUsedRegularProfile())
                                         .getBoolean(Pref.SIGNIN_ALLOWED)));
         Assert.assertFalse("Chrome Signin should not be allowed", allowChromeSignin.isChecked());
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"Preference"})
-    @DisableFeatures(ChromeFeatureList.METRICS_SETTINGS_ANDROID)
-    public void testMetricsSettingsHiddenFlagOff() {
-        final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Assert.assertNull(
-                            "Metrics settings should be null when the flag is off.",
-                            googleServicesSettings.findPreference(
-                                    GoogleServicesSettings.PREF_METRICS_SETTINGS));
-                });
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"Preference"})
-    @EnableFeatures(ChromeFeatureList.METRICS_SETTINGS_ANDROID)
-    public void testMetricsSettingsShownFlagOn() {
-        final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Assert.assertNotNull(
-                            "Metrics settings should exist when the flag is on.",
-                            googleServicesSettings.findPreference(
-                                    GoogleServicesSettings.PREF_METRICS_SETTINGS));
-                });
     }
 
     @Test

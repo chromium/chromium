@@ -2267,10 +2267,6 @@ const char kMediaRouterCastAllowAllIPsDescription[] =
     "Have the Media Router connect to Cast devices on all IP addresses, not "
     "just RFC1918/RFC4193 private addresses.";
 
-const char kMetricsSettingsAndroidName[] = "Metrics Settings on Android";
-const char kMetricsSettingsAndroidDescription[] =
-    "Enables the new design of metrics settings.";
-
 const char kMojoLinuxChannelSharedMemName[] =
     "Enable Mojo Shared Memory Channel";
 const char kMojoLinuxChannelSharedMemDescription[] =

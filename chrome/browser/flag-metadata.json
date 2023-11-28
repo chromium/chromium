@@ -5392,15 +5392,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "metrics-settings-android",
-    "owners": [
-      "andzaytsev@chromium.org",
-      "msramek@chromium.org",
-      "chrome-privacy-controls@google.com"
-    ],
-    "expiry_milestone": 95
-  },
-  {
     "name": "microphone-mute-notifications",
     "owners": ["tbarzic@chromium.org", "rtinkoff@google.com", "amehfooz@chromium.org"],
     "expiry_milestone": 94

@@ -438,35 +438,6 @@ CHAR_LIMIT guidelines:
         Automatically sends usage statistics and crash reports to Google
       </message>
 
-      <!-- Metrics settings -->
-      <message name="IDS_PREFS_METRICS_SETTINGS" desc="Title for the page that allows the user to control how much usage data Chrome uploads. [CHAR_LIMIT=32]">
-        Usage data
-      </message>
-      <message name="IDS_MANAGE_METRICS_SETTINGS" desc="The text for a preferences row to open metrics settings.">
-        Manage usage data sharing
-      </message>
-      <message name="IDS_METRICS_SETTINGS_DESCRIPTION" desc="The text describing what the metrics settings page controls.">
-        Choose what you’re comfortable to share with Chrome. The metrics you share will be used to help improve Chrome’s features, performance, and stability.
-      </message>
-      <message name="IDS_METRICS_SETTINGS_EXTENDED_TITLE" desc="Title for the extended metrics option.">
-        Extended usage data
-      </message>
-      <message name="IDS_METRICS_SETTINGS_EXTENDED_SUMMARY" desc="Description text for 'Extended usage data' option in Usage data settings that enables extended metrics collection. Other options are 'Basic usage data' and 'No usage data'.">
-        Basic data plus information about the websites you visit and apps you use
-      </message>
-      <message name="IDS_METRICS_SETTINGS_BASIC_TITLE" desc="Title for the basic metrics option.">
-        Basic usage data
-      </message>
-      <message name="IDS_METRICS_SETTINGS_BASIC_SUMMARY" desc="Description text for 'Basic usage data' option in Usage data settings that enables basic metrics collection. Other options are 'Extended usage data' and 'No usage data'.">
-        How you interact with Chrome, settings you’ve selected, details of Chrome crashes
-      </message>
-      <message name="IDS_METRICS_SETTINGS_NONE_TITLE" desc="Title for no metrics option.">
-        No usage data
-      </message>
-      <message name="IDS_METRICS_SETTINGS_NONE_SUMMARY" desc="Description text for 'No usage data' option in Usage data settings that disables metrics collection. Other options are 'Extended usage data' and 'Basic usage data'.">
-        No statistics or crash reports are sent to Google
-      </message>
-
       <!-- Search engine settings -->
       <message name="IDS_SEARCH_ENGINE_SETTINGS" desc="Title for Search Engine settings. [CHAR_LIMIT=32]">
         Search engine

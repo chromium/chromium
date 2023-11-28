@@ -20,7 +20,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.metrics.ChangeMetricsReportingStateCalledFrom;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -68,9 +67,6 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
 
     @VisibleForTesting
     public static final String PREF_USAGE_STATS_REPORTING = "usage_stats_reporting";
-
-    @VisibleForTesting public static final String PREF_METRICS_SETTINGS = "metrics_settings";
-
     @VisibleForTesting
     public static final String PREF_PRICE_TRACKING_ANNOTATIONS = "price_tracking_annotations";
 
@@ -115,11 +111,6 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
         mSearchSuggestions = (ChromeSwitchPreference) findPreference(PREF_SEARCH_SUGGESTIONS);
         mSearchSuggestions.setOnPreferenceChangeListener(this);
         mSearchSuggestions.setManagedPreferenceDelegate(mManagedPreferenceDelegate);
-
-        // If the metrics-settings-android flag is not enabled, remove the corresponding element.
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.METRICS_SETTINGS_ANDROID)) {
-            removePreference(getPreferenceScreen(), findPreference(PREF_METRICS_SETTINGS));
-        }
 
         mUsageAndCrashReporting =
                 (ChromeSwitchPreference) findPreference(PREF_USAGE_AND_CRASH_REPORTING);

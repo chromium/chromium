@@ -1281,9 +1281,6 @@ extern const char kUnthrottledNestedTimeoutDescription[];
 extern const char kMediaRouterCastAllowAllIPsName[];
 extern const char kMediaRouterCastAllowAllIPsDescription[];
 
-extern const char kMetricsSettingsAndroidName[];
-extern const char kMetricsSettingsAndroidDescription[];
-
 extern const char kMojoLinuxChannelSharedMemName[];
 extern const char kMojoLinuxChannelSharedMemDescription[];
 
