@@ -7,10 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
+
 @protocol PrivacyGuideWelcomeViewControllerPresentationDelegate;
 
 // View controller for the Privacy Guide Welcome step.
-@interface PrivacyGuideWelcomeViewController : UITableViewController
+@interface PrivacyGuideWelcomeViewController : PromoStyleViewController
 
 // Presentation delegate.
 @property(nonatomic, weak)
