@@ -42,7 +42,10 @@ CommonConnectJobParams::CommonConnectJobParams(
     NetworkQualityEstimator* network_quality_estimator,
     NetLog* net_log,
     WebSocketEndpointLockManager* websocket_endpoint_lock_manager,
-    HttpServerProperties* http_server_properties)
+    HttpServerProperties* http_server_properties,
+    const NextProtoVector* alpn_protos,
+    const SSLConfig::ApplicationSettings* application_settings,
+    const bool* ignore_certificate_errors)
     : client_socket_factory(client_socket_factory),
       host_resolver(host_resolver),
       http_auth_cache(http_auth_cache),
@@ -57,7 +60,10 @@ CommonConnectJobParams::CommonConnectJobParams(
       network_quality_estimator(network_quality_estimator),
       net_log(net_log),
       websocket_endpoint_lock_manager(websocket_endpoint_lock_manager),
-      http_server_properties(http_server_properties) {}
+      http_server_properties(http_server_properties),
+      alpn_protos(alpn_protos),
+      application_settings(application_settings),
+      ignore_certificate_errors(ignore_certificate_errors) {}
 
 CommonConnectJobParams::CommonConnectJobParams(
     const CommonConnectJobParams& other) = default;
