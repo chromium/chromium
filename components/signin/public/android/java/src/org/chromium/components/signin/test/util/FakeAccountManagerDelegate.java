@@ -100,6 +100,10 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
         ThreadUtils.runOnUiThreadBlocking(mObserver::onCoreAccountInfosChanged);
     }
 
+    public void callOnCoreAccountInfoChanged() {
+        ThreadUtils.runOnUiThreadBlocking(mObserver::onCoreAccountInfosChanged);
+    }
+
     @Override
     public AccessTokenData getAuthToken(Account account, String scope) throws AuthException {
         AccountHolder accountHolder = tryGetAccountHolder(account);

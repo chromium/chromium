@@ -19,12 +19,15 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.components.signin.AccountManagerDelegate.CapabilityResponse;
 import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -46,9 +49,17 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
      */
     @VisibleForTesting public static final String FEATURE_IS_USM_ACCOUNT_KEY = "service_usm";
 
+    /** The maximum amount of acceptable retries (for a total of MAXIMUM_RETRIES+1 attempts). */
+    @VisibleForTesting public static final int MAXIMUM_RETRIES = 5;
+
     // Prefix used to define the capability name for querying Identity services. This
     // prefix is not required for Android queries to GmsCore.
     private static final String ACCOUNT_CAPABILITY_NAME_PREFIX = "accountcapabilities/";
+
+    // Time, in milliseconds, between two attempts to fetch the accounts.
+    private static final long GET_ACCOUNTS_BACKOFF_DELAY = 1000L;
+
+    private static final String TAG = "AccountManager";
 
     private final AccountManagerDelegate mDelegate;
 
@@ -63,6 +74,8 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     private @NonNull Promise<List<CoreAccountInfo>> mCoreAccountInfosPromise = new Promise<>();
 
     private @Nullable AsyncTask<List<String>> mFetchGaiaIdsTask;
+
+    private int mNumberOfRetries;
 
     /** @param delegate the AccountManagerDelegate to use as a backend */
     public AccountManagerFacadeImpl(AccountManagerDelegate delegate) {
@@ -309,16 +322,49 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         ThreadUtils.assertOnUiThread();
         new AsyncTask<List<Account>>() {
             @Override
-            protected List<Account> doInBackground() {
-                return Collections.unmodifiableList(Arrays.asList(mDelegate.getAccounts()));
+            protected @Nullable List<Account> doInBackground() {
+                try {
+                    return Collections.unmodifiableList(
+                            Arrays.asList(mDelegate.getAccountsSynchronous()));
+                } catch (AccountManagerDelegateException delegateException) {
+                    // TODO(crbug.com/1504732): Record error metrics for this exception.
+                    Log.e(TAG, "Error fetching accounts from the delegate.", delegateException);
+                    return null;
+                }
             }
 
             @Override
-            protected void onPostExecute(List<Account> allAccounts) {
+            protected void onPostExecute(@Nullable List<Account> allAccounts) {
+                if (allAccounts == null) {
+                    if (shouldRetry()) {
+                        // Wait for a fixed amount of time then try to fetch the accounts again.
+                        PostTask.postDelayedTask(
+                                TaskTraits.UI_USER_VISIBLE,
+                                () -> {
+                                    onAccountsUpdated();
+                                },
+                                GET_ACCOUNTS_BACKOFF_DELAY);
+                        return;
+                    } else {
+                        // We shouldn't wait indefinitely for the account fetching to succeed, at it
+                        // might block certain features. Fall back to an empty list to allow the
+                        // user to proceed.
+                        allAccounts = List.of();
+                    }
+                }
+                mNumberOfRetries = 0;
                 mAllAccounts.set(allAccounts);
                 updateAccounts();
             }
         }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+    }
+
+    private boolean shouldRetry() {
+        if (mNumberOfRetries < MAXIMUM_RETRIES) {
+            mNumberOfRetries += 1;
+            return true;
+        }
+        return false;
     }
 
     private void onAccountRestrictionPatternsUpdated(List<PatternMatcher> patternMatchers) {
