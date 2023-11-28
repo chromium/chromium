@@ -104,9 +104,7 @@ void CloseNotification() {
 
 class NotificationDelegateImpl : public message_center::NotificationDelegate {
  public:
-  explicit NotificationDelegateImpl(
-      base::WeakPtr<NetworkPortalSigninController> signin_controller)
-      : signin_controller_(signin_controller) {}
+  NotificationDelegateImpl() = default;
   NotificationDelegateImpl(const NotificationDelegateImpl&) = delete;
   NotificationDelegateImpl& operator=(const NotificationDelegateImpl&) = delete;
 
@@ -116,17 +114,13 @@ class NotificationDelegateImpl : public message_center::NotificationDelegate {
 
  private:
   ~NotificationDelegateImpl() override = default;
-
-  base::WeakPtr<NetworkPortalSigninController> signin_controller_;
 };
 
 void NotificationDelegateImpl::Click(
     const absl::optional<int>& button_index,
     const absl::optional<std::u16string>& reply) {
-  if (signin_controller_) {
-    signin_controller_->ShowSignin(
-        NetworkPortalSigninController::SigninSource::kNotification);
-  }
+  NetworkPortalSigninController::Get()->ShowSignin(
+      NetworkPortalSigninController::SigninSource::kNotification);
   CloseNotification();
 }
 
@@ -162,10 +156,9 @@ void NetworkPortalNotificationController::PortalStateChanged(
     // In browser tests we initiate fake network portal detection, but network
     // state usually stays connected. This way, after dialog is shown, it is
     // immediately closed. The testing check below prevents dialog from closing.
-    if (signin_controller_ &&
-        (!ignore_no_network_for_testing_ ||
-         portal_state == NetworkState::PortalState::kOnline)) {
-      signin_controller_->CloseSignin();
+    if (!ignore_no_network_for_testing_ ||
+        portal_state == NetworkState::PortalState::kOnline) {
+      NetworkPortalSigninController::Get()->CloseSignin();
     }
 
     CloseNotification();
@@ -196,8 +189,7 @@ void NetworkPortalNotificationController::PortalStateChanged(
 }
 
 void NetworkPortalNotificationController::OnShuttingDown() {
-  if (signin_controller_)
-    signin_controller_->CloseSignin();
+  NetworkPortalSigninController::Get()->CloseSignin();
   NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
 }
 
@@ -207,8 +199,7 @@ void NetworkPortalNotificationController::OnSessionStateChanged() {
   session_manager::SessionState state =
       session_manager::SessionManager::Get()->session_state();
   if (state == session_manager::SessionState::LOCKED) {
-    if (signin_controller_)
-      signin_controller_->CloseSignin();
+    NetworkPortalSigninController::Get()->CloseSignin();
   }
 }
 
@@ -216,9 +207,7 @@ std::unique_ptr<message_center::Notification>
 NetworkPortalNotificationController::CreateDefaultCaptivePortalNotification(
     const NetworkState* network,
     NetworkState::PortalState portal_state) {
-  signin_controller_ = std::make_unique<NetworkPortalSigninController>();
-  auto notification_delegate = base::MakeRefCounted<NotificationDelegateImpl>(
-      signin_controller_->GetWeakPtr());
+  auto notification_delegate = base::MakeRefCounted<NotificationDelegateImpl>();
   message_center::NotifierId notifier_id(
       message_center::NotifierType::SYSTEM_COMPONENT,
       kNotifierNetworkPortalDetector,

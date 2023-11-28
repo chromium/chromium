@@ -25,9 +25,7 @@ bool IsUIAvailable() {
 }  // namespace
 
 NetworkConnectDelegate::NetworkConnectDelegate()
-    : network_state_notifier_(std::make_unique<ash::NetworkStateNotifier>()),
-      network_portal_signin_controller_(
-          std::make_unique<ash::NetworkPortalSigninController>()) {}
+    : network_state_notifier_(std::make_unique<ash::NetworkStateNotifier>()) {}
 
 NetworkConnectDelegate::~NetworkConnectDelegate() = default;
 
@@ -82,7 +80,7 @@ void NetworkConnectDelegate::ShowPortalSignin(
           ash::NetworkPortalSigninController::SigninSource::kQuickSettings;
       break;
   }
-  network_portal_signin_controller_->ShowSignin(signin_source);
+  ash::NetworkPortalSigninController::Get()->ShowSignin(signin_source);
 }
 
 void NetworkConnectDelegate::ShowNetworkConnectError(
