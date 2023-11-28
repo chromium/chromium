@@ -143,7 +143,9 @@ void CheckPasswordDetailsVisitMetricCount(int count) {
       [self
           isRunningTest:@selector
           (testOpenPasswordBottomSheetOpenPasswordDetailsWithFailedAuthentication
-              )]) {
+              )] ||
+      [self
+          isRunningTest:@selector(testOpenPasswordBottomSheetDeletePassword)]) {
     config.features_enabled.push_back(
         password_manager::features::kIOSPasswordAuthOnEntryV2);
   }
@@ -607,6 +609,10 @@ id<GREYMatcher> NavigationBarEditButton() {
 
   [ChromeEarlGreyUI waitForAppToIdle];
 
+  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
+
   [[EarlGrey
       selectElementWithMatcher:
           grey_allOf(chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
@@ -614,10 +620,6 @@ id<GREYMatcher> NavigationBarEditButton() {
                      grey_interactable(), nullptr)] performAction:grey_tap()];
 
   [ChromeEarlGreyUI waitForAppToIdle];
-
-  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
-  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
-                                    ReauthenticationResult::kSuccess];
 
   [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
       performAction:grey_tap()];
