@@ -60,7 +60,8 @@ class FakeSafeBrowsingDatabaseManager
                          Client* client) override;
 
  private:
-  void OnCheckUrlForSubresourceFilterComplete(Client* client, const GURL& url);
+  void OnCheckUrlForSubresourceFilterComplete(base::WeakPtr<Client> client,
+                                              const GURL& url);
 
   std::set<Client*> checks_;
   std::map<
