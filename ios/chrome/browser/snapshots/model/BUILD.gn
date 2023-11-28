@@ -8,9 +8,8 @@ source_set("model") {
   public = [
     "image_file_manager.h",
     "snapshot_browser_agent.h",
+    "snapshot_generator_delegate.h",
     "snapshot_lru_cache.h",
-    "snapshot_manager.h",
-    "snapshot_manager_delegate.h",
     "snapshot_scale.h",
     "snapshot_storage+Testing.h",
     "snapshot_storage.h",
@@ -20,7 +19,10 @@ source_set("model") {
   sources = [
     "image_file_manager.mm",
     "snapshot_browser_agent.mm",
+    "snapshot_generator.h",
+    "snapshot_generator.mm",
     "snapshot_lru_cache.mm",
+    "snapshot_manager.h",
     "snapshot_manager.mm",
     "snapshot_scale.mm",
     "snapshot_storage.mm",
@@ -69,8 +71,8 @@ swift_source_set("model_swift") {
 source_set("test_utils") {
   testonly = true
   sources = [
-    "fake_snapshot_manager_delegate.h",
-    "fake_snapshot_manager_delegate.mm",
+    "fake_snapshot_generator_delegate.h",
+    "fake_snapshot_generator_delegate.mm",
   ]
   deps = [ ":model" ]
 }

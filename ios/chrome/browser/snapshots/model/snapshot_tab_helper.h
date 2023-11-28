@@ -15,7 +15,7 @@
 
 @class SnapshotStorage;
 @class SnapshotManager;
-@protocol SnapshotManagerDelegate;
+@protocol SnapshotGeneratorDelegate;
 
 namespace web {
 class WebState;
@@ -32,7 +32,7 @@ class SnapshotTabHelper : public web::WebStateObserver,
 
   // Sets the delegate. Capturing snapshot before setting a delegate will
   // results in failures. The delegate is not owned by the tab helper.
-  void SetDelegate(id<SnapshotManagerDelegate> delegate);
+  void SetDelegate(id<SnapshotGeneratorDelegate> delegate);
 
   // Sets the snapshot storage to be used to store and retrieve snapshots. This
   // is not owned by the tab helper.

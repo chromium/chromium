@@ -17,7 +17,7 @@ class PrerenderService;
 @class PrintCoordinator;
 @protocol RepostFormTabHelperDelegate;
 @class SadTabCoordinator;
-@protocol SnapshotManagerDelegate;
+@protocol SnapshotGeneratorDelegate;
 class TabInsertionBrowserAgent;
 class WebStateList;
 @protocol NetExportTabHelperDelegate;
@@ -50,7 +50,8 @@ class WebStateList;
     overscrollActionsDelegate;
 @property(nonatomic, weak) id<PasswordControllerDelegate>
     passwordControllerDelegate;
-@property(nonatomic, weak) id<SnapshotManagerDelegate> snapshotManagerDelegate;
+@property(nonatomic, weak) id<SnapshotGeneratorDelegate>
+    snapshotGeneratorDelegate;
 @property(nonatomic, weak) id<AppLauncherTabHelperBrowserPresentationProvider>
     appLauncherBrowserPresentationProvider;
 

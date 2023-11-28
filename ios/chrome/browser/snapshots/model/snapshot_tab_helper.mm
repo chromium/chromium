@@ -45,8 +45,8 @@ SnapshotTabHelper::~SnapshotTabHelper() {
   DCHECK(!web_state_);
 }
 
-void SnapshotTabHelper::SetDelegate(id<SnapshotManagerDelegate> delegate) {
-  snapshot_manager_.delegate = delegate;
+void SnapshotTabHelper::SetDelegate(id<SnapshotGeneratorDelegate> delegate) {
+  [snapshot_manager_ setDelegate:delegate];
 }
 
 void SnapshotTabHelper::SetSnapshotStorage(SnapshotStorage* snapshot_storage) {

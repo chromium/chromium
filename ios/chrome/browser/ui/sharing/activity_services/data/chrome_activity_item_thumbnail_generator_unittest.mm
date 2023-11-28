@@ -6,7 +6,7 @@
 
 #import "base/task/thread_pool.h"
 #import "base/test/task_environment.h"
-#import "ios/chrome/browser/snapshots/model/fake_snapshot_manager_delegate.h"
+#import "ios/chrome/browser/snapshots/model/fake_snapshot_generator_delegate.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/platform_test.h"
@@ -17,7 +17,7 @@ namespace {
 class ChromeActivityItemThumbnailGeneratorTest : public PlatformTest {
  protected:
   ChromeActivityItemThumbnailGeneratorTest() {
-    delegate_ = [[FakeSnapshotManagerDelegate alloc] init];
+    delegate_ = [[FakeSnapshotGeneratorDelegate alloc] init];
     CGRect frame = {CGPointZero, CGSizeMake(400, 300)};
     delegate_.view = [[UIView alloc] initWithFrame:frame];
     delegate_.view.backgroundColor = [UIColor redColor];
@@ -26,7 +26,7 @@ class ChromeActivityItemThumbnailGeneratorTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment_;
-  FakeSnapshotManagerDelegate* delegate_ = nil;
+  FakeSnapshotGeneratorDelegate* delegate_ = nil;
   web::FakeWebState fake_web_state_;
 };
 

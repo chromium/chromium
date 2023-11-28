@@ -9,7 +9,8 @@
 
 class SnapshotID;
 @class SnapshotStorage;
-@protocol SnapshotManagerDelegate;
+@class SnapshotGenerator;
+@protocol SnapshotGeneratorDelegate;
 
 namespace web {
 class WebState;
@@ -19,12 +20,13 @@ class WebState;
 // tab's web page. This lives on the UI thread.
 @interface SnapshotManager : NSObject
 
-// Weak reference to the snapshot storage which is used to store and retrieve
-// snapshots for the WebState associated with this SnapshotManager.
-@property(nonatomic, weak) SnapshotStorage* snapshotStorage;
+// Strong reference to the snapshot generator which is used to generate
+// snapshots.
+@property(nonatomic, readonly) SnapshotGenerator* snapshotGenerator;
 
-// The SnapshotManager delegate.
-@property(nonatomic, weak) id<SnapshotManagerDelegate> delegate;
+// Weak reference to the snapshot storage which is used to store and retrieve
+// snapshots. SnapshotStorage is owned by SnapshotBrowserAgent.
+@property(nonatomic, weak) SnapshotStorage* snapshotStorage;
 
 // The snapshot ID.
 @property(nonatomic, readonly) SnapshotID snapshotID;
@@ -45,13 +47,13 @@ class WebState;
 - (void)retrieveGreySnapshot:(void (^)(UIImage*))callback;
 
 // Asynchronously generates a new snapshot with WebKit-based snapshot API,
-// updates the snapshot storage, and runs `callback` with the new snapshot
+// updates the snapshot storage, and runs a callback with the new snapshot
 // image. It is an error to call this method if the web state is showing
 // anything other (e.g., native content) than a web view.
 - (void)updateWKWebViewSnapshotWithCompletion:(void (^)(UIImage*))completion;
 
 // Generates a new snapshot with UIKit-based snapshot API, updates the snapshot
-// storage, and runs `callback` with the new snapshot image.
+// storage, and runs a callback with the new snapshot image.
 - (void)updateUIViewSnapshotWithCompletion:(void (^)(UIImage*))completion;
 
 // Generates and returns a new snapshot image with UIKit-based snapshot API.
@@ -69,6 +71,10 @@ class WebState;
 
 // Requests deletion of the current page snapshot from disk and memory.
 - (void)removeSnapshot;
+
+// Sets the delegate to SnapshotGenerator. Generating snapshots before setting a
+// delegate will fail. The delegate is not owned by the tab helper.
+- (void)setDelegate:(id<SnapshotGeneratorDelegate>)delegate;
 
 @end
 

@@ -2,32 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/snapshots/model/fake_snapshot_manager_delegate.h"
+#import "ios/chrome/browser/snapshots/model/fake_snapshot_generator_delegate.h"
 
-@implementation FakeSnapshotManagerDelegate
+@implementation FakeSnapshotGeneratorDelegate
 
 @synthesize view = _view;
 
-- (BOOL)snapshotManager:(SnapshotManager*)snapshotManager
+- (BOOL)snapshotGenerator:(SnapshotGenerator*)snapshotGenerator
     canTakeSnapshotForWebState:(web::WebState*)webState {
   return YES;
 }
 
-- (UIEdgeInsets)snapshotManager:(SnapshotManager*)snapshotManager
+- (UIEdgeInsets)snapshotGenerator:(SnapshotGenerator*)snapshotGenerator
     snapshotEdgeInsetsForWebState:(web::WebState*)webState {
   return UIEdgeInsetsZero;
 }
 
-- (NSArray<UIView*>*)snapshotManager:(SnapshotManager*)snapshotManager
+- (NSArray<UIView*>*)snapshotGenerator:(SnapshotGenerator*)snapshotGenerator
            snapshotOverlaysForWebState:(web::WebState*)webState {
   return nil;
 }
 
-- (void)snapshotManager:(SnapshotManager*)snapshotManager
+- (void)snapshotGenerator:(SnapshotGenerator*)snapshotGenerator
     willUpdateSnapshotForWebState:(web::WebState*)webState {
 }
 
-- (UIView*)snapshotManager:(SnapshotManager*)snapshotManager
+- (UIView*)snapshotGenerator:(SnapshotGenerator*)snapshotGenerator
          baseViewForWebState:(web::WebState*)webState {
   return self.view;
 }
