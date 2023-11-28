@@ -6428,8 +6428,6 @@ static_library("ui") {
       "extensions/extension_installed_bubble_model.h",
       "extensions/extension_installed_waiter.cc",
       "extensions/extension_installed_waiter.h",
-      "extensions/extension_message_bubble_bridge.cc",
-      "extensions/extension_message_bubble_bridge.h",
       "extensions/extension_popup_types.h",
       "extensions/extension_settings_overridden_dialog.cc",
       "extensions/extension_settings_overridden_dialog.h",
