@@ -8,7 +8,6 @@ import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
-import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -113,7 +112,6 @@ public class ToolbarPhone extends ToolbarLayout
     private static final int URL_CLEAR_FOCUS_MENU_DELAY_MS = 250;
 
     // Values used during animation to show/hide optional toolbar button.
-    public static final int LOC_BAR_WIDTH_CHANGE_ANIMATION_DURATION_MS = 225;
     private static final float UNINITIALIZED_FRACTION = -1f;
 
     /** States that the toolbar can be in regarding the tab switcher. */
@@ -314,7 +312,7 @@ public class ToolbarPhone extends ToolbarLayout
     // to avoid the cost of reflection for each animation setup.
 
     private final FloatProperty<ToolbarPhone> mUrlFocusChangeFractionProperty =
-            new FloatProperty<ToolbarPhone>("") {
+            new FloatProperty<>("") {
                 @Override
                 public Float get(ToolbarPhone object) {
                     return object.mUrlFocusChangeFraction;
@@ -357,9 +355,9 @@ public class ToolbarPhone extends ToolbarLayout
         try (TraceEvent te = TraceEvent.scoped("ToolbarPhone.onFinishInflate")) {
             super.onFinishInflate();
 
-            mToolbarButtonsContainer = (ViewGroup) findViewById(R.id.toolbar_buttons);
+            mToolbarButtonsContainer = findViewById(R.id.toolbar_buttons);
             mHomeButton = findViewById(R.id.home_button);
-            mUrlBar = (TextView) findViewById(R.id.url_bar);
+            mUrlBar = findViewById(R.id.url_bar);
             mUrlActionContainer = findViewById(R.id.url_action_container);
             mToolbarBackground =
                     new ColorDrawable(getToolbarColorForVisualState(VisualState.NORMAL));
@@ -1205,7 +1203,7 @@ public class ToolbarPhone extends ToolbarLayout
 
             // Only transition theme colors if in static tab mode that is not the NTP. In practice
             // this only runs when you focus the omnibox on a web page.
-            // In NTP, toolbar and locationbar need to transite color only when the omnibox is
+            // In NTP, toolbar and locationbar need to transition color only when the omnibox is
             // focused. When the fake omnibox is scrolled, the color should not change.
             if (((mShouldShowModernizeVisualUpdate && mLocationBar.getPhoneCoordinator().hasFocus())
                             || (mIsSurfacePolishEnabled
@@ -1779,7 +1777,7 @@ public class ToolbarPhone extends ToolbarLayout
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
 
-        mToolbarShadow = (ImageView) getRootView().findViewById(R.id.toolbar_hairline);
+        mToolbarShadow = getRootView().findViewById(R.id.toolbar_hairline);
         updateShadowVisibility();
     }
 
@@ -2529,22 +2527,17 @@ public class ToolbarPhone extends ToolbarLayout
                 ValueAnimator.ofFloat(0, 1).setDuration(THEME_COLOR_TRANSITION_DURATION);
         mBrandColorTransitionAnimation.setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
         mBrandColorTransitionAnimation.addUpdateListener(
-                new AnimatorUpdateListener() {
-                    @Override
-                    public void onAnimationUpdate(ValueAnimator animation) {
-                        float fraction = animation.getAnimatedFraction();
-                        if (shouldAnimateAlpha) {
-                            mLocationBarBackgroundAlpha =
-                                    (int)
-                                            (MathUtils.interpolate(
-                                                    initialAlpha, finalAlpha, fraction));
-                        }
-                        updateToolbarBackground(
-                                ColorUtils.getColorWithOverlay(initialColor, finalColor, fraction));
-                        updateModernLocationBarColor(
-                                ColorUtils.getColorWithOverlay(
-                                        initialLocationBarColor, finalLocationBarColor, fraction));
+                (ValueAnimator animation) -> {
+                    float fraction = animation.getAnimatedFraction();
+                    if (shouldAnimateAlpha) {
+                        mLocationBarBackgroundAlpha =
+                                (int) (MathUtils.interpolate(initialAlpha, finalAlpha, fraction));
                     }
+                    updateToolbarBackground(
+                            ColorUtils.getColorWithOverlay(initialColor, finalColor, fraction));
+                    updateModernLocationBarColor(
+                            ColorUtils.getColorWithOverlay(
+                                    initialLocationBarColor, finalLocationBarColor, fraction));
                 });
         mBrandColorTransitionAnimation.addListener(
                 new CancelAwareAnimatorListener() {
