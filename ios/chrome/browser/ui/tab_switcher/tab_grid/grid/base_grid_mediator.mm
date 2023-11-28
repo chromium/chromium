@@ -1254,7 +1254,6 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
 
 - (void)removeFromSelectionItemID:(web::WebStateID)itemID {
   if (self.currentMode != TabGridModeSelection) {
-    base::debug::DumpWithoutCrashing();
     return;
   }
   _selectedEditingItemIDs.erase(itemID);
