@@ -137,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsCrosapiBrowserTest, PinUsingContextMenu) {
   const webapps::AppId app_id =
       InstallWebApp("https://example.org/", apps::WindowMode::kWindow);
 
-  EXPECT_EQ(ash::ShelfModel::Get()->ItemIndexByAppID(app_id), -1);
+  EXPECT_FALSE(ash::ShelfModel::Get()->ItemByID(ash::ShelfID(app_id)));
 
   {
     AppInstanceWaiter waiter(AppServiceProxy()->InstanceRegistry(), app_id);
@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsCrosapiBrowserTest, PinUsingContextMenu) {
     waiter.Await();
   }
 
-  EXPECT_NE(ash::ShelfModel::Get()->ItemIndexByAppID(app_id), -1);
+  EXPECT_TRUE(ash::ShelfModel::Get()->ItemByID(ash::ShelfID(app_id)));
   {
     std::vector<std::string> items = GetContextMenuForApp(app_id);
     ASSERT_EQ(5u, items.size());
@@ -168,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsCrosapiBrowserTest, PinUsingContextMenu) {
     waiter.Await();
   }
 
-  EXPECT_NE(ash::ShelfModel::Get()->ItemIndexByAppID(app_id), -1);
+  EXPECT_TRUE(ash::ShelfModel::Get()->ItemByID(ash::ShelfID(app_id)));
   {
     std::vector<std::string> items = GetContextMenuForApp(app_id);
     // Close is absent as there are no open windows.
@@ -186,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsCrosapiBrowserTest, PinUsingContextMenu) {
     waiter.Await();
   }
 
-  EXPECT_NE(ash::ShelfModel::Get()->ItemIndexByAppID(app_id), -1);
+  EXPECT_TRUE(ash::ShelfModel::Get()->ItemByID(ash::ShelfID(app_id)));
   {
     std::vector<std::string> items = GetContextMenuForApp(app_id);
     ASSERT_EQ(5u, items.size());
@@ -204,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsCrosapiBrowserTest, PinUsingContextMenu) {
     waiter.Await();
   }
 
-  EXPECT_EQ(ash::ShelfModel::Get()->ItemIndexByAppID(app_id), -1);
+  EXPECT_FALSE(ash::ShelfModel::Get()->ItemByID(ash::ShelfID(app_id)));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppsCrosapiBrowserTest, Uninstall) {
@@ -225,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsCrosapiBrowserTest, Uninstall) {
     waiter.Await();
   }
 
-  EXPECT_NE(ash::ShelfModel::Get()->ItemIndexByAppID(app_id), -1);
+  EXPECT_TRUE(ash::ShelfModel::Get()->ItemByID(ash::ShelfID(app_id)));
 
   {
     base::test::TestFuture<void> signal;
@@ -242,7 +242,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsCrosapiBrowserTest, Uninstall) {
   }
 
   AppUninstallDialogView::GetActiveViewForTesting()->CancelDialog();
-  EXPECT_NE(ash::ShelfModel::Get()->ItemIndexByAppID(app_id), -1);
+  EXPECT_TRUE(ash::ShelfModel::Get()->ItemByID(ash::ShelfID(app_id)));
 
   SelectContextMenuForApp(app_id, kPinIndex);
 
@@ -270,7 +270,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsCrosapiBrowserTest, Uninstall) {
     app_instance_waiter.Await();
   }
 
-  EXPECT_EQ(ash::ShelfModel::Get()->ItemIndexByAppID(app_id), -1);
+  EXPECT_FALSE(ash::ShelfModel::Get()->ItemByID(ash::ShelfID(app_id)));
 }
 
 namespace {
