@@ -136,25 +136,6 @@ const ash::NetworkState* GetShillBackedNetwork(
   return GetStateHandler()->GetNetworkStateFromGuid(network->tether_guid());
 }
 
-// Checks if a NetworkState should be forwarded to Android guest.
-bool ShouldForwardToAndroid(const ash::NetworkState* state,
-                            const std::string& arc_vpn_path) {
-  // Never tell Android about its own VPN.
-  if (state->path() == arc_vpn_path) {
-    return false;
-  }
-
-  // For tethered networks, the underlying WiFi networks are not part of
-  // active networks. Replace any such tethered network with its underlying
-  // backing network, because ARC cannot match its datapath with the tethered
-  // network configuration.
-  if (!GetShillBackedNetwork(state)) {
-    return false;
-  }
-
-  return true;
-}
-
 std::string IPv4AddressToString(uint32_t addr) {
   char buf[INET_ADDRSTRLEN] = {0};
   struct in_addr ia;
@@ -529,16 +510,27 @@ std::vector<arc::mojom::NetworkConfigurationPtr> TranslateNetworkStates(
   }
 
   std::vector<arc::mojom::NetworkConfigurationPtr> networks;
-  for (const ash::NetworkState* state : network_states) {
-    if (!ShouldForwardToAndroid(state, arc_vpn_path)) {
+  for (const ash::NetworkState* const state : network_states) {
+    // Never tell Android about its own VPN.
+    if (state->path() == arc_vpn_path) {
+      continue;
+    }
+    // For networks established with instant tethering, the underlying WiFi
+    // networks are not part of active networks. Replace any such tethered
+    // network with its underlying backing network, because ARC cannot match its
+    // datapath with the tethered network configuration. For other cases, the
+    // underlying_state is identical to state.
+    const ash::NetworkState* const underlying_state =
+        GetShillBackedNetwork(state);
+    if (!underlying_state) {
       continue;
     }
 
-    const auto it = shill_network_properties.find(state->path());
+    const auto it = shill_network_properties.find(underlying_state->path());
     const base::Value::Dict* shill_dict =
         (it != shill_network_properties.end()) ? &it->second : nullptr;
     auto network = arc::mojom::NetworkConfiguration::New();
-    FillConfigurationsFromState(state, shill_dict, network.get());
+    FillConfigurationsFromState(underlying_state, shill_dict, network.get());
 
     // Fill in ARC properties.
     auto arc_it =
