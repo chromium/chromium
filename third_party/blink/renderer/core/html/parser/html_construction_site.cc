@@ -501,7 +501,8 @@ HTMLConstructionSite::HTMLConstructionSite(
       in_quirks_mode_(document.InQuirksMode()),
       canonicalize_whitespace_strings_(
           RuntimeEnabledFeatures::CanonicalizeWhitespaceStringsEnabled()) {
-  DCHECK(document_->IsHTMLDocument() || document_->IsXHTMLDocument());
+  DCHECK(document_->IsHTMLDocument() || document_->IsXHTMLDocument() ||
+         is_parsing_fragment_);
 
   DCHECK_EQ(!fragment, !context_element);
   if (fragment) {
@@ -617,6 +618,8 @@ void HTMLConstructionSite::SetCompatibilityModeFromDoctype(
   // treatment of line-height in the inline box model.
   // No Quirks - no quirks apply. Web pages will obey the specifications to the
   // letter.
+
+  DCHECK(document_->IsHTMLDocument() || document_->IsXHTMLDocument());
 
   // Check for Quirks Mode.
   if (tag != html_names::HTMLTag::kHTML ||

@@ -184,6 +184,21 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
           Document*,
           ConstructionType = kCreateElement);
 
+  // IncludeShadowRoots and ForceHtml are used as parameters for HTML
+  // serialization and parsing functions in Element and serialization.h.
+  // IncludeShadowRoots specifies whether ShadowRoots should be included in the
+  // serialized HTML.
+  // ForceHtml specifies whether the HTML parser should be used when parsing
+  // markup even if we are in an XML document.
+  enum class IncludeShadowRoots {
+    kDontInclude = 0,
+    kInclude = 1,
+  };
+  enum class ForceHtml {
+    kDontForce = 0,
+    kForce = 1,
+  };
+
   // Animatable implementation.
   Element* GetAnimationTarget() override;
 
@@ -1656,7 +1671,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
                                                         const AtomicString&);
 
   void SetInnerHTMLInternal(const String&,
-                            bool include_shadow_roots,
+                            IncludeShadowRoots include_shadow_roots,
+                            ForceHtml force_html_over_xml,
                             ExceptionState&);
 
   ElementRareDataVector* GetElementRareData() const;

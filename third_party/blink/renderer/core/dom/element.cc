@@ -6500,14 +6500,15 @@ String Element::outerHTML() const {
 }
 
 void Element::SetInnerHTMLInternal(const String& html,
-                                   bool include_shadow_roots,
+                                   IncludeShadowRoots include_shadow_roots,
+                                   ForceHtml force_html,
                                    ExceptionState& exception_state) {
   if (html.empty() && !HasNonInBodyInsertionMode()) {
     setTextContent(html);
   } else {
     if (DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
             html, this, kAllowScriptingContent, include_shadow_roots,
-            exception_state)) {
+            force_html, exception_state)) {
       ContainerNode* container = this;
       bool swap_dom_parts{false};
       if (auto* template_element = DynamicTo<HTMLTemplateElement>(*this)) {
@@ -6534,13 +6535,14 @@ void Element::SetInnerHTMLInternal(const String& html,
 void Element::setInnerHTML(const String& html,
                            ExceptionState& exception_state) {
   probe::BreakableLocation(GetExecutionContext(), "Element.setInnerHTML");
-  SetInnerHTMLInternal(html, /*include_shadow_roots=*/false, exception_state);
+  SetInnerHTMLInternal(html, IncludeShadowRoots::kDontInclude,
+                       ForceHtml::kDontForce, exception_state);
 }
 
 void Element::setInnerHTMLWithDeclarativeShadowDOMForTesting(
     const String& html) {
-  SetInnerHTMLInternal(html, /*include_shadow_roots=*/true,
-                       ASSERT_NO_EXCEPTION);
+  SetInnerHTMLInternal(html, IncludeShadowRoots::kInclude,
+                       ForceHtml::kDontForce, ASSERT_NO_EXCEPTION);
 }
 
 String Element::getInnerHTML(const GetInnerHTMLOptions* options) const {
@@ -6579,8 +6581,8 @@ void Element::setOuterHTML(const String& html,
   Node* next = nextSibling();
 
   DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
-      html, parent, kAllowScriptingContent,
-      /*include_shadow_roots=*/false, exception_state);
+      html, parent, kAllowScriptingContent, IncludeShadowRoots::kDontInclude,
+      ForceHtml::kDontForce, exception_state);
   if (exception_state.HadException()) {
     return;
   }
@@ -6808,7 +6810,7 @@ void Element::insertAdjacentHTML(const String& where,
   // Step 3 of http://domparsing.spec.whatwg.org/#insertadjacenthtml()
   DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
       markup, context_element, kAllowScriptingContent,
-      /*include_shadow_roots=*/false, exception_state);
+      IncludeShadowRoots::kDontInclude, ForceHtml::kDontForce, exception_state);
   if (!fragment) {
     return;
   }
@@ -9687,7 +9689,8 @@ Element* Element::ImplicitAnchorElement() {
 void Element::setHTMLUnsafe(const String& html,
                             ExceptionState& exception_state) {
   CHECK(RuntimeEnabledFeatures::HTMLUnsafeMethodsEnabled());
-  SetInnerHTMLInternal(html, /*include_shadow_roots=*/true, exception_state);
+  SetInnerHTMLInternal(html, IncludeShadowRoots::kInclude, ForceHtml::kForce,
+                       exception_state);
 }
 
 }  // namespace blink

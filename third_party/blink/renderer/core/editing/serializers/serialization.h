@@ -62,11 +62,13 @@ DocumentFragment* CreateFragmentFromMarkupWithContext(Document&,
                                                       unsigned fragment_end,
                                                       const String& base_url,
                                                       ParserContentPolicy);
-DocumentFragment* CreateFragmentForInnerOuterHTML(const String&,
-                                                  Element*,
-                                                  ParserContentPolicy,
-                                                  bool include_shadow_roots,
-                                                  ExceptionState&);
+DocumentFragment* CreateFragmentForInnerOuterHTML(
+    const String&,
+    Element*,
+    ParserContentPolicy,
+    Element::IncludeShadowRoots include_shadow_roots,
+    Element::ForceHtml force_html,
+    ExceptionState&);
 DocumentFragment* CreateFragmentForTransformToFragment(
     const String&,
     const String& source_mime_type,
