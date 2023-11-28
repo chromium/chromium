@@ -1646,6 +1646,10 @@
         'additional_compile_targets': [
           'chrome',
         ],
+        'mixins': [
+          # TODO(crbug.com/1505778): Remove this if/when DUT pool is healthy.
+          'ci_only',
+        ],
         'test_suites': {
           'skylab_tests': 'lacros_skylab_tests_amd64_generic_rel',
         },
