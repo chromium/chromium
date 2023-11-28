@@ -4,9 +4,8 @@
 
 #import "ios/chrome/browser/snapshots/model/snapshot_generator.h"
 
-// TODO(crbug.com/636188): required to implement ViewHierarchyContainsWebView
-// for -drawViewHierarchyInRect:afterScreenUpdates:, remove once the workaround
-// is no longer needed.
+// It is required to implement ViewHierarchyContainsWebView to check if
+// the view is `WKWebView`.
 #import <WebKit/WebKit.h>
 
 #import "base/functional/bind.h"
@@ -189,10 +188,6 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
           // called on a view that is part of view controller containment and
           // not in the view hierarchy, an
           // UIViewControllerHierarchyInconsistency exception will be thrown.
-          // TODO(crbug.com/636188):
-          // `-drawViewHierarchyInRect:afterScreenUpdates:` is buggy causing GPU
-          // glitches, screen redraws during animations, broken pinch to dismiss
-          // on tablet, etc.
           snapshotSuccess = [baseView drawViewHierarchyInRect:baseView.bounds
                                            afterScreenUpdates:YES];
         } else {
