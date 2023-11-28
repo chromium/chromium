@@ -96,7 +96,6 @@ if (include_js2gtest_tests) {
       "crostini_installer_browsertest.js",
       "crostini_upgrader_browsertest.js",
       "os_feedback_ui/os_feedback_browsertest.js",
-      "scanning/scanning_app_browsertest.js",
       "shimless_rma/shimless_rma_browsertest.js",
     ]
 
