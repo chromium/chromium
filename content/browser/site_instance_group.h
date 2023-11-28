@@ -154,6 +154,8 @@ class CONTENT_EXPORT SiteInstanceGroup
     return *agent_scheduling_group_;
   }
 
+  const StoragePartitionConfig& GetStoragePartitionConfig() const;
+
   // Creates a new SiteInstanceGroup in a new BrowsingInstance for testing.
   static SiteInstanceGroup* CreateForTesting(BrowserContext* browser_context,
                                              RenderProcessHost* process);

@@ -112,6 +112,11 @@ void SiteInstanceGroup::RenderProcessExited(
     observer.RenderProcessGone(this, info);
 }
 
+const StoragePartitionConfig& SiteInstanceGroup::GetStoragePartitionConfig()
+    const {
+  return process()->GetStoragePartition()->GetConfig();
+}
+
 // static
 SiteInstanceGroup* SiteInstanceGroup::CreateForTesting(
     BrowserContext* browser_context,
