@@ -207,10 +207,6 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, Menu) {
   RunTestURL("foreground/js/ui/menu_unittest.js");
 }
 
-IN_PROC_BROWSER_TEST_F(FileManagerJsTest, MenuButton) {
-  RunTestURL("foreground/js/ui/menu_button_unittest.js");
-}
-
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, MetadataCacheItem) {
   RunTestURL("foreground/js/metadata/metadata_cache_item_unittest.js");
 }

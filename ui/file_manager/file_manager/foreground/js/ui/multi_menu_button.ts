@@ -9,10 +9,18 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {decorate} from '../../../common/js/cr_ui.js';
 
 import {Menu} from './menu.js';
-import {HideType} from './menu_button.js';
 import {MenuItem, MenuItemActivationEvent} from './menu_item.js';
 import {MultiMenu} from './multi_menu.js';
 import {AnchorType, positionPopupAroundElement} from './position_util.js';
+
+/**
+ * Enum for type of hide. Delayed is used when called by clicking on a
+ * checkable menu item.
+ */
+export enum HideType {
+  INSTANT = 0,
+  DELAYED = 1,
+}
 
 /**
  * A button that displays a MultiMenu (menu with sub-menus).
