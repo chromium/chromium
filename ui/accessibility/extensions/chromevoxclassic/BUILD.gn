@@ -506,8 +506,8 @@ if (is_chromeos_ash) {
     sources = [
       "//chrome/browser/extensions/browsertest_util.cc",
       "//chrome/browser/extensions/browsertest_util.h",
-      "//chrome/browser/ui/webui/web_ui_test_handler.cc",
-      "//chrome/browser/ui/webui/web_ui_test_handler.h",
+      "//chrome/browser/ui/webui/ash/web_ui_test_handler.cc",
+      "//chrome/browser/ui/webui/ash/web_ui_test_handler.h",
       "//chrome/test/base/ash/extension_js_browser_test.cc",
       "//chrome/test/base/ash/extension_js_browser_test.h",
       "//chrome/test/base/ash/javascript_browser_test.cc",
