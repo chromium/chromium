@@ -1462,15 +1462,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // For non-boxes, for better performance, the caller can prepare
   // |block_for_flipping| (= ContainingBlock()) if it will loop through many
   // rects/points to flip to avoid the cost of repeated ContainingBlock() calls.
-  [[nodiscard]] DeprecatedLayoutRect FlipForWritingMode(
-      const PhysicalRect& r,
-      const LayoutBox* box_for_flipping = nullptr) const {
-    NOT_DESTROYED();
-    if (LIKELY(!HasFlippedBlocksWritingMode()))
-      return r.ToLayoutRect();
-    return {FlipForWritingModeInternal(r.X(), r.Width(), box_for_flipping),
-            r.Y(), r.Width(), r.Height()};
-  }
   [[nodiscard]] PhysicalRect FlipForWritingMode(
       const DeprecatedLayoutRect& r,
       const LayoutBox* box_for_flipping = nullptr) const {

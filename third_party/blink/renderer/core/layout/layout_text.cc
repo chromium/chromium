@@ -647,16 +647,9 @@ void LayoutText::AbsoluteQuadsForRange(Vector<gfx::QuadF>& quads,
 gfx::RectF LayoutText::LocalBoundingBoxRectForAccessibility() const {
   NOT_DESTROYED();
   gfx::RectF result;
-  const LayoutBlock* block_for_flipping =
-      UNLIKELY(HasFlippedBlocksWritingMode()) ? ContainingBlock() : nullptr;
   CollectLineBoxRects(
-      [this, &result, block_for_flipping](const PhysicalRect& r) {
-        DeprecatedLayoutRect rect = FlipForWritingMode(r, block_for_flipping);
-        result.Union(gfx::RectF(rect));
-      },
+      [&result](const PhysicalRect& rect) { result.Union(gfx::RectF(rect)); },
       kClipToEllipsis);
-  // TODO(wangxianzhu): This is one of a few cases that a gfx::RectF is required
-  // to be in flipped blocks direction. Should eliminite them.
   return result;
 }
 

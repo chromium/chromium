@@ -931,8 +931,7 @@ gfx::RectF LayoutInline::LocalBoundingBoxRectForAccessibility() const {
   UnionOutlineRectCollector collector;
   AddOutlineRects(collector, nullptr, PhysicalOffset(),
                   OutlineType::kIncludeBlockInkOverflow);
-
-  return gfx::RectF(FlipForWritingMode(collector.Rect().ToLayoutRect()));
+  return gfx::RectF(collector.Rect());
 }
 
 void LayoutInline::AddAnnotatedRegions(Vector<AnnotatedRegionValue>& regions) {
