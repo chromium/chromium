@@ -80,7 +80,12 @@ class SoftNavigationHeuristics
                    uint64_t painted_area,
                    bool is_modified_by_soft_navigation);
 
-  void SetCurrentEventParameters(EventScopeType type, bool is_new_interaction);
+  void SetEventParametersAndQueueNestedOnes(EventScopeType type,
+                                            bool is_new_interaction,
+                                            bool is_nested);
+  // If there are nested EventParameters, pop one, restore it to the
+  // current_event_parameters_ and return true. Otherwise, return false.
+  bool PopNestedEventParametersIfNeeded();
 
  private:
   enum FlagType : uint8_t {
@@ -139,8 +144,17 @@ class SoftNavigationHeuristics
   scheduler::TaskAttributionIdType last_interaction_task_id_ = 0;
   bool soft_navigation_conditions_met_ = false;
   bool initial_interaction_encountered_ = false;
-  bool is_current_event_new_interaction_ = false;
-  EventScopeType current_event_type_;
+  struct EventParameters {
+    explicit EventParameters() = default;
+    EventParameters(bool is_new_interaction, EventScopeType type)
+        : is_new_interaction(is_new_interaction), type(type) {}
+
+    bool is_new_interaction = false;
+    EventScopeType type = EventScopeType::Click;
+  };
+  EventParameters top_event_parameters_;
+  WTF::Deque<EventParameters> nested_event_parameters_;
+  EventParameters* current_event_parameters_ = nullptr;
 };
 
 // This class defines a scope that would cover click or navigation related

@@ -95,8 +95,9 @@ class PLATFORM_EXPORT TaskAttributionTracker {
       const WTF::HashSet<scheduler::TaskAttributionIdType>& set,
       const TaskAttributionInfo& task) = 0;
 
-  // Register an observer to be notified when a task is started.
-  virtual void RegisterObserver(Observer* observer) = 0;
+  // Register an observer if one isn't yet registered, to be notified when a
+  // task is started. Return false if no observer was registered.
+  virtual bool RegisterObserverIfNeeded(Observer* observer) = 0;
   // Unregister the observer.
   virtual void UnregisterObserver(Observer* observer) = 0;
 

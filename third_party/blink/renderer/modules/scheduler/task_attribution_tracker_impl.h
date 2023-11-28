@@ -60,10 +60,13 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
 
   void TaskScopeCompleted(ScriptState*, TaskAttributionId);
 
-  void RegisterObserver(TaskAttributionTracker::Observer* observer) override {
-    if (!base::Contains(observers_, observer)) {
+  bool RegisterObserverIfNeeded(
+      TaskAttributionTracker::Observer* observer) override {
+    bool not_registered = !base::Contains(observers_, observer);
+    if (not_registered) {
       observers_.insert(observer);
     }
+    return not_registered;
   }
 
   void UnregisterObserver(TaskAttributionTracker::Observer* observer) override {

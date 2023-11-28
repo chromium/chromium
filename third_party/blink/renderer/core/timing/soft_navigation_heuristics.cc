@@ -165,7 +165,7 @@ void SoftNavigationHeuristics::InteractionCallbackCalled(
                                            last_interaction_task_id_);
   }
 
-  tracker->RegisterObserver(this);
+  tracker->RegisterObserverIfNeeded(this);
   SetIsTrackingSoftNavigationHeuristicsOnDocument(true);
   TRACE_EVENT_INSTANT("scheduler",
                       "SoftNavigationHeuristics::UserInitiatedInteraction");
@@ -343,15 +343,37 @@ void SoftNavigationHeuristics::RecordPaint(
   }
 }
 
-void SoftNavigationHeuristics::SetCurrentEventParameters(
+void SoftNavigationHeuristics::SetEventParametersAndQueueNestedOnes(
     EventScopeType type,
-    bool is_new_interaction) {
-  is_current_event_new_interaction_ = is_new_interaction;
-  current_event_type_ = type;
+    bool is_new_interaction,
+    bool is_nested) {
+  if (is_nested) {
+    nested_event_parameters_.push_back(
+        EventParameters(is_new_interaction, type));
+    current_event_parameters_ = &nested_event_parameters_.back();
+  } else {
+    top_event_parameters_ = EventParameters(is_new_interaction, type);
+    current_event_parameters_ = &top_event_parameters_;
+    nested_event_parameters_.clear();
+  }
+
   pending_interaction_timestamp_ =
       (is_new_interaction || !last_interaction_task_id_)
           ? base::TimeTicks::Now()
           : base::TimeTicks();
+}
+
+bool SoftNavigationHeuristics::PopNestedEventParametersIfNeeded() {
+  if (nested_event_parameters_.empty()) {
+    return false;
+  }
+  nested_event_parameters_.pop_back();
+  if (!nested_event_parameters_.empty()) {
+    current_event_parameters_ = &nested_event_parameters_.back();
+    return true;
+  }
+  current_event_parameters_ = &top_event_parameters_;
+  return true;
 }
 
 void SoftNavigationHeuristics::ReportSoftNavigationToMetrics(
@@ -469,9 +491,10 @@ void SoftNavigationHeuristics::OnCreateTaskScope(
   soft_navigation_descendant_cache_.clear();
 
   // Create a user initiated interaction
-  InteractionCallbackCalled(script_state, current_event_type_,
-                            is_current_event_new_interaction_);
-  if (current_event_type_ ==
+  CHECK(current_event_parameters_);
+  InteractionCallbackCalled(script_state, current_event_parameters_->type,
+                            current_event_parameters_->is_new_interaction);
+  if (current_event_parameters_->type ==
       SoftNavigationHeuristics::EventScopeType::Navigate) {
     SameDocumentNavigationStarted(script_state);
   }
@@ -509,19 +532,33 @@ SoftNavigationEventScope::SoftNavigationEventScope(
   if (!tracker) {
     return;
   }
-  heuristics_->SetCurrentEventParameters(type, is_new_interaction);
-  tracker->RegisterObserver(heuristics_);
+  // EventScope can be nested in case a click/keyboard event synchronously
+  // initiates a navigation.
+  bool nested = !tracker->RegisterObserverIfNeeded(heuristics_);
 
-  heuristics->UserInitiatedInteraction(script_state);
-}
-SoftNavigationEventScope::~SoftNavigationEventScope() {
-  ThreadScheduler* scheduler = ThreadScheduler::Current();
-  DCHECK(scheduler);
-  auto* tracker = scheduler->GetTaskAttributionTracker();
-  if (!tracker) {
-    return;
+  // Even for nested event scopes, we need to set these parameters, to ensure
+  // that created tasks know they were initiated by the correct event type.
+  heuristics_->SetEventParametersAndQueueNestedOnes(type, is_new_interaction,
+                                                    nested);
+
+  if (!nested) {
+    heuristics_->UserInitiatedInteraction(script_state);
   }
-  tracker->UnregisterObserver(heuristics_);
+}
+
+SoftNavigationEventScope::~SoftNavigationEventScope() {
+  bool nested = heuristics_->PopNestedEventParametersIfNeeded();
+
+  // Only the top level EventScope should unregister the observer.
+  if (!nested) {
+    ThreadScheduler* scheduler = ThreadScheduler::Current();
+    DCHECK(scheduler);
+    auto* tracker = scheduler->GetTaskAttributionTracker();
+    if (!tracker) {
+      return;
+    }
+    tracker->UnregisterObserver(heuristics_);
+  }
   // TODO(crbug.com/1502640): We should also reset the heuristic a few seconds
   // after a click event handler is done, to reduce potential cycles.
 }
