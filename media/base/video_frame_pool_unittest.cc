@@ -38,8 +38,9 @@ class VideoFramePoolTest
     if (format == PIXEL_FORMAT_ARGB) {
       EXPECT_EQ(coded_size, frame->coded_size());
     } else {
-      const gfx::Size adjusted(base::bits::AlignUp(coded_size.width(), 2),
-                               base::bits::AlignUp(coded_size.height(), 2));
+      const gfx::Size adjusted(
+          base::bits::AlignUpDeprecatedDoNotUse(coded_size.width(), 2),
+          base::bits::AlignUpDeprecatedDoNotUse(coded_size.height(), 2));
       EXPECT_EQ(adjusted, frame->coded_size());
     }
     EXPECT_EQ(visible_rect, frame->visible_rect());

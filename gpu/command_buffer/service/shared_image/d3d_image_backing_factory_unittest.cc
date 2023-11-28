@@ -710,8 +710,8 @@ void D3DImageBackingFactoryTest::CheckDawnPixels(
     const std::vector<uint8_t>& expected_color) const {
   wgpu::Texture texture(scoped_read_access->texture());
 
-  uint32_t buffer_stride =
-      static_cast<uint32_t>(base::bits::AlignUp(size.width() * 4, 256));
+  uint32_t buffer_stride = static_cast<uint32_t>(
+      base::bits::AlignUpDeprecatedDoNotUse(size.width() * 4, 256));
   size_t buffer_size = static_cast<size_t>(size.height()) * buffer_stride;
   wgpu::BufferDescriptor buffer_desc{
       .usage = wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::MapRead,

@@ -1034,7 +1034,9 @@ bool AllocateFileRegion(File* file, int64_t offset, size_t size) {
   blksize_t block_size = 512;  // Start with something safe.
   stat_wrapper_t statbuf;
   if (File::Fstat(file->GetPlatformFile(), &statbuf) == 0 &&
-      statbuf.st_blksize > 0 && base::bits::IsPowerOfTwo(statbuf.st_blksize)) {
+      statbuf.st_blksize > 0 &&
+      base::bits::IsPowerOfTwo(
+          base::checked_cast<uint64_t>(statbuf.st_blksize))) {
     block_size = static_cast<blksize_t>(statbuf.st_blksize);
   }
 

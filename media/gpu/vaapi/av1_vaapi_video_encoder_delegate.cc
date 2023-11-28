@@ -350,9 +350,11 @@ bool AV1VaapiVideoEncoderDelegate::Initialize(
   }
 
   visible_size_ = config.input_visible_size;
-  coded_size_ = gfx::Size(
-      base::bits::AlignUp(visible_size_.width(), kAV1AlignmentSize.width()),
-      base::bits::AlignUp(visible_size_.height(), kAV1AlignmentSize.height()));
+  coded_size_ =
+      gfx::Size(base::bits::AlignUpDeprecatedDoNotUse(
+                    visible_size_.width(), kAV1AlignmentSize.width()),
+                base::bits::AlignUpDeprecatedDoNotUse(
+                    visible_size_.height(), kAV1AlignmentSize.height()));
 
   current_params_.framerate = config.initial_framerate.value_or(
       VideoEncodeAccelerator::kDefaultFramerate);

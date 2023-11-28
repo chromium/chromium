@@ -176,8 +176,9 @@ bool FrameResources::Initialize() {
   // Align buffer stride to 4, because our SharedImage shared memory backing
   // code requires it, since it sometimes treats Y-planes are 4 bytes per pixel
   // textures.
-  gfx::Size buffer_size_in_pixels(base::bits::AlignUp(coded_size_.width(), 4),
-                                  base::bits::AlignUp(coded_size_.height(), 2));
+  gfx::Size buffer_size_in_pixels(
+      base::bits::AlignUpDeprecatedDoNotUse(coded_size_.width(), 4),
+      base::bits::AlignUpDeprecatedDoNotUse(coded_size_.height(), 2));
 
   // Create the GpuMemoryBuffer.
   gpu_memory_buffer_ = context->CreateGpuMemoryBuffer(

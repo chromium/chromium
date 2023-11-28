@@ -63,8 +63,9 @@ void Detile4(uint8_t* linear_dest,
       kTile4TileWidthBytes * kTile4TileHeightBytes;
   constexpr int kTile4ZWidth = 4;
 
-  width = base::bits::AlignDown(width, kTile4TileWidthBytes);
-  height = base::bits::AlignDown(height, kTile4TileHeightBytes);
+  width = base::bits::AlignDownDeprecatedDoNotUse(width, kTile4TileWidthBytes);
+  height =
+      base::bits::AlignDownDeprecatedDoNotUse(height, kTile4TileHeightBytes);
 
   for (int y = 0; y < height; y += kTile4TileHeight * kTile4SubtileHeight) {
     for (int tile_y = 0; tile_y < kTile4TileHeight; tile_y++) {
@@ -217,15 +218,15 @@ class Tile4Mapping : public NativePixmapMapping {
 
     int aligned_width = base::bits::AlignUp(
         handle.planes[0].stride, static_cast<uint32_t>(kTile4TileWidthBytes));
-    int aligned_height =
-        base::bits::AlignUp(size.height(), kTile4TileHeightBytes);
+    int aligned_height = base::bits::AlignUpDeprecatedDoNotUse(
+        size.height(), kTile4TileHeightBytes);
     plane_strides[0] = aligned_width;
     plane_sizes[0] = aligned_height * aligned_width;
 
     aligned_width = base::bits::AlignUp(
         handle.planes[1].stride, static_cast<uint32_t>(kTile4TileWidthBytes));
-    aligned_height =
-        base::bits::AlignUp(size.height() / 2, kTile4TileHeightBytes);
+    aligned_height = base::bits::AlignUpDeprecatedDoNotUse(
+        size.height() / 2, kTile4TileHeightBytes);
     plane_strides[1] = aligned_width;
     plane_sizes[1] = aligned_height * aligned_width;
 

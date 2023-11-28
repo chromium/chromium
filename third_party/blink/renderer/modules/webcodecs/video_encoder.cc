@@ -442,9 +442,10 @@ bool VerifyCodecSupportStatic(VideoEncoderTraits::ParsedConfig* config,
 
       // Note: This calculation is incorrect for interlaced or MBAFF encoding;
       // but we don't support those and likely never will.
-      gfx::Size coded_size(
-          base::bits::AlignUp(config->options.frame_size.width(), 16),
-          base::bits::AlignUp(config->options.frame_size.height(), 16));
+      gfx::Size coded_size(base::bits::AlignUpDeprecatedDoNotUse(
+                               config->options.frame_size.width(), 16),
+                           base::bits::AlignUpDeprecatedDoNotUse(
+                               config->options.frame_size.height(), 16));
       uint64_t coded_area = coded_size.Area64();
       uint64_t max_coded_area =
           media::H264LevelToMaxFS(config->level) * 16ull * 16ull;

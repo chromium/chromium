@@ -858,7 +858,8 @@ TEST_P(VaapiMinigbmTest, AllocateAndCompareWithMinigbm) {
           base::checked_cast<uint32_t>(scoped_va_surface->size().width()));
     } else {
       const auto expected_rounded_up_pitch =
-          base::bits::AlignUp(scoped_va_surface->size().width(), 2);
+          base::bits::AlignUpDeprecatedDoNotUse(
+              scoped_va_surface->size().width(), 2);
       EXPECT_GE(va_descriptor.layers[i].pitch[0],
                 base::checked_cast<uint32_t>(expected_rounded_up_pitch));
     }

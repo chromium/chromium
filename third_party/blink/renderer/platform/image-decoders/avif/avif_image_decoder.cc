@@ -303,8 +303,8 @@ wtf_size_t AVIFImageDecoder::DecodedYUVWidthBytes(cc::YUVIndex index) const {
   //
   // The comments for Dav1dPicAllocator in dav1d/picture.h require the pixel
   // width be padded to a multiple of 128 pixels.
-  wtf_size_t aligned_width =
-      static_cast<wtf_size_t>(base::bits::AlignUp(Size().width(), 128));
+  wtf_size_t aligned_width = static_cast<wtf_size_t>(
+      base::bits::AlignUpDeprecatedDoNotUse(Size().width(), 128));
   if (index == cc::YUVIndex::kU || index == cc::YUVIndex::kV) {
     aligned_width >>= chroma_shift_x_;
   }

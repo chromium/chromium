@@ -14,7 +14,7 @@ namespace {
 bool IsValidPageSize(int page_size) {
   if (page_size < 512 || page_size > 65536)
     return false;
-  return base::bits::IsPowerOfTwo(page_size);
+  return base::bits::IsPowerOfTwoDeprecatedDoNotUse(page_size);
 }
 
 }  // namespace

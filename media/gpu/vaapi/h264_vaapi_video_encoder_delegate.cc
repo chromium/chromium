@@ -236,9 +236,11 @@ bool H264VaapiVideoEncoderDelegate::Initialize(
     return false;
   }
   constexpr int kH264MacroblockSizeInPixels = 16;
-  coded_size_ = gfx::Size(
-      base::bits::AlignUp(visible_size_.width(), kH264MacroblockSizeInPixels),
-      base::bits::AlignUp(visible_size_.height(), kH264MacroblockSizeInPixels));
+  coded_size_ =
+      gfx::Size(base::bits::AlignUpDeprecatedDoNotUse(
+                    visible_size_.width(), kH264MacroblockSizeInPixels),
+                base::bits::AlignUpDeprecatedDoNotUse(
+                    visible_size_.height(), kH264MacroblockSizeInPixels));
   mb_width_ = coded_size_.width() / kH264MacroblockSizeInPixels;
   mb_height_ = coded_size_.height() / kH264MacroblockSizeInPixels;
 

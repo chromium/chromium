@@ -257,7 +257,7 @@ void CastAudioOutputStream::MixerServiceWrapper::FillNextBuffer(
   DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
 
   // Round down to closest multiple of 4 to ensure correct channel alignment.
-  frames = base::bits::AlignDown(frames, 4);
+  frames = base::bits::AlignDownDeprecatedDoNotUse(frames, 4);
 
   // Acquire running_lock_ for the scope of this fill call to
   // prevent the source callback from closing the output stream

@@ -5,7 +5,6 @@
 // This file contains the unit tests for the bit utilities.
 
 #include "base/bits.h"
-#include "build/build_config.h"
 
 #include <stddef.h>
 
@@ -51,12 +50,12 @@ TEST(BitsTest, Log2Ceiling) {
 
 TEST(BitsTest, AlignUp) {
   static constexpr size_t kSizeTMax = std::numeric_limits<size_t>::max();
-  EXPECT_EQ(0, AlignUp(0, 4));
-  EXPECT_EQ(4, AlignUp(1, 4));
-  EXPECT_EQ(4096, AlignUp(1, 4096));
-  EXPECT_EQ(4096, AlignUp(4096, 4096));
-  EXPECT_EQ(4096, AlignUp(4095, 4096));
-  EXPECT_EQ(8192, AlignUp(4097, 4096));
+  EXPECT_EQ(0u, AlignUp(0u, 4u));
+  EXPECT_EQ(4u, AlignUp(1u, 4u));
+  EXPECT_EQ(4096u, AlignUp(1u, 4096u));
+  EXPECT_EQ(4096u, AlignUp(4096u, 4096u));
+  EXPECT_EQ(4096u, AlignUp(4095u, 4096u));
+  EXPECT_EQ(8192u, AlignUp(4097u, 4096u));
   EXPECT_EQ(kSizeTMax - 31, AlignUp(kSizeTMax - 62, size_t{32}));
   EXPECT_EQ(kSizeTMax / 2 + 1, AlignUp(size_t{1}, kSizeTMax / 2 + 1));
 }
@@ -84,12 +83,12 @@ TEST(BitsTest, AlignUpPointer) {
 
 TEST(BitsTest, AlignDown) {
   static constexpr size_t kSizeTMax = std::numeric_limits<size_t>::max();
-  EXPECT_EQ(0, AlignDown(0, 4));
-  EXPECT_EQ(0, AlignDown(1, 4));
-  EXPECT_EQ(0, AlignDown(1, 4096));
-  EXPECT_EQ(4096, AlignDown(4096, 4096));
-  EXPECT_EQ(0, AlignDown(4095, 4096));
-  EXPECT_EQ(4096, AlignDown(4097, 4096));
+  EXPECT_EQ(0u, AlignDown(0u, 4u));
+  EXPECT_EQ(0u, AlignDown(1u, 4u));
+  EXPECT_EQ(0u, AlignDown(1u, 4096u));
+  EXPECT_EQ(4096u, AlignDown(4096u, 4096u));
+  EXPECT_EQ(0u, AlignDown(4095u, 4096u));
+  EXPECT_EQ(4096u, AlignDown(4097u, 4096u));
   EXPECT_EQ(kSizeTMax - 63, AlignDown(kSizeTMax - 62, size_t{32}));
   EXPECT_EQ(kSizeTMax - 31, AlignDown(kSizeTMax, size_t{32}));
   EXPECT_EQ(0ul, AlignDown(size_t{1}, kSizeTMax / 2 + 1));
@@ -119,10 +118,9 @@ TEST(BitsTest, AlignDownPointer) {
 }
 
 TEST(BitsTest, PowerOfTwo) {
-  EXPECT_FALSE(IsPowerOfTwo(-1));
-  EXPECT_FALSE(IsPowerOfTwo(0));
-  EXPECT_TRUE(IsPowerOfTwo(1));
-  EXPECT_TRUE(IsPowerOfTwo(2));
+  EXPECT_FALSE(IsPowerOfTwo(0u));
+  EXPECT_TRUE(IsPowerOfTwo(1u));
+  EXPECT_TRUE(IsPowerOfTwo(2u));
   // Unsigned 64 bit cases.
   for (uint32_t i = 2; i < 64; i++) {
     const uint64_t val = uint64_t{1} << i;
@@ -130,15 +128,19 @@ TEST(BitsTest, PowerOfTwo) {
     EXPECT_TRUE(IsPowerOfTwo(val));
     EXPECT_FALSE(IsPowerOfTwo(val + 1));
   }
+}
+
+TEST(BitsTest, PowerOfTwoDeprecatedDoNotUse) {
+  EXPECT_FALSE(IsPowerOfTwoDeprecatedDoNotUse(-1));
   // Signed 64 bit cases.
   for (uint32_t i = 2; i < 63; i++) {
     const int64_t val = int64_t{1} << i;
-    EXPECT_FALSE(IsPowerOfTwo(val - 1));
-    EXPECT_TRUE(IsPowerOfTwo(val));
-    EXPECT_FALSE(IsPowerOfTwo(val + 1));
+    EXPECT_FALSE(IsPowerOfTwoDeprecatedDoNotUse(val - 1));
+    EXPECT_TRUE(IsPowerOfTwoDeprecatedDoNotUse(val));
+    EXPECT_FALSE(IsPowerOfTwoDeprecatedDoNotUse(val + 1));
   }
   // Signed integers with only the last bit set are negative, not powers of two.
-  EXPECT_FALSE(IsPowerOfTwo(int64_t{1} << 63));
+  EXPECT_FALSE(IsPowerOfTwoDeprecatedDoNotUse(int64_t{1} << 63));
 }
 
 TEST(BitsTest, LeftMostBit) {

@@ -132,8 +132,10 @@ scoped_refptr<VideoFrame> CreateNV12Frame(const gfx::Size& size,
 
 scoped_refptr<VideoFrame> CreateRandomMM21Frame(const gfx::Size& size,
                                                 VideoFrame::StorageType type) {
-  DCHECK_EQ(size.width(), base::bits::AlignUp(size.width(), kMM21TileWidth));
-  DCHECK_EQ(size.height(), base::bits::AlignUp(size.height(), kMM21TileHeight));
+  DCHECK_EQ(size.width(), base::bits::AlignUpDeprecatedDoNotUse(
+                              size.width(), kMM21TileWidth));
+  DCHECK_EQ(size.height(), base::bits::AlignUpDeprecatedDoNotUse(
+                               size.height(), kMM21TileHeight));
 
   scoped_refptr<VideoFrame> frame = CreateNV12Frame(size, type);
   if (!frame) {
@@ -897,9 +899,10 @@ TEST_F(ImageProcessorPerfTest, VulkanImageProcessorPerfTest) {
       &shared_image_manager, nullptr, false);
 
   gfx::Size test_image_size(kTestImageWidth, kTestImageHeight);
-  gfx::Size test_coded_size(
-      base::bits::AlignUp(test_image_size.width(), kMM21TileWidth),
-      base::bits::AlignUp(test_image_size.height(), kMM21TileHeight));
+  gfx::Size test_coded_size(base::bits::AlignUpDeprecatedDoNotUse(
+                                test_image_size.width(), kMM21TileWidth),
+                            base::bits::AlignUpDeprecatedDoNotUse(
+                                test_image_size.height(), kMM21TileHeight));
   std::vector<scoped_refptr<VideoFrame>> input_frames(kNumberOfTestFrames);
   std::vector<scoped_refptr<VideoFrame>> output_frames(kNumberOfTestFrames);
   std::vector<gpu::Mailbox> input_mailboxes(kNumberOfTestFrames);

@@ -166,9 +166,10 @@ bool CodecOutputBuffer::CanGuessCodedSize() const {
 
 gfx::Size CodecOutputBuffer::GuessCodedSize() const {
   DCHECK(CanGuessCodedSize());
-  return gfx::Size(
-      base::bits::AlignUp(size_.width(), coded_size_alignment_->width()),
-      base::bits::AlignUp(size_.height(), coded_size_alignment_->height()));
+  return gfx::Size(base::bits::AlignUpDeprecatedDoNotUse(
+                       size_.width(), coded_size_alignment_->width()),
+                   base::bits::AlignUpDeprecatedDoNotUse(
+                       size_.height(), coded_size_alignment_->height()));
 }
 
 CodecWrapperImpl::CodecWrapperImpl(

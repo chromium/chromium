@@ -205,8 +205,10 @@ scoped_refptr<VideoFrame> CreateNV12Frame(const gfx::Size& size,
 
 scoped_refptr<VideoFrame> CreateRandomMM21Frame(const gfx::Size& size,
                                                 VideoFrame::StorageType type) {
-  DCHECK(size.width() == base::bits::AlignUp(size.width(), MM21_TILE_WIDTH));
-  DCHECK(size.height() == base::bits::AlignUp(size.height(), MM21_TILE_HEIGHT));
+  DCHECK_EQ(size.width(), base::bits::AlignUpDeprecatedDoNotUse(
+                              size.width(), MM21_TILE_WIDTH));
+  DCHECK_EQ(size.height(), base::bits::AlignUpDeprecatedDoNotUse(
+                               size.height(), MM21_TILE_HEIGHT));
 
   scoped_refptr<VideoFrame> ret = CreateNV12Frame(size, type);
   if (!ret) {
