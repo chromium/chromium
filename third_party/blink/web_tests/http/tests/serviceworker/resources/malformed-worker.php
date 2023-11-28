@@ -1,6 +1,7 @@
 <?php
 header('Content-Type:application/javascript');
-switch ($_SERVER['QUERY_STRING']) {
+$query_string = $_SERVER['QUERY_STRING'] ?? null;
+switch ($query_string) {
   case 'parse-error':
     echo 'var foo = function() {;';
     exit;

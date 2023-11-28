@@ -8,7 +8,7 @@ if ($_GET["report-only"]) {
 <!DOCTYPE html>
 <p>Ready</p>
 <?php
-if ($_GET["script-in-subframe"]) {
+if (isset($_GET["script-in-subframe"])) {
 ?>
 <iframe src="data:text/html,<script>console.log('Script executed in child frame');</script>"></iframe>
 <?php
