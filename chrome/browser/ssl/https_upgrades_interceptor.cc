@@ -575,8 +575,7 @@ bool HttpsUpgradesInterceptor::MaybeCreateLoaderForResponse(
     mojo::PendingRemote<network::mojom::URLLoader>* loader,
     mojo::PendingReceiver<network::mojom::URLLoaderClient>* client_receiver,
     blink::ThrottlingURLLoader* url_loader,
-    bool* skip_other_interceptors,
-    bool* will_return_unsafe_redirect) {
+    bool* skip_other_interceptors) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // When an upgraded navigation fails, this method creates a loader to trigger
   // the fallback to HTTP.

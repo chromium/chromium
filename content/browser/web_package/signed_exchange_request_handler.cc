@@ -84,8 +84,7 @@ bool SignedExchangeRequestHandler::MaybeCreateLoaderForResponse(
     mojo::PendingRemote<network::mojom::URLLoader>* loader,
     mojo::PendingReceiver<network::mojom::URLLoaderClient>* client_receiver,
     blink::ThrottlingURLLoader* url_loader,
-    bool* skip_other_interceptors,
-    bool* will_return_unsafe_redirect) {
+    bool* skip_other_interceptors) {
   DCHECK(!signed_exchange_loader_);
 
   // Navigation ResourceRequests always have non-empty |trusted_params|.

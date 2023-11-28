@@ -294,15 +294,13 @@ bool WorkerScriptLoader::MaybeCreateLoaderForResponse(
   DCHECK(default_loader_used_);
   if (interceptor_) {
     bool skip_other_interceptors = false;
-    bool will_return_unsafe_redirect = false;
     if (interceptor_->MaybeCreateLoaderForResponse(
             status, resource_request_, response_head, response_body,
             response_url_loader, response_client_receiver, url_loader,
-            &skip_other_interceptors, &will_return_unsafe_redirect)) {
+            &skip_other_interceptors)) {
       // ServiceWorkerMainResourceLoaderInterceptor doesn't set
-      // skip_other_interceptors or will_return_unsafe_redirect.
+      // skip_other_interceptors.
       DCHECK(!skip_other_interceptors);
-      DCHECK(!will_return_unsafe_redirect);
       subresource_loader_params_ =
           interceptor_->MaybeCreateSubresourceLoaderParams();
       return true;
