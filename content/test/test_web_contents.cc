@@ -10,6 +10,7 @@
 
 #include "base/no_destructor.h"
 #include "content/browser/browser_url_handler_impl.h"
+#include "content/browser/display_cutout/display_cutout_host_impl.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
@@ -543,6 +544,11 @@ void TestWebContents::SetOverscrollNavigationEnabled(bool enabled) {
 
 bool TestWebContents::GetOverscrollNavigationEnabled() {
   return overscroll_enabled_;
+}
+
+void TestWebContents::SetDisplayCutoutHost(
+    std::unique_ptr<DisplayCutoutHostImpl> display_cutout_host_impl) {
+  display_cutout_host_impl_ = std::move(display_cutout_host_impl);
 }
 
 }  // namespace content

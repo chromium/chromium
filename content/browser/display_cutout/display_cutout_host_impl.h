@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/mojom/page/display_cutout.mojom.h"
@@ -17,7 +18,8 @@ namespace content {
 class RenderFrameHostImpl;
 class WebContentsImpl;
 
-class DisplayCutoutHostImpl : public blink::mojom::DisplayCutoutHost {
+class CONTENT_EXPORT DisplayCutoutHostImpl
+    : public blink::mojom::DisplayCutoutHost {
  public:
   explicit DisplayCutoutHostImpl(WebContentsImpl*);
 
@@ -34,11 +36,6 @@ class DisplayCutoutHostImpl : public blink::mojom::DisplayCutoutHost {
   // blink::mojom::DisplayCutoutHost
   void NotifyViewportFitChanged(blink::mojom::ViewportFit value) override;
 
-  // Stores the updated viewport fit value for a |frame| and notifies observers
-  // if it has changed.
-  void ViewportFitChangedForFrame(RenderFrameHost* rfh,
-                                  blink::mojom::ViewportFit value);
-
   // Called by WebContents when various events occur.
   void DidAcquireFullscreen(RenderFrameHost* rfh);
   void DidExitFullscreen();
@@ -49,13 +46,19 @@ class DisplayCutoutHostImpl : public blink::mojom::DisplayCutoutHost {
   // Updates the safe area insets on the current frame.
   void SetDisplayCutoutSafeArea(gfx::Insets insets);
 
+ protected:
+  // Send the safe area insets to a |RenderFrameHost|.
+  // Protected and virtual for testing only.
+  virtual void SendSafeAreaToFrame(RenderFrameHost* rfh, gfx::Insets insets);
+
  private:
+  // Stores the updated viewport fit value for a |frame| and notifies observers
+  // if it has changed.
+  void ViewportFitChangedForFrame(RenderFrameHost* rfh,
+                                  blink::mojom::ViewportFit value);
   // Set the current |RenderFrameHost| that should have control over the
   // viewport fit value and we should set safe area insets on.
   void SetCurrentRenderFrameHost(RenderFrameHost* rfh);
-
-  // Send the safe area insets to a |RenderFrameHost|.
-  void SendSafeAreaToFrame(RenderFrameHost* rfh, gfx::Insets insets);
 
   // Get the stored viewport fit value for a frame or kAuto if there is no
   // stored value.

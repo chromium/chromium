@@ -256,7 +256,7 @@ class RenderViewHostTestHarness : public ::testing::Test {
   NavigationController& controller();
 
   // The contents under test.
-  WebContents* web_contents();
+  WebContents* web_contents() const;
 
   // RVH/RFH getters are shorthand for oft-used bits of web_contents().
 
