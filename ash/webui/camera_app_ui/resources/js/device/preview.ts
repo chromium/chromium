@@ -410,6 +410,7 @@ export class Preview {
       const track = this.getVideoTrack();
       const {deviceId} = getVideoTrackSettings(track);
       track.stop();
+      this.streamInternal.getAudioTracks()[0]?.stop();
       const deviceOperator = DeviceOperator.getInstance();
       await deviceOperator?.dropConnection(deviceId);
       assert(this.onPreviewExpired !== null);
