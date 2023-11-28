@@ -424,9 +424,9 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     ]);
   });
 
-  test('show breadcrumbs for SeaPen template content', async () => {
+  test('show breadcrumbs for SeaPen results content', async () => {
     breadcrumbElement = initElement(PersonalizationBreadcrumbElement, {
-      'path': Paths.SEA_PEN_COLLECTION,
+      'path': Paths.SEA_PEN_RESULTS,
       'seaPenTemplateId': 'ChromeOSWallpaperTemplateSamplePark',
     });
 

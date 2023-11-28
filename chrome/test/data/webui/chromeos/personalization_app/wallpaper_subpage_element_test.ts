@@ -69,27 +69,48 @@ suite('WallpaperSubpageElementTest', function() {
     assertFalse(!!googlePhotosCollections);
   });
 
-  test('shows SeaPen collection', async () => {
+  test('shows SeaPen templates', async () => {
     loadTimeData.overrideValues({isSeaPenEnabled: true});
     wallpaperSubpage =
         initElement(WallpaperSubpageElement, {path: Paths.SEA_PEN_COLLECTION});
     await waitAfterNextRender(wallpaperSubpage);
 
-    // SeaPen collection is displayed.
+    // SeaPen templates is displayed.
     const seaPenCollection =
-        wallpaperSubpage!.shadowRoot!.querySelector('sea-pen-collection');
+        wallpaperSubpage!.shadowRoot!.querySelector('sea-pen-templates');
     assertTrue(!!seaPenCollection);
   });
 
-  test('hides SeaPen collection for ineligible users', async () => {
+  test('hides SeaPen templates for ineligible users', async () => {
     loadTimeData.overrideValues({isSeaPenEnabled: false});
     wallpaperSubpage =
         initElement(WallpaperSubpageElement, {path: Paths.SEA_PEN_COLLECTION});
     await waitAfterNextRender(wallpaperSubpage);
 
-    // SeaPen collection is not displayed.
     const seaPenCollection =
-        wallpaperSubpage!.shadowRoot!.querySelector('sea-pen-collection');
-    assertFalse(!!seaPenCollection);
+        wallpaperSubpage!.shadowRoot!.querySelector('sea-pen-templates');
+    assertFalse(!!seaPenCollection, 'SeaPen templates are not displayed');
+  });
+
+  test('shows SeaPen results', async () => {
+    loadTimeData.overrideValues({isSeaPenEnabled: true});
+    wallpaperSubpage =
+        initElement(WallpaperSubpageElement, {path: Paths.SEA_PEN_RESULTS});
+    await waitAfterNextRender(wallpaperSubpage);
+
+    const seaPenImages =
+        wallpaperSubpage!.shadowRoot!.querySelector('sea-pen-images');
+    assertTrue(!!seaPenImages, 'SeaPen images are displayed');
+  });
+
+  test('hides SeaPen results for ineligible users', async () => {
+    loadTimeData.overrideValues({isSeaPenEnabled: false});
+    wallpaperSubpage =
+        initElement(WallpaperSubpageElement, {path: Paths.SEA_PEN_RESULTS});
+    await waitAfterNextRender(wallpaperSubpage);
+
+    const seaPenImages =
+        wallpaperSubpage!.shadowRoot!.querySelector('sea-pen-images');
+    assertFalse(!!seaPenImages, 'sea pen images are not displayed');
   });
 });

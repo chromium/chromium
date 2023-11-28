@@ -26,8 +26,7 @@ import {getTemplate} from './personalization_breadcrumb_element.html.js';
 import {isPathValid, Paths, PersonalizationRouterElement} from './personalization_router_element.js';
 import {WithPersonalizationStore} from './personalization_store.js';
 import {inBetween, isNonEmptyArray} from './utils.js';
-import {SeaPenTemplate} from './wallpaper/sea_pen/sea_pen_collection_element.js';
-import {findAlbumById, getSampleSeaPenTemplates, QUERY} from './wallpaper/utils.js';
+import {findAlbumById, getSampleSeaPenTemplates, QUERY, SeaPenTemplate} from './wallpaper/utils.js';
 
 /** Event interface for dom-repeat. */
 interface RepeaterEvent extends CustomEvent {
@@ -218,6 +217,12 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
         break;
       case Paths.SEA_PEN_COLLECTION:
         breadcrumbs.push(this.i18n('wallpaperLabel'));
+        // TODO(b/308200616): Add real text
+        breadcrumbs.push('Sea Pen');
+        break;
+      case Paths.SEA_PEN_RESULTS:
+        breadcrumbs.push(this.i18n('wallpaperLabel'));
+        // TODO(b/308200616): Add real text
         breadcrumbs.push('Sea Pen');
         if (this.seaPenTemplateId === QUERY) {
           breadcrumbs.push(QUERY);

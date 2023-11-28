@@ -60,13 +60,15 @@ export class WallpaperSubpageTopElement extends WithPersonalizationStore {
 
   private shouldShowInputQuery_(path: string, templateId: string|null):
       boolean {
-    return isSeaPenTextInputEnabled() && path === Paths.SEA_PEN_COLLECTION &&
+    return isSeaPenTextInputEnabled() &&
+        (path === Paths.SEA_PEN_COLLECTION || path === Paths.SEA_PEN_RESULTS) &&
         (templateId === QUERY || !templateId);
   }
 
   private shouldShowTemplateQuery_(path: string, templateId: string|null):
       boolean {
-    return isSeaPenEnabled() && path === Paths.SEA_PEN_COLLECTION &&
+    return isSeaPenEnabled() &&
+        (path === Paths.SEA_PEN_COLLECTION || path === Paths.SEA_PEN_RESULTS) &&
         templateId !== QUERY && !!templateId;
   }
 

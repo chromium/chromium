@@ -13,9 +13,8 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {PersonalizationRouterElement} from '../../personalization_router_element.js';
 import {WithPersonalizationStore} from '../../personalization_store.js';
-import {getSampleSeaPenTemplates} from '../utils.js';
+import {getSampleSeaPenTemplates, SeaPenTemplate} from '../utils.js';
 
-import {SeaPenTemplate} from './sea_pen_collection_element.js';
 import {getTemplate} from './sea_pen_templates_element.html.js';
 
 export class SeaPenTemplatesElement extends WithPersonalizationStore {

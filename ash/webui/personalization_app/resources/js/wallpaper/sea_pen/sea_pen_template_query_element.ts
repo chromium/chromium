@@ -7,11 +7,12 @@
  * SeaPen wallpapers.
  */
 
+import '../../../common/icons.html.js';
+
 import {WithPersonalizationStore} from '../../personalization_store.js';
 import {isNonEmptyArray} from '../../utils.js';
-import {getSampleSeaPenTemplates, parseTemplateText} from '../utils.js';
+import {getSampleSeaPenTemplates, parseTemplateText, SeaPenOption, SeaPenTemplate} from '../utils.js';
 
-import {SeaPenOption, SeaPenTemplate} from './sea_pen_collection_element.js';
 import {getTemplate} from './sea_pen_template_query_element.html.js';
 
 export class SeaPenTemplateQueryElement extends WithPersonalizationStore {

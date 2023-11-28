@@ -18,7 +18,6 @@ import './wallpaper_preview_element.js';
 import './wallpaper_selected_element.js';
 import './wallpaper_subpage_element.js';
 import './wallpaper_subpage_top_element.js';
-import './sea_pen/sea_pen_collection_element.js';
 import './sea_pen/sea_pen_images_element.js';
 import './sea_pen/sea_pen_input_query_element.js';
 import './sea_pen/sea_pen_recent_wallpapers_element.js';

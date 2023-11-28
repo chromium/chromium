@@ -28,6 +28,7 @@ export enum Paths {
   LOCAL_COLLECTION = '/wallpaper/local',
   ROOT = '/',
   SEA_PEN_COLLECTION = '/wallpaper/sea-pen',
+  SEA_PEN_RESULTS = '/wallpaper/sea-pen/results',
   USER = '/user',
 }
 

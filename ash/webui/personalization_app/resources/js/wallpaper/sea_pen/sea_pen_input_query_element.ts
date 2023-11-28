@@ -18,7 +18,7 @@ import '../../../css/cros_button_style.css.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {MAXIMUM_SEARCH_WALLPAPER_TEXT_BYTES} from '../../../sea_pen.mojom-webui.js';
-import {PersonalizationRouterElement} from '../../personalization_router_element.js';
+import {Paths, PersonalizationRouterElement} from '../../personalization_router_element.js';
 import {WithPersonalizationStore} from '../../personalization_store.js';
 import {QUERY} from '../utils.js';
 import {searchWallpaperThumbnails} from '../wallpaper_controller.js';
@@ -67,7 +67,8 @@ export class SeaPenInputQueryElement extends WithPersonalizationStore {
     assert(this.textValue_, 'input query should not be empty.');
     searchWallpaperThumbnails(
         this.textValue_, getSeaPenProvider(), this.getStore());
-    PersonalizationRouterElement.instance().selectSeaPenTemplate(QUERY);
+    PersonalizationRouterElement.instance().goToRoute(
+        Paths.SEA_PEN_RESULTS, {seaPenTemplateId: QUERY});
   }
 }
 customElements.define(SeaPenInputQueryElement.is, SeaPenInputQueryElement);

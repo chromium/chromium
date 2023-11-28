@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {emptyState, Paths, PersonalizationRouterElement, SeaPenActionName, SeaPenState, WallpaperSubpageTopElement} from 'chrome://personalization/js/personalization_app.js';
+import {emptyState, Paths, PersonalizationRouterElement, QueryParams, SeaPenActionName, SeaPenState, WallpaperSubpageTopElement} from 'chrome://personalization/js/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -145,12 +145,12 @@ suite('WallpaperSubpageTopElementTest', function() {
     assertTrue(!!searchButton, 'search button should display.');
   });
 
-  test('shows input element on input query tab', async () => {
+  test('shows input element on sea pen results page', async () => {
     loadTimeData.overrideValues(
         {isSeaPenEnabled: true, isSeaPenTextInputEnabled: true});
     wallpaperSubpageTopElement = initElement(
         WallpaperSubpageTopElement,
-        {path: Paths.SEA_PEN_COLLECTION, 'templateId': 'query'});
+        {path: Paths.SEA_PEN_RESULTS, 'templateId': 'query'});
     await waitAfterNextRender(wallpaperSubpageTopElement);
 
     // wallpaper selected page isn't displayed.
@@ -192,10 +192,11 @@ suite('WallpaperSubpageTopElementTest', function() {
     const router = TestMock.fromClass(PersonalizationRouterElement);
     PersonalizationRouterElement.instance = () => router;
 
-    // Mock |PersonalizationRouter.selectSeaPenTemplate()|.
+    // Mock |PersonalizationRouter.goToRoute()|.
     let selectedTemplateId: string|undefined;
-    router.selectSeaPenTemplate = (templateId: string) => {
-      selectedTemplateId = templateId;
+    router.goToRoute = (path: string, queryParams: QueryParams) => {
+      selectedTemplateId = queryParams.seaPenTemplateId;
+      assertEquals(Paths.SEA_PEN_RESULTS, path);
     };
 
     // Make sure state starts at expected value.
@@ -208,7 +209,7 @@ suite('WallpaperSubpageTopElementTest', function() {
     inputQuery.value = 'this is a test query';
     searchButton.click();
 
-    assertEquals(selectedTemplateId, 'query');
+    assertEquals('query', selectedTemplateId);
 
     await personalizationStore.waitForAction(
         SeaPenActionName.SET_SEA_PEN_THUMBNAILS);
@@ -249,6 +250,22 @@ suite('WallpaperSubpageTopElementTest', function() {
     wallpaperSubpageTopElement = initElement(
         WallpaperSubpageTopElement,
         {path: Paths.SEA_PEN_COLLECTION, 'templateId': '4'});
+    await waitAfterNextRender(wallpaperSubpageTopElement);
+
+    const seaPenTemplateQueryElement =
+        wallpaperSubpageTopElement.shadowRoot!.querySelector(
+            'sea-pen-template-query');
+
+    assertTrue(
+        !!seaPenTemplateQueryElement, 'template query should be displayed.');
+  });
+
+  test('displays template query content on sea pen results page', async () => {
+    loadTimeData.overrideValues({isSeaPenEnabled: true});
+    // Initialize |wallpaperSubpageTopElement|.
+    wallpaperSubpageTopElement = initElement(
+        WallpaperSubpageTopElement,
+        {path: Paths.SEA_PEN_RESULTS, 'templateId': '4'});
     await waitAfterNextRender(wallpaperSubpageTopElement);
 
     const seaPenTemplateQueryElement =

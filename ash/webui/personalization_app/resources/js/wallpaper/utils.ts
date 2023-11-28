@@ -7,15 +7,34 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {CurrentAttribution, CurrentWallpaper, GooglePhotosAlbum, GooglePhotosPhoto, WallpaperImage, WallpaperLayout, WallpaperType} from '../../personalization_app.mojom-webui.js';
+import {isSeaPenTextInputEnabled} from '../load_time_booleans.js';
 import {getNumberOfGridItemsPerRow, isNonEmptyArray, isNonEmptyString} from '../utils.js';
 
 import {DefaultImageSymbol, DisplayableImage, kDefaultImageSymbol, SeaPenWallpaper} from './constants.js';
-import {SeaPenTemplate} from './sea_pen/sea_pen_collection_element.js';
 import {DailyRefreshState} from './wallpaper_state.js';
 
 export const QUERY: string = 'query';
+
+export interface SeaPenOption {
+  // `value` is the actual option value to be sent to the server side.
+  value: string;
+  // `translation` is the translated value to be displayed in the UI.
+  translation: string;
+}
+
+export interface SeaPenTemplate {
+  preview: Url[];
+  // `title` is the user-visible string in collection titles and breadcrumbs.
+  title: string;
+  // `text` is the string that shows up on the sea pen subpage.
+  text: string;
+  id: string;
+  // `options` are in the form of 'option_name': [option1, option2, ...].
+  options: Map<string, SeaPenOption[]>;
+}
 
 export function isWallpaperImage(obj: any): obj is WallpaperImage {
   return !!obj && typeof obj.unitId === 'bigint';
@@ -225,7 +244,7 @@ export function parseTemplateText(template: string): string[] {
 }
 
 export function getSampleSeaPenTemplates(): SeaPenTemplate[] {
-  return [
+  const templates = [
     {
       preview: [{
         url: 'chrome://personalization/images/no_images.svg',
@@ -263,4 +282,16 @@ export function getSampleSeaPenTemplates(): SeaPenTemplate[] {
       ]),
     },
   ];
+  if (isSeaPenTextInputEnabled()) {
+    templates.push({
+      preview: [{
+        url: 'chrome://personalization/images/no_images.svg',
+      }],
+      title: 'Freeform',
+      text: 'Freeform',
+      id: QUERY,
+      options: new Map(),
+    });
+  }
+  return templates;
 }
