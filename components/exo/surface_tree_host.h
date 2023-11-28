@@ -317,7 +317,8 @@ class SurfaceTreeHost : public SurfaceDelegate,
 
   display::ScopedDisplayObserver display_observer_{this};
 
-  int64_t display_id_ = display::kInvalidDisplayId;
+  // The display id for the output the surface is entered onto.
+  int64_t output_display_id_ = display::kInvalidDisplayId;
 
   bool client_submits_surfaces_in_pixel_coordinates_ = false;
 
