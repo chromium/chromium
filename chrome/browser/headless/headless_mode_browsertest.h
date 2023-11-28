@@ -12,10 +12,6 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace content {
-class WebContents;
-}
-
 namespace views {
 class Widget;
 }
@@ -44,8 +40,6 @@ class HeadlessModeBrowserTest : public InProcessBrowserTest {
   bool headful_mode() const { return headful_mode_; }
 
   void AppendHeadlessCommandLineSwitches(base::CommandLine* command_line);
-
-  content::WebContents* GetActiveWebContents();
 
  private:
   bool headful_mode_ = false;
