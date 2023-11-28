@@ -336,9 +336,7 @@ bool DawnContextProvider::Initialize(
       wgpu::FeatureName::DualSourceBlending,
       wgpu::FeatureName::MultiPlanarFormatExtendedUsages,
       wgpu::FeatureName::MultiPlanarFormatP010,
-#if BUILDFLAG(IS_MAC)
       wgpu::FeatureName::MultiPlanarFormatNv12a,
-#endif  // BUILDFLAG(IS_MAC)
       wgpu::FeatureName::MultiPlanarRenderTargets,
       wgpu::FeatureName::Norm16TextureFormats,
       wgpu::FeatureName::TransientAttachments,
