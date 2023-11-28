@@ -1300,9 +1300,18 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
   TabSwitcherItem* existingItem = self.items[index];
   self.items[index] = newItem;
 
-  Snapshot* snapshot = self.diffableDataSource.snapshot;
   GridItemIdentifier* existingItemIdentifier =
       [GridItemIdentifier tabIdentifier:existingItem];
+
+  if (![self.diffableDataSource
+          indexPathForItemIdentifier:existingItemIdentifier]) {
+    // It is possible that the item is still/already in self.items but no
+    // longer/yet in the data source. No repro steps were found. In that case,
+    // ignore the update. See crbug.com/1503139.
+    return;
+  }
+
+  Snapshot* snapshot = self.diffableDataSource.snapshot;
   if (existingItemID == newItem.identifier) {
     [snapshot reconfigureItemsWithIdentifiers:@[ existingItemIdentifier ]];
   } else {
