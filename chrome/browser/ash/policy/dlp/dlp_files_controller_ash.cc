@@ -1309,11 +1309,11 @@ void DlpFilesControllerAsh::ContinueCheckIfDropAllowed(
     DCHECK(destination.url());
     request.set_destination_url(destination.url()->spec());
   }
-  request.set_file_action(::dlp::FileAction::MOVE);
+  request.set_file_action(::dlp::FileAction::COPY);
 
   auto return_drop_allowed_cb =
       base::BindOnce(&DlpFilesControllerAsh::ReturnIfActionAllowed,
-                     weak_ptr_factory_.GetWeakPtr(), dlp::FileAction::kMove,
+                     weak_ptr_factory_.GetWeakPtr(), dlp::FileAction::kCopy,
                      std::move(result_callback));
   chromeos::DlpClient::Get()->CheckFilesTransfer(
       request, std::move(return_drop_allowed_cb));

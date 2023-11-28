@@ -1407,7 +1407,7 @@ TEST_F(DlpFilesControllerAshTest, CheckIfDropAllowed_ErrorResponse) {
   ASSERT_EQ(request.files_paths().size(), 1);
   EXPECT_EQ(request.files_paths()[0], file_path1.value());
   EXPECT_EQ(kExampleUrl1, request.destination_url());
-  EXPECT_EQ(::dlp::FileAction::MOVE, request.file_action());
+  EXPECT_EQ(::dlp::FileAction::COPY, request.file_action());
   EXPECT_FALSE(request.has_io_task_id());
 }
 
@@ -1439,7 +1439,7 @@ TEST_F(DlpFilesControllerAshTest, CheckIfDropAllowed) {
   EXPECT_CALL(*fpnm_,
               ShowDlpBlockedFiles(/*task_id=*/{absl::nullopt},
                                   std::vector<base::FilePath>{file_path2},
-                                  dlp::FileAction::kMove));
+                                  dlp::FileAction::kCopy));
 
   std::vector<ui::FileInfo> dropped_files{
       ui::FileInfo(file_path1, file_path1),
@@ -1460,7 +1460,7 @@ TEST_F(DlpFilesControllerAshTest, CheckIfDropAllowed) {
   ASSERT_EQ(request.files_paths().size(), 1);
   EXPECT_EQ(request.files_paths()[0], file_path2.value());
   EXPECT_EQ(kExampleUrl1, request.destination_url());
-  EXPECT_EQ(::dlp::FileAction::MOVE, request.file_action());
+  EXPECT_EQ(::dlp::FileAction::COPY, request.file_action());
   EXPECT_FALSE(request.has_io_task_id());
 }
 
@@ -2637,7 +2637,7 @@ TEST_P(DlpFilesDnDTest, CheckIfDropAllowed) {
   EXPECT_CALL(*fpnm_, ShowDlpBlockedFiles(
                           /*task_id=*/{absl::nullopt},
                           std::vector<base::FilePath>{file_path1},
-                          dlp::FileAction::kMove));
+                          dlp::FileAction::kCopy));
 
   std::vector<ui::FileInfo> dropped_files{ui::FileInfo(file_path1, file_path1)};
   auto [data_dst, expected_component] = GetParam();
