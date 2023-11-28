@@ -84,6 +84,7 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
   void StartTabGroupTutorial() override;
   void TriggerSync() override;
   void TriggerSignIn() override;
+  void OpenHelpPage() override;
   void OpenSyncSettings() override;
   void ShowUI() override;
 

@@ -47,6 +47,8 @@ export interface TabSearchApiProxy {
 
   triggerSignIn(): void;
 
+  openHelpPage(): void;
+
   openSyncSettings(): void;
 
   showUi(): void;
@@ -131,6 +133,10 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
 
   triggerSignIn() {
     this.handler.triggerSignIn();
+  }
+
+  openHelpPage() {
+    this.handler.openHelpPage();
   }
 
   openSyncSettings() {

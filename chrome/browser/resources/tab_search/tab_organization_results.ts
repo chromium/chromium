@@ -142,7 +142,10 @@ export class TabOrganizationResultsElement extends PolymerElement {
   }
 
   private onLearnMoreClick_() {
-    // TODO(emshack): Implement this
+    this.dispatchEvent(new CustomEvent('learn-more-click', {
+      bubbles: true,
+      composed: true,
+    }));
   }
 
   private onThumbsUpClick_() {

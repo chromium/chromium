@@ -27,6 +27,7 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
       'startTabGroupTutorial',
       'triggerSync',
       'triggerSignIn',
+      'openHelpPage',
       'openSyncSettings',
       'showUi',
     ]);
@@ -94,6 +95,10 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
 
   triggerSignIn() {
     this.methodCalled('triggerSignIn');
+  }
+
+  openHelpPage() {
+    this.methodCalled('openHelpPage');
   }
 
   openSyncSettings() {

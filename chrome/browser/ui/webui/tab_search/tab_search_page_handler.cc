@@ -487,6 +487,15 @@ void TabSearchPageHandler::TriggerSignIn() {
       profile, signin_metrics::AccessPoint::ACCESS_POINT_TAB_ORGANIZATION);
 }
 
+void TabSearchPageHandler::OpenHelpPage() {
+  Browser* browser = chrome::FindLastActive();
+  GURL help_url("https://support.google.com/chrome?p=tab_organization");
+  NavigateParams params(browser, help_url,
+                        ui::PageTransition::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&params);
+}
+
 void TabSearchPageHandler::OpenSyncSettings() {
   Browser* browser = chrome::FindLastActive();
   GURL settings_url("chrome://settings/syncSetup/advanced");

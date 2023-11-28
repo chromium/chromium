@@ -236,6 +236,9 @@ interface PageHandler {
   // Initiate the sign in flow.
   TriggerSignIn();
 
+  // Open the help page associated with tab organization.
+  OpenHelpPage();
+
   // Open the user's sync settings in a new tab.
   OpenSyncSettings();
 
