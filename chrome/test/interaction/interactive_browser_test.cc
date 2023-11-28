@@ -578,7 +578,7 @@ InteractiveBrowserTestApi::DeepQueryToRelativePosition(const DeepQuery& query) {
             << " are outside the screen bounds of the containing WebView, "
             << container_bounds.ToString()
             << ". Did you forget to scroll the element into view? See "
-               "ScrollToVisible().";
+               "ScrollIntoView().";
         return intersect_bounds.CenterPoint();
       },
       query);
