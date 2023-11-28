@@ -65,14 +65,14 @@ AX_TEST_F(
       Object.defineProperty(slider, 'value', {get: () => sliderValue});
 
       const event = new CustomAutomationEvent(EventType.VALUE_CHANGED, slider);
-      mockFeedback.call(() => this.handler_.onValueChanged(event))
+      mockFeedback.call(() => this.handler_.onValueChanged_(event))
           .expectSpeech('Slider', '50%')
 
           // Override the min time to observe value changes so that even super
           // fast updates triggers speech.
           .call(() => DesktopAutomationHandler.MIN_VALUE_CHANGE_DELAY_MS = -1)
           .call(() => sliderValue = '60%')
-          .call(() => this.handler_.onValueChanged(event))
+          .call(() => this.handler_.onValueChanged_(event))
 
           // The range stays on the slider, so subsequent value changes only
           // report the value.
@@ -83,12 +83,12 @@ AX_TEST_F(
           .call(
               () => DesktopAutomationHandler.MIN_VALUE_CHANGE_DELAY_MS = 10000)
           .call(() => sliderValue = '70%')
-          .call(() => this.handler_.onValueChanged(event))
+          .call(() => this.handler_.onValueChanged_(event))
 
           // Send one more that is processed.
           .call(() => DesktopAutomationHandler.MIN_VALUE_CHANGE_DELAY_MS = -1)
           .call(() => sliderValue = '80%')
-          .call(() => this.handler_.onValueChanged(event))
+          .call(() => this.handler_.onValueChanged_(event))
 
           .expectNextSpeechUtteranceIsNot('70%')
           .expectSpeech('80%');
