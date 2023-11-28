@@ -95,16 +95,18 @@ void InterestGroupCachingStorage::GetInterestGroupsForOwner(
 
   // If there is a cache hit, use the in-memory object.
   auto cached_groups_it = cached_interest_groups_.find(owner);
-  if (cached_groups_it != cached_interest_groups_.end() &&
-      cached_groups_it->second.get() &&
-      !cached_groups_it->second->IsExpired()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  scoped_refptr<StorageInterestGroups>(
-                                      cached_groups_it->second.get())));
-    base::UmaHistogramBoolean("Ads.InterestGroup.Auction.LoadGroupsCacheHit",
-                              true);
-    return;
+  if (cached_groups_it != cached_interest_groups_.end()) {
+    scoped_refptr<StorageInterestGroups> groups =
+        cached_groups_it->second.get();
+    if (groups && !groups->IsExpired()) {
+      StartTimerForInterestGroupHold(owner, groups);
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), std::move(groups)));
+
+      base::UmaHistogramBoolean("Ads.InterestGroup.Auction.LoadGroupsCacheHit",
+                                true);
+      return;
+    }
   }
   base::UmaHistogramBoolean("Ads.InterestGroup.Auction.LoadGroupsCacheHit",
                             false);
@@ -386,6 +388,7 @@ void InterestGroupCachingStorage::OnLoadInterestGroupsForOwnerOneCallback(
       base::MakeRefCounted<StorageInterestGroups>(std::move(interest_groups));
   if (base::FeatureList::IsEnabled(features::kFledgeUseInterestGroupCache)) {
     cached_interest_groups_[owner] = interest_groups_ptr->GetWeakPtr();
+    StartTimerForInterestGroupHold(owner, interest_groups_ptr);
   }
   std::move(callback).Run(std::move(interest_groups_ptr));
 }
@@ -410,11 +413,13 @@ void InterestGroupCachingStorage::OnLoadInterestGroupsForOwner(
   }
   outstanding_interest_groups_for_owner_callbacks_.erase(owner);
   outdated_outstanding_interest_group_loads_.erase(owner);
+  StartTimerForInterestGroupHold(owner, interest_groups_ptr);
 }
 
 void InterestGroupCachingStorage::InvalidateCachedInterestGroupsForOwner(
     const url::Origin& owner) {
   cached_interest_groups_.erase(owner);
+  timed_holds_of_interest_groups_.erase(owner);
   if (outstanding_interest_groups_for_owner_callbacks_.find(owner) !=
       outstanding_interest_groups_for_owner_callbacks_.end()) {
     outdated_outstanding_interest_group_loads_.emplace(owner);
@@ -423,10 +428,29 @@ void InterestGroupCachingStorage::InvalidateCachedInterestGroupsForOwner(
 
 void InterestGroupCachingStorage::InvalidateAllCachedInterestGroups() {
   cached_interest_groups_.clear();
+  timed_holds_of_interest_groups_.clear();
   for (const auto& [owner, _] :
        outstanding_interest_groups_for_owner_callbacks_) {
     outdated_outstanding_interest_group_loads_.emplace(owner);
   }
+}
+
+void InterestGroupCachingStorage::StartTimerForInterestGroupHold(
+    const url::Origin& owner,
+    scoped_refptr<StorageInterestGroups> groups) {
+  // Get the existing timer if it exists or create a new one if not.
+  std::unique_ptr<base::OneShotTimer>& timer =
+      timed_holds_of_interest_groups_
+          .insert(std::make_pair(owner, std::make_unique<base::OneShotTimer>()))
+          .first->second;
+  if (timer->IsRunning()) {
+    timer->Stop();
+  }
+  timer->Start(
+      FROM_HERE, kMinimumCacheHoldTime,
+      base::BindOnce(
+          &InterestGroupCachingStorage::OnMinimumCacheHoldTimeCompleted,
+          weak_factory_.GetWeakPtr(), owner, groups));
 }
 
 }  // namespace content
