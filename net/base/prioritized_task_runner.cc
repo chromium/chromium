@@ -40,11 +40,7 @@ void PrioritizedTaskRunner::PostTaskAndReply(const base::Location& from_here,
                                              uint32_t priority) {
   Job job(from_here, std::move(task), std::move(reply), priority,
           task_count_++);
-  {
-    base::AutoLock lock(task_job_heap_lock_);
-    task_job_heap_.push_back(std::move(job));
-    std::push_heap(task_job_heap_.begin(), task_job_heap_.end(), JobComparer());
-  }
+  task_jobs_.Push(std::move(job));
 
   scoped_refptr<base::TaskRunner> task_runner;
   if (task_runner_for_testing_) {
@@ -63,35 +59,47 @@ PrioritizedTaskRunner::~PrioritizedTaskRunner() = default;
 
 void PrioritizedTaskRunner::RunTaskAndPostReply() {
   // Find the next job to run.
-  Job job;
-  {
-    base::AutoLock lock(task_job_heap_lock_);
-    std::pop_heap(task_job_heap_.begin(), task_job_heap_.end(), JobComparer());
-    job = std::move(task_job_heap_.back());
-    task_job_heap_.pop_back();
-  }
+  Job job = task_jobs_.Pop();
 
   std::move(job.task).Run();
 
   // Add the job to the reply priority queue.
-  base::AutoLock reply_lock(reply_job_heap_lock_);
-  reply_job_heap_.push_back(std::move(job));
-  std::push_heap(reply_job_heap_.begin(), reply_job_heap_.end(), JobComparer());
+  reply_jobs_.Push(std::move(job));
 }
 
 void PrioritizedTaskRunner::RunReply() {
   // Find the next job to run.
-  Job job;
-  {
-    base::AutoLock lock(reply_job_heap_lock_);
-    std::pop_heap(reply_job_heap_.begin(), reply_job_heap_.end(),
-                  JobComparer());
-    job = std::move(reply_job_heap_.back());
-    reply_job_heap_.pop_back();
-  }
+  Job job = reply_jobs_.Pop();
 
   // Run the job.
   std::move(job.reply).Run();
+}
+
+struct PrioritizedTaskRunner::JobComparer {
+  bool operator()(const Job& left, const Job& right) {
+    if (left.priority == right.priority) {
+      return left.task_count > right.task_count;
+    }
+    return left.priority > right.priority;
+  }
+};
+
+PrioritizedTaskRunner::JobPriorityQueue::JobPriorityQueue() = default;
+PrioritizedTaskRunner::JobPriorityQueue::~JobPriorityQueue() = default;
+
+void PrioritizedTaskRunner::JobPriorityQueue::Push(Job job) {
+  base::AutoLock auto_lock(lock_);
+  heap_.push_back(std::move(job));
+  std::push_heap(heap_.begin(), heap_.end(), JobComparer());
+}
+
+PrioritizedTaskRunner::Job PrioritizedTaskRunner::JobPriorityQueue::Pop() {
+  base::AutoLock auto_lock(lock_);
+  CHECK(!heap_.empty());
+  std::pop_heap(heap_.begin(), heap_.end(), JobComparer());
+  Job job = std::move(heap_.back());
+  heap_.pop_back();
+  return job;
 }
 
 }  // namespace net
