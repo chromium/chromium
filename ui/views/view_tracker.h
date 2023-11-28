@@ -29,6 +29,8 @@ class VIEWS_EXPORT ViewTracker : public ViewObserver {
   void SetOnViewIsDeletingCallback(
       base::OnceClosure on_view_is_deleting_callback);
 
+  operator bool() const { return !!view_; }
+
   // ViewObserver:
   void OnViewIsDeleting(View* observed_view) override;
 
