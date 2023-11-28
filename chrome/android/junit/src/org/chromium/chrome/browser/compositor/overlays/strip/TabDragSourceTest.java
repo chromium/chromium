@@ -22,6 +22,7 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipData.Item;
+import android.content.ClipDescription;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Point;
 import android.graphics.PointF;
@@ -423,6 +424,21 @@ public class TabDragSourceTest {
     }
 
     @Test
+    public void test_DragStartWithInvalidMime_ReturnsFalse() {
+        // Set state.
+        mTabDragSource.setGlobalState(mTabBeingDragged);
+
+        DragEvent event = mock(DragEvent.class);
+        when(event.getAction()).thenReturn(DragEvent.ACTION_DRAG_STARTED);
+        when(event.getX()).thenReturn(POS_X);
+        when(event.getY()).thenReturn(mPosY);
+        when(event.getClipDescription())
+                .thenReturn(new ClipDescription("", new String[] {"some_value"}));
+
+        assertFalse(mTabDragSource.onDrag(mTabsToolbarView, event));
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     @DisableFeatures(ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID)
     public void test_onProvideShadowMetrics_WithDesiredStartPosition_ReturnsSuccess() {
@@ -480,6 +496,7 @@ public class TabDragSourceTest {
         when(event.getClipData())
                 .thenReturn(
                         new ClipData(null, SUPPORTED_MIME_TYPES, new Item("TabId=" + tabId, null)));
+        when(event.getClipDescription()).thenReturn(new ClipDescription("", SUPPORTED_MIME_TYPES));
         mTabDragSource.onDrag(mTabsToolbarView, event);
     }
 }
