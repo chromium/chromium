@@ -18735,6 +18735,21 @@
             ]
         }
     ],
+    "TimeOfDayWallpaperForcedAutoSchedule": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TimeOfDayWallpaperForcedAutoSchedule"
+                    ]
+                }
+            ]
+        }
+    ],
     "TimedHTMLParserBudget": [
         {
             "platforms": [
