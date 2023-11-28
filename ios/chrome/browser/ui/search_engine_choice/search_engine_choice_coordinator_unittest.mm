@@ -37,7 +37,7 @@
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-// Dummy implementation of the FirstRunScreenDelegate used to check that the
+// Empty implementation of the FirstRunScreenDelegate used to check that the
 // screen does get dismissed.
 @interface FirstRunScreenTestDelegate : NSObject <FirstRunScreenDelegate>
 
@@ -54,6 +54,26 @@
 }
 
 - (void)skipAllScreens {
+}
+
+@end
+
+// Empty implementation of the SearchEngineChoiceCoordinatorDelegate used to
+// check that the screen does get dismissed.
+@interface SearchEngineChoiceCoordinatorTestDelegate
+    : NSObject <SearchEngineChoiceCoordinatorDelegate>
+
+@property(nonatomic, readonly) BOOL wasDismissed;
+
+@end
+
+@implementation SearchEngineChoiceCoordinatorTestDelegate
+
+@synthesize wasDismissed = _wasDismissed;
+
+- (void)choiceScreenWillBeDismissed:
+    (SearchEngineChoiceCoordinator*)coordinator {
+  _wasDismissed = YES;
 }
 
 @end
@@ -79,20 +99,12 @@ class SearchEngineChoiceCoordinatorTest : public PlatformTest {
         ios::HistoryServiceFactory::GetDefaultFactory());
     browser_state_ = test_cbs_builder.Build();
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
-    promos_manager_ = std::make_unique<MockPromosManager>();
-
-    mocked_browser_coordinator_commands_handler_ =
-        OCMStrictProtocolMock(@protocol(BrowserCoordinatorCommands));
-    [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:mocked_browser_coordinator_commands_handler_
-                     forProtocol:@protocol(BrowserCoordinatorCommands)];
 
     browser_state_->GetTestingPrefService()->registry()->RegisterInt64Pref(
         prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp, 0);
   }
 
   ~SearchEngineChoiceCoordinatorTest() override {
-    EXPECT_OCMOCK_VERIFY(mocked_browser_coordinator_commands_handler_);
     [coordinator_ stop];
     coordinator_ = nil;
     feature_list_.Reset();
@@ -102,10 +114,12 @@ class SearchEngineChoiceCoordinatorTest : public PlatformTest {
     feature_list_.InitAndEnableFeature(switches::kSearchEngineChoice);
     base_view_controller_ = [[UIViewController alloc] init];
     [scoped_key_window_.Get() setRootViewController:base_view_controller_];
+    coordinator_delegate_ =
+        [[SearchEngineChoiceCoordinatorTestDelegate alloc] init];
     coordinator_ = [[SearchEngineChoiceCoordinator alloc]
         initWithBaseViewController:base_view_controller_
                            browser:browser_.get()];
-    [coordinator_ setPromosManagerForTesting:promos_manager_.get()];
+    coordinator_.delegate = coordinator_delegate_;
     [coordinator_ start];
 
     search_engine_choice_view_controller_ =
@@ -125,7 +139,6 @@ class SearchEngineChoiceCoordinatorTest : public PlatformTest {
         initForFirstRunWithBaseNavigationController:base_navigation_controller_
                                             browser:browser_.get()
                                    firstRunDelegate:first_run_delegate_];
-    [coordinator_ setPromosManagerForTesting:promos_manager_.get()];
     [coordinator_ start];
 
     // `base_navigation_controller_` needs to be presented to make sure the view
@@ -150,9 +163,6 @@ class SearchEngineChoiceCoordinatorTest : public PlatformTest {
 
   // Select the first visible search engine and set it as the default.
   void SelectAndSetAsDefault() {
-    EXPECT_CALL(*promos_manager_.get(),
-                DeregisterPromo(promos_manager::Promo::Choice))
-        .Times(1);
     [table_view_controller_.delegate selectSearchEngineAtRow:0];
     [search_engine_choice_view_controller_.actionDelegate didTapPrimaryButton];
   }
@@ -212,9 +222,8 @@ class SearchEngineChoiceCoordinatorTest : public PlatformTest {
   ScopedKeyWindow scoped_key_window_;
   SearchEngineChoiceCoordinator* coordinator_;
   base::HistogramTester histogram_tester_;
-  id mocked_browser_coordinator_commands_handler_;
   FirstRunScreenTestDelegate* first_run_delegate_ = nil;
-  std::unique_ptr<MockPromosManager> promos_manager_;
+  SearchEngineChoiceCoordinatorTestDelegate* coordinator_delegate_ = nil;
 };
 
 // Checks that the correct metrics are recorded and that the screen gets
@@ -222,9 +231,9 @@ class SearchEngineChoiceCoordinatorTest : public PlatformTest {
 TEST_F(SearchEngineChoiceCoordinatorTest, TestHistograms) {
   CreateAndStartCoordinator();
   ExpectChoiceScreenWasDisplayedRecorded();
-  OCMExpect([mocked_browser_coordinator_commands_handler_ dismissChoice]);
 
   SelectAndSetAsDefault();
+  ASSERT_TRUE(coordinator_delegate_.wasDismissed);
   ExpectDefaultWasSetRecorded();
 }
 

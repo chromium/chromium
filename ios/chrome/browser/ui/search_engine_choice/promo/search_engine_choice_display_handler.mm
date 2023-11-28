@@ -12,7 +12,6 @@
 
 - (void)handleDisplay {
   CHECK(self.handler);
-  [self.handler showChoicePromo];
 }
 
 - (PromoConfig)config {

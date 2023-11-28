@@ -974,11 +974,6 @@ void InjectNTP(Browser* browser) {
   [sceneState addAgent:[[WhatsNewSceneAgent alloc]
                            initWithPromosManager:promosManager]];
 
-  if (ios::provider::IsChoiceEnabled()) {
-    [sceneState addAgent:ios::provider::CreateChoiceSceneAgent(promosManager,
-                                                               browserState)];
-  }
-
   // Do not gate by feature flag so it can run for enabled -> disabled
   // scenarios.
   [sceneState addAgent:[[CredentialProviderPromoSceneAgent alloc]

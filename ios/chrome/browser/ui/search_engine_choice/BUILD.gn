@@ -18,8 +18,6 @@ source_set("search_engine_choice") {
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/favicon",
-    "//ios/chrome/browser/promos_manager",
-    "//ios/chrome/browser/promos_manager:factory",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",

@@ -7,6 +7,9 @@
 
 #import "ios/chrome/browser/shared/coordinator/scene/observing_scene_state_agent.h"
 
+// TODO(b/306576460): Clean up all promos manager -related code for the choice
+// screen once the internal references to this class are deleted.
+
 class ChromeBrowserState;
 class PromosManager;
 

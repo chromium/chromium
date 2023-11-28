@@ -98,12 +98,6 @@ class GURL;
 // Preloads voice search in the current BVC.
 - (void)preloadVoiceSearch;
 
-// Show the choice screen.
-- (void)showChoice;
-
-// Dismiss the choice screen.
-- (void)dismissChoice;
-
 // Dismiss the payments suggestions.
 - (void)dismissPaymentSuggestions;
 

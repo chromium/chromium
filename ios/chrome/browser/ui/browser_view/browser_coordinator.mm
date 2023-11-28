@@ -1805,24 +1805,6 @@ enum class ToolbarKind {
   self.plusAddressBottomSheetCoordinator = nil;
 }
 
-- (void)showChoice {
-  if (!ios::provider::IsChoiceEnabled()) {
-    return;
-  }
-
-  if (!self.choiceCoordinator) {
-    self.choiceCoordinator =
-        ios::provider::CreateChoiceCoordinatorWithViewController(
-            self.viewController, self.browser);
-  }
-  [self.choiceCoordinator start];
-}
-
-- (void)dismissChoice {
-  [self.choiceCoordinator stop];
-  self.choiceCoordinator = nil;
-}
-
 #pragma mark - DefaultBrowserPromoCommands
 
 - (void)hidePromo {
@@ -2046,10 +2028,6 @@ enum class ToolbarKind {
   [self showWhatsNew];
   self.whatsNewCoordinator.promosUIHandler = self.promosManagerCoordinator;
   self.whatsNewCoordinator.shouldShowBubblePromoOnDismiss = YES;
-}
-
-- (void)showChoicePromo {
-  [self showChoice];
 }
 
 - (void)maybeDisplayDefaultBrowserPromo {

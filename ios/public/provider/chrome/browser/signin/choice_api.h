@@ -17,19 +17,6 @@
 namespace ios {
 namespace provider {
 
-// Creates a new ChoiceCoordinator instance.
-// TODO(b/280753739): Rename this method to CreateCoordinator(...).
-ChromeCoordinator* CreateChoiceCoordinatorWithViewController(
-    UIViewController* view_controller,
-    Browser* browser);
-
-// Creates a new ChoiceDisplayHandler instance.
-id<StandardPromoDisplayHandler> CreateChoiceDisplayHandler();
-
-// Creates a new ChoiceSceneAgent instance.
-id<SceneAgent> CreateChoiceSceneAgent(PromosManager* promosManager,
-                                      ChromeBrowserState* browserState);
-
 // Whether the feature flag is enabled on runs that are not the first run.
 // TODO(b/306576460): Update this method's name to make it clearer what is
 // enabled or not.

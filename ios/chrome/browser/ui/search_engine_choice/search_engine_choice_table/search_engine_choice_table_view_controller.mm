@@ -137,6 +137,7 @@ UIImageView* CreateCheckedCircle() {
   UIImageView* checkedCircleView = CreateCheckedCircle();
   [cell setAccessoryView:checkedCircleView];
 
+  CHECK(self.delegate);
   [self.delegate selectSearchEngineAtRow:_selectedRow];
 }
 

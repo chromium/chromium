@@ -12,21 +12,6 @@
 namespace ios {
 namespace provider {
 
-ChromeCoordinator* CreateChoiceCoordinatorWithViewController(
-    UIViewController* view_controller,
-    Browser* browser) {
-  NOTREACHED_NORETURN();
-}
-
-id<StandardPromoDisplayHandler> CreateChoiceDisplayHandler() {
-  NOTREACHED_NORETURN();
-}
-
-id<SceneAgent> CreateChoiceSceneAgent(PromosManager* promosManager,
-                                      ChromeBrowserState* browserState) {
-  NOTREACHED_NORETURN();
-}
-
 bool IsChoiceEnabled() {
   // The feature is disabled on chromium
   return false;

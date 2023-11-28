@@ -582,12 +582,6 @@
       [[DefaultBrowserPromoDisplayHandler alloc] init];
   _displayHandlerPromos[promos_manager::Promo::DefaultBrowserRemindMeLater] =
       [[DefaultBrowserRemindMeLaterPromoDisplayHandler alloc] init];
-
-  // Choice Promo handler
-  if (ios::provider::IsChoiceEnabled()) {
-    _displayHandlerPromos[promos_manager::Promo::Choice] =
-        ios::provider::CreateChoiceDisplayHandler();
-  }
 }
 
 - (PromoConfigsSet)promoImpressionLimits {

@@ -24,9 +24,6 @@
 // Display WhatsNew as a promo.
 - (void)showWhatsNewPromo;
 
-// Display the choice screen as a promo.
-- (void)showChoicePromo;
-
 // Display default browser promo.
 - (void)maybeDisplayDefaultBrowserPromo;
 

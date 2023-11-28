@@ -24,31 +24,3 @@ source_set("promo") {
   ]
   frameworks = [ "UIKit.framework" ]
 }
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "search_engine_choice_scene_agent_unittest.mm" ]
-  deps = [
-    ":promo",
-    "//base/test:test_support",
-    "//components/country_codes",
-    "//components/policy/core/common",
-    "//components/policy/core/common:test_support",
-    "//components/prefs:test_support",
-    "//components/search_engines",
-    "//components/signin/public/base",
-    "//components/sync_preferences:test_support",
-    "//ios/chrome/app/application_delegate:app_state_header",
-    "//ios/chrome/app/application_delegate:test_support",
-    "//ios/chrome/browser/policy:test_support",
-    "//ios/chrome/browser/promos_manager:test_support",
-    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
-    "//ios/chrome/browser/shared/coordinator/scene",
-    "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
-    "//ios/web/public/test",
-    "//testing/gtest",
-    "//third_party/ocmock",
-  ]
-}

@@ -365,6 +365,28 @@ source_set("post_restore_app_agent") {
   ]
 }
 
+source_set("search_engine_choice_app_agent") {
+  sources = [
+    "search_engine_choice_app_agent.h",
+    "search_engine_choice_app_agent.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/search_engines",
+    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/application_delegate:application_delegate_internal",
+    "//ios/chrome/app/application_delegate:observing_app_state_agent",
+    "//ios/chrome/browser/policy",
+    "//ios/chrome/browser/promos_manager:constants",
+    "//ios/chrome/browser/promos_manager:factory",
+    "//ios/chrome/browser/promos_manager:promos_manager",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/ui/search_engine_choice",
+  ]
+}
+
 source_set("feed_app_agent") {
   sources = [
     "feed_app_agent.h",
@@ -427,6 +449,7 @@ source_set("app_internal") {
     ":mode",
     ":post_restore_app_agent",
     ":safe_mode_app_state_agent",
+    ":search_engine_choice_app_agent",
     ":tests_hook",
     ":variations_app_state_agent",
     "//base",
@@ -547,6 +570,7 @@ source_set("app_internal") {
     "//ios/net",
     "//ios/public/provider/chrome/browser/app_distribution:app_distribution_api",
     "//ios/public/provider/chrome/browser/overrides:overrides_api",
+    "//ios/public/provider/chrome/browser/signin:choice_api",
     "//ios/public/provider/chrome/browser/ui_utils:ui_utils_api",
     "//ios/public/provider/chrome/browser/user_feedback:user_feedback_api",
     "//ios/third_party/material_components_ios",

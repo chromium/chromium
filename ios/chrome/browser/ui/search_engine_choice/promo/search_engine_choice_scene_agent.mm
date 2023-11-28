@@ -36,44 +36,4 @@
   return self;
 }
 
-- (void)sceneState:(SceneState*)sceneState
-    transitionedToActivationLevel:(SceneActivationLevel)level {
-  switch (level) {
-    case SceneActivationLevelForegroundActive:
-    case SceneActivationLevelBackground:
-    case SceneActivationLevelForegroundInactive: {
-      [self registerPromoForSingleDisplayIfNecessary];
-      break;
-    }
-    case SceneActivationLevelDisconnected:
-    case SceneActivationLevelUnattached: {
-      break;
-    }
-  }
-}
-
-// Register the Search Engine Choice Screen for a single display in the promo
-// manager if we want to display the choice screen promo.
-- (void)registerPromoForSingleDisplayIfNecessary {
-  ChromeBrowserState* browserState = _browserState.get();
-  if (!browserState) {
-    return;
-  }
-  CHECK(self.promosManager);
-  BrowserStatePolicyConnector* policyConnector =
-      browserState->GetPolicyConnector();
-  if (search_engines::ShouldShowChoiceScreen(
-          *policyConnector->GetPolicyService(),
-          /*profile_properties=*/
-          {.is_regular_profile = true,
-           .pref_service = browserState->GetPrefs()},
-          ios::TemplateURLServiceFactory::GetForBrowserState(browserState))) {
-    self.promosManager->RegisterPromoForSingleDisplay(
-        promos_manager::Promo::Choice);
-  } else {
-    // If the promo was not registered to begin with, this does nothing.
-    self.promosManager->DeregisterPromo(promos_manager::Promo::Choice);
-  }
-}
-
 @end
