@@ -14,19 +14,19 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabSelectionEditorActionMetricGroups;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorActionMetricGroups;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 
 import java.util.List;
 
-/** Bookmark action for the {@link TabSelectionEditorMenu}. */
-public class TabSelectionEditorBookmarkAction extends TabSelectionEditorAction {
+/** Bookmark action for the {@link TabListEditorMenu}. */
+public class TabListEditorBookmarkAction extends TabListEditorAction {
     private Activity mActivity;
-    private TabSelectionEditorBookmarkActionDelegate mDelegate;
+    private TabListEditorBookmarkActionDelegate mDelegate;
 
     /** Interface for passing params on bookmark action. */
-    public interface TabSelectionEditorBookmarkActionDelegate {
+    public interface TabListEditorBookmarkActionDelegate {
         /**
          * Bookmark selected tabs and show snackbar.
          * @param activity the current activity.
@@ -44,27 +44,27 @@ public class TabSelectionEditorBookmarkAction extends TabSelectionEditorAction {
      * @param buttonType the type of the action view.
      * @param iconPosition the position of the icon in the action view.
      */
-    public static TabSelectionEditorAction createAction(
+    public static TabListEditorAction createAction(
             Activity activity,
             @ShowMode int showMode,
             @ButtonType int buttonType,
             @IconPosition int iconPosition) {
         Drawable drawable = AppCompatResources.getDrawable(activity, R.drawable.btn_star);
-        TabSelectionEditorBookmarkActionDelegate delegate =
-                new TabSelectionEditorBookmarkActionDelegateImpl();
-        return new TabSelectionEditorBookmarkAction(
+        TabListEditorBookmarkActionDelegate delegate =
+                new TabListEditorBookmarkActionDelegateImpl();
+        return new TabListEditorBookmarkAction(
                 activity, showMode, buttonType, iconPosition, drawable, delegate);
     }
 
-    private TabSelectionEditorBookmarkAction(
+    private TabListEditorBookmarkAction(
             Activity activity,
             @ShowMode int showMode,
             @ButtonType int buttonType,
             @IconPosition int iconPosition,
             Drawable drawable,
-            TabSelectionEditorBookmarkActionDelegate delegate) {
+            TabListEditorBookmarkActionDelegate delegate) {
         super(
-                R.id.tab_selection_editor_bookmark_menu_item,
+                R.id.tab_list_editor_bookmark_menu_item,
                 showMode,
                 buttonType,
                 iconPosition,
@@ -75,8 +75,8 @@ public class TabSelectionEditorBookmarkAction extends TabSelectionEditorAction {
         mDelegate = delegate;
     }
 
-    private static class TabSelectionEditorBookmarkActionDelegateImpl
-            implements TabSelectionEditorBookmarkActionDelegate {
+    private static class TabListEditorBookmarkActionDelegateImpl
+            implements TabListEditorBookmarkActionDelegate {
         @Override
         public void bookmarkTabsAndShowSnackbar(
                 Activity activity, List<Tab> tabs, SnackbarManager snackbarManager) {
@@ -110,7 +110,7 @@ public class TabSelectionEditorBookmarkAction extends TabSelectionEditorAction {
             mDelegate.bookmarkTabsAndShowSnackbar(mActivity, tabs, snackbarManager);
         }
         TabUiMetricsHelper.recordSelectionEditorActionMetrics(
-                TabSelectionEditorActionMetricGroups.BOOKMARK);
+                TabListEditorActionMetricGroups.BOOKMARK);
         return true;
     }
 
@@ -119,7 +119,7 @@ public class TabSelectionEditorBookmarkAction extends TabSelectionEditorAction {
         return false;
     }
 
-    void setDelegateForTesting(TabSelectionEditorBookmarkActionDelegate delegate) {
+    void setDelegateForTesting(TabListEditorBookmarkActionDelegate delegate) {
         var oldValue = mDelegate;
         mDelegate = delegate;
         ResettersForTesting.register(() -> mDelegate = oldValue);

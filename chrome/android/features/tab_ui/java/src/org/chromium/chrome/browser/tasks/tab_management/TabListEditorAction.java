@@ -18,7 +18,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabSelectionEditorExitMetricGroups;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorExitMetricGroups;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -28,8 +28,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Defines the core action of a {@link TabSelectionEditorMenuItem}. */
-public abstract class TabSelectionEditorAction {
+/** Defines the core action of a {@link TabListEditorMenuItem}. */
+public abstract class TabListEditorAction {
     @IntDef({ShowMode.MENU_ONLY, ShowMode.IF_ROOM, ShowMode.NUM_ENTRIES})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ShowMode {
@@ -80,7 +80,7 @@ public abstract class TabSelectionEditorAction {
         // TODO(ckitagawa): Determine if this can be removed or moved to post processing.
 
         /**
-         * Called at the start of {@link TabSelectionEditorAction#perform()} before an action
+         * Called at the start of {@link TabListEditorAction#perform()} before an action
          * is executed.
          * @param tabs The list of tabs that will be acted on.
          */
@@ -88,7 +88,7 @@ public abstract class TabSelectionEditorAction {
     }
 
     /**
-     * Delegate for handling additional selection and control actions for the TabSelectionEditor.
+     * Delegate for handling additional selection and control actions for the TabListEditor.
      */
     public interface ActionDelegate {
         /** Selects all tabs in the current selection editor. */
@@ -119,7 +119,7 @@ public abstract class TabSelectionEditorAction {
     private SelectionDelegate<Integer> mSelectionDelegate;
     private Boolean mEditorSupportsActionOnRelatedTabs;
 
-    public TabSelectionEditorAction(
+    public TabListEditorAction(
             int menuItemId,
             @ShowMode int showMode,
             @ButtonType int buttonType,
@@ -139,29 +139,29 @@ public abstract class TabSelectionEditorAction {
                                 .getResourceTypeName(titleResourceId));
 
         mModel =
-                new PropertyModel.Builder(TabSelectionEditorActionProperties.ACTION_KEYS)
-                        .with(TabSelectionEditorActionProperties.MENU_ITEM_ID, menuItemId)
-                        .with(TabSelectionEditorActionProperties.SHOW_MODE, showMode)
-                        .with(TabSelectionEditorActionProperties.BUTTON_TYPE, buttonType)
-                        .with(TabSelectionEditorActionProperties.ICON_POSITION, iconPosition)
-                        .with(TabSelectionEditorActionProperties.TITLE_RESOURCE_ID, titleResourceId)
-                        .with(TabSelectionEditorActionProperties.TITLE_IS_PLURAL, titleIsPlural)
+                new PropertyModel.Builder(TabListEditorActionProperties.ACTION_KEYS)
+                        .with(TabListEditorActionProperties.MENU_ITEM_ID, menuItemId)
+                        .with(TabListEditorActionProperties.SHOW_MODE, showMode)
+                        .with(TabListEditorActionProperties.BUTTON_TYPE, buttonType)
+                        .with(TabListEditorActionProperties.ICON_POSITION, iconPosition)
+                        .with(TabListEditorActionProperties.TITLE_RESOURCE_ID, titleResourceId)
+                        .with(TabListEditorActionProperties.TITLE_IS_PLURAL, titleIsPlural)
                         .with(
-                                TabSelectionEditorActionProperties.CONTENT_DESCRIPTION_RESOURCE_ID,
+                                TabListEditorActionProperties.CONTENT_DESCRIPTION_RESOURCE_ID,
                                 contentDescriptionResourceId)
-                        .with(TabSelectionEditorActionProperties.ICON, icon)
-                        .with(TabSelectionEditorActionProperties.ENABLED, false)
-                        .with(TabSelectionEditorActionProperties.ITEM_COUNT, 0)
+                        .with(TabListEditorActionProperties.ICON, icon)
+                        .with(TabListEditorActionProperties.ENABLED, false)
+                        .with(TabListEditorActionProperties.ITEM_COUNT, 0)
                         .with(
-                                TabSelectionEditorActionProperties.TEXT_TINT,
+                                TabListEditorActionProperties.TEXT_TINT,
                                 ColorStateList.valueOf(Color.TRANSPARENT))
                         .with(
-                                TabSelectionEditorActionProperties.ICON_TINT,
+                                TabListEditorActionProperties.ICON_TINT,
                                 ColorStateList.valueOf(Color.TRANSPARENT))
-                        .with(TabSelectionEditorActionProperties.ON_CLICK_LISTENER, this::perform)
-                        .with(TabSelectionEditorActionProperties.SHOULD_DISMISS_MENU, true)
+                        .with(TabListEditorActionProperties.ON_CLICK_LISTENER, this::perform)
+                        .with(TabListEditorActionProperties.SHOULD_DISMISS_MENU, true)
                         .with(
-                                TabSelectionEditorActionProperties.ON_SELECTION_STATE_CHANGE,
+                                TabListEditorActionProperties.ON_SELECTION_STATE_CHANGE,
                                 this::onSelectionStateChange)
                         .build();
 
@@ -198,7 +198,7 @@ public abstract class TabSelectionEditorAction {
     }
 
     /**
-     * @return Whether the TabSelectionEditor supports applying the actions to related tabs.
+     * @return Whether the TabListEditor supports applying the actions to related tabs.
      */
     public boolean editorSupportsActionOnRelatedTabs() {
         assert mEditorSupportsActionOnRelatedTabs != null;
@@ -258,7 +258,7 @@ public abstract class TabSelectionEditorAction {
         if (shouldHideEditorAfterAction()) {
             mActionDelegate.hideByAction();
             TabUiMetricsHelper.recordSelectionEditorExitMetrics(
-                    TabSelectionEditorExitMetricGroups.CLOSED_AUTOMATICALLY,
+                    TabListEditorExitMetricGroups.CLOSED_AUTOMATICALLY,
                     tabs.get(0).getContext());
         }
         return true;
@@ -268,8 +268,8 @@ public abstract class TabSelectionEditorAction {
      * Called by {@link TabModelSelectionEditorMediator} to supply additional dependencies.
      * @param tabModelSelector that this action should act on.
      * @param selectionDelegate to get selected tab IDs from.
-     * @param actionDelegate to control the TabSelectionEditor.
-     * @param editorSupportsActionOnRelatedTabs whether the TabSelectionEditor supports actions on
+     * @param actionDelegate to control the TabListEditor.
+     * @param editorSupportsActionOnRelatedTabs whether the TabListEditor supports actions on
      *                                          related tabs.
      */
     void configure(
@@ -298,8 +298,8 @@ public abstract class TabSelectionEditorAction {
     }
 
     protected void setEnabledAndItemCount(boolean enabled, int itemCount) {
-        mModel.set(TabSelectionEditorActionProperties.ENABLED, enabled);
-        mModel.set(TabSelectionEditorActionProperties.ITEM_COUNT, itemCount);
+        mModel.set(TabListEditorActionProperties.ENABLED, enabled);
+        mModel.set(TabListEditorActionProperties.ITEM_COUNT, itemCount);
     }
 
     private List<Tab> getTabsFromSelection() {

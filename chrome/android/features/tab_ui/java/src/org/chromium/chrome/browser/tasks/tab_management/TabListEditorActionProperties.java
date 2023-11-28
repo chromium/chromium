@@ -16,8 +16,8 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.util.List;
 
-/** Properties of the {@link TabSelectionEditorAction}. */
-public class TabSelectionEditorActionProperties {
+/** Properties of the {@link TabListEditorAction}. */
+public class TabListEditorActionProperties {
     public static final ReadableIntPropertyKey MENU_ITEM_ID = new ReadableIntPropertyKey();
     public static final ReadableIntPropertyKey SHOW_MODE = new ReadableIntPropertyKey();
     public static final ReadableIntPropertyKey BUTTON_TYPE = new ReadableIntPropertyKey();
@@ -50,7 +50,7 @@ public class TabSelectionEditorActionProperties {
     public static final WritableObjectPropertyKey<Callback<List<Integer>>>
             ON_SELECTION_STATE_CHANGE = new WritableObjectPropertyKey<>();
 
-    /** Keys for the {@link TabSelectionEditorAction}. */
+    /** Keys for the {@link TabListEditorAction}. */
     public static final PropertyKey[] ACTION_KEYS = {
         MENU_ITEM_ID,
         SHOW_MODE,
@@ -70,7 +70,7 @@ public class TabSelectionEditorActionProperties {
         ON_SELECTION_STATE_CHANGE
     };
 
-    /** Keys for the {@link TabSelectionEditorMenuItem}. */
+    /** Keys for the {@link TabListEditorMenuItem}. */
     public static final PropertyKey[] MENU_ITEM_KEYS = {
         MENU_ITEM_ID,
         TEXT_APPEARANCE_ID,

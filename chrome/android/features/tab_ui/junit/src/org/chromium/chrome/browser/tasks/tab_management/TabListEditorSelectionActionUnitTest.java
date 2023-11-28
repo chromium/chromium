@@ -26,10 +26,10 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ActionDelegate;
-import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ButtonType;
-import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.IconPosition;
-import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ShowMode;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ActionDelegate;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ButtonType;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.IconPosition;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ShowMode;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
@@ -37,16 +37,16 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelega
 import java.util.ArrayList;
 import java.util.List;
 
-/** Unit tests for {@link TabSelectionEditorSelectionAction}. */
+/** Unit tests for {@link TabListEditorSelectionAction}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class TabSelectionEditorSelectionActionUnitTest {
+public class TabListEditorSelectionActionUnitTest {
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private SelectionDelegate<Integer> mSelectionDelegate;
     @Mock private ActionDelegate mDelegate;
     @Mock private Profile mProfile;
     private MockTabModel mTabModel;
-    private TabSelectionEditorAction mAction;
+    private TabListEditorAction mAction;
     private Context mContext;
 
     @Before
@@ -55,7 +55,7 @@ public class TabSelectionEditorSelectionActionUnitTest {
         mContext = Robolectric.buildActivity(Activity.class).get();
         mContext.setTheme(org.chromium.chrome.tab_ui.R.style.Theme_BrowserUI_DayNight);
         mAction =
-                TabSelectionEditorSelectionAction.createAction(
+                TabListEditorSelectionAction.createAction(
                         mContext, ShowMode.IF_ROOM, ButtonType.ICON_AND_TEXT, IconPosition.END);
         mTabModel = spy(new MockTabModel(mProfile, null));
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
@@ -67,23 +67,23 @@ public class TabSelectionEditorSelectionActionUnitTest {
     @SmallTest
     public void testInherentActionProperties() {
         Assert.assertEquals(
-                R.id.tab_selection_editor_selection_menu_item,
-                mAction.getPropertyModel().get(TabSelectionEditorActionProperties.MENU_ITEM_ID));
+                R.id.tab_list_editor_selection_menu_item,
+                mAction.getPropertyModel().get(TabListEditorActionProperties.MENU_ITEM_ID));
         Assert.assertEquals(
                 R.string.tab_selection_editor_select_all,
                 mAction.getPropertyModel()
-                        .get(TabSelectionEditorActionProperties.TITLE_RESOURCE_ID));
+                        .get(TabListEditorActionProperties.TITLE_RESOURCE_ID));
         Assert.assertEquals(
                 false,
-                mAction.getPropertyModel().get(TabSelectionEditorActionProperties.TITLE_IS_PLURAL));
+                mAction.getPropertyModel().get(TabListEditorActionProperties.TITLE_IS_PLURAL));
         Assert.assertEquals(
                 null,
                 mAction.getPropertyModel()
-                        .get(TabSelectionEditorActionProperties.CONTENT_DESCRIPTION_RESOURCE_ID));
+                        .get(TabListEditorActionProperties.CONTENT_DESCRIPTION_RESOURCE_ID));
         Assert.assertNotNull(
-                mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ICON));
+                mAction.getPropertyModel().get(TabListEditorActionProperties.ICON));
         Assert.assertNotNull(
-                mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ICON_TINT));
+                mAction.getPropertyModel().get(TabListEditorActionProperties.ICON_TINT));
     }
 
     @Test
@@ -98,15 +98,15 @@ public class TabSelectionEditorSelectionActionUnitTest {
         Assert.assertEquals(
                 R.string.tab_selection_editor_select_all,
                 mAction.getPropertyModel()
-                        .get(TabSelectionEditorActionProperties.TITLE_RESOURCE_ID));
+                        .get(TabListEditorActionProperties.TITLE_RESOURCE_ID));
         Assert.assertEquals(
-                true, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ENABLED));
+                true, mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
         Assert.assertEquals(
-                0, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ITEM_COUNT));
+                0, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
         Assert.assertNotNull(
-                mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ICON));
+                mAction.getPropertyModel().get(TabListEditorActionProperties.ICON));
         Drawable selectAllIcon =
-                mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ICON);
+                mAction.getPropertyModel().get(TabListEditorActionProperties.ICON);
 
         // 1 tab of 2 selected.
         selectedTabIds.add(0);
@@ -114,14 +114,14 @@ public class TabSelectionEditorSelectionActionUnitTest {
         Assert.assertEquals(
                 R.string.tab_selection_editor_select_all,
                 mAction.getPropertyModel()
-                        .get(TabSelectionEditorActionProperties.TITLE_RESOURCE_ID));
+                        .get(TabListEditorActionProperties.TITLE_RESOURCE_ID));
         Assert.assertEquals(
-                true, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ENABLED));
+                true, mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
         Assert.assertEquals(
-                1, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ITEM_COUNT));
+                1, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
         Assert.assertEquals(
                 selectAllIcon,
-                mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ICON));
+                mAction.getPropertyModel().get(TabListEditorActionProperties.ICON));
 
         // 2 tabs of 2 selected.
         selectedTabIds.add(1);
@@ -130,14 +130,14 @@ public class TabSelectionEditorSelectionActionUnitTest {
         Assert.assertEquals(
                 R.string.tab_selection_editor_deselect_all,
                 mAction.getPropertyModel()
-                        .get(TabSelectionEditorActionProperties.TITLE_RESOURCE_ID));
+                        .get(TabListEditorActionProperties.TITLE_RESOURCE_ID));
         Assert.assertEquals(
-                true, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ENABLED));
+                true, mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
         Assert.assertEquals(
-                2, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ITEM_COUNT));
+                2, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
         Assert.assertNotEquals(
                 selectAllIcon,
-                mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ICON));
+                mAction.getPropertyModel().get(TabListEditorActionProperties.ICON));
     }
 
     @Test

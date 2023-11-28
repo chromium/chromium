@@ -24,12 +24,12 @@ import org.chromium.ui.widget.ChromeImageButton;
 import java.util.Collections;
 import java.util.List;
 
-/** Handles toolbar functionality for TabSelectionEditor. */
-class TabSelectionEditorToolbar extends SelectableListToolbar<Integer> {
+/** Handles toolbar functionality for TabListEditor. */
+class TabListEditorToolbar extends SelectableListToolbar<Integer> {
     private static final List<Integer> sEmptyIntegerList = Collections.emptyList();
     private Context mContext;
     private ChromeImageButton mMenuButton;
-    private TabSelectionEditorActionViewLayout mActionViewLayout;
+    private TabListEditorActionViewLayout mActionViewLayout;
     @ColorInt private int mBackgroundColor;
     private RelatedTabCountProvider mRelatedTabCountProvider;
 
@@ -41,7 +41,7 @@ class TabSelectionEditorToolbar extends SelectableListToolbar<Integer> {
         int getRelatedTabCount(List<Integer> tabIds);
     }
 
-    public TabSelectionEditorToolbar(Context context, AttributeSet attrs) {
+    public TabListEditorToolbar(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
     }
@@ -52,7 +52,7 @@ class TabSelectionEditorToolbar extends SelectableListToolbar<Integer> {
 
         showNavigationButton();
         mActionViewLayout =
-                (TabSelectionEditorActionViewLayout) findViewById(R.id.action_view_layout);
+                (TabListEditorActionViewLayout) findViewById(R.id.action_view_layout);
         mMenuButton = (ChromeImageButton) findViewById(R.id.list_menu_button);
 
         mNumberRollView.setStringForZero(R.string.tab_selection_editor_toolbar_select_tabs);
@@ -113,7 +113,7 @@ class TabSelectionEditorToolbar extends SelectableListToolbar<Integer> {
     /**
      * @return the action view layout.
      */
-    public TabSelectionEditorActionViewLayout getActionViewLayout() {
+    public TabListEditorActionViewLayout getActionViewLayout() {
         return mActionViewLayout;
     }
 

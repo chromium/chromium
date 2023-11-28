@@ -945,8 +945,8 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     }
 
     @Test
-    public void onLongPress_triggerTabSelectionEditor() {
-        TabUiFeatureUtilities.setTabSelectionEditorLongPressEntryEnabledForTesting(true);
+    public void onLongPress_triggerTabListEditor() {
+        TabUiFeatureUtilities.setTabListEditorLongPressEntryEnabledForTesting(true);
 
         initAndAssertAllProperties();
 
@@ -961,8 +961,8 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     }
 
     @Test
-    public void onLongPress_preventTriggerTabSelectionEditor() {
-        TabUiFeatureUtilities.setTabSelectionEditorLongPressEntryEnabledForTesting(true);
+    public void onLongPress_preventTriggerTabListEditor() {
+        TabUiFeatureUtilities.setTabListEditorLongPressEntryEnabledForTesting(true);
 
         initAndAssertAllProperties();
 

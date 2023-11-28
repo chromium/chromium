@@ -42,23 +42,19 @@ public class TabUiFeatureUtilities {
                     300);
 
     // Cached and fixed values.
-    private static boolean sTabSelectionEditorLongPressEntryEnabled;
+    private static boolean sTabListEditorLongPressEntryEnabled;
     private static Boolean sIsTabToGtsAnimationEnabled;
 
-    /**
-     * Set whether the longpress entry for TabSelectionEditor is enabled. Currently only in tests.
-     */
-    public static void setTabSelectionEditorLongPressEntryEnabledForTesting(boolean enabled) {
-        var oldValue = sTabSelectionEditorLongPressEntryEnabled;
-        sTabSelectionEditorLongPressEntryEnabled = enabled;
-        ResettersForTesting.register(() -> sTabSelectionEditorLongPressEntryEnabled = oldValue);
+    /** Set whether the longpress entry for TabListEditor is enabled. Currently only in tests. */
+    public static void setTabListEditorLongPressEntryEnabledForTesting(boolean enabled) {
+        var oldValue = sTabListEditorLongPressEntryEnabled;
+        sTabListEditorLongPressEntryEnabled = enabled;
+        ResettersForTesting.register(() -> sTabListEditorLongPressEntryEnabled = oldValue);
     }
 
-    /**
-     * Whether the longpress entry for TabSelectionEditor is enabled. Currently only in tests.
-     */
-    public static boolean isTabSelectionEditorLongPressEntryEnabled() {
-        return sTabSelectionEditorLongPressEntryEnabled;
+    /** Whether the longpress entry for TabListEditor is enabled. Currently only in tests. */
+    public static boolean isTabListEditorLongPressEntryEnabled() {
+        return sTabListEditorLongPressEntryEnabled;
     }
 
     /**

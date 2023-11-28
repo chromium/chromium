@@ -29,11 +29,11 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
-import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ButtonType;
-import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.IconPosition;
-import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ShowMode;
-import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorCoordinator.TabSelectionEditorController;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabSelectionEditorOpenMetricGroups;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ButtonType;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.IconPosition;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ShowMode;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorOpenMetricGroups;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
@@ -120,8 +120,8 @@ public class TabGridDialogMediator
     private final String mComponentName;
 
     private TabGroupTitleEditor mTabGroupTitleEditor;
-    private Supplier<TabSelectionEditorController> mTabSelectionEditorControllerSupplier;
-    private boolean mTabSelectionEditorSetup;
+    private Supplier<TabListEditorController> mTabListEditorControllerSupplier;
+    private boolean mTabListEditorSetup;
     private KeyboardVisibilityDelegate.KeyboardVisibilityListener mKeyboardVisibilityListener;
     private int mCurrentTabId = Tab.INVALID_TAB_ID;
     private boolean mIsUpdatingTitle;
@@ -292,9 +292,9 @@ public class TabGridDialogMediator
     }
 
     public void initWithNative(
-            Supplier<TabSelectionEditorController> tabSelectionEditorControllerSupplier,
+            Supplier<TabListEditorController> tabListEditorControllerSupplier,
             TabGroupTitleEditor tabGroupTitleEditor) {
-        mTabSelectionEditorControllerSupplier = tabSelectionEditorControllerSupplier;
+        mTabListEditorControllerSupplier = tabListEditorControllerSupplier;
         mTabGroupTitleEditor = tabGroupTitleEditor;
         mTabModelSelector.getTabModelFilterProvider().addTabModelFilterObserver(mTabModelObserver);
 
@@ -305,9 +305,9 @@ public class TabGridDialogMediator
                 result -> {
                     if (result == R.id.ungroup_tab || result == R.id.select_tabs) {
                         mModel.set(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED, false);
-                        if (setupAndShowTabSelectionEditor(mCurrentTabId)) {
+                        if (setupAndShowTabListEditor(mCurrentTabId)) {
                             TabUiMetricsHelper.recordSelectionEditorOpenMetrics(
-                                    TabSelectionEditorOpenMetricGroups.OPEN_FROM_DIALOG, mContext);
+                                    TabListEditorOpenMetricGroups.OPEN_FROM_DIALOG, mContext);
                         }
                     }
 
@@ -338,9 +338,9 @@ public class TabGridDialogMediator
                         mAnimationSourceViewProvider.getAnimationSourceViewForTab(mCurrentTabId));
             }
         }
-        if (mTabSelectionEditorControllerSupplier != null
-                && mTabSelectionEditorControllerSupplier.hasValue()) {
-            mTabSelectionEditorControllerSupplier.get().hide();
+        if (mTabListEditorControllerSupplier != null
+                && mTabListEditorControllerSupplier.hasValue()) {
+            mTabListEditorControllerSupplier.get().hide();
         }
         // Hide view first. Listener will reset tabs on #finishedHiding.
         mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, false);
@@ -350,11 +350,11 @@ public class TabGridDialogMediator
      * @return a boolean indicating if the result of handling the backpress was successful.
      */
     public boolean handleBackPress() {
-        if (mTabSelectionEditorControllerSupplier != null
-                && mTabSelectionEditorControllerSupplier.hasValue()
-                && mTabSelectionEditorControllerSupplier.get().isVisible()) {
-            mTabSelectionEditorControllerSupplier.get().hide();
-            return !mTabSelectionEditorControllerSupplier.get().isVisible();
+        if (mTabListEditorControllerSupplier != null
+                && mTabListEditorControllerSupplier.hasValue()
+                && mTabListEditorControllerSupplier.get().isVisible()) {
+            mTabListEditorControllerSupplier.get().hide();
+            return !mTabListEditorControllerSupplier.get().isVisible();
         }
         hideDialog(true);
         RecordUserAction.record("TabGridDialog.Exit");
@@ -515,43 +515,43 @@ public class TabGridDialogMediator
     }
 
     private void setupDialogSelectionEditor() {
-        assert mTabSelectionEditorControllerSupplier != null;
+        assert mTabListEditorControllerSupplier != null;
 
-        if (!mTabSelectionEditorControllerSupplier.hasValue() || mTabSelectionEditorSetup) {
+        if (!mTabListEditorControllerSupplier.hasValue() || mTabListEditorSetup) {
             return;
         }
 
-        mTabSelectionEditorSetup = true;
+        mTabListEditorSetup = true;
 
-        List<TabSelectionEditorAction> actions = new ArrayList<>();
+        List<TabListEditorAction> actions = new ArrayList<>();
         actions.add(
-                TabSelectionEditorSelectionAction.createAction(
+                TabListEditorSelectionAction.createAction(
                         mContext, ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.END));
         actions.add(
-                TabSelectionEditorCloseAction.createAction(
+                TabListEditorCloseAction.createAction(
                         mContext,
                         ShowMode.MENU_ONLY,
                         ButtonType.ICON_AND_TEXT,
                         IconPosition.START));
         actions.add(
-                TabSelectionEditorUngroupAction.createAction(
+                TabListEditorUngroupAction.createAction(
                         mContext,
                         ShowMode.MENU_ONLY,
                         ButtonType.ICON_AND_TEXT,
                         IconPosition.START));
         actions.add(
-                TabSelectionEditorBookmarkAction.createAction(
+                TabListEditorBookmarkAction.createAction(
                         mActivity,
                         ShowMode.MENU_ONLY,
                         ButtonType.ICON_AND_TEXT,
                         IconPosition.START));
         actions.add(
-                TabSelectionEditorShareAction.createAction(
+                TabListEditorShareAction.createAction(
                         mContext,
                         ShowMode.MENU_ONLY,
                         ButtonType.ICON_AND_TEXT,
                         IconPosition.START));
-        mTabSelectionEditorControllerSupplier.get().configureToolbarWithMenuItems(actions, null);
+        mTabListEditorControllerSupplier.get().configureToolbarWithMenuItems(actions, null);
     }
 
     private void setupToolbarEditText() {
@@ -627,7 +627,7 @@ public class TabGridDialogMediator
     }
 
     private View.OnClickListener getMenuButtonClickListener() {
-        assert mTabSelectionEditorControllerSupplier != null;
+        assert mTabListEditorControllerSupplier != null;
         return TabGridDialogMenuCoordinator.getTabGridDialogMenuOnClickListener(
                 mToolbarMenuCallback);
     }
@@ -738,18 +738,18 @@ public class TabGridDialogMediator
     // OnLongPressTabItemEventListener implementation
     @Override
     public void onLongPressEvent(int tabId) {
-        if (setupAndShowTabSelectionEditor(tabId)) {
+        if (setupAndShowTabListEditor(tabId)) {
             RecordUserAction.record("TabMultiSelectV2.OpenLongPressInDialog");
         }
     }
 
-    private boolean setupAndShowTabSelectionEditor(int currentTabId) {
-        if (mTabSelectionEditorControllerSupplier == null) return false;
+    private boolean setupAndShowTabListEditor(int currentTabId) {
+        if (mTabListEditorControllerSupplier == null) return false;
 
         List<Tab> tabs = getRelatedTabs(currentTabId);
         // Setup dialog selection editor.
         setupDialogSelectionEditor();
-        mTabSelectionEditorControllerSupplier
+        mTabListEditorControllerSupplier
                 .get()
                 .show(tabs, /* preSelectedTabCount= */ 0, mRecyclerViewPositionSupplier.get());
         return true;

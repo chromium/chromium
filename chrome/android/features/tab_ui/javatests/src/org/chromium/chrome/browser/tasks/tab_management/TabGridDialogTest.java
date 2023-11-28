@@ -163,8 +163,7 @@ public class TabGridDialogTest {
             ActivityLifecycleMonitorRegistry.getInstance();
 
     private boolean mHasReceivedSourceRect;
-    private TabSelectionEditorTestingRobot mSelectionEditorRobot =
-            new TabSelectionEditorTestingRobot();
+    private TabListEditorTestingRobot mSelectionEditorRobot = new TabListEditorTestingRobot();
 
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =
@@ -466,13 +465,13 @@ public class TabGridDialogTest {
 
         // Click navigation button should close selection editor but not tab grid dialog.
         mSelectionEditorRobot.actionRobot.clickToolbarNavigationButton();
-        mSelectionEditorRobot.resultRobot.verifyTabSelectionEditorIsHidden();
+        mSelectionEditorRobot.resultRobot.verifyTabListEditorIsHidden();
         assertTrue(isDialogFullyVisible(cta));
 
         // Back press should close both theselectioneditor.
         openSelectionEditorAndVerify(cta, 2);
         Espresso.pressBack();
-        mSelectionEditorRobot.resultRobot.verifyTabSelectionEditorIsHidden();
+        mSelectionEditorRobot.resultRobot.verifyTabListEditorIsHidden();
         assertTrue(isDialogFullyVisible(cta));
 
         // Back press again to exit.
@@ -484,7 +483,7 @@ public class TabGridDialogTest {
         openDialogFromTabSwitcherAndVerify(cta, 2, null);
         openSelectionEditorAndVerify(cta, 2);
         clickScrimToExitDialog(cta);
-        mSelectionEditorRobot.resultRobot.verifyTabSelectionEditorIsHidden();
+        mSelectionEditorRobot.resultRobot.verifyTabListEditorIsHidden();
         waitForDialogHidingAnimationInTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 1);
     }
@@ -512,19 +511,19 @@ public class TabGridDialogTest {
 
         // Click navigation button should close selection editor but not tab grid dialog.
         mSelectionEditorRobot.actionRobot.clickToolbarNavigationButton();
-        mSelectionEditorRobot.resultRobot.verifyTabSelectionEditorIsHidden();
+        mSelectionEditorRobot.resultRobot.verifyTabListEditorIsHidden();
         assertTrue(isDialogFullyVisible(cta));
 
         // Back press should close only the selection editor.
         openSelectionEditorAndVerify(cta, 2);
         Espresso.pressBack();
-        mSelectionEditorRobot.resultRobot.verifyTabSelectionEditorIsHidden();
+        mSelectionEditorRobot.resultRobot.verifyTabListEditorIsHidden();
         assertTrue(isDialogFullyVisible(cta));
 
         // Clicking ScrimView should close both the dialog and selection editor.
         openSelectionEditorAndVerify(cta, 2);
         clickScrimToExitDialog(cta);
-        mSelectionEditorRobot.resultRobot.verifyTabSelectionEditorIsHidden();
+        mSelectionEditorRobot.resultRobot.verifyTabListEditorIsHidden();
         waitForDialogHidingAnimationInTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 1);
     }
@@ -533,7 +532,7 @@ public class TabGridDialogTest {
     @MediumTest
     public void testDialogSelectionEditor_LongPressTabAndVerifyNoSelectionOccurs()
             throws ExecutionException {
-        TabUiFeatureUtilities.setTabSelectionEditorLongPressEntryEnabledForTesting(true);
+        TabUiFeatureUtilities.setTabListEditorLongPressEntryEnabledForTesting(true);
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         createTabs(cta, false, 2);
         enterTabSwitcher(cta);
@@ -551,7 +550,7 @@ public class TabGridDialogTest {
                                 withParent(withId(R.id.dialog_container_view))))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(0, longClick()));
 
-        mSelectionEditorRobot.resultRobot.verifyTabSelectionEditorIsVisible();
+        mSelectionEditorRobot.resultRobot.verifyTabListEditorIsVisible();
         // Verify no selection action occurred to switch the selected tab in the tab model
         Criteria.checkThat(
                 sActivityTestRule.getActivity().getCurrentTabModel().index(), Matchers.is(1));
@@ -561,7 +560,7 @@ public class TabGridDialogTest {
     @MediumTest
     public void testDialogSelectionEditor_PostLongPressClickNoSelectionEditor()
             throws ExecutionException {
-        TabUiFeatureUtilities.setTabSelectionEditorLongPressEntryEnabledForTesting(true);
+        TabUiFeatureUtilities.setTabListEditorLongPressEntryEnabledForTesting(true);
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         createTabs(cta, false, 2);
         enterTabSwitcher(cta);
@@ -579,7 +578,7 @@ public class TabGridDialogTest {
                                 withParent(withId(R.id.dialog_container_view))))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(0, longClick()));
 
-        mSelectionEditorRobot.resultRobot.verifyTabSelectionEditorIsVisible();
+        mSelectionEditorRobot.resultRobot.verifyTabListEditorIsVisible();
         Espresso.pressBack();
 
         assertTrue(isDialogFullyVisible(cta));
@@ -641,7 +640,7 @@ public class TabGridDialogTest {
         BookmarkEditActivity activity = BookmarkTestUtil.waitForEditActivity();
         activity.finish();
 
-        mSelectionEditorRobot.resultRobot.verifyTabSelectionEditorIsVisible();
+        mSelectionEditorRobot.resultRobot.verifyTabListEditorIsVisible();
     }
 
     @Test
@@ -687,7 +686,7 @@ public class TabGridDialogTest {
         BookmarkAddEditFolderActivity activity = BookmarkTestUtil.waitForAddEditFolderActivity();
         activity.finish();
 
-        mSelectionEditorRobot.resultRobot.verifyTabSelectionEditorIsVisible();
+        mSelectionEditorRobot.resultRobot.verifyTabListEditorIsVisible();
     }
 
     @Test
@@ -774,7 +773,7 @@ public class TabGridDialogTest {
         openDialogFromTabSwitcherAndVerify(cta, 3, null);
         openSelectionEditorAndVerify(cta, 3);
 
-        TabSelectionEditorShareAction.setIntentCallbackForTesting(
+        TabListEditorShareAction.setIntentCallbackForTesting(
                 (result -> {
                     assertEquals(Intent.ACTION_SEND, result.getAction());
                     assertEquals(String.join("\n", urls), result.getStringExtra(Intent.EXTRA_TEXT));
@@ -841,7 +840,7 @@ public class TabGridDialogTest {
                 .clickItemAtAdapterPosition(2)
                 .clickToolbarMenuButton()
                 .clickToolbarMenuItem("Close tabs");
-        mSelectionEditorRobot.resultRobot.verifyTabSelectionEditorIsHidden();
+        mSelectionEditorRobot.resultRobot.verifyTabListEditorIsHidden();
         verifyShowingDialog(cta, 2, null);
         verifyDialogUndoBarAndClick();
         verifyShowingDialog(cta, 4, null);
@@ -876,7 +875,7 @@ public class TabGridDialogTest {
                 .clickItemAtAdapterPosition(3)
                 .clickToolbarMenuButton()
                 .clickToolbarMenuItem("Close tabs");
-        mSelectionEditorRobot.resultRobot.verifyTabSelectionEditorIsHidden();
+        mSelectionEditorRobot.resultRobot.verifyTabListEditorIsHidden();
         waitForDialogHidingAnimationInTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 0);
 
@@ -939,18 +938,18 @@ public class TabGridDialogTest {
         openDialogFromTabSwitcherAndVerify(cta, 3, null);
         checkPosition(cta, true, true);
 
-        // Verify the size and position of TabSelectionEditor in portrait mode.
+        // Verify the size and position of TabListEditor in portrait mode.
         openSelectionEditorAndVerify(cta, 3);
         checkPosition(cta, false, true);
 
-        // Verify the size and position of TabSelectionEditor in landscape mode.
+        // Verify the size and position of TabListEditor in landscape mode.
         ActivityTestUtils.rotateActivityToOrientation(cta, Configuration.ORIENTATION_LANDSCAPE);
         CriteriaHelper.pollUiThread(() -> parentView.getHeight() < parentView.getWidth());
         checkPosition(cta, false, false);
 
         // Verify the size and position of TabGridDialog in landscape mode.
         mSelectionEditorRobot.actionRobot.clickToolbarNavigationButton();
-        mSelectionEditorRobot.resultRobot.verifyTabSelectionEditorIsHidden();
+        mSelectionEditorRobot.resultRobot.verifyTabListEditorIsHidden();
         assertTrue(isDialogFullyVisible(cta));
         checkPosition(cta, true, false);
 
@@ -1139,7 +1138,7 @@ public class TabGridDialogTest {
                 .clickItemAtAdapterPosition(2)
                 .clickToolbarMenuButton()
                 .clickToolbarMenuItem("Ungroup tabs");
-        mSelectionEditorRobot.resultRobot.verifyTabSelectionEditorIsHidden();
+        mSelectionEditorRobot.resultRobot.verifyTabListEditorIsHidden();
 
         // Verify the ungroup occurred.
         clickScrimToExitDialog(cta);
@@ -1147,8 +1146,8 @@ public class TabGridDialogTest {
         verifyFirstCardTitle(CUSTOMIZED_TITLE1);
         verifyTabSwitcherCardCount(cta, 3);
 
-        enterTabSelectionEditor(cta);
-        mSelectionEditorRobot.resultRobot.verifyTabSelectionEditorIsVisible();
+        enterTabListEditor(cta);
+        mSelectionEditorRobot.resultRobot.verifyTabListEditorIsVisible();
         mSelectionEditorRobot
                 .actionRobot
                 .clickItemAtAdapterPosition(0)
@@ -1156,7 +1155,7 @@ public class TabGridDialogTest {
                 .clickItemAtAdapterPosition(2)
                 .clickToolbarMenuButton()
                 .clickToolbarMenuItem("Group tabs");
-        mSelectionEditorRobot.resultRobot.verifyTabSelectionEditorIsHidden();
+        mSelectionEditorRobot.resultRobot.verifyTabListEditorIsHidden();
 
         // Verify the group worked and the title remained.
         verifyFirstCardTitle(CUSTOMIZED_TITLE1);
@@ -1400,7 +1399,7 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @DisableIf.Device(type = UiDisableIf.TABLET)
-    public void testStripDialog_TabSelectionEditorCloseAll_NoCustomHomepage() throws Exception {
+    public void testStripDialog_TabListEditorCloseAll_NoCustomHomepage() throws Exception {
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         // Create a tab group with 2 tabs.
         createTabs(cta, false, 2);
@@ -1445,7 +1444,7 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @DisableIf.Device(type = UiDisableIf.TABLET)
-    public void testStripDialog_TabSelectionEditorCloseAll_CustomHomepage() throws Exception {
+    public void testStripDialog_TabListEditorCloseAll_CustomHomepage() throws Exception {
         GURL url =
                 new GURL(
                         sActivityTestRule
@@ -1771,7 +1770,7 @@ public class TabGridDialogTest {
 
         mSelectionEditorRobot
                 .resultRobot
-                .verifyTabSelectionEditorIsVisible()
+                .verifyTabListEditorIsVisible()
                 .verifyToolbarSelectionTextWithResourceId(
                         R.string.tab_selection_editor_toolbar_select_tabs)
                 .verifyAdapterHasItemCount(count);
@@ -1779,7 +1778,7 @@ public class TabGridDialogTest {
 
     private void checkPosition(ChromeTabbedActivity cta, boolean isDialog, boolean isPortrait) {
         // If isDialog is true, we are checking the position of TabGridDialog; otherwise we are
-        // checking the position of TabSelectionEditor.
+        // checking the position of TabListEditor.
         int contentViewId = isDialog ? R.id.dialog_container_view : R.id.selectable_list;
         int smallMargin =
                 (int) cta.getResources().getDimension(R.dimen.tab_grid_dialog_side_margin);
@@ -1991,7 +1990,7 @@ public class TabGridDialogTest {
                 });
     }
 
-    private void enterTabSelectionEditor(ChromeTabbedActivity cta) {
+    private void enterTabListEditor(ChromeTabbedActivity cta) {
         MenuUtils.invokeCustomMenuActionSync(
                 InstrumentationRegistry.getInstrumentation(), cta, R.id.menu_select_tabs);
     }

@@ -11,7 +11,7 @@ found in the LICENSE file.
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_centerVertical="true"
-    android:drawablePadding="@dimen/tab_selection_editor_action_view_padding"
+    android:drawablePadding="@dimen/tab_list_editor_action_view_padding"
      android:maxLines="1"
     android:id="@+id/tab_selection_editor_action_view"
     android:enabled="false"

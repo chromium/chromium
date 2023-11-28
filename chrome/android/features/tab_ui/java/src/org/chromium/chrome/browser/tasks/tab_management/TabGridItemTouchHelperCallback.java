@@ -102,8 +102,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
         mMode = mode;
         mLongPressDpThreshold =
                 context.getResources()
-                        .getDimensionPixelSize(
-                                R.dimen.tab_selection_editor_longpress_entry_threshold);
+                        .getDimensionPixelSize(R.dimen.tab_list_editor_longpress_entry_threshold);
     }
 
     /**
@@ -327,7 +326,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
                 }
 
                 if (mOnLongPressTabItemEventListener != null
-                        && TabUiFeatureUtilities.isTabSelectionEditorLongPressEntryEnabled()) {
+                        && TabUiFeatureUtilities.isTabListEditorLongPressEntryEnabled()) {
                     int tabId = mModel.get(mSelectedTabIndex).model.get(TabProperties.TAB_ID);
                     mOnLongPressTabItemEventListener.onLongPressEvent(tabId);
                 }

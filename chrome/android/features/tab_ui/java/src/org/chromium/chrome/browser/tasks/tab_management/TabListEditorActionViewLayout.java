@@ -22,18 +22,18 @@ import java.util.ArrayList;
 import java.util.Set;
 
 /**
- * A {@link LinearLayout} that displays only the TabSelectionEditorMenuItem ActionViews that fit in
- * the space it contains. Managed by a {@link TabSelectionEditorMenu}.
+ * A {@link LinearLayout} that displays only the TabListEditorMenuItem ActionViews that fit in
+ * the space it contains. Managed by a {@link TabListEditorMenu}.
  */
-public class TabSelectionEditorActionViewLayout extends LinearLayout {
-    /** All {@link TabSelectionEditoreMenuItem} action views with menu items. */
-    private final ArrayList<TabSelectionEditorMenuItem> mMenuItemsWithActionView =
+public class TabListEditorActionViewLayout extends LinearLayout {
+    /** All {@link TabListEditoreMenuItem} action views with menu items. */
+    private final ArrayList<TabListEditorMenuItem> mMenuItemsWithActionView =
             new ArrayList<>();
 
-    /** The {@link TabSelectionEditoreMenuItem}s with visible action views. */
-    private final Set<TabSelectionEditorMenuItem> mVisibleActions = new ArraySet<>();
+    /** The {@link TabListEditoreMenuItem}s with visible action views. */
+    private final Set<TabListEditorMenuItem> mVisibleActions = new ArraySet<>();
 
-    /** {@link ListMenuButton} for showing the {@link TabSelectionEditorMenu}. */
+    /** {@link ListMenuButton} for showing the {@link TabListEditorMenu}. */
     private ListMenuButton mMenuButton;
 
     private LinearLayout.LayoutParams mActionViewParams;
@@ -45,13 +45,13 @@ public class TabSelectionEditorActionViewLayout extends LinearLayout {
     /** Delegate updates in response to which action views are visible. */
     public interface ActionViewLayoutDelegate {
         /**
-         * @param visibleActions the list of {@link TabSelectionEditorMenuItem}s with visible action
+         * @param visibleActions the list of {@link TabListEditorMenuItem}s with visible action
          * views.
          */
-        public void setVisibleActionViews(Set<TabSelectionEditorMenuItem> visibleActions);
+        public void setVisibleActionViews(Set<TabListEditorMenuItem> visibleActions);
     }
 
-    public TabSelectionEditorActionViewLayout(Context context, AttributeSet attrs) {
+    public TabListEditorActionViewLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         mActionViewParams =
                 new LinearLayout.LayoutParams(
@@ -99,7 +99,7 @@ public class TabSelectionEditorActionViewLayout extends LinearLayout {
      * @param menuItem a menu item with an action view to attempt to show prioritized by insertion
      * order.
      */
-    public void add(TabSelectionEditorMenuItem menuItem) {
+    public void add(TabListEditorMenuItem menuItem) {
         assert menuItem.getActionView() != null;
 
         mMenuItemsWithActionView.add(menuItem);
@@ -121,7 +121,7 @@ public class TabSelectionEditorActionViewLayout extends LinearLayout {
     }
 
     private void removeAllActionViews() {
-        for (TabSelectionEditorMenuItem menuItem : mMenuItemsWithActionView) {
+        for (TabListEditorMenuItem menuItem : mMenuItemsWithActionView) {
             final View actionView = menuItem.getActionView();
             if (this == actionView.getParent()) {
                 removeView(menuItem.getActionView());
@@ -148,7 +148,7 @@ public class TabSelectionEditorActionViewLayout extends LinearLayout {
         boolean hasForcedAnyActionViewToMenu = false;
         final int childMeasureSpec =
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-        for (TabSelectionEditorMenuItem menuItem : mMenuItemsWithActionView) {
+        for (TabListEditorMenuItem menuItem : mMenuItemsWithActionView) {
             final View actionView = menuItem.getActionView();
             actionView.measure(childMeasureSpec, childMeasureSpec);
             final int actionViewWidth = actionView.getMeasuredWidth();

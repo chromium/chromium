@@ -300,13 +300,13 @@ public class BookmarkUtils {
     }
 
     /**
-     * Add all selected tabs from TabSelectionEditor as bookmarks. This logic depends on the
-     * snackbar workflow above. Currently there is no support for adding the selected tabs or newly
-     * created folder directly to the reading list.
+     * Add all selected tabs from TabListEditor as bookmarks. This logic depends on the snackbar
+     * workflow above. Currently there is no support for adding the selected tabs or newly created
+     * folder directly to the reading list.
      *
      * @param activity The current activity.
      * @param bookmarkModel The bookmark model.
-     * @param tabList The list of all currently selected tabs from the TabSelectionEditor menu.
+     * @param tabList The list of all currently selected tabs from the TabListEditor menu.
      * @param snackbarManager The SnackbarManager used to show the snackbar.
      */
     public static void addBookmarksOnMultiSelect(

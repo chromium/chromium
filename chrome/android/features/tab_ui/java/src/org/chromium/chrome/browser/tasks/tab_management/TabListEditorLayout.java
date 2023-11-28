@@ -20,17 +20,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** This class is used to show the {@link SelectableListLayout} in a {@link PopupWindow}. */
-class TabSelectionEditorLayout extends SelectableListLayout<Integer> {
-    private TabSelectionEditorToolbar mToolbar;
+class TabListEditorLayout extends SelectableListLayout<Integer> {
+    private TabListEditorToolbar mToolbar;
     private ViewGroup mParentView;
     private boolean mIsInitialized;
     private boolean mIsShowing;
 
     private Map<View, Integer> mAccessibilityImportanceMap = new HashMap<>();
 
-    // TODO(meiliang): inflates R.layout.tab_selection_editor_layout in
-    // TabSelectionEditorCoordinator.
-    public TabSelectionEditorLayout(Context context, AttributeSet attrs) {
+    // TODO(meiliang): inflates R.layout.tab_list_editor_layout in
+    // TabListEditorCoordinator.
+    public TabListEditorLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
@@ -38,7 +38,7 @@ class TabSelectionEditorLayout extends SelectableListLayout<Integer> {
      * Initializes the RecyclerView and the toolbar for the layout. Also initializes the selection
      * editor layout provider if there is one.This must be called before calling show/hide.
      *
-     * @param parentView The parent view to attach the {@link TabSelectionEditorLayout}.
+     * @param parentView The parent view to attach the {@link TabListEditorLayout}.
      * @param recyclerView The recycler view to be shown.
      * @param adapter The adapter that provides views that represent items in the recycler view.
      * @param selectionDelegate The {@link SelectionDelegate} that will inform the toolbar of
@@ -52,9 +52,9 @@ class TabSelectionEditorLayout extends SelectableListLayout<Integer> {
         mIsInitialized = true;
         initializeRecyclerView(adapter, recyclerView);
         mToolbar =
-                (TabSelectionEditorToolbar)
+                (TabListEditorToolbar)
                         initializeToolbar(
-                                R.layout.tab_selection_editor_toolbar,
+                                R.layout.tab_list_editor_toolbar,
                                 selectionDelegate,
                                 0,
                                 0,
@@ -83,7 +83,7 @@ class TabSelectionEditorLayout extends SelectableListLayout<Integer> {
     /**
      * @return The toolbar of the layout.
      */
-    public TabSelectionEditorToolbar getToolbar() {
+    public TabListEditorToolbar getToolbar() {
         return mToolbar;
     }
 

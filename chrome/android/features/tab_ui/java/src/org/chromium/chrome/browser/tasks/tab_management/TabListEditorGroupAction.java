@@ -13,15 +13,15 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabSelectionEditorActionMetricGroups;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorActionMetricGroups;
 import org.chromium.chrome.tab_ui.R;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-/** Group action for the {@link TabSelectionEditorMenu}. */
-public class TabSelectionEditorGroupAction extends TabSelectionEditorAction {
+/** Group action for the {@link TabListEditorMenu}. */
+public class TabListEditorGroupAction extends TabListEditorAction {
     /**
      * Create an action for grouping tabs.
      * @param context for loading resources.
@@ -29,22 +29,22 @@ public class TabSelectionEditorGroupAction extends TabSelectionEditorAction {
      * @param buttonType the type of the action view.
      * @param iconPosition the position of the icon in the action view.
      */
-    public static TabSelectionEditorAction createAction(
+    public static TabListEditorAction createAction(
             Context context,
             @ShowMode int showMode,
             @ButtonType int buttonType,
             @IconPosition int iconPosition) {
         Drawable drawable = AppCompatResources.getDrawable(context, R.drawable.ic_widgets);
-        return new TabSelectionEditorGroupAction(showMode, buttonType, iconPosition, drawable);
+        return new TabListEditorGroupAction(showMode, buttonType, iconPosition, drawable);
     }
 
-    private TabSelectionEditorGroupAction(
+    private TabListEditorGroupAction(
             @ShowMode int showMode,
             @ButtonType int buttonType,
             @IconPosition int iconPosition,
             Drawable drawable) {
         super(
-                R.id.tab_selection_editor_group_menu_item,
+                R.id.tab_list_editor_group_menu_item,
                 showMode,
                 buttonType,
                 iconPosition,
@@ -101,7 +101,7 @@ public class TabSelectionEditorGroupAction extends TabSelectionEditorAction {
                 sortedTabs, destinationTab, /* isSameGroup= */ true, /* notify= */ true);
 
         TabUiMetricsHelper.recordSelectionEditorActionMetrics(
-                TabSelectionEditorActionMetricGroups.GROUP);
+                TabListEditorActionMetricGroups.GROUP);
         return true;
     }
 

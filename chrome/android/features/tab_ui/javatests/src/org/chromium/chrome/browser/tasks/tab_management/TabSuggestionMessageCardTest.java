@@ -77,8 +77,8 @@ public class TabSuggestionMessageCardTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    private final TabSelectionEditorTestingRobot mTabSelectionEditorTestingRobot =
-            new TabSelectionEditorTestingRobot();
+    private final TabListEditorTestingRobot mTabListEditorTestingRobot =
+            new TabListEditorTestingRobot();
     private final String mClosingSuggestionMessage =
             "3 of your tabs haven't been used lately. Close them?";
     private final String mGroupingSuggestionMessage = "3 tabs seem related. Group them?";
@@ -149,20 +149,20 @@ public class TabSuggestionMessageCardTest {
     private void reviewSuggestion() {
         onView(allOf(withId(R.id.action_button), withParent(withId(R.id.tab_grid_message_item))))
                 .perform(click());
-        mTabSelectionEditorTestingRobot.resultRobot.verifyTabSelectionEditorIsVisible();
+        mTabListEditorTestingRobot.resultRobot.verifyTabListEditorIsVisible();
     }
 
     private void acceptSuggestion(int id) {
-        mTabSelectionEditorTestingRobot.resultRobot.verifyTabSelectionEditorIsVisible();
-        mTabSelectionEditorTestingRobot.actionRobot.clickToolbarActionView(id);
-        mTabSelectionEditorTestingRobot.resultRobot.verifyTabSelectionEditorIsHidden();
+        mTabListEditorTestingRobot.resultRobot.verifyTabListEditorIsVisible();
+        mTabListEditorTestingRobot.actionRobot.clickToolbarActionView(id);
+        mTabListEditorTestingRobot.resultRobot.verifyTabListEditorIsHidden();
     }
 
     private void dismissSuggestion(boolean isReviewed) {
         if (isReviewed) {
-            mTabSelectionEditorTestingRobot.resultRobot.verifyTabSelectionEditorIsVisible();
-            mTabSelectionEditorTestingRobot.actionRobot.clickToolbarNavigationButton();
-            mTabSelectionEditorTestingRobot.resultRobot.verifyTabSelectionEditorIsHidden();
+            mTabListEditorTestingRobot.resultRobot.verifyTabListEditorIsVisible();
+            mTabListEditorTestingRobot.actionRobot.clickToolbarNavigationButton();
+            mTabListEditorTestingRobot.resultRobot.verifyTabListEditorIsHidden();
         } else {
             onView(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
             onView(allOf(withId(R.id.close_button), withParent(withId(R.id.tab_grid_message_item))))
@@ -179,7 +179,7 @@ public class TabSuggestionMessageCardTest {
 
         enteringTabSwitcherAndVerifySuggestionIsShown(mClosingSuggestionMessage);
         reviewSuggestion();
-        acceptSuggestion(R.id.tab_selection_editor_close_menu_item);
+        acceptSuggestion(R.id.tab_list_editor_close_menu_item);
 
         onViewWaiting(allOf(withParent(withId(R.id.snackbar)), withText("3 tabs closed")));
     }
@@ -207,7 +207,7 @@ public class TabSuggestionMessageCardTest {
 
         enteringTabSwitcherAndVerifySuggestionIsShown(mGroupingSuggestionMessage);
         reviewSuggestion();
-        acceptSuggestion(R.id.tab_selection_editor_group_menu_item);
+        acceptSuggestion(R.id.tab_list_editor_group_menu_item);
 
         onViewWaiting(allOf(withParent(withId(R.id.snackbar)), withText("3 tabs grouped")));
     }
@@ -303,7 +303,7 @@ public class TabSuggestionMessageCardTest {
 
         enteringTabSwitcherAndVerifySuggestionIsShown(mGroupingSuggestionMessage);
         reviewSuggestion();
-        acceptSuggestion(R.id.tab_selection_editor_group_menu_item);
+        acceptSuggestion(R.id.tab_list_editor_group_menu_item);
 
         onView(withId(R.id.tab_grid_message_item)).check(doesNotExist());
     }

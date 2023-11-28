@@ -146,7 +146,7 @@ public class TabSwitcherMediatorUnitTest {
     private ArgumentCaptor<IncognitoReauthManager.IncognitoReauthCallback>
             mIncognitoReauthCallbackArgumentCaptor;
 
-    @Mock private TabSelectionEditorCoordinator.TabSelectionEditorController mEditorController;
+    @Mock private TabListEditorCoordinator.TabListEditorController mEditorController;
 
     private Tab mTab1;
     private Tab mTab2;
@@ -237,7 +237,7 @@ public class TabSwitcherMediatorUnitTest {
                         null);
 
         mMediator.initWithNative(null);
-        mMediator.setTabSelectionEditorController(mEditorController);
+        mMediator.setTabListEditorController(mEditorController);
         mMediator.addTabSwitcherViewObserver(mTabSwitcherViewObserver);
         mMediator.setOnTabSelectingListener(mOnTabSelectingListener);
         verify(mIncognitoReauthController, times(1))
@@ -368,7 +368,7 @@ public class TabSwitcherMediatorUnitTest {
                         mTabSwitcherVisibilityDelegate,
                         null);
         mMediator.initWithNative(null);
-        mMediator.setTabSelectionEditorController(mEditorController);
+        mMediator.setTabListEditorController(mEditorController);
         mMediator.addTabSwitcherViewObserver(mTabSwitcherViewObserver);
         mMediator.setOnTabSelectingListener(mOnTabSelectingListener);
 
@@ -457,7 +457,7 @@ public class TabSwitcherMediatorUnitTest {
                         mTabSwitcherVisibilityDelegate,
                         null);
         mMediator.initWithNative(null);
-        mMediator.setTabSelectionEditorController(mEditorController);
+        mMediator.setTabListEditorController(mEditorController);
         mMediator.addTabSwitcherViewObserver(mTabSwitcherViewObserver);
         mMediator.setOnTabSelectingListener(mOnTabSelectingListener);
 

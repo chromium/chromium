@@ -12,15 +12,15 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabSelectionEditorActionMetricGroups;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorActionMetricGroups;
 import org.chromium.chrome.tab_ui.R;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
-/** Select all and deselect all toggle action for the {@link TabSelectionEditorMenu}. */
-public class TabSelectionEditorSelectionAction extends TabSelectionEditorAction {
+/** Select all and deselect all toggle action for the {@link TabListEditorMenu}. */
+public class TabListEditorSelectionAction extends TabListEditorAction {
     private Context mContext;
     private @ActionState int mActionState;
     private final Drawable mSelectAllIcon;
@@ -42,7 +42,7 @@ public class TabSelectionEditorSelectionAction extends TabSelectionEditorAction 
      * @param iconPosition the position of the icon in the action view.
      * @param isIncognito whether the current tab model is incognito this will update dynamically.
      */
-    public static TabSelectionEditorAction createAction(
+    public static TabListEditorAction createAction(
             Context context,
             @ShowMode int showMode,
             @ButtonType int buttonType,
@@ -51,12 +51,12 @@ public class TabSelectionEditorSelectionAction extends TabSelectionEditorAction 
                 AppCompatResources.getDrawable(context, R.drawable.ic_select_all_24dp);
         Drawable deselectAllIcon =
                 AppCompatResources.getDrawable(context, R.drawable.ic_deselect_all_24dp);
-        return new TabSelectionEditorSelectionAction(
+        return new TabListEditorSelectionAction(
                 context, showMode, buttonType, iconPosition, selectAllIcon, deselectAllIcon);
     }
 
     @VisibleForTesting
-    TabSelectionEditorSelectionAction(
+    TabListEditorSelectionAction(
             Context context,
             @ShowMode int showMode,
             @ButtonType int buttonType,
@@ -64,7 +64,7 @@ public class TabSelectionEditorSelectionAction extends TabSelectionEditorAction 
             Drawable selectAllIcon,
             Drawable deselectAllIcon) {
         super(
-                R.id.tab_selection_editor_selection_menu_item,
+                R.id.tab_list_editor_selection_menu_item,
                 showMode,
                 buttonType,
                 iconPosition,
@@ -76,7 +76,7 @@ public class TabSelectionEditorSelectionAction extends TabSelectionEditorAction 
         mActionState = ActionState.UNKNOWN;
         mSelectAllIcon = selectAllIcon;
         mDeselectAllIcon = deselectAllIcon;
-        getPropertyModel().set(TabSelectionEditorActionProperties.SHOULD_DISMISS_MENU, false);
+        getPropertyModel().set(TabListEditorActionProperties.SHOULD_DISMISS_MENU, false);
         updateState(ActionState.SELECT_ALL);
     }
 
@@ -99,11 +99,11 @@ public class TabSelectionEditorSelectionAction extends TabSelectionEditorAction 
         if (mActionState == ActionState.SELECT_ALL) {
             getActionDelegate().selectAll();
             TabUiMetricsHelper.recordSelectionEditorActionMetrics(
-                    TabSelectionEditorActionMetricGroups.SELECT_ALL);
+                    TabListEditorActionMetricGroups.SELECT_ALL);
         } else if (mActionState == ActionState.DESELECT_ALL) {
             getActionDelegate().deselectAll();
             TabUiMetricsHelper.recordSelectionEditorActionMetrics(
-                    TabSelectionEditorActionMetricGroups.DESELECT_ALL);
+                    TabListEditorActionMetricGroups.DESELECT_ALL);
         } else {
             assert false : "Invalid selection state";
         }
@@ -123,15 +123,15 @@ public class TabSelectionEditorSelectionAction extends TabSelectionEditorAction 
         if (mActionState == ActionState.SELECT_ALL) {
             getPropertyModel()
                     .set(
-                            TabSelectionEditorActionProperties.TITLE_RESOURCE_ID,
+                            TabListEditorActionProperties.TITLE_RESOURCE_ID,
                             R.string.tab_selection_editor_select_all);
-            getPropertyModel().set(TabSelectionEditorActionProperties.ICON, mSelectAllIcon);
+            getPropertyModel().set(TabListEditorActionProperties.ICON, mSelectAllIcon);
         } else if (mActionState == ActionState.DESELECT_ALL) {
             getPropertyModel()
                     .set(
-                            TabSelectionEditorActionProperties.TITLE_RESOURCE_ID,
+                            TabListEditorActionProperties.TITLE_RESOURCE_ID,
                             R.string.tab_selection_editor_deselect_all);
-            getPropertyModel().set(TabSelectionEditorActionProperties.ICON, mDeselectAllIcon);
+            getPropertyModel().set(TabListEditorActionProperties.ICON, mDeselectAllIcon);
         } else {
             assert false : "Invalid selection state";
         }

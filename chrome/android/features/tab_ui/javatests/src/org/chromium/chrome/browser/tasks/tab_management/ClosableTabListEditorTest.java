@@ -42,7 +42,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
-/** End-to-end test for TabSelectionEditorCoordinator with closable item type. */
+/** End-to-end test for closable TabListEditor. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DisableFeatures(TAB_TO_GTS_ANIMATION)
 @Batch(Batch.PER_CLASS)
@@ -57,14 +57,13 @@ public class ClosableTabListEditorTest {
 
     @Mock private Callback<RecyclerViewPosition> mSetRecyclerViewPosition;
 
-    private TabSelectionEditorTestingRobot mRobot = new TabSelectionEditorTestingRobot();
+    private TabListEditorTestingRobot mRobot = new TabListEditorTestingRobot();
 
     private TabModelSelector mTabModelSelector;
-    private TabSelectionEditorCoordinator.TabSelectionEditorController
-            mTabSelectionEditorController;
-    private TabSelectionEditorLayout mTabSelectionEditorLayout;
-    private TabSelectionEditorCoordinator mTabSelectionEditorCoordinator;
-    private WeakReference<TabSelectionEditorLayout> mRef;
+    private TabListEditorCoordinator.TabListEditorController mTabListEditorController;
+    private TabListEditorLayout mTabListEditorLayout;
+    private TabListEditorCoordinator mTabListEditorCoordinator;
+    private WeakReference<TabListEditorLayout> mRef;
 
     private ViewGroup mParentView;
     private SnackbarManager mSnackbarManager;
@@ -77,8 +76,8 @@ public class ClosableTabListEditorTest {
         mSnackbarManager = sActivityTestRule.getActivity().getSnackbarManager();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabSelectionEditorCoordinator =
-                            new TabSelectionEditorCoordinator(
+                    mTabListEditorCoordinator =
+                            new TabListEditorCoordinator(
                                     sActivityTestRule.getActivity(),
                                     mParentView,
                                     sActivityTestRule.getActivity().getBrowserControlsManager(),
@@ -93,26 +92,26 @@ public class ClosableTabListEditorTest {
                                     mSnackbarManager,
                                     TabProperties.UiType.CLOSABLE);
 
-                    mTabSelectionEditorController = mTabSelectionEditorCoordinator.getController();
-                    mTabSelectionEditorLayout =
-                            mTabSelectionEditorCoordinator.getTabSelectionEditorLayoutForTesting();
-                    mRef = new WeakReference<>(mTabSelectionEditorLayout);
+                    mTabListEditorController = mTabListEditorCoordinator.getController();
+                    mTabListEditorLayout =
+                            mTabListEditorCoordinator.getTabListEditorLayoutForTesting();
+                    mRef = new WeakReference<>(mTabListEditorLayout);
                 });
     }
 
     @After
     public void tearDown() {
-        if (mTabSelectionEditorCoordinator != null) {
+        if (mTabListEditorCoordinator != null) {
             if (sActivityTestRule.getActivity().findViewById(R.id.app_menu_list) != null) {
                 Espresso.pressBack();
             }
 
             TestThreadUtils.runOnUiThreadBlocking(
                     () -> {
-                        if (mTabSelectionEditorController.isVisible()) {
-                            mTabSelectionEditorController.hide();
+                        if (mTabListEditorController.isVisible()) {
+                            mTabListEditorController.hide();
                         }
-                        mTabSelectionEditorCoordinator.destroy();
+                        mTabListEditorCoordinator.destroy();
                     });
 
             if (sActivityTestRule
@@ -155,7 +154,7 @@ public class ClosableTabListEditorTest {
 
         showTabListEditor(tabs);
         mRobot.actionRobot.clickItemAtAdapterPosition(0);
-        mRobot.resultRobot.verifyTabSelectionEditorIsHidden();
+        mRobot.resultRobot.verifyTabListEditorIsHidden();
     }
 
     @Test
@@ -169,7 +168,7 @@ public class ClosableTabListEditorTest {
         showTabListEditor(tabs);
         TabUiTestHelper.closeFirstTabInTabSwitcher(cta);
         TabUiTestHelper.verifyTabSwitcherCardCount(cta, 1);
-        mRobot.resultRobot.verifyTabSelectionEditorIsVisible();
+        mRobot.resultRobot.verifyTabListEditorIsVisible();
     }
 
     /** Retrieves all tabs from the current tab model */
@@ -187,7 +186,7 @@ public class ClosableTabListEditorTest {
     private void showTabListEditor(List<Tab> tabs) {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabSelectionEditorController.show(
+                    mTabListEditorController.show(
                             tabs, /* preSelectedTabCount= */ 0, /* recyclerViewPosition= */ null);
                 });
     }

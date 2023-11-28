@@ -466,7 +466,7 @@ public class TabUiThemeProvider {
     public static @ColorInt int getTabSelectionToolbarBackground(
             Context context, boolean isIncognito) {
         if (isIncognito) {
-            return context.getColor(R.color.incognito_tab_selection_editor_toolbar_bg_color);
+            return context.getColor(R.color.incognito_tab_list_editor_toolbar_bg_color);
         } else {
             return MaterialColors.getColor(context, R.attr.colorSurface, TAG);
         }

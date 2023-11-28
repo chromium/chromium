@@ -80,10 +80,10 @@ found in the LICENSE file.
     <dimen name="tasks_surface_location_bar_url_button_size"> 20dp</dimen>
     <dimen name="tasks_surface_location_bar_url_button_start_margin"> 16dp</dimen>
 
-    <!-- Dimens for TabSelectionEditor -->
-    <dimen name="tab_selection_editor_action_view_padding">14dp</dimen>
-    <dimen name="tab_selection_editor_longpress_entry_threshold">20dp</dimen>
-    <dimen name="tab_selection_editor_share_sheet_preview_thumbnail_padding">10dp</dimen>
+    <!-- Dimens for TabListEditor -->
+    <dimen name="tab_list_editor_action_view_padding">14dp</dimen>
+    <dimen name="tab_list_editor_longpress_entry_threshold">20dp</dimen>
+    <dimen name="tab_list_editor_share_sheet_preview_thumbnail_padding">10dp</dimen>
 
     <!-- Large form factor device strip tab hover card dimensions -->
     <dimen name="tab_hover_card_width">264dp</dimen>

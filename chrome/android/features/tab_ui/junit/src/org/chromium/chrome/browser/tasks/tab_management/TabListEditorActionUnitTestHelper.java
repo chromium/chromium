@@ -17,8 +17,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-/** Helper for setting up mock tabs and groups for TabSelectionEditor*ActionUnitTests. */
-public class TabSelectionEditorActionUnitTestHelper {
+/** Helper for setting up mock tabs and groups for TabListEditor*ActionUnitTests. */
+public class TabListEditorActionUnitTestHelper {
     /** Defines a group of tabs and its selection state. */
     public static class TabIdGroup {
         private int[] mTabIds;
@@ -48,14 +48,14 @@ public class TabSelectionEditorActionUnitTestHelper {
 
     /**
      * Holds lists of selected tabs that may be needed by the test and that will be used by the
-     * {@link TabSelectionEditorAction}.
+     * {@link TabListEditorAction}.
      */
     public static class TabListHolder {
         private List<Tab> mSelectedTabs;
         private List<Tab> mSelectedAndRelatedTabs;
 
         /**
-         * @param selectedTabs the selected tabs in the TabSelectionEditor.
+         * @param selectedTabs the selected tabs in the TabListEditor.
          * @param selectedAndRelatedTabs the selected tabs and their related tabs.
          */
         TabListHolder(List<Tab> selectedTabs, List<Tab> selectedAndRelatedTabs) {

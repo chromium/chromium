@@ -12,7 +12,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorShareAction.TabSelectionEditorShareActionState;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorShareAction.TabListEditorShareActionState;
 
 /** Unit tests for {@link TabUiMetricsHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -20,7 +20,7 @@ public class TabUiMetricsHelperUnitTest {
     @Test
     public void testShareStateHistogram() {
         String histogramName = "Android.TabMultiSelectV2.SharingState";
-        TabUiMetricsHelper.recordShareStateHistogram(TabSelectionEditorShareActionState.SUCCESS);
+        TabUiMetricsHelper.recordShareStateHistogram(TabListEditorShareActionState.SUCCESS);
         assertThat(RecordHistogram.getHistogramValueCountForTesting(histogramName, 1), equalTo(1));
     }
 }

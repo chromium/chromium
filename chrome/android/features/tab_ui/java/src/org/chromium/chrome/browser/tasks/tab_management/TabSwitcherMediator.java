@@ -152,8 +152,7 @@ class TabSwitcherMediator
     private Integer mCleanupDelayMsForTesting;
     private OneshotSupplier<TabGridDialogMediator.DialogController>
             mTabGridDialogControllerSupplier;
-    private TabSelectionEditorCoordinator.TabSelectionEditorController
-            mTabSelectionEditorController;
+    private TabListEditorCoordinator.TabListEditorController mTabListEditorController;
     private TabSwitcher.OnTabSelectingListener mOnTabSelectingListener;
     private PriceMessageService mPriceMessageService;
 
@@ -604,16 +603,15 @@ class TabSwitcherMediator
     }
 
     /**
-     * Initialization of the {@link TabSelectionEditorCoordinator}.
+     * Initialization of the {@link TabListEditorCoordinator}.
+     *
      * @param controller the controller to use.
      */
-    public void setTabSelectionEditorController(
-            @Nullable
-                    TabSelectionEditorCoordinator.TabSelectionEditorController
-                            tabSelectionEditorController) {
-        if (tabSelectionEditorController != null) {
-            mTabSelectionEditorController = tabSelectionEditorController;
-            mTabSelectionEditorController
+    public void setTabListEditorController(
+            @Nullable TabListEditorCoordinator.TabListEditorController tabListEditorController) {
+        if (tabListEditorController != null) {
+            mTabListEditorController = tabListEditorController;
+            mTabListEditorController
                     .getHandleBackPressChangedSupplier()
                     .addObserver(mNotifyBackPressedCallback);
         }
@@ -928,10 +926,9 @@ class TabSwitcherMediator
     }
 
     private boolean onBackPressedInternal() {
-        // The TabSelectionEditor dialog can be shown on the Start surface without showing the Grid
+        // The TabListEditor dialog can be shown on the Start surface without showing the Grid
         // Tab switcher, so skip the check of visibility of mContainerViewModel here.
-        if (mTabSelectionEditorController != null
-                && mTabSelectionEditorController.handleBackPressed()) {
+        if (mTabListEditorController != null && mTabListEditorController.handleBackPressed()) {
             return true;
         }
 
@@ -991,7 +988,7 @@ class TabSwitcherMediator
 
     @Override
     public boolean isDialogVisible() {
-        if (mTabSelectionEditorController != null && mTabSelectionEditorController.isVisible()) {
+        if (mTabListEditorController != null && mTabListEditorController.isVisible()) {
             return true;
         }
 
@@ -1139,8 +1136,8 @@ class TabSwitcherMediator
 
     /** Destroy any members that needs clean up. */
     public void destroy() {
-        if (mTabSelectionEditorController != null) {
-            mTabSelectionEditorController
+        if (mTabListEditorController != null) {
+            mTabListEditorController
                     .getHandleBackPressChangedSupplier()
                     .removeObserver(mNotifyBackPressedCallback);
         }

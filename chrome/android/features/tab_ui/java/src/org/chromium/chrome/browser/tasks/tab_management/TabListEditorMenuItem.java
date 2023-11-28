@@ -19,9 +19,9 @@ import androidx.core.widget.TextViewCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ButtonType;
-import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.IconPosition;
-import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ShowMode;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ButtonType;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.IconPosition;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ShowMode;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -30,9 +30,9 @@ import java.util.List;
 
 /**
  * Holds the {@code mActionView} and {@link ListItem} for an item in the {@link
- * TabSelectionEditorMenu}.
+ * TabListEditorMenu}.
  */
-public class TabSelectionEditorMenuItem {
+public class TabListEditorMenuItem {
     private final Context mContext;
 
     private int mMenuId;
@@ -51,7 +51,7 @@ public class TabSelectionEditorMenuItem {
     /**
      * @param context for loading resources.
      */
-    TabSelectionEditorMenuItem(Context context, ListItem listItem) {
+    TabListEditorMenuItem(Context context, ListItem listItem) {
         mContext = context;
         mListItem = listItem;
     }
@@ -70,8 +70,8 @@ public class TabSelectionEditorMenuItem {
         mActionView =
                 (Button)
                         LayoutInflater.from(mContext)
-                                .inflate(R.layout.tab_selection_editor_action_view, null);
-        mActionView.setId(mListItem.model.get(TabSelectionEditorActionProperties.MENU_ITEM_ID));
+                                .inflate(R.layout.tab_list_editor_action_view, null);
+        mActionView.setId(mListItem.model.get(TabListEditorActionProperties.MENU_ITEM_ID));
         if (mShowIcon && !mShowText) {
             mActionView.setCompoundDrawablePadding(0);
         }
@@ -99,7 +99,7 @@ public class TabSelectionEditorMenuItem {
         } else {
             title = mContext.getResources().getString(titleResourceId);
         }
-        mListItem.model.set(TabSelectionEditorActionProperties.TITLE, title);
+        mListItem.model.set(TabListEditorActionProperties.TITLE, title);
         if (mActionView != null) {
             if (mShowText) {
                 mActionView.setText(title);
@@ -125,7 +125,7 @@ public class TabSelectionEditorMenuItem {
                             .getQuantityString(contentDescriptionResourceId, itemCount, itemCount);
         }
         mListItem.model.set(
-                TabSelectionEditorActionProperties.CONTENT_DESCRIPTION, contentDescription);
+                TabListEditorActionProperties.CONTENT_DESCRIPTION, contentDescription);
         if (mActionView != null) {
             mActionView.setContentDescription(contentDescription);
         }
@@ -137,7 +137,7 @@ public class TabSelectionEditorMenuItem {
      * @param icon to display in the menu item or action view.
      */
     public void setIcon(@IconPosition int iconPosition, Drawable icon) {
-        mListItem.model.set(TabSelectionEditorActionProperties.ICON, icon);
+        mListItem.model.set(TabListEditorActionProperties.ICON, icon);
         if (mActionView != null && mShowIcon) {
             TextViewCompat.setCompoundDrawablesRelativeWithIntrinsicBounds(
                     mActionView,
@@ -150,7 +150,7 @@ public class TabSelectionEditorMenuItem {
 
     public void setEnabled(boolean enabled) {
         mEnabled = enabled;
-        mListItem.model.set(TabSelectionEditorActionProperties.ENABLED, enabled);
+        mListItem.model.set(TabListEditorActionProperties.ENABLED, enabled);
         if (mActionView != null) {
             mActionView.setEnabled(enabled);
         }
@@ -173,7 +173,7 @@ public class TabSelectionEditorMenuItem {
         // mListItem uses the default icon tint whenever shown. Cache the tint to restore it when
         // the action view shown state is toggled.
         mListItem.model.set(
-                TabSelectionEditorActionProperties.ICON_TINT,
+                TabListEditorActionProperties.ICON_TINT,
                 AppCompatResources.getColorStateList(
                         mContext, BrowserUiListMenuUtils.getDefaultIconTintColorStateListId()));
         mIconTint = colorStateList;
@@ -218,7 +218,7 @@ public class TabSelectionEditorMenuItem {
         return true;
     }
 
-    /** Updates the {@link TabSelectionEditorAction} with the currently selected tabs. */
+    /** Updates the {@link TabListEditorAction} with the currently selected tabs. */
     public void onSelectionStateChange(List<Integer> tabIds) {
         mOnSelectionStateChange.onResult(tabIds);
     }

@@ -102,7 +102,8 @@ public class TabGroupModelFilter extends TabModelFilter {
 
         /**
          * This method is called after a group is created manually by user. Either using the
-         * TabSelectionEditor (Group tab menu item) or using drag and drop.
+         * TabListEditor (Group tab menu item) or using drag and drop.
+         *
          * @param tabs The list of modified {@link Tab}s.
          * @param tabOriginalIndex The original tab index for each modified tab.
          * @param tabOriginalRootId The original root id for each modified tab.

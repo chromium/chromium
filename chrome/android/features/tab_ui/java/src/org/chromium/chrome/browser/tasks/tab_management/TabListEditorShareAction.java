@@ -25,7 +25,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabList;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabSelectionEditorActionMetricGroups;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorActionMetricGroups;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.browser_ui.share.ShareParams;
@@ -38,8 +38,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
-/** Share action for the {@link TabSelectionEditorMenu}. */
-public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
+/** Share action for the {@link TabListEditorMenu}. */
+public class TabListEditorShareAction extends TabListEditorAction {
     private static final List<String> UNSUPPORTED_SCHEMES =
             new ArrayList<>(
                     Arrays.asList(
@@ -54,12 +54,12 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
     @IntDef({
-        TabSelectionEditorShareActionState.UNKNOWN,
-        TabSelectionEditorShareActionState.SUCCESS,
-        TabSelectionEditorShareActionState.ALL_TABS_FILTERED,
-        TabSelectionEditorShareActionState.NUM_ENTRIES
+        TabListEditorShareActionState.UNKNOWN,
+        TabListEditorShareActionState.SUCCESS,
+        TabListEditorShareActionState.ALL_TABS_FILTERED,
+        TabListEditorShareActionState.NUM_ENTRIES
     })
-    public @interface TabSelectionEditorShareActionState {
+    public @interface TabListEditorShareActionState {
         int UNKNOWN = 0;
         int SUCCESS = 1;
         int ALL_TABS_FILTERED = 2;
@@ -75,25 +75,25 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
      * @param buttonType the type of the action view.
      * @param iconPosition the position of the icon in the action view.
      */
-    public static TabSelectionEditorAction createAction(
+    public static TabListEditorAction createAction(
             Context context,
             @ShowMode int showMode,
             @ButtonType int buttonType,
             @IconPosition int iconPosition) {
         Drawable drawable =
-                AppCompatResources.getDrawable(context, R.drawable.tab_selection_editor_share_icon);
-        return new TabSelectionEditorShareAction(
+                AppCompatResources.getDrawable(context, R.drawable.tab_list_editor_share_icon);
+        return new TabListEditorShareAction(
                 context, showMode, buttonType, iconPosition, drawable);
     }
 
-    private TabSelectionEditorShareAction(
+    private TabListEditorShareAction(
             Context context,
             @ShowMode int showMode,
             @ButtonType int buttonType,
             @IconPosition int iconPosition,
             Drawable drawable) {
         super(
-                R.id.tab_selection_editor_share_menu_item,
+                R.id.tab_list_editor_share_menu_item,
                 showMode,
                 buttonType,
                 iconPosition,
@@ -139,7 +139,7 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
 
         if (sortedTabIndexList.size() == 0) {
             TabUiMetricsHelper.recordShareStateHistogram(
-                    TabSelectionEditorShareActionState.ALL_TABS_FILTERED);
+                    TabListEditorShareActionState.ALL_TABS_FILTERED);
             return false;
         }
 
@@ -150,11 +150,11 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
                 isOnlyOneTab ? tabList.getTabAt(sortedTabIndexList.get(0)).getTitle() : "";
         String tabUrl =
                 isOnlyOneTab ? tabList.getTabAt(sortedTabIndexList.get(0)).getUrl().getSpec() : "";
-        @TabSelectionEditorActionMetricGroups
+        @TabListEditorActionMetricGroups
         int actionId =
                 isOnlyOneTab
-                        ? TabSelectionEditorActionMetricGroups.SHARE_TAB
-                        : TabSelectionEditorActionMetricGroups.SHARE_TABS;
+                        ? TabListEditorActionMetricGroups.SHARE_TAB
+                        : TabListEditorActionMetricGroups.SHARE_TABS;
 
         ShareParams shareParams =
                 new ShareParams.Builder(
@@ -179,7 +179,7 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
 
         float padding =
                 resources.getDimension(
-                        R.dimen.tab_selection_editor_share_sheet_preview_thumbnail_padding);
+                        R.dimen.tab_list_editor_share_sheet_preview_thumbnail_padding);
         Drawable drawable =
                 new InsetDrawable(
                         AppCompatResources.getDrawable(context, R.drawable.chrome_sync_logo),
@@ -206,7 +206,7 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
     private void createShareableImageAndSendIntent(
             Intent shareIntent,
             Drawable drawable,
-            @TabSelectionEditorActionMetricGroups int actionId,
+            @TabListEditorActionMetricGroups int actionId,
             PendingIntent pendingIntent) {
         PostTask.postTask(
                 TaskTraits.USER_BLOCKING_MAY_BLOCK,
@@ -242,7 +242,7 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
                                             TabUiMetricsHelper.recordSelectionEditorActionMetrics(
                                                     actionId);
                                             TabUiMetricsHelper.recordShareStateHistogram(
-                                                    TabSelectionEditorShareActionState.SUCCESS);
+                                                    TabListEditorShareActionState.SUCCESS);
                                         });
 
                                 if (sIntentCallbackForTesting != null) {

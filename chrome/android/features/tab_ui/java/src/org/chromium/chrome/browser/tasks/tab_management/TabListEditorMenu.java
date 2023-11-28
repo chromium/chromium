@@ -13,7 +13,7 @@ import android.widget.ListView;
 
 import androidx.annotation.IntDef;
 
-import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorActionViewLayout.ActionViewLayoutDelegate;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorActionViewLayout.ActionViewLayoutDelegate;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
@@ -32,11 +32,11 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * A {@link ListMenu} for the {@link TabSelectionEditorToolbar} that helps manage a
- * {@link TabSelectionEditorActionViewLayout} for Action views. The menu contains a list of
- * {@link TabSelectionEditorMenuItem}s which hold optional action views if room is available.
+ * A {@link ListMenu} for the {@link TabListEditorToolbar} that helps manage a
+ * {@link TabListEditorActionViewLayout} for Action views. The menu contains a list of
+ * {@link TabListEditorMenuItem}s which hold optional action views if room is available.
  */
-public class TabSelectionEditorMenu
+public class TabListEditorMenu
         implements ListMenu,
                 OnItemClickListener,
                 SelectionDelegate.SelectionObserver<Integer>,
@@ -49,11 +49,11 @@ public class TabSelectionEditorMenu
 
     private Context mContext;
     // Insertion ordering is important and for performance it is ok as size is very small.
-    private Map<Integer, TabSelectionEditorMenuItem> mMenuItems = new LinkedHashMap<>();
+    private Map<Integer, TabListEditorMenuItem> mMenuItems = new LinkedHashMap<>();
 
     private View mContentView;
     private ListView mListView;
-    private TabSelectionEditorActionViewLayout mActionViewLayout;
+    private TabListEditorActionViewLayout mActionViewLayout;
     private ModelList mModelList;
     private ModelListAdapter mAdapter;
 
@@ -62,8 +62,8 @@ public class TabSelectionEditorMenu
      * @param actionViewLayout the actionViewLayout to use.
      * @param anchorView the {@link View} to anchor on.
      */
-    public TabSelectionEditorMenu(
-            Context context, TabSelectionEditorActionViewLayout actionViewLayout) {
+    public TabListEditorMenu(
+            Context context, TabListEditorActionViewLayout actionViewLayout) {
         mContext = context;
         mActionViewLayout = actionViewLayout;
 
@@ -79,7 +79,7 @@ public class TabSelectionEditorMenu
                         return mModelList
                                 .get(position)
                                 .model
-                                .get(TabSelectionEditorActionProperties.ENABLED);
+                                .get(TabListEditorActionProperties.ENABLED);
                     }
                 };
         registerItemTypes();
@@ -97,38 +97,38 @@ public class TabSelectionEditorMenu
         mAdapter.registerType(
                 ListItemType.MENU_ITEM,
                 new LayoutViewBuilder(R.layout.list_menu_item),
-                TabSelectionEditorMenuAdapter::bindMenuItem);
+                TabListEditorMenuAdapter::bindMenuItem);
     }
 
     private ListItem buildListItem(int menuItemId) {
-        // Model values are populated while configuring the TabSelectionEditorMenuItem.
+        // Model values are populated while configuring the TabListEditorMenuItem.
         return new ListItem(
                 ListItemType.MENU_ITEM,
-                new PropertyModel.Builder(TabSelectionEditorActionProperties.MENU_ITEM_KEYS)
-                        .with(TabSelectionEditorActionProperties.MENU_ITEM_ID, menuItemId)
+                new PropertyModel.Builder(TabListEditorActionProperties.MENU_ITEM_KEYS)
+                        .with(TabListEditorActionProperties.MENU_ITEM_ID, menuItemId)
                         .with(
-                                TabSelectionEditorActionProperties.TEXT_APPEARANCE_ID,
+                                TabListEditorActionProperties.TEXT_APPEARANCE_ID,
                                 BrowserUiListMenuUtils.getDefaultTextAppearanceStyle())
                         .build());
     }
 
     /**
-     * Create a {@link TabSelectionEditorMenuItem} for this menu.
-     * @param menuItemId the ID to use for the new TabSelectionEditorMenuItem.
+     * Create a {@link TabListEditorMenuItem} for this menu.
+     * @param menuItemId the ID to use for the new TabListEditorMenuItem.
      */
     public void add(int menuItemId) {
         ListItem listItem = buildListItem(menuItemId);
-        mMenuItems.put(menuItemId, new TabSelectionEditorMenuItem(mContext, listItem));
+        mMenuItems.put(menuItemId, new TabListEditorMenuItem(mContext, listItem));
         mModelList.add(listItem);
     }
 
     /**
      * Signal that the action view and property model for {@link TabSelecetionEditorMenuItem} are
      * initialized.
-     * @param menuItemId the ID of the TabSelectionEditorMenuItem that finished initialization.
+     * @param menuItemId the ID of the TabListEditorMenuItem that finished initialization.
      */
     public void menuItemInitialized(int menuItemId) {
-        final TabSelectionEditorMenuItem menuItem = mMenuItems.get(menuItemId);
+        final TabListEditorMenuItem menuItem = mMenuItems.get(menuItemId);
         if (menuItem.getActionView() == null) {
             mActionViewLayout.setHasMenuOnlyItems(true);
         } else {
@@ -138,9 +138,9 @@ public class TabSelectionEditorMenu
 
     /**
      * @param menuItemId the id of the item to get.
-     * @return a {@link} TabSelectionEditorMenuItem or null if the key isn't present.
+     * @return a {@link} TabListEditorMenuItem or null if the key isn't present.
      */
-    public TabSelectionEditorMenuItem getMenuItem(int menuItemId) {
+    public TabListEditorMenuItem getMenuItem(int menuItemId) {
         return mMenuItems.get(menuItemId);
     }
 
@@ -157,7 +157,7 @@ public class TabSelectionEditorMenu
      */
     @Override
     public void onSelectionStateChange(List<Integer> selectedItems) {
-        for (TabSelectionEditorMenuItem menuItem : mMenuItems.values()) {
+        for (TabListEditorMenuItem menuItem : mMenuItems.values()) {
             menuItem.onSelectionStateChange(selectedItems);
         }
     }
@@ -165,10 +165,10 @@ public class TabSelectionEditorMenu
     /** {@link OnItemClickListener} implementation. */
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        TabSelectionEditorMenuItem item =
+        TabListEditorMenuItem item =
                 mMenuItems.get(
                         ((ListItem) mAdapter.getItem(position))
-                                .model.get(TabSelectionEditorActionProperties.MENU_ITEM_ID));
+                                .model.get(TabListEditorActionProperties.MENU_ITEM_ID));
 
         if (!item.onClick()) return;
 
@@ -177,10 +177,10 @@ public class TabSelectionEditorMenu
 
     /** {@link ActionViewLayoutDelegate} implementation. */
     @Override
-    public void setVisibleActionViews(Set<TabSelectionEditorMenuItem> visibleActions) {
+    public void setVisibleActionViews(Set<TabListEditorMenuItem> visibleActions) {
         if (mModelList.size() == visibleActions.size()) {
             boolean unchanged = true;
-            for (TabSelectionEditorMenuItem item : visibleActions) {
+            for (TabListEditorMenuItem item : visibleActions) {
                 if (mModelList.indexOf(item.getListItem()) == -1) {
                     unchanged = false;
                     break;
@@ -191,7 +191,7 @@ public class TabSelectionEditorMenu
 
         // Reset the entire list to maintain the correct ordering.
         mModelList.clear();
-        for (TabSelectionEditorMenuItem item : mMenuItems.values()) {
+        for (TabListEditorMenuItem item : mMenuItems.values()) {
             if (visibleActions.contains(item)) {
                 item.setActionViewShowing(true);
                 continue;

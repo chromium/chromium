@@ -1081,11 +1081,11 @@ class StartSurfaceMediator
         boolean isOnHomepage = isHomepageShown();
 
         // When the SecondaryTasksSurface is shown, the TabGridDialog is controlled by
-        // mSecondaryTasksSurfaceController, while the TabSelectionEditor dialog is controlled
+        // mSecondaryTasksSurfaceController, while the TabListEditor dialog is controlled
         // by mController. Therefore, we need to check both controllers whether any dialog is
         // visible. If so, the corresponding controller will handle the back button.
         // When the Start surface is shown, tapping "Group Tabs" from menu will also show the
-        // the TabSelectionEditor dialog. Therefore, we need to check both controllers as well.
+        // the TabListEditor dialog. Therefore, we need to check both controllers as well.
         if (mSecondaryTasksSurfaceController != null
                 && mSecondaryTasksSurfaceController.isDialogVisible()) {
             boolean ret = mSecondaryTasksSurfaceController.onBackPressed();

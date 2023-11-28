@@ -5,13 +5,13 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorToolbar
+<org.chromium.chrome.browser.tasks.tab_management.TabListEditorToolbar
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorActionViewLayout
+    <org.chromium.chrome.browser.tasks.tab_management.TabListEditorActionViewLayout
         android:id="@+id/action_view_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -31,5 +31,5 @@ found in the LICENSE file.
             app:menuMaxWidth="@dimen/menu_width"
             app:tint="@color/default_icon_color_tint_list"
             tools:ignore="ContentDescription" />
-    </org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorActionViewLayout>
-</org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorToolbar>
+    </org.chromium.chrome.browser.tasks.tab_management.TabListEditorActionViewLayout>
+</org.chromium.chrome.browser.tasks.tab_management.TabListEditorToolbar>

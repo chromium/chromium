@@ -882,8 +882,8 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @DisabledTest(
             message =
                     "http://crbug/1005865 - Test was previously flaky but only on bots.Was not"
-                            + " locally reproducible. Disabling until verified that it's deflaked on"
-                            + " bots.")
+                        + " locally reproducible. Disabling until verified that it's deflaked on"
+                        + " bots.")
     public void testIncognitoEnterGts(boolean isStartSurfaceRefactorEnabled)
             throws InterruptedException {
         prepareTabs(1, 1, null);
@@ -1095,12 +1095,11 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
                                 withParent(withId(R.id.tab_grid_message_item))))
                 .perform(click());
 
-        TabSelectionEditorTestingRobot tabSelectionEditorTestingRobot =
-                new TabSelectionEditorTestingRobot();
-        tabSelectionEditorTestingRobot.resultRobot.verifyTabSelectionEditorIsVisible();
+        TabListEditorTestingRobot tabListEditorTestingRobot = new TabListEditorTestingRobot();
+        tabListEditorTestingRobot.resultRobot.verifyTabListEditorIsVisible();
 
         Espresso.pressBack();
-        tabSelectionEditorTestingRobot.resultRobot.verifyTabSelectionEditorIsHidden();
+        tabListEditorTestingRobot.resultRobot.verifyTabListEditorIsHidden();
     }
 
     @Test
@@ -1565,13 +1564,13 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     public void testTabGroupManualSelection(boolean isStartSurfaceRefactorEnabled)
             throws InterruptedException {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        TabSelectionEditorTestingRobot robot = new TabSelectionEditorTestingRobot();
+        TabListEditorTestingRobot robot = new TabListEditorTestingRobot();
         createTabs(cta, false, 3);
         enterTabSwitcher(cta);
         onView(tabSwitcherViewMatcher()).check(TabCountAssertion.havingTabCount(3));
 
-        enterTabSelectionEditor(cta);
-        robot.resultRobot.verifyTabSelectionEditorIsVisible();
+        enterTabListEditor(cta);
+        robot.resultRobot.verifyTabListEditorIsVisible();
 
         // Group first two tabs.
         robot.actionRobot.clickItemAtAdapterPosition(0);
@@ -1579,7 +1578,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         robot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Group tabs");
 
         // Exit manual selection mode, back to tab switcher.
-        robot.resultRobot.verifyTabSelectionEditorIsHidden();
+        robot.resultRobot.verifyTabListEditorIsHidden();
         onView(tabSwitcherViewMatcher()).check(TabCountAssertion.havingTabCount(2));
         onViewWaiting(withText("2 tabs grouped"));
     }
@@ -1588,18 +1587,18 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @MediumTest
     @UseMethodParameter(RefactorTestParams.class)
     @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
-    public void testTabSelectionEditor_SystemBackDismiss(boolean isStartSurfaceRefactorEnabled) {
+    public void testTabListEditor_SystemBackDismiss(boolean isStartSurfaceRefactorEnabled) {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        TabSelectionEditorTestingRobot robot = new TabSelectionEditorTestingRobot();
+        TabListEditorTestingRobot robot = new TabListEditorTestingRobot();
         createTabs(cta, false, 2);
         enterTabSwitcher(cta);
         onView(tabSwitcherViewMatcher()).check(TabCountAssertion.havingTabCount(2));
-        enterTabSelectionEditor(cta);
-        robot.resultRobot.verifyTabSelectionEditorIsVisible();
+        enterTabListEditor(cta);
+        robot.resultRobot.verifyTabListEditorIsVisible();
 
         // Pressing system back should dismiss the selection editor.
         Espresso.pressBack();
-        robot.resultRobot.verifyTabSelectionEditorIsHidden();
+        robot.resultRobot.verifyTabListEditorIsHidden();
     }
 
     @Test
@@ -1617,7 +1616,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     public void testTabGroupManualSelection_AfterReviewTabSuggestion(
             boolean isStartSurfaceRefactorEnable) throws InterruptedException {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        TabSelectionEditorTestingRobot robot = new TabSelectionEditorTestingRobot();
+        TabListEditorTestingRobot robot = new TabListEditorTestingRobot();
         createTabs(cta, false, 3);
 
         // Review closing tab suggestion.
@@ -1637,11 +1636,11 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
                 .perform(click());
 
         robot.resultRobot
-                .verifyTabSelectionEditorIsVisible()
-                .verifyToolbarActionViewEnabled(R.id.tab_selection_editor_close_menu_item);
+                .verifyTabListEditorIsVisible()
+                .verifyToolbarActionViewEnabled(R.id.tab_list_editor_close_menu_item);
 
-        robot.actionRobot.clickToolbarActionView(R.id.tab_selection_editor_close_menu_item);
-        robot.resultRobot.verifyTabSelectionEditorIsHidden();
+        robot.actionRobot.clickToolbarActionView(R.id.tab_list_editor_close_menu_item);
+        robot.resultRobot.verifyTabListEditorIsHidden();
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
@@ -1653,8 +1652,8 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         createTabs(cta, false, 3);
 
         TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
-        enterTabSelectionEditor(cta);
-        robot.resultRobot.verifyTabSelectionEditorIsVisible();
+        enterTabListEditor(cta);
+        robot.resultRobot.verifyTabListEditorIsVisible();
 
         // Group first two tabs.
         robot.actionRobot.clickItemAtAdapterPosition(0);
@@ -1662,7 +1661,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         robot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Group tabs");
 
         // Exit manual selection mode, back to tab switcher.
-        robot.resultRobot.verifyTabSelectionEditorIsHidden();
+        robot.resultRobot.verifyTabListEditorIsHidden();
         onViewWaiting(withText("2 tabs grouped"));
     }
 
@@ -1820,19 +1819,19 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @UseMethodParameter(RefactorTestParams.class)
     public void testLongPressTab_entryInTabSwitcher_verifyNoSelectionOccurs(
             boolean isStartSurfaceRefactorEnable) {
-        TabUiFeatureUtilities.setTabSelectionEditorLongPressEntryEnabledForTesting(true);
+        TabUiFeatureUtilities.setTabListEditorLongPressEntryEnabledForTesting(true);
 
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 2);
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 2);
 
-        // LongPress entry to TabSelectionEditor.
+        // LongPress entry to TabListEditor.
         onView(tabSwitcherViewMatcher())
                 .perform(RecyclerViewActions.actionOnItemAtPosition(0, longClick()));
 
-        TabSelectionEditorTestingRobot mSelectionEditorRobot = new TabSelectionEditorTestingRobot();
-        mSelectionEditorRobot.resultRobot.verifyTabSelectionEditorIsVisible();
+        TabListEditorTestingRobot mSelectionEditorRobot = new TabListEditorTestingRobot();
+        mSelectionEditorRobot.resultRobot.verifyTabListEditorIsVisible();
 
         // Verify no selection action occurred to switch the selected tab in the tab model
         Criteria.checkThat(
@@ -1843,7 +1842,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @MediumTest
     @UseMethodParameter(RefactorTestParams.class)
     public void testLongPressTabGroup_entryInTabSwitcher(boolean isStartSurfaceRefactorEnable) {
-        TabUiFeatureUtilities.setTabSelectionEditorLongPressEntryEnabledForTesting(true);
+        TabUiFeatureUtilities.setTabListEditorLongPressEntryEnabledForTesting(true);
 
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 2);
@@ -1854,12 +1853,12 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         mergeAllNormalTabsToAGroup(cta);
         verifyTabSwitcherCardCount(cta, 1);
 
-        // LongPress entry to TabSelectionEditor.
+        // LongPress entry to TabListEditor.
         onView(tabSwitcherViewMatcher())
                 .perform(RecyclerViewActions.actionOnItemAtPosition(0, longClick()));
 
-        TabSelectionEditorTestingRobot mSelectionEditorRobot = new TabSelectionEditorTestingRobot();
-        mSelectionEditorRobot.resultRobot.verifyTabSelectionEditorIsVisible();
+        TabListEditorTestingRobot mSelectionEditorRobot = new TabListEditorTestingRobot();
+        mSelectionEditorRobot.resultRobot.verifyTabListEditorIsVisible();
     }
 
     @Test
@@ -1867,19 +1866,19 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @UseMethodParameter(RefactorTestParams.class)
     public void testLongPressTab_verifyPostLongPressClickNoSelectionEditor(
             boolean isStartSurfaceRefactorEnabled) {
-        TabUiFeatureUtilities.setTabSelectionEditorLongPressEntryEnabledForTesting(true);
+        TabUiFeatureUtilities.setTabListEditorLongPressEntryEnabledForTesting(true);
 
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 2);
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 2);
 
-        // LongPress entry to TabSelectionEditor.
+        // LongPress entry to TabListEditor.
         onView(tabSwitcherViewMatcher())
                 .perform(RecyclerViewActions.actionOnItemAtPosition(0, longClick()));
 
-        TabSelectionEditorTestingRobot mSelectionEditorRobot = new TabSelectionEditorTestingRobot();
-        mSelectionEditorRobot.resultRobot.verifyTabSelectionEditorIsVisible();
+        TabListEditorTestingRobot mSelectionEditorRobot = new TabListEditorTestingRobot();
+        mSelectionEditorRobot.resultRobot.verifyTabListEditorIsVisible();
         mSelectionEditorRobot.actionRobot.clickItemAtAdapterPosition(0);
         mSelectionEditorRobot.resultRobot.verifyItemSelectedAtAdapterPosition(0);
         Espresso.pressBack();
@@ -2232,7 +2231,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         return tabListDelegate.get();
     }
 
-    private void enterTabSelectionEditor(ChromeTabbedActivity cta) {
+    private void enterTabListEditor(ChromeTabbedActivity cta) {
         MenuUtils.invokeCustomMenuActionSync(
                 InstrumentationRegistry.getInstrumentation(), cta, R.id.menu_select_tabs);
     }

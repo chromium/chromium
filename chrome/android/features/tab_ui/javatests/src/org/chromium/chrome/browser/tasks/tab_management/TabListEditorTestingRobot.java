@@ -45,17 +45,17 @@ import org.junit.Assert;
 import org.chromium.chrome.test.R;
 
 /**
- * This is the testing util class for TabSelectionEditor. It's used to perform action and verify
- * result within the TabSelectionEditor.
+ * This is the testing util class for TabListEditor. It's used to perform action and verify
+ * result within the TabListEditor.
  */
-public class TabSelectionEditorTestingRobot {
+public class TabListEditorTestingRobot {
     /**
      * @param viewMatcher A matcher that matches a view.
-     * @return A matcher that matches view in the {@link TabSelectionEditorLayout} based on the
+     * @return A matcher that matches view in the {@link TabListEditorLayout} based on the
      *         given matcher.
      */
-    public static Matcher<View> inTabSelectionEditor(Matcher<View> viewMatcher) {
-        return allOf(isDescendantOfA(instanceOf(TabSelectionEditorLayout.class)), viewMatcher);
+    public static Matcher<View> inTabListEditor(Matcher<View> viewMatcher) {
+        return allOf(isDescendantOfA(instanceOf(TabListEditorLayout.class)), viewMatcher);
     }
 
     /**
@@ -108,25 +108,25 @@ public class TabSelectionEditorTestingRobot {
         };
     }
 
-    public final TabSelectionEditorTestingRobot.Result resultRobot;
-    public final TabSelectionEditorTestingRobot.Action actionRobot;
+    public final TabListEditorTestingRobot.Result resultRobot;
+    public final TabListEditorTestingRobot.Action actionRobot;
 
-    public TabSelectionEditorTestingRobot() {
+    public TabListEditorTestingRobot() {
         resultRobot = new Result();
         actionRobot = new Action();
     }
 
-    /** This Robot is used to perform action within the TabSelectionEditor. */
+    /** This Robot is used to perform action within the TabListEditor. */
     public static class Action {
-        public TabSelectionEditorTestingRobot.Action clickItemAtAdapterPosition(int position) {
-            onView(inTabSelectionEditor(withId(R.id.tab_list_recycler_view)))
+        public TabListEditorTestingRobot.Action clickItemAtAdapterPosition(int position) {
+            onView(inTabListEditor(withId(R.id.tab_list_recycler_view)))
                     .perform(actionOnItemAtPosition(position, click()));
             return this;
         }
 
-        public TabSelectionEditorTestingRobot.Action clickToolbarMenuButton() {
+        public TabListEditorTestingRobot.Action clickToolbarMenuButton() {
             onView(
-                            inTabSelectionEditor(
+                            inTabListEditor(
                                     allOf(
                                             withId(R.id.list_menu_button),
                                             withParent(withId(R.id.action_view_layout)))))
@@ -134,19 +134,19 @@ public class TabSelectionEditorTestingRobot {
             return this;
         }
 
-        public TabSelectionEditorTestingRobot.Action clickToolbarActionView(int id) {
-            onView(inTabSelectionEditor(withId(id))).perform(click());
+        public TabListEditorTestingRobot.Action clickToolbarActionView(int id) {
+            onView(inTabListEditor(withId(id))).perform(click());
             return this;
         }
 
-        public TabSelectionEditorTestingRobot.Action clickToolbarMenuItem(String text) {
+        public TabListEditorTestingRobot.Action clickToolbarMenuItem(String text) {
             onView(withText(text)).perform(click());
             return this;
         }
 
-        public TabSelectionEditorTestingRobot.Action clickToolbarNavigationButton() {
+        public TabListEditorTestingRobot.Action clickToolbarNavigationButton() {
             onView(
-                            inTabSelectionEditor(
+                            inTabListEditor(
                                     allOf(
                                             withContentDescription(
                                                     R.string
@@ -156,8 +156,8 @@ public class TabSelectionEditorTestingRobot {
             return this;
         }
 
-        public TabSelectionEditorTestingRobot.Action clickEndButtonAtAdapterPosition(int position) {
-            onView(inTabSelectionEditor(withId(R.id.tab_list_recycler_view)))
+        public TabListEditorTestingRobot.Action clickEndButtonAtAdapterPosition(int position) {
+            onView(inTabListEditor(withId(R.id.tab_list_recycler_view)))
                     .perform(
                             new ViewAction() {
                                 @Override
@@ -187,72 +187,72 @@ public class TabSelectionEditorTestingRobot {
         }
     }
 
-    /** This Robot is used to verify result within the TabSelectionEditor. */
+    /** This Robot is used to verify result within the TabListEditor. */
     public static class Result {
-        public TabSelectionEditorTestingRobot.Result verifyTabSelectionEditorIsVisible() {
-            onView(allOf(instanceOf(TabSelectionEditorLayout.class), withId(R.id.selectable_list)))
+        public TabListEditorTestingRobot.Result verifyTabListEditorIsVisible() {
+            onView(allOf(instanceOf(TabListEditorLayout.class), withId(R.id.selectable_list)))
                     .check(matches(isDisplayed()));
             return this;
         }
 
-        public TabSelectionEditorTestingRobot.Result verifyTabSelectionEditorIsHidden() {
+        public TabListEditorTestingRobot.Result verifyTabListEditorIsHidden() {
             try {
                 onView(
                                 allOf(
-                                        instanceOf(TabSelectionEditorLayout.class),
+                                        instanceOf(TabListEditorLayout.class),
                                         withId(R.id.selectable_list)))
                         .check(matches(isDisplayed()));
             } catch (NoMatchingRootException | NoMatchingViewException e) {
                 return this;
             }
 
-            assert false : "TabSelectionEditor should be hidden, but it's not.";
+            assert false : "TabListEditor should be hidden, but it's not.";
             return this;
         }
 
-        public TabSelectionEditorTestingRobot.Result verifyToolbarSelectionTextWithResourceId(
+        public TabListEditorTestingRobot.Result verifyToolbarSelectionTextWithResourceId(
                 int resourceId) {
-            onView(inTabSelectionEditor(withText(resourceId))).check(matches(isDisplayed()));
+            onView(inTabListEditor(withText(resourceId))).check(matches(isDisplayed()));
             return this;
         }
 
-        public TabSelectionEditorTestingRobot.Result verifyToolbarSelectionText(String text) {
+        public TabListEditorTestingRobot.Result verifyToolbarSelectionText(String text) {
             // Text updates are animated. Wait for the right text if animations cannot be disabled.
-            onViewWaiting(inTabSelectionEditor(withText(text))).check(matches(isDisplayed()));
+            onViewWaiting(inTabListEditor(withText(text))).check(matches(isDisplayed()));
             return this;
         }
 
-        public TabSelectionEditorTestingRobot.Result verifyToolbarActionViewWithText(
+        public TabListEditorTestingRobot.Result verifyToolbarActionViewWithText(
                 int id, String text) {
-            onView(inTabSelectionEditor(withId(id))).check(matches(withText(text)));
+            onView(inTabListEditor(withId(id))).check(matches(withText(text)));
             return this;
         }
 
-        public TabSelectionEditorTestingRobot.Result verifyToolbarActionViewDisabled(int id) {
-            onView(inTabSelectionEditor(withId(id))).check(matches(not(isEnabled())));
+        public TabListEditorTestingRobot.Result verifyToolbarActionViewDisabled(int id) {
+            onView(inTabListEditor(withId(id))).check(matches(not(isEnabled())));
             return this;
         }
 
-        public TabSelectionEditorTestingRobot.Result verifyToolbarActionViewEnabled(int id) {
-            onView(inTabSelectionEditor(withId(id))).check(matches(isEnabled()));
+        public TabListEditorTestingRobot.Result verifyToolbarActionViewEnabled(int id) {
+            onView(inTabListEditor(withId(id))).check(matches(isEnabled()));
             return this;
         }
 
-        public TabSelectionEditorTestingRobot.Result verifyToolbarMenuItemState(
+        public TabListEditorTestingRobot.Result verifyToolbarMenuItemState(
                 String text, boolean enabled) {
             onView(withText(text)).check(matches(enabled ? isEnabled() : not(isEnabled())));
             return this;
         }
 
-        public TabSelectionEditorTestingRobot.Result verifyToolbarMenuItemWithContentDescription(
+        public TabListEditorTestingRobot.Result verifyToolbarMenuItemWithContentDescription(
                 String text, String contentDescription) {
             onView(allOf(withText(text), withContentDescription(contentDescription)))
                     .check(matches(isDisplayed()));
             return this;
         }
 
-        public TabSelectionEditorTestingRobot.Result verifyHasAtLeastNItemVisible(int count) {
-            onView(inTabSelectionEditor(withId(R.id.tab_list_recycler_view)))
+        public TabListEditorTestingRobot.Result verifyHasAtLeastNItemVisible(int count) {
+            onView(inTabListEditor(withId(R.id.tab_list_recycler_view)))
                     .check(
                             (v, noMatchException) -> {
                                 if (noMatchException != null) throw noMatchException;
@@ -263,15 +263,15 @@ public class TabSelectionEditorTestingRobot {
             return this;
         }
 
-        public TabSelectionEditorTestingRobot.Result verifyAdapterHasItemCount(int count) {
-            onView(inTabSelectionEditor(withId(R.id.tab_list_recycler_view)))
+        public TabListEditorTestingRobot.Result verifyAdapterHasItemCount(int count) {
+            onView(inTabListEditor(withId(R.id.tab_list_recycler_view)))
                     .check(matches(RecyclerViewMatcherUtils.adapterHasItemCount(count)));
             return this;
         }
 
-        public TabSelectionEditorTestingRobot.Result verifyItemNotSelectedAtAdapterPosition(
+        public TabListEditorTestingRobot.Result verifyItemNotSelectedAtAdapterPosition(
                 int position) {
-            onView(inTabSelectionEditor(withId(R.id.tab_list_recycler_view)))
+            onView(inTabListEditor(withId(R.id.tab_list_recycler_view)))
                     .check(
                             matches(
                                     not(
@@ -280,9 +280,9 @@ public class TabSelectionEditorTestingRobot {
             return this;
         }
 
-        public TabSelectionEditorTestingRobot.Result verifyItemSelectedAtAdapterPosition(
+        public TabListEditorTestingRobot.Result verifyItemSelectedAtAdapterPosition(
                 int position) {
-            onView(inTabSelectionEditor(withId(R.id.tab_list_recycler_view)))
+            onView(inTabListEditor(withId(R.id.tab_list_recycler_view)))
                     .check(
                             matches(
                                     RecyclerViewMatcherUtils.atPosition(
@@ -290,7 +290,7 @@ public class TabSelectionEditorTestingRobot {
             return this;
         }
 
-        public TabSelectionEditorTestingRobot.Result verifyUndoSnackbarWithTextIsShown(
+        public TabListEditorTestingRobot.Result verifyUndoSnackbarWithTextIsShown(
                 String text) {
             onView(withText(text)).check(matches(isDisplayed()));
             return this;
@@ -298,7 +298,7 @@ public class TabSelectionEditorTestingRobot {
 
         public Result verifyDividerAlwaysStartsAtTheEdgeOfScreen() {
             onView(
-                            inTabSelectionEditor(
+                            inTabListEditor(
                                     allOf(
                                             isDivider(),
                                             withParent(withId(R.id.tab_list_recycler_view)))))
@@ -314,10 +314,10 @@ public class TabSelectionEditorTestingRobot {
         }
 
         public Result verifyDividerAlwaysStartsAtTheEdgeOfScreenAtPosition(int position) {
-            onView(inTabSelectionEditor(withId(R.id.tab_list_recycler_view)))
+            onView(inTabListEditor(withId(R.id.tab_list_recycler_view)))
                     .perform(scrollToPosition(position));
 
-            onView(inTabSelectionEditor(atPosition(position, isDivider())))
+            onView(inTabListEditor(atPosition(position, isDivider())))
                     .check(matches(isDisplayed()))
                     .check(
                             (v, noMatchException) -> {
@@ -332,7 +332,7 @@ public class TabSelectionEditorTestingRobot {
 
         public Result verifyDividerNotClickableNotFocusable() {
             onView(
-                            inTabSelectionEditor(
+                            inTabListEditor(
                                     allOf(
                                             isDivider(),
                                             withParent(withId(R.id.tab_list_recycler_view)))))
@@ -342,7 +342,7 @@ public class TabSelectionEditorTestingRobot {
         }
 
         /**
-         * Verifies the TabSelectionEditor has an ItemView at given position that matches the given
+         * Verifies the TabListEditor has an ItemView at given position that matches the given
          * targetItemViewType.
          *
          * First this method scrolls to the given adapter position to make sure ViewHolder for the
@@ -353,10 +353,10 @@ public class TabSelectionEditorTestingRobot {
          * @return {@link Result} to do chain verification.
          */
         public Result verifyHasItemViewTypeAtAdapterPosition(int position, int targetItemViewType) {
-            onView(inTabSelectionEditor(withId(R.id.tab_list_recycler_view)))
+            onView(inTabListEditor(withId(R.id.tab_list_recycler_view)))
                     .perform(scrollToPosition(position));
             onView(
-                            inTabSelectionEditor(
+                            inTabListEditor(
                                     atPositionWithViewHolder(
                                             position, withItemType(targetItemViewType))))
                     .check(matches(isDisplayed()));

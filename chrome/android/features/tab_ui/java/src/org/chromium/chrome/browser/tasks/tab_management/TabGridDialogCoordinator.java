@@ -20,7 +20,7 @@ import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorCoordinator.TabSelectionEditorController;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
@@ -47,7 +47,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     private TabModelSelector mTabModelSelector;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private TabContentManager mTabContentManager;
-    private TabSelectionEditorCoordinator mTabSelectionEditorCoordinator;
+    private TabListEditorCoordinator mTabListEditorCoordinator;
     private TabGridDialogView mDialogView;
     private SnackbarManager mSnackbarManager;
 
@@ -156,7 +156,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             // This is always created post-native so calling these immediately is safe.
             // TODO(crbug/1418690): Consider inlining these behaviors in their respective
             // constructors if possible.
-            mMediator.initWithNative(this::getTabSelectionEditorController, tabGroupTitleEditor);
+            mMediator.initWithNative(this::getTabListEditorController, tabGroupTitleEditor);
             mTabListCoordinator.initWithNative(null);
         }
     }
@@ -166,15 +166,15 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
         return mTabListCoordinator.getRecyclerViewPosition();
     }
 
-    private @Nullable TabSelectionEditorController getTabSelectionEditorController() {
-        if (mTabSelectionEditorCoordinator == null) {
+    private @Nullable TabListEditorController getTabListEditorController() {
+        if (mTabListEditorCoordinator == null) {
             @TabListCoordinator.TabListMode
             int mode =
                     TabUiFeatureUtilities.shouldUseListMode(mActivity)
                             ? TabListCoordinator.TabListMode.LIST
                             : TabListCoordinator.TabListMode.GRID;
-            mTabSelectionEditorCoordinator =
-                    new TabSelectionEditorCoordinator(
+            mTabListEditorCoordinator =
+                    new TabListEditorCoordinator(
                             mActivity,
                             mDialogView.findViewById(R.id.dialog_container_view),
                             mBrowserControlsStateProvider,
@@ -188,7 +188,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             TabProperties.UiType.SELECTABLE);
         }
 
-        return mTabSelectionEditorCoordinator.getController();
+        return mTabListEditorCoordinator.getController();
     }
 
     /** Destroy any members that needs clean up. */
@@ -196,8 +196,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
         mTabListCoordinator.onDestroy();
         mMediator.destroy();
         mModelChangeProcessor.destroy();
-        if (mTabSelectionEditorCoordinator != null) {
-            mTabSelectionEditorCoordinator.destroy();
+        if (mTabListEditorCoordinator != null) {
+            mTabListEditorCoordinator.destroy();
         }
     }
 

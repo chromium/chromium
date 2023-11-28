@@ -29,13 +29,13 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
-import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ActionDelegate;
-import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ActionObserver;
-import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ButtonType;
-import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.IconPosition;
-import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ShowMode;
-import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorActionUnitTestHelper.TabIdGroup;
-import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorActionUnitTestHelper.TabListHolder;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ActionDelegate;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ActionObserver;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ButtonType;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.IconPosition;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ShowMode;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorActionUnitTestHelper.TabIdGroup;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorActionUnitTestHelper.TabListHolder;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
@@ -46,10 +46,10 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-/** Unit tests for {@link TabSelectionEditorGroupAction}. */
+/** Unit tests for {@link TabListEditorGroupAction}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class TabSelectionEditorGroupActionUnitTest {
+public class TabListEditorGroupActionUnitTest {
     @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Mock private TabModelSelector mTabModelSelector;
@@ -59,13 +59,13 @@ public class TabSelectionEditorGroupActionUnitTest {
     @Mock private ActionDelegate mDelegate;
     @Mock private Profile mProfile;
     private MockTabModel mTabModel;
-    private TabSelectionEditorAction mAction;
+    private TabListEditorAction mAction;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mAction =
-                TabSelectionEditorGroupAction.createAction(
+                TabListEditorGroupAction.createAction(
                         RuntimeEnvironment.application,
                         ShowMode.MENU_ONLY,
                         ButtonType.TEXT,
@@ -84,22 +84,22 @@ public class TabSelectionEditorGroupActionUnitTest {
     @SmallTest
     public void testInherentActionProperties() {
         Assert.assertEquals(
-                R.id.tab_selection_editor_group_menu_item,
-                mAction.getPropertyModel().get(TabSelectionEditorActionProperties.MENU_ITEM_ID));
+                R.id.tab_list_editor_group_menu_item,
+                mAction.getPropertyModel().get(TabListEditorActionProperties.MENU_ITEM_ID));
         Assert.assertEquals(
                 R.plurals.tab_selection_editor_group_tabs,
                 mAction.getPropertyModel()
-                        .get(TabSelectionEditorActionProperties.TITLE_RESOURCE_ID));
+                        .get(TabListEditorActionProperties.TITLE_RESOURCE_ID));
         Assert.assertEquals(
                 true,
-                mAction.getPropertyModel().get(TabSelectionEditorActionProperties.TITLE_IS_PLURAL));
+                mAction.getPropertyModel().get(TabListEditorActionProperties.TITLE_IS_PLURAL));
         Assert.assertEquals(
                 R.plurals.accessibility_tab_selection_editor_group_tabs,
                 mAction.getPropertyModel()
-                        .get(TabSelectionEditorActionProperties.CONTENT_DESCRIPTION_RESOURCE_ID)
+                        .get(TabListEditorActionProperties.CONTENT_DESCRIPTION_RESOURCE_ID)
                         .intValue());
         Assert.assertNotNull(
-                mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ICON));
+                mAction.getPropertyModel().get(TabListEditorActionProperties.ICON));
     }
 
     @Test
@@ -109,16 +109,16 @@ public class TabSelectionEditorGroupActionUnitTest {
         List<Integer> tabIds = new ArrayList<>();
         mAction.onSelectionStateChange(tabIds);
         Assert.assertEquals(
-                false, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ENABLED));
+                false, mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
         Assert.assertEquals(
-                0, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ITEM_COUNT));
+                0, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
 
         tabIds.add(1);
         mAction.onSelectionStateChange(tabIds);
         Assert.assertEquals(
-                false, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ENABLED));
+                false, mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
         Assert.assertEquals(
-                1, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ITEM_COUNT));
+                1, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
     }
 
     @Test
@@ -138,9 +138,9 @@ public class TabSelectionEditorGroupActionUnitTest {
 
         mAction.onSelectionStateChange(tabIds);
         Assert.assertEquals(
-                true, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ENABLED));
+                true, mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
         Assert.assertEquals(
-                3, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ITEM_COUNT));
+                3, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
 
         final CallbackHelper helper = new CallbackHelper();
         ActionObserver observer =
@@ -177,7 +177,7 @@ public class TabSelectionEditorGroupActionUnitTest {
         tabIdGroups.add(new TabIdGroup(new int[] {8, 7}, true));
         tabIdGroups.add(new TabIdGroup(new int[] {10, 11, 12}, false));
         TabListHolder holder =
-                TabSelectionEditorActionUnitTestHelper.configureTabs(
+                TabListEditorActionUnitTestHelper.configureTabs(
                         mTabModel, mGroupFilter, mSelectionDelegate, tabIdGroups, false);
 
         Assert.assertEquals(3, holder.getSelectedTabs().size());
@@ -186,9 +186,9 @@ public class TabSelectionEditorGroupActionUnitTest {
         Assert.assertEquals(8, holder.getSelectedTabs().get(2).getId());
         mAction.onSelectionStateChange(holder.getSelectedTabIds());
         Assert.assertEquals(
-                true, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ENABLED));
+                true, mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
         Assert.assertEquals(
-                4, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ITEM_COUNT));
+                4, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
 
         Assert.assertEquals(4, holder.getSelectedAndRelatedTabs().size());
         Assert.assertEquals(5, holder.getSelectedAndRelatedTabs().get(0).getId());
@@ -218,7 +218,7 @@ public class TabSelectionEditorGroupActionUnitTest {
         tabIdGroups.add(new TabIdGroup(new int[] {8, 7, 6}, true));
         tabIdGroups.add(new TabIdGroup(new int[] {10, 11, 12}, false));
         TabListHolder holder =
-                TabSelectionEditorActionUnitTestHelper.configureTabs(
+                TabListEditorActionUnitTestHelper.configureTabs(
                         mTabModel, mGroupFilter, mSelectionDelegate, tabIdGroups, false);
 
         Assert.assertEquals(2, holder.getSelectedTabs().size());
@@ -226,9 +226,9 @@ public class TabSelectionEditorGroupActionUnitTest {
         Assert.assertEquals(8, holder.getSelectedTabs().get(1).getId());
         mAction.onSelectionStateChange(holder.getSelectedTabIds());
         Assert.assertEquals(
-                true, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ENABLED));
+                true, mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
         Assert.assertEquals(
-                5, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ITEM_COUNT));
+                5, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
 
         Assert.assertEquals(5, holder.getSelectedAndRelatedTabs().size());
         Assert.assertEquals(5, holder.getSelectedAndRelatedTabs().get(0).getId());
@@ -260,7 +260,7 @@ public class TabSelectionEditorGroupActionUnitTest {
         tabIdGroups.add(new TabIdGroup(new int[] {10, 11, 12}, true));
         tabIdGroups.add(new TabIdGroup(new int[] {1}, true));
         TabListHolder holder =
-                TabSelectionEditorActionUnitTestHelper.configureTabs(
+                TabListEditorActionUnitTestHelper.configureTabs(
                         mTabModel, mGroupFilter, mSelectionDelegate, tabIdGroups, false);
 
         Assert.assertEquals(4, holder.getSelectedTabs().size());
@@ -270,9 +270,9 @@ public class TabSelectionEditorGroupActionUnitTest {
         Assert.assertEquals(1, holder.getSelectedTabs().get(3).getId());
         mAction.onSelectionStateChange(holder.getSelectedTabIds());
         Assert.assertEquals(
-                true, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ENABLED));
+                true, mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
         Assert.assertEquals(
-                9, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ITEM_COUNT));
+                9, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
 
         Assert.assertEquals(9, holder.getSelectedAndRelatedTabs().size());
         Assert.assertEquals(5, holder.getSelectedAndRelatedTabs().get(0).getId());

@@ -10,8 +10,8 @@ import android.view.View;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/** {@link PropertyKey} list for TabSelectionEditor. */
-public class TabSelectionEditorProperties {
+/** {@link PropertyKey} list for TabListEditor. */
+public class TabListEditorProperties {
     public static final PropertyModel.WritableBooleanPropertyKey IS_VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey();
 
@@ -31,7 +31,7 @@ public class TabSelectionEditorProperties {
             TOOLBAR_BUTTON_TINT = new PropertyModel.WritableObjectPropertyKey<>();
 
     public static final PropertyModel.WritableObjectPropertyKey<
-                    TabSelectionEditorToolbar.RelatedTabCountProvider>
+                    TabListEditorToolbar.RelatedTabCountProvider>
             RELATED_TAB_COUNT_PROVIDER = new PropertyModel.WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS =

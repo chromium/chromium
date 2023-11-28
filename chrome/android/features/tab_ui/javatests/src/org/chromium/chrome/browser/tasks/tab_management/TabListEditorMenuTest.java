@@ -42,11 +42,11 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ActionDelegate;
-import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ActionObserver;
-import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ButtonType;
-import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.IconPosition;
-import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ShowMode;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ActionDelegate;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ActionObserver;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ButtonType;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.IconPosition;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ShowMode;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.Features;
@@ -71,11 +71,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
-/** On-device Unit tests for the {@link TabSelectionEditorMenu} and its related classes. */
+/** On-device Unit tests for the {@link TabListEditorMenu} and its related classes. */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(Batch.PER_CLASS)
-public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
+public class TabListEditorMenuTest extends BlankUiTestActivityTestCase {
     private static final int TAB_COUNT = 3;
     private static final Integer TAB_ID_0 = 0;
     private static final Integer TAB_ID_1 = 1;
@@ -96,11 +96,11 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
 
     @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
-    static class FakeTabSelectionEditorAction extends TabSelectionEditorAction {
+    static class FakeTabListEditorAction extends TabListEditorAction {
         private boolean mShouldEnableAction = true;
         private List<Integer> mLastTabIdList;
 
-        FakeTabSelectionEditorAction(
+        FakeTabListEditorAction(
                 Context context,
                 int menuId,
                 @ShowMode int showMode,
@@ -161,13 +161,13 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
 
     private List<Tab> mTabs = new ArrayList<>();
 
-    private TabSelectionEditorToolbar mToolbar;
-    private TabSelectionEditorMenu mTabSelectionEditorMenu;
+    private TabListEditorToolbar mToolbar;
+    private TabListEditorMenu mTabListEditorMenu;
     private ListMenuButton mMenuButton;
     private PropertyListModel<PropertyModel, PropertyKey> mPropertyListModel;
     private ListModelChangeProcessor mChangeProcessor;
 
-    public TabSelectionEditorMenuTest(boolean nightModeEnabled) {
+    public TabListEditorMenuTest(boolean nightModeEnabled) {
         NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
     }
@@ -200,8 +200,8 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
 
                     LayoutInflater inflater = LayoutInflater.from(getActivity());
                     mToolbar =
-                            (TabSelectionEditorToolbar)
-                                    inflater.inflate(R.layout.tab_selection_editor_toolbar, null);
+                            (TabListEditorToolbar)
+                                    inflater.inflate(R.layout.tab_list_editor_toolbar, null);
                     layoutParams =
                             new LinearLayout.LayoutParams(
                                     LinearLayout.LayoutParams.MATCH_PARENT,
@@ -214,16 +214,16 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
                     mToolbar.initialize(mSelectionDelegate, 0, 0, 0, true);
 
                     mPropertyListModel = new PropertyListModel<>();
-                    mTabSelectionEditorMenu =
-                            new TabSelectionEditorMenu(
+                    mTabListEditorMenu =
+                            new TabListEditorMenu(
                                     getActivity(), mToolbar.getActionViewLayout());
                     mMenuButton = mToolbar.getActionViewLayout().getListMenuButtonForTesting();
-                    mSelectionDelegate.addObserver(mTabSelectionEditorMenu);
+                    mSelectionDelegate.addObserver(mTabListEditorMenu);
                     mChangeProcessor =
                             new ListModelChangeProcessor(
                                     mPropertyListModel,
-                                    mTabSelectionEditorMenu,
-                                    new TabSelectionEditorMenuAdapter());
+                                    mTabListEditorMenu,
+                                    new TabListEditorMenuAdapter());
                     mPropertyListModel.addObserver(mChangeProcessor);
                 });
     }
@@ -238,18 +238,18 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
         super.tearDownTest();
     }
 
-    private void configureMenuWithActions(List<FakeTabSelectionEditorAction> actions) {
+    private void configureMenuWithActions(List<FakeTabListEditorAction> actions) {
         mPropertyListModel.clear();
         List<PropertyModel> models = new ArrayList<>();
-        for (FakeTabSelectionEditorAction action : actions) {
+        for (FakeTabListEditorAction action : actions) {
             action.getPropertyModel()
                     .set(
-                            TabSelectionEditorActionProperties.TEXT_TINT,
+                            TabListEditorActionProperties.TEXT_TINT,
                             AppCompatResources.getColorStateList(
                                     getActivity(), R.color.default_text_color_list));
             action.getPropertyModel()
                     .set(
-                            TabSelectionEditorActionProperties.ICON_TINT,
+                            TabListEditorActionProperties.ICON_TINT,
                             AppCompatResources.getColorStateList(
                                     getActivity(), R.color.default_icon_color_tint_list));
             action.configure(
@@ -266,13 +266,13 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
     @MediumTest
     @Feature({"RenderTest"})
     public void testSingleActionView_TextAndIcon_Enabled() throws Exception {
-        List<FakeTabSelectionEditorAction> actions = new ArrayList<>();
+        List<FakeTabListEditorAction> actions = new ArrayList<>();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     actions.add(
-                            new FakeTabSelectionEditorAction(
+                            new FakeTabListEditorAction(
                                     getActivity(),
-                                    R.id.tab_selection_editor_close_menu_item,
+                                    R.id.tab_list_editor_close_menu_item,
                                     ShowMode.IF_ROOM,
                                     ButtonType.ICON_AND_TEXT,
                                     IconPosition.END,
@@ -282,7 +282,7 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
                 });
 
         setSelectedItems(new HashSet<Integer>(Arrays.asList(new Integer[] {TAB_ID_0, TAB_ID_2})));
-        assertActionView(R.id.tab_selection_editor_close_menu_item, true);
+        assertActionView(R.id.tab_list_editor_close_menu_item, true);
 
         forceFinishRollAnimation();
         mRenderTestRule.render(mToolbar, "singleActionToolbarEnabled");
@@ -292,13 +292,13 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
     @MediumTest
     @Feature({"RenderTest"})
     public void testSingleActionView_TextAndIcon_Disabled() throws Exception {
-        List<FakeTabSelectionEditorAction> actions = new ArrayList<>();
+        List<FakeTabListEditorAction> actions = new ArrayList<>();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     actions.add(
-                            new FakeTabSelectionEditorAction(
+                            new FakeTabListEditorAction(
                                     getActivity(),
-                                    R.id.tab_selection_editor_close_menu_item,
+                                    R.id.tab_list_editor_close_menu_item,
                                     ShowMode.IF_ROOM,
                                     ButtonType.ICON_AND_TEXT,
                                     IconPosition.END,
@@ -312,7 +312,7 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
                     actions.get(0).setShouldEnableAction(false);
                 });
         setSelectedItems(new HashSet<Integer>(Arrays.asList(new Integer[] {TAB_ID_1})));
-        assertActionView(R.id.tab_selection_editor_close_menu_item, false);
+        assertActionView(R.id.tab_list_editor_close_menu_item, false);
 
         forceFinishRollAnimation();
         mRenderTestRule.render(mToolbar, "singleActionToolbarDisabled");
@@ -322,13 +322,13 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
     @MediumTest
     @Feature({"RenderTest"})
     public void testSingleActionView_IconOnly_Enabled() throws Exception {
-        List<FakeTabSelectionEditorAction> actions = new ArrayList<>();
+        List<FakeTabListEditorAction> actions = new ArrayList<>();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     actions.add(
-                            new FakeTabSelectionEditorAction(
+                            new FakeTabListEditorAction(
                                     getActivity(),
-                                    R.id.tab_selection_editor_close_menu_item,
+                                    R.id.tab_list_editor_close_menu_item,
                                     ShowMode.IF_ROOM,
                                     ButtonType.ICON,
                                     IconPosition.END,
@@ -339,7 +339,7 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
 
         setSelectedItems(
                 new HashSet<Integer>(Arrays.asList(new Integer[] {TAB_ID_0, TAB_ID_1, TAB_ID_2})));
-        assertActionView(R.id.tab_selection_editor_close_menu_item, true);
+        assertActionView(R.id.tab_list_editor_close_menu_item, true);
 
         forceFinishRollAnimation();
         mRenderTestRule.render(mToolbar, "singleActionToolbarIconOnlyEnabled");
@@ -349,13 +349,13 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
     @MediumTest
     @Feature({"RenderTest"})
     public void testSingleActionView_Click() throws Exception {
-        List<FakeTabSelectionEditorAction> actions = new ArrayList<>();
+        List<FakeTabListEditorAction> actions = new ArrayList<>();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     actions.add(
-                            new FakeTabSelectionEditorAction(
+                            new FakeTabListEditorAction(
                                     getActivity(),
-                                    R.id.tab_selection_editor_close_menu_item,
+                                    R.id.tab_list_editor_close_menu_item,
                                     ShowMode.IF_ROOM,
                                     ButtonType.TEXT,
                                     IconPosition.END,
@@ -383,8 +383,8 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
 
         forceFinishRollAnimation();
         mRenderTestRule.render(mToolbar, "singleActionToolbarTextOnlyEnabled");
-        assertActionView(R.id.tab_selection_editor_close_menu_item, true);
-        clickActionView(R.id.tab_selection_editor_close_menu_item);
+        assertActionView(R.id.tab_list_editor_close_menu_item, true);
+        clickActionView(R.id.tab_list_editor_close_menu_item);
 
         helper.waitForCallback(0);
         Assert.assertEquals(2, processedTabs.size());
@@ -396,13 +396,13 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
     @MediumTest
     @Feature({"RenderTest"})
     public void testSingleMenuItem_Disabled() throws Exception {
-        List<FakeTabSelectionEditorAction> actions = new ArrayList<>();
+        List<FakeTabListEditorAction> actions = new ArrayList<>();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     actions.add(
-                            new FakeTabSelectionEditorAction(
+                            new FakeTabListEditorAction(
                                     getActivity(),
-                                    R.id.tab_selection_editor_close_menu_item,
+                                    R.id.tab_list_editor_close_menu_item,
                                     ShowMode.MENU_ONLY,
                                     ButtonType.TEXT,
                                     IconPosition.START,
@@ -423,7 +423,7 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
 
         forceFinishRollAnimation();
         mRenderTestRule.render(
-                mTabSelectionEditorMenu.getContentView(), "singleMenuItemDisabled_Menu");
+                mTabListEditorMenu.getContentView(), "singleMenuItemDisabled_Menu");
         closeMenu(listener);
     }
 
@@ -431,13 +431,13 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
     @MediumTest
     @Feature({"RenderTest"})
     public void testSingleMenuItem_Click() throws Exception {
-        List<FakeTabSelectionEditorAction> actions = new ArrayList<>();
+        List<FakeTabListEditorAction> actions = new ArrayList<>();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     actions.add(
-                            new FakeTabSelectionEditorAction(
+                            new FakeTabListEditorAction(
                                     getActivity(),
-                                    R.id.tab_selection_editor_close_menu_item,
+                                    R.id.tab_list_editor_close_menu_item,
                                     ShowMode.MENU_ONLY,
                                     ButtonType.TEXT,
                                     IconPosition.START,
@@ -473,7 +473,7 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
         forceFinishRollAnimation();
         mRenderTestRule.render(mToolbar, "singleMenuItemEnabled_Toolbar");
         mRenderTestRule.render(
-                mTabSelectionEditorMenu.getContentView(), "singleMenuItemEnabled_Menu");
+                mTabListEditorMenu.getContentView(), "singleMenuItemEnabled_Menu");
         closeMenu(listener);
 
         Assert.assertEquals(1, processedTabs.size());
@@ -484,22 +484,22 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
     @MediumTest
     @Feature({"RenderTest"})
     public void testTwoActionView_OneActionDisabled() throws Exception {
-        List<FakeTabSelectionEditorAction> actions = new ArrayList<>();
+        List<FakeTabListEditorAction> actions = new ArrayList<>();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     actions.add(
-                            new FakeTabSelectionEditorAction(
+                            new FakeTabListEditorAction(
                                     getActivity(),
-                                    R.id.tab_selection_editor_close_menu_item,
+                                    R.id.tab_list_editor_close_menu_item,
                                     ShowMode.IF_ROOM,
                                     ButtonType.ICON,
                                     IconPosition.START,
                                     R.plurals.tab_selection_editor_close_tabs,
                                     R.drawable.ic_close_tabs_24dp));
                     actions.add(
-                            new FakeTabSelectionEditorAction(
+                            new FakeTabListEditorAction(
                                     getActivity(),
-                                    R.id.tab_selection_editor_group_menu_item,
+                                    R.id.tab_list_editor_group_menu_item,
                                     ShowMode.IF_ROOM,
                                     ButtonType.ICON,
                                     IconPosition.END,
@@ -513,8 +513,8 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
                     actions.get(0).setShouldEnableAction(false);
                 });
         setSelectedItems(new HashSet<Integer>());
-        assertActionView(R.id.tab_selection_editor_close_menu_item, false);
-        assertActionView(R.id.tab_selection_editor_group_menu_item, true);
+        assertActionView(R.id.tab_list_editor_close_menu_item, false);
+        assertActionView(R.id.tab_list_editor_group_menu_item, true);
 
         forceFinishRollAnimation();
         mRenderTestRule.render(mToolbar, "twoActionToolbarPartlyDisabled");
@@ -524,22 +524,22 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
     @MediumTest
     @Feature({"RenderTest"})
     public void testActionViewAndMenuItem_Enabled() throws Exception {
-        List<FakeTabSelectionEditorAction> actions = new ArrayList<>();
+        List<FakeTabListEditorAction> actions = new ArrayList<>();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     actions.add(
-                            new FakeTabSelectionEditorAction(
+                            new FakeTabListEditorAction(
                                     getActivity(),
-                                    R.id.tab_selection_editor_close_menu_item,
+                                    R.id.tab_list_editor_close_menu_item,
                                     ShowMode.MENU_ONLY,
                                     ButtonType.TEXT,
                                     IconPosition.START,
                                     R.plurals.tab_selection_editor_close_tabs,
                                     R.drawable.ic_close_tabs_24dp));
                     actions.add(
-                            new FakeTabSelectionEditorAction(
+                            new FakeTabListEditorAction(
                                     getActivity(),
-                                    R.id.tab_selection_editor_group_menu_item,
+                                    R.id.tab_list_editor_group_menu_item,
                                     ShowMode.IF_ROOM,
                                     ButtonType.ICON,
                                     IconPosition.START,
@@ -550,7 +550,7 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
 
         setSelectedItems(new HashSet<Integer>(Arrays.asList(new Integer[] {TAB_ID_2})));
 
-        assertActionView(R.id.tab_selection_editor_group_menu_item, true);
+        assertActionView(R.id.tab_list_editor_group_menu_item, true);
 
         PopupListener listener = new PopupListener();
         openMenu(listener);
@@ -558,7 +558,7 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
         forceFinishRollAnimation();
         mRenderTestRule.render(mToolbar, "oneActionToolbarOneMenuItemEnabled_Toobar");
         mRenderTestRule.render(
-                mTabSelectionEditorMenu.getContentView(),
+                mTabListEditorMenu.getContentView(),
                 "oneActionToolbarOneMenuItemEnabled_Menu");
         closeMenu(listener);
     }
@@ -568,25 +568,25 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
     @MediumTest
     @Feature({"RenderTest"})
     public void testLongTextActionViewAndMenuItem() throws Exception {
-        List<FakeTabSelectionEditorAction> actions = new ArrayList<>();
+        List<FakeTabListEditorAction> actions = new ArrayList<>();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     NumberRollView numberRoll =
                             (NumberRollView) mToolbar.getActionViewLayout().getChildAt(0);
                     numberRoll.setStringForZero(R.string.close_all_tabs_dialog_message_incognito);
                     actions.add(
-                            new FakeTabSelectionEditorAction(
+                            new FakeTabListEditorAction(
                                     getActivity(),
-                                    R.id.tab_selection_editor_close_menu_item,
+                                    R.id.tab_list_editor_close_menu_item,
                                     ShowMode.MENU_ONLY,
                                     ButtonType.TEXT,
                                     IconPosition.START,
                                     R.plurals.tab_selection_editor_close_tabs,
                                     R.drawable.ic_close_tabs_24dp));
                     actions.add(
-                            new FakeTabSelectionEditorAction(
+                            new FakeTabListEditorAction(
                                     getActivity(),
-                                    R.id.tab_selection_editor_group_menu_item,
+                                    R.id.tab_list_editor_group_menu_item,
                                     ShowMode.IF_ROOM,
                                     ButtonType.ICON,
                                     IconPosition.START,
@@ -599,7 +599,7 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
 
         setSelectedItems(new HashSet<Integer>(Arrays.asList(new Integer[] {})));
 
-        assertActionView(R.id.tab_selection_editor_group_menu_item, false);
+        assertActionView(R.id.tab_list_editor_group_menu_item, false);
 
         forceFinishRollAnimation();
         mRenderTestRule.render(mToolbar, "longTextV2ActionAndMenu");
@@ -609,22 +609,22 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
     @MediumTest
     @Feature({"RenderTest"})
     public void testTwoMenuItems_OneMenuItemDisabled() throws Exception {
-        List<FakeTabSelectionEditorAction> actions = new ArrayList<>();
+        List<FakeTabListEditorAction> actions = new ArrayList<>();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     actions.add(
-                            new FakeTabSelectionEditorAction(
+                            new FakeTabListEditorAction(
                                     getActivity(),
-                                    R.id.tab_selection_editor_close_menu_item,
+                                    R.id.tab_list_editor_close_menu_item,
                                     ShowMode.MENU_ONLY,
                                     ButtonType.TEXT,
                                     IconPosition.END,
                                     R.plurals.tab_selection_editor_close_tabs,
                                     R.drawable.ic_close_tabs_24dp));
                     actions.add(
-                            new FakeTabSelectionEditorAction(
+                            new FakeTabListEditorAction(
                                     getActivity(),
-                                    R.id.tab_selection_editor_group_menu_item,
+                                    R.id.tab_list_editor_group_menu_item,
                                     ShowMode.MENU_ONLY,
                                     ButtonType.ICON,
                                     IconPosition.START,
@@ -645,7 +645,7 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
         assertMenuItem("Group tab", false);
         forceFinishRollAnimation();
         mRenderTestRule.render(
-                mTabSelectionEditorMenu.getContentView(), "twoMenuItemsPartlyDisabled_Menu");
+                mTabListEditorMenu.getContentView(), "twoMenuItemsPartlyDisabled_Menu");
         closeMenu(listener);
     }
 

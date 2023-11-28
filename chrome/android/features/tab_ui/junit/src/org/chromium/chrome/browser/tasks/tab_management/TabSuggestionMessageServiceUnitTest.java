@@ -44,7 +44,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
-import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ActionDelegate;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ActionDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabContext;
 import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestion;
 import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestionFeedback;
@@ -84,7 +84,7 @@ public class TabSuggestionMessageServiceUnitTest {
     @Mock TabModel mTabModel;
     @Mock TabModelFilterProvider mTabModelFilterProvider;
     @Mock TabGroupModelFilter mTabGroupModelFilter;
-    @Mock TabSelectionEditorCoordinator.TabSelectionEditorController mTabSelectionEditorController;
+    @Mock TabListEditorCoordinator.TabListEditorController mTabListEditorController;
     @Mock Callback<TabSuggestionFeedback> mTabSuggestionFeedbackCallback;
     @Mock MessageService.MessageObserver mMessageObserver;
     @Mock SelectionDelegate<Integer> mSelectionDelegate;
@@ -129,7 +129,7 @@ public class TabSuggestionMessageServiceUnitTest {
 
         mMessageService =
                 new TabSuggestionMessageService(
-                        mContext, mTabModelSelector, () -> mTabSelectionEditorController);
+                        mContext, mTabModelSelector, () -> mTabListEditorController);
         mMessageService.addObserver(mMessageObserver);
     }
 
@@ -141,15 +141,15 @@ public class TabSuggestionMessageServiceUnitTest {
                         Arrays.asList(mTab1, mTab2), TabSuggestion.TabSuggestionAction.CLOSE);
 
         mMessageService.review(tabSuggestion, mTabSuggestionFeedbackCallback);
-        verify(mTabSelectionEditorController).configureToolbarWithMenuItems(any(), any());
-        verify(mTabSelectionEditorController)
+        verify(mTabListEditorController).configureToolbarWithMenuItems(any(), any());
+        verify(mTabListEditorController)
                 .show(eq(Arrays.asList(mTab1, mTab2, mTab3)), eq(2), eq(null));
 
         tabSuggestion =
                 prepareTabSuggestion(
                         Arrays.asList(mTab1, mTab3), TabSuggestion.TabSuggestionAction.CLOSE);
         mMessageService.review(tabSuggestion, mTabSuggestionFeedbackCallback);
-        verify(mTabSelectionEditorController)
+        verify(mTabListEditorController)
                 .show(eq(Arrays.asList(mTab1, mTab3, mTab2)), eq(2), eq(null));
     }
 
@@ -166,7 +166,7 @@ public class TabSuggestionMessageServiceUnitTest {
         tabSet.add(TAB1_ID);
         tabSet.add(TAB2_ID);
         doReturn(tabSet).when(mSelectionDelegate).getSelectedItems();
-        TabSelectionEditorAction action =
+        TabListEditorAction action =
                 mMessageService.getAction(tabSuggestion, mTabSuggestionFeedbackCallback);
         action.configure(
                 mTabModelSelector,
@@ -193,7 +193,7 @@ public class TabSuggestionMessageServiceUnitTest {
         TabSuggestion tabSuggestion =
                 prepareTabSuggestion(suggestedTabs, TabSuggestion.TabSuggestionAction.CLOSE);
 
-        TabSelectionEditorCoordinator.TabSelectionEditorNavigationProvider navigationProvider =
+        TabListEditorCoordinator.TabListEditorNavigationProvider navigationProvider =
                 mMessageService.getNavigationProvider(
                         tabSuggestion, mTabSuggestionFeedbackCallback);
         navigationProvider.goBack();
