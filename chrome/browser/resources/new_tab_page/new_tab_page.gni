@@ -50,9 +50,11 @@ if (optimize_webui) {
     "history_clusters.mojom-webui.js",
     "history_clusters_v2.mojom-webui.js",
     "history_clusters_layout_type.mojom-webui.js",
+    "history_types.mojom-webui.js",
     "new_tab_page.mojom-webui.js",
     "photos.mojom-webui.js",
     "recipes.mojom-webui.js",
+    "tab_resumption.mojom-webui.js",
   ]
 
   if (!is_official_build) {

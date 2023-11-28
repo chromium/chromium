@@ -14,8 +14,6 @@
 #include "components/sync_sessions/synced_session.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-inline constexpr char kSampleUrl[] = "https://www.google.com";
-
 class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
  public:
   MockOpenTabsUIDelegate();
@@ -68,13 +66,5 @@ class MockSessionSyncService : public sync_sessions::SessionSyncService {
   base::RepeatingClosureList subscriber_list_;
   MockOpenTabsUIDelegate mock_open_tabs_ui_delegate_;
 };
-
-std::unique_ptr<sync_sessions::SyncedSession> SampleSession(
-    const char session_name[],
-    const char session_tag[],
-    int num_windows);
-std::unique_ptr<sync_sessions::SyncedSessionWindow> SampleSessionWindow(
-    int num_tabs);
-std::unique_ptr<sessions::SessionTab> SampleSessionTab(int tab_id);
 
 #endif  // CHROME_BROWSER_NEW_TAB_PAGE_MODULES_V2_TAB_RESUMPTION_TAB_RESUMPTION_TEST_SUPPORT_H_

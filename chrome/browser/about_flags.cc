@@ -2229,6 +2229,12 @@ const FeatureEntry::FeatureVariation kNtpSafeBrowsingModuleVariations[] = {
     {"(Fast Cooldown)", kNtpSafeBrowsingModuleFastCooldown,
      std::size(kNtpSafeBrowsingModuleFastCooldown), nullptr},
 };
+
+const FeatureEntry::FeatureParam kNtpTabResumptionModuleFakeData[] = {
+    {ntp_features::kNtpTabResumptionModuleDataParam, "Fake Data"}};
+const FeatureEntry::FeatureVariation kNtpTabResumptionModuleVariations[] = {
+    {"- Fake Data", kNtpTabResumptionModuleFakeData,
+     std::size(kNtpTabResumptionModuleFakeData), nullptr}};
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -7011,7 +7017,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"ntp-tab-resumption-module",
      flag_descriptions::kNtpTabResumptionModuleName,
      flag_descriptions::kNtpTabResumptionModuleDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kNtpTabResumptionModule)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpTabResumptionModule,
+                                    kNtpTabResumptionModuleVariations,
+                                    "NtpTabResumptionModules")},
 
     {"price-insights", commerce::flag_descriptions::kPriceInsightsName,
      commerce::flag_descriptions::kPriceInsightsDescription, kOsDesktop,

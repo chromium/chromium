@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/new_tab_page/modules/v2/tab_resumption/tab_resumption.mojom.h"
+#include "chrome/browser/new_tab_page/modules/v2/tab_resumption/tab_resumption_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
@@ -19,6 +20,7 @@
 #include "chrome/common/url_constants.h"
 #include "components/history/core/browser/mojom/history_types.mojom.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/search/ntp_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
@@ -96,6 +98,28 @@ absl::optional<history::mojom::WindowPtr> SessionWindowToMojom(
 
   return window_mojom;
 }
+
+// Helper method to create mojom session objects from Session objects.
+history::mojom::SessionPtr SessionToMojom(
+    const sync_sessions::SyncedSession* session) {
+  const std::string& session_tag = session->GetSessionTag();
+  auto session_mojom = history::mojom::Session::New();
+  session_mojom->tag = session_tag;
+  session_mojom->name = session->GetSessionName();
+  base::Time now = base::Time::Now();
+  base::Time time = session->GetModifiedTime();
+  session_mojom->modified_time = now < time ? base::TimeDelta() : now - time;
+  session_mojom->timestamp = session->GetModifiedTime();
+
+  // Order tabs by visual order within window.
+  for (const auto& window_pair : session->windows) {
+    auto window = SessionWindowToMojom(window_pair.second->wrapped_window);
+    if (window) {
+      session_mojom->windows.push_back(std::move(*window));
+    }
+  }
+  return session_mojom;
+}
 }  // namespace
 
 TabResumptionPageHandler::TabResumptionPageHandler(
@@ -112,6 +136,23 @@ TabResumptionPageHandler::TabResumptionPageHandler(
 TabResumptionPageHandler::~TabResumptionPageHandler() = default;
 
 void TabResumptionPageHandler::GetTabs(GetTabsCallback callback) {
+  const std::string fake_data_param = base::GetFieldTrialParamValueByFeature(
+      ntp_features::kNtpTabResumptionModule,
+      ntp_features::kNtpTabResumptionModuleDataParam);
+
+  if (!fake_data_param.empty()) {
+    std::vector<history::mojom::SessionPtr> sessions_mojom;
+    const int kSampleSessionsCount = 3;
+    for (int i = 0; i < kSampleSessionsCount; i++) {
+      sessions_mojom.push_back(SessionToMojom(
+          SampleSession("Test Name",
+                        ("Test Tag " + base::NumberToString(i)).c_str(), 3)
+              .get()));
+    }
+    std::move(callback).Run(std::move(sessions_mojom));
+    return;
+  }
+
   auto sessions_mojom = GetForeignSessions();
   std::move(callback).Run(std::move(sessions_mojom));
 }
@@ -142,31 +183,14 @@ TabResumptionPageHandler::GetForeignSessions() {
 
     // Note: we don't own the SyncedSessions themselves.
     for (size_t i = 0; i < sessions.size() && i < kMaxSessionsToShow; ++i) {
-      const sync_sessions::SyncedSession* session = sessions[i];
+      const sync_sessions::SyncedSession* session(sessions[i]);
+      auto session_mojom = SessionToMojom(session);
       const std::string& session_tag = session->GetSessionTag();
-      auto session_mojom = history::mojom::Session::New();
-      session_mojom->tag = session_tag;
-      session_mojom->name = session->GetSessionName();
-      base::Time now = base::Time::Now();
-      base::Time time = session->GetModifiedTime();
-      session_mojom->modified_time =
-          now < time ? base::TimeDelta() : now - time;
-      session_mojom->timestamp = session->GetModifiedTime();
-
       bool is_collapsed = collapsed_sessions.Find(session_tag);
       session_mojom->collapsed = is_collapsed;
       if (is_collapsed) {
         current_collapsed_sessions.Set(session_tag, true);
       }
-
-      // Order tabs by visual order within window.
-      for (const auto& window_pair : session->windows) {
-        auto window = SessionWindowToMojom(window_pair.second->wrapped_window);
-        if (window) {
-          session_mojom->windows.push_back(std::move(*window));
-        }
-      }
-
       sessions_mojom.push_back(std::move(session_mojom));
     }
   }

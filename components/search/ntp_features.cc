@@ -453,6 +453,8 @@ const char kNtpHistoryClustersModuleCategoriesBoostlistParam[] =
 const char kNtpHistoryClustersModuleMaxClustersParam[] =
     "NtpHistoryClustersModuleMaxClustersParam";
 const char kNtpRealboxWidthBehaviorParam[] = "NtpRealboxWidthBehaviorParam";
+const char kNtpTabResumptionModuleDataParam[] =
+    "NtpTabResumptionModuleDataParam";
 
 base::TimeDelta GetModulesLoadTimeout() {
   std::string param_value = base::GetFieldTrialParamValueByFeature(

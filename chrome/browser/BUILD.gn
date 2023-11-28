@@ -4122,6 +4122,8 @@ static_library("browser") {
       "new_tab_page/modules/v2/history_clusters/history_clusters_page_handler_v2.h",
       "new_tab_page/modules/v2/tab_resumption/tab_resumption_page_handler.cc",
       "new_tab_page/modules/v2/tab_resumption/tab_resumption_page_handler.h",
+      "new_tab_page/modules/v2/tab_resumption/tab_resumption_util.cc",
+      "new_tab_page/modules/v2/tab_resumption/tab_resumption_util.h",
       "new_tab_page/new_tab_page_util.cc",
       "new_tab_page/new_tab_page_util.h",
       "new_tab_page/one_google_bar/one_google_bar_data.cc",

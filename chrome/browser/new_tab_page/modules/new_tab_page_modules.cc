@@ -38,6 +38,10 @@ const std::vector<std::pair<const std::string, int>> MakeModuleIdNames(
                          IDS_OMNIBOX_HISTORY_CLUSTERS_SEARCH_HINT);
   }
 
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpTabResumptionModule)) {
+    details.emplace_back("tab_resumption", IDS_NTP_TAB_RESUMPTION_TITLE);
+  }
+
   if (IsRecipeTasksModuleEnabled()) {
     std::vector<std::string> splitExperimentGroup = base::SplitString(
         base::GetFieldTrialParamValueByFeature(

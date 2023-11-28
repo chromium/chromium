@@ -10,6 +10,7 @@ import("./photos/photos.gni")
 import("./recipes/recipes.gni")
 import("./v2/drive/drive.gni")
 import("./v2/history_clusters/history_clusters.gni")
+import("./v2/tab_resumption/tab_resumption.gni")
 
 if (!is_official_build) {
   import("./v2/dummy/dummy.gni")
@@ -24,7 +25,8 @@ modules_non_web_component_files =
     ] + cart_non_web_component_files + drive_non_web_component_files +
     feed_non_web_component_files + photos_non_web_component_files +
     recipes_non_web_component_files + history_clusters_non_web_component_files +
-    history_clusters_v2_non_web_component_files
+    history_clusters_v2_non_web_component_files +
+    tab_resumption_v2_non_web_component_files
 
 if (!is_official_build) {
   modules_non_web_component_files += dummy_v2_non_web_component_files
@@ -43,7 +45,8 @@ modules_web_component_files =
     drive_v2_web_component_files + feed_web_component_files +
     photos_web_component_files + recipes_web_component_files +
     history_clusters_web_component_files +
-    history_clusters_v2_web_component_files
+    history_clusters_v2_web_component_files +
+    tab_resumption_v2_web_component_files
 
 if (!is_official_build) {
   modules_web_component_files += dummy_v2_web_component_files

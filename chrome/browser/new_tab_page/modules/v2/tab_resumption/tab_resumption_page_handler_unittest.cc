@@ -11,6 +11,7 @@
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "chrome/browser/new_tab_page/modules/v2/tab_resumption/tab_resumption_test_support.h"
+#include "chrome/browser/new_tab_page/modules/v2/tab_resumption/tab_resumption_util.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/test_browser_window.h"

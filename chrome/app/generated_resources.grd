@@ -8288,6 +8288,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_ACCNAME_SEARCH_SUGG" desc="The accessible name for the search suggestion tile in the NTP Journeys Module.">
         Search for <ph name="QUERY_CLUSTER_NAME">$1<ex>Office Chairs</ex></ph>
       </message>
+      <message name="IDS_NTP_TAB_RESUMPTION_TITLE" desc="Name of the tab resumption module in sentence case shown in various UIs.">
+        Your tabs from other devices
+      </message>
 
       <!-- Extensions NTP Middle Slot Promo -->
       <message name="IDS_EXTENSIONS_PROMO_PERFORMANCE">

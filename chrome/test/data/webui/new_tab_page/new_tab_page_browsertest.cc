@@ -329,3 +329,20 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesHistoryClustersModuleTest, CartTile) {
   RunTest("new_tab_page/modules/history_clusters/cart/cart_tile_test.js",
           "mocha.run()");
 }
+
+class NewTabPageModulesTabResumptionModuleTest : public NewTabPageBrowserTest {
+ protected:
+  NewTabPageModulesTabResumptionModuleTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{ntp_features::kNtpTabResumptionModule},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesTabResumptionModuleTest, Core) {
+  RunTest("new_tab_page/modules/v2/tab_resumption/module_test.js",
+          "runMochaSuite('NewTabPageModulesTabResumptionModuleTest Core')");
+}
