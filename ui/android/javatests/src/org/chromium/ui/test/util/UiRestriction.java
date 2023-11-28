@@ -14,9 +14,9 @@ import org.chromium.base.test.util.Restriction;
  * </code>
  */
 public final class UiRestriction {
-    /** Specifies the test is only valid on phone form factors. */
+    /** Specifies the test is only valid on phone sized screens. */
     public static final String RESTRICTION_TYPE_PHONE = "Phone";
 
-    /** Specifies the test is only valid on tablet form factors. */
+    /** Specifies the test is only valid on tablet sized screens. */
     public static final String RESTRICTION_TYPE_TABLET = "Tablet";
 }
