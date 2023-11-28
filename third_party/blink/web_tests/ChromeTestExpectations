@@ -36,6 +36,13 @@ external/wpt/webdriver/tests/bidi/browsing_context/traverse_history/delta.py [ F
 external/wpt/webdriver/tests/bidi/browsing_context/traverse_history/invalid.py [ Failure ]
 external/wpt/webdriver/tests/bidi/browsing_context/set_viewport/viewport.py [ Failure ]
 
+# Those tests fail when DCHECK enabled
+crbug.com/1499775 external/wpt/html/browsers/the-window-object/window-open-windowfeatures-values.html [ Pass Timeout ]
+crbug.com/1499775 external/wpt/media-capabilities/encodingInfo.any.worker.html [ Crash ]
+crbug.com/1499775 external/wpt/navigation-api/navigate-event/navigate-history-back-bfcache.html [ Failure ]
+crbug.com/1499775 external/wpt/storage-access-api/requestStorageAccess-cross-origin-iframe-navigation.sub.https.window.html [ Failure Timeout ]
+crbug.com/1499775 external/wpt/url/failure.html [ Pass Timeout ]
+
 # Chrome specific failures
 crbug.com/1499775 external/wpt/css/css-text/text-transform/text-transform-capitalize-014.html [ Failure Pass ]
 crbug.com/1499775 external/wpt/html/semantics/forms/the-selectlist-element/selectlist-option-arbitrary-content-not-displayed.tentative.html [ Failure Pass ]
