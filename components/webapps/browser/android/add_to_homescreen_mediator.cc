@@ -172,11 +172,10 @@ void AddToHomescreenMediator::OnUserTitleAvailable(
 void AddToHomescreenMediator::OnDataAvailable(
     const ShortcutInfo& info,
     const SkBitmap& display_icon,
+    AddToHomescreenParams::AppType app_type,
     const InstallableStatusCode status_code) {
   params_ = std::make_unique<AddToHomescreenParams>();
-  params_->app_type = info.source == ShortcutInfo::SOURCE_ADD_TO_HOMESCREEN_PWA
-                          ? AddToHomescreenParams::AppType::WEBAPK
-                          : AddToHomescreenParams::AppType::SHORTCUT;
+  params_->app_type = app_type;
   params_->shortcut_info = std::make_unique<ShortcutInfo>(info);
   params_->primary_icon = data_fetcher_->primary_icon();
   params_->install_source = InstallableMetrics::GetInstallSource(

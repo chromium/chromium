@@ -256,27 +256,26 @@ void AddToHomescreenDataFetcher::OnDidPerformInstallableCheck(
       (data.errors.empty() && data.installable_check_passed &&
        WebappsUtils::AreWebManifestUrlsWebApkCompatible(*data.manifest));
 
+  installable_status_code_ = data.GetFirstError();
+
+  if (!webapk_compatible) {
+    PrepareToAddShortcut(false /* fetch_favicon */);
+    return;
+  }
+
   observer_->OnUserTitleAvailable(
       webapk_compatible ? shortcut_info_.name : shortcut_info_.user_title,
       shortcut_info_.url, webapk_compatible);
 
   shortcut_info_.UpdateDisplayMode(webapk_compatible);
 
-  if (webapk_compatible) {
-    // WebAPKs should always use the raw icon for the launcher whether or not
-    // that icon is maskable.
-    primary_icon_ = raw_primary_icon_;
-    shortcut_info_.UpdateSource(ShortcutInfo::SOURCE_ADD_TO_HOMESCREEN_PWA);
-    // We can skip creating an icon for the view because the raw icon is
-    // sufficient when WebAPK-compatible.
-    OnIconCreated(raw_primary_icon_,
-                  /*is_icon_generated=*/false);
-    return;
-  }
-
-  installable_status_code_ = data.GetFirstError();
-
-  CreateIconForView(raw_primary_icon_);
+  // WebAPKs should always use the raw icon for the launcher whether or not
+  // that icon is maskable.
+  primary_icon_ = raw_primary_icon_;
+  shortcut_info_.UpdateSource(ShortcutInfo::SOURCE_ADD_TO_HOMESCREEN_PWA);
+  observer_->OnDataAvailable(shortcut_info_, primary_icon_,
+                             AddToHomescreenParams::AppType::WEBAPK,
+                             installable_status_code_);
 }
 
 void AddToHomescreenDataFetcher::PrepareToAddShortcut(bool fetch_favicon) {
@@ -361,6 +360,7 @@ void AddToHomescreenDataFetcher::OnIconCreated(const SkBitmap& icon_for_view,
   }
 
   observer_->OnDataAvailable(shortcut_info_, icon_for_view,
+                             AddToHomescreenParams::AppType::SHORTCUT,
                              installable_status_code_);
 }
 

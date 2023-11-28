@@ -59,10 +59,7 @@ const int kIconSizePx = 144;
 // called.
 class ObserverWaiter : public AddToHomescreenDataFetcher::Observer {
  public:
-  ObserverWaiter()
-      : is_webapk_compatible_(false),
-        title_available_(false),
-        data_available_(false) {}
+  ObserverWaiter() = default;
 
   ObserverWaiter(const ObserverWaiter&) = delete;
   ObserverWaiter& operator=(const ObserverWaiter&) = delete;
@@ -93,12 +90,14 @@ class ObserverWaiter : public AddToHomescreenDataFetcher::Observer {
   void OnDataAvailable(
       const ShortcutInfo& info,
       const SkBitmap& primary_icon,
+      AddToHomescreenParams::AppType app_type,
       const InstallableStatusCode installable_status) override {
     // This should only be called once.
     EXPECT_FALSE(data_available_);
     EXPECT_TRUE(title_available_);
     data_available_ = true;
     installable_status_ = installable_status;
+    app_type_ = app_type;
     if (quit_closure_)
       quit_closure_.Run();
   }
@@ -106,15 +105,17 @@ class ObserverWaiter : public AddToHomescreenDataFetcher::Observer {
   std::u16string title() const { return title_; }
   bool is_webapk_compatible() const { return is_webapk_compatible_; }
   bool title_available() const { return title_available_; }
+  AddToHomescreenParams::AppType app_type() const { return app_type_; }
   InstallableStatusCode installable_status() const {
     return installable_status_;
   }
 
  private:
   std::u16string title_;
-  bool is_webapk_compatible_;
-  bool title_available_;
-  bool data_available_;
+  bool is_webapk_compatible_ = false;
+  bool title_available_ = false;
+  bool data_available_ = false;
+  AddToHomescreenParams::AppType app_type_;
   InstallableStatusCode installable_status_;
   base::RepeatingClosure quit_closure_;
 };
@@ -272,10 +273,13 @@ class AddToHomescreenDataFetcherTest
 
     EXPECT_EQ(is_webapk_compatible, waiter.is_webapk_compatible());
     EXPECT_TRUE(waiter.title_available());
-    if (is_webapk_compatible)
+    if (is_webapk_compatible) {
       EXPECT_EQ(waiter.title(), expected_name);
-    else
+      EXPECT_EQ(waiter.app_type(), AddToHomescreenParams::AppType::WEBAPK);
+    } else {
       EXPECT_EQ(waiter.title(), expected_user_title);
+      EXPECT_EQ(waiter.app_type(), AddToHomescreenParams::AppType::SHORTCUT);
+    }
 
     EXPECT_EQ(fetcher->shortcut_info().user_title, expected_user_title);
     EXPECT_EQ(display_mode, fetcher->shortcut_info().display);

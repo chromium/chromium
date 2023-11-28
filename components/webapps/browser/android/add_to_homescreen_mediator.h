@@ -87,6 +87,7 @@ class AddToHomescreenMediator : public AddToHomescreenDataFetcher::Observer {
 
   void OnDataAvailable(const ShortcutInfo& info,
                        const SkBitmap& display_icon,
+                       AddToHomescreenParams::AppType app_type,
                        InstallableStatusCode status_code) override;
 
   void RecordEventForAppMenu(AddToHomescreenInstaller::Event event,
