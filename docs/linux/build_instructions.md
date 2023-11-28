@@ -166,6 +166,14 @@ compatible with [REAPI](https://github.com/bazelbuild/remote-apis). This allows
 you to benefit from remote caching and executing many build actions in parallel
 on a shared cluster of workers.
 
+For contributors who have
+[tryjob access](https://www.chromium.org/getting-involved/become-a-committer/#try-job-access)
+, please ask a Googler to email accounts@chromium.org on your behalf to access
+RBE backend paid by Google. Note that reclient for external contributors is a
+best-effort process. We do not guarantee when you will be invited. Reach out to
+[reclient-users@chromium.org](https://groups.google.com/a/chromium.org/g/reclient-users)
+if you have some questions about reclient usages.
+
 To get started, you need access to an REAPI-compatible backend. The following
 instructions assume that you received an invitation from Google to use
 Chromium's RBE service and were granted access to it. However, you are welcome
