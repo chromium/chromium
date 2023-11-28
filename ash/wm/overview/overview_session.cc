@@ -139,20 +139,6 @@ class AsyncWindowStateChangeObserver : public WindowStateObserver,
   base::OnceCallback<void(WindowState*)> on_post_window_state_changed_;
 };
 
-// Simple override of views::Button. Allows to use a element of accessibility
-// role button as the overview focus widget's contents.
-class OverviewFocusButton : public views::Button {
- public:
-  OverviewFocusButton() : views::Button(views::Button::PressedCallback()) {
-    // Make this not focusable to avoid accessibility error since this view has
-    // no accessible name.
-    SetFocusBehavior(FocusBehavior::NEVER);
-  }
-  OverviewFocusButton(const OverviewFocusButton&) = delete;
-  OverviewFocusButton& operator=(const OverviewFocusButton&) = delete;
-  ~OverviewFocusButton() override = default;
-};
-
 }  // namespace
 
 OverviewSession::OverviewSession(OverviewDelegate* delegate)
@@ -263,10 +249,9 @@ void OverviewSession::Init(const WindowList& windows,
   UpdateNoWindowsWidgetOnEachGrid(animate, is_continuous_enter);
 
   // Create the widget that will receive focus while in overview mode for
-  // accessibility purposes. Add a button as the contents so that
+  // accessibility purposes. Make its role a button as the contents so that
   // `UpdateAccessibilityFocus` can put it on the accessibility focus
   // cycler.
-  overview_focus_widget_ = std::make_unique<views::Widget>();
   views::Widget::InitParams params;
   params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
@@ -276,10 +261,12 @@ void OverviewSession::Init(const WindowList& windows,
   params.layer_type = ui::LAYER_NOT_DRAWN;
   params.name = "OverviewModeFocusWidget";
   params.z_order = ui::ZOrderLevel::kFloatingWindow;
-  params.init_properties_container.SetProperty(ash::kExcludeInMruKey, true);
-  overview_focus_widget_->Init(std::move(params));
+  params.init_properties_container.SetProperty(kExcludeInMruKey, true);
+  overview_focus_widget_ = std::make_unique<views::Widget>(std::move(params));
   overview_focus_widget_->SetContentsView(
-      std::make_unique<OverviewFocusButton>());
+      views::Builder<views::View>()
+          .SetAccessibleRole(ax::mojom::Role::kButton)
+          .Build());
 
   num_start_windows_ = GetNumWindows();
   UMA_HISTOGRAM_COUNTS_100("Ash.Overview.Items", num_start_windows_);
