@@ -2,9 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/protobuf/proto_library.gni")
+import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 
-proto_library("proto") {
+fuzzable_proto_library("proto") {
   sources = [ "privacy_sandbox_attestations.proto" ]
   cc_generator_options = "lite=true:"
 }
