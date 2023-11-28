@@ -730,8 +730,6 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
         return 'os-settings:language';
       case SearchResultIcon.kGooglePlay:
         return 'os-settings:google-play';
-      case SearchResultIcon.kHardDrive:
-        return 'os-settings:hard-drive';
       case SearchResultIcon.kHotspot:
         return 'os-settings:hotspot';
       case SearchResultIcon.kInstantTethering:
@@ -778,6 +776,9 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
         return 'cr:security';
       case SearchResultIcon.kStartup:
         return 'os-settings:startup';
+      case SearchResultIcon.kStorage:
+        return isRevampEnabled ? 'os-settings:storage' :
+                                 'os-settings:hard-drive';
       case SearchResultIcon.kStylus:
         return 'os-settings:stylus';
       case SearchResultIcon.kSync:

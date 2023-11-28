@@ -33,7 +33,7 @@ const std::vector<SearchConcept>& GetDefaultSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_STORAGE,
        mojom::kStorageSubpagePath,
-       mojom::SearchResultIcon::kHardDrive,
+       mojom::SearchResultIcon::kStorage,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kStorage},
@@ -47,7 +47,7 @@ const std::vector<SearchConcept>& GetExternalStorageSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_EXTERNAL_STORAGE,
        mojom::kExternalStorageSubpagePath,
-       mojom::SearchResultIcon::kHardDrive,
+       mojom::SearchResultIcon::kStorage,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kExternalStorage}},
@@ -139,7 +139,7 @@ mojom::Section StorageSection::GetSection() const {
 }
 
 mojom::SearchResultIcon StorageSection::GetSectionIcon() const {
-  return mojom::SearchResultIcon::kHardDrive;
+  return mojom::SearchResultIcon::kStorage;
 }
 
 const char* StorageSection::GetSectionPath() const {
@@ -157,11 +157,11 @@ bool StorageSection::LogMetric(mojom::Setting setting,
 void StorageSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   generator->RegisterTopLevelSubpage(
       IDS_SETTINGS_STORAGE_TITLE, mojom::Subpage::kStorage,
-      mojom::SearchResultIcon::kHardDrive,
+      mojom::SearchResultIcon::kStorage,
       mojom::SearchResultDefaultRank::kMedium, mojom::kStorageSubpagePath);
   generator->RegisterNestedSubpage(
       IDS_SETTINGS_STORAGE_EXTERNAL, mojom::Subpage::kExternalStorage,
-      mojom::Subpage::kStorage, mojom::SearchResultIcon::kHardDrive,
+      mojom::Subpage::kStorage, mojom::SearchResultIcon::kStorage,
       mojom::SearchResultDefaultRank::kMedium,
       mojom::kExternalStorageSubpagePath);
 }
