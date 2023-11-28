@@ -570,8 +570,6 @@ component("net") {
     "http/http_cache_writers.h",
     "http/http_chunked_decoder.cc",
     "http/http_chunked_decoder.h",
-    "http/http_connection_info.cc",
-    "http/http_connection_info.h",
     "http/http_content_disposition.cc",
     "http/http_content_disposition.h",
     "http/http_log_util.cc",

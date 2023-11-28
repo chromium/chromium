@@ -23,7 +23,6 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_flags.h"
 #include "net/dns/public/resolve_error_info.h"
-#include "net/http/http_connection_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom.h"
@@ -143,7 +142,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
     should_replace_current_entry_ = should_replace_current_entry;
   }
 
-  void set_http_connection_info(net::HttpConnectionInfo info) {
+  void set_http_connection_info(net::HttpResponseInfo::ConnectionInfo info) {
     http_connection_info_ = info;
   }
 
@@ -384,8 +383,8 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   mojo::ScopedDataPipeConsumerHandle response_body_;
   network::mojom::CSPDisposition should_check_main_world_csp_ =
       network::mojom::CSPDisposition::CHECK;
-  net::HttpConnectionInfo http_connection_info_ =
-      net::HttpConnectionInfo::kUNKNOWN;
+  net::HttpResponseInfo::ConnectionInfo http_connection_info_ =
+      net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN;
   net::ResolveErrorInfo resolve_error_info_ = net::ResolveErrorInfo(net::OK);
   absl::optional<net::SSLInfo> ssl_info_;
   absl::optional<blink::PageState> page_state_;

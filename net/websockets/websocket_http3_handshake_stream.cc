@@ -296,9 +296,11 @@ void WebSocketHttp3HandshakeStream::OnHeadersReceived(
   http_response_info_->was_alpn_negotiated = true;
   http_response_info_->response_time = base::Time::Now();
   http_response_info_->request_time = request_time_;
-  http_response_info_->connection_info = HttpConnectionInfo::kHTTP2;
+  http_response_info_->connection_info =
+      HttpResponseInfo::CONNECTION_INFO_HTTP2;
   http_response_info_->alpn_negotiated_protocol =
-      HttpConnectionInfoToString(http_response_info_->connection_info);
+      HttpResponseInfo::ConnectionInfoToString(
+          http_response_info_->connection_info);
 
   if (callback_) {
     std::move(callback_).Run(ValidateResponse());

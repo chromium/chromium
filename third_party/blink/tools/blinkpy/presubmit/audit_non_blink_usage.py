@@ -632,7 +632,7 @@ _CONFIG = [
             'net::HTTP_.+',
 
             # For ConnectionInfo enumeration
-            'net::HttpConnectionInfo',
+            'net::HttpResponseInfo',
 
             # Network service.
             'network::.+',

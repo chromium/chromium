@@ -32,9 +32,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
-#include "net/base/auth.h"
 #include "net/base/ip_endpoint.h"
-#include "net/http/alternate_protocol_usage.h"
 #include "net/ssl/ssl_info.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/cpp/trigger_verification.h"
@@ -357,8 +355,10 @@ class PLATFORM_EXPORT ResourceResponse final {
     alternate_protocol_usage_ = value;
   }
 
-  net::HttpConnectionInfo ConnectionInfo() const { return connection_info_; }
-  void SetConnectionInfo(net::HttpConnectionInfo value) {
+  net::HttpResponseInfo::ConnectionInfo ConnectionInfo() const {
+    return connection_info_;
+  }
+  void SetConnectionInfo(net::HttpResponseInfo::ConnectionInfo value) {
     connection_info_ = value;
   }
 
@@ -656,7 +656,8 @@ class PLATFORM_EXPORT ResourceResponse final {
       net::AlternateProtocolUsage::ALTERNATE_PROTOCOL_USAGE_UNSPECIFIED_REASON;
 
   // Information about the type of connection used to fetch this resource.
-  net::HttpConnectionInfo connection_info_ = net::HttpConnectionInfo::kUNKNOWN;
+  net::HttpResponseInfo::ConnectionInfo connection_info_ =
+      net::HttpResponseInfo::ConnectionInfo::CONNECTION_INFO_UNKNOWN;
 
   // Size of the response in bytes prior to decompression.
   int64_t encoded_data_length_ = 0;

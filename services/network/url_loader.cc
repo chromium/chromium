@@ -53,7 +53,6 @@
 #include "net/cookies/site_for_cookies.h"
 #include "net/cookies/static_cookie_policy.h"
 #include "net/dns/public/secure_dns_policy.h"
-#include "net/http/http_connection_info.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
 #include "net/log/net_log_source_type.h"
@@ -433,6 +432,21 @@ const char* GetCertStatePartString(const net::SSLInfo& ssl_info) {
   return ssl_info.is_issued_by_known_root ? "KnownRootCert" : "UnknownRootCert";
 }
 
+const char* ConnectionInfoCoarseString(
+    net::HttpResponseInfo::ConnectionInfo connection_info) {
+  switch (net::HttpResponseInfo::ConnectionInfoToCoarse(connection_info)) {
+    case net::HttpResponseInfo::CONNECTION_INFO_COARSE_HTTP1:
+      return "Http1";
+    case net::HttpResponseInfo::CONNECTION_INFO_COARSE_HTTP2:
+      return "Http2";
+    case net::HttpResponseInfo::CONNECTION_INFO_COARSE_QUIC:
+      return "Http3";
+    case net::HttpResponseInfo::CONNECTION_INFO_COARSE_OTHER:
+      return "Other";
+  }
+  NOTREACHED_NORETURN();
+}
+
 void MaybeRecordSharedDictionaryUsedResponseMetrics(
     int error_code,
     network::mojom::RequestDestination destination,
@@ -451,10 +465,8 @@ void MaybeRecordSharedDictionaryUsedResponseMetrics(
     base::UmaHistogramBoolean(
         base::StrCat(
             {"Net.SharedDictionaryUsedByResponseWhenAvailable.MainFrame.",
-             net::HttpConnectionInfoCoarseToString(
-                 net::HttpConnectionInfoToCoarse(
-                     response_info.connection_info)),
-             ".", GetCertStatePartString(response_info.ssl_info)}),
+             ConnectionInfoCoarseString(response_info.connection_info), ".",
+             GetCertStatePartString(response_info.ssl_info)}),
         response_info.did_use_shared_dictionary);
   }
 }

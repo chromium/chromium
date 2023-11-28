@@ -1345,7 +1345,7 @@ void LocalFrameMojoHandler::AddResourceTimingEntryForFailedSubframeNavigation(
     uint32_t response_code,
     const WTF::String& mime_type,
     network::mojom::blink::LoadTimingInfoPtr load_timing_info,
-    net::HttpConnectionInfo connection_info,
+    net::HttpResponseInfo::ConnectionInfo connection_info,
     const WTF::String& alpn_negotiated_protocol,
     bool is_secure_transport,
     bool is_validated,

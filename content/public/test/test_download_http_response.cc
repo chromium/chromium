@@ -139,7 +139,9 @@ TestDownloadHttpResponse::Parameters::Parameters()
       size(102400),
       pattern_generator_seed(1),
       support_byte_ranges(true),
-      support_partial_response(true) {}
+      support_partial_response(true),
+      connection_type(
+          net::HttpResponseInfo::ConnectionInfo::CONNECTION_INFO_UNKNOWN) {}
 
 TestDownloadHttpResponse::Parameters::Parameters(const Parameters& that) =
     default;

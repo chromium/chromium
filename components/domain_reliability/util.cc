@@ -103,16 +103,16 @@ bool GetDomainReliabilityBeaconStatus(
 // TODO(juliatuttle): Consider using ALPN instead, if there's a good way to
 //                    differentiate HTTP and HTTPS.
 std::string GetDomainReliabilityProtocol(
-    net::HttpConnectionInfo connection_info,
+    net::HttpResponseInfo::ConnectionInfo connection_info,
     bool ssl_info_populated) {
-  switch (net::HttpConnectionInfoToCoarse(connection_info)) {
-    case net::HttpConnectionInfoCoarse::kHTTP1:
+  switch (net::HttpResponseInfo::ConnectionInfoToCoarse(connection_info)) {
+    case net::HttpResponseInfo::CONNECTION_INFO_COARSE_HTTP1:
       return ssl_info_populated ? "HTTPS" : "HTTP";
-    case net::HttpConnectionInfoCoarse::kHTTP2:
+    case net::HttpResponseInfo::CONNECTION_INFO_COARSE_HTTP2:
       return "SPDY";
-    case net::HttpConnectionInfoCoarse::kQUIC:
+    case net::HttpResponseInfo::CONNECTION_INFO_COARSE_QUIC:
       return "QUIC";
-    case net::HttpConnectionInfoCoarse::kOTHER:
+    case net::HttpResponseInfo::CONNECTION_INFO_COARSE_OTHER:
       return "";
   }
   NOTREACHED();

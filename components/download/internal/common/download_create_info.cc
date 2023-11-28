@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/format_macros.h"
-#include "net/http/http_connection_info.h"
 #include "net/http/http_response_headers.h"
 
 namespace download {
@@ -30,7 +29,7 @@ DownloadCreateInfo::DownloadCreateInfo(
       render_process_id(-1),
       render_frame_id(-1),
       accept_range(RangeRequestSupportType::kNoSupport),
-      connection_info(net::HttpConnectionInfo::kUNKNOWN),
+      connection_info(net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN),
       method("GET"),
       ukm_source_id(ukm::kInvalidSourceId),
       is_content_initiated(false),

@@ -310,9 +310,9 @@ void SpdyHttpStream::OnHeadersReceived(
   // will take care of that part.
   response_info_->was_alpn_negotiated = was_alpn_negotiated_;
   response_info_->request_time = stream_->GetRequestTime();
-  response_info_->connection_info = HttpConnectionInfo::kHTTP2;
+  response_info_->connection_info = HttpResponseInfo::CONNECTION_INFO_HTTP2;
   response_info_->alpn_negotiated_protocol =
-      HttpConnectionInfoToString(response_info_->connection_info);
+      HttpResponseInfo::ConnectionInfoToString(response_info_->connection_info);
 
   // Invalidate HttpRequestInfo pointer. This is to allow |this| to be
   // shared across multiple consumers at the cache layer which might require
@@ -575,7 +575,7 @@ int SpdyHttpStream::GetRemoteEndpoint(IPEndPoint* endpoint) {
 }
 
 void SpdyHttpStream::PopulateNetErrorDetails(NetErrorDetails* details) {
-  details->connection_info = HttpConnectionInfo::kHTTP2;
+  details->connection_info = HttpResponseInfo::CONNECTION_INFO_HTTP2;
   return;
 }
 

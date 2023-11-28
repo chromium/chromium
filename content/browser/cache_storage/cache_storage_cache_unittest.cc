@@ -52,7 +52,6 @@
 #include "net/base/test_completion_callback.h"
 #include "net/base/url_util.h"
 #include "net/disk_cache/disk_cache.h"
-#include "net/http/http_connection_info.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/blob_test_utils.h"
@@ -694,7 +693,8 @@ class CacheStorageCacheTest : public testing::Test {
         /*cors_exposed_header_names=*/std::vector<std::string>(),
         /*side_data_blob=*/nullptr,
         /*side_data_blob_cache_put=*/nullptr,
-        network::mojom::ParsedHeaders::New(), net::HttpConnectionInfo::kUNKNOWN,
+        network::mojom::ParsedHeaders::New(),
+        net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN,
         /*alpn_negotiated_protocol=*/"unknown",
         /*was_fetched_via_spdy=*/false, /*has_range_requested=*/false,
         /*auth_challenge_info=*/absl::nullopt,

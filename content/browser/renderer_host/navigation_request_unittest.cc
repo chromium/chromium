@@ -253,23 +253,25 @@ TEST_F(NavigationRequestTest, SimpleDataChecksRedirectAndProcess) {
   EXPECT_EQ(blink::mojom::RequestContextType::LOCATION,
             NavigationRequest::From(navigation->GetNavigationHandle())
                 ->request_context_type());
-  EXPECT_EQ(net::HttpConnectionInfo::kUNKNOWN,
+  EXPECT_EQ(net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN,
             navigation->GetNavigationHandle()->GetConnectionInfo());
 
-  navigation->set_http_connection_info(net::HttpConnectionInfo::kHTTP1_1);
+  navigation->set_http_connection_info(
+      net::HttpResponseInfo::CONNECTION_INFO_HTTP1_1);
   navigation->Redirect(kUrl2);
   EXPECT_EQ(blink::mojom::RequestContextType::LOCATION,
             NavigationRequest::From(navigation->GetNavigationHandle())
                 ->request_context_type());
-  EXPECT_EQ(net::HttpConnectionInfo::kHTTP1_1,
+  EXPECT_EQ(net::HttpResponseInfo::CONNECTION_INFO_HTTP1_1,
             navigation->GetNavigationHandle()->GetConnectionInfo());
 
-  navigation->set_http_connection_info(net::HttpConnectionInfo::kQUIC_35);
+  navigation->set_http_connection_info(
+      net::HttpResponseInfo::CONNECTION_INFO_QUIC_35);
   navigation->ReadyToCommit();
   EXPECT_EQ(blink::mojom::RequestContextType::LOCATION,
             NavigationRequest::From(navigation->GetNavigationHandle())
                 ->request_context_type());
-  EXPECT_EQ(net::HttpConnectionInfo::kQUIC_35,
+  EXPECT_EQ(net::HttpResponseInfo::CONNECTION_INFO_QUIC_35,
             navigation->GetNavigationHandle()->GetConnectionInfo());
 }
 
@@ -278,12 +280,13 @@ TEST_F(NavigationRequestTest, SimpleDataCheckNoRedirect) {
   auto navigation =
       NavigationSimulatorImpl::CreateRendererInitiated(kUrl, main_rfh());
   navigation->Start();
-  EXPECT_EQ(net::HttpConnectionInfo::kUNKNOWN,
+  EXPECT_EQ(net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN,
             navigation->GetNavigationHandle()->GetConnectionInfo());
 
-  navigation->set_http_connection_info(net::HttpConnectionInfo::kQUIC_35);
+  navigation->set_http_connection_info(
+      net::HttpResponseInfo::CONNECTION_INFO_QUIC_35);
   navigation->ReadyToCommit();
-  EXPECT_EQ(net::HttpConnectionInfo::kQUIC_35,
+  EXPECT_EQ(net::HttpResponseInfo::CONNECTION_INFO_QUIC_35,
             navigation->GetNavigationHandle()->GetConnectionInfo());
 }
 
@@ -295,7 +298,7 @@ TEST_F(NavigationRequestTest, SimpleDataChecksFailure) {
   EXPECT_EQ(blink::mojom::RequestContextType::LOCATION,
             NavigationRequest::From(navigation->GetNavigationHandle())
                 ->request_context_type());
-  EXPECT_EQ(net::HttpConnectionInfo::kUNKNOWN,
+  EXPECT_EQ(net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN,
             navigation->GetNavigationHandle()->GetConnectionInfo());
 
   navigation->Fail(net::ERR_CERT_DATE_INVALID);
@@ -690,13 +693,14 @@ TEST_F(NavigationRequestTest, DnsAliasesCanBeAccessed) {
 
   // Start the navigation.
   navigation->Start();
-  EXPECT_EQ(net::HttpConnectionInfo::kUNKNOWN,
+  EXPECT_EQ(net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN,
             navigation->GetNavigationHandle()->GetConnectionInfo());
 
   // Commit the navigation.
-  navigation->set_http_connection_info(net::HttpConnectionInfo::kQUIC_35);
+  navigation->set_http_connection_info(
+      net::HttpResponseInfo::CONNECTION_INFO_QUIC_35);
   navigation->ReadyToCommit();
-  EXPECT_EQ(net::HttpConnectionInfo::kQUIC_35,
+  EXPECT_EQ(net::HttpResponseInfo::CONNECTION_INFO_QUIC_35,
             navigation->GetNavigationHandle()->GetConnectionInfo());
 
   // Verify that the aliases are accessible from the NavigationRequest.
@@ -715,13 +719,14 @@ TEST_F(NavigationRequestTest, NoDnsAliases) {
 
   // Start the navigation.
   navigation->Start();
-  EXPECT_EQ(net::HttpConnectionInfo::kUNKNOWN,
+  EXPECT_EQ(net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN,
             navigation->GetNavigationHandle()->GetConnectionInfo());
 
   // Commit the navigation.
-  navigation->set_http_connection_info(net::HttpConnectionInfo::kQUIC_35);
+  navigation->set_http_connection_info(
+      net::HttpResponseInfo::CONNECTION_INFO_QUIC_35);
   navigation->ReadyToCommit();
-  EXPECT_EQ(net::HttpConnectionInfo::kQUIC_35,
+  EXPECT_EQ(net::HttpResponseInfo::CONNECTION_INFO_QUIC_35,
             navigation->GetNavigationHandle()->GetConnectionInfo());
 
   // Verify that there are no aliases in the NavigationRequest.

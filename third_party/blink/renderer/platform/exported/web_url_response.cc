@@ -692,12 +692,12 @@ void WebURLResponse::SetWasAlternateProtocolAvailable(
       was_alternate_protocol_available);
 }
 
-net::HttpConnectionInfo WebURLResponse::ConnectionInfo() const {
+net::HttpResponseInfo::ConnectionInfo WebURLResponse::ConnectionInfo() const {
   return resource_response_->ConnectionInfo();
 }
 
 void WebURLResponse::SetConnectionInfo(
-    net::HttpConnectionInfo connection_info) {
+    net::HttpResponseInfo::ConnectionInfo connection_info) {
   resource_response_->SetConnectionInfo(connection_info);
 }
 

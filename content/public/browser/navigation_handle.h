@@ -25,8 +25,7 @@
 #include "net/base/isolation_info.h"
 #include "net/base/net_errors.h"
 #include "net/dns/public/resolve_error_info.h"
-#include "net/http/http_connection_info.h"
-#include "net/ssl/ssl_info.h"
+#include "net/http/http_response_info.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-forward.h"
 #include "third_party/blink/public/common/navigation/impression.h"
@@ -426,10 +425,10 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   virtual const net::HttpResponseHeaders* GetResponseHeaders() = 0;
 
   // Returns the connection info for the request, the default value is
-  // HttpConnectionInfo::kUNKNOWN if there hasn't been a response (or redirect)
+  // CONNECTION_INFO_UNKNOWN if there hasn't been a response (or redirect)
   // yet. The connection info may change during the navigation (e.g. after
   // encountering a server redirect).
-  virtual net::HttpConnectionInfo GetConnectionInfo() = 0;
+  virtual net::HttpResponseInfo::ConnectionInfo GetConnectionInfo() = 0;
 
   // Returns the SSLInfo for a request that succeeded or failed due to a
   // certificate error. In the case of other request failures or of a non-secure
