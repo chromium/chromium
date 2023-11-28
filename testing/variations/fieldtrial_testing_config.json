@@ -1543,6 +1543,30 @@
             ]
         }
     ],
+    "AutofillModelPredictions": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "model_active": "false"
+                    },
+                    "enable_features": [
+                        "AutofillModelPredictions"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillMoreProminentPopup": [
         {
             "platforms": [
