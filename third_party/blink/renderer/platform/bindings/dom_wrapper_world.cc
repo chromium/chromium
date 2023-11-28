@@ -47,14 +47,6 @@
 
 namespace blink {
 
-namespace {
-
-// TODO(dtapuska): Progressively remove this static by moving callees
-// to use MainWorld with an isolate.
-DOMWrapperWorld* g_main_world = nullptr;
-
-}  // namespace
-
 static_assert(kMainDOMWorldId == DOMWrapperWorld::kMainWorldId,
               "The publicly-exposed kMainWorldId constant must match "
               "the internal blink value.");
@@ -117,24 +109,6 @@ DOMWrapperWorld::DOMWrapperWorld(v8::Isolate* isolate,
 DOMWrapperWorld& DOMWrapperWorld::MainWorld(v8::Isolate* isolate) {
   DCHECK(IsMainThread());
   return V8PerIsolateData::From(isolate)->GetMainWorld();
-}
-
-DOMWrapperWorld& DOMWrapperWorld::MainWorld() {
-  DCHECK(IsMainThread());
-  DCHECK_NE(nullptr, g_main_world);
-  return *g_main_world;
-}
-
-void DOMWrapperWorld::InitMainWorldOnMainThread(DOMWrapperWorld& main_world) {
-  DCHECK(IsMainThread());
-  DCHECK(!g_main_world);
-  g_main_world = &main_world;
-}
-
-void DOMWrapperWorld::ClearMainWorldOnMainThread(DOMWrapperWorld& main_world) {
-  DCHECK(IsMainThread());
-  DCHECK_EQ(g_main_world, &main_world);
-  g_main_world = nullptr;
 }
 
 void DOMWrapperWorld::AllWorldsInIsolate(
