@@ -17,7 +17,11 @@
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(ENABLE_PDF)
+#include "base/feature_list.h"
 #include "chrome/browser/pdf/pdf_frame_util.h"
+#include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
+#include "chrome/common/pdf_util.h"
+#include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -36,17 +40,60 @@ using PrintViewManagerImpl = PrintViewManager;
 using PrintViewManagerImpl = PrintViewManagerBasic;
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
+#if BUILDFLAG(ENABLE_PDF)
+// Get the PDF extension host from a full-page OOPIF PDF viewer.
+content::RenderFrameHost* FindPdfExtensionHostFullPage(
+    content::WebContents* contents) {
+  CHECK(base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif));
+
+  auto* pdf_viewer_stream_manager =
+      pdf::PdfViewerStreamManager::FromWebContents(contents);
+  if (!pdf_viewer_stream_manager) {
+    return nullptr;
+  }
+
+  // If `primary_main_frame` has a stream container, it must be a full-page PDF
+  // embedder host.
+  content::RenderFrameHost* primary_main_frame =
+      contents->GetPrimaryMainFrame();
+  if (!pdf_viewer_stream_manager->GetStreamContainer(primary_main_frame)) {
+    return nullptr;
+  }
+
+  // A full-page PDF embedder host should have a child PDF extension host.
+  content::RenderFrameHost* extension_host = nullptr;
+  primary_main_frame->ForEachRenderFrameHost(
+      [&extension_host](content::RenderFrameHost* child_host) {
+        if (!IsPdfExtensionOrigin(child_host->GetLastCommittedOrigin())) {
+          return;
+        }
+
+        CHECK(!extension_host);
+        extension_host = child_host;
+      });
+
+  return extension_host;
+}
+
+#endif  // BUILDFLAG(ENABLE_PDF)
+
 // Pick the right RenderFrameHost based on the WebContents.
 content::RenderFrameHost* GetRenderFrameHostToUse(
     content::WebContents* contents) {
 #if BUILDFLAG(ENABLE_PDF)
-  // Pick the plugin frame if `contents` is a PDF viewer guest.
-  content::RenderFrameHost* full_page_plugin = GetFullPagePlugin(contents);
+  // Pick the plugin frame host if `contents` is a PDF viewer guest. If using
+  // OOPIF PDF viewer, pick the PDF extension frame host.
+  content::RenderFrameHost* full_page_pdf_embedder_host =
+      base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif)
+          ? FindPdfExtensionHostFullPage(contents)
+          : GetFullPagePlugin(contents);
   content::RenderFrameHost* pdf_rfh = pdf_frame_util::FindPdfChildFrame(
-      full_page_plugin ? full_page_plugin : contents->GetPrimaryMainFrame());
-  if (pdf_rfh)
+      full_page_pdf_embedder_host ? full_page_pdf_embedder_host
+                                  : contents->GetPrimaryMainFrame());
+  if (pdf_rfh) {
     return pdf_rfh;
-#endif
+  }
+#endif  // BUILDFLAG(ENABLE_PDF)
   return GetFrameToPrint(contents);
 }
 
