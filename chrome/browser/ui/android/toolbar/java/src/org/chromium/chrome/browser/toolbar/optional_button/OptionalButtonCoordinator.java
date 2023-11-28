@@ -10,6 +10,7 @@ import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
@@ -201,9 +202,10 @@ public class OptionalButtonCoordinator {
      * #updateButton(ButtonData)} is called with a {@link
      * org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec} where {@code isDynamicAction()} is
      * true).
+     *
      * @param backgroundColor
      */
-    public void setBackgroundColorFilter(int backgroundColor) {
+    public void setBackgroundColorFilter(@ColorInt int backgroundColor) {
         mMediator.setBackgroundColorFilter(backgroundColor);
     }
 

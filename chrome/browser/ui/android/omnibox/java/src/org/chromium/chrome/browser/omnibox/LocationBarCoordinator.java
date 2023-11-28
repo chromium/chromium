@@ -12,6 +12,7 @@ import android.graphics.Typeface;
 import android.view.ActionMode;
 import android.view.View;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
@@ -91,7 +92,6 @@ public class LocationBarCoordinator
     private StatusCoordinator mStatusCoordinator;
     private WindowDelegate mWindowDelegate;
     private WindowAndroid mWindowAndroid;
-    private View mAutocompleteAnchorView;
     private LocationBarMediator mLocationBarMediator;
     private View mUrlBar;
     private View mDeleteButton;
@@ -101,10 +101,10 @@ public class LocationBarCoordinator
     private boolean mDestroyed;
 
     private boolean mNativeInitialized;
-    private final int mDropdownStandardBackgroundColor;
-    private final int mDropdownIncognitoBackgroundColor;
-    private final int mSuggestionStandardBackgroundColor;
-    private final int mSuggestionIncognitoBackgroundColor;
+    private final @ColorInt int mDropdownStandardBackgroundColor;
+    private final @ColorInt int mDropdownIncognitoBackgroundColor;
+    private final @ColorInt int mSuggestionStandardBackgroundColor;
+    private final @ColorInt int mSuggestionIncognitoBackgroundColor;
     private boolean mShortCircuitUnfocusAnimation;
 
     /**
@@ -185,7 +185,6 @@ public class LocationBarCoordinator
         mWindowAndroid = windowAndroid;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mActivityLifecycleDispatcher.register(this);
-        mAutocompleteAnchorView = autocompleteAnchorView;
         Context context = mLocationBarLayout.getContext();
         OneshotSupplierImpl<TemplateUrlService> templateUrlServiceSupplier =
                 new OneshotSupplierImpl<>();
@@ -287,8 +286,7 @@ public class LocationBarCoordinator
         mUrlCoordinator.setUrlDirectionListener(
                 mCallbackController.makeCancelable(
                         layoutDirection -> {
-                            ViewCompat.setLayoutDirection(
-                                    mLocationBarLayout, (Integer) layoutDirection);
+                            ViewCompat.setLayoutDirection(mLocationBarLayout, layoutDirection);
                             mAutocompleteCoordinator.updateSuggestionListLayoutDirection();
                         }));
 
@@ -794,15 +792,11 @@ public class LocationBarCoordinator
         return mLocationBarMediator;
     }
 
-    /* package */ StatusCoordinator getStatusCoordinatorForTesting() {
-        return mStatusCoordinator;
-    }
-
     /**
      * @param isIncognito Whether we are currently in incognito mode.
      * @return The background color for the Omnibox suggestion dropdown list.
      */
-    public int getDropdownBackgroundColor(boolean isIncognito) {
+    public @ColorInt int getDropdownBackgroundColor(boolean isIncognito) {
         return isIncognito ? mDropdownIncognitoBackgroundColor : mDropdownStandardBackgroundColor;
     }
 
@@ -810,7 +804,7 @@ public class LocationBarCoordinator
      * @param isIncognito Whether we are currently in incognito mode.
      * @return The the background color for each individual suggestion.
      */
-    public int getSuggestionBackgroundColor(boolean isIncognito) {
+    public @ColorInt int getSuggestionBackgroundColor(boolean isIncognito) {
         return isIncognito
                 ? mSuggestionIncognitoBackgroundColor
                 : mSuggestionStandardBackgroundColor;

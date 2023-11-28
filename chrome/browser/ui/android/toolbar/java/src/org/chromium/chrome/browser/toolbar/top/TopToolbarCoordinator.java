@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewStub;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -70,8 +71,10 @@ public class TopToolbarCoordinator implements Toolbar {
 
     /** Observes toolbar color change. */
     public interface ToolbarColorObserver {
-        /** @param color The toolbar color value. */
-        void onToolbarColorChanged(int color);
+        /**
+         * @param color The toolbar color value.
+         */
+        void onToolbarColorChanged(@ColorInt int color);
     }
 
     /** Observes toolbar alpha value change during overview mode fading animation. */

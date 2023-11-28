@@ -469,6 +469,7 @@ public class ToolbarTablet extends ToolbarLayout
 
     private TabletCaptureStateToken generateCaptureStateToken() {
         UrlBarData urlBarData = getToolbarDataProvider().getUrlBarData();
+        @DrawableRes
         int securityIconResource =
                 getToolbarDataProvider().getSecurityIconResource(/* isTablet= */ true);
         VisibleUrlText visibleUrlText =
@@ -522,7 +523,7 @@ public class ToolbarTablet extends ToolbarLayout
     }
 
     @Override
-    public void onThemeColorChanged(int color, boolean shouldAnimate) {
+    public void onThemeColorChanged(@ColorInt int color, boolean shouldAnimate) {
         setBackgroundColor(color);
         final @ColorInt int textBoxColor =
                 ThemeUtils.getTextBoxColorForToolbarBackgroundInNonNativePage(

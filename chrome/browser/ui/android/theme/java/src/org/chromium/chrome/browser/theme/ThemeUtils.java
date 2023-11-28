@@ -32,16 +32,18 @@ public class ThemeUtils {
     /**
      * The background color to use for a given {@link Tab}. This will either be the color specified
      * by the associated web content or a default color if not specified.
+     *
      * @param tab {@link Tab} object to get the background color for.
      * @return The background color of {@link Tab}.
      */
-    public static int getBackgroundColor(Tab tab) {
+    public static @ColorInt int getBackgroundColor(Tab tab) {
         if (tab.isNativePage()) return tab.getNativePage().getBackgroundColor();
 
         WebContents tabWebContents = tab.getWebContents();
         RenderWidgetHostView rwhv =
                 tabWebContents == null ? null : tabWebContents.getRenderWidgetHostView();
-        final int backgroundColor = rwhv != null ? rwhv.getBackgroundColor() : Color.TRANSPARENT;
+        final @ColorInt int backgroundColor =
+                rwhv != null ? rwhv.getBackgroundColor() : Color.TRANSPARENT;
         if (backgroundColor != Color.TRANSPARENT) return backgroundColor;
         return ChromeColors.getPrimaryBackgroundColor(tab.getContext(), false);
     }
@@ -78,10 +80,10 @@ public class ThemeUtils {
         // Text box color on default toolbar background in incognito mode is a pre-defined
         // color. We calculate the equivalent opaque color from the pre-defined translucent color.
         if (isIncognito) {
-            final int overlayColor =
+            final @ColorInt int overlayColor =
                     context.getColor(R.color.toolbar_text_box_background_incognito);
             final float overlayColorAlpha = Color.alpha(overlayColor) / 255f;
-            final int overlayColorOpaque = overlayColor & 0xFF000000;
+            final @ColorInt int overlayColorOpaque = overlayColor & 0xFF000000;
             return ColorUtils.getColorWithOverlay(color, overlayColorOpaque, overlayColorAlpha);
         }
 
@@ -162,13 +164,14 @@ public class ThemeUtils {
 
     /**
      * Test if the toolbar is using the default color.
+     *
      * @param context The context to get the toolbar surface color.
      * @param isIncognito Whether to retrieve the default theme color for incognito mode.
      * @param color The color that the toolbar is using.
      * @return If the color is the default toolbar color.
      */
     public static boolean isUsingDefaultToolbarColor(
-            Context context, boolean isIncognito, int color) {
+            Context context, boolean isIncognito, @ColorInt int color) {
         return color == ChromeColors.getDefaultThemeColor(context, isIncognito);
     }
 
@@ -189,7 +192,7 @@ public class ThemeUtils {
         }
 
         final float alpha = ResourcesCompat.getFloat(res, R.dimen.toolbar_hairline_overlay_alpha);
-        final int hairlineColorOpaque =
+        final @ColorInt int hairlineColorOpaque =
                 res.getColor(R.color.toolbar_hairline_overlay_opaque) & 0xFF000000;
         return ColorUtils.getColorWithOverlay(toolbarColor, hairlineColorOpaque, alpha);
     }

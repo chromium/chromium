@@ -37,6 +37,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -249,7 +251,7 @@ public class ToolbarPhone extends ToolbarLayout
     private int mLocationBarBackgroundVerticalInset;
 
     /** The current color of the location bar. */
-    private int mCurrentLocationBarColor;
+    private @ColorInt int mCurrentLocationBarColor;
 
     /** Whether the toolbar has a pending request to call {@link triggerUrlFocusAnimation()}. */
     private boolean mPendingTriggerUrlFocusRequest;
@@ -267,7 +269,7 @@ public class ToolbarPhone extends ToolbarLayout
     private boolean mIsShowingStartSurfaceTabSwitcher;
 
     private NtpSearchBoxDrawable mNtpSearchBoxBackground;
-    private int mHomeSurfaceToolbarBackgroundColor;
+    private @ColorInt int mHomeSurfaceToolbarBackgroundColor;
     private boolean mHasFocus;
 
     /** Used to specify the visual state of the toolbar. */
@@ -433,7 +435,7 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     /** Set the background color of the location bar to appropriately match the theme color. */
-    private void updateModernLocationBarColor(int color) {
+    private void updateModernLocationBarColor(@ColorInt int color) {
         if (mCurrentLocationBarColor == color) return;
         mCurrentLocationBarColor = color;
         mLocationBarBackground.setTint(color);
@@ -462,16 +464,17 @@ public class ToolbarPhone extends ToolbarLayout
 
     /**
      * Get the corresponding location bar color for a toolbar color.
+     *
      * @param toolbarColor The color of the toolbar.
      * @return The location bar color.
      */
-    private int getLocationBarColorForToolbarColor(int toolbarColor) {
+    private @ColorInt int getLocationBarColorForToolbarColor(@ColorInt int toolbarColor) {
         return ThemeUtils.getTextBoxColorForToolbarBackgroundInNonNativePage(
                 getContext(), toolbarColor, isIncognito());
     }
 
     /** Get the toolbar default color depending on the toolbar's status. */
-    private int getToolbarDefaultColor() {
+    private @ColorInt int getToolbarDefaultColor() {
         if (mShouldShowModernizeVisualUpdate && mLocationBar.getPhoneCoordinator().hasFocus()) {
             if (mDropdownListScrolled) {
                 return isIncognito()
@@ -485,14 +488,14 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     /**
-     * Get the corresponding default location bar color for a toolbar color.
-     * If location bar has focus, return the Omnibox suggestion background color.
-     * If location bar does not have focus, return {@link getLocationBarColorForToolbarColor(int
-     * toolbarColor)}.
+     * Get the corresponding default location bar color for a toolbar color. If location bar has
+     * focus, return the Omnibox suggestion background color. If location bar does not have focus,
+     * return {@link getLocationBarColorForToolbarColor(int toolbarColor)}.
+     *
      * @param toolbarColor The color of the toolbar.
      * @return The default location bar color.
      */
-    private int getLocationBarDefaultColorForToolbarColor(int toolbarColor) {
+    private @ColorInt int getLocationBarDefaultColorForToolbarColor(@ColorInt int toolbarColor) {
         if (mShouldShowModernizeVisualUpdate && mLocationBar.getPhoneCoordinator().hasFocus()) {
             if (OmniboxFeatures.shouldShowActiveColorOnOmnibox()) {
                 // Omnibox has same background as the Omnibox suggestion.
@@ -847,7 +850,7 @@ public class ToolbarPhone extends ToolbarLayout
                 && mStartSurfaceScrollFraction != 1.0f;
     }
 
-    private void updateToolbarBackground(int color) {
+    private void updateToolbarBackground(@ColorInt int color) {
         if (mToolbarBackground.getColor() == color) return;
         mToolbarBackground.setColor(color);
         setToolbarHairlineColor(color);
@@ -861,7 +864,7 @@ public class ToolbarPhone extends ToolbarLayout
         updateToolbarBackground(getToolbarColorForVisualState(visualState));
     }
 
-    private int getToolbarColorForVisualState(final @VisualState int visualState) {
+    private @ColorInt int getToolbarColorForVisualState(final @VisualState int visualState) {
         switch (visualState) {
             case VisualState.NEW_TAB_NORMAL:
                 // We are likely in the middle of a layout animation, and the NTP cannot draw itself
@@ -1210,10 +1213,12 @@ public class ToolbarPhone extends ToolbarLayout
                                     ? (!isLocationBarShownInNTP && !mIsShowingStartSurfaceHomepage)
                                     : !isLocationBarShownInNTP))
                     && mTabSwitcherState == STATIC_TAB) {
-                int defaultColor = getToolbarDefaultColor();
+                @ColorInt int defaultColor = getToolbarDefaultColor();
+                @ColorInt
                 int defaultLocationBarColor =
                         getLocationBarDefaultColorForToolbarColor(defaultColor);
-                int primaryColor = getToolbarDataProvider().getPrimaryColor();
+                @ColorInt int primaryColor = getToolbarDataProvider().getPrimaryColor();
+                @ColorInt
                 int themedLocationBarColor = getLocationBarColorForToolbarColor(primaryColor);
 
                 updateToolbarBackground(
@@ -1866,7 +1871,7 @@ public class ToolbarPhone extends ToolbarLayout
 
     private PhoneCaptureStateToken generateToolbarSnapshotState() {
         UrlBarData urlBarData;
-        int securityIconResource;
+        @DrawableRes int securityIconResource;
         if (ToolbarFeatures.shouldSuppressCaptures()) {
             urlBarData = mLocationBar.getUrlBarData();
             if (urlBarData == null) urlBarData = getToolbarDataProvider().getUrlBarData();
@@ -2471,9 +2476,10 @@ public class ToolbarPhone extends ToolbarLayout
     /**
      * Get the theme color for the currently active tab. This is not affected by the tab switcher's
      * theme color.
+     *
      * @return The current tab's theme color.
      */
-    private int getTabThemeColor() {
+    private @ColorInt int getTabThemeColor() {
         if (getToolbarDataProvider() != null) return getToolbarDataProvider().getPrimaryColor();
         return getToolbarColorForVisualState(
                 isIncognito() ? VisualState.INCOGNITO : VisualState.NORMAL);
@@ -2502,12 +2508,13 @@ public class ToolbarPhone extends ToolbarLayout
         super.onPrimaryColorChanged(shouldAnimate);
         if (mBrandColorTransitionActive) mBrandColorTransitionAnimation.end();
 
-        final int initialColor = mToolbarBackground.getColor();
-        final int finalColor = getToolbarDataProvider().getPrimaryColor();
+        final @ColorInt int initialColor = mToolbarBackground.getColor();
+        final @ColorInt int finalColor = getToolbarDataProvider().getPrimaryColor();
         if (initialColor == finalColor) return;
 
-        final int initialLocationBarColor = getLocationBarColorForToolbarColor(initialColor);
-        final int finalLocationBarColor = getLocationBarColorForToolbarColor(finalColor);
+        final @ColorInt int initialLocationBarColor =
+                getLocationBarColorForToolbarColor(initialColor);
+        final @ColorInt int finalLocationBarColor = getLocationBarColorForToolbarColor(finalColor);
 
         // Ignore theme color changes while the omnibox is focused, since we want a standard,
         // app-defined color for the toolbar in this scenario, not the site's color. We'll
@@ -2663,7 +2670,7 @@ public class ToolbarPhone extends ToolbarLayout
     /**
      * @return The color that progress bar should use.
      */
-    private int getProgressBarColor() {
+    private @ColorInt int getProgressBarColor() {
         return getToolbarDataProvider().getPrimaryColor();
     }
 
@@ -2757,8 +2764,8 @@ public class ToolbarPhone extends ToolbarLayout
 
         boolean visualStateChanged = mVisualState != newVisualState;
 
-        int currentPrimaryColor = getToolbarDataProvider().getPrimaryColor();
-        int themeColorForProgressBar = getProgressBarColor();
+        @ColorInt int currentPrimaryColor = getToolbarDataProvider().getPrimaryColor();
+        @ColorInt int themeColorForProgressBar = getProgressBarColor();
 
         // If The page is native force the use of the standard theme for the progress bar.
         if (getToolbarDataProvider() != null
@@ -3178,7 +3185,7 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     private void updateToolbarAndLocationBarColor() {
-        int toolbarDefaultColor = getToolbarDefaultColor();
+        @ColorInt int toolbarDefaultColor = getToolbarDefaultColor();
         updateToolbarBackground(toolbarDefaultColor);
         updateModernLocationBarColor(
                 getLocationBarDefaultColorForToolbarColor(toolbarDefaultColor));

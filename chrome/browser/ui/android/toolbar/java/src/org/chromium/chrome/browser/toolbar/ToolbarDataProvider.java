@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -66,6 +67,7 @@ public interface ToolbarDataProvider {
     /**
      * @return The primary color to use for the background drawable.
      */
+    @ColorInt
     int getPrimaryColor();
 
     /**

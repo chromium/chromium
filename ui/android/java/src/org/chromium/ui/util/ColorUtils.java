@@ -36,7 +36,7 @@ public class ColorUtils {
     }
 
     /** Computes the lightness value in HSL standard for the given color. */
-    public static float getLightnessForColor(int color) {
+    public static float getLightnessForColor(@ColorInt int color) {
         int red = Color.red(color);
         int green = Color.green(color);
         int blue = Color.blue(color);
@@ -50,7 +50,7 @@ public class ColorUtils {
      * Calculates the contrast between the given color and white, using the algorithm provided by
      * the WCAG v2 in http://www.w3.org/TR/WCAG20/#contrast-ratiodef.
      */
-    private static float getContrastForColor(int color) {
+    private static float getContrastForColor(@ColorInt int color) {
         float bgR = Color.red(color) / 255f;
         float bgG = Color.green(color) / 255f;
         float bgB = Color.blue(color) / 255f;
@@ -64,30 +64,34 @@ public class ColorUtils {
     /**
      * Get a color when overlaid with a different color. Note that colors returned by this method
      * are always opaque.
+     *
      * @param baseColor The base Android color.
      * @param overlayColor The overlay Android color.
      * @param overlayAlpha The alpha |overlayColor| should have on the base color.
      */
-    public static int getColorWithOverlay(int baseColor, int overlayColor, float overlayAlpha) {
+    public static @ColorInt int getColorWithOverlay(
+            @ColorInt int baseColor, @ColorInt int overlayColor, float overlayAlpha) {
         return getColorWithOverlay(baseColor, overlayColor, overlayAlpha, false);
     }
 
     /**
      * Darkens the given color to use on the status bar.
+     *
      * @param color Color which should be darkened.
      * @return Color that should be used for Android status bar.
      */
-    public static int getDarkenedColorForStatusBar(int color) {
+    public static @ColorInt int getDarkenedColorForStatusBar(@ColorInt int color) {
         return getDarkenedColor(color, DARKEN_COLOR_FRACTION);
     }
 
     /**
      * Darken a color to a fraction of its current brightness.
+     *
      * @param color The input color.
      * @param darkenFraction The fraction of the current brightness the color should be.
      * @return The new darkened color.
      */
-    public static int getDarkenedColor(int color, float darkenFraction) {
+    public static @ColorInt int getDarkenedColor(@ColorInt int color, float darkenFraction) {
         float[] hsv = new float[3];
         Color.colorToHSV(color, hsv);
         hsv[2] *= darkenFraction;
@@ -95,50 +99,54 @@ public class ColorUtils {
     }
 
     /**
-     * Check whether lighter or darker foreground elements (i.e. text, drawables etc.)
-     * should be used depending on the given background color.
+     * Check whether lighter or darker foreground elements (i.e. text, drawables etc.) should be
+     * used depending on the given background color.
+     *
      * @param backgroundColor The background color value which is being queried.
      * @return Whether light colored elements should be used.
      */
-    public static boolean shouldUseLightForegroundOnBackground(int backgroundColor) {
+    public static boolean shouldUseLightForegroundOnBackground(@ColorInt int backgroundColor) {
         return getContrastForColor(backgroundColor) >= CONTRAST_LIGHT_ITEM_THRESHOLD;
     }
 
     /**
-     * Check which version of the textbox background should be used depending on the given
-     * color.
+     * Check which version of the textbox background should be used depending on the given color.
+     *
      * @param color The color value we are querying for.
      * @return Whether the transparent version of the background should be used.
      */
-    public static boolean shouldUseOpaqueTextboxBackground(int color) {
+    public static boolean shouldUseOpaqueTextboxBackground(@ColorInt int color) {
         return getLightnessForColor(color) > LIGHTNESS_OPAQUE_BOX_THRESHOLD;
     }
 
     /**
      * Returns an opaque version of the given color.
+     *
      * @param color Color for which an opaque version should be returned.
      * @return Opaque version of the given color.
      */
-    public static int getOpaqueColor(int color) {
+    public static @ColorInt int getOpaqueColor(@ColorInt int color) {
         return Color.rgb(Color.red(color), Color.green(color), Color.blue(color));
     }
 
     /**
      * Determine if a theme color is too bright. A theme color is too bright if its luminance is >
      * 0.94.
+     *
      * @param color The color to test.
      * @return True if the theme color is too bright.
      */
-    public static boolean isThemeColorTooBright(int color) {
+    public static boolean isThemeColorTooBright(@ColorInt int color) {
         return ColorUtils.getLightnessForColor(color) > MAX_LUMINANCE_FOR_VALID_THEME_COLOR;
     }
 
     /**
      * Compute a color to use for assets that sit on top of a themed background.
+     *
      * @param themeColor The base theme color.
      * @return A color to use for elements in the foreground (on top of the base theme color).
      */
-    public static int getThemedAssetColor(int themeColor, boolean isIncognito) {
+    public static @ColorInt int getThemedAssetColor(@ColorInt int themeColor, boolean isIncognito) {
         if (ColorUtils.shouldUseLightForegroundOnBackground(themeColor) || isIncognito) {
             // Dark theme.
             return Color.WHITE;
@@ -151,14 +159,18 @@ public class ColorUtils {
 
     /**
      * Get a color when overlaid with a different color.
+     *
      * @param baseColor The base Android color.
      * @param overlayColor The overlay Android color.
      * @param overlayAlpha The alpha |overlayColor| should have on the base color.
      * @param considerOpacity indicates whether to take color opacity into consideration when
-     * calculating the new color.
+     *     calculating the new color.
      */
-    public static int getColorWithOverlay(
-            int baseColor, int overlayColor, float overlayAlpha, boolean considerOpacity) {
+    public static @ColorInt int getColorWithOverlay(
+            @ColorInt int baseColor,
+            @ColorInt int overlayColor,
+            float overlayAlpha,
+            boolean considerOpacity) {
         int red =
                 (int)
                         MathUtils.interpolate(

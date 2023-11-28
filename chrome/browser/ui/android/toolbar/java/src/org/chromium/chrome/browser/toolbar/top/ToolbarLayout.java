@@ -240,7 +240,7 @@ public abstract class ToolbarLayout extends FrameLayout
     public void onTintChanged(ColorStateList tint, @BrandedColorScheme int brandedColorScheme) {}
 
     @Override
-    public void onThemeColorChanged(int color, boolean shouldAnimate) {}
+    public void onThemeColorChanged(@ColorInt int color, boolean shouldAnimate) {}
 
     /**
      * Set the height that the progress bar should be.
@@ -336,7 +336,7 @@ public abstract class ToolbarLayout extends FrameLayout
                     }
 
                     @Override
-                    public int getPrimaryColor() {
+                    public @ColorInt int getPrimaryColor() {
                         return 0;
                     }
 
@@ -873,7 +873,7 @@ public abstract class ToolbarLayout extends FrameLayout
      * Notify the observer that the toolbar color is changed and pass the toolbar color to the
      * observer.
      */
-    protected void notifyToolbarColorChanged(int color) {
+    protected void notifyToolbarColorChanged(@ColorInt int color) {
         if (mToolbarColorObserver != null) {
             mToolbarColorObserver.onToolbarColorChanged(color);
         }
