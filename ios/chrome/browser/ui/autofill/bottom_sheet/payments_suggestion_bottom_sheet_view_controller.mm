@@ -376,7 +376,7 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
 
   if (_creditCardData.count) {
     [self.view layoutIfNeeded];
-    CGFloat fullHeight = [self computeTableViewHeightForAllCells];
+    CGFloat fullHeight = [self computeTableViewHeightForAllCells] + kSpacing;
     if (fullHeight > 0) {
       // Update height constraints for the table view.
       _heightConstraint.constant = fullHeight;
