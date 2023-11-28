@@ -477,7 +477,8 @@ void InjectNTP(Browser* browser) {
                            appState:self.sceneState.appState];
   }
   if (self.sceneState.connectionOptions.shortcutItem) {
-    userActivityBrowserAgent->Handle3DTouchApplicationShortcuts();
+    userActivityBrowserAgent->Handle3DTouchApplicationShortcuts(
+        self.sceneState.connectionOptions.shortcutItem);
   }
 
   // See if this scene launched as part of a multiwindow URL opening.
@@ -620,7 +621,7 @@ void InjectNTP(Browser* browser) {
   UserActivityBrowserAgent* userActivityBrowserAgent =
       UserActivityBrowserAgent::FromBrowser(self.currentInterface.browser);
   BOOL handledShortcutItem =
-      userActivityBrowserAgent->Handle3DTouchApplicationShortcuts();
+      userActivityBrowserAgent->Handle3DTouchApplicationShortcuts(shortcutItem);
   if (completionHandler) {
     completionHandler(handledShortcutItem);
   }

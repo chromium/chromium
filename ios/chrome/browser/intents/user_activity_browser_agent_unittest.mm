@@ -645,16 +645,12 @@ TEST_F(UserActivityBrowserAgentTest,
   ];
 
   for (id parameters in parameters_to_test) {
-    id mock_connection_options = OCMClassMock([UISceneConnectionOptions class]);
     UIApplicationShortcutItem* shortcut =
         [[UIApplicationShortcutItem alloc] initWithType:parameters[0]
                                          localizedTitle:parameters[0]];
-    OCMStub([(UISceneConnectionOptions*)mock_connection_options shortcutItem])
-        .andReturn(shortcut);
-    scene_state_.connectionOptions = mock_connection_options;
 
     // Action.
-    user_activity_browser_agent_->Handle3DTouchApplicationShortcuts();
+    user_activity_browser_agent_->Handle3DTouchApplicationShortcuts(shortcut);
 
     // Tests.
     if ([[parameters objectAtIndex:1] boolValue]) {
@@ -682,10 +678,13 @@ TEST_F(UserActivityBrowserAgentTest,
        PerformActionForShortcutItemWithFirstRunUI) {
   // Setup.
   scene_state_.appState = CreateMockAppState(InitStageFirstRun);
+  UIApplicationShortcutItem* shortcut =
+      [[UIApplicationShortcutItem alloc] initWithType:kShortcutNewSearch
+                                       localizedTitle:kShortcutNewSearch];
 
   // Action.
   bool result =
-      user_activity_browser_agent_->Handle3DTouchApplicationShortcuts();
+      user_activity_browser_agent_->Handle3DTouchApplicationShortcuts(shortcut);
 
   // Tests.
   EXPECT_FALSE(result);

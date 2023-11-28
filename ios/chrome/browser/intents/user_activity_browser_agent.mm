@@ -475,8 +475,9 @@ BOOL UserActivityBrowserAgent::ContinueUserActivity(
   return ContinueUserActivityURL(webpage_url, application_is_active, NO);
 }
 
-BOOL UserActivityBrowserAgent::Handle3DTouchApplicationShortcuts() {
-  BOOL handledShortcutItem = HandleShortcutItem();
+BOOL UserActivityBrowserAgent::Handle3DTouchApplicationShortcuts(
+    UIApplicationShortcutItem* shortcut_item) {
+  BOOL handledShortcutItem = HandleShortcutItem(shortcut_item);
   BOOL isActive = [[UIApplication sharedApplication] applicationState] ==
                   UIApplicationStateActive;
   if (handledShortcutItem && isActive) {
@@ -614,7 +615,8 @@ UserActivityBrowserAgent::StartupParametersForOpeningNewTab(
   return startup_params;
 }
 
-BOOL UserActivityBrowserAgent::HandleShortcutItem() {
+BOOL UserActivityBrowserAgent::HandleShortcutItem(
+    UIApplicationShortcutItem* shortcut_item) {
   SceneState* scene_state = browser_->GetSceneState();
   InitStage init_stage = scene_state.appState.initStage;
   if (init_stage <= InitStageFirstRun) {
@@ -622,9 +624,6 @@ BOOL UserActivityBrowserAgent::HandleShortcutItem() {
   }
   base::UmaHistogramEnumeration(kAppLaunchSource,
                                 AppLaunchSource::LONG_PRESS_ON_APP_ICON);
-
-  UIApplicationShortcutItem* shortcut_item =
-      scene_state.connectionOptions.shortcutItem;
 
   // Lens entry points should not open an extra new tab page.
   GURL startup_url =
