@@ -5,7 +5,6 @@
 package org.chromium.ui.dragdrop;
 
 import android.graphics.Bitmap;
-import android.os.Build;
 import android.view.View;
 import android.view.View.DragShadowBuilder;
 
@@ -14,13 +13,6 @@ import android.view.View.DragShadowBuilder;
  * #startDragAndDrop(Bitmap, DropDataAndroid).}
  */
 public interface DragAndDropDelegate {
-    /** General feature switch whether drag and drop is enabled for the current Android OS. */
-    static boolean isDragAndDropSupportedForOs() {
-        // Only enabled on Android O+ to mitigate known issue for drag and drop in Android system.
-        // See b/245614280.
-        return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O);
-    }
-
     /**
      * @see View#startDragAndDrop
      */

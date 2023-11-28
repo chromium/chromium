@@ -18,7 +18,6 @@ import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.ViewportInsets;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropBrowserDelegate;
-import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.dragdrop.DragStateTracker;
 
 /** Implementation of the abstract class {@link ViewAndroidDelegate} for Chrome. */
@@ -41,8 +40,7 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
         mTab = (TabImpl) tab;
         containerView.addOnDragListener(getDragStateTracker());
 
-        if (ContentFeatureMap.isEnabled(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU)
-                && DragAndDropDelegate.isDragAndDropSupportedForOs()) {
+        if (ContentFeatureMap.isEnabled(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU)) {
             mDragAndDropBrowserDelegate = new ChromeDragAndDropBrowserDelegate(tab.getContext());
             getDragAndDropDelegate().setDragAndDropBrowserDelegate(mDragAndDropBrowserDelegate);
         }

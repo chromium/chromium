@@ -11,7 +11,6 @@ import android.webkit.URLUtil;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.dragdrop.DragAndDropDelegate;
 
 /** Provides utility methods for generating context menus. */
 public final class ContextMenuUtils {
@@ -61,7 +60,6 @@ public final class ContextMenuUtils {
 
         return ChromeFeatureList.isEnabled(
                         ChromeFeatureList.CONTEXT_MENU_POPUP_FOR_ALL_SCREEN_SIZES)
-                || (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
-                        && DragAndDropDelegate.isDragAndDropSupportedForOs());
+                || DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
     }
 }

@@ -14,8 +14,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
-import android.os.Build.VERSION;
-import android.os.Build.VERSION_CODES;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.view.DragAndDropPermissions;
@@ -35,8 +33,6 @@ import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.MathUtils;
-import org.chromium.base.compat.ApiHelperForN;
-import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.ui.R;
 import org.chromium.ui.accessibility.AccessibilityState;
@@ -169,8 +165,8 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
                 && mDragAndDropBrowserDelegate.getSupportDropInChrome()) {
             myLocalState = dropData;
         }
-        return ApiHelperForN.startDragAndDrop(
-                containerView, clipdata, dragShadowBuilder, myLocalState, buildFlags(dropData));
+        return containerView.startDragAndDrop(
+                clipdata, dragShadowBuilder, myLocalState, buildFlags(dropData));
     }
 
     @Override
@@ -261,12 +257,8 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
                                 ContextUtils.getApplicationContext().getContentResolver(),
                                 null,
                                 cachedUri);
-                // Add image link URL to the ClipData if present. Since the ClipData MIME types for
-                // the items are different, this will not be supported for O- versions where {@link
-                // ClipData#addItem(ContentResolver, Item)} is not available.
-                if (VERSION.SDK_INT >= VERSION_CODES.O && dropData.hasLink()) {
-                    ApiHelperForO.addItem(
-                            clipData,
+                if (dropData.hasLink()) {
+                    clipData.addItem(
                             ContextUtils.getApplicationContext().getContentResolver(),
                             new Item(dropData.gurl.getSpec()));
                 }
