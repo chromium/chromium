@@ -5,13 +5,10 @@
 package org.chromium.chrome.browser.toolbar.optional_button;
 
 import android.content.res.ColorStateList;
-import android.view.ViewGroup;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.ui.modelutil.PropertyModel;
-
-import java.util.function.BooleanSupplier;
 
 class OptionalButtonMediator {
     private final PropertyModel mModel;
@@ -27,17 +24,8 @@ class OptionalButtonMediator {
         }
     }
 
-    void setTransitionRoot(ViewGroup transitionRoot) {
-        mModel.set(OptionalButtonProperties.TRANSITION_ROOT, transitionRoot);
-    }
-
     void setTransitionStartedCallback(Callback<Integer> transitionStartedCallback) {
         mModel.set(OptionalButtonProperties.TRANSITION_STARTED_CALLBACK, transitionStartedCallback);
-    }
-
-    void setTransitionFinishedCallback(Callback<Integer> transitionFinishedCallback) {
-        mModel.set(
-                OptionalButtonProperties.TRANSITION_FINISHED_CALLBACK, transitionFinishedCallback);
     }
 
     void setIconForegroundColor(ColorStateList colorStateList) {
@@ -64,11 +52,5 @@ class OptionalButtonMediator {
 
     public void cancelTransition() {
         mModel.set(OptionalButtonProperties.TRANSITION_CANCELLATION_REQUESTED, true);
-    }
-
-    public void setIsAnimationAllowedPredicate(BooleanSupplier isAnimationAllowedPredicate) {
-        mModel.set(
-                OptionalButtonProperties.IS_ANIMATION_ALLOWED_PREDICATE,
-                isAnimationAllowedPredicate);
     }
 }
