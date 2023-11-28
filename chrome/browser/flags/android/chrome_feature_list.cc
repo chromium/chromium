@@ -1005,7 +1005,7 @@ BASE_FEATURE(kRestoreTabsOnFRE,
 
 BASE_FEATURE(kScrollToTLDOptimization,
              "ScrollToTLDOptimization",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kShowNtpAtStartupAndroid,
              "ShowNtpAtStartupAndroid",
