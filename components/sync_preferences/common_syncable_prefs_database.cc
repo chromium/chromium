@@ -75,7 +75,7 @@ enum {
   kReaderForAccessibility = 30,
   kTheme = 31,
   kAcceptLanguages = 32,
-  kApplicationLocale = 33,
+  // kApplicationLocale = 33,  (moved to chrome_syncable_prefs_database.cc)
   kSelectedLanguages = 34,
   kSyncDemographicsPrefName = 35,
   kCustomLinksInitialized = 36,
@@ -215,12 +215,6 @@ const auto& SyncablePreferences() {
         {language::prefs::kAcceptLanguages,
          {syncable_prefs_ids::kAcceptLanguages, syncer::PREFERENCES,
           PrefSensitivity::kNone, MergeBehavior::kNone}},
-        // TODO(crbug.com/1424774): Move this to
-        // chrome_syncable_prefs_database.
-        {language::prefs::kApplicationLocale,
-         {syncable_prefs_ids::kApplicationLocale,
-          syncer::OS_PRIORITY_PREFERENCES, PrefSensitivity::kNone,
-          MergeBehavior::kNone}},
         {language::prefs::kSelectedLanguages,
          {syncable_prefs_ids::kSelectedLanguages, syncer::PREFERENCES,
           PrefSensitivity::kNone, MergeBehavior::kNone}},

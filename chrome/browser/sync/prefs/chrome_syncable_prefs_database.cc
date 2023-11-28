@@ -302,6 +302,7 @@ enum {
   kReadAloudHighlightingEnabled = 100244,
   kHttpsFirstModeIncognito = 100245,
   kAccessibilityReadAnythingOmniboxIconLabelShownCount = 100246,
+  kApplicationLocale = 100247,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -1053,6 +1054,10 @@ const auto& SyncablePreferences() {
         sync_preferences::MergeBehavior::kNone}},
       {drive::prefs::kDisableDriveOverCellular,
        {syncable_prefs_ids::kGdataCellularDisabled, syncer::OS_PREFERENCES,
+        sync_preferences::PrefSensitivity::kNone,
+        sync_preferences::MergeBehavior::kNone}},
+      {language::prefs::kApplicationLocale,
+       {syncable_prefs_ids::kApplicationLocale, syncer::OS_PRIORITY_PREFERENCES,
         sync_preferences::PrefSensitivity::kNone,
         sync_preferences::MergeBehavior::kNone}},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
