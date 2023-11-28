@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.hub;
 
 /** Combination of display information and the event handling for pressing the button. */
-interface FullButtonData extends DisplayButtonData {
+public interface FullButtonData extends DisplayButtonData {
     /** Returns the {@link Runnable} that should be invoked when the button is pressed. */
     Runnable getOnPressRunnable();
 }

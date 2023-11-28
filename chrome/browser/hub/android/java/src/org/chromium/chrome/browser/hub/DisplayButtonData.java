@@ -12,7 +12,7 @@ import android.graphics.drawable.Drawable;
  * implementors to delay resolving the underlying Android resources until bind time. This interface
  * should be used directly when implementor is not responsible for handling effect of the button.
  */
-interface DisplayButtonData {
+public interface DisplayButtonData {
     /** Returns the text that should be shown for this button. */
     String resolveText(Context context);
 
