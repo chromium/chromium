@@ -175,6 +175,10 @@ void PdfOcrService::ReceiveOcrResultsForImage(
     PdfOcrRequest request,
     const ui::AXTreeUpdate& tree_update) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::UmaHistogramEnumeration("Accessibility.PdfOcr.PDFImages",
+                                PdfOcrRequestStatus::kPerformed);
+
   const bool is_last_on_page = request.is_last_on_page;
   batch_requests_.push_back(std::move(request));
   batch_tree_updates_.push_back(tree_update);
@@ -2364,9 +2368,6 @@ void PdfAccessibilityTree::OnOcrDataReceived(
       // can be some updates after this empty update in `tree_updates`.
       continue;
     }
-
-    base::UmaHistogramEnumeration("Accessibility.PdfOcr.PDFImages",
-                                  PdfOcrRequestStatus::kPerformed);
 
     // Update the flag if OCR extracted text from any images. This flag will be
     // used to update the status node to notify users of it.
