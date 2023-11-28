@@ -1,3 +1,0 @@
-Test	http://www.w3.org/2001/DOM-Test-Suite/level1/core/hc_elementwrongdocumenterr
-Status	failure
-Message	throw_WRONG_DOCUMENT_ERR: assertTrue failed
