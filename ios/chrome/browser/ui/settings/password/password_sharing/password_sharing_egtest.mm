@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_egtest_utils.h"
+#import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_constants.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
@@ -36,6 +37,12 @@ constexpr char kGoogleHelpCenterURL[] = "support.google.com";
 void SignInAndEnableSync() {
   FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fake_identity enableSync:YES];
+}
+
+// Matcher for Password Sharing First Run.
+id<GREYMatcher> PasswordSharingFirstRunMatcher() {
+  return grey_accessibilityLabel(
+      l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_FIRST_RUN_TITLE));
 }
 
 }  // namespace
@@ -112,6 +119,12 @@ void SignInAndEnableSync() {
         password_manager::features::kSendPasswords);
     config.features_enabled.push_back(
         password_manager::features::kPasswordManagerEnableSenderService);
+  }
+
+  if ([self isRunningTest:@selector
+            (testFirstRunExperienceViewDismissedForAuthentication)]) {
+    config.features_enabled.push_back(
+        password_manager::features::kIOSPasswordAuthOnEntryV2);
   }
 
   return config;
@@ -493,9 +506,7 @@ void SignInAndEnableSync() {
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
       performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_PASSWORD_SHARING_FIRST_RUN_TITLE))]
+  [[EarlGrey selectElementWithMatcher:PasswordSharingFirstRunMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -563,6 +574,28 @@ void SignInAndEnableSync() {
   GREYAssertEqual(std::string(kGoogleHelpCenterURL),
                   [ChromeEarlGrey webStateVisibleURL].host(),
                   @"Did not navigate to the help center article.");
+}
+
+- (void)testFirstRunExperienceViewDismissedForAuthentication {
+  [ChromeEarlGrey setBoolValue:NO
+                   forUserPref:prefs::kPasswordSharingFlowHasBeenEntered];
+
+  SignInAndEnableSync();
+  [self saveExamplePasswordAndOpenDetails];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:PasswordSharingFirstRunMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Background then foreground app so reauthentication UI is displayed.
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
+  // Check that first run experience is gone.
+  [[EarlGrey selectElementWithMatcher:PasswordSharingFirstRunMatcher()]
+      assertWithMatcher:grey_nil()];
 }
 
 @end

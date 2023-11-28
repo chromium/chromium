@@ -461,6 +461,7 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
   [self dismissAlertCoordinator];
   [self dismissActionSheetCoordinator];
   [self dismissPasswordSharingCoordinator];
+  [self stopPasswordSharingFirstRunCoordinatorWithCompletion:nil];
 }
 
 #pragma mark - PasswordSharingCoordinatorDelegate
