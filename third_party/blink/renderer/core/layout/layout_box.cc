@@ -2586,9 +2586,6 @@ void LayoutBox::SetCachedLayoutResult(const LayoutResult* result,
     // set the "layout" result.
     if (measure_result_)
       InvalidateItems(*measure_result_);
-    if (IsTableCell()) {
-      To<LayoutTableCell>(this)->InvalidateLayoutResultCacheAfterMeasure();
-    }
     measure_result_ = result;
   } else {
     // We have a "layout" result, and we may need to clear the old "measure"

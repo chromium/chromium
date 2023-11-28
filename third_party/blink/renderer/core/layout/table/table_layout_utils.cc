@@ -228,8 +228,12 @@ TableTypes::Row ComputeMinimumRowBlockSize(
         /* is_initial_block_size_indefinite */ true,
         is_table_block_size_specified, has_collapsed_borders,
         LayoutResultCacheSlot::kMeasure, &space_builder);
-
     const auto cell_space = space_builder.ToConstraintSpace();
+
+    absl::optional<DisableLayoutSideEffectsScope> disable_side_effects;
+    if (!cell.GetLayoutBox()->NeedsLayout()) {
+      disable_side_effects.emplace();
+    }
     const LayoutResult* layout_result = cell.Layout(cell_space);
 
     const LogicalBoxFragment fragment(
