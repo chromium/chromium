@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from typing import Optional
-from typing import Sequence
 from collections import defaultdict
 import fnmatch
 import json
@@ -195,14 +193,8 @@ class MockFile(object):
   MockInputApi for presubmit unittests.
   """
 
-  def __init__(self, local_path, new_contents: Sequence[str],
-               old_contents: Optional[Sequence[str]] = None, action='A',
+  def __init__(self, local_path, new_contents, old_contents=None, action='A',
                scm_diff=None):
-    if type(new_contents) is str:
-      raise TypeError('old_contents` should be an iterable of strings')
-    if type(old_contents) is str:
-      raise TypeError('new_contents` should be an iterable of strings')
-
     self._local_path = local_path
     self._new_contents = new_contents
     self._changed_contents = [(i + 1, l) for i, l in enumerate(new_contents)]

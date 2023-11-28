@@ -47,9 +47,9 @@ class BadExtensionsTest(unittest.TestCase):
   def testBadRejFile(self):
     mock_input_api = MockInputApi()
     mock_input_api.files = [
-      MockFile('some/path/foo.cc', []),
-      MockFile('some/path/foo.cc.rej', []),
-      MockFile('some/path2/bar.h.rej', []),
+      MockFile('some/path/foo.cc', ''),
+      MockFile('some/path/foo.cc.rej', ''),
+      MockFile('some/path2/bar.h.rej', ''),
     ]
 
     results = PRESUBMIT.CheckPatchFiles(mock_input_api, MockOutputApi())
@@ -61,9 +61,9 @@ class BadExtensionsTest(unittest.TestCase):
   def testBadOrigFile(self):
     mock_input_api = MockInputApi()
     mock_input_api.files = [
-      MockFile('other/path/qux.h.orig', []),
-      MockFile('other/path/qux.h', []),
-      MockFile('other/path/qux.cc', []),
+      MockFile('other/path/qux.h.orig', ''),
+      MockFile('other/path/qux.h', ''),
+      MockFile('other/path/qux.cc', ''),
     ]
 
     results = PRESUBMIT.CheckPatchFiles(mock_input_api, MockOutputApi())
@@ -74,8 +74,8 @@ class BadExtensionsTest(unittest.TestCase):
   def testGoodFiles(self):
     mock_input_api = MockInputApi()
     mock_input_api.files = [
-      MockFile('other/path/qux.h', []),
-      MockFile('other/path/qux.cc', []),
+      MockFile('other/path/qux.h', ''),
+      MockFile('other/path/qux.cc', ''),
     ]
     results = PRESUBMIT.CheckPatchFiles(mock_input_api, MockOutputApi())
     self.assertEqual(0, len(results))
@@ -1960,8 +1960,8 @@ class RelativeIncludesTest(unittest.TestCase):
   def testThirdPartyNotWebKitIgnored(self):
     mock_input_api = MockInputApi()
     mock_input_api.files = [
-      MockAffectedFile('third_party/test.cpp', ['#include "../header.h"']),
-      MockAffectedFile('third_party/test/test.cpp', ['#include "../header.h"']),
+      MockAffectedFile('third_party/test.cpp', '#include "../header.h"'),
+      MockAffectedFile('third_party/test/test.cpp', '#include "../header.h"'),
     ]
 
     mock_output_api = MockOutputApi()
@@ -1973,7 +1973,7 @@ class RelativeIncludesTest(unittest.TestCase):
   def testNonCppFileIgnored(self):
     mock_input_api = MockInputApi()
     mock_input_api.files = [
-      MockAffectedFile('test.py', ['#include "../header.h"']),
+      MockAffectedFile('test.py', '#include "../header.h"'),
     ]
 
     mock_output_api = MockOutputApi()
@@ -1985,8 +1985,8 @@ class RelativeIncludesTest(unittest.TestCase):
   def testInnocuousChangesAllowed(self):
     mock_input_api = MockInputApi()
     mock_input_api.files = [
-      MockAffectedFile('test.cpp', ['#include "header.h"']),
-      MockAffectedFile('test2.cpp', ['../']),
+      MockAffectedFile('test.cpp', '#include "header.h"'),
+      MockAffectedFile('test2.cpp', '../'),
     ]
 
     mock_output_api = MockOutputApi()
@@ -2025,7 +2025,7 @@ class CCIncludeTest(unittest.TestCase):
   def testThirdPartyNotBlinkIgnored(self):
     mock_input_api = MockInputApi()
     mock_input_api.files = [
-      MockAffectedFile('third_party/test.cpp', ['#include "file.cc"']),
+      MockAffectedFile('third_party/test.cpp', '#include "file.cc"'),
     ]
 
     mock_output_api = MockOutputApi()
@@ -2037,7 +2037,7 @@ class CCIncludeTest(unittest.TestCase):
   def testPythonFileIgnored(self):
     mock_input_api = MockInputApi()
     mock_input_api.files = [
-      MockAffectedFile('test.py', ['#include "file.cc"']),
+      MockAffectedFile('test.py', '#include "file.cc"'),
     ]
 
     mock_output_api = MockOutputApi()
@@ -2049,7 +2049,7 @@ class CCIncludeTest(unittest.TestCase):
   def testIncFilesAccepted(self):
     mock_input_api = MockInputApi()
     mock_input_api.files = [
-      MockAffectedFile('test.py', ['#include "file.inc"']),
+      MockAffectedFile('test.py', '#include "file.inc"'),
     ]
 
     mock_output_api = MockOutputApi()
@@ -2061,8 +2061,8 @@ class CCIncludeTest(unittest.TestCase):
   def testInnocuousChangesAllowed(self):
     mock_input_api = MockInputApi()
     mock_input_api.files = [
-      MockAffectedFile('test.cpp', ['#include "header.h"']),
-      MockAffectedFile('test2.cpp', ['Something "file.cc"']),
+      MockAffectedFile('test.cpp', '#include "header.h"'),
+      MockAffectedFile('test2.cpp', 'Something "file.cc"'),
     ]
 
     mock_output_api = MockOutputApi()
@@ -2161,7 +2161,7 @@ class NewHeaderWithoutGnChangeTest(unittest.TestCase):
   def testAddHeaderWithoutGn(self):
     mock_input_api = MockInputApi()
     mock_input_api.files = [
-      MockAffectedFile('base/stuff.h', []),
+      MockAffectedFile('base/stuff.h', ''),
     ]
     warnings = PRESUBMIT.CheckNewHeaderWithoutGnChangeOnUpload(
         mock_input_api, MockOutputApi())
@@ -2171,7 +2171,7 @@ class NewHeaderWithoutGnChangeTest(unittest.TestCase):
   def testModifyHeader(self):
     mock_input_api = MockInputApi()
     mock_input_api.files = [
-      MockAffectedFile('base/stuff.h', [], action='M'),
+      MockAffectedFile('base/stuff.h', '', action='M'),
     ]
     warnings = PRESUBMIT.CheckNewHeaderWithoutGnChangeOnUpload(
         mock_input_api, MockOutputApi())
@@ -2180,7 +2180,7 @@ class NewHeaderWithoutGnChangeTest(unittest.TestCase):
   def testDeleteHeader(self):
     mock_input_api = MockInputApi()
     mock_input_api.files = [
-      MockAffectedFile('base/stuff.h', [], action='D'),
+      MockAffectedFile('base/stuff.h', '', action='D'),
     ]
     warnings = PRESUBMIT.CheckNewHeaderWithoutGnChangeOnUpload(
         mock_input_api, MockOutputApi())
@@ -2189,8 +2189,8 @@ class NewHeaderWithoutGnChangeTest(unittest.TestCase):
   def testAddHeaderWithGn(self):
     mock_input_api = MockInputApi()
     mock_input_api.files = [
-      MockAffectedFile('base/stuff.h', []),
-      MockAffectedFile('base/BUILD.gn', ['stuff.h']),
+      MockAffectedFile('base/stuff.h', ''),
+      MockAffectedFile('base/BUILD.gn', 'stuff.h'),
     ]
     warnings = PRESUBMIT.CheckNewHeaderWithoutGnChangeOnUpload(
         mock_input_api, MockOutputApi())
@@ -2199,8 +2199,8 @@ class NewHeaderWithoutGnChangeTest(unittest.TestCase):
   def testAddHeaderWithGni(self):
     mock_input_api = MockInputApi()
     mock_input_api.files = [
-      MockAffectedFile('base/stuff.h', []),
-      MockAffectedFile('base/files.gni', ['stuff.h']),
+      MockAffectedFile('base/stuff.h', ''),
+      MockAffectedFile('base/files.gni', 'stuff.h'),
     ]
     warnings = PRESUBMIT.CheckNewHeaderWithoutGnChangeOnUpload(
         mock_input_api, MockOutputApi())
@@ -2209,8 +2209,8 @@ class NewHeaderWithoutGnChangeTest(unittest.TestCase):
   def testAddHeaderWithOther(self):
     mock_input_api = MockInputApi()
     mock_input_api.files = [
-      MockAffectedFile('base/stuff.h', []),
-      MockAffectedFile('base/stuff.cc', ['stuff.h']),
+      MockAffectedFile('base/stuff.h', ''),
+      MockAffectedFile('base/stuff.cc', 'stuff.h'),
     ]
     warnings = PRESUBMIT.CheckNewHeaderWithoutGnChangeOnUpload(
         mock_input_api, MockOutputApi())
@@ -2219,8 +2219,8 @@ class NewHeaderWithoutGnChangeTest(unittest.TestCase):
   def testAddHeaderWithWrongGn(self):
     mock_input_api = MockInputApi()
     mock_input_api.files = [
-      MockAffectedFile('base/stuff.h', []),
-      MockAffectedFile('base/BUILD.gn', ['stuff_h']),
+      MockAffectedFile('base/stuff.h', ''),
+      MockAffectedFile('base/BUILD.gn', 'stuff_h'),
     ]
     warnings = PRESUBMIT.CheckNewHeaderWithoutGnChangeOnUpload(
         mock_input_api, MockOutputApi())
@@ -2229,9 +2229,9 @@ class NewHeaderWithoutGnChangeTest(unittest.TestCase):
   def testAddHeadersWithGn(self):
     mock_input_api = MockInputApi()
     mock_input_api.files = [
-      MockAffectedFile('base/stuff.h', []),
-      MockAffectedFile('base/another.h', []),
-      MockAffectedFile('base/BUILD.gn', ['another.h\nstuff.h']),
+      MockAffectedFile('base/stuff.h', ''),
+      MockAffectedFile('base/another.h', ''),
+      MockAffectedFile('base/BUILD.gn', 'another.h\nstuff.h'),
     ]
     warnings = PRESUBMIT.CheckNewHeaderWithoutGnChangeOnUpload(
         mock_input_api, MockOutputApi())
@@ -2240,9 +2240,9 @@ class NewHeaderWithoutGnChangeTest(unittest.TestCase):
   def testAddHeadersWithWrongGn(self):
     mock_input_api = MockInputApi()
     mock_input_api.files = [
-      MockAffectedFile('base/stuff.h', []),
-      MockAffectedFile('base/another.h', []),
-      MockAffectedFile('base/BUILD.gn', ['another_h\nstuff.h']),
+      MockAffectedFile('base/stuff.h', ''),
+      MockAffectedFile('base/another.h', ''),
+      MockAffectedFile('base/BUILD.gn', 'another_h\nstuff.h'),
     ]
     warnings = PRESUBMIT.CheckNewHeaderWithoutGnChangeOnUpload(
         mock_input_api, MockOutputApi())
@@ -2253,9 +2253,9 @@ class NewHeaderWithoutGnChangeTest(unittest.TestCase):
   def testAddHeadersWithWrongGn2(self):
     mock_input_api = MockInputApi()
     mock_input_api.files = [
-      MockAffectedFile('base/stuff.h', []),
-      MockAffectedFile('base/another.h', []),
-      MockAffectedFile('base/BUILD.gn', ['another_h\nstuff_h']),
+      MockAffectedFile('base/stuff.h', ''),
+      MockAffectedFile('base/another.h', ''),
+      MockAffectedFile('base/BUILD.gn', 'another_h\nstuff_h'),
     ]
     warnings = PRESUBMIT.CheckNewHeaderWithoutGnChangeOnUpload(
         mock_input_api, MockOutputApi())
@@ -2773,7 +2773,7 @@ class SecurityChangeTest(_SecurityOwnersTestCase):
 
   def testDiffRemovingLine(self):
     mock_input_api = MockInputApi()
-    mock_file = MockAffectedFile('services/goat/teleporter_host.cc', [])
+    mock_file = MockAffectedFile('services/goat/teleporter_host.cc', '')
     mock_file._scm_diff = """--- old 2020-05-04 14:08:25.000000000 -0400
 +++ new 2020-05-04 14:08:32.000000000 -0400
 @@ -1,5 +1,4 @@
@@ -3627,7 +3627,7 @@ class StringTest(unittest.TestCase):
             self.OLD_GRD_CONTENTS,
             action='M'),
         MockAffectedFile(
-            os.path.join('test_grd', 'IDS_TEST1.png'), ['binary'], action='A')
+            os.path.join('test_grd', 'IDS_TEST1.png'), 'binary', action='A')
     ])
     warnings = PRESUBMIT.CheckStrings(input_api, MockOutputApi())
     self.assertEqual(2, len(warnings))
@@ -3660,9 +3660,9 @@ class StringTest(unittest.TestCase):
             action='M'),
         # Added files:
         MockAffectedFile(
-            os.path.join('test_grd', 'IDS_TEST1.png'), ['binary'], action='A'),
+            os.path.join('test_grd', 'IDS_TEST1.png'), 'binary', action='A'),
         MockAffectedFile(
-            os.path.join('part_grdp', 'IDS_PART_TEST1.png'), ['binary'],
+            os.path.join('part_grdp', 'IDS_PART_TEST1.png'), 'binary',
             action='A')
     ])
     warnings = PRESUBMIT.CheckStrings(input_api, MockOutputApi())
@@ -3773,13 +3773,13 @@ class StringTest(unittest.TestCase):
             action='M'),
         # Unmodified files:
         MockFile(os.path.join('test_grd', 'IDS_TEST1.png.sha1'),
-                 self.VALID_SHA1, []),
+                 self.VALID_SHA1, ''),
         MockFile(os.path.join('test_grd', 'IDS_TEST2.png.sha1'),
-                 self.VALID_SHA1, []),
+                 self.VALID_SHA1, ''),
         MockFile(os.path.join('part_grdp', 'IDS_PART_TEST1.png.sha1'),
-                 self.VALID_SHA1, []),
+                 self.VALID_SHA1, ''),
         MockFile(os.path.join('part_grdp', 'IDS_PART_TEST2.png.sha1'),
-                 self.VALID_SHA1, [])
+                 self.VALID_SHA1, '')
     ])
     warnings = PRESUBMIT.CheckStrings(input_api, MockOutputApi())
     self.assertEqual(1, len(warnings))
@@ -3807,19 +3807,19 @@ class StringTest(unittest.TestCase):
             action='M'),
         # Unmodified files:
         MockFile(os.path.join('test_grd', 'IDS_TEST1.png.sha1'),
-                 self.VALID_SHA1, []),
+                 self.VALID_SHA1, ''),
         MockFile(os.path.join('part_grdp', 'IDS_PART_TEST1.png.sha1'),
-                 self.VALID_SHA1, []),
+                 self.VALID_SHA1, ''),
         # Deleted files:
         MockAffectedFile(
             os.path.join('test_grd', 'IDS_TEST2.png.sha1'),
-            [],
-            ['old_contents'],
+            '',
+            'old_contents',
             action='D'),
         MockAffectedFile(
             os.path.join('part_grdp', 'IDS_PART_TEST2.png.sha1'),
-            [],
-            ['old_contents'],
+            '',
+            'old_contents',
             action='D')
     ])
     warnings = PRESUBMIT.CheckStrings(input_api, MockOutputApi())
@@ -3945,7 +3945,7 @@ class TranslationExpectationsTest(unittest.TestCase):
   def testExpectationsNoModifiedGrd(self):
     input_api = MockInputApi()
     input_api.files = [
-        MockAffectedFile('not_used.txt', ['not used'], ['not used'], action='M')
+        MockAffectedFile('not_used.txt', 'not used', 'not used', action='M')
     ]
     # Fake list of all grd files in the repo. This list is missing all grd/grdps
     # under tools/translation/testdata. This is OK because the presubmit won't
@@ -3964,7 +3964,7 @@ class TranslationExpectationsTest(unittest.TestCase):
     # presubmit. The file itself doesn't matter.
     input_api = MockInputApi()
     input_api.files = [
-        MockAffectedFile('dummy.grd', ['not used'], ['not used'], action='M')
+        MockAffectedFile('dummy.grd', 'not used', 'not used', action='M')
     ]
     # List of all grd files in the repo.
     grd_files = ['test.grd', 'unlisted.grd', 'not_translated.grd',
@@ -3981,7 +3981,7 @@ class TranslationExpectationsTest(unittest.TestCase):
     # presubmit.
     input_api = MockInputApi()
     input_api.files = [
-      MockAffectedFile('dummy.grd', ['not used'], ['not used'], action='M')
+      MockAffectedFile('dummy.grd', 'not used', 'not used', action='M')
     ]
     # unlisted.grd is listed under tools/translation/testdata but is not
     # included in translation expectations.
@@ -4004,7 +4004,7 @@ class TranslationExpectationsTest(unittest.TestCase):
     # presubmit.
     input_api = MockInputApi()
     input_api.files = [
-      MockAffectedFile('dummy.grd', ['not used'], ['not used'], action='M')
+      MockAffectedFile('dummy.grd', 'not used', 'not used', action='M')
     ]
     # unlisted.grd is listed under tools/translation/testdata but is not
     # included in translation expectations.
@@ -4030,7 +4030,7 @@ class TranslationExpectationsTest(unittest.TestCase):
     # presubmit.
     input_api = MockInputApi()
     input_api.files = [
-      MockAffectedFile('dummy.grd', ['not used'], ['not used'], action='M')
+      MockAffectedFile('dummy.grd', 'not used', 'not used', action='M')
     ]
     # unlisted.grd is listed under tools/translation/testdata but is not
     # included in translation expectations.
@@ -4100,7 +4100,7 @@ class DISABLETypoInTest(unittest.TestCase):
   def testIgnoreNotTestFiles(self):
     mock_input_api = MockInputApi()
     mock_input_api.files = [
-        MockFile('some/path/foo.cc', ['TEST_F(FoobarTest, DISABLE_Foo)']),
+        MockFile('some/path/foo.cc', 'TEST_F(FoobarTest, DISABLE_Foo)'),
     ]
 
     results = PRESUBMIT.CheckNoDISABLETypoInTests(mock_input_api,
@@ -4110,7 +4110,7 @@ class DISABLETypoInTest(unittest.TestCase):
   def testIgnoreDeletedFiles(self):
     mock_input_api = MockInputApi()
     mock_input_api.files = [
-        MockFile('some/path/foo.cc', ['TEST_F(FoobarTest, Foo)'], action='D'),
+        MockFile('some/path/foo.cc', 'TEST_F(FoobarTest, Foo)', action='D'),
     ]
 
     results = PRESUBMIT.CheckNoDISABLETypoInTests(mock_input_api,
