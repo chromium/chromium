@@ -39,6 +39,10 @@ SnippetSearchEngineItem* CreateSnippetSearchEngineItemFromTemplateURL(
     item.URL = template_url->favicon_url();
   }
   item.name = base::SysUTF16ToNSString(template_url->short_name());
+  item.snippetDescription = [[NSString alloc]
+      initWithFormat:@"** Description for %@ that can be very very very very "
+                     @"very very long. **",
+                     item.name];
   return item;
 }
 

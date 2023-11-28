@@ -24,82 +24,73 @@
     UIView* contentView = self.contentView;
 
     _faviconContainerView = [[FaviconContainerView alloc] init];
+    _faviconContainerView.translatesAutoresizingMaskIntoConstraints = NO;
     [_faviconContainerView
         setFaviconBackgroundColor:[UIColor colorNamed:kBackgroundColor]];
-    _faviconContainerView.translatesAutoresizingMaskIntoConstraints = NO;
     [contentView addSubview:_faviconContainerView];
+
+    // Add name label and snippet label.
+    UIView* nameSnippetLabelContainer = [[UIView alloc] init];
+    nameSnippetLabelContainer.translatesAutoresizingMaskIntoConstraints = NO;
+    [contentView addSubview:nameSnippetLabelContainer];
     _nameLabel = [[UILabel alloc] init];
+    _nameLabel.translatesAutoresizingMaskIntoConstraints = NO;
     _nameLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
     _nameLabel.adjustsFontForContentSizeCategory = YES;
+    [nameSnippetLabelContainer addSubview:_nameLabel];
     _snippetLabel = [[UILabel alloc] init];
+    _snippetLabel.translatesAutoresizingMaskIntoConstraints = NO;
     _snippetLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     _snippetLabel.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
     _snippetLabel.adjustsFontForContentSizeCategory = YES;
     _snippetLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
-    _snippetLabel.hidden = YES;
+    _snippetLabel.numberOfLines = 1;
+    [nameSnippetLabelContainer addSubview:_snippetLabel];
 
-    // Horizontal view holds vertical stack view and metadata views.
-    UIView* horizontalView = [[UIView alloc] init];
-    horizontalView.translatesAutoresizingMaskIntoConstraints = NO;
-    [contentView addSubview:horizontalView];
-
-    // Use stack views to layout the subviews except for the favicon.
-    UIStackView* verticalStack = [[UIStackView alloc]
-        initWithArrangedSubviews:@[ _nameLabel, _snippetLabel ]];
-    verticalStack.axis = UILayoutConstraintAxisVertical;
-    verticalStack.translatesAutoresizingMaskIntoConstraints = NO;
-    [horizontalView addSubview:verticalStack];
-
-    NSLayoutConstraint* heightConstraint = [self.contentView.heightAnchor
-        constraintGreaterThanOrEqualToConstant:kChromeTableViewCellHeight];
-    // Don't set the priority to required to avoid clashing with the estimated
-    // height.
-    heightConstraint.priority = UILayoutPriorityRequired - 1;
-
+    NSLayoutConstraint* heightConstraint = [_snippetLabel.bottomAnchor
+        constraintEqualToAnchor:nameSnippetLabelContainer.bottomAnchor
+                       constant:0];
+    heightConstraint.priority = UILayoutPriorityDefaultLow;
     [NSLayoutConstraint activateConstraints:@[
       [_faviconContainerView.leadingAnchor
           constraintEqualToAnchor:self.contentView.leadingAnchor
                          constant:kTableViewHorizontalSpacing],
       [_faviconContainerView.centerYAnchor
           constraintEqualToAnchor:self.contentView.centerYAnchor],
-
-      // The stack view fills the remaining space, has an intrinsic height, and
-      // is centered vertically.
-      [horizontalView.leadingAnchor
-          constraintEqualToAnchor:_faviconContainerView.trailingAnchor
-                         constant:kTableViewSubViewHorizontalSpacing],
-      [horizontalView.trailingAnchor
-          constraintEqualToAnchor:self.contentView.trailingAnchor
-                         constant:-kTableViewHorizontalSpacing],
-      [horizontalView.centerYAnchor
-          constraintEqualToAnchor:self.contentView.centerYAnchor],
-      [verticalStack.topAnchor
-          constraintEqualToAnchor:horizontalView.topAnchor],
-      [verticalStack.bottomAnchor
-          constraintEqualToAnchor:horizontalView.bottomAnchor],
-      [verticalStack.leadingAnchor
-          constraintEqualToAnchor:horizontalView.leadingAnchor],
-      [horizontalView.topAnchor
+      [nameSnippetLabelContainer.topAnchor
           constraintGreaterThanOrEqualToAnchor:self.contentView.topAnchor
                                       constant:
                                         kTableViewTwoLabelsCellVerticalSpacing],
-      [horizontalView.bottomAnchor
+      [nameSnippetLabelContainer.bottomAnchor
           constraintLessThanOrEqualToAnchor:self.contentView.bottomAnchor
                                    constant:
                                        -kTableViewTwoLabelsCellVerticalSpacing],
-      heightConstraint
+      [nameSnippetLabelContainer.leadingAnchor
+          constraintEqualToAnchor:_faviconContainerView.trailingAnchor],
+      [nameSnippetLabelContainer.trailingAnchor
+          constraintEqualToAnchor:contentView.trailingAnchor],
+      [_nameLabel.leadingAnchor
+          constraintEqualToAnchor:nameSnippetLabelContainer.leadingAnchor
+                         constant:kTableViewSubViewHorizontalSpacing],
+      [_nameLabel.trailingAnchor
+          constraintEqualToAnchor:nameSnippetLabelContainer.trailingAnchor
+                         constant:-kTableViewHorizontalSpacing],
+      [_snippetLabel.leadingAnchor
+          constraintEqualToAnchor:nameSnippetLabelContainer.leadingAnchor
+                         constant:kTableViewSubViewHorizontalSpacing],
+      [_snippetLabel.trailingAnchor
+          constraintEqualToAnchor:nameSnippetLabelContainer.trailingAnchor
+                         constant:-kTableViewHorizontalSpacing],
+      [_nameLabel.topAnchor
+          constraintEqualToAnchor:nameSnippetLabelContainer.topAnchor
+                         constant:0],
+      [_nameLabel.bottomAnchor constraintEqualToAnchor:_snippetLabel.topAnchor
+                                              constant:0],
+      heightConstraint,
     ]];
   }
   return self;
-}
-
-- (void)configureUILayout {
-  if ([self.snippetLabel.text length]) {
-    self.snippetLabel.hidden = NO;
-  } else {
-    self.snippetLabel.hidden = YES;
-  }
 }
 
 #pragma mark - Properties
@@ -113,7 +104,7 @@
 - (void)prepareForReuse {
   [super prepareForReuse];
   [self.faviconView configureWithAttributes:nil];
-  self.snippetLabel.hidden = YES;
+  self.snippetLabel.numberOfLines = 1;
 }
 
 #pragma mark - Accessibility

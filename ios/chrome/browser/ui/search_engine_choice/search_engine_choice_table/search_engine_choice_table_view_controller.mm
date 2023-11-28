@@ -121,8 +121,11 @@ UIImageView* CreateCheckedCircle() {
       textItem.accessoryType = UITableViewCellAccessoryNone;
       UITableViewCell* cell =
           [tableView cellForRowAtIndexPath:[model indexPathForItem:item]];
+      SnippetSearchEngineCell* urlCell =
+          base::apple::ObjCCastStrict<SnippetSearchEngineCell>(cell);
       UIImageView* circleView = CreateEmptyCircle();
-      [cell setAccessoryView:circleView];
+      [urlCell setAccessoryView:circleView];
+      urlCell.snippetLabel.numberOfLines = 1;
     }
   }
 
@@ -132,13 +135,18 @@ UIImageView* CreateCheckedCircle() {
           [model itemAtIndexPath:indexPath]);
   newDefaultEngine.accessoryType = UITableViewCellAccessoryCheckmark;
   UITableViewCell* cell = [tableView cellForRowAtIndexPath:indexPath];
+  SnippetSearchEngineCell* urlCell =
+      base::apple::ObjCCastStrict<SnippetSearchEngineCell>(cell);
 
   cell.accessoryType = UITableViewCellAccessoryCheckmark;
   UIImageView* checkedCircleView = CreateCheckedCircle();
-  [cell setAccessoryView:checkedCircleView];
+  [urlCell setAccessoryView:checkedCircleView];
+  urlCell.snippetLabel.numberOfLines = 0;
 
   CHECK(self.delegate);
   [self.delegate selectSearchEngineAtRow:_selectedRow];
+  [self.tableView beginUpdates];
+  [self.tableView endUpdates];
 }
 
 #pragma mark - UITableViewDataSource

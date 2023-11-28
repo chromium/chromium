@@ -17,7 +17,7 @@ class GURL;
 // The name of the search engine.
 @property(nonatomic, readwrite, copy) NSString* name;
 // The text for the search engine snippet.
-@property(nonatomic, readwrite, copy) NSString* snippet;
+@property(nonatomic, readwrite, copy) NSString* snippetDescription;
 // The URL to fetch the favicon. This can be the favicon's URL, or a "fake" web
 // page URL created by filling empty query word into the search engine's
 // searchable URL template(e.g. "http://www.google.com/?q=").

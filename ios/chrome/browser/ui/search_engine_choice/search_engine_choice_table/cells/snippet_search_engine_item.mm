@@ -43,6 +43,7 @@
   SnippetSearchEngineCell* cell =
       base::apple::ObjCCastStrict<SnippetSearchEngineCell>(tableCell);
   cell.nameLabel.text = self.name;
+  cell.snippetLabel.text = self.snippetDescription;
   cell.cellUniqueIdentifier = self.uniqueIdentifier;
   cell.accessibilityTraits |= UIAccessibilityTraitButton;
   cell.contentView.alpha = 1.0;
@@ -52,8 +53,6 @@
   if (styler.cellTitleColor) {
     cell.nameLabel.textColor = styler.cellTitleColor;
   }
-
-  [cell configureUILayout];
 }
 
 - (BOOL)isEqual:(SnippetSearchEngineItem*)otherItem {
