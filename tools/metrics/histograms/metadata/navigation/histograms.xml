@@ -2013,21 +2013,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Prerender.NetworkBytesTotalForProfile" units="bytes"
-    expires_after="M77">
-  <owner>hajimehoshi@chromium.org</owner>
-  <owner>jkarlin@chromium.org</owner>
-  <owner>kouhei@chromium.org</owner>
-  <summary>
-    Number of bytes transferred on the network for URLRequests (not including
-    HTTP/TLS/TCP/IP overhead). Reported on event of a PrerenderContents
-    deletion. Includes prerender bytes. Bytes are only counted when prerendering
-    is enabled and not in a control group. The sum of the distribution for a
-    single user represents all of that user's network transfers for resource for
-    that time period while prerendering was enabled.
-  </summary>
-</histogram>
-
 <histogram name="Prerender.NetworkBytesWasted" units="bytes"
     expires_after="M77">
   <owner>hajimehoshi@chromium.org</owner>

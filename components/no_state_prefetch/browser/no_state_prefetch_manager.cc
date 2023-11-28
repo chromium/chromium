@@ -1054,13 +1054,8 @@ void NoStatePrefetchManager::SkipNoStatePrefetchContentsAndMaybePreconnect(
 void NoStatePrefetchManager::RecordNetworkBytesConsumed(
     Origin origin,
     int64_t prerender_bytes) {
-  int64_t recent_browser_context_bytes =
-      browser_context_network_bytes_ -
-      last_recorded_browser_context_network_bytes_;
   last_recorded_browser_context_network_bytes_ = browser_context_network_bytes_;
-  DCHECK_GE(recent_browser_context_bytes, 0);
-  histograms_->RecordNetworkBytesConsumed(origin, prerender_bytes,
-                                          recent_browser_context_bytes);
+  histograms_->RecordNetworkBytesConsumed(origin, prerender_bytes);
 }
 
 void NoStatePrefetchManager::AddPrerenderProcessHost(
