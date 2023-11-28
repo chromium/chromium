@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/views/toolbar/chrome_labs_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/feature_engagement_initialized_observer.h"
@@ -132,17 +131,14 @@ class ToolbarControllerUiTest : public InteractiveBrowserTest {
   auto CheckMenuMatchesOverflowedElements() {
     return Steps(Check([this]() {
       const ui::SimpleMenuModel* menu = GetOverflowMenu();
+      const auto overflowed_elements = GetOverflowedElements();
       EXPECT_NE(menu, nullptr);
       EXPECT_GT(menu->GetItemCount(), size_t(0));
-      const auto& responsive_elements =
-          toolbar_controller_->responsive_elements_;
-      for (size_t i = 0; i < responsive_elements.size(); ++i) {
-        if (toolbar_controller_->IsOverflowed(
-                responsive_elements[i].overflow_identifier)) {
-          if (toolbar_controller_->GetMenuText(responsive_elements[i]) !=
-              menu->GetLabelAt(menu->GetIndexOfCommandId(i).value())) {
-            return false;
-          }
+      EXPECT_EQ(menu->GetItemCount(), overflowed_elements.size());
+      for (size_t i = 0; i < menu->GetItemCount(); ++i) {
+        if (menu->GetLabelAt(i).compare(toolbar_controller_->GetMenuText(
+                *overflowed_elements[i])) != 0) {
+          return false;
         }
       }
       return true;
@@ -330,31 +326,6 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest, ActivateActionElementFromMenu) {
   EXPECT_EQ(1,
             user_action_tester.GetActionCount(
                 "ResponsiveToolbar.OverflowMenuItemActivated.ForwardButton"));
-}
-
-IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest, MenuSeparator) {
-  RunTestSequence(
-      Do([this]() {
-        AddDummyButtonsToToolbarTillElementOverflows(
-            kToolbarForwardButtonElementId);
-      }),
-      WaitForShow(kToolbarOverflowButtonElementId),
-      PressButton(kToolbarOverflowButtonElementId), Check([this]() {
-        const auto* menu = GetOverflowMenu();
-
-        // The first item is Forward button.
-        return menu->GetLabelAt(0) ==
-                   l10n_util::GetStringUTF16(
-                       IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD) &&
-
-               // There is a separator between Forward and Labs because they
-               // belong to different menu sections.
-               menu->GetTypeAt(1) == ui::MenuModel::ItemType::TYPE_SEPARATOR &&
-
-               // The third item is Labs button.
-               menu->GetLabelAt(2) ==
-                   l10n_util::GetStringUTF16(IDS_OVERFLOW_MENU_ITEM_TEXT_LABS);
-      }));
 }
 
 class ToolbarControllerIphUiTest : public ToolbarControllerUiTest {

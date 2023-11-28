@@ -142,22 +142,18 @@ ToolbarController::GetDefaultResponsiveElements() {
       {{kToolbarForwardButtonElementId, IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD,
         kToolbarForwardButtonElementId},
        {kToolbarHomeButtonElementId, IDS_OVERFLOW_MENU_ITEM_TEXT_HOME,
-        kToolbarHomeButtonElementId, /*is_section_end=*/true},
+        kToolbarHomeButtonElementId},
        {kToolbarChromeLabsButtonElementId, IDS_OVERFLOW_MENU_ITEM_TEXT_LABS,
-        kToolbarChromeLabsButtonElementId, /*is_section_end=*/false,
-        kToolbarChromeLabsBubbleElementId},
+        kToolbarChromeLabsButtonElementId, kToolbarChromeLabsBubbleElementId},
        {kToolbarMediaButtonElementId,
         IDS_OVERFLOW_MENU_ITEM_TEXT_MEDIA_CONTROLS,
-        kToolbarMediaButtonElementId, /*is_section_end=*/false,
-        kToolbarMediaBubbleElementId},
+        kToolbarMediaButtonElementId, kToolbarMediaBubbleElementId},
        {kToolbarDownloadButtonElementId, IDS_OVERFLOW_MENU_ITEM_TEXT_DOWNLOADS,
-        kToolbarDownloadButtonElementId, /*is_section_end=*/false,
-        kToolbarDownloadBubbleElementId},
+        kToolbarDownloadButtonElementId, kToolbarDownloadBubbleElementId},
        {kToolbarNewTabButtonElementId, IDS_OVERFLOW_MENU_ITEM_TEXT_NEW_TAB,
-        kToolbarNewTabButtonElementId, /*is_section_end=*/true},
+        kToolbarNewTabButtonElementId},
        {kToolbarAvatarButtonElementId, IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE,
-        kToolbarAvatarButtonElementId, /*is_section_end=*/false,
-        kToolbarAvatarBubbleElementId}});
+        kToolbarAvatarButtonElementId, kToolbarAvatarBubbleElementId}});
 }
 
 std::vector<ui::ElementIdentifier>
@@ -310,21 +306,9 @@ std::unique_ptr<ui::SimpleMenuModel>
 ToolbarController::CreateOverflowMenuModel() {
   CHECK(overflow_button_->GetVisible());
   auto menu_model = std::make_unique<ui::SimpleMenuModel>(this);
-
-  // True if the separator belonging to previous section has not been added yet.
-  bool pre_separator_pending = false;
-
   for (size_t i = 0; i < responsive_elements_.size(); ++i) {
-    const auto& element = responsive_elements_[i];
-    if (IsOverflowed(element.overflow_identifier)) {
-      if (pre_separator_pending && menu_model->GetItemCount() > 0) {
-        menu_model->AddSeparator(ui::NORMAL_SEPARATOR);
-      }
-      menu_model->AddItem(i, GetMenuText(element));
-      pre_separator_pending = false;
-    }
-    if (element.is_section_end) {
-      pre_separator_pending = true;
+    if (IsOverflowed(responsive_elements_[i].overflow_identifier)) {
+      menu_model->AddItem(i, GetMenuText(responsive_elements_[i]));
     }
   }
   return menu_model;
