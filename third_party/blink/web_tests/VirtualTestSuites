@@ -2667,8 +2667,6 @@
       "http/tests/navigation/redirect-on-reload-updates-history-item.html",
       "http/tests/navigation/targeted-navigation-in-unload-handler.html",
       "http/tests/notifications/close-on-document-unload.html",
-      "http/tests/notifications/notification-creation-detached-context.html",
-      "http/tests/notifications/request-permission-detached-context.html",
       "http/tests/security/isolatedWorld/context-destroy.html",
       "http/tests/security/window-events-clear-domain.html",
       "http/tests/security/window-events-clear-port.html",
