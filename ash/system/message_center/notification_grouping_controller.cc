@@ -366,6 +366,9 @@ void NotificationGroupingController::OnNotificationAdded(
 
   Notification* parent_notification =
       message_center->FindParentNotification(notification);
+  if (!parent_notification) {
+    return;
+  }
   std::string parent_id = parent_notification->id();
 
   // TODO(b/308814203): clean the static_cast checks by replacing
