@@ -2048,7 +2048,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 // We should make it more robust by using more signals.
                 IntentHandler.hasAnyIncognitoExtra(getIntent().getExtras()),
                 mBackPressManager,
-                getSavedInstanceState());
+                getSavedInstanceState(),
+                mMultiInstanceManager);
     }
 
     @Override

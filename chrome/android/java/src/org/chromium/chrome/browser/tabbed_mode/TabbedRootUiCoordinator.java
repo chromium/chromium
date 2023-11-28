@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.desktop_site.DesktopSiteSettingsIPHController;
+import org.chromium.chrome.browser.dragdrop.ChromeTabbedOnDragListener;
 import org.chromium.chrome.browser.feature_guide.notifications.FeatureNotificationUtils;
 import org.chromium.chrome.browser.feature_guide.notifications.FeatureType;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedFollowIntroController;
@@ -67,6 +68,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceIphController;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeMessageController;
 import org.chromium.chrome.browser.notifications.permissions.NotificationPermissionController;
@@ -166,6 +168,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private LayoutStateProvider.LayoutStateObserver mGestureNavLayoutObserver;
     private final ObservableSupplierImpl<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
     private Callback<Integer> mOnTabStripHeightChangedCallback;
+    private MultiInstanceManager mMultiInstanceManager;
 
     private int mStatusIndicatorHeight;
 
@@ -256,6 +259,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param initializeUiWithIncognitoColors Whether to initialize the UI with incognito colors.
      * @param backPressManager The {@link BackPressManager} handling back press.
      * @param savedInstanceState The saved bundle for the last recorded state.
+     * @param multiInstanceManager Manages multi-instance mode.
      */
     public TabbedRootUiCoordinator(
             @NonNull AppCompatActivity activity,
@@ -301,7 +305,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             OneshotSupplier<TabReparentingController> tabReparentingControllerSupplier,
             boolean initializeUiWithIncognitoColors,
             @NonNull BackPressManager backPressManager,
-            @Nullable Bundle savedInstanceState) {
+            @Nullable Bundle savedInstanceState,
+            @Nullable MultiInstanceManager multiInstanceManager) {
         super(
                 activity,
                 onOmniboxFocusChangedListener,
@@ -368,6 +373,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         }
                     }
                 };
+        mMultiInstanceManager = multiInstanceManager;
     }
 
     @Override
@@ -561,6 +567,14 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         () -> mCompositorViewHolderSupplier.get(),
                         mLayoutManager);
         mRootUiTabObserver.swapToTab(mActivityTabProvider.get());
+
+        // TODO(crbug.com/1505851): Consider register this drag listener to other views besides CVH.
+        if (ChromeFeatureList.sTabLinkDragDropAndroid.isEnabled()) {
+            ChromeTabbedOnDragListener chromeTabbedOnDragListener =
+                    new ChromeTabbedOnDragListener(
+                            mMultiInstanceManager, mTabModelSelectorSupplier.get(), mWindowAndroid);
+            mCompositorViewHolderSupplier.get().setOnDragListener(chromeTabbedOnDragListener);
+        }
 
         if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
             getToolbarManager().enableBottomControls();

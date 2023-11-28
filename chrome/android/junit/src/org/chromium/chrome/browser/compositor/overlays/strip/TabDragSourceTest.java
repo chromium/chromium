@@ -246,6 +246,8 @@ public class TabDragSourceTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void test_DragOutsideStrip_ReturnsSuccess() {
         // Call startDrag to set class variables.
         mTabDragSource.startTabDragAction(mTabsToolbarView, mTabBeingDragged, DRAG_START_POINT);
@@ -332,6 +334,8 @@ public class TabDragSourceTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void test_DropInDestinationStripOnLaterHalfOfTab_MoveTabToDestinationAtIndex() {
         // Set state.
         mTabDragSource.setGlobalState(mTabBeingDragged);
@@ -469,6 +473,8 @@ public class TabDragSourceTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID)
+    @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void test_OnDragEndAfterExit_NewWindowIsOpened() {
         // Call startDrag to set class variables.
         mTabDragSource.startTabDragAction(mTabsToolbarView, mTabBeingDragged, DRAG_START_POINT);

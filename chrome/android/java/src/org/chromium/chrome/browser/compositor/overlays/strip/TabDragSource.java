@@ -260,9 +260,12 @@ public class TabDragSource implements View.OnDragListener {
             View view, float xPx, float yPx, boolean dropHandled, boolean didExitToolbar) {
         if (!isDragSource()) return false;
         // If tab was dragged and dropped out of source toolbar but the drop was not handled, move
-        // to a new window. TODO (crbug.com/1497784): Add isTabDragAsWindowEnabled() check below.
+        // to a new window.
         Tab tabBeingDragged = DragDropGlobalState.getInstance().tabBeingDragged;
-        if (didExitToolbar && !dropHandled && tabBeingDragged != null) {
+        if (TabUiFeatureUtilities.isTabDragAsWindowEnabled()
+                && didExitToolbar
+                && !dropHandled
+                && DragDropGlobalState.getInstance().tabBeingDragged != null) {
             // Following call is device specific and is intended for specific platform
             // SysUI.
             sendPositionInfoToSysUI(view, mStartScreenPos.x, mStartScreenPos.y, xPx, yPx);
