@@ -349,6 +349,10 @@
         },
       },
       'Mac12 Tests': {
+        # TODO(crbug.com/1479108): Remove this once the bug is fixed.
+        'args': [
+          '--driver-logging',
+        ],
         'swarming': {
           'dimensions': {
             'gpu': None,
@@ -598,6 +602,11 @@
           'hard_timeout': 2400,
         },
       },
+      'mac12-arm64-rel-tests': {
+        'args': [
+          '--driver-logging',
+        ],
+      },
       'mac12.0-blink-rel': {
         'swarming': {
           'hard_timeout': 2400,
@@ -696,6 +705,9 @@
         },
       },
       'Mac12 Tests': {
+        'args': [
+          '--driver-logging',
+        ],
         'swarming': {
           'dimensions': {
             'gpu': None,
@@ -915,6 +927,11 @@
         'swarming': {
           'hard_timeout': 2400,
         },
+      },
+      'mac12-arm64-rel-tests': {
+        'args': [
+          '--driver-logging',
+        ],
       },
       'mac12.0-blink-rel': {
         'swarming': {
