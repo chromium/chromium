@@ -631,6 +631,11 @@ inline constexpr char kInstantTetheringLearnMoreURL[] =
 inline constexpr char kChromebookHotspotLearnMoreURL[] =
     "https://support.google.com/chromebook?p=chromebook_hotspot";
 
+// The URL for the "learn more" link for cellular carrier lock.
+// TODO(b/293463820): Replace the link with carrier lock link once ready.
+inline constexpr char kCellularCarrierLockLearnMoreURL[] =
+    "https://support.google.com/chromebook";
+
 // The URL for the "Learn more" link for Kerberos accounts.
 inline constexpr char kKerberosAccountsLearnMoreURL[] =
     "https://support.google.com/chromebook?p=kerberos_accounts";

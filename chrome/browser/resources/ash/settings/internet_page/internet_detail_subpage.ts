@@ -303,6 +303,14 @@ export class SettingsInternetDetailPageElement extends
         },
       },
 
+      isCellularCarrierLockEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.valueExists('isCellularCarrierLockEnabled') &&
+              loadTimeData.getBoolean('isCellularCarrierLockEnabled');
+        },
+      },
+
       isPasspointEnabled_: {
         type: Boolean,
         value() {
@@ -406,6 +414,7 @@ export class SettingsInternetDetailPageElement extends
   private isApnRevampEnabled_: boolean;
   private isSuppressTextMessagesEnabled_: boolean;
   private suppressTextMessagesOverride_: boolean;
+  private isCellularCarrierLockEnabled_: boolean;
   private isPasspointEnabled_: boolean;
   private isPasspointSettingsEnabled_: boolean;
   private isRevampWayfindingEnabled_: boolean;
@@ -1152,6 +1161,11 @@ export class SettingsInternetDetailPageElement extends
       }
     }
 
+    if (this.isCellularCarrierLockEnabled_ &&
+        this.isCarrierLockedActiveSim_(managedProperties, deviceState)) {
+      return this.i18n('networkMobileProviderLocked');
+    }
+
     return this.i18n(
         OncMojo.getConnectionStateString(managedProperties.connectionState));
   }
@@ -1869,7 +1883,8 @@ export class SettingsInternetDetailPageElement extends
   private messagesDividerClass_(
       name: string, managedProperties: ManagedProperties,
       globalPolicy: GlobalPolicy, managedNetworkAvailable: boolean,
-      isSecondaryUser: boolean, isWifiSyncEnabled: boolean): string {
+      isSecondaryUser: boolean, isWifiSyncEnabled: boolean,
+      deviceState: OncMojo.DeviceStateProperties|null): string {
     let first = '';
     if (this.isBlockedByPolicy_(
             managedProperties, globalPolicy, managedNetworkAvailable)) {
@@ -1883,7 +1898,12 @@ export class SettingsInternetDetailPageElement extends
                    managedProperties, globalPolicy, managedNetworkAvailable,
                    isWifiSyncEnabled)) {
       first = 'synced';
+    } else if (
+        this.isCellularCarrierLockEnabled_ &&
+        this.isCarrierLockedActiveSim_(managedProperties, deviceState)) {
+      first = 'carrierlocked';
     }
+
     return first === name ? 'continuation' : '';
   }
 
@@ -1900,6 +1920,31 @@ export class SettingsInternetDetailPageElement extends
     return !this.propertiesMissingOrBlockedByPolicy_() &&
         (managedProperties.source === OncSource.kDevice ||
          managedProperties.source === OncSource.kDevicePolicy);
+  }
+
+  private isCarrierLockedActiveSim_(
+      managedProperties: ManagedProperties|undefined,
+      deviceState: OncMojo.DeviceStateProperties|null): boolean {
+    if (!this.isCellularCarrierLockEnabled_) {
+      return false;
+    }
+    if (!deviceState || deviceState.type !== NetworkType.kCellular) {
+      return false;
+    }
+    if (!managedProperties) {
+      return false;
+    }
+    const networkState =
+        OncMojo.managedPropertiesToNetworkState(managedProperties);
+
+    if (!isActiveSim(networkState, deviceState)) {
+      return false;
+    }
+    const simLockStatus = deviceState.simLockStatus;
+    if (!simLockStatus) {
+      return false;
+    }
+    return simLockStatus.lockType === 'network-pin';
   }
 
   private showAutoConnect_(
@@ -2336,6 +2381,13 @@ export class SettingsInternetDetailPageElement extends
     if (!this.deviceState_ ||
         this.deviceState_.type !== NetworkType.kCellular) {
       return false;
+    }
+    // If device is carrier locked, all the settings should be
+    // disabled for non compatible SIMs.
+    if (this.isCellularCarrierLockEnabled_ &&
+        this.isCarrierLockedActiveSim_(
+            this.managedProperties_, this.deviceState_)) {
+      return true;
     }
     // If this is a cellular device and inhibited, state cannot be changed, so
     // the page's inputs should be disabled.

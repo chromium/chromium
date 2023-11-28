@@ -226,6 +226,14 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
         },
       },
 
+      isCellularCarrierLockEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.valueExists('isCellularCarrierLockEnabled') &&
+              loadTimeData.getBoolean('isCellularCarrierLockEnabled');
+        },
+      },
+
       /**
        * Page name, if defined, indicating that the next deviceStates update
        * should call attemptShowCellularSetupDialog_().
@@ -351,6 +359,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
   private globalPolicy_: GlobalPolicy|undefined;
   private hasActiveCellularNetwork_: boolean;
   private isApnRevampEnabled_: boolean;
+  private isCellularCarrierLockEnabled_: boolean;
   private isConnectedToNonCellularNetwork_: boolean;
   private isCreateCustomApnButtonDisabled_: boolean;
   private isHotspotFeatureEnabled_: boolean;
@@ -737,6 +746,22 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
     }
     return this.i18n(
         'OncType' + OncMojo.getNetworkTypeString(this.subpageType_));
+  }
+
+  private isProviderLocked_(): boolean {
+    if (!this.isCellularCarrierLockEnabled_) {
+      return false;
+    }
+    if (this.subpageType_ !== NetworkType.kCellular) {
+      return false;
+    }
+    // Check carrier lock status reported by carrier lock manager.
+    const cellularDeviceState =
+        this.getDeviceState_(NetworkType.kCellular, this.deviceStates);
+    if (!cellularDeviceState || !cellularDeviceState.isCarrierLocked) {
+      return false;
+    }
+    return true;
   }
 
   private getDeviceState_(

@@ -905,6 +905,8 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"networkSharedNotOwner", IDS_SETTINGS_INTERNET_NETWORK_SHARED_NOT_OWNER},
       {"networkVpnBuiltin", IDS_NETWORK_TYPE_VPN_BUILTIN},
       {"networkOutOfRange", IDS_SETTINGS_INTERNET_WIFI_NETWORK_OUT_OF_RANGE},
+      {"networkMobileProviderLocked",
+       IDS_SETTINGS_INTERNET_MOBILE_PROVIDER_LOCKED},
       {"cellularSetupDialogTitle",
        IDS_SETTINGS_INTERNET_CELLULAR_SETUP_DIALOG_TITLE},
       {"tetherPhoneOutOfRange",
@@ -1204,6 +1206,19 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
           IDS_SETTINGS_INTERNET_HOTSPOT_SETTINGS_SUBTITLE_WITH_LEARN_MORE_LINK,
           ui::GetChromeOSDeviceName(),
           GetHelpUrlWithBoard(chrome::kChromebookHotspotLearnMoreURL)));
+
+  html_source->AddString(
+      "cellularSubpageSubtitle",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_INTERNET_CELLULAR_SUBTITLE_WITH_LEARN_MORE_LINK,
+          GetHelpUrlWithBoard(chrome::kCellularCarrierLockLearnMoreURL)));
+
+  html_source->AddString(
+      "networkCarrierLocked",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_INTERNET_NETWORK_CARRIER_LOCKED_WITH_LEARN_MORE_LINK,
+          GetHelpUrlWithBoard(chrome::kCellularCarrierLockLearnMoreURL)));
+
   html_source->AddBoolean("isUserLoggedIn", IsUserLoggedIn());
 }
 

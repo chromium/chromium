@@ -3962,6 +3962,9 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_SETTINGS_INTERNET_CELLULAR_DETAILS" desc="Name of the settings page which displays details about a cellular network (e.g., an LTE network).">
     Cellular details
+    </message>
+    <message name="IDS_SETTINGS_INTERNET_CELLULAR_SUBTITLE_WITH_LEARN_MORE_LINK" desc="Subtitle of the cellular subpage which explains the behavior of a carrier locked Chromebook.">
+    This device can only connect to a specific mobile network. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_INTERNET_INSTANT_TETHERING_DETAILS" desc="Name of the settings page which displays details about an Instant Tethering network (i.e., using a phone's internet through the Instant Tethering feature).">
     Instant Tethering details
@@ -4379,6 +4382,9 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_SHARED_NOT_OWNER" desc="Settings > Internet > Network details: Text to show when a network is shared with you (by another user or configured before login).">
     This network is shared with you
+    </message>
+    <message name="IDS_SETTINGS_INTERNET_NETWORK_CARRIER_LOCKED_WITH_LEARN_MORE_LINK" desc="Settings > Internet > Network details: Text to show when a network is carrier locked">
+      Your device can't connect to this network. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_NOT_SYNCED" desc="Settings > Internet > Network details: Text to show when a network is not synced to the user's account.">
     This network is not synced to your account. <ph name="LINK_BEGIN">&lt;a target="_blank" href="$1<ex>https://google.com/</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
@@ -4391,6 +4397,9 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_SETTINGS_INTERNET_WIFI_NETWORK_OUT_OF_RANGE" desc="Text shown when viewing the Wi-Fi network detail page when the currently-viewed Wi-Fi network has been lost (e.g., has gone out of range).">
     Network out of range
+    </message>
+    <message name="IDS_SETTINGS_INTERNET_MOBILE_PROVIDER_LOCKED" desc="Text shown when viewing network detail page when the mobile provider is locked due to carrier lock">
+    Mobile network provider is locked
   </message>
   <message name="IDS_SETTINGS_INTERNET_CELLULAR_SETUP_DIALOG_TITLE" desc="The title text of the cellular setup dialog that allows users set up a new cellular network by activating a physical SIM card or setting up the device's built in eSIM.">
     Set up new network
