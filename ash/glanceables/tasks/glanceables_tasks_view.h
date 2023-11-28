@@ -134,6 +134,11 @@ class ASH_EXPORT GlanceablesTasksView : public GlanceablesTasksViewBase,
       nullptr;
   raw_ptr<GlanceablesProgressBarView, ExperimentalAsh> progress_bar_ = nullptr;
 
+  // Pending new task that was added after pressing `add_new_task_button_`.
+  // Used to limit the number of such views to only one and to remove the view
+  // from `task_items_container_view_` if needed.
+  raw_ptr<GlanceablesTaskView> pending_new_task_ = nullptr;
+
   // Records the time when the bubble was about to request a task list. Used for
   // metrics.
   base::TimeTicks tasks_requested_time_;

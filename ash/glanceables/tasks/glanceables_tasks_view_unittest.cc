@@ -18,10 +18,13 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "components/account_id/account_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/progress_bar.h"
+#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -191,6 +194,114 @@ TEST_F(GlanceablesTasksViewTest, SupportsEditingRightAfterAdding) {
   // Verify executed callbacks number.
   EXPECT_EQ(tasks_client()->RunPendingAddTaskCallbacks(), 0u);
   EXPECT_EQ(tasks_client()->RunPendingUpdateTaskCallbacks(), 1u);
+}
+
+TEST_F(GlanceablesTasksViewTest, AllowsAddingOnlyOneTaskAtATime) {
+  const auto initial_tasks_count =
+      GetTaskItemsContainerView()->children().size();
+
+  // Pressing the "Add new task" button should add another "pending" view.
+  GestureTapOn(GetAddNewTaskButton());
+  EXPECT_EQ(GetTaskItemsContainerView()->children().size(),
+            initial_tasks_count + 1);
+
+  // Pressing the "Add new task" button again does nothing.
+  GestureTapOn(GetAddNewTaskButton());
+  EXPECT_EQ(GetTaskItemsContainerView()->children().size(),
+            initial_tasks_count + 1);
+}
+
+TEST_F(GlanceablesTasksViewTest, AddingNewTaskControlsButtonDisabledState) {
+  // Initially the button is enabled.
+  EXPECT_EQ(GetAddNewTaskButton()->GetState(),
+            views::Button::ButtonState::STATE_NORMAL);
+
+  // Pressing the "Add new task" button should disable the button.
+  GestureTapOn(GetAddNewTaskButton());
+  EXPECT_EQ(GetAddNewTaskButton()->GetState(),
+            views::Button::ButtonState::STATE_DISABLED);
+
+  // Exiting edit state should re-enable the button.
+  PressAndReleaseKey(ui::VKEY_ESCAPE);
+  EXPECT_EQ(GetAddNewTaskButton()->GetState(),
+            views::Button::ButtonState::STATE_NORMAL);
+}
+
+TEST_F(GlanceablesTasksViewTest,
+       DoesNotSendRequestAfterEditingWithUnchangedTitle) {
+  tasks_client()->set_paused(true);
+
+  const auto* const title_label = views::AsViewClass<views::Label>(
+      GetTaskItemsContainerView()->children()[0]->GetViewByID(
+          base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
+
+  // Enter and exit editing mode, the task's title should stay the same.
+  GestureTapOn(title_label);
+  PressAndReleaseKey(ui::VKEY_ESCAPE);
+
+  // Verify executed callbacks number.
+  EXPECT_EQ(tasks_client()->RunPendingUpdateTaskCallbacks(), 0u);
+}
+
+TEST_F(GlanceablesTasksViewTest, DoesNotAllowEditingToBlankTitle) {
+  tasks_client()->set_paused(true);
+
+  const auto* const task_view = GetTaskItemsContainerView()->children()[0];
+
+  {
+    const auto* const title_label =
+        views::AsViewClass<views::Label>(task_view->GetViewByID(
+            base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
+    EXPECT_FALSE(title_label->GetText().empty());
+
+    // Enter editing mode.
+    GestureTapOn(title_label);
+  }
+
+  {
+    const auto* const title_text_field =
+        views::AsViewClass<views::Textfield>(task_view->GetViewByID(
+            base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
+    EXPECT_FALSE(title_text_field->GetText().empty());
+
+    // Clear `title_text_field`.
+    PressAndReleaseKey(ui::VKEY_A, ui::EF_CONTROL_DOWN);
+    PressAndReleaseKey(ui::VKEY_DELETE);
+    EXPECT_TRUE(title_text_field->GetText().empty());
+
+    // Commit changes.
+    PressAndReleaseKey(ui::VKEY_ESCAPE);
+  }
+
+  {
+    const auto* const title_label =
+        views::AsViewClass<views::Label>(task_view->GetViewByID(
+            base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
+
+    // `title_label` is back with non-empty title.
+    EXPECT_FALSE(title_label->GetText().empty());
+  }
+
+  // Verify executed callbacks number.
+  EXPECT_EQ(tasks_client()->RunPendingUpdateTaskCallbacks(), 0u);
+}
+
+TEST_F(GlanceablesTasksViewTest, DoesNotAddTaskWithBlankTitle) {
+  tasks_client()->set_paused(true);
+
+  const auto initial_tasks_count =
+      GetTaskItemsContainerView()->children().size();
+
+  // Add a task with blank title.
+  GestureTapOn(GetAddNewTaskButton());
+  EXPECT_EQ(GetTaskItemsContainerView()->children().size(),
+            initial_tasks_count + 1);
+  PressAndReleaseKey(ui::VKEY_ESCAPE);
+
+  // Verify executed callbacks number.
+  EXPECT_EQ(GetTaskItemsContainerView()->children().size(),
+            initial_tasks_count);
+  EXPECT_EQ(tasks_client()->RunPendingAddTaskCallbacks(), 0u);
 }
 
 }  // namespace ash
