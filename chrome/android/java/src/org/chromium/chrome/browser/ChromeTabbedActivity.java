@@ -666,7 +666,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                                     finish();
                                 } else if (isPendingClosure) {
                                     NewTabPageUma.recordNTPImpression(
-                                            NewTabPageUma.NTP_IMPESSION_POTENTIAL_NOTAB);
+                                            NewTabPageUma.NTP_IMPRESSION_POTENTIAL_NO_TAB);
                                 }
                             }
                         }

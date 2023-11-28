@@ -44407,15 +44407,18 @@ Called by update_net_error_codes.py.-->
   <int value="8" label="Navigated to the webpage for a snippet"/>
   <int value="9" label="Clicked on Learn More"/>
   <int value="10"
-      label="Clicked on the Refresh button in the all dismissed state"/>
-  <int value="11" label="Opened an explore sites tile"/>
-  <int value="12" label="Opened the manage interests page from the feed"/>
+      label="Clicked on the Refresh button in the all dismissed state
+             (obsolete)"/>
+  <int value="11" label="Opened an explore sites tile (obsolete)"/>
+  <int value="12"
+      label="Opened the manage interests page from the feed (obsolete)"/>
   <int value="13"
       label="Triggered a block content action, which typically results in the
              content being removed from the feed, and a setting written
-             server side to avoid serving that content again."/>
+             server side to avoid serving that content again. (obsolete)"/>
   <int value="14" label="Clicked on Manage activity (obsolete)"/>
   <int value="15" label="Clicked on the feed header menu button (obsolete)"/>
+  <int value="16" label="Clicked to play a video (obsolete)"/>
 </enum>
 
 <enum name="NewTabPageActioniOS">

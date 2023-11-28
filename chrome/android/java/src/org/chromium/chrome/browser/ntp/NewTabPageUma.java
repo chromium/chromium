@@ -63,29 +63,29 @@ public class NewTabPageUma {
     /** User clicked on the "learn more" link in the footer or in the feed header menu. */
     public static final int ACTION_CLICKED_LEARN_MORE = 9;
 
-    /** User clicked on the "Refresh" button in the "all dismissed" state. */
-    public static final int ACTION_CLICKED_ALL_DISMISSED_REFRESH = 10;
+    /** (Obsolete) User clicked on the "Refresh" button in the "all dismissed" state. */
+    // public static final int ACTION_CLICKED_ALL_DISMISSED_REFRESH = 10;
 
     /** (Obsolete) User opened an explore sites tile. */
     // public static final int ACTION_OPENED_EXPLORE_SITES_TILE = 11;
 
     /**
-     * User clicked on the "Manage Interests" item in the snippet card menu or in the feed header
-     * menu.
+     * (Obsolete) User clicked on the "Manage Interests" item in the snippet card menu or in the
+     * feed header menu.
      */
-    public static final int ACTION_CLICKED_MANAGE_INTERESTS = 12;
+    // public static final int ACTION_CLICKED_MANAGE_INTERESTS = 12;
 
-    /** User triggered a block content action. **/
-    public static final int ACTION_BLOCK_CONTENT = 13;
+    /** (Obsolete) User triggered a block content action. * */
+    // public static final int ACTION_BLOCK_CONTENT = 13;
 
-    /** (Obsolete)  User clicked on the "Manage activity" item in the feed header menu. */
+    /** (Obsolete) User clicked on the "Manage activity" item in the feed header menu. */
     // public static final int ACTION_CLICKED_MANAGE_ACTIVITY = 14;
 
     /** (Obsolete) User clicked on the feed header menu button item in the feed header menu. */
     // public static final int ACTION_CLICKED_FEED_HEADER_MENU = 15;
 
-    /** User clicked to play the full video for a video snippet shown on the NTP. */
-    public static final int ACTION_OPENED_VIDEO = 16;
+    /** (Obsolete) User clicked to play the full video for a video snippet shown on the NTP. */
+    // public static final int ACTION_OPENED_VIDEO = 16;
 
     /** The number of possible actions. */
     private static final int NUM_ACTIONS = 17;
@@ -94,7 +94,7 @@ public class NewTabPageUma {
     public static final int NTP_IMPRESSION_REGULAR = 0;
 
     /** Potential NTP impressions (instead of blank page if no tab is open). */
-    public static final int NTP_IMPESSION_POTENTIAL_NOTAB = 1;
+    public static final int NTP_IMPRESSION_POTENTIAL_NO_TAB = 1;
 
     /** The number of possible NTP impression types */
     private static final int NUM_NTP_IMPRESSION = 2;
