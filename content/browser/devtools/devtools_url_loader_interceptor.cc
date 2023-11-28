@@ -80,9 +80,7 @@ DevToolsURLLoaderInterceptor::Modifications::Modifications() = default;
 
 DevToolsURLLoaderInterceptor::Modifications::Modifications(
     net::Error error_reason)
-    : error_reason(error_reason) {
-  CHECK(this->error_reason);
-}
+    : error_reason(error_reason) {}
 
 DevToolsURLLoaderInterceptor::Modifications::Modifications(
     scoped_refptr<net::HttpResponseHeaders> response_headers,
@@ -124,9 +122,7 @@ DevToolsURLLoaderInterceptor::Modifications::Modifications(
       modified_method(std::move(modified_method)),
       modified_post_data(std::move(modified_post_data)),
       modified_headers(std::move(modified_headers)),
-      auth_challenge_response(std::move(auth_challenge_response)) {
-  CHECK(!this->error_reason || *this->error_reason);
-}
+      auth_challenge_response(std::move(auth_challenge_response)) {}
 
 DevToolsURLLoaderInterceptor::Modifications::~Modifications() = default;
 
@@ -1701,15 +1697,6 @@ void InterceptionJob::OnComplete(
     // treat it as a response and intercept (provided response are
     // being intercepted).
     if (!(stage_ & InterceptionStage::RESPONSE) || !status.error_code) {
-      // TODO(https://crbug.com/1475018): NavigationURLLoaderImpl does not
-      // expect OnComplete() with successful status to be called without
-      // ResponseReceived, and it appears to happen mostly with browser
-      // automation, so let's see if it may be caused by interception.
-      if (!status.error_code) {
-        SCOPED_CRASH_KEY_BOOL("InterceptionJob", "waiting_for_resolution",
-                              waiting_for_resolution_);
-        base::debug::DumpWithoutCrashing();
-      }
       CompleteRequest(status);
       return;
     }
