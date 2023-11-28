@@ -415,7 +415,12 @@ export class ExtensionsDetailViewElement extends
     if (!loadTimeData.getBoolean('safetyCheckShowReviewPanel')) {
       return false;
     }
-
+    const ExtensionType = chrome.developerPrivate.ExtensionType;
+    // Check to make sure this is an extension and not a Chrome app.
+    if (!(this.data.type === ExtensionType.EXTENSION ||
+          this.data.type === ExtensionType.SHARED_MODULE)) {
+      return false;
+    }
     return !!(
         this.data.safetyCheckText && this.data.safetyCheckText.detailString &&
         this.data.acknowledgeSafetyCheckWarning !== true);
