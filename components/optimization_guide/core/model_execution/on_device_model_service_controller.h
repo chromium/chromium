@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/types/pass_key.h"
-#include "components/optimization_guide/core/model_execution/on_device_session.h"
+#include "components/optimization_guide/core/model_execution/session_impl.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -72,8 +72,7 @@ class OnDeviceModelServiceController
       GetEstimatedPerformanceClassCallback callback);
 
   // A session completed successfully.
-  void OnResponseCompleted(base::PassKey<OnDeviceSession>,
-                           OnDeviceSession& session);
+  void OnResponseCompleted(base::PassKey<SessionImpl>, SessionImpl& session);
 
   bool ShouldStartNewSession() const;
 

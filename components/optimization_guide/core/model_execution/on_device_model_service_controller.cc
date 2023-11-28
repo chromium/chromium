@@ -9,7 +9,7 @@
 #include "base/task/thread_pool.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_config_interpreter.h"
-#include "components/optimization_guide/core/model_execution/on_device_session.h"
+#include "components/optimization_guide/core/model_execution/session_impl.h"
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
@@ -114,7 +114,7 @@ OnDeviceModelServiceController::CreateSession(
   }
   CHECK_EQ(reason, OnDeviceModelEligibilityReason::kSuccess);
 
-  return std::make_unique<OnDeviceSession>(
+  return std::make_unique<SessionImpl>(
       base::BindRepeating(&OnDeviceModelServiceController::StartMojoSession,
                           weak_ptr_factory_.GetWeakPtr()),
       feature, config_interpreter_.get(), weak_ptr_factory_.GetWeakPtr(),
@@ -173,8 +173,8 @@ void OnDeviceModelServiceController::OnModelAssetsLoaded(
 }
 
 void OnDeviceModelServiceController::OnResponseCompleted(
-    base::PassKey<OnDeviceSession>,
-    OnDeviceSession& session) {
+    base::PassKey<SessionImpl>,
+    SessionImpl& session) {
   access_controller_->OnResponseCompleted();
 }
 

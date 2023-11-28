@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_SESSION_H_
-#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_SESSION_H_
+#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_SESSION_IMPL_H_
+#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_SESSION_IMPL_H_
 
 #include <string>
 
@@ -25,20 +25,19 @@ using ExecuteRemoteFn = base::RepeatingCallback<void(
 
 // Session implementation that uses either the on device model or the server
 // model.
-// TODO: rename to SessionImpl.
-class OnDeviceSession : public OptimizationGuideModelExecutor::Session,
+class SessionImpl : public OptimizationGuideModelExecutor::Session,
                         public on_device_model::mojom::StreamingResponder {
  public:
   using StartSessionFn = base::RepeatingCallback<void(
       mojo::PendingReceiver<on_device_model::mojom::Session>)>;
 
-  OnDeviceSession(
+  SessionImpl(
       StartSessionFn start_session_fn,
       proto::ModelExecutionFeature feature,
       const OnDeviceModelExecutionConfigInterpreter* config_interpreter,
       base::WeakPtr<OnDeviceModelServiceController> controller,
       ExecuteRemoteFn execute_remote_fn);
-  ~OnDeviceSession() override;
+  ~SessionImpl() override;
 
   // optimization_guide::OptimizationGuideModelExecutor::Session:
   void AddContext(
@@ -114,4 +113,4 @@ class OnDeviceSession : public OptimizationGuideModelExecutor::Session,
 
 }  // namespace optimization_guide
 
-#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_SESSION_H_
+#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_SESSION_IMPL_H_

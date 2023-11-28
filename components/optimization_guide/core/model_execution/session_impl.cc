@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/core/model_execution/on_device_session.h"
+#include "components/optimization_guide/core/model_execution/session_impl.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_config_interpreter.h"
@@ -18,10 +18,10 @@ using ModelExecutionError =
 // Handles incrementally processing context. After the min context size has been
 // processed, any pending context processing will be cancelled if an
 // ExecuteModel() call is made.
-class OnDeviceSession::ContextProcessor
+class SessionImpl::ContextProcessor
     : public on_device_model::mojom::ContextClient {
  public:
-  ContextProcessor(OnDeviceSession& session, const std::string& input)
+  ContextProcessor(SessionImpl& session, const std::string& input)
       : session_(session), input_(input) {
     int min_context = features::GetOnDeviceModelMinTokensForContext();
     if (min_context > 0) {
@@ -73,7 +73,7 @@ class OnDeviceSession::ContextProcessor
         client_.BindNewPipeAndPassRemote());
   }
 
-  raw_ref<OnDeviceSession> session_;
+  raw_ref<SessionImpl> session_;
   std::string input_;
   uint32_t expected_tokens_ = 0;
   uint32_t tokens_processed_ = 0;
@@ -81,7 +81,7 @@ class OnDeviceSession::ContextProcessor
   mojo::Receiver<on_device_model::mojom::ContextClient> client_{this};
 };
 
-OnDeviceSession::OnDeviceSession(
+SessionImpl::SessionImpl(
     StartSessionFn start_session_fn,
     proto::ModelExecutionFeature feature,
     const OnDeviceModelExecutionConfigInterpreter* config_interpreter,
@@ -98,9 +98,9 @@ OnDeviceSession::OnDeviceSession(
   }
 }
 
-OnDeviceSession::~OnDeviceSession() = default;
+SessionImpl::~SessionImpl() = default;
 
-void OnDeviceSession::AddContext(
+void SessionImpl::AddContext(
     const google::protobuf::MessageLite& request_metadata) {
   context_.reset(request_metadata.New());
   context_->CheckTypeAndMergeFrom(request_metadata);
@@ -134,7 +134,7 @@ void OnDeviceSession::AddContext(
       std::make_unique<ContextProcessor>(*this, input->input_string);
 }
 
-void OnDeviceSession::ExecuteModel(
+void SessionImpl::ExecuteModel(
     const google::protobuf::MessageLite& request_metadata,
     optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
         callback) {
@@ -185,11 +185,11 @@ void OnDeviceSession::ExecuteModel(
           /*token_offset=*/std::nullopt, input->should_ignore_input_context),
       on_device_state_->receiver.BindNewPipeAndPassRemote());
   on_device_state_->receiver.set_disconnect_handler(
-      base::BindOnce(&OnDeviceSession::OnDisconnect, base::Unretained(this)));
+      base::BindOnce(&SessionImpl::OnDisconnect, base::Unretained(this)));
 }
 
 // on_device_model::mojom::StreamingResponder:
-void OnDeviceSession::OnResponse(const std::string& response) {
+void SessionImpl::OnResponse(const std::string& response) {
   if (on_device_state_->current_response.empty()) {
     base::UmaHistogramMediumTimes(
         base::StrCat(
@@ -201,7 +201,7 @@ void OnDeviceSession::OnResponse(const std::string& response) {
   SendResponse(/*is_complete=*/false);
 }
 
-void OnDeviceSession::OnComplete() {
+void SessionImpl::OnComplete() {
   base::UmaHistogramMediumTimes(
       base::StrCat(
           {"OptimizationGuide.ModelExecution.OnDeviceResponseCompleteTime.",
@@ -214,18 +214,18 @@ void OnDeviceSession::OnComplete() {
   ResetResponse();
 }
 
-on_device_model::mojom::Session& OnDeviceSession::GetOrCreateSession() {
+on_device_model::mojom::Session& SessionImpl::GetOrCreateSession() {
   CHECK(ShouldUseOnDeviceModel());
   if (!on_device_state_->session) {
     on_device_state_->start_session_fn.Run(
         on_device_state_->session.BindNewPipeAndPassReceiver());
     on_device_state_->session.set_disconnect_handler(
-        base::BindOnce(&OnDeviceSession::OnDisconnect, base::Unretained(this)));
+        base::BindOnce(&SessionImpl::OnDisconnect, base::Unretained(this)));
   }
   return *on_device_state_->session;
 }
 
-void OnDeviceSession::OnDisconnect() {
+void SessionImpl::OnDisconnect() {
   if (context_) {
     // Persist the current context, so that ExecuteModel() can be called
     // without adding the same context.
@@ -235,14 +235,14 @@ void OnDeviceSession::OnDisconnect() {
   CancelPendingResponse();
 }
 
-void OnDeviceSession::ResetResponse() {
+void SessionImpl::ResetResponse() {
   on_device_state_->receiver.reset();
   on_device_state_->callback.Reset();
   on_device_state_->current_response.clear();
   on_device_state_->start = base::TimeTicks();
 }
 
-void OnDeviceSession::CancelPendingResponse(ModelExecutionError error) {
+void SessionImpl::CancelPendingResponse(ModelExecutionError error) {
   auto callback = std::move(on_device_state_->callback);
   ResetResponse();
   if (callback) {
@@ -254,7 +254,7 @@ void OnDeviceSession::CancelPendingResponse(ModelExecutionError error) {
   }
 }
 
-void OnDeviceSession::SendResponse(bool is_complete) {
+void SessionImpl::SendResponse(bool is_complete) {
   if (!on_device_state_->callback) {
     return;
   }
@@ -276,16 +276,16 @@ void OnDeviceSession::SendResponse(bool is_complete) {
       nullptr);
 }
 
-bool OnDeviceSession::ShouldUseOnDeviceModel() const {
+bool SessionImpl::ShouldUseOnDeviceModel() const {
   return controller_ && controller_->ShouldStartNewSession() &&
          on_device_state_;
 }
 
-void OnDeviceSession::DestroyOnDeviceState() {
+void SessionImpl::DestroyOnDeviceState() {
   on_device_state_.reset();
 }
 
-std::unique_ptr<google::protobuf::MessageLite> OnDeviceSession::MergeContext(
+std::unique_ptr<google::protobuf::MessageLite> SessionImpl::MergeContext(
     const google::protobuf::MessageLite& request) {
   // Create a message of the correct type.
   auto message = base::WrapUnique(request.New());
@@ -298,11 +298,11 @@ std::unique_ptr<google::protobuf::MessageLite> OnDeviceSession::MergeContext(
   return message;
 }
 
-OnDeviceSession::OnDeviceState::OnDeviceState(
+SessionImpl::OnDeviceState::OnDeviceState(
     StartSessionFn start_session_fn,
     on_device_model::mojom::StreamingResponder* session)
     : start_session_fn(std::move(start_session_fn)), receiver(session) {}
 
-OnDeviceSession::OnDeviceState::~OnDeviceState() = default;
+SessionImpl::OnDeviceState::~OnDeviceState() = default;
 
 }  // namespace optimization_guide

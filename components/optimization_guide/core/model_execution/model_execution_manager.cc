@@ -294,8 +294,8 @@ ModelExecutionManager::StartSession(proto::ModelExecutionFeature feature) {
   }
 
   RecordSessionUsedRemoteExecutionHistogram(feature, /*is_remote=*/true);
-  return std::make_unique<OnDeviceSession>(base::DoNothing(), feature, nullptr,
-                                           nullptr, std::move(execute_fn));
+  return std::make_unique<SessionImpl>(base::DoNothing(), feature, nullptr,
+                                       nullptr, std::move(execute_fn));
 }
 
 void ModelExecutionManager::OnModelExecuteResponse(

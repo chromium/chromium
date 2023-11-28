@@ -57,8 +57,8 @@ class ModelExecutionManager {
       proto::ModelExecutionFeature feature);
 
  private:
-  // Called from OnDeviceSession (via ExecuteRemoteFn) when model execution
-  // happens remotely.
+  // Called from SessionImpl (via ExecuteRemoteFn) when model execution happens
+  // remotely.
   void ExecuteModelWithStreaming(
       proto::ModelExecutionFeature feature,
       const google::protobuf::MessageLite& request_metadata,
