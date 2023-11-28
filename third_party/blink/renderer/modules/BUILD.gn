@@ -479,7 +479,6 @@ source_set("unit_tests") {
     "mediarecorder/video_track_recorder_unittest.cc",
     "mediasession/media_session_test.cc",
     "mediastream/browser_capture_media_stream_track_test.cc",
-    "mediastream/capture_controller_test.cc",
     "mediastream/local_media_stream_audio_source_test.cc",
     "mediastream/low_latency_video_renderer_algorithm_unittest.cc",
     "mediastream/media_constraints_test.cc",
@@ -617,9 +616,16 @@ source_set("unit_tests") {
   ]
 
   if (!is_android) {
-    # Inline text box tests do not apply to Android, which only loads
-    # AXInlineTextBox tests for the focused node.
-    sources += [ "accessibility/ax_inline_text_box_test.cc" ]
+    sources += [
+      # Inline text box tests do not apply to Android, which only loads
+      # AXInlineTextBox tests for the focused node.
+      "accessibility/ax_inline_text_box_test.cc",
+
+      # CaptureController is not Web-exposed on Android,
+      # so most of the logic is compile-guarded away on Android,
+      # preventing meaningful testing.
+      "mediastream/capture_controller_test.cc",
+    ]
   }
 
   if (rtc_use_h264) {

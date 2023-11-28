@@ -31,7 +31,7 @@ interface CaptureController : EventTarget {
   // https://screen-share.github.io/mouse-events/#capture-controller-extensions
   [RuntimeEnabled=CapturedMouseEvents] attribute EventHandler oncapturedmousechange;
 
-  [RuntimeEnabled=CapturedSurfaceControl]
+  [RuntimeEnabled=CapturedSurfaceControl, CallWith=ScriptState]
   Promise<undefined> sendWheel(CapturedWheelAction action);
 
   [RuntimeEnabled=CapturedSurfaceControl] long getMinZoomLevel();

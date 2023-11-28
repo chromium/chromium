@@ -16,6 +16,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_captured_wheel_action.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
@@ -197,6 +198,13 @@ void MediaStreamVideoCapturerSource::ChangeSourceImpl(
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+void MediaStreamVideoCapturerSource::SendWheel(
+    CapturedWheelAction* action,
+    base::OnceCallback<void(bool, const String&)> callback) {
+  // TODO(crbug.com/1466247): Forward to GetMediaStreamDispatcherHost.
+  std::move(callback).Run(false, "Not implemented.");
+}
+
 void MediaStreamVideoCapturerSource::ApplySubCaptureTarget(
     media::mojom::blink::SubCaptureTargetType type,
     const base::Token& sub_capture_target,

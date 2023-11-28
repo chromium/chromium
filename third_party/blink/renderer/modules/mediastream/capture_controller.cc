@@ -4,16 +4,24 @@
 
 #include "third_party/blink/renderer/modules/mediastream/capture_controller.h"
 
+#include "base/ranges/algorithm.h"
+#include "build/build_config.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_captured_wheel_action.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_client.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
 
 namespace {
 
-bool IsTabOrWindowCapture(const MediaStreamTrack* track) {
+using SurfaceType = media::mojom::DisplayCaptureSurfaceType;
+
+bool IsCaptureType(const MediaStreamTrack* track,
+                   const std::vector<SurfaceType>& types) {
   DCHECK(track);
 
   const MediaStreamVideoTrack* video_track =
@@ -24,13 +32,20 @@ bool IsTabOrWindowCapture(const MediaStreamTrack* track) {
 
   MediaStreamTrackPlatform::Settings settings;
   video_track->GetSettings(settings);
-  return (settings.display_surface ==
-              media::mojom::DisplayCaptureSurfaceType::BROWSER ||
-          settings.display_surface ==
-              media::mojom::DisplayCaptureSurfaceType::WINDOW);
+  const absl::optional<SurfaceType> display_surface = settings.display_surface;
+  return base::ranges::any_of(
+      types, [display_surface](SurfaceType t) { return t == display_surface; });
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+bool IsValid(CapturedWheelAction* action) {
+  CHECK(action->hasX());
+  CHECK(action->hasY());
+  CHECK(action->hasWheelDeltaX());
+  CHECK(action->hasWheelDeltaY());
+  return action->x() >= 0 && action->y() >= 0;
+}
+
 bool ShouldFocusCapturedSurface(V8CaptureStartFocusBehavior focus_behavior) {
   switch (focus_behavior.AsEnum()) {
     case V8CaptureStartFocusBehavior::Enum::kFocusCapturedSurface:
@@ -41,7 +56,7 @@ bool ShouldFocusCapturedSurface(V8CaptureStartFocusBehavior focus_behavior) {
   }
   NOTREACHED_NORETURN();
 }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -79,7 +94,8 @@ void CaptureController::setFocusBehavior(
     return;
   }
 
-  if (!IsTabOrWindowCapture(video_track_)) {
+  if (!IsCaptureType(video_track_,
+                     {SurfaceType::BROWSER, SurfaceType::WINDOW})) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "The captured display surface must be either a tab or a window.");
@@ -90,10 +106,69 @@ void CaptureController::setFocusBehavior(
   FinalizeFocusDecision();
 }
 
-ScriptPromise CaptureController::sendWheel(CapturedWheelAction* action) {
-  // TODO(crbug.com/1466247): Implement.
-  NOTIMPLEMENTED();
-  return ScriptPromise();
+ScriptPromise CaptureController::sendWheel(ScriptState* script_state,
+                                           CapturedWheelAction* action) {
+  DCHECK(IsMainThread());
+  CHECK(action);
+
+  ScriptPromiseResolver* const resolver =
+      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+
+  const ScriptPromise promise = resolver->Promise();
+
+#if BUILDFLAG(IS_ANDROID)
+  resolver->Reject(MakeGarbageCollected<DOMException>(
+      DOMExceptionCode::kNotSupportedError, "Unsupported."));
+  return promise;
+#else
+
+  if (!is_bound_) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError,
+        "getDisplayMedia() not called yet."));
+    return promise;
+  }
+
+  if (!video_track_) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError, "Capture-session not started."));
+    return promise;
+  }
+
+  if (video_track_->readyState() == "ended") {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError, "Video track ended."));
+    return promise;
+  }
+
+  if (!IsCaptureType(video_track_, {SurfaceType::BROWSER})) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotSupportedError,
+        "Action only supported for tab-capture."));
+    return promise;
+  }
+
+  if (!IsValid(action)) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError, "Invalid action."));
+    return promise;
+  }
+
+  base::OnceCallback<void(bool, const String&)> callback = WTF::BindOnce(
+      [](ScriptPromiseResolver* resolver, bool success, const String& error) {
+        if (success) {
+          resolver->Resolve();
+        } else {
+          resolver->Reject(MakeGarbageCollected<DOMException>(
+              DOMExceptionCode::kUnknownError, error));
+        }
+      },
+      WrapPersistent(resolver));
+
+  video_track_->SendWheel(action, std::move(callback));
+
+  return promise;
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 int CaptureController::getMinZoomLevel() {
@@ -151,7 +226,8 @@ void CaptureController::FinalizeFocusDecision() {
 
   focus_decision_finalized_ = true;
 
-  if (!video_track_ || !IsTabOrWindowCapture(video_track_)) {
+  if (!video_track_ || !IsCaptureType(video_track_, {SurfaceType::BROWSER,
+                                                     SurfaceType::WINDOW})) {
     return;
   }
 
@@ -176,4 +252,5 @@ void CaptureController::Trace(Visitor* visitor) const {
   EventTarget::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
 }
+
 }  // namespace blink

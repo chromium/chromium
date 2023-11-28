@@ -33,7 +33,8 @@ class MODULES_EXPORT CaptureController final : public EventTarget,
 
   // IDL interface, APIs related to Captured Surface Control
   // TODO(crbug.com/1466247): Link to spec.
-  ScriptPromise sendWheel(CapturedWheelAction* action);
+  ScriptPromise sendWheel(ScriptState* script_state,
+                          CapturedWheelAction* action);
   int getMinZoomLevel();
   int getMaxZoomLevel();
   ScriptPromise getZoomLevel();
