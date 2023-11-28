@@ -89,13 +89,21 @@ class AppInstallDialogElement extends HTMLElement {
 
     // Keep the installing state shown for at least 2 seconds to give the
     // impression that the PWA is being installed.
-    // TODO(crbug.com/1488697): Call out to actually install the PWA.
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    const [{installed: install_result}] = await Promise.all([
+      this.proxy.handler.installApp(),
+      new Promise(resolve => setTimeout(resolve, 2000)),
+    ]);
 
-    // TODO(crbug.com/1488697): Show an "Open app" button instead of
-    // "Installed".
-    installButton.textContent = 'Installed';
-    installButton.classList.replace('installing', 'installed');
+    if (install_result) {
+      // TODO(crbug.com/1488697): Localize string.
+      installButton.textContent = 'Open app';
+      installButton.classList.replace('installing', 'installed');
+    } else {
+      // TODO(crbug.com/1488697): Proper error display.
+      installButton.textContent = loadTimeData.getString('install');
+      installButton.classList.replace('installing', 'install');
+      installButton.disabled = false;
+    }
   }
 }
 

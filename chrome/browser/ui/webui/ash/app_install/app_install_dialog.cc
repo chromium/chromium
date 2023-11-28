@@ -6,7 +6,6 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install.mojom.h"
-#include "chrome/browser/ui/webui/ash/app_install/app_install_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/webapps/browser/installable/installable_data.h"
@@ -41,57 +40,76 @@ std::optional<SkBitmap> GetDialogIcon(
 }  // namespace
 
 ChromeOsAppInstallDialogParams::ChromeOsAppInstallDialogParams(
-    std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
+    const web_app::WebAppInstallInfo& web_app_info,
     std::vector<webapps::Screenshot> screenshots)
-    : icon_bitmap(GetDialogIcon(web_app_info->icon_bitmaps.any)),
-      name(base::UTF16ToUTF8(web_app_info->title)),
-      url(web_app_info->start_url),
-      description(base::UTF16ToUTF8(web_app_info->description)),
+    : icon_bitmap(GetDialogIcon(web_app_info.icon_bitmaps.any)),
+      name(base::UTF16ToUTF8(web_app_info.title)),
+      url(web_app_info.start_url),
+      description(base::UTF16ToUTF8(web_app_info.description)),
       screenshots(screenshots) {}
 
 ChromeOsAppInstallDialogParams::~ChromeOsAppInstallDialogParams() = default;
 
+ChromeOsAppInstallDialogParams::ChromeOsAppInstallDialogParams(
+    ChromeOsAppInstallDialogParams&&) = default;
+
 // static
-bool AppInstallDialog::Show(gfx::NativeWindow parent,
-                            ChromeOsAppInstallDialogParams params) {
+base::WeakPtr<AppInstallDialog> AppInstallDialog::CreateDialog() {
   CHECK(base::FeatureList::IsEnabled(
       chromeos::features::kCrosWebAppInstallDialog));
-  // Allow no more than one upload dialog at a time.
-  if (SystemWebDialogDelegate::HasInstance(
-          GURL(chrome::kChromeUIAppInstallDialogURL))) {
-    return false;
-  }
 
-  mojom::DialogArgsPtr args = mojom::DialogArgs::New();
-  // TODO(crbug.com/1488697): Get app data passed in and set the dialog args.
-  args->url = params.url;
-  args->name = params.name;
-  args->description = base::UTF16ToUTF8(gfx::TruncateString(
+  return (new AppInstallDialog())->GetWeakPtr();
+}
+
+void AppInstallDialog::Show(
+    gfx::NativeWindow parent,
+    ChromeOsAppInstallDialogParams params,
+    base::OnceCallback<void(bool accepted)> dialog_accepted_callback) {
+  dialog_accepted_callback_ = std::move(dialog_accepted_callback);
+
+  dialog_args_ = mojom::DialogArgs::New();
+  dialog_args_->url = params.url;
+  dialog_args_->name = params.name;
+  dialog_args_->description = base::UTF16ToUTF8(gfx::TruncateString(
       base::UTF8ToUTF16(params.description), webapps::kMaximumDescriptionLength,
       gfx::CHARACTER_BREAK));
 
-  // The pointer is managed by an instance of `views::WebDialogView` and removed
-  // in `SystemWebDialogDelegate::OnDialogClosed`.
-  AppInstallDialog* dialog = new AppInstallDialog(std::move(args));
-  dialog->ShowSystemDialog(parent);
-  return true;
+  this->ShowSystemDialog(parent);
+}
+
+void AppInstallDialog::SetInstallSuccess(bool success) {
+  if (dialog_ui_) {
+    dialog_ui_->SetInstallSuccess(success);
+  }
 }
 
 void AppInstallDialog::OnDialogShown(content::WebUI* webui) {
   DCHECK(dialog_args_);
-  static_cast<AppInstallDialogUI*>(webui->GetController())
-      ->SetDialogArgs(std::move(dialog_args_));
+  DCHECK(dialog_accepted_callback_);
+  SystemWebDialogDelegate::OnDialogShown(webui);
+  dialog_ui_ = static_cast<AppInstallDialogUI*>(webui->GetController());
+  dialog_ui_->SetDialogArgs(std::move(dialog_args_));
+  dialog_ui_->SetDialogCallback(std::move(dialog_accepted_callback_));
 }
 
-AppInstallDialog::AppInstallDialog(mojom::DialogArgsPtr args)
+void AppInstallDialog::CleanUpDialogIfNotShown() {
+  if (!dialog_ui_) {
+    delete this;
+  }
+}
+
+AppInstallDialog::AppInstallDialog()
     : SystemWebDialogDelegate(GURL(chrome::kChromeUIAppInstallDialogURL),
-                              std::u16string() /* title */),
-      dialog_args_(std::move(args)) {}
+                              std::u16string() /* title */) {}
 
 AppInstallDialog::~AppInstallDialog() = default;
 
 bool AppInstallDialog::ShouldShowCloseButton() const {
   return false;
+}
+
+base::WeakPtr<AppInstallDialog> AppInstallDialog::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 }  // namespace ash::app_install

@@ -26,11 +26,13 @@ interface PageHandlerFactory {
 // Lives in the browser process. A renderer uses this to invoke methods that
 // are implemented in the browser process.
 interface PageHandler {
-  // TODO(crbug.com/1488697): Add an InstallApp method.
-
   // Returns arguments passed to the dialog on creation.
   GetDialogArgs() => (DialogArgs args);
 
   // Closes the dialog.
   CloseDialog();
+
+  // Runs the callback to install the app and returns whether the app was
+  // successfully installed.
+  InstallApp() => (bool installed);
 };

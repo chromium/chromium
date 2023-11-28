@@ -22,6 +22,9 @@ class AppInstallDialogUI : public ui::MojoWebDialogUI,
   ~AppInstallDialogUI() override;
 
   void SetDialogArgs(mojom::DialogArgsPtr args);
+  void SetDialogCallback(
+      base::OnceCallback<void(bool accepted)> dialog_accepted_callback);
+  void SetInstallSuccess(bool success);
 
   // Instantiates the implementor of the mojom::PageHandlerFactory mojo
   // interface passing the pending receiver that will be internally bound.
@@ -35,6 +38,7 @@ class AppInstallDialogUI : public ui::MojoWebDialogUI,
   void CloseDialog();
 
   mojom::DialogArgsPtr dialog_args_;
+  base::OnceCallback<void(bool accepted)> dialog_accepted_callback_;
   std::unique_ptr<AppInstallPageHandler> page_handler_;
   mojo::Receiver<mojom::PageHandlerFactory> factory_receiver_{this};
 

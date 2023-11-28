@@ -22,6 +22,7 @@ class AppInstallPageHandler : public mojom::PageHandler {
   using CloseDialogCallback = base::OnceCallback<void()>;
   explicit AppInstallPageHandler(
       mojom::DialogArgsPtr args,
+      base::OnceCallback<void(bool accepted)> dialog_accepted_callback,
       mojo::PendingReceiver<mojom::PageHandler> pending_page_handler,
       CloseDialogCallback close_dialog_callback);
 
@@ -30,14 +31,19 @@ class AppInstallPageHandler : public mojom::PageHandler {
 
   ~AppInstallPageHandler() override;
 
+  void OnInstallComplete(bool success);
+
   // mojom::PageHandler:
   void GetDialogArgs(GetDialogArgsCallback callback) override;
   void CloseDialog() override;
+  void InstallApp(InstallAppCallback callback) override;
 
  private:
   mojom::DialogArgsPtr dialog_args_;
+  base::OnceCallback<void(bool accepted)> dialog_accepted_callback_;
   mojo::Receiver<mojom::PageHandler> receiver_;
   CloseDialogCallback close_dialog_callback_;
+  InstallAppCallback install_app_callback_;
 
   base::WeakPtrFactory<AppInstallPageHandler> weak_ptr_factory_{this};
 };

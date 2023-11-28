@@ -43,6 +43,18 @@ void AppInstallDialogUI::SetDialogArgs(mojom::DialogArgsPtr args) {
   dialog_args_ = std::move(args);
 }
 
+void AppInstallDialogUI::SetDialogCallback(
+    base::OnceCallback<void(bool accepted)> dialog_accepted_callback) {
+  dialog_accepted_callback_ = std::move(dialog_accepted_callback);
+}
+
+void AppInstallDialogUI::SetInstallSuccess(bool success) {
+  if (!page_handler_) {
+    return;
+  }
+  page_handler_->OnInstallComplete(success);
+}
+
 void AppInstallDialogUI::BindInterface(
     mojo::PendingReceiver<mojom::PageHandlerFactory> pending_receiver) {
   if (factory_receiver_.is_bound()) {
@@ -54,9 +66,9 @@ void AppInstallDialogUI::BindInterface(
 void AppInstallDialogUI::CreatePageHandler(
     mojo::PendingReceiver<mojom::PageHandler> receiver) {
   page_handler_ = std::make_unique<AppInstallPageHandler>(
-      std::move(dialog_args_), std::move(receiver),
-      base::BindOnce(&AppInstallDialogUI::CloseDialog,
-                     base::Unretained(this)));
+      std::move(dialog_args_), std::move(dialog_accepted_callback_),
+      std::move(receiver),
+      base::BindOnce(&AppInstallDialogUI::CloseDialog, base::Unretained(this)));
 }
 
 void AppInstallDialogUI::CloseDialog() {
