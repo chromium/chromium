@@ -73,7 +73,7 @@ void LayoutNGBlockFlow::AddOutlineRects(
   // TODO(crbug.com/1145048): Currently |NGBoxPhysicalFragment| does not support
   // NG block fragmentation. Fallback to the legacy code path.
   if (PhysicalFragmentCount() == 1) {
-    const NGPhysicalBoxFragment* fragment = GetPhysicalFragment(0);
+    const PhysicalBoxFragment* fragment = GetPhysicalFragment(0);
     if (fragment->HasItems()) {
       fragment->AddSelfOutlineRects(additional_offset, include_block_overflows,
                                     collector, info);
@@ -104,7 +104,7 @@ bool LayoutNGBlockFlow::NodeAtPoint(HitTestResult& result,
   }
 
   if (PhysicalFragmentCount()) {
-    const NGPhysicalBoxFragment* fragment = GetPhysicalFragment(0);
+    const PhysicalBoxFragment* fragment = GetPhysicalFragment(0);
     DCHECK(fragment);
     if (fragment->HasItems() ||
         // Check descendants of this fragment because floats may be in the

@@ -39,7 +39,7 @@ class LayoutTextCombineTest : public RenderingTest {
   }
 
   static PhysicalRect ContentsInkOverflow(const FragmentItem& item) {
-    if (const NGPhysicalBoxFragment* box_fragment = item.BoxFragment()) {
+    if (const PhysicalBoxFragment* box_fragment = item.BoxFragment()) {
       return box_fragment->ContentsInkOverflowRect();
     }
     if (!item.HasInkOverflow()) {

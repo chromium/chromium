@@ -22,7 +22,7 @@ class FragmentItems;
 class InlineNode;
 class LayoutBox;
 class LayoutResult;
-class NGPhysicalBoxFragment;
+class PhysicalBoxFragment;
 class PhysicalFragment;
 enum class BaselineAlgorithmType;
 enum class MathScriptType;
@@ -154,7 +154,7 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
 
   // Returns the transform to apply to a child (e.g. for scrollable-overflow).
   absl::optional<gfx::Transform> GetTransformForChildFragment(
-      const NGPhysicalBoxFragment& child_fragment,
+      const PhysicalBoxFragment& child_fragment,
       PhysicalSize size) const;
 
   bool HasLeftOverflow() const { return box_->HasLeftOverflow(); }
@@ -228,9 +228,9 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
   // After we run the layout algorithm, this function copies back the fragment
   // position to the layout box.
   void CopyChildFragmentPosition(
-      const NGPhysicalBoxFragment& child_fragment,
+      const PhysicalBoxFragment& child_fragment,
       PhysicalOffset,
-      const NGPhysicalBoxFragment& container_fragment,
+      const PhysicalBoxFragment& container_fragment,
       const BlockBreakToken* previous_container_break_token = nullptr,
       bool needs_invalidation_check = false) const;
 
@@ -272,16 +272,16 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
       const LayoutResult&,
       const BlockBreakToken* previous_break_token) const;
   void CopyFragmentItemsToLayoutBox(
-      const NGPhysicalBoxFragment& container,
+      const PhysicalBoxFragment& container,
       const FragmentItems& items,
       const BlockBreakToken* previous_break_token) const;
-  void PlaceChildrenInLayoutBox(const NGPhysicalBoxFragment&,
+  void PlaceChildrenInLayoutBox(const PhysicalBoxFragment&,
                                 const BlockBreakToken* previous_break_token,
                                 bool needs_invalidation_check = false) const;
   void PlaceChildrenInFlowThread(
       LayoutMultiColumnFlowThread*,
       const ConstraintSpace&,
-      const NGPhysicalBoxFragment&,
+      const PhysicalBoxFragment&,
       const BlockBreakToken* previous_container_break_token) const;
 
   void UpdateMarginPaddingInfoIfNeeded(const ConstraintSpace&,

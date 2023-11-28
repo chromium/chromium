@@ -146,7 +146,7 @@ PhysicalRect ComputeLocalCaretRectAtTextOffset(const InlineCursor& cursor,
   }
   const PhysicalSize caret_size(caret_width, caret_height);
 
-  const NGPhysicalBoxFragment& fragment = cursor.ContainerFragment();
+  const PhysicalBoxFragment& fragment = cursor.ContainerFragment();
   InlineCursor line_box(cursor);
   line_box.MoveToContainingLine();
   const PhysicalOffset line_box_offset =
@@ -194,7 +194,7 @@ LocalCaretRect ComputeLocalCaretRect(const CaretPosition& caret_position) {
 
   const LayoutObject* const layout_object =
       caret_position.cursor.Current().GetLayoutObject();
-  const NGPhysicalBoxFragment& container_fragment =
+  const PhysicalBoxFragment& container_fragment =
       caret_position.cursor.ContainerFragment();
   switch (caret_position.position_type) {
     case CaretPositionType::kBeforeBox:

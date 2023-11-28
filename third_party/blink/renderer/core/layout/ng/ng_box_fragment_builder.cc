@@ -139,7 +139,7 @@ void BoxFragmentBuilder::AddResult(
            child_layout_result.IsSelfCollapsing(), relative_offset,
            inline_container);
   if (margins) {
-    const auto& box_fragment = To<NGPhysicalBoxFragment>(fragment);
+    const auto& box_fragment = To<PhysicalBoxFragment>(fragment);
     if (!margins->IsEmpty() || !box_fragment.Margins().IsZero()) {
       box_fragment.GetMutableForContainerLayout().SetMargins(
           margins->ConvertToPhysical(GetWritingDirection()));
@@ -181,7 +181,7 @@ void BoxFragmentBuilder::AddChild(
           may_have_descendant_above_block_start_ = true;
       } else if (child.IsCSSBox()) {
         // Apply the relative position offset.
-        const auto& box_child = To<NGPhysicalBoxFragment>(child);
+        const auto& box_child = To<PhysicalBoxFragment>(child);
         if (box_child.Style().GetPosition() == EPosition::kRelative) {
           relative_offset = ComputeRelativeOffsetForBoxFragment(
               box_child, GetWritingDirection(), child_available_size_);
@@ -369,7 +369,7 @@ void BoxFragmentBuilder::PropagateBreakInfo(
 
   const auto& child_fragment = child_layout_result.GetPhysicalFragment();
   const auto* child_box_fragment =
-      DynamicTo<NGPhysicalBoxFragment>(child_fragment);
+      DynamicTo<PhysicalBoxFragment>(child_fragment);
   const BlockBreakToken* token =
       child_box_fragment ? child_box_fragment->GetBreakToken() : nullptr;
 
@@ -499,7 +499,7 @@ void BoxFragmentBuilder::PropagateChildBreakValues(
   SetPreviousBreakAfter(break_after);
 
   if (GetConstraintSpace().IsPaginated()) {
-    SetPageNameIfNeeded(To<NGPhysicalBoxFragment>(fragment).PageName());
+    SetPageNameIfNeeded(To<PhysicalBoxFragment>(fragment).PageName());
   }
 }
 
@@ -569,8 +569,8 @@ const LayoutResult* BoxFragmentBuilder::ToBoxFragment(
     }
   }
 
-  const NGPhysicalBoxFragment* fragment =
-      NGPhysicalBoxFragment::Create(this, block_or_line_writing_mode);
+  const PhysicalBoxFragment* fragment =
+      PhysicalBoxFragment::Create(this, block_or_line_writing_mode);
   fragment->CheckType();
 
   return MakeGarbageCollected<LayoutResult>(

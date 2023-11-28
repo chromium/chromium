@@ -383,7 +383,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
       LogicalOffset* offset) const;
 
   void ReplaceFragment(const LayoutResult* new_result,
-                       const NGPhysicalBoxFragment& old_fragment,
+                       const PhysicalBoxFragment& old_fragment,
                        wtf_size_t index);
 
   // This saves the static-position for an OOF-positioned object into its

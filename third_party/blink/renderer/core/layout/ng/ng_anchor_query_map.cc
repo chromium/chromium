@@ -171,7 +171,7 @@ struct StitchedAnchorQueries {
       for (const FragmentItemsBuilder::ItemWithOffset& item_with_offset :
            *items) {
         const FragmentItem& item = item_with_offset.item;
-        if (const NGPhysicalBoxFragment* fragment = item.BoxFragment()) {
+        if (const PhysicalBoxFragment* fragment = item.BoxFragment()) {
           AddBoxChild(*fragment, item.OffsetInContainerFragment(),
                       fragmentainer);
         }
@@ -215,11 +215,12 @@ struct StitchedAnchorQueries {
   void AddChild(const PhysicalFragment& fragment,
                 const PhysicalOffset& offset_from_fragmentainer,
                 const FragmentainerContext& fragmentainer) {
-    if (const auto* box = DynamicTo<NGPhysicalBoxFragment>(&fragment))
+    if (const auto* box = DynamicTo<PhysicalBoxFragment>(&fragment)) {
       AddBoxChild(*box, offset_from_fragmentainer, fragmentainer);
+    }
   }
 
-  void AddBoxChild(const NGPhysicalBoxFragment& fragment,
+  void AddBoxChild(const PhysicalBoxFragment& fragment,
                    const PhysicalOffset& offset_from_fragmentainer,
                    const FragmentainerContext& fragmentainer) {
     if (fragment.IsOutOfFlowPositioned()) {
@@ -273,7 +274,7 @@ struct StitchedAnchorQueries {
   }
 
   void AddFragmentationContextRootChild(
-      const NGPhysicalBoxFragment& fragment,
+      const PhysicalBoxFragment& fragment,
       const PhysicalOffset& offset_from_fragmentainer,
       const FragmentainerContext& fragmentainer) {
     DCHECK(fragment.IsFragmentationContextRoot());
@@ -290,7 +291,7 @@ struct StitchedAnchorQueries {
                              fragmentainer.converter.GetWritingDirection());
   }
 
-  void AddOutOfFlowChild(const NGPhysicalBoxFragment& fragment,
+  void AddOutOfFlowChild(const PhysicalBoxFragment& fragment,
                          const PhysicalOffset& offset_from_fragmentainer,
                          const FragmentainerContext& fragmentainer) {
     DCHECK(fragment.IsOutOfFlowPositioned());

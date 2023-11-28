@@ -704,7 +704,7 @@ void LayoutBlockFlow::SetShouldDoFullPaintInvalidationForFirstLine() {
   if (fragments.IsEmpty()) {
     return;
   }
-  for (const NGPhysicalBoxFragment& fragment : fragments) {
+  for (const PhysicalBoxFragment& fragment : fragments) {
     InlineCursor first_line(fragment);
     if (!first_line) {
       continue;

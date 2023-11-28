@@ -132,7 +132,7 @@ void CaretDisplayItemClient::LayoutBlockWillBeDestroyed(
 }
 
 bool CaretDisplayItemClient::ShouldPaintCaret(
-    const NGPhysicalBoxFragment& box_fragment) const {
+    const PhysicalBoxFragment& box_fragment) const {
   const auto* const block =
       DynamicTo<LayoutBlock>(box_fragment.GetLayoutObject());
   if (!block)
@@ -174,7 +174,7 @@ void CaretDisplayItemClient::UpdateStyleAndLayoutIfNeeded(
     return;
   }
 
-  const NGPhysicalBoxFragment* const new_box_fragment =
+  const PhysicalBoxFragment* const new_box_fragment =
       rect_and_block.box_fragment;
   if (new_box_fragment != box_fragment_) {
     // The caret property tree space may have changed.

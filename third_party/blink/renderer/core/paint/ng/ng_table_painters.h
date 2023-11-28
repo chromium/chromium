@@ -13,7 +13,7 @@ namespace blink {
 
 class BoxDecorationData;
 class LayoutBox;
-class NGPhysicalBoxFragment;
+class PhysicalBoxFragment;
 struct PaintInfo;
 struct PhysicalOffset;
 struct PhysicalRect;
@@ -22,7 +22,7 @@ class NGTablePainter {
   STACK_ALLOCATED();
 
  public:
-  explicit NGTablePainter(const NGPhysicalBoxFragment& table_wrapper_fragment)
+  explicit NGTablePainter(const PhysicalBoxFragment& table_wrapper_fragment)
       : fragment_(table_wrapper_fragment) {
     DCHECK(fragment_.IsTable());
   }
@@ -38,7 +38,7 @@ class NGTablePainter {
                              const gfx::Rect& visual_rect);
 
  private:
-  const NGPhysicalBoxFragment& fragment_;
+  const PhysicalBoxFragment& fragment_;
 };
 
 class NGTableSectionPainter {
@@ -46,7 +46,7 @@ class NGTableSectionPainter {
 
  public:
   explicit NGTableSectionPainter(
-      const NGPhysicalBoxFragment& table_section_fragment)
+      const PhysicalBoxFragment& table_section_fragment)
       : fragment_(table_section_fragment) {
     DCHECK(fragment_.IsTableSection());
   }
@@ -61,14 +61,14 @@ class NGTableSectionPainter {
                               const TableFragmentData::ColumnGeometries&);
 
  private:
-  const NGPhysicalBoxFragment& fragment_;
+  const PhysicalBoxFragment& fragment_;
 };
 
 class NGTableRowPainter {
   STACK_ALLOCATED();
 
  public:
-  explicit NGTableRowPainter(const NGPhysicalBoxFragment& table_row_fragment)
+  explicit NGTableRowPainter(const PhysicalBoxFragment& table_row_fragment)
       : fragment_(table_row_fragment) {
     DCHECK(fragment_.IsTableRow());
   }
@@ -89,14 +89,14 @@ class NGTableRowPainter {
                               const TableFragmentData::ColumnGeometries&);
 
  private:
-  const NGPhysicalBoxFragment& fragment_;
+  const PhysicalBoxFragment& fragment_;
 };
 
 class NGTableCellPainter {
   STACK_ALLOCATED();
 
  public:
-  explicit NGTableCellPainter(const NGPhysicalBoxFragment& table_cell_fragment)
+  explicit NGTableCellPainter(const PhysicalBoxFragment& table_cell_fragment)
       : fragment_(table_cell_fragment) {}
 
   void PaintBoxDecorationBackground(const PaintInfo&,
@@ -110,7 +110,7 @@ class NGTableCellPainter {
       const PhysicalOffset& table_cell_paint_offset);
 
  private:
-  const NGPhysicalBoxFragment& fragment_;
+  const PhysicalBoxFragment& fragment_;
 };
 
 }  // namespace blink

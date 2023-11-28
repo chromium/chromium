@@ -625,7 +625,7 @@ OutOfFlowLayoutPart::GetContainingBlockInfo(
           LayoutBoxUtils::TotalBlockSize(*To<LayoutBox>(containing_block));
 
       // TODO(1079031): This should eventually include scrollbar and border.
-      BoxStrut border = To<NGPhysicalBoxFragment>(containing_block_fragment)
+      BoxStrut border = To<PhysicalBoxFragment>(containing_block_fragment)
                             ->Borders()
                             .ConvertToLogical(writing_direction);
 
@@ -1059,13 +1059,13 @@ void OutOfFlowLayoutPart::LayoutOOFsInMulticol(
 
   WritingDirectionMode writing_direction =
       multicol.Style().GetWritingDirection();
-  const NGPhysicalBoxFragment* last_fragment_with_fragmentainer = nullptr;
+  const PhysicalBoxFragment* last_fragment_with_fragmentainer = nullptr;
 
   // Accumulate all of the pending OOF positioned nodes that are stored inside
   // |multicol|.
   for (auto& multicol_fragment : multicol.GetLayoutBox()->PhysicalFragments()) {
-    const NGPhysicalBoxFragment* multicol_box_fragment =
-        To<NGPhysicalBoxFragment>(&multicol_fragment);
+    const auto* multicol_box_fragment =
+        To<PhysicalBoxFragment>(&multicol_fragment);
 
     const ComputedStyle& style = multicol_box_fragment->Style();
     const WritingModeConverter converter(writing_direction,
@@ -2316,8 +2316,7 @@ void OutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
   const auto& fragmentainer = children[index];
   DCHECK(fragmentainer.fragment->IsFragmentainerBox());
   const BlockNode& node = container_builder_->Node();
-  const auto* fragment =
-      To<NGPhysicalBoxFragment>(fragmentainer.fragment.Get());
+  const auto* fragment = To<PhysicalBoxFragment>(fragmentainer.fragment.Get());
   FragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
   LogicalOffset fragmentainer_offset = UpdatedFragmentainerOffset(
@@ -2424,7 +2423,7 @@ void OutOfFlowLayoutPart::AddOOFToFragmentainer(
   }
 
   const auto& physical_fragment =
-      To<NGPhysicalBoxFragment>(result->GetPhysicalFragment());
+      To<PhysicalBoxFragment>(result->GetPhysicalFragment());
   const BlockBreakToken* break_token = physical_fragment.GetBreakToken();
   if (break_token) {
     // We must continue layout in the next fragmentainer. Update any information
@@ -2491,8 +2490,8 @@ void OutOfFlowLayoutPart::AddOOFToFragmentainer(
   // to its containing block rather than the fragmentainer that it is being
   // added to.
   if (!descendant.break_token) {
-    const NGPhysicalBoxFragment* container =
-        To<NGPhysicalBoxFragment>(descendant.containing_block_fragment.Get());
+    const auto* container =
+        To<PhysicalBoxFragment>(descendant.containing_block_fragment.Get());
 
     if (!container) {
       // If we're paginated, we don't have a containing block fragment, but we
@@ -2501,7 +2500,7 @@ void OutOfFlowLayoutPart::AddOOFToFragmentainer(
       // as the initial containing block:
       // https://www.w3.org/TR/CSS22/page.html#page-box
       DCHECK(container_builder_->Node().IsPaginatedRoot());
-      container = To<NGPhysicalBoxFragment>(
+      container = To<PhysicalBoxFragment>(
           FragmentationContextChildren()[0].fragment.Get());
     }
 
@@ -2587,7 +2586,7 @@ ConstraintSpace OutOfFlowLayoutPart::GetFragmentainerConstraintSpace(
 
   const auto& fragmentainer = children[index];
   DCHECK(fragmentainer.fragment->IsFragmentainerBox());
-  const auto& fragment = To<NGPhysicalBoxFragment>(*fragmentainer.fragment);
+  const auto& fragment = To<PhysicalBoxFragment>(*fragmentainer.fragment);
   const WritingMode container_writing_mode =
       container_builder_->Style().GetWritingMode();
   LogicalSize column_size =
@@ -2707,7 +2706,7 @@ void OutOfFlowLayoutPart::ComputeStartFragmentIndexAndRelativeOffset(
 
 void OutOfFlowLayoutPart::ReplaceFragment(
     const LayoutResult* new_result,
-    const NGPhysicalBoxFragment& old_fragment,
+    const PhysicalBoxFragment& old_fragment,
     wtf_size_t index) {
   // Replace the LayoutBox entry.
   LayoutBox& box = *old_fragment.MutableOwnerLayoutBox();
@@ -2753,8 +2752,8 @@ void OutOfFlowLayoutPart::ReplaceFragment(
   }
 
   // Replace the old fragment with the new one, if it's inside |parent|.
-  auto ReplaceChild = [&new_result, &old_fragment](
-                          const NGPhysicalBoxFragment& parent) -> bool {
+  auto ReplaceChild =
+      [&new_result, &old_fragment](const PhysicalBoxFragment& parent) -> bool {
     for (PhysicalFragmentLink& child_link :
          parent.GetMutableChildrenForOutOfFlow().Children()) {
       if (child_link.fragment != &old_fragment)
@@ -2773,7 +2772,7 @@ void OutOfFlowLayoutPart::ReplaceFragment(
     // fragmentainer at all.
     if (!multicol_child.IsFragmentainerBox())
       return false;
-    const auto& fragmentainer = To<NGPhysicalBoxFragment>(multicol_child);
+    const auto& fragmentainer = To<PhysicalBoxFragment>(multicol_child);
     // Then search and replace inside the fragmentainer.
     return ReplaceChild(fragmentainer);
   };
@@ -2789,7 +2788,7 @@ void OutOfFlowLayoutPart::ReplaceFragment(
         // an OOF inside.
         if (FragmentItems::ReplaceBoxFragment(
                 old_fragment,
-                To<NGPhysicalBoxFragment>(new_result->GetPhysicalFragment()),
+                To<PhysicalBoxFragment>(new_result->GetPhysicalFragment()),
                 parent_fragment)) {
           return;
         }

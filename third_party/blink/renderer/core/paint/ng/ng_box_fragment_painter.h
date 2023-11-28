@@ -38,11 +38,11 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
   STACK_ALLOCATED();
 
  public:
-  NGBoxFragmentPainter(const NGPhysicalBoxFragment&);
+  explicit NGBoxFragmentPainter(const PhysicalBoxFragment&);
   // Construct for an inline box.
   NGBoxFragmentPainter(const InlineCursor& inline_box_cursor,
                        const FragmentItem& item,
-                       const NGPhysicalBoxFragment& fragment,
+                       const PhysicalBoxFragment& fragment,
                        NGInlinePaintContext* inline_context);
 
   void Paint(const PaintInfo&);
@@ -97,7 +97,7 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
       const PhysicalRect&) override;
 
  private:
-  NGBoxFragmentPainter(const NGPhysicalBoxFragment&,
+  NGBoxFragmentPainter(const PhysicalBoxFragment&,
                        const DisplayItemClient& display_item_client,
                        const InlineCursor* inline_box_cursor = nullptr,
                        const FragmentItem* box_item = nullptr,
@@ -163,7 +163,7 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
                      const PhysicalOffset& paint_offset,
                      const PhysicalOffset& parent_offset);
   void PaintBoxItem(const FragmentItem& item,
-                    const NGPhysicalBoxFragment& child_fragment,
+                    const PhysicalBoxFragment& child_fragment,
                     const InlineCursor& cursor,
                     const PaintInfo& paint_info,
                     const PhysicalOffset& paint_offset);
@@ -207,7 +207,7 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
     // T is PhysicalRect or gfx::QuadF.
     template <typename T>
     bool AddNodeToResult(Node* node,
-                         const NGPhysicalBoxFragment* box_fragment,
+                         const PhysicalBoxFragment* box_fragment,
                          const T& bounds_rect,
                          const PhysicalOffset& offset) const;
     // Same as |AddNodeToResult|, except that |offset| is in the content
@@ -215,11 +215,10 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
     // differ when |container| is a scroll container.
     // T is PhysicalRect or gfx::QuadF.
     template <typename T>
-    bool AddNodeToResultWithContentOffset(
-        Node* node,
-        const NGPhysicalBoxFragment& container,
-        const T& bounds_rect,
-        PhysicalOffset offset) const;
+    bool AddNodeToResultWithContentOffset(Node* node,
+                                          const PhysicalBoxFragment& container,
+                                          const T& bounds_rect,
+                                          PhysicalOffset offset) const;
 
     HitTestPhase phase;
     const HitTestLocation& location;
@@ -241,7 +240,7 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
   bool HitTestChildren(const HitTestContext& hit_test,
                        const PhysicalOffset& physical_offset);
   bool HitTestChildren(const HitTestContext& hit_test,
-                       const NGPhysicalBoxFragment& container,
+                       const PhysicalBoxFragment& container,
                        const InlineCursor& children,
                        const PhysicalOffset& physical_offset);
   bool HitTestBlockChildren(HitTestResult&,
@@ -249,7 +248,7 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
                             PhysicalOffset,
                             HitTestPhase);
   bool HitTestItemsChildren(const HitTestContext& hit_test,
-                            const NGPhysicalBoxFragment& container,
+                            const PhysicalBoxFragment& container,
                             const InlineCursor& children);
   bool HitTestFloatingChildren(const HitTestContext& hit_test,
                                const PhysicalFragment& container,
@@ -262,11 +261,11 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
   // @param physical_offset Physical offset of the given box fragment in the
   // paint layer.
   bool HitTestInlineChildBoxFragment(const HitTestContext& hit_test,
-                                     const NGPhysicalBoxFragment& fragment,
+                                     const PhysicalBoxFragment& fragment,
                                      const InlineBackwardCursor& cursor,
                                      const PhysicalOffset& physical_offset);
   bool HitTestChildBoxItem(const HitTestContext& hit_test,
-                           const NGPhysicalBoxFragment& container,
+                           const PhysicalBoxFragment& container,
                            const FragmentItem& item,
                            const InlineBackwardCursor& cursor);
 
@@ -299,7 +298,7 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
   bool UpdateHitTestResultForView(const PhysicalRect& bounds_rect,
                                   const HitTestContext& hit_test) const;
 
-  const NGPhysicalBoxFragment& GetPhysicalFragment() const {
+  const PhysicalBoxFragment& GetPhysicalFragment() const {
     return box_fragment_;
   }
   const DisplayItemClient& GetDisplayItemClient() const {
@@ -310,7 +309,7 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
   static bool ShouldHitTestCulledInlineAncestors(const HitTestContext& hit_test,
                                                  const FragmentItem& item);
 
-  const NGPhysicalBoxFragment& box_fragment_;
+  const PhysicalBoxFragment& box_fragment_;
   const DisplayItemClient& display_item_client_;
   const FragmentItems* items_ = nullptr;
   const FragmentItem* box_item_ = nullptr;
@@ -320,7 +319,7 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
 };
 
 inline NGBoxFragmentPainter::NGBoxFragmentPainter(
-    const NGPhysicalBoxFragment& box,
+    const PhysicalBoxFragment& box,
     const DisplayItemClient& display_item_client,
     const InlineCursor* inline_box_cursor,
     const FragmentItem* box_item,
@@ -343,7 +342,7 @@ inline NGBoxFragmentPainter::NGBoxFragmentPainter(
 }
 
 inline NGBoxFragmentPainter::NGBoxFragmentPainter(
-    const NGPhysicalBoxFragment& fragment)
+    const PhysicalBoxFragment& fragment)
     : NGBoxFragmentPainter(fragment,
                            *fragment.GetLayoutObject(),
                            /* inline_box_cursor */ nullptr,
@@ -353,7 +352,7 @@ inline NGBoxFragmentPainter::NGBoxFragmentPainter(
 inline NGBoxFragmentPainter::NGBoxFragmentPainter(
     const InlineCursor& inline_box_cursor,
     const FragmentItem& item,
-    const NGPhysicalBoxFragment& fragment,
+    const PhysicalBoxFragment& fragment,
     NGInlinePaintContext* inline_context)
     : NGBoxFragmentPainter(fragment,
                            *item.GetDisplayItemClient(),

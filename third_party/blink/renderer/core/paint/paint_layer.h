@@ -601,7 +601,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
       const HitTestingTransformState* root_transform_state) const;
 
   bool HitTestFragmentWithPhase(HitTestResult&,
-                                const NGPhysicalBoxFragment*,
+                                const PhysicalBoxFragment*,
                                 const PhysicalOffset& fragment_offset,
                                 const HitTestLocation&,
                                 HitTestPhase phase) const;

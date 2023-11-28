@@ -414,7 +414,7 @@ BreakStatus FieldsetLayoutAlgorithm::LayoutFieldsetContent(
     container_builder_.AddResult(*result, offset);
 
     const auto& fragment =
-        To<NGPhysicalBoxFragment>(result->GetPhysicalFragment());
+        To<PhysicalBoxFragment>(result->GetPhysicalFragment());
     if (auto first_baseline = fragment.FirstBaseline()) {
       container_builder_.SetFirstBaseline(offset.block_offset +
                                           *first_baseline);

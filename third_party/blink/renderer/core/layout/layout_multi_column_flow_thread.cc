@@ -1174,7 +1174,7 @@ void LayoutMultiColumnFlowThread::UpdateGeometry() {
   const BlockBreakToken* break_token = nullptr;
   for (const auto& container_fragment : container->PhysicalFragments()) {
     for (const auto& link : container_fragment.Children()) {
-      const auto& child_fragment = To<NGPhysicalBoxFragment>(*link);
+      const auto& child_fragment = To<PhysicalBoxFragment>(*link);
       if (!child_fragment.IsFragmentainerBox()) {
         continue;
       }

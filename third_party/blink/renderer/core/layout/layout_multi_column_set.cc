@@ -69,14 +69,14 @@ class ChildFragmentIterator {
     return IsValid();
   }
 
-  const NGPhysicalBoxFragment* operator->() const {
+  const PhysicalBoxFragment* operator->() const {
     DCHECK(IsValid());
-    return To<NGPhysicalBoxFragment>(
+    return To<PhysicalBoxFragment>(
         CurrentFragment()->Children()[child_index_].get());
   }
-  const NGPhysicalBoxFragment& operator*() const {
+  const PhysicalBoxFragment& operator*() const {
     DCHECK(IsValid());
-    return To<NGPhysicalBoxFragment>(
+    return To<PhysicalBoxFragment>(
         *CurrentFragment()->Children()[child_index_]);
   }
   PhysicalOffset Offset() const {
@@ -87,7 +87,7 @@ class ChildFragmentIterator {
   wtf_size_t FragmentIndex() const { return fragment_index_; }
 
  private:
-  const NGPhysicalBoxFragment* CurrentFragment() const {
+  const PhysicalBoxFragment* CurrentFragment() const {
     return container_.GetPhysicalFragment(fragment_index_);
   }
 
@@ -103,13 +103,13 @@ class ChildFragmentIterator {
   wtf_size_t child_index_ = 0;
 };
 
-LayoutPoint ComputeLocation(const NGPhysicalBoxFragment& column_box,
+LayoutPoint ComputeLocation(const PhysicalBoxFragment& column_box,
                             PhysicalOffset column_offset,
                             LayoutUnit set_inline_size,
                             const LayoutBlockFlow& container,
                             wtf_size_t fragment_index,
                             const PhysicalBoxStrut& border_padding_scrollbar) {
-  const NGPhysicalBoxFragment* container_fragment =
+  const PhysicalBoxFragment* container_fragment =
       container.GetPhysicalFragment(fragment_index);
   WritingModeConverter converter(
       container_fragment->Style().GetWritingDirection(),

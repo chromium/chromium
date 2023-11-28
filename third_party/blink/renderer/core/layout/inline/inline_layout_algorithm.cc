@@ -839,7 +839,7 @@ void InlineLayoutAlgorithm::PlaceLayoutResult(InlineItemResult* item_result,
   DCHECK(item.Style());
   FontHeight metrics =
       LogicalBoxFragment(GetConstraintSpace().GetWritingDirection(),
-                         To<NGPhysicalBoxFragment>(
+                         To<PhysicalBoxFragment>(
                              item_result->layout_result->GetPhysicalFragment()))
           .BaselineMetrics(item_result->margins, baseline_type_);
   if (box)
@@ -864,7 +864,7 @@ void InlineLayoutAlgorithm::PlaceBlockInInline(const InlineItem& item,
   DCHECK(item_result->layout_result);
   const LayoutResult& result = *item_result->layout_result;
   const auto& box_fragment =
-      To<NGPhysicalBoxFragment>(result.GetPhysicalFragment());
+      To<PhysicalBoxFragment>(result.GetPhysicalFragment());
   LogicalBoxFragment fragment(GetConstraintSpace().GetWritingDirection(),
                               box_fragment);
 

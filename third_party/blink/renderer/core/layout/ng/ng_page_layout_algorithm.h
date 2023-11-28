@@ -27,7 +27,7 @@ class CORE_EXPORT PageLayoutAlgorithm
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
 
  private:
-  const NGPhysicalBoxFragment* LayoutPage(
+  const PhysicalBoxFragment* LayoutPage(
       uint32_t page_index,
       const AtomicString& page_name,
       const BlockBreakToken* break_token) const;

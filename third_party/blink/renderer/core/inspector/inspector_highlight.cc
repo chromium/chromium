@@ -1093,7 +1093,7 @@ DevtoolsFlexInfo GetFlexLinesAndItems(LayoutBox* layout_box,
 
       LayoutUnit baseline =
           LogicalBoxFragment(layout_box->StyleRef().GetWritingDirection(),
-                             *To<NGPhysicalBoxFragment>(child_fragment))
+                             *To<PhysicalBoxFragment>(child_fragment))
               .FirstBaselineOrSynthesize(
                   layout_box->StyleRef().GetFontBaseline());
       float adjusted_baseline = AdjustForAbsoluteZoom::AdjustFloat(

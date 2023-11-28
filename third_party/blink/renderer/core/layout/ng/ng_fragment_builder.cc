@@ -599,8 +599,7 @@ void FragmentBuilder::PropagateOOFPositionedInfo(
     return;
   DCHECK(!oof_data->multicols_with_pending_oofs.empty() ||
          !oof_data->oof_positioned_fragmentainer_descendants.empty());
-  const NGPhysicalBoxFragment* box_fragment =
-      DynamicTo<NGPhysicalBoxFragment>(&fragment);
+  const auto* box_fragment = DynamicTo<PhysicalBoxFragment>(&fragment);
   bool is_column_spanner = box_fragment && box_fragment->IsColumnSpanAll();
 
   if (!oof_data->multicols_with_pending_oofs.empty()) {
@@ -693,8 +692,7 @@ void FragmentBuilder::PropagateOOFFragmentainerDescendants(
     return;
 
   const WritingModeConverter converter(GetWritingDirection(), fragment.Size());
-  const NGPhysicalBoxFragment* box_fragment =
-      DynamicTo<NGPhysicalBoxFragment>(&fragment);
+  const auto* box_fragment = DynamicTo<PhysicalBoxFragment>(&fragment);
   bool is_column_spanner = box_fragment && box_fragment->IsColumnSpanAll();
 
   auto& out_of_flow_fragmentainer_descendants =

@@ -57,14 +57,13 @@ class NGInlineBoxFragmentPainterBase {
   }
 
   // Constructor for |FragmentItem|.
-  NGInlineBoxFragmentPainterBase(
-      const InlineCursor& inline_box_cursor,
-      const FragmentItem& inline_box_item,
-      const NGPhysicalBoxFragment& inline_box_fragment,
-      const LayoutObject& layout_object,
-      const ComputedStyle& style,
-      const ComputedStyle& line_style,
-      NGInlinePaintContext* inline_context)
+  NGInlineBoxFragmentPainterBase(const InlineCursor& inline_box_cursor,
+                                 const FragmentItem& inline_box_item,
+                                 const PhysicalBoxFragment& inline_box_fragment,
+                                 const LayoutObject& layout_object,
+                                 const ComputedStyle& style,
+                                 const ComputedStyle& line_style,
+                                 NGInlinePaintContext* inline_context)
       : NGInlineBoxFragmentPainterBase(inline_box_fragment,
                                        &inline_box_cursor,
                                        inline_box_item,
@@ -161,7 +160,7 @@ class NGInlineBoxFragmentPainter : public NGInlineBoxFragmentPainterBase {
   // Constructor for |FragmentItem|.
   NGInlineBoxFragmentPainter(const InlineCursor& inline_box_cursor,
                              const FragmentItem& inline_box_item,
-                             const NGPhysicalBoxFragment& inline_box_fragment,
+                             const PhysicalBoxFragment& inline_box_fragment,
                              NGInlinePaintContext* inline_context)
       : NGInlineBoxFragmentPainterBase(inline_box_cursor,
                                        inline_box_item,
@@ -198,8 +197,8 @@ class NGInlineBoxFragmentPainter : public NGInlineBoxFragmentPainterBase {
  private:
   void PaintMask(const PaintInfo&, const PhysicalOffset& paint_offset);
 
-  const NGPhysicalBoxFragment& BoxFragment() const {
-    return static_cast<const NGPhysicalBoxFragment&>(inline_box_fragment_);
+  const PhysicalBoxFragment& BoxFragment() const {
+    return static_cast<const PhysicalBoxFragment&>(inline_box_fragment_);
   }
 
   PhysicalBoxSides SidesToInclude() const final;
@@ -220,7 +219,7 @@ class NGLineBoxFragmentPainter : public NGInlineBoxFragmentPainterBase {
  public:
   NGLineBoxFragmentPainter(const PhysicalFragment& line_box_fragment,
                            const FragmentItem& line_box_item,
-                           const NGPhysicalBoxFragment& block_fragment)
+                           const PhysicalBoxFragment& block_fragment)
       : NGLineBoxFragmentPainter(line_box_fragment,
                                  line_box_item,
                                  block_fragment,
@@ -239,7 +238,7 @@ class NGLineBoxFragmentPainter : public NGInlineBoxFragmentPainterBase {
  private:
   NGLineBoxFragmentPainter(const PhysicalFragment& line_box_fragment,
                            const FragmentItem& line_box_item,
-                           const NGPhysicalBoxFragment& block_fragment,
+                           const PhysicalBoxFragment& block_fragment,
                            const LayoutObject& layout_block_flow)
       : NGInlineBoxFragmentPainterBase(
             line_box_fragment,
@@ -265,7 +264,7 @@ class NGLineBoxFragmentPainter : public NGInlineBoxFragmentPainterBase {
 
   PhysicalBoxSides SidesToInclude() const final { return PhysicalBoxSides(); }
 
-  const NGPhysicalBoxFragment& block_fragment_;
+  const PhysicalBoxFragment& block_fragment_;
 };
 
 }  // namespace blink

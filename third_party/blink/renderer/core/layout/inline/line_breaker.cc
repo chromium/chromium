@@ -58,7 +58,7 @@ inline LineBreakStrictness StrictnessFromLineBreak(LineBreak line_break) {
 // Returns smallest negative left and right bearing in `box_fragment`.
 // This function is used for calculating side bearing.
 LineBoxStrut ComputeNegativeSideBearings(
-    const NGPhysicalBoxFragment& box_fragment) {
+    const PhysicalBoxFragment& box_fragment) {
   const auto get_shape_result =
       [](const InlineCursor cursor) -> const ShapeResultView* {
     if (!cursor)
@@ -156,7 +156,7 @@ LineBoxStrut ComputeNegativeSideBearings(
 // Note: We don't apply inline kerning for vertical writing mode with text
 // orientation other than `sideways` because characters are laid out vertically.
 // [1] https://drafts.csswg.org/css-inline/#initial-letter-inline-position
-bool ShouldApplyInlineKerning(const NGPhysicalBoxFragment& box_fragment) {
+bool ShouldApplyInlineKerning(const PhysicalBoxFragment& box_fragment) {
   if (!box_fragment.Borders().IsZero() || !box_fragment.Padding().IsZero())
     return false;
   const ComputedStyle& style = box_fragment.Style();
@@ -2596,7 +2596,7 @@ void LineBreaker::HandleAtomicInline(const InlineItem& item,
                                 /* use_first_line_style */ false,
                                 baseline_algorithm_type);
 
-    const auto& physical_box_fragment = To<NGPhysicalBoxFragment>(
+    const auto& physical_box_fragment = To<PhysicalBoxFragment>(
         item_result->layout_result->GetPhysicalFragment());
     item_result->inline_size =
         LogicalFragment(constraint_space_.GetWritingDirection(),
@@ -3665,7 +3665,7 @@ const InlineBreakToken* LineBreaker::CreateBreakToken(
     // Look for a break token inside the block-in-inline, so that we can add it
     // to the inline break token that we're about to create.
     const auto& block_in_inline_fragment =
-        To<NGPhysicalBoxFragment>(block_in_inline->GetPhysicalFragment());
+        To<PhysicalBoxFragment>(block_in_inline->GetPhysicalFragment());
     sub_break_token = block_in_inline_fragment.GetBreakToken();
   }
 

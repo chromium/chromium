@@ -81,7 +81,7 @@ class CORE_EXPORT FragmentItems final {
   // Returns the end (next of the last) item that are reusable. If no items are
   // reusable, it is the first item.
   const FragmentItem* EndOfReusableItems(
-      const NGPhysicalBoxFragment& container) const;
+      const PhysicalBoxFragment& container) const;
 
   // Return true if any items inside the culled inline occur here. In that case,
   // |is_first_container| and |is_last_container| will also be set to indicate
@@ -105,9 +105,9 @@ class CORE_EXPORT FragmentItems final {
   // |containing_fragment|, and replace it with |new_fragment| if found. Return
   // true if found and replaced, otherwise false.
   static bool ReplaceBoxFragment(
-      const NGPhysicalBoxFragment& old_fragment,
-      const NGPhysicalBoxFragment& new_fragment,
-      const NGPhysicalBoxFragment& containing_fragment);
+      const PhysicalBoxFragment& old_fragment,
+      const PhysicalBoxFragment& new_fragment,
+      const PhysicalBoxFragment& containing_fragment);
 
 #if DCHECK_IS_ON()
   void CheckAllItemsAreValid() const;

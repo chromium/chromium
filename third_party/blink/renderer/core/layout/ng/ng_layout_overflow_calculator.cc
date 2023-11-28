@@ -23,7 +23,7 @@ namespace blink {
 // static
 PhysicalRect
 ScrollableOverflowCalculator::RecalculateScrollableOverflowForFragment(
-    const NGPhysicalBoxFragment& fragment,
+    const PhysicalBoxFragment& fragment,
     bool has_block_fragmentation) {
   const BlockNode node(const_cast<LayoutBox*>(
       To<LayoutBox>(fragment.GetSelfOrContainerLayoutObject())));
@@ -33,7 +33,7 @@ ScrollableOverflowCalculator::RecalculateScrollableOverflowForFragment(
       node.Style().GetWritingDirection();
 
   // TODO(ikilpatrick): The final computed scrollbars for a fragment should
-  // likely live on the NGPhysicalBoxFragment.
+  // likely live on the PhysicalBoxFragment.
   PhysicalBoxStrut scrollbar;
   if (fragment.IsCSSBox()) {
     scrollbar = ComputeScrollbarsForNonAnonymous(node).ConvertToPhysical(
@@ -49,8 +49,7 @@ ScrollableOverflowCalculator::RecalculateScrollableOverflowForFragment(
   }
 
   for (const auto& child : fragment.PostLayoutChildren()) {
-    const auto* box_fragment =
-        DynamicTo<NGPhysicalBoxFragment>(*child.fragment);
+    const auto* box_fragment = DynamicTo<PhysicalBoxFragment>(*child.fragment);
     if (!box_fragment)
       continue;
 
@@ -188,7 +187,7 @@ void ScrollableOverflowCalculator::AddItems(
 }
 
 void ScrollableOverflowCalculator::AddItems(
-    const NGPhysicalBoxFragment& box_fragment,
+    const PhysicalBoxFragment& box_fragment,
     const FragmentItems& items) {
   AddItemsInternal(box_fragment.GetLayoutObject(), items.Items());
 }
@@ -237,7 +236,7 @@ PhysicalRect ScrollableOverflowCalculator::AdjustOverflowForScrollOrigin(
 }
 
 PhysicalRect ScrollableOverflowCalculator::ScrollableOverflowForPropagation(
-    const NGPhysicalBoxFragment& child_fragment) {
+    const PhysicalBoxFragment& child_fragment) {
   // If the fragment is anonymous, just return its scrollable-overflow (don't
   // apply any incorrect transforms, etc).
   if (!child_fragment.IsCSSBox())

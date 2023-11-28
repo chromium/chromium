@@ -22,7 +22,7 @@ namespace {
 // letter text and shift down amount of surrounding text in
 // `initial_letter_block_start_adjust`,
 LayoutUnit ComputeInitialLetterBoxBlockOffset(
-    const NGPhysicalBoxFragment& initial_letter_box_fragment,
+    const PhysicalBoxFragment& initial_letter_box_fragment,
     const LayoutUnit block_size,
     const ComputedStyle& initial_letter_box_style,
     const ComputedStyle& paragraph_style,
@@ -255,8 +255,8 @@ const ExclusionArea* PostPlaceInitialLetterBox(
       line_box->begin(), line_box->end(),
       [](const auto& line_item) { return line_item.IsInitialLetterBox(); });
 
-  const auto& initial_letter_box_fragment = *To<NGPhysicalBoxFragment>(
-      initial_letter_line_item->GetPhysicalFragment());
+  const auto& initial_letter_box_fragment =
+      *To<PhysicalBoxFragment>(initial_letter_line_item->GetPhysicalFragment());
 
   DCHECK(initial_letter_box_fragment.IsInitialLetterBox());
   DCHECK(!initial_letter_box_fragment.Style().InitialLetter().IsNormal());

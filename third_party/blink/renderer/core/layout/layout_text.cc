@@ -683,7 +683,7 @@ PositionWithAffinity LayoutText::PositionForPoint(
           containing_block_flow->PixelSnappedScrolledContentOffset());
     }
     const auto* const text_combine = DynamicTo<LayoutTextCombine>(Parent());
-    const NGPhysicalBoxFragment* container_fragment = nullptr;
+    const PhysicalBoxFragment* container_fragment = nullptr;
     PhysicalOffset point_in_container_fragment;
     DCHECK(!IsSVGInlineText());
     for (; cursor; cursor.MoveToNextForSameLayoutObject()) {

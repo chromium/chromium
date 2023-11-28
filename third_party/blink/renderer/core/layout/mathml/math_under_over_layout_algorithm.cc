@@ -219,7 +219,7 @@ const LayoutResult* MathUnderOverLayoutAlgorithm::Layout() {
   auto UpdateInlineStretchSize = [&](const LayoutResult* result) {
     LogicalFragment fragment(
         constraint_space.GetWritingDirection(),
-        To<NGPhysicalBoxFragment>(result->GetPhysicalFragment()));
+        To<PhysicalBoxFragment>(result->GetPhysicalFragment()));
     inline_stretch_size = std::max(inline_stretch_size, fragment.InlineSize());
   };
 
@@ -299,7 +299,7 @@ const LayoutResult* MathUnderOverLayoutAlgorithm::Layout() {
 
   LogicalBoxFragment base_fragment(
       constraint_space.GetWritingDirection(),
-      To<NGPhysicalBoxFragment>(base_layout_result->GetPhysicalFragment()));
+      To<PhysicalBoxFragment>(base_layout_result->GetPhysicalFragment()));
   LayoutUnit base_ascent =
       base_fragment.FirstBaselineOrSynthesize(baseline_type);
 
@@ -312,7 +312,7 @@ const LayoutResult* MathUnderOverLayoutAlgorithm::Layout() {
         ComputeMarginsFor(over_space, over.Style(), constraint_space);
     LogicalBoxFragment over_fragment(
         constraint_space.GetWritingDirection(),
-        To<NGPhysicalBoxFragment>(over_layout_result->GetPhysicalFragment()));
+        To<PhysicalBoxFragment>(over_layout_result->GetPhysicalFragment()));
     ascent += parameters.over_extra_ascender + over_margins.block_start;
     LogicalOffset over_offset = {
         content_start_offset.inline_offset + over_margins.inline_start +
@@ -359,7 +359,7 @@ const LayoutResult* MathUnderOverLayoutAlgorithm::Layout() {
         ComputeMarginsFor(under_space, under.Style(), constraint_space);
     LogicalBoxFragment under_fragment(
         constraint_space.GetWritingDirection(),
-        To<NGPhysicalBoxFragment>(under_layout_result->GetPhysicalFragment()));
+        To<PhysicalBoxFragment>(under_layout_result->GetPhysicalFragment()));
     descent += under_margins.block_start;
     if (parameters.use_under_over_bar_fallback) {
       if (!HasAccent(Node(), true))

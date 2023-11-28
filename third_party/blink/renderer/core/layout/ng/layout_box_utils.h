@@ -13,7 +13,7 @@ class BlockBreakToken;
 class LayoutBox;
 class LayoutBlock;
 class LayoutPoint;
-class NGPhysicalBoxFragment;
+class PhysicalBoxFragment;
 struct PhysicalOffset;
 
 // This static class should be used for querying information from a |LayoutBox|,
@@ -35,9 +35,9 @@ class LayoutBoxUtils {
   // vertical-rl writing-mode, and also for block fragmentation (the
   // block-offset should include consumed space in previous fragments).
   static LayoutPoint ComputeLocation(
-      const NGPhysicalBoxFragment& child_fragment,
+      const PhysicalBoxFragment& child_fragment,
       PhysicalOffset offset,
-      const NGPhysicalBoxFragment& container_fragment,
+      const PhysicalBoxFragment& container_fragment,
       const BlockBreakToken* previous_container_break_token);
 };
 

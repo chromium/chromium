@@ -359,7 +359,7 @@ const LayoutResult* BlockNode::Layout(
     // after performing subtree layout.
     layout_result = LayoutResult::CloneWithPostLayoutFragments(*layout_result);
     const auto& new_fragment =
-        To<NGPhysicalBoxFragment>(layout_result->GetPhysicalFragment());
+        To<PhysicalBoxFragment>(layout_result->GetPhysicalFragment());
     // If we have fragment items, and we're not done (more fragments to follow),
     // be sure to miss the cache for any subsequent fragments, lest finalization
     // be missed (which could cause trouble for InlineCursor when walking the
@@ -599,9 +599,9 @@ const LayoutResult* BlockNode::SimplifiedLayout(
   }
 
   const auto& old_fragment =
-      To<NGPhysicalBoxFragment>(previous_result->GetPhysicalFragment());
+      To<PhysicalBoxFragment>(previous_result->GetPhysicalFragment());
   const auto& new_fragment =
-      To<NGPhysicalBoxFragment>(result->GetPhysicalFragment());
+      To<PhysicalBoxFragment>(result->GetPhysicalFragment());
 
   // Simplified layout has the ability to add/remove scrollbars, this can cause
   // a couple (rare) edge-cases which will make the fragment different enough
@@ -653,8 +653,7 @@ const LayoutResult* BlockNode::LayoutRepeatableRoot(
   }
 
   wtf_size_t index = FragmentIndex(break_token);
-  const auto& fragment =
-      To<NGPhysicalBoxFragment>(result->GetPhysicalFragment());
+  const auto& fragment = To<PhysicalBoxFragment>(result->GetPhysicalFragment());
   // We need to create a special "repeat" break token, which will be the
   // incoming break token when generating the next fragment. This is needed in
   // order to get the sequence numbers right, which is important when adding the
@@ -691,7 +690,7 @@ void BlockNode::FinishRepeatableRoot() const {
 
   // First remove the outgoing break token from the last fragment, that was set
   // in LayoutRepeatableRoot().
-  const NGPhysicalBoxFragment& last_fragment = box_->PhysicalFragments().back();
+  const PhysicalBoxFragment& last_fragment = box_->PhysicalFragments().back();
   auto mutator = last_fragment.GetMutableForCloning();
   mutator.SetBreakToken(nullptr);
 
@@ -701,7 +700,7 @@ void BlockNode::FinishRepeatableRoot() const {
   DCHECK_GE(fragment_count, 1u);
   box_->ClearNeedsLayout();
   for (wtf_size_t i = 1; i < fragment_count; i++) {
-    const NGPhysicalBoxFragment& physical_fragment =
+    const PhysicalBoxFragment& physical_fragment =
         *box_->GetPhysicalFragment(i);
     bool is_first = i == 1;
     bool is_last = i + 1 == fragment_count;
@@ -792,7 +791,7 @@ void BlockNode::FinishLayout(
   }
 
   const auto& physical_fragment =
-      To<NGPhysicalBoxFragment>(layout_result->GetPhysicalFragment());
+      To<PhysicalBoxFragment>(layout_result->GetPhysicalFragment());
 
   if (auto* replaced = DynamicTo<LayoutReplaced>(*box_)) {
     // NG replaced elements are painted with legacy painters. We need to force
@@ -867,8 +866,7 @@ void BlockNode::FinishLayout(
 void BlockNode::StoreResultInLayoutBox(const LayoutResult* result,
                                        const BlockBreakToken* break_token,
                                        bool clear_trailing_results) const {
-  const auto& fragment =
-      To<NGPhysicalBoxFragment>(result->GetPhysicalFragment());
+  const auto& fragment = To<PhysicalBoxFragment>(result->GetPhysicalFragment());
   wtf_size_t fragment_idx = 0;
 
   if (fragment.IsOnlyForNode()) {
@@ -1149,7 +1147,7 @@ void BlockNode::CopyFragmentDataToLayoutBox(
     const LayoutResult& layout_result,
     const BlockBreakToken* previous_break_token) const {
   const auto& physical_fragment =
-      To<NGPhysicalBoxFragment>(layout_result.GetPhysicalFragment());
+      To<PhysicalBoxFragment>(layout_result.GetPhysicalFragment());
   bool is_last_fragment = !physical_fragment.GetBreakToken();
 
   // TODO(mstensho): This should always be done by the parent algorithm, since
@@ -1174,7 +1172,7 @@ void BlockNode::CopyFragmentDataToLayoutBox(
       // correctly.
       if (is_last_fragment) {
         const BlockBreakToken* incoming_break_token = nullptr;
-        for (const NGPhysicalBoxFragment& multicol_fragment :
+        for (const PhysicalBoxFragment& multicol_fragment :
              box_->PhysicalFragments()) {
           PlaceChildrenInFlowThread(flow_thread, constraint_space,
                                     multicol_fragment, incoming_break_token);
@@ -1219,7 +1217,7 @@ void BlockNode::CopyFragmentDataToLayoutBox(
 }
 
 void BlockNode::PlaceChildrenInLayoutBox(
-    const NGPhysicalBoxFragment& physical_fragment,
+    const PhysicalBoxFragment& physical_fragment,
     const BlockBreakToken* previous_break_token,
     bool needs_invalidation_check) const {
   for (const auto& child_fragment : physical_fragment.Children()) {
@@ -1228,7 +1226,7 @@ void BlockNode::PlaceChildrenInLayoutBox(
     if (!child_fragment->IsBox())
       continue;
 
-    const auto& box_fragment = *To<NGPhysicalBoxFragment>(child_fragment.get());
+    const auto& box_fragment = *To<PhysicalBoxFragment>(child_fragment.get());
     if (!box_fragment.IsFirstForNode())
       continue;
 
@@ -1248,7 +1246,7 @@ void BlockNode::PlaceChildrenInLayoutBox(
 void BlockNode::PlaceChildrenInFlowThread(
     LayoutMultiColumnFlowThread* flow_thread,
     const ConstraintSpace& space,
-    const NGPhysicalBoxFragment& physical_fragment,
+    const PhysicalBoxFragment& physical_fragment,
     const BlockBreakToken* previous_container_break_token) const {
   // Stitch the contents of the columns together in the legacy flow thread, and
   // update the position and size of column sets, spanners and spanner
@@ -1287,7 +1285,7 @@ void BlockNode::PlaceChildrenInFlowThread(
   }
 
   for (const auto& child : physical_fragment.Children()) {
-    const auto& child_fragment = To<NGPhysicalBoxFragment>(*child);
+    const auto& child_fragment = To<PhysicalBoxFragment>(*child);
     const auto* child_box = To<LayoutBox>(child_fragment.GetLayoutObject());
     if (child_box && child_box != box_) {
       CopyChildFragmentPosition(child_fragment, child.offset,
@@ -1334,9 +1332,9 @@ void BlockNode::PlaceChildrenInFlowThread(
 
 // Copies data back to the legacy layout tree for a given child fragment.
 void BlockNode::CopyChildFragmentPosition(
-    const NGPhysicalBoxFragment& child_fragment,
+    const PhysicalBoxFragment& child_fragment,
     PhysicalOffset offset,
-    const NGPhysicalBoxFragment& container_fragment,
+    const PhysicalBoxFragment& container_fragment,
     const BlockBreakToken* previous_container_break_token,
     bool needs_invalidation_check) const {
   auto* layout_box = To<LayoutBox>(child_fragment.GetMutableLayoutObject());
@@ -1365,7 +1363,7 @@ void BlockNode::MakeRoomForExtraColumns(LayoutUnit block_size) const {
 }
 
 void BlockNode::CopyFragmentItemsToLayoutBox(
-    const NGPhysicalBoxFragment& container,
+    const PhysicalBoxFragment& container,
     const FragmentItems& items,
     const BlockBreakToken* previous_break_token) const {
   LayoutUnit previously_consumed_block_size;
@@ -1375,7 +1373,7 @@ void BlockNode::CopyFragmentItemsToLayoutBox(
   }
   bool initial_container_is_flipped = Style().IsFlippedBlocksWritingMode();
   for (InlineCursor cursor(container, items); cursor; cursor.MoveToNext()) {
-    if (const NGPhysicalBoxFragment* child = cursor.Current().BoxFragment()) {
+    if (const PhysicalBoxFragment* child = cursor.Current().BoxFragment()) {
       // Replaced elements and inline blocks need Location() set relative to
       // their block container. Similarly for block-in-inline anonymous wrapper
       // blocks, but those may actually fragment, so we need to make sure that
@@ -1490,7 +1488,7 @@ LogicalSize BlockNode::GetAspectRatio() const {
 }
 
 absl::optional<gfx::Transform> BlockNode::GetTransformForChildFragment(
-    const NGPhysicalBoxFragment& child_fragment,
+    const PhysicalBoxFragment& child_fragment,
     PhysicalSize size) const {
   const auto* child_layout_object = child_fragment.GetLayoutObject();
   DCHECK(child_layout_object);
@@ -1576,7 +1574,7 @@ const LayoutResult* BlockNode::RunSimplifiedLayout(
     const LayoutAlgorithmParams& params,
     const LayoutResult& previous_result) const {
   SimplifiedLayoutAlgorithm algorithm(params, previous_result);
-  if (const auto* previous_box_fragment = DynamicTo<NGPhysicalBoxFragment>(
+  if (const auto* previous_box_fragment = DynamicTo<PhysicalBoxFragment>(
           &previous_result.GetPhysicalFragment())) {
     if (previous_box_fragment->HasItems())
       return algorithm.LayoutWithItemsBuilder();
@@ -1595,9 +1593,8 @@ void BlockNode::UpdateMarginPaddingInfoIfNeeded(
     // We set the initial margin data here because RebuildFragmentTreeSpine()
     // and atomic inline layout don't use BoxFragmentBuilder::AddResult().
     // TODO(crbug.com/1353190): Try to move margin computation to them.
-    To<NGPhysicalBoxFragment>(fragment)
-        .GetMutableForContainerLayout()
-        .SetMargins(ComputePhysicalMargins(space, Style()));
+    To<PhysicalBoxFragment>(fragment).GetMutableForContainerLayout().SetMargins(
+        ComputePhysicalMargins(space, Style()));
 
     // This margin data may be overwritten by BoxFragmentBuilder::AddResult().
   }

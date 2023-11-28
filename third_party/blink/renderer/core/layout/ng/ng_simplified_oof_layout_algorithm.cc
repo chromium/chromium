@@ -15,7 +15,7 @@ namespace blink {
 
 SimplifiedOofLayoutAlgorithm::SimplifiedOofLayoutAlgorithm(
     const LayoutAlgorithmParams& params,
-    const NGPhysicalBoxFragment& previous_fragment,
+    const PhysicalBoxFragment& previous_fragment,
     bool is_new_fragment)
     : LayoutAlgorithm(params),
       writing_direction_(Style().GetWritingDirection()) {

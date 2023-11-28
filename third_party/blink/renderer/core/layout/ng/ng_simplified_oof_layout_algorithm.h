@@ -25,7 +25,7 @@ class CORE_EXPORT SimplifiedOofLayoutAlgorithm
     : public LayoutAlgorithm<BlockNode, BoxFragmentBuilder, BlockBreakToken> {
  public:
   SimplifiedOofLayoutAlgorithm(const LayoutAlgorithmParams&,
-                               const NGPhysicalBoxFragment&,
+                               const PhysicalBoxFragment&,
                                bool is_new_fragment);
 
   const LayoutResult* Layout() override;

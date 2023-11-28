@@ -77,7 +77,7 @@ class CORE_EXPORT AbstractInlineTextBox final
   Member<LayoutText> layout_text_;
   // |root_box_fragment_| owns |fragment_item_|. Persistent is used here to keep
   // |AbstractInlineTextBoxCache| off-heap.
-  Member<const NGPhysicalBoxFragment> root_box_fragment_;
+  Member<const PhysicalBoxFragment> root_box_fragment_;
 };
 
 }  // namespace blink

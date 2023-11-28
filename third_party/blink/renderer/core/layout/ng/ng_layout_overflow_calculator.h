@@ -23,7 +23,7 @@ class CORE_EXPORT ScrollableOverflowCalculator {
 
  public:
   static PhysicalRect RecalculateScrollableOverflowForFragment(
-      const NGPhysicalBoxFragment&,
+      const PhysicalBoxFragment&,
       bool has_block_fragmentation);
 
   ScrollableOverflowCalculator(const BlockNode&,
@@ -40,7 +40,7 @@ class CORE_EXPORT ScrollableOverflowCalculator {
   const PhysicalRect Result(const absl::optional<PhysicalRect> inflow_bounds);
 
   // Adds scrollable-overflow from |child_fragment|, at |offset|.
-  void AddChild(const NGPhysicalBoxFragment& child_fragment,
+  void AddChild(const PhysicalBoxFragment& child_fragment,
                 PhysicalOffset offset) {
     if (is_view_ && child_fragment.IsFixedPositioned())
       return;
@@ -51,7 +51,7 @@ class CORE_EXPORT ScrollableOverflowCalculator {
   }
 
   // Adds scrollable-overflow from fragment-items.
-  void AddItems(const NGPhysicalBoxFragment&, const FragmentItems&);
+  void AddItems(const PhysicalBoxFragment&, const FragmentItems&);
   void AddItems(const LayoutObject*,
                 const FragmentItemsBuilder::ItemWithOffsetList&);
 
@@ -66,7 +66,7 @@ class CORE_EXPORT ScrollableOverflowCalculator {
   PhysicalRect AdjustOverflowForScrollOrigin(const PhysicalRect& overflow);
 
   PhysicalRect ScrollableOverflowForPropagation(
-      const NGPhysicalBoxFragment& child_fragment);
+      const PhysicalBoxFragment& child_fragment);
 
   void AddOverflow(PhysicalRect child_overflow,
                    bool child_is_fragmentainer = false) {

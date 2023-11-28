@@ -20,7 +20,7 @@ class LayoutBox;
 class LayoutBoxModelObject;
 class LayoutTableCell;
 class LayoutView;
-class NGPhysicalBoxFragment;
+class PhysicalBoxFragment;
 struct PaintInfo;
 
 struct SnappedAndUnsnappedOutsets {
@@ -46,7 +46,7 @@ class BackgroundImageGeometry {
                           const LayoutBox& table_part,
                           PhysicalSize table_part_size);
 
-  explicit BackgroundImageGeometry(const NGPhysicalBoxFragment&);
+  explicit BackgroundImageGeometry(const PhysicalBoxFragment&);
 
   // Compute the initial position area based on the geometry for the object
   // this BackgroundImageGeometry was created for.

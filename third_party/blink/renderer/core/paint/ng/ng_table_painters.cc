@@ -336,14 +336,14 @@ void ComputeEdgeJoints(const TableBorders& collapsed_borders,
 
 // Computes the stitched columns-rect relative to the current fragment.
 // The columns-rect is the union of all the sections in the table.
-PhysicalRect ComputeColumnsRect(const NGPhysicalBoxFragment& fragment) {
+PhysicalRect ComputeColumnsRect(const PhysicalBoxFragment& fragment) {
   const auto writing_direction = fragment.Style().GetWritingDirection();
   LogicalRect columns_rect;
   LayoutUnit stitched_block_size;
   LayoutUnit fragment_block_offset;
 
   bool is_first_section = true;
-  for (const NGPhysicalBoxFragment& walker :
+  for (const PhysicalBoxFragment& walker :
        To<LayoutBox>(fragment.GetLayoutObject())->PhysicalFragments()) {
     if (&walker == &fragment)
       fragment_block_offset = stitched_block_size;
@@ -459,7 +459,7 @@ void NGTablePainter::PaintBoxDecorationBackground(
     if (!child.fragment->IsTableSection()) {
       continue;
     }
-    NGTableSectionPainter(To<NGPhysicalBoxFragment>(*child.fragment))
+    NGTableSectionPainter(To<PhysicalBoxFragment>(*child.fragment))
         .PaintColumnsBackground(paint_info, paint_rect.offset + child.offset,
                                 columns_paint_rect,
                                 column_geometries_with_background);
@@ -468,7 +468,7 @@ void NGTablePainter::PaintBoxDecorationBackground(
 
 namespace {
 
-const PhysicalFragment* StartSection(const NGPhysicalBoxFragment& table) {
+const PhysicalFragment* StartSection(const PhysicalBoxFragment& table) {
   for (const auto& child : table.Children()) {
     if (!child->IsTableSection()) {
       continue;
@@ -478,7 +478,7 @@ const PhysicalFragment* StartSection(const NGPhysicalBoxFragment& table) {
   return nullptr;
 }
 
-const PhysicalFragment* EndSection(const NGPhysicalBoxFragment& table) {
+const PhysicalFragment* EndSection(const PhysicalBoxFragment& table) {
   const auto children = table.Children();
   for (auto it = children.rbegin(); it != children.rend(); ++it) {
     const auto& child = *it;
@@ -490,20 +490,20 @@ const PhysicalFragment* EndSection(const NGPhysicalBoxFragment& table) {
   return nullptr;
 }
 
-bool IsStartRowFragmented(const NGPhysicalBoxFragment& section) {
+bool IsStartRowFragmented(const PhysicalBoxFragment& section) {
   for (const auto& child : section.Children()) {
     if (!child->IsTableRow()) {
       continue;
     }
 
     return IsBreakInside(
-        FindPreviousBreakToken(To<NGPhysicalBoxFragment>(*child)));
+        FindPreviousBreakToken(To<PhysicalBoxFragment>(*child)));
   }
 
   return false;
 }
 
-bool IsEndRowFragmented(const NGPhysicalBoxFragment& section) {
+bool IsEndRowFragmented(const PhysicalBoxFragment& section) {
   const auto children = section.Children();
   for (auto it = children.rbegin(); it != children.rend(); ++it) {
     const auto& child = *it;
@@ -554,7 +554,7 @@ void NGTablePainter::PaintCollapsedBorders(const PaintInfo& paint_info,
       continue;
     }
 
-    const auto& section = To<NGPhysicalBoxFragment>(*child);
+    const auto& section = To<PhysicalBoxFragment>(*child);
     const absl::optional<wtf_size_t> section_start_row_index =
         section.TableSectionStartRowIndex();
     if (!section_start_row_index)
@@ -756,7 +756,7 @@ void NGTableSectionPainter::PaintBoxDecorationBackground(
     if (!child_fragment.IsTableRow()) {
       continue;
     }
-    NGTableRowPainter(To<NGPhysicalBoxFragment>(child_fragment))
+    NGTableRowPainter(To<PhysicalBoxFragment>(child_fragment))
         .PaintTablePartBackgroundIntoCells(
             paint_info, *To<LayoutBox>(fragment_.GetLayoutObject()), part_rect,
             paint_rect.offset + child.offset);
@@ -776,7 +776,7 @@ void NGTableSectionPainter::PaintColumnsBackground(
     if (!row.fragment->IsTableRow()) {
       continue;
     }
-    NGTableRowPainter(To<NGPhysicalBoxFragment>(*row.fragment))
+    NGTableRowPainter(To<PhysicalBoxFragment>(*row.fragment))
         .PaintColumnsBackground(paint_info, section_paint_offset + row.offset,
                                 columns_paint_rect, column_geometries);
   }
@@ -821,7 +821,7 @@ void NGTableRowPainter::PaintTablePartBackgroundIntoCells(
     if (!child_fragment.IsTableCell()) {
       continue;
     }
-    NGTableCellPainter(To<NGPhysicalBoxFragment>(child_fragment))
+    NGTableCellPainter(To<PhysicalBoxFragment>(child_fragment))
         .PaintBackgroundForTablePart(paint_info, table_part,
                                      table_part_paint_rect,
                                      row_paint_offset + child.offset);
@@ -840,7 +840,7 @@ void NGTableRowPainter::PaintColumnsBackground(
       continue;
     }
     const wtf_size_t cell_column =
-        To<NGPhysicalBoxFragment>(child.fragment.Get())->TableCellColumnIndex();
+        To<PhysicalBoxFragment>(child.fragment.Get())->TableCellColumnIndex();
     for (const auto& column_geometry : column_geometries) {
       wtf_size_t current_start = column_geometry.start_column;
       wtf_size_t current_end =
@@ -858,7 +858,7 @@ void NGTableRowPainter::PaintColumnsBackground(
           converter.ToPhysical({column_geometry.inline_offset, LayoutUnit()},
                                column_paint_rect.size);
 
-      NGTableCellPainter(To<NGPhysicalBoxFragment>(*child.fragment))
+      NGTableCellPainter(To<PhysicalBoxFragment>(*child.fragment))
           .PaintBackgroundForTablePart(
               paint_info, *column_geometry.node.GetLayoutBox(),
               column_paint_rect, row_paint_offset + child.offset);

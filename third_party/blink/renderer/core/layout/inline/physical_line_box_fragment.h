@@ -66,10 +66,10 @@ class CORE_EXPORT PhysicalLineBoxFragment final : public PhysicalFragment {
   // computed when LineBox is generated because it needs container dimensions
   // to resolve relative position of its children.
   PhysicalRect ComputeRubyEmHeightBox(
-      const NGPhysicalBoxFragment& container,
+      const PhysicalBoxFragment& container,
       const ComputedStyle& container_style) const;
   PhysicalRect ComputeRubyEmHeightBoxForLine(
-      const NGPhysicalBoxFragment& container,
+      const PhysicalBoxFragment& container,
       const ComputedStyle& container_style,
       const FragmentItem& line,
       const InlineCursor& cursor) const;

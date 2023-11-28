@@ -883,7 +883,7 @@ const LayoutResult* InlineLayoutStateStack::BoxData::CreateBoxFragment(
     }
 
     // |FragmentItems| has a flat list of all descendants, except
-    // OOF-positioned descendants. We still create a |NGPhysicalBoxFragment|,
+    // OOF-positioned descendants. We still create a |PhysicalBoxFragment|,
     // but don't add children to it and keep them in the flat list.
   }
 

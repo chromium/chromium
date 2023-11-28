@@ -86,7 +86,7 @@ const LayoutResult* MathRadicalLayoutAlgorithm::Layout() {
         Node(), ChildAvailableSize(), GetConstraintSpace(), base);
     base_layout_result = base.Layout(constraint_space);
     const auto& base_fragment =
-        To<NGPhysicalBoxFragment>(base_layout_result->GetPhysicalFragment());
+        To<PhysicalBoxFragment>(base_layout_result->GetPhysicalFragment());
     base_margins =
         ComputeMarginsFor(constraint_space, base.Style(), GetConstraintSpace());
     LogicalBoxFragment fragment(GetConstraintSpace().GetWritingDirection(),
@@ -102,7 +102,7 @@ const LayoutResult* MathRadicalLayoutAlgorithm::Layout() {
         Node(), ChildAvailableSize(), GetConstraintSpace(), index);
     index_layout_result = index.Layout(constraint_space);
     const auto& index_fragment =
-        To<NGPhysicalBoxFragment>(index_layout_result->GetPhysicalFragment());
+        To<PhysicalBoxFragment>(index_layout_result->GetPhysicalFragment());
     index_margins = ComputeMarginsFor(constraint_space, index.Style(),
                                       GetConstraintSpace());
     LogicalBoxFragment fragment(GetConstraintSpace().GetWritingDirection(),

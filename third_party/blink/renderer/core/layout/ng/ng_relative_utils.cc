@@ -89,7 +89,7 @@ LogicalOffset ComputeRelativeOffset(
 }
 
 LogicalOffset ComputeRelativeOffsetForBoxFragment(
-    const NGPhysicalBoxFragment& fragment,
+    const PhysicalBoxFragment& fragment,
     WritingDirectionMode container_writing_direction,
     const LogicalSize& available_size) {
   const auto& child_style = fragment.Style();

@@ -99,7 +99,7 @@ inline void AddInlineSizeToRubyEmHeightBox(
 }  // namespace
 
 PhysicalRect PhysicalLineBoxFragment::ComputeRubyEmHeightBox(
-    const NGPhysicalBoxFragment& container,
+    const PhysicalBoxFragment& container,
     const ComputedStyle& container_style) const {
   const WritingMode container_writing_mode = container_style.GetWritingMode();
   PhysicalRect overflow;
@@ -111,7 +111,7 @@ PhysicalRect PhysicalLineBoxFragment::ComputeRubyEmHeightBox(
 }
 
 PhysicalRect PhysicalLineBoxFragment::ComputeRubyEmHeightBoxForLine(
-    const NGPhysicalBoxFragment& container,
+    const PhysicalBoxFragment& container,
     const ComputedStyle& container_style,
     const FragmentItem& line,
     const InlineCursor& cursor) const {

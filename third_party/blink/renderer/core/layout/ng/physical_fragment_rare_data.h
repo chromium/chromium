@@ -18,8 +18,8 @@ class TableBorders;
 struct FrameSetLayoutData;
 struct MathMLPaintInfo;
 
-// This class manages rare data of NGPhysicalBoxFragment.
-// Only NGPhysicalBoxFragment should use this class.
+// This class manages rare data of PhysicalBoxFragment.
+// Only PhysicalBoxFragment should use this class.
 //
 // How to add a new field:
 //  * Add a new enum member to FieldId.
@@ -50,7 +50,7 @@ class PhysicalFragmentRareData
   }
 
  private:
-  friend NGPhysicalBoxFragment;
+  friend PhysicalBoxFragment;
 
   using RareBitFieldType = uint32_t;
 

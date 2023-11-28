@@ -83,18 +83,18 @@ class CORE_EXPORT FragmentItem final {
   // (e.g., <span>text</span>) and atomic inlines.
   struct BoxItem {
     DISALLOW_NEW();
-    BoxItem(const NGPhysicalBoxFragment*, wtf_size_t descendants_count);
+    BoxItem(const PhysicalBoxFragment*, wtf_size_t descendants_count);
 
     // If this item is an inline box, its children are stored as following
     // items. |descendants_count_| has the number of such items.
     //
     // If this item is a root of another IFC/BFC, children are stored normally,
     // as children of |box_fragment|.
-    const NGPhysicalBoxFragment* PostLayout() const;
+    const PhysicalBoxFragment* PostLayout() const;
 
     void Trace(Visitor*) const;
 
-    Member<const NGPhysicalBoxFragment> box_fragment;
+    Member<const PhysicalBoxFragment> box_fragment;
     wtf_size_t descendants_count;
   };
 
@@ -106,7 +106,7 @@ class CORE_EXPORT FragmentItem final {
   // Create appropriate type for |line_item|.
   FragmentItem(LogicalLineItem&& line_item, WritingMode writing_mode);
   // Create a box item.
-  FragmentItem(const NGPhysicalBoxFragment& box,
+  FragmentItem(const PhysicalBoxFragment& box,
                TextDirection resolved_direction);
   // Create a line item.
   explicit FragmentItem(const PhysicalLineBoxFragment& line);
@@ -259,13 +259,13 @@ class CORE_EXPORT FragmentItem final {
     NOTREACHED();
   }
 
-  // Returns |NGPhysicalBoxFragment| if one is associated with this item.
-  const NGPhysicalBoxFragment* BoxFragment() const {
+  // Returns |PhysicalBoxFragment| if one is associated with this item.
+  const PhysicalBoxFragment* BoxFragment() const {
     if (Type() == kBox)
       return box_.box_fragment.Get();
     return nullptr;
   }
-  const NGPhysicalBoxFragment* PostLayoutBoxFragment() const {
+  const PhysicalBoxFragment* PostLayoutBoxFragment() const {
     if (Type() == kBox)
       return box_.PostLayout();
     return nullptr;
@@ -344,7 +344,7 @@ class CORE_EXPORT FragmentItem final {
     STACK_ALLOCATED();
 
    public:
-    void ReplaceBoxFragment(const NGPhysicalBoxFragment& new_fragment) {
+    void ReplaceBoxFragment(const PhysicalBoxFragment& new_fragment) {
       DCHECK(item_.BoxFragment());
       item_.box_.box_fragment = &new_fragment;
     }

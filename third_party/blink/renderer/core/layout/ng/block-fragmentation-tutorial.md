@@ -13,7 +13,7 @@ Main spec: https://www.w3.org/TR/css-break-3/
 
 Any layout algorithm for block nodes takes ConstraintSpace, BlockNode and
 BlockBreakToken as input, and writes output to BoxFragmentBuilder, which
-will eventually generate an NGPhysicalBoxFragment wrapped inside an
+will eventually generate an PhysicalBoxFragment wrapped inside an
 LayoutResult. This will serve as input to the parent algorithm, which will
 eventually add the child fragment to their output, i.e. BoxFragmentBuilder (or
 abort / finish without doing so). Rather than having each layout algorithm

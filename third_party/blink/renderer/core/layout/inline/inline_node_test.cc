@@ -152,8 +152,7 @@ class InlineNodeTest : public RenderingTest {
 
   void TestAnyItemsAreDirty(const LayoutBlockFlow& block_flow, bool expected) {
     FragmentItems::DirtyLinesFromNeedsLayout(block_flow);
-    for (const NGPhysicalBoxFragment& fragment :
-         block_flow.PhysicalFragments()) {
+    for (const PhysicalBoxFragment& fragment : block_flow.PhysicalFragments()) {
       if (const FragmentItems* items = fragment.Items()) {
         // Check |FragmentItem::IsDirty| directly without using
         // |EndOfReusableItems|. This is different from the line cache logic,

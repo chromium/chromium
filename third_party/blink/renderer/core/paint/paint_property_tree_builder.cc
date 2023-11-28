@@ -288,7 +288,7 @@ class FragmentPaintPropertyTreeBuilder {
            full_context_.force_subtree_update_reasons;
   }
 
-  const NGPhysicalBoxFragment& BoxFragment() const {
+  const PhysicalBoxFragment& BoxFragment() const {
     const auto& box = To<LayoutBox>(object_);
     if (pre_paint_info_) {
       if (pre_paint_info_->box_fragment) {
@@ -1205,7 +1205,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateIndividualTransform(
         }
 
         // TODO(crbug.com/1185254): Make this work correctly for block
-        // fragmentation. It's the size of each individual NGPhysicalBoxFragment
+        // fragmentation. It's the size of each individual PhysicalBoxFragment
         // that's interesting, not the total LayoutBox size.
         state.flags.animation_is_axis_aligned =
             UpdateBoxSizeAndCheckActiveAnimationAxisAlignment(
@@ -2356,7 +2356,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowClip() {
         // the first parameter?
         state.SetClipRect(clip_rect.Rect(), clip_rect);
       } else if (object_.IsBox()) {
-        const NGPhysicalBoxFragment& box_fragment = BoxFragment();
+        const PhysicalBoxFragment& box_fragment = BoxFragment();
         PhysicalRect clip_rect =
             box_fragment.OverflowClipRect(context_.current.paint_offset,
                                           FindPreviousBreakToken(box_fragment));

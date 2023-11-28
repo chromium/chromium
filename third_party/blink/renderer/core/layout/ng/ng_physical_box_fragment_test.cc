@@ -11,25 +11,23 @@
 
 namespace blink {
 
-class NGPhysicalBoxFragmentTest : public RenderingTest {
+class PhysicalBoxFragmentTest : public RenderingTest {
  public:
-  const NGPhysicalBoxFragment& GetBodyFragment() const {
+  const PhysicalBoxFragment& GetBodyFragment() const {
     return *To<LayoutBlockFlow>(GetDocument().body()->GetLayoutObject())
                 ->GetPhysicalFragment(0);
   }
 
-  const NGPhysicalBoxFragment& GetPhysicalBoxFragmentByElementId(
-      const char* id) {
+  const PhysicalBoxFragment& GetPhysicalBoxFragmentByElementId(const char* id) {
     auto* layout_object = GetLayoutBoxByElementId(id);
     DCHECK(layout_object);
-    const NGPhysicalBoxFragment* fragment =
-        layout_object->GetPhysicalFragment(0);
+    const PhysicalBoxFragment* fragment = layout_object->GetPhysicalFragment(0);
     DCHECK(fragment);
     return *fragment;
   }
 };
 
-TEST_F(NGPhysicalBoxFragmentTest, FloatingDescendantsInlineChlidren) {
+TEST_F(PhysicalBoxFragmentTest, FloatingDescendantsInlineChlidren) {
   SetBodyInnerHTML(R"HTML(
     <div id="hasfloats">
       text
@@ -40,15 +38,13 @@ TEST_F(NGPhysicalBoxFragmentTest, FloatingDescendantsInlineChlidren) {
     </div>
   )HTML");
 
-  const NGPhysicalBoxFragment& has_floats =
-      GetPhysicalBoxFragmentByElementId("hasfloats");
+  const auto& has_floats = GetPhysicalBoxFragmentByElementId("hasfloats");
   EXPECT_TRUE(has_floats.HasFloatingDescendantsForPaint());
-  const NGPhysicalBoxFragment& no_floats =
-      GetPhysicalBoxFragmentByElementId("nofloats");
+  const auto& no_floats = GetPhysicalBoxFragmentByElementId("nofloats");
   EXPECT_FALSE(no_floats.HasFloatingDescendantsForPaint());
 }
 
-TEST_F(NGPhysicalBoxFragmentTest, FloatingDescendantsBlockChlidren) {
+TEST_F(PhysicalBoxFragmentTest, FloatingDescendantsBlockChlidren) {
   SetBodyInnerHTML(R"HTML(
     <div id="hasfloats">
       <div></div>
@@ -59,17 +55,15 @@ TEST_F(NGPhysicalBoxFragmentTest, FloatingDescendantsBlockChlidren) {
     </div>
   )HTML");
 
-  const NGPhysicalBoxFragment& has_floats =
-      GetPhysicalBoxFragmentByElementId("hasfloats");
+  const auto& has_floats = GetPhysicalBoxFragmentByElementId("hasfloats");
   EXPECT_TRUE(has_floats.HasFloatingDescendantsForPaint());
-  const NGPhysicalBoxFragment& no_floats =
-      GetPhysicalBoxFragmentByElementId("nofloats");
+  const auto& no_floats = GetPhysicalBoxFragmentByElementId("nofloats");
   EXPECT_FALSE(no_floats.HasFloatingDescendantsForPaint());
 }
 
 // HasFloatingDescendantsForPaint() should be set for each inline formatting
 // context and should not be propagated across inline formatting context.
-TEST_F(NGPhysicalBoxFragmentTest, FloatingDescendantsInlineBlock) {
+TEST_F(PhysicalBoxFragmentTest, FloatingDescendantsInlineBlock) {
   SetBodyInnerHTML(R"HTML(
     <div id="nofloats">
       text
@@ -79,17 +73,15 @@ TEST_F(NGPhysicalBoxFragmentTest, FloatingDescendantsInlineBlock) {
     </div>
   )HTML");
 
-  const NGPhysicalBoxFragment& has_floats =
-      GetPhysicalBoxFragmentByElementId("hasfloats");
+  const auto& has_floats = GetPhysicalBoxFragmentByElementId("hasfloats");
   EXPECT_TRUE(has_floats.HasFloatingDescendantsForPaint());
-  const NGPhysicalBoxFragment& no_floats =
-      GetPhysicalBoxFragmentByElementId("nofloats");
+  const auto& no_floats = GetPhysicalBoxFragmentByElementId("nofloats");
   EXPECT_FALSE(no_floats.HasFloatingDescendantsForPaint());
 }
 
 // HasFloatingDescendantsForPaint() should be set even if it crosses a block
 // formatting context.
-TEST_F(NGPhysicalBoxFragmentTest, FloatingDescendantsBlockFormattingContext) {
+TEST_F(PhysicalBoxFragmentTest, FloatingDescendantsBlockFormattingContext) {
   SetBodyInnerHTML(R"HTML(
     <div id="hasfloats">
       <div style="display: flow-root">
@@ -103,20 +95,18 @@ TEST_F(NGPhysicalBoxFragmentTest, FloatingDescendantsBlockFormattingContext) {
     </div>
   )HTML");
 
-  const NGPhysicalBoxFragment& has_floats =
-      GetPhysicalBoxFragmentByElementId("hasfloats");
+  const auto& has_floats = GetPhysicalBoxFragmentByElementId("hasfloats");
   EXPECT_TRUE(has_floats.HasFloatingDescendantsForPaint());
 
-  const NGPhysicalBoxFragment& has_floats_2 =
-      GetPhysicalBoxFragmentByElementId("hasfloats2");
+  const auto& has_floats_2 = GetPhysicalBoxFragmentByElementId("hasfloats2");
   EXPECT_TRUE(has_floats_2.HasFloatingDescendantsForPaint());
 }
 
-TEST_F(NGPhysicalBoxFragmentTest, ReplacedBlock) {
+TEST_F(PhysicalBoxFragmentTest, ReplacedBlock) {
   SetBodyInnerHTML(R"HTML(
     <img id="target" style="display: block">
   )HTML");
-  const NGPhysicalBoxFragment& body = GetBodyFragment();
+  const PhysicalBoxFragment& body = GetBodyFragment();
   const PhysicalFragment& fragment = *body.Children().front();
   EXPECT_EQ(fragment.Type(), PhysicalFragment::kFragmentBox);
   // |LayoutReplaced| sets |IsAtomicInlineLevel()| even when it is block-level.
@@ -125,7 +115,7 @@ TEST_F(NGPhysicalBoxFragmentTest, ReplacedBlock) {
   EXPECT_EQ(fragment.GetBoxType(), PhysicalFragment::kBlockFlowRoot);
 }
 
-TEST_F(NGPhysicalBoxFragmentTest, IsFragmentationContextRoot) {
+TEST_F(PhysicalBoxFragmentTest, IsFragmentationContextRoot) {
   SetBodyInnerHTML(R"HTML(
     <div id="multicol" style="columns:3;">
       <div id="child"></div>
@@ -137,7 +127,7 @@ TEST_F(NGPhysicalBoxFragmentTest, IsFragmentationContextRoot) {
 
   // There should be one column.
   EXPECT_EQ(multicol.Children().size(), 1u);
-  const auto& column = To<NGPhysicalBoxFragment>(*multicol.Children()[0]);
+  const auto& column = To<PhysicalBoxFragment>(*multicol.Children()[0]);
   EXPECT_TRUE(column.IsColumnBox());
   EXPECT_FALSE(column.IsFragmentationContextRoot());
 
@@ -145,7 +135,7 @@ TEST_F(NGPhysicalBoxFragmentTest, IsFragmentationContextRoot) {
   EXPECT_FALSE(child.IsFragmentationContextRoot());
 }
 
-TEST_F(NGPhysicalBoxFragmentTest, IsFragmentationContextRootNested) {
+TEST_F(PhysicalBoxFragmentTest, IsFragmentationContextRootNested) {
   SetBodyInnerHTML(R"HTML(
     <div id="outer" style="columns:3;">
       <div id="foo">
@@ -160,7 +150,7 @@ TEST_F(NGPhysicalBoxFragmentTest, IsFragmentationContextRootNested) {
   EXPECT_TRUE(outer.IsFragmentationContextRoot());
 
   EXPECT_EQ(outer.Children().size(), 1u);
-  const auto& outer_column = To<NGPhysicalBoxFragment>(*outer.Children()[0]);
+  const auto& outer_column = To<PhysicalBoxFragment>(*outer.Children()[0]);
   EXPECT_TRUE(outer_column.IsColumnBox());
   EXPECT_FALSE(outer_column.IsFragmentationContextRoot());
 
@@ -171,7 +161,7 @@ TEST_F(NGPhysicalBoxFragmentTest, IsFragmentationContextRootNested) {
   EXPECT_TRUE(inner.IsFragmentationContextRoot());
 
   EXPECT_EQ(inner.Children().size(), 1u);
-  const auto& inner_column = To<NGPhysicalBoxFragment>(*inner.Children()[0]);
+  const auto& inner_column = To<PhysicalBoxFragment>(*inner.Children()[0]);
   EXPECT_TRUE(inner_column.IsColumnBox());
   EXPECT_FALSE(inner_column.IsFragmentationContextRoot());
 
@@ -179,7 +169,7 @@ TEST_F(NGPhysicalBoxFragmentTest, IsFragmentationContextRootNested) {
   EXPECT_FALSE(bar.IsFragmentationContextRoot());
 }
 
-TEST_F(NGPhysicalBoxFragmentTest, IsFragmentationContextRootFieldset) {
+TEST_F(PhysicalBoxFragmentTest, IsFragmentationContextRootFieldset) {
   SetBodyInnerHTML(R"HTML(
     <fieldset id="fieldset" style="columns:3;">
       <legend id="legend"></legend>
@@ -193,25 +183,25 @@ TEST_F(NGPhysicalBoxFragmentTest, IsFragmentationContextRootFieldset) {
   // There should be a legend and an anonymous fieldset wrapper fragment.
   ASSERT_EQ(fieldset.Children().size(), 2u);
 
-  const auto& legend = To<NGPhysicalBoxFragment>(*fieldset.Children()[0]);
+  const auto& legend = To<PhysicalBoxFragment>(*fieldset.Children()[0]);
   EXPECT_EQ(To<Element>(legend.GetNode())->GetIdAttribute(), "legend");
   EXPECT_FALSE(legend.IsFragmentationContextRoot());
 
   // The multicol container is established by the anonymous content wrapper, not
   // the actual fieldset.
-  const auto& wrapper = To<NGPhysicalBoxFragment>(*fieldset.Children()[1]);
+  const auto& wrapper = To<PhysicalBoxFragment>(*fieldset.Children()[1]);
   EXPECT_FALSE(wrapper.GetNode());
   EXPECT_TRUE(wrapper.IsFragmentationContextRoot());
 
   EXPECT_EQ(wrapper.Children().size(), 1u);
-  const auto& column = To<NGPhysicalBoxFragment>(*wrapper.Children()[0]);
+  const auto& column = To<PhysicalBoxFragment>(*wrapper.Children()[0]);
   EXPECT_TRUE(column.IsColumnBox());
 
   const auto& child = GetPhysicalBoxFragmentByElementId("child");
   EXPECT_FALSE(child.IsFragmentationContextRoot());
 }
 
-TEST_F(NGPhysicalBoxFragmentTest, MayHaveDescendantAboveBlockStart) {
+TEST_F(PhysicalBoxFragmentTest, MayHaveDescendantAboveBlockStart) {
   SetBodyInnerHTML(R"HTML(
     <div id="container2">
       <div id="container">
@@ -226,8 +216,7 @@ TEST_F(NGPhysicalBoxFragmentTest, MayHaveDescendantAboveBlockStart) {
   EXPECT_TRUE(container2.MayHaveDescendantAboveBlockStart());
 }
 
-TEST_F(NGPhysicalBoxFragmentTest,
-       MayHaveDescendantAboveBlockStartBlockInInline) {
+TEST_F(PhysicalBoxFragmentTest, MayHaveDescendantAboveBlockStartBlockInInline) {
   SetBodyInnerHTML(R"HTML(
     <div id="container2">
       <div id="container">
@@ -244,7 +233,7 @@ TEST_F(NGPhysicalBoxFragmentTest,
   EXPECT_TRUE(container2.MayHaveDescendantAboveBlockStart());
 }
 
-TEST_F(NGPhysicalBoxFragmentTest, OverflowClipMarginVisualBox) {
+TEST_F(PhysicalBoxFragmentTest, OverflowClipMarginVisualBox) {
   SetBodyInnerHTML(R"HTML(
     <style>
       body {
@@ -309,12 +298,12 @@ TEST_F(NGPhysicalBoxFragmentTest, OverflowClipMarginVisualBox) {
       PhysicalRect(zero_offset, PhysicalSize(LayoutUnit(85), LayoutUnit(50))));
 }
 
-TEST_F(NGPhysicalBoxFragmentTest, CloneWithPostLayoutFragments) {
+TEST_F(PhysicalBoxFragmentTest, CloneWithPostLayoutFragments) {
   SetHtmlInnerHTML(R"HTML(<frameset id="fs"></frameset>)HTML");
   const auto& fragment = GetPhysicalBoxFragmentByElementId("fs");
   EXPECT_TRUE(fragment.GetFrameSetLayoutData());
   const auto* clone =
-      NGPhysicalBoxFragment::CloneWithPostLayoutFragments(fragment);
+      PhysicalBoxFragment::CloneWithPostLayoutFragments(fragment);
   EXPECT_TRUE(clone->GetFrameSetLayoutData());
 }
 

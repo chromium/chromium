@@ -11,7 +11,7 @@ namespace blink {
 
 class LayoutBox;
 class LayoutResult;
-class NGPhysicalBoxFragment;
+class PhysicalBoxFragment;
 
 // Fragment tree mutator / cloner / repeater.
 //
@@ -33,14 +33,14 @@ class FragmentRepeater {
   // also create new break tokens inside, in order to set unique sequence
   // numbers. The result is only usable by pre-paint / painting, not by actual
   // layout.
-  void CloneChildFragments(const NGPhysicalBoxFragment& cloned_fragment);
+  void CloneChildFragments(const PhysicalBoxFragment& cloned_fragment);
 
  private:
   const LayoutResult* Repeat(const LayoutResult& other);
 
   const LayoutResult* GetClonableLayoutResult(
       const LayoutBox& layout_box,
-      const NGPhysicalBoxFragment& fragment) const;
+      const PhysicalBoxFragment& fragment) const;
 
   // True when at the first cloned fragment.
   bool is_first_clone_;

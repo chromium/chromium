@@ -124,7 +124,7 @@ class GridLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     return growth_limits;
   }
 
-  const NGPhysicalBoxFragment* RunBlockLayoutAlgorithm(Element* element) {
+  const PhysicalBoxFragment* RunBlockLayoutAlgorithm(Element* element) {
     BlockNode container(element->GetLayoutBox());
     ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
@@ -137,7 +137,7 @@ class GridLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     return DumpFragmentTree(fragment);
   }
 
-  String DumpFragmentTree(const blink::NGPhysicalBoxFragment* fragment) {
+  String DumpFragmentTree(const blink::PhysicalBoxFragment* fragment) {
     PhysicalFragment::DumpFlags flags =
         PhysicalFragment::DumpHeaderText | PhysicalFragment::DumpSubtree |
         PhysicalFragment::DumpIndentation | PhysicalFragment::DumpOffset |

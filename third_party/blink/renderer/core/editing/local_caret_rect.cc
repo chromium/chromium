@@ -110,7 +110,7 @@ LocalCaretRect LocalCaretRectOfPositionTemplate(
   // If the caret is in an empty `LayoutBlockFlow`, and if it is block-
   // fragmented, set the first fragment to prevent rendering multiple carets in
   // following fragments.
-  const NGPhysicalBoxFragment* root_box_fragment = nullptr;
+  const PhysicalBoxFragment* root_box_fragment = nullptr;
   if (position.GetPosition().IsOffsetInAnchor() &&
       !position.GetPosition().OffsetInContainerNode()) {
     if (const auto* block_flow = DynamicTo<LayoutBlockFlow>(layout_object)) {

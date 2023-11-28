@@ -16,7 +16,7 @@ namespace blink {
 void NGFragmentPainter::PaintOutline(const PaintInfo& paint_info,
                                      const PhysicalOffset& paint_offset,
                                      const ComputedStyle& style_to_use) {
-  const NGPhysicalBoxFragment& fragment = PhysicalFragment();
+  const PhysicalBoxFragment& fragment = PhysicalFragment();
   DCHECK(HasPaintedOutline(style_to_use, fragment.GetNode()));
   VectorOutlineRectCollector collector;
   LayoutObject::OutlineInfo info;
@@ -37,7 +37,7 @@ void NGFragmentPainter::AddURLRectIfNeeded(const PaintInfo& paint_info,
                                            const PhysicalOffset& paint_offset) {
   DCHECK(paint_info.ShouldAddUrlMetadata());
 
-  const NGPhysicalBoxFragment& fragment = PhysicalFragment();
+  const PhysicalBoxFragment& fragment = PhysicalFragment();
   if (fragment.Style().Visibility() != EVisibility::kVisible) {
     return;
   }

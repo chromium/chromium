@@ -18,7 +18,7 @@ namespace blink {
 
 class LayoutObject;
 class LocalFrameView;
-class NGPhysicalBoxFragment;
+class PhysicalBoxFragment;
 class PhysicalFragment;
 struct PhysicalFragmentLink;
 
@@ -45,7 +45,7 @@ class CORE_EXPORT PrePaintTreeWalk final {
    public:
     bool IsInFragmentationContext() const;
 
-    const NGPhysicalBoxFragment* fragment = nullptr;
+    const PhysicalBoxFragment* fragment = nullptr;
     wtf_size_t fragmentainer_idx = WTF::kNotFound;
     int fragmentation_nesting_level = 0;
   };
@@ -153,7 +153,7 @@ class CORE_EXPORT PrePaintTreeWalk final {
 
   void UpdateContextForOOFContainer(const LayoutObject&,
                                     PrePaintTreeWalkContext&,
-                                    const NGPhysicalBoxFragment*);
+                                    const PhysicalBoxFragment*);
 
   void Walk(LocalFrameView&, const PrePaintTreeWalkContext& parent_context);
 
@@ -177,7 +177,7 @@ class CORE_EXPORT PrePaintTreeWalk final {
   // Returns true if there are any missable children inside the fragment, false
   // otherwise.
   bool CollectMissableChildren(PrePaintTreeWalkContext&,
-                               const NGPhysicalBoxFragment&);
+                               const PhysicalBoxFragment&);
 
   // Based on the context established by |ancestor|, modify it to become as
   // correct as possible for |object|. Any object between the ancestor and the
@@ -193,26 +193,26 @@ class CORE_EXPORT PrePaintTreeWalk final {
   // fragmentainer), and we need to behave according to specs (assume that a
   // transform origin is based on a zero-block-size box, zero clip rectangle
   // size, etc.)
-  const NGPhysicalBoxFragment* RebuildContextForMissedDescendant(
-      const NGPhysicalBoxFragment& ancestor,
+  const PhysicalBoxFragment* RebuildContextForMissedDescendant(
+      const PhysicalBoxFragment& ancestor,
       const LayoutObject& object,
       bool update_tree_builder_context,
       PrePaintTreeWalkContext&);
 
   // Walk any missed children (i.e. those collected by CollectMissableChildren()
   // and not walked by Walk()) after child object traversal.
-  void WalkMissedChildren(const NGPhysicalBoxFragment&,
+  void WalkMissedChildren(const PhysicalBoxFragment&,
                           bool is_in_fragment_traversal,
                           const PrePaintTreeWalkContext&);
 
   void WalkFragmentationContextRootChildren(const LayoutObject&,
-                                            const NGPhysicalBoxFragment&,
+                                            const PhysicalBoxFragment&,
                                             const PrePaintTreeWalkContext&);
   void WalkLayoutObjectChildren(const LayoutObject&,
-                                const NGPhysicalBoxFragment*,
+                                const PhysicalBoxFragment*,
                                 const PrePaintTreeWalkContext&);
   void WalkChildren(const LayoutObject&,
-                    const NGPhysicalBoxFragment*,
+                    const PhysicalBoxFragment*,
                     PrePaintTreeWalkContext&,
                     bool is_inside_fragment_child = false);
   void Walk(const LayoutObject&,

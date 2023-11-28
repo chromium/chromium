@@ -184,7 +184,7 @@ LayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
     const ConstraintSpace& old_space) {
   const ComputedStyle& style = node.Style();
   const auto& physical_fragment =
-      To<NGPhysicalBoxFragment>(layout_result.GetPhysicalFragment());
+      To<PhysicalBoxFragment>(layout_result.GetPhysicalFragment());
   LogicalBoxFragment fragment(style.GetWritingDirection(), physical_fragment);
 
   if (fragment_geometry.border_box_size.inline_size != fragment.InlineSize())
@@ -568,7 +568,7 @@ bool MaySkipLayoutWithinBlockFormattingContext(
     return false;
 
   const auto& physical_fragment =
-      To<NGPhysicalBoxFragment>(cached_layout_result.GetPhysicalFragment());
+      To<PhysicalBoxFragment>(cached_layout_result.GetPhysicalFragment());
 
   // Check we have a descendant that *may* be positioned above the block-start
   // edge. We abort if either the old or new space has floats, as we don't keep

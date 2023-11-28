@@ -19,7 +19,7 @@ namespace blink {
 namespace {
 
 LayoutUnit FragmentWidth(const InlineNode& node) {
-  const NGPhysicalBoxFragment* fragment =
+  const PhysicalBoxFragment* fragment =
       node.GetLayoutBox()->GetPhysicalFragment(0);
   return fragment->Size().width;
 }

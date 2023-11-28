@@ -107,7 +107,7 @@ void NGMathMLPainter::PaintRadicalSymbol(
   LayoutUnit base_child_ascent;
   if (box_fragment_.Children().size() > 0) {
     const auto& base_child =
-        To<NGPhysicalBoxFragment>(*box_fragment_.Children()[0]);
+        To<PhysicalBoxFragment>(*box_fragment_.Children()[0]);
     base_child_width = base_child.Size().width;
     base_child_ascent =
         base_child.FirstBaseline().value_or(base_child.Size().height);

@@ -369,7 +369,7 @@ void PaintLayerPainter::PaintFragmentWithPhase(
     PaintPhase phase,
     const FragmentData& fragment_data,
     wtf_size_t fragment_data_idx,
-    const NGPhysicalBoxFragment* physical_fragment,
+    const PhysicalBoxFragment* physical_fragment,
     GraphicsContext& context,
     PaintFlags paint_flags) {
   DCHECK(paint_layer_.IsSelfPaintingLayer() ||
@@ -426,7 +426,7 @@ void PaintLayerPainter::PaintWithPhase(PaintPhase phase,
 
   for (const FragmentData& fragment :
        FragmentDataIterator(paint_layer_.GetLayoutObject())) {
-    const NGPhysicalBoxFragment* physical_fragment = nullptr;
+    const PhysicalBoxFragment* physical_fragment = nullptr;
     if (layout_box_with_fragments) {
       physical_fragment =
           layout_box_with_fragments->GetPhysicalFragment(fragment_idx);

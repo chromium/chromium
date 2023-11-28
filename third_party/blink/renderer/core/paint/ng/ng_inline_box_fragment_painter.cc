@@ -182,7 +182,7 @@ void NGInlineBoxFragmentPainterBase::PaintBackgroundBorderShadow(
   DCHECK(inline_context_);
   NGBoxFragmentPainter box_painter(
       *inline_box_cursor_, inline_box_item_,
-      To<NGPhysicalBoxFragment>(inline_box_fragment_), inline_context_);
+      To<PhysicalBoxFragment>(inline_box_fragment_), inline_context_);
   PaintBoxDecorationBackground(
       box_painter, paint_info, paint_offset, adjusted_frame_rect, geometry,
       object_may_have_multiple_boxes, SidesToInclude());
@@ -267,7 +267,7 @@ void NGInlineBoxFragmentPainterBase::ComputeFragmentOffsetOnLine(
       before_self = false;
       continue;
     }
-    const NGPhysicalBoxFragment* box_fragment = cursor.Current().BoxFragment();
+    const PhysicalBoxFragment* box_fragment = cursor.Current().BoxFragment();
     DCHECK(box_fragment);
     if (before_self)
       before += LogicalFragment(writing_direction, *box_fragment).InlineSize();
@@ -527,7 +527,7 @@ void NGInlineBoxFragmentPainter::PaintAllFragments(
 
   wtf_size_t container_fragment_idx =
       first_container_cursor.ContainerFragmentIndex() + fragment_data_idx;
-  const NGPhysicalBoxFragment* container_fragment =
+  const PhysicalBoxFragment* container_fragment =
       block_flow->GetPhysicalFragment(container_fragment_idx);
 
   InlineCursor cursor(*container_fragment);
@@ -537,7 +537,7 @@ void NGInlineBoxFragmentPainter::PaintAllFragments(
         cursor, &inline_context);
     const FragmentItem* item = cursor.CurrentItem();
     DCHECK(item);
-    const NGPhysicalBoxFragment* box_fragment = item->BoxFragment();
+    const PhysicalBoxFragment* box_fragment = item->BoxFragment();
     DCHECK(box_fragment);
     NGInlineBoxFragmentPainter(cursor, *item, *box_fragment, &inline_context)
         .Paint(paint_info, paint_offset);

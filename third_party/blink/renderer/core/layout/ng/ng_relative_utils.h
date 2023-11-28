@@ -25,7 +25,7 @@ ComputeRelativeOffset(const ComputedStyle& child_style,
                       const LogicalSize& available_size);
 
 CORE_EXPORT LogicalOffset ComputeRelativeOffsetForBoxFragment(
-    const NGPhysicalBoxFragment& fragment,
+    const PhysicalBoxFragment& fragment,
     WritingDirectionMode container_writing_direction,
     const LogicalSize& available_size);
 

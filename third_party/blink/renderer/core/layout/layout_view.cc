@@ -738,12 +738,12 @@ AtomicString LayoutView::NamedPageAtIndex(wtf_size_t page_index) const {
     return AtomicString();
   }
   DCHECK_EQ(PhysicalFragmentCount(), 1u);
-  const NGPhysicalBoxFragment& view_fragment = *GetPhysicalFragment(0);
+  const PhysicalBoxFragment& view_fragment = *GetPhysicalFragment(0);
   const auto children = view_fragment.Children();
   if (page_index >= children.size()) {
     return AtomicString();
   }
-  const auto& page_fragment = To<NGPhysicalBoxFragment>(*children[page_index]);
+  const auto& page_fragment = To<PhysicalBoxFragment>(*children[page_index]);
   return page_fragment.PageName();
 }
 

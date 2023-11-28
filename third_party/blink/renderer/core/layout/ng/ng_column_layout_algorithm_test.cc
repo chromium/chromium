@@ -16,7 +16,7 @@ namespace {
 
 class ColumnLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
  protected:
-  const NGPhysicalBoxFragment* RunBlockLayoutAlgorithm(Element* element) {
+  const PhysicalBoxFragment* RunBlockLayoutAlgorithm(Element* element) {
     BlockNode container(element->GetLayoutBox());
     ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
@@ -24,7 +24,7 @@ class ColumnLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     return BaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(container, space);
   }
 
-  String DumpFragmentTree(const NGPhysicalBoxFragment* fragment) {
+  String DumpFragmentTree(const PhysicalBoxFragment* fragment) {
     PhysicalFragment::DumpFlags flags =
         PhysicalFragment::DumpHeaderText | PhysicalFragment::DumpSubtree |
         PhysicalFragment::DumpIndentation | PhysicalFragment::DumpOffset |
@@ -91,7 +91,7 @@ TEST_F(ColumnLayoutAlgorithmTest, EmptyMulticol) {
   ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(1000), kIndefiniteSize));
-  const NGPhysicalBoxFragment* parent_fragment =
+  const PhysicalBoxFragment* parent_fragment =
       BaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(container, space);
   FragmentChildIterator iterator(parent_fragment);
   const auto* fragment = iterator.NextChild();
@@ -131,7 +131,7 @@ TEST_F(ColumnLayoutAlgorithmTest, EmptyBlock) {
   ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(1000), kIndefiniteSize));
-  const NGPhysicalBoxFragment* parent_fragment =
+  const PhysicalBoxFragment* parent_fragment =
       BaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(container, space);
   FragmentChildIterator iterator(parent_fragment);
   const auto* fragment = iterator.NextChild();
@@ -180,7 +180,7 @@ TEST_F(ColumnLayoutAlgorithmTest, BlockInOneColumn) {
   ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(1000), kIndefiniteSize));
-  const NGPhysicalBoxFragment* parent_fragment =
+  const PhysicalBoxFragment* parent_fragment =
       BaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(container, space);
 
   FragmentChildIterator iterator(parent_fragment);
@@ -3070,7 +3070,7 @@ TEST_F(ColumnLayoutAlgorithmTest, ColumnBalancing100By3) {
     </div>
   )HTML");
 
-  const NGPhysicalBoxFragment* parent_fragment =
+  const PhysicalBoxFragment* parent_fragment =
       RunBlockLayoutAlgorithm(GetElementById("container"));
 
   FragmentChildIterator iterator(parent_fragment);

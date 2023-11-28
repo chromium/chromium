@@ -15,7 +15,7 @@ namespace blink {
 
 class Color;
 class DisplayItemClient;
-class NGPhysicalBoxFragment;
+class PhysicalBoxFragment;
 struct AutoDarkMode;
 struct PaintInfo;
 struct PhysicalOffset;
@@ -24,7 +24,7 @@ class NGFrameSetPainter {
   STACK_ALLOCATED();
 
  public:
-  NGFrameSetPainter(const NGPhysicalBoxFragment& box_fragment,
+  NGFrameSetPainter(const PhysicalBoxFragment& box_fragment,
                     const DisplayItemClient& display_item_client)
       : box_fragment_(box_fragment),
         display_item_client_(display_item_client) {}
@@ -43,7 +43,7 @@ class NGFrameSetPainter {
                          const Color& fill_color,
                          const AutoDarkMode& auto_dark_mode);
 
-  const NGPhysicalBoxFragment& box_fragment_;
+  const PhysicalBoxFragment& box_fragment_;
   const DisplayItemClient& display_item_client_;
 };
 

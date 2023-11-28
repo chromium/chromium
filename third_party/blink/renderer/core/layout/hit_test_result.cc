@@ -149,10 +149,9 @@ void HitTestResult::Trace(Visitor* visitor) const {
   visitor->Trace(list_based_test_result_);
 }
 
-void HitTestResult::SetNodeAndPosition(
-    Node* node,
-    const NGPhysicalBoxFragment* box_fragment,
-    const PhysicalOffset& position) {
+void HitTestResult::SetNodeAndPosition(Node* node,
+                                       const PhysicalBoxFragment* box_fragment,
+                                       const PhysicalOffset& position) {
   if (box_fragment) {
     local_point_ = position + box_fragment->OffsetFromOwnerLayoutBox();
   } else {

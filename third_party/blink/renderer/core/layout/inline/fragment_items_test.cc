@@ -93,7 +93,7 @@ TEST_F(FragmentItemsTest, IsContainerForCulledInline) {
   ASSERT_TRUE(area);
 
   ASSERT_EQ(container->PhysicalFragmentCount(), 7u);
-  const NGPhysicalBoxFragment* fragment = container->GetPhysicalFragment(0);
+  const PhysicalBoxFragment* fragment = container->GetPhysicalFragment(0);
   ASSERT_TRUE(fragment->Items());
   bool is_first, is_last, has_any_child;
   EXPECT_FALSE(fragment->Items()->IsContainerForCulledInline(

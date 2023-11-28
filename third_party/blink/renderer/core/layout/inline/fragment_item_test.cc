@@ -46,7 +46,7 @@ class FragmentItemTest : public RenderingTest {
 
   void TestFirstDirtyLineIndex(const char* id, wtf_size_t expected_index) {
     LayoutBlockFlow* block_flow = GetLayoutBlockFlowByElementId(id);
-    const NGPhysicalBoxFragment* fragment = block_flow->GetPhysicalFragment(0);
+    const PhysicalBoxFragment* fragment = block_flow->GetPhysicalFragment(0);
     const FragmentItems* items = fragment->Items();
     FragmentItems::DirtyLinesFromNeedsLayout(*block_flow);
     const FragmentItem* end_reusable_item =
@@ -153,7 +153,7 @@ TEST_F(FragmentItemTest, BasicText) {
   auto* container =
       To<LayoutBlockFlow>(GetLayoutObjectByElementId("container"));
   auto* layout_text = To<LayoutText>(container->FirstChild());
-  const NGPhysicalBoxFragment* box = container->GetPhysicalFragment(0);
+  const PhysicalBoxFragment* box = container->GetPhysicalFragment(0);
   EXPECT_NE(box, nullptr);
   const FragmentItems* items = box->Items();
   EXPECT_NE(items, nullptr);
@@ -200,7 +200,7 @@ TEST_F(FragmentItemTest, RtlText) {
       To<LayoutBlockFlow>(GetLayoutObjectByElementId("container"));
   LayoutObject* span = GetLayoutObjectByElementId("span");
   auto* layout_text = To<LayoutText>(span->SlowFirstChild());
-  const NGPhysicalBoxFragment* box = container->GetPhysicalFragment(0);
+  const PhysicalBoxFragment* box = container->GetPhysicalFragment(0);
   EXPECT_NE(box, nullptr);
   const FragmentItems* items = box->Items();
   EXPECT_NE(items, nullptr);

@@ -484,7 +484,7 @@ ScrollAnchor::WalkStatus ScrollAnchor::FindAnchorInOOFs(
   // need to check for that.
   bool is_block_fragmentation_context_root =
       IsNGBlockFragmentationRoot(DynamicTo<LayoutNGBlockFlow>(layout_block));
-  for (const NGPhysicalBoxFragment& fragment :
+  for (const PhysicalBoxFragment& fragment :
        layout_block->PhysicalFragments()) {
     if (!fragment.HasOutOfFlowFragmentChild() &&
         !is_block_fragmentation_context_root)

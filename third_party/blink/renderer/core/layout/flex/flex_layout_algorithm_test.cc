@@ -54,10 +54,10 @@ TEST_F(FlexLayoutAlgorithmTest, ReplacedAspectRatioPrecision) {
       LogicalSize(LayoutUnit(100), kIndefiniteSize));
   BlockNode box(GetDocument().body()->GetLayoutBox());
 
-  const NGPhysicalBoxFragment* fragment = RunBlockLayoutAlgorithm(box, space);
+  const PhysicalBoxFragment* fragment = RunBlockLayoutAlgorithm(box, space);
   EXPECT_EQ(PhysicalSize(84, 22), fragment->Size());
   ASSERT_EQ(1u, fragment->Children().size());
-  fragment = To<NGPhysicalBoxFragment>(fragment->Children()[0].get());
+  fragment = To<PhysicalBoxFragment>(fragment->Children()[0].get());
   EXPECT_EQ(PhysicalSize(50, 22), fragment->Size());
   ASSERT_EQ(1u, fragment->Children().size());
   EXPECT_EQ(PhysicalSize(29, 22), fragment->Children()[0]->Size());

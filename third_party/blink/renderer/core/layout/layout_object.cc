@@ -585,7 +585,7 @@ void LayoutObject::AssertFragmentTree(bool display_locked) const {
     // Check the direct children of the fragment. Grand-children and further
     // descendants will be checked by descendant LayoutObjects.
     if (const auto* box = DynamicTo<LayoutBox>(layout_object)) {
-      for (const NGPhysicalBoxFragment& fragment : box->PhysicalFragments()) {
+      for (const PhysicalBoxFragment& fragment : box->PhysicalFragments()) {
         DCHECK_EQ(box, fragment.OwnerLayoutBox());
         fragment.AssertFragmentTreeChildren(
             /* allow_destroyed_or_moved */ display_locked);
@@ -605,7 +605,7 @@ void LayoutObject::AssertClearedPaintInvalidationFlags() const {
     NOTREACHED();
   }
 
-  // Assert that the number of FragmentData and NGPhysicalBoxFragment objects
+  // Assert that the number of FragmentData and PhysicalBoxFragment objects
   // are identical. This was added as part of investigating crbug.com/1244130
 
   // Only LayoutBox has fragments. Bail if it's not a box, or if fragment
@@ -2056,8 +2056,9 @@ void LayoutObject::InvalidateVisualOverflow() {
 #if DCHECK_IS_ON()
 void LayoutObject::InvalidateVisualOverflowForDCheck() {
   if (auto* box = DynamicTo<LayoutBox>(this)) {
-    for (const NGPhysicalBoxFragment& fragment : box->PhysicalFragments())
+    for (const PhysicalBoxFragment& fragment : box->PhysicalFragments()) {
       fragment.GetMutableForPainting().InvalidateInkOverflow();
+    }
   }
   // For now, we can only check |LayoutBox| laid out by NG.
 }
@@ -5011,7 +5012,7 @@ Vector<PhysicalRect> LayoutObject::CollectOutlineRectsAndAdvance(
       const FragmentItem* item = iterator.Cursor()->Current().Item();
       if (!item)
         continue;
-      if (const NGPhysicalBoxFragment* box_fragment = item->BoxFragment()) {
+      if (const PhysicalBoxFragment* box_fragment = item->BoxFragment()) {
         box_fragment->AddSelfOutlineRects(
             paint_offset + item->OffsetInContainerFragment(), outline_type,
             collector, nullptr);
@@ -5028,8 +5029,7 @@ Vector<PhysicalRect> LayoutObject::CollectOutlineRectsAndAdvance(
              iterator.Cursor()->ContainerFragmentIndex() == fragment_index);
     outline_rects = collector.TakeRects();
   } else {
-    if (const NGPhysicalBoxFragment* box_fragment =
-            iterator.GetPhysicalBoxFragment()) {
+    if (const auto* box_fragment = iterator.GetPhysicalBoxFragment()) {
       box_fragment->AddSelfOutlineRects(paint_offset, outline_type, collector,
                                         nullptr);
       outline_rects = collector.TakeRects();

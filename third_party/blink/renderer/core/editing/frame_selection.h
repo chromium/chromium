@@ -46,22 +46,22 @@ namespace blink {
 
 class EffectPaintPropertyNode;
 class Element;
-class LayoutBlock;
-class LayoutText;
-class LocalFrame;
 class FrameCaret;
 class GranularityStrategy;
 class GraphicsContext;
 class InlineCursor;
 class InlineCursorPosition;
-class NGPhysicalBoxFragment;
+class LayoutBlock;
+class LayoutSelection;
+class LayoutText;
+class LocalFrame;
+class PhysicalBoxFragment;
 class Range;
 class SelectionEditor;
-class LayoutSelection;
+class TextIteratorBehavior;
 enum class SelectionModifyAlteration;
 enum class SelectionModifyDirection;
 enum class SelectionState;
-class TextIteratorBehavior;
 struct PaintInvalidatorContext;
 struct PhysicalOffset;
 struct PhysicalRect;
@@ -201,7 +201,7 @@ class CORE_EXPORT FrameSelection final
   // Returns true if specified layout block should paint caret. This function is
   // called during painting only.
   bool ShouldPaintCaret(const LayoutBlock&) const;
-  bool ShouldPaintCaret(const NGPhysicalBoxFragment&) const;
+  bool ShouldPaintCaret(const PhysicalBoxFragment&) const;
 
   // Bounds of (possibly transformed) caret in absolute coords
   gfx::Rect AbsoluteCaretBounds() const;

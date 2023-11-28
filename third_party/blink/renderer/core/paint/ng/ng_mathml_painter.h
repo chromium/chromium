@@ -13,15 +13,15 @@ class Rect;
 
 namespace blink {
 
+class PhysicalBoxFragment;
 struct PaintInfo;
 struct PhysicalOffset;
-class NGPhysicalBoxFragment;
 
 class NGMathMLPainter {
   STACK_ALLOCATED();
 
  public:
-  explicit NGMathMLPainter(const NGPhysicalBoxFragment& box_fragment)
+  explicit NGMathMLPainter(const PhysicalBoxFragment& box_fragment)
       : box_fragment_(box_fragment) {}
   void Paint(const PaintInfo&, PhysicalOffset);
 
@@ -32,7 +32,7 @@ class NGMathMLPainter {
   void PaintRadicalSymbol(const PaintInfo&, PhysicalOffset);
   void PaintStretchyOrLargeOperator(const PaintInfo&, PhysicalOffset);
 
-  const NGPhysicalBoxFragment& box_fragment_;
+  const PhysicalBoxFragment& box_fragment_;
 };
 
 }  // namespace blink

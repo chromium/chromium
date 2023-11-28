@@ -14,7 +14,7 @@ namespace blink {
 class ParagraphLineBreakerTest : public RenderingTest {
  public:
   absl::optional<LayoutUnit> AttemptParagraphBalancing(const InlineNode& node) {
-    const NGPhysicalBoxFragment* fragment =
+    const PhysicalBoxFragment* fragment =
         node.GetLayoutBox()->GetPhysicalFragment(0);
     const LayoutUnit width = fragment->Size().width;
     ConstraintSpace space = ConstraintSpaceForAvailableSize(width);

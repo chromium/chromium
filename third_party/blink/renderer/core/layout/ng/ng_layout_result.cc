@@ -40,16 +40,16 @@ ASSERT_SIZE(LayoutResult, SameSizeAsLayoutResult);
 // static
 const LayoutResult* LayoutResult::Clone(const LayoutResult& other) {
   return MakeGarbageCollected<LayoutResult>(
-      other, NGPhysicalBoxFragment::Clone(
-                 To<NGPhysicalBoxFragment>(other.GetPhysicalFragment())));
+      other, PhysicalBoxFragment::Clone(
+                 To<PhysicalBoxFragment>(other.GetPhysicalFragment())));
 }
 
 // static
 const LayoutResult* LayoutResult::CloneWithPostLayoutFragments(
     const LayoutResult& other) {
   return MakeGarbageCollected<LayoutResult>(
-      other, NGPhysicalBoxFragment::CloneWithPostLayoutFragments(
-                 To<NGPhysicalBoxFragment>(other.GetPhysicalFragment())));
+      other, PhysicalBoxFragment::CloneWithPostLayoutFragments(
+                 To<PhysicalBoxFragment>(other.GetPhysicalFragment())));
 }
 
 LayoutResult::LayoutResult(BoxFragmentBuilderPassKey passkey,
@@ -318,9 +318,9 @@ void LayoutResult::CheckSameForSimplifiedLayout(
     const LayoutResult& other,
     bool check_same_block_size,
     bool check_no_fragmentation) const {
-  To<NGPhysicalBoxFragment>(*physical_fragment_)
+  To<PhysicalBoxFragment>(*physical_fragment_)
       .CheckSameForSimplifiedLayout(
-          To<NGPhysicalBoxFragment>(*other.physical_fragment_),
+          To<PhysicalBoxFragment>(*other.physical_fragment_),
           check_same_block_size, check_no_fragmentation);
 
   DCHECK(LinesUntilClamp() == other.LinesUntilClamp());
@@ -362,7 +362,7 @@ void LayoutResult::CheckSameForSimplifiedLayout(
 #if DCHECK_IS_ON()
 void LayoutResult::AssertSoleBoxFragment() const {
   DCHECK(physical_fragment_->IsBox());
-  DCHECK(To<NGPhysicalBoxFragment>(GetPhysicalFragment()).IsFirstForNode());
+  DCHECK(To<PhysicalBoxFragment>(GetPhysicalFragment()).IsFirstForNode());
   DCHECK(!physical_fragment_->GetBreakToken());
 }
 #endif

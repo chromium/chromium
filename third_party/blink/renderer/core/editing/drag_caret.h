@@ -35,7 +35,7 @@
 namespace blink {
 
 class LayoutBlock;
-class NGPhysicalBoxFragment;
+class PhysicalBoxFragment;
 struct PaintInvalidatorContext;
 
 class DragCaret final : public GarbageCollected<DragCaret>,
@@ -52,7 +52,7 @@ class DragCaret final : public GarbageCollected<DragCaret>,
   void InvalidatePaint(const LayoutBlock&, const PaintInvalidatorContext&);
 
   bool ShouldPaintCaret(const LayoutBlock&) const;
-  bool ShouldPaintCaret(const NGPhysicalBoxFragment&) const;
+  bool ShouldPaintCaret(const PhysicalBoxFragment&) const;
   void PaintDragCaret(const LocalFrame*,
                       GraphicsContext&,
                       const PhysicalOffset&) const;

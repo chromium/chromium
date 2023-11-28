@@ -275,14 +275,13 @@ PhysicalRect BackgroundImageGeometry::FixedAttachmentPositioningArea(
 namespace {
 
 // Computes the stitched table-grid rect relative to the current fragment.
-PhysicalRect ComputeStitchedTableGridRect(
-    const NGPhysicalBoxFragment& fragment) {
+PhysicalRect ComputeStitchedTableGridRect(const PhysicalBoxFragment& fragment) {
   const auto writing_direction = fragment.Style().GetWritingDirection();
   LogicalRect table_grid_rect;
   LogicalRect fragment_local_grid_rect;
   LayoutUnit stitched_block_size;
 
-  for (const NGPhysicalBoxFragment& walker :
+  for (const PhysicalBoxFragment& walker :
        To<LayoutBox>(fragment.GetLayoutObject())->PhysicalFragments()) {
     LogicalRect local_grid_rect = walker.TableGridRect();
     local_grid_rect.offset.block_offset += stitched_block_size;
@@ -341,7 +340,7 @@ BackgroundImageGeometry::BackgroundImageGeometry(const LayoutTableCell& cell,
 }
 
 BackgroundImageGeometry::BackgroundImageGeometry(
-    const NGPhysicalBoxFragment& fragment)
+    const PhysicalBoxFragment& fragment)
     : BackgroundImageGeometry(
           To<LayoutBoxModelObject>(fragment.GetLayoutObject()),
           To<LayoutBoxModelObject>(fragment.GetLayoutObject())) {

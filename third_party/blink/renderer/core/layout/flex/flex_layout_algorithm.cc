@@ -1519,7 +1519,7 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
       }
 
       const auto& physical_fragment =
-          To<NGPhysicalBoxFragment>(layout_result->GetPhysicalFragment());
+          To<PhysicalBoxFragment>(layout_result->GetPhysicalFragment());
 
       const auto writing_direction = GetConstraintSpace().GetWritingDirection();
       LogicalBoxFragment fragment(writing_direction, physical_fragment);
@@ -1910,7 +1910,7 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     }
 
     const auto& physical_fragment =
-        To<NGPhysicalBoxFragment>(layout_result->GetPhysicalFragment());
+        To<PhysicalBoxFragment>(layout_result->GetPhysicalFragment());
 
     LogicalBoxFragment fragment(GetConstraintSpace().GetWritingDirection(),
                                 physical_fragment);
@@ -2142,7 +2142,7 @@ void FlexLayoutAlgorithm::AdjustButtonBaseline(
   DCHECK(!child.fragment->IsLineBox());
   const auto& space = GetConstraintSpace();
   LogicalBoxFragment fragment(space.GetWritingDirection(),
-                              To<NGPhysicalBoxFragment>(*child.fragment));
+                              To<PhysicalBoxFragment>(*child.fragment));
   absl::optional<LayoutUnit> child_baseline =
       space.GetBaselineAlgorithmType() == BaselineAlgorithmType::kDefault
           ? fragment.FirstBaseline()

@@ -1636,7 +1636,7 @@ PaintLayer* PaintLayer::HitTestLayerByApplyingTransform(
 
 bool PaintLayer::HitTestFragmentWithPhase(
     HitTestResult& result,
-    const NGPhysicalBoxFragment* physical_fragment,
+    const PhysicalBoxFragment* physical_fragment,
     const PhysicalOffset& fragment_offset,
     const HitTestLocation& hit_test_location,
     HitTestPhase phase) const {

@@ -150,7 +150,7 @@ inline void InlineCursor::MoveToItem(const ItemsSpan::iterator& iter) {
   MakeNull();
 }
 
-void InlineCursor::SetRoot(const NGPhysicalBoxFragment& box_fragment,
+void InlineCursor::SetRoot(const PhysicalBoxFragment& box_fragment,
                            const FragmentItems& fragment_items,
                            ItemsSpan items) {
   DCHECK_EQ(box_fragment.Items(), &fragment_items);
@@ -162,7 +162,7 @@ void InlineCursor::SetRoot(const NGPhysicalBoxFragment& box_fragment,
   MoveToItem(items_.begin());
 }
 
-void InlineCursor::SetRoot(const NGPhysicalBoxFragment& box_fragment,
+void InlineCursor::SetRoot(const PhysicalBoxFragment& box_fragment,
                            const FragmentItems& items) {
   SetRoot(box_fragment, items, items.Items());
 }
@@ -178,7 +178,7 @@ bool InlineCursor::TrySetRootFragmentItems() {
     return false;
   }
   for (; fragment_index_ <= max_fragment_index_; IncrementFragmentIndex()) {
-    const NGPhysicalBoxFragment* fragment =
+    const PhysicalBoxFragment* fragment =
         root_block_flow_->GetPhysicalFragment(fragment_index_);
     DCHECK(fragment);
     if (const FragmentItems* items = fragment->Items()) {
@@ -210,18 +210,18 @@ InlineCursor::InlineCursor(const LayoutBlockFlow& block_flow) {
   SetRoot(block_flow);
 }
 
-InlineCursor::InlineCursor(const NGPhysicalBoxFragment& box_fragment,
+InlineCursor::InlineCursor(const PhysicalBoxFragment& box_fragment,
                            const FragmentItems& fragment_items,
                            ItemsSpan items) {
   SetRoot(box_fragment, fragment_items, items);
 }
 
-InlineCursor::InlineCursor(const NGPhysicalBoxFragment& box_fragment,
+InlineCursor::InlineCursor(const PhysicalBoxFragment& box_fragment,
                            const FragmentItems& items) {
   SetRoot(box_fragment, items);
 }
 
-InlineCursor::InlineCursor(const NGPhysicalBoxFragment& box_fragment) {
+InlineCursor::InlineCursor(const PhysicalBoxFragment& box_fragment) {
   if (const FragmentItems* items = box_fragment.Items()) {
     SetRoot(box_fragment, *items);
   }
@@ -601,7 +601,7 @@ PhysicalRect InlineCursorPosition::ConvertChildToPhysical(
 
 PositionWithAffinity InlineCursor::PositionForPointInInlineFormattingContext(
     const PhysicalOffset& point,
-    const NGPhysicalBoxFragment& container) {
+    const PhysicalBoxFragment& container) {
   DCHECK(HasRoot());
   const auto writing_direction = container.Style().GetWritingDirection();
   const PhysicalSize& container_size = container.Size();
@@ -840,8 +840,7 @@ PositionWithAffinity InlineCursor::PositionForPointInChild(
     case FragmentItem::kGeneratedText:
       break;
     case FragmentItem::kBox:
-      if (const NGPhysicalBoxFragment* box_fragment =
-              child_item.BoxFragment()) {
+      if (const PhysicalBoxFragment* box_fragment = child_item.BoxFragment()) {
         if (!box_fragment->IsInlineBox()) {
           // In case of inline block with with block formatting context that
           // has block children[1].

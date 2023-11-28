@@ -111,8 +111,7 @@ TEST_F(PhysicalFragmentTest, DumpFragmentTreeWithTargetInsideColumn) {
   ASSERT_TRUE(child_object->IsBox());
   const LayoutBox& box = To<LayoutBox>(*child_object);
   ASSERT_EQ(box.PhysicalFragmentCount(), 3u);
-  const NGPhysicalBoxFragment* second_child_fragment =
-      box.GetPhysicalFragment(1);
+  const PhysicalBoxFragment* second_child_fragment = box.GetPhysicalFragment(1);
 
   String dump = DumpAll(second_child_fragment);
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.

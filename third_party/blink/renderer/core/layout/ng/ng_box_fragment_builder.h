@@ -412,7 +412,7 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
     is_truncated_by_fragmentation_line = true;
   }
 
-  // See |NGPhysicalBoxFragment::InflowBounds|.
+  // See |PhysicalBoxFragment::InflowBounds|.
   void SetInflowBounds(const LogicalRect& inflow_bounds) {
     DCHECK_NE(box_type_, PhysicalFragment::BoxType::kInlineBox);
     DCHECK(Node().IsScrollContainer());
@@ -720,8 +720,8 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
 #endif
 
   friend class BlockBreakToken;
-  friend class NGPhysicalBoxFragment;
   friend class LayoutResult;
+  friend class PhysicalBoxFragment;
   friend class PhysicalFragmentRareData;
 };
 

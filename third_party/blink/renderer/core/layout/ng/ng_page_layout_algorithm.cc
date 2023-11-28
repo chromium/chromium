@@ -32,7 +32,7 @@ const LayoutResult* PageLayoutAlgorithm::Layout() {
 
   do {
     // Lay out one page. Each page will become a fragment.
-    const NGPhysicalBoxFragment* page =
+    const PhysicalBoxFragment* page =
         LayoutPage(page_index, page_name, break_token);
 
     if (page_name != page->PageName()) {
@@ -82,7 +82,7 @@ MinMaxSizesResult PageLayoutAlgorithm::ComputeMinMaxSizes(
   return MinMaxSizesResult();
 }
 
-const NGPhysicalBoxFragment* PageLayoutAlgorithm::LayoutPage(
+const PhysicalBoxFragment* PageLayoutAlgorithm::LayoutPage(
     uint32_t page_index,
     const AtomicString& page_name,
     const BlockBreakToken* break_token) const {
@@ -100,7 +100,7 @@ const NGPhysicalBoxFragment* PageLayoutAlgorithm::LayoutPage(
       {Node(), fragment_geometry, child_space, break_token});
   child_algorithm.SetBoxType(PhysicalFragment::kPageBox);
   const LayoutResult* result = child_algorithm.Layout();
-  return &To<NGPhysicalBoxFragment>(result->GetPhysicalFragment());
+  return &To<PhysicalBoxFragment>(result->GetPhysicalFragment());
 }
 
 ConstraintSpace PageLayoutAlgorithm::CreateConstraintSpaceForPages(

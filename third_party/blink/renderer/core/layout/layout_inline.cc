@@ -623,7 +623,7 @@ bool LayoutInline::NodeAtPoint(HitTestResult& result,
         continue;
       DCHECK(cursor.Current().Item());
       const FragmentItem& item = *cursor.Current().Item();
-      const NGPhysicalBoxFragment* box_fragment = item.BoxFragment();
+      const PhysicalBoxFragment* box_fragment = item.BoxFragment();
       DCHECK(box_fragment);
       // NGBoxFragmentPainter::NodeAtPoint() takes an offset that is accumulated
       // up to the fragment itself. Compute this offset.

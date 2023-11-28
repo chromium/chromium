@@ -79,7 +79,7 @@ String StringForBoxType(const PhysicalFragment& fragment) {
     result.Append("fieldset-container");
   }
   if (fragment.IsBox() &&
-      To<NGPhysicalBoxFragment>(fragment).IsInlineFormattingContext()) {
+      To<PhysicalBoxFragment>(fragment).IsInlineFormattingContext()) {
     if (result.length())
       result.Append(" ");
     result.Append("children-inline");
@@ -103,7 +103,7 @@ class FragmentTreeDumper {
     AppendIndentation(indent, fragment);
 
     bool has_content = false;
-    if (const auto* box = DynamicTo<NGPhysicalBoxFragment>(fragment)) {
+    if (const auto* box = DynamicTo<PhysicalBoxFragment>(fragment)) {
       if (box->IsLayoutObjectDestroyedOrMoved()) {
         builder_->Append("DEAD LAYOUT OBJECT!\n");
         return;
@@ -467,7 +467,7 @@ PhysicalFragment::~PhysicalFragment() {
 void PhysicalFragment::Dispose() {
   switch (Type()) {
     case kFragmentBox:
-      static_cast<NGPhysicalBoxFragment*>(this)->Dispose();
+      static_cast<PhysicalBoxFragment*>(this)->Dispose();
       break;
     case kFragmentLineBox:
       static_cast<PhysicalLineBoxFragment*>(this)->Dispose();
@@ -543,8 +543,9 @@ bool PhysicalFragment::IsMonolithic() const {
   // wrapper inside the line is breakable.
   if (IsLineBox())
     return !IsBlockInInline();
-  if (const auto* box_fragment = DynamicTo<NGPhysicalBoxFragment>(this))
+  if (const auto* box_fragment = DynamicTo<PhysicalBoxFragment>(this)) {
     return box_fragment->IsMonolithic();
+  }
   return false;
 }
 
@@ -561,13 +562,13 @@ const FragmentData* PhysicalFragment::GetFragmentData() const {
     DCHECK(!GetLayoutObject());
     return nullptr;
   }
-  return box->FragmentDataFromPhysicalFragment(
-      To<NGPhysicalBoxFragment>(*this));
+  return box->FragmentDataFromPhysicalFragment(To<PhysicalBoxFragment>(*this));
 }
 
 const PhysicalFragment* PhysicalFragment::PostLayout() const {
-  if (const auto* box = DynamicTo<NGPhysicalBoxFragment>(this))
+  if (const auto* box = DynamicTo<PhysicalBoxFragment>(this)) {
     return box->PostLayout();
+  }
   return this;
 }
 
@@ -619,10 +620,10 @@ void PhysicalFragment::CheckType() const {
 #endif
 
 PhysicalRect PhysicalFragment::ComputeRubyEmHeightBox(
-    const NGPhysicalBoxFragment& container) const {
+    const PhysicalBoxFragment& container) const {
   switch (Type()) {
     case kFragmentBox:
-      return To<NGPhysicalBoxFragment>(*this).ComputeRubyEmHeightBox();
+      return To<PhysicalBoxFragment>(*this).ComputeRubyEmHeightBox();
     case kFragmentLineBox:
       NOTREACHED() << "You must call LineBoxFragment::ComputeRubyEmHeightBox "
                       "explicitly.";
@@ -633,14 +634,14 @@ PhysicalRect PhysicalFragment::ComputeRubyEmHeightBox(
 }
 
 PhysicalRect PhysicalFragment::ComputeRubyEmHeightBoxForPropagation(
-    const NGPhysicalBoxFragment& container) const {
+    const PhysicalBoxFragment& container) const {
   PhysicalRect overflow = ComputeRubyEmHeightBox(container);
   AdjustRubyEmHeightBoxForPropagation(container, &overflow);
   return overflow;
 }
 
 void PhysicalFragment::AdjustRubyEmHeightBoxForPropagation(
-    const NGPhysicalBoxFragment& container,
+    const PhysicalBoxFragment& container,
     PhysicalRect* overflow) const {
   DCHECK(!IsLineBox());
   if (!IsCSSBox())
@@ -719,7 +720,7 @@ String PhysicalFragment::DumpFragmentTree(const LayoutObject& root,
 void PhysicalFragment::Trace(Visitor* visitor) const {
   switch (Type()) {
     case kFragmentBox:
-      static_cast<const NGPhysicalBoxFragment*>(this)->TraceAfterDispatch(
+      static_cast<const PhysicalBoxFragment*>(this)->TraceAfterDispatch(
           visitor);
       break;
     case kFragmentLineBox:
@@ -740,15 +741,14 @@ void PhysicalFragment::TraceAfterDispatch(Visitor* visitor) const {
 // casting and/or branching to the callers.
 base::span<const PhysicalFragmentLink> PhysicalFragment::Children() const {
   if (Type() == kFragmentBox)
-    return static_cast<const NGPhysicalBoxFragment*>(this)->Children();
+    return static_cast<const PhysicalBoxFragment*>(this)->Children();
   return base::make_span(static_cast<PhysicalFragmentLink*>(nullptr), 0u);
 }
 
 PhysicalFragment::PostLayoutChildLinkList PhysicalFragment::PostLayoutChildren()
     const {
   if (Type() == kFragmentBox) {
-    return static_cast<const NGPhysicalBoxFragment*>(this)
-        ->PostLayoutChildren();
+    return static_cast<const PhysicalBoxFragment*>(this)->PostLayoutChildren();
   }
   return PostLayoutChildLinkList(0, nullptr);
 }
@@ -769,7 +769,7 @@ void PhysicalFragment::AddOutlineRectsForNormalChildren(
     const PhysicalOffset& additional_offset,
     OutlineType outline_type,
     const LayoutBoxModelObject* containing_block) const {
-  if (const auto* box = DynamicTo<NGPhysicalBoxFragment>(this)) {
+  if (const auto* box = DynamicTo<PhysicalBoxFragment>(this)) {
     DCHECK_EQ(box->PostLayout(), box);
     if (const FragmentItems* items = box->Items()) {
       InlineCursor cursor(*box, *items);
@@ -788,7 +788,7 @@ void PhysicalFragment::AddOutlineRectsForNormalChildren(
 
   for (const auto& child : PostLayoutChildren()) {
     // Outlines of out-of-flow positioned descendants are handled in
-    // NGPhysicalBoxFragment::AddSelfOutlineRects().
+    // PhysicalBoxFragment::AddSelfOutlineRects().
     if (child->IsOutOfFlowPositioned())
       continue;
     AddOutlineRectsForDescendant(child, collector, additional_offset,
@@ -839,7 +839,7 @@ void PhysicalFragment::AddOutlineRectsForCursor(
         break;
       }
       case FragmentItem::kBox: {
-        if (const NGPhysicalBoxFragment* child_box =
+        if (const PhysicalBoxFragment* child_box =
                 item.PostLayoutBoxFragment()) {
           DCHECK(!child_box->IsOutOfFlowPositioned());
           AddOutlineRectsForDescendant(
@@ -860,7 +860,7 @@ void PhysicalFragment::AddOutlineRectsForCursor(
 }
 
 void PhysicalFragment::AddRubyEmHeightBoxForInlineChild(
-    const NGPhysicalBoxFragment& container,
+    const PhysicalBoxFragment& container,
     const ComputedStyle& container_style,
     const FragmentItem& line,
     bool has_hanging,
@@ -894,8 +894,7 @@ void PhysicalFragment::AddRubyEmHeightBoxForInlineChild(
       continue;
     }
 
-    if (const NGPhysicalBoxFragment* child_box =
-            item->PostLayoutBoxFragment()) {
+    if (const PhysicalBoxFragment* child_box = item->PostLayoutBoxFragment()) {
       PhysicalRect child_scroll_overflow;
       if (child_box->GetBoxType() != kInlineBox && !IsRubyBox()) {
         child_scroll_overflow = item->RectInContainerFragment();
@@ -961,7 +960,7 @@ void PhysicalFragment::AddOutlineRectsForDescendant(
     return;
 
   if (const auto* descendant_box =
-          DynamicTo<NGPhysicalBoxFragment>(descendant.get())) {
+          DynamicTo<PhysicalBoxFragment>(descendant.get())) {
     DCHECK_EQ(descendant_box->PostLayout(), descendant_box);
     const LayoutObject* descendant_layout_object =
         descendant_box->GetLayoutObject();

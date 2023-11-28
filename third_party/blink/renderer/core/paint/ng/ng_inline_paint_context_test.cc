@@ -93,7 +93,7 @@ TEST_F(NGInlinePaintContextTest, MultiLine) {
   EXPECT_EQ(text1_item.InkOverflowRect(), PhysicalRect(0, 0, 10, 10));
 
   // Test the containing block.
-  const NGPhysicalBoxFragment& container_fragment = cursor.ContainerFragment();
+  const PhysicalBoxFragment& container_fragment = cursor.ContainerFragment();
   EXPECT_EQ(container_fragment.InkOverflowRect(), PhysicalRect(0, 0, 800, 40));
 }
 

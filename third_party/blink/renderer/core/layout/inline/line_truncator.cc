@@ -409,7 +409,7 @@ void LineTruncator::HideChild(LogicalLineItem* child) {
   if (const LayoutResult* layout_result = child->layout_result) {
     // Need to propagate OOF descendants in this inline-block child.
     const auto& fragment =
-        To<NGPhysicalBoxFragment>(layout_result->GetPhysicalFragment());
+        To<PhysicalBoxFragment>(layout_result->GetPhysicalFragment());
     if (fragment.HasOutOfFlowPositionedDescendants())
       return;
 

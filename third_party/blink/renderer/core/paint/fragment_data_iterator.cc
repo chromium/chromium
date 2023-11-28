@@ -26,8 +26,8 @@ AccompaniedFragmentIterator::AccompaniedFragmentIterator(
   }
 }
 
-const NGPhysicalBoxFragment*
-AccompaniedFragmentIterator::GetPhysicalBoxFragment() const {
+const PhysicalBoxFragment* AccompaniedFragmentIterator::GetPhysicalBoxFragment()
+    const {
   if (ng_layout_box_) {
     return ng_layout_box_->GetPhysicalFragment(idx_);
   }

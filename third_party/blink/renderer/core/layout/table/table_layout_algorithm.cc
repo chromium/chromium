@@ -1335,7 +1335,7 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
       child_inline_offset = section_inline_offset;
 
       border_spacing_after_last_section = border_spacing.block_size;
-      if (To<NGPhysicalBoxFragment>(child_result->GetPhysicalFragment())
+      if (To<PhysicalBoxFragment>(child_result->GetPhysicalFragment())
               .HasDescendantsForTablePart()) {
         // We want to add border-spacing after this section, but not if the
         // current fragment is past the block-end of the section. This might
@@ -1373,7 +1373,7 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
     }
 
     const auto& physical_fragment =
-        To<NGPhysicalBoxFragment>(child_result->GetPhysicalFragment());
+        To<PhysicalBoxFragment>(child_result->GetPhysicalFragment());
     LogicalBoxFragment fragment(table_writing_direction, physical_fragment);
     if (child.IsTableSection()) {
       if (!is_repeated_section) {

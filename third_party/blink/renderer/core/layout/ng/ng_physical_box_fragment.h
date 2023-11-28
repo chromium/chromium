@@ -30,43 +30,43 @@ class BoxFragmentBuilder;
 enum class OutlineType;
 struct FrameSetLayoutData;
 
-class CORE_EXPORT NGPhysicalBoxFragment final : public PhysicalFragment {
+class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
  public:
-  static const NGPhysicalBoxFragment* Create(
+  static const PhysicalBoxFragment* Create(
       BoxFragmentBuilder* builder,
       WritingMode block_or_line_writing_mode);
 
   // Creates a shallow copy of |other|.
-  static const NGPhysicalBoxFragment* Clone(const NGPhysicalBoxFragment& other);
+  static const PhysicalBoxFragment* Clone(const PhysicalBoxFragment& other);
 
   // Creates a shallow copy of |other| but uses the "post-layout" fragments to
   // ensure fragment-tree consistency.
-  static const NGPhysicalBoxFragment* CloneWithPostLayoutFragments(
-      const NGPhysicalBoxFragment& other);
+  static const PhysicalBoxFragment* CloneWithPostLayoutFragments(
+      const PhysicalBoxFragment& other);
 
-  using PassKey = base::PassKey<NGPhysicalBoxFragment>;
-  NGPhysicalBoxFragment(PassKey,
-                        BoxFragmentBuilder* builder,
-                        bool has_scrollable_overflow,
-                        const PhysicalRect& scrollable_overflow,
-                        bool has_borders,
-                        const PhysicalBoxStrut& borders,
-                        bool has_padding,
-                        const PhysicalBoxStrut& padding,
-                        const absl::optional<PhysicalRect>& inflow_bounds,
-                        bool has_fragment_items,
-                        WritingMode block_or_line_writing_mode);
+  using PassKey = base::PassKey<PhysicalBoxFragment>;
+  PhysicalBoxFragment(PassKey,
+                      BoxFragmentBuilder* builder,
+                      bool has_scrollable_overflow,
+                      const PhysicalRect& scrollable_overflow,
+                      bool has_borders,
+                      const PhysicalBoxStrut& borders,
+                      bool has_padding,
+                      const PhysicalBoxStrut& padding,
+                      const absl::optional<PhysicalRect>& inflow_bounds,
+                      bool has_fragment_items,
+                      WritingMode block_or_line_writing_mode);
 
   // Make a shallow copy. The child fragment pointers are just shallowly
   // copied. Fragment *items* are cloned (but not box fragments associated with
   // items), though. Additionally, the copy will set new overflow information,
   // based on the parameters, rather than copying it from the original fragment.
-  NGPhysicalBoxFragment(PassKey,
-                        const NGPhysicalBoxFragment& other,
-                        bool has_scrollable_overflow,
-                        const PhysicalRect& scrollable_overflow);
+  PhysicalBoxFragment(PassKey,
+                      const PhysicalBoxFragment& other,
+                      bool has_scrollable_overflow,
+                      const PhysicalRect& scrollable_overflow);
 
-  ~NGPhysicalBoxFragment();
+  ~PhysicalBoxFragment();
 
 #if DCHECK_IS_ON()
   class AllowPostLayoutScope {
@@ -84,7 +84,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public PhysicalFragment {
 
   void TraceAfterDispatch(Visitor* visitor) const;
 
-  const NGPhysicalBoxFragment* PostLayout() const;
+  const PhysicalBoxFragment* PostLayout() const;
 
   // Returns the children of |this|.
   //
@@ -114,7 +114,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public PhysicalFragment {
     }
 
    private:
-    friend class NGPhysicalBoxFragment;
+    friend class PhysicalBoxFragment;
     MutableChildrenForOutOfFlow(const PhysicalFragmentLink* buffer,
                                 wtf_size_t num_children)
         : buffer_(const_cast<PhysicalFragmentLink*>(buffer)),
@@ -367,7 +367,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public PhysicalFragment {
   bool IsOutlineOwner() const {
     return !IsInlineBox() || InlineContainerFragmentIfOutlineOwner();
   }
-  const NGPhysicalBoxFragment* InlineContainerFragmentIfOutlineOwner() const;
+  const PhysicalBoxFragment* InlineContainerFragmentIfOutlineOwner() const;
 
   // Fragment offset is this fragment's offset from parent.
   // Needed to compensate for LayoutInline Legacy code offsets.
@@ -414,7 +414,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public PhysicalFragment {
   bool IsMonolithic() const { return bit_field_.get<IsMonolithicFlag>(); }
 
 #if DCHECK_IS_ON()
-  void CheckSameForSimplifiedLayout(const NGPhysicalBoxFragment&,
+  void CheckSameForSimplifiedLayout(const PhysicalBoxFragment&,
                                     bool check_same_block_size,
                                     bool check_no_fragmentation) const;
 #endif
@@ -439,12 +439,12 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public PhysicalFragment {
     STACK_ALLOCATED();
 
    public:
-    MutableForStyleRecalc(base::PassKey<NGPhysicalBoxFragment>,
-                          NGPhysicalBoxFragment& fragment);
+    MutableForStyleRecalc(base::PassKey<PhysicalBoxFragment>,
+                          PhysicalBoxFragment& fragment);
     void SetScrollableOverflow(const PhysicalRect& scrollable_overflow);
 
    private:
-    NGPhysicalBoxFragment& fragment_;
+    PhysicalBoxFragment& fragment_;
   };
   MutableForStyleRecalc GetMutableForStyleRecalc() const;
 
@@ -452,12 +452,12 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public PhysicalFragment {
     STACK_ALLOCATED();
 
    public:
-    MutableForContainerLayout(base::PassKey<NGPhysicalBoxFragment>,
-                              NGPhysicalBoxFragment& fragment);
+    MutableForContainerLayout(base::PassKey<PhysicalBoxFragment>,
+                              PhysicalBoxFragment& fragment);
     void SetMargins(const PhysicalBoxStrut& margins);
 
    private:
-    NGPhysicalBoxFragment& fragment_;
+    PhysicalBoxFragment& fragment_;
   };
 
   MutableForContainerLayout GetMutableForContainerLayout() const;
@@ -477,11 +477,11 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public PhysicalFragment {
 #endif
 
    private:
-    friend class NGPhysicalBoxFragment;
-    explicit MutableForPainting(const NGPhysicalBoxFragment& fragment)
-        : fragment_(const_cast<NGPhysicalBoxFragment&>(fragment)) {}
+    friend class PhysicalBoxFragment;
+    explicit MutableForPainting(const PhysicalBoxFragment& fragment)
+        : fragment_(const_cast<PhysicalBoxFragment&>(fragment)) {}
 
-    NGPhysicalBoxFragment& fragment_;
+    PhysicalBoxFragment& fragment_;
   };
   MutableForPainting GetMutableForPainting() const {
     return MutableForPainting(*this);
@@ -490,7 +490,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public PhysicalFragment {
   class MutableForCloning {
     STACK_ALLOCATED();
     friend class FragmentRepeater;
-    friend class NGPhysicalBoxFragment;
+    friend class PhysicalBoxFragment;
 
    public:
     void ClearIsFirstForNode() {
@@ -506,10 +506,10 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public PhysicalFragment {
     }
 
    private:
-    explicit MutableForCloning(const NGPhysicalBoxFragment& fragment)
-        : fragment_(const_cast<NGPhysicalBoxFragment&>(fragment)) {}
+    explicit MutableForCloning(const PhysicalBoxFragment& fragment)
+        : fragment_(const_cast<PhysicalBoxFragment&>(fragment)) {}
 
-    NGPhysicalBoxFragment& fragment_;
+    PhysicalBoxFragment& fragment_;
   };
   friend class MutableForCloning;
   MutableForCloning GetMutableForCloning() const {
@@ -620,7 +620,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public PhysicalFragment {
       PhysicalOffset point_in_contents) const;
 
   PositionWithAffinity PositionForPointRespectingEditingBoundaries(
-      const NGPhysicalBoxFragment& child,
+      const PhysicalBoxFragment& child,
       PhysicalOffset point_in_child) const;
 
 #if DCHECK_IS_ON()
@@ -638,7 +638,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public PhysicalFragment {
 };
 
 template <>
-struct DowncastTraits<NGPhysicalBoxFragment> {
+struct DowncastTraits<PhysicalBoxFragment> {
   static bool AllowFrom(const PhysicalFragment& fragment) {
     return fragment.Type() == PhysicalFragment::kFragmentBox;
   }

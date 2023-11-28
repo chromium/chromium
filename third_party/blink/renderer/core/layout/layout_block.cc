@@ -338,7 +338,7 @@ void LayoutBlock::Paint(const PaintInfo& paint_info) const {
   }
 
   if (PhysicalFragmentCount()) {
-    const NGPhysicalBoxFragment* fragment = GetPhysicalFragment(0);
+    const PhysicalBoxFragment* fragment = GetPhysicalFragment(0);
     DCHECK(fragment);
     NGBoxFragmentPainter(*fragment).Paint(paint_info);
     return;
@@ -399,7 +399,7 @@ void LayoutBlock::RemovePositionedObjects(LayoutObject* stay_within) {
   // PositionedObjects() is populated in legacy, and in NG when inside a
   // fragmentation context root. But in other NG cases it's empty as an
   // optimization, since we can just look at the children in the fragment tree.
-  for (const NGPhysicalBoxFragment& fragment : PhysicalFragments()) {
+  for (const PhysicalBoxFragment& fragment : PhysicalFragments()) {
     if (!fragment.HasOutOfFlowFragmentChild()) {
       continue;
     }
@@ -474,7 +474,7 @@ bool LayoutBlock::NodeAtPoint(HitTestResult& result,
          GetPhysicalFragment(0)->GetBreakToken()->IsRepeated());
 
   if (PhysicalFragmentCount()) {
-    const NGPhysicalBoxFragment* fragment = GetPhysicalFragment(0);
+    const PhysicalBoxFragment* fragment = GetPhysicalFragment(0);
     DCHECK(fragment);
     return NGBoxFragmentPainter(*fragment).NodeAtPoint(
         result, hit_test_location, accumulated_offset, phase);
@@ -493,7 +493,7 @@ bool LayoutBlock::HitTestChildren(HitTestResult& result,
   if (PhysicalFragmentCount() && CanTraversePhysicalFragments()) {
     DCHECK(!Parent()->CanTraversePhysicalFragments());
     DCHECK_LE(PhysicalFragmentCount(), 1u);
-    const NGPhysicalBoxFragment* fragment = GetPhysicalFragment(0);
+    const PhysicalBoxFragment* fragment = GetPhysicalFragment(0);
     DCHECK(fragment);
     DCHECK(!fragment->HasItems());
     return NGBoxFragmentPainter(*fragment).NodeAtPoint(
@@ -821,7 +821,7 @@ void LayoutBlock::RecalcVisualOverflow() {
 
   DCHECK(CanUseFragmentsForVisualOverflow());
   DCHECK(!DisplayLockUtilities::LockedAncestorPreventingPrePaint(*this));
-  for (const NGPhysicalBoxFragment& fragment : PhysicalFragments()) {
+  for (const PhysicalBoxFragment& fragment : PhysicalFragments()) {
     DCHECK(fragment.CanUseFragmentsForInkOverflow());
     fragment.GetMutableForPainting().RecalcInkOverflow();
   }

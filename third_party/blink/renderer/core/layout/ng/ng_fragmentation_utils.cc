@@ -116,10 +116,10 @@ EBreakBetween CalculateBreakBetweenValue(LayoutInputNode child,
 
   // Since it's not an inline node, if we have a fragment at all, it has to be a
   // box fragment.
-  const NGPhysicalBoxFragment* box_fragment = nullptr;
+  const PhysicalBoxFragment* box_fragment = nullptr;
   if (layout_result.Status() == LayoutResult::kSuccess) {
     box_fragment =
-        &To<NGPhysicalBoxFragment>(layout_result.GetPhysicalFragment());
+        &To<PhysicalBoxFragment>(layout_result.GetPhysicalFragment());
     if (!box_fragment->IsFirstForNode()) {
       // If the node is resumed after a break, we are not *before* it anymore,
       // so ignore values. We normally don't even consider breaking before a
@@ -159,7 +159,7 @@ bool IsBreakableAtStartOfResumedContainer(
     return false;
   }
   bool is_first_for_node = true;
-  if (const auto* box_fragment = DynamicTo<NGPhysicalBoxFragment>(
+  if (const auto* box_fragment = DynamicTo<PhysicalBoxFragment>(
           child_layout_result.GetPhysicalFragment())) {
     is_first_for_node = box_fragment->IsFirstForNode();
   }
@@ -264,7 +264,7 @@ BreakAppeal CalculateBreakAppealInside(
 }
 
 LogicalSize FragmentainerLogicalCapacity(
-    const NGPhysicalBoxFragment& fragmentainer) {
+    const PhysicalBoxFragment& fragmentainer) {
   DCHECK(fragmentainer.IsFragmentainerBox());
   LogicalSize logical_size =
       WritingModeConverter(fragmentainer.Style().GetWritingDirection())
@@ -273,7 +273,7 @@ LogicalSize FragmentainerLogicalCapacity(
   // descendants that take up block space rather than if it has overflow. In
   // other words, we would still want to clamp a zero height fragmentainer if
   // it had content with zero inline size and non-zero block size. This would
-  // likely require us to store an extra flag on NGPhysicalBoxFragment.
+  // likely require us to store an extra flag on PhysicalBoxFragment.
   if (fragmentainer.HasScrollableOverflow()) {
     // Don't clamp the fragmentainer to a block size of 1 if it is truly a
     // zero-height column.
@@ -799,7 +799,7 @@ bool HasBreakOpportunityBeforeNextChild(
   // children in parallel flows, since they shouldn't affect this flow.
   //
   // [1] https://www.w3.org/TR/css-break-3/#possible-breaks
-  if (IsA<NGPhysicalBoxFragment>(&child_fragment)) {
+  if (IsA<PhysicalBoxFragment>(&child_fragment)) {
     const auto* block_break_token =
         To<BlockBreakToken>(incoming_child_break_token);
     return !block_break_token || !block_break_token->IsAtBlockEnd();
@@ -875,7 +875,7 @@ void BreakBeforeChild(const ConstraintSpace& space,
     // fragment.
     const auto& physical_fragment = layout_result->GetPhysicalFragment();
     DCHECK(!physical_fragment.IsBox() ||
-           To<NGPhysicalBoxFragment>(physical_fragment).IsFirstForNode());
+           To<PhysicalBoxFragment>(physical_fragment).IsFirstForNode());
   }
 #endif
 
@@ -981,7 +981,7 @@ bool MovePastBreakpoint(const ConstraintSpace& space,
 
   if (child.IsBlock()) {
     const auto& box_fragment =
-        To<NGPhysicalBoxFragment>(layout_result.GetPhysicalFragment());
+        To<PhysicalBoxFragment>(layout_result.GetPhysicalFragment());
 
     // If we're at a resumed fragment, don't break before it. Once we've found
     // room for the first fragment, we cannot skip fragmentainers afterwards. We
@@ -1336,7 +1336,7 @@ const BlockBreakToken* PreviousFragmentainerBreakToken(
         container_builder.Children()[i - 1].fragment.Get();
     if (previous_fragment->IsFragmentainerBox()) {
       previous_break_token = To<BlockBreakToken>(
-          To<NGPhysicalBoxFragment>(previous_fragment)->GetBreakToken());
+          To<PhysicalBoxFragment>(previous_fragment)->GetBreakToken());
       break;
     }
   }
@@ -1344,7 +1344,7 @@ const BlockBreakToken* PreviousFragmentainerBreakToken(
 }
 
 const BlockBreakToken* FindPreviousBreakToken(
-    const NGPhysicalBoxFragment& fragment) {
+    const PhysicalBoxFragment& fragment) {
   const LayoutBox* box = To<LayoutBox>(fragment.GetLayoutObject());
   DCHECK(box);
   DCHECK_GE(box->PhysicalFragmentCount(), 1u);
@@ -1358,7 +1358,7 @@ const BlockBreakToken* FindPreviousBreakToken(
   // fragments.
   DCHECK_GT(box->PhysicalFragmentCount(), 1u);
 
-  const NGPhysicalBoxFragment* previous_fragment;
+  const PhysicalBoxFragment* previous_fragment;
   if (const BlockBreakToken* break_token = fragment.GetBreakToken()) {
     // The sequence number of the outgoing break token is the same as the index
     // of this fragment.
@@ -1374,14 +1374,14 @@ const BlockBreakToken* FindPreviousBreakToken(
   return previous_fragment->GetBreakToken();
 }
 
-wtf_size_t BoxFragmentIndex(const NGPhysicalBoxFragment& fragment) {
+wtf_size_t BoxFragmentIndex(const PhysicalBoxFragment& fragment) {
   DCHECK(!fragment.IsInlineBox());
   const BlockBreakToken* token = FindPreviousBreakToken(fragment);
   return token ? token->SequenceNumber() + 1 : 0;
 }
 
 wtf_size_t PreviousInnerFragmentainerIndex(
-    const NGPhysicalBoxFragment& fragment) {
+    const PhysicalBoxFragment& fragment) {
   // This should be a fragmentation context root, typically a multicol
   // container.
   DCHECK(fragment.IsFragmentationContextRoot());
@@ -1395,7 +1395,7 @@ wtf_size_t PreviousInnerFragmentainerIndex(
   // Walk the list of fragments generated by the node, until we reach the
   // specified one. Note that some fragments may not contain any fragmentainers
   // at all, if all the space is taken up by column spanners, for instance.
-  for (const NGPhysicalBoxFragment& walker : box->PhysicalFragments()) {
+  for (const PhysicalBoxFragment& walker : box->PhysicalFragments()) {
     if (&walker == &fragment)
       return idx;
     // Find the last fragmentainer inside this fragment.
@@ -1416,7 +1416,7 @@ wtf_size_t PreviousInnerFragmentainerIndex(
 }
 
 PhysicalOffset OffsetInStitchedFragments(
-    const NGPhysicalBoxFragment& fragment,
+    const PhysicalBoxFragment& fragment,
     PhysicalSize* out_stitched_fragments_size) {
   auto writing_direction = fragment.Style().GetWritingDirection();
   LayoutUnit stitched_block_size;
@@ -1445,7 +1445,7 @@ PhysicalOffset OffsetInStitchedFragments(
       // other hand, we need to search backwards until we find the end of the
       // block-end border edge.
       while (idx) {
-        const NGPhysicalBoxFragment* walker =
+        const PhysicalBoxFragment* walker =
             layout_box->GetPhysicalFragment(idx);
         stitched_block_size =
             LogicalFragment(writing_direction, *walker).BlockSize();
@@ -1499,7 +1499,7 @@ LayoutUnit BlockSizeForFragmentation(
   return block_size;
 }
 
-bool CanPaintMultipleFragments(const NGPhysicalBoxFragment& fragment) {
+bool CanPaintMultipleFragments(const PhysicalBoxFragment& fragment) {
   if (!fragment.IsCSSBox())
     return true;
   DCHECK(fragment.GetLayoutObject());

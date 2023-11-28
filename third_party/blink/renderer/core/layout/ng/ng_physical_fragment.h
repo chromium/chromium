@@ -483,15 +483,14 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
 
   // Em height box. including contents, in the local coordinate.
   PhysicalRect ComputeRubyEmHeightBox(
-      const NGPhysicalBoxFragment& container) const;
+      const PhysicalBoxFragment& container) const;
 
   // ComputeRubyEmHeightBox(), with transforms applied wrt container if needed.
   // This does not include any offsets from the parent (including relpos).
   PhysicalRect ComputeRubyEmHeightBoxForPropagation(
-      const NGPhysicalBoxFragment& container) const;
-  void AdjustRubyEmHeightBoxForPropagation(
-      const NGPhysicalBoxFragment& container,
-      PhysicalRect* overflow) const;
+      const PhysicalBoxFragment& container) const;
+  void AdjustRubyEmHeightBoxForPropagation(const PhysicalBoxFragment& container,
+                                           PhysicalRect* overflow) const;
 
   // Helper functions to convert between |PhysicalRect| and |LogicalRect| of a
   // child.
@@ -724,7 +723,7 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
  protected:
   const ComputedStyle& SlowEffectiveStyle() const;
 
-  void AddRubyEmHeightBoxForInlineChild(const NGPhysicalBoxFragment& container,
+  void AddRubyEmHeightBoxForInlineChild(const PhysicalBoxFragment& container,
                                         const ComputedStyle& container_style,
                                         const FragmentItem& line,
                                         bool has_hanging,
@@ -788,7 +787,7 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
   uint8_t is_math_operator_ : 1;                       // NOLINT
   uint8_t may_have_descendant_above_block_start_ : 1;  // NOLINT
 
-  // The following are only used by NGPhysicalBoxFragment but are initialized
+  // The following are only used by PhysicalBoxFragment but are initialized
   // for all types to allow methods using them to be inlined.
   uint8_t is_fieldset_container_ : 1;                           // NOLINT
   uint8_t is_table_part_ : 1;                                   // NOLINT

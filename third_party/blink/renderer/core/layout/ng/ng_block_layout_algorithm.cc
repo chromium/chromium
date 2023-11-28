@@ -1231,7 +1231,7 @@ bool BlockLayoutAlgorithm::TryReuseFragmentsFromCache(
   }
 
   const auto& previous_fragment =
-      To<NGPhysicalBoxFragment>(previous_result_->GetPhysicalFragment());
+      To<PhysicalBoxFragment>(previous_result_->GetPhysicalFragment());
   const FragmentItems* previous_items = previous_fragment.Items();
   DCHECK(previous_items);
 
@@ -2490,7 +2490,7 @@ PreviousInflowPosition BlockLayoutAlgorithm::ComputeInflowPosition(
     // fragmentainer boundaries, so that whether or not we add such margins
     // doesn't really make much of a difference, this isn't the case in the
     // initial column balancing pass.
-    if (const auto* physical_fragment = DynamicTo<NGPhysicalBoxFragment>(
+    if (const auto* physical_fragment = DynamicTo<PhysicalBoxFragment>(
             &layout_result.GetPhysicalFragment())) {
       if (const BlockBreakToken* token = physical_fragment->GetBreakToken()) {
         // TODO(mstensho): Don't apply the margin to all overflowing fragments
@@ -3067,7 +3067,7 @@ void BlockLayoutAlgorithm::PropagateBaselineFromBlockChild(
   if (lines_until_clamp_ && *lines_until_clamp_ <= 0)
     return;
 
-  const auto& physical_fragment = To<NGPhysicalBoxFragment>(child);
+  const auto& physical_fragment = To<PhysicalBoxFragment>(child);
   LogicalBoxFragment fragment(GetConstraintSpace().GetWritingDirection(),
                               physical_fragment);
 
@@ -3309,16 +3309,16 @@ void BlockLayoutAlgorithm::HandleRubyText(BlockNode ruby_text_child) {
       ruby_text_child.Layout(builder.ToConstraintSpace(), break_token);
 
   const auto& ruby_text_fragment =
-      To<NGPhysicalBoxFragment>(result->GetPhysicalFragment());
+      To<PhysicalBoxFragment>(result->GetPhysicalFragment());
   const LogicalRect ruby_text_box = ruby_text_fragment.ConvertChildToLogical(
       ruby_text_fragment.ComputeRubyEmHeightBox());
 
   // Find the ruby-base fragment.
-  const NGPhysicalBoxFragment* ruby_base_fragment = nullptr;
+  const PhysicalBoxFragment* ruby_base_fragment = nullptr;
   LayoutUnit ruby_base_block_offset;
   for (const auto& child : container_builder_.Children()) {
     if (child->IsRubyBase()) {
-      ruby_base_fragment = &To<NGPhysicalBoxFragment>(*child.fragment);
+      ruby_base_fragment = &To<PhysicalBoxFragment>(*child.fragment);
       ruby_base_block_offset = child.offset.block_offset;
       break;
     }
@@ -3420,7 +3420,7 @@ LayoutUnit BlockLayoutAlgorithm::HandleTextControlPlaceholder(
   }
   LogicalBoxFragment fragment(
       GetConstraintSpace().GetWritingDirection(),
-      To<NGPhysicalBoxFragment>(result->GetPhysicalFragment()));
+      To<PhysicalBoxFragment>(result->GetPhysicalFragment()));
   // We should apply FirstBaseline() of the placeholder fragment because the
   // placeholder might have the 'overflow' property, and its LastBaseline()
   // might be the block-end margin.
@@ -3462,7 +3462,7 @@ LayoutUnit BlockLayoutAlgorithm::FinishTextControlPlaceholder(
   }
   LogicalBoxFragment fragment(
       GetConstraintSpace().GetWritingDirection(),
-      To<NGPhysicalBoxFragment>(result->GetPhysicalFragment()));
+      To<PhysicalBoxFragment>(result->GetPhysicalFragment()));
   return std::max(block_offset, offset.block_offset + fragment.BlockSize());
 }
 

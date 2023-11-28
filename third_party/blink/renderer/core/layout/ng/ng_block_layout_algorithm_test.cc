@@ -32,13 +32,13 @@ class BlockLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
  protected:
   void SetUp() override { BaseLayoutAlgorithmTest::SetUp(); }
 
-  const NGPhysicalBoxFragment* GetHtmlPhysicalFragment() const {
+  const PhysicalBoxFragment* GetHtmlPhysicalFragment() const {
     const auto* layout_box =
         To<LayoutBox>(GetDocument()
                           .getElementsByTagName(AtomicString("html"))
                           ->item(0)
                           ->GetLayoutObject());
-    return To<NGPhysicalBoxFragment>(
+    return To<PhysicalBoxFragment>(
         &layout_box->GetSingleCachedLayoutResult()->GetPhysicalFragment());
   }
 
@@ -64,7 +64,7 @@ class BlockLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
                              &initial_fragment_geometry, &cache_status);
   }
 
-  String DumpFragmentTree(const NGPhysicalBoxFragment* fragment) {
+  String DumpFragmentTree(const PhysicalBoxFragment* fragment) {
     PhysicalFragment::DumpFlags flags =
         PhysicalFragment::DumpHeaderText | PhysicalFragment::DumpSubtree |
         PhysicalFragment::DumpIndentation | PhysicalFragment::DumpOffset |
@@ -96,7 +96,7 @@ TEST_F(BlockLayoutAlgorithmTest, FixedSize) {
 
   BlockNode box(GetLayoutBoxByElementId("box"));
 
-  const NGPhysicalBoxFragment* fragment = RunBlockLayoutAlgorithm(box, space);
+  const PhysicalBoxFragment* fragment = RunBlockLayoutAlgorithm(box, space);
 
   EXPECT_EQ(PhysicalSize(30, 40), fragment->Size());
 }
@@ -338,7 +338,7 @@ TEST_F(BlockLayoutAlgorithmTest, LayoutBlockChildren) {
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(100), kIndefiniteSize));
 
-  const NGPhysicalBoxFragment* fragment =
+  const PhysicalBoxFragment* fragment =
       RunBlockLayoutAlgorithm(container, space);
 
   EXPECT_EQ(LayoutUnit(kWidth), fragment->Size().width);
@@ -382,12 +382,12 @@ TEST_F(BlockLayoutAlgorithmTest, LayoutBlockChildrenWithWritingMode) {
   ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(500), LayoutUnit(500)));
-  const NGPhysicalBoxFragment* fragment =
+  const PhysicalBoxFragment* fragment =
       RunBlockLayoutAlgorithm(container, space);
 
   const PhysicalFragmentLink& child = fragment->Children()[0];
   const PhysicalFragmentLink& child2 =
-      static_cast<const NGPhysicalBoxFragment*>(child.get())->Children()[0];
+      static_cast<const PhysicalBoxFragment*>(child.get())->Children()[0];
 
   EXPECT_EQ(kHeight, child2->Size().height);
   EXPECT_EQ(0, child2.Offset().top);
@@ -437,8 +437,7 @@ TEST_F(BlockLayoutAlgorithmTest, CollapsingMarginsCase1WithFloats) {
   ASSERT_EQ(fragment->Children().size(), 1UL);
 
   PhysicalOffset body_offset = fragment->Children()[0].Offset();
-  auto* body_fragment =
-      To<NGPhysicalBoxFragment>(fragment->Children()[0].get());
+  auto* body_fragment = To<PhysicalBoxFragment>(fragment->Children()[0].get());
   // 20 = max(first child's margin top, containers's margin top)
   int body_top_offset = 20;
   EXPECT_THAT(LayoutUnit(body_top_offset), body_offset.top);
@@ -448,7 +447,7 @@ TEST_F(BlockLayoutAlgorithmTest, CollapsingMarginsCase1WithFloats) {
   ASSERT_EQ(1UL, body_fragment->Children().size());
 
   auto* container_fragment =
-      To<NGPhysicalBoxFragment>(body_fragment->Children()[0].get());
+      To<PhysicalBoxFragment>(body_fragment->Children()[0].get());
   PhysicalOffset container_offset = body_fragment->Children()[0].Offset();
 
   // 0 = collapsed with body's margin
@@ -513,8 +512,7 @@ TEST_F(BlockLayoutAlgorithmTest, CollapsingMarginsCase2WithFloats) {
     )HTML");
 
   const auto* fragment = GetHtmlPhysicalFragment();
-  auto* body_fragment =
-      To<NGPhysicalBoxFragment>(fragment->Children()[0].get());
+  auto* body_fragment = To<PhysicalBoxFragment>(fragment->Children()[0].get());
   PhysicalOffset body_offset = fragment->Children()[0].Offset();
   // -7 = empty1's margin(-15) + body's margin(8)
   EXPECT_THAT(LayoutUnit(-7), body_offset.top);
@@ -565,10 +563,10 @@ TEST_F(BlockLayoutAlgorithmTest, CollapsingMarginsCase3) {
       </div>
     )HTML");
 
-  const NGPhysicalBoxFragment* body_fragment = nullptr;
-  const NGPhysicalBoxFragment* container_fragment = nullptr;
-  const NGPhysicalBoxFragment* child_fragment = nullptr;
-  const NGPhysicalBoxFragment* fragment = nullptr;
+  const PhysicalBoxFragment* body_fragment = nullptr;
+  const PhysicalBoxFragment* container_fragment = nullptr;
+  const PhysicalBoxFragment* child_fragment = nullptr;
+  const PhysicalBoxFragment* fragment = nullptr;
   auto run_test = [&](const Length& container_height) {
     UpdateStyleForElement(
         GetDocument().getElementById(AtomicString("container")),
@@ -577,12 +575,12 @@ TEST_F(BlockLayoutAlgorithmTest, CollapsingMarginsCase3) {
         });
     fragment = GetHtmlPhysicalFragment();
     ASSERT_EQ(1UL, fragment->Children().size());
-    body_fragment = To<NGPhysicalBoxFragment>(fragment->Children()[0].get());
+    body_fragment = To<PhysicalBoxFragment>(fragment->Children()[0].get());
     container_fragment =
-        To<NGPhysicalBoxFragment>(body_fragment->Children()[0].get());
+        To<PhysicalBoxFragment>(body_fragment->Children()[0].get());
     ASSERT_EQ(1UL, container_fragment->Children().size());
     child_fragment =
-        To<NGPhysicalBoxFragment>(container_fragment->Children()[0].get());
+        To<PhysicalBoxFragment>(container_fragment->Children()[0].get());
   };
 
   // height == auto
@@ -621,7 +619,7 @@ TEST_F(BlockLayoutAlgorithmTest, CollapsingMarginsCase4) {
   PhysicalOffset body_offset;
   PhysicalOffset container_offset;
   PhysicalOffset child_offset;
-  const NGPhysicalBoxFragment* fragment = nullptr;
+  const PhysicalBoxFragment* fragment = nullptr;
   auto run_test = [&](const Length& container_padding_top) {
     UpdateStyleForElement(
         GetDocument().getElementById(AtomicString("container")),
@@ -631,10 +629,10 @@ TEST_F(BlockLayoutAlgorithmTest, CollapsingMarginsCase4) {
     fragment = GetHtmlPhysicalFragment();
     ASSERT_EQ(1UL, fragment->Children().size());
     const auto* body_fragment =
-        To<NGPhysicalBoxFragment>(fragment->Children()[0].get());
+        To<PhysicalBoxFragment>(fragment->Children()[0].get());
     body_offset = fragment->Children()[0].Offset();
     const auto* container_fragment =
-        To<NGPhysicalBoxFragment>(body_fragment->Children()[0].get());
+        To<PhysicalBoxFragment>(body_fragment->Children()[0].get());
     container_offset = body_fragment->Children()[0].Offset();
     ASSERT_EQ(1UL, container_fragment->Children().size());
     child_offset = container_fragment->Children()[0].Offset();
@@ -692,8 +690,7 @@ TEST_F(BlockLayoutAlgorithmTest, CollapsingMarginsCase5) {
   const auto* fragment = GetHtmlPhysicalFragment();
 
   // body
-  auto* body_fragment =
-      To<NGPhysicalBoxFragment>(fragment->Children()[0].get());
+  auto* body_fragment = To<PhysicalBoxFragment>(fragment->Children()[0].get());
   PhysicalOffset body_offset = fragment->Children()[0].Offset();
   // 10 = std::max(body's margin 8, container's margin top)
   int body_top_offset = 10;
@@ -707,7 +704,7 @@ TEST_F(BlockLayoutAlgorithmTest, CollapsingMarginsCase5) {
 
   // container
   auto* container_fragment =
-      To<NGPhysicalBoxFragment>(body_fragment->Children()[0].get());
+      To<PhysicalBoxFragment>(body_fragment->Children()[0].get());
   PhysicalOffset container_offset = body_fragment->Children()[0].Offset();
   // Container's margins are collapsed with body's fragment.
   EXPECT_THAT(container_offset.top, LayoutUnit());
@@ -743,8 +740,8 @@ TEST_F(BlockLayoutAlgorithmTest, CollapsingMarginsWithText) {
     )HTML");
   const auto* html_fragment = GetHtmlPhysicalFragment();
 
-  const NGPhysicalBoxFragment* body_fragment =
-      To<NGPhysicalBoxFragment>(html_fragment->Children()[0].get());
+  const auto* body_fragment =
+      To<PhysicalBoxFragment>(html_fragment->Children()[0].get());
   PhysicalOffset body_offset = html_fragment->Children()[0].Offset();
   // 20 = std::max(body's margin, p's margin)
   EXPECT_THAT(body_offset, PhysicalOffset(10, 20));
@@ -783,7 +780,7 @@ TEST_F(BlockLayoutAlgorithmTest, CollapsingMarginsCase6) {
   ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(500), LayoutUnit(500)));
-  const NGPhysicalBoxFragment* fragment =
+  const PhysicalBoxFragment* fragment =
       RunBlockLayoutAlgorithm(container, space);
 
   ASSERT_EQ(fragment->Children().size(), 2UL);
@@ -835,7 +832,7 @@ TEST_F(BlockLayoutAlgorithmTest, CollapsingMarginsCase7) {
 
   // body
   PhysicalOffset offset;
-  const NGPhysicalBoxFragment* child = iterator.NextChild(&offset);
+  const PhysicalBoxFragment* child = iterator.NextChild(&offset);
   EXPECT_EQ(PhysicalSize(200, 20), child->Size());
   EXPECT_EQ(PhysicalOffset(8, 20), offset);
 
@@ -1031,9 +1028,9 @@ TEST_F(BlockLayoutAlgorithmTest, NewFormattingContextAutoMargins) {
     )HTML");
 
   const auto* fragment =
-      &To<NGPhysicalBoxFragment>(GetLayoutBoxByElementId("container")
-                                     ->GetSingleCachedLayoutResult()
-                                     ->GetPhysicalFragment());
+      &To<PhysicalBoxFragment>(GetLayoutBoxByElementId("container")
+                                   ->GetSingleCachedLayoutResult()
+                                   ->GetPhysicalFragment());
 
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
   offset:unplaced size:200x60
@@ -1081,7 +1078,7 @@ TEST_F(BlockLayoutAlgorithmTest, BorderAndPadding) {
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(1000), kIndefiniteSize));
 
-  const NGPhysicalBoxFragment* fragment =
+  const PhysicalBoxFragment* fragment =
       RunBlockLayoutAlgorithm(container, space);
 
   ASSERT_EQ(fragment->Children().size(), 1UL);
@@ -1094,11 +1091,11 @@ TEST_F(BlockLayoutAlgorithmTest, BorderAndPadding) {
             child->Size().height);
 
   ASSERT_TRUE(child->IsBox());
-  ASSERT_EQ(static_cast<const NGPhysicalBoxFragment*>(child)->Children().size(),
+  ASSERT_EQ(static_cast<const PhysicalBoxFragment*>(child)->Children().size(),
             1UL);
 
   PhysicalOffset div2_offset =
-      static_cast<const NGPhysicalBoxFragment*>(child)->Children()[0].Offset();
+      static_cast<const PhysicalBoxFragment*>(child)->Children()[0].Offset();
   EXPECT_EQ(kBorderTop + kPaddingTop, div2_offset.top);
   EXPECT_EQ(kBorderLeft + kPaddingLeft, div2_offset.left);
 }
@@ -1117,7 +1114,7 @@ TEST_F(BlockLayoutAlgorithmTest, PercentageResolutionSize) {
   ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(100), kIndefiniteSize));
-  const NGPhysicalBoxFragment* fragment =
+  const PhysicalBoxFragment* fragment =
       RunBlockLayoutAlgorithm(container, space);
 
   EXPECT_EQ(LayoutUnit(kWidth + kPaddingLeft), fragment->Size().width);
@@ -1149,7 +1146,7 @@ TEST_F(BlockLayoutAlgorithmTest, AutoMargin) {
   ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(100), kIndefiniteSize));
-  const NGPhysicalBoxFragment* fragment =
+  const PhysicalBoxFragment* fragment =
       RunBlockLayoutAlgorithm(container, space);
 
   EXPECT_EQ(LayoutUnit(kWidth + kPaddingLeft), fragment->Size().width);
@@ -1209,7 +1206,7 @@ TEST_F(BlockLayoutAlgorithmTest, PositionFloatInsideEmptyBlocks) {
 
   const auto* fragment = GetHtmlPhysicalFragment();
   const auto* body_fragment =
-      To<NGPhysicalBoxFragment>(fragment->Children()[0].get());
+      To<PhysicalBoxFragment>(fragment->Children()[0].get());
   PhysicalOffset body_offset = fragment->Children()[0].Offset();
   FragmentChildIterator iterator(body_fragment);
   // 20 = std::max(empty1's margin, empty2's margin, body's margin)
@@ -1313,7 +1310,7 @@ TEST_F(BlockLayoutAlgorithmTest, PositionFloatFragments) {
   // ** Verify LayoutNG fragments and the list of positioned floats **
   ASSERT_EQ(1UL, fragment->Children().size());
   const auto* body_fragment =
-      To<NGPhysicalBoxFragment>(fragment->Children()[0].get());
+      To<PhysicalBoxFragment>(fragment->Children()[0].get());
   PhysicalOffset body_offset = fragment->Children()[0].Offset();
   EXPECT_THAT(LayoutUnit(8), body_offset.top);
 
@@ -1439,11 +1436,11 @@ TEST_F(BlockLayoutAlgorithmTest, PositionFragmentsWithClear) {
         [&](ComputedStyleBuilder& builder) { builder.SetClear(clear_value); });
     const auto* fragment = GetHtmlPhysicalFragment();
     ASSERT_EQ(1UL, fragment->Children().size());
-    const NGPhysicalBoxFragment* body_fragment =
-        To<NGPhysicalBoxFragment>(fragment->Children()[0].get());
+    const auto* body_fragment =
+        To<PhysicalBoxFragment>(fragment->Children()[0].get());
     body_offset = fragment->Children()[0].Offset();
-    const NGPhysicalBoxFragment* container_fragment =
-        To<NGPhysicalBoxFragment>(body_fragment->Children()[0].get());
+    const auto* container_fragment =
+        To<PhysicalBoxFragment>(body_fragment->Children()[0].get());
     ASSERT_EQ(5UL, container_fragment->Children().size());
     container_offset = body_fragment->Children()[0].Offset();
     clerance_offset = container_fragment->Children()[2].Offset();
@@ -1642,7 +1639,7 @@ TEST_F(BlockLayoutAlgorithmTest, ShrinkToFit) {
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(100), kIndefiniteSize),
       /* stretch_inline_size_if_auto */ false);
-  const NGPhysicalBoxFragment* fragment =
+  const PhysicalBoxFragment* fragment =
       RunBlockLayoutAlgorithm(container, space);
 
   EXPECT_EQ(LayoutUnit(kWidthChild2), fragment->Size().width);
@@ -1679,9 +1676,9 @@ TEST_F(BlockLayoutAlgorithmTest, PositionEmptyBlocksInNewBfc) {
 
   const auto* html_fragment = GetHtmlPhysicalFragment();
   auto* body_fragment =
-      To<NGPhysicalBoxFragment>(html_fragment->Children()[0].get());
+      To<PhysicalBoxFragment>(html_fragment->Children()[0].get());
   auto* container_fragment =
-      To<NGPhysicalBoxFragment>(body_fragment->Children()[0].get());
+      To<PhysicalBoxFragment>(body_fragment->Children()[0].get());
   PhysicalOffset empty_block1_offset =
       container_fragment->Children()[1].Offset();
   // empty-block1's margin == 8
@@ -1744,12 +1741,12 @@ TEST_F(BlockLayoutAlgorithmTest,
 
   const auto* html_fragment = GetHtmlPhysicalFragment();
   auto* body_fragment =
-      To<NGPhysicalBoxFragment>(html_fragment->Children()[0].get());
+      To<PhysicalBoxFragment>(html_fragment->Children()[0].get());
   ASSERT_EQ(4UL, body_fragment->Children().size());
 
   // Verify #container-clear block
   auto* container_clear_fragment =
-      To<NGPhysicalBoxFragment>(body_fragment->Children()[3].get());
+      To<PhysicalBoxFragment>(body_fragment->Children()[3].get());
   PhysicalOffset container_clear_offset = body_fragment->Children()[3].Offset();
   // 60 = block1's height 30 + std::max(block1's margin 20, zero's margin 30)
   EXPECT_THAT(PhysicalOffset(0, 60), container_clear_offset);
@@ -1791,7 +1788,7 @@ TEST_F(BlockLayoutAlgorithmTest, NoFragmentation) {
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   // We should only have one 150x200 fragment with no fragmentation.
-  const NGPhysicalBoxFragment* fragment = RunBlockLayoutAlgorithm(node, space);
+  const PhysicalBoxFragment* fragment = RunBlockLayoutAlgorithm(node, space);
   EXPECT_EQ(PhysicalSize(150, 200), fragment->Size());
   ASSERT_FALSE(fragment->GetBreakToken());
 }
@@ -1818,7 +1815,7 @@ TEST_F(BlockLayoutAlgorithmTest, SimpleFragmentation) {
       /* stretch_inline_size_if_auto */ true,
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
-  const NGPhysicalBoxFragment* fragment = RunBlockLayoutAlgorithm(node, space);
+  const PhysicalBoxFragment* fragment = RunBlockLayoutAlgorithm(node, space);
   EXPECT_EQ(PhysicalSize(150, 200), fragment->Size());
   EXPECT_TRUE(fragment->GetBreakToken());
 
@@ -1861,13 +1858,13 @@ TEST_F(BlockLayoutAlgorithmTest, InnerChildrenFragmentation) {
       /* stretch_inline_size_if_auto */ true,
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
-  const NGPhysicalBoxFragment* fragment = RunBlockLayoutAlgorithm(node, space);
+  const PhysicalBoxFragment* fragment = RunBlockLayoutAlgorithm(node, space);
   EXPECT_EQ(PhysicalSize(150, 200), fragment->Size());
   EXPECT_TRUE(fragment->GetBreakToken());
 
-  FragmentChildIterator iterator(To<NGPhysicalBoxFragment>(fragment));
+  FragmentChildIterator iterator(To<PhysicalBoxFragment>(fragment));
   PhysicalOffset offset;
-  const NGPhysicalBoxFragment* child = iterator.NextChild(&offset);
+  const PhysicalBoxFragment* child = iterator.NextChild(&offset);
   EXPECT_EQ(PhysicalSize(150, 180), child->Size());
   EXPECT_EQ(PhysicalOffset(0, 20), offset);
 
@@ -1877,7 +1874,7 @@ TEST_F(BlockLayoutAlgorithmTest, InnerChildrenFragmentation) {
   EXPECT_EQ(PhysicalSize(150, 140), fragment->Size());
   ASSERT_FALSE(fragment->GetBreakToken());
 
-  iterator.SetParent(To<NGPhysicalBoxFragment>(fragment));
+  iterator.SetParent(To<PhysicalBoxFragment>(fragment));
   child = iterator.NextChild(&offset);
   EXPECT_EQ(PhysicalSize(150, 20), child->Size());
   EXPECT_EQ(PhysicalOffset(0, 0), offset);
@@ -1925,13 +1922,13 @@ TEST_F(BlockLayoutAlgorithmTest, InnerFormattingContextChildrenFragmentation) {
       /* stretch_inline_size_if_auto */ true,
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
-  const NGPhysicalBoxFragment* fragment = RunBlockLayoutAlgorithm(node, space);
+  const PhysicalBoxFragment* fragment = RunBlockLayoutAlgorithm(node, space);
   EXPECT_EQ(PhysicalSize(150, 200), fragment->Size());
   EXPECT_TRUE(fragment->GetBreakToken());
 
-  FragmentChildIterator iterator(To<NGPhysicalBoxFragment>(fragment));
+  FragmentChildIterator iterator(To<PhysicalBoxFragment>(fragment));
   PhysicalOffset offset;
-  const NGPhysicalBoxFragment* child = iterator.NextChild(&offset);
+  const PhysicalBoxFragment* child = iterator.NextChild(&offset);
   EXPECT_EQ(PhysicalSize(150, 180), child->Size());
   EXPECT_EQ(PhysicalOffset(0, 20), offset);
 
@@ -1941,7 +1938,7 @@ TEST_F(BlockLayoutAlgorithmTest, InnerFormattingContextChildrenFragmentation) {
   EXPECT_EQ(PhysicalSize(150, 140), fragment->Size());
   ASSERT_FALSE(fragment->GetBreakToken());
 
-  iterator.SetParent(To<NGPhysicalBoxFragment>(fragment));
+  iterator.SetParent(To<PhysicalBoxFragment>(fragment));
   child = iterator.NextChild(&offset);
   EXPECT_EQ(PhysicalSize(150, 20), child->Size());
   EXPECT_EQ(PhysicalOffset(0, 0), offset);
@@ -1988,13 +1985,13 @@ TEST_F(BlockLayoutAlgorithmTest, InnerChildrenFragmentationSmallHeight) {
       /* stretch_inline_size_if_auto */ true,
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
-  const NGPhysicalBoxFragment* fragment = RunBlockLayoutAlgorithm(node, space);
+  const PhysicalBoxFragment* fragment = RunBlockLayoutAlgorithm(node, space);
   EXPECT_EQ(PhysicalSize(150, 70), fragment->Size());
   EXPECT_TRUE(fragment->GetBreakToken());
 
-  FragmentChildIterator iterator(To<NGPhysicalBoxFragment>(fragment));
+  FragmentChildIterator iterator(To<PhysicalBoxFragment>(fragment));
   PhysicalOffset offset;
-  const NGPhysicalBoxFragment* child = iterator.NextChild(&offset);
+  const PhysicalBoxFragment* child = iterator.NextChild(&offset);
   EXPECT_EQ(PhysicalSize(150, 180), child->Size());
   EXPECT_EQ(PhysicalOffset(0, 20), offset);
 
@@ -2004,7 +2001,7 @@ TEST_F(BlockLayoutAlgorithmTest, InnerChildrenFragmentationSmallHeight) {
   EXPECT_EQ(PhysicalSize(150, 0), fragment->Size());
   ASSERT_FALSE(fragment->GetBreakToken());
 
-  iterator.SetParent(To<NGPhysicalBoxFragment>(fragment));
+  iterator.SetParent(To<PhysicalBoxFragment>(fragment));
   child = iterator.NextChild(&offset);
   EXPECT_EQ(PhysicalSize(150, 20), child->Size());
   EXPECT_EQ(PhysicalOffset(0, 0), offset);
@@ -2053,11 +2050,11 @@ TEST_F(BlockLayoutAlgorithmTest, DISABLED_FloatFragmentationParallelFlows) {
       /* stretch_inline_size_if_auto */ true,
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
-  const NGPhysicalBoxFragment* fragment = RunBlockLayoutAlgorithm(node, space);
+  const PhysicalBoxFragment* fragment = RunBlockLayoutAlgorithm(node, space);
   EXPECT_EQ(PhysicalSize(150, 50), fragment->Size());
   EXPECT_TRUE(fragment->GetBreakToken());
 
-  FragmentChildIterator iterator(To<NGPhysicalBoxFragment>(fragment));
+  FragmentChildIterator iterator(To<PhysicalBoxFragment>(fragment));
 
   // First fragment of float1.
   PhysicalOffset offset;
@@ -2080,7 +2077,7 @@ TEST_F(BlockLayoutAlgorithmTest, DISABLED_FloatFragmentationParallelFlows) {
   EXPECT_EQ(PhysicalSize(150, 0), fragment->Size());
   ASSERT_FALSE(fragment->GetBreakToken());
 
-  iterator.SetParent(To<NGPhysicalBoxFragment>(fragment));
+  iterator.SetParent(To<PhysicalBoxFragment>(fragment));
 
   // Second fragment of float1.
   child = iterator.NextChild(&offset);
@@ -2131,7 +2128,7 @@ TEST_F(BlockLayoutAlgorithmTest, FloatFragmentationOrthogonalFlows) {
       /* stretch_inline_size_if_auto */ true,
       /* is_new_formatting_context */ true, kFragmentainerSpaceAvailable);
 
-  const NGPhysicalBoxFragment* fragment = RunBlockLayoutAlgorithm(node, space);
+  const PhysicalBoxFragment* fragment = RunBlockLayoutAlgorithm(node, space);
   EXPECT_EQ(PhysicalSize(150, 60), fragment->Size());
   ASSERT_FALSE(fragment->GetBreakToken());
 
@@ -2141,7 +2138,7 @@ TEST_F(BlockLayoutAlgorithmTest, FloatFragmentationOrthogonalFlows) {
   EXPECT_EQ(PhysicalSize(60, 200), float2->Size());
   ASSERT_TRUE(float2->IsBox());
   const BreakToken* break_token =
-      To<NGPhysicalBoxFragment>(float2)->GetBreakToken();
+      To<PhysicalBoxFragment>(float2)->GetBreakToken();
   EXPECT_FALSE(break_token);
 }
 
@@ -2178,11 +2175,11 @@ TEST_F(BlockLayoutAlgorithmTest, DISABLED_FloatFragmentationZeroHeight) {
       /* stretch_inline_size_if_auto */ true,
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
-  const NGPhysicalBoxFragment* fragment = RunBlockLayoutAlgorithm(node, space);
+  const PhysicalBoxFragment* fragment = RunBlockLayoutAlgorithm(node, space);
   EXPECT_EQ(PhysicalSize(150, 50), fragment->Size());
   EXPECT_TRUE(fragment->GetBreakToken());
 
-  FragmentChildIterator iterator(To<NGPhysicalBoxFragment>(fragment));
+  FragmentChildIterator iterator(To<PhysicalBoxFragment>(fragment));
   const auto* child = iterator.NextChild();
 
   // First fragment of float.
@@ -2202,7 +2199,7 @@ TEST_F(BlockLayoutAlgorithmTest, DISABLED_FloatFragmentationZeroHeight) {
   EXPECT_EQ(PhysicalSize(150, 0), fragment->Size());
   ASSERT_FALSE(fragment->GetBreakToken());
 
-  iterator.SetParent(To<NGPhysicalBoxFragment>(fragment));
+  iterator.SetParent(To<PhysicalBoxFragment>(fragment));
   child = iterator.NextChild();
 
   // Second fragment of float.
@@ -2248,9 +2245,9 @@ TEST_F(BlockLayoutAlgorithmTest, NewFcBlockWithAdjoiningFloatCollapsesMargins) {
     const auto* fragment = GetHtmlPhysicalFragment();
     ASSERT_EQ(1UL, fragment->Children().size());
     const auto* body_fragment =
-        To<NGPhysicalBoxFragment>(fragment->Children()[0].get());
+        To<PhysicalBoxFragment>(fragment->Children()[0].get());
     const auto* container_fragment =
-        To<NGPhysicalBoxFragment>(body_fragment->Children()[0].get());
+        To<PhysicalBoxFragment>(body_fragment->Children()[0].get());
     ASSERT_EQ(2UL, container_fragment->Children().size());
     body_offset = fragment->Children()[0].Offset();
     new_fc_offset = container_fragment->Children()[1].Offset();
@@ -2297,13 +2294,13 @@ TEST_F(BlockLayoutAlgorithmTest, NewFcAvoidsFloats) {
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(1000), kIndefiniteSize));
 
-  const NGPhysicalBoxFragment* fragment = RunBlockLayoutAlgorithm(node, space);
+  const PhysicalBoxFragment* fragment = RunBlockLayoutAlgorithm(node, space);
   EXPECT_EQ(PhysicalSize(200, 150), fragment->Size());
 
-  FragmentChildIterator iterator(To<NGPhysicalBoxFragment>(fragment));
+  FragmentChildIterator iterator(To<PhysicalBoxFragment>(fragment));
 
   PhysicalOffset offset;
-  const NGPhysicalBoxFragment* child = iterator.NextChild(&offset);
+  const PhysicalBoxFragment* child = iterator.NextChild(&offset);
   EXPECT_EQ(PhysicalSize(100, 30), child->Size());
   EXPECT_EQ(PhysicalOffset(0, 0), offset);
 
@@ -2333,13 +2330,13 @@ TEST_F(BlockLayoutAlgorithmTest, ZeroBlockSizeAboveEdge) {
       /* stretch_inline_size_if_auto */ true,
       /* is_new_formatting_context */ true);
 
-  const NGPhysicalBoxFragment* fragment = RunBlockLayoutAlgorithm(node, space);
+  const PhysicalBoxFragment* fragment = RunBlockLayoutAlgorithm(node, space);
   EXPECT_EQ(PhysicalSize(200, 10), fragment->Size());
 
-  FragmentChildIterator iterator(To<NGPhysicalBoxFragment>(fragment));
+  FragmentChildIterator iterator(To<PhysicalBoxFragment>(fragment));
 
   PhysicalOffset offset;
-  const NGPhysicalBoxFragment* child = iterator.NextChild(&offset);
+  const PhysicalBoxFragment* child = iterator.NextChild(&offset);
   EXPECT_EQ(PhysicalSize(50, 50), child->Size());
   EXPECT_EQ(PhysicalOffset(0, -70), offset);
 
@@ -2371,13 +2368,13 @@ TEST_F(BlockLayoutAlgorithmTest, NewFcFirstChildIsZeroBlockSize) {
       /* stretch_inline_size_if_auto */ true,
       /* is_new_formatting_context */ true);
 
-  const NGPhysicalBoxFragment* fragment = RunBlockLayoutAlgorithm(node, space);
+  const PhysicalBoxFragment* fragment = RunBlockLayoutAlgorithm(node, space);
   EXPECT_EQ(PhysicalSize(200, 10), fragment->Size());
 
-  FragmentChildIterator iterator(To<NGPhysicalBoxFragment>(fragment));
+  FragmentChildIterator iterator(To<PhysicalBoxFragment>(fragment));
 
   PhysicalOffset offset;
-  const NGPhysicalBoxFragment* child = iterator.NextChild(&offset);
+  const PhysicalBoxFragment* child = iterator.NextChild(&offset);
   EXPECT_EQ(PhysicalSize(50, 0), child->Size());
   EXPECT_EQ(PhysicalOffset(0, -30), offset);
 
@@ -2403,7 +2400,7 @@ TEST_F(BlockLayoutAlgorithmTest, RootFragmentOffsetInsideLegacy) {
   const LayoutObject* innerNGRoot = GetLayoutObjectByElementId("innerNGRoot");
 
   ASSERT_TRUE(innerNGRoot->IsLayoutNGObject());
-  const NGPhysicalBoxFragment* fragment =
+  const PhysicalBoxFragment* fragment =
       CurrentFragmentFor(To<LayoutNGBlockFlow>(innerNGRoot));
 
   ASSERT_TRUE(fragment);

@@ -31,8 +31,8 @@ SimplifiedLayoutAlgorithm::SimplifiedLayoutAlgorithm(
   DCHECK(!Node().IsReplaced());
 
   const bool is_block_flow = Node().IsBlockFlow();
-  const NGPhysicalBoxFragment& physical_fragment =
-      To<NGPhysicalBoxFragment>(result.GetPhysicalFragment());
+  const auto& physical_fragment =
+      To<PhysicalBoxFragment>(result.GetPhysicalFragment());
 
   container_builder_.SetIsNewFormattingContext(
       physical_fragment.IsFormattingContextRoot());
@@ -206,7 +206,7 @@ SimplifiedLayoutAlgorithm::SimplifiedLayoutAlgorithm(
 
 void SimplifiedLayoutAlgorithm::CloneOldChildren() {
   const auto& previous_fragment =
-      To<NGPhysicalBoxFragment>(previous_result_.GetPhysicalFragment());
+      To<PhysicalBoxFragment>(previous_result_.GetPhysicalFragment());
   for (const auto& child_link : previous_fragment.Children()) {
     const auto& child_fragment = *child_link.get();
     AddChildFragment(child_link, child_fragment);
@@ -235,7 +235,7 @@ const LayoutResult* SimplifiedLayoutAlgorithm::Layout() {
     return container_builder_.ToBoxFragment();
 
   const auto& previous_fragment =
-      To<NGPhysicalBoxFragment>(previous_result_.GetPhysicalFragment());
+      To<PhysicalBoxFragment>(previous_result_.GetPhysicalFragment());
 
   for (const auto& child_link : previous_fragment.Children()) {
     const auto& child_fragment = *child_link.get();

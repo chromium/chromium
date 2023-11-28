@@ -31,8 +31,8 @@ class LayoutInline;
 class LayoutObject;
 class LayoutUnit;
 class NGInlinePaintContext;
-class NGPhysicalBoxFragment;
 class Node;
+class PhysicalBoxFragment;
 class ShapeResultView;
 enum class StyleVariant;
 struct LayoutSelectionStatus;
@@ -113,7 +113,7 @@ class CORE_EXPORT InlineCursorPosition {
   const ComputedStyle& Style() const { return item_->Style(); }
 
   // Functions to get corresponding objects for this position.
-  const NGPhysicalBoxFragment* BoxFragment() const {
+  const PhysicalBoxFragment* BoxFragment() const {
     return item_->BoxFragment();
   }
   const LayoutObject* GetLayoutObject() const {
@@ -240,8 +240,8 @@ class CORE_EXPORT InlineCursor {
   using ItemsSpan = FragmentItems::Span;
 
   explicit InlineCursor(const LayoutBlockFlow& block_flow);
-  explicit InlineCursor(const NGPhysicalBoxFragment& box_fragment);
-  InlineCursor(const NGPhysicalBoxFragment& box_fragment,
+  explicit InlineCursor(const PhysicalBoxFragment& box_fragment);
+  InlineCursor(const PhysicalBoxFragment& box_fragment,
                const FragmentItems& items);
   explicit InlineCursor(const InlineBackwardCursor& backward_cursor);
   InlineCursor(const InlineCursor& other) = default;
@@ -266,8 +266,8 @@ class CORE_EXPORT InlineCursor {
     return *fragment_items_;
   }
 
-  // Returns the |NGPhysicalBoxFragment| that owns |Items|.
-  const NGPhysicalBoxFragment& ContainerFragment() const {
+  // Returns the |PhysicalBoxFragment| that owns |Items|.
+  const PhysicalBoxFragment& ContainerFragment() const {
     DCHECK(root_box_fragment_);
     return *root_box_fragment_;
   }
@@ -373,7 +373,7 @@ class CORE_EXPORT InlineCursor {
   // offset, and snaps to the nearest line in the block direction.
   PositionWithAffinity PositionForPointInInlineFormattingContext(
       const PhysicalOffset& point,
-      const NGPhysicalBoxFragment& container);
+      const PhysicalBoxFragment& container);
   // Find the |Position| in the line box |Current()| points to. This variation
   // ignores the block offset, and snaps to the nearest item in inline
   // direction.
@@ -571,7 +571,7 @@ class CORE_EXPORT InlineCursor {
 #endif
 
  private:
-  InlineCursor(const NGPhysicalBoxFragment& box_fragment,
+  InlineCursor(const PhysicalBoxFragment& box_fragment,
                const FragmentItems& fragment_items,
                ItemsSpan items);
 
@@ -601,9 +601,9 @@ class CORE_EXPORT InlineCursor {
   // Move the cursor position to the first fragment in tree.
   void MoveToFirst();
 
-  void SetRoot(const NGPhysicalBoxFragment& box_fragment,
+  void SetRoot(const PhysicalBoxFragment& box_fragment,
                const FragmentItems& items);
-  void SetRoot(const NGPhysicalBoxFragment& box_fragment,
+  void SetRoot(const PhysicalBoxFragment& box_fragment,
                const FragmentItems& fragment_items,
                ItemsSpan items);
   void SetRoot(const LayoutBlockFlow& block_flow);
@@ -668,7 +668,7 @@ class CORE_EXPORT InlineCursor {
 
   ItemsSpan items_;
   const FragmentItems* fragment_items_ = nullptr;
-  const NGPhysicalBoxFragment* root_box_fragment_ = nullptr;
+  const PhysicalBoxFragment* root_box_fragment_ = nullptr;
 
   CulledInlineTraversal culled_inline_;
 
@@ -702,7 +702,7 @@ class CORE_EXPORT InlineBackwardCursor {
 
   void MoveToPreviousSibling();
 
-  const NGPhysicalBoxFragment& ContainerFragment() const {
+  const PhysicalBoxFragment& ContainerFragment() const {
     return cursor_.ContainerFragment();
   }
 

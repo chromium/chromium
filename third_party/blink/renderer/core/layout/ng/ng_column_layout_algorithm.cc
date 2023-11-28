@@ -568,8 +568,8 @@ struct ResultWithOffset {
   ResultWithOffset(const LayoutResult* result, LogicalOffset offset)
       : result(result), offset(offset) {}
 
-  const NGPhysicalBoxFragment& Fragment() const {
-    return To<NGPhysicalBoxFragment>(result->GetPhysicalFragment());
+  const PhysicalBoxFragment& Fragment() const {
+    return To<PhysicalBoxFragment>(result->GetPhysicalFragment());
   }
 
   void Trace(Visitor* visitor) const { visitor->Trace(result); }
@@ -751,7 +751,7 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
       child_algorithm.SetBoxType(PhysicalFragment::kColumnBox);
       result = child_algorithm.Layout();
       const auto& column =
-          To<NGPhysicalBoxFragment>(result->GetPhysicalFragment());
+          To<PhysicalBoxFragment>(result->GetPhysicalFragment());
       intrinsic_block_size_contribution = column_size.block_size;
       if (shrink_to_fit_column_block_size) {
         // Shrink-to-fit the row block-size contribution from the first column
@@ -1025,7 +1025,7 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
     container_builder_.SetPreviousBreakAfter(EBreakBetween::kAuto);
 
     const auto& first_column =
-        To<NGPhysicalBoxFragment>(new_columns[0].Fragment());
+        To<PhysicalBoxFragment>(new_columns[0].Fragment());
 
     // Only the first column in a row may attempt to place any unpositioned
     // list-item. This matches the behavior in Gecko, and also to some extent
@@ -1042,7 +1042,7 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
 
   // Commit all column fragments to the fragment builder.
   for (auto result_with_offset : new_columns) {
-    const NGPhysicalBoxFragment& column = result_with_offset.Fragment();
+    const PhysicalBoxFragment& column = result_with_offset.Fragment();
     container_builder_.AddChild(column, result_with_offset.offset);
     PropagateBaselineFromChild(column, result_with_offset.offset.block_offset);
   }
@@ -1097,7 +1097,7 @@ BreakStatus ColumnLayoutAlgorithm::LayoutSpanner(
   }
 
   const auto& spanner_fragment =
-      To<NGPhysicalBoxFragment>(result->GetPhysicalFragment());
+      To<PhysicalBoxFragment>(result->GetPhysicalFragment());
   LogicalFragment logical_fragment(GetConstraintSpace().GetWritingDirection(),
                                    spanner_fragment);
 
@@ -1127,7 +1127,7 @@ BreakStatus ColumnLayoutAlgorithm::LayoutSpanner(
 }
 
 void ColumnLayoutAlgorithm::AttemptToPositionListMarker(
-    const NGPhysicalBoxFragment& child_fragment,
+    const PhysicalBoxFragment& child_fragment,
     LayoutUnit block_offset) {
   const auto marker = container_builder_.GetUnpositionedListMarker();
   if (!marker)
@@ -1174,7 +1174,7 @@ void ColumnLayoutAlgorithm::PositionAnyUnclaimedListMarker() {
 }
 
 void ColumnLayoutAlgorithm::PropagateBaselineFromChild(
-    const NGPhysicalBoxFragment& child,
+    const PhysicalBoxFragment& child,
     LayoutUnit block_offset) {
   LogicalBoxFragment fragment(GetConstraintSpace().GetWritingDirection(),
                               child);
@@ -1316,7 +1316,7 @@ LayoutUnit ColumnLayoutAlgorithm::ResolveColumnAutoBlockSizeInternal(
     DCHECK_EQ(result->Status(), LayoutResult::kSuccess);
 
     const auto& fragment =
-        To<NGPhysicalBoxFragment>(result->GetPhysicalFragment());
+        To<PhysicalBoxFragment>(result->GetPhysicalFragment());
 
     // Add a content run, as long as we have soft break opportunities. Ignore
     // content that's doomed to end up in overflowing columns (because of too

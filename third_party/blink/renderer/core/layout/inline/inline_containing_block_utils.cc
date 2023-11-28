@@ -46,7 +46,7 @@ void GatherInlineContainerFragmentsFromItems(
     }
 
     // We only care about inlines which have generated a box fragment.
-    const NGPhysicalBoxFragment* box = item->BoxFragment();
+    const PhysicalBoxFragment* box = item->BoxFragment();
     if (!box)
       continue;
 
@@ -141,7 +141,7 @@ void InlineContainingBlockUtils::ComputeInlineContainerGeometry(
     if (!child.fragment->IsAnonymousBlock())
       continue;
 
-    const auto& child_fragment = To<NGPhysicalBoxFragment>(*child.fragment);
+    const auto& child_fragment = To<PhysicalBoxFragment>(*child.fragment);
     const auto* items = child_fragment.Items();
     if (!items)
       continue;
@@ -199,7 +199,7 @@ void InlineContainingBlockUtils::ComputeInlineContainerGeometryForFragmentainer(
         if (!child.fragment->IsAnonymousBlock())
           continue;
 
-        const auto& child_fragment = To<NGPhysicalBoxFragment>(*child.fragment);
+        const auto& child_fragment = To<PhysicalBoxFragment>(*child.fragment);
         if (!child_fragment.HasItems())
           continue;
 

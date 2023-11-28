@@ -13,7 +13,7 @@ namespace blink {
 
 class LayoutBox;
 class LayoutObject;
-class NGPhysicalBoxFragment;
+class PhysicalBoxFragment;
 
 template <typename Iterator, typename Data, typename Head>
 class FragmentDataIteratorBase {
@@ -85,7 +85,7 @@ class MutableFragmentDataIterator
 };
 
 // FragmentData iterator, accompanied by "corresponding" NG layout structures.
-// For LayoutBox, this means NGPhysicalBoxFragment. For non-atomic inlines, it
+// For LayoutBox, this means PhysicalBoxFragment. For non-atomic inlines, it
 // means InlineCursor. For non-atomic inlines, this also means that Advance()
 // will stop for each line on which the LayoutObject is represented. There may
 // be multiple lines per FragmentData (whereas there's just one FragmentData per
@@ -98,7 +98,7 @@ class AccompaniedFragmentIterator : public FragmentDataIterator {
   explicit AccompaniedFragmentIterator(const LayoutObject&);
 
   const InlineCursor* Cursor() { return cursor_ ? &(*cursor_) : nullptr; }
-  const NGPhysicalBoxFragment* GetPhysicalBoxFragment() const;
+  const PhysicalBoxFragment* GetPhysicalBoxFragment() const;
 
   // Advance the iterator. For LayoutBox fragments this also means that we're
   // going to advance to the next fragmentainer, and thereby the next

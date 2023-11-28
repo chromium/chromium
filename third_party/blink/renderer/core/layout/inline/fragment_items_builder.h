@@ -75,7 +75,7 @@ class CORE_EXPORT FragmentItemsBuilder {
                const LogicalOffset& offset);
 
   // Add a list marker to the current line.
-  void AddListMarker(const NGPhysicalBoxFragment& marker_fragment,
+  void AddListMarker(const PhysicalBoxFragment& marker_fragment,
                      const LogicalOffset& offset);
 
   // See |AddPreviousItems| below.
@@ -94,7 +94,7 @@ class CORE_EXPORT FragmentItemsBuilder {
   // When |stop_at_dirty| is true, this function checks reusability of previous
   // items and stops copying before the first dirty line.
   AddPreviousItemsResult AddPreviousItems(
-      const NGPhysicalBoxFragment& container,
+      const PhysicalBoxFragment& container,
       const FragmentItems& items,
       BoxFragmentBuilder* container_builder = nullptr,
       const FragmentItem* end_item = nullptr,

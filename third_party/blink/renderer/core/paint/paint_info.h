@@ -144,7 +144,7 @@ struct CORE_EXPORT PaintInfo {
   // certain types of monolithic content, but there may still be multiple
   // fragments in such cases, due to repeated table headers/footers or repeated
   // fixed positioned objects when printing. The correct FragmentData is
-  // typically obtained via an NGPhysicalBoxFragment object, but there are no
+  // typically obtained via an PhysicalBoxFragment object, but there are no
   // physical fragments passed to legacy painters.
   const FragmentData* fragment_data_override_ = nullptr;
 

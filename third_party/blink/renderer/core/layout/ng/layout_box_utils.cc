@@ -64,9 +64,9 @@ LayoutUnit LayoutBoxUtils::TotalBlockSize(const LayoutBox& box) {
 
 // static
 LayoutPoint LayoutBoxUtils::ComputeLocation(
-    const NGPhysicalBoxFragment& child_fragment,
+    const PhysicalBoxFragment& child_fragment,
     PhysicalOffset offset,
-    const NGPhysicalBoxFragment& container_fragment,
+    const PhysicalBoxFragment& container_fragment,
     const BlockBreakToken* previous_container_break_token) {
   if (UNLIKELY(container_fragment.Style().IsFlippedBlocksWritingMode())) {
     // Move the physical offset to the right side of the child fragment,

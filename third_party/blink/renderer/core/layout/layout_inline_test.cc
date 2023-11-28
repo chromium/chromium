@@ -30,7 +30,7 @@ class LayoutInlineTest : public RenderingTest {
     }
     const LayoutBox& box = To<LayoutBox>(object);
     DCHECK_EQ(box.PhysicalFragmentCount(), 1u);
-    const NGPhysicalBoxFragment& fragment = *box.GetPhysicalFragment(0);
+    const PhysicalBoxFragment& fragment = *box.GetPhysicalFragment(0);
     return NGBoxFragmentPainter(fragment).HitTestAllPhases(result, location,
                                                            offset);
   }

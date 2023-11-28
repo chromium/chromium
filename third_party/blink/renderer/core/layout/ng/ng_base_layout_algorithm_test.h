@@ -18,7 +18,7 @@ namespace blink {
 class BlockNode;
 class BreakToken;
 class LayoutNGBlockFlow;
-class NGPhysicalBoxFragment;
+class PhysicalBoxFragment;
 
 // Base class for all LayoutNG Algorithms unit test classes.
 typedef bool TestParamLayoutNG;
@@ -30,19 +30,19 @@ class BaseLayoutAlgorithmTest
 
   void AdvanceToLayoutPhase();
 
-  const NGPhysicalBoxFragment* RunBlockLayoutAlgorithm(
+  const PhysicalBoxFragment* RunBlockLayoutAlgorithm(
       BlockNode node,
       const ConstraintSpace& space,
       const BreakToken* break_token = nullptr);
 
-  const NGPhysicalBoxFragment* RunFieldsetLayoutAlgorithm(
+  const PhysicalBoxFragment* RunFieldsetLayoutAlgorithm(
       BlockNode node,
       const ConstraintSpace& space,
       const BreakToken* break_token = nullptr);
 
-  const NGPhysicalBoxFragment* GetBoxFragmentByElementId(const char*);
+  const PhysicalBoxFragment* GetBoxFragmentByElementId(const char*);
 
-  static const NGPhysicalBoxFragment* CurrentFragmentFor(
+  static const PhysicalBoxFragment* CurrentFragmentFor(
       const LayoutNGBlockFlow*);
 };
 
@@ -50,19 +50,19 @@ class FragmentChildIterator {
   STACK_ALLOCATED();
 
  public:
-  explicit FragmentChildIterator(const NGPhysicalBoxFragment* parent) {
+  explicit FragmentChildIterator(const PhysicalBoxFragment* parent) {
     SetParent(parent);
   }
-  void SetParent(const NGPhysicalBoxFragment* parent) {
+  void SetParent(const PhysicalBoxFragment* parent) {
     parent_ = parent;
     index_ = 0;
   }
 
-  const NGPhysicalBoxFragment* NextChild(
+  const PhysicalBoxFragment* NextChild(
       PhysicalOffset* fragment_offset = nullptr);
 
  private:
-  const NGPhysicalBoxFragment* parent_;
+  const PhysicalBoxFragment* parent_;
   unsigned index_;
 };
 

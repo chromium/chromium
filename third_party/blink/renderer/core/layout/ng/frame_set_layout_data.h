@@ -11,7 +11,7 @@
 namespace blink {
 
 // An instance of FrameSetLayoutData is produced by FrameSetLayoutAlgorithm,
-// and is owned by BoxFragmentBuilder and NGPhysicalBoxFragment. It is used
+// and is owned by BoxFragmentBuilder and PhysicalBoxFragment. It is used
 // by NGFrameSetPainter and resize handling of HTMLFrameSetElement.
 struct FrameSetLayoutData {
   // Frame grid sizes.

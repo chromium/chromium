@@ -30,7 +30,7 @@ void BaseLayoutAlgorithmTest::AdvanceToLayoutPhase() {
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInPerformLayout);
 }
 
-const NGPhysicalBoxFragment* BaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(
+const PhysicalBoxFragment* BaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(
     BlockNode node,
     const ConstraintSpace& space,
     const BreakToken* break_token) {
@@ -44,11 +44,10 @@ const NGPhysicalBoxFragment* BaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(
           {node, fragment_geometry, space, To<BlockBreakToken>(break_token)})
           .Layout();
 
-  return To<NGPhysicalBoxFragment>(&result->GetPhysicalFragment());
+  return To<PhysicalBoxFragment>(&result->GetPhysicalFragment());
 }
 
-const NGPhysicalBoxFragment*
-BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
+const PhysicalBoxFragment* BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
     BlockNode node,
     const ConstraintSpace& space,
     const BreakToken* break_token) {
@@ -62,25 +61,25 @@ BaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
           {node, fragment_geometry, space, To<BlockBreakToken>(break_token)})
           .Layout();
 
-  return To<NGPhysicalBoxFragment>(&result->GetPhysicalFragment());
+  return To<PhysicalBoxFragment>(&result->GetPhysicalFragment());
 }
 
-const NGPhysicalBoxFragment* BaseLayoutAlgorithmTest::GetBoxFragmentByElementId(
+const PhysicalBoxFragment* BaseLayoutAlgorithmTest::GetBoxFragmentByElementId(
     const char* id) {
   LayoutObject* layout_object = GetLayoutObjectByElementId(id);
   CHECK(layout_object && layout_object->IsLayoutNGObject());
-  const NGPhysicalBoxFragment* fragment =
+  const PhysicalBoxFragment* fragment =
       To<LayoutBlockFlow>(layout_object)->GetPhysicalFragment(0);
   CHECK(fragment);
   return fragment;
 }
 
-const NGPhysicalBoxFragment* BaseLayoutAlgorithmTest::CurrentFragmentFor(
+const PhysicalBoxFragment* BaseLayoutAlgorithmTest::CurrentFragmentFor(
     const LayoutNGBlockFlow* block_flow) {
   return block_flow->GetPhysicalFragment(0);
 }
 
-const NGPhysicalBoxFragment* FragmentChildIterator::NextChild(
+const PhysicalBoxFragment* FragmentChildIterator::NextChild(
     PhysicalOffset* fragment_offset) {
   if (!parent_)
     return nullptr;
@@ -95,7 +94,7 @@ const NGPhysicalBoxFragment* FragmentChildIterator::NextChild(
   auto& child = parent_->Children()[index_++];
   if (fragment_offset)
     *fragment_offset = child.Offset();
-  return To<NGPhysicalBoxFragment>(child.get());
+  return To<PhysicalBoxFragment>(child.get());
 }
 
 ConstraintSpace ConstructBlockLayoutTestConstraintSpace(

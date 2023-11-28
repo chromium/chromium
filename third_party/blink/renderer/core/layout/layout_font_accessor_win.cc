@@ -24,7 +24,7 @@ namespace {
 void GetFontsUsedByLayoutObject(const LayoutObject& layout_object,
                                 FontFamilyNames& result);
 
-void GetFontsUsedByFragment(const NGPhysicalBoxFragment& fragment,
+void GetFontsUsedByFragment(const PhysicalBoxFragment& fragment,
                             FontFamilyNames& result) {
   for (InlineCursor cursor(fragment); cursor; cursor.MoveToNext()) {
     const FragmentItem& item = *cursor.Current().Item();
@@ -67,9 +67,10 @@ void GetFontsUsedByLayoutObject(const LayoutObject& layout_object,
     // Use |InlineCursor| to traverse if |target| is an IFC.
     if (const auto* block_flow = DynamicTo<LayoutBlockFlow>(target)) {
       if (block_flow->HasFragmentItems()) {
-        for (const NGPhysicalBoxFragment& fragment :
-             block_flow->PhysicalFragments())
+        for (const PhysicalBoxFragment& fragment :
+             block_flow->PhysicalFragments()) {
           GetFontsUsedByFragment(fragment, result);
+        }
         target = target->NextInPreOrderAfterChildren(&layout_object);
         continue;
       }

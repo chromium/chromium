@@ -593,7 +593,7 @@ bool FrameSelection::ShouldPaintCaret(const LayoutBlock& block) const {
 }
 
 bool FrameSelection::ShouldPaintCaret(
-    const NGPhysicalBoxFragment& box_fragment) const {
+    const PhysicalBoxFragment& box_fragment) const {
   DCHECK_GE(GetDocument().Lifecycle().GetState(),
             DocumentLifecycle::kLayoutClean);
   bool result = frame_caret_->ShouldPaintCaret(box_fragment);

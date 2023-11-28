@@ -23,7 +23,7 @@ class AnchorQueryTest : public RenderingTest,
         To<LayoutBlockFlow>(element.GetLayoutObject());
     if (!container->PhysicalFragmentCount())
       return nullptr;
-    const NGPhysicalBoxFragment* fragment = container->GetPhysicalFragment(0);
+    const PhysicalBoxFragment* fragment = container->GetPhysicalFragment(0);
     DCHECK(fragment);
     return fragment->AnchorQuery();
   }
@@ -398,13 +398,13 @@ TEST_F(AnchorQueryTest, FragmentedContainingBlock) {
   )HTML");
   auto* cb = To<LayoutBox>(GetLayoutObjectByElementId("cb"));
   ASSERT_EQ(cb->PhysicalFragmentCount(), 3u);
-  const NGPhysicalBoxFragment* cb_fragment1 = cb->GetPhysicalFragment(1);
+  const PhysicalBoxFragment* cb_fragment1 = cb->GetPhysicalFragment(1);
   const PhysicalAnchorQuery* cb_anchor_query1 = cb_fragment1->AnchorQuery();
   ASSERT_NE(cb_anchor_query1, nullptr);
   EXPECT_THAT(AnchorTestData::ToList(*cb_anchor_query1),
               testing::ElementsAre(AnchorTestData{
                   AtomicString("--a1"), PhysicalRect(0, 50, 100, 50)}));
-  const NGPhysicalBoxFragment* cb_fragment2 = cb->GetPhysicalFragment(2);
+  const PhysicalBoxFragment* cb_fragment2 = cb->GetPhysicalFragment(2);
   const PhysicalAnchorQuery* cb_anchor_query2 = cb_fragment2->AnchorQuery();
   ASSERT_NE(cb_anchor_query2, nullptr);
   EXPECT_THAT(AnchorTestData::ToList(*cb_anchor_query2),

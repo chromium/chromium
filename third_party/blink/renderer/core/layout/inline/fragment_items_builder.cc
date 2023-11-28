@@ -199,7 +199,7 @@ void FragmentItemsBuilder::AddItems(LogicalLineItem* child_begin,
 }
 
 void FragmentItemsBuilder::AddListMarker(
-    const NGPhysicalBoxFragment& marker_fragment,
+    const PhysicalBoxFragment& marker_fragment,
     const LogicalOffset& offset) {
   DCHECK(!is_converted_to_physical_);
 
@@ -210,7 +210,7 @@ void FragmentItemsBuilder::AddListMarker(
 }
 
 FragmentItemsBuilder::AddPreviousItemsResult
-FragmentItemsBuilder::AddPreviousItems(const NGPhysicalBoxFragment& container,
+FragmentItemsBuilder::AddPreviousItems(const PhysicalBoxFragment& container,
                                        const FragmentItems& items,
                                        BoxFragmentBuilder* container_builder,
                                        const FragmentItem* end_item,
@@ -311,7 +311,7 @@ FragmentItemsBuilder::AddPreviousItems(const NGPhysicalBoxFragment& container,
         // |RebuildFragmentTreeSpine| does not rebuild spine if |NeedsLayout|.
         // Such block needs to copy PostLayout fragment while running simplified
         // layout.
-        absl::optional<NGPhysicalBoxFragment::AllowPostLayoutScope>
+        absl::optional<PhysicalBoxFragment::AllowPostLayoutScope>
             allow_post_layout;
         if (line_child.IsRelayoutBoundary())
           allow_post_layout.emplace();
@@ -324,7 +324,7 @@ FragmentItemsBuilder::AddPreviousItems(const NGPhysicalBoxFragment& container,
 
         // Be sure to pick the post-layout fragment.
         const FragmentItem& new_item = items_.back().item;
-        if (const NGPhysicalBoxFragment* box = new_item.BoxFragment()) {
+        if (const PhysicalBoxFragment* box = new_item.BoxFragment()) {
           box = box->PostLayout();
           new_item.GetMutableForCloning().ReplaceBoxFragment(*box);
         }

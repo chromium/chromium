@@ -35,7 +35,7 @@ class ScopedPaintState {
                          paint_info,
                          DetermineFragmentToPaint(object, paint_info)) {}
 
-  ScopedPaintState(const NGPhysicalBoxFragment& fragment,
+  ScopedPaintState(const PhysicalBoxFragment& fragment,
                    const PaintInfo& paint_info)
       : ScopedPaintState(*fragment.GetLayoutObject(),
                          paint_info,

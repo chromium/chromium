@@ -3241,7 +3241,7 @@ void LocalFrameView::ForceLayoutForPagination(float maximum_shrink_factor) {
 
   LayoutForPrinting();
 
-  const auto& first_page = To<NGPhysicalBoxFragment>(
+  const auto& first_page = To<PhysicalBoxFragment>(
       *layout_view->GetPhysicalFragment(0)->Children()[0]);
   const AtomicString& first_page_name = first_page.PageName();
   if (first_page_name) {
@@ -3267,7 +3267,7 @@ void LocalFrameView::ForceLayoutForPagination(float maximum_shrink_factor) {
   float overall_scale_factor = 1.0;
   for (const PhysicalFragmentLink& link :
        layout_view->GetPhysicalFragment(0)->Children()) {
-    const auto& page = To<NGPhysicalBoxFragment>(*link);
+    const auto& page = To<PhysicalBoxFragment>(*link);
     // Check the inline axis overflow on each individual page, to find the
     // largest relative overflow.
     float page_scale_factor;

@@ -367,7 +367,7 @@ PositionedFloat PositionFloat(UnpositionedFloat* unpositioned_float,
   }
 
   const auto& physical_fragment =
-      To<NGPhysicalBoxFragment>(layout_result->GetPhysicalFragment());
+      To<PhysicalBoxFragment>(layout_result->GetPhysicalFragment());
   LogicalFragment float_fragment(parent_space.GetWritingDirection(),
                                  physical_fragment);
 

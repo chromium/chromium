@@ -106,7 +106,7 @@ const LayoutResult* TableSectionLayoutAlgorithm::Layout() {
     }
 
     const auto& physical_fragment =
-        To<NGPhysicalBoxFragment>(row_result->GetPhysicalFragment());
+        To<PhysicalBoxFragment>(row_result->GetPhysicalFragment());
     const LogicalBoxFragment fragment(table_data.table_writing_direction,
                                       physical_fragment);
 

@@ -51,8 +51,8 @@ void NGFrameSetPainter::PaintChildren(const PaintInfo& paint_info) {
     const PhysicalFragment& child_fragment = *link;
     if (child_fragment.HasSelfPaintingLayer())
       continue;
-    if (To<NGPhysicalBoxFragment>(child_fragment).CanTraverse()) {
-      NGBoxFragmentPainter(To<NGPhysicalBoxFragment>(child_fragment))
+    if (To<PhysicalBoxFragment>(child_fragment).CanTraverse()) {
+      NGBoxFragmentPainter(To<PhysicalBoxFragment>(child_fragment))
           .Paint(paint_info);
     } else {
       child_fragment.GetLayoutObject()->Paint(paint_info);

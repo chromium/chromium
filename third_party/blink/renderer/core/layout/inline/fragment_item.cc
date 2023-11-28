@@ -125,7 +125,7 @@ FragmentItem::FragmentItem(const PhysicalLineBoxFragment& line)
   DCHECK(!IsFormattingContextRoot());
 }
 
-FragmentItem::FragmentItem(const NGPhysicalBoxFragment& box,
+FragmentItem::FragmentItem(const PhysicalBoxFragment& box,
                            TextDirection resolved_direction)
     : box_(&box, /* descendants_count */ 1),
       rect_({PhysicalOffset(), box.Size()}),
@@ -167,8 +167,8 @@ FragmentItem::FragmentItem(LogicalLineItem&& line_item,
   }
 
   if (line_item.layout_result) {
-    const auto& box_fragment = To<NGPhysicalBoxFragment>(
-        line_item.layout_result->GetPhysicalFragment());
+    const auto& box_fragment =
+        To<PhysicalBoxFragment>(line_item.layout_result->GetPhysicalFragment());
     new (this) FragmentItem(box_fragment, line_item.ResolvedDirection());
     return;
   }
@@ -297,8 +297,9 @@ FragmentItem::~FragmentItem() {
 
 bool FragmentItem::IsInlineBox() const {
   if (Type() == kBox) {
-    if (const NGPhysicalBoxFragment* box = BoxFragment())
+    if (const PhysicalBoxFragment* box = BoxFragment()) {
       return box->IsInlineBox();
+    }
     NOTREACHED();
   }
   return false;
@@ -307,8 +308,9 @@ bool FragmentItem::IsInlineBox() const {
 bool FragmentItem::IsAtomicInline() const {
   if (Type() != kBox)
     return false;
-  if (const NGPhysicalBoxFragment* box = BoxFragment())
+  if (const PhysicalBoxFragment* box = BoxFragment()) {
     return box->IsAtomicInline();
+  }
   return false;
 }
 
@@ -328,8 +330,9 @@ bool FragmentItem::IsBlockInInline() const {
 }
 
 bool FragmentItem::IsFloating() const {
-  if (const NGPhysicalBoxFragment* box = BoxFragment())
+  if (const PhysicalBoxFragment* box = BoxFragment()) {
     return box->IsFloating();
+  }
   return false;
 }
 
@@ -348,7 +351,7 @@ bool FragmentItem::IsGeneratedText() const {
 }
 
 bool FragmentItem::IsFormattingContextRoot() const {
-  const NGPhysicalBoxFragment* box = BoxFragment();
+  const PhysicalBoxFragment* box = BoxFragment();
   return box && box->IsFormattingContextRoot();
 }
 
@@ -440,24 +443,27 @@ bool FragmentItem::InclusiveContains(const gfx::PointF& position) const {
 }
 
 bool FragmentItem::HasNonVisibleOverflow() const {
-  if (const NGPhysicalBoxFragment* fragment = BoxFragment())
+  if (const PhysicalBoxFragment* fragment = BoxFragment()) {
     return fragment->HasNonVisibleOverflow();
+  }
   return false;
 }
 
 bool FragmentItem::IsScrollContainer() const {
-  if (const NGPhysicalBoxFragment* fragment = BoxFragment())
+  if (const PhysicalBoxFragment* fragment = BoxFragment()) {
     return fragment->IsScrollContainer();
+  }
   return false;
 }
 
 bool FragmentItem::HasSelfPaintingLayer() const {
-  if (const NGPhysicalBoxFragment* fragment = BoxFragment())
+  if (const PhysicalBoxFragment* fragment = BoxFragment()) {
     return fragment->HasSelfPaintingLayer();
+  }
   return false;
 }
 
-FragmentItem::BoxItem::BoxItem(const NGPhysicalBoxFragment* box_fragment,
+FragmentItem::BoxItem::BoxItem(const PhysicalBoxFragment* box_fragment,
                                wtf_size_t descendants_count)
     : box_fragment(box_fragment), descendants_count(descendants_count) {}
 
@@ -465,7 +471,7 @@ void FragmentItem::BoxItem::Trace(Visitor* visitor) const {
   visitor->Trace(box_fragment);
 }
 
-const NGPhysicalBoxFragment* FragmentItem::BoxItem::PostLayout() const {
+const PhysicalBoxFragment* FragmentItem::BoxItem::PostLayout() const {
   if (box_fragment)
     return box_fragment->PostLayout();
   return nullptr;
@@ -473,8 +479,9 @@ const NGPhysicalBoxFragment* FragmentItem::BoxItem::PostLayout() const {
 
 void FragmentItem::LayoutObjectWillBeDestroyed() const {
   const_cast<FragmentItem*>(this)->layout_object_ = nullptr;
-  if (const NGPhysicalBoxFragment* fragment = BoxFragment())
+  if (const PhysicalBoxFragment* fragment = BoxFragment()) {
     fragment->LayoutObjectWillBeDestroyed();
+  }
 }
 
 void FragmentItem::LayoutObjectWillBeMoved() const {
@@ -488,8 +495,9 @@ void FragmentItem::LayoutObjectWillBeMoved() const {
 
 const PhysicalOffset FragmentItem::ContentOffsetInContainerFragment() const {
   PhysicalOffset offset = OffsetInContainerFragment();
-  if (const NGPhysicalBoxFragment* box = BoxFragment())
+  if (const PhysicalBoxFragment* box = BoxFragment()) {
     offset += box->ContentOffset();
+  }
   return offset;
 }
 
@@ -508,16 +516,18 @@ inline LayoutBox* FragmentItem::MutableInkOverflowOwnerBox() {
 }
 
 PhysicalRect FragmentItem::SelfInkOverflowRect() const {
-  if (const NGPhysicalBoxFragment* box_fragment = BoxFragment())
+  if (const PhysicalBoxFragment* box_fragment = BoxFragment()) {
     return box_fragment->SelfInkOverflowRect();
+  }
   if (!HasInkOverflow())
     return LocalRect();
   return ink_overflow_.Self(InkOverflowType(), Size());
 }
 
 PhysicalRect FragmentItem::InkOverflowRect() const {
-  if (const NGPhysicalBoxFragment* box_fragment = BoxFragment())
+  if (const PhysicalBoxFragment* box_fragment = BoxFragment()) {
     return box_fragment->InkOverflowRect();
+  }
   if (!HasInkOverflow())
     return LocalRect();
   if (!IsContainer() || HasNonVisibleOverflow())
@@ -766,7 +776,7 @@ String FragmentItem::ToString() const {
     if (const LayoutBlockFlow* block_flow =
             layout_object_->FragmentItemsContainer()) {
       for (unsigned i = 0; i < block_flow->PhysicalFragmentCount(); ++i) {
-        const NGPhysicalBoxFragment* containing_fragment =
+        const PhysicalBoxFragment* containing_fragment =
             block_flow->GetPhysicalFragment(i);
         fragment_items = containing_fragment->Items();
         if (fragment_items)
@@ -889,7 +899,7 @@ void FragmentItem::RecalcInkOverflow(const InlineCursor& cursor,
   }
 
   if (Type() == kBox) {
-    const NGPhysicalBoxFragment* box_fragment = PostLayoutBoxFragment();
+    const PhysicalBoxFragment* box_fragment = PostLayoutBoxFragment();
     if (UNLIKELY(!box_fragment))
       return;
     if (!box_fragment->IsInlineBox()) {

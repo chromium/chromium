@@ -61,7 +61,7 @@ class CORE_EXPORT ColumnLayoutAlgorithm
   // later fragment (if any). If we reach the end of layout and still have an
   // unpositioned marker, it can be placed by calling
   // PositionAnyUnclaimedListMarker().
-  void AttemptToPositionListMarker(const NGPhysicalBoxFragment& child_fragment,
+  void AttemptToPositionListMarker(const PhysicalBoxFragment& child_fragment,
                                    LayoutUnit block_offset);
 
   // At the end of layout, if no column or spanner were able to position the
@@ -70,7 +70,7 @@ class CORE_EXPORT ColumnLayoutAlgorithm
   void PositionAnyUnclaimedListMarker();
 
   // Propagate the baseline from the given |child| if needed.
-  void PropagateBaselineFromChild(const NGPhysicalBoxFragment& child,
+  void PropagateBaselineFromChild(const PhysicalBoxFragment& child,
                                   LayoutUnit block_offset);
 
   // Calculate the smallest possible block-size for columns, based on the
