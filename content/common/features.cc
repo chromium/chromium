@@ -107,7 +107,11 @@ BASE_FEATURE(kCodeCacheDeletionWithoutFilter,
 // proxy.
 BASE_FEATURE(kConsolidatedIPCForProxyCreation,
              "ConsolidatedIPCForProxyCreation",
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 // When enabled, event.movement is calculated in blink instead of in browser.
 BASE_FEATURE(kConsolidatedMovementXY,
