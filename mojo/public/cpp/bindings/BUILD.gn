@@ -273,6 +273,11 @@ source_set("struct_traits") {
     "struct_traits.h",
     "union_traits.h",
   ]
+
+  deps = [
+    ":bindings_base",
+    "//base",
+  ]
 }
 
 # This is provided as a separate target so other targets can use Mojo bindings

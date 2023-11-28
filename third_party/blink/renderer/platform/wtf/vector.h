@@ -1113,6 +1113,7 @@ class Vector
  public:
   using ValueType = T;
   using value_type = T;
+  using size_type = wtf_size_t;
   using reference = value_type&;
   using const_reference = const value_type&;
   using pointer = value_type*;

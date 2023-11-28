@@ -71,6 +71,11 @@ template <typename T>
 class WebVector {
  public:
   using value_type = typename std::vector<T>::value_type;
+  using size_type = size_t;
+  using reference = value_type&;
+  using const_reference = const value_type&;
+  using pointer = value_type*;
+  using const_pointer = const value_type*;
   using iterator = typename std::vector<T>::iterator;
   using const_iterator = typename std::vector<T>::const_iterator;
 
