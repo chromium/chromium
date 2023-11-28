@@ -3,6 +3,7 @@
   "gn_args": {
     "also_build_lacros_chrome_for_architecture": "amd64",
     "dcheck_always_on": true,
+    "enable_mojom_message_id_scrambling": false,
     "is_chromeos_device": true,
     "ozone_platform_headless": true,
     "use_dummy_lastchange": true,

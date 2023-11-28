@@ -2,6 +2,7 @@
   "args_file": "//build/args/chromeos/arm-generic.gni",
   "gn_args": {
     "dcheck_always_on": true,
+    "enable_mojom_message_id_scrambling": false,
     "is_chromeos_device": true,
     "ozone_platform_headless": true,
     "use_dummy_lastchange": true,

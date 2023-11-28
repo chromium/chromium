@@ -417,6 +417,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "ci/Mac Builder (dbg)",
+            "disable_mojom_message_id_scrambling",
             "use_dummy_lastchange",
         ],
     ),
@@ -557,8 +558,9 @@ try_.orchestrator_builder(
     gn_args = gn_args.config(
         configs = [
             "ci/ios-simulator",
-            "use_clang_coverage",
+            "disable_mojom_message_id_scrambling",
             "partial_code_coverage_instrumentation",
+            "use_clang_coverage",
             "use_dummy_lastchange",
         ],
     ),
@@ -626,8 +628,9 @@ ios_builder(
     gn_args = gn_args.config(
         configs = [
             "ci/ios-simulator-full-configs",
-            "use_clang_coverage",
+            "disable_mojom_message_id_scrambling",
             "partial_code_coverage_instrumentation",
+            "use_clang_coverage",
             "use_dummy_lastchange",
         ],
     ),
@@ -656,6 +659,7 @@ ios_builder(
     gn_args = gn_args.config(
         configs = [
             "ci/ios-simulator-noncq",
+            "disable_mojom_message_id_scrambling",
             "use_dummy_lastchange",
         ],
     ),

@@ -63,6 +63,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "ci/chromeos-amd64-generic-dbg",
+            "disable_mojom_message_id_scrambling",
             "use_dummy_lastchange",
         ],
     ),
@@ -86,6 +87,7 @@ try_.builder(
         configs = [
             "ci/chromeos-amd64-generic-rel",
             "dcheck_always_on",
+            "disable_mojom_message_id_scrambling",
             "use_dummy_lastchange",
         ],
     ),
@@ -111,6 +113,7 @@ try_.orchestrator_builder(
         configs = [
             "ci/chromeos-amd64-generic-rel",
             "dcheck_always_on",
+            "disable_mojom_message_id_scrambling",
             "use_dummy_lastchange",
         ],
     ),
@@ -148,6 +151,7 @@ try_.orchestrator_builder(
         configs = [
             "ci/chromeos-amd64-generic-rel",
             "dcheck_always_on",
+            "disable_mojom_message_id_scrambling",
             "use_dummy_lastchange",
         ],
     ),
@@ -173,6 +177,7 @@ try_.orchestrator_builder(
         configs = [
             "ci/chromeos-amd64-generic-rel-renamed",
             "dcheck_always_on",
+            "disable_mojom_message_id_scrambling",
             "use_dummy_lastchange",
         ],
     ),
@@ -276,6 +281,7 @@ try_.builder(
         configs = [
             "ci/chromeos-arm-generic-rel",
             "dcheck_always_on",
+            "disable_mojom_message_id_scrambling",
             "use_dummy_lastchange",
         ],
     ),
@@ -307,6 +313,7 @@ Lacros builder that runs Tast tests and gtests on ChromeOS devices via Skylab"""
         configs = [
             "ci/lacros-amd64-generic-rel",
             "dcheck_always_on",
+            "disable_mojom_message_id_scrambling",
             "use_dummy_lastchange",
         ],
     ),
@@ -334,6 +341,7 @@ try_.builder(
         configs = [
             "ci/lacros-amd64-generic-rel-non-skylab",
             "dcheck_always_on",
+            "disable_mojom_message_id_scrambling",
             "use_dummy_lastchange",
         ],
     ),
@@ -363,6 +371,7 @@ try_.builder(
         configs = [
             "ci/lacros-arm-generic-rel",
             "dcheck_always_on",
+            "disable_mojom_message_id_scrambling",
             "use_dummy_lastchange",
         ],
     ),
@@ -424,6 +433,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "ci/linux-chromeos-dbg",
+            "disable_mojom_message_id_scrambling",
             "no_symbols",
             "use_dummy_lastchange",
         ],
@@ -558,10 +568,11 @@ try_.orchestrator_builder(
     gn_args = gn_args.config(
         configs = [
             "ci/linux-lacros-builder-rel",
-            "release_try_builder",
             "clang",
-            "use_clang_coverage",
+            "disable_mojom_message_id_scrambling",
             "partial_code_coverage_instrumentation",
+            "release_try_builder",
+            "use_clang_coverage",
             "use_dummy_lastchange",
         ],
     ),
@@ -592,6 +603,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "ci/linux-chromeos-dbg",
+            "disable_mojom_message_id_scrambling",
             "use_dummy_lastchange",
         ],
     ),

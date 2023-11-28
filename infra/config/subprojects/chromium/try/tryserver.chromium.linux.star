@@ -70,6 +70,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "ci/Cast Linux ARM64",
+            "disable_mojom_message_id_scrambling",
             "use_dummy_lastchange",
         ],
     ),
@@ -451,6 +452,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "ci/Cast Linux Debug",
+            "disable_mojom_message_id_scrambling",
             "use_dummy_lastchange",
         ],
     ),

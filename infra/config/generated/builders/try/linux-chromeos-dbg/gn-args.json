@@ -1,5 +1,6 @@
 {
   "gn_args": {
+    "enable_mojom_message_id_scrambling": false,
     "ffmpeg_branding": "ChromeOS",
     "is_component_build": true,
     "is_debug": true,

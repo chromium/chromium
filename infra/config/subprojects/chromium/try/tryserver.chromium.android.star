@@ -258,12 +258,13 @@ try_.builder(
         configs = [
             "android_builder",
             "chrome_with_codecs",
-            "reclient",
+            "disable_mojom_message_id_scrambling",
             "minimal_symbols",
             "official_optimize",
+            "reclient",
             "stable_channel",
-            "v8_release_branch",
             "use_dummy_lastchange",
+            "v8_release_branch",
         ],
     ),
     main_list_view = "try",
@@ -535,7 +536,7 @@ try_.builder(
     ],
     contact_team_email = "cronet-team@google.com",
     gn_args = gn_args.config(
-        configs = ["ci/android-cronet-x86-dbg", "use_dummy_lastchange"],
+        configs = ["ci/android-cronet-x86-dbg", "disable_mojom_message_id_scrambling", "use_dummy_lastchange"],
     ),
     main_list_view = "try",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
@@ -593,7 +594,7 @@ try_.builder(
     ],
     contact_team_email = "cronet-team@google.com",
     gn_args = gn_args.config(
-        configs = ["ci/android-cronet-x86-dbg", "use_dummy_lastchange"],
+        configs = ["ci/android-cronet-x86-dbg", "disable_mojom_message_id_scrambling", "use_dummy_lastchange"],
     ),
     main_list_view = "try",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
@@ -966,6 +967,7 @@ try_.builder(
         configs = [
             "ci/Cast Android (dbg)",
             "compile_only",
+            "disable_mojom_message_id_scrambling",
             "use_dummy_lastchange",
         ],
     ),

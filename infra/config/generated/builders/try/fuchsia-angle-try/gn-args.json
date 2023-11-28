@@ -2,6 +2,7 @@
   "gn_args": {
     "build_angle_deqp_tests": true,
     "dcheck_always_on": true,
+    "enable_mojom_message_id_scrambling": false,
     "is_component_build": true,
     "is_debug": false,
     "symbol_level": 0,

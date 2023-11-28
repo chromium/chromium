@@ -1,6 +1,7 @@
 {
   "gn_args": {
     "dcheck_always_on": true,
+    "enable_mojom_message_id_scrambling": false,
     "enable_updater": true,
     "is_component_build": false,
     "is_debug": false,

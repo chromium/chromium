@@ -1,6 +1,7 @@
 {
   "gn_args": {
     "debuggable_apks": false,
+    "enable_mojom_message_id_scrambling": false,
     "ffmpeg_branding": "Chrome",
     "is_component_build": true,
     "is_debug": true,

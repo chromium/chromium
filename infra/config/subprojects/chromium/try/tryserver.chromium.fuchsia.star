@@ -101,12 +101,13 @@ try_.builder(
     cores = 16 if settings.is_main else 8,
     gn_args = gn_args.config(
         configs = [
-            "release",
-            "official_optimize",
-            "reclient",
-            "fuchsia",
             "arm64",
             "cast_receiver_size_optimized",
+            "disable_mojom_message_id_scrambling",
+            "fuchsia",
+            "official_optimize",
+            "reclient",
+            "release",
             "use_dummy_lastchange",
         ],
     ),
@@ -163,6 +164,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "ci/fuchsia-x64-dbg",
+            "disable_mojom_message_id_scrambling",
             "use_dummy_lastchange",
         ],
     ),

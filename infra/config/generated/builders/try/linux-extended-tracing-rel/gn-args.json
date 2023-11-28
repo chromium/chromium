@@ -1,6 +1,7 @@
 {
   "gn_args": {
     "dcheck_always_on": true,
+    "enable_mojom_message_id_scrambling": false,
     "extended_tracing_enabled": true,
     "is_component_build": false,
     "is_debug": false,
