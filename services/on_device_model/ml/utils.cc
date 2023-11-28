@@ -13,16 +13,16 @@
 namespace ml {
 namespace {
 
-// The threshold for integrated GPU system RAM below which the device is
-// considered VeryLow. Intel integrated GPUs on Windows can use half of system
-// RAM as VRAM.
-const base::FeatureParam<int> kLowIntegratedRAMThreshold{
+constexpr uint64_t kBytesPerMb = 1024 * 1024;
+
+// The threshold for GPU RAM below which the device is considered VeryLow.
+const base::FeatureParam<int> kLowRAMThreshold{
     &on_device_model::features::kOnDeviceModelService,
-    "on_device_low_integrated_ram_threshold_mb", 4000};
+    "on_device_low_ram_threshold_mb", 4000};
 // RAM threshold necessary to be considered High or better.
-const base::FeatureParam<int> kHighIntegratedRAMThreshold{
+const base::FeatureParam<int> kHighRAMThreshold{
     &on_device_model::features::kOnDeviceModelService,
-    "on_device_high_integrated_ram_threshold_mb", 8000};
+    "on_device_high_ram_threshold_mb", 8000};
 
 // Output threshold to be considered Low or better.
 const base::FeatureParam<int> kLowOutputThreshold{
@@ -62,6 +62,11 @@ on_device_model::mojom::PerformanceClass GetEstimatedPerformanceClass(
       base::StrCat({"OnDeviceModel.SystemRAM.",
                     is_integrated_gpu ? "Integrated" : "Discrete"}),
       system_ram);
+  uint64_t device_heap_mb = info.device_heap_size / kBytesPerMb;
+  base::UmaHistogramMemoryLargeMB(
+      base::StrCat({"OnDeviceModel.DeviceHeapSize.",
+                    is_integrated_gpu ? "Integrated" : "Discrete"}),
+      device_heap_mb);
 
   base::UmaHistogramCounts10000(
       "OnDeviceModel.BenchmarkEstimatedTokensPerSecond.Input", input_speed);
@@ -69,7 +74,7 @@ on_device_model::mojom::PerformanceClass GetEstimatedPerformanceClass(
       "OnDeviceModel.BenchmarkEstimatedTokensPerSecond.Output", output_speed);
 
   // Devices with low RAM are considered very low perf.
-  if (is_integrated_gpu && system_ram < kLowIntegratedRAMThreshold.Get()) {
+  if (device_heap_mb < static_cast<uint64_t>(kLowRAMThreshold.Get())) {
     return on_device_model::mojom::PerformanceClass::kVeryLow;
   }
 
@@ -87,8 +92,7 @@ on_device_model::mojom::PerformanceClass GetEstimatedPerformanceClass(
   } else if (input_speed < kMediumThreshold.Get()) {
     return on_device_model::mojom::PerformanceClass::kLow;
   } else if (input_speed < kHighThreshold.Get() ||
-             (is_integrated_gpu &&
-              system_ram < kHighIntegratedRAMThreshold.Get())) {
+             device_heap_mb < static_cast<uint64_t>(kHighRAMThreshold.Get())) {
     return on_device_model::mojom::PerformanceClass::kMedium;
   } else if (input_speed < kVeryHighThreshold.Get()) {
     return on_device_model::mojom::PerformanceClass::kHigh;

@@ -90,6 +90,7 @@ struct ChromeMLPerformanceInfo {
   float input_speed = 0.0f;
   float output_speed = 0.0f;
   bool is_integrated_gpu = false;
+  uint64_t device_heap_size = 0;
 };
 
 // Structure needed to determine if the gpu is blockedlisted. Fields correspond
