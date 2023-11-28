@@ -9,6 +9,9 @@ load("@builtin//struct.star", "module")
 __KNOWN_CONFIG_OPTIONS = [
     # Indicates that the build runs on a builder.
     "builder",
+
+    # TODO: b/308405411 - Enable this config for all builders.
+    "remote-devtools-frontend-typescript",
 ]
 
 def __check(ctx):

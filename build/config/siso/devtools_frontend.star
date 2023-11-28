@@ -18,8 +18,6 @@ def __filegroups(ctx):
     }
 
 def __step_config(ctx, step_config):
-    remote_run = True
-
     step_config["input_deps"].update({
         "third_party/devtools-frontend/src/third_party/typescript/ts_library.py": [
             "third_party/devtools-frontend/src/node_modules/typescript:typescript",
@@ -28,28 +26,29 @@ def __step_config(ctx, step_config):
     })
 
     step_config["rules"].extend([
+        # TODO: b/308405411 - fix deps.
         {
-            "name": "devtools-frontend/typescript/ts_library",
+            "name": "devtools-frontend/typescript/ts_library_local",
             "command_prefix": "python3 ../../third_party/devtools-frontend/src/third_party/typescript/ts_library.py",
-            # TODO: b/308405411 - Support more actions. blocked on crbug.com/1503020
-            "action": "__third_party_devtools-frontend_src_front_end_third_party_.*",
             "exclude_input_patterns": [
                 "*.stamp",
             ],
-            # TODO: crbug.com/1503020 - Fix devtools_entrypoint to propagate d.ts output.
-            "outputs_map": {
-                "./gen/third_party/devtools-frontend/src/front_end/third_party/i18n/i18n-tsconfig.json": {
-                    "inputs": [
-                        "./gen/third_party/devtools-frontend/src/front_end/third_party/intl-messageformat/intl-messageformat.d.ts",
-                    ],
-                },
-                "./gen/third_party/devtools-frontend/src/front_end/third_party/diff/diff-tsconfig.json": {
-                    "inputs": [
-                        "./gen/third_party/devtools-frontend/src/front_end/core/common/common.d.ts",
-                    ],
-                },
-            },
-            "remote": remote_run,
+            "remote": False,
+            "handler": "devtools_frontend/typescript_ts_library",
+            "action_outs": [
+                "./gen/third_party/devtools-frontend/src/front_end/entrypoints/formatter_worker/formatter_worker-tsconfig.json",
+                "./gen/third_party/devtools-frontend/src/test/unittests/front_end/entrypoints/formatter_worker/formatter_worker-tsconfig.json",
+                "./gen/third_party/devtools-frontend/src/test/unittests/front_end/entrypoints/missing_entrypoints/missing_entrypoints-tsconfig.json",
+                "./gen/third_party/devtools-frontend/src/test/unittests/front_end/panels/lighthouse/lighthouse-tsconfig.json",
+            ],
+        },
+        {
+            "name": "devtools-frontend/typescript/ts_library",
+            "command_prefix": "python3 ../../third_party/devtools-frontend/src/third_party/typescript/ts_library.py",
+            "exclude_input_patterns": [
+                "*.stamp",
+            ],
+            "remote": config.get(ctx, "remote-devtools-frontend-typescript"),
             "handler": "devtools_frontend/typescript_ts_library",
             "output_local": True,
         },
@@ -86,8 +85,50 @@ def _ts_library(ctx, cmd):
         tsconfig["files"].append(path.rel(tsconfig_dir, s))
     for d in deps:
         tsconfig["references"].append({"path": d})
+        refpath = path.join(tsconfig_dir, d)
+        refdir = path.dir(refpath)
+
+        # TODO: crbug.com/1503020 - Fix devtools_entrypoint to propagate .d.ts output.
+        dpath = path.join(refdir, path.base(refdir) + ".d.ts")
+        if ctx.fs.exists(dpath):
+            sources.append(dpath)
+
     inputs = tsc.scandeps(ctx, tsconfig_path, tsconfig)
-    ctx.actions.fix(inputs = cmd.inputs + inputs + sources)
+
+    # Sources and imported files might be located in different dirs. source vs gen.
+    # Try to collect the corresponding files in source or gen dir.
+    # TODO: crbug.com/1505319 - Fix devtools_module import issues.
+    files = {}
+    gen_dir = None
+
+    # Infer source files from gen file.
+    for f in cmd.inputs + inputs:
+        if f.startswith("out/"):
+            # Remove out/{subdir}/gen.
+            splits = f.split("/", 3)
+            if len(splits) < 4:
+                continue
+            gen_dir = path.join(splits[0], splits[1], splits[2])
+            f = splits[3]
+            if ctx.fs.exists(f) and not f in files:
+                files[f] = True
+                continue
+            if f.endswith(".js"):
+                f = f.removesuffix(".js") + ".d.ts"
+                if ctx.fs.exists(f) and not f in files:
+                    files[f] = True
+
+    # Infer gen files from source file.
+    if gen_dir:
+        for f in cmd.inputs + inputs:
+            if not f.endswith(".ts"):
+                continue
+            f = path.join(gen_dir, f)
+            f = f.removesuffix(".ts") + ".d.ts"
+            if ctx.fs.exists(f) and not f in files:
+                files[f] = True
+
+    ctx.actions.fix(inputs = cmd.inputs + inputs + sources + files.keys())
 
 devtools_frontend = module(
     "devtools_frontend",
