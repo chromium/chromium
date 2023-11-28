@@ -238,10 +238,7 @@ bool FieldTrial::FieldTrialEntry::GetParams(
 }
 
 PickleIterator FieldTrial::FieldTrialEntry::GetPickleIterator() const {
-  const char* src =
-      reinterpret_cast<const char*>(this) + sizeof(FieldTrialEntry);
-
-  Pickle pickle(src, checked_cast<size_t>(pickle_size));
+  Pickle pickle(GetPickledDataPtr(), checked_cast<size_t>(pickle_size));
   return PickleIterator(pickle);
 }
 
@@ -980,9 +977,7 @@ void FieldTrialList::ClearParamsFromSharedMemoryForTesting() {
 
     // TODO(lawrencewu): Modify base::Pickle to be able to write over a section
     // in memory, so we can avoid this memcpy.
-    char* dst = reinterpret_cast<char*>(new_entry) +
-                sizeof(FieldTrial::FieldTrialEntry);
-    memcpy(dst, pickle.data(), pickle.size());
+    memcpy(new_entry->GetPickledDataPtr(), pickle.data(), pickle.size());
 
     // Update the ref on the field trial and add it to the list to be made
     // iterable.
@@ -1320,9 +1315,7 @@ void FieldTrialList::AddToAllocatorWhileLocked(
 
   // TODO(lawrencewu): Modify base::Pickle to be able to write over a section in
   // memory, so we can avoid this memcpy.
-  char* dst =
-      reinterpret_cast<char*>(entry) + sizeof(FieldTrial::FieldTrialEntry);
-  memcpy(dst, pickle.data(), pickle.size());
+  memcpy(entry->GetPickledDataPtr(), pickle.data(), pickle.size());
 
   allocator->MakeIterable(ref);
   field_trial->ref_ = ref;

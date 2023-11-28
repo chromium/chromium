@@ -138,19 +138,21 @@ struct FeatureEntry {
   // Size of the pickled structure, NOT the total size of this entry.
   uint64_t pickle_size;
 
+  // Return a pointer to the pickled data area immediately following the entry.
+  char* GetPickledDataPtr() { return reinterpret_cast<char*>(this + 1); }
+  const char* GetPickledDataPtr() const {
+    return reinterpret_cast<const char*>(this + 1);
+  }
+
   // Reads the feature and trial name from the pickle. Calling this is only
   // valid on an initialized entry that's in shared memory.
   bool GetFeatureAndTrialName(StringPiece* feature_name,
                               StringPiece* trial_name) const {
-    const char* src =
-        reinterpret_cast<const char*>(this) + sizeof(FeatureEntry);
-
-    Pickle pickle(src, checked_cast<size_t>(pickle_size));
+    Pickle pickle(GetPickledDataPtr(), checked_cast<size_t>(pickle_size));
     PickleIterator pickle_iter(pickle);
-
-    if (!pickle_iter.ReadStringPiece(feature_name))
+    if (!pickle_iter.ReadStringPiece(feature_name)) {
       return false;
-
+    }
     // Return true because we are not guaranteed to have a trial name anyways.
     std::ignore = pickle_iter.ReadStringPiece(trial_name);
     return true;
@@ -406,9 +408,7 @@ void FeatureList::AddFeaturesToAllocator(PersistentMemoryAllocator* allocator) {
 
     entry->override_state = override.second.overridden_state;
     entry->pickle_size = pickle.size();
-
-    char* dst = reinterpret_cast<char*>(entry) + sizeof(FeatureEntry);
-    memcpy(dst, pickle.data(), pickle.size());
+    memcpy(entry->GetPickledDataPtr(), pickle.data(), pickle.size());
 
     allocator->MakeIterable(entry);
   }
