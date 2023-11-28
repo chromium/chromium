@@ -106,9 +106,7 @@ void AXTreeSnapshotterImpl::Snapshot(size_t max_node_count,
   }
 #endif
 
-  base::UmaHistogramEnumeration(
-      kAXTreeSnapshotterErrorHistogramName,
-      AXTreeSnapshotErrorReason::kGenericSerializationError);
+  RECORD_ERROR(GenericSerializationError);
   // It failed again. Clear the response object because it might have errors.
   *response = ui::AXTreeUpdate();
   LOG(WARNING) << "Unable to serialize accessibility tree.";
@@ -158,12 +156,14 @@ bool AXTreeSnapshotterImpl::SerializeTree(ui::AXTreeUpdate* response) {
   base::TimeDelta snapshotDuration = timer.Elapsed();
   base::LinearHistogram::FactoryGet(
       "Accessibility.AXTreeSnapshotter.Snapshot.NoRestrictions.Nodes", 0,
-      kMaxNodesHistogramLimit, 100, base::HistogramBase::kNoFlags)
+      kMaxNodesHistogramLimit, 100,
+      base::HistogramBase::kUmaTargetedHistogramFlag)
       ->Add(response->nodes.size());
 
   base::LinearHistogram::FactoryGet(
       "Accessibility.AXTreeSnapshotter.Snapshot.NoRestrictions.Time", 0,
-      kTimeoutInMillisecondsHistogramLimit, 100, base::HistogramBase::kNoFlags)
+      kTimeoutInMillisecondsHistogramLimit, 100,
+      base::HistogramBase::kUmaTargetedHistogramFlag)
       ->Add(snapshotDuration.InMilliseconds());
 
   return true;
