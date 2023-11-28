@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/image_decoder_core.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/weak_cell.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/loader/fetch/bytes_consumer.h"
 #include "third_party/blink/renderer/platform/wtf/sequence_bound.h"
@@ -165,10 +166,10 @@ class MODULES_EXPORT ImageDecoderExternal final
 
   // WeakPtrFactory used only for decode() requests. Invalidated upon decoding
   // errors or a call to reset().
-  base::WeakPtrFactory<ImageDecoderExternal> decode_weak_factory_{this};
+  WeakCellFactory<ImageDecoderExternal> decode_weak_factory_{this};
 
   // WeakPtrFactory for all other cancelable tasks.
-  base::WeakPtrFactory<ImageDecoderExternal> weak_factory_{this};
+  WeakCellFactory<ImageDecoderExternal> weak_factory_{this};
 };
 
 }  // namespace blink

@@ -9,6 +9,7 @@
 
 #include "base/functional/bind_internal.h"
 #include "base/types/pass_key.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -148,6 +149,31 @@ struct MaybeValidTraits<blink::Persistent<blink::WeakCell<T>>> {
     // Not necessarily called on `Persistent<T>` and `WeakCell<T>`'s owning
     // thread, so the only possible implementation is to assume the weak cell
     // has not been invalidated.
+    return true;
+  }
+};
+
+template <typename T>
+struct IsWeakReceiver<blink::UnwrappingCrossThreadHandle<blink::WeakCell<T>>>
+    : std::true_type {};
+
+template <typename T>
+struct BindUnwrapTraits<
+    blink::UnwrappingCrossThreadHandle<blink::WeakCell<T>>> {
+  static T* Unwrap(
+      const blink::UnwrappingCrossThreadHandle<blink::WeakCell<T>>& wrapped) {
+    return wrapped.GetOnCreationThread()->Get();
+  }
+};
+
+template <typename T>
+struct MaybeValidTraits<
+    blink::UnwrappingCrossThreadHandle<blink::WeakCell<T>>> {
+  static constexpr bool MaybeValid(
+      const blink::UnwrappingCrossThreadHandle<blink::WeakCell<T>>& p) {
+    // Not necessarily called on `UnwrappingCrossThreadHandle<T>` and
+    // `WeakCell<T>`'s owning thread, so the only possible implementation is to
+    // assume the weak cell has not been invalidated.
     return true;
   }
 };
