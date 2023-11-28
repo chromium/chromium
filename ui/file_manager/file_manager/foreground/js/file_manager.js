@@ -702,14 +702,15 @@ export class FileManager extends EventTarget {
     });
 
     // @ts-ignore: error TS2531: Object is possibly 'null'.
-    this.directoryModel_.addEventListener(
-        'directory-changed',
-        /** @param {!Event} event */
-        event => {
-          // @ts-ignore: error TS2339: Property 'newDirEntry' does not exist on
-          // type 'Event'.
-          this.navigationUma_.onDirectoryChanged(event.newDirEntry);
-        });
+    this.directoryModel_.addEventListener('directory-changed', event => {
+      const
+          customEvent = /**
+                           @type {import('../../definitions/directory_change_event.js').DirectoryChangeEvent}
+                             */
+          (event);
+      // @ts-ignore: error TS2531: Object is possibly 'null'.
+      this.navigationUma_.onDirectoryChanged(customEvent.detail.newDirEntry);
+    });
 
     this.initCommands_();
 

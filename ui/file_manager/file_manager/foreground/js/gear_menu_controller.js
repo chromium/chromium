@@ -6,7 +6,6 @@ import {getDriveQuotaMetadata, getSizeStats} from '../../common/js/api.js';
 import {isRecentRoot} from '../../common/js/entry_utils.js';
 import {str} from '../../common/js/translations.js';
 import {VolumeType} from '../../common/js/volume_manager_types.js';
-import {DirectoryChangeEvent} from '../../externs/directory_change_event.js';
 
 import {DirectoryModel} from './directory_model.js';
 import {CommandHandler} from './file_manager_commands.js';
@@ -74,10 +73,12 @@ export class GearMenuController {
    * @private
    */
   onDirectoryChanged_(event) {
-    event = /** @type {DirectoryChangeEvent} */ (event);
-    // @ts-ignore: error TS2339: Property 'volumeChanged' does not exist on type
-    // 'Event'.
-    if (event.volumeChanged) {
+    const
+        customEvent = /**
+                         @type {import('../../definitions/directory_change_event.js').DirectoryChangeEvent}
+                           */
+        (event);
+    if (customEvent.detail.volumeChanged) {
       this.refreshRemainingSpace_(true);
     }  // Show loading caption.
 

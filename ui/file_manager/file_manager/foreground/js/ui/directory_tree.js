@@ -2845,14 +2845,17 @@ export class DirectoryTree extends Tree {
    * @private
    */
   async onCurrentDirectoryChanged_(event) {
+    const
+        customEvent = /**
+                         @type {import('../../../definitions/directory_change_event.js').DirectoryChangeEvent}
+                           */
+        (event);
     // Clear last active item; this is set by search temporarily disabling
     // highlight in the directory tree. When the user changes the directory and
     // search is active, the search closes and  attempts to restore last active
     // item, unless we clear it.
     this.lastActiveItem_ = null;
-    // @ts-ignore: error TS2339: Property 'newDirEntry' does not exist on type
-    // 'Event'.
-    await this.selectByEntry(event.newDirEntry);
+    await this.selectByEntry(customEvent.detail.newDirEntry);
 
     // Update style of the current item as inactive.
     this.updateActiveItemStyle_(/*active=*/ false);

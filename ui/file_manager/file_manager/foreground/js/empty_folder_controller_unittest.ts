@@ -252,11 +252,14 @@ export async function testShownForODFS(done: VoidCallback) {
   // Pass a NO_MODIFICATION_ALLOWED_ERR error (triggers a call to
   // getCustomActions to which is stubbed out to return reauthentication
   // required as true).
-  const event = new Event('scan-failed') as ScanFailedEvent;
-  event.error = {
-    name: FileErrorToDomError.NO_MODIFICATION_ALLOWED_ERR,
-    message: '',
-  };
+  const event = new CustomEvent('scan-failed', {
+    detail: {
+      error: {
+        name: FileErrorToDomError.NO_MODIFICATION_ALLOWED_ERR,
+        message: '',
+      },
+    },
+  });
   emptyFolderController.onScanFailed(event);
 
   // Expect that the empty-folder element is shown and the sign in link is

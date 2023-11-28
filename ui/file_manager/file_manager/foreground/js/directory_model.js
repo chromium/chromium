@@ -863,10 +863,7 @@ export class DirectoryModel extends EventTarget {
         return;
       }
 
-      const event = new Event('scan-failed');
-      // @ts-ignore: error TS2339: Property 'error' does not exist on type
-      // 'Event'.
-      event.error = error;
+      const event = new CustomEvent('scan-failed', {detail: {error}});
       this.dispatchEvent(event);
       callback(false);
     };
@@ -1348,16 +1345,13 @@ export class DirectoryModel extends EventTarget {
           null;
       // VolumeInfo for dirEntry.
       const currentVolumeInfo = this.getCurrentVolumeInfo();
-      const event = new Event('directory-changed');
-      // @ts-ignore: error TS2339: Property 'previousDirEntry' does not exist on
-      // type 'Event'.
-      event.previousDirEntry = previousDirEntry;
-      // @ts-ignore: error TS2339: Property 'newDirEntry' does not exist on type
-      // 'Event'.
-      event.newDirEntry = dirEntry;
-      // @ts-ignore: error TS2339: Property 'volumeChanged' does not exist on
-      // type 'Event'.
-      event.volumeChanged = previousVolumeInfo !== currentVolumeInfo;
+      const event = new CustomEvent('directory-changed', {
+        detail: {
+          previousDirEntry,
+          newDirEntry: dirEntry,
+          volumeChanged: (previousVolumeInfo !== currentVolumeInfo),
+        },
+      });
       this.dispatchEvent(event);
       if (previousDirEntry) {
         // If we changed from a directory to another directory always clear

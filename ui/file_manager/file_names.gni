@@ -37,7 +37,6 @@ static_js_files = [
   "file_manager/externs/background/file_manager_base.js",
   "file_manager/externs/background/progress_center.js",
   "file_manager/externs/command_handler_deps.js",
-  "file_manager/externs/directory_change_event.js",
   "file_manager/externs/entry_location.js",
   "file_manager/externs/exif_entry.js",
   "file_manager/externs/files_app_entry_interfaces.js",
@@ -579,6 +578,7 @@ generate_definitions_js_files = [
 checked_in_dts_files = [
   "file_manager/definitions/file_error.d.ts",
   "file_manager/definitions/file_manager.d.ts",
+  "file_manager/definitions/directory_change_event.d.ts",
   "file_manager/externs/volume_info.d.ts",
   "file_manager/externs/volume_manager.d.ts",
   "file_manager/definitions/navigator_connection.d.ts",

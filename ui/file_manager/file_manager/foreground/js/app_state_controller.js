@@ -216,26 +216,25 @@ export class AppStateController {
    * @private
    */
   onDirectoryChanged_(event) {
-    // @ts-ignore: error TS2339: Property 'newDirEntry' does not exist on type
-    // 'Event'.
-    if (!event.newDirEntry) {
+    const
+        customEvent = /**
+                         @type {import('../../definitions/directory_change_event.js').DirectoryChangeEvent}
+                           */
+        (event);
+    if (!customEvent.detail.newDirEntry) {
       return;
     }
 
     // Sort the file list by:
     // 1) 'date-mofidied' and 'desc' order on Recent folder.
     // 2) preferred field and direction on other folders.
-    // @ts-ignore: error TS2339: Property 'newDirEntry' does not exist on type
-    // 'Event'.
-    const isOnRecent = isRecentRoot(event.newDirEntry);
+    const isOnRecent = isRecentRoot(customEvent.detail.newDirEntry);
     // @ts-ignore: error TS2531: Object is possibly 'null'.
     const fileListModel = this.directoryModel_.getFileList();
     // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.ui_.listContainer.isOnRecent = isOnRecent;
-    const isOnRecentBefore =
-        // @ts-ignore: error TS2339: Property 'previousDirEntry' does not exist
-        // on type 'Event'.
-        event.previousDirEntry && isRecentRoot(event.previousDirEntry);
+    const isOnRecentBefore = customEvent.detail.previousDirEntry &&
+        isRecentRoot(customEvent.detail.previousDirEntry);
     if (isOnRecent != isOnRecentBefore) {
       if (isOnRecent) {
         fileListModel.groupByField = GROUP_BY_FIELD_MODIFICATION_TIME;

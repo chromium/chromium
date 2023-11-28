@@ -6,7 +6,6 @@ import {createChild} from '../../common/js/dom_utils.js';
 import {isSameEntry} from '../../common/js/entry_utils.js';
 import {recordEnum} from '../../common/js/metrics.js';
 import {str, strf} from '../../common/js/translations.js';
-import {DirectoryChangeEvent} from '../../externs/directory_change_event.js';
 import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
 import {State} from '../../externs/ts/state.js';
 import {getStore} from '../../state/store.js';
@@ -230,11 +229,16 @@ export class FileTypeFiltersController {
    * @private
    */
   onCurrentDirectoryChanged_(event) {
-    const directoryChangeEvent = /** @type {!DirectoryChangeEvent} */ (event);
+    const
+        directoryChangeEvent = /**
+                                  @type {!import('../../definitions/directory_change_event.js').DirectoryChangeEvent}
+                                    */
+        (event);
     const isEnteringRecentEntry =
-        isSameEntry(directoryChangeEvent.newDirEntry, this.recentEntry_);
+        isSameEntry(directoryChangeEvent.detail.newDirEntry, this.recentEntry_);
     const isLeavingRecentEntry = !isEnteringRecentEntry &&
-        isSameEntry(directoryChangeEvent.previousDirEntry, this.recentEntry_);
+        isSameEntry(
+            directoryChangeEvent.detail.previousDirEntry, this.recentEntry_);
     // We show filter buttons only in Recents view at this moment.
     this.container_.hidden = !isEnteringRecentEntry;
     // Reset the filter back to "All" on leaving Recents view.

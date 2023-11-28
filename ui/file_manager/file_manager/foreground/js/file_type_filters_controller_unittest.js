@@ -8,7 +8,6 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeo
 import {EntryList, FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {RootType} from '../../common/js/volume_manager_types.js';
-import {DirectoryChangeEvent} from '../../externs/directory_change_event.js';
 import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
 
 import {DirectoryModel} from './directory_model.js';
@@ -70,9 +69,12 @@ export function setUp() {
       this.currentDirEntry = dirEntry;
 
       // Emit 'directory-changed' event synchronously to simplify testing.
-      const event = new DirectoryChangeEvent('directory-changed');
-      event.previousDirEntry = previousDirEntry;
-      event.newDirEntry = this.currentDirEntry;
+      const event = new CustomEvent('directory-changed', {
+        detail: {
+          previousDirEntry,
+          newDirEntry: this.currentDirEntry,
+        },
+      });
       this.dispatchEvent(event);
     }
 

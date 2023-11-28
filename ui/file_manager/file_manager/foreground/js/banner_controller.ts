@@ -270,8 +270,7 @@ export class BannerController extends EventTarget {
     if (!this.disableBanners_) {
       storage.onChanged.addListener(this.onStorageChanged_.bind(this));
       this.directoryModel_.addEventListener(
-          'directory-changed',
-          (event: Event) => this.onDirectoryChanged_(event));
+          'directory-changed', (_event: Event) => this.onDirectoryChanged_());
     }
 
     chrome.fileManagerPrivate.onPreferencesChanged.addListener(
@@ -842,7 +841,7 @@ export class BannerController extends EventTarget {
    * Invoked when a directory has been changed, used to update the local cache
    * and reconcile the current banners being shown.
    */
-  private async onDirectoryChanged_(_: Event) {
+  private async onDirectoryChanged_() {
     const previousVolume = this.currentVolume_;
     await this.reconcile();
 

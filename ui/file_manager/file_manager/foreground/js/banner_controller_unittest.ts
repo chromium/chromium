@@ -217,7 +217,7 @@ function changeCurrentVolume(
     return rootType ? new FakeEntryImpl('entry', rootType) : null;
   };
 
-  directoryModel.dispatchEvent(new Event('directory-changed'));
+  directoryModel.dispatchEvent(new CustomEvent('directory-changed'));
 }
 
 /**

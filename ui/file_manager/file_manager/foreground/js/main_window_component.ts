@@ -12,7 +12,7 @@ import {recordEnum} from '../../common/js/metrics.js';
 import {getEntryLabel, str} from '../../common/js/translations.js';
 import type {TrashEntry} from '../../common/js/trash.js';
 import {RootType} from '../../common/js/volume_manager_types.js';
-import type {DirectoryChangeEvent} from '../../externs/directory_change_event.js';
+import type {DirectoryChangeEvent} from '../../definitions/directory_change_event.js';
 import {DialogType} from '../../externs/ts/state.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 import {changeDirectory} from '../../state/ducks/current_directory.js';
@@ -438,20 +438,20 @@ export class MainWindowComponent {
    * @param event The directory-changed event.
    */
   private onDirectoryChanged_(event: DirectoryChangeEvent) {
-    const newVolumeInfo = event.newDirEntry ?
-        this.volumeManager_.getVolumeInfo(event.newDirEntry) :
+    const newVolumeInfo = event.detail.newDirEntry ?
+        this.volumeManager_.getVolumeInfo(event.detail.newDirEntry) :
         null;
 
     // Update unformatted volume status.
     const unformatted = !!(newVolumeInfo && newVolumeInfo.error);
     this.ui_.element.toggleAttribute('unformatted', /*force=*/ unformatted);
 
-    if (event.newDirEntry) {
+    if (event.detail.newDirEntry) {
       // Updates UI.
       if (this.dialogType_ === DialogType.FULL_PAGE) {
         const locationInfo =
-            this.volumeManager_.getLocationInfo(event.newDirEntry);
-        const label = getEntryLabel(locationInfo, event.newDirEntry);
+            this.volumeManager_.getLocationInfo(event.detail.newDirEntry);
+        const label = getEntryLabel(locationInfo, event.detail.newDirEntry);
         document.title = `${str('FILEMANAGER_APP_NAME')} - ${label}`;
       }
     }

@@ -41,9 +41,7 @@ const TRASH_EMPTY_FOLDER =
 const ODFS_REAUTHENTICATION_REQUIRED = 'foreground/images/files/ui/' +
     'odfs_reauthentication_required.svg#odfs_reauthentication_required';
 
-export interface ScanFailedEvent extends Event {
-  error: DOMError;
-}
+export type ScanFailedEvent = CustomEvent<{error: DOMError}>;
 
 /**
  * Empty folder controller which controls the empty folder element inside
@@ -137,7 +135,8 @@ export class EmptyFolderController {
     }
     // If the error is not NO_MODIFICATION_ALLOWED_ERR, return. This is
     // equivalent to the ACCESS_DENIED error thrown by ODFS.
-    if (event.error.name != FileErrorToDomError.NO_MODIFICATION_ALLOWED_ERR) {
+    if (event.detail.error.name !=
+        FileErrorToDomError.NO_MODIFICATION_ALLOWED_ERR) {
       this.updateUi_();
       return;
     }

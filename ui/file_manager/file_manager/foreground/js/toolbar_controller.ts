@@ -12,7 +12,7 @@ import {isCrosComponentsEnabled} from '../../common/js/flags.js';
 import {str, strf} from '../../common/js/translations.js';
 import {canBulkPinningCloudPanelShow} from '../../common/js/util.js';
 import {RootType} from '../../common/js/volume_manager_types.js';
-import {DirectoryChangeEvent} from '../../externs/directory_change_event.js';
+import type {DirectoryChangeEvent} from '../../definitions/directory_change_event.js';
 import {State} from '../../externs/ts/state.js';
 import {Store} from '../../externs/ts/store.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
@@ -180,13 +180,15 @@ export class ToolbarController {
         'change', this.onPinnedToggleChanged_.bind(this));
 
     this.directoryModel_.addEventListener(
-        'directory-changed', this.updateCurrentDirectoryButtons_.bind(this));
+        'directory-changed',
+        this.updateCurrentDirectoryButtons_.bind(this) as
+            EventListenerOrEventListenerObject);
   }
 
   /**
    * Updates toolbar's UI elements which are related to current directory.
    */
-  private updateCurrentDirectoryButtons_(event: Event) {
+  private updateCurrentDirectoryButtons_(event: DirectoryChangeEvent) {
     this.updateRefreshCommand_();
 
     this.newFolderCommand_.canExecuteChange(this.listContainer_.currentList);
@@ -206,7 +208,7 @@ export class ToolbarController {
           locationInfo.rootType !== RootType.CROSTINI &&
           locationInfo.rootType !== RootType.GUEST_OS);
 
-    const newDirectory = (event as DirectoryChangeEvent).newDirEntry;
+    const newDirectory = event.detail.newDirEntry;
     if (newDirectory) {
       const locationInfo = this.volumeManager_.getLocationInfo(newDirectory);
       const bodyClassList =
