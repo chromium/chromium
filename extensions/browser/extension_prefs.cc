@@ -2571,6 +2571,7 @@ void ExtensionPrefs::MigrateObsoleteExtensionPrefs() {
 
       // Added 2023-11.
       "ack_proxy_bubble",
+      "ack_wiped",
   };
 
   for (auto key_value : extensions_dictionary) {

@@ -173,9 +173,6 @@ void MaybeShowExtensionControlledNewTabPage(
     return;  // Not being overridden by an extension.
 
   Profile* const profile = browser->profile();
-  ToolbarActionsModel* model = ToolbarActionsModel::Get(profile);
-  if (model->has_active_bubble())
-    return;
 
   absl::optional<ExtensionSettingsOverriddenDialog::Params> params =
       settings_overridden_params::GetNtpOverriddenParams(profile);

@@ -101,11 +101,6 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
 
   const base::flat_set<ActionId>& action_ids() const { return action_ids_; }
 
-  bool has_active_bubble() const { return has_active_bubble_; }
-  void set_has_active_bubble(bool has_active_bubble) {
-    has_active_bubble_ = has_active_bubble;
-  }
-
   void SetActionVisibility(const ActionId& action_id, bool visible);
 
   // Returns the extension name corresponding to the `action_id`.
@@ -225,10 +220,6 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
   // Ordered list of pinned action IDs, indicating the order actions should
   // appear on the toolbar.
   std::vector<ActionId> pinned_action_ids_;
-
-  // Whether or not there is an active ExtensionMessageBubbleController
-  // associated with the profile. There should only be one at a time.
-  bool has_active_bubble_;
 
   base::ScopedObservation<extensions::ExtensionActionAPI,
                           extensions::ExtensionActionAPI::Observer>
