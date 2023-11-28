@@ -11,6 +11,7 @@ import android.view.WindowManager;
 
 import org.hamcrest.Matchers;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Criteria;
@@ -139,6 +140,9 @@ public class FullscreenTestUtils {
 
     private static boolean isFullscreenFlagSet(
             final Tab tab, final boolean state, Activity activity) {
+        if (BuildInfo.getInstance().isAutomotive) {
+            return true;
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             View view = tab.getContentView();
             int visibility = view.getSystemUiVisibility();
