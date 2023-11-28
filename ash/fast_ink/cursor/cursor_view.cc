@@ -83,8 +83,11 @@ void CursorView::OnCursorLocationChanged(const gfx::PointF& location) {
   gfx::PointF new_location_f = buffer_to_screen_transform_.MapPoint(location);
   gfx::Point new_location = gfx::ToRoundedPoint(new_location_f);
 
+  // This may be called on the evdev thread, so post the change notification to
+  // the UI thread.
   ui_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(set_location_callback_, new_location));
+      FROM_HERE, base::BindOnce(&CursorView::SetLocation,
+                                weak_ptr_factory_.GetWeakPtr(), new_location));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -93,8 +96,6 @@ void CursorView::OnCursorLocationChanged(const gfx::PointF& location) {
 CursorView::CursorView(const gfx::Point& initial_location)
     : cursor_location_(initial_location),
       ui_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
-  set_location_callback_ = base::BindRepeating(&CursorView::SetLocation,
-                                               weak_ptr_factory_.GetWeakPtr());
   stationary_timer_.emplace(
       FROM_HERE, base::Milliseconds(kStationaryDelayMs),
       base::BindRepeating(&CursorView::OnStationary,

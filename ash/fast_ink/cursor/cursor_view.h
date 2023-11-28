@@ -80,13 +80,6 @@ class CursorView : public FastInkView,
   gfx::Rect damage_rect_;
 
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
-  using SetLocationCallback =
-      base::RepeatingCallback<void(const gfx::Point& location)>;
-
-  // `CursorController::CursorObserver::OnCursorLocationChanged` could
-  // be called on evdev thread. It uses this callback to post a call
-  // to `SetLocation` on UI thread.
-  SetLocationCallback set_location_callback_;
 
   // Timer for cursor's stationary status. The cursor gets into stationary state
   // after it is not moved for a certain period of time, which is tracked by
