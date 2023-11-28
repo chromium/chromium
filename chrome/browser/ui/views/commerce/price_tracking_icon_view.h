@@ -52,7 +52,6 @@ class PriceTrackingIconView : public PageActionIconView {
   void MaybeShowPageActionLabel();
   void HidePageActionLabel();
   base::OneShotTimer& AnimateOutTimer();
-  bool MaybeShowIPH();
 
   const raw_ptr<Browser> browser_;
   const raw_ptr<Profile> profile_;

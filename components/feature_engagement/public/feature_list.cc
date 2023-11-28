@@ -177,7 +177,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHPasswordSharingFeature,
     &kIPHPowerBookmarksSidePanelFeature,
     &kIPHPriceInsightsPageActionIconLabelFeature,
-    &kIPHPriceTrackingChipFeature,
     &kIPHPriceTrackingEmailConsentFeature,
     &kIPHPriceTrackingPageActionIconLabelFeature,
     &kIPHReadingListDiscoveryFeature,

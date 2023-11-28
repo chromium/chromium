@@ -102,9 +102,6 @@ BASE_FEATURE(kIPHPowerBookmarksSidePanelFeature,
 BASE_FEATURE(kIPHPriceInsightsPageActionIconLabelFeature,
              "IPH_PriceInsightsPageActionIconLabelFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHPriceTrackingChipFeature,
-             "IPH_PriceTrackingChipFeature",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHPriceTrackingEmailConsentFeature,
              "IPH_PriceTrackingEmailConsentFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);

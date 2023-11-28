@@ -681,11 +681,6 @@ void MaybeRegisterChromeFeaturePromos(
                     FeaturePromoSpecification::AcceleratorInfo())
                     .SetBubbleArrow(HelpBubbleArrow::kTopLeft)));
 
-  // kIPHPriceTrackingChipFeature:
-  registry.RegisterFeature(FeaturePromoSpecification::CreateForLegacyPromo(
-      &feature_engagement::kIPHPriceTrackingChipFeature,
-      kPriceTrackingChipElementId, IDS_PRICE_TRACKING_CHIP_IPH));
-
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
   // kIPHDesktopPWAsLinkCapturingLaunch:
   registry.RegisterFeature(std::move(

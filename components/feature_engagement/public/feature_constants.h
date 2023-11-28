@@ -54,7 +54,6 @@ BASE_DECLARE_FEATURE(kIPHPasswordManagerShortcutFeature);
 BASE_DECLARE_FEATURE(kIPHPasswordSharingFeature);
 BASE_DECLARE_FEATURE(kIPHPowerBookmarksSidePanelFeature);
 BASE_DECLARE_FEATURE(kIPHPriceInsightsPageActionIconLabelFeature);
-BASE_DECLARE_FEATURE(kIPHPriceTrackingChipFeature);
 BASE_DECLARE_FEATURE(kIPHPriceTrackingEmailConsentFeature);
 BASE_DECLARE_FEATURE(kIPHPriceTrackingPageActionIconLabelFeature);
 BASE_DECLARE_FEATURE(kIPHReadingListDiscoveryFeature);

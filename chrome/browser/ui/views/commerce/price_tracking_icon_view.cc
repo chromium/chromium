@@ -195,24 +195,7 @@ void PriceTrackingIconView::AnimationProgressed(
         FROM_HERE, kLabelPersistDuration,
         base::BindOnce(&PriceTrackingIconView::UnpauseAnimation,
                        base::Unretained(this)));
-    if (static_cast<commerce::PriceTrackingChipExperimentVariation>(
-            commerce::kCommercePriceTrackingChipExperimentVariation.Get()) ==
-            commerce::PriceTrackingChipExperimentVariation::kWithChipIPH &&
-        MaybeShowIPH()) {
-      AnimateOutTimer().Stop();
-    }
   }
-}
-
-bool PriceTrackingIconView::MaybeShowIPH() {
-  if (!browser_->window() || !ShouldShowFirstUseExperienceBubble()) {
-    return false;
-  }
-  user_education::FeaturePromoParams params(
-      feature_engagement::kIPHPriceTrackingChipFeature);
-  params.close_callback = base::BindOnce(
-      &PriceTrackingIconView::UnpauseAnimation, base::Unretained(this));
-  return browser_->window()->MaybeShowFeaturePromo(std::move(params));
 }
 
 void PriceTrackingIconView::ForceVisibleForTesting(bool is_tracking_price) {

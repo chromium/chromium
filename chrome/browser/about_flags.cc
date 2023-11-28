@@ -1971,15 +1971,10 @@ const FeatureEntry::FeatureVariation kChromeLabsVariations[] = {
 const flags_ui::FeatureEntry::FeatureParam kDelayPriceTrackingChip[] = {
     {commerce::kCommercePriceTrackingChipExperimentVariationParam, "1"}};
 
-const flags_ui::FeatureEntry::FeatureParam kIphForPriceTrackingChip[] = {
-    {commerce::kCommercePriceTrackingChipExperimentVariationParam, "2"}};
-
 const FeatureEntry::FeatureVariation kPriceTrackingChipExperimentVariations[] =
     {
         {"- Delay Chip", kDelayPriceTrackingChip,
          std::size(kDelayPriceTrackingChip), nullptr},
-        {"- Chip IPH", kIphForPriceTrackingChip,
-         std::size(kIphForPriceTrackingChip), nullptr},
 };
 
 const FeatureEntry::FeatureParam kNtpChromeCartModuleFakeData[] = {

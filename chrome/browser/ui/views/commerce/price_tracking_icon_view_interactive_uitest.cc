@@ -640,4 +640,3 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
                 "Commerce.PriceTracking.EditedBookmarkFolderFromOmniboxBubble"),
             1);
 }
-
