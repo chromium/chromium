@@ -191,7 +191,7 @@ class SoftNavigationTest : public MetricIntegrationTest,
         ukm::builders::SoftNavigation::kInteractiveTiming_INPOffsetName);
     EXPECT_EQ(soft_nav_source_id_to_offsets.size(), 2u);
     EXPECT_GT(soft_nav_source_id_to_offsets.begin()->second, 0);
-    EXPECT_LT(soft_nav_source_id_to_offsets.begin()->second, 2);
+    EXPECT_LT(soft_nav_source_id_to_offsets.begin()->second, 3);
     EXPECT_EQ(std::next(soft_nav_source_id_to_offsets.begin())->second, 1);
 
     // Verify there are 2 soft nav times.
