@@ -44,9 +44,15 @@ base::FilePath GenerateFuzzedFilePath(FuzzedDataProvider& provider) {
 #endif
 }
 
+const size_t kMaxFuzzerInputBytes = 100 * 1024;
+
 }  // namespace
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+  if (size > kMaxFuzzerInputBytes) {
+    return 0;
+  }
+
   static Environment env;
   FuzzedDataProvider provider(data, size);
 
