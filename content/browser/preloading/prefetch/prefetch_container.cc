@@ -64,35 +64,6 @@ void RecordCookieCopyTimes(
       base::Seconds(5), 50);
 }
 
-// Most of (not all though) eligibility-related `PrefetchStatus` are
-// mapped to `PreloadingEligibility` by adding
-// `PreloadingEligibility::kPreloadingEligibilityCommonEnd`.
-static_assert(
-    static_cast<int>(PrefetchStatus::kMaxValue) +
-        static_cast<int>(
-            PreloadingEligibility::kPreloadingEligibilityCommonEnd) <=
-    static_cast<int>(PreloadingEligibility::kPreloadingEligibilityContentEnd));
-
-#define CHECK_PRELOADING_ELIGIBILITY_VALUE(NAME)                         \
-  static_assert(                                                         \
-      static_cast<int>(PrefetchStatus::kPrefetchIneligible##NAME) +      \
-          static_cast<int>(                                              \
-              PreloadingEligibility::kPreloadingEligibilityCommonEnd) == \
-      static_cast<int>(PreloadingEligibility::k##NAME))
-
-CHECK_PRELOADING_ELIGIBILITY_VALUE(BrowserContextOffTheRecord);
-CHECK_PRELOADING_ELIGIBILITY_VALUE(ExistingProxy);
-CHECK_PRELOADING_ELIGIBILITY_VALUE(HostIsNonUnique);
-CHECK_PRELOADING_ELIGIBILITY_VALUE(NonDefaultStoragePartition);
-CHECK_PRELOADING_ELIGIBILITY_VALUE(PrefetchProxyNotAvailable);
-CHECK_PRELOADING_ELIGIBILITY_VALUE(RetryAfter);
-CHECK_PRELOADING_ELIGIBILITY_VALUE(SameSiteCrossOriginPrefetchRequiredProxy);
-CHECK_PRELOADING_ELIGIBILITY_VALUE(SchemeIsNotHttps);
-CHECK_PRELOADING_ELIGIBILITY_VALUE(UserHasCookies);
-CHECK_PRELOADING_ELIGIBILITY_VALUE(UserHasServiceWorker);
-
-#undef CHECK_PRELOADING_ELIGIBILITY_VALUE
-
 PrefetchStatus PrefetchStatusFromIneligibleReason(
     PreloadingEligibility eligibility) {
   switch (eligibility) {

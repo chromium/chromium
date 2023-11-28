@@ -13,8 +13,6 @@ namespace content {
 // UKM logging so don't remove or reorder values. Update
 // |PrefetchProxyPrefetchStatus| in //tools/metrics/histograms/enums.xml
 // whenever this is changed.
-// These are also mapped onto the first content internal range of
-// `PreloadingEligibility` and onto `PreloadingFailureReason`.
 //
 // If you change this, please follow the process
 // https://docs.google.com/document/d/1PnrfowsZMt62PX1EvvTp2Nqs3ji1zrklrAEe1JYbkTk
