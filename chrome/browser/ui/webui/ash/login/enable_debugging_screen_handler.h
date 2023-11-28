@@ -20,11 +20,11 @@ class EnableDebuggingScreenView
                                                        "EnableDebuggingScreen"};
 
   enum UIState {
-    UI_STATE_ERROR = -1,
-    UI_STATE_REMOVE_PROTECTION = 1,
-    UI_STATE_SETUP = 2,
-    UI_STATE_WAIT = 3,
-    UI_STATE_DONE = 4,
+    kUIStateError = -1,
+    kUIStateRemoveProtection = 1,
+    kUIStateSetup = 2,
+    kUIStateWait = 3,
+    kUIStateDone = 4,
   };
 
   virtual ~EnableDebuggingScreenView() = default;
