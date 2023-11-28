@@ -1,1 +1,0 @@
-XPathResult_invalidIteratorState_BOOLEAN_TYPE: Success
