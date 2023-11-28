@@ -327,6 +327,8 @@ This builder should be removed after migrating linux-rel from Ninja to Siso. b/2
 try_.compilator_builder(
     name = "linux-siso-rel-compilator",
     main_list_view = "try",
+    # TODO: b/308405411 - Enable remote-devtools-frontend-typescript by default.
+    siso_configs = ["builder", "remote-devtools-frontend-typescript"],
     siso_enabled = True,
 )
 

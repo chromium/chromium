@@ -205,6 +205,8 @@ try_.compilator_builder(
     cpu = cpu.ARM64,
     contact_team_email = "chrome-build-team@google.com",
     main_list_view = "try",
+    # TODO: b/308405411 - Enable remote-devtools-frontend-typescript by default.
+    siso_configs = ["builder", "remote-devtools-frontend-typescript"],
     siso_enabled = True,
 )
 

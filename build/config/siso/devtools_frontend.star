@@ -48,6 +48,7 @@ def __step_config(ctx, step_config):
             "exclude_input_patterns": [
                 "*.stamp",
             ],
+            # TODO: b/308405411 - Enable remote-devtools-frontend-typescript by default.
             "remote": config.get(ctx, "remote-devtools-frontend-typescript"),
             "handler": "devtools_frontend/typescript_ts_library",
             "output_local": True,

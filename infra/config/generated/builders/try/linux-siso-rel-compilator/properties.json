@@ -168,7 +168,8 @@
   },
   "$build/siso": {
     "configs": [
-      "builder"
+      "builder",
+      "remote-devtools-frontend-typescript"
     ],
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
