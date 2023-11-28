@@ -2814,7 +2814,7 @@ static bool ScrollControlNeedsPaintInvalidation(
   return needs_paint_invalidation;
 }
 
-bool PaintLayerScrollableArea::ShouldDirectlyCompositeScrollbar(
+bool PaintLayerScrollableArea::MayCompositeScrollbar(
     const Scrollbar& scrollbar) const {
   // Don't composite non-scrollable scrollbars.
   // TODO(crbug.com/1020913): !ScrollsOverflow() should imply
@@ -2851,7 +2851,7 @@ void PaintLayerScrollableArea::InvalidatePaintOfScrollbarIfNeeded(
     bool needs_paint_invalidation,
     Scrollbar* scrollbar,
     bool& previously_was_overlay,
-    bool& previously_was_directly_composited,
+    bool& previously_might_be_composited,
     gfx::Rect& visual_rect) {
   bool is_overlay = scrollbar && scrollbar->IsOverlayScrollbar();
 
@@ -2891,13 +2891,15 @@ void PaintLayerScrollableArea::InvalidatePaintOfScrollbarIfNeeded(
   previously_was_overlay = is_overlay;
 
   if (scrollbar) {
-    bool directly_composited = ShouldDirectlyCompositeScrollbar(*scrollbar);
-    if (directly_composited != previously_was_directly_composited) {
+    bool may_be_composited = MayCompositeScrollbar(*scrollbar);
+    if (may_be_composited != previously_might_be_composited) {
       needs_paint_invalidation = true;
-      previously_was_directly_composited = directly_composited;
-    } else if (directly_composited) {
-      // Don't invalidate directly composited scrollbar if the change is only
-      // inside of the scrollbar. ScrollbarDisplayItem will handle such change.
+      previously_might_be_composited = may_be_composited;
+    } else if (may_be_composited && UsesCompositedScrolling()) {
+      // Don't invalidate composited scrollbar if the change is only inside of
+      // the scrollbar. ScrollbarDisplayItem will handle such change.
+      // TODO(crbug.com/1505560): Avoid paint invalidation for non-composited
+      // scrollbars for changes inside of the scrollbar.
       needs_paint_invalidation = false;
     }
   }
@@ -2922,12 +2924,12 @@ void PaintLayerScrollableArea::InvalidatePaintOfScrollControlsIfNeeded(
   InvalidatePaintOfScrollbarIfNeeded(
       context, HorizontalScrollbarNeedsPaintInvalidation(),
       HorizontalScrollbar(), horizontal_scrollbar_previously_was_overlay_,
-      horizontal_scrollbar_previously_was_directly_composited_,
+      horizontal_scrollbar_previously_might_be_composited_,
       horizontal_scrollbar_visual_rect_);
   InvalidatePaintOfScrollbarIfNeeded(
       context, VerticalScrollbarNeedsPaintInvalidation(), VerticalScrollbar(),
       vertical_scrollbar_previously_was_overlay_,
-      vertical_scrollbar_previously_was_directly_composited_,
+      vertical_scrollbar_previously_might_be_composited_,
       vertical_scrollbar_visual_rect_);
 
   gfx::Rect new_scroll_corner_and_resizer_visual_rect =

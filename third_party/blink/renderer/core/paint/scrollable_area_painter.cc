@@ -301,7 +301,7 @@ void ScrollableAreaPainter::PaintNativeScrollbar(GraphicsContext& context,
   CHECK(properties);
 
   const TransformPaintPropertyNode* scroll_translation = nullptr;
-  if (scrollable_area_->ShouldDirectlyCompositeScrollbar(scrollbar)) {
+  if (scrollable_area_->MayCompositeScrollbar(scrollbar)) {
     scroll_translation = properties->ScrollTranslation();
     CHECK(scroll_translation);
     CHECK(scroll_translation->ScrollNode());

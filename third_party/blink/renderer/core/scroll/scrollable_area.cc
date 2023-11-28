@@ -902,7 +902,7 @@ void ScrollableArea::SetScrollbarNeedsPaintInvalidation(
     }
   }
 
-  // TODO(crbug.com/1414885): we don't need to invalidate paint of scrollbar
+  // TODO(crbug.com/1505560): we don't need to invalidate paint of scrollbar
   // for changes inside of the scrollbar. We'll invalidate raster if needed
   // after paint. We can remove some of paint invalidation code in this class,
   // and move remaining paint invalidation code into
