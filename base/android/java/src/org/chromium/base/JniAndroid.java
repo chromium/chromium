@@ -14,7 +14,7 @@ public final class JniAndroid {
 
     /**
      * Returns a sanitized stacktrace (per {@link PiiElider#sanitizeStacktrace(String)}) for the
-     * given throwable, for the purposes of uncaught exception handling.
+     * given throwable. Returns null if an OutOfMemoryError occurs.
      *
      * <p>Since this is running inside an uncaught exception handler, this method will make every
      * effort not to throw; instead, any failures will be surfaced through the returned string.
@@ -23,9 +23,15 @@ public final class JniAndroid {
     private static String sanitizedStacktraceForUnhandledException(Throwable throwable) {
         try {
             return PiiElider.sanitizeStacktrace(Log.getStackTraceString(throwable));
+        } catch (OutOfMemoryError oomError) {
+            return null;
         } catch (Throwable stacktraceThrowable) {
-            return "Error while getting stack trace: "
-                    + Log.getStackTraceString(stacktraceThrowable);
+            try {
+                return "Error while getting stack trace: "
+                        + Log.getStackTraceString(stacktraceThrowable);
+            } catch (OutOfMemoryError oomError) {
+                return null;
+            }
         }
     }
 
