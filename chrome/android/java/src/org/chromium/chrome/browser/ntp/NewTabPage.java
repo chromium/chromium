@@ -97,7 +97,6 @@ import org.chromium.chrome.browser.xsurface.feed.FeedLaunchReliabilityLogger.Sur
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.tasks.SingleTabSwitcherCoordinator;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -108,7 +107,6 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
-import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -133,17 +131,15 @@ public class NewTabPage
 
     private final String mTitle;
     private final JankTracker mJankTracker;
-    private Context mContext;
-    private int mBackgroundColor;
+    private final Context mContext;
+    private final int mBackgroundColor;
     protected final NewTabPageManagerImpl mNewTabPageManager;
     protected final TileGroup.Delegate mTileGroupDelegate;
     private final boolean mIsTablet;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
-    private final NewTabPageUma mNewTabPageUma;
     private final ContextMenuManager mContextMenuManager;
     private final ObserverList<MostVisitedTileClickObserver> mMostVisitedTileClickObservers;
     private final BottomSheetController mBottomSheetController;
-    private final SettingsLauncher mSettingsLauncher;
     private FeedSurfaceProvider mFeedSurfaceProvider;
 
     private NewTabPageLayout mNewTabPageLayout;
@@ -347,9 +343,10 @@ public class NewTabPage
 
     /**
      * Constructs a NewTabPage.
+     *
      * @param activity The activity used for context to create the new tab page's View.
      * @param browserControlsStateProvider {@link BrowserControlsStateProvider} to observe for
-     *         offset changes.
+     *     offset changes.
      * @param activityTabProvider Provides the current active tab.
      * @param snackbarManager {@link SnackbarManager} object.
      * @param lifecycleDispatcher Activity lifecycle dispatcher.
@@ -365,7 +362,8 @@ public class NewTabPage
      * @param windowAndroid The containing window of this page.
      * @param jankTracker {@link JankTracker} object to measure jankiness while NTP is visible.
      * @param toolbarSupplier Supplies the {@link Toolbar}.
-     * @param settingsLauncher {@link SettingsLauncher} object to launch settings fragments.
+     * @param homeSurfaceTracker Used to decide whether we are the home surface.
+     * @param tabContentManagerSupplier Used to create tab thumbnails.
      */
     public NewTabPage(
             Activity activity,
@@ -385,7 +383,6 @@ public class NewTabPage
             WindowAndroid windowAndroid,
             JankTracker jankTracker,
             Supplier<Toolbar> toolbarSupplier,
-            SettingsLauncher settingsLauncher,
             HomeSurfaceTracker homeSurfaceTracker,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier) {
         mConstructedTimeNs = System.nanoTime();
@@ -395,14 +392,12 @@ public class NewTabPage
         mActivityTabProvider = activityTabProvider;
         mActivityLifecycleDispatcher = lifecycleDispatcher;
         mTab = tab;
-        mNewTabPageUma = uma;
         mJankTracker = jankTracker;
         mToolbarSupplier = toolbarSupplier;
         mMostVisitedTileClickObservers = new ObserverList<>();
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mTabModelSelector = tabModelSelector;
         mBottomSheetController = bottomSheetController;
-        mSettingsLauncher = settingsLauncher;
         mHomeSurfaceTracker = homeSurfaceTracker;
         mTabContentManagerSupplier = tabContentManagerSupplier;
         mIsInNightMode = isInNightMode;
@@ -461,7 +456,7 @@ public class NewTabPage
                     public void onInteractabilityChanged(Tab tab, boolean isInteractable) {
                         // We start/stop tracking based on InteractabilityChanged in addition to
                         // Shown/Hidden because those events don't trigger for switching to tab
-                        // switcher, we don't rely solely on this event because it doeesn't
+                        // switcher, we don't rely solely on this event because it doesn't
                         // trigger when the user navigates to a website.
                         if (isInteractable) {
                             mJankTracker.startTrackingScenario(JankScenario.NEW_TAB_PAGE);
@@ -540,7 +535,7 @@ public class NewTabPage
         mTabStripAndToolbarHeight =
                 activity.getResources().getDimensionPixelSize(R.dimen.tab_strip_and_toolbar_height);
 
-        mNewTabPageUma.recordContentSuggestionsDisplayStatus(profile);
+        uma.recordContentSuggestionsDisplayStatus(profile);
 
         // TODO(twellington): Move this somewhere it can be shared with NewTabPageView?
         Runnable closeContextMenuCallback = activity::closeContextMenu;
@@ -646,32 +641,6 @@ public class NewTabPage
                         HelpAndFeedbackLauncherImpl.getForProfile(profile),
                         mTabModelSelector);
         mFeedSurfaceProvider = feedSurfaceCoordinator;
-    }
-
-    /**
-     * Saves a single string under a given key to the navigation entry. It is up to the caller to
-     * extract and interpret later.
-     * @param tab A tab that is used to access the NavigationController and the NavigationEntry
-     *            extras.
-     * @param key The key to store the data under, will need to be used to access later.
-     * @param value The payload to persist.
-     *
-     * TODO(https://crbug.com/941581): Refactor this to be reusable across NativePage components.
-     */
-    public static void saveStringToNavigationEntry(Tab tab, String key, String value) {
-        if (tab.getWebContents() == null) return;
-        NavigationController controller = tab.getWebContents().getNavigationController();
-        int index = controller.getLastCommittedEntryIndex();
-        NavigationEntry entry = controller.getEntryAtIndex(index);
-        if (entry == null) return;
-
-        // At least under test conditions this method may be called initially for the load of the
-        // NTP itself, at which point the last committed entry is not for the NTP yet. This method
-        // will then be called a second time when the user navigates away, at which point the last
-        // committed entry is for the NTP. The extra data must only be set in the latter case.
-        if (!UrlUtilities.isNTPUrl(entry.getUrl())) return;
-
-        controller.setEntryExtraData(index, key, value);
     }
 
     /**
@@ -919,20 +888,6 @@ public class NewTabPage
                 (System.nanoTime() - mLastShownTimeNs) / TimeUtils.NANOSECONDS_PER_MILLISECOND);
         SuggestionsMetrics.recordSurfaceHidden();
         FeatureNotificationUtils.unregisterIPHCallback(FeatureType.VOICE_SEARCH);
-    }
-
-    /**
-     * Returns the value of the adapter scroll position that was stored in the last committed
-     * navigation entry. Returns {@code RecyclerView.NO_POSITION} if there is no last committed
-     * navigation entry, or if no data is found.
-     * @param scrollPositionKey The key under which the scroll position has been stored in the
-     *                          NavigationEntryExtraData.
-     * @param tab A tab that is used to access the NavigationController and the NavigationEntry
-     *            extras.
-     * @return The adapter scroll position.
-     */
-    public static int getScrollPositionFromNavigationEntry(String scrollPositionKey, Tab tab) {
-        return getIntFromNavigationEntry(scrollPositionKey, tab, RecyclerView.NO_POSITION);
     }
 
     /**
