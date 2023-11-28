@@ -422,7 +422,7 @@ class PrivacySandboxSettingsEventReportingBrowserTest
  public:
   PrivacySandboxSettingsEventReportingBrowserTest() {
     scoped_feature_list_.InitWithFeatureState(
-        blink::features::kFencedFramesM120FeaturesPart2,
+        blink::features::kFencedFramesReportingAttestationsChanges,
         IsAttributionReportingAcceptedForPostImpressionBeacons());
   }
 

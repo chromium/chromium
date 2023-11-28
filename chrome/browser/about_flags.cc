@@ -8043,6 +8043,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableFencedFramesM120FeaturesDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kFencedFramesM120FeaturesPart2)},
 
+    {"enable-fenced-frames-reporting-attestations-changes",
+     flag_descriptions::kEnableFencedFramesReportingAttestationsChangeName,
+     flag_descriptions::
+         kEnableFencedFramesReportingAttestationsChangeDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         blink::features::kFencedFramesReportingAttestationsChanges)},
+
     {"storage-access-api", flag_descriptions::kStorageAccessAPIName,
      flag_descriptions::kStorageAccessAPIDescription, kOsAll,
      FEATURE_WITH_PARAMS_VALUE_TYPE(blink::features::kStorageAccessAPI,

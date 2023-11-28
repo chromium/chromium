@@ -1117,9 +1117,15 @@ const char kEnableFencedFramesM120FeaturesName[] =
     "Enable the Fenced Frames M120 features";
 const char kEnableFencedFramesM120FeaturesDescription[] =
     "The Fenced Frames M120 features include: 1. Support leaving interest "
-    "group from ad components. 2. Relax the attestation requirement of "
-    "post-impression beacons from Protected Audience only to either Protected "
-    "Audience or Attribution Reporting.";
+    "group from ad components. 2. Allow automatic beacons to send at "
+    "navigation start.";
+
+const char kEnableFencedFramesReportingAttestationsChangeName[] =
+    "Enable Fenced Frames reporting attestations changes";
+const char kEnableFencedFramesReportingAttestationsChangeDescription[] =
+    "Relax the attestation requirement of post-impression beacons from "
+    "Protected Audience only to either Protected Audience or Attribution "
+    "Reporting.";
 
 const char kEnableGamepadButtonAxisEventsName[] =
     "Gamepad Button and Axis Events";
