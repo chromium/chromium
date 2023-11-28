@@ -39088,7 +39088,6 @@ from previous Chrome versions.
   <int value="716073306" label="AssistantVoiceMatch:disabled"/>
   <int value="716080990" label="restrict-iframe-permissions"/>
   <int value="716592729" label="SuspiciousSiteDetectionRTLookups:disabled"/>
-  <int value="717020975" label="ForceOffTextAutosizing:disabled"/>
   <int value="717591093" label="UrlLoaderSyncClient:disabled"/>
   <int value="717827121" label="ChromeSharingHub:disabled"/>
   <int value="717913871" label="PeripheralCustomization:disabled"/>
@@ -41331,7 +41330,6 @@ from previous Chrome versions.
   <int value="1786182939" label="ExoPointerLock:enabled"/>
   <int value="1786229999" label="disable-md-downloads"/>
   <int value="1786386775" label="TranslateCompactUI:disabled"/>
-  <int value="1786414968" label="ForceOffTextAutosizing:enabled"/>
   <int value="1786692012"
       label="AssistantEnableMediaSessionIntegration:disabled"/>
   <int value="1786724316" label="OmniboxIgnoreIntermediateResults:enabled"/>

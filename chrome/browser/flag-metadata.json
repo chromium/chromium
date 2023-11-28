@@ -4393,11 +4393,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "force-off-text-autosizing",
-    "owners": [ "pdr@chromium.org", "chrishtr@chromium.org" ],
-    "expiry_milestone": 119
-  },
-  {
     "name": "force-password-initial-sync-when-decryption-fails",
     "owners": [ "derinel@google.com", "mamir@chromium.org" ],
     "expiry_milestone": 124

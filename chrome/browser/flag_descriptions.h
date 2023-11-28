@@ -2421,9 +2421,6 @@ extern const char kFeedDiscoFeedEndpointDescription[];
 extern const char kRefreshFeedOnRestartName[];
 extern const char kRefreshFeedOnRestartDescription[];
 
-extern const char kForceOffTextAutosizingName[];
-extern const char kForceOffTextAutosizingDescription[];
-
 extern const char kGridTabSwitcherAndroidAnimationsName[];
 extern const char kGridTabSwitcherAndroidAnimationsDescription[];
 

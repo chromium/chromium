@@ -9747,13 +9747,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kLargeFaviconFromGoogleVariations,
                                     "LargeFaviconFromGoogle")},
 
-#if BUILDFLAG(IS_ANDROID)
-    {"force-off-text-autosizing",
-     flag_descriptions::kForceOffTextAutosizingName,
-     flag_descriptions::kForceOffTextAutosizingDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kForceOffTextAutosizing)},
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"video-conference", flag_descriptions::kVideoConferenceName,
      flag_descriptions::kVideoConferenceDescription, kOsCrOS,
