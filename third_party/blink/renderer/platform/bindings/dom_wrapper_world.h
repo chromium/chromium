@@ -134,6 +134,7 @@ class PLATFORM_EXPORT DOMWrapperWorld : public RefCounted<DOMWrapperWorld> {
   // Deprecated : Use variant with v8::Isolate*.
   static DOMWrapperWorld& MainWorld();
   static void InitMainWorldOnMainThread(DOMWrapperWorld&);
+  static void ClearMainWorldOnMainThread(DOMWrapperWorld&);
 
   static void SetNonMainWorldStableId(int32_t world_id, const String&);
   String NonMainWorldStableId() const;

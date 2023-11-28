@@ -249,8 +249,14 @@ const char* RenderingPrioritizationStateToString(
 
 MainThreadSchedulerImpl::MainThreadSchedulerImpl(
     std::unique_ptr<base::sequence_manager::SequenceManager> sequence_manager)
-    : sequence_manager_(std::move(sequence_manager)),
-      helper_(sequence_manager_.get(), this),
+    : MainThreadSchedulerImpl(sequence_manager.get()) {
+  owned_sequence_manager_ = std::move(sequence_manager);
+}
+
+MainThreadSchedulerImpl::MainThreadSchedulerImpl(
+    base::sequence_manager::SequenceManager* sequence_manager)
+    : sequence_manager_(sequence_manager),
+      helper_(sequence_manager_, this),
       idle_helper_queue_(helper_.NewTaskQueue(
           MainThreadTaskQueue::QueueCreationParams(
               MainThreadTaskQueue::QueueType::kIdle)
@@ -642,7 +648,8 @@ void MainThreadSchedulerImpl::Shutdown() {
   // from |idle_helper_| early-outs and doesn't do anything.
   helper_.Shutdown();
   idle_helper_.Shutdown();
-  sequence_manager_.reset();
+  sequence_manager_ = nullptr;
+  owned_sequence_manager_.reset();
   main_thread_only().rail_mode_observers.Clear();
   was_shutdown_ = true;
 }

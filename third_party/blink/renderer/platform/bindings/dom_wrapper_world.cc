@@ -47,6 +47,14 @@
 
 namespace blink {
 
+namespace {
+
+// TODO(dtapuska): Progressively remove this static by moving callees
+// to use MainWorld with an isolate.
+DOMWrapperWorld* g_main_world = nullptr;
+
+}  // namespace
+
 static_assert(kMainDOMWorldId == DOMWrapperWorld::kMainWorldId,
               "The publicly-exposed kMainWorldId constant must match "
               "the internal blink value.");
@@ -111,20 +119,22 @@ DOMWrapperWorld& DOMWrapperWorld::MainWorld(v8::Isolate* isolate) {
   return V8PerIsolateData::From(isolate)->GetMainWorld();
 }
 
-// TODO(dtapuska): Progressively remove this static by moving callees
-// to use MainWorld with an isolate.
-static DOMWrapperWorld* g_main_world = nullptr;
-
 DOMWrapperWorld& DOMWrapperWorld::MainWorld() {
   DCHECK(IsMainThread());
+  DCHECK_NE(nullptr, g_main_world);
   return *g_main_world;
 }
 
 void DOMWrapperWorld::InitMainWorldOnMainThread(DOMWrapperWorld& main_world) {
   DCHECK(IsMainThread());
   DCHECK(!g_main_world);
-  DEFINE_STATIC_REF(DOMWrapperWorld, s_main_world, &main_world);
-  g_main_world = s_main_world;
+  g_main_world = &main_world;
+}
+
+void DOMWrapperWorld::ClearMainWorldOnMainThread(DOMWrapperWorld& main_world) {
+  DCHECK(IsMainThread());
+  DCHECK_EQ(g_main_world, &main_world);
+  g_main_world = nullptr;
 }
 
 void DOMWrapperWorld::AllWorldsInCurrentThread(
@@ -136,14 +146,14 @@ void DOMWrapperWorld::AllWorldsInCurrentThread(
 }
 
 DOMWrapperWorld::~DOMWrapperWorld() {
-  DCHECK(!IsMainWorld());
   if (IsMainThread())
     number_of_non_main_worlds_in_main_thread_--;
 
   // WorkerWorld should be disposed of before the dtor.
-  if (!IsWorkerWorld())
+  if (!IsWorkerWorld()) {
     Dispose();
-  DCHECK(!GetWorldMap().Contains(world_id_));
+  }
+  DCHECK(IsMainWorld() || !GetWorldMap().Contains(world_id_));
 }
 
 void DOMWrapperWorld::Dispose() {
@@ -154,8 +164,10 @@ void DOMWrapperWorld::Dispose() {
     dom_data_store_->Dispose();
     dom_data_store_.Clear();
   }
-  DCHECK(GetWorldMap().Contains(world_id_));
-  GetWorldMap().erase(world_id_);
+  if (!IsMainWorld()) {
+    DCHECK(GetWorldMap().Contains(world_id_));
+    GetWorldMap().erase(world_id_);
+  }
 }
 
 scoped_refptr<DOMWrapperWorld> DOMWrapperWorld::EnsureIsolatedWorld(

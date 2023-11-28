@@ -7,8 +7,10 @@
 #include "base/test/test_suite.h"
 #include "content/public/test/blink_test_environment.h"
 #include "third_party/blink/renderer/controller/tests/thread_state_test_environment.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 int main(int argc, char** argv) {
+  blink::test::internal::TaskEnvironmentImpl::SetSupported(true);
   ::testing::AddGlobalTestEnvironment(new content::BlinkTestEnvironment);
   ::testing::AddGlobalTestEnvironment(new ThreadStateTestEnvironment);
 

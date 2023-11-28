@@ -151,6 +151,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   explicit MainThreadSchedulerImpl(
       std::unique_ptr<base::sequence_manager::SequenceManager>
           sequence_manager);
+  explicit MainThreadSchedulerImpl(
+      base::sequence_manager::SequenceManager* sequence_manager);
   MainThreadSchedulerImpl(const MainThreadSchedulerImpl&) = delete;
   MainThreadSchedulerImpl& operator=(const MainThreadSchedulerImpl&) = delete;
 
@@ -714,7 +716,9 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   // initialized first and can be used everywhere.
   const SchedulingSettings scheduling_settings_;
 
-  std::unique_ptr<base::sequence_manager::SequenceManager> sequence_manager_;
+  raw_ptr<base::sequence_manager::SequenceManager> sequence_manager_;
+  std::unique_ptr<base::sequence_manager::SequenceManager>
+      owned_sequence_manager_;
   MainThreadSchedulerHelper helper_;
   scoped_refptr<MainThreadTaskQueue> idle_helper_queue_;
   IdleHelper idle_helper_;

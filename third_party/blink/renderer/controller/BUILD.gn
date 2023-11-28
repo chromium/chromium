@@ -324,6 +324,7 @@ test("blink_unittests_v2") {
 
   sources = [
     "//third_party/blink/renderer/platform/testing/main_thread_isolate_unittest.cc",
+    "//third_party/blink/renderer/platform/testing/task_environment_unittest.cc",
     "tests/run_all_tests_v2.cc",
     "tests/thread_state_test_environment.h",
   ]
