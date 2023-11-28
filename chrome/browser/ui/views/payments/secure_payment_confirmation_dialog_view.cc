@@ -200,7 +200,7 @@ void SecurePaymentConfirmationDialogView::OnModelUpdated() {
       gfx::ImageSkia image =
           gfx::ImageSkia::CreateFrom1xBitmap(*model_->instrument_icon())
               .DeepCopy();
-      image_view->SetImage(image);
+      image_view->SetImage(ui::ImageModel::FromImageSkia(image));
     }
     if (model_->instrument_icon()->drawsNothing()) {
       image_view->SetImage(ui::ImageModel::FromVectorIcon(

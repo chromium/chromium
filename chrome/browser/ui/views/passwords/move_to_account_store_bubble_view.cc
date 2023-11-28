@@ -180,7 +180,7 @@ void ImageWithBadge::Render() {
 
   gfx::ImageSkia badged_image = gfx::ImageSkiaOperations::CreateIconWithBadge(
       main_image_with_border, rounded_badge_with_background_and_border);
-  SetImage(badged_image);
+  SetImage(ui::ImageModel::FromImageSkia(badged_image));
 }
 
 BEGIN_METADATA(ImageWithBadge, views::ImageView)

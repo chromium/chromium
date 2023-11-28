@@ -183,7 +183,7 @@ class DownloadToolbarButtonView : public ToolbarButton,
   // views::Button overrides:
   void PaintButtonContents(gfx::Canvas* canvas) override;
 
-  gfx::ImageSkia GetBadgeImage(bool is_active,
+  ui::ImageModel GetBadgeImage(bool is_active,
                                int progress_download_count,
                                SkColor badge_text_color,
                                SkColor badge_background_color);

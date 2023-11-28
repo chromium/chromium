@@ -320,7 +320,8 @@ class FeatureButtonIconView : public views::ImageView {
     const SkColor icon_color = GetColorProvider()->GetColor(ui::kColorIcon);
     gfx::ImageSkia image =
         ImageForMenu(*icon_, icon_to_image_ratio_, icon_color);
-    SetImage(SizeImage(ColorImage(image, icon_color), kIconSize));
+    SetImage(ui::ImageModel::FromImageSkia(
+        SizeImage(ColorImage(image, icon_color), kIconSize)));
   }
 
  private:
@@ -397,7 +398,7 @@ class AvatarImageView : public views::ImageView {
         sized_avatar_image, GetBackgroundColor(), kIdentityImageSizeInclBorder);
 
     if (features::IsChromeRefresh2023()) {
-      SetImage(sized_avatar_image);
+      SetImage(ui::ImageModel::FromImageSkia(sized_avatar_image));
     } else {
       gfx::ImageSkia sized_badge = AddCircularBackground(
           SizeImage(root_view_->GetSyncIcon(), kBadgeSize),
@@ -410,7 +411,7 @@ class AvatarImageView : public views::ImageView {
       gfx::ImageSkia badged_image =
           gfx::ImageSkiaOperations::CreateIconWithBadge(
               sized_avatar_image, sized_badge_with_shadow);
-      SetImage(badged_image);
+      SetImage(ui::ImageModel::FromImageSkia(badged_image));
     }
   }
 
@@ -456,7 +457,8 @@ class SyncImageView : public views::ImageView {
   // views::ImageView:
   void OnThemeChanged() override {
     ImageView::OnThemeChanged();
-    SetImage(SizeImage(root_view_->GetSyncIcon(), kBadgeSize));
+    SetImage(ui::ImageModel::FromImageSkia(
+        SizeImage(root_view_->GetSyncIcon(), kBadgeSize)));
   }
 
  private:

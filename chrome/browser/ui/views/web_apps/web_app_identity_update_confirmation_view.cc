@@ -118,7 +118,8 @@ WebAppIdentityUpdateConfirmationView::WebAppIdentityUpdateConfirmationView(
               .AddChildren(
                   views::Builder<views::ImageView>()
                       .SetImageSize(image_size)
-                      .SetImage(gfx::ImageSkia::CreateFrom1xBitmap(old_icon))
+                      .SetImage(ui::ImageModel::FromImageSkia(
+                          gfx::ImageSkia::CreateFrom1xBitmap(old_icon)))
                       .SetAccessibleName(l10n_util::GetStringUTF16(
                           IDS_WEBAPP_UPDATE_CURRENT_ICON)),
                   views::Builder<views::ImageView>().SetImage(
@@ -127,7 +128,8 @@ WebAppIdentityUpdateConfirmationView::WebAppIdentityUpdateConfirmationView(
                           kArrowIconSizeDp)),
                   views::Builder<views::ImageView>()
                       .SetImageSize(image_size)
-                      .SetImage(gfx::ImageSkia::CreateFrom1xBitmap(new_icon))
+                      .SetImage(ui::ImageModel::FromImageSkia(
+                          gfx::ImageSkia::CreateFrom1xBitmap(new_icon)))
                       .SetAccessibleName(l10n_util::GetStringUTF16(
                           IDS_WEBAPP_UPDATE_NEW_ICON)))
               .AddPaddingRow(views::TableLayout::kFixedSize,

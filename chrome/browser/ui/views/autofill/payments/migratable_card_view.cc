@@ -16,7 +16,6 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -151,13 +150,11 @@ MigratableCardView::GetMigratableCardDescriptionView(
           views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
           provider->GetDistanceMetric(DISTANCE_RELATED_LABEL_HORIZONTAL_LIST)));
 
-  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   std::unique_ptr<views::ImageView> card_image =
       std::make_unique<views::ImageView>();
   card_image->SetImage(
-      rb.GetImageNamed(CreditCard::IconResourceId(
-                           migratable_credit_card.credit_card().network()))
-          .AsImageSkia());
+      ui::ImageModel::FromResourceId(CreditCard::IconResourceId(
+          migratable_credit_card.credit_card().network())));
   card_image->SetAccessibleName(
       migratable_credit_card.credit_card().NetworkForDisplay());
   card_network_and_last_four_digits->AddChildView(card_image.release());

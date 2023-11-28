@@ -155,8 +155,7 @@ void OldCookieControlsBubbleView::UpdateUi() {
   } else if (status_ == CookieControlsStatus::kEnabled) {
     header_view_->SetVisible(true);
     header_view_->SetImage(
-        ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-            IDR_COOKIE_BLOCKING_ON_HEADER));
+        ui::ImageModel::FromResourceId(IDR_COOKIE_BLOCKING_ON_HEADER));
     text_->SetVisible(true);
     text_->SetText(
         l10n_util::GetStringUTF16(IDS_COOKIE_CONTROLS_BLOCKED_MESSAGE));
@@ -173,8 +172,7 @@ void OldCookieControlsBubbleView::UpdateUi() {
     DCHECK_EQ(status_, CookieControlsStatus::kDisabledForSite);
     header_view_->SetVisible(true);
     header_view_->SetImage(
-        ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-            IDR_COOKIE_BLOCKING_OFF_HEADER));
+        ui::ImageModel::FromResourceId(IDR_COOKIE_BLOCKING_OFF_HEADER));
     if (extra_view_) {
       extra_view_->SetVisible(false);
     }

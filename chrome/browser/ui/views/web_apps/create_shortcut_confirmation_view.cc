@@ -158,7 +158,7 @@ CreateShortcutConfirmationView::CreateShortcutConfirmationView(
               views::DialogContentType::kText))
           .AddChildren(views::Builder<views::ImageView>()
                            .SetImageSize(image_size)
-                           .SetImage(image),
+                           .SetImage(ui::ImageModel::FromImageSkia(image)),
                        views::Builder<views::Textfield>()
                            .CopyAddressTo(&title_tf_)
                            .SetText(NormalizeSuggestedAppTitle(

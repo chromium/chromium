@@ -177,7 +177,7 @@ void ShareThisTabSourceView::OnCaptureHandled(
 
   if (hash != last_hash_) {
     last_hash_ = hash;
-    image_view_->SetImage(image.value());
+    image_view_->SetImage(ui::ImageModel::FromImageSkia(image.value()));
   }
 
   content::GetUIThreadTaskRunner({})->PostDelayedTask(

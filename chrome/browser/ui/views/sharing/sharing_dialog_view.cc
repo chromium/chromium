@@ -282,7 +282,7 @@ void SharingDialogView::InitListView() {
           *app.vector_icon, ui::kColorIcon, kPrimaryIconSize));
     } else {
       icon = std::make_unique<views::ImageView>();
-      icon->SetImage(app.image.AsImageSkia());
+      icon->SetImage(ui::ImageModel::FromImage(app.image));
     }
 
     auto* dialog_button =

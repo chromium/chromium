@@ -185,7 +185,8 @@ void CredentialsItemView::SetStoreIndicatorIcon(
 }
 
 void CredentialsItemView::UpdateAvatar(const gfx::ImageSkia& image) {
-  image_view_->SetImage(ScaleImageForAccountAvatar(image));
+  image_view_->SetImage(
+      ui::ImageModel::FromImageSkia(ScaleImageForAccountAvatar(image)));
 }
 
 int CredentialsItemView::GetPreferredHeight() const {

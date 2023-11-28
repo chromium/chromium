@@ -292,7 +292,7 @@ class AccountImageView : public views::ImageView {
           gfx::CanvasImageSource::MakeImageSkia<CircleCroppedImageSkiaSource>(
               image.AsImageSkia(), absl::nullopt, kDesiredAvatarSize);
     }
-    SetImage(avatar);
+    SetImage(ui::ImageModel::FromImageSkia(avatar));
   }
 
   base::WeakPtrFactory<AccountImageView> weak_ptr_factory_{this};
@@ -339,7 +339,7 @@ class IdpImageView : public views::ImageView {
             image.Width() *
                 FedCmAccountSelectionView::kMaskableWebIconSafeZoneRatio,
             kDesiredIdpIconSize);
-    SetImage(idp_image);
+    SetImage(ui::ImageModel::FromImageSkia(idp_image));
     bubble_view_->AddIdpImage(image_url, idp_image);
   }
 
@@ -1154,7 +1154,7 @@ void AccountSelectionBubbleView::ConfigureIdpBrandImageView(
 
   auto it = idp_images_.find(idp_metadata.brand_icon_url);
   if (it != idp_images_.end()) {
-    image_view->SetImage(it->second);
+    image_view->SetImage(ui::ImageModel::FromImageSkia(it->second));
     return;
   }
 

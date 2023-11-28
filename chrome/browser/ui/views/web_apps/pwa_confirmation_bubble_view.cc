@@ -69,7 +69,7 @@ std::unique_ptr<views::ImageView> CreateIconView(
                        gfx::Size(kIconSize, kIconSize));
 
   auto icon_image_view = std::make_unique<views::ImageView>();
-  icon_image_view->SetImage(image);
+  icon_image_view->SetImage(ui::ImageModel::FromImageSkia(image));
   return icon_image_view;
 }
 

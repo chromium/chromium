@@ -127,7 +127,8 @@ BadgedProfilePhoto::BadgedProfilePhoto(BadgeType badge_type,
   views::ImageView* profile_photo_view = badge_type == BADGE_TYPE_NONE
                                              ? new views::ImageView()
                                              : new CustomImageView();
-  profile_photo_view->SetImage(*profile_photo_circular.ToImageSkia());
+  profile_photo_view->SetImage(
+      ui::ImageModel::FromImage(profile_photo_circular));
   profile_photo_view->SizeToPreferredSize();
   AddChildView(profile_photo_view);
 

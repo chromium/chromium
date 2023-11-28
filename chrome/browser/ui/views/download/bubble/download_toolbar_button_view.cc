@@ -192,23 +192,24 @@ DownloadToolbarButtonView::~DownloadToolbarButtonView() {
   bubble_controller_.reset();
 }
 
-gfx::ImageSkia DownloadToolbarButtonView::GetBadgeImage(
+ui::ImageModel DownloadToolbarButtonView::GetBadgeImage(
     bool is_active,
     int progress_download_count,
     SkColor badge_text_color,
     SkColor badge_background_color) {
   // Only display the badge if there are multiple downloads.
   if (!is_active || progress_download_count < 2) {
-    return gfx::ImageSkia();
+    return ui::ImageModel();
   }
   const int badge_height = badge_image_view_->bounds().height();
   // base::Unretained is safe because this owns the ImageView to which the
   // image source is applied.
-  return gfx::CanvasImageSource::MakeImageSkia<CircleBadgeImageSource>(
-      gfx::Size(badge_height, badge_height), badge_background_color,
-      base::BindRepeating(&DownloadToolbarButtonView::GetBadgeText,
-                          base::Unretained(this), progress_download_count,
-                          badge_text_color));
+  return ui::ImageModel::FromImageSkia(
+      gfx::CanvasImageSource::MakeImageSkia<CircleBadgeImageSource>(
+          gfx::Size(badge_height, badge_height), badge_background_color,
+          base::BindRepeating(&DownloadToolbarButtonView::GetBadgeText,
+                              base::Unretained(this), progress_download_count,
+                              badge_text_color)));
 }
 
 gfx::RenderText& DownloadToolbarButtonView::GetBadgeText(

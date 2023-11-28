@@ -132,7 +132,7 @@ std::unique_ptr<views::ImageView> ImageViewFromImageSkia(
     return nullptr;
   }
   auto image_view = std::make_unique<views::ImageView>();
-  image_view->SetImage(image_skia);
+  image_view->SetImage(ui::ImageModel::FromImageSkia(image_skia));
   return image_view;
 }
 

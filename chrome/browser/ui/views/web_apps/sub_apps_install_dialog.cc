@@ -131,10 +131,10 @@ std::unique_ptr<views::ScrollView> CreateSubAppsListView(
 
     auto* sub_app_icon =
         box->AddChildView(std::make_unique<views::ImageView>());
-    sub_app_icon->SetImage(
+    sub_app_icon->SetImage(ui::ImageModel::FromImageSkia(
         gfx::ImageSkia(std::make_unique<WebAppInfoImageSource>(
                            kSubAppIconSize, sub_app->icon_bitmaps.any),
-                       gfx::Size(kSubAppIconSize, kSubAppIconSize)));
+                       gfx::Size(kSubAppIconSize, kSubAppIconSize))));
     sub_app_icon->SetGroup(
         base::to_underlying(SubAppsInstallDialogController::
                                 SubAppsInstallDialogViewID::SUB_APP_ICON));

@@ -406,7 +406,7 @@ void DesktopMediaTabList::ClearSelection() {
 void DesktopMediaTabList::ClearPreview() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   preview_label_->SetText(u"");
-  preview_->SetImage(nullptr);
+  preview_->SetImage(ui::ImageModel());
   preview_->SetVisible(false);
   empty_preview_label_->SetVisible(true);
 }
@@ -446,7 +446,7 @@ void DesktopMediaTabList::ClearPreviewImageIfUnchanged(
   if (preview_set_count_ == previous_preview_set_count) {
     // preview_ has not been set to a new image since this was scheduled. Clear
     // it.
-    preview_->SetImage(nullptr);
+    preview_->SetImage(ui::ImageModel());
   }
 }
 
@@ -458,7 +458,7 @@ void DesktopMediaTabList::OnPreviewUpdated(size_t index) {
 
   const DesktopMediaList::Source& source = controller_->GetSource(index);
   if (!source.preview.isNull()) {
-    preview_->SetImage(source.preview);
+    preview_->SetImage(ui::ImageModel::FromImageSkia(source.preview));
     ++preview_set_count_;
   } else {
     // Clear the preview after a short time.

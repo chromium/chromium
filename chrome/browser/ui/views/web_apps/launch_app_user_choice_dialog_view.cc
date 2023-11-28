@@ -182,11 +182,11 @@ void LaunchAppUserChoiceDialogView::OnIconsRead(
     return;
 
   gfx::Size image_size{web_app::kWebAppIconSmall, web_app::kWebAppIconSmall};
-  auto imageSkia =
+  auto image_skia =
       gfx::ImageSkia(std::make_unique<WebAppInfoImageSource>(
                          web_app::kWebAppIconSmall, std::move(icon_bitmaps)),
                      image_size);
-  icon_image_view_->SetImage(imageSkia);
+  icon_image_view_->SetImage(ui::ImageModel::FromImageSkia(image_skia));
 }
 
 BEGIN_METADATA(LaunchAppUserChoiceDialogView, views::DialogDelegateView)

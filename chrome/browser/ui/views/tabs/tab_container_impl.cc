@@ -44,9 +44,8 @@ namespace {
 int g_drop_indicator_width = 0;
 int g_drop_indicator_height = 0;
 
-gfx::ImageSkia* GetDropArrowImage(bool is_down) {
-  return ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-      is_down ? IDR_TAB_DROP_DOWN : IDR_TAB_DROP_UP);
+int GetDropArrowImageResourceId(bool is_down) {
+  return is_down ? IDR_TAB_DROP_DOWN : IDR_TAB_DROP_UP;
 }
 
 }  // namespace
@@ -109,7 +108,9 @@ TabContainerImpl::TabContainerImpl(
 
   if (g_drop_indicator_width == 0) {
     // Direction doesn't matter, both images are the same size.
-    gfx::ImageSkia* drop_image = GetDropArrowImage(true);
+    gfx::ImageSkia* drop_image =
+        ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+            GetDropArrowImageResourceId(true));
     g_drop_indicator_width = drop_image->width();
     g_drop_indicator_height = drop_image->height();
   }
@@ -1001,7 +1002,8 @@ TabContainerImpl::DropArrow::DropArrow(const BrowserRootView::DropIndex& index,
   arrow_window_->Init(std::move(params));
   arrow_view_ =
       arrow_window_->SetContentsView(std::make_unique<views::ImageView>());
-  arrow_view_->SetImage(GetDropArrowImage(point_down_));
+  arrow_view_->SetImage(
+      ui::ImageModel::FromResourceId(GetDropArrowImageResourceId(point_down_)));
   scoped_observation_.Observe(arrow_window_.get());
 
   arrow_window_->Show();
@@ -1018,7 +1020,8 @@ void TabContainerImpl::DropArrow::SetPointDown(bool down) {
     return;
 
   point_down_ = down;
-  arrow_view_->SetImage(GetDropArrowImage(point_down_));
+  arrow_view_->SetImage(
+      ui::ImageModel::FromResourceId(GetDropArrowImageResourceId(point_down_)));
 }
 
 void TabContainerImpl::DropArrow::SetWindowBounds(const gfx::Rect& bounds) {

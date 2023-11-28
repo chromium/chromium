@@ -224,7 +224,7 @@ class TabHoverCardBubbleView::ThumbnailView
   void SetImage(views::ImageView* image_view,
                 gfx::ImageSkia image,
                 ImageType image_type) {
-    image_view->SetImage(image);
+    image_view->SetImage(ui::ImageModel::FromImageSkia(image));
     switch (image_type) {
       case ImageType::kNone:
       case ImageType::kNoneButWaiting:

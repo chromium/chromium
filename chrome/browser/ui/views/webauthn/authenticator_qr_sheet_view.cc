@@ -109,8 +109,8 @@ class AuthenticatorQRViewCentered : public views::View {
       const qrcode_generator::mojom::GenerateQRCodeResponsePtr response) {
     DCHECK(response->error_code ==
            qrcode_generator::mojom::QRCodeGeneratorError::NONE);
-    qr_code_image_->SetImage(
-        gfx::ImageSkia::CreateFrom1xBitmap(response->bitmap));
+    qr_code_image_->SetImage(ui::ImageModel::FromImageSkia(
+        gfx::ImageSkia::CreateFrom1xBitmap(response->bitmap)));
     qr_code_image_->SetVisible(true);
   }
 

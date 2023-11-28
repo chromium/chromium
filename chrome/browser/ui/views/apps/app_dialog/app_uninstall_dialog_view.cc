@@ -431,7 +431,8 @@ void AppUninstallDialogView::InitializeSubAppList(
 
     auto* sub_app_icon =
         box->AddChildView(std::make_unique<views::ImageView>());
-    sub_app_icon->SetImage(sub_app.icon->uncompressed);
+    sub_app_icon->SetImage(
+        ui::ImageModel::FromImageSkia(sub_app.icon->uncompressed));
     sub_app_icon->SetGroup(base::to_underlying(DialogViewID::SUB_APP_ICON));
 
     box->SetBetweenChildSpacing(
