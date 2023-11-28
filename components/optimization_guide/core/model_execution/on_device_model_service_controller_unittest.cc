@@ -6,7 +6,9 @@
 #include <memory>
 #include <optional>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -161,11 +163,16 @@ class FakeOnDeviceModelServiceController
       : OnDeviceModelServiceController(std::move(access_controller)) {}
 
   void LaunchService() override {
+    did_launch_service_ = true;
     service_remote_.reset();
     service_ = std::make_unique<FakeOnDeviceModelService>(
         service_remote_.BindNewPipeAndPassReceiver(), load_model_result_,
         drop_connection_request_);
   }
+
+  void clear_did_launch_service() { did_launch_service_ = false; }
+
+  bool did_launch_service() const { return did_launch_service_; }
 
   void set_load_model_result(LoadModelResult result) {
     load_model_result_ = result;
@@ -181,6 +188,7 @@ class FakeOnDeviceModelServiceController
   LoadModelResult load_model_result_ = LoadModelResult::kSuccess;
   bool drop_connection_request_ = false;
   std::unique_ptr<FakeOnDeviceModelService> service_;
+  bool did_launch_service_ = false;
 };
 
 class OnDeviceModelServiceControllerTest : public testing::Test {
@@ -193,6 +201,15 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
          {"on_device_model_context_token_chunk_size", "4"}});
     prefs::RegisterLocalStatePrefs(pref_service_.registry());
     RecreateServiceController();
+  }
+
+  ExecuteRemoteFn CreateExecuteRemoteFn() {
+    return base::BindLambdaForTesting(
+        [=](proto::ModelExecutionFeature feature,
+            const google::protobuf::MessageLite& m,
+            OptimizationGuideModelExecutionResultStreamingCallback c) {
+          remote_execute_called_ = true;
+        });
   }
 
   void RecreateServiceController() {
@@ -290,12 +307,13 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
   std::optional<OptimizationGuideModelExecutionError::ModelExecutionError>
       response_error_;
   base::test::ScopedFeatureList feature_list_;
+  bool remote_execute_called_ = false;
 };
 
 TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionSuccess) {
   base::HistogramTester histogram_tester;
 
-  auto session = test_controller_->StartSession(kFeature);
+  auto session = test_controller_->CreateSession(kFeature, base::DoNothing());
   EXPECT_TRUE(session);
   ExecuteModel(*session, "foo");
   task_environment_.RunUntilIdle();
@@ -310,7 +328,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionSuccess) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionWithContext) {
-  auto session = test_controller_->StartSession(kFeature);
+  auto session = test_controller_->CreateSession(kFeature, base::DoNothing());
   EXPECT_TRUE(session);
   AddContext(*session, "foo");
   task_environment_.RunUntilIdle();
@@ -329,7 +347,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionWithContext) {
 
 TEST_F(OnDeviceModelServiceControllerTest,
        ModelExecutionLoadsSingleContextChunk) {
-  auto session = test_controller_->StartSession(kFeature);
+  auto session = test_controller_->CreateSession(kFeature, base::DoNothing());
   EXPECT_TRUE(session);
 
   AddContext(*session, "context");
@@ -349,7 +367,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
 TEST_F(OnDeviceModelServiceControllerTest,
        ModelExecutionLoadsLongContextInChunks) {
-  auto session = test_controller_->StartSession(kFeature);
+  auto session = test_controller_->CreateSession(kFeature, base::DoNothing());
   EXPECT_TRUE(session);
 
   AddContext(*session, "this is long context");
@@ -371,7 +389,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
 TEST_F(OnDeviceModelServiceControllerTest,
        ModelExecutionCancelsOptionalContext) {
-  auto session = test_controller_->StartSession(kFeature);
+  auto session = test_controller_->CreateSession(kFeature, base::DoNothing());
   EXPECT_TRUE(session);
 
   AddContext(*session, "this is long context");
@@ -390,8 +408,9 @@ TEST_F(OnDeviceModelServiceControllerTest,
 TEST_F(OnDeviceModelServiceControllerTest, SessionFailsForInvalidFeature) {
   base::HistogramTester histogram_tester;
 
-  EXPECT_FALSE(test_controller_->StartSession(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION));
+  EXPECT_FALSE(test_controller_->CreateSession(
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION,
+      base::DoNothing()));
 
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason."
@@ -407,7 +426,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionNoMinContext) {
        {"on_device_model_max_tokens_for_context", "22"},
        {"on_device_model_context_token_chunk_size", "4"}});
 
-  auto session = test_controller_->StartSession(kFeature);
+  auto session = test_controller_->CreateSession(kFeature, base::DoNothing());
   EXPECT_TRUE(session);
 
   AddContext(*session, "context");
@@ -427,7 +446,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionNoMinContext) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ReturnsErrorOnServiceDisconnect) {
-  auto session = test_controller_->StartSession(kFeature);
+  auto session = test_controller_->CreateSession(kFeature, base::DoNothing());
   EXPECT_TRUE(session);
   task_environment_.RunUntilIdle();
 
@@ -442,7 +461,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ReturnsErrorOnServiceDisconnect) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnAddContext) {
-  auto session = test_controller_->StartSession(kFeature);
+  auto session = test_controller_->CreateSession(kFeature, base::DoNothing());
   EXPECT_TRUE(session);
   task_environment_.RunUntilIdle();
 
@@ -457,7 +476,7 @@ TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnAddContext) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnExecute) {
-  auto session = test_controller_->StartSession(kFeature);
+  auto session = test_controller_->CreateSession(kFeature, base::DoNothing());
   EXPECT_TRUE(session);
   task_environment_.RunUntilIdle();
 
@@ -476,7 +495,7 @@ TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnExecute) {
 TEST_F(OnDeviceModelServiceControllerTest, WontStartSessionAfterGpuBlocked) {
   // Start a session.
   test_controller_->set_load_model_result(LoadModelResult::kGpuBlocked);
-  auto session = test_controller_->StartSession(kFeature);
+  auto session = test_controller_->CreateSession(kFeature, base::DoNothing());
   EXPECT_TRUE(session);
 
   // Wait for the service to launch, and be shut down.
@@ -486,7 +505,7 @@ TEST_F(OnDeviceModelServiceControllerTest, WontStartSessionAfterGpuBlocked) {
     base::HistogramTester histogram_tester;
 
     // Because the model returned kGpuBlocked, no more sessions should start.
-    EXPECT_FALSE(test_controller_->StartSession(kFeature));
+    EXPECT_FALSE(test_controller_->CreateSession(kFeature, base::DoNothing()));
 
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason."
@@ -495,19 +514,33 @@ TEST_F(OnDeviceModelServiceControllerTest, WontStartSessionAfterGpuBlocked) {
   }
 }
 
+TEST_F(OnDeviceModelServiceControllerTest, DontRecreateSessionIfGpuBlocked) {
+  test_controller_->set_load_model_result(LoadModelResult::kGpuBlocked);
+  auto session = test_controller_->CreateSession(kFeature, base::DoNothing());
+  ASSERT_TRUE(session);
+
+  // Wait for the service to launch, and be shut down.
+  task_environment_.RunUntilIdle();
+  test_controller_->clear_did_launch_service();
+
+  // Adding context should not trigger launching the service again.
+  AddContext(*session, "baz");
+  EXPECT_FALSE(test_controller_->did_launch_service());
+}
+
 TEST_F(OnDeviceModelServiceControllerTest, StopsConnectingAfterMultipleDrops) {
   // Start a session.
   test_controller_->set_drop_connection_request(true);
   for (int i = 0; i < features::GetOnDeviceModelCrashCountBeforeDisable();
        ++i) {
-    auto session = test_controller_->StartSession(kFeature);
+    auto session = test_controller_->CreateSession(kFeature, base::DoNothing());
     EXPECT_TRUE(session) << i;
     task_environment_.RunUntilIdle();
   }
 
   {
     base::HistogramTester histogram_tester;
-    auto session = test_controller_->StartSession(kFeature);
+    auto session = test_controller_->CreateSession(kFeature, base::DoNothing());
     EXPECT_FALSE(session);
 
     histogram_tester.ExpectUniqueSample(
@@ -521,7 +554,7 @@ TEST_F(OnDeviceModelServiceControllerTest, AlternatingDisconnectSucceeds) {
   // Start a session.
   for (int i = 0; i < 10; ++i) {
     test_controller_->set_drop_connection_request(i % 2 == 1);
-    auto session = test_controller_->StartSession(kFeature);
+    auto session = test_controller_->CreateSession(kFeature, base::DoNothing());
     EXPECT_TRUE(session) << i;
     task_environment_.RunUntilIdle();
   }
@@ -533,11 +566,11 @@ TEST_F(OnDeviceModelServiceControllerTest,
   test_controller_->set_drop_connection_request(true);
   for (int i = 0; i < features::GetOnDeviceModelCrashCountBeforeDisable();
        ++i) {
-    auto session = test_controller_->StartSession(kFeature);
+    auto session = test_controller_->CreateSession(kFeature, base::DoNothing());
     EXPECT_TRUE(session) << i;
     task_environment_.RunUntilIdle();
   }
-  EXPECT_FALSE(test_controller_->StartSession(kFeature));
+  EXPECT_FALSE(test_controller_->CreateSession(kFeature, base::DoNothing()));
 
   // Change the pref to a different value and recreate the service.
   access_controller_ = nullptr;
@@ -547,12 +580,12 @@ TEST_F(OnDeviceModelServiceControllerTest,
   RecreateServiceController();
 
   // A new session should be started because the version changed.
-  auto session = test_controller_->StartSession(kFeature);
+  auto session = test_controller_->CreateSession(kFeature, base::DoNothing());
   EXPECT_TRUE(session);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, AddContextDisconnectExecute) {
-  auto session = test_controller_->StartSession(kFeature);
+  auto session = test_controller_->CreateSession(kFeature, base::DoNothing());
   EXPECT_TRUE(session);
   AddContext(*session, "foo");
   task_environment_.RunUntilIdle();
@@ -574,7 +607,7 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextDisconnectExecute) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, AddContextExecuteDisconnect) {
-  auto session = test_controller_->StartSession(kFeature);
+  auto session = test_controller_->CreateSession(kFeature, base::DoNothing());
   EXPECT_TRUE(session);
   AddContext(*session, "foo");
   task_environment_.RunUntilIdle();
@@ -587,13 +620,13 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextExecuteDisconnect) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ExecuteDisconnectedSession) {
-  auto session1 = test_controller_->StartSession(kFeature);
+  auto session1 = test_controller_->CreateSession(kFeature, base::DoNothing());
   EXPECT_TRUE(session1);
   AddContext(*session1, "foo");
   task_environment_.RunUntilIdle();
 
   // Start another session.
-  auto session2 = test_controller_->StartSession(kFeature);
+  auto session2 = test_controller_->CreateSession(kFeature, base::DoNothing());
   EXPECT_TRUE(session2);
   AddContext(*session2, "bar");
   task_environment_.RunUntilIdle();
@@ -619,6 +652,77 @@ TEST_F(OnDeviceModelServiceControllerTest, ExecuteDisconnectedSession) {
   };
   EXPECT_EQ(*response_received_, expected_responses2[1]);
   EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses2));
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, CallsRemoteExecute) {
+  test_controller_->set_load_model_result(LoadModelResult::kGpuBlocked);
+  auto session =
+      test_controller_->CreateSession(kFeature, CreateExecuteRemoteFn());
+  ASSERT_TRUE(session);
+
+  // Wait for the service to launch, and be shut down.
+  task_environment_.RunUntilIdle();
+  test_controller_->clear_did_launch_service();
+
+  // Adding context should not trigger launching the service again.
+  AddContext(*session, "baz");
+  ExecuteModel(*session, "2");
+  EXPECT_TRUE(remote_execute_called_);
+  EXPECT_FALSE(test_controller_->did_launch_service());
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, AddContextInvalidConfig) {
+  access_controller_ = nullptr;
+  test_controller_ = nullptr;
+
+  auto access_controller =
+      std::make_unique<OnDeviceModelAccessController>(pref_service_);
+  access_controller_ = access_controller.get();
+  test_controller_ = base::MakeRefCounted<FakeOnDeviceModelServiceController>(
+      std::move(access_controller));
+
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  config.set_feature(kFeature);
+  auto config_interpreter =
+      std::make_unique<OnDeviceModelExecutionConfigInterpreter>();
+  auto* config_interpreter_raw = config_interpreter.get();
+  test_controller_->Init(base::FilePath::FromASCII("/foo"),
+                         std::move(config_interpreter));
+  config_interpreter_raw->OverrideFeatureConfigForTesting(config);
+
+  auto session =
+      test_controller_->CreateSession(kFeature, CreateExecuteRemoteFn());
+  ASSERT_TRUE(session);
+  AddContext(*session, "foo");
+  task_environment_.RunUntilIdle();
+  ExecuteModel(*session, "2");
+  EXPECT_TRUE(remote_execute_called_);
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, ExecuteInvalidConfig) {
+  access_controller_ = nullptr;
+  test_controller_ = nullptr;
+
+  auto access_controller =
+      std::make_unique<OnDeviceModelAccessController>(pref_service_);
+  access_controller_ = access_controller.get();
+  test_controller_ = base::MakeRefCounted<FakeOnDeviceModelServiceController>(
+      std::move(access_controller));
+
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  config.set_feature(kFeature);
+  auto config_interpreter =
+      std::make_unique<OnDeviceModelExecutionConfigInterpreter>();
+  auto* config_interpreter_raw = config_interpreter.get();
+  test_controller_->Init(base::FilePath::FromASCII("/foo"),
+                         std::move(config_interpreter));
+  config_interpreter_raw->OverrideFeatureConfigForTesting(config);
+
+  auto session =
+      test_controller_->CreateSession(kFeature, CreateExecuteRemoteFn());
+  ASSERT_TRUE(session);
+  ExecuteModel(*session, "2");
+  EXPECT_TRUE(remote_execute_called_);
 }
 
 }  // namespace optimization_guide

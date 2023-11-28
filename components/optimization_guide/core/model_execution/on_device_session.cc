@@ -64,6 +64,9 @@ class OnDeviceSession::ContextProcessor
   void AddContext(uint32_t num_tokens) {
     expected_tokens_ = num_tokens;
     client_.reset();
+    if (!session_->ShouldUseOnDeviceModel()) {
+      return;
+    }
     session_->GetOrCreateSession().AddContext(
         on_device_model::mojom::InputOptions::New(
             input_, num_tokens, tokens_processed_, /*ignore_context=*/false),
@@ -82,29 +85,37 @@ OnDeviceSession::OnDeviceSession(
     StartSessionFn start_session_fn,
     proto::ModelExecutionFeature feature,
     const OnDeviceModelExecutionConfigInterpreter* config_interpreter,
-    base::WeakPtr<OnDeviceModelServiceController> controller)
+    base::WeakPtr<OnDeviceModelServiceController> controller,
+    ExecuteRemoteFn execute_remote_fn)
     : controller_(controller),
       feature_(feature),
-      config_interpreter_(config_interpreter),
-      start_session_fn_(std::move(start_session_fn)) {
-  // Prewarm the initial session to make sure the service is started.
-  GetOrCreateSession();
+      execute_remote_fn_(std::move(execute_remote_fn)) {
+  if (controller_ && controller_->ShouldStartNewSession()) {
+    on_device_state_.emplace(std::move(start_session_fn), this);
+    on_device_state_->config_interpreter = config_interpreter;
+    // Prewarm the initial session to make sure the service is started.
+    GetOrCreateSession();
+  }
 }
 
 OnDeviceSession::~OnDeviceSession() = default;
 
 void OnDeviceSession::AddContext(
     const google::protobuf::MessageLite& request_metadata) {
-  add_context_before_execute_ = false;
   context_.reset(request_metadata.New());
   context_->CheckTypeAndMergeFrom(request_metadata);
 
-  auto input = config_interpreter_->ConstructInputString(
+  if (!ShouldUseOnDeviceModel()) {
+    DestroyOnDeviceState();
+    return;
+  }
+
+  on_device_state_->add_context_before_execute = false;
+  auto input = on_device_state_->config_interpreter->ConstructInputString(
       feature_, *context_, /*want_input_context=*/true);
   if (!input) {
-    // TODO(b/302402576): Add error handling.
-    context_.reset();
-    LOG(ERROR) << "Error constructing input string.";
+    // Use server if can't construct input.
+    DestroyOnDeviceState();
     return;
   }
 
@@ -112,8 +123,14 @@ void OnDeviceSession::AddContext(
   CancelPendingResponse();
 
   // Only the latest context is used, so restart the mojo session here.
-  session_.reset();
-  context_processor_ =
+  on_device_state_->session.reset();
+
+  // As the session was just destroyed, clear the contextprocessor as
+  // it will be using the wrong session, and we don't care about old context
+  // at this point.
+  on_device_state_->context_processor.reset();
+
+  on_device_state_->context_processor =
       std::make_unique<ContextProcessor>(*this, input->input_string);
 }
 
@@ -121,20 +138,29 @@ void OnDeviceSession::ExecuteModel(
     const google::protobuf::MessageLite& request_metadata,
     optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
         callback) {
-  if (add_context_before_execute_) {
+  auto request = MergeContext(request_metadata);
+
+  if (!ShouldUseOnDeviceModel()) {
+    DestroyOnDeviceState();
+    execute_remote_fn_.Run(feature_, *request, std::move(callback));
+    return;
+  }
+
+  if (on_device_state_->add_context_before_execute) {
     CHECK(context_);
     std::unique_ptr<google::protobuf::MessageLite> context =
         std::move(context_);
     AddContext(*context);
-    CHECK(!add_context_before_execute_);
+    CHECK(!on_device_state_->add_context_before_execute);
   }
 
-  auto request = MergeContext(request_metadata);
-  auto input = config_interpreter_->ConstructInputString(
+  auto input = on_device_state_->config_interpreter->ConstructInputString(
       feature_, *request, /*want_input_context=*/false);
   if (!input) {
-    // TODO(b/302402576): Add error handling.
-    LOG(ERROR) << "Error constructing input string.";
+    // TODO(b/313666843): add metrics.
+    // Use server if can't construct input.
+    DestroyOnDeviceState();
+    execute_remote_fn_.Run(feature_, *request, std::move(callback));
     return;
   }
 
@@ -142,36 +168,36 @@ void OnDeviceSession::ExecuteModel(
   CancelPendingResponse();
 
   // Cancel any optional context still processing.
-  if (context_processor_) {
-    context_processor_->MaybeCancelProcessing();
+  if (on_device_state_->context_processor) {
+    on_device_state_->context_processor->MaybeCancelProcessing();
     base::UmaHistogramCounts10000(
         base::StrCat(
             {"OptimizationGuide.ModelExecution.OnDeviceContextTokensProcessed.",
              GetStringNameForModelExecutionFeature(feature_)}),
-        context_processor_->tokens_processed());
+        on_device_state_->context_processor->tokens_processed());
   }
 
-  start_ = base::TimeTicks::Now();
-  callback_ = std::move(callback);
+  on_device_state_->callback = std::move(callback);
+  on_device_state_->start = base::TimeTicks::Now();
   GetOrCreateSession().Execute(
       on_device_model::mojom::InputOptions::New(
           input->input_string, features::GetOnDeviceModelMaxTokensForExecute(),
           /*token_offset=*/std::nullopt, input->should_ignore_input_context),
-      receiver_.BindNewPipeAndPassRemote());
-  receiver_.set_disconnect_handler(
+      on_device_state_->receiver.BindNewPipeAndPassRemote());
+  on_device_state_->receiver.set_disconnect_handler(
       base::BindOnce(&OnDeviceSession::OnDisconnect, base::Unretained(this)));
 }
 
 // on_device_model::mojom::StreamingResponder:
 void OnDeviceSession::OnResponse(const std::string& response) {
-  if (current_response_.empty()) {
+  if (on_device_state_->current_response.empty()) {
     base::UmaHistogramMediumTimes(
         base::StrCat(
             {"OptimizationGuide.ModelExecution.OnDeviceFirstResponseTime.",
              GetStringNameForModelExecutionFeature(feature_)}),
-        base::TimeTicks::Now() - start_);
+        base::TimeTicks::Now() - on_device_state_->start);
   }
-  current_response_ += response;
+  on_device_state_->current_response += response;
   SendResponse(/*is_complete=*/false);
 }
 
@@ -180,7 +206,7 @@ void OnDeviceSession::OnComplete() {
       base::StrCat(
           {"OptimizationGuide.ModelExecution.OnDeviceResponseCompleteTime.",
            GetStringNameForModelExecutionFeature(feature_)}),
-      base::TimeTicks::Now() - start_);
+      base::TimeTicks::Now() - on_device_state_->start);
   if (controller_) {
     controller_->OnResponseCompleted({}, *this);
   }
@@ -189,32 +215,35 @@ void OnDeviceSession::OnComplete() {
 }
 
 on_device_model::mojom::Session& OnDeviceSession::GetOrCreateSession() {
-  if (!session_) {
-    start_session_fn_.Run(session_.BindNewPipeAndPassReceiver());
-    session_.set_disconnect_handler(
+  CHECK(ShouldUseOnDeviceModel());
+  if (!on_device_state_->session) {
+    on_device_state_->start_session_fn.Run(
+        on_device_state_->session.BindNewPipeAndPassReceiver());
+    on_device_state_->session.set_disconnect_handler(
         base::BindOnce(&OnDeviceSession::OnDisconnect, base::Unretained(this)));
   }
-  return *session_;
+  return *on_device_state_->session;
 }
 
 void OnDeviceSession::OnDisconnect() {
   if (context_) {
     // Persist the current context, so that ExecuteModel() can be called
     // without adding the same context.
-    add_context_before_execute_ = true;
+    on_device_state_->add_context_before_execute = true;
   }
+  on_device_state_->session.reset();
   CancelPendingResponse();
 }
 
 void OnDeviceSession::ResetResponse() {
-  receiver_.reset();
-  callback_.Reset();
-  current_response_ = "";
-  start_ = base::TimeTicks();
+  on_device_state_->receiver.reset();
+  on_device_state_->callback.Reset();
+  on_device_state_->current_response.clear();
+  on_device_state_->start = base::TimeTicks();
 }
 
 void OnDeviceSession::CancelPendingResponse(ModelExecutionError error) {
-  auto callback = std::move(callback_);
+  auto callback = std::move(on_device_state_->callback);
   ResetResponse();
   if (callback) {
     callback.Run(
@@ -226,24 +255,54 @@ void OnDeviceSession::CancelPendingResponse(ModelExecutionError error) {
 }
 
 void OnDeviceSession::SendResponse(bool is_complete) {
-  if (!callback_) {
+  if (!on_device_state_->callback) {
     return;
   }
 
-  auto output =
-      config_interpreter_->ConstructOutputMetadata(feature_, current_response_);
+  auto output = on_device_state_->config_interpreter->ConstructOutputMetadata(
+      feature_, on_device_state_->current_response);
   if (!output) {
+    // TODO(b/313666843): add metrics.
     CancelPendingResponse(ModelExecutionError::kGenericFailure);
     return;
   }
 
   // TODO(b/302327957): Add logging.
-  callback_.Run(
+  on_device_state_->callback.Run(
       StreamingResponse{
           .response = *output,
           .is_complete = is_complete,
       },
       nullptr);
 }
+
+bool OnDeviceSession::ShouldUseOnDeviceModel() const {
+  return controller_ && controller_->ShouldStartNewSession() &&
+         on_device_state_;
+}
+
+void OnDeviceSession::DestroyOnDeviceState() {
+  on_device_state_.reset();
+}
+
+std::unique_ptr<google::protobuf::MessageLite> OnDeviceSession::MergeContext(
+    const google::protobuf::MessageLite& request) {
+  // Create a message of the correct type.
+  auto message = base::WrapUnique(request.New());
+  // First merge in the current context.
+  if (context_) {
+    message->CheckTypeAndMergeFrom(*context_);
+  }
+  // Then merge in the request.
+  message->CheckTypeAndMergeFrom(request);
+  return message;
+}
+
+OnDeviceSession::OnDeviceState::OnDeviceState(
+    StartSessionFn start_session_fn,
+    on_device_model::mojom::StreamingResponder* session)
+    : start_session_fn(std::move(start_session_fn)), receiver(session) {}
+
+OnDeviceSession::OnDeviceState::~OnDeviceState() = default;
 
 }  // namespace optimization_guide

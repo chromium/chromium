@@ -28,10 +28,6 @@ class OnDeviceModelExecutor : public on_device_model::OnDeviceModel {
                                  const ChromeML& chrome_ml);
   ~OnDeviceModelExecutor() override;
 
-  static std::unique_ptr<OnDeviceModelExecutor> Create(
-      const ChromeML& chrome_ml,
-      on_device_model::mojom::LoadModelParamsPtr params);
-
   static base::expected<std::unique_ptr<OnDeviceModelExecutor>,
                         on_device_model::mojom::LoadModelResult>
   CreateWithResult(const ChromeML& chrome_ml,

@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/types/pass_key.h"
+#include "components/optimization_guide/core/model_execution/on_device_session.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -26,7 +27,6 @@ class FilePath;
 namespace optimization_guide {
 class OnDeviceModelAccessController;
 class OnDeviceModelExecutionConfigInterpreter;
-class OnDeviceSession;
 
 // Controls the lifetime of the on-device model service, loading and unloading
 // of the models, and executing them via the service.
@@ -56,8 +56,9 @@ class OnDeviceModelServiceController
   // Starts a session for `feature`. This will start the service and load the
   // model if it is not already loaded. The session will handle updating
   // context, executing input, and sending the response.
-  std::unique_ptr<OptimizationGuideModelExecutor::Session> StartSession(
-      proto::ModelExecutionFeature feature);
+  std::unique_ptr<OptimizationGuideModelExecutor::Session> CreateSession(
+      proto::ModelExecutionFeature feature,
+      ExecuteRemoteFn execute_remote_fn);
 
   // Launches the on-device model-service.
   virtual void LaunchService() = 0;
@@ -73,6 +74,8 @@ class OnDeviceModelServiceController
   // A session completed successfully.
   void OnResponseCompleted(base::PassKey<OnDeviceSession>,
                            OnDeviceSession& session);
+
+  bool ShouldStartNewSession() const;
 
  private:
   friend class base::RefCounted<OnDeviceModelServiceController>;

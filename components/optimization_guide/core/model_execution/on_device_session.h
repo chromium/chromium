@@ -18,7 +18,14 @@ namespace optimization_guide {
 class OnDeviceModelExecutionConfigInterpreter;
 class OnDeviceModelServiceController;
 
-// A session backed by the on device service.
+using ExecuteRemoteFn = base::RepeatingCallback<void(
+    proto::ModelExecutionFeature feature,
+    const google::protobuf::MessageLite&,
+    OptimizationGuideModelExecutionResultStreamingCallback)>;
+
+// Session implementation that uses either the on device model or the server
+// model.
+// TODO: rename to SessionImpl.
 class OnDeviceSession : public OptimizationGuideModelExecutor::Session,
                         public on_device_model::mojom::StreamingResponder {
  public:
@@ -29,7 +36,8 @@ class OnDeviceSession : public OptimizationGuideModelExecutor::Session,
       StartSessionFn start_session_fn,
       proto::ModelExecutionFeature feature,
       const OnDeviceModelExecutionConfigInterpreter* config_interpreter,
-      base::WeakPtr<OnDeviceModelServiceController> controller);
+      base::WeakPtr<OnDeviceModelServiceController> controller,
+      ExecuteRemoteFn execute_remote_fn);
   ~OnDeviceSession() override;
 
   // optimization_guide::OptimizationGuideModelExecutor::Session:
@@ -37,15 +45,36 @@ class OnDeviceSession : public OptimizationGuideModelExecutor::Session,
       const google::protobuf::MessageLite& request_metadata) override;
   void ExecuteModel(
       const google::protobuf::MessageLite& request_metadata,
-      optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
-          callback) override;
+      OptimizationGuideModelExecutionResultStreamingCallback callback) override;
 
   // on_device_model::mojom::StreamingResponder:
   void OnResponse(const std::string& response) override;
   void OnComplete() override;
 
+  // Returns true if the on-device model should be used.
+  bool ShouldUseOnDeviceModel() const;
+
  private:
   class ContextProcessor;
+
+  // Captures all state used for the on device model.
+  struct OnDeviceState {
+    OnDeviceState(StartSessionFn start_session_fn,
+                  on_device_model::mojom::StreamingResponder* session);
+    ~OnDeviceState();
+
+    mojo::Remote<on_device_model::mojom::Session> session;
+    raw_ptr<const OnDeviceModelExecutionConfigInterpreter> config_interpreter;
+    StartSessionFn start_session_fn;
+    std::unique_ptr<ContextProcessor> context_processor;
+    mojo::Receiver<on_device_model::mojom::StreamingResponder> receiver;
+    std::string current_response;
+    OptimizationGuideModelExecutionResultStreamingCallback callback;
+    // If true, the context is added before execution. This is set to true if
+    // a disconnect happens.
+    bool add_context_before_execute = false;
+    base::TimeTicks start;
+  };
 
   // Gets the active session or restarts a session if the session is reset.
   on_device_model::mojom::Session& GetOrCreateSession();
@@ -65,23 +94,22 @@ class OnDeviceSession : public OptimizationGuideModelExecutor::Session,
   // Sends `current_response_` to the client.
   void SendResponse(bool is_complete);
 
+  void DestroyOnDeviceState();
+
+  // Returns a new message created by merging `request` into `context_`. This
+  // is a bit tricky since we don't know the type of MessageLite.
+  std::unique_ptr<google::protobuf::MessageLite> MergeContext(
+      const google::protobuf::MessageLite& request);
+
   base::WeakPtr<OnDeviceModelServiceController> controller_;
-  mojo::Remote<on_device_model::mojom::Session> session_;
   const proto::ModelExecutionFeature feature_;
-  raw_ptr<const OnDeviceModelExecutionConfigInterpreter> config_interpreter_;
-  StartSessionFn start_session_fn_;
-  std::unique_ptr<ContextProcessor> context_processor_;
 
-  // These fields handle the currently active response.
-  optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
-      callback_;
-  mojo::Receiver<on_device_model::mojom::StreamingResponder> receiver_{this};
-  std::string current_response_;
-  base::TimeTicks start_;
+  ExecuteRemoteFn execute_remote_fn_;
 
-  // If true, the context is added before execution. This is set to true if
-  // a disconnect happens.
-  bool add_context_before_execute_ = false;
+  std::unique_ptr<google::protobuf::MessageLite> context_;
+
+  // Has a value when using the on device model.
+  std::optional<OnDeviceState> on_device_state_;
 };
 
 }  // namespace optimization_guide

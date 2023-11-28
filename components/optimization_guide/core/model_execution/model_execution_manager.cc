@@ -5,6 +5,7 @@
 #include "components/optimization_guide/core/model_execution/model_execution_manager.h"
 
 #include "base/command_line.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -68,50 +69,6 @@ GURL GetModelExecutionServiceURL() {
   }
   return GURL(kOptimizationGuideServiceModelExecutionDefaultURL);
 }
-
-// Session which passes through all ExecuteModel() calls to the underlying
-// ModelExecutionManager and saves context passed to AddContext().
-class PassthroughSession : public OptimizationGuideModelExecutor::Session {
- public:
-  PassthroughSession(proto::ModelExecutionFeature feature,
-                     ModelExecutionManager& execution_manager)
-      : feature_(feature), execution_manager_(execution_manager) {}
-
-  // OptimizationGuideModelExecutor::Session:
-  void AddContext(
-      const google::protobuf::MessageLite& request_metadata) override {
-    context_.reset(request_metadata.New());
-    context_->CheckTypeAndMergeFrom(request_metadata);
-  }
-  void ExecuteModel(const google::protobuf::MessageLite& request_metadata,
-                    OptimizationGuideModelExecutionResultStreamingCallback
-                        callback) override {
-    auto request = MergeContext(request_metadata);
-    execution_manager_->ExecuteModel(
-        feature_, *request,
-        base::BindOnce(
-            [](OptimizationGuideModelExecutionResultStreamingCallback callback,
-               OptimizationGuideModelExecutionResult result,
-               std::unique_ptr<ModelQualityLogEntry> log_entry) {
-              if (result.has_value()) {
-                callback.Run(
-                    StreamingResponse{
-                        .response = *result,
-                        .is_complete = true,
-                    },
-                    std::move(log_entry));
-              } else {
-                callback.Run(base::unexpected(result.error()),
-                             std::move(log_entry));
-              }
-            },
-            callback));
-  }
-
- private:
-  proto::ModelExecutionFeature feature_;
-  raw_ref<ModelExecutionManager> execution_manager_;
-};
 
 // Sets request data corresponding the feature's LogAiDataRequest.
 template <typename FeatureType>
@@ -234,6 +191,31 @@ ModelExecutionManager::ModelExecutionManager(
 
 ModelExecutionManager::~ModelExecutionManager() = default;
 
+void ModelExecutionManager::ExecuteModelWithStreaming(
+    proto::ModelExecutionFeature feature,
+    const google::protobuf::MessageLite& request_metadata,
+    OptimizationGuideModelExecutionResultStreamingCallback callback) {
+  ExecuteModel(
+      feature, request_metadata,
+      base::BindOnce(
+          [](OptimizationGuideModelExecutionResultStreamingCallback callback,
+             OptimizationGuideModelExecutionResult result,
+             std::unique_ptr<ModelQualityLogEntry> log_entry) {
+            if (result.has_value()) {
+              callback.Run(
+                  StreamingResponse{
+                      .response = *result,
+                      .is_complete = true,
+                  },
+                  std::move(log_entry));
+            } else {
+              callback.Run(base::unexpected(result.error()),
+                           std::move(log_entry));
+            }
+          },
+          callback));
+}
+
 void ModelExecutionManager::ExecuteModel(
     proto::ModelExecutionFeature feature,
     const google::protobuf::MessageLite& request_metadata,
@@ -299,8 +281,12 @@ void ModelExecutionManager::ExecuteModel(
 
 std::unique_ptr<OptimizationGuideModelExecutor::Session>
 ModelExecutionManager::StartSession(proto::ModelExecutionFeature feature) {
+  ExecuteRemoteFn execute_fn =
+      base::BindRepeating(&ModelExecutionManager::ExecuteModelWithStreaming,
+                          base::Unretained(this));
   if (on_device_model_service_controller_) {
-    auto session = on_device_model_service_controller_->StartSession(feature);
+    auto session =
+        on_device_model_service_controller_->CreateSession(feature, execute_fn);
     if (session) {
       RecordSessionUsedRemoteExecutionHistogram(feature, /*is_remote=*/false);
       return session;
@@ -308,7 +294,8 @@ ModelExecutionManager::StartSession(proto::ModelExecutionFeature feature) {
   }
 
   RecordSessionUsedRemoteExecutionHistogram(feature, /*is_remote=*/true);
-  return std::make_unique<PassthroughSession>(feature, *this);
+  return std::make_unique<OnDeviceSession>(base::DoNothing(), feature, nullptr,
+                                           nullptr, std::move(execute_fn));
 }
 
 void ModelExecutionManager::OnModelExecuteResponse(

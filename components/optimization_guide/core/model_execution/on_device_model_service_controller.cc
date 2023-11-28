@@ -88,8 +88,9 @@ void OnDeviceModelServiceController::Init() {
 }
 
 std::unique_ptr<OptimizationGuideModelExecutor::Session>
-OnDeviceModelServiceController::StartSession(
-    proto::ModelExecutionFeature feature) {
+OnDeviceModelServiceController::CreateSession(
+    proto::ModelExecutionFeature feature,
+    ExecuteRemoteFn execute_remote_fn) {
   ScopedEligibilityReasonLogger logger(feature);
   if (!base::FeatureList::IsEnabled(
           features::kOptimizationGuideOnDeviceModel)) {
@@ -116,7 +117,8 @@ OnDeviceModelServiceController::StartSession(
   return std::make_unique<OnDeviceSession>(
       base::BindRepeating(&OnDeviceModelServiceController::StartMojoSession,
                           weak_ptr_factory_.GetWeakPtr()),
-      feature, config_interpreter_.get(), weak_ptr_factory_.GetWeakPtr());
+      feature, config_interpreter_.get(), weak_ptr_factory_.GetWeakPtr(),
+      std::move(execute_remote_fn));
 }
 
 void OnDeviceModelServiceController::GetEstimatedPerformanceClass(
@@ -196,6 +198,11 @@ void OnDeviceModelServiceController::OnLoadModelResult(
 void OnDeviceModelServiceController::OnDisconnected() {
   model_remote_.reset();
   access_controller_->OnDisconnectedFromRemote();
+}
+
+bool OnDeviceModelServiceController::ShouldStartNewSession() const {
+  return access_controller_->ShouldStartNewSession() ==
+         OnDeviceModelEligibilityReason::kSuccess;
 }
 
 }  // namespace optimization_guide

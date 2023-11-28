@@ -202,19 +202,6 @@ OnDeviceModelExecutor::~OnDeviceModelExecutor() {
 }
 
 // static
-std::unique_ptr<OnDeviceModelExecutor> OnDeviceModelExecutor::Create(
-    const ChromeML& chrome_ml,
-    on_device_model::mojom::LoadModelParamsPtr params) {
-  auto executor = std::make_unique<OnDeviceModelExecutor>(
-      base::PassKey<OnDeviceModelExecutor>(), chrome_ml);
-  auto load_model_result = executor->Init(std::move(params));
-  if (load_model_result != LoadModelResult::kSuccess) {
-    return nullptr;
-  }
-  return executor;
-}
-
-// static
 base::expected<std::unique_ptr<OnDeviceModelExecutor>, LoadModelResult>
 OnDeviceModelExecutor::CreateWithResult(
     const ChromeML& chrome_ml,
