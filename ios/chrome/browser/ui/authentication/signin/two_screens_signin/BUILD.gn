@@ -33,6 +33,7 @@ source_set("unit_tests") {
   deps = [
     ":two_screens_signin",
     "//base/test:test_support",
+    "//components/sync/base:features",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
@@ -42,6 +43,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:test_support",
+    "//ios/chrome/browser/ui/authentication/history_sync:ui",
     "//ios/chrome/browser/ui/authentication/signin:signin_headers",
     "//ios/chrome/browser/ui/authentication/tangible_sync:signin_ui",
     "//ios/chrome/browser/ui/first_run/signin:signin_ui",
