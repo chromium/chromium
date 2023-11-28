@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/functional/function_ref.h"
+#include "base/memory/safety_checks.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "content/common/content_export.h"
@@ -105,6 +106,10 @@ class StoragePartitionConfig;
 // It lives on the UI thread. All these methods must only be called on the UI
 // thread.
 class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
+  // Do not remove this macro!
+  // The macro is maintained by the memory safety team.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   //////////////////////////////////////////////////////////////////////////////
   // The BrowserContext methods below are provided/implemented by the //content
