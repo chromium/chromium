@@ -37,3 +37,41 @@ interface PerformancePageHandler {
 interface PerformancePage {
 
 };
+
+// Factory to create the performance page handler.
+interface BatterySaverCardHandlerFactory {
+  // The WebUI calls this method when the battery saver card is first
+  // initialized.
+  CreateBatterySaverCardHandler(
+      pending_remote<BatterySaverCard> page,
+      pending_receiver<BatterySaverCardHandler> handler);
+};
+
+// Browser-side handler for requests from WebUI battery saver card.
+interface BatterySaverCardHandler {
+
+};
+
+// WebUI-side handler for requests from the browser.
+interface BatterySaverCard {
+
+};
+
+// Factory to create the performance page handler.
+interface MemorySaverCardHandlerFactory {
+  // The WebUI calls this method when the memory saver card is first
+  // initialized.
+  CreateMemorySaverCardHandler(
+      pending_remote<MemorySaverCard> page,
+      pending_receiver<MemorySaverCardHandler> handler);
+};
+
+// Browser-side handler for requests from WebUI memory saver card.
+interface MemorySaverCardHandler {
+
+};
+
+// WebUI-side handler for requests from the browser.
+interface MemorySaverCard {
+
+};

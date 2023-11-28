@@ -9,6 +9,8 @@
 
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/side_panel/performance_controls/battery_saver_card_handler.h"
+#include "chrome/browser/ui/webui/side_panel/performance_controls/memory_saver_card_handler.h"
 #include "chrome/browser/ui/webui/side_panel/performance_controls/performance_page_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
@@ -66,4 +68,20 @@ void PerformanceSidePanelUI::CreatePerformancePageHandler(
     mojo::PendingReceiver<side_panel::mojom::PerformancePageHandler> receiver) {
   performance_page_handler_ = std::make_unique<PerformancePageHandler>(
       std::move(receiver), std::move(page), this);
+}
+
+void PerformanceSidePanelUI::CreateBatterySaverCardHandler(
+    mojo::PendingRemote<side_panel::mojom::BatterySaverCard> battery_saver_card,
+    mojo::PendingReceiver<side_panel::mojom::BatterySaverCardHandler>
+        battery_saver_receiver) {
+  battery_saver_card_handler_ = std::make_unique<BatterySaverCardHandler>(
+      std::move(battery_saver_receiver), std::move(battery_saver_card));
+}
+
+void PerformanceSidePanelUI::CreateMemorySaverCardHandler(
+    mojo::PendingRemote<side_panel::mojom::MemorySaverCard> memory_saver_card,
+    mojo::PendingReceiver<side_panel::mojom::MemorySaverCardHandler>
+        memory_saver_receiver) {
+  memory_saver_card_handler_ = std::make_unique<MemorySaverCardHandler>(
+      std::move(memory_saver_receiver), std::move(memory_saver_card), this);
 }
