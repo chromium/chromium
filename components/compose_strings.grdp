@@ -37,7 +37,7 @@
   </message>
 
   <!-- Input dialog -->
-  <message name="IDS_COMPOSE_TITLE" desc="The title of the input dialog." translateable="false">
+  <message name="IDS_COMPOSE_DIALOG_TITLE" desc="Compose input dialog title." translateable="false">
   Lorem ipsum
   </message>
   <message name="IDS_COMPOSE_INPUT_PLACEHOLDER" desc="A placeholder text used in the input textfield." translateable="false">

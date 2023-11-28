@@ -53,7 +53,7 @@ void ChromeComposeDialogController::ShowComposeDialog(
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
   auto bubble_wrapper = std::make_unique<BubbleContentsWrapperT<ComposeUI>>(
-      GURL(kComposeURL), profile, IDS_COMPOSE_TITLE);
+      GURL(kComposeURL), profile, IDS_COMPOSE_DIALOG_TITLE);
   bubble_wrapper->ReloadWebContents();
 
   // This WebUI needs to know the calling BrowserContents so that the compose

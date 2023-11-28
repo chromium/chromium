@@ -42,7 +42,7 @@ ComposeUI::ComposeUI(content::WebUI* web_ui)
       {"consentNoButton", IDS_COMPOSE_CONSENT_NO_BUTTON},
       {"consentYesButton", IDS_COMPOSE_CONSENT_YES_BUTTON},
       {"consentLearnMore", IDS_COMPOSE_CONSENT_LEARN_LINK},
-      {"dialogTitle", IDS_COMPOSE_TITLE},
+      {"dialogTitle", IDS_COMPOSE_DIALOG_TITLE},
       {"inputPlaceholder", IDS_COMPOSE_INPUT_PLACEHOLDER},
       {"inputFooter", IDS_COMPOSE_FOOTER_FISHFOOD},
       {"submitButton", IDS_COMPOSE_SUBMIT_BUTTON},
