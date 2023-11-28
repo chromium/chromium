@@ -4,6 +4,13 @@
 
 package org.chromium.chrome.browser.readaloud.player.expanded;
 
+import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.BUFFERING;
+import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.ERROR;
+import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.PAUSED;
+import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.PLAYING;
+import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.STOPPED;
+import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.UNKNOWN;
+
 import android.content.Context;
 
 import org.chromium.base.Log;
@@ -11,6 +18,7 @@ import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
+import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -80,6 +88,35 @@ class VoiceMenuSheetContent extends MenuSheetContent {
                 (itemId) -> {
                     handler.onPreviewVoiceClick(mVoices[itemId]);
                 });
+    }
+
+    void updatePreviewButtons(String voiceId, @PlaybackListener.State int state) {
+        Integer maybeId = mVoiceIdToMenuItemId.get(voiceId);
+        assert maybeId != null : "Tried to preview a voice that isn't in the menu";
+
+        MenuItem item = mMenu.getItem(maybeId.intValue());
+        switch (state) {
+            case BUFFERING:
+                item.showPlayButtonSpinner();
+                break;
+
+                // TODO: handle error state
+            case ERROR:
+            case PAUSED:
+            case STOPPED:
+                item.setPlayButtonStopped();
+                item.showPlayButton();
+                break;
+
+            case PLAYING:
+                item.setPlayButtonPlaying();
+                item.showPlayButton();
+                break;
+
+            case UNKNOWN:
+            default:
+                break;
+        }
     }
 
     private void onItemSelected(int itemId) {

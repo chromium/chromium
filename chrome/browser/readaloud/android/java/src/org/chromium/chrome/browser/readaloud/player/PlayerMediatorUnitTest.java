@@ -7,12 +7,20 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+
+import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.BUFFERING;
+import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.ERROR;
+import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.PAUSED;
+import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.PLAYING;
+import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.STOPPED;
 
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
@@ -27,7 +35,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.Promise;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
@@ -60,6 +70,7 @@ public class PlayerMediatorUnitTest {
     @Mock private SeekBar mSeekbar;
     private MockPrefServiceHelper mMockPrefServiceHelper;
     private OnSeekBarChangeListener mOnSeekBarChangeListener;
+    private final PlaybackVoice mPlaybackVoiceA = new PlaybackVoice("en", "a", "");
 
     private ObservableSupplierImpl<List<PlaybackVoice>> mVoicesSupplier;
     private ObservableSupplierImpl<String> mSelectedVoiceIdSupplier;
@@ -110,6 +121,8 @@ public class PlayerMediatorUnitTest {
 
     private TestPlaybackData mPlaybackData;
     @Mock private Player.Delegate mDelegate;
+    private Promise<Playback> mPreviewPromise;
+    @Mock private Playback mPreviewPlayback;
 
     private PlayerMediator mMediator;
 
@@ -134,8 +147,10 @@ public class PlayerMediatorUnitTest {
         doReturn(mVoicesSupplier).when(mDelegate).getCurrentLanguageVoicesSupplier();
         doReturn(mSelectedVoiceIdSupplier).when(mDelegate).getVoiceIdSupplier();
         doReturn(mMockPrefServiceHelper.getPrefService()).when(mDelegate).getPrefService();
+        mPreviewPromise = new Promise<>();
+        doReturn(mPreviewPromise).when(mDelegate).previewVoice(any());
 
-        mModel = new PropertyModel.Builder(PlayerProperties.ALL_KEYS).build();
+        mModel = Mockito.spy(new PropertyModel.Builder(PlayerProperties.ALL_KEYS).build());
         mMediator = new PlayerMediator(mPlayerCoordinator, mDelegate, mModel);
         mOnSeekBarChangeListener = mMediator.getSeekBarChangeListener();
     }
@@ -186,9 +201,8 @@ public class PlayerMediatorUnitTest {
 
     @Test
     public void testSetPlaybackState() {
-        mMediator.setPlaybackState(PlaybackListener.State.PLAYING);
-        assertEquals(
-                PlaybackListener.State.PLAYING, (int) mModel.get(PlayerProperties.PLAYBACK_STATE));
+        mMediator.setPlaybackState(PLAYING);
+        assertEquals(PLAYING, (int) mModel.get(PlayerProperties.PLAYBACK_STATE));
     }
 
     @Test
@@ -208,23 +222,22 @@ public class PlayerMediatorUnitTest {
         mMediator.setPlayback(mPlayback);
         verify(mPlayback).addListener(mPlaybackListenerCaptor.capture());
 
-        mPlaybackData.mState = PlaybackListener.State.PLAYING;
+        mPlaybackData.mState = PLAYING;
         mPlaybackListenerCaptor.getValue().onPlaybackDataChanged(mPlaybackData);
 
-        assertEquals(
-                PlaybackListener.State.PLAYING, (int) mModel.get(PlayerProperties.PLAYBACK_STATE));
+        assertEquals(PLAYING, (int) mModel.get(PlayerProperties.PLAYBACK_STATE));
     }
 
     @Test
     public void testPlayClicked() {
         mMediator.setPlayback(mPlayback);
-        mMediator.setPlaybackState(PlaybackListener.State.PAUSED);
+        mMediator.setPlaybackState(PAUSED);
 
         mMediator.onPlayPauseClick();
         verify(mPlayback).play();
 
         Mockito.reset(mPlayback);
-        mMediator.setPlaybackState(PlaybackListener.State.STOPPED);
+        mMediator.setPlaybackState(STOPPED);
         mMediator.onPlayPauseClick();
         verify(mPlayback).seek(0L);
         verify(mPlayback).play();
@@ -233,7 +246,7 @@ public class PlayerMediatorUnitTest {
     @Test
     public void testPlayClicked_fromStopped() {
         mMediator.setPlayback(mPlayback);
-        mMediator.setPlaybackState(PlaybackListener.State.STOPPED);
+        mMediator.setPlaybackState(STOPPED);
 
         mMediator.onPlayPauseClick();
         verify(mPlayback).play();
@@ -242,7 +255,7 @@ public class PlayerMediatorUnitTest {
     @Test
     public void testPauseClicked() {
         mMediator.setPlayback(mPlayback);
-        mMediator.setPlaybackState(PlaybackListener.State.PLAYING);
+        mMediator.setPlaybackState(PLAYING);
 
         mMediator.onPlayPauseClick();
         verify(mPlayback).pause();
@@ -368,10 +381,88 @@ public class PlayerMediatorUnitTest {
     }
 
     @Test
-    public void testPreviewVoice() {
-        var voice = new PlaybackVoice("en", "a", "");
-        mMediator.onPreviewVoiceClick(voice);
-        verify(mDelegate).previewVoice(eq(voice));
+    public void testPreviewVoice_firstPreview() {
+        triggerVoicePreview();
+        fulfillPreview();
+        updatePreviewPlaybackState(PLAYING);
+    }
+
+    @Test
+    public void testPreviewVoice_pause() {
+        triggerVoicePreview();
+        fulfillPreview();
+        updatePreviewPlaybackState(PLAYING);
+
+        // Pause.
+        updatePreviewPlaybackState(PAUSED);
+    }
+
+    @Test
+    public void testPreviewVoice_stop() {
+        triggerVoicePreview();
+        fulfillPreview();
+        updatePreviewPlaybackState(PLAYING);
+
+        // Playback finishes.
+        updatePreviewPlaybackState(STOPPED);
+        verify(mPreviewPlayback).removeListener(eq(mPlaybackListenerCaptor.getValue()));
+    }
+
+    @Test
+    public void testPreviewVoice_stopThenPlay() {
+        triggerVoicePreview();
+        fulfillPreview();
+        updatePreviewPlaybackState(PLAYING);
+
+        // Playback finishes.
+        updatePreviewPlaybackState(STOPPED);
+        verify(mPreviewPlayback).removeListener(eq(mPlaybackListenerCaptor.getValue()));
+
+        // Playing again should trigger a new request.
+        mMediator.onPreviewVoiceClick(mPlaybackVoiceA);
+        assertEquals("a", mModel.get(PlayerProperties.PREVIEWING_VOICE_ID));
+        assertEquals(BUFFERING, mModel.get(PlayerProperties.VOICE_PREVIEW_PLAYBACK_STATE));
+        verify(mDelegate, times(2)).previewVoice(eq(mPlaybackVoiceA));
+    }
+
+    @Test
+    public void testPreviewVoice_playThenPlayAnother() {
+        triggerVoicePreview();
+        fulfillPreview();
+        updatePreviewPlaybackState(PLAYING);
+
+        // Different voice preview requested.
+        var newVoice = new PlaybackVoice("en", "b", "");
+        mMediator.onPreviewVoiceClick(newVoice);
+        verify(mModel).set(eq(PlayerProperties.VOICE_PREVIEW_PLAYBACK_STATE), eq(STOPPED));
+        assertEquals("b", mModel.get(PlayerProperties.PREVIEWING_VOICE_ID));
+        assertEquals(BUFFERING, mModel.get(PlayerProperties.VOICE_PREVIEW_PLAYBACK_STATE));
+        verify(mDelegate).previewVoice(eq(newVoice));
+    }
+
+    @Test
+    public void testPreviewVoice_errorBeforePlayback() {
+        triggerVoicePreview();
+
+        // Preview fails to load.
+        failPreview();
+        assertEquals(ERROR, mModel.get(PlayerProperties.VOICE_PREVIEW_PLAYBACK_STATE));
+    }
+
+    @Test
+    public void testPreviewVoice_errorDuringPlayback() {
+        triggerVoicePreview();
+        fulfillPreview();
+        updatePreviewPlaybackState(PLAYING);
+
+        // Playback stops with an error.
+        var data = new TestPlaybackData();
+        data.mState = ERROR;
+        mPlaybackListenerCaptor.getValue().onPlaybackDataChanged(data);
+        verify(mModel).set(eq(PlayerProperties.VOICE_PREVIEW_PLAYBACK_STATE), eq(ERROR));
+        // UI is reset.
+        assertEquals(STOPPED, mModel.get(PlayerProperties.VOICE_PREVIEW_PLAYBACK_STATE));
+        verify(mPreviewPlayback).removeListener(eq(mPlaybackListenerCaptor.getValue()));
     }
 
     @Test
@@ -386,8 +477,57 @@ public class PlayerMediatorUnitTest {
         verify(mPlayerCoordinator).restoreMiniPlayer();
     }
 
+    @Test
+    public void testVoiceMenuClosedDuringPreviewLoading() {
+        triggerVoicePreview();
+
+        // Closing the voice menu should cause the preview play button to reset.
+        mMediator.onVoiceMenuClosed();
+        verify(mPlayerCoordinator).voiceMenuClosed();
+        assertEquals(STOPPED, mModel.get(PlayerProperties.VOICE_PREVIEW_PLAYBACK_STATE));
+    }
+
+    @Test
+    public void testVoiceMenuClosedDuringPreviewPlaying() {
+        triggerVoicePreview();
+        fulfillPreview();
+
+        // Closing the voice menu should cause the preview play button to reset and the listener to
+        // be removed.
+        mMediator.onVoiceMenuClosed();
+        verify(mPlayerCoordinator).voiceMenuClosed();
+        assertEquals(STOPPED, mModel.get(PlayerProperties.VOICE_PREVIEW_PLAYBACK_STATE));
+        verify(mPreviewPlayback).removeListener(eq(mPlaybackListenerCaptor.getValue()));
+    }
+
     private void resetPlayback() {
         reset(mPlayback);
         doReturn(mPlaybackMetadata).when(mPlayback).getMetadata();
+    }
+
+    // Voice preview helpers
+    private void triggerVoicePreview() {
+        mMediator.onPreviewVoiceClick(mPlaybackVoiceA);
+        assertEquals("a", mModel.get(PlayerProperties.PREVIEWING_VOICE_ID));
+        assertEquals(BUFFERING, mModel.get(PlayerProperties.VOICE_PREVIEW_PLAYBACK_STATE));
+        verify(mDelegate).previewVoice(eq(mPlaybackVoiceA));
+    }
+
+    private void fulfillPreview() {
+        mPreviewPromise.fulfill(mPreviewPlayback);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        verify(mPreviewPlayback).addListener(mPlaybackListenerCaptor.capture());
+    }
+
+    private void updatePreviewPlaybackState(@PlaybackListener.State int state) {
+        TestPlaybackData data = new TestPlaybackData();
+        data.mState = state;
+        mPlaybackListenerCaptor.getValue().onPlaybackDataChanged(data);
+        assertEquals(state, mModel.get(PlayerProperties.VOICE_PREVIEW_PLAYBACK_STATE));
+    }
+
+    private void failPreview() {
+        mPreviewPromise.reject(new Exception());
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
     }
 }

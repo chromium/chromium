@@ -588,7 +588,7 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
     }
 
     @Override
-    public void previewVoice(PlaybackVoice voice) {
+    public Promise<Playback> previewVoice(PlaybackVoice voice) {
         // Only one playback possible at a time, so current playback must be stopped and
         // cleaned up. May be null if the most recent playback was a voice preview.
         if (mCurrentlyPlayingTab != null) {
@@ -617,20 +617,18 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
                         /* dateModifiedMsSinceEpoch= */ 0);
         Log.d(TAG, "Voice preview args: %s", args);
 
-        createPlayback(args)
-                .then(
-                        playback -> {
-                            Log.d(TAG, "Voice preview playback created.");
-                            mVoicePreviewPlayback = playback;
-                            playback.addListener(mVoicePreviewPlaybackListener);
-                            mVoicePreviewPlayback.play();
-                        },
-                        exception -> {
-                            Log.e(
-                                    TAG,
-                                    "Failed to create voice preview: %s",
-                                    exception.getMessage());
-                        });
+        Promise<Playback> promise = createPlayback(args);
+        promise.then(
+                playback -> {
+                    Log.d(TAG, "Voice preview playback created.");
+                    mVoicePreviewPlayback = playback;
+                    playback.addListener(mVoicePreviewPlaybackListener);
+                    mVoicePreviewPlayback.play();
+                },
+                exception -> {
+                    Log.e(TAG, "Failed to create voice preview: %s", exception.getMessage());
+                });
+        return promise;
     }
 
     private void destroyVoicePreview() {

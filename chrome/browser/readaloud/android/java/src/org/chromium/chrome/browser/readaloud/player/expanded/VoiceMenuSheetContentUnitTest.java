@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -34,6 +35,7 @@ import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
+import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -133,6 +135,40 @@ public class VoiceMenuSheetContentUnitTest {
         assertEquals("en", voice.getLanguage());
         assertEquals("b", voice.getVoiceId());
         assertEquals("description b", voice.getDescription());
+    }
+
+    @Test
+    public void testMenuItemInitialState() {
+        assertEquals(View.GONE, mMenu.getItem(0).findViewById(R.id.spinner).getVisibility());
+        assertEquals(View.VISIBLE, mMenu.getItem(0).findViewById(R.id.play_button).getVisibility());
+    }
+
+    @Test
+    public void testShowPreviewSpinner() {
+        mContent.updatePreviewButtons("a", PlaybackListener.State.BUFFERING);
+        assertEquals(View.VISIBLE, mMenu.getItem(0).findViewById(R.id.spinner).getVisibility());
+        assertEquals(View.GONE, mMenu.getItem(0).findViewById(R.id.play_button).getVisibility());
+    }
+
+    @Test
+    public void testPlayPreview() {
+        mContent.updatePreviewButtons("a", PlaybackListener.State.PLAYING);
+        assertEquals(View.GONE, mMenu.getItem(0).findViewById(R.id.spinner).getVisibility());
+        assertEquals(View.VISIBLE, mMenu.getItem(0).findViewById(R.id.play_button).getVisibility());
+    }
+
+    @Test
+    public void testStopPreview() {
+        mContent.updatePreviewButtons("a", PlaybackListener.State.STOPPED);
+        assertEquals(View.GONE, mMenu.getItem(0).findViewById(R.id.spinner).getVisibility());
+        assertEquals(View.VISIBLE, mMenu.getItem(0).findViewById(R.id.play_button).getVisibility());
+    }
+
+    @Test
+    public void testClickPreviewButton() {
+        mMenu.getItem(0).findViewById(R.id.play_button).performClick();
+        verify(mInteractionHandler)
+                .onPreviewVoiceClick(eq(mModel.get(PlayerProperties.VOICES_LIST).get(0)));
     }
 
     private static CharSequence getText(View ancestor, int viewId) {

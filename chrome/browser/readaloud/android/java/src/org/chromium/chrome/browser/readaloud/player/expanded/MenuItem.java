@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
@@ -49,6 +50,8 @@ public class MenuItem extends FrameLayout {
     private final @Action int mActionType;
     private final Menu mMenu;
     private final LinearLayout mLayout;
+    private final ImageView mPlayButton;
+    private final ProgressBar mPlayButtonSpinner;
     private Callback<Boolean> mToggleHandler;
 
     /**
@@ -124,6 +127,9 @@ public class MenuItem extends FrameLayout {
                 break;
         }
         addView(layout);
+
+        mPlayButton = (ImageView) findViewById(R.id.play_button);
+        mPlayButtonSpinner = (ProgressBar) findViewById(R.id.spinner);
     }
 
     void setToggleHandler(Callback<Boolean> handler) {
@@ -131,9 +137,8 @@ public class MenuItem extends FrameLayout {
     }
 
     void addPlayButton() {
-        ImageView playButton = (ImageView) findViewById(R.id.play_button);
-        playButton.setVisibility(View.VISIBLE);
-        playButton.setOnClickListener(
+        mPlayButton.setVisibility(View.VISIBLE);
+        mPlayButton.setOnClickListener(
                 (view) -> {
                     mMenu.onPlayButtonClicked(mId);
                 });
@@ -150,6 +155,24 @@ public class MenuItem extends FrameLayout {
         } else if (mActionType == Action.RADIO) {
             getRadioButton().setChecked(value);
         }
+    }
+
+    void showPlayButtonSpinner() {
+        mPlayButton.setVisibility(View.GONE);
+        mPlayButtonSpinner.setVisibility(View.VISIBLE);
+    }
+
+    void showPlayButton() {
+        mPlayButtonSpinner.setVisibility(View.GONE);
+        mPlayButton.setVisibility(View.VISIBLE);
+    }
+
+    void setPlayButtonStopped() {
+        mPlayButton.setImageResource(R.drawable.mini_play_button);
+    }
+
+    void setPlayButtonPlaying() {
+        mPlayButton.setImageResource(R.drawable.mini_pause_button);
     }
 
     private void setEndView(LinearLayout layout, View view) {

@@ -198,4 +198,12 @@ public class ExpandedPlayerCoordinatorUnitTest {
 
         verify(mVoiceMenu).setVoiceSelection(eq("asdf"));
     }
+
+    @Test
+    public void testBindVoicePreviewState() {
+        doReturn(mVoiceMenu).when(mSheetContent).getVoiceMenu();
+        mModel.set(PlayerProperties.PREVIEWING_VOICE_ID, "asdf");
+        mModel.set(PlayerProperties.VOICE_PREVIEW_PLAYBACK_STATE, PlaybackListener.State.PLAYING);
+        verify(mVoiceMenu).updatePreviewButtons(eq("asdf"), eq(PlaybackListener.State.PLAYING));
+    }
 }

@@ -56,6 +56,13 @@ public class ExpandedPlayerViewBinder {
                 content.getVoiceMenu()
                         .setVoiceSelection(model.get(PlayerProperties.SELECTED_VOICE_ID));
             }
+        } else if (key == PlayerProperties.VOICE_PREVIEW_PLAYBACK_STATE) {
+            if (content.getVoiceMenu() != null) {
+                content.getVoiceMenu()
+                        .updatePreviewButtons(
+                                model.get(PlayerProperties.PREVIEWING_VOICE_ID),
+                                model.get(PlayerProperties.VOICE_PREVIEW_PLAYBACK_STATE));
+            }
         }
     }
 }

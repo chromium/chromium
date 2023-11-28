@@ -6,6 +6,7 @@ package org.chromium.chrome.modules.readaloud;
 
 import android.app.Activity;
 
+import org.chromium.base.Promise;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
@@ -45,8 +46,13 @@ public interface Player {
          */
         void setVoiceOverrideAndApplyToPlayback(PlaybackVoice voice);
 
-        /** Play a short example of the specified voice. */
-        void previewVoice(PlaybackVoice voice);
+        /**
+         * Play a short example of the specified voice.
+         *
+         * @param voice Voice to preview.
+         * @return Promise that resolves to the preview's playback.
+         */
+        Promise<Playback> previewVoice(PlaybackVoice voice);
 
         /** Navigate to the tab associated with the current playback */
         void navigateToPlayingTab();

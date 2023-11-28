@@ -36,6 +36,10 @@ public class PlayerProperties {
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<String> SELECTED_VOICE_ID =
             new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<String> PREVIEWING_VOICE_ID =
+            new WritableObjectPropertyKey<>();
+    public static final WritableIntPropertyKey VOICE_PREVIEW_PLAYBACK_STATE =
+            new WritableIntPropertyKey();
     public static final PropertyKey[] ALL_KEYS = {
         EXPANDED_PLAYER_VISIBILITY,
         TITLE,
@@ -50,5 +54,7 @@ public class PlayerProperties {
         HIGHLIGHTING_ENABLED,
         VOICES_LIST,
         SELECTED_VOICE_ID,
+        PREVIEWING_VOICE_ID,
+        VOICE_PREVIEW_PLAYBACK_STATE,
     };
 }
