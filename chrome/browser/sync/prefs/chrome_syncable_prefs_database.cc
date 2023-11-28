@@ -27,6 +27,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chromeos/ash/components/tether/pref_names.h"
+#include "components/drive/drive_pref_names.h"  // nogncheck crbug.com/1125897
 #include "components/metrics/demographics/user_demographics.h"
 #include "components/variations/service/google_groups_updater_service.h"
 #include "ui/events/ash/pref_names.h"
@@ -1046,14 +1047,11 @@ const auto& SyncablePreferences() {
        {syncable_prefs_ids::kUserImageInfo, syncer::OS_PRIORITY_PREFERENCES,
         sync_preferences::PrefSensitivity::kNone,
         sync_preferences::MergeBehavior::kNone}},
-      // CI complains about /components/drive:drive not being part of deps
-      // even though it is. Putting these as literals.
-      // TODO(crbug.com/1401271): Investigate this failure.
-      {"gdata.disabled",
+      {drive::prefs::kDisableDrive,
        {syncable_prefs_ids::kGdataDisabled, syncer::OS_PREFERENCES,
         sync_preferences::PrefSensitivity::kNone,
         sync_preferences::MergeBehavior::kNone}},
-      {"gdata.cellular.disabled",
+      {drive::prefs::kDisableDriveOverCellular,
        {syncable_prefs_ids::kGdataCellularDisabled, syncer::OS_PREFERENCES,
         sync_preferences::PrefSensitivity::kNone,
         sync_preferences::MergeBehavior::kNone}},
