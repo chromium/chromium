@@ -136,6 +136,92 @@ scoped_refptr<VP9Picture> GetVP9Picture(
   return base::WrapRefCounted(
       reinterpret_cast<VP9Picture*>(job.picture().get()));
 }
+
+// Checks if all the bitrate values in the active layers range are not zero and
+// all the ones in non active layers range are zero.
+bool ValidateBitrates(const VideoBitrateAllocation& bitrate_allocation,
+                      size_t begin_active_spatial_layer,
+                      size_t end_active_spatial_layer,
+                      size_t num_temporal_layers) {
+  for (size_t sid = 0; sid < VideoBitrateAllocation::kMaxSpatialLayers; ++sid) {
+    for (size_t tid = 0; tid < VideoBitrateAllocation::kMaxTemporalLayers;
+         ++tid) {
+      const bool is_active = bitrate_allocation.GetBitrateBps(sid, tid) > 0;
+      const bool expected_active = begin_active_spatial_layer <= sid &&
+                                   sid < end_active_spatial_layer &&
+                                   tid < num_temporal_layers;
+      if (is_active != expected_active) {
+        DVLOG(1) << "Invalid bitrate, sid=" << sid << ", tid=" << tid
+                 << " : bitrate_allocation=" << bitrate_allocation.ToString();
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+// Fills the spatial layers range and the number of temporal layers whose
+// bitrate is not zero.
+// |begin_active_spatial_layer| - the lowest active spatial layer index.
+// |end_active_spatial_layer| - the last active spatial layer index + 1.
+// |num_temporal_layers| - the number of temporal layers.
+//
+// The active spatial layer doesn't have to start with the bottom one, but the
+// active temporal layer must start with the bottom one. In other words, if
+// the spatial layer, spatial_index, is active, then
+// GetBitrateBps(spatial_index, 0) must not be zero.
+// Returns false VideoBitrateAllocation is invalid.
+bool GetActiveLayers(const VideoBitrateAllocation& bitrate_allocation,
+                     size_t& begin_active_spatial_layer,
+                     size_t& end_active_spatial_layer,
+                     size_t& num_temporal_layers) {
+  if (bitrate_allocation.GetSumBps() == 0) {
+    DVLOG(1) << "No active bitrate: bitrate_allocation="
+             << bitrate_allocation.ToString();
+    return false;
+  }
+
+  begin_active_spatial_layer = 0;
+  end_active_spatial_layer = 0;
+  num_temporal_layers = 0;
+
+  for (size_t sid = 0; sid < VideoBitrateAllocation::kMaxSpatialLayers; ++sid) {
+    if (bitrate_allocation.GetBitrateBps(sid, 0) != 0) {
+      begin_active_spatial_layer = sid;
+      break;
+    }
+  }
+  for (int sid = VideoBitrateAllocation::kMaxSpatialLayers - 1;
+       sid >= base::checked_cast<int>(begin_active_spatial_layer); --sid) {
+    if (bitrate_allocation.GetBitrateBps(sid, 0) != 0) {
+      end_active_spatial_layer = sid + 1;
+      break;
+    }
+  }
+
+  if (end_active_spatial_layer == 0) {
+    DVLOG(1) << "Invalid bitrate: bitrate_allocation="
+             << bitrate_allocation.ToString();
+    return false;
+  }
+
+  // This assumes the number of temporal layers are the same in all the spatial
+  // layers. This will not be satisfied if we support a mix of hw/sw encoders.
+  // See the discussion:
+  // https://chromium-review.googlesource.com/c/chromium/src/+/5040171/2/media/base/video_bitrate_allocation.cc#200
+  for (int tid = VideoBitrateAllocation::kMaxTemporalLayers - 1; tid >= 0;
+       --tid) {
+    if (bitrate_allocation.GetBitrateBps(begin_active_spatial_layer, tid) !=
+        0) {
+      num_temporal_layers = tid + 1;
+      break;
+    }
+  }
+
+  return ValidateBitrates(bitrate_allocation, begin_active_spatial_layer,
+                          end_active_spatial_layer, num_temporal_layers);
+}
 }  // namespace
 
 std::unique_ptr<VP9RateControlWrapper> VP9RateControlWrapper::Create(
