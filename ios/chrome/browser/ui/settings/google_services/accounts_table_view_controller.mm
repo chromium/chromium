@@ -670,9 +670,12 @@ constexpr CGFloat kErrorSymbolSize = 22.;
 
 - (void)showAccountDetails:(id<SystemIdentity>)identity
                   itemView:(UIView*)itemView {
-  // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
-  // low.
-  DUMP_WILL_BE_CHECK(!self.removeOrMyGoogleChooserAlertCoordinator);
+  if (self.removeOrMyGoogleChooserAlertCoordinator) {
+    // It is possible for the user to tap twice on the cell. If the action
+    // sheet coordinator already exists, we need to ignore the second tap.
+    // Related to crbug.com/1497100.
+    return;
+  }
   self.removeOrMyGoogleChooserAlertCoordinator = [[ActionSheetCoordinator alloc]
       initWithBaseViewController:self
                          browser:_browser
