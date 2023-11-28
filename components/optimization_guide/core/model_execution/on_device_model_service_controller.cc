@@ -45,6 +45,18 @@ class ScopedEligibilityReasonLogger {
       OnDeviceModelEligibilityReason::kUnknown;
 };
 
+OnDeviceModelLoadResult ConvertToOnDeviceModelLoadResult(
+    on_device_model::mojom::LoadModelResult result) {
+  switch (result) {
+    case on_device_model::mojom::LoadModelResult::kSuccess:
+      return OnDeviceModelLoadResult::kSuccess;
+    case on_device_model::mojom::LoadModelResult::kGpuBlocked:
+      return OnDeviceModelLoadResult::kGpuBlocked;
+    case on_device_model::mojom::LoadModelResult::kFailedToLoadLibrary:
+      return OnDeviceModelLoadResult::kFailedToLoadLibrary;
+  }
+}
+
 }  // namespace
 
 OnDeviceModelServiceController::OnDeviceModelServiceController(
@@ -163,6 +175,9 @@ void OnDeviceModelServiceController::OnResponseCompleted(
 
 void OnDeviceModelServiceController::OnLoadModelResult(
     on_device_model::mojom::LoadModelResult result) {
+  base::UmaHistogramEnumeration(
+      "OptimizationGuide.ModelExecution.OnDeviceModelLoadResult",
+      ConvertToOnDeviceModelLoadResult(result));
   switch (result) {
     case on_device_model::mojom::LoadModelResult::kGpuBlocked:
       access_controller_->OnGpuBlocked();

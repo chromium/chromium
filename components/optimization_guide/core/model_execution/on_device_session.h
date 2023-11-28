@@ -77,6 +77,7 @@ class OnDeviceSession : public OptimizationGuideModelExecutor::Session,
       callback_;
   mojo::Receiver<on_device_model::mojom::StreamingResponder> receiver_{this};
   std::string current_response_;
+  base::TimeTicks start_;
 
   // If true, the context is added before execution. This is set to true if
   // a disconnect happens.

@@ -63,10 +63,10 @@ on_device_model::mojom::PerformanceClass GetEstimatedPerformanceClass(
                     is_integrated_gpu ? "Integrated" : "Discrete"}),
       system_ram);
 
-  base::UmaHistogramCounts10000("OnDeviceModel.EstimatedTokensPerSecond.Input",
-                                input_speed);
-  base::UmaHistogramCounts1000("OnDeviceModel.EstimatedTokensPerSecond.Output",
-                               output_speed);
+  base::UmaHistogramCounts10000(
+      "OnDeviceModel.BenchmarkEstimatedTokensPerSecond.Input", input_speed);
+  base::UmaHistogramCounts1000(
+      "OnDeviceModel.BenchmarkEstimatedTokensPerSecond.Output", output_speed);
 
   // Devices with low RAM are considered very low perf.
   if (is_integrated_gpu && system_ram < kLowIntegratedRAMThreshold.Get()) {

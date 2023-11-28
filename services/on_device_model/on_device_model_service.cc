@@ -4,6 +4,8 @@
 
 #include "services/on_device_model/on_device_model_service.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "base/timer/elapsed_timer.h"
 #include "services/on_device_model/public/cpp/on_device_model.h"
 
 namespace on_device_model {
@@ -72,12 +74,15 @@ void OnDeviceModelService::LoadModel(
     mojom::LoadModelParamsPtr params,
     mojo::PendingReceiver<mojom::OnDeviceModel> model,
     LoadModelCallback callback) {
+  base::ElapsedTimer timer;
   auto model_impl = CreateModel(std::move(params));
   if (!model_impl.has_value()) {
     std::move(callback).Run(model_impl.error());
     return;
   }
 
+  base::UmaHistogramMediumTimes("OnDeviceModel.LoadModelDuration",
+                                timer.Elapsed());
   mojo::PendingRemote<mojom::OnDeviceModel> remote;
   model_receivers_.Add(
       std::make_unique<ModelWrapper>(std::move(model_impl.value())),
@@ -87,7 +92,9 @@ void OnDeviceModelService::LoadModel(
 
 void OnDeviceModelService::GetEstimatedPerformanceClass(
     GetEstimatedPerformanceClassCallback callback) {
+  base::ElapsedTimer timer;
   std::move(callback).Run(GetEstimatedPerformanceClass());
+  base::UmaHistogramTimes("OnDeviceModel.BenchmarkDuration", timer.Elapsed());
 }
 
 }  // namespace on_device_model

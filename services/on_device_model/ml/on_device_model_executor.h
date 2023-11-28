@@ -55,10 +55,6 @@ class OnDeviceModelExecutor : public on_device_model::OnDeviceModel {
   base::MemoryMappedFile weights_;
 
   ChromeMLModel model_ = 0;
-  // TODO(cduvall): |responder_| should be owned by the session, but we need
-  // to change the underlying API to take a output fn per input instead of
-  // at initialization.
-  mojo::Remote<on_device_model::mojom::StreamingResponder> responder_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 

@@ -4,9 +4,11 @@
 
 #include "components/optimization_guide/core/model_execution/on_device_session.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_config_interpreter.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
 
 namespace optimization_guide {
 
@@ -33,6 +35,8 @@ class OnDeviceSession::ContextProcessor
 
   // on_device_model::mojom::ContextClient:
   void OnComplete(uint32_t tokens_processed) override {
+    tokens_processed_ += tokens_processed;
+
     // This means input has been fully processed.
     if (tokens_processed < expected_tokens_) {
       return;
@@ -41,7 +45,6 @@ class OnDeviceSession::ContextProcessor
     // Once the initial context is complete, we can cancel future context
     // processing.
     can_cancel_ = true;
-    tokens_processed_ += tokens_processed;
     if (tokens_processed_ <
         static_cast<uint32_t>(
             features::GetOnDeviceModelMaxTokensForContext())) {
@@ -54,6 +57,8 @@ class OnDeviceSession::ContextProcessor
       client_.reset();
     }
   }
+
+  uint32_t tokens_processed() const { return tokens_processed_; }
 
  private:
   void AddContext(uint32_t num_tokens) {
@@ -139,8 +144,14 @@ void OnDeviceSession::ExecuteModel(
   // Cancel any optional context still processing.
   if (context_processor_) {
     context_processor_->MaybeCancelProcessing();
+    base::UmaHistogramCounts10000(
+        base::StrCat(
+            {"OptimizationGuide.ModelExecution.OnDeviceContextTokensProcessed.",
+             GetStringNameForModelExecutionFeature(feature_)}),
+        context_processor_->tokens_processed());
   }
 
+  start_ = base::TimeTicks::Now();
   callback_ = std::move(callback);
   GetOrCreateSession().Execute(
       on_device_model::mojom::InputOptions::New(
@@ -154,11 +165,23 @@ void OnDeviceSession::ExecuteModel(
 
 // on_device_model::mojom::StreamingResponder:
 void OnDeviceSession::OnResponse(const std::string& response) {
+  if (current_response_.empty()) {
+    base::UmaHistogramMediumTimes(
+        base::StrCat(
+            {"OptimizationGuide.ModelExecution.OnDeviceFirstResponseTime.",
+             GetStringNameForModelExecutionFeature(feature_)}),
+        base::TimeTicks::Now() - start_);
+  }
   current_response_ += response;
   SendResponse(/*is_complete=*/false);
 }
 
 void OnDeviceSession::OnComplete() {
+  base::UmaHistogramMediumTimes(
+      base::StrCat(
+          {"OptimizationGuide.ModelExecution.OnDeviceResponseCompleteTime.",
+           GetStringNameForModelExecutionFeature(feature_)}),
+      base::TimeTicks::Now() - start_);
   if (controller_) {
     controller_->OnResponseCompleted({}, *this);
   }
@@ -188,6 +211,7 @@ void OnDeviceSession::ResetResponse() {
   receiver_.reset();
   callback_.Reset();
   current_response_ = "";
+  start_ = base::TimeTicks();
 }
 
 void OnDeviceSession::CancelPendingResponse(ModelExecutionError error) {

@@ -289,6 +289,29 @@ enum class OnDeviceModelPerformanceClass {
   kMaxValue = kServiceCrash,
 };
 
+// The result of loading an on-device model.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class OnDeviceModelLoadResult {
+  kUnknown = 0,
+
+  // Model loaded successfully.
+  kSuccess = 1,
+
+  // GPU was blocklisted.
+  kGpuBlocked = 2,
+
+  // Native library failed to load.
+  kFailedToLoadLibrary = 3,
+
+  // This must be kept in sync with
+  // OnDeviceModelLoadResult in optimization/enums.xml.
+
+  // Insert new values before this line.
+  kMaxValue = kFailedToLoadLibrary,
+};
+
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_ENUMS_H_
