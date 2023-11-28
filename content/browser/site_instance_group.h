@@ -156,6 +156,11 @@ class CONTENT_EXPORT SiteInstanceGroup
 
   const StoragePartitionConfig& GetStoragePartitionConfig() const;
 
+  const base::flat_set<raw_ptr<SiteInstanceImpl>>& site_instances_for_testing()
+      const {
+    return site_instances_;
+  }
+
   // Creates a new SiteInstanceGroup in a new BrowsingInstance for testing.
   static SiteInstanceGroup* CreateForTesting(BrowserContext* browser_context,
                                              RenderProcessHost* process);

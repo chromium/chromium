@@ -276,8 +276,10 @@ std::string FrameTreeVisualizer::DepictFrameTree(FrameTreeNode* root) {
       legend[GetName(spec->GetSiteInstance())] = spec->GetSiteInstance();
   }
 
-  // Traversal 3: Assign names to the proxies and add them to |legend| too.
-  // Typically, only openers should have their names assigned this way.
+  // Traversal 3: Assign names to the SiteInstances within each group's proxies
+  // (which are associated with SiteInstanceGroups instead of SiteInstances) and
+  // add them to |legend| too. Typically, only openers should have their names
+  // assigned this way.
   for (to_explore.push(root); !to_explore.empty();) {
     FrameTreeNode* node = to_explore.top();
     to_explore.pop();
@@ -289,7 +291,16 @@ std::string FrameTreeVisualizer::DepictFrameTree(FrameTreeNode* root) {
     std::vector<SiteInstance*> site_instances;
     for (const auto& proxy_pair :
          node->render_manager()->GetAllProxyHostsForTesting()) {
-      site_instances.push_back(proxy_pair.second->GetSiteInstanceDeprecated());
+      SiteInstanceGroup* group = proxy_pair.second->site_instance_group();
+
+      // Currently, each SiteInstanceGroup only has one SiteInstance in it.
+      // TODO(crbug.com/1195535, yangsharon): Remove when multiple SiteInstances
+      // per group is supported.
+      CHECK_EQ(group->site_instances_for_testing().size(), 1u);
+      for (raw_ptr<SiteInstanceImpl> instance :
+           group->site_instances_for_testing()) {
+        site_instances.push_back(instance);
+      }
     }
     std::sort(site_instances.begin(), site_instances.end(),
               [](SiteInstance* lhs, SiteInstance* rhs) {
@@ -380,8 +391,16 @@ std::string FrameTreeVisualizer::DepictFrameTree(FrameTreeNode* root) {
       // Sort these alphabetically, to avoid hash_map ordering dependency.
       std::vector<std::string> sorted_proxy_hosts;
       for (const auto& proxy_pair : proxy_host_map) {
-        sorted_proxy_hosts.push_back(
-            GetName(proxy_pair.second->GetSiteInstanceDeprecated()));
+        // Get the first SiteInstance from each group, since there's only one
+        // SiteInstance per group.
+        // TODO(crbug.com/1447896, yangsharon): Add support for multiple
+        // SiteInstances per group.
+        auto site_instances_for_testing =
+            proxy_pair.second->site_instance_group()
+                ->site_instances_for_testing();
+        CHECK_EQ(site_instances_for_testing.size(), 1u);
+        SiteInstance* site_instance = *(site_instances_for_testing.begin());
+        sorted_proxy_hosts.push_back(GetName(site_instance));
       }
       std::sort(sorted_proxy_hosts.begin(), sorted_proxy_hosts.end());
       for (std::string& proxy_name : sorted_proxy_hosts) {
