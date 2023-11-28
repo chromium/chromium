@@ -1503,12 +1503,20 @@ void FormStructure::EncodeFormFieldsForUpload(
     }
 
     // Don't upload checkable fields.
-    if (IsCheckable(field->check_status))
+    if (IsCheckable(field->check_status)) {
       continue;
+    }
 
     // Add the same field elements as the query and a few more below.
-    if (ShouldSkipField(*field))
+    if (ShouldSkipField(*field)) {
       continue;
+    }
+
+    // Do not upload fields that were filled with a fallback type, as this would
+    // introduce unnecessary noise in the field votes.
+    if (field->WasAutofilledWithFallback()) {
+      continue;
+    }
 
     auto* added_field = upload->add_field();
 

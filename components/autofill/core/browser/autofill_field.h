@@ -346,6 +346,8 @@ class AutofillField : public FormFieldData {
     return autofilled_type_;
   }
 
+  bool WasAutofilledWithFallback() const;
+
  private:
   explicit AutofillField(FieldSignature field_signature);
 
@@ -488,13 +490,14 @@ class AutofillField : public FormFieldData {
   // filling. nullopt means the field wasn't autofilled.
   // Note: `is_autofilled` is true for autocompleted fields. So `is_autofilled`
   // is not a sufficient condition for `autofill_source_profile_guid_` to have a
-  // value.
+  // value. This is not tracked for fields filled with field by field filling.
   std::optional<std::string> autofill_source_profile_guid_;
 
   // Denotes the type that was used to fill the field in its last autofill
   // operation. This is different from `overall_type_` because in some cases
   // Autofill might fallback to filling a classified field with a different type
   // than the classified one, based on country-specific rules.
+  // This is not tracked for fields filled with field by field filling.
   std::optional<ServerFieldType> autofilled_type_;
 };
 

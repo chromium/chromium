@@ -572,4 +572,9 @@ void AutofillField::AppendLogEventIfNotRepeated(
   }
 }
 
+bool AutofillField::WasAutofilledWithFallback() const {
+  return autofilled_type_ &&
+         autofilled_type_ != overall_type_.GetStorableType();
+}
+
 }  // namespace autofill

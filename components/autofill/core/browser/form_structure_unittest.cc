@@ -6920,4 +6920,31 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_SetsInitialValueChanged) {
   EXPECT_FALSE(upload.field(3).has_initial_value_changed());
 }
 
+// Tests that Autofill does not send votes for a field that was filled with
+// fallback.
+TEST_F(FormStructureTestImpl,
+       EncodeUploadRequest_SkipFieldsFilledWithFallback) {
+  FormData form = test::GetFormData({.fields = {{.role = NAME_FIRST}}});
+  FormStructure form_structure(form);
+
+  std::vector<AutofillUploadContents> uploads =
+      form_structure.EncodeUploadRequest(
+          /*available_field_types=*/{}, /*form_was_autofilled=*/false,
+          /*login_form_signature=*/"", /*observed_submission=*/true);
+  ASSERT_GE(uploads.size(), 1u);
+  AutofillUploadContents upload = uploads[0];
+  EXPECT_EQ(upload.field_size(), 1);
+
+  // Set the autofilled type of the field as something different from its
+  // classified type, representing that the field was filled using this type as
+  // fallback.
+  form_structure.field(0)->set_autofilled_type(NAME_FULL);
+  uploads = form_structure.EncodeUploadRequest(
+      /*available_field_types=*/{}, /*form_was_autofilled=*/false,
+      /*login_form_signature=*/"", /*observed_submission=*/true);
+  ASSERT_GE(uploads.size(), 1u);
+  upload = uploads[0];
+  EXPECT_EQ(upload.field_size(), 0);
+}
+
 }  // namespace autofill
