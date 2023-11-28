@@ -26,6 +26,7 @@
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 #include "chrome/browser/profiles/profile_metrics.h"
+#include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_manager_factory.h"
@@ -44,6 +45,7 @@
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -720,6 +722,12 @@ void TurnSyncOnHelper::AttachToProfile() {
 }
 
 void TurnSyncOnHelper::AbortAndDelete() {
+  // The lock is needed here because the `SigninManager` should unset the
+  // primary account before the `AccountReconcilor` runs. The
+  // `AccountReconcilor` does not support the case where the primary account has
+  // no token.
+  AccountReconcilor::Lock lock(
+      AccountReconcilorFactory::GetForProfile(profile_));
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // If the initial primary account is still valid, reset it. This is only
   // on Lacros because the `SigninManager` does it automatically with DICE.

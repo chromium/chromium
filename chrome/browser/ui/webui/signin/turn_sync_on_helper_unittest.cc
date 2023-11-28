@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_file_util.h"
 #include "build/chromeos_buildflags.h"
@@ -336,6 +337,7 @@ class MockSigninManager : public SigninManager {
   explicit MockSigninManager(Profile* profile)
       : SigninManager(*profile->GetPrefs(),
                       *IdentityManagerFactory::GetForProfile(profile),
+                      SyncServiceFactory::GetForProfile(profile),
                       *ChromeSigninClientFactory::GetForProfile(profile)) {}
   ~MockSigninManager() override = default;
 
@@ -1012,8 +1014,29 @@ TEST_F(TurnSyncOnHelperTest, InvalidAccount) {
   CheckSigninMetrics({});
 }
 
+class TurnSyncOnHelperTestWithSigninAllowedDisabled
+    : public TurnSyncOnHelperTest {
+ public:
+  void SetUp() override {
+    // In those tests, `prefs::kSigninAllowed` pref is set to false after the
+    // Profile is created which will change the
+    // `signin::AccountConsistencyMethod` in the
+    // `AccountConsistencyModeManager`. This is not expected, so we disable the
+    // browser signin from the command line prior to the creation of the
+    // Profile.
+    scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+        "allow-browser-signin", "false");
+
+    TurnSyncOnHelperTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedCommandLine scoped_command_line;
+};
+
 // Tests that the login error is displayed and that the account is kept.
-TEST_F(TurnSyncOnHelperTest, CanOfferSigninErrorKeepAccount) {
+TEST_F(TurnSyncOnHelperTestWithSigninAllowedDisabled,
+       CanOfferSigninErrorKeepAccount) {
   // Set expectations.
   expected_login_error_ = SigninUIError::Other(kEmail);
   // Configure the test.
@@ -1031,7 +1054,8 @@ TEST_F(TurnSyncOnHelperTest, CanOfferSigninErrorKeepAccount) {
 }
 
 // Tests that the login error is displayed and that the account is removed.
-TEST_F(TurnSyncOnHelperTest, CanOfferSigninErrorRemoveAccount) {
+TEST_F(TurnSyncOnHelperTestWithSigninAllowedDisabled,
+       CanOfferSigninErrorRemoveAccount) {
   // Set expectations.
   expected_login_error_ = SigninUIError::Other(kEmail);
   // Configure the test.
