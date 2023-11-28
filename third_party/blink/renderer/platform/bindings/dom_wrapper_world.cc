@@ -137,12 +137,14 @@ void DOMWrapperWorld::ClearMainWorldOnMainThread(DOMWrapperWorld& main_world) {
   g_main_world = nullptr;
 }
 
-void DOMWrapperWorld::AllWorldsInCurrentThread(
+void DOMWrapperWorld::AllWorldsInIsolate(
+    v8::Isolate* isolate,
     Vector<scoped_refptr<DOMWrapperWorld>>& worlds) {
   DCHECK(worlds.empty());
   WTF::CopyValuesToVector(GetWorldMap(), worlds);
-  if (IsMainThread())
-    worlds.push_back(&MainWorld());
+  if (IsMainThread()) {
+    worlds.push_back(&MainWorld(isolate));
+  }
 }
 
 DOMWrapperWorld::~DOMWrapperWorld() {
