@@ -90,13 +90,13 @@ TEST_F(FocusModeCountdownViewTest, ExtendSessionDurationUntilUpperBound) {
   EXPECT_TRUE(button->GetEnabled());
 
   auto* label = GetTimeRemainingLabel();
-  EXPECT_EQ(u"4 hr, 59 min, 0 sec", label->GetText());
+  EXPECT_EQ(u"4:59:00", label->GetText());
 
   // Extend the session duration.
   LeftClickOn(button);
 
   EXPECT_FALSE(button->GetEnabled());
-  EXPECT_EQ(u"5 hr, 0 min, 0 sec", label->GetText());
+  EXPECT_EQ(u"5:00:00", label->GetText());
   EXPECT_EQ(focus_mode_util::kMaximumDuration, controller->session_duration());
 }
 
