@@ -854,6 +854,9 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
     public void notifyOnCrash() {
         resetSameDocNavFlags();
+        for (LocationBarDataProvider.Observer observer : mLocationBarDataObservers) {
+            observer.onTabCrashed();
+        }
     }
 
     public void notifyContentChanged() {
