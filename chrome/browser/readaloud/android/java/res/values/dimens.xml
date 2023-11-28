@@ -38,12 +38,10 @@ found in the LICENSE file.
 
     <!-- Seek bar -->
     <dimen name="readaloud_expanded_player_seek_bar_height">4dp</dimen>
-    <dimen name="readaloud_expanded_player_seek_bar_margin_top">38dp</dimen>
+    <dimen name="readaloud_expanded_player_seek_bar_margin_top">10dp</dimen>
+    <dimen name="readaloud_expanded_player_seek_bar_vertical_padding">16dp</dimen>
     <dimen name="readaloud_expanded_player_seek_bar_scrubber_handle_width">4dp</dimen>
     <dimen name="readaloud_expanded_player_seek_bar_scrubber_handle_height">16dp</dimen>
-
-    <!-- Times -->
-    <dimen name="readaloud_expanded_player_times_margin_top">4dp</dimen>
 
     <!-- Control buttons -->
     <dimen name="readaloud_control_buttons_margin_top">24dp</dimen>

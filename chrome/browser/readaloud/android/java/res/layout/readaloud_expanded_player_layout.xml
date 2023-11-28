@@ -144,11 +144,12 @@ found in the LICENSE file.
         <SeekBar
             android:id="@+id/readaloud_expanded_player_seek_bar"
             android:layout_marginTop="@dimen/readaloud_expanded_player_seek_bar_margin_top"
-            android:padding="0dp"
+            android:paddingTop="@dimen/readaloud_expanded_player_seek_bar_vertical_padding"
+            android:paddingBottom="@dimen/readaloud_expanded_player_seek_bar_vertical_padding"
             android:paddingEnd="0dp"
             android:paddingStart="0dp"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/readaloud_expanded_player_seek_bar_scrubber_handle_height"
+            android:layout_height="wrap_content"
             android:max="1000"
             android:progress="0"
             android:maxHeight="@dimen/readaloud_expanded_player_seek_bar_height"
@@ -159,7 +160,6 @@ found in the LICENSE file.
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/readaloud_expanded_player_times_margin_top"
             android:orientation="horizontal">
             <TextView
                 android:id="@+id/readaloud_player_time"
