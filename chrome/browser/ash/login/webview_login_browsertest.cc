@@ -2121,7 +2121,9 @@ class WebviewProxyAuthLoginTest : public WebviewLoginTest {
   // gaia. Returns the LoginHandler handling this authentication request.
   LoginHandler* WaitForAuthRequested() {
     auth_needed_wait_loop_->Run();
-    return gaia_frame_login_handler_;
+    LoginHandler* handler = gaia_frame_login_handler_;
+    gaia_frame_login_handler_ = nullptr;
+    return handler;
   }
 
   void UpdateServedPolicyFromDevicePolicyTestHelper() {
@@ -2153,8 +2155,10 @@ class WebviewProxyAuthLoginTest : public WebviewLoginTest {
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
 };
 
-// TODO(crbug.com/1377241): Test is flaky.
-IN_PROC_BROWSER_TEST_F(WebviewProxyAuthLoginTest, DISABLED_ProxyAuthTransfer) {
+// This tests that proxy authentication details supplied on the sign-in screen
+// when attempting to load gaia are used for the gaia page load, for device
+// policy fetches and for subsequent gaia page loads.
+IN_PROC_BROWSER_TEST_F(WebviewProxyAuthLoginTest, ProxyAuthTransfer) {
   WaitForSigninScreen();
 
   LoginHandler* login_handler = WaitForAuthRequested();
@@ -2164,7 +2168,8 @@ IN_PROC_BROWSER_TEST_F(WebviewProxyAuthLoginTest, DISABLED_ProxyAuthTransfer) {
   em::ChromeDeviceSettingsProto& device_policy =
       device_policy_builder()->payload();
   device_policy.mutable_device_login_screen_auto_select_certificate_for_urls()
-      ->add_login_screen_auto_select_certificate_rules("test_pattern");
+      ->add_login_screen_auto_select_certificate_rules(
+          "{\"pattern\": \"https://www.example.com\", \"filter\": {}}");
   UpdateServedPolicyFromDevicePolicyTestHelper();
 
   policy::PolicyChangeRegistrar policy_change_registrar(
@@ -2174,20 +2179,27 @@ IN_PROC_BROWSER_TEST_F(WebviewProxyAuthLoginTest, DISABLED_ProxyAuthTransfer) {
       policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME,
                               std::string() /* component_id */));
 
-  // Now enter auth data
-  login_handler->SetAuth(u"foo", u"bar");
-  WaitForGaiaPageLoad();
-
+  // Setup waiting for the policy to change.
   base::RunLoop run_loop;
   policy_change_registrar.Observe(
       policy::key::kDeviceLoginScreenAutoSelectCertificateForUrls,
       base::BindRepeating(&PolicyChangedCallback, run_loop.QuitClosure()));
+
+  // Now enter auth data, which should trigger a gaia page which should now be
+  // successful.
+  login_handler->SetAuth(u"foo", u"bar");
+  WaitForGaiaPageLoad();
+
+  // Wait for the policy-mapped pref to change, because the supplied proxy auth
+  // credentials above should be propagated to the "system network context"
+  // which can now be used for a successful device policy fetch.
   run_loop.Run();
 
   // Press the back button at a sign-in screen without pre-existing users to
   // start a new sign-in attempt.
   // This will re-load gaia, rotating the StoragePartition. The new
-  // StoragePartition must also have the proxy auth details.
+  // StoragePartition must also have the proxy auth details, so authentication
+  // credentials don't have to be re-entered.
   test::OobeJS().ClickOnPath(kBackButton);
   WaitForGaiaPageLoadAndPropertyUpdate();
   // Expect that we got back to the identifier page, as there are no known users
