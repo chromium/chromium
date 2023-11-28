@@ -92,9 +92,6 @@ class SyncablePrefMetadata {
 // PrefModelAssociatorClient uses the interface to verify if a preference is
 // syncable. Platform-specific preferences should be part of individual
 // implementations of this interface.
-// TODO(crbug.com/1401271): Consider adding more information about the listed
-// preferences, for eg. distinguishing between SYNCABLE_PREF,
-// SYNCABLE_PRIORITY_PREF, SYNCABLE_OS_PREF, and SYNCABLE_OS_PRIORITY_PREF.
 class SyncablePrefsDatabase {
  public:
   SyncablePrefsDatabase() = default;
