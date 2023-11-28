@@ -162,6 +162,18 @@ BASE_FEATURE(kCanvasOopRasterization,
 #endif
 );
 
+// Enables the use of out of process rasterization for canvas even when GPU tile
+// rasterization is disabled. CanvasOopRasterization is still required to be
+// enabled to use OOP-C path with this flag.
+BASE_FEATURE(kCanvasOopWithoutGpuTileRaster,
+             "CanvasOopWithoutGpuTileRaster",
+#if BUILDFLAG(IS_WIN)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
+
 #if BUILDFLAG(IS_OZONE)
 // Enables per context GLTexture cache for OzoneImageBacking that avoids
 // unnecessary construction/destruction of GLTextures.

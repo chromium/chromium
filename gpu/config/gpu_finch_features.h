@@ -37,6 +37,7 @@ GPU_EXPORT BASE_DECLARE_FEATURE(kAggressiveSkiaGpuResourcePurge);
 GPU_EXPORT BASE_DECLARE_FEATURE(kDefaultEnableGpuRasterization);
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kCanvasOopRasterization);
+GPU_EXPORT BASE_DECLARE_FEATURE(kCanvasOopWithoutGpuTileRaster);
 
 #if BUILDFLAG(IS_OZONE)
 GPU_EXPORT BASE_DECLARE_FEATURE(kEnablePerContextGLTextureCache);

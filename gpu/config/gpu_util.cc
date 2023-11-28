@@ -235,11 +235,18 @@ GpuFeatureStatus GetCanvasOopRasterizationFeatureStatus(
     const base::CommandLine& command_line,
     const GpuPreferences& gpu_preferences,
     bool use_swift_shader) {
-  // Requires GPU rasterization
   if (GetGpuRasterizationFeatureStatus(blocklisted_features, command_line,
                                        use_swift_shader) !=
       kGpuFeatureStatusEnabled) {
-    return kGpuFeatureStatusDisabled;
+    // Originally OOP-C required GPU tile raster to be enabled. There are
+    // different GPU blocklist entries for gpu_tile_rasterization vs
+    // accelerated_2d_canvas. Devices with gpu_tile_rasterization blocked but
+    // not accelerated_2d_canvas would end up using the deprecated GL
+    // accelerated path.
+    if (!base::FeatureList::IsEnabled(
+            features::kCanvasOopWithoutGpuTileRaster)) {
+      return kGpuFeatureStatusDisabled;
+    }
   }
 
   // VDA video decoder on ChromeOS uses legacy mailboxes which is not compatible
