@@ -15,6 +15,45 @@
 #include "ui/views/view_tracker.h"
 #include "ui/views/views_export.h"
 
+/////////////////////////////////////////////////////////////////////////////
+//
+// How to allow ActionViewController to support a new view class:
+// (See ui/views/controls/button/button files for a concrete example.)
+//
+// ClassName: Name of your class
+// ParentName: Name of the parent class with already specialized functionality.
+// This may just be `View`. Parent class specialization will also be propagated
+// to child views.
+//
+// Add the following in the .h file of view class:
+//
+// #include "ui/views/action_view_controller.h"
+//
+// template <>
+// struct VIEWS_EXPORT ActionViewControllerSuperClassT<ClassName> {
+//   using SuperClass = ActionViewControllerTemplate<ParentName>;
+// };
+//
+// The following are optional, but can be specialized as desired. Declare in the
+// .h file of the view class with functionality defined in .cc file.
+
+// If you wish to add class specific functionality for responding to action
+// items changing:
+//
+// template <>
+// void ActionViewControllerTemplate<ClassName,
+//                                   ActionViewControllerTemplate<ParentName>>::
+//     ActionItemChangedImpl(ClassName* action_view,
+//                           actions::ActionItem* action_item);
+//
+// If you wish to add class specific functionality for when the action view is
+// set:
+//
+// template <>
+// void ActionViewControllerTemplate<ClassName,
+//                                   ActionViewControllerTemplate<ParentName>>::
+//     SetActionViewImpl(ClassName* action_view);
+
 namespace views {
 
 class View;
