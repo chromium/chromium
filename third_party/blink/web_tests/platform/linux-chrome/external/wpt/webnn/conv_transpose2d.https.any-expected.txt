@@ -3,10 +3,6 @@ This is a testharness.js-based test.
   promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."
 [FAIL] convTranspose2d float32 4D input and filter tensors default options / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."
-[FAIL] convTranspose2d float32 4D input and filter tensors options.groups / async
-  promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."
-[FAIL] convTranspose2d float32 4D input and filter tensors options.groups=2 options.strides=[2, 2] / async
-  promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."
 [FAIL] convTranspose2d float32 4D input and filter tensors options.padding / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."
 [FAIL] convTranspose2d float32 4D input and filter tensors options.strides / async

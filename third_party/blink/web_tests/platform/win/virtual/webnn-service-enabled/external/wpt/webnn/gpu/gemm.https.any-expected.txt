@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] gemm two float32 2D tensors scalar options.c / async
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'constant' on 'MLGraphBuilder': 2 arguments required, but only 1 present."
-Harness: the test ran to completion.
-
