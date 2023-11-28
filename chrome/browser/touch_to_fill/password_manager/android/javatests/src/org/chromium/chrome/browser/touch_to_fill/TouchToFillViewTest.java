@@ -290,7 +290,7 @@ public class TouchToFillViewTest {
         TextView subtitle =
                 mTouchToFillView.getContentView().findViewById(R.id.touch_to_fill_sheet_subtitle);
 
-        assertThat(subtitle.getText(), is("www.example.org"));
+        assertThat(subtitle.getText().toString(), is("www.example.org"));
     }
 
     @Test
@@ -325,7 +325,7 @@ public class TouchToFillViewTest {
         TextView subtitle =
                 mTouchToFillView.getContentView().findViewById(R.id.touch_to_fill_sheet_subtitle);
 
-        assertThat(subtitle.getText(), is("m.example.org (not secure)"));
+        assertThat(subtitle.getText().toString(), is("m.example.org (not secure)"));
     }
 
     @Test
@@ -360,7 +360,7 @@ public class TouchToFillViewTest {
         TextView subtitle =
                 mTouchToFillView.getContentView().findViewById(R.id.touch_to_fill_sheet_subtitle);
 
-        assertThat(subtitle.getText(), is("You'll sign in to m.example.org"));
+        assertThat(subtitle.getText().toString(), is("You'll sign in to m.example.org"));
     }
 
     @Test
@@ -395,7 +395,8 @@ public class TouchToFillViewTest {
         TextView subtitle =
                 mTouchToFillView.getContentView().findViewById(R.id.touch_to_fill_sheet_subtitle);
 
-        assertThat(subtitle.getText(), is("You'll sign in to m.example.org (not secure)"));
+        assertThat(
+                subtitle.getText().toString(), is("You'll sign in to m.example.org (not secure)"));
     }
 
     @Test

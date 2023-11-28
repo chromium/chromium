@@ -399,7 +399,7 @@ public class TouchToFillControllerTest {
                                 mContext.getString(
                                         R.string
                                                 .touch_to_fill_sheet_shared_passwords_one_password_subtitle),
-                                "Sender Name",
+                                "<b>Sender Name</b>",
                                 TEST_URL_FORMATTED)));
     }
 

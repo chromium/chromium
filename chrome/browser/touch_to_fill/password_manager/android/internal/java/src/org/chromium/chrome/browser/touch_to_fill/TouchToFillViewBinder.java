@@ -26,6 +26,7 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.We
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.WEBAUTHN_FAVICON_OR_FALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.WEBAUTHN_ITEM_COLLECTION_INFO;
 
+import android.text.Html;
 import android.text.method.PasswordTransformationMethod;
 import android.view.View;
 import android.view.ViewGroup;
@@ -335,7 +336,8 @@ class TouchToFillViewBinder {
             sheetTitleText.setText(model.get(TITLE));
 
             TextView sheetSubtitleText = view.findViewById(R.id.touch_to_fill_sheet_subtitle);
-            sheetSubtitleText.setText(model.get(SUBTITLE));
+            sheetSubtitleText.setText(
+                    Html.fromHtml(model.get(SUBTITLE), Html.FROM_HTML_MODE_LEGACY));
 
             ImageView sheetHeaderImage = view.findViewById(R.id.touch_to_fill_sheet_header_image);
             sheetHeaderImage.setImageDrawable(

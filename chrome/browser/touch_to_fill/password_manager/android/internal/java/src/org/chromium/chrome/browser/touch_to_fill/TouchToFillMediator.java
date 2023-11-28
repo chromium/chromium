@@ -230,7 +230,7 @@ class TouchToFillMediator {
             return String.format(
                     mContext.getString(
                             R.string.touch_to_fill_sheet_shared_passwords_one_password_subtitle),
-                    sharedCredentials.get(0).getSenderName(),
+                    "<b>" + sharedCredentials.get(0).getSenderName() + "</b>",
                     formattedUrl);
         }
         if (sharedCredentials.size() > 1) {
