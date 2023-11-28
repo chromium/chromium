@@ -269,6 +269,7 @@ class Page::CloseTaskHandler : public GarbageCollected<Page::CloseTaskHandler> {
 
   void DoDeferredClose() {
     if (page_) {
+      CHECK(page_->MainFrame());
       page_->GetChromeClient().CloseWindow();
     }
   }
@@ -301,13 +302,16 @@ void Page::CloseSoon() {
   // executing, thanks to nested message loops running and handling the
   // resulting disconnecting PageBroadcast. So instead, post a message back to
   // the message loop, which won't run until the JS is complete, and then the
-  // close request can be sent.
-  if (!close_task_handler_) {
+  // close request can be sent. Note that we won't post this task if the Page is
+  // already marked as being destroyed: in that case, `MainFrame()` will be
+  // null.
+  if (!close_task_handler_ && MainFrame()) {
     close_task_handler_ = MakeGarbageCollected<Page::CloseTaskHandler>(this);
+    GetPageScheduler()->GetAgentGroupScheduler().DefaultTaskRunner()->PostTask(
+        FROM_HERE,
+        WTF::BindOnce(&Page::CloseTaskHandler::DoDeferredClose,
+                      WrapWeakPersistent(close_task_handler_.Get())));
   }
-  GetPageScheduler()->GetAgentGroupScheduler().DefaultTaskRunner()->PostTask(
-      FROM_HERE, WTF::BindOnce(&Page::CloseTaskHandler::DoDeferredClose,
-                               WrapWeakPersistent(close_task_handler_.Get())));
 }
 
 ViewportDescription Page::GetViewportDescription() const {
@@ -390,6 +394,7 @@ void Page::TakeCloseTaskHandler(Page* old_page) {
   // a CloseTaskHandler yet at this point.
   CHECK(!close_task_handler_);
   close_task_handler_ = old_page->close_task_handler_;
+  old_page->close_task_handler_ = nullptr;
   if (close_task_handler_) {
     close_task_handler_->SetPage(this);
   }
@@ -1078,11 +1083,6 @@ void Page::WillStopCompositing() {
 }
 
 void Page::WillBeDestroyed() {
-  if (close_task_handler_) {
-    close_task_handler_->SetPage(nullptr);
-    close_task_handler_ = nullptr;
-  }
-
   Frame* main_frame = main_frame_;
 
   // TODO(https://crbug.com/838348): Sadly, there are situations where Blink may
@@ -1095,6 +1095,8 @@ void Page::WillBeDestroyed() {
     main_frame->Detach(FrameDetachType::kRemove);
   }
 
+  // Only begin clearing state after JS has run, since running JS itself can
+  // sometimes alter Page's state.
   DCHECK(AllPages().Contains(this));
   AllPages().erase(this);
   OrdinaryPages().erase(this);
@@ -1125,6 +1127,11 @@ void Page::WillBeDestroyed() {
   page_visibility_observer_set_.clear();
 
   page_scheduler_ = nullptr;
+
+  if (close_task_handler_) {
+    close_task_handler_->SetPage(nullptr);
+    close_task_handler_ = nullptr;
+  }
 }
 
 void Page::RegisterPluginsChangedObserver(PluginsChangedObserver* observer) {

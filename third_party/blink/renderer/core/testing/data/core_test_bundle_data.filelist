@@ -34,6 +34,7 @@ testing/data/body-overflow-hidden.html
 testing/data/button.html
 testing/data/cancelTest.html
 testing/data/clipped-body.html
+testing/data/close-on-pagehide.html
 testing/data/composited_selection_bounds_basic.html
 testing/data/composited_selection_bounds_basic_rtl.html
 testing/data/composited_selection_bounds_detached_frame.html
