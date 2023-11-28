@@ -278,7 +278,6 @@ CGFloat const kSpacingAfterTitle = 4;
 
 - (void)confirmationAlertPrimaryAction {
   // Use password button
-  [self.delegate willSelectSuggestion:[self selectedRow]];
   __weak __typeof(self) weakSelf = self;
   [self dismissViewControllerAnimated:NO
                            completion:^{

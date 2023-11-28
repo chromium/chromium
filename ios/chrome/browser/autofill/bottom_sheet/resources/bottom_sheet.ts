@@ -88,7 +88,12 @@ function focusEventHandler_(event: Event): void {
     return;
   }
 
-  // Prevent the keyboard from showing up
+  // Field must be empty (ignoring white spaces).
+  if ((event.target instanceof HTMLInputElement) && event.target.value.trim()) {
+    return;
+  }
+
+  // Prevent the keyboard from showing up.
   event.target.blur();
   lastBlurredElement_ = event.target;
 
@@ -96,33 +101,16 @@ function focusEventHandler_(event: Event): void {
 }
 
 /**
- * Focus events for observed input elements are messaged to the main
- * application for broadcast to WebStateObservers.
- * @private
- */
-function focusEmptyOnlyEventHandler_(event: Event): void {
-  // Field must be empty (ignoring white spaces)
-  if ((event.target instanceof HTMLInputElement) &&
-      event.target.value.trim()) {
-    return;
-  }
-  focusEventHandler_(event);
-}
-
-/**
  * Removes listeners on the elements associated with each provided renderer ID
  * and removes those same elements from list of observed elements.
  * @private
  */
-function detachListeners_(
-    renderer_ids: number[], must_be_empty: boolean): void {
-  let eventHandler =
-      must_be_empty ? focusEmptyOnlyEventHandler_ : focusEventHandler_;
+function detachListeners_(renderer_ids: number[]): void {
   for (const renderer_id of renderer_ids) {
     const element = gCrWeb.fill.getElementByUniqueID(renderer_id);
     let index = observedElements_.indexOf(element);
     if (index > -1) {
-      element.removeEventListener('focus', eventHandler, true);
+      element.removeEventListener('focus', focusEventHandler_, true);
       observedElements_.splice(index, 1);
     }
   }
@@ -132,7 +120,7 @@ function detachListeners_(
  * Finds the element associated with each provided renderer ID and
  * attaches a listener to each of these elements for the focus event.
  */
-function attachListeners(renderer_ids: number[], must_be_empty: boolean): void {
+function attachListeners(renderer_ids: number[]): void {
   // Build list of elements
   let blurredElement: HTMLElement|null = null;
   let elementsToObserve: Element[] = [];
@@ -144,7 +132,7 @@ function attachListeners(renderer_ids: number[], must_be_empty: boolean): void {
         !observedElements_.find(elem => elem === element)) {
       elementsToObserve.push(element);
       if (document.activeElement === element) {
-        // Check if the field is empty (ignoring white spaces)
+        // Check if the field is empty (ignoring white spaces).
         if (element.value.trim() != '') {
           // The user has already started filling the active field, so bail out
           // without attaching listeners.
@@ -159,10 +147,8 @@ function attachListeners(renderer_ids: number[], must_be_empty: boolean): void {
   }
 
   // Attach the listeners once the IDs are set.
-  let eventHandler =
-      must_be_empty ? focusEmptyOnlyEventHandler_ : focusEventHandler_;
   for (const element of elementsToObserve) {
-    element.addEventListener('focus', eventHandler, true);
+    element.addEventListener('focus', focusEventHandler_, true);
     observedElements_.push(element);
   }
 
@@ -177,14 +163,13 @@ function attachListeners(renderer_ids: number[], must_be_empty: boolean): void {
  * Removes all previously attached listeners before re-triggering
  * a focus event on the previously blurred element.
  */
-function detachListeners(
-    renderer_ids: number[], must_be_empty: boolean, refocus: boolean): void {
+function detachListeners(renderer_ids: number[], refocus: boolean): void {
   // If the bottom sheet was dismissed, we don't need to show it anymore on this
   // page, so remove the event listeners.
-  detachListeners_(renderer_ids, must_be_empty);
+  detachListeners_(renderer_ids);
 
   if (refocus && lastBlurredElement_) {
-    // Re-focus the previously blurred element
+    // Re-focus the previously blurred element.
     lastBlurredElement_.focus();
   }
 }

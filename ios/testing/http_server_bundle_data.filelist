@@ -43,6 +43,7 @@ data/http_server_files/sample.ics
 data/http_server_files/sample.mobileconfig
 data/http_server_files/semi_bundle.pkpasses
 data/http_server_files/simple_login_form.html
+data/http_server_files/simple_login_form_empty.html
 data/http_server_files/simple_signup_form.html
 data/http_server_files/single_page_wide.pdf
 data/http_server_files/state_operations.html

@@ -162,7 +162,8 @@ void CheckPasswordDetailsVisitMetricCount(int count) {
 // Loads simple page on localhost.
 - (void)loadLoginPage {
   // Loads simple page. It is on localhost so it is considered a secure context.
-  [ChromeEarlGrey loadURL:self.testServer->GetURL("/simple_login_form.html")];
+  [ChromeEarlGrey
+      loadURL:self.testServer->GetURL("/simple_login_form_empty.html")];
   [ChromeEarlGrey waitForWebStateContainingText:"Login form."];
 }
 
@@ -196,7 +197,7 @@ id<GREYMatcher> NavigationBarEditButton() {
       mockReauthenticationModuleExpectedResult:ReauthenticationResult::
                                                    kSuccess];
 
-  GURL URL = self.testServer->GetURL("/simple_login_form.html");
+  GURL URL = self.testServer->GetURL("/simple_login_form_empty.html");
   [PasswordManagerAppInterface
       storeCredentialWithUsername:@"user"
                          password:@"password"
@@ -229,12 +230,9 @@ id<GREYMatcher> NavigationBarEditButton() {
   [self verifyPasswordFieldsHaveBeenFilled:@"user"];
 }
 
-// Notes:
-// - Using the password twice will allow us to know if observers are
-//   properly removed between 2 uses of the bottom sheet.
-// - Testing in incognito mode will allow us to know if we're using a
-//   coherent browser state for all the objects in the bottom sheet.
-- (void)testOpenPasswordBottomSheetUsePasswordTwiceIncognito {
+// This test will allow us to know if we're using a coherent browser state to
+// open the bottom sheet in incognito mode.
+- (void)testOpenPasswordBottomSheetUsePasswordIncognito {
   [PasswordSuggestionBottomSheetAppInterface setUpMockReauthenticationModule];
   [PasswordSuggestionBottomSheetAppInterface
       mockReauthenticationModuleExpectedResult:ReauthenticationResult::
@@ -243,27 +241,25 @@ id<GREYMatcher> NavigationBarEditButton() {
       storeCredentialWithUsername:@"user"
                          password:@"password"
                               URL:net::NSURLWithGURL(self.testServer->GetURL(
-                                      "/simple_login_form.html"))];
+                                      "/simple_login_form_empty.html"))];
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
                                 enableSync:NO];
 
   [ChromeEarlGrey openNewIncognitoTab];
   [self loadLoginPage];
 
-  for (int i = 0; i < 2; ++i) {
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-        performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
 
-    [ChromeEarlGrey
-        waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user")];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user")];
 
-    [[EarlGrey selectElementWithMatcher:
-                   grey_accessibilityLabel(l10n_util::GetNSString(
-                       IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD))]
-        performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD))]
+      performAction:grey_tap()];
 
-    [self verifyPasswordFieldsHaveBeenFilled:@"user"];
-  }
+  [self verifyPasswordFieldsHaveBeenFilled:@"user"];
 }
 
 - (void)testOpenPasswordBottomSheetTapUseKeyboardShowKeyboard {
@@ -271,7 +267,7 @@ id<GREYMatcher> NavigationBarEditButton() {
       storeCredentialWithUsername:@"user"
                          password:@"password"
                               URL:net::NSURLWithGURL(self.testServer->GetURL(
-                                      "/simple_login_form.html"))];
+                                      "/simple_login_form_empty.html"))];
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
                                 enableSync:NO];
   [self loadLoginPage];
@@ -293,8 +289,8 @@ id<GREYMatcher> NavigationBarEditButton() {
 - (void)testOpenPasswordBottomSheetOpenPasswordManager {
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
                                 enableSync:NO];
-  NSURL* URL =
-      net::NSURLWithGURL(self.testServer->GetURL("/simple_login_form.html"));
+  NSURL* URL = net::NSURLWithGURL(
+      self.testServer->GetURL("/simple_login_form_empty.html"));
   [PasswordSuggestionBottomSheetAppInterface setUpMockReauthenticationModule];
   [PasswordSuggestionBottomSheetAppInterface
       mockReauthenticationModuleExpectedResult:ReauthenticationResult::
@@ -358,8 +354,8 @@ id<GREYMatcher> NavigationBarEditButton() {
 - (void)testOpenPasswordBottomSheetOpenPasswordDetails {
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
                                 enableSync:NO];
-  NSURL* URL =
-      net::NSURLWithGURL(self.testServer->GetURL("/simple_login_form.html"));
+  NSURL* URL = net::NSURLWithGURL(
+      self.testServer->GetURL("/simple_login_form_empty.html"));
   [PasswordSuggestionBottomSheetAppInterface setUpMockReauthenticationModule];
   [PasswordSuggestionBottomSheetAppInterface
       mockReauthenticationModuleExpectedResult:ReauthenticationResult::
@@ -433,8 +429,8 @@ id<GREYMatcher> NavigationBarEditButton() {
 - (void)testOpenPasswordBottomSheetOpenPasswordDetailsWithoutAuthentication {
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
                                 enableSync:NO];
-  NSURL* URL =
-      net::NSURLWithGURL(self.testServer->GetURL("/simple_login_form.html"));
+  NSURL* URL = net::NSURLWithGURL(
+      self.testServer->GetURL("/simple_login_form_empty.html"));
   [PasswordSuggestionBottomSheetAppInterface setUpMockReauthenticationModule];
   [PasswordSuggestionBottomSheetAppInterface
       mockReauthenticationModuleExpectedResult:ReauthenticationResult::
@@ -488,8 +484,8 @@ id<GREYMatcher> NavigationBarEditButton() {
 - (void)testOpenPasswordBottomSheetDeletePassword {
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
                                 enableSync:NO];
-  NSURL* URL =
-      net::NSURLWithGURL(self.testServer->GetURL("/simple_login_form.html"));
+  NSURL* URL = net::NSURLWithGURL(
+      self.testServer->GetURL("/simple_login_form_empty.html"));
   [PasswordSuggestionBottomSheetAppInterface setUpMockReauthenticationModule];
   [PasswordSuggestionBottomSheetAppInterface
       mockReauthenticationModuleExpectedResult:ReauthenticationResult::
@@ -539,7 +535,7 @@ id<GREYMatcher> NavigationBarEditButton() {
       performAction:grey_tap()];
 
   NSString* website = [URL.absoluteString
-      stringByReplacingOccurrencesOfString:@"simple_login_form.html"
+      stringByReplacingOccurrencesOfString:@"simple_login_form_empty.html"
                                 withString:@""];
   DeleteCredential(@"user2", website);
 
@@ -563,8 +559,8 @@ id<GREYMatcher> NavigationBarEditButton() {
 - (void)testOpenPasswordBottomSheetSelectPassword {
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
                                 enableSync:NO];
-  NSURL* URL =
-      net::NSURLWithGURL(self.testServer->GetURL("/simple_login_form.html"));
+  NSURL* URL = net::NSURLWithGURL(
+      self.testServer->GetURL("/simple_login_form_empty.html"));
   [PasswordSuggestionBottomSheetAppInterface setUpMockReauthenticationModule];
   [PasswordSuggestionBottomSheetAppInterface
       mockReauthenticationModuleExpectedResult:ReauthenticationResult::
@@ -642,8 +638,8 @@ id<GREYMatcher> NavigationBarEditButton() {
 - (void)MAYBE_testOpenPasswordBottomSheetExpand {
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
                                 enableSync:NO];
-  NSURL* URL =
-      net::NSURLWithGURL(self.testServer->GetURL("/simple_login_form.html"));
+  NSURL* URL = net::NSURLWithGURL(
+      self.testServer->GetURL("/simple_login_form_empty.html"));
   [PasswordSuggestionBottomSheetAppInterface setUpMockReauthenticationModule];
   [PasswordSuggestionBottomSheetAppInterface
       mockReauthenticationModuleExpectedResult:ReauthenticationResult::
@@ -694,7 +690,7 @@ id<GREYMatcher> NavigationBarEditButton() {
       storeCredentialWithUsername:@"user"
                          password:@"password"
                               URL:net::NSURLWithGURL(self.testServer->GetURL(
-                                      "/simple_login_form.html"))];
+                                      "/simple_login_form_empty.html"))];
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
                                 enableSync:NO];
 
@@ -770,7 +766,7 @@ id<GREYMatcher> NavigationBarEditButton() {
       storeCredentialWithUsername:@""
                          password:@"password"
                               URL:net::NSURLWithGURL(self.testServer->GetURL(
-                                      "/simple_login_form.html"))];
+                                      "/simple_login_form_empty.html"))];
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
                                 enableSync:NO];
   [self loadLoginPage];
@@ -813,7 +809,7 @@ id<GREYMatcher> NavigationBarEditButton() {
         storeCredentialWithUsername:@"user"
                            password:@"password"
                                 URL:net::NSURLWithGURL(self.testServer->GetURL(
-                                        "/simple_login_form.html"))];
+                                        "/simple_login_form_empty.html"))];
     [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
                                   enableSync:NO];
     [self loadLoginPage];
@@ -863,8 +859,8 @@ id<GREYMatcher> NavigationBarEditButton() {
                                                    kSuccess];
 
   // Save 1 password that has been received via sharing and the other not.
-  NSURL* URL =
-      net::NSURLWithGURL(self.testServer->GetURL("/simple_login_form.html"));
+  NSURL* URL = net::NSURLWithGURL(
+      self.testServer->GetURL("/simple_login_form_empty.html"));
   [PasswordManagerAppInterface storeCredentialWithUsername:@"user1"
                                                   password:@"password1"
                                                        URL:URL
@@ -931,8 +927,8 @@ id<GREYMatcher> NavigationBarEditButton() {
       mockReauthenticationModuleExpectedResult:ReauthenticationResult::
                                                    kSuccess];
 
-  NSURL* URL =
-      net::NSURLWithGURL(self.testServer->GetURL("/simple_login_form.html"));
+  NSURL* URL = net::NSURLWithGURL(
+      self.testServer->GetURL("/simple_login_form_empty.html"));
   [PasswordManagerAppInterface storeCredentialWithUsername:@"user1"
                                                   password:@"password1"
                                                        URL:URL
@@ -983,7 +979,7 @@ id<GREYMatcher> NavigationBarEditButton() {
       storeCredentialWithUsername:@"user1"
                          password:@"password1"
                               URL:net::NSURLWithGURL(self.testServer->GetURL(
-                                      "/simple_login_form.html"))
+                                      "/simple_login_form_empty.html"))
                            shared:YES];
 
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
