@@ -11,7 +11,7 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 
-namespace gwp_asan::internal {
+namespace gwp_asan::internal::lud {
 
 template <typename T>
 class SharedState;
@@ -60,6 +60,6 @@ class SharedState {
   using Holder = SharedStateHolder<T>;
 };
 
-}  // namespace gwp_asan::internal
+}  // namespace gwp_asan::internal::lud
 
 #endif  // COMPONENTS_GWP_ASAN_CLIENT_LIGHTWEIGHT_DETECTOR_SHARED_STATE_H_

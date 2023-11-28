@@ -15,6 +15,10 @@
 #include "components/gwp_asan/common/lightweight_detector_state.h"
 
 namespace gwp_asan::internal {
+FORWARD_DECLARE_TEST(LightweightDetectorAnalyzerTest, InternalError);
+}  // namespace gwp_asan::internal
+
+namespace gwp_asan::internal::lud {
 
 // Responsible for both poisoning memory allocations and tracking metadata
 // associated with these poisoned allocations.
@@ -26,7 +30,7 @@ class GWP_ASAN_EXPORT PoisonMetadataRecorder
 
   // Records the deallocation stack trace and overwrites the allocation with a
   // pattern that allows the crash handler to recover the trace ID.
-  void RecordDeallocation(void* ptr, size_t size);
+  void RecordAndZap(void* ptr, size_t size);
 
   // Retrieves the textual address of the shared state required by the
   // crash handler.
@@ -56,12 +60,14 @@ class GWP_ASAN_EXPORT PoisonMetadataRecorder
 
   FRIEND_TEST_ALL_PREFIXES(PoisonMetadataRecorderTest, PoisonAlloc);
   FRIEND_TEST_ALL_PREFIXES(PoisonMetadataRecorderTest, SlotReuse);
-  FRIEND_TEST_ALL_PREFIXES(LightweightDetectorAnalyzerTest, InternalError);
+  FRIEND_TEST_ALL_PREFIXES(
+      ::gwp_asan::internal::LightweightDetectorAnalyzerTest,
+      InternalError);
 };
 
 extern template class EXPORT_TEMPLATE_DECLARE(GWP_ASAN_EXPORT)
     SharedStateHolder<PoisonMetadataRecorder>;
 
-}  // namespace gwp_asan::internal
+}  // namespace gwp_asan::internal::lud
 
 #endif  // COMPONENTS_GWP_ASAN_CLIENT_LIGHTWEIGHT_DETECTOR_POISON_METADATA_RECORDER_H_

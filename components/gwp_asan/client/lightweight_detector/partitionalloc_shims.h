@@ -7,13 +7,10 @@
 
 #include "components/gwp_asan/client/export.h"
 
-namespace gwp_asan::internal {
+namespace gwp_asan::internal::lud {
 
-class GWP_ASAN_EXPORT PartitionAllocShimSupport {
- public:
-  static void InstallLightweightDetectorHooks();
-};
+GWP_ASAN_EXPORT void InstallPartitionAllocHooks();
 
-}  // namespace gwp_asan::internal
+}  // namespace gwp_asan::internal::lud
 
 #endif  // COMPONENTS_GWP_ASAN_CLIENT_LIGHTWEIGHT_DETECTOR_PARTITIONALLOC_SHIMS_H_
