@@ -301,6 +301,11 @@ Platform::CreateWebGPUGraphicsContext3DProvider(const WebURL& document_url) {
   return nullptr;
 }
 
+void Platform::CreateWebGPUGraphicsContext3DProviderAsync(
+    const blink::WebURL& document_url,
+    base::OnceCallback<
+        void(std::unique_ptr<blink::WebGraphicsContext3DProvider>)> callback) {}
+
 scoped_refptr<viz::RasterContextProvider>
 Platform::SharedMainThreadContextProvider() {
   return nullptr;

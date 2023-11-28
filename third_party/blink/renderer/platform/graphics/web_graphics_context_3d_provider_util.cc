@@ -48,16 +48,6 @@ void CreateOffscreenGraphicsContextOnMainThread(
   waitable_event->Signal();
 }
 
-void CreateWebGPUGraphicsContextOnMainThread(
-    const KURL& url,
-    base::WaitableEvent* waitable_event,
-    std::unique_ptr<WebGraphicsContext3DProvider>* created_context_provider) {
-  DCHECK(IsMainThread());
-  *created_context_provider =
-      Platform::Current()->CreateWebGPUGraphicsContext3DProvider(url);
-  waitable_event->Signal();
-}
-
 void CreateWebGPUGraphicsContextOnMainThreadAsync(
     KURL url,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
@@ -99,34 +89,14 @@ CreateOffscreenGraphicsContext3DProvider(
   }
 }
 
-std::unique_ptr<WebGraphicsContext3DProvider>
-CreateWebGPUGraphicsContext3DProvider(const KURL& url) {
-  if (IsMainThread()) {
-    return Platform::Current()->CreateWebGPUGraphicsContext3DProvider(url);
-  } else {
-    base::WaitableEvent waitable_event;
-    std::unique_ptr<WebGraphicsContext3DProvider> created_context_provider;
-    PostCrossThreadTask(
-        *Thread::MainThread()->GetTaskRunner(
-            AccessMainThreadForWebGraphicsContext3DProvider()),
-        FROM_HERE,
-        CrossThreadBindOnce(&CreateWebGPUGraphicsContextOnMainThread, url,
-                            CrossThreadUnretained(&waitable_event),
-                            CrossThreadUnretained(&created_context_provider)));
-
-    waitable_event.Wait();
-    return created_context_provider;
-  }
-}
-
 void CreateWebGPUGraphicsContext3DProviderAsync(
     const KURL& url,
     scoped_refptr<base::SingleThreadTaskRunner> current_thread_task_runner,
     base::OnceCallback<void(std::unique_ptr<WebGraphicsContext3DProvider>)>
         callback) {
   if (IsMainThread()) {
-    std::move(callback).Run(
-        Platform::Current()->CreateWebGPUGraphicsContext3DProvider(url));
+    Platform::Current()->CreateWebGPUGraphicsContext3DProviderAsync(
+        url, std::move(callback));
   } else {
     // Posts a task to the main thread to create context provider
     // because the current RendererBlinkPlatformImpl and viz::Gpu
