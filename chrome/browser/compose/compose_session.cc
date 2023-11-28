@@ -89,6 +89,7 @@ ComposeSession::ComposeSession(
     content::WebContents* web_contents,
     optimization_guide::OptimizationGuideModelExecutor* executor,
     optimization_guide::ModelQualityLogsUploader* model_quality_logs_uploader,
+    base::Token session_id,
     ComposeCallback callback)
     : executor_(executor),
       handler_receiver_(this),
@@ -96,6 +97,7 @@ ComposeSession::ComposeSession(
       final_status_(optimization_guide::proto::FinalStatus::STATUS_UNSPECIFIED),
       web_contents_(web_contents),
       model_quality_logs_uploader_(model_quality_logs_uploader),
+      session_id_(session_id),
       weak_ptr_factory_(this) {
   callback_ = std::move(callback);
   current_state_ = compose::mojom::ComposeState::New();
@@ -271,7 +273,12 @@ void ComposeSession::ModelExecutionCallback(
     modeling_log_entry_
         ->quality_data<optimization_guide::ComposeFeatureTypeMap>()
         ->set_request_latency_ms(request_delta.InMilliseconds());
-
+    optimization_guide::proto::Int128* token =
+        modeling_log_entry_
+            ->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+            ->mutable_session_id();
+    token->set_high(session_id_.high());
+    token->set_low(session_id_.low());
   }
 }
 

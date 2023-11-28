@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/token.h"
 #include "chrome/browser/compose/compose_enabling.h"
 #include "chrome/browser/compose/compose_session.h"
 #include "chrome/browser/compose/proto/compose_optimization_guide.pb.h"
@@ -81,6 +82,7 @@ class ChromeComposeClient
   void SetModelExecutorForTest(
       optimization_guide::OptimizationGuideModelExecutor* model_executor);
   void SetSkipShowDialogForTest();
+  void SetSessionIdForTest(base::Token session_id);
 
   // content::WebContentsObserver implementation.
   // Called when the primary page location changes. This includes reloads.
@@ -104,6 +106,7 @@ class ChromeComposeClient
   optimization_guide::ModelQualityLogsUploader* GetModelQualityLogsUploader();
   optimization_guide::OptimizationGuideModelExecutor* GetModelExecutor();
   optimization_guide::OptimizationGuideDecider* GetOptimizationGuide();
+  base::Token GetSessionId();
   std::unique_ptr<TranslateLanguageProvider> translate_language_provider_;
   ComposeEnabling compose_enabling_;
 
@@ -141,6 +144,8 @@ class ChromeComposeClient
 
   std::optional<optimization_guide::OptimizationGuideModelExecutor*>
       model_executor_for_test_;
+
+  std::optional<base::Token> session_id_for_test_;
 
   // The unique renderer ID of the last field the user selected compose on.
   std::optional<autofill::FieldGlobalId> active_compose_field_id_;

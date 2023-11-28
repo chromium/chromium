@@ -47,6 +47,8 @@ using ComposeCallback = base::OnceCallback<void(const std::u16string&)>;
 
 namespace {
 
+const uint64_t kSessionIdHigh = 1234;
+const uint64_t kSessionIdLow = 5678;
 constexpr char kTypeURL[] =
     "type.googleapis.com/optimization_guide.proto.ComposeResponse";
 
@@ -131,6 +133,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
     client_->SetModelExecutorForTest(&model_executor_);
     client_->SetSkipShowDialogForTest();
     client_->SetModelQualityLogsUploaderForTest(&model_quality_logs_uploader_);
+    client_->SetSessionIdForTest(base::Token(kSessionIdHigh, kSessionIdLow));
 
     ON_CALL(model_executor_, StartSession(_)).WillByDefault([&] {
       return std::make_unique<MockSessionWrapper>(session());
@@ -1246,6 +1249,55 @@ TEST_F(ChromeComposeClientTest, TestAutoComposeWithRepeatedRightClick) {
   result = open_test_future.Take();
   EXPECT_TRUE(result->compose_state->has_pending_request);
   EXPECT_EQ(base::UTF16ToUTF8(selection), result->initial_input);
+}
+
+TEST_F(ChromeComposeClientTest, TestComposeQualitySessionId) {
+  ShowDialogAndBindMojo();
+
+  EXPECT_CALL(session(), ExecuteModel(_, _)).Times(2);
+
+  base::test::TestFuture<
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry>>
+      quality_test_future;
+
+  EXPECT_CALL(model_quality_logs_uploader(), UploadModelQualityLogs(_))
+      .WillRepeatedly(testing::Invoke(
+          [&](std::unique_ptr<optimization_guide::ModelQualityLogEntry>
+                  response) {
+            quality_test_future.SetValue(std::move(response));
+          }));
+
+  page_handler()->Compose("a user typed this");
+
+  page_handler()->Compose("a user typed that");
+
+  // This take should clear the test future for the second commit.
+  std::unique_ptr<optimization_guide::ModelQualityLogEntry> result =
+      quality_test_future.Take();
+
+  EXPECT_EQ(kSessionIdHigh,
+            result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+                ->session_id()
+                .high());
+
+  EXPECT_EQ(kSessionIdLow,
+            result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+                ->session_id()
+                .low());
+
+  // Close UI to submit quality logs.
+  client_page_handler()->CloseUI(compose::mojom::CloseReason::kCloseButton);
+
+  result = quality_test_future.Take();
+
+  EXPECT_EQ(kSessionIdHigh,
+            result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+                ->session_id()
+                .high());
+  EXPECT_EQ(kSessionIdLow,
+            result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+                ->session_id()
+                .low());
 }
 
 TEST_F(ChromeComposeClientTest, TestComposeQualityLatency) {

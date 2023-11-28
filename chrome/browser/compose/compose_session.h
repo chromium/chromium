@@ -50,6 +50,7 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
       content::WebContents* web_contents,
       optimization_guide::OptimizationGuideModelExecutor* executor,
       optimization_guide::ModelQualityLogsUploader* model_quality_logs_uploader,
+      base::Token session_id,
       ComposeCallback callback = base::NullCallback());
   ~ComposeSession() override;
 
@@ -199,6 +200,9 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
 
   std::optional<optimization_guide::ModelQualityLogsUploader*>
       model_quality_logs_uploader_;
+
+  base::Token session_id_;
+
   base::WeakPtrFactory<ComposeSession> weak_ptr_factory_;
 };
 

@@ -95,7 +95,8 @@ void ChromeComposeClient::BindComposeDialog(
       GetWebContents().GetPrimaryMainFrame()->GetLastCommittedOrigin();
   if (origin == url::Origin::Create(GURL(kComposeURL))) {
     debug_session_ = std::make_unique<ComposeSession>(
-        &GetWebContents(), GetModelExecutor(), GetModelQualityLogsUploader());
+        &GetWebContents(), GetModelExecutor(), GetModelQualityLogsUploader(),
+        GetSessionId());
     debug_session_->set_skip_inner_text(true);
     debug_session_->Bind(std::move(handler), std::move(dialog));
     return;
@@ -187,7 +188,7 @@ void ChromeComposeClient::CreateOrUpdateSession(
     }
     auto new_session = std::make_unique<ComposeSession>(
         &GetWebContents(), GetModelExecutor(), GetModelQualityLogsUploader(),
-        std::move(callback));
+        GetSessionId(), std::move(callback));
     current_session = new_session.get();
     // Insert or replace with a new session.
     sessions_.insert_or_assign(active_compose_field_id_.value(),
@@ -287,6 +288,10 @@ ChromeComposeClient::GetModelExecutor() {
           Profile::FromBrowserContext(GetWebContents().GetBrowserContext())));
 }
 
+base::Token ChromeComposeClient::GetSessionId() {
+  return session_id_for_test_.value_or(base::Token::CreateRandom());
+}
+
 optimization_guide::OptimizationGuideDecider*
 ChromeComposeClient::GetOptimizationGuide() {
   return opt_guide_;
@@ -304,6 +309,10 @@ void ChromeComposeClient::SetModelQualityLogsUploaderForTest(
 
 void ChromeComposeClient::SetSkipShowDialogForTest() {
   skip_show_dialog_for_test_ = true;
+}
+
+void ChromeComposeClient::SetSessionIdForTest(base::Token session_id) {
+  session_id_for_test_ = session_id;
 }
 
 int ChromeComposeClient::GetSessionCountForTest() {
