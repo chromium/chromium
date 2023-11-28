@@ -559,16 +559,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="RendererScheduler.IPC.FrameVisibility" enum="Boolean"
-    expires_after="M85">
-  <owner>altimin@chromium.org</owner>
-  <owner>lpy@chromium.org</owner>
-  <summary>
-    This boolean keeps track the count of the visibility change of a frame.
-    Recorded every time when the visibility of a frame is changed.
-  </summary>
-</histogram>
-
 <histogram name="RendererScheduler.QueueingDuration.{Priority}Priority"
     units="microseconds" expires_after="2024-04-28">
   <owner>szager@chromium.org</owner>
