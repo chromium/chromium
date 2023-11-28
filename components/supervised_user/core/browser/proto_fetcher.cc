@@ -31,6 +31,7 @@
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/backoff_entry.h"
+#include "net/base/request_priority.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -111,6 +112,7 @@ std::unique_ptr<network::SimpleURLLoader> InitializeSimpleUrlLoader(
   resource_request->url = CreateRequestUrl(fetcher_config);
   resource_request->method = fetcher_config.GetHttpMethod();
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  resource_request->priority = net::IDLE;
   resource_request->headers.SetHeader(
       net::HttpRequestHeaders::kAuthorization,
       CreateAuthorizationHeader(access_token_info));
