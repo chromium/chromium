@@ -121,7 +121,7 @@ class GpuMemoryBufferVideoFramePool::PoolImpl
   struct PlaneResource {
     gfx::Size size;
     std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer;
-    gpu::Mailbox mailbox;
+    scoped_refptr<gpu::ClientSharedImage> shared_image;
     // Tracks whether the SharedImage is created with GpuMemoryBuffer containing
     // multiplanar format and prefers external sampler.
     bool is_multiplanar_buffer = false;
@@ -1253,7 +1253,7 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
         GpuMemoryBufferFormat(output_format_, plane);
     unsigned texture_target = gpu_factories_->ImageTextureTarget(buffer_format);
     // Bind the texture and create or rebind the image.
-    if (gpu_memory_buffer && plane_resource.mailbox.IsZero()) {
+    if (gpu_memory_buffer && !plane_resource.shared_image) {
       uint32_t usage = gpu::SHARED_IMAGE_USAGE_GLES2 |
                        gpu::SHARED_IMAGE_USAGE_RASTER |
                        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
@@ -1276,24 +1276,24 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
         if (SetPrefersExternalSampler(si_format)) {
           plane_resource.is_multiplanar_buffer = true;
         }
-        client_shared_image = sii->CreateSharedImage(
+        plane_resource.shared_image = sii->CreateSharedImage(
             si_format, gpu_memory_buffer->GetSize(), color_space,
             kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, kDebugLabel,
             gpu_memory_buffer->CloneHandle());
       } else {
-        client_shared_image = sii->CreateSharedImage(
+        plane_resource.shared_image = sii->CreateSharedImage(
             gpu_memory_buffer, gpu_factories_->GpuMemoryBufferManager(),
             GetSharedImageBufferPlane(output_format_, plane), color_space,
             kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, kDebugLabel);
       }
-      CHECK(client_shared_image);
-      plane_resource.mailbox = client_shared_image->mailbox();
-    } else if (!plane_resource.mailbox.IsZero()) {
+      CHECK(plane_resource.shared_image);
+    } else if (plane_resource.shared_image) {
       sii->UpdateSharedImage(frame_resources->sync_token,
-                             plane_resource.mailbox);
+                             plane_resource.shared_image->mailbox());
     }
-    mailbox_holders[plane] = gpu::MailboxHolder(
-        plane_resource.mailbox, gpu::SyncToken(), texture_target);
+    mailbox_holders[plane] =
+        gpu::MailboxHolder(plane_resource.shared_image->mailbox(),
+                           gpu::SyncToken(), texture_target);
   }
 
   // Insert a sync_token, this is needed to make sure that the textures the
@@ -1485,9 +1485,9 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::DeleteFrameResources(
     return;
 
   for (PlaneResource& plane_resource : frame_resources->plane_resources) {
-    if (!plane_resource.mailbox.IsZero()) {
+    if (plane_resource.shared_image) {
       sii->DestroySharedImage(frame_resources->sync_token,
-                              plane_resource.mailbox);
+                              std::move(plane_resource.shared_image));
     }
   }
 }
