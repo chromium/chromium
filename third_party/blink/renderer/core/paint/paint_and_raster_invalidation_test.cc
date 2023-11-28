@@ -1183,14 +1183,8 @@ TEST_P(PaintAndRasterInvalidationTest,
   GetDocument().View()->SetTracksRasterInvalidations(false);
 }
 
-#if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/1313284): Fix this test on Fuchsia and re-enable.
-#define MAYBE_RepaintScrollbarThumbOnHover DISABLED_RepaintScrollbarThumbOnHover
-#else
-#define MAYBE_RepaintScrollbarThumbOnHover RepaintScrollbarThumbOnHover
-#endif
-TEST_P(PaintAndRasterInvalidationTest, MAYBE_RepaintScrollbarThumbOnHover) {
-  USE_NON_OVERLAY_SCROLLBARS();
+TEST_P(PaintAndRasterInvalidationTest, RepaintScrollbarThumbOnHover) {
+  USE_NON_OVERLAY_SCROLLBARS_OR_QUIT();
   SetBodyInnerHTML(R"HTML(
     <style>body {margin: 0}</style>
     <div id="target" style="width: 100px; height: 100px; overflow-y: auto">

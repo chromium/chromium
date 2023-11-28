@@ -3008,7 +3008,7 @@ INSTANTIATE_TEST_SUITE_P(NonOverlay,
                          testing::Values(false));
 
 TEST_P(ScrollbarColorSchemeTest, ThemeEnginePaint) {
-  USE_NON_OVERLAY_SCROLLBARS();
+  USE_NON_OVERLAY_SCROLLBARS_OR_QUIT();
 
   ScopedStubThemeEngine scoped_theme;
 

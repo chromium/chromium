@@ -206,16 +206,10 @@ TEST_P(VisualViewportTest, TestResize) {
   EXPECT_EQ(new_viewport_size, visual_viewport.Size());
 }
 
-#if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/1313284): Fix this test on Fuchsia and re-enable.
-#define MAYBE_TestVisibleContentRect DISABLED_TestVisibleContentRect
-#else
-#define MAYBE_TestVisibleContentRect TestVisibleContentRect
-#endif
 // Make sure that the visibleContentRect method acurately reflects the scale and
 // scroll location of the viewport with and without scrollbars.
-TEST_P(VisualViewportTest, MAYBE_TestVisibleContentRect) {
-  USE_NON_OVERLAY_SCROLLBARS();
+TEST_P(VisualViewportTest, TestVisibleContentRect) {
+  USE_NON_OVERLAY_SCROLLBARS_OR_QUIT();
   InitializeWithDesktopSettings();
 
   RegisterMockedHttpURLLoad("200-by-300.html");
