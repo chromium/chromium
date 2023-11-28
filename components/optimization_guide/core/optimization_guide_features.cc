@@ -967,6 +967,20 @@ int GetOnDeviceModelContextTokenChunkSize() {
   return kOnDeviceModelContextTokenChunkSize.Get();
 }
 
+int GetOnDeviceModelMaxTokensForExecute() {
+  static const base::FeatureParam<int> kOnDeviceModelMaxTokensForExecute{
+      &kOptimizationGuideOnDeviceModel,
+      "on_device_model_max_tokens_for_execute", 1024};
+  return kOnDeviceModelMaxTokensForExecute.Get();
+}
+
+int GetOnDeviceModelMaxTokensForOutput() {
+  static const base::FeatureParam<int> kOnDeviceModelMaxTokensForOutput{
+      &kOptimizationGuideOnDeviceModel, "on_device_model_max_tokens_for_output",
+      1024};
+  return kOnDeviceModelMaxTokensForOutput.Get();
+}
+
 int GetOnDeviceModelCrashCountBeforeDisable() {
   static const base::FeatureParam<int> kOnDeviceModelDisableCrashCount{
       &features::kOptimizationGuideOnDeviceModel,

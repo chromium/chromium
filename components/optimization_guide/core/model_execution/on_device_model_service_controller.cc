@@ -159,9 +159,12 @@ void OnDeviceModelServiceController::OnModelAssetsLoaded(
     return;
   }
   // TODO(b/302402959): Choose max_tokens based on device.
+  int max_tokens = features::GetOnDeviceModelMaxTokensForContext() +
+                   features::GetOnDeviceModelMaxTokensForExecute() +
+                   features::GetOnDeviceModelMaxTokensForOutput();
   service_remote_->LoadModel(
       on_device_model::mojom::LoadModelParams::New(std::move(assets),
-                                                   /*max_tokens=*/4096),
+                                                   max_tokens),
       std::move(model),
       base::BindOnce(&OnDeviceModelServiceController::OnLoadModelResult,
                      weak_ptr_factory_.GetWeakPtr()));

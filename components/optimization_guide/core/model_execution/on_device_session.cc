@@ -155,9 +155,8 @@ void OnDeviceSession::ExecuteModel(
   callback_ = std::move(callback);
   GetOrCreateSession().Execute(
       on_device_model::mojom::InputOptions::New(
-          input->input_string,
-          /*max_tokens=*/std::nullopt, /*token_offset=*/std::nullopt,
-          input->should_ignore_input_context),
+          input->input_string, features::GetOnDeviceModelMaxTokensForExecute(),
+          /*token_offset=*/std::nullopt, input->should_ignore_input_context),
       receiver_.BindNewPipeAndPassRemote());
   receiver_.set_disconnect_handler(
       base::BindOnce(&OnDeviceSession::OnDisconnect, base::Unretained(this)));

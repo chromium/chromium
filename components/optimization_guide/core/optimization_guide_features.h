@@ -383,6 +383,12 @@ int GetOnDeviceModelMinTokensForContext();
 int GetOnDeviceModelMaxTokensForContext();
 int GetOnDeviceModelContextTokenChunkSize();
 
+// The maximum tokens for the input when executing the model.
+int GetOnDeviceModelMaxTokensForExecute();
+
+// The maximum tokens the model will output if the maximum input is given.
+int GetOnDeviceModelMaxTokensForOutput();
+
 // Returns the number of crashes without a successful response before the
 // on-device model won't be used.
 int GetOnDeviceModelCrashCountBeforeDisable();
