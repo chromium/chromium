@@ -173,6 +173,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    "blink_symbol",
+    args = {
+        "blink_symbol_level": 1,
+    },
+)
+
+gn_args.config(
     "cast_android",
     args = {
         "is_cast_android": True,

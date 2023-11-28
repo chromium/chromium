@@ -2,6 +2,10 @@
   "chromium": {
     "linux-official": "ci/linux-official/gn-args.json"
   },
+  "chromium.accessibility": {
+    "fuchsia-x64-accessibility-rel": "ci/fuchsia-x64-accessibility-rel/gn-args.json",
+    "linux-blink-web-tests-force-accessibility-rel": "ci/linux-blink-web-tests-force-accessibility-rel/gn-args.json"
+  },
   "chromium.android": {
     "Android ASAN (dbg)": "ci/Android ASAN (dbg)/gn-args.json",
     "Android arm Builder (dbg)": "ci/Android arm Builder (dbg)/gn-args.json",
@@ -329,6 +333,10 @@
   },
   "tryserver.chromium": {
     "linux-official": "try/linux-official/gn-args.json"
+  },
+  "tryserver.chromium.accessibility": {
+    "fuchsia-x64-accessibility-rel": "try/fuchsia-x64-accessibility-rel/gn-args.json",
+    "linux-blink-web-tests-force-accessibility-rel": "try/linux-blink-web-tests-force-accessibility-rel/gn-args.json"
   },
   "tryserver.chromium.android": {
     "android-10-arm64-rel": "try/android-10-arm64-rel/gn-args.json",

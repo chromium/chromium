@@ -8,6 +8,7 @@ load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "os", "reclient")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -56,6 +57,15 @@ ci.builder(
             short_name = "a11y",
         ),
     ],
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "fuchsia",
+            "blink_symbol",
+            "minimal_symbols",
+        ],
+    ),
 )
 
 ci.builder(
@@ -74,5 +84,12 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "rel",
         short_name = "x64",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder_blink",
+            "reclient",
+            "dcheck_always_on",
+        ],
     ),
 )
