@@ -74,6 +74,7 @@ tools/metrics/histograms/metadata/game_mode/histograms.xml
 tools/metrics/histograms/metadata/gcm/histograms.xml
 tools/metrics/histograms/metadata/geolocation/enums.xml
 tools/metrics/histograms/metadata/geolocation/histograms.xml
+tools/metrics/histograms/metadata/google/enums.xml
 tools/metrics/histograms/metadata/google/histograms.xml
 tools/metrics/histograms/metadata/gpu/histograms.xml
 tools/metrics/histograms/metadata/hang_watcher/histograms.xml
@@ -85,6 +86,7 @@ tools/metrics/histograms/metadata/holding_space/histograms.xml
 tools/metrics/histograms/metadata/image/histograms.xml
 tools/metrics/histograms/metadata/input/enums.xml
 tools/metrics/histograms/metadata/input/histograms.xml
+tools/metrics/histograms/metadata/installer/enums.xml
 tools/metrics/histograms/metadata/installer/histograms.xml
 tools/metrics/histograms/metadata/interstitial/histograms.xml
 tools/metrics/histograms/metadata/invalidation/histograms.xml
@@ -169,6 +171,7 @@ tools/metrics/histograms/metadata/side_search/histograms.xml
 tools/metrics/histograms/metadata/signin/enums.xml
 tools/metrics/histograms/metadata/signin/histograms.xml
 tools/metrics/histograms/metadata/simple/histograms.xml
+tools/metrics/histograms/metadata/stability/enums.xml
 tools/metrics/histograms/metadata/stability/histograms.xml
 tools/metrics/histograms/metadata/start_surface/histograms.xml
 tools/metrics/histograms/metadata/startup/histograms.xml
@@ -205,6 +208,7 @@ tools/metrics/histograms/metadata/webapps/enums.xml
 tools/metrics/histograms/metadata/webapps/histograms.xml
 tools/metrics/histograms/metadata/webauthn/enums.xml
 tools/metrics/histograms/metadata/webauthn/histograms.xml
+tools/metrics/histograms/metadata/windows/enums.xml
 tools/metrics/histograms/metadata/windows/histograms.xml
 tools/metrics/histograms/metadata/xr/enums.xml
 tools/metrics/histograms/metadata/xr/histograms.xml

@@ -1397,76 +1397,6 @@ Unknown properties are collapsed to zero. -->
   <int value="1" label="MultiWindow"/>
 </enum>
 
-<enum name="AndroidProcessedCrashCounts">
-  <int value="0" label="Gpu foreground OOM">
-    GPU is killed by Android due to OOM while app is foreground.
-  </int>
-  <int value="1" label="Visible renderer foreground oom">
-    Renderer is killed by Android due to OOM while app is foreground and
-    renderer is hosting visible clients (generally tabs).
-  </int>
-  <int value="2" label="Renderer intentional kill">
-    Renderer is killed to free renderer slot while and app is foreground.
-  </int>
-  <int value="3" label="Visible subframe renderer foreground oom">
-    Renderer hosting visible subframe is killed by Android due to OOM while app
-    is foreground.
-  </int>
-  <int value="4" label="Visible subframe renderer foreground intentional kill">
-    Renderer hosting visible subframe is killed to free renderer slot while app
-    is foreground.
-  </int>
-  <int value="5" label="Visible main frame renderer foreground crash">
-    Renderer is crashed (with crash report) while app is foreground and renderer
-    is hosting visible clients (generally tabs).
-  </int>
-  <int value="6" label="Visible subframe renderer foreground crash">
-    Renderer hosting visible subframe is crashed (with crash report) while app
-    is foreground.
-  </int>
-  <int value="7" label="All GPU process crashes"/>
-  <int value="8" label="All renderer process crashes"/>
-  <int value="9"
-      label="Visible main frame renderer foreground intentional kill"/>
-  <int value="10"
-      label="Visible renderer foreground normal termination without minidump"/>
-  <int value="11"
-      label="Invisible renderer in foreground app with strong binding killed"/>
-  <int value="12"
-      label="Invisible renderer in foreground app with strong binding oom"/>
-  <int value="13"
-      label="Invisible renderer in foreground app with moderate binding
-             killed"/>
-  <int value="14"
-      label="Invisible renderer in foreground app with moderate binding oom"/>
-  <int value="15"
-      label="Visible renderer in foreground app allocation failure"/>
-  <int value="16" label="All renderer allocation failure"/>
-  <int value="17" label="Utility process foreground OOM"/>
-  <int value="18" label="All utility process crashes"/>
-  <int value="19" label="Renderer shutdown from RenderProcessHost::Shutdown"/>
-  <int value="20"
-      label="Invisible renderer in foreground app with visible binding killed"/>
-  <int value="21"
-      label="Invisible renderer in foreground app with visible binding oom"/>
-  <int value="22"
-      label="Invisible renderer in foreground app with not perceptible
-             binding killed"/>
-  <int value="23"
-      label="Invisible renderer in foreground app with not perceptible
-             binding oom"/>
-  <int value="24"
-      label="Invisible renderer in foreground app with waived binding oom"/>
-</enum>
-
-<enum name="AndroidProcessedMinidumps">
-  <int value="0" label="Other"/>
-  <int value="1" label="Browser"/>
-  <int value="2" label="Renderer"/>
-  <int value="3" label="Gpu"/>
-  <int value="4" label="Utility"/>
-</enum>
-
 <enum name="AndroidProcessExitReason">
   <int value="0" label="ANR"/>
   <int value="1" label="Crash"/>
@@ -1753,21 +1683,6 @@ Unknown properties are collapsed to zero. -->
   <int value="15" label="Extension opened in Standalone browser"/>
   <int value="16" label="Web app opened in Standalone browser"/>
   <int value="17" label="Bruschetta app"/>
-</enum>
-
-<enum name="AppWillTerminateReceived">
-  <int value="0" label="WasNotReceivedForXte">
-    ApplicationWillTerminate notification was not received for this XTE.
-  </int>
-  <int value="1" label="WasNotReceivedForUte">
-    ApplicationWillTerminate notification was not received for this UTE.
-  </int>
-  <int value="2" label="WasReceivedForXte">
-    ApplicationWillTerminate notification was received for this XTE.
-  </int>
-  <int value="3" label="WasReceivedForUte">
-    ApplicationWillTerminate notification was received for this UTE.
-  </int>
 </enum>
 
 <enum name="ArcContinueBootImpulseStatus">
@@ -6106,452 +6021,6 @@ Called by update_autofill_enums.py.-->
   <int value="20" label="Saving trace succeeded"/>
 </enum>
 
-<enum name="BadMessageReasonAutofill">
-<!-- Generated from components/autofill/content/browser/bad_message.h.
-Called by update_bad_message_reasons.py.-->
-
-  <int value="1" label="Prerendering"/>
-</enum>
-
-<enum name="BadMessageReasonChrome">
-<!-- Generated from chrome/browser/bad_message.h.
-Called by update_bad_message_reasons.py.-->
-
-  <int value="0" label="WRLHH_LOGGING_STOPPED_BAD_STATE"/>
-  <int value="1" label="PPH_EXTRA_PREVIEW_MESSAGE"/>
-  <int value="2" label="PMF_INVALID_INITIATOR_ORIGIN"/>
-  <int value="3" label="RFH_INVALID_WEB_UI_CONTROLLER"/>
-  <int value="4" label="RFH_DISPLAY_CAPTURE_PERMISSION_MISSING"/>
-  <int value="5" label="MSFD_MULTIPLE_CLOSURES_OF_FOCUSABILITY_WINDOW"/>
-  <int value="6" label="MSFD_MULTIPLE_EXPLICIT_CALLS_TO_FOCUS"/>
-  <int value="7" label="PVM_SCRIPTED_PRINT_FENCED_FRAME"/>
-  <int value="8" label="PVMB_SCRIPTED_PRINT_FENCED_FRAME"/>
-  <int value="9" label="SSI_CREATE_FENCED_FRAME"/>
-  <int value="10" label="CCU_SUPERFLUOUS_BIND"/>
-</enum>
-
-<enum name="BadMessageReasonContent">
-<!-- Generated from content/browser/bad_message.h.
-Called by update_bad_message_reasons.py.-->
-
-  <int value="0" label="OBSOLETE_NC_IN_PAGE_NAVIGATION"/>
-  <int value="1" label="RFH_CAN_COMMIT_URL_BLOCKED"/>
-  <int value="2" label="RFH_CAN_ACCESS_FILES_OF_PAGE_STATE"/>
-  <int value="3" label="RFH_SANDBOX_FLAGS"/>
-  <int value="4" label="RFH_NO_PROXY_TO_PARENT"/>
-  <int value="5" label="RPH_DESERIALIZATION_FAILED"/>
-  <int value="6" label="OBSOLETE_RVH_CAN_ACCESS_FILES_OF_PAGE_STATE"/>
-  <int value="7" label="OBSOLETE_RFH_FILE_CHOOSER_PATH"/>
-  <int value="8" label="OBSOLETE_RWH_SYNTHETIC_GESTURE"/>
-  <int value="9" label="OBSOLETE_RWH_FOCUS"/>
-  <int value="10" label="OBSOLETE_RWH_BLUR"/>
-  <int value="11" label="RWH_SHARED_BITMAP"/>
-  <int value="12" label="OBSOLETE_RWH_BAD_ACK_MESSAGE"/>
-  <int value="13" label="OBSOLETE_RWHVA_SHARED_MEMORY"/>
-  <int value="14" label="SERVICE_WORKER_BAD_URL"/>
-  <int value="15" label="OBSOLETE_WC_INVALID_FRAME_SOURCE"/>
-  <int value="16" label="OBSOLETE_RWHVM_UNEXPECTED_FRAME_TYPE"/>
-  <int value="17" label="RFPH_DETACH"/>
-  <int value="18" label="DFH_BAD_EMBEDDER_MESSAGE"/>
-  <int value="19" label="NC_AUTO_SUBFRAME"/>
-  <int value="20" label="CSDH_NOT_RECOGNIZED"/>
-  <int value="21" label="OBSOLETE_DSMF_OPEN_STORAGE"/>
-  <int value="22" label="DSMF_LOAD_STORAGE"/>
-  <int value="23" label="OBSOLETE_DBMF_INVALID_ORIGIN_ON_OPEN"/>
-  <int value="24" label="OBSOLETE_DBMF_DB_NOT_OPEN_ON_MODIFY"/>
-  <int value="25" label="OBSOLETE_DBMF_DB_NOT_OPEN_ON_CLOSE"/>
-  <int value="26" label="OBSOLETE_DBMF_INVALID_ORIGIN_ON_SQLITE_ERROR"/>
-  <int value="27" label="RDH_INVALID_PRIORITY"/>
-  <int value="28" label="OBSOLETE_RDH_REQUEST_NOT_TRANSFERRING"/>
-  <int value="29" label="RDH_BAD_DOWNLOAD"/>
-  <int value="30" label="OBSOLETE_NMF_NO_PERMISSION_SHOW"/>
-  <int value="31" label="OBSOLETE_NMF_NO_PERMISSION_CLOSE"/>
-  <int value="32" label="OBSOLETE_NMF_NO_PERMISSION_VERIFY"/>
-  <int value="33" label="MH_INVALID_MIDI_PORT"/>
-  <int value="34" label="MH_MIDI_SYSEX_PERMISSION"/>
-  <int value="35" label="ACDH_REGISTER"/>
-  <int value="36" label="ACDH_UNREGISTER"/>
-  <int value="37" label="ACDH_SET_SPAWNING"/>
-  <int value="38" label="ACDH_SELECT_CACHE"/>
-  <int value="39" label="OBSOLETE_ACDH_SELECT_CACHE_FOR_WORKER"/>
-  <int value="40" label="ACDH_SELECT_CACHE_FOR_SHARED_WORKER"/>
-  <int value="41" label="ACDH_MARK_AS_FOREIGN_ENTRY"/>
-  <int value="42" label="ACDH_PENDING_REPLY_IN_GET_STATUS"/>
-  <int value="43" label="ACDH_GET_STATUS"/>
-  <int value="44" label="ACDH_PENDING_REPLY_IN_START_UPDATE"/>
-  <int value="45" label="ACDH_START_UPDATE"/>
-  <int value="46" label="ACDH_PENDING_REPLY_IN_SWAP_CACHE"/>
-  <int value="47" label="ACDH_SWAP_CACHE"/>
-  <int value="48" label="SWDH_NOT_HANDLED"/>
-  <int value="49" label="OBSOLETE_SWDH_REGISTER_BAD_URL"/>
-  <int value="50" label="OBSOLETE_SWDH_REGISTER_NO_HOST"/>
-  <int value="51" label="OBSOLETE_SWDH_REGISTER_CANNOT"/>
-  <int value="52" label="OBSOLETE_SWDH_UNREGISTER_BAD_URL"/>
-  <int value="53" label="OBSOLETE_SWDH_UNREGISTER_NO_HOST"/>
-  <int value="54" label="OBSOLETE_SWDH_UNREGISTER_CANNOT"/>
-  <int value="55" label="OBSOLETE_SWDH_GET_REGISTRATION_BAD_URL"/>
-  <int value="56" label="OBSOLETE_SWDH_GET_REGISTRATION_NO_HOST"/>
-  <int value="57" label="OBSOLETE_SWDH_GET_REGISTRATION_CANNOT"/>
-  <int value="58" label="OBSOLETE_SWDH_GET_REGISTRATION_FOR_READY_NO_HOST"/>
-  <int value="59"
-      label="OBSOLETE_SWDH_GET_REGISTRATION_FOR_READY_ALREADY_IN_PROGRESS"/>
-  <int value="60" label="SWDH_POST_MESSAGE"/>
-  <int value="61" label="OBSOLETE_SWDH_PROVIDER_CREATED_NO_HOST"/>
-  <int value="62" label="OBSOLETE_SWDH_PROVIDER_DESTROYED_NO_HOST"/>
-  <int value="63" label="OBSOLETE_SWDH_SET_HOSTED_VERSION_NO_HOST"/>
-  <int value="64" label="OBSOLETE_SWDH_SET_HOSTED_VERSION"/>
-  <int value="65" label="OBSOLETE_SWDH_WORKER_SCRIPT_LOAD_NO_HOST"/>
-  <int value="66" label="SWDH_INCREMENT_WORKER_BAD_HANDLE"/>
-  <int value="67" label="SWDH_DECREMENT_WORKER_BAD_HANDLE"/>
-  <int value="68" label="OBSOLETE_SWDH_INCREMENT_REGISTRATION_BAD_HANDLE"/>
-  <int value="69" label="OBSOLETE_SWDH_DECREMENT_REGISTRATION_BAD_HANDLE"/>
-  <int value="70" label="SWDH_TERMINATE_BAD_HANDLE"/>
-  <int value="71" label="OBSOLETE_FAMF_APPEND_ITEM_TO_BLOB"/>
-  <int value="72" label="OBSOLETE_FAMF_APPEND_SHARED_MEMORY_TO_BLOB"/>
-  <int value="73" label="OBSOLETE_FAMF_MALFORMED_STREAM_URL"/>
-  <int value="74" label="OBSOLETE_FAMF_APPEND_ITEM_TO_STREAM"/>
-  <int value="75" label="OBSOLETE_FAMF_APPEND_SHARED_MEMORY_TO_STREAM"/>
-  <int value="76" label="OBSOLETE_IDBDH_CAN_READ_FILE"/>
-  <int value="77" label="OBSOLETE_IDBDH_GET_OR_TERMINATE"/>
-  <int value="78" label="RFMF_SET_COOKIE_BAD_ORIGIN"/>
-  <int value="79" label="RFMF_GET_COOKIES_BAD_ORIGIN"/>
-  <int value="80" label="OBSOLETE_SWDH_GET_REGISTRATIONS_NO_HOST"/>
-  <int value="81" label="OBSOLETE_SWDH_GET_REGISTRATIONS_INVALID_ORIGIN"/>
-  <int value="82" label="OBSOLETE_AOAH_UNAUTHORIZED_URL"/>
-  <int value="83" label="BDH_INVALID_SERVICE_ID"/>
-  <int value="84" label="OBSOLETE_RFH_COMMIT_DESERIALIZATION_FAILED"/>
-  <int value="85" label="BDH_INVALID_CHARACTERISTIC_ID"/>
-  <int value="86" label="OBSOLETE_SWDH_UPDATE_NO_HOST"/>
-  <int value="87" label="OBSOLETE_SWDH_UPDATE_BAD_REGISTRATION_ID"/>
-  <int value="88" label="OBSOLETE_SWDH_UPDATE_CANNOT"/>
-  <int value="89" label="OBSOLETE_SWDH_UNREGISTER_BAD_REGISTRATION_ID"/>
-  <int value="90" label="BDH_INVALID_WRITE_VALUE_LENGTH"/>
-  <int value="91" label="OBSOLETE_WC_MEMORY_CACHE_RESOURCE_BAD_SECURITY_INFO"/>
-  <int value="92" label="OBSOLETE_WC_RENDERER_DID_NAVIGATE_BAD_SECURITY_INFO"/>
-  <int value="93" label="OBSOLETE_BDH_DUPLICATE_REQUEST_DEVICE_ID"/>
-  <int value="94" label="CSDH_INVALID_ORIGIN"/>
-  <int value="95" label="OBSOLETE_RDH_ILLEGAL_ORIGIN"/>
-  <int value="96" label="OBSOLETE_RDH_UNAUTHORIZED_HEADER_REQUEST"/>
-  <int value="97" label="RDH_INVALID_URL"/>
-  <int value="98" label="OBSOLETE_BDH_CHARACTERISTIC_ALREADY_SUBSCRIBED"/>
-  <int value="99" label="RFH_OWNER_PROPERTY"/>
-  <int value="100" label="OBSOLETE_BDH_EMPTY_OR_INVALID_FILTERS"/>
-  <int value="101"
-      label="OBSOLETE_WC_CONTENT_WITH_CERT_ERRORS_BAD_SECURITY_INFO"/>
-  <int value="102" label="OBSOLETE_RFMF_RENDERER_FAKED_ITS_OWN_DEATH"/>
-  <int value="103" label="DWNLD_INVALID_SAVABLE_RESOURCE_LINKS_RESPONSE"/>
-  <int value="104" label="OBSOLETE_DWNLD_INVALID_SERIALIZE_AS_MHTML_RESPONSE"/>
-  <int value="105" label="BDH_DEVICE_NOT_ALLOWED_FOR_ORIGIN"/>
-  <int value="106" label="OBSOLETE_ACI_WRONG_STORAGE_PARTITION"/>
-  <int value="107" label="OBSOLETE_RDHI_WRONG_STORAGE_PARTITION"/>
-  <int value="108" label="RDH_INVALID_REQUEST_ID"/>
-  <int value="109" label="BDH_SERVICE_NOT_ALLOWED_FOR_ORIGIN"/>
-  <int value="110" label="WSI_UNEXPECTED_ADD_CHANNEL_REQUEST"/>
-  <int value="111" label="WSI_UNEXPECTED_SEND_FRAME"/>
-  <int value="112" label="RFH_UNEXPECTED_LOAD_START"/>
-  <int value="113" label="NMF_INVALID_ARGUMENT"/>
-  <int value="114" label="RFH_INVALID_ORIGIN_ON_COMMIT"/>
-  <int value="115" label="BDH_UUID_REGISTERED"/>
-  <int value="116" label="BDH_CONSTRUCTION_FAILED"/>
-  <int value="117" label="BDH_INVALID_REFCOUNT_OPERATION"/>
-  <int value="118" label="BDH_INVALID_URL_OPERATION"/>
-  <int value="119" label="OBSOLETE_IDBDH_INVALID_ORIGIN"/>
-  <int value="120" label="OBSOLETE_RFH_FAIL_PROVISIONAL_LOAD_NO_HANDLE"/>
-  <int value="121" label="OBSOLETE_RFH_FAIL_PROVISIONAL_LOAD_NO_ERROR"/>
-  <int value="122" label="NI_IN_PAGE_NAVIGATION"/>
-  <int value="123" label="RPH_MOJO_PROCESS_ERROR"/>
-  <int value="124" label="OBSOLETE_DBMF_INVALID_ORIGIN_ON_GET_SPACE"/>
-  <int value="125" label="OBSOLETE_DBMF_INVALID_ORIGIN_ON_MODIFIED"/>
-  <int value="126" label="OBSOLETE_DBMF_INVALID_ORIGIN_ON_CLOSED"/>
-  <int value="127" label="OBSOLETE_WSI_INVALID_HEADER_VALUE"/>
-  <int value="128" label="OBSOLETE_SWDH_SET_HOSTED_VERSION_INVALID_HOST"/>
-  <int value="129" label="OBSOLETE_SWDH_SET_HOSTED_VERSION_PROCESS_MISMATCH"/>
-  <int value="130" label="OBSOLETE_MSDH_INVALID_FRAME_ID"/>
-  <int value="131" label="SDH_INVALID_PORT_RANGE"/>
-  <int value="132" label="SCO_INVALID_ARGUMENT"/>
-  <int value="133" label="RFH_INCONSISTENT_DEVTOOLS_MESSAGE"/>
-  <int value="134" label="DSH_DUPLICATE_CONNECTION_ID"/>
-  <int value="135" label="DSH_NOT_CREATED_SESSION_ID"/>
-  <int value="136" label="DSH_NOT_ALLOCATED_SESSION_ID"/>
-  <int value="137" label="DSH_DELETED_SESSION_ID"/>
-  <int value="138" label="OBSOLETE_DSH_WRONG_STORAGE_PARTITION"/>
-  <int value="139" label="BDH_DISALLOWED_ORIGIN"/>
-  <int value="140" label="ARH_CREATED_STREAM_WITHOUT_AUTHORIZATION"/>
-  <int value="141" label="MDDH_INVALID_DEVICE_TYPE_REQUEST"/>
-  <int value="142" label="OBSOLETE_MDDH_UNAUTHORIZED_ORIGIN"/>
-  <int value="143" label="OBSOLETE_SWDH_ENABLE_NAVIGATION_PRELOAD_NO_HOST"/>
-  <int value="144"
-      label="OBSOLETE_SWDH_ENABLE_NAVIGATION_PRELOAD_INVALID_ORIGIN"/>
-  <int value="145"
-      label="OBSOLETE_SWDH_ENABLE_NAVIGATION_PRELOAD_BAD_REGISTRATION_ID"/>
-  <int value="146" label="OBSOLETE_RDH_TRANSFERRING_REQUEST_NOT_FOUND"/>
-  <int value="147" label="OBSOLETE_RDH_TRANSFERRING_NONNAVIGATIONAL_REQUEST"/>
-  <int value="148" label="OBSOLETE_SWDH_GET_NAVIGATION_PRELOAD_STATE_NO_HOST"/>
-  <int value="149"
-      label="OBSOLETE_SWDH_GET_NAVIGATION_PRELOAD_STATE_INVALID_ORIGIN"/>
-  <int value="150"
-      label="OBSOLETE_SWDH_GET_NAVIGATION_PRELOAD_STATE_BAD_REGISTRATION_ID"/>
-  <int value="151" label="OBSOLETE_SWDH_SET_NAVIGATION_PRELOAD_HEADER_NO_HOST"/>
-  <int value="152"
-      label="OBSOLETE_SWDH_SET_NAVIGATION_PRELOAD_HEADER_INVALID_ORIGIN"/>
-  <int value="153"
-      label="OBSOLETE_SWDH_SET_NAVIGATION_PRELOAD_HEADER_BAD_REGISTRATION_ID"/>
-  <int value="154"
-      label="OBSOLETE_SWDH_SET_NAVIGATION_PRELOAD_HEADER_BAD_VALUE"/>
-  <int value="155" label="MDDH_INVALID_SUBSCRIPTION_REQUEST"/>
-  <int value="156" label="OBSOLETE_MDDH_INVALID_UNSUBSCRIPTION_REQUEST"/>
-  <int value="157" label="OBSOLETE_AOAH_NONSENSE_DEVICE_ID"/>
-  <int value="158" label="BDH_INVALID_OPTIONS"/>
-  <int value="159" label="RFH_DID_ADD_CONSOLE_MESSAGE_BAD_SEVERITY"/>
-  <int value="160" label="AIRH_VOLUME_OUT_OF_RANGE"/>
-  <int value="161" label="BDH_INVALID_DESCRIPTOR_ID"/>
-  <int value="162" label="OBSOLETE_RWH_INVALID_BEGIN_FRAME_ACK_DID_NOT_SWAP"/>
-  <int value="163"
-      label="OBSOLETE_RWH_INVALID_BEGIN_FRAME_ACK_COMPOSITOR_FRAME"/>
-  <int value="164" label="BFSI_INVALID_DEVELOPER_ID"/>
-  <int value="165" label="BFSI_INVALID_REQUESTS"/>
-  <int value="166" label="BFSI_INVALID_TITLE"/>
-  <int value="167" label="RWH_INVALID_FRAME_TOKEN"/>
-  <int value="168" label="RWH_BAD_FRAME_SINK_REQUEST"/>
-  <int value="169" label="RWH_SURFACE_INVARIANTS_VIOLATION"/>
-  <int value="170" label="ILLEGAL_UPLOAD_PARAMS"/>
-  <int value="171" label="RFH_BASE_URL_FOR_DATA_URL_SPECIFIED"/>
-  <int value="172" label="OBSOLETE_RFPH_ILLEGAL_UPLOAD_PARAMS"/>
-  <int value="173" label="OBSOLETE_SWDH_PROVIDER_CREATED_ILLEGAL_TYPE"/>
-  <int value="174"
-      label="OBSOLETE_SWDH_PROVIDER_CREATED_ILLEGAL_TYPE_NOT_WINDOW"/>
-  <int value="175"
-      label="OBSOLETE_SWDH_PROVIDER_CREATED_ILLEGAL_TYPE_SERVICE_WORKER"/>
-  <int value="176" label="OBSOLETE_SWDH_PROVIDER_CREATED_DUPLICATE_ID"/>
-  <int value="177" label="OBSOLETE_SWDH_PROVIDER_CREATED_BAD_ID"/>
-  <int value="178" label="RFH_KEEP_ALIVE_HANDLE_REQUESTED_INCORRECTLY"/>
-  <int value="179" label="BFSI_INVALID_UNIQUE_ID"/>
-  <int value="180" label="BPE_UNEXPECTED_MESSAGE_BEFORE_BPGM_CREATION"/>
-  <int value="181" label="WEBUI_SEND_FROM_UNAUTHORIZED_PROCESS"/>
-  <int value="182"
-      label="CPFC_RESIZE_PARAMS_CHANGED_LOCAL_SURFACE_ID_UNCHANGED"/>
-  <int value="183"
-      label="BPG_RESIZE_PARAMS_CHANGED_LOCAL_SURFACE_ID_UNCHANGED"/>
-  <int value="184" label="RFH_NEGATIVE_SELECTION_START_OFFSET"/>
-  <int value="185" label="WEBUI_BAD_SCHEME_ACCESS"/>
-  <int value="186" label="CSDH_UNEXPECTED_OPERATION"/>
-  <int value="187" label="RMF_BAD_URL_CACHEABLE_METADATA"/>
-  <int value="188" label="RFH_INTERFACE_PROVIDER_MISSING"/>
-  <int value="189" label="OBSOLETE_RFH_INTERFACE_PROVIDER_SUPERFLUOUS"/>
-  <int value="190" label="AIRH_UNEXPECTED_BITSTREAM"/>
-  <int value="191" label="ARH_UNEXPECTED_BITSTREAM"/>
-  <int value="192" label="RDH_NULL_CLIENT"/>
-  <int value="193" label="RVH_WEB_UI_BINDINGS_MISMATCH"/>
-  <int value="194" label="OBSOLETE_WCI_NEW_WIDGET_PROCESS_MISMATCH"/>
-  <int value="195" label="AUTH_INVALID_EFFECTIVE_DOMAIN"/>
-  <int value="196" label="AUTH_INVALID_RELYING_PARTY"/>
-  <int value="197" label="RWH_COPY_REQUEST_ATTEMPT"/>
-  <int value="198" label="SYNC_COMPOSITOR_NO_FUTURE_FRAME"/>
-  <int value="199" label="SYNC_COMPOSITOR_NO_BEGIN_FRAME"/>
-  <int value="200" label="WEBUI_BAD_HOST_ACCESS"/>
-  <int value="201" label="OBSOLETE_RFMF_BLOB_URL_TOKEN_FOR_NON_BLOB_URL"/>
-  <int value="202" label="PSI_BAD_PERMISSION_DESCRIPTOR"/>
-  <int value="203" label="BLOB_URL_TOKEN_FOR_NON_BLOB_URL"/>
-  <int value="204" label="OBSOLETE_RFPH_BLOB_URL_TOKEN_FOR_NON_BLOB_URL"/>
-  <int value="205" label="RFH_ERROR_PROCESS_NON_ERROR_COMMIT"/>
-  <int value="206" label="RFH_ERROR_PROCESS_NON_UNIQUE_ORIGIN_COMMIT"/>
-  <int value="207" label="OBSOLETE_RFH_CANNOT_RENDER_FALLBACK_CONTENT"/>
-  <int value="208" label="OBSOLETE_RFH_CHILD_FRAME_NEEDS_OWNER_ELEMENT_TYPE"/>
-  <int value="209" label="OBSOLETE_RFH_INVALID_WEB_REPORTING_CRASH_ID"/>
-  <int value="210" label="RFH_DETACH_MAIN_FRAME"/>
-  <int value="211" label="RFH_BROWSER_INTERFACE_BROKER_MISSING"/>
-  <int value="212" label="RFPH_POST_MESSAGE_INVALID_SOURCE_ORIGIN"/>
-  <int value="213" label="INVALID_INITIATOR_ORIGIN"/>
-  <int value="214" label="RFHI_BEGIN_NAVIGATION_MISSING_INITIATOR_ORIGIN"/>
-  <int value="215" label="RFHI_BEGIN_NAVIGATION_NON_WEBBY_TRANSITION"/>
-  <int value="216" label="RFH_NO_MATCHING_NAVIGATION_REQUEST_ON_COMMIT"/>
-  <int value="217" label="OBSOLETE_AUTH_INVALID_ICON_URL"/>
-  <int value="218" label="MDDH_INVALID_STREAM_SELECTION_INFO"/>
-  <int value="219" label="REGISTER_PROTOCOL_HANDLER_INVALID_URL"/>
-  <int value="220" label="NC_SAME_DOCUMENT_POST_COMMIT_ERROR"/>
-  <int value="221" label="RFH_INVALID_WEB_UI_CONTROLLER"/>
-  <int value="222" label="RFPH_ADVANCE_FOCUS_INTO_PORTAL"/>
-  <int value="223" label="RFH_UNEXPECTED_EMBEDDING_TOKEN"/>
-  <int value="224" label="RFH_MISSING_EMBEDDING_TOKEN"/>
-  <int value="225" label="RFH_BAD_DOCUMENT_POLICY_HEADER"/>
-  <int value="226" label="RFMF_INVALID_PLUGIN_EMBEDDER_ORIGIN"/>
-  <int value="227" label="RFH_INVALID_CALL_FROM_NOT_MAIN_FRAME"/>
-  <int value="228" label="INPUT_ROUTER_INVALID_EVENT_SOURCE"/>
-  <int value="229" label="RFH_INACTIVE_CHECK_FROM_SPECULATIVE_RFH"/>
-  <int value="230" label="RFH_SUBFRAME_CAPTURE_ON_MAIN_FRAME"/>
-  <int value="231" label="RFH_CSP_ATTRIBUTE"/>
-  <int value="232" label="RFH_RECEIVED_ASSOCIATED_MESSAGE_WHILE_BFCACHED"/>
-  <int value="233" label="RWH_CLOSE_PORTAL"/>
-  <int value="234" label="MSDH_INVALID_STREAM_TYPE"/>
-  <int value="235" label="RFH_CREATE_CHILD_FRAME_TOKENS_NOT_FOUND"/>
-  <int value="236" label="ASGH_ASSOCIATED_INTERFACE_REQUEST"/>
-  <int value="237" label="ASGH_RECEIVED_CONTROL_MESSAGE"/>
-  <int value="238" label="CSDH_BAD_OWNER"/>
-  <int value="239" label="SYNC_COMPOSITOR_NO_LOCAL_SURFACE_ID"/>
-  <int value="240" label="WCI_INVALID_FULLSCREEN_OPTIONS"/>
-  <int value="241" label="PAYMENTS_WITHOUT_PERMISSION"/>
-  <int value="242" label="WEB_BUNDLE_INVALID_NAVIGATION_URL"/>
-  <int value="243" label="WCI_INVALID_DOWNLOAD_IMAGE_RESULT"/>
-  <int value="244" label="MDDH_NULL_CAPTURE_HANDLE_CONFIG"/>
-  <int value="245" label="MDDH_INVALID_CAPTURE_HANDLE"/>
-  <int value="246" label="MDDH_INVALID_ALL_ORIGINS_PERMITTED"/>
-  <int value="247" label="MDDH_INVALID_PERMITTED_ORIGIN"/>
-  <int value="248" label="MDDH_NOT_TOP_LEVEL"/>
-  <int value="249" label="RFH_DID_CHANGE_IFRAME_ATTRIBUTE"/>
-  <int value="250" label="FARI_LOGOUT_BAD_ENDPOINT"/>
-  <int value="251"
-      label="OBSOLETE_RFH_CHILD_FRAME_UNEXPECTED_OWNER_ELEMENT_TYPE"/>
-  <int value="252" label="RFH_POPUP_REQUEST_WHILE_PRERENDERING"/>
-  <int value="253" label="RFH_INTERECEPT_DOWNLOAD_WHILE_INACTIVE"/>
-  <int value="254" label="RFH_CREATE_CHILD_FRAME_SANDBOX_FLAGS"/>
-  <int value="255" label="RFPH_FOCUSED_FENCED_FRAME"/>
-  <int value="256" label="WCI_REQUEST_LOCK_MOUSE_FENCED_FRAME"/>
-  <int value="257" label="BFSI_CREATE_FOR_FRAME_FENCED_FRAME"/>
-  <int value="258" label="RFH_FENCED_FRAME_MOJO_WHEN_DISABLED"/>
-  <int value="259" label="PMM_SUBSCRIBE_INVALID_ORIGIN"/>
-  <int value="260" label="PMM_UNSUBSCRIBE_INVALID_ORIGIN"/>
-  <int value="261" label="PMM_GET_SUBSCRIPTION_INVALID_ORIGIN"/>
-  <int value="262" label="RFH_INACTIVE_CHECK_FROM_PENDING_COMMIT_RFH"/>
-  <int value="263" label="MSDH_INVALID_STREAM_TYPE_COMBINATION"/>
-  <int value="264" label="AUTH_INVALID_FENCED_FRAME"/>
-  <int value="265" label="BIBI_BIND_GAMEPAD_MONITOR_FOR_FENCED_FRAME"/>
-  <int value="266" label="BIBI_BIND_GAMEPAD_HAPTICS_MANAGER_FOR_FENCED_FRAME"/>
-  <int value="267" label="BIBI_BIND_BATTERY_MONITOR_FOR_FENCED_FRAME"/>
-  <int value="268" label="RFH_CREATE_FENCED_FRAME_IN_SANDBOXED_FRAME"/>
-  <int value="269" label="RFH_UNLOAD_HANDLER_NOT_ALLOWED_IN_FENCED_FRAME"/>
-  <int value="270"
-      label="RFH_BEFOREUNLOAD_HANDLER_NOT_ALLOWED_IN_FENCED_FRAME"/>
-  <int value="271" label="MSDH_GET_OPEN_DEVICE_USE_WITHOUT_FEATURE"/>
-  <int value="272" label="RFHI_SUBFRAME_NAV_WOULD_CHANGE_MAINFRAME_ORIGIN"/>
-  <int value="273" label="FF_CREATE_WHILE_PRERENDERING"/>
-  <int value="274" label="RFHI_SET_OVERLAYS_CONTENT_NOT_OUTERMOST_FRAME"/>
-  <int value="275" label="FF_DIFFERENT_MODE_THAN_EMBEDDER"/>
-  <int value="276" label="RFHI_UNFENCED_TOP_IPC_OUTSIDE_FENCED_FRAME"/>
-  <int value="277" label="FF_NAVIGATION_INVALID_URL"/>
-  <int value="278" label="FTN_ANONYMOUS"/>
-  <int value="279" label="BFSI_CREATE_FOR_WORKER_FENCED_FRAME"/>
-  <int value="280" label="PMM_SUBSCRIBE_IN_FENCED_FRAME"/>
-  <int value="281" label="MSDH_REQUEST_ALL_SCREENS_NOT_ALLOWED_FOR_ORIGIN"/>
-  <int value="282" label="RFHI_CREATE_FENCED_FRAME_BAD_FRAME_TOKEN"/>
-  <int value="283" label="RFHI_CREATE_FENCED_FRAME_BAD_DEVTOOLS_FRAME_TOKEN"/>
-  <int value="284" label="FF_FROZEN_SANDBOX_FLAGS_CHANGED"/>
-  <int value="285" label="MSM_GET_OPEN_DEVICE_FOR_UNSUPPORTED_STREAM_TYPE"/>
-  <int value="286" label="MSDH_KEEP_DEVICE_ALIVE_USE_WITHOUT_FEATURE"/>
-  <int value="287"
-      label="OBSOLETE_MSDH_INCONSISTENT_AUDIO_TYPE_AND_REQUESTED_FIELDS"/>
-  <int value="288"
-      label="OBSOLETE_MSDH_INCONSISTENT_VIDEO_TYPE_AND_REQUESTED_FIELDS"/>
-  <int value="289"
-      label="MSDH_SUPPRESS_LOCAL_AUDIO_PLAYBACK_BUT_AUDIO_NOT_REQUESTED"/>
-  <int value="290" label="MSDH_HOTWORD_ENABLED_BUT_AUDIO_NOT_REQUESTED"/>
-  <int value="291" label="MSDH_DISABLE_LOCAL_ECHO_BUT_AUDIO_NOT_REQUESTED"/>
-  <int value="292" label="MSDH_ON_STREAM_STARTED_DISALLOWED"/>
-  <int value="293" label="RFH_WINDOW_CLOSE_ON_NON_OUTERMOST_FRAME"/>
-  <int value="294" label="RFPH_WINDOW_CLOSE_ON_NON_OUTERMOST_FRAME"/>
-  <int value="295" label="BIBI_BIND_PRESSURE_MANAGER_FOR_INSECURE_ORIGIN"/>
-  <int value="296" label="BIBI_BIND_PRESSURE_MANAGER_FOR_FENCED_FRAME"/>
-  <int value="297"
-      label="BIBI_BIND_PRESSURE_MANAGER_BLOCKED_BY_PERMISSIONS_POLICY"/>
-  <int value="298" label="RFSCI_BROWSER_VALIDATION_BAD_ORIGIN_TRIAL_TOKEN"/>
-  <int value="299" label="RFH_RECEIVED_INVALID_BROWSING_TOPICS_ATTRIBUTE"/>
-  <int value="300" label="RFHI_FULLSCREEN_NAV_INVALID_INITIAL_DOCUMENT"/>
-  <int value="301" label="RFHI_FULLSCREEN_NAV_NOT_OUTERMOST_MAIN_FRAME"/>
-  <int value="302" label="MH_MIDI_PERMISSION"/>
-  <int value="303" label="RFH_CAN_ACCESS_FILES_OF_PAGE_STATE_AT_COMMIT"/>
-  <int value="304" label="PSI_REQUEST_EMBEDDED_PERMISSION_WITHOUT_FEATURE"/>
-  <int value="305" label="RFH_FOCUS_ACROSS_FENCED_BOUNDARY"/>
-  <int value="306"
-      label="RFH_RECEIVED_INVALID_SHARED_STORAGE_WRITABLE_ATTRIBUTE"/>
-  <int value="307"
-      label="MSDH_EXCLUDE_MONITORS_BUT_PREFERRED_MONITOR_REQUESTED"/>
-  <int value="308" label="PSI_REGISTER_PERMISSION_ELEMENT_WITHOUT_FEATURE"/>
-  <int value="309" label="RFH_RECEIVED_INVALID_AD_AUCTION_HEADERS_ATTRIBUTE"/>
-</enum>
-
-<enum name="BadMessageReasonExtensions">
-<!-- Generated from extensions/browser/bad_message.h.
-Called by update_bad_message_reasons.py.-->
-
-  <int value="0" label="EOG_BAD_ORIGIN"/>
-  <int value="1" label="EVG_BAD_ORIGIN"/>
-  <int value="2" label="BH_BLOB_NOT_OWNED"/>
-  <int value="3" label="EH_BAD_EVENT_ID"/>
-  <int value="4" label="AVG_BAD_INST_ID"/>
-  <int value="5" label="AVG_BAD_EXT_ID"/>
-  <int value="6" label="OBSOLETE_AVG_NULL_AVG"/>
-  <int value="7" label="DEPRECATED_ESWMF_INVALID_DECREMENT_ACTIVITY"/>
-  <int value="8" label="EFD_BAD_MESSAGE"/>
-  <int value="9" label="EFD_BAD_MESSAGE_WORKER"/>
-  <int value="10" label="WVG_PARTITION_ID_NOT_UTF8"/>
-  <int value="11" label="ESWMF_BAD_EVENT_ACK"/>
-  <int value="12" label="MHVG_INVALID_PLUGIN_FRAME_ID"/>
-  <int value="13" label="EMF_INVALID_CHANNEL_SOURCE_TYPE"/>
-  <int value="14" label="EMF_NO_EXTENSION_ID_FOR_EXTENSION_SOURCE"/>
-  <int value="15" label="EMF_INVALID_EXTENSION_ID_FOR_EXTENSION_SOURCE"/>
-  <int value="16" label="EMF_INVALID_EXTENSION_ID_FOR_CONTENT_SCRIPT"/>
-  <int value="17" label="EMF_INVALID_EXTENSION_ID_FOR_WORKER_CONTEXT"/>
-  <int value="18" label="EMF_INVALID_PORT_CONTEXT"/>
-  <int value="19" label="AWCI_INVALID_CALL_FROM_NOT_PRIMARY_MAIN_FRAME"/>
-  <int value="20" label="EFD_INVALID_EXTENSION_ID_FOR_PROCESS"/>
-  <int value="21" label="DEPRECATED_EMF_INVALID_EXTENSION_ID_FOR_TAB_MSG"/>
-  <int value="22" label="EMF_NON_EXTENSION_SENDER_FRAME"/>
-  <int value="23" label="EMF_NON_EXTENSION_SENDER_NATIVE_HOST"/>
-  <int value="24" label="EMF_INVALID_SOURCE_URL"/>
-  <int value="25" label="DEPRECATED_EMF_INVALID_SOURCE_URL_FROM_WORKER"/>
-  <int value="26"
-      label="EMF_INVALID_OPEN_CHANNEL_TO_EXTENSION_FROM_NATIVE_HOST"/>
-  <int value="27" label="EMF_INVALID_EXTENSION_ID_FOR_WEB_PAGE"/>
-  <int value="28" label="EMF_INVALID_EXTENSION_ID_FOR_USER_SCRIPT"/>
-  <int value="29" label="EMF_INVALID_EXTERNAL_EXTENSION_ID_FOR_USER_SCRIPT"/>
-  <int value="30"
-      label="EMF_INVALID_OPEN_CHANNEL_TO_NATIVE_APP_FROM_NATIVE_HOST"/>
-  <int value="31" label="EFH_NO_BACKGROUND_HOST_FOR_FRAME"/>
-  <int value="32" label="LEGACY_IPC_MISMATCH"/>
-  <int value="33" label="ER_SW_INVALID_LAZY_BACKGROUND_PARAM"/>
-</enum>
-
-<enum name="BadMessageReasonGuestView">
-<!-- Generated from components/guest_view/browser/bad_message.h.
-Called by update_bad_message_reasons.py.-->
-
-  <int value="0" label="GVM_EMBEDDER_FORBIDDEN_ACCESS_TO_GUEST"/>
-  <int value="1" label="GVM_INVALID_GUESTVIEW_TYPE"/>
-  <int value="2" label="GVMF_UNEXPECTED_MESSAGE_BEFORE_GVM_CREATION"/>
-  <int value="3" label="GVM_INVALID_ATTACH"/>
-</enum>
-
-<enum name="BadMessageReasonNaCl">
-<!-- Generated from components/nacl/browser/bad_message.h.
-Called by update_bad_message_reasons.py.-->
-
-  <int value="0" label="NFH_OPEN_EXECUTABLE_BAD_ROUTING_ID"/>
-  <int value="1" label="NHMF_LAUNCH_CONTINUATION_BAD_ROUTING_ID"/>
-  <int value="2" label="NHMF_GET_NEXE_FD_BAD_URL"/>
-</enum>
-
-<enum name="BadMessageReasonPasswordManager">
-<!-- Generated from components/password_manager/content/browser/bad_message.h.
-Called by update_bad_message_reasons.py.-->
-
-  <int value="1" label="CPMD_BAD_ORIGIN_FORMS_PARSED_OBSOLETE"/>
-  <int value="2" label="CPMD_BAD_ORIGIN_FORMS_RENDERED_OBSOLETE"/>
-  <int value="3" label="CPMD_BAD_ORIGIN_FORM_SUBMITTED"/>
-  <int value="4" label="CPMD_BAD_ORIGIN_FOCUSED_PASSWORD_FORM_FOUND_OBSOLETE"/>
-  <int value="5" label="CPMD_BAD_ORIGIN_IN_PAGE_NAVIGATION_OBSOLETE"/>
-  <int value="6" label="CPMD_BAD_ORIGIN_PASSWORD_NO_LONGER_GENERATED"/>
-  <int value="7" label="CPMD_BAD_ORIGIN_PRESAVE_GENERATED_PASSWORD"/>
-  <int value="8"
-      label="CPMD_BAD_ORIGIN_SAVE_GENERATION_FIELD_DETECTED_BY_CLASSIFIER_OBSOLETE"/>
-  <int value="9" label="CPMD_BAD_ORIGIN_UPON_USER_INPUT_CHANGE_OBSOLETE"/>
-  <int value="10" label="CPMD_BAD_ORIGIN_AUTOMATIC_GENERATION_STATUS_CHANGED"/>
-  <int value="11"
-      label="CPMD_BAD_ORIGIN_SHOW_MANUAL_PASSWORD_GENERATION_POPUP"/>
-  <int value="12" label="CPMD_BAD_ORIGIN_SHOW_PASSWORD_EDITING_POPUP_OBSOLETE"/>
-  <int value="13"
-      label="CPMD_BAD_ORIGIN_GENERATION_AVAILABLE_FOR_FORM_OBSOLETE"/>
-  <int value="14" label="CPMD_BAD_ORIGIN_PRERENDERING"/>
-</enum>
-
 <enum name="BadSyncDataReason">
   <int value="0" label="Bad extension ID"/>
   <int value="1" label="Bad version"/>
@@ -6796,11 +6265,6 @@ Called by update_bad_message_reasons.py.-->
 <enum name="BooleanAllowed">
   <int value="0" label="Not Allowed"/>
   <int value="1" label="Allowed"/>
-</enum>
-
-<enum name="BooleanAlreadyUpdating">
-  <int value="0" label="Not Already Updating"/>
-  <int value="1" label="Already Updating"/>
 </enum>
 
 <enum name="BooleanAttempted">
@@ -7124,11 +6588,6 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Has fetchers"/>
 </enum>
 
-<enum name="BooleanHasPossibleExplanation">
-  <int value="0" label="Unknown explanation"/>
-  <int value="1" label="Has possible explanation"/>
-</enum>
-
 <enum name="BooleanHasUserActivation">
   <int value="0" label="Does not have user activation"/>
   <int value="1" label="Has user activation"/>
@@ -7247,11 +6706,6 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Main frame"/>
 </enum>
 
-<enum name="BooleanMarkedForReload">
-  <int value="0" label="Not marked for reload"/>
-  <int value="1" label="Marked for reload"/>
-</enum>
-
 <enum name="BooleanMatched">
   <int value="0" label="Not matched"/>
   <int value="1" label="Matched"/>
@@ -7315,11 +6769,6 @@ Called by update_bad_message_reasons.py.-->
 <enum name="BooleanReady">
   <int value="0" label="Not Ready"/>
   <int value="1" label="Ready"/>
-</enum>
-
-<enum name="BooleanRebooted">
-  <int value="0" label="Has not rebooted"/>
-  <int value="1" label="Rebooted"/>
 </enum>
 
 <enum name="BooleanReceived">
@@ -7530,11 +6979,6 @@ Called by update_bad_message_reasons.py.-->
 <enum name="BooleanWillReadFrequently">
   <int value="0" label="Not initialized to be read frequently"/>
   <int value="1" label="Initialized to be read frequently"/>
-</enum>
-
-<enum name="BooleanWin11MenuStyle">
-  <int value="0" label="Prior to Win11 Style"/>
-  <int value="1" label="Win11 Style"/>
 </enum>
 
 <enum name="BooleanYesNo">
@@ -8884,129 +8328,11 @@ Called by update_protocol_commands_enum.py.-->
   <int value="11" label="User selected the Customize Chrome Side Panel lab"/>
 </enum>
 
-<enum name="ChromeOSBiosType">
-  <int value="0" label="kUnknown"/>
-  <int value="1" label="kSecure"/>
-  <int value="2" label="kUBoot"/>
-  <int value="3" label="kLegacy"/>
-  <int value="4" label="kEFI"/>
-</enum>
-
-<enum name="ChromeOSEfiManagementEvent">
-  <int value="0" label="RequiredEntryManagementFailed"/>
-  <int value="1" label="OptionalEntryManagementFailed"/>
-</enum>
-
 <enum name="ChromeOSHiddenUserPodsOfflineLogin">
   <summary>Tracks if offline user login is allowed.</summary>
   <int value="0" label="Enabled"/>
   <int value="1" label="Blocked by time limit expired"/>
   <int value="2" label="Blocked by invalid sync token"/>
-</enum>
-
-<enum name="ChromeOSRecoveryReason">
-  <summary>
-    Reason for entering Recovery Mode. See
-    platform/vboot_reference/firmware/2lib/include/2recovery_reasons.h
-  </summary>
-  <int value="0" label="Recovery not requested."/>
-  <int value="1" label="Recovery requested from legacy utility."/>
-  <int value="2" label="User manually requested recovery via recovery button"/>
-  <int value="3"
-      label="RW firmware failed signature check (neither RW firmware slot was
-             valid)"/>
-  <int value="4" label="S3 resume failed"/>
-  <int value="5" label="TPM error in read-only firmware (deprecated)"/>
-  <int value="6" label="Shared data error in read-only firmware"/>
-  <int value="7" label="Test error from S3Resume()"/>
-  <int value="8" label="Test error from LoadFirmwareSetup() (deprecated)"/>
-  <int value="9" label="Test error from LoadFirmware() (deprecated)"/>
-  <int value="19"
-      label="Latest tried RW firmware keyblock verification failed"/>
-  <int value="20" label="Latest tried RW firmware key version too old"/>
-  <int value="22"
-      label="Latest tried RW firmware preamble verification failed"/>
-  <int value="23" label="Latest tried RW firmware version too old"/>
-  <int value="27" label="Latest tried RW firmware body verification failed"/>
-  <int value="32"
-      label="Firmware boot failure outside of verified boot (RAM init,
-             missing SSD, etc.)."/>
-  <int value="33"
-      label="Recovery mode TPM initialization requires a system reboot. The
-             system was already in recovery mode for some other reason when
-             this happened."/>
-  <int value="34" label="EC software sync - other error"/>
-  <int value="35"
-      label="EC software sync - unable to determine active EC image"/>
-  <int value="36"
-      label="EC software sync - error obtaining EC image hash (deprecated)"/>
-  <int value="37" label="EC software sync - error obtaining expected EC image"/>
-  <int value="38" label="EC software sync - error updating EC"/>
-  <int value="39" label="EC software sync - unable to jump to EC-RW"/>
-  <int value="40"
-      label="EC software sync - unable to protect / unprotect EC-RW"/>
-  <int value="41" label="EC software sync - error obtaining expected EC hash"/>
-  <int value="42"
-      label="EC software sync - expected EC image doesn't match hash"/>
-  <int value="43" label="Secure data inititalization error"/>
-  <int value="44" label="GBB header is bad"/>
-  <int value="45" label="Unable to clear TPM owner"/>
-  <int value="46" label="Error determining/updating virtual dev switch"/>
-  <int value="47" label="Error determining firmware slot"/>
-  <int value="63" label="Unspecified/unknown error in read-only firmware"/>
-  <int value="65"
-      label="User manually requested recovery by pressing a key at developer
-             warning screen"/>
-  <int value="66" label="No OS kernel detected"/>
-  <int value="67" label="OS kernel failed signature check"/>
-  <int value="68" label="TPM error in rewritable firmware (deprecated)"/>
-  <int value="69" label="RW firmware in dev mode, but dev switch is off"/>
-  <int value="70" label="Shared data error in rewritable firmware"/>
-  <int value="71" label="Test error from LoadKernel()"/>
-  <int value="72" label="No bootable disk found (deprecated)"/>
-  <int value="73"
-      label="Rebooting did not correct TPM_E_FAIL or TPM_E_FAILEDSELFTEST"/>
-  <int value="80" label="TPM setup error in read-only firmware"/>
-  <int value="81" label="TPM write error in read-only firmware"/>
-  <int value="82" label="TPM lock error in read-only firmware"/>
-  <int value="83" label="TPM update error in read-only firmware"/>
-  <int value="84" label="TPM read error in rewritable firmware"/>
-  <int value="85" label="TPM write error in rewritable firmware"/>
-  <int value="86" label="TPM lock error in rewritable firmware"/>
-  <int value="87" label="EC software sync unable to get EC image hash"/>
-  <int value="88" label="EC software sync invalid image hash size"/>
-  <int value="89" label="Unspecified error while trying to load kernel"/>
-  <int value="90" label="No bootable storage device in system"/>
-  <int value="91" label="No bootable kernel found on disk"/>
-  <int value="92" label="BCB related error in RW firmware"/>
-  <int value="93" label="Secure data inititalization error 0"/>
-  <int value="94" label="Fastboot mode requested in firmware"/>
-  <int value="95" label="Recovery hash space lock error in RO firmware"/>
-  <int value="127" label="Unspecified/unknown error in rewritable firmware"/>
-  <int value="129" label="DM-verity error"/>
-  <int value="143" label="Unspecified/unknown error in kernel."/>
-  <int value="191" label="Unspecified/unknown error in kernel"/>
-  <int value="193" label="Recovery mode test from user-mode"/>
-  <int value="194" label="Recovery requested by user-mode via BCB"/>
-  <int value="195" label="Fastboot mode requested by user-mode"/>
-  <int value="196"
-      label="User requested recovery for training memory and rebooting."/>
-  <int value="200" label="User requested network based recovery"/>
-  <int value="255" label="Unspecified/unknown error in user-mode"/>
-</enum>
-
-<enum name="ChromeOSRevenPartitionMigration">
-  <int value="0" label="kSuccess"/>
-  <int value="1" label="kNoMigrationNeeded"/>
-  <int value="2" label="kGptReadKernError"/>
-  <int value="3" label="kGptReadRootError"/>
-  <int value="4" label="kGptWriteKernError"/>
-  <int value="5" label="kGptWriteRootError"/>
-  <int value="6" label="kDiskOpenError"/>
-  <int value="7" label="kDiskReadError"/>
-  <int value="8" label="kDiskWriteError"/>
-  <int value="9" label="kRootPartitionUnexpectedSize"/>
-  <int value="10" label="kMigrationNotAllowed"/>
 </enum>
 
 <enum name="ChromeOSUserImageId2">
@@ -12025,40 +11351,6 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="250477278" label="(Delphi exception)"/>
 </enum>
 
-<enum name="CrashVisibility">
-  <summary>
-    This enum describes the timing of a renderer crash in relation to whether a
-    sad frame was visible. Whether a subframe is &quot;visible&quot; is
-    currently defined as 1) in visible, non-occluded WebContents and 2) with a
-    non-empty viewport intersection rect.
-  </summary>
-  <int value="0" label="CrashedWhileVisible">
-    The renderer crashed while the subframe was visible.
-  </int>
-  <int value="1" label="ShownAfterCrashing">
-    The renderer crashed while the subframe was hidden, but later the frame
-    became visible (the tab was foregrounded, the frame was scrolled into view,
-    the frame was resized, etc.).
-  </int>
-  <int value="2" label="NeverVisibleAfterCrash">
-    The renderer crashed while the subframe was hidden, and the frame was never
-    shown afterwards (e.g. until eventually being discarded when the whole tab
-    is navigated away).
-  </int>
-  <int value="3" label="ShownWhileAncestorIsLoading">
-    The renderer crashed while the subframe was hidden, and the frame became
-    visible while an ancestor frame had a pending load. This form of sad frame
-    is not as bad for user experience as ShownAfterCrashing, since the sad frame
-    is expected to disappear shortly when the ancestor frame finishes
-    navigation.
-
-    One common case where this is expected to happen is when a crashed subframe
-    appears on a hidden tab, which will mark the tab for reload, and then the
-    user switches to this tab. The tab will start reloading, but the crashed
-    subframe may become visible momentarily before the reload completes.
-  </int>
-</enum>
-
 <enum name="CrasNoiseCancellationStatus">
   <summary>
     List of status types of Noise Cancellation for the supported audio device.
@@ -13443,25 +12735,6 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
       label="Failed YUV video quad no p010 video processor support"/>
   <int value="21" label="Failed YUV video quad hdr non fullscreen"/>
   <int value="22" label="Failed YUV video quad hdr non p010"/>
-</enum>
-
-<enum name="DebugScenario">
-<!-- Generated from content/common/debug_utils.h.
-Called by update_debug_scenarios.py.-->
-
-<!-- For more details about the meaning of each value in this enum,
-     please refer to content/common/debug_utils.h. -->
-
-  <int value="1" label="kDebugSameDocNavigationDocIdMismatch"/>
-  <int value="2" label="kDebugNonMainFrameWithOldPageInfo"/>
-  <int value="3" label="kDebugBackForwardCacheMetricsMismatch"/>
-  <int value="4" label="kDebugBrowserVsRendererOriginToCommit"/>
-  <int value="5" label="kDebugBackForwardCacheEvictRestoreRace"/>
-  <int value="6" label="kDebugNoResponseHeadForHttpOrHttps"/>
-  <int value="7" label="kDebugSubframeProxyCreationWithNoRVH"/>
-  <int value="8" label="kDebugBackForwardCacheEntryExistsOnSubframeHistoryNav"/>
-  <int value="9" label="kDebugNoRenderFrameProxyHostOnSetFocusedFrame"/>
-  <int value="10" label="kDebugNoRestoredRFHOnNonRestartedNavigation"/>
 </enum>
 
 <enum name="DeclarativeAPIFunctionType">
@@ -16137,11 +15410,6 @@ Called by update_document_policy_enum.py.-->
 <enum name="DspHotwordDetectionStatus">
   <int value="0" label="HARDWARE_ACCEPTED"/>
   <int value="1" label="SOFTWARE_REJECTED"/>
-</enum>
-
-<enum name="DumpWithoutCrashingStatus">
-  <int value="0" label="Dump throttled"/>
-  <int value="1" label="Dump uploaded"/>
 </enum>
 
 <enum name="DXGI_FORMAT">
@@ -26551,13 +25819,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="3" label="Compositor Only Frame"/>
 </enum>
 
-<enum name="FrameVisibility">
-  <int value="0" label="Rendered but not in the current viewport"/>
-  <int value="1" label="Rendered in current viewport"/>
-  <int value="2"
-      label="Not visible, no layout object created (e.g., display: none)"/>
-</enum>
-
 <enum name="FuseArchiveError">
   <int value="0" label="Success">EXIT_SUCCESS</int>
   <int value="1" label="Generic error">EXIT_CODE_GENERIC_FAILURE</int>
@@ -27222,44 +26483,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="13" label="WEB_LOGIN_REQUIRED (deprecated)"/>
   <int value="14" label="SCOPE_LIMITED_UNRECOVERABLE_ERROR"/>
   <int value="15" label="CHALLENGE_RESPONSE_REQUIRED"/>
-</enum>
-
-<enum name="GoogleUpdateErrorCode">
-  <int value="0" label="GOOGLE_UPDATE_NO_ERROR"/>
-  <int value="1" label="CANNOT_UPGRADE_CHROME_IN_THIS_DIRECTORY"/>
-  <int value="2" label="GOOGLE_UPDATE_JOB_SERVER_CREATION_FAILED (deprecated)"/>
-  <int value="3" label="GOOGLE_UPDATE_ONDEMAND_CLASS_NOT_FOUND"/>
-  <int value="4" label="GOOGLE_UPDATE_ONDEMAND_CLASS_REPORTED_ERROR"/>
-  <int value="5" label="GOOGLE_UPDATE_GET_RESULT_CALL_FAILED (deprecated)"/>
-  <int value="6" label="GOOGLE_UPDATE_GET_VERSION_INFO_FAILED (deprecated)"/>
-  <int value="7" label="GOOGLE_UPDATE_ERROR_UPDATING"/>
-  <int value="8" label="GOOGLE_UPDATE_DISABLED_BY_POLICY"/>
-  <int value="9" label="GOOGLE_UPDATE_DISABLED_BY_POLICY_AUTO_ONLY"/>
-</enum>
-
-<enum name="GoogleUpdateHashedCohortId">
-  <summary>
-    A hash of the update cohort id; a value of zero/none likely indicates no
-    cohort id, which suggests that the updater is broken or not present.
-  </summary>
-  <int value="0" label="None"/>
-</enum>
-
-<enum name="GoogleUpdateHashedCohortName">
-  <summary>
-    A hash of the update cohort name; a value of zero/none likely indicates no
-    cohort name, which suggests that the updater is broken or not present.
-  </summary>
-  <int value="0" label="None"/>
-</enum>
-
-<enum name="GoogleUpdateUpgradeStatus">
-  <int value="0" label="UPGRADE_STARTED (deprecated)"/>
-  <int value="1" label="UPGRADE_CHECK_STARTED (deprecated)"/>
-  <int value="2" label="UPGRADE_IS_AVAILABLE"/>
-  <int value="3" label="UPGRADE_SUCCESSFUL"/>
-  <int value="4" label="UPGRADE_ALREADY_UP_TO_DATE"/>
-  <int value="5" label="UPGRADE_ERROR"/>
 </enum>
 
 <enum name="GPUBlocklistFeatureTestResults">
@@ -30197,23 +29420,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="11" label="Omnibox Most Visited Tile"/>
 </enum>
 
-<enum name="IOSAppState">
-  <int value="0"
-      label="Unknown UTE. This should not happen and presence of this value
-             likely indicates a bug in Chrome or UIKit code."/>
-  <int value="1"
-      label="Unknown XTE. This should not happen and presence of this value
-             likely indicates a bug in Chrome or UIKit code."/>
-  <int value="2" label="App state was UIApplicationStateActive during UTE."/>
-  <int value="3" label="App state was UIApplicationStateActive during XTE."/>
-  <int value="4" label="App state was UIApplicationStateInactive during UTE."/>
-  <int value="5" label="App state was UIApplicationStateInactive during XTE."/>
-  <int value="6"
-      label="App state was UIApplicationStateBackground during UTE."/>
-  <int value="7"
-      label="App state was UIApplicationStateBackground during XTE."/>
-</enum>
-
 <enum name="IOSColdStartType">
   <int value="0" label="Cold start"/>
   <int value="1" label="Cold start with FRE"/>
@@ -30246,14 +29452,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="1" label="Omnibox"/>
   <int value="2" label="External Intent"/>
   <int value="3" label="Set Up List"/>
-</enum>
-
-<enum name="IOSDeviceThermalState">
-  <int value="0" label="0-Unknown"/>
-  <int value="1" label="1-Nominal"/>
-  <int value="2" label="2-Fair"/>
-  <int value="3" label="3-Serious"/>
-  <int value="4" label="4-Critical"/>
 </enum>
 
 <enum name="IOSExternalURLRequestStatus">
@@ -30362,14 +29560,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="11" label="CarrierIParcel"/>
 </enum>
 
-<enum name="IOSPostCrashAction">
-  <int value="0" label="Restore tabs normally after a clean shutdown"/>
-  <int value="1" label="Restore tabs normally after an unclean shutdown"/>
-  <int value="2" label="Don't restore tabs, show crash infobar and NTP"/>
-  <int value="3" label="Restore tabs with return to previous tab NTP"/>
-  <int value="4" label="Show safe mode"/>
-</enum>
-
 <enum name="IOSShareAction">
   <int value="0" label="Unknown"/>
   <int value="1" label="Cancel"/>
@@ -30391,19 +29581,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="17" label="Save to Files"/>
   <int value="18" label="Markup"/>
   <int value="19" label="Add to Home"/>
-</enum>
-
-<enum name="IOSStabilityUserVisibleTerminationType">
-  <summary>
-    One of several separate stability metrics. The values are non-contiguous as
-    they are a subset of values matching fields of the Stability proto (from the
-    SystemProfile).
-  </summary>
-  <int value="0"
-      label="Termination caused by system signal (f.e. EXC_BAD_ACCESS)"/>
-  <int value="1"
-      label="Termination caused by Hang / UI Thread freeze (ui thread was
-             locked for 9+ seconds and the app was quit by OS or the user)."/>
 </enum>
 
 <enum name="IPCAttachmentBrokerPrivilegedBrokerAttachmentError">
@@ -30496,12 +29673,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="0" label="Unknown"/>
   <int value="1" label="Mainframe"/>
   <int value="2" label="Subresource"/>
-</enum>
-
-<enum name="IsPinnedToTaskbarResult">
-  <int value="0" label="Not pinned"/>
-  <int value="1" label="Pinned"/>
-  <int value="2" label="Failed to determine"/>
 </enum>
 
 <enum name="ItemSuggestRequestResult">
@@ -43959,16 +43130,6 @@ Called by update_use_counter_css.py.-->
   <int value="18" label="Chrome Open In Extension"/>
 </enum>
 
-<enum name="MobileSessionShutdownType">
-  <int value="0" label="Shutdown in background"/>
-  <int value="1" label="Shutdown in foreground; no log; no memory warning"/>
-  <int value="2" label="Shutdown in foreground; with log; no memory warning"/>
-  <int value="3" label="Shutdown in foreground; no log; with memory warning"/>
-  <int value="4" label="Shutdown in foreground; with log; with memory warning"/>
-  <int value="5" label="First launch after upgrade"/>
-  <int value="6" label="Shutdown in foreground, main thread not responding"/>
-</enum>
-
 <enum name="MobileSessionStartAction">
   <int value="0" label="Open http">
     Logged when an application passes an http URL to Chrome using the custom
@@ -46865,12 +46026,6 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="Load timeout"/>
   <int value="2" label="Load error"/>
   <int value="3" label="HTTP error"/>
-</enum>
-
-<enum name="OOMShutdownHint">
-  <int value="0" label="There is no additional information for this UTE/XTE"/>
-  <int value="1" label="Session restoration was in progress before this UTE"/>
-  <int value="2" label="Session restoration was in progress before this XTE"/>
 </enum>
 
 <enum name="OopRasterGlyphCacheMissType">
@@ -51101,74 +50256,6 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Broadcast Receiver"/>
 </enum>
 
-<enum name="ProcessNameHash">
-  <summary>
-    The hash of a lower case process name generated using metrics::HashName.
-  </summary>
-  <int value="-2031320757" label="naio.exe"/>
-  <int value="-1975402871" label="windbg.exe"/>
-  <int value="-1883802758" label="chrome.exe"/>
-  <int value="-1861811955" label="origin.exe"/>
-  <int value="-1794024814" label="avpui.exe"/>
-  <int value="-1728702815" label="devenv.exe"/>
-  <int value="-1700192260" label="outlook.exe"/>
-  <int value="-1524496827" label="client.exe"/>
-  <int value="-1478451048" label="nexus.exe"/>
-  <int value="-1121730033" label="firefox.exe"/>
-  <int value="-1119614451" label="idman.exe"/>
-  <int value="-958751916" label="qq.exe"/>
-  <int value="-642217101" label="new_chrome.exe"/>
-  <int value="-590220378" label="phped.exe"/>
-  <int value="-569935454" label="itype.exe"/>
-  <int value="-319883659" label="perl.exe"/>
-  <int value="-214303849" label="userinit.exe"/>
-  <int value="-113003297" label="launchy.exe"/>
-  <int value="-105465200" label="discord.exe"/>
-  <int value="-84282901" label="cmd.exe"/>
-  <int value="-46738700" label="svchost.exe"/>
-  <int value="-918169" label="wlmail.exe"/>
-  <int value="0" label="Unknown"/>
-  <int value="98111354" label="explorer.exe"/>
-  <int value="160270488" label="node.exe"/>
-  <int value="169714319" label="idea.exe"/>
-  <int value="179238190" label="botweb.exe"/>
-  <int value="309035343" label="mailbird.exe"/>
-  <int value="373915621" label="skype.exe"/>
-  <int value="533327338" label="raidcall.exe"/>
-  <int value="575047983" label="tween.exe"/>
-  <int value="683573237" label="dropbox.exe"/>
-  <int value="693432326" label="steam.exe"/>
-  <int value="729198307" label="excel.exe"/>
-  <int value="742620152" label="python.exe"/>
-  <int value="747859312" label="courier.exe"/>
-  <int value="1000072556" label="java.exe"/>
-  <int value="1408608854" label="old_chrome.exe"/>
-  <int value="1412988381" label="claunch.exe"/>
-  <int value="1590408389" label="services.exe"/>
-  <int value="1614875030" label="taskeng.exe"/>
-  <int value="1630952668" label="line.exe"/>
-  <int value="1641914182" label="winword.exe"/>
-  <int value="1660748446" label="acad.exe"/>
-  <int value="1775984853" label="spotify.exe"/>
-  <int value="1896894115" label="filmora.exe"/>
-  <int value="1914315258" label="cdb.exe"/>
-  <int value="1941932935" label="javaw.exe"/>
-  <int value="1943061727" label="fiddler.exe"/>
-  <int value="1976535553" label="jsvmail.exe"/>
-  <int value="2011028983" label="pcman.exe"/>
-</enum>
-
-<enum name="ProcessorFamily">
-<!-- These are the first three values from a very long list of values.
-The Full list of enums is in section 7.5.2 in the SMBios spec.
-https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
--->
-
-  <int value="0" label="Error"/>
-  <int value="1" label="Other"/>
-  <int value="2" label="Unknown"/>
-</enum>
-
 <enum name="ProcessPerSiteWithMainFrameThresholdBlockReason">
   <int value="0" label="Not blocked"/>
   <int value="1" label="Process reuse is disabled"/>
@@ -54815,36 +53902,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="12" label="Extension Renderer"/>
 </enum>
 
-<enum name="ShownAfterCrashingReason">
-  <summary>
-    This enum describes the reason that a crashed subframe became visible.
-  </summary>
-  <int value="0" label="TabWasShown">
-    The crashed subframe became visible because the user switched to a tab that
-    contains it.
-  </int>
-  <int value="1" label="ViewportIntersection">
-    The crashed subframe became visible because its viewport intersection became
-    non-empty. For example, this can happens when the subframe was scrolled into
-    view.
-  </int>
-  <int value="2" label="Visibility">
-    The crashed subframe became visible because its visibility was updated, for
-    example if the parent frame changed the iframe element's visibility through
-    CSS.
-  </int>
-  <int value="3" label="ViewportIntersectionAfterTabWasShown">
-    The crashed subframe became visible after (1) a tab that contains it became
-    visible, and then (2) its viewport intersection became non-empty, for
-    example if the subframe was scrolled into view.
-  </int>
-  <int value="4" label="VisibilityAfterTabWasShown">
-    The crashed subframe became visible after (1) a tab that contains it became
-    visible, and then (2) its visibility was updated, for example if the parent
-    frame changed the iframe element's visibility through CSS.
-  </int>
-</enum>
-
 <enum name="ShowQueryTilesSegmentationResult">
   <int value="0" label="Uninitialized"/>
   <int value="1" label="Dont show Start surface"/>
@@ -55851,55 +54908,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="0" label="ACTION_DISMISSED"/>
   <int value="1" label="ACTION_ENABLED_SSO_ACCOUNT"/>
   <int value="2" label="ACTION_ADDED_ANOTHER_ACCOUNT"/>
-</enum>
-
-<enum name="StabilityEventType">
-  <summary>
-    One of several separate stability metrics. The values are non-contiguous as
-    they are a subset of values matching fields of the Stability proto (from the
-    SystemProfile).
-  </summary>
-  <int value="2" label="Pageload count"/>
-  <int value="3" label="Renderer crash count"/>
-  <int value="4" label="(Obsolete Dec 2021) Renderer hang count"/>
-  <int value="5" label="Extension renderer crash count"/>
-  <int value="6" label="(Obsolete Feb 2022) Child process crash count"/>
-  <int value="15" label="Browser launch count"/>
-  <int value="16" label="Browser crash count"/>
-  <int value="17" label="(Obsolete Dec 2021) Incomplete shutdown count"/>
-  <int value="22" label="(Obsolete Mar 2022) Plugin crash count"/>
-  <int value="24" label="Renderer failed launch count"/>
-  <int value="25" label="Extension renderer failed launch count"/>
-  <int value="26" label="Renderer launch count"/>
-  <int value="27" label="Extension renderer launch count"/>
-  <int value="31" label="GPU process crash count"/>
-  <int value="32" label="Utility process crash count"/>
-  <int value="33" label="Utility process launch count"/>
-</enum>
-
-<enum name="StabilityPageLoadType">
-  <summary>
-    Load types included in the &quot;Total pageloads&quot; shown on the
-    stability dashboard.
-  </summary>
-  <int value="0" label="Visible tab - Main frame different document"/>
-  <int value="1" label="Visible tab - Sub frame different document"/>
-  <int value="2" label="Visible tab - Main frame same document"/>
-  <int value="3" label="Visible tab - Sub frame same document"/>
-  <int value="4" label="Visible tab - No commit"/>
-  <int value="5" label="Hidden tab - Main frame different document"/>
-  <int value="6" label="Hidden tab - Sub frame different document"/>
-  <int value="7" label="Hidden tab - Main frame same document"/>
-  <int value="8" label="Hidden tab - Sub frame same document"/>
-  <int value="9" label="Hidden tab - No commit"/>
-  <int value="10" label="Prerender - Main frame different document"/>
-  <int value="11" label="Prerender - Sub frame different document"/>
-  <int value="12" label="Prerender - Main frame same document"/>
-  <int value="13" label="Prerender - Sub frame same document"/>
-  <int value="14" label="Prerender - No commit"/>
-  <int value="15" label="Extension background page"/>
-  <int value="16" label="DevTools"/>
-  <int value="17" label="Unknown"/>
 </enum>
 
 <enum name="StartSurfaceState">
@@ -57618,13 +56626,6 @@ would be helpful to identify which type is being sent.
   <int value="5" label="is_overriding_user_agent"/>
   <int value="6" label="http_status_code"/>
   <int value="7" label="should_update_history"/>
-</enum>
-
-<enum name="VersionComparison">
-  <summary>The difference between two compared versions.</summary>
-  <int value="0" label="Same">No version between versions.</int>
-  <int value="1" label="Minor">A difference in minor versions.</int>
-  <int value="2" label="Major">A difference in major versions.</int>
 </enum>
 
 <enum name="VideoCodec">
@@ -59492,677 +58493,6 @@ Called by update_scheduler_enums.py.-->
   <int value="2" label="Shortcut missing"/>
   <int value="3" label="Toast activator CLSID incorrect"/>
   <int value="4" label="Read shortcut property failed"/>
-</enum>
-
-<enum name="WindowsPatchLevel">
-<!-- These can be generated by visiting https://bit.ly/2JQr6rB -->
-
-  <int value="0" label="Invalid Patch Level"/>
-  <int value="170393600" label="Windows XP (Build 2600.0)"/>
-  <int value="170417534" label="Windows XP (Build 2600.23934)"/>
-  <int value="170418111" label="Windows XP (Build 2600.24511)"/>
-  <int value="393216000" label="Windows Vista (Build 6000.0)"/>
-  <int value="393216615" label="Windows Vista (Build 6000.615)"/>
-  <int value="393239964" label="Windows Vista (Build 6000.23964)"/>
-  <int value="393240180" label="Windows Vista (Build 6000.24180)"/>
-  <int value="393306030"
-      label="Windows Vista Service Pack 1 (Build 6001.24494)"/>
-  <int value="393347072" label="Windows Vista Service Pack 2 (Build 6002.0)"/>
-  <int value="393347339" label="Windows Vista Service Pack 2 (Build 6002.267)"/>
-  <int value="393347957" label="Windows Vista Service Pack 2 (Build 6002.885)"/>
-  <int value="393348022" label="Windows Vista Service Pack 2 (Build 6002.950)"/>
-  <int value="393348159"
-      label="Windows Vista Service Pack 2 (Build 6002.1087)"/>
-  <int value="393371006"
-      label="Windows Vista Service Pack 2 (Build 6002.23934)"/>
-  <int value="498073600" label="Windows 7 (Build 7600.0)"/>
-  <int value="498073615" label="Windows 7 (Build 7600.15)"/>
-  <int value="498073839" label="Windows 7 (Build 7600.239)"/>
-  <int value="498073867" label="Windows 7 (Build 7600.267)"/>
-  <int value="498073895" label="Windows 7 (Build 7600.295)"/>
-  <int value="498073929" label="Windows 7 (Build 7600.329)"/>
-  <int value="498073956" label="Windows 7 (Build 7600.356)"/>
-  <int value="498074215" label="Windows 7 (Build 7600.615)"/>
-  <int value="498074278" label="Windows 7 (Build 7600.678)"/>
-  <int value="498074320" label="Windows 7 (Build 7600.720)"/>
-  <int value="498074337" label="Windows 7 (Build 7600.737)"/>
-  <int value="498074485" label="Windows 7 (Build 7600.885)"/>
-  <int value="498074550" label="Windows 7 (Build 7600.950)"/>
-  <int value="498074606" label="Windows 7 (Build 7600.1006)"/>
-  <int value="498074868" label="Windows 7 (Build 7600.1268)"/>
-  <int value="498074931" label="Windows 7 (Build 7600.1331)"/>
-  <int value="498075814" label="Windows 7 (Build 7600.2214)"/>
-  <int value="498083606" label="Windows 7 (Build 7600.10006)"/>
-  <int value="498092782" label="Windows 7 (Build 7600.19182)"/>
-  <int value="498097242" label="Windows 7 (Build 7600.23642)"/>
-  <int value="498097889" label="Windows 7 (Build 7600.24289)"/>
-  <int value="498097934" label="Windows 7 (Build 7600.24334)"/>
-  <int value="498097985" label="Windows 7 (Build 7600.24385)"/>
-  <int value="498098005" label="Windows 7 (Build 7600.24405)"/>
-  <int value="498098043" label="Windows 7 (Build 7600.24443)"/>
-  <int value="498098068" label="Windows 7 (Build 7600.24468)"/>
-  <int value="498098094" label="Windows 7 (Build 7600.24494)"/>
-  <int value="498098096" label="Windows 7 (Build 7600.24496)"/>
-  <int value="498098111" label="Windows 7 (Build 7600.24511)"/>
-  <int value="498098119" label="Windows 7 (Build 7600.24519)"/>
-  <int value="498139136" label="Windows 7 Service Pack 1 (Build 7601.0)"/>
-  <int value="498162751" label="Windows 7 Service Pack 1 (Build 7601.23615)"/>
-  <int value="498162778" label="Windows 7 Service Pack 1 (Build 7601.23642)"/>
-  <int value="498162846" label="Windows 7 Service Pack 1 (Build 7601.23710)"/>
-  <int value="498162851" label="Windows 7 Service Pack 1 (Build 7601.23715)"/>
-  <int value="498162877" label="Windows 7 Service Pack 1 (Build 7601.23741)"/>
-  <int value="498162878" label="Windows 7 Service Pack 1 (Build 7601.23742)"/>
-  <int value="498162933" label="Windows 7 Service Pack 1 (Build 7601.23797)"/>
-  <int value="498162934" label="Windows 7 Service Pack 1 (Build 7601.23798)"/>
-  <int value="498162969" label="Windows 7 Service Pack 1 (Build 7601.23833)"/>
-  <int value="498162982" label="Windows 7 Service Pack 1 (Build 7601.23846)"/>
-  <int value="498162998" label="Windows 7 Service Pack 1 (Build 7601.23862)"/>
-  <int value="498163015" label="Windows 7 Service Pack 1 (Build 7601.23879)"/>
-  <int value="498163017" label="Windows 7 Service Pack 1 (Build 7601.23881)"/>
-  <int value="498163043" label="Windows 7 Service Pack 1 (Build 7601.23907)"/>
-  <int value="498163045" label="Windows 7 Service Pack 1 (Build 7601.23909)"/>
-  <int value="498163050" label="Windows 7 Service Pack 1 (Build 7601.23914)"/>
-  <int value="498163051" label="Windows 7 Service Pack 1 (Build 7601.23915)"/>
-  <int value="498163070" label="Windows 7 Service Pack 1 (Build 7601.23934)"/>
-  <int value="498163099" label="Windows 7 Service Pack 1 (Build 7601.23963)"/>
-  <int value="498163100" label="Windows 7 Service Pack 1 (Build 7601.23964)"/>
-  <int value="498163138" label="Windows 7 Service Pack 1 (Build 7601.24002)"/>
-  <int value="498163159" label="Windows 7 Service Pack 1 (Build 7601.24023)"/>
-  <int value="498163191" label="Windows 7 Service Pack 1 (Build 7601.24055)"/>
-  <int value="498163194" label="Windows 7 Service Pack 1 (Build 7601.24058)"/>
-  <int value="498163211" label="Windows 7 Service Pack 1 (Build 7601.24075)"/>
-  <int value="498163212" label="Windows 7 Service Pack 1 (Build 7601.24076)"/>
-  <int value="498163225" label="Windows 7 Service Pack 1 (Build 7601.24089)"/>
-  <int value="498163242" label="Windows 7 Service Pack 1 (Build 7601.24106)"/>
-  <int value="498163266" label="Windows 7 Service Pack 1 (Build 7601.24130)"/>
-  <int value="498163272" label="Windows 7 Service Pack 1 (Build 7601.24136)"/>
-  <int value="498163273" label="Windows 7 Service Pack 1 (Build 7601.24137)"/>
-  <int value="498163285" label="Windows 7 Service Pack 1 (Build 7601.24149)"/>
-  <int value="498163286" label="Windows 7 Service Pack 1 (Build 7601.24150)"/>
-  <int value="498163316" label="Windows 7 Service Pack 1 (Build 7601.24180)"/>
-  <int value="498163344" label="Windows 7 Service Pack 1 (Build 7601.24208)"/>
-  <int value="498163350" label="Windows 7 Service Pack 1 (Build 7601.24214)"/>
-  <int value="498163373" label="Windows 7 Service Pack 1 (Build 7601.24237)"/>
-  <int value="498163377" label="Windows 7 Service Pack 1 (Build 7601.24241)"/>
-  <int value="498163397" label="Windows 7 Service Pack 1 (Build 7601.24261)"/>
-  <int value="498163399" label="Windows 7 Service Pack 1 (Build 7601.24263)"/>
-  <int value="498163400" label="Windows 7 Service Pack 1 (Build 7601.24264)"/>
-  <int value="498163425" label="Windows 7 Service Pack 1 (Build 7601.24289)"/>
-  <int value="498163426" label="Windows 7 Service Pack 1 (Build 7601.24290)"/>
-  <int value="498163448" label="Windows 7 Service Pack 1 (Build 7601.24312)"/>
-  <int value="498163470" label="Windows 7 Service Pack 1 (Build 7601.24334)"/>
-  <int value="498163491" label="Windows 7 Service Pack 1 (Build 7601.24355)"/>
-  <int value="498163492" label="Windows 7 Service Pack 1 (Build 7601.24356)"/>
-  <int value="498163519" label="Windows 7 Service Pack 1 (Build 7601.24383)"/>
-  <int value="498163521" label="Windows 7 Service Pack 1 (Build 7601.24385)"/>
-  <int value="498163541" label="Windows 7 Service Pack 1 (Build 7601.24405)"/>
-  <int value="498163547" label="Windows 7 Service Pack 1 (Build 7601.24411)"/>
-  <int value="498163553" label="Windows 7 Service Pack 1 (Build 7601.24417)"/>
-  <int value="498163579" label="Windows 7 Service Pack 1 (Build 7601.24443)"/>
-  <int value="498163601" label="Windows 7 Service Pack 1 (Build 7601.24465)"/>
-  <int value="498163604" label="Windows 7 Service Pack 1 (Build 7601.24468)"/>
-  <int value="498163627" label="Windows 7 Service Pack 1 (Build 7601.24491)"/>
-  <int value="498163630" label="Windows 7 Service Pack 1 (Build 7601.24494)"/>
-  <int value="498163632" label="Windows 7 Service Pack 1 (Build 7601.24496)"/>
-  <int value="498163647" label="Windows 7 Service Pack 1 (Build 7601.24511)"/>
-  <int value="498163651" label="Windows 7 Service Pack 1 (Build 7601.24515)"/>
-  <int value="498163655" label="Windows 7 Service Pack 1 (Build 7601.24519)"/>
-  <int value="498163661" label="Windows 7 Service Pack 1 (Build 7601.24525)"/>
-  <int value="498163666" label="Windows 7 Service Pack 1 (Build 7601.24530)"/>
-  <int value="498163669" label="Windows 7 Service Pack 1 (Build 7601.24533)"/>
-  <int value="498163670" label="Windows 7 Service Pack 1 (Build 7601.24534)"/>
-  <int value="550502400" label="Windows 8 Preview (Build 8400.0)"/>
-  <int value="602931200" label="Windows 8 (Build 9200.0)"/>
-  <int value="602931201" label="Windows 8 (Build 9200.1)"/>
-  <int value="602931251" label="Windows 8 (Build 9200.51)"/>
-  <int value="602931439" label="Windows 8 (Build 9200.239)"/>
-  <int value="602931467" label="Windows 8 (Build 9200.267)"/>
-  <int value="602931495" label="Windows 8 (Build 9200.295)"/>
-  <int value="602931529" label="Windows 8 (Build 9200.329)"/>
-  <int value="602931556" label="Windows 8 (Build 9200.356)"/>
-  <int value="602931607" label="Windows 8 (Build 9200.407)"/>
-  <int value="602931703" label="Windows 8 (Build 9200.503)"/>
-  <int value="602931790" label="Windows 8 (Build 9200.590)"/>
-  <int value="602931815" label="Windows 8 (Build 9200.615)"/>
-  <int value="602931852" label="Windows 8 (Build 9200.652)"/>
-  <int value="602931878" label="Windows 8 (Build 9200.678)"/>
-  <int value="602931937" label="Windows 8 (Build 9200.737)"/>
-  <int value="602932029" label="Windows 8 (Build 9200.829)"/>
-  <int value="602932085" label="Windows 8 (Build 9200.885)"/>
-  <int value="602932115" label="Windows 8 (Build 9200.915)"/>
-  <int value="602932116" label="Windows 8 (Build 9200.916)"/>
-  <int value="602932150" label="Windows 8 (Build 9200.950)"/>
-  <int value="602932200" label="Windows 8 (Build 9200.1000)"/>
-  <int value="602932205" label="Windows 8 (Build 9200.1005)"/>
-  <int value="602932206" label="Windows 8 (Build 9200.1006)"/>
-  <int value="602932287" label="Windows 8 (Build 9200.1087)"/>
-  <int value="602932618" label="Windows 8 (Build 9200.1418)"/>
-  <int value="602941206" label="Windows 8 (Build 9200.10006)"/>
-  <int value="602947584" label="Windows 8 (Build 9200.16384)"/>
-  <int value="602950601" label="Windows 8 (Build 9200.19401)"/>
-  <int value="602950631" label="Windows 8 (Build 9200.19431)"/>
-  <int value="602950663" label="Windows 8 (Build 9200.19463)"/>
-  <int value="602953820" label="Windows 8 (Build 9200.22620)"/>
-  <int value="602953872" label="Windows 8 (Build 9200.22672)"/>
-  <int value="602954001" label="Windows 8 (Build 9200.22801)"/>
-  <int value="629145600" label="Windows 8.1 (Build 9600.0)"/>
-  <int value="629164143" label="Windows 8.1 (Build 9600.18543)"/>
-  <int value="629164219" label="Windows 8.1 (Build 9600.18619)"/>
-  <int value="629164221" label="Windows 8.1 (Build 9600.18621)"/>
-  <int value="629164254" label="Windows 8.1 (Build 9600.18654)"/>
-  <int value="629164284" label="Windows 8.1 (Build 9600.18684)"/>
-  <int value="629164287" label="Windows 8.1 (Build 9600.18687)"/>
-  <int value="629164320" label="Windows 8.1 (Build 9600.18720)"/>
-  <int value="629164356" label="Windows 8.1 (Build 9600.18756)"/>
-  <int value="629164378" label="Windows 8.1 (Build 9600.18778)"/>
-  <int value="629164410" label="Windows 8.1 (Build 9600.18810)"/>
-  <int value="629164422" label="Windows 8.1 (Build 9600.18822)"/>
-  <int value="629164433" label="Windows 8.1 (Build 9600.18833)"/>
-  <int value="629164456" label="Windows 8.1 (Build 9600.18856)"/>
-  <int value="629164474" label="Windows 8.1 (Build 9600.18874)"/>
-  <int value="629164494" label="Windows 8.1 (Build 9600.18894)"/>
-  <int value="629164509" label="Windows 8.1 (Build 9600.18909)"/>
-  <int value="629164537" label="Windows 8.1 (Build 9600.18937)"/>
-  <int value="629164564" label="Windows 8.1 (Build 9600.18964)"/>
-  <int value="629164571" label="Windows 8.1 (Build 9600.18971)"/>
-  <int value="629164593" label="Windows 8.1 (Build 9600.18993)"/>
-  <int value="629164594" label="Windows 8.1 (Build 9600.18994)"/>
-  <int value="629164623" label="Windows 8.1 (Build 9600.19023)"/>
-  <int value="629164624" label="Windows 8.1 (Build 9600.19024)"/>
-  <int value="629164636" label="Windows 8.1 (Build 9600.19036)"/>
-  <int value="629164669" label="Windows 8.1 (Build 9600.19069)"/>
-  <int value="629164699" label="Windows 8.1 (Build 9600.19099)"/>
-  <int value="629164702" label="Windows 8.1 (Build 9600.19102)"/>
-  <int value="629164734" label="Windows 8.1 (Build 9600.19134)"/>
-  <int value="629164755" label="Windows 8.1 (Build 9600.19155)"/>
-  <int value="629164756" label="Windows 8.1 (Build 9600.19156)"/>
-  <int value="629164782" label="Windows 8.1 (Build 9600.19182)"/>
-  <int value="629164806" label="Windows 8.1 (Build 9600.19206)"/>
-  <int value="629164835" label="Windows 8.1 (Build 9600.19235)"/>
-  <int value="629164837" label="Windows 8.1 (Build 9600.19237)"/>
-  <int value="629164868" label="Windows 8.1 (Build 9600.19268)"/>
-  <int value="629164896" label="Windows 8.1 (Build 9600.19296)"/>
-  <int value="629164902" label="Windows 8.1 (Build 9600.19302)"/>
-  <int value="629164923" label="Windows 8.1 (Build 9600.19323)"/>
-  <int value="629164927" label="Windows 8.1 (Build 9600.19327)"/>
-  <int value="629164932" label="Windows 8.1 (Build 9600.19332)"/>
-  <int value="629164956" label="Windows 8.1 (Build 9600.19356)"/>
-  <int value="629164975" label="Windows 8.1 (Build 9600.19375)"/>
-  <int value="629164977" label="Windows 8.1 (Build 9600.19377)"/>
-  <int value="629164999" label="Windows 8.1 (Build 9600.19399)"/>
-  <int value="629165001" label="Windows 8.1 (Build 9600.19401)"/>
-  <int value="629165004" label="Windows 8.1 (Build 9600.19404)"/>
-  <int value="629165031" label="Windows 8.1 (Build 9600.19431)"/>
-  <int value="629165060" label="Windows 8.1 (Build 9600.19460)"/>
-  <int value="629165063" label="Windows 8.1 (Build 9600.19463)"/>
-  <int value="629165103" label="Windows 8.1 (Build 9600.19503)"/>
-  <int value="629165105" label="Windows 8.1 (Build 9600.19505)"/>
-  <int value="629165107" label="Windows 8.1 (Build 9600.19507)"/>
-  <int value="671090283" label="Windows 10 1507 (Build 10240.1643)"/>
-  <int value="671090292" label="Windows 10 1507 (Build 10240.1652)"/>
-  <int value="671090299" label="Windows 10 1507 (Build 10240.1659)"/>
-  <int value="671090359" label="Windows 10 1507 (Build 10240.1719)"/>
-  <int value="671090417" label="Windows 10 1507 (Build 10240.1777)"/>
-  <int value="671105024" label="Windows 10 1507 (Build 10240.16384)"/>
-  <int value="671105037" label="Windows 10 1507 (Build 10240.16397)"/>
-  <int value="671105045" label="Windows 10 1507 (Build 10240.16405)"/>
-  <int value="671105053" label="Windows 10 1507 (Build 10240.16413)"/>
-  <int value="671105070" label="Windows 10 1507 (Build 10240.16430)"/>
-  <int value="671105073" label="Windows 10 1507 (Build 10240.16433)"/>
-  <int value="671105085" label="Windows 10 1507 (Build 10240.16445)"/>
-  <int value="671105103" label="Windows 10 1507 (Build 10240.16463)"/>
-  <int value="671105127" label="Windows 10 1507 (Build 10240.16487)"/>
-  <int value="671105160" label="Windows 10 1507 (Build 10240.16520)"/>
-  <int value="671105189" label="Windows 10 1507 (Build 10240.16549)"/>
-  <int value="671105206" label="Windows 10 1507 (Build 10240.16566)"/>
-  <int value="671105230" label="Windows 10 1507 (Build 10240.16590)"/>
-  <int value="671105241" label="Windows 10 1507 (Build 10240.16601)"/>
-  <int value="671105284" label="Windows 10 1507 (Build 10240.16644)"/>
-  <int value="671105323" label="Windows 10 1507 (Build 10240.16683)"/>
-  <int value="671105365" label="Windows 10 1507 (Build 10240.16725)"/>
-  <int value="671105372" label="Windows 10 1507 (Build 10240.16732)"/>
-  <int value="671105411" label="Windows 10 1507 (Build 10240.16771)"/>
-  <int value="671105494" label="Windows 10 1507 (Build 10240.16854)"/>
-  <int value="671105582" label="Windows 10 1507 (Build 10240.16942)"/>
-  <int value="671105664" label="Windows 10 1507 (Build 10240.17024)"/>
-  <int value="671105711" label="Windows 10 1507 (Build 10240.17071)"/>
-  <int value="671105753" label="Windows 10 1507 (Build 10240.17113)"/>
-  <int value="671105786" label="Windows 10 1507 (Build 10240.17146)"/>
-  <int value="671105842" label="Windows 10 1507 (Build 10240.17202)"/>
-  <int value="671105876" label="Windows 10 1507 (Build 10240.17236)"/>
-  <int value="671105959" label="Windows 10 1507 (Build 10240.17319)"/>
-  <int value="671105994" label="Windows 10 1507 (Build 10240.17354)"/>
-  <int value="671106034" label="Windows 10 1507 (Build 10240.17394)"/>
-  <int value="671106083" label="Windows 10 1507 (Build 10240.17443)"/>
-  <int value="671106086" label="Windows 10 1507 (Build 10240.17446)"/>
-  <int value="671106128" label="Windows 10 1507 (Build 10240.17488)"/>
-  <int value="671106173" label="Windows 10 1507 (Build 10240.17533)"/>
-  <int value="671106249" label="Windows 10 1507 (Build 10240.17609)"/>
-  <int value="671106283" label="Windows 10 1507 (Build 10240.17643)"/>
-  <int value="671106313" label="Windows 10 1507 (Build 10240.17673)"/>
-  <int value="671106349" label="Windows 10 1507 (Build 10240.17709)"/>
-  <int value="671106378" label="Windows 10 1507 (Build 10240.17738)"/>
-  <int value="671106381" label="Windows 10 1507 (Build 10240.17741)"/>
-  <int value="671106410" label="Windows 10 1507 (Build 10240.17770)"/>
-  <int value="671106437" label="Windows 10 1507 (Build 10240.17797)"/>
-  <int value="671106471" label="Windows 10 1507 (Build 10240.17831)"/>
-  <int value="671106501" label="Windows 10 1507 (Build 10240.17861)"/>
-  <int value="671106529" label="Windows 10 1507 (Build 10240.17889)"/>
-  <int value="671106554" label="Windows 10 1507 (Build 10240.17914)"/>
-  <int value="671106558" label="Windows 10 1507 (Build 10240.17918)"/>
-  <int value="671106586" label="Windows 10 1507 (Build 10240.17946)"/>
-  <int value="671106616" label="Windows 10 1507 (Build 10240.17976)"/>
-  <int value="671106645" label="Windows 10 1507 (Build 10240.18005)"/>
-  <int value="671106676" label="Windows 10 1507 (Build 10240.18036)"/>
-  <int value="671106703" label="Windows 10 1507 (Build 10240.18063)"/>
-  <int value="671106704" label="Windows 10 1507 (Build 10240.18064)"/>
-  <int value="671106734" label="Windows 10 1507 (Build 10240.18094)"/>
-  <int value="671106772" label="Windows 10 1507 (Build 10240.18132)"/>
-  <int value="671106775" label="Windows 10 1507 (Build 10240.18135)"/>
-  <int value="671106798" label="Windows 10 1507 (Build 10240.18158)"/>
-  <int value="671106826" label="Windows 10 1507 (Build 10240.18186)"/>
-  <int value="671106827" label="Windows 10 1507 (Build 10240.18187)"/>
-  <int value="671106855" label="Windows 10 1507 (Build 10240.18215)"/>
-  <int value="671106858" label="Windows 10 1507 (Build 10240.18218)"/>
-  <int value="671106884" label="Windows 10 1507 (Build 10240.18244)"/>
-  <int value="671106915" label="Windows 10 1507 (Build 10240.18275)"/>
-  <int value="671106945" label="Windows 10 1507 (Build 10240.18305)"/>
-  <int value="671106973" label="Windows 10 1507 (Build 10240.18333)"/>
-  <int value="693764096" label="Windows 10 1511 (Build 10586.0)"/>
-  <int value="693764099" label="Windows 10 1511 (Build 10586.3)"/>
-  <int value="693764107" label="Windows 10 1511 (Build 10586.11)"/>
-  <int value="693764110" label="Windows 10 1511 (Build 10586.14)"/>
-  <int value="693764113" label="Windows 10 1511 (Build 10586.17)"/>
-  <int value="693764125" label="Windows 10 1511 (Build 10586.29)"/>
-  <int value="693764132" label="Windows 10 1511 (Build 10586.36)"/>
-  <int value="693764138" label="Windows 10 1511 (Build 10586.42)"/>
-  <int value="693764159" label="Windows 10 1511 (Build 10586.63)"/>
-  <int value="693764167" label="Windows 10 1511 (Build 10586.71)"/>
-  <int value="693764175" label="Windows 10 1511 (Build 10586.79)"/>
-  <int value="693764200" label="Windows 10 1511 (Build 10586.104)"/>
-  <int value="693764218" label="Windows 10 1511 (Build 10586.122)"/>
-  <int value="693764250" label="Windows 10 1511 (Build 10586.154)"/>
-  <int value="693764260" label="Windows 10 1511 (Build 10586.164)"/>
-  <int value="693764314" label="Windows 10 1511 (Build 10586.218)"/>
-  <int value="693764414" label="Windows 10 1511 (Build 10586.318)"/>
-  <int value="693764434" label="Windows 10 1511 (Build 10586.338)"/>
-  <int value="693764516" label="Windows 10 1511 (Build 10586.420)"/>
-  <int value="693764542" label="Windows 10 1511 (Build 10586.446)"/>
-  <int value="693764590" label="Windows 10 1511 (Build 10586.494)"/>
-  <int value="693764641" label="Windows 10 1511 (Build 10586.545)"/>
-  <int value="693764685" label="Windows 10 1511 (Build 10586.589)"/>
-  <int value="693764729" label="Windows 10 1511 (Build 10586.633)"/>
-  <int value="693764775" label="Windows 10 1511 (Build 10586.679)"/>
-  <int value="693764809" label="Windows 10 1511 (Build 10586.713)"/>
-  <int value="693764849" label="Windows 10 1511 (Build 10586.753)"/>
-  <int value="693764935" label="Windows 10 1511 (Build 10586.839)"/>
-  <int value="693764969" label="Windows 10 1511 (Build 10586.873)"/>
-  <int value="693765012" label="Windows 10 1511 (Build 10586.916)"/>
-  <int value="693765058" label="Windows 10 1511 (Build 10586.962)"/>
-  <int value="693765061" label="Windows 10 1511 (Build 10586.965)"/>
-  <int value="693765103" label="Windows 10 1511 (Build 10586.1007)"/>
-  <int value="693765141" label="Windows 10 1511 (Build 10586.1045)"/>
-  <int value="693765202" label="Windows 10 1511 (Build 10586.1106)"/>
-  <int value="693765272" label="Windows 10 1511 (Build 10586.1176)"/>
-  <int value="693765273" label="Windows 10 1511 (Build 10586.1177)"/>
-  <int value="693765328" label="Windows 10 1511 (Build 10586.1232)"/>
-  <int value="693765391" label="Windows 10 1511 (Build 10586.1295)"/>
-  <int value="693765452" label="Windows 10 1511 (Build 10586.1356)"/>
-  <int value="693765454" label="Windows 10 1511 (Build 10586.1358)"/>
-  <int value="693765513" label="Windows 10 1511 (Build 10586.1417)"/>
-  <int value="693765574" label="Windows 10 1511 (Build 10586.1478)"/>
-  <int value="693765636" label="Windows 10 1511 (Build 10586.1540)"/>
-  <int value="943259648" label="Windows 10 1607 (Build 14393.0)"/>
-  <int value="943259649" label="Windows 10 1607 (Build 14393.1)"/>
-  <int value="943259658" label="Windows 10 1607 (Build 14393.10)"/>
-  <int value="943259699" label="Windows 10 1607 (Build 14393.51)"/>
-  <int value="943259715" label="Windows 10 1607 (Build 14393.67)"/>
-  <int value="943259730" label="Windows 10 1607 (Build 14393.82)"/>
-  <int value="943259753" label="Windows 10 1607 (Build 14393.105)"/>
-  <int value="943259796" label="Windows 10 1607 (Build 14393.148)"/>
-  <int value="943259815" label="Windows 10 1607 (Build 14393.167)"/>
-  <int value="943259825" label="Windows 10 1607 (Build 14393.177)"/>
-  <int value="943259835" label="Windows 10 1607 (Build 14393.187)"/>
-  <int value="943259870" label="Windows 10 1607 (Build 14393.222)"/>
-  <int value="943259891" label="Windows 10 1607 (Build 14393.243)"/>
-  <int value="943259906" label="Windows 10 1607 (Build 14393.258)"/>
-  <int value="943259915" label="Windows 10 1607 (Build 14393.267)"/>
-  <int value="943259969" label="Windows 10 1607 (Build 14393.321)"/>
-  <int value="943259999" label="Windows 10 1607 (Build 14393.351)"/>
-  <int value="943260095" label="Windows 10 1607 (Build 14393.447)"/>
-  <int value="943260127" label="Windows 10 1607 (Build 14393.479)"/>
-  <int value="943260224" label="Windows 10 1607 (Build 14393.576)"/>
-  <int value="943260225" label="Windows 10 1607 (Build 14393.577)"/>
-  <int value="943260341" label="Windows 10 1607 (Build 14393.693)"/>
-  <int value="943260374" label="Windows 10 1607 (Build 14393.726)"/>
-  <int value="943260601" label="Windows 10 1607 (Build 14393.953)"/>
-  <int value="943260617" label="Windows 10 1607 (Build 14393.969)"/>
-  <int value="943260618" label="Windows 10 1607 (Build 14393.970)"/>
-  <int value="943260714" label="Windows 10 1607 (Build 14393.1066)"/>
-  <int value="943260846" label="Windows 10 1607 (Build 14393.1198)"/>
-  <int value="943260878" label="Windows 10 1607 (Build 14393.1230)"/>
-  <int value="943261006" label="Windows 10 1607 (Build 14393.1358)"/>
-  <int value="943261026" label="Windows 10 1607 (Build 14393.1378)"/>
-  <int value="943261128" label="Windows 10 1607 (Build 14393.1480)"/>
-  <int value="943261180" label="Windows 10 1607 (Build 14393.1532)"/>
-  <int value="943261185" label="Windows 10 1607 (Build 14393.1537)"/>
-  <int value="943261241" label="Windows 10 1607 (Build 14393.1593)"/>
-  <int value="943261261" label="Windows 10 1607 (Build 14393.1613)"/>
-  <int value="943261318" label="Windows 10 1607 (Build 14393.1670)"/>
-  <int value="943261363" label="Windows 10 1607 (Build 14393.1715)"/>
-  <int value="943261385" label="Windows 10 1607 (Build 14393.1737)"/>
-  <int value="943261418" label="Windows 10 1607 (Build 14393.1770)"/>
-  <int value="943261442" label="Windows 10 1607 (Build 14393.1794)"/>
-  <int value="943261445" label="Windows 10 1607 (Build 14393.1797)"/>
-  <int value="943261532" label="Windows 10 1607 (Build 14393.1884)"/>
-  <int value="943261562" label="Windows 10 1607 (Build 14393.1914)"/>
-  <int value="943261592" label="Windows 10 1607 (Build 14393.1944)"/>
-  <int value="943261655" label="Windows 10 1607 (Build 14393.2007)"/>
-  <int value="943261683" label="Windows 10 1607 (Build 14393.2035)"/>
-  <int value="943261716" label="Windows 10 1607 (Build 14393.2068)"/>
-  <int value="943261745" label="Windows 10 1607 (Build 14393.2097)"/>
-  <int value="943261773" label="Windows 10 1607 (Build 14393.2125)"/>
-  <int value="943261803" label="Windows 10 1607 (Build 14393.2155)"/>
-  <int value="943261804" label="Windows 10 1607 (Build 14393.2156)"/>
-  <int value="943261837" label="Windows 10 1607 (Build 14393.2189)"/>
-  <int value="943261862" label="Windows 10 1607 (Build 14393.2214)"/>
-  <int value="943261896" label="Windows 10 1607 (Build 14393.2248)"/>
-  <int value="943261921" label="Windows 10 1607 (Build 14393.2273)"/>
-  <int value="943261960" label="Windows 10 1607 (Build 14393.2312)"/>
-  <int value="943261987" label="Windows 10 1607 (Build 14393.2339)"/>
-  <int value="943262011" label="Windows 10 1607 (Build 14393.2363)"/>
-  <int value="943262016" label="Windows 10 1607 (Build 14393.2368)"/>
-  <int value="943262043" label="Windows 10 1607 (Build 14393.2395)"/>
-  <int value="943262044" label="Windows 10 1607 (Build 14393.2396)"/>
-  <int value="943262078" label="Windows 10 1607 (Build 14393.2430)"/>
-  <int value="943262105" label="Windows 10 1607 (Build 14393.2457)"/>
-  <int value="943262133" label="Windows 10 1607 (Build 14393.2485)"/>
-  <int value="943262163" label="Windows 10 1607 (Build 14393.2515)"/>
-  <int value="943262199" label="Windows 10 1607 (Build 14393.2551)"/>
-  <int value="943262228" label="Windows 10 1607 (Build 14393.2580)"/>
-  <int value="943262256" label="Windows 10 1607 (Build 14393.2608)"/>
-  <int value="943262287" label="Windows 10 1607 (Build 14393.2639)"/>
-  <int value="943262289" label="Windows 10 1607 (Build 14393.2641)"/>
-  <int value="943262313" label="Windows 10 1607 (Build 14393.2665)"/>
-  <int value="943262318" label="Windows 10 1607 (Build 14393.2670)"/>
-  <int value="943262372" label="Windows 10 1607 (Build 14393.2724)"/>
-  <int value="943262407" label="Windows 10 1607 (Build 14393.2759)"/>
-  <int value="943262439" label="Windows 10 1607 (Build 14393.2791)"/>
-  <int value="943262476" label="Windows 10 1607 (Build 14393.2828)"/>
-  <int value="943262496" label="Windows 10 1607 (Build 14393.2848)"/>
-  <int value="943262527" label="Windows 10 1607 (Build 14393.2879)"/>
-  <int value="943262554" label="Windows 10 1607 (Build 14393.2906)"/>
-  <int value="943262556" label="Windows 10 1607 (Build 14393.2908)"/>
-  <int value="943262589" label="Windows 10 1607 (Build 14393.2941)"/>
-  <int value="943262617" label="Windows 10 1607 (Build 14393.2969)"/>
-  <int value="943262620" label="Windows 10 1607 (Build 14393.2972)"/>
-  <int value="943262647" label="Windows 10 1607 (Build 14393.2999)"/>
-  <int value="943262673" label="Windows 10 1607 (Build 14393.3025)"/>
-  <int value="943262701" label="Windows 10 1607 (Build 14393.3053)"/>
-  <int value="943262704" label="Windows 10 1607 (Build 14393.3056)"/>
-  <int value="943262733" label="Windows 10 1607 (Build 14393.3085)"/>
-  <int value="943262763" label="Windows 10 1607 (Build 14393.3115)"/>
-  <int value="943262792" label="Windows 10 1607 (Build 14393.3144)"/>
-  <int value="943262829" label="Windows 10 1607 (Build 14393.3181)"/>
-  <int value="943262852" label="Windows 10 1607 (Build 14393.3204)"/>
-  <int value="943262922" label="Windows 10 1607 (Build 14393.3274)"/>
-  <int value="943262948" label="Windows 10 1607 (Build 14393.3300)"/>
-  <int value="987168768" label="Windows 10 1703 (Build 15063.0)"/>
-  <int value="987168779" label="Windows 10 1703 (Build 15063.11)"/>
-  <int value="987168781" label="Windows 10 1703 (Build 15063.13)"/>
-  <int value="987168782" label="Windows 10 1703 (Build 15063.14)"/>
-  <int value="987168793" label="Windows 10 1703 (Build 15063.25)"/>
-  <int value="987168822" label="Windows 10 1703 (Build 15063.54)"/>
-  <int value="987168853" label="Windows 10 1703 (Build 15063.85)"/>
-  <int value="987168906" label="Windows 10 1703 (Build 15063.138)"/>
-  <int value="987169018" label="Windows 10 1703 (Build 15063.250)"/>
-  <int value="987169064" label="Windows 10 1703 (Build 15063.296)"/>
-  <int value="987169100" label="Windows 10 1703 (Build 15063.332)"/>
-  <int value="987169181" label="Windows 10 1703 (Build 15063.413)"/>
-  <int value="987169215" label="Windows 10 1703 (Build 15063.447)"/>
-  <int value="987169251" label="Windows 10 1703 (Build 15063.483)"/>
-  <int value="987169270" label="Windows 10 1703 (Build 15063.502)"/>
-  <int value="987169308" label="Windows 10 1703 (Build 15063.540)"/>
-  <int value="987169376" label="Windows 10 1703 (Build 15063.608)"/>
-  <int value="987169400" label="Windows 10 1703 (Build 15063.632)"/>
-  <int value="987169442" label="Windows 10 1703 (Build 15063.674)"/>
-  <int value="987169443" label="Windows 10 1703 (Build 15063.675)"/>
-  <int value="987169494" label="Windows 10 1703 (Build 15063.726)"/>
-  <int value="987169497" label="Windows 10 1703 (Build 15063.729)"/>
-  <int value="987169554" label="Windows 10 1703 (Build 15063.786)"/>
-  <int value="987169618" label="Windows 10 1703 (Build 15063.850)"/>
-  <int value="987169645" label="Windows 10 1703 (Build 15063.877)"/>
-  <int value="987169677" label="Windows 10 1703 (Build 15063.909)"/>
-  <int value="987169704" label="Windows 10 1703 (Build 15063.936)"/>
-  <int value="987169734" label="Windows 10 1703 (Build 15063.966)"/>
-  <int value="987169762" label="Windows 10 1703 (Build 15063.994)"/>
-  <int value="987169797" label="Windows 10 1703 (Build 15063.1029)"/>
-  <int value="987169826" label="Windows 10 1703 (Build 15063.1058)"/>
-  <int value="987169856" label="Windows 10 1703 (Build 15063.1088)"/>
-  <int value="987169880" label="Windows 10 1703 (Build 15063.1112)"/>
-  <int value="987169923" label="Windows 10 1703 (Build 15063.1155)"/>
-  <int value="987169950" label="Windows 10 1703 (Build 15063.1182)"/>
-  <int value="987169974" label="Windows 10 1703 (Build 15063.1206)"/>
-  <int value="987169977" label="Windows 10 1703 (Build 15063.1209)"/>
-  <int value="987170003" label="Windows 10 1703 (Build 15063.1235)"/>
-  <int value="987170034" label="Windows 10 1703 (Build 15063.1266)"/>
-  <int value="987170060" label="Windows 10 1703 (Build 15063.1292)"/>
-  <int value="987170092" label="Windows 10 1703 (Build 15063.1324)"/>
-  <int value="987170124" label="Windows 10 1703 (Build 15063.1356)"/>
-  <int value="987170155" label="Windows 10 1703 (Build 15063.1387)"/>
-  <int value="987170186" label="Windows 10 1703 (Build 15063.1418)"/>
-  <int value="987170214" label="Windows 10 1703 (Build 15063.1446)"/>
-  <int value="987170246" label="Windows 10 1703 (Build 15063.1478)"/>
-  <int value="987170274" label="Windows 10 1703 (Build 15063.1506)"/>
-  <int value="987170276" label="Windows 10 1703 (Build 15063.1508)"/>
-  <int value="987170331" label="Windows 10 1703 (Build 15063.1563)"/>
-  <int value="987170364" label="Windows 10 1703 (Build 15063.1596)"/>
-  <int value="987170399" label="Windows 10 1703 (Build 15063.1631)"/>
-  <int value="987170427" label="Windows 10 1703 (Build 15063.1659)"/>
-  <int value="987170457" label="Windows 10 1703 (Build 15063.1689)"/>
-  <int value="987170484" label="Windows 10 1703 (Build 15063.1716)"/>
-  <int value="987170514" label="Windows 10 1703 (Build 15063.1746)"/>
-  <int value="987170552" label="Windows 10 1703 (Build 15063.1784)"/>
-  <int value="987170553" label="Windows 10 1703 (Build 15063.1785)"/>
-  <int value="987170573" label="Windows 10 1703 (Build 15063.1805)"/>
-  <int value="987170576" label="Windows 10 1703 (Build 15063.1808)"/>
-  <int value="987170607" label="Windows 10 1703 (Build 15063.1839)"/>
-  <int value="987170636" label="Windows 10 1703 (Build 15063.1868)"/>
-  <int value="987170665" label="Windows 10 1703 (Build 15063.1897)"/>
-  <int value="987170666" label="Windows 10 1703 (Build 15063.1898)"/>
-  <int value="987170696" label="Windows 10 1703 (Build 15063.1928)"/>
-  <int value="987170723" label="Windows 10 1703 (Build 15063.1955)"/>
-  <int value="987170755" label="Windows 10 1703 (Build 15063.1987)"/>
-  <int value="987170756" label="Windows 10 1703 (Build 15063.1988)"/>
-  <int value="987170789" label="Windows 10 1703 (Build 15063.2021)"/>
-  <int value="987170813" label="Windows 10 1703 (Build 15063.2045)"/>
-  <int value="987170876" label="Windows 10 1703 (Build 15063.2108)"/>
-  <int value="1068171279" label="Windows 10 1709 (Build 16299.15)"/>
-  <int value="1068171283" label="Windows 10 1709 (Build 16299.19)"/>
-  <int value="1068171328" label="Windows 10 1709 (Build 16299.64)"/>
-  <int value="1068171346" label="Windows 10 1709 (Build 16299.82)"/>
-  <int value="1068171362" label="Windows 10 1709 (Build 16299.98)"/>
-  <int value="1068171379" label="Windows 10 1709 (Build 16299.115)"/>
-  <int value="1068171389" label="Windows 10 1709 (Build 16299.125)"/>
-  <int value="1068171456" label="Windows 10 1709 (Build 16299.192)"/>
-  <int value="1068171458" label="Windows 10 1709 (Build 16299.194)"/>
-  <int value="1068171465" label="Windows 10 1709 (Build 16299.201)"/>
-  <int value="1068171478" label="Windows 10 1709 (Build 16299.214)"/>
-  <int value="1068171512" label="Windows 10 1709 (Build 16299.248)"/>
-  <int value="1068171515" label="Windows 10 1709 (Build 16299.251)"/>
-  <int value="1068171573" label="Windows 10 1709 (Build 16299.309)"/>
-  <int value="1068171598" label="Windows 10 1709 (Build 16299.334)"/>
-  <int value="1068171635" label="Windows 10 1709 (Build 16299.371)"/>
-  <int value="1068171666" label="Windows 10 1709 (Build 16299.402)"/>
-  <int value="1068171695" label="Windows 10 1709 (Build 16299.431)"/>
-  <int value="1068171725" label="Windows 10 1709 (Build 16299.461)"/>
-  <int value="1068171756" label="Windows 10 1709 (Build 16299.492)"/>
-  <int value="1068171786" label="Windows 10 1709 (Build 16299.522)"/>
-  <int value="1068171811" label="Windows 10 1709 (Build 16299.547)"/>
-  <int value="1068171815" label="Windows 10 1709 (Build 16299.551)"/>
-  <int value="1068171843" label="Windows 10 1709 (Build 16299.579)"/>
-  <int value="1068171875" label="Windows 10 1709 (Build 16299.611)"/>
-  <int value="1068171901" label="Windows 10 1709 (Build 16299.637)"/>
-  <int value="1068171929" label="Windows 10 1709 (Build 16299.665)"/>
-  <int value="1068171930" label="Windows 10 1709 (Build 16299.666)"/>
-  <int value="1068171963" label="Windows 10 1709 (Build 16299.699)"/>
-  <int value="1068171990" label="Windows 10 1709 (Build 16299.726)"/>
-  <int value="1068172019" label="Windows 10 1709 (Build 16299.755)"/>
-  <int value="1068172049" label="Windows 10 1709 (Build 16299.785)"/>
-  <int value="1068172084" label="Windows 10 1709 (Build 16299.820)"/>
-  <int value="1068172110" label="Windows 10 1709 (Build 16299.846)"/>
-  <int value="1068172111" label="Windows 10 1709 (Build 16299.847)"/>
-  <int value="1068172168" label="Windows 10 1709 (Build 16299.904)"/>
-  <int value="1068172200" label="Windows 10 1709 (Build 16299.936)"/>
-  <int value="1068172231" label="Windows 10 1709 (Build 16299.967)"/>
-  <int value="1068172268" label="Windows 10 1709 (Build 16299.1004)"/>
-  <int value="1068172293" label="Windows 10 1709 (Build 16299.1029)"/>
-  <int value="1068172323" label="Windows 10 1709 (Build 16299.1059)"/>
-  <int value="1068172351" label="Windows 10 1709 (Build 16299.1087)"/>
-  <int value="1068172391" label="Windows 10 1709 (Build 16299.1127)"/>
-  <int value="1068172410" label="Windows 10 1709 (Build 16299.1146)"/>
-  <int value="1068172414" label="Windows 10 1709 (Build 16299.1150)"/>
-  <int value="1068172446" label="Windows 10 1709 (Build 16299.1182)"/>
-  <int value="1068172481" label="Windows 10 1709 (Build 16299.1217)"/>
-  <int value="1068172501" label="Windows 10 1709 (Build 16299.1237)"/>
-  <int value="1068172503" label="Windows 10 1709 (Build 16299.1239)"/>
-  <int value="1068172532" label="Windows 10 1709 (Build 16299.1268)"/>
-  <int value="1068172560" label="Windows 10 1709 (Build 16299.1296)"/>
-  <int value="1068172595" label="Windows 10 1709 (Build 16299.1331)"/>
-  <int value="1068172629" label="Windows 10 1709 (Build 16299.1365)"/>
-  <int value="1068172651" label="Windows 10 1709 (Build 16299.1387)"/>
-  <int value="1068172715" label="Windows 10 1709 (Build 16299.1451)"/>
-  <int value="1122893825" label="Windows 10 1803 (Build 17134.1)"/>
-  <int value="1122893829" label="Windows 10 1803 (Build 17134.5)"/>
-  <int value="1122893856" label="Windows 10 1803 (Build 17134.32)"/>
-  <int value="1122893872" label="Windows 10 1803 (Build 17134.48)"/>
-  <int value="1122893883" label="Windows 10 1803 (Build 17134.59)"/>
-  <int value="1122893905" label="Windows 10 1803 (Build 17134.81)"/>
-  <int value="1122893907" label="Windows 10 1803 (Build 17134.83)"/>
-  <int value="1122893910" label="Windows 10 1803 (Build 17134.86)"/>
-  <int value="1122893936" label="Windows 10 1803 (Build 17134.112)"/>
-  <int value="1122893961" label="Windows 10 1803 (Build 17134.137)"/>
-  <int value="1122893989" label="Windows 10 1803 (Build 17134.165)"/>
-  <int value="1122893991" label="Windows 10 1803 (Build 17134.167)"/>
-  <int value="1122894015" label="Windows 10 1803 (Build 17134.191)"/>
-  <int value="1122894052" label="Windows 10 1803 (Build 17134.228)"/>
-  <int value="1122894078" label="Windows 10 1803 (Build 17134.254)"/>
-  <int value="1122894109" label="Windows 10 1803 (Build 17134.285)"/>
-  <int value="1122894110" label="Windows 10 1803 (Build 17134.286)"/>
-  <int value="1122894143" label="Windows 10 1803 (Build 17134.319)"/>
-  <int value="1122894144" label="Windows 10 1803 (Build 17134.320)"/>
-  <int value="1122894169" label="Windows 10 1803 (Build 17134.345)"/>
-  <int value="1122894200" label="Windows 10 1803 (Build 17134.376)"/>
-  <int value="1122894231" label="Windows 10 1803 (Build 17134.407)"/>
-  <int value="1122894265" label="Windows 10 1803 (Build 17134.441)"/>
-  <int value="1122894295" label="Windows 10 1803 (Build 17134.471)"/>
-  <int value="1122894296" label="Windows 10 1803 (Build 17134.472)"/>
-  <int value="1122894347" label="Windows 10 1803 (Build 17134.523)"/>
-  <int value="1122894380" label="Windows 10 1803 (Build 17134.556)"/>
-  <int value="1122894414" label="Windows 10 1803 (Build 17134.590)"/>
-  <int value="1122894443" label="Windows 10 1803 (Build 17134.619)"/>
-  <int value="1122894472" label="Windows 10 1803 (Build 17134.648)"/>
-  <int value="1122894501" label="Windows 10 1803 (Build 17134.677)"/>
-  <int value="1122894530" label="Windows 10 1803 (Build 17134.706)"/>
-  <int value="1122894577" label="Windows 10 1803 (Build 17134.753)"/>
-  <int value="1122894589" label="Windows 10 1803 (Build 17134.765)"/>
-  <int value="1122894590" label="Windows 10 1803 (Build 17134.766)"/>
-  <int value="1122894623" label="Windows 10 1803 (Build 17134.799)"/>
-  <int value="1122894653" label="Windows 10 1803 (Build 17134.829)"/>
-  <int value="1122894682" label="Windows 10 1803 (Build 17134.858)"/>
-  <int value="1122894684" label="Windows 10 1803 (Build 17134.860)"/>
-  <int value="1122894709" label="Windows 10 1803 (Build 17134.885)"/>
-  <int value="1122894739" label="Windows 10 1803 (Build 17134.915)"/>
-  <int value="1122894774" label="Windows 10 1803 (Build 17134.950)"/>
-  <int value="1122894808" label="Windows 10 1803 (Build 17134.984)"/>
-  <int value="1122894830" label="Windows 10 1803 (Build 17134.1006)"/>
-  <int value="1122894864" label="Windows 10 1803 (Build 17134.1040)"/>
-  <int value="1122894893" label="Windows 10 1803 (Build 17134.1069)"/>
-  <int value="1122894923" label="Windows 10 1803 (Build 17134.1099)"/>
-  <int value="1122895128" label="Windows 10 1803 (Build 17134.1304)"/>
-  <int value="1122895312" label="Windows 10 1803 (Build 17134.1488)"/>
-  <int value="1164115969" label="Windows 10 1809 (Build 17763.1)"/>
-  <int value="1164115985" label="Windows 10 1809 (Build 17763.17)"/>
-  <int value="1164116023" label="Windows 10 1809 (Build 17763.55)"/>
-  <int value="1164116072" label="Windows 10 1809 (Build 17763.104)"/>
-  <int value="1164116075" label="Windows 10 1809 (Build 17763.107)"/>
-  <int value="1164116102" label="Windows 10 1809 (Build 17763.134)"/>
-  <int value="1164116136" label="Windows 10 1809 (Build 17763.168)"/>
-  <int value="1164116162" label="Windows 10 1809 (Build 17763.194)"/>
-  <int value="1164116163" label="Windows 10 1809 (Build 17763.195)"/>
-  <int value="1164116221" label="Windows 10 1809 (Build 17763.253)"/>
-  <int value="1164116256" label="Windows 10 1809 (Build 17763.288)"/>
-  <int value="1164116260" label="Windows 10 1809 (Build 17763.292)"/>
-  <int value="1164116284" label="Windows 10 1809 (Build 17763.316)"/>
-  <int value="1164116316" label="Windows 10 1809 (Build 17763.348)"/>
-  <int value="1164116317" label="Windows 10 1809 (Build 17763.349)"/>
-  <int value="1164116347" label="Windows 10 1809 (Build 17763.379)"/>
-  <int value="1164116370" label="Windows 10 1809 (Build 17763.402)"/>
-  <int value="1164116372" label="Windows 10 1809 (Build 17763.404)"/>
-  <int value="1164116405" label="Windows 10 1809 (Build 17763.437)"/>
-  <int value="1164116407" label="Windows 10 1809 (Build 17763.439)"/>
-  <int value="1164116443" label="Windows 10 1809 (Build 17763.475)"/>
-  <int value="1164116471" label="Windows 10 1809 (Build 17763.503)"/>
-  <int value="1164116472" label="Windows 10 1809 (Build 17763.504)"/>
-  <int value="1164116497" label="Windows 10 1809 (Build 17763.529)"/>
-  <int value="1164116525" label="Windows 10 1809 (Build 17763.557)"/>
-  <int value="1164116560" label="Windows 10 1809 (Build 17763.592)"/>
-  <int value="1164116561" label="Windows 10 1809 (Build 17763.593)"/>
-  <int value="1164116583" label="Windows 10 1809 (Build 17763.615)"/>
-  <int value="1164116620" label="Windows 10 1809 (Build 17763.652)"/>
-  <int value="1164116646" label="Windows 10 1809 (Build 17763.678)"/>
-  <int value="1164116688" label="Windows 10 1809 (Build 17763.720)"/>
-  <int value="1164116705" label="Windows 10 1809 (Build 17763.737)"/>
-  <int value="1164116743" label="Windows 10 1809 (Build 17763.775)"/>
-  <int value="1164116773" label="Windows 10 1809 (Build 17763.805)"/>
-  <int value="1164116800" label="Windows 10 1809 (Build 17763.832)"/>
-  <int value="1164117126" label="Windows 10 1809 (Build 17763.1158)"/>
-  <int value="1164117185" label="Windows 10 1809 (Build 17763.1217)"/>
-  <int value="1203372033" label="Windows 10 1903 (Build 18362.1)"/>
-  <int value="1203372062" label="Windows 10 1903 (Build 18362.30)"/>
-  <int value="1203372085" label="Windows 10 1903 (Build 18362.53)"/>
-  <int value="1203372118" label="Windows 10 1903 (Build 18362.86)"/>
-  <int value="1203372145" label="Windows 10 1903 (Build 18362.113)"/>
-  <int value="1203372148" label="Windows 10 1903 (Build 18362.116)"/>
-  <int value="1203372177" label="Windows 10 1903 (Build 18362.145)"/>
-  <int value="1203372207" label="Windows 10 1903 (Build 18362.175)"/>
-  <int value="1203372239" label="Windows 10 1903 (Build 18362.207)"/>
-  <int value="1203372271" label="Windows 10 1903 (Build 18362.239)"/>
-  <int value="1203372295" label="Windows 10 1903 (Build 18362.263)"/>
-  <int value="1203372296" label="Windows 10 1903 (Build 18362.264)"/>
-  <int value="1203372298" label="Windows 10 1903 (Build 18362.266)"/>
-  <int value="1203372299" label="Windows 10 1903 (Build 18362.267)"/>
-  <int value="1203372327" label="Windows 10 1903 (Build 18362.295)"/>
-  <int value="1203372357" label="Windows 10 1903 (Build 18362.325)"/>
-  <int value="1203372359" label="Windows 10 1903 (Build 18362.327)"/>
-  <int value="1203372361" label="Windows 10 1903 (Build 18362.329)"/>
-  <int value="1203372388" label="Windows 10 1903 (Build 18362.356)"/>
-  <int value="1203372420" label="Windows 10 1903 (Build 18362.388)"/>
-  <int value="1203372450" label="Windows 10 1903 (Build 18362.418)"/>
-  <int value="1203372481" label="Windows 10 1903 (Build 18362.449)"/>
-  <int value="1203372752" label="Windows 10 1903 (Build 18362.720)"/>
-  <int value="1203372810" label="Windows 10 1903 (Build 18362.778)"/>
-  <int value="1203372868" label="Windows 10 1903 (Build 18362.836)"/>
-  <int value="1203382032" label="Windows 10 1903 (Build 18362.10000)"/>
-  <int value="1203382037" label="Windows 10 1903 (Build 18362.10005)"/>
-  <int value="1203382038" label="Windows 10 1903 (Build 18362.10006)"/>
-  <int value="1203382044" label="Windows 10 1903 (Build 18362.10012)"/>
-  <int value="1203382045" label="Windows 10 1903 (Build 18362.10013)"/>
-  <int value="1203382046" label="Windows 10 1903 (Build 18362.10014)"/>
-  <int value="1203382047" label="Windows 10 1903 (Build 18362.10015)"/>
-  <int value="1203382051" label="Windows 10 1903 (Build 18362.10019)"/>
-  <int value="1203382056" label="Windows 10 1903 (Build 18362.10024)"/>
-  <int value="1203438288" label="Windows 10 1909 (Build 18363.720)"/>
-  <int value="1203438346" label="Windows 10 1909 (Build 18363.778)"/>
-  <int value="1203438404" label="Windows 10 1909 (Build 18363.836)"/>
-  <int value="1239155688" label="Windows 10 Insider (Build 18908.1000)"/>
-  <int value="1240073192" label="Windows 10 Insider (Build 18922.1000)"/>
-  <int value="1240728552" label="Windows 10 Insider (Build 18932.1000)"/>
-  <int value="1240990696" label="Windows 10 Insider (Build 18936.1000)"/>
-  <int value="1241318377" label="Windows 10 Insider (Build 18941.1001)"/>
-  <int value="1241580521" label="Windows 10 Insider (Build 18945.1001)"/>
-  <int value="1241711592" label="Windows 10 Insider (Build 18947.1000)"/>
-  <int value="1247871240" label="Windows 10 2004 (Build 19041.264)"/>
 </enum>
 
 <enum name="WinGetLastError">
