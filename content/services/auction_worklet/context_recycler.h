@@ -12,6 +12,7 @@
 #include "base/memory/raw_ref.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "v8/include/v8-context.h"
 #include "v8/include/v8-external.h"
 #include "v8/include/v8-forward.h"
 
