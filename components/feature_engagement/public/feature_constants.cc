@@ -530,6 +530,9 @@ BASE_FEATURE(kIPHiOSPromoDefaultBrowserFeature,
 BASE_FEATURE(kIPHiOSPromoDefaultBrowserReminderFeature,
              "IPH_iOSPromoDefaultBrowserReminder",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSPromoOmniboxPositionFeature,
+             "IPH_iOSPromoOmniboxPosition",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHiOSNewTabToolbarItemFeature,
              "IPH_iOSNewTabToolbarItemFeature",
              base::FEATURE_DISABLED_BY_DEFAULT);

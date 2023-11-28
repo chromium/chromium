@@ -251,6 +251,8 @@ DEFINE_VARIATION_PARAM(kIPHiOSPromoDefaultBrowserFeature,
                        "IPH_iOSPromoDefaultBrowser");
 DEFINE_VARIATION_PARAM(kIPHiOSPromoDefaultBrowserReminderFeature,
                        "IPH_iOSPromoDefaultBrowserReminder");
+DEFINE_VARIATION_PARAM(kIPHiOSPromoOmniboxPositionFeature,
+                       "IPH_iOSPromoOmniboxPosition");
 DEFINE_VARIATION_PARAM(kIPHiOSNewTabToolbarItemFeature,
                        "IPH_iOSNewTabToolbarItemFeature");
 DEFINE_VARIATION_PARAM(kIPHiOSTabGridToolbarItemFeature,
@@ -574,6 +576,7 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHiOSPromoPostRestoreFeature),
         VARIATION_ENTRY(kIPHiOSPromoCredentialProviderExtensionFeature),
         VARIATION_ENTRY(kIPHiOSPromoDefaultBrowserFeature),
+        VARIATION_ENTRY(kIPHiOSPromoOmniboxPositionFeature),
         VARIATION_ENTRY(kIPHiOSNewTabToolbarItemFeature),
         VARIATION_ENTRY(kIPHiOSTabGridToolbarItemFeature),
         VARIATION_ENTRY(kIPHiOSHistoryOnOverflowMenuFeature),

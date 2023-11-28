@@ -104,6 +104,21 @@ absl::optional<FeatureConfig> GetStandardPromoConfig(
     return config;
   }
 
+  if (kIPHiOSPromoOmniboxPositionFeature.name == feature->name) {
+    // Shown only once.
+    config = FeatureConfig();
+    config->groups.push_back(kiOSFullscreenPromosGroup.name);
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->used = EventConfig("omnibox_position_promo_used",
+                               Comparator(ANY, 0), 365, 365);
+    config->trigger =
+        EventConfig("omnibox_position_promo_trigger", Comparator(EQUAL, 0),
+                    feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+  }
+
   // All standard promos can only be shown once per month.
   if (config) {
     config->event_configs.insert(
