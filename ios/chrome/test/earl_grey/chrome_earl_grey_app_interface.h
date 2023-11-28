@@ -694,7 +694,7 @@
 #pragma mark - Default Search Engine Choice Screen Utilities
 
 // Returns YES if the search engine choice screen will be shown.
-+ (BOOL)isChoiceEnabled;
++ (BOOL)IsSearchEngineChoiceScreenEnabledFre;
 
 #pragma mark - First Run Utilities
 

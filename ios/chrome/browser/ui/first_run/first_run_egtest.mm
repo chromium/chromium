@@ -98,7 +98,7 @@ id<GREYMatcher> GetSyncSettings() {
 
 // Dismisses the choice screen if it appears
 void DismissChoiceScreenIfNecessary() {
-  if (![ChromeEarlGreyAppInterface isChoiceEnabled]) {
+  if (![ChromeEarlGreyAppInterface IsSearchEngineChoiceScreenEnabledFre]) {
     return;
   }
   // Selects a search engine. The list of search engines varies from country to
@@ -1420,7 +1420,7 @@ void DismissScreensAfterSigninAndSync() {
 // feature is enabled. If the feature is not enabled, checks that the default
 // browser screen is displayed.
 - (void)verifyChoiceScreenOrDefaultBrowserIsDisplayed {
-  if ([ChromeEarlGreyAppInterface isChoiceEnabled]) {
+  if ([ChromeEarlGreyAppInterface IsSearchEngineChoiceScreenEnabledFre]) {
     [[EarlGrey
         selectElementWithMatcher:
             grey_accessibilityID(

@@ -1507,8 +1507,8 @@ int watchRunNumber = 0;
 
 #pragma mark - Default Search Engine Choice Screen Utilities
 
-+ (BOOL)isChoiceEnabled {
-  return ios::provider::IsChoiceEnabled();
++ (BOOL)IsSearchEngineChoiceScreenEnabledFre {
+  return ios::provider::IsSearchEngineChoiceScreenEnabledFre();
 }
 
 #pragma mark - First Run Utilities
