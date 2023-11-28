@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -24,7 +25,6 @@
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
@@ -96,8 +96,9 @@ absl::optional<std::string> GetPortName(HDEVINFO dev_info,
 base::FilePath GetPath(std::string port_name) {
   // For COM numbers less than 9, CreateFile is called with a string such as
   // "COM1". For numbers greater than 9, a prefix of "\\.\" must be added.
-  if (port_name.length() > base::StringPiece("COM9").length())
+  if (port_name.length() > std::string_view("COM9").length()) {
     return base::FilePath(LR"(\\.\)").AppendASCII(port_name);
+  }
 
   return base::FilePath::FromUTF8Unsafe(port_name);
 }
@@ -323,7 +324,7 @@ void SerialDeviceEnumeratorWin::EnumeratePort(HDEVINFO dev_info,
   // Some versions of Windows pad this string with a variable number of NUL
   // bytes for no discernible reason.
   instance_id = std::string(base::TrimString(
-      *instance_id, base::StringPiece("\0", 1), base::TRIM_TRAILING));
+      *instance_id, std::string_view("\0", 1), base::TRIM_TRAILING));
 
   base::UnguessableToken token = base::UnguessableToken::Create();
   auto info = mojom::SerialPortInfo::New();
@@ -341,7 +342,7 @@ void SerialDeviceEnumeratorWin::EnumeratePort(HDEVINFO dev_info,
     // This string is also sometimes padded with a variable number of NUL bytes
     // for no discernible reason.
     info->display_name = std::string(base::TrimString(
-        *info->display_name, base::StringPiece("\0", 1), base::TRIM_TRAILING));
+        *info->display_name, std::string_view("\0", 1), base::TRIM_TRAILING));
   } else {
     // Fall back to the "friendly name" if no "bus reported device description"
     // is available. This name will likely be the same for all devices using the

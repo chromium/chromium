@@ -13,6 +13,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -255,7 +256,7 @@ bool NetworkManagerWlanApi::GetAccessPointsForAdapter(
         continue;
       }
 
-      base::ReplaceSubstringsAfterOffset(&mac, 0U, ":", base::StringPiece());
+      base::ReplaceSubstringsAfterOffset(&mac, 0U, ":", std::string_view());
       std::vector<uint8_t> mac_bytes;
       if (!base::HexStringToBytes(mac, &mac_bytes) || mac_bytes.size() != 6) {
         LOG(WARNING) << "Can't parse mac address (found " << mac_bytes.size()

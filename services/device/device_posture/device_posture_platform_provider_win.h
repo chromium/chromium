@@ -5,6 +5,7 @@
 #ifndef SERVICES_DEVICE_DEVICE_POSTURE_DEVICE_POSTURE_PLATFORM_PROVIDER_WIN_H_
 #define SERVICES_DEVICE_DEVICE_POSTURE_DEVICE_POSTURE_PLATFORM_PROVIDER_WIN_H_
 
+#include <string_view>
 #include <vector>
 
 #include "base/strings/string_piece.h"
@@ -38,7 +39,7 @@ class DevicePosturePlatformProviderWin : public DevicePosturePlatformProvider {
   static absl::optional<std::vector<gfx::Rect>> ParseViewportSegments(
       const base::Value::List& viewport_segments);
   static absl::optional<mojom::DevicePostureType> ParsePosture(
-      base::StringPiece posture_state);
+      std::string_view posture_state);
 
   mojom::DevicePostureType current_posture_ =
       mojom::DevicePostureType::kContinuous;

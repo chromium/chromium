@@ -10,6 +10,7 @@
 #include <limits>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -53,12 +54,12 @@ const char kLongitudeString[] = "lng";
 const char kAccuracyString[] = "accuracy";
 
 // Keys for the network request.
-constexpr base::StringPiece kAgeKey = "age";
-constexpr base::StringPiece kChannelKey = "channel";
-constexpr base::StringPiece kMacAddressKey = "macAddress";
-constexpr base::StringPiece kSignalStrengthKey = "signalStrength";
-constexpr base::StringPiece kSignalToNoiseRatioKey = "signalToNoiseRatio";
-constexpr base::StringPiece kWifiAccessPointsKey = "wifiAccessPoints";
+constexpr std::string_view kAgeKey = "age";
+constexpr std::string_view kChannelKey = "channel";
+constexpr std::string_view kMacAddressKey = "macAddress";
+constexpr std::string_view kSignalStrengthKey = "signalStrength";
+constexpr std::string_view kSignalToNoiseRatioKey = "signalToNoiseRatio";
+constexpr std::string_view kWifiAccessPointsKey = "wifiAccessPoints";
 
 enum NetworkLocationRequestEvent {
   // NOTE: Do not renumber these as that would confuse interpretation of
@@ -365,14 +366,14 @@ base::Value::Dict FormUploadData(const WifiData& wifi_data,
   return request;
 }
 
-void AddString(base::StringPiece property_name,
+void AddString(std::string_view property_name,
                const std::string& value,
                base::Value::Dict& dict) {
   if (!value.empty())
     dict.Set(property_name, value);
 }
 
-void AddInteger(base::StringPiece property_name,
+void AddInteger(std::string_view property_name,
                 int value,
                 base::Value::Dict& dict) {
   if (value != std::numeric_limits<int32_t>::min())

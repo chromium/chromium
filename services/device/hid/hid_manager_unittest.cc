@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -424,7 +426,7 @@ TEST_F(HidManagerTest, TestHidConnectionInterface) {
     client->GetConnection()->Read(base::BindLambdaForTesting(
         [&](bool success, uint8_t report_id,
             const absl::optional<std::vector<uint8_t>>& buffer) {
-          constexpr base::StringPiece kExpected = "TestRead";
+          constexpr std::string_view kExpected = "TestRead";
           EXPECT_TRUE(success);
           EXPECT_EQ(report_id, 1u);
           ASSERT_TRUE(buffer);
@@ -454,7 +456,7 @@ TEST_F(HidManagerTest, TestHidConnectionInterface) {
         base::BindLambdaForTesting(
             [&](bool success,
                 const absl::optional<std::vector<uint8_t>>& buffer) {
-              constexpr base::StringPiece kExpected = "TestGetFeatureReport";
+              constexpr std::string_view kExpected = "TestGetFeatureReport";
               EXPECT_TRUE(success);
               ASSERT_TRUE(buffer);
               EXPECT_THAT(*buffer, ElementsAreArray(kExpected));
