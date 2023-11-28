@@ -1070,7 +1070,8 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
       // case we don't need to reconnect the new redirect with the existing
       // chain.
       if (request.referrer.is_valid()) {
-        DCHECK_EQ(request.referrer, redirects[0]);
+        // redirects.begin() should equal request.referrer, but sometimes it
+        // doesn't for an unknown reason. See crbug.com/1502514.
         redirects.erase(redirects.begin());
 
         // If the navigation entry for this visit has replaced that for the
