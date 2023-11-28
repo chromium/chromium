@@ -247,11 +247,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
         optimization_guide::proto::ComposeTone::COMPOSE_UNSPECIFIED_TONE);
     request.set_length(
         optimization_guide::proto::ComposeLength::COMPOSE_UNSPECIFIED_LENGTH);
-
-    optimization_guide::proto::ComposeRequest::GenerateParams generate_params;
-    generate_params.set_user_input(user_input);
-    *request.mutable_generate_params() = std::move(generate_params);
-
+    request.mutable_generate_params()->set_user_input(user_input);
     return request;
   }
 
@@ -327,9 +323,7 @@ TEST_F(ChromeComposeClientTest, TestCompose) {
             test_future.SetValue(std::move(response));
           }));
 
-  auto style_modifiers = compose::mojom::StyleModifiers::New();
-  page_handler()->Compose(std::move(style_modifiers), "a user typed this",
-                          /*rewrite=*/false);
+  page_handler()->Compose("");
 
   compose::mojom::ComposeResponsePtr result = test_future.Take();
 
@@ -381,8 +375,7 @@ TEST_F(ChromeComposeClientTest, TestComposeWithIncompleteResponses) {
             test_future.SetValue(std::move(response));
           }));
 
-  auto style_modifiers = compose::mojom::StyleModifiers::New();
-  page_handler()->Compose(std::move(style_modifiers), input, /*rewrite=*/false);
+  page_handler()->Compose(input);
 
   compose::mojom::ComposeResponsePtr result = test_future.Take();
   EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
@@ -449,15 +442,13 @@ TEST_F(ChromeComposeClientTest, TestComposeSessionIgnoresPreviousResponse) {
             test_future.SetValue(std::move(response));
           }));
 
-  page_handler()->Compose(compose::mojom::StyleModifiers::New(), input,
-                          /*rewrite=*/false);
+  page_handler()->Compose(input);
 
   compose::mojom::ComposeResponsePtr result = test_future.Take();
   EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
   EXPECT_EQ("Cucu", result->result);
 
-  page_handler()->Compose(compose::mojom::StyleModifiers::New(), input2,
-                          /*rewrite=*/false);
+  page_handler()->Compose(input2);
   result = test_future.Take();
   EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
   EXPECT_EQ("Cucumbers", result->result);
@@ -492,9 +483,7 @@ TEST_F(ChromeComposeClientTest, TestComposeParams) {
             test_future.SetValue(std::move(response));
           }));
 
-  auto style_modifiers = compose::mojom::StyleModifiers::New();
-  page_handler()->Compose(std::move(style_modifiers), user_input,
-                          /*rewrite=*/false);
+  page_handler()->Compose(user_input);
 
   compose::mojom::ComposeResponsePtr result = test_future.Take();
   EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
@@ -524,9 +513,7 @@ TEST_F(ChromeComposeClientTest, TestComposeNoResponse) {
             test_future.SetValue(std::move(response));
           }));
 
-  auto style_modifiers = compose::mojom::StyleModifiers::New();
-  page_handler()->Compose(std::move(style_modifiers), "a user typed this",
-                          /*rewrite=*/false);
+  page_handler()->Compose("a user typed this");
 
   compose::mojom::ComposeResponsePtr result = test_future.Take();
   EXPECT_EQ(compose::mojom::ComposeStatus::kTryAgainLater, result->status);
@@ -552,9 +539,7 @@ TEST_F(ChromeComposeClientTest, TestComposeNoParsedAny) {
             test_future.SetValue(std::move(response));
           }));
 
-  auto style_modifiers = compose::mojom::StyleModifiers::New();
-  page_handler()->Compose(std::move(style_modifiers), "a user typed this",
-                          /*rewrite=*/false);
+  page_handler()->Compose("a user typed this");
 
   compose::mojom::ComposeResponsePtr result = test_future.Take();
   EXPECT_EQ(compose::mojom::ComposeStatus::kTryAgain, result->status);
@@ -587,9 +572,7 @@ TEST_F(ChromeComposeClientTest, TestOptimizationGuideDisabled) {
             test_future.SetValue(std::move(response));
           }));
 
-  auto style_modifiers = compose::mojom::StyleModifiers::New();
-  page_handler()->Compose(std::move(style_modifiers), "a user typed this",
-                          /*rewrite=*/false);
+  page_handler()->Compose("a user typed this");
 
   compose::mojom::ComposeResponsePtr result = test_future.Take();
   EXPECT_EQ(compose::mojom::ComposeStatus::kMisconfiguration, result->status);
@@ -607,9 +590,7 @@ TEST_F(ChromeComposeClientTest, TestNoModelExecutor) {
             test_future.SetValue(std::move(response));
           }));
 
-  auto style_modifiers = compose::mojom::StyleModifiers::New();
-  page_handler()->Compose(std::move(style_modifiers), "a user typed this",
-                          /*rewrite=*/false);
+  page_handler()->Compose("a user typed this");
 
   compose::mojom::ComposeResponsePtr result = test_future.Take();
   EXPECT_EQ(compose::mojom::ComposeStatus::kMisconfiguration, result->status);
@@ -635,11 +616,7 @@ TEST_F(ChromeComposeClientTest, TestRestoreStateAfterRequestResponse) {
             test_future.SetValue(std::move(response));
           }));
 
-  auto style_modifiers = compose::mojom::StyleModifiers::New();
-  style_modifiers->tone = compose::mojom::Tone::kCasual;
-  style_modifiers->length = compose::mojom::Length::kLonger;
-  page_handler()->Compose(std::move(style_modifiers), "a user typed this",
-                          /*rewrite=*/false);
+  page_handler()->Compose("a user typed this");
 
   base::test::TestFuture<compose::mojom::OpenMetadataPtr> open_test_future;
   page_handler()->RequestInitialState(open_test_future.GetCallback());
@@ -700,8 +677,7 @@ TEST_F(ChromeComposeClientTest, TestSaveThenComposeThenRestoreWebUIState) {
           }));
 
   page_handler()->SaveWebUIState("web ui state");
-  page_handler()->Compose(compose::mojom::StyleModifiers::New(), "",
-                          /*rewrite=*/false);
+  page_handler()->Compose("");
 
   compose::mojom::ComposeResponsePtr response = compose_test_future.Take();
   EXPECT_FALSE(response->undo_available)
@@ -736,9 +712,7 @@ TEST_F(ChromeComposeClientTest, NoStateWorksAtChromeCompose) {
             test_future.SetValue(std::move(response));
           }));
 
-  auto style_modifiers = compose::mojom::StyleModifiers::New();
-  page_handler()->Compose(std::move(style_modifiers), "a user typed this",
-                          /*rewrite=*/false);
+  page_handler()->Compose("a user typed this");
 
   compose::mojom::ComposeResponsePtr result = test_future.Take();
 
@@ -825,8 +799,7 @@ TEST_F(ChromeComposeClientTest, TestUndoUnavailableFirstCompose) {
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> compose_future;
   BindComposeFutureToOnResponseReceived(compose_future);
 
-  page_handler()->Compose(compose::mojom::StyleModifiers::New(), "",
-                          /*rewrite=*/false);
+  page_handler()->Compose("");
   compose::mojom::ComposeResponsePtr response = compose_future.Take();
   EXPECT_FALSE(response->undo_available)
       << "First Compose() response should say undo not available.";
@@ -853,15 +826,13 @@ TEST_F(ChromeComposeClientTest, TestComposeTwiceThenUpdateWebUIStateThenUndo) {
   BindComposeFutureToOnResponseReceived(compose_future);
 
   page_handler()->SaveWebUIState("this state should be restored with undo");
-  page_handler()->Compose(compose::mojom::StyleModifiers::New(), "",
-                          /*rewrite=*/false);
+  page_handler()->Compose("");
 
   compose::mojom::ComposeResponsePtr response = compose_future.Take();
   EXPECT_FALSE(response->undo_available) << "First Compose() response should "
                                             "say undo is not available.";
   page_handler()->SaveWebUIState("second state");
-  page_handler()->Compose(compose::mojom::StyleModifiers::New(), "",
-                          /*rewrite=*/false);
+  page_handler()->Compose("");
 
   response = compose_future.Take();
   EXPECT_TRUE(response->undo_available) << "Second Compose() response should "
@@ -894,22 +865,19 @@ TEST_F(ChromeComposeClientTest, TestUndoStackMultipleUndos) {
   BindComposeFutureToOnResponseReceived(compose_future);
 
   page_handler()->SaveWebUIState("first state");
-  page_handler()->Compose(compose::mojom::StyleModifiers::New(), "",
-                          /*rewrite=*/false);
+  page_handler()->Compose("");
 
   compose::mojom::ComposeResponsePtr response = compose_future.Take();
   EXPECT_FALSE(response->undo_available) << "First Compose() response should "
                                             "say undo is not available.";
   page_handler()->SaveWebUIState("second state");
-  page_handler()->Compose(compose::mojom::StyleModifiers::New(), "",
-                          /*rewrite=*/false);
+  page_handler()->Compose("");
   response = compose_future.Take();
   EXPECT_TRUE(response->undo_available) << "Second Compose() response should "
                                            "say undo is available.";
 
   page_handler()->SaveWebUIState("third state");
-  page_handler()->Compose(compose::mojom::StyleModifiers::New(), "",
-                          /*rewrite=*/false);
+  page_handler()->Compose("");
 
   response = compose_future.Take();
   EXPECT_TRUE(response->undo_available) << "Third Compose() response should "
@@ -939,16 +907,14 @@ TEST_F(ChromeComposeClientTest, TestUndoComposeThenUndoAgain) {
   BindComposeFutureToOnResponseReceived(compose_future);
 
   page_handler()->SaveWebUIState("first state");
-  page_handler()->Compose(compose::mojom::StyleModifiers::New(), "",
-                          /*rewrite=*/false);
+  page_handler()->Compose("");
 
   compose::mojom::ComposeResponsePtr response = compose_future.Take();
   EXPECT_FALSE(response->undo_available) << "First Compose() response should "
                                             "say undo is not available.";
 
   page_handler()->SaveWebUIState("second state");
-  page_handler()->Compose(compose::mojom::StyleModifiers::New(), "",
-                          /*rewrite=*/false);
+  page_handler()->Compose("");
 
   response = compose_future.Take();
   EXPECT_TRUE(response->undo_available) << "Second Compose() response should "
@@ -960,8 +926,7 @@ TEST_F(ChromeComposeClientTest, TestUndoComposeThenUndoAgain) {
   EXPECT_EQ("first state", undo_future.Take()->webui_state);
 
   page_handler()->SaveWebUIState("third state");
-  page_handler()->Compose(compose::mojom::StyleModifiers::New(), "",
-                          /*rewrite=*/false);
+  page_handler()->Compose("");
 
   response = compose_future.Take();
   EXPECT_TRUE(response->undo_available) << "Third Compose() response should "
@@ -993,9 +958,7 @@ TEST_F(ChromeComposeClientTest, TestAcceptComposeResultCallback) {
   page_handler()->AcceptComposeResult(accept_future_1.GetCallback());
   EXPECT_EQ(false, accept_future_1.Take());
 
-  auto style_modifiers = compose::mojom::StyleModifiers::New();
-  page_handler()->Compose(std::move(style_modifiers), "a user typed this",
-                          /*rewrite=*/false);
+  page_handler()->Compose("a user typed this");
 
   base::test::TestFuture<bool> accept_future_2;
   page_handler()->AcceptComposeResult(accept_future_2.GetCallback());
@@ -1028,8 +991,7 @@ TEST_F(ChromeComposeClientTest, ResetClientOnNavigation) {
   ShowDialogAndBindMojo();
 
   page_handler()->SaveWebUIState("first state");
-  page_handler()->Compose(compose::mojom::StyleModifiers::New(), "",
-                          /*rewrite=*/false);
+  page_handler()->Compose("");
 
   autofill::FormFieldData field_2;
   field_2.unique_renderer_id = autofill::FieldRendererId(2);
@@ -1053,16 +1015,13 @@ TEST_F(ChromeComposeClientTest, CloseButtonHistogramTest) {
   BindComposeFutureToOnResponseReceived(compose_future);
 
   // Simulate three compose request.
-  page_handler()->Compose(compose::mojom::StyleModifiers::New(), "",
-                          /*rewrite=*/false);
+  page_handler()->Compose("");
   compose::mojom::ComposeResponsePtr response = compose_future.Take();
 
-  page_handler()->Compose(compose::mojom::StyleModifiers::New(), "",
-                          /*rewrite=*/false);
+  page_handler()->Compose("");
   response = compose_future.Take();
 
-  page_handler()->Compose(compose::mojom::StyleModifiers::New(), "",
-                          /*rewrite=*/false);
+  page_handler()->Compose("");
   response = compose_future.Take();
 
   // Show the dialog a second time.
@@ -1101,16 +1060,13 @@ TEST_F(ChromeComposeClientTest, AcceptSuggestionHistogramTest) {
   BindComposeFutureToOnResponseReceived(compose_future);
 
   // Simulate three compose request.
-  page_handler()->Compose(compose::mojom::StyleModifiers::New(), "",
-                          /*rewrite=*/false);
+  page_handler()->Compose("");
   compose::mojom::ComposeResponsePtr response = compose_future.Take();
 
-  page_handler()->Compose(compose::mojom::StyleModifiers::New(), "",
-                          /*rewrite=*/false);
+  page_handler()->Compose("");
   response = compose_future.Take();
 
-  page_handler()->Compose(compose::mojom::StyleModifiers::New(), "",
-                          /*rewrite=*/false);
+  page_handler()->Compose("");
   response = compose_future.Take();
 
   // Show the dialog a second time.
@@ -1308,14 +1264,9 @@ TEST_F(ChromeComposeClientTest, TestComposeQualityLatency) {
             quality_test_future.SetValue(std::move(response));
           }));
 
-  auto style_modifiers = compose::mojom::StyleModifiers::New();
+  page_handler()->Compose("a user typed this");
 
-  page_handler()->Compose(std::move(style_modifiers), "a user typed this",
-                          /*rewrite=*/false);
-
-  style_modifiers = compose::mojom::StyleModifiers::New();
-  page_handler()->Compose(std::move(style_modifiers), "a user typed that",
-                          /*rewrite=*/false);
+  page_handler()->Compose("a user typed that");
 
   // This take should clear the test future for the second commit.
   std::unique_ptr<optimization_guide::ModelQualityLogEntry> result =

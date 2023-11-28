@@ -24,7 +24,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {Debouncer, microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
-import {CloseReason, ComposeDialogCallbackRouter, ComposeResponse, ComposeStatus, ConfigurableParams, Length, Tone, UserFeedback} from './compose.mojom-webui.js';
+import {CloseReason, ComposeDialogCallbackRouter, ComposeResponse, ComposeStatus, ConfigurableParams, Length, StyleModifiers, Tone, UserFeedback} from './compose.mojom-webui.js';
 import {ComposeApiProxy, ComposeApiProxyImpl} from './compose_api_proxy.js';
 import {ComposeTextareaElement} from './textarea.js';
 
@@ -222,8 +222,8 @@ export class ComposeAppElement extends ComposeAppElementBase {
       }
       const composeState = initialState.composeState;
       this.loading_ = composeState.hasPendingRequest;
-      this.selectedLength_ = composeState.style.length;
-      this.selectedTone_ = composeState.style.tone;
+      this.selectedLength_ = composeState.style.length ?? Length.kUnset;
+      this.selectedTone_ = composeState.style.tone ?? Tone.kUnset;
       this.submitted_ =
           composeState.hasPendingRequest || Boolean(composeState.response);
       if (!composeState.hasPendingRequest) {
@@ -275,7 +275,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
   }
 
   private onRefresh_() {
-    this.compose_(/*rewrite=*/ true);
+    this.rewrite_(/*style=*/ {});
   }
 
   private onSubmit_() {
@@ -314,12 +314,12 @@ export class ComposeAppElement extends ComposeAppElementBase {
 
   private onLengthChanged_() {
     this.selectedLength_ = Number(this.$.lengthMenu.value) as Length;
-    this.compose_(/*rewrite=*/ true);
+    this.rewrite_(/*style=*/ {length: this.selectedLength_});
   }
 
   private onToneChanged_() {
     this.selectedTone_ = Number(this.$.toneMenu.value) as Tone;
-    this.compose_(/*rewrite=*/ true);
+    this.rewrite_(/*style=*/ {tone: this.selectedTone_});
   }
 
   private onFileBugClick_(e: Event) {
@@ -339,18 +339,22 @@ export class ComposeAppElement extends ComposeAppElementBase {
     }
   }
 
-  private compose_(rewrite: boolean = false) {
+  private compose_() {
     assert(this.$.textarea.validate());
     assert(this.submitted_);
     this.loading_ = true;
     this.response_ = undefined;
     this.saveComposeAppState_();  // Ensure state is saved before compose call.
-    this.apiProxy_.compose(
-        {
-          length: this.selectedLength_,
-          tone: this.selectedTone_,
-        },
-        this.input_, rewrite);
+    this.apiProxy_.compose(this.input_);
+  }
+
+  private rewrite_(style: StyleModifiers) {
+    assert(this.$.textarea.validate());
+    assert(this.submitted_);
+    this.loading_ = true;
+    this.response_ = undefined;
+    this.saveComposeAppState_();  // Ensure state is saved before compose call.
+    this.apiProxy_.rewrite(style, this.input_);
   }
 
   private composeResponseReceived_(response: ComposeResponse) {
@@ -419,8 +423,8 @@ export class ComposeAppElement extends ComposeAppElementBase {
       // Restore state to the state returned by Undo.
       this.response_ = state.response;
       this.undoEnabled_ = Boolean(state.response?.undoAvailable);
-      this.selectedLength_ = state.style.length;
-      this.selectedTone_ = state.style.tone;
+      this.selectedLength_ = state.style.length ?? Length.kUnset;
+      this.selectedTone_ = state.style.tone ?? Tone.kUnset;
 
       if (state.webuiState) {
         const appState: ComposeAppState = JSON.parse(state.webuiState);

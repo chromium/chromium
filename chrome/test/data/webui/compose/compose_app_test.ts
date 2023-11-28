@@ -31,6 +31,7 @@ class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
       'acceptComposeResult',
       'closeUi',
       'compose',
+      'rewrite',
       'openBugReportingLink',
       'requestInitialState',
       'saveWebuiState',
@@ -48,8 +49,12 @@ class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
     this.methodCalled('closeUi', reason);
   }
 
-  compose(style: StyleModifiers, input: string, rewrite: boolean): void {
-    this.methodCalled('compose', {style, input, rewrite});
+  compose(input: string): void {
+    this.methodCalled('compose', {input});
+  }
+
+  rewrite(style: StyleModifiers, input: string): void {
+    this.methodCalled('rewrite', {style, input});
   }
 
   undo(): Promise<(ComposeState | null)> {
@@ -163,10 +168,7 @@ suite('ComposeApp', () => {
     const args = await testProxy.whenCalled('compose');
     await mockResponse();
 
-    assertEquals(Length.kUnset, args.style.length);
-    assertEquals(Tone.kUnset, args.style.tone);
     assertEquals('Here is my input.', args.input);
-    assertFalse(args.rewrite);
 
     assertFalse(isVisible(app.$.loading));
     assertFalse(isVisible(app.$.submitButton));
@@ -184,7 +186,7 @@ suite('ComposeApp', () => {
     app.$.submitButton.click();
     await mockResponse();
 
-    testProxy.resetResolver('compose');
+    testProxy.resetResolver('rewrite');
     assertTrue(
         isVisible(app.$.refreshButton), 'Refresh button should be visible.');
 
@@ -193,15 +195,15 @@ suite('ComposeApp', () => {
     assertTrue(
         isVisible(app.$.loading), 'Loading indicator should be visible.');
 
-    const args = await testProxy.whenCalled('compose');
+    const args = await testProxy.whenCalled('rewrite');
     await mockResponse('Refreshed output.');
 
-    assertEquals(Length.kUnset, args.style.length);
-    assertEquals(Tone.kUnset, args.style.tone);
-    assertEquals('Input to refresh.', args.input);
-    assertTrue(args.rewrite);
+    // When the style length and tone are undefined, the request is to simply
+    // rewrite the last response as-is.
+    assertEquals(undefined, args.style.length);
+    assertEquals(undefined, args.style.tone);
 
-    // // Verify UI has updated with refreshed results.
+    // Verify UI has updated with refreshed results.
     assertFalse(isVisible(app.$.loading));
     assertTrue(
         isVisible(app.$.resultContainer),
@@ -479,8 +481,6 @@ suite('ComposeApp', () => {
     const args = await testProxy.whenCalled('compose');
     await mockResponse('new response');
     assertEquals('Here is an even better input.', args.input);
-    assertEquals(Length.kUnset, args.style.length);
-    assertEquals(Tone.kUnset, args.style.tone);
     assertTrue(app.$.resultContainer.textContent!.includes('new response'));
   });
 
@@ -490,7 +490,7 @@ suite('ComposeApp', () => {
     app.$.submitButton.click();
     await mockResponse();
 
-    testProxy.resetResolver('compose');
+    testProxy.resetResolver('rewrite');
 
     assertTrue(isVisible(app.$.lengthMenu), 'Length menu should be visible.');
     assertEquals(
@@ -499,12 +499,12 @@ suite('ComposeApp', () => {
     app.$.lengthMenu.value = `${Length.kShorter}`;
     app.$.lengthMenu.dispatchEvent(new CustomEvent('change'));
 
-    const args = await testProxy.whenCalled('compose');
+    const args = await testProxy.whenCalled('rewrite');
     await mockResponse();
 
     assertEquals(Length.kShorter, args.style.length);
 
-    testProxy.resetResolver('compose');
+    testProxy.resetResolver('rewrite');
 
     assertTrue(isVisible(app.$.toneMenu), 'Tone menu should be visible.');
     assertEquals(
@@ -513,7 +513,7 @@ suite('ComposeApp', () => {
     app.$.toneMenu.value = `${Tone.kCasual}`;
     app.$.toneMenu.dispatchEvent(new CustomEvent('change'));
 
-    const args2 = await testProxy.whenCalled('compose');
+    const args2 = await testProxy.whenCalled('rewrite');
     await mockResponse();
 
     assertEquals(Tone.kCasual, args2.style.tone);

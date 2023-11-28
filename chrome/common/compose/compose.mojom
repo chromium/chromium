@@ -48,10 +48,12 @@ enum ComposeStatus {
   kPermissionDenied = 6,
 };
 
-// Configuration parameters used in compose requests.
+// Configuration parameters used in rewrite requests, specifying how the
+// response should be changed. An empty StyleModifiers object without a tone or
+// length requests a rewrite without changes to the tone or length.
 struct StyleModifiers {
-  Tone tone;
-  Length length;
+  Tone? tone;
+  Length? length;
 };
 
 // The response to compose requests. `response_text` is only valid if `status`
@@ -121,10 +123,14 @@ enum UserFeedback {
 
 // Interface for calls from Compose dialog JS into the Browser process.
 interface ComposeSessionPageHandler {
-  // Asks the Browser to compose `input` with `stye` applied. Response contains
-  // the modified output. `rewrite` indicates that the user clicked on a tone,
-  // length, or the refresh button.
-  Compose(StyleModifiers style, string input, bool rewrite);
+  // Asks the Browser to compose `input`.
+  Compose(string input);
+
+  // Asks the Browser to rewrite the last response. `style` specifies how the
+  // response should be changed. An empty `style` without a tone or length
+  // requests a rewrite without changes to the tone or length.
+  // TODO(b/310022952) Remove `input` once backend handles rewrite params.
+  Rewrite(StyleModifiers style, string input);
 
   // Asks the native handler to store `webui_state` for the last field the user
   // selected compose on.
