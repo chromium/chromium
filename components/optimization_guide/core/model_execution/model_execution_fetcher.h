@@ -49,7 +49,6 @@ class ModelExecutionFetcher {
 
   void ExecuteModel(proto::ModelExecutionFeature feature,
                     signin::IdentityManager* identity_manager,
-                    const std::set<std::string>& oauth_scopes,
                     const google::protobuf::MessageLite& request_metadata,
                     ModelExecuteResponseCallback callback);
 

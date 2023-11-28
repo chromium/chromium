@@ -127,23 +127,6 @@ bool IsSupportedCountryForFeature(const std::string& country_code,
       });
 }
 
-std::set<std::string> GetOauthScopesForFeature(const base::Feature& feature) {
-  std::set<std::string> scopes;
-  if (base::FeatureList::IsEnabled(feature)) {
-    std::string param =
-        base::GetFieldTrialParamValueByFeature(feature, "oauth_scopes");
-    for (const auto& scope : base::SplitString(
-             param, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
-      scopes.insert(scope);
-    }
-  }
-  if (scopes.empty()) {
-    scopes.insert(GaiaConstants::kGoogleUserInfoProfile);
-  }
-
-  return scopes;
-}
-
 }  // namespace
 
 // Enables the syncing of the Optimization Hints component, which provides
@@ -932,10 +915,6 @@ GetPredictionModelVersionsInKillSwitch() {
     }
   }
   return killswitch_model_versions;
-}
-
-std::set<std::string> GetOAuthScopesForModelExecution() {
-  return GetOauthScopesForFeature(kOptimizationGuideModelExecution);
 }
 
 base::TimeDelta GetOnDeviceModelIdleTimeout() {

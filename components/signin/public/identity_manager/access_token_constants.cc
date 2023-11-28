@@ -85,6 +85,7 @@ const std::set<std::string> GetUnconsentedOAuth2Scopes() {
 
       // Required by Optimization Guide.
       GaiaConstants::kOptimizationGuideServiceGetHintsOAuth2Scope,
+      GaiaConstants::kOptimizationGuideServiceModelExecutionOAuth2Scope,
 
     // Required by ChromeOS only.
 #if BUILDFLAG(IS_CHROMEOS_ASH)

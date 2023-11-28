@@ -77,8 +77,7 @@ class ModelExecutionFetcherTest : public testing::Test {
   void ExecuteModel(proto::ModelExecutionFeature feature,
                     const google::protobuf::MessageLite& request_metadata) {
     model_execution_fetcher_->ExecuteModel(
-        feature, identity_test_env_.identity_manager(),
-        features::GetOAuthScopesForModelExecution(), request_metadata,
+        feature, identity_test_env_.identity_manager(), request_metadata,
         base::BindOnce(&ModelExecutionFetcherTest::OnModelExecutionReceived,
                        base::Unretained(this)));
     RunUntilIdle();

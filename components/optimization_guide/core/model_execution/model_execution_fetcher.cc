@@ -10,6 +10,7 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/variations/net/variations_http_headers.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -63,7 +64,6 @@ ModelExecutionFetcher::~ModelExecutionFetcher() {
 void ModelExecutionFetcher::ExecuteModel(
     proto::ModelExecutionFeature feature,
     signin::IdentityManager* identity_manager,
-    const std::set<std::string>& oauth_scopes,
     const google::protobuf::MessageLite& request_metadata,
     ModelExecuteResponseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -92,7 +92,8 @@ void ModelExecutionFetcher::ExecuteModel(
   execute_request.SerializeToString(&serialized_request);
 
   RequestAccessToken(
-      identity_manager, oauth_scopes,
+      identity_manager,
+      {GaiaConstants::kOptimizationGuideServiceModelExecutionOAuth2Scope},
       base::BindOnce(&ModelExecutionFetcher::OnAccessTokenReceived,
                      weak_ptr_factory_.GetWeakPtr(), serialized_request));
 }

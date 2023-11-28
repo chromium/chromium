@@ -82,9 +82,6 @@ class ModelExecutionManager {
   // incognito profiles.
   const raw_ptr<signin::IdentityManager> identity_manager_;
 
-  // The set of OAuth scopes to use for requesting access token.
-  std::set<std::string> oauth_scopes_;
-
   // Controller for the on-device service.
   scoped_refptr<OnDeviceModelServiceController>
       on_device_model_service_controller_;

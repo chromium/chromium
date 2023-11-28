@@ -369,9 +369,6 @@ bool IsModelQualityLoggingEnabledForFeature(
 std::map<proto::OptimizationTarget, std::set<int64_t>>
 GetPredictionModelVersionsInKillSwitch();
 
-// Returns the OAuth scopes to use for model execution.
-std::set<std::string> GetOAuthScopesForModelExecution();
-
 // Returns the idle timeout before the on device model service shuts down.
 base::TimeDelta GetOnDeviceModelIdleTimeout();
 
