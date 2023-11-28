@@ -21,13 +21,11 @@ public class StaticResourcePreloads {
     /** A list of resources to load synchronously once the compositor is initialized. */
     private static final int[] sSynchronousResources =
             new int[] {
-                R.drawable.bg_tabstrip_tab,
-                TabUiThemeUtil.getTSRDetachedResource(),
-                TabUiThemeUtil.getTSRFolioResource(),
+                TabUiThemeUtil.getTabResource(),
                 R.drawable.btn_tab_close_normal,
-                R.drawable.ic_new_tab_button,
                 R.drawable.spinner,
                 R.drawable.spinner_white,
+                R.drawable.ic_new_tab_button,
             };
 
     /** A list of resources to load asynchronously once the compositor is initialized. */

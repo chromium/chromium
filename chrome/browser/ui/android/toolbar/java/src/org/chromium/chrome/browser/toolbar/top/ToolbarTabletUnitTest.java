@@ -112,7 +112,6 @@ public final class ToolbarTabletUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
     public void testButtonPosition() {
         mToolbarTablet.onFinishInflate();
         assertEquals(
@@ -135,7 +134,6 @@ public final class ToolbarTabletUnitTest {
 
     @Test
     @EnableFeatures({
-        ChromeFeatureList.TAB_STRIP_REDESIGN,
         ChromeFeatureList.TABLET_TOOLBAR_REORDERING
     })
     public void testButtonPosition_TSR() {

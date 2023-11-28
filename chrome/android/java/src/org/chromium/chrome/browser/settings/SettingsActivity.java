@@ -667,9 +667,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         // On P+, the status bar color is set via the XML theme.
         if (VERSION.SDK_INT >= Build.VERSION_CODES.P
                 && !BuildInfo.getInstance().isAutomotive
-                && (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(this)
-                        || (DeviceFormFactor.isNonMultiDisplayContextOnTablet(this)
-                                && !ChromeFeatureList.sTabStripRedesign.isEnabled()))) {
+                && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(this)) {
             return;
         }
 

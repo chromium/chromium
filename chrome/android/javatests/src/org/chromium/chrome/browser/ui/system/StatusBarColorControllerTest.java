@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
@@ -442,7 +441,6 @@ public class StatusBarColorControllerTest {
     @Test
     @LargeTest
     @Feature({"StatusBar"})
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
     @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
     public void testStatusBarColorForTabStripRedesignFolioTablet() throws Exception {
         final ChromeActivity activity = sActivityTestRule.getActivity();
@@ -458,44 +456,10 @@ public class StatusBarColorControllerTest {
                 Color.BLACK,
                 activity.getWindow().getStatusBarColor());
 
-        // Enable Tab strip redesign folio, and status bar color should update to the same as folio
-        // background color.
-        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_FOLIO.setForTesting(true);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> statusBarColorController.updateStatusBarColor());
         assertEquals(
                 "Wrong value returned for Tab Strip Redesign Folio.",
-                TabUiThemeUtil.getTabStripBackgroundColor(activity, false),
-                activity.getWindow().getStatusBarColor());
-    }
-
-    /** Test status bar color for Tab Strip Redesign Detached. */
-    @Test
-    @LargeTest
-    @Feature({"StatusBar"})
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
-    @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
-    public void testStatusBarColorForTabStripRedesignDetachedTablet() throws Exception {
-        final ChromeActivity activity = sActivityTestRule.getActivity();
-        final StatusBarColorController statusBarColorController =
-                sActivityTestRule
-                        .getActivity()
-                        .getRootUiCoordinatorForTesting()
-                        .getStatusBarColorController();
-
-        // Before enable tab strip redesign, status bar should be black.
-        assertEquals(
-                "Wrong initial value returned before enable Tab Strip Redesign Detached",
-                Color.BLACK,
-                activity.getWindow().getStatusBarColor());
-
-        // Enable Tab strip redesign detached, and status bar color should update to the same as
-        // detached background color.
-        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED.setForTesting(true);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> statusBarColorController.updateStatusBarColor());
-        assertEquals(
-                "Wrong value returned for Tab Strip Redesign Detached.",
                 TabUiThemeUtil.getTabStripBackgroundColor(activity, false),
                 activity.getWindow().getStatusBarColor());
     }

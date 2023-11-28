@@ -23,7 +23,6 @@ import android.view.ViewStub;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.Callback;
@@ -46,7 +45,6 @@ import org.chromium.chrome.browser.toolbar.ToolbarCaptureType;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarBlockCaptureReason;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar.DrawingInfo;
 import org.chromium.components.browser_ui.widget.ViewResourceFrameLayout;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener;
@@ -150,39 +148,29 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
     }
 
     private Drawable getTempTabStripDrawable(boolean incognito) {
-        if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
-            Drawable bgdColor =
-                    new ColorDrawable(
-                            TabUiThemeUtil.getTabStripBackgroundColor(getContext(), incognito));
-            Drawable bdgTabImage =
-                    ResourcesCompat.getDrawable(
-                            getContext().getResources(),
-                            TabUiThemeUtil.getTSRTabResource(),
-                            getContext().getTheme());
-            bdgTabImage.setTint(
-                    TabUiThemeUtil.getTabStripContainerColor(
-                            getContext(), incognito, true, false, false, false));
-            LayerDrawable backgroundDrawable =
-                    new LayerDrawable(new Drawable[] {bgdColor, bdgTabImage});
-            // Set image size to match tab size.
-            backgroundDrawable.setPadding(0, 0, 0, 0);
-            backgroundDrawable.setLayerSize(
-                    1,
-                    ViewUtils.dpToPx(getContext(), TabUiThemeUtil.getMaxTabStripTabWidthDp()),
-                    mToolbar.getTabStripHeight());
-            // Tab should show up at start of layer based on layout.
-            backgroundDrawable.setLayerGravity(1, Gravity.START);
+        Drawable bgdColor =
+                new ColorDrawable(
+                        TabUiThemeUtil.getTabStripBackgroundColor(getContext(), incognito));
+        Drawable bdgTabImage =
+                ResourcesCompat.getDrawable(
+                        getContext().getResources(),
+                        TabUiThemeUtil.getTabResource(),
+                        getContext().getTheme());
+        bdgTabImage.setTint(
+                TabUiThemeUtil.getTabStripContainerColor(
+                        getContext(), incognito, true, false, false, false));
+        LayerDrawable backgroundDrawable =
+                new LayerDrawable(new Drawable[] {bgdColor, bdgTabImage});
+        // Set image size to match tab size.
+        backgroundDrawable.setPadding(0, 0, 0, 0);
+        backgroundDrawable.setLayerSize(
+                1,
+                ViewUtils.dpToPx(getContext(), TabUiThemeUtil.getMaxTabStripTabWidthDp()),
+                mToolbar.getTabStripHeight());
+        // Tab should show up at start of layer based on layout.
+        backgroundDrawable.setLayerGravity(1, Gravity.START);
 
-            return backgroundDrawable;
-        } else {
-            final Drawable backgroundDrawable =
-                    AppCompatResources.getDrawable(getContext(), R.drawable.toolbar_background)
-                            .mutate();
-            backgroundDrawable.setTint(ChromeColors.getDefaultThemeColor(getContext(), incognito));
-            backgroundDrawable.setTintMode(PorterDuff.Mode.MULTIPLY);
-
-            return backgroundDrawable;
-        }
+        return backgroundDrawable;
     }
 
     /**

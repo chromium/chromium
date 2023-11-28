@@ -61,7 +61,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
-import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -111,25 +110,18 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
     }
 
     // Model selector buttons constants.
-    private static final float MODEL_SELECTOR_BUTTON_Y_OFFSET_DP = 10.f;
-    private static final float MODEL_SELECTOR_BUTTON_PADDING_DP = 12.f;
-    private static final float MODEL_SELECTOR_BUTTON_WIDTH_DP = 24.f;
-    private static final float MODEL_SELECTOR_BUTTON_HEIGHT_DP = 24.f;
-    private static final float MODEL_SELECTOR_BUTTON_BACKGROUND_Y_OFFSET_DP_FOLIO = 3.f;
-    private static final float MODEL_SELECTOR_BUTTON_BACKGROUND_Y_OFFSET_DP_DETACHED = 5.f;
-    private static final float MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP_TSR = 32.f;
-    private static final float MODEL_SELECTOR_BUTTON_BACKGROUND_HEIGHT_DP_TSR = 32.f;
+    private static final float MODEL_SELECTOR_BUTTON_BACKGROUND_Y_OFFSET_DP = 3.f;
+    private static final float MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP = 32.f;
+    private static final float MODEL_SELECTOR_BUTTON_BACKGROUND_HEIGHT_DP = 32.f;
     private static final float MODEL_SELECTOR_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY = 0.12f;
     private static final float MODEL_SELECTOR_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY = 0.08f;
     private static final float MODEL_SELECTOR_BUTTON_CLICK_SLOP_DP = 12.f;
     private static final float BUTTON_DESIRED_TOUCH_TARGET_SIZE = 48.f;
 
     // Fade constants.
-    private static final float FADE_SHORT_WIDTH_DP = 72;
-    private static final float FADE_LONG_WIDTH_DP = 120;
-    static final float FADE_SHORT_TSR_WIDTH_DP = 60;
-    static final float FADE_MEDIUM_TSR_WIDTH_DP = 72;
-    static final float FADE_LONG_TSR_WIDTH_DP = 136;
+    static final float FADE_SHORT_WIDTH_DP = 60;
+    static final float FADE_MEDIUM_WIDTH_DP = 72;
+    static final float FADE_LONG_WIDTH_DP = 136;
 
     // Caching Variables
     private final RectF mStripFilterArea = new RectF();
@@ -153,10 +145,6 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
     private CompositorButton mModelSelectorButton;
     private Context mContext;
     private boolean mBrowserScrimShowing;
-    private int mTabStripFadeShort;
-    private int mTabStripFadeLong;
-    private float mTabStripFadeShortWidth;
-    private float mTabStripFadeLongWidth;
     private TabStripSceneLayer mTabStripTreeProvider;
     private TabStripEventHandler mTabStripEventHandler;
     private TabSwitcherLayoutObserver mTabSwitcherLayoutObserver;
@@ -338,107 +326,63 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
                         handleModelSelectorButtonClick();
                     }
                 };
-        if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
-            createModelSelectorButtonForTsr(context, selectorClickHandler);
-            // Model selector button background color.
-            // Default bg color is surface inverse.
-            int tsrBackgroundDefaultColor =
-                    context.getResources().getColor(R.color.model_selector_button_bg_color);
+        createModelSelectorButton(context, selectorClickHandler);
+        // Model selector button background color.
+        // Default bg color is surface inverse.
+        int BackgroundDefaultColor =
+                context.getResources().getColor(R.color.model_selector_button_bg_color);
 
-            // Incognito bg color is surface 1 baseline for folio, surface 2 baseline for detached.
-            int tsrBackgroundIncognitoColor =
-                    TabManagementFieldTrial.isTabStripFolioEnabled()
-                            ? context.getResources()
-                                    .getColor(R.color.default_bg_color_dark_elev_1_baseline)
-                            : context.getResources()
-                                    .getColor(R.color.default_bg_color_dark_elev_2_baseline);
+        // Incognito bg color is surface 1 baseline.
+        int BackgroundIncognitoColor =
+                context.getResources().getColor(R.color.default_bg_color_dark_elev_1_baseline);
 
-            int apsBackgroundHoveredColor =
-                    org.chromium.ui.util.ColorUtils.setAlphaComponent(
-                            SemanticColorUtils.getDefaultTextColor(context),
-                            (int) (MODEL_SELECTOR_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY * 255));
-            int apsBackgroundPressedColor =
-                    org.chromium.ui.util.ColorUtils.setAlphaComponent(
-                            SemanticColorUtils.getDefaultTextColor(context),
-                            (int) (MODEL_SELECTOR_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY * 255));
-            int apsBackgroundHoveredIncognitoColor =
-                    ColorUtils.setAlphaComponent(
-                            context.getResources()
-                                    .getColor(R.color.tab_strip_button_hover_bg_color),
-                            (int) (MODEL_SELECTOR_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY * 255));
-            int apsBackgroundPressedIncognitoColor =
-                    ColorUtils.setAlphaComponent(
-                            context.getResources()
-                                    .getColor(R.color.tab_strip_button_hover_bg_color),
-                            (int) (MODEL_SELECTOR_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY * 255));
+        int apsBackgroundHoveredColor =
+                org.chromium.ui.util.ColorUtils.setAlphaComponent(
+                        SemanticColorUtils.getDefaultTextColor(context),
+                        (int) (MODEL_SELECTOR_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY * 255));
+        int apsBackgroundPressedColor =
+                org.chromium.ui.util.ColorUtils.setAlphaComponent(
+                        SemanticColorUtils.getDefaultTextColor(context),
+                        (int) (MODEL_SELECTOR_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY * 255));
+        int apsBackgroundHoveredIncognitoColor =
+                ColorUtils.setAlphaComponent(
+                        context.getResources().getColor(R.color.tab_strip_button_hover_bg_color),
+                        (int) (MODEL_SELECTOR_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY * 255));
+        int apsBackgroundPressedIncognitoColor =
+                ColorUtils.setAlphaComponent(
+                        context.getResources().getColor(R.color.tab_strip_button_hover_bg_color),
+                        (int) (MODEL_SELECTOR_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY * 255));
 
-            int iconDefaultColor =
-                    TabUiFeatureUtilities.isTabStripButtonStyleDisabled()
-                            ? AppCompatResources.getColorStateList(
-                                            context, R.color.default_icon_color_tint_list)
-                                    .getDefaultColor()
-                            : context.getResources()
-                                    .getColor(R.color.model_selector_button_icon_color);
-            int iconIncognitoColor =
-                    context.getResources().getColor(R.color.default_icon_color_secondary_light);
+        int iconDefaultColor =
+                AppCompatResources.getColorStateList(context, R.color.default_icon_color_tint_list)
+                        .getDefaultColor();
+        int iconIncognitoColor =
+                context.getResources().getColor(R.color.default_icon_color_secondary_light);
 
-            ((TintedCompositorButton) mModelSelectorButton)
-                    .setTint(
-                            iconDefaultColor,
-                            iconDefaultColor,
-                            iconIncognitoColor,
-                            iconIncognitoColor);
+        ((TintedCompositorButton) mModelSelectorButton)
+                .setTint(
+                        iconDefaultColor, iconDefaultColor, iconIncognitoColor, iconIncognitoColor);
 
-            ((TintedCompositorButton) mModelSelectorButton)
-                    .setBackgroundTint(
-                            tsrBackgroundDefaultColor,
-                            tsrBackgroundDefaultColor,
-                            tsrBackgroundIncognitoColor,
-                            tsrBackgroundIncognitoColor,
-                            apsBackgroundHoveredColor,
-                            apsBackgroundPressedColor,
-                            apsBackgroundHoveredIncognitoColor,
-                            apsBackgroundPressedIncognitoColor);
+        ((TintedCompositorButton) mModelSelectorButton)
+                .setBackgroundTint(
+                        BackgroundDefaultColor,
+                        BackgroundDefaultColor,
+                        BackgroundIncognitoColor,
+                        BackgroundIncognitoColor,
+                        apsBackgroundHoveredColor,
+                        apsBackgroundPressedColor,
+                        apsBackgroundHoveredIncognitoColor,
+                        apsBackgroundPressedIncognitoColor);
 
-            if (TabManagementFieldTrial.isTabStripFolioEnabled()) {
-                // y-offset for folio = lowered tab container + (tab container size - bg size)/2 -
-                // folio tab title y-offset = 2 + (38 - 32)/2 - 2 = 3dp
-                mModelSelectorButton.setY(MODEL_SELECTOR_BUTTON_BACKGROUND_Y_OFFSET_DP_FOLIO);
-            } else if (TabManagementFieldTrial.isTabStripDetachedEnabled()) {
-                // y-offset for detached = lowered tab container + (tab container size - bg size)/2
-                // = 2 + (38 - 32)/2 = 5dp
-                mModelSelectorButton.setY(MODEL_SELECTOR_BUTTON_BACKGROUND_Y_OFFSET_DP_DETACHED);
-            }
-            mTabStripFadeShort = R.drawable.tab_strip_fade_short_tsr;
-            mTabStripFadeLong = R.drawable.tab_strip_fade_long_tsr;
-            mTabStripFadeShortWidth = FADE_SHORT_TSR_WIDTH_DP;
-            mTabStripFadeLongWidth = FADE_LONG_TSR_WIDTH_DP;
+        // y-offset for folio = lowered tab container + (tab container size - bg size)/2 -
+        // folio tab title y-offset = 2 + (38 - 32)/2 - 2 = 3dp
+        mModelSelectorButton.setY(MODEL_SELECTOR_BUTTON_BACKGROUND_Y_OFFSET_DP);
 
-            // Use toolbar menu button padding as the strip end adding to align MSB with menu
-            // button.
-            mStripEndPadding =
-                    context.getResources().getDimension(R.dimen.button_end_padding)
-                            / context.getResources().getDisplayMetrics().density;
+        // Use toolbar menu button padding to align MSB with menu button.
+        mStripEndPadding =
+                context.getResources().getDimension(R.dimen.button_end_padding)
+                        / context.getResources().getDisplayMetrics().density;
 
-        } else {
-            mModelSelectorButton =
-                    new CompositorButton(
-                            context,
-                            MODEL_SELECTOR_BUTTON_WIDTH_DP,
-                            MODEL_SELECTOR_BUTTON_HEIGHT_DP,
-                            selectorClickHandler);
-            mModelSelectorButton.setResources(
-                    R.drawable.btn_tabstrip_switch_normal,
-                    R.drawable.btn_tabstrip_switch_normal,
-                    R.drawable.location_bar_incognito_badge,
-                    R.drawable.location_bar_incognito_badge);
-            mModelSelectorButton.setY(MODEL_SELECTOR_BUTTON_Y_OFFSET_DP);
-            mModelSelectorWidth = MODEL_SELECTOR_BUTTON_WIDTH_DP;
-            mTabStripFadeShort = R.drawable.tab_strip_fade_short;
-            mTabStripFadeLong = R.drawable.tab_strip_fade_long;
-            mTabStripFadeShortWidth = FADE_SHORT_WIDTH_DP;
-            mTabStripFadeLongWidth = FADE_LONG_WIDTH_DP;
-        }
         mModelSelectorButton.setIncognito(false);
         mModelSelectorButton.setVisible(false);
         // Pressed resources are the same as the unpressed resources.
@@ -518,13 +462,13 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
     }
 
     // Incognito button for Tab Strip Redesign.
-    private void createModelSelectorButtonForTsr(
+    private void createModelSelectorButton(
             Context context, CompositorOnClickHandler selectorClickHandler) {
         mModelSelectorButton =
                 new TintedCompositorButton(
                         context,
-                        MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP_TSR,
-                        MODEL_SELECTOR_BUTTON_BACKGROUND_HEIGHT_DP_TSR,
+                        MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP,
+                        MODEL_SELECTOR_BUTTON_BACKGROUND_HEIGHT_DP,
                         selectorClickHandler,
                         R.drawable.ic_incognito);
 
@@ -532,7 +476,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         ((TintedCompositorButton) mModelSelectorButton)
                 .setBackgroundResourceId(R.drawable.bg_circle_tab_strip_button);
 
-        mModelSelectorWidth = MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP_TSR;
+        mModelSelectorWidth = MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP;
     }
 
     /** Cleans up internal state. */
@@ -632,19 +576,10 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
             orientationChanged = true;
         }
         if (!LocalizationUtils.isLayoutRtl()) {
-            if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
-                mModelSelectorButton.setX(mWidth - getModelSelectorButtonWidthWithEndPadding());
-            } else {
-                mModelSelectorButton.setX(
-                        mWidth - mModelSelectorWidth - MODEL_SELECTOR_BUTTON_PADDING_DP);
-            }
+            mModelSelectorButton.setX(mWidth - getModelSelectorButtonWidthWithEndPadding());
         } else {
-            if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
-                mModelSelectorButton.setX(
-                        getModelSelectorButtonWidthWithEndPadding() - mModelSelectorWidth);
-            } else {
-                mModelSelectorButton.setX(MODEL_SELECTOR_BUTTON_PADDING_DP);
-            }
+            mModelSelectorButton.setX(
+                    getModelSelectorButtonWidthWithEndPadding() - mModelSelectorWidth);
         }
 
         mNormalHelper.onSizeChanged(mWidth, mHeight, orientationChanged, LayoutManagerImpl.time());
@@ -656,11 +591,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
     }
 
     private float getModelSelectorButtonWidthWithEndPadding() {
-        if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
-            return mModelSelectorWidth + mStripEndPadding;
-        } else {
-            return mModelSelectorWidth + (MODEL_SELECTOR_BUTTON_PADDING_DP * 2);
-        }
+        return mModelSelectorWidth + mStripEndPadding;
     }
 
     /**
@@ -668,7 +599,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
      * for touch target.
      */
     private float getButtonStartPaddingForTouchTarget() {
-        if (mModelSelectorButton.isVisible() && ChromeFeatureList.sTabStripRedesign.isEnabled()) {
+        if (mModelSelectorButton.isVisible()) {
             return BUTTON_DESIRED_TOUCH_TARGET_SIZE
                     - mModelSelectorButton.getWidth()
                     - mStripEndPadding;
@@ -688,8 +619,8 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
     /**
      * @return The touch target offset to be applied to the new tab button.
      */
-    public float getNewTabBtnTouchTargetOffset() {
-        return getActiveStripLayoutHelper().getNewTabButtonTouchTargetOffset();
+    public float getNewTabBtnVisualOffset() {
+        return getActiveStripLayoutHelper().getNewTabButtonVisualOffset();
     }
 
     public CompositorButton getModelSelectorButton() {
@@ -725,43 +656,43 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
 
     public int getLeftFadeDrawable() {
         int leftFadeDrawable;
-        if (mModelSelectorButton.isVisible() && LocalizationUtils.isLayoutRtl()) {
-            leftFadeDrawable = mTabStripFadeLong;
-            mNormalHelper.setLeftFadeWidth(mTabStripFadeLongWidth);
-            mIncognitoHelper.setLeftFadeWidth(mTabStripFadeLongWidth);
-        } else if (ChromeFeatureList.sTabStripRedesign.isEnabled()
-                && !mModelSelectorButton.isVisible()
-                && LocalizationUtils.isLayoutRtl()) {
-            // Use fade_medium for TSR left fade when RTL and model selector button not
-            // visible.
-            leftFadeDrawable = R.drawable.tab_strip_fade_medium_tsr;
-            mNormalHelper.setLeftFadeWidth(FADE_MEDIUM_TSR_WIDTH_DP);
-            mIncognitoHelper.setLeftFadeWidth(FADE_MEDIUM_TSR_WIDTH_DP);
+        if (LocalizationUtils.isLayoutRtl()) {
+            if (mModelSelectorButton.isVisible()) {
+                leftFadeDrawable = R.drawable.tab_strip_fade_long;
+                mNormalHelper.setLeftFadeWidth(FADE_LONG_WIDTH_DP);
+                mIncognitoHelper.setLeftFadeWidth(FADE_LONG_WIDTH_DP);
+            } else {
+                // Use fade_medium for left fade when RTL and model selector button not
+                // visible.
+                leftFadeDrawable = R.drawable.tab_strip_fade_medium;
+                mNormalHelper.setLeftFadeWidth(FADE_MEDIUM_WIDTH_DP);
+                mIncognitoHelper.setLeftFadeWidth(FADE_MEDIUM_WIDTH_DP);
+            }
         } else {
-            leftFadeDrawable = mTabStripFadeShort;
-            mNormalHelper.setLeftFadeWidth(mTabStripFadeShortWidth);
-            mIncognitoHelper.setLeftFadeWidth(mTabStripFadeShortWidth);
+            leftFadeDrawable = R.drawable.tab_strip_fade_short;
+            mNormalHelper.setLeftFadeWidth(FADE_SHORT_WIDTH_DP);
+            mIncognitoHelper.setLeftFadeWidth(FADE_SHORT_WIDTH_DP);
         }
         return leftFadeDrawable;
     }
 
     public int getRightFadeDrawable() {
         int rightFadeDrawable;
-        if (mModelSelectorButton.isVisible() && !LocalizationUtils.isLayoutRtl()) {
-            rightFadeDrawable = mTabStripFadeLong;
-            mNormalHelper.setRightFadeWidth(mTabStripFadeLongWidth);
-            mIncognitoHelper.setRightFadeWidth(mTabStripFadeLongWidth);
-        } else if (ChromeFeatureList.sTabStripRedesign.isEnabled()
-                && !mModelSelectorButton.isVisible()
-                && !LocalizationUtils.isLayoutRtl()) {
-            // Use fade_medium for TSR right fade when model selector button not visible.
-            rightFadeDrawable = R.drawable.tab_strip_fade_medium_tsr;
-            mNormalHelper.setRightFadeWidth(FADE_MEDIUM_TSR_WIDTH_DP);
-            mIncognitoHelper.setRightFadeWidth(FADE_MEDIUM_TSR_WIDTH_DP);
+        if (!LocalizationUtils.isLayoutRtl()) {
+            if (mModelSelectorButton.isVisible()) {
+                rightFadeDrawable = R.drawable.tab_strip_fade_long;
+                mNormalHelper.setRightFadeWidth(FADE_LONG_WIDTH_DP);
+                mIncognitoHelper.setRightFadeWidth(FADE_LONG_WIDTH_DP);
+            } else {
+                // Use fade_medium for right fade when model selector button not visible.
+                rightFadeDrawable = R.drawable.tab_strip_fade_medium;
+                mNormalHelper.setRightFadeWidth(FADE_MEDIUM_WIDTH_DP);
+                mIncognitoHelper.setRightFadeWidth(FADE_MEDIUM_WIDTH_DP);
+            }
         } else {
-            rightFadeDrawable = mTabStripFadeShort;
-            mNormalHelper.setRightFadeWidth(mTabStripFadeShortWidth);
-            mIncognitoHelper.setRightFadeWidth(mTabStripFadeShortWidth);
+            rightFadeDrawable = R.drawable.tab_strip_fade_short;
+            mNormalHelper.setRightFadeWidth(FADE_SHORT_WIDTH_DP);
+            mIncognitoHelper.setRightFadeWidth(FADE_SHORT_WIDTH_DP);
         }
         return rightFadeDrawable;
     }

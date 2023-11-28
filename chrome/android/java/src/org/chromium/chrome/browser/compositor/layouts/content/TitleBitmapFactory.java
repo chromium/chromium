@@ -20,7 +20,6 @@ import android.view.InflateException;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.chrome.R;
-import org.chromium.ui.UiUtils;
 
 /** A factory that creates text and favicon bitmaps. */
 public class TitleBitmapFactory {
@@ -115,23 +114,15 @@ public class TitleBitmapFactory {
     /**
      * Generates the title bitmap.
      *
-     * @param context   Android's UI context.
-     * @param title     The title of the tab.
-     * @param useRobotoMediumStyle    Whether the tab title text style should be TextMediumThick /
-     *         RobotoMedium.
-     * @return          The Bitmap with the title.
+     * @param context Android's UI context.
+     * @param title The title of the tab.
+     * @return The Bitmap with the title.
      */
-    public Bitmap getTitleBitmap(Context context, String title, boolean useRobotoMediumStyle) {
+    public Bitmap getTitleBitmap(Context context, String title) {
         try {
             boolean drawText = !TextUtils.isEmpty(title);
             int textWidth =
                     drawText ? (int) Math.ceil(Layout.getDesiredWidth(title, mTextPaint)) : 0;
-
-            // Use TextMediumThick / RobotoMediumStyle for tab title text style.
-            if (useRobotoMediumStyle) {
-                Typeface RobotoMediumStyle = UiUtils.createRobotoMediumTypeface();
-                mTextPaint.setTypeface(RobotoMediumStyle);
-            }
 
             // Minimum 1 width bitmap to avoid createBitmap function's IllegalArgumentException,
             // when textWidth == 0.

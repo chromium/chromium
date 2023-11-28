@@ -77,7 +77,6 @@ public class StripStackerUnitTest {
                         STRIP_RIGHT_MARGIN,
                         STRIP_WIDTH,
                         BUTTON_WIDTH,
-                        TOUCH_OFFSET,
                         CACHED_TAB_WIDTH,
                         true);
         assertThat("New Tab button offset does not match", result, is(35f));
@@ -87,9 +86,9 @@ public class StripStackerUnitTest {
     public void testComputeNewTabButtonOffsetRTL() {
         LocalizationUtils.setRtlForTesting(true);
         float expected_res = 3f;
-        // Update idealX for RTL = ((mInput.length -1 ) * TAB_WIDTH) + TOUCH_OFFSET + BUTTON_WIDTH +
-        // expected_res = 4*25 + 5 + 10 + 3
-        float ideal_x = 118f;
+        // Update idealX for RTL = ((mInput.length -1 ) * TAB_WIDTH) + BUTTON_WIDTH +
+        // expected_res = 4*25 + 10 + 3
+        float ideal_x = 113f;
         for (StripLayoutTab tab : mInput) {
             when(tab.getIdealX()).thenReturn(ideal_x);
             ideal_x -= TAB_WIDTH;
@@ -102,7 +101,6 @@ public class StripStackerUnitTest {
                         STRIP_RIGHT_MARGIN,
                         STRIP_WIDTH,
                         BUTTON_WIDTH,
-                        TOUCH_OFFSET,
                         CACHED_TAB_WIDTH,
                         true);
         assertThat("New Tab button offset does not match", result, is(expected_res));

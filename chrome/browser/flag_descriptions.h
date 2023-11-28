@@ -1931,9 +1931,6 @@ extern const char kTabHoverCardImagesDescription[];
 extern const char kTabSearchFuzzySearchName[];
 extern const char kTabSearchFuzzySearchDescription[];
 
-extern const char kTabStripRedesignAndroidName[];
-extern const char kTabStripRedesignAndroidDescription[];
-
 extern const char kTabletToolbarReorderingAndroidName[];
 extern const char kTabletToolbarReorderingAndroidDescription[];
 

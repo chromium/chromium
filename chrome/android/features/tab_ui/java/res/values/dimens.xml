@@ -94,7 +94,7 @@ found in the LICENSE file.
     <dimen name="tab_hover_card_bg_color_elev">@dimen/default_elevation_0</dimen>
     <dimen name="tab_hover_card_corner_radius">8dp</dimen>
     <dimen name="tab_hover_card_elevation">6dp</dimen>
-    <dimen name="tsr_no_feet_tab_hover_card_x_offset">16dp</dimen>
+    <dimen name="inactive_tab_hover_card_x_offset">16dp</dimen>
 
     <!-- Dimens for tab cleanup promo message icon -->
     <dimen name="tab_cleanup_promo_card_favicon_inset">8dp</dimen>

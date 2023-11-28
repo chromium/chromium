@@ -416,12 +416,10 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
                         .with(ScrimProperties.ANCHOR_VIEW, mScrimAnchor)
                         .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, false);
 
-        if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
-            int scrimColor = ChromeColors.getPrimaryBackgroundColor(getContext(), isIncognito());
-            scrimPropertiesBuilder
-                    .with(ScrimProperties.AFFECTS_STATUS_BAR, true)
-                    .with(ScrimProperties.BACKGROUND_COLOR, scrimColor);
-        }
+        int scrimColor = ChromeColors.getPrimaryBackgroundColor(getContext(), isIncognito());
+        scrimPropertiesBuilder
+                .with(ScrimProperties.AFFECTS_STATUS_BAR, true)
+                .with(ScrimProperties.BACKGROUND_COLOR, scrimColor);
 
         mScrimCoordinator.showScrim(scrimPropertiesBuilder.build());
     }

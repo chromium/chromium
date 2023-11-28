@@ -192,7 +192,7 @@
 	url = https://chromium.googlesource.com/external/github.com/google/crc32c
 [submodule "third_party/cros_system_api"]
 	path = third_party/cros_system_api
-	url = https://chromium.googlesource.com/chromiumos/platform2/system_api
+	url = https://chromium.googlesource.com/chromiumos/platform2/system_api.git
 	gclient-condition = checkout_linux
 [submodule "third_party/crossbench"]
 	path = third_party/crossbench

@@ -66,7 +66,6 @@ public abstract class StripStacker {
      * @param stripRightMargin The right margin of the tab strip.
      * @param stripWidth The width of the tab strip.
      * @param buttonWidth The width of the new tab button.
-     * @param touchTargetOffset Touch target offset applied to the button position.
      * @return The x offset for the new tab button.
      */
     public float computeNewTabButtonOffset(
@@ -76,7 +75,6 @@ public abstract class StripStacker {
             float stripRightMargin,
             float stripWidth,
             float buttonWidth,
-            float touchTargetOffset,
             float cachedTabWidth,
             boolean animate) {
         return LocalizationUtils.isLayoutRtl()
@@ -86,7 +84,6 @@ public abstract class StripStacker {
                         stripRightMargin,
                         stripWidth,
                         buttonWidth,
-                        touchTargetOffset,
                         animate)
                 : computeNewTabButtonOffsetLtr(
                         indexOrderedTabs,
@@ -94,7 +91,6 @@ public abstract class StripStacker {
                         stripLeftMargin,
                         stripRightMargin,
                         stripWidth,
-                        touchTargetOffset,
                         cachedTabWidth,
                         animate);
     }
@@ -105,7 +101,6 @@ public abstract class StripStacker {
             float stripLeftMargin,
             float stripRightMargin,
             float stripWidth,
-            float touchTargetOffset,
             float cachedTabWidth,
             boolean animate) {
         float rightEdge = stripLeftMargin;
@@ -133,8 +128,6 @@ public abstract class StripStacker {
 
         rightEdge = Math.min(rightEdge + tabOverlapWidth, stripWidth - stripRightMargin);
 
-        // Adjust the new tab button to be away from the tabs to account for the touch target skew.
-        rightEdge += touchTargetOffset;
 
         // The draw X position for the new tab button is the rightEdge of the tab strip.
         return rightEdge;
@@ -146,7 +139,6 @@ public abstract class StripStacker {
             float stripRightMargin,
             float stripWidth,
             float newTabButtonWidth,
-            float touchTargetOffset,
             boolean animate) {
         float leftEdge = stripWidth - stripRightMargin;
 
@@ -158,9 +150,6 @@ public abstract class StripStacker {
         }
 
         leftEdge = Math.max(leftEdge, stripLeftMargin);
-
-        // Adjust the new tab button to be away from the tabs to account for the touch target skew.
-        leftEdge -= touchTargetOffset;
 
         // The draw X position for the new tab button is the left edge of the tab strip minus
         // the new tab button width.

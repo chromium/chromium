@@ -3130,45 +3130,6 @@ const FeatureEntry::FeatureVariation kRestoreTabsOnFREVariations[] = {
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kTabStripRedesignFolio[] = {
-    {"enable_folio", "true"}};
-const FeatureEntry::FeatureParam kTabStripRedesignDetached[] = {
-    {"enable_detached", "true"}};
-const FeatureEntry::FeatureParam
-    kTabStripRedesignDisableNtbAnchorAndBtnStyleFolio[] = {
-        {"disable_ntb_anchor", "true"},
-        {"disable_btn_style", "true"},
-        {"enable_folio", "true"}};
-const FeatureEntry::FeatureParam
-    kTabStripRedesignDisableNtbAnchorAndBtnStyleDetached[] = {
-        {"disable_ntb_anchor", "true"},
-        {"disable_btn_style", "true"},
-        {"enable_detached", "true"}};
-const FeatureEntry::FeatureParam kTabStripRedesignDisableButtonStyleFolio[] = {
-    {"disable_btn_style", "true"},
-    {"enable_folio", "true"}};
-const FeatureEntry::FeatureParam kTabStripRedesignDisableButtonStyleDetached[] =
-    {{"disable_btn_style", "true"}, {"enable_detached", "true"}};
-
-const FeatureEntry::FeatureVariation kTabStripRedesignVariations[] = {
-    {"Folio", kTabStripRedesignFolio, std::size(kTabStripRedesignFolio),
-     nullptr},
-    {"Detached", kTabStripRedesignDetached,
-     std::size(kTabStripRedesignDetached), nullptr},
-    {"Folio NTB Unanchored, Remove Style",
-     kTabStripRedesignDisableNtbAnchorAndBtnStyleFolio,
-     std::size(kTabStripRedesignDisableNtbAnchorAndBtnStyleFolio), nullptr},
-    {"Detached NTB Unanchored, Remove Style",
-     kTabStripRedesignDisableNtbAnchorAndBtnStyleDetached,
-     std::size(kTabStripRedesignDisableNtbAnchorAndBtnStyleDetached), nullptr},
-    {"Folio Remove Button Style", kTabStripRedesignDisableButtonStyleFolio,
-     std::size(kTabStripRedesignDisableButtonStyleFolio), nullptr},
-    {"Detached Remove Button Style",
-     kTabStripRedesignDisableButtonStyleDetached,
-     std::size(kTabStripRedesignDisableButtonStyleDetached), nullptr}};
-#endif  // BUILDFLAG(IS_ANDROID)
-
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 constexpr FeatureEntry::FeatureParam kIOSPromoPasswordBubbleContextualDirect[] =
     {{"activation", "contextual-direct"}};
@@ -7390,13 +7351,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabEngagementReportingName,
      flag_descriptions::kTabEngagementReportingDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabEngagementReportingAndroid)},
-
-    {"enable-tab-strip-redesign",
-     flag_descriptions::kTabStripRedesignAndroidName,
-     flag_descriptions::kTabStripRedesignAndroidDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kTabStripRedesign,
-                                    kTabStripRedesignVariations,
-                                    "TabStripRedesignAndroid")},
 
     {"enable-tablet-toolbar-reordering",
      flag_descriptions::kTabletToolbarReorderingAndroidName,

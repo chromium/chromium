@@ -53,7 +53,6 @@ import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager.TabModelStartupInfo;
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayer;
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayerJni;
-import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
@@ -62,8 +61,6 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -75,7 +72,6 @@ import org.chromium.ui.dragdrop.DragAndDropDelegate;
 
 /** Tests for {@link StripLayoutHelperManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({ChromeFeatureList.TAB_STRIP_REDESIGN})
 @Config(manifest = Config.NONE, qualifiers = "sw600dp")
 public class StripLayoutHelperManagerTest {
     @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
@@ -108,7 +104,7 @@ public class StripLayoutHelperManagerTest {
     private static final float SCREEN_HEIGHT = 1600.f;
     private static final float VISIBLE_VIEWPORT_Y = 200.f;
     private static final int ORIENTATION = 2;
-    private static final float BUTTON_END_PADDING_TSR = 8.f;
+    private static final float BUTTON_END_PADDING = 8.f;
 
     @Before
     public void beforeTest() {
@@ -151,29 +147,8 @@ public class StripLayoutHelperManagerTest {
         mStripLayoutHelperManager.setTabModelSelector(mTabModelSelector, mTabCreatorManager);
     }
 
-    private void initializeTestWithTsrArm(BooleanCachedFieldTrialParameter param, boolean value) {
-        // Since we check TSR arm and determine model selector button properties(eg. color/bg color,
-        // width, etc) inside constructor, so need to set TSR arm before initialize test each time
-        // we switch arm.
-        param.setForTesting(value);
-        initializeTest();
-    }
-
     @Test
-    @Feature("Tab Strip Redesign")
-    public void testGetBackgroundColorDetached() {
-        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED.setForTesting(true);
-        initializeTestWithTsrArm(TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_FOLIO, false);
-        mStripLayoutHelperManager.onContextChanged(mContext);
-        assertEquals(
-                ChromeColors.getSurfaceColor(mContext, R.dimen.default_elevation_0),
-                mStripLayoutHelperManager.getBackgroundColor());
-    }
-
-    @Test
-    @Feature("Tab Strip Redesign")
-    public void testGetBackgroundColorFolio() {
-        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_FOLIO.setForTesting(true);
+    public void testGetBackgroundColor() {
         mStripLayoutHelperManager.onContextChanged(mContext);
         assertEquals(
                 ChromeColors.getSurfaceColor(mContext, R.dimen.default_elevation_3),
@@ -181,41 +156,7 @@ public class StripLayoutHelperManagerTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
     public void testModelSelectorButtonXPosition() {
-        // Set model selector button position.
-        mStripLayoutHelperManager.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, VISIBLE_VIEWPORT_Y, ORIENTATION);
-
-        // Verify model selector button x-position.
-        // stripWidth(800) - buttonEndPadding(12) - MsbWidth(24) = 764
-        assertEquals(
-                "Model selector button x-position is not as expected",
-                764.f,
-                mStripLayoutHelperManager.getModelSelectorButton().getX(),
-                0.0);
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
-    public void testModelSelectorButtonXPosition_Rtl() {
-        // Set model selector button position.
-        LocalizationUtils.setRtlForTesting(true);
-        mStripLayoutHelperManager.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, VISIBLE_VIEWPORT_Y, ORIENTATION);
-
-        // Verify model selector button x-position.
-        // msbEndPadding(12)
-        assertEquals(
-                "Model selector button x-position is not as expected",
-                12.f,
-                mStripLayoutHelperManager.getModelSelectorButton().getX(),
-                0.0);
-    }
-
-    @Test
-    @Feature("Tab Strip Redesign")
-    public void testModelSelectorButtonXPosition_TSR() {
         // Set model selector button position.
         mStripLayoutHelperManager.setModelSelectorButtonVisibleForTesting(true);
         mStripLayoutHelperManager.onSizeChanged(
@@ -231,8 +172,7 @@ public class StripLayoutHelperManagerTest {
     }
 
     @Test
-    @Feature("Tab Strip Redesign")
-    public void testModelSelectorButtonXPosition_RTL_TSR() {
+    public void testModelSelectorButtonXPosition_RTL() {
         // Set model selector button position.
         LocalizationUtils.setRtlForTesting(true);
         mStripLayoutHelperManager.setModelSelectorButtonVisibleForTesting(true);
@@ -242,17 +182,13 @@ public class StripLayoutHelperManagerTest {
         // Verify model selector button position.
         assertEquals(
                 "Model selector button x-position is not as expected",
-                BUTTON_END_PADDING_TSR,
+                BUTTON_END_PADDING,
                 mStripLayoutHelperManager.getModelSelectorButton().getX(),
                 0.0);
     }
 
     @Test
-    @Feature("Tab Strip Redesign")
-    public void testModelSelectorButtonYPosition_Folio() {
-        // setup
-        initializeTestWithTsrArm(TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_FOLIO, true);
-
+    public void testModelSelectorButtonYPosition() {
         // Set model selector button position.
         mStripLayoutHelperManager.onSizeChanged(
                 SCREEN_WIDTH, SCREEN_HEIGHT, VISIBLE_VIEWPORT_Y, ORIENTATION);
@@ -266,31 +202,8 @@ public class StripLayoutHelperManagerTest {
     }
 
     @Test
-    @Feature("Tab Strip Redesign")
-    public void testModelSelectorButtonYPosition_Detached() {
-        // setup
-        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_FOLIO.setForTesting(false);
-        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED.setForTesting(true);
-        initializeTest();
-
-        // Set model selector button position.
-        mStripLayoutHelperManager.onSizeChanged(
-                SCREEN_WIDTH, SCREEN_HEIGHT, VISIBLE_VIEWPORT_Y, ORIENTATION);
-
-        // Verify model selector button y-position.
-        assertEquals(
-                "Model selector button y-position is not as expected",
-                5.f,
-                mStripLayoutHelperManager.getModelSelectorButton().getY(),
-                0.0);
-    }
-
-    @Test
     @Feature("Advanced Peripherals Support")
     public void testModelSelectorButtonHoverHighlightProperties() {
-        // setup
-        initializeTestWithTsrArm(TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED, true);
-
         // Set model selector button position.
         mStripLayoutHelperManager.onSizeChanged(
                 SCREEN_WIDTH, SCREEN_HEIGHT, VISIBLE_VIEWPORT_Y, ORIENTATION);
@@ -359,8 +272,6 @@ public class StripLayoutHelperManagerTest {
     @Feature("Advanced Peripherals Support")
     @EnableFeatures(ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP)
     public void testModelSelectorButtonHoverEnter() {
-        // Setup
-        initializeTestWithTsrArm(TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED, true);
         mStripLayoutHelperManager.setModelSelectorButtonVisibleForTesting(true);
 
         int x = (int) mStripLayoutHelperManager.getModelSelectorButton().getX();
@@ -387,8 +298,6 @@ public class StripLayoutHelperManagerTest {
     @Feature("Advanced Peripherals Support")
     @EnableFeatures(ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP)
     public void testModelSelectorButtonHoverOnDown() {
-        // Setup
-        initializeTestWithTsrArm(TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED, true);
         mStripLayoutHelperManager.setModelSelectorButtonVisibleForTesting(true);
 
         // Verify model selector button is in pressed state, not hover state, when click is from
@@ -404,27 +313,6 @@ public class StripLayoutHelperManagerTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
-    public void testFadeDrawable_Left() {
-        // Verify fade drawable.
-        assertEquals(
-                "Fade drawable resource is not as expected",
-                R.drawable.tab_strip_fade_short,
-                mStripLayoutHelperManager.getLeftFadeDrawable());
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
-    public void testFadeDrawable_Right() {
-        // Verify fade drawable.
-        assertEquals(
-                "Fade drawable resource is not as expected",
-                R.drawable.tab_strip_fade_short,
-                mStripLayoutHelperManager.getRightFadeDrawable());
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
     public void testFadeDrawable_Right_ModelSelectorButtonVisible() {
         // setup
         mStripLayoutHelperManager.setModelSelectorButtonVisibleForTesting(true);
@@ -437,44 +325,28 @@ public class StripLayoutHelperManagerTest {
     }
 
     @Test
-    @Feature("Tab Strip Redesign")
-    public void testFadeDrawable_Right_ModelSelectorButtonVisible_TSR() {
+    public void testFadeDrawable_Right() {
+        // Verify fade drawable.
+        assertEquals(
+                "Fade drawable resource is not as expected",
+                R.drawable.tab_strip_fade_medium,
+                mStripLayoutHelperManager.getRightFadeDrawable());
+    }
+
+    @Test
+    public void testFadeDrawable_Left() {
         // setup
         mStripLayoutHelperManager.setModelSelectorButtonVisibleForTesting(true);
 
         // Verify fade drawable.
         assertEquals(
                 "Fade drawable resource is not as expected",
-                R.drawable.tab_strip_fade_long_tsr,
-                mStripLayoutHelperManager.getRightFadeDrawable());
-    }
-
-    @Test
-    @Feature("Tab Strip Redesign")
-    public void testFadeDrawable_Right_TSR() {
-        // Verify fade drawable.
-        assertEquals(
-                "Fade drawable resource is not as expected",
-                R.drawable.tab_strip_fade_medium_tsr,
-                mStripLayoutHelperManager.getRightFadeDrawable());
-    }
-
-    @Test
-    @Feature("Tab Strip Redesign")
-    public void testFadeDrawable_Left_TSR() {
-        // setup
-        mStripLayoutHelperManager.setModelSelectorButtonVisibleForTesting(true);
-
-        // Verify fade drawable.
-        assertEquals(
-                "Fade drawable resource is not as expected",
-                R.drawable.tab_strip_fade_short_tsr,
+                R.drawable.tab_strip_fade_short,
                 mStripLayoutHelperManager.getLeftFadeDrawable());
     }
 
     @Test
-    @Feature("Tab Strip Redesign")
-    public void testFadeDrawable_Left_RTL_ModelSelectorButtonVisible_TSR() {
+    public void testFadeDrawable_Left_RTL_ModelSelectorButtonVisible() {
         // setup
         mStripLayoutHelperManager.setModelSelectorButtonVisibleForTesting(true);
         LocalizationUtils.setRtlForTesting(true);
@@ -482,26 +354,24 @@ public class StripLayoutHelperManagerTest {
         // Verify fade drawable.
         assertEquals(
                 "Fade drawable resource is not as expected",
-                R.drawable.tab_strip_fade_long_tsr,
+                R.drawable.tab_strip_fade_long,
                 mStripLayoutHelperManager.getLeftFadeDrawable());
     }
 
     @Test
-    @Feature("Tab Strip Redesign")
-    public void testFadeDrawable_Left_RTL_TSR() {
+    public void testFadeDrawable_Left_RTL() {
         // setup
         LocalizationUtils.setRtlForTesting(true);
 
         // Verify fade drawable.
         assertEquals(
                 "Fade drawable resource is not as expected",
-                R.drawable.tab_strip_fade_medium_tsr,
+                R.drawable.tab_strip_fade_medium,
                 mStripLayoutHelperManager.getLeftFadeDrawable());
     }
 
     @Test
-    @Feature("Tab Strip Redesign")
-    public void testFadeDrawable_Right_RTL_TSR() {
+    public void testFadeDrawable_Right_RTL() {
         // setup
         mStripLayoutHelperManager.setModelSelectorButtonVisibleForTesting(true);
         LocalizationUtils.setRtlForTesting(true);
@@ -509,33 +379,13 @@ public class StripLayoutHelperManagerTest {
         // Verify fade drawable.
         assertEquals(
                 "Fade drawable resource is not as expected",
-                R.drawable.tab_strip_fade_short_tsr,
+                R.drawable.tab_strip_fade_short,
                 mStripLayoutHelperManager.getRightFadeDrawable());
     }
 
     @Test
-    @Feature("Tab Strip Redesign")
-    public void testButtonIconColor() {
-        // setup
-        initializeTestWithTsrArm(
-                TabUiFeatureUtilities.TAB_STRIP_REDESIGN_DISABLE_BUTTON_STYLE, false);
-
-        // Verify TSR button icon color.
-        assertEquals(
-                "Unexpected incognito button color.",
-                mContext.getResources().getColor(R.color.model_selector_button_icon_color),
-                ((TintedCompositorButton) mStripLayoutHelperManager.getModelSelectorButton())
-                        .getTint());
-    }
-
-    @Test
-    @Feature("Tab Strip Redesign")
     public void testButtonIconColor_DisableButtonStyle() {
-        // setup
-        initializeTestWithTsrArm(
-                TabUiFeatureUtilities.TAB_STRIP_REDESIGN_DISABLE_BUTTON_STYLE, true);
-
-        // Verify TSR button icon color after disabling button style.
+        // Verify button icon color after disabling button style.
         assertEquals(
                 "Unexpected incognito button color.",
                 AppCompatResources.getColorStateList(mContext, R.color.default_icon_color_tint_list)

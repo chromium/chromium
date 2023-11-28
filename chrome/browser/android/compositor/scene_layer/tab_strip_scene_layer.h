@@ -29,10 +29,7 @@ class TabHandleLayer;
 // added as a subtree.
 class TabStripSceneLayer : public SceneLayer {
  public:
-  TabStripSceneLayer(JNIEnv* env,
-                     const base::android::JavaRef<jobject>& jobj,
-                     jboolean is_tab_strip_redesign_enabled,
-                     jboolean is_tsr_btn_style_disabled);
+  TabStripSceneLayer(JNIEnv* env, const base::android::JavaRef<jobject>& jobj);
 
   TabStripSceneLayer(const TabStripSceneLayer&) = delete;
   TabStripSceneLayer& operator=(const TabStripSceneLayer&) = delete;
@@ -172,9 +169,6 @@ class TabStripSceneLayer : public SceneLayer {
   scoped_refptr<cc::slim::UIResourceLayer> right_fade_;
   scoped_refptr<cc::slim::UIResourceLayer> model_selector_button_;
   scoped_refptr<cc::slim::UIResourceLayer> model_selector_button_background_;
-
-  const bool is_tab_strip_redesign_enabled_ = false;
-  const bool is_tsr_btn_style_disabled_ = false;
 
   unsigned write_index_;
   TabHandleLayerList tab_handle_layers_;

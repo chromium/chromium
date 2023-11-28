@@ -18,9 +18,6 @@ found in the LICENSE file.
     <!-- Scrollbar colors -->
     <color name="default_scroll_thumb">@color/white_alpha_20</color>
 
-    <!-- Model selector button TSR colors -->
-    <color name="model_selector_button_icon_color">@android:color/black</color>
-
     <!-- Model selector button background TSR colors -->
     <color name="model_selector_button_bg_color">@android:color/white</color>
 </resources>

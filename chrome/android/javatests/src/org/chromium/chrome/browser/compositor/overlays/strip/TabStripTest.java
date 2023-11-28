@@ -33,7 +33,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -972,11 +971,9 @@ public class TabStripTest {
     @Feature({"TabStrip"})
     @EnableFeatures({
         ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP,
-        ChromeFeatureList.TAB_STRIP_REDESIGN
     })
     @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
     public void testHoverOnTabStrip() throws Exception {
-        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_FOLIO.setForTesting(true);
         // Open a few regular tabs.
         ChromeTabUtils.newTabsFromMenu(
                 InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity(), 4);
@@ -1148,12 +1145,9 @@ public class TabStripTest {
     @Feature({"TabStrip"})
     @EnableFeatures({
         ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP,
-        ChromeFeatureList.TAB_STRIP_REDESIGN
     })
     @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
     public void testTabHoverStateClearedOnActivityPause() throws Exception {
-        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_FOLIO.setForTesting(true);
-
         TabModel model = sActivityTestRule.getActivity().getTabModelSelector().getModel(false);
         StripLayoutTab tab =
                 TabStripUtils.findStripLayoutTab(

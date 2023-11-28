@@ -4542,11 +4542,6 @@ const char kThumbnailPlaceholderName[] = "Thumbnail placeholder";
 const char kThumbnailPlaceholderDescription[] =
     "Display a placeholder image for missing thumbnails.";
 
-const char kTabStripRedesignAndroidName[] = "Tab Strip Redesign Android.";
-const char kTabStripRedesignAndroidDescription[] =
-    "Enabled Tab Strip Redesign on Android - A visual redesign of Clank Tab "
-    "Strip that is consistent with GM3.";
-
 const char kTabletToolbarReorderingAndroidName[] =
     "Tablet Toolbar Reordering Android.";
 const char kTabletToolbarReorderingAndroidDescription[] =

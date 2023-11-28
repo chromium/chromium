@@ -32,23 +32,6 @@ public class TabUiFeatureUtilities {
             new IntCachedFieldTrialParameter(
                     ChromeFeatureList.TAB_TO_GTS_ANIMATION, MIN_MEMORY_MB_PARAM, 2048);
 
-    // Field trial parameter for disabling new tab button anchor for tab strip redesign.
-    private static final String TAB_STRIP_REDESIGN_DISABLE_NTB_ANCHOR_PARAM = "disable_ntb_anchor";
-    public static final BooleanCachedFieldTrialParameter TAB_STRIP_REDESIGN_DISABLE_NTB_ANCHOR =
-            new BooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.TAB_STRIP_REDESIGN,
-                    TAB_STRIP_REDESIGN_DISABLE_NTB_ANCHOR_PARAM,
-                    true);
-
-    // Field trial parameter for disabling button style for tab strip redesign. This includes
-    // disabling NTB anchor and button bg style.
-    private static final String TAB_STRIP_REDESIGN_DISABLE_BUTTON_STYLE_PARAM = "disable_btn_style";
-    public static final BooleanCachedFieldTrialParameter TAB_STRIP_REDESIGN_DISABLE_BUTTON_STYLE =
-            new BooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.TAB_STRIP_REDESIGN,
-                    TAB_STRIP_REDESIGN_DISABLE_BUTTON_STYLE_PARAM,
-                    true);
-
     // Field trial parameter for animation start timeout for new Android based shrink and expand
     // animations in TabSwitcherLayout.
     private static final String ANIMATION_START_TIMEOUT_MS_PARAM = "animation_start_timeout_ms";
@@ -72,20 +55,8 @@ public class TabUiFeatureUtilities {
     }
 
     /**
-     * @return Whether New tab button anchor for tab strip redesign is disabled.
+     * Whether the longpress entry for TabSelectionEditor is enabled. Currently only in tests.
      */
-    public static boolean isTabStripNtbAnchorDisabled() {
-        return TAB_STRIP_REDESIGN_DISABLE_NTB_ANCHOR.getValue();
-    }
-
-    /**
-     * @return Whether button style for tab strip redesign is disabled.
-     */
-    public static boolean isTabStripButtonStyleDisabled() {
-        return TAB_STRIP_REDESIGN_DISABLE_BUTTON_STYLE.getValue();
-    }
-
-    /** Whether the longpress entry for TabSelectionEditor is enabled. Currently only in tests. */
     public static boolean isTabSelectionEditorLongPressEntryEnabled() {
         return sTabSelectionEditorLongPressEntryEnabled;
     }

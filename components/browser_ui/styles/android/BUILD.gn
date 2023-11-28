@@ -22,8 +22,6 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
-    "java/res/color-night/new_tab_button_pressed_tint_list.xml",
-    "java/res/color-night/new_tab_button_tint_list.xml",
     "java/res/color/chip_text_color_secondary_list.xml",
     "java/res/color/color_primary_with_alpha_10.xml",
     "java/res/color/color_primary_with_alpha_15.xml",
@@ -47,8 +45,6 @@ android_resources("java_resources") {
     "java/res/color/default_text_color_secondary_list.xml",
     "java/res/color/filled_button_bg_dynamic_list.xml",
     "java/res/color/icon_animated_faded_color_list.xml",
-    "java/res/color/new_tab_button_pressed_tint_list.xml",
-    "java/res/color/new_tab_button_tint_list.xml",
     "java/res/color/progress_bar_bg_color_list.xml",
     "java/res/color/selection_control_button_tint_list.xml",
     "java/res/color/target_view_color_list.xml",

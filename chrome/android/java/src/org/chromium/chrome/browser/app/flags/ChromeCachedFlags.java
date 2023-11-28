@@ -131,11 +131,7 @@ public class ChromeCachedFlags {
                         TabUiFeatureUtilities.ANIMATION_START_TIMEOUT_MS,
                         TabUiFeatureUtilities.ZOOMING_MIN_MEMORY,
                         TabUiFeatureUtilities.SKIP_SLOW_ZOOMING,
-                        TabUiFeatureUtilities.TAB_STRIP_REDESIGN_DISABLE_NTB_ANCHOR,
-                        TabUiFeatureUtilities.TAB_STRIP_REDESIGN_DISABLE_BUTTON_STYLE,
                         TabManagementFieldTrial.DELAY_TEMP_STRIP_TIMEOUT_MS,
-                        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_FOLIO,
-                        TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED,
                         VersionNumberGetter.MIN_SDK_VERSION,
                         MinimizeAppAndCloseTabBackPressHandler.SYSTEM_BACK,
                         BackPressManager.TAB_HISTORY_RECOVER);
