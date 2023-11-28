@@ -251,11 +251,9 @@ class MockHandledEventCallback {
   }
 };
 
-class MockWebFrameWidgetImpl : public SimWebFrameWidget {
+class MockWebFrameWidgetImpl : public frame_test_helpers::TestWebFrameWidget {
  public:
-  template <typename... Args>
-  explicit MockWebFrameWidgetImpl(Args&&... args)
-      : SimWebFrameWidget(std::forward<Args>(args)...) {}
+  using frame_test_helpers::TestWebFrameWidget::TestWebFrameWidget;
 
   MOCK_METHOD1(HandleInputEvent,
                WebInputEventResult(const WebCoalescedInputEvent&));
@@ -269,14 +267,11 @@ class MockWebFrameWidgetImpl : public SimWebFrameWidget {
 
   MOCK_METHOD2(WillHandleGestureEvent,
                void(const WebGestureEvent& event, bool* suppress));
-
-  // mojom::blink::WidgetHost overrides:
-  using SimWebFrameWidget::SetCursor;
 };
 
 class WebFrameWidgetImplSimTest : public SimTest {
  public:
-  SimWebFrameWidget* CreateSimWebFrameWidget(
+  frame_test_helpers::TestWebFrameWidget* CreateWebFrameWidget(
       base::PassKey<WebLocalFrame> pass_key,
       CrossVariantMojoAssociatedRemote<
           mojom::blink::FrameWidgetHostInterfaceBase> frame_widget_host,
@@ -292,14 +287,12 @@ class WebFrameWidgetImplSimTest : public SimTest {
       bool never_composited,
       bool is_for_child_local_root,
       bool is_for_nested_main_frame,
-      bool is_for_scalable_page,
-      SimCompositor* compositor) override {
+      bool is_for_scalable_page) override {
     return MakeGarbageCollected<MockWebFrameWidgetImpl>(
-        compositor, pass_key, std::move(frame_widget_host),
-        std::move(frame_widget), std::move(widget_host), std::move(widget),
-        std::move(task_runner), frame_sink_id, hidden, never_composited,
-        is_for_child_local_root, is_for_nested_main_frame,
-        is_for_scalable_page);
+        pass_key, std::move(frame_widget_host), std::move(frame_widget),
+        std::move(widget_host), std::move(widget), std::move(task_runner),
+        frame_sink_id, hidden, never_composited, is_for_child_local_root,
+        is_for_nested_main_frame, is_for_scalable_page);
   }
 
   MockWebFrameWidgetImpl* MockMainFrameWidget() {
@@ -1597,7 +1590,7 @@ class EventHandlingWebFrameWidgetSimTest : public SimTest {
     Compositor().BeginFrame();
   }
 
-  SimWebFrameWidget* CreateSimWebFrameWidget(
+  frame_test_helpers::TestWebFrameWidget* CreateWebFrameWidget(
       base::PassKey<WebLocalFrame> pass_key,
       CrossVariantMojoAssociatedRemote<
           mojom::blink::FrameWidgetHostInterfaceBase> frame_widget_host,
@@ -1613,14 +1606,12 @@ class EventHandlingWebFrameWidgetSimTest : public SimTest {
       bool never_composited,
       bool is_for_child_local_root,
       bool is_for_nested_main_frame,
-      bool is_for_scalable_page,
-      SimCompositor* compositor) override {
+      bool is_for_scalable_page) override {
     return MakeGarbageCollected<TestWebFrameWidget>(
-        compositor, pass_key, std::move(frame_widget_host),
-        std::move(frame_widget), std::move(widget_host), std::move(widget),
-        std::move(task_runner), frame_sink_id, hidden, never_composited,
-        is_for_child_local_root, is_for_nested_main_frame,
-        is_for_scalable_page);
+        pass_key, std::move(frame_widget_host), std::move(frame_widget),
+        std::move(widget_host), std::move(widget), std::move(task_runner),
+        frame_sink_id, hidden, never_composited, is_for_child_local_root,
+        is_for_nested_main_frame, is_for_scalable_page);
   }
 
  protected:
@@ -1663,11 +1654,9 @@ class EventHandlingWebFrameWidgetSimTest : public SimTest {
   };
 
   // A test `WebFrameWidget` implementation that fakes handling of an event.
-  class TestWebFrameWidget : public SimWebFrameWidget {
+  class TestWebFrameWidget : public frame_test_helpers::TestWebFrameWidget {
    public:
-    template <typename... Args>
-    explicit TestWebFrameWidget(Args&&... args)
-        : SimWebFrameWidget(std::forward<Args>(args)...) {}
+    using frame_test_helpers::TestWebFrameWidget::TestWebFrameWidget;
 
     WebInputEventResult HandleInputEvent(
         const WebCoalescedInputEvent& coalesced_event) override {

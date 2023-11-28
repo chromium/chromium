@@ -628,11 +628,10 @@ class PanActionWidgetInputHandlerHost
   PanAction pan_action_ = PanAction::kNone;
 };
 
-class PanActionTrackingWebFrameWidget : public SimWebFrameWidget {
+class PanActionTrackingWebFrameWidget
+    : public frame_test_helpers::TestWebFrameWidget {
  public:
-  template <typename... Args>
-  explicit PanActionTrackingWebFrameWidget(Args&&... args)
-      : SimWebFrameWidget(std::forward<Args>(args)...) {}
+  using frame_test_helpers::TestWebFrameWidget::TestWebFrameWidget;
 
   // frame_test_helpers::TestWebFrameWidget overrides.
   frame_test_helpers::TestWidgetInputHandlerHost* GetInputHandlerHost()
@@ -656,7 +655,7 @@ class PanActionPointerEventTest : public PointerEventManagerTest {
                                    {});
   }
 
-  SimWebFrameWidget* CreateSimWebFrameWidget(
+  frame_test_helpers::TestWebFrameWidget* CreateWebFrameWidget(
       base::PassKey<WebLocalFrame> pass_key,
       CrossVariantMojoAssociatedRemote<
           mojom::blink::FrameWidgetHostInterfaceBase> frame_widget_host,
@@ -672,14 +671,12 @@ class PanActionPointerEventTest : public PointerEventManagerTest {
       bool never_composited,
       bool is_for_child_local_root,
       bool is_for_nested_main_frame,
-      bool is_for_scalable_page,
-      SimCompositor* compositor) override {
+      bool is_for_scalable_page) override {
     return MakeGarbageCollected<PanActionTrackingWebFrameWidget>(
-        compositor, pass_key, std::move(frame_widget_host),
-        std::move(frame_widget), std::move(widget_host), std::move(widget),
-        std::move(task_runner), frame_sink_id, hidden, never_composited,
-        is_for_child_local_root, is_for_nested_main_frame,
-        is_for_scalable_page);
+        pass_key, std::move(frame_widget_host), std::move(frame_widget),
+        std::move(widget_host), std::move(widget), std::move(task_runner),
+        frame_sink_id, hidden, never_composited, is_for_child_local_root,
+        is_for_nested_main_frame, is_for_scalable_page);
   }
 
  protected:

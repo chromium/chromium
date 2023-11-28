@@ -1615,6 +1615,7 @@ TEST_P(FrameThrottlingTest, LifecycleThrottledFrameNeedsRepaint) {
       GetDocument().getElementById(AtomicString("frame")));
   auto* frame_document = frame_element->contentDocument();
   frame_document->View()->SetLifecycleUpdatesThrottledForTesting(true);
+  GetDocument().View()->GetLayoutView()->Layer()->SetNeedsRepaint();
   GetDocument().View()->ScheduleAnimation();
   EXPECT_TRUE(frame_document->View()->ShouldThrottleRenderingForTest());
 
