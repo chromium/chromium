@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_OCCLUSION_TRACKER_H_
 #define CHROME_BROWSER_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_OCCLUSION_TRACKER_H_
 
+#include <vector>
+
 #include "base/containers/flat_map.h"
 #include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
@@ -92,6 +94,10 @@ class PictureInPictureOcclusionTracker : public views::WidgetObserver {
                                  bool visibility) override;
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override;
+
+  // Allows tests to check which picture-in-picture widgets are currently being
+  // observed.
+  std::vector<views::Widget*> GetPictureInPictureWidgetsForTesting();
 
  private:
   struct ObservedWidgetData {

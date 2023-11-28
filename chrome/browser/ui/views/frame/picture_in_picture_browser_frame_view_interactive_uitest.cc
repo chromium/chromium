@@ -7,6 +7,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -16,6 +18,7 @@
 #include "content/public/browser/document_picture_in_picture_window_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "media/base/media_switches.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/gfx/animation/animation_test_api.h"
@@ -43,8 +46,10 @@ class PictureInPictureBrowserFrameViewTest : public InProcessBrowserTest {
   }
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kDocumentPictureInPictureAPI);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{blink::features::kDocumentPictureInPictureAPI,
+                              media::kPictureInPictureOcclusionTracking},
+        /*disabled_features=*/{});
     InProcessBrowserTest::SetUp();
   }
 
@@ -296,6 +301,43 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
   ASSERT_TRUE(
       IsButtonVisible(pip_frame_view()->GetBackToTabButtonForTesting()));
   ASSERT_TRUE(IsButtonVisible(pip_frame_view()->GetCloseButtonForTesting()));
+}
+
+IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
+                       IsTrackedByTheOcclusionObserver) {
+  ASSERT_NO_FATAL_FAILURE(SetUpDocumentPIP());
+
+  PictureInPictureOcclusionTracker* occlusion_tracker =
+      PictureInPictureWindowManager::GetInstance()->GetOcclusionTracker();
+  ASSERT_TRUE(occlusion_tracker);
+
+  {
+    std::vector<views::Widget*> pip_widgets =
+        occlusion_tracker->GetPictureInPictureWidgetsForTesting();
+
+    // Check that the PictureInPictureOcclusionTracker is observing the
+    // document picture-in-picture window.
+    EXPECT_EQ(1u, pip_widgets.size());
+    EXPECT_EQ(pip_frame_view()->GetWidget(), pip_widgets[0]);
+  }
+
+  // Open the PageInfo dialog and ensure that it's being tracked as well. We
+  // don't have a handle to the widget, but we can reasonably assume it's being
+  // tracked if the number of tracked widgets is now 2.
+  {
+    pip_frame_view()->ShowPageInfoDialog();
+    std::vector<views::Widget*> pip_widgets =
+        occlusion_tracker->GetPictureInPictureWidgetsForTesting();
+    EXPECT_EQ(2u, pip_widgets.size());
+  }
+
+  // Close both widgets and ensure they're no longer being tracked.
+  {
+    pip_frame_view()->GetWidget()->CloseNow();
+    std::vector<views::Widget*> pip_widgets =
+        occlusion_tracker->GetPictureInPictureWidgetsForTesting();
+    EXPECT_EQ(0u, pip_widgets.size());
+  }
 }
 
 }  // namespace

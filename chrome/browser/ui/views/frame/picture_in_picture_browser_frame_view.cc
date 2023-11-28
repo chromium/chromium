@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -800,6 +801,12 @@ void PictureInPictureBrowserFrameView::AddedToWidget() {
     auto_pip_setting_overlay_->ShowBubble(GetWidget()->GetNativeView());
   }
 
+  PictureInPictureOcclusionTracker* tracker =
+      PictureInPictureWindowManager::GetInstance()->GetOcclusionTracker();
+  if (tracker) {
+    tracker->OnPictureInPictureWidgetOpened(GetWidget());
+  }
+
   BrowserNonClientFrameView::AddedToWidget();
 }
 
@@ -914,6 +921,13 @@ bool PictureInPictureBrowserFrameView::ShowPageInfoDialog() {
           /*closing_callback=*/base::DoNothing());
   bubble->SetHighlightedButton(location_icon_view_);
   bubble->GetWidget()->Show();
+
+  PictureInPictureOcclusionTracker* tracker =
+      PictureInPictureWindowManager::GetInstance()->GetOcclusionTracker();
+  if (tracker) {
+    tracker->OnPictureInPictureWidgetOpened(bubble->GetWidget());
+  }
+
   return true;
 }
 

@@ -163,6 +163,17 @@ void PictureInPictureOcclusionTracker::OnWidgetBoundsChanged(
                      base::Unretained(this)));
 }
 
+std::vector<views::Widget*>
+PictureInPictureOcclusionTracker::GetPictureInPictureWidgetsForTesting() {
+  std::vector<views::Widget*> pip_widgets;
+  for (const auto& [widget, observed_widget_data] : observed_widget_data_) {
+    if (observed_widget_data.is_picture_in_picture_widget) {
+      pip_widgets.push_back(widget);
+    }
+  }
+  return pip_widgets;
+}
+
 void PictureInPictureOcclusionTracker::ObserveWidgetAndParents(
     views::Widget* widget,
     bool directly_observe_this_widget) {

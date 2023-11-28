@@ -7,11 +7,14 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/views/overlay/close_image_button.h"
 #include "chrome/browser/ui/views/overlay/simple_overlay_window_image_button.h"
@@ -21,6 +24,7 @@
 #include "content/public/browser/video_picture_in_picture_window_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_web_contents_factory.h"
+#include "media/base/media_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/test/test_screen.h"
@@ -123,6 +127,8 @@ class VideoOverlayWindowViewsTest : public ChromeViewsTestBase {
   VideoOverlayWindowViewsTest() = default;
   // ChromeViewsTestBase:
   void SetUp() override {
+    feature_list_.InitAndEnableFeature(
+        media::kPictureInPictureOcclusionTracking);
     display::Screen::SetScreenInstance(&test_screen_);
 
     // Purposely skip ChromeViewsTestBase::SetUp() as that creates ash::Shell
@@ -193,6 +199,8 @@ class VideoOverlayWindowViewsTest : public ChromeViewsTestBase {
         base::Milliseconds(1));
   }
 
+  void DestroyOverlayWindow() { overlay_window_.reset(); }
+
  private:
   std::unique_ptr<AutoPipSettingOverlayView> GetOverlayViewImpl() {
     return std::move(overlay_view_);
@@ -211,6 +219,8 @@ class VideoOverlayWindowViewsTest : public ChromeViewsTestBase {
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 
   std::unique_ptr<VideoOverlayWindowViews> overlay_window_;
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(VideoOverlayWindowViewsTest, InitialWindowSize_Square) {
@@ -674,4 +684,20 @@ TEST_F(VideoOverlayWindowViewsTest, OverlayWindowStopsBlockingInput) {
   overlay_view->SetWantsEvent(true);
   EXPECT_TRUE(overlay_window().ControlsHitTestContainsPoint(
       close_controls_center_point));
+}
+
+TEST_F(VideoOverlayWindowViewsTest, IsTrackedByTheOcclusionObserver) {
+  overlay_window().ShowInactive();
+
+  PictureInPictureOcclusionTracker* tracker =
+      PictureInPictureWindowManager::GetInstance()->GetOcclusionTracker();
+
+  // Check that the PictureInPictureOcclusionTracker is observing the
+  // VideoOverlayWindowViews.
+  EXPECT_TRUE(base::Contains(tracker->GetPictureInPictureWidgetsForTesting(),
+                             &overlay_window()));
+
+  // Check that it's no longer observed when the widget is destroyed.
+  DestroyOverlayWindow();
+  EXPECT_EQ(0u, tracker->GetPictureInPictureWidgetsForTesting().size());
 }

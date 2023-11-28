@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -305,6 +306,12 @@ std::unique_ptr<VideoOverlayWindowViews> VideoOverlayWindowViews::Create(
     }
   }
 #endif  // BUILDFLAG(IS_WIN)
+
+  PictureInPictureOcclusionTracker* tracker =
+      PictureInPictureWindowManager::GetInstance()->GetOcclusionTracker();
+  if (tracker) {
+    tracker->OnPictureInPictureWidgetOpened(overlay_window.get());
+  }
 
   return overlay_window;
 }
