@@ -14,11 +14,15 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   var snapshot = BindingsTestRunner.dumpWorkspace();
 
   TestRunner.markStep('createIframesAndWaitForSourceMaps');
+  await BindingsTestRunner.attachFrame('frame1', './resources/sourcemap-frame.html', '_test_create-iframe1.js');
   await Promise.all([
-    BindingsTestRunner.attachFrame('frame1', './resources/sourcemap-frame.html', '_test_create-iframe1.js'),
-    BindingsTestRunner.attachFrame('frame2', './resources/sourcemap-frame.html', '_test_create-iframe2.js'),
     BindingsTestRunner.waitForSourceMap('sourcemap-script.js.map'),
-    BindingsTestRunner.waitForSourceMap('sourcemap-style.css.map')
+    BindingsTestRunner.waitForSourceMap('sourcemap-style.css.map'),
+  ]);
+  await BindingsTestRunner.attachFrame('frame2', './resources/sourcemap-frame.html', '_test_create-iframe2.js');
+  await Promise.all([
+    BindingsTestRunner.waitForSourceMap('sourcemap-script.js.map'),
+    BindingsTestRunner.waitForSourceMap('sourcemap-style.css.map'),
   ]);
   snapshot = BindingsTestRunner.dumpWorkspace(snapshot);
 
