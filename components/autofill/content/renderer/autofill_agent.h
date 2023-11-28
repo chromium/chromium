@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CONTENT_RENDERER_AUTOFILL_AGENT_H_
 #define COMPONENTS_AUTOFILL_CONTENT_RENDERER_AUTOFILL_AGENT_H_
 
+#include <memory>
 #include <set>
 #include <string>
 #include <vector>
@@ -175,7 +176,11 @@ class AutofillAgent : public content::RenderFrameObserver,
   void UpdateStateForTextChange(const blink::WebFormControlElement& element,
                                 FieldPropertiesFlags flag);
 
-  FormTracker* form_tracker_for_testing() { return &form_tracker_; }
+  FormTracker* form_tracker_for_testing() { return form_tracker_.get(); }
+  void set_form_tracker_for_testing(
+      std::unique_ptr<FormTracker>&& form_tracker) {
+    form_tracker_ = std::move(form_tracker);
+  }
 
   bool is_heavy_form_data_scraping_enabled() {
     return is_heavy_form_data_scraping_enabled_;
@@ -443,7 +448,9 @@ class AutofillAgent : public content::RenderFrameObserver,
   bool last_left_mouse_down_or_gesture_tap_in_node_caused_focus_ = false;
   FieldRendererId last_clicked_form_control_element_for_testing_;
 
-  FormTracker form_tracker_;
+  // This is never null, it is created at construction time and is not changed
+  // until destruction time.
+  std::unique_ptr<FormTracker> form_tracker_;
 
   // Whether or not we delay focus handling until scrolling occurs.
   bool focus_requires_scroll_ = true;

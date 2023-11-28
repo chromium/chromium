@@ -199,6 +199,10 @@ void FormTracker::SelectControlDidChange(const WebFormControlElement& element) {
                                 Observer::ElementChangeSource::SELECT_CHANGED));
 }
 
+void FormTracker::ElementDisappeared(const blink::WebElement& element) {
+  // TODO(crbug.com/1483242): Implement.
+}
+
 void FormTracker::TrackAutofilledElement(const WebFormControlElement& element) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
   DCHECK(element.IsAutofilled());

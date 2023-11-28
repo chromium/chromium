@@ -16,6 +16,7 @@
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/content/renderer/autofill_agent.h"
 #include "components/autofill/content/renderer/autofill_agent_test_api.h"
+#include "components/autofill/content/renderer/form_tracker.h"
 #include "components/autofill/content/renderer/password_generation_agent.h"
 #include "components/autofill/content/renderer/test_password_autofill_agent.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -50,6 +51,15 @@ namespace {
 
 // The throttling amount of ProcessForms().
 constexpr base::TimeDelta kFormsSeenThrottle = base::Milliseconds(100);
+
+class MockFormTracker : public FormTracker {
+ public:
+  using FormTracker::FormTracker;
+  MOCK_METHOD(void,
+              ElementDisappeared,
+              (const blink::WebElement& element),
+              (override));
+};
 
 class MockAutofillDriver : public mojom::AutofillDriver {
  public:
@@ -160,8 +170,6 @@ auto HasSingleElementWhich(Matchers... element_matchers) {
   return AllOf(SizeIs(1), ElementsAre(AllOf(element_matchers...)));
 }
 
-}  // namespace
-
 // TODO(crbug.com/63573): Add many more test cases.
 class AutofillAgentTest : public content::RenderViewTest {
  public:
@@ -183,11 +191,18 @@ class AutofillAgentTest : public content::RenderViewTest {
     autofill_agent_ = std::make_unique<AutofillAgent>(
         GetMainRenderFrame(), std::move(password_autofill_agent),
         std::move(password_generation), &associated_interfaces_);
+    autofill_agent_->set_form_tracker_for_testing(
+        std::make_unique<MockFormTracker>(GetMainRenderFrame()));
   }
 
   void TearDown() override {
     autofill_agent_.reset();
     RenderViewTest::TearDown();
+  }
+
+  MockFormTracker& form_tracker() {
+    return *static_cast<MockFormTracker*>(
+        autofill_agent_->form_tracker_for_testing());
   }
 
   // AutofillDriver::FormsSeen() is throttled indirectly because some callsites
@@ -476,5 +491,7 @@ TEST_F(AutofillAgentTest, UndoAutofillSetsLastQueriedElement) {
                                    mojom::ActionPersistence::kFill, form);
   EXPECT_FALSE(autofill_agent_->focused_element().IsNull());
 }
+
+}  // namespace
 
 }  // namespace autofill

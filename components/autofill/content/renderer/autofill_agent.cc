@@ -5,6 +5,7 @@
 #include "components/autofill/content/renderer/autofill_agent.h"
 
 #include <stddef.h>
+#include <memory>
 #include <optional>
 #include <tuple>
 
@@ -312,7 +313,7 @@ AutofillAgent::AutofillAgent(
       query_node_autofill_state_(WebAutofillState::kNotFilled),
       is_popup_possibly_visible_(false),
       is_secure_context_required_(false),
-      form_tracker_(render_frame),
+      form_tracker_(std::make_unique<FormTracker>(render_frame)),
       field_data_manager_(base::MakeRefCounted<FieldDataManager>()),
       focus_state_notifier_(this) {
   render_frame->GetWebFrame()->SetAutofillClient(this);
@@ -530,11 +531,11 @@ void AutofillAgent::TextFieldDidEndEditing(const WebInputElement& element) {
 }
 
 void AutofillAgent::SetUserGestureRequired(bool required) {
-  form_tracker_.set_user_gesture_required(required);
+  form_tracker_->set_user_gesture_required(required);
 }
 
 void AutofillAgent::TextFieldDidChange(const WebFormControlElement& element) {
-  form_tracker_.TextFieldDidChange(element);
+  form_tracker_->TextFieldDidChange(element);
 }
 
 void AutofillAgent::OnTextFieldDidChange(const WebFormControlElement& element) {
@@ -1129,7 +1130,7 @@ void AutofillAgent::DoFillFieldWithValue(std::u16string_view value,
                                          WebAutofillState autofill_state) {
   DCHECK(MaybeWasOwnedByFrame(element, unsafe_render_frame()));
 
-  form_tracker_.set_ignore_control_changes(true);
+  form_tracker_->set_ignore_control_changes(true);
 
   element.SetAutofillValue(blink::WebString::FromUTF16(value), autofill_state);
 
@@ -1138,7 +1139,7 @@ void AutofillAgent::DoFillFieldWithValue(std::u16string_view value,
                                ? FieldPropertiesFlags::kAutofilled
                                : FieldPropertiesFlags::kUserTyped);
 
-  form_tracker_.set_ignore_control_changes(false);
+  form_tracker_->set_ignore_control_changes(false);
 }
 
 void AutofillAgent::TriggerFormExtraction() {
@@ -1305,7 +1306,7 @@ void AutofillAgent::DidReceiveLeftMouseDownOrGestureTapInNode(
 
 void AutofillAgent::SelectControlDidChange(
     const WebFormControlElement& element) {
-  form_tracker_.SelectControlDidChange(element);
+  form_tracker_->SelectControlDidChange(element);
 }
 
 // Notifies the AutofillDriver about changes in the <select> or <selectlist>
@@ -1467,7 +1468,7 @@ void AutofillAgent::SendFocusedInputChangedNotificationToBrowser(
 }
 
 void AutofillAgent::AjaxSucceeded() {
-  form_tracker_.AjaxSucceeded();
+  form_tracker_->AjaxSucceeded();
   SendPotentiallySubmittedFormToBrowser();
 }
 
@@ -1641,16 +1642,16 @@ void AutofillAgent::OnInferredFormSubmission(SubmissionSource source) {
 }
 
 void AutofillAgent::AddFormObserver(Observer* observer) {
-  form_tracker_.AddObserver(observer);
+  form_tracker_->AddObserver(observer);
 }
 
 void AutofillAgent::RemoveFormObserver(Observer* observer) {
-  form_tracker_.RemoveObserver(observer);
+  form_tracker_->RemoveObserver(observer);
 }
 
 void AutofillAgent::TrackAutofilledElement(
     const blink::WebFormControlElement& element) {
-  form_tracker_.TrackAutofilledElement(element);
+  form_tracker_->TrackAutofilledElement(element);
 }
 
 void AutofillAgent::UpdateStateForTextChange(
