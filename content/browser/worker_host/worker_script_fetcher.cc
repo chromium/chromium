@@ -635,61 +635,24 @@ void WorkerScriptFetcher::OnReceiveResponse(
     absl::optional<mojo_base::BigBuffer> cached_metadata) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!cached_metadata);
-  response_head_ = std::move(response_head);
   if (!body)
     return;
 
-  base::WeakPtr<WorkerScriptLoader> script_loader =
-      script_loader_factory_->GetScriptLoader();
-  if (script_loader && script_loader->default_loader_used_) {
-    // If the default network loader was used to handle the URL load request we
-    // need to see if the request interceptors want to potentially create a new
-    // loader for the response, e.g. SXG or WebBundles. Since the response has
-    // already been received, this means the loader completed without any
-    // network errors, so we pass a URLLoaderCompletionStatus of `net::OK`.
-    DCHECK(!response_url_loader_);
-    mojo::PendingReceiver<network::mojom::URLLoaderClient>
-        response_client_receiver;
-    auto status = network::URLLoaderCompletionStatus(net::OK);
-    if (script_loader->MaybeCreateLoaderForResponse(
-            status, &response_head_, &body, &response_url_loader_,
-            &response_client_receiver, url_loader_.get())) {
-      DCHECK(response_url_loader_);
-      response_url_loader_receiver_.Bind(std::move(response_client_receiver));
-      subresource_loader_params_ = script_loader->TakeSubresourceLoaderParams();
-      url_loader_.reset();
-      // OnReceiveResponse() will be called again.
-      return;
-    }
-  }
-
-  DCHECK(!main_script_load_params_);
+  CHECK(!main_script_load_params_);
+  CHECK(url_loader_);
   main_script_load_params_ = blink::mojom::WorkerMainScriptLoadParams::New();
   main_script_load_params_->request_id = request_id_;
-  main_script_load_params_->response_head = std::move(response_head_);
+  main_script_load_params_->response_head = std::move(response_head);
   main_script_load_params_->response_body = std::move(body);
-  if (url_loader_) {
-    // The main script was served by a request interceptor or the default
-    // network loader.
-    DCHECK(!response_url_loader_);
-    main_script_load_params_->url_loader_client_endpoints =
-        url_loader_->Unbind();
-    subresource_loader_params_ = script_loader->TakeSubresourceLoaderParams();
-  } else {
-    // The main script was served by the default network loader first, and then
-    // a request interceptor created another loader |response_url_loader_| for
-    // serving an alternative response.
-    DCHECK(response_url_loader_);
-    DCHECK(response_url_loader_receiver_.is_bound());
-    main_script_load_params_->url_loader_client_endpoints =
-        network::mojom::URLLoaderClientEndpoints::New(
-            std::move(response_url_loader_),
-            response_url_loader_receiver_.Unbind());
-  }
-
+  // The main script was served by a request interceptor or the default
+  // network loader.
+  main_script_load_params_->url_loader_client_endpoints = url_loader_->Unbind();
   main_script_load_params_->redirect_infos = std::move(redirect_infos_);
   main_script_load_params_->redirect_response_heads =
       std::move(redirect_response_heads_);
+
+  subresource_loader_params_ =
+      script_loader_factory_->GetScriptLoader()->TakeSubresourceLoaderParams();
 
   // Currently `parsed_headers` is null when FileURLLoader is used.
   if (main_script_load_params_->response_head->parsed_headers) {

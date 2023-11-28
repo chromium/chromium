@@ -231,18 +231,11 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
   // URLLoader instance backed by a request interceptor or the network service.
   std::unique_ptr<blink::ThrottlingURLLoader> url_loader_;
 
-  // URLLoader instance for handling a response received from the default
-  // network loader. This can be provided by an interceptor.
-  mojo::PendingRemote<network::mojom::URLLoader> response_url_loader_;
-  mojo::Receiver<network::mojom::URLLoaderClient> response_url_loader_receiver_{
-      this};
-
   blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params_;
   absl::optional<SubresourceLoaderParams> subresource_loader_params_;
 
   std::vector<net::RedirectInfo> redirect_infos_;
   std::vector<network::mojom::URLResponseHeadPtr> redirect_response_heads_;
-  network::mojom::URLResponseHeadPtr response_head_;
 
   base::WeakPtrFactory<WorkerScriptFetcher> weak_factory_{this};
 };

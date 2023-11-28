@@ -81,6 +81,9 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
   absl::optional<SubresourceLoaderParams> MaybeCreateSubresourceLoaderParams()
       override;
 
+  // MaybeCreateLoaderForResponse() should NOT overridden here, because
+  // `WorkerScriptLoader` assumes so.
+
  private:
   friend class ServiceWorkerMainResourceLoaderInterceptorTest;
 
