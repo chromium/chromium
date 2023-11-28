@@ -7,7 +7,7 @@
 #include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/common/service_worker/service_worker_router_rule.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_urlpatterninit_usvstring.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_urlpattern_urlpatterninit_usvstring.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_router_condition.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_router_rule.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_router_source.h"
@@ -90,20 +90,20 @@ absl::optional<std::vector<liburlpattern::Part>> ToPartList(
 // The method should take a exception_state to raise on regex usage.
 absl::optional<SafeUrlPattern> RouterUrlPatternConditionToBlink(
     v8::Isolate* isolate,
-    const V8URLPatternInput* url_pattern_input,
+    const V8URLPatternCompatible* url_pattern_compatible,
     const KURL& url_pattern_base_url,
     ExceptionState& exception_state) {
-  URLPattern* url_pattern;
-  switch (url_pattern_input->GetContentType()) {
-    case blink::V8URLPatternInput::ContentType::kUSVString:
-      url_pattern = URLPattern::Create(isolate, url_pattern_input,
-                                       url_pattern_base_url, exception_state);
-      break;
-    case blink::V8URLPatternInput::ContentType::kURLPatternInit:
-      url_pattern =
-          URLPattern::Create(isolate, url_pattern_input, exception_state);
-      break;
-  }
+  // If |url_pattern_compatible| is not a constructed URLPattern,
+  // |url_pattern_base_url| as baseURL will give additional information to
+  // appropriately complement missing fields. For more details, see
+  // https://urlpattern.spec.whatwg.org/#other-specs-javascript.
+  //
+  // note: The empty string passname may result in an unintuitive output,
+  // because the step 17 in 3.2. URLPatternInit processing will make the new
+  // pathname field be a substring from 0 to slash index + 1 within baseURLPath.
+  // https://urlpattern.spec.whatwg.org/#canon-processing-for-init
+  URLPattern* url_pattern = URLPattern::From(
+      isolate, url_pattern_compatible, url_pattern_base_url, exception_state);
   if (!url_pattern) {
     CHECK(exception_state.HadException());
     return absl::nullopt;
