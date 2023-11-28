@@ -212,7 +212,22 @@ bool OutputQueue::NegotiateFormat() {
 
 bool OutputQueue::PrepareBuffers() {
   DVLOGF(4);
-  return AllocateBuffers(buffer_format_.NumPlanes());
+
+  if (!AllocateBuffers(buffer_format_.NumPlanes())) {
+    return false;
+  }
+
+  // Queue all buffers after allocation in anticipation of being used.
+  for (auto index = free_buffer_indices_.begin();
+       index != free_buffer_indices_.end();) {
+    if (!device_->QueueBuffer(buffers_[*index], base::ScopedFD(-1))) {
+      DVLOGF(1) << "Failed to queue buffer.";
+      return false;
+    }
+    free_buffer_indices_.erase(index++);
+  }
+
+  return true;
 }
 
 std::string OutputQueue::Description() {

@@ -33,7 +33,8 @@ class Buffer {
   Buffer(BufferType buffer_type,
          MemoryType memory_type,
          uint32_t index,
-         uint32_t plane_count);
+         uint32_t plane_count,
+         struct timeval time_val);
   ~Buffer();
   Buffer(const Buffer&);
 
@@ -55,6 +56,8 @@ class Buffer {
   BufferType GetBufferType() const { return buffer_type_; }
   MemoryType GetMemoryType() const { return memory_type_; }
 
+  struct timeval GetTimeval() const;
+
   // Method for copying compressed input data into a Buffer's backing store. It
   // is limited to destination buffers that have a single plane and are memory
   // mapped.
@@ -73,6 +76,7 @@ class Buffer {
   const MemoryType memory_type_;
   const uint32_t index_;
   std::vector<Plane> planes_;
+  struct timeval time_val_;
 };
 
 class PlaneFormat {
@@ -149,6 +153,10 @@ class MEDIA_GPU_EXPORT Device : public base::RefCountedThreadSafe<Device> {
                                      MemoryType memory,
                                      uint32_t index,
                                      uint32_t num_planes);
+
+  // Enqueue a buffer allocated through |RequestBuffers| with the driver for
+  // processing.
+  bool QueueBuffer(const Buffer& buffer, const base::ScopedFD& request_fd);
 
   // Query the driver for the smallest and largest uncompressed frame sizes that
   // are supported using the VIDIOC_ENUM_FRAMESIZES ioctl.

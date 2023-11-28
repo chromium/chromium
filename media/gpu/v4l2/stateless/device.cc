@@ -93,14 +93,27 @@ MemoryType V4L2ToMemoryType(unsigned int memory) {
 Buffer V4L2BufferToBuffer(const struct v4l2_buffer& v4l2_buffer) {
   const BufferType buffer_type = V4L2ToBufferType(v4l2_buffer.type);
   const MemoryType memory_type = V4L2ToMemoryType(v4l2_buffer.memory);
-  Buffer buffer(buffer_type, memory_type, v4l2_buffer.index,
-                v4l2_buffer.length);
+  Buffer buffer(buffer_type, memory_type, v4l2_buffer.index, v4l2_buffer.length,
+                v4l2_buffer.timestamp);
   for (uint32_t plane = 0; plane < buffer.PlaneCount(); ++plane) {
     buffer.SetupPlane(plane, v4l2_buffer.m.planes[plane].m.mem_offset,
                       v4l2_buffer.m.planes[plane].length);
   }
 
   return buffer;
+}
+
+void BufferToV4L2Buffer(struct v4l2_buffer* v4l2_buffer, const Buffer& buffer) {
+  v4l2_buffer->length = buffer.PlaneCount();
+  v4l2_buffer->type = BufferTypeToV4L2(buffer.GetBufferType());
+  v4l2_buffer->memory = MemoryTypeToV4L2(buffer.GetMemoryType());
+  v4l2_buffer->index = buffer.GetIndex();
+  v4l2_buffer->timestamp = buffer.GetTimeval();
+  for (uint32_t plane = 0; plane < buffer.PlaneCount(); ++plane) {
+    v4l2_buffer->m.planes[plane].length = buffer.PlaneLength(plane);
+    v4l2_buffer->m.planes[plane].bytesused = buffer.PlaneBytesUsed(plane);
+    v4l2_buffer->m.planes[plane].m.mem_offset = buffer.PlaneMemOffset(plane);
+  }
 }
 
 using v4l2_enum_type = decltype(V4L2_PIX_FMT_H264);
@@ -200,8 +213,12 @@ Device::Device() {}
 Buffer::Buffer(BufferType buffer_type,
                MemoryType memory_type,
                uint32_t index,
-               uint32_t plane_count)
-    : buffer_type_(buffer_type), memory_type_(memory_type), index_(index) {
+               uint32_t plane_count,
+               struct timeval time_val)
+    : buffer_type_(buffer_type),
+      memory_type_(memory_type),
+      index_(index),
+      time_val_(time_val) {
   planes_.resize(plane_count);
 }
 
@@ -221,6 +238,10 @@ void Buffer::SetMappedAddress(uint32_t plane, void* address) {
 void Buffer::SetupPlane(uint32_t plane, size_t offset, size_t size) {
   planes_[plane].mem_offset = offset;
   planes_[plane].length = size;
+}
+
+struct timeval Buffer::GetTimeval() const {
+  return time_val_;
 }
 
 bool Buffer::CopyDataIn(const void* data, size_t length) {
@@ -412,6 +433,30 @@ absl::optional<Buffer> Device::QueryBuffer(BufferType buffer_type,
   }
 
   return V4L2BufferToBuffer(v4l2_buffer);
+}
+
+// VIDIOC_QBUF
+bool Device::QueueBuffer(const Buffer& buffer,
+                         const base::ScopedFD& request_fd) {
+  struct v4l2_buffer v4l2_buffer;
+  struct v4l2_plane v4l2_planes[VIDEO_MAX_PLANES];
+  memset(&v4l2_buffer, 0, sizeof(v4l2_buffer));
+  memset(v4l2_planes, 0, sizeof(v4l2_planes));
+  v4l2_buffer.m.planes = v4l2_planes;
+
+  BufferToV4L2Buffer(&v4l2_buffer, buffer);
+
+  // TODO(frkoenig): This should be in the stateless driver. It is not currently
+  // because BufferToV4L2Buffer is a function that is only available to this
+  // file
+  if (BufferType::kCompressedData == buffer.GetBufferType()) {
+    v4l2_buffer.flags |= V4L2_BUF_FLAG_REQUEST_FD;
+    v4l2_buffer.request_fd = request_fd.get();
+  }
+
+  DVLOGF(4) << V4L2BufferToString(v4l2_buffer);
+
+  return (IoctlDevice(VIDIOC_QBUF, &v4l2_buffer) == kIoctlOk);
 }
 
 // VIDIOC_ENUM_FRAMESIZES
