@@ -1250,7 +1250,7 @@ TEST_F(MultiStoreFormFetcherTest, InsecureCredentials) {
                                     Pointee(account_form_insecure_credential)));
 }
 
-TEST_P(FormFetcherImplTest, BackendErrorResetsOnNewFetch) {
+TEST_P(FormFetcherImplTest, ProfileBackendErrorResetsOnNewFetch) {
   ASSERT_EQ(form_fetcher_->GetProfileStoreBackendError(), std::nullopt);
 
   Fetch();
@@ -1275,6 +1275,36 @@ TEST_P(FormFetcherImplTest, BackendErrorResetsOnNewFetch) {
 
   DeliverPasswordStoreResults(/*profile_store_results=*/std::move(form_results),
                               /*account_store_results=*/{});
+
+  EXPECT_EQ(form_fetcher_->GetProfileStoreBackendError(), std::nullopt);
+}
+
+TEST_F(MultiStoreFormFetcherTest, AccountBackendErrorResetsOnNewFetch) {
+  ASSERT_EQ(form_fetcher_->GetProfileStoreBackendError(), std::nullopt);
+
+  Fetch();
+
+  PasswordStoreBackendError error_results = PasswordStoreBackendError(
+      PasswordStoreBackendErrorType::kAuthErrorResolvable,
+      PasswordStoreBackendErrorRecoveryType::kRecoverable);
+  DeliverPasswordStoreResults(
+      /*profile_store_results=*/{},
+      /*account_store_results=*/std::move(error_results));
+
+  EXPECT_EQ(form_fetcher_->GetAccountStoreBackendError().value(),
+            PasswordStoreBackendError(
+                PasswordStoreBackendErrorType::kAuthErrorResolvable,
+                PasswordStoreBackendErrorRecoveryType::kRecoverable));
+
+  Fetch();
+
+  PasswordForm form = CreateNonFederated();
+  std::vector<PasswordForm> form_results;
+  form_results.push_back(form);
+
+  DeliverPasswordStoreResults(
+      /*profile_store_results=*/{},
+      /*account_store_results=*/std::move(form_results));
 
   EXPECT_EQ(form_fetcher_->GetProfileStoreBackendError(), std::nullopt);
 }

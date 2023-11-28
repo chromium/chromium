@@ -4050,10 +4050,42 @@ TEST_P(PasswordFormManagerTest,
 #if BUILDFLAG(IS_ANDROID)
 TEST_P(PasswordFormManagerTest,
        ClientShouldShowErrorMessageForAuthErrorResolvable) {
-  base::test::ScopedFeatureList feature_list;
   fetcher_->SetProfileStoreBackendError(PasswordStoreBackendError(
       PasswordStoreBackendErrorType::kAuthErrorResolvable,
       PasswordStoreBackendErrorRecoveryType::kRecoverable));
+
+  EXPECT_CALL(client_,
+              ShowPasswordManagerErrorMessage(
+                  password_manager::ErrorMessageFlowType::kFillFlow,
+                  PasswordStoreBackendErrorType::kAuthErrorResolvable));
+  fetcher_->NotifyFetchCompleted();
+}
+
+TEST_P(PasswordFormManagerTest,
+       ClientShouldShowErrorMessageForAuthErrorForAccountStore) {
+  fetcher_->SetAccountStoreBackendError(PasswordStoreBackendError(
+      PasswordStoreBackendErrorType::kAuthErrorResolvable,
+      PasswordStoreBackendErrorRecoveryType::kRecoverable));
+
+  EXPECT_CALL(client_,
+              ShowPasswordManagerErrorMessage(
+                  password_manager::ErrorMessageFlowType::kFillFlow,
+                  PasswordStoreBackendErrorType::kAuthErrorResolvable));
+  fetcher_->NotifyFetchCompleted();
+}
+
+// Tests that the error message is displayed in the case when both account and
+// profile store are requested and the result is the following:
+// - account store replies with an authentication error,
+// - profile store replies with another backend error.
+TEST_P(PasswordFormManagerTest,
+       ClientShouldShowErrorMessageWhenBothStoresHaveDifferentErrors) {
+  fetcher_->SetAccountStoreBackendError(PasswordStoreBackendError(
+      PasswordStoreBackendErrorType::kAuthErrorResolvable,
+      PasswordStoreBackendErrorRecoveryType::kRecoverable));
+  fetcher_->SetProfileStoreBackendError(PasswordStoreBackendError(
+      PasswordStoreBackendErrorType::kUncategorized,
+      PasswordStoreBackendErrorRecoveryType::kUnrecoverable));
 
   EXPECT_CALL(client_,
               ShowPasswordManagerErrorMessage(

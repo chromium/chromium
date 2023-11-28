@@ -256,6 +256,11 @@ FormFetcherImpl::GetProfileStoreBackendError() const {
   return profile_store_backend_error_;
 }
 
+std::optional<PasswordStoreBackendError>
+FormFetcherImpl::GetAccountStoreBackendError() const {
+  return account_store_backend_error_;
+}
+
 void FormFetcherImpl::FindMatchesAndNotifyConsumers(
     std::vector<std::unique_ptr<PasswordForm>> results) {
   DCHECK_EQ(State::WAITING, state_);
@@ -323,6 +328,12 @@ void FormFetcherImpl::OnGetPasswordStoreResultsOrErrorFrom(
     profile_store_backend_error_.reset();
     if (absl::holds_alternative<PasswordStoreBackendError>(results_or_error)) {
       profile_store_backend_error_ =
+          absl::get<PasswordStoreBackendError>(results_or_error);
+    }
+  } else if (store == client_->GetAccountPasswordStore()) {
+    account_store_backend_error_.reset();
+    if (absl::holds_alternative<PasswordStoreBackendError>(results_or_error)) {
+      account_store_backend_error_ =
           absl::get<PasswordStoreBackendError>(results_or_error);
     }
   }

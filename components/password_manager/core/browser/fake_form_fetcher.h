@@ -56,6 +56,8 @@ class FakeFormFetcher : public FormFetcher {
   std::unique_ptr<FormFetcher> Clone() override;
   std::optional<PasswordStoreBackendError> GetProfileStoreBackendError()
       const override;
+  absl::optional<PasswordStoreBackendError> GetAccountStoreBackendError()
+      const override;
 
   void set_stats(const std::vector<InteractionsStats>& stats) {
     state_ = State::NOT_WAITING;
@@ -83,6 +85,9 @@ class FakeFormFetcher : public FormFetcher {
   void SetProfileStoreBackendError(
       std::optional<PasswordStoreBackendError> error);
 
+  void SetAccountStoreBackendError(
+      std::optional<PasswordStoreBackendError> error);
+
  private:
   base::ObserverList<Consumer> consumers_;
   State state_ = State::NOT_WAITING;
@@ -95,6 +100,7 @@ class FakeFormFetcher : public FormFetcher {
   std::vector<const PasswordForm*> insecure_credentials_;
   bool is_blocklisted_ = false;
   std::optional<PasswordStoreBackendError> profile_store_backend_error_;
+  std::optional<PasswordStoreBackendError> account_store_backend_error_;
 };
 
 }  // namespace password_manager
