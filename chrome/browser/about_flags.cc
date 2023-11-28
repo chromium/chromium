@@ -2762,6 +2762,23 @@ const FeatureEntry::FeatureVariation kAuxiliarySearchDonationVariations[] = {
     {"500 counts", kAuxiliarySearchDonation_MaxDonation_500,
      std::size(kAuxiliarySearchDonation_MaxDonation_500), nullptr},
 };
+
+const FeatureEntry::FeatureParam kBoardingPassDetectorUrl_AA[] = {
+    {chrome::android::kBoardingPassDetectorUrlParam.name,
+     "https://www.aa.com/checkin/viewMobileBoardingPass"}};
+const FeatureEntry::FeatureParam kBoardingPassDetectorUrl_All[] = {
+    {chrome::android::kBoardingPassDetectorUrlParam.name,
+     "https://www.aa.com/checkin/viewMobileBoardingPass,https://united.com"}};
+const FeatureEntry::FeatureParam kBoardingPassDetectorUrl_Test[] = {
+    {chrome::android::kBoardingPassDetectorUrlParam.name, "http"}};
+const FeatureEntry::FeatureVariation kBoardingPassDetectorVariations[] = {
+    {"AA", kBoardingPassDetectorUrl_AA, std::size(kBoardingPassDetectorUrl_AA),
+     nullptr},
+    {"All", kBoardingPassDetectorUrl_All,
+     std::size(kBoardingPassDetectorUrl_All), nullptr},
+    {"Test", kBoardingPassDetectorUrl_Test,
+     std::size(kBoardingPassDetectorUrl_Test), nullptr},
+};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // TODO(crbug.com/991082,1015377): Remove after proper support for back/forward
@@ -11352,7 +11369,9 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(IS_ANDROID)
     {"boarding-pass-detector", flag_descriptions::kBoardingPassDetectorName,
      flag_descriptions::kBoardingPassDetectorDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kBoardingPassDetector)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kBoardingPassDetector,
+                                    kBoardingPassDetectorVariations,
+                                    "Allowed Urls")},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"autofill-enable-card-benefits",

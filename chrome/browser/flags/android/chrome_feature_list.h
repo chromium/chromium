@@ -232,6 +232,11 @@ constexpr base::FeatureParam<int> kAuxiliarySearchMaxTabsCountParam(
     "auxiliary_search_max_donation_tab",
     100);
 
+constexpr base::FeatureParam<std::string> kBoardingPassDetectorUrlParam(
+    &kBoardingPassDetector,
+    "boarding_pass_detector_urls",
+    "");
+
 }  // namespace android
 }  // namespace chrome
 
