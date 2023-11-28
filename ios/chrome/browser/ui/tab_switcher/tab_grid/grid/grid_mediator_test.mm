@@ -61,11 +61,6 @@ constexpr web::ContentWorld kContentWorlds[] = {
     web::ContentWorld::kIsolatedWorld,
 };
 
-std::unique_ptr<KeyedService> BuildFakeTabRestoreService(
-    web::BrowserState* browser_state) {
-  return std::make_unique<FakeTabRestoreService>();
-}
-
 }  // namespace
 
 GridMediatorTestClass::GridMediatorTestClass() {
@@ -79,7 +74,7 @@ void GridMediatorTestClass::SetUp() {
 
   TestChromeBrowserState::Builder builder;
   builder.AddTestingFactory(IOSChromeTabRestoreServiceFactory::GetInstance(),
-                            base::BindRepeating(BuildFakeTabRestoreService));
+                            FakeTabRestoreService::GetTestingFactory());
   builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                             base::BindRepeating(&CreateMockSyncService));
   builder.AddTestingFactory(AuthenticationServiceFactory::GetInstance(),

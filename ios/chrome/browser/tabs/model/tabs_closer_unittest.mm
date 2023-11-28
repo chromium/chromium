@@ -6,6 +6,9 @@
 
 #import "base/functional/bind.h"
 #import "base/test/test_file_util.h"
+#import "components/sessions/core/tab_restore_service.h"
+#import "ios/chrome/browser/sessions/fake_tab_restore_service.h"
+#import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
 #import "ios/chrome/browser/sessions/test_session_restoration_service.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -16,11 +19,14 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "ui/base/page_transition_types.h"
 
 namespace {
 
@@ -43,7 +49,7 @@ const char kSceneSessionID[] = "Identifier";
 
 }  // namespace
 
-class TabsCloserTest : public testing::TestWithParam<TabsCloser::ClosePolicy> {
+class TabsCloserTest : public PlatformTest {
  public:
   TabsCloserTest() {
     // Create a TestChromeBrowserState with required services.
@@ -54,6 +60,8 @@ class TabsCloserTest : public testing::TestWithParam<TabsCloser::ClosePolicy> {
     builder.AddTestingFactory(
         SessionRestorationServiceFactory::GetInstance(),
         TestSessionRestorationService::GetTestingFactory());
+    builder.AddTestingFactory(IOSChromeTabRestoreServiceFactory::GetInstance(),
+                              FakeTabRestoreService::GetTestingFactory());
     browser_state_ = builder.Build();
 
     // Initialize the AuthenticationService.
@@ -68,11 +76,26 @@ class TabsCloserTest : public testing::TestWithParam<TabsCloser::ClosePolicy> {
 
   Browser* browser() { return browser_.get(); }
 
+  sessions::TabRestoreService* restore_service() {
+    return IOSChromeTabRestoreServiceFactory::GetForBrowserState(
+        browser_state_.get());
+  }
+
   // Creates an insert a fake WebState in `browser` using `policy` and `opener`.
   web::WebState* InsertWebState(InsertionPolicy policy, WebStateOpener opener) {
+    const GURL url = GURL("https://example.com");
+    auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
+    navigation_manager->AddItem(url, ui::PAGE_TRANSITION_LINK);
+    navigation_manager->SetLastCommittedItem(
+        navigation_manager->GetItemAtIndex(0));
+
     auto web_state = std::make_unique<web::FakeWebState>();
-    web_state->SetIsRealized(false);
+    web_state->SetIsRealized(true);
+    web_state->SetVisibleURL(url);
     web_state->SetBrowserState(browser_->GetBrowserState());
+    web_state->SetNavigationManager(std::move(navigation_manager));
+    web_state->SetNavigationItemCount(1);
+
     for (const web::ContentWorld content_world : kContentWorlds) {
       web_state->SetWebFramesManager(
           content_world, std::make_unique<web::FakeWebFramesManager>());
@@ -97,23 +120,31 @@ class TabsCloserTest : public testing::TestWithParam<TabsCloser::ClosePolicy> {
   std::unique_ptr<Browser> browser_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    TabsCloserTestWithClosePolicy,
-    TabsCloserTest,
-    ::testing::Values(TabsCloser::ClosePolicy::kAllTabs,
-                      TabsCloser::ClosePolicy::kRegularTabs));
-
-// Tests that TabsCloser can be constructed with a reference to an empty
-// Browser and returns there are no tabs that can be closed.
-TEST_P(TabsCloserTest, EmptyBrowser) {
-  TabsCloser tabs_closer(browser(), GetParam());
+// Tests how a TabsCloser behaves when presented with a Browser containing
+// no tabs.
+//
+// Variants: ClosePolicy::kAllTabs
+TEST_F(TabsCloserTest, EmptyBrowser_ClosePolicyAllTabs) {
+  TabsCloser tabs_closer(browser(), TabsCloser::ClosePolicy::kAllTabs);
   EXPECT_FALSE(tabs_closer.CanCloseTabs());
   EXPECT_FALSE(tabs_closer.CanUndoCloseTabs());
 }
 
-// Tests that TabsCloser can be constructed with a reference to a Browser
-// containing only regular tabs and behave similary for all policies.
-TEST_P(TabsCloserTest, BrowserWithOnlyRegularTabs) {
+// Tests how a TabsCloser behaves when presented with a Browser containing
+// no tabs.
+//
+// Variants: ClosePolicy::kRegularTabs
+TEST_F(TabsCloserTest, EmptyBrowser_ClosePolicyRegularTabs) {
+  TabsCloser tabs_closer(browser(), TabsCloser::ClosePolicy::kRegularTabs);
+  EXPECT_FALSE(tabs_closer.CanCloseTabs());
+  EXPECT_FALSE(tabs_closer.CanUndoCloseTabs());
+}
+
+// Tests how a TabsCloser behaves when presented with a Browser containing
+// only regular tabs.
+//
+// Variants: ClosePolicy::kAllTabs
+TEST_F(TabsCloserTest, BrowserWithOnlyRegularTabs_ClosePolicyAllTabs) {
   WebStateList* web_state_list = browser()->GetWebStateList();
 
   web::WebState* web_state0 =
@@ -128,7 +159,7 @@ TEST_P(TabsCloserTest, BrowserWithOnlyRegularTabs) {
   ASSERT_EQ(web_state_list->GetWebStateAt(1), web_state1);
   ASSERT_EQ(web_state_list->GetWebStateAt(2), web_state2);
 
-  TabsCloser tabs_closer(browser(), GetParam());
+  TabsCloser tabs_closer(browser(), TabsCloser::ClosePolicy::kAllTabs);
 
   // Check that some tabs can be closed.
   EXPECT_TRUE(tabs_closer.CanCloseTabs());
@@ -139,6 +170,10 @@ TEST_P(TabsCloserTest, BrowserWithOnlyRegularTabs) {
   EXPECT_EQ(tabs_closer.CloseTabs(), 3);
   EXPECT_TRUE(tabs_closer.CanUndoCloseTabs());
   EXPECT_TRUE(web_state_list->empty());
+
+  // Check that the TabRestoreService has not been informed of the
+  // close operation yet (as it has not been confirmed).
+  EXPECT_EQ(restore_service()->entries().size(), 0u);
 
   // Check that calling UndoCloseTabs() correctly restored all the
   // closed tabs, in the correct order, and with the opener-opened
@@ -151,6 +186,10 @@ TEST_P(TabsCloserTest, BrowserWithOnlyRegularTabs) {
   EXPECT_EQ(web_state_list->GetWebStateAt(2), web_state2);
   EXPECT_EQ(web_state_list->GetOpenerOfWebStateAt(2).opener, web_state1);
 
+  // Check that the TabRestoreService has not been informed of the
+  // close operation yet (as the operation has been cancelled).
+  EXPECT_EQ(restore_service()->entries().size(), 0u);
+
   // Check that calling CloseTabs() and ConfirmDeletion() correctly
   // close the tabs and prevents undo.
   ASSERT_TRUE(tabs_closer.CanCloseTabs());
@@ -158,11 +197,80 @@ TEST_P(TabsCloserTest, BrowserWithOnlyRegularTabs) {
   EXPECT_EQ(tabs_closer.ConfirmDeletion(), 3);
   EXPECT_FALSE(tabs_closer.CanCloseTabs());
   EXPECT_FALSE(tabs_closer.CanUndoCloseTabs());
+
+  // Check that the TabRestoreService has now been informed of the
+  // close operation which has been confirmed.
+  EXPECT_EQ(restore_service()->entries().size(), 3u);
 }
 
-// Tests that TabsCloser can be constructed with a reference to a Browser
-// containing only pinned tabs and return value consistent with its policy.
-TEST_P(TabsCloserTest, BrowserWithOnlyPinnedTabs) {
+// Tests how a TabsCloser behaves when presented with a Browser containing
+// only regular tabs.
+//
+// Variants: ClosePolicy::kRegularTabs
+TEST_F(TabsCloserTest, BrowserWithOnlyRegularTabs) {
+  WebStateList* web_state_list = browser()->GetWebStateList();
+
+  web::WebState* web_state0 =
+      InsertWebState(InsertionPolicy::kRegular, WebStateOpener{});
+  web::WebState* web_state1 =
+      InsertWebState(InsertionPolicy::kRegular, WebStateOpener{});
+  web::WebState* web_state2 =
+      InsertWebState(InsertionPolicy::kRegular, WebStateOpener{web_state1, 0});
+
+  ASSERT_EQ(web_state_list->count(), 3);
+  ASSERT_EQ(web_state_list->GetWebStateAt(0), web_state0);
+  ASSERT_EQ(web_state_list->GetWebStateAt(1), web_state1);
+  ASSERT_EQ(web_state_list->GetWebStateAt(2), web_state2);
+
+  TabsCloser tabs_closer(browser(), TabsCloser::ClosePolicy::kRegularTabs);
+
+  // Check that some tabs can be closed.
+  EXPECT_TRUE(tabs_closer.CanCloseTabs());
+  EXPECT_FALSE(tabs_closer.CanUndoCloseTabs());
+
+  // Check that calling CloseTabs() close all the tabs registered,
+  // allow to undo the operation and leave the WebStateList empty.
+  EXPECT_EQ(tabs_closer.CloseTabs(), 3);
+  EXPECT_TRUE(tabs_closer.CanUndoCloseTabs());
+  EXPECT_TRUE(web_state_list->empty());
+
+  // Check that the TabRestoreService has not been informed of the
+  // close operation yet (as it has not been confirmed).
+  EXPECT_EQ(restore_service()->entries().size(), 0u);
+
+  // Check that calling UndoCloseTabs() correctly restored all the
+  // closed tabs, in the correct order, and with the opener-opened
+  // relationship intact.
+  EXPECT_EQ(tabs_closer.UndoCloseTabs(), 3);
+  ASSERT_EQ(web_state_list->count(), 3);
+  EXPECT_EQ(web_state_list->pinned_tabs_count(), 0);
+  EXPECT_EQ(web_state_list->GetWebStateAt(0), web_state0);
+  EXPECT_EQ(web_state_list->GetWebStateAt(1), web_state1);
+  EXPECT_EQ(web_state_list->GetWebStateAt(2), web_state2);
+  EXPECT_EQ(web_state_list->GetOpenerOfWebStateAt(2).opener, web_state1);
+
+  // Check that the TabRestoreService has not been informed of the
+  // close operation yet (as the operation has been cancelled).
+  EXPECT_EQ(restore_service()->entries().size(), 0u);
+
+  // Check that calling CloseTabs() and ConfirmDeletion() correctly
+  // close the tabs and prevents undo.
+  ASSERT_TRUE(tabs_closer.CanCloseTabs());
+  EXPECT_EQ(tabs_closer.CloseTabs(), 3);
+  EXPECT_EQ(tabs_closer.ConfirmDeletion(), 3);
+  EXPECT_FALSE(tabs_closer.CanCloseTabs());
+  EXPECT_FALSE(tabs_closer.CanUndoCloseTabs());
+
+  // Check that the TabRestoreService has now been informed of the
+  // close operation which has been confirmed.
+  EXPECT_EQ(restore_service()->entries().size(), 3u);
+}
+
+// Tests how a TabsCloser behaves when presented with a Browser containing
+// only pinned tabs.
+//
+// Variants: ClosePolicy::kAllTabs
+TEST_F(TabsCloserTest, BrowserWithOnlyPinnedTabs_ClosePolicyAllTabs) {
   WebStateList* web_state_list = browser()->GetWebStateList();
 
   web::WebState* web_state0 =
@@ -174,51 +282,78 @@ TEST_P(TabsCloserTest, BrowserWithOnlyPinnedTabs) {
   ASSERT_EQ(web_state_list->GetWebStateAt(0), web_state0);
   ASSERT_EQ(web_state_list->GetWebStateAt(1), web_state1);
 
-  TabsCloser tabs_closer(browser(), GetParam());
-  switch (GetParam()) {
-    case TabsCloser::ClosePolicy::kAllTabs:
-      // Check that some tabs can be closed.
-      EXPECT_TRUE(tabs_closer.CanCloseTabs());
-      EXPECT_FALSE(tabs_closer.CanUndoCloseTabs());
+  TabsCloser tabs_closer(browser(), TabsCloser::ClosePolicy::kAllTabs);
 
-      // Check that calling CloseTabs() close all the tabs registered,
-      // allow to undo the operation and leave the WebStateList empty.
-      EXPECT_EQ(tabs_closer.CloseTabs(), 2);
-      EXPECT_TRUE(tabs_closer.CanUndoCloseTabs());
-      EXPECT_TRUE(web_state_list->empty());
+  // Check that some tabs can be closed.
+  EXPECT_TRUE(tabs_closer.CanCloseTabs());
+  EXPECT_FALSE(tabs_closer.CanUndoCloseTabs());
 
-      // Check that calling UndoCloseTabs() correctly restored all the
-      // closed tabs, in the correct order, and with the opener-opened
-      // relationship intact.
-      EXPECT_EQ(tabs_closer.UndoCloseTabs(), 2);
-      ASSERT_EQ(web_state_list->count(), 2);
-      EXPECT_EQ(web_state_list->pinned_tabs_count(), 2);
-      EXPECT_EQ(web_state_list->GetWebStateAt(0), web_state0);
-      EXPECT_EQ(web_state_list->GetWebStateAt(1), web_state1);
-      EXPECT_EQ(web_state_list->GetOpenerOfWebStateAt(1).opener, web_state0);
+  // Check that calling CloseTabs() close all the tabs registered,
+  // allow to undo the operation and leave the WebStateList empty.
+  EXPECT_EQ(tabs_closer.CloseTabs(), 2);
+  EXPECT_TRUE(tabs_closer.CanUndoCloseTabs());
+  EXPECT_TRUE(web_state_list->empty());
 
-      // Check that calling CloseTabs() and ConfirmDeletion() correctly
-      // close the tabs and prevents undo.
-      ASSERT_TRUE(tabs_closer.CanCloseTabs());
-      EXPECT_EQ(tabs_closer.CloseTabs(), 2);
-      EXPECT_EQ(tabs_closer.ConfirmDeletion(), 2);
-      EXPECT_FALSE(tabs_closer.CanCloseTabs());
-      EXPECT_FALSE(tabs_closer.CanUndoCloseTabs());
-      break;
+  // Check that the TabRestoreService has not been informed of the
+  // close operation yet (as it has not been confirmed).
+  EXPECT_EQ(restore_service()->entries().size(), 0u);
 
-    case TabsCloser::ClosePolicy::kRegularTabs:
-      // Check that nothing can be closed since there are only pinned
-      // tabs in the WebStateList.
-      EXPECT_FALSE(tabs_closer.CanCloseTabs());
-      EXPECT_FALSE(tabs_closer.CanUndoCloseTabs());
-      break;
-  }
+  // Check that calling UndoCloseTabs() correctly restored all the
+  // closed tabs, in the correct order, and with the opener-opened
+  // relationship intact.
+  EXPECT_EQ(tabs_closer.UndoCloseTabs(), 2);
+  ASSERT_EQ(web_state_list->count(), 2);
+  EXPECT_EQ(web_state_list->pinned_tabs_count(), 2);
+  EXPECT_EQ(web_state_list->GetWebStateAt(0), web_state0);
+  EXPECT_EQ(web_state_list->GetWebStateAt(1), web_state1);
+  EXPECT_EQ(web_state_list->GetOpenerOfWebStateAt(1).opener, web_state0);
+
+  // Check that the TabRestoreService has not been informed of the
+  // close operation yet (as the operation has been cancelled).
+  EXPECT_EQ(restore_service()->entries().size(), 0u);
+
+  // Check that calling CloseTabs() and ConfirmDeletion() correctly
+  // close the tabs and prevents undo.
+  ASSERT_TRUE(tabs_closer.CanCloseTabs());
+  EXPECT_EQ(tabs_closer.CloseTabs(), 2);
+  EXPECT_EQ(tabs_closer.ConfirmDeletion(), 2);
+  EXPECT_FALSE(tabs_closer.CanCloseTabs());
+  EXPECT_FALSE(tabs_closer.CanUndoCloseTabs());
+
+  // Check that the TabRestoreService has now been informed of the
+  // close operation which has been confirmed.
+  EXPECT_EQ(restore_service()->entries().size(), 2u);
 }
 
-// Tests that TabsCloser can be constructed with a reference to a Browser
-// containing regular and pinned tabs and return value consistent with its
-// policy.
-TEST_P(TabsCloserTest, BrowserWithRegularAndPinnedTabs) {
+// Tests how a TabsCloser behaves when presented with a Browser containing
+// only pinned tabs.
+//
+// Variants: ClosePolicy::kRegularTabs
+TEST_F(TabsCloserTest, BrowserWithOnlyPinnedTabs_ClosePolicyRegularTabs) {
+  WebStateList* web_state_list = browser()->GetWebStateList();
+
+  web::WebState* web_state0 =
+      InsertWebState(InsertionPolicy::kPinned, WebStateOpener{});
+  web::WebState* web_state1 =
+      InsertWebState(InsertionPolicy::kPinned, WebStateOpener{web_state0, 0});
+
+  ASSERT_EQ(web_state_list->count(), 2);
+  ASSERT_EQ(web_state_list->GetWebStateAt(0), web_state0);
+  ASSERT_EQ(web_state_list->GetWebStateAt(1), web_state1);
+
+  TabsCloser tabs_closer(browser(), TabsCloser::ClosePolicy::kRegularTabs);
+
+  // Check that nothing can be closed since there are only pinned
+  // tabs in the WebStateList.
+  EXPECT_FALSE(tabs_closer.CanCloseTabs());
+  EXPECT_FALSE(tabs_closer.CanUndoCloseTabs());
+}
+
+// Tests how a TabsCloser behaves when presented with a Browser containing
+// regular and pinned tabs.
+//
+// Variants: ClosePolicy::kAllTabs
+TEST_F(TabsCloserTest, BrowserWithRegularAndPinnedTabs_ClosePolicyAllTabs) {
   WebStateList* web_state_list = browser()->GetWebStateList();
 
   web::WebState* web_state0 =
@@ -239,78 +374,125 @@ TEST_P(TabsCloserTest, BrowserWithRegularAndPinnedTabs) {
   ASSERT_EQ(web_state_list->GetWebStateAt(3), web_state3);
   ASSERT_EQ(web_state_list->GetWebStateAt(4), web_state4);
 
-  TabsCloser tabs_closer(browser(), GetParam());
-  switch (GetParam()) {
-    case TabsCloser::ClosePolicy::kAllTabs:
-      // Check that some tabs can be closed.
-      EXPECT_TRUE(tabs_closer.CanCloseTabs());
-      EXPECT_FALSE(tabs_closer.CanUndoCloseTabs());
+  TabsCloser tabs_closer(browser(), TabsCloser::ClosePolicy::kAllTabs);
 
-      // Check that calling CloseTabs() close all the tabs registered,
-      // allow to undo the operation and leave the WebStateList empty.
-      EXPECT_EQ(tabs_closer.CloseTabs(), 5);
-      EXPECT_TRUE(tabs_closer.CanUndoCloseTabs());
-      EXPECT_TRUE(web_state_list->empty());
+  // Check that some tabs can be closed.
+  EXPECT_TRUE(tabs_closer.CanCloseTabs());
+  EXPECT_FALSE(tabs_closer.CanUndoCloseTabs());
 
-      // Check that calling UndoCloseTabs() correctly restored all the
-      // closed tabs, in the correct order, and with the opener-opened
-      // relationship intact.
-      EXPECT_EQ(tabs_closer.UndoCloseTabs(), 5);
-      ASSERT_EQ(web_state_list->count(), 5);
-      EXPECT_EQ(web_state_list->pinned_tabs_count(), 2);
-      EXPECT_EQ(web_state_list->GetWebStateAt(0), web_state0);
-      EXPECT_EQ(web_state_list->GetWebStateAt(1), web_state1);
-      EXPECT_EQ(web_state_list->GetWebStateAt(2), web_state2);
-      EXPECT_EQ(web_state_list->GetWebStateAt(3), web_state3);
-      EXPECT_EQ(web_state_list->GetWebStateAt(4), web_state4);
-      EXPECT_EQ(web_state_list->GetOpenerOfWebStateAt(1).opener, web_state0);
-      EXPECT_EQ(web_state_list->GetOpenerOfWebStateAt(3).opener, web_state1);
-      EXPECT_EQ(web_state_list->GetOpenerOfWebStateAt(4).opener, web_state3);
+  // Check that calling CloseTabs() close all the tabs registered,
+  // allow to undo the operation and leave the WebStateList empty.
+  EXPECT_EQ(tabs_closer.CloseTabs(), 5);
+  EXPECT_TRUE(tabs_closer.CanUndoCloseTabs());
+  EXPECT_TRUE(web_state_list->empty());
 
-      // Check that calling CloseTabs() and ConfirmDeletion() correctly
-      // close the tabs and prevents undo.
-      ASSERT_TRUE(tabs_closer.CanCloseTabs());
-      EXPECT_EQ(tabs_closer.CloseTabs(), 5);
-      EXPECT_EQ(tabs_closer.ConfirmDeletion(), 5);
-      EXPECT_FALSE(tabs_closer.CanCloseTabs());
-      EXPECT_FALSE(tabs_closer.CanUndoCloseTabs());
-      break;
+  // Check that the TabRestoreService has not been informed of the
+  // close operation yet (as it has not been confirmed).
+  EXPECT_EQ(restore_service()->entries().size(), 0u);
 
-    case TabsCloser::ClosePolicy::kRegularTabs:
-      // Check that some tabs can be closed.
-      EXPECT_TRUE(tabs_closer.CanCloseTabs());
-      EXPECT_FALSE(tabs_closer.CanUndoCloseTabs());
+  // Check that calling UndoCloseTabs() correctly restored all the
+  // closed tabs, in the correct order, and with the opener-opened
+  // relationship intact.
+  EXPECT_EQ(tabs_closer.UndoCloseTabs(), 5);
+  ASSERT_EQ(web_state_list->count(), 5);
+  EXPECT_EQ(web_state_list->pinned_tabs_count(), 2);
+  EXPECT_EQ(web_state_list->GetWebStateAt(0), web_state0);
+  EXPECT_EQ(web_state_list->GetWebStateAt(1), web_state1);
+  EXPECT_EQ(web_state_list->GetWebStateAt(2), web_state2);
+  EXPECT_EQ(web_state_list->GetWebStateAt(3), web_state3);
+  EXPECT_EQ(web_state_list->GetWebStateAt(4), web_state4);
+  EXPECT_EQ(web_state_list->GetOpenerOfWebStateAt(1).opener, web_state0);
+  EXPECT_EQ(web_state_list->GetOpenerOfWebStateAt(3).opener, web_state1);
+  EXPECT_EQ(web_state_list->GetOpenerOfWebStateAt(4).opener, web_state3);
 
-      // Check that calling CloseTabs() close only the regular tabs,
-      // allow to undo the operation and leave the WebStateList with
-      // only pinned tabs.
-      EXPECT_EQ(tabs_closer.CloseTabs(), 3);
-      EXPECT_TRUE(tabs_closer.CanUndoCloseTabs());
-      EXPECT_EQ(web_state_list->count(), 2);
-      EXPECT_EQ(web_state_list->pinned_tabs_count(), 2);
+  // Check that the TabRestoreService has not been informed of the
+  // close operation yet (as the operation has been cancelled).
+  EXPECT_EQ(restore_service()->entries().size(), 0u);
 
-      // Check that calling UndoCloseTabs() correctly restored all the
-      // closed tabs, in the correct order, and with the opener-opened
-      // relationship intact.
-      EXPECT_EQ(tabs_closer.UndoCloseTabs(), 3);
-      ASSERT_EQ(web_state_list->count(), 5);
-      EXPECT_EQ(web_state_list->pinned_tabs_count(), 2);
-      EXPECT_EQ(web_state_list->GetWebStateAt(0), web_state0);
-      EXPECT_EQ(web_state_list->GetWebStateAt(1), web_state1);
-      EXPECT_EQ(web_state_list->GetWebStateAt(2), web_state2);
-      EXPECT_EQ(web_state_list->GetWebStateAt(3), web_state3);
-      EXPECT_EQ(web_state_list->GetWebStateAt(4), web_state4);
-      EXPECT_EQ(web_state_list->GetOpenerOfWebStateAt(1).opener, web_state0);
-      EXPECT_EQ(web_state_list->GetOpenerOfWebStateAt(3).opener, web_state1);
-      EXPECT_EQ(web_state_list->GetOpenerOfWebStateAt(4).opener, web_state3);
+  // Check that calling CloseTabs() and ConfirmDeletion() correctly
+  // close the tabs and prevents undo.
+  ASSERT_TRUE(tabs_closer.CanCloseTabs());
+  EXPECT_EQ(tabs_closer.CloseTabs(), 5);
+  EXPECT_EQ(tabs_closer.ConfirmDeletion(), 5);
+  EXPECT_FALSE(tabs_closer.CanCloseTabs());
+  EXPECT_FALSE(tabs_closer.CanUndoCloseTabs());
 
-      // Check that calling CloseTabs() and ConfirmDeletion() correctly
-      // close the tabs and prevents undo.
-      ASSERT_TRUE(tabs_closer.CanCloseTabs());
-      EXPECT_EQ(tabs_closer.CloseTabs(), 3);
-      EXPECT_EQ(tabs_closer.ConfirmDeletion(), 3);
-      EXPECT_FALSE(tabs_closer.CanCloseTabs());
-      EXPECT_FALSE(tabs_closer.CanUndoCloseTabs());
-      break;
-  }
+  // Check that the TabRestoreService has now been informed of the
+  // close operation which has been confirmed.
+  EXPECT_EQ(restore_service()->entries().size(), 5u);
+}
+
+// Tests how a TabsCloser behaves when presented with a Browser containing
+// regular and pinned tabs.
+//
+// Variants: ClosePolicy::kAllTabs
+TEST_F(TabsCloserTest, BrowserWithRegularAndPinnedTabs_ClosePolicyRegularTabs) {
+  WebStateList* web_state_list = browser()->GetWebStateList();
+
+  web::WebState* web_state0 =
+      InsertWebState(InsertionPolicy::kPinned, WebStateOpener{});
+  web::WebState* web_state1 =
+      InsertWebState(InsertionPolicy::kPinned, WebStateOpener{web_state0, 0});
+  web::WebState* web_state2 =
+      InsertWebState(InsertionPolicy::kRegular, WebStateOpener{});
+  web::WebState* web_state3 =
+      InsertWebState(InsertionPolicy::kRegular, WebStateOpener{web_state1, 0});
+  web::WebState* web_state4 =
+      InsertWebState(InsertionPolicy::kRegular, WebStateOpener{web_state3, 0});
+
+  ASSERT_EQ(web_state_list->count(), 5);
+  ASSERT_EQ(web_state_list->GetWebStateAt(0), web_state0);
+  ASSERT_EQ(web_state_list->GetWebStateAt(1), web_state1);
+  ASSERT_EQ(web_state_list->GetWebStateAt(2), web_state2);
+  ASSERT_EQ(web_state_list->GetWebStateAt(3), web_state3);
+  ASSERT_EQ(web_state_list->GetWebStateAt(4), web_state4);
+
+  TabsCloser tabs_closer(browser(), TabsCloser::ClosePolicy::kRegularTabs);
+
+  // Check that some tabs can be closed.
+  EXPECT_TRUE(tabs_closer.CanCloseTabs());
+  EXPECT_FALSE(tabs_closer.CanUndoCloseTabs());
+
+  // Check that calling CloseTabs() close only the regular tabs,
+  // allow to undo the operation and leave the WebStateList with
+  // only pinned tabs.
+  EXPECT_EQ(tabs_closer.CloseTabs(), 3);
+  EXPECT_TRUE(tabs_closer.CanUndoCloseTabs());
+  EXPECT_EQ(web_state_list->count(), 2);
+  EXPECT_EQ(web_state_list->pinned_tabs_count(), 2);
+
+  // Check that the TabRestoreService has not been informed of the
+  // close operation yet (as it has not been confirmed).
+  EXPECT_EQ(restore_service()->entries().size(), 0u);
+
+  // Check that calling UndoCloseTabs() correctly restored all the
+  // closed tabs, in the correct order, and with the opener-opened
+  // relationship intact.
+  EXPECT_EQ(tabs_closer.UndoCloseTabs(), 3);
+  ASSERT_EQ(web_state_list->count(), 5);
+  EXPECT_EQ(web_state_list->pinned_tabs_count(), 2);
+  EXPECT_EQ(web_state_list->GetWebStateAt(0), web_state0);
+  EXPECT_EQ(web_state_list->GetWebStateAt(1), web_state1);
+  EXPECT_EQ(web_state_list->GetWebStateAt(2), web_state2);
+  EXPECT_EQ(web_state_list->GetWebStateAt(3), web_state3);
+  EXPECT_EQ(web_state_list->GetWebStateAt(4), web_state4);
+  EXPECT_EQ(web_state_list->GetOpenerOfWebStateAt(1).opener, web_state0);
+  EXPECT_EQ(web_state_list->GetOpenerOfWebStateAt(3).opener, web_state1);
+  EXPECT_EQ(web_state_list->GetOpenerOfWebStateAt(4).opener, web_state3);
+
+  // Check that the TabRestoreService has not been informed of the
+  // close operation yet (as the operation has been cancelled).
+  EXPECT_EQ(restore_service()->entries().size(), 0u);
+
+  // Check that calling CloseTabs() and ConfirmDeletion() correctly
+  // close the tabs and prevents undo.
+  ASSERT_TRUE(tabs_closer.CanCloseTabs());
+  EXPECT_EQ(tabs_closer.CloseTabs(), 3);
+  EXPECT_EQ(tabs_closer.ConfirmDeletion(), 3);
+  EXPECT_FALSE(tabs_closer.CanCloseTabs());
+  EXPECT_FALSE(tabs_closer.CanUndoCloseTabs());
+
+  // Check that the TabRestoreService has now been informed of the
+  // close operation which has been confirmed.
+  EXPECT_EQ(restore_service()->entries().size(), 3u);
 }

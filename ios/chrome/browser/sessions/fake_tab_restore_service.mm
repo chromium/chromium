@@ -4,11 +4,23 @@
 
 #import "ios/chrome/browser/sessions/fake_tab_restore_service.h"
 
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
 #import "base/run_loop.h"
 #import "components/sessions/core/live_tab.h"
 
-FakeTabRestoreService::FakeTabRestoreService() {}
-FakeTabRestoreService::~FakeTabRestoreService() {}
+FakeTabRestoreService::FakeTabRestoreService() = default;
+
+FakeTabRestoreService::~FakeTabRestoreService() = default;
+
+// static
+FakeTabRestoreService::TestingFactory
+FakeTabRestoreService::GetTestingFactory() {
+  return base::BindRepeating(
+      [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
+        return std::make_unique<FakeTabRestoreService>();
+      });
+}
 
 void FakeTabRestoreService::AddObserver(
     sessions::TabRestoreServiceObserver* observer) {

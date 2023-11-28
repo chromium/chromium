@@ -52,19 +52,12 @@
 #import "third_party/ocmock/ocmock_extensions.h"
 #import "ui/base/l10n/l10n_util.h"
 
-namespace {
-
-std::unique_ptr<KeyedService> BuildFakeTabRestoreService(
-    web::BrowserState* browser_state) {
-  return std::make_unique<FakeTabRestoreService>();
-}
-
 class KeyCommandsProviderTest : public PlatformTest {
  protected:
   KeyCommandsProviderTest() {
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(IOSChromeTabRestoreServiceFactory::GetInstance(),
-                              base::BindRepeating(BuildFakeTabRestoreService));
+                              FakeTabRestoreService::GetTestingFactory());
     builder.AddTestingFactory(
         ios::LocalOrSyncableBookmarkModelFactory::GetInstance(),
         ios::LocalOrSyncableBookmarkModelFactory::GetDefaultFactory());
@@ -1002,5 +995,3 @@ TEST_F(KeyCommandsProviderTest, ClearingBrowserDoesntCrash) {
 
   EXPECT_FALSE(CanPerform(@"keyCommand_showNextTab"));
 }
-
-}  // namespace

@@ -67,7 +67,7 @@ std::string GetTemporaryIdentifier(Browser* original_browser) {
 
 class TabsCloser::UndoStorage {
  public:
-  UndoStorage(Browser* browser);
+  explicit UndoStorage(Browser* browser);
 
   UndoStorage(const UndoStorage&) = delete;
   UndoStorage& operator=(const UndoStorage&) = delete;
@@ -112,6 +112,13 @@ TabsCloser::UndoStorage::UndoStorage(Browser* browser)
 }
 
 TabsCloser::UndoStorage::~UndoStorage() {
+  // If there is still a pending undo when the object is destroyed, consider
+  // that the close operation has been confirmed.
+  Drop();
+
+  // The temporary browser must now be empty.
+  DCHECK(temporary_browser_->GetWebStateList()->empty());
+
   SessionRestorationService* service =
       SessionRestorationServiceFactory::GetForBrowserState(
           temporary_browser_->GetBrowserState());
@@ -185,12 +192,7 @@ TabsCloser::TabsCloser(Browser* browser, ClosePolicy policy)
   DCHECK(!browser_->GetBrowserState()->IsOffTheRecord());
 }
 
-TabsCloser::~TabsCloser() {
-  if (state_) {
-    state_->Drop();
-    state_.reset();
-  }
-}
+TabsCloser::~TabsCloser() = default;
 
 int TabsCloser::CloseTabs() {
   DCHECK(CanCloseTabs());

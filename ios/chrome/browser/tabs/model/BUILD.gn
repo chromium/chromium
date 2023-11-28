@@ -160,6 +160,8 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/strings",
     "//ios/chrome/browser/download/model",
+    "//ios/chrome/browser/sessions",
+    "//ios/chrome/browser/sessions:fake",
     "//ios/chrome/browser/sessions:session_restoration_service_factory",
     "//ios/chrome/browser/sessions:test_support",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",

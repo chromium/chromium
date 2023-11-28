@@ -33,11 +33,6 @@ namespace {
 const char kIdentifier0[] = "Identifier0";
 const char kIdentifier1[] = "Identifier1";
 
-std::unique_ptr<KeyedService> BuildFakeTabRestoreService(
-    web::BrowserState* browser_state) {
-  return std::make_unique<FakeTabRestoreService>();
-}
-
 }  // namespace
 
 // Test fixture for testing functions in browser_util.h/mm.
@@ -47,7 +42,7 @@ class BrowserUtilTest : public PlatformTest {
     TestChromeBrowserState::Builder test_browser_state_builder;
     test_browser_state_builder.AddTestingFactory(
         IOSChromeTabRestoreServiceFactory::GetInstance(),
-        base::BindRepeating(BuildFakeTabRestoreService));
+        FakeTabRestoreService::GetTestingFactory());
 
     chrome_browser_state_ = test_browser_state_builder.Build();
 
