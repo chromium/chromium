@@ -34,7 +34,7 @@ build_webui("build") {
     "fake_feedback_service_provider.js",
     "feedback_constants.js",
     "feedback_types.js",
-    "feedback_utils.js",
+    "feedback_utils.ts",
     "mojo_interface_provider.js",
     "questionnaire.js",
   ]

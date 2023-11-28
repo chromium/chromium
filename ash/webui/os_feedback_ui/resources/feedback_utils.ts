@@ -2,23 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
+
 /**
- * Change visual effect when the content is scrolling.
- * @param {!Event} event
- * @param {!HTMLElement} page
+ * @fileoverview
+ * The file exports functions to handle scrolling.
  */
-export function showScrollingEffects(event, page) {
-  const shadowShield = page.shadowRoot.querySelector('#shadowShield');
-  const content = page.shadowRoot.querySelector('#content');
-  const navButtons = page.shadowRoot.querySelector('#navButtons');
-  const shadowElevation = page.shadowRoot.querySelector('#shadowElevation');
-  const separator = page.shadowRoot.querySelector('#separator');
+
+/** Change visual effect when the content is scrolling. */
+export function showScrollingEffects(_event: Event, page: HTMLElement): void {
+  const shadowShield =
+      strictQuery('#shadowShield', page.shadowRoot, HTMLElement);
+  const content = strictQuery('#content', page.shadowRoot, HTMLElement);
+  const navButtons = strictQuery('#navButtons', page.shadowRoot, HTMLElement);
+  const shadowElevation =
+      strictQuery('#shadowElevation', page.shadowRoot, HTMLElement);
+  const separator = strictQuery('#separator', page.shadowRoot, HTMLElement);
 
   // Debugging found the scrollTop reading sometimes was off by 0.61 px when the
   // content was scrolled to bottom. This caused the shadowShield be still
   // visible even though it should not be. Relax the condition to be not larger
   // than 1 px.
-  const scrollingEnded =
+  const scrollingEnded: boolean =
       (content.scrollTop + content.clientHeight + 1 >= content.scrollHeight);
 
   shadowElevation.classList.toggle(
@@ -31,11 +36,11 @@ export function showScrollingEffects(event, page) {
 
 /**
  * Show initial effect only when the content is scrollable.
- * @param {!HTMLElement} page
  */
-export function showScrollingEffectOnStart(page) {
-  const content = page.shadowRoot.querySelector('#content');
-  const shadowShield = page.shadowRoot.querySelector('#shadowShield');
+export function showScrollingEffectOnStart(page: HTMLElement): void {
+  const shadowShield =
+      strictQuery('#shadowShield', page.shadowRoot, HTMLElement);
+  const content = strictQuery('#content', page.shadowRoot, HTMLElement);
   shadowShield.classList.toggle(
       'scrolling-shield', content.scrollHeight > content.clientHeight);
 }
