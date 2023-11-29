@@ -541,11 +541,6 @@ const char kIOSKeyboardAccessoryUpgradeName[] =
 const char kIOSKeyboardAccessoryUpgradeDescription[] =
     "When enabled, the upgraded keyboard accessory UI will be presented.";
 
-const char kIOSNewPostRestoreExperienceName[] = "New Post Restore Experience";
-const char kIOSNewPostRestoreExperienceDescription[] =
-    "When enabled, a prompt will be presented after a device restore to "
-    "allow the user to sign in again.";
-
 const char kIOSParcelTrackingName[] = "Parcel Tracking";
 const char kIOSParcelTrackingDescription[] =
     "When enabled, the user will be able to track their packages.";
