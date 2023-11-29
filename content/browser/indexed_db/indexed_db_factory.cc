@@ -606,17 +606,6 @@ int64_t IndexedDBFactory::GetInMemoryDBSize(
   return backing_store->GetInMemoryBlobSize() + level_db_size;
 }
 
-base::Time IndexedDBFactory::GetLastModified(
-    const storage::BucketLocator& bucket_locator) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = bucket_contexts_.find(bucket_locator.id);
-  if (it == bucket_contexts_.end()) {
-    return base::Time();
-  }
-  IndexedDBBackingStore* backing_store = it->second->backing_store();
-  return backing_store->db()->LastModified();
-}
-
 std::vector<storage::BucketId> IndexedDBFactory::GetOpenBucketIdsForTesting()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

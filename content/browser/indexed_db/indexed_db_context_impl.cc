@@ -209,36 +209,6 @@ void IndexedDBContextImpl::BindIndexedDBImpl(
                                std::move(receiver));
 }
 
-void IndexedDBContextImpl::GetUsage(GetUsageCallback usage_callback) {
-  InitializeFromFilesIfNeeded(
-      base::BindOnce(&IndexedDBContextImpl::GetUsageImpl,
-                     weak_factory_.GetWeakPtr(), std::move(usage_callback)));
-}
-
-void IndexedDBContextImpl::GetUsageImpl(GetUsageCallback usage_callback) {
-  std::map<blink::StorageKey, storage::mojom::StorageUsageInfoPtr> usage_map;
-  for (const auto& bucket_locator : GetAllBuckets()) {
-    const auto& it = usage_map.find(bucket_locator.storage_key);
-    if (it != usage_map.end()) {
-      it->second->total_size_bytes += GetBucketDiskUsage(bucket_locator);
-      const auto& last_modified = GetBucketLastModified(bucket_locator);
-      if (it->second->last_modified < last_modified) {
-        it->second->last_modified = last_modified;
-      }
-    } else {
-      usage_map[bucket_locator.storage_key] =
-          storage::mojom::StorageUsageInfo::New(
-              bucket_locator.storage_key, GetBucketDiskUsage(bucket_locator),
-              GetBucketLastModified(bucket_locator));
-    }
-  }
-  std::vector<storage::mojom::StorageUsageInfoPtr> result;
-  for (const auto& it : usage_map) {
-    result.emplace_back(it.second->Clone());
-  }
-  std::move(usage_callback).Run(std::move(result));
-}
-
 // Note - this is being kept async (instead of having a 'sync' version) to allow
 // ForceClose to become asynchronous.  This is required for
 // https://crbug.com/965142.
@@ -780,6 +750,15 @@ void IndexedDBContextImpl::CompactBackingStoreForTesting(
   std::move(callback).Run();
 }
 
+void IndexedDBContextImpl::GetUsageForTesting(
+    GetUsageForTestingCallback callback) {
+  int64_t total_size = 0;
+  for (const storage::BucketLocator& bucket : bucket_set_) {
+    total_size += GetBucketDiskUsage(bucket);
+  }
+  std::move(callback).Run(total_size);
+}
+
 void IndexedDBContextImpl::BindMockFailureSingletonForTesting(
     mojo::PendingReceiver<storage::mojom::MockFailureInjector> receiver) {
   IndexedDBTransaction::DisableInactivityTimeoutForTesting();  // IN-TEST
@@ -867,10 +846,9 @@ base::Time IndexedDBContextImpl::GetBucketLastModified(
   if (!LookUpBucket(bucket_locator.id))
     return base::Time();
 
+  // Only used by indexeddb-internals; not worth the complexity to implement.
   if (is_incognito()) {
-    if (!indexeddb_factory_)
-      return base::Time();
-    return indexeddb_factory_->GetLastModified(bucket_locator);
+    return base::Time();
   }
 
   base::FilePath idb_directory = GetLevelDBPath(bucket_locator);

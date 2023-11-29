@@ -27,47 +27,13 @@ using content::StorageUsageInfo;
 
 namespace browsing_data {
 
-IndexedDBHelper::IndexedDBHelper(content::StoragePartition* storage_partition)
+CannedIndexedDBHelper::CannedIndexedDBHelper(
+    content::StoragePartition* storage_partition)
     : storage_partition_(storage_partition) {
   DCHECK(storage_partition_);
 }
 
-IndexedDBHelper::~IndexedDBHelper() {}
-
-void IndexedDBHelper::StartFetching(FetchCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!callback.is_null());
-  storage_partition_->GetIndexedDBControl().GetUsage(
-      base::BindOnce(&IndexedDBHelper::IndexedDBUsageInfoReceived,
-                     base::WrapRefCounted(this), std::move(callback)));
-}
-
-void IndexedDBHelper::DeleteIndexedDB(const blink::StorageKey& storage_key,
-                                      base::OnceCallback<void(bool)> callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  storage_partition_->GetIndexedDBControl().DeleteForStorageKey(
-      storage_key, std::move(callback));
-}
-
-void IndexedDBHelper::IndexedDBUsageInfoReceived(
-    FetchCallback callback,
-    std::vector<storage::mojom::StorageUsageInfoPtr> usages) {
-  DCHECK(!callback.is_null());
-  std::list<content::StorageUsageInfo> result;
-  for (const auto& usage : usages) {
-    if (!HasWebScheme(usage->storage_key.origin().GetURL()))
-      continue;  // Non-websafe state is not considered browsing data.
-    result.emplace_back(usage->storage_key, usage->total_size_bytes,
-                        usage->last_modified);
-  }
-  std::move(callback).Run(std::move(result));
-}
-
-CannedIndexedDBHelper::CannedIndexedDBHelper(
-    content::StoragePartition* storage_partition)
-    : IndexedDBHelper(storage_partition) {}
-
-CannedIndexedDBHelper::~CannedIndexedDBHelper() {}
+CannedIndexedDBHelper::~CannedIndexedDBHelper() = default;
 
 void CannedIndexedDBHelper::Add(const blink::StorageKey& storage_key) {
   if (!HasWebScheme(storage_key.origin().GetURL()))
@@ -109,7 +75,8 @@ void CannedIndexedDBHelper::DeleteIndexedDB(
     const blink::StorageKey& storage_key,
     base::OnceCallback<void(bool)> callback) {
   pending_storage_keys_.erase(storage_key);
-  IndexedDBHelper::DeleteIndexedDB(storage_key, std::move(callback));
+  storage_partition_->GetIndexedDBControl().DeleteForStorageKey(
+      storage_key, std::move(callback));
 }
 
 }  // namespace browsing_data

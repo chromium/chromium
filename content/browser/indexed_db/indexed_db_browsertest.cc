@@ -175,15 +175,19 @@ class IndexedDBBrowserTest : public ContentBrowserTest {
     return partition->GetIndexedDBControl();
   }
 
-  mojo::Remote<storage::mojom::IndexedDBControlTest> GetControlTest() {
+  mojo::Remote<storage::mojom::IndexedDBControlTest> GetControlTest(
+      Shell* browser = nullptr) {
     mojo::Remote<storage::mojom::IndexedDBControlTest> idb_control_test;
-    BindControlTest(idb_control_test.BindNewPipeAndPassReceiver());
+    BindControlTest(browser, idb_control_test.BindNewPipeAndPassReceiver());
     return idb_control_test;
   }
 
   void BindControlTest(
+      Shell* browser,
       mojo::PendingReceiver<storage::mojom::IndexedDBControlTest> receiver) {
-    auto* browser = shell();
+    if (!browser) {
+      browser = shell();
+    }
     StoragePartition* partition = browser->web_contents()
                                       ->GetBrowserContext()
                                       ->GetDefaultStoragePartition();
@@ -228,30 +232,17 @@ class IndexedDBBrowserTest : public ContentBrowserTest {
   }
 
   int64_t RequestUsage(Shell* browser = nullptr) {
-    base::RunLoop loop;
-    int64_t size = 0;
-    auto& control = GetControl(browser);
-    control.GetUsage(base::BindLambdaForTesting(
-        [&](std::vector<storage::mojom::StorageUsageInfoPtr> usages) {
-          for (auto& usage : usages)
-            size += usage->total_size_bytes;
-          loop.Quit();
-        }));
-    loop.Run();
-    return size;
+    base::test::TestFuture<int64_t> future;
+    auto control = GetControlTest(browser);
+    control->GetUsageForTesting(future.GetCallback());
+    return future.Take();
   }
 
   int64_t RequestBlobFileCount(const storage::BucketLocator& bucket_locator) {
-    base::RunLoop loop;
-    int64_t count = 0;
-    auto control_test = GetControlTest();
-    control_test->GetBlobCountForTesting(
-        bucket_locator, base::BindLambdaForTesting([&](int64_t returned_count) {
-          count = returned_count;
-          loop.Quit();
-        }));
-    loop.Run();
-    return count;
+    base::test::TestFuture<int64_t> future;
+    auto control = GetControlTest();
+    control->GetBlobCountForTesting(bucket_locator, future.GetCallback());
+    return future.Take();
   }
 
   bool RequestSchemaDowngrade(const storage::BucketLocator& bucket_locator) {
@@ -641,8 +632,6 @@ class IndexedDBBrowserTestWithVersion123456Schema : public
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithVersion123456Schema,
                        DestroyTest) {
   const GURL kTestUrl = GetTestUrl("indexeddb", "open_bad_db.html");
-  const blink::StorageKey kTestStorageKey =
-      blink::StorageKey::CreateFirstParty(url::Origin::Create(kTestUrl));
   int64_t original_size = RequestUsage();
   EXPECT_GT(original_size, 0);
   SimpleTest(kTestUrl);
@@ -659,8 +648,6 @@ class IndexedDBBrowserTestWithVersion987654SSVData : public
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithVersion987654SSVData,
                        DestroyTest) {
   const GURL kTestUrl = GetTestUrl("indexeddb", "open_bad_db.html");
-  const blink::StorageKey kTestStorageKey =
-      blink::StorageKey::CreateFirstParty(url::Origin::Create(kTestUrl));
   int64_t original_size = RequestUsage();
   EXPECT_GT(original_size, 0);
   SimpleTest(kTestUrl);
@@ -677,8 +664,6 @@ class IndexedDBBrowserTestWithCorruptLevelDB : public
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithCorruptLevelDB,
                        DestroyTest) {
   const GURL kTestUrl = GetTestUrl("indexeddb", "open_bad_db.html");
-  const blink::StorageKey kTestStorageKey =
-      blink::StorageKey::CreateFirstParty(url::Origin::Create(kTestUrl));
   int64_t original_size = RequestUsage();
   EXPECT_GT(original_size, 0);
   SimpleTest(kTestUrl);
@@ -695,8 +680,6 @@ class IndexedDBBrowserTestWithMissingSSTFile : public
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithMissingSSTFile,
                        DestroyTest) {
   const GURL kTestUrl = GetTestUrl("indexeddb", "open_missing_table.html");
-  const blink::StorageKey kTestStorageKey =
-      blink::StorageKey::CreateFirstParty(url::Origin::Create(kTestUrl));
   int64_t original_size = RequestUsage();
   EXPECT_GT(original_size, 0);
   SimpleTest(kTestUrl);
@@ -717,8 +700,6 @@ class IndexedDBBrowserTestWithCrbug899446
 
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithCrbug899446, StableTest) {
   const GURL kTestUrl = GetTestUrl("indexeddb", "crbug899446.html");
-  const blink::StorageKey kTestStorageKey =
-      blink::StorageKey::CreateFirstParty(url::Origin::Create(kTestUrl));
   SimpleTest(kTestUrl);
 }
 
@@ -729,8 +710,6 @@ class IndexedDBBrowserTestWithCrbug899446Noai
 
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithCrbug899446Noai, StableTest) {
   const GURL kTestUrl = GetTestUrl("indexeddb", "crbug899446_noai.html");
-  const blink::StorageKey kTestStorageKey =
-      blink::StorageKey::CreateFirstParty(url::Origin::Create(kTestUrl));
   SimpleTest(kTestUrl);
 }
 
@@ -810,8 +789,8 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, DeleteForStorageKeyIncognito) {
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFirstParty(url::Origin::Create(test_url));
 
-  Shell* browser = CreateOffTheRecordBrowser();
-  NavigateToURLBlockUntilNavigationsComplete(browser, test_url, 2);
+  Shell* browser = nullptr;
+  SimpleTest(test_url, /*incognito=*/true, &browser);
 
   EXPECT_GT(RequestUsage(browser), 5 * 1024);
 
@@ -910,7 +889,7 @@ std::unique_ptr<net::test_server::HttpResponse> CorruptDBRequestHandler(
     mojo::Remote<storage::mojom::IndexedDBControlTest> control_test;
     task_runner->PostTask(
         FROM_HERE, base::BindOnce(&IndexedDBBrowserTest::BindControlTest,
-                                  base::Unretained(test),
+                                  base::Unretained(test), nullptr,
                                   control_test.BindNewPipeAndPassReceiver()));
 
     // TODO(enne): this is a nested message loop on the embedded test server's

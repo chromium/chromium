@@ -79,6 +79,9 @@ interface IndexedDBControlTest {
   CompactBackingStoreForTesting(storage.mojom.BucketLocator bucket_locator) =>
       ();
 
+  // Gets the total usage in bytes across all buckets.
+  GetUsageForTesting() => (int64 total_usage);
+
   // Overrides IndexedDB with a mock class factory that can inject failures
   // at specific points.  For now, because this is static, there can only
   // be one of these bound at a single time.

@@ -116,9 +116,6 @@ class CONTENT_EXPORT IndexedDBFactory
   // For usage reporting.
   int64_t GetInMemoryDBSize(const storage::BucketLocator& bucket_locator) const;
 
-  base::Time GetLastModified(
-      const storage::BucketLocator& bucket_locator) const;
-
   std::vector<storage::BucketId> GetOpenBucketIdsForTesting() const;
 
   IndexedDBBucketContext* GetBucketContextForTesting(

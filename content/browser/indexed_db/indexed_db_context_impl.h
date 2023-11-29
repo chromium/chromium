@@ -84,7 +84,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
       mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
           client_state_checker_remote,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) override;
-  void GetUsage(GetUsageCallback usage_callback) override;
   void DeleteForStorageKey(const blink::StorageKey& storage_key,
                            DeleteForStorageKeyCallback callback) override;
   void ForceClose(storage::BucketId bucket_id,
@@ -134,6 +133,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
   void CompactBackingStoreForTesting(
       const storage::BucketLocator& bucket_locator,
       base::OnceClosure callback) override;
+  void GetUsageForTesting(GetUsageForTestingCallback) override;
   void BindMockFailureSingletonForTesting(
       mojo::PendingReceiver<storage::mojom::MockFailureInjector> receiver)
       override;
@@ -241,7 +241,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
           client_state_checker_remote,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver,
       storage::QuotaErrorOr<storage::BucketInfo> bucket_info);
-  void GetUsageImpl(GetUsageCallback usage_callback);
   void ForceCloseImpl(
       const storage::mojom::ForceCloseReason reason,
       base::OnceClosure closure,

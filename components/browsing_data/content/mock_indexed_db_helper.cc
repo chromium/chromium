@@ -15,7 +15,7 @@ namespace browsing_data {
 
 MockIndexedDBHelper::MockIndexedDBHelper(
     content::StoragePartition* storage_partition)
-    : IndexedDBHelper(storage_partition) {}
+    : CannedIndexedDBHelper(storage_partition) {}
 
 MockIndexedDBHelper::~MockIndexedDBHelper() {}
 

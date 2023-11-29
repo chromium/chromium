@@ -17,7 +17,6 @@
 #include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/clock.h"
-#include "base/time/time.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "components/services/storage/indexed_db/leveldb/leveldb_state.h"
 #include "third_party/leveldatabase/src/include/leveldb/options.h"
@@ -91,7 +90,6 @@ class TransactionalLevelDBDatabase
   leveldb::DB* db() { return level_db_state_->db(); }
   leveldb::Env* env() { return level_db_state_->in_memory_env(); }
   LevelDBScopes* scopes() { return scopes_.get(); }
-  base::Time LastModified() const { return last_modified_; }
 
   TransactionalLevelDBFactory* class_factory() const { return class_factory_; }
 
@@ -136,7 +134,6 @@ class TransactionalLevelDBDatabase
   scoped_refptr<LevelDBState> level_db_state_;
   std::unique_ptr<LevelDBScopes> scopes_;
   raw_ptr<TransactionalLevelDBFactory> class_factory_;
-  base::Time last_modified_;
   std::unique_ptr<base::Clock> clock_;
 
   // Contains all iterators created by this database directly through

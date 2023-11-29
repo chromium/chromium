@@ -303,45 +303,17 @@ TEST_P(IndexedDBFactoryTestWithStoragePartitioning,
   EXPECT_TRUE(bucket_context5_handle.IsHeld()) << s.ToString();
   EXPECT_TRUE(s.ok()) << s.ToString();
 
-  base::test::TestFuture<std::vector<storage::mojom::StorageUsageInfoPtr>>
-      infos_future;
-  context()->GetUsage(infos_future.GetCallback());
-  auto infos = infos_future.Take();
-
   int64_t bucket_size_1 = base::ComputeDirectorySize(file_1.DirName());
-  int64_t bucket_size_2 = base::ComputeDirectorySize(file_2.DirName());
-  int64_t bucket_size_3 = base::ComputeDirectorySize(file_3.DirName());
   int64_t bucket_size_4 = base::ComputeDirectorySize(file_4.DirName());
   int64_t bucket_size_5 = base::ComputeDirectorySize(file_5.DirName());
 
-  // Buckets 1, 4, and 5 merge if partitioning is on. If partitioning is off
-  // buckets 1 and 5 merge.
-  EXPECT_EQ(IsThirdPartyStoragePartitioningEnabled() ? 4ul : 3ul, infos.size());
-  for (const auto& info : infos) {
-    if (info->storage_key == bucket_locator_1.storage_key) {
-      // This is the size of the 10 and 10000 character files (buckets 1 and 4).
-      if (IsThirdPartyStoragePartitioningEnabled()) {
-        // If third party storage partitioning is on, additional space is taken
-        // by supporting files for the independent buckets.
-        EXPECT_NE(bucket_size_1, bucket_size_4);
-      } else {
-        EXPECT_NE(bucket_size_1, bucket_size_5);
-      }
-      EXPECT_NE(bucket_size_1, bucket_size_5);
-      EXPECT_EQ(info->total_size_bytes, bucket_size_1 + bucket_size_5);
-    } else if (info->storage_key == bucket_locator_2.storage_key) {
-      // This is the size of the 100 character file (bucket 2).
-      EXPECT_EQ(info->total_size_bytes, bucket_size_2);
-    } else if (info->storage_key == bucket_locator_3.storage_key) {
-      // This is the size of the 1000 character file (bucket 3).
-      EXPECT_EQ(info->total_size_bytes, bucket_size_3);
-    } else if (info->storage_key == bucket_locator_4.storage_key) {
-      // This is the size of the 1000 character file (bucket 4).
-      EXPECT_EQ(info->total_size_bytes, bucket_size_4);
-    } else {
-      NOTREACHED();
-    }
+  if (IsThirdPartyStoragePartitioningEnabled()) {
+    // If third party storage partitioning is on, additional space is taken
+    // by supporting files for the independent buckets.
+    EXPECT_NE(bucket_size_1, bucket_size_4);
   }
+  EXPECT_NE(bucket_size_1, bucket_size_5);
+
   if (IsThirdPartyStoragePartitioningEnabled()) {
     EXPECT_EQ(5ul, factory()->GetOpenBucketIdsForTesting().size());
   } else {

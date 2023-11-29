@@ -248,7 +248,7 @@ using browsing_data_test_util::SetDataForType;
 
 class BrowsingDataModelBrowserTest
     : public MixinBasedInProcessBrowserTest,
-      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+      public ::testing::WithParamInterface<bool> {
  public:
   BrowsingDataModelBrowserTest() {
     auto& field_trial_param =
@@ -286,14 +286,6 @@ class BrowsingDataModelBrowserTest
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
     enabled_features.push_back({media::kExternalClearKeyForTesting, {}});
 #endif
-
-    if (IsMigrateStorageToBDMEnabled()) {
-      enabled_features.push_back(
-          {browsing_data::features::kMigrateStorageToBDM, {}});
-    } else {
-      disabled_features.emplace_back(
-          browsing_data::features::kMigrateStorageToBDM);
-    }
 
     if (IsDeprecateCookiesTreeModelEnabled()) {
       enabled_features.push_back(
@@ -375,9 +367,7 @@ class BrowsingDataModelBrowserTest
     return https_test_server()->GetURL(kTestHost, replaced_path);
   }
 
-  bool IsMigrateStorageToBDMEnabled() { return std::get<0>(GetParam()); }
-
-  bool IsDeprecateCookiesTreeModelEnabled() { return std::get<1>(GetParam()); }
+  bool IsDeprecateCookiesTreeModelEnabled() { return GetParam(); }
 
   network::test::TrustTokenRequestHandler request_handler_;
 
@@ -819,41 +809,36 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
     // Ensure that quota data is fetched
     browsing_data_model = BuildBrowsingDataModel();
 
-    if (IsMigrateStorageToBDMEnabled()) {
-      // Validate that quota data is fetched to browsing data model.
-      url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
-      auto data_key = blink::StorageKey::CreateFirstParty(testOrigin);
-      if (data_type == "MediaLicense") {
-        ValidateBrowsingDataEntries(
-            browsing_data_model.get(),
-            {{kTestHost,
-              data_key,
-              {{BrowsingDataModel::StorageType::kQuotaStorage},
-               /*storage_size=*/0,
-               /*cookie_count=*/0}}});
-      } else {
-        ValidateBrowsingDataEntriesNonZeroUsage(
-            browsing_data_model.get(),
-            {{kTestHost,
-              data_key,
-              {{BrowsingDataModel::StorageType::kQuotaStorage},
-               /*storage_size=*/0,
-               /*cookie_count=*/0}}});
-      }
-
-      ASSERT_EQ(browsing_data_model->size(), 1u);
-
-      // Remove quota entry.
-      RemoveBrowsingDataForDataOwner(browsing_data_model.get(), kTestHost);
-
-      // Rebuild Browsing Data Model and verify entries are empty.
-      browsing_data_model = BuildBrowsingDataModel();
-      ValidateBrowsingDataEntries(browsing_data_model.get(), {});
-      ASSERT_EQ(browsing_data_model->size(), 0u);
+    // Validate that quota data is fetched to browsing data model.
+    url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
+    auto data_key = blink::StorageKey::CreateFirstParty(testOrigin);
+    if (data_type == "MediaLicense") {
+      ValidateBrowsingDataEntries(
+          browsing_data_model.get(),
+          {{kTestHost,
+            data_key,
+            {{BrowsingDataModel::StorageType::kQuotaStorage},
+             /*storage_size=*/0,
+             /*cookie_count=*/0}}});
     } else {
-      ValidateBrowsingDataEntries(browsing_data_model.get(), {});
-      ASSERT_EQ(browsing_data_model->size(), 0u);
+      ValidateBrowsingDataEntriesNonZeroUsage(
+          browsing_data_model.get(),
+          {{kTestHost,
+            data_key,
+            {{BrowsingDataModel::StorageType::kQuotaStorage},
+             /*storage_size=*/0,
+             /*cookie_count=*/0}}});
     }
+
+    ASSERT_EQ(browsing_data_model->size(), 1u);
+
+    // Remove quota entry.
+    RemoveBrowsingDataForDataOwner(browsing_data_model.get(), kTestHost);
+
+    // Rebuild Browsing Data Model and verify entries are empty.
+    browsing_data_model = BuildBrowsingDataModel();
+    ValidateBrowsingDataEntries(browsing_data_model.get(), {});
+    ASSERT_EQ(browsing_data_model->size(), 0u);
   }
 }
 
@@ -867,10 +852,6 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
       BuildBrowsingDataModel();
   ValidateBrowsingDataEntries(browsing_data_model.get(), {});
   ASSERT_EQ(browsing_data_model->size(), 0u);
-
-  if (!IsMigrateStorageToBDMEnabled()) {
-    return;
-  }
 
   SetDataForType("LocalStorage", web_contents());
 
@@ -933,24 +914,22 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
   ASSERT_EQ(allowed_browsing_data_model->size(), 0u);
 
   SetDataForType("LocalStorage", web_contents());
-  if (IsMigrateStorageToBDMEnabled()) {
-    WaitForModelUpdate(allowed_browsing_data_model, /*expected_size=*/1);
+  WaitForModelUpdate(allowed_browsing_data_model, /*expected_size=*/1);
 
-    // Validate Local Storage is reported.
-    url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
-    auto data_key = blink::StorageKey::CreateFirstParty(testOrigin);
-    ValidateBrowsingDataEntries(
-        allowed_browsing_data_model,
-        {{kTestHost,
-          data_key,
-          {{BrowsingDataModel::StorageType::kLocalStorage},
-           /*storage_size=*/0,
-           /*cookie_count=*/0}}});
-    ASSERT_EQ(allowed_browsing_data_model->size(), 1u);
+  // Validate Local Storage is reported.
+  url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
+  auto data_key = blink::StorageKey::CreateFirstParty(testOrigin);
+  ValidateBrowsingDataEntries(
+      allowed_browsing_data_model,
+      {{kTestHost,
+        data_key,
+        {{BrowsingDataModel::StorageType::kLocalStorage},
+         /*storage_size=*/0,
+         /*cookie_count=*/0}}});
+  ASSERT_EQ(allowed_browsing_data_model->size(), 1u);
 
-    // Delete Local Storage
-    RemoveBrowsingDataForDataOwner(allowed_browsing_data_model, kTestHost);
-  }
+  // Delete Local Storage
+  RemoveBrowsingDataForDataOwner(allowed_browsing_data_model, kTestHost);
   // Validate that the allowed browsing data model is empty.
   ValidateBrowsingDataEntries(allowed_browsing_data_model, {});
   ASSERT_EQ(allowed_browsing_data_model->size(), 0u);
@@ -971,9 +950,6 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
       content_settings->allowed_browsing_data_model();
   ValidateBrowsingDataEntries(allowed_browsing_data_model, {});
   ASSERT_EQ(allowed_browsing_data_model->size(), 0u);
-  if (!IsMigrateStorageToBDMEnabled()) {
-    return;
-  }
 
   SetDataForType("SessionStorage", web_contents());
   WaitForModelUpdate(allowed_browsing_data_model, /*expected_size=*/1);
@@ -1045,10 +1021,6 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
     ValidateBrowsingDataEntries(allowed_browsing_data_model, {});
     ASSERT_EQ(allowed_browsing_data_model->size(), 0u);
 
-    if (!IsMigrateStorageToBDMEnabled()) {
-      return;
-    }
-
     SetDataForType(data_type, web_contents());
     WaitForModelUpdate(allowed_browsing_data_model, /*expected_size=*/1);
 
@@ -1090,28 +1062,26 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
   ASSERT_EQ(allowed_browsing_data_model->size(), 0u);
 
   SetDataForType("SharedWorker", web_contents());
-  if (IsMigrateStorageToBDMEnabled()) {
-    WaitForModelUpdate(allowed_browsing_data_model, /*expected_size=*/1);
+  WaitForModelUpdate(allowed_browsing_data_model, /*expected_size=*/1);
 
-    // Validate Shared Worker is reported.
-    url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
-    GURL::Replacements replacements;
-    replacements.SetPathStr("browsing_data/shared_worker.js");
-    GURL worker = testOrigin.GetURL().ReplaceComponents(replacements);
-    browsing_data::SharedWorkerInfo data_key(
-        worker, /*name=*/"", blink::StorageKey::CreateFirstParty(testOrigin));
-    ValidateBrowsingDataEntries(
-        allowed_browsing_data_model,
-        {{kTestHost,
-          data_key,
-          {{BrowsingDataModel::StorageType::kSharedWorker},
-           /*storage_size=*/0,
-           /*cookie_count=*/0}}});
-    ASSERT_EQ(allowed_browsing_data_model->size(), 1u);
+  // Validate Shared Worker is reported.
+  url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
+  GURL::Replacements replacements;
+  replacements.SetPathStr("browsing_data/shared_worker.js");
+  GURL worker = testOrigin.GetURL().ReplaceComponents(replacements);
+  browsing_data::SharedWorkerInfo data_key(
+      worker, /*name=*/"", blink::StorageKey::CreateFirstParty(testOrigin));
+  ValidateBrowsingDataEntries(
+      allowed_browsing_data_model,
+      {{kTestHost,
+        data_key,
+        {{BrowsingDataModel::StorageType::kSharedWorker},
+         /*storage_size=*/0,
+         /*cookie_count=*/0}}});
+  ASSERT_EQ(allowed_browsing_data_model->size(), 1u);
 
-    // Delete Shared Worker
-    RemoveBrowsingDataForDataOwner(allowed_browsing_data_model, kTestHost);
-  }
+  // Delete Shared Worker
+  RemoveBrowsingDataForDataOwner(allowed_browsing_data_model, kTestHost);
   // Validate that the allowed browsing data model is empty.
   ValidateBrowsingDataEntries(allowed_browsing_data_model, {});
   ASSERT_EQ(allowed_browsing_data_model->size(), 0u);
@@ -1123,9 +1093,6 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
   std::unique_ptr<BrowsingDataModel> browsing_data_model =
       BuildBrowsingDataModel();
   ValidateBrowsingDataEntries(browsing_data_model.get(), {});
-  if (!IsMigrateStorageToBDMEnabled()) {
-    return;
-  }
 
   // Navigate to a.test.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -1539,11 +1506,5 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest, CookiesHandledCorrectly) {
   ASSERT_FALSE(HasDataForType("Cookie", web_contents()));
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    BrowsingDataModelBrowserTest,
-    ::testing::Combine(
-        // Enable/disable `kMigrateStorageToBDM` feature.
-        ::testing::Bool(),
-        // Enable/disable `kDeprecateCookiesTreeModel` feature.
-        ::testing::Bool()));
+// Enable/disable `kDeprecateCookiesTreeModel` feature.
+INSTANTIATE_TEST_SUITE_P(All, BrowsingDataModelBrowserTest, ::testing::Bool());

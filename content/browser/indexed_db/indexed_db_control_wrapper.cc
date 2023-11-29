@@ -60,12 +60,6 @@ void IndexedDBControlWrapper::BindIndexedDB(
                                      std::move(receiver));
 }
 
-void IndexedDBControlWrapper::GetUsage(GetUsageCallback usage_callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  BindRemoteIfNeeded();
-  indexed_db_control_->GetUsage(std::move(usage_callback));
-}
-
 void IndexedDBControlWrapper::DeleteForStorageKey(
     const blink::StorageKey& storage_key,
     DeleteForStorageKeyCallback callback) {
