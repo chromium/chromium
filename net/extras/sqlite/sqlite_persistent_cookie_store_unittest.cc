@@ -723,8 +723,8 @@ TEST_F(SQLitePersistentCookieStoreTest, FilterBadCookiesAndFixupDb) {
       "INSERT INTO cookies (creation_utc, host_key, top_frame_site_key, name, "
       "value, encrypted_value, path, expires_utc, is_secure, is_httponly, "
       "samesite, last_access_utc, has_expires, is_persistent, priority, "
-      "source_scheme, source_port, is_same_party, last_update_utc) "
-      "VALUES (?,?,?,?,?,'',?,0,0,0,0,0,1,1,0,?,?,0,?)"));
+      "source_scheme, source_port, last_update_utc) "
+      "VALUES (?,?,?,?,?,'',?,0,0,0,0,0,1,1,0,?,?,?)"));
   ASSERT_TRUE(stmt.is_valid());
 
   struct CookieInfo {
@@ -1658,6 +1658,53 @@ bool CreateV18Schema(sql::Database* db) {
   return true;
 }
 
+bool CreateV20Schema(sql::Database* db) {
+  sql::MetaTable meta_table;
+  if (!meta_table.Init(db, 20, 20)) {
+    return false;
+  }
+
+  // Version 20 schema
+  static constexpr char kCreateSql[] =
+      "CREATE TABLE cookies("
+      "creation_utc INTEGER NOT NULL,"
+      "host_key TEXT NOT NULL,"
+      "top_frame_site_key TEXT NOT NULL,"
+      "name TEXT NOT NULL,"
+      "value TEXT NOT NULL,"
+      "encrypted_value BLOB NOT NULL,"
+      "path TEXT NOT NULL,"
+      "expires_utc INTEGER NOT NULL,"
+      "is_secure INTEGER NOT NULL,"
+      "is_httponly INTEGER NOT NULL,"
+      "last_access_utc INTEGER NOT NULL,"
+      "has_expires INTEGER NOT NULL,"
+      "is_persistent INTEGER NOT NULL,"
+      "priority INTEGER NOT NULL,"
+      "samesite INTEGER NOT NULL,"
+      "source_scheme INTEGER NOT NULL,"
+      "source_port INTEGER NOT NULL,"
+      "is_same_party INTEGER NOT NULL,"
+      "last_update_utc INTEGER NOT NULL,"
+      "UNIQUE (host_key, top_frame_site_key, name, path, source_scheme, "
+      "source_port))";
+
+  static constexpr char kCreateIndexSql[] =
+      "CREATE UNIQUE INDEX cookies_unique_index "
+      "ON cookies(host_key, top_frame_site_key, name, path, source_scheme, "
+      "source_port)";
+
+  if (!db->Execute(kCreateSql)) {
+    return false;
+  }
+
+  if (!db->Execute(kCreateIndexSql)) {
+    return false;
+  }
+
+  return true;
+}
+
 int GetDBCurrentVersionNumber(sql::Database* db) {
   static constexpr char kGetDBCurrentVersionQuery[] =
       "SELECT value FROM meta WHERE key='version'";
@@ -1670,9 +1717,6 @@ std::vector<CanonicalCookie> CookiesForMigrationTest() {
   static base::Time now = base::Time::Now();
 
   std::vector<CanonicalCookie> cookies;
-  // Note: These are all constructed with the default value of
-  // is_source_scheme_secure, which is false, but that doesn't matter because
-  // v11 doesn't store that info.
   cookies.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
       "A", "B", "example.com", "/", now, now, now, now, true /* secure */,
       false /* httponly */, CookieSameSite::UNSPECIFIED,
@@ -1761,7 +1805,11 @@ bool AddV17CookiesToDB(sql::Database* db) {
   return AddV16CookiesToDB(db);
 }
 
-bool AddV18CookiesToDB(sql::Database* db) {
+// Versions 18, 19, and 20 use the same schema so they can reuse this function.
+// AddV20CookiesToDB (and future versions) need to set max_expiration_delta to
+// base::Days(400) to simulate expiration limits introduced in version 19.
+bool AddV18CookiesToDB(sql::Database* db,
+                       base::TimeDelta max_expiration_delta) {
   std::vector<CanonicalCookie> cookies = CookiesForMigrationTest();
   sql::Statement statement(db->GetCachedStatement(
       SQL_FROM_HERE,
@@ -1778,6 +1826,8 @@ bool AddV18CookiesToDB(sql::Database* db) {
     return false;
   }
   for (const CanonicalCookie& cookie : cookies) {
+    base::Time max_expiration(cookie.CreationDate() + max_expiration_delta);
+
     statement.Reset(true);
     statement.BindTime(0, cookie.CreationDate());
     std::string top_frame_site_key;
@@ -1789,7 +1839,7 @@ bool AddV18CookiesToDB(sql::Database* db) {
     statement.BindString(4, cookie.Value());
     statement.BindBlob(5, base::span<uint8_t>());  // encrypted_value
     statement.BindString(6, cookie.Path());
-    statement.BindTime(7, cookie.ExpiryDate());
+    statement.BindTime(7, std::min(cookie.ExpiryDate(), max_expiration));
     statement.BindInt(8, cookie.IsSecure());
     statement.BindInt(9, cookie.IsHttpOnly());
     // Note that this, Priority(), and SourceScheme() below nominally rely on
@@ -1815,6 +1865,10 @@ bool AddV18CookiesToDB(sql::Database* db) {
   }
 
   return true;
+}
+
+bool AddV20CookiesToDB(sql::Database* db) {
+  return AddV18CookiesToDB(db, base::Days(400));
 }
 
 // Confirm the cookie list passed in has the above cookies in it.
@@ -1902,6 +1956,8 @@ void ConfirmCookiesAfterMigrationTest(
                                     : base::Time());
   EXPECT_EQ(read_in_cookies[i]->ExpiryDate(),
             read_in_cookies[i]->CreationDate() + base::Days(399));
+
+  EXPECT_EQ(read_in_cookies.size(), static_cast<size_t>(i) + 1);
 }
 
 TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion16) {
@@ -1970,7 +2026,7 @@ TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion19) {
   ASSERT_TRUE(connection.Open(temp_dir_.GetPath().Append(kCookieFilename)));
   ASSERT_TRUE(CreateV18Schema(&connection));
   ASSERT_EQ(GetDBCurrentVersionNumber(&connection), 18);
-  ASSERT_TRUE(AddV18CookiesToDB(&connection));
+  ASSERT_TRUE(AddV18CookiesToDB(&connection, base::TimeDelta::Max()));
 
   std::vector<std::unique_ptr<CanonicalCookie>> read_in_cookies;
   CreateAndLoad(false, false, &read_in_cookies);
@@ -1987,7 +2043,7 @@ TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion20) {
   // V19's schema is the same as V18, so we can reuse the creation function.
   ASSERT_TRUE(CreateV18Schema(&connection));
   ASSERT_EQ(GetDBCurrentVersionNumber(&connection), 18);
-  ASSERT_TRUE(AddV18CookiesToDB(&connection));
+  ASSERT_TRUE(AddV18CookiesToDB(&connection, base::TimeDelta::Max()));
 
   std::vector<std::unique_ptr<CanonicalCookie>> read_in_cookies;
   CreateAndLoad(/*crypt_cookies=*/false, /*restore_old_session_cookies=*/false,
@@ -1995,6 +2051,23 @@ TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion20) {
   ConfirmCookiesAfterMigrationTest(std::move(read_in_cookies),
                                    /*expect_last_update_date=*/true);
   ASSERT_GE(GetDBCurrentVersionNumber(&connection), 20);
+  connection.Close();
+}
+
+TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion21) {
+  // Open db.
+  sql::Database connection;
+  ASSERT_TRUE(connection.Open(temp_dir_.GetPath().Append(kCookieFilename)));
+  ASSERT_TRUE(CreateV20Schema(&connection));
+  ASSERT_EQ(GetDBCurrentVersionNumber(&connection), 20);
+  ASSERT_TRUE(AddV20CookiesToDB(&connection));
+
+  std::vector<std::unique_ptr<CanonicalCookie>> read_in_cookies;
+  CreateAndLoad(/*crypt_cookies=*/false, /*restore_old_session_cookies=*/false,
+                &read_in_cookies);
+  ConfirmCookiesAfterMigrationTest(std::move(read_in_cookies),
+                                   /*expect_last_update_date=*/true);
+  ASSERT_GE(GetDBCurrentVersionNumber(&connection), 21);
   connection.Close();
 }
 
@@ -2180,8 +2253,8 @@ TEST_P(PartitionedCookiesSQLitePersistentCookieStoreTest,
       "INSERT INTO cookies (creation_utc, host_key, top_frame_site_key, name, "
       "value, encrypted_value, path, expires_utc, is_secure, is_httponly, "
       "samesite, last_access_utc, has_expires, is_persistent, priority, "
-      "source_scheme, source_port, is_same_party, last_update_utc) "
-      "VALUES (?,?,?,?,?,'',?,?,1,0,0,?,1,1,0,?,?,0,?)"));
+      "source_scheme, source_port, last_update_utc) "
+      "VALUES (?,?,?,?,?,'',?,?,1,0,0,?,1,1,0,?,?,?)"));
   ASSERT_TRUE(stmt.is_valid());
 
   base::Time creation(base::Time::Now());
