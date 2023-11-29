@@ -48,10 +48,6 @@ base::WeakPtr<AutofillManager> AndroidAutofillManager::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-CreditCardAccessManager* AndroidAutofillManager::GetCreditCardAccessManager() {
-  return nullptr;
-}
-
 bool AndroidAutofillManager::ShouldClearPreviewedForm() {
   return false;
 }

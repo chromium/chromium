@@ -47,7 +47,6 @@ class AndroidAutofillManager : public AutofillManager,
   }
 
   base::WeakPtr<AutofillManager> GetWeakPtr() override;
-  CreditCardAccessManager* GetCreditCardAccessManager() override;
 
   bool ShouldClearPreviewedForm() override;
 

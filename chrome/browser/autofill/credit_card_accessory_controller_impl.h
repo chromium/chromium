@@ -16,7 +16,7 @@ class ManualFillingController;
 
 namespace autofill {
 
-class AutofillManager;
+class BrowserAutofillManager;
 
 // Use either CreditCardAccessoryController::GetOrCreate or
 // CreditCardAccessoryController::GetIfExisting to obtain instances of this
@@ -89,7 +89,8 @@ class CreditCardAccessoryControllerImpl
 
   base::WeakPtr<ManualFillingController> GetManualFillingController();
   AutofillDriver* GetDriver();
-  AutofillManager* GetManager() const;
+  const BrowserAutofillManager* GetManager() const;
+  BrowserAutofillManager* GetManager();
 
   content::WebContents& GetWebContents() const;
 

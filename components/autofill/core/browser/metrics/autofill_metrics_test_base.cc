@@ -81,7 +81,7 @@ void AutofillMetricsBaseTest::SetUpHelper() {
 #if !BUILDFLAG(IS_IOS)
   autofill_manager()
       .GetCreditCardAccessManager()
-      ->set_fido_authenticator_for_testing(
+      .set_fido_authenticator_for_testing(
           std::make_unique<TestCreditCardFidoAuthenticator>(
               autofill_driver_.get(), autofill_client_.get()));
 #endif
@@ -124,19 +124,19 @@ void AutofillMetricsBaseTest::RecreateProfile() {
 }
 
 void AutofillMetricsBaseTest::SetFidoEligibility(bool is_verifiable) {
-  CreditCardAccessManager* access_manager =
+  CreditCardAccessManager& access_manager =
       autofill_manager().GetCreditCardAccessManager();
 #if !BUILDFLAG(IS_IOS)
   static_cast<TestCreditCardFidoAuthenticator*>(
-      access_manager->GetOrCreateFidoAuthenticator())
+      access_manager.GetOrCreateFidoAuthenticator())
       ->SetUserVerifiable(is_verifiable);
 #endif
   static_cast<payments::TestPaymentsNetworkInterface*>(
       autofill_client_->GetPaymentsNetworkInterface())
       ->AllowFidoRegistration(true);
-  access_manager->is_authentication_in_progress_ = false;
-  access_manager->can_fetch_unmask_details_ = true;
-  access_manager->is_user_verifiable_ = absl::nullopt;
+  access_manager.is_authentication_in_progress_ = false;
+  access_manager.can_fetch_unmask_details_ = true;
+  access_manager.is_user_verifiable_ = absl::nullopt;
 }
 
 void AutofillMetricsBaseTest::OnDidGetRealPan(

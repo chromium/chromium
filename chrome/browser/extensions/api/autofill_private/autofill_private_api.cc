@@ -88,7 +88,7 @@ base::Value::Dict AddressUiComponentAsValueMap(
   return info;
 }
 
-autofill::AutofillManager* GetAutofillManager(
+autofill::BrowserAutofillManager* GetBrowserAutofillManager(
     content::WebContents* web_contents) {
   if (!web_contents) {
     return nullptr;
@@ -98,7 +98,10 @@ autofill::AutofillManager* GetAutofillManager(
           ->DriverForFrame(web_contents->GetPrimaryMainFrame());
   if (!autofill_driver)
     return nullptr;
-  return &autofill_driver->GetAutofillManager();
+  // This cast is safe, since `AutofillManager` is always a
+  // `BrowserAutofillManager` apart from on WebView.
+  return static_cast<autofill::BrowserAutofillManager*>(
+      &autofill_driver->GetAutofillManager());
 }
 
 autofill::AutofillProfile CreateNewAutofillProfile(
@@ -499,7 +502,7 @@ AutofillPrivateMigrateCreditCardsFunction::Run() {
   // BrowserAutofillManager has a pointer to its AutofillClient which owns
   // FormDataImporter.
   autofill::AutofillManager* autofill_manager =
-      GetAutofillManager(GetSenderWebContents());
+      GetBrowserAutofillManager(GetSenderWebContents());
   if (!autofill_manager) {
     return RespondNow(Error(kErrorDataUnavailable));
   }
@@ -552,13 +555,9 @@ AutofillPrivateLogServerCardLinkClickedFunction::Run() {
 ExtensionFunction::ResponseAction
 AutofillPrivateSetCreditCardFIDOAuthEnabledStateFunction::Run() {
   // Getting CreditCardAccessManager from WebContents.
-  autofill::AutofillManager* autofill_manager =
-      GetAutofillManager(GetSenderWebContents());
+  autofill::BrowserAutofillManager* autofill_manager =
+      GetBrowserAutofillManager(GetSenderWebContents());
   if (!autofill_manager)
-    return RespondNow(Error(kErrorDataUnavailable));
-  autofill::CreditCardAccessManager* credit_card_access_manager =
-      autofill_manager->GetCreditCardAccessManager();
-  if (!credit_card_access_manager)
     return RespondNow(Error(kErrorDataUnavailable));
 
   absl::optional<
@@ -567,7 +566,7 @@ AutofillPrivateSetCreditCardFIDOAuthEnabledStateFunction::Run() {
           Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
-  credit_card_access_manager->OnSettingsPageFIDOAuthToggled(
+  autofill_manager->GetCreditCardAccessManager().OnSettingsPageFIDOAuthToggled(
       parameters->enabled);
   return RespondNow(NoArguments());
 }
@@ -698,8 +697,8 @@ ExtensionFunction::ResponseAction AutofillPrivateAddVirtualCardFunction::Run() {
   if (!card)
     return RespondNow(Error(kErrorDataUnavailable));
 
-  autofill::AutofillManager* autofill_manager =
-      GetAutofillManager(GetSenderWebContents());
+  autofill::BrowserAutofillManager* autofill_manager =
+      GetBrowserAutofillManager(GetSenderWebContents());
   if (!autofill_manager || !autofill_manager->client().GetFormDataImporter() ||
       !autofill_manager->client()
            .GetFormDataImporter()
@@ -742,8 +741,8 @@ AutofillPrivateRemoveVirtualCardFunction::Run() {
   if (!card)
     return RespondNow(Error(kErrorDataUnavailable));
 
-  autofill::AutofillManager* autofill_manager =
-      GetAutofillManager(GetSenderWebContents());
+  autofill::BrowserAutofillManager* autofill_manager =
+      GetBrowserAutofillManager(GetSenderWebContents());
   if (!autofill_manager || !autofill_manager->client().GetFormDataImporter() ||
       !autofill_manager->client()
            .GetFormDataImporter()

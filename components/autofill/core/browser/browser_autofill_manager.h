@@ -240,9 +240,11 @@ class BrowserAutofillManager : public AutofillManager {
       Suggestion::BackendId backend_id,
       AutofillSuggestionTriggerSource trigger_source);
 
+  CreditCardAccessManager& GetCreditCardAccessManager();
+  const CreditCardAccessManager& GetCreditCardAccessManager() const;
+
   // AutofillManager:
   base::WeakPtr<AutofillManager> GetWeakPtr() override;
-  CreditCardAccessManager* GetCreditCardAccessManager() override;
   bool ShouldClearPreviewedForm() override;
   void OnFocusNoLongerOnFormImpl(bool had_interacted_form) override;
   void OnFocusOnFormFieldImpl(const FormData& form,

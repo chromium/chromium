@@ -522,7 +522,9 @@ class CreditCardAccessManagerTest : public testing::Test {
 
  protected:
   CreditCardAccessManager& credit_card_access_manager() {
-    return *autofill_driver_->GetAutofillManager().GetCreditCardAccessManager();
+    return static_cast<BrowserAutofillManager&>(
+               autofill_driver_->GetAutofillManager())
+        .GetCreditCardAccessManager();
   }
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
   TestCreditCardFidoAuthenticator& fido_authenticator() {

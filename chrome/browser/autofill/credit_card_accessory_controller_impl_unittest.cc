@@ -338,12 +338,12 @@ TEST_F(CreditCardAccessoryControllerTest,
   card.set_record_type(CreditCard::RecordType::kFullServerCard);
   data_manager_.AddCreditCard(card);
   std::u16string cvc = u"123";
-  autofill_manager().GetCreditCardAccessManager()->CacheUnmaskedCardInfo(card,
-                                                                         cvc);
+  autofill_manager().GetCreditCardAccessManager().CacheUnmaskedCardInfo(card,
+                                                                        cvc);
   AccessorySheetData result(autofill::AccessoryTabType::CREDIT_CARDS,
                             std::u16string());
 
-  EXPECT_CALL(mock_mf_controller_, RefreshSuggestions(_))
+  EXPECT_CALL(mock_mf_controller_, RefreshSuggestions)
       .WillOnce(SaveArg<0>(&result));
   ASSERT_TRUE(controller());
   controller()->RefreshSuggestions();
@@ -376,12 +376,12 @@ TEST_F(CreditCardAccessoryControllerTest,
   // cache.
   unmasked_card.set_record_type(CreditCard::RecordType::kVirtualCard);
   std::u16string cvc = u"123";
-  autofill_manager().GetCreditCardAccessManager()->CacheUnmaskedCardInfo(
+  autofill_manager().GetCreditCardAccessManager().CacheUnmaskedCardInfo(
       unmasked_card, cvc);
   AccessorySheetData result(autofill::AccessoryTabType::CREDIT_CARDS,
                             std::u16string());
 
-  EXPECT_CALL(mock_mf_controller_, RefreshSuggestions(_))
+  EXPECT_CALL(mock_mf_controller_, RefreshSuggestions)
       .WillOnce(SaveArg<0>(&result));
   ASSERT_TRUE(controller());
   controller()->RefreshSuggestions();

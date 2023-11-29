@@ -66,11 +66,13 @@ class CreditCardAccessManagerBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(GetAutofillManager()->WaitForFormsSeen(1));
   }
 
-  CreditCardAccessManager* GetCreditCardAccessManager() {
+  CreditCardAccessManager& GetCreditCardAccessManager() {
     ContentAutofillDriver* autofill_driver =
         ContentAutofillDriverFactory::FromWebContents(web_contents())
             ->DriverForFrame(web_contents()->GetPrimaryMainFrame());
-    return autofill_driver->GetAutofillManager().GetCreditCardAccessManager();
+    return static_cast<BrowserAutofillManager&>(
+               autofill_driver->GetAutofillManager())
+        .GetCreditCardAccessManager();
   }
 
   CreditCard SaveServerCard(std::string card_number) {
@@ -96,14 +98,14 @@ IN_PROC_BROWSER_TEST_F(CreditCardAccessManagerBrowserTest,
 
   // CreditCardAccessManager is completely recreated on page navigation, so to
   // ensure we're not using stale pointers, always re-fetch it on use.
-  EXPECT_TRUE(GetCreditCardAccessManager()->UnmaskedCardCacheIsEmpty());
-  GetCreditCardAccessManager()->CacheUnmaskedCardInfo(card, u"123");
-  EXPECT_FALSE(GetCreditCardAccessManager()->UnmaskedCardCacheIsEmpty());
+  EXPECT_TRUE(GetCreditCardAccessManager().UnmaskedCardCacheIsEmpty());
+  GetCreditCardAccessManager().CacheUnmaskedCardInfo(card, u"123");
+  EXPECT_FALSE(GetCreditCardAccessManager().UnmaskedCardCacheIsEmpty());
 
   // Cache should reset upon navigation.
   NavigateToAndWaitForForm(
       embedded_test_server()->GetURL("/credit_card_upload_form_cc.html"));
-  EXPECT_TRUE(GetCreditCardAccessManager()->UnmaskedCardCacheIsEmpty());
+  EXPECT_TRUE(GetCreditCardAccessManager().UnmaskedCardCacheIsEmpty());
 }
 
 }  // namespace autofill

@@ -111,10 +111,6 @@ class MockAutofillManager : public AutofillManager {
                const std::u16string& value,
                PopupItemId popup_item_id),
               (override));
-  MOCK_METHOD(CreditCardAccessManager*,
-              GetCreditCardAccessManager,
-              (),
-              (override));
   MOCK_METHOD(void,
               OnFocusNoLongerOnFormImpl,
               (bool had_interacted_form),

@@ -46,7 +46,6 @@ namespace autofill {
 class AutofillField;
 class AutofillProfile;
 class CreditCard;
-class CreditCardAccessManager;
 struct FormData;
 struct FormFieldData;
 class FormStructure;
@@ -202,9 +201,6 @@ class AutofillManager
 
   // Returns a WeakPtr to the leaf class.
   virtual base::WeakPtr<AutofillManager> GetWeakPtr() = 0;
-
-  // May return nullptr.
-  virtual CreditCardAccessManager* GetCreditCardAccessManager() = 0;
 
   // Events triggered by the renderer.
 

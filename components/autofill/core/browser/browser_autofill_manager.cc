@@ -633,8 +633,14 @@ base::WeakPtr<AutofillManager> BrowserAutofillManager::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-CreditCardAccessManager* BrowserAutofillManager::GetCreditCardAccessManager() {
-  return credit_card_access_manager_.get();
+CreditCardAccessManager& BrowserAutofillManager::GetCreditCardAccessManager() {
+  return *credit_card_access_manager_;
+}
+
+const CreditCardAccessManager&
+BrowserAutofillManager::GetCreditCardAccessManager() const {
+  return const_cast<BrowserAutofillManager*>(this)
+      ->GetCreditCardAccessManager();
 }
 
 bool BrowserAutofillManager::ShouldShowScanCreditCard(

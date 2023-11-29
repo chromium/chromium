@@ -33,11 +33,12 @@ class BetterAuthMetricsTest : public AutofillMetricsBaseTest,
   void TearDown() override { TearDownHelper(); }
 
   FormData SetUpCreditCardUnmaskingPreflightCallTest() {
-    auto* access_manager = autofill_manager().GetCreditCardAccessManager();
-    access_manager->SetUnmaskDetailsRequestInProgressForTesting(
+    CreditCardAccessManager& access_manager =
+        autofill_manager().GetCreditCardAccessManager();
+    access_manager.SetUnmaskDetailsRequestInProgressForTesting(
         IsUnmaskDetailsRequestInProgress());
     static_cast<TestCreditCardFidoAuthenticator*>(
-        access_manager->GetOrCreateFidoAuthenticator())
+        access_manager.GetOrCreateFidoAuthenticator())
         ->set_is_user_opted_in(IsUserOptedInToFido());
 
     RecreateCreditCards(
