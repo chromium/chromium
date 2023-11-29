@@ -368,6 +368,8 @@ void BubbleFrameView::UpdateSubtitle() {
   subtitle_->SetVisible(!bubble_delegate->GetSubtitle().empty() &&
                         default_title_->GetVisible());
   subtitle_->SetText(bubble_delegate->GetSubtitle());
+  subtitle_->SetAllowCharacterBreak(
+      bubble_delegate->GetSubtitleAllowCharacterBreak());
   InvalidateLayout();
 }
 

@@ -1235,6 +1235,7 @@ TEST_F(BubbleFrameViewTest, LayoutSubtitleEdgeCases) {
   TestBubbleDialogDelegateView* const delegate = delegate_unique.get();
   TestAnchor anchor(CreateParams(Widget::InitParams::TYPE_WINDOW));
   delegate->SetAnchorView(anchor.widget().GetContentsView());
+  delegate->SetSubtitleAllowCharacterBreak(true);
 
   Widget* bubble =
       BubbleDialogDelegateView::CreateBubble(std::move(delegate_unique));
@@ -1264,9 +1265,10 @@ TEST_F(BubbleFrameViewTest, LayoutSubtitleEdgeCases) {
 
   // Set the new min bubble height with a Subtitle added.
   min_bubble_height = bubble->GetWindowBoundsInScreen().height();
-  // Grow the subtitle incrementally until word wrap is required.
+  // Grow the subtitle incrementally until a wrap is required.
   while (bubble->GetWindowBoundsInScreen().height() == min_bubble_height) {
-    subtitle += u" j";
+    // Use a single character to check that character breaks are enabled.
+    subtitle += u"j";
     delegate->ChangeSubtitle(subtitle);
   }
 
@@ -1275,6 +1277,12 @@ TEST_F(BubbleFrameViewTest, LayoutSubtitleEdgeCases) {
       bubble->GetWindowBoundsInScreen().height() - min_bubble_height;
   EXPECT_GT(line_height_diff, 12);
   EXPECT_LT(line_height_diff, 18);
+
+  // Turn off character breaks and confirm the height has returned to the single
+  // line height.
+  delegate->SetSubtitleAllowCharacterBreak(false);
+  delegate->SizeToContents();
+  EXPECT_EQ(bubble->GetWindowBoundsInScreen().height(), min_bubble_height);
 }
 
 TEST_F(BubbleFrameViewTest, LayoutWithIcon) {

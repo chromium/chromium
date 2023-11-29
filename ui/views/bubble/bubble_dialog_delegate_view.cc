@@ -1031,6 +1031,21 @@ void BubbleDialogDelegate::SetSubtitle(const std::u16string& subtitle) {
     frame_view->UpdateSubtitle();
 }
 
+bool BubbleDialogDelegate::GetSubtitleAllowCharacterBreak() const {
+  return subtitle_allow_character_break_;
+}
+
+void BubbleDialogDelegate::SetSubtitleAllowCharacterBreak(bool allow) {
+  if (subtitle_allow_character_break_ == allow) {
+    return;
+  }
+  subtitle_allow_character_break_ = allow;
+  BubbleFrameView* frame_view = GetBubbleFrameView();
+  if (frame_view) {
+    frame_view->UpdateSubtitle();
+  }
+}
+
 void BubbleDialogDelegate::UpdateColorsFromTheme() {
   View* const contents_view = GetContentsView();
   DCHECK(contents_view);

@@ -164,6 +164,9 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   virtual std::u16string GetSubtitle() const;
   void SetSubtitle(const std::u16string& subtitle);
 
+  bool GetSubtitleAllowCharacterBreak() const;
+  void SetSubtitleAllowCharacterBreak(bool allow);
+
   //////////////////////////////////////////////////////////////////////////////
   // Miscellaneous bubble behaviors:
   //
@@ -457,6 +460,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   ViewTracker highlighted_button_tracker_;
   ui::ImageModel main_image_;
   std::u16string subtitle_;
+  bool subtitle_allow_character_break_ = false;
 
   // A flag controlling bubble closure on deactivation.
   bool close_on_deactivate_ = true;

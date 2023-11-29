@@ -33,6 +33,7 @@ CookieControlsBubbleViewImpl::CookieControlsBubbleViewImpl(
   SetShowCloseButton(true);
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetProperty(views::kElementIdentifierKey, kCookieControlsBubble);
+  SetSubtitleAllowCharacterBreak(true);
 }
 
 CookieControlsBubbleViewImpl::~CookieControlsBubbleViewImpl() = default;
