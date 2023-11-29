@@ -409,6 +409,10 @@ class PrerenderBookmarkBarNavigationTestBase
     button->OnMousePressed(ui::MouseEvent(
         ui::ET_MOUSE_PRESSED, center, center, ui::EventTimeForNow(),
         ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
+    if (expect_activation) {
+      content::test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
+          *GetActiveWebContents(), prerender_url);
+    }
     button->OnMouseReleased(ui::MouseEvent(
         ui::ET_MOUSE_RELEASED, center, center, ui::EventTimeForNow(),
         ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
@@ -635,9 +639,8 @@ class PrerenderBookmarkBarOnHoverNavigationTest
       ukm_entry_builder_;
 };
 
-// TODO(https://crbug.com/1491974): Times out on Win, Mac, Linux and ChromeOS.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_CHROMEOS)
+// TODO(https://crbug.com/1491974): Times out on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_PrerenderActivation DISABLED_PrerenderActivation
 #else
 #define MAYBE_PrerenderActivation PrerenderActivation
