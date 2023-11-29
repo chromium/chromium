@@ -18,6 +18,7 @@ public interface Pane extends BackPressHandler {
     int getPaneId();
 
     /** Returns the {@link View} containing the contents of the Pane. */
+    @NonNull
     View getRootView();
 
     /**
