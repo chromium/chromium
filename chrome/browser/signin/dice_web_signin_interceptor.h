@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
 #include "chrome/browser/signin/web_signin_interceptor.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -180,8 +181,7 @@ class DiceWebSigninInterceptor : public KeyedService,
     ProfilePresets& operator=(ProfilePresets&) = delete;
 
     SkColor profile_color = SK_ColorTRANSPARENT;
-    int64_t search_engine_choice_timestamp = 0;
-    TemplateURLData default_search_engine;
+    search_engines::ChoiceData search_engine_choice_data;
   };
 
   // Cancels any current signin interception and resets the interceptor to its

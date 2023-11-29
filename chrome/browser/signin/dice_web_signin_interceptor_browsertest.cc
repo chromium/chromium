@@ -58,6 +58,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/version_info/version_info.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -1490,11 +1491,15 @@ IN_PROC_BROWSER_TEST_P(DiceWebSigninInterceptorParametrizedBrowserTest,
 #if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
   int64_t search_engine_choice_timestamp =
       base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds();
+  const char kChoiceVersion[] = "1.2.3.4";
   if (WithSearchEngineChoiceEnabled()) {
     PrefService* pref_service = browser()->profile()->GetPrefs();
     pref_service->SetInt64(
         prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
         search_engine_choice_timestamp);
+    pref_service->SetString(
+        prefs::kDefaultSearchProviderChoiceScreenCompletionVersion,
+        kChoiceVersion);
 
     TemplateURLService* template_url_service =
         TemplateURLServiceFactory::GetForProfile(browser()->profile());
@@ -1546,6 +1551,9 @@ IN_PROC_BROWSER_TEST_P(DiceWebSigninInterceptorParametrizedBrowserTest,
     EXPECT_EQ(new_pref_service->GetInt64(
                   prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp),
               search_engine_choice_timestamp);
+    EXPECT_EQ(new_pref_service->GetString(
+                  prefs::kDefaultSearchProviderChoiceScreenCompletionVersion),
+              kChoiceVersion);
 
     TemplateURLService* new_template_url_service =
         TemplateURLServiceFactory::GetForProfile(new_profile);

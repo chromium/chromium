@@ -940,12 +940,8 @@ void DiceWebSigninInterceptor::OnProfileCreationChoice(
 #if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
   if (search_engines::IsChoiceScreenFlagEnabled(
           search_engines::ChoicePromo::kAny)) {
-    search_engines::ChoiceData choice_data =
+    profile_presets.search_engine_choice_data =
         SearchEngineChoiceService::GetChoiceDataFromProfile(*profile_);
-
-    profile_presets.search_engine_choice_timestamp = choice_data.timestamp;
-    profile_presets.default_search_engine =
-        std::move(choice_data.default_search_engine);
   }
 #endif
 
@@ -1050,13 +1046,8 @@ void DiceWebSigninInterceptor::OnNewSignedInProfileCreated(
       // engine choice timestamp from the previous profile.
       if (search_engines::IsChoiceScreenFlagEnabled(
               search_engines::ChoicePromo::kAny)) {
-        search_engines::ChoiceData choice_data{
-            .timestamp = profile_presets->search_engine_choice_timestamp,
-            .default_search_engine =
-                std::move(profile_presets->default_search_engine)};
-
-        SearchEngineChoiceService::UpdateProfileFromChoiceData(*new_profile,
-                                                               choice_data);
+        SearchEngineChoiceService::UpdateProfileFromChoiceData(
+            *new_profile, profile_presets->search_engine_choice_data);
       }
 #endif
     }

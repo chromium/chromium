@@ -181,6 +181,10 @@ void RecordChoiceScreenEvent(SearchEngineChoiceScreenEvents event);
 // in the search engine choice screen or in the settings page.
 void RecordChoiceScreenDefaultSearchProviderType(SearchEngineType engine_type);
 
+// Clears the search engine choice prefs, such as the timestamp and the Chrome
+// version, to ensure the choice screen is shown again.
+void WipeSearchEngineChoicePrefs(PrefService& profile_prefs);
+
 }  // namespace search_engines
 
 #endif  // COMPONENTS_SEARCH_ENGINES_SEARCH_ENGINE_CHOICE_UTILS_H_

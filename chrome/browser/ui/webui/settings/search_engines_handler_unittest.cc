@@ -21,6 +21,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/version_info/version_info.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "content/public/test/test_web_ui.h"
@@ -223,6 +224,9 @@ TEST_F(SearchEnginesHandlerTestWithSearchEngineChoiceEnabled,
 
   EXPECT_FALSE(pref_service->HasPrefPath(
       prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp));
+  EXPECT_FALSE(pref_service->HasPrefPath(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionVersion));
+
   base::Value::List args;
   // Search engine model id.
   args.Append(1);
@@ -234,6 +238,9 @@ TEST_F(SearchEnginesHandlerTestWithSearchEngineChoiceEnabled,
                   prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp),
               base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds(),
               /*abs_error=*/2);
+  EXPECT_EQ(pref_service->GetString(
+                prefs::kDefaultSearchProviderChoiceScreenCompletionVersion),
+            version_info::GetVersionNumber());
 
   histogram_tester().ExpectUniqueSample(
       search_engines::kDefaultSearchEngineChoiceLocationHistogram,

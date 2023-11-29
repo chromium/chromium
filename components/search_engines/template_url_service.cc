@@ -313,6 +313,9 @@ void TemplateURLService::RegisterProfilePrefs(
           search_engines::ChoicePromo::kAny)) {
     registry->RegisterInt64Pref(
         prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp, 0);
+    registry->RegisterStringPref(
+        prefs::kDefaultSearchProviderChoiceScreenCompletionVersion,
+        std::string());
   }
 }
 

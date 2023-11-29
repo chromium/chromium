@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/profiles/profile_customization_bubble_sync_controller.h"
 #include "chrome/browser/ui/search_engine_choice/search_engine_choice_tab_helper.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "components/country_codes/country_codes.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_pref_names.h"
@@ -181,16 +182,16 @@ search_engines::ChoiceData SearchEngineChoiceService::GetChoiceDataFromProfile(
   }
 
   PrefService* pref_service = profile.GetPrefs();
-  int64_t search_engine_choice_timestamp = pref_service->GetInt64(
-      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp);
-
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(&profile);
   CHECK(template_url_service);
   const TemplateURLData& default_search_engine =
       template_url_service->GetDefaultSearchProvider()->data();
 
-  return {.timestamp = search_engine_choice_timestamp,
+  return {.timestamp = pref_service->GetInt64(
+              prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp),
+          .chrome_version = pref_service->GetString(
+              prefs::kDefaultSearchProviderChoiceScreenCompletionVersion),
           .default_search_engine = default_search_engine};
 }
 
@@ -203,11 +204,17 @@ void SearchEngineChoiceService::UpdateProfileFromChoiceData(
     return;
   }
 
+  PrefService* pref_service = profile.GetPrefs();
   if (choice_data.timestamp != 0) {
-    PrefService* pref_service = profile.GetPrefs();
     pref_service->SetInt64(
         prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
         choice_data.timestamp);
+  }
+
+  if (!choice_data.chrome_version.empty()) {
+    pref_service->SetString(
+        prefs::kDefaultSearchProviderChoiceScreenCompletionVersion,
+        choice_data.chrome_version);
   }
 
   TemplateURLData& default_search_engine = choice_data.default_search_engine;
@@ -305,16 +312,6 @@ bool SearchEngineChoiceService::CanShowDialog(Browser& browser) {
 
   return conditions ==
          search_engines::SearchEngineChoiceScreenConditions::kEligible;
-}
-
-bool SearchEngineChoiceService::HasUserMadeChoice() const {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kForceSearchEngineChoiceScreen)) {
-    return false;
-  }
-  PrefService* pref_service = profile_->GetPrefs();
-  return pref_service->GetInt64(
-      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp);
 }
 
 bool SearchEngineChoiceService::CanSuppressPrivacySandboxPromo() const {

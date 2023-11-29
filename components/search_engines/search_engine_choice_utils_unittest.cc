@@ -14,7 +14,6 @@
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
-#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/search_engine_type.h"
@@ -22,6 +21,8 @@
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/version_info/version_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::NiceMock;
@@ -32,8 +33,7 @@ class SearchEngineChoiceUtilsTest : public ::testing::Test {
       : template_url_service_(/*initializers=*/nullptr, /*count=*/0) {
     feature_list_.InitAndEnableFeature(switches::kSearchEngineChoice);
     country_codes::RegisterProfilePrefs(pref_service_.registry());
-    pref_service_.registry()->RegisterInt64Pref(
-        prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp, 0);
+    TemplateURLService::RegisterProfilePrefs(pref_service_.registry());
     pref_service_.registry()->RegisterListPref(prefs::kSearchProviderOverrides);
     pref_service_.registry()->RegisterBooleanPref(
         prefs::kDefaultSearchProviderChoicePending, false);
@@ -80,7 +80,7 @@ class SearchEngineChoiceUtilsTest : public ::testing::Test {
 
   policy::MockPolicyService& policy_service() { return policy_service_; }
   policy::PolicyMap& policy_map() { return policy_map_; }
-  TestingPrefServiceSimple* pref_service() { return &pref_service_; }
+  PrefService* pref_service() { return &pref_service_; }
   base::test::ScopedFeatureList* feature_list() { return &feature_list_; }
   TemplateURLService& template_url_service() { return template_url_service_; }
   base::HistogramTester histogram_tester_;
@@ -110,7 +110,7 @@ class SearchEngineChoiceUtilsTest : public ::testing::Test {
 
   NiceMock<policy::MockPolicyService> policy_service_;
   policy::PolicyMap policy_map_;
-  TestingPrefServiceSimple pref_service_;
+  sync_preferences::TestingPrefServiceSyncable pref_service_;
   base::test::ScopedFeatureList feature_list_;
   TemplateURLService template_url_service_;
 };
@@ -424,6 +424,8 @@ TEST_F(SearchEngineChoiceUtilsTest, RecordChoiceMade) {
       SearchEngineType::SEARCH_ENGINE_GOOGLE, 0);
   EXPECT_FALSE(pref_service()->HasPrefPath(
       prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp));
+  EXPECT_FALSE(pref_service()->HasPrefPath(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionVersion));
 
   histogram_tester_.ExpectUniqueSample(
       search_engines::kDefaultSearchEngineChoiceLocationHistogram,
@@ -447,6 +449,9 @@ TEST_F(SearchEngineChoiceUtilsTest, RecordChoiceMade) {
                   prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp),
               base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds(),
               /*abs_error=*/2);
+  EXPECT_EQ(pref_service()->GetString(
+                prefs::kDefaultSearchProviderChoiceScreenCompletionVersion),
+            version_info::GetVersionNumber());
 
   histogram_tester_.ExpectUniqueSample(
       search_engines::kDefaultSearchEngineChoiceLocationHistogram,

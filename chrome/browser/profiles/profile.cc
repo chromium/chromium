@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/check_deref.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -510,11 +511,7 @@ double Profile::GetDefaultZoomLevelForProfile() {
 void Profile::Wipe() {
   // Clear the search engine choice prefs.
   // TODO(b/312180262): Consider clearing other preferences as well.
-  if (search_engines::IsChoiceScreenFlagEnabled(
-          search_engines::ChoicePromo::kAny)) {
-    GetPrefs()->ClearPref(
-        prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp);
-  }
+  search_engines::WipeSearchEngineChoicePrefs(CHECK_DEREF(GetPrefs()));
 
   GetBrowsingDataRemover()->Remove(
       base::Time(), base::Time::Max(),

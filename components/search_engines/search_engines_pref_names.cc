@@ -35,8 +35,17 @@ const char kDefaultSearchProviderChoicePending[] =
 
 // Epoch timestamp in seconds of when the user chose a search engine in
 // the choice screen.
+// The timestamp and the version indicate that the user has already made a
+// search engine choice in the choice screen or in settings.
 const char kDefaultSearchProviderChoiceScreenCompletionTimestamp[] =
     "default_search_provider.choice_screen_completion_timestamp";
+
+// Version of Chrome when the user chose a search engine, in the format
+// "6.0.490.1".
+// The timestamp and the version indicate that the user has already made a
+// search engine choice in the choice screen or in settings.
+const char kDefaultSearchProviderChoiceScreenCompletionVersion[] =
+    "default_search_provider.choice_screen_completion_version";
 
 // Random number to use as a profile-constant seed for the random shuffling of
 // the choice screen elements.

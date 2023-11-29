@@ -8,13 +8,12 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/country_codes/country_codes.h"
-#import "components/prefs/pref_registry_simple.h"
-#import "components/prefs/testing_pref_service.h"
 #import "components/search_engines/search_engines_pref_names.h"
 #import "components/search_engines/search_engines_switches.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/signin/public/base/signin_switches.h"
+#import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
@@ -50,8 +49,8 @@ class SearchEngineChoiceTableMediatorTest : public PlatformTest {
     DefaultSearchManager::SetFallbackSearchEnginesDisabledForTesting(true);
     template_url_service_ = ios::TemplateURLServiceFactory::GetForBrowserState(
         browser_state_.get());
-    pref_service_.registry()->RegisterInt64Pref(
-        prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp, 0);
+    TemplateURLService::RegisterProfilePrefs(pref_service_.registry());
+
     // The search engine choice feature is only enabled for countries in the
     // EEA region. Override the country checks to simulate being in Belgium.
     // TODO(b/307713013): Set the country using the PrefService rather than
@@ -80,7 +79,7 @@ class SearchEngineChoiceTableMediatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
-  TestingPrefServiceSimple pref_service_;
+  sync_preferences::TestingPrefServiceSyncable pref_service_;
   TemplateURLService* template_url_service_;
   SearchEngineChoiceTableMediator* mediator_ = nil;
   SearchEngineChoiceTableTestConsumer* consumer_ =
@@ -103,9 +102,13 @@ TEST_F(SearchEngineChoiceTableMediatorTest, SavesDefaultSearchEngine) {
       isEqualToString:default_search_engine_name]);
   // We don't care about the value, we just need to check that something was
   // written.
-  ASSERT_TRUE(
-      pref_service_.GetInt64(
-          prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp) > 0);
+  EXPECT_GT(pref_service_.GetInt64(
+                prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp),
+            0);
+  EXPECT_FALSE(
+      pref_service_
+          .GetString(prefs::kDefaultSearchProviderChoiceScreenCompletionVersion)
+          .empty());
 }
 
 // Tests that the list of search engines is correctly initialized.

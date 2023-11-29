@@ -26,7 +26,6 @@
 #import "components/search_engines/template_url_data_util.h"
 #import "components/search_engines/template_url_prepopulate_data.h"
 #import "components/search_engines/template_url_service.h"
-#import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/favicon/favicon_service_factory.h"
@@ -88,10 +87,7 @@ class SearchEngineTableViewControllerTest
   }
 
   void SetupForChoiceScreenDisplay() {
-    feature_list_.InitAndEnableFeature(switches::kSearchEngineChoice);
     pref_service_ = chrome_browser_state_->GetTestingPrefService();
-    pref_service_->registry()->RegisterInt64Pref(
-        prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp, 0);
 
     // Override the country checks to simulate being in Belgium.
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
@@ -234,11 +230,12 @@ class SearchEngineTableViewControllerTest
   }
 
   web::WebTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList feature_list_{
+      switches::kSearchEngineChoiceTrigger};
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   base::HistogramTester histogram_tester_;
   TemplateURLService* template_url_service_;  // weak
   sync_preferences::TestingPrefServiceSyncable* pref_service_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that no items are shown if TemplateURLService is empty.

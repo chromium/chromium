@@ -43,6 +43,7 @@ source_set("unit_tests") {
     "//components/country_codes",
     "//components/prefs:test_support",
     "//components/search_engines",
+    "//components/sync_preferences/:test_support",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/ui/list_model",

@@ -17,6 +17,7 @@
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/version_info/version_info.h"
 
 namespace search_engines {
 namespace {
@@ -112,6 +113,14 @@ SearchEngineType GetDefaultSearchEngineType(
                                : SEARCH_ENGINE_OTHER;
 }
 
+// Returns true if all search engine choice prefs are set.
+bool IsSearchEngineChoiceCompleted(const PrefService& prefs) {
+  return prefs.HasPrefPath(
+             prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp) &&
+         prefs.HasPrefPath(
+             prefs::kDefaultSearchProviderChoiceScreenCompletionVersion);
+}
+
 }  // namespace
 
 const char kSearchEngineChoiceScreenNavigationConditionsHistogram[] =
@@ -181,8 +190,7 @@ SearchEngineChoiceScreenConditions GetStaticChoiceScreenConditions(
   PrefService& prefs = CHECK_DEREF(profile_properties.pref_service.get());
   if (switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.Get() &&
       !prefs.GetBoolean(prefs::kDefaultSearchProviderChoicePending)) {
-    return search_engines::SearchEngineChoiceScreenConditions::
-        kProfileOutOfScope;
+    return SearchEngineChoiceScreenConditions::kProfileOutOfScope;
   }
 
   if (!profile_properties.is_regular_profile) {
@@ -205,10 +213,7 @@ SearchEngineChoiceScreenConditions GetStaticChoiceScreenConditions(
     return SearchEngineChoiceScreenConditions::kEligible;
   }
 
-  // The timestamp indicates that the user has already made a search engine
-  // choice in the choice screen.
-  if (prefs.HasPrefPath(
-          prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp)) {
+  if (IsSearchEngineChoiceCompleted(prefs)) {
     return SearchEngineChoiceScreenConditions::kAlreadyCompleted;
   }
 
@@ -237,8 +242,7 @@ SearchEngineChoiceScreenConditions GetDynamicChoiceScreenConditions(
     const TemplateURLService& template_url_service) {
   // Don't show the dialog if the default search engine is set by an extension.
   if (template_url_service.IsExtensionControlledDefaultSearch()) {
-    return search_engines::SearchEngineChoiceScreenConditions::
-        kExtensionControlled;
+    return SearchEngineChoiceScreenConditions::kExtensionControlled;
   }
 
   // Don't show the dialog if the user has a custom search engine set as
@@ -261,10 +265,8 @@ SearchEngineChoiceScreenConditions GetDynamicChoiceScreenConditions(
     return SearchEngineChoiceScreenConditions::kEligible;
   }
 
-  if (profile_prefs.HasPrefPath(
-          prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp)) {
-    return search_engines::SearchEngineChoiceScreenConditions::
-        kAlreadyCompleted;
+  if (IsSearchEngineChoiceCompleted(profile_prefs)) {
+    return SearchEngineChoiceScreenConditions::kAlreadyCompleted;
   }
 
   return SearchEngineChoiceScreenConditions::kEligible;
@@ -288,13 +290,12 @@ bool IsEeaChoiceCountry(int country_id) {
 void RecordChoiceScreenProfileInitCondition(
     SearchEngineChoiceScreenConditions condition) {
   base::UmaHistogramEnumeration(
-      search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
-      condition);
+      kSearchEngineChoiceScreenProfileInitConditionsHistogram, condition);
 }
 
 void RecordChoiceScreenEvent(SearchEngineChoiceScreenEvents event) {
-  base::UmaHistogramEnumeration(
-      search_engines::kSearchEngineChoiceScreenEventsHistogram, event);
+  base::UmaHistogramEnumeration(kSearchEngineChoiceScreenEventsHistogram,
+                                event);
 }
 
 void RecordChoiceScreenDefaultSearchProviderType(SearchEngineType engine_type) {
@@ -307,35 +308,44 @@ void RecordChoiceMade(PrefService* profile_prefs,
                       ChoiceMadeLocation choice_location,
                       TemplateURLService* template_url_service) {
   // Record the histogram even if the feature is not enabled.
-  base::UmaHistogramEnumeration(
-      search_engines::kDefaultSearchEngineChoiceLocationHistogram,
-      choice_location);
+  base::UmaHistogramEnumeration(kDefaultSearchEngineChoiceLocationHistogram,
+                                choice_location);
 
   if (!IsChoiceScreenFlagEnabled(ChoicePromo::kAny)) {
     return;
   }
 
   // Don't modify the pref if the user is not in the EEA region.
-  if (!search_engines::IsEeaChoiceCountry(
-          search_engines::GetSearchEngineChoiceCountryId(profile_prefs))) {
+  if (!IsEeaChoiceCountry(GetSearchEngineChoiceCountryId(profile_prefs))) {
     return;
   }
 
-  // Don't modify the pref if it was already set.
-  if (profile_prefs->HasPrefPath(
-          prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp)) {
+  // Don't modify the prefs if they were already set.
+  if (IsSearchEngineChoiceCompleted(*profile_prefs)) {
     return;
   }
 
-  search_engines::RecordChoiceScreenDefaultSearchProviderType(
+  RecordChoiceScreenDefaultSearchProviderType(
       GetDefaultSearchEngineType(CHECK_DEREF(template_url_service)));
   profile_prefs->SetInt64(
       prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
       base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds());
+  profile_prefs->SetString(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionVersion,
+      version_info::GetVersionNumber());
 
   if (profile_prefs->HasPrefPath(prefs::kDefaultSearchProviderChoicePending)) {
     DVLOG(1) << "Choice made, removing profile tag.";
     profile_prefs->ClearPref(prefs::kDefaultSearchProviderChoicePending);
+  }
+}
+
+void WipeSearchEngineChoicePrefs(PrefService& profile_prefs) {
+  if (IsChoiceScreenFlagEnabled(ChoicePromo::kAny)) {
+    profile_prefs.ClearPref(
+        prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp);
+    profile_prefs.ClearPref(
+        prefs::kDefaultSearchProviderChoiceScreenCompletionVersion);
   }
 }
 

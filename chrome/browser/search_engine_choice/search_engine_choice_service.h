@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_SERVICE_H_
 #define CHROME_BROWSER_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_SERVICE_H_
 
+#include <string>
+
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
@@ -27,9 +29,11 @@ enum class SearchEngineChoiceScreenConditions;
 // Profile specific data related to the search engine choice.
 // `timestamp` is the search engine choice timestamp that's saved in the
 // `kDefaultSearchProviderChoiceScreenCompletionTimestamp` pref.
+// `chrome_version` is the Chrome version when the user made the choice.
 // `default_search_engine` is the profile's default search engine.
 struct ChoiceData {
   int64_t timestamp = 0;
+  std::string chrome_version;
   TemplateURLData default_search_engine;
 };
 
@@ -87,9 +91,6 @@ class SearchEngineChoiceService : public KeyedService {
   // Returns whether the Search Engine Choice dialog is either shown or
   // pending to be shown.
   bool HasPendingDialog(Browser& browser);
-
-  // Returns whether the user has already made a choice or not.
-  bool HasUserMadeChoice() const;
 
   // Checks whether we need to display the Privacy Sandbox dialog
   // in context of the Search Engine Choice.
