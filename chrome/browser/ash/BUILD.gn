@@ -1922,6 +1922,8 @@ source_set("ash") {
     "login/screens/osauth/cryptohome_recovery_screen.h",
     "login/screens/osauth/cryptohome_recovery_setup_screen.cc",
     "login/screens/osauth/cryptohome_recovery_setup_screen.h",
+    "login/screens/osauth/enter_old_password_screen.cc",
+    "login/screens/osauth/enter_old_password_screen.h",
     "login/screens/osauth/factor_setup_success_screen.cc",
     "login/screens/osauth/factor_setup_success_screen.h",
     "login/screens/osauth/gaia_password_changed_screen.cc",

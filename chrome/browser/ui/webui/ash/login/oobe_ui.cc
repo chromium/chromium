@@ -68,6 +68,7 @@
 #include "chrome/browser/ui/webui/ash/login/enable_debugging_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/encryption_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/enrollment_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/enter_old_password_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/family_link_notice_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/fingerprint_setup_screen_handler.h"
@@ -486,7 +487,9 @@ void OobeUI::ConfigureOobeDisplay() {
     AddScreenHandler(std::make_unique<LocalPasswordSetupHandler>());
     AddScreenHandler(std::make_unique<ApplyOnlinePasswordScreenHandler>());
   }
+
   AddScreenHandler(std::make_unique<LocalDataLossWarningScreenHandler>());
+  AddScreenHandler(std::make_unique<EnterOldPasswordScreenHandler>());
 
   AddScreenHandler(std::make_unique<OSAuthErrorScreenHandler>());
   AddScreenHandler(std::make_unique<FactorSetupSuccessScreenHandler>());

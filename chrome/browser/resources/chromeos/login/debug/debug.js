@@ -884,6 +884,28 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
       ],
     },
     {
+      id: 'enter-old-password',
+      kind: ScreenKind.NORMAL,
+      states: [
+        {
+          id: 'no-error',
+          trigger: (screen) => {
+            screen.onBeforeShow({
+              passwordInvalid: false,
+            });
+          },
+        },
+        {
+          id: 'wrong-password',
+          trigger: (screen) => {
+            screen.onBeforeShow({
+              passwordInvalid: true,
+            });
+          },
+        },
+      ],
+    },
+    {
       id: 'local-password-setup',
       kind: ScreenKind.NORMAL,
       states: [

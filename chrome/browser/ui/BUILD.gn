@@ -3131,6 +3131,8 @@ static_library("ui") {
       "webui/ash/login/encryption_migration_screen_handler.h",
       "webui/ash/login/enrollment_screen_handler.cc",
       "webui/ash/login/enrollment_screen_handler.h",
+      "webui/ash/login/enter_old_password_screen_handler.cc",
+      "webui/ash/login/enter_old_password_screen_handler.h",
       "webui/ash/login/error_screen_handler.cc",
       "webui/ash/login/error_screen_handler.h",
       "webui/ash/login/family_link_notice_screen_handler.cc",

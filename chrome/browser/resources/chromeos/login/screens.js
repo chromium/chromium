@@ -53,6 +53,7 @@ import './screens/osauth/factor_setup_success.js';
 import './screens/osauth/fingerprint_setup.js';
 import './screens/osauth/local_password_setup.js';
 import './screens/osauth/local_data_loss_warning.js';
+import './screens/osauth/enter_old_password.js';
 import './screens/osauth/osauth_error.js';
 import './screens/osauth/password_selection.js';
 import './screens/osauth/pin_setup.js';
@@ -119,6 +120,10 @@ export const commonScreensList = [
     condition: 'isDrivePinningEnabled',
   },
   {tag: 'enable-kiosk-element', id: 'kiosk-enable'},
+  {
+    tag: 'enter-old-password-element',
+    id: 'enter-old-password',
+  },
   {tag: 'error-message-element', id: 'error-message'},
   {tag: 'family-link-notice-element', id: 'family-link-notice'},
   {tag: 'fingerprint-setup-element', id: 'fingerprint-setup'},
