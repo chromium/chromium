@@ -19,6 +19,20 @@ public class PrivacySandboxDialogController {
     private static boolean sDisableAnimations;
     private static boolean sDisableEEANoticeForTesting;
 
+    public static boolean shouldShowPrivacySandboxDialog(boolean isIncognito) {
+        if (isIncognito) {
+            return false;
+        }
+        @PromptType int promptType = PrivacySandboxBridge.getRequiredPromptType();
+        if (promptType != PromptType.M1_CONSENT
+                && promptType != PromptType.M1_NOTICE_EEA
+                && promptType != PromptType.M1_NOTICE_ROW
+                && promptType != PromptType.M1_NOTICE_RESTRICTED) {
+            return false;
+        }
+        return true;
+    }
+
     /** Launches an appropriate dialog if necessary and returns whether that happened. */
     public static boolean maybeLaunchPrivacySandboxDialog(
             Context context, @NonNull SettingsLauncher settingsLauncher, boolean isIncognito) {

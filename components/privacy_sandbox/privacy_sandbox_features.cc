@@ -3,8 +3,15 @@
 // found in the LICENSE file.
 
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "base/feature_list.h"
 
 namespace privacy_sandbox {
+
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kPrivacySandboxAdsNoticeCCT,
+             "PrivacySandboxAdsNoticeCCT",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Show the Tracking Protection onboarding flow if not already onboarded.
 BASE_FEATURE(kPrivacySandboxSuppressDialogOnNonNormalBrowsers,

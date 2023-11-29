@@ -499,6 +499,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Startup.Android.PrivacySandbox.ShouldShowAdsNoticeCCT"
+    enum="Boolean" expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Whether or not the Privacy Sandbox ads notice is shown on Android CCTs.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Startup.Android.SingleTabTitleAvailableTime"
     units="ms" expires_after="2024-05-07">
 <!-- Name completed by histogram_suffixes name="JavaStartMode" -->

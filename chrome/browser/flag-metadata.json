@@ -6612,6 +6612,14 @@
     "expiry_milestone": 125
   },
   {
+    "name": "privacy-sandbox-ads-notice-cct",
+    "owners": [
+      "jacobstanley@google.com",
+      "koilos@google.com"
+      ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "privacy-sandbox-enrollment-overrides",
     "owners": [
       "lbrady@chromium.org",

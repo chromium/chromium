@@ -20,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -64,6 +65,7 @@ import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.page_insights.PageInsightsCoordinator;
 import org.chromium.chrome.browser.page_insights.proto.Config.PageInsightsConfig;
+import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
@@ -93,6 +95,7 @@ import java.util.function.BooleanSupplier;
 
 /** A {@link RootUiCoordinator} variant that controls UI for {@link BaseCustomTabActivity}. */
 public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
+
     private final Supplier<CustomTabToolbarCoordinator> mToolbarCoordinator;
     private final Supplier<CustomTabActivityNavigationController> mNavigationController;
     private final Supplier<BrowserServicesIntentDataProvider> mIntentDataProvider;
@@ -231,7 +234,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         mToolbarCoordinator = customTabToolbarCoordinator;
         mNavigationController = customTabNavigationController;
         mIntentDataProvider = intentDataProvider;
-
         if (intentDataProvider.get().getActivityType() == ActivityType.CUSTOM_TAB
                 && !intentDataProvider.get().isOpenedByChrome()
                 && !intentDataProvider.get().isIncognito()) {
@@ -585,10 +587,35 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 mCallbackController.makeCancelable(
                         (profile) -> {
                             Profile regularProfile = profile.getOriginalProfile();
+                            boolean didShowPrompt = false;
+                            boolean shouldShowPrivacySandboxDialog =
+                                    PrivacySandboxDialogController.shouldShowPrivacySandboxDialog(
+                                            mTabModelSelectorSupplier.get().isIncognitoSelected());
+                            RecordHistogram.recordBooleanHistogram(
+                                    "Startup.Android.PrivacySandbox.ShouldShowAdsNoticeCCT",
+                                    shouldShowPrivacySandboxDialog);
 
-                            boolean didShowPrompt =
-                                    RequestDesktopUtils.maybeShowDefaultEnableGlobalSettingMessage(
-                                            regularProfile, mMessageDispatcher, mActivity);
+                            if (ChromeFeatureList.isEnabled(
+                                            ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT)
+                                    && !(mIntentDataProvider.get().isPartialCustomTab())
+                                    && shouldShowPrivacySandboxDialog) {
+                                didShowPrompt =
+                                        PrivacySandboxDialogController
+                                                .maybeLaunchPrivacySandboxDialog(
+                                                        mActivity,
+                                                        new SettingsLauncherImpl(),
+                                                        mTabModelSelectorSupplier
+                                                                .get()
+                                                                .isIncognitoSelected());
+                            }
+                            if (!didShowPrompt) {
+                                didShowPrompt =
+                                        RequestDesktopUtils
+                                                .maybeShowDefaultEnableGlobalSettingMessage(
+                                                        regularProfile,
+                                                        mMessageDispatcher,
+                                                        mActivity);
+                            }
                             if (!didShowPrompt && mAppMenuCoordinator != null) {
                                 mDesktopSiteSettingsIPHController =
                                         DesktopSiteSettingsIPHController.create(
