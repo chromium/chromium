@@ -7,5 +7,5 @@ source_set("google_logo") {
     "google_logo_service.h",
     "google_logo_service_factory.h",
   ]
-  public_deps = [ "//ios/chrome/browser/google" ]
+  public_deps = [ "//ios/chrome/browser/google:google_logo" ]
 }
