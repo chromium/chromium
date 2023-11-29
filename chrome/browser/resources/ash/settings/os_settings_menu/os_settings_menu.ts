@@ -530,7 +530,7 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
       {
         section: Section.kDateAndTime,
         path: `/${routesMojom.DATE_AND_TIME_SECTION_PATH}`,
-        icon: 'os-settings:access-time',
+        icon: 'os-settings:clock',
         label: this.i18n('dateTimePageTitle'),
       },
       {

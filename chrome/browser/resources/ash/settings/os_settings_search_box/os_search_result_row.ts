@@ -703,7 +703,7 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       case SearchResultIcon.kChromeVox:
         return 'os-settings:chromevox';
       case SearchResultIcon.kClock:
-        return 'os-settings:access-time';
+        return 'os-settings:clock';
       case SearchResultIcon.kContrast:
         return 'os-settings:contrast';
       case SearchResultIcon.kDeveloperTags:

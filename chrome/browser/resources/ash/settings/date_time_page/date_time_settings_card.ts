@@ -88,12 +88,31 @@ export class DateTimeSettingsCardElement extends
             prefs.generated.resolve_timezone_by_geolocation_on_off.value,
             prefs.generated.resolve_timezone_by_geolocation_method_short.value)`,
       },
+
+      rowIcons_: {
+        type: Object,
+        value() {
+          if (isRevampWayfindingEnabled()) {
+            return {
+              timezone: 'os-settings:clock',
+              use24hour: 'os-settings:24hour',
+              setDateTime: 'os-settings:set-date-time',
+            };
+          }
+          return {
+            timezone: '',
+            use24hour: '',
+            setDateTime: '',
+          };
+        },
+      },
     };
   }
 
   activeTimeZoneDisplayName: string;
   private browserProxy_: TimeZoneBrowserProxy;
   private canSetDateTime_: boolean;
+  private rowIcons_: Record<string, string>;
   private shouldShowManagedByParentIcon_: boolean;
   private timeZoneSettingSublabel_: string;
 
