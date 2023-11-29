@@ -12326,6 +12326,26 @@
             ]
         }
     ],
+    "PageInfoAboutThisSite40Langs": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_231129",
+                    "enable_features": [
+                        "PageInfoAboutThisSiteMoreLangs"
+                    ]
+                }
+            ]
+        }
+    ],
     "PageInfoHistory": [
         {
             "platforms": [
