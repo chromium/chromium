@@ -538,30 +538,21 @@ public final class ReturnToChromeUtil {
     }
 
     /**
-     * @return Whether we should show Start Surface as the home page on phone. Start surface
-     *         hasn't been enabled on tablet yet.
+     * Returns whether we should show Start Surface as the home page on phone. Start surface hasn't
+     * been enabled on tablet yet.
      */
     public static boolean shouldShowStartSurfaceAsTheHomePageOnPhone(
             Context context, boolean isTablet) {
         return !isTablet && shouldShowStartSurfaceAsTheHomePage(context);
     }
 
-    /**
-     * @return Whether Start Surface should be shown as a new Tab.
-     */
+    /** Returns whether Start Surface should be shown as a new Tab. */
     public static boolean shouldShowStartSurfaceHomeAsNewTab(
             Context context, boolean incognito, boolean isTablet) {
         return !incognito
                 && !isTablet
                 && isStartSurfaceEnabled(context)
                 && !StartSurfaceConfiguration.START_SURFACE_OPEN_NTP_INSTEAD_OF_START.getValue();
-    }
-
-    /**
-     * @return Whether opening a NTP instead of Start surface for new Tab is enabled.
-     */
-    public static boolean shouldOpenNTPInsteadOfStart() {
-        return StartSurfaceConfiguration.START_SURFACE_OPEN_NTP_INSTEAD_OF_START.getValue();
     }
 
     /**
@@ -585,9 +576,9 @@ public final class ReturnToChromeUtil {
     }
 
     /**
-     * @return Whether start surface should be hidden when accessibility is enabled. If it's true,
-     *         NTP is shown as homepage. Also, when time threshold is reached, grid tab switcher or
-     *         overview list layout is shown instead of start surface.
+     * Returns whether start surface should be hidden when accessibility is enabled. If it's true,
+     * NTP is shown as homepage. Also, when time threshold is reached, grid tab switcher or overview
+     * list layout is shown instead of start surface.
      */
     public static boolean shouldHideStartSurfaceWithAccessibilityOn(Context context) {
         // TODO(crbug.com/1127732): Move this method back to StartSurfaceConfiguration.
@@ -765,8 +756,9 @@ public final class ReturnToChromeUtil {
                             boolean isTabExpected =
                                     TextUtils.equals(lastActiveTabUrl, tab.getUrl().getSpec());
                             assert isTabExpected
-                                    : "The URL of first Tab restored doesn't match the URL of the last active "
-                                            + "Tab read from the Tab state metadata file! Existing Tab count = %d"
+                                    : "The URL of first Tab restored doesn't match the URL of the"
+                                            + " last active Tab read from the Tab state metadata"
+                                            + " file! Existing Tab count = %d"
                                             + tabModelSelector.getModel(false).getCount()
                                             + ".";
                             if (!isTabExpected) {
@@ -868,10 +860,7 @@ public final class ReturnToChromeUtil {
 
     @VisibleForTesting
     public static void cacheReturnTimeFromSegmentationImpl(ClassificationResult result) {
-        long returnTimeMs =
-                StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS.getDefaultValue()
-                        * DateUtils.SECOND_IN_MILLIS;
-
+        long returnTimeMs;
         if (result.status != PredictionStatus.SUCCEEDED || result.orderedLabels.isEmpty()) {
             // Model execution failed or no label selected.
             returnTimeMs = -1;
@@ -923,9 +912,7 @@ public final class ReturnToChromeUtil {
                                         .getBoolean(Pref.ARTICLES_LIST_VISIBLE));
     }
 
-    /**
-     * @return Whether the Feed articles are visible.
-     */
+    /** Returns whether the Feed articles are visible. */
     public static boolean getFeedArticlesVisibility() {
         return ChromeSharedPreferences.getInstance()
                 .readBoolean(ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE, true);
@@ -1019,7 +1006,7 @@ public final class ReturnToChromeUtil {
                         && ChromeFeatureList.sStartSurfaceOnTablet.isEnabled();
     }
 
-    /** Shows the home surface UI on the given Ntp on tablets. */
+    /** Shows the home surface UI on the given NTP on tablets. */
     static void showHomeSurfaceUiOnNtp(
             Tab ntpTab, Tab lastActiveTab, HomeSurfaceTracker homeSurfaceTracker) {
         NativePage nativePage = ntpTab.getNativePage();
