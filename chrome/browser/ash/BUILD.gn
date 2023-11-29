@@ -5070,7 +5070,6 @@ source_set("unit_tests") {
     "app_list/chrome_app_list_item_manager_unittest.cc",
     "app_list/md_icon_normalizer_unittest.cc",
     "app_list/reorder/app_list_reorder_core_unittest.cc",
-    "app_list/reorder/app_list_reorder_util_unittest.cc",
     "app_list/search/app_discovery_metrics_manager_unittest.cc",
     "app_list/search/app_search_provider_test_base.cc",
     "app_list/search/app_search_provider_test_base.h",

@@ -183,7 +183,8 @@ void ChromeAppListItem::SetIcon(const gfx::ImageSkia& icon,
   metadata_->icon_color =
       is_place_holder_icon
           ? ash::IconColor()
-          : app_list::reorder::GetSortableIconColorForApp(id(), icon);
+          : ash::AppIconColorCache::GetInstance().GetIconColorForApp(id(),
+                                                                     icon);
   metadata_->is_placeholder_icon = is_place_holder_icon;
 
   AppListModelUpdater* updater = model_updater();
