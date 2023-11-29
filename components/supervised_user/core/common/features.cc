@@ -36,7 +36,7 @@ BASE_FEATURE(kLocalWebApprovals,
 // Proto fetcher experiments.
 BASE_FEATURE(kEnableProtoApiForClassifyUrl,
              "EnableProtoApiForClassifyUrl",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Request priority experiment for ClassifyUrl (for critical path of rendering).
 BASE_FEATURE(kHighestRequestPriorityForClassifyUrl,
