@@ -8,7 +8,6 @@
 #include "base/trace_event/trace_event.h"
 #include "content/public/common/content_client.h"
 #include "ui/display/screen.h"
-#include "ui/display/tablet_state.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/gestures/blink/web_gesture_curve_impl.h"
 
@@ -40,9 +39,7 @@ bool ShouldUseMobileFlingCurve() {
   return true;
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   CHECK(display::Screen::GetScreen());
-  auto tablet_state = display::Screen::GetScreen()->GetTabletState();
-  return (tablet_state == display::TabletState::kInTabletMode ||
-          tablet_state == display::TabletState::kEnteringTabletMode);
+  return display::Screen::GetScreen()->InTabletMode();
 #else
   return false;
 #endif

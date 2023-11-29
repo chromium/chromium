@@ -5,6 +5,8 @@
 #ifndef UI_DISPLAY_TABLET_STATE_H_
 #define UI_DISPLAY_TABLET_STATE_H_
 
+#include "ui/display/display_export.h"
+
 namespace display {
 
 // Tracks whether we are in the process of entering or exiting tablet mode.
@@ -24,6 +26,9 @@ enum class TabletState {
   kInTabletMode,
   kExitingTabletMode,
 };
+
+// Returns true if the tablet state is in the process of transition.
+DISPLAY_EXPORT bool IsTabletStateChanging(TabletState state);
 
 }  // namespace display
 

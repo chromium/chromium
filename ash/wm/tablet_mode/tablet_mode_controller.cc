@@ -490,9 +490,8 @@ bool TabletModeController::TriggerRecordLidAngleTimerForTesting() {
 void TabletModeController::MaybeObserveBoundsAnimation(aura::Window* window) {
   StopObservingAnimation(/*record_stats=*/false, /*delete_screenshot=*/false);
 
-  display::TabletState state = display::Screen::GetScreen()->GetTabletState();
-  if (state != display::TabletState::kEnteringTabletMode &&
-      state != display::TabletState::kExitingTabletMode) {
+  if (!display::IsTabletStateChanging(
+          display::Screen::GetScreen()->GetTabletState())) {
     return;
   }
 

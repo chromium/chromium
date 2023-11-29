@@ -529,8 +529,7 @@ void AssistantInteractionControllerImpl::OnSuggestionPressed(
 void AssistantInteractionControllerImpl::OnDisplayTabletStateChanged(
     display::TabletState state) {
   // Ignore the state in the process of changing the tablet state.
-  if (state == display::TabletState::kEnteringTabletMode ||
-      state == display::TabletState::kExitingTabletMode) {
+  if (display::IsTabletStateChanging(state)) {
     return;
   }
 

@@ -1407,8 +1407,7 @@ void CaptureModeSession::OnWindowDestroying(aura::Window* window) {
 
 void CaptureModeSession::OnDisplayTabletStateChanged(
     display::TabletState state) {
-  if (state == display::TabletState::kEnteringTabletMode ||
-      state == display::TabletState::kExitingTabletMode) {
+  if (display::IsTabletStateChanging(state)) {
     // Do nothing when tablet state is still in the process of transition.
     return;
   }

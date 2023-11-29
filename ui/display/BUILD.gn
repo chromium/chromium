@@ -53,6 +53,7 @@ component("display") {
     "screen_info.h",
     "screen_infos.cc",
     "screen_infos.h",
+    "tablet_state.cc",
     "tablet_state.h",
     "unified_desktop_utils.cc",
     "unified_desktop_utils.h",

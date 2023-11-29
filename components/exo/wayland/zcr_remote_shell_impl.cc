@@ -557,11 +557,9 @@ void WaylandRemoteShell::OnDisplayTabletStateChanged(
     event_mapping_.send_layout_mode(remote_shell_resource_, layout_mode_);
   }
 
-  const bool layout_change_started =
-      state == display::TabletState::kEnteringTabletMode ||
-      state == display::TabletState::kExitingTabletMode;
-  if (layout_change_started)
+  if (display::IsTabletStateChanging(state)) {
     ScheduleSendDisplayMetrics(kConfigureDelayAfterLayoutSwitchMs);
+  }
 }
 
 void WaylandRemoteShell::OnDisplayMetricsChanged(
