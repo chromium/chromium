@@ -402,6 +402,27 @@ export const getNumpadKeyDisplay = (code: string): string => {
 };
 
 /**
+ * Translate an unidentified key to a display string.
+ */
+export const getUnidentifiedKeyDisplay = (e: KeyboardEvent): string => {
+  if (e.code === 'Backquote') {
+    // Backquote `key` will become 'unidentified' when ctrl
+    // is pressed.
+    if (e.ctrlKey) {
+      return unidentifiedKeyCodeToKey[e.keyCode];
+    }
+    return e.key;
+  }
+  if (e.code === '') {
+    // If there is no `code`, check the `key`. If the `key` is
+    // `unidentified`, we need to manually lookup the key.
+    return unidentifiedKeyCodeToKey[e.keyCode] || e.key;
+  }
+
+  return `Unidentified ${e.keyCode}`;
+};
+
+/**
  * @returns the Aria label for the standard accelerators.
  */
 export const getAriaLabelForStandardAccelerators =
@@ -472,6 +493,10 @@ export const getKeyDisplayFromKeyboardEvent = (e: KeyboardEvent): string => {
   if (e.code.startsWith('Numpad')) {
     return getNumpadKeyDisplay(e.code);
   }
+  // Handle unidentified keys:
+  if (e.key === 'Unidentified' || e.code === '') {
+    return getUnidentifiedKeyDisplay(e);
+  }
 
   switch (e.code) {
     case 'Space':  // Space key: e.key: ' ', e.code: 'Space', set keyDisplay
@@ -482,17 +507,6 @@ export const getKeyDisplayFromKeyboardEvent = (e: KeyboardEvent): string => {
       // 'LaunchApplication1' and will display as
       // 'overview' icon.
       return 'LaunchApplication1';
-    case 'Backquote':
-      // Backquote `key` will become 'unidentified' when ctrl
-      // is pressed.
-      if (e.ctrlKey && e.key === 'Unidentified') {
-        return unidentifiedKeyCodeToKey[e.keyCode];
-      }
-      return e.key;
-    case '':
-      // If there is no `code`, check the `key`. If the `key` is
-      // `unidentified`, we need to manually lookup the key.
-      return unidentifiedKeyCodeToKey[e.keyCode] || e.key;
     default:  // All other keys: Use the original e.key as keyDisplay.
       return e.key;
   }

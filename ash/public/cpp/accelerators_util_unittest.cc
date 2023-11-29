@@ -89,4 +89,13 @@ TEST_F(AcceleratorsUtilTest, NonAlphanumericKey) {
   EXPECT_EQ(expected, found_key_string.value());
 }
 
+TEST_F(AcceleratorsUtilTest, UnIdentifiedKey) {
+  EXPECT_EQ(u"Unidentified 10", GetKeyDisplay(ui::KeyboardCode::VKEY_BACKTAB));
+  EXPECT_EQ(u"Unidentified 231", GetKeyDisplay(ui::KeyboardCode::VKEY_PACKET));
+  EXPECT_EQ(u"Unidentified 240",
+            GetKeyDisplay(ui::KeyboardCode::VKEY_OEM_ATTN));
+  EXPECT_EQ(u"Unidentified 241",
+            GetKeyDisplay(ui::KeyboardCode::VKEY_OEM_FINISH));
+}
+
 }  // namespace ash

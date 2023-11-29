@@ -8,7 +8,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {CycleTabsTextSearchResult, SnapWindowLeftSearchResult, TakeScreenshotSearchResult} from 'chrome://shortcut-customization/js/fake_data.js';
 import {Accelerator, AcceleratorCategory, AcceleratorKeyState, Modifier, StandardAcceleratorInfo, TextAcceleratorPart, TextAcceleratorPartType} from 'chrome://shortcut-customization/js/shortcut_types.js';
-import {areAcceleratorsEqual, compareAcceleratorInfos, getAccelerator, getAcceleratorId, getModifiersForAcceleratorInfo, getModifierString, getNumpadKeyDisplay, getSortedModifiers, getSourceAndActionFromAcceleratorId, getURLForSearchResult, isCustomizationAllowed, isStandardAcceleratorInfo, isTextAcceleratorInfo, SHORTCUTS_APP_URL} from 'chrome://shortcut-customization/js/shortcut_utils.js';
+import {areAcceleratorsEqual, compareAcceleratorInfos, getAccelerator, getAcceleratorId, getModifiersForAcceleratorInfo, getModifierString, getNumpadKeyDisplay, getSortedModifiers, getSourceAndActionFromAcceleratorId, getUnidentifiedKeyDisplay, getURLForSearchResult, isCustomizationAllowed, isStandardAcceleratorInfo, isTextAcceleratorInfo, SHORTCUTS_APP_URL} from 'chrome://shortcut-customization/js/shortcut_utils.js';
 import {assertArrayEquals, assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {createStandardAcceleratorInfo, createTextAcceleratorInfo} from './shortcut_customization_test_util.js';
@@ -240,6 +240,25 @@ suite('shortcutUtilsTest', function() {
 
     const result2 = getSourceAndActionFromAcceleratorId('0-33');
     assertDeepEquals(result2, {source: 0, action: 33});
+  });
+
+  test('getUnidentifiedKeyDisplay', async () => {
+    // If unidentified keys in unidentifiedKeyCodeToKey map, return the mapped
+    // value.
+    const key_event_1 = new KeyboardEvent('keydown', {
+      key: 'Unidentified',
+      keyCode: 239,
+      code: '',
+    });
+    assertEquals('ViewAllApps', getUnidentifiedKeyDisplay(key_event_1));
+
+    // For other unidentified keys, keydisplay is "Keycode {digit}".
+    const key_event_2 = new KeyboardEvent('keydown', {
+      key: 'Unidentified',
+      keyCode: 10,
+      code: 'Unidentified',
+    });
+    assertEquals('Unidentified 10', getUnidentifiedKeyDisplay(key_event_2));
   });
 
   test('areAcceleratorsEqual', async () => {
