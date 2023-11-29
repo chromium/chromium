@@ -168,6 +168,28 @@ static_assert([]() constexpr {
 }());
 #endif
 
+struct StructWithoutTypeBasedTraits {};
+struct BaseWithTypeBasedTraits {};
+struct DerivedWithTypeBasedTraits : BaseWithTypeBasedTraits {};
+
+namespace base::raw_ptr_traits {
+// `BaseWithTypeBasedTraits` and any derived classes have
+// `RawPtrTraits::kDummyForTest`.
+template <typename T>
+constexpr auto kTypeTraits<
+    T,
+    std::enable_if_t<std::is_base_of_v<BaseWithTypeBasedTraits, T>>> =
+    RawPtrTraits::kDummyForTest;
+}  // namespace base::raw_ptr_traits
+
+// `raw_ptr<T>` should have traits based on specialization of `kTypeTraits<T>`.
+static_assert(!ContainsFlags(raw_ptr<StructWithoutTypeBasedTraits>::Traits,
+                             base::RawPtrTraits::kDummyForTest));
+static_assert(ContainsFlags(raw_ptr<BaseWithTypeBasedTraits>::Traits,
+                            base::RawPtrTraits::kDummyForTest));
+static_assert(ContainsFlags(raw_ptr<DerivedWithTypeBasedTraits>::Traits,
+                            base::RawPtrTraits::kDummyForTest));
+
 // Don't use base::internal for testing raw_ptr API, to test if code outside
 // this namespace calls the correct functions from this namespace.
 namespace {

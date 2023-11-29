@@ -271,6 +271,15 @@ using ImplForTraits =
                        test::RawPtrCountingImplForTest,
                        UnderlyingImplForTraits<Traits>>;
 
+// `kTypeTraits` is a customization interface to accosiate `T` with some
+// `RawPtrTraits`. Users may create specialization of this variable
+// to enable some traits by default.
+// Note that specialization must be declared before the first use that would
+// cause implicit instantiation of `raw_ptr` or `raw_ref`, in every translation
+// unit where such use occurs.
+template <typename T, typename SFINAE = void>
+constexpr inline auto kTypeTraits = RawPtrTraits::kEmpty;
+
 }  // namespace raw_ptr_traits
 
 // `raw_ptr<T>` is a non-owning smart pointer that has improved memory-safety
@@ -283,9 +292,12 @@ using ImplForTraits =
 // non-default move constructor/assignment. Thus, it's possible to get an error
 // where the pointer is not actually dangling, and have to work around the
 // compiler. We have not managed to construct such an example in Chromium yet.
-template <typename T, RawPtrTraits Traits = RawPtrTraits::kEmpty>
+template <typename T, RawPtrTraits PointerTraits = RawPtrTraits::kEmpty>
 class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
  public:
+  // Users may specify `RawPtrTraits` via raw_ptr's second template parameter
+  // `PointerTraits`, or specialization of `raw_ptr_traits::kTypeTraits<T>`.
+  constexpr static auto Traits = PointerTraits | raw_ptr_traits::kTypeTraits<T>;
   using Impl = typename raw_ptr_traits::ImplForTraits<Traits>;
   // Needed to make gtest Pointee matcher work with raw_ptr.
   using element_type = T;
@@ -416,14 +428,15 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   PA_ALWAYS_INLINE constexpr explicit raw_ptr(
       const raw_ptr<T, PassedTraits>& p) noexcept
       : wrapped_ptr_(Impl::WrapRawPtrForDuplication(
-            raw_ptr_traits::ImplForTraits<PassedTraits>::
+            raw_ptr_traits::ImplForTraits<raw_ptr<T, PassedTraits>::Traits>::
                 UnsafelyUnwrapPtrForDuplication(p.wrapped_ptr_))) {
     // Limit cross-kind conversions only to cases where kMayDangle gets added,
     // because that's needed for Unretained(Ref)Wrapper. Use a static_assert,
     // instead of disabling via SFINAE, so that the compiler catches other
     // conversions. Otherwise implicit raw_ptr<T> -> T* -> raw_ptr<> route will
     // be taken.
-    static_assert(Traits == (PassedTraits | RawPtrTraits::kMayDangle));
+    static_assert(Traits == (raw_ptr<T, PassedTraits>::Traits |
+                             RawPtrTraits::kMayDangle));
   }
 
   // Cross-kind assignment.
@@ -438,12 +451,13 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     // instead of disabling via SFINAE, so that the compiler catches other
     // conversions. Otherwise implicit raw_ptr<T> -> T* -> raw_ptr<> route will
     // be taken.
-    static_assert(Traits == (PassedTraits | RawPtrTraits::kMayDangle));
+    static_assert(Traits == (raw_ptr<T, PassedTraits>::Traits |
+                             RawPtrTraits::kMayDangle));
 
     Impl::ReleaseWrappedPtr(wrapped_ptr_);
     wrapped_ptr_ = Impl::WrapRawPtrForDuplication(
-        raw_ptr_traits::ImplForTraits<
-            PassedTraits>::UnsafelyUnwrapPtrForDuplication(p.wrapped_ptr_));
+        raw_ptr_traits::ImplForTraits<raw_ptr<T, PassedTraits>::Traits>::
+            UnsafelyUnwrapPtrForDuplication(p.wrapped_ptr_));
     return *this;
   }
 

@@ -31,10 +31,10 @@ void CrossKindConversionFromMayDangle() {
   DanglingRefB ref_b1(b);
   DanglingRefC ref_c1(c);
   DanglingRefD ref_d1(d);
-  raw_ref<TypeA> ref_a2 = ref_a1;             // expected-error@*:* {{static assertion failed due to requirement '(partition_alloc::internal::RawPtrTraits)4U == ((partition_alloc::internal::RawPtrTraits)5U | RawPtrTraits::kMayDangle)'}}
-  raw_ref<TypeB> ref_b2(ref_b1);              // expected-error@*:* {{static assertion failed due to requirement '(partition_alloc::internal::RawPtrTraits)4U == ((partition_alloc::internal::RawPtrTraits)5U | RawPtrTraits::kMayDangle)'}}
-  raw_ref<TypeC> ref_c2 = std::move(ref_c1);  // expected-error@*:* {{static assertion failed due to requirement '(partition_alloc::internal::RawPtrTraits)4U == ((partition_alloc::internal::RawPtrTraits)5U | RawPtrTraits::kMayDangle)'}}
-  raw_ref<TypeD> ref_d2(std::move(ref_d1));   // expected-error@*:* {{static assertion failed due to requirement '(partition_alloc::internal::RawPtrTraits)4U == ((partition_alloc::internal::RawPtrTraits)5U | RawPtrTraits::kMayDangle)'}}
+  raw_ref<TypeA> ref_a2 = ref_a1;             // expected-error@*:* {{static assertion failed due to requirement 'Traits == (raw_ptr<(anonymous namespace)::TypeA, 5>::Traits | RawPtrTraits::kMayDangle)'}}
+  raw_ref<TypeB> ref_b2(ref_b1);              // expected-error@*:* {{static assertion failed due to requirement 'Traits == (raw_ptr<(anonymous namespace)::TypeB, 5>::Traits | RawPtrTraits::kMayDangle)'}}
+  raw_ref<TypeC> ref_c2 = std::move(ref_c1);  // expected-error@*:* {{static assertion failed due to requirement 'Traits == (raw_ptr<(anonymous namespace)::TypeC, 5>::Traits | RawPtrTraits::kMayDangle)'}}
+  raw_ref<TypeD> ref_d2(std::move(ref_d1));   // expected-error@*:* {{static assertion failed due to requirement 'Traits == (raw_ptr<(anonymous namespace)::TypeD, 5>::Traits | RawPtrTraits::kMayDangle)'}}
 }
 
 void CrossKindConversionFromDummy() {
@@ -47,10 +47,10 @@ void CrossKindConversionFromDummy() {
   raw_ref<TypeB, base::RawPtrTraits::kDummyForTest> ref_b1(b);
   raw_ref<TypeC, base::RawPtrTraits::kDummyForTest> ref_c1(c);
   raw_ref<TypeD, base::RawPtrTraits::kDummyForTest> ref_d1(d);
-  DanglingRefA ref_a2 = ref_a1;             // expected-error@*:* {{static assertion failed due to requirement '(partition_alloc::internal::RawPtrTraits)5U == ((partition_alloc::internal::RawPtrTraits)2052U | RawPtrTraits::kMayDangle)'}}
-  DanglingRefB ref_b3(ref_b1);              // expected-error@*:* {{static assertion failed due to requirement '(partition_alloc::internal::RawPtrTraits)5U == ((partition_alloc::internal::RawPtrTraits)2052U | RawPtrTraits::kMayDangle)'}}
-  DanglingRefC ref_c2 = std::move(ref_c1);  // expected-error@*:* {{static assertion failed due to requirement '(partition_alloc::internal::RawPtrTraits)5U == ((partition_alloc::internal::RawPtrTraits)2052U | RawPtrTraits::kMayDangle)'}}
-  DanglingRefD ref_d2(std::move(ref_d1));   // expected-error@*:* {{static assertion failed due to requirement '(partition_alloc::internal::RawPtrTraits)5U == ((partition_alloc::internal::RawPtrTraits)2052U | RawPtrTraits::kMayDangle)'}}
+  DanglingRefA ref_a2 = ref_a1;             // expected-error@*:* {{static assertion failed due to requirement 'Traits == (raw_ptr<(anonymous namespace)::TypeA, 2052>::Traits | RawPtrTraits::kMayDangle)'}}
+  DanglingRefB ref_b3(ref_b1);              // expected-error@*:* {{static assertion failed due to requirement 'Traits == (raw_ptr<(anonymous namespace)::TypeB, 2052>::Traits | RawPtrTraits::kMayDangle)'}}
+  DanglingRefC ref_c2 = std::move(ref_c1);  // expected-error@*:* {{static assertion failed due to requirement 'Traits == (raw_ptr<(anonymous namespace)::TypeC, 2052>::Traits | RawPtrTraits::kMayDangle)'}}
+  DanglingRefD ref_d2(std::move(ref_d1));   // expected-error@*:* {{static assertion failed due to requirement 'Traits == (raw_ptr<(anonymous namespace)::TypeD, 2052>::Traits | RawPtrTraits::kMayDangle)'}}
 }
 
 }  // namespace
