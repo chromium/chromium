@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ntp/browser_policy_new_tab_page_rewriter.h"
+#import "ios/chrome/browser/ntp/model/browser_policy_new_tab_page_rewriter.h"
 
 #import "components/prefs/pref_service.h"
 #import "components/url_formatter/url_fixer.h"

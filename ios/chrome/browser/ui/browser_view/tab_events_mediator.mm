@@ -6,7 +6,7 @@
 
 #import "ios/chrome/browser/feature_engagement/model/tracker_util.h"
 #import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
-#import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/all_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"

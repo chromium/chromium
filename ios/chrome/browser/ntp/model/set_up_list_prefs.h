@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_NTP_SET_UP_LIST_PREFS_H_
-#define IOS_CHROME_BROWSER_NTP_SET_UP_LIST_PREFS_H_
+#ifndef IOS_CHROME_BROWSER_NTP_MODEL_SET_UP_LIST_PREFS_H_
+#define IOS_CHROME_BROWSER_NTP_MODEL_SET_UP_LIST_PREFS_H_
 
 namespace base {
 class Time;
@@ -67,4 +67,4 @@ base::Time GetLastInteraction(PrefService* prefs);
 
 }  // namespace set_up_list_prefs
 
-#endif  // IOS_CHROME_BROWSER_NTP_SET_UP_LIST_PREFS_H_
+#endif  // IOS_CHROME_BROWSER_NTP_MODEL_SET_UP_LIST_PREFS_H_

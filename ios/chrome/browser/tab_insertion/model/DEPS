@@ -1,6 +1,6 @@
 include_rules = [
   "+ios/chrome/browser/sessions",
   "+ios/chrome/browser/crash_report/model",
-  "+ios/chrome/browser/ntp/new_tab_page_tab_helper.h",
+  "+ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h",
   "+ios/chrome/browser/url_loading/model",
 ]

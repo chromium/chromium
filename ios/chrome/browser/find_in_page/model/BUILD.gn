@@ -25,7 +25,7 @@ source_set("model") {
     "//base",
     "//components/strings:components_strings_grit",
     "//components/ukm/ios:ukm_url_recorder",
-    "//ios/chrome/browser/ntp",
+    "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/web",
     "//ios/web/public",
     "//ios/web/public/find_in_page",

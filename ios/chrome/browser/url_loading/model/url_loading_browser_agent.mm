@@ -9,7 +9,7 @@
 #import "base/strings/string_number_conversions.h"
 #import "base/task/thread_pool.h"
 #import "ios/chrome/browser/crash_report/model/crash_reporter_url_observer.h"
-#import "ios/chrome/browser/ntp/new_tab_page_util.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/prerender/model/prerender_service.h"
 #import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"

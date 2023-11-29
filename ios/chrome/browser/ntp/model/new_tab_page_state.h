@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_NTP_NEW_TAB_PAGE_STATE_H_
-#define IOS_CHROME_BROWSER_NTP_NEW_TAB_PAGE_STATE_H_
+#ifndef IOS_CHROME_BROWSER_NTP_MODEL_NEW_TAB_PAGE_STATE_H_
+#define IOS_CHROME_BROWSER_NTP_MODEL_NEW_TAB_PAGE_STATE_H_
 
 #import <UIKit/UIKit.h>
 
@@ -30,4 +30,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_NTP_NEW_TAB_PAGE_STATE_H_
+#endif  // IOS_CHROME_BROWSER_NTP_MODEL_NEW_TAB_PAGE_STATE_H_

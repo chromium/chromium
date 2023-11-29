@@ -132,7 +132,7 @@ source_set("settings") {
     "//ios/chrome/browser/language/model",
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/net:crurl",
-    "//ios/chrome/browser/ntp:util",
+    "//ios/chrome/browser/ntp/model:util",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/passwords/model:password_checkup_utils",
     "//ios/chrome/browser/photos/model",

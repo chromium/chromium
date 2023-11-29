@@ -8,7 +8,7 @@ include_rules = [
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/supervised_user/model",
   "+ios/chrome/browser/tabs/model",
-  "+ios/chrome/browser/ntp",
+  "+ios/chrome/browser/ntp/model",
   "+ios/chrome/browser/sessions",
   "+ios/chrome/browser/web",
 ]

@@ -138,7 +138,7 @@ source_set("omnibox_internal") {
     "//ios/chrome/browser/https_upgrades/model",
     "//ios/chrome/browser/intents:intents_donation_helper",
     "//ios/chrome/browser/net",
-    "//ios/chrome/browser/ntp",
+    "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/prerender/model",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/search_engines/model:search_engines_util",

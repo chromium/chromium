@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ntp/set_up_list_metrics.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_metrics.h"
 
 #import "base/metrics/histogram_functions.h"
-#import "ios/chrome/browser/ntp/set_up_list_item_type.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
 
 namespace set_up_list_metrics {
 

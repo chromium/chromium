@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_NTP_SET_UP_LIST_ITEM_H_
-#define IOS_CHROME_BROWSER_NTP_SET_UP_LIST_ITEM_H_
+#ifndef IOS_CHROME_BROWSER_NTP_MODEL_SET_UP_LIST_ITEM_H_
+#define IOS_CHROME_BROWSER_NTP_MODEL_SET_UP_LIST_ITEM_H_
 
 #import <UIKit/UIKit.h>
 
@@ -29,4 +29,4 @@ enum class SetUpListItemType;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_NTP_SET_UP_LIST_ITEM_H_
+#endif  // IOS_CHROME_BROWSER_NTP_MODEL_SET_UP_LIST_ITEM_H_

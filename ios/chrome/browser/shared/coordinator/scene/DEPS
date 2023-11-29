@@ -9,7 +9,7 @@ include_rules = [
   "+ios/chrome/browser/mailto_handler/model",
   "+ios/chrome/browser/intents",
   "+ios/chrome/browser/main/model",
-  "+ios/chrome/browser/ntp",
+  "+ios/chrome/browser/ntp/model",
   "+ios/chrome/browser/policy",
   "+ios/chrome/browser/passwords/model",
   "+ios/chrome/browser/promos_manager",

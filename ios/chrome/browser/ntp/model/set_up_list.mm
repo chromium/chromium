@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ntp/set_up_list.h"
+#import "ios/chrome/browser/ntp/model/set_up_list.h"
 
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
@@ -11,11 +11,11 @@
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
-#import "ios/chrome/browser/ntp/set_up_list_delegate.h"
-#import "ios/chrome/browser/ntp/set_up_list_item.h"
-#import "ios/chrome/browser/ntp/set_up_list_item_type.h"
-#import "ios/chrome/browser/ntp/set_up_list_metrics.h"
-#import "ios/chrome/browser/ntp/set_up_list_prefs.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_delegate.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_item.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_metrics.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/sync/model/enterprise_utils.h"

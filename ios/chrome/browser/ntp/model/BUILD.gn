@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("ntp") {
+source_set("model") {
   sources = [
     "browser_policy_new_tab_page_rewriter.h",
     "browser_policy_new_tab_page_rewriter.mm",
@@ -37,7 +37,7 @@ source_set("util") {
     "new_tab_page_util.mm",
   ]
   deps = [
-    ":ntp",
+    ":model",
     "//components/search",
     "//components/search_engines",
     "//ios/chrome/browser/shared/model/url:constants",
@@ -119,7 +119,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/default_browser/model:test_support",
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/favicon:favicon",
-    "//ios/chrome/browser/ntp",
+    "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/model/application_context",

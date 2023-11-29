@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ntp/set_up_list_item_type.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
 
 // Enum specifying the type of Content Suggestions a module is showing.
 // Entries should always keep synced with the IOSMagicStackModuleType histogram

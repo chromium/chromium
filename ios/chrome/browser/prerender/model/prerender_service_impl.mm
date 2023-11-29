@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/prerender/model/prerender_service_impl.h"
 
 #import "base/metrics/histogram_macros.h"
-#import "ios/chrome/browser/ntp/new_tab_page_util.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/prerender/model/preload_controller.h"
 #import "ios/chrome/browser/sessions/session_restoration_service.h"
 #import "ios/chrome/browser/sessions/session_restoration_service_factory.h"

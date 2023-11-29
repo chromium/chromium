@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_NTP_SET_UP_LIST_ITEM_TYPE_H_
-#define IOS_CHROME_BROWSER_NTP_SET_UP_LIST_ITEM_TYPE_H_
+#ifndef IOS_CHROME_BROWSER_NTP_MODEL_SET_UP_LIST_ITEM_TYPE_H_
+#define IOS_CHROME_BROWSER_NTP_MODEL_SET_UP_LIST_ITEM_TYPE_H_
 
 // The possible types of items for the Set Up List. This enum must match the
 // UMA histogram enum IOSSetUpListItemType.
@@ -20,4 +20,4 @@ enum class SetUpListItemType {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 
-#endif  // IOS_CHROME_BROWSER_NTP_SET_UP_LIST_ITEM_TYPE_H_
+#endif  // IOS_CHROME_BROWSER_NTP_MODEL_SET_UP_LIST_ITEM_TYPE_H_

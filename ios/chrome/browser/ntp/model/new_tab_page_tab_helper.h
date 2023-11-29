@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_NTP_NEW_TAB_PAGE_TAB_HELPER_H_
-#define IOS_CHROME_BROWSER_NTP_NEW_TAB_PAGE_TAB_HELPER_H_
+#ifndef IOS_CHROME_BROWSER_NTP_MODEL_NEW_TAB_PAGE_TAB_HELPER_H_
+#define IOS_CHROME_BROWSER_NTP_MODEL_NEW_TAB_PAGE_TAB_HELPER_H_
 
 #import <UIKit/UIKit.h>
 
@@ -86,4 +86,4 @@ class NewTabPageTabHelper : public web::WebStateObserver,
   WEB_STATE_USER_DATA_KEY_DECL();
 };
 
-#endif  // IOS_CHROME_BROWSER_NTP_NEW_TAB_PAGE_TAB_HELPER_H_
+#endif  // IOS_CHROME_BROWSER_NTP_MODEL_NEW_TAB_PAGE_TAB_HELPER_H_

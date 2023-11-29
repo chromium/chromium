@@ -11,7 +11,7 @@
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/find_in_page/model/find_in_page_model.h"
 #import "ios/chrome/browser/find_in_page/model/find_in_page_response_delegate.h"
-#import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/web/public/find_in_page/find_in_page_manager.h"
 #import "ios/web/public/find_in_page/find_in_page_manager_delegate_bridge.h"
 #import "ios/web/public/web_state.h"

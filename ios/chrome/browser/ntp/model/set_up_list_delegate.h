@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_NTP_SET_UP_LIST_DELEGATE_H_
-#define IOS_CHROME_BROWSER_NTP_SET_UP_LIST_DELEGATE_H_
+#ifndef IOS_CHROME_BROWSER_NTP_MODEL_SET_UP_LIST_DELEGATE_H_
+#define IOS_CHROME_BROWSER_NTP_MODEL_SET_UP_LIST_DELEGATE_H_
 
 // Protocol that SetUpList uses to tell its delegate of events.
 @protocol SetUpListDelegate
@@ -13,4 +13,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_NTP_SET_UP_LIST_DELEGATE_H_
+#endif  // IOS_CHROME_BROWSER_NTP_MODEL_SET_UP_LIST_DELEGATE_H_

@@ -23,7 +23,7 @@ source_set("side_swipe") {
     "//base",
     "//components/reading_list/core",
     "//ios/chrome/app/theme",
-    "//ios/chrome/browser/ntp:util",
+    "//ios/chrome/browser/ntp/model:util",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
