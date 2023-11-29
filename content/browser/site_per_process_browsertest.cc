@@ -10192,11 +10192,14 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // Finally, navigate the grandchild frame to a new origin, creating a new site
   // instance. Again, the new document should be sandboxed, as it should get its
   // flags from its (remote) parent in B.
+  RenderFrameDeletedObserver deleted_observer_grandchild(
+      root->child_at(0)->child_at(0)->current_frame_host());
   EXPECT_TRUE(NavigateToURLFromRenderer(
       root->child_at(0)->child_at(0),
       embedded_test_server()->GetURL("baz.com", "/title1.html")));
 
   if (sandboxed_iframes_are_isolated) {
+    deleted_observer_grandchild.WaitUntilDeleted();
     switch (blink::features::kIsolateSandboxedIframesGroupingParam.Get()) {
       case blink::features::IsolateSandboxedIframesGrouping::kPerSite:
       case blink::features::IsolateSandboxedIframesGrouping::kPerOrigin:
