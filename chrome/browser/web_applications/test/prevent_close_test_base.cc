@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/prevent_close_test_base.h"
+#include "chrome/browser/web_applications/test/prevent_close_test_base.h"
 
 #include "base/json/json_reader.h"
 #include "base/test/scoped_feature_list.h"
@@ -21,7 +21,6 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/webapps/common/web_app_id.h"
-#include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"

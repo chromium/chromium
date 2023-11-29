@@ -11,12 +11,16 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
+#include "chrome/browser/web_applications/test/prevent_close_test_base.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/models/menu_model.h"
 #include "ui/base/ui_base_features.h"
 #include "url/gurl.h"
 
@@ -92,6 +96,58 @@ IN_PROC_BROWSER_TEST_F(TestWebAppMenuModelCR2023, CommandStatusTest) {
   }
 
   UninstallWebApp(app_id);
+}
+
+namespace {
+constexpr char kCalculatorAppUrl[] = "https://calculator.apps.chrome/";
+
+constexpr char kPreventCloseEnabledForCalculator[] = R"([
+  {
+    "manifest_id": "https://calculator.apps.chrome/",
+    "run_on_os_login": "run_windowed",
+    "prevent_close_after_run_on_os_login": true
+  }
+])";
+
+#if BUILDFLAG(IS_CHROMEOS)
+constexpr bool kShouldPreventClose = true;
+#else
+constexpr bool kShouldPreventClose = false;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+}  // namespace
+
+using WebAppModelMenuPreventCloseTest = PreventCloseTestBase;
+
+IN_PROC_BROWSER_TEST_F(WebAppModelMenuPreventCloseTest,
+                       PreventCloseEnforedByPolicy) {
+  InstallPWA(GURL(kCalculatorAppUrl), web_app::kCalculatorAppId);
+  SetWebAppSettings(kPreventCloseEnabledForCalculator);
+
+  Browser* const browser =
+      LaunchPWA(web_app::kCalculatorAppId, /*launch_in_window=*/true);
+  ASSERT_TRUE(browser);
+
+  {
+    auto app_menu_model =
+        std::make_unique<WebAppMenuModel>(/*provider=*/nullptr, browser);
+    app_menu_model->Init();
+
+    EXPECT_EQ(!kShouldPreventClose,
+              app_menu_model->IsCommandIdEnabled(IDC_OPEN_IN_CHROME));
+    EXPECT_EQ(!kShouldPreventClose,
+              app_menu_model->IsCommandIdVisible(IDC_OPEN_IN_CHROME));
+
+    // Verify that "Open in Chrome" button is not visible in the menu.
+    ui::MenuModel* model = app_menu_model.get();
+    size_t index = 0;
+    const bool found = ui::MenuModel::GetModelAndIndexForCommandId(
+        IDC_OPEN_IN_CHROME, &model, &index);
+    EXPECT_TRUE(found);
+    EXPECT_EQ(!kShouldPreventClose, model->IsVisibleAt(index));
+  }
+
+  test::UninstallAllWebApps(browser->profile());
 }
 
 }  // namespace web_app

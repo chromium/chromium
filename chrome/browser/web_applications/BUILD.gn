@@ -656,6 +656,28 @@ source_set("web_applications_test_support") {
   }
 }
 
+# This has to be a separate target to avoid circular dependencies with
+# `//chrome/test:test_support` target.
+source_set("prevent_close_test_support") {
+  testonly = true
+
+  sources = [
+    "test/prevent_close_test_base.cc",
+    "test/prevent_close_test_base.h",
+  ]
+  deps = [
+    ":web_applications",
+    ":web_applications_test_support",
+    "//chrome/browser/policy:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:ui",
+    "//chrome/test:test_support",
+    "//components/policy/core/common:test_support",
+    "//components/webapps/common:common",
+    "//ui/base:types",
+  ]
+}
+
 source_set("web_applications_unit_tests") {
   testonly = true
 

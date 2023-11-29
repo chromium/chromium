@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_PREVENT_CLOSE_TEST_BASE_H_
-#define CHROME_BROWSER_UI_PREVENT_CLOSE_TEST_BASE_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_PREVENT_CLOSE_TEST_BASE_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_TEST_PREVENT_CLOSE_TEST_BASE_H_
 
 #include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
@@ -55,4 +55,4 @@ class PreventCloseTestBase : public policy::PolicyTest {
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
 };
 
-#endif  // CHROME_BROWSER_UI_PREVENT_CLOSE_TEST_BASE_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_TEST_PREVENT_CLOSE_TEST_BASE_H_

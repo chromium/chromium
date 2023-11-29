@@ -308,7 +308,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, NoOpenInChrome) {
   size_t index = 0;
   const bool found = app_menu_model->GetModelAndIndexForCommandId(
       IDC_OPEN_IN_CHROME, &model, &index);
-  EXPECT_FALSE(found);
+  EXPECT_TRUE(found);
+  EXPECT_FALSE(model->IsVisibleAt(index));
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, WasmLoadableFromFile) {
