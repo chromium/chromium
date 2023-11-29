@@ -64,6 +64,25 @@ suite('NetworkIpConfigTest', function() {
     assertTrue(ipConfig.$$('#autoConfigIpToggle').disabled);
   });
 
+  test(
+      'Show ip config textbox when automatic config is toggled off',
+      function() {
+        ipConfig.managedProperties = {
+          type: NetworkType.kEthernet,
+        };
+        flush();
+
+        const autoConfigIpToggle = ipConfig.$$('#autoConfigIpToggle');
+        assertFalse(autoConfigIpToggle.disabled);
+
+        autoConfigIpToggle.click();
+        flush();
+
+        const propertyList = ipConfig.$$('network-property-list-mojo');
+        assertTrue(!!propertyList);
+        assertFalse(propertyList.disabled);
+      });
+
   test('Disabled UI state', function() {
     // WiFi non-policy networks should enable autoConfigIpToggle.
     ipConfig.managedProperties = {
