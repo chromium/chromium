@@ -76,7 +76,7 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
                            bool* defer) override;
   const char* NameForLoggingWillProcessResponse() override;
 
-  UrlCheckerOnSB* GetSBCheckerForTesting();
+  UrlCheckerOnSB* GetSyncSBCheckerForTesting();
 
  private:
   // |web_contents_getter| is used for displaying SafeBrowsing UI when
@@ -93,34 +93,39 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
       base::WeakPtr<AsyncCheckTracker> async_check_tracker);
 
   // |slow_check| indicates whether it reports the result of a slow check.
-  // (Please see comments of CheckerOnSB::OnCheckUrlResult() for what slow check
-  // means).
-  void OnCompleteCheck(
+  // (Please see comments of UrlCheckerOnSB::OnCheckUrlResult() for what slow
+  // check means).
+  void OnCompleteSyncCheck(
       bool slow_check,
       bool proceed,
       bool showed_interstitial,
       SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
       bool did_check_url_real_time_allowlist);
 
-  // Returns the suffixed to be used for the TotalDelay2 metrics that specifies
-  // which type of check was performed.
-  std::string GetUrlCheckTypeForLogging(
-      SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check);
-
   // Called to skip future safe browsing checks and resume the request if
   // necessary.
   void SkipChecks();
 
   // Called when a slow safe browsing check is ongoing.
-  void NotifySlowCheck();
+  void NotifySyncSlowCheck();
 
-  // Destroys |sb_checker_| on the IO thread, or UI thread if
+  // Returns the suffixed to be used for the TotalDelay2 metrics that specifies
+  // which type of check was performed.
+  std::string GetUrlCheckTypeForLogging(
+      SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check);
+
+  // Destroys all checkers on the IO thread, or UI thread if
   // kSafeBrowsingOnUIThread is enabled.
-  void DeleteCheckerOnSB();
+  void DeleteUrlCheckerOnSB();
 
-  size_t pending_checks_ = 0;
+  size_t pending_sync_checks_ = 0;
+
   // How many slow checks that haven't received results.
-  size_t pending_slow_checks_ = 0;
+  size_t pending_sync_slow_checks_ = 0;
+
+  // Whether future safe browsing checks should be skipped.
+  bool skip_checks_ = false;
+
   bool blocked_ = false;
 
   // The time when |WillStartRequest| is called.
@@ -136,10 +141,7 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
   // The total delay caused by SafeBrowsing deferring the resource load.
   base::TimeDelta total_delay_;
 
-  // Whether future safe browsing checks should be skipped.
-  bool skip_checks_ = false;
-
-  std::unique_ptr<UrlCheckerOnSB> sb_checker_;
+  std::unique_ptr<UrlCheckerOnSB> sync_sb_checker_;
 
   // Metric suffix for the URL lookup service.
   std::string url_lookup_service_metric_suffix_;

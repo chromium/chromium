@@ -269,9 +269,14 @@ class MockSafeBrowsingUrlChecker : public SafeBrowsingUrlCheckerImpl {
     callback_infos_.push_back(std::move(callback_info));
   }
 
+  base::WeakPtr<MockSafeBrowsingUrlChecker> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
   size_t check_url_called_cnt_ = 0;
   std::vector<CallbackInfo> callback_infos_;
+  base::WeakPtrFactory<MockSafeBrowsingUrlChecker> weak_factory_{this};
 };
 
 }  // namespace
@@ -309,7 +314,7 @@ class SBBrowserUrlLoaderThrottleTest : public ::testing::Test {
     url_checker_delegate_ = base::MakeRefCounted<MockUrlCheckerDelegate>();
     throttle_delegate_ = std::make_unique<MockThrottleDelegate>();
 
-    std::unique_ptr<MockSafeBrowsingUrlChecker> url_checker =
+    std::unique_ptr<MockSafeBrowsingUrlChecker> sync_url_checker =
         std::make_unique<MockSafeBrowsingUrlChecker>(
             net::HttpRequestHeaders(), /*load_flags=*/0,
             network::mojom::RequestDestination::kDocument,
@@ -329,10 +334,10 @@ class SBBrowserUrlLoaderThrottleTest : public ::testing::Test {
             /*is_mechanism_experiment_allowed=*/false,
             /*hash_realtime_selection=*/
             hash_realtime_utils::HashRealTimeSelection::kNone);
-    url_checker_ = url_checker.get();
+    sync_url_checker_ = sync_url_checker->GetWeakPtr();
 
-    throttle_->GetSBCheckerForTesting()->SetUrlCheckerForTesting(
-        std::move(url_checker));
+    throttle_->GetSyncSBCheckerForTesting()->SetUrlCheckerForTesting(
+        std::move(sync_url_checker));
     throttle_->set_delegate(throttle_delegate_.get());
 
     url_ = GURL("https://example.com/");
@@ -394,15 +399,15 @@ class SBBrowserUrlLoaderThrottleTest : public ::testing::Test {
       std::string expected_histogram) {
     SetUpTest(url_real_time_lookup_enabled);
     base::HistogramTester histograms;
-    url_checker_->AddCallbackInfo(/*should_proceed=*/true,
-                                  /*should_show_interstitial=*/false,
-                                  /*should_delay_callback=*/true,
-                                  performed_check);
+    sync_url_checker_->AddCallbackInfo(/*should_proceed=*/true,
+                                       /*should_show_interstitial=*/false,
+                                       /*should_delay_callback=*/true,
+                                       performed_check);
 
     CallWillStartRequest();
     CallWillProcessResponse();
     task_environment_.FastForwardBy(base::Milliseconds(200));
-    url_checker_->RestartDelayedCallback(/*index=*/0);
+    sync_url_checker_->RestartDelayedCallback(/*index=*/0);
     task_environment_.RunUntilIdle();
 
     histograms.ExpectUniqueTimeSample(expected_histogram,
@@ -417,8 +422,7 @@ class SBBrowserUrlLoaderThrottleTest : public ::testing::Test {
   std::unique_ptr<BrowserURLLoaderThrottle> throttle_;
   // Owned by |throttle_|. May be deleted before the test completes. Prefer
   // setting it up at the start of the test.
-  raw_ptr<MockSafeBrowsingUrlChecker, AcrossTasksDanglingUntriaged>
-      url_checker_;
+  base::WeakPtr<MockSafeBrowsingUrlChecker> sync_url_checker_;
   std::unique_ptr<MockRealTimeUrlLookupService> url_lookup_service_ =
       std::make_unique<MockRealTimeUrlLookupService>();
   scoped_refptr<MockUrlCheckerDelegate> url_checker_delegate_;
@@ -428,9 +432,9 @@ class SBBrowserUrlLoaderThrottleTest : public ::testing::Test {
 TEST_F(SBBrowserUrlLoaderThrottleTest,
        VerifyDefer_DoesNotDeferOnSafeDocumentUrl) {
   SetUpTest();
-  url_checker_->AddCallbackInfo(/*should_proceed=*/true,
-                                /*should_show_interstitial=*/false,
-                                /*should_delay_callback=*/false);
+  sync_url_checker_->AddCallbackInfo(/*should_proceed=*/true,
+                                     /*should_show_interstitial=*/false,
+                                     /*should_delay_callback=*/false);
 
   bool defer = CallWillStartRequest();
   EXPECT_FALSE(defer);
@@ -442,9 +446,9 @@ TEST_F(SBBrowserUrlLoaderThrottleTest,
 
 TEST_F(SBBrowserUrlLoaderThrottleTest, VerifyDefer_DeferOnUnsafeDocumentUrl) {
   SetUpTest();
-  url_checker_->AddCallbackInfo(/*should_proceed=*/false,
-                                /*should_show_interstitial=*/true,
-                                /*should_delay_callback=*/false);
+  sync_url_checker_->AddCallbackInfo(/*should_proceed=*/false,
+                                     /*should_show_interstitial=*/true,
+                                     /*should_delay_callback=*/false);
 
   bool defer = CallWillStartRequest();
   // Safe Browsing and URL loader are performed in parallel. Safe Browsing
@@ -460,9 +464,9 @@ TEST_F(SBBrowserUrlLoaderThrottleTest, VerifyDefer_DeferOnUnsafeDocumentUrl) {
 TEST_F(SBBrowserUrlLoaderThrottleTest,
        VerifyDefer_DoesNotDeferOnUnsafeIframeUrl) {
   SetUpTest();
-  url_checker_->AddCallbackInfo(/*should_proceed=*/false,
-                                /*should_show_interstitial=*/true,
-                                /*should_delay_callback=*/false);
+  sync_url_checker_->AddCallbackInfo(/*should_proceed=*/false,
+                                     /*should_show_interstitial=*/true,
+                                     /*should_delay_callback=*/false);
 
   bool defer = CallWillStartRequestWithDestination(
       network::mojom::RequestDestination::kIframe);
@@ -475,12 +479,12 @@ TEST_F(SBBrowserUrlLoaderThrottleTest,
 
 TEST_F(SBBrowserUrlLoaderThrottleTest, VerifyDefer_DeferIfRedirectUrlIsUnsafe) {
   SetUpTest();
-  url_checker_->AddCallbackInfo(/*should_proceed=*/true,
-                                /*should_show_interstitial=*/false,
-                                /*should_delay_callback=*/false);
-  url_checker_->AddCallbackInfo(/*should_proceed=*/false,
-                                /*should_show_interstitial=*/true,
-                                /*should_delay_callback=*/false);
+  sync_url_checker_->AddCallbackInfo(/*should_proceed=*/true,
+                                     /*should_show_interstitial=*/false,
+                                     /*should_delay_callback=*/false);
+  sync_url_checker_->AddCallbackInfo(/*should_proceed=*/false,
+                                     /*should_show_interstitial=*/true,
+                                     /*should_delay_callback=*/false);
 
   CallWillStartRequest();
   CallWillRedirectRequest();
@@ -492,9 +496,9 @@ TEST_F(SBBrowserUrlLoaderThrottleTest, VerifyDefer_DeferIfRedirectUrlIsUnsafe) {
 
 TEST_F(SBBrowserUrlLoaderThrottleTest, VerifyDefer_DoesNotDeferOnSkippedUrl) {
   SetUpTest();
-  url_checker_->AddCallbackInfo(/*should_proceed=*/false,
-                                /*should_show_interstitial=*/true,
-                                /*should_delay_callback=*/false);
+  sync_url_checker_->AddCallbackInfo(/*should_proceed=*/false,
+                                     /*should_show_interstitial=*/true,
+                                     /*should_delay_callback=*/false);
   url_checker_delegate_->EnableSkipRequestCheck();
 
   CallWillStartRequestWithDestination(
@@ -507,12 +511,12 @@ TEST_F(SBBrowserUrlLoaderThrottleTest, VerifyDefer_DoesNotDeferOnSkippedUrl) {
 
 TEST_F(SBBrowserUrlLoaderThrottleTest, VerifyDefer_DoesNotDeferOnKnownSafeUrl) {
   SetUpTest();
-  url_checker_->AddCallbackInfo(/*should_proceed=*/true,
-                                /*should_show_interstitial=*/false,
-                                /*should_delay_callback=*/true);
-  url_checker_->AddCallbackInfo(/*should_proceed=*/true,
-                                /*should_show_interstitial=*/false,
-                                /*should_delay_callback=*/true);
+  sync_url_checker_->AddCallbackInfo(/*should_proceed=*/true,
+                                     /*should_show_interstitial=*/false,
+                                     /*should_delay_callback=*/true);
+  sync_url_checker_->AddCallbackInfo(/*should_proceed=*/true,
+                                     /*should_show_interstitial=*/false,
+                                     /*should_delay_callback=*/true);
 
   bool defer = false;
   network::ResourceRequest request;
@@ -529,9 +533,9 @@ TEST_F(SBBrowserUrlLoaderThrottleTest, VerifyDefer_DoesNotDeferOnKnownSafeUrl) {
 
 TEST_F(SBBrowserUrlLoaderThrottleTest, VerifyDefer_DeferOnSlowCheck) {
   SetUpTest();
-  url_checker_->AddCallbackInfo(/*should_proceed=*/true,
-                                /*should_show_interstitial=*/false,
-                                /*should_delay_callback=*/true);
+  sync_url_checker_->AddCallbackInfo(/*should_proceed=*/true,
+                                     /*should_show_interstitial=*/false,
+                                     /*should_delay_callback=*/true);
 
   CallWillStartRequest();
 
@@ -540,19 +544,19 @@ TEST_F(SBBrowserUrlLoaderThrottleTest, VerifyDefer_DeferOnSlowCheck) {
   EXPECT_TRUE(defer);
   EXPECT_FALSE(throttle_delegate_->IsResumed());
 
-  url_checker_->RestartDelayedCallback(/*index=*/0);
+  sync_url_checker_->RestartDelayedCallback(/*index=*/0);
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(throttle_delegate_->IsResumed());
 }
 
 TEST_F(SBBrowserUrlLoaderThrottleTest, VerifyDefer_DeferOnSlowRedirectCheck) {
   SetUpTest();
-  url_checker_->AddCallbackInfo(/*should_proceed=*/true,
-                                /*should_show_interstitial=*/false,
-                                /*should_delay_callback=*/false);
-  url_checker_->AddCallbackInfo(/*should_proceed=*/true,
-                                /*should_show_interstitial=*/false,
-                                /*should_delay_callback=*/true);
+  sync_url_checker_->AddCallbackInfo(/*should_proceed=*/true,
+                                     /*should_show_interstitial=*/false,
+                                     /*should_delay_callback=*/false);
+  sync_url_checker_->AddCallbackInfo(/*should_proceed=*/true,
+                                     /*should_show_interstitial=*/false,
+                                     /*should_delay_callback=*/true);
 
   CallWillStartRequest();
   CallWillRedirectRequest();
@@ -562,7 +566,7 @@ TEST_F(SBBrowserUrlLoaderThrottleTest, VerifyDefer_DeferOnSlowRedirectCheck) {
   EXPECT_TRUE(defer);
   EXPECT_FALSE(throttle_delegate_->IsResumed());
 
-  url_checker_->RestartDelayedCallback(/*index=*/1);
+  sync_url_checker_->RestartDelayedCallback(/*index=*/1);
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(throttle_delegate_->IsResumed());
 }
@@ -570,9 +574,9 @@ TEST_F(SBBrowserUrlLoaderThrottleTest, VerifyDefer_DeferOnSlowRedirectCheck) {
 TEST_F(SBBrowserUrlLoaderThrottleTest,
        VerifyDefer_DoesNotResumeOnSlowCheckNotProceed) {
   SetUpTest();
-  url_checker_->AddCallbackInfo(/*should_proceed=*/false,
-                                /*should_show_interstitial=*/true,
-                                /*should_delay_callback=*/true);
+  sync_url_checker_->AddCallbackInfo(/*should_proceed=*/false,
+                                     /*should_show_interstitial=*/true,
+                                     /*should_delay_callback=*/true);
 
   CallWillStartRequest();
 
@@ -580,7 +584,7 @@ TEST_F(SBBrowserUrlLoaderThrottleTest,
   EXPECT_TRUE(defer);
   EXPECT_FALSE(throttle_delegate_->IsResumed());
 
-  url_checker_->RestartDelayedCallback(/*index=*/0);
+  sync_url_checker_->RestartDelayedCallback(/*index=*/0);
   task_environment_.RunUntilIdle();
   // Resume should not be called because the slow check returns don't proceed.
   EXPECT_FALSE(throttle_delegate_->IsResumed());
@@ -590,12 +594,12 @@ TEST_F(SBBrowserUrlLoaderThrottleTest,
 TEST_F(SBBrowserUrlLoaderThrottleTest,
        VerifyDefer_DoesNotDeferRedirectOnSlowCheck) {
   SetUpTest();
-  url_checker_->AddCallbackInfo(/*should_proceed=*/true,
-                                /*should_show_interstitial=*/false,
-                                /*should_delay_callback=*/true);
-  url_checker_->AddCallbackInfo(/*should_proceed=*/true,
-                                /*should_show_interstitial=*/false,
-                                /*should_delay_callback=*/false);
+  sync_url_checker_->AddCallbackInfo(/*should_proceed=*/true,
+                                     /*should_show_interstitial=*/false,
+                                     /*should_delay_callback=*/true);
+  sync_url_checker_->AddCallbackInfo(/*should_proceed=*/true,
+                                     /*should_show_interstitial=*/false,
+                                     /*should_delay_callback=*/false);
 
   CallWillStartRequest();
 
@@ -608,9 +612,9 @@ TEST_F(SBBrowserUrlLoaderThrottleTest,
 TEST_F(SBBrowserUrlLoaderThrottleTest,
        VerifyDefer_DeferRedirectWhenFirstUrlAlreadyBlocked) {
   SetUpTest();
-  url_checker_->AddCallbackInfo(/*should_proceed=*/false,
-                                /*should_show_interstitial=*/true,
-                                /*should_delay_callback=*/false);
+  sync_url_checker_->AddCallbackInfo(/*should_proceed=*/false,
+                                     /*should_show_interstitial=*/true,
+                                     /*should_delay_callback=*/false);
 
   CallWillStartRequest();
   EXPECT_EQ(throttle_delegate_->GetErrorCode(), net::ERR_BLOCKED_BY_CLIENT);
@@ -622,9 +626,9 @@ TEST_F(SBBrowserUrlLoaderThrottleTest,
 TEST_F(SBBrowserUrlLoaderThrottleTest,
        VerifyErrorCodeWhenInterstitialNotShown) {
   SetUpTest();
-  url_checker_->AddCallbackInfo(/*should_proceed=*/false,
-                                /*should_show_interstitial=*/false,
-                                /*should_delay_callback=*/false);
+  sync_url_checker_->AddCallbackInfo(/*should_proceed=*/false,
+                                     /*should_show_interstitial=*/false,
+                                     /*should_delay_callback=*/false);
 
   CallWillStartRequest();
   EXPECT_EQ(throttle_delegate_->GetErrorCode(), net::ERR_ABORTED);
@@ -634,9 +638,9 @@ TEST_F(SBBrowserUrlLoaderThrottleTest,
        VerifyTotalDelayHistograms_FastCheckFromNetwork) {
   SetUpTest();
   base::HistogramTester histograms;
-  url_checker_->AddCallbackInfo(/*should_proceed=*/true,
-                                /*should_show_interstitial=*/false,
-                                /*should_delay_callback=*/false);
+  sync_url_checker_->AddCallbackInfo(/*should_proceed=*/true,
+                                     /*should_show_interstitial=*/false,
+                                     /*should_delay_callback=*/false);
 
   CallWillStartRequest();
   task_environment_.FastForwardBy(base::Milliseconds(200));
@@ -656,9 +660,9 @@ TEST_F(SBBrowserUrlLoaderThrottleTest,
        VerifyTotalDelayHistograms_FastCheckFromCache) {
   SetUpTest();
   base::HistogramTester histograms;
-  url_checker_->AddCallbackInfo(/*should_proceed=*/true,
-                                /*should_show_interstitial=*/false,
-                                /*should_delay_callback=*/false);
+  sync_url_checker_->AddCallbackInfo(/*should_proceed=*/true,
+                                     /*should_show_interstitial=*/false,
+                                     /*should_delay_callback=*/false);
 
   CallWillStartRequest();
   task_environment_.FastForwardBy(base::Milliseconds(200));
@@ -678,14 +682,14 @@ TEST_F(SBBrowserUrlLoaderThrottleTest,
        VerifyTotalDelayHistograms_SlowCheckFromNetwork) {
   SetUpTest();
   base::HistogramTester histograms;
-  url_checker_->AddCallbackInfo(/*should_proceed=*/true,
-                                /*should_show_interstitial=*/false,
-                                /*should_delay_callback=*/true);
+  sync_url_checker_->AddCallbackInfo(/*should_proceed=*/true,
+                                     /*should_show_interstitial=*/false,
+                                     /*should_delay_callback=*/true);
 
   CallWillStartRequest();
   CallWillProcessResponse();
   task_environment_.FastForwardBy(base::Milliseconds(200));
-  url_checker_->RestartDelayedCallback(/*index=*/0);
+  sync_url_checker_->RestartDelayedCallback(/*index=*/0);
   task_environment_.RunUntilIdle();
 
   histograms.ExpectUniqueTimeSample(
@@ -702,14 +706,14 @@ TEST_F(SBBrowserUrlLoaderThrottleTest,
        VerifyTotalDelayHistograms_SlowCheckFromCache) {
   SetUpTest();
   base::HistogramTester histograms;
-  url_checker_->AddCallbackInfo(/*should_proceed=*/true,
-                                /*should_show_interstitial=*/false,
-                                /*should_delay_callback=*/true);
+  sync_url_checker_->AddCallbackInfo(/*should_proceed=*/true,
+                                     /*should_show_interstitial=*/false,
+                                     /*should_delay_callback=*/true);
 
   CallWillStartRequest();
   CallWillProcessResponseFromCache();
   task_environment_.FastForwardBy(base::Milliseconds(200));
-  url_checker_->RestartDelayedCallback(/*index=*/0);
+  sync_url_checker_->RestartDelayedCallback(/*index=*/0);
   task_environment_.RunUntilIdle();
 
   histograms.ExpectUniqueTimeSample(
@@ -768,9 +772,9 @@ class SBBrowserUrlLoaderThrottleDisableSkipSubresourcesTest
 TEST_F(SBBrowserUrlLoaderThrottleDisableSkipSubresourcesTest,
        VerifyDefer_DoesNotDeferOnSafeDocumentUrl) {
   SetUpTest();
-  url_checker_->AddCallbackInfo(/*should_proceed=*/true,
-                                /*should_show_interstitial=*/false,
-                                /*should_delay_callback=*/false);
+  sync_url_checker_->AddCallbackInfo(/*should_proceed=*/true,
+                                     /*should_show_interstitial=*/false,
+                                     /*should_delay_callback=*/false);
 
   bool defer = CallWillStartRequest();
   EXPECT_FALSE(defer);
@@ -783,9 +787,9 @@ TEST_F(SBBrowserUrlLoaderThrottleDisableSkipSubresourcesTest,
 TEST_F(SBBrowserUrlLoaderThrottleDisableSkipSubresourcesTest,
        VerifyDefer_DefersOnUnsafeDocumentUrl) {
   SetUpTest();
-  url_checker_->AddCallbackInfo(/*should_proceed=*/false,
-                                /*should_show_interstitial=*/true,
-                                /*should_delay_callback=*/false);
+  sync_url_checker_->AddCallbackInfo(/*should_proceed=*/false,
+                                     /*should_show_interstitial=*/true,
+                                     /*should_delay_callback=*/false);
 
   bool defer = CallWillStartRequest();
   // Safe Browsing and URL loader are performed in parallel. Safe Browsing
@@ -801,9 +805,9 @@ TEST_F(SBBrowserUrlLoaderThrottleDisableSkipSubresourcesTest,
 TEST_F(SBBrowserUrlLoaderThrottleDisableSkipSubresourcesTest,
        VerifyDefer_DefersOnUnsafeIframeUrl) {
   SetUpTest();
-  url_checker_->AddCallbackInfo(/*should_proceed=*/false,
-                                /*should_show_interstitial=*/true,
-                                /*should_delay_callback=*/false);
+  sync_url_checker_->AddCallbackInfo(/*should_proceed=*/false,
+                                     /*should_show_interstitial=*/true,
+                                     /*should_delay_callback=*/false);
 
   bool defer = CallWillStartRequestWithDestination(
       network::mojom::RequestDestination::kIframe);
