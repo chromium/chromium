@@ -1201,7 +1201,7 @@ targets.legacy_basic_suite(
             test = "interactive_ui_tests",
             args = [
                 "--windows-virtual-display-driver",
-                "--gtest_filter=*MultiScreen*,*VirtualDisplayWinUtil*",
+                "--gtest_filter=*MultiScreen*:*VirtualDisplayWinUtil*",
             ],
         ),
     },
