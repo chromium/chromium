@@ -302,6 +302,11 @@ void AwContents::InitializeAndroidAutofill(JNIEnv* env) {
     return;
   }
   AwAutofillClient::CreateForWebContents(web_contents_.get());
+
+  // We need to initialize the keyboard suppressor before creating any
+  // AutofillManagers and after the autofill client is available.
+  autofill::AutofillProvider::FromWebContents(web_contents_.get())
+      ->MaybeInitKeyboardSuppressor();
 }
 
 void AwContents::SetAwAutofillClient(const JavaRef<jobject>& client) {

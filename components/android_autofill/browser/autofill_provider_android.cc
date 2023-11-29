@@ -17,6 +17,8 @@
 #include "components/android_autofill/browser/android_autofill_manager.h"
 #include "components/android_autofill/browser/autofill_provider_android_bridge.h"
 #include "components/android_autofill/browser/form_data_android.h"
+#include "components/autofill/android/touch_to_fill_keyboard_suppressor.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -42,6 +44,8 @@ using FieldInfo = ::autofill::AutofillProviderAndroidBridge::FieldInfo;
 
 constexpr int kMinimumSdkVersionForPrefillRequests =
     base::android::SdkVersion::SDK_VERSION_U;
+
+constexpr base::TimeDelta kKeyboardSuppressionTimeout = base::Seconds(1);
 
 }  // namespace
 
@@ -184,6 +188,7 @@ void AutofillProviderAndroid::StartNewSession(AndroidAutofillManager* manager,
 
 void AutofillProviderAndroid::OnAutofillAvailable() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  was_bottom_sheet_just_shown_ = false;
   if (manager_ && form_) {
     form_->UpdateFromJava();
     FillOrPreviewForm(manager_.get(), form_->form(), field_type_group_,
@@ -204,6 +209,13 @@ void AutofillProviderAndroid::SetAnchorViewRect(
     const gfx::RectF& bounds) {
   if (ui::ViewAndroid* view_android = web_contents()->GetNativeView()) {
     view_android->SetAnchorRect(anchor, bounds);
+  }
+}
+
+void AutofillProviderAndroid::OnShowBottomSheetResult(bool is_shown) {
+  was_bottom_sheet_just_shown_ = is_shown;
+  if (!is_shown && keyboard_suppressor_) {
+    keyboard_suppressor_->Unsuppress();
   }
 }
 
@@ -431,6 +443,34 @@ bool AutofillProviderAndroid::GetCachedIsAutofilled(
   size_t field_index = 0u;
   return form_ && form_->GetFieldIndex(field, &field_index) &&
          form_->form().fields[field_index].is_autofilled;
+}
+
+bool AutofillProviderAndroid::IntendsToShowBottomSheet(
+    AutofillManager& manager,
+    FormGlobalId form,
+    FieldGlobalId field,
+    const FormData& form_data) const {
+  return !has_used_cached_form_ && cached_form_ &&
+         form == cached_form_->form().global_id();
+}
+
+bool AutofillProviderAndroid::WasBottomSheetJustShown(
+    AutofillManager& manager) {
+  return std::exchange(was_bottom_sheet_just_shown_, false);
+}
+
+void AutofillProviderAndroid::MaybeInitKeyboardSuppressor() {
+  // Return early if prefill requests are not supported.
+  if (!ArePrefillRequestsSupported()) {
+    return;
+  }
+  keyboard_suppressor_ = std::make_unique<TouchToFillKeyboardSuppressor>(
+      ContentAutofillClient::FromWebContents(web_contents()),
+      base::BindRepeating(&AutofillProviderAndroid::WasBottomSheetJustShown,
+                          base::Unretained(this)),
+      base::BindRepeating(&AutofillProviderAndroid::IntendsToShowBottomSheet,
+                          base::Unretained(this)),
+      kKeyboardSuppressionTimeout);
 }
 
 bool AutofillProviderAndroid::IsLinkedManager(

@@ -9,6 +9,7 @@
 #include "components/android_autofill/browser/autofill_provider.h"
 #include "components/android_autofill/browser/autofill_provider_android_bridge.h"
 #include "components/android_autofill/browser/form_data_android.h"
+#include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -17,6 +18,8 @@ class WebContents;
 }
 
 namespace autofill {
+
+class TouchToFillKeyboardSuppressor;
 
 // Android implementation of AutofillProvider, it has one instance per
 // WebContents, this class is native peer of AutofillProvider.java.
@@ -82,6 +85,8 @@ class AutofillProviderAndroid : public AutofillProvider,
 
   bool GetCachedIsAutofilled(const FormFieldData& field) const override;
 
+  void MaybeInitKeyboardSuppressor() override;
+
  private:
   friend class AutofillProviderAndroidTestApi;
 
@@ -92,12 +97,27 @@ class AutofillProviderAndroid : public AutofillProvider,
   void OnAcceptDatalistSuggestion(const std::u16string& value) override;
   void SetAnchorViewRect(const base::android::JavaRef<jobject>& anchor,
                          const gfx::RectF& bounds) override;
+  void OnShowBottomSheetResult(bool is_shown) override;
 
   // content::WebContentsObserver:
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
+
+  // Returns true the first time it is called after a bottom sheet was shown.
+  // This is intended to be used only by the keyboard suppressor, which calls it
+  // once in OnAfterAskForValuesToFill to determine whether it should continue
+  // to suppress the keyboard. Ideally, this would return whether the bottom
+  // sheet is currently showing, but Android does not expose that information.
+  bool WasBottomSheetJustShown(AutofillManager& manager);
+
+  // Returns true if there's possibility for the bottom sheet to show, false
+  // otherwise.
+  bool IntendsToShowBottomSheet(AutofillManager& manager,
+                                FormGlobalId form,
+                                FieldGlobalId field,
+                                const FormData& form_data) const;
 
   void FireSuccessfulSubmission(mojom::SubmissionSource source);
 
@@ -162,6 +182,13 @@ class AutofillProviderAndroid : public AutofillProvider,
   // (cached) form a second time.
   bool has_used_cached_form_ = false;
 
+  // This is used by the keyboard suppressor. We update it with the result of
+  // the platform method call `showAutofillDialog`. Since we don't know for sure
+  // when the bottom sheet is dismissed we set it to `false` in
+  // `WasBottomSheetJustShown()` once it gets accessed as it should be called
+  // only once after asking for values to fill.
+  bool was_bottom_sheet_just_shown_ = false;
+
   // The form of the current session (queried input or changed select box).
   std::unique_ptr<FormDataAndroid> form_;
 
@@ -196,6 +223,9 @@ class AutofillProviderAndroid : public AutofillProvider,
 
   // The bridge for C++ <-> Java communication.
   std::unique_ptr<AutofillProviderAndroidBridge> bridge_;
+
+  // Used for handling keyboard suppression in case there's a bottom sheet.
+  std::unique_ptr<TouchToFillKeyboardSuppressor> keyboard_suppressor_;
 };
 }  // namespace autofill
 

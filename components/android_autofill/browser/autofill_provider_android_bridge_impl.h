@@ -69,6 +69,8 @@ class AutofillProviderAndroidBridgeImpl : public AutofillProviderAndroidBridge {
                          jfloat width,
                          jfloat height);
 
+  void OnShowBottomSheetResult(JNIEnv* env, jboolean is_shown);
+
  private:
   // The delegate of the bridge.
   raw_ref<Delegate> delegate_;

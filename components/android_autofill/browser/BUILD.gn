@@ -111,6 +111,7 @@ static_library("android") {
   deps = [
     ":features",
     ":jni_headers",
+    "//components/autofill/android:keyboard_suppressor",
     "//components/autofill/content/browser",
     "//components/password_manager/core/browser/form_parsing",
     "//content/public/browser",

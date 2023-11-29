@@ -9,6 +9,7 @@ import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.util.SparseArray;
 import android.view.View;
@@ -16,6 +17,7 @@ import android.view.ViewGroup;
 import android.view.ViewStructure;
 import android.view.autofill.AutofillValue;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -224,8 +226,8 @@ public class AutofillProvider {
     }
 
     /**
-     * Invoked when filling form is need. AutofillProvider shall ask autofill
-     * service for the values with which to fill the form.
+     * Invoked when filling form is need. AutofillProvider shall ask autofill service for the values
+     * with which to fill the form.
      *
      * @param formData the form needs to fill.
      * @param focus the index of focus field in formData
@@ -256,7 +258,20 @@ public class AutofillProvider {
         mRequest =
                 new AutofillRequest(
                         formData, new FocusField((short) focus, absBound), hasServerPrediction);
-        notifyVirtualViewEntered(mContainerView, focus, absBound);
+        boolean bottomSheetShown = false;
+        if (Build.VERSION.SDK_INT >= VERSION_CODES.UPSIDE_DOWN_CAKE
+                && mPrefillRequest != null
+                && mPrefillRequest.getForm().mSessionId == formData.mSessionId) {
+            bottomSheetShown = showAutofillDialog(mContainerView, focus);
+            // Update native with the results.
+            if (mNativeAutofillProvider != 0) {
+                AutofillProviderJni.get()
+                        .onShowBottomSheetResult(mNativeAutofillProvider, bottomSheetShown);
+            }
+        }
+        if (!bottomSheetShown) {
+            notifyVirtualViewEntered(mContainerView, focus, absBound);
+        }
         mAutofillUMA.onSessionStarted(mAutofillManager.isDisabled());
         if (hasServerPrediction) {
             mAutofillUMA.onServerTypeAvailable(formData, /* afterSessionStarted= */ false);
@@ -387,6 +402,15 @@ public class AutofillProvider {
                 mContainerView, mRequest.getFieldVirtualId((short) index), isVisible);
     }
 
+    @RequiresApi(VERSION_CODES.TIRAMISU)
+    private boolean showAutofillDialog(View parent, int index) {
+        // Refer to notifyVirtualValueChanged() for the reason of the datalist's special handling.
+        if (isDatalistField(index)) return false;
+
+        return mAutofillManager.showAutofillDialog(
+                parent, mRequest.getFieldVirtualId((short) index));
+    }
+
     private void notifyVirtualViewEntered(View parent, int index, Rect absBounds) {
         // Refer to notifyVirtualValueChanged() for the reason of the datalist's special handling.
         if (isDatalistField(index)) return;
@@ -419,7 +443,7 @@ public class AutofillProvider {
      * Invoked when focus field changed.
      *
      * @param focusOnForm whether focus is still on form.
-     * @param focusItem the index of field has focus
+     * @param focusField the index of field has focus
      * @param x the boundary of focus field.
      * @param y the boundary of focus field.
      * @param width the boundary of focus field.
@@ -756,5 +780,7 @@ public class AutofillProvider {
                 float y,
                 float width,
                 float height);
+
+        void onShowBottomSheetResult(long nativeAutofillProviderAndroidBridgeImpl, boolean isShown);
     }
 }

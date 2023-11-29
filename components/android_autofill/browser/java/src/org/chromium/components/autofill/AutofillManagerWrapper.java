@@ -8,12 +8,14 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.autofill.AutofillManager;
 import android.view.autofill.AutofillValue;
 import android.view.autofill.VirtualViewFillInfo;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CollectionUtil;
@@ -140,6 +142,18 @@ public class AutofillManagerWrapper {
         mAutofillManager.notifyViewEntered(parent, childId, absBounds);
     }
 
+    @RequiresApi(VERSION_CODES.TIRAMISU)
+    public boolean showAutofillDialog(View parent, int childId) {
+        // Log warning only when the autofill is triggered.
+        if (mDisabled) {
+            Log.w(TAG, "Autofill is disabled: AutofillManager isn't available in given Context.");
+            return false;
+        }
+        if (checkAndWarnIfDestroyed()) return false;
+        if (isLoggable()) log("showAutofillDialog");
+        return mAutofillManager.showAutofillDialog(parent, childId);
+    }
+
     public void notifyVirtualViewExited(View parent, int childId) {
         if (mDisabled || checkAndWarnIfDestroyed()) return;
         if (isLoggable()) log("notifyVirtualViewExited");
@@ -247,4 +261,5 @@ public class AutofillManagerWrapper {
         // Check the system setting directly.
         sIsLoggable = android.util.Log.isLoggable(TAG, Log.DEBUG);
     }
+
 }
