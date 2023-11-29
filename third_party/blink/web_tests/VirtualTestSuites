@@ -2719,5 +2719,18 @@
     "args": ["--enable-features=DeprecateUnload"],
     "expires": "Jun 1, 2024",
     "owners": ["fergal@chromium.org", "rakina@chromium.org"]
+  },
+  {
+    "prefix": "webrtc-transforms-per-stream-disabled",
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-audio.https.html",
+      "external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-errors.https.html",
+      "external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-video.https.html",
+      "fast/peerconnection/RTCPeerconnection-insertable-streams.html"
+    ],
+    "args": ["--disable-features=WebRtcEncodedTransformsPerStreamCreation"],
+    "expires": "Mar 1, 2024",
+    "owners": ["herre@google.com", "video-cmi-apis@google.com"]
   }
 ]
