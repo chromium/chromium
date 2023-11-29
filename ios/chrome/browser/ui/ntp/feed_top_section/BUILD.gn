@@ -21,6 +21,8 @@ source_set("feed_top_section") {
     "feed_top_section_view_controller_delegate.h",
   ]
   deps = [
+    ":constants",
+    ":feed_top_section_promos_ui",
     "//components/signin/public/identity_manager/objc",
     "//components/sync/base:features",
     "//ios/chrome/app/strings",

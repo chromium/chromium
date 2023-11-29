@@ -57,7 +57,7 @@
 }
 
 - (void)setUp {
-  [self updateShouldShowSigninPromo];
+  [self updateShouldShowPromo];
 }
 
 - (void)dealloc {
@@ -93,11 +93,11 @@
     case signin::PrimaryAccountChangeEvent::Type::kSet:
       if (!self.signinPromoMediator.showSpinner) {
         // User has signed in, stop showing the promo.
-        [self updateShouldShowSigninPromo];
+        [self updateShouldShowPromo];
       }
       break;
     case signin::PrimaryAccountChangeEvent::Type::kCleared:
-      [self updateShouldShowSigninPromo];
+      [self updateShouldShowPromo];
       break;
     case signin::PrimaryAccountChangeEvent::Type::kNone:
       break;
@@ -116,41 +116,48 @@
 - (void)signinPromoViewMediatorCloseButtonWasTapped:
     (SigninPromoViewMediator*)mediator {
   [self.NTPDelegate handleFeedTopSectionClosed];
-  [self.consumer hideSigninPromo];
+  [self.consumer hidePromo];
 }
 
 #pragma mark - Private
 
-- (void)updateShouldShowSigninPromo {
+- (void)updateShouldShowPromo {
   PrefService* localState = GetApplicationContext()->GetLocalState();
+  // Don't show any promo if Set Up List is Enabled.
+  if (set_up_list_utils::IsSetUpListActive(localState)) {
+    return;
+  }
   // Don't show the promo for incognito or start surface.
   BOOL isStartSurfaceOrIncognito = self.isIncognito ||
                                    [self.NTPDelegate isStartSurface] ||
                                    !self.isSignInPromoEnabled;
 
-  // Don't show the promo if Set Up List is active.
-  BOOL isSetupListEnabled = set_up_list_utils::IsSetUpListActive(localState);
-
   // Don't show the promo if the account is not elegible for a SigninPromo.
-  BOOL isAccountEligibleForPromo = NO;
+  BOOL isAccountEligibleForSignInPromo = NO;
+  auto consent =
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+          ? signin::ConsentLevel::kSignin
+          : signin::ConsentLevel::kSync;
   if ([SigninPromoViewMediator
           shouldDisplaySigninPromoViewWithAccessPoint:
               signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO
                                 authenticationService:self.authenticationService
                                           prefService:self.prefService]) {
-    auto consent =
-        base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
-            ? signin::ConsentLevel::kSignin
-            : signin::ConsentLevel::kSync;
-    isAccountEligibleForPromo =
+    isAccountEligibleForSignInPromo =
         !self.identityManager->HasPrimaryAccount(consent);
   }
+  BOOL isAccountSignedIn = self.identityManager->HasPrimaryAccount(consent);
 
-  if (!isStartSurfaceOrIncognito && !isSetupListEnabled &&
-      isAccountEligibleForPromo) {
-    [self.consumer showSigninPromo];
-  } else {
-    [self.consumer hideSigninPromo];
+  if (!isStartSurfaceOrIncognito && isAccountEligibleForSignInPromo) {
+    self.consumer.visiblePromoViewType = PromoViewTypeSignin;
+    [self.consumer showPromo];
+    return;
+  }
+
+  if (IsContentPushNotificationsPromoEnabled() && isAccountSignedIn) {
+    self.consumer.visiblePromoViewType = PromoViewTypeNotifications;
+    [self.consumer showPromo];
+    return;
   }
 }
 
