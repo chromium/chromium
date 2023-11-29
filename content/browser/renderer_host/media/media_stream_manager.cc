@@ -2124,8 +2124,8 @@ bool MediaStreamManager::GetRequestedDeviceCaptureId(
 void MediaStreamManager::TranslateDeviceIdToSourceId(
     const DeviceRequest* request,
     MediaStreamDevice* device) const {
-  if (request->audio_type() == MediaStreamType::DEVICE_AUDIO_CAPTURE ||
-      request->video_type() == MediaStreamType::DEVICE_VIDEO_CAPTURE) {
+  if (blink::IsDeviceMediaType(request->audio_type()) ||
+      blink::IsDeviceMediaType(request->video_type())) {
     device->id =
         GetHMACForRawMediaDeviceID(request->salt_and_origin, device->id);
     if (device->group_id) {
@@ -2800,8 +2800,11 @@ void MediaStreamManager::FinalizeGenerateStreams(const std::string& label,
                          RequestTypeToString(request->request_type())));
 
   // Subscribe to follow permission changes in order to close streams when the
-  // user denies mic/camera.
-  SubscribeToPermissionController(label, request);
+  // user denies mic/camera. Only done for input devices.
+  if (blink::IsDeviceMediaType(request->audio_type()) ||
+      blink::IsDeviceMediaType(request->video_type())) {
+    SubscribeToPermissionController(label, request);
+  }
 
   blink::mojom::StreamDevicesSetPtr stream_devices_set =
       request->stream_devices_set.Clone();
@@ -2843,8 +2846,11 @@ void MediaStreamManager::FinalizeGetOpenDevice(const std::string& label,
                          RequestTypeToString(request->request_type())));
 
   // Subscribe to follow permission changes in order to close streams when the
-  // user denies mic/camera.
-  SubscribeToPermissionController(label, request);
+  // user denies mic/camera. Only done for input devices.
+  if (blink::IsDeviceMediaType(request->audio_type()) ||
+      blink::IsDeviceMediaType(request->video_type())) {
+    SubscribeToPermissionController(label, request);
+  }
 
   // It is safe to bind base::Unretained(this) because MediaStreamManager is
   // owned by BrowserMainLoop and so outlives the IO thread.
