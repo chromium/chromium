@@ -34,8 +34,6 @@ namespace {
 base::UnsafeSharedMemoryRegion AllocateSharedMemory(
     const gfx::Size& size,
     viz::SharedImageFormat format) {
-  DCHECK(format.IsBitmapFormatSupported())
-      << "(format = " << format.ToString() << ")";
 
   size_t bytes = 0;
   if (!viz::ResourceSizes::MaybeSizeInBytes(size, format, &bytes)) {
@@ -83,6 +81,7 @@ class BitmapRasterBufferImpl : public RasterBuffer {
  public:
   BitmapRasterBufferImpl(const gfx::Size& size,
                          const gfx::ColorSpace& color_space,
+                         BitmapSoftwareBacking* backing,
                          void* pixels,
                          uint64_t resource_content_id,
                          uint64_t previous_content_id)
@@ -90,8 +89,8 @@ class BitmapRasterBufferImpl : public RasterBuffer {
         color_space_(color_space),
         pixels_(pixels),
         resource_has_previous_content_(
-            resource_content_id && resource_content_id == previous_content_id) {
-  }
+            resource_content_id && resource_content_id == previous_content_id),
+        backing_(backing) {}
   BitmapRasterBufferImpl(const BitmapRasterBufferImpl&) = delete;
   BitmapRasterBufferImpl& operator=(const BitmapRasterBufferImpl&) = delete;
 
@@ -112,9 +111,13 @@ class BitmapRasterBufferImpl : public RasterBuffer {
         << "Why are we rastering a tile that's not dirty?";
 
     size_t stride = 0u;
+    viz::SharedImageFormat format =
+        backing_->frame_sink->shared_image_interface()
+            ? viz::SinglePlaneFormat::kBGRA_8888
+            : viz::SinglePlaneFormat::kRGBA_8888;
     RasterBufferProvider::PlaybackToMemory(
-        pixels_, viz::SinglePlaneFormat::kRGBA_8888, resource_size_, stride,
-        raster_source, raster_full_rect, playback_rect, transform, color_space_,
+        pixels_, format, resource_size_, stride, raster_source,
+        raster_full_rect, playback_rect, transform, color_space_,
         /*gpu_compositing=*/false, playback_settings);
   }
 
@@ -129,6 +132,7 @@ class BitmapRasterBufferImpl : public RasterBuffer {
   // `mmap`, MapViewOfFile or base::AllocPages directly.
   RAW_PTR_EXCLUSION void* const pixels_;
   bool resource_has_previous_content_;
+  raw_ptr<BitmapSoftwareBacking> backing_;
 };
 
 }  // namespace
@@ -147,7 +151,9 @@ BitmapRasterBufferProvider::AcquireBufferForRaster(
     bool depends_on_at_raster_decodes,
     bool depends_on_hardware_accelerated_jpeg_candidates,
     bool depends_on_hardware_accelerated_webp_candidates) {
-  DCHECK_EQ(resource.format(), viz::SinglePlaneFormat::kRGBA_8888);
+  DCHECK_EQ(resource.format(), frame_sink_->shared_image_interface()
+                                   ? viz::SinglePlaneFormat::kBGRA_8888
+                                   : viz::SinglePlaneFormat::kRGBA_8888);
 
   const gfx::Size& size = resource.size();
   const gfx::ColorSpace& color_space = resource.color_space();
@@ -158,19 +164,19 @@ BitmapRasterBufferProvider::AcquireBufferForRaster(
     if (frame_sink_->shared_image_interface()) {
       constexpr char kDebugLabel[] = "BitmapRasterBufferProvider";
       backing->unsafe_region =
-          AllocateSharedMemory(size, viz::SinglePlaneFormat::kRGBA_8888);
+          AllocateSharedMemory(size, viz::SinglePlaneFormat::kBGRA_8888);
       backing->mapping = backing->unsafe_region.Map();
 
       gfx::GpuMemoryBufferHandle handle;
       handle.type = gfx::SHARED_MEMORY_BUFFER;
       handle.offset = 0;
       handle.stride = static_cast<int32_t>(gfx::RowSizeForBufferFormat(
-          size.width(), gfx::BufferFormat::RGBA_8888, 0));
+          size.width(), gfx::BufferFormat::BGRA_8888, 0));
       handle.region = backing->unsafe_region.Duplicate();
 
       backing->shared_image =
           frame_sink_->shared_image_interface()->CreateSharedImage(
-              viz::SinglePlaneFormat::kRGBA_8888, size, color_space,
+              viz::SinglePlaneFormat::kBGRA_8888, size, color_space,
               kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
               gpu::SHARED_IMAGE_USAGE_CPU_WRITE, kDebugLabel,
               std::move(handle));
@@ -192,14 +198,16 @@ BitmapRasterBufferProvider::AcquireBufferForRaster(
       static_cast<BitmapSoftwareBacking*>(resource.software_backing());
 
   return std::make_unique<BitmapRasterBufferImpl>(
-      size, color_space, backing->mapping.memory(), resource_content_id,
-      previous_content_id);
+      size, color_space, backing, backing->mapping.memory(),
+      resource_content_id, previous_content_id);
 }
 
 void BitmapRasterBufferProvider::Flush() {}
 
 viz::SharedImageFormat BitmapRasterBufferProvider::GetFormat() const {
-  return viz::SinglePlaneFormat::kRGBA_8888;
+  return frame_sink_->shared_image_interface()
+             ? viz::SinglePlaneFormat::kBGRA_8888
+             : viz::SinglePlaneFormat::kRGBA_8888;
 }
 
 bool BitmapRasterBufferProvider::IsResourcePremultiplied() const {

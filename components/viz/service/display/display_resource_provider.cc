@@ -237,7 +237,9 @@ void DisplayResourceProvider::ReceiveFromChild(
 
     ResourceId local_id = resource_id_generator_.GenerateNextId();
     DCHECK(!transferable_resource.is_software ||
-           transferable_resource.format.IsBitmapFormatSupported());
+           transferable_resource.mailbox_holder.mailbox.IsSharedImage() ||
+           (!transferable_resource.mailbox_holder.mailbox.IsSharedImage() &&
+            transferable_resource.format.IsBitmapFormatSupported()));
     resources_.emplace(local_id,
                        ChildResource(child_id, transferable_resource));
     child_info.child_to_parent_map[transferable_resource.id] = local_id;
