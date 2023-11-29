@@ -57,7 +57,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1195412055398077112">ivično područje ekrana</translation>
 <translation id="1195667586424773550">Prevucite link na traku za adresu kartice</translation>
 <translation id="119944043368869598">Obriši sve</translation>
-<translation id="1199716647557067911">Jeste li sigurni da želite isključiti prekidač za pristup?</translation>
+<translation id="1199716647557067911">Jeste li sigurni da želite isključiti Pristup pomoću prekidača?</translation>
 <translation id="1201402288615127009">Naprijed</translation>
 <translation id="1210557957257435379">snimanje ekrana</translation>
 <translation id="121097972571826261">Riječ unaprijed</translation>
@@ -166,7 +166,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1610778689852195798">"Opozovite"</translation>
 <translation id="1611993646327628135">Uključeno</translation>
 <translation id="1620510694547887537">Kamera</translation>
-<translation id="1632985212731562677">Prekidač za pristup se može onemogućiti u meniju Postavke &gt; Pristupačnost.</translation>
+<translation id="1632985212731562677">Pristup pomoću prekidača se može onemogućiti u meniju Postavke &gt; Pristupačnost.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> uređaj(a)</translation>
 <translation id="1639239467298939599">Učitavanje</translation>
 <translation id="1647986356840967552">Prethodna stranica</translation>
@@ -528,7 +528,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3181441307743005334">Ponovno pokretanje može potrajati</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Povezano s uređajem}one{Povezano s # uređajem}few{Povezano s # uređaja}other{Povezano s # uređaja}}</translation>
 <translation id="320207200541803018">Postavi tajmer</translation>
-<translation id="3203405173652969239">Prekidač za pristup je omogućen</translation>
+<translation id="3203405173652969239">Pristup pomoću prekidača je omogućen</translation>
 <translation id="3206735939915734551">Uključivanje/isključivanje Caps Locka</translation>
 <translation id="3207953481422525583">Korisničke postavke</translation>
 <translation id="3208321278970793882">Aplikacija</translation>
