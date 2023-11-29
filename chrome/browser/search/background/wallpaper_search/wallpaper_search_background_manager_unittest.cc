@@ -175,6 +175,40 @@ TEST_F(WallpaperSearchBackgroundManagerTest, SetLocalBackgroundImage) {
   EXPECT_EQ(SK_ColorRED, image_arg.ToSkBitmap()->getColor(0, 0));
 }
 
+// If the currently set wallpaper search image is set again, do not pass it
+// through to SetBackgroundToLocalResourceWithId(). Otherwise, its image file
+// could be deleted.
+TEST_F(WallpaperSearchBackgroundManagerTest,
+       SetLocalBackgroundImage_DoNotReSetSameImage) {
+  gfx::Image image_arg;
+  ON_CALL(mock_ntp_custom_background_service(),
+          IsCustomBackgroundDisabledByPolicy)
+      .WillByDefault(testing::Return(false));
+  EXPECT_CALL(mock_ntp_custom_background_service(),
+              SetBackgroundToLocalResourceWithId)
+      .Times(0);
+  EXPECT_CALL(mock_ntp_custom_background_service(),
+              UpdateCustomLocalBackgroundColorAsync)
+      .WillOnce(SaveArg<0>(&image_arg));
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(32, 32);
+  bitmap.eraseColor(SK_ColorRED);
+
+  base::Token token = base::Token::CreateRandom();
+  CustomBackground custom_background;
+  custom_background.local_background_id = token;
+  ON_CALL(mock_ntp_custom_background_service(), GetCustomBackground())
+      .WillByDefault(Return(absl::make_optional(custom_background)));
+  wallpaper_search_background_manager().SelectLocalBackgroundImage(token,
+                                                                   bitmap);
+
+  task_environment().RunUntilIdle();
+
+  // Check that the args were passed to |NtpCustomBackgroundService|.
+  EXPECT_EQ(SK_ColorRED, image_arg.ToSkBitmap()->getColor(0, 0));
+}
+
 TEST_F(WallpaperSearchBackgroundManagerTest, SaveCurrentBackgroundToHistory) {
   base::Token token = base::Token::CreateRandom();
   CustomBackground custom_background;
