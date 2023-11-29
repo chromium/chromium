@@ -13,6 +13,7 @@
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "net/base/backoff_entry.h"
+#include "net/base/request_priority.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -63,6 +64,8 @@ struct FetcherConfig {
 
   AccessTokenConfig access_token_config;
 
+  net::RequestPriority request_priority;
+
   std::string GetHttpMethod() const;
 };
 
@@ -75,12 +78,13 @@ constexpr FetcherConfig kClassifyUrlConfig = {
         {
             // Fail the fetch right away when access token is not immediately
             // available.
-            // TODO(b/301931929): consider using `kWaitUntilAvailable` to improve
-            // reliability.
+            // TODO(b/301931929): consider using `kWaitUntilAvailable` to
+            // improve reliability.
             .mode = signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
             // TODO(b/284523446): Refer to GaiaConstants rather than literal.
             .oauth2_scope = "https://www.googleapis.com/auth/kid.permission",
         },
+    .request_priority = net::IDLE,
 };
 
 constexpr FetcherConfig kListFamilyMembersConfig{
@@ -124,7 +128,7 @@ constexpr FetcherConfig kListFamilyMembersConfig{
         // TODO(b/284523446): Refer to GaiaConstants rather than literal.
         .oauth2_scope = "https://www.googleapis.com/auth/kid.family.readonly",
     },
-
+    .request_priority = net::IDLE,
 };
 
 constexpr FetcherConfig kCreatePermissionRequestConfig = {
@@ -139,6 +143,7 @@ constexpr FetcherConfig kCreatePermissionRequestConfig = {
         // TODO(b/284523446): Refer to GaiaConstants rather than literal.
         .oauth2_scope = "https://www.googleapis.com/auth/kid.permission",
     },
+    .request_priority = net::IDLE,
 };
 
 }  // namespace supervised_user

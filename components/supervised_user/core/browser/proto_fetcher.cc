@@ -112,7 +112,7 @@ std::unique_ptr<network::SimpleURLLoader> InitializeSimpleUrlLoader(
   resource_request->url = CreateRequestUrl(fetcher_config);
   resource_request->method = fetcher_config.GetHttpMethod();
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-  resource_request->priority = net::IDLE;
+  resource_request->priority = fetcher_config.request_priority;
   resource_request->headers.SetHeader(
       net::HttpRequestHeaders::kAuthorization,
       CreateAuthorizationHeader(access_token_info));
