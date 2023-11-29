@@ -645,6 +645,7 @@ void AttributionManagerImpl::OnSourceStored(
   if (const auto* success_noised =
           absl::get_if<StoreSourceResult::SuccessNoised>(&result.result())) {
     scheduler_timer_->MaybeSet(success_noised->min_fake_report_time);
+    NotifyReportsChanged();
   }
 
   NotifySourcesChanged();

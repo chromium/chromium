@@ -2312,6 +2312,27 @@ TEST_F(AttributionManagerImplFakeReportTest,
   task_environment_.FastForwardBy(kImpressionExpiry);
 }
 
+// Regression test for https://crbug.com/1506245.
+TEST_F(AttributionManagerImplFakeReportTest, FakeReport_NotifiesObservers) {
+  MockAttributionObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionObserver> observation(
+      &observer);
+  observation.Observe(attribution_manager_.get());
+
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(observer, OnReportsChanged).Times(0);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(observer, OnReportsChanged);
+  }
+
+  attribution_manager_->HandleSource(SourceBuilder().Build(), kFrameId);
+  checkpoint.Call(1);
+  task_environment_.FastForwardBy(base::TimeDelta());
+}
+
 // Test that multiple source and trigger registrations, with and without debug
 // keys present, are handled in the order they are received by the manager.
 TEST_F(AttributionManagerImplTest, RegistrationsHandledInOrder) {
