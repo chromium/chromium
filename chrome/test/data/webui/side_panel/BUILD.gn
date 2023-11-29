@@ -20,6 +20,7 @@ build_webui_tests("build") {
     "commerce/price_tracking_section_test.ts",
     "performance_controls/app_test.ts",
     "performance_controls/battery_saver_card_test.ts",
+    "performance_controls/browser_health_card_test.ts",
     "performance_controls/memory_saver_card_test.ts",
     "performance_controls/performance_page_api_proxy_test.ts",
     "performance_controls/battery_saver_card_api_proxy_test.ts",

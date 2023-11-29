@@ -19,6 +19,7 @@
 #include "chrome/grit/side_panel_performance_resources_map.h"
 #include "chrome/grit/side_panel_shared_resources.h"
 #include "chrome/grit/side_panel_shared_resources_map.h"
+#include "components/performance_manager/public/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -43,6 +44,15 @@ PerformanceSidePanelUI::PerformanceSidePanelUI(content::WebUI* web_ui)
       IDR_SIDE_PANEL_PERFORMANCE_PERFORMANCE_HTML);
   source->AddResourcePaths(base::make_span(kSidePanelSharedResources,
                                            kSidePanelSharedResourcesSize));
+
+  source->AddBoolean(
+      "isPerformanceCPUInterventionEnabled",
+      base::FeatureList::IsEnabled(
+          performance_manager::features::kPerformanceCPUIntervention));
+  source->AddBoolean(
+      "isPerformanceMemoryInterventionEnabled",
+      base::FeatureList::IsEnabled(
+          performance_manager::features::kPerformanceMemoryIntervention));
 }
 
 PerformanceSidePanelUI::~PerformanceSidePanelUI() = default;

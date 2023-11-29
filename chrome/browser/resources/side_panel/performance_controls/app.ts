@@ -4,6 +4,7 @@
 
 import 'chrome://performance-side-panel.top-chrome/shared/sp_shared_style.css.js';
 import './battery_saver_card.js';
+import './browser_health_card.js';
 import './memory_saver_card.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';

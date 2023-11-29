@@ -28,6 +28,11 @@ IN_PROC_BROWSER_TEST_F(SidePanelPerformanceControlsTest, BatterySaverCard) {
           "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SidePanelPerformanceControlsTest, BrowserHealthCard) {
+  RunTest("side_panel/performance_controls/browser_health_card_test.js",
+          "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(SidePanelPerformanceControlsTest, MemorySaverCard) {
   RunTest("side_panel/performance_controls/memory_saver_card_test.js",
           "mocha.run()");
