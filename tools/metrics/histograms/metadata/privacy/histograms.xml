@@ -1065,7 +1065,11 @@ reviewer.
     enum="Boolean" expires_after="2024-09-30">
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
-  <summary>Records whether that the profile responded to the survey.</summary>
+  <summary>
+    WARNING: the values in this histograms are inverted. See b/313698252.
+    Currently, true is recorded when the profile was not presented with a survey
+    and false otherwise.
+  </summary>
 </histogram>
 
 <histogram name="PrivacySandbox.{ApiType}" enum="PrivacySandboxApiAllowed"
