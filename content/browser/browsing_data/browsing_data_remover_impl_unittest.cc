@@ -380,7 +380,9 @@ class BrowsingDataRemoverImplTest : public testing::Test {
   BrowsingDataRemoverImplTest& operator=(const BrowsingDataRemoverImplTest&) =
       delete;
 
-  ~BrowsingDataRemoverImplTest() override = default;
+  ~BrowsingDataRemoverImplTest() override {
+    remover_ = nullptr;
+  }
 
   void TearDown() override {
     mock_policy_ = nullptr;
