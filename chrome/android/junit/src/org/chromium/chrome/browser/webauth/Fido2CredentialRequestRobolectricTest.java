@@ -51,7 +51,6 @@ import org.chromium.components.webauthn.Fido2ApiTestHelper;
 import org.chromium.components.webauthn.Fido2CredentialRequest;
 import org.chromium.components.webauthn.WebAuthnBrowserBridge;
 import org.chromium.components.webauthn.WebAuthnCredentialDetails;
-import org.chromium.content.browser.ClientDataJsonImpl;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.RenderFrameHost.WebAuthSecurityChecksResults;
 import org.chromium.device.DeviceFeatureList;
@@ -76,7 +75,6 @@ public class Fido2CredentialRequestRobolectricTest {
 
     @Mock private RenderFrameHost mFrameHost;
     @Mock GURLUtils.Natives mGURLUtilsJniMock;
-    @Mock ClientDataJsonImpl.Natives mClientDataJsonImplMock;
     @Mock Activity mActivity;
     @Mock WebAuthnBrowserBridge mBrowserBridgeMock;
     @Mock CredManHelper mCredManHelperMock;
