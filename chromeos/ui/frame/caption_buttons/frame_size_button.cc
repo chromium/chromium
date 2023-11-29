@@ -139,6 +139,10 @@ class FrameSizeButton::PieAnimationView : public views::View,
 
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override {
+    if (!GetWidget()) {
+      return;
+    }
+
     const double animation_value = animation_.GetCurrentValue();
     if (animation_value == 0.0) {
       return;
@@ -183,7 +187,7 @@ class FrameSizeButton::PieAnimationView : public views::View,
       MultitaskMenuEntryType::kFrameSizeButtonHover;
 
   // The button `this` is associated with. Unowned.
-  raw_ptr<FrameSizeButton> button_;
+  const raw_ptr<FrameSizeButton> button_;
 };
 
 BEGIN_METADATA(FrameSizeButton, PieAnimationView, views::View)
@@ -317,9 +321,7 @@ void FrameSizeButton::OnMouseReleased(const ui::MouseEvent& event) {
     }
   }
 
-  if (pie_animation_view_) {
-    pie_animation_view_->Stop();
-  }
+  pie_animation_view_->Stop();
 
   views::FrameCaptionButton::OnMouseReleased(event);
 }
@@ -405,27 +407,22 @@ void FrameSizeButton::StateChanged(views::Button::ButtonState old_state) {
              GetState() != views::Button::STATE_PRESSED) {
     // We want to continue the animation if the button was pressed while it was
     // already hovered, so only stop in other instances.
-    DCHECK(pie_animation_view_);
     pie_animation_view_->Stop();
   }
 }
 
 void FrameSizeButton::Layout() {
-  if (pie_animation_view_) {
-    // Use the bounds of the inkdrop.
-    gfx::Rect bounds = GetLocalBounds();
-    bounds.Inset(GetInkdropInsets(bounds.size()));
-    pie_animation_view_->SetBoundsRect(bounds);
-  }
+  // Use the bounds of the inkdrop for the pie animation.
+  gfx::Rect bounds = GetLocalBounds();
+  bounds.Inset(GetInkdropInsets(bounds.size()));
+  pie_animation_view_->SetBoundsRect(bounds);
 
   views::FrameCaptionButton::Layout();
 }
 
 void FrameSizeButton::OnDisplayTabletStateChanged(display::TabletState state) {
   if (state == display::TabletState::kEnteringTabletMode) {
-    if (pie_animation_view_) {
-      pie_animation_view_->Stop();
-    }
+    pie_animation_view_->Stop();
     long_tap_delay_timer_.Stop();
   }
 }
@@ -448,7 +445,6 @@ void FrameSizeButton::StartPieAnimation(base::TimeDelta duration,
     return;
   }
 
-  CHECK(pie_animation_view_);
   pie_animation_view_->Start(duration, entry_type);
 }
 
@@ -559,9 +555,7 @@ void FrameSizeButton::CancelSnap() {
 void FrameSizeButton::SetButtonsToNormalMode(
     FrameSizeButtonDelegate::Animate animate) {
   in_snap_mode_ = false;
-  if (pie_animation_view_) {
-    pie_animation_view_->Stop();
-  }
+  pie_animation_view_->Stop();
   long_tap_delay_timer_.Stop();
   delegate_->SetButtonsToNormal(animate);
 }
