@@ -44,7 +44,7 @@ class MediaViewControllerBase {
   ~MediaViewControllerBase();
 
   // Returns the immediate parent view of the live camera/mic feeds.
-  MediaView& GetLiveFeedContainer();
+  MediaView& GetLiveFeedContainer() { return live_feed_container_.get(); }
 
   // Enables the combobox if there are connected devices (e.g.`has_devices` is
   // true).
@@ -56,6 +56,7 @@ class MediaViewControllerBase {
   void OnComboboxSelection();
 
   const raw_ref<MediaView> base_view_;
+  const raw_ref<MediaView> live_feed_container_;
   const raw_ref<views::Label> no_device_connected_label_;
   const raw_ref<views::Combobox> device_selector_combobox_;
 

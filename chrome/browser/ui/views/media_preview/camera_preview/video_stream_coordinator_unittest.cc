@@ -46,8 +46,7 @@ class VideoStreamCoordinatorTest : public TestWithBrowserView {
   void SetUp() override {
     TestWithBrowserView::SetUp();
     parent_view_ = std::make_unique<views::View>();
-    coordinator_ =
-        std::make_unique<VideoStreamCoordinator>(*parent_view_, /*index=*/0);
+    coordinator_ = std::make_unique<VideoStreamCoordinator>(*parent_view_);
   }
 
   void TearDown() override {

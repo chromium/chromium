@@ -20,7 +20,7 @@ class MediaViewControllerBaseTest : public TestWithBrowserView {
  protected:
   void SetUp() override {
     TestWithBrowserView::SetUp();
-    media_view_ = std::make_unique<MediaView>(/*is_subsection=*/false);
+    media_view_ = std::make_unique<MediaView>();
     controller_ = std::make_unique<MediaViewControllerBase>(
         *media_view_, /*needs_borders=*/true, /*model=*/nullptr,
         source_change_callback_.Get(), std::u16string(), std::u16string());

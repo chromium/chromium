@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include <memory>
-#include <optional>
 #include <utility>
 #include <vector>
 
@@ -28,9 +27,8 @@ class VideoStreamView;
 class VideoStreamCoordinator
     : public capture_mode::CameraVideoFrameHandler::Delegate {
  public:
-  // VideoStreamView is added to `parent_view` children list at `index`.
-  // If `index` is `nullopt`, then the view is added to the end of the list.
-  VideoStreamCoordinator(views::View& parent_view, std::optional<size_t> index);
+  // VideoStreamView is added to `parent_view` children list.
+  explicit VideoStreamCoordinator(views::View& parent_view);
   VideoStreamCoordinator(const VideoStreamCoordinator&) = delete;
   VideoStreamCoordinator& operator=(const VideoStreamCoordinator&) = delete;
   ~VideoStreamCoordinator() override;
@@ -48,10 +46,6 @@ class VideoStreamCoordinator
   // here to protect from destruction.
   void StopAndCleanup(mojo::Remote<video_capture::mojom::VideoSourceProvider>
                           video_source_provider);
-
-  // Shows/Hides video stream preview. It does nothing if the view has already
-  // been closed.
-  void SetPreviewVisibility(bool is_visible);
 
   // capture_mode::CameraVideoFrameHandler::Delegate implementation.
   void OnCameraVideoFrame(scoped_refptr<media::VideoFrame> frame) override;

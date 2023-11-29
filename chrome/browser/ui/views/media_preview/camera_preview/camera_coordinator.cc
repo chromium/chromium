@@ -18,8 +18,7 @@ CameraCoordinator::CameraCoordinator(views::View& parent_view,
     : camera_mediator_(
           base::BindRepeating(&CameraCoordinator::OnVideoSourceInfosReceived,
                               base::Unretained(this))) {
-  auto* camera_view = parent_view.AddChildView(
-      std::make_unique<MediaView>(/*is_subsection=*/false));
+  auto* camera_view = parent_view.AddChildView(std::make_unique<MediaView>());
   camera_view_tracker_.SetView(camera_view);
   // Safe to use base::Unretained() because `this` owns / outlives
   // `camera_view_tracker_`.
@@ -34,7 +33,7 @@ CameraCoordinator::CameraCoordinator(views::View& parent_view,
                           base::Unretained(this)));
 
   video_stream_coordinator_.emplace(
-      camera_view_controller_->GetLiveFeedContainer(), /*index=*/0);
+      camera_view_controller_->GetLiveFeedContainer());
 }
 
 CameraCoordinator::~CameraCoordinator() {
@@ -49,8 +48,6 @@ void CameraCoordinator::OnVideoSourceInfosReceived(
   if (!camera_view_controller_.has_value()) {
     return;
   }
-
-  video_stream_coordinator_->SetPreviewVisibility(!device_infos.empty());
 
   std::vector<VideoSourceInfo> relevant_device_infos;
   relevant_device_infos.reserve(device_infos.size());

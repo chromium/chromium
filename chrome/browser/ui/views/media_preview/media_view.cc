@@ -31,5 +31,5 @@ void MediaView::ChildPreferredSizeChanged(View* child) {
 
 MediaView::~MediaView() = default;
 
-BEGIN_METADATA(MediaView, views::BoxLayoutView)
+BEGIN_METADATA(MediaView)
 END_METADATA

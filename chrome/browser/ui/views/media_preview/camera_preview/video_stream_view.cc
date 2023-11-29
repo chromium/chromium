@@ -55,7 +55,7 @@ void VideoStreamView::ClearFrame() {
 }
 
 void VideoStreamView::OnPaint(gfx::Canvas* canvas) {
-  if (!latest_frame_ || !raster_context_provider_) {
+  if (!latest_frame_) {
     gfx::RectF base_rect(width(), height());
     canvas->DrawRoundRect(base_rect, rounded_radius_, cc::PaintFlags());
     return;

@@ -24,6 +24,8 @@ MediaViewControllerBase::MediaViewControllerBase(
     const std::u16string& combobox_accessible_name,
     const std::u16string& no_device_connected_label_text)
     : base_view_(base_view),
+      live_feed_container_(raw_ref<MediaView>::from_ptr(
+          base_view_->AddChildView(std::make_unique<MediaView>()))),
       no_device_connected_label_(raw_ref<views::Label>::from_ptr(
           base_view_->AddChildView(std::make_unique<views::Label>()))),
       device_selector_combobox_(raw_ref<views::Combobox>::from_ptr(
@@ -47,6 +49,8 @@ MediaViewControllerBase::MediaViewControllerBase(
         ui::kColorMenuBackground, kRoundedRadius));
   }
 
+  live_feed_container_->SetVisible(false);
+
   no_device_connected_label_->SetText(no_device_connected_label_text);
   no_device_connected_label_->SetTextContext(
       views::style::CONTEXT_DIALOG_BODY_TEXT);
@@ -65,11 +69,8 @@ MediaViewControllerBase::~MediaViewControllerBase() {
   device_selector_combobox_->SetCallback({});
 }
 
-MediaView& MediaViewControllerBase::GetLiveFeedContainer() {
-  return *base_view_;
-}
-
 void MediaViewControllerBase::AdjustComboboxEnabledState(bool has_devices) {
+  live_feed_container_->SetVisible(has_devices);
   no_device_connected_label_->SetVisible(!has_devices);
   device_selector_combobox_->SetEnabled(has_devices);
   if (has_devices) {

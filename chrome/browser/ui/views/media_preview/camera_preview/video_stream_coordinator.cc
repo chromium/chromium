@@ -91,13 +91,10 @@ media::VideoCaptureFormat GetClosestVideoFormat(
 
 }  // namespace
 
-VideoStreamCoordinator::VideoStreamCoordinator(views::View& parent_view,
-                                               absl::optional<size_t> index) {
-  auto* video_stream_view = parent_view.AddChildViewAt(
-      std::make_unique<VideoStreamView>(kDefaultAspectRatio),
-      index.value_or(parent_view.children().size()));
+VideoStreamCoordinator::VideoStreamCoordinator(views::View& parent_view) {
+  auto* video_stream_view = parent_view.AddChildView(
+      std::make_unique<VideoStreamView>(kDefaultAspectRatio));
 
-  video_stream_view->SetVisible(false);
   video_stream_view->SetRasterContextProvider(
       content::GetContextFactory()->SharedMainThreadRasterContextProvider());
 
@@ -168,12 +165,6 @@ void VideoStreamCoordinator::StopInternal(
 
   if (auto* view = GetVideoStreamView(); view) {
     view->ClearFrame();
-  }
-}
-
-void VideoStreamCoordinator::SetPreviewVisibility(bool is_visible) {
-  if (auto* view = GetVideoStreamView(); view) {
-    view->SetVisible(is_visible);
   }
 }
 

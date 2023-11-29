@@ -10,9 +10,10 @@
 
 // The base view for both camera and mic views.
 class MediaView : public views::BoxLayoutView {
+  METADATA_HEADER(MediaView, views::BoxLayoutView)
+
  public:
-  METADATA_HEADER(MediaView);
-  explicit MediaView(bool is_subsection);
+  explicit MediaView(bool is_subsection = false);
   MediaView(const MediaView&) = delete;
   MediaView& operator=(const MediaView&) = delete;
   ~MediaView() override;
