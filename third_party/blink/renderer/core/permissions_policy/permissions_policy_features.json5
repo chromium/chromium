@@ -399,6 +399,11 @@
       depends_on: ["WebUSB"],
     },
     {
+      name: "UsbUnrestricted",
+      permissions_policy_name: "usb-unrestricted",
+      depends_on: ["UnrestrictedUsb"],
+    },
+    {
       // Unload is special and can default to being disabled by default based
       // on the DeprecateUnload flag.
       name: "Unload",

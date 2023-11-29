@@ -1,0 +1,20 @@
+{
+  "name": "Unrestricted USB Isolated App",
+  "version": "1.0.0",
+  "id": "/",
+  "scope": "/",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "permissions_policy": {
+    "cross-origin-isolated": [ "*" ],
+    "usb": [ "*" ],
+    "usb-unrestricted": [ "*" ]
+  },
+  "icons": [
+    {
+      "src": "256x256-green.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    }
+  ]
+}

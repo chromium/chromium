@@ -21,10 +21,12 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/isolated_context_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "services/device/public/cpp/usb/usb_utils.h"
 #include "services/device/public/mojom/usb_enumeration_options.mojom.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -272,8 +274,19 @@ bool UsbChooserController::DisplayDevice(
     return false;
   }
 
-  if (UsbBlocklist::Get().IsExcluded(device_info))
+  bool is_usb_unrestricted = false;
+  if (base::FeatureList::IsEnabled(blink::features::kUnrestrictedUsb)) {
+    is_usb_unrestricted =
+        requesting_frame_ &&
+        requesting_frame_->IsFeatureEnabled(
+            blink::mojom::PermissionsPolicyFeature::kUsbUnrestricted) &&
+        content::HasIsolatedContextCapability(requesting_frame_);
+  }
+  // Isolated context with permission to access the policy-controlled feature
+  // "usb-unrestricted" can bypass the USB blocklist.
+  if (!is_usb_unrestricted && UsbBlocklist::Get().IsExcluded(device_info)) {
     return false;
+  }
 
   return true;
 }

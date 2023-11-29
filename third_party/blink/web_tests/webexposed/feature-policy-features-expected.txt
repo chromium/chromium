@@ -72,6 +72,7 @@ storage-access
 sync-xhr
 unload
 usb
+usb-unrestricted
 vertical-scroll
 web-printing
 window-management
