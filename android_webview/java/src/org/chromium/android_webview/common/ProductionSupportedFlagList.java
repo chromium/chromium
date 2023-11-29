@@ -529,10 +529,6 @@ public final class ProductionSupportedFlagList {
                 "Controls whether a log is allowed to be closed when Chrome"
                         + " is backgrounded/foregrounded early."),
         Flag.baseFeature(
-                MetricsFeatures.MERGE_SUBPROCESS_METRICS_ON_BG_AND_FG,
-                "Controls whether child process histograms are merged on background "
-                        + "and foreground."),
-        Flag.baseFeature(
                 MetricsFeatures.FLUSH_PERSISTENT_SYSTEM_PROFILE_ON_WRITE,
                 "Controls whether to schedule a flush of persistent histogram memory "
                         + "immediately after writing a system profile to it."),

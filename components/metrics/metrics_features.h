@@ -20,12 +20,6 @@ BASE_DECLARE_FEATURE(kMetricsServiceAllowEarlyLogClose);
 // This can be used to disable structured metrics as a whole.
 BASE_DECLARE_FEATURE(kStructuredMetrics);
 
-#if BUILDFLAG(IS_ANDROID)
-// Determines whether to merge histograms from child processes when Chrome is
-// backgrounded/foregrounded. Only on Android.
-BASE_DECLARE_FEATURE(kMergeSubprocessMetricsOnBgAndFg);
-#endif  // BUILDFLAG(IS_ANDROID)
-
 // Determines whether to schedule a flush of persistent histogram memory
 // immediately after writing a system profile to it.
 BASE_DECLARE_FEATURE(kFlushPersistentSystemProfileOnWrite);
