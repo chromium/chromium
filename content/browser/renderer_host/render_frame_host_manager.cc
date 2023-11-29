@@ -3632,7 +3632,7 @@ RenderFrameHostManager::CreateRenderFrameHost(
 
   if (!render_view_host) {
     render_view_host = frame_tree.CreateRenderViewHost(
-        site_instance, frame_routing_id, renderer_initiated_creation,
+        site_instance->group(), frame_routing_id, renderer_initiated_creation,
         features::GetBrowsingContextMode() ==
                 features::BrowsingContextStateImplementationType::
                     kSwapForCrossBrowsingInstanceNavigations
@@ -3929,7 +3929,7 @@ void RenderFrameHostManager::CreateRenderFrameProxy(
       // Before creating a new RenderFrameProxyHost, ensure a RenderViewHost
       // exists for |instance|, as it creates the page level structure in Blink.
       render_view_host = frame_tree_node_->frame_tree().CreateRenderViewHost(
-          instance, /*main_frame_routing_id=*/MSG_ROUTING_NONE,
+          group, /*main_frame_routing_id=*/MSG_ROUTING_NONE,
           /*renderer_initiated_creation=*/false,
           features::GetBrowsingContextMode() ==
                   features::BrowsingContextStateImplementationType::

@@ -418,7 +418,7 @@ class CONTENT_EXPORT FrameTree {
   // RenderViewHost. If set, it implies we're reusing the compositor from the
   // previous RenderViewHost.
   scoped_refptr<RenderViewHostImpl> CreateRenderViewHost(
-      SiteInstanceImpl* site_instance,
+      SiteInstanceGroup* site_instance_group,
       int32_t main_frame_routing_id,
       bool renderer_initiated_creation,
       scoped_refptr<BrowsingContextState> main_browsing_context_state,
