@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_uploaded_crash_info_manager.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer.h"
 
+#include <atomic>
 #include <memory>
 #include <sstream>
 #include <string>
@@ -193,14 +194,17 @@ Status FatalCrashEventsObserver::UploadedCrashInfoManager::WriteSaveFile()
                   "Failed to create a JSON string for uploaded crash info");
   }
 
-  // TODO(b/266018440): Find a way to cancel all tasks on io_task_runner_ that
-  // has not been executed yet, as later save file writing tasks will always
-  // override the results of earlier ones.
   io_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
           [](base::FilePath save_file, base::FilePath save_file_tmp,
-             std::string content) {
+             std::string content, uint64_t cur_save_file_writing_task_id,
+             const std::atomic<uint64_t>* latest_save_file_writing_task_id) {
+            if (cur_save_file_writing_task_id <
+                latest_save_file_writing_task_id->load()) {
+              // Another file writing task has been posted. Skip this one.
+              return;
+            }
             // Write to the temp save file first, then rename it to the official
             // save file. This would prevent partly written file to be
             // effective, as renaming within the same partition is atomic on
@@ -217,7 +221,15 @@ Status FatalCrashEventsObserver::UploadedCrashInfoManager::WriteSaveFile()
             }
             // Successfully written the save file.
           },
-          save_file_, save_file_tmp_, std::move(content).value()));
+          save_file_, save_file_tmp_, std::move(content).value(),
+          latest_save_file_writing_task_id_->load() + 1,
+          latest_save_file_writing_task_id_.get()));
+
+  // Increase the latest task ID only after the latest task has been posted, not
+  // before. Otherwise, in a rare case that this thread hangs after the latest
+  // task ID has increased, the IO thread would prematurely skip all file
+  // writing tasks.
+  latest_save_file_writing_task_id_->fetch_add(1u);
 
   return Status::StatusOK();
 }
