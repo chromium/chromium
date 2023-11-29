@@ -144,6 +144,10 @@
   [_viewController enablePrimaryButton];
 }
 
+- (void)didReachBottom {
+  // Needs implementation.
+}
+
 #pragma mark - SearchEngineChoiceViewControllerDelegate
 
 - (void)showLearnMore {

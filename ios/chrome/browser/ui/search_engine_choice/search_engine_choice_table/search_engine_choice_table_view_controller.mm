@@ -62,6 +62,13 @@ UIImageView* CreateCheckedCircle() {
   _faviconLoader = nullptr;
 }
 
+- (void)scrollToBottom {
+  CGFloat scrollLimit = self.tableView.contentSize.height -
+                        self.tableView.bounds.size.height +
+                        self.tableView.contentInset.bottom;
+  [self.tableView setContentOffset:CGPointMake(0, scrollLimit) animated:YES];
+}
+
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
@@ -81,6 +88,11 @@ UIImageView* CreateCheckedCircle() {
   self.tableView.separatorColor = [UIColor colorNamed:kGrey300Color];
 
   [self loadModel];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+  [self updateDidReachBottomFlag];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -149,6 +161,12 @@ UIImageView* CreateCheckedCircle() {
   [self.tableView endUpdates];
 }
 
+#pragma mark - UIScrollViewDelegate
+
+- (void)scrollViewDidScroll:(UIScrollView*)scrollView {
+  [self updateDidReachBottomFlag];
+}
+
 #pragma mark - UITableViewDataSource
 
 - (UITableViewCell*)tableView:(UITableView*)tableView
@@ -191,6 +209,24 @@ UIImageView* CreateCheckedCircle() {
 - (void)reloadData {
   [self loadModel];
   [self.tableView reloadData];
+}
+
+#pragma mark - Private
+
+// Updates `-SearchEngineChoiceTableViewController.didReachBottom`.
+- (void)updateDidReachBottomFlag {
+  if (self.didReachBottom) {
+    // Don't update the value if the bottom was reached at least once.
+    return;
+  }
+  CGFloat scrollPosition =
+      self.tableView.contentOffset.y + self.tableView.frame.size.height;
+  CGFloat scrollLimit =
+      self.tableView.contentSize.height + self.tableView.contentInset.bottom;
+  if (scrollPosition >= scrollLimit) {
+    [self.delegate didReachBottom];
+    self.didReachBottom = YES;
+  }
 }
 
 @end
