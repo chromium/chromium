@@ -47,10 +47,6 @@ class WebContentsViewAndroid : public WebContentsView,
     synchronous_compositor_client_ = client;
   }
 
-  void set_selection_popup_controller(SelectionPopupController* controller) {
-    selection_popup_controller_ = controller;
-  }
-
   SynchronousCompositorClient* synchronous_compositor_client() const {
     return synchronous_compositor_client_;
   }
@@ -159,6 +155,10 @@ class WebContentsViewAndroid : public WebContentsView,
 
   SelectPopup* GetSelectPopup();
 
+  // Returns the current `SelectionPopupController` from the current
+  // `RenderWidgetHostViewAndroid`.
+  SelectionPopupController* GetSelectionPopupController();
+
   // The WebContents whose contents we display.
   raw_ptr<WebContentsImpl> web_contents_;
 
@@ -195,9 +195,6 @@ class WebContentsViewAndroid : public WebContentsView,
 
   // Interface used to get notified of events from the synchronous compositor.
   raw_ptr<SynchronousCompositorClient> synchronous_compositor_client_;
-
-  raw_ptr<SelectionPopupController, AcrossTasksDanglingUntriaged>
-      selection_popup_controller_ = nullptr;
 
   int device_orientation_ = 0;
 

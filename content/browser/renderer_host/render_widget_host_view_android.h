@@ -297,6 +297,9 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   void set_selection_popup_controller(SelectionPopupController* controller) {
     selection_popup_controller_ = controller;
   }
+  SelectionPopupController* selection_popup_controller() const {
+    return selection_popup_controller_.get();
+  }
   void set_text_suggestion_host(
       TextSuggestionHostAndroid* text_suggestion_host) {
     text_suggestion_host_ = text_suggestion_host;
