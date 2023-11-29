@@ -6692,6 +6692,9 @@ crbug.com/1453398 [ Linux ] images/image-hover-display-alt.html [ Failure Pass ]
 
 # Since HTTPS upgrades run in the //chrome layer, these will fail when ran in content shell.
 external/wpt/https-upgrades/tentative/upgrade.https.sub.html [ Timeout ]
+external/wpt/https-upgrades/tentative/http-redirecting-to-http.https.sub.html [ Timeout ]
+external/wpt/https-upgrades/tentative/http-redirecting-to-http-redirecting-to-http.https.sub.html [ Timeout ]
+external/wpt/https-upgrades/tentative/http-redirecting-to-https.https.sub.html [ Timeout ]
 
 # Sherrif 2023-06-09
 crbug.com/1358175 [ Mac12 ] media/controls/closed-captions-single-track.html [ Failure Pass ]
