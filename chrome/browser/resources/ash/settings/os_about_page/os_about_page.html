@@ -29,6 +29,10 @@
     text-align: center;
   }
 
+  :host-context(body.revamp-wayfinding-enabled) #updateRowIcon {
+    margin-inline-end: 16px;
+  }
+
   /* TODO(crbug.com/986596): Don't use browser icons here. Fork them. */
   iron-icon[icon='settings:check-circle'] {
     fill: var(--cros-icon-color-prominent);
@@ -38,6 +42,19 @@
   iron-icon[icon='cr:warning'],
   iron-icon[icon='os-settings:end-of-life'] {
     fill: var(--cros-icon-color-alert);
+  }
+
+  iron-icon[icon='os-settings:about-update-complete'] {
+    fill: var(--cros-sys-positive);
+  }
+  iron-icon[icon='os-settings:about-update-warning'] {
+    fill: var(--cros-sys-warning);
+  }
+  iron-icon[icon='os-settings:about-update-error'] {
+    fill: var(--cros-sys-error);
+  }
+  :host-context(body.revamp-wayfinding-enabled)  iron-icon[icon='cr20:domain'] {
+    fill: var(--cros-sys-primary);
   }
 
   #firmwareUpdateBadge {
@@ -94,11 +111,23 @@
         <div class="settings-box two-line">
           <!-- Set the icon from the iconset (when it's obsolete/EOL and
             when update is done) or set the src (when it's updating). -->
-          <div class="icon-container"
-              hidden="[[!shouldShowIcons_(showUpdateStatus_)]]">
-            <!-- TODO(crbug.com/986596): Don't use browser icons here. Fork
-              them. -->
-            <iron-icon
+          <template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">
+            <div class="icon-container"
+                hidden="[[!shouldShowIcons_(showUpdateStatus_)]]">
+              <!-- TODO(crbug.com/986596): Don't use browser icons here. Fork
+                them. -->
+              <iron-icon
+                  icon$="[[getUpdateStatusIcon_(
+                      hasEndOfLife_, currentUpdateStatusEvent_)]]"
+                  src="[[getThrobberSrcIfUpdating_(
+                      isDarkModeActive_,
+                      hasEndOfLife_,
+                      currentUpdateStatusEvent_)]]">
+              </iron-icon>
+            </div>
+          </template>
+          <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
+            <iron-icon id="updateRowIcon"
                 icon$="[[getUpdateStatusIcon_(
                     hasEndOfLife_, currentUpdateStatusEvent_)]]"
                 src="[[getThrobberSrcIfUpdating_(
@@ -106,7 +135,7 @@
                     hasEndOfLife_,
                     currentUpdateStatusEvent_)]]">
             </iron-icon>
-          </div>
+          </template>
           <div class="start padded">
             <div id="updateStatusMessage" hidden="[[!showUpdateStatus_]]">
               <div id="updateStatusMessageInner" tabindex="-1"
@@ -161,6 +190,7 @@
         <cr-link-row
             id="aboutTPMFirmwareUpdate"
             class="hr"
+            start-icon="[[rowIcons_.powerWash]]"
             hidden$="[[!showTPMFirmwareUpdateLineItem_]]"
             label="$i18n{aboutTPMFirmwareUpdateTitle}"
             on-click="onTpmFirmwareUpdateClick_">
@@ -174,6 +204,7 @@
         </cr-link-row>
         <template is="dom-if" if="[[hasInternetConnection_]]">
           <cr-link-row class="hr" id="releaseNotesOnline"
+              start-icon="[[rowIcons_.releaseNotes]]"
               on-click="onReleaseNotesClick_"
               label="$i18n{aboutShowReleaseNotes}"
               sub-label="[[getShowReleaseNotesSublabel_()]]"
@@ -183,6 +214,7 @@
         </template>
         <template is="dom-if" if="[[!hasInternetConnection_]]">
           <cr-link-row class="hr" id="releaseNotesOffline"
+              start-icon="[[rowIcons_.releaseNotes]]"
               on-click="onReleaseNotesClick_"
               label="$i18n{aboutShowReleaseNotes}"
               title="$i18n{aboutReleaseNotesOffline}"
@@ -190,7 +222,9 @@
               deep-link-focus-id$="[[Setting.kSeeWhatsNew]]">
           </cr-link-row>
         </template>
-        <cr-link-row class="hr" id="help" on-click="onHelpClick_"
+        <cr-link-row class="hr" id="help"
+            start-icon="[[rowIcons_.help]]"
+            on-click="onHelpClick_"
             label="$i18n{aboutGetHelpUsingChromeOs}"
             sub-label="[[getHelpUsingChromeOsSublabel_()]]"
             external
@@ -198,6 +232,7 @@
         </cr-link-row>
   <if expr="_google_chrome">
         <cr-link-row class="hr" id="reportIssue"
+            start-icon="[[rowIcons_.feedback]]"
             on-click="onReportIssueClick_"
             hidden="[[!prefs.feedback_allowed.value]]"
             label="[[getReportIssueLabel_()]]"
@@ -207,6 +242,7 @@
         </cr-link-row>
   </if>
         <cr-link-row class="hr" id="diagnostics"
+            start-icon="[[rowIcons_.diagnostics]]"
             on-click="onDiagnosticsClick_"
             label="$i18n{aboutDiagnostics}"
             sub-label="[[getDiagnosticsSublabel_()]]"
@@ -214,6 +250,7 @@
             deep-link-focus-id$="[[Setting.kDiagnostics]]">
         </cr-link-row>
         <cr-link-row class="hr" id="firmwareUpdates"
+            start-icon="[[rowIcons_.firmwareUpdates]]"
             on-click="onFirmwareUpdatesClick_"
             label="$i18n{aboutFirmwareUpdates}"
             sub-label="[[getFirmwareSublabel_(firmwareUpdateCount_)]]"
@@ -232,6 +269,7 @@
           </div>
         </cr-link-row>
         <cr-link-row class="hr" id="detailedBuildInfoTrigger"
+            start-icon="[[rowIcons_.additionalDetails]]"
             on-click="onDetailedBuildInfoClick_"
             label="$i18n{aboutDetailedBuildInfo}"
             role-description="$i18n{subpageArrowRoleDescription}">
