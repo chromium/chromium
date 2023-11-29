@@ -1523,6 +1523,25 @@ TEST_F(DIPSDatabaseHistogramTest, ErrorMetrics) {
                                   sql::SqliteLoggedResultCode::kCorrupt, 1);
 }
 
+TEST_F(DIPSDatabaseHistogramTest, PerformanceMetrics) {
+  histograms().ExpectTotalCount("Privacy.DIPS.Database.Operation.WriteTime", 0);
+  histograms().ExpectTotalCount("Privacy.DIPS.Database.Operation.ReadTime", 0);
+
+  // Write an entry to the db.
+  db_->Write("url.test", {},
+             /*interaction_times=*/
+             {{Time::FromSecondsSinceUnixEpoch(1),
+               Time::FromSecondsSinceUnixEpoch(1)}},
+             {}, {}, {});
+  histograms().ExpectTotalCount("Privacy.DIPS.Database.Operation.ReadTime", 0);
+  histograms().ExpectTotalCount("Privacy.DIPS.Database.Operation.WriteTime", 1);
+
+  // Read back the entry from the db.
+  db_->Read("site.test");
+  histograms().ExpectTotalCount("Privacy.DIPS.Database.Operation.ReadTime", 1);
+  histograms().ExpectTotalCount("Privacy.DIPS.Database.Operation.WriteTime", 1);
+}
+
 class DIPSDatabaseMigrationTest : public testing::Test {
  public:
   DIPSDatabaseMigrationTest() {

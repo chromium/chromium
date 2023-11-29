@@ -27,6 +27,24 @@ reviewer.
       summary="in an off-the-record profile, with third-party cookies blocked"/>
 </variants>
 
+<variants name="DIPSDatabaseOperation">
+  <variant name="ClearTimestamps" summary="ClearTimestamps"/>
+  <variant name="FilterSitesWithInteractionOrWaa"
+      summary="FilterSitesWithInteractionOrWaa"/>
+  <variant name="GetSitesThatBounced" summary="GetSitesThatBounced"/>
+  <variant name="GetSitesThatBouncedWithState"
+      summary="GetSitesThatBouncedWithState"/>
+  <variant name="GetSitesThatUsedStorage" summary="GetSitesThatUsedStorage"/>
+  <variant name="Init" summary="Init"/>
+  <variant name="Read" summary="Read"/>
+  <variant name="ReadPopup" summary="ReadPopup"/>
+  <variant name="ReadRecentPopupsWithInteraction"
+      summary="ReadRecentPopupsWithInteraction"/>
+  <variant name="RemoveRows" summary="RemoveRows"/>
+  <variant name="Write" summary="Write"/>
+  <variant name="WritePopup" summary="WritePopup"/>
+</variants>
+
 <variants name="DIPSRedirectType">
   <variant name="Client" summary="client-side"/>
   <variant name="Server" summary="server-side"/>
@@ -254,6 +272,20 @@ reviewer.
     action.
   </summary>
   <token key="DIPSCookieMode" variants="DIPSCookieMode"/>
+</histogram>
+
+<histogram name="Privacy.DIPS.Database.Operation.{DIPSDatabaseOperation}Time"
+    units="ms" expires_after="2024-09-01">
+  <owner>etienneb@chromium.org</owner>
+  <owner>jdh@chromium.org</owner>
+  <owner>src/chrome/browser/dips/OWNERS</owner>
+  <summary>
+    The time taken to execute the {DIPSDatabaseOperation} DIPS database
+    operation.
+
+    Recorded for each call to the operation.
+  </summary>
+  <token key="DIPSDatabaseOperation" variants="DIPSDatabaseOperation"/>
 </histogram>
 
 <histogram name="Privacy.DIPS.DatabaseEntryCount" units="entries"
