@@ -59,11 +59,14 @@ class EditLabels : public views::View {
   // Called when this view is clicked upon.
   void FocusLabel();
 
+  void ShowEduNudgeForEditingTip();
+
+  // Returns Action name, such as "Joystick WASD".
+  std::u16string CalculateActionName();
+
   void set_should_update_title(bool should_update_title) {
     should_update_title_ = should_update_title;
   }
-
-  void ShowEduNudgeForEditingTip();
 
  private:
   friend class ButtonOptionsMenuTest;
@@ -75,9 +78,6 @@ class EditLabels : public views::View {
 
   // Called when `labels_` is initiated or changes the content.
   void UpdateNameTag();
-  // Called when the editing list is first loaded to assign name labels to
-  // name tags, if available.
-  void UpdateNameTagTitle();
 
   raw_ptr<DisplayOverlayController> controller_ = nullptr;
   raw_ptr<Action, DanglingUntriaged> action_ = nullptr;

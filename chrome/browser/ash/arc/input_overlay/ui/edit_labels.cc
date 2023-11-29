@@ -56,9 +56,6 @@ void EditLabels::Init() {
   }
 
   UpdateNameTag();
-  if (should_update_title_) {
-    UpdateNameTagTitle();
-  }
 }
 
 void EditLabels::OnActionInputBindingUpdated() {
@@ -67,10 +64,6 @@ void EditLabels::OnActionInputBindingUpdated() {
   }
 
   UpdateNameTag();
-}
-
-void EditLabels::UpdateNameTagTitle() {
-  NOTIMPLEMENTED();
 }
 
 void EditLabels::SetNameTagState(bool is_error,
@@ -106,6 +99,48 @@ void EditLabels::ShowEduNudgeForEditingTip() {
   controller_->AddNudgeWidget(labels_[size - 1],
                               u"You can easily click and swap this key. To "
                               u"edit the details, tap the row.");
+}
+
+std::u16string EditLabels::CalculateActionName() {
+  std::u16string key_string = u"";
+  // Check if all labels are unassigned. The prefix for the sub-title is
+  // different if all labels are unassigned.
+  bool all_unassigned = true;
+  // If at least one label is unassigned, it needs to show error state.
+  missing_assign_ = false;
+  DCHECK_GE(labels_.size(), 1u);
+  for (auto* label : labels_) {
+    if (label->IsInputUnbound()) {
+      missing_assign_ = true;
+    } else {
+      key_string.append(label->GetText());
+      all_unassigned = false;
+    }
+  }
+  // TODO(b/274690042): Replace placeholder text with localized strings.
+  if (all_unassigned) {
+    switch (action_->GetType()) {
+      case ActionType::TAP:
+        return u"Unassigned button";
+      case ActionType::MOVE:
+        return u"Unassigned joystick";
+      default:
+        NOTREACHED();
+    }
+  }
+
+  auto* prefix_string = u"";
+  switch (action_->GetType()) {
+    case ActionType::TAP:
+      prefix_string = u"Game button ";
+      break;
+    case ActionType::MOVE:
+      prefix_string = u"Joystick ";
+      break;
+    default:
+      NOTREACHED();
+  }
+  return prefix_string + key_string;
 }
 
 void EditLabels::InitForActionTapKeyboard() {
@@ -152,26 +187,14 @@ void EditLabels::InitForActionMoveKeyboard() {
 }
 
 void EditLabels::UpdateNameTag() {
-  std::u16string key_string = u"";
-  // Check if all labels are unassigned. The prefix for the sub-title is
-  // different if all labels are unassigned.
-  bool all_unassigned = true;
   // If at least one label is unassigned, it needs to show error state.
   missing_assign_ = false;
   DCHECK_GE(labels_.size(), 1u);
   for (auto* label : labels_) {
-    key_string.append(label->GetText());
-    key_string.append(u", ");
     if (label->IsInputUnbound()) {
       missing_assign_ = true;
-    } else {
-      all_unassigned = false;
+      break;
     }
-  }
-  key_string.erase(key_string.end() - 2, key_string.end());
-  // TODO(b/274690042): Replace placeholder text with localized strings.
-  if (all_unassigned) {
-    key_string = u"unassigned";
   }
 
   name_tag_->SetState(
@@ -181,6 +204,10 @@ void EditLabels::UpdateNameTag() {
       missing_assign_
           ? l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_EDIT_MISSING_BINDING)
           : u"");
+
+  if (should_update_title_) {
+    name_tag_->SetTitle(CalculateActionName());
+  }
 }
 
 void EditLabels::RemoveNewState() {

@@ -115,6 +115,15 @@ class EditLabelTest : public OverlayViewTestBase {
     }
   }
 
+  void CheckActionName(std::u16string expected_name,
+                       ButtonOptionsMenu* menu,
+                       ActionViewListItem* list_item) {
+    EXPECT_EQ(menu->action_name_label_->GetText(), expected_name);
+    if (list_item) {
+      EXPECT_EQ(list_item->name_tag_->title_label_->GetText(), expected_name);
+    }
+  }
+
   void CheckErrorState(ButtonOptionsMenu* menu,
                        ActionViewListItem* list_item,
                        bool menu_has_error,
@@ -169,11 +178,13 @@ TEST_F(EditLabelTest, TestEditingListLabelEditing) {
   // ActionTap: ␣ -> m.
   auto* menu = ShowButtonOptionsMenu(tap_action_);
   CheckAction(ActionType::TAP, menu, {ui::DomCode::SPACE}, {u"␣"});
+  CheckActionName(u"Game button ␣", menu, tap_action_list_item_);
   CheckErrorState(menu, tap_action_list_item_, /*menu_has_error=*/false,
                   /*list_item_has_error=*/false);
   TapKeyboardKeyOnEditLabel(GetEditLabel(tap_action_list_item_, /*index=*/0),
                             ui::VKEY_M);
   CheckAction(ActionType::TAP, menu, {ui::DomCode::US_M}, {u"m"});
+  CheckActionName(u"Game button m", menu, tap_action_list_item_);
   CheckErrorState(menu, tap_action_list_item_, /*menu_has_error=*/false,
                   /*list_item_has_error=*/false);
   EXPECT_FALSE(tap_action_->IsDeleted());
@@ -186,6 +197,7 @@ TEST_F(EditLabelTest, TestEditingListLabelEditing) {
               {ui::DomCode::US_W, ui::DomCode::US_A, ui::DomCode::US_S,
                ui::DomCode::US_D},
               {u"w", u"a", u"s", u"d"});
+  CheckActionName(u"Joystick wasd", menu, move_action_list_item_);
   CheckErrorState(menu, move_action_list_item_, /*menu_has_error=*/false,
                   /*list_item_has_error=*/false);
   EXPECT_FALSE(tap_action_->IsDeleted());
@@ -197,6 +209,7 @@ TEST_F(EditLabelTest, TestEditingListLabelEditing) {
               {ui::DomCode::US_L, ui::DomCode::US_A, ui::DomCode::US_S,
                ui::DomCode::US_D},
               {u"l", u"a", u"s", u"d"});
+  CheckActionName(u"Joystick lasd", menu, move_action_list_item_);
   CheckErrorState(menu, move_action_list_item_, /*menu_has_error=*/false,
                   /*list_item_has_error=*/false);
   EXPECT_FALSE(tap_action_->IsDeleted());
@@ -210,6 +223,7 @@ TEST_F(EditLabelTest, TestEditingListLabelEditing) {
               {ui::DomCode::NONE, ui::DomCode::US_A, ui::DomCode::US_L,
                ui::DomCode::US_D},
               {u"?", u"a", u"l", u"d"});
+  CheckActionName(u"Joystick ald", menu, move_action_list_item_);
   CheckErrorState(menu, move_action_list_item_, /*menu_has_error=*/true,
                   /*list_item_has_error=*/true);
   EXPECT_FALSE(tap_action_->IsDeleted());
@@ -222,6 +236,7 @@ TEST_F(EditLabelTest, TestEditingListLabelEditing) {
   TapKeyboardKeyOnEditLabel(GetEditLabel(move_action_list_item_, /*index=*/0),
                             ui::VKEY_M);
   CheckAction(ActionType::TAP, menu, {ui::DomCode::NONE}, {u"?"});
+  CheckActionName(u"Unassigned button", menu, tap_action_list_item_);
   CheckErrorState(menu, tap_action_list_item_, /*menu_has_error=*/true,
                   /*list_item_has_error=*/true);
   menu = ShowButtonOptionsMenu(move_action_);
@@ -229,6 +244,7 @@ TEST_F(EditLabelTest, TestEditingListLabelEditing) {
               {ui::DomCode::US_M, ui::DomCode::US_A, ui::DomCode::US_L,
                ui::DomCode::US_D},
               {u"m", u"a", u"l", u"d"});
+  CheckActionName(u"Joystick mald", menu, move_action_list_item_);
   CheckErrorState(menu, move_action_list_item_, /*menu_has_error=*/false,
                   /*list_item_has_error=*/false);
   EXPECT_FALSE(tap_action_->IsDeleted());
@@ -241,6 +257,7 @@ TEST_F(EditLabelTest, TestEditingListLabelEditing) {
   TapKeyboardKeyOnEditLabel(GetEditLabel(tap_action_list_item_, /*index=*/0),
                             ui::VKEY_D);
   CheckAction(ActionType::TAP, menu, {ui::DomCode::US_D}, {u"d"});
+  CheckActionName(u"Game button d", menu, tap_action_list_item_);
   CheckErrorState(menu, tap_action_list_item_, /*menu_has_error=*/false,
                   /*list_item_has_error=*/false);
   menu = ShowButtonOptionsMenu(move_action_);
@@ -248,6 +265,7 @@ TEST_F(EditLabelTest, TestEditingListLabelEditing) {
               {ui::DomCode::US_M, ui::DomCode::US_A, ui::DomCode::US_L,
                ui::DomCode::NONE},
               {u"m", u"a", u"l", u"?"});
+  CheckActionName(u"Joystick mal", menu, move_action_list_item_);
   CheckErrorState(menu, move_action_list_item_, /*menu_has_error=*/true,
                   /*list_item_has_error=*/true);
   EXPECT_FALSE(tap_action_->IsDeleted());
@@ -263,6 +281,7 @@ TEST_F(EditLabelTest, TestEditingListLabelReservedKey) {
                             ui::VKEY_ESCAPE);
   // Label is not changed.
   CheckAction(ActionType::TAP, menu, {ui::DomCode::SPACE}, {u"␣"});
+  CheckActionName(u"Game button ␣", menu, tap_action_list_item_);
   // Error state shows temporarily on list item view.
   CheckErrorState(menu, tap_action_list_item_, /*menu_has_error=*/false,
                   /*list_item_has_error=*/true);
@@ -281,6 +300,7 @@ TEST_F(EditLabelTest, TestEditingListLabelReservedKey) {
               {ui::DomCode::US_W, ui::DomCode::US_A, ui::DomCode::US_S,
                ui::DomCode::NONE},
               {u"w", u"a", u"s", u"?"});
+  CheckActionName(u"Joystick was", menu, move_action_list_item_);
   CheckErrorState(menu, move_action_list_item_, /*menu_has_error=*/true,
                   /*list_item_has_error=*/true);
   FocusOnLabel(GetEditLabel(move_action_list_item_, /*index=*/0));
@@ -308,6 +328,7 @@ TEST_F(EditLabelTest, TestEditingNewAction) {
               {ui::DomCode::NONE, ui::DomCode::NONE, ui::DomCode::NONE,
                ui::DomCode::NONE},
               {u"", u"", u"", u""});
+  CheckActionName(u"Unassigned joystick", menu, nullptr);
 
   auto* label0 = GetEditLabel(menu, /*index=*/0);
   FocusOnLabel(label0);
@@ -317,6 +338,7 @@ TEST_F(EditLabelTest, TestEditingNewAction) {
               {ui::DomCode::US_A, ui::DomCode::NONE, ui::DomCode::NONE,
                ui::DomCode::NONE},
               {u"a", u"", u"", u""});
+  CheckActionName(u"Joystick a", menu, nullptr);
 
   auto* label1 = GetEditLabel(menu, /*index=*/1);
   FocusOnLabel(label1);
@@ -326,6 +348,7 @@ TEST_F(EditLabelTest, TestEditingNewAction) {
               {ui::DomCode::NONE, ui::DomCode::US_A, ui::DomCode::NONE,
                ui::DomCode::NONE},
               {u"", u"a", u"", u""});
+  CheckActionName(u"Joystick a", menu, nullptr);
 }
 
 }  // namespace arc::input_overlay

@@ -109,6 +109,10 @@ void ActionEditView::OnActionInputBindingUpdated() {
   labels_view_->OnActionInputBindingUpdated();
 }
 
+std::u16string ActionEditView::GetActionName() {
+  return labels_view_->CalculateActionName();
+}
+
 void ActionEditView::OnClicked() {
   ClickCallback();
 }

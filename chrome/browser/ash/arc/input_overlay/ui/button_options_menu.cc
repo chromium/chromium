@@ -32,6 +32,7 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_types.h"
@@ -208,10 +209,9 @@ void ButtonOptionsMenu::AddHeader() {
   container->SetProperty(views::kMarginsKey,
                          gfx::Insets::TLBR(0, kHeaderLeftMarginSpacing, 12, 0));
 
-  container->AddChildView(ash::bubble_utils::CreateLabel(
+  action_name_label_ = container->AddChildView(ash::bubble_utils::CreateLabel(
       // TODO(b/274690042): Replace placeholder text with localized strings.
-      ash::TypographyToken::kCrosTitle1, u"Button options",
-      cros_tokens::kCrosSysOnSurface));
+      ash::TypographyToken::kCrosTitle1, u"", cros_tokens::kCrosSysOnSurface));
 
   done_button_ = container->AddChildView(std::make_unique<ash::IconButton>(
       base::BindRepeating(&ButtonOptionsMenu::OnDoneButtonPressed,
@@ -219,6 +219,11 @@ void ButtonOptionsMenu::AddHeader() {
       ash::IconButton::Type::kMedium, &kGameControlsDoneIcon,
       // TODO(b/279117180): Replace placeholder names with a11y strings.
       IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER));
+
+  action_name_label_->SetMultiLine(true);
+  action_name_label_->SetMaximumWidth(
+      kButtonOptionsMenuWidth - 2 * kArrowContainerHorizontalBorderInset -
+      kHeaderLeftMarginSpacing - done_button_->GetPreferredSize().width());
 }
 
 void ButtonOptionsMenu::AddEditTitle() {
@@ -247,6 +252,7 @@ void ButtonOptionsMenu::AddActionEdit() {
   // ------------------------------
   action_edit_ = AddChildView(
       std::make_unique<ButtonOptionsActionEdit>(controller_, action_));
+  action_name_label_->SetText(action_edit_->GetActionName());
 }
 
 void ButtonOptionsMenu::AddActionSelection() {
@@ -314,12 +320,14 @@ void ButtonOptionsMenu::OnActionTypeChanged(Action* action,
   RemoveChildViewT(action_edit_);
   action_edit_ = AddChildViewAt(
       std::make_unique<ButtonOptionsActionEdit>(controller_, action_), *index);
+  action_name_label_->SetText(action_edit_->GetActionName());
   UpdateWidget();
 }
 
 void ButtonOptionsMenu::OnActionInputBindingUpdated(const Action& action) {
   if (action_ == &action) {
     action_edit_->OnActionInputBindingUpdated();
+    action_name_label_->SetText(action_edit_->GetActionName());
   }
 }
 

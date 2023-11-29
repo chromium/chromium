@@ -16,6 +16,10 @@ namespace ash {
 class IconButton;
 }  // namespace ash
 
+namespace views {
+class Label;
+}  // namespace views
+
 namespace arc::input_overlay {
 
 class Action;
@@ -88,6 +92,7 @@ class ButtonOptionsMenu : public ArrowContainer, public TouchInjectorObserver {
   raw_ptr<ash::IconButton> done_button_ = nullptr;
   raw_ptr<ActionTypeButtonGroup> button_group_ = nullptr;
   raw_ptr<ActionEditView, DisableDanglingPtrDetection> action_edit_ = nullptr;
+  raw_ptr<views::Label> action_name_label_ = nullptr;
 };
 
 }  // namespace arc::input_overlay
