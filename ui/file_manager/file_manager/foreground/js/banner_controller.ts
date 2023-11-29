@@ -490,7 +490,9 @@ export class BannerController extends EventTarget {
         this.volumeSizeObservers_[this.currentVolume_.volumeType];
     const sharedDriveChanged = this.currentSharedDrive_ !== previousSharedDrive;
     if (volumeChanged || sharedDriveChanged) {
-      this.pendingVolumeSizeUpdates_.add(this.currentVolume_);
+      if (this.currentVolume_) {
+        this.pendingVolumeSizeUpdates_.add(this.currentVolume_);
+      }
       this.updateVolumeSizeStatsDebounced_.runImmediately();
 
       // updateVolumeSizeStats will call reconcile at its end. Return here to

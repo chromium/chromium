@@ -165,7 +165,7 @@ export class EmptyFolderController {
    */
   onScanFinished() {
     const currentVolumeInfo = this.directoryModel_.getCurrentVolumeInfo();
-    if (isOneDrive(currentVolumeInfo)) {
+    if (currentVolumeInfo && isOneDrive(currentVolumeInfo)) {
       if (!isInteractiveVolume(currentVolumeInfo)) {
         // Set |isInteractive| to true for ODFS when in an authenticated state.
         getStore().dispatch(updateIsInteractiveVolume({
@@ -233,7 +233,7 @@ export class EmptyFolderController {
    */
   private onOdfsSignIn_() {
     const currentVolumeInfo = this.directoryModel_.getCurrentVolumeInfo();
-    if (isOneDrive(currentVolumeInfo) &&
+    if (currentVolumeInfo && isOneDrive(currentVolumeInfo) &&
         currentVolumeInfo.providerId !== undefined) {
       this.providersModel_.requestMount(currentVolumeInfo.providerId);
     }
@@ -252,7 +252,7 @@ export class EmptyFolderController {
     } else if (currentRootType === RootType.TRASH) {
       svgRef = TRASH_EMPTY_FOLDER;
     } else if (
-        isOneDrive(currentVolumeInfo) &&
+        currentVolumeInfo && isOneDrive(currentVolumeInfo) &&
         !isInteractiveVolume(currentVolumeInfo)) {
       // Show ODFS reauthentication required empty state if is it
       // non-interactive.

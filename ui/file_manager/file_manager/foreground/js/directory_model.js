@@ -14,7 +14,7 @@ import {isDlpEnabled, isDriveFsBulkPinningEnabled} from '../../common/js/flags.j
 import {recordMediumCount, recordUserAction} from '../../common/js/metrics.js';
 import {getEntryLabel} from '../../common/js/translations.js';
 import {testSendMessage} from '../../common/js/util.js';
-import {getVolumeTypeFromRootType, isNative, RootType, VolumeType} from '../../common/js/volume_manager_types.js';
+import {getVolumeTypeFromRootType, isNative, RootType, Source, VolumeType} from '../../common/js/volume_manager_types.js';
 import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {PropStatus, SearchLocation, SearchOptions, State, Volume, VolumeId} from '../../externs/ts/state.js';
 // @ts-ignore: error TS6133: 'Store' is declared but its value is never read.
@@ -308,17 +308,13 @@ export class DirectoryModel extends EventTarget {
 
   /**
    * Obtains current volume information.
-   * @return {import('../../externs/volume_info.js').VolumeInfo}
+   * @return {import('../../externs/volume_info.js').VolumeInfo|null}
    */
   getCurrentVolumeInfo() {
     const entry = this.getCurrentDirEntry();
     if (!entry) {
-      // @ts-ignore: error TS2322: Type 'null' is not assignable to type
-      // 'VolumeInfo'.
       return null;
     }
-    // @ts-ignore: error TS2322: Type 'VolumeInfo | null' is not assignable to
-    // type 'VolumeInfo'.
     return this.volumeManager_.getVolumeInfo(entry);
   }
 

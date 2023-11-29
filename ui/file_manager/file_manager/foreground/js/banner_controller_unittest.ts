@@ -228,7 +228,7 @@ function changeCurrentVolumeDiskSpace(
     newSizeStats: chrome.fileManagerPrivate.MountPointSizeStats|null,
     dispatchEvent = true) {
   const currentVolume = directoryModel.getCurrentVolumeInfo();
-  if (!currentVolume.volumeId) {
+  if (!currentVolume || !currentVolume.volumeId) {
     return;
   }
 
