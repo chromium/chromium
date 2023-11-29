@@ -16,6 +16,7 @@
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "gpu/config/gpu_info_collector.h"                    // nogncheck
+#include "third_party/dawn/include/dawn/dawn_proc.h"          // nogncheck
 #include "third_party/dawn/include/dawn/native/DawnNative.h"  // nogncheck
 #include "third_party/dawn/include/dawn/webgpu_cpp.h"         // nogncheck
 #endif
@@ -77,6 +78,7 @@ bool OnDeviceModelService::PreSandboxInit() {
   // Warm any relevant drivers before attempting to bring up the sandbox. For
   // good measure we initialize a device instance for any adapter with an
   // appropriate backend on top of any integrated or discrete GPU.
+  dawnProcSetProcs(&dawn::native::GetProcs());
   auto instance = std::make_unique<dawn::native::Instance>();
   const wgpu::RequestAdapterOptions adapter_options{
       .backendType = wgpu::BackendType::Vulkan,
