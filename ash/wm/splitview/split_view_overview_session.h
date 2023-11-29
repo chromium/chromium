@@ -99,6 +99,9 @@ class ASH_EXPORT SplitViewOverviewSession : public aura::WindowObserver,
   }
 
  private:
+  // Either ends full overview, or only `SplitViewOverviewSession`.
+  void MaybeEndOverview(SplitViewOverviewSessionExitPoint exit_point);
+
   // True while we are processing a window resize event.
   bool is_resizing_ = false;
 
@@ -112,9 +115,6 @@ class ASH_EXPORT SplitViewOverviewSession : public aura::WindowObserver,
   // The single snapped window in intermediate split view, with overview on
   // the opposite side.
   const raw_ptr<aura::Window> window_;
-
-  // True when `this` is being destroyed.
-  bool is_shutting_down_ = false;
 
   SplitViewOverviewSetupType setup_type_ =
       SplitViewOverviewSetupType::kSnapThenAutomaticOverview;

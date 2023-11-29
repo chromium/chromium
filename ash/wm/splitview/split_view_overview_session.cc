@@ -78,17 +78,7 @@ SplitViewOverviewSession::SplitViewOverviewSession(
 }
 
 SplitViewOverviewSession::~SplitViewOverviewSession() {
-  if (is_shutting_down_) {
-    return;
-  }
   WindowState::Get(window_)->RemoveObserver(this);
-  if (window_util::IsFasterSplitScreenOrSnapGroupEnabledInClamshell() &&
-      IsInOverviewSession()) {
-    // `EndOverview()` will also try to end this again.
-    base::AutoReset<bool> ignore(&is_shutting_down_, true);
-    Shell::Get()->overview_controller()->EndOverview(
-        OverviewEndAction::kSplitView);
-  }
 }
 
 void SplitViewOverviewSession::Init(std::optional<OverviewStartAction> action,
@@ -260,9 +250,7 @@ void SplitViewOverviewSession::OnWindowBoundsChanged(
 void SplitViewOverviewSession::OnWindowDestroying(aura::Window* window) {
   CHECK(window_observation_.IsObservingSource(window));
   CHECK_EQ(window_, window);
-  // Destroys `this`.
-  RootWindowController::ForWindow(window_)->EndSplitViewOverviewSession(
-      SplitViewOverviewSessionExitPoint::kWindowDestroy);
+  MaybeEndOverview(SplitViewOverviewSessionExitPoint::kWindowDestroy);
 }
 
 void SplitViewOverviewSession::OnPreWindowStateTypeChange(
@@ -272,9 +260,25 @@ void SplitViewOverviewSession::OnPreWindowStateTypeChange(
   // Normally split view would have ended and destroy this, but the window can
   // get unsnapped, e.g. during mid-drag or mid-resize, so bail out here.
   if (!window_state->IsSnapped()) {
-    RootWindowController::ForWindow(window_)->EndSplitViewOverviewSession(
-        SplitViewOverviewSessionExitPoint::kUnspecified);
+    MaybeEndOverview(SplitViewOverviewSessionExitPoint::kUnspecified);
   }
+}
+
+void SplitViewOverviewSession::MaybeEndOverview(
+    SplitViewOverviewSessionExitPoint exit_point) {
+  if (window_util::IsFasterSplitScreenOrSnapGroupEnabledInClamshell()) {
+    // If `FasterSplitScreenOrSnapGroup` is enabled, end full overview.
+    RecordSplitViewOverviewSessionExitPointMetrics(exit_point);
+    // `EndOverview()` will also destroy `this`.
+    Shell::Get()->overview_controller()->EndOverview(
+        OverviewEndAction::kSplitView);
+    return;
+  }
+  // Otherwise simply end `SplitViewOverviewSession` and remain in overview.
+  // TODO(sophiewen): Fix tests that expect overview to still be active after
+  // `FasterSplitScreenOrSnapGroup` is enabled.
+  RootWindowController::ForWindow(window_)->EndSplitViewOverviewSession(
+      exit_point);
 }
 
 }  // namespace ash
