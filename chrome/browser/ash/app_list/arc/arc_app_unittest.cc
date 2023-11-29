@@ -119,7 +119,6 @@ namespace {
 
 constexpr char kTestPackageName[] = "fake.package.name2";
 constexpr char kTestPackageName4[] = "fake.package.name4";
-constexpr char kTestPackageName5[] = "fake.package.name5";
 constexpr char kFrameworkPackageName[] = "android";
 
 constexpr int kFrameworkNycVersion = 25;
@@ -805,6 +804,10 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
     app_instance()->SendPackageAdded(package->Clone());
   }
 
+  void UpdateTestPackage(const arc::mojom::ArcPackageInfoPtr& package) {
+    arc_test_.UpdatePackage(package->Clone());
+  }
+
   void UpdatePackage(const arc::mojom::ArcPackageInfoPtr& package) {
     arc_test_.UpdatePackage(package->Clone());
     app_instance()->SendPackageModified(package->Clone());
@@ -1449,8 +1452,14 @@ TEST_P(ArcAppModelBuilderTest, ArcPackagePref_PerAppLanguageFlagDisabled) {
   app_instance()->SendRefreshPackageList(
       ArcAppTest::ClonePackages(fake_packages()));
 
-  // Update locale_info of the locale info test package to null.
-  UpdatePackage(CreatePackage(kTestPackageName5));
+  // Update fake_packages to be used as validation.
+  // Even if package was initially sent with localeInfo, the resulting saved
+  // package should not contain localeInfo.
+  // fake_packages[4] is the test package with localeInfo.
+  arc::mojom::ArcPackageInfoPtr updated_package = fake_packages()[4]->Clone();
+  updated_package->locale_info = nullptr;
+  UpdateTestPackage(updated_package);
+
   ValidateHavePackages(fake_packages());
 }
 
