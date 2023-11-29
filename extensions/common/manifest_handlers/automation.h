@@ -15,11 +15,9 @@
 
 namespace extensions {
 
-namespace api {
-namespace extensions_manifest_types {
+namespace api::extensions_manifest_types {
 struct Automation;
 }
-}  // namespace api
 
 class URLPatternSet;
 class AutomationManifestPermission;

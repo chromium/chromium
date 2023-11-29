@@ -18,8 +18,7 @@
 
 // Contains helper methods for parsing content script fields.
 
-namespace extensions {
-namespace script_parsing {
+namespace extensions::script_parsing {
 
 // Returns the maximum length allowed in an individual script file. Scripts
 // above this length will not be loaded.
@@ -90,7 +89,6 @@ bool ValidateMatchOriginAsFallback(
 
 ExtensionResource::SymlinkPolicy GetSymlinkPolicy(const Extension* extension);
 
-}  // namespace script_parsing
-}  // namespace extensions
+}  // namespace extensions::script_parsing
 
 #endif  // EXTENSIONS_COMMON_UTILS_CONTENT_SCRIPT_UTILS_H_
