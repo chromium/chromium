@@ -201,9 +201,10 @@ public class NewTabPageUma {
     /**
      * Record a NTP impression (even potential ones to make informed product decisions). If the
      * impression type is {@link NewTabPageUma#NTP_IMPRESSION_REGULAR}, also records a user action.
+     *
      * @param impressionType Type of the impression from NewTabPageUma.java
      */
-    public static void recordNTPImpression(int impressionType) {
+    public static void recordNtpImpression(int impressionType) {
         assert impressionType >= 0;
         assert impressionType < NUM_NTP_IMPRESSION;
         RecordHistogram.recordEnumeratedHistogram(
@@ -214,7 +215,7 @@ public class NewTabPageUma {
      * Records how often new tabs with a NewTabPage are created. This helps to determine how often
      * users navigate back to already opened NTPs.
      */
-    public void monitorNTPCreation() {
+    public void monitorNtpCreation() {
         mTabCreationRecorder = new TabCreationRecorder();
         mTabModelSelector.addObserver(mTabCreationRecorder);
     }
@@ -242,8 +243,8 @@ public class NewTabPageUma {
     }
 
     /**
-     * Records the number of new NTPs opened in a new tab. Use through
-     * {@link NewTabPageUma#monitorNTPCreation(TabModelSelector)}.
+     * Records the number of new NTPs opened in a new tab. Use through {@link
+     * NewTabPageUma#monitorNtpCreation(TabModelSelector)}.
      */
     private static class TabCreationRecorder implements TabModelSelectorObserver {
         @Override

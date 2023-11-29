@@ -119,7 +119,7 @@ public class SnapScrollHelperImpl implements SnapScrollHelper {
     @VisibleForTesting
     @Override
     public int calculateSnapPosition(int scrollPosition) {
-        if (mManager.isLocationBarShownInNTP()) {
+        if (mManager.isLocationBarShownInNtp()) {
             // Snap scroll to prevent only part of the toolbar from showing.
             scrollPosition = calculateSnapPositionForRegion(scrollPosition, 0, mToolbarHeight);
 

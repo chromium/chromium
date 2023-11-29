@@ -665,7 +665,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                                 if (HomepageManager.shouldCloseAppWithZeroTabs()) {
                                     finish();
                                 } else if (isPendingClosure) {
-                                    NewTabPageUma.recordNTPImpression(
+                                    NewTabPageUma.recordNtpImpression(
                                             NewTabPageUma.NTP_IMPRESSION_POTENTIAL_NO_TAB);
                                 }
                             }

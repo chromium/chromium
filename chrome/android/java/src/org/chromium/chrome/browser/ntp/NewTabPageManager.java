@@ -9,8 +9,10 @@ import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
 
 /** Manages the view interaction with the rest of the system. */
 public interface NewTabPageManager extends SuggestionsUiDelegate {
-    /** @return Whether the location bar is shown in the NTP. */
-    boolean isLocationBarShownInNTP();
+    /**
+     * @return Whether the location bar is shown in the NTP.
+     */
+    boolean isLocationBarShownInNtp();
 
     /** @return Whether voice search is enabled and the microphone should be shown. */
     boolean isVoiceSearchEnabled();

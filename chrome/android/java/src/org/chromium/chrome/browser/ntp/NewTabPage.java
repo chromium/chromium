@@ -236,7 +236,7 @@ public class NewTabPage
         }
 
         @Override
-        public boolean isLocationBarShownInNTP() {
+        public boolean isLocationBarShownInNtp() {
             if (mIsDestroyed) return false;
             return isInSingleUrlBarMode() && !mNewTabPageLayout.urlFocusAnimationsDisabled();
         }
@@ -298,9 +298,9 @@ public class NewTabPage
             long loadTimeMs = (System.nanoTime() - mConstructedTimeNs) / 1000000;
             RecordHistogram.recordTimesHistogram("Tab.NewTabOnload", loadTimeMs);
             mIsLoaded = true;
-            NewTabPageUma.recordNTPImpression(NewTabPageUma.NTP_IMPRESSION_REGULAR);
+            NewTabPageUma.recordNtpImpression(NewTabPageUma.NTP_IMPRESSION_REGULAR);
             // If not visible when loading completes, wait until onShown is received.
-            if (!mTab.isHidden()) recordNTPShown();
+            if (!mTab.isHidden()) recordNtpShown();
         }
     }
 
@@ -438,13 +438,13 @@ public class NewTabPage
                     @Override
                     public void onShown(Tab tab, @TabSelectionType int type) {
                         // Showing the NTP is only meaningful when the page has been loaded already.
-                        if (mIsLoaded) recordNTPShown();
+                        if (mIsLoaded) recordNtpShown();
                         mNewTabPageLayout.onSwitchToForeground();
                     }
 
                     @Override
                     public void onHidden(Tab tab, @TabHidingType int type) {
-                        if (mIsLoaded) recordNTPHidden();
+                        if (mIsLoaded) recordNtpHidden();
                         if (mSingleTabSwitcherCoordinator != null
                                 && (mHomeSurfaceTracker == null
                                         || !mHomeSurfaceTracker.canShowHomeSurface(mTab))) {
@@ -794,8 +794,8 @@ public class NewTabPage
     /**
      * @return Whether the location bar is shown in the NTP.
      */
-    public boolean isLocationBarShownInNTP() {
-        return mNewTabPageManager.isLocationBarShownInNTP();
+    public boolean isLocationBarShownInNtp() {
+        return mNewTabPageManager.isLocationBarShownInNtp();
     }
 
     /** @see org.chromium.chrome.browser.omnibox.NewTabPageDelegate#hasCompletedFirstLayout(). */
@@ -869,7 +869,7 @@ public class NewTabPage
      * Records UMA for the NTP being shown. This includes a fresh page load or being brought to the
      * foreground.
      */
-    private void recordNTPShown() {
+    private void recordNtpShown() {
         mLastShownTimeNs = System.nanoTime();
         RecordUserAction.record("MobileNTPShown");
         mJankTracker.startTrackingScenario(JankScenario.NEW_TAB_PAGE);
@@ -881,7 +881,7 @@ public class NewTabPage
     }
 
     /** Records UMA for the NTP being hidden and the time spent on it. */
-    private void recordNTPHidden() {
+    private void recordNtpHidden() {
         mJankTracker.finishTrackingScenario(JankScenario.NEW_TAB_PAGE);
         RecordHistogram.recordMediumTimesHistogram(
                 "NewTabPage.TimeSpent",
@@ -955,7 +955,7 @@ public class NewTabPage
         assert !mIsDestroyed;
         assert !ViewCompat.isAttachedToWindow(getView())
                 : "Destroy called before removed from window";
-        if (mIsLoaded && !mTab.isHidden()) recordNTPHidden();
+        if (mIsLoaded && !mTab.isHidden()) recordNtpHidden();
 
         mNewTabPageManager.onDestroy();
         mTileGroupDelegate.destroy();
@@ -1000,7 +1000,7 @@ public class NewTabPage
 
     @Override
     public @ColorInt int getToolbarTextBoxBackgroundColor(@ColorInt int defaultColor) {
-        if (isLocationBarShownInNTP()) {
+        if (isLocationBarShownInNtp()) {
             if (!mIsSurfacePolishEnabled) {
                 return isLocationBarScrolledToTopInNtp()
                         ? ChromeColors.getSurfaceColor(mContext, R.dimen.toolbar_text_box_elevation)
@@ -1030,7 +1030,7 @@ public class NewTabPage
 
     @Override
     public @ColorInt int getToolbarSceneLayerBackground(@ColorInt int defaultColor) {
-        return isLocationBarShownInNTP() ? getBackgroundColor() : defaultColor;
+        return isLocationBarShownInNtp() ? getBackgroundColor() : defaultColor;
     }
 
     @Override

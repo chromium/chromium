@@ -123,7 +123,7 @@ public class NativePageFactory {
     private NewTabPageUma getNewTabPageUma() {
         if (mNewTabPageUma == null) {
             mNewTabPageUma = new NewTabPageUma(mTabModelSelector);
-            mNewTabPageUma.monitorNTPCreation();
+            mNewTabPageUma.monitorNtpCreation();
         }
         return mNewTabPageUma;
     }

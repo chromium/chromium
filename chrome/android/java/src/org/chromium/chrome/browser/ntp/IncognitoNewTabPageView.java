@@ -77,7 +77,7 @@ public class IncognitoNewTabPageView extends FrameLayout {
         mScrollView.setDescendantFocusability(FOCUS_BEFORE_DESCENDANTS);
 
         ViewStub viewStub = findViewById(R.id.incognito_description_layout_stub);
-        if (shouldShowRevampedIncognitoNTP()) {
+        if (shouldShowRevampedIncognitoNtp()) {
             viewStub.setLayoutResource(R.layout.revamped_incognito_description_layout);
         } else {
             viewStub.setLayoutResource(R.layout.incognito_description_layout);
@@ -95,14 +95,14 @@ public class IncognitoNewTabPageView extends FrameLayout {
         // Inflate the correct cookie/tracking protection card.
         ViewStub cardStub = findViewById(R.id.cookie_card_stub);
         if (cardStub == null) return;
-        if (shouldShowTrackingProtectionNTP()) {
+        if (shouldShowTrackingProtectionNtp()) {
             cardStub.setLayoutResource(
-                    shouldShowRevampedIncognitoNTP()
+                    shouldShowRevampedIncognitoNtp()
                             ? R.layout.revamped_incognito_tracking_protection_card
                             : R.layout.incognito_tracking_protection_card);
         } else {
             cardStub.setLayoutResource(
-                    shouldShowRevampedIncognitoNTP()
+                    shouldShowRevampedIncognitoNtp()
                             ? R.layout.revamped_incognito_cookie_controls_card
                             : R.layout.incognito_cookie_controls_card);
         }
@@ -147,11 +147,11 @@ public class IncognitoNewTabPageView extends FrameLayout {
                 || mScrollView.getScrollY() != mSnapshotScrollY;
     }
 
-    boolean shouldShowRevampedIncognitoNTP() {
+    boolean shouldShowRevampedIncognitoNtp() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.INCOGNITO_NTP_REVAMP);
     }
 
-    boolean shouldShowTrackingProtectionNTP() {
+    boolean shouldShowTrackingProtectionNtp() {
         Profile profile =
                 Profile.getLastUsedRegularProfile()
                         .getPrimaryOTRProfile(/* createIfNeeded= */ true);

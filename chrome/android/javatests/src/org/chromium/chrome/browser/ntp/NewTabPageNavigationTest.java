@@ -58,7 +58,7 @@ public class NewTabPageNavigationTest {
     @Test
     @MediumTest
     @Feature({"NewTabPage", "Main"})
-    public void testNTPIsDefault() {
+    public void testNtpIsDefault() {
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
         Assert.assertNotNull(tab);
         String url = ChromeTabUtils.getUrlStringOnUiThread(tab);
@@ -73,7 +73,7 @@ public class NewTabPageNavigationTest {
     @Test
     @LargeTest
     @Feature({"NewTabPage"})
-    public void testNavigatingFromNTP() {
+    public void testNavigatingFromNtp() {
         String url = mTestServer.getURL("/chrome/test/data/android/google.html");
         mActivityTestRule.loadUrl(url);
         Assert.assertEquals(
@@ -86,7 +86,7 @@ public class NewTabPageNavigationTest {
     @Test
     @MediumTest
     @Feature({"NewTabPage"})
-    public void testNavigateBackToNTPViaUrl() {
+    public void testNavigateBackToNtpViaUrl() {
         String url = mTestServer.getURL("/chrome/test/data/android/google.html");
         mActivityTestRule.loadUrl(url);
         Assert.assertEquals(
@@ -108,7 +108,7 @@ public class NewTabPageNavigationTest {
     @Test
     @MediumTest
     @Feature({"NewTabPage"})
-    public void testNavigateToTabSwitcherFromNTP() {
+    public void testNavigateToTabSwitcherFromNtp() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         Tab tab = cta.getActivityTab();
         TestThreadUtils.runOnUiThreadBlocking(
@@ -129,7 +129,7 @@ public class NewTabPageNavigationTest {
     /** Tests navigating to the tab switcher from the Incognito NTP. */
     @Test
     @MediumTest
-    public void testNavigateToTabSwitcherFromIncognitoNTP() {
+    public void testNavigateToTabSwitcherFromIncognitoNtp() {
         mActivityTestRule.newIncognitoTabFromMenu();
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         Tab tab = cta.getActivityTab();

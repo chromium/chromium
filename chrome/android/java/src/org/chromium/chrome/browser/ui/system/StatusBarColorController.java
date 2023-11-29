@@ -565,6 +565,6 @@ public class StatusBarColorController
     private boolean isLocationBarShownInNtp() {
         if (!isStandardNtp()) return false;
         final NewTabPage newTabPage = (NewTabPage) mCurrentTab.getNativePage();
-        return newTabPage != null && newTabPage.isLocationBarShownInNTP();
+        return newTabPage != null && newTabPage.isLocationBarShownInNtp();
     }
 }

@@ -35,7 +35,7 @@ public class IncognitoNewTabPage extends BasicNativePage
     private IncognitoCookieControlsManager mCookieControlsManager;
     private IncognitoCookieControlsManager.Observer mCookieControlsObserver;
 
-    private final int mIncognitoNTPBackgroundColor;
+    private final int mIncognitoNtpBackgroundColor;
 
     private void showIncognitoLearnMore() {
         Profile profile =
@@ -57,7 +57,7 @@ public class IncognitoNewTabPage extends BasicNativePage
 
         mActivity = activity;
 
-        mIncognitoNTPBackgroundColor = host.getContext().getColor(R.color.ntp_bg_incognito);
+        mIncognitoNtpBackgroundColor = host.getContext().getColor(R.color.ntp_bg_incognito);
 
         mIncognitoNewTabPageManager =
                 new IncognitoNewTabPageManager() {
@@ -149,7 +149,7 @@ public class IncognitoNewTabPage extends BasicNativePage
 
     @Override
     public int getBackgroundColor() {
-        return mIncognitoNTPBackgroundColor;
+        return mIncognitoNtpBackgroundColor;
     }
 
     @Override

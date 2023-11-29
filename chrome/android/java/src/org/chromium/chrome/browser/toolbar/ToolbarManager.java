@@ -1481,13 +1481,13 @@ public class ToolbarManager
             }
 
             NewTabPage ntp = getNewTabPageForCurrentTab();
-            return ntp != null && ntp.isLocationBarShownInNTP();
+            return ntp != null && ntp.isLocationBarShownInNtp();
         }
 
         @Override
         public boolean transitioningAwayFromLocationBar() {
             return mVisibleNtp != null
-                    && mVisibleNtp.isLocationBarShownInNTP()
+                    && mVisibleNtp.isLocationBarShownInNtp()
                     && !isLocationBarShown();
         }
 
@@ -1548,7 +1548,7 @@ public class ToolbarManager
             return new ToolbarNtpDelegate() {
                 @Override
                 protected boolean shouldUpdateListener() {
-                    return mVisibleNtp.isLocationBarShownInNTP();
+                    return mVisibleNtp.isLocationBarShownInNtp();
                 }
             };
         } else if (toolbarLayout instanceof ToolbarTablet) {
