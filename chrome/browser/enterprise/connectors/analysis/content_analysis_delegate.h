@@ -126,12 +126,6 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
     // analysis.
     ContentAnalysisRequest::Reason reason = ContentAnalysisRequest::UNKNOWN;
 
-    // Mime type of the contents of the clipboard.
-    // For pasted images, this represents the type of the bytes in `image`.
-    // For other clipboard data, this represents the type of the bytes in
-    // `text[0]`.
-    std::string clipboard_mime_type;
-
     // The settings to use for the analysis of the data in this struct.
     AnalysisSettings settings;
   };

@@ -692,7 +692,6 @@ void ContentAnalysisDelegate::PrepareTextRequest() {
                        weak_ptr_factory_.GetWeakPtr()));
 
     PrepareRequest(BULK_DATA_ENTRY, request.get());
-    request->set_content_type(data_.clipboard_mime_type);
     UploadTextForDeepScanning(std::move(request));
   }
 }
@@ -720,7 +719,6 @@ void ContentAnalysisDelegate::PrepareImageRequest() {
                        weak_ptr_factory_.GetWeakPtr()));
 
     PrepareRequest(BULK_DATA_ENTRY, request.get());
-    request->set_content_type(data_.clipboard_mime_type);
     UploadImageForDeepScanning(std::move(request));
   }
 }
