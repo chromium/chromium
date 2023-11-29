@@ -84,7 +84,7 @@ bool IsWhatsNewPromoRegistered() {
 
 BASE_FEATURE(kWhatsNewIOSM116,
              "WhatsNewIOSM116",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool WasWhatsNewUsed() {
   if (IsWhatsNewM116Enabled()) {
