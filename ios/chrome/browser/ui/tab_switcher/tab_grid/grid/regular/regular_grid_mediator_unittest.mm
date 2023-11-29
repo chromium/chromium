@@ -11,8 +11,6 @@
 #import "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
-#import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
-#import "ios/chrome/browser/sessions/test_session_service.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -39,7 +37,6 @@ class RegularGridMediatorTest : public GridMediatorTestClass {
     tab_restore_service_ =
         IOSChromeTabRestoreServiceFactory::GetForBrowserState(
             browser_state_.get());
-    mediator_.tabRestoreService = tab_restore_service_;
   }
 
   void TearDown() override {
@@ -50,19 +47,9 @@ class RegularGridMediatorTest : public GridMediatorTestClass {
     GridMediatorTestClass::TearDown();
   }
 
-  // Prepare the mock method to restore the tabs.
-  void PrepareForRestoration() {
-    TestSessionService* test_session_service =
-        [[TestSessionService alloc] init];
-    SessionRestorationBrowserAgent::CreateForBrowser(
-        browser_.get(), test_session_service, false);
-    SessionRestorationBrowserAgent::FromBrowser(browser_.get())
-        ->SetSessionID([[NSUUID UUID] UUIDString]);
-  }
-
  protected:
-  RegularGridMediator* mediator_;
-  sessions::TabRestoreService* tab_restore_service_;
+  RegularGridMediator* mediator_ = nullptr;
+  sessions::TabRestoreService* tab_restore_service_ = nullptr;
 };
 
 #pragma mark - Command tests
@@ -79,7 +66,6 @@ TEST_F(RegularGridMediatorTest, SaveAndCloseAllItemsCommand) {
 // Tests that the WebStateList is not restored to 3 items when
 // `-undoCloseAllItems` is called after `-discardSavedClosedItems` is called.
 TEST_F(RegularGridMediatorTest, DiscardSavedClosedItemsCommand) {
-  PrepareForRestoration();
   // Previously there were 3 items.
   [mediator_ saveAndCloseAllItems];
   [mediator_ discardSavedClosedItems];
@@ -91,7 +77,6 @@ TEST_F(RegularGridMediatorTest, DiscardSavedClosedItemsCommand) {
 // Tests that the WebStateList is restored to 3 items when
 // `-undoCloseAllItems` is called.
 TEST_F(RegularGridMediatorTest, UndoCloseAllItemsCommand) {
-  PrepareForRestoration();
   // Previously there were 3 items.
   [mediator_ saveAndCloseAllItems];
   [mediator_ undoCloseAllItems];
@@ -105,20 +90,19 @@ TEST_F(RegularGridMediatorTest, UndoCloseAllItemsCommand) {
 // Tests that the WebStateList is restored to 3 items when
 // `-undoCloseAllItems` is called.
 TEST_F(RegularGridMediatorTest, UndoCloseAllItemsCommandWithNTP) {
-  PrepareForRestoration();
   // Previously there were 3 items.
   [mediator_ saveAndCloseAllItems];
-  // The three tabs created in the SetUp should be passed to the restore
-  // service.
-  EXPECT_EQ(3UL, tab_restore_service_->entries().size());
-  std::set<SessionID::id_type> ids;
-  for (auto& entry : tab_restore_service_->entries()) {
-    ids.insert(entry->id.id());
-  }
-  EXPECT_EQ(3UL, ids.size());
+
   // There should be no tabs in the WebStateList.
   EXPECT_EQ(0, browser_->GetWebStateList()->count());
   EXPECT_EQ(0UL, consumer_.items.size());
+
+  // There should be no "recently closed items" yet.
+  EXPECT_EQ(0u, tab_restore_service_->entries().size());
+
+  // Discarding the saved item should add them to recently closed.
+  [mediator_ discardSavedClosedItems];
+  EXPECT_EQ(3u, tab_restore_service_->entries().size());
 
   // Add three new tabs.
   auto web_state1 = CreateFakeWebStateWithURL(GURL("https://test/url1"));
@@ -136,18 +120,19 @@ TEST_F(RegularGridMediatorTest, UndoCloseAllItemsCommandWithNTP) {
                                               WebStateOpener());
   browser_->GetWebStateList()->ActivateWebStateAt(0);
 
+  // Closing item does not add them to the recently closed.
   [mediator_ saveAndCloseAllItems];
-  // The NTP should not be saved.
-  EXPECT_EQ(5UL, tab_restore_service_->entries().size());
+
+  // There should be no tabs in the WebStateList.
   EXPECT_EQ(0, browser_->GetWebStateList()->count());
   EXPECT_EQ(0UL, consumer_.items.size());
+
+  // There should be no new "recently closed items".
+  EXPECT_EQ(3u, tab_restore_service_->entries().size());
+
+  // Undoing the close should restore the items.
   [mediator_ undoCloseAllItems];
-  EXPECT_EQ(3UL, tab_restore_service_->entries().size());
   EXPECT_EQ(3UL, consumer_.items.size());
-  // Check the session entries were not changed.
-  for (auto& entry : tab_restore_service_->entries()) {
-    EXPECT_EQ(1UL, ids.count(entry->id.id()));
-  }
 }
 
 // Checks that opening a new regular tab from the toolbar is done when allowed.

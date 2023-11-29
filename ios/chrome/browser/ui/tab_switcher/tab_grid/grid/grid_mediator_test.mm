@@ -38,10 +38,6 @@
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
-// To get access to web::features::kEnableSessionSerializationOptimizations.
-// TODO(crbug.com/1383087): remove once the feature is fully launched.
-#import "ios/web/common/features.h"
-
 using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace {
@@ -163,7 +159,4 @@ bool GridMediatorTestClass::WaitForConsumerUpdates(size_t expected_count) {
       });
 }
 
-void GridMediatorTestClass::InitializeFeatureFlags() {
-  scoped_feature_list_.InitAndDisableFeature(
-      web::features::kEnableSessionSerializationOptimizations);
-}
+void GridMediatorTestClass::InitializeFeatureFlags() {}

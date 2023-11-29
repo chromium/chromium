@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular/regular_grid_coordinator.h"
 
 #import "ios/chrome/browser/policy/policy_util.h"
-#import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/tabs/model/features.h"
@@ -101,15 +100,6 @@
   _mediator.delegate = _gridMediatorDelegate;
   _mediator.toolbarsMutator = _toolbarsMutator;
   _mediator.actionWrangler = self.tabGridViewController;
-
-  // TODO(crbug.com/1457146): As browser state should never be nil, it should be
-  // safe to remove the check.
-  ChromeBrowserState* regularBrowserState = self.browser->GetBrowserState();
-  if (regularBrowserState) {
-    _mediator.tabRestoreService =
-        IOSChromeTabRestoreServiceFactory::GetForBrowserState(
-            regularBrowserState);
-  }
 
   self.tabGridViewController.regularTabsDelegate = _mediator;
   self.gridViewController.dragDropHandler = _mediator;

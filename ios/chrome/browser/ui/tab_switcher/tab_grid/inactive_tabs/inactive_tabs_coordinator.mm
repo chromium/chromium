@@ -11,14 +11,13 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
-#import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
+#import "ios/chrome/browser/tabs/model/tabs_closer.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular/regular_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_constants.h"
@@ -30,10 +29,6 @@
 #import "ios/web/public/web_state_id.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/strings/grit/ui_strings.h"
-
-// To get access to UseSessionSerializationOptimizations().
-// TODO(crbug.com/1383087): remove once the feature is fully launched.
-#import "ios/web/common/features.h"
 
 // A view that can be dimmed continusouly between no dimming and being fully
 // dimmed (the view is then fully black).
@@ -187,24 +182,15 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
 - (void)start {
   [super start];
 
-  // Create the mediator.
-  SessionRestorationBrowserAgent* sessionRestorationBrowserAgent = nullptr;
-  if (!web::features::UseSessionSerializationOptimizations()) {
-    sessionRestorationBrowserAgent =
-        SessionRestorationBrowserAgent::FromBrowser(self.browser);
-  }
-  SnapshotBrowserAgent* snapshotBrowserAgent =
-      SnapshotBrowserAgent::FromBrowser(self.browser);
-  sessions::TabRestoreService* tabRestoreService =
-      IOSChromeTabRestoreServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
-
+  Browser* browser = self.browser;
+  SnapshotStorage* snapshotStorage =
+      SnapshotBrowserAgent::FromBrowser(browser)->snapshot_storage();
   self.mediator = [[InactiveTabsMediator alloc]
-         initWithWebStateList:self.browser->GetWebStateList()
-                  prefService:GetApplicationContext()->GetLocalState()
-      sessionRestorationAgent:sessionRestorationBrowserAgent
-                snapshotAgent:snapshotBrowserAgent
-            tabRestoreService:tabRestoreService];
+      initWithWebStateList:browser->GetWebStateList()
+               prefService:GetApplicationContext()->GetLocalState()
+           snapshotStorage:snapshotStorage
+                tabsCloser:std::make_unique<TabsCloser>(
+                               browser, TabsCloser::ClosePolicy::kAllTabs)];
 }
 
 - (void)show {

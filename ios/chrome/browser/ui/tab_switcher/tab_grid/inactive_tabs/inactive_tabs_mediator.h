@@ -12,14 +12,10 @@
 
 @protocol InactiveTabsInfoConsumer;
 class PrefService;
-class SnapshotBrowserAgent;
-class SessionRestorationBrowserAgent;
+class TabsCloser;
+@class SnapshotStorage;
 @protocol TabCollectionConsumer;
 class WebStateList;
-
-namespace sessions {
-class TabRestoreService;
-}  // namespace sessions
 
 // This mediator provides data to the Inactive Tabs grid and handles
 // interactions.
@@ -33,18 +29,14 @@ class TabRestoreService;
 // Initializer with:
 // - `webStateList`: the list of tabs to observe.
 // - `prefService`: the preference service from the application context.
-// - `sessionRestorationAgent`: the session restoration browser agent from the
-//     inactive browser.
-// - `snapshotAgent`: the snapshot browser agent from the inactive browser.
-// - `tabRestoreService`: the service that holds the recently closed tabs.
+// - `snapshotStorage`: the snapshot storage from the inactive browser.
+// - `tabsCloser`: the object used to implement "close all" and "undo".
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                          prefService:(PrefService*)prefService
-             sessionRestorationAgent:
-                 (SessionRestorationBrowserAgent*)sessionRestorationAgent
-                       snapshotAgent:(SnapshotBrowserAgent*)snapshotAgent
-                   tabRestoreService:
-                       (sessions::TabRestoreService*)tabRestoreService
+                     snapshotStorage:(SnapshotStorage*)snapshotStorage
+                          tabsCloser:(std::unique_ptr<TabsCloser>)tabsCloser
     NS_DESIGNATED_INITIALIZER;
+
 - (instancetype)init NS_UNAVAILABLE;
 
 // Returns the number of items pushed to the consumer.

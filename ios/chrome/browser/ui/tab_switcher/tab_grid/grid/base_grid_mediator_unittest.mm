@@ -22,10 +22,6 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 
-// To get access to web::features::kEnableSessionSerializationOptimizations.
-// TODO(crbug.com/1383087): remove once the feature is fully launched.
-#import "ios/web/common/features.h"
-
 namespace {
 
 // BaseGridMediatorTest is parameterized on this enum to test all children
@@ -78,7 +74,7 @@ class BaseGridMediatorWithPriceDropIndicatorsTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{commerce::kCommercePriceTracking,
           {{kPriceTrackingWithOptimizationGuideParam, "true"}}}},
-        {web::features::kEnableSessionSerializationOptimizations});
+        {});
   }
 
   void SetFakePriceDrop(web::WebState* web_state) {
