@@ -36,6 +36,11 @@
   Yes I'm in
   </message>
 
+  <!-- Disclaimer dialog -->
+  <message name="IDS_COMPOSE_DISCLAIMER_BUTTON" desc="The button to acknowledge the disclaimer message." translateable="false">
+  Let's go
+  </message>
+
   <!-- Input dialog -->
   <message name="IDS_COMPOSE_DIALOG_TITLE" desc="Compose input dialog title." translateable="false">
   Lorem ipsum

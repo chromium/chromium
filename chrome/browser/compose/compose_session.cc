@@ -98,6 +98,14 @@ ComposeSession::ComposeSession(
 }
 
 ComposeSession::~ComposeSession() {
+  // Don't log any metrics for sessions that only display consent/disclaimer
+  // dialogs.
+  // TODO(b/312295685): Add metrics for consent dialog related close reasons.
+  if (initial_consent_state_ != compose::mojom::ConsentState::kConsented &&
+      !consent_given_or_acknowledged_) {
+    return;
+  }
+
   LogComposeSessionCloseMetrics(close_reason_, compose_count_,
                                 dialog_shown_count_, undo_count_);
 
@@ -279,7 +287,7 @@ void ComposeSession::RequestInitialState(RequestInitialStateCallback callback) {
   }
   auto compose_config = compose::GetComposeConfig();
   std::move(callback).Run(compose::mojom::OpenMetadata::New(
-      initial_input_, current_state_->Clone(),
+      initial_consent_state_, initial_input_, current_state_->Clone(),
       compose::mojom::ConfigurableParams::New(compose_config.input_min_words,
                                               compose_config.input_max_words,
                                               compose_config.input_max_chars)));

@@ -24,11 +24,13 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/compose/type_conversions.h"
+#include "chrome/common/pref_names.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/compose/core/browser/compose_manager_impl.h"
 #include "components/compose/core/browser/compose_metrics.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/unified_consent/pref_names.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/page.h"
@@ -68,6 +70,7 @@ ChromeComposeClient::ChromeComposeClient(content::WebContents* web_contents)
       client_page_receiver_(this) {
   profile_ = Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
   opt_guide_ = OptimizationGuideKeyedServiceFactory::GetForProfile(profile_);
+  pref_service_ = profile_->GetPrefs();
 
   if (GetOptimizationGuide()) {
     std::vector<optimization_guide::proto::OptimizationType> types;
@@ -141,6 +144,11 @@ void ChromeComposeClient::ShowUI() {
 
 void ChromeComposeClient::CloseUI(compose::mojom::CloseReason reason) {
   switch (reason) {
+    // TODO(b/312295685): Add metrics for consent dialog related close reasons.
+    case compose::mojom::CloseReason::kConsentCloseButton:
+    case compose::mojom::CloseReason::kPageContentConsentDeclined:
+      RemoveActiveSession();
+      break;
     case compose::mojom::CloseReason::kCloseButton:
       SetSessionCloseReason(
           compose::ComposeSessionCloseReason::kCloseButtonPressed);
@@ -155,6 +163,28 @@ void ChromeComposeClient::CloseUI(compose::mojom::CloseReason reason) {
 
   if (compose_dialog_controller_) {
     compose_dialog_controller_->Close();
+  }
+}
+
+void ChromeComposeClient::ApproveConsent() {
+  pref_service_->SetBoolean(
+      unified_consent::prefs::kPageContentCollectionEnabled, true);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  pref_service_->SetBoolean(prefs::kPrefHasAcceptedComposeConsent, true);
+#endif
+  UpdateAllSessionsWithConsentApproved();
+}
+
+void ChromeComposeClient::AcknowledgeConsentDisclaimer() {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  pref_service_->SetBoolean(prefs::kPrefHasAcceptedComposeConsent, true);
+#endif
+  UpdateAllSessionsWithConsentApproved();
+}
+
+void ChromeComposeClient::UpdateAllSessionsWithConsentApproved() {
+  for (const auto& session : sessions_) {
+    session.second->set_consent_given_or_acknowledged();
   }
 }
 
@@ -200,6 +230,12 @@ void ChromeComposeClient::CreateOrUpdateSession(
         utf8_chars.has_value() ? utf8_chars.value() : 0);
   }
 
+  // Assume full consent for tests, otherwise compute from prefs.
+  auto consent_state = skip_show_dialog_for_test_
+                           ? compose::mojom::ConsentState::kConsented
+                           : GetConsentStateFromPrefs();
+  current_session->set_initial_consent_state(consent_state);
+
   // If we are resuming then don't send the selected text - we want to keep the
   // prior selection and not trigger another Compose.
   current_session->InitializeWithText(resume_current_session
@@ -240,6 +276,26 @@ void ChromeComposeClient::RemoveAllSessions() {
 
   sessions_.erase(sessions_.begin(), sessions_.end());
   active_compose_field_id_.reset();
+}
+
+compose::mojom::ConsentState ChromeComposeClient::GetConsentStateFromPrefs() {
+  auto consent_state = compose::mojom::ConsentState::kUnset;
+  bool page_content_collection_enabled = pref_service_->GetBoolean(
+      unified_consent::prefs::kPageContentCollectionEnabled);
+  bool consent_acknowledged_through_compose = false;
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  consent_acknowledged_through_compose =
+      pref_service_->GetBoolean(prefs::kPrefHasAcceptedComposeConsent);
+#endif
+  if (page_content_collection_enabled) {
+    // Page content collection can be enabled from the Compose UI or through
+    // other UIs. If the latter, then a specific disclaimer dialog should be
+    // shown for Compose FRE. This is captured by `consent_state`.
+    consent_state = consent_acknowledged_through_compose
+                        ? compose::mojom::ConsentState::kConsented
+                        : compose::mojom::ConsentState::kExternalConsented;
+  }
+  return consent_state;
 }
 
 compose::ComposeManager& ChromeComposeClient::GetManager() {
@@ -307,8 +363,18 @@ void ChromeComposeClient::SetModelQualityLogsUploaderForTest(
   model_quality_uploader_for_test_ = model_quality_uploader;
 }
 
-void ChromeComposeClient::SetSkipShowDialogForTest() {
-  skip_show_dialog_for_test_ = true;
+void ChromeComposeClient::SetSkipShowDialogForTest(bool should_skip) {
+  skip_show_dialog_for_test_ = should_skip;
+}
+
+void ChromeComposeClient::SetActiveSessionConsentStateForTest(
+    compose::mojom::ConsentState consent_state) {
+  if (active_compose_field_id_.has_value()) {
+    auto it = sessions_.find(active_compose_field_id_.value());
+    if (it != sessions_.end()) {
+      it->second->set_initial_consent_state(consent_state);
+    }
+  }
 }
 
 void ChromeComposeClient::SetSessionIdForTest(base::Token session_id) {
