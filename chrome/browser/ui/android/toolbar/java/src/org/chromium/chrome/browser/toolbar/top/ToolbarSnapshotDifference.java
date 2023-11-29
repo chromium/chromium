@@ -11,10 +11,10 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * Reasons that two toolbar snapshots are different. Contains a superset of differences and each
- * toolbar instance will only be able to report a subset. Treat this list as append only and keep
- * it in sync with ToolbarSnapshotDifference in enums.xml, as well as the proto in
+ * toolbar instance will only be able to report a subset. Treat this list as append only and keep it
+ * in sync with ToolbarSnapshotDifference in enums.xml, as well as the proto in
  * chrome_track_event.proto.
- **/
+ */
 @IntDef({
     ToolbarSnapshotDifference.NONE,
     ToolbarSnapshotDifference.NULL,
@@ -32,10 +32,10 @@ import java.lang.annotation.RetentionPolicy;
     ToolbarSnapshotDifference.TITLE_TEXT,
     ToolbarSnapshotDifference.CCT_ANIMATION,
     ToolbarSnapshotDifference.BOOKMARK_BUTTON,
-    ToolbarSnapshotDifference.HOME_BUTTON,
     ToolbarSnapshotDifference.BACK_BUTTON,
     ToolbarSnapshotDifference.FORWARD_BUTTON,
     ToolbarSnapshotDifference.RELOAD_BUTTON,
+    ToolbarSnapshotDifference.MINIMIZE_BUTTON,
     ToolbarSnapshotDifference.NUM_ENTRIES
 })
 @Retention(RetentionPolicy.SOURCE)
@@ -59,5 +59,7 @@ public @interface ToolbarSnapshotDifference {
     int BACK_BUTTON = 16;
     int FORWARD_BUTTON = 17;
     int RELOAD_BUTTON = 18;
-    int NUM_ENTRIES = 19;
+    int MINIMIZE_BUTTON = 19;
+
+    int NUM_ENTRIES = 20;
 }

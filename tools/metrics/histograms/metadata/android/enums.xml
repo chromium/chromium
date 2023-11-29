@@ -1529,6 +1529,7 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="BACK_BUTTON"/>
   <int value="17" label="FORWARD_BUTTON"/>
   <int value="18" label="RELOAD_BUTTON"/>
+  <int value="19" label="MINIMIZE_BUTTON"/>
 </enum>
 
 <enum name="TopToolbarAllowCaptureReason">

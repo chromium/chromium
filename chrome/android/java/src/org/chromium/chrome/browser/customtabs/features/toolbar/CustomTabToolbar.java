@@ -1000,13 +1000,20 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         // Must convert CharSequence to String in order for equality to be clearly defined.
         String url = mLocationBar.mUrlBar.getText().toString();
         String title = mLocationBar.mTitleBar.getText().toString();
+        boolean minimizeVisible =
+                mMinimizeButton != null && mMinimizeButton.getVisibility() == VISIBLE;
+        var minimizeTag =
+                mMinimizeButton != null ? mMinimizeButton.getTag(R.id.highlight_state) : null;
+        boolean minimizeHighlighted = Boolean.TRUE.equals(minimizeTag);
         return new CustomTabCaptureStateToken(
                 url,
                 title,
                 getBackground().getColor(),
                 mLocationBar.mAnimDelegate.getSecurityIconRes(),
                 mLocationBar.mAnimDelegate.isInAnimation(),
-                getWidth());
+                getWidth(),
+                minimizeVisible,
+                minimizeHighlighted);
     }
 
     /** Custom tab-specific implementation of the LocationBar interface. */
