@@ -21,6 +21,7 @@
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/texture_manager.h"
@@ -57,6 +58,7 @@ class GPU_GLES2_EXPORT D3DImageBacking final
       uint32_t usage,
       Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
       scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state,
+      const GLFormatCaps& gl_format_caps,
       GLenum texture_target,
       size_t array_slice,
       size_t plane_index);
@@ -71,6 +73,7 @@ class GPU_GLES2_EXPORT D3DImageBacking final
       uint32_t usage,
       Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
       Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
+      const GLFormatCaps& gl_format_caps,
       bool is_back_buffer);
 
   // Helper used by D3D11VideoDecoder to create backings directly.
@@ -80,9 +83,10 @@ class GPU_GLES2_EXPORT D3DImageBacking final
       DXGI_FORMAT dxgi_format,
       const gfx::Size& size,
       uint32_t usage,
-      Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
       unsigned array_slice,
-      scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state = nullptr);
+      const GLFormatCaps& gl_format_caps,
+      Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
+      scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state);
 
   D3DImageBacking(const D3DImageBacking&) = delete;
   D3DImageBacking& operator=(const D3DImageBacking&) = delete;
@@ -169,7 +173,7 @@ class GPU_GLES2_EXPORT D3DImageBacking final
   };
 
   static scoped_refptr<GLTextureHolder> CreateGLTexture(
-      viz::SharedImageFormat format,
+      const GLFormatDesc& gl_format_desc,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
       Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
@@ -213,21 +217,21 @@ class GPU_GLES2_EXPORT D3DImageBacking final
       VideoDecodeDevice device) override;
 
  private:
-  D3DImageBacking(
-      const Mailbox& mailbox,
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
-      scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state = nullptr,
-      GLenum texture_target = GL_TEXTURE_2D,
-      size_t array_slice = 0u,
-      size_t plane_index = 0u,
-      Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain = nullptr,
-      bool is_back_buffer = false);
+  D3DImageBacking(const Mailbox& mailbox,
+                  viz::SharedImageFormat format,
+                  const gfx::Size& size,
+                  const gfx::ColorSpace& color_space,
+                  GrSurfaceOrigin surface_origin,
+                  SkAlphaType alpha_type,
+                  uint32_t usage,
+                  Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
+                  scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state,
+                  const GLFormatCaps& gl_format_caps,
+                  GLenum texture_target = GL_TEXTURE_2D,
+                  size_t array_slice = 0u,
+                  size_t plane_index = 0u,
+                  Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain = nullptr,
+                  bool is_back_buffer = false);
 
   // Helper to retrieve internal EGLImage for WebGPU GLES compat backend.
   void* GetEGLImage() const;
@@ -261,13 +265,17 @@ class GPU_GLES2_EXPORT D3DImageBacking final
   // Texture could be nullptr if an empty backing is needed for testing.
   Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture_;
 
-  // Weak pointers for gl textures which are owned by GL texture representation.
-  std::array<base::WeakPtr<GLTextureHolder>, 3> gl_texture_holders_;
-
   // Holds DXGI shared handle and the keyed mutex if present.  Can be shared
   // between plane shared image backings of a multi-plane texture, or between
   // backings created from duplicated handles that refer to the same texture.
   scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state_;
+
+  // Capabilities needed for getting the correct GL format for creating GL
+  // textures.
+  const GLFormatCaps gl_format_caps_;
+
+  // Weak pointers for gl textures which are owned by GL texture representation.
+  std::array<base::WeakPtr<GLTextureHolder>, 3> gl_texture_holders_;
 
   // GL texture target. Can be GL_TEXTURE_2D or GL_TEXTURE_EXTERNAL_OES.
   // TODO(sunnyps): Switch to GL_TEXTURE_2D for all cases.

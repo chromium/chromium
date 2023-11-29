@@ -59,6 +59,7 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub : public MemoryTracker {
   SequenceId sequence() const { return sequence_; }
   SharedImageFactory* factory() const { return factory_.get(); }
   GpuChannel* channel() const { return channel_; }
+  SharedContextState* shared_context_state() { return context_state_.get(); }
 
   SharedImageDestructionCallback GetSharedImageDestructionCallback(
       const Mailbox& mailbox);

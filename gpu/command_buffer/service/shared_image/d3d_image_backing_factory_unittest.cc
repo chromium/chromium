@@ -151,7 +151,7 @@ class D3DImageBackingFactoryTestBase : public testing::Test {
             &shared_image_manager_, nullptr);
     shared_image_factory_ = std::make_unique<D3DImageBackingFactory>(
         gl::QueryD3D11DeviceObjectFromANGLE(),
-        shared_image_manager_.dxgi_shared_handle_manager());
+        shared_image_manager_.dxgi_shared_handle_manager(), GLFormatCaps());
     dawnProcSetProcs(&dawn::native::GetProcs());
   }
 
@@ -1585,8 +1585,9 @@ D3DImageBackingFactoryTest::CreateVideoImages(const gfx::Size& size,
                                                  d3d11_texture);
     }
     shared_image_backings = D3DImageBacking::CreateFromVideoTexture(
-        mailboxes, DXGI_FORMAT_NV12, size, usage, d3d11_texture,
-        /*array_slice=*/0, std::move(dxgi_shared_handle_state));
+        mailboxes, DXGI_FORMAT_NV12, size, usage, /*array_slice=*/0,
+        context_state_->GetGLFormatCaps(), d3d11_texture,
+        std::move(dxgi_shared_handle_state));
   }
 
   std::vector<std::unique_ptr<SharedImageRepresentationFactoryRef>>

@@ -286,7 +286,8 @@ SharedImageFactory::SharedImageFactory(
     // TODO(sunnyps): Should we get the device from SharedContextState instead?
     auto d3d_factory = std::make_unique<D3DImageBackingFactory>(
         shared_context_state_->GetD3D11Device(),
-        shared_image_manager_->dxgi_shared_handle_manager());
+        shared_image_manager_->dxgi_shared_handle_manager(),
+        shared_context_state_->GetGLFormatCaps());
     d3d_backing_factory_ = d3d_factory.get();
     factories_.push_back(std::move(d3d_factory));
   }

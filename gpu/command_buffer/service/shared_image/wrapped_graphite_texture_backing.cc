@@ -344,7 +344,8 @@ WrappedGraphiteTextureBacking::ProduceGLTexturePassthrough(
     return nullptr;
   }
   return std::make_unique<GLTexturePassthroughFallbackImageRepresentation>(
-      manager, this, tracker, context_state_->progress_reporter());
+      manager, this, tracker, context_state_->progress_reporter(),
+      context_state_->GetGLFormatCaps());
 }
 
 std::unique_ptr<DawnImageRepresentation>

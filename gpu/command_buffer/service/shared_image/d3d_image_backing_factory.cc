@@ -97,11 +97,13 @@ constexpr uint32_t kSupportedUsage =
 
 D3DImageBackingFactory::D3DImageBackingFactory(
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
-    scoped_refptr<DXGISharedHandleManager> dxgi_shared_handle_manager)
+    scoped_refptr<DXGISharedHandleManager> dxgi_shared_handle_manager,
+    const GLFormatCaps& gl_format_caps)
     : SharedImageBackingFactory(kSupportedUsage),
       d3d11_device_(std::move(d3d11_device)),
       dxgi_shared_handle_manager_(std::move(dxgi_shared_handle_manager)),
-      angle_d3d11_device_(gl::QueryD3D11DeviceObjectFromANGLE()) {
+      angle_d3d11_device_(gl::QueryD3D11DeviceObjectFromANGLE()),
+      gl_format_caps_(gl_format_caps) {
   CHECK(d3d11_device_);
   CHECK(angle_d3d11_device_);
 }
@@ -269,7 +271,7 @@ D3DImageBackingFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
   auto back_buffer_backing = D3DImageBacking::CreateFromSwapChainBuffer(
       back_buffer_mailbox, format, size, color_space, surface_origin,
       alpha_type, usage, std::move(back_buffer_texture), swap_chain,
-      /*is_back_buffer=*/true);
+      gl_format_caps_, /*is_back_buffer=*/true);
   if (!back_buffer_backing)
     return {nullptr, nullptr};
   back_buffer_backing->SetCleared();
@@ -283,7 +285,7 @@ D3DImageBackingFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
   auto front_buffer_backing = D3DImageBacking::CreateFromSwapChainBuffer(
       front_buffer_mailbox, format, size, color_space, surface_origin,
       alpha_type, usage, std::move(front_buffer_texture), swap_chain,
-      /*is_back_buffer=*/false);
+      gl_format_caps_, /*is_back_buffer=*/false);
   if (!front_buffer_backing)
     return {nullptr, nullptr};
   front_buffer_backing->SetCleared();
@@ -386,7 +388,8 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     // Early return before creating D3D shared handle resources.
     return D3DImageBacking::Create(
         mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-        std::move(d3d11_texture), nullptr, texture_target, /*array_slice=*/0u,
+        std::move(d3d11_texture), /*dxgi_shared_handle_state=*/nullptr,
+        gl_format_caps_, texture_target, /*array_slice=*/0u,
         /*plane_index=*/0u);
   }
 
@@ -415,7 +418,7 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
   return D3DImageBacking::Create(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       std::move(d3d11_texture), std::move(dxgi_shared_handle_state),
-      texture_target, /*array_slice=*/0u, /*plane_index=*/0u);
+      gl_format_caps_, texture_target, /*array_slice=*/0u, /*plane_index=*/0u);
 }
 
 std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
@@ -617,13 +620,14 @@ D3DImageBackingFactory::CreateSharedImageGMBs(
     backing = D3DImageBacking::Create(
         mailbox, plane_format, plane_size, color_space, surface_origin,
         alpha_type, usage, std::move(d3d11_texture),
-        std::move(dxgi_shared_handle_state), texture_target, /*array_slice=*/0u,
+        std::move(dxgi_shared_handle_state), gl_format_caps_, texture_target,
+        /*array_slice=*/0u,
         /*plane_index=*/plane_index);
   } else {
     backing = D3DImageBacking::Create(
         mailbox, format, size, color_space, surface_origin, alpha_type, usage,
         std::move(d3d11_texture), std::move(dxgi_shared_handle_state),
-        texture_target, /*array_slice=*/0u,
+        gl_format_caps_, texture_target, /*array_slice=*/0u,
         /*plane_index=*/0);
   }
 
