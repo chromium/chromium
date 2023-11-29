@@ -10,6 +10,8 @@
 #include "base/android/jni_android.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 
@@ -18,7 +20,8 @@ class ChromeAutocompleteProviderClient;
 class Profile;
 
 // The native part of the Java AutocompleteController class.
-class AutocompleteControllerAndroid : public AutocompleteController::Observer {
+class AutocompleteControllerAndroid : public AutocompleteController::Observer,
+                                      ProfileObserver {
  public:
   AutocompleteControllerAndroid(
       JNIEnv* env,
@@ -100,6 +103,9 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer {
   void OnResultChanged(AutocompleteController* controller,
                        bool default_match_changed) override;
 
+  // ProfileObserver overrides.
+  void OnProfileWillBeDestroyed(Profile* profile) override;
+
   // Notifies the Java AutocompleteController that suggestions were received
   // based on the text the user typed in last.
   void NotifySuggestionsReceived(
@@ -129,7 +135,7 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer {
   // Destruction of Profile triggers destruction of both
   // C++ AutocompleteControllerAndroid and Java AutocompleteController objects.
   // Guaranteed to be non-null.
-  const base::android::ScopedJavaGlobalRef<jobject> java_controller_;
+  base::android::ScopedJavaGlobalRef<jobject> java_controller_;
 
   // AutocompleteController associated with this client. As this is directly
   // associated with the |provider_client_| and indirectly with |profile_|
@@ -138,6 +144,8 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer {
   // Invalidated only immediately before the AutocompleteControllerAndroid is
   // destroyed.
   std::unique_ptr<AutocompleteController> autocomplete_controller_;
+
+  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 
   // Factory used to create asynchronously invoked callbacks.
   // Retained throughout the lifetime of the AutocompleteControllerAndroid.

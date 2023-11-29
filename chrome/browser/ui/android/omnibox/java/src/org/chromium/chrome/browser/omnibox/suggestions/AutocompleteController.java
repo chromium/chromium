@@ -81,9 +81,15 @@ public class AutocompleteController implements Destroyable {
         assert mNativeController != 0 : "Failed to instantiate native AutocompleteController";
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @CalledByNative
+    void notifyNativeDestroyed() {
+        mNativeController = 0;
+    }
+
     /**
-     * @param listener The listener to be notified when new suggestions are available.
-     */
+      * @param listener The listener to be notified when new suggestions are available.
+      */
     public void addOnSuggestionsReceivedListener(@NonNull OnSuggestionsReceivedListener listener) {
         mListeners.add(listener);
     }

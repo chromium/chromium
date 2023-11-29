@@ -11656,6 +11656,7 @@
     "OmniboxPrefBasedConsentHelper": [
         {
             "platforms": [
+                "android",
                 "chromeos",
                 "chromeos_lacros",
                 "ios",
