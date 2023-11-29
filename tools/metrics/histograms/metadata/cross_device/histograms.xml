@@ -1228,6 +1228,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="InstantTethering.ConnectionToHostResult.EndResult"
+    enum="InstantTethering_ConnectionToHostResult_EndResult"
+    expires_after="2024-12-01">
+  <owner>joeantonetti@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Provides a top-level breakdown of all connection end results, and what the
+    results were. This replaces
+    InstantTethering.ConnectionToHostResult.ProvisioningFailureRate.
+
+    The statuses here are designed to reflect normal conculsions to Instant
+    Tethering, with only &quot;Internal Error&quot; representing product
+    failures.
+
+    An &quot;Internal Error&quot; is caused by the host returning an
+    &quot;Internal Error&quot; response code. Tethering timing out and client
+    connection error are both broken down further in
+    InstantTethering.ConnectionToHostResult.Failure.TetheringTimeout and
+    InstantTethering.ConnectionToHostResult.Failure.ClientConnection,
+    respectively.
+  </summary>
+</histogram>
+
 <histogram name="InstantTethering.ConnectionToHostResult.Failure"
     enum="InstantTethering_ConnectionToHostResult_Failure"
     expires_after="2024-05-05">

@@ -27,9 +27,12 @@ class MockHostConnectionMetricsLogger : public HostConnectionMetricsLogger {
 
   ~MockHostConnectionMetricsLogger() override;
 
-  MOCK_METHOD2(RecordConnectionToHostResult,
-               void(HostConnectionMetricsLogger::ConnectionToHostResult,
-                    const std::string&));
+  MOCK_METHOD3(
+      RecordConnectionToHostResult,
+      void(HostConnectionMetricsLogger::ConnectionToHostResult,
+           const std::string&,
+           absl::optional<
+               HostConnectionMetricsLogger::ConnectionToHostInternalError>));
 };
 
 }  // namespace tether

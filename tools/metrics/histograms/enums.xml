@@ -29259,12 +29259,21 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="7" label="Unknown error"/>
 </enum>
 
+<enum name="InstantTethering_ConnectionToHostResult_EndResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Internal error"/>
+  <int value="2" label="User cancelled connection attempt"/>
+  <int value="3" label="Provisioning failed"/>
+  <int value="4" label="No cellular data"/>
+  <int value="5" label="Tethering unsupported"/>
+</enum>
+
 <enum name="InstantTethering_ConnectionToHostResult_Failure">
   <int value="0" label="Unknown error"/>
   <int value="1" label="Tethering timed out"/>
   <int value="2" label="Client connection error"/>
-  <int value="3" label="Tethering unsupported"/>
-  <int value="4" label="No cellular data"/>
+  <int value="3" label="(obsolete) Tethering unsupported"/>
+  <int value="4" label="(obsolete) No cellular data"/>
   <int value="5" label="Enabling hotspot failed"/>
   <int value="6" label="Enabling hotspot timed out"/>
   <int value="7" label="No response"/>
@@ -29279,7 +29288,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
 
 <enum name="InstantTethering_ConnectionToHostResult_Failure_ClientConnection">
   <int value="0" label="Timeout while waiting to connect"/>
-  <int value="1" label="Canceled"/>
+  <int value="1" label="(obsolete) Canceled"/>
   <int value="2" label="Internal error"/>
 </enum>
 

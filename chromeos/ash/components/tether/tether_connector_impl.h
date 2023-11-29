@@ -87,9 +87,7 @@ class TetherConnectorImpl : public TetherConnector,
  private:
   friend class TetherConnectorImplTest;
 
-  void SetConnectionFailed(const std::string& error_name,
-                           HostConnectionMetricsLogger::ConnectionToHostResult
-                               connection_to_host_result);
+  void SetConnectionFailed(const std::string& error_name);
   void SetConnectionSucceeded(const std::string& device_id,
                               const std::string& wifi_network_guid);
 
@@ -98,8 +96,7 @@ class TetherConnectorImpl : public TetherConnector,
       absl::optional<multidevice::RemoteDeviceRef> tether_host_to_connect);
   void OnWifiConnection(const std::string& device_id,
                         const std::string& wifi_network_guid);
-  HostConnectionMetricsLogger::ConnectionToHostResult
-  GetConnectionToHostResultFromErrorCode(
+  void RecordConnectTetheringOperationResult(
       const std::string& device_id,
       ConnectTetheringOperation::HostResponseErrorCode error_code);
 
