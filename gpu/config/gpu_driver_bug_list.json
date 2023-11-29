@@ -974,24 +974,6 @@
       ]
     },
     {
-      "id": 174,
-      "description": "Adreno 4xx support for EXT_multisampled_render_to_texture is buggy on Android 7.0",
-      "cr_bugs": [612474],
-      "os": {
-        "type": "android",
-        "version": {
-          "op": "between",
-          "value": "7.0.0",
-          "value2": "7.0.99",
-          "comment": "Only initial version of N."
-        }
-      },
-      "gl_renderer": "Adreno \\(TM\\) 4.*",
-      "disabled_extensions": [
-        "GL_EXT_multisampled_render_to_texture"
-      ]
-    },
-    {
       "id": 176,
       "description": "glClear does not work on Acer Predator GT-810",
       "cr_bugs": [633634],
@@ -1056,22 +1038,6 @@
       "gl_version_string": ".*Mesa.*",
       "features": [
         "disable_post_sub_buffers_for_onscreen_surfaces"
-      ]
-    },
-    {
-      "id": 205,
-      "description": "Adreno 5xx support for EXT_multisampled_render_to_texture is buggy on Android 7.1",
-      "cr_bugs": [663811],
-      "os": {
-        "type": "android",
-        "version": {
-          "op": "=",
-          "value": "7.1.0"
-        }
-      },
-      "gl_renderer": "Adreno \\(TM\\) 5.*",
-      "disabled_extensions": [
-        "GL_EXT_multisampled_render_to_texture"
       ]
     },
     {
@@ -1534,29 +1500,6 @@
       ]
     },
     {
-      "id": 260,
-      "cr_bugs": [760389],
-      "description": "eglClientWaitSyncKHR with nonzero timeout waits too long",
-      "comment": [
-        "This bug is specific to Samsung S8/S8+ on Android N, but there ",
-        "isn't currently a way to restrict the filter to those devices. The ",
-        "functionality is currently only used for WebVR on Daydream ready ",
-        "devices, and the non-Samsung Daydream devices generally use ",
-        "Android O, so an overbroad match seems acceptable."
-      ],
-      "os": {
-        "type": "android",
-        "version": {
-          "op": "<",
-          "value": "8.0"
-        }
-      },
-      "gl_renderer": "Adreno \\(TM\\) 540",
-      "features": [
-        "dont_use_eglclientwaitsync_with_timeout"
-      ]
-    },
-    {
       "id": 262,
       "description": "Program fails in PowerVR*GX6250 drivers if gl_Position is not set",
       "cr_bugs": [286468, 416670],
@@ -1662,26 +1605,6 @@
       "vendor_id": "0x1002",
       "features": [
         "clear_pixel_unpack_buffer_before_copyteximage"
-      ]
-    },
-    {
-      "id": 271,
-      "cr_bugs": [860418],
-      "description": "Frequent crashes in glClear on Mali-T7xx on N with driver 12.1.01alp0",
-      "os": {
-        "type": "android",
-        "version": {
-          "op": "<",
-          "value": "8.0"
-        }
-      },
-      "driver_version": {
-        "op": "=",
-        "value": "12.1.01alp0"
-      },
-      "gl_renderer": ".*Mali-T7.*",
-      "features": [
-        "gl_clear_broken"
       ]
     },
     {
@@ -1834,25 +1757,6 @@
       "gl_vendor": "NVIDIA.*",
       "features": [
         "adjust_src_dst_region_for_blitframebuffer"
-      ]
-    },
-    {
-      "id": 293,
-      "cr_bugs": [931527],
-      "description": "Frequent crashes in glClear on Android N with driver 12.0.04rel0",
-      "os": {
-        "type": "android",
-        "version": {
-          "op": "<",
-          "value": "8.0"
-        }
-      },
-      "driver_version": {
-        "op": "=",
-        "value": "12.0.04rel0"
-      },
-      "features": [
-        "gl_clear_broken"
       ]
     },
     {

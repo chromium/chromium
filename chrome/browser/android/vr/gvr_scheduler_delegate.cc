@@ -58,12 +58,6 @@ constexpr int kWebVrUnstuffMaxDropRate = 7;
 // reached, yield to let other tasks execute before rechecking.
 constexpr base::TimeDelta kWebVRFenceCheckTimeout = base::Microseconds(2000);
 
-// Polling interval for checking for the WebVR rendering GL fence. Used as
-// an alternative to kWebVRFenceCheckTimeout if the GPU workaround is active.
-// The actual interval may be longer due to PostDelayedTask's resolution.
-constexpr base::TimeDelta kWebVRFenceCheckPollInterval =
-    base::Microseconds(500);
-
 bool ValidateRect(const gfx::RectF& bounds) {
   // Bounds should be between 0 and 1, with positive width/height.
   // We simply clamp to [0,1], but still validate that the bounds are not NAN.
@@ -576,35 +570,17 @@ void GvrSchedulerDelegate::DrawFrameSubmitWhenReady(
     std::unique_ptr<gl::GLFenceEGL> fence) {
   TRACE_EVENT1("gpu", __func__, "frame_type", frame_type);
   DVLOG(2) << __func__ << ": frame_type=" << frame_type;
-  bool use_polling = webxr_.mailbox_bridge_ready() &&
-                     mailbox_bridge_->IsGpuWorkaroundEnabled(
-                         gpu::DONT_USE_EGLCLIENTWAITSYNC_WITH_TIMEOUT);
   if (fence) {
-    if (!use_polling) {
-      // Use wait-with-timeout to find out as soon as possible when rendering
-      // is complete.
-      fence->ClientWaitWithTimeoutNanos(
-          kWebVRFenceCheckTimeout.InNanoseconds());
-    }
+    // Use wait-with-timeout to find out as soon as possible when rendering
+    // is complete.
+    fence->ClientWaitWithTimeoutNanos(kWebVRFenceCheckTimeout.InNanoseconds());
     if (!fence->HasCompleted()) {
       webxr_delayed_gvr_submit_.Reset(
           base::BindOnce(&GvrSchedulerDelegate::DrawFrameSubmitWhenReady,
                          base::Unretained(this)));
-      if (use_polling) {
-        // Poll the fence status at a short interval. This burns some CPU, but
-        // avoids excessive waiting on devices which don't handle timeouts
-        // correctly. Downside is that the completion status is only detected
-        // with a delay of up to one polling interval.
-        task_runner()->PostDelayedTask(
-            FROM_HERE,
-            base::BindOnce(webxr_delayed_gvr_submit_.callback(), frame_type,
-                           head_pose, std::move(fence)),
-            kWebVRFenceCheckPollInterval);
-      } else {
-        task_runner()->PostTask(
-            FROM_HERE, base::BindOnce(webxr_delayed_gvr_submit_.callback(),
-                                      frame_type, head_pose, std::move(fence)));
-      }
+      task_runner()->PostTask(
+          FROM_HERE, base::BindOnce(webxr_delayed_gvr_submit_.callback(),
+                                    frame_type, head_pose, std::move(fence)));
       return;
     }
   }
