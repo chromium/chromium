@@ -243,8 +243,6 @@ void IOSChromePasswordManagerClient::NotifyUserCredentialsWereLeaked(
                                 username:username];
 }
 
-void IOSChromePasswordManagerClient::NotifyKeychainError() {}
-
 bool IOSChromePasswordManagerClient::IsSavingAndFillingEnabled(
     const GURL& url) const {
   return *saving_passwords_enabled_ && !IsOffTheRecord() &&

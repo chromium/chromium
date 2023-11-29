@@ -118,10 +118,6 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
                                             true);
     prefs_->registry()->RegisterBooleanPref(::prefs::kSafeBrowsingEnhanced,
                                             false);
-#if BUILDFLAG(IS_MAC)
-    prefs_->registry()->RegisterIntegerPref(
-        password_manager::prefs::kRelaunchChromeBubbleDismissedCounter, 0);
-#endif
   }
   MockPasswordManagerClient(const MockPasswordManagerClient&) = delete;
   MockPasswordManagerClient& operator=(const MockPasswordManagerClient&) =

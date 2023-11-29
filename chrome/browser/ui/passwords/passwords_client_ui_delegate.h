@@ -113,10 +113,6 @@ class PasswordsClientUIDelegate {
   virtual void OnBiometricAuthenticationForFilling(
       PrefService* pref_service) = 0;
 
-  // Called when trying to access saved passwords when keychain is not
-  // available.
-  virtual void OnKeychainError() = 0;
-
  protected:
   virtual ~PasswordsClientUIDelegate() = default;
 };

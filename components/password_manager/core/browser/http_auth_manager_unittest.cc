@@ -28,10 +28,6 @@
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/pref_service.h"
-#include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -69,7 +65,6 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               (),
               (const, override));
   MOCK_METHOD(void, PromptUserToSaveOrUpdatePasswordPtr, (), ());
-  MOCK_METHOD(PrefService*, GetPrefs, (), (const, override));
 
   // Workaround for std::unique_ptr<> lacking a copy constructor.
   bool PromptUserToSaveOrUpdatePassword(
@@ -121,18 +116,12 @@ class HttpAuthManagerTest : public testing::Test {
               WithArg<1>(InvokeEmptyConsumerWithForms(account_store_.get())));
     }
 
-#if BUILDFLAG(IS_MAC)
-    pref_service_.registry()->RegisterIntegerPref(
-        password_manager::prefs::kRelaunchChromeBubbleDismissedCounter, 0);
-#endif
-
     ON_CALL(client_, GetProfilePasswordStore())
         .WillByDefault(Return(store_.get()));
     ON_CALL(client_, GetAccountPasswordStore())
         .WillByDefault(Return(account_store_.get()));
     EXPECT_CALL(*store_, GetSmartBubbleStatsStore)
         .WillRepeatedly(Return(&smart_bubble_stats_store_));
-    ON_CALL(client_, GetPrefs()).WillByDefault(Return(&pref_service_));
 
     httpauth_manager_ = std::make_unique<HttpAuthManagerImpl>(&client_);
 
@@ -148,7 +137,6 @@ class HttpAuthManagerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<MockPasswordStoreInterface> store_;
   scoped_refptr<MockPasswordStoreInterface> account_store_;
-  TestingPrefServiceSimple pref_service_;
   testing::NiceMock<MockPasswordManagerClient> client_;
   testing::NiceMock<MockSmartBubbleStatsStore> smart_bubble_stats_store_;
   std::unique_ptr<HttpAuthManagerImpl> httpauth_manager_;
