@@ -207,6 +207,10 @@ export class SettingsPrivacyHubCameraSubpage extends
   }
 
   private onAccessStatusRowClick_(): void {
+    if (this.shouldDisableCameraToggle_) {
+      return;
+    }
+
     this.getCameraToggle_().click();
   }
 

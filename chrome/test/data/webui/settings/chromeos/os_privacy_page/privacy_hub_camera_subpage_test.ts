@@ -133,6 +133,31 @@ suite('<settings-privacy-hub-camera-subpage>', () => {
     }
   });
 
+  function isCameraRowActionable(): boolean {
+    const actionableAttribute =
+        privacyHubCameraSubpage.shadowRoot!.querySelector('#accessStatusRow')!
+            .getAttribute('actionable');
+    return actionableAttribute === '';
+  }
+
+  test(
+      'Clicking toggle is no-op when accessStatusRow is not actionable',
+      async () => {
+        const cameraToggle = getCameraCrToggle();
+        assertTrue(cameraToggle.checked);
+
+        assertFalse(isCameraRowActionable());
+        cameraToggle.click();
+        assertTrue(cameraToggle.checked);
+
+        // Add a camera to make accessStatusRow actionable.
+        mediaDevices.addDevice('videoinput', 'Fake Camera');
+        await flushTasks();
+        assertTrue(isCameraRowActionable());
+        cameraToggle.click();
+        assertFalse(cameraToggle.checked);
+      });
+
   test('No camera connected and toggle disabled by default', () => {
     assertTrue(getCameraCrToggle().disabled);
     assertNull(getCameraList());
