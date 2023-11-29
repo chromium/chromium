@@ -825,11 +825,7 @@ bool FrameTreeNode::UpdateUserActivationState(
       break;
     case blink::mojom::UserActivationUpdateType::
         kNotifyActivationPendingBrowserVerification: {
-      const bool user_activation_verified = VerifyUserActivation();
-      // Add UMA metric for when browser user activation verification succeeds
-      base::UmaHistogramBoolean("Event.BrowserVerifiedUserActivation",
-                                user_activation_verified);
-      if (user_activation_verified) {
+      if (VerifyUserActivation()) {
         update_result = NotifyUserActivation(
             blink::mojom::UserActivationNotificationType::kInteraction);
         update_type = blink::mojom::UserActivationUpdateType::kNotifyActivation;
