@@ -411,8 +411,7 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest, RemoveShortcutSurvivesUpdate) {
 
   // Install v1 of the extension.
   ASSERT_TRUE(InstallExtension(path_v1, 1));
-  EXPECT_TRUE(
-      registry->GetExtensionById(kExtensionId, ExtensionRegistry::ENABLED));
+  EXPECT_TRUE(registry->enabled_extensions().GetByID(kExtensionId));
 
   // Verify it has a command of Alt+Shift+F.
   ui::Accelerator accelerator =
@@ -439,8 +438,7 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest, RemoveShortcutSurvivesUpdate) {
 
   // Update to version 2.
   EXPECT_TRUE(UpdateExtension(kExtensionId, path_v2, 0));
-  EXPECT_TRUE(
-      registry->GetExtensionById(kExtensionId, ExtensionRegistry::ENABLED));
+  EXPECT_TRUE(registry->enabled_extensions().GetByID(kExtensionId));
 
   // Verify it is still set to nothing.
   accelerator =

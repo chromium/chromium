@@ -82,9 +82,9 @@ bool CanExecuteScriptEverywhere(BrowserContext* browser_context,
   if (host_id.type == mojom::HostID::HostType::kWebUi)
     return true;
 
-  const Extension* extension =
-      ExtensionRegistry::Get(browser_context)
-          ->GetExtensionById(host_id.id, ExtensionRegistry::ENABLED);
+  const Extension* extension = ExtensionRegistry::Get(browser_context)
+                                   ->enabled_extensions()
+                                   .GetByID(host_id.id);
 
   return extension && PermissionsData::CanExecuteScriptEverywhere(
                           extension->id(), extension->location());

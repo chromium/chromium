@@ -95,8 +95,7 @@ IN_PROC_BROWSER_TEST_P(ManagementApiNonPersistentApiTest,
   // installed or not (ExtensionRegistry::EVERYTHING)
   // is enough. But for clarity, we check for enabled-ness
   // (ExtensionRegistry::ENABLED) here.
-  EXPECT_TRUE(
-      registry->GetExtensionById(extension_b_id, ExtensionRegistry::ENABLED));
+  EXPECT_TRUE(registry->enabled_extensions().GetByID(extension_b_id));
 
   // Load extension_a and wait for browserAction.onClicked listener
   // registration.

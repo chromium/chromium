@@ -100,7 +100,7 @@ class EnableViaDialogFlow : public ExtensionEnableFlowDelegate {
   // ExtensionEnableFlowDelegate overrides.
   void ExtensionEnableFlowFinished() override {
     const Extension* extension =
-        registry_->GetExtensionById(extension_id_, ExtensionRegistry::ENABLED);
+        registry_->enabled_extensions().GetByID(extension_id_);
     if (!extension)
       return;
     std::move(callback_).Run();
