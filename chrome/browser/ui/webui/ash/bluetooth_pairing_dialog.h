@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/strings/string_piece.h"
-#include "base/values.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-forward.h"
@@ -51,15 +50,9 @@ class BluetoothPairingDialog : public SystemWebDialogDelegate {
   std::string Id() override;
   void AdjustWidgetInitParams(views::Widget::InitParams* params) override;
 
-  // ui::WebDialogDelegate
-  void GetDialogSize(gfx::Size* size) const override;
-  std::string GetDialogArgs() const override;
-
   // The canonical Bluetooth address of a device when pairing a specific device,
   // otherwise |kChromeUIBluetoothPairingURL|.
   std::string dialog_id_;
-
-  base::Value::Dict device_data_;
 };
 
 class BluetoothPairingDialogUI;
