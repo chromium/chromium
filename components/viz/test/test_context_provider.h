@@ -135,10 +135,6 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
   scoped_refptr<gfx::NativePixmap> GetNativePixmap(
       const gpu::Mailbox& mailbox) override;
 
-  std::unique_ptr<gpu::SharedImageInterface::ScopedMapping> MapSharedImage(
-      const scoped_refptr<gpu::ClientSharedImage>& client_shared_image)
-      override;
-
   size_t shared_image_count() const { return shared_images_.size(); }
   const gfx::Size& MostRecentSize() const { return most_recent_size_; }
   const gpu::SyncToken& MostRecentGeneratedToken() const {

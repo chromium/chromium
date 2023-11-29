@@ -315,10 +315,8 @@ void RoundedDisplayFrameFactory::Paint(
   if (base::FeatureList::IsEnabled(
           kUseMappableSIInRoundedDisplayFrameFactory)) {
     DCHECK(!buffer);
-    gpu::SharedImageInterface* sii =
-        resource->context_provider->SharedImageInterface();
     CHECK(resource->client_shared_image());
-    mapping = sii->MapSharedImage(resource->client_shared_image());
+    mapping = resource->client_shared_image()->Map();
     if (!mapping) {
       return;
     }

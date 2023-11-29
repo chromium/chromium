@@ -251,18 +251,6 @@ void ClientSharedImageInterface::AddReferenceToSharedImage(
   proxy_->AddReferenceToSharedImage(sync_token, mailbox, usage);
 }
 
-std::unique_ptr<SharedImageInterface::ScopedMapping>
-ClientSharedImageInterface::MapSharedImage(
-    const scoped_refptr<gpu::ClientSharedImage>& client_shared_image) {
-  auto scoped_mapping = SharedImageInterface::ScopedMapping::Create(
-      client_shared_image->gpu_memory_buffer());
-  if (!scoped_mapping) {
-    LOG(ERROR) << "Unable to create ScopedMapping.";
-    return nullptr;
-  }
-  return scoped_mapping;
-}
-
 uint32_t ClientSharedImageInterface::UsageForMailbox(const Mailbox& mailbox) {
   return proxy_->UsageForMailbox(mailbox);
 }

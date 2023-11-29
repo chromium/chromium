@@ -476,20 +476,6 @@ class PLATFORM_EXPORT CanvasResourceRasterSharedImage final
   // TODO(crbug.com/1494911): Remove this field once GetOrCreateGpuMailbox() is
   // converted to return ClientSharedImage.
   const gpu::Mailbox empty_mailbox_;
-
-  // Note that SharedImageInterface is supposed to be used via
-  // |context_provider_wrapper_| to ensure that only owning thread can access
-  // this interface to modify the owning thread data like mailbox and non owning
-  // thread can only read the mailbox.
-  // With MappableSI, we added a new interface MapSharedImage() which provides
-  // CPU mapped memory to client and hence replacing use of GpuMemoryBuffer
-  // directly. As a result, CanvasResourceRasterSharedImage::Bitmap() will need
-  // to use the SharedImageInterface on non-owning thread to call
-  // MapSharedImage() which should be fine since we are preserving legacy
-  // behavior of not modifying the CPU mapped memory content on non owning
-  // thread. Note that this will be only used when MappableSI is enabled.
-  const raw_ptr<gpu::SharedImageInterface, ExperimentalRenderer> sii_;
-
   OwningThreadData owning_thread_data_;
 };
 

@@ -16,4 +16,13 @@ ClientSharedImage::ClientSharedImage(
 
 ClientSharedImage::~ClientSharedImage() = default;
 
+std::unique_ptr<SharedImageInterface::ScopedMapping> ClientSharedImage::Map() {
+  auto scoped_mapping =
+      SharedImageInterface::ScopedMapping::Create(gpu_memory_buffer_.get());
+  if (!scoped_mapping) {
+    LOG(ERROR) << "Unable to create ScopedMapping";
+  }
+  return scoped_mapping;
+}
+
 }  // namespace gpu

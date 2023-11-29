@@ -77,10 +77,6 @@ class ASH_EXPORT FastInkHost : public FrameSinkHost {
     return client_shared_image_.get();
   }
 
-  viz::RasterContextProvider* context_provider_for_test() {
-    return context_provider_.get();
-  }
-
   int get_pending_bitmaps_size_for_test() const {
     return pending_bitmaps_.size();
   }

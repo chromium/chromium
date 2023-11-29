@@ -42,10 +42,6 @@ class D3DSharedFence;
 #endif
 }  // namespace gfx
 
-namespace viz {
-class TestSharedImageInterface;
-}
-
 namespace gpu {
 class ClientSharedImage;
 class GpuMemoryBufferManager;
@@ -62,6 +58,7 @@ class GPU_EXPORT SharedImageInterface {
   // used for CPU READ/WRITE and underlying resource(native buffers/shared
   // memory) is CPU mappable. Memory and strides can be requested for each
   // plane.
+  // TODO(blundell): Move this into ClientSharedImage.
   class GPU_EXPORT ScopedMapping {
    public:
     ~ScopedMapping();
@@ -93,9 +90,7 @@ class GPU_EXPORT SharedImageInterface {
         int importance);
 
    private:
-    friend class ClientSharedImageInterface;
-    friend class SharedImageInterfaceInProcess;
-    friend class viz::TestSharedImageInterface;
+    friend class ClientSharedImage;
 
     ScopedMapping();
     static std::unique_ptr<ScopedMapping> Create(
@@ -361,15 +356,6 @@ class GPU_EXPORT SharedImageInterface {
   // Informs that existing |mailbox| with |usage| can be passed to
   // DestroySharedImage().
   virtual void NotifyMailboxAdded(const Mailbox& mailbox, uint32_t usage);
-
-  // Maps |mailbox| into CPU visible memory(if SharedImageUsage/BufferUsage are
-  // set to do CPU READ/WRITE) and returns a ScopedMapping object which can be
-  // used to read/write to the CPU mapped memory. Mailbox must have been created
-  // with CPU_READ/CPU_WRITE usage. Note that this call can be blocking
-  // and blocks on the clients thread only the first time for a given
-  // |client_shared_image|.
-  virtual std::unique_ptr<SharedImageInterface::ScopedMapping> MapSharedImage(
-      const scoped_refptr<ClientSharedImage>& client_shared_image);
 
   virtual const SharedImageCapabilities& GetCapabilities() = 0;
 };

@@ -446,11 +446,7 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
       use_oop_rasterization_(is_accelerated &&
                              context_provider_wrapper_->ContextProvider()
                                  ->GetCapabilities()
-                                 .gpu_rasterization),
-      sii_(base::FeatureList::IsEnabled(kAlwaysUseMappableSIForSoftwareCanvas)
-               ? context_provider_wrapper_->ContextProvider()
-                     ->SharedImageInterface()
-               : nullptr) {
+                                 .gpu_rasterization) {
   auto* gpu_memory_buffer_manager =
       SharedGpuContext::GetGpuMemoryBufferManager();
 
@@ -470,11 +466,6 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
     gpu_memory_buffer_->SetColorSpace(GetColorSpace());
   }
 
-  // Note that we should be using |context_provider_wrapper_| below to access
-  // SharedImageInterface everywhere except in
-  // CanvasResourceRasterSharedImage::Bitmap() when MappableSI is used to ensure
-  // that this interface is accessed only on owning thread. |sii_| should be
-  // used for special case. see header file for more comments.
   auto* shared_image_interface =
       context_provider_wrapper_->ContextProvider()->SharedImageInterface();
   DCHECK(shared_image_interface);
@@ -715,12 +706,7 @@ scoped_refptr<StaticBitmapImage> CanvasResourceRasterSharedImage::Bitmap() {
     void* memory = nullptr;
     size_t stride = 0;
     if (base::FeatureList::IsEnabled(kAlwaysUseMappableSIForSoftwareCanvas)) {
-      // Note that |sii_| can only be used as a special case here on non-owning
-      // thread. Otherwise this interface is prohibited to be accessed from
-      // non-owning thread in order to avoid modifying the mailbox on non
-      // owning thread by mistake.
-      CHECK(sii_);
-      mapping = sii_->MapSharedImage(client_shared_image());
+      mapping = client_shared_image()->Map();
       if (!mapping) {
         LOG(ERROR) << "MapSharedImage Failed.";
         return nullptr;
@@ -808,7 +794,7 @@ void CanvasResourceRasterSharedImage::CopyRenderingResultsToGpuMemoryBuffer(
   void* memory = nullptr;
   size_t stride = 0;
   if (base::FeatureList::IsEnabled(kAlwaysUseMappableSIForSoftwareCanvas)) {
-    mapping = sii->MapSharedImage(client_shared_image());
+    mapping = client_shared_image()->Map();
     if (!mapping) {
       LOG(ERROR) << "MapSharedImage failed.";
       return;

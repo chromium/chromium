@@ -275,10 +275,8 @@ void ViewTreeHostRootViewFrameFactory::Paint(
           kUseMappableSIInViewTreeHostRootViewFrameFactory)) {
     DCHECK(!gpu_buffer);
 
-    gpu::SharedImageInterface* sii =
-        resource->context_provider->SharedImageInterface();
     CHECK(resource->client_shared_image());
-    mapping = sii->MapSharedImage(resource->client_shared_image());
+    mapping = resource->client_shared_image()->Map();
     if (!mapping) {
       TRACE_EVENT0("ui", "ViewTreeHostRootView::Paint::Map");
       LOG(ERROR) << "MapSharedImage Failed.";

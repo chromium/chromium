@@ -6,6 +6,7 @@
 #define GPU_COMMAND_BUFFER_CLIENT_CLIENT_SHARED_IMAGE_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/gpu_export.h"
@@ -22,11 +23,14 @@ class GPU_EXPORT ClientSharedImage
 
   const Mailbox& mailbox() { return mailbox_; }
 
-  gfx::GpuMemoryBuffer* gpu_memory_buffer() { return gpu_memory_buffer_.get(); }
-
   base::trace_event::MemoryAllocatorDumpGuid GetGUIDForTracing() {
     return gpu::GetSharedImageGUIDForTracing(mailbox_);
   }
+
+  // Maps |mailbox| into CPU visible memory and returns a ScopedMapping object
+  // which can be used to read/write to the CPU mapped memory. The SharedImage
+  // backing this ClientSI must have been created with CPU_READ/CPU_WRITE usage.
+  std::unique_ptr<SharedImageInterface::ScopedMapping> Map();
 
   static scoped_refptr<ClientSharedImage> CreateForTesting() {
     return base::MakeRefCounted<ClientSharedImage>(

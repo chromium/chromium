@@ -198,8 +198,7 @@ TestSharedImageInterface::CreateSharedImage(SharedImageFormat format,
                                             base::StringPiece debug_label,
                                             gpu::SurfaceHandle surface_handle,
                                             gfx::BufferUsage buffer_usage) {
-  // Create a GMBHandle and a mailbox and associate the two for usage in
-  // MapSharedImage().
+  // Create a ClientSharedImage with a GMB.
   auto client_shared_image =
       CreateSharedImage(format, size, color_space, surface_origin, alpha_type,
                         usage, std::move(debug_label), surface_handle);
@@ -344,13 +343,6 @@ void TestSharedImageInterface::Flush() {
 scoped_refptr<gfx::NativePixmap> TestSharedImageInterface::GetNativePixmap(
     const gpu::Mailbox& mailbox) {
   return nullptr;
-}
-
-std::unique_ptr<gpu::SharedImageInterface::ScopedMapping>
-TestSharedImageInterface::MapSharedImage(
-    const scoped_refptr<gpu::ClientSharedImage>& client_shared_image) {
-  return SharedImageInterface::ScopedMapping::Create(
-      client_shared_image->gpu_memory_buffer());
 }
 
 bool TestSharedImageInterface::CheckSharedImageExists(

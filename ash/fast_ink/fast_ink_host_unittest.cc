@@ -242,9 +242,7 @@ TEST_P(FastInkHostTest, DelayPaintingUntilReceivingFirstBeginFrame) {
     // Pending bitmaps should be drawn and cleared.
     EXPECT_EQ(fast_ink_host_->get_pending_bitmaps_size_for_test(), 0);
 
-    auto mapping = fast_ink_host_->context_provider_for_test()
-                       ->SharedImageInterface()
-                       ->MapSharedImage(fast_ink_host_->client_si_for_test());
+    auto mapping = fast_ink_host_->client_si_for_test()->Map();
     ASSERT_TRUE(mapping);
     // Pending bitmaps should be correctly copied to the MappableSI's buffer.
     EXPECT_EQ(*static_cast<SkColor*>(mapping->Memory(0)), SK_ColorGREEN);
