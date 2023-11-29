@@ -141,6 +141,7 @@
   _searchEnginesTableMediator.selectedRow = row;
   [_mediator
       setSelectedItem:_searchEnginesTableViewController.searchEngines[row]];
+  _viewController.didUserSelectARow = YES;
   [_viewController enablePrimaryButton];
 }
 
