@@ -112,7 +112,7 @@ IN_PROC_BROWSER_TEST_F(FamilyLinkNoticeScreenTest, RegularAccount) {
       ->sign_in_as_child = false;
   LoginAsRegularUser();
   WaitForScreenExit();
-  EXPECT_EQ(screen_result_.value(), FamilyLinkNoticeScreen::Result::SKIPPED);
+  EXPECT_EQ(screen_result_.value(), FamilyLinkNoticeScreen::Result::kSkipped);
   ExpectHelpAppPrefValue(false);
 }
 
@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(FamilyLinkNoticeScreenTest, NonSupervisedChildAccount) {
   OobeScreenWaiter(FamilyLinkNoticeView::kScreenId).Wait();
   ClickContinueButtonOnFamilyLinkScreen();
   WaitForScreenExit();
-  EXPECT_EQ(screen_result_.value(), FamilyLinkNoticeScreen::Result::DONE);
+  EXPECT_EQ(screen_result_.value(), FamilyLinkNoticeScreen::Result::kDone);
   ExpectHelpAppPrefValue(true);
 }
 
@@ -160,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(FamilyLinkNoticeScreenChildTest, ChildAccount) {
       ->sign_in_as_child = true;
   LoginAsChildUser();
   WaitForScreenExit();
-  EXPECT_EQ(screen_result_.value(), FamilyLinkNoticeScreen::Result::SKIPPED);
+  EXPECT_EQ(screen_result_.value(), FamilyLinkNoticeScreen::Result::kSkipped);
   ExpectHelpAppPrefValue(false);
 }
 
@@ -173,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(FamilyLinkNoticeScreenChildTest,
       ->sign_in_as_child = false;
   LoginAsChildUser();
   WaitForScreenExit();
-  EXPECT_EQ(screen_result_.value(), FamilyLinkNoticeScreen::Result::SKIPPED);
+  EXPECT_EQ(screen_result_.value(), FamilyLinkNoticeScreen::Result::kSkipped);
   ExpectHelpAppPrefValue(false);
 }
 
@@ -199,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(FamilyLinkNoticeScreenManagedTest, ManagedAccount) {
   OobeScreenWaiter(FamilyLinkNoticeView::kScreenId).Wait();
   ClickContinueButtonOnFamilyLinkScreen();
   WaitForScreenExit();
-  EXPECT_EQ(screen_result_.value(), FamilyLinkNoticeScreen::Result::DONE);
+  EXPECT_EQ(screen_result_.value(), FamilyLinkNoticeScreen::Result::kDone);
   ExpectHelpAppPrefValue(false);
 }
 
