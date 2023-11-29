@@ -280,7 +280,6 @@ class ArcSettingsServiceImpl : public TimezoneSettings::Observer,
   void SyncBackupEnabled() const;
   void SyncCaptionStyle() const;
   void SyncConsumerAutoUpdateToggle() const;
-  void SyncGIOBetaEnabled() const;
   void SyncLocale() const;
   void SyncLocationServiceEnabled() const;
   void SyncProxySettings() const;
@@ -583,7 +582,6 @@ void ArcSettingsServiceImpl::SyncBootTimeSettings() const {
   SyncAccessibilityVirtualKeyboardEnabled();
   SyncCaptionStyle();
   SyncConsumerAutoUpdateToggle();
-  SyncGIOBetaEnabled();
   SyncProxySettings();
   SyncReportingConsent(/*initial_sync=*/false);
   SyncPictureInPictureEnabled();
@@ -876,12 +874,6 @@ void ArcSettingsServiceImpl::SyncUse24HourClock() const {
   extras.Set("use24HourClock", use24HourClock);
   SendSettingsBroadcast("org.chromium.arc.intent_helper.SET_USE_24_HOUR_CLOCK",
                         extras);
-}
-
-void ArcSettingsServiceImpl::SyncGIOBetaEnabled() const {
-  SendBoolValueSettingsBroadcast(
-      ash::features::IsArcInputOverlayBetaEnabled(), /*managed=*/false,
-      "org.chromium.arc.intent_helper.ACTION_SET_GIO_BETA_ENABLED");
 }
 
 void ArcSettingsServiceImpl::SyncUserGeolocation() const {
