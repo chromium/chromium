@@ -33,9 +33,8 @@ void CallCancelPrerenderForUnsupportedScheme(
 }  // namespace
 
 NoStatePrefetchURLLoaderThrottle::NoStatePrefetchURLLoaderThrottle(
-    const std::string& histogram_prefix,
     mojo::PendingRemote<prerender::mojom::PrerenderCanceler> canceler)
-    : histogram_prefix_(histogram_prefix), canceler_(std::move(canceler)) {
+    : canceler_(std::move(canceler)) {
   DCHECK(canceler_);
 }
 
@@ -131,7 +130,6 @@ void NoStatePrefetchURLLoaderThrottle::WillRedirectRequest(
     std::vector<std::string>* /* to_be_removed_headers */,
     net::HttpRequestHeaders* /* modified_headers */,
     net::HttpRequestHeaders* /* modified_cors_exempt_headers */) {
-  redirect_count_++;
 
   std::string follow_only_when_prerender_shown_header;
   if (response_head.headers) {
@@ -151,16 +149,6 @@ void NoStatePrefetchURLLoaderThrottle::WillRedirectRequest(
     *defer = true;
     deferred_ = true;
   }
-}
-
-void NoStatePrefetchURLLoaderThrottle::WillProcessResponse(
-    const GURL& response_url,
-    network::mojom::URLResponseHead* response_head,
-    bool* defer) {
-  bool is_main_resource =
-      blink::IsRequestDestinationFrame(request_destination_);
-  RecordPrefetchRedirectCount(histogram_prefix_, is_main_resource,
-                              redirect_count_);
 }
 
 void NoStatePrefetchURLLoaderThrottle::OnTimedOut() {

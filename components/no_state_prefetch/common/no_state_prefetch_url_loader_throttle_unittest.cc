@@ -44,8 +44,8 @@ TEST_F(NoStatePrefetchURLLoaderThrottleTest, DestructionClosure) {
   mojo::MakeSelfOwnedReceiver(std::make_unique<FakeCanceler>(),
                               pending_remote.InitWithNewPipeAndPassReceiver());
   std::unique_ptr<NoStatePrefetchURLLoaderThrottle> no_state_prefetch_throttle =
-      std::make_unique<NoStatePrefetchURLLoaderThrottle>("PREFIX",
-                                                   std::move(pending_remote));
+      std::make_unique<NoStatePrefetchURLLoaderThrottle>(
+          std::move(pending_remote));
   bool destruction_closure_called = false;
   no_state_prefetch_throttle->set_destruction_closure(
       base::BindLambdaForTesting([&]() { destruction_closure_called = true; }));
@@ -60,8 +60,8 @@ TEST_F(NoStatePrefetchURLLoaderThrottleTest,
   mojo::MakeSelfOwnedReceiver(std::make_unique<FakeCanceler>(),
                               pending_remote.InitWithNewPipeAndPassReceiver());
   std::unique_ptr<NoStatePrefetchURLLoaderThrottle> no_state_prefetch_throttle =
-      std::make_unique<NoStatePrefetchURLLoaderThrottle>("PREFIX",
-                                                   std::move(pending_remote));
+      std::make_unique<NoStatePrefetchURLLoaderThrottle>(
+          std::move(pending_remote));
   base::RunLoop run_loop;
   scoped_refptr<base::SequencedTaskRunner> current_task_runner =
       base::SequencedTaskRunner::GetCurrentDefault();

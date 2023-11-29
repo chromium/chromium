@@ -21,7 +21,6 @@ class NoStatePrefetchURLLoaderThrottle
       public base::SupportsWeakPtr<NoStatePrefetchURLLoaderThrottle> {
  public:
   NoStatePrefetchURLLoaderThrottle(
-      const std::string& histogram_prefix,
       mojo::PendingRemote<prerender::mojom::PrerenderCanceler> canceler);
   ~NoStatePrefetchURLLoaderThrottle() override;
 
@@ -46,16 +45,10 @@ class NoStatePrefetchURLLoaderThrottle
       std::vector<std::string>* to_be_removed_headers,
       net::HttpRequestHeaders* modified_headers,
       net::HttpRequestHeaders* modified_cors_exempt_headers) override;
-  void WillProcessResponse(const GURL& response_url,
-                           network::mojom::URLResponseHead* response_head,
-                           bool* defer) override;
 
   void OnTimedOut();
 
-  std::string histogram_prefix_;
-
   bool deferred_ = false;
-  int redirect_count_ = 0;
   network::mojom::RequestDestination request_destination_;
 
   mojo::PendingRemote<prerender::mojom::PrerenderCanceler> canceler_;

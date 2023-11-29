@@ -62,16 +62,4 @@ std::string ComposeHistogramName(const std::string& prefix_type,
   return std::string("Prerender.") + prefix_type + std::string("_") + name;
 }
 
-void RecordPrefetchRedirectCount(const std::string& histogram_prefix,
-                                 bool is_main_resource,
-                                 int redirect_count) {
-  const int kMaxRedirectCount = 10;
-  std::string histogram_base_name = base::StringPrintf(
-      "NoStatePrefetch%sResourceRedirects", is_main_resource ? "Main" : "Sub");
-  std::string histogram_name =
-      ComposeHistogramName(histogram_prefix, histogram_base_name);
-  base::UmaHistogramExactLinear(histogram_name, redirect_count,
-                                kMaxRedirectCount);
-}
-
 }  // namespace prerender

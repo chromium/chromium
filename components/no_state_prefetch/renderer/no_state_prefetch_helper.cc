@@ -46,8 +46,8 @@ NoStatePrefetchHelper::MaybeCreateThrottle(
   render_frame->GetBrowserInterfaceBroker()->GetInterface(
       canceler.InitWithNewPipeAndPassReceiver());
 
-  auto throttle = std::make_unique<NoStatePrefetchURLLoaderThrottle>(
-      helper->histogram_prefix(), std::move(canceler));
+  auto throttle =
+      std::make_unique<NoStatePrefetchURLLoaderThrottle>(std::move(canceler));
   helper->AddThrottle(*throttle);
   return throttle;
 }

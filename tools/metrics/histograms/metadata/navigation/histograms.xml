@@ -2026,28 +2026,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Prerender.NoStatePrefetchMainResourceRedirects"
-    units="redirects" expires_after="M85">
-  <owner>droger@chromium.org</owner>
-  <owner>mattcary@chromium.org</owner>
-  <owner>pasko@chromium.org</owner>
-  <summary>
-    Length of the redirect chain for main resources loaded by NoStatePrefetch.
-    Recorded when the final response in the chain is received.
-  </summary>
-</histogram>
-
-<histogram name="Prerender.NoStatePrefetchSubResourceRedirects"
-    units="redirects" expires_after="M85">
-  <owner>droger@chromium.org</owner>
-  <owner>mattcary@chromium.org</owner>
-  <owner>pasko@chromium.org</owner>
-  <summary>
-    Length of the redirect chain for sub-resources loaded by NoStatePrefetch.
-    Recorded when the final response in the chain is received.
-  </summary>
-</histogram>
-
 <histogram name="Prerender.PrerenderLoadComplete" enum="BooleanSuccess"
     expires_after="2024-04-28">
   <owner>gambard@chromium.org</owner>

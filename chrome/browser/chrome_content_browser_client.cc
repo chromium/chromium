@@ -5722,7 +5722,6 @@ ChromeContentBrowserClient::CreateURLLoaderThrottles(
       chrome_navigation_ui_data->is_no_state_prefetching()) {
     result.push_back(
         std::make_unique<prerender::NoStatePrefetchURLLoaderThrottle>(
-            chrome_navigation_ui_data->prerender_histogram_prefix(),
             GetPrerenderCanceler(wc_getter)));
   }
 
