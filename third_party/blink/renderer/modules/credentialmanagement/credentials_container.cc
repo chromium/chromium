@@ -515,15 +515,6 @@ DOMException* AuthenticatorStatusToDOMException(
           "successful, but no listed origin matched the caller. Note that a "
           "match may have been found but the limit on the number of eTLD+1 "
           "labels was reached, causing some entries to be ignored.");
-    case AuthenticatorStatus::BAD_RELYING_PARTY_ID_NO_JSON_MATCH_EXTENSION:
-      return MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kSecurityError,
-          "The relying party ID is not a registrable domain suffix of, nor "
-          "equal to the current domain. Subsequently, fetching the "
-          ".well-known/passkey-origins resource of the claimed RP ID was "
-          "successful, but no listed origin matched the caller. Note that "
-          "since the caller is an extension, it must be listed in an "
-          "'extensions' list, not 'origins'.");
     case AuthenticatorStatus::CANNOT_READ_AND_WRITE_LARGE_BLOB:
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotSupportedError,

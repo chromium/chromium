@@ -149,40 +149,11 @@ WebAuthRequestSecurityChecker::RemoteValidation::ValidateWellKnownJSON(
     const url::Origin& caller_origin,
     const base::Value& value) {
   // This code processes a .well-known/webauthn-origins JSON. See
-  // https://github.com/w3c/webauthn/wiki/Explainer:-Cross-domain-requests
+  // https://github.com/w3c/webauthn/wiki/Explainer:-Related-origin-requests
 
   if (!value.is_dict()) {
     return blink::mojom::AuthenticatorStatus::
         BAD_RELYING_PARTY_ID_JSON_PARSE_ERROR;
-  }
-
-  // Extensions aren't listed in the `origins` list so that they don't interfere
-  // with the label limits in other browsers.
-  if (base::EndsWith(caller_origin.scheme(), "-extension")) {
-    const base::Value::List* extensions =
-        value.GetDict().FindList("extensions");
-    if (!extensions) {
-      return blink::mojom::AuthenticatorStatus::
-          BAD_RELYING_PARTY_ID_NO_JSON_MATCH_EXTENSION;
-    }
-    for (const base::Value& extension_str : *extensions) {
-      if (!extension_str.is_string()) {
-        return blink::mojom::AuthenticatorStatus::
-            BAD_RELYING_PARTY_ID_JSON_PARSE_ERROR;
-      }
-      const GURL url(extension_str.GetString());
-      if (!url.is_valid()) {
-        return blink::mojom::AuthenticatorStatus::
-            BAD_RELYING_PARTY_ID_JSON_PARSE_ERROR;
-      }
-      const auto origin = url::Origin::Create(url);
-      if (origin.IsSameOriginWith(caller_origin)) {
-        return blink::mojom::AuthenticatorStatus::SUCCESS;
-      }
-    }
-
-    return blink::mojom::AuthenticatorStatus::
-        BAD_RELYING_PARTY_ID_NO_JSON_MATCH;
   }
 
   const base::Value::List* origins = value.GetDict().FindList("origins");
