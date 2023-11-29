@@ -190,11 +190,11 @@ WebGPUSwapBufferProvider::NewOrRecycledSwapBuffer(
         kTopLeft_GrSurfaceOrigin, alpha_mode, usage, "WebGPUSwapBufferProvider",
         gpu::kNullSurfaceHandle);
     CHECK(client_shared_image);
-    gpu::Mailbox mailbox = client_shared_image->mailbox();
     gpu::SyncToken creation_token = sii->GenUnverifiedSyncToken();
 
     unused_swap_buffers_.push_back(base::MakeRefCounted<SwapBuffer>(
-        std::move(context_provider), mailbox, creation_token, size));
+        std::move(context_provider), std::move(client_shared_image),
+        creation_token, size));
     DCHECK_EQ(unused_swap_buffers_.back()->size, size);
   }
 
@@ -251,7 +251,8 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUSwapBufferProvider::GetNewTexture(
   // Make a mailbox texture from the swap buffer.
   current_swap_buffer_->mailbox_texture =
       WebGPUMailboxTexture::FromExistingMailbox(
-          dawn_control_client_, device_, desc, current_swap_buffer_->mailbox,
+          dawn_control_client_, device_, desc,
+          current_swap_buffer_->shared_image->mailbox(),
           // Wait on the last usage of this swap buffer.
           current_swap_buffer_->access_finished_token,
           gpu::webgpu::WEBGPU_MAILBOX_DISCARD,
@@ -288,7 +289,8 @@ WebGPUSwapBufferProvider::GetLastWebGPUMailboxTextureAndSize() const {
 
   return WebGPUMailboxTextureAndSize(
       WebGPUMailboxTexture::FromExistingMailbox(
-          dawn_control_client_, device_, desc, latest_swap_buffer->mailbox,
+          dawn_control_client_, device_, desc,
+          latest_swap_buffer->shared_image->mailbox(),
           latest_swap_buffer->access_finished_token,
           gpu::webgpu::WEBGPU_MAILBOX_NONE),
       latest_swap_buffer->size);
@@ -312,7 +314,7 @@ bool WebGPUSwapBufferProvider::PrepareTransferableResource(
 
   // Populate the output resource
   *out_resource = viz::TransferableResource::MakeGpu(
-      current_swap_buffer_->mailbox, GetTextureTarget(),
+      current_swap_buffer_->shared_image, GetTextureTarget(),
       current_swap_buffer_->access_finished_token, current_swap_buffer_->size,
       Format(), IsOverlayCandidate(),
       viz::TransferableResource::ResourceSource::kWebGPUSwapBuffer);
@@ -351,9 +353,9 @@ bool WebGPUSwapBufferProvider::CopyToVideoFrame(
   // need to release WebGPU/Dawn's context's access to the texture.
   ReleaseWGPUTextureAccessIfNeeded();
 
-  gpu::MailboxHolder mailbox_holder(current_swap_buffer_->mailbox,
-                                    current_swap_buffer_->access_finished_token,
-                                    GetTextureTarget());
+  gpu::MailboxHolder mailbox_holder(
+      current_swap_buffer_->shared_image->mailbox(),
+      current_swap_buffer_->access_finished_token, GetTextureTarget());
 
   if (frame_pool->CopyRGBATextureToVideoFrame(
           Format(), current_swap_buffer_->size,
@@ -389,11 +391,11 @@ void WebGPUSwapBufferProvider::MailboxReleased(
 
 WebGPUSwapBufferProvider::SwapBuffer::SwapBuffer(
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider,
-    gpu::Mailbox mailbox,
+    scoped_refptr<gpu::ClientSharedImage> shared_image,
     gpu::SyncToken creation_token,
     gfx::Size size)
     : size(size),
-      mailbox(mailbox),
+      shared_image(std::move(shared_image)),
       context_provider(context_provider),
       access_finished_token(creation_token) {}
 
@@ -401,12 +403,13 @@ WebGPUSwapBufferProvider::SwapBuffer::~SwapBuffer() {
   if (context_provider) {
     gpu::SharedImageInterface* sii =
         context_provider->ContextProvider()->SharedImageInterface();
-    sii->DestroySharedImage(access_finished_token, mailbox);
+    sii->DestroySharedImage(access_finished_token, std::move(shared_image));
   }
 }
 
 gpu::Mailbox WebGPUSwapBufferProvider::GetCurrentMailboxForTesting() const {
   DCHECK(current_swap_buffer_);
-  return current_swap_buffer_->mailbox;
+  DCHECK(current_swap_buffer_->shared_image);
+  return current_swap_buffer_->shared_image->mailbox();
 }
 }  // namespace blink
