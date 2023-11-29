@@ -16,7 +16,7 @@ constexpr char kTestDescription[] = R"(class=ui::InputDevice id=12
  name="Name"
  phys="Phys"
  enabled=1
- suspected_imposter=0
+ suspected_keyboard_imposter=0
  sys_path="/sys/some/path/event8"
  vendor_id=0012
  product_id=BE00

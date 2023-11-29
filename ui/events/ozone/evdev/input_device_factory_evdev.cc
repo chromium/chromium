@@ -29,9 +29,9 @@
 #include "ui/events/ozone/evdev/event_converter_evdev_impl.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 #include "ui/events/ozone/evdev/gamepad_event_converter_evdev.h"
+#include "ui/events/ozone/evdev/imposter_checker_evdev.h"
 #include "ui/events/ozone/evdev/input_controller_evdev.h"
 #include "ui/events/ozone/evdev/input_device_settings_evdev.h"
-#include "ui/events/ozone/evdev/keyboard_imposter_checker_evdev.h"
 #include "ui/events/ozone/evdev/microphone_mute_switch_event_converter_evdev.h"
 #include "ui/events/ozone/evdev/stylus_button_event_converter_evdev.h"
 #include "ui/events/ozone/evdev/tablet_event_converter_evdev.h"
@@ -105,7 +105,7 @@ InputDeviceFactoryEvdev::InputDeviceFactoryEvdev(
       gesture_property_provider_(new GesturePropertyProvider),
 #endif
       dispatcher_(std::move(dispatcher)),
-      keyboard_imposter_checker_(new KeyboardImposterCheckerEvdev),
+      imposter_checker_(new ImposterCheckerEvdev),
       input_device_opener_(std::move(input_device_opener)),
       input_controller_(input_controller) {
 }
@@ -184,7 +184,7 @@ void InputDeviceFactoryEvdev::AttachInputDevice(
          converter->type() == InputDeviceType::INPUT_DEVICE_BLUETOOTH) &&
         converter->HasKeyboard()) {
       converter->SetReceivedValidInputCallback(base::BindRepeating(
-          &InputDeviceFactoryEvdev::UpdateKeyboardDevicesOnKeyPress,
+          &InputDeviceFactoryEvdev::UpdateDevicesOnImposterOverride,
           base::Unretained(this)));
     }
 
@@ -197,12 +197,13 @@ void InputDeviceFactoryEvdev::AttachInputDevice(
     // Register device on physical port & get ids of devices on the same
     // physical port.
     std::vector<int> ids_to_check =
-        keyboard_imposter_checker_->OnDeviceAdded(converters_[path].get());
+        imposter_checker_->OnDeviceAdded(converters_[path].get());
     // Check for imposters on all devices that share the same physical port.
     for (const auto& it : converters_) {
       if (base::Contains(ids_to_check, it.second->id()) &&
-          keyboard_imposter_checker_->FlagIfImposter(it.second.get()))
+          imposter_checker_->FlagSuspectedImposter(it.second.get())) {
         UpdateDirtyFlags(it.second.get());
+      }
     }
 
     input_device_factory_metrics_.OnDeviceAttach(converters_[path].get());
@@ -236,14 +237,15 @@ void InputDeviceFactoryEvdev::DetachInputDevice(const base::FilePath& path) {
     // Decrement device count on physical port. Get ids of devices on the same
     // physical port.
     std::vector<int> ids_to_check =
-        keyboard_imposter_checker_->OnDeviceRemoved(converter.get());
+        imposter_checker_->OnDeviceRemoved(converter.get());
     // Check for imposters on all devices that share the same physical port.
     // Declassify any devices as no longer imposters, if the removal of this
     // device changes their status.
     for (const auto& it : converters_) {
       if (base::Contains(ids_to_check, it.second->id()) &&
-          !keyboard_imposter_checker_->FlagIfImposter(it.second.get()))
+          !imposter_checker_->FlagSuspectedImposter(it.second.get())) {
         UpdateDirtyFlags(it.second.get());
+      }
     }
 
     UpdateDirtyFlags(converter.get());
@@ -626,10 +628,11 @@ void InputDeviceFactoryEvdev::NotifyMouseDevicesUpdated() {
     if (converter.second->HasMouse()) {
       mice.push_back(converter.second->input_device());
 
-      // If the device also has a keyboard, clear the suspected imposter field
-      // as it currently only applies to the keyboard `InputDevice` struct.
+      // If the device also has a keyboard, clear the keyboard suspected
+      // imposter field as it only applies to the keyboard
+      // `InputDevice` struct.
       if (converter.second->HasKeyboard()) {
-        mice.back().suspected_imposter = false;
+        mice.back().suspected_keyboard_imposter = false;
       }
 
       // Some I2C touchpads falsely claim to be mice, see b/205272718
@@ -649,10 +652,11 @@ void InputDeviceFactoryEvdev::NotifyPointingStickDevicesUpdated() {
     if (converter.second->HasPointingStick()) {
       pointing_sticks.push_back(converter.second->input_device());
 
-      // If the device also has a keyboard, clear the suspected imposter field
-      // as it currently only applies to the keyboard `InputDevice` struct.
+      // If the device also has a keyboard, clear the keyboard suspected
+      // imposter field as it only applies to the keyboard
+      // `InputDevice` struct.
       if (converter.second->HasKeyboard()) {
-        pointing_sticks.back().suspected_imposter = false;
+        pointing_sticks.back().suspected_keyboard_imposter = false;
       }
     }
   }
@@ -670,10 +674,11 @@ void InputDeviceFactoryEvdev::NotifyTouchpadDevicesUpdated() {
       touchpads.emplace_back(it.second->input_device(),
                              it.second->HasHapticTouchpad());
 
-      // If the device also has a keyboard, clear the suspected imposter field
-      // as it currently only applies to the keyboard `InputDevice` struct.
+      // If the device also has a keyboard, clear the keyboard suspected
+      // imposter field as it only applies to the keyboard
+      // `InputDevice` struct.
       if (it.second->HasKeyboard()) {
-        touchpads.back().suspected_imposter = false;
+        touchpads.back().suspected_keyboard_imposter = false;
       }
     }
   }
@@ -717,7 +722,7 @@ void InputDeviceFactoryEvdev::NotifyUncategorizedDevicesUpdated() {
   dispatcher_->DispatchUncategorizedDevicesUpdated(uncategorized_devices);
 }
 
-void InputDeviceFactoryEvdev::UpdateKeyboardDevicesOnKeyPress(
+void InputDeviceFactoryEvdev::UpdateDevicesOnImposterOverride(
     const EventConverterEvdev* converter) {
   UpdateDirtyFlags(converter);
   NotifyDevicesUpdated();

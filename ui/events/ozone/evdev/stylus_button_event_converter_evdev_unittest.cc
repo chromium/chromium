@@ -44,7 +44,7 @@ member class=ui::InputDevice id=1
  name="Dell Active Pen PN579X"
  phys=""
  enabled=0
- suspected_imposter=0
+ suspected_keyboard_imposter=0
  sys_path=""
  vendor_id=413C
  product_id=81D5

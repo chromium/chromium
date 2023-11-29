@@ -138,7 +138,7 @@ bool IsDeviceASuspectedImposter<mojom::KeyboardPtr>(
     return true;
   }
 
-  return device.suspected_imposter;
+  return device.suspected_keyboard_imposter;
 }
 
 template <>
@@ -291,7 +291,7 @@ void InputDeviceNotifier<mojom::KeyboardPtr, ui::KeyboardDevice>::
   // get removed upon device disconnect.
   base::flat_set<DeviceId> updated_imposter_devices;
   for (const ui::KeyboardDevice& device : updated_device_list) {
-    if (device.suspected_imposter) {
+    if (device.suspected_keyboard_imposter) {
       updated_imposter_devices.insert(device.id);
       continue;
     }

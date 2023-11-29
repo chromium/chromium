@@ -148,11 +148,11 @@ void EventReaderLibevdevCros::ApplyDeviceSettings(
 }
 
 void EventReaderLibevdevCros::ReceivedKeyboardInput(uint64_t key) {
-  if (!IsSuspectedImposter() || !IsValidKeyboardKeyPress(key)) {
+  if (!IsSuspectedKeyboardImposter() || !IsValidKeyboardKeyPress(key)) {
     return;
   }
 
-  SetSuspectedImposter(false);
+  SetSuspectedKeyboardImposter(false);
   received_valid_input_callback_.Run(this);
 }
 

@@ -475,7 +475,8 @@ bool IsInternalKeyboard(const ui::KeyboardDevice& keyboard) {
 bool HasExternalKeyboardConnected() {
   for (const ui::KeyboardDevice& keyboard :
        ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
-    if (!keyboard.suspected_imposter && !IsInternalKeyboard(keyboard)) {
+    if (!keyboard.suspected_keyboard_imposter &&
+        !IsInternalKeyboard(keyboard)) {
       return true;
     }
   }

@@ -66,7 +66,8 @@ std::ostream& InputDevice::DescribeForLog(std::ostream& os) const {
             << " name=\"" << name << "\"" << std::endl
             << " phys=\"" << phys << "\"" << std::endl
             << " enabled=" << enabled << std::endl
-            << " suspected_imposter=" << suspected_imposter << std::endl
+            << " suspected_keyboard_imposter=" << suspected_keyboard_imposter
+            << std::endl
             << " sys_path=\"" << sys_path.AsUTF8Unsafe() << "\"" << std::endl
             << " vendor_id=" << base::StringPrintf("%04X", vendor_id)
             << std::endl
