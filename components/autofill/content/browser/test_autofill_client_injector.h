@@ -90,4 +90,4 @@ class TestAutofillClientInjector : public TestAutofillClientInjectorBase {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CONTENT_BROWSER_TEST_AUTOFILL_MANAGER_INJECTOR_H_
+#endif  // COMPONENTS_AUTOFILL_CONTENT_BROWSER_TEST_AUTOFILL_CLIENT_INJECTOR_H_

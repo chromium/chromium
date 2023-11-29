@@ -14,4 +14,4 @@ std::string CreateProto(
     const std::vector<lens::mojom::LatencyLogPtr>& log_data);
 }
 
-#endif  // COMPONENTS_LENS_LENS_ENTRYPOINTS_H_
+#endif  // COMPONENTS_LENS_LENS_METADATA_H_

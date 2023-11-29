@@ -23,4 +23,4 @@ class SubSurfaceObserver : public base::CheckedObserver {
 
 }  // namespace exo
 
-#endif  // COMPONENTS_EXO_SURFACE_OBSERVER_H_
+#endif  // COMPONENTS_EXO_SUB_SURFACE_OBSERVER_H_

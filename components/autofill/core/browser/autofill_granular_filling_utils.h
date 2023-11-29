@@ -54,4 +54,4 @@ ServerFieldTypeSet GetTargetServerFieldsForTypeAndLastTargetedFields(
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_GRANULAR_FILLING_UTILS_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_GRANULAR_FILLING_UTILS_H_

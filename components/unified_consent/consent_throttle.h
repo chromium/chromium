@@ -72,4 +72,4 @@ class ConsentThrottle : public UrlKeyedDataCollectionConsentHelper::Observer {
 
 }  // namespace unified_consent
 
-#endif  // CHROME_BROWSER_COMPONENTS_UNIFIED_CONSENT_CONSENT_THROTTLE_H_
+#endif  // COMPONENTS_UNIFIED_CONSENT_CONSENT_THROTTLE_H_

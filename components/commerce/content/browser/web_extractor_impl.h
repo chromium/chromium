@@ -36,4 +36,4 @@ class WebExtractorImpl : public WebExtractor {
 
 }  // namespace commerce
 
-#endif  // CHROME_BROWSER_COMMERCE_WEB_EXTRACTOR_IMPL_H_
+#endif  // COMPONENTS_COMMERCE_CONTENT_BROWSER_WEB_EXTRACTOR_IMPL_H_

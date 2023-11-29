@@ -53,4 +53,4 @@ class TestPasskeyModel : public PasskeyModel {
 
 }  // namespace webauthn
 
-#endif  // COMPONENTS_WEBAUTHN_CORE_BROWSER__TEST_PASSKEY_MODEL_H_
+#endif  // COMPONENTS_WEBAUTHN_CORE_BROWSER_TEST_PASSKEY_MODEL_H_

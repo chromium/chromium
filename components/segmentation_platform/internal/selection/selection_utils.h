@@ -20,4 +20,4 @@ PredictionStatus ResultStateToPredictionStatus(
 }  // namespace selection_utils
 }  // namespace segmentation_platform
 
-#endif  // COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SELECTION_SELECTIONUTILS_H_
+#endif  // COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SELECTION_SELECTION_UTILS_H_

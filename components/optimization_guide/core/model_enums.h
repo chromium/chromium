@@ -85,4 +85,4 @@ enum class PredictionModelStoreModelRemovalReason {
 
 }  // namespace optimization_guide
 
-#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_ENUMS_H_
+#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_ENUMS_H_

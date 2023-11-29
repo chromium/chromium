@@ -156,4 +156,4 @@ class StrikeDatabase : public StrikeDatabaseBase {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_STRIKE_DATABASES_BROWSER_STRIKE_DATABASE_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASES_STRIKE_DATABASE_H_

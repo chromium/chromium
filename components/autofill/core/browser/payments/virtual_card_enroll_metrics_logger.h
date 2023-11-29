@@ -72,4 +72,4 @@ VirtualCardEnrollmentBubbleSource ConvertToVirtualCardEnrollmentBubbleSource(
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_VIRTUAL_CARD_ENROLL_METRICS_LOGGER_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_VIRTUAL_CARD_ENROLL_METRICS_LOGGER_H_

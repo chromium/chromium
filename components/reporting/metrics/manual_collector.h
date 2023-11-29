@@ -45,4 +45,4 @@ class ManualCollector : public CollectorBase {
 };
 }  // namespace reporting
 
-#endif  // COMPONENTS_REPORTING_METRICS_ONE_SHOT_COLLECTOR_H_
+#endif  // COMPONENTS_REPORTING_METRICS_MANUAL_COLLECTOR_H_

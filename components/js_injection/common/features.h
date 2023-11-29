@@ -16,4 +16,4 @@ bool IsJsToBrowserArrayBufferSupported();
 
 }  // namespace js_injection
 
-#endif
+#endif  // COMPONENTS_JS_INJECTION_COMMON_FEATURES_H_

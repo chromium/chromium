@@ -119,4 +119,4 @@ class MockDevicePickerObserver
 
 }  // namespace global_media_controls::test
 
-#endif  // COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_MOCK_DEVICE_SERVICE_H_
+#endif  // COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_TEST_MOCK_DEVICE_SERVICE_H_

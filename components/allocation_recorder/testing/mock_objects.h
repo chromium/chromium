@@ -48,4 +48,4 @@ struct AllocationRecorderHolderMock
 
 }  // namespace allocation_recorder::testing::crash_handler
 
-#endif
+#endif  // COMPONENTS_ALLOCATION_RECORDER_TESTING_MOCK_OBJECTS_H_

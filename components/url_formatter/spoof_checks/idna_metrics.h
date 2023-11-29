@@ -16,4 +16,4 @@ enum class IDNA2008DeviationCharacter {
   kZeroWidthNonJoiner,
 };
 
-#endif
+#endif  // COMPONENTS_URL_FORMATTER_SPOOF_CHECKS_IDNA_METRICS_H_

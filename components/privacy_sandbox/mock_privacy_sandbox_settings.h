@@ -127,4 +127,4 @@ class MockPrivacySandboxSettings
 
 }  // namespace privacy_sandbox_test_util
 
-#endif  // COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_TEST_UTIL_H_
+#endif  // COMPONENTS_PRIVACY_SANDBOX_MOCK_PRIVACY_SANDBOX_SETTINGS_H_

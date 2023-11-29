@@ -81,4 +81,4 @@ class DeskModelWrapper : public DeskModel {
 
 }  // namespace desks_storage
 
-#endif  // COMPONENTS_DESKS_STORAGE_CORE_LOCAL_DESK_DATA_MANAGER_H_
+#endif  // COMPONENTS_DESKS_STORAGE_CORE_DESK_MODEL_WRAPPER_H_

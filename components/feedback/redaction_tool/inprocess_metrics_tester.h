@@ -31,4 +31,4 @@ class InprocessMetricsTester : public MetricsTester {
 
 }  // namespace redaction
 
-#endif
+#endif  // COMPONENTS_FEEDBACK_REDACTION_TOOL_INPROCESS_METRICS_TESTER_H_

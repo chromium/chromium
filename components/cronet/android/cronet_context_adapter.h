@@ -155,4 +155,4 @@ class CronetContextAdapter : public CronetContext::Callback {
 
 }  // namespace cronet
 
-#endif  // COMPONENTS_CRONET_ANDROID_CRONET_ADAPTER_H_
+#endif  // COMPONENTS_CRONET_ANDROID_CRONET_CONTEXT_ADAPTER_H_

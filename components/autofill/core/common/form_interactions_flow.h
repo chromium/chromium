@@ -30,4 +30,4 @@ struct FormInteractionCounts {
 
 }  // namespace autofill
 
-#endif
+#endif  // COMPONENTS_AUTOFILL_CORE_COMMON_FORM_INTERACTIONS_FLOW_H_

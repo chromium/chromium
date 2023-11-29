@@ -93,4 +93,4 @@ class HttpsOnlyModeEnforcelist {
 
 }  // namespace security_interstitials
 
-#endif  // COMPONENTS_SECURITY_INTERSTITIALS_CORE_HTTPS_ONLY_MODE_ALLOWLIST_H_
+#endif  // COMPONENTS_SECURITY_INTERSTITIALS_CORE_HTTPS_ONLY_MODE_ENFORCELIST_H_
