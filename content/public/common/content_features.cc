@@ -382,7 +382,7 @@ BASE_FEATURE(kFedCmError, "FedCmError", base::FEATURE_ENABLED_BY_DEFAULT);
 // the RP site.
 BASE_FEATURE(kFedCmExemptIdpWithThirdPartyCookies,
              "FedCmExemptIdpWithThirdPartyCookies",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables usage of the FedCM IdP Registration API.
 BASE_FEATURE(kFedCmIdPRegistration,
