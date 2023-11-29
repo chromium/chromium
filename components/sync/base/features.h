@@ -201,6 +201,10 @@ BASE_DECLARE_FEATURE(kSyncSessionOnVisibilityChanged);
 // autofill. See crbug.com/1435431 for details.
 BASE_DECLARE_FEATURE(kSyncDecoupleAddressPaymentSettings);
 
+// If enabled, sync-the-transport will auto-start (avoid deferring startup) if
+// sync metadata isn't available (i.e. initial sync never completed).
+BASE_DECLARE_FEATURE(kSyncAlwaysForceImmediateStartIfTransportDataMissing);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_

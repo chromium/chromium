@@ -390,11 +390,6 @@ class SyncServiceImpl : public SyncService,
   // type.
   void MaybeRecordTrustedVaultHistograms();
 
-  // Whether sync-the-feature should be enabled without further action (e.g.
-  // ChromeOS Ash). In practice it means SyncRequested and FirstSetupComplete
-  // are set automatically.
-  bool ShouldAutoStartSyncFeature() const;
-
   // Clean up download status recorder.
   void OnDownloadStatusRecorderFinished();
 

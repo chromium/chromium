@@ -182,6 +182,15 @@ void LogWaitingForUpdatesReasonIfNeeded(
   }
 }
 
+bool ShouldForceImmediateStartIfTransportDataMissing() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return true;
+#else
+  return base::FeatureList::IsEnabled(
+      kSyncAlwaysForceImmediateStartIfTransportDataMissing);
+#endif
+}
+
 }  // namespace
 
 SyncServiceImpl::InitParams::InitParams() = default;
@@ -353,12 +362,11 @@ void SyncServiceImpl::Initialize() {
   }
 
   if (IsEngineAllowedToRun()) {
-    // TODO(crbug.com/1374718): Consider simplifying the logic and always
-    // triggering an immediate start if transport data is missing.
     const bool force_immediate_start =
         !sync_client_->GetSyncApiComponentFactory()
              ->HasTransportDataIncludingFirstSync() &&
-        ShouldAutoStartSyncFeature();
+        (IsLocalSyncEnabled() ||
+         ShouldForceImmediateStartIfTransportDataMissing());
 
     if (force_immediate_start) {
       // Sync never initialized before on this profile, so let's try immediately
@@ -2308,16 +2316,6 @@ void SyncServiceImpl::OnSetupInProgressHandleDestroyed() {
 
   DVLOG(2) << "Notify observers OnSetupInProgressHandleDestroyed";
   NotifyObservers();
-}
-
-// TODO(crbug.com/1445931): If FirstSetupComplete is set earlier, in
-// Initialize(), this method can be inlined.
-bool SyncServiceImpl::ShouldAutoStartSyncFeature() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return true;
-#else
-  return IsLocalSyncEnabled();
-#endif
 }
 
 void SyncServiceImpl::OnDownloadStatusRecorderFinished() {
