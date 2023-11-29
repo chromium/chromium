@@ -1124,12 +1124,19 @@ bool Node::ShouldSkipMarkingStyleDirty() const {
   if (Element* parent = GetStyleRecalcParent()) {
     return !parent->GetComputedStyle();
   }
-  // If this is the root element, and it does not have a computed style, we
-  // still need to mark it for style recalc since it may change from
-  // display:none. Otherwise, the node is not in the flat tree, and we can
-  // skip marking it dirty.
-  return !GetComputedStyle() && GetDocument().documentElement() &&
-         this != GetDocument().documentElement();
+  if (const Element* element = DynamicTo<Element>(this)) {
+    const Element* root_element = GetDocument().documentElement();
+    if (!root_element || element == root_element) {
+      // This is the root element, or we are about to insert the root element.
+      // Should always allow marking it dirty.
+      return false;
+    }
+    // This is an element outside the flat tree without a parent. Should only
+    // mark dirty if it has an ensured style.
+    return !element->GetComputedStyle();
+  }
+  // Text nodes outside the flat tree do not need to be marked for style recalc.
+  return true;
 }
 
 void Node::MarkAncestorsWithChildNeedsStyleRecalc() {
@@ -1157,14 +1164,15 @@ void Node::MarkAncestorsWithChildNeedsStyleRecalc() {
     return;
   // If we are outside the flat tree we should not update the recalc root
   // because we should not traverse those nodes from StyleEngine::RecalcStyle().
-  if (const ComputedStyle* current_style = GetComputedStyle()) {
-    if (current_style->IsEnsuredOutsideFlatTree())
-      return;
-  } else if (style_parent) {
-    if (const auto* parent_style = style_parent->GetComputedStyle()) {
-      if (parent_style->IsEnsuredOutsideFlatTree())
-        return;
-    }
+  const ComputedStyle* current_style = nullptr;
+  if (Element* element = DynamicTo<Element>(this)) {
+    current_style = element->GetComputedStyle();
+  }
+  if (!current_style && style_parent) {
+    current_style = style_parent->GetComputedStyle();
+  }
+  if (current_style && current_style->IsEnsuredOutsideFlatTree()) {
+    return;
   }
   // If we're in a locked subtree, then we should not update the style recalc
   // roots. These would be updated when we commit the lock. If we have locked
@@ -3222,17 +3230,19 @@ bool Node::HasMediaControlAncestor() const {
 }
 
 void Node::FlatTreeParentChanged() {
-  if (!isConnected())
+  if (!isConnected()) {
     return;
+  }
   DCHECK(IsSlotable());
-
-  const ComputedStyle* style = GetComputedStyle();
+  const ComputedStyle* style =
+      IsElementNode() ? To<Element>(this)->GetComputedStyle() : nullptr;
   bool detach = false;
   if (ShouldSkipMarkingStyleDirty()) {
     // If we should not mark the node dirty in the new flat tree position,
     // detach to make sure all computes styles, layout objects, and dirty
     // flags are cleared.
-    detach = IsDirtyForStyleRecalc() || ChildNeedsStyleRecalc() || style;
+    detach = IsDirtyForStyleRecalc() || ChildNeedsStyleRecalc() || style ||
+             GetLayoutObject();
   }
   if (!detach) {
     // We are moving a node with ensured computed style into the flat tree.
