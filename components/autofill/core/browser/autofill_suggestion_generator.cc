@@ -561,24 +561,50 @@ PopupItemId GetProfileSuggestionPopupItemId(
   }
 }
 
-// Creates a specific granular filling label when the `last_filling_granularity`
-// for a certain form was group filling. This is done to give users feedback
-// about the filling behaviour.
-std::optional<Suggestion::Text> GetGranularFillingLabel(
+// Returns the number of occurrences of a certain `Suggestion::main_text` and
+// its granular filling label. Used to decide whether or not a differentiating
+// label should be added. If the concatenation of `Suggestion::main_text` and
+// its respective granular filling label is unique, there is no need for a
+// differentiating label.
+std::map<std::u16string, size_t>
+GetNumberOfSuggestionMainTextAndGranularFillingLabelOcurrences(
+    base::span<const Suggestion> suggestions,
+    base::span<const std::u16string> suggestions_granular_filling_labels) {
+  CHECK_EQ(suggestions_granular_filling_labels.size(), suggestions.size());
+  // Count the occurrences of the concatenation between `Suggestion::main_text`
+  // and its granular filling label.
+  std::map<std::u16string, size_t> main_text_and_granular_filling_label_count;
+  for (size_t i = 0; i < suggestions.size(); ++i) {
+    ++main_text_and_granular_filling_label_count
+        [suggestions[i].main_text.value +
+         suggestions_granular_filling_labels[i]];
+  }
+  return main_text_and_granular_filling_label_count;
+}
+
+// Creates a specific granular filling label  when the
+// `last_filling_granularity` for a certain form was group filling. This is done
+// to give users feedback about the filling behaviour. Returns an empty string
+// when no granular filling label needs to be applied.
+std::u16string GetGranularFillingLabel(
     absl::optional<ServerFieldTypeSet> optional_last_targeted_fields,
-    FieldTypeGroup triggering_field_type_group) {
+    ServerFieldType triggering_field_type) {
   if (!optional_last_targeted_fields ||
       !AreFieldsGranularFillingGroup(*optional_last_targeted_fields)) {
-    return absl::nullopt;
+    return std::u16string();
   }
-  switch (triggering_field_type_group) {
+  // TODO(crbug.com/1459990): Depending on the `optional_last_targeted_fields`
+  // and the `triggering_field_type`, add specific profile information. Such as
+  // ADDRESS_HOME_LINE1 when group filling and the `triggering_field_type` is
+  // not `ADDRESS_HOME_LINE1` nor `ADDRESS_HOME_LINE2`.
+  switch (GroupTypeOfServerFieldType(triggering_field_type)) {
     case FieldTypeGroup::kName:
-      return Suggestion::Text(l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_FILL_NAME_GROUP_POPUP_OPTION_SELECTED));
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_FILL_NAME_GROUP_POPUP_OPTION_SELECTED);
     case FieldTypeGroup::kCompany:
     case FieldTypeGroup::kAddress:
-      return Suggestion::Text(l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_FILL_ADDRESS_GROUP_POPUP_OPTION_SELECTED));
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_FILL_ADDRESS_GROUP_POPUP_OPTION_SELECTED);
     case FieldTypeGroup::kNoGroup:
     case FieldTypeGroup::kPhone:
     case FieldTypeGroup::kEmail:
@@ -589,18 +615,15 @@ std::optional<Suggestion::Text> GetGranularFillingLabel(
     case FieldTypeGroup::kUnfillable:
     case FieldTypeGroup::kBirthdateField:
     case FieldTypeGroup::kIban:
-      return absl::nullopt;
+      return std::u16string();
   }
+  return std::u16string();
 }
 
-// Returns for each profile in `profiles` label `Suggestion::Text`s to be used
-// as a secondary text in the corresponding suggestion bubble. The last label in
-// the label's vector is used to differentiate profiles, while the others are a
-// granular filling specific label and an optional separator label ("-"), which
-// exists when both a granular filling and a differentiating label exists. The
-// Granular filling label is added depending on `optional_last_targeted_fields`
-// and the `trigger_field_type`. See `GetProfileSuggestionLabels()` for details.
-std::vector<std::vector<Suggestion::Text>> GetProfileSuggestionLabels(
+// Returns for each profile in `profiles` a differentiating label string to be
+// used as a secondary text in the corresponding suggestion bubble.
+// `field_types` the types of the fields that will be filled by the suggestion.
+std::vector<std::u16string> GetProfileSuggestionLabels(
     const std::vector<const AutofillProfile*>& profiles,
     const ServerFieldTypeSet& field_types,
     ServerFieldType trigger_field_type,
@@ -639,32 +662,90 @@ std::vector<std::vector<Suggestion::Text>> GetProfileSuggestionLabels(
                                                             nullptr);
   }
 
-  std::optional<Suggestion::Text> granular_filling_label =
-      base::FeatureList::IsEnabled(features::kAutofillGranularFillingAvailable)
-          ? GetGranularFillingLabel(
-                optional_last_targeted_fields,
-                GroupTypeOfServerFieldType(trigger_field_type))
-          : absl::nullopt;
-  // Creates a list of `Suggestion::Text` to be used as labels.
+  return differentiating_labels;
+}
+
+// For each profile in `profiles`, returns a vector of `Suggestion::labels` to
+// be applied. Takes into account the `last_targeted_fields` and the
+// `trigger_field_type` to add specific granular filling labels. Optionally adds
+// a differentiating label if the Suggestion::main_text + granular filling label
+// is not unique.
+std::vector<std::vector<Suggestion::Text>>
+CreateSuggestionLabelsWithGranularFillingDetails(
+    base::span<const Suggestion> suggestions,
+    const std::vector<const AutofillProfile*>& profiles,
+    const ServerFieldTypeSet& field_types,
+    absl::optional<ServerFieldTypeSet> last_targeted_fields,
+    ServerFieldType trigger_field_type,
+    const std::string& app_locale) {
+  // Get a granular filling label to be applied to each suggestion.
+  const std::vector<std::u16string> granular_filling_labels(
+      suggestions.size(),
+      GetGranularFillingLabel(last_targeted_fields, trigger_field_type));
+
+  const std::vector<std::u16string> differentiating_labels =
+      GetProfileSuggestionLabels(profiles, field_types, trigger_field_type,
+                                 last_targeted_fields, app_locale);
+
+  const std::map<std::u16string, size_t>
+      main_text_and_granular_filling_label_count =
+          GetNumberOfSuggestionMainTextAndGranularFillingLabelOcurrences(
+              suggestions, granular_filling_labels);
+
   std::vector<std::vector<Suggestion::Text>> suggestions_labels;
-  for (const std::u16string& differentiating_label : differentiating_labels) {
-    suggestions_labels.emplace_back();
-    // Add granular filling specific labels if it exists.
-    if (granular_filling_label) {
-      suggestions_labels.back().emplace_back(
-          std::move(*granular_filling_label));
-      // Add a separator if the `differentiating_label` is not empty.
-      // This will lead to a suggestion rendered as:
-      // "Fill address - Sansa Stark".
-      if (!differentiating_label.empty()) {
-        suggestions_labels.back().emplace_back(u"-");
-      }
+  suggestions_labels.reserve(suggestions.size());
+  for (size_t i = 0; i < suggestions.size(); ++i) {
+    const std::u16string& granular_filling_label = granular_filling_labels[i];
+    const std::u16string& differentiating_label = differentiating_labels[i];
+
+    if (granular_filling_label.empty() && differentiating_label.empty()) {
+      // No labels to be added.
+      suggestions_labels.emplace_back();
+      continue;
     }
-    if (!differentiating_label.empty()) {
+
+    if (granular_filling_label.empty() && !differentiating_label.empty()) {
+      // If only a differentiating label exists, add it and continue.
+      //  _________________________
+      // | Jon snow                |
+      // | Winterfel               |
+      // |_________________________|
+      suggestions_labels.push_back({Suggestion::Text(differentiating_label)});
+      continue;
+    }
+
+    if (!granular_filling_label.empty() && differentiating_label.empty()) {
+      // If only a granular filling label label exists, add and continue.
+      //  _________________________
+      // | Jon snow                |
+      // | Fill address            |
+      // |_________________________|
+      suggestions_labels.push_back({Suggestion::Text(granular_filling_label)});
+      continue;
+    }
+
+    // Both labels exist, add the granular filling label first.
+    suggestions_labels.push_back({Suggestion::Text(granular_filling_label)});
+
+    // Check whether main_text + differentiating is unique.
+    auto main_text_and_granular_filling_label_count_iterator =
+        main_text_and_granular_filling_label_count.find(
+            suggestions[i].main_text.value + granular_filling_label);
+    CHECK(main_text_and_granular_filling_label_count_iterator !=
+          main_text_and_granular_filling_label_count.end());
+    const bool needs_differentiating_label =
+        main_text_and_granular_filling_label_count_iterator->second > 1;
+    if (needs_differentiating_label) {
+      // if main_text + differentiating labels is not unique, add the
+      // differentiating label.
+      //  _________________________________
+      // | 81274                           |
+      // | Fill address - Winterfel        |
+      // |_________________________________|
+      suggestions_labels.back().emplace_back(u"-");
       suggestions_labels.back().emplace_back(differentiating_label);
     }
   }
-
   return suggestions_labels;
 }
 
@@ -672,8 +753,8 @@ std::vector<std::vector<Suggestion::Text>> GetProfileSuggestionLabels(
 // suggestion bubble, and deduplicates suggestions having the same main text
 // and label. For each vector in `labels`, the last value is used to
 // differentiate profiles, while the others are granular filling specific
-// labels, see `GetGranularFillingLabel()`. In the case where `labels` is empty,
-// we have no differentiating label for the profile.
+// labels, see `GetGranularFillingLabel()`. In the case where `labels` is
+// empty, we have no differentiating label for the profile.
 void AssignLabelsAndDeduplicate(
     std::vector<Suggestion>& suggestions,
     const std::vector<std::vector<Suggestion::Text>>& labels,
@@ -971,8 +1052,9 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
 
   AssignLabelsAndDeduplicate(
       suggestions,
-      GetProfileSuggestionLabels(profiles, field_types, trigger_field_type,
-                                 last_targeted_fields, app_locale),
+      CreateSuggestionLabelsWithGranularFillingDetails(
+          suggestions, profiles, field_types, last_targeted_fields,
+          trigger_field_type, app_locale),
       app_locale);
 
   // Add devtools test addresses suggestion if it exists. A suggestion will
