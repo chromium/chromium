@@ -261,6 +261,9 @@ void Av1VideoEncoder::Initialize(VideoCodecProfile profile,
 
   if (options.content_hint == ContentHint::Screen) {
     CALL_AOM_CONTROL(AV1E_SET_TUNE_CONTENT, AOM_CONTENT_SCREEN);
+    CALL_AOM_CONTROL(AV1E_SET_ENABLE_PALETTE, 1);
+  } else {
+    CALL_AOM_CONTROL(AV1E_SET_ENABLE_PALETTE, 0);
   }
 
   // Keep in mind that AV1E_SET_TILE_[COLUMNS|ROWS] uses log2 units.
