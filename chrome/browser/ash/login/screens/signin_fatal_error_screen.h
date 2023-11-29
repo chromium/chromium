@@ -26,11 +26,11 @@ class SignInFatalErrorScreen : public BaseScreen {
 
   // Sets the error information to be shown on the screen
   enum class Error {
-    UNKNOWN = 0,
-    SCRAPED_PASSWORD_VERIFICATION_FAILURE = 1,
-    INSECURE_CONTENT_BLOCKED = 2,
-    MISSING_GAIA_INFO = 3,
-    CUSTOM = 4,
+    kUnknown = 0,
+    kScrapedPasswordVerificationFailure = 1,
+    kInsecureContentBlocked = 2,
+    kMissingGaiaInfo = 3,
+    kCustom = 4,
   };
 
   explicit SignInFatalErrorScreen(base::WeakPtr<SignInFatalErrorView> view,
@@ -52,7 +52,7 @@ class SignInFatalErrorScreen : public BaseScreen {
   void HideImpl() override;
   void OnUserAction(const base::Value::List& args) override;
 
-  Error error_state_ = Error::UNKNOWN;
+  Error error_state_ = Error::kUnknown;
   base::Value::Dict extra_error_info_;
 
   base::WeakPtr<SignInFatalErrorView> view_;
