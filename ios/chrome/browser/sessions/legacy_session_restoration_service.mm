@@ -8,10 +8,12 @@
 #import "base/containers/contains.h"
 #import "base/functional/callback.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/sessions/session_migration.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/sessions/session_service_ios.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/web/session_state/web_session_state_cache.h"
 #import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/session/proto/storage.pb.h"
 #import "ios/web/public/web_state.h"
@@ -20,10 +22,12 @@ LegacySessionRestorationService::LegacySessionRestorationService(
     bool is_pinned_tabs_enabled,
     const base::FilePath& storage_path,
     SessionServiceIOS* session_service_ios,
+    WebSessionStateCache* web_session_state_cache,
     sessions::TabRestoreService* tab_restore_service)
     : is_pinned_tabs_enabled_(is_pinned_tabs_enabled),
       storage_path_(storage_path),
       session_service_ios_(session_service_ios),
+      web_session_state_cache_(web_session_state_cache),
       tab_restore_service_(tab_restore_service) {
   DCHECK(session_service_ios_);
 }
@@ -37,6 +41,8 @@ void LegacySessionRestorationService::Shutdown() {
 
   [session_service_ios_ shutdown];
   session_service_ios_ = nil;
+
+  web_session_state_cache_ = nil;
 }
 
 void LegacySessionRestorationService::AddObserver(
@@ -140,6 +146,18 @@ void LegacySessionRestorationService::InvokeClosureWhenBackgroundProcessingDone(
     base::OnceClosure closure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   [session_service_ios_ shutdownWithClosure:std::move(closure)];
+}
+
+void LegacySessionRestorationService::PurgeUnassociatedData(
+    base::OnceClosure closure) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (web_session_state_cache_) {
+    [web_session_state_cache_
+        purgeUnassociatedDataWithCompletion:std::move(closure)];
+  } else {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(closure));
+  }
 }
 
 void LegacySessionRestorationService::WillStartSessionRestoration(

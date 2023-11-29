@@ -91,3 +91,9 @@ void TestSessionRestorationService::InvokeClosureWhenBackgroundProcessingDone(
     base::OnceClosure closure) {
   std::move(closure).Run();
 }
+
+void TestSessionRestorationService::PurgeUnassociatedData(
+    base::OnceClosure closure) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                           std::move(closure));
+}

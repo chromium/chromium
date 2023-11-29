@@ -217,6 +217,7 @@ source_set("legacy_session_restoration_service") {
     ":session_service",
     "//base",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/web/session_state",
     "//ios/web/public",
     "//ios/web/public/session",
     "//ios/web/public/session/proto",
@@ -238,6 +239,8 @@ source_set("session_restoration_service_factory") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/tabs/model:features",
+    "//ios/chrome/browser/web:feature_flags",
+    "//ios/chrome/browser/web/session_state",
     "//ios/web/common:features",
   ]
 }

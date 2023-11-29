@@ -122,9 +122,6 @@
 #import "ios/chrome/browser/ui/webui/chrome_web_ui_ios_controller_factory.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/browser/web/certificate_policy_app_agent.h"
-#import "ios/chrome/browser/web/features.h"
-#import "ios/chrome/browser/web/session_state/web_session_state_cache.h"
-#import "ios/chrome/browser/web/session_state/web_session_state_cache_factory.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/app_group/app_group_field_trial_version.h"
 #import "ios/chrome/common/app_group/app_group_utils.h"
@@ -1034,11 +1031,13 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   [[DeferredInitializationRunner sharedInstance]
       enqueueBlockNamed:kPurgeWebSessionStates
                   block:^{
-                    if (web::UseNativeSessionRestorationCache()) {
-                      WebSessionStateCache* cache =
-                          WebSessionStateCacheFactory::GetForBrowserState(
-                              self.appState.mainBrowserState);
-                      [cache purgeUnassociatedData];
+                    ChromeBrowserState* browserState =
+                        self.appState.mainBrowserState;
+
+                    if (browserState) {
+                      SessionRestorationServiceFactory::GetForBrowserState(
+                          self.appState.mainBrowserState)
+                          ->PurgeUnassociatedData(base::DoNothing());
                     }
                   }];
 }

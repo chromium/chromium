@@ -25,13 +25,16 @@
 #import "ios/chrome/browser/sessions/session_service_ios.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
 #import "ios/chrome/browser/sessions/test_session_restoration_observer.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/web/chrome_web_client.h"
-#import "ios/chrome/browser/web/features.h"
+#import "ios/chrome/browser/web/session_state/web_session_state_cache.h"
+#import "ios/chrome/browser/web/session_state/web_session_state_cache_factory.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_tab_helper.h"
 #import "ios/web/common/user_agent.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -49,6 +52,10 @@
 // To get access to web::features::kEnableSessionSerializationOptimizations.
 // TODO(crbug.com/1383087): remove once the feature is fully launched.
 #import "ios/web/common/features.h"
+
+// To get access to web::UseNativeSessionRestorationCache().
+// TODO(crbug.com/1383087): remove once the feature is fully launched.
+#import "ios/chrome/browser/web/features.h"
 
 namespace {
 
@@ -285,12 +292,19 @@ class LegacySessionRestorationServiceTest : public PlatformTest {
         initWithSaveDelay:kSaveDelay
                taskRunner:base::SequencedTaskRunner::GetCurrentDefault()];
 
+    WebSessionStateCache* web_session_state_cache = nil;
+    if (web::UseNativeSessionRestorationCache()) {
+      web_session_state_cache =
+          WebSessionStateCacheFactory::GetForBrowserState(browser_state_.get());
+    }
+
     // Create the service, force enabling the pinned tab support (since
     // the code using the `is_pinned_tabs_enabled` is tested by the
     // deserialization code and does not need to be tested again here).
     service_ = std::make_unique<LegacySessionRestorationService>(
         /*is_pinned_tabs_enabled=*/true, browser_state_->GetStatePath(),
-        session_service_ios, /*tab_restore_service=*/nullptr);
+        session_service_ios, web_session_state_cache,
+        /*tab_restore_service=*/nullptr);
   }
 
   ~LegacySessionRestorationServiceTest() override { service_->Shutdown(); }
@@ -1026,4 +1040,70 @@ TEST_F(LegacySessionRestorationServiceTest, DeleteDataForDiscardedSessions) {
   EXPECT_EQ(DeletedFiles(), ExpectedStorageFilesForWebStates(
                                 storage_path(), kIdentifier0,
                                 /*expect_session_metadata=*/true, {}));
+}
+
+// Tests that PurgeUnassociatedData() can be called at any point and
+// delete any native WKWebView sessions that are not associated to a
+// Browser's WebState.
+TEST_F(LegacySessionRestorationServiceTest, PurgeUnassociatedData) {
+  // If the native session restoration cache is not used, this method
+  // does nothing.
+  if (!web::UseNativeSessionRestorationCache()) {
+    return;
+  }
+
+  TestBrowser browser = TestBrowser(
+      browser_state(), std::make_unique<TestWebStateListDelegate>());
+
+  // PurgeUnassociatedData requires the Browser to be registered with
+  // the BrowserList (as it uses it to detect all the Browsers).
+  BrowserListFactory::GetForBrowserState(browser_state())->AddBrowser(&browser);
+
+  service()->SetSessionID(&browser, kIdentifier0);
+
+  // Insert a few WebStage in the Browser and wait for the changes to
+  // automatically be saved (this is because loading the pages will
+  // take time and may cause automatically saving the session).
+  InsertTabsWithUrls(browser, base::make_span(kURLs));
+  WaitForSessionSaveComplete();
+
+  EXPECT_EQ(ModifiedFiles(), ExpectedStorageFilesForBrowser(
+                                 storage_path(), kIdentifier0, &browser));
+
+  SnapshotFiles();
+
+  // Close a few tabs, check that the native session files have not been
+  // deleted yet. Record the path to the native session files for those
+  // closed WebStates.
+  FilePathSet native_session_paths;
+  while (browser.GetWebStateList()->count() > 1) {
+    std::unique_ptr<web::WebState> web_state =
+        browser.GetWebStateList()->DetachWebStateAt(0);
+
+    native_session_paths.insert(
+        storage_path()
+            .Append(kLegacyWebSessionsDirname)
+            .Append(base::StringPrintf(
+                "%08u", web_state->GetUniqueIdentifier().identifier())));
+  }
+
+  // Check that even after a session save, the native session files have
+  // not been deleted.
+  WaitForSessionSaveComplete();
+  EXPECT_EQ(DeletedFiles(), FilePathSet{});
+
+  SnapshotFiles();
+
+  // Check that calling PurgeUnassociatedData() delete the native session
+  // files for the closed tabs, and keep those for the other tabs.
+  base::RunLoop run_loop;
+  service()->PurgeUnassociatedData(run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_EQ(DeletedFiles(), native_session_paths);
+
+  // Unregister the Browser before destruction.
+  BrowserListFactory::GetForBrowserState(browser_state())
+      ->RemoveBrowser(&browser);
+  service()->Disconnect(&browser);
 }

@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 
 class ChromeBrowserState;
@@ -41,10 +42,9 @@ class WebState;
 // short delay.
 - (void)removeSessionStateDataForWebState:(const web::WebState*)webState;
 
-// Removes any persisted session data for tabs that no longer exist.  Usually
-// this happens because of a crash, but may also be used internally if any tabs
-// are removed when `_delayRemove` is true.
-- (void)purgeUnassociatedData;
+// Removes any persisted session data for tabs that no longer exist and
+// invokes `closure` on the calling sequence when the operation completes.
+- (void)purgeUnassociatedDataWithCompletion:(base::OnceClosure)closure;
 
 // Delay any removes triggered by -removeSessionStateDataForWebState.  This is
 // useful when doing a 'Close All' -> 'Undo' in the tab grid.

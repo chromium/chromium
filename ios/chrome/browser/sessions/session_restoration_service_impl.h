@@ -59,6 +59,7 @@ class SessionRestorationServiceImpl final : public SessionRestorationService {
                                       base::OnceClosure closure) final;
   void InvokeClosureWhenBackgroundProcessingDone(
       base::OnceClosure closure) final;
+  void PurgeUnassociatedData(base::OnceClosure closure) final;
 
  private:
   // Helper type used to record information about a single WebStateList.

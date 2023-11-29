@@ -188,11 +188,9 @@ void PurgeCacheOnBackgroundSequenceExcept(
   return data;
 }
 
-- (void)purgeUnassociatedData {
+- (void)purgeUnassociatedDataWithCompletion:(base::OnceClosure)closure {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  if (!_taskRunner)
-    return;
-  [self purgeCacheExcept:[self liveSessionIDs]];
+  [self purgeCacheExcept:[self liveSessionIDs] closure:std::move(closure)];
 }
 
 - (void)removeSessionStateDataForWebState:(const web::WebState*)webState {
@@ -226,6 +224,11 @@ void PurgeCacheOnBackgroundSequenceExcept(
 }
 
 #pragma mark - Private
+
+- (void)purgeUnassociatedData {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  [self purgeUnassociatedDataWithCompletion:base::DoNothing()];
+}
 
 // Returns a set of all known tab ids.
 - (std::set<std::string>)liveSessionIDs {
@@ -275,19 +278,25 @@ void PurgeCacheOnBackgroundSequenceExcept(
 
 // Deletes any files from the session cache directory that don't exist in
 // `liveSessionIDs`.
-- (void)purgeCacheExcept:(std::set<std::string>)liveSessionIDs {
+- (void)purgeCacheExcept:(std::set<std::string>)liveSessionIDs
+                 closure:(base::OnceClosure)closure {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  if (!_taskRunner)
+  if (!_taskRunner) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(closure));
     return;
+  }
 
   std::set<base::FilePath> filesToKeep;
   for (const std::string& sessionID : liveSessionIDs) {
     filesToKeep.insert(_cacheDirectory.Append(sessionID));
   }
 
-  _taskRunner->PostTask(FROM_HERE,
-                        base::BindOnce(&PurgeCacheOnBackgroundSequenceExcept,
-                                       _cacheDirectory, filesToKeep));
+  _taskRunner->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(&PurgeCacheOnBackgroundSequenceExcept, _cacheDirectory,
+                     filesToKeep),
+      std::move(closure));
 }
 
 @end

@@ -93,6 +93,10 @@ class SessionRestorationService : public KeyedService {
   // specific sequence.
   virtual void InvokeClosureWhenBackgroundProcessingDone(
       base::OnceClosure closure) = 0;
+
+  // Removes any persisted data that is no longer needed and invokes
+  // `closure` on the calling sequence when done.
+  virtual void PurgeUnassociatedData(base::OnceClosure closure) = 0;
 };
 
 #endif  // IOS_CHROME_BROWSER_SESSIONS_SESSION_RESTORATION_SERVICE_H_
