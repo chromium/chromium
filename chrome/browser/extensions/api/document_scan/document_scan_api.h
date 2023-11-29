@@ -31,6 +31,27 @@ class DocumentScanScanFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("documentScan.scan", DOCUMENT_SCAN_SCAN)
 };
 
+class DocumentScanGetScannerListFunction : public ExtensionFunction {
+ public:
+  DocumentScanGetScannerListFunction();
+  DocumentScanGetScannerListFunction(
+      const DocumentScanGetScannerListFunction&) = delete;
+  DocumentScanGetScannerListFunction& operator=(
+      const DocumentScanGetScannerListFunction&) = delete;
+
+ protected:
+  ~DocumentScanGetScannerListFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  void OnScannerListReceived(
+      api::document_scan::GetScannerListResponse response);
+  DECLARE_EXTENSION_FUNCTION("documentScan.getScannerList",
+                             DOCUMENT_SCAN_GETSCANNERLIST)
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_DOCUMENT_SCAN_DOCUMENT_SCAN_API_H_

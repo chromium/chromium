@@ -157,5 +157,13 @@ namespace documentScan {
     // |callback| : Called with the result and data from the scan.
     [supportsPromises] static void scan(ScanOptions options,
                                         ScanCallback callback);
+
+    // Gets the list of available scanners.  On success, the list will be
+    // sent to the callback.
+    // |filter| : <code>DeviceFilter</code> indicating which types of scanners
+    // should be returned.
+    // |callback| : Called with the result and list of scanners.
+    [nodoc, supportsPromises] static void getScannerList(
+        DeviceFilter filter, GetScannerListCallback callback);
   };
 };

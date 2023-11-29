@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/extensions/api/document_scan/document_scan_api_handler.h"
+#include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -68,6 +69,32 @@ void DocumentScanScanFunction::OnScanCompleted(
   }
 
   Respond(WithArguments(scan_results->ToValue()));
+}
+
+DocumentScanGetScannerListFunction::DocumentScanGetScannerListFunction() =
+    default;
+DocumentScanGetScannerListFunction::~DocumentScanGetScannerListFunction() =
+    default;
+
+ExtensionFunction::ResponseAction DocumentScanGetScannerListFunction::Run() {
+  auto params = api::document_scan::GetScannerList::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  DocumentScanAPIHandler::Get(browser_context())
+      ->GetScannerList(
+          ChromeExtensionFunctionDetails(this).GetNativeWindowForUI(),
+          extension_, std::move(params->filter),
+          base::BindOnce(
+              &DocumentScanGetScannerListFunction::OnScannerListReceived,
+              this));
+
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void DocumentScanGetScannerListFunction::OnScannerListReceived(
+    api::document_scan::GetScannerListResponse response) {
+  Respond(ArgumentList(
+      api::document_scan::GetScannerList::Results::Create(response)));
 }
 
 }  // namespace extensions

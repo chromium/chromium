@@ -18816,6 +18816,7 @@ Called by update_extension_histograms.py.-->
   <int value="1847" label="AUTOTESTPRIVATE_OVERRIDEORCARESPONSE"/>
   <int value="1848" label="ODFSCONFIGPRIVATE_GETMOUNT"/>
   <int value="1849" label="ODFSCONFIGPRIVATE_GETACCOUNTRESTRICTIONS"/>
+  <int value="1850" label="DOCUMENT_SCAN_GETSCANNERLIST"/>
 </enum>
 
 <enum name="ExtensionInProgressRequestState">

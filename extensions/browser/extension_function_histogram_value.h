@@ -1909,7 +1909,7 @@ enum HistogramValue {
   AUTOTESTPRIVATE_OVERRIDEORCARESPONSE = 1847,
   ODFSCONFIGPRIVATE_GETMOUNT = 1848,
   ODFSCONFIGPRIVATE_GETACCOUNTRESTRICTIONS = 1849,
-
+  DOCUMENT_SCAN_GETSCANNERLIST = 1850,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY
