@@ -5,6 +5,7 @@
 #include "chromeos/ui/frame/caption_buttons/frame_center_button.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "base/i18n/rtl.h"
 #include "base/numerics/safe_conversions.h"
@@ -49,7 +50,9 @@ constexpr float kDefaultHighlightOpacityForDark = 0.20f;
 }  // namespace
 
 FrameCenterButton::FrameCenterButton(PressedCallback callback)
-    : FrameCaptionButton(callback, views::CAPTION_BUTTON_ICON_CENTER, HTMENU) {
+    : FrameCaptionButton(std::move(callback),
+                         views::CAPTION_BUTTON_ICON_CENTER,
+                         HTMENU) {
   SetAccessibleName(l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CENTER));
   background_color_changed_subscription_ = AddBackgroundColorChangedCallback(
       base::BindRepeating(&FrameCenterButton::OnBackgroundColorChanged,
