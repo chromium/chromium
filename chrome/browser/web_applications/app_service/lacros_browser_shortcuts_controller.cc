@@ -170,6 +170,7 @@ void LacrosBrowserShortcutsController::InitializeOnControllerReady(
       base::BindOnce(&OnInitialBrowserShortcutsPublished));
 
   install_manager_observation_.Observe(&provider_->install_manager());
+  registrar_observation_.Observe(&provider_->registrar_unsafe());
 }
 
 void LacrosBrowserShortcutsController::MaybePublishBrowserShortcuts(
@@ -295,6 +296,16 @@ void LacrosBrowserShortcutsController::OnWebAppUninstalled(
   remote_publisher->ShortcutRemoved(
       apps::GenerateShortcutId(app_constants::kLacrosAppId, app_id).value(),
       base::DoNothing());
+}
+
+void LacrosBrowserShortcutsController::OnAppRegistrarDestroyed() {
+  registrar_observation_.Reset();
+}
+
+void LacrosBrowserShortcutsController::OnWebAppUserDisplayModeChanged(
+    const webapps::AppId& app_id,
+    mojom::UserDisplayMode user_display_mode) {
+  MaybePublishBrowserShortcuts({app_id});
 }
 
 }  // namespace web_app

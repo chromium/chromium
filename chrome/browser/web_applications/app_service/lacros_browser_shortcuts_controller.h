@@ -12,6 +12,7 @@
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registrar_observer.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "components/webapps/common/web_app_id.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -28,7 +29,8 @@ class WebAppProvider;
 // shortcuts where the parent app is the browser.
 class LacrosBrowserShortcutsController
     : public crosapi::mojom::AppShortcutController,
-      public WebAppInstallManagerObserver {
+      public WebAppInstallManagerObserver,
+      public WebAppRegistrarObserver {
  public:
   explicit LacrosBrowserShortcutsController(Profile* profile);
   LacrosBrowserShortcutsController(const LacrosBrowserShortcutsController&) =
@@ -79,6 +81,12 @@ class LacrosBrowserShortcutsController
       const webapps::AppId& app_id,
       webapps::WebappUninstallSource uninstall_source) override;
 
+  // WebAppRegistrarObserver:
+  void OnAppRegistrarDestroyed() override;
+  void OnWebAppUserDisplayModeChanged(
+      const webapps::AppId& app_id,
+      mojom::UserDisplayMode user_display_mode) override;
+
   void OnOpenPrimaryProfileFirstRunExited(const std::string& host_app_id,
                                           const std::string& local_shortcut_id,
                                           int64_t display_id,
@@ -95,6 +103,9 @@ class LacrosBrowserShortcutsController
 
   base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>
       install_manager_observation_{this};
+
+  base::ScopedObservation<WebAppRegistrar, WebAppRegistrarObserver>
+      registrar_observation_{this};
 
   mojo::Receiver<crosapi::mojom::AppShortcutController> receiver_{this};
 

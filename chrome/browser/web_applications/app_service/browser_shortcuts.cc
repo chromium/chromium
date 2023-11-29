@@ -76,6 +76,7 @@ void BrowserShortcuts::InitBrowserShortcuts() {
   }
 
   install_manager_observation_.Observe(&provider_->install_manager());
+  registrar_observation_.Observe(&provider_->registrar_unsafe());
 
   if (*GetInitializedCallbackForTesting()) {
     std::move(*GetInitializedCallbackForTesting()).Run();
@@ -178,6 +179,16 @@ void BrowserShortcuts::OnWebAppUninstalled(
   }
   apps::ShortcutPublisher::ShortcutRemoved(
       apps::GenerateShortcutId(app_constants::kChromeAppId, app_id));
+}
+
+void BrowserShortcuts::OnAppRegistrarDestroyed() {
+  registrar_observation_.Reset();
+}
+
+void BrowserShortcuts::OnWebAppUserDisplayModeChanged(
+    const webapps::AppId& app_id,
+    mojom::UserDisplayMode user_display_mode) {
+  MaybePublishBrowserShortcut(app_id);
 }
 
 }  // namespace web_app

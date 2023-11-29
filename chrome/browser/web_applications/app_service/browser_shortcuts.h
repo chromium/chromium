@@ -13,6 +13,7 @@
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registrar_observer.h"
 #include "components/webapps/common/web_app_id.h"
 
 static_assert(BUILDFLAG(IS_CHROMEOS_ASH), "For ash only");
@@ -31,7 +32,8 @@ class WebAppProvider;
 // shortcuts where the parent app is the browser.
 class BrowserShortcuts : public apps::ShortcutPublisher,
                          public base::SupportsWeakPtr<BrowserShortcuts>,
-                         public WebAppInstallManagerObserver {
+                         public WebAppInstallManagerObserver,
+                         public WebAppRegistrarObserver {
  public:
   explicit BrowserShortcuts(apps::AppServiceProxy* proxy);
   BrowserShortcuts(const BrowserShortcuts&) = delete;
@@ -72,6 +74,12 @@ class BrowserShortcuts : public apps::ShortcutPublisher,
       const webapps::AppId& app_id,
       webapps::WebappUninstallSource uninstall_source) override;
 
+  // WebAppRegistrarObserver:
+  void OnAppRegistrarDestroyed() override;
+  void OnWebAppUserDisplayModeChanged(
+      const webapps::AppId& app_id,
+      mojom::UserDisplayMode user_display_mode) override;
+
   const raw_ptr<Profile> profile_;
 
   const raw_ptr<WebAppProvider> provider_;
@@ -80,6 +88,9 @@ class BrowserShortcuts : public apps::ShortcutPublisher,
 
   base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>
       install_manager_observation_{this};
+
+  base::ScopedObservation<WebAppRegistrar, WebAppRegistrarObserver>
+      registrar_observation_{this};
 };
 
 }  // namespace web_app

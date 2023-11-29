@@ -44,6 +44,8 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/policy_util.h"
@@ -102,8 +104,6 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
 #include "chrome/browser/badging/badge_manager.h"
 #include "chrome/browser/badging/badge_manager_factory.h"
@@ -1441,8 +1441,21 @@ void WebAppPublisherHelper::OnWebAppUserDisplayModeChanged(
   if (IsAppServiceShortcut(app_id, *provider_)) {
     return;
   }
-  PublishWindowModeUpdate(app_id,
-                          registrar().GetAppEffectiveDisplayMode(app_id));
+
+  // If the app that changed display mode is not registered in app service, it
+  // is because this was considered as a shortcut and now considered as an app
+  // due to display mode change, in this case we should publish the full app.
+  if (apps::AppServiceProxyFactory::GetForProfile(profile_)
+          ->AppRegistryCache()
+          .IsAppInstalled(app_id)) {
+    PublishWindowModeUpdate(app_id,
+                            registrar().GetAppEffectiveDisplayMode(app_id));
+  } else {
+    const WebApp* web_app = GetWebApp(app_id);
+    if (web_app) {
+      delegate_->PublishWebApp(CreateWebApp(web_app));
+    }
+  }
 }
 
 void WebAppPublisherHelper::OnWebAppRunOnOsLoginModeChanged(
