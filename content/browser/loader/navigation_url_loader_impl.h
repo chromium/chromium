@@ -304,7 +304,6 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   // (eg: NavigationLoaderInterceptor for loading a local Web Bundle file).
   bool bypass_redirect_checks_ = false;
 
-  network::mojom::URLResponseHeadPtr head_;
   mojo::ScopedDataPipeConsumerHandle response_body_;
 
   // Factories to handle navigation requests for non-network resources.
