@@ -55,10 +55,10 @@ enum Modifier {
  * contains the following four.
  */
 const modifierBitMaskToString: Map<number, string> = new Map([
-  [Modifier.CONTROL, 'ctrl'],
-  [Modifier.SHIFT, 'shift'],
-  [Modifier.ALT, 'alt'],
-  [Modifier.META, 'meta'],
+  [Modifier.CONTROL, 'Ctrl'],
+  [Modifier.SHIFT, 'Shift'],
+  [Modifier.ALT, 'Alt'],
+  [Modifier.META, 'Meta'],
 ]);
 
 /**
@@ -67,7 +67,12 @@ const modifierBitMaskToString: Map<number, string> = new Map([
 function getInputKeys(keyEvent: KeyEvent): string[] {
   const inputKeysArray: string[] = [];
   modifierBitMaskToString.forEach((modifierName: string, bitValue: number) => {
-    if ((keyEvent.modifiers & bitValue) !== 0) {
+    // Now if pressing a single modifier key like "shift", it will show
+    // "shift + shift" instead of a single "shift".
+    // Temporarily add a condition to check modifierName duplicating with
+    // keyDisplay until it's fixed in the key combination logics.
+    if ((keyEvent.modifiers & bitValue) !== 0 &&
+        modifierName !== keyEvent.keyDisplay) {
       inputKeysArray.push(modifierName, '+');
     }
   });
