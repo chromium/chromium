@@ -159,8 +159,9 @@ TEST_F(BrowserShortcutsTest, PublishExistingBrowserShortcut) {
   EXPECT_EQ(stored_shortcut->host_app_id, app_constants::kChromeAppId);
   EXPECT_EQ(stored_shortcut->local_id, local_shortcut_id);
   EXPECT_TRUE(stored_shortcut->icon_key.has_value());
-  EXPECT_EQ(stored_shortcut->icon_key->icon_effects,
-            apps::IconEffects::kCrOsStandardMask);
+  EXPECT_EQ(
+      stored_shortcut->icon_key->icon_effects,
+      apps::IconEffects::kRoundCorners | apps::IconEffects::kCrOsStandardMask);
 }
 
 TEST_F(BrowserShortcutsTest, WebAppNotPublishedAsShortcut) {
@@ -207,8 +208,9 @@ TEST_F(BrowserShortcutsTest, PublishNewBrowserShortcut) {
   EXPECT_EQ(stored_shortcut->host_app_id, app_constants::kChromeAppId);
   EXPECT_EQ(stored_shortcut->local_id, local_shortcut_id);
   EXPECT_TRUE(stored_shortcut->icon_key.has_value());
-  EXPECT_EQ(stored_shortcut->icon_key->icon_effects,
-            apps::IconEffects::kCrOsStandardMask);
+  EXPECT_EQ(
+      stored_shortcut->icon_key->icon_effects,
+      apps::IconEffects::kRoundCorners | apps::IconEffects::kCrOsStandardMask);
 }
 
 TEST_F(BrowserShortcutsTest, LaunchShortcut) {
