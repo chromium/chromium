@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "components/system_media_controls/system_media_controls.h"
 #include "content/public/browser/content_browser_client.h"
@@ -40,7 +41,8 @@ constexpr base::TimeDelta kHideSmtcDelay = base::Seconds(kHideSmtcDelaySeconds);
 constexpr base::TimeDelta kDebounceDelay = base::Milliseconds(10);
 
 SystemMediaControlsNotifier::SystemMediaControlsNotifier(
-    system_media_controls::SystemMediaControls* system_media_controls)
+    system_media_controls::SystemMediaControls* system_media_controls,
+    base::UnguessableToken request_id)
     : system_media_controls_(system_media_controls) {
   DCHECK(system_media_controls_);
 
@@ -51,21 +53,31 @@ SystemMediaControlsNotifier::SystemMediaControlsNotifier(
                           base::Unretained(this)));
 #endif  // BUILDFLAG(IS_WIN)
 
-  // Connect to the MediaControllerManager and create a MediaController that
-  // controls the active session so we can observe it.
-  mojo::Remote<media_session::mojom::MediaControllerManager> controller_manager;
+  mojo::Remote<media_session::mojom::MediaControllerManager>
+      controller_manager_remote;
   GetMediaSessionService().BindMediaControllerManager(
-      controller_manager.BindNewPipeAndPassReceiver());
-  controller_manager->CreateActiveMediaController(
-      media_controller_.BindNewPipeAndPassReceiver());
+      controller_manager_remote.BindNewPipeAndPassReceiver());
+
+  if (request_id == base::UnguessableToken::Null()) {
+    // Null ID for all scenarios where kWebAppSystemMediaControlsWin is not
+    // supported. ie. Mac, Linux, Windows with the feature flag off.
+    // Create a media controller that follows the active session for this case.
+    controller_manager_remote->CreateActiveMediaController(
+        media_controller_remote_.BindNewPipeAndPassReceiver());
+  } else {
+    // Create a media controller tied to |request_id| when
+    // kWebAppSystemMediaControlsWin is enabled (on Windows OS).
+    controller_manager_remote->CreateMediaControllerForSession(
+        media_controller_remote_.BindNewPipeAndPassReceiver(), request_id);
+  }
 
   // Observe the active media controller for changes to playback state and
   // supported actions.
-  media_controller_->AddObserver(
+  media_controller_remote_->AddObserver(
       media_controller_observer_receiver_.BindNewPipeAndPassRemote());
 
   // Observe the active media controller for changes to provided artwork.
-  media_controller_->ObserveImages(
+  media_controller_remote_->ObserveImages(
       media_session::mojom::MediaSessionImageType::kArtwork, kMinImageSize,
       kDesiredImageSize,
       media_controller_image_observer_receiver_.BindNewPipeAndPassRemote());

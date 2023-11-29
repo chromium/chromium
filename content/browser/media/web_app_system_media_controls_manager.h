@@ -5,13 +5,12 @@
 #ifndef CONTENT_BROWSER_MEDIA_WEB_APP_SYSTEM_MEDIA_CONTROLS_MANAGER_H_
 #define CONTENT_BROWSER_MEDIA_WEB_APP_SYSTEM_MEDIA_CONTROLS_MANAGER_H_
 
+#include "base/unguessable_token.h"
 #include "content/common/content_export.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
-#include "third_party/blink/public/mojom/mediasession/media_session.mojom.h"
 
 namespace system_media_controls {
 class SystemMediaControls;
@@ -20,6 +19,14 @@ class SystemMediaControls;
 namespace content {
 
 class WebAppSystemMediaControls;
+
+// A simple observer interface for tests to be notified when events are
+// received by the WebAppSystemmediaControlsManager.
+class WebAppSystemMediaControlsManagerObserver {
+ public:
+  virtual void OnBrowserAdded() {}
+  virtual void OnWebAppAdded(base::UnguessableToken request_id) {}
+};
 
 // WebAppSystemMediaControlsManager is a class that handles system media
 // controls related metadata for use with instanced per dPWA system media
@@ -89,6 +96,13 @@ class CONTENT_EXPORT WebAppSystemMediaControlsManager
 
   void TryConnectToAudioFocusManager();
 
+  // This method allows friended tests to register themselves as observers
+  // to be notified of events happening in this manager.
+  void SetObserverForTesting(
+      WebAppSystemMediaControlsManagerObserver* observer) {
+    test_observer_ = observer;
+  }
+
   std::map<base::UnguessableToken, std::unique_ptr<WebAppSystemMediaControls>>
       controls_map_;
 
@@ -101,8 +115,12 @@ class CONTENT_EXPORT WebAppSystemMediaControlsManager
 
   bool initialized_ = false;
   bool skip_mojo_connection_for_testing_ = false;
+  bool always_assume_web_app_for_testing_ = false;
+
+  raw_ptr<WebAppSystemMediaControlsManagerObserver> test_observer_;
 
   friend class WebAppSystemMediaControlsManagerTest;
+  friend class WebAppSystemMediaControlsBrowserTest;
 };
 
 }  // namespace content

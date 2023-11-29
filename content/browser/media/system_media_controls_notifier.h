@@ -18,6 +18,9 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
 
+namespace base {
+class UnguessableToken;
+}
 namespace content {
 
 // The SystemMediaControlsNotifier connects to the SystemMediaControls API and
@@ -28,8 +31,9 @@ class CONTENT_EXPORT SystemMediaControlsNotifier
     : public media_session::mojom::MediaControllerObserver,
       public media_session::mojom::MediaControllerImageObserver {
  public:
-  explicit SystemMediaControlsNotifier(
-      system_media_controls::SystemMediaControls* system_media_controls);
+  SystemMediaControlsNotifier(
+      system_media_controls::SystemMediaControls* system_media_controls,
+      base::UnguessableToken request_id);
 
   SystemMediaControlsNotifier(const SystemMediaControlsNotifier&) = delete;
   SystemMediaControlsNotifier& operator=(const SystemMediaControlsNotifier&) =
@@ -100,8 +104,8 @@ class CONTENT_EXPORT SystemMediaControlsNotifier
   base::OneShotTimer hide_smtc_timer_;
 #endif  // BUILDFLAG(IS_WIN)
 
-  // Our connection to the System Media Controls. We don't own it since it's a
-  // global instance.
+  // Our connection to the System Media Controls instance we should notify.
+  // Owned by WebAppSystemMediaControls.
   const raw_ptr<system_media_controls::SystemMediaControls>
       system_media_controls_;
 
@@ -123,7 +127,7 @@ class CONTENT_EXPORT SystemMediaControlsNotifier
   absl::optional<bool> delayed_is_seek_to_enabled_;
 
   // Tracks current media session state/metadata.
-  mojo::Remote<media_session::mojom::MediaController> media_controller_;
+  mojo::Remote<media_session::mojom::MediaController> media_controller_remote_;
   media_session::mojom::MediaSessionInfoPtr session_info_ptr_;
 
   // Used to receive updates to the active media controller.
