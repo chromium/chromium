@@ -119,6 +119,8 @@ class ServiceWorkerPaymentApp : public PaymentApp {
   void OnCanMakePaymentEventResponded(
       ValidateCanMakePaymentCallback callback,
       mojom::CanMakePaymentResponsePtr response);
+  void CallValidateCanMakePaymentCallback(
+      ValidateCanMakePaymentCallback callback);
 
   // Called from two places:
   // 1) From PaymentAppProvider after a just-in-time installable payment handler

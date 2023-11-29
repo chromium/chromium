@@ -200,7 +200,9 @@ void ServiceWorkerPaymentApp::OnCanMakePaymentEventSkipped(
   has_enrolled_instrument_result_ = false;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(callback), this, can_make_payment_result_));
+      base::BindOnce(
+          &ServiceWorkerPaymentApp::CallValidateCanMakePaymentCallback,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void ServiceWorkerPaymentApp::OnCanMakePaymentEventResponded(
@@ -213,7 +215,15 @@ void ServiceWorkerPaymentApp::OnCanMakePaymentEventResponded(
                             response->can_make_payment);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(callback), this, can_make_payment_result_));
+      base::BindOnce(
+          &ServiceWorkerPaymentApp::CallValidateCanMakePaymentCallback,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ServiceWorkerPaymentApp::CallValidateCanMakePaymentCallback(
+    ValidateCanMakePaymentCallback callback) {
+  // TODO(https://crbug.com/1505422): Change `this` to `base::WeakPtr`.
+  std::move(callback).Run(this, true);
 }
 
 void ServiceWorkerPaymentApp::InvokePaymentApp(
