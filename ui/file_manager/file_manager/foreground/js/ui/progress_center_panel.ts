@@ -57,6 +57,11 @@ export class ProgressCenterPanel implements ProgressCenterPanelInterface {
     }
   }
 
+  setTimingForTests(pendingTimeMs: number, timeoutToRemoveMs: number): void {
+    this.pendingTimeMs_ = pendingTimeMs;
+    this.timeoutToRemoveMs_ = timeoutToRemoveMs;
+  }
+
   /**
    * Generate source string for display on the feedback panel.
    * @param item Item we're generating a message for.
@@ -134,7 +139,8 @@ export class ProgressCenterPanel implements ProgressCenterPanelInterface {
    * @param candidate String we're checking.
    * @return true if there's content in the candidate.
    */
-  private isNonEmptyString_(candidate: string|undefined|null): boolean {
+  private isNonEmptyString_(candidate: string|undefined|
+                            null): candidate is string {
     if (!candidate || candidate.trim().length === 0) {
       return false;
     }
@@ -166,7 +172,7 @@ export class ProgressCenterPanel implements ProgressCenterPanelInterface {
         if (item.itemCount === 1) {
           if (item.type === ProgressItemType.COPY) {
             return hasDestination ?
-                getStrForCopyWithDestination(item, source ?? '', destination!) :
+                getStrForCopyWithDestination(item, source ?? '', destination) :
                 strf('FILE_COPIED', source);
           }
           if (item.type === ProgressItemType.EXTRACT) {
@@ -176,7 +182,7 @@ export class ProgressCenterPanel implements ProgressCenterPanelInterface {
           }
           if (item.type === ProgressItemType.MOVE) {
             return hasDestination ?
-                getStrForMoveWithDestination(item, source ?? '', destination!) :
+                getStrForMoveWithDestination(item, source ?? '', destination) :
                 strf('FILE_MOVED', source);
           }
           if (item.type === ProgressItemType.ZIP) {
