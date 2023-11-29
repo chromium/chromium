@@ -31,9 +31,8 @@ function getMetricName(metricIndex) {
 /**
  * Checks that the `toggle-holding-space` command is appropriately enabled/
  * disabled given the current selection state and executes as expected.
- * @param {()=>void} done
  */
-export async function testToggleHoldingSpaceCommand(done) {
+export async function testToggleHoldingSpaceCommand() {
   // Verify `toggle-holding-space` command exists.
   const command = CommandHandler.getCommand('toggle-holding-space');
   assertNotEquals(command, undefined);
@@ -268,16 +267,13 @@ export async function testToggleHoldingSpaceCommand(done) {
         testCase.expect.isAdd ? 'pin-to-holding-space' :
                                 'unpin-from-holding-space');
   }
-
-  done();
 }
 
 /**
  * Checks that the 'extract-all' command is enabled or disabled
  * dependent on the current selection.
- * @param {()=>void} done
  */
-export async function testExtractAllCommand(done) {
+export async function testExtractAllCommand() {
   // Check: `extract-all` command exists.
   const command = CommandHandler.getCommand('extract-all');
   assertNotEquals(command, undefined);
@@ -414,15 +410,12 @@ export async function testExtractAllCommand(done) {
   zipCommand.canExecute(event, fileManager);
   assertTrue(event.canExecute);
   assertFalse(event.command.hidden);
-
-  done();
 }
 
 /**
  * Tests that rename command should be disabled for Recent entry.
- * @param {()=>void} done
  */
-export async function testRenameCommand(done) {
+export async function testRenameCommand() {
   // Check: `rename` command exists.
   const command = CommandHandler.getCommand('rename');
   assertNotEquals(command, undefined);
@@ -483,8 +476,6 @@ export async function testRenameCommand(done) {
   command.canExecute(event, fileManager);
   assertFalse(event.canExecute);
   assertFalse(event.command.hidden);
-
-  done();
 }
 
 /**
@@ -545,9 +536,8 @@ async function createAndAddNonInteractiveDownloadsVolume() {
  * disabled and hidden when there are no selected entries but the current
  * directory is on a non-interactive volume (e.g. when the blank space in a
  * non-interactive directory is right clicked).
- * @param {()=>void} done
  */
-export async function testCommandsForNonInteractiveVolumeAndNoEntries(done) {
+export async function testCommandsForNonInteractiveVolumeAndNoEntries() {
   const nonInteractiveVolumeInfo =
       await createAndAddNonInteractiveDownloadsVolume();
 
@@ -624,17 +614,14 @@ export async function testCommandsForNonInteractiveVolumeAndNoEntries(done) {
     assertFalse(event.canExecute);
     assertTrue(event.command.hidden);
   }
-
-  done();
 }
 
 /**
  * Tests that the paste, cut, copy, new-folder, delete, move-to-trash,
  * paste-into-folder, rename, extract-all and zip-selection commands should be
  * disabled and hidden for an entry on a non-interactive volume.
- * @param {()=>void} done
  */
-export async function testCommandsForEntriesOnNonInteractiveVolume(done) {
+export async function testCommandsForEntriesOnNonInteractiveVolume() {
   // Create non-interactive volume.
   const nonInteractiveVolumeInfo =
       await createAndAddNonInteractiveDownloadsVolume();
@@ -721,6 +708,4 @@ export async function testCommandsForEntriesOnNonInteractiveVolume(done) {
     assertFalse(event.canExecute);
     assertTrue(event.command.hidden);
   }
-
-  done();
 }
