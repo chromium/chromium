@@ -851,6 +851,8 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
       // actually need to preconnect any sockets, so we're done.
       if (job_type_ == PRECONNECT)
         return OK;
+      // TODO(crbug.com/1286835): Stop uing `was_alpn_negotiated_` and
+      // `using_spdy_`.
       using_spdy_ = true;
       was_alpn_negotiated_ = true;
       negotiated_protocol_ = kProtoHTTP2;
@@ -1026,12 +1028,14 @@ int HttpStreamFactory::Job::DoInitConnectionComplete(int result) {
       // below. In the QUIC case, we only record it for origin connections. In
       // the TCP case, we also record it for non-tunneled, proxied requests.
       if (using_ssl_) {
+        // TODO(crbug.com/1286835): Stop uing `was_alpn_negotiated_`.
         was_alpn_negotiated_ = true;
         negotiated_protocol_ = kProtoQUIC;
       }
     } else if (connection_->socket()->WasAlpnNegotiated()) {
       // Only connections that use TLS can negotiate ALPN.
       DCHECK(using_ssl_ || proxy_info_.is_secure_http_like());
+      // TODO(crbug.com/1286835): Stop uing `was_alpn_negotiated_`.
       was_alpn_negotiated_ = true;
       negotiated_protocol_ = connection_->socket()->GetNegotiatedProtocol();
       net_log_.AddEvent(NetLogEventType::HTTP_STREAM_REQUEST_PROTO, [&] {
@@ -1051,7 +1055,7 @@ int HttpStreamFactory::Job::DoInitConnectionComplete(int result) {
           // and see if this is still needed.
           return ERR_NOT_IMPLEMENTED;
         }
-
+        // TODO(crbug.com/1286835): Stop uing `using_spdy_`.
         using_spdy_ = true;
       }
     }
@@ -1301,7 +1305,11 @@ void HttpStreamFactory::Job::OnSpdySessionAvailable(
     return;
   }
 
+  // TODO(crbug.com/1286835): Stop uing `was_alpn_negotiated_` and
+  // `using_spdy_`.
   using_spdy_ = true;
+  was_alpn_negotiated_ = true;
+  negotiated_protocol_ = kProtoHTTP2;
   existing_spdy_session_ = spdy_session;
   next_state_ = STATE_CREATE_STREAM;
 

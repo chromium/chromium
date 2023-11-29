@@ -19569,9 +19569,19 @@ TEST_P(HttpNetworkTransactionTest, UseIPConnectionPooling) {
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
   HttpNetworkTransaction trans2(DEFAULT_PRIORITY, session.get());
 
+  ConnectedHandler connected_handler2;
+  trans2.SetConnectedCallback(connected_handler2.Callback());
+
   rv = trans2.Start(&request2, callback.callback(), NetLogWithSource());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   EXPECT_THAT(callback.WaitForResult(), IsOk());
+
+  TransportInfo expected_transport;
+  expected_transport.type = TransportType::kDirect;
+  expected_transport.endpoint =
+      net::IPEndPoint(net::IPAddress(1, 2, 3, 4), 443);
+  expected_transport.negotiated_protocol = kProtoHTTP2;
+  EXPECT_THAT(connected_handler2.transports(), ElementsAre(expected_transport));
 
   response = trans2.GetResponseInfo();
   ASSERT_TRUE(response);
