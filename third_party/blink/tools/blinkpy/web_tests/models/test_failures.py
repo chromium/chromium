@@ -36,7 +36,7 @@ from blinkpy.web_tests.models.failure_reason import FailureReason
 from blinkpy.common.html_diff import html_diff
 from blinkpy.common.unified_diff import unified_diff
 
-# TODO(rmhasan) Create a unit test for each Failure type and make
+# TODO(weizhong) Create a unit test for each Failure type and make
 # sure each artifact is written to the correct path
 
 # Filename pieces when writing failures to the test results directory.
@@ -201,7 +201,7 @@ class AbstractTestResultType(object):
 
 class PassWithStderr(AbstractTestResultType):
     def __init__(self, driver_output):
-        # TODO (rmhasan): Should we write out the reference driver standard
+        # TODO (weizhong): Should we write out the reference driver standard
         # error
         super(PassWithStderr, self).__init__(driver_output, None)
 
@@ -364,7 +364,7 @@ class FailureText(ActualAndBaselineArtifacts):
         return ''
 
     def create_artifacts(self, typ_artifacts, force_overwrite=False):
-        # TODO (rmhasan): See if you can can only output diff files for
+        # TODO (weizhong): See if you can can only output diff files for
         # non empty text.
         super(FailureText, self).create_artifacts(typ_artifacts,
                                                   force_overwrite)

@@ -780,7 +780,8 @@ class SingleTestRunner(object):
                         actual_driver_output, reference_driver_output,
                         reference_filename))
             elif err_str:
-                # TODO(rmhasan) Should we include this error message in the artifacts ?
+                # TODO(weizhong) Should we include this error message in the
+                # artifacts ?
                 _log.error('  %s : %s', self._test_name, err_str)
             elif not max_pixels_diff:
                 _log.warning(

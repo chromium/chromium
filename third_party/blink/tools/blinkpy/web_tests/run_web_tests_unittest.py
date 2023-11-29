@@ -896,7 +896,7 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
 
     @unittest.skip('Need to make subprocesses use mock filesystem')
     def test_crash_log_is_saved_after_delay_using_multiple_jobs(self):
-        # TODO(rmhasan): When web_test_runner.run() spawns multiple jobs it uses
+        # TODO(weizhong): When web_test_runner.run() spawns multiple jobs it uses
         # the non mock file system. We should figure out how to make all subprocesses
         # use the mock file system.
         host = MockHost()
