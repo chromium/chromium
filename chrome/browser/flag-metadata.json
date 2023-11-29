@@ -7130,6 +7130,11 @@
     "expiry_milestone": 92
   },
   {
+    "name": "screencast-v2",
+    "owners": [ "dorianbrandon@google.com","cros-edu-team@google.com"],
+    "expiry_milestone": 123
+  },
+  {
     "name": "screenshots-for-android-v2",
     "owners": [ "kenok@google.com", "addisonphelps@google.com", "jeffreycohen@chromium.org" ],
     "expiry_milestone": 115

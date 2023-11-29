@@ -7018,6 +7018,9 @@ const char kScanningAppJellyDescription[] =
     "Enable jelly colors for the Scanning App. Requires "
     "jelly-colors flag to be enabled.";
 
+const char kScreencastV2Name[] = "Screencast V2";
+const char kScreencastV2Description[] = "Enable V2 features for Screencast app";
+
 const char kShelfAutoHideSeparationName[] =
     "Enable separate shelf auto-hide preferences.";
 const char kShelfAutoHideSeparationDescription[] =

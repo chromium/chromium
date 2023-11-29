@@ -36098,6 +36098,7 @@ from previous Chrome versions.
   <int value="-360453785" label="LeftToRightUrls:disabled"/>
   <int value="-360038744" label="invert-viewport-scroll-order"/>
   <int value="-359886807" label="AppPreloadService:disabled"/>
+  <int value="-359452972" label="ProjectorV2:enabled"/>
   <int value="-359331504" label="InputDeviceSettingsSplit:enabled"/>
   <int value="-357464687" label="SharingPreferVapid:enabled"/>
   <int value="-357250869"
@@ -40444,6 +40445,7 @@ from previous Chrome versions.
   <int value="1712697097" label="QuickAnswersV2:disabled"/>
   <int value="1712880335" label="FiltersInRecents:enabled"/>
   <int value="1713230497" label="ColorCorrectRendering:disabled"/>
+  <int value="1713419708" label="ProjectorV2:disabled"/>
   <int value="1713509078" label="NewBaseUrlInheritanceBehavior:enabled"/>
   <int value="1714016217" label="EnableHeuristicPalmDetectionFilter:enabled"/>
   <int value="1714520147" label="MBIMode:disabled"/>

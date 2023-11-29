@@ -4027,6 +4027,9 @@ extern const char kScalableIphDebugDescription[];
 extern const char kScanningAppJellyName[];
 extern const char kScanningAppJellyDescription[];
 
+extern const char kScreencastV2Name[];
+extern const char kScreencastV2Description[];
+
 extern const char kSecondaryGoogleAccountUsageName[];
 extern const char kSecondaryGoogleAccountUsageDescription[];
 
