@@ -255,8 +255,6 @@ static_library("core") {
       "model_execution/on_device_model_execution_proto_value_utils.h",
       "model_execution/on_device_model_service_controller.cc",
       "model_execution/on_device_model_service_controller.h",
-      "model_execution/on_device_model_stream_receiver.cc",
-      "model_execution/on_device_model_stream_receiver.h",
       "model_execution/optimization_guide_model_execution_error.cc",
       "model_execution/optimization_guide_model_execution_error.h",
       "model_execution/session_impl.cc",
