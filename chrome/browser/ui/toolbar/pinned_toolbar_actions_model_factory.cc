@@ -25,7 +25,7 @@ PinnedToolbarActionsModelFactory::PinnedToolbarActionsModelFactory()
     : ProfileKeyedServiceFactory(
           "PinnedToolbarActionsModel",
           ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kOwnInstance)
+              .WithRegular(ProfileSelection::kRedirectedToOriginal)
               .WithGuest(ProfileSelection::kOwnInstance)
               .Build()) {}
 
