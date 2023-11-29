@@ -99,10 +99,16 @@ BruschettaService* BruschettaService::GetForProfile(Profile* profile) {
 void BruschettaService::OnPolicyChanged() {
   for (auto guest_id :
        guest_os::GetContainers(profile_, guest_os::VmType::BRUSCHETTA)) {
-    const std::string& config_id =
-        GetContainerPrefValue(profile_, guest_id,
-                              guest_os::prefs::kBruschettaConfigId)
-            ->GetString();
+    std::string config_id;
+    const base::Value* pref_value = GetContainerPrefValue(
+        profile_, guest_id, guest_os::prefs::kBruschettaConfigId);
+    if (pref_value) {
+      config_id = pref_value->GetString();
+    } else {
+      LOG(WARNING) << "Missing container prefs for VM " << guest_id.vm_name;
+      BlockLaunch(std::move(guest_id));
+      continue;
+    }
 
     absl::optional<const base::Value::Dict*> config_opt =
         GetRunnableConfig(profile_, config_id);
