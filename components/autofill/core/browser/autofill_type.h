@@ -47,7 +47,9 @@ class AutofillType {
 
     // Whether the server-side classification indicates that the field
     // may be pre-filled with a placeholder in the value attribute.
-    bool may_use_prefilled_placeholder = false;
+    // For autofillable types, `nullopt` indicates that there is no server-side
+    // classification. For PWM, `nullopt` and `false` are currently identical.
+    std::optional<bool> may_use_prefilled_placeholder = std::nullopt;
 
     // Requirements the site imposes on passwords (for password generation)
     // obtained from the Autofill server.

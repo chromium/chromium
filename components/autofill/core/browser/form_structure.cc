@@ -864,8 +864,10 @@ void FormStructure::ProcessQueryResponse(
       }
       field->set_server_predictions({field_suggestion->predictions().begin(),
                                      field_suggestion->predictions().end()});
-      field->set_may_use_prefilled_placeholder(
-          field_suggestion->may_use_prefilled_placeholder());
+      if (field_suggestion->has_may_use_prefilled_placeholder()) {
+        field->set_may_use_prefilled_placeholder(
+            field_suggestion->may_use_prefilled_placeholder());
+      }
       if (heuristic_type != field->Type().GetStorableType()) {
         query_response_overrode_heuristics = true;
       }
