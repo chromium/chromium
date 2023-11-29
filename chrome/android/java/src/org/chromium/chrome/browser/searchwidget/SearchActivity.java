@@ -317,7 +317,8 @@ public class SearchActivity extends AsyncInitializationActivity
                             @Override
                             public void openHistoryClustersUi(String query) {}
                         },
-                        /* tabModelSelectorSupplier= */ null);
+                        /* tabModelSelectorSupplier= */ null,
+                        /* forcePhoneStyleOmnibox= */ true);
         mLocationBarCoordinator.setUrlBarFocusable(true);
         mLocationBarCoordinator.setShouldShowMicButtonWhenUnfocused(true);
         mLocationBarCoordinator.getOmniboxStub().addUrlFocusChangeListener(this);

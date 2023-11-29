@@ -65,6 +65,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     private int mListViewMaxHeight;
     private int mLastBroadcastedListViewMaxHeight;
     private @Nullable Callback<OmniboxAlignment> mOmniboxAlignmentObserver;
+    private final boolean mForcePhoneStyleOmnibox;
 
     /**
      * Interface that will receive notifications when the user is interacting with an item on the
@@ -213,11 +214,15 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
      *
      * @param context Context used for contained views.
      */
-    public OmniboxSuggestionsDropdown(@NonNull Context context, RecycledViewPool recycledViewPool) {
+    public OmniboxSuggestionsDropdown(
+            @NonNull Context context,
+            RecycledViewPool recycledViewPool,
+            boolean forcePhoneStyleOmnibox) {
         super(context, null, android.R.attr.dropDownListViewStyle);
         setFocusable(true);
         setFocusableInTouchMode(true);
         setRecycledViewPool(recycledViewPool);
+        mForcePhoneStyleOmnibox = forcePhoneStyleOmnibox;
         setId(R.id.omnibox_suggestions_dropdown);
 
         // By default RecyclerViews come with item animators.
@@ -247,7 +252,8 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
                 shouldShowModernizeVisualUpdate
                         ? context.getColor(incognitoBgColorRes)
                         : ChromeColors.getDefaultThemeColor(context, true);
-        if (OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
+        if (!mForcePhoneStyleOmnibox
+                && OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
                 && DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
             setOutlineProvider(
                     new RoundedCornerOutlineProvider(

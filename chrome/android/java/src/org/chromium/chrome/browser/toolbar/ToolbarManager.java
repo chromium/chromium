@@ -824,7 +824,8 @@ public class ToolbarManager
                             BackPressManager.isEnabled() ? backPressManager : null,
                             scrollListener,
                             openHistoryClustersDelegate,
-                            tabModelSelectorSupplier);
+                            tabModelSelectorSupplier,
+                            /* forcePhoneStyleOmnibox= */ false);
             toolbarLayout.setLocationBarCoordinator(locationBarCoordinator);
             toolbarLayout.setBrowserControlsVisibilityDelegate(mControlsVisibilityDelegate);
             mLocationBar = locationBarCoordinator;

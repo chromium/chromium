@@ -100,7 +100,11 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
         doReturn(DIP_SCALE).when(mDisplay).getDipScale();
         mImpl =
                 new OmniboxSuggestionsDropdownEmbedderImpl(
-                        mWindowAndroid, mWindowDelegate, mAnchorView, mHorizontalAlignmentView);
+                        mWindowAndroid,
+                        mWindowDelegate,
+                        mAnchorView,
+                        mHorizontalAlignmentView,
+                        false);
     }
 
     @Test

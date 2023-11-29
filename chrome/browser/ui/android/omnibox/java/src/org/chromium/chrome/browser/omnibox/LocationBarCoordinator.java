@@ -144,6 +144,8 @@ public class LocationBarCoordinator
      * @param reportExceptionCallback A {@link Callback} to report exceptions.
      * @param backPressManager The {@link BackPressManager} for intercepting back press.
      * @param tabModelSelectorSupplier Supplier of the {@link TabModelSelector}.
+     * @param forcePhoneStyleOmnibox Whether a "phone-style" (full bleed, unrounded corners) omnibox
+     *     suggestions list should be used even when the screen width is >600dp.
      */
     public LocationBarCoordinator(
             View locationBarLayout,
@@ -179,7 +181,8 @@ public class LocationBarCoordinator
                     OmniboxSuggestionsDropdownScrollListener
                             omniboxSuggestionsDropdownScrollListener,
             @Nullable OpenHistoryClustersDelegate openHistoryClustersDelegate,
-            @Nullable ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
+            @Nullable ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
+            boolean forcePhoneStyleOmnibox) {
         mLocationBarLayout = (LocationBarLayout) locationBarLayout;
         mWindowDelegate = windowDelegate;
         mWindowAndroid = windowAndroid;
@@ -193,7 +196,8 @@ public class LocationBarCoordinator
                         mWindowAndroid,
                         mWindowDelegate,
                         autocompleteAnchorView,
-                        mLocationBarLayout);
+                        mLocationBarLayout,
+                        forcePhoneStyleOmnibox);
 
         mUrlBar = mLocationBarLayout.findViewById(R.id.url_bar);
         // TODO(crbug.com/1151513): Inject LocaleManager instance to LocationBarCoordinator instead
@@ -250,7 +254,8 @@ public class LocationBarCoordinator
                         bookmarkState,
                         omniboxActionDelegate,
                         omniboxSuggestionsDropdownScrollListener,
-                        openHistoryClustersDelegate);
+                        openHistoryClustersDelegate,
+                        forcePhoneStyleOmnibox);
         StatusView statusView = mLocationBarLayout.findViewById(R.id.location_bar_status);
         mStatusCoordinator =
                 new StatusCoordinator(
