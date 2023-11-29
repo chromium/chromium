@@ -2600,6 +2600,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.Triggers.SuspiciousSite.DelayTimerState"
+    enum="SuspiciousSiteTriggerState" expires_after="2024-04-28">
+  <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Tracks the state of the Suspicious Site trigger when its report delay timer
+    fires. Warning: this histogram was expired from 2021-07-01 to 2023-11-28;
+    data may be missing.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.Triggers.SuspiciousSite.Event"
     enum="SuspiciousSiteTriggerEvent" expires_after="2024-04-28">
   <owner>vakh@chromium.org</owner>
@@ -2607,6 +2618,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     Tracks the events occurring in the Suspicious Site trigger whenever it is
     executed.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.Triggers.SuspiciousSite.ReportRejectionReason"
+    enum="SuspiciousSiteTriggerManagerReason" expires_after="2024-04-28">
+  <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Tracks the reasons that a report requested by the Suspicious Site trigger is
+    rejected by the Trigger Manager. Warning: this histogram was expired from
+    2021-11-07 to 2023-11-28; data may be missing.
   </summary>
 </histogram>
 

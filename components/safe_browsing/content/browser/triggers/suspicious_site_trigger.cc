@@ -38,10 +38,10 @@ const char kSuspiciousSiteTriggerEventMetricName[] =
     "SafeBrowsing.Triggers.SuspiciousSite.Event";
 
 const char kSuspiciousSiteTriggerReportRejectionTestMetricName[] =
-    "SafeBrowsingTest.Triggers.SuspiciousSite.ReportRejectionReason";
+    "SafeBrowsing.Triggers.SuspiciousSite.ReportRejectionReason";
 
 const char kSuspiciousSiteTriggerReportDelayStateTestMetricName[] =
-    "SafeBrowsingTest.Triggers.SuspiciousSite.DelayTimerState";
+    "SafeBrowsing.Triggers.SuspiciousSite.DelayTimerState";
 
 void NotifySuspiciousSiteTriggerDetected(
     const base::RepeatingCallback<content::WebContents*()>&
@@ -104,7 +104,7 @@ bool SuspiciousSiteTrigger::MaybeStartReport() {
           error_options, &reason)) {
     UMA_HISTOGRAM_ENUMERATION(kSuspiciousSiteTriggerEventMetricName,
                               SuspiciousSiteTriggerEvent::REPORT_START_FAILED);
-    LOCAL_HISTOGRAM_ENUMERATION(
+    UMA_HISTOGRAM_ENUMERATION(
         kSuspiciousSiteTriggerReportRejectionTestMetricName, reason);
     return false;
   }
@@ -268,7 +268,7 @@ void SuspiciousSiteTrigger::ReportDelayTimerFired() {
   UMA_HISTOGRAM_ENUMERATION(kSuspiciousSiteTriggerEventMetricName,
                             SuspiciousSiteTriggerEvent::REPORT_DELAY_TIMER);
   // This local histogram is used as a signal for testing.
-  LOCAL_HISTOGRAM_ENUMERATION(
+  UMA_HISTOGRAM_ENUMERATION(
       kSuspiciousSiteTriggerReportDelayStateTestMetricName, current_state_);
   switch (current_state_) {
     case TriggerState::IDLE:
