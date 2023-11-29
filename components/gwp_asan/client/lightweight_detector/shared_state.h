@@ -41,7 +41,7 @@ class SharedState {
   static void Init(Args&&... args) {
     DCHECK(!Holder::initialized_);
     Holder::initialized_ = true;
-    new (Get()) T(std::forward<Args>(args)...);
+    new (Holder::buffer_) T(std::forward<Args>(args)...);
   }
 
   ALWAYS_INLINE static T* Get() {
