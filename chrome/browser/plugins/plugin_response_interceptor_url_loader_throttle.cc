@@ -156,21 +156,20 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
 
   std::string payload;
   const std::string internal_id = base::UnguessableToken::Create().ToString();
+
 #if BUILDFLAG(ENABLE_PDF)
-  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif) &&
-      response_head->mime_type == "application/pdf") {
+  const bool is_for_oopif_pdf =
+      base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif) &&
+      response_head->mime_type == "application/pdf";
+#else
+  constexpr bool is_for_oopif_pdf = false;
+#endif
+  if (is_for_oopif_pdf) {
     // For the PDF viewer, set the payload without creating a MimeHandlerView.
     payload =
         extensions::MimeHandlerViewAttachHelper::CreateTemplateMimeHandlerPage(
             response_url, response_head->mime_type, internal_id);
-    // Schedule `ResumeLoad()` for later to provide an opportunity for other UI
-    // thread initializations.
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&PluginResponseInterceptorURLLoaderThrottle::ResumeLoad,
-                       weak_factory_.GetWeakPtr()));
   } else {
-#endif  // BUILDFLAG(ENABLE_PDF)
     // The resource is handled by frame-based MimeHandlerView, so let the
     // MimeHandlerView code set the payload.
     payload = extensions::MimeHandlerViewAttachHelper::
@@ -180,9 +179,7 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
             base::BindOnce(
                 &PluginResponseInterceptorURLLoaderThrottle::ResumeLoad,
                 weak_factory_.GetWeakPtr()));
-#if BUILDFLAG(ENABLE_PDF)
   }
-#endif  // BUILDFLAG(ENABLE_PDF)
   *defer = true;
 
   mojo::ScopedDataPipeProducerHandle producer_handle;
@@ -232,6 +229,18 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
           &extensions::StreamsPrivateAPI::SendExecuteMimeTypeHandlerEvent,
           extension_id, stream_id, embedded, frame_tree_node_id_,
           std::move(transferrable_loader), response_url, internal_id));
+
+#if BUILDFLAG(ENABLE_PDF)
+  if (is_for_oopif_pdf) {
+    // Schedule `ResumeLoad()` for after the SendExecuteMimeTypeHandlerEvent()
+    // call, to ensure the work in SendExecuteMimeTypeHandlerEvent() does not
+    // race against subsequent network events.
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&PluginResponseInterceptorURLLoaderThrottle::ResumeLoad,
+                       weak_factory_.GetWeakPtr()));
+  }
+#endif
 }
 
 void PluginResponseInterceptorURLLoaderThrottle::ResumeLoad() {
