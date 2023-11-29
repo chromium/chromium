@@ -27,6 +27,18 @@ namespace blink {
 
 namespace {
 
+// This struct contains the keyframe index and the intra-keyframe progress. It
+// is calculated by GetAdjustedProgress.
+struct AnimationProgress {
+  int idx;
+  float adjusted_progress;
+  AnimationProgress(int idx, float adjusted_progress)
+      : idx(idx), adjusted_progress(adjusted_progress) {}
+  bool operator==(const AnimationProgress& other) const {
+    return idx == other.idx && adjusted_progress == other.adjusted_progress;
+  }
+};
+
 // This class includes information that is required by the compositor thread
 // when painting clip path.
 class ClipPathPaintWorkletInput : public PaintWorkletInput {
@@ -59,10 +71,6 @@ class ClipPathPaintWorkletInput : public PaintWorkletInput {
 
   ~ClipPathPaintWorkletInput() override = default;
 
-  const Vector<double>& Offsets() const { return offsets_; }
-  double AdjustProgress(int keyframe, double progress) const {
-    return timing_functions_[keyframe]->GetValue(progress);
-  }
   const absl::optional<double>& MainThreadProgress() const { return progress_; }
   const Vector<SkPath>& Paths() const { return paths_; }
 
@@ -74,6 +82,42 @@ class ClipPathPaintWorkletInput : public PaintWorkletInput {
 
   PaintWorkletInputType GetType() const override {
     return PaintWorkletInputType::kClipPath;
+  }
+
+  AnimationProgress GetAdjustedProgress(float progress) const {
+    // TODO(crbug.com/1374390): This function should be shared with composited
+    // bgcolor animations Get the start and end clip-path based on the progress
+    // and offsets.
+    unsigned result_index = offsets_.size() - 1;
+    if (progress <= 0) {
+      result_index = 0;
+    } else if (progress > 0 && progress < 1) {
+      for (unsigned i = 0; i < offsets_.size() - 1; i++) {
+        if (progress <= offsets_[i + 1]) {
+          result_index = i;
+          break;
+        }
+      }
+    }
+    if (result_index == offsets_.size() - 1) {
+      result_index = offsets_.size() - 2;
+    }
+
+    // Use offsets to calculate for intra-keyframe progress.
+    float local_progress =
+        (progress - offsets_[result_index]) /
+        (offsets_[result_index + 1] - offsets_[result_index]);
+    // Adjust for that keyframe's timing function
+    return AnimationProgress(
+        result_index,
+        timing_functions_[result_index]->GetValue(local_progress));
+  }
+
+  bool ValueChangeShouldCauseRepaint(const PropertyValue& val1,
+                                     const PropertyValue& val2) const override {
+    return !val1.float_value.has_value() || !val2.float_value.has_value() ||
+           GetAdjustedProgress(*val1.float_value) ==
+               GetAdjustedProgress(*val2.float_value);
   }
 
  private:
@@ -238,12 +282,6 @@ PaintRecord ClipPathPaintDefinition::Paint(
 
   const Vector<SkPath>& paths = input->Paths();
 
-  // TODO(crbug.com/1374390): This section is a good candidate as a shared
-  // helper function with bgcolor.
-  Vector<double> offsets = input->Offsets();
-  DCHECK_GT(paths.size(), 1u);
-  DCHECK_EQ(paths.size(), offsets.size());
-
   // TODO(crbug.com/1188760): We should handle the case when it is null, and
   // paint the original clip-path retrieved from its style.
   float progress = input->MainThreadProgress().has_value()
@@ -257,27 +295,7 @@ PaintRecord ClipPathPaintDefinition::Paint(
     progress = entry->second.float_value.value();
   }
 
-  // Get the start and end clip-path based on the progress and offsets.
-  unsigned result_index = offsets.size() - 1;
-  if (progress <= 0) {
-    result_index = 0;
-  } else if (progress > 0 && progress < 1) {
-    for (unsigned i = 0; i < offsets.size() - 1; i++) {
-      if (progress <= offsets[i + 1]) {
-        result_index = i;
-        break;
-      }
-    }
-  }
-  if (result_index == offsets.size() - 1) {
-    result_index = offsets.size() - 2;
-  }
-
-  // Use offsets to calculate for intra-keyframe progress.
-  float local_progress = GetLocalProgress(progress, offsets[result_index],
-                                          offsets[result_index + 1]);
-  // Adjust for that keyframe's timing function
-  float adjusted_progress = input->AdjustProgress(result_index, local_progress);
+  auto [result_index, adjusted_progress] = input->GetAdjustedProgress(progress);
 
   SkPath path = InterpolatePaths(input->CanAttemptInterpolation(result_index),
                                  paths[result_index], paths[result_index + 1],

@@ -14,6 +14,8 @@ namespace cc {
 class TestPaintWorkletInput : public PaintWorkletInput {
  public:
   explicit TestPaintWorkletInput(const gfx::SizeF& size);
+  explicit TestPaintWorkletInput(const PaintWorkletInput::PropertyKey& key,
+                                 const gfx::SizeF& size);
 
   gfx::SizeF GetSize() const override;
   int WorkletId() const override;

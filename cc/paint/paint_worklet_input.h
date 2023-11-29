@@ -94,6 +94,9 @@ class CC_PAINT_EXPORT PaintWorkletInput
   // frames are colors.
   virtual bool KnownToBeOpaque() const;
 
+  virtual bool ValueChangeShouldCauseRepaint(const PropertyValue& val1,
+                                             const PropertyValue& val2) const;
+
  protected:
   friend class base::RefCountedThreadSafe<PaintWorkletInput>;
   virtual ~PaintWorkletInput() = default;

@@ -2144,15 +2144,19 @@ void PictureLayerImpl::SetPaintWorkletInputs(
 }
 
 void PictureLayerImpl::InvalidatePaintWorklets(
-    const PaintWorkletInput::PropertyKey& key) {
+    const PaintWorkletInput::PropertyKey& key,
+    const PaintWorkletInput::PropertyValue& prev,
+    const PaintWorkletInput::PropertyValue& next) {
   for (auto& entry : paint_worklet_records_) {
     const std::vector<PaintWorkletInput::PropertyKey>& prop_ids =
         entry.first->GetPropertyKeys();
     // If the PaintWorklet depends on the property whose value was changed by
     // the animation system, then invalidate its associated PaintRecord so that
     // we can repaint the PaintWorklet during impl side invalidation.
-    if (base::Contains(prop_ids, key))
-      entry.second.second = std::nullopt;
+    if (base::Contains(prop_ids, key) &&
+        entry.first->ValueChangeShouldCauseRepaint(prev, next)) {
+      entry.second.second = absl::nullopt;
+    }
   }
 }
 

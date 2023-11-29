@@ -169,7 +169,9 @@ class CC_EXPORT PictureLayerImpl
   // Invalidates all PaintWorklets in this layer who depend on the given
   // property to be painted. Used when the value for the property is changed by
   // an animation, at which point the PaintWorklet must be re-painted.
-  void InvalidatePaintWorklets(const PaintWorkletInput::PropertyKey& key);
+  void InvalidatePaintWorklets(const PaintWorkletInput::PropertyKey& key,
+                               const PaintWorkletInput::PropertyValue& prev,
+                               const PaintWorkletInput::PropertyValue& next);
 
   void SetContentsScaleForTesting(float scale) {
     ideal_contents_scale_ = raster_contents_scale_ =
