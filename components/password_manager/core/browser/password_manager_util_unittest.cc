@@ -14,12 +14,14 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
+#include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
@@ -45,15 +47,15 @@
 #include "base/android/build_info.h"
 #endif
 
-using autofill::password_generation::PasswordGenerationType;
-using device_reauth::MockDeviceAuthenticator;
-using password_manager::Facet;
-using password_manager::FacetURI;
-using password_manager::GroupedFacets;
-using password_manager::PasswordForm;
-
 namespace password_manager_util {
 namespace {
+
+using ::autofill::password_generation::PasswordGenerationType;
+using ::device_reauth::MockDeviceAuthenticator;
+using ::password_manager::Facet;
+using ::password_manager::FacetURI;
+using ::password_manager::GroupedFacets;
+using ::password_manager::PasswordForm;
 
 constexpr char kTestAndroidRealm[] = "android://hash@com.example.beta.android";
 constexpr char kTestFederationURL[] = "https://google.com/";
@@ -80,150 +82,6 @@ class MockPasswordManagerClient
   MOCK_METHOD(PrefService*, GetLocalStatePrefs, (), (const, override));
   MOCK_METHOD(std::unique_ptr<device_reauth::DeviceAuthenticator>,
               GetDeviceAuthenticator,
-              (),
-              (override));
-};
-
-class MockAutofillClient : public autofill::AutofillClient {
- public:
-  MockAutofillClient() = default;
-  MockAutofillClient(const MockAutofillClient&) = delete;
-  MockAutofillClient& operator=(const MockAutofillClient&) = delete;
-  ~MockAutofillClient() override = default;
-
-  MOCK_METHOD(version_info::Channel, GetChannel, (), (const, override));
-  MOCK_METHOD(bool, IsOffTheRecord, (), (override));
-  MOCK_METHOD(scoped_refptr<network::SharedURLLoaderFactory>,
-              GetURLLoaderFactory,
-              (),
-              (override));
-  MOCK_METHOD(autofill::PersonalDataManager*,
-              GetPersonalDataManager,
-              (),
-              (override));
-  MOCK_METHOD(autofill::AutocompleteHistoryManager*,
-              GetAutocompleteHistoryManager,
-              (),
-              (override));
-  MOCK_METHOD(PrefService*, GetPrefs, (), (override));
-  MOCK_METHOD(const PrefService*, GetPrefs, (), (const, override));
-  MOCK_METHOD(syncer::SyncService*, GetSyncService, (), (override));
-  MOCK_METHOD(signin::IdentityManager*, GetIdentityManager, (), (override));
-  MOCK_METHOD(autofill::FormDataImporter*, GetFormDataImporter, (), (override));
-  MOCK_METHOD(autofill::payments::PaymentsNetworkInterface*,
-              GetPaymentsNetworkInterface,
-              (),
-              (override));
-  MOCK_METHOD(autofill::StrikeDatabase*, GetStrikeDatabase, (), (override));
-  MOCK_METHOD(ukm::UkmRecorder*, GetUkmRecorder, (), (override));
-  MOCK_METHOD(ukm::SourceId, GetUkmSourceId, (), (override));
-  MOCK_METHOD(autofill::AddressNormalizer*,
-              GetAddressNormalizer,
-              (),
-              (override));
-  MOCK_METHOD(const GURL&,
-              GetLastCommittedPrimaryMainFrameURL,
-              (),
-              (const, override));
-  MOCK_METHOD(url::Origin,
-              GetLastCommittedPrimaryMainFrameOrigin,
-              (),
-              (const, override));
-  MOCK_METHOD(security_state::SecurityLevel,
-              GetSecurityLevelForUmaHistograms,
-              (),
-              (override));
-  MOCK_METHOD(const translate::LanguageState*,
-              GetLanguageState,
-              (),
-              (override));
-  MOCK_METHOD(translate::TranslateDriver*, GetTranslateDriver, (), (override));
-  MOCK_METHOD(void, ShowAutofillSettings, (autofill::PopupType), (override));
-  MOCK_METHOD(void,
-              ConfirmCreditCardFillAssist,
-              (const autofill::CreditCard&, base::OnceClosure),
-              (override));
-  MOCK_METHOD(void,
-              ConfirmSaveAddressProfile,
-              (const autofill::AutofillProfile&,
-               const autofill::AutofillProfile*,
-               SaveAddressProfilePromptOptions,
-               AddressProfileSavePromptCallback),
-              (override));
-  MOCK_METHOD(void,
-              ShowEditAddressProfileDialog,
-              (const autofill::AutofillProfile&,
-               AutofillClient::AddressProfileSavePromptCallback),
-              (override));
-  MOCK_METHOD(void,
-              ShowDeleteAddressProfileDialog,
-              (const autofill::AutofillProfile&,
-               AutofillClient::AddressProfileDeleteDialogCallback),
-              (override));
-  MOCK_METHOD(bool, HasCreditCardScanFeature, (), (override));
-  MOCK_METHOD(void, ScanCreditCard, (CreditCardScanCallback), (override));
-  MOCK_METHOD(bool, IsTouchToFillCreditCardSupported, (), (override));
-  MOCK_METHOD(bool,
-              ShowTouchToFillCreditCard,
-              (base::WeakPtr<autofill::TouchToFillDelegate>,
-               base::span<const autofill::CreditCard>),
-              (override));
-  MOCK_METHOD(void, HideTouchToFillCreditCard, (), (override));
-  MOCK_METHOD(void,
-              ShowAutofillPopup,
-              (const PopupOpenArgs&,
-               base::WeakPtr<autofill::AutofillPopupDelegate>),
-              (override));
-  MOCK_METHOD(void,
-              UpdateAutofillPopupDataListValues,
-              (base::span<const autofill::SelectOption>),
-              (override));
-  MOCK_METHOD(void, PinPopupView, (), (override));
-  MOCK_METHOD(PopupOpenArgs,
-              GetReopenPopupArgs,
-              (autofill::AutofillSuggestionTriggerSource),
-              (const, override));
-  MOCK_METHOD(std::vector<autofill::Suggestion>,
-              GetPopupSuggestions,
-              (),
-              (const, override));
-  MOCK_METHOD(void,
-              UpdatePopup,
-              (const std::vector<autofill::Suggestion>&,
-               autofill::PopupType,
-               autofill::AutofillSuggestionTriggerSource),
-              (override));
-  MOCK_METHOD(void,
-              HideAutofillPopup,
-              (autofill::PopupHidingReason),
-              (override));
-  MOCK_METHOD(bool, IsAutocompleteEnabled, (), (const, override));
-  MOCK_METHOD(bool, IsPasswordManagerEnabled, (), (override));
-  MOCK_METHOD(void,
-              DidFillOrPreviewForm,
-              (autofill::mojom::ActionPersistence action_persistence,
-               autofill::AutofillTriggerSource trigger_source,
-               bool is_refill),
-              (override));
-  MOCK_METHOD(void,
-              DidFillOrPreviewField,
-              (const std::u16string&, const std::u16string&),
-              (override));
-  MOCK_METHOD(bool, IsContextSecure, (), (const, override));
-  MOCK_METHOD(autofill::LogManager*, GetLogManager, (), (const, override));
-  MOCK_METHOD(const autofill::AutofillAblationStudy&,
-              GetAblationStudy,
-              (),
-              (const, override));
-#if BUILDFLAG(IS_IOS)
-  MOCK_METHOD(bool, IsLastQueriedField, (autofill::FieldGlobalId), (override));
-#endif
-  MOCK_METHOD(void,
-              LoadRiskData,
-              (base::OnceCallback<void(const std::string&)>),
-              (override));
-  MOCK_METHOD(autofill::FormInteractionsFlowId,
-              GetCurrentFormInteractionsFlowId,
               (),
               (override));
 };
@@ -792,15 +650,17 @@ TEST(PasswordManagerUtil,
 }
 
 TEST(PasswordManagerUtil, AvoidOverlappingAutofillMenuAndManualGeneration) {
+  base::test::TaskEnvironment task_environment;
   password_manager::StubPasswordManagerClient stub_password_client;
-  MockAutofillClient mock_autofill_client;
+  autofill::TestAutofillClient test_autofill_client;
 
-  EXPECT_CALL(mock_autofill_client,
-              HideAutofillPopup(autofill::PopupHidingReason::
-                                    kOverlappingWithPasswordGenerationPopup));
-
+  test_autofill_client.ShowAutofillPopup(
+      autofill::AutofillClient::PopupOpenArgs(), /*delegate=*/nullptr);
   UserTriggeredManualGenerationFromContextMenu(&stub_password_client,
-                                               &mock_autofill_client);
+                                               &test_autofill_client);
+  EXPECT_EQ(
+      test_autofill_client.popup_hiding_reason(),
+      autofill::PopupHidingReason::kOverlappingWithPasswordGenerationPopup);
 }
 
 TEST(PasswordManagerUtil, StripAuthAndParams) {
