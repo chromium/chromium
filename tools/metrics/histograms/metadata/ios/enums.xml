@@ -510,6 +510,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Choice Promo"/>
   <int value="8" label="Post Restore Default Browser (Alert)"/>
   <int value="9" label="Default Browser Remind Me Later"/>
+  <int value="10" label="Omnibox Position"/>
 </enum>
 
 <enum name="IOSPromosManagerPromoImpressionLimitEvaluationType">

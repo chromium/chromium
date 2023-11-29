@@ -53,6 +53,10 @@ std::optional<Promo> PromoForName(base::StringPiece promo) {
     return promos_manager::Promo::DefaultBrowserRemindMeLater;
   }
 
+  if (promo == "promos_manager::Promo::OmniboxPosition") {
+    return promos_manager::Promo::OmniboxPosition;
+  }
+
   return std::nullopt;
 }
 
@@ -82,6 +86,8 @@ base::StringPiece ShortNameForPromo(Promo promo) {
       return "PostRestoreDefaultBrowserAlert";
     case promos_manager::Promo::DefaultBrowserRemindMeLater:
       return "DefaultBrowserRemindMeLater";
+    case promos_manager::Promo::OmniboxPosition:
+      return "OmniboxPosition";
   }
 }
 

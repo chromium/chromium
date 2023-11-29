@@ -104,6 +104,12 @@ class GURL;
 // Dismiss the plus address bottom sheet.
 - (void)dismissPlusAddressBottomSheet;
 
+// Shows the omnibox position choice screen.
+- (void)showOmniboxPositionChoice;
+
+// Dismisses the omnibox position choice screen.
+- (void)dismissOmniboxPositionChoice;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_BROWSER_COORDINATOR_COMMANDS_H_

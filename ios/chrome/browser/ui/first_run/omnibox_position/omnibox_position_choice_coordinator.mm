@@ -7,10 +7,13 @@
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
 #import "ios/chrome/browser/ui/first_run/omnibox_position/omnibox_position_choice_mediator.h"
 #import "ios/chrome/browser/ui/first_run/omnibox_position/omnibox_position_choice_view_controller.h"
+#import "ios/chrome/browser/ui/promos_manager/promos_manager_ui_handler.h"
 
 @interface OmniboxPositionChoiceCoordinator () <
     PromoStyleViewControllerDelegate>
@@ -86,6 +89,7 @@
     [_viewController.presentingViewController
         dismissViewControllerAnimated:YES
                            completion:nil];
+    [self.promosUIHandler promoWasDismissed];
   }
   _viewController = nil;
   _mediator = nil;
@@ -113,7 +117,9 @@
   if (_firstRun) {
     [_first_run_delegate screenWillFinishPresenting];
   } else {
-    // TODO(crbug.com/1503638): Implement browser dismissal here.
+    id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+    [handler dismissOmniboxPositionChoice];
   }
 }
 

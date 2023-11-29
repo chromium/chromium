@@ -147,6 +147,7 @@ source_set("browser_view") {
     "//ios/chrome/browser/ui/find_bar",
     "//ios/chrome/browser/ui/first_run",
     "//ios/chrome/browser/ui/first_run:utils",
+    "//ios/chrome/browser/ui/first_run/omnibox_position",
     "//ios/chrome/browser/ui/follow",
     "//ios/chrome/browser/ui/follow:first_follow",
     "//ios/chrome/browser/ui/follow:follow_iph",

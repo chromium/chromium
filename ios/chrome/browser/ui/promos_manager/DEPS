@@ -4,4 +4,5 @@ include_rules = [
   "+ios/chrome/browser/ui/whats_new",
   "+ios/chrome/browser/ui/credential_provider_promo",
   "+ios/chrome/browser/ui/default_promo",
+  "+ios/chrome/browser/ui/first_run/omnibox_position/promo",
 ]

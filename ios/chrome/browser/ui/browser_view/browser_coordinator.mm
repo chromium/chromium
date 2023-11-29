@@ -153,6 +153,7 @@
 #import "ios/chrome/browser/ui/download/vcard_coordinator.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_controller_ios.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_coordinator.h"
+#import "ios/chrome/browser/ui/first_run/omnibox_position/omnibox_position_choice_coordinator.h"
 #import "ios/chrome/browser/ui/follow/first_follow_coordinator.h"
 #import "ios/chrome/browser/ui/follow/follow_iph_coordinator.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
@@ -526,6 +527,7 @@ enum class ToolbarKind {
   WebNavigationBrowserAgent* _webNavigationBrowserAgent;
   UrlLoadingBrowserAgent* _urlLoadingBrowserAgent;
   AddContactsCoordinator* _addContactsCoordinator;
+  OmniboxPositionChoiceCoordinator* _omniboxPositionChoiceCoordinator;
 }
 
 #pragma mark - ChromeCoordinator
@@ -1804,6 +1806,27 @@ enum class ToolbarKind {
   self.plusAddressBottomSheetCoordinator = nil;
 }
 
+- (void)showOmniboxPositionChoice {
+  CHECK(IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType::kAppLaunch));
+
+  if (!_omniboxPositionChoiceCoordinator) {
+    _omniboxPositionChoiceCoordinator =
+        [[OmniboxPositionChoiceCoordinator alloc]
+            initWithBaseViewController:self.viewController
+                               browser:self.browser];
+    _omniboxPositionChoiceCoordinator.promosUIHandler =
+        self.promosManagerCoordinator;
+  } else {
+    [_omniboxPositionChoiceCoordinator stop];
+  }
+  [_omniboxPositionChoiceCoordinator start];
+}
+
+- (void)dismissOmniboxPositionChoice {
+  [_omniboxPositionChoiceCoordinator stop];
+  _omniboxPositionChoiceCoordinator = nil;
+}
+
 #pragma mark - DefaultBrowserPromoCommands
 
 - (void)hidePromo {
@@ -2053,6 +2076,11 @@ enum class ToolbarKind {
       self.promosManagerCoordinator;
   self.defaultBrowserPromoManager.promoWasFromRemindMeLater = YES;
   [self.defaultBrowserPromoManager start];
+}
+
+- (void)showOmniboxPositionChoicePromo {
+  CHECK(IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType::kAppLaunch));
+  [self showOmniboxPositionChoice];
 }
 
 #pragma mark - PageInfoCommands

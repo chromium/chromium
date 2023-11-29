@@ -39,9 +39,12 @@ enum class Promo {
   PostRestoreDefaultBrowserAlert =
       8,  // Post Restore Default Browser (native iOS alert)
   DefaultBrowserRemindMeLater = 9,  // Remind me later for default browser.
-  kMaxValue = DefaultBrowserRemindMeLater,
+  OmniboxPosition = 10,             // Choose between top and bottom omnibox.
+  kMaxValue = OmniboxPosition,
 };
 // LINT.ThenChange(/ios/chrome/browser/promos_manager/constants.cc)
+// Also update IOSPromosManagerPromo in
+// (/tools/metrics/histograms/metadata/ios/enums.xml).
 
 // Enum for IOS.PromosManager.Promo.ImpressionLimitEvaluation histogram.
 // Entries should not be renumbered and numeric values should never be reused.

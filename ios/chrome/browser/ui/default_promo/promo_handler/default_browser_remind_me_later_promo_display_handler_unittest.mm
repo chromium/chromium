@@ -43,6 +43,9 @@
   self.displayDefaultBrowserPromoAfterRemindMeLaterCalled = YES;
 }
 
+- (void)showOmniboxPositionChoicePromo {
+}
+
 @end
 
 class DefaultBrowserRemindMeLaterPromoDisplayHandlerTest : public PlatformTest {
