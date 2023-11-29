@@ -1789,17 +1789,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.Renderer.EstimatedDroppableEncodedSize" units="KB"
-    expires_after="M77">
-  <owner>hajimehoshi@chromium.org</owner>
-  <summary>
-    The esitimated memory size which would be reduced when reusing disk cache is
-    implemented. If it is 100% sure that the encoded data is in disk cache, the
-    same data in memory can be dropped to reduce memory usage. This is rencorded
-    when an ImageResource is pruned. See crbug/664437.
-  </summary>
-</histogram>
-
 <histogram name="Memory.Renderer.EvictedLockedResources.{Source}" units="KB"
     expires_after="2024-06-01">
   <owner>jonross@chromium.org</owner>
