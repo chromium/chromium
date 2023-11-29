@@ -1258,6 +1258,11 @@
     "expiry_milestone": 126
   },
   {
+    "name": "compose",
+    "owners": ["//components/compose/OWNERS", "chrome-compose-frontend@google.com"],
+    "expiry_milestone": 132
+  },
+  {
     "name": "consumer-auto-update-toggle-allowed",
     "owners": [
       "kimjae@chromium.org",
