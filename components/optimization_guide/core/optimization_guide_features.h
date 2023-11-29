@@ -392,6 +392,10 @@ int GetOnDeviceModelCrashCountBeforeDisable();
 
 base::TimeDelta GetOnDeviceStartupMetricDelay();
 
+// Returns the amount of time before the initial response needs to be received
+// from the on-device model before falling back to the server.
+base::TimeDelta GetOnDeviceModelTimeForInitialResponse();
+
 }  // namespace features
 }  // namespace optimization_guide
 

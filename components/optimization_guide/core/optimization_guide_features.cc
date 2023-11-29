@@ -974,5 +974,13 @@ base::TimeDelta GetOnDeviceStartupMetricDelay() {
   return kOnDeviceStartupMetricDelay.Get();
 }
 
+base::TimeDelta GetOnDeviceModelTimeForInitialResponse() {
+  static const base::FeatureParam<base::TimeDelta>
+      kOnDeviceModelTimeForInitialResponse{
+          &kLogOnDeviceMetricsOnStartup, "on_device_time_for_initial_response",
+          base::Seconds(30)};
+  return kOnDeviceModelTimeForInitialResponse.Get();
+}
+
 }  // namespace features
 }  // namespace optimization_guide

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -72,7 +73,11 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
     // If true, the context is added before execution. This is set to true if
     // a disconnect happens.
     bool add_context_before_execute = false;
+    // Time ExecuteModel() was called.
     base::TimeTicks start;
+    // Timer used to detect when no response has been received and fallback
+    // to remote execution.
+    base::OneShotTimer timer_for_first_response;
   };
 
   // Gets the active session or restarts a session if the session is reset.
@@ -93,6 +98,8 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
   // Sends `current_response_` to the client.
   void SendResponse(bool is_complete);
 
+  void FallbackToRemote();
+
   void DestroyOnDeviceState();
 
   // Returns a new message created by merging `request` into `context_`. This
@@ -106,6 +113,9 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
   ExecuteRemoteFn execute_remote_fn_;
 
   std::unique_ptr<google::protobuf::MessageLite> context_;
+
+  // Last message executed.
+  std::unique_ptr<google::protobuf::MessageLite> last_message_;
 
   // Has a value when using the on device model.
   std::optional<OnDeviceState> on_device_state_;

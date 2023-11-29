@@ -31,6 +31,11 @@ using ::testing::ElementsAreArray;
 
 using on_device_model::mojom::LoadModelResult;
 
+namespace {
+// If non-zero this amount of delay is added before the response is sent.
+base::TimeDelta g_execute_delay = base::TimeDelta();
+}  // namespace
+
 std::vector<std::string> ConcatResponses(
     const std::vector<std::string>& responses) {
   std::vector<std::string> concat_responses;
@@ -61,6 +66,22 @@ class FakeOnDeviceSession : public base::SupportsWeakPtr<FakeOnDeviceSession>,
   void Execute(on_device_model::mojom::InputOptionsPtr input,
                mojo::PendingRemote<on_device_model::mojom::StreamingResponder>
                    response) override {
+    if (g_execute_delay.is_zero()) {
+      ExecuteImpl(std::move(input), std::move(response));
+      return;
+    }
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&FakeOnDeviceSession::ExecuteImpl, AsWeakPtr(),
+                       std::move(input), std::move(response)),
+        g_execute_delay);
+  }
+
+ private:
+  void ExecuteImpl(
+      on_device_model::mojom::InputOptionsPtr input,
+      mojo::PendingRemote<on_device_model::mojom::StreamingResponder>
+          response) {
     mojo::Remote<on_device_model::mojom::StreamingResponder> remote(
         std::move(response));
     for (const std::string& context : context_) {
@@ -70,7 +91,6 @@ class FakeOnDeviceSession : public base::SupportsWeakPtr<FakeOnDeviceSession>,
     remote->OnComplete();
   }
 
- private:
   void AddContextInternal(
       on_device_model::mojom::InputOptionsPtr input,
       mojo::PendingRemote<on_device_model::mojom::ContextClient> client) {
@@ -194,6 +214,7 @@ class FakeOnDeviceModelServiceController
 class OnDeviceModelServiceControllerTest : public testing::Test {
  public:
   void SetUp() override {
+    g_execute_delay = base::TimeDelta();
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kOptimizationGuideOnDeviceModel,
         {{"on_device_model_min_tokens_for_context", "10"},
@@ -209,6 +230,8 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
             const google::protobuf::MessageLite& m,
             OptimizationGuideModelExecutionResultStreamingCallback c) {
           remote_execute_called_ = true;
+          last_remote_message_ = base::WrapUnique(m.New());
+          last_remote_message_->CheckTypeAndMergeFrom(m);
         });
   }
 
@@ -297,7 +320,8 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
     }
   }
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingPrefServiceSimple pref_service_;
   scoped_refptr<FakeOnDeviceModelServiceController> test_controller_;
   // Owned by FakeOnDeviceModelServiceController.
@@ -308,6 +332,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
       response_error_;
   base::test::ScopedFeatureList feature_list_;
   bool remote_execute_called_ = false;
+  std::unique_ptr<google::protobuf::MessageLite> last_remote_message_;
 };
 
 TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionSuccess) {
@@ -723,6 +748,26 @@ TEST_F(OnDeviceModelServiceControllerTest, ExecuteInvalidConfig) {
   ASSERT_TRUE(session);
   ExecuteModel(*session, "2");
   EXPECT_TRUE(remote_execute_called_);
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, FallbackToServerAfterDelay) {
+  g_execute_delay = features::GetOnDeviceModelTimeForInitialResponse() * 2;
+
+  auto session =
+      test_controller_->CreateSession(kFeature, CreateExecuteRemoteFn());
+  ASSERT_TRUE(session);
+  ExecuteModel(*session, "2z");
+  task_environment_.FastForwardBy(
+      features::GetOnDeviceModelTimeForInitialResponse() +
+      base::Milliseconds(1));
+  EXPECT_TRUE(streamed_responses_.empty());
+  EXPECT_FALSE(response_received_);
+  EXPECT_TRUE(remote_execute_called_);
+  ASSERT_TRUE(last_remote_message_);
+  auto& compose_request =
+      static_cast<const proto::ComposeRequest&>(*last_remote_message_);
+  ASSERT_TRUE(compose_request.has_page_metadata());
+  EXPECT_EQ("2z", compose_request.page_metadata().page_url());
 }
 
 }  // namespace optimization_guide

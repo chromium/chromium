@@ -114,6 +114,7 @@ void SessionImpl::AddContext(
   auto input = on_device_state_->config_interpreter->ConstructInputString(
       feature_, *context_, /*want_input_context=*/true);
   if (!input) {
+    // TODO(b/313666843): add metrics.
     // Use server if can't construct input.
     DestroyOnDeviceState();
     return;
@@ -138,11 +139,11 @@ void SessionImpl::ExecuteModel(
     const google::protobuf::MessageLite& request_metadata,
     optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
         callback) {
-  auto request = MergeContext(request_metadata);
+  last_message_ = MergeContext(request_metadata);
 
   if (!ShouldUseOnDeviceModel()) {
     DestroyOnDeviceState();
-    execute_remote_fn_.Run(feature_, *request, std::move(callback));
+    execute_remote_fn_.Run(feature_, *last_message_, std::move(callback));
     return;
   }
 
@@ -155,12 +156,12 @@ void SessionImpl::ExecuteModel(
   }
 
   auto input = on_device_state_->config_interpreter->ConstructInputString(
-      feature_, *request, /*want_input_context=*/false);
+      feature_, *last_message_, /*want_input_context=*/false);
   if (!input) {
     // TODO(b/313666843): add metrics.
     // Use server if can't construct input.
-    DestroyOnDeviceState();
-    execute_remote_fn_.Run(feature_, *request, std::move(callback));
+    on_device_state_->callback = std::move(callback);
+    FallbackToRemote();
     return;
   }
 
@@ -179,6 +180,9 @@ void SessionImpl::ExecuteModel(
 
   on_device_state_->callback = std::move(callback);
   on_device_state_->start = base::TimeTicks::Now();
+  on_device_state_->timer_for_first_response.Start(
+      FROM_HERE, features::GetOnDeviceModelTimeForInitialResponse(), this,
+      &SessionImpl::FallbackToRemote);
   GetOrCreateSession().Execute(
       on_device_model::mojom::InputOptions::New(
           input->input_string, features::GetOnDeviceModelMaxTokensForExecute(),
@@ -190,6 +194,7 @@ void SessionImpl::ExecuteModel(
 
 // on_device_model::mojom::StreamingResponder:
 void SessionImpl::OnResponse(const std::string& response) {
+  on_device_state_->timer_for_first_response.Stop();
   if (on_device_state_->current_response.empty()) {
     base::UmaHistogramMediumTimes(
         base::StrCat(
@@ -240,6 +245,7 @@ void SessionImpl::ResetResponse() {
   on_device_state_->callback.Reset();
   on_device_state_->current_response.clear();
   on_device_state_->start = base::TimeTicks();
+  on_device_state_->timer_for_first_response.Stop();
 }
 
 void SessionImpl::CancelPendingResponse(ModelExecutionError error) {
@@ -255,6 +261,7 @@ void SessionImpl::CancelPendingResponse(ModelExecutionError error) {
 }
 
 void SessionImpl::SendResponse(bool is_complete) {
+  on_device_state_->timer_for_first_response.Stop();
   if (!on_device_state_->callback) {
     return;
   }
@@ -279,6 +286,13 @@ void SessionImpl::SendResponse(bool is_complete) {
 bool SessionImpl::ShouldUseOnDeviceModel() const {
   return controller_ && controller_->ShouldStartNewSession() &&
          on_device_state_;
+}
+
+void SessionImpl::FallbackToRemote() {
+  // TODO(b/313666843): add metrics.
+  auto callback = std::move(on_device_state_->callback);
+  DestroyOnDeviceState();
+  execute_remote_fn_.Run(feature_, *last_message_, std::move(callback));
 }
 
 void SessionImpl::DestroyOnDeviceState() {
