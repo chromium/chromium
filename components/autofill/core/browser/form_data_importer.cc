@@ -224,10 +224,10 @@ void FormDataImporter::ImportAndProcessFormData(
   fetched_card_instrument_id_.reset();
 
   bool iban_prompt_potentially_shown = false;
-  if (extracted_data.iban_import_candidate.has_value() &&
+  if (extracted_data.extracted_iban.has_value() &&
       payment_methods_autofill_enabled) {
     iban_prompt_potentially_shown =
-        ProcessIbanImportCandidate(*extracted_data.iban_import_candidate);
+        ProcessIbanImportCandidate(*extracted_data.extracted_iban);
   }
 
   // If a prompt for credit cards or IBANs is potentially shown, do not allow
@@ -310,7 +310,7 @@ FormDataImporter::ExtractedFormData FormDataImporter::ExtractFormData(
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (payment_methods_autofill_enabled) {
-    extracted_form_data.iban_import_candidate = ExtractIban(submitted_form);
+    extracted_form_data.extracted_iban = ExtractIban(submitted_form);
   }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -339,7 +339,7 @@ FormDataImporter::ExtractedFormData FormDataImporter::ExtractFormData(
 
   if (!extracted_form_data.extracted_credit_card &&
       num_complete_address_profiles == 0 &&
-      !extracted_form_data.iban_import_candidate) {
+      !extracted_form_data.extracted_iban) {
     personal_data_manager_->MarkObserversInsufficientFormDataForImport();
   }
   return extracted_form_data;
@@ -765,8 +765,8 @@ bool FormDataImporter::ProcessExtractedCreditCard(
 }
 
 bool FormDataImporter::ProcessIbanImportCandidate(
-    const Iban& iban_import_candidate) {
-  return iban_save_manager_->AttemptToOfferSave(iban_import_candidate);
+    const Iban& extracted_iban) {
+  return iban_save_manager_->AttemptToOfferSave(extracted_iban);
 }
 
 absl::optional<CreditCard> FormDataImporter::ExtractCreditCard(

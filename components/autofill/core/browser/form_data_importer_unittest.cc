@@ -699,9 +699,9 @@ class FormDataImporterTest : public testing::Test {
       bool payment_methods_autofill_enabled) {
     ExtractedFormData extracted_data = form_data_importer().ExtractFormData(
         form, profile_autofill_enabled, payment_methods_autofill_enabled);
-    return extracted_data.iban_import_candidate &&
+    return extracted_data.extracted_iban &&
            form_data_importer().ProcessIbanImportCandidate(
-               extracted_data.iban_import_candidate.value());
+               extracted_data.extracted_iban.value());
   }
 
   void ExtractAddressProfilesAndVerifyExpectation(
@@ -3031,7 +3031,7 @@ TEST_F(FormDataImporterTest, ExtractFormData_ImportIbanRecordType_NoIban) {
   auto extracted_data = ExtractFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/true);
-  ASSERT_FALSE(extracted_data.iban_import_candidate);
+  ASSERT_FALSE(extracted_data.extracted_iban);
 }
 
 TEST_F(FormDataImporterTest, ExtractFormData_SubmittingIbanFormUpdatesPref) {
@@ -3077,7 +3077,7 @@ TEST_F(FormDataImporterTest,
       /*payment_methods_autofill_enabled=*/true);
 
   // IBAN candidate is empty as the value is invalid.
-  ASSERT_FALSE(extracted_data.iban_import_candidate);
+  ASSERT_FALSE(extracted_data.extracted_iban);
 }
 
 TEST_F(FormDataImporterTest,
@@ -3089,7 +3089,7 @@ TEST_F(FormDataImporterTest,
   auto extracted_data = ExtractFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/true);
-  EXPECT_TRUE(extracted_data.iban_import_candidate);
+  EXPECT_TRUE(extracted_data.extracted_iban);
 }
 
 TEST_F(FormDataImporterTest, ExtractFormData_ImportIbanRecordType_LocalIban) {
@@ -3116,7 +3116,7 @@ TEST_F(FormDataImporterTest, ExtractFormData_ImportIbanRecordType_LocalIban) {
   auto extracted_data = ExtractFormDataAndProcessAddressCandidates(
       form_structure, /*profile_autofill_enabled=*/true,
       /*payment_methods_autofill_enabled=*/true);
-  EXPECT_TRUE(extracted_data.iban_import_candidate);
+  EXPECT_TRUE(extracted_data.extracted_iban);
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -3940,10 +3940,10 @@ TEST_F(FormDataImporterTest, SkipAutocompleteUnrecognizedFields) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_F(FormDataImporterTest,
        ProcessIbanImportCandidate_ShouldOfferLocalSave_NewIban) {
-  Iban iban_import_candidate = test::GetLocalIban();
+  Iban extracted_iban = test::GetLocalIban();
 
   EXPECT_TRUE(
-      form_data_importer().ProcessIbanImportCandidate(iban_import_candidate));
+      form_data_importer().ProcessIbanImportCandidate(extracted_iban));
 }
 
 TEST_F(FormDataImporterTest,
