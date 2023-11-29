@@ -17,7 +17,6 @@
 #import "ios/chrome/app/application_delegate/fake_startup_information.h"
 #import "ios/chrome/app/application_delegate/memory_warning_helper.h"
 #import "ios/chrome/app/application_delegate/metrics_mediator.h"
-#import "ios/chrome/app/application_delegate/mock_tab_opener.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/enterprise_app_agent.h"
 #import "ios/chrome/app/safe_mode_app_state_agent+private.h"
@@ -431,15 +430,12 @@ TEST_F(AppStateTest, applicationWillEnterForeground) {
   id application = [OCMockObject mockForClass:[UIApplication class]];
   id metricsMediator = [OCMockObject mockForClass:[MetricsMediator class]];
   id memoryHelper = [OCMockObject mockForClass:[MemoryWarningHelper class]];
-  id tabOpener = [OCMockObject mockForProtocol:@protocol(TabOpening)];
   std::unique_ptr<Browser> browser =
       std::make_unique<TestBrowser>(GetBrowserState());
 
   [[metricsMediator expect] updateMetricsStateBasedOnPrefsUserTriggered:NO];
   [[memoryHelper expect] resetForegroundMemoryWarningCount];
   [[[memoryHelper stub] andReturnValue:@0] foregroundMemoryWarningCount];
-  [[[tabOpener stub] andReturnValue:@YES]
-      shouldOpenNTPTabOnActivationOfBrowser:browser.get()];
 
   id appStateMock = OCMPartialMock(GetAppStateWithMock());
   [[appStateMock expect] completeUIInitialization];
