@@ -20,7 +20,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
+#include "components/autofill/core/browser/crowdsourcing/mock_autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/randomized_encoder.h"
@@ -68,46 +68,46 @@
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
-using autofill::AutofillUploadContents;
-using autofill::FieldPropertiesFlags;
-using autofill::FieldRendererId;
-using autofill::FieldSignature;
-using autofill::FormData;
-using autofill::FormFieldData;
-using autofill::FormRendererId;
-using autofill::FormSignature;
-using autofill::FormStructure;
-using autofill::IsMostRecentSingleUsernameCandidate;
-using autofill::NOT_USERNAME;
-using autofill::PasswordFormFillData;
-using autofill::PasswordFormGenerationData;
-using autofill::ServerFieldType;
-using autofill::ServerFieldTypeSet;
-using autofill::SINGLE_USERNAME;
-using autofill::SINGLE_USERNAME_FORGOT_PASSWORD;
-using autofill::UNKNOWN_TYPE;
-using autofill::password_generation::PasswordGenerationType;
-using base::TestMockTimeTaskRunner;
-using signin::GaiaIdHash;
-using testing::_;
-using testing::AllOf;
-using testing::Contains;
-using testing::DoAll;
-using testing::ElementsAre;
-using testing::IsEmpty;
-using testing::IsNull;
-using testing::Mock;
-using testing::NiceMock;
-using testing::Pointee;
-using testing::Return;
-using testing::ReturnRef;
-using testing::SaveArg;
-using testing::SaveArgPointee;
-using testing::UnorderedElementsAre;
-
 namespace password_manager {
 
 namespace {
+
+using ::autofill::AutofillUploadContents;
+using ::autofill::FieldPropertiesFlags;
+using ::autofill::FieldRendererId;
+using ::autofill::FieldSignature;
+using ::autofill::FormData;
+using ::autofill::FormFieldData;
+using ::autofill::FormRendererId;
+using ::autofill::FormSignature;
+using ::autofill::FormStructure;
+using ::autofill::IsMostRecentSingleUsernameCandidate;
+using ::autofill::NOT_USERNAME;
+using ::autofill::PasswordFormFillData;
+using ::autofill::PasswordFormGenerationData;
+using ::autofill::ServerFieldType;
+using ::autofill::ServerFieldTypeSet;
+using ::autofill::SINGLE_USERNAME;
+using ::autofill::SINGLE_USERNAME_FORGOT_PASSWORD;
+using ::autofill::UNKNOWN_TYPE;
+using ::autofill::password_generation::PasswordGenerationType;
+using ::base::TestMockTimeTaskRunner;
+using ::signin::GaiaIdHash;
+using ::testing::_;
+using ::testing::AllOf;
+using ::testing::Contains;
+using ::testing::DoAll;
+using ::testing::ElementsAre;
+using ::testing::IsEmpty;
+using ::testing::IsNull;
+using ::testing::Mock;
+using ::testing::NiceMock;
+using ::testing::Pointee;
+using ::testing::Return;
+using ::testing::ReturnRef;
+using ::testing::SaveArg;
+using ::testing::SaveArgPointee;
+using ::testing::UnorderedElementsAre;
 
 // Indices of username and password fields in the observed form.
 constexpr int kUsernameFieldIndex = 1;
@@ -149,30 +149,6 @@ class MockPasswordManagerDriver : public StubPasswordManagerDriver {
               (const autofill::PasswordFormGenerationData&),
               (override));
   MOCK_METHOD(bool, IsInPrimaryMainFrame, (), (const, override));
-};
-
-class MockAutofillCrowdsourcingManager
-    : public autofill::AutofillCrowdsourcingManager {
- public:
-  MockAutofillCrowdsourcingManager()
-      : AutofillCrowdsourcingManager(nullptr,
-                                     version_info::Channel::UNKNOWN,
-                                     nullptr) {}
-  MockAutofillCrowdsourcingManager(const MockAutofillCrowdsourcingManager&) =
-      delete;
-  MockAutofillCrowdsourcingManager& operator=(
-      const MockAutofillCrowdsourcingManager&) = delete;
-
-  MOCK_METHOD(bool,
-              StartUploadRequest,
-              (const FormStructure&,
-               bool,
-               const ServerFieldTypeSet&,
-               const std::string&,
-               bool,
-               PrefService*,
-               base::WeakPtr<Observer>),
-              (override));
 };
 
 class MockPasswordManagerClient : public StubPasswordManagerClient {
@@ -490,7 +466,8 @@ class PasswordFormManagerTest : public testing::Test,
 
  protected:
   autofill::test::AutofillUnitTestEnvironment autofill_test_environment_;
-  MockAutofillCrowdsourcingManager mock_autofill_crowdsourcing_manager_;
+  NiceMock<autofill::MockAutofillCrowdsourcingManager>
+      mock_autofill_crowdsourcing_manager_{/*client=*/nullptr};
   FormData observed_form_;
   FormData submitted_form_;
   FormData observed_form_only_password_fields_;

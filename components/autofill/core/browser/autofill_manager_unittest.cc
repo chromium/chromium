@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/crowdsourcing/mock_autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/mock_autofill_manager_observer.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
@@ -31,45 +32,24 @@
 #include "components/autofill/core/browser/ml_model/autofill_ml_prediction_model_handler.h"
 #endif
 
-using testing::_;
-using testing::AtLeast;
-using testing::ElementsAre;
-using testing::Eq;
-using testing::Field;
-using testing::Invoke;
-using testing::NiceMock;
-using testing::Pair;
-using testing::Property;
-using testing::Ref;
-using testing::Return;
-using testing::UnorderedElementsAreArray;
-using testing::VariantWith;
-
 namespace autofill {
-
-using FieldTypeSource = AutofillManager::Observer::FieldTypeSource;
 
 namespace {
 
-class MockAutofillCrowdsourcingManager : public AutofillCrowdsourcingManager {
- public:
-  explicit MockAutofillCrowdsourcingManager(AutofillClient* client)
-      : AutofillCrowdsourcingManager(client,
-                                     /*api_key=*/"",
-                                     /*log_manager=*/nullptr) {}
-
-  MockAutofillCrowdsourcingManager(const MockAutofillCrowdsourcingManager&) =
-      delete;
-  MockAutofillCrowdsourcingManager& operator=(
-      const MockAutofillCrowdsourcingManager&) = delete;
-
-  MOCK_METHOD(bool,
-              StartQueryRequest,
-              (const std::vector<FormStructure*>&,
-               net::IsolationInfo,
-               base::WeakPtr<Observer>),
-              (override));
-};
+using ::testing::_;
+using ::testing::AtLeast;
+using ::testing::ElementsAre;
+using ::testing::Eq;
+using ::testing::Field;
+using ::testing::Invoke;
+using ::testing::NiceMock;
+using ::testing::Pair;
+using ::testing::Property;
+using ::testing::Ref;
+using ::testing::Return;
+using ::testing::UnorderedElementsAreArray;
+using ::testing::VariantWith;
+using FieldTypeSource = AutofillManager::Observer::FieldTypeSource;
 
 class MockAutofillClient : public TestAutofillClient {
  public:

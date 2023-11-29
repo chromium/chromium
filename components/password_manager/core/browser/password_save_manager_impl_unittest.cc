@@ -9,7 +9,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
+#include "components/autofill/core/browser/crowdsourcing/mock_autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/test_utils/vote_uploads_test_matchers.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -25,33 +25,33 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using autofill::AutofillUploadContents;
-using autofill::FormData;
-using autofill::FormFieldData;
-using autofill::FormStructure;
-using autofill::PasswordFormFillData;
-using autofill::mojom::SubmissionIndicatorEvent;
-using base::TestMockTimeTaskRunner;
-using testing::_;
-using testing::AllOf;
-using testing::Contains;
-using testing::DoAll;
-using testing::ElementsAre;
-using testing::IsEmpty;
-using testing::Mock;
-using testing::NiceMock;
-using testing::Pointee;
-using testing::Return;
-using testing::SaveArg;
-using testing::UnorderedElementsAre;
-
 namespace password_manager {
 
 namespace {
 
+using ::autofill::AutofillUploadContents;
+using ::autofill::FormData;
+using ::autofill::FormFieldData;
+using ::autofill::FormStructure;
+using ::autofill::PasswordFormFillData;
+using ::autofill::mojom::SubmissionIndicatorEvent;
+using ::base::TestMockTimeTaskRunner;
+using ::testing::_;
+using ::testing::AllOf;
+using ::testing::Contains;
+using ::testing::DoAll;
+using ::testing::ElementsAre;
+using ::testing::IsEmpty;
+using ::testing::Mock;
+using ::testing::NiceMock;
+using ::testing::Pointee;
+using ::testing::Return;
+using ::testing::SaveArg;
+using ::testing::UnorderedElementsAre;
+
 // Indices of username and password fields in the observed form.
-const int kUsernameFieldIndex = 1;
-const int kPasswordFieldIndex = 2;
+constexpr int kUsernameFieldIndex = 1;
+constexpr int kPasswordFieldIndex = 2;
 
 MATCHER_P(FormHasUniqueKey, key, "") {
   return ArePasswordFormUniqueKeysEqual(arg, key);
@@ -169,30 +169,6 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               (const PasswordForm&, const PasswordFormManagerForUI*),
               (override));
   MOCK_METHOD(bool, IsCommittedMainFrameSecure, (), (const, override));
-};
-
-class MockAutofillCrowdsourcingManager
-    : public autofill::AutofillCrowdsourcingManager {
- public:
-  MockAutofillCrowdsourcingManager()
-      : AutofillCrowdsourcingManager(nullptr,
-                                     version_info::Channel::UNKNOWN,
-                                     nullptr) {}
-  MockAutofillCrowdsourcingManager(const MockAutofillCrowdsourcingManager&) =
-      delete;
-  MockAutofillCrowdsourcingManager& operator=(
-      const MockAutofillCrowdsourcingManager&) = delete;
-
-  MOCK_METHOD(bool,
-              StartUploadRequest,
-              (const FormStructure&,
-               bool,
-               const autofill::ServerFieldTypeSet&,
-               const std::string&,
-               bool,
-               PrefService*,
-               base::WeakPtr<Observer>),
-              (override));
 };
 
 }  // namespace
@@ -342,7 +318,8 @@ class PasswordSaveManagerImplTestBase : public testing::Test {
     return metrics_recorder_.get();
   }
 
-  MockAutofillCrowdsourcingManager* mock_autofill_crowdsourcing_manager() {
+  autofill::MockAutofillCrowdsourcingManager*
+  mock_autofill_crowdsourcing_manager() {
     return &mock_autofill_crowdsourcing_manager_;
   }
 
@@ -411,8 +388,8 @@ class PasswordSaveManagerImplTestBase : public testing::Test {
   std::unique_ptr<PasswordSaveManagerImpl> password_save_manager_impl_;
   raw_ptr<NiceMock<MockFormSaver>> mock_account_form_saver_ = nullptr;
   raw_ptr<NiceMock<MockFormSaver>> mock_profile_form_saver_ = nullptr;
-  NiceMock<MockAutofillCrowdsourcingManager>
-      mock_autofill_crowdsourcing_manager_;
+  NiceMock<autofill::MockAutofillCrowdsourcingManager>
+      mock_autofill_crowdsourcing_manager_{/*client=*/nullptr};
 };
 
 // The boolean test parameter maps to the `enable_account_store` constructor

@@ -37,7 +37,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
-#include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
+#include "components/autofill/core/browser/crowdsourcing/mock_autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
@@ -104,29 +104,11 @@
 #include "url/gurl.h"
 #include "url/url_canon.h"
 
-using base::UTF8ToUTF16;
-using testing::_;
-using testing::AllOf;
-using testing::AnyOf;
-using testing::AtLeast;
-using testing::Contains;
-using testing::DoAll;
-using testing::Each;
-using testing::ElementsAre;
-using testing::Eq;
-using testing::Field;
-using testing::HasSubstr;
-using testing::Matcher;
-using testing::NiceMock;
-using testing::Not;
-using testing::Property;
-using testing::Return;
-using testing::SaveArg;
-using testing::UnorderedElementsAre;
-using testing::VariantWith;
-
 namespace autofill {
 
+namespace {
+
+using ::base::UTF8ToUTF16;
 using mojom::SubmissionIndicatorEvent;
 using mojom::SubmissionSource;
 using test::CreateTestAddressFormData;
@@ -135,8 +117,26 @@ using test::CreateTestIbanFormData;
 using test::CreateTestPersonalInformationFormData;
 using test::CreateTestSelectField;
 using test::CreateTestSelectOrSelectListField;
-
-namespace {
+using ::testing::_;
+using ::testing::AllOf;
+using ::testing::AnyNumber;
+using ::testing::AnyOf;
+using ::testing::AtLeast;
+using ::testing::Contains;
+using ::testing::DoAll;
+using ::testing::Each;
+using ::testing::ElementsAre;
+using ::testing::Eq;
+using ::testing::Field;
+using ::testing::HasSubstr;
+using ::testing::Matcher;
+using ::testing::NiceMock;
+using ::testing::Not;
+using ::testing::Property;
+using ::testing::Return;
+using ::testing::SaveArg;
+using ::testing::UnorderedElementsAre;
+using ::testing::VariantWith;
 
 const std::string kArbitraryNickname = "Grocery Card";
 const std::u16string kArbitraryNickname16 = u"Grocery Card";
@@ -292,49 +292,6 @@ class MockAutofillClient : public TestAutofillClient {
               (),
               (override));
   MOCK_METHOD(AutofillComposeDelegate*, GetComposeDelegate, (), (override));
-};
-
-class MockAutofillCrowdsourcingManager : public AutofillCrowdsourcingManager {
- public:
-  explicit MockAutofillCrowdsourcingManager(AutofillClient* client)
-      : AutofillCrowdsourcingManager(client,
-                                     /*api_key=*/"",
-                                     /*log_manager=*/nullptr) {}
-
-  MockAutofillCrowdsourcingManager(const MockAutofillCrowdsourcingManager&) =
-      delete;
-  MockAutofillCrowdsourcingManager& operator=(
-      const MockAutofillCrowdsourcingManager&) = delete;
-
-  MOCK_METHOD(bool,
-              StartUploadRequest,
-              (const FormStructure&,
-               bool,
-               const ServerFieldTypeSet&,
-               const std::string&,
-               bool,
-               PrefService*,
-               base::WeakPtr<Observer>),
-              (override));
-
-  bool StartQueryRequest(const std::vector<FormStructure*>& forms,
-                         net::IsolationInfo isolation_info,
-                         base::WeakPtr<Observer> observer) override {
-    last_queried_forms_ = forms;
-    return true;
-  }
-
-  // Verify that the last queried forms equal |expected_forms|.
-  void VerifyLastQueriedForms(const std::vector<FormData>& expected_forms) {
-    ASSERT_EQ(expected_forms.size(), last_queried_forms_.size());
-    for (size_t i = 0; i < expected_forms.size(); ++i) {
-      EXPECT_EQ(last_queried_forms_[i]->global_id().renderer_id,
-                expected_forms[i].global_id().renderer_id);
-    }
-  }
-
- private:
-  std::vector<FormStructure*> last_queried_forms_;
 };
 
 class MockTouchToFillDelegate : public TouchToFillDelegate {
@@ -545,6 +502,12 @@ void CheckThatNoFieldHasThisPossibleType(const FormStructure& form_structure,
   }
 }
 
+// Returns a matcher that checks a `FormStructure`'s renderer id.
+auto FormStructureHasRendererId(FormRendererId form_renderer_id) {
+  return Property(&FormStructure::global_id,
+                  Field(&FormGlobalId::renderer_id, form_renderer_id));
+}
+
 class MockAutofillDriver : public TestAutofillDriver {
  public:
   MockAutofillDriver() = default;
@@ -634,7 +597,8 @@ class BrowserAutofillManagerTest : public testing::Test {
         .WillByDefault(Return(true));
 
     autofill_client_.set_crowdsourcing_manager(
-        std::make_unique<MockAutofillCrowdsourcingManager>(&autofill_client_));
+        std::make_unique<NiceMock<MockAutofillCrowdsourcingManager>>(
+            &autofill_client_));
 
     browser_autofill_manager_->set_touch_to_fill_delegate(
         std::make_unique<NiceMock<MockTouchToFillDelegate>>());
@@ -1403,13 +1367,6 @@ TEST_F(BrowserAutofillManagerTest, OnFormsSeen_Empty) {
 TEST_F(BrowserAutofillManagerTest, OnFormsSeen_DifferentFormStructures) {
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
-  base::HistogramTester histogram_tester;
-  FormsSeen({form});
-  histogram_tester.ExpectUniqueSample("Autofill.UserHappiness",
-                                      0 /* FORMS_LOADED */, 1);
-  crowdsourcing_manager()->VerifyLastQueriedForms({form});
-
-  // Different form structure.
   FormData form2;
   form2.host_frame = test::MakeLocalFrameToken();
   form2.unique_renderer_id = test::MakeFormRendererId();
@@ -1423,10 +1380,26 @@ TEST_F(BrowserAutofillManagerTest, OnFormsSeen_DifferentFormStructures) {
                           FormControlType::kInputText),
       CreateTestFormField("Email", "email", "", FormControlType::kInputText)};
 
+  EXPECT_CALL(*crowdsourcing_manager(), StartQueryRequest).Times(AnyNumber());
+  EXPECT_CALL(
+      *crowdsourcing_manager(),
+      StartQueryRequest(
+          ElementsAre(FormStructureHasRendererId(form.unique_renderer_id)), _,
+          _));
+  EXPECT_CALL(
+      *crowdsourcing_manager(),
+      StartQueryRequest(
+          ElementsAre(FormStructureHasRendererId(form2.unique_renderer_id)), _,
+          _));
+
+  base::HistogramTester histogram_tester;
+  FormsSeen({form});
+  histogram_tester.ExpectUniqueSample("Autofill.UserHappiness",
+                                      0 /* FORMS_LOADED */, 1);
+
   FormsSeen({form2});
   histogram_tester.ExpectUniqueSample("Autofill.UserHappiness",
                                       0 /* FORMS_LOADED */, 2);
-  crowdsourcing_manager()->VerifyLastQueriedForms({form2});
 }
 
 // Tests that only fields from `field_types_to_fill` are filled.
@@ -3567,10 +3540,15 @@ TEST_F(BrowserAutofillManagerTest,
   // If the password manager is enabled, that's enough to parse the form.
   {
     base::HistogramTester histogram_tester;
+    EXPECT_CALL(*crowdsourcing_manager(), StartQueryRequest).Times(AnyNumber());
+    EXPECT_CALL(
+        *crowdsourcing_manager(),
+        StartQueryRequest(
+            ElementsAre(FormStructureHasRendererId(form.unique_renderer_id)), _,
+            _));
     FormsSeen({form});
     histogram_tester.ExpectUniqueSample("Autofill.UserHappiness",
                                         0 /* FORMS_LOADED */, 1);
-    crowdsourcing_manager()->VerifyLastQueriedForms({form});
   }
 }
 

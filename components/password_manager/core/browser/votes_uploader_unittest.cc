@@ -17,7 +17,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
+#include "components/autofill/core/browser/crowdsourcing/mock_autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/test_utils/vote_uploads_test_matchers.h"
 #include "components/autofill/core/common/form_data.h"
@@ -32,35 +32,36 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using autofill::AutofillCrowdsourcingManager;
-using autofill::CONFIRMATION_PASSWORD;
-using autofill::FieldRendererId;
-using autofill::FieldSignature;
-using autofill::FormData;
-using autofill::FormFieldData;
-using autofill::FormSignature;
-using autofill::FormStructure;
-using autofill::NEW_PASSWORD;
-using autofill::NOT_USERNAME;
-using autofill::PASSWORD;
-using autofill::PasswordAttribute;
-using autofill::ServerFieldType;
-using autofill::ServerFieldTypeSet;
-using autofill::SignatureIsSameAs;
-using autofill::SINGLE_USERNAME;
-using autofill::SubmissionEventIsSameAs;
-using autofill::UNKNOWN_TYPE;
-using autofill::mojom::SubmissionIndicatorEvent;
-using base::ASCIIToUTF16;
-using testing::_;
-using testing::AllOf;
-using testing::AnyNumber;
-using testing::IsNull;
-using testing::Return;
-using testing::SaveArg;
-
 namespace password_manager {
 namespace {
+
+using ::autofill::AutofillCrowdsourcingManager;
+using ::autofill::CONFIRMATION_PASSWORD;
+using ::autofill::FieldRendererId;
+using ::autofill::FieldSignature;
+using ::autofill::FormData;
+using ::autofill::FormFieldData;
+using ::autofill::FormSignature;
+using ::autofill::FormStructure;
+using ::autofill::NEW_PASSWORD;
+using ::autofill::NOT_USERNAME;
+using ::autofill::PASSWORD;
+using ::autofill::PasswordAttribute;
+using ::autofill::ServerFieldType;
+using ::autofill::ServerFieldTypeSet;
+using ::autofill::SignatureIsSameAs;
+using ::autofill::SINGLE_USERNAME;
+using ::autofill::SubmissionEventIsSameAs;
+using ::autofill::UNKNOWN_TYPE;
+using ::autofill::mojom::SubmissionIndicatorEvent;
+using ::base::ASCIIToUTF16;
+using ::testing::_;
+using ::testing::AllOf;
+using ::testing::AnyNumber;
+using ::testing::IsNull;
+using ::testing::NiceMock;
+using ::testing::Return;
+using ::testing::SaveArg;
 
 constexpr int kNumberOfPasswordAttributes =
     static_cast<int>(PasswordAttribute::kPasswordAttributesCount);
@@ -89,30 +90,6 @@ MakeSimpleSingleUsernameData() {
       autofill::AutofillUploadContents::USERNAME_LIKE);
   return single_username_data;
 }
-
-class MockAutofillCrowdsourcingManager : public AutofillCrowdsourcingManager {
- public:
-  MockAutofillCrowdsourcingManager()
-      : AutofillCrowdsourcingManager(nullptr,
-                                     version_info::Channel::UNKNOWN,
-                                     nullptr) {}
-
-  MockAutofillCrowdsourcingManager(const MockAutofillCrowdsourcingManager&) =
-      delete;
-  MockAutofillCrowdsourcingManager& operator=(
-      const MockAutofillCrowdsourcingManager&) = delete;
-
-  MOCK_METHOD(bool,
-              StartUploadRequest,
-              (const FormStructure&,
-               bool,
-               const ServerFieldTypeSet&,
-               const std::string&,
-               bool,
-               PrefService*,
-               base::WeakPtr<Observer>),
-              (override));
-};
 
 class MockPasswordManagerClient : public StubPasswordManagerClient {
  public:
@@ -153,8 +130,8 @@ class VotesUploaderTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  MockAutofillCrowdsourcingManager mock_autofill_crowdsourcing_manager_;
-
+  NiceMock<autofill::MockAutofillCrowdsourcingManager>
+      mock_autofill_crowdsourcing_manager_{/*client=*/nullptr};
   MockPasswordManagerClient client_;
 
   PasswordForm form_to_upload_;
