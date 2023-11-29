@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught TypeError: Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
+[FAIL] SanitizerAPI: allowAttributes stays is okay.
+  Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
+Harness: the test ran to completion.
+

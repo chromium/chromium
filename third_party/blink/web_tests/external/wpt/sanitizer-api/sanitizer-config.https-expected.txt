@@ -1,6 +1,23 @@
 This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = Uncaught TypeError: Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-[FAIL] SanitizerAPI: allowAttributes stays is okay.
-  Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
+[FAIL] SanitizerAPI: elements modify is okay.
+  assert_false: expected false got true
+[FAIL] SanitizerAPI: elements config is not kept as reference.
+  assert_false: expected false got true
+[FAIL] SanitizerAPI: replaceWithChildrenElements modify is okay.
+  assert_false: expected false got true
+[FAIL] SanitizerAPI: replaceWithChildrenElements config is not kept as reference.
+  assert_false: expected false got true
+[FAIL] SanitizerAPI: removeElements modify is okay.
+  assert_false: expected false got true
+[FAIL] SanitizerAPI: removeElements config is not kept as reference.
+  assert_false: expected false got true
+[FAIL] SanitizerAPI: attributes modify is okay.
+  assert_false: expected false got true
+[FAIL] SanitizerAPI: attributes config is not kept as reference.
+  assert_false: expected false got true
+[FAIL] SanitizerAPI: removeAttributes modify is okay.
+  assert_false: expected false got true
+[FAIL] SanitizerAPI: removeAttributes config is not kept as reference.
+  assert_false: expected false got true
 Harness: the test ran to completion.
 
