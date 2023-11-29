@@ -113,7 +113,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kBackForwardCache,
     &features::kBackForwardTransitions,
     &features::kBlockMidiByDefault,
-    &features::kBoardingPassDetector,
     &features::kNetworkServiceInProcess,
     &shared_highlighting::kPreemptiveLinkToTextGeneration,
     &features::kElasticOverscroll,
@@ -184,6 +183,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kBackgroundThreadPool,
     &kBaselineGM3SurfaceColors,
     &kBlockIntentsWhileLocked,
+    &kBoardingPassDetector,
     &kCacheActivityTaskID,
     &kCastDeviceFilter,
     &kClearOmniboxFocusAfterNavigation,
@@ -525,6 +525,10 @@ BASE_FEATURE(kBaselineGM3SurfaceColors,
 
 BASE_FEATURE(kBlockIntentsWhileLocked,
              "BlockIntentsWhileLocked",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kBoardingPassDetector,
+             "BoardingPassDetector",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCacheActivityTaskID,
