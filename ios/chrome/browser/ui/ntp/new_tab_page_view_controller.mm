@@ -149,6 +149,9 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   GradientView* _backgroundGradientView;
   // Container view surrounding the feed.
   UIView* _feedContainer;
+  // YES if the view is in the process of appearing, but viewDidAppear hasn't
+  // finished yet.
+  BOOL _appearing;
 }
 
 - (instancetype)init {
@@ -165,6 +168,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
     _focusAccessibilityOmniboxWhenViewAppears = YES;
     _inhibitScrollPositionUpdates = NO;
     _shiftTileStartTime = -1;
+    _appearing = YES;
   }
   return self;
 }
@@ -216,6 +220,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
+  _appearing = YES;
 
   if (IsIOSLargeFakeboxEnabled()) {
     self.headerViewController.view.alpha = 1;
@@ -261,11 +266,6 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   // back to the NTP.
   [self updateFakeOmniboxForScrollPosition];
 
-  if (self.shouldFocusFakebox) {
-    [self shiftTilesUpToFocusOmnibox];
-    self.shouldFocusFakebox = NO;
-  }
-
   if (self.isFeedVisible) {
     [self updateFeedInsetsForMinimumHeight];
   } else {
@@ -287,7 +287,20 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   // whenever an NTP reappears.
   [self handleStickyElementsForScrollPosition:[self scrollPosition] force:YES];
 
+  if (self.shouldFocusFakebox) {
+    self.shouldFocusFakebox = NO;
+    __weak __typeof(self) weakSelf = self;
+    // Since a focus was requested before the view appeared, the shift up to
+    // focus should be performed without animation so that the NTP appears and
+    // is immediately ready to focus the omnibox. The actual focus animation
+    // will still happen.
+    [UIView performWithoutAnimation:^{
+      [weakSelf shiftTilesUpToFocusOmnibox];
+    }];
+  }
+
   self.viewDidAppear = YES;
+  _appearing = NO;
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -407,7 +420,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   // action) needs to wait until it is ready. viewDidAppear: currently serves as
   // this proxy as there is no specific signal given from the feed that its
   // contents have loaded.
-  if (self.isFeedVisible && !self.viewDidAppear) {
+  if (self.isFeedVisible && _appearing) {
     self.shouldFocusFakebox = YES;
   } else {
     [self shiftTilesUpToFocusOmnibox];

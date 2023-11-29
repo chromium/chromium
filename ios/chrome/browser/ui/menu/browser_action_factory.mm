@@ -324,7 +324,9 @@
                   OpenNewTabCommand* command =
                       [OpenNewTabCommand commandWithIncognito:NO];
                   command.shouldFocusOmnibox = YES;
-                  [handler openURLInNewTab:command];
+                  [UIView performWithoutAnimation:^{
+                    [handler openURLInNewTab:command];
+                  }];
                 }];
 
   if (IsIncognitoModeForced(self.browser->GetBrowserState()->GetPrefs())) {
@@ -347,7 +349,9 @@
                         OpenNewTabCommand* command =
                             [OpenNewTabCommand commandWithIncognito:YES];
                         command.shouldFocusOmnibox = YES;
-                        [handler openURLInNewTab:command];
+                        [UIView performWithoutAnimation:^{
+                          [handler openURLInNewTab:command];
+                        }];
                       }];
 
   if (IsIncognitoModeDisabled(self.browser->GetBrowserState()->GetPrefs())) {
