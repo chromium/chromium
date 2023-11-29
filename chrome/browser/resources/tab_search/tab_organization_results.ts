@@ -38,12 +38,21 @@ export class TabOrganizationResultsElement extends PolymerElement {
 
   static get properties() {
     return {
-      tabs: Array,
+      tabs: {
+        type: Array,
+        observer: 'onTabsChange_',
+      },
+
       name: String,
 
       availableHeight: {
         type: Number,
         observer: 'onAvailableHeightChange_',
+      },
+
+      lastFocusedIndex_: {
+        type: Number,
+        value: 0,
       },
 
       tabDatas_: {
@@ -58,6 +67,7 @@ export class TabOrganizationResultsElement extends PolymerElement {
   name: string;
   availableHeight: number;
 
+  private lastFocusedIndex_: number;
   private tabDatas_: TabData[];
 
   static get template() {
@@ -68,6 +78,14 @@ export class TabOrganizationResultsElement extends PolymerElement {
     return this.tabs.map(
         tab => new TabData(
             tab, TabItemType.OPEN_TAB, new URL(tab.url.url).hostname));
+  }
+
+  private onTabsChange_() {
+    this.lastFocusedIndex_ = 0;
+  }
+
+  private getTabIndex_(index: number): number {
+    return index === this.lastFocusedIndex_ ? 0 : -1;
   }
 
   private onAvailableHeightChange_() {
@@ -115,6 +133,7 @@ export class TabOrganizationResultsElement extends PolymerElement {
       const selectedItemCloseButton =
           selectedItem.shadowRoot!.querySelector(`cr-icon-button`)!;
       selectedItemCloseButton.focus();
+      this.lastFocusedIndex_ = this.$.selector.indexOf(selectedItem);
     }
   }
 

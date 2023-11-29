@@ -30,6 +30,8 @@
   cursor: pointer;
   font-size: 13px;
   font-weight: 400;
+  outline-color: var(--color-button-foreground);
+  outline-offset: 2px;
   text-decoration: underline;
 }
 
