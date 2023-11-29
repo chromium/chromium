@@ -93,6 +93,11 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_set.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/metrics/login_unlock_throughput_recorder.h"
 #include "ash/shell.h"
@@ -567,6 +572,32 @@ class SessionRestoreImpl : public BrowserListObserver {
     return result;
   }
 
+  void PruneWindows(
+      std::vector<std::unique_ptr<sessions::SessionWindow>>* windows) {
+#if BUILDFLAG(IS_CHROMEOS)
+    web_app::WebAppProvider* provider =
+        web_app::WebAppProvider::GetForWebApps(profile_);
+    if (!provider) {
+      return;
+    }
+
+    windows->erase(
+        base::ranges::remove_if(
+            *windows,
+            [provider](const std::unique_ptr<sessions::SessionWindow>& window)
+                -> bool {
+              // Windows that are auto-started and prevented from closing are
+              // exempted from session restore.
+              webapps::AppId app_id =
+                  web_app::GetAppIdFromApplicationName(window->app_name);
+              // Checking for close prevention does not require an `AppLock`
+              // and therefore `registrar_unsafe()` is safe to use.
+              return provider->registrar_unsafe().IsPreventCloseEnabled(app_id);
+            }),
+        windows->end());
+#endif  // BUIDLFLAG(IS_CHROMEOS)
+  }
+
   Browser* ProcessSessionWindows(
       std::vector<std::unique_ptr<sessions::SessionWindow>>* windows,
       SessionID active_window_id,
@@ -574,6 +605,8 @@ class SessionRestoreImpl : public BrowserListObserver {
       int* window_count,
       int* tab_count) {
     DVLOG(1) << "ProcessSessionWindows " << windows->size();
+
+    PruneWindows(windows);
 
     if (windows->empty()) {
       // Restore was unsuccessful. The DOM storage system can also delete its

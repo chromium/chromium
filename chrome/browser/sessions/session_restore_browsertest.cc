@@ -125,6 +125,10 @@
 #include "ui/aura/window.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "base/json/json_reader.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 using sessions::ContentTestHelper;
 using sessions::SerializedNavigationEntry;
 using sessions::SerializedNavigationEntryTestHelper;
@@ -3477,6 +3481,127 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, MAYBE_BasicAppSessionRestore) {
   EXPECT_EQ(browsers, 2);
   EXPECT_EQ(apps, 2);
 }
+
+// This feature is only available on ChromeOS.
+// This test opens an unclosable app and ensures that it is not restored.
+#if BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, DontTrackUnclosableApp) {
+  Profile* profile = browser()->profile();
+  auto example_url = GURL("http://www.example.com");
+
+  // Open a PWA.
+  webapps::AppId app_id = InstallPWA(profile, example_url);
+
+  // Make sure the app is unclosable when before it is launched to influence the
+  // tracking for session restore.
+  base::Value::List web_app_settings = base::JSONReader::Read(R"([
+  {
+    "manifest_id": "http://www.example.com",
+    "run_on_os_login": "run_windowed",
+    "prevent_close_after_run_on_os_login": true
+  }
+  ])")
+                                           ->GetList()
+                                           .Clone();
+  profile->GetPrefs()->SetList(prefs::kWebAppSettings,
+                               std::move(web_app_settings));
+
+  Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
+
+  // Pretend to 'close the browser'.
+  // Just shutdown the services as we would if the browser is shutting down for
+  // real.
+  ShutdownServices(profile);
+
+  auto keep_alive = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED);
+  auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+      profile, ProfileKeepAliveOrigin::kBrowserWindow);
+
+  // Remove unclosability setting. The browser should still not be restored
+  // because the app window was not tracked when the browser was closed.
+  profile->GetPrefs()->SetList(prefs::kWebAppSettings, base::Value::List());
+
+  // Now that SessionServices are off, we can close stuff to simulate a closure.
+  CloseBrowserSynchronously(app_browser);
+  CloseBrowserSynchronously(browser());
+
+  ASSERT_EQ(0u, BrowserList::GetInstance()->size());
+
+  // Now trigger a restore.
+  // We need to start up the services again before restoring.
+  StartupServices(profile);
+
+  SessionRestore::RestoreSession(profile, nullptr,
+                                 SessionRestore::SYNCHRONOUS |
+                                     SessionRestore::RESTORE_APPS |
+                                     SessionRestore::RESTORE_BROWSER,
+                                 {});
+
+  for (Browser* browser : *(BrowserList::GetInstance())) {
+    EXPECT_NE(browser->type(), Browser::Type::TYPE_APP);
+  }
+  EXPECT_EQ(1u, BrowserList::GetInstance()->size());
+
+  keep_alive.reset();
+  profile_keep_alive.reset();
+}
+
+IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, DontRestoreUnclosableApp) {
+  Profile* profile = browser()->profile();
+  auto example_url = GURL("http://www.example.com");
+
+  // Open a PWA.
+  webapps::AppId app_id = InstallPWA(profile, example_url);
+  Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
+
+  // Pretend to 'close the browser'.
+  // Just shutdown the services as we would if the browser is shutting down for
+  // real.
+  ShutdownServices(profile);
+
+  auto keep_alive = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED);
+  auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+      profile, ProfileKeepAliveOrigin::kBrowserWindow);
+
+  // Now that SessionServices are off, we can close stuff to simulate a closure.
+  CloseBrowserSynchronously(app_browser);
+  CloseBrowserSynchronously(browser());
+
+  ASSERT_EQ(0u, BrowserList::GetInstance()->size());
+
+  // Now trigger a restore.
+  // We need to start up the services again before restoring.
+  StartupServices(profile);
+
+  base::Value::List web_app_settings = base::JSONReader::Read(R"([
+  {
+    "manifest_id": "http://www.example.com",
+    "run_on_os_login": "run_windowed",
+    "prevent_close_after_run_on_os_login": true
+  }
+  ])")
+                                           ->GetList()
+                                           .Clone();
+  profile->GetPrefs()->SetList(prefs::kWebAppSettings,
+                               std::move(web_app_settings));
+
+  SessionRestore::RestoreSession(profile, nullptr,
+                                 SessionRestore::SYNCHRONOUS |
+                                     SessionRestore::RESTORE_APPS |
+                                     SessionRestore::RESTORE_BROWSER,
+                                 {});
+
+  for (Browser* browser : *(BrowserList::GetInstance())) {
+    EXPECT_NE(browser->type(), Browser::Type::TYPE_APP);
+  }
+  EXPECT_EQ(1u, BrowserList::GetInstance()->size());
+
+  keep_alive.reset();
+  profile_keep_alive.reset();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // This is disabled on mac pending http://crbug.com/1194201
 #if BUILDFLAG(IS_MAC)
