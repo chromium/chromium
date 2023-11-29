@@ -75,7 +75,7 @@ chromium-metrics-reviews@google.com.
   <owner>gildekel@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>
-    Modeset attempt result of an internal display. This is recorded after Chrome
+    Modeset attempt result of an external display. This is recorded after Chrome
     attempted all the available modes and finally modeset the display. All the
     previously attempted modes and refreshes, including the successful one will
     be recorded.
