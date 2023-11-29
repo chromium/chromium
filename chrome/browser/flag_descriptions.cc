@@ -3347,10 +3347,6 @@ const char kCommerceDeveloperName[] = "Commerce developer mode";
 const char kCommerceDeveloperDescription[] =
     "Allows users in the allowlist to enter the developer mode";
 
-const char kCommerceMerchantViewerAndroidName[] = "Merchant Viewer";
-const char kCommerceMerchantViewerAndroidDescription[] =
-    "Allows users to view merchant trust signals on eligible pages.";
-
 const char kTabGroupsSaveId[] = "tab-groups-save";
 const char kTabGroupsSaveName[] = "Tab Groups Save and Sync";
 const char kTabGroupsSaveDescription[] =

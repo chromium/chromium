@@ -2222,11 +2222,6 @@
     "expiry_milestone": 108
   },
   {
-    "name": "enable-commerce-merchant-viewer",
-    "owners": [ "chrome-shopping@google.com" ],
-    "expiry_milestone": 108
-  },
-  {
     "name": "enable-commerce-price-tracking",
     "owners": [ "chrome-shopping@google.com" ],
     "expiry_milestone": 108
