@@ -43,6 +43,8 @@ class AudioDeviceSelectionTestBase : public testing::Test {
   void Unplug(const AudioNode& node);
   void Select(const AudioNode& node);
 
+  void SystemBootsWith(const AudioNodeList& new_nodes);
+
   uint64_t ActiveInputNodeId();
   uint64_t ActiveOutputNodeId();
 

@@ -346,6 +346,28 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugHistogramMetrics) {
                                      expected_system_not_switch_output_count);
 }
 
+TEST_F(AudioDeviceSelectionTest, SystemBootsHistogramMetrics) {
+  AudioNode input_internal = NewInputNode("INTERNAL_MIC");
+  AudioNode input_USB = NewInputNode("USB");
+  AudioNode output_internal = NewOutputNode("INTERNAL_SPEAKER");
+  AudioNode output_USB = NewOutputNode("USB");
+
+  uint16_t expected_system_switch_input_count = 0;
+  uint16_t expected_system_not_switch_input_count = 0;
+  uint16_t expected_system_switch_output_count = 0;
+  uint16_t expected_system_not_switch_output_count = 0;
+
+  // System boots with multiple audio devices.
+  // Expect to record system has switched both input and output.
+  SystemBootsWith({input_internal, input_USB, output_internal, output_USB});
+
+  ExpectSystemDecisionHistogramCount(histogram_tester(),
+                                     ++expected_system_switch_input_count,
+                                     expected_system_not_switch_input_count,
+                                     ++expected_system_switch_output_count,
+                                     expected_system_not_switch_output_count);
+}
+
 TEST_F(AudioDeviceSelectionTest, DevicePrefEviction) {
   base::test::ScopedFeatureList features(
       ash::features::kRobustAudioDeviceSelectLogic);
