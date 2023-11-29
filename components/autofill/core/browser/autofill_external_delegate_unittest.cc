@@ -1377,7 +1377,11 @@ TEST_F(AutofillExternalDelegateUnitTest, AcceptSuggestion_TriggerSource) {
 // corresponding to which field type was used.
 TEST_F(AutofillExternalDelegateUnitTest,
        FieldByFieldFilling_SubPopup_EmitsTypeMetric) {
-  Suggestion suggestion = Suggestion(u"Jon", PopupItemId::kFieldByFieldFilling);
+  const AutofillProfile profile = test::GetFullProfile();
+  pdm().AddProfile(profile);
+  Suggestion suggestion =
+      test::CreateAutofillSuggestion(PopupItemId::kFieldByFieldFilling, u"Jon",
+                                     Suggestion::Guid(profile.guid()));
   suggestion.field_by_field_filling_type_used = std::optional(NAME_FIRST);
   IssueOnQuery();
   manager().OnFormsSeen({queried_form_}, {});

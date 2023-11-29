@@ -430,8 +430,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
           suggestion.main_text.value, suggestion.popup_item_id);
       break;
     case PopupItemId::kFieldByFieldFilling:
-      FillOrPreviewFieldByFieldFillingSuggestion(suggestion, /*is_preview=*/
-                                                 true);
+      PreviewFieldByFieldFillingSuggestion(suggestion);
       break;
     case PopupItemId::kVirtualCreditCardEntry:
       FillAutofillFormData(
@@ -515,37 +514,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
           query_field_.global_id(), suggestion.main_text.value);
       break;
     case PopupItemId::kFieldByFieldFilling:
-      if (const AutofillField* autofill_trigger_field =
-              GetQueriedAutofillField()) {
-        autofill_metrics::LogFillingMethodUsed(
-            autofill_metrics::AutofillFillingMethodMetric::
-                kFieldByFieldFilling);
-        CHECK(suggestion.field_by_field_filling_type_used);
-        // Only log the field-by-field filling type used if it was accepted from
-        // a suggestion in a subpopup. The root popup can have field-by-field
-        // suggestions after a field-by-field suggestion was accepted from a
-        // subpopup, this is done to keep the user in a certain filling
-        // granularity during their filling experience. However only the
-        // subpopups field-by-field-filling types are statically built, based on
-        // what we think is useful/handy (this will in the future vary per
-        // country, see crbug.com/1502162), while field-by-field filling
-        // suggestions in the root popup are dynamically built depending on the
-        // triggering field type, which means that selecting them is the only
-        // option users have in the first level. Therefore we only emit logs for
-        // subpopup acceptance to measure the efficiency of the types we chose
-        // and potentially remove/add new ones.
-        if (position.sub_popup_level > 0) {
-          autofill_metrics::LogFieldByFieldFillingFieldUsed(
-              *(suggestion.field_by_field_filling_type_used));
-        }
-        // We target only the triggering field type in the
-        // PopupItemId::kFieldByFieldFilling case.
-        last_field_types_to_fill_for_address_form_section_
-            [autofill_trigger_field->section] = {
-                autofill_trigger_field->Type().GetStorableType()};
-        FillOrPreviewFieldByFieldFillingSuggestion(suggestion, /*is_preview=*/
-                                                   false);
-      }
+      FillFieldByFieldFillingSuggestion(suggestion, position);
       break;
     case PopupItemId::kIbanEntry:
       // User selected an IBAN suggestion, and we should fill the unmasked IBAN
@@ -881,29 +850,100 @@ void AutofillExternalDelegate::OnCreditCardScanned(
                                {.trigger_source = trigger_source});
 }
 
-void AutofillExternalDelegate::FillOrPreviewFieldByFieldFillingSuggestion(
-    const Suggestion& suggestion,
-    bool is_preview) {
+void AutofillExternalDelegate::PreviewFieldByFieldFillingSuggestion(
+    const Suggestion& suggestion) {
   CHECK_EQ(suggestion.popup_item_id, PopupItemId::kFieldByFieldFilling);
   CHECK(suggestion.field_by_field_filling_type_used);
-  const AutofillProfile* profile =
-      manager_->client().GetPersonalDataManager()->GetProfileByGUID(
-          suggestion.GetBackendId<Suggestion::Guid>().value());
-  if (!profile) {
+  const auto guid = suggestion.GetBackendId<Suggestion::Guid>().value();
+  if (const AutofillProfile* profile =
+          manager_->client().GetPersonalDataManager()->GetProfileByGUID(guid)) {
+    PreviewAddressFieldByFieldFillingSuggestion(*profile, suggestion);
+  } else if (manager_->client().GetPersonalDataManager()->GetCreditCardByGUID(
+                 guid)) {
+    PreviewCreditCardFieldByFieldFillingSuggestion(suggestion);
+  }
+}
+
+void AutofillExternalDelegate::FillFieldByFieldFillingSuggestion(
+    const Suggestion& suggestion,
+    const SuggestionPosition& position) {
+  CHECK_EQ(suggestion.popup_item_id, PopupItemId::kFieldByFieldFilling);
+  CHECK(suggestion.field_by_field_filling_type_used);
+  const auto guid = suggestion.GetBackendId<Suggestion::Guid>().value();
+  if (const AutofillProfile* profile =
+          manager_->client().GetPersonalDataManager()->GetProfileByGUID(guid)) {
+    FillAddressFieldByFieldFillingSuggestion(*profile, suggestion, position);
+  } else if (manager_->client().GetPersonalDataManager()->GetCreditCardByGUID(
+                 guid)) {
+    FillCreditCardFieldByFieldFillingSuggestion(suggestion);
+  }
+}
+
+void AutofillExternalDelegate::PreviewAddressFieldByFieldFillingSuggestion(
+    const AutofillProfile& profile,
+    const Suggestion& suggestion) {
+  if (const std::optional<std::u16string> value_to_fill = GetValueForProfile(
+          profile, manager_->app_locale(),
+          AutofillType(*suggestion.field_by_field_filling_type_used),
+          query_field_, manager_->client().GetAddressNormalizer())) {
+    manager_->FillOrPreviewField(
+        mojom::ActionPersistence::kPreview, mojom::TextReplacement::kReplaceAll,
+        query_form_, query_field_, *value_to_fill, suggestion.popup_item_id);
+  }
+}
+
+void AutofillExternalDelegate::FillAddressFieldByFieldFillingSuggestion(
+    const AutofillProfile& profile,
+    const Suggestion& suggestion,
+    const SuggestionPosition& position) {
+  const AutofillField* autofill_trigger_field;
+  if (autofill_trigger_field = GetQueriedAutofillField();
+      !autofill_trigger_field) {
     return;
   }
-  const std::optional<std::u16string> value_to_fill = GetValueForProfile(
-      *profile, manager_->app_locale(),
-      AutofillType(*suggestion.field_by_field_filling_type_used), query_field_,
-      manager_->client().GetAddressNormalizer());
-  if (!value_to_fill) {
-    return;
+  autofill_metrics::LogFillingMethodUsed(
+      autofill_metrics::AutofillFillingMethodMetric::kFieldByFieldFilling);
+  // Only log the field-by-field filling type used if it was accepted from
+  // a suggestion in a subpopup. The root popup can have field-by-field
+  // suggestions after a field-by-field suggestion was accepted from a
+  // subpopup, this is done to keep the user in a certain filling
+  // granularity during their filling experience. However only the
+  // subpopups field-by-field-filling types are statically built, based on
+  // what we think is useful/handy (this will in the future vary per
+  // country, see crbug.com/1502162), while field-by-field filling
+  // suggestions in the root popup are dynamically built depending on the
+  // triggering field type, which means that selecting them is the only
+  // option users have in the first level. Therefore we only emit logs for
+  // subpopup acceptance to measure the efficiency of the types we chose
+  // and potentially remove/add new ones.
+  if (position.sub_popup_level > 0) {
+    autofill_metrics::LogFieldByFieldFillingFieldUsed(
+        *(suggestion.field_by_field_filling_type_used));
   }
-  manager_->FillOrPreviewField(is_preview ? mojom::ActionPersistence::kPreview
-                                          : mojom::ActionPersistence::kFill,
-                               mojom::TextReplacement::kReplaceAll, query_form_,
-                               query_field_, *value_to_fill,
-                               suggestion.popup_item_id);
+  // We target only the triggering field type in the
+  // PopupItemId::kFieldByFieldFilling case.
+  last_field_types_to_fill_for_address_form_section_[autofill_trigger_field
+                                                         ->section] = {
+      autofill_trigger_field->Type().GetStorableType()};
+
+  if (const std::optional<std::u16string> value_to_fill = GetValueForProfile(
+          profile, manager_->app_locale(),
+          AutofillType(*suggestion.field_by_field_filling_type_used),
+          query_field_, manager_->client().GetAddressNormalizer())) {
+    manager_->FillOrPreviewField(
+        mojom::ActionPersistence::kFill, mojom::TextReplacement::kReplaceAll,
+        query_form_, query_field_, *value_to_fill, suggestion.popup_item_id);
+  }
+}
+
+void AutofillExternalDelegate::PreviewCreditCardFieldByFieldFillingSuggestion(
+    const Suggestion& suggestion) {
+  // TODO(crbug.com/1493361): Preview credit card field-by-field suggestion.
+}
+
+void AutofillExternalDelegate::FillCreditCardFieldByFieldFillingSuggestion(
+    const Suggestion& suggestion) {
+  // TODO(crbug.com/1493361): Fill credit card field-by-field suggestion.
 }
 
 void AutofillExternalDelegate::FillAutofillFormData(

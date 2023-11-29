@@ -176,12 +176,37 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
                             bool is_preview,
                             const AutofillTriggerDetails& trigger_details);
 
-  // Used by `PopupItemId::kFieldByFieldFilling` suggestions. Fills the `field`
-  // with the info stored in the `AutofillProfile` for the field type
-  // `suggestion.field_by_field_filling_type_used`. `is_preview` has the same
-  // meaning as the one in `FillAutofillFormData()`.
-  void FillOrPreviewFieldByFieldFillingSuggestion(const Suggestion& suggestion,
-                                                  bool is_preview);
+  // Determines the correct data type (`AutofillProfile` or `CreditCard`) to be
+  // previewed and previews the corresponding
+  // `PopupItemId::kFieldByFieldFilling` suggestion.
+  void PreviewFieldByFieldFillingSuggestion(const Suggestion& suggestion);
+
+  // Determines the correct data type (`AutofillProfile` or `CreditCard`) to be
+  // filled and fills the corresponding `PopupItemId::kFieldByFieldFilling`
+  // suggestion.
+  void FillFieldByFieldFillingSuggestion(const Suggestion& suggestion,
+                                         const SuggestionPosition& position);
+
+  // Previews the value from `profile` specified in the `suggestion`.
+  void PreviewAddressFieldByFieldFillingSuggestion(
+      const AutofillProfile& profile,
+      const Suggestion& suggestion);
+
+  // Previews the main text from the `suggestion`.
+  void PreviewCreditCardFieldByFieldFillingSuggestion(
+      const Suggestion& suggestion);
+
+  // Fills the value from `profile` specified in the `suggestion`. Emits
+  // necessary metrics based on the
+  // `suggestion.field_by_field_filling_type_used`.
+  void FillAddressFieldByFieldFillingSuggestion(
+      const AutofillProfile& profile,
+      const Suggestion& suggestion,
+      const SuggestionPosition& position);
+
+  // Fills the main text from the `suggestion`.
+  void FillCreditCardFieldByFieldFillingSuggestion(
+      const Suggestion& suggestion);
 
   // Will remove Autofill warnings from |suggestions| if there are also
   // autocomplete entries in the vector. Note: at this point, it is assumed that
