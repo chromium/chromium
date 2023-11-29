@@ -56,7 +56,8 @@ bool CheckSecurityRestrictions(LocalFrame& frame) {
     return false;
   }
 
-  if (frame.GetDocument()->contentType() != "text/html") {
+  AtomicString content_type = frame.GetDocument()->contentType();
+  if (content_type != "text/html" && content_type != "text/plain") {
     TRACE_EVENT_INSTANT("blink", "CheckSecurityRestrictions", "Result",
                         "Invalid ContentType");
     return false;

@@ -23,3 +23,5 @@ In 2006, the W3C indicated an interest to participate in the development of HTML
 For a number of years, both groups then worked together. In 2011, however, the groups came to the conclusion that they had different goals: the W3C wanted to publish a "finished" version of "HTML5", while the WHATWG wanted to continue working on a Living Standard for HTML, continuously maintaining the specification rather than freezing it in a state with known problems, and adding new features as needed to evolve the platform.
 
 In 2019, the WHATWG and W3C signed an agreement to collaborate on a single version of HTML going forward: this document.
+
+target
