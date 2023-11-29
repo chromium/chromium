@@ -1210,6 +1210,25 @@ void AutofillAgent::ExtractForms(base::OneShotTimer& timer,
                              base::Unretained(this), std::move(callback)));
 }
 
+void AutofillAgent::ExtractFormsForPasswordAutofillAgent(
+    base::OneShotTimer& timer) {
+  static constexpr base::TimeDelta kThrottle = base::Milliseconds(100);
+  if (!is_dom_content_loaded_ || timer.IsRunning()) {
+    return;
+  }
+  timer.Start(
+      FROM_HERE, kThrottle,
+      base::BindOnce(
+          &AutofillAgent::ExtractFormsUnthrottled, base::Unretained(this),
+          base::BindOnce(
+              [](PasswordAutofillAgent* password_autofill_agent, bool success) {
+                if (success) {
+                  password_autofill_agent->OnDynamicFormsSeen();
+                }
+              },
+              base::Unretained(password_autofill_agent_.get()))));
+}
+
 void AutofillAgent::ExtractFormsUnthrottled(
     base::OnceCallback<void(bool)> callback) {
   if (!form_cache_) {
@@ -1259,15 +1278,8 @@ void AutofillAgent::DidChangeFormRelatedElementDynamically(
   }
   // If the control flow is here than the document was at least loaded. The
   // whole page doesn't have to be loaded.
-  ExtractForms(
-      process_forms_after_dynamic_change_timer_,
-      base::BindOnce(
-          [](PasswordAutofillAgent* password_autofill_agent, bool success) {
-            if (success) {
-              password_autofill_agent->OnDynamicFormsSeen();
-            }
-          },
-          base::Unretained(password_autofill_agent_.get())));
+  ExtractFormsForPasswordAutofillAgent(
+      process_forms_after_dynamic_change_timer_);
 }
 
 void AutofillAgent::DidCompleteFocusChangeInFrame() {

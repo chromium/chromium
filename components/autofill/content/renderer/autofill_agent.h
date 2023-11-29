@@ -350,7 +350,12 @@ class AutofillAgent : public content::RenderFrameObserver,
   void ExtractForms(base::OneShotTimer& timer,
                     base::OnceCallback<void(bool)> callback);
 
-  // Extracts new and/or removed forms and triggers AutofillDriver::FormsSeen().
+  // This function can be implemented through the one above, but it exists to
+  // avoid memory allocation for the OnceCallback state. Allocation and
+  // destruction of this callback in the hot path (when timer is already
+  // running) is expensive.
+  void ExtractFormsForPasswordAutofillAgent(base::OneShotTimer& timer);
+
   void ExtractFormsUnthrottled(base::OnceCallback<void(bool)> callback);
 
   // Hides any currently showing Autofill popup.
