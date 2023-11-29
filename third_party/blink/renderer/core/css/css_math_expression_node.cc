@@ -1437,6 +1437,18 @@ CSSMathExpressionOperation::CSSMathExpressionOperation(
       operands_({left_side, right_side}),
       operator_(op) {}
 
+bool CSSMathExpressionOperation::InvolvesPercentage() const {
+  if (Category() == kCalcPercent || Category() == kCalcPercentLength) {
+    return true;
+  }
+  for (const CSSMathExpressionNode* operand : operands_) {
+    if (operand->InvolvesPercentage()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 static bool AnyOperandHasComparisons(
     CSSMathExpressionOperation::Operands& operands) {
   for (const CSSMathExpressionNode* operand : operands) {
