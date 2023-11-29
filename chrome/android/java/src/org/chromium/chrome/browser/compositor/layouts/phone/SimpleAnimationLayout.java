@@ -24,7 +24,9 @@ import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.resources.ResourceManager;
 
@@ -62,6 +64,9 @@ public class SimpleAnimationLayout extends Layout {
     private final TabListSceneLayer mSceneLayer;
     private final BlackHoleEventFilter mBlackHoleEventFilter;
 
+    // The tab to select on finishing the animation.
+    private int mNextTabId;
+
     /**
      * Creates an instance of the {@link SimpleAnimationLayout}.
      * @param context     The current Android's context.
@@ -81,8 +86,17 @@ public class SimpleAnimationLayout extends Layout {
     }
 
     @Override
+    public void doneHiding() {
+        TabModelUtils.selectTabById(
+                mTabModelSelector, mNextTabId, TabSelectionType.FROM_USER, false);
+        super.doneHiding();
+    }
+
+    @Override
     public void show(long time, boolean animate) {
         super.show(time, animate);
+
+        mNextTabId = Tab.INVALID_TAB_ID;
 
         if (mTabModelSelector != null && mTabContentManager != null) {
             Tab tab = mTabModelSelector.getCurrentTab();
@@ -226,7 +240,8 @@ public class SimpleAnimationLayout extends Layout {
         mTabCreatedForegroundAnimation.start();
 
         mTabModelSelector.selectModel(newIsIncognito);
-        startHiding(id);
+        mNextTabId = id;
+        startHiding();
     }
 
     /**
@@ -438,7 +453,8 @@ public class SimpleAnimationLayout extends Layout {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         // Once the animation has finished, we can switch layouts.
-                        startHiding(sourceId);
+                        mNextTabId = sourceId;
+                        startHiding();
                     }
                 });
         step3.playTogether(animationList);

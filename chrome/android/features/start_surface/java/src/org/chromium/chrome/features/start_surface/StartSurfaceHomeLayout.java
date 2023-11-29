@@ -86,10 +86,10 @@ public class StartSurfaceHomeLayout extends Layout {
     }
 
     @Override
-    public void startHiding(int nextTabId) {
+    public void startHiding() {
         try (TraceEvent e = TraceEvent.scoped(TRACE_HIDE_START_SURFACE)) {
             StartSurfaceUserData.getInstance().setUnusedTabRestoredAtStartup(false);
-            super.startHiding(nextTabId);
+            super.startHiding();
             mIsShown = false;
             mStartSurface.hide(false);
             doneHiding();
@@ -172,6 +172,6 @@ public class StartSurfaceHomeLayout extends Layout {
 
     private void onTabSelecting(int tabId) {
         TabModelUtils.selectTabById(mTabModelSelector, tabId, TabSelectionType.FROM_USER, false);
-        startHiding(tabId);
+        startHiding();
     }
 }

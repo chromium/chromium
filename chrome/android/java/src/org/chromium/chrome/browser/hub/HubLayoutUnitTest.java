@@ -622,7 +622,12 @@ public class HubLayoutUnitTest {
         when(mLayoutStateProvider.getActiveLayoutType()).thenReturn(layoutType);
         when(mLayoutStateProvider.getNextLayoutType()).thenReturn(nextLayout);
 
-        mHubLayout.startHiding(nextTabId);
+        // This selection happens before anything else in selectTabAndHideHubLayout. Mock it before
+        // the call.
+        if (nextTabId != Tab.INVALID_TAB_ID) {
+            when(mTabModelSelector.getCurrentTabId()).thenReturn(nextTabId);
+        }
+        mHubLayout.selectTabAndHideHubLayout(nextTabId);
     }
 
     private void animateCheckingSceneLayerAndLayoutTabs(

@@ -1096,7 +1096,7 @@ public class LayoutManagerImpl
         Layout activeLayout = getActiveLayout();
         if (activeLayout != null && !activeLayout.isStartingToHide()) {
             setNextLayout(getLayoutForType(layoutType), animate);
-            activeLayout.startHiding(Tab.INVALID_TAB_ID);
+            activeLayout.startHiding();
         } else {
             startShowing(getLayoutForType(layoutType), animate);
         }

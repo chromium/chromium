@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
+import org.chromium.chrome.browser.tab.TabLoadIfNeededCaller;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -172,6 +173,10 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
                 @Override
                 public void startedHiding() {
                     removeFinishedShowingRunnable();
+                    Tab currentTab = mTabModelSelector.getCurrentTab();
+                    if (currentTab != null && currentTab.isHidden()) {
+                        currentTab.show(TabSelectionType.FROM_USER, TabLoadIfNeededCaller.SET_TAB);
+                    }
                 }
 
                 @Override
@@ -443,37 +448,34 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
     }
 
     @Override
-    public void startHiding(int nextId) {
+    public void startHiding() {
         int startSurfaceState = mStartSurface.getStartSurfaceState();
         StartSurfaceUserData.getInstance().setUnusedTabRestoredAtStartup(false);
         if (startSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
-            startHidingStartSurface(nextId);
+            startHidingStartSurface();
         } else {
-            startHidingTabSwitcher(nextId);
+            startHidingTabSwitcher();
         }
     }
 
-    private void startHidingStartSurface(int nextId) {
+    private void startHidingStartSurface() {
         try (TraceEvent e = TraceEvent.scoped(TRACE_HIDE_START_SURFACE)) {
-            startHidingImpl(nextId);
+            startHidingImpl();
         }
     }
 
-    private void startHidingTabSwitcher(int nextId) {
+    private void startHidingTabSwitcher() {
         try (TraceEvent e = TraceEvent.scoped(TRACE_HIDE_TAB_SWITCHER)) {
             mTransitionStartTime = SystemClock.elapsedRealtime();
 
-            startHidingImpl(nextId);
+            startHidingImpl();
         }
     }
 
-    private void startHidingImpl(int nextId) {
-        super.startHiding(nextId);
+    private void startHidingImpl() {
+        super.startHiding();
 
-        int sourceTabId = nextId;
-        if (sourceTabId == Tab.INVALID_TAB_ID) {
-            sourceTabId = mTabModelSelector.getCurrentTabId();
-        }
+        int sourceTabId = mTabModelSelector.getCurrentTabId();
 
         LayoutTab sourceLayoutTab =
                 createLayoutTab(sourceTabId, mTabModelSelector.isIncognitoSelected());
@@ -1060,6 +1062,6 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
 
     private void onTabSelecting(int tabId) {
         TabModelUtils.selectTabById(mTabModelSelector, tabId, TabSelectionType.FROM_USER, false);
-        startHiding(tabId);
+        startHiding();
     }
 }

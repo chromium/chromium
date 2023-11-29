@@ -137,11 +137,7 @@ public class HubLayout extends Layout implements HubLayoutController {
     @Override
     public void selectTabAndHideHubLayout(int tabId) {
         TabModelUtils.selectTabById(mTabModelSelector, tabId, TabSelectionType.FROM_USER, false);
-
-        // Don't forward a tabId as it is only used to select the tab again in doneHiding() which is
-        // redundant work.
-        // TODO(crbug/1495121): Find a way to remove the tabId parameter from start hiding.
-        startHiding(Tab.INVALID_TAB_ID);
+        startHiding();
     }
 
     @Override
@@ -262,10 +258,10 @@ public class HubLayout extends Layout implements HubLayoutController {
     }
 
     @Override
-    public void startHiding(int nextTabId) {
+    public void startHiding() {
         if (isStartingToHide()) return;
 
-        super.startHiding(nextTabId);
+        super.startHiding();
 
         // Use the EXPAND_NEW_TAB animation if it is already prepared.
         if (getCurrentAnimationType() == HubLayoutAnimationType.EXPAND_NEW_TAB) {
@@ -275,10 +271,7 @@ public class HubLayout extends Layout implements HubLayoutController {
 
         forceAnimationToFinish();
 
-        // TODO(crbug/1495121): Remove the need for this logic if feasible and just get the value
-        // from TabModelSelector.
-        int tabId =
-                nextTabId != Tab.INVALID_TAB_ID ? nextTabId : mTabModelSelector.getCurrentTabId();
+        int tabId = mTabModelSelector.getCurrentTabId();
         @LayoutType int nextLayoutType = mLayoutStateProvider.getNextLayoutType();
         if (nextLayoutType == LayoutType.BROWSING) {
             // During fade and translate animations the composited scene layer is visible. At the

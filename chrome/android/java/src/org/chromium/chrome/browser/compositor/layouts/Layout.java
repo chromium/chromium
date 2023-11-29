@@ -20,10 +20,8 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.resources.ResourceManager;
 
@@ -120,9 +118,6 @@ public abstract class Layout {
 
     // Current state of the Layout.
     private @LayoutState int mLayoutState;
-
-    // The next id to show when the layout is hidden, or TabBase#INVALID_TAB_ID if no change.
-    protected int mNextTabId = Tab.INVALID_TAB_ID;
 
     // The ratio of dp to px.
     protected final float mDpToPx;
@@ -405,15 +400,10 @@ public abstract class Layout {
         updateCacheVisibleIdsAndPrimary(visible, Tab.INVALID_TAB_ID);
     }
 
-    /**
-     * To be called when the layout is starting a transition out of the view mode.
-     *
-     * @param nextTabId The id of the next tab.
-     */
-    public void startHiding(int nextTabId) {
+    /** To be called when the layout is starting a transition out of the view mode. */
+    public void startHiding() {
         mUpdateHost.startHiding();
         mLayoutState = LayoutState.STARTING_TO_HIDE;
-        mNextTabId = nextTabId;
     }
 
     /**
@@ -453,9 +443,6 @@ public abstract class Layout {
         if (mLayoutState != LayoutState.STARTING_TO_HIDE) return;
 
         mLayoutState = LayoutState.HIDDEN;
-        TabModelUtils.selectTabById(
-                mTabModelSelector, mNextTabId, TabSelectionType.FROM_USER, false);
-        mNextTabId = Tab.INVALID_TAB_ID;
         mUpdateHost.doneHiding();
         if (mRenderHost != null && mRenderHost.getResourceManager() != null) {
             mRenderHost.getResourceManager().clearTintedResourceCache();
@@ -472,7 +459,6 @@ public abstract class Layout {
     public void show(long time, boolean animate) {
         // TODO(crbug.com/1108496): Remove after LayoutManager explicitly hide the old layout.
         mLayoutState = LayoutState.STARTING_TO_SHOW;
-        mNextTabId = Tab.INVALID_TAB_ID;
     }
 
     /**

@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
+import org.chromium.chrome.browser.tab.TabLoadIfNeededCaller;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -533,14 +534,14 @@ public class TabSwitcherLayout extends Layout {
     }
 
     @Override
-    public void startHiding(int nextId) {
+    public void startHiding() {
         try (TraceEvent e = TraceEvent.scoped(TRACE_HIDE_TAB_SWITCHER)) {
             // This is already in the process of hiding. No-op.
             if (isStartingToHide()) return;
 
             mTransitionStartTime = SystemClock.elapsedRealtime();
 
-            super.startHiding(nextId);
+            super.startHiding();
 
             // The new tab animation will handle the rest of the hide.
             if (mRunningNewTabAnimation) return;
@@ -552,12 +553,13 @@ public class TabSwitcherLayout extends Layout {
             mBackToStartSurface =
                     mLayoutStateProvider.getNextLayoutType() == LayoutType.START_SURFACE;
 
-            int sourceTabId = nextId;
-            if (sourceTabId == Tab.INVALID_TAB_ID) {
-                sourceTabId = mTabModelSelector.getCurrentTabId();
-            }
+            int sourceTabId = mTabModelSelector.getCurrentTabId();
 
             clearFinishedShowingRunnable();
+            Tab currentTab = mTabModelSelector.getCurrentTab();
+            if (currentTab != null && currentTab.isHidden()) {
+                currentTab.show(TabSelectionType.FROM_USER, TabLoadIfNeededCaller.SET_TAB);
+            }
 
             boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext());
             boolean tabGtsAnimationEnabled =
@@ -1503,6 +1505,6 @@ public class TabSwitcherLayout extends Layout {
 
     private void onTabSelecting(int tabId) {
         TabModelUtils.selectTabById(mTabModelSelector, tabId, TabSelectionType.FROM_USER, false);
-        startHiding(tabId);
+        startHiding();
     }
 }

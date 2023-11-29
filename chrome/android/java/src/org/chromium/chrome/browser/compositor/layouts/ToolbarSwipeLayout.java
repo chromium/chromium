@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
@@ -87,6 +88,9 @@ public class ToolbarSwipeLayout extends Layout {
     private boolean mIsSwitchToStaticTab;
     private int mToTabId;
     private int mFromTabId;
+
+    // The tab to select on finishing the animation.
+    private int mNextTabId;
 
     /**
      * @param context             The current Android's context.
@@ -169,9 +173,17 @@ public class ToolbarSwipeLayout extends Layout {
     }
 
     @Override
+    public void doneHiding() {
+        TabModelUtils.selectTabById(
+                mTabModelSelector, mNextTabId, TabSelectionType.FROM_USER, false);
+        super.doneHiding();
+    }
+
+    @Override
     public void show(long time, boolean animate) {
         super.show(time, animate);
         init();
+        mNextTabId = Tab.INVALID_TAB_ID;
         if (mTabModelSelector == null) return;
         Tab tab = mTabModelSelector.getCurrentTab();
         if (tab != null && tab.isNativePage()) mTabContentManager.cacheTabThumbnail(tab);
@@ -337,7 +349,8 @@ public class ToolbarSwipeLayout extends Layout {
             RecordUserAction.record("MobileSideSwipeFinished");
         }
 
-        startHiding(mToTab.getId());
+        mNextTabId = mToTab.getId();
+        startHiding();
 
         float start = mOffsetTarget;
         float end = offsetTo;
@@ -539,7 +552,8 @@ public class ToolbarSwipeLayout extends Layout {
 
         mToTab = fromTabIndex < toTabIndex ? mRightTab : mLeftTab;
         float end = fromTabIndex < toTabIndex ? -getWidth() : getWidth();
-        startHiding(toTabId);
+        mNextTabId = toTabId;
+        startHiding();
         doTabSwitchAnimation(toTabId, 0f, end, SWITCH_TO_TAB_DURATION_MS);
     }
 
