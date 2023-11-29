@@ -20541,14 +20541,14 @@
             ],
             "experiments": [
                 {
-                    "name": "Control",
-                    "disable_features": [
+                    "name": "Enabled",
+                    "enable_features": [
                         "WebAssemblyTurboshaft"
                     ]
                 },
                 {
-                    "name": "Enabled",
-                    "enable_features": [
+                    "name": "Control",
+                    "disable_features": [
                         "WebAssemblyTurboshaft"
                     ]
                 }
