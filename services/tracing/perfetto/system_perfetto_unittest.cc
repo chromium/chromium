@@ -35,7 +35,7 @@
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "testing/gtest/include/gtest/gtest-death-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/perfetto/include/perfetto/ext/tracing/ipc/default_socket.h"
+#include "third_party/perfetto/include/perfetto/tracing/default_socket.h"
 #include "third_party/perfetto/protos/perfetto/config/trace_config.pb.h"
 #include "third_party/perfetto/protos/perfetto/trace/trace.pb.h"
 

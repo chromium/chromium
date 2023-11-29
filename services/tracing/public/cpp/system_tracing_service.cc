@@ -17,7 +17,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "services/tracing/public/cpp/system_tracing_service.h"
-#include "third_party/perfetto/include/perfetto/ext/tracing/ipc/default_socket.h"  // nogncheck
+#include "third_party/perfetto/include/perfetto/tracing/default_socket.h"  // nogncheck
 
 namespace tracing {
 
