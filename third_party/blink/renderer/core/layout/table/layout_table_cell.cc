@@ -36,6 +36,18 @@ LayoutTableCell* LayoutTableCell::CreateAnonymousWithParent(
   return new_cell;
 }
 
+void LayoutTableCell::InvalidateLayoutResultCacheAfterMeasure() const {
+  NOT_DESTROYED();
+  if (LayoutBox* row = ParentBox()) {
+    DCHECK(row->IsTableRow());
+    row->SetShouldSkipLayoutCache(true);
+    if (LayoutBox* section = row->ParentBox()) {
+      DCHECK(section->IsTableSection());
+      section->SetShouldSkipLayoutCache(true);
+    }
+  }
+}
+
 LayoutUnit LayoutTableCell::BorderTop() const {
   NOT_DESTROYED();
   // TODO(1061423) Should return cell border, not fragment border.
