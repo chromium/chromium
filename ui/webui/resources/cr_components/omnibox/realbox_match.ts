@@ -127,6 +127,12 @@ export class RealboxMatchElement extends PolymerElement {
         value: -1,
       },
 
+      realboxConsistentRowHeight: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('realboxCr23ConsistentRowHeight'),
+        reflectToAttribute: true,
+      },
+
       sideType: Number,
 
       /** String representation of `sideType` to use in CSS. */
@@ -194,6 +200,7 @@ export class RealboxMatchElement extends PolymerElement {
   hasImage: boolean;
   match: AutocompleteMatch;
   matchIndex: number;
+  realboxConsistentRowHeight: boolean;
   sideType: SideType;
   private actionIsVisible_: boolean;
   private contentsHtml_: TrustedHTML;
