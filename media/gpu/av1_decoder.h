@@ -82,6 +82,16 @@ class MEDIA_GPU_EXPORT AV1Decoder : public AcceleratedVideoDecoder {
     // case and treat it as normal, returning kRanOutOfSurfaces from Decode().
     virtual scoped_refptr<AV1Picture> CreateAV1Picture(bool apply_grain) = 0;
 
+    // |secure_handle| is a reference to the corresponding secure memory when
+    // doing secure decoding on ARM. This is invoked instead of CreateAV1Picture
+    // when doing secure decoding on ARM. Default implementation returns
+    // nullptr.
+    // TODO(jkardatzke): Remove this once we move to the V4L2 flat stateless
+    // decoder and add a field to media::CodecPicture instead.
+    virtual scoped_refptr<AV1Picture> CreateAV1PictureSecure(
+        bool apply_grain,
+        uint64_t secure_handle);
+
     // Submits |pic| to the driver for accelerated decoding. The following
     // parameters are also passed:
     // - |sequence_header|: the current OBU sequence header.
@@ -176,6 +186,10 @@ class MEDIA_GPU_EXPORT AV1Decoder : public AcceleratedVideoDecoder {
   const uint8_t* stream_ = nullptr;
   size_t stream_size_ = 0;
   std::unique_ptr<DecryptConfig> decrypt_config_;
+
+  // Secure handle to pass through to the accelerator when doing secure playback
+  // on ARM.
+  uint64_t secure_handle_ = 0;
 
   // Pending picture for decode when accelerator returns kTryAgain.
   scoped_refptr<AV1Picture> pending_pic_;

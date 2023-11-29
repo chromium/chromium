@@ -102,6 +102,11 @@ VP9Decoder::VP9Accelerator::VP9Accelerator() {}
 
 VP9Decoder::VP9Accelerator::~VP9Accelerator() {}
 
+scoped_refptr<VP9Picture> VP9Decoder::VP9Accelerator::CreateVP9PictureSecure(
+    uint64_t secure_handle) {
+  return nullptr;
+}
+
 VP9Decoder::VP9Decoder(std::unique_ptr<VP9Accelerator> accelerator,
                        VideoCodecProfile profile,
                        const VideoColorSpace& container_color_space)
@@ -129,6 +134,12 @@ void VP9Decoder::SetStream(int32_t id, const DecoderBuffer& decoder_buffer) {
     SetError();
     return;
   }
+  if (decoder_buffer.has_side_data() &&
+      decoder_buffer.side_data()->secure_handle) {
+    secure_handle_ = decoder_buffer.side_data()->secure_handle;
+  } else {
+    secure_handle_ = 0;
+  }
 
   parser_.SetStream(ptr, size, frame_sizes,
                     decrypt_config ? decrypt_config->Clone() : nullptr);
@@ -148,6 +159,8 @@ void VP9Decoder::Reset() {
   ref_frames_.Clear();
 
   parser_.Reset();
+
+  secure_handle_ = 0;
 
   if (state_ == kDecoding) {
     state_ = kAfterReset;
@@ -335,7 +348,12 @@ VP9Decoder::DecodeResult VP9Decoder::Decode() {
       return kConfigChange;
     }
 
-    scoped_refptr<VP9Picture> pic = accelerator_->CreateVP9Picture();
+    scoped_refptr<VP9Picture> pic;
+    if (secure_handle_) {
+      pic = accelerator_->CreateVP9PictureSecure(secure_handle_);
+    } else {
+      pic = accelerator_->CreateVP9Picture();
+    }
     if (!pic) {
       return kRanOutOfSurfaces;
     }

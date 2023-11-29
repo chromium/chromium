@@ -36,6 +36,8 @@ class V4L2VideoDecoderDelegateH264 : public H264Decoder::H264Accelerator {
 
   // H264Decoder::H264Accelerator implementation.
   scoped_refptr<H264Picture> CreateH264Picture() override;
+  scoped_refptr<H264Picture> CreateH264PictureSecure(
+      uint64_t secure_handle) override;
   Status SubmitFrameMetadata(const H264SPS* sps,
                              const H264PPS* pps,
                              const H264DPB& dpb,
@@ -54,9 +56,6 @@ class V4L2VideoDecoderDelegateH264 : public H264Decoder::H264Accelerator {
   Status SubmitDecode(scoped_refptr<H264Picture> pic) override;
   bool OutputPicture(scoped_refptr<H264Picture> pic) override;
   void Reset() override;
-  Status SetStream(base::span<const uint8_t> stream,
-                   const DecryptConfig* decrypt_config,
-                   uint64_t secure_handle) override;
 
  private:
   std::vector<scoped_refptr<V4L2DecodeSurface>> H264DPBToV4L2DPB(
@@ -70,11 +69,6 @@ class V4L2VideoDecoderDelegateH264 : public H264Decoder::H264Accelerator {
   // Contains the kernel-specific structures that we don't want to expose
   // outside of the compilation unit.
   const std::unique_ptr<V4L2VideoDecoderDelegateH264Private> priv_;
-
-  // Secure handle that identifies the buffer w/ the decrypted contents in the
-  // secure world. Used to resolve to the corresponding FD that references the
-  // secure world memory (V4L2 will resolve that fd back to this same value).
-  uint64_t secure_handle_;
 };
 
 }  // namespace media

@@ -28,6 +28,8 @@ class V4L2VideoDecoderDelegateVP9 : public VP9Decoder::VP9Accelerator {
 
   // VP9Decoder::VP9Accelerator implementation.
   scoped_refptr<VP9Picture> CreateVP9Picture() override;
+  scoped_refptr<VP9Picture> CreateVP9PictureSecure(
+      uint64_t secure_handle) override;
   Status SubmitDecode(scoped_refptr<VP9Picture> pic,
                       const Vp9SegmentationParams& segm_params,
                       const Vp9LoopFilterParams& lf_params,

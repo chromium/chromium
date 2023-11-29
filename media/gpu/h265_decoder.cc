@@ -79,6 +79,11 @@ H265Decoder::H265Accelerator::H265Accelerator() = default;
 
 H265Decoder::H265Accelerator::~H265Accelerator() = default;
 
+scoped_refptr<H265Picture>
+H265Decoder::H265Accelerator::CreateH265PictureSecure(uint64_t secure_handle) {
+  return nullptr;
+}
+
 void H265Decoder::H265Accelerator::ProcessVPS(
     const H265VPS* vps,
     base::span<const uint8_t> vps_nalu_data) {}
@@ -156,6 +161,12 @@ void H265Decoder::SetStream(int32_t id, const DecoderBuffer& decoder_buffer) {
     parser_.SetStream(ptr, size);
     current_decrypt_config_ = nullptr;
   }
+  if (decoder_buffer.has_side_data() &&
+      decoder_buffer.side_data()->secure_handle) {
+    secure_handle_ = decoder_buffer.side_data()->secure_handle;
+  } else {
+    secure_handle_ = 0;
+  }
 }
 
 void H265Decoder::Reset() {
@@ -181,6 +192,8 @@ void H265Decoder::Reset() {
   dpb_.Clear();
   parser_.Reset();
   accelerator_->Reset();
+
+  secure_handle_ = 0;
 
   state_ = kAfterReset;
 }
@@ -386,7 +399,11 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
           } else {
             // New picture, try to start a new one or tell client we need more
             // surfaces.
-            curr_pic_ = accelerator_->CreateH265Picture();
+            if (secure_handle_) {
+              curr_pic_ = accelerator_->CreateH265PictureSecure(secure_handle_);
+            } else {
+              curr_pic_ = accelerator_->CreateH265Picture();
+            }
             if (!curr_pic_)
               return kRanOutOfSurfaces;
             if (current_decrypt_config_)
@@ -1253,6 +1270,8 @@ bool H265Decoder::FinishPicture(scoped_refptr<H265Picture> pic,
   ref_pic_set_lt_curr_.clear();
   ref_pic_set_st_curr_after_.clear();
   ref_pic_set_st_curr_before_.clear();
+
+  secure_handle_ = 0;
 
   return true;
 }

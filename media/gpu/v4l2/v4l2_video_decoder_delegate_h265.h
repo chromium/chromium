@@ -37,6 +37,8 @@ class V4L2VideoDecoderDelegateH265 : public H265Decoder::H265Accelerator {
 
   // H265Decoder::H265Accelerator implementation.
   scoped_refptr<H265Picture> CreateH265Picture() override;
+  scoped_refptr<H265Picture> CreateH265PictureSecure(
+      uint64_t secure_handle) override;
   Status SubmitFrameMetadata(
       const H265SPS* sps,
       const H265PPS* pps,

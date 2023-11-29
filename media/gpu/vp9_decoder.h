@@ -71,6 +71,15 @@ class MEDIA_GPU_EXPORT VP9Decoder : public AcceleratedVideoDecoder {
     // case and treat it as normal, returning kRanOutOfSurfaces from Decode().
     virtual scoped_refptr<VP9Picture> CreateVP9Picture() = 0;
 
+    // |secure_handle| is a reference to the corresponding secure memory when
+    // doing secure decoding on ARM. This is invoked instead of CreateAV1Picture
+    // when doing secure decoding on ARM. Default implementation returns
+    // nullptr.
+    // TODO(jkardatzke): Remove this once we move to the V4L2 flat stateless
+    // decoder and add a field to media::CodecPicture instead.
+    virtual scoped_refptr<VP9Picture> CreateVP9PictureSecure(
+        uint64_t secure_handle);
+
     // Submit decode for |pic| to be run in accelerator, taking as arguments
     // information contained in it, as well as current segmentation and loop
     // filter state in |segm_params| and |lf_params|, respectively, and using
@@ -164,6 +173,11 @@ class MEDIA_GPU_EXPORT VP9Decoder : public AcceleratedVideoDecoder {
   // picture.
   std::unique_ptr<Vp9FrameHeader> curr_frame_hdr_;
   std::unique_ptr<DecryptConfig> decrypt_config_;
+
+  // Secure handle to pass through to the accelerator when doing secure playback
+  // on ARM.
+  uint64_t secure_handle_ = 0;
+
   // Current frame size that is necessary to decode |curr_frame_hdr_|.
   gfx::Size curr_frame_size_;
 

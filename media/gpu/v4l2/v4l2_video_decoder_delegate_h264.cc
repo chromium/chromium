@@ -68,12 +68,19 @@ V4L2VideoDecoderDelegateH264::V4L2VideoDecoderDelegateH264(
 V4L2VideoDecoderDelegateH264::~V4L2VideoDecoderDelegateH264() {}
 
 scoped_refptr<H264Picture> V4L2VideoDecoderDelegateH264::CreateH264Picture() {
-  scoped_refptr<V4L2DecodeSurface> dec_surface;
-  if (secure_handle_) {
-    dec_surface = surface_handler_->CreateSecureSurface(secure_handle_);
-  } else {
-    dec_surface = surface_handler_->CreateSurface();
+  scoped_refptr<V4L2DecodeSurface> dec_surface =
+      surface_handler_->CreateSurface();
+  if (!dec_surface) {
+    return nullptr;
   }
+
+  return new V4L2H264Picture(dec_surface);
+}
+
+scoped_refptr<H264Picture>
+V4L2VideoDecoderDelegateH264::CreateH264PictureSecure(uint64_t secure_handle) {
+  scoped_refptr<V4L2DecodeSurface> dec_surface =
+      surface_handler_->CreateSecureSurface(secure_handle);
   if (!dec_surface)
     return nullptr;
 
@@ -340,7 +347,7 @@ H264Decoder::H264Accelerator::Status V4L2VideoDecoderDelegateH264::SubmitSlice(
   // Add the 3-bytes NAL start code.
   // TODO: don't do it here, but have it passed from the parser?
   const size_t data_copy_size = size + 3;
-  if (secure_handle_) {
+  if (dec_surface->secure_handle()) {
     // The secure world already post-processed the secure buffer so that all of
     // the slice NALUs w/ 3 byte start codes are the only contents.
     return surface_handler_->SubmitSlice(dec_surface.get(), nullptr,
@@ -425,14 +432,6 @@ bool V4L2VideoDecoderDelegateH264::OutputPicture(
 
 void V4L2VideoDecoderDelegateH264::Reset() {
   memset(&priv_->v4l2_decode_param, 0, sizeof(priv_->v4l2_decode_param));
-}
-
-H264Decoder::H264Accelerator::Status V4L2VideoDecoderDelegateH264::SetStream(
-    base::span<const uint8_t> /*stream*/,
-    const media::DecryptConfig* /*decrypt_config*/,
-    uint64_t secure_handle) {
-  secure_handle_ = secure_handle;
-  return Status::kOk;
 }
 
 scoped_refptr<V4L2DecodeSurface>

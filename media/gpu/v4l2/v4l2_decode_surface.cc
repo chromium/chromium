@@ -18,12 +18,14 @@ namespace media {
 
 V4L2DecodeSurface::V4L2DecodeSurface(V4L2WritableBufferRef input_buffer,
                                      V4L2WritableBufferRef output_buffer,
-                                     scoped_refptr<VideoFrame> frame)
+                                     scoped_refptr<VideoFrame> frame,
+                                     uint64_t secure_handle)
     : input_buffer_(std::move(input_buffer)),
       output_buffer_(std::move(output_buffer)),
       video_frame_(std::move(frame)),
       output_record_(output_buffer_.BufferId()),
-      decoded_(false) {
+      decoded_(false),
+      secure_handle_(secure_handle) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 

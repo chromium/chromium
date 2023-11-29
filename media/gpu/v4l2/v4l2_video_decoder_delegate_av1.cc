@@ -753,6 +753,18 @@ scoped_refptr<AV1Picture> V4L2VideoDecoderDelegateAV1::CreateAV1Picture(
   return new V4L2AV1Picture(std::move(dec_surface));
 }
 
+scoped_refptr<AV1Picture> V4L2VideoDecoderDelegateAV1::CreateAV1PictureSecure(
+    bool apply_grain,
+    uint64_t secure_handle) {
+  scoped_refptr<V4L2DecodeSurface> dec_surface =
+      surface_handler_->CreateSecureSurface(secure_handle);
+  if (!dec_surface) {
+    return nullptr;
+  }
+
+  return new V4L2AV1Picture(std::move(dec_surface));
+}
+
 DecodeStatus V4L2VideoDecoderDelegateAV1::SubmitDecode(
     const AV1Picture& pic,
     const libgav1::ObuSequenceHeader& sequence_header,
@@ -793,7 +805,8 @@ DecodeStatus V4L2VideoDecoderDelegateAV1::SubmitDecode(
       .controls = ext_ctrl_array};
 
   const auto* v4l2_pic = static_cast<const V4L2AV1Picture*>(&pic);
-  v4l2_pic->dec_surface()->PrepareSetCtrls(&ext_ctrls);
+  auto dec_surface = v4l2_pic->dec_surface();
+  dec_surface->PrepareSetCtrls(&ext_ctrls);
   if (device_->Ioctl(VIDIOC_S_EXT_CTRLS, &ext_ctrls) != 0) {
     RecordVidiocIoctlErrorUMA(VidiocIoctlRequests::kVidiocSExtCtrls);
     VPLOGF(1) << "ioctl() failed: VIDIOC_S_EXT_CTRLS";
@@ -809,11 +822,13 @@ DecodeStatus V4L2VideoDecoderDelegateAV1::SubmitDecode(
       ref_surfaces.emplace_back(std::move(v4l2_ref_pic->dec_surface()));
     }
   }
-  v4l2_pic->dec_surface()->SetReferenceSurfaces(std::move(ref_surfaces));
+  dec_surface->SetReferenceSurfaces(std::move(ref_surfaces));
 
   // Copies the frame data into the V4L2 buffer.
-  if (!surface_handler_->SubmitSlice(v4l2_pic->dec_surface().get(),
-                                     stream.data(), stream.size())) {
+  if (!surface_handler_->SubmitSlice(
+          dec_surface.get(),
+          dec_surface->secure_handle() ? nullptr : stream.data(),
+          stream.size())) {
     return DecodeStatus::kFail;
   }
 

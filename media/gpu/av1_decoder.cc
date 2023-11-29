@@ -116,6 +116,12 @@ gfx::HdrMetadataCta861_3 ToGfxCta861_3(const libgav1::ObuMetadataHdrCll& cll) {
 }
 }  // namespace
 
+scoped_refptr<AV1Picture> AV1Decoder::AV1Accelerator::CreateAV1PictureSecure(
+    bool apply_grain,
+    uint64_t secure_handle) {
+  return nullptr;
+}
+
 AV1Decoder::AV1Decoder(std::unique_ptr<AV1Accelerator> accelerator,
                        VideoCodecProfile profile,
                        const VideoColorSpace& container_color_space)
@@ -164,6 +170,7 @@ void AV1Decoder::Reset() {
   ClearReferenceFrames();
   parser_.reset();
   decrypt_config_.reset();
+  secure_handle_ = 0;
 
   buffer_pool_ = std::make_unique<libgav1::BufferPool>(
       /*on_frame_buffer_size_changed=*/nullptr,
@@ -193,6 +200,12 @@ void AV1Decoder::SetStream(int32_t id, const DecoderBuffer& decoder_buffer) {
     decrypt_config_ = decoder_buffer.decrypt_config()->Clone();
   else
     decrypt_config_.reset();
+  if (decoder_buffer.has_side_data() &&
+      decoder_buffer.side_data()->secure_handle) {
+    secure_handle_ = decoder_buffer.side_data()->secure_handle;
+  } else {
+    secure_handle_ = 0;
+  }
 }
 
 void AV1Decoder::ClearCurrentFrame() {
@@ -451,8 +464,11 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
 
     DCHECK(current_sequence_header_->film_grain_params_present ||
            !frame_header.film_grain_params.apply_grain);
-    auto pic = accelerator_->CreateAV1Picture(
-        frame_header.film_grain_params.apply_grain);
+    auto pic = secure_handle_ ? accelerator_->CreateAV1PictureSecure(
+                                    frame_header.film_grain_params.apply_grain,
+                                    secure_handle_)
+                              : accelerator_->CreateAV1Picture(
+                                    frame_header.film_grain_params.apply_grain);
     if (!pic) {
       clear_current_frame.ReplaceClosure(base::DoNothing());
       return kRanOutOfSurfaces;

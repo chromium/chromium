@@ -80,6 +80,15 @@ class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
     // this situation as normal and return from Decode() with kRanOutOfSurfaces.
     virtual scoped_refptr<H265Picture> CreateH265Picture() = 0;
 
+    // |secure_handle| is a reference to the corresponding secure memory when
+    // doing secure decoding on ARM. This is invoked instead of CreateAV1Picture
+    // when doing secure decoding on ARM. Default implementation returns
+    // nullptr.
+    // TODO(jkardatzke): Remove this once we move to the V4L2 flat stateless
+    // decoder and add a field to media::CodecPicture instead.
+    virtual scoped_refptr<H265Picture> CreateH265PictureSecure(
+        uint64_t secure_handle);
+
     // Provides the raw NALU data for a VPS. The |vps| passed to
     // SubmitFrameMetadata() is always the most recent VPS passed to
     // ProcessVPS() with the same |vps_video_parameter_set_id|.
@@ -301,6 +310,10 @@ class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
 
   // Decrypting config for the most recent data passed to SetStream().
   std::unique_ptr<DecryptConfig> current_decrypt_config_;
+
+  // Secure handle to pass through to the accelerator when doing secure playback
+  // on ARM.
+  uint64_t secure_handle_ = 0;
 
   // Keep track of when SetStream() is called so that
   // H265Accelerator::SetStream() can be called.

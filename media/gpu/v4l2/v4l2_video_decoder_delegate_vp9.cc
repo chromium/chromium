@@ -167,6 +167,17 @@ scoped_refptr<VP9Picture> V4L2VideoDecoderDelegateVP9::CreateVP9Picture() {
   return new V4L2VP9Picture(std::move(dec_surface));
 }
 
+scoped_refptr<VP9Picture> V4L2VideoDecoderDelegateVP9::CreateVP9PictureSecure(
+    uint64_t secure_handle) {
+  scoped_refptr<V4L2DecodeSurface> dec_surface =
+      surface_handler_->CreateSecureSurface(secure_handle);
+  if (!dec_surface) {
+    return nullptr;
+  }
+
+  return new V4L2VP9Picture(std::move(dec_surface));
+}
+
 DecodeStatus V4L2VideoDecoderDelegateVP9::SubmitDecode(
     scoped_refptr<VP9Picture> pic,
     const Vp9SegmentationParams& segm_params,
@@ -311,8 +322,10 @@ DecodeStatus V4L2VideoDecoderDelegateVP9::SubmitDecode(
   dec_surface->SetReferenceSurfaces(std::move(ref_surfaces));
 
   // Copy the frame data into the V4L2 buffer.
-  if (!surface_handler_->SubmitSlice(dec_surface.get(), frame_hdr->data,
-                                     frame_hdr->frame_size)) {
+  if (!surface_handler_->SubmitSlice(
+          dec_surface.get(),
+          dec_surface->secure_handle() ? nullptr : frame_hdr->data,
+          frame_hdr->frame_size)) {
     return DecodeStatus::kFail;
   }
 
