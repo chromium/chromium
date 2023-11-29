@@ -3496,6 +3496,9 @@ if (!is_android) {
         "//ppapi/native_client:irt",
         "//ppapi/tests/extensions",
       ]
+      if (is_chromeos) {
+        sources += [ "../browser/ui/views/extensions/document_scanner_discovery_confirmation_dialog_browsertest.cc" ]
+      }
       if (is_chromeos_ash) {
         data += [ "//ash/webui/common/resources/cr.js" ]
         sources += [
@@ -3865,6 +3868,8 @@ if (!is_android) {
           "../browser/chromeos/extensions/login_screen/login_state/login_state_apitest.cc",
           "../browser/extensions/api/certificate_provider/certificate_provider_apitest.cc",
           "../browser/extensions/api/document_scan/document_scan_apitest.cc",
+          "../browser/extensions/api/document_scan/fake_document_scan_ash.cc",
+          "../browser/extensions/api/document_scan/fake_document_scan_ash.h",
           "../browser/extensions/clipboard_extension_apitest_chromeos.cc",
         ]
 
@@ -8330,6 +8335,7 @@ test("unit_tests") {
       "../browser/download/notification/download_item_notification_unittest.cc",
       "../browser/extensions/api/document_scan/document_scan_api_handler_unittest.cc",
       "../browser/extensions/api/document_scan/document_scan_api_unittest.cc",
+      "../browser/extensions/api/document_scan/document_scan_type_converters_unittest.cc",
       "../browser/extensions/api/document_scan/fake_document_scan_ash.cc",
       "../browser/extensions/api/document_scan/fake_document_scan_ash.h",
       "../browser/hid/hid_pinned_notification_unittest.cc",

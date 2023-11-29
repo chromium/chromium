@@ -14,14 +14,19 @@
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/document_scan/document_scan_api.h"
+#include "chrome/browser/extensions/api/document_scan/document_scan_test_utils.h"
 #include "chrome/browser/extensions/api/document_scan/fake_document_scan_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_constants.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/crosapi/mojom/document_scan.mojom.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/common/extension_builder.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -33,6 +38,14 @@ namespace {
 using SimpleScanFuture =
     base::test::TestFuture<absl::optional<api::document_scan::ScanResults>,
                            absl::optional<std::string>>;
+
+using GetScannerListFuture =
+    base::test::TestFuture<api::document_scan::GetScannerListResponse>;
+
+// Fake extension info.
+constexpr char kExtensionId[] = "abcdefghijklmnopqrstuvwxyz123456";
+constexpr char kExtensionName[] = "DocumentScan API extension";
+constexpr char kExtensionPermissionName[] = "documentScan";
 
 // Scanner name used for tests.
 constexpr char kTestScannerName[] = "Test Scanner";
@@ -58,6 +71,12 @@ class DocumentScanAPIHandlerTest : public testing::Test {
     testing_profile_ =
         profile_manager_->CreateTestingProfile(chrome::kInitialProfile);
 
+    extension_ = ExtensionBuilder(kExtensionName)
+                     .SetID(kExtensionId)
+                     .AddPermission(kExtensionPermissionName)
+                     .Build();
+    ExtensionRegistry::Get(testing_profile_)->AddEnabled(extension_);
+
     document_scan_api_handler_ = DocumentScanAPIHandler::CreateForTesting(
         testing_profile_, &document_scan_);
   }
@@ -72,6 +91,15 @@ class DocumentScanAPIHandlerTest : public testing::Test {
 
  protected:
   std::unique_ptr<DocumentScanAPIHandler> document_scan_api_handler_;
+  scoped_refptr<const Extension> extension_;
+
+  // Allow an extension to bypass user confirmation dialogs by adding it to the
+  // list of trusted document scan extensions.
+  void MarkExtensionTrusted() {
+    testing_profile_->GetTestingPrefService()->SetList(
+        prefs::kDocumentScanAPITrustedExtensions,
+        base::Value::List().Append(kExtensionId));
+  }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -158,6 +186,80 @@ TEST_F(DocumentScanAPIHandlerTest, SimpleScan_TestingMIMETypeSuccess) {
   EXPECT_THAT(scan_results->data_urls,
               testing::ElementsAre(kScanDataItemBase64));
   EXPECT_EQ("image/png", scan_results->mime_type);
+}
+
+TEST_F(DocumentScanAPIHandlerTest, GetScannerList_DiscoveryDenied) {
+  GetDocumentScan().AddScanner(CreateTestScannerInfo());
+  ScannerDiscoveryRunner::SetDiscoveryConfirmationResultForTesting(false);
+  api::document_scan::DeviceFilter filter;
+  GetScannerListFuture future;
+  document_scan_api_handler_->GetScannerList(
+      /*native_window=*/nullptr, extension_, std::move(filter),
+      future.GetCallback());
+
+  const api::document_scan::GetScannerListResponse& response = future.Get();
+  EXPECT_EQ(response.result,
+            api::document_scan::OperationResult::kAccessDenied);
+  EXPECT_EQ(response.scanners.size(), 0U);
+}
+
+TEST_F(DocumentScanAPIHandlerTest, GetScannerList_DiscoveryApproved) {
+  GetDocumentScan().AddScanner(CreateTestScannerInfo());
+  ScannerDiscoveryRunner::SetDiscoveryConfirmationResultForTesting(true);
+  api::document_scan::DeviceFilter filter;
+  GetScannerListFuture future;
+  document_scan_api_handler_->GetScannerList(
+      /*native_window=*/nullptr, extension_, std::move(filter),
+      future.GetCallback());
+
+  const api::document_scan::GetScannerListResponse& response = future.Get();
+  EXPECT_EQ(response.result, api::document_scan::OperationResult::kSuccess);
+  ASSERT_EQ(response.scanners.size(), 1U);
+  EXPECT_EQ(response.scanners[0].model, "Scanner");
+}
+
+TEST_F(DocumentScanAPIHandlerTest, GetScannerList_DiscoveryTrusted) {
+  GetDocumentScan().AddScanner(CreateTestScannerInfo());
+  MarkExtensionTrusted();
+  // Confirmation will be denied, but it won't matter because the extension is
+  // trusted.
+  ScannerDiscoveryRunner::SetDiscoveryConfirmationResultForTesting(false);
+
+  api::document_scan::DeviceFilter filter;
+  GetScannerListFuture future;
+  document_scan_api_handler_->GetScannerList(
+      /*native_window=*/nullptr, extension_, std::move(filter),
+      future.GetCallback());
+
+  const api::document_scan::GetScannerListResponse& response = future.Get();
+  EXPECT_EQ(response.result, api::document_scan::OperationResult::kSuccess);
+  ASSERT_EQ(response.scanners.size(), 1U);
+  EXPECT_EQ(response.scanners[0].model, "Scanner");
+}
+
+TEST_F(DocumentScanAPIHandlerTest, GetScannerList_NewIdBetweenCalls) {
+  GetDocumentScan().AddScanner(CreateTestScannerInfo());
+  MarkExtensionTrusted();
+
+  api::document_scan::DeviceFilter filter1;
+  GetScannerListFuture future1;
+  document_scan_api_handler_->GetScannerList(
+      /*native_window=*/nullptr, extension_, std::move(filter1),
+      future1.GetCallback());
+
+  api::document_scan::DeviceFilter filter2;
+  GetScannerListFuture future2;
+  document_scan_api_handler_->GetScannerList(
+      /*native_window=*/nullptr, extension_, std::move(filter2),
+      future2.GetCallback());
+
+  const api::document_scan::GetScannerListResponse& response1 = future1.Get();
+  const api::document_scan::GetScannerListResponse& response2 = future2.Get();
+  EXPECT_EQ(response1.result, api::document_scan::OperationResult::kSuccess);
+  EXPECT_EQ(response1.result, api::document_scan::OperationResult::kSuccess);
+  ASSERT_EQ(response1.scanners.size(), 1U);
+  ASSERT_EQ(response2.scanners.size(), 1U);
+  EXPECT_NE(response1.scanners[0].scanner_id, response2.scanners[0].scanner_id);
 }
 
 }  // namespace

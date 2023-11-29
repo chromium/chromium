@@ -462,6 +462,11 @@ inline constexpr char kDeskAPIThirdPartyAllowlist[] =
 inline constexpr char kPrintingAPIExtensionsAllowlist[] =
     "printing.printing_api_extensions_whitelist";
 
+// The list of extensions allowed to skip discovery and scan confirmation
+// dialogs when using the chrome.documentScan API.
+inline constexpr char kDocumentScanAPITrustedExtensions[] =
+    "document_scan.document_scan_api_trusted_extensions";
+
 // A boolean specifying whether the insights extension is enabled. If set to
 // true, the CCaaS Chrome component extension will be installed.
 inline constexpr char kInsightsExtensionEnabled[] =

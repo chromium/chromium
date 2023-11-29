@@ -30,6 +30,7 @@ class FakeDocumentScanAsh : public crosapi::mojom::DocumentScan {
                       crosapi::mojom::ScannerEnumFilterPtr filter,
                       GetScannerListCallback callback) override;
 
+  void AddScanner(crosapi::mojom::ScannerInfoPtr scanner);
   void SetGetScannerNamesResponse(std::vector<std::string> scanner_names);
   void SetScanResponse(
       const std::optional<std::vector<std::string>>& scan_data);
@@ -37,6 +38,7 @@ class FakeDocumentScanAsh : public crosapi::mojom::DocumentScan {
  private:
   std::vector<std::string> scanner_names_;
   std::optional<std::vector<std::string>> scan_data_;
+  std::vector<crosapi::mojom::ScannerInfoPtr> scanners_;
 };
 
 }  // namespace extensions

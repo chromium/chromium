@@ -105,6 +105,18 @@ void ShowExtensionInstallBlockedByParentDialog(
 
 #if BUILDFLAG(IS_CHROMEOS)
 
+// Shows a scanner discovery confirmation dialog bubble anchored to the toolbar
+// icon for the extension.
+// If there's no toolbar icon, shows a modal dialog using
+// CreateBrowserModalDialogViews(). Note that this dialog is shown even if there
+// is no `parent` window.
+void ShowDocumentScannerDiscoveryConfirmationDialog(
+    gfx::NativeWindow parent,
+    const ExtensionId& extension_id,
+    const std::u16string& extension_name,
+    const gfx::ImageSkia& extension_icon,
+    base::OnceCallback<void(bool)> callback);
+
 // Shows a dialog requesting the user to grant the extension access to a file
 // system.
 void ShowRequestFileSystemDialog(

@@ -24,10 +24,131 @@ namespace documentScan {
     DOMString mimeType;
   };
 
+  // OperationResult is an enum that indicates the result of each operation
+  // performed by the backend.  It contains the same causes as SANE_Status plus
+  // additional statuses that come from the IPC layers and image conversion
+  // stages.
+  [nodoc] enum OperationResult {
+    // An unknown or generic failure occurred.
+    UNKNOWN,
+
+    // Operation succeeded.
+    SUCCESS,
+
+    // The operation is not supported.
+    UNSUPPORTED,
+
+    // The operation was cancelled.
+    CANCELLED,
+
+    // The device is busy.
+    DEVICE_BUSY,
+
+    // Data or argument is invalid.
+    INVALID,
+
+    // Value is the wrong type for the underlying option.
+    WRONG_TYPE,
+
+    // No more data is available.
+    EOF,
+
+    // The document feeder is jammed.
+    ADF_JAMMED,
+
+    // The document feeder is empty.
+    ADF_EMPTY,
+
+    // The flatbed cover is open.
+    COVER_OPEN,
+
+    // An error occurred while communicating with the device.
+    IO_ERROR,
+
+    // The device requires authentication.
+    ACCESS_DENIED,
+
+    // Not enough memory was available to complete the operation.
+    NO_MEMORY,
+
+    // The device was not reachable.
+    UNREACHABLE,
+
+    // The device was disconnected.
+    MISSING,
+
+    // An internal error occurred.
+    INTERNAL_ERROR
+  };
+
+  // How the scanner is connected to the computer.
+  [nodoc] enum ConnectionType {
+    UNSPECIFIED,
+    USB,
+    NETWORK
+  };
+
+  // ScannerInfo contains general information about a scanner device.  It is
+  // intended for filtering and constructing user-facing information, not for
+  // configuring a scan.
+  [nodoc] dictionary ScannerInfo {
+    // For connecting with <code>openScanner</code>.
+    DOMString scannerId;
+
+    // Printable name for displaying in the UI.
+    DOMString name;
+
+    // Scanner manufacturer.
+    DOMString manufacturer;
+
+    // Scanner model if available, or a generic description.
+    DOMString model;
+
+    // For matching against other <code>ScannerInfo</code> entries that point
+    // to the same physical device.
+    DOMString deviceUuid;
+
+    // How the scanner is connected to the computer.
+    ConnectionType connectionType;
+
+    // If true, the scanner connection's transport cannot be intercepted by a
+    // passive listener, such as TLS or USB.
+    boolean secure;
+
+    // MIME types that can be requested for returned scans.
+    DOMString[] imageFormats;
+  };
+
+  // A set of criteria passed to <code>getScannerList()</code>.  Only devices
+  // that match all of the criteria will be returned.
+  [nodoc] dictionary DeviceFilter {
+    // Only return scanners that are directly attached to the computer.
+    boolean? local;
+
+    // Only return scanners that use a secure transport, such as USB or TLS.
+    boolean? secure;
+  };
+
+  // The response from <code>getScannerList()</code>.
+  [nodoc] dictionary GetScannerListResponse {
+    // The backend's enumeration result.  Note that partial results could be
+    // returned even if this indicates an error.
+    OperationResult result;
+
+    // A possibly-empty list of scanners that match the provided
+    // <code>DeviceFilter</code>.
+    ScannerInfo[] scanners;
+  };
+
   // Callback from the <code>scan</code> method.
   // |result| The results from the scan, if successful.
   // Otherwise will return null and set runtime.lastError.
   callback ScanCallback = void (ScanResults result);
+
+  // Callback from the <code>getScannerList</code> method.
+  // |response| The response from enumeration, if the call was valid.
+  // Otherwise will return null and set runtime.lastError.
+  [nodoc] callback GetScannerListCallback = void (GetScannerListResponse response);
 
   interface Functions {
     // Performs a document scan.  On success, the PNG data will be

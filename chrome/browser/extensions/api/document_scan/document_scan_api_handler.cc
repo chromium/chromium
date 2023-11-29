@@ -11,11 +11,19 @@
 #include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/unguessable_token.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/api/document_scan/document_scan_type_converters.h"
+#include "chrome/browser/extensions/api/document_scan/scanner_discovery_runner.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/extensions/api/document_scan.h"
+#include "chrome/common/pref_names.h"
 #include "chromeos/crosapi/mojom/document_scan.mojom.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/common/extension.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
@@ -84,11 +92,14 @@ DocumentScanAPIHandler::DocumentScanAPIHandler(
 DocumentScanAPIHandler::DocumentScanAPIHandler(
     content::BrowserContext* browser_context,
     crosapi::mojom::DocumentScan* document_scan)
-    : document_scan_(document_scan) {
+    : browser_context_(browser_context), document_scan_(document_scan) {
   CHECK(document_scan_);
 }
 
 DocumentScanAPIHandler::~DocumentScanAPIHandler() = default;
+
+DocumentScanAPIHandler::ExtensionState::ExtensionState() = default;
+DocumentScanAPIHandler::ExtensionState::~ExtensionState() = default;
 
 // static
 BrowserContextKeyedAPIFactory<DocumentScanAPIHandler>*
@@ -104,6 +115,17 @@ DocumentScanAPIHandler* DocumentScanAPIHandler::Get(
     content::BrowserContext* browser_context) {
   return BrowserContextKeyedAPIFactory<DocumentScanAPIHandler>::Get(
       browser_context);
+}
+
+// static
+void DocumentScanAPIHandler::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterListPref(prefs::kDocumentScanAPITrustedExtensions);
+}
+
+void DocumentScanAPIHandler::SetDocumentScanForTesting(
+    crosapi::mojom::DocumentScan* document_scan) {
+  document_scan_ = document_scan;
 }
 
 void DocumentScanAPIHandler::SimpleScan(
@@ -178,6 +200,53 @@ void DocumentScanAPIHandler::OnSimpleScanCompleted(
   scan_results.mime_type = kScannerImageMimeTypePng;
 
   std::move(callback).Run(std::move(scan_results), absl::nullopt);
+}
+
+void DocumentScanAPIHandler::GetScannerList(
+    gfx::NativeWindow native_window,
+    scoped_refptr<const Extension> extension,
+    api::document_scan::DeviceFilter filter,
+    GetScannerListCallback callback) {
+  // Invalidate any previously returned scannerId values because the underlying
+  // SANE entries aren't stable across multiple calls to sane_get_devices.
+  // Removed scannerIds don't need to be explicitly closed because there's no
+  // state associated with them on the backend.
+  // TODO(b/311196232): Once deviceUuid calculation is stable on the backend,
+  // don't erase the whole list.  Instead, preserve entries that point to the
+  // same connection string and deviceUuid so that previously-issued tokens
+  // remain valid if they still point to the same device.
+  for (auto& [id, state] : extension_state_) {
+    state.scanner_ids.clear();
+  }
+
+  auto discovery_runner = std::make_unique<ScannerDiscoveryRunner>(
+      native_window, browser_context_, std::move(extension), document_scan_);
+
+  ScannerDiscoveryRunner* raw_runner = discovery_runner.get();
+  raw_runner->Start(
+      crosapi::mojom::ScannerEnumFilter::From(filter),
+      base::BindOnce(&DocumentScanAPIHandler::OnScannerListReceived,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(discovery_runner), std::move(callback)));
+}
+
+void DocumentScanAPIHandler::OnScannerListReceived(
+    std::unique_ptr<ScannerDiscoveryRunner> runner,
+    GetScannerListCallback callback,
+    crosapi::mojom::GetScannerListResponsePtr mojo_response) {
+  auto api_response =
+      std::move(mojo_response).To<api::document_scan::GetScannerListResponse>();
+
+  // Replace the SANE connection strings with unguessable tokens to reduce
+  // information leakage about the user's network and specific devices.
+  ExtensionState& state = extension_state_[runner->extension_id()];
+  for (auto& scanner : api_response.scanners) {
+    std::string token = base::UnguessableToken::Create().ToString();
+    state.scanner_ids[token] = scanner.scanner_id;
+    scanner.scanner_id = std::move(token);
+  }
+
+  std::move(callback).Run(std::move(api_response));
 }
 
 template <>

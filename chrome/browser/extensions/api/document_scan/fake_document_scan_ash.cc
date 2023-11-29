@@ -33,7 +33,12 @@ void FakeDocumentScanAsh::GetScannerList(
     const std::string& client_id,
     crosapi::mojom::ScannerEnumFilterPtr filter,
     GetScannerListCallback callback) {
-  NOTIMPLEMENTED();
+  auto response = crosapi::mojom::GetScannerListResponse::New();
+  response->result = crosapi::mojom::ScannerOperationResult::kSuccess;
+  for (const auto& scanner : scanners_) {
+    response->scanners.emplace_back(scanner.Clone());
+  }
+  std::move(callback).Run(std::move(response));
 }
 
 void FakeDocumentScanAsh::SetGetScannerNamesResponse(
@@ -47,6 +52,10 @@ void FakeDocumentScanAsh::SetScanResponse(
     DCHECK(!scan_data.value().empty());
   }
   scan_data_ = scan_data;
+}
+
+void FakeDocumentScanAsh::AddScanner(crosapi::mojom::ScannerInfoPtr scanner) {
+  scanners_.emplace_back(std::move(scanner));
 }
 
 }  // namespace extensions
