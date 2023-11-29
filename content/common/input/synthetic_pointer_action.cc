@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/input/synthetic_pointer_action.h"
+#include "content/common/input/synthetic_pointer_action.h"
 
 #include "base/check_op.h"
 #include "ui/latency/latency_info.h"

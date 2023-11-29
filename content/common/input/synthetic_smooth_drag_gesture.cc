@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/input/synthetic_smooth_drag_gesture.h"
+#include "content/common/input/synthetic_smooth_drag_gesture.h"
 
 #include <memory>
 

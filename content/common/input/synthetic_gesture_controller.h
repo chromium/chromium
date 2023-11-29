@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_SYNTHETIC_GESTURE_CONTROLLER_H_
-#define CONTENT_BROWSER_RENDERER_HOST_INPUT_SYNTHETIC_GESTURE_CONTROLLER_H_
+#ifndef CONTENT_COMMON_INPUT_SYNTHETIC_GESTURE_CONTROLLER_H_
+#define CONTENT_COMMON_INPUT_SYNTHETIC_GESTURE_CONTROLLER_H_
 
 #include <memory>
 #include <utility>
@@ -15,8 +15,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "content/browser/renderer_host/input/synthetic_gesture.h"
 #include "content/common/content_export.h"
+#include "content/common/input/synthetic_gesture.h"
 #include "content/common/input/synthetic_gesture_params.h"
 
 namespace content {
@@ -40,7 +40,8 @@ class CONTENT_EXPORT SyntheticGestureController {
   };
   SyntheticGestureController(
       Delegate* delegate,
-      std::unique_ptr<SyntheticGestureTarget> gesture_target);
+      std::unique_ptr<SyntheticGestureTarget> gesture_target,
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   SyntheticGestureController(const SyntheticGestureController&) = delete;
   SyntheticGestureController& operator=(const SyntheticGestureController&) =
@@ -185,4 +186,4 @@ class CONTENT_EXPORT SyntheticGestureController {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_RENDERER_HOST_INPUT_SYNTHETIC_GESTURE_CONTROLLER_H_
+#endif  // CONTENT_COMMON_INPUT_SYNTHETIC_GESTURE_CONTROLLER_H_

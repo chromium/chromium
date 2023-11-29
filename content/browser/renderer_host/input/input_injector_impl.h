@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include "content/browser/renderer_host/input/synthetic_gesture.h"
 #include "content/common/input/input_injector.mojom.h"
+#include "content/common/input/synthetic_gesture.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace content {

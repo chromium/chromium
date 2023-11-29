@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_SYNTHETIC_SMOOTH_MOVE_GESTURE_H_
-#define CONTENT_BROWSER_RENDERER_HOST_INPUT_SYNTHETIC_SMOOTH_MOVE_GESTURE_H_
+#ifndef CONTENT_COMMON_INPUT_SYNTHETIC_SMOOTH_MOVE_GESTURE_H_
+#define CONTENT_COMMON_INPUT_SYNTHETIC_SMOOTH_MOVE_GESTURE_H_
 
 #include <memory>
 #include <vector>
 
 #include "base/time/time.h"
-#include "content/browser/renderer_host/input/synthetic_gesture.h"
-#include "content/browser/renderer_host/input/synthetic_gesture_target.h"
-#include "content/browser/renderer_host/input/synthetic_pointer_driver.h"
 #include "content/common/content_export.h"
+#include "content/common/input/synthetic_gesture.h"
 #include "content/common/input/synthetic_gesture_params.h"
+#include "content/common/input/synthetic_gesture_target.h"
+#include "content/common/input/synthetic_pointer_driver.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "ui/events/types/scroll_types.h"
@@ -128,4 +128,4 @@ class CONTENT_EXPORT SyntheticSmoothMoveGesture
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_RENDERER_HOST_INPUT_SYNTHETIC_SMOOTH_MOVE_GESTURE_H_
+#endif  // CONTENT_COMMON_INPUT_SYNTHETIC_SMOOTH_MOVE_GESTURE_H_

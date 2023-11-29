@@ -8,15 +8,15 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "content/browser/renderer_host/input/synthetic_gesture.h"
-#include "content/browser/renderer_host/input/synthetic_pinch_gesture.h"
-#include "content/browser/renderer_host/input/synthetic_pointer_action.h"
-#include "content/browser/renderer_host/input/synthetic_smooth_drag_gesture.h"
-#include "content/browser/renderer_host/input/synthetic_smooth_scroll_gesture.h"
-#include "content/browser/renderer_host/input/synthetic_tap_gesture.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/common/input/input_injector.mojom.h"
+#include "content/common/input/synthetic_gesture.h"
+#include "content/common/input/synthetic_pinch_gesture.h"
+#include "content/common/input/synthetic_pointer_action.h"
+#include "content/common/input/synthetic_smooth_drag_gesture.h"
+#include "content/common/input/synthetic_smooth_scroll_gesture.h"
+#include "content/common/input/synthetic_tap_gesture.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 

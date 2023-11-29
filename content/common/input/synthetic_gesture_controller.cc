@@ -2,26 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/input/synthetic_gesture_controller.h"
+#include "content/common/input/synthetic_gesture_controller.h"
 
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
-#include "content/browser/renderer_host/input/synthetic_gesture_target.h"
-#include "content/common/input/synthetic_smooth_scroll_gesture_params.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
-#include "content/public/browser/render_widget_host.h"
+#include "content/common/input/synthetic_gesture_target.h"
 
 namespace content {
 
 SyntheticGestureController::SyntheticGestureController(
     Delegate* delegate,
-    std::unique_ptr<SyntheticGestureTarget> gesture_target)
+    std::unique_ptr<SyntheticGestureTarget> gesture_target,
+    scoped_refptr<base::SequencedTaskRunner> task_runner)
     : delegate_(delegate), gesture_target_(std::move(gesture_target)) {
   DCHECK(delegate_);
+  dispatch_timer_.SetTaskRunner(task_runner);
 }
 
 SyntheticGestureController::~SyntheticGestureController() {
@@ -203,9 +203,6 @@ void SyntheticGestureController::StartGesture() {
     deferred_start_ = true;
     return;
   }
-
-  dispatch_timer_.SetTaskRunner(
-      content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput}));
 
   if (!dispatch_timer_.IsRunning()) {
     DCHECK(!pending_gesture_queue_.IsEmpty());

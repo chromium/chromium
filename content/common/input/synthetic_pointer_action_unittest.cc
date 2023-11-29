@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/input/synthetic_pointer_action.h"
+#include "content/common/input/synthetic_pointer_action.h"
 
 #include "base/functional/bind.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "content/browser/renderer_host/input/synthetic_gesture.h"
-#include "content/browser/renderer_host/input/synthetic_gesture_controller.h"
-#include "content/browser/renderer_host/input/synthetic_gesture_target.h"
+#include "content/common/input/synthetic_gesture.h"
+#include "content/common/input/synthetic_gesture_controller.h"
+#include "content/common/input/synthetic_gesture_target.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/gfx/geometry/point.h"
@@ -434,7 +435,8 @@ class SyntheticPointerActionTest : public testing::Test {
     synthetic_pointer_driver_ = SyntheticPointerDriver::Create(
         target_->GetDefaultSyntheticGestureSourceType());
     controller_ = std::make_unique<SyntheticGestureController>(
-        &controller_delegate_, std::move(target));
+        &controller_delegate_, std::move(target),
+        base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
   std::unique_ptr<SyntheticPointerAction> CreatePointerAction(
@@ -464,6 +466,7 @@ class SyntheticPointerActionTest : public testing::Test {
   std::unique_ptr<SyntheticPointerAction> pointer_action_;
   std::unique_ptr<SyntheticPointerDriver> synthetic_pointer_driver_;
   SyntheticPointerActionListParams params_;
+  base::test::TaskEnvironment env_;
 };
 
 TEST_F(SyntheticPointerActionTest, PointerTouchAction) {

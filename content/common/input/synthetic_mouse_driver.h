@@ -2,26 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_SYNTHETIC_TOUCH_DRIVER_H_
-#define CONTENT_BROWSER_RENDERER_HOST_INPUT_SYNTHETIC_TOUCH_DRIVER_H_
-
-#include <map>
+#ifndef CONTENT_COMMON_INPUT_SYNTHETIC_MOUSE_DRIVER_H_
+#define CONTENT_COMMON_INPUT_SYNTHETIC_MOUSE_DRIVER_H_
 
 #include "base/memory/weak_ptr.h"
-#include "content/browser/renderer_host/input/synthetic_pointer_driver.h"
-#include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
+#include "content/common/input/synthetic_pointer_driver.h"
 
 namespace content {
 
-class SyntheticTouchDriver final : public SyntheticPointerDriver {
+class SyntheticMouseDriverBase : public SyntheticPointerDriver {
  public:
-  SyntheticTouchDriver();
-  explicit SyntheticTouchDriver(blink::SyntheticWebTouchEvent touch_event);
+  SyntheticMouseDriverBase();
 
-  SyntheticTouchDriver(const SyntheticTouchDriver&) = delete;
-  SyntheticTouchDriver& operator=(const SyntheticTouchDriver&) = delete;
+  SyntheticMouseDriverBase(const SyntheticMouseDriverBase&) = delete;
+  SyntheticMouseDriverBase& operator=(const SyntheticMouseDriverBase&) = delete;
 
-  ~SyntheticTouchDriver() override;
+  ~SyntheticMouseDriverBase() override;
 
   void DispatchEvent(SyntheticGestureTarget* target,
                      const base::TimeTicks& timestamp) override;
@@ -29,12 +25,12 @@ class SyntheticTouchDriver final : public SyntheticPointerDriver {
   void Press(
       float x,
       float y,
-      int index,
+      int index = 0,
       SyntheticPointerActionParams::Button button =
           SyntheticPointerActionParams::Button::LEFT,
       int key_modifiers = 0,
-      float width = 40.f,
-      float height = 40.f,
+      float width = 1.f,
+      float height = 1.f,
       float rotation_angle = 0.f,
       float force = 0.5,
       float tangential_pressure = 0.f,
@@ -43,10 +39,10 @@ class SyntheticTouchDriver final : public SyntheticPointerDriver {
       const base::TimeTicks& timestamp = base::TimeTicks::Now()) override;
   void Move(float x,
             float y,
-            int index,
+            int index = 0,
             int key_modifiers = 0,
-            float width = 40.f,
-            float height = 40.f,
+            float width = 1.f,
+            float height = 1.f,
             float rotation_angle = 0.f,
             float force = 0.5,
             float tangential_pressure = 0.f,
@@ -54,7 +50,7 @@ class SyntheticTouchDriver final : public SyntheticPointerDriver {
             int tilt_y = 0,
             SyntheticPointerActionParams::Button button =
                 SyntheticPointerActionParams::Button::NO_BUTTON) override;
-  void Release(int index,
+  void Release(int index = 0,
                SyntheticPointerActionParams::Button button =
                    SyntheticPointerActionParams::Button::LEFT,
                int key_modifiers = 0) override;
@@ -67,19 +63,36 @@ class SyntheticTouchDriver final : public SyntheticPointerDriver {
   bool UserInputCheck(
       const SyntheticPointerActionParams& params) const override;
 
+ protected:
+  blink::WebMouseEvent mouse_event_;
+  unsigned last_modifiers_ = 0;
+
+ private:
+  int ComputeClickCount(const base::TimeTicks& timestamp,
+                        blink::WebMouseEvent::Button pressed_button,
+                        float x,
+                        float y);
+  int click_count_ = 0;
+  base::TimeTicks last_mouse_click_time_ = base::TimeTicks::Now();
+  float last_x_ = 0;
+  float last_y_ = 0;
+};
+
+class SyntheticMouseDriver final : public SyntheticMouseDriverBase {
+ public:
+  SyntheticMouseDriver();
+
+  SyntheticMouseDriver(const SyntheticMouseDriver&) = delete;
+  SyntheticMouseDriver& operator=(const SyntheticMouseDriver&) = delete;
+
+  ~SyntheticMouseDriver() override;
+
   base::WeakPtr<SyntheticPointerDriver> AsWeakPtr() override;
 
  private:
-  using PointerIdIndexMap = std::map<int, int>;
-
-  void ResetPointerIdIndexMap();
-  int GetIndexFromMap(int value) const;
-
-  blink::SyntheticWebTouchEvent touch_event_;
-  PointerIdIndexMap pointer_id_map_;
-  base::WeakPtrFactory<SyntheticTouchDriver> weak_ptr_factory_{this};
+  base::WeakPtrFactory<SyntheticMouseDriver> weak_ptr_factory_{this};
 };
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_RENDERER_HOST_INPUT_SYNTHETIC_TOUCH_DRIVER_H_
+#endif  // CONTENT_COMMON_INPUT_SYNTHETIC_MOUSE_DRIVER_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/input/synthetic_gesture_controller.h"
+#include "content/common/input/synthetic_gesture_controller.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -15,25 +15,20 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "content/browser/renderer_host/input/synthetic_gesture.h"
-#include "content/browser/renderer_host/input/synthetic_gesture_target.h"
-#include "content/browser/renderer_host/input/synthetic_pinch_gesture.h"
-#include "content/browser/renderer_host/input/synthetic_pointer_action.h"
-#include "content/browser/renderer_host/input/synthetic_smooth_drag_gesture.h"
-#include "content/browser/renderer_host/input/synthetic_smooth_move_gesture.h"
-#include "content/browser/renderer_host/input/synthetic_smooth_scroll_gesture.h"
-#include "content/browser/renderer_host/input/synthetic_tap_gesture.h"
-#include "content/browser/renderer_host/input/synthetic_touchpad_pinch_gesture.h"
-#include "content/browser/renderer_host/input/synthetic_touchscreen_pinch_gesture.h"
-#include "content/browser/renderer_host/render_widget_host_delegate.h"
+#include "content/common/input/synthetic_gesture.h"
+#include "content/common/input/synthetic_gesture_target.h"
+#include "content/common/input/synthetic_pinch_gesture.h"
 #include "content/common/input/synthetic_pinch_gesture_params.h"
+#include "content/common/input/synthetic_pointer_action.h"
+#include "content/common/input/synthetic_smooth_drag_gesture.h"
 #include "content/common/input/synthetic_smooth_drag_gesture_params.h"
+#include "content/common/input/synthetic_smooth_move_gesture.h"
+#include "content/common/input/synthetic_smooth_scroll_gesture.h"
 #include "content/common/input/synthetic_smooth_scroll_gesture_params.h"
+#include "content/common/input/synthetic_tap_gesture.h"
 #include "content/common/input/synthetic_tap_gesture_params.h"
-#include "content/public/test/browser_task_environment.h"
-#include "content/public/test/mock_render_process_host.h"
-#include "content/public/test/test_browser_context.h"
-#include "content/test/test_render_view_host.h"
+#include "content/common/input/synthetic_touchpad_pinch_gesture.h"
+#include "content/common/input/synthetic_touchscreen_pinch_gesture.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/gfx/geometry/point.h"
@@ -817,11 +812,12 @@ class SyntheticGestureControllerTestBase {
   ~SyntheticGestureControllerTestBase() {}
 
  protected:
-  template<typename MockGestureTarget>
+  template <typename MockGestureTarget>
   void CreateControllerAndTarget() {
     target_ = new MockGestureTarget();
     controller_ = std::make_unique<SyntheticGestureController>(
-        &delegate_, std::unique_ptr<SyntheticGestureTarget>(target_));
+        &delegate_, std::unique_ptr<SyntheticGestureTarget>(target_),
+        base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
   void QueueSyntheticGesture(std::unique_ptr<SyntheticGesture> gesture) {
@@ -857,7 +853,7 @@ class SyntheticGestureControllerTestBase {
 
   base::TimeDelta GetTotalTime() const { return time_ - start_time_; }
 
-  content::BrowserTaskEnvironment env_;
+  base::test::TaskEnvironment env_;
   raw_ptr<MockSyntheticGestureTarget, DanglingUntriaged> target_;
   DummySyntheticGestureControllerDelegate delegate_;
   std::unique_ptr<SyntheticGestureController> controller_;

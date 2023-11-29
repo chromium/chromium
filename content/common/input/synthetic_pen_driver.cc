@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/input/synthetic_pen_driver.h"
+#include "content/common/input/synthetic_pen_driver.h"
 
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 

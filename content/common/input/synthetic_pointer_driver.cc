@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/input/synthetic_pointer_driver.h"
+#include "content/common/input/synthetic_pointer_driver.h"
 
-#include "content/browser/renderer_host/input/synthetic_mouse_driver.h"
-#include "content/browser/renderer_host/input/synthetic_pen_driver.h"
-#include "content/browser/renderer_host/input/synthetic_touch_driver.h"
+#include "content/common/input/synthetic_mouse_driver.h"
+#include "content/common/input/synthetic_pen_driver.h"
+#include "content/common/input/synthetic_touch_driver.h"
 
 namespace content {
 

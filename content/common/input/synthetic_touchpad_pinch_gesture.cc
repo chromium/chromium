@@ -5,8 +5,8 @@
 #include <stdint.h>
 
 #include "base/functional/callback.h"
-#include "content/browser/renderer_host/input/synthetic_touchpad_pinch_gesture.h"
 #include "content/common/input/input_injector.mojom.h"
+#include "content/common/input/synthetic_touchpad_pinch_gesture.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 
 namespace content {

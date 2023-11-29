@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/input/synthetic_mouse_driver.h"
+#include "content/common/input/synthetic_mouse_driver.h"
 
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "content/browser/renderer_host/input/synthetic_gesture_target.h"
+#include "content/common/input/synthetic_gesture_target.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 
 namespace content {

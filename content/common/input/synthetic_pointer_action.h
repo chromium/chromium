@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_SYNTHETIC_POINTER_ACTION_H_
-#define CONTENT_BROWSER_RENDERER_HOST_INPUT_SYNTHETIC_POINTER_ACTION_H_
+#ifndef CONTENT_COMMON_INPUT_SYNTHETIC_POINTER_ACTION_H_
+#define CONTENT_COMMON_INPUT_SYNTHETIC_POINTER_ACTION_H_
 
 #include <memory>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
-#include "content/browser/renderer_host/input/synthetic_gesture.h"
-#include "content/browser/renderer_host/input/synthetic_gesture_target.h"
-#include "content/browser/renderer_host/input/synthetic_pointer_driver.h"
 #include "content/common/content_export.h"
+#include "content/common/input/synthetic_gesture.h"
+#include "content/common/input/synthetic_gesture_target.h"
 #include "content/common/input/synthetic_pointer_action_list_params.h"
 #include "content/common/input/synthetic_pointer_action_params.h"
+#include "content/common/input/synthetic_pointer_driver.h"
 
 namespace content {
 
@@ -79,4 +79,4 @@ class CONTENT_EXPORT SyntheticPointerAction
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_RENDERER_HOST_INPUT_SYNTHETIC_POINTER_ACTION_H_
+#endif  // CONTENT_COMMON_INPUT_SYNTHETIC_POINTER_ACTION_H_
