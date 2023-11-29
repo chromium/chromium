@@ -246,14 +246,17 @@ TEST_F(ServiceWorkerPaymentAppTest, CreateCanMakePaymentEvent) {
             "https://bobpay.test");
 }
 
-// Test the case when CanMakePaymentEvent cannot be fired. The app should be
-// considered valid, but not ready for payment.
+// This test validates the scenario where CanMakePaymentEvent cannot be fired.
+// The app is expected to be considered valid but not ready for payment.
 TEST_F(ServiceWorkerPaymentAppTest, ValidateCanMakePayment) {
-  // CanMakePaymentEvent is not fired because this test app does not have any
+  // CanMakePaymentEvent is not triggered because this test app lacks any
   // explicitly verified methods.
   CreateInstalledServiceWorkerPaymentApp(/*with_url_method=*/true);
   GetApp()->ValidateCanMakePayment(base::BindOnce(
-      [](ServiceWorkerPaymentApp*, bool result) { EXPECT_TRUE(result); }));
+      [](base::WeakPtr<ServiceWorkerPaymentApp> app, bool result) {
+        EXPECT_NE(nullptr, app.get());
+        EXPECT_TRUE(result);
+      }));
   EXPECT_FALSE(GetApp()->HasEnrolledInstrument());
 }
 

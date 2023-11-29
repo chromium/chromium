@@ -222,8 +222,7 @@ void ServiceWorkerPaymentApp::OnCanMakePaymentEventResponded(
 
 void ServiceWorkerPaymentApp::CallValidateCanMakePaymentCallback(
     ValidateCanMakePaymentCallback callback) {
-  // TODO(https://crbug.com/1505422): Change `this` to `base::WeakPtr`.
-  std::move(callback).Run(this, true);
+  std::move(callback).Run(weak_ptr_factory_.GetWeakPtr(), true);
 }
 
 void ServiceWorkerPaymentApp::InvokePaymentApp(
