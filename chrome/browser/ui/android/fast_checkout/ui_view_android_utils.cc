@@ -114,7 +114,9 @@ CreateFastCheckoutAutofillProfileFromJava(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jprofile,
     const std::string& locale) {
-  auto profile = std::make_unique<autofill::AutofillProfile>();
+  AddressCountryCode country_code = AddressCountryCode(ConvertJavaStringToUTF8(
+      Java_FastCheckoutAutofillProfile_getCountryCode(env, jprofile)));
+  auto profile = std::make_unique<autofill::AutofillProfile>(country_code);
   // Only set the guid if it is an existing profile (Java guid not empty).
   // Otherwise, keep the generated one.
   std::string guid = ConvertJavaStringToUTF8(
@@ -148,9 +150,6 @@ CreateFastCheckoutAutofillProfileFromJava(
   MaybeSetRawInfo(
       profile.get(), autofill::ADDRESS_HOME_SORTING_CODE,
       Java_FastCheckoutAutofillProfile_getSortingCode(env, jprofile));
-  MaybeSetInfo(profile.get(), autofill::ADDRESS_HOME_COUNTRY,
-               Java_FastCheckoutAutofillProfile_getCountryCode(env, jprofile),
-               locale);
   MaybeSetRawInfo(
       profile.get(), autofill::PHONE_HOME_WHOLE_NUMBER,
       Java_FastCheckoutAutofillProfile_getPhoneNumber(env, jprofile));
