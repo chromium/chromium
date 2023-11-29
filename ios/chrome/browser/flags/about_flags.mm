@@ -1357,11 +1357,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(password_manager::features::
                             kIOSPasswordSettingsBulkUploadLocalPasswords)},
-    {"enable-reading-list-account-storage",
-     flag_descriptions::kEnableReadingListAccountStorageName,
-     flag_descriptions::kEnableReadingListAccountStorageDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(syncer::kReadingListEnableDualReadingListModel)},
     {"enable-reading-list-sign-in-promo",
      flag_descriptions::kEnableReadingListSignInPromoName,
      flag_descriptions::kEnableReadingListSignInPromoDescription,

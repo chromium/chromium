@@ -3328,11 +3328,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-reading-list-account-storage",
-    "owners": [ "mmrashad@google.com", "mastiz@chromium.org", "myuu@google.com", "chrome-signin-team@google.com" ],
-    "expiry_milestone": 119
-  },
-  {
     "name": "enable-reading-list-sign-in-promo",
     "owners": [ "mmrashad@google.com", "mastiz@chromium.org", "myuu@google.com", "chrome-signin-team@google.com" ],
     "expiry_milestone": 119

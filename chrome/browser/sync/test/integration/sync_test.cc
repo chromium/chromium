@@ -1157,8 +1157,6 @@ syncer::ModelTypeSet AllowedTypesInStandaloneTransportMode() {
     allowed_types.Put(syncer::PRIORITY_PREFERENCES);
   }
   if (base::FeatureList::IsEnabled(
-          syncer::kReadingListEnableDualReadingListModel) &&
-      base::FeatureList::IsEnabled(
           syncer::kReadingListEnableSyncTransportModeUponSignIn)) {
     allowed_types.Put(syncer::READING_LIST);
   }

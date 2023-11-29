@@ -265,8 +265,7 @@ class SingleClientFeatureToTransportSyncTest : public SyncTest {
   SingleClientFeatureToTransportSyncTest() : SyncTest(SINGLE_CLIENT) {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {syncer::kReadingListEnableDualReadingListModel,
-         syncer::kReadingListEnableSyncTransportModeUponSignIn},
+        {syncer::kReadingListEnableSyncTransportModeUponSignIn},
         /*disabled_features=*/{});
   }
 

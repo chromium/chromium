@@ -141,10 +141,6 @@ BASE_FEATURE(kEnableBookmarkFoldersForAccountStorage,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_IOS)
 
-BASE_FEATURE(kReadingListEnableDualReadingListModel,
-             "ReadingListEnableDualReadingListModel",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kReadingListEnableSyncTransportModeUponSignIn,
              "ReadingListEnableSyncTransportModeUponSignIn",
 #if BUILDFLAG(IS_IOS)

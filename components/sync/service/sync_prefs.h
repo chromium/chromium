@@ -134,11 +134,10 @@ class SyncPrefs {
 
 #if BUILDFLAG(IS_IOS)
   // Sets the opt-in for bookmarks & reading list in transport mode.
-  // Note that this only has an effect if `kEnableBookmarksAccountStorage`
-  // and/or `kReadingListEnableDualReadingListModel` are enabled, but
-  // `kReplaceSyncPromosWithSignInPromos` is NOT enabled. (It should still be
-  // called if `kReplaceSyncPromosWithSignInPromos` is enabled though, to better
-  // support rollbacks.)
+  // Note that this only has an effect if `kReplaceSyncPromosWithSignInPromos`
+  // is NOT enabled. (It should still be called if
+  // `kReplaceSyncPromosWithSignInPromos` is enabled though, to better support
+  // rollbacks.)
   void SetBookmarksAndReadingListAccountStorageOptIn(bool value);
 
   // Gets the opt-in state for bookmarks & reading list in transport mode, for

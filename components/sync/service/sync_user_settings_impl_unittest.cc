@@ -156,7 +156,6 @@ TEST_F(SyncUserSettingsImplTest, DefaultSelectedTypesWhileSignedIn) {
   feature_list.InitWithFeatures(
       /*enabled_features=*/{kReplaceSyncPromosWithSignInPromos,
                             kEnableBookmarksAccountStorage,
-                            kReadingListEnableDualReadingListModel,
                             kReadingListEnableSyncTransportModeUponSignIn,
                             password_manager::features::
                                 kEnablePasswordsAccountStorage,

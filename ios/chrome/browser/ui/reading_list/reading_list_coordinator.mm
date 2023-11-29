@@ -625,8 +625,6 @@
 - (void)updateSignInPromoVisibility {
   BOOL areAccountStorageAndPromoEnabled =
       base::FeatureList::IsEnabled(
-          syncer::kReadingListEnableDualReadingListModel) &&
-      base::FeatureList::IsEnabled(
           syncer::kReadingListEnableSyncTransportModeUponSignIn);
   if (!areAccountStorageAndPromoEnabled || self.isSyncDisabledByAdministrator) {
     self.shouldShowSignInPromo = NO;

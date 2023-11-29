@@ -520,8 +520,7 @@ class SingleClientStandaloneTransportReplaceSyncWithSigninMigrationSyncTest
     // `syncer::kEnableBookmarksAccountStorage` when possible.
     default_features_.InitWithFeatures(
         /*enabled_features=*/
-        {syncer::kReadingListEnableDualReadingListModel,
-         syncer::kReadingListEnableSyncTransportModeUponSignIn,
+        {syncer::kReadingListEnableSyncTransportModeUponSignIn,
          password_manager::features::kEnablePasswordsAccountStorage,
          syncer::kSyncEnableContactInfoDataTypeInTransportMode,
          syncer::kEnablePreferencesAccountStorage},

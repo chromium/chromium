@@ -36,17 +36,13 @@ std::unique_ptr<KeyedService> BuildReadingListModel(
   Profile* const profile = Profile::FromBrowserContext(context);
   syncer::OnceModelTypeStoreFactory store_factory =
       ModelTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory();
-  auto storage =
+  auto local_storage =
       std::make_unique<ReadingListModelStorageImpl>(std::move(store_factory));
-  auto reading_list_model = std::make_unique<ReadingListModelImpl>(
-      std::move(storage), syncer::StorageType::kUnspecified,
-      syncer::WipeModelUponSyncDisabledBehavior::kNever,
-      base::DefaultClock::GetInstance());
-
-  if (!base::FeatureList::IsEnabled(
-          syncer::kReadingListEnableDualReadingListModel)) {
-    return reading_list_model;
-  }
+  auto reading_list_model_for_local_storage =
+      std::make_unique<ReadingListModelImpl>(
+          std::move(local_storage), syncer::StorageType::kUnspecified,
+          syncer::WipeModelUponSyncDisabledBehavior::kNever,
+          base::DefaultClock::GetInstance());
 
   syncer::OnceModelTypeStoreFactory store_factory_for_account_storage =
       ModelTypeStoreServiceFactory::GetForProfile(profile)
@@ -59,7 +55,8 @@ std::unique_ptr<KeyedService> BuildReadingListModel(
           syncer::WipeModelUponSyncDisabledBehavior::kAlways,
           base::DefaultClock::GetInstance());
   return std::make_unique<reading_list::DualReadingListModel>(
-      /*local_or_syncable_model=*/std::move(reading_list_model),
+      /*local_or_syncable_model=*/std::move(
+          reading_list_model_for_local_storage),
       /*account_model=*/std::move(reading_list_model_for_account_storage));
 }
 

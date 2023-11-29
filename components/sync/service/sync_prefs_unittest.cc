@@ -300,7 +300,6 @@ TEST_F(SyncPrefsTest,
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       /*enabled_features=*/{kEnableBookmarksAccountStorage,
-                            kReadingListEnableDualReadingListModel,
                             kReadingListEnableSyncTransportModeUponSignIn,
                             password_manager::features::
                                 kEnablePasswordsAccountStorage,
@@ -342,7 +341,6 @@ TEST_F(SyncPrefsTest,
   features.InitWithFeatures(
       /*enabled_features=*/{kReplaceSyncPromosWithSignInPromos,
                             kEnableBookmarksAccountStorage,
-                            kReadingListEnableDualReadingListModel,
                             kReadingListEnableSyncTransportModeUponSignIn,
                             password_manager::features::
                                 kEnablePasswordsAccountStorage,
@@ -664,7 +662,6 @@ class SyncPrefsMigrationTest : public testing::Test {
     // in transport mode.
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{kEnableBookmarksAccountStorage,
-                              kReadingListEnableDualReadingListModel,
                               kReadingListEnableSyncTransportModeUponSignIn,
                               password_manager::features::
                                   kEnablePasswordsAccountStorage,
