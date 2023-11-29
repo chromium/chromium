@@ -17,11 +17,15 @@ PASS rules[0].conditionText is "(width: 0)"
 PASS rules[0].cssText is "@supports (width: 0) {\n  s { width: 0px; }\n  @supports (width: 1) {\n  s { color: rgb(0, 0, 0); }\n}\n}"
 
 Missing argument exceptions.
-PASS rules[0].insertRule() threw exception TypeError: Failed to execute 'insertRule' on 'CSSGroupingRule': 2 arguments required, but only 0 present..
-PASS rules[0].insertRule('@media all {}') threw exception TypeError: Failed to execute 'insertRule' on 'CSSGroupingRule': 2 arguments required, but only 1 present..
+PASS rules[0].insertRule() threw exception TypeError: Failed to execute 'insertRule' on 'CSSGroupingRule': 1 argument required, but only 0 present..
 PASS rules[0].deleteRule() threw exception TypeError: Failed to execute 'deleteRule' on 'CSSGroupingRule': 1 argument required, but only 0 present..
 
 Inserting and deleting rules.
+rules[0].insertRule('@media all { #s { width: 0px; } }')
+PASS rules[0].cssRules.length is 3
+PASS rules[0].cssRules[0].type is CSSRule.MEDIA_RULE
+rules[0].deleteRule(0)
+PASS rules[0].cssRules.length is 2
 rules[0].insertRule('@media all { #s { width: 0px; } }', 2)
 PASS rules[0].cssRules.length is 3
 PASS rules[0].cssRules[2].type is CSSRule.MEDIA_RULE

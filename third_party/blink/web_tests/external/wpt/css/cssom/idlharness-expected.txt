@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 58 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 57 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] CSSRule interface: constant MARGIN_RULE on interface object
   assert_own_property: expected property "MARGIN_RULE" missing
 [FAIL] CSSRule interface: constant MARGIN_RULE on interface prototype object
@@ -16,8 +16,6 @@ Found 58 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "string" but got "object"
 [FAIL] CSSRule interface: sheet.cssRules[0] must inherit property "MARGIN_RULE" with the proper type
   assert_inherits: property "MARGIN_RULE" not found in prototype chain
-[FAIL] CSSGroupingRule interface: operation insertRule(CSSOMString, optional unsigned long)
-  assert_equals: property has wrong .length expected 1 but got 2
 [FAIL] CSSPageRule interface: existence and properties of interface object
   assert_equals: prototype of CSSPageRule is not CSSGroupingRule expected function "function CSSGroupingRule() { [native code] }" but got function "function CSSRule() { [native code] }"
 [FAIL] CSSPageRule interface: existence and properties of interface prototype object
