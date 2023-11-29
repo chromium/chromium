@@ -76,6 +76,7 @@ void CreditCardRiskBasedAuthenticator::Authenticate(
 void CreditCardRiskBasedAuthenticator::OnDidGetUnmaskRiskData(
     const std::string& risk_data) {
   unmask_request_details_->risk_data = risk_data;
+  autofill_metrics::LogRiskBasedAuthAttempt(card_.record_type());
   autofill_client_->GetPaymentsNetworkInterface()->UnmaskCard(
       *unmask_request_details_,
       base::BindOnce(

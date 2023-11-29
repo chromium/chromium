@@ -83,6 +83,16 @@ TEST_F(CreditCardRiskBasedAuthenticatorTest, UnmaskRequestSetCorrectly) {
       payments_network_interface()->unmask_request()->risk_data.empty());
 }
 
+// Ensures that ServerCard authentication attempts are logged correctly.
+TEST_F(CreditCardRiskBasedAuthenticatorTest,
+       AuthServerCardAttemptLoggedCorrectly) {
+  base::HistogramTester histogram_tester;
+  authenticator_->Authenticate(card_, requester_->GetWeakPtr());
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.RiskBasedAuth.ServerCard.Attempt", true, 1);
+}
+
 // Test that risk-based authentication returns the full PAN upon success.
 TEST_F(CreditCardRiskBasedAuthenticatorTest, AuthenticateServerCardSuccess) {
   base::HistogramTester histogram_tester;
@@ -197,6 +207,17 @@ TEST_F(CreditCardRiskBasedAuthenticatorTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.RiskBasedAuth.ServerCard.Result",
       autofill_metrics::RiskBasedAuthEvent::kAuthenticationRequired, 1);
+}
+
+// Ensures that VirtualCard authentication attempts are logged correctly.
+TEST_F(CreditCardRiskBasedAuthenticatorTest,
+       AuthVirtualCardAttemptLoggedCorrectly) {
+  base::HistogramTester histogram_tester;
+  authenticator_->Authenticate(test::GetVirtualCard(),
+                               requester_->GetWeakPtr());
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.RiskBasedAuth.VirtualCard.Attempt", true, 1);
 }
 
 // Test a success risk based virtual card unmask request.

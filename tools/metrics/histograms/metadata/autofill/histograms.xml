@@ -3821,8 +3821,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.RiskBasedAuth.{CardType}.Attempt"
+    enum="BooleanAttempted" expires_after="2024-07-01">
+  <owner>junhuihe@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Emits true when a risk-based authentication starts, and does not emit any
+    value otherwise. Currently, ServerCard and VirtualCard support risk-based
+    authentication.
+  </summary>
+  <token key="CardType" variants="Autofill.PaymentsRpcCardType"/>
+</histogram>
+
 <histogram name="Autofill.RiskBasedAuth.{CardType}.Result"
-    enum="AutofillRiskBasedAuthEvent" expires_after="2024-11-14">
+    enum="AutofillRiskBasedAuthEvent" expires_after="2024-07-01">
   <owner>junhuihe@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>

@@ -182,6 +182,9 @@ enum class RiskBasedAuthEvent {
   kMaxValue = kUnexpectedError
 };
 
+// Logs when a risk-based authentication starts.
+void LogRiskBasedAuthAttempt(CreditCard::RecordType card_type);
+
 // Logs when a risk-based authentication finishes.
 void LogRiskBasedAuthResult(CreditCard::RecordType card_type,
                             RiskBasedAuthEvent event);
