@@ -125,9 +125,9 @@ void BackendIO::RunEntryResultCallback() {
   if (result_ != net::OK) {
     entry_result = EntryResult::MakeError(static_cast<net::Error>(result()));
   } else if (out_entry_opened_) {
-    entry_result = EntryResult::MakeOpened(out_entry_);
+    entry_result = EntryResult::MakeOpened(out_entry_.ExtractAsDangling());
   } else {
-    entry_result = EntryResult::MakeCreated(out_entry_);
+    entry_result = EntryResult::MakeCreated(out_entry_.ExtractAsDangling());
   }
   std::move(entry_result_callback_).Run(std::move(entry_result));
 }

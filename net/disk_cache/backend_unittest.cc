@@ -5618,3 +5618,21 @@ TEST_F(DiskCacheBackendTest, SimpleOpenIter) {
   // Should not have eaten any entries.
   EXPECT_EQ(kEntries, cache_->GetEntryCount());
 }
+
+// Make sure that if we close an entry in callback from open/create we do not
+// trigger dangling pointer warnings.
+TEST_F(DiskCacheBackendTest, BlockFileImmediateCloseNoDangle) {
+  InitCache();
+  base::RunLoop run_loop;
+  EntryResult result =
+      cache_->CreateEntry("some key", net::HIGHEST,
+                          base::BindLambdaForTesting([&](EntryResult result) {
+                            ASSERT_EQ(result.net_error(), net::OK);
+                            result.ReleaseEntry()->Close();
+                            // Make sure the close actually happens now.
+                            disk_cache::BackendImpl::FlushForTesting();
+                            run_loop.Quit();
+                          }));
+  EXPECT_EQ(result.net_error(), net::ERR_IO_PENDING);
+  run_loop.Run();
+}
