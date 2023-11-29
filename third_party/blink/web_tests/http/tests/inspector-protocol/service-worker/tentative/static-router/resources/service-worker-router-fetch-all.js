@@ -2,8 +2,12 @@
 
 self.addEventListener('install', async e => {
   await e.registerRouter(
-      [{condition: {urlPattern: '*'}, source: 'fetch-event'}]);
+      [{condition: {urlPattern: new URLPattern({})}, source: 'fetch-event'}]);
   self.skipWaiting();
+});
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(clients.claim());
 });
 
 self.addEventListener('fetch', e => {

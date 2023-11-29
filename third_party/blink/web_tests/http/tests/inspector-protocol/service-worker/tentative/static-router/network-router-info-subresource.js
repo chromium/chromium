@@ -1,7 +1,7 @@
 (async function(testRunner) {
   var {page, session, dp} = await testRunner.startURL(
       'resources/simple.html',
-      'Verifies that the request head has static routing information on the main resource when the request fallbacks to the network.');
+      'Verifies that the request head has static routing information on sub resources.');
   const swHelper =
       (await testRunner.loadScript('../../resources/service-worker-helper.js'))(
           dp, session);
@@ -12,9 +12,10 @@
   ]);
 
   await swHelper.installSWAndWaitForActivated(
-      'service-worker-router-to-network.js');
+      'service-worker-router-fetch-all.js');
 
-  await dp.Page.reload();
+  await session.evaluate(
+      `fetch('${testRunner.url('./resources/does-not-exists.txt')}')`)
 
   const responseReceived = await dp.Network.onceResponseReceived();
   testRunner.log(responseReceived.params.response.serviceWorkerRouterInfo);
