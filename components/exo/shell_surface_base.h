@@ -155,7 +155,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   void SetPersistable(bool persistable);
 
   // Sets the window corner radii.
-  void SetWindowCornerRadii(const gfx::RoundedCornersF& radii);
+  void SetWindowCornersRadii(const gfx::RoundedCornersF& radii);
 
   // Sets the shadow corner radii.
   void SetShadowCornersRadii(const gfx::RoundedCornersF& radii);

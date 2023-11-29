@@ -820,9 +820,8 @@ void AuraToplevel::SetOrientationLock(uint32_t lock_type) {
   shell_surface_->SetOrientationLock(OrientationLock(lock_type));
 }
 
-void AuraToplevel::SetWindowRoundedCornerRadius(
-    const gfx::RoundedCornersF& radii) {
-  shell_surface_->SetWindowCornerRadii(radii);
+void AuraToplevel::SetWindowCornersRadii(const gfx::RoundedCornersF& radii) {
+  shell_surface_->SetWindowCornersRadii(radii);
 }
 
 void AuraToplevel::SetClientSubmitsSurfacesInPixelCoordinates(bool enable) {
@@ -1451,7 +1450,7 @@ void aura_toplevel_set_window_corner_radii(wl_client* client,
                                            uint32_t upper_right_radius,
                                            uint32_t lower_right_radius,
                                            uint32_t lower_left_radius) {
-  GetUserDataAs<AuraToplevel>(resource)->SetWindowRoundedCornerRadius(
+  GetUserDataAs<AuraToplevel>(resource)->SetWindowCornersRadii(
       gfx::RoundedCornersF(upper_left_radius, upper_right_radius,
                            lower_right_radius, lower_left_radius));
 }

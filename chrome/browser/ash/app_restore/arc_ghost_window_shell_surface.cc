@@ -142,7 +142,7 @@ std::unique_ptr<ArcGhostWindowShellSurface> ArcGhostWindowShellSurface::Create(
             : 0;
 
     gfx::RoundedCornersF window_radii(window_corner_radius);
-    shell_surface->SetWindowCornerRadii(window_radii);
+    shell_surface->SetWindowCornersRadii(window_radii);
 
     // Ghost surface shadow radii must match the window radii.
     shell_surface->SetShadowCornersRadii(window_radii);

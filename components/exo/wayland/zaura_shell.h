@@ -80,7 +80,6 @@ class AuraSurface : public SurfaceObserver,
   void Pin(bool trusted);
   void Unpin();
   void SetOrientationLock(uint32_t orientation_lock);
-  void SetWindowRoundedCornerRadius(const gfx::RoundedCornersF& radii);
   void ShowTooltip(const char* text,
                    const gfx::Point& position,
                    uint32_t trigger,
@@ -141,7 +140,7 @@ class AuraToplevel {
   virtual ~AuraToplevel();
 
   void SetOrientationLock(uint32_t lock_type);
-  void SetWindowRoundedCornerRadius(const gfx::RoundedCornersF& radii);
+  void SetWindowCornersRadii(const gfx::RoundedCornersF& radii);
   void SetClientSubmitsSurfacesInPixelCoordinates(bool enable);
   void SetClientUsesScreenCoordinates();
   void SetWindowBounds(int32_t x,

@@ -524,8 +524,9 @@ void ShellSurfaceBase::SetTopInset(int height) {
   pending_top_inset_height_ = height;
 }
 
-void ShellSurfaceBase::SetWindowCornerRadii(const gfx::RoundedCornersF& radii) {
-  TRACE_EVENT1("exo", "ShellSurfaceBase::SetWindowCornerRadii", "window_radii",
+void ShellSurfaceBase::SetWindowCornersRadii(
+    const gfx::RoundedCornersF& radii) {
+  TRACE_EVENT1("exo", "ShellSurfaceBase::SetWindowCornerRadii", "radii",
                radii.ToString());
   pending_window_corners_radii_dp_ = radii;
 }
