@@ -226,6 +226,7 @@ void KioskBrowserWindowHandler::OnBrowserRemoved(Browser* browser) {
   // Exit the kiosk session if the last browser was closed.
   if (ShouldExitKioskWhenLastBrowserRemoved() &&
       BrowserList::GetInstance()->empty()) {
+    LOG(WARNING) << "Last browser window closed, ending kiosk session.";
     Shutdown();
   }
 
@@ -261,7 +262,7 @@ bool KioskBrowserWindowHandler::IsNormalTroubleshootingBrowserAllowed(
 }
 
 bool KioskBrowserWindowHandler::ShouldExitKioskWhenLastBrowserRemoved() const {
-  return web_app_name_.has_value();
+  return !IsAshWithLacrosEnabled() && web_app_name_.has_value();
 }
 
 bool KioskBrowserWindowHandler::IsOnlySettingsBrowserRemainOpen() const {
