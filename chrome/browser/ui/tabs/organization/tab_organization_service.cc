@@ -83,7 +83,7 @@ TabOrganizationSession* TabOrganizationService::ResetSessionForBrowser(
 void TabOrganizationService::StartRequest(const Browser* browser) {
   TabOrganizationSession* session = GetSessionForBrowser(browser);
   if (!session || session->IsComplete()) {
-    session = CreateSessionForBrowser(browser);
+    session = ResetSessionForBrowser(browser);
   }
   if (session->request()->state() ==
       TabOrganizationRequest::State::NOT_STARTED) {

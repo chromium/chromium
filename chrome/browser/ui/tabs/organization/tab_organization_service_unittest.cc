@@ -230,3 +230,32 @@ TEST_F(TabOrganizationServiceTest,
       service()->ResetSessionForBrowser(browser1)->session_id();
   EXPECT_NE(session_id_1, session_id_2);
 }
+
+TEST_F(TabOrganizationServiceTest, SecondRequestAfterCompletionDoesntCrash) {
+  Browser* browser1 = AddBrowser();
+  for (int i = 0; i < 4; i++) {
+    AddValidTabToBrowser(browser1, 0);
+  }
+
+  service()->StartRequest(browser1);
+  auto* const session = service()->GetSessionForBrowser(browser1);
+  ASSERT_EQ(session->tab_organizations().size(), 1u);
+  session->GetNextTabOrganization()->Accept();
+  ASSERT_TRUE(session->IsComplete());
+
+  service()->StartRequest(browser1);
+}
+
+TEST_F(TabOrganizationServiceTest, SecondRequestAfterStartingDoesntCrash) {
+  Browser* browser1 = AddBrowser();
+  for (int i = 0; i < 4; i++) {
+    AddValidTabToBrowser(browser1, 0);
+  }
+
+  service()->StartRequest(browser1);
+  auto* const session = service()->GetSessionForBrowser(browser1);
+  ASSERT_EQ(session->tab_organizations().size(), 1u);
+  ASSERT_FALSE(session->IsComplete());
+
+  service()->StartRequest(browser1);
+}
