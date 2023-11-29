@@ -13431,35 +13431,6 @@
             ]
         }
     ],
-    "Prerender2DesktopOmniboxTriggers": [
-        {
-            "platforms": [
-                "windows",
-                "chromeos",
-                "chromeos_lacros",
-                "mac",
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledDUIAndDSE_20230517",
-                    "params": {
-                        "embedder_blocked_hosts": "",
-                        "implementation_type": "use_prefetch"
-                    },
-                    "enable_features": [
-                        "OmniboxTriggerForPrerender2",
-                        "Prerender2",
-                        "SupportSearchSuggestionForPrerender2"
-                    ],
-                    "disable_features": [
-                        "OmniboxTriggerForNoStatePrefetch",
-                        "Prerender2Holdback"
-                    ]
-                }
-            ]
-        }
-    ],
     "Prerender2NewTabPageTrigger": [
         {
             "platforms": [
