@@ -401,7 +401,7 @@ class StartSurfaceMediator
                                 if (mUseMagicSpace) return;
 
                                 if (type == TabSelectionType.FROM_CLOSE
-                                        && UrlUtilities.isNTPUrl(tab.getUrl())) {
+                                        && UrlUtilities.isNtpUrl(tab.getUrl())) {
                                     setTabCarouselVisibility(false);
                                 }
                             }
@@ -1621,7 +1621,7 @@ class StartSurfaceMediator
         return mTabModelSelector.isTabStateInitialized()
                         && currentTab != null
                         && currentTab.getUrl() != null
-                ? UrlUtilities.isNTPUrl(currentTab.getUrl())
+                ? UrlUtilities.isNtpUrl(currentTab.getUrl())
                 : ChromeSharedPreferences.getInstance()
                                 .readInt(
                                         ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE)

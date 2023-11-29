@@ -151,7 +151,7 @@ class NavigationSheetMediator {
                 Drawable drawable;
                 if (favicon == null) {
                     drawable =
-                            UrlUtilities.isNTPUrl(pageUrl)
+                            UrlUtilities.isNtpUrl(pageUrl)
                                     ? getNTPIcon()
                                     : new BitmapDrawable(
                                             mIconGenerator.generateIconForUrl(pageUrl));
@@ -165,7 +165,7 @@ class NavigationSheetMediator {
 
     private String getEntryText(NavigationEntry entry) {
         String entryText = entry.getTitle();
-        if (UrlUtilities.isNTPUrl(entry.getUrl())) entryText = getNTPText();
+        if (UrlUtilities.isNtpUrl(entry.getUrl())) entryText = getNTPText();
         if (TextUtils.isEmpty(entryText)) entryText = entry.getVirtualUrl().getSpec();
         if (TextUtils.isEmpty(entryText)) entryText = entry.getUrl().getSpec();
         return entryText;

@@ -270,7 +270,7 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
             if (mDefaultFaviconHelper == null) mDefaultFaviconHelper = new DefaultFaviconHelper();
             favicon = mDefaultFaviconHelper.getDefaultFaviconBitmap(mContext, pageUrl, true);
         }
-        if (UrlUtilities.isNTPUrl(pageUrl) && shouldUseIncognitoResources()) {
+        if (UrlUtilities.isNtpUrl(pageUrl) && shouldUseIncognitoResources()) {
             favicon =
                     mDefaultFaviconHelper.getThemifiedBitmap(
                             mContext, R.drawable.incognito_small, true);

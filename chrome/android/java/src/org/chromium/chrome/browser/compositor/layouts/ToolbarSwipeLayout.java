@@ -192,7 +192,7 @@ public class ToolbarSwipeLayout extends Layout {
             // - let the caller of the LayoutManager#switchToTab observe the LayoutState and close
             // the ntp tab in the #doneShowing event.
             Tab lastTab = mTabModelSelector.getTabById(mFromTabId);
-            if (UrlUtilities.isNTPUrl(lastTab.getUrl())
+            if (UrlUtilities.isNtpUrl(lastTab.getUrl())
                     && !lastTab.canGoBack()
                     && !lastTab.canGoForward()) {
                 mTabModelSelector

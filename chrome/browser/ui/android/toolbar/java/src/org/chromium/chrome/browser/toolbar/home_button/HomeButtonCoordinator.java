@@ -125,7 +125,7 @@ public class HomeButtonCoordinator {
     void handlePageLoadFinished(GURL url) {
         if (!mHomeButton.isShown()) return;
         if (mIsIncognitoSupplier.getAsBoolean()) return;
-        if (UrlUtilities.isNTPUrl(url)) return;
+        if (UrlUtilities.isNtpUrl(url)) return;
         if (mIsHomepageNonNtpSupplier.get()) return;
         if (mPromoShownOneshotSupplier.get() == null || mPromoShownOneshotSupplier.get()) return;
 

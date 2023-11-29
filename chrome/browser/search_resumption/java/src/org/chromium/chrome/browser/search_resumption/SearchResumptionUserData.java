@@ -82,7 +82,7 @@ public class SearchResumptionUserData implements UserData {
      */
     public void cacheSuggestions(
             Tab tab, GURL urlToTrack, String[] suggestionTexts, GURL[] suggestionUrls) {
-        if (tab == null || !UrlUtilities.isNTPUrl(tab.getUrl())) return;
+        if (tab == null || !UrlUtilities.isNtpUrl(tab.getUrl())) return;
 
         SearchResumptionUserData searchResumptionUserData = get(tab);
         if (searchResumptionUserData == null) {
@@ -101,7 +101,7 @@ public class SearchResumptionUserData implements UserData {
      * @param suggestions: The suggestions fetched using Autocompelete API.
      */
     public void cacheSuggestions(Tab tab, GURL urlToTrack, List<AutocompleteMatch> suggestions) {
-        if (tab == null || !UrlUtilities.isNTPUrl(tab.getUrl())) return;
+        if (tab == null || !UrlUtilities.isNtpUrl(tab.getUrl())) return;
 
         SearchResumptionUserData searchResumptionUserData = get(tab);
         if (searchResumptionUserData == null) {

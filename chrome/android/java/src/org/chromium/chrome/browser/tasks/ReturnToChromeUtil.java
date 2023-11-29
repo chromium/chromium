@@ -504,7 +504,7 @@ public final class ReturnToChromeUtil {
         ChromeActivity chromeActivity = (ChromeActivity) activity;
 
         assert LibraryLoader.getInstance().isInitialized();
-        if (!chromeActivity.isInOverviewMode() && !UrlUtilities.isNTPUrl(url)) return null;
+        if (!chromeActivity.isInOverviewMode() && !UrlUtilities.isNtpUrl(url)) return null;
 
         return chromeActivity;
     }
@@ -534,7 +534,7 @@ public final class ReturnToChromeUtil {
         return HomepageManager.isHomepageEnabled()
                 && ((HomepagePolicyManager.isInitializedWithNative()
                                 || sSkipInitializationCheckForTesting)
-                        && (homePageGurl.isEmpty() || UrlUtilities.isNTPUrl(homePageGurl)));
+                        && (homePageGurl.isEmpty() || UrlUtilities.isNtpUrl(homePageGurl)));
     }
 
     /**
@@ -618,7 +618,7 @@ public final class ReturnToChromeUtil {
         // and UrlUtilities.isCanonicalizedNTPUrl(intentUrl) returns true.
         // If user taps the "New Incognito Tab" item from the app icon, skip here and continue the
         // following checks.
-        if (UrlUtilities.isCanonicalizedNTPUrl(intentUrl)
+        if (UrlUtilities.isCanonicalizedNtpUrl(intentUrl)
                 && ReturnToChromeUtil.shouldShowStartSurfaceHomeAsNewTab(
                         context, tabModelSelector.isIncognitoSelected(), isTablet)
                 && !intent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false)) {
@@ -735,7 +735,7 @@ public final class ReturnToChromeUtil {
         Tab ntpTab =
                 tabCreator.createNewTab(
                         new LoadUrlParams(UrlConstants.NTP_URL), TabLaunchType.FROM_STARTUP, null);
-        boolean isNtpUrl = UrlUtilities.isNTPUrl(ntpTab.getUrl());
+        boolean isNtpUrl = UrlUtilities.isNtpUrl(ntpTab.getUrl());
         assert isNtpUrl : "The URL of the newly created NTP doesn't match NTP URL!";
         if (!isNtpUrl) {
             recordFailToShowHomeSurfaceReasonUma(
@@ -808,7 +808,7 @@ public final class ReturnToChromeUtil {
         if (lastActiveTab == null) return;
 
         // If the last active Tab is a NTP, we continue to show this NTP as it is now.
-        if (UrlUtilities.isNTPUrl(lastActiveTab.getUrl())) {
+        if (UrlUtilities.isNtpUrl(lastActiveTab.getUrl())) {
             if (!homeSurfaceTracker.isHomeSurfaceTab(lastActiveTab)) {
                 homeSurfaceTracker.updateHomeSurfaceAndTrackingTabs(lastActiveTab, null);
             }
@@ -818,7 +818,7 @@ public final class ReturnToChromeUtil {
             if (indexOfFirstNtp != TabModel.INVALID_TAB_INDEX) {
                 Tab ntpTab = currentTabModel.getTabAt(indexOfFirstNtp);
                 assert indexOfFirstNtp != index;
-                boolean isNtpUrl = UrlUtilities.isNTPUrl(ntpTab.getUrl());
+                boolean isNtpUrl = UrlUtilities.isNtpUrl(ntpTab.getUrl());
                 assert isNtpUrl
                         : "The URL of the first NTP found onResume doesn't match a NTP URL!";
                 if (!isNtpUrl) {
@@ -970,7 +970,7 @@ public final class ReturnToChromeUtil {
                     BrowserUiUtils.ModuleTypeOnStartAndNTP.TAB_SWITCHER_BUTTON);
         } else if (currentTab != null
                 && !currentTab.isIncognito()
-                && UrlUtilities.isNTPUrl(currentTab.getUrl())) {
+                && UrlUtilities.isNtpUrl(currentTab.getUrl())) {
             BrowserUiUtils.recordModuleClickHistogram(
                     HostSurface.NEW_TAB_PAGE,
                     BrowserUiUtils.ModuleTypeOnStartAndNTP.TAB_SWITCHER_BUTTON);

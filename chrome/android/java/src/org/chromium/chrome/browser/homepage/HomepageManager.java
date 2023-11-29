@@ -108,7 +108,7 @@ public class HomepageManager
      */
     public static boolean shouldCloseAppWithZeroTabs() {
         return HomepageManager.isHomepageEnabled()
-                && !UrlUtilities.isNTPUrl(HomepageManager.getHomepageGurl());
+                && !UrlUtilities.isNtpUrl(HomepageManager.getHomepageGurl());
     }
 
     /**
@@ -202,7 +202,7 @@ public class HomepageManager
      */
     public static boolean isHomepageNonNtp() {
         GURL currentHomepage = getHomepageGurl();
-        return !currentHomepage.isEmpty() && !UrlUtilities.isNTPUrl(currentHomepage);
+        return !currentHomepage.isEmpty() && !UrlUtilities.isNtpUrl(currentHomepage);
     }
 
     /**
@@ -348,7 +348,7 @@ public class HomepageManager
     @VisibleForTesting
     public @HomepageLocationType int getHomepageLocationType() {
         if (HomepagePolicyManager.isHomepageManagedByPolicy()) {
-            return UrlUtilities.isNTPUrl(HomepagePolicyManager.getHomepageUrl())
+            return UrlUtilities.isNtpUrl(HomepagePolicyManager.getHomepageUrl())
                     ? HomepageLocationType.POLICY_NTP
                     : HomepageLocationType.POLICY_OTHER;
         }
@@ -361,13 +361,13 @@ public class HomepageManager
                 return HomepageLocationType.DEFAULT_NTP;
             }
 
-            return UrlUtilities.isNTPUrl(
+            return UrlUtilities.isNtpUrl(
                             PartnerBrowserCustomizations.getInstance().getHomePageUrl())
                     ? HomepageLocationType.PARTNER_PROVIDED_NTP
                     : HomepageLocationType.PARTNER_PROVIDED_OTHER;
         }
         // If user type NTP URI as their customized homepage, we'll record user is using NTP.
-        return UrlUtilities.isNTPUrl(getPrefHomepageCustomGurl())
+        return UrlUtilities.isNtpUrl(getPrefHomepageCustomGurl())
                 ? HomepageLocationType.USER_CUSTOMIZED_NTP
                 : HomepageLocationType.USER_CUSTOMIZED_OTHER;
     }
@@ -397,7 +397,7 @@ public class HomepageManager
         return new HomepageCharacterizationHelper() {
             @Override
             public boolean isUrlNtp(@Nullable String url) {
-                return UrlConstants.NTP_URL.equals(url) || UrlUtilities.isNTPUrl(url);
+                return UrlConstants.NTP_URL.equals(url) || UrlUtilities.isNtpUrl(url);
             }
 
             @Override

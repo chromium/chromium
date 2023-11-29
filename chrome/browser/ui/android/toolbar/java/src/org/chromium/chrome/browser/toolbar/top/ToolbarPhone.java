@@ -2005,7 +2005,7 @@ public class ToolbarPhone extends ToolbarLayout
 
     private boolean hideShadowForRegularNtpTextureCapture() {
         return !isIncognito()
-                && UrlUtilities.isNTPUrl(getToolbarDataProvider().getCurrentGurl())
+                && UrlUtilities.isNtpUrl(getToolbarDataProvider().getCurrentGurl())
                 && mNtpSearchBoxScrollFraction < 1.f;
     }
 
@@ -2651,7 +2651,7 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     private boolean hideShadowForIncognitoNtp() {
-        return isIncognito() && UrlUtilities.isNTPUrl(getToolbarDataProvider().getCurrentGurl());
+        return isIncognito() && UrlUtilities.isNtpUrl(getToolbarDataProvider().getCurrentGurl());
     }
 
     private boolean hideShadowForInterstitial() {

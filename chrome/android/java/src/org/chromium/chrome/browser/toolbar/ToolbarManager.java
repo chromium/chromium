@@ -981,7 +981,7 @@ public class ToolbarManager
                         onBackPressStateChanged();
                         NewTabPage ntp = getNewTabPageForCurrentTab();
                         if (ntp == null) return;
-                        if (!UrlUtilities.isNTPUrl(params.getUrl())
+                        if (!UrlUtilities.isNtpUrl(params.getUrl())
                                 && loadType != Tab.TabLoadStatus.PAGE_LOAD_FAILED) {
                             ntp.setUrlFocusAnimationsDisabled(true);
                             onTabOrModelChanged();
@@ -999,7 +999,7 @@ public class ToolbarManager
                         NavigationEntry pendingEntry = navigationController.getPendingEntry();
                         if (pendingEntry == null) return false;
 
-                        return !UrlUtilities.isNTPUrl(pendingEntry.getUrl());
+                        return !UrlUtilities.isNtpUrl(pendingEntry.getUrl());
                     }
 
                     @Override
@@ -2498,7 +2498,7 @@ public class ToolbarManager
         Tab tab = mLocationBarModel.getTab();
         if (tab == null) return;
         NativePage nativePage = tab.getNativePage();
-        boolean onNtp = UrlUtilities.isNTPUrl(tab.getUrl());
+        boolean onNtp = UrlUtilities.isNtpUrl(tab.getUrl());
 
         if (ChromeAccessibilityUtil.get().isAccessibilityEnabled()
                 && nativePage instanceof NewTabPage) {
@@ -2520,7 +2520,7 @@ public class ToolbarManager
 
     private void maybeShowUrlBarCursorIfHardwareKeyboardAvailable() {
         if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) return;
-        if (!UrlUtilities.isNTPUrl(mLocationBarModel.getCurrentGurl())) return;
+        if (!UrlUtilities.isNtpUrl(mLocationBarModel.getCurrentGurl())) return;
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT)) return;
 
         if (mActivity.getResources().getConfiguration().keyboard == Configuration.KEYBOARD_QWERTY) {

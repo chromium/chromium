@@ -255,7 +255,7 @@ public class ChromeTabCreator extends TabCreator {
             Intent intent) {
         if (mOverviewNTPCreator != null
                 && mOverviewNTPCreator.handleCreateNTPIfNeeded(
-                        UrlUtilities.isNTPUrl(loadUrlParams.getUrl()),
+                        UrlUtilities.isNtpUrl(loadUrlParams.getUrl()),
                         mIncognito,
                         parent,
                         NewTabPageUtils.decodeOriginFromNtpUrl(loadUrlParams.getUrl()))) {

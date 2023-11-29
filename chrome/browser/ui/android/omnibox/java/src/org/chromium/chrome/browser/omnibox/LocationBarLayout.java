@@ -573,7 +573,7 @@ public class LocationBarLayout extends FrameLayout {
 
         boolean isNtpOnPhone =
                 mStatusCoordinator.isSearchEngineStatusIconVisible()
-                        && UrlUtilities.isNTPUrl(mLocationBarDataProvider.getCurrentGurl())
+                        && UrlUtilities.isNtpUrl(mLocationBarDataProvider.getCurrentGurl())
                         && !isOnTablet;
         boolean isScrollingOnNtpOnPhone = !mUrlBar.hasFocus() && isNtpOnPhone;
 

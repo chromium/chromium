@@ -543,7 +543,7 @@ public class HomepageSettingsUnitTest {
                 ASSERT_MESSAGE_EDIT_TEXT, "", mCustomUriRadioButton.getPrimaryText().toString());
         Assert.assertTrue(
                 ASSERT_HOMEPAGE_MANAGER_SETTINGS,
-                UrlUtilities.isNTPUrl(HomepageManager.getHomepageGurl()));
+                UrlUtilities.isNtpUrl(HomepageManager.getHomepageGurl()));
         assertUserActionRecorded(false);
 
         // Update the text box. To do this, request focus for customized radio button so that the

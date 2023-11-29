@@ -209,7 +209,7 @@ public class AppLaunchDrawBlocker {
 
         String url = IntentHandler.getUrlFromIntent(mIntentSupplier.get());
         boolean hasValidIntentUrl = !mShouldIgnoreIntentSupplier.get() && !TextUtils.isEmpty(url);
-        boolean isNtpUrl = UrlUtilities.isCanonicalizedNTPUrl(url);
+        boolean isNtpUrl = UrlUtilities.isCanonicalizedNtpUrl(url);
 
         boolean shouldBlockWithoutIntent =
                 shouldBlockDrawForNtpOnColdStartWithoutIntent(

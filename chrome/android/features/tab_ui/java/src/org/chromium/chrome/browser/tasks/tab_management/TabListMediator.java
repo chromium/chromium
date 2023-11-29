@@ -467,7 +467,7 @@ class TabListMediator {
                     // new one.
                     // See https://crbug.com/1359002.
                     if (navigationHandle.isSameDocument()
-                            || UrlUtilities.isNTPUrl(tab.getUrl())
+                            || UrlUtilities.isNtpUrl(tab.getUrl())
                             || tab.getUrl().equals(navigationHandle.getUrl())) {
                         return;
                     }

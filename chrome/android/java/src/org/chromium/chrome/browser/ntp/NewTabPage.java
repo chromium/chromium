@@ -467,7 +467,7 @@ public class NewTabPage
 
                     @Override
                     public void onLoadUrl(Tab tab, LoadUrlParams params, int loadType) {
-                        mNewTabPageLayout.onLoadUrl(UrlUtilities.isNTPUrl(tab.getUrl()));
+                        mNewTabPageLayout.onLoadUrl(UrlUtilities.isNtpUrl(tab.getUrl()));
                     }
                 };
         mTab.addObserver(mTabObserver);
@@ -1186,7 +1186,7 @@ public class NewTabPage
 
     /** Show the module when the current new tab page is been used as the home surface. */
     private void initializeSingleTabCard(Tab mostRecentTab) {
-        if (mostRecentTab == null || UrlUtilities.isNTPUrl(mostRecentTab.getUrl())) {
+        if (mostRecentTab == null || UrlUtilities.isNtpUrl(mostRecentTab.getUrl())) {
             return;
         }
 

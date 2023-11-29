@@ -662,7 +662,7 @@ public class TabPersistentStore {
                 Log.w(TAG, "Failed to restore tab: not enough info about its type was available.");
                 return;
             } else if (isIncognito) {
-                boolean isNtp = UrlUtilities.isNTPUrl(tabToRestore.url);
+                boolean isNtp = UrlUtilities.isNtpUrl(tabToRestore.url);
                 boolean isNtpFromMerge = isNtp && tabToRestore.fromMerge;
 
                 if (!isNtpFromMerge && (!isNtp || !setAsActive || mCancelIncognitoTabLoads)) {
@@ -714,7 +714,7 @@ public class TabPersistentStore {
                             .createFrozenTab(tabState, tabToRestore.id, restoredIndex);
         } else {
             if (!mSkipSavingNonActiveNtps
-                    && UrlUtilities.isNTPUrl(tabToRestore.url)
+                    && UrlUtilities.isNtpUrl(tabToRestore.url)
                     && !setAsActive
                     && !tabToRestore.fromMerge) {
                 Log.i(TAG, "Skipping restore of non-selected NTP.");
@@ -869,7 +869,7 @@ public class TabPersistentStore {
         }
 
         if (isTabUrlContentScheme(tab)
-                || (UrlUtilities.isNTPUrl(tab.getUrl())
+                || (UrlUtilities.isNtpUrl(tab.getUrl())
                         && !tab.canGoBack()
                         && !tab.canGoForward())) {
             // At present the tab is not in a valid state to save. Reset dirtiness state so that the
@@ -985,7 +985,7 @@ public class TabPersistentStore {
             Tab activeTab = normalModel.getTabAt(activeIndex);
             activeTabId = activeTab.getId();
             activeTabState =
-                    UrlUtilities.isNTPUrl(activeTab.getUrl())
+                    UrlUtilities.isNtpUrl(activeTab.getUrl())
                             ? ActiveTabState.NTP
                             : ActiveTabState.OTHER;
         }
@@ -1042,7 +1042,7 @@ public class TabPersistentStore {
                     // If any non-active NTPs have been skipped, the serialized tab model index
                     // needs to be adjusted.
                     modelInfo.index = modelInfo.ids.size();
-                } else if (tab.isNativePage() && UrlUtilities.isNTPUrl(tab.getUrl())) {
+                } else if (tab.isNativePage() && UrlUtilities.isNtpUrl(tab.getUrl())) {
                     // Skips saving the non-selected Ntps.
                     continue;
                 }

@@ -211,7 +211,7 @@ public class SingleTabSwitcherOnNtpMediator implements ConfigurationChangedObser
      * @return Whether has a Tab to track. Returns false if the Tab to track is set as null.
      */
     boolean setTab(Tab tabToTrack) {
-        if (tabToTrack != null && UrlUtilities.isNTPUrl(tabToTrack.getUrl())) {
+        if (tabToTrack != null && UrlUtilities.isNtpUrl(tabToTrack.getUrl())) {
             tabToTrack = null;
         }
 

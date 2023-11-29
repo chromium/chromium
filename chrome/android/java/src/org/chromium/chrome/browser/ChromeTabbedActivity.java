@@ -1498,7 +1498,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     onStandardActiveIndexRead =
                             url -> {
                                 mLastActiveTabUrl = url;
-                                if (UrlUtilities.isNTPUrl(url)) {
+                                if (UrlUtilities.isNtpUrl(url)) {
                                     assert !mTabModelSelector.isIncognitoSelected();
                                     isActiveUrlNTP.set(true);
                                 }
@@ -1658,7 +1658,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             } else {
                 // Migrate legacy NTP URLs (chrome://newtab) to the newer format
                 // (chrome-native://newtab)
-                if (UrlUtilities.isNTPUrl(homepageGurl)) {
+                if (UrlUtilities.isNtpUrl(homepageGurl)) {
                     url = UrlConstants.NTP_URL;
                 } else {
                     url = homepageGurl.getSpec();
@@ -2813,7 +2813,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
 
     private boolean isTabNtp(Tab tab) {
-        return tab != null && UrlUtilities.isNTPUrl(tab.getUrl());
+        return tab != null && UrlUtilities.isNtpUrl(tab.getUrl());
     }
 
     private boolean isTabRegularNtp(Tab tab) {
@@ -3112,7 +3112,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
      */
     private Tab launchIntent(
             LoadUrlParams loadUrlParams, String externalAppId, boolean forceNewTab, Intent intent) {
-        if (mUIWithNativeInitialized && !UrlUtilities.isNTPUrl(loadUrlParams.getUrl())) {
+        if (mUIWithNativeInitialized && !UrlUtilities.isNtpUrl(loadUrlParams.getUrl())) {
             getLayoutManager().showLayout(LayoutType.BROWSING, false);
             getToolbarManager().finishAnimations();
         }

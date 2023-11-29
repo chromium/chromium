@@ -544,7 +544,7 @@ class LocationBarMediator
         }
 
         if (currentTab != null) {
-            boolean isCurrentTabNtpUrl = UrlUtilities.isNTPUrl(currentTab.getUrl());
+            boolean isCurrentTabNtpUrl = UrlUtilities.isNtpUrl(currentTab.getUrl());
             if (currentTab.isNativePage() || isCurrentTabNtpUrl) {
                 mOmniboxUma.recordNavigationOnNtp(
                         url, transition, !currentTab.isIncognito() && isCurrentTabNtpUrl);

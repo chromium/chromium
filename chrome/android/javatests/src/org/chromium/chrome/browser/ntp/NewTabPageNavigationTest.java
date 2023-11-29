@@ -116,7 +116,7 @@ public class NewTabPageNavigationTest {
                     Assert.assertTrue(
                             tab != null
                                     && !tab.isIncognito()
-                                    && UrlUtilities.isNTPUrl(tab.getUrl()));
+                                    && UrlUtilities.isNtpUrl(tab.getUrl()));
                 });
         TabUiTestHelper.enterTabSwitcher(cta);
         TabUiTestHelper.verifyTabSwitcherCardCount(cta, 1);
@@ -138,7 +138,7 @@ public class NewTabPageNavigationTest {
                     Assert.assertTrue(
                             tab != null
                                     && tab.isIncognito()
-                                    && UrlUtilities.isNTPUrl(tab.getUrl()));
+                                    && UrlUtilities.isNtpUrl(tab.getUrl()));
                 });
         TabUiTestHelper.enterTabSwitcher(cta);
         TabUiTestHelper.verifyTabSwitcherCardCount(cta, 1);

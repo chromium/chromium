@@ -157,7 +157,7 @@ public class OptionalNewTabButtonController extends BaseButtonDataProvider
     protected boolean shouldShowButton(Tab tab) {
         if (!super.shouldShowButton(tab) || mIsTablet) return false;
 
-        if (UrlUtilities.isNTPUrl(tab.getUrl())) return false;
+        if (UrlUtilities.isNtpUrl(tab.getUrl())) return false;
 
         return true;
     }

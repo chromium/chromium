@@ -195,32 +195,32 @@ public class UrlUtilitiesUnitTest {
     @Test
     @SmallTest
     public void testIsNtpUrlString() {
-        Assert.assertTrue(UrlUtilities.isNTPUrl("chrome-native://newtab"));
-        Assert.assertTrue(UrlUtilities.isNTPUrl("chrome://newtab"));
-        Assert.assertTrue(UrlUtilities.isNTPUrl("about:newtab"));
+        Assert.assertTrue(UrlUtilities.isNtpUrl("chrome-native://newtab"));
+        Assert.assertTrue(UrlUtilities.isNtpUrl("chrome://newtab"));
+        Assert.assertTrue(UrlUtilities.isNtpUrl("about:newtab"));
 
-        Assert.assertFalse(UrlUtilities.isNTPUrl("http://www.example.com"));
-        Assert.assertFalse(UrlUtilities.isNTPUrl("chrome://history"));
-        Assert.assertFalse(UrlUtilities.isNTPUrl("chrome-native://newtabz"));
-        Assert.assertFalse(UrlUtilities.isNTPUrl("newtab"));
-        Assert.assertFalse(UrlUtilities.isNTPUrl(""));
+        Assert.assertFalse(UrlUtilities.isNtpUrl("http://www.example.com"));
+        Assert.assertFalse(UrlUtilities.isNtpUrl("chrome://history"));
+        Assert.assertFalse(UrlUtilities.isNtpUrl("chrome-native://newtabz"));
+        Assert.assertFalse(UrlUtilities.isNtpUrl("newtab"));
+        Assert.assertFalse(UrlUtilities.isNtpUrl(""));
     }
 
     @Test
     @SmallTest
     public void testIsNtpUrlGurl() {
-        Assert.assertTrue(UrlUtilities.isNTPUrl(new GURL("chrome-native://newtab")));
-        Assert.assertTrue(UrlUtilities.isNTPUrl(new GURL("chrome://newtab")));
+        Assert.assertTrue(UrlUtilities.isNtpUrl(new GURL("chrome-native://newtab")));
+        Assert.assertTrue(UrlUtilities.isNtpUrl(new GURL("chrome://newtab")));
 
         // Note that this intentionally differs from UrlUtilities#isNTPUrl(String) (see comments on
         // method).
-        Assert.assertFalse(UrlUtilities.isNTPUrl(new GURL("about:newtab")));
+        Assert.assertFalse(UrlUtilities.isNtpUrl(new GURL("about:newtab")));
 
-        Assert.assertFalse(UrlUtilities.isNTPUrl(new GURL("http://www.example.com")));
-        Assert.assertFalse(UrlUtilities.isNTPUrl(new GURL("chrome://history")));
-        Assert.assertFalse(UrlUtilities.isNTPUrl(new GURL("chrome-native://newtabz")));
-        Assert.assertFalse(UrlUtilities.isNTPUrl(new GURL("newtab")));
-        Assert.assertFalse(UrlUtilities.isNTPUrl(new GURL("")));
+        Assert.assertFalse(UrlUtilities.isNtpUrl(new GURL("http://www.example.com")));
+        Assert.assertFalse(UrlUtilities.isNtpUrl(new GURL("chrome://history")));
+        Assert.assertFalse(UrlUtilities.isNtpUrl(new GURL("chrome-native://newtabz")));
+        Assert.assertFalse(UrlUtilities.isNtpUrl(new GURL("newtab")));
+        Assert.assertFalse(UrlUtilities.isNtpUrl(new GURL("")));
     }
 
     @Test

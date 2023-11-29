@@ -1307,7 +1307,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         }
         Tab currentTab = mActivityTabProvider.get();
         if (currentTab != null
-                && UrlUtilities.isNTPUrl(currentTab.getUrl())
+                && UrlUtilities.isNtpUrl(currentTab.getUrl())
                 && !currentTab.isIncognito()) {
             BrowserUiUtils.recordModuleClickHistogram(
                     HostSurface.NEW_TAB_PAGE, ModuleTypeOnStartAndNTP.MENU_BUTTON);

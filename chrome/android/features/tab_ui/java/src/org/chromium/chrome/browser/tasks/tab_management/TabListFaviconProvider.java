@@ -478,7 +478,7 @@ public class TabListFaviconProvider {
      */
     void getFaviconForUrlAsync(
             GURL url, boolean isIncognito, Callback<TabFavicon> faviconCallback) {
-        if (mFaviconHelper == null || UrlUtilities.isNTPUrl(url)) {
+        if (mFaviconHelper == null || UrlUtilities.isNtpUrl(url)) {
             faviconCallback.onResult(getRoundedChromeFavicon(isIncognito));
         } else {
             mFaviconHelper.getLocalFaviconImageForURL(

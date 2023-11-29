@@ -125,7 +125,7 @@ public class InstantStartNewTabFromLauncherTest {
         Assert.assertFalse(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Assert.assertTrue(UrlUtilities.isNTPUrl(cta.getActivityTab().getUrl()));
+                    Assert.assertTrue(UrlUtilities.isNtpUrl(cta.getActivityTab().getUrl()));
                 });
     }
 
@@ -147,7 +147,7 @@ public class InstantStartNewTabFromLauncherTest {
         Assert.assertFalse(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Assert.assertTrue(UrlUtilities.isNTPUrl(cta.getActivityTab().getUrl()));
+                    Assert.assertTrue(UrlUtilities.isNtpUrl(cta.getActivityTab().getUrl()));
                 });
     }
 

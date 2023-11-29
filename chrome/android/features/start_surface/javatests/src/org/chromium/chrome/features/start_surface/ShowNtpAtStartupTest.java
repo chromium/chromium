@@ -150,7 +150,7 @@ public class ShowNtpAtStartupTest {
     public void testShowNtpAtStartupWithNtpExist() throws IOException {
         // The existing NTP isn't the last active Tab.
         String modifiedNtpUrl = UrlConstants.NTP_URL + "/1";
-        Assert.assertTrue(UrlUtilities.isNTPUrl(modifiedNtpUrl));
+        Assert.assertTrue(UrlUtilities.isNtpUrl(modifiedNtpUrl));
 
         HistogramWatcher histogram =
                 HistogramWatcher.newBuilder()
@@ -178,7 +178,7 @@ public class ShowNtpAtStartupTest {
     public void testShowNtpAtStartupWithActiveNtpExist() throws IOException {
         // The existing NTP is set as the last active Tab.
         String modifiedNtpUrl = UrlConstants.NTP_URL + "/1";
-        Assert.assertTrue(UrlUtilities.isNTPUrl(modifiedNtpUrl));
+        Assert.assertTrue(UrlUtilities.isNtpUrl(modifiedNtpUrl));
         HistogramWatcher histogram =
                 HistogramWatcher.newBuilder()
                         .expectBooleanRecord(HOME_SURFACE_SHOWN_AT_STARTUP_UMA, true)

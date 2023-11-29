@@ -439,7 +439,7 @@ public class PartnerBrowserCustomizations {
             return false;
         }
 
-        if (!url.isValid() || (!UrlUtilities.isHttpOrHttps(url) && !UrlUtilities.isNTPUrl(url))) {
+        if (!url.isValid() || (!UrlUtilities.isHttpOrHttps(url) && !UrlUtilities.isNtpUrl(url))) {
             Log.w(
                     TAG,
                     "Partner homepage must be HTTP(S) or NewTabPage. " + "Got invalid URL \"%s\"",

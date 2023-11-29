@@ -80,7 +80,7 @@ public class LoadProgressMediator {
                             @Override
                             public void onLoadProgressChanged(Tab tab, float progress) {
                                 if (tab.getUrl() == null
-                                        || UrlUtilities.isNTPUrl(tab.getUrl())
+                                        || UrlUtilities.isNtpUrl(tab.getUrl())
                                         || NativePage.isNativePageUrl(
                                                 tab.getUrl(), tab.isIncognito())) {
                                     return;

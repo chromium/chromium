@@ -53,7 +53,7 @@ public class ReparentingDelegateFactory {
 
             @Override
             public boolean isNTPUrl(GURL url) {
-                return UrlUtilities.isNTPUrl(url);
+                return UrlUtilities.isNtpUrl(url);
             }
         };
     }

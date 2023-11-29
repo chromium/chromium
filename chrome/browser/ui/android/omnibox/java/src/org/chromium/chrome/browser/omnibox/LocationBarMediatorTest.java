@@ -121,12 +121,12 @@ public class LocationBarMediatorTest {
         static boolean sIsNtp;
 
         @Implementation
-        public static boolean isNTPUrl(GURL url) {
+        public static boolean isNtpUrl(GURL url) {
             return sIsNtp;
         }
 
         @Implementation
-        public static boolean isNTPUrl(String url) {
+        public static boolean isNtpUrl(String url) {
             return sIsNtp;
         }
     }
@@ -1170,7 +1170,7 @@ public class LocationBarMediatorTest {
                         anyBoolean());
         doReturn(true).when(mTab).isNativePage();
         ShadowUrlUtilities.sIsNtp = true;
-        assertTrue(UrlUtilities.isNTPUrl(mTab.getUrl()));
+        assertTrue(UrlUtilities.isNtpUrl(mTab.getUrl()));
         doReturn(false).when(mTab).isIncognito();
         // Test navigating using omnibox.
         mMediator.loadUrl(TEST_URL, PageTransition.TYPED, 0, false);
@@ -1186,7 +1186,7 @@ public class LocationBarMediatorTest {
         // This will run the function recordNavigationOnNtp with isNtp equal to false
         // making it unable to record the histogram.
         ShadowUrlUtilities.sIsNtp = false;
-        assertFalse(UrlUtilities.isNTPUrl(mTab.getUrl()));
+        assertFalse(UrlUtilities.isNtpUrl(mTab.getUrl()));
         // Test navigating using omnibox.
         mMediator.loadUrl(TEST_URL, PageTransition.TYPED, 0, false);
         verify(mOmniboxUma, times(1)).recordNavigationOnNtp(TEST_URL, PageTransition.TYPED, true);

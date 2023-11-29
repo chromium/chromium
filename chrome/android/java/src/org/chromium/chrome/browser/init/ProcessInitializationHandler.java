@@ -360,7 +360,7 @@ public class ProcessInitializationHandler {
                                                         HomepageManager.getHomepageGurl();
                                                 LaunchMetrics.recordHomePageLaunchMetrics(
                                                         HomepageManager.isHomepageEnabled(),
-                                                        UrlUtilities.isNTPUrl(homepageGurl),
+                                                        UrlUtilities.isNtpUrl(homepageGurl),
                                                         homepageGurl);
                                             }
                                         });

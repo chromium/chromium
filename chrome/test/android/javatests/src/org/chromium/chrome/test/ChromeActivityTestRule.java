@@ -210,7 +210,7 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
         ChromeTabUtils.waitForTabPageLoaded(tab, (String) null);
 
         if (tab != null
-                && UrlUtilities.isNTPUrl(ChromeTabUtils.getUrlStringOnUiThread(tab))
+                && UrlUtilities.isNtpUrl(ChromeTabUtils.getUrlStringOnUiThread(tab))
                 && !getActivity().isInOverviewMode()) {
             NewTabPageTestUtils.waitForNtpLoaded(tab);
         }

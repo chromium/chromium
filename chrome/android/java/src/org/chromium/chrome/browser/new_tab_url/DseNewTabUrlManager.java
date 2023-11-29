@@ -58,7 +58,7 @@ public class DseNewTabUrlManager {
         if (isIncognito()
                 || !shouldSwapOutNtp()
                 || isDefaultSearchEngineGoogle()
-                || !UrlUtilities.isNTPUrl(gurl)) {
+                || !UrlUtilities.isNtpUrl(gurl)) {
             return gurl;
         }
 
@@ -95,7 +95,7 @@ public class DseNewTabUrlManager {
         if ((profile != null && profile.isOffTheRecord())
                 || !shouldSwapOutNtp()
                 || isDefaultSearchEngineGoogle()
-                || !UrlUtilities.isNTPUrl(gurl)) {
+                || !UrlUtilities.isNtpUrl(gurl)) {
             return gurl;
         }
 

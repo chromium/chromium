@@ -104,7 +104,7 @@ public class CreatorTabMediator {
                             // The link Back to Safety on the interstitial page will go to the
                             // previous page. If there is no previous page, i.e. previous page is
                             // NTP, the preview tab will be closed.
-                            if (mIsOnErrorPage && UrlUtilities.isNTPUrl(url)) {
+                            if (mIsOnErrorPage && UrlUtilities.isNtpUrl(url)) {
                                 mBottomSheetController.hideContent(
                                         mSheetContent, /* animate= */ true);
                                 mCurrentUrl = null;

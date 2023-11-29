@@ -119,7 +119,7 @@ public class NtpFeedSurfaceLifecycleManager extends FeedSurfaceLifecycleManager 
         // NTP itself, at which point the last committed entry is not for the NTP yet. This method
         // will then be called a second time when the user navigates away, at which point the last
         // committed entry is for the NTP. The extra data must only be set in the latter case.
-        if (!UrlUtilities.isNTPUrl(entry.getUrl())) return;
+        if (!UrlUtilities.isNtpUrl(entry.getUrl())) return;
 
         controller.setEntryExtraData(
                 index, FEED_SAVED_INSTANCE_STATE_KEY, mCoordinator.getSavedInstanceStateString());

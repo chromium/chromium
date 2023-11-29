@@ -126,10 +126,10 @@ public class HomepageSettings extends ChromeBaseSettingsFragment {
         GURL defaultGurl = HomepageManager.getDefaultHomepageGurl();
         GURL customGurl = mHomepageManager.getPrefHomepageCustomGurl();
         if (mHomepageManager.getPrefHomepageUseDefaultUri()) {
-            return UrlUtilities.isNTPUrl(defaultGurl) ? GURL.emptyGURL() : defaultGurl;
+            return UrlUtilities.isNtpUrl(defaultGurl) ? GURL.emptyGURL() : defaultGurl;
         }
 
-        if (customGurl.isEmpty() && !UrlUtilities.isNTPUrl(defaultGurl)) {
+        if (customGurl.isEmpty() && !UrlUtilities.isNtpUrl(defaultGurl)) {
             return defaultGurl;
         }
 
@@ -144,12 +144,12 @@ public class HomepageSettings extends ChromeBaseSettingsFragment {
         // URL, we don't check Chrome's Homepage radio button.
         boolean shouldCheckNTP;
         if (isPolicyEnabled) {
-            shouldCheckNTP = UrlUtilities.isNTPUrl(HomepagePolicyManager.getHomepageUrl());
+            shouldCheckNTP = UrlUtilities.isNtpUrl(HomepagePolicyManager.getHomepageUrl());
         } else {
             shouldCheckNTP =
                     mHomepageManager.getPrefHomepageUseChromeNTP()
                             || (mHomepageManager.getPrefHomepageUseDefaultUri()
-                                    && UrlUtilities.isNTPUrl(
+                                    && UrlUtilities.isNtpUrl(
                                             HomepageManager.getDefaultHomepageGurl()));
         }
 

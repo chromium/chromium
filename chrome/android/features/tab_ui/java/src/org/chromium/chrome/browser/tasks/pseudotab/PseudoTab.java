@@ -361,7 +361,7 @@ public class PseudoTab {
                             isStandardActiveIndex,
                             isIncognitoActiveIndex) -> {
                         // Skip restoring of non-selected NTP to match the real restoration logic.
-                        if (UrlUtilities.isCanonicalizedNTPUrl(url) && !isStandardActiveIndex) {
+                        if (UrlUtilities.isCanonicalizedNtpUrl(url) && !isStandardActiveIndex) {
                             return;
                         }
                         PseudoTab tab = PseudoTab.fromTabId(id);
