@@ -3910,6 +3910,11 @@ const char kAppMenuMobileSiteOptionDescription[] =
     "When enabled, app menu should show 'Mobile site' when showing desktop "
     "site, instead of showing 'Desktop Site' with checkbox";
 
+const char kArchiveTabServiceName[] = "Enable archive tab service";
+const char kArchiveTabServiceDescription[] =
+    "Archives suggested tabs for the user that haven't been used beyond a "
+    "certain time threshold as specified by the user.";
+
 const char kBackGestureActivityTabProviderName[] =
     "Back Gesture Refactor (Activity Tab Provider)";
 const char kBackGestureActivityTabProviderDescription[] =
@@ -4001,12 +4006,6 @@ const char kChimeAlwaysShowNotificationName[] =
 const char kChimeAndroidSdkDescription[] =
     "Enable Chime SDK to receive push notification.";
 const char kChimeAndroidSdkName[] = "Use Chime SDK";
-
-const char kCloseTabSuggestionsName[] = "Enable close tab suggestions";
-const char kCloseTabSuggestionsDescription[] =
-    "Suggests to the user to close tabs that haven't been used beyond a "
-    "certain time threshold, if tab duplicates exist or based on tab launch "
-    "type, among other criteria.";
 
 const char kCriticalPersistedTabDataName[] = "Enable CriticalPersistedTabData";
 const char kCriticalPersistedTabDataDescription[] =

@@ -2058,6 +2058,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "enable-archive-tab-service",
+    "owners": [ "bjfong@google.com", "ckitagawa@chromium.org", "fredmello@chromium.org" ],
+    "expiry_milestone": 124
+  },
+  {
     "name": "enable-aria-element-reflection",
     "owners": [ "aleventhal@chromium.org", "//third_party/blink/renderer/modules/accessibility/OWNERS" ],
     "expiry_milestone": 105
@@ -2188,11 +2193,6 @@
     "name": "enable-cct-text-fragment-lookup-api",
     "owners": [ "tbansal@chromium.org", "chrome-intelligence-core@chromium.org"],
     "expiry_milestone":120
-  },
-  {
-    "name": "enable-close-tab-suggestions",
-    "owners": [ "bjfong@google.com", "ckitagawa@chromium.org", "fredmello@chromium.org" ],
-    "expiry_milestone": 122
   },
   {
     "name": "enable-cloud-identifiers",

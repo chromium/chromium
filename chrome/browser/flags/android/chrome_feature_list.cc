@@ -175,6 +175,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidVisibleUrlTruncation,
     &kAnimatedImageDragShadow,
     &kAppMenuMobileSiteOption,
+    &kArchiveTabService,
     &kAuxiliarySearchDonation,
     &kAvoidSelectedTabFocusOnLayoutDoneShowing,
     &kBackGestureActivityTabProvider,
@@ -187,7 +188,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCacheActivityTaskID,
     &kCastDeviceFilter,
     &kClearOmniboxFocusAfterNavigation,
-    &kCloseTabSuggestions,
     &kCloseTabSaveTabList,
     &kCriticalPersistedTabData,
     &kCreateNewTabInitializeRenderer,
@@ -511,6 +511,10 @@ BASE_FEATURE(kAppMenuMobileSiteOption,
              "AppMenuMobileSiteOption",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kArchiveTabService,
+             "ArchiveTabService",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kAuxiliarySearchDonation,
              "AuxiliarySearchDonation",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -543,10 +547,6 @@ BASE_FEATURE(kCastDeviceFilter,
 BASE_FEATURE(kClearOmniboxFocusAfterNavigation,
              "ClearOmniboxFocusAfterNavigation",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCloseTabSuggestions,
-             "CloseTabSuggestions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCloseTabSaveTabList,
              "CloseTabSaveTabList",

@@ -497,7 +497,7 @@ public class TabSwitcherCoordinator
                     shouldUseDynamicResource ? mDynamicResourceLoaderSupplier.get() : null);
 
             if (mMode == TabListCoordinator.TabListMode.GRID) {
-                if (ChromeFeatureList.sCloseTabSuggestions.isEnabled()) {
+                if (ChromeFeatureList.sArchiveTabService.isEnabled()) {
                     mTabSuggestionsOrchestrator =
                             new TabSuggestionsOrchestrator(
                                     mActivity, mTabModelSelector, mLifecycleDispatcher);
@@ -999,7 +999,7 @@ public class TabSwitcherCoordinator
     }
 
     private boolean shouldRegisterMessageItemType() {
-        return ChromeFeatureList.sCloseTabSuggestions.isEnabled()
+        return ChromeFeatureList.sArchiveTabService.isEnabled()
                 || !TabSwitcherCoordinator.isShowingTabsInMRUOrder(mMode);
     }
 

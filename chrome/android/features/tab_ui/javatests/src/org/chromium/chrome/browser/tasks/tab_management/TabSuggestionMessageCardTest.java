@@ -54,7 +54,7 @@ import java.util.concurrent.TimeoutException;
 /** End-to-end tests for TabSuggestion. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
-@EnableFeatures({ChromeFeatureList.CLOSE_TAB_SUGGESTIONS + "<Study"})
+@EnableFeatures({ChromeFeatureList.ARCHIVE_TAB_SERVICE + "<Study"})
 // Disable TAB_TO_GTS_ANIMATION to make it less flaky. When animation is enabled, the suggestion
 // cards will be removed temporarily, then append again.
 // TODO(https://crbug.com/1362059): The message cards aren't shown the first time when entering GTS
@@ -70,7 +70,7 @@ public class TabSuggestionMessageCardTest {
                     + "Study.Group:baseline_tab_suggestions/true/enable_launch_polish/true"
                     + "/min_time_between_prefetches/0/thumbnail_aspect_ratio/1.0";
     private static final String ENABLE_CLOSE_SUGGESTION_PARAM =
-            "/baseline_close_tab_suggestions/true";
+            "/baseline_archive_tab_service/true";
     private static final String ENABLE_GROUP_SUGGESTION_PARAM =
             "/baseline_group_tab_suggestions/true";
 

@@ -1010,13 +1010,13 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @Feature("TabSuggestion")
     @UseMethodParameter(RefactorTestParams.class)
     @EnableFeatures({
-        ChromeFeatureList.CLOSE_TAB_SUGGESTIONS + "<Study",
+        ChromeFeatureList.ARCHIVE_TAB_SERVICE + "<Study",
         ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"
     })
     @CommandLineFlags.Add({
         BASE_PARAMS
                 + "/baseline_tab_suggestions/true"
-                + "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0"
+                + "/baseline_archive_tab_service/true/min_time_between_prefetches/0"
     })
     @DisabledTest(message = "https://crbug.com/1458026 for RefactorDisabled")
     public void testTabSuggestionMessageCard_dismiss(boolean isStartSurfaceRefactorEnable)
@@ -1050,13 +1050,13 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @Feature("TabSuggestion")
     @UseMethodParameter(RefactorTestParams.class)
     @EnableFeatures({
-        ChromeFeatureList.CLOSE_TAB_SUGGESTIONS + "<Study",
+        ChromeFeatureList.ARCHIVE_TAB_SERVICE + "<Study",
         ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"
     })
     @CommandLineFlags.Add({
         BASE_PARAMS
                 + "/baseline_tab_suggestions/true"
-                + "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0"
+                + "/baseline_archive_tab_service/true/min_time_between_prefetches/0"
     })
     @DisabledTest(message = "https://crbug.com/1447282 for refactor disabled case.")
     public void testTabSuggestionMessageCard_review(boolean isStartSurfaceRefactorEnable)
@@ -1091,13 +1091,13 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @Feature("TabSuggestion")
     @DisabledTest(message = "https://crbug.com/1230107, crbug.com/1130621")
     @EnableFeatures({
-        ChromeFeatureList.CLOSE_TAB_SUGGESTIONS + "<Study",
+        ChromeFeatureList.ARCHIVE_TAB_SERVICE + "<Study",
         ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"
     })
     @CommandLineFlags.Add({
         BASE_PARAMS
                 + "/baseline_tab_suggestions/true"
-                + "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0"
+                + "/baseline_archive_tab_service/true/min_time_between_prefetches/0"
     })
     public void testShowOnlyOneTabSuggestionMessageCard_withSoftCleanup(
             boolean isStartSurfaceRefactorEnabled) throws InterruptedException {
@@ -1109,13 +1109,13 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @UseMethodParameter(RefactorTestParams.class)
     @Feature("TabSuggestion")
     @EnableFeatures({
-        ChromeFeatureList.CLOSE_TAB_SUGGESTIONS + "<Study",
+        ChromeFeatureList.ARCHIVE_TAB_SERVICE + "<Study",
         ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"
     })
     @CommandLineFlags.Add({
         BASE_PARAMS
                 + "/baseline_tab_suggestions/true"
-                + "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0"
+                + "/baseline_archive_tab_service/true/min_time_between_prefetches/0"
     })
     @DisabledTest(message = "https://crbug.com/1198484, crbug.com/1130621")
     public void testShowOnlyOneTabSuggestionMessageCard_withHardCleanup(
@@ -1128,13 +1128,13 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @Feature("TabSuggestion")
     @UseMethodParameter(RefactorTestParams.class)
     @EnableFeatures({
-        ChromeFeatureList.CLOSE_TAB_SUGGESTIONS + "<Study",
+        ChromeFeatureList.ARCHIVE_TAB_SERVICE + "<Study",
         ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"
     })
     @CommandLineFlags.Add({
         BASE_PARAMS
                 + "/baseline_tab_suggestions/true"
-                + "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0"
+                + "/baseline_archive_tab_service/true/min_time_between_prefetches/0"
     })
     @DisabledTest(message = "https://crbug.com/1311825")
     public void testTabSuggestionMessageCardDismissAfterTabClosing(
@@ -1168,13 +1168,13 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @Feature("TabSuggestion")
     @UseMethodParameter(RefactorTestParams.class)
     @EnableFeatures({
-        ChromeFeatureList.CLOSE_TAB_SUGGESTIONS + "<Study",
+        ChromeFeatureList.ARCHIVE_TAB_SERVICE + "<Study",
         ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"
     })
     @CommandLineFlags.Add({
         BASE_PARAMS
                 + "/baseline_tab_suggestions/true"
-                + "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0"
+                + "/baseline_archive_tab_service/true/min_time_between_prefetches/0"
     })
     @DisabledTest(message = "https://crbug.com/1326533")
     public void testTabSuggestionMessageCard_orientation(boolean isStartSurfaceRefactorEnabled)
@@ -1586,12 +1586,12 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @MediumTest
     @Feature("TabSuggestion")
     @UseMethodParameter(LegacyTestParams.class)
-    @EnableFeatures({ChromeFeatureList.CLOSE_TAB_SUGGESTIONS + "<Study"})
+    @EnableFeatures({ChromeFeatureList.ARCHIVE_TAB_SERVICE + "<Study"})
     @DisableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION})
     @CommandLineFlags.Add({
         BASE_PARAMS
                 + "/baseline_tab_suggestions/true"
-                + "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0"
+                + "/baseline_archive_tab_service/true/min_time_between_prefetches/0"
     })
     @DisabledTest(message = "https://crbug.com/1449985")
     public void testTabGroupManualSelection_AfterReviewTabSuggestion(

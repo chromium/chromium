@@ -128,6 +128,7 @@ public abstract class ChromeFeatureList {
             "AndroidNoVisibleHintForTablets";
     public static final String ANIMATED_IMAGE_DRAG_SHADOW = "AnimatedImageDragShadow";
     public static final String APP_MENU_MOBILE_SITE_OPTION = "AppMenuMobileSiteOption";
+    public static final String ARCHIVE_TAB_SERVICE = "ArchiveTabService";
     public static final String AUTOFILL_ADDRESS_PROFILE_SAVE_PROMPT_NICKNAME_SUPPORT =
             "AutofillAddressProfileSavePromptNicknameSupport";
     public static final String AUTOFILL_ALLOW_NON_HTTP_ACTIVATION =
@@ -212,7 +213,6 @@ public abstract class ChromeFeatureList {
     public static final String CHROME_SURVEY_NEXT_ANDROID = "ChromeSurveyNextAndroid";
     public static final String CLEAR_OMNIBOX_FOCUS_AFTER_NAVIGATION =
             "ClearOmniboxFocusAfterNavigation";
-    public static final String CLOSE_TAB_SUGGESTIONS = "CloseTabSuggestions";
     public static final String CLOSE_TAB_SAVE_TAB_LIST = "CloseTabSaveTabList";
     public static final String COLLECT_ANDROID_FRAME_TIMELINE_METRICS =
             "CollectAndroidFrameTimelineMetrics";
@@ -518,6 +518,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sAndroidHub = new CachedFlag(ANDROID_HUB, false);
     public static final CachedFlag sAppMenuMobileSiteOption =
             new CachedFlag(APP_MENU_MOBILE_SITE_OPTION, false);
+    public static final CachedFlag sArchiveTabService = new CachedFlag(ARCHIVE_TAB_SERVICE, false);
     public static final CachedFlag sBackGestureActivityTabProvider =
             new CachedFlag(BACK_GESTURE_ACTIVITY_TAB_PROVIDER, false);
     public static final CachedFlag sBackGestureRefactorActivityAndroid =
@@ -551,8 +552,6 @@ public abstract class ChromeFeatureList {
             new CachedFlag(CCT_RESIZABLE_SIDE_SHEET_FOR_THIRD_PARTIES, true);
     public static final CachedFlag sCctToolbarCustomizations =
             new CachedFlag(CCT_TOOLBAR_CUSTOMIZATIONS, true);
-    public static final CachedFlag sCloseTabSuggestions =
-            new CachedFlag(CLOSE_TAB_SUGGESTIONS, false);
     public static final CachedFlag sCloseTabSaveTabList =
             new CachedFlag(CLOSE_TAB_SAVE_TAB_LIST, true);
     public static final CachedFlag sCollectAndroidFrameTimelineMetrics =
@@ -661,6 +660,7 @@ public abstract class ChromeFeatureList {
                     sAndroidAppIntegration,
                     sAndroidHub,
                     sAppMenuMobileSiteOption,
+                    sArchiveTabService,
                     sBackGestureActivityTabProvider,
                     sBackGestureRefactorActivityAndroid,
                     sBackGestureRefactorAndroid,
@@ -679,7 +679,6 @@ public abstract class ChromeFeatureList {
                     sCctResizableSideSheet,
                     sCctResizableSideSheetForThirdParties,
                     sCctToolbarCustomizations,
-                    sCloseTabSuggestions,
                     sCloseTabSaveTabList,
                     sCollectAndroidFrameTimelineMetrics,
                     sCommandLineOnNonRooted,

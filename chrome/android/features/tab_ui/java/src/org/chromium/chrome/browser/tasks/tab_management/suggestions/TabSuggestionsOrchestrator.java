@@ -142,7 +142,7 @@ public class TabSuggestionsOrchestrator implements TabSuggestions, DestroyObserv
         mNextPrefetchTime =
                 time
                         + ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                                ChromeFeatureList.CLOSE_TAB_SUGGESTIONS,
+                                ChromeFeatureList.ARCHIVE_TAB_SERVICE,
                                 "min_time_between_prefetches",
                                 mMinTimeBetweenPrefetchesMs);
         performPrefetch();

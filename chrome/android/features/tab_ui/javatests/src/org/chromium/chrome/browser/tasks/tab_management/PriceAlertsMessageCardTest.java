@@ -85,7 +85,7 @@ import java.io.IOException;
     "force-fieldtrials=Study/Group"
 })
 @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
-@DisableFeatures({ChromeFeatureList.CLOSE_TAB_SUGGESTIONS})
+@DisableFeatures({ChromeFeatureList.ARCHIVE_TAB_SERVICE})
 public class PriceAlertsMessageCardTest {
     private static final String BASE_PARAMS =
             "force-fieldtrial-params=Study.Group:implicit_subscriptions_enabled/true";
