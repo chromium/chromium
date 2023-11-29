@@ -158,7 +158,7 @@ std::unique_ptr<ImageButton> ImageButton::CreateIconButton(
   int icon_size = (icon_style == MaterialIconStyle::kLarge) ? kLargeIconSize
                                                             : kSmallIconSize;
   std::unique_ptr<ImageButton> icon_button =
-      std::make_unique<ImageButton>(callback);
+      std::make_unique<ImageButton>(std::move(callback));
   icon_button->SetImageModel(
       ButtonState::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon, icon_size));

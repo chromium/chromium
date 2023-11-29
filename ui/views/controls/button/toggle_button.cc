@@ -220,7 +220,7 @@ class ToggleButton::ThumbView : public View {
 };
 
 ToggleButton::ToggleButton(PressedCallback callback)
-    : ToggleButton(callback,
+    : ToggleButton(std::move(callback),
                    /*has_thumb_shadow=*/!features::IsChromeRefresh2023()) {}
 
 ToggleButton::ToggleButton(PressedCallback callback, bool has_thumb_shadow)

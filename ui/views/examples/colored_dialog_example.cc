@@ -59,7 +59,7 @@ class TextVectorImageButton : public views::MdTextButton {
   TextVectorImageButton(PressedCallback callback,
                         const std::u16string& text,
                         const gfx::VectorIcon& icon)
-      : MdTextButton(callback, text), icon_(icon) {}
+      : MdTextButton(std::move(callback), text), icon_(icon) {}
   TextVectorImageButton(const TextVectorImageButton&) = delete;
   TextVectorImageButton& operator=(const TextVectorImageButton&) = delete;
   ~TextVectorImageButton() override = default;
