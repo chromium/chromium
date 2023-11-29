@@ -131,9 +131,10 @@ export class CameraIntent extends Camera {
   override async onVideoCaptureDone(videoResult: VideoResult): Promise<void> {
     await super.onVideoCaptureDone(videoResult);
     assert(this.videoResultFile !== null);
-    await this.review.setReviewVideo(this.videoResultFile);
+    const cleanup = await this.review.setReviewVideo(this.videoResultFile);
     await this.reviewIntentResult(
         {resolution: videoResult.resolution, duration: videoResult.duration});
+    cleanup();
     ChromeHelper.getInstance().maybeTriggerSurvey();
   }
 }
