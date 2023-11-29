@@ -343,8 +343,10 @@ void SessionRestorationBrowserAgent::SaveSession(bool immediately) {
   if (web::UseNativeSessionRestorationCache()) {
     for (int i = 0; i < web_state_list->count(); ++i) {
       web::WebState* web_state = web_state_list->GetWebStateAt(i);
-      WebSessionStateTabHelper::FromWebState(web_state)
-          ->SaveSessionStateIfStale();
+      if (WebSessionStateTabHelper* tab_helper =
+              WebSessionStateTabHelper::FromWebState(web_state)) {
+        tab_helper->SaveSessionStateIfStale();
+      }
     }
   }
 }

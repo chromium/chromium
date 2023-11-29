@@ -29,7 +29,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/web/chrome_web_client.h"
@@ -183,18 +182,6 @@ class FileModificationTracker {
 struct WebStateReference {
   const web::WebState* web_state = nullptr;
   bool is_native_session_available = false;
-};
-
-// A WebStateListDelegate that creates the WebSessionStateTabHelper for
-// WebState inserted in the WebStateList (as this is required by the
-// LegacySessionRestorationService).
-class TestWebStateListDelegate final : public FakeWebStateListDelegate {
- public:
-  void WillAddWebState(web::WebState* web_state) final {
-    if (web::UseNativeSessionRestorationCache()) {
-      WebSessionStateTabHelper::CreateForWebState(web_state);
-    }
-  }
 };
 
 // Returns the storage file for `references` in `session_dir`.
@@ -408,8 +395,7 @@ TEST_F(LegacySessionRestorationServiceTest, SetSessionID) {
   observer.Observe(service());
 
   // Check that calling SetSessionID() does not load the session.
-  TestBrowser browser = TestBrowser(
-      browser_state(), std::make_unique<TestWebStateListDelegate>());
+  TestBrowser browser = TestBrowser(browser_state());
   service()->SetSessionID(&browser, kIdentifier0);
   EXPECT_FALSE(observer.restore_started());
 
@@ -431,8 +417,7 @@ TEST_F(LegacySessionRestorationServiceTest, LoadSession) {
   // Check that when a Browser is modified, the changes are reflected to the
   // storage after a delay.
   {
-    TestBrowser browser = TestBrowser(
-        browser_state(), std::make_unique<TestWebStateListDelegate>());
+    TestBrowser browser = TestBrowser(browser_state());
     service()->SetSessionID(&browser, kIdentifier0);
     EXPECT_FALSE(observer.restore_started());
 
@@ -467,8 +452,7 @@ TEST_F(LegacySessionRestorationServiceTest, LoadSession) {
   // Check that the session can be reloaded and that it contains the same
   // state as when it was saved.
   {
-    TestBrowser browser = TestBrowser(
-        browser_state(), std::make_unique<TestWebStateListDelegate>());
+    TestBrowser browser = TestBrowser(browser_state());
     service()->SetSessionID(&browser, kIdentifier0);
     EXPECT_FALSE(observer.restore_started());
 
@@ -511,8 +495,7 @@ TEST_F(LegacySessionRestorationServiceTest, LoadSession_EmptySession) {
   // Check that the session can be loaded even if non-existent and that the
   // Browser is unmodified (but the observers notified).
   {
-    TestBrowser browser = TestBrowser(
-        browser_state(), std::make_unique<TestWebStateListDelegate>());
+    TestBrowser browser = TestBrowser(browser_state());
     service()->SetSessionID(&browser, kIdentifier0);
     EXPECT_FALSE(observer.restore_started());
 
@@ -535,8 +518,7 @@ TEST_F(LegacySessionRestorationServiceTest, LoadSession_MissingSession) {
   // Check that the session can be loaded even if non-existent and that the
   // Browser is unmodified (but the observers notified).
   {
-    TestBrowser browser = TestBrowser(
-        browser_state(), std::make_unique<TestWebStateListDelegate>());
+    TestBrowser browser = TestBrowser(browser_state());
     service()->SetSessionID(&browser, kIdentifier0);
     EXPECT_FALSE(observer.restore_started());
 
@@ -555,10 +537,8 @@ TEST_F(LegacySessionRestorationServiceTest, LoadSession_MissingSession) {
 TEST_F(LegacySessionRestorationServiceTest, SaveSessionOfModifiedBrowser) {
   // Register multiple Browser and modify one of them. Check that
   // only data for the modified Browser is written to disk.
-  TestBrowser browser0 = TestBrowser(
-      browser_state(), std::make_unique<TestWebStateListDelegate>());
-  TestBrowser browser1 = TestBrowser(
-      browser_state(), std::make_unique<TestWebStateListDelegate>());
+  TestBrowser browser0 = TestBrowser(browser_state());
+  TestBrowser browser1 = TestBrowser(browser_state());
   service()->SetSessionID(&browser0, kIdentifier0);
   service()->SetSessionID(&browser1, kIdentifier1);
 
@@ -579,8 +559,7 @@ TEST_F(LegacySessionRestorationServiceTest, SaveSessionOfModifiedBrowser) {
 TEST_F(LegacySessionRestorationServiceTest,
        SaveSessionChangesOnlyRequiredFiles) {
   // Create a Browser and add a few WebStates to it.
-  TestBrowser browser = TestBrowser(
-      browser_state(), std::make_unique<TestWebStateListDelegate>());
+  TestBrowser browser = TestBrowser(browser_state());
   service()->SetSessionID(&browser, kIdentifier0);
   InsertTabsWithUrls(browser, base::make_span(kURLs));
 
@@ -616,8 +595,7 @@ TEST_F(LegacySessionRestorationServiceTest, AdoptUnrealizedWebStateOnMove) {
   // add some WebState, wait for the session to be serialized. The session
   // can then be loaed to get unrealized WebStates.
   {
-    TestBrowser browser = TestBrowser(
-        browser_state(), std::make_unique<TestWebStateListDelegate>());
+    TestBrowser browser = TestBrowser(browser_state());
     service()->SetSessionID(&browser, kIdentifier0);
 
     // Insert a few WebState in the Browser's WebStateList.
@@ -640,10 +618,8 @@ TEST_F(LegacySessionRestorationServiceTest, AdoptUnrealizedWebStateOnMove) {
 
   // Load the session created before, and then move the tabs from the first
   // browser to the second one. Check that the session files have been copied.
-  TestBrowser browser0 = TestBrowser(
-      browser_state(), std::make_unique<TestWebStateListDelegate>());
-  TestBrowser browser1 = TestBrowser(
-      browser_state(), std::make_unique<TestWebStateListDelegate>());
+  TestBrowser browser0 = TestBrowser(browser_state());
+  TestBrowser browser1 = TestBrowser(browser_state());
   service()->SetSessionID(&browser0, kIdentifier0);
   service()->SetSessionID(&browser1, kIdentifier1);
 
@@ -719,8 +695,7 @@ TEST_F(LegacySessionRestorationServiceTest, AdoptUnrealizedWebStateOnMove) {
 // Tests that the service save pending changes on disconnect.
 TEST_F(LegacySessionRestorationServiceTest, SavePendingChangesOnDisconnect) {
   // Create a Browser and add a few WebStates to it.
-  TestBrowser browser = TestBrowser(
-      browser_state(), std::make_unique<TestWebStateListDelegate>());
+  TestBrowser browser = TestBrowser(browser_state());
   service()->SetSessionID(&browser, kIdentifier0);
   InsertTabsWithUrls(browser, base::make_span(kURLs));
 
@@ -767,8 +742,7 @@ TEST_F(LegacySessionRestorationServiceTest, RecordHistograms) {
   {
     // Create a Browser and add a few WebStates to it and wait for all
     // pending scheduled tasks to complete.
-    TestBrowser browser = TestBrowser(
-        browser_state(), std::make_unique<TestWebStateListDelegate>());
+    TestBrowser browser = TestBrowser(browser_state());
     service()->SetSessionID(&browser, kIdentifier0);
     InsertTabsWithUrls(browser, base::make_span(kURLs));
     WaitForSessionSaveComplete();
@@ -790,8 +764,7 @@ TEST_F(LegacySessionRestorationServiceTest, RecordHistograms) {
   }
 
   // Create a Browser.
-  TestBrowser browser = TestBrowser(
-      browser_state(), std::make_unique<TestWebStateListDelegate>());
+  TestBrowser browser = TestBrowser(browser_state());
   service()->SetSessionID(&browser, kIdentifier0);
 
   // Load the session and check that the time spent loading was logged.
@@ -812,8 +785,7 @@ TEST_F(LegacySessionRestorationServiceTest, RecordHistograms) {
 // is correctly saved to the disk.
 TEST_F(LegacySessionRestorationServiceTest, CreateUnrealizedWebState) {
   // Create a Browser.
-  TestBrowser browser = TestBrowser(
-      browser_state(), std::make_unique<TestWebStateListDelegate>());
+  TestBrowser browser = TestBrowser(browser_state());
   service()->SetSessionID(&browser, kIdentifier0);
 
   // Create an unrealized WebState.
@@ -859,10 +831,8 @@ TEST_F(LegacySessionRestorationServiceTest, SaveSessionsCallableAtAnyTime) {
 
   // Check that calling SaveSessions() when Browser are registered with no
   // changes updates the session on disk unconditionally.
-  TestBrowser browser0 = TestBrowser(
-      browser_state(), std::make_unique<TestWebStateListDelegate>());
-  TestBrowser browser1 = TestBrowser(
-      browser_state(), std::make_unique<TestWebStateListDelegate>());
+  TestBrowser browser0 = TestBrowser(browser_state());
+  TestBrowser browser1 = TestBrowser(browser_state());
   service()->SetSessionID(&browser0, kIdentifier0);
   service()->SetSessionID(&browser1, kIdentifier1);
 
@@ -936,10 +906,8 @@ TEST_F(LegacySessionRestorationServiceTest, ScheduleSaveSessions) {
 
   // Check that calling ScheduleSaveSessions() when Browser are registered
   // with no changes is a no-op.
-  TestBrowser browser0 = TestBrowser(
-      browser_state(), std::make_unique<TestWebStateListDelegate>());
-  TestBrowser browser1 = TestBrowser(
-      browser_state(), std::make_unique<TestWebStateListDelegate>());
+  TestBrowser browser0 = TestBrowser(browser_state());
+  TestBrowser browser1 = TestBrowser(browser_state());
   service()->SetSessionID(&browser0, kIdentifier0);
   service()->SetSessionID(&browser1, kIdentifier1);
 
@@ -1010,8 +978,7 @@ TEST_F(LegacySessionRestorationServiceTest, ScheduleSaveSessions) {
 // Tests that calling DeleteDataForDiscardedSessions() deletes data for
 // discarded sessions and accept inexistant sessions identifiers.
 TEST_F(LegacySessionRestorationServiceTest, DeleteDataForDiscardedSessions) {
-  TestBrowser browser = TestBrowser(
-      browser_state(), std::make_unique<TestWebStateListDelegate>());
+  TestBrowser browser = TestBrowser(browser_state());
   service()->SetSessionID(&browser, kIdentifier0);
 
   // Insert a few WebStage in one of the Browser and wait for the changes
@@ -1052,8 +1019,7 @@ TEST_F(LegacySessionRestorationServiceTest, PurgeUnassociatedData) {
     return;
   }
 
-  TestBrowser browser = TestBrowser(
-      browser_state(), std::make_unique<TestWebStateListDelegate>());
+  TestBrowser browser = TestBrowser(browser_state());
 
   // PurgeUnassociatedData requires the Browser to be registered with
   // the BrowserList (as it uses it to detect all the Browsers).

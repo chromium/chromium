@@ -12,8 +12,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/url_loading/model/new_tab_animation_tab_helper.h"
-#import "ios/chrome/browser/web/features.h"
-#import "ios/chrome/browser/web/session_state/web_session_state_tab_helper.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -23,21 +21,6 @@ namespace {
 
 const char kURL1[] = "https://www.some.url.com";
 
-// A WebStateListDelegate that creates the WebSessionStateTabHelper for
-// WebState inserted in the WebStateList (as this is required by the
-// LegacySessionRestorationService).
-class TestWebStateListDelegate final : public FakeWebStateListDelegate {
- public:
-  TestWebStateListDelegate()
-      : FakeWebStateListDelegate(/*force_realization_on_activation=*/true) {}
-
-  void WillAddWebState(web::WebState* web_state) final {
-    if (web::UseNativeSessionRestorationCache()) {
-      WebSessionStateTabHelper::CreateForWebState(web_state);
-    }
-  }
-};
-
 }  // namespace
 
 class TabInsertionBrowserAgentTest : public PlatformTest {
@@ -45,7 +28,8 @@ class TabInsertionBrowserAgentTest : public PlatformTest {
   TabInsertionBrowserAgentTest() {
     browser_state_ = TestChromeBrowserState::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(
-        browser_state_.get(), std::make_unique<TestWebStateListDelegate>());
+        browser_state_.get(), std::make_unique<FakeWebStateListDelegate>(
+                                  /*force_realization_on_activation=*/true));
     TabInsertionBrowserAgent::CreateForBrowser(browser_.get());
     agent_ = TabInsertionBrowserAgent::FromBrowser(browser_.get());
   }

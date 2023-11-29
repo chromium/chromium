@@ -494,12 +494,9 @@ void ChromeWebClient::LogDefaultUserAgent(web::WebState* web_state,
 }
 
 NSData* ChromeWebClient::FetchSessionFromCache(web::WebState* web_state) const {
-  if (!web::UseNativeSessionRestorationCache()) {
-    return nil;
-  }
-
-  return WebSessionStateTabHelper::FromWebState(web_state)
-      ->FetchSessionFromCache();
+  WebSessionStateTabHelper* tab_helper =
+      WebSessionStateTabHelper::FromWebState(web_state);
+  return tab_helper ? tab_helper->FetchSessionFromCache() : nil;
 }
 
 void ChromeWebClient::CleanupNativeRestoreURLs(web::WebState* web_state) const {

@@ -13,7 +13,9 @@
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/sessions/session_service_ios.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_cache.h"
+#import "ios/chrome/browser/web/session_state/web_session_state_tab_helper.h"
 #import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/session/proto/storage.pb.h"
 #import "ios/web/public/web_state.h"
@@ -80,6 +82,8 @@ void LegacySessionRestorationService::SetSessionID(
   DCHECK(!base::Contains(browsers_, browser));
   browsers_.insert(browser);
 
+  browser->GetWebStateList()->AddObserver(this);
+
   // Migrate the storage to legacy format before trying to load.
   ios::sessions::MigrateNamedSessionToLegacy(
       browser->GetBrowserState()->GetStatePath(), identifier,
@@ -115,6 +119,8 @@ void LegacySessionRestorationService::Disconnect(Browser* browser) {
 
   // Destroy the SessionRestorationBrowserAgent for browser.
   SessionRestorationBrowserAgent::RemoveFromBrowser(browser);
+
+  browser->GetWebStateList()->RemoveObserver(this);
 }
 
 std::unique_ptr<web::WebState>
@@ -174,5 +180,30 @@ void LegacySessionRestorationService::SessionRestorationFinished(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (SessionRestorationObserver& observer : observers_) {
     observer.SessionRestorationFinished(browser, restored_web_states);
+  }
+}
+
+void LegacySessionRestorationService::WebStateListDidChange(
+    WebStateList* web_state_list,
+    const WebStateListChange& change,
+    const WebStateListStatus& status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  switch (change.type()) {
+    case WebStateListChange::Type::kInsert: {
+      const auto& typed_change = change.As<WebStateListChangeInsert>();
+      WebSessionStateTabHelper::CreateForWebState(
+          typed_change.inserted_web_state());
+      break;
+    }
+
+    case WebStateListChange::Type::kReplace: {
+      const auto& typed_change = change.As<WebStateListChangeReplace>();
+      WebSessionStateTabHelper::CreateForWebState(
+          typed_change.inserted_web_state());
+      break;
+    }
+
+    default:
+      break;
   }
 }

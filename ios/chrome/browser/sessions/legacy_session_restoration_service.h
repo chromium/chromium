@@ -13,6 +13,7 @@
 #include "base/sequence_checker.h"
 #include "ios/chrome/browser/sessions/session_restoration_observer.h"
 #include "ios/chrome/browser/sessions/session_restoration_service.h"
+#include "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 
 @class SessionServiceIOS;
 @class WebSessionStateCache;
@@ -25,9 +26,9 @@ class TabRestoreService;
 // feature is disabled.
 //
 // TODO(crbug.com/1383087): Remove when the feature is fully launched.
-class LegacySessionRestorationService final
-    : public SessionRestorationService,
-      public SessionRestorationObserver {
+class LegacySessionRestorationService final : public SessionRestorationService,
+                                              public SessionRestorationObserver,
+                                              public WebStateListObserver {
  public:
   LegacySessionRestorationService(
       bool is_pinned_tabs_enabled,
@@ -63,6 +64,11 @@ class LegacySessionRestorationService final
   void SessionRestorationFinished(
       Browser* browser,
       const std::vector<web::WebState*>& restored_web_states) final;
+
+  // WebStateListObserver implementation.
+  void WebStateListDidChange(WebStateList* web_state_list,
+                             const WebStateListChange& change,
+                             const WebStateListStatus& status) final;
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);

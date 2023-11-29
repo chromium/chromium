@@ -88,7 +88,6 @@
 #import "ios/chrome/browser/voice/model/voice_search_navigations_tab_helper.h"
 #import "ios/chrome/browser/web/annotations/annotations_tab_helper.h"
 #import "ios/chrome/browser/web/blocked_popup_tab_helper.h"
-#import "ios/chrome/browser/web/features.h"
 #import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
 #import "ios/chrome/browser/web/image_fetch/image_fetch_tab_helper.h"
 #import "ios/chrome/browser/web/invalid_url_tab_helper.h"
@@ -97,7 +96,6 @@
 #import "ios/chrome/browser/web/print/print_tab_helper.h"
 #import "ios/chrome/browser/web/repost_form_tab_helper.h"
 #import "ios/chrome/browser/web/sad_tab_tab_helper.h"
-#import "ios/chrome/browser/web/session_state/web_session_state_tab_helper.h"
 #import "ios/chrome/browser/web/web_performance_metrics/web_performance_metrics_tab_helper.h"
 #import "ios/chrome/browser/web_selection/model/web_selection_tab_helper.h"
 #import "ios/chrome/browser/webui/model/net_export_tab_helper.h"
@@ -113,7 +111,6 @@
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_unsafe_resource_container.h"
 #import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
 #import "ios/web/common/annotations_utils.h"
-#import "ios/web/common/features.h"
 #import "ios/web/public/find_in_page/java_script_find_in_page_manager.h"
 #import "ios/web/public/web_state.h"
 
@@ -271,10 +268,6 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
 
   if (IsPartialTranslateEnabled() || IsSearchWithEnabled()) {
     WebSelectionTabHelper::CreateForWebState(web_state);
-  }
-
-  if (web::UseNativeSessionRestorationCache()) {
-    WebSessionStateTabHelper::CreateForWebState(web_state);
   }
 
   WebPerformanceMetricsTabHelper::CreateForWebState(web_state);
