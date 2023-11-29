@@ -104,6 +104,20 @@ static constexpr auto kAllInteractionsSet =
         Interaction::kSettingsApp,
     });
 
+// Enumeration of quantized time values for easy to interpret metrics about
+// human scale time measurements that can range from minutes to weeks.
+enum class TimeBucket {
+  kMinValue = 0,
+  kOneMinute = kMinValue,
+  kTenMinutes = 1,
+  kOneHour = 2,
+  kOneDay = 3,
+  kOneWeek = 4,
+  kTwoWeeks = 5,
+  kOverTwoWeeks = 6,
+  kMaxValue = kOverTwoWeeks,
+};
+
 // Utilities -------------------------------------------------------------------
 
 // Record that a given `interaction` has occurred.
