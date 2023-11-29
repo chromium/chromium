@@ -88,7 +88,7 @@
     "playpause",
     "pause",
     "play",
-    "mute",
+    "toggleMuted",
 
     // loading attribute
     // https://github.com/scott-little/lazyload#ways-the-loading-attribute-can-be-used
