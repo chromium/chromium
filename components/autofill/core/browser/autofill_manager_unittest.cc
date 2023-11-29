@@ -51,14 +51,6 @@ using ::testing::UnorderedElementsAreArray;
 using ::testing::VariantWith;
 using FieldTypeSource = AutofillManager::Observer::FieldTypeSource;
 
-class MockAutofillClient : public TestAutofillClient {
- public:
-  MockAutofillClient() = default;
-  MockAutofillClient(const MockAutofillClient&) = delete;
-  MockAutofillClient& operator=(const MockAutofillClient&) = delete;
-  ~MockAutofillClient() override = default;
-};
-
 class MockAutofillDriver : public TestAutofillDriver {
  public:
   MockAutofillDriver() = default;
@@ -280,7 +272,7 @@ class AutofillManagerTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_async_parse_form_;
   base::test::TaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
-  NiceMock<MockAutofillClient> client_;
+  TestAutofillClient client_;
   std::unique_ptr<MockAutofillDriver> driver_;
   std::unique_ptr<MockAutofillManager> manager_;
   MockAutofillManagerObserver observer_;
