@@ -5669,6 +5669,23 @@ TEST_F(BidderWorkletTest, ReportWinBrowserSignalRecency) {
       GURL("https://jumboshrimp.test"));
 }
 
+TEST_F(BidderWorkletTest, ReportWinNoBrowserSignalRecencyForAdditionalBid) {
+  is_for_additional_bid_ = true;
+  browser_signal_recency_report_win_ = 19u;
+  const char kScript[] = R"(
+    function reportAdditionalBidWin(
+          auctionSignals, perBuyerSignals, sellerSignals,
+          browserSignals, directFromSellerSignals) {
+      if ('recency' in browserSignals)
+        throw 'Should not have recency in reportAdditionalBidWin';
+      sendReportTo("https://report-additional-bid-win.test/");
+    }
+  )";
+
+  RunReportWinWithJavascriptExpectingResult(
+      kScript, GURL("https://report-additional-bid-win.test/"));
+}
+
 TEST_F(BidderWorkletTest, ReportWinSignalKAnonStatusNotExposedByDefault) {
   RunReportWinWithFunctionBodyExpectingResult(
       R"(if (!("kAnonStatus" in browserSignals))

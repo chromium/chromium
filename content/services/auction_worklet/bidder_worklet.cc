@@ -826,8 +826,9 @@ void BidderWorklet::V8State::ReportWin(
            static_cast<double>(*browser_signal_modeling_signals))) ||
       !browser_signals_dict.Set(
           "joinCount", static_cast<double>(browser_signal_join_count)) ||
-      !browser_signals_dict.Set("recency",
-                                static_cast<double>(browser_signal_recency)) ||
+      (!is_for_additional_bid &&
+       !browser_signals_dict.Set(
+           "recency", static_cast<double>(browser_signal_recency))) ||
       !browser_signals_dict.Set("highestScoringOtherBid",
                                 browser_signal_highest_scoring_other_bid) ||
       !browser_signals_dict.Set(
