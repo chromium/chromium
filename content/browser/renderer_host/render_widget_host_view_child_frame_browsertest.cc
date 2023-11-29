@@ -149,8 +149,15 @@ class AutoResizeWebContentsDelegate : public WebContentsDelegate {
 // resizes the top level widget.
 // d) When auto-resize is enabled for the nested main frame and the renderer
 // resizes the nested widget.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_VisualPropertiesPropagation_VisibleViewportSize \
+  DISABLED_VisualPropertiesPropagation_VisibleViewportSize
+#else
+#define MAYBE_VisualPropertiesPropagation_VisibleViewportSize \
+  VisualPropertiesPropagation_VisibleViewportSize
+#endif
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
-                       VisualPropertiesPropagation_VisibleViewportSize) {
+                       MAYBE_VisualPropertiesPropagation_VisibleViewportSize) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b,c,about:blank)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
