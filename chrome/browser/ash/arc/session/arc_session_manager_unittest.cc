@@ -29,7 +29,6 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -444,8 +443,6 @@ TEST_F(ArcSessionManagerTest, BaseWorkflow) {
 }
 
 TEST_F(ArcSessionManagerTest, SignedInWorkflow) {
-  base::HistogramTester histogram_tester;
-
   PrefService* const prefs = profile()->GetPrefs();
   prefs->SetBoolean(prefs::kArcTermsAccepted, true);
   prefs->SetBoolean(prefs::kArcSignedIn, true);
@@ -458,14 +455,10 @@ TEST_F(ArcSessionManagerTest, SignedInWorkflow) {
 
   // When signed-in, enabling ARC results in the ACTIVE state.
   arc_session_manager()->RequestEnable();
-  histogram_tester.ExpectUniqueSample(
-      "Arc.DelayedActivation.ActivationIsDelayed", false, 1);
   ASSERT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
 }
 
 TEST_F(ArcSessionManagerTest, SignedInWorkflowWithArcOnDemand) {
-  base::HistogramTester histogram_tester;
-
   // Enable ARC on Demand feature.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kArcOnDemandFeature);
@@ -490,18 +483,11 @@ TEST_F(ArcSessionManagerTest, SignedInWorkflowWithArcOnDemand) {
   // When signed-in, enabling ARC results in the READY state.
   arc_session_manager()->RequestEnable();
   ASSERT_EQ(ArcSessionManager::State::READY, arc_session_manager()->state());
-  histogram_tester.ExpectUniqueSample(
-      "Arc.DelayedActivation.ActivationIsDelayed", true, 1);
   ASSERT_TRUE(arc_session_manager()->IsActivationDelayed());
-
-  constexpr auto kDelay = base::Minutes(10);
-  task_environment().FastForwardBy(kDelay);
 
   // ARC starts after calling AllowActivation().
   arc_session_manager()->AllowActivation();
   ASSERT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
-  histogram_tester.ExpectUniqueTimeSample("Arc.DelayedActivation.Delay", kDelay,
-                                          1);
 }
 
 TEST_F(ArcSessionManagerTest, SignedInWorkflow_ActivationIsAlreadyAllowed) {

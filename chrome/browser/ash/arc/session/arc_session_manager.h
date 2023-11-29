@@ -356,9 +356,7 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   void StopMiniArcIfNecessary();
 
   // Returns whether ARC activation is delayed by ARC on Demand
-  bool IsActivationDelayed() const {
-    return activation_delay_elapsed_timer_ != nullptr;
-  }
+  bool IsActivationDelayed() const { return activation_is_delayed; }
 
  private:
   // Reports statuses of OptIn flow to UMA.
@@ -486,6 +484,7 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   bool provisioning_reported_ = false;
   bool skipped_terms_of_service_negotiation_ = false;
   bool activation_is_allowed_ = false;
+  bool activation_is_delayed = false;
   base::OneShotTimer arc_sign_in_timer_;
 
   std::unique_ptr<ArcSupportHost> support_host_;
@@ -511,9 +510,6 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   base::TimeTicks pre_start_time_;
   // The time when ARC was about to start.
   base::TimeTicks start_time_;
-
-  // Used to measure the activation delay.
-  std::unique_ptr<base::ElapsedTimer> activation_delay_elapsed_timer_;
 
   base::RepeatingClosure attempt_user_exit_callback_;
 
