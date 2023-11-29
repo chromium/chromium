@@ -50,7 +50,6 @@ class Element;
 class EncodedFormData;
 class Event;
 class ExecutionContext;
-class Frame;
 class HitTestLocation;
 class HitTestRequest;
 class HitTestResult;
@@ -90,7 +89,8 @@ class CORE_EXPORT InspectorTraceEvents
   InspectorTraceEvents(const InspectorTraceEvents&) = delete;
   InspectorTraceEvents& operator=(const InspectorTraceEvents&) = delete;
 
-  void WillSendRequest(DocumentLoader*,
+  void WillSendRequest(ExecutionContext*,
+                       DocumentLoader*,
                        const KURL& fetch_context_url,
                        const ResourceRequest&,
                        const ResourceResponse& redirect_response,
@@ -315,6 +315,7 @@ void Data(perfetto::TracedValue context,
 
 namespace inspector_send_request_event {
 void Data(perfetto::TracedValue context,
+          ExecutionContext* execution_context,
           DocumentLoader*,
           uint64_t identifier,
           LocalFrame*,
@@ -430,7 +431,7 @@ void Data(perfetto::TracedValue context, ExecutionContext*, XMLHttpRequest*);
 //     associated with this event is the bounding damage rect.
 namespace inspector_paint_event {
 void Data(perfetto::TracedValue context,
-          Frame*,
+          LocalFrame*,
           const LayoutObject*,
           const gfx::QuadF& quad,
           int layer_id);
@@ -476,6 +477,7 @@ void Data(perfetto::TracedValue context, LocalFrame*);
 
 namespace inspector_evaluate_script_event {
 void Data(perfetto::TracedValue context,
+          v8::Isolate*,
           LocalFrame*,
           const String& url,
           const WTF::TextPosition&);
@@ -525,7 +527,7 @@ void Data(perfetto::TracedValue context,
 }
 
 namespace inspector_update_counters_event {
-void Data(perfetto::TracedValue context);
+void Data(perfetto::TracedValue context, v8::Isolate* isolate);
 }
 
 namespace inspector_invalidate_layout_event {
@@ -537,7 +539,7 @@ void Data(perfetto::TracedValue context, LocalFrame*);
 }
 
 namespace inspector_event_dispatch_event {
-void Data(perfetto::TracedValue context, const Event&);
+void Data(perfetto::TracedValue context, const Event&, v8::Isolate*);
 }
 
 namespace inspector_time_stamp_event {
@@ -588,7 +590,8 @@ void Data(perfetto::TracedValue context, const StringView&);
 }
 
 CORE_EXPORT String ToHexString(const void* p);
-CORE_EXPORT void SetCallStack(perfetto::TracedDictionary&);
+CORE_EXPORT void SetCallStack(v8::Isolate* isolate,
+                              perfetto::TracedDictionary&);
 
 }  // namespace blink
 

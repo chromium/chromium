@@ -103,7 +103,8 @@ class CORE_EXPORT InspectorNetworkAgent final
                       ResourceRequest&,
                       ResourceLoaderOptions&,
                       ResourceType);
-  void WillSendRequest(DocumentLoader*,
+  void WillSendRequest(ExecutionContext*,
+                       DocumentLoader*,
                        const KURL& fetch_context_url,
                        const ResourceRequest&,
                        const ResourceResponse& redirect_response,

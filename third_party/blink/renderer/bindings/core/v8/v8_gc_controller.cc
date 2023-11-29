@@ -140,7 +140,7 @@ void V8GCController::GcEpilogue(v8::Isolate* isolate,
   TRACE_EVENT_INSTANT1(
       TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "UpdateCounters",
       TRACE_EVENT_SCOPE_THREAD, "data", [&](perfetto::TracedValue context) {
-        inspector_update_counters_event::Data(std::move(context));
+        inspector_update_counters_event::Data(std::move(context), isolate);
       });
 }
 

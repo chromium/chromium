@@ -2085,7 +2085,8 @@ DispatchEventResult LocalDOMWindow::DispatchEvent(Event& event,
   event.SetEventPhase(Event::PhaseType::kAtTarget);
 
   DEVTOOLS_TIMELINE_TRACE_EVENT("EventDispatch",
-                                inspector_event_dispatch_event::Data, event);
+                                inspector_event_dispatch_event::Data, event,
+                                GetIsolate());
   return FireEventListeners(event);
 }
 

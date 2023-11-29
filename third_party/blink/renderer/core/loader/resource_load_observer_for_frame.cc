@@ -157,7 +157,7 @@ void ResourceLoadObserverForFrame::WillSendRequest(
       request, redirect_response, resource);
 
   probe::WillSendRequest(
-      GetProbe(), document_loader_,
+      document_->domWindow(), document_loader_,
       fetcher_properties_->GetFetchClientSettingsObject().GlobalObjectUrl(),
       request, redirect_response, options, resource_type,
       render_blocking_behavior, base::TimeTicks::Now());

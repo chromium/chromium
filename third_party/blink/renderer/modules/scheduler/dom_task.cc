@@ -57,7 +57,7 @@ void SchedulePostTaskCallbackTraceEventData(perfetto::TracedValue trace_context,
   GenericTaskData(dict, execution_context, task_id);
   dict.Add("priority", priority);
   dict.Add("delay", delay);
-  SetCallStack(dict);
+  SetCallStack(execution_context->GetIsolate(), dict);
 }
 
 void RunPostTaskCallbackTraceEventData(perfetto::TracedValue trace_context,
@@ -76,7 +76,7 @@ void AbortPostTaskCallbackTraceEventData(perfetto::TracedValue trace_context,
                                          uint64_t task_id) {
   auto dict = std::move(trace_context).WriteDictionary();
   GenericTaskData(dict, execution_context, task_id);
-  SetCallStack(dict);
+  SetCallStack(execution_context->GetIsolate(), dict);
 }
 
 }  // namespace

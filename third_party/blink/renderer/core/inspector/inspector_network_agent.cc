@@ -1412,6 +1412,7 @@ void InspectorNetworkAgent::PrepareRequest(DocumentLoader* loader,
 }
 
 void InspectorNetworkAgent::WillSendRequest(
+    ExecutionContext*,
     DocumentLoader* loader,
     const KURL& fetch_context_url,
     const ResourceRequest& request,

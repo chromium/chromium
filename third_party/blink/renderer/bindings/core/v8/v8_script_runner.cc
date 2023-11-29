@@ -542,7 +542,7 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
   v8::Context::Scope scope(script_state->GetContext());
 
   DEVTOOLS_TIMELINE_TRACE_EVENT(
-      "EvaluateScript", inspector_evaluate_script_event::Data, frame,
+      "EvaluateScript", inspector_evaluate_script_event::Data, isolate, frame,
       classic_script->SourceUrl().GetString(), classic_script->StartPosition());
 
   // Scope for |v8::TryCatch|.

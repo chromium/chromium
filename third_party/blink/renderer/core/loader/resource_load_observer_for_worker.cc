@@ -39,7 +39,7 @@ void ResourceLoadObserverForWorker::WillSendRequest(
     RenderBlockingBehavior render_blocking_behavior,
     const Resource* resource) {
   probe::WillSendRequest(
-      probe_, nullptr,
+      worker_fetch_context_->GetExecutionContext(), nullptr,
       fetcher_properties_->GetFetchClientSettingsObject().GlobalObjectUrl(),
       request, redirect_response, options, resource_type,
       render_blocking_behavior, base::TimeTicks::Now());
