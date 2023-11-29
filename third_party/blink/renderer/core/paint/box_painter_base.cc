@@ -1132,13 +1132,6 @@ PhysicalBoxStrut BoxPainterBase::ComputeSnappedBorders() const {
       border_widths.bottom.ToInt(), border_widths.left.ToInt());
 }
 
-PhysicalBoxStrut BoxPainterBase::AdjustedBorderOutsets(
-    const FillLayerInfo& info) const {
-  PhysicalBoxStrut snapped_borders = ComputeSnappedBorders();
-  snapped_borders.TruncateSides(info.sides_to_include);
-  return snapped_borders;
-}
-
 void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
                                     const Color& color,
                                     const FillLayer& bg_layer,
@@ -1161,8 +1154,14 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
   GraphicsContext& context = paint_info.context;
   GraphicsContextStateSaver clip_with_scrolling_state_saver(
       context, fill_layer_info.is_clipped_with_local_scrolling);
-  auto scrolled_paint_rect =
-      AdjustRectForScrolledContent(paint_info, fill_layer_info, rect);
+  auto scrolled_paint_rect = rect;
+  if (fill_layer_info.is_clipped_with_local_scrolling &&
+      !paint_info.IsPaintingBackgroundInContentsSpace()) {
+    PhysicalBoxStrut snapped_borders = ComputeSnappedBorders();
+    snapped_borders.TruncateSides(fill_layer_info.sides_to_include);
+    scrolled_paint_rect =
+        AdjustRectForScrolledContent(paint_info.context, snapped_borders, rect);
+  }
   const auto did_adjust_paint_rect = scrolled_paint_rect != rect;
 
   scoped_refptr<Image> image;

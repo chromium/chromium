@@ -14,8 +14,6 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/box_painter_base.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_inline_paint_context.h"
-#include "third_party/blink/renderer/platform/geometry/layout_point.h"
-#include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -91,10 +89,9 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
   void PaintTextClipMask(const PaintInfo& paint_info,
                          PhysicalOffset paint_offset,
                          NGInlineBoxFragmentPainter* inline_box_painter);
-  PhysicalRect AdjustRectForScrolledContent(
-      const PaintInfo&,
-      const BoxPainterBase::FillLayerInfo&,
-      const PhysicalRect&) override;
+  PhysicalRect AdjustRectForScrolledContent(GraphicsContext&,
+                                            const PhysicalBoxStrut& borders,
+                                            const PhysicalRect&) const override;
 
  private:
   NGBoxFragmentPainter(const PhysicalBoxFragment&,

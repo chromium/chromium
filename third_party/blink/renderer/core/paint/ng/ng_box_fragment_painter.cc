@@ -1839,27 +1839,22 @@ void NGBoxFragmentPainter::PaintTextClipMask(
 }
 
 PhysicalRect NGBoxFragmentPainter::AdjustRectForScrolledContent(
-    const PaintInfo& paint_info,
-    const BoxPainterBase::FillLayerInfo& info,
-    const PhysicalRect& rect) {
-  PhysicalRect scrolled_paint_rect = rect;
-  GraphicsContext& context = paint_info.context;
+    GraphicsContext& context,
+    const PhysicalBoxStrut& borders,
+    const PhysicalRect& rect) const {
   const PhysicalBoxFragment& physical = GetPhysicalFragment();
 
   // Clip to the overflow area.
-  if (info.is_clipped_with_local_scrolling &&
-      !paint_info.IsPaintingBackgroundInContentsSpace()) {
-    context.Clip(gfx::RectF(physical.OverflowClipRect(rect.offset)));
+  context.Clip(gfx::RectF(physical.OverflowClipRect(rect.offset)));
 
-    // Adjust the paint rect to reflect a scrolled content box with borders at
-    // the ends.
-    scrolled_paint_rect.offset -=
-        PhysicalOffset(physical.PixelSnappedScrolledContentOffset());
-    PhysicalBoxStrut borders = AdjustedBorderOutsets(info);
-    scrolled_paint_rect.size =
-        physical.ScrollSize() +
-        PhysicalSize(borders.HorizontalSum(), borders.VerticalSum());
-  }
+  PhysicalRect scrolled_paint_rect = rect;
+  // Adjust the paint rect to reflect a scrolled content box with borders at
+  // the ends.
+  scrolled_paint_rect.offset -=
+      PhysicalOffset(physical.PixelSnappedScrolledContentOffset());
+  scrolled_paint_rect.size =
+      physical.ScrollSize() +
+      PhysicalSize(borders.HorizontalSum(), borders.VerticalSum());
   return scrolled_paint_rect;
 }
 

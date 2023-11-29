@@ -26,6 +26,7 @@ class ComputedStyle;
 class Document;
 class FillLayer;
 class FloatRoundedRect;
+class GraphicsContext;
 class ImageResourceObserver;
 class LayoutBox;
 class Node;
@@ -143,9 +144,6 @@ class BoxPainterBase {
   };
 
  protected:
-  virtual PhysicalBoxStrut ComputeBorders() const = 0;
-  virtual PhysicalBoxStrut ComputePadding() const = 0;
-  PhysicalBoxStrut AdjustedBorderOutsets(const FillLayerInfo&) const;
   void PaintFillLayerTextFillBox(const PaintInfo&,
                                  const FillLayerInfo&,
                                  Image*,
@@ -159,9 +157,10 @@ class BoxPainterBase {
                                  const PhysicalOffset& paint_offset,
                                  bool object_has_multiple_boxes) = 0;
 
-  virtual PhysicalRect AdjustRectForScrolledContent(const PaintInfo&,
-                                                    const FillLayerInfo&,
-                                                    const PhysicalRect&) = 0;
+  virtual PhysicalRect AdjustRectForScrolledContent(
+      GraphicsContext&,
+      const PhysicalBoxStrut& borders,
+      const PhysicalRect&) const = 0;
   virtual FillLayerInfo GetFillLayerInfo(
       const Color&,
       const FillLayer&,
@@ -174,6 +173,8 @@ class BoxPainterBase {
       PhysicalBoxSides sides_to_include = PhysicalBoxSides());
 
  private:
+  virtual PhysicalBoxStrut ComputeBorders() const = 0;
+  virtual PhysicalBoxStrut ComputePadding() const = 0;
   PhysicalBoxStrut ComputeSnappedBorders() const;
 
   const Document& document_;

@@ -34,15 +34,9 @@ BoxModelObjectPainter::BoxModelObjectPainter(const LayoutBoxModelObject& box)
       box_model_(box) {}
 
 PhysicalRect BoxModelObjectPainter::AdjustRectForScrolledContent(
-    const PaintInfo& paint_info,
-    const BoxPainterBase::FillLayerInfo& info,
-    const PhysicalRect& rect) {
-  if (!info.is_clipped_with_local_scrolling)
-    return rect;
-  if (paint_info.IsPaintingBackgroundInContentsSpace())
-    return rect;
-
-  GraphicsContext& context = paint_info.context;
+    GraphicsContext& context,
+    const PhysicalBoxStrut& border,
+    const PhysicalRect& rect) const {
   // Clip to the overflow area.
   // TODO(chrishtr): this should be pixel-snapped.
   const auto& this_box = To<LayoutBox>(box_model_);
@@ -53,7 +47,6 @@ PhysicalRect BoxModelObjectPainter::AdjustRectForScrolledContent(
   PhysicalRect scrolled_paint_rect = rect;
   scrolled_paint_rect.offset -=
       PhysicalOffset(this_box.PixelSnappedScrolledContentOffset());
-  PhysicalBoxStrut border = AdjustedBorderOutsets(info);
   scrolled_paint_rect.SetWidth(border.HorizontalSum() + this_box.ScrollWidth());
   scrolled_paint_rect.SetHeight(this_box.BorderTop() + this_box.ScrollHeight() +
                                 this_box.BorderBottom());
