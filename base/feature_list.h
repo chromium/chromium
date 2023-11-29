@@ -274,13 +274,13 @@ class BASE_EXPORT FeatureList {
   // If a feature name is prefixed with the '*' character, it will be created
   // with OVERRIDE_USE_DEFAULT - which is useful for associating with a trial
   // while using the default state.
-  void InitializeFromCommandLine(const std::string& enable_features,
-                                 const std::string& disable_features);
+  void InitFromCommandLine(const std::string& enable_features,
+                           const std::string& disable_features);
 
   // Initializes feature overrides through the field trial allocator, which
   // we're using to store the feature names, their override state, and the name
   // of the associated field trial.
-  void InitializeFromSharedMemory(PersistentMemoryAllocator* allocator);
+  void InitFromSharedMemory(PersistentMemoryAllocator* allocator);
 
   // Returns true if the state of |feature_name| has been overridden (regardless
   // of whether the overridden value is the same as the default value) for any
@@ -288,21 +288,21 @@ class BASE_EXPORT FeatureList {
   bool IsFeatureOverridden(const std::string& feature_name) const;
 
   // Returns true if the state of |feature_name| has been overridden via
-  // |InitializeFromCommandLine()|. This includes features explicitly
+  // |InitFromCommandLine()|. This includes features explicitly
   // disabled/enabled with --disable-features and --enable-features, as well as
   // any extra feature overrides that depend on command line switches.
   bool IsFeatureOverriddenFromCommandLine(
       const std::string& feature_name) const;
 
   // Returns true if the state |feature_name| has been overridden by
-  // |InitializeFromCommandLine()| and the state matches |state|.
+  // |InitFromCommandLine()| and the state matches |state|.
   bool IsFeatureOverriddenFromCommandLine(const std::string& feature_name,
                                           OverrideState state) const;
 
   // Associates a field trial for reporting purposes corresponding to the
   // command-line setting the feature state to |for_overridden_state|. The trial
   // will be activated when the state of the feature is first queried. This
-  // should be called during registration, after InitializeFromCommandLine() has
+  // should be called during registration, after InitFromCommandLine() has
   // been called but before the instance is registered via SetInstance().
   void AssociateReportingFieldTrial(const std::string& feature_name,
                                     OverrideState for_overridden_state,
@@ -313,7 +313,7 @@ class BASE_EXPORT FeatureList {
   // over field trials, so this will have no effect if the feature is being
   // overridden from the command-line. The associated field trial will be
   // activated when the feature state for this feature is queried. This should
-  // be called during registration, after InitializeFromCommandLine() has been
+  // be called during registration, after InitFromCommandLine() has been
   // called but before the instance is registered via SetInstance().
   void RegisterFieldTrialOverride(const std::string& feature_name,
                                   OverrideState override_state,
@@ -321,7 +321,7 @@ class BASE_EXPORT FeatureList {
 
   // Adds extra overrides (not associated with a field trial). Should be called
   // before SetInstance().
-  // The ordering of calls with respect to InitializeFromCommandLine(),
+  // The ordering of calls with respect to InitFromCommandLine(),
   // RegisterFieldTrialOverride(), etc. matters. The first call wins out,
   // because the |overrides_| map uses insert(), which retains the first
   // inserted entry and does not overwrite it on subsequent calls to insert().
@@ -332,7 +332,7 @@ class BASE_EXPORT FeatureList {
   void AddFeaturesToAllocator(PersistentMemoryAllocator* allocator);
 
   // Returns comma-separated lists of feature names (in the same format that is
-  // accepted by InitializeFromCommandLine()) corresponding to features that
+  // accepted by InitFromCommandLine()) corresponding to features that
   // have been overridden - either through command-line or via FieldTrials. For
   // those features that have an associated FieldTrial, the output entry will be
   // of the format "FeatureName<TrialName" (|include_group_name|=false) or
@@ -435,15 +435,15 @@ class BASE_EXPORT FeatureList {
   // Initializes and sets an instance of FeatureList with feature overrides via
   // command-line flags |enable_features| and |disable_features| if one has not
   // already been set from command-line flags. Returns true if an instance did
-  // not previously exist. See InitializeFromCommandLine() for more details
+  // not previously exist. See InitFromCommandLine() for more details
   // about |enable_features| and |disable_features| parameters.
-  static bool InitializeInstance(const std::string& enable_features,
-                                 const std::string& disable_features);
+  static bool InitInstance(const std::string& enable_features,
+                           const std::string& disable_features);
 
   // Like the above, but also adds extra overrides. If a feature appears in
   // |extra_overrides| and also |enable_features| or |disable_features|, the
   // disable/enable will supersede the extra overrides.
-  static bool InitializeInstance(
+  static bool InitInstance(
       const std::string& enable_features,
       const std::string& disable_features,
       const std::vector<FeatureOverrideInfo>& extra_overrides);

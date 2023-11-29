@@ -338,8 +338,8 @@ TEST_F(FieldTrialUtilTest, FieldTrialConfigSkipOverridden) {
   // Enable feature "A" and disable feature "B" as if they were enabled/disabled
   // using the |--enable-features| and |--disable-features| switches.
   base::FieldTrialList::CreateFieldTrial("Study", "Experiment");
-  feature_list.InitializeFromCommandLine(/*enable_features=*/"A<Study",
-                                         /*disable_features=*/"B");
+  feature_list.InitFromCommandLine(/*enable_features=*/"A<Study",
+                                   /*disable_features=*/"B");
 
   // Associate the |kConfig| field trial config.
   AssociateParamsFromFieldTrialConfig(

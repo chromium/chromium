@@ -84,7 +84,7 @@ class ReduceUserAgentPlatformBrowserTest : public InProcessBrowserTest {
 
   void SetUp() override {
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
-    feature_list->InitializeFromCommandLine(
+    feature_list->InitFromCommandLine(
         "ReduceUserAgentMinorVersion,ReduceUserAgentPlatformOsCpu", "");
     scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
     InProcessBrowserTest::SetUp();

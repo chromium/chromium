@@ -172,7 +172,7 @@ void PpapiDispatcher::OnMsgInitializeNaClDispatcher(
   logging::InitLogging(settings);
 
   base::FeatureList::ClearInstanceForTesting();
-  base::FeatureList::InitializeInstance(
+  base::FeatureList::InitInstance(
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kEnableFeatures),
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(

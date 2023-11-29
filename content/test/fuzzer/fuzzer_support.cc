@@ -40,7 +40,7 @@ void RenderViewTestAdapter::SetUp() {
 
 Env::Env() {
   base::CommandLine::Init(0, nullptr);
-  base::FeatureList::InitializeInstance(std::string(), std::string());
+  base::FeatureList::InitInstance(std::string(), std::string());
   base::i18n::InitializeICU();
   TestTimeouts::Initialize();
 

@@ -145,7 +145,7 @@ int APP_SHIM_ENTRY_POINT_NAME(const app_mode::ChromeAppModeInfo* info) {
     if (info->mojo_ipcz_config ==
         app_mode::MojoIpczConfig::kUseCommandLineFeatures) {
       const auto& command_line = *base::CommandLine::ForCurrentProcess();
-      feature_list->InitializeFromCommandLine(
+      feature_list->InitFromCommandLine(
           command_line.GetSwitchValueASCII(switches::kEnableFeatures),
           command_line.GetSwitchValueASCII(switches::kDisableFeatures));
 

@@ -922,7 +922,7 @@ TEST_F(FieldTrialListTest, TestCopyFieldTrialStateToFlags) {
   test::ScopedFeatureList scoped_feature_list1;
   scoped_feature_list1.InitWithEmptyFeatureAndFieldTrialLists();
   std::unique_ptr<FeatureList> feature_list(new FeatureList);
-  feature_list->InitializeFromCommandLine("A,B", "C");
+  feature_list->InitFromCommandLine("A,B", "C");
 
   FieldTrial* trial = FieldTrialList::CreateFieldTrial("Trial1", "Group1");
   feature_list->RegisterFieldTrialOverride(

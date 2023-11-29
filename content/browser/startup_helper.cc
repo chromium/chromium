@@ -41,7 +41,7 @@ std::unique_ptr<base::FieldTrialList> SetUpFieldTrialsAndFeatureList() {
                   << " list specified.";
   }
 
-  base::FeatureList::InitializeInstance(
+  base::FeatureList::InitInstance(
       command_line->GetSwitchValueASCII(switches::kEnableFeatures),
       command_line->GetSwitchValueASCII(switches::kDisableFeatures),
       GetSwitchDependentFeatureOverrides(*command_line));

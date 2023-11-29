@@ -722,8 +722,7 @@ void FieldTrialList::ApplyFeatureOverridesInChildProcess(
   CHECK(global_->create_trials_in_child_process_called_);
   // TODO(crbug.com/867558): Change to a CHECK.
   if (global_->field_trial_allocator_) {
-    feature_list->InitializeFromSharedMemory(
-        global_->field_trial_allocator_.get());
+    feature_list->InitFromSharedMemory(global_->field_trial_allocator_.get());
   }
 }
 

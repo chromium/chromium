@@ -36,7 +36,7 @@ TEST_F(ChromeFeaturesServiceProviderTest, IsFeatureEnabled_Success) {
   auto feature_list_accessor = feature_list->ConstructAccessor();
   const char enabled[] = "CrOSLateBootA";
   const char disabled[] = "";
-  feature_list->InitializeFromCommandLine(enabled, disabled);
+  feature_list->InitFromCommandLine(enabled, disabled);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
 
@@ -65,7 +65,7 @@ TEST_F(ChromeFeaturesServiceProviderTest, IsFeatureEnabled_UnknownFeature) {
   auto feature_list_accessor = feature_list->ConstructAccessor();
   const char enabled[] = "CrOSLateBootA";
   const char disabled[] = "";
-  feature_list->InitializeFromCommandLine(enabled, disabled);
+  feature_list->InitFromCommandLine(enabled, disabled);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
 
@@ -95,7 +95,7 @@ TEST_F(ChromeFeaturesServiceProviderTest, IsFeatureEnabled_InvalidPrefix) {
   auto feature_list_accessor = feature_list->ConstructAccessor();
   const char enabled[] = "CrOSLateBootA";
   const char disabled[] = "";
-  feature_list->InitializeFromCommandLine(enabled, disabled);
+  feature_list->InitFromCommandLine(enabled, disabled);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
 
@@ -125,7 +125,7 @@ TEST_F(ChromeFeaturesServiceProviderTest, IsFeatureEnabled_InvalidInput) {
   auto feature_list_accessor = feature_list->ConstructAccessor();
   const char enabled[] = "";
   const char disabled[] = "";
-  feature_list->InitializeFromCommandLine(enabled, disabled);
+  feature_list->InitFromCommandLine(enabled, disabled);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
 
@@ -155,7 +155,7 @@ TEST_F(ChromeFeaturesServiceProviderTest, GetFeatureParams_Success) {
   auto feature_list_accessor = feature_list->ConstructAccessor();
   const char enabled[] = "CrOSLateBootA:key1/value1/key2/value2,CrOSLateBootB";
   const char disabled[] = "CrOSLateBootC";
-  feature_list->InitializeFromCommandLine(enabled, disabled);
+  feature_list->InitFromCommandLine(enabled, disabled);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
 
@@ -233,7 +233,7 @@ array [
 TEST_F(ChromeFeaturesServiceProviderTest, GetFeatureParams_NoInput) {
   auto feature_list = std::make_unique<base::FeatureList>();
   auto feature_list_accessor = feature_list->ConstructAccessor();
-  feature_list->InitializeFromCommandLine("", "");
+  feature_list->InitFromCommandLine("", "");
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
 
@@ -257,7 +257,7 @@ string "Could not pop string array of feature names"
 TEST_F(ChromeFeaturesServiceProviderTest, GetFeatureParams_BadInput) {
   auto feature_list = std::make_unique<base::FeatureList>();
   auto feature_list_accessor = feature_list->ConstructAccessor();
-  feature_list->InitializeFromCommandLine("", "");
+  feature_list->InitFromCommandLine("", "");
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
 
@@ -283,7 +283,7 @@ string "Could not pop string array of feature names"
 TEST_F(ChromeFeaturesServiceProviderTest, GetFeatureParams_BadArrayEntry) {
   auto feature_list = std::make_unique<base::FeatureList>();
   auto feature_list_accessor = feature_list->ConstructAccessor();
-  feature_list->InitializeFromCommandLine("", "");
+  feature_list->InitFromCommandLine("", "");
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
 
@@ -312,7 +312,7 @@ string "Missing or invalid feature_name string arg in array."
 TEST_F(ChromeFeaturesServiceProviderTest, GetFeatureParams_BadNameFormat) {
   auto feature_list = std::make_unique<base::FeatureList>();
   auto feature_list_accessor = feature_list->ConstructAccessor();
-  feature_list->InitializeFromCommandLine("", "");
+  feature_list->InitFromCommandLine("", "");
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
 

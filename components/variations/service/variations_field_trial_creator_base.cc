@@ -261,11 +261,11 @@ bool VariationsFieldTrialCreatorBase::SetUpFieldTrials(
                                        switches::kForceDisableVariationIds));
   }
 
-  feature_list->InitializeFromCommandLine(
+  feature_list->InitFromCommandLine(
       command_line->GetSwitchValueASCII(::switches::kEnableFeatures),
       command_line->GetSwitchValueASCII(::switches::kDisableFeatures));
 
-  // This needs to happen here: After the InitializeFromCommandLine() call,
+  // This needs to happen here: After the InitFromCommandLine() call,
   // because the explicit cmdline --disable-features and --enable-features
   // should take precedence over these extra overrides. Before the call to
   // SetInstance(), because overrides cannot be registered after the FeatureList

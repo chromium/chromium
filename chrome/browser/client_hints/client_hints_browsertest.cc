@@ -651,7 +651,7 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
     // Force-enable the ClientHintsFormFactor feature, so that the header is
     // represented in the various header counts.
-    feature_list->InitializeFromCommandLine(
+    feature_list->InitFromCommandLine(
         "UserAgentClientHint,CriticalClientHint,AcceptCHFrame,"
         "ClientHintsFormFactor,ClientHintsPrefersReducedTransparency,"
         "UseAlpsNewCodepoint",
@@ -3333,7 +3333,7 @@ class ClientHintsWebHoldbackBrowserTest : public ClientHintsBrowserTest {
             ->AssociateFieldTrialParams(kTrialName, kGroupName, params));
 
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
-    feature_list->InitializeFromCommandLine(
+    feature_list->InitFromCommandLine(
         "UserAgentClientHint,ClientHintsFormFactor,"
         "ClientHintsPrefersReducedTransparency",
         "");
@@ -3441,7 +3441,7 @@ class CriticalClientHintsBrowserTest : public InProcessBrowserTest {
         std::make_unique<base::FeatureList>();
     // Don't include ClientHintsDPR in the enabled features; we will verify that
     // sec-ch-dpr is not included.
-    feature_list->InitializeFromCommandLine(
+    feature_list->InitFromCommandLine(
         "UserAgentClientHint,CriticalClientHint,AcceptCHFrame",
         "ClientHintsDPR,UseAlpsNewCodepoint");
     scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
@@ -4189,8 +4189,8 @@ class UaReductionBrowserTest : public InProcessBrowserTest {
   void SetUp() override {
     std::unique_ptr<base::FeatureList> feature_list =
         std::make_unique<base::FeatureList>();
-    feature_list->InitializeFromCommandLine(
-        "CriticalClientHint,UACHOverrideBlank", "");
+    feature_list->InitFromCommandLine("CriticalClientHint,UACHOverrideBlank",
+                                      "");
     scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
 
     InProcessBrowserTest::SetUp();
@@ -4822,8 +4822,7 @@ class GreaseFeatureParamOptOutTest : public ClientHintsBrowserTest {
   // the new algorithm is attained.
   std::unique_ptr<base::FeatureList> EnabledFeatures() override {
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
-    feature_list->InitializeFromCommandLine(
-        "GreaseUACH:updated_algorithm/false", "");
+    feature_list->InitFromCommandLine("GreaseUACH:updated_algorithm/false", "");
     return feature_list;
   }
 };

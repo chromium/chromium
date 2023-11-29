@@ -526,7 +526,7 @@ int main(int argc, char** argv) {
 #if BUILDFLAG(USE_V4L2_CODEC)
   std::unique_ptr<base::FeatureList> feature_list =
       std::make_unique<base::FeatureList>();
-  feature_list->InitializeFromCommandLine(
+  feature_list->InitFromCommandLine(
       cmd_line->GetSwitchValueASCII(switches::kEnableFeatures),
       cmd_line->GetSwitchValueASCII(switches::kDisableFeatures));
   if (feature_list->IsFeatureOverridden("V4L2FlatStatelessVideoDecoder")) {

@@ -268,9 +268,8 @@ FeatureList::ScopedDisallowOverrides::~ScopedDisallowOverrides() {
 #endif
 }
 
-void FeatureList::InitializeFromCommandLine(
-    const std::string& enable_features,
-    const std::string& disable_features) {
+void FeatureList::InitFromCommandLine(const std::string& enable_features,
+                                      const std::string& disable_features) {
   DCHECK(!initialized_);
 
   std::string parsed_enable_features;
@@ -310,8 +309,7 @@ void FeatureList::InitializeFromCommandLine(
   initialized_from_command_line_ = true;
 }
 
-void FeatureList::InitializeFromSharedMemory(
-    PersistentMemoryAllocator* allocator) {
+void FeatureList::InitFromSharedMemory(PersistentMemoryAllocator* allocator) {
   DCHECK(!initialized_);
 
   PersistentMemoryAllocator::Iterator iter(allocator);
@@ -506,14 +504,14 @@ bool FeatureList::ParseEnableFeatureString(StringPiece enable_feature,
 }
 
 // static
-bool FeatureList::InitializeInstance(const std::string& enable_features,
-                                     const std::string& disable_features) {
-  return InitializeInstance(enable_features, disable_features,
-                            std::vector<FeatureOverrideInfo>());
+bool FeatureList::InitInstance(const std::string& enable_features,
+                               const std::string& disable_features) {
+  return InitInstance(enable_features, disable_features,
+                      std::vector<FeatureOverrideInfo>());
 }
 
 // static
-bool FeatureList::InitializeInstance(
+bool FeatureList::InitInstance(
     const std::string& enable_features,
     const std::string& disable_features,
     const std::vector<FeatureOverrideInfo>& extra_overrides) {
@@ -540,7 +538,7 @@ bool FeatureList::InitializeInstance(
   }
 
   std::unique_ptr<FeatureList> feature_list(new FeatureList);
-  feature_list->InitializeFromCommandLine(enable_features, disable_features);
+  feature_list->InitFromCommandLine(enable_features, disable_features);
   feature_list->RegisterExtraFeatureOverrides(extra_overrides);
   FeatureList::SetInstance(std::move(feature_list));
   return !instance_existed_before;

@@ -429,7 +429,7 @@ class DisableFeatureReduceAcceptLanguageBrowserTest
     : public ReduceAcceptLanguageBrowserTest {
   void EnabledFeatures() override {
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
-    feature_list->InitializeFromCommandLine("", "ReduceAcceptLanguage");
+    feature_list->InitFromCommandLine("", "ReduceAcceptLanguage");
     scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
   }
 };
@@ -476,7 +476,7 @@ class SameOriginReduceAcceptLanguageBrowserTest
  protected:
   void EnabledFeatures() override {
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
-    feature_list->InitializeFromCommandLine("ReduceAcceptLanguage", "");
+    feature_list->InitFromCommandLine("ReduceAcceptLanguage", "");
     scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
   }
 };
@@ -1142,7 +1142,7 @@ class ThirdPartyReduceAcceptLanguageBrowserTest
  protected:
   void EnabledFeatures() override {
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
-    feature_list->InitializeFromCommandLine("ReduceAcceptLanguage", "");
+    feature_list->InitFromCommandLine("ReduceAcceptLanguage", "");
     scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
   }
 };
@@ -1430,7 +1430,7 @@ class SameOriginRedirectReduceAcceptLanguageBrowserTest
  protected:
   void EnabledFeatures() override {
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
-    feature_list->InitializeFromCommandLine("ReduceAcceptLanguage", "");
+    feature_list->InitFromCommandLine("ReduceAcceptLanguage", "");
     scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
   }
 
@@ -1602,7 +1602,7 @@ class CrossOriginRedirectReduceAcceptLanguageBrowserTest
  protected:
   void EnabledFeatures() override {
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
-    feature_list->InitializeFromCommandLine("ReduceAcceptLanguage", "");
+    feature_list->InitFromCommandLine("ReduceAcceptLanguage", "");
     scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
   }
 
@@ -1835,8 +1835,8 @@ class SameOriginRedirectReduceAcceptLanguageOTBrowserTest
     // Explicit disable feature ReduceAcceptLanguage but enable
     // ReduceAcceptLanguageOriginTrial.
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
-    feature_list->InitializeFromCommandLine("ReduceAcceptLanguageOriginTrial",
-                                            "ReduceAcceptLanguage");
+    feature_list->InitFromCommandLine("ReduceAcceptLanguageOriginTrial",
+                                      "ReduceAcceptLanguage");
     scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
   }
 };
@@ -2104,8 +2104,8 @@ class CrossOriginRedirectReduceAcceptLanguageOTBrowserTest
     // Explicit disable feature ReduceAcceptLanguage but enable
     // ReduceAcceptLanguageOriginTrial.
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
-    feature_list->InitializeFromCommandLine("ReduceAcceptLanguageOriginTrial",
-                                            "ReduceAcceptLanguage");
+    feature_list->InitFromCommandLine("ReduceAcceptLanguageOriginTrial",
+                                      "ReduceAcceptLanguage");
     scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
   }
 };
@@ -2389,8 +2389,8 @@ class SameOriginReduceAcceptLanguageOTBrowserTest
     // Explicit disable feature ReduceAcceptLanguage but enable
     // ReduceAcceptLanguageOriginTrial.
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
-    feature_list->InitializeFromCommandLine("ReduceAcceptLanguageOriginTrial",
-                                            "ReduceAcceptLanguage");
+    feature_list->InitFromCommandLine("ReduceAcceptLanguageOriginTrial",
+                                      "ReduceAcceptLanguage");
     scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
   }
 };
@@ -2546,8 +2546,8 @@ class ThirdPartyReduceAcceptLanguageOTBrowserTest
     // Explicit disable feature ReduceAcceptLanguage but enable
     // ReduceAcceptLanguageOriginTrial.
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
-    feature_list->InitializeFromCommandLine("ReduceAcceptLanguageOriginTrial",
-                                            "ReduceAcceptLanguage");
+    feature_list->InitFromCommandLine("ReduceAcceptLanguageOriginTrial",
+                                      "ReduceAcceptLanguage");
     scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
   }
 };
@@ -2657,7 +2657,7 @@ class DisableReduceAcceptLanguageOTBrowserTest
     // Explicit disable feature ReduceAcceptLanguage and
     // ReduceAcceptLanguageOriginTrial.
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
-    feature_list->InitializeFromCommandLine(
+    feature_list->InitFromCommandLine(
         "", "ReduceAcceptLanguageOriginTrial,ReduceAcceptLanguage");
     scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
   }

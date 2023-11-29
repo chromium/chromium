@@ -727,9 +727,8 @@ TYPED_TEST(VariationsSeedProcessorTest, FeatureAssociationAndForcing) {
     base_scoped_feature_list.Init();
 
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
-    feature_list->InitializeFromCommandLine(
-        test_case.enable_features_command_line,
-        test_case.disable_features_command_line);
+    feature_list->InitFromCommandLine(test_case.enable_features_command_line,
+                                      test_case.disable_features_command_line);
 
     VariationsSeed seed;
     Study* study = seed.add_study();

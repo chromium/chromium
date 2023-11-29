@@ -91,7 +91,7 @@ ExamplesExitCode ExamplesMainProc(bool under_test) {
   // window to not render. See http://crbug.com/936249.
   gl::SetGlWorkarounds(gl::GlWorkarounds{.disable_direct_composition = true});
 
-  base::FeatureList::InitializeInstance(
+  base::FeatureList::InitInstance(
       command_line->GetSwitchValueASCII(switches::kEnableFeatures),
       command_line->GetSwitchValueASCII(switches::kDisableFeatures));
 
