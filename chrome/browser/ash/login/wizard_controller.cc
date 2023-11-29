@@ -2094,12 +2094,12 @@ void WizardController::OnDemoSetupScreenExit(DemoSetupScreen::Result result) {
   demo_setup_controller_.reset();
 
   switch (result) {
-    case DemoSetupScreen::Result::COMPLETED:
+    case DemoSetupScreen::Result::kCompleted:
       PerformOOBECompletedActions(
           OobeMetricsHelper::CompletedPreLoginOobeFlowType::kDemo);
       SwitchWebUItoMojo();
       break;
-    case DemoSetupScreen::Result::CANCELED:
+    case DemoSetupScreen::Result::kCanceled:
       ShowWelcomeScreen();
       break;
   }

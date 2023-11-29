@@ -2617,7 +2617,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupTest,
   EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
 
   test::LockDemoDeviceInstallAttributes();
-  mock_demo_setup_screen_->ExitScreen(DemoSetupScreen::Result::COMPLETED);
+  mock_demo_setup_screen_->ExitScreen(DemoSetupScreen::Result::kCompleted);
 
   EXPECT_TRUE(StartupUtils::IsOobeCompleted());
   EXPECT_TRUE(ExistingUserController::current_controller());
@@ -2676,7 +2676,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupTest, DemoSetupCanceled) {
   EXPECT_CALL(*mock_demo_setup_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_welcome_screen_, ShowImpl()).Times(1);
 
-  mock_demo_setup_screen_->ExitScreen(DemoSetupScreen::Result::CANCELED);
+  mock_demo_setup_screen_->ExitScreen(DemoSetupScreen::Result::kCanceled);
 
   CheckCurrentScreen(WelcomeView::kScreenId);
   EXPECT_FALSE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
