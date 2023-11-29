@@ -346,14 +346,24 @@ void LocalPrinterAsh::NotifyPrintJobUpdate(base::WeakPtr<ash::CupsPrintJob> job,
     LOG(WARNING) << "Ignoring invalid print job";
     return;
   }
+  const auto& printer_id = job->printer().id();
+  const auto& job_id = job->job_id();
   for (auto& remote : print_job_remotes_) {
-    remote->OnPrintJobUpdate(job->printer().id(), job->job_id(), status);
+    remote->OnPrintJobUpdate(printer_id, job_id, status);
   }
-  if (job->source() != mojom::PrintJob::Source::kExtension) {
-    return;
-  }
-  for (auto& remote : extension_print_job_remotes_) {
-    remote->OnPrintJobUpdate(job->printer().id(), job->job_id(), status);
+  switch (job->source()) {
+    case mojom::PrintJob::Source::kExtension:
+      for (auto& remote : extension_print_job_remotes_) {
+        remote->OnPrintJobUpdate(printer_id, job_id, status);
+      }
+      break;
+    case mojom::PrintJob::Source::kIsolatedWebApp:
+      for (auto& remote : iwa_print_job_remotes_) {
+        remote->OnPrintJobUpdate(printer_id, job_id, status);
+      }
+      break;
+    default:
+      break;
   }
 }
 
@@ -661,6 +671,9 @@ void LocalPrinterAsh::AddPrintJobObserver(
   switch (source) {
     case mojom::PrintJobSource::kExtension:
       extension_print_job_remotes_.Add(std::move(remote));
+      break;
+    case mojom::PrintJobSource::kIsolatedWebApp:
+      iwa_print_job_remotes_.Add(std::move(remote));
       break;
     case mojom::PrintJobSource::kAny:
       print_job_remotes_.Add(std::move(remote));

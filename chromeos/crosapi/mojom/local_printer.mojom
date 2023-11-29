@@ -271,8 +271,9 @@ interface PrintJobObserver {
 // Used to specify which source(s) to observe print jobs from.
 [Stable, Extensible]
 enum PrintJobSource {
- [Default] kAny, // reserved
- kExtension,
+  [Default] kAny, // reserved
+  kExtension,
+  [MinVersion=1] kIsolatedWebApp,
 };
 
 // This interface is used to notify Lacros about local printer events.

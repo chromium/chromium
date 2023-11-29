@@ -151,6 +151,9 @@ class LocalPrinterAsh : public mojom::LocalPrinter,
   // Remotes which observe only extension print jobs.
   mojo::RemoteSet<mojom::PrintJobObserver> extension_print_job_remotes_;
 
+  // Remotes which observe only IWA print jobs.
+  mojo::RemoteSet<mojom::PrintJobObserver> iwa_print_job_remotes_;
+
   // Remotes which observe local printer updates.
   mojo::RemoteSet<mojom::LocalPrintersObserver>
       local_printers_observer_remotes_;
