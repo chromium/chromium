@@ -86,6 +86,7 @@ PasswordForm LegacyIncomingSharingInvitationToPasswordForm(
   form.scheme =
       static_cast<PasswordForm::Scheme>(incoming_credentials.scheme());
   form.display_name = base::UTF8ToUTF16(incoming_credentials.display_name());
+  form.icon_url = GURL(incoming_credentials.avatar_url());
   form.date_created = base::Time::Now();
   form.type = PasswordForm::Type::kReceivedViaSharing;
 
@@ -131,6 +132,7 @@ std::vector<PasswordForm> ModernIncomingSharingInvitationToPasswordForms(
         static_cast<PasswordForm::Scheme>(password_group_element_data.scheme());
     form.display_name =
         base::UTF8ToUTF16(password_group_element_data.display_name());
+    form.icon_url = GURL(password_group_element_data.avatar_url());
     form.date_created = base::Time::Now();
     form.type = PasswordForm::Type::kReceivedViaSharing;
 

@@ -24,7 +24,6 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/engine/cycle/entity_change_metric_recording.h"
 #include "components/sync/engine/nigori/cross_user_sharing_public_key.h"
 #include "components/sync/engine/nigori/cross_user_sharing_public_private_key_pair.h"
 #include "components/sync/nigori/cryptographer_impl.h"
@@ -314,9 +313,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientIncomingPasswordSharingInvitationTest,
   EXPECT_EQ(base::UTF16ToUTF8(password_form.password_value), kPasswordValue);
   EXPECT_EQ(base::UTF16ToUTF8(password_form.display_name),
             kPasswordDisplayName);
-  // TODO(crbug.com/1468523): check the remaining fields including sender
-  // profile image.
-  // EXPECT_EQ(password_form.icon_url.spec(), kPasswordAvatarUrl);
+  EXPECT_EQ(password_form.icon_url.spec(), kPasswordAvatarUrl);
   EXPECT_EQ(base::UTF16ToUTF8(password_form.sender_email), kSenderEmail);
   EXPECT_EQ(base::UTF16ToUTF8(password_form.sender_name), kSenderDisplayName);
   EXPECT_EQ(password_form.sender_profile_image_url,
