@@ -7,6 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "build/branding_buildflags.h"
 #import "components/search_engines/search_engines_switches.h"
+#import "ios/chrome/browser/promos_manager/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
@@ -86,8 +87,10 @@ void SkipScreensBeforeOmniboxPositionChoice() {
 
 }  // namespace
 
-@interface OmniboxPositionFirstRunTestCase : ChromeTestCase
+#pragma mark - FRE promo
 
+/// Tests the omnibox position choice screen in FRE promo.
+@interface OmniboxPositionFirstRunTestCase : ChromeTestCase
 @end
 
 @implementation OmniboxPositionFirstRunTestCase
@@ -95,6 +98,7 @@ void SkipScreensBeforeOmniboxPositionChoice() {
 - (void)setUp {
   [[self class] testForStartup];
   [super setUp];
+  [ChromeEarlGrey clearUserPrefWithName:prefs::kBottomOmnibox];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
@@ -136,7 +140,7 @@ void SkipScreensBeforeOmniboxPositionChoice() {
   return config;
 }
 
-#pragma mark - First run tests
+#pragma mark Tests
 
 // Tests selecting top omnibox in FRE when top is selected by default.
 - (void)testSelectTopWithTopDefault {
@@ -236,6 +240,87 @@ void SkipScreensBeforeOmniboxPositionChoice() {
   // Verify that the preferred omnibox position is top.
   GREYAssertFalse([ChromeEarlGrey userBooleanPref:prefs::kBottomOmnibox],
                   @"Failed to set preferred omnibox position to top");
+}
+
+@end
+
+#pragma mark - App-launch promo
+
+/// The the omnibox position choice screen in app-launch promo.
+@interface OmniboxPositionAppLaunchTestCase : ChromeTestCase
+@end
+
+@implementation OmniboxPositionAppLaunchTestCase
+
+- (void)setUp {
+  [[self class] testForStartup];
+  [super setUp];
+  [ChromeEarlGrey clearUserPrefWithName:prefs::kBottomOmnibox];
+}
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  config.additional_args.push_back("-enable-promo-manager-fullscreen-promos");
+  // Override trigger requirements to force the promo to appear.
+  config.additional_args.push_back("-NextPromoForDisplayOverride");
+  config.additional_args.push_back("promos_manager::Promo::OmniboxPosition");
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+
+  // Disable FET in promo manager as the initialization takes too much time and
+  // causes the test to fail (crbug.com/1505431).
+  config.features_disabled.push_back(kPromosManagerUsesFET);
+
+  std::string bottomOptionByDefault =
+      std::string(kBottomOmniboxPromoDefaultPosition.name) + ":" +
+      kBottomOmniboxPromoDefaultPositionParam + "/" +
+      kBottomOmniboxPromoDefaultPositionParamBottom;
+
+  config.additional_args.push_back(
+      "--enable-features=" + bottomOptionByDefault + "," +
+      kBottomOmniboxPromoAppLaunch.name);
+
+  return config;
+}
+
+#pragma mark Tests
+
+/// Tests confirming the default omnibox option in app-launch promo.
+- (void)testConfirmDefaultOption {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Skipped for iPad (no choice for omnibox position on tablet)");
+  }
+
+  // The bottom address bar option should be selected.
+  [[EarlGrey selectElementWithMatcher:BottomAddressBarOptionSelected()]
+      assertWithMatcher:grey_notNil()];
+
+  // Confirm selection.
+  TapPromoStyleButton(kPromoStylePrimaryActionAccessibilityIdentifier);
+
+  // Verify that the preferred omnibox position is bottom.
+  GREYAssertTrue([ChromeEarlGrey userBooleanPref:prefs::kBottomOmnibox],
+                 @"Failed to set preferred omnibox position to bottom");
+}
+
+/// Tests discarding the omnibox position choice app-launch promo.
+- (void)testNoThanks {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Skipped for iPad (no choice for omnibox position on tablet)");
+  }
+
+  // The bottom address bar option should be selected.
+  [[EarlGrey selectElementWithMatcher:BottomAddressBarOptionSelected()]
+      assertWithMatcher:grey_notNil()];
+
+  // Discard selection.
+  TapPromoStyleButton(kPromoStyleSecondaryActionAccessibilityIdentifier);
+
+  // Verify that there is no user preferred omnibox position.
+  GREYAssertTrue(
+      [ChromeEarlGrey prefWithNameIsDefaultValue:prefs::kBottomOmnibox],
+      @"Failed to discard the selected position");
 }
 
 @end

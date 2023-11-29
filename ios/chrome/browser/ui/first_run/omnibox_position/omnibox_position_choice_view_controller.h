@@ -17,6 +17,9 @@
 /// Mutator of the omnibox position choice model.
 @property(nonatomic, weak) id<OmniboxPositionChoiceMutator> mutator;
 
+/// Initializes the view controller. The UI changes depending on `isFirstRun`.
+- (instancetype)initWithFirstRun:(BOOL)isFirstRun;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_FIRST_RUN_OMNIBOX_POSITION_OMNIBOX_POSITION_CHOICE_VIEW_CONTROLLER_H_

@@ -19,11 +19,13 @@
   AddressBarOptionView* _topAddressBar;
   /// The view for the bottom address bar preference option.
   AddressBarOptionView* _bottomAddressBar;
+  /// Whether the screen is being shown in the FRE.
+  BOOL _isFirstRun;
 }
 
 #pragma mark - UIViewController
 
-- (instancetype)init {
+- (instancetype)initWithFirstRun:(BOOL)isFirstRun {
   self = [super init];
   if (self) {
     _topAddressBar = [[AddressBarOptionView alloc]
@@ -34,6 +36,7 @@
         initWithSymbolName:kBottomOmniboxOptionSymbol
                  labelText:l10n_util::GetNSString(
                                IDS_IOS_BOTTOM_ADDRESS_BAR_OPTION)];
+    _isFirstRun = isFirstRun;
   }
   return self;
 }
@@ -47,7 +50,13 @@
   self.titleText = @"**Tailor to Your Needs**";
   self.subtitleText = @"**Decide the position of the search bar to tailor your "
                       @"needs and browsing habits**";
-  self.primaryActionString = @"**Finish**";
+  if (_isFirstRun) {
+    self.primaryActionString = @"**Finish**";
+    self.secondaryActionString = nil;
+  } else {
+    self.primaryActionString = @"**Confirm**";
+    self.secondaryActionString = @"**No, thanks**";
+  }
 
   [_topAddressBar addTarget:self
                      action:@selector(didTapTopAddressBarView)

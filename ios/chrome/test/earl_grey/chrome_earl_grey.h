@@ -794,6 +794,14 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (void)setBoolValue:(BOOL)value forUserPref:(const std::string&)UTF8PrefName;
 - (void)setIntegerValue:(int)value forUserPref:(const std::string&)UTF8PrefName;
 
+// Returns true if the Preference is currently using its default value,
+// and has not been set by any higher-priority source (even with the same
+// value).
+- (bool)prefWithNameIsDefaultValue:(const std::string&)prefName;
+
+// Clears the user pref of `prefName` in the original browser state.
+- (void)clearUserPrefWithName:(const std::string&)prefName;
+
 // Resets the BrowsingDataPrefs, which defines if its selected or not when
 // clearing Browsing data.
 - (void)resetBrowsingDataPrefs;

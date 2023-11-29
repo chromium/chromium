@@ -64,7 +64,8 @@
                                       ->GetOriginalChromeBrowserState()
                                       ->GetPrefs();
 
-  _viewController = [[OmniboxPositionChoiceViewController alloc] init];
+  _viewController =
+      [[OmniboxPositionChoiceViewController alloc] initWithFirstRun:_firstRun];
   _viewController.modalInPresentation = YES;
   _viewController.delegate = self;
   _viewController.mutator = _mediator;

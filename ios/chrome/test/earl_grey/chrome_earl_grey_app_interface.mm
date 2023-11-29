@@ -1323,6 +1323,14 @@ base::RepeatingClosure ExpectNCall(uint32_t n, base::RepeatingClosure closure) {
       base::SysNSStringToUTF8(prefName).c_str(), value);
 }
 
++ (BOOL)prefWithNameIsDefaultValue:(NSString*)prefName {
+  std::string path = base::SysNSStringToUTF8(prefName);
+  const PrefService::Preference* pref =
+      chrome_test_util::GetOriginalBrowserState()->GetPrefs()->FindPreference(
+          path);
+  return pref->IsDefaultValue();
+}
+
 + (void)clearUserPrefWithName:(NSString*)prefName {
   PrefService* prefs = chrome_test_util::GetOriginalBrowserState()->GetPrefs();
   prefs->ClearPref(base::SysNSStringToUTF8(prefName));
