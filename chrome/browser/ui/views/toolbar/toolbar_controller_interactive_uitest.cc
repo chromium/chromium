@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/toolbar/chrome_labs_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/feature_engagement_initialized_observer.h"
@@ -131,14 +132,17 @@ class ToolbarControllerUiTest : public InteractiveBrowserTest {
   auto CheckMenuMatchesOverflowedElements() {
     return Steps(Check([this]() {
       const ui::SimpleMenuModel* menu = GetOverflowMenu();
-      const auto overflowed_elements = GetOverflowedElements();
       EXPECT_NE(menu, nullptr);
       EXPECT_GT(menu->GetItemCount(), size_t(0));
-      EXPECT_EQ(menu->GetItemCount(), overflowed_elements.size());
-      for (size_t i = 0; i < menu->GetItemCount(); ++i) {
-        if (menu->GetLabelAt(i).compare(toolbar_controller_->GetMenuText(
-                *overflowed_elements[i])) != 0) {
-          return false;
+      const auto& responsive_elements =
+          toolbar_controller_->responsive_elements_;
+      for (size_t i = 0; i < responsive_elements.size(); ++i) {
+        if (toolbar_controller_->IsOverflowed(
+                responsive_elements[i].overflow_identifier)) {
+          if (toolbar_controller_->GetMenuText(responsive_elements[i]) !=
+              menu->GetLabelAt(menu->GetIndexOfCommandId(i).value())) {
+            return false;
+          }
         }
       }
       return true;
