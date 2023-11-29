@@ -280,7 +280,7 @@ Verdict ChromeDlpRulesManager::GetVerdict(Restriction restriction,
     case Rule::Level::kBlock:
       return Verdict::Block(base::DoNothing());
     case Rule::Level::kAllow:
-      return Verdict::NotSet();
+      return Verdict::Allow();
   }
 }
 

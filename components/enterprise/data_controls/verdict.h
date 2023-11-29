@@ -25,6 +25,8 @@ class Verdict {
   static Verdict Allow();
 
   ~Verdict();
+  Verdict(Verdict&&);
+  Verdict& operator=(Verdict&&);
 
   Rule::Level level() const;
 

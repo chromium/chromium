@@ -12,6 +12,8 @@ source_set("data_controls") {
     "chrome_dlp_rules_manager.h",
     "dlp_reporting_manager.cc",
     "dlp_reporting_manager.h",
+    "rules_service.cc",
+    "rules_service.h",
   ]
 
   public_deps = [
@@ -32,6 +34,7 @@ source_set("data_controls") {
     "//components/reporting/proto:record_constants",
     "//components/reporting/util:status",
     "//components/url_matcher",
+    "//content/public/browser",
     "//third_party/abseil-cpp:absl",
     "//url",
   ]
@@ -77,7 +80,10 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "chrome_dlp_rules_manager_unittest.cc" ]
+  sources = [
+    "chrome_dlp_rules_manager_unittest.cc",
+    "rules_service_unittest.cc",
+  ]
   deps = [
     ":data_controls",
     ":test_support",

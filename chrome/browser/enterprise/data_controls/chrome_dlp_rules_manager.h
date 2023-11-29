@@ -24,6 +24,8 @@ class Profile;
 namespace data_controls {
 
 class ChromeDlpRulesManagerTest;
+class RulesService;
+class RulesServiceFactory;
 
 // Implementation of DlpRulesManagerBase common to all desktop platforms.
 class ChromeDlpRulesManager : public DlpRulesManagerBase {
@@ -63,6 +65,8 @@ class ChromeDlpRulesManager : public DlpRulesManagerBase {
 
  protected:
   friend class data_controls::ChromeDlpRulesManagerTest;
+  friend class data_controls::RulesService;
+  friend class data_controls::RulesServiceFactory;
 
   explicit ChromeDlpRulesManager(Profile* profile);
 

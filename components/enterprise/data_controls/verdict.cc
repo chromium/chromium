@@ -47,6 +47,8 @@ Verdict::Verdict(Rule::Level level,
 }
 
 Verdict::~Verdict() = default;
+Verdict::Verdict(Verdict&& other) = default;
+Verdict& Verdict::operator=(Verdict&& other) = default;
 
 Rule::Level Verdict::level() const {
   return level_;
