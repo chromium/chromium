@@ -7,6 +7,10 @@
     Camera
   </message>
 
+  <message name="IDS_MEDIA_PREVIEW_VIDEO_STREAM_ACCESSIBLE_NAME" desc="Text for accessability description of the video stream view">
+    Preview of your camera
+  </message>
+
   <message name="IDS_MEDIA_PREVIEW_NO_CAMERAS_FOUND" desc="Text shown when there are no cameras found connected. This is shown instead of video stream">
     No camera connected
   </message>

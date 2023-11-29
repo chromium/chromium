@@ -4680,6 +4680,10 @@ static_library("ui") {
       "views/media_preview/camera_preview/camera_selector_combobox_model.h",
       "views/media_preview/camera_preview/camera_view_controller.cc",
       "views/media_preview/camera_preview/camera_view_controller.h",
+      "views/media_preview/camera_preview/video_stream_coordinator.cc",
+      "views/media_preview/camera_preview/video_stream_coordinator.h",
+      "views/media_preview/camera_preview/video_stream_view.cc",
+      "views/media_preview/camera_preview/video_stream_view.h",
       "views/media_preview/media_coordinator.cc",
       "views/media_preview/media_coordinator.h",
       "views/media_preview/media_view.cc",
@@ -4687,7 +4691,10 @@ static_library("ui") {
       "views/media_preview/media_view_controller_base.cc",
       "views/media_preview/media_view_controller_base.h",
     ]
-    deps += [ "//services/video_capture/public/mojom" ]
+    deps += [
+      "//components/capture_mode",
+      "//services/video_capture/public/mojom",
+    ]
   }
 
   if (enable_webui_certificate_viewer) {

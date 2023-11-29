@@ -32,15 +32,25 @@ CameraCoordinator::CameraCoordinator(views::View& parent_view,
       *camera_view, needs_borders, combobox_model_,
       base::BindRepeating(&CameraCoordinator::OnVideoSourceChanged,
                           base::Unretained(this)));
+
+  video_stream_coordinator_.emplace(
+      camera_view_controller_->GetLiveFeedContainer(), /*index=*/0);
 }
 
-CameraCoordinator::~CameraCoordinator() = default;
+CameraCoordinator::~CameraCoordinator() {
+  // As to guarantee that VideoSourceProvider outlive its VideoSource
+  // connection, it is passed in here to protect from destruction.
+  video_stream_coordinator_->StopAndCleanup(
+      camera_mediator_.TakeVideoSourceProvider());
+}
 
 void CameraCoordinator::OnVideoSourceInfosReceived(
     const std::vector<media::VideoCaptureDeviceInfo>& device_infos) {
   if (!camera_view_controller_.has_value()) {
     return;
   }
+
+  video_stream_coordinator_->SetPreviewVisibility(!device_infos.empty());
 
   std::vector<VideoSourceInfo> relevant_device_infos;
   relevant_device_infos.reserve(device_infos.size());
@@ -50,6 +60,7 @@ void CameraCoordinator::OnVideoSourceInfosReceived(
 
   if (relevant_device_infos.empty()) {
     active_device_id_.clear();
+    video_stream_coordinator_->Stop();
   }
   camera_view_controller_->UpdateVideoSourceInfos(
       std::move(relevant_device_infos));
@@ -71,8 +82,8 @@ void CameraCoordinator::OnVideoSourceChanged(
   mojo::Remote<video_capture::mojom::VideoSource> video_source;
   camera_mediator_.BindVideoSource(device_info.id,
                                    video_source.BindNewPipeAndPassReceiver());
-  // TODO(ahmedmoussa): `video_source` is to be passed to
-  // VideoStreamCoordiantor. Done in the following CL.
+  video_stream_coordinator_->ConnectToDevice(std::move(video_source),
+                                             device_info.supported_formats);
 }
 
 void CameraCoordinator::ResetViewController() {

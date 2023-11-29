@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/media_preview/camera_preview/camera_mediator.h"
 #include "chrome/browser/ui/views/media_preview/camera_preview/camera_selector_combobox_model.h"
 #include "chrome/browser/ui/views/media_preview/camera_preview/camera_view_controller.h"
+#include "chrome/browser/ui/views/media_preview/camera_preview/video_stream_coordinator.h"
 #include "ui/views/view_tracker.h"
 
 // Acts as a middle man between the ViewController and the Mediator.
@@ -44,6 +45,7 @@ class CameraCoordinator {
   CameraSelectorComboboxModel combobox_model_;
   std::string active_device_id_;
   std::optional<CameraViewController> camera_view_controller_;
+  std::optional<VideoStreamCoordinator> video_stream_coordinator_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_MEDIA_PREVIEW_CAMERA_PREVIEW_CAMERA_COORDINATOR_H_
