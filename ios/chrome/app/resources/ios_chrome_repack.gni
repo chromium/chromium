@@ -28,6 +28,7 @@ template("ios_chrome_repack_locales") {
   repack_locales(target_name) {
     forward_variables_from(invoker, "*")
     source_patterns = [
+      "${root_gen_dir}/components/strings/search_engine_descriptions_strings_",
       "${root_gen_dir}/components/strings/components_${branding_path_product}_strings_",
       "${root_gen_dir}/components/strings/components_locale_settings_",
       "${root_gen_dir}/components/strings/components_strings_",
@@ -55,6 +56,7 @@ template("ios_chrome_repack_locales") {
       "//components/strings:components_branded_strings",
       "//components/strings:components_locale_settings",
       "//components/strings:components_strings",
+      "//components/strings:search_engine_descriptions_strings",
       "//ios/chrome/app/strings:ios_branded_strings",
       "//ios/chrome/app/strings:ios_strings",
       "//ios/chrome/browser/ui/whats_new/strings:strings",
