@@ -59,6 +59,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) MountPerformer {
   void MountPersistentDirectory(std::unique_ptr<UserContext> context,
                                 AuthOperationCallback callback);
 
+  // Restore evicted filesystem keyset for the user identified by auth session
+  // in `context`. Session should be authenticated.
+  void RestoreEvictedVaultKey(std::unique_ptr<UserContext> context,
+                              AuthOperationCallback callback);
+
   // Mounts persistent directory for the user identified by auth session in
   // `context` to perform dircrypto migration.
   // Session should be authenticated.
@@ -107,6 +112,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) MountPerformer {
       std::unique_ptr<UserContext> context,
       AuthOperationCallback callback,
       absl::optional<user_data_auth::CreatePersistentUserReply> reply);
+  void OnRestoreEvictedVaultKey(
+      std::unique_ptr<UserContext> context,
+      AuthOperationCallback callback,
+      absl::optional<user_data_auth::RestoreDeviceKeyReply> reply);
   void OnPrepareGuestVault(
       std::unique_ptr<UserContext> context,
       AuthOperationCallback callback,

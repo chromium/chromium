@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
@@ -415,8 +416,19 @@ void AuthSessionAuthenticator::AuthenticateToUnlock(
     }
   }
 
+  AuthSessionIntent intent = AuthSessionIntent::kVerifyOnly;
+
+  // Full authentication is needed to restore keyset. It is only for
+  // non-ephemeral user sessions.
+  if (switches::ShouldRestoreKeyOnLockScreen() && !ephemeral) {
+    LOGIN_LOG(EVENT)
+        << "AuthenticateToUnlock starts AuthSession for decrypt to "
+           "restore keyset.";
+    intent = AuthSessionIntent::kDecrypt;
+  }
+
   StartAuthSessionForLoggedIn(
-      ephemeral, std::move(user_context), AuthSessionIntent::kVerifyOnly,
+      ephemeral, std::move(user_context), intent,
       base::BindOnce(&AuthSessionAuthenticator::DoUnlock,
                      weak_factory_.GetWeakPtr(), ephemeral));
 }
@@ -528,6 +540,11 @@ void AuthSessionAuthenticator::DoUnlock(
         base::BindOnce(&AuthPerformer::AuthenticateUsingKnowledgeKey,
                        auth_performer_->AsWeakPtr()));
   }
+  if (switches::ShouldRestoreKeyOnLockScreen() && !ephemeral) {
+    steps.push_back(base::BindOnce(&MountPerformer::RestoreEvictedVaultKey,
+                                   mount_performer_->AsWeakPtr()));
+  }
+
   RunOperationChain(std::move(context), std::move(steps),
                     std::move(success_callback), std::move(error_callback));
 }

@@ -82,6 +82,11 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) MockUserDataAuthClient
                CreatePersistentUserCallback callback),
               (override));
   MOCK_METHOD(void,
+              RestoreDeviceKey,
+              (const ::user_data_auth::RestoreDeviceKeyRequest& request,
+               RestoreDeviceKeyCallback callback),
+              (override));
+  MOCK_METHOD(void,
               PreparePersistentVault,
               (const ::user_data_auth::PreparePersistentVaultRequest& request,
                PreparePersistentVaultCallback callback),

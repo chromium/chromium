@@ -1041,6 +1041,48 @@ void FakeUserDataAuthClient::CreatePersistentUser(
       cryptohome::kAuthsessionInitialLifetime.InSeconds());
 }
 
+void FakeUserDataAuthClient::RestoreDeviceKey(
+    const ::user_data_auth::RestoreDeviceKeyRequest& request,
+    RestoreDeviceKeyCallback callback) {
+  ::user_data_auth::RestoreDeviceKeyReply reply;
+  ReplyOnReturn auto_reply(&reply, std::move(callback));
+  RememberRequest<Operation::kRestoreDeviceKey>(request);
+
+  if (auto error = TakeOperationError(Operation::kRestoreDeviceKey);
+      error != CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
+    reply.set_error(error);
+    return;
+  }
+
+  auto error = CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET;
+  auto* authenticated_auth_session =
+      GetAuthenticatedAuthSession(request.auth_session_id(), &error);
+
+  if (authenticated_auth_session == nullptr) {
+    reply.set_error(error);
+    return;
+  }
+
+  if (authenticated_auth_session->ephemeral) {
+    LOG(ERROR) << "Ephemeral AuthSession used with RestoreDeviceKey";
+    reply.set_error(CryptohomeErrorCode::CRYPTOHOME_ERROR_INVALID_ARGUMENT);
+    return;
+  }
+
+  const auto user_it = users_.find(authenticated_auth_session->account);
+  if (user_it == std::end(users_)) {
+    reply.set_error(CryptohomeErrorCode::CRYPTOHOME_ERROR_ACCOUNT_NOT_FOUND);
+    return;
+  }
+
+  if (!authenticated_auth_session->authorized_auth_session_intent.Has(
+          user_data_auth::AUTH_INTENT_DECRYPT)) {
+    reply.set_error(
+        CryptohomeErrorCode::CRYPTOHOME_ERROR_UNAUTHENTICATED_AUTH_SESSION);
+    return;
+  }
+}
+
 void FakeUserDataAuthClient::PreparePersistentVault(
     const ::user_data_auth::PreparePersistentVaultRequest& request,
     PreparePersistentVaultCallback callback) {

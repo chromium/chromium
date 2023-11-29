@@ -1115,6 +1115,11 @@ bool IsAuthSessionCryptohomeEnabled() {
       kCryptohomeUseAuthSession);
 }
 
+bool ShouldRestoreKeyOnLockScreen() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kRestoreKeyOnLockScreen);
+}
+
 bool IsCellularFirstDevice() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(kCellularFirst);
 }

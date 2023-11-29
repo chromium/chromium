@@ -51,6 +51,19 @@ void MountPerformer::CreateNewUser(std::unique_ptr<UserContext> context,
                               std::move(context), std::move(callback)));
 }
 
+void MountPerformer::RestoreEvictedVaultKey(
+    std::unique_ptr<UserContext> context,
+    AuthOperationCallback callback) {
+  user_data_auth::RestoreDeviceKeyRequest request;
+  LOGIN_LOG(EVENT) << "Restore evicted filesystem keyset";
+  request.set_auth_session_id(context->GetAuthSessionId());
+
+  UserDataAuthClient::Get()->RestoreDeviceKey(
+      request, base::BindOnce(&MountPerformer::OnRestoreEvictedVaultKey,
+                              weak_factory_.GetWeakPtr(), std::move(context),
+                              std::move(callback)));
+}
+
 void MountPerformer::MountPersistentDirectory(
     std::unique_ptr<UserContext> context,
     AuthOperationCallback callback) {
@@ -232,6 +245,23 @@ void MountPerformer::OnPrepareEphemeralVault(
   AuthPerformer::FillAuthenticationData(request_start, reply->auth_properties(),
                                         *context);
   context->SetUserIDHash(reply->sanitized_username());
+  std::move(callback).Run(std::move(context), absl::nullopt);
+}
+
+void MountPerformer::OnRestoreEvictedVaultKey(
+    std::unique_ptr<UserContext> context,
+    AuthOperationCallback callback,
+    absl::optional<user_data_auth::RestoreDeviceKeyReply> reply) {
+  auto error = user_data_auth::ReplyToCryptohomeError(reply);
+  bool is_success = !cryptohome::HasError(error);
+  AuthEventsRecorder::Get()->OnUserVaultPrepared(
+      AuthEventsRecorder::UserVaultType::kPersistent, is_success);
+  if (!is_success) {
+    LOGIN_LOG(ERROR) << "RestoreVaultKey failed with error " << error;
+    std::move(callback).Run(std::move(context), AuthenticationError{error});
+    return;
+  }
+  CHECK(reply.has_value());
   std::move(callback).Run(std::move(context), absl::nullopt);
 }
 
