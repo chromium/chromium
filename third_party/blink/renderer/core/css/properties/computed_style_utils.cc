@@ -769,6 +769,7 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
     const LayoutObject* layout_object) {
   std::pair<const Length*, const Length*> positions;
   bool is_horizontal_property;
+  // TODO(crbug.com/1477314): inset-area should probably be included.
   switch (property.PropertyID()) {
     case CSSPropertyID::kLeft:
       positions = std::make_pair(&style.UsedLeft(), &style.UsedRight());

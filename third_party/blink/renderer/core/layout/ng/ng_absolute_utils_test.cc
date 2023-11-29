@@ -115,8 +115,11 @@ class AbsoluteUtilsTest : public RenderingTest {
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
         /* offset_to_padding_box */
         PhysicalOffset());
+    WritingDirectionMode self_writing_direction =
+        node.Style().GetWritingDirection();
     const LogicalOofInsets insets = ComputeOutOfFlowInsets(
-        node.Style(), space.AvailableSize(), &anchor_evaluator);
+        node.Style(), space.AvailableSize(), container_writing_direction,
+        self_writing_direction, &anchor_evaluator);
     const InsetModifiedContainingBlock imcb =
         ComputeInsetModifiedContainingBlock(
             node, space.AvailableSize(), insets, static_position,
@@ -151,8 +154,11 @@ class AbsoluteUtilsTest : public RenderingTest {
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
         /* offset_to_padding_box */
         PhysicalOffset());
+    WritingDirectionMode self_writing_direction =
+        node.Style().GetWritingDirection();
     const LogicalOofInsets insets = ComputeOutOfFlowInsets(
-        node.Style(), space.AvailableSize(), &anchor_evaluator);
+        node.Style(), space.AvailableSize(), container_writing_direction,
+        self_writing_direction, &anchor_evaluator);
     const InsetModifiedContainingBlock imcb =
         ComputeInsetModifiedContainingBlock(
             node, space.AvailableSize(), insets, static_position,

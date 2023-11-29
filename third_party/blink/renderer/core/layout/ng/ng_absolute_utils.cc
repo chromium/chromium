@@ -247,7 +247,33 @@ void ComputeInsets(
   *inset_end_out = imcb_end + margin_end;
 }
 
-bool CanComputeBlockSizeWithoutLayout(const BlockNode& node) {
+bool IsInsetAutoForAxis(const Length& side1,
+                        const Length& side2,
+                        const ComputedStyle& style,
+                        const WritingDirectionMode& container_writing_direction,
+                        const AnchorEvaluatorImpl* anchor_evaluator) {
+  if (!side1.IsAuto() && !side2.IsAuto()) {
+    return false;
+  }
+  // The 'inset-area' property causes the used value of 'auto' to resolve to
+  // a non-'auto' value when different from 'none', the spans are orthogonal,
+  // and there is a valid default anchor.
+  // https://drafts.csswg.org/css-anchor-position-1/#resolving-spans
+  if (style.GetInsetArea().IsNone()) {
+    return true;
+  }
+  if (!anchor_evaluator->HasDefaultAnchor()) {
+    return true;
+  }
+  return style.GetInsetArea()
+      .ToPhysical(container_writing_direction, style.GetWritingDirection())
+      .IsNone();
+}
+
+bool CanComputeBlockSizeWithoutLayout(
+    const BlockNode& node,
+    const WritingDirectionMode& container_writing_direction,
+    const AnchorEvaluatorImpl* anchor_evaluator) {
   // Tables (even with an explicit size) apply a min-content constraint.
   if (node.IsTable()) {
     return false;
@@ -264,7 +290,8 @@ bool CanComputeBlockSizeWithoutLayout(const BlockNode& node) {
   }
   if (style.LogicalHeight().IsAuto()) {
     // Any 'auto' inset will trigger shink-to-fit sizing.
-    if (style.LogicalTop().IsAuto() || style.LogicalBottom().IsAuto()) {
+    if (IsInsetAutoForAxis(style.LogicalTop(), style.LogicalBottom(), style,
+                           container_writing_direction, anchor_evaluator)) {
       return false;
     }
   }
@@ -276,22 +303,32 @@ bool CanComputeBlockSizeWithoutLayout(const BlockNode& node) {
 LogicalOofInsets ComputeOutOfFlowInsets(
     const ComputedStyle& style,
     const LogicalSize& available_logical_size,
+    const WritingDirectionMode& container_writing_direction,
+    const WritingDirectionMode& self_writing_direction,
     AnchorEvaluatorImpl* anchor_evaluator) {
+  InsetArea inset_area;
+  if (!style.GetInsetArea().IsNone() && anchor_evaluator->HasDefaultAnchor()) {
+    inset_area = style.GetInsetArea().ToPhysical(container_writing_direction,
+                                                 self_writing_direction);
+  }
   // Compute in physical, because anchors may be in different `writing-mode` or
   // `direction`.
-  const WritingDirectionMode writing_direction = style.GetWritingDirection();
   const PhysicalSize available_size = ToPhysicalSize(
-      available_logical_size, writing_direction.GetWritingMode());
-  absl::optional<LayoutUnit> left;
-  if (const Length& left_length = style.UsedLeft(); !left_length.IsAuto()) {
+      available_logical_size, self_writing_direction.GetWritingMode());
+  const Length& left_length =
+      style.UsedLeft().IsAuto() ? inset_area.UsedLeft() : style.UsedLeft();
+  std::optional<LayoutUnit> left;
+  if (!left_length.IsAuto()) {
     anchor_evaluator->SetAxis(/* is_y_axis */ false,
                               /* is_right_or_bottom */ false,
                               available_size.width);
     left = MinimumValueForLength(left_length, available_size.width,
                                  anchor_evaluator);
   }
-  absl::optional<LayoutUnit> right;
-  if (const Length& right_length = style.UsedRight(); !right_length.IsAuto()) {
+  std::optional<LayoutUnit> right;
+  const Length& right_length =
+      style.UsedRight().IsAuto() ? inset_area.UsedRight() : style.UsedRight();
+  if (!right_length.IsAuto()) {
     anchor_evaluator->SetAxis(/* is_y_axis */ false,
                               /* is_right_or_bottom */ true,
                               available_size.width);
@@ -299,17 +336,21 @@ LogicalOofInsets ComputeOutOfFlowInsets(
                                   anchor_evaluator);
   }
 
-  absl::optional<LayoutUnit> top;
-  if (const Length& top_length = style.UsedTop(); !top_length.IsAuto()) {
+  std::optional<LayoutUnit> top;
+  const Length& top_length =
+      style.UsedTop().IsAuto() ? inset_area.UsedTop() : style.UsedTop();
+  if (!top_length.IsAuto()) {
     anchor_evaluator->SetAxis(/* is_y_axis */ true,
                               /* is_right_or_bottom */ false,
                               available_size.height);
     top = MinimumValueForLength(top_length, available_size.height,
                                 anchor_evaluator);
   }
-  absl::optional<LayoutUnit> bottom;
-  if (const Length& bottom_length = style.UsedBottom();
-      !bottom_length.IsAuto()) {
+  std::optional<LayoutUnit> bottom;
+  const Length& bottom_length = style.UsedBottom().IsAuto()
+                                    ? inset_area.UsedBottom()
+                                    : style.UsedBottom();
+  if (!bottom_length.IsAuto()) {
     anchor_evaluator->SetAxis(/* is_y_axis */ true,
                               /* is_right_or_bottom */ true,
                               available_size.height);
@@ -318,8 +359,8 @@ LogicalOofInsets ComputeOutOfFlowInsets(
   }
 
   // Convert the physical insets to logical.
-  PhysicalToLogical<absl::optional<LayoutUnit>&> insets(writing_direction, top,
-                                                        right, bottom, left);
+  PhysicalToLogical<absl::optional<LayoutUnit>&> insets(
+      self_writing_direction, top, right, bottom, left);
   return {insets.InlineStart(), insets.InlineEnd(), insets.BlockStart(),
           insets.BlockEnd()};
 }
@@ -378,14 +419,15 @@ bool ComputeOofInlineDimensions(
     const BoxStrut& border_padding,
     const absl::optional<LogicalSize>& replaced_size,
     const WritingDirectionMode container_writing_direction,
-    const Length::AnchorEvaluator* anchor_evaluator,
+    const AnchorEvaluatorImpl* anchor_evaluator,
     LogicalOofDimensions* dimensions) {
   DCHECK(dimensions);
   DCHECK_GE(imcb.InlineSize(), LayoutUnit());
 
   bool depends_on_min_max_sizes = false;
   const bool can_compute_block_size_without_layout =
-      CanComputeBlockSizeWithoutLayout(node);
+      CanComputeBlockSizeWithoutLayout(node, container_writing_direction,
+                                       anchor_evaluator);
 
   auto MinMaxSizesFunc = [&](MinMaxSizesType type) -> MinMaxSizesResult {
     DCHECK(!node.IsReplaced());
@@ -419,7 +461,8 @@ bool ComputeOofInlineDimensions(
   };
 
   const bool has_auto_inline_inset =
-      style.LogicalInlineStart().IsAuto() || style.LogicalInlineEnd().IsAuto();
+      IsInsetAutoForAxis(style.LogicalInlineStart(), style.LogicalInlineEnd(),
+                         style, container_writing_direction, anchor_evaluator);
 
   LayoutUnit inline_size;
   if (replaced_size) {
@@ -504,7 +547,7 @@ const LayoutResult* ComputeOofBlockDimensions(
     const BoxStrut& border_padding,
     const absl::optional<LogicalSize>& replaced_size,
     const WritingDirectionMode container_writing_direction,
-    const Length::AnchorEvaluator* anchor_evaluator,
+    const AnchorEvaluatorImpl* anchor_evaluator,
     LogicalOofDimensions* dimensions) {
   DCHECK(dimensions);
   DCHECK_GE(imcb.BlockSize(), LayoutUnit());
@@ -550,7 +593,8 @@ const LayoutResult* ComputeOofBlockDimensions(
   };
 
   const bool has_auto_block_inset =
-      style.LogicalTop().IsAuto() || style.LogicalBottom().IsAuto();
+      IsInsetAutoForAxis(style.LogicalTop(), style.LogicalBottom(), style,
+                         container_writing_direction, anchor_evaluator);
 
   LayoutUnit block_size;
   if (replaced_size) {

@@ -50,6 +50,8 @@ struct CORE_EXPORT LogicalOofInsets {
 CORE_EXPORT LogicalOofInsets
 ComputeOutOfFlowInsets(const ComputedStyle& style,
                        const LogicalSize& available_size,
+                       const WritingDirectionMode& container_writing_direction,
+                       const WritingDirectionMode& self_writing_direction,
                        AnchorEvaluatorImpl* anchor_evaluator);
 
 struct CORE_EXPORT InsetModifiedContainingBlock {
@@ -128,7 +130,7 @@ CORE_EXPORT bool ComputeOofInlineDimensions(
     const BoxStrut& border_padding,
     const absl::optional<LogicalSize>& replaced_size,
     const WritingDirectionMode container_writing_direction,
-    const Length::AnchorEvaluator* anchor_evaluator,
+    const AnchorEvaluatorImpl* anchor_evaluator,
     LogicalOofDimensions* dimensions);
 
 // If layout was performed to determine the position, this will be returned
@@ -141,7 +143,7 @@ CORE_EXPORT const LayoutResult* ComputeOofBlockDimensions(
     const BoxStrut& border_padding,
     const absl::optional<LogicalSize>& replaced_size,
     const WritingDirectionMode container_writing_direction,
-    const Length::AnchorEvaluator* anchor_evaluator,
+    const AnchorEvaluatorImpl* anchor_evaluator,
     LogicalOofDimensions* dimensions);
 
 CORE_EXPORT void AdjustOffsetForSplitInline(

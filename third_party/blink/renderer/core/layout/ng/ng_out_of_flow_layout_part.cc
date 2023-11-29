@@ -135,6 +135,7 @@ const ComputedStyle* CreateFlippedAutoAnchorStyle(
   const bool flip_x = is_horizontal ? flip_inline : flip_block;
   const bool flip_y = is_horizontal ? flip_block : flip_inline;
   ComputedStyleBuilder builder(base_style);
+  // TODO(crbug.com/1477314): Handle inset-area
   if (flip_x) {
     builder.SetLeft(base_style.UsedRight());
     builder.SetRight(base_style.UsedLeft());
@@ -157,6 +158,7 @@ const CSSPropertyValueSet* CreateFlippedAutoAnchorDeclarations(
   auto* set =
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
   float zoom = base_style.EffectiveZoom();
+  // TODO(crbug.com/1477314): Handle inset-area
   set->SetProperty(CSSPropertyID::kLeft,
                    *CSSValue::Create(base_style.UsedLeft(), zoom));
   set->SetProperty(CSSPropertyID::kRight,
@@ -308,6 +310,7 @@ class OOFCandidateStyleIterator {
     // Note that for styles created from a `@try` rule, we create "flipped"
     // fallback only if the `@try` rule itself uses auto anchor positioning.
     // Usage in the base style doesn't create fallbacks.
+    // TODO(crbug.com/1477314): Handle inset-area
     bool flippable_in_x = false;
     if (!position_fallback_index_ ||
         style_->HasAutoAnchorPositioningInXAxisFromTryBlock()) {
@@ -1926,6 +1929,7 @@ OutOfFlowLayoutPart::TryCalculateOffset(
 
   const LogicalOofInsets insets = ComputeOutOfFlowInsets(
       candidate_style, node_info.constraint_space.AvailableSize(),
+      container_writing_direction, candidate_writing_direction,
       anchor_evaluator);
 
   {

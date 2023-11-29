@@ -745,13 +745,15 @@ const LayoutResult* BlockNode::CachedLayoutResultForOutOfFlowPositioned(
   //
   // TODO(layout-dev): We might be able to determine what the previous
   // static-position was based on |LayoutResult::OutOfFlowPositionedOffset|.
+  // TODO(crbug.com/1477314): This unnecessarily defeats caching when inset-area
+  // is applied.
   bool depends_on_static_position =
-      (Style().UsedLeft().IsAuto() && Style().UsedRight().IsAuto()) ||
-      (Style().UsedTop().IsAuto() && Style().UsedBottom().IsAuto());
+      Style().HasAutoLeftAndRightIgnoringInsetArea() ||
+      Style().HasAutoTopAndBottomIgnoringInsetArea();
 
-  if (depends_on_static_position)
+  if (depends_on_static_position) {
     return nullptr;
-
+  }
   return cached_layout_result;
 }
 

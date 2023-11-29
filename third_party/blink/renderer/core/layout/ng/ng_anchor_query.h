@@ -328,6 +328,8 @@ class CORE_EXPORT AnchorEvaluatorImpl : public Length::AnchorEvaluator {
   // property, or nullopt if there's no such element.
   absl::optional<LogicalRect> GetAdditionalFallbackBoundsRect() const;
 
+  bool HasDefaultAnchor() const { return DefaultAnchor() != nullptr; }
+
  private:
   const LogicalAnchorQuery* AnchorQuery() const;
   const LogicalAnchorReference* ResolveAnchorReference(
