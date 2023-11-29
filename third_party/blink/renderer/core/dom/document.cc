@@ -8394,8 +8394,10 @@ Document& Document::EnsureTemplateDocument() {
 void Document::DidChangeFormRelatedElementDynamically(
     HTMLElement* element,
     WebFormRelatedChangeType form_related_change) {
-  if (!GetFrame() || !GetFrame()->GetPage() || !HasFinishedParsing())
+  if (!GetFrame() || !GetFrame()->GetPage() || !HasFinishedParsing() ||
+      !GetFrame()->IsAttached()) {
     return;
+  }
 
   GetFrame()
       ->GetPage()
