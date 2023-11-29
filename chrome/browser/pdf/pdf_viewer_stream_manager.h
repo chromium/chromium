@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_PDF_PDF_VIEWER_STREAM_MANAGER_H_
 #define CHROME_BROWSER_PDF_PDF_VIEWER_STREAM_MANAGER_H_
 
+#include <stdint.h>
+
 #include <map>
 #include <memory>
 
@@ -12,6 +14,9 @@
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "extensions/common/mojom/guest_view.mojom.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -21,6 +26,9 @@ class WebContents;
 }  // namespace content
 
 namespace extensions {
+namespace mime_handler {
+class BeforeUnloadControl;
+}
 class StreamContainer;
 }  // namespace extensions
 
@@ -36,12 +44,13 @@ namespace pdf {
 // 3. Observing for the RFH created by the PDF embedder RFH to load the PDF
 //    extension URL.
 // 4. Observing for the PDF content RFH to register the stream as a subresource
-//    override for the final PDF commit navigation.
+//    override for the final PDF commit navigation and to set up postMessage
+//    support.
 // `PdfViewerStreamManager` is scoped to the `content::WebContents` it tracks,
 // but it may also delete itself if all PDF streams are no longer used.
 // `extensions::StreamContainer` objects are stored from
 // `PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse()` until
-// the PDF navigation is complete.
+// the PDF viewer is no longer in use.
 // Use `PdfViewerStreamManager::FromWebContents()` to get an instance.
 class PdfViewerStreamManager
     : public content::WebContentsObserver,
@@ -115,8 +124,6 @@ class PdfViewerStreamManager
 
     // A unique ID for the PDF viewer instance. Used to set up postMessage
     // support for the full-page PDF viewer.
-    // TODO(crbug.com/1445746): Currently an unused field. Use it to set up
-    // postMessage.
     const std::string internal_id;
 
     // A container for the PDF stream. Holds data needed to load the PDF in the
@@ -127,6 +134,14 @@ class PdfViewerStreamManager
     // to avoid navigating multiple about:blank child hosts to the PDF extension
     // URL.
     bool did_extension_navigate = false;
+
+    // The container manager used to provide postMessage support.
+    mojo::AssociatedRemote<extensions::mojom::MimeHandlerViewContainerManager>
+        container_manager;
+
+    // A unique ID for this instance. Used for postMessage support to identify
+    // `extensions::MimeHandlerViewFrameContainer` objects.
+    int32_t instance_id;
   };
 
   friend class content::WebContentsUserData<PdfViewerStreamManager>;
@@ -143,10 +158,10 @@ class PdfViewerStreamManager
   bool ContainsUnclaimedStreamInfo(int frame_tree_node_id) const;
 
   // Mark an unclaimed stream info with the same frame tree node ID as
-  // `embedder_host` as claimed by `embedder_host`. Callers must ensure such a
-  // stream info exists with `ContainsUnclaimedStreamInfo()` before calling
-  // this. Otherwise, a crash will occur.
-  void ClaimStreamInfo(content::RenderFrameHost* embedder_host);
+  // `embedder_host` as claimed by `embedder_host`. Returns a pointer to the
+  // claimed stream info. Callers must ensure such a stream info exists with
+  // `ContainsUnclaimedStreamInfo()` before calling this.
+  StreamInfo* ClaimStreamInfo(content::RenderFrameHost* embedder_host);
 
   // Deletes the stream info associated with `embedder_host`, and deletes
   // `this` if there are no remaining stream infos.
@@ -158,8 +173,22 @@ class PdfViewerStreamManager
   bool MaybeRegisterPdfSubresourceOverride(
       content::NavigationHandle* navigation_handle);
 
+  // Intended to be called during the PDF content frame's 'DidFinishNavigation'.
+  // Sets up postMessage communication between the embedder frame and the PDF
+  // extension frame after the PDF has finished loading.
+  bool MaybeSetUpPostMessage(content::NavigationHandle* navigation_handle);
+
+  // Sets up beforeunload API support for full-page PDF viewers.
+  // TODO(crbug.com/1445746): Currently a no-op. Support the beforeunload API.
+  void SetUpBeforeUnloadControl(
+      mojo::PendingRemote<extensions::mime_handler::BeforeUnloadControl>
+          before_unload_control_remote);
+
   // Stores stream info by embedder host info.
   std::map<EmbedderHostInfo, std::unique_ptr<StreamInfo>> stream_infos_;
+
+  // Needed to avoid use-after-free when setting up beforeunload API support.
+  base::WeakPtrFactory<PdfViewerStreamManager> weak_factory_{this};
 };
 
 }  // namespace pdf
