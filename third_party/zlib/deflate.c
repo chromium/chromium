@@ -65,7 +65,7 @@
 #endif
 
 const char deflate_copyright[] =
-   " deflate 1.3 Copyright 1995-2023 Jean-loup Gailly and Mark Adler ";
+   " deflate 1.3.0.1 Copyright 1995-2023 Jean-loup Gailly and Mark Adler ";
 /*
   If you use the zlib library in a product, an acknowledgment is welcome
   in the documentation of your product. If for some reason you cannot
