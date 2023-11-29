@@ -237,6 +237,7 @@ source_set("browser") {
     "//components/embedder_support/origin_trials",
     "//components/favicon_base:favicon_base",
     "//components/flags_ui",
+    "//components/history/core/browser:browser",
     "//components/keyed_service/content",
     "//components/optimization_guide/core:bloomfilter",
     "//components/profile_metrics",

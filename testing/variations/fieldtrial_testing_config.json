@@ -13210,26 +13210,6 @@
             ]
         }
     ],
-    "PopulateVisitedLinkDatabase": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "PopulateVisitedLinkDatabase",
-                    "enable_features": [
-                        "PopulateVisitedLinkDatabase"
-                    ]
-                }
-            ]
-        }
-    ],
     "PostQuantumKyber": [
         {
             "platforms": [

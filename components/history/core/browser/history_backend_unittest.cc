@@ -5426,9 +5426,8 @@ class HistoryBackendTestForVisitedLinks
     // Set-up the parameterized testing to depend on the flag value.
     is_database_enabled_ =
         (GetParam() == TestMode::kPopulateVisitedLinkDatabaseEnabled);
-    if (is_database_enabled_) {
-      scoped_feature_list_.InitAndEnableFeature(kPopulateVisitedLinkDatabase);
-    }
+    scoped_feature_list_.InitWithFeatureState(kPopulateVisitedLinkDatabase,
+                                              is_database_enabled_);
     // Init the transition types for AddPageVisit.
     link_transition_ = ui::PageTransitionFromInt(
         ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_CHAIN_START |

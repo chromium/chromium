@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/path_service.h"
+#include "components/history/core/browser/features.h"
 #include "components/metrics/persistent_histograms.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/common/content_features.h"
@@ -102,6 +103,9 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // Disable the new prefetch limits policy on WebView (it is enabled by
   // default on Android, but we need a slower ramp up on WebView).
   aw_feature_overrides.DisableFeature(::features::kPrefetchNewLimits);
+
+  // Disable Populating the VisitedLinkDatabase on WebView.
+  aw_feature_overrides.DisableFeature(history::kPopulateVisitedLinkDatabase);
 
   aw_feature_overrides.RegisterOverrides(feature_list);
 }
