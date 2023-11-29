@@ -4289,6 +4289,7 @@ if (!is_android) {
         "//components/supervised_user/core/browser:mocked",
         "//components/supervised_user/core/browser/proto",
         "//components/supervised_user/core/common",
+        "//components/supervised_user/core/common:test_utils",
       ]
     }
 
