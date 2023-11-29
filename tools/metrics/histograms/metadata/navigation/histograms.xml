@@ -2037,18 +2037,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Prerender.NoStatePrefetchResponseTypes"
-    enum="NoStatePrefetchResponseType" expires_after="M85">
-  <owner>droger@chromium.org</owner>
-  <owner>mattcary@chromium.org</owner>
-  <owner>pasko@chromium.org</owner>
-  <summary>
-    Type of responses received by NoStatePrefetch, distinguishing cacheable
-    resources from no-store resources, and main resources from sub-resources.
-    Recorded when a response is received, including on each redirect.
-  </summary>
-</histogram>
-
 <histogram name="Prerender.NoStatePrefetchSubResourceRedirects"
     units="redirects" expires_after="M85">
   <owner>droger@chromium.org</owner>

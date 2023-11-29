@@ -44564,17 +44564,6 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="Timed out"/>
 </enum>
 
-<enum name="NoStatePrefetchResponseType">
-  <int value="0" label="Sub-resource, cacheable"/>
-  <int value="1" label="Sub-resource, no-store"/>
-  <int value="2" label="Sub-resource redirect, cacheable"/>
-  <int value="3" label="Sub-resource redirect, no-store"/>
-  <int value="4" label="Main resource, cacheable"/>
-  <int value="5" label="Main resource, no-store"/>
-  <int value="6" label="Main resource redirect, cacheable"/>
-  <int value="7" label="Main resource redirect, no-store"/>
-</enum>
-
 <enum name="NoteCreationFunnel">
   <int value="0" label="Create Card Button Clicked"/>
   <int value="1" label="Template Selected"/>

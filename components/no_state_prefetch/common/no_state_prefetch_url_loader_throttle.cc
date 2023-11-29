@@ -30,12 +30,6 @@ void CallCancelPrerenderForUnsupportedScheme(
       ->CancelPrerenderForUnsupportedScheme();
 }
 
-// Returns true if the response has a "no-store" cache control header.
-bool IsNoStoreResponse(const network::mojom::URLResponseHead& response_head) {
-  return response_head.headers &&
-         response_head.headers->HasHeaderValue("cache-control", "no-store");
-}
-
 }  // namespace
 
 NoStatePrefetchURLLoaderThrottle::NoStatePrefetchURLLoaderThrottle(
@@ -138,9 +132,6 @@ void NoStatePrefetchURLLoaderThrottle::WillRedirectRequest(
     net::HttpRequestHeaders* /* modified_headers */,
     net::HttpRequestHeaders* /* modified_cors_exempt_headers */) {
   redirect_count_++;
-  RecordPrefetchResponseReceived(
-      histogram_prefix_, blink::IsRequestDestinationFrame(request_destination_),
-      true /* is_redirect */, IsNoStoreResponse(response_head));
 
   std::string follow_only_when_prerender_shown_header;
   if (response_head.headers) {
@@ -168,9 +159,6 @@ void NoStatePrefetchURLLoaderThrottle::WillProcessResponse(
     bool* defer) {
   bool is_main_resource =
       blink::IsRequestDestinationFrame(request_destination_);
-  RecordPrefetchResponseReceived(histogram_prefix_, is_main_resource,
-                                 true /* is_redirect */,
-                                 IsNoStoreResponse(*response_head));
   RecordPrefetchRedirectCount(histogram_prefix_, is_main_resource,
                               redirect_count_);
 }

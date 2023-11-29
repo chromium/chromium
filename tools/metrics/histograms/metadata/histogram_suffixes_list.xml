@@ -3292,7 +3292,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Prerender.FinalStatus"/>
   <affected-histogram name="Prerender.NetworkBytesWasted"/>
   <affected-histogram name="Prerender.NoStatePrefetchMainResourceRedirects"/>
-  <affected-histogram name="Prerender.NoStatePrefetchResponseTypes"/>
   <affected-histogram name="Prerender.NoStatePrefetchSubResourceRedirects"/>
   <affected-histogram name="Prerender.PrerendersPerSessionCount"/>
 </histogram_suffixes>
