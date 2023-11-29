@@ -4131,7 +4131,7 @@
     },
     {
       name: "WebCodecsContentHint",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "WebCodecsCopyToRGB",
