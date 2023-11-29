@@ -418,12 +418,6 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   static UnitType StringToUnitType(const UChar*, unsigned length);
 
   double ComputeLengthDouble(const CSSLengthResolver&) const;
-
- protected:
-  bool IsResolvableLength() const;
-
- private:
-  bool InvolvesPercentage() const;
 };
 
 using CSSLengthArray = CSSPrimitiveValue::CSSLengthArray;

@@ -109,7 +109,7 @@ bool CSSMathFunctionValue::AccumulateLengthArray(CSSLengthArray& length_array,
 
 Length CSSMathFunctionValue::ConvertToLength(
     const CSSLengthResolver& length_resolver) const {
-  if (IsResolvableLength()) {
+  if (IsLength()) {
     return Length::Fixed(ComputeLengthPx(length_resolver));
   }
   return Length(ToCalcValue(length_resolver));
