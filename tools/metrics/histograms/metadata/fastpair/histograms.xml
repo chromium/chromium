@@ -50,7 +50,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FastPair.GattServiceDiscovery.Latency" units="ms"
-    expires_after="2023-12-31">
+    expires_after="2024-12-31">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -103,7 +103,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FastPair.KeyBasedNotify.Latency" units="ms"
-    expires_after="2023-12-31">
+    expires_after="2024-12-31">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -116,7 +116,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FastPair.KeyBasedWriteRequest.Latency" units="ms"
-    expires_after="2023-12-31">
+    expires_after="2024-12-31">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -129,7 +129,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FastPair.PasskeyNotify.Latency" units="ms"
-    expires_after="2023-12-31">
+    expires_after="2024-12-31">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -142,7 +142,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FastPair.PasskeyWriteRequest.Latency" units="ms"
-    expires_after="2023-12-31">
+    expires_after="2024-12-31">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -279,7 +279,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="FastPair.{PairingScenario}.Initialization.RetriesBeforeSuccess"
-    units="count" expires_after="2023-12-31">
+    units="count" expires_after="2024-12-31">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
