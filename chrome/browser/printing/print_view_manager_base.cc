@@ -73,7 +73,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-#include "chrome/browser/enterprise/connectors/analysis/print_content_analysis_utils.h"
+#include "chrome/browser/enterprise/data_protection/print_utils.h"
 #endif
 
 namespace printing {
@@ -438,14 +438,14 @@ void PrintViewManagerBase::StartLocalPrintJob(
   // done first in this function's workflow, this way other code can check if
   // content analysis is going to happen and delay starting `print_job_` to
   // avoid needlessly prompting the user.
-  using enterprise_connectors::PrintScanningContext;
+  using enterprise_data_protection::PrintScanningContext;
   auto context = show_system_dialog
                      ? PrintScanningContext::kSystemPrintBeforePrintDocument
                      : PrintScanningContext::kNormalPrintBeforePrintDocument;
 
   absl::optional<enterprise_connectors::ContentAnalysisDelegate::Data>
-      scanning_data =
-          enterprise_connectors::GetPrintAnalysisData(web_contents(), context);
+      scanning_data = enterprise_data_protection::GetPrintAnalysisData(
+          web_contents(), context);
 
   if (scanning_data) {
     content_analysis_before_printing_document_ = base::BindOnce(
@@ -824,9 +824,9 @@ void PrintViewManagerBase::ScriptedPrint(mojom::ScriptedPrintParamsPtr params,
 #endif
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
   absl::optional<enterprise_connectors::ContentAnalysisDelegate::Data>
-      scanning_data = enterprise_connectors::GetPrintAnalysisData(
-          web_contents(),
-          enterprise_connectors::PrintScanningContext::kBeforeSystemDialog);
+      scanning_data = enterprise_data_protection::GetPrintAnalysisData(
+          web_contents(), enterprise_data_protection::PrintScanningContext::
+                              kBeforeSystemDialog);
   if (scanning_data) {
     if (!ContentAnalysisAfterDialog(*scanning_data)) {
       auto scanning_done_callback = base::BindOnce(
@@ -1444,7 +1444,7 @@ void PrintViewManagerBase::ContentAnalysisBeforePrintingDocument(
       weak_ptr_factory_.GetWeakPtr(), print_data, page_size, content_area,
       offsets);
 
-  enterprise_connectors::PrintIfAllowedByPolicy(
+  enterprise_data_protection::PrintIfAllowedByPolicy(
       print_data, web_contents()->GetOutermostWebContents(),
       std::move(scanning_data), std::move(on_verdict));
 }

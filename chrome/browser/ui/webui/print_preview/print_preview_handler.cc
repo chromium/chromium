@@ -72,7 +72,7 @@
 #include "third_party/icu/source/i18n/unicode/ulocdata.h"
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-#include "chrome/browser/enterprise/connectors/analysis/print_content_analysis_utils.h"
+#include "chrome/browser/enterprise/data_protection/print_utils.h"
 #if BUILDFLAG(IS_MAC)
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -748,7 +748,7 @@ void PrintPreviewHandler::HandleDoPrint(const base::Value::List& args) {
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
   std::string device_name = *settings.FindString(kSettingDeviceName);
 
-  using enterprise_connectors::PrintScanningContext;
+  using enterprise_data_protection::PrintScanningContext;
   auto scan_context =
       settings.FindBool(kSettingShowSystemDialog).value_or(false)
           ? PrintScanningContext::kSystemPrintAfterPreview
@@ -773,7 +773,7 @@ void PrintPreviewHandler::HandleDoPrint(const base::Value::List& args) {
   auto hide_preview = base::BindOnce(&PrintPreviewHandler::OnHidePreviewDialog,
                                      weak_factory_.GetWeakPtr());
 
-  enterprise_connectors::PrintIfAllowedByPolicy(
+  enterprise_data_protection::PrintIfAllowedByPolicy(
       data, GetInitiator(), std::move(device_name), scan_context,
       std::move(on_verdict), std::move(hide_preview));
 

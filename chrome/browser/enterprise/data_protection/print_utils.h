@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_PRINT_CONTENT_ANALYSIS_UTILS_H_
-#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_PRINT_CONTENT_ANALYSIS_UTILS_H_
+#ifndef CHROME_BROWSER_ENTERPRISE_DATA_PROTECTION_PRINT_UTILS_H_
+#define CHROME_BROWSER_ENTERPRISE_DATA_PROTECTION_PRINT_UTILS_H_
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted_memory.h"
@@ -15,7 +15,7 @@ namespace content {
 class WebContents;
 }
 
-namespace enterprise_connectors {
+namespace enterprise_data_protection {
 
 // Represents context for the kind of print workflow that needs to check if
 // scanning should happen. This is used in conjunction with the
@@ -76,17 +76,18 @@ void PrintIfAllowedByPolicy(scoped_refptr<base::RefCountedMemory> print_data,
                             PrintScanningContext context,
                             base::OnceCallback<void(bool)> on_verdict,
                             base::OnceClosure hide_preview);
-void PrintIfAllowedByPolicy(scoped_refptr<base::RefCountedMemory> print_data,
-                            content::WebContents* initiator,
-                            ContentAnalysisDelegate::Data scanning_data,
-                            base::OnceCallback<void(bool)> on_verdict);
+void PrintIfAllowedByPolicy(
+    scoped_refptr<base::RefCountedMemory> print_data,
+    content::WebContents* initiator,
+    enterprise_connectors::ContentAnalysisDelegate::Data scanning_data,
+    base::OnceCallback<void(bool)> on_verdict);
 
 // Returns a `ContentAnalysisDelegate::Data` object with information about how
 // content scanning should proceed, or nullopt if it shouldn't.
-absl::optional<ContentAnalysisDelegate::Data> GetPrintAnalysisData(
-    content::WebContents* web_contents,
-    PrintScanningContext context);
+absl::optional<enterprise_connectors::ContentAnalysisDelegate::Data>
+GetPrintAnalysisData(content::WebContents* web_contents,
+                     PrintScanningContext context);
 
-}  // namespace enterprise_connectors
+}  // namespace enterprise_data_protection
 
-#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_PRINT_CONTENT_ANALYSIS_UTILS_H_
+#endif  // CHROME_BROWSER_ENTERPRISE_DATA_PROTECTION_PRINT_UTILS_H_

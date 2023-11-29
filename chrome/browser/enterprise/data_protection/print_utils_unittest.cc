@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/analysis/print_content_analysis_utils.h"
+#include "chrome/browser/enterprise/data_protection/print_utils.h"
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -29,9 +29,14 @@
 #include "chrome/browser/enterprise/connectors/test/fake_content_analysis_sdk_manager.h"  // nogncheck
 #endif
 
-namespace enterprise_connectors {
+namespace enterprise_data_protection {
 
 namespace {
+
+using ContentAnalysisResponse = enterprise_connectors::ContentAnalysisResponse;
+using ContentAnalysisDelegate = enterprise_connectors::ContentAnalysisDelegate;
+using RealtimeReportingClientFactory =
+    enterprise_connectors::RealtimeReportingClientFactory;
 
 ContentAnalysisDelegate* test_delegate_ = nullptr;
 
@@ -178,7 +183,7 @@ class PrintContentAnalysisUtilsTest
     RealtimeReportingClientFactory::GetInstance()->SetTestingFactory(
         profile(), base::BindRepeating([](content::BrowserContext* context) {
           return std::unique_ptr<KeyedService>(
-              new RealtimeReportingClient(context));
+              new enterprise_connectors::RealtimeReportingClient(context));
         }));
 
     RealtimeReportingClientFactory::GetForProfile(profile())
@@ -189,9 +194,10 @@ class PrintContentAnalysisUtilsTest
         ->SetIdentityManagerForTesting(
             identity_test_environment_.identity_manager());
 
-    enterprise_connectors::test::SetAnalysisConnector(profile()->GetPrefs(),
-                                                      PRINT, policy_value());
-    test::SetOnSecurityEventReporting(profile()->GetPrefs(), true);
+    enterprise_connectors::test::SetAnalysisConnector(
+        profile()->GetPrefs(), enterprise_connectors::PRINT, policy_value());
+    enterprise_connectors::test::SetOnSecurityEventReporting(
+        profile()->GetPrefs(), true);
   }
 
   void TearDown() override {
@@ -228,7 +234,7 @@ class PrintContentAnalysisUtilsTest
   // This installs a fake SDK manager that creates fake SDK clients when
   // its GetClient() method is called. This is needed so that calls to
   // ContentAnalysisSdkManager::Get()->GetClient() do not fail.
-  FakeContentAnalysisSdkManager sdk_manager_;
+  enterprise_connectors::FakeContentAnalysisSdkManager sdk_manager_;
 #endif
 };
 
@@ -239,8 +245,10 @@ TEST_P(PrintContentAnalysisUtilsTest, GetPrintAnalysisData_BeforeSystemDialog) {
                                    PrintScanningContext::kBeforeSystemDialog);
 
   ASSERT_TRUE(data);
-  ASSERT_EQ(data->settings.block_until_verdict, BlockUntilVerdict::kBlock);
-  ASSERT_EQ(data->reason, ContentAnalysisRequest::SYSTEM_DIALOG_PRINT);
+  ASSERT_EQ(data->settings.block_until_verdict,
+            enterprise_connectors::BlockUntilVerdict::kBlock);
+  ASSERT_EQ(data->reason,
+            enterprise_connectors::ContentAnalysisRequest::SYSTEM_DIALOG_PRINT);
 
   ASSERT_EQ(policy_value() == kLocalPolicy,
             data->settings.cloud_or_local_settings.is_local_analysis());
@@ -278,8 +286,11 @@ TEST_P(PrintContentAnalysisUtilsTest, GetPrintAnalysisData_BeforePreview) {
                                         0);
   } else {
     ASSERT_TRUE(data);
-    ASSERT_EQ(data->settings.block_until_verdict, BlockUntilVerdict::kBlock);
-    ASSERT_EQ(data->reason, ContentAnalysisRequest::PRINT_PREVIEW_PRINT);
+    ASSERT_EQ(data->settings.block_until_verdict,
+              enterprise_connectors::BlockUntilVerdict::kBlock);
+    ASSERT_EQ(
+        data->reason,
+        enterprise_connectors::ContentAnalysisRequest::PRINT_PREVIEW_PRINT);
 
     ASSERT_EQ(policy_value() == kLocalPolicy,
               data->settings.cloud_or_local_settings.is_local_analysis());
@@ -328,8 +339,11 @@ TEST_P(PrintContentAnalysisUtilsTest,
 
   if (ExpectPostDialogAnalysis()) {
     ASSERT_TRUE(data);
-    ASSERT_EQ(data->settings.block_until_verdict, BlockUntilVerdict::kBlock);
-    ASSERT_EQ(data->reason, ContentAnalysisRequest::PRINT_PREVIEW_PRINT);
+    ASSERT_EQ(data->settings.block_until_verdict,
+              enterprise_connectors::BlockUntilVerdict::kBlock);
+    ASSERT_EQ(
+        data->reason,
+        enterprise_connectors::ContentAnalysisRequest::PRINT_PREVIEW_PRINT);
 
     ASSERT_EQ(policy_value() == kLocalPolicy,
               data->settings.cloud_or_local_settings.is_local_analysis());
@@ -384,8 +398,11 @@ TEST_P(PrintContentAnalysisUtilsTest,
 
   if (ExpectPostDialogAnalysis()) {
     ASSERT_TRUE(data);
-    ASSERT_EQ(data->settings.block_until_verdict, BlockUntilVerdict::kBlock);
-    ASSERT_EQ(data->reason, ContentAnalysisRequest::SYSTEM_DIALOG_PRINT);
+    ASSERT_EQ(data->settings.block_until_verdict,
+              enterprise_connectors::BlockUntilVerdict::kBlock);
+    ASSERT_EQ(
+        data->reason,
+        enterprise_connectors::ContentAnalysisRequest::SYSTEM_DIALOG_PRINT);
 
     ASSERT_EQ(policy_value() == kLocalPolicy,
               data->settings.cloud_or_local_settings.is_local_analysis());
@@ -426,8 +443,11 @@ TEST_P(PrintContentAnalysisUtilsTest,
 
   if (ExpectPostDialogAnalysis()) {
     ASSERT_TRUE(data);
-    ASSERT_EQ(data->settings.block_until_verdict, BlockUntilVerdict::kBlock);
-    ASSERT_EQ(data->reason, ContentAnalysisRequest::PRINT_PREVIEW_PRINT);
+    ASSERT_EQ(data->settings.block_until_verdict,
+              enterprise_connectors::BlockUntilVerdict::kBlock);
+    ASSERT_EQ(
+        data->reason,
+        enterprise_connectors::ContentAnalysisRequest::PRINT_PREVIEW_PRINT);
 
     ASSERT_EQ(policy_value() == kLocalPolicy,
               data->settings.cloud_or_local_settings.is_local_analysis());
@@ -466,7 +486,7 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyAllowed) {
       &PrintTestContentAnalysisDelegate::Create,
       ContentAnalysisResponse::Result::TriggeredRule::ACTION_UNSPECIFIED));
 
-  test::EventReportValidator validator(client_.get());
+  enterprise_connectors::test::EventReportValidator validator(client_.get());
   validator.ExpectNoReport();
 
   auto data = CreateData();
@@ -513,7 +533,7 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyReportOnly) {
       &PrintTestContentAnalysisDelegate::Create,
       ContentAnalysisResponse::Result::TriggeredRule::REPORT_ONLY));
 
-  test::EventReportValidator validator(client_.get());
+  enterprise_connectors::test::EventReportValidator validator(client_.get());
   if (ExpectPostDialogAnalysis()) {
     validator.ExpectSensitiveDataEvent(
         /*url*/ "",
@@ -582,7 +602,7 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyWarnThenCancel) {
       &PrintTestContentAnalysisDelegate::Create,
       ContentAnalysisResponse::Result::TriggeredRule::WARN));
 
-  test::EventReportValidator validator(client_.get());
+  enterprise_connectors::test::EventReportValidator validator(client_.get());
   validator.SetDoneClosure(base::BindLambdaForTesting([this, &validator]() {
     testing::Mock::VerifyAndClearExpectations(client_.get());
     validator.ExpectNoReport();
@@ -657,7 +677,7 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyWarnedThenBypass) {
       ContentAnalysisResponse::Result::TriggeredRule::WARN));
 
   bool bypassed = false;
-  test::EventReportValidator validator(client_.get());
+  enterprise_connectors::test::EventReportValidator validator(client_.get());
   validator.SetDoneClosure(base::BindLambdaForTesting([this, &validator,
                                                        &bypassed]() {
     // Only do this once to avoid infinite recursion since bypassing triggers
@@ -758,7 +778,7 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyBlocked) {
       &PrintTestContentAnalysisDelegate::Create,
       ContentAnalysisResponse::Result::TriggeredRule::BLOCK));
 
-  test::EventReportValidator validator(client_.get());
+  enterprise_connectors::test::EventReportValidator validator(client_.get());
   if (ExpectPostDialogAnalysis()) {
     validator.ExpectSensitiveDataEvent(
         /*url*/ "",
@@ -828,4 +848,4 @@ INSTANTIATE_TEST_SUITE_P(
         /*policy_value=*/testing::Values(kLocalPolicy, kCloudPolicy),
         /*cloud_scan_after_preview_feature_enabled=*/testing::Bool()));
 
-}  // namespace enterprise_connectors
+}  // namespace enterprise_data_protection

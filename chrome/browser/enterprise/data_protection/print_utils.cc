@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/analysis/print_content_analysis_utils.h"
+#include "chrome/browser/enterprise/data_protection/print_utils.h"
 
 #include <cstring>
 #include <utility>
@@ -17,7 +17,7 @@
 #include "printing/printing_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace enterprise_connectors {
+namespace enterprise_data_protection {
 
 namespace {
 
@@ -75,8 +75,9 @@ bool ShouldDoScan(bool post_dialog_feature_enabled,
   }
 }
 
-bool ShouldScan(PrintScanningContext context,
-                const ContentAnalysisDelegate::Data& scanning_data) {
+bool ShouldScan(
+    PrintScanningContext context,
+    const enterprise_connectors::ContentAnalysisDelegate::Data& scanning_data) {
   return ShouldDoScan(
       /*post_dialog_feature_enabled=*/
       scanning_data.settings.cloud_or_local_settings.is_local_analysis()
@@ -86,8 +87,9 @@ bool ShouldScan(PrintScanningContext context,
       context);
 }
 
-void RecordPrintType(PrintScanningContext context,
-                     const ContentAnalysisDelegate::Data& scanning_data) {
+void RecordPrintType(
+    PrintScanningContext context,
+    const enterprise_connectors::ContentAnalysisDelegate::Data& scanning_data) {
   if (scanning_data.settings.cloud_or_local_settings.is_local_analysis()) {
     base::UmaHistogramEnumeration("Enterprise.OnPrint.Local.PrintType",
                                   context);
@@ -115,8 +117,7 @@ void PrintIfAllowedByPolicy(scoped_refptr<base::RefCountedMemory> print_data,
   // passed to the delegate.
   content::WebContents* web_contents = initiator->GetOutermostWebContents();
 
-  absl::optional<ContentAnalysisDelegate::Data> scanning_data =
-      GetPrintAnalysisData(web_contents, context);
+  auto scanning_data = GetPrintAnalysisData(web_contents, context);
 
   if (!scanning_data) {
     std::move(on_verdict).Run(/*allowed=*/true);
@@ -132,7 +133,7 @@ void PrintIfAllowedByPolicy(scoped_refptr<base::RefCountedMemory> print_data,
   // policy configurations to avoid races between the dialog being hidden vs
   // destroyed.
   if (scanning_data->settings.block_until_verdict ==
-      BlockUntilVerdict::kBlock) {
+      enterprise_connectors::BlockUntilVerdict::kBlock) {
     std::move(hide_preview).Run();
   }
 
@@ -140,10 +141,11 @@ void PrintIfAllowedByPolicy(scoped_refptr<base::RefCountedMemory> print_data,
                          std::move(on_verdict));
 }
 
-void PrintIfAllowedByPolicy(scoped_refptr<base::RefCountedMemory> print_data,
-                            content::WebContents* initiator,
-                            ContentAnalysisDelegate::Data scanning_data,
-                            base::OnceCallback<void(bool)> on_verdict) {
+void PrintIfAllowedByPolicy(
+    scoped_refptr<base::RefCountedMemory> print_data,
+    content::WebContents* initiator,
+    enterprise_connectors::ContentAnalysisDelegate::Data scanning_data,
+    base::OnceCallback<void(bool)> on_verdict) {
   // The preview document bytes are copied so that the content analysis code
   // can arbitrarily use them without having to handle ownership issues with
   // other printing code.
@@ -160,8 +162,8 @@ void PrintIfAllowedByPolicy(scoped_refptr<base::RefCountedMemory> print_data,
 
   auto on_scan_result = base::BindOnce(
       [](base::OnceCallback<void(bool should_proceed)> callback,
-         const ContentAnalysisDelegate::Data& data,
-         ContentAnalysisDelegate::Result& result) {
+         const enterprise_connectors::ContentAnalysisDelegate::Data& data,
+         enterprise_connectors::ContentAnalysisDelegate::Result& result) {
         std::move(callback).Run(result.page_result);
       },
       std::move(on_verdict));
@@ -174,20 +176,20 @@ void PrintIfAllowedByPolicy(scoped_refptr<base::RefCountedMemory> print_data,
   // passed to the delegate.
   content::WebContents* web_contents = initiator->GetOutermostWebContents();
 
-  ContentAnalysisDelegate::CreateForWebContents(
+  enterprise_connectors::ContentAnalysisDelegate::CreateForWebContents(
       web_contents, std::move(scanning_data), std::move(on_scan_result),
       safe_browsing::DeepScanAccessPoint::PRINT);
 }
 
-absl::optional<ContentAnalysisDelegate::Data> GetPrintAnalysisData(
-    content::WebContents* web_contents,
-    PrintScanningContext context) {
-  ContentAnalysisDelegate::Data scanning_data;
+absl::optional<enterprise_connectors::ContentAnalysisDelegate::Data>
+GetPrintAnalysisData(content::WebContents* web_contents,
+                     PrintScanningContext context) {
+  enterprise_connectors::ContentAnalysisDelegate::Data scanning_data;
 
-  bool enabled = ContentAnalysisDelegate::IsEnabled(
+  bool enabled = enterprise_connectors::ContentAnalysisDelegate::IsEnabled(
       Profile::FromBrowserContext(web_contents->GetBrowserContext()),
       web_contents->GetOutermostWebContents()->GetLastCommittedURL(),
-      &scanning_data, AnalysisConnector::PRINT);
+      &scanning_data, enterprise_connectors::AnalysisConnector::PRINT);
 
   if (enabled && ShouldScan(context, scanning_data)) {
     // Returning a non-null value here means the user triggered an action
@@ -202,13 +204,15 @@ absl::optional<ContentAnalysisDelegate::Data> GetPrintAnalysisData(
       case PrintScanningContext::kNormalPrintAfterPreview:
       case PrintScanningContext::kBeforePreview:
       case PrintScanningContext::kNormalPrintBeforePrintDocument:
-        scanning_data.reason = ContentAnalysisRequest::PRINT_PREVIEW_PRINT;
+        scanning_data.reason =
+            enterprise_connectors::ContentAnalysisRequest::PRINT_PREVIEW_PRINT;
         break;
 
       case PrintScanningContext::kBeforeSystemDialog:
       case PrintScanningContext::kSystemPrintAfterPreview:
       case PrintScanningContext::kSystemPrintBeforePrintDocument:
-        scanning_data.reason = ContentAnalysisRequest::SYSTEM_DIALOG_PRINT;
+        scanning_data.reason =
+            enterprise_connectors::ContentAnalysisRequest::SYSTEM_DIALOG_PRINT;
         break;
     }
 
@@ -218,4 +222,4 @@ absl::optional<ContentAnalysisDelegate::Data> GetPrintAnalysisData(
   return absl::nullopt;
 }
 
-}  // namespace enterprise_connectors
+}  // namespace enterprise_data_protection
