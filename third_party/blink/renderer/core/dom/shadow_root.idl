@@ -69,7 +69,7 @@ interface ShadowRoot : DocumentFragment {
     Element createElementNS(DOMString? namespaceURI, DOMString qualifiedName,
                             (DOMString or ElementCreationOptions) options);
 
-    [RuntimeEnabled=HTMLUnsafeMethods,RaisesException,MeasureAs=SetHTMLUnsafe] void setHTMLUnsafe(DOMString string);
+    [RuntimeEnabled=HTMLUnsafeMethods,RaisesException,MeasureAs=SetHTMLUnsafe,CEReactions] void setHTMLUnsafe(DOMString string);
 };
 
 ShadowRoot includes DocumentOrShadowRoot;
