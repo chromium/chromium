@@ -410,7 +410,11 @@ bool FormField::ParseFieldSpecifics(
     raw_ptr<AutofillField>* match,
     const RegExLogging& logging,
     MatchingPattern (*projection)(const MatchingPattern&)) {
-  return base::FeatureList::IsEnabled(features::kAutofillParsingPatternProvider)
+  return (base::FeatureList::IsEnabled(
+              features::kAutofillParsingPatternProvider) ||
+          // Some patterns may not exist as an old-school regex because they
+          // require negative matching.
+          pattern == kNoLegacyPattern)
              ? ParseFieldSpecificsWithNewPatterns(scanner, patterns, match,
                                                   logging, projection)
              : ParseFieldSpecificsWithLegacyPattern(scanner, pattern,

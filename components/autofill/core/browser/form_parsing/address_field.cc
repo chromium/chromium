@@ -146,8 +146,10 @@ std::unique_ptr<FormField> AddressField::Parse(
     // Ignore "Address Lookup" field. http://crbug.com/427622
     if (ParseField(scanner, kAddressLookupRe, address_patterns, nullptr,
                    {log_manager, "kAddressLookupRe"}) ||
-        ParseField(scanner, kAddressNameIgnoredRe, address_ignore_patterns,
-                   nullptr, {log_manager, "kAddressNameIgnoreRe"})) {
+        // This pattern fully migrated to the MatchPattern mechanism. There
+        // is no regular expression in autofill_regex_constants.h anymore.
+        ParseField(scanner, kNoLegacyPattern, address_ignore_patterns, nullptr,
+                   {log_manager, "kAddressNameIgnoreRe"})) {
       continue;
       // Ignore email addresses.
     } else if (ParseFieldSpecifics(

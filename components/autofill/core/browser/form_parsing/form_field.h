@@ -27,6 +27,11 @@ class AutofillField;
 class AutofillScanner;
 class LogManager;
 
+// When kNoLegacyPattern is passed to ParseField/ParseFieldSpecifics as the
+// pattern, the functions always default to the MatchPatternRefs, regardless
+// of the status of features::kAutofillParsingPatternProvider.
+inline constexpr std::u16string_view kNoLegacyPattern = u"no-legacy-pattern";
+
 // This helper struct allows passing information into ParseField() and
 // ParseFieldSpecifics() that can be used to create a log entry in
 // chrome://autofill-internals explaining which regular expressions
@@ -150,7 +155,10 @@ class FormField {
       std::vector<std::u16string>* groups = nullptr);
 
   // Attempts to parse a form field with the given pattern.  Returns true on
-  // success and fills |match| with a pointer to the field.
+  // success and fills `match` with a pointer to the field.
+  // When `kNoLegacyPattern` is passed as the `pattern`, the functions always
+  // default to `patterns`, regardless of the status of
+  // `features::kAutofillParsingPatternProvider`.
   static bool ParseField(AutofillScanner* scanner,
                          base::StringPiece16 pattern,
                          base::span<const MatchPatternRef> patterns,
@@ -158,6 +166,9 @@ class FormField {
                          const RegExLogging& logging = {});
 
   // TODO(crbug/1142936): Remove `projection` if it's not needed anymore.
+  // When `kNoLegacyPattern` is passed as the `pattern`, the functions always
+  // default to `patterns`, regardless of the status of
+  // `features::kAutofillParsingPatternProvider`.
   static bool ParseFieldSpecifics(
       AutofillScanner* scanner,
       base::StringPiece16 pattern,

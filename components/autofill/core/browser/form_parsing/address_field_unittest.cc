@@ -340,10 +340,18 @@ TEST_P(AddressFieldTest, ParseTurkishCityStateWithLabelPrecedence) {
 }
 
 // Tests that address name is not misclassified as address.
-TEST_P(AddressFieldTest, NotParseAddressName) {
+TEST_P(AddressFieldTest, NotParseAddressName_TR) {
   AddTextFormFieldData("address", "Adres Başlığı", UNKNOWN_TYPE);
   ClassifyAndVerify(ParseResult::NOT_PARSED, GeoIpCountryCode("TR"),
                     LanguageCode("tr"));
+}
+
+// Tests that an address name does not lead to a classification even if the
+// field mentions the word city.
+TEST_P(AddressFieldTest, NotParseAddressName_BR) {
+  AddTextFormFieldData("-", "nombre de la dirección, city", UNKNOWN_TYPE);
+  ClassifyAndVerify(ParseResult::NOT_PARSED, GeoIpCountryCode("BR"),
+                    LanguageCode("es"));
 }
 
 // Tests that the address components sequence in a label is classified

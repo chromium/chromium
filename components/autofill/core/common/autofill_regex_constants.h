@@ -15,11 +15,6 @@ inline constexpr char16_t kRegionIgnoredRe[] =
     u"province|region|other"
     u"|provincia"       // es
     u"|bairro|suburb";  // pt-BR, pt-PT
-inline constexpr char16_t kAddressNameIgnoredRe[] =
-    u"address.*nickname|address.*label"
-    u"|adres ([İi]sim|başlığı|adı)"  // tr
-    u"|identificação do endereço"    // pt-BR, pt-PT
-    u"|(label|judul|nama) alamat";   // id
 inline constexpr char16_t kCompanyRe[] =
     u"company|business|organization|organisation"
     u"|(?<!con)firma|firmenname"  // de-DE

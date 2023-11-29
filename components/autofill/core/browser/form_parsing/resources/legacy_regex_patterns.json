@@ -218,38 +218,47 @@
   "ADDRESS_NAME_IGNORED": {
     "en": [
       {
-        "positive_pattern": "address.*nickname|address.*label",
+        "positive_pattern": "(?:address|location).*(?:nickname|label|type)",
         "positive_score": 1.1,
-        "negative_pattern": null,
+        "negative_pattern": "e.?mail|re.?type|typed",
         "match_field_attributes": ["LABEL", "NAME"],
-        "match_field_input_types": ["TEXT"]
+        "match_field_input_types": ["TEXT", "SELECT", "SEARCH"]
+      }
+    ],
+    "es": [
+      {
+        "positive_pattern": "(?:alias|identificador|nombre).*dirección",
+        "positive_score": 1.1,
+        "negative_pattern": "e.?mail|correo|apellido|nombres",
+        "match_field_attributes": ["LABEL", "NAME"],
+        "match_field_input_types": ["TEXT", "SELECT", "SEARCH"]
       }
     ],
     "tr": [
       {
-        "positive_pattern": "adres ([İi]sim|başlığı|adı)",
+        "positive_pattern": "adres (?:[İi]sim|başlığı|adı)",
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],
-        "match_field_input_types": ["TEXT"]
+        "match_field_input_types": ["TEXT", "SELECT", "SEARCH"]
       }
     ],
     "pt": [
       {
-        "positive_pattern": "identificação do endereço",
+        "positive_pattern": "(?:tipo|nome|apelido|identificação|título).*(?:endereço|local da entrega)",
         "positive_score": 1.1,
-        "negative_pattern": null,
+        "negative_pattern": "e.?mail|eletrónico|usuário|nomes",
         "match_field_attributes": ["LABEL", "NAME"],
-        "match_field_input_types": ["TEXT"]
+        "match_field_input_types": ["TEXT", "SELECT", "SEARCH"]
       }
     ],
     "id": [
       {
-        "positive_pattern": "(label|judul|nama) alamat",
+        "positive_pattern": "(?:label|judul|nama) alamat",
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],
-        "match_field_input_types": ["TEXT"]
+        "match_field_input_types": ["TEXT", "SELECT", "SEARCH"]
       }
     ]
   },
