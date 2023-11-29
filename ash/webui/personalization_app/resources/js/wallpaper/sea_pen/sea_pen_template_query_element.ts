@@ -92,7 +92,7 @@ export class SeaPenTemplateQueryElement extends WithPersonalizationStore {
   }
 
   private seaPenTemplate_: SeaPenTemplate;
-  private selectedOptions_: Map<string, string>;
+  private selectedOptions_: Map<string, SeaPenOption>;
   private templateTokens_: TemplateToken[];
   private options_: SeaPenOption[]|null;
   private selectedChip_: ChipToken|null;
@@ -118,12 +118,11 @@ export class SeaPenTemplateQueryElement extends WithPersonalizationStore {
     this.options_ = this.seaPenTemplate_.options.get(this.selectedChip_.id)!;
   }
 
-  private onClickOption_(event: Event) {
-    const eventTarget = event.currentTarget as HTMLElement;
-    const newValue = eventTarget.getAttribute('value') as string;
+  private onClickOption_(event: Event&{model: {option: SeaPenOption}}) {
+    const option = event.model.option;
     // Notifies the selected chip's translation has changed to the UI.
-    this.set('selectedChip_.translation', newValue);
-    this.selectedOptions_.set(this.selectedChip_!.id, newValue);
+    this.set('selectedChip_.translation', option.translation);
+    this.selectedOptions_.set(this.selectedChip_!.id, option);
     this.templateTokens_ = this.computeTemplateTokens_(
         this.seaPenTemplate_, this.selectedOptions_);
   }
@@ -133,10 +132,9 @@ export class SeaPenTemplateQueryElement extends WithPersonalizationStore {
     this.seaPenTemplate_.options.forEach((options, chip) => {
       if (isNonEmptyArray(options)) {
         const option = options[getRandomInt(options.length)];
-        this.selectedOptions_.set(chip, option.translation);
+        this.selectedOptions_.set(chip, option);
       } else {
         console.warn('empty options for', this.seaPenTemplate_.id);
-        this.selectedOptions_.set(chip, '');
       }
     });
     if (this.selectedChip_) {
@@ -144,21 +142,20 @@ export class SeaPenTemplateQueryElement extends WithPersonalizationStore {
       // option. Notifies the UI to update its value.
       this.set(
           `selectedChip_.translation`,
-          this.selectedOptions_.get(this.selectedChip_.id));
+          this.selectedOptions_.get(this.selectedChip_.id)?.translation);
     }
     this.templateTokens_ = this.computeTemplateTokens_(
         this.seaPenTemplate_, this.selectedOptions_);
   }
 
   private onSeaPenTemplateChanged_(template: SeaPenTemplate) {
-    const selectedOptions = new Map<string, string>();
+    const selectedOptions = new Map<string, SeaPenOption>();
     template.options.forEach((options, chip) => {
       if (isNonEmptyArray(options)) {
         const option = options[0];
-        selectedOptions.set(chip, option.translation);
+        selectedOptions.set(chip, option);
       } else {
         console.warn('empty options for', template.id);
-        selectedOptions.set(chip, '');
       }
     });
     this.selectedChip_ = null;
@@ -169,13 +166,14 @@ export class SeaPenTemplateQueryElement extends WithPersonalizationStore {
   }
 
   private computeTemplateTokens_(
-      template: SeaPenTemplate, selectedOptions: Map<string, string>) {
+      template: SeaPenTemplate, selectedOptions: Map<string, SeaPenOption>) {
     const strs = parseTemplateText(template.text);
     const tokens: TemplateToken[] = [];
     strs.forEach(str => {
       if (isChip(str)) {
         tokens.push({
-          translation: isChip(str) ? selectedOptions.get(str) || '' : str,
+          translation:
+              isChip(str) ? selectedOptions.get(str)?.translation || '' : str,
           id: str,
         });
       } else {

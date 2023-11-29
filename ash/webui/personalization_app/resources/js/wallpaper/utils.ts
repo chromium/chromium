@@ -257,11 +257,11 @@ export function getSampleSeaPenTemplates(): SeaPenTemplate[] {
           '<city>',
           [
             {
-              value: 'Paris',
+              value: 'Test - Paris',
               translation: loadTimeData.getString('templateOptionParis'),
             },
             {
-              value: 'New York',
+              value: 'Test - New York',
               translation: loadTimeData.getString('templateOptionNewYork'),
             },
           ],
@@ -270,11 +270,11 @@ export function getSampleSeaPenTemplates(): SeaPenTemplate[] {
           '<style>',
           [
             {
-              value: 'photography',
+              value: 'Test - photography',
               translation: loadTimeData.getString('templateOptionPhotography'),
             },
             {
-              value: 'watercolor',
+              value: 'Test - watercolor',
               translation: loadTimeData.getString('templateOptionWatercolor'),
             },
           ],
