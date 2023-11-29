@@ -207,10 +207,10 @@ void ArcAppTest::WaitForRemoveAllApps() {
 void ArcAppTest::CreateFakeAppsAndPackages() {
   arc::mojom::AppInfo app;
   // Make sure we have enough data for test.
-  for (int i = 0; i < 3; ++i) {
+  for (int i = 1; i <= 5; ++i) {
     arc::mojom::AppInfoPtr app_info = arc::mojom::AppInfo::New(
         base::StringPrintf("Fake App %d", i),
-        base::StringPrintf("fake.app.%d", i),
+        base::StringPrintf("fake.package.name%d", i),
         base::StringPrintf("fake.app.%d.activity", i), false /* sticky */);
     app_info->app_category = arc::mojom::AppCategory::kUndefined;
     fake_apps_.emplace_back(std::move(app_info));
@@ -302,7 +302,7 @@ void ArcAppTest::CreateFakeAppsAndPackages() {
       arc::mojom::PackageLocaleInfo::New(kSupportedLocales5,
                                          kSelectedLocale5)));
 
-  for (int i = 0; i < 3; ++i) {
+  for (int i = 1; i <= 5; ++i) {
     arc::mojom::ShortcutInfo shortcut_info;
     shortcut_info.name = base::StringPrintf("Fake Shortcut %d", i);
     shortcut_info.package_name = base::StringPrintf("fake.shortcut.%d", i);
