@@ -10,7 +10,6 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
-#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 
 namespace content_settings {
 
@@ -31,26 +30,15 @@ void CookieSettingsPolicyHandler::ApplyPolicySettings(
         static_cast<int>(third_party_cookie_blocking->GetBool()
                              ? CookieControlsMode::kBlockThirdParty
                              : CookieControlsMode::kOff));
-    // Copy only the managed state of cookie controls to privacy sandbox while
-    // privacy sandbox is an experiment.
-    // TODO(crbug.com/1304044): Create a dedicated policy.
-    prefs->SetBoolean(prefs::kPrivacySandboxApisEnabled,
-                      !third_party_cookie_blocking->GetBool());
-    prefs->SetBoolean(prefs::kPrivacySandboxApisEnabledV2,
-                      !third_party_cookie_blocking->GetBool());
   }
 
   // If there is a Cookie BLOCK default content setting, then this implicitly
-  // overrides several other preferences. Pre-M1 Privacy Sandbox should be
-  // disabled, and 3PC are effectively blocked. Setting this here allows the
-  // UI to easily reflect that.
+  // also blocks 3PC.
   const base::Value* default_cookie_setting = policies.GetValue(
       policy::key::kDefaultCookiesSetting, base::Value::Type::INTEGER);
   if (default_cookie_setting &&
       static_cast<ContentSetting>(default_cookie_setting->GetInt()) ==
           CONTENT_SETTING_BLOCK) {
-    prefs->SetBoolean(prefs::kPrivacySandboxApisEnabled, false);
-    prefs->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, false);
     prefs->SetInteger(prefs::kCookieControlsMode,
                       static_cast<int>(CookieControlsMode::kBlockThirdParty));
   }
