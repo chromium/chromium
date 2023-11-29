@@ -1247,14 +1247,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropForbiddenUrlFromOutside) {
 
 // Scenario: starting a drag in left frame
 // Test coverage: dragstart DOM event, dragstart data passed to the OS.
-//
-// TODO(https://crbug.com/1444100): Re-enable the test once fixed.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) && defined(ADDRESS_SANITIZER)
-#define MAYBE_DragStartInFrame DISABLED_DragStartInFrame
-#else
-#define MAYBE_DragStartInFrame DragStartInFrame
-#endif
-IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_DragStartInFrame) {
+IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DragStartInFrame) {
   std::string frame_site = use_cross_site_subframe() ? "b.test" : "a.test";
   ASSERT_TRUE(NavigateToTestPage("a.test"));
   ASSERT_TRUE(NavigateLeftFrame(frame_site, "image_source.html"));
