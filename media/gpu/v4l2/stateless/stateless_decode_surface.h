@@ -12,8 +12,7 @@ namespace media {
 
 class StatelessDecodeSurface : public base::RefCounted<StatelessDecodeSurface> {
  public:
-  StatelessDecodeSurface(scoped_refptr<VideoFrame> frame);
-  StatelessDecodeSurface();
+  StatelessDecodeSurface(uint32_t frame_id);
 
   StatelessDecodeSurface(const StatelessDecodeSurface&) = delete;
   StatelessDecodeSurface& operator=(const StatelessDecodeSurface&) = delete;
@@ -23,7 +22,9 @@ class StatelessDecodeSurface : public base::RefCounted<StatelessDecodeSurface> {
   friend class base::RefCounted<StatelessDecodeSurface>;
 
  private:
-  scoped_refptr<VideoFrame> video_frame_;
+  // Identify this surface so that it can be matched up the the uncompressed
+  // buffer when it is done being decompressed.
+  const uint32_t frame_id_;
 };
 
 }  // namespace media

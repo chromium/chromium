@@ -162,13 +162,30 @@ V4L2StatelessVideoDecoder::CreateSurface() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DVLOGF(4);
 
-  return base::MakeRefCounted<StatelessDecodeSurface>();
+  // This function is called before decoding of the bitstream. A place to
+  // store the decoded frame should be available before the decode occurs. But
+  // that is not how the V4L2 stateless model works. The compressed buffer queue
+  // is independent of the decoded frame queue.
+  // The two queues need to be matched up. The metadata associated with the
+  // compressed data needs to be tracked. In V4L2 m2m model this is done by
+  // copying the timestamps from the compressed buffer to the decoded buffer.
+  //
+  // The surface needs to match up the decompressed buffer to the originating
+  // metadata. This can't be done with |bitstream_id| because |bitstream_id| is
+  // a per packet, not per frame, designator. But it is used to match up the
+  // incoming timestamp with the displayed frame.
+
+  const uint32_t frame_id =
+      frame_id_generator_.GenerateNextId().GetUnsafeValue();
+
+  return base::MakeRefCounted<StatelessDecodeSurface>(frame_id);
 }
 
 bool V4L2StatelessVideoDecoder::SubmitFrame(void* ctrls,
                                             const uint8_t* data,
                                             size_t size,
-                                            int32_t bitstream_id) {
+                                            uint32_t frame_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DVLOGF(4);
   if (!output_queue_) {
     if (!input_queue_->PrepareBuffers()) {

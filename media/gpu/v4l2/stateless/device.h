@@ -200,6 +200,6 @@ class MEDIA_GPU_EXPORT Device : public base::RefCountedThreadSafe<Device> {
   bool OpenDevice();
 };
 
-}  //  namespace media
+}  // namespace media
 
 #endif  // MEDIA_GPU_V4L2_STATELESS_DEVICE_H_

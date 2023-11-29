@@ -6,10 +6,8 @@
 
 namespace media {
 
-StatelessDecodeSurface::StatelessDecodeSurface(scoped_refptr<VideoFrame> frame)
-    : video_frame_(std::move(frame)) {}
-
-StatelessDecodeSurface::StatelessDecodeSurface() {}
+StatelessDecodeSurface::StatelessDecodeSurface(uint32_t frame_id)
+    : frame_id_(frame_id) {}
 
 StatelessDecodeSurface::~StatelessDecodeSurface() {}
 
