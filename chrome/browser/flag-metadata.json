@@ -520,6 +520,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "autofill-content-editables",
+    "owners": [ "jkeitel@chromium.org", "schwering@chromium.org" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "autofill-disable-profile-updates",
     "owners": ["sebsg@chromium.org"],
     "expiry_milestone": 125

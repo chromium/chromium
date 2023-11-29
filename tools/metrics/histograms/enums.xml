@@ -33855,6 +33855,7 @@ from previous Chrome versions.
   <int value="-1408288176" label="enable-account-consistency"/>
   <int value="-1407904527"
       label="OmniboxRemoveSuggestionHeaderCapitalization:disabled"/>
+  <int value="-1407251816" label="AutofillContentEditables:enabled"/>
   <int value="-1406630685" label="AutofillUndo:disabled"/>
   <int value="-1405349891" label="PictureInPictureAPI:enabled"/>
   <int value="-1405048637" label="OfflinePagesResourceBasedSnapshot:enabled"/>
@@ -40518,6 +40519,7 @@ from previous Chrome versions.
       label="AutofillEnableSaveCardLoadingAndConfirmation:disabled"/>
   <int value="1782808560"
       label="OmniboxUseExistingAutocompleteClient:disabled"/>
+  <int value="1783270679" label="AutofillContentEditables:disabled"/>
   <int value="1783293530" label="disallow-autofill-sync-credential"/>
   <int value="1783679416" label="PhoneHubOnboardingNotifierRevamp:disabled"/>
   <int value="1783837132" label="enable-threaded-gpu-rasterization"/>
