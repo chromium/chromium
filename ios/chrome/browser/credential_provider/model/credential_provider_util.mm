@@ -144,7 +144,9 @@ void FetchFaviconForURLToPath(FaviconLoader* favicon_loader,
                             /* continue_fetching */ YES);
   } else {
     base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock()},
+        FROM_HERE,
+        {base::MayBlock(), base::ThreadPolicy::PREFER_BACKGROUND,
+         base::TaskPriority::BEST_EFFORT},
         base::BindOnce(&ShouldContinueFetchingFavicon),
         base::BindOnce(&ContinueFetchingFavicon, favicon_loader->AsWeakPtr(),
                        site_url, filename, fallback_to_google_server));
