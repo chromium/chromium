@@ -21,8 +21,9 @@ TabOrganizationResponse::Organization::Organization(
 TabOrganizationResponse::Organization::~Organization() = default;
 
 TabOrganizationResponse::TabOrganizationResponse(
-    std::vector<TabOrganizationResponse::Organization> organizations_)
-    : organizations(organizations_) {}
+    std::vector<TabOrganizationResponse::Organization> organizations_,
+    std::u16string feedback_id_)
+    : organizations(organizations_), feedback_id(feedback_id_) {}
 TabOrganizationResponse::~TabOrganizationResponse() = default;
 
 TabOrganizationRequest::TabOrganizationRequest(

@@ -25,10 +25,12 @@ struct TabOrganizationResponse {
     const std::vector<TabData::TabID> tab_ids;
   };
 
-  explicit TabOrganizationResponse(std::vector<Organization> organizations_);
+  TabOrganizationResponse(std::vector<Organization> organizations_,
+                          std::u16string feedback_id_ = u"");
   ~TabOrganizationResponse();
 
   const std::vector<Organization> organizations;
+  const std::u16string feedback_id;
 };
 
 class TabOrganizationRequest {

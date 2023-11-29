@@ -25,6 +25,7 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
       'saveRecentlyClosedExpandedPref',
       'setTabIndex',
       'startTabGroupTutorial',
+      'triggerFeedback',
       'triggerSync',
       'triggerSignIn',
       'openHelpPage',
@@ -87,6 +88,10 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
 
   startTabGroupTutorial() {
     this.methodCalled('startTabGroupTutorial');
+  }
+
+  triggerFeedback(sessionId: number) {
+    this.methodCalled('triggerFeedback', [sessionId]);
   }
 
   triggerSync() {

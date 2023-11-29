@@ -61,8 +61,13 @@ void OnTabOrganizationModelExecutionResult(
   }
 
   if (organizations.size() > 0) {
+    const std::string server_execution_id = log_entry->log_ai_data_request()
+                                                ->mutable_model_execution_info()
+                                                ->server_execution_id();
+
     std::unique_ptr<TabOrganizationResponse> local_response =
-        std::make_unique<TabOrganizationResponse>(std::move(organizations));
+        std::make_unique<TabOrganizationResponse>(
+            std::move(organizations), base::UTF8ToUTF16(server_execution_id));
 
     std::move(on_completion).Run(std::move(local_response));
   } else {

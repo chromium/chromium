@@ -82,6 +82,7 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
   void SaveRecentlyClosedExpandedPref(bool expanded) override;
   void SetTabIndex(int32_t index) override;
   void StartTabGroupTutorial() override;
+  void TriggerFeedback(int32_t session_id) override;
   void TriggerSync() override;
   void TriggerSignIn() override;
   void OpenHelpPage() override;

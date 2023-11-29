@@ -230,6 +230,9 @@ interface PageHandler {
   // Force trigger the tab group tutorial.
   StartTabGroupTutorial();
 
+  // Initiate the feedback flow.
+  TriggerFeedback(int32 session_id);
+
   // Initiate the sync flow.
   TriggerSync();
 

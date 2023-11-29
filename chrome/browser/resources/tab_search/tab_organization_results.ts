@@ -153,7 +153,10 @@ export class TabOrganizationResultsElement extends PolymerElement {
   }
 
   private onThumbsDownClick_() {
-    // TODO(emshack): Implement this
+    this.dispatchEvent(new CustomEvent('thumbs-down-click', {
+      bubbles: true,
+      composed: true,
+    }));
   }
 }
 

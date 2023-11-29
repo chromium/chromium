@@ -42,6 +42,7 @@ class TabOrganizationSession : public TabOrganization::Observer {
     return tab_organizations_;
   }
   ID session_id() const { return session_id_; }
+  std::u16string feedback_id() const { return feedback_id_; }
 
   static std::unique_ptr<TabOrganizationSession> CreateSessionForBrowser(
       const Browser* browser);
@@ -85,6 +86,7 @@ class TabOrganizationSession : public TabOrganization::Observer {
   std::unique_ptr<TabOrganizationRequest> request_;
   TabOrganizations tab_organizations_;
   ID session_id_;
+  std::u16string feedback_id_;
 
   base::ObserverList<Observer>::Unchecked observers_;
 };

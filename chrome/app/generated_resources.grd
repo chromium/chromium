@@ -9056,6 +9056,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_TOOLTIP_TAB_ORGANIZE_CLOSE" desc="The tooltip for the close button within the Tab Organization button." translateable="false">
         Close
       </message>
+      <message name="IDS_TAB_ORGANIZATION_FEEDBACK_PLACEHOLDER" desc="Placeholder text for the Tab Organization feedback dialog." translateable="false">
+        Send feedback for tab organization
+      </message>
       <if expr="use_titlecase">
         <message name="IDS_TAB_ORGANIZE_MENU" desc="In Title Case: The text label for all tab organization menu items." translateable="false">
           Organize Tabs
