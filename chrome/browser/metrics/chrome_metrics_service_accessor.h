@@ -100,6 +100,10 @@ namespace tpcd::experiment {
 class ExperimentManagerImpl;
 }
 
+namespace SearchEngineChoiceClientSideTrial {
+void RegisterSyntheticTrials();
+}
+
 // This class limits and documents access to metrics service helper methods.
 // Since these methods are private, each user has to be explicitly declared
 // as a 'friend' below.
@@ -154,6 +158,7 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class WebUITabStripFieldTrial;
   friend class feed::FeedServiceDelegateImpl;
   friend class FirstRunService;
+  friend void SearchEngineChoiceClientSideTrial::RegisterSyntheticTrials();
   friend class browser_sync::DeviceInfoSyncClientImpl;
   friend class feed::WebFeedSubscriptionCoordinator;
   friend class HttpsFirstModeService;
