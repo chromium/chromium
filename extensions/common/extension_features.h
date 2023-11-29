@@ -38,6 +38,7 @@ BASE_DECLARE_FEATURE(kApiContentSettingsClipboard);
 BASE_DECLARE_FEATURE(kApiEnterpriseKioskInput);
 BASE_DECLARE_FEATURE(kApiReadingList);
 BASE_DECLARE_FEATURE(kApiUserScripts);
+BASE_DECLARE_FEATURE(kApiOdfsConfigPrivate);
 BASE_DECLARE_FEATURE(kRestrictFileURLNavigation);
 
 ///////////////////////////////////////////////////////////////////////////////

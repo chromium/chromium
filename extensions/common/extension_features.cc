@@ -31,6 +31,11 @@ BASE_FEATURE(kApiUserScripts,
              "ApiUserScripts",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls the availability of the odfsConfigPrivate API.
+BASE_FEATURE(kApiOdfsConfigPrivate,
+             "ApiOdfsConfigPrivate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls the availability of navigation to file URLs.
 BASE_FEATURE(kRestrictFileURLNavigation,
              "RestrictFileURLNavigation",

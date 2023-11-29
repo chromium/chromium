@@ -18778,6 +18778,8 @@ Called by update_extension_histograms.py.-->
   <int value="1845" label="OS_DIAGNOSTICS_CREATEFANROUTINE"/>
   <int value="1846" label="OS_DIAGNOSTICS_ISFANROUTINEARGUMENTSUPPORTED"/>
   <int value="1847" label="AUTOTESTPRIVATE_OVERRIDEORCARESPONSE"/>
+  <int value="1848" label="ODFSCONFIGPRIVATE_GETMOUNT"/>
+  <int value="1849" label="ODFSCONFIGPRIVATE_GETACCOUNTRESTRICTIONS"/>
 </enum>
 
 <enum name="ExtensionInProgressRequestState">
@@ -19203,6 +19205,7 @@ Called by update_extension_permission.py.-->
   <int value="253" label="kUserScripts"/>
   <int value="254" label="kChromeOSBluetoothPeripheralsInfo"/>
   <int value="255" label="kEnterpriseKioskInput"/>
+  <int value="256" label="kOdfsConfigPrivate"/>
 </enum>
 
 <enum name="ExtensionPointEnableState">

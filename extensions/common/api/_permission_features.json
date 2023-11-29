@@ -503,6 +503,14 @@
       "4E09F1C1EEC4D27F1F7DF18BA3643307107A7C41"   // http://crbug.com/1483151
     ]
   },
+  "odfsConfigPrivate": {
+    "channel": "dev",
+    "extension_types": ["extension"],
+    "platforms": ["chromeos", "lacros"],
+    "allowlist": [
+      "1B1388598AC9A5608F43DE38316D6FB5FAD3574A"  // ODFS extension
+    ]
+  },
   "offscreen": [{
     "channel": "stable",
     "extension_types": ["extension"],
