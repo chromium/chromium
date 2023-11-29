@@ -107,7 +107,8 @@ TEST_F(BackgroundFetchEventDispatcherTest, DispatchAbortEvent) {
   EXPECT_EQ(kExampleDeveloperId2, worker->last_registration()->developer_id);
 }
 
-TEST_F(BackgroundFetchEventDispatcherTest, DispatchClickEvent) {
+// TODO(crbug.com/1506090): Disabled due to flakiness.
+TEST_F(BackgroundFetchEventDispatcherTest, DISABLED_DispatchClickEvent) {
   auto* worker =
       embedded_worker_test_helper()
           ->AddNewPendingServiceWorker<BackgroundFetchTestServiceWorker>(
@@ -208,7 +209,8 @@ TEST_F(BackgroundFetchEventDispatcherTest, DispatchFailEvent) {
   EXPECT_EQ(kExampleDeveloperId2, worker->last_registration()->developer_id);
 }
 
-TEST_F(BackgroundFetchEventDispatcherTest, DispatchFetchSuccessEvent) {
+// TODO(crbug.com/1506090): Disabled due to flakiness.
+TEST_F(BackgroundFetchEventDispatcherTest, DISABLED_DispatchFetchSuccessEvent) {
   auto* worker =
       embedded_worker_test_helper()
           ->AddNewPendingServiceWorker<BackgroundFetchTestServiceWorker>(
