@@ -341,10 +341,19 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
             mPlaybackHooks.initVoices();
         }
 
+        String playbackLanguage = getLanguageForNewPlayback(tab);
+        var voices = mPlaybackHooks.getVoicesFor(playbackLanguage);
+        // TODO: Don't show entrypoints for unsupported languages
+        if (voices == null || voices.isEmpty()) {
+            var promise = new Promise<Playback>();
+            promise.reject(new Exception("Unsupported language"));
+            return promise;
+        }
+
         PlaybackArgs args =
                 new PlaybackArgs(
                         stripUserData(tab.getUrl()).getSpec(),
-                        getLanguageForNewPlayback(tab),
+                        playbackLanguage,
                         mPlaybackHooks.getPlaybackVoiceList(
                                 ReadAloudPrefs.getVoices(getPrefService())),
                         /* dateModifiedMsSinceEpoch= */ 0);
