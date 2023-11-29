@@ -90,9 +90,20 @@ class GPU_GLES2_EXPORT GLFormatCaps {
       viz::SharedImageFormat format,
       int plane_index) const;
 
+  bool ext_texture_rg() const { return ext_texture_rg_; }
+  bool ext_texture_norm16() const { return ext_texture_norm16_; }
+  bool disable_r8_shared_images() const { return disable_r8_shared_images_; }
+
  private:
+  // Return fallback gl format if the GL data, internal, tex storage format is
+  // not supported.
+  GLenum GetFallbackFormatIfNotSupported(GLenum gl_format) const;
+
   bool angle_rgbx_internal_format_ = false;
   bool oes_texture_float_available_ = false;
+  bool ext_texture_rg_ = false;
+  bool ext_texture_norm16_ = false;
+  bool disable_r8_shared_images_ = false;
 };
 
 // Following functions return the appropriate Vulkan format for a

@@ -6,12 +6,13 @@
 
 #include <algorithm>
 #include <list>
+#include <optional>
 
 #include "base/feature_list.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/service/service_utils.h"
-#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
+#include "gpu/command_buffer/service/shared_image/gl_texture_holder.h"
 #include "gpu/config/gpu_preferences.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
@@ -28,75 +29,48 @@ BASE_FEATURE(kAllowEs3F16CoreTypeForGlSi,
              "AllowEs3F16CoreTypeForGlSi",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+std::optional<viz::SharedImageFormat> GetFallbackFormatIfNotSupported(
+    viz::SharedImageFormat plane_format,
+    const GLFormatCaps& caps) {
+  if (plane_format == viz::SinglePlaneFormat::kR_8 &&
+      (!caps.ext_texture_rg() || caps.disable_r8_shared_images())) {
+    // Fallback to LUMINANCE_8 for R_8 format.
+    return viz::SinglePlaneFormat::kLUMINANCE_8;
+  }
+  if (plane_format == viz::SinglePlaneFormat::kRG_88 &&
+      !caps.ext_texture_rg()) {
+    // No fallback for RG_88 format.
+    return std::nullopt;
+  }
+  if ((plane_format == viz::SinglePlaneFormat::kR_16 ||
+       plane_format == viz::SinglePlaneFormat::kRG_1616) &&
+      !caps.ext_texture_norm16()) {
+    // No fallback for R_16, RG_1616 format.
+    return std::nullopt;
+  }
+  return plane_format;
+}
+
 // Returns a vector of FormatInfo for multiplanar formats. The returned
 // FormatInfos depend on the plane config and channel format of the multiplanar
 // format passed in.
 std::vector<GLCommonImageBackingFactory::FormatInfo> GetMultiPlaneFormatInfo(
     const std::map<viz::SharedImageFormat,
                    GLCommonImageBackingFactory::FormatInfo>& supported_formats,
+    const GLFormatCaps& gl_format_caps,
     viz::SharedImageFormat format) {
-  auto channel_format = format.channel_format();
-  auto plane_config = format.plane_config();
   std::vector<viz::SharedImageFormat> plane_formats;
-  switch (channel_format) {
-    // If R_8 and RG_88 are supported then 8 bit YUV formats should also work.
-    case viz::SharedImageFormat::ChannelFormat::k8:
-      switch (plane_config) {
-        case viz::SharedImageFormat::PlaneConfig::kY_UV:
-          plane_formats = {viz::SinglePlaneFormat::kR_8,
-                           viz::SinglePlaneFormat::kRG_88};
-          break;
-        case viz::SharedImageFormat::PlaneConfig::kY_UV_A:
-          plane_formats = {viz::SinglePlaneFormat::kR_8,
-                           viz::SinglePlaneFormat::kRG_88,
-                           viz::SinglePlaneFormat::kR_8};
-          break;
-        case viz::SharedImageFormat::PlaneConfig::kY_U_V:
-        case viz::SharedImageFormat::PlaneConfig::kY_V_U:
-          plane_formats = {viz::SinglePlaneFormat::kR_8,
-                           viz::SinglePlaneFormat::kR_8,
-                           viz::SinglePlaneFormat::kR_8};
-          break;
-      }
-      break;
-
-    // If R_16 and RG_1616 are supported then 10/16 bit YUV formats should also
-    // work.
-    case viz::SharedImageFormat::ChannelFormat::k10:
-    case viz::SharedImageFormat::ChannelFormat::k16:
-      switch (plane_config) {
-        case viz::SharedImageFormat::PlaneConfig::kY_UV:
-          plane_formats = {viz::SinglePlaneFormat::kR_16,
-                           viz::SinglePlaneFormat::kRG_1616};
-          break;
-        case viz::SharedImageFormat::PlaneConfig::kY_UV_A:
-          // Supporting 10/16 bit Y_UV_A plane config is not required as there
-          // is no use-case for it.
-          break;
-        case viz::SharedImageFormat::PlaneConfig::kY_U_V:
-        case viz::SharedImageFormat::PlaneConfig::kY_V_U:
-          plane_formats = {viz::SinglePlaneFormat::kR_16,
-                           viz::SinglePlaneFormat::kR_16,
-                           viz::SinglePlaneFormat::kR_16};
-          break;
-      }
-      break;
-
-    // If LUMINANCE_F16 is supported then 16 float YUV formats should also work.
-    case viz::SharedImageFormat::ChannelFormat::k16F:
-      switch (plane_config) {
-        // UV plane is unsupported with 16F formats.
-        case viz::SharedImageFormat::PlaneConfig::kY_UV:
-        case viz::SharedImageFormat::PlaneConfig::kY_UV_A:
-          break;
-        case viz::SharedImageFormat::PlaneConfig::kY_U_V:
-        case viz::SharedImageFormat::PlaneConfig::kY_V_U:
-          plane_formats = {viz::SinglePlaneFormat::kLUMINANCE_F16,
-                           viz::SinglePlaneFormat::kLUMINANCE_F16,
-                           viz::SinglePlaneFormat::kLUMINANCE_F16};
-          break;
-      }
-      break;
+  for (int plane = 0; plane < format.NumberOfPlanes(); plane++) {
+    viz::SharedImageFormat plane_format =
+        GLTextureHolder::GetPlaneFormat(format, plane);
+    auto fallback_format =
+        GetFallbackFormatIfNotSupported(plane_format, gl_format_caps);
+    if (!fallback_format) {
+      // Could not find supported single plane format for the requested
+      // multiplane format.
+      return {};
+    }
+    plane_formats.emplace_back(fallback_format.value());
   }
 
   std::vector<GLCommonImageBackingFactory::FormatInfo> plane_infos;
@@ -124,6 +98,7 @@ GLCommonImageBackingFactory::GLCommonImageBackingFactory(
       use_passthrough_(gpu_preferences.use_passthrough_cmd_decoder &&
                        gles2::PassthroughCommandDecoderSupported()),
       workarounds_(workarounds),
+      gl_format_caps_(GLFormatCaps(feature_info)),
       use_webgpu_adapter_(gpu_preferences.use_webgpu_adapter),
       progress_reporter_(progress_reporter) {
   gl::GLApi* api = gl::g_current_gl_context;
@@ -137,14 +112,14 @@ GLCommonImageBackingFactory::GLCommonImageBackingFactory(
   bool enable_texture_storage =
       feature_info->feature_flags().ext_texture_storage;
   const gles2::Validators* validators = feature_info->validators();
-  GLFormatCaps caps = GLFormatCaps(feature_info);
   for (auto format : viz::SinglePlaneFormat::kAll) {
     // BG5_565 is not supported for historical reasons.
     if (format == viz::SinglePlaneFormat::kBGR_565) {
       continue;
     }
     const GLFormatDesc format_desc =
-        caps.ToGLFormatDescOverrideHalfFloatType(format, /*plane_index=*/0);
+        gl_format_caps_.ToGLFormatDescOverrideHalfFloatType(format,
+                                                            /*plane_index=*/0);
     const GLuint image_internal_format = format_desc.image_internal_format;
     const GLenum gl_format = format_desc.data_format;
     CHECK_NE(gl_format, static_cast<GLenum>(GL_ZERO));
@@ -208,7 +183,7 @@ std::vector<GLCommonImageBackingFactory::FormatInfo>
 GLCommonImageBackingFactory::GetFormatInfo(
     viz::SharedImageFormat format) const {
   if (format.is_multi_plane()) {
-    return GetMultiPlaneFormatInfo(supported_formats_, format);
+    return GetMultiPlaneFormatInfo(supported_formats_, gl_format_caps_, format);
   }
 
   auto iter = supported_formats_.find(format);

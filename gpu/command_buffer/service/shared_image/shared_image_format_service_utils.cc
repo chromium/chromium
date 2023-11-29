@@ -18,6 +18,10 @@
 
 namespace gpu {
 
+using PlaneConfig = viz::SharedImageFormat::PlaneConfig;
+using ChannelFormat = viz::SharedImageFormat::ChannelFormat;
+using Subsampling = viz::SharedImageFormat::Subsampling;
+
 namespace {
 
 #if BUILDFLAG(ENABLE_VULKAN)
@@ -106,13 +110,13 @@ class SharedImageFormatRestrictedUtilsAccessor {
     }
 
     switch (format.channel_format()) {
-      case viz::SharedImageFormat::ChannelFormat::k8:
+      case ChannelFormat::k8:
         return GL_UNSIGNED_BYTE;
-      case viz::SharedImageFormat::ChannelFormat::k10:
+      case ChannelFormat::k10:
         return GL_UNSIGNED_SHORT;
-      case viz::SharedImageFormat::ChannelFormat::k16:
+      case ChannelFormat::k16:
         return GL_UNSIGNED_SHORT;
-      case viz::SharedImageFormat::ChannelFormat::k16F:
+      case ChannelFormat::k16F:
         return GL_HALF_FLOAT_OES;
     }
   }
@@ -148,20 +152,20 @@ class SharedImageFormatRestrictedUtilsAccessor {
     int num_channels = format.NumChannelsInPlane(plane_index);
     DCHECK_LE(num_channels, 2);
     switch (format.channel_format()) {
-      case viz::SharedImageFormat::ChannelFormat::k8:
+      case ChannelFormat::k8:
         return num_channels == 2 ? GL_RG_EXT : GL_RED_EXT;
-      case viz::SharedImageFormat::ChannelFormat::k10:
-      case viz::SharedImageFormat::ChannelFormat::k16:
+      case ChannelFormat::k10:
+      case ChannelFormat::k16:
         return num_channels == 2 ? GL_RG16_EXT : GL_R16_EXT;
-      case viz::SharedImageFormat::ChannelFormat::k16F:
+      case ChannelFormat::k16F:
         return num_channels == 2 ? GL_RG16F_EXT : GL_R16F_EXT;
     }
   }
 
   // Returns texture storage format for given `format`.
   static GLenum TextureStorageFormat(viz::SharedImageFormat format,
-                                     bool use_angle_rgbx_format,
-                                     int plane_index) {
+                                     int plane_index,
+                                     bool use_angle_rgbx_format) {
     DCHECK(format.IsValidPlaneIndex(plane_index));
     if (format.is_single_plane()) {
       return viz::SharedImageFormatRestrictedSinglePlaneUtils::
@@ -176,12 +180,12 @@ class SharedImageFormatRestrictedUtilsAccessor {
     int num_channels = format.NumChannelsInPlane(plane_index);
     DCHECK_LE(num_channels, 2);
     switch (format.channel_format()) {
-      case viz::SharedImageFormat::ChannelFormat::k8:
+      case ChannelFormat::k8:
         return num_channels == 2 ? GL_RG8_EXT : GL_R8_EXT;
-      case viz::SharedImageFormat::ChannelFormat::k10:
-      case viz::SharedImageFormat::ChannelFormat::k16:
+      case ChannelFormat::k10:
+      case ChannelFormat::k16:
         return num_channels == 2 ? GL_RG16_EXT : GL_R16_EXT;
-      case viz::SharedImageFormat::ChannelFormat::k16F:
+      case ChannelFormat::k16F:
         return num_channels == 2 ? GL_RG16F_EXT : GL_R16F_EXT;
     }
   }
@@ -207,24 +211,24 @@ gfx::BufferFormat ToBufferFormat(viz::SharedImageFormat format) {
 
 SkYUVAInfo::PlaneConfig ToSkYUVAPlaneConfig(viz::SharedImageFormat format) {
   switch (format.plane_config()) {
-    case viz::SharedImageFormat::PlaneConfig::kY_U_V:
+    case PlaneConfig::kY_U_V:
       return SkYUVAInfo::PlaneConfig::kY_U_V;
-    case viz::SharedImageFormat::PlaneConfig::kY_V_U:
+    case PlaneConfig::kY_V_U:
       return SkYUVAInfo::PlaneConfig::kY_V_U;
-    case viz::SharedImageFormat::PlaneConfig::kY_UV:
+    case PlaneConfig::kY_UV:
       return SkYUVAInfo::PlaneConfig::kY_UV;
-    case viz::SharedImageFormat::PlaneConfig::kY_UV_A:
+    case PlaneConfig::kY_UV_A:
       return SkYUVAInfo::PlaneConfig::kY_UV_A;
   }
 }
 
 SkYUVAInfo::Subsampling ToSkYUVASubsampling(viz::SharedImageFormat format) {
   switch (format.subsampling()) {
-    case viz::SharedImageFormat::Subsampling::k420:
+    case Subsampling::k420:
       return SkYUVAInfo::Subsampling::k420;
-    case viz::SharedImageFormat::Subsampling::k422:
+    case Subsampling::k422:
       return SkYUVAInfo::Subsampling::k422;
-    case viz::SharedImageFormat::Subsampling::k444:
+    case Subsampling::k444:
       return SkYUVAInfo::Subsampling::k444;
   }
 }
@@ -233,13 +237,13 @@ SkColorType ToClosestSkColorTypeExternalSampler(viz::SharedImageFormat format) {
   CHECK(format.PrefersExternalSampler());
   auto channel_format = format.channel_format();
   switch (channel_format) {
-    case viz::SharedImageFormat::ChannelFormat::k8:
+    case ChannelFormat::k8:
       return format.HasAlpha() ? kRGBA_8888_SkColorType : kRGB_888x_SkColorType;
-    case viz::SharedImageFormat::ChannelFormat::k10:
+    case ChannelFormat::k10:
       return kRGBA_1010102_SkColorType;
-    case viz::SharedImageFormat::ChannelFormat::k16:
+    case ChannelFormat::k16:
       return kR16G16B16A16_unorm_SkColorType;
-    case viz::SharedImageFormat::ChannelFormat::k16F:
+    case ChannelFormat::k16F:
       return kRGBA_F16_SkColorType;
   }
 }
@@ -247,8 +251,11 @@ SkColorType ToClosestSkColorTypeExternalSampler(viz::SharedImageFormat format) {
 GLFormatCaps::GLFormatCaps(const gles2::FeatureInfo* feature_info)
     : angle_rgbx_internal_format_(
           feature_info->feature_flags().angle_rgbx_internal_format),
-      oes_texture_float_available_(
-          feature_info->oes_texture_float_available()) {}
+      oes_texture_float_available_(feature_info->oes_texture_float_available()),
+      ext_texture_rg_(feature_info->feature_flags().ext_texture_rg),
+      ext_texture_norm16_(feature_info->feature_flags().ext_texture_norm16),
+      disable_r8_shared_images_(
+          feature_info->workarounds().r8_egl_images_broken) {}
 
 GLFormatDesc GLFormatCaps::ToGLFormatDescExternalSampler(
     viz::SharedImageFormat format) const {
@@ -259,17 +266,17 @@ GLFormatDesc GLFormatCaps::ToGLFormatDescExternalSampler(
   gl_format.data_format = ext_format;
   gl_format.image_internal_format = ext_format;
   switch (format.channel_format()) {
-    case viz::SharedImageFormat::ChannelFormat::k8:
+    case ChannelFormat::k8:
       gl_format.storage_internal_format =
           format.HasAlpha() ? GL_RGBA8_OES : GL_RGB8_OES;
       break;
-    case viz::SharedImageFormat::ChannelFormat::k10:
+    case ChannelFormat::k10:
       gl_format.storage_internal_format = GL_RGB10_A2_EXT;
       break;
-    case viz::SharedImageFormat::ChannelFormat::k16:
+    case ChannelFormat::k16:
       gl_format.storage_internal_format = GL_RGBA16_EXT;
       break;
-    case viz::SharedImageFormat::ChannelFormat::k16F:
+    case ChannelFormat::k16F:
       gl_format.storage_internal_format = GL_RGBA16F_EXT;
       break;
   }
@@ -290,7 +297,15 @@ GLFormatDesc GLFormatCaps::ToGLFormatDesc(viz::SharedImageFormat format,
                                                                  plane_index);
   gl_format.storage_internal_format =
       SharedImageFormatRestrictedUtilsAccessor::TextureStorageFormat(
-          format, angle_rgbx_internal_format_, plane_index);
+          format, plane_index, angle_rgbx_internal_format_);
+  if (format.is_multi_plane()) {
+    gl_format.data_format =
+        GetFallbackFormatIfNotSupported(gl_format.data_format);
+    gl_format.image_internal_format =
+        GetFallbackFormatIfNotSupported(gl_format.image_internal_format);
+    gl_format.storage_internal_format =
+        GetFallbackFormatIfNotSupported(gl_format.storage_internal_format);
+  }
   gl_format.target = GL_TEXTURE_2D;
   return gl_format;
 }
@@ -314,6 +329,41 @@ GLFormatDesc GLFormatCaps::ToGLFormatDescOverrideHalfFloatType(
   return format_desc;
 }
 
+GLenum GLFormatCaps::GetFallbackFormatIfNotSupported(GLenum gl_format) const {
+  // Fallback to GL_LUMINANCE for unsized RED format.
+  if (gl_format == GL_RED_EXT &&
+      (disable_r8_shared_images_ || !ext_texture_rg_)) {
+    return GL_LUMINANCE;
+  }
+  // Fallback to GL_LUMINANCE8 for sized R8 format.
+  if (gl_format == GL_R8_EXT &&
+      (disable_r8_shared_images_ || !ext_texture_rg_)) {
+    return GL_LUMINANCE8_EXT;
+  }
+  // No fallback for sized/unsize RG8 format without texture_rg extension.
+  if ((gl_format == GL_RG_EXT || gl_format == GL_RG8_EXT) && !ext_texture_rg_) {
+    return GL_ZERO;
+  }
+  // No fallback for R16, RG16 format without texture_norm16 extension.
+  if ((gl_format == GL_R16_EXT || gl_format == GL_RG16_EXT) &&
+      !ext_texture_norm16_) {
+    return GL_ZERO;
+  }
+  // Fallback to GL_LUMINANCE16F for R16F format without texture_rg
+  // extension.
+  if (gl_format == GL_R16F_EXT && !ext_texture_rg_) {
+    // TODO(hitawala): Check for enable_texture_half_float_linear extension
+    // support.
+    return GL_LUMINANCE16F_EXT;
+  }
+  // No fallback for RG16F format without texture_rg extension.
+  if (gl_format == GL_RG16F_EXT && !ext_texture_rg_) {
+    return GL_ZERO;
+  }
+  // Return original format if its supported.
+  return gl_format;
+}
+
 #if BUILDFLAG(ENABLE_VULKAN)
 bool HasVkFormat(viz::SharedImageFormat format) {
   if (format.is_single_plane()) {
@@ -334,24 +384,24 @@ VkFormat ToVkFormatExternalSampler(viz::SharedImageFormat format) {
   CHECK(format.PrefersExternalSampler());
 
   // Return early for unsupported kY_UV_A plane configs.
-  if (format.plane_config() == viz::SharedImageFormat::PlaneConfig::kY_UV_A) {
+  if (format.plane_config() == PlaneConfig::kY_UV_A) {
     return VK_FORMAT_UNDEFINED;
   }
 
   switch (format.channel_format()) {
-    case viz::SharedImageFormat::ChannelFormat::k8:
-      return format.plane_config() == viz::SharedImageFormat::PlaneConfig::kY_UV
+    case ChannelFormat::k8:
+      return format.plane_config() == PlaneConfig::kY_UV
                  ? VK_FORMAT_G8_B8R8_2PLANE_420_UNORM
                  : VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM;
-    case viz::SharedImageFormat::ChannelFormat::k10:
-      return format.plane_config() == viz::SharedImageFormat::PlaneConfig::kY_UV
+    case ChannelFormat::k10:
+      return format.plane_config() == PlaneConfig::kY_UV
                  ? VK_FORMAT_G10X6_B10X6R10X6_2PLANE_420_UNORM_3PACK16
                  : VK_FORMAT_G10X6_B10X6_R10X6_3PLANE_420_UNORM_3PACK16;
-    case viz::SharedImageFormat::ChannelFormat::k16:
-      return format.plane_config() == viz::SharedImageFormat::PlaneConfig::kY_UV
+    case ChannelFormat::k16:
+      return format.plane_config() == PlaneConfig::kY_UV
                  ? VK_FORMAT_G16_B16R16_2PLANE_420_UNORM
                  : VK_FORMAT_G16_B16_R16_3PLANE_420_UNORM;
-    case viz::SharedImageFormat::ChannelFormat::k16F:
+    case ChannelFormat::k16F:
       return VK_FORMAT_UNDEFINED;
   }
 }
@@ -379,12 +429,12 @@ VkFormat ToVkFormat(viz::SharedImageFormat format, int plane_index) {
   int num_channels = format.NumChannelsInPlane(plane_index);
   CHECK_LE(num_channels, 2);
   switch (format.channel_format()) {
-    case viz::SharedImageFormat::ChannelFormat::k8:
+    case ChannelFormat::k8:
       return num_channels == 2 ? VK_FORMAT_R8G8_UNORM : VK_FORMAT_R8_UNORM;
-    case viz::SharedImageFormat::ChannelFormat::k10:
-    case viz::SharedImageFormat::ChannelFormat::k16:
+    case ChannelFormat::k10:
+    case ChannelFormat::k16:
       return num_channels == 2 ? VK_FORMAT_R16G16_UNORM : VK_FORMAT_R16_UNORM;
-    case viz::SharedImageFormat::ChannelFormat::k16F:
+    case ChannelFormat::k16F:
       break;
   }
 

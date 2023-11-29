@@ -55,6 +55,7 @@ constexpr int ComputeBestAlignment(size_t bytes_per_pixel, size_t stride) {
 }  // anonymous namespace
 
 // static
+// TODO(hitawala): Check GLFormatCaps for format support.
 viz::SharedImageFormat GLTextureHolder::GetPlaneFormat(
     viz::SharedImageFormat format,
     int plane_index) {
@@ -77,9 +78,7 @@ viz::SharedImageFormat GLTextureHolder::GetPlaneFormat(
       CHECK_EQ(num_channels, 1);
       return viz::SinglePlaneFormat::kLUMINANCE_F16;
   }
-
-  NOTREACHED();
-  return viz::SinglePlaneFormat::kRGBA_8888;
+  NOTREACHED_NORETURN();
 }
 
 GLTextureHolder::GLTextureHolder(viz::SharedImageFormat format,
