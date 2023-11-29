@@ -289,6 +289,7 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
                       andHeaderView:self.headerView];
 
     [self.logoVendor fetchDoodle];
+    self.headerView.tintAdjustmentMode = UIViewTintAdjustmentModeNormal;
   }
 }
 
