@@ -31,10 +31,11 @@
 #include <xmmintrin.h>
 #endif
 
-#if defined(_MSC_VER) && _MSC_VER >= 1900 && \
-    (defined(_M_X64) || defined(_M_IX86))
+#if defined(_MSC_VER)
 #include <intrin.h>
+#if defined(ABSL_INTERNAL_HAVE_SSE)
 #pragma intrinsic(_mm_prefetch)
+#endif
 #endif
 
 namespace absl {

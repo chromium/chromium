@@ -205,9 +205,9 @@ DereferenceFormatter() {
 //   // sign. This pattern would also work with, say, a
 //   // `std::vector<std::pair<>>`.
 //   std::map<std::string, int> m = {
-//       std::make_pair("a", 1),
-//       std::make_pair("b", 2),
-//       std::make_pair("c", 3)};
+//       {"a", 1},
+//       {"b", 2},
+//       {"c", 3}};
 //   std::string s = absl::StrJoin(m, ",", absl::PairFormatter("="));
 //   EXPECT_EQ(s, "a=1,b=2,c=3");
 //
