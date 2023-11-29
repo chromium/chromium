@@ -897,9 +897,6 @@ WebMediaPlayerMSCompositor::GetLastPresentedFrameMetadata() {
     frame_metadata->rendering_interval = last_render_length_;
   }
 
-  if (base::FeatureList::IsEnabled(media::kKeepRvfcFrameAlive))
-    frame_metadata->frame = last_frame;
-
   frame_metadata->width = last_frame->visible_rect().width();
   frame_metadata->height = last_frame->visible_rect().height();
 

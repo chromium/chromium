@@ -253,7 +253,6 @@ MEDIA_EXPORT extern const base::FeatureParam<bool>
     kHardwareSecureDecryptionFallbackOnHardwareContextReset;
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kHideIncognitoMediaMetadata);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kInternalMediaSession);
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kKeepRvfcFrameAlive);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kKeyPressMonitoring);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kLiveCaption);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kLiveCaptionAutomaticLanguageDownload);

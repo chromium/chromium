@@ -902,14 +902,6 @@ BASE_FEATURE(kWebRTCColorAccuracy,
              "WebRTCColorAccuracy",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Takes a reference on a video frame, keeping it alive during the duration of a
-// video.requestVideoFrameCallback call. Doesn't change anything to the API for
-// now, as this is only used to measure the potential impact of keeping frames
-// alive for longer. See crbug.com/1259784.
-BASE_FEATURE(kKeepRvfcFrameAlive,
-             "keep-rvfc-frame-alive",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables support for External Clear Key (ECK) key system for testing on
 // supported platforms. On platforms that do not support ECK, this feature has
 // no effect.
