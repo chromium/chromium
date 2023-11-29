@@ -14,6 +14,7 @@ namespace autofill::features {
 namespace {
 
 const base::Feature* kFeaturesExposedToJava[] = {
+    &kAndroidAutofillBottomSheetWorkaround,
     &kAndroidAutofillFormSubmissionCheckById,
     &kAndroidAutofillPrefillRequestsForLoginForms,
     &kAndroidAutofillSupportVisibilityChanges,
@@ -21,6 +22,14 @@ const base::Feature* kFeaturesExposedToJava[] = {
 };
 
 }  // namespace
+
+// If enabled, we send SparseArrayWithWorkaround class as the PrefillHints for
+// the platform API `AutofillManager.notifyViewReady()` as a workaround for the
+// platform bug, see the comment on the class. This works as a kill switch for
+// the workaround in case any unexpected thing goes wrong.
+BASE_FEATURE(kAndroidAutofillBottomSheetWorkaround,
+             "AndroidAutofillBottomSheetWorkaround",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, form submissions are reported to Android Autofill iff the
 // `FormGlobalId` of the submitted form matches that of the current Autofill

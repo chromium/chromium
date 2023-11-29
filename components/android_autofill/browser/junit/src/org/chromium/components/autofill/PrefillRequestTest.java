@@ -27,7 +27,8 @@ import java.util.Arrays;
 @Batch(Batch.PER_CLASS)
 @Config(manifest = Config.NONE, minSdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @Features.EnableFeatures({
-    AndroidAutofillFeatures.ANDROID_AUTOFILL_PREFILL_REQUESTS_FOR_LOGIN_FORMS_NAME
+    AndroidAutofillFeatures.ANDROID_AUTOFILL_PREFILL_REQUESTS_FOR_LOGIN_FORMS_NAME,
+    AndroidAutofillFeatures.ANDROID_AUTOFILL_BOTTOM_SHEET_WORKAROUND_NAME
 })
 public class PrefillRequestTest {
 

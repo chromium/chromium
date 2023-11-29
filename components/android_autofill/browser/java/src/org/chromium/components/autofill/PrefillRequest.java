@@ -43,7 +43,15 @@ class PrefillRequest {
                 .isEnabled()) {
             return null;
         }
-        SparseArray<VirtualViewFillInfo> virtualViewsInfo = new SparseArray<VirtualViewFillInfo>();
+        SparseArray<VirtualViewFillInfo> virtualViewsInfo;
+
+        // Check the comment on SparseArrayWithWorkaround class.
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+                && AndroidAutofillFeatures.ANDROID_AUTOFILL_BOTTOM_SHEET_WORKAROUND.isEnabled()) {
+            virtualViewsInfo = new SparseArrayWithWorkaround();
+        } else {
+            virtualViewsInfo = new SparseArray<>();
+        }
 
         for (short i = 0; i < mForm.mFields.size(); ++i) {
             int virtualFieldId = FormData.toFieldVirtualId(mForm.mSessionId, i);
