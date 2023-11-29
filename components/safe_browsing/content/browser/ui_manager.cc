@@ -12,6 +12,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/content/browser/client_report_util.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
 #include "components/safe_browsing/content/browser/threat_details.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
@@ -34,6 +35,7 @@
 using content::BrowserThread;
 using content::NavigationEntry;
 using content::WebContents;
+using safe_browsing::ClientSafeBrowsingReportRequest;
 using safe_browsing::HitReport;
 using safe_browsing::SBThreatType;
 
@@ -98,6 +100,40 @@ void SafeBrowsingUIManager::CreateAndSendHitReport(
 
   for (Observer& observer : observer_list_)
     observer.OnSafeBrowsingHit(resource);
+}
+
+void SafeBrowsingUIManager::CreateAndSendClientSafeBrowsingWarningShownReport(
+    const UnsafeResource& resource) {
+  WebContents* web_contents =
+      security_interstitials::GetWebContentsForResource(resource);
+  DCHECK(web_contents);
+  std::unique_ptr<ClientSafeBrowsingReportRequest> report =
+      std::make_unique<ClientSafeBrowsingReportRequest>();
+  client_report_utils::FillReportBasicResourceDetails(report.get(), resource);
+
+  // When the malicious url is on the main frame, and resource.original_url
+  // is not the same as the resource.url, that means we have a redirect from
+  // resource.original_url to resource.url.
+  // Also, at this point, page_url points to the _previous_ page that we
+  // were on. We replace page_url with resource.original_url and referrer
+  // with page_url.
+  if (!resource.is_subresource && !resource.original_url.is_empty() &&
+      resource.original_url != resource.url) {
+    report->set_referrer_url(report->page_url());
+    report->set_page_url(resource.original_url.spec());
+  }
+
+  report->set_type(ClientSafeBrowsingReportRequest::WARNING_SHOWN);
+  report->mutable_client_properties()->set_url_api_type(
+      client_report_utils::GetUrlApiTypeForThreatSource(
+          resource.threat_source));
+  report->set_warning_shown_timestamp_msec(
+      base::Time::Now().InMillisecondsSinceUnixEpoch());
+  report->mutable_warning_shown_info()->set_warning_type(
+      client_report_utils::GetWarningUXTypeFromSBThreatType(
+          resource.threat_type));
+  MaybeSendClientSafeBrowsingWarningShownReport(std::move(report),
+                                                web_contents);
 }
 
 void SafeBrowsingUIManager::StartDisplayingBlockingPage(
@@ -244,6 +280,14 @@ bool SafeBrowsingUIManager::ShouldSendHitReport(HitReport* hit_report,
          delegate_->IsSendingOfHitReportsEnabled();
 }
 
+bool SafeBrowsingUIManager::ShouldSendClientSafeBrowsingWarningShownReport(
+    ClientSafeBrowsingReportRequest* report,
+    WebContents* web_contents) {
+  const auto& prefs = *delegate_->GetPrefs(web_contents->GetBrowserContext());
+  return web_contents && GetExtendedReportingLevel(prefs) != SBER_LEVEL_OFF &&
+         !web_contents->GetBrowserContext()->IsOffTheRecord();
+}
+
 // A SafeBrowsing hit is sent after a blocking page for malware/phishing
 // or after the warning dialog for download urls, only for
 // extended-reporting users.
@@ -266,6 +310,18 @@ void SafeBrowsingUIManager::MaybeReportSafeBrowsingHit(
            << hit_report->is_subresource << " " << hit_report->threat_type;
   delegate_->GetPingManager(web_contents->GetBrowserContext())
       ->ReportSafeBrowsingHit(std::move(hit_report));
+}
+
+void SafeBrowsingUIManager::MaybeSendClientSafeBrowsingWarningShownReport(
+    std::unique_ptr<ClientSafeBrowsingReportRequest> report,
+    WebContents* web_contents) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // Send report if user opted-in to extended reporting and is not in incognito
+  // mode.
+  if (ShouldSendClientSafeBrowsingWarningShownReport(report.get(),
+                                                     web_contents)) {
+    SendThreatDetails(web_contents->GetBrowserContext(), std::move(report));
+  }
 }
 
 // Static.

@@ -192,6 +192,14 @@ class SafeBrowsingUIManager : public BaseUIManager {
   void MaybeReportSafeBrowsingHit(std::unique_ptr<HitReport> hit_report,
                                   content::WebContents* web_contents) override;
 
+  // Send ClientSafeBrowsingReport for unsafe contents (malware, phishing,
+  // unsafe download URL) to the server. Can only be called on UI thread.  The
+  // report will only be sent if the user has enabled SBER and is not in
+  // incognito mode.
+  void MaybeSendClientSafeBrowsingWarningShownReport(
+      std::unique_ptr<ClientSafeBrowsingReportRequest> report,
+      content::WebContents* web_contents) override;
+
   // Creates the allowlist URL set for tests that create a blocking page
   // themselves and then simulate OnBlockingPageDone(). OnBlockingPageDone()
   // expects the allowlist to exist, but the tests don't necessarily call
@@ -239,10 +247,22 @@ class SafeBrowsingUIManager : public BaseUIManager {
   // |observer_list_|.
   void CreateAndSendHitReport(const UnsafeResource& resource) override;
 
+  // Creates a safe browsing report for the given resource and calls
+  // MaybeSendClientSafeBrowsingWarningShownReport.
+  void CreateAndSendClientSafeBrowsingWarningShownReport(
+      const UnsafeResource& resource) override;
+
   // Helper method to ensure hit reports are only sent when the user has
   // opted in to extended reporting and is not currently in incognito mode.
   bool ShouldSendHitReport(HitReport* hit_report,
                            content::WebContents* web_contents);
+
+  // Helper method to ensure client safe browsing reports are only sent when the
+  // user has opted in to extended reporting and is not currently in incognito
+  // mode.
+  bool ShouldSendClientSafeBrowsingWarningShownReport(
+      ClientSafeBrowsingReportRequest* report,
+      content::WebContents* web_contents);
 
  private:
   friend class SafeBrowsingUIManagerTest;

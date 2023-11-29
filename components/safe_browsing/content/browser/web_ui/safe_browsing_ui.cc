@@ -1603,6 +1603,9 @@ std::string SerializeCSBRR(const ClientSafeBrowsingReportRequest& report) {
       case ClientSafeBrowsingReportRequest::PHISHY_SITE_INTERACTIONS:
         report_type = "PHISHY_SITE_INTERACTIONS";
         break;
+      case ClientSafeBrowsingReportRequest::WARNING_SHOWN:
+        report_type = "WARNING_SHOWN";
+        break;
     }
     report_request.Set("type", report_type);
   }

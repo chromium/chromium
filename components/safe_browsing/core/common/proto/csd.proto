@@ -1502,7 +1502,7 @@ message DownloadMetadata {
 // A Detailed Safebrowsing Report from clients. Chrome safebrowsing reports are
 // only sent by Chrome users who have opted into extended Safe Browsing.
 // This proto is replacing ClientMalwareReportRequest.
-// Next tag: 33
+// Next tag: 34
 message ClientSafeBrowsingReportRequest {
   // Note: A lot of the "optional" fields would make sense to be
   // "required" instead.  However, having them as optional allows the
@@ -1530,6 +1530,7 @@ message ClientSafeBrowsingReportRequest {
     // TODO(crbug.com/1410253): Deprecate this once the experiment is complete.
     HASH_PREFIX_REAL_TIME_EXPERIMENT = 21;
     PHISHY_SITE_INTERACTIONS = 22;
+    WARNING_SHOWN = 23;
   }
 
   message HTTPHeader {
@@ -1926,6 +1927,27 @@ message ClientSafeBrowsingReportRequest {
 
   // Timestamp of when the warning was first shown to the user.
   optional int64 warning_shown_timestamp_msec = 32;
+
+  // Information included in WARNING_SHOWN reports.
+  message WarningShownInfo {
+    // Type of warning UX shown to the user.
+    enum WarningUXType {
+      UNKNOWN = 0;
+      PHISHING_INTERSTITIAL = 1;
+      CLIENT_SIDE_PHISHING_INTERSTITIAL = 2;
+      MALWARE_INTERSTITIAL = 3;
+      UWS_INTERSTITIAL = 4;
+      BILLING_INTERSTITIAL = 5;
+      BINARY_MALWARE_DOWNLOAD_WARNING = 6;
+    }
+    optional WarningUXType warning_type = 1;
+
+    // Data contains the hash value of the download and referrer URLs. Only set
+    // in BINARY_MALWARE_DOWNLOAD_WARNING report.
+    optional string post_data = 2;
+  }
+
+  optional WarningShownInfo warning_shown_info = 33;
 }
 
 // An HTML Element on the page (eg: iframe, div, script, etc).

@@ -137,28 +137,6 @@ std::string GetElementKey(const int frame_tree_node_id,
   return base::StringPrintf("%d-%d", frame_tree_node_id, element_node_id);
 }
 
-using CSBRR = safe_browsing::ClientSafeBrowsingReportRequest;
-CSBRR::SafeBrowsingUrlApiType GetUrlApiTypeForThreatSource(
-    safe_browsing::ThreatSource source) {
-  switch (source) {
-    case safe_browsing::ThreatSource::LOCAL_PVER4:
-      return CSBRR::PVER4_NATIVE;
-    case safe_browsing::ThreatSource::REMOTE:
-      return CSBRR::ANDROID_SAFETYNET;
-    case safe_browsing::ThreatSource::URL_REAL_TIME_CHECK:
-      return CSBRR::REAL_TIME;
-    case safe_browsing::ThreatSource::NATIVE_PVER5_REAL_TIME:
-      return CSBRR::PVER5_NATIVE_REAL_TIME;
-    case safe_browsing::ThreatSource::ANDROID_SAFEBROWSING_REAL_TIME:
-      return CSBRR::ANDROID_SAFEBROWSING_REAL_TIME;
-    case safe_browsing::ThreatSource::ANDROID_SAFEBROWSING:
-      return CSBRR::ANDROID_SAFEBROWSING;
-    case safe_browsing::ThreatSource::UNKNOWN:
-    case safe_browsing::ThreatSource::CLIENT_SIDE_DETECTION:
-      return CSBRR::SAFE_BROWSING_URL_API_TYPE_UNSPECIFIED;
-  }
-}
-
 void TrimElements(const std::set<int> target_ids,
                   ElementMap* elements,
                   ResourceMap* resources) {
@@ -798,7 +776,8 @@ void ThreatDetails::OnCacheCollectionReady() {
   report_->set_complete(cache_result_);
 
   report_->mutable_client_properties()->set_url_api_type(
-      GetUrlApiTypeForThreatSource(resource_.threat_source));
+      client_report_utils::GetUrlApiTypeForThreatSource(
+          resource_.threat_source));
 
   // Fill the referrer chain if applicable.
   if (ShouldFillReferrerChain()) {

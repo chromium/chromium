@@ -26,6 +26,7 @@
 using content::BrowserThread;
 using content::NavigationEntry;
 using content::WebContents;
+using safe_browsing::ClientSafeBrowsingReportRequest;
 using safe_browsing::HitReport;
 using safe_browsing::SBThreatType;
 
@@ -361,6 +362,8 @@ void BaseUIManager::EnsureAllowlistCreated(WebContents* web_contents) {
 }
 
 void BaseUIManager::CreateAndSendHitReport(const UnsafeResource& resource) {}
+void BaseUIManager::CreateAndSendClientSafeBrowsingWarningShownReport(
+    const UnsafeResource& resource) {}
 
 BaseBlockingPage* BaseUIManager::CreateBlockingPageForSubresource(
     content::WebContents* contents,
@@ -379,6 +382,16 @@ BaseBlockingPage* BaseUIManager::CreateBlockingPageForSubresource(
 // users who are not in incognito mode.
 void BaseUIManager::MaybeReportSafeBrowsingHit(
     std::unique_ptr<HitReport> hit_report,
+    content::WebContents* web_contents) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  return;
+}
+
+// A client safe browsing report is sent after a blocking page for
+// malware/phishing or after the warning dialog for download urls, only for
+// extended_reporting users who are not in incognito mode.
+void BaseUIManager::MaybeSendClientSafeBrowsingWarningShownReport(
+    std::unique_ptr<ClientSafeBrowsingReportRequest> report,
     content::WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return;

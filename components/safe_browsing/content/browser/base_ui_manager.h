@@ -78,6 +78,14 @@ class BaseUIManager : public base::RefCountedThreadSafe<BaseUIManager> {
       std::unique_ptr<safe_browsing::HitReport> hit_report,
       content::WebContents* web_contents);
 
+  // This is a no-op in the base class, but should be overridden to send report
+  // about unsafe contents (malware, phishing, unsafe download URL) to the
+  // server. Can only be called on UI thread and only sent for
+  // extended_reporting users who are not in incognito mode.
+  virtual void MaybeSendClientSafeBrowsingWarningShownReport(
+      std::unique_ptr<ClientSafeBrowsingReportRequest> report,
+      content::WebContents* web_contents);
+
   // A convenience wrapper method for IsUrlAllowlistedOrPendingForWebContents.
   virtual bool IsAllowlisted(const UnsafeResource& resource);
 
@@ -165,6 +173,11 @@ class BaseUIManager : public base::RefCountedThreadSafe<BaseUIManager> {
   // BaseUIManager does not send SafeBrowsingHitReport. Subclasses should
   // implement the reporting logic themselves if needed.
   virtual void CreateAndSendHitReport(const UnsafeResource& resource);
+
+  // BaseUIManager does not send ClientSafeBrowsingReport. Subclasses should
+  // implement the reporting logic themselves if needed.
+  virtual void CreateAndSendClientSafeBrowsingWarningShownReport(
+      const UnsafeResource& resource);
 
  private:
   friend class base::RefCountedThreadSafe<BaseUIManager>;
