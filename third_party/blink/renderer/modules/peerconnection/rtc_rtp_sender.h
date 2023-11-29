@@ -55,14 +55,6 @@ class RTCRtpSender final : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  // If |require_encoded_insertable_streams| is true, no received frames will be
-  // passed to the packetizer until |createEncodedStreams()| has been called and
-  // the frames have been transformed and passed back to the returned
-  // WritableStream. If it's false, during construction a task will be posted to
-  // |encoded_transform_shortcircuit_runner| to check if
-  // |createEncodedStreams()| has been called yet and if not will tell the
-  // underlying WebRTC sender to 'short circuit' the transform, so frames will
-  // flow directly to the packetizer.
   // TODO(hbos): Get rid of sender's reference to RTCPeerConnection?
   // https://github.com/w3c/webrtc-pc/issues/1712
   RTCRtpSender(RTCPeerConnection*,
@@ -70,9 +62,7 @@ class RTCRtpSender final : public ScriptWrappable,
                String kind,
                MediaStreamTrack*,
                MediaStreamVector streams,
-               bool require_encoded_insertable_streams,
-               scoped_refptr<base::SequencedTaskRunner>
-                   encoded_transform_shortcircuit_runner);
+               bool encoded_insertable_streams);
 
   MediaStreamTrack* track();
   RTCDtlsTransport* transport();
@@ -132,10 +122,6 @@ class RTCRtpSender final : public ScriptWrappable,
       RTCEncodedVideoUnderlyingSink* new_underlying_sink);
   void LogMessage(const std::string& message);
 
-  // If createEncodedStreams has not yet been called, instead tell the webrtc
-  // encoded transform to 'short circuit', skipping calling the transform.
-  void MaybeShortCircuitEncodedStreams();
-
   Member<RTCPeerConnection> pc_;
   std::unique_ptr<RTCRtpSenderPlatform> sender_;
   String kind_;
@@ -145,7 +131,10 @@ class RTCRtpSender final : public ScriptWrappable,
   MediaStreamVector streams_;
   Member<RTCRtpSendParameters> last_returned_parameters_;
   Member<RTCRtpTransceiver> transceiver_;
-  bool transform_shortcircuited_ = false;
+
+  // Insertable Streams flag, |True| if the sender has been configured to
+  // use Encoded Insertable Streams.
+  bool encoded_insertable_streams_;
 
   // Insertable Streams audio support
   base::Lock audio_underlying_source_lock_;

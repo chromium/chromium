@@ -2104,8 +2104,7 @@ RTCRtpSender* RTCPeerConnection::CreateOrUpdateSender(
     // Create new sender (with empty stream set).
     sender = MakeGarbageCollected<RTCRtpSender>(
         this, std::move(rtp_sender_platform), kind, track, MediaStreamVector(),
-        encoded_insertable_streams_,
-        GetExecutionContext()->GetTaskRunner(TaskType::kInternalMedia));
+        encoded_insertable_streams_);
     rtp_senders_.push_back(sender);
   } else {
     // Update existing sender (not touching the stream set).
@@ -2139,8 +2138,7 @@ RTCRtpReceiver* RTCPeerConnection::CreateOrUpdateReceiver(
     // Create new receiver.
     receiver = MakeGarbageCollected<RTCRtpReceiver>(
         this, std::move(platform_receiver), track, MediaStreamVector(),
-        encoded_insertable_streams_,
-        GetExecutionContext()->GetTaskRunner(TaskType::kInternalMedia));
+        encoded_insertable_streams_);
     // Receiving tracks should be muted by default. SetReadyState() propagates
     // the related state changes to ensure it is muted on all layers. It also
     // fires events - which is not desired - but because they fire synchronously

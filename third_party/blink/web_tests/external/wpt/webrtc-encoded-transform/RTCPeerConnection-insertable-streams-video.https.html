@@ -12,10 +12,10 @@
 </head>
 <body>
 <script>
-async function testVideoFlow(t, negotiationFunction, setConstructorParam, frameCallback = () => {}) {
-  const caller = new RTCPeerConnection(setConstructorParam ? {encodedInsertableStreams:true} : {});
+async function testVideoFlow(t, negotiationFunction, frameCallback = () => {}) {
+  const caller = new RTCPeerConnection({encodedInsertableStreams:true});
   t.add_cleanup(() => caller.close());
-  const callee = new RTCPeerConnection(setConstructorParam ? {encodedInsertableStreams:true} : {});
+  const callee = new RTCPeerConnection({encodedInsertableStreams:true});
   t.add_cleanup(() => callee.close());
 
   await setMediaPermission("granted", ["camera"]);
@@ -34,25 +34,15 @@ async function testVideoFlow(t, negotiationFunction, setConstructorParam, frameC
   const numFramesModifyData = 5;
   const numFramesToSend = numFramesPassthrough + numFramesReplaceData + numFramesModifyData;
 
-  let streamsCreatedAtNegotiation;
   const ontrackPromise = new Promise(resolve => {
     callee.ontrack = t.step_func(() => {
       const videoReceiver = callee.getReceivers().find(r => r.track.kind === 'video');
       assert_not_equals(videoReceiver, undefined);
 
-      let receiverReader;
-      let receiverWriter;
-      if (streamsCreatedAtNegotiation) {
-        const videoStreams = streamsCreatedAtNegotiation.find(r => r.kind === 'video');
-        assert_true(!!videoStreams);
-        receiverReader = videoStreams.streams.readable.getReader();
-        receiverWriter = videoStreams.streams.writable.getWriter();
-      } else {
-        const receiverStreams =
-            videoReceiver.createEncodedStreams();
-        receiverReader = receiverStreams.readable.getReader();
-        receiverWriter = receiverStreams.writable.getWriter();
-      }
+      const receiverStreams =
+          videoReceiver.createEncodedStreams();
+      const receiverReader = receiverStreams.readable.getReader();
+      const receiverWriter = receiverStreams.writable.getWriter();
 
       const maxFramesToReceive = numFramesToSend;
       let numVerifiedFrames = 0;
@@ -76,7 +66,7 @@ async function testVideoFlow(t, negotiationFunction, setConstructorParam, frameC
   });
 
   exchangeIceCandidates(caller, callee);
-  await negotiationFunction(caller, callee, (streams) => {streamsCreatedAtNegotiation = streams;});
+  await negotiationFunction(caller, callee);
 
   // Pass frames as they come from the encoder.
   for (let i = 0; i < numFramesPassthrough; i++) {
@@ -137,18 +127,16 @@ async function testVideoFlow(t, negotiationFunction, setConstructorParam, frameC
   return ontrackPromise;
 }
 
-for (const setConstructorParam of [false, true]) {
-  promise_test(async t => {
-    return testVideoFlow(t, exchangeOfferAnswer, setConstructorParam);
-  }, 'Frames flow correctly using insertable streams' + (setConstructorParam ? ' with param' : ''));
-
-  promise_test(async t => {
-    return testVideoFlow(t, exchangeOfferAnswerReverse, setConstructorParam);
-  }, 'Frames flow correctly using insertable streams when receiver starts negotiation' + (setConstructorParam ? ' with param' : ''));
-}
+promise_test(async t => {
+  return testVideoFlow(t, exchangeOfferAnswer);
+}, 'Frames flow correctly using insertable streams');
 
 promise_test(async t => {
-  const caller = new RTCPeerConnection();
+  return testVideoFlow(t, exchangeOfferAnswerReverse);
+}, 'Frames flow correctly using insertable streams when receiver starts negotiation');
+
+promise_test(async t => {
+  const caller = new RTCPeerConnection({encodedInsertableStreams:true});
   t.add_cleanup(() => caller.close());
   const stream = await navigator.mediaDevices.getUserMedia({video:true});
   const track = stream.getTracks()[0];
@@ -167,7 +155,7 @@ promise_test(async t => {
     clonedFrames.push(clone);
   };
 
-  await testVideoFlow(t, exchangeOfferAnswer, /*setConstructorParam=*/false, verifyFramesSerializeAndDeserialize);
+  await testVideoFlow(t, exchangeOfferAnswer, verifyFramesSerializeAndDeserialize);
 
   // Ensure all of our cloned frames are still alive and well, despite the
   // originals having been sent through the PeerConnection.
