@@ -12,6 +12,11 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/aura/window.h"
+#include "ui/events/test/event_generator.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash::test {
 
@@ -26,7 +31,18 @@ base::FilePath GetDownloadsPath(Profile* profile) {
   return result;
 }
 
+aura::Window* GetRootWindow(const views::View* view) {
+  return view->GetWidget()->GetNativeWindow()->GetRootWindow();
+}
+
 }  // namespace
+
+void Click(const views::View* view, int flags) {
+  ui::test::EventGenerator event_generator(GetRootWindow(view));
+  event_generator.set_flags(flags);
+  event_generator.MoveMouseTo(view->GetBoundsInScreen().CenterPoint());
+  event_generator.ClickLeftButton();
+}
 
 base::FilePath CreateFile(Profile* profile, const std::string& extension) {
   const base::FilePath file_path =
@@ -46,6 +62,11 @@ base::FilePath CreateFile(Profile* profile, const std::string& extension) {
   }
 
   return file_path;
+}
+
+void MoveMouseTo(const views::View* view, size_t count) {
+  ui::test::EventGenerator(GetRootWindow(view))
+      .MoveMouseTo(view->GetBoundsInScreen().CenterPoint(), count);
 }
 
 }  // namespace ash::test

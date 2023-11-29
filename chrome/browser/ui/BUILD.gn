@@ -6906,6 +6906,7 @@ static_library("test_support") {
       "//chrome/browser/ash:ash",
       "//chromeos/ash/components/dbus",
       "//chromeos/ui/base",
+      "//ui/events:test_support",
     ]
   }
 

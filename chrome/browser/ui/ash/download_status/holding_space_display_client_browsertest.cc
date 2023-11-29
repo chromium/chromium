@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/download_status_updater_ash.h"
+#include "chrome/browser/ui/ash/ash_test_util.h"
 #include "chrome/browser/ui/ash/download_status/display_test_util.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_browsertest_base.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_test_util.h"
@@ -155,12 +156,12 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest, CompleteDownload) {
   EXPECT_FALSE(secondary_label->GetVisible());
 
   // Remove the download chip.
-  Click(download_chips[0]);
+  test::Click(download_chips[0]);
   RightClick(download_chips[0]);
   const views::MenuItemView* const menu_item =
       SelectMenuItemWithCommandId(HoldingSpaceCommandId::kRemoveItem);
   ASSERT_TRUE(menu_item);
-  Click(menu_item);
+  test::Click(menu_item);
   ASSERT_TRUE(test_api().GetDownloadChips().empty());
 
   // Add a new in-progress download with the duplicate download guid.

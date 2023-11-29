@@ -23,9 +23,6 @@ namespace ash {
 enum class HoldingSpaceCommandId;
 class HoldingSpaceModel;
 
-// Performs a click on `view` with optional `flags`.
-void Click(const views::View* view, int flags = ui::EF_NONE);
-
 // Returns the suggestion items in `model`.
 std::vector<std::pair<HoldingSpaceItem::Type, base::FilePath>>
 GetSuggestionsInModel(const HoldingSpaceModel& model);

@@ -21,14 +21,6 @@
 
 namespace ash {
 
-void Click(const views::View* view, int flags) {
-  ui::test::EventGenerator event_generator(
-      view->GetWidget()->GetNativeWindow()->GetRootWindow());
-  event_generator.set_flags(flags);
-  event_generator.MoveMouseTo(view->GetBoundsInScreen().CenterPoint());
-  event_generator.ClickLeftButton();
-}
-
 std::vector<std::pair<HoldingSpaceItem::Type, base::FilePath>>
 GetSuggestionsInModel(const HoldingSpaceModel& model) {
   std::vector<std::pair<HoldingSpaceItem::Type, base::FilePath>>
