@@ -217,7 +217,6 @@ if (current_toolchain == default_toolchain) {
       "//components/browser_ui/strings/android:browser_ui_strings_grd",
       "//components/browser_ui/styles/android:java_resources",
       "//components/browser_ui/theme/android:java_resources",
-      "//components/browser_ui/util/android:java_resources",
       "//components/browser_ui/widget/android:java_resources",
       "//components/find_in_page/android:java_resources",
       "//components/javascript_dialogs/android:java_resources",

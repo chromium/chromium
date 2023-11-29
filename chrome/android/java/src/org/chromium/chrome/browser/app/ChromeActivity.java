@@ -26,7 +26,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
-import android.widget.FrameLayout;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.CallSuper;
@@ -850,17 +849,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             // https://crbug.com/639352.
             try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
                 TraceEvent.begin("setContentView(R.layout.main)");
-                if (BuildInfo.getInstance().isAutomotive
-                        && ChromeFeatureList.sVerticalAutomotiveBackButtonToolbar.isEnabled()) {
-                    // Automotive devices override ChromeBaseAppCompatActivity#setContentView to add
-                    // the automotive back button toolbar. This doesn't work if the layout uses
-                    // <merge> tags, so we need to wrap R.layout.main in a ViewGroup first.
-                    View mainView =
-                            getLayoutInflater().inflate(R.layout.main, new FrameLayout(this), true);
-                    setContentView(mainView);
-                } else {
-                    setContentView(R.layout.main);
-                }
+                setContentView(R.layout.main);
                 TraceEvent.end("setContentView(R.layout.main)");
                 if (getControlContainerLayoutId() != ActivityUtils.NO_RESOURCE_ID) {
                     ViewStub toolbarContainerStub =
@@ -3141,9 +3130,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     @Override
     protected int getAutomotiveToolbarImplementation() {
-        return ChromeFeatureList.sVerticalAutomotiveBackButtonToolbar.isEnabled()
-                ? AutomotiveToolbarImplementation.WITH_TOOLBAR_VIEW
-                : AutomotiveToolbarImplementation.WITH_ACTION_BAR;
+        return AutomotiveToolbarImplementation.WITH_ACTION_BAR;
     }
 
     private @Nullable SyncService getSyncServiceForOriginalProfile() {

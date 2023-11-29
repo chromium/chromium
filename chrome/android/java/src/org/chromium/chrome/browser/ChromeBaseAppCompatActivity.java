@@ -49,7 +49,6 @@ import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.night_mode.GlobalNightModeStateProviderHolder;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
-import org.chromium.components.browser_ui.util.AutomotiveUtils;
 import org.chromium.ui.display.DisplaySwitches;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -86,19 +85,15 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     protected @interface AutomotiveToolbarImplementation {
         /**
          * Automotive toolbar is added by including the original layout into a bigger LinearLayout
-         * that has a Toolbar View, see
-         * R.layout.automotive_layout_with_horizontal_back_button_toolbar and
-         * R.layout.automotive_layout_with_vertical_back_button_toolbar.
+         * that has a Toolbar View, see R.layout.automotive_layout_with_back_button_toolbar.
          */
         int WITH_TOOLBAR_VIEW = 0;
 
         /**
          * Automotive toolbar is added using AppCompatActivity's ActionBar, provided with a
          * ThemeOverlay, see R.style.ThemeOverlay_BrowserUI_Automotive_PersistentBackButtonToolbar.
-         *
-         * <p>This will be deprecated because it does not support a vertical toolbar.
          */
-        @Deprecated int WITH_ACTION_BAR = 1;
+        int WITH_ACTION_BAR = 1;
 
         /** Automotive toolbar is not added. */
         int NONE = -1;
@@ -390,7 +385,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         if (BuildInfo.getInstance().isAutomotive
                 && getAutomotiveToolbarImplementation()
                         == AutomotiveToolbarImplementation.WITH_TOOLBAR_VIEW) {
-            super.setContentView(AutomotiveUtils.getAutomotiveLayoutWithBackButtonToolbar(this));
+            super.setContentView(R.layout.automotive_layout_with_back_button_toolbar);
             setAutomotiveToolbarBackButtonAction();
             ViewStub stub = findViewById(R.id.original_layout);
             stub.setLayoutResource(layoutResID);
@@ -405,7 +400,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         if (BuildInfo.getInstance().isAutomotive
                 && getAutomotiveToolbarImplementation()
                         == AutomotiveToolbarImplementation.WITH_TOOLBAR_VIEW) {
-            super.setContentView(AutomotiveUtils.getAutomotiveLayoutWithBackButtonToolbar(this));
+            super.setContentView(R.layout.automotive_layout_with_back_button_toolbar);
             setAutomotiveToolbarBackButtonAction();
             LinearLayout linearLayout = findViewById(R.id.automotive_base_linear_layout);
             linearLayout.addView(
@@ -420,7 +415,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         if (BuildInfo.getInstance().isAutomotive
                 && getAutomotiveToolbarImplementation()
                         == AutomotiveToolbarImplementation.WITH_TOOLBAR_VIEW) {
-            super.setContentView(AutomotiveUtils.getAutomotiveLayoutWithBackButtonToolbar(this));
+            super.setContentView(R.layout.automotive_layout_with_back_button_toolbar);
             setAutomotiveToolbarBackButtonAction();
             LinearLayout linearLayout = findViewById(R.id.automotive_base_linear_layout);
             linearLayout.setLayoutParams(params);
@@ -440,8 +435,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
                     (ViewGroup)
                             getLayoutInflater()
                                     .inflate(
-                                            AutomotiveUtils
-                                                    .getAutomotiveLayoutWithBackButtonToolbar(this),
+                                            R.layout.automotive_layout_with_back_button_toolbar,
                                             null);
             super.addContentView(
                     automotiveLayout, new LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT));
