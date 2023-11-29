@@ -1541,6 +1541,12 @@ H.264 video stream with the first track marked as disabled, generated with
 ffmpeg -f lavfi -i "color=c=white:d=1" -f lavfi -i "testsrc2=d=1" -map 0 -disposition:v:0 0 -map 1 -disposition:v:1 default -c:v libx264 multitrack-disabled.mp4
 ````
 
+#### track-disabled.mp4
+H.264 video stream with the only track disabled, generated with
+````
+ffmpeg -f lavfi -i "color=c=white:d=1" -map 0 -disposition:v:0 0 -c:v libx264 track-disabled.mp4
+````
+
 ### Multi-track WebM file
 
 #### multitrack-3video-2audio.webm

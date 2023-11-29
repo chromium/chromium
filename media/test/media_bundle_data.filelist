@@ -465,6 +465,7 @@ data/test-25fps.vp9_2
 data/test-25fps.vp9_2.json
 data/test_key_system_instantiation.html
 data/tos-h264-opus.mp4
+data/track-disabled.mp4
 data/trailing-garbage.mp3
 data/tulip2.webm
 data/vorbis-extradata
