@@ -73,6 +73,7 @@ mojom("mojom") {
     "mojom/automation_registry.mojom",
     "mojom/channel.mojom",
     "mojom/code_injection.mojom",
+    "mojom/context_type.mojom",
     "mojom/css_origin.mojom",
     "mojom/event_dispatcher.mojom",
     "mojom/event_router.mojom",
