@@ -114,23 +114,23 @@ TEST(MemorySafetyCheckTest, SchedulerLoopQuarantine) {
 
   auto* root =
       base::internal::GetPartitionRootForMemorySafetyCheckedAllocation();
-  auto& list = root->GetSchedulerLoopQuarantineForTesting();
+  auto& branch = root->GetSchedulerLoopQuarantineBranchForTesting();
 
-  size_t original_capacity_in_bytes = list.GetCapacityInBytes();
-  list.SetCapacityInBytesForTesting(kCapacityInBytes);
+  size_t original_capacity_in_bytes = branch.GetRoot().GetCapacityInBytes();
+  branch.GetRoot().SetCapacityInBytesForTesting(kCapacityInBytes);
 
   auto* ptr1 = new DefaultChecks();
   EXPECT_NE(ptr1, nullptr);
   delete ptr1;
-  EXPECT_FALSE(list.IsQuarantinedForTesting(ptr1));
+  EXPECT_FALSE(branch.IsQuarantinedForTesting(ptr1));
 
   auto* ptr2 = new AdvancedChecks();
   EXPECT_NE(ptr2, nullptr);
   delete ptr2;
-  EXPECT_TRUE(list.IsQuarantinedForTesting(ptr2));
+  EXPECT_TRUE(branch.IsQuarantinedForTesting(ptr2));
 
-  list.Purge();
-  list.SetCapacityInBytesForTesting(original_capacity_in_bytes);
+  branch.Purge();
+  branch.GetRoot().SetCapacityInBytesForTesting(original_capacity_in_bytes);
 }
 
 TEST(MemorySafetyCheckTest, ZapOnFree) {

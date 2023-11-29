@@ -3625,12 +3625,12 @@ TEST_P(PartitionAllocTest, ZeroFill) {
 }
 
 TEST_P(PartitionAllocTest, SchedulerLoopQuarantine) {
-  SchedulerLoopQuarantine& list =
-      allocator.root()->GetSchedulerLoopQuarantineForTesting();
+  SchedulerLoopQuarantineBranch& branch =
+      allocator.root()->GetSchedulerLoopQuarantineBranchForTesting();
 
   constexpr size_t kCapacityInBytes = std::numeric_limits<size_t>::max();
-  size_t original_capacity_in_bytes = list.GetCapacityInBytes();
-  list.SetCapacityInBytesForTesting(kCapacityInBytes);
+  size_t original_capacity_in_bytes = branch.GetRoot().GetCapacityInBytes();
+  branch.GetRoot().SetCapacityInBytesForTesting(kCapacityInBytes);
 
   for (size_t size : kTestSizes) {
     SCOPED_TRACE(size);
@@ -3638,7 +3638,7 @@ TEST_P(PartitionAllocTest, SchedulerLoopQuarantine) {
     void* object = allocator.root()->Alloc(size);
     allocator.root()->Free<FreeFlags::kSchedulerLoopQuarantine>(object);
 
-    ASSERT_TRUE(list.IsQuarantinedForTesting(object));
+    ASSERT_TRUE(branch.IsQuarantinedForTesting(object));
   }
 
   for (int i = 0; i < 10; ++i) {
@@ -3647,8 +3647,8 @@ TEST_P(PartitionAllocTest, SchedulerLoopQuarantine) {
         allocator.root(), 250);
   }
 
-  list.Purge();
-  list.SetCapacityInBytesForTesting(original_capacity_in_bytes);
+  branch.Purge();
+  branch.GetRoot().SetCapacityInBytesForTesting(original_capacity_in_bytes);
 }
 
 TEST_P(PartitionAllocTest, ZapOnFree) {

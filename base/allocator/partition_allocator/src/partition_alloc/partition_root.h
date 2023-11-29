@@ -386,9 +386,10 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 
   bool quarantine_always_for_testing = false;
 
+  internal::LightweightQuarantineRoot scheduler_loop_quarantine_root;
   // NoDestructor because we don't need to dequarantine objects as the root
   // associated with it is dying anyway.
-  internal::base::NoDestructor<internal::SchedulerLoopQuarantine>
+  internal::base::NoDestructor<internal::SchedulerLoopQuarantineBranch>
       scheduler_loop_quarantine;
 
   PartitionRoot();
@@ -879,7 +880,8 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     return straighten_larger_slot_span_free_lists_;
   }
 
-  internal::SchedulerLoopQuarantine& GetSchedulerLoopQuarantineForTesting() {
+  internal::SchedulerLoopQuarantineBranch&
+  GetSchedulerLoopQuarantineBranchForTesting() {
     // TODO(crbug.com/1462223): Implement thread-local version and return it
     // here.
     return *scheduler_loop_quarantine;
@@ -1008,8 +1010,8 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   PA_ALWAYS_INLINE ThreadCache* GetOrCreateThreadCache();
   PA_ALWAYS_INLINE ThreadCache* GetThreadCache();
 
-  PA_ALWAYS_INLINE internal::SchedulerLoopQuarantine&
-  GetSchedulerLoopQuarantine();
+  PA_ALWAYS_INLINE internal::SchedulerLoopQuarantineBranch&
+  GetSchedulerLoopQuarantineBranch();
 
   PA_ALWAYS_INLINE AllocationNotificationData
   CreateAllocationNotificationData(void* object,
@@ -1423,12 +1425,11 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInline(void* object) {
     }
   }
   // TODO(https://crbug.com/1497380): Collecting objects for
-  // `kSchedulerLoopQuarantine` here means it "delays" other checks (BRP
+  // `kSchedulerLoopQuarantineBranch` here means it "delays" other checks (BRP
   // refcount, cookie, etc.)
   // For better debuggability, we should do these checks before quarantining.
   if constexpr (ContainsFlags(flags, FreeFlags::kSchedulerLoopQuarantine)) {
-    GetSchedulerLoopQuarantine().Quarantine(
-        internal::LightweightQuarantineEntry(object));
+    GetSchedulerLoopQuarantineBranch().Quarantine(object);
     return;
   }
 
@@ -2507,7 +2508,8 @@ ThreadCache* PartitionRoot::GetThreadCache() {
 }
 
 // private.
-internal::SchedulerLoopQuarantine& PartitionRoot::GetSchedulerLoopQuarantine() {
+internal::SchedulerLoopQuarantineBranch&
+PartitionRoot::GetSchedulerLoopQuarantineBranch() {
   // TODO(crbug.com/1462223): Implement thread-local version and return it here.
   return *scheduler_loop_quarantine;
 }

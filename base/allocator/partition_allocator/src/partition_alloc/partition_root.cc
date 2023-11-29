@@ -1134,12 +1134,21 @@ void PartitionRoot::Init(PartitionOptions opts) {
 
 PartitionRoot::Settings::Settings() = default;
 
-PartitionRoot::PartitionRoot() : scheduler_loop_quarantine(this) {}
+PartitionRoot::PartitionRoot()
+    : scheduler_loop_quarantine_root(*this),
+      scheduler_loop_quarantine(
+          scheduler_loop_quarantine_root
+              .CreateBranch<internal::SchedulerLoopQuarantineBranch::
+                                kQuarantineCapacityCount>()) {}
 
 PartitionRoot::PartitionRoot(PartitionOptions opts)
-    : scheduler_loop_quarantine(
-          this,
-          opts.scheduler_loop_quarantine_capacity_in_bytes) {
+    : scheduler_loop_quarantine_root(
+          *this,
+          opts.scheduler_loop_quarantine_capacity_in_bytes),
+      scheduler_loop_quarantine(
+          scheduler_loop_quarantine_root
+              .CreateBranch<internal::SchedulerLoopQuarantineBranch::
+                                kQuarantineCapacityCount>()) {
   Init(opts);
 }
 
