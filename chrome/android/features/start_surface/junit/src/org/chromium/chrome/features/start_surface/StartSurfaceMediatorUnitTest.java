@@ -99,7 +99,6 @@ import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.logo.LogoBridge;
 import org.chromium.chrome.browser.logo.LogoBridgeJni;
 import org.chromium.chrome.browser.logo.LogoView;
-import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
@@ -164,7 +163,6 @@ public class StartSurfaceMediatorUnitTest {
     @Mock private OmniboxStub mOmniboxStub;
     @Mock private ExploreSurfaceCoordinator mExploreSurfaceCoordinator;
     @Mock private ExploreSurfaceCoordinatorFactory mExploreSurfaceCoordinatorFactory;
-    @Mock private NightModeStateProvider mNightModeStateProvider;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private StartSurfaceMediator.ActivityStateChecker mActivityStateChecker;
     @Mock private VoiceRecognitionHandler mVoiceRecognitionHandler;
@@ -178,7 +176,7 @@ public class StartSurfaceMediatorUnitTest {
     @Mock private Supplier<Tab> mParentTabSupplier;
     @Mock private View mLogoContainerView;
     @Mock private LogoView mLogoView;
-    @Mock LogoBridge.Natives mLogoBridge;
+    @Mock private LogoBridge.Natives mLogoBridge;
     @Mock private Profile mProfile;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
@@ -205,15 +203,15 @@ public class StartSurfaceMediatorUnitTest {
 
     @Captor private ArgumentCaptor<TemplateUrlServiceObserver> mTemplateUrlServiceObserverCaptor;
 
-    private ObservableSupplierImpl<Boolean>
+    private final ObservableSupplierImpl<Boolean>
             mCarouselTabSwitcherModuleControllerBackPressStateSupplier =
                     new ObservableSupplierImpl<>();
-    private ObservableSupplierImpl<Boolean>
+    private final ObservableSupplierImpl<Boolean>
             mCarouselTabSwitcherModuleControllerDialogVisibleSupplier =
                     new ObservableSupplierImpl<>();
-    private ObservableSupplierImpl<Boolean> mSecondaryControllerBackPressStateSupplier =
+    private final ObservableSupplierImpl<Boolean> mSecondaryControllerBackPressStateSupplier =
             new ObservableSupplierImpl<>();
-    private ObservableSupplierImpl<Boolean> mSecondaryControllerDialogVisibleSupplier =
+    private final ObservableSupplierImpl<Boolean> mSecondaryControllerDialogVisibleSupplier =
             new ObservableSupplierImpl<>();
     private ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
 
