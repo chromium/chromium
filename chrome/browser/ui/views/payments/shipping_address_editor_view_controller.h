@@ -146,7 +146,8 @@ class ShippingAddressEditorViewController : public EditorViewController {
 
   // A temporary profile to keep unsaved data in between relayout (e.g., when
   // the country is changed and fields set may be different).
-  autofill::AutofillProfile temporary_profile_;
+  autofill::AutofillProfile temporary_profile_{
+      autofill::i18n_model_definition::kLegacyHierarchyCountryCode};
 
   // List of fields, reset everytime the current country changes.
   std::vector<EditorField> editor_fields_;
