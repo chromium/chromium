@@ -9,21 +9,9 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "url/origin.h"
 
-@protocol BrowserCoordinatorCommands;
-@protocol PlusAddressBottomSheetCoordinatorDelegate;
-
-// The coordinator responsible for creating the bottom sheet's view controller,
-// and eventually a mediator.
+// The coordinator responsible for the plus_address bottom sheet. Sets up
+// dependencies between the view controller and mediator.
 @interface PlusAddressBottomSheetCoordinator : ChromeCoordinator
-
-// `viewController` is the VC used to present the bottom sheet.
-// TODO(b/311204704): create a mediator that will orchestrate the data
-// operations via the `PlusAddressService`. This will entail reserving a
-// plus_address, showing a preview of it, confirming via service call when the
-// primary button is clicked, and then running a callback to fill the field from
-// which the bottom sheet was triggered.
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser;
 
 @end
 

@@ -4,9 +4,11 @@
 
 #import "ios/chrome/browser/plus_addresses/coordinator/plus_address_bottom_sheet_coordinator.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "components/plus_addresses/plus_address_service.h"
 #import "components/plus_addresses/plus_address_types.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
+#import "ios/chrome/browser/plus_addresses/coordinator/plus_address_bottom_sheet_mediator.h"
 #import "ios/chrome/browser/plus_addresses/model/plus_address_service_factory.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -14,54 +16,43 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
 namespace {
 constexpr CGFloat kHalfSheetCornerRadius = 20;
 }  // namespace
 
-@interface PlusAddressBottomSheetCoordinator () <ConfirmationAlertActionHandler>
-
-@end
-
 @implementation PlusAddressBottomSheetCoordinator {
-  plus_addresses::PlusAddressCallback _callback;
-  url::Origin _mainFrameOrigin;
+  // The view controller responsible for display of the bottom sheet.
   PlusAddressBottomSheetViewController* _viewController;
-  plus_addresses::PlusAddressService* _plusAddressService;
-  id<BrowserCoordinatorCommands> _browserCoordinatorHandler;
-}
-
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser {
-  self = [super initWithBaseViewController:viewController browser:browser];
-  if (self) {
-    ChromeBrowserState* browserState =
-        browser->GetBrowserState()->GetOriginalChromeBrowserState();
-    _plusAddressService = PlusAddressServiceFactory::GetForBrowserState(
-        browserState->GetOriginalChromeBrowserState());
-    _browserCoordinatorHandler = HandlerForProtocol(
-        browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
-
-    web::WebState* activeWebState =
-        browser->GetWebStateList()->GetActiveWebState();
-    AutofillBottomSheetTabHelper* bottomSheetTabHelper =
-        AutofillBottomSheetTabHelper::FromWebState(activeWebState);
-    _mainFrameOrigin =
-        url::Origin::Create(activeWebState->GetLastCommittedURL());
-    _callback = bottomSheetTabHelper->GetPendingPlusAddressFillCallback();
-  }
-  return self;
+  // A mediator that hides data operations from the view controller.
+  PlusAddressBottomSheetMediator* _mediator;
 }
 
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  _viewController = [[PlusAddressBottomSheetViewController alloc] init];
-
+  ChromeBrowserState* browserState =
+      self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
+  plus_addresses::PlusAddressService* plusAddressService =
+      PlusAddressServiceFactory::GetForBrowserState(browserState);
+  web::WebState* activeWebState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  // TODO(crbug.com/1467623): Move this to the mediator to reduce model
+  // dependencies in this class.
+  AutofillBottomSheetTabHelper* bottomSheetTabHelper =
+      AutofillBottomSheetTabHelper::FromWebState(activeWebState);
+  _mediator = [[PlusAddressBottomSheetMediator alloc]
+      initWithPlusAddressService:plusAddressService
+                       activeUrl:activeWebState->GetLastCommittedURL()
+                autofillCallback:bottomSheetTabHelper
+                                     ->GetPendingPlusAddressFillCallback()];
+  _viewController = [[PlusAddressBottomSheetViewController alloc]
+                    initWithDelegate:_mediator
+      withBrowserCoordinatorCommands:HandlerForProtocol(
+                                         self.browser->GetCommandDispatcher(),
+                                         BrowserCoordinatorCommands)];
   // Indicate a preference for half sheet detents, and other styling concerns.
   _viewController.modalPresentationStyle = UIModalPresentationPageSheet;
-  _viewController.actionHandler = self;
   UISheetPresentationController* presentationController =
       _viewController.sheetPresentationController;
   presentationController.prefersEdgeAttachedInCompactHeight = YES;
@@ -74,6 +65,7 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
                                       completion:nil];
+  _mediator.consumer = _viewController;
 }
 
 - (void)stop {
@@ -81,31 +73,7 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
   [_viewController.presentingViewController dismissViewControllerAnimated:NO
                                                                completion:nil];
   _viewController = nil;
-}
-
-#pragma mark - ConfirmationAlertActionHandler
-
-- (void)confirmationAlertPrimaryAction {
-  __weak __typeof(self) weakSelf = self;
-  [_viewController.presentingViewController
-      dismissViewControllerAnimated:NO
-                         completion:^{
-                           [weakSelf didConfirm];
-                         }];
-}
-
-- (void)confirmationAlertSecondaryAction {
-  // The cancel button was tapped, which dismisses the bottom sheet.
-  // Call out to the command handler to hide the view and stop the coordinator.
-  [_browserCoordinatorHandler dismissPlusAddressBottomSheet];
-}
-
-#pragma mark - Private
-
-- (void)didConfirm {
-  _plusAddressService->OfferPlusAddressCreation(_mainFrameOrigin,
-                                                std::move(_callback));
-  [_browserCoordinatorHandler dismissPlusAddressBottomSheet];
+  _mediator = nil;
 }
 
 @end

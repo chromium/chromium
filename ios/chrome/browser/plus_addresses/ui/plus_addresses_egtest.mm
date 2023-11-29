@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/strings/escape.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
@@ -13,9 +14,11 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/earl_grey/matchers.h"
 #import "net/test/embedded_test_server/default_handlers.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 const char kEmailFormUrl[] = "/email_signup_form.html";
@@ -33,20 +36,21 @@ const char kFakeSuggestionLabel[] = "plus?";
   [super setUp];
   net::test_server::RegisterDefaultHandlers(self.testServer);
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
-  // Ensure a fake identity is available, as this is required by the
-  // plus_addresses feature.
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   // Ensure the feature is enabled, including a required param.
-  // TODO(crbug.com/1467623): Set up an app interface or a demo feature param
-  // instead of supplying a fake, un-called server URL.
-  config.additional_args.push_back(
-      base::StringPrintf("--enable-features=PlusAddressesEnabled:suggestion-"
-                         "label/%s/server-url/fake.example",
-                         kFakeSuggestionLabel));
+  // TODO(crbug.com/1467623): Set up fake responses via `self.testServer`, or
+  // use an app interface to force different states without a backend
+  // dependency.
+  config.additional_args.push_back(base::StringPrintf(
+      "--enable-features=PlusAddressesEnabled:suggestion-"
+      "label/%s/server-url/%s",
+      kFakeSuggestionLabel,
+      base::EscapeQueryParamValue(self.testServer->base_url().spec(),
+                                  /*use_plus=*/false)
+          .c_str()));
   return config;
 }
 
@@ -63,7 +67,18 @@ const char kFakeSuggestionLabel[] = "plus?";
 
 // A basic test that simply opens and dismisses the bottom sheet.
 - (void)testShowPlusAddressBottomSheet {
+  // Force a re-evaluation of the enabled features, since the testServer isn't
+  // yet available in the initial `appConfigurationForTestCase` run.
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // Ensure a fake identity is available, as this is required by the
+  // plus_addresses feature.
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+
   [self loadPlusAddressEligiblePage];
+
   // Tap an element that is eligible for plus_address autofilling.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kEmailFieldId)];
@@ -79,6 +94,12 @@ const char kFakeSuggestionLabel[] = "plus?";
   // too, such that actions that normally trigger server calls can be mocked
   // out.
   [[EarlGrey selectElementWithMatcher:user_chip] performAction:grey_tap()];
+
+  // The request to reserve a plus address is hitting the test server, and
+  // should fail immediately.
+  id<GREYMatcher> error_message =
+      grey_text(l10n_util::GetNSString(IDS_PLUS_ADDRESS_MODAL_ERROR_MESSAGE));
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:error_message];
 
   // Ensure the cancel button is shown.
   id<GREYMatcher> cancelButton =

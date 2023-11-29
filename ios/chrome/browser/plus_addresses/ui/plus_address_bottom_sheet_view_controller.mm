@@ -4,11 +4,46 @@
 
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_view_controller.h"
 
+#import "base/functional/bind.h"
+#import "base/logging.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/types/expected.h"
+#import "components/plus_addresses/plus_address_service.h"
+#import "components/plus_addresses/plus_address_types.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_delegate.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
+#import "ios/chrome/common/ui/util/dynamic_type_util.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-@implementation PlusAddressBottomSheetViewController
+@interface PlusAddressBottomSheetViewController () <
+    ConfirmationAlertActionHandler>
+
+@end
+
+@implementation PlusAddressBottomSheetViewController {
+  // The delegate that wraps PlusAddressService operations (reserve, confirm,
+  // etc.).
+  __weak id<PlusAddressBottomSheetDelegate> _delegate;
+  // A commands handler that allows dismissing the bottom sheet.
+  __weak id<BrowserCoordinatorCommands> _browserCoordinatorHandler;
+  // The label that will display the reserved plus address, once it is ready.
+  UILabel* _reservedPlusAddressLabel;
+}
+
+- (instancetype)initWithDelegate:(id<PlusAddressBottomSheetDelegate>)delegate
+    withBrowserCoordinatorCommands:
+        (id<BrowserCoordinatorCommands>)browserCoordinatorHandler {
+  self = [super init];
+  if (self) {
+    _delegate = delegate;
+    _browserCoordinatorHandler = browserCoordinatorHandler;
+  }
+  return self;
+}
 
 #pragma mark - UIViewController
 
@@ -19,7 +54,66 @@
       l10n_util::GetNSString(IDS_PLUS_ADDRESS_MODAL_OK_TEXT);
   self.secondaryActionString =
       l10n_util::GetNSString(IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT);
+  // Set up the label that will indicate the reserved plus address to the user.
+  _reservedPlusAddressLabel = [self setUpReservedPlusAddressView:@""];
+  self.aboveTitleView = _reservedPlusAddressLabel;
   [super viewDidLoad];
+
+  self.actionHandler = self;
+  // Disable the primary button until such time as the reservation is complete.
+  // If reserving an address fails, we should inform the user and not attempt to
+  // fill any fields on the page.
+  self.primaryActionButton.enabled = NO;
+  [_delegate reservePlusAddress];
+}
+
+#pragma mark - ConfirmationAlertActionHandler
+
+- (void)confirmationAlertPrimaryAction {
+  [_delegate confirmPlusAddress];
+}
+
+- (void)confirmationAlertSecondaryAction {
+  // The cancel button was tapped, which dismisses the bottom sheet.
+  // Call out to the command handler to hide the view and stop the coordinator.
+  [_browserCoordinatorHandler dismissPlusAddressBottomSheet];
+}
+
+#pragma mark - PlusAddressBottomSheetConsumer
+
+- (void)didReservePlusAddress:(NSString*)plusAddress {
+  self.primaryActionButton.enabled = YES;
+  _reservedPlusAddressLabel.text = plusAddress;
+}
+
+- (void)didConfirmPlusAddress {
+  [_browserCoordinatorHandler dismissPlusAddressBottomSheet];
+}
+
+- (void)notifyError {
+  // With any error, whether during the reservation step or the confirmation
+  // step, disable submission of the modal.
+  self.primaryActionButton.enabled = NO;
+  _reservedPlusAddressLabel.text =
+      l10n_util::GetNSString(IDS_PLUS_ADDRESS_MODAL_ERROR_MESSAGE);
+}
+
+#pragma mark - Private
+
+// Configures the reserved address view, which allows the user to understand the
+// plus address they can confirm use of (or not).
+- (UILabel*)setUpReservedPlusAddressView:(NSString*)text {
+  UILabel* reservedPlusAddressLabel = [[UILabel alloc] init];
+  reservedPlusAddressLabel.text = text;
+
+  // Limit the size of text to avoid truncation.
+  reservedPlusAddressLabel.font = PreferredFontForTextStyleWithMaxCategory(
+      UIFontTextStyleBody, self.traitCollection.preferredContentSizeCategory,
+      UIContentSizeCategoryExtraExtraExtraLarge);
+
+  reservedPlusAddressLabel.numberOfLines = 0;
+  reservedPlusAddressLabel.textAlignment = NSTextAlignmentCenter;
+  return reservedPlusAddressLabel;
 }
 
 @end

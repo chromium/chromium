@@ -6,6 +6,8 @@ source_set("coordinator") {
   sources = [
     "plus_address_bottom_sheet_coordinator.h",
     "plus_address_bottom_sheet_coordinator.mm",
+    "plus_address_bottom_sheet_mediator.h",
+    "plus_address_bottom_sheet_mediator.mm",
   ]
   deps = [
     "//base",
@@ -19,5 +21,20 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/common/ui/confirmation_alert",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "plus_address_bottom_sheet_mediator_unittest.mm" ]
+  deps = [
+    ":coordinator",
+    "//components/plus_addresses",
+    "//ios/chrome/browser/plus_addresses/model",
+    "//ios/chrome/browser/plus_addresses/ui",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }
