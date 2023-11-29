@@ -9,8 +9,6 @@ source_set("search_engine_choice") {
     "search_engine_choice_coordinator.mm",
     "search_engine_choice_mediator.h",
     "search_engine_choice_mediator.mm",
-    "search_engine_choice_ui_util.h",
-    "search_engine_choice_ui_util.mm",
     "search_engine_choice_view_controller.h",
     "search_engine_choice_view_controller.mm",
   ]

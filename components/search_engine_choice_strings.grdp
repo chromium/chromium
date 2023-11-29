@@ -76,7 +76,4 @@
     Lorem ipsum dolor sit amet, consectetur adipiscing elit.
   </message>
 </if>
-<message name="IDS_SEARCH_ENGINE_CHOICE_MORE_BUTTON" desc="Title of the button to scroll the choice screen when it is too small to show everything at once.">
-    More
-</message>
 </grit-part>
