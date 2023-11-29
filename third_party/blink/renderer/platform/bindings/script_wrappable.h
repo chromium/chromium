@@ -104,15 +104,6 @@ class PLATFORM_EXPORT ScriptWrappable
   ScriptWrappable& operator=(const ScriptWrappable&) = delete;
   ~ScriptWrappable() override = default;
 
-  // The following methods may override lifetime of ScriptWrappable objects when
-  // needed. In particular if `HasPendingActivity()` returns true *and* the
-  // child type also inherits from `ActiveScriptWrappable`, the objects will not
-  // be reclaimed by the GC, even if they are otherwise unreachable.
-  //
-  // Note: These methods are queried during garbage collection and *must not*
-  // allocate any new objects.
-  virtual bool HasPendingActivity() const { return false; }
-
   const char* NameInHeapSnapshot() const override;
 
   virtual void Trace(Visitor*) const;

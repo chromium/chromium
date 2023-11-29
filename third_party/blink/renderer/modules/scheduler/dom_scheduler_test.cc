@@ -150,13 +150,4 @@ class DOMSchedulerTestWithCompositionDisabled : public DOMSchedulerTest {
   ScopedAbortSignalCompositionForTest scoped_signal_composition_;
 };
 
-TEST_F(DOMSchedulerTestWithCompositionDisabled, FixedPriorirtySignal) {
-  // Regression test for crbug.com/1431940.
-  V8TestingScope scope;
-  auto* signal = GetScheduler()->GetFixedPriorityTaskSignal(
-      scope.GetScriptState(), WebSchedulingPriority::kUserVisiblePriority);
-  // This should not crash.
-  signal->HasPendingActivity();
-}
-
 }  // namespace blink

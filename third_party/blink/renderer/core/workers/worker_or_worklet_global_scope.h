@@ -77,7 +77,6 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope
       v8::Isolate*,
       const WrapperTypeInfo*,
       v8::Local<v8::Object> wrapper) final;
-  bool HasPendingActivity() const override;
 
   // ExecutionContext
   bool IsWorkerOrWorkletGlobalScope() const final { return true; }

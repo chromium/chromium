@@ -218,6 +218,9 @@ class CORE_EXPORT WorkerGlobalScope
 
   void Trace(Visitor*) const override;
 
+  // ActiveScriptWrappable.
+  bool HasPendingActivity() const override;
+
   virtual InstalledScriptsManager* GetInstalledScriptsManager() {
     return nullptr;
   }

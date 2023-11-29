@@ -754,6 +754,10 @@ void WorkerGlobalScope::Trace(Visitor* visitor) const {
   Supplementable<WorkerGlobalScope>::Trace(visitor);
 }
 
+bool WorkerGlobalScope::HasPendingActivity() const {
+  return !ExecutionContext::IsContextDestroyed();
+}
+
 FontMatchingMetrics* WorkerGlobalScope::GetFontMatchingMetrics() {
   if (!font_matching_metrics_) {
     font_matching_metrics_ = std::make_unique<FontMatchingMetrics>(
