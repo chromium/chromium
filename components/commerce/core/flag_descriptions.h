@@ -40,9 +40,6 @@ extern const char kPriceInsightsDescription[];
 extern const char kShowDiscountOnNavigationName[];
 extern const char kShowDiscountOnNavigationDescription[];
 
-extern const char kPriceTrackingChipExperimentName[];
-extern const char kPriceTrackingChipExperimentDescription[];
-
 extern const char kShoppingPageTypesName[];
 extern const char kShoppingPageTypesDescription[];
 

@@ -26,14 +26,6 @@ extern const char kEnableChromeCart[];
 BASE_DECLARE_FEATURE(kCommercePriceTracking);
 BASE_DECLARE_FEATURE(kCommercePriceTrackingRegionLaunched);
 
-// Feature flag for Price Tracking chip experiment
-BASE_DECLARE_FEATURE(kCommercePriceTrackingChipExperiment);
-// This indicates the Price Tracking chip experiment variation.
-enum class PriceTrackingChipExperimentVariation {
-  kDefault = 0,
-  kDelayChip = 1
-};
-
 // Price tracking variations for Android.
 constexpr flags_ui::FeatureEntry::FeatureParam
     kCommercePriceTracking_PriceAlerts[] = {
@@ -397,11 +389,6 @@ extern const base::FeatureParam<bool> kCodeBasedRuleDiscount;
 extern const char kCodeBasedRuleDiscountCouponDeletionTimeParam[];
 extern const base::FeatureParam<base::TimeDelta>
     kCodeBasedRuleDiscountCouponDeletionTime;
-
-// CommercePriceTrackingChipExperiment params.
-extern const char kCommercePriceTrackingChipExperimentVariationParam[];
-extern const base::FeatureParam<int>
-    kCommercePriceTrackingChipExperimentVariation;
 
 // Check if a URL belongs to a partner merchant of any type of discount.
 bool IsPartnerMerchant(const GURL& url);

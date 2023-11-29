@@ -1968,15 +1968,6 @@ const FeatureEntry::FeatureVariation kChromeLabsVariations[] = {
      std::size(kChromeLabsEnabledInFlags), nullptr}};
 
 #if !BUILDFLAG(IS_ANDROID)
-const flags_ui::FeatureEntry::FeatureParam kDelayPriceTrackingChip[] = {
-    {commerce::kCommercePriceTrackingChipExperimentVariationParam, "1"}};
-
-const FeatureEntry::FeatureVariation kPriceTrackingChipExperimentVariations[] =
-    {
-        {"- Delay Chip", kDelayPriceTrackingChip,
-         std::size(kDelayPriceTrackingChip), nullptr},
-};
-
 const FeatureEntry::FeatureParam kNtpChromeCartModuleFakeData[] = {
     {ntp_features::kNtpChromeCartModuleDataParam, "fake"},
     {ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam, "true"}};
@@ -6765,15 +6756,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
-    {"enable-price-tracking-chip-experiment",
-     commerce::flag_descriptions::kPriceTrackingChipExperimentName,
-     commerce::flag_descriptions::kPriceTrackingChipExperimentDescription,
-     kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         commerce::kCommercePriceTrackingChipExperiment,
-         kPriceTrackingChipExperimentVariations,
-         "PriceTrackingChipExperiment")},
-
     {"price-tracking-icon-colors",
      commerce::flag_descriptions::kPriceTrackingIconColorsDescription,
      commerce::flag_descriptions::kPriceTrackingIconColorsDescription,

@@ -88,20 +88,8 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
 constexpr char kImageFetcherUmaClient[] = "ShoppingList";
 
-constexpr base::TimeDelta kDelayIconView = base::Seconds(1);
-
 // price tracking chip (assuming price insights isn't expanded).
 constexpr int64_t kAlwaysExpandChipPriceMicros = 100000000L;
-
-bool ShouldDelayChipUpdate() {
-  if (base::FeatureList::IsEnabled(commerce::kPriceInsights)) {
-    return commerce::kPriceInsightsDelayChip.Get();
-  }
-
-  return static_cast<commerce::PriceTrackingChipExperimentVariation>(
-             commerce::kCommercePriceTrackingChipExperimentVariation.Get()) ==
-         commerce::PriceTrackingChipExperimentVariation::kDelayChip;
-}
 }  // namespace
 
 CommerceUiTabHelper::CommerceUiTabHelper(
@@ -181,7 +169,6 @@ void CommerceUiTabHelper::DidFinishNavigation(
   page_action_to_expand_ = absl::nullopt;
   page_action_expanded_ = absl::nullopt;
   pending_tracking_state_.reset();
-  is_first_load_for_nav_finished_ = false;
   price_insights_info_.reset();
   icon_use_recorded_for_page_ = false;
   price_insights_label_type_ =
@@ -229,16 +216,6 @@ bool CommerceUiTabHelper::IsSameDocumentWithSameCommittedUrl(
          navigation_handle->IsSameDocument();
 }
 
-void CommerceUiTabHelper::DidStopLoading() {
-  if (!web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame() ||
-      !ShouldDelayChipUpdate() || is_first_load_for_nav_finished_) {
-    return;
-  }
-  is_first_load_for_nav_finished_ = true;
-
-  TriggerUpdateForIconView();
-}
-
 void CommerceUiTabHelper::WebContentsDestroyed() {
   // If the tab or browser is closed, try recording whether the price tracking
   // icon was used.
@@ -246,40 +223,14 @@ void CommerceUiTabHelper::WebContentsDestroyed() {
 }
 
 void CommerceUiTabHelper::TriggerUpdateForIconView() {
-  if (!ShouldDelayChipUpdate()) {
-    if (shopping_service_->IsPriceInsightsEligible()) {
-      UpdatePriceInsightsIconView();
-    }
-    UpdatePriceTrackingIconView();
-  } else {
-    DelayUpdateForIconView();
-  }
-}
-
-void CommerceUiTabHelper::DelayUpdateForIconView() {
-  if (!is_first_load_for_nav_finished_) {
+  if (!shopping_service_) {
     return;
   }
 
   if (shopping_service_->IsPriceInsightsEligible()) {
-    content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
-        ->PostDelayedTask(
-            FROM_HERE,
-            base::BindOnce(
-                &CommerceUiTabHelper::UpdatePriceInsightsIconView,
-                weak_ptr_factory_.GetWeakPtr()),
-            kDelayIconView);
+    UpdatePriceInsightsIconView();
   }
-
-  if (!last_fetched_image_.IsEmpty()) {
-    content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
-        ->PostDelayedTask(
-            FROM_HERE,
-            base::BindOnce(
-                &CommerceUiTabHelper::UpdatePriceTrackingIconView,
-                weak_ptr_factory_.GetWeakPtr()),
-            kDelayIconView);
-  }
+  UpdatePriceTrackingIconView();
 }
 
 void CommerceUiTabHelper::UpdatePriceInsightsIconView() {
@@ -333,24 +284,14 @@ void CommerceUiTabHelper::SetImageFetcherForTesting(
 }
 
 bool CommerceUiTabHelper::ShouldShowPriceTrackingIconView() {
-  bool should_show = shopping_service_ &&
-                     shopping_service_->IsShoppingListEligible() &&
-                     !last_fetched_image_.IsEmpty() &&
-                     got_initial_subscription_status_for_page_;
-
-  return ShouldDelayChipUpdate()
-             ? should_show && is_first_load_for_nav_finished_
-             : should_show;
+  return shopping_service_ && shopping_service_->IsShoppingListEligible() &&
+         !last_fetched_image_.IsEmpty() &&
+         got_initial_subscription_status_for_page_;
 }
 
 bool CommerceUiTabHelper::ShouldShowPriceInsightsIconView() {
-  bool should_show = shopping_service_ &&
-                     shopping_service_->IsPriceInsightsEligible() &&
-                     price_insights_info_.has_value();
-
-  return ShouldDelayChipUpdate()
-             ? should_show && is_first_load_for_nav_finished_
-             : should_show;
+  return shopping_service_ && shopping_service_->IsPriceInsightsEligible() &&
+         price_insights_info_.has_value();
 }
 
 void CommerceUiTabHelper::HandleProductInfoResponse(

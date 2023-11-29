@@ -132,21 +132,6 @@ class CommerceUiTabHelperTest : public testing::Test {
     return tab_helper_->GetPendingTrackingStateForTesting();
   }
 
-  void EnableChipExperimentVariation(
-      base::test::ScopedFeatureList& feature_list,
-      commerce::PriceTrackingChipExperimentVariation variation) {
-    int variation_num = static_cast<int>(variation);
-    std::vector<base::test::FeatureRefAndParams> enabled_features;
-    base::FieldTrialParams chip_experiment_param;
-    chip_experiment_param
-        [commerce::kCommercePriceTrackingChipExperimentVariationParam] =
-            base::NumberToString(variation_num);
-    enabled_features.emplace_back(
-        commerce::kCommercePriceTrackingChipExperiment, chip_experiment_param);
-    feature_list.InitWithFeaturesAndParameters(enabled_features,
-                                               /*disabled_features*/ {});
-  }
-
  protected:
   raw_ptr<CommerceUiTabHelper> tab_helper_;
   std::unique_ptr<MockShoppingService> shopping_service_;
@@ -314,62 +299,6 @@ TEST_F(CommerceUiTabHelperTest, TestSubscriptionChangeNoBookmark) {
   ASSERT_FALSE(tab_helper_->IsPriceTracking());
 }
 
-// The following tests are for the chip experiment - chip delay variation.
-TEST_F(CommerceUiTabHelperTest,
-       TestPriceTrackingIconAvailableAfterLoading) {
-  base::test::ScopedFeatureList feature_list;
-  EnableChipExperimentVariation(
-      feature_list, commerce::PriceTrackingChipExperimentVariation::kDelayChip);
-  ASSERT_FALSE(tab_helper_->IsPriceTracking());
-
-  AddProductBookmark(bookmark_model_.get(), u"title", GURL(kProductUrl),
-                     kClusterId, true);
-
-  absl::optional<ProductInfo> info =
-      CreateProductInfo(kClusterId, GURL(kProductImageUrl));
-  SetupImageFetcherForSimpleImage();
-
-  shopping_service_->SetIsShoppingListEligible(true);
-  shopping_service_->SetResponseForGetProductInfoForUrl(info);
-  // Simulate the navigation is committed and has stopped loading.
-  auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
-      GURL(kProductUrl), web_contents_);
-  simulator->SetKeepLoading(false);
-  simulator->Start();
-  simulator->Commit();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(tab_helper_->GetProductImage().IsEmpty());
-  EXPECT_TRUE(tab_helper_->ShouldShowPriceTrackingIconView());
-}
-
-TEST_F(CommerceUiTabHelperTest,
-       TestPriceTrackingIconNotAvailableDuringLoading) {
-  base::test::ScopedFeatureList feature_list;
-  EnableChipExperimentVariation(
-      feature_list, commerce::PriceTrackingChipExperimentVariation::kDelayChip);
-  ASSERT_FALSE(tab_helper_->IsPriceTracking());
-
-  AddProductBookmark(bookmark_model_.get(), u"title", GURL(kProductUrl),
-                     kClusterId, true);
-
-  absl::optional<ProductInfo> info =
-      CreateProductInfo(kClusterId, GURL(kProductImageUrl));
-  SetupImageFetcherForSimpleImage();
-
-  shopping_service_->SetIsShoppingListEligible(true);
-  shopping_service_->SetResponseForGetProductInfoForUrl(info);
-
-  // Simulate the navigation is committed but has not stopped loading.
-  auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
-      GURL(kProductUrl), web_contents_);
-  simulator->SetKeepLoading(true);
-  simulator->Start();
-  simulator->Commit();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(tab_helper_->GetProductImage().IsEmpty());
-  EXPECT_FALSE(tab_helper_->ShouldShowPriceTrackingIconView());
-}
-
 TEST_F(CommerceUiTabHelperTest, TestShoppingInsightsSidePanelAvailable) {
   ASSERT_FALSE(SidePanelRegistry::Get(web_contents_.get())
                    ->GetEntryForKey(SidePanelEntry::Key(
@@ -434,63 +363,6 @@ TEST_F(CommerceUiTabHelperTest,
   SimulateNavigationCommitted(GURL(kProductUrl));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_FALSE(tab_helper_->ShouldShowPriceInsightsIconView());
-}
-
-TEST_F(CommerceUiTabHelperTest,
-       TestPriceInsightsIconAvailableAfterLoading) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{commerce::kPriceInsights,
-        {{commerce::kPriceInsightsDelayChipParam, "true"}}}},
-      {});
-
-  shopping_service_->SetIsPriceInsightsEligible(true);
-
-  absl::optional<ProductInfo> product_info = CreateProductInfo(
-      kClusterId, GURL(kProductImageUrl), kProductClusterTitle);
-  shopping_service_->SetResponseForGetProductInfoForUrl(product_info);
-
-  absl::optional<PriceInsightsInfo> price_insights_info =
-      CreateValidPriceInsightsInfo(true, true, PriceBucket::kLowPrice);
-  shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(
-      price_insights_info);
-  // Simulate the navigation is committed and has stopped loading.
-  auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
-      GURL(kProductUrl), web_contents_);
-  simulator->SetKeepLoading(false);
-  simulator->Start();
-  simulator->Commit();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(tab_helper_->ShouldShowPriceInsightsIconView());
-}
-
-TEST_F(CommerceUiTabHelperTest,
-       TestPriceInsightsIconNotAvailableDuringLoading) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{commerce::kPriceInsights,
-        {{commerce::kPriceInsightsDelayChipParam, "true"}}}},
-      {});
-
-  shopping_service_->SetIsPriceInsightsEligible(true);
-
-  absl::optional<ProductInfo> product_info = CreateProductInfo(
-      kClusterId, GURL(kProductImageUrl), kProductClusterTitle);
-  shopping_service_->SetResponseForGetProductInfoForUrl(product_info);
-
-  absl::optional<PriceInsightsInfo> price_insights_info =
-      CreateValidPriceInsightsInfo(true, true, PriceBucket::kLowPrice);
-  shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(
-      price_insights_info);
-
-  // Simulate the navigation is committed but has not stopped loading.
-  auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
-      GURL(kProductUrl), web_contents_);
-  simulator->SetKeepLoading(true);
-  simulator->Start();
-  simulator->Commit();
-  base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(tab_helper_->ShouldShowPriceInsightsIconView());
 }
 
