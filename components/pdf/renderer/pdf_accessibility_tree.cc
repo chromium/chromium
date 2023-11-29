@@ -1860,8 +1860,6 @@ void PdfAccessibilityTree::DoSetAccessibilityPageInfo(
         !did_have_an_image_) {
       // In this case, PDF OCR doesn't run. Thus, set the status node to notify
       // users that the PDF content has been loaded into an accessibility tree.
-      // TODO(crbug.com/1473176): Consider merging the code below with
-      // `SetOcrCompleteStatus()`.
       SetStatusMessage(IDS_PDF_LOADED_TO_A11Y_TREE);
 
       UnserializeNodes();

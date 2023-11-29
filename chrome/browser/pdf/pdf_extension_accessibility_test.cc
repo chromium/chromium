@@ -973,9 +973,6 @@ class PDFExtensionAccessibilityTreeDumpTest
     std::vector<std::string> actual_lines =
         base::SplitString(actual_contents, "\n", base::KEEP_WHITESPACE,
                           base::SPLIT_WANT_NONEMPTY);
-    // TODO(b/1473176): Either keep the banner and status node in the output or
-    // modify `pdf_root` above to remove the banner and status nodes from the
-    // tree so that they are not in the format output.
     RemoveBannerAndStatusNodesFromFormatOutput(actual_lines, ax_inspect_type());
 
     // Validate the dump against the expectation file.

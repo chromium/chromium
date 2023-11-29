@@ -2896,9 +2896,6 @@ TEST_P(PdfOcrServiceTest, EmptyOCRResults) {
             status_node->GetStringAttribute(ax::mojom::StringAttribute::kName));
 }
 
-// TODO(crbug.com/1473176): Update it to provide fine-grained test coverage,
-// considering that the status node can be updated with an OCR complete message
-// before or after `UnserializeNodes()`.
 TEST_P(PdfOcrServiceTest, OCRCompleteNotification) {
   CreatePdfAccessibilityTree();
 
