@@ -108,7 +108,6 @@ public class PageInsightsCoordinatorTest {
 
     @Mock private OptimizationGuideBridge.Natives mOptimizationGuideBridgeJniMock;
     @Mock private ObservableSupplierImpl<Tab> mTabProvider;
-    @Captor private ArgumentCaptor<Callback<Tab>> mTabCallbackCaptor;
     @Captor private ArgumentCaptor<EmptyTabObserver> mTabObserverCaptor;
     @Captor private ArgumentCaptor<BottomSheetObserver> mBottomUiObserverCaptor;
 
@@ -223,6 +222,8 @@ public class PageInsightsCoordinatorTest {
                                             () -> rootView());
                         });
         doReturn(true).when(mIsPageInsightsHubEnabled).getAsBoolean();
+        doReturn(mTab).when(mTabProvider).get();
+        doReturn(JUnitTestGURLs.EXAMPLE_URL).when(mTab).getUrl();
         mPageInsightsCoordinator =
                 TestThreadUtils.runOnUiThreadBlocking(
                         () ->
@@ -246,10 +247,6 @@ public class PageInsightsCoordinatorTest {
                                                         .setShouldXsurfaceLog(true)
                                                         .setShouldAttachGaiaToRequest(true)
                                                         .build()));
-        doReturn(mTab).when(mTabProvider).get();
-        doReturn(JUnitTestGURLs.EXAMPLE_URL).when(mTab).getUrl();
-        verify(mTabProvider).addObserver(mTabCallbackCaptor.capture());
-        mTabCallbackCaptor.getValue().onResult(mTab);
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         mTabObserverCaptor
                 .getValue()
