@@ -70,5 +70,15 @@ void TestScreen::SetCursorScreenPointForTesting(const gfx::Point& point) {
   cursor_screen_point_ = point;
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+TabletState TestScreen::GetTabletState() const {
+  return state_;
+}
+
+void TestScreen::OverrideTabletStateForTesting(TabletState state) {
+  state_ = state;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 }  // namespace test
 }  // namespace display

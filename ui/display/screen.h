@@ -202,15 +202,12 @@ class DISPLAY_EXPORT Screen {
 
   // Returns true if the system is in tablet mode.
   bool InTabletMode() const;
-#endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Overrides tablet state stored in screen and notifies observers only on
   // Lacros side.
   // Not that this method may make tablet state out-of-sync with Ash side.
-  virtual void OverrideTabletStateForTesting(
-      display::TabletState tablet_state) {}
-#endif
+  virtual void OverrideTabletStateForTesting(TabletState tablet_state) {}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
  protected:
   void set_shutdown(bool shutdown) { shutdown_ = shutdown; }

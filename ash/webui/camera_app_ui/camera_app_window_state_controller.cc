@@ -4,14 +4,14 @@
 
 #include "ash/webui/camera_app_ui/camera_app_window_state_controller.h"
 
-#include "ash/public/cpp/tablet_mode.h"
+#include "ui/display/screen.h"
 
 namespace ash {
 
 namespace {
 
 bool IsRestored(views::Widget* widget) {
-  if (TabletMode::Get()->InTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     return !widget->IsMinimized();
   }
   return !widget->IsMinimized() && !widget->IsMaximized() &&

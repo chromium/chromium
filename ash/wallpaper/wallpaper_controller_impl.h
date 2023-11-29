@@ -48,6 +48,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/user_manager/user_type.h"
 #include "ui/compositor/compositor_lock.h"
+#include "ui/display/display_observer.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_observer.h"
@@ -55,6 +56,10 @@
 namespace base {
 class SequencedTaskRunner;
 }  // namespace base
+
+namespace display {
+enum class TabletState;
+}  // namespace display
 
 namespace ash {
 
@@ -87,7 +92,7 @@ class ASH_EXPORT WallpaperControllerImpl
       public ShellObserver,
       public LoginDataDispatcher::Observer,
       public SessionObserver,
-      public TabletModeObserver,
+      public display::DisplayObserver,
       public OverviewObserver,
       public ui::CompositorLockClient,
       public ui::NativeThemeObserver,
@@ -353,9 +358,8 @@ class ASH_EXPORT WallpaperControllerImpl
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
 
-  // TabletModeObserver:
-  void OnTabletModeStarted() override;
-  void OnTabletModeEnded() override;
+  // display::DisplayObserver:
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   // ScheduledFeature::CheckpointObserver:
   void OnCheckpointChanged(const ScheduledFeature* src,
@@ -865,6 +869,8 @@ class ASH_EXPORT WallpaperControllerImpl
   base::ScopedObservation<ScheduledFeature,
                           ScheduledFeature::CheckpointObserver>
       time_of_day_scheduler_observation_{this};
+
+  display::ScopedDisplayObserver display_observer_{this};
 
   std::unique_ptr<ui::CompositorLock> compositor_lock_;
 

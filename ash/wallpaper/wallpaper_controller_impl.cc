@@ -49,7 +49,6 @@
 #include "ash/wallpaper/wallpaper_window_state_manager.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "ash/wm/overview/overview_controller.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/command_line.h"
@@ -74,6 +73,7 @@
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 #include "ui/display/util/display_util.h"
 #include "ui/gfx/color_analysis.h"
 #include "ui/gfx/image/image.h"
@@ -551,7 +551,7 @@ bool WallpaperControllerImpl::ShouldApplyShield() const {
     needs_shield = false;
   } else if (Shell::Get()->session_controller()->IsUserSessionBlocked()) {
     needs_shield = true;
-  } else if (Shell::Get()->tablet_mode_controller()->InTabletMode() &&
+  } else if (display::Screen::GetScreen()->InTabletMode() &&
              !confirm_preview_wallpaper_callback_) {
     needs_shield = true;
   }
@@ -1532,7 +1532,6 @@ void WallpaperControllerImpl::OnRootWindowAdded(aura::Window* root_window) {
 
 void WallpaperControllerImpl::OnShellInitialized() {
   auto* shell = Shell::Get();
-  shell->tablet_mode_controller()->AddObserver(this);
   shell->overview_controller()->AddObserver(this);
   shell->dark_light_mode_controller()->AddCheckpointObserver(this);
   daily_refresh_scheduler_ = std::make_unique<WallpaperDailyRefreshScheduler>();
@@ -1547,7 +1546,6 @@ void WallpaperControllerImpl::OnShellInitialized() {
 
 void WallpaperControllerImpl::OnShellDestroying() {
   auto* shell = Shell::Get();
-  shell->tablet_mode_controller()->RemoveObserver(this);
   shell->overview_controller()->RemoveObserver(this);
   shell->dark_light_mode_controller()->RemoveCheckpointObserver(this);
   daily_refresh_observation_.Reset();
@@ -1633,11 +1631,13 @@ void WallpaperControllerImpl::OnSessionStateChanged(
   }
 }
 
-void WallpaperControllerImpl::OnTabletModeStarted() {
-  RepaintWallpaper();
-}
+void WallpaperControllerImpl::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  if (display::IsTabletStateChanging(state)) {
+    // Do nothing when the tablet state is still in the process of transition.
+    return;
+  }
 
-void WallpaperControllerImpl::OnTabletModeEnded() {
   RepaintWallpaper();
 }
 
@@ -1696,14 +1696,14 @@ void WallpaperControllerImpl::OnOverviewModeStarting() {
   // don't apply the wallpaper shield no matter it's in overview mode or not.
   // However, in tablet mode, we need to apply the wallpaper shield when it's
   // not in the overview mode.
-  if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     RepaintWallpaper();
   }
 }
 
 void WallpaperControllerImpl::OnOverviewModeEnded() {
   // Refer to the comment in `OnOverviewModeStarting`.
-  if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+  if (display::Screen::GetScreen()->InTabletMode()) {
     RepaintWallpaper();
   }
 }

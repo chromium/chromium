@@ -8,7 +8,6 @@
 
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/new_window_delegate.h"
-#include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
@@ -18,8 +17,11 @@
 #include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
 #include "ui/aura/window.h"
+#include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 
 namespace ash {
+
 namespace {
 
 using camera_app::mojom::DocumentOutputFormat;
@@ -123,12 +125,10 @@ CameraAppHelperImpl::CameraAppHelperImpl(
   DCHECK(camera_app_ui);
   DCHECK(window);
   window->SetProperty(kCanConsumeSystemKeysKey, true);
-  TabletMode::Get()->AddObserver(this);
   ScreenBacklight::Get()->AddObserver(this);
 }
 
 CameraAppHelperImpl::~CameraAppHelperImpl() {
-  TabletMode::Get()->RemoveObserver(this);
   ScreenBacklight::Get()->RemoveObserver(this);
 
   if (pending_intent_id_.has_value()) {
@@ -159,7 +159,7 @@ void CameraAppHelperImpl::HandleCameraResult(
 }
 
 void CameraAppHelperImpl::IsTabletMode(IsTabletModeCallback callback) {
-  std::move(callback).Run(TabletMode::Get()->InTabletMode());
+  std::move(callback).Run(display::Screen::GetScreen()->InTabletMode());
 }
 
 void CameraAppHelperImpl::StartPerfEventTrace(const std::string& event) {
@@ -176,7 +176,7 @@ void CameraAppHelperImpl::SetTabletMonitor(
     mojo::PendingRemote<TabletModeMonitor> monitor,
     SetTabletMonitorCallback callback) {
   tablet_mode_monitor_ = mojo::Remote<TabletModeMonitor>(std::move(monitor));
-  std::move(callback).Run(TabletMode::Get()->InTabletMode());
+  std::move(callback).Run(display::Screen::GetScreen()->InTabletMode());
 }
 
 void CameraAppHelperImpl::SetScreenStateMonitor(
@@ -446,14 +446,23 @@ void CameraAppHelperImpl::StopStorageMonitor() {
   }
 }
 
-void CameraAppHelperImpl::OnTabletModeStarted() {
-  if (tablet_mode_monitor_.is_bound())
-    tablet_mode_monitor_->Update(true);
-}
-
-void CameraAppHelperImpl::OnTabletModeEnded() {
-  if (tablet_mode_monitor_.is_bound())
-    tablet_mode_monitor_->Update(false);
+void CameraAppHelperImpl::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  switch (state) {
+    case display::TabletState::kEnteringTabletMode:
+    case display::TabletState::kExitingTabletMode:
+      break;
+    case display::TabletState::kInClamshellMode:
+      if (tablet_mode_monitor_.is_bound()) {
+        tablet_mode_monitor_->Update(false);
+      }
+      break;
+    case display::TabletState::kInTabletMode:
+      if (tablet_mode_monitor_.is_bound()) {
+        tablet_mode_monitor_->Update(true);
+      }
+      break;
+  }
 }
 
 void CameraAppHelperImpl::OnScreenBacklightStateChanged(
