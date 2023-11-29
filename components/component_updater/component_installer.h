@@ -170,7 +170,7 @@ class ComponentInstaller final : public update_client::CrxInstaller {
 
   bool GetInstalledFile(const std::string& file,
                         base::FilePath* installed_file) override;
-  // Only user-level component installations can be uninstalled.
+  // Components bundled with installations of Chrome cannot be uninstalled.
   bool Uninstall() override;
 
  private:
