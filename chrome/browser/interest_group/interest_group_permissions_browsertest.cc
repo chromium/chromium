@@ -39,7 +39,8 @@ class InterestGroupPermissionsBrowserTest
          features::kPrivacySandboxAdsAPIsOverride,
          privacy_sandbox::kPrivacySandboxSettings4},
         /*disabled_features=*/
-        {blink::features::kFencedFrames});
+        {blink::features::kFencedFrames,
+         blink::features::kFledgeEnforceKAnonymity});
   }
 
   void SetUpOnMainThread() override {

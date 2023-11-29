@@ -14113,6 +14113,27 @@
             ]
         }
     ],
+    "ProtectedAudiencesKAnonymityEnforcementStudy": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FledgeConsiderKAnonymity",
+                        "FledgeEnforceKAnonymity"
+                    ]
+                }
+            ]
+        }
+    ],
     "ProtectedAudiencesNegativeTargetingStudy": [
         {
             "platforms": [

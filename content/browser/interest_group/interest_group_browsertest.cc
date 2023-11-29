@@ -696,7 +696,8 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
          blink::features::kFencedFramesM120FeaturesPart1,
          features::kBackForwardCache, features::kFledgeUseInterestGroupCache},
         /*disabled_features=*/
-        {blink::features::kFencedFrames});
+        {blink::features::kFencedFrames,
+         blink::features::kFledgeEnforceKAnonymity});
   }
 
   ~InterestGroupBrowserTest() override { content_browser_client_.reset(); }
