@@ -13,7 +13,6 @@
 namespace blink {
 
 class ComputedStyle;
-class Document;
 class FillLayer;
 class ImageResourceObserver;
 class LayoutBox;
@@ -101,7 +100,6 @@ class BackgroundImageGeometry {
   }
 
   const ImageResourceObserver& ImageClient() const;
-  const Document& ImageDocument() const;
   const ComputedStyle& ImageStyle(const ComputedStyle& fragment_style) const;
   InterpolationQuality ImageInterpolationQuality() const;
   cc::PaintFlags::DynamicRangeLimit DynamicRangeLimit() const;
@@ -186,7 +184,6 @@ class BackgroundImageGeometry {
   // 2. a table cell using its row/column's background (box_ is the table cell,
   //    and positioning_box_ is the row/column).
   // When they are different:
-  // - ImageDocument() uses box_;
   // - ImageClient() uses box_ if painting view, otherwise positioning_box_;
   // - ImageStyle() uses positioning_box_;
   // - ImageInterpolationQuality() uses box_;

@@ -966,10 +966,6 @@ const ImageResourceObserver& BackgroundImageGeometry::ImageClient() const {
   return *(painting_view_ ? box_ : positioning_box_);
 }
 
-const Document& BackgroundImageGeometry::ImageDocument() const {
-  return box_->GetDocument();
-}
-
 const ComputedStyle& BackgroundImageGeometry::ImageStyle(
     const ComputedStyle& fragment_style) const {
   if (painting_view_ || cell_using_container_background_)
