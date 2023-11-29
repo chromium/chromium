@@ -5,7 +5,7 @@
 import 'chrome://compose/app.js';
 
 import {ComposeAppElement, ComposeAppState} from 'chrome://compose/app.js';
-import {CloseReason, ComposeDialogCallbackRouter, ComposeState, ComposeStatus, Length, OpenMetadata, StyleModifiers, Tone, UserFeedback} from 'chrome://compose/compose.mojom-webui.js';
+import {CloseReason, ComposeDialogCallbackRouter, ComposeState, ComposeStatus, ConsentState, Length, OpenMetadata, StyleModifiers, Tone, UserFeedback} from 'chrome://compose/compose.mojom-webui.js';
 import {ComposeApiProxy, ComposeApiProxyImpl} from 'chrome://compose/compose_api_proxy.js';
 import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -15,6 +15,7 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {isVisible, whenCheck} from 'chrome://webui-test/test_util.js';
 
 class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
+  private initialConsentState_: ConsentState = ConsentState.kConsented;
   private initialInput_: string = '';
   private initialState_: ComposeState = {
     webuiState: '',
@@ -43,6 +44,10 @@ class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
     this.methodCalled('acceptComposeResult');
     return Promise.resolve(true);
   }
+
+  acknowledgeConsentDisclaimer() {}
+
+  approveConsent() {}
 
   closeUi(reason: CloseReason) {
     this.methodCalled('closeUi', reason);
@@ -74,6 +79,7 @@ class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
   requestInitialState(): Promise<OpenMetadata> {
     this.methodCalled('requestInitialState');
     return Promise.resolve({
+      consentState: this.initialConsentState_,
       composeState: this.initialState_,
       initialInput: this.initialInput_,
       configurableParams: {
@@ -90,6 +96,10 @@ class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
 
   setUserFeedback(feedback: UserFeedback) {
     this.methodCalled('setUserFeedback', feedback);
+  }
+
+  setInitialConsentState(consent: ConsentState) {
+    this.initialConsentState_ = consent;
   }
 
   setInitialState(state: Partial<ComposeState>, input?: string) {
@@ -137,6 +147,16 @@ suite('ComposeApp', () => {
     testProxy.remote.responseReceived(
         {status: status, undoAvailable: false, result});
     return testProxy.remote.$.flushForTesting();
+  }
+
+  async function initializeNewAppWithConsentState(consent: ConsentState):
+      Promise<ComposeAppElement> {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    testProxy.setInitialConsentState(consent);
+    const newApp = document.createElement('compose-app');
+    document.body.appendChild(newApp);
+    await flushTasks();
+    return newApp;
   }
 
   test('SendsInputParams', () => {
@@ -228,6 +248,70 @@ suite('ComposeApp', () => {
         app.$.body, () => app.$.body.classList.contains('can-scroll'));
     assertEquals(220, app.$.body.offsetHeight);
     assertTrue(220 < app.$.body.scrollHeight);
+  });
+
+  test('ConsentStateDeterminesViewState', async () => {
+    const appWithConsentDialog =
+        await initializeNewAppWithConsentState(ConsentState.kUnset);
+    // Check correct visibility for consent view state
+    assertFalse(isVisible(appWithConsentDialog.$.appDialog));
+    assertTrue(isVisible(appWithConsentDialog.$.consentDialog));
+    assertTrue(isVisible(appWithConsentDialog.$.consentFooter));
+    assertFalse(isVisible(appWithConsentDialog.$.disclaimerFooter));
+
+    const appWithDisclaimerDialog =
+        await initializeNewAppWithConsentState(ConsentState.kExternalConsented);
+    // Check correct visibility for disclaimer view state
+    assertFalse(isVisible(appWithDisclaimerDialog.$.appDialog));
+    assertTrue(isVisible(appWithDisclaimerDialog.$.consentDialog));
+    assertFalse(isVisible(appWithDisclaimerDialog.$.consentFooter));
+    assertTrue(isVisible(appWithDisclaimerDialog.$.disclaimerFooter));
+
+    const appWithMainDialog =
+        await initializeNewAppWithConsentState(ConsentState.kConsented);
+    // Check correct visibility for main app view state
+    assertTrue(isVisible(appWithMainDialog.$.appDialog));
+    assertFalse(isVisible(appWithMainDialog.$.consentDialog));
+  });
+
+  test('ConsentCloseButton', async () => {
+    const appWithConsentDialog =
+        await initializeNewAppWithConsentState(ConsentState.kUnset);
+
+    appWithConsentDialog.$.closeButtonConsent.click();
+    // Close reason should match that given to the consent close button.
+    const closeReason = await testProxy.whenCalled('closeUi');
+    assertEquals(CloseReason.kConsentCloseButton, closeReason);
+  });
+
+  test('ConsentNoThanksButton', async () => {
+    const appWithConsentDialog =
+        await initializeNewAppWithConsentState(ConsentState.kUnset);
+
+    appWithConsentDialog.$.consentNoThanksButton.click();
+    // Close reason should match that given to the consent no thanks button.
+    const closeReason = await testProxy.whenCalled('closeUi');
+    assertEquals(CloseReason.kPageContentConsentDeclined, closeReason);
+  });
+
+  test('ConsentYesButton', async () => {
+    const appWithConsentDialog =
+        await initializeNewAppWithConsentState(ConsentState.kUnset);
+
+    appWithConsentDialog.$.consentYesButton.click();
+    // View state should change from consent UI to main app UI.
+    assertFalse(isVisible(appWithConsentDialog.$.consentDialog));
+    assertTrue(isVisible(appWithConsentDialog.$.appDialog));
+  });
+
+  test('DisclaimerLetsGoButton', async () => {
+    const appWithDisclaimerDialog =
+        await initializeNewAppWithConsentState(ConsentState.kExternalConsented);
+
+    appWithDisclaimerDialog.$.disclaimerLetsGoButton.click();
+    // View state should change from disclaimer UI to main app UI.
+    assertFalse(isVisible(appWithDisclaimerDialog.$.consentDialog));
+    assertTrue(isVisible(appWithDisclaimerDialog.$.appDialog));
   });
 
   test('InitializesWithState', async () => {

@@ -118,6 +118,17 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
     skip_inner_text_ = skip_inner_text;
   }
 
+  void set_initial_consent_state(compose::mojom::ConsentState consent_state) {
+    initial_consent_state_ = consent_state;
+  }
+
+  // Set the first time the user progresses through the consent/disclaimer
+  // dialog to the main dialog. This can only be set one way as it corresponds
+  // to completion of the user's FRE.
+  void set_consent_given_or_acknowledged() {
+    consent_given_or_acknowledged_ = true;
+  }
+
   // Refresh the inner text on session resumption.
   void RefreshInnerText();
 
@@ -162,6 +173,12 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
 
   // Renderer provided text selection.
   std::string initial_input_;
+
+  // The state of consent-related prefs when the session is first created.
+  compose::mojom::ConsentState initial_consent_state_;
+  // True if the user either gave consent or acknowledged given consent in this
+  // session.
+  bool consent_given_or_acknowledged_ = false;
 
   // Reason that a compose session was exited, used for metrics.
   compose::ComposeSessionCloseReason close_reason_;

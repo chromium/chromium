@@ -24,7 +24,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {Debouncer, microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
-import {CloseReason, ComposeDialogCallbackRouter, ComposeResponse, ComposeStatus, ConfigurableParams, Length, StyleModifiers, Tone, UserFeedback} from './compose.mojom-webui.js';
+import {CloseReason, ComposeDialogCallbackRouter, ComposeResponse, ComposeStatus, ConfigurableParams, ConsentState, Length, StyleModifiers, Tone, UserFeedback} from './compose.mojom-webui.js';
 import {ComposeApiProxy, ComposeApiProxyImpl} from './compose_api_proxy.js';
 import {ComposeTextareaElement} from './textarea.js';
 
@@ -40,6 +40,13 @@ export interface ComposeAppState {
 
 export interface ComposeAppElement {
   $: {
+    consentDialog: HTMLElement,
+    consentFooter: HTMLElement,
+    consentNoThanksButton: CrButtonElement,
+    consentYesButton: CrButtonElement,
+    disclaimerFooter: HTMLElement,
+    disclaimerLetsGoButton: CrButtonElement,
+    appDialog: HTMLElement,
     body: HTMLElement,
     cancelEditButton: CrButtonElement,
     closeButton: HTMLElement,
@@ -110,6 +117,14 @@ export class ComposeAppElement extends ComposeAppElementBase {
         type: Number,
         value: Tone.kUnset,
       },
+      showMainAppDialog_: {
+        type: Boolean,
+        value: false,
+      },
+      showDisclaimerFooter_: {
+        type: Boolean,
+        value: false,
+      },
       submitted_: {
         type: Boolean,
         value: false,
@@ -171,6 +186,8 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private apiProxy_: ComposeApiProxy = ComposeApiProxyImpl.getInstance();
   private eventTracker_: EventTracker = new EventTracker();
   private router_: ComposeDialogCallbackRouter = this.apiProxy_.getRouter();
+  private showMainAppDialog_: boolean;
+  private showDisclaimerFooter_: boolean;
   private editedInput_: string;
   private input_: string;
   private inputParams_: ConfigurableParams;
@@ -219,6 +236,16 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private getInitialState_() {
     this.apiProxy_.requestInitialState().then(initialState => {
       this.inputParams_ = initialState.configurableParams;
+      // The dialog can initially be in one of three view states. The consent
+      // view is shown if consent is not currently granted. If consent was
+      // granted but not through Compose use, the disclaimer view is shown.
+      // Otherwise, full consent causes the dialog to show at the main app
+      // state.
+      this.showMainAppDialog_ =
+          initialState.consentState === ConsentState.kConsented;
+      this.showDisclaimerFooter_ =
+          initialState.consentState === ConsentState.kExternalConsented;
+
       if (initialState.initialInput) {
         this.input_ = initialState.initialInput;
       }
@@ -250,12 +277,30 @@ export class ComposeAppElement extends ComposeAppElementBase {
     });
   }
 
+  private onConsentNoThanksButtonClick_() {
+    this.apiProxy_.closeUi(CloseReason.kPageContentConsentDeclined);
+  }
+
+  private onConsentYesButtonClick_() {
+    this.apiProxy_.approveConsent();
+    this.showMainAppDialog_ = true;
+  }
+
+  private onDisclaimerLetsGoButtonClick_() {
+    this.apiProxy_.acknowledgeConsentDisclaimer();
+    this.showDisclaimerFooter_ = false;
+    this.showMainAppDialog_ = true;
+  }
+
   private onCancelEditClick_() {
     this.isEditingSubmittedInput_ = false;
   }
 
-  private onClose_() {
-    this.apiProxy_.closeUi(CloseReason.kCloseButton);
+  private onClose_(e: Event) {
+    const closeReason = (e.target as HTMLElement).id === 'closeButtonConsent' ?
+        CloseReason.kConsentCloseButton :
+        CloseReason.kCloseButton;
+    this.apiProxy_.closeUi(closeReason);
   }
 
   private onEditedInputChanged_() {
