@@ -158,8 +158,6 @@ std::string GetMainContentExtractorRoleFromChromeRole(ax::mojom::Role role) {
   return role_name;
 }
 
-// TODO(https://crbug.com/1443341): Consider merging the following functions
-// into a template, e.g. using std::is_same.
 void AddAttribute(const std::string& name,
                   int value,
                   screenai::UiElement& ui_element) {
@@ -169,17 +167,9 @@ void AddAttribute(const std::string& name,
   ui_element.add_attributes()->Swap(&attrib);
 }
 
+template <class T>
 void AddAttribute(const std::string& name,
-                  const char* value,
-                  screenai::UiElement& ui_element) {
-  screenai::UiElementAttribute attrib;
-  attrib.set_name(name);
-  attrib.set_string_value(value);
-  ui_element.add_attributes()->Swap(&attrib);
-}
-
-void AddAttribute(const std::string& name,
-                  const std::string& value,
+                  const T& value,
                   screenai::UiElement& ui_element) {
   screenai::UiElementAttribute attrib;
   attrib.set_name(name);
