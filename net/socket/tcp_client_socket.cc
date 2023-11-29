@@ -347,7 +347,6 @@ void TCPClientSocket::DoDisconnect() {
   }
 
   total_received_bytes_ = 0;
-  EmitTCPMetricsHistogramsOnDisconnect();
 
   // If connecting or already connected, record that the socket has been
   // disconnected.
@@ -562,14 +561,6 @@ int TCPClientSocket::OpenSocket(AddressFamily family) {
   socket_->SetDefaultOptionsForClient();
 
   return OK;
-}
-
-void TCPClientSocket::EmitTCPMetricsHistogramsOnDisconnect() {
-  base::TimeDelta rtt;
-  if (socket_->GetEstimatedRoundTripTime(&rtt)) {
-    UMA_HISTOGRAM_CUSTOM_TIMES("Net.TcpRtt.AtDisconnect", rtt,
-                               base::Milliseconds(1), base::Minutes(10), 100);
-  }
 }
 
 void TCPClientSocket::EmitConnectAttemptHistograms(int result) {

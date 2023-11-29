@@ -5458,14 +5458,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.TcpRtt.AtDisconnect" units="ms" expires_after="M85">
-  <owner>bmcquade@chromium.org</owner>
-  <summary>
-    The kernel's estimated TCP round trip time. Recorded for each TCP socket, at
-    the time it is disconnected.
-  </summary>
-</histogram>
-
 <histogram base="true" name="Net.TrustTokens.NetErrorForFetchFailure"
     enum="NetErrorCodes" expires_after="2023-06-06">
 <!-- Name completed by histogram_suffixes name="TrustTokenOperationType" -->
