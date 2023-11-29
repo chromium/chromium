@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "ash/shell.h"
 #include "ash/style/style_viewer/system_ui_components_grid_view.h"
@@ -66,7 +67,7 @@ class SystemUIComponentsStyleViewerView::ComponentButton
  public:
   ComponentButton(views::LabelButton::PressedCallback pressed_callback,
                   const std::u16string& name)
-      : views::LabelButton(pressed_callback, name) {
+      : views::LabelButton(std::move(pressed_callback), name) {
     SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
     SetBorder(std::make_unique<views::HighlightBorder>(
         0, chromeos::features::IsJellyrollEnabled()

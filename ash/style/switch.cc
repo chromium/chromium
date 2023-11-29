@@ -4,6 +4,8 @@
 
 #include "ash/style/switch.h"
 
+#include <utility>
+
 #include "ash/style/switch.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
@@ -29,7 +31,7 @@ constexpr int kFocusPadding = 2;
 // Switch:
 
 Switch::Switch(PressedCallback callback)
-    : views::ToggleButton(callback, /*has_thumb_shadow=*/false) {
+    : views::ToggleButton(std::move(callback), /*has_thumb_shadow=*/false) {
   SetBorder(views::CreateEmptyBorder(gfx::Insets(kSwitchInnerPadding)));
   auto* focus_ring = views::FocusRing::Get(this);
   focus_ring->SetOutsetFocusRingDisabled(true);

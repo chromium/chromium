@@ -5,6 +5,7 @@
 #include "ash/style/combobox.h"
 
 #include <memory>
+#include <utility>
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/style/color_provider.h"
@@ -85,7 +86,7 @@ class ComboboxMenuOption : public RadioButton {
                      PressedCallback callback,
                      const std::u16string& label)
       : RadioButton(button_width,
-                    callback,
+                    std::move(callback),
                     label,
                     RadioButton::IconDirection::kLeading,
                     RadioButton::IconType::kCheck,
@@ -135,7 +136,8 @@ class ComboboxMenuOptionGroup : public RadioButtonGroup {
   RadioButton* AddButton(RadioButton::PressedCallback callback,
                          const std::u16string& label) override {
     auto* button = AddChildView(std::make_unique<ComboboxMenuOption>(
-        group_width_ - inside_border_insets_.width(), callback, label));
+        group_width_ - inside_border_insets_.width(), std::move(callback),
+        label));
     button->set_delegate(this);
     buttons_.push_back(button);
     return button;

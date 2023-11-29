@@ -5,6 +5,7 @@
 #include "ash/style/pagination_view.h"
 
 #include <optional>
+#include <utility>
 
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -75,7 +76,7 @@ class IndicatorButton : public views::Button {
 
   IndicatorButton(PressedCallback callback,
                   const std::u16string& accessible_name)
-      : views::Button(callback) {
+      : views::Button(std::move(callback)) {
     SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
     SetAccessibleName(accessible_name);
   }

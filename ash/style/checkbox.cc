@@ -4,6 +4,8 @@
 
 #include "ash/style/checkbox.h"
 
+#include <utility>
+
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -23,7 +25,7 @@ Checkbox::Checkbox(int button_width,
                    const gfx::Insets& insets,
                    int image_label_spacing)
     : OptionButtonBase(button_width,
-                       callback,
+                       std::move(callback),
                        label,
                        insets,
                        image_label_spacing) {}

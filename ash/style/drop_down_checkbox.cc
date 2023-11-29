@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -86,8 +87,8 @@ class CheckboxMenuOptionGroup : public CheckboxGroup {
   Checkbox* AddButton(Checkbox::PressedCallback callback,
                       const std::u16string& label) override {
     auto* button = AddChildView(std::make_unique<Checkbox>(
-        group_width_ - inside_border_insets_.width(), callback, label,
-        kMenuItemInnerPadding, kCheckmarkLabelSpacing));
+        group_width_ - inside_border_insets_.width(), std::move(callback),
+        label, kMenuItemInnerPadding, kCheckmarkLabelSpacing));
     button->set_delegate(this);
     buttons_.push_back(button);
     return button;
