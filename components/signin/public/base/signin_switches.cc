@@ -92,9 +92,6 @@ BASE_FEATURE(kSearchEngineChoice,
 const base::FeatureParam<bool> kWithSearchEngineMarketingSnippets{
     &kSearchEngineChoice, "with-marketing-snippets", /*default_value=*/false};
 
-const base::FeatureParam<bool> kWithForcedScrollEnabled{
-    &kSearchEngineChoice, "with-forced-scroll", /*default_value=*/false};
-
 // Enables the search engine choice feature in the FRE.
 BASE_FEATURE(kSearchEngineChoiceFre,
              "SearchEngineChoiceFre",

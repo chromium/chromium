@@ -261,8 +261,7 @@ class FirstRunParameterizedInteractiveUiTest
       enabled_features_and_params.push_back(
           {switches::kSearchEngineChoiceFre, {}});
       enabled_features_and_params.push_back(
-          {switches::kSearchEngineChoice,
-           {{switches::kWithForcedScrollEnabled.name, "true"}}});
+          {switches::kSearchEngineChoice, {}});
     }
 #endif
 
@@ -335,19 +334,10 @@ class FirstRunParameterizedInteractiveUiTest
   auto CompleteSearchEngineChoiceStep() {
     const DeepQuery first_search_engine = {"search-engine-choice-app",
                                            "cr-radio-button"};
-    const DeepQuery searchEngineChoiceList{"search-engine-choice-app",
-                                           "#choiceList"};
     return Steps(
         WaitForWebContentsNavigation(
             kWebContentsId, GURL(chrome::kChromeUISearchEngineChoiceURL)),
         PressJsButton(kWebContentsId, first_search_engine),
-        // Simulate scrolling to the bottom of the choice list.
-        ExecuteJsAt(kWebContentsId, searchEngineChoiceList, R"js(
-          element => {
-            element.scrollTop = element.scrollHeight - element.clientHeight;
-            element.dispatchEvent(new CustomEvent('scroll'));
-          }
-        )js"),
         WaitForButtonEnabled(kWebContentsId, kSubmitSearchEngineChoiceButton),
         PressJsButton(kWebContentsId, kSubmitSearchEngineChoiceButton));
   }

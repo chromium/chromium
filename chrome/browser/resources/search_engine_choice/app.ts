@@ -18,7 +18,6 @@ import './strings.m.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -35,7 +34,6 @@ export interface SearchEngineChoiceAppElement {
     searchEngineOmnibox: HTMLElement,
     submitButton: CrButtonElement,
     infoLink: HTMLElement,
-    choiceList: CrRadioGroupElement,
   };
 }
 
@@ -75,8 +73,7 @@ export class SearchEngineChoiceAppElement extends
 
       isSubmitDisabled_: {
         type: Boolean,
-        computed: 'isSubmitButtonDisabled_(selectedChoice_, ' +
-            'hasUserScrolledToTheBottom_)',
+        computed: 'isSubmitButtonDisabled_(selectedChoice_)',
       },
 
       fakeOmniboxText_: {
@@ -95,13 +92,6 @@ export class SearchEngineChoiceAppElement extends
           return loadTimeData.getBoolean('withMarketingSnippets');
         },
       },
-
-      withForcedScroll_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('withForcedScroll');
-        },
-      },
     };
   }
 
@@ -111,8 +101,6 @@ export class SearchEngineChoiceAppElement extends
   private fakeOmniboxIconPath_: string;
   private pageHandler_: PageHandlerRemote;
   private withMarketingSnippets_: boolean;
-  private hasUserScrolledToTheBottom_: boolean;
-  private withForcedScroll_: boolean;
 
   constructor() {
     super();
@@ -142,26 +130,12 @@ export class SearchEngineChoiceAppElement extends
     });
   }
 
-  override ready() {
-    super.ready();
-
-    if (this.withForcedScroll_) {
-      this.$.choiceList.addEventListener(
-          'scroll', this.onChoiceListScroll_.bind(this));
-    }
-  }
-
   private onLinkClicked_() {
     this.$.infoDialog.showModal();
     this.pageHandler_.handleLearnMoreLinkClicked();
   }
 
-  // The user needs to make a choice and scroll to the bottom of the list to be
-  // able to submit the selection.
   private isSubmitButtonDisabled_() {
-    if (this.withForcedScroll_ && !this.hasUserScrolledToTheBottom_) {
-      return true;
-    }
     return parseInt(this.selectedChoice_) === -1;
   }
 
@@ -231,20 +205,6 @@ export class SearchEngineChoiceAppElement extends
       this.fakeOmniboxText_ = fakeOmniboxText;
       this.fakeOmniboxIconPath_ = fakeOmniboxIconPath;
       searchEngineOmnibox.classList.add('fade-in-animation');
-    }
-  }
-
-  private onChoiceListScroll_() {
-    const scrollHeight = this.$.choiceList.scrollHeight;
-    const clientHeight = this.$.choiceList.clientHeight;
-    const scrollTop = this.$.choiceList.scrollTop;
-
-    // We check for `< 1` so that we don't care about rounding issues.
-    if (Math.abs(scrollHeight - clientHeight - scrollTop) < 1) {
-      this.hasUserScrolledToTheBottom_ = true;
-
-      this.$.choiceList.removeEventListener(
-          'scroll', this.onChoiceListScroll_.bind(this));
     }
   }
 }
