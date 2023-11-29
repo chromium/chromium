@@ -65,6 +65,7 @@ absl::optional<ViewID> GetViewID(
     case ImageType::SENSORS:
     case ImageType::NOTIFICATIONS_QUIET_PROMPT:
     case ImageType::STORAGE_ACCESS:
+    case ImageType::MIDI:
       return absl::nullopt;
 
     case ImageType::NUM_IMAGE_TYPES:

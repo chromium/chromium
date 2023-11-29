@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -36,6 +37,7 @@
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
@@ -45,6 +47,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "net/base/schemeful_site.h"
 #include "services/device/public/cpp/device_features.h"
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"
@@ -128,6 +131,17 @@ class ContentSettingRPHImageModel : public ContentSettingSimpleImageModel {
 
   ContentSettingRPHImageModel(const ContentSettingRPHImageModel&) = delete;
   ContentSettingRPHImageModel& operator=(const ContentSettingRPHImageModel&) =
+      delete;
+
+  bool UpdateAndGetVisibility(WebContents* web_contents) override;
+};
+
+class ContentSettingMIDIImageModel : public ContentSettingSimpleImageModel {
+ public:
+  ContentSettingMIDIImageModel();
+
+  ContentSettingMIDIImageModel(const ContentSettingMIDIImageModel&) = delete;
+  ContentSettingMIDIImageModel& operator=(const ContentSettingMIDIImageModel&) =
       delete;
 
   bool UpdateAndGetVisibility(WebContents* web_contents) override;
@@ -331,6 +345,7 @@ void GetIconChromeRefresh(ContentSettingsType type,
       *icon = blocked ? &vector_icons::kProtocolHandlerOffChromeRefreshIcon
                       : &vector_icons::kProtocolHandlerChromeRefreshIcon;
       return;
+    case ContentSettingsType::MIDI:
     case ContentSettingsType::MIDI_SYSEX:
       *icon = blocked ? &vector_icons::kMidiOffChromeRefreshIcon
                       : &vector_icons::kMidiChromeRefreshIcon;
@@ -416,6 +431,7 @@ void GetIconFromType(ContentSettingsType type,
     case ContentSettingsType::PROTOCOL_HANDLERS:
       *icon = &vector_icons::kProtocolHandlerIcon;
       return;
+    case ContentSettingsType::MIDI:
     case ContentSettingsType::MIDI_SYSEX:
       *icon = &vector_icons::kMidiIcon;
       return;
@@ -447,6 +463,41 @@ void GetIconFromType(ContentSettingsType type,
       NOTREACHED();
       return;
   }
+}
+
+std::optional<ContentSettingsType> WhichMidiShouldDisplay(
+    PageSpecificContentSettings* content_settings) {
+  // MIDI and MIDI-SysEx should be mutually exclusive in their display.
+  // The precedence logic:
+  // * Always show the allowed permission over the blocked one.
+  // * Always show the more dangerous permission (MIDI-SysEx) over the less
+  //   dangerous permission (MIDI).
+  const bool is_midi_allowed =
+      content_settings->IsContentAllowed(ContentSettingsType::MIDI);
+  const bool is_midi_blocked =
+      content_settings->IsContentBlocked(ContentSettingsType::MIDI);
+  const bool is_sysex_allowed =
+      content_settings->IsContentAllowed(ContentSettingsType::MIDI_SYSEX);
+  const bool is_sysex_blocked =
+      content_settings->IsContentBlocked(ContentSettingsType::MIDI_SYSEX);
+
+  if (is_sysex_allowed) {
+    return ContentSettingsType::MIDI_SYSEX;
+  }
+
+  if (is_midi_allowed) {
+    return ContentSettingsType::MIDI;
+  }
+
+  if (is_midi_blocked) {
+    return ContentSettingsType::MIDI;
+  }
+
+  if (is_sysex_blocked) {
+    return ContentSettingsType::MIDI_SYSEX;
+  }
+
+  return std::nullopt;
 }
 
 }  // namespace
@@ -513,6 +564,8 @@ ContentSettingImageModel::CreateForContentType(ImageType image_type) {
       return std::make_unique<ContentSettingNotificationsImageModel>();
     case ImageType::STORAGE_ACCESS:
       return std::make_unique<ContentSettingStorageAccessImageModel>();
+    case ImageType::MIDI:
+      return std::make_unique<ContentSettingMIDIImageModel>();
 
     case ImageType::NUM_IMAGE_TYPES:
       break;
@@ -851,6 +904,37 @@ bool ContentSettingRPHImageModel::UpdateAndGetVisibility(
   return true;
 }
 
+// MIDI ------------------------------------------------------------------------
+
+ContentSettingMIDIImageModel::ContentSettingMIDIImageModel()
+    : ContentSettingSimpleImageModel(ImageType::MIDI,
+                                     ContentSettingsType::MIDI) {}
+
+bool ContentSettingMIDIImageModel::UpdateAndGetVisibility(
+    WebContents* web_contents) {
+  if (!base::FeatureList::IsEnabled(features::kBlockMidiByDefault)) {
+    return false;
+  }
+
+  PageSpecificContentSettings* content_settings =
+      PageSpecificContentSettings::GetForFrame(
+          web_contents->GetPrimaryMainFrame());
+  if (!content_settings) {
+    return false;
+  }
+
+  if (WhichMidiShouldDisplay(content_settings) != ContentSettingsType::MIDI) {
+    return false;
+  }
+
+  const bool is_allowed =
+      content_settings->IsContentAllowed(ContentSettingsType::MIDI);
+  SetIcon(ContentSettingsType::MIDI, /*blocked=*/!is_allowed);
+  set_tooltip(l10n_util::GetStringUTF16(is_allowed ? IDS_ALLOWED_MIDI_MESSAGE
+                                                   : IDS_BLOCKED_MIDI_MESSAGE));
+  return true;
+}
+
 // MIDI SysEx ------------------------------------------------------------------
 
 ContentSettingMIDISysExImageModel::ContentSettingMIDISysExImageModel()
@@ -865,13 +949,21 @@ bool ContentSettingMIDISysExImageModel::UpdateAndGetVisibility(
   if (!content_settings)
     return false;
 
-  bool is_allowed =
+  const bool is_allowed =
       content_settings->IsContentAllowed(ContentSettingsType::MIDI_SYSEX);
-  bool is_blocked =
+  const bool is_blocked =
       content_settings->IsContentBlocked(ContentSettingsType::MIDI_SYSEX);
 
-  if (!is_allowed && !is_blocked)
-    return false;
+  if (base::FeatureList::IsEnabled(features::kBlockMidiByDefault)) {
+    if (WhichMidiShouldDisplay(content_settings) !=
+        ContentSettingsType::MIDI_SYSEX) {
+      return false;
+    }
+  } else {
+    if (!is_allowed && !is_blocked) {
+      return false;
+    }
+  }
 
   SetIcon(ContentSettingsType::MIDI_SYSEX, /*blocked=*/!is_allowed);
   set_tooltip(l10n_util::GetStringUTF16(is_allowed
@@ -1357,6 +1449,7 @@ ContentSettingImageModel::GenerateContentSettingImageModels() {
       ImageType::SENSORS,
       ImageType::ADS,
       ImageType::AUTOMATIC_DOWNLOADS,
+      ImageType::MIDI,
       ImageType::MIDI_SYSEX,
       ImageType::SOUND,
       ImageType::FRAMEBUST,
@@ -1366,8 +1459,13 @@ ContentSettingImageModel::GenerateContentSettingImageModels() {
   };
 
   std::vector<std::unique_ptr<ContentSettingImageModel>> result;
-  for (auto type : kContentSettingImageOrder)
+  for (auto type : kContentSettingImageOrder) {
+    if (!base::FeatureList::IsEnabled(features::kBlockMidiByDefault) &&
+        type == ImageType::MIDI) {
+      continue;
+    }
     result.push_back(CreateForContentType(type));
+  }
 
   return result;
 }

@@ -15,7 +15,7 @@ include_rules = [
   "+third_party/blink/public",
   "+components/privacy_sandbox",
   "+components/site_engagement/content",
-   "+services/metrics/public",
+  "+services/metrics/public",
   "+components/strings",
   "+components/vector_icons",
   "+ui/base",

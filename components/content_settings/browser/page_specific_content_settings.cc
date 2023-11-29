@@ -50,6 +50,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/common/content_constants.h"
+#include "content/public/common/content_features.h"
 #include "net/base/schemeful_site.h"
 #include "services/network/public/mojom/shared_dictionary_access_observer.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -828,6 +829,8 @@ bool PageSpecificContentSettings::IsContentBlocked(
       content_type == ContentSettingsType::MIXEDSCRIPT ||
       content_type == ContentSettingsType::MEDIASTREAM_MIC ||
       content_type == ContentSettingsType::MEDIASTREAM_CAMERA ||
+      (base::FeatureList::IsEnabled(::features::kBlockMidiByDefault) &&
+       content_type == ContentSettingsType::MIDI) ||
       content_type == ContentSettingsType::MIDI_SYSEX ||
       content_type == ContentSettingsType::ADS ||
       content_type == ContentSettingsType::SOUND ||
@@ -855,6 +858,8 @@ bool PageSpecificContentSettings::IsContentAllowed(
   if (content_type != ContentSettingsType::COOKIES &&
       content_type != ContentSettingsType::MEDIASTREAM_MIC &&
       content_type != ContentSettingsType::MEDIASTREAM_CAMERA &&
+      (!base::FeatureList::IsEnabled(::features::kBlockMidiByDefault) ||
+       content_type != ContentSettingsType::MIDI) &&
       content_type != ContentSettingsType::MIDI_SYSEX &&
       content_type != ContentSettingsType::CLIPBOARD_READ_WRITE &&
       content_type != ContentSettingsType::SENSORS &&
@@ -1400,6 +1405,7 @@ void PageSpecificContentSettings::OnContentSettingChanged(
     case ContentSettingsType::COOKIES:
     case ContentSettingsType::POPUPS:
     case ContentSettingsType::MIXEDSCRIPT:
+    case ContentSettingsType::MIDI:
     case ContentSettingsType::MIDI_SYSEX:
     case ContentSettingsType::ADS:
     case ContentSettingsType::SOUND:
