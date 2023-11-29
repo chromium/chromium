@@ -528,6 +528,13 @@ targets.legacy_compound_suite(
     ],
 )
 
+targets.legacy_compound_suite(
+    name = "chromium_win10_gtests_multiscreen_fyi",
+    basic_suites = [
+        "chromium_gtests_for_windows_multiscreen",
+    ],
+)
+
 # TODO(crbug.com/1444855): This set should match chromium_win10_gtests,
 # except that it also runs tests that we can afford to run only once
 # on Windows machines (for now this is just the cr23_win_gtests).

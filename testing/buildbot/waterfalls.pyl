@@ -3999,6 +3999,15 @@
         },
         'use_swarming': False,
       },
+      'win10-multiscreen-fyi-rel': {
+        'mixins': [
+          'x86-64',
+          'win10',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromium_win10_gtests_multiscreen_fyi',
+        },
+      },
       'win10-rel-no-external-ip': {
         'mixins': [
           'x86-64',

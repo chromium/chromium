@@ -2059,6 +2059,35 @@ ci.builder(
 )
 
 ci.builder(
+    name = "win10-multiscreen-fyi-rel",
+    description_html = (
+        "This builder is intended to run tests related to multiscreen " +
+        "functionality on Windows. For more info, see " +
+        "<a href=\"http://shortn/_4L6uYvA1xU\">http://shortn/_4L6uYvA1xU</a>."
+    ),
+    schedule = "with 5h interval",
+    triggered_by = [],
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+    ),
+    builderless = True,
+    os = os.WINDOWS_10,
+    console_view_entry = consoles.console_view_entry(
+        category = "win10",
+    ),
+    contact_team_email = "web-windowing-team@google.com",
+    experimental = True,
+)
+
+ci.builder(
     name = "win10-wpt-content-shell-fyi-rel",
     schedule = "with 5h interval",
     triggered_by = [],

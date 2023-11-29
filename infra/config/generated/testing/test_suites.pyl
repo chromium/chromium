@@ -963,6 +963,16 @@
       },
     },
 
+    'chromium_gtests_for_windows_multiscreen': {
+      'multiscreen_interactive_ui_tests': {
+        'test': 'interactive_ui_tests',
+        'args': [
+          '--windows-virtual-display-driver',
+          '--gtest_filter=*MultiScreen*,*VirtualDisplayWinUtil*',
+        ],
+      },
+    },
+
     'chromium_ios_scripts': {
       'check_static_initializers': {
         'script': 'check_static_initializers.py',
@@ -6086,6 +6096,10 @@
       'pixel_browser_tests_gtests',
       'vr_platform_specific_chromium_gtests',
       'win_specific_chromium_gtests',
+    ],
+
+    'chromium_win10_gtests_multiscreen_fyi': [
+      'chromium_gtests_for_windows_multiscreen',
     ],
 
     'chromium_win10_gtests_once': [
