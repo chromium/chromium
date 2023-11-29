@@ -149,7 +149,7 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
       }
 
       if (deviceState.deviceState === DeviceStateType.kEnabling) {
-        return this.i18n('internetDeviceEnabling');
+        return this.i18n('networkDeviceTurningOn');
       }
     }
     // No device or unknown device state, use 'off'.

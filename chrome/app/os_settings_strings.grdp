@@ -4083,8 +4083,8 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_INTERNET_MOBILE_DATA_NETWORKS" desc="Name of the settings page which displays a list of mobile data networks which the user can choose to connect to.">
     Mobile data networks
   </message>
-  <message name="IDS_SETTINGS_INTERNET_DEVICE_ENABLING" desc="Settings > Internet > Message when a device (e.g a Cellular modem) is enabling.">
-    Enabling
+  <message name="IDS_SETTINGS_NETWORK_DEVICE_TURNING_ON" desc="Settings > Network > Message when a device (e.g a Cellular modem) is turning on.">
+    Turning on...
   </message>
   <message name="IDS_SETTINGS_INTERNET_DEVICE_BUSY" desc="Settings > Internet > Message when the cellular modem is busy applying updates (e.g., installing an eSIM profile).">
     Applying changes...
