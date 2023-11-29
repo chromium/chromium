@@ -218,20 +218,10 @@ void PrimaryAccountManager::PrepareToLoadPrefs() {
     prefs->SetBoolean(prefs::kGoogleServicesConsentedToSync, false);
   }
 
-  std::string pref_account_id =
-      prefs->GetString(prefs::kGoogleServicesAccountId);
-
-  // Initial value for the kGoogleServicesConsentedToSync preference if it is
-  // missing.
-  const PrefService::Preference* consented_pref =
-      prefs->FindPreference(prefs::kGoogleServicesConsentedToSync);
-  if (consented_pref->IsDefaultValue()) {
-    prefs->SetBoolean(prefs::kGoogleServicesConsentedToSync,
-                      !pref_account_id.empty());
-  }
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Migrate primary account ID from email to Gaia ID if needed.
+  std::string pref_account_id =
+      prefs->GetString(prefs::kGoogleServicesAccountId);
   if (!pref_account_id.empty()) {
     if (account_tracker_service_->GetMigrationState() ==
         AccountTrackerService::MIGRATION_IN_PROGRESS) {
