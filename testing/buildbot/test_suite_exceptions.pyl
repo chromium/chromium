@@ -3093,7 +3093,7 @@
       },
       'Linux MSan Tests': {
         'swarming': {
-          'shards': 4,
+          'shards': 8,
         },
       },
       'Linux TSan Tests': {
