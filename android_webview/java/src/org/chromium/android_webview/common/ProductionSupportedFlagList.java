@@ -788,6 +788,10 @@ public final class ProductionSupportedFlagList {
                         + " contention."),
         Flag.baseFeature(
                 ContentFeatures.BACK_FORWARD_CACHE, "Controls if back/forward cache is enabled."),
+        Flag.baseFeature(
+                VizFeatures.INVALIDATE_LOCAL_SURFACE_ID_PRE_COMMIT,
+                "When enabled, invalidates the LocalSurfaceId of the DelegatedFrameHostAndroid when"
+                        + " the old page is about to be unloaded."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
