@@ -4237,6 +4237,26 @@
             ]
         }
     ],
+    "ComposeModelQualityLogging": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "ComposeLoggingEnabled_Dogfood",
+                    "params": {
+                        "model_execution_feature_compose": "true"
+                    },
+                    "enable_features": [
+                        "ModelQualityLogging"
+                    ]
+                }
+            ]
+        }
+    ],
     "CompositeBGColorAnimationExp4": [
         {
             "platforms": [
