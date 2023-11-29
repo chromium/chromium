@@ -771,12 +771,13 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
         return 'os-settings:print';
       case SearchResultIcon.kReset:
         return isRevampEnabled ? 'os-settings:startup' : 'os-settings:restore';
+      case SearchResultIcon.kRestore:
+        return isRevampEnabled ? 'os-settings:restore-revamp' :
+                                 'os-settings:startup';
       case SearchResultIcon.kSelectToSpeak:
         return 'os-settings:select-to-speak';
       case SearchResultIcon.kShield:
         return 'cr:security';
-      case SearchResultIcon.kStartup:
-        return 'os-settings:startup';
       case SearchResultIcon.kStorage:
         return isRevampEnabled ? 'os-settings:storage' :
                                  'os-settings:hard-drive';

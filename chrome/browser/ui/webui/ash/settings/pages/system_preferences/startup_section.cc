@@ -29,7 +29,7 @@ const std::vector<SearchConcept>& GetAppRestoreSearchConcepts(
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_RESTORE_APPS_AND_PAGES,
        section_path,
-       mojom::SearchResultIcon::kStartup,
+       mojom::SearchResultIcon::kRestore,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kRestoreAppsAndPages},
@@ -95,7 +95,7 @@ mojom::Section StartupSection::GetSection() const {
 }
 
 mojom::SearchResultIcon StartupSection::GetSectionIcon() const {
-  return mojom::SearchResultIcon::kStartup;
+  return mojom::SearchResultIcon::kRestore;
 }
 
 const char* StartupSection::GetSectionPath() const {
