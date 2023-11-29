@@ -621,6 +621,17 @@ bool IsSkiaGraphiteEnabled(const base::CommandLine* command_line) {
   if (command_line->HasSwitch(switches::kEnableSkiaGraphite)) {
     return true;
   }
+#if !(BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN))
+  // Disallow Graphite from being enabled via the base::Feature on
+  // not-yet-supported platforms to avoid users experiencing undefined behavior,
+  // including behavior that might prevent them from being able to return to
+  // chrome://flags to disable the feature.
+  if (base::FeatureList::IsEnabled(features::kSkiaGraphite)) {
+    LOG(ERROR) << "Enabling Graphite on a not-yet-supported platform is "
+                  "disallowed for safety";
+  }
+  return false;
+#else
 #if BUILDFLAG(IS_APPLE)
   // Graphite only works well with ANGLE Metal on Mac or iOS.
   // TODO(crbug.com/1423574): Remove this after ANGLE Metal launches fully.
@@ -675,6 +686,7 @@ bool IsSkiaGraphiteEnabled(const base::CommandLine* command_line) {
 #endif  // BUILDFLAG(IS_MAC)
 #endif  // BUILDFLAG(IS_APPLE)
   return base::FeatureList::IsEnabled(features::kSkiaGraphite);
+#endif  // !(BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN))
 }
 
 #if BUILDFLAG(IS_ANDROID)
