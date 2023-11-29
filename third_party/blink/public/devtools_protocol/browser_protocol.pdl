@@ -11636,11 +11636,14 @@ experimental domain FedCm
       AccountChooser
       AutoReauthn
       ConfirmIdpLogin
+      Error
 
   # The buttons on the FedCM dialog.
   type DialogButton extends string
     enum
       ConfirmIdpLoginContinue
+      ErrorGotIt
+      ErrorMoreDetails
 
   # Corresponds to IdentityRequestAccount
   type Account extends object

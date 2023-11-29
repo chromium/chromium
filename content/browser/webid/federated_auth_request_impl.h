@@ -158,7 +158,13 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
     return idp_data_for_display_;
   }
 
-  enum DialogType { kNone, kSelectAccount, kAutoReauth, kConfirmIdpLogin };
+  enum DialogType {
+    kNone,
+    kSelectAccount,
+    kAutoReauth,
+    kConfirmIdpLogin,
+    kError
+  };
   DialogType GetDialogType() const { return dialog_type_; }
 
   void AcceptAccountsDialogForDevtools(const GURL& config_url,
@@ -166,6 +172,10 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void DismissAccountsDialogForDevtools(bool should_embargo);
   void AcceptConfirmIdpLoginDialogForDevtools();
   void DismissConfirmIdpLoginDialogForDevtools();
+  bool HasMoreDetailsButtonForDevtools();
+  void ClickErrorDialogGotItForDevtools();
+  void ClickErrorDialogMoreDetailsForDevtools();
+  void DismissErrorDialogForDevtools();
 
   // Check if the scope of the request allows the browser to mediate
   // or delegate (to the IdP) the authorization.
@@ -447,6 +457,15 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   // If dialog_type_ is kConfirmIdpLogin, this is the login URL for the IDP.
   GURL login_url_;
+
+  // If dialog_type_ is kError, this is the config URL for the IDP.
+  GURL config_url_;
+
+  // If dialog_type_ is kError, this is the fetch status of the token request.
+  IdpNetworkRequestManager::FetchStatus token_request_status_;
+
+  // If dialog_type_ is kError, this is the token error.
+  absl::optional<TokenError> token_error_;
 
   DialogType dialog_type_ = kNone;
   MediationRequirement mediation_requirement_;

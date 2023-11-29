@@ -1851,6 +1851,8 @@ void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
 
 void FederatedAuthRequestImpl::OnDismissFailureDialog(
     IdentityRequestDialogController::DismissReason dismiss_reason) {
+  dialog_type_ = kNone;
+
   // Clicking the close button and swiping away the account chooser are more
   // intentional than other ways of dismissing the account chooser such as
   // the virtual keyboard showing on Android. Dismissal through closing the
@@ -1886,6 +1888,8 @@ void FederatedAuthRequestImpl::OnDismissErrorDialog(
     IdpNetworkRequestManager::FetchStatus status,
     absl::optional<TokenError> token_error,
     IdentityRequestDialogController::DismissReason dismiss_reason) {
+  dialog_type_ = kNone;
+
   bool has_url = token_error && !token_error->url.is_empty();
   ErrorDialogResult result;
   switch (dismiss_reason) {
@@ -1917,6 +1921,8 @@ void FederatedAuthRequestImpl::OnDismissErrorDialog(
 
 void FederatedAuthRequestImpl::OnDialogDismissed(
     IdentityRequestDialogController::DismissReason dismiss_reason) {
+  dialog_type_ = kNone;
+
   // Clicking the close button and swiping away the account chooser are more
   // intentional than other ways of dismissing the account chooser such as
   // the virtual keyboard showing on Android.
@@ -2018,6 +2024,11 @@ void FederatedAuthRequestImpl::ShowErrorDialog(
       base::BindOnce(&FederatedAuthRequestImpl::CompleteRequestWithError,
                      weak_ptr_factory_.GetWeakPtr()));
 
+  dialog_type_ = kError;
+  config_url_ = idp_config_url;
+  token_request_status_ = status;
+  token_error_ = token_error;
+
   // TODO(crbug.com/1485710): Refactor IdentityCredentialTokenError
   request_dialog_controller_->ShowErrorDialog(
       GetTopFrameOriginForDisplay(GetEmbeddingOrigin()), iframe_for_display,
@@ -2031,6 +2042,7 @@ void FederatedAuthRequestImpl::ShowErrorDialog(
           ? base::BindOnce(&FederatedAuthRequestImpl::ShowModalDialog,
                            weak_ptr_factory_.GetWeakPtr(), token_error->url)
           : base::NullCallback());
+  devtools_instrumentation::OnFedCmDialogShown(&render_frame_host());
 }
 
 void FederatedAuthRequestImpl::OnTokenResponseReceived(
@@ -2323,6 +2335,8 @@ void FederatedAuthRequestImpl::CleanUp() {
   metrics_endpoints_.clear();
   token_request_get_infos_.clear();
   login_url_ = GURL();
+  config_url_ = GURL();
+  token_error_ = absl::nullopt;
   dialog_type_ = kNone;
 }
 
@@ -2523,6 +2537,30 @@ void FederatedAuthRequestImpl::DismissConfirmIdpLoginDialogForDevtools() {
   // These values match what HandleAccountsFetchFailure passes.
   OnDismissFailureDialog(
       IdentityRequestDialogController::DismissReason::kOther);
+}
+
+bool FederatedAuthRequestImpl::HasMoreDetailsButtonForDevtools() {
+  return token_error_ && token_error_->url.is_valid();
+}
+
+void FederatedAuthRequestImpl::ClickErrorDialogGotItForDevtools() {
+  DCHECK(token_error_);
+  OnDismissErrorDialog(
+      config_url_, token_request_status_, token_error_,
+      IdentityRequestDialogController::DismissReason::kGotItButton);
+}
+
+void FederatedAuthRequestImpl::ClickErrorDialogMoreDetailsForDevtools() {
+  DCHECK(token_error_ && token_error_->url.is_valid());
+  ShowModalDialog(token_error_->url);
+  OnDismissErrorDialog(
+      config_url_, token_request_status_, token_error_,
+      IdentityRequestDialogController::DismissReason::kMoreDetailsButton);
+}
+
+void FederatedAuthRequestImpl::DismissErrorDialogForDevtools() {
+  OnDismissErrorDialog(config_url_, token_request_status_, token_error_,
+                       IdentityRequestDialogController::DismissReason::kOther);
 }
 
 bool FederatedAuthRequestImpl::GetSingleReturningAccount(

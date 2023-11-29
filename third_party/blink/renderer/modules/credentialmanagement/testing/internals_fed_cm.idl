@@ -5,6 +5,8 @@
 // This should match the DialogButton enum in browser_protocol.pdl
 enum DialogButton {
   "ConfirmIdpLoginContinue",
+  "ErrorGotIt",
+  "ErrorMoreDetails",
 };
 
 [

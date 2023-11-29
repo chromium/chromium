@@ -183,6 +183,12 @@ ScriptPromise InternalsFedCm::clickFedCmDialogButton(
     case V8DialogButton::Enum::kConfirmIdpLoginContinue:
       button = test::mojom::blink::DialogButton::kConfirmIdpLoginContinue;
       break;
+    case V8DialogButton::Enum::kErrorGotIt:
+      button = test::mojom::blink::DialogButton::kErrorGotIt;
+      break;
+    case V8DialogButton::Enum::kErrorMoreDetails:
+      button = test::mojom::blink::DialogButton::kErrorMoreDetails;
+      break;
   }
 
   // Get the interface so `federated_auth_request_automation` can be moved

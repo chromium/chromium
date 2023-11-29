@@ -6,6 +6,8 @@ module blink.test.mojom;
 
 enum DialogButton {
   kConfirmIdpLoginContinue,
+  kErrorGotIt,
+  kErrorMoreDetails,
 };
 
 // Provides a way for tests without chromedriver support to execute certain FedCM commands.
