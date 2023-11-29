@@ -236,10 +236,16 @@ void SplitViewOverviewSession::OnWindowBoundsChanged(
     presentation_time_recorder_->RequestNext();
   }
 
-  if (GetOverviewSession()) {
+  if (window_util::IsFasterSplitScreenOrSnapGroupEnabledInClamshell() &&
+      IsInOverviewSession()) {
+    // When `FasterSplitScreenSetup` or `SnapGroup` is enabled, we need to
+    // manually refresh the grid bounds, because `OverviewGrid` will calculate
+    // the bounds based on `SplitViewController::divider_position_` which
+    // wouldn't work for multiple groups.
     GetOverviewSession()
         ->GetGridWithRootWindow(window->GetRootWindow())
         ->RefreshGridBounds(/*animate=*/false);
+    return;
   }
 
   // SplitViewController will update the divider position and notify observers
