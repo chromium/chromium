@@ -16,11 +16,11 @@ namespace ash {
 // for ARC enabled users and one for ARC disabled users.
 BASE_FEATURE(kCrOSMemoryPressureSignalStudyNonArc,
              "ChromeOSMemoryPressureSignalStudyNonArc",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kCrOSMemoryPressureSignalStudyNonArcCriticalBps{
     &kCrOSMemoryPressureSignalStudyNonArc, "critical_threshold_percentage",
-    1500};
+    520};
 
 const base::FeatureParam<int> kCrOSMemoryPressureSignalStudyNonArcModerateBps{
     &kCrOSMemoryPressureSignalStudyNonArc, "moderate_threshold_percentage",
