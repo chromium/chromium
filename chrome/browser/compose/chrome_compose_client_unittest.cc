@@ -131,7 +131,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
     AddTab(browser(), GetPageUrl());
     client_ = ChromeComposeClient::FromWebContents(web_contents());
     client_->SetModelExecutorForTest(&model_executor_);
-    client_->SetSkipShowDialogForTest(true);
+    client_->SetSkipShowDialogForTest();
     client_->SetModelQualityLogsUploaderForTest(&model_quality_logs_uploader_);
     client_->SetSessionIdForTest(base::Token(kSessionIdHigh, kSessionIdLow));
 
@@ -1049,45 +1049,6 @@ TEST_F(ChromeComposeClientTest, CloseButtonHistogramTest) {
       compose::kComposeSessionDialogShownCount + std::string(".Ignored"),
       2,  // Expect that the dialog was shown twice.
       1);
-}
-
-TEST_F(ChromeComposeClientTest, ConsentUICloseReasonHistogramTest) {
-  // Show the dialog and set unset consent state
-  ShowDialogAndBindMojo();
-  client().SetActiveSessionConsentStateForTest(
-      compose::mojom::ConsentState::kUnset);
-
-  // Closing the dialog from the consent UI should not log metrics.
-  // TODO(b/312295685): Add metrics for consent dialog related close reasons.
-  client().CloseUI(compose::mojom::CloseReason::kConsentCloseButton);
-  histograms().ExpectTotalCount(compose::kComposeSessionCloseReason, 0);
-  histograms().ExpectTotalCount(
-      compose::kComposeSessionDialogShownCount + std::string(".Ignored"), 0);
-
-  // Show the dialog a second time.
-  ShowDialogAndBindMojo();
-  client().SetActiveSessionConsentStateForTest(
-      compose::mojom::ConsentState::kUnset);
-
-  client().CloseUI(compose::mojom::CloseReason::kPageContentConsentDeclined);
-  histograms().ExpectTotalCount(compose::kComposeSessionCloseReason, 0);
-  histograms().ExpectTotalCount(
-      compose::kComposeSessionDialogShownCount + std::string(".Ignored"), 0);
-}
-
-TEST_F(ChromeComposeClientTest, ConsentUpdatedHistogramTest) {
-  // Show the dialog and set unset consent state
-  ShowDialogAndBindMojo();
-  client().SetActiveSessionConsentStateForTest(
-      compose::mojom::ConsentState::kUnset);
-
-  // If consent is given in this session, then session metrics should be logged.
-  client().UpdateAllSessionsWithConsentApproved();
-  client().CloseUI(compose::mojom::CloseReason::kCloseButton);
-
-  histograms().ExpectBucketCount(
-      compose::kComposeSessionCloseReason,
-      compose::ComposeSessionCloseReason::kCloseButtonPressed, 1);
 }
 
 TEST_F(ChromeComposeClientTest, AcceptSuggestionHistogramTest) {

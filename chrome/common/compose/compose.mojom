@@ -48,17 +48,6 @@ enum ComposeStatus {
   kPermissionDenied = 6,
 };
 
-// Whether the user has consented to page content sharing and acknowledged this
-// consent in compose.
-enum ConsentState {
-  // Consent has not been given
-  kUnset,
-  // Consent has been given but not acknowledged in compose
-  kExternalConsented,
-  // Consent has been given and acknowledged in compose
-  kConsented,
-};
-
 // Configuration parameters used in rewrite requests, specifying how the
 // response should be changed.
 union StyleModifiers {
@@ -105,7 +94,6 @@ struct ConfigurableParams {
 // Information needed by the WebUI to show a new or restored
 // compose dialog.
 struct OpenMetadata {
-  ConsentState consent_state;
   // Renderer provided text selection.
   string initial_input;
   ComposeState compose_state;
@@ -114,11 +102,7 @@ struct OpenMetadata {
 
 // The trigger for dismissing the compose dialog.
 enum CloseReason {
-  // The X button on the upper-right of the consent/disclaimer dialog.
-  kConsentCloseButton,
-  // The page content consent was declined.
-  kPageContentConsentDeclined,
-  // The X button on the upper-right of the main app dialog.
+  // The X button on the upper-right of the dialog.
   kCloseButton,
   // The Insert button of the dialog.
   kInsertButton,
@@ -190,10 +174,6 @@ interface ComposeClientPageHandler {
   // Asks the receiver to close the compose dialog. `reason` describes
   // the user action that triggered the close.
   CloseUI(CloseReason reason);
-  // Notifies the browser that the page content consent was approved.
-  ApproveConsent();
-  // Notifies the browser that the page content disclaimer was acknowledged.
-  AcknowledgeConsentDisclaimer();
 };
 
 // Interface for calls from the Browser process into Compose dialog JS.

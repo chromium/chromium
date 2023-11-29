@@ -285,7 +285,7 @@
   }
 </style>
 
-<div id="consentDialog" class="dialog" hidden="[[showMainAppDialog_]]">
+<div id="consentDialog" class="dialog" hidden>
   <div id="consentHeading">
     <div id="consentIconContainer">
       <iron-icon icon="compose:refresh"></iron-icon>
@@ -305,26 +305,17 @@
     </div>
   </div>
 
-  <div id="consentFooter" class="footer" hidden="[[showDisclaimerFooter_]]">
-    <cr-button id="consentNoThanksButton" class="tonal-button"
-      on-click="onConsentNoThanksButtonClick_">
+  <div id="consentFooter" class="footer">
+    <cr-button id="noThanksButton" class="tonal-button">
       $i18n{consentNoButton}
     </cr-button>
-    <cr-button id="consentYesButton" class="action-button"
-      on-click="onConsentYesButtonClick_">
+    <cr-button id="yesButton" class="action-button">
       $i18n{consentYesButton}
-    </cr-button>
-  </div>
-  <div id="disclaimerFooter" class="footer"
-    hidden="[[!showDisclaimerFooter_]]">
-    <cr-button id="disclaimerLetsGoButton" class="action-button"
-      on-click="onDisclaimerLetsGoButtonClick_">
-      $i18n{disclaimerLetsGoButton}
     </cr-button>
   </div>
 </div>
 
-<div id="appDialog" class="dialog" hidden="[[!showMainAppDialog_]]">
+<div id="appDialog" class="dialog">
   <div id="heading">
     <h1>$i18n{dialogTitle}</h1>
     <cr-icon-button id="closeButton" iron-icon="cr:close" on-click="onClose_">

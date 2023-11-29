@@ -58,8 +58,6 @@ class ChromeComposeClient
           popup_screen_location,
       ComposeCallback callback) override;
   bool HasSession(const autofill::FieldGlobalId& trigger_field_id) override;
-  bool ShouldTriggerPopup(
-      const autofill::FormFieldData& trigger_field) override;
 
   // ComposeClientPageHandler
   // Shows the compose dialog.
@@ -67,18 +65,9 @@ class ChromeComposeClient
   // Closes the compose dialog. `reason` describes the user action that
   // triggered the close.
   void CloseUI(compose::mojom::CloseReason reason) override;
-  // Update corresponding prefs and state when consent is given through Compose.
-  void ApproveConsent() override;
-  // Update corresponding prefs and state when consent is acknowledged.
-  void AcknowledgeConsentDisclaimer() override;
 
-  // Update session state when the consent has been given/acknowledged. This
-  // will be used to differentiate sessions involving the consent flow.
-  // TODO(b/312295685): Add metrics for consent dialog related close reasons.
-  void UpdateAllSessionsWithConsentApproved();
-
-  compose::mojom::ConsentState GetConsentStateFromPrefs();
-
+  bool ShouldTriggerPopup(
+      const autofill::FormFieldData& trigger_field) override;
   virtual bool ShouldTriggerContextMenu(content::RenderFrameHost* rfh,
                                         content::ContextMenuParams& params);
 
@@ -92,12 +81,8 @@ class ChromeComposeClient
       optimization_guide::ModelQualityLogsUploader* model_quality_uploader);
   void SetModelExecutorForTest(
       optimization_guide::OptimizationGuideModelExecutor* model_executor);
-  void SetSkipShowDialogForTest(bool should_skip);
+  void SetSkipShowDialogForTest();
   void SetSessionIdForTest(base::Token session_id);
-  // Enable tests for consent and disclaimer dialogs to set the dialog's
-  // initial consent state accordingly.
-  void SetActiveSessionConsentStateForTest(
-      compose::mojom::ConsentState consent_state);
 
   // content::WebContentsObserver implementation.
   // Called when the primary page location changes. This includes reloads.
@@ -129,7 +114,6 @@ class ChromeComposeClient
   friend class content::WebContentsUserData<ChromeComposeClient>;
 
   raw_ptr<Profile> profile_;
-  raw_ptr<PrefService> pref_service_;
 
   // Creates a session for `trigger_field` and initializes it as necessary.
   // `callback` is a callback to the renderer to insert the compose response

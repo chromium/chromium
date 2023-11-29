@@ -7,8 +7,6 @@ import {CloseReason, ComposeClientPageHandlerRemote, ComposeDialogCallbackRouter
 /** @interface */
 export interface ComposeApiProxy {
   acceptComposeResult(): Promise<boolean>;
-  acknowledgeConsentDisclaimer(): void;
-  approveConsent(): void;
   closeUi(reason: CloseReason): void;
   compose(input: string): void;
   rewrite(style: StyleModifiers): void;
@@ -49,14 +47,6 @@ export class ComposeApiProxyImpl implements ComposeApiProxy {
   acceptComposeResult(): Promise<boolean> {
     return this.composeSessionPageHandler.acceptComposeResult().then(
         res => res.success);
-  }
-
-  acknowledgeConsentDisclaimer(): void {
-    this.composeClientPageHandler.acknowledgeConsentDisclaimer();
-  }
-
-  approveConsent(): void {
-    this.composeClientPageHandler.approveConsent();
   }
 
   closeUi(reason: CloseReason): void {
