@@ -89,6 +89,7 @@
 #include "net/test/url_request/url_request_failed_job.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
 using base::ASCIIToUTF16;
@@ -5528,6 +5529,11 @@ class RenderFrameHostManagerUnloadBrowserTest
     rfh->SetSubframeUnloadTimeoutForTesting(base::Seconds(30));
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    RenderFrameHostManagerTest::SetUpCommandLine(command_line);
+    feature_list_.InitAndDisableFeature(blink::features::kDeprecateUnload);
+  }
+
  protected:
   void SetUpOnMainThread() override {
     // Request interceptor needs to be installed before the test server is
@@ -5565,6 +5571,7 @@ class RenderFrameHostManagerUnloadBrowserTest
   std::string request_content_ GUARDED_BY(lock_);
   bool saw_request_url_ GUARDED_BY(lock_) = false;
   std::unique_ptr<base::RunLoop> run_loop_ GUARDED_BY(lock_);
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Ensure that after a main frame with a cross-site iframe is itself navigated
