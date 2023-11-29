@@ -639,7 +639,7 @@ views::View* CalendarView::CreateCalendarHeaderRow() {
   auto* today_button = new IconButton(
       base::BindRepeating(&CalendarView::ResetToTodayWithAnimation,
                           base::Unretained(this)),
-      IconButton::Type::kMedium, &kGlanceablesCalendarTodayIcon,
+      IconButton::Type::kMediumFloating, &kGlanceablesCalendarTodayIcon,
       IDS_ASH_CALENDAR_INFO_BUTTON_ACCESSIBLE_DESCRIPTION);
   today_button->SetBackgroundColor(cros_tokens::kCrosSysBaseElevated);
   today_button->SetProperty(views::kMarginsKey, kHeaderIconButtonMargin);

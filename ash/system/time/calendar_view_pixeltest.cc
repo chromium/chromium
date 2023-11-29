@@ -108,7 +108,7 @@ TEST_P(CalendarViewPixelTest, Basics) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "calendar_view",
-      /*revision_number=*/8, GetCalendarView()));
+      /*revision_number=*/9, GetCalendarView()));
 }
 
 TEST_P(CalendarViewPixelTest, EventList) {
