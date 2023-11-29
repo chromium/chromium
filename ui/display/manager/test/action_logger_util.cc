@@ -8,9 +8,9 @@
 
 #include "base/format_macros.h"
 #include "base/strings/stringprintf.h"
+#include "ui/display/types/display_color_management.h"
 #include "ui/display/types/display_mode.h"
 #include "ui/display/types/display_snapshot.h"
-#include "ui/display/types/gamma_ramp_rgb_entry.h"
 #include "ui/display/types/native_display_delegate.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
@@ -51,26 +51,13 @@ std::string SetColorMatrixAction(int64_t display_id,
                             ctm.c_str());
 }
 
-std::string SetGammaCorrectionAction(
-    int64_t display_id,
-    const std::vector<display::GammaRampRGBEntry>& degamma_lut,
-    const std::vector<display::GammaRampRGBEntry>& gamma_lut) {
-  std::string degamma_table;
-  for (size_t i = 0; i < degamma_lut.size(); ++i) {
-    degamma_table += base::StringPrintf(",degamma[%" PRIuS "]=%04x%04x%04x", i,
-                                        degamma_lut[i].r, degamma_lut[i].g,
-                                        degamma_lut[i].b);
-  }
-  std::string gamma_table;
-  for (size_t i = 0; i < gamma_lut.size(); ++i) {
-    gamma_table +=
-        base::StringPrintf(",gamma[%" PRIuS "]=%04x%04x%04x", i, gamma_lut[i].r,
-                           gamma_lut[i].g, gamma_lut[i].b);
-  }
-
+std::string SetGammaCorrectionAction(int64_t display_id,
+                                     const display::GammaCurve& degamma,
+                                     const display::GammaCurve& gamma) {
   return base::StringPrintf("set_gamma_correction(id=%" PRId64 "%s%s)",
-                            display_id, degamma_table.c_str(),
-                            gamma_table.c_str());
+                            display_id,
+                            degamma.ToActionString("degamma").c_str(),
+                            gamma.ToActionString("gamma").c_str());
 }
 
 std::string SetPrivacyScreenAction(int64_t display_id, bool enabled) {

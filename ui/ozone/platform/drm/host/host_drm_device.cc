@@ -255,8 +255,8 @@ bool HostDrmDevice::GpuSetColorMatrix(int64_t display_id,
 
 bool HostDrmDevice::GpuSetGammaCorrection(
     int64_t display_id,
-    const std::vector<display::GammaRampRGBEntry>& degamma_lut,
-    const std::vector<display::GammaRampRGBEntry>& gamma_lut) {
+    const display::GammaCurve& degamma_lut,
+    const display::GammaCurve& gamma_lut) {
   DCHECK_CALLED_ON_VALID_THREAD(on_ui_thread_);
   if (!IsConnected())
     return false;

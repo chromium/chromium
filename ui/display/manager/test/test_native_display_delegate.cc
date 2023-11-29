@@ -229,10 +229,9 @@ bool TestNativeDisplayDelegate::SetColorMatrix(
 
 bool TestNativeDisplayDelegate::SetGammaCorrection(
     int64_t display_id,
-    const std::vector<display::GammaRampRGBEntry>& degamma_lut,
-    const std::vector<display::GammaRampRGBEntry>& gamma_lut) {
-  log_->AppendAction(
-      SetGammaCorrectionAction(display_id, degamma_lut, gamma_lut));
+    const display::GammaCurve& degamma,
+    const display::GammaCurve& gamma) {
+  log_->AppendAction(SetGammaCorrectionAction(display_id, degamma, gamma));
   return true;
 }
 

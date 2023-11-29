@@ -18,7 +18,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/display/types/gamma_ramp_rgb_entry.h"
+#include "ui/display/types/display_color_management.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/linux/gbm_buffer.h"
@@ -36,6 +36,11 @@
 namespace ui {
 
 namespace {
+
+// TODO(https://crbug.com/1505062): These tests should not use a single-point
+// curve as the non-empty value (it is arguably not a valid input).
+const display::GammaCurve kNonemptyGammaCurve({{0, 0, 0}});
+const display::GammaCurve kEmptyGammaCurve;
 
 const gfx::Size kDefaultBufferSize(2, 2);
 // Create a basic mode for a 6x4 screen.
@@ -1095,7 +1100,7 @@ TEST_P(HardwareDisplayPlaneManagerTest, SetGammaCorrection_MissingDegamma) {
   fake_drm_->InitializeState(drm_state, use_atomic_);
 
   EXPECT_FALSE(fake_drm_->plane_manager()->SetGammaCorrection(
-      fake_drm_->crtc_property(0).id, {{0, 0, 0}}, {}));
+      fake_drm_->crtc_property(0).id, kNonemptyGammaCurve, kEmptyGammaCurve));
   if (use_atomic_) {
     HardwareDisplayPlaneList state;
     PerformPageFlip(/*crtc_idx=*/0, &state);
@@ -1110,7 +1115,7 @@ TEST_P(HardwareDisplayPlaneManagerTest, SetGammaCorrection_MissingDegamma) {
   fake_drm_->InitializeState(drm_state, use_atomic_);
 
   EXPECT_FALSE(fake_drm_->plane_manager()->SetGammaCorrection(
-      fake_drm_->crtc_property(0).id, {{0, 0, 0}}, {}));
+      fake_drm_->crtc_property(0).id, kNonemptyGammaCurve, kEmptyGammaCurve));
   if (use_atomic_) {
     HardwareDisplayPlaneList state;
     PerformPageFlip(/*crtc_idx=*/0, &state);
@@ -1129,7 +1134,7 @@ TEST_P(HardwareDisplayPlaneManagerTest, SetGammaCorrection_MissingGamma) {
   fake_drm_->InitializeState(drm_state, use_atomic_);
 
   EXPECT_FALSE(fake_drm_->plane_manager()->SetGammaCorrection(
-      fake_drm_->crtc_property(0).id, {}, {{0, 0, 0}}));
+      fake_drm_->crtc_property(0).id, kEmptyGammaCurve, kNonemptyGammaCurve));
   if (use_atomic_) {
     HardwareDisplayPlaneList state;
     PerformPageFlip(/*crtc_idx=*/0, &state);
@@ -1145,7 +1150,7 @@ TEST_P(HardwareDisplayPlaneManagerTest, SetGammaCorrection_MissingGamma) {
   fake_drm_->InitializeState(drm_state, use_atomic_);
 
   EXPECT_FALSE(fake_drm_->plane_manager()->SetGammaCorrection(
-      fake_drm_->crtc_property(0).id, {}, {{0, 0, 0}}));
+      fake_drm_->crtc_property(0).id, kEmptyGammaCurve, kNonemptyGammaCurve));
   if (use_atomic_) {
     HardwareDisplayPlaneList state;
     PerformPageFlip(/*crtc_idx=*/0, &state);
@@ -1163,14 +1168,14 @@ TEST_P(HardwareDisplayPlaneManagerTest, SetGammaCorrection_LegacyGamma) {
 
   fake_drm_->set_legacy_gamma_ramp_expectation(true);
   EXPECT_TRUE(fake_drm_->plane_manager()->SetGammaCorrection(
-      fake_drm_->crtc_property(0).id, {}, {{0, 0, 0}}));
+      fake_drm_->crtc_property(0).id, kEmptyGammaCurve, kNonemptyGammaCurve));
   EXPECT_EQ(1, fake_drm_->get_set_gamma_ramp_count());
   EXPECT_EQ(0, fake_drm_->get_commit_count());
   EXPECT_EQ(0, fake_drm_->get_set_object_property_count());
 
   // Ensure disabling gamma also works on legacy.
   EXPECT_TRUE(fake_drm_->plane_manager()->SetGammaCorrection(
-      fake_drm_->crtc_property(0).id, {}, {}));
+      fake_drm_->crtc_property(0).id, kEmptyGammaCurve, kEmptyGammaCurve));
   EXPECT_EQ(2, fake_drm_->get_set_gamma_ramp_count());
   EXPECT_EQ(0, fake_drm_->get_commit_count());
   EXPECT_EQ(0, fake_drm_->get_set_object_property_count());
@@ -1184,7 +1189,7 @@ TEST_P(HardwareDisplayPlaneManagerTest, SetGammaCorrection_Success) {
   fake_drm_->InitializeState(drm_state, use_atomic_);
 
   EXPECT_FALSE(fake_drm_->plane_manager()->SetGammaCorrection(
-      fake_drm_->crtc_property(0).id, {{0, 0, 0}}, {}));
+      fake_drm_->crtc_property(0).id, kNonemptyGammaCurve, kEmptyGammaCurve));
   EXPECT_EQ(0, fake_drm_->get_commit_count());
 
   drm_state.crtc_properties[0].properties.push_back(
@@ -1217,7 +1222,8 @@ TEST_P(HardwareDisplayPlaneManagerTest, SetGammaCorrection_Success) {
   }
 
   EXPECT_TRUE(fake_drm_->plane_manager()->SetGammaCorrection(
-      fake_drm_->crtc_property(0).id, {{0, 0, 0}}, {{0, 0, 0}}));
+      fake_drm_->crtc_property(0).id, kNonemptyGammaCurve,
+      kNonemptyGammaCurve));
   if (use_atomic_) {
     PerformPageFlip(/*crtc_idx=*/0, &state);
 #if defined(COMMIT_PROPERTIES_ON_PAGE_FLIP)

@@ -17,9 +17,9 @@
 
 namespace display {
 class DisplaySnapshot;
+class GammaCurve;
 class NativeDisplayObserver;
 
-struct GammaRampRGBEntry;
 struct DisplayConfigurationParams;
 
 using GetDisplaysCallback =
@@ -87,10 +87,9 @@ class DISPLAY_TYPES_EXPORT NativeDisplayDelegate {
   // Sets the given |gamma_lut| and |degamma_lut| on the display with
   // |display_id|. Returns true if the given tables were sent to the GPU process
   // successfully.
-  virtual bool SetGammaCorrection(
-      int64_t display_id,
-      const std::vector<GammaRampRGBEntry>& degamma_lut,
-      const std::vector<GammaRampRGBEntry>& gamma_lut) = 0;
+  virtual bool SetGammaCorrection(int64_t display_id,
+                                  const GammaCurve& degamma,
+                                  const GammaCurve& gamma) = 0;
 
   // Sets the privacy screen state on the display with |display_id|.
   virtual void SetPrivacyScreen(int64_t display_id,

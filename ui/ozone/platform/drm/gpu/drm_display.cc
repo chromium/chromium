@@ -13,8 +13,8 @@
 #include "base/trace_event/trace_event.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/display/display_features.h"
+#include "ui/display/types/display_color_management.h"
 #include "ui/display/types/display_snapshot.h"
-#include "ui/display/types/gamma_ramp_rgb_entry.h"
 #include "ui/gfx/color_space.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
@@ -322,18 +322,19 @@ void DrmDisplay::SetBackgroundColor(const uint64_t background_color) {
   drm_->plane_manager()->SetBackgroundColor(crtc_, background_color);
 }
 
-void DrmDisplay::SetGammaCorrection(
-    const std::vector<display::GammaRampRGBEntry>& degamma_lut,
-    const std::vector<display::GammaRampRGBEntry>& gamma_lut) {
-  // When both |degamma_lut| and |gamma_lut| are empty they are interpreted as
+void DrmDisplay::SetGammaCorrection(const display::GammaCurve& degamma,
+                                    const display::GammaCurve& gamma) {
+  // When both |degamma| and |gamma| are empty they are interpreted as
   // "linear/pass-thru" [1]. If the display |is_hdr_capable_| we have to make
   // sure the |current_color_space_| is considered properly.
   // [1]
   // https://www.kernel.org/doc/html/v4.19/gpu/drm-kms.html#color-management-properties
-  if (degamma_lut.empty() && gamma_lut.empty() && is_hdr_capable_)
+  if (degamma.IsDefaultIdentity() && gamma.IsDefaultIdentity() &&
+      is_hdr_capable_) {
     SetColorSpace(current_color_space_);
-  else
-    CommitGammaCorrection(degamma_lut, gamma_lut);
+  } else {
+    CommitGammaCorrection(degamma, gamma);
+  }
 }
 
 bool DrmDisplay::SetPrivacyScreen(bool enabled) {
@@ -460,10 +461,8 @@ void DrmDisplay::SetColorSpace(const gfx::ColorSpace& color_space) {
   // is interpreted as "linear/pass-thru", see [1]. However when we have an SDR
   // |color_space|, we need to write a scaled down |gamma| function to prevent
   // the mode change brightness to be visible.
-  std::vector<display::GammaRampRGBEntry> degamma;
-  std::vector<display::GammaRampRGBEntry> gamma;
   if (current_color_space_.IsHDR())
-    return CommitGammaCorrection(degamma, gamma);
+    return CommitGammaCorrection({}, {});
 
   // TODO(mcasas) This should be the inverse value of DisplayChangeObservers's
   // FillDisplayColorSpaces's kHDRLevel, move to a common place.
@@ -474,15 +473,17 @@ void DrmDisplay::SetColorSpace(const gfx::ColorSpace& color_space) {
   // Only using kSDRLevel of the available values shifts the contrast ratio, we
   // restore it via a smaller local gamma correction using this exponent.
   constexpr float kExponent = 1.2;
-  FillPowerFunctionValues(&gamma, kNumGammaSamples, kSDRLevel, kExponent);
-  CommitGammaCorrection(degamma, gamma);
+  std::vector<display::GammaRampRGBEntry> gamma_entries;
+  FillPowerFunctionValues(&gamma_entries, kNumGammaSamples, kSDRLevel,
+                          kExponent);
+  CommitGammaCorrection({}, display::GammaCurve(gamma_entries));
 }
 
-void DrmDisplay::CommitGammaCorrection(
-    const std::vector<display::GammaRampRGBEntry>& degamma_lut,
-    const std::vector<display::GammaRampRGBEntry>& gamma_lut) {
-  if (!drm_->plane_manager()->SetGammaCorrection(crtc_, degamma_lut, gamma_lut))
+void DrmDisplay::CommitGammaCorrection(const display::GammaCurve& degamma,
+                                       const display::GammaCurve& gamma) {
+  if (!drm_->plane_manager()->SetGammaCorrection(crtc_, degamma, gamma)) {
     LOG(ERROR) << "Failed to set gamma tables for display: crtc_id = " << crtc_;
+  }
 }
 
 }  // namespace ui

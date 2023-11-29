@@ -19,6 +19,7 @@
 #include "third_party/skia/include/core/SkM44.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/manager/display_configurator.h"
+#include "ui/display/types/display_color_management.h"
 #include "ui/display/types/display_constants.h"
 
 namespace base {
@@ -27,7 +28,6 @@ class SequencedTaskRunner;
 
 namespace display {
 class DisplaySnapshot;
-struct GammaRampRGBEntry;
 }  // namespace display
 
 namespace ash {
@@ -89,8 +89,8 @@ class ASH_EXPORT DisplayColorManager
     ColorCalibrationData();
     ~ColorCalibrationData();
 
-    std::vector<display::GammaRampRGBEntry> degamma_lut;
-    std::vector<display::GammaRampRGBEntry> gamma_lut;
+    display::GammaCurve degamma_curve;
+    display::GammaCurve gamma_curve;
     // Initialized to identity to reset color correction.
     std::vector<float> correction_matrix;
   };

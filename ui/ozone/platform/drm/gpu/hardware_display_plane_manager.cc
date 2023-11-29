@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
+#include "ui/display/types/display_color_management.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"
@@ -333,8 +334,8 @@ void HardwareDisplayPlaneManager::SetBackgroundColor(
 
 bool HardwareDisplayPlaneManager::SetGammaCorrection(
     uint32_t crtc_id,
-    const std::vector<display::GammaRampRGBEntry>& degamma_lut,
-    const std::vector<display::GammaRampRGBEntry>& gamma_lut) {
+    const display::GammaCurve& degamma_curve,
+    const display::GammaCurve& gamma_curve) {
   const auto crtc_index = LookupCrtcIndex(crtc_id);
   if (!crtc_index) {
     LOG(ERROR) << "Unknown CRTC ID=" << crtc_id;
@@ -344,23 +345,25 @@ bool HardwareDisplayPlaneManager::SetGammaCorrection(
   CrtcState* crtc_state = &crtc_state_[*crtc_index];
   CrtcProperties* crtc_props = &crtc_state->properties;
 
-  if (!degamma_lut.empty() &&
-      (!crtc_props->degamma_lut.id || !crtc_props->degamma_lut_size.id))
+  if (!degamma_curve.IsDefaultIdentity() &&
+      (!crtc_props->degamma_lut.id || !crtc_props->degamma_lut_size.id)) {
     return false;
+  }
 
   if (!crtc_props->gamma_lut.id || !crtc_props->gamma_lut_size.id) {
-    if (degamma_lut.empty())
-      return drm_->SetGammaRamp(crtc_id, gamma_lut);
+    if (degamma_curve.IsDefaultIdentity()) {
+      return drm_->SetGammaRamp(crtc_id, gamma_curve);
+    }
 
     // We're missing either degamma or gamma lut properties. We shouldn't try to
     // set just one of them.
     return false;
   }
 
-  ScopedDrmColorLutPtr degamma_blob_data = CreateLutBlob(
-      ResampleLut(degamma_lut, crtc_props->degamma_lut_size.value));
+  ScopedDrmColorLutPtr degamma_blob_data =
+      CreateLutBlob(degamma_curve, crtc_props->degamma_lut_size.value);
   ScopedDrmColorLutPtr gamma_blob_data =
-      CreateLutBlob(ResampleLut(gamma_lut, crtc_props->gamma_lut_size.value));
+      CreateLutBlob(gamma_curve, crtc_props->gamma_lut_size.value);
 
   if (degamma_blob_data) {
     crtc_state->degamma_lut_blob = drm_->CreatePropertyBlob(

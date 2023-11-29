@@ -79,10 +79,9 @@ class HostDrmDevice : public base::RefCountedThreadSafe<HostDrmDevice>,
       display::ContentProtectionMethod protection_method) override;
   bool GpuSetColorMatrix(int64_t display_id,
                          const std::vector<float>& color_matrix) override;
-  bool GpuSetGammaCorrection(
-      int64_t display_id,
-      const std::vector<display::GammaRampRGBEntry>& degamma_lut,
-      const std::vector<display::GammaRampRGBEntry>& gamma_lut) override;
+  bool GpuSetGammaCorrection(int64_t display_id,
+                             const display::GammaCurve& degamma,
+                             const display::GammaCurve& gamma) override;
   void GpuSetPrivacyScreen(int64_t display_id,
                            bool enabled,
                            display::SetPrivacyScreenCallback callback) override;

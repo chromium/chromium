@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "ui/display/types/gamma_ramp_rgb_entry.h"
+#include "ui/display/types/display_color_management.h"
 
 namespace chromecast {
 

@@ -799,14 +799,13 @@ bool DisplayConfigurator::SetColorMatrix(
   return native_display_delegate_->SetColorMatrix(display_id, color_matrix);
 }
 
-bool DisplayConfigurator::SetGammaCorrection(
-    int64_t display_id,
-    const std::vector<GammaRampRGBEntry>& degamma_lut,
-    const std::vector<GammaRampRGBEntry>& gamma_lut) {
+bool DisplayConfigurator::SetGammaCorrection(int64_t display_id,
+                                             const GammaCurve& degamma,
+                                             const GammaCurve& gamma) {
   if (!IsDisplayIdInDisplayStateList(display_id, cached_displays_))
     return false;
-  return native_display_delegate_->SetGammaCorrection(display_id, degamma_lut,
-                                                      gamma_lut);
+  return native_display_delegate_->SetGammaCorrection(display_id, degamma,
+                                                      gamma);
 }
 
 void DisplayConfigurator::SetPrivacyScreen(int64_t display_id,

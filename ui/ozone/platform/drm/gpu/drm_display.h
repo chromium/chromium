@@ -22,7 +22,7 @@ typedef struct _drmModeModeInfo drmModeModeInfo;
 
 namespace display {
 class DisplaySnapshot;
-struct GammaRampRGBEntry;
+class GammaCurve;
 }  // namespace display
 
 namespace ui {
@@ -87,9 +87,8 @@ class DrmDisplay {
                     display::ContentProtectionMethod protection_method);
   void SetColorMatrix(const std::vector<float>& color_matrix);
   void SetBackgroundColor(const uint64_t background_color);
-  void SetGammaCorrection(
-      const std::vector<display::GammaRampRGBEntry>& degamma_lut,
-      const std::vector<display::GammaRampRGBEntry>& gamma_lut);
+  void SetGammaCorrection(const display::GammaCurve& degamma,
+                          const display::GammaCurve& gamma);
   bool SetPrivacyScreen(bool enabled);
   bool SetHdrOutputMetadata(const gfx::ColorSpace color_space);
   bool SetColorspaceProperty(const gfx::ColorSpace color_space);
@@ -98,9 +97,8 @@ class DrmDisplay {
   void set_is_hdr_capable_for_testing(bool value) { is_hdr_capable_ = value; }
 
  private:
-  void CommitGammaCorrection(
-      const std::vector<display::GammaRampRGBEntry>& degamma_lut,
-      const std::vector<display::GammaRampRGBEntry>& gamma_lut);
+  void CommitGammaCorrection(const display::GammaCurve& degamma,
+                             const display::GammaCurve& gamma);
   gfx::HDRStaticMetadata::Eotf GetEotf(
       const gfx::ColorSpace::TransferID transfer_id);
 

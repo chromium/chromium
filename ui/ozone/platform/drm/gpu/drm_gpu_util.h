@@ -24,9 +24,9 @@ bool AddPropertyIfValid(drmModeAtomicReq* property_set,
                         uint32_t object_id,
                         const DrmWrapper::Property& property);
 
-// Transforms the gamma ramp entries into the drm_color_lut format.
-ScopedDrmColorLutPtr CreateLutBlob(
-    const std::vector<display::GammaRampRGBEntry>& source);
+// Transforms the gamma curve into the drm_color_lut format with `size` entries.
+ScopedDrmColorLutPtr CreateLutBlob(const display::GammaCurve& source,
+                                   size_t size);
 
 // Converts |color_matrix| to a drm_color_ctm in U31.32 format where the most
 // significant bit is the sign.
@@ -35,12 +35,6 @@ ScopedDrmColorCtmPtr CreateCTMBlob(const std::vector<float>& color_matrix);
 
 // Creates a FB Damage Clip Blob
 ScopedDrmModeRectPtr CreateDCBlob(const gfx::Rect& rect);
-
-// Creates a new look-up table of the desired size to fit the expectations of
-// the DRM driver.
-std::vector<display::GammaRampRGBEntry> ResampleLut(
-    const std::vector<display::GammaRampRGBEntry>& lut_in,
-    size_t desired_size);
 
 // Returns the display infos parsed in
 // |GetDisplayInfosAndInvalidCrtcs| and disables the invalid CRTCs

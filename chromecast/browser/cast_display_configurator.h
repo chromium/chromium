@@ -18,7 +18,7 @@
 namespace display {
 class DisplayMode;
 class DisplaySnapshot;
-struct GammaRampRGBEntry;
+class GammaCurve;
 }  // namespace display
 
 namespace gfx {
@@ -64,9 +64,8 @@ class CastDisplayConfigurator : public display::NativeDisplayObserver {
 
   void ConfigureDisplayFromCommandLine();
   void SetColorMatrix(const std::vector<float>& color_matrix);
-  void SetGammaCorrection(
-      const std::vector<display::GammaRampRGBEntry>& degamma_lut,
-      const std::vector<display::GammaRampRGBEntry>& gamma_lut);
+  void SetGammaCorrection(const display::GammaCurve& degamma,
+                          const display::GammaCurve& gamma);
 
  private:
   void ForceInitialConfigure();

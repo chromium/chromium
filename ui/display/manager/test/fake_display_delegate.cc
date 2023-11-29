@@ -197,10 +197,9 @@ bool FakeDisplayDelegate::SetColorMatrix(
   return false;
 }
 
-bool FakeDisplayDelegate::SetGammaCorrection(
-    int64_t display_id,
-    const std::vector<display::GammaRampRGBEntry>& degamma_lut,
-    const std::vector<display::GammaRampRGBEntry>& gamma_lut) {
+bool FakeDisplayDelegate::SetGammaCorrection(int64_t display_id,
+                                             const display::GammaCurve& degamma,
+                                             const display::GammaCurve& gamma) {
   return false;
 }
 

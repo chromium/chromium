@@ -897,9 +897,8 @@ bool MockDrmDevice::CommitProperties(
   return true;
 }
 
-bool MockDrmDevice::SetGammaRamp(
-    uint32_t crtc_id,
-    const std::vector<display::GammaRampRGBEntry>& lut) {
+bool MockDrmDevice::SetGammaRamp(uint32_t crtc_id,
+                                 const display::GammaCurve& curve) {
   set_gamma_ramp_count_++;
   return legacy_gamma_ramp_expectation_;
 }

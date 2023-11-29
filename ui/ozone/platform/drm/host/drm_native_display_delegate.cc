@@ -92,10 +92,10 @@ bool DrmNativeDisplayDelegate::SetColorMatrix(
 
 bool DrmNativeDisplayDelegate::SetGammaCorrection(
     int64_t display_id,
-    const std::vector<display::GammaRampRGBEntry>& degamma_lut,
-    const std::vector<display::GammaRampRGBEntry>& gamma_lut) {
+    const display::GammaCurve& degamma,
+    const display::GammaCurve& gamma) {
   DrmDisplayHost* display = display_manager_->GetDisplay(display_id);
-  display->SetGammaCorrection(degamma_lut, gamma_lut);
+  display->SetGammaCorrection(degamma, gamma);
   return true;
 }
 

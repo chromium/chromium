@@ -15,7 +15,7 @@
 
 namespace display {
 
-struct GammaRampRGBEntry;
+class GammaCurve;
 struct DisplayConfigurationParams;
 
 namespace test {
@@ -51,10 +51,9 @@ std::string SetColorMatrixAction(int64_t display_id,
 
 // Returns a string describing a TestNativeDisplayDelegate::SetGammaCorrection()
 // call.
-std::string SetGammaCorrectionAction(
-    int64_t display_id,
-    const std::vector<display::GammaRampRGBEntry>& degamma_lut,
-    const std::vector<display::GammaRampRGBEntry>& gamma_lut);
+std::string SetGammaCorrectionAction(int64_t display_id,
+                                     const display::GammaCurve& degamma,
+                                     const display::GammaCurve& gamma);
 
 // Returns a string describing a TestNativeDisplayDelegate::SetPrivacyScreen()
 // call.

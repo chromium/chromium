@@ -10,6 +10,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/manager/test/fake_display_snapshot.h"
+#include "ui/display/types/display_color_management.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/linux/test/mock_gbm_device.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"
@@ -62,19 +63,27 @@ std::unique_ptr<HardwareDisplayControllerInfo> GetDisplayInfo(
 // Verifies that the argument goes from 0 to the maximum uint16_t times |scale|
 // following a power function with |exponent|.
 MATCHER_P2(MatchesPowerFunction, scale, exponent, "") {
-  EXPECT_FALSE(arg.empty());
+  EXPECT_FALSE(arg.IsDefaultIdentity());
 
-  const uint16_t max_value = std::numeric_limits<uint16_t>::max() * scale;
+  const uint16_t kMaxValue = std::numeric_limits<uint16_t>::max() * scale;
+  const uint16_t kEpsilon = std::numeric_limits<uint16_t>::max() * 0.02f;
 
-  float i = 1.0;
-  for (const auto rgb_value : arg) {
-    const uint16_t expected_value = max_value * pow(i / arg.size(), exponent);
-    i++;
-    EXPECT_NEAR(rgb_value.r, expected_value, 1.0);
-    EXPECT_NEAR(rgb_value.g, expected_value, 1.0);
-    EXPECT_NEAR(rgb_value.b, expected_value, 1.0);
+  const size_t kSize = 10;
+  for (size_t i = 0; i < kSize; ++i) {
+    float x = i / (kSize - 1.f);
+    uint16_t r, g, b;
+    arg.Evaluate(x, r, g, b);
+
+    const uint16_t expected_value = kMaxValue * pow(x, exponent);
+    EXPECT_NEAR(r, expected_value, kEpsilon);
+    EXPECT_NEAR(g, expected_value, kEpsilon);
+    EXPECT_NEAR(b, expected_value, kEpsilon);
   }
+  return true;
+}
 
+MATCHER(IsDefaultIdentity, "") {
+  EXPECT_TRUE(arg.IsDefaultIdentity());
   return true;
 }
 
@@ -87,8 +96,8 @@ class MockHardwareDisplayPlaneManager : public HardwareDisplayPlaneManager {
   MOCK_METHOD(bool,
               SetGammaCorrection,
               (uint32_t crtc_id,
-               const std::vector<display::GammaRampRGBEntry>& degamma_lut,
-               const std::vector<display::GammaRampRGBEntry>& gamma_lut),
+               const display::GammaCurve& degamma,
+               const display::GammaCurve& gamma),
               (override));
 
   bool Commit(CommitRequest commit_request, uint32_t flags) override {
@@ -181,18 +190,19 @@ TEST_F(DrmDisplayTest, SetColorSpace) {
   MockHardwareDisplayPlaneManager* plane_manager =
       AddMockHardwareDisplayPlaneManager();
 
-  ON_CALL(*plane_manager, SetGammaCorrection(_, SizeIs(0), _))
+  ON_CALL(*plane_manager, SetGammaCorrection(_, IsDefaultIdentity(), _))
       .WillByDefault(::testing::Return(true));
 
   const auto kHDRColorSpace = gfx::ColorSpace::CreateHDR10();
-  EXPECT_CALL(*plane_manager, SetGammaCorrection(_, SizeIs(0), SizeIs(0)));
+  EXPECT_CALL(*plane_manager,
+              SetGammaCorrection(_, IsDefaultIdentity(), IsDefaultIdentity()));
   drm_display_->SetColorSpace(kHDRColorSpace);
 
   const auto kSDRColorSpace = gfx::ColorSpace::CreateREC709();
   constexpr float kSDRLevel = 0.85;
   constexpr float kExponent = 1.2;
   EXPECT_CALL(*plane_manager,
-              SetGammaCorrection(_, SizeIs(0),
+              SetGammaCorrection(_, IsDefaultIdentity(),
                                  MatchesPowerFunction(kSDRLevel, kExponent)));
   drm_display_->SetColorSpace(kSDRColorSpace);
 }
@@ -204,9 +214,9 @@ TEST_F(DrmDisplayTest, SetEmptyGammaCorrectionNonHDRDisplay) {
   ON_CALL(*plane_manager, SetGammaCorrection(_, _, _))
       .WillByDefault(::testing::Return(true));
 
-  EXPECT_CALL(*plane_manager, SetGammaCorrection(_, SizeIs(0), SizeIs(0)));
-  drm_display_->SetGammaCorrection(std::vector<display::GammaRampRGBEntry>(),
-                                   std::vector<display::GammaRampRGBEntry>());
+  EXPECT_CALL(*plane_manager,
+              SetGammaCorrection(_, IsDefaultIdentity(), IsDefaultIdentity()));
+  drm_display_->SetGammaCorrection({}, {});
 }
 
 TEST_F(DrmDisplayTest, SetEmptyGammaCorrectionHDRDisplay) {
@@ -220,10 +230,9 @@ TEST_F(DrmDisplayTest, SetEmptyGammaCorrectionHDRDisplay) {
   constexpr float kSDRLevel = 0.85;
   constexpr float kExponent = 1.2;
   EXPECT_CALL(*plane_manager,
-              SetGammaCorrection(_, SizeIs(0),
+              SetGammaCorrection(_, IsDefaultIdentity(),
                                  MatchesPowerFunction(kSDRLevel, kExponent)));
-  drm_display_->SetGammaCorrection(std::vector<display::GammaRampRGBEntry>(),
-                                   std::vector<display::GammaRampRGBEntry>());
+  drm_display_->SetGammaCorrection({}, {});
 }
 
 }  // namespace ui

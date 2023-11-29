@@ -18,7 +18,7 @@
 using drmModeModeInfo = struct _drmModeModeInfo;
 
 namespace display {
-struct GammaRampRGBEntry;
+class GammaCurve;
 }  // namespace display
 
 namespace gfx {
@@ -71,10 +71,9 @@ class DrmGpuDisplayManager {
   void SetColorMatrix(int64_t display_id,
                       const std::vector<float>& color_matrix);
   void SetBackgroundColor(int64_t display_id, const uint64_t background_color);
-  void SetGammaCorrection(
-      int64_t display_id,
-      const std::vector<display::GammaRampRGBEntry>& degamma_lut,
-      const std::vector<display::GammaRampRGBEntry>& gamma_lut);
+  void SetGammaCorrection(int64_t display_id,
+                          const display::GammaCurve& degamma,
+                          const display::GammaCurve& gamma);
   bool SetPrivacyScreen(int64_t display_id, bool enabled);
 
   void SetColorSpace(int64_t crtc_id, const gfx::ColorSpace& color_space);

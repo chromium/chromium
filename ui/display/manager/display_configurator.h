@@ -30,11 +30,10 @@ namespace display {
 class ContentProtectionManager;
 class DisplayMode;
 class DisplaySnapshot;
+class GammaCurve;
 class ManagedDisplayMode;
 class NativeDisplayDelegate;
 class UpdateDisplayConfigurationTask;
-
-struct GammaRampRGBEntry;
 
 namespace test {
 class DisplayManagerTestApi;
@@ -274,8 +273,8 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   // Sets the given |gamma_lut| and |degamma_lut| on the display with
   // |display_id|.
   bool SetGammaCorrection(int64_t display_id,
-                          const std::vector<GammaRampRGBEntry>& degamma_lut,
-                          const std::vector<GammaRampRGBEntry>& gamma_lut);
+                          const GammaCurve& degamma,
+                          const GammaCurve& gamma);
 
   // Enable/disable the privacy screen on display with |display_id|.
   // For this to succeed, privacy screen must be supported by the display.

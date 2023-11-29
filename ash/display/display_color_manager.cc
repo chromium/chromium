@@ -63,11 +63,15 @@ std::unique_ptr<DisplayColorManager::ColorCalibrationData> ParseDisplayProfile(
       return nullptr;
     }
 
-    data->gamma_lut.resize(vcgt_channel_length);
-    for (size_t i = 0; i < vcgt_channel_length; ++i) {
-      data->gamma_lut[i].r = vcgt_data[i];
-      data->gamma_lut[i].g = vcgt_data[vcgt_channel_length + i];
-      data->gamma_lut[i].b = vcgt_data[(vcgt_channel_length * 2) + i];
+    {
+      std::vector<display::GammaRampRGBEntry> gamma_lut;
+      gamma_lut.resize(vcgt_channel_length);
+      for (size_t i = 0; i < vcgt_channel_length; ++i) {
+        gamma_lut[i].r = vcgt_data[i];
+        gamma_lut[i].g = vcgt_data[vcgt_channel_length + i];
+        gamma_lut[i].b = vcgt_data[(vcgt_channel_length * 2) + i];
+      }
+      data->gamma_curve = display::GammaCurve(gamma_lut);
     }
   } else {
     VLOG(1) << "Using full degamma/gamma/CTM from profile.";
@@ -121,18 +125,26 @@ std::unique_ptr<DisplayColorManager::ColorCalibrationData> ParseDisplayProfile(
     qcms_transform_get_output_trc_rgba(transform, display_profile,
                                        QCMS_TRC_USHORT, &gamma_data[0]);
 
-    data->degamma_lut.resize(degamma_size);
-    for (size_t i = 0; i < degamma_size; ++i) {
-      data->degamma_lut[i].r = degamma_data[i * 4];
-      data->degamma_lut[i].g = degamma_data[(i * 4) + 1];
-      data->degamma_lut[i].b = degamma_data[(i * 4) + 2];
+    {
+      std::vector<display::GammaRampRGBEntry> degamma_lut;
+      degamma_lut.resize(degamma_size);
+      for (size_t i = 0; i < degamma_size; ++i) {
+        degamma_lut[i].r = degamma_data[i * 4];
+        degamma_lut[i].g = degamma_data[(i * 4) + 1];
+        degamma_lut[i].b = degamma_data[(i * 4) + 2];
+      }
+      data->degamma_curve = display::GammaCurve(degamma_lut);
     }
 
-    data->gamma_lut.resize(gamma_size);
-    for (size_t i = 0; i < gamma_size; ++i) {
-      data->gamma_lut[i].r = gamma_data[i * 4];
-      data->gamma_lut[i].g = gamma_data[(i * 4) + 1];
-      data->gamma_lut[i].b = gamma_data[(i * 4) + 2];
+    {
+      std::vector<display::GammaRampRGBEntry> gamma_lut;
+      gamma_lut.resize(gamma_size);
+      for (size_t i = 0; i < gamma_size; ++i) {
+        gamma_lut[i].r = gamma_data[i * 4];
+        gamma_lut[i].g = gamma_data[(i * 4) + 1];
+        gamma_lut[i].b = gamma_data[(i * 4) + 2];
+      }
+      data->gamma_curve = display::GammaCurve(gamma_lut);
     }
 
     data->correction_matrix.resize(9);
@@ -329,8 +341,8 @@ void DisplayColorManager::ApplyDisplayColorCalibration(
   }
 
   if (!configurator_->SetGammaCorrection(display_id,
-                                         calibration_data.degamma_lut,
-                                         calibration_data.gamma_lut)) {
+                                         calibration_data.degamma_curve,
+                                         calibration_data.gamma_curve)) {
     LOG(WARNING) << "Error applying gamma correction data.";
   }
 }
