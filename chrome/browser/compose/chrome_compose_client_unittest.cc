@@ -985,6 +985,25 @@ TEST_F(ChromeComposeClientTest, ThumbsDownOpensCorrectURL) {
   EXPECT_EQ(bug_url, new_tab_webcontents->GetVisibleURL());
 }
 
+TEST_F(ChromeComposeClientTest, SurveyLinkOpensCorrectURL) {
+  GURL survey_url("https://goto.google.com/ccfsfd");
+
+  ShowDialogAndBindMojo();
+
+  ui_test_utils::TabAddedWaiter tab_add_waiter(browser());
+  page_handler()->OpenFeedbackSurveyLink();
+
+  // Wait for the resulting new tab to be created.
+  tab_add_waiter.Wait();
+  // Check that the new foreground tab is opened.
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+  // Check expected URL of the new tab.
+  content::WebContents* new_tab_webcontents =
+      browser()->tab_strip_model()->GetWebContentsAt(1);
+  EXPECT_EQ(survey_url, new_tab_webcontents->GetVisibleURL());
+}
+
 TEST_F(ChromeComposeClientTest, ResetClientOnNavigation) {
   ShowDialogAndBindMojo();
 

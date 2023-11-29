@@ -107,9 +107,9 @@
   <!-- Cross-dialog -->
   <message name="IDS_COMPOSE_FOOTER_FISHFOOD" desc="The footer text used for Fishfood in the input and result dialogs." translateable="false">
     This feature is experimental.
-  </message>
-  <message name="IDS_COMPOSE_FILE_BUG" desc="The text used as a clickable link to open the Compose bug-reporting page. Used for Fishfood only." translateable="false">
-    File a bug
+    <ph name="BEGIN_BUG_LINK">&lt;a href="#" id="bugLink" role="button"&gt;</ph>File a bug<ph name="END_BUG_LINK">&lt;/a&gt;</ph>
+    or fill out our
+    <ph name="BEGIN_SURVEY_LINK">&lt;a href="#" id="surveyLink" role="button"&gt;</ph>survey<ph name="END_SURVEY_LINK">&lt;/a&gt;</ph>
   </message>
 
 </grit-part>

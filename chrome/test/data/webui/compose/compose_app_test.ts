@@ -34,6 +34,7 @@ class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
       'compose',
       'rewrite',
       'openBugReportingLink',
+      'openFeedbackSurveyLink',
       'requestInitialState',
       'saveWebuiState',
       'setUserFeedback',
@@ -73,6 +74,10 @@ class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
 
   openBugReportingLink() {
     this.methodCalled('openBugReportingLink');
+  }
+
+  openFeedbackSurveyLink() {
+    this.methodCalled('openFeedbackSurveyLink');
   }
 
   openComposeSettings() {}

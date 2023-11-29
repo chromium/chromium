@@ -375,9 +375,19 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.rewrite_(/*style=*/ {tone: this.selectedTone_});
   }
 
-  private onFileBugClick_(e: Event) {
+  private onFooterClick_(e: Event) {
     e.preventDefault();
-    this.apiProxy_.openBugReportingLink();
+    // The "File a bug" and "survey" links are embedded into the string.
+    // Embededd links do not work in WebUI so handle each click in the parent
+    // event listener.
+    switch ((e.target as HTMLElement).id) {
+      case 'bugLink':
+        this.apiProxy_.openBugReportingLink();
+        break;
+      case 'surveyLink':
+        this.apiProxy_.openFeedbackSurveyLink();
+        break;
+    }
   }
 
   private onConsentTopTextClick_(e: Event) {

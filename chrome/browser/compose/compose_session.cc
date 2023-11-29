@@ -67,6 +67,7 @@ bool IsValidComposePrompt(const std::string& prompt) {
 }
 
 const char kComposeBugReportURL[] = "https://goto.google.com/ccbrfd";
+const char kComposeFeedbackSurveyURL[] = "https://goto.google.com/ccfsfd";
 
 void LogComposeResponseStatus(compose::mojom::ComposeStatus status) {
   UMA_HISTOGRAM_ENUMERATION(compose::kComposeResponseStatus, status);
@@ -344,6 +345,13 @@ void ComposeSession::Undo(UndoCallback callback) {
 void ComposeSession::OpenBugReportingLink() {
   web_contents_->OpenURL(content::OpenURLParams(
       GURL(kComposeBugReportURL), content::Referrer(),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
+      /* is_renderer_initiated= */ false));
+}
+
+void ComposeSession::OpenFeedbackSurveyLink() {
+  web_contents_->OpenURL(content::OpenURLParams(
+      GURL(kComposeFeedbackSurveyURL), content::Referrer(),
       WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
       /* is_renderer_initiated= */ false));
 }

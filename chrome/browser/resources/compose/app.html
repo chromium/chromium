@@ -386,11 +386,8 @@
 
     <div id="submitFooter" class="footer" hidden$="[[submitted_]]">
       <div class="footer-text">
-        <div>
+        <div on-click="onFooterClick_">
           $i18nRaw{inputFooter}
-          <a href="#" role="button" on-click="onFileBugClick_">
-            $i18nRaw{fileBugText}
-          </a>
         </div>
       </div>
       <cr-button id="submitButton" class="action-button" on-click="onSubmit_"
@@ -403,11 +400,8 @@
     <div id="resultFooter" class="footer"
       hidden="[[!hasSuccessfulResponse_(response_)]]">
       <div class="footer-text">
-        <div>
+        <div on-click="onFooterClick_">
           $i18nRaw{resultFooter}
-          <a href="#" role="button" on-click="onFileBugClick_">
-            $i18nRaw{fileBugText}
-          </a>
         </div>
         <cr-feedback-buttons
             on-selected-option-changed="onFeedbackSelectedOptionChanged_"

@@ -91,6 +91,10 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   // Down button is clicked. This implementation is designed for Fishfood only.
   void OpenBugReportingLink() override;
 
+  // Opens the Compose feedback survey page in a new tab. This implementation is
+  // designed for Dogfood only.
+  void OpenFeedbackSurveyLink() override;
+
   // Opens the Compose-related Chrome settings page in a new tab when the
   // "settings" link is clicked in the consent dialog.
   void OpenComposeSettings() override;
