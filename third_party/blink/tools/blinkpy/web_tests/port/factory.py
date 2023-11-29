@@ -219,6 +219,9 @@ def add_configuration_options_group(parser: argparse.ArgumentParser,
                        const='Release',
                        dest='configuration',
                        help='Set the configuration to Release')
+    group.add_argument('--chrome-branded',
+                       action='store_true',
+                       help='Set the configuration as chrome_branded.')
     add_common_wpt_options(group)
     if rwt:
         group.add_argument('--no-xvfb',

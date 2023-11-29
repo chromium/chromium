@@ -470,6 +470,9 @@ class Port(object):
 
     @memoized
     def _build_is_chrome_branded(self):
+        chrome_branded = self.get_option('chrome_branded')
+        if chrome_branded:
+            return bool(chrome_branded)
         contents = self._build_args_gn_content()
         return bool(
             re.search(r'^\s*is_chrome_branded\s*=\s*true\s*(#.*)?$', contents,

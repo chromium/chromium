@@ -1195,7 +1195,6 @@ if (use_blink && !is_cronet_build) {
     }
 
     data = [
-      "$root_out_dir/args.gn",
       "//build/skia_gold_common/",
       "//testing/scripts/common.py",
       "//testing/scripts/run_isolated_script_test.py",
@@ -1259,6 +1258,9 @@ if (use_blink && !is_cronet_build) {
     if (dcheck_always_on) {
       _common_web_test_args += [ "--timeout-ms=12000" ]
     }
+  }
+  if (is_chrome_branded) {
+    _common_web_test_args += [ "--chrome-branded" ]
   }
 
   if (is_android) {
