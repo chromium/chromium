@@ -454,7 +454,8 @@ void PasswordGenerationAgent::TriggeredGeneratePassword(
         is_generation_element_password_type,
         GetTextDirectionForElement(
             current_generation_item_->generation_element_),
-        current_generation_item_->form_data_);
+        current_generation_item_->form_data_,
+        current_generation_item_->generation_element_.Value().Utf16().empty());
     std::move(callback).Run(std::move(password_generation_ui_data));
     current_generation_item_->generation_popup_shown_ = true;
   } else {
@@ -675,7 +676,8 @@ void PasswordGenerationAgent::AutomaticGenerationAvailable() {
           current_generation_item_->generation_element_),
       is_generation_element_password_type,
       GetTextDirectionForElement(current_generation_item_->generation_element_),
-      current_generation_item_->form_data_);
+      current_generation_item_->form_data_,
+      current_generation_item_->generation_element_.Value().Utf16().empty());
   current_generation_item_->generation_popup_shown_ = true;
   GetPasswordGenerationDriver().AutomaticGenerationAvailable(
       password_generation_ui_data);

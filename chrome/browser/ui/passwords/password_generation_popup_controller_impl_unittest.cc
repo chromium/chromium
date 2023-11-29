@@ -38,11 +38,11 @@ using ::testing::_;
 using ::testing::Return;
 
 PasswordGenerationUIData CreatePasswordGenerationUIData() {
-  return PasswordGenerationUIData(gfx::RectF(100, 20), /*max_length=*/20,
-                                  u"element", autofill::FieldRendererId(100),
-                                  /*is_generation_element_password_type=*/true,
-                                  base::i18n::TextDirection(),
-                                  autofill::FormData());
+  return PasswordGenerationUIData(
+      gfx::RectF(100, 20), /*max_length=*/20, u"element",
+      autofill::FieldRendererId(100),
+      /*is_generation_element_password_type=*/true, base::i18n::TextDirection(),
+      autofill::FormData(), /*input_field_empty=*/true);
 }
 
 class MockPasswordManagerDriver
@@ -71,6 +71,7 @@ class MockPasswordManagerDriver
 };
 
 class MockPasswordGenerationPopupView : public PasswordGenerationPopupView {
+ public:
   MOCK_METHOD(bool, Show, (), (override));
   MOCK_METHOD(void, Hide, (), (override));
   MOCK_METHOD(void, UpdateState, (), (override));
@@ -334,6 +335,43 @@ TEST_F(PasswordGenerationPopupControllerImplTest,
               GeneratedPasswordAccepted(_, autofill::FieldRendererId(100), _));
   EXPECT_CALL(*driver, FocusNextFieldAfterPasswords).Times(0);
   controller->EditPasswordClicked();
+}
+
+TEST_F(PasswordGenerationPopupControllerImplTest,
+       PreviewsGeneratedPasswordOnShowInNudgePassword) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{password_manager::features::kPasswordGenerationExperiment,
+        {{"password_generation_variation", "nudge_password"}}}},
+      {});
+
+  // The password generation helper is needed in the offer generation state and
+  // since the driver mock returns a raw pointer to it, we construct it first.
+  StubPasswordManagerClient client;
+  PasswordGenerationFrameHelper pw_generation_helper{&client,
+                                                     /*driver=*/nullptr};
+
+  PasswordGenerationUIData ui_data = CreatePasswordGenerationUIData();
+  auto driver = CreateDriver();
+  ON_CALL(*driver, GetPasswordGenerationHelper)
+      .WillByDefault(Return(&pw_generation_helper));
+  std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
+  base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
+      PasswordGenerationPopupControllerImpl::GetOrCreate(
+          /*previous=*/nullptr, ui_data.bounds, ui_data, driver->AsWeakPtr(),
+          /*observer=*/nullptr, web_contents.get(), main_rfh());
+
+  controller->SetViewForTesting(popup_view());
+  // TODO(crbug.com/1444072): Rewrite controller_->Show() function to allow
+  // testing expectations when the view doesn't exist.  SetViewForTesting
+  // prevents that currently, hence the update view flow is being called.
+  ON_CALL(*popup_view(), UpdateBoundsAndRedrawPopup)
+      .WillByDefault(Return(true));
+
+  // In the nudge password experiment suggestion is previewed on show.
+  EXPECT_CALL(*driver, PreviewGenerationSuggestion);
+  controller->Show(
+      PasswordGenerationPopupController::GenerationUIState::kOfferGeneration);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

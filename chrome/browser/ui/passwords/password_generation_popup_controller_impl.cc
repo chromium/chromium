@@ -301,6 +301,16 @@ void PasswordGenerationPopupControllerImpl::Show(GenerationUIState state) {
     }
   }
 
+  // In `kNudgePassword` Desktop experiment password is previewed straight away
+  // in offer generation state.
+#if !BUILDFLAG(IS_ANDROID)
+  if (state == kOfferGeneration &&
+      kPasswordGenerationExperimentVariationParam.Get() ==
+          PasswordGenerationVariation::kNudgePassword) {
+    driver_->PreviewGenerationSuggestion(current_generated_password_);
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   if (observer_)
     observer_->OnPopupShown(state_);
 }
