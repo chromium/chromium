@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase_map.h"
+#include "base/functional/overloaded.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "components/performance_manager/frame_node_source.h"
@@ -225,7 +226,7 @@ void WorkerWatcher::TearDown() {
 void WorkerWatcher::OnWorkerCreated(
     const blink::DedicatedWorkerToken& dedicated_worker_token,
     int worker_process_id,
-    content::GlobalRenderFrameHostId ancestor_render_frame_host_id) {
+    content::DedicatedWorkerCreator creator) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // TODO(https://crbug.com/993029): Plumb through the URL.
@@ -237,13 +238,23 @@ void WorkerWatcher::OnWorkerCreated(
       dedicated_worker_token, std::move(worker_node));
   DCHECK(insertion_result.second);
 
-  AddFrameClientConnection(insertion_result.first->second.get(),
-                           ancestor_render_frame_host_id);
+  absl::visit(
+      base::Overloaded(
+          [&,
+           this](const content::GlobalRenderFrameHostId& render_frame_host_id) {
+            AddFrameClientConnection(insertion_result.first->second.get(),
+                                     render_frame_host_id);
+          },
+          [&, this](blink::DedicatedWorkerToken dedicated_worker_token) {
+            ConnectDedicatedWorkerClient(insertion_result.first->second.get(),
+                                         dedicated_worker_token);
+          }),
+      creator);
 }
 
 void WorkerWatcher::OnBeforeWorkerDestroyed(
     const blink::DedicatedWorkerToken& dedicated_worker_token,
-    content::GlobalRenderFrameHostId ancestor_render_frame_host_id) {
+    content::DedicatedWorkerCreator creator) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto it = dedicated_worker_nodes_.find(dedicated_worker_token);
@@ -251,8 +262,20 @@ void WorkerWatcher::OnBeforeWorkerDestroyed(
 
   auto worker_node = std::move(it->second);
 
-  // First disconnect the ancestor's frame node from this worker node.
-  RemoveFrameClientConnection(worker_node.get(), ancestor_render_frame_host_id);
+  // First disconnect the creator's node from this worker node.
+
+  absl::visit(
+      base::Overloaded(
+          [&,
+           this](const content::GlobalRenderFrameHostId& render_frame_host_id) {
+            RemoveFrameClientConnection(worker_node.get(),
+                                        render_frame_host_id);
+          },
+          [&, this](blink::DedicatedWorkerToken dedicated_worker_token) {
+            DisconnectDedicatedWorkerClient(worker_node.get(),
+                                            dedicated_worker_token);
+          }),
+      creator);
 
   // Disconnect all child workers before destroying the node.
   auto child_it = dedicated_worker_child_workers_.find(dedicated_worker_token);
@@ -660,11 +683,13 @@ void WorkerWatcher::ConnectDedicatedWorkerClient(
       GetDedicatedWorkerNode(client_dedicated_worker_token);
   if (!client_dedicated_worker_node) {
 #if DCHECK_IS_ON()
-    bool inserted =
-        missing_service_worker_clients_[worker_node]
-            .insert(ServiceWorkerClient(client_dedicated_worker_token))
-            .second;
-    DCHECK(inserted);
+    if (IsServiceWorkerNode(worker_node)) {
+      bool inserted =
+          missing_service_worker_clients_[worker_node]
+              .insert(ServiceWorkerClient(client_dedicated_worker_token))
+              .second;
+      DCHECK(inserted);
+    }
 #endif
     return;
   }
@@ -687,12 +712,15 @@ void WorkerWatcher::DisconnectDedicatedWorkerClient(
       GetDedicatedWorkerNode(client_dedicated_worker_token);
   if (!client_dedicated_worker) {
 #if DCHECK_IS_ON()
-    auto it = missing_service_worker_clients_.find(worker_node);
-    DCHECK(it != missing_service_worker_clients_.end());
-    DCHECK_EQ(1u, it->second.erase(
-                      ServiceWorkerClient(client_dedicated_worker_token)));
-    if (it->second.empty())
-      missing_service_worker_clients_.erase(it);
+    if (IsServiceWorkerNode(worker_node)) {
+      auto it = missing_service_worker_clients_.find(worker_node);
+      DCHECK(it != missing_service_worker_clients_.end());
+      DCHECK_EQ(1u, it->second.erase(
+                        ServiceWorkerClient(client_dedicated_worker_token)));
+      if (it->second.empty()) {
+        missing_service_worker_clients_.erase(it);
+      }
+    }
 #endif
     return;
   }
@@ -721,6 +749,7 @@ void WorkerWatcher::ConnectSharedWorkerClient(
       GetSharedWorkerNode(client_shared_worker_token);
   if (!client_shared_worker_node) {
 #if DCHECK_IS_ON()
+    DCHECK(IsServiceWorkerNode(worker_node));
     bool inserted = missing_service_worker_clients_[worker_node]
                         .insert(ServiceWorkerClient(client_shared_worker_token))
                         .second;
@@ -752,6 +781,7 @@ void WorkerWatcher::DisconnectSharedWorkerClient(
            shared_worker_child_workers_.end());
 
 #if DCHECK_IS_ON()
+    DCHECK(IsServiceWorkerNode(worker_node));
     auto it = missing_service_worker_clients_.find(worker_node);
     DCHECK(it != missing_service_worker_clients_.end());
     DCHECK_EQ(

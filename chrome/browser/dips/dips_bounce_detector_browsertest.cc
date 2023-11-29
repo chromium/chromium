@@ -203,14 +203,12 @@ class WCOCallbackLogger
   // End SharedWorkerService.Observer overrides.
 
   // Start DedicatedWorkerService.Observer overrides:
-  void OnWorkerCreated(
-      const blink::DedicatedWorkerToken& worker_token,
-      int worker_process_id,
-      content::GlobalRenderFrameHostId ancestor_render_frame_host_id) override;
+  void OnWorkerCreated(const blink::DedicatedWorkerToken& worker_token,
+                       int worker_process_id,
+                       content::DedicatedWorkerCreator creator) override;
   void OnBeforeWorkerDestroyed(
       const blink::DedicatedWorkerToken& worker_token,
-      content::GlobalRenderFrameHostId ancestor_render_frame_host_id) override {
-  }
+      content::DedicatedWorkerCreator creator) override {}
   void OnFinalResponseURLDetermined(
       const blink::DedicatedWorkerToken& worker_token,
       const GURL& url) override {}
@@ -290,9 +288,11 @@ void WCOCallbackLogger::OnClientAdded(
 void WCOCallbackLogger::OnWorkerCreated(
     const blink::DedicatedWorkerToken& worker_token,
     int worker_process_id,
-    content::GlobalRenderFrameHostId ancestor_render_frame_host_id) {
+    content::DedicatedWorkerCreator creator) {
+  const content::GlobalRenderFrameHostId& render_frame_host_id =
+      absl::get<content::GlobalRenderFrameHostId>(creator);
   content::RenderFrameHost* render_frame_host =
-      content::RenderFrameHost::FromID(ancestor_render_frame_host_id);
+      content::RenderFrameHost::FromID(render_frame_host_id);
   GURL scope = GetFirstPartyURL(render_frame_host).value_or(GURL());
 
   log_.push_back(base::StringPrintf("OnDedicatedWorkerCreated(%s)",

@@ -988,9 +988,15 @@ void DIPSWebContentsObserver::OnClientAdded(
 void DIPSWebContentsObserver::OnWorkerCreated(
     const blink::DedicatedWorkerToken& worker_token,
     int worker_process_id,
-    content::GlobalRenderFrameHostId ancestor_render_frame_host_id) {
+    content::DedicatedWorkerCreator creator) {
+  const content::GlobalRenderFrameHostId* const render_frame_host_id =
+      absl::get_if<content::GlobalRenderFrameHostId>(&creator);
+  if (!render_frame_host_id) {
+    return;
+  }
+
   content::RenderFrameHost* render_frame_host =
-      content::RenderFrameHost::FromID(ancestor_render_frame_host_id);
+      content::RenderFrameHost::FromID(*render_frame_host_id);
 
   if (!IsInPrimaryPage(render_frame_host)) {
     return;

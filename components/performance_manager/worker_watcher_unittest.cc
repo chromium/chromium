@@ -24,6 +24,7 @@
 #include "components/performance_manager/performance_manager_impl.h"
 #include "components/performance_manager/process_node_source.h"
 #include "components/performance_manager/public/features.h"
+#include "content/public/browser/dedicated_worker_creator.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/shared_worker_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -86,7 +87,7 @@ class TestDedicatedWorkerService : public content::DedicatedWorkerService {
   // Creates a new dedicated worker and returns its ID.
   const blink::DedicatedWorkerToken& CreateDedicatedWorker(
       int worker_process_id,
-      content::GlobalRenderFrameHostId client_render_frame_host_id);
+      content::DedicatedWorkerCreator creator);
 
   // Destroys an existing dedicated worker.
   void DestroyDedicatedWorker(const blink::DedicatedWorkerToken& token);
@@ -94,9 +95,9 @@ class TestDedicatedWorkerService : public content::DedicatedWorkerService {
  private:
   base::ObserverList<Observer> observer_list_;
 
-  // Maps each running worker to its client RenderFrameHost ID.
-  base::flat_map<blink::DedicatedWorkerToken, content::GlobalRenderFrameHostId>
-      dedicated_worker_client_frame_;
+  // Maps each running worker to its creator.
+  base::flat_map<blink::DedicatedWorkerToken, content::DedicatedWorkerCreator>
+      dedicated_worker_creators_;
 };
 
 TestDedicatedWorkerService::TestDedicatedWorkerService() = default;
@@ -119,19 +120,17 @@ void TestDedicatedWorkerService::EnumerateDedicatedWorkers(Observer* observer) {
 const blink::DedicatedWorkerToken&
 TestDedicatedWorkerService::CreateDedicatedWorker(
     int worker_process_id,
-    content::GlobalRenderFrameHostId client_render_frame_host_id) {
+    content::DedicatedWorkerCreator creator) {
   // Create a new token for the worker and add it to the map, along with its
   // client ID.
   const blink::DedicatedWorkerToken token;
 
-  auto result = dedicated_worker_client_frame_.emplace(
-      token, client_render_frame_host_id);
+  auto result = dedicated_worker_creators_.emplace(token, creator);
   DCHECK(result.second);  // Check inserted.
 
   // Notify observers.
   for (auto& observer : observer_list_) {
-    observer.OnWorkerCreated(token, worker_process_id,
-                             client_render_frame_host_id);
+    observer.OnWorkerCreated(token, worker_process_id, creator);
   }
 
   return result.first->first;
@@ -139,15 +138,15 @@ TestDedicatedWorkerService::CreateDedicatedWorker(
 
 void TestDedicatedWorkerService::DestroyDedicatedWorker(
     const blink::DedicatedWorkerToken& token) {
-  auto it = dedicated_worker_client_frame_.find(token);
-  DCHECK(it != dedicated_worker_client_frame_.end());
+  auto it = dedicated_worker_creators_.find(token);
+  DCHECK(it != dedicated_worker_creators_.end());
 
   // Notify observers that the worker is being destroyed.
   for (auto& observer : observer_list_)
     observer.OnBeforeWorkerDestroyed(token, it->second);
 
   // Remove the worker ID from the map.
-  dedicated_worker_client_frame_.erase(it);
+  dedicated_worker_creators_.erase(it);
 }
 
 // TestSharedWorkerService -----------------------------------------------------
@@ -806,7 +805,7 @@ WorkerNodeImpl* WorkerWatcherTest::GetServiceWorkerNode(int64_t version_id) {
   return worker_watcher_->GetServiceWorkerNode(version_id);
 }
 
-// This test creates one dedicated worker.
+// This test creates one dedicated worker with a frame client.
 TEST_F(WorkerWatcherTest, SimpleDedicatedWorker) {
   int render_process_id = process_node_source()->CreateProcessNode();
 
@@ -841,6 +840,46 @@ TEST_F(WorkerWatcherTest, SimpleDedicatedWorker) {
   dedicated_worker_service()->DestroyDedicatedWorker(token);
 
   EXPECT_EQ(worker_watcher()->FindWorkerNodeForToken(token), nullptr);
+}
+
+TEST_F(WorkerWatcherTest, NestedDedicatedWorker) {
+  int render_process_id = process_node_source()->CreateProcessNode();
+
+  // Create the ancestor frame node.
+  content::GlobalRenderFrameHostId render_frame_host_id =
+      frame_node_source()->CreateFrameNode(
+          render_process_id,
+          process_node_source()->GetProcessNode(render_process_id));
+
+  // Create the parent worker.
+  const blink::DedicatedWorkerToken parent_worker_token =
+      dedicated_worker_service()->CreateDedicatedWorker(render_process_id,
+                                                        render_frame_host_id);
+
+  // Create the nested worker.
+  const blink::DedicatedWorkerToken nested_worker_token =
+      dedicated_worker_service()->CreateDedicatedWorker(render_process_id,
+                                                        parent_worker_token);
+
+  // Check expectations on the graph.
+  CallOnGraphAndWait(base::BindLambdaForTesting(
+      [process_node = process_node_source()->GetProcessNode(render_process_id),
+       parent_worker_node = GetDedicatedWorkerNode(parent_worker_token),
+       nested_worker_node = GetDedicatedWorkerNode(nested_worker_token),
+       ancestor_frame_node = frame_node_source()->GetFrameNode(
+           render_frame_host_id)](GraphImpl* graph) {
+        EXPECT_TRUE(graph->NodeInGraph(nested_worker_node));
+        EXPECT_EQ(nested_worker_node->GetWorkerType(),
+                  WorkerNode::WorkerType::kDedicated);
+        EXPECT_EQ(nested_worker_node->process_node(), process_node);
+        // The ancestor frame is not directly a client of the nested worker.
+        EXPECT_FALSE(IsWorkerClient(nested_worker_node, ancestor_frame_node));
+        EXPECT_TRUE(IsWorkerClient(nested_worker_node, parent_worker_node));
+      }));
+
+  // Disconnect and clean up the dedicated workers.
+  dedicated_worker_service()->DestroyDedicatedWorker(nested_worker_token);
+  dedicated_worker_service()->DestroyDedicatedWorker(parent_worker_token);
 }
 
 // This test creates one shared worker with one client frame.

@@ -78,10 +78,10 @@ class WorkerWatcher : public content::DedicatedWorkerService::Observer,
   void OnWorkerCreated(
       const blink::DedicatedWorkerToken& dedicated_worker_token,
       int worker_process_id,
-      content::GlobalRenderFrameHostId ancestor_render_frame_host_id) override;
+      content::DedicatedWorkerCreator creator) override;
   void OnBeforeWorkerDestroyed(
       const blink::DedicatedWorkerToken& dedicated_worker_token,
-      content::GlobalRenderFrameHostId ancestor_render_frame_host_id) override;
+      content::DedicatedWorkerCreator creator) override;
   void OnFinalResponseURLDetermined(
       const blink::DedicatedWorkerToken& dedicated_worker_token,
       const GURL& url) override;

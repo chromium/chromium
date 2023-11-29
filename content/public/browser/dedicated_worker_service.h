@@ -7,6 +7,7 @@
 
 #include "base/observer_list_types.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/dedicated_worker_creator.h"
 #include "content/public/browser/global_routing_id.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
@@ -26,10 +27,10 @@ class CONTENT_EXPORT DedicatedWorkerService {
     virtual void OnWorkerCreated(
         const blink::DedicatedWorkerToken& worker_token,
         int worker_process_id,
-        GlobalRenderFrameHostId ancestor_render_frame_host_id) = 0;
+        DedicatedWorkerCreator creator) = 0;
     virtual void OnBeforeWorkerDestroyed(
         const blink::DedicatedWorkerToken& worker_token,
-        GlobalRenderFrameHostId ancestor_render_frame_host_id) = 0;
+        DedicatedWorkerCreator creator) = 0;
 
     // Called when the final response URL (the URL after redirects) was
     // determined when fetching the worker's script.

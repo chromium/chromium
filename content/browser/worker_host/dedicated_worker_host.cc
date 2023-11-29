@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/functional/overloaded.h"
 #include "build/build_config.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/broadcast_channel/broadcast_channel_provider.h"
@@ -67,8 +68,7 @@ DedicatedWorkerHost::DedicatedWorkerHost(
     DedicatedWorkerServiceImpl* service,
     const blink::DedicatedWorkerToken& token,
     RenderProcessHost* worker_process_host,
-    absl::optional<GlobalRenderFrameHostId> creator_render_frame_host_id,
-    absl::optional<blink::DedicatedWorkerToken> creator_worker_token,
+    DedicatedWorkerCreator creator,
     GlobalRenderFrameHostId ancestor_render_frame_host_id,
     const blink::StorageKey& creator_storage_key,
     const net::IsolationInfo& isolation_info,
@@ -79,8 +79,7 @@ DedicatedWorkerHost::DedicatedWorkerHost(
     : service_(service),
       token_(token),
       worker_process_host_(worker_process_host),
-      creator_render_frame_host_id_(creator_render_frame_host_id),
-      creator_worker_token_(creator_worker_token),
+      creator_(creator),
       ancestor_render_frame_host_id_(ancestor_render_frame_host_id),
       creator_origin_(creator_storage_key.origin()),
       // TODO(https://crbug.com/1058759): Calculate the worker origin based on
@@ -99,8 +98,6 @@ DedicatedWorkerHost::DedicatedWorkerHost(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(worker_process_host_);
   DCHECK(worker_process_host_->IsInitializedAndNotDead());
-  DCHECK_NE(creator_render_frame_host_id_.has_value(),
-            creator_worker_token_.has_value());
   DCHECK(creator_client_security_state_);
 
   // TODO(https://crbug.com/11990077): Once we add more stuff to
@@ -152,7 +149,7 @@ DedicatedWorkerHost::~DedicatedWorkerHost() {
       ->GetNetworkContext()
       ->SendReportsAndRemoveSource(reporting_source_);
 
-  service_->NotifyBeforeWorkerDestroyed(token_, ancestor_render_frame_host_id_);
+  service_->NotifyBeforeWorkerDestroyed(token_, creator_);
 
   if (base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker)) {
     WorkerDevToolsManager::GetInstance().WorkerDestroyed(this);
@@ -253,26 +250,22 @@ void DedicatedWorkerHost::StartScriptLoad(
 
   RenderFrameHostImpl* creator_render_frame_host = nullptr;
   DedicatedWorkerHost* creator_worker = nullptr;
-  if (creator_render_frame_host_id_) {
-    // This is not a nested worker, it has a creator frame.
-    creator_render_frame_host =
-        RenderFrameHostImpl::FromID(*creator_render_frame_host_id_);
-    if (!creator_render_frame_host) {
-      ScriptLoadStartFailed(
-          script_url, network::URLLoaderCompletionStatus(net::ERR_ABORTED));
-      return;
-    }
-  } else {
-    // The creator of this worker is a dedicated worker.
-    DCHECK(creator_worker_token_);
 
-    creator_worker =
-        service_->GetDedicatedWorkerHostFromToken(*creator_worker_token_);
-    if (!creator_worker) {
-      ScriptLoadStartFailed(
-          script_url, network::URLLoaderCompletionStatus(net::ERR_ABORTED));
-      return;
-    }
+  absl::visit(base::Overloaded(
+                  [&](const GlobalRenderFrameHostId& render_frame_host_id) {
+                    creator_render_frame_host =
+                        RenderFrameHostImpl::FromID(render_frame_host_id);
+                  },
+                  [&](blink::DedicatedWorkerToken dedicated_worker_token) {
+                    creator_worker = service_->GetDedicatedWorkerHostFromToken(
+                        dedicated_worker_token);
+                  }),
+              creator_);
+
+  if (!creator_render_frame_host && !creator_worker) {
+    ScriptLoadStartFailed(script_url,
+                          network::URLLoaderCompletionStatus(net::ERR_ABORTED));
+    return;
   }
 
   // At this point there is either a creator frame or a creator worker.
@@ -728,10 +721,8 @@ void DedicatedWorkerHost::CreateNestedDedicatedWorker(
 
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<DedicatedWorkerHostFactoryImpl>(
-          worker_process_host_->GetID(),
-          /*creator_render_frame_host_id_=*/absl::nullopt,
-          /*creator_worker_token=*/token_, ancestor_render_frame_host_id_,
-          GetStorageKey(), isolation_info_,
+          worker_process_host_->GetID(), /*creator=*/token_,
+          ancestor_render_frame_host_id_, GetStorageKey(), isolation_info_,
           worker_client_security_state_->Clone(), creator_coep_reporter,
           ancestor_coep_reporter_),
       std::move(receiver));
@@ -869,10 +860,11 @@ void DedicatedWorkerHost::UpdateSubresourceLoaderFactories() {
 
   // If this is a nested worker, there is no creator frame and
   // |creator_render_frame_host| will be null.
+  const content::GlobalRenderFrameHostId* const render_frame_host_id =
+      absl::get_if<content::GlobalRenderFrameHostId>(&creator_);
   RenderFrameHostImpl* creator_render_frame_host =
-      creator_render_frame_host_id_
-          ? RenderFrameHostImpl::FromID(creator_render_frame_host_id_.value())
-          : nullptr;
+      render_frame_host_id ? RenderFrameHostImpl::FromID(*render_frame_host_id)
+                           : nullptr;
 
   // Recreate the default URLLoaderFactory.
   std::unique_ptr<blink::PendingURLLoaderFactoryBundle>

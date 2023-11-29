@@ -34,7 +34,7 @@ class CONTENT_EXPORT DedicatedWorkerServiceImpl
   // Notifies all observers about a worker being destroyed.
   void NotifyBeforeWorkerDestroyed(
       const blink::DedicatedWorkerToken& worker_token,
-      GlobalRenderFrameHostId ancestor_render_frame_host_id);
+      DedicatedWorkerCreator creator);
 
   // Notifies all observers that a worker's final response URL was determined.
   void NotifyWorkerFinalResponseURLDetermined(

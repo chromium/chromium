@@ -62,7 +62,7 @@ PerProfileWorkerTaskTracker::~PerProfileWorkerTaskTracker() {
 void PerProfileWorkerTaskTracker::OnWorkerCreated(
     const blink::DedicatedWorkerToken& worker_token,
     int worker_process_id,
-    content::GlobalRenderFrameHostId ancestor_render_frame_host_id) {
+    content::DedicatedWorkerCreator creator) {
   auto* worker_process_host =
       content::RenderProcessHost::FromID(worker_process_id);
   DCHECK(worker_process_host);
@@ -72,7 +72,7 @@ void PerProfileWorkerTaskTracker::OnWorkerCreated(
 
 void PerProfileWorkerTaskTracker::OnBeforeWorkerDestroyed(
     const blink::DedicatedWorkerToken& worker_token,
-    content::GlobalRenderFrameHostId ancestor_render_frame_host_id) {
+    content::DedicatedWorkerCreator creator) {
   DeleteWorkerTask(worker_token, &dedicated_worker_tasks_);
 }
 
