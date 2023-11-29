@@ -226,6 +226,7 @@ src/webgpu/api/validation/createView.spec.ts
 src/webgpu/api/validation/debugMarker.spec.ts
 src/webgpu/api/validation/error_scope.spec.ts
 src/webgpu/api/validation/getBindGroupLayout.spec.ts
+src/webgpu/util/color_space_conversion.ts
 src/webgpu/web_platform/util.ts
 src/webgpu/api/validation/gpu_external_texture_expiration.spec.ts
 src/webgpu/api/validation/layout_shader_compat.spec.ts
@@ -619,7 +620,6 @@ src/webgpu/shader/validation/types/alias.spec.ts
 src/webgpu/shader/validation/types/struct.spec.ts
 src/webgpu/shader/validation/types/vector.spec.ts
 src/webgpu/shader/validation/uniformity/uniformity.spec.ts
-src/webgpu/util/color_space_conversion.ts
 src/webgpu/util/copy_to_texture.ts
 src/webgpu/util/texture/texel_data.spec.ts
 src/webgpu/util/texture/texture_ok.spec.ts
