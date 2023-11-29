@@ -150,6 +150,20 @@ public class PlusAddressCreationBottomSheetContentTest {
 
     @Test
     @SmallTest
+    public void testOnConfirmButtonClicked_showsLoadingIndicator() {
+        Assert.assertFalse(mBottomSheetContent.showsLoadingIndicatorForTesting());
+        // Show the loading indicator once we click the Confirm button.
+        Button modalConfirmButton =
+                mBottomSheetContent.getContentView().findViewById(R.id.plus_address_confirm_button);
+        modalConfirmButton.callOnClick();
+        Assert.assertTrue(mBottomSheetContent.showsLoadingIndicatorForTesting());
+        // Hide the loading indicator if we show an error.
+        mBottomSheetContent.showError(MODAL_ERROR_MESSAGE);
+        Assert.assertFalse(mBottomSheetContent.showsLoadingIndicatorForTesting());
+    }
+
+    @Test
+    @SmallTest
     public void testOnCancelButtonClicked_callsDelegateOnCanceled() {
         Button modalCancelButton =
                 mBottomSheetContent.getContentView().findViewById(R.id.plus_address_cancel_button);

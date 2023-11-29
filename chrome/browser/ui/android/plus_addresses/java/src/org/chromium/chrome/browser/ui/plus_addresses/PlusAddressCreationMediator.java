@@ -86,7 +86,6 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
     // PlusAddressCreationDelegate implementation:
     @Override
     public void onConfirmRequested() {
-        // TODO(crbug.com/1467623): Show a loading icon here?
         mBridge.onConfirmRequested();
     }
 
