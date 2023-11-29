@@ -496,8 +496,46 @@ TEST_F(PeopleHandlerTest,
   // Sync engine becomes active, so |handler_| is notified.
   NotifySyncStateChanged();
 
-  // It's important to tell sync the user cancelled the setup flow before we
-  // tell it we're through with the setup progress.
+  // StopAndClear() should only be invoked for explicit passphrase users. For
+  // the rest, it's not particularly important whether or not it gets invoked,
+  // but let's document the current behavior to avoid accidental behavioral
+  // changes.
+  EXPECT_CALL(*mock_sync_service_, StopAndClear()).Times(0);
+
+  EXPECT_CALL(mock_on_setup_in_progress_handle_destroyed_, Run());
+
+  handler_->CloseSyncSetup();
+  EXPECT_EQ(
+      nullptr,
+      LoginUIServiceFactory::GetForProfile(profile())->current_login_ui());
+}
+
+TEST_F(
+    PeopleHandlerTest,
+    DisplayConfigureWithEngineDisabledAndCancelAfterSigninSuccessWithCustomPassphrase) {
+  SigninUser();
+  CreatePeopleHandler();
+  ON_CALL(*mock_sync_service_, GetDisableReasons())
+      .WillByDefault(Return(syncer::SyncService::DisableReasonSet()));
+  ON_CALL(*GetMockUserSettings(), IsInitialSyncFeatureSetupComplete())
+      .WillByDefault(Return(false));
+  ON_CALL(*GetMockUserSettings(), GetPassphraseType())
+      .WillByDefault(Return(syncer::PassphraseType::kCustomPassphrase));
+  ON_CALL(*GetMockUserSettings(), IsUsingExplicitPassphrase())
+      .WillByDefault(Return(true));
+  EXPECT_CALL(*mock_sync_service_, GetTransportState())
+      .WillOnce(Return(syncer::SyncService::TransportState::INITIALIZING))
+      .WillRepeatedly(Return(syncer::SyncService::TransportState::ACTIVE));
+  EXPECT_CALL(*mock_sync_service_, SetSyncFeatureRequested());
+  SetDefaultExpectationsForConfigPage();
+  handler_->HandleShowSyncSetupUI(base::Value::List());
+
+  // Sync engine becomes active, so |handler_| is notified.
+  NotifySyncStateChanged();
+
+  // StopAndClear() has the desired side efffect of clearing the passphrase.
+  // This should happen before releasing the handle that represents an
+  // ongoing setup progress.
   testing::InSequence seq;
   EXPECT_CALL(*mock_sync_service_, StopAndClear());
   EXPECT_CALL(mock_on_setup_in_progress_handle_destroyed_, Run());

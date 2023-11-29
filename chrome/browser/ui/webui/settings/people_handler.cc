@@ -771,6 +771,12 @@ void PeopleHandler::CloseSyncSetup() {
   LoginUIService* service = GetLoginUIService();
   if (service) {
     auto self_weak_ptr = weak_factory_.GetWeakPtr();
+
+    // ChromeOS Ash doesn't support signing out and hence the code below
+    // cannot build (RevokeSyncConsent() doesn't exist). However, the code is
+    // unreachable on Ash because IsInitialSyncFeatureSetupComplete() in the
+    // condition below always returns true.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
     syncer::SyncService* sync_service = GetSyncService();
 
     // Don't log a cancel event if the sync setup dialog is being
@@ -779,18 +785,14 @@ void PeopleHandler::CloseSyncSetup() {
         configuring_sync_ &&
         !sync_service->GetUserSettings()->IsInitialSyncFeatureSetupComplete() &&
         sync_service->GetAuthError().state() == GoogleServiceAuthError::NONE) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      // ChromeOS Ash doesn't support signing out and hence the code below
-      // cannot build (RevokeSyncConsent() doesn't exist). However, this code is
-      // unreachable on Ash because IsInitialSyncFeatureSetupComplete() always
-      // returns true.
-      NOTREACHED_NORETURN();
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
-      // If the user clicked "Cancel" while setting up sync, disable sync
-      // because we don't want the sync engine to remain in the
-      // first-setup-incomplete state.
       DVLOG(1) << "Sync setup aborted by user action";
-      sync_service->StopAndClear();
+
+      // If a custom passphrase user clicked "Cancel" while setting up sync,
+      // make sure that any passphrase entered by the user in the meantime is
+      // cleared.
+      if (sync_service->GetUserSettings()->IsUsingExplicitPassphrase()) {
+        sync_service->StopAndClear();
+      }
 
       // Revoke sync consent on desktop Chrome if they click cancel during
       // initial setup or close sync setup without confirming sync.
@@ -798,8 +800,8 @@ void PeopleHandler::CloseSyncSetup() {
           ->GetPrimaryAccountMutator()
           ->RevokeSyncConsent(signin_metrics::ProfileSignout::kAbortSignin,
                               signin_metrics::SignoutDelete::kIgnoreMetric);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     }
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
     service->LoginUIClosed(this);
 
