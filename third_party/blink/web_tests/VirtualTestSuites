@@ -1978,7 +1978,10 @@
   {
     "prefix": "isolate-sandboxed-iframes",
     "platforms": ["Linux", "Mac", "Win"],
-    "bases": [ "external/wpt/html/infrastructure/urls/terminology-0/" ],
+    "bases": [
+      "external/wpt/html/infrastructure/urls/terminology-0/",
+      "external/wpt/cookie-store/cookieStore_opaque_origin.https.html"
+    ],
     "args": ["--enable-features=IsolateSandboxedIframes",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Jul 1, 2024"

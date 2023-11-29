@@ -2197,14 +2197,29 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
     //
     // Note: Sandboxed about:srcdoc iframe without "allow-same-origin" aren't
     // allowed to load user's file, even if its parent can.
-    if (owner_document) {
+    if (url_.IsAboutSrcdocURL()) {
+      // We should only have a sandboxed, srcdoc frame without an owner document
+      // if isolated-sandboxed-iframes is enabled. Only cases that would
+      // normally inherit the origin need to be handled here, and a sandboxed
+      // about:blank document won't be moved out of process. Also, data: urls
+      // don't get secure contexts, so needn't be considered here.
+      CHECK(owner_document ||
+            base::FeatureList::IsEnabled(features::kIsolateSandboxedIframes));
+
+      bool is_potentially_trustworthy =
+          origin->GetOriginOrPrecursorOriginIfOpaque()
+              ->IsPotentiallyTrustworthy();
+      if (is_potentially_trustworthy) {
+        sandbox_origin->SetOpaqueOriginIsPotentiallyTrustworthy(true);
+        debug_info_builder.Append(", _potentially_trustworthy");
+      }
+    } else if (owner_document) {
       if (origin->IsPotentiallyTrustworthy()) {
         sandbox_origin->SetOpaqueOriginIsPotentiallyTrustworthy(true);
         debug_info_builder.Append(", _potentially_trustworthy");
       }
-      if (origin->CanLoadLocalResources() && !loading_srcdoc_) {
+      if (origin->CanLoadLocalResources()) {
         sandbox_origin->GrantLoadLocalResources();
-
         debug_info_builder.Append(", _load_local");
       }
     }
