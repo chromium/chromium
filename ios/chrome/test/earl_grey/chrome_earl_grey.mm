@@ -769,21 +769,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   [self waitForPageToFinishLoading];
 }
 
-- (void)triggerRestoreViaTabGridRemoveAllUndo {
-  [ChromeEarlGrey showTabSwitcher];
-  GREYWaitForAppToIdle(@"App failed to idle");
-  [ChromeEarlGrey
-      waitForAndTapButton:grey_allOf(chrome_test_util::TabGridEditButton(),
-                                     grey_sufficientlyVisible(), nil)];
-  [ChromeEarlGrey
-      waitForAndTapButton:chrome_test_util::TabGridEditMenuCloseAllButton()];
-  [ChromeEarlGrey
-      waitForAndTapButton:chrome_test_util::TabGridUndoCloseAllButton()];
-  [ChromeEarlGrey waitForAndTapButton:chrome_test_util::TabGridDoneButton()];
-  [self waitForRestoreSessionToFinish];
-  [self waitForPageToFinishLoading];
-}
-
 - (BOOL)webStateWebViewUsesContentInset {
   return [ChromeEarlGreyAppInterface webStateWebViewUsesContentInset];
 }

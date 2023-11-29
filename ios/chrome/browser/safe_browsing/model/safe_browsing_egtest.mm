@@ -643,7 +643,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
   // Do a session restoration and verify that all navigation history is
   // preserved.
-  [ChromeEarlGrey triggerRestoreViaTabGridRemoveAllUndo];
+  [self triggerRestoreByRestartingApplication];
   [ChromeEarlGrey
       waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
 
@@ -883,7 +883,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
 
   // Perform session restoration, and verify that a warning is still shown.
-  [ChromeEarlGrey triggerRestoreViaTabGridRemoveAllUndo];
+  [self triggerRestoreByRestartingApplication];
   [ChromeEarlGrey
       waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
 }

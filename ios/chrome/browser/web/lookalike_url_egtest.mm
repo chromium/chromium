@@ -337,7 +337,7 @@ const char kLookalikeInNewTabContent[] = "New tab";
   // after a load.
   [[EarlGrey selectElementWithMatcher:ForwardButton()]
       performAction:grey_tap()];
-  [ChromeEarlGrey triggerRestoreViaTabGridRemoveAllUndo];
+  [self triggerRestoreByRestartingApplication];
   [LookalikeUrlAppInterface setUpLookalikeUrlDeciderForWebState];
   [ChromeEarlGrey goBack];
   [ChromeEarlGrey waitForWebStateContainingText:_lookalikeBlockingPageContent];

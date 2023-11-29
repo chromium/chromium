@@ -566,7 +566,7 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
   [ChromeEarlGrey loadURL:destinationURL];
   [ChromeEarlGrey goBack];
 
-  [ChromeEarlGrey triggerRestoreViaTabGridRemoveAllUndo];
+  [self triggerRestoreByRestartingApplication];
 
   [ChromeEarlGrey waitForWebStateContainingText:"Revision"];
   [[EarlGrey selectElementWithMatcher:OmniboxText("chrome://version")]
@@ -585,7 +585,7 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
   [ChromeEarlGrey loadURL:destinationURL];
   [ChromeEarlGrey goBack];
 
-  [ChromeEarlGrey triggerRestoreViaTabGridRemoveAllUndo];
+  [self triggerRestoreByRestartingApplication];
 
   [ChromeEarlGrey goForward];
 
@@ -602,7 +602,7 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL destinationURL("chrome://crash");
   [ChromeEarlGrey loadURL:destinationURL];
-  [ChromeEarlGrey triggerRestoreViaTabGridRemoveAllUndo];
+  [self triggerRestoreByRestartingApplication];
   [[EarlGrey selectElementWithMatcher:OmniboxText("chrome://crash")]
       assertWithMatcher:grey_notNil()];
 }

@@ -616,10 +616,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Cache-Control response header says otherwise.
 - (void)purgeCachedWebViewPages;
 
-// Simulators background, killing, and restoring the app within the limitations
-// of EG1, by simply doing a tab grid close all / undo / done.
-- (void)triggerRestoreViaTabGridRemoveAllUndo;
-
 // Returns YES if the current WebState's web view uses the content inset to
 // correctly align the top of the content with the bottom of the top bar.
 - (BOOL)webStateWebViewUsesContentInset;

@@ -54,6 +54,10 @@ class EmbeddedTestServer;
 // name of the currently running test method.
 - (BOOL)isRunningTest:(SEL)selector;
 
+// Forces reloading the current session by restarting the app. This restarts
+// the app with the same configuration as used by -setUp.
+- (void)triggerRestoreByRestartingApplication;
+
 // Configures the fixture for startup testing.
 + (void)testForStartup;
 
