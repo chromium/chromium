@@ -19,7 +19,7 @@ import node
 import node_modules
 
 from path_mappings import GetDepToPathMappings
-from validate_tsconfig import validateTsconfigJson, validateJavaScriptAllowed, validateRootDir, isUnsupportedJsTarget
+from validate_tsconfig import validateTsconfigJson, validateJavaScriptAllowed, validateRootDir, isUnsupportedJsTarget, isInAshFolder, isDependencyAllowed, isMappingAllowed, getTargetPath
 
 
 def _write_tsconfig_json(gen_dir, tsconfig, tsconfig_file):
@@ -157,6 +157,9 @@ def main(argv):
   # Handle path mappings, for example chrome://resources/ URLs.
   path_mappings = collections.defaultdict(list)
 
+  target_path = getTargetPath(args.gen_dir, args.root_gen_dir)
+  is_ash_target = isInAshFolder(target_path)
+
   if args.deps is not None:
     tsconfig['references'] = [{'path': dep} for dep in args.deps]
 
@@ -168,6 +171,9 @@ def main(argv):
         args.platform)
 
     for dep in args.raw_deps:
+      assert isDependencyAllowed(is_ash_target, dep, target_path), \
+          f'{target_path} should not use Ash-only dependency {dep}.'
+
       if dep not in dep_to_path_mappings:
         assert not dep.startswith("//ui/webui/resources"), \
             f'Missing path mapping for \'{dep}\'. Update ' \
@@ -185,6 +191,10 @@ def main(argv):
   if args.path_mappings is not None:
     for m in args.path_mappings:
       mapping = m.split('|')
+      mapping_path = os.path.relpath(mapping[1], args.root_src_dir)
+      assert isMappingAllowed(is_ash_target, target_path, mapping_path), \
+          f'Cannot use mapping to Ash-specific folder {mapping_path} from ' \
+          f'non-Ash target {target_path}'
       path_mappings[mapping[0]].append(os.path.join('./', mapping[1]))
 
   tsconfig['compilerOptions']['paths'] = path_mappings

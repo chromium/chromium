@@ -152,14 +152,64 @@ def validateJavaScriptAllowed(source_dir, out_dir, is_ios):
       'code should be added in TypeScript.'
 
 
+def getTargetPath(gen_dir, root_gen_dir):
+  root_gen_dir_from_build = os.path.normpath(os.path.join(
+      gen_dir, root_gen_dir)).replace('\\', '/')
+  return os.path.relpath(gen_dir, root_gen_dir_from_build).replace('\\', '/')
+
+
+def isInAshFolder(path):
+  # TODO (https://crbug.com/1506296): Organize Ash WebUI code under fewer
+  # directories.
+  ash_folders = [
+      # Source code folders
+      'ash/webui',
+      'chrome/browser/resources/ash/settings',
+      'chrome/browser/resources/chromeos',
+      'chrome/browser/resources/nearby_share',
+      'ui/file_manager',
+
+      # Test folders
+      'chrome/test/data/webui/chromeos',
+      'chrome/test/data/webui/cr_components/chromeos',
+      'chrome/test/data/webui/settings/chromeos',
+  ]
+  return any(path.startswith(folder) for folder in ash_folders)
+
+
+def isDependencyAllowed(is_ash_target, raw_dep, target_path):
+  is_ash_dep = isInAshFolder(raw_dep[2:])
+  if not is_ash_dep or is_ash_target:
+    return True
+
+  exceptions = [
+      # TODO(https://crbug.com/1506299): Remove this incorrect dependency
+      'chrome/browser/resources/settings',
+      # TODO(https://crbug.com/1347740): Move remaining Ash-only test files to
+      # chrome/test/data/webui/chromeos.
+      'chrome/test/data/webui',
+  ]
+
+  return target_path in exceptions
+
+
+def isMappingAllowed(is_ash_target, target_path, mapping_path):
+  if is_ash_target:
+    return True
+
+  # TODO(https://crbug.com/1506304): Remove these incorrect dependencies.
+  exceptions = [
+      'chrome/browser/resources/inline_login',
+      'chrome/test/data/webui/inline_login',
+  ]
+
+  return not isInAshFolder(mapping_path) or target_path in exceptions
+
+
 # TODO (https://www.crbug.com/1412158): Remove all exceptions below and this
 # function; these build targets rely on implicitly unmapped dependencies.
 def isUnsupportedJsTarget(gen_dir, root_gen_dir):
-  root_gen_dir_from_build = os.path.normpath(os.path.join(
-      gen_dir, root_gen_dir)).replace('\\', '/')
-  target_path = os.path.relpath(gen_dir,
-                                root_gen_dir_from_build).replace('\\', '/')
-
+  target_path = getTargetPath(gen_dir, root_gen_dir)
   exceptions = [
       'ash/webui/color_internals/resources',
       'ash/webui/face_ml_app_ui/resources/trusted',
