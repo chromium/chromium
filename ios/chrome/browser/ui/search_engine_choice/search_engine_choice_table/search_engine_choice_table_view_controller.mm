@@ -63,10 +63,17 @@ UIImageView* CreateCheckedCircle() {
 }
 
 - (void)scrollToBottom {
-  CGFloat scrollLimit = self.tableView.contentSize.height -
-                        self.tableView.bounds.size.height +
-                        self.tableView.contentInset.bottom;
-  [self.tableView setContentOffset:CGPointMake(0, scrollLimit) animated:YES];
+  TableViewModel* model = self.tableViewModel;
+  NSInteger lastSectionIndex = [model numberOfSections] - 1;
+  NSInteger lastRowIndex = [model numberOfItemsInSection:lastSectionIndex] - 1;
+  NSIndexPath* lastRowIndexPath =
+      [NSIndexPath indexPathForRow:lastRowIndex inSection:lastSectionIndex];
+  [self.tableView scrollToRowAtIndexPath:lastRowIndexPath
+                        atScrollPosition:UITableViewScrollPositionBottom
+                                animated:YES];
+  // Make sure the delegate receives the bottom reach event, so if the scroll
+  // as an offset of one pixel, the delegate will be called.
+  [self bottomReached];
 }
 
 #pragma mark - UIViewController
@@ -213,7 +220,7 @@ UIImageView* CreateCheckedCircle() {
 
 #pragma mark - Private
 
-// Updates `-SearchEngineChoiceTableViewController.didReachBottom`.
+// Checks if the the bottom has been reached.
 - (void)updateDidReachBottomFlag {
   if (self.didReachBottom) {
     // Don't update the value if the bottom was reached at least once.
@@ -224,9 +231,15 @@ UIImageView* CreateCheckedCircle() {
   CGFloat scrollLimit =
       self.tableView.contentSize.height + self.tableView.contentInset.bottom;
   if (scrollPosition >= scrollLimit) {
-    [self.delegate didReachBottom];
-    self.didReachBottom = YES;
+    [self bottomReached];
   }
+}
+
+// Updates `-SearchEngineChoiceTableViewController.didReachBottom`, and calls
+// the delegate.
+- (void)bottomReached {
+  self.didReachBottom = YES;
+  [self.delegate didReachBottom];
 }
 
 @end
