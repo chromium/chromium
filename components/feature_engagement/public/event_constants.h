@@ -39,14 +39,6 @@ extern const char kMediaBackgrounded[];
 // The user opened the Global Media Controls dialog.
 extern const char kGlobalMediaControlsOpened[];
 
-// All the events declared below are the string names of deferred onboarding
-// events for the Focus Mode feature.
-
-// The user has opened a Focus Mode window.
-extern const char kFocusModeOpened[];
-// All conditions for show Focus Mode IPH were met.
-extern const char kFocusModeConditionsMet[];
-
 // The side search panel was automatically triggered.
 extern const char kSideSearchAutoTriggered[];
 // The side search panel was opened by the user.

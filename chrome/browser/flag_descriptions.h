@@ -3763,6 +3763,9 @@ extern const char kFirstPartyVietnameseInputDescription[];
 extern const char kFocusFollowsCursorName[];
 extern const char kFocusFollowsCursorDescription[];
 
+extern const char kFocusModeName[];
+extern const char kFocusModeDescription[];
+
 extern const char kForceReSyncDriveName[];
 extern const char kForceReSyncDriveDescription[];
 

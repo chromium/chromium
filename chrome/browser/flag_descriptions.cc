@@ -6555,6 +6555,10 @@ const char kFocusFollowsCursorName[] = "Focus follows cursor";
 const char kFocusFollowsCursorDescription[] =
     "Enable window focusing by moving the cursor.";
 
+const char kFocusModeName[] = "Focus Mode on ChromeOS";
+const char kFocusModeDescription[] =
+    "Focus mode on the OS with timer and task management functionalities.";
+
 const char kForceReSyncDriveName[] = "Force resync drive";
 const char kForceReSyncDriveDescription[] =
     "Enable Drive to forcibly resync office files.";

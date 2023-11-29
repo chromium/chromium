@@ -10555,9 +10555,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-desk-button", flag_descriptions::kDeskButtonName,
      flag_descriptions::kDeskButtonDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kDeskButton)},
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"cros-focus-mode", flag_descriptions::kFocusModeName,
+     flag_descriptions::kFocusModeDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kFocusMode)},
     {"render-arc-notifications-by-chrome",
      flag_descriptions::kRenderArcNotificationsByChromeName,
      flag_descriptions::kRenderArcNotificationsByChromeDescription, kOsCrOS,

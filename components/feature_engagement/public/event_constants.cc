@@ -24,9 +24,6 @@ const char kCustomizeChromeOpened[] = "customize_chrome_opened";
 const char kMediaBackgrounded[] = "media_backgrounded";
 const char kGlobalMediaControlsOpened[] = "global_media_controls_opened";
 
-const char kFocusModeOpened[] = "focus_mode_opened";
-const char kFocusModeConditionsMet[] = "focus_mode_conditions_met";
-
 const char kSideSearchAutoTriggered[] = "side_search_auto_triggered";
 const char kSideSearchOpened[] = "side_search_opened";
 const char kSideSearchPageActionLabelShown[] =

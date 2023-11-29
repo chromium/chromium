@@ -1384,6 +1384,14 @@
     "expiry_milestone": 125
   },
   {
+    "name": "cros-focus-mode",
+    "owners": [
+      "richui@chromium.org",
+      "nupurjain@chromium.org"
+    ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "cros-labs-continuous-overview-animation",
     "owners": [ "sammiequon@chromium.org", "chromeos-wm-corexp@google.com" ],
     "expiry_milestone": 125
