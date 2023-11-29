@@ -4019,8 +4019,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordProtection.VisualFeatureExtractionDuration" units="ms"
-    expires_after="2023-12-10">
-  <owner>drubery@chromium.org</owner>
+    expires_after="2024-12-10">
+  <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The time it takes to extract the visual features of a login page before
