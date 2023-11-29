@@ -759,10 +759,6 @@ extern const char kIPHPriceNotificationsWhileBrowsingDescription[];
 extern const char kNotificationSettingsMenuItemName[];
 extern const char kNotificationSettingsMenuItemDescription[];
 
-// Title and description for the flag to native restore web states.
-extern const char kRestoreSessionFromCacheName[];
-extern const char kRestoreSessionFromCacheDescription[];
-
 // Title and description for the flag to remove excess NTP tabs that don't have
 // navigation history.
 extern const char kRemoveExcessNTPsExperimentName[];

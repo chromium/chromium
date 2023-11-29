@@ -8,7 +8,6 @@
 #import "base/containers/contains.h"
 #import "base/functional/callback.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/sessions/session_migration.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/sessions/session_service_ios.h"
@@ -32,6 +31,7 @@ LegacySessionRestorationService::LegacySessionRestorationService(
       web_session_state_cache_(web_session_state_cache),
       tab_restore_service_(tab_restore_service) {
   DCHECK(session_service_ios_);
+  DCHECK(web_session_state_cache_);
 }
 
 LegacySessionRestorationService::~LegacySessionRestorationService() {}
@@ -157,13 +157,8 @@ void LegacySessionRestorationService::InvokeClosureWhenBackgroundProcessingDone(
 void LegacySessionRestorationService::PurgeUnassociatedData(
     base::OnceClosure closure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (web_session_state_cache_) {
-    [web_session_state_cache_
-        purgeUnassociatedDataWithCompletion:std::move(closure)];
-  } else {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(closure));
-  }
+  [web_session_state_cache_
+      purgeUnassociatedDataWithCompletion:std::move(closure)];
 }
 
 void LegacySessionRestorationService::WillStartSessionRestoration(

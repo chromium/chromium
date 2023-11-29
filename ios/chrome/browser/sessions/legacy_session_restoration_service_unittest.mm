@@ -52,10 +52,6 @@
 // TODO(crbug.com/1383087): remove once the feature is fully launched.
 #import "ios/web/common/features.h"
 
-// To get access to web::UseNativeSessionRestorationCache().
-// TODO(crbug.com/1383087): remove once the feature is fully launched.
-#import "ios/chrome/browser/web/features.h"
-
 namespace {
 
 // Set of FilePath.
@@ -197,14 +193,12 @@ FilePathSet ExpectedStorageFilesForWebStates(
                       .Append(kLegacySessionFilename));
   }
 
-  if (web::UseNativeSessionRestorationCache()) {
-    const base::FilePath web_sessions_dir =
-        storage_dir.Append(kLegacyWebSessionsDirname);
-    for (const WebStateReference& reference : references) {
-      if (reference.is_native_session_available) {
-        result.insert(web_sessions_dir.Append(base::StringPrintf(
-            "%08u", reference.web_state->GetUniqueIdentifier().identifier())));
-      }
+  const base::FilePath web_sessions_dir =
+      storage_dir.Append(kLegacyWebSessionsDirname);
+  for (const WebStateReference& reference : references) {
+    if (reference.is_native_session_available) {
+      result.insert(web_sessions_dir.Append(base::StringPrintf(
+          "%08u", reference.web_state->GetUniqueIdentifier().identifier())));
     }
   }
 
@@ -279,11 +273,8 @@ class LegacySessionRestorationServiceTest : public PlatformTest {
         initWithSaveDelay:kSaveDelay
                taskRunner:base::SequencedTaskRunner::GetCurrentDefault()];
 
-    WebSessionStateCache* web_session_state_cache = nil;
-    if (web::UseNativeSessionRestorationCache()) {
-      web_session_state_cache =
-          WebSessionStateCacheFactory::GetForBrowserState(browser_state_.get());
-    }
+    WebSessionStateCache* web_session_state_cache =
+        WebSessionStateCacheFactory::GetForBrowserState(browser_state_.get());
 
     // Create the service, force enabling the pinned tab support (since
     // the code using the `is_pinned_tabs_enabled` is tested by the
@@ -1013,12 +1004,6 @@ TEST_F(LegacySessionRestorationServiceTest, DeleteDataForDiscardedSessions) {
 // delete any native WKWebView sessions that are not associated to a
 // Browser's WebState.
 TEST_F(LegacySessionRestorationServiceTest, PurgeUnassociatedData) {
-  // If the native session restoration cache is not used, this method
-  // does nothing.
-  if (!web::UseNativeSessionRestorationCache()) {
-    return;
-  }
-
   TestBrowser browser = TestBrowser(browser_state());
 
   // PurgeUnassociatedData requires the Browser to be registered with

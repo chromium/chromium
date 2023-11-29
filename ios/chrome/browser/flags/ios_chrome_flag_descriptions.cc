@@ -868,12 +868,6 @@ const char kReplaceSyncPromosWithSignInPromosName[] =
 const char kReplaceSyncPromosWithSignInPromosDescription[] =
     "When enabled, all sync-related promos will be replaced by sign-in ones.";
 
-const char kRestoreSessionFromCacheName[] =
-    "Use native WKWebView sesion restoration (iOS15 only).";
-const char kRestoreSessionFromCacheDescription[] =
-    "Enable instant session restoration for faster web session restoration "
-    "(iOS15 only).";
-
 const char kSafeBrowsingAvailableName[] = "Make Safe Browsing available";
 const char kSafeBrowsingAvailableDescription[] =
     "When enabled, navigation URLs are compared to Safe Browsing blocklists, "

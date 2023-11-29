@@ -164,6 +164,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":delegate",
+    ":feature_flags",
     ":page_placeholder",
     ":tab_helper_delegates",
     ":web",
@@ -190,7 +191,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/tab_insertion/model",
     "//ios/chrome/browser/web",
-    "//ios/chrome/browser/web:feature_flags",
     "//ios/chrome/test:test_support",
     "//ios/net",
     "//ios/net:test_support",
@@ -222,6 +222,7 @@ source_set("web_internal") {
     "ios_thread_profiler.h",
   ]
   deps = [
+    ":feature_flags",
     ":web",
     "//base",
     "//base/allocator:buildflags",
@@ -300,7 +301,6 @@ source_set("web_internal") {
     "//ios/chrome/browser/supervised_user/model",
     "//ios/chrome/browser/translate/model",
     "//ios/chrome/browser/ui/infobars/coordinators",
-    "//ios/chrome/browser/web:feature_flags",
     "//ios/chrome/browser/web/choose_file",
     "//ios/chrome/browser/web/font_size",
     "//ios/chrome/browser/web/image_fetch",
@@ -511,8 +511,5 @@ source_set("feature_flags") {
     "features.cc",
     "features.h",
   ]
-  deps = [
-    "//base",
-    "//ios/web/common:features",
-  ]
+  deps = [ "//base" ]
 }

@@ -26,7 +26,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller_source.h"
 #import "ios/chrome/browser/shared/model/web_state_list/removing_indexes.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/web/features.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_tab_helper.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -340,13 +339,11 @@ void SessionRestorationBrowserAgent::SaveSession(bool immediately) {
                       directory:browser_->GetBrowserState()->GetStatePath()
                     immediately:immediately];
 
-  if (web::UseNativeSessionRestorationCache()) {
-    for (int i = 0; i < web_state_list->count(); ++i) {
-      web::WebState* web_state = web_state_list->GetWebStateAt(i);
-      if (WebSessionStateTabHelper* tab_helper =
-              WebSessionStateTabHelper::FromWebState(web_state)) {
-        tab_helper->SaveSessionStateIfStale();
-      }
+  for (int i = 0; i < web_state_list->count(); ++i) {
+    web::WebState* web_state = web_state_list->GetWebStateAt(i);
+    if (WebSessionStateTabHelper* tab_helper =
+            WebSessionStateTabHelper::FromWebState(web_state)) {
+      tab_helper->SaveSessionStateIfStale();
     }
   }
 }

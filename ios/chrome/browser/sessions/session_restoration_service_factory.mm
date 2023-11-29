@@ -20,10 +20,6 @@
 // TODO(crbug.com/1383087): remove once the feature is fully launched.
 #import "ios/web/common/features.h"
 
-// To get access to web::UseNativeSessionRestorationCache().
-// TODO(crbug.com/1383087): remove once the feature is fully launched.
-#import "ios/chrome/browser/web/features.h"
-
 namespace {
 
 // Value taken from Desktop Chrome.
@@ -76,15 +72,9 @@ SessionRestorationServiceFactory::BuildServiceInstanceFor(
         [[SessionServiceIOS alloc] initWithSaveDelay:kSaveDelay
                                           taskRunner:task_runner];
 
-    WebSessionStateCache* web_session_state_cache = nil;
-    if (web::UseNativeSessionRestorationCache()) {
-      web_session_state_cache =
-          WebSessionStateCacheFactory::GetForBrowserState(browser_state);
-    }
-
     return std::make_unique<LegacySessionRestorationService>(
         IsPinnedTabsEnabled(), storage_path, session_service_ios,
-        web_session_state_cache,
+        WebSessionStateCacheFactory::GetForBrowserState(browser_state),
         IOSChromeTabRestoreServiceFactory::GetForBrowserState(browser_state));
   }
 

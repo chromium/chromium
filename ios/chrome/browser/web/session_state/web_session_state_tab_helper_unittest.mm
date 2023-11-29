@@ -13,14 +13,11 @@
 #import "base/strings/stringprintf.h"
 #import "base/task/thread_pool/thread_pool_instance.h"
 #import "base/test/ios/wait_util.h"
-#import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/sessions/session_constants.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/web/chrome_web_client.h"
-#import "ios/chrome/browser/web/features.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_cache.h"
-#import "ios/web/common/features.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/session/serializable_user_data_manager.h"
@@ -38,12 +35,7 @@ namespace {
 class WebSessionStateTabHelperTest : public PlatformTest {
  public:
   WebSessionStateTabHelperTest()
-      : web_client_(std::make_unique<ChromeWebClient>()) {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{web::kRestoreSessionFromCache},
-        /*disabled_features=*/{
-            web::features::kEnableSessionSerializationOptimizations});
-  }
+      : web_client_(std::make_unique<ChromeWebClient>()) {}
 
   void SetUp() override {
     PlatformTest::SetUp();
@@ -75,7 +67,6 @@ class WebSessionStateTabHelperTest : public PlatformTest {
  protected:
   web::WebState* web_state() { return web_state_.get(); }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   web::ScopedTestingWebClient web_client_;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
