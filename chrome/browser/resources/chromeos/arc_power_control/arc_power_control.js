@@ -198,8 +198,8 @@ cr.define('cr.ArcPowerControl', function() {
       $('arc-power-control-doze').onclick = function(event) {
         chrome.send('setWakefulnessMode', ['doze']);
       };
-      $('arc-power-control-sleep').onclick = function(event) {
-        chrome.send('setWakefulnessMode', ['sleep']);
+      $('arc-power-control-force-doze').onclick = function(event) {
+        chrome.send('setWakefulnessMode', ['force-doze']);
       };
       $('arc-power-control-sleep').onclick = function(event) {
         chrome.send('setWakefulnessMode', ['sleep']);

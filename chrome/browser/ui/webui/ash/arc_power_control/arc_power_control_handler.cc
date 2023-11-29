@@ -37,6 +37,7 @@ constexpr char kThrottlingForce[] = "force";
 // Names of wakenessfull mode.
 constexpr char kWakenessfullWakeUp[] = "wakeup";
 constexpr char kWakenessfullDoze[] = "doze";
+constexpr char kWakenessfullForceDoze[] = "force-doze";
 constexpr char kWakenessfullSleep[] = "sleep";
 
 // To read developer mode.
@@ -232,6 +233,12 @@ void ArcPowerControlHandler::HandleSetWakefulnessMode(
         ARC_GET_INSTANCE_FOR_METHOD(power, SetIdleState);
     if (power_instance)
       power_instance->SetIdleState(arc::mojom::IdleState::INACTIVE);
+  } else if (mode == kWakenessfullForceDoze) {
+    arc::mojom::PowerInstance* const power_instance =
+        ARC_GET_INSTANCE_FOR_METHOD(power, SetIdleState);
+    if (power_instance) {
+      power_instance->SetIdleState(arc::mojom::IdleState::FORCE_INACTIVE);
+    }
   } else if (mode == kWakenessfullSleep) {
     arc::mojom::PowerInstance* const power_instance =
         ARC_GET_INSTANCE_FOR_METHOD(power, Suspend);
