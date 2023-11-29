@@ -19,7 +19,6 @@ source_set("autofill") {
     "autofill_credit_card_table_view_controller.mm",
     "autofill_credit_card_util.h",
     "autofill_credit_card_util.mm",
-    "autofill_edit_table_view_controller+protected.h",
     "autofill_edit_table_view_controller.h",
     "autofill_edit_table_view_controller.mm",
     "autofill_profile_edit_coordinator.h",

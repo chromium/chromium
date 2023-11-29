@@ -4,7 +4,6 @@
 
 source_set("infobars") {
   sources = [
-    "infobar_controller+protected.h",
     "infobar_ios.h",
     "infobar_ios.mm",
     "infobar_manager_impl.h",
