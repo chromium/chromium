@@ -1505,7 +1505,6 @@ void CrostiniManager::StartTerminaVm(std::string name,
   request.set_timeout(static_cast<uint32_t>(kStartVmTimeout.InSeconds()));
   if (base::FeatureList::IsEnabled(ash::features::kCrostiniGpuSupport)) {
     request.set_enable_gpu(true);
-    request.set_enable_vulkan(true);
   }
   if (profile_->GetPrefs()->GetBoolean(prefs::kCrostiniMicAllowed) &&
       profile_->GetPrefs()->GetBoolean(::prefs::kAudioCaptureAllowed)) {
