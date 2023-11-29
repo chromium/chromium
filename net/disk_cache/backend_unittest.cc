@@ -4767,7 +4767,7 @@ void DiskCacheBackendTest::BackendOpenOrCreateEntry() {
     EntryResult result =
         cache_->OpenOrCreateEntry("first", net::HIGHEST, callback.callback());
     ASSERT_EQ(net::ERR_IO_PENDING, result.net_error());
-    cache_ = nullptr;
+    ResetCaches();
 
     // Callback is supposed to be cancelled, so have to flush everything
     // to check for any trouble.
