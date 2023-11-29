@@ -21,8 +21,6 @@
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/app/app_startup_parameters.h"
-#import "ios/chrome/app/application_delegate/mock_tab_opener.h"
-#import "ios/chrome/app/application_delegate/tab_opening.h"
 #import "ios/chrome/app/application_mode.h"
 #import "ios/chrome/app/main_controller.h"
 #import "ios/chrome/app/spotlight/actions_spotlight_manager.h"
@@ -69,6 +67,42 @@
 #import "third_party/ocmock/gtest_support.h"
 #import "url/gurl.h"
 
+@interface FakeSceneController : SceneController
+// Arguments for
+// -dismissModalsAndMaybeOpenSelectedTabInMode:withUrlLoadParams:dismissOmnibox:
+//  completion:.
+@property(nonatomic, readonly) UrlLoadParams urlLoadParams;
+@property(nonatomic, readonly) ApplicationModeForTabOpening applicationMode;
+// Argument for
+// -dismissModalsAndOpenMultipleTabsInMode:URLs:dismissOmnibox:completion:.
+@property(nonatomic, readonly) std::vector<GURL>& URLs;
+@end
+
+@implementation FakeSceneController
+
+- (BOOL)URLIsOpenedInRegularMode:(const GURL&)URL {
+  return NO;
+}
+
+- (void)dismissModalsAndMaybeOpenSelectedTabInMode:
+            (ApplicationModeForTabOpening)targetMode
+                                 withUrlLoadParams:
+                                     (const UrlLoadParams&)urlLoadParams
+                                    dismissOmnibox:(BOOL)dismissOmnibox
+                                        completion:(ProceduralBlock)completion {
+  _urlLoadParams = urlLoadParams;
+  _applicationMode = targetMode;
+}
+
+- (void)dismissModalsAndOpenMultipleTabsWithURLs:(const std::vector<GURL>&)URLs
+                                 inIncognitoMode:(BOOL)incognitoMode
+                                  dismissOmnibox:(BOOL)dismissOmnibox
+                                      completion:(ProceduralBlock)completion {
+  _URLs = URLs;
+}
+
+@end
+
 #pragma mark - Test class.
 
 class UserActivityBrowserAgentTest : public PlatformTest {
@@ -83,9 +117,9 @@ class UserActivityBrowserAgentTest : public PlatformTest {
                                     browserState:browser_state_.get()];
 
     scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-    SceneController* controller =
-        [[SceneController alloc] initWithSceneState:scene_state_];
-    scene_state_.controller = controller;
+    scene_controller_ =
+        [[FakeSceneController alloc] initWithSceneState:scene_state_];
+    scene_state_.controller = scene_controller_;
     browser_ =
         std::make_unique<TestBrowser>(browser_state_.get(), scene_state_);
 
@@ -94,15 +128,7 @@ class UserActivityBrowserAgentTest : public PlatformTest {
     user_activity_browser_agent_ =
         UserActivityBrowserAgent::FromBrowser(browser_.get());
 
-    id mock_tab_opening =
-        [OCMockObject niceMockForProtocol:@protocol(TabOpening)];
-    const GURL example_url("http://www.example.com");
-    OCMStub([mock_tab_opening URLIsOpenedInRegularMode:example_url])
-        .andReturn(NO);
-
-    user_activity_browser_agent_->SetTabOpenerForTesting(mock_tab_opening);
     connection_information_ = scene_state_.controller;
-    tab_opener_ = scene_state_.controller;
   }
 
   ~UserActivityBrowserAgentTest() override {}
@@ -165,8 +191,8 @@ class UserActivityBrowserAgentTest : public PlatformTest {
 
   UserActivityBrowserAgent* user_activity_browser_agent_;
   FakeSceneState* scene_state_;
+  FakeSceneController* scene_controller_;
   id<ConnectionInformation> connection_information_;
-  id<TabOpening> tab_opener_;
 
  private:
   std::unique_ptr<TestBrowser> browser_;
@@ -365,16 +391,14 @@ TEST_F(UserActivityBrowserAgentTest, ContinueUserActivityForeground) {
           applicationMode:ApplicationModeForTabOpening::NORMAL];
   [connection_information_ setStartupParameters:startup_params];
 
-  MockTabOpener* tab_opener = [[MockTabOpener alloc] init];
-  user_activity_browser_agent_->SetTabOpenerForTesting(tab_opener);
-
   // Action.
   BOOL result =
       user_activity_browser_agent_->ContinueUserActivity(user_activity, YES);
 
   // Test.
-  EXPECT_EQ(gurl, tab_opener.urlLoadParams.web_params.url);
-  EXPECT_TRUE(tab_opener.urlLoadParams.web_params.virtual_url.is_empty());
+  EXPECT_EQ(gurl, scene_controller_.urlLoadParams.web_params.url);
+  EXPECT_TRUE(
+      scene_controller_.urlLoadParams.web_params.virtual_url.is_empty());
   EXPECT_TRUE(result);
 }
 
@@ -386,17 +410,17 @@ TEST_F(UserActivityBrowserAgentTest, ContinueUserActivityBrowsingWeb) {
   // of application logic.
   NSURL* nsurl = [NSURL URLWithString:@"http://goo.gl/foo/bar"];
   [user_activity setWebpageURL:nsurl];
-  MockTabOpener* tab_opener = [[MockTabOpener alloc] init];
-  user_activity_browser_agent_->SetTabOpenerForTesting(tab_opener);
 
   BOOL result =
       user_activity_browser_agent_->ContinueUserActivity(user_activity, YES);
 
   const GURL gurl = net::GURLWithNSURL(nsurl);
-  EXPECT_EQ(gurl, tab_opener.urlLoadParams.web_params.url);
-  EXPECT_TRUE(tab_opener.urlLoadParams.web_params.virtual_url.is_empty());
+  EXPECT_EQ(gurl, scene_controller_.urlLoadParams.web_params.url);
+  EXPECT_TRUE(
+      scene_controller_.urlLoadParams.web_params.virtual_url.is_empty());
   // AppStartupParameters default to opening pages in non-Incognito mode.
-  EXPECT_EQ(ApplicationModeForTabOpening::NORMAL, [tab_opener applicationMode]);
+  EXPECT_EQ(ApplicationModeForTabOpening::NORMAL,
+            [scene_controller_ applicationMode]);
   EXPECT_TRUE(result);
 }
 
@@ -532,8 +556,6 @@ TEST_F(UserActivityBrowserAgentTest,
                                                             response:nil];
 
   id mock_user_activity = CreateMockNSUserActivity(userActivity, interaction);
-  MockTabOpener* tab_opener = [[MockTabOpener alloc] init];
-  user_activity_browser_agent_->SetTabOpenerForTesting(tab_opener);
 
   // Action.
   BOOL result = user_activity_browser_agent_->ContinueUserActivity(
@@ -541,7 +563,7 @@ TEST_F(UserActivityBrowserAgentTest,
 
   // Test.
   EXPECT_TRUE(result);
-  EXPECT_EQ(3U, tab_opener.URLs.size());
+  EXPECT_EQ(3U, scene_controller_.URLs.size());
   NSURL* external_url = net::NSURLWithGURL(
       [connection_information_ startupParameters].externalURL);
   EXPECT_TRUE([intent.url containsObject:external_url]);
@@ -572,16 +594,13 @@ TEST_F(UserActivityBrowserAgentTest, ContinueUserActivityIntentForeground) {
       applicationMode:ApplicationModeForTabOpening::NORMAL];
   [connection_information_ setStartupParameters:startup_params];
 
-  MockTabOpener* tab_opener = [[MockTabOpener alloc] init];
-  user_activity_browser_agent_->SetTabOpenerForTesting(tab_opener);
-
   // Action.
   BOOL result = user_activity_browser_agent_->ContinueUserActivity(
       mock_user_activity, YES);
 
   // Test.
   EXPECT_TRUE(result);
-  EXPECT_EQ(3U, tab_opener.URLs.size());
+  EXPECT_EQ(3U, scene_controller_.URLs.size());
   NSURL* external_url = net::NSURLWithGURL(
       [connection_information_ startupParameters].externalURL);
   EXPECT_TRUE([intent.url containsObject:external_url]);
@@ -600,9 +619,6 @@ TEST_F(UserActivityBrowserAgentTest, HandleStartupParamsWithExternalFile) {
           applicationMode:ApplicationModeForTabOpening::INCOGNITO];
   [connection_information_ setStartupParameters:startup_params];
 
-  MockTabOpener* tab_opener = [[MockTabOpener alloc] init];
-  user_activity_browser_agent_->SetTabOpenerForTesting(tab_opener);
-
   // Action.
   user_activity_browser_agent_->RouteToCorrectTab();
 
@@ -610,8 +626,9 @@ TEST_F(UserActivityBrowserAgentTest, HandleStartupParamsWithExternalFile) {
   // External file:// URL will be loaded by WebState, which expects complete
   // file:// URL. chrome:// URL is expected to be displayed in the omnibox,
   // and omnibox shows virtual URL.
-  EXPECT_EQ(complete_url, tab_opener.urlLoadParams.web_params.url);
-  EXPECT_EQ(external_url, tab_opener.urlLoadParams.web_params.virtual_url);
+  EXPECT_EQ(complete_url, scene_controller_.urlLoadParams.web_params.url);
+  EXPECT_EQ(external_url,
+            scene_controller_.urlLoadParams.web_params.virtual_url);
   EXPECT_EQ(ApplicationModeForTabOpening::INCOGNITO,
             connection_information_.startupParameters.applicationMode);
 }

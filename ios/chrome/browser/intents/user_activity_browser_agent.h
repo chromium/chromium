@@ -45,9 +45,6 @@ class UserActivityBrowserAgent
   // browser will proceed the request.
   BOOL ProceedWithUserActivity(NSUserActivity* user_activity);
 
-  // Public setter used for testing.
-  void SetTabOpenerForTesting(id<TabOpening> tab_opener) { tab_opener_ = tab_opener; }
-
  private:
   friend class BrowserUserData<UserActivityBrowserAgent>;
   BROWSER_USER_DATA_KEY_DECL();
