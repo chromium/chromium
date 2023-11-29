@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ui/first_run/first_run_app_interface.h"
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
+#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
@@ -104,14 +105,23 @@ void DismissChoiceScreenIfNecessary() {
   // Selects a search engine. The list of search engines varies from country to
   // country and is refreshed periodically. Google should always be proposed in
   // the countries selected by test settings.
-  id<GREYMatcher> googleRowMatcher = grey_allOf(
-      grey_userInteractionEnabled(), grey_accessibilityLabel(@"Google"), nil);
+  NSString* googleAccessibiltyIdentifier = [NSString
+      stringWithFormat:@"%@Google", kSnippetSearchEngineIdentifierPrefix];
+  id<GREYMatcher> googleRowMatcher =
+      grey_allOf(grey_userInteractionEnabled(),
+                 grey_accessibilityID(googleAccessibiltyIdentifier), nil);
+  // Scroll down to find Google search engine cell.
+  id<GREYMatcher> scrollView =
+      grey_accessibilityID(kSearchEngineTableViewIdentifier);
+  [[[EarlGrey selectElementWithMatcher:googleRowMatcher]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 50)
+      onElementWithMatcher:scrollView] assertWithMatcher:grey_notNil()];
+  // Tap on the Google search engine cell.
   [[[EarlGrey selectElementWithMatcher:googleRowMatcher]
       assertWithMatcher:grey_notNil()] performAction:grey_tap()];
-
-  // Taps the "set as default" button.
-  id<GREYMatcher> primaryButtonMatcher = grey_accessibilityLabel(
-      l10n_util::GetNSString(IDS_SEARCH_ENGINE_CHOICE_BUTTON_TITLE));
+  // Taps the "Set as Default" button.
+  id<GREYMatcher> primaryButtonMatcher =
+      grey_accessibilityID(kSetAsDefaultSearchEngineIdentifier);
   [[[EarlGrey selectElementWithMatcher:primaryButtonMatcher]
       assertWithMatcher:grey_notNil()] performAction:grey_tap()];
 }

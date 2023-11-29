@@ -9,6 +9,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/common/ui/util/device_util.h"
@@ -199,7 +200,7 @@ UIButton* CreateDisabledPrimaryButton() {
   button.configuration = buttonConfiguration;
   button.translatesAutoresizingMaskIntoConstraints = NO;
   button.enabled = NO;
-
+  button.accessibilityIdentifier = kSetAsDefaultSearchEngineIdentifier;
   return button;
 }
 

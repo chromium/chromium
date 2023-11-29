@@ -15,6 +15,7 @@ source_set("cells") {
     "//ios/chrome/browser/shared/ui/table_view:styler",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/search_engine_choice:constants",
     "//ios/chrome/browser/ui/settings/cells:public",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/favicon",

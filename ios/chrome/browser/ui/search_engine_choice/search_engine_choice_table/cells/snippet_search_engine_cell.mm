@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table/cells/snippet_search_engine_cell.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_container_view.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
@@ -124,7 +125,9 @@
 }
 
 - (NSString*)accessibilityIdentifier {
-  return self.nameLabel.text;
+  return
+      [NSString stringWithFormat:@"%@%@", kSnippetSearchEngineIdentifierPrefix,
+                                 self.nameLabel.text];
 }
 
 - (BOOL)isAccessibilityElement {

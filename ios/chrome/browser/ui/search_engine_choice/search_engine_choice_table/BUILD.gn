@@ -25,6 +25,7 @@ source_set("search_engine_choice_table") {
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:styler",
     "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/ui/search_engine_choice:constants",
     "//ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table/cells",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/favicon",

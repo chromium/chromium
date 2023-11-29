@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_constants.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table/cells/snippet_search_engine_cell.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_table/cells/snippet_search_engine_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -81,18 +82,19 @@ UIImageView* CreateCheckedCircle() {
 - (void)viewDidLoad {
   [super viewDidLoad];
 
+  UITableView* tableView = self.tableView;
+  tableView.accessibilityIdentifier = kSearchEngineTableViewIdentifier;
   // With no header on first appearance, UITableView adds a 35 points space at
   // the beginning of the table view. This space remains after this table view
   // reloads with headers. Setting a small tableHeaderView avoids this.
-  self.tableView.tableHeaderView =
+  tableView.tableHeaderView =
       [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, CGFLOAT_MIN)];
-
-  self.tableView.separatorInset =
+  tableView.separatorInset =
       UIEdgeInsetsMake(0, kTableViewSeparatorLeadingInset, 0, 0);
-  self.tableView.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+  tableView.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
   self.styler.cellBackgroundColor =
       [UIColor colorNamed:kTertiaryBackgroundColor];
-  self.tableView.separatorColor = [UIColor colorNamed:kGrey300Color];
+  tableView.separatorColor = [UIColor colorNamed:kGrey300Color];
 
   [self loadModel];
 }

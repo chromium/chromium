@@ -15,6 +15,7 @@ source_set("search_engine_choice") {
     "search_engine_choice_view_controller.mm",
   ]
   deps = [
+    ":constants",
     "//base",
     "//components/search_engines",
     "//components/strings",
@@ -38,6 +39,14 @@ source_set("search_engine_choice") {
     "//ios/chrome/common/ui/util",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("constants") {
+  sources = [
+    "search_engine_choice_constants.h",
+    "search_engine_choice_constants.mm",
+  ]
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
