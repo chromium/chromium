@@ -487,6 +487,11 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   // registration.
   ServiceWorkerRegistration* controller_registration() const;
 
+  // Should be called only when `controller()` is non-null.
+  // Callers should fill `ControllerServiceWorkerInfo::object_info` when needed.
+  blink::mojom::ControllerServiceWorkerInfoPtr
+  CreateControllerServiceWorkerInfo();
+
   // For service worker execution contexts.
   void set_service_worker_host(ServiceWorkerHost* service_worker_host);
   ServiceWorkerHost* service_worker_host();

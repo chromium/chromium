@@ -636,32 +636,12 @@ void ServiceWorkerContainerHost::CountFeature(
   container_->CountFeature(feature);
 }
 
-void ServiceWorkerContainerHost::SendSetControllerServiceWorker(
-    bool notify_controllerchange) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(IsContainerForClient());
+blink::mojom::ControllerServiceWorkerInfoPtr
+ServiceWorkerContainerHost::CreateControllerServiceWorkerInfo() {
+  CHECK(controller());
 
   auto controller_info = blink::mojom::ControllerServiceWorkerInfo::New();
   controller_info->client_id = client_uuid();
-  // Set |fetch_request_window_id| only when |controller_| is available.
-  // Setting |fetch_request_window_id| should not affect correctness, however,
-  // we have the extensions bug, https://crbug.com/963748, which we don't yet
-  // understand.  That is why we don't set |fetch_request_window_id| if there
-  // is no controller, at least, until we can fix the extension bug.
-  if (controller_ && fetch_request_window_id_) {
-    controller_info->fetch_request_window_id =
-        absl::make_optional(fetch_request_window_id_);
-  }
-
-  if (!controller_) {
-    container_->SetController(std::move(controller_info),
-                              notify_controllerchange);
-    return;
-  }
-
-  DCHECK(controller_registration());
-  DCHECK_EQ(controller_registration_->active_version(), controller_.get());
-
   controller_info->mode = GetControllerMode();
   controller_info->fetch_handler_type = controller()->fetch_handler_type();
   controller_info->effective_fetch_handler_type =
@@ -670,6 +650,7 @@ void ServiceWorkerContainerHost::SendSetControllerServiceWorker(
       controller()->fetch_handler_bypass_option();
   controller_info->sha256_script_checksum =
       controller()->sha256_script_checksum();
+
   if (controller()->router_evaluator()) {
     controller_info->router_data = blink::mojom::ServiceWorkerRouterData::New();
     controller_info->router_data->router_rules =
@@ -689,24 +670,57 @@ void ServiceWorkerContainerHost::SendSetControllerServiceWorker(
     }
   }
 
-  // Pass an endpoint for the client to talk to this controller.
+  // Note that |controller_info->remote_controller| is null if the controller
+  // has no fetch event handler. In that case the renderer frame won't get the
+  // controller pointer upon the navigation commit, and subresource loading will
+  // not be intercepted. (It might get intercepted later if the controller
+  // changes due to skipWaiting() so SetController is sent.)
   mojo::Remote<blink::mojom::ControllerServiceWorker> remote =
       GetRemoteControllerServiceWorker();
   if (remote.is_bound()) {
     controller_info->remote_controller = remote.Unbind();
   }
 
+  if (fetch_request_window_id()) {
+    controller_info->fetch_request_window_id =
+        absl::make_optional(fetch_request_window_id());
+  }
+  // Populate used features for UseCounter purposes.
+  for (const auto feature : controller()->used_features()) {
+    controller_info->used_features.push_back(feature);
+  }
+  return controller_info;
+}
+
+void ServiceWorkerContainerHost::SendSetControllerServiceWorker(
+    bool notify_controllerchange) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(IsContainerForClient());
+
+  if (!controller_) {
+    // Do not set |fetch_request_window_id| when |controller_| is not available.
+    // Setting |fetch_request_window_id| should not affect correctness, however,
+    // we have the extensions bug, https://crbug.com/963748, which we don't yet
+    // understand.  That is why we don't set |fetch_request_window_id| if there
+    // is no controller, at least, until we can fix the extension bug.
+    auto controller_info = blink::mojom::ControllerServiceWorkerInfo::New();
+    controller_info->client_id = client_uuid();
+    container_->SetController(std::move(controller_info),
+                              notify_controllerchange);
+    return;
+  }
+
+  DCHECK(controller_registration());
+  DCHECK_EQ(controller_registration_->active_version(), controller_.get());
+
+  auto controller_info = CreateControllerServiceWorkerInfo();
+
   // Set the info for the JavaScript ServiceWorkerContainer#controller object.
-  base::WeakPtr<ServiceWorkerObjectHost> object_host =
-      GetOrCreateServiceWorkerObjectHost(controller_);
-  if (object_host) {
+  if (base::WeakPtr<ServiceWorkerObjectHost> object_host =
+          GetOrCreateServiceWorkerObjectHost(controller())) {
     controller_info->object_info =
         object_host->CreateCompleteObjectInfoToSend();
   }
-
-  // Populate used features for UseCounter purposes.
-  for (const blink::mojom::WebFeature feature : controller_->used_features())
-    controller_info->used_features.push_back(feature);
 
   container_->SetController(std::move(controller_info),
                             notify_controllerchange);
