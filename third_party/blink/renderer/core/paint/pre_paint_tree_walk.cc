@@ -364,7 +364,7 @@ FragmentData* PrePaintTreeWalk::GetOrCreateFragmentData(
   FragmentData* fragment_data = &fragment_list;
 
   // BR elements never fragment. While there are parts of the code that depend
-  // on the correct paint offset (getBoundingClientRect(), etc.), we don't need
+  // on the correct paint offset (GetBoundingClientRect(), etc.), we don't need
   // to set fragmentation info (nor create multiple FragmentData entries). BR
   // elements aren't necessarily marked for invalidation when laid out (which
   // means that allow_update won't be set when it should, and the code below

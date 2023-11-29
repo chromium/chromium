@@ -410,7 +410,7 @@ WebPagePopupImpl::WebPagePopupImpl(
                                          std::move(data));
 
   popup_owner_client_rect_ =
-      popup_client_->OwnerElement().getBoundingClientRect();
+      popup_client_->OwnerElement().GetBoundingClientRect();
   popup_widget_host_->ShowPopup(
       initial_rect_, GetAnchorRectInScreen(),
       WTF::BindOnce(&WebPagePopupImpl::DidShowPopup, WTF::Unretained(this)));
@@ -557,7 +557,7 @@ void WebPagePopupImpl::Update() {
   if (!page_ && !popup_client_)
     return;
 
-  DOMRect* dom_rect = popup_client_->OwnerElement().getBoundingClientRect();
+  DOMRect* dom_rect = popup_client_->OwnerElement().GetBoundingClientRect();
   bool forced_update = (*dom_rect != *popup_owner_client_rect_);
   if (forced_update)
     popup_owner_client_rect_ = dom_rect;

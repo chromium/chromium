@@ -2131,7 +2131,7 @@ TEST_P(PaintPropertyTreeUpdateTest, UpdatesInLockedDisplayHandledCorrectly) {
       ->setAttribute(html_names::kStyleAttr, AtomicString("background:purple"));
   GetDocument()
       .getElementById(AtomicString("locked_display_inner"))
-      ->getBoundingClientRect();
+      ->GetBoundingClientRect();
   EXPECT_TRUE(fast_path_div->GetLayoutObject()->NeedsPaintPropertyUpdate());
   GetDocument().ElementFromPoint(1, 1);
   EXPECT_NEAR(0.8, div_properties->Effect()->Opacity(), 0.001);

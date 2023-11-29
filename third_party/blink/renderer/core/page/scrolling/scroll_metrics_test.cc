@@ -109,8 +109,8 @@ int BucketIndex(uint32_t reason) {
 void ScrollMetricsTest::Scroll(Element* element,
                                const WebGestureDevice device) {
   DCHECK(element);
-  DCHECK(element->getBoundingClientRect());
-  DOMRect* rect = element->getBoundingClientRect();
+  DCHECK(element->GetBoundingClientRect());
+  DOMRect* rect = element->GetBoundingClientRect();
   ScrollBeginEventBuilder scroll_begin(
       gfx::PointF(rect->left() + rect->width() / 2,
                   rect->top() + rect->height() / 2),

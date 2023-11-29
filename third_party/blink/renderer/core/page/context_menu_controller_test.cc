@@ -178,7 +178,7 @@ class ContextMenuControllerTest : public testing::Test {
   }
 
   bool ShowContextMenuForElement(Element* element, WebMenuSourceType source) {
-    const DOMRect* rect = element->getBoundingClientRect();
+    const DOMRect* rect = element->GetBoundingClientRect();
     PhysicalOffset location(LayoutUnit((rect->left() + rect->right()) / 2),
                             LayoutUnit((rect->top() + rect->bottom()) / 2));
     ContextMenuAllowedScope context_menu_allowed_scope;
@@ -308,7 +308,7 @@ TEST_F(ContextMenuControllerTest, VideoNotLoaded) {
               HasVideo())
       .WillRepeatedly(Return(false));
 
-  DOMRect* rect = video->getBoundingClientRect();
+  DOMRect* rect = video->GetBoundingClientRect();
   PhysicalOffset location(LayoutUnit((rect->left() + rect->right()) / 2),
                           LayoutUnit((rect->top() + rect->bottom()) / 2));
   EXPECT_TRUE(ShowContextMenu(location, kMenuSourceMouse));
@@ -369,7 +369,7 @@ TEST_F(ContextMenuControllerTest, VideoWithAudioOnly) {
               HasAudio())
       .WillRepeatedly(Return(true));
 
-  DOMRect* rect = video->getBoundingClientRect();
+  DOMRect* rect = video->GetBoundingClientRect();
   PhysicalOffset location(LayoutUnit((rect->left() + rect->right()) / 2),
                           LayoutUnit((rect->top() + rect->bottom()) / 2));
   EXPECT_TRUE(ShowContextMenu(location, kMenuSourceMouse));
@@ -426,7 +426,7 @@ TEST_F(ContextMenuControllerTest, PictureInPictureEnabledVideoLoaded) {
               HasVideo())
       .WillRepeatedly(Return(true));
 
-  DOMRect* rect = video->getBoundingClientRect();
+  DOMRect* rect = video->GetBoundingClientRect();
   PhysicalOffset location(LayoutUnit((rect->left() + rect->right()) / 2),
                           LayoutUnit((rect->top() + rect->bottom()) / 2));
   EXPECT_TRUE(ShowContextMenu(location, kMenuSourceMouse));
@@ -483,7 +483,7 @@ TEST_F(ContextMenuControllerTest, PictureInPictureDisabledVideoLoaded) {
               HasVideo())
       .WillRepeatedly(Return(true));
 
-  DOMRect* rect = video->getBoundingClientRect();
+  DOMRect* rect = video->GetBoundingClientRect();
   PhysicalOffset location(LayoutUnit((rect->left() + rect->right()) / 2),
                           LayoutUnit((rect->top() + rect->bottom()) / 2));
   EXPECT_TRUE(ShowContextMenu(location, kMenuSourceMouse));
@@ -542,7 +542,7 @@ TEST_F(ContextMenuControllerTest, MediaStreamVideoLoaded) {
               HasVideo())
       .WillRepeatedly(Return(true));
 
-  DOMRect* rect = video->getBoundingClientRect();
+  DOMRect* rect = video->GetBoundingClientRect();
   PhysicalOffset location(LayoutUnit((rect->left() + rect->right()) / 2),
                           LayoutUnit((rect->top() + rect->bottom()) / 2));
   EXPECT_TRUE(ShowContextMenu(location, kMenuSourceMouse));
@@ -604,7 +604,7 @@ TEST_F(ContextMenuControllerTest, InfiniteDurationVideoLoaded) {
       .WillRepeatedly(Return(std::numeric_limits<double>::infinity()));
   DurationChanged(video.Get());
 
-  DOMRect* rect = video->getBoundingClientRect();
+  DOMRect* rect = video->GetBoundingClientRect();
   PhysicalOffset location(LayoutUnit((rect->left() + rect->right()) / 2),
                           LayoutUnit((rect->top() + rect->bottom()) / 2));
   EXPECT_TRUE(ShowContextMenu(location, kMenuSourceMouse));
@@ -766,7 +766,7 @@ TEST_F(ContextMenuControllerTest, ShowNonLocatedContextMenuEvent) {
   document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   // Select the 'Sample' of |input|.
-  DOMRect* rect = input_element->getBoundingClientRect();
+  DOMRect* rect = input_element->GetBoundingClientRect();
   WebGestureEvent gesture_event(
       WebInputEvent::Type::kGestureLongPress, WebInputEvent::kNoModifiers,
       base::TimeTicks::Now(), WebGestureDevice::kTouchscreen);
@@ -846,7 +846,7 @@ TEST_F(ContextMenuControllerTest, SelectionRectClipped) {
   FrameSelection& selection = document->GetFrame()->Selection();
 
   // Select the 'Sample' of |textarea|.
-  DOMRect* rect = editable_element->getBoundingClientRect();
+  DOMRect* rect = editable_element->GetBoundingClientRect();
   WebGestureEvent gesture_event(
       WebInputEvent::Type::kGestureLongPress, WebInputEvent::kNoModifiers,
       base::TimeTicks::Now(), WebGestureDevice::kTouchscreen);

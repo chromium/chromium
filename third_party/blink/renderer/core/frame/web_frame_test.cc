@@ -12801,10 +12801,10 @@ TEST_F(WebFrameSimTest, ScrollFocusedIntoViewClipped) {
       ->ScrollFocusedEditableElementIntoView();
 
   Element* input = GetDocument().getElementById(AtomicString("target"));
-  gfx::Rect input_rect(input->getBoundingClientRect()->top(),
-                       input->getBoundingClientRect()->left(),
-                       input->getBoundingClientRect()->width(),
-                       input->getBoundingClientRect()->height());
+  gfx::Rect input_rect(input->GetBoundingClientRect()->top(),
+                       input->GetBoundingClientRect()->left(),
+                       input->GetBoundingClientRect()->width(),
+                       input->GetBoundingClientRect()->height());
 
   gfx::Rect visible_content_rect(frame_view->Size());
   EXPECT_TRUE(visible_content_rect.Contains(input_rect))
@@ -12926,7 +12926,7 @@ TEST_F(WebFrameSimTest, DoubleTapZoomWhileScrolled) {
       ScrollOffset(2000 - 440, 3000 - 450),
       mojom::blink::ScrollType::kProgrammatic);
   Element* target = GetDocument().QuerySelector(AtomicString("#target"));
-  DOMRect* rect = target->getBoundingClientRect();
+  DOMRect* rect = target->GetBoundingClientRect();
   ASSERT_EQ(440, rect->left());
   ASSERT_EQ(450, rect->top());
 

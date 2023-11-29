@@ -191,7 +191,7 @@ class MediaControlsImplTest : public PageTestBase,
     // Fire the size-change callback to ensure that the controls have
     // been properly notified of the video size.
     media_controls_->NotifyElementSizeChanged(
-        media_controls_->MediaElement().getBoundingClientRect());
+        media_controls_->MediaElement().GetBoundingClientRect());
   }
 
   void SimulateHideMediaControlsTimerFired() {
@@ -1205,7 +1205,7 @@ TEST_F(MediaControlsImplTestWithMockScheduler,
   EXPECT_TRUE(IsElementVisible(*mute_btn));
   EXPECT_TRUE(volume_slider->classList().contains(AtomicString("closed")));
 
-  DOMRect* mute_btn_rect = mute_btn->getBoundingClientRect();
+  DOMRect* mute_btn_rect = mute_btn->GetBoundingClientRect();
   gfx::PointF mute_btn_center(
       mute_btn_rect->left() + mute_btn_rect->width() / 2,
       mute_btn_rect->top() + mute_btn_rect->height() / 2);
@@ -1420,7 +1420,7 @@ TEST_F(MediaControlsImplTest, DoubleTouchChangesTime) {
   // We've set the video to the halfway mark.
   EXPECT_EQ(30, MediaControls().MediaElement().currentTime());
 
-  DOMRect* videoRect = MediaControls().MediaElement().getBoundingClientRect();
+  DOMRect* videoRect = MediaControls().MediaElement().GetBoundingClientRect();
   ASSERT_LT(0, videoRect->width());
   gfx::PointF leftOfCenter(videoRect->left() + (videoRect->width() / 2) - 5,
                            videoRect->top() + 5);
@@ -1450,7 +1450,7 @@ TEST_F(MediaControlsImplTest, DoubleTouchChangesTimeWhenZoomed) {
   // We've set the video to the halfway mark.
   EXPECT_EQ(30, MediaControls().MediaElement().currentTime());
 
-  DOMRect* videoRect = MediaControls().MediaElement().getBoundingClientRect();
+  DOMRect* videoRect = MediaControls().MediaElement().GetBoundingClientRect();
   ASSERT_LT(0, videoRect->width());
   gfx::PointF leftOfCenter(videoRect->left() + (videoRect->width() / 2) - 5,
                            videoRect->top() + 10);

@@ -967,7 +967,7 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterFocusChange) {
   second->SetValue("ABCD EFGH");
   second->Focus();
   gfx::Point origin =
-      second->getBoundingClientRect()->ToEnclosingRect().origin();
+      second->GetBoundingClientRect()->ToEnclosingRect().origin();
   widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
   expected = Vector({gfx::Rect(origin.x(), origin.y(), 90, 10)});
   actual = widget->GetVisibleLineBoundsOnScreen();
@@ -1335,7 +1335,7 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterCommit) {
   // Focus the element and check the line bounds.
   first->Focus();
   gfx::Point origin =
-      first->getBoundingClientRect()->ToEnclosingRect().origin();
+      first->GetBoundingClientRect()->ToEnclosingRect().origin();
   String text = "hello world";
   for (wtf_size_t i = 0; i < text.length(); ++i) {
     first->SetValue(first->Value() + text[i]);
@@ -1401,7 +1401,7 @@ TEST_F(WebFrameWidgetSimTest, TestLineBoundsAreCorrectAfterDelete) {
   first->Focus();
   first->SetValue("hello world\rgoodbye world");
   gfx::Point origin =
-      first->getBoundingClientRect()->ToEnclosingRect().origin();
+      first->GetBoundingClientRect()->ToEnclosingRect().origin();
 
   String last_line = "goodbye world";
   for (wtf_size_t i = last_line.length() - 1; i > 0; --i) {

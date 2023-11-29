@@ -380,7 +380,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildElementInfo(Element* element) {
   if (!layout_object || !containing_view)
     return element_info;
 
-  // layoutObject the getBoundingClientRect() data in the tooltip
+  // layoutObject the GetBoundingClientRect() data in the tooltip
   // to be consistent with the rulers (see http://crbug.com/262338).
 
   DCHECK(element->GetDocument().Lifecycle().GetState() >=

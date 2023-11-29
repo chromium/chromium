@@ -3184,8 +3184,8 @@ TEST_P(DisplayLockContextRenderingTest, FirstAutoFramePaintsInViewport) {
   EXPECT_FALSE(visible->GetLayoutObject()->SelfNeedsFullLayout());
   EXPECT_FALSE(hidden->GetLayoutObject()->SelfNeedsFullLayout());
 
-  auto* visible_rect = visible->getBoundingClientRect();
-  auto* hidden_rect = hidden->getBoundingClientRect();
+  auto* visible_rect = visible->GetBoundingClientRect();
+  auto* hidden_rect = hidden->GetBoundingClientRect();
 
   EXPECT_FLOAT_EQ(visible_rect->height(), 100);
   EXPECT_FLOAT_EQ(hidden_rect->height(), 200);
@@ -3503,7 +3503,7 @@ TEST_P(DisplayLockContextTest, ReattachPropagationBlockedByDisplayLock) {
   auto* parent = GetDocument().getElementById(AtomicString("parent"));
 
   // Force update all layout objects
-  grandchild->getBoundingClientRect();
+  grandchild->GetBoundingClientRect();
 
   ASSERT_TRUE(locked->GetLayoutObject());
   ASSERT_TRUE(grandchild->GetLayoutObject());

@@ -228,7 +228,7 @@ void MediaControlPopupMenuElement::SetPosition() {
   static const char kImportant[] = "important";
   static const char kPx[] = "px";
 
-  DOMRect* bounding_client_rect = PopupAnchor()->getBoundingClientRect();
+  DOMRect* bounding_client_rect = PopupAnchor()->GetBoundingClientRect();
   LocalDOMWindow* dom_window = GetDocument().domWindow();
 
   DCHECK(bounding_client_rect);

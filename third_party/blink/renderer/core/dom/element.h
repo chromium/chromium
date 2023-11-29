@@ -414,7 +414,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   gfx::RectF GetBoundingClientRectNoLifecycleUpdateNoAdjustment() const;
   // Returns a rectangle in CSS pixel units.  i.e. ignorign zoom.
   gfx::RectF GetBoundingClientRectNoLifecycleUpdate() const;
-  DOMRect* getBoundingClientRect();
+  DOMRect* GetBoundingClientRect();
+  DOMRect* GetBoundingClientRectForBinding();
 
   // Call the NoLifecycleUpdate variants if you are sure that the lifcycle is
   // already updated to at least pre-paint clean.

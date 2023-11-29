@@ -170,7 +170,7 @@ TEST_F(ScrollAnchorTest, VisualViewportAnchors) {
   // Scroll the visual viewport to bring #text to the top.
   int top = GetDocument()
                 .getElementById(AtomicString("text"))
-                ->getBoundingClientRect()
+                ->GetBoundingClientRect()
                 ->top();
   v_viewport.SetLocation(gfx::PointF(0, top));
 
@@ -1158,7 +1158,7 @@ TEST_F(ScrollAnchorFindInPageTest, FindInPageResultPrioritized) {
   // Save the old bounds for comparison.
   auto* old_bounds = GetDocument()
                          .getElementById(AtomicString("target"))
-                         ->getBoundingClientRect();
+                         ->GetBoundingClientRect();
 
   GetDocument()
       .getElementById(AtomicString("growing"))
@@ -1167,7 +1167,7 @@ TEST_F(ScrollAnchorFindInPageTest, FindInPageResultPrioritized) {
 
   auto* new_bounds = GetDocument()
                          .getElementById(AtomicString("target"))
-                         ->getBoundingClientRect();
+                         ->GetBoundingClientRect();
 
   // The y coordinate of the target should not change.
   EXPECT_EQ(old_bounds->y(), new_bounds->y());
@@ -1208,10 +1208,10 @@ TEST_F(ScrollAnchorFindInPageTest, FocusPrioritizedOverFindInPage) {
   // Save the old bounds for comparison.
   auto* old_focus_bounds = GetDocument()
                                .getElementById(AtomicString("focus_target"))
-                               ->getBoundingClientRect();
+                               ->GetBoundingClientRect();
   auto* old_find_bounds = GetDocument()
                               .getElementById(AtomicString("find_target"))
-                              ->getBoundingClientRect();
+                              ->GetBoundingClientRect();
 
   GetDocument()
       .getElementById(AtomicString("growing"))
@@ -1220,10 +1220,10 @@ TEST_F(ScrollAnchorFindInPageTest, FocusPrioritizedOverFindInPage) {
 
   auto* new_focus_bounds = GetDocument()
                                .getElementById(AtomicString("focus_target"))
-                               ->getBoundingClientRect();
+                               ->GetBoundingClientRect();
   auto* new_find_bounds = GetDocument()
                               .getElementById(AtomicString("find_target"))
-                              ->getBoundingClientRect();
+                              ->GetBoundingClientRect();
 
   // `focus_target` should remain where it is, since it is prioritized.
   // `find_target`, however, is shifted.
@@ -1265,7 +1265,7 @@ TEST_F(ScrollAnchorFindInPageTest, FocusedUnderStickyIsSkipped) {
   // regardless of scroll anchoring.
   auto* old_bounds = GetDocument()
                          .getElementById(AtomicString("check"))
-                         ->getBoundingClientRect();
+                         ->GetBoundingClientRect();
 
   GetDocument()
       .getElementById(AtomicString("growing"))
@@ -1274,7 +1274,7 @@ TEST_F(ScrollAnchorFindInPageTest, FocusedUnderStickyIsSkipped) {
 
   auto* new_bounds = GetDocument()
                          .getElementById(AtomicString("check"))
-                         ->getBoundingClientRect();
+                         ->GetBoundingClientRect();
 
   // The y coordinate of #check should change since #target is not a valid
   // anchor, so we should have selected one of the spacers as the anchor.

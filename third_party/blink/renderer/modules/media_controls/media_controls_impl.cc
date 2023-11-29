@@ -1670,7 +1670,7 @@ bool MediaControlsImpl::IsOnLeftSide(Event* event) {
 
   float tap_x = gesture_event->NativeEvent().PositionInWidget().x();
 
-  DOMRect* rect = getBoundingClientRect();
+  DOMRect* rect = GetBoundingClientRect();
   double middle = rect->x() + (rect->width() / 2);
   if (GetDocument().GetFrame())
     middle *= GetDocument().GetFrame()->PageZoomFactor();

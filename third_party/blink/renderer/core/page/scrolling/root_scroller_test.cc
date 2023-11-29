@@ -734,7 +734,7 @@ TEST_F(RootScrollerTest, RotationAnchoring) {
   UpdateAllLifecyclePhases(MainFrameView());
 
   // The visual viewport should remain fully filled by the target.
-  DOMRect* rect = target->getBoundingClientRect();
+  DOMRect* rect = target->GetBoundingClientRect();
   EXPECT_EQ(rect->left(), GetVisualViewport().GetScrollOffset().x());
   EXPECT_EQ(rect->top(), GetVisualViewport().GetScrollOffset().y());
 }

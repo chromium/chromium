@@ -2193,10 +2193,14 @@ gfx::RectF Element::GetBoundingClientRectNoLifecycleUpdate() const {
   return result;
 }
 
-DOMRect* Element::getBoundingClientRect() {
+DOMRect* Element::GetBoundingClientRect() {
   GetDocument().EnsurePaintLocationDataValidForNode(
       this, DocumentUpdateReason::kJavaScript);
   return DOMRect::FromRectF(GetBoundingClientRectNoLifecycleUpdate());
+}
+
+DOMRect* Element::GetBoundingClientRectForBinding() {
+  return GetBoundingClientRect();
 }
 
 const AtomicString& Element::computedRole() {

@@ -2179,7 +2179,7 @@ TEST_F(TextFragmentAnchorTest, OpenedFromHighlightDoesNotSelectAdditionalText) {
   WebMouseEvent mouse_down_event(WebInputEvent::Type::kMouseDown,
                                  WebInputEvent::kNoModifiers,
                                  WebInputEvent::GetStaticTimeStampForTests());
-  const DOMRect* middle_rect = middle_element->getBoundingClientRect();
+  const DOMRect* middle_rect = middle_element->GetBoundingClientRect();
   gfx::PointF middle_elem_point(((middle_rect->left() + 1)),
                                 ((middle_rect->top() + 1)));
   mouse_down_event.SetPositionInWidget(middle_elem_point.x(),
@@ -2203,7 +2203,7 @@ TEST_F(TextFragmentAnchorTest, OpenedFromHighlightDoesNotSelectAdditionalText) {
   EXPECT_TRUE(selection.SelectedText().empty());
 
   // Create a mouse event at the center of <p> four.
-  const DOMRect* last_rect = last_element->getBoundingClientRect();
+  const DOMRect* last_rect = last_element->GetBoundingClientRect();
   gfx::PointF last_elem_point(((last_rect->left() + 1)),
                               ((last_rect->top() + 1)));
   mouse_down_event.SetPositionInWidget(last_elem_point.x(),
