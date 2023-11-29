@@ -559,11 +559,12 @@ void EcheTray::SetIcon(const gfx::Image& icon,
                        const std::u16string& tooltip_text) {
   views::ImageButton* icon_view = GetIcon();
   if (icon_view) {
-    icon_view->SetImage(
+    icon_view->SetImageModel(
         views::ImageButton::STATE_NORMAL,
-        gfx::ImageSkiaOperations::CreateResizedImage(
-            icon.AsImageSkia(), skia::ImageOperations::RESIZE_BEST,
-            gfx::Size(kIconSize, kIconSize)));
+        ui::ImageModel::FromImageSkia(
+            gfx::ImageSkiaOperations::CreateResizedImage(
+                icon.AsImageSkia(), skia::ImageOperations::RESIZE_BEST,
+                gfx::Size(kIconSize, kIconSize))));
     icon_view->SetTooltipText(tooltip_text);
     SetIconVisibility(true);
   }
@@ -887,11 +888,12 @@ void EcheTray::ResizeIcon(int offset_dip) {
   views::ImageButton* icon_view = GetIcon();
   if (icon_view) {
     auto icon = icon_view->GetImage(views::ImageButton::STATE_NORMAL);
-    icon_view->SetImage(
+    icon_view->SetImageModel(
         views::ImageButton::STATE_NORMAL,
-        gfx::ImageSkiaOperations::CreateResizedImage(
-            icon, skia::ImageOperations::RESIZE_BEST,
-            gfx::Size(kIconSize - offset_dip, kIconSize - offset_dip)));
+        ui::ImageModel::FromImageSkia(
+            gfx::ImageSkiaOperations::CreateResizedImage(
+                icon, skia::ImageOperations::RESIZE_BEST,
+                gfx::Size(kIconSize - offset_dip, kIconSize - offset_dip))));
     GetPhoneHubTray()->tray_container()->UpdateLayout();
   }
 }

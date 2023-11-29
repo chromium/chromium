@@ -180,7 +180,6 @@ ButtonExample::~ButtonExample() = default;
 
 void ButtonExample::CreateExampleView(View* container) {
   container->SetUseDefaultFillLayout(true);
-  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
 
   auto view = Builder<BoxLayoutView>()
                   .SetOrientation(BoxLayout::Orientation::kVertical)
@@ -238,12 +237,12 @@ void ButtonExample::CreateExampleView(View* container) {
                           base::Unretained(this)),
       views::kLaunchIcon, u"Icon button"));
 
-  image_button_->SetImage(ImageButton::STATE_NORMAL,
-                          rb.GetImageNamed(IDR_CLOSE).ToImageSkia());
-  image_button_->SetImage(ImageButton::STATE_HOVERED,
-                          rb.GetImageNamed(IDR_CLOSE_H).ToImageSkia());
-  image_button_->SetImage(ImageButton::STATE_PRESSED,
-                          rb.GetImageNamed(IDR_CLOSE_P).ToImageSkia());
+  image_button_->SetImageModel(ImageButton::STATE_NORMAL,
+                               ui::ImageModel::FromResourceId(IDR_CLOSE));
+  image_button_->SetImageModel(ImageButton::STATE_HOVERED,
+                               ui::ImageModel::FromResourceId(IDR_CLOSE_H));
+  image_button_->SetImageModel(ImageButton::STATE_PRESSED,
+                               ui::ImageModel::FromResourceId(IDR_CLOSE_P));
 
   container->AddChildView(std::move(view));
 }

@@ -709,10 +709,11 @@ void HomeButton::CreateQuickAppButton() {
 
   quick_app_button_->SetPaintToLayer();
   quick_app_button_->layer()->SetFillsBoundsOpaquely(false);
-  quick_app_button_->SetImage(
+  quick_app_button_->SetImageModel(
       views::Button::STATE_NORMAL,
-      AppListModelProvider::Get()->quick_app_access_model()->GetAppIcon(
-          preferred_size));
+      ui::ImageModel::FromImageSkia(
+          AppListModelProvider::Get()->quick_app_access_model()->GetAppIcon(
+              preferred_size)));
   views::HighlightPathGenerator::Install(
       quick_app_button_,
       std::make_unique<views::RoundRectHighlightPathGenerator>(
@@ -1003,10 +1004,11 @@ void HomeButton::OnQuickAppIconChanged() {
   }
 
   const int control_size = ShelfControlButton::CalculatePreferredSize().width();
-  quick_app_button_->SetImage(
+  quick_app_button_->SetImageModel(
       views::Button::STATE_NORMAL,
-      AppListModelProvider::Get()->quick_app_access_model()->GetAppIcon(
-          gfx::Size(control_size, control_size)));
+      ui::ImageModel::FromImageSkia(
+          AppListModelProvider::Get()->quick_app_access_model()->GetAppIcon(
+              gfx::Size(control_size, control_size))));
 }
 
 void HomeButton::AnimateQuickAppButtonIn() {

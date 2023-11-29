@@ -769,19 +769,19 @@ void SearchBoxView::OnThemeChanged() {
 
   const SkColor button_icon_color =
       GetColorProvider()->GetColor(kColorAshButtonIconColor);
-  close_button()->SetImage(
+  close_button()->SetImageModel(
       views::ImageButton::STATE_NORMAL,
-      gfx::CreateVectorIcon(views::kIcCloseIcon, GetSearchBoxIconSize(),
-                            button_icon_color));
-  assistant_button()->SetImage(
+      ui::ImageModel::FromVectorIcon(views::kIcCloseIcon, button_icon_color,
+                                     GetSearchBoxIconSize()));
+  assistant_button()->SetImageModel(
       views::ImageButton::STATE_NORMAL,
-      gfx::CreateVectorIcon(chromeos::kAssistantIcon, GetSearchBoxIconSize(),
-                            button_icon_color));
+      ui::ImageModel::FromVectorIcon(
+          chromeos::kAssistantIcon, button_icon_color, GetSearchBoxIconSize()));
   if (filter_button()) {
-    filter_button()->SetImage(
+    filter_button()->SetImageModel(
         views::ImageButton::STATE_NORMAL,
-        gfx::CreateVectorIcon(kFilterIcon, GetSearchBoxIconSize(),
-                              button_icon_color));
+        ui::ImageModel::FromVectorIcon(kFilterIcon, button_icon_color,
+                                       GetSearchBoxIconSize()));
   }
   auto* focus_ring = views::FocusRing::Get(assistant_button());
   focus_ring->SetOutsetFocusRingDisabled(true);

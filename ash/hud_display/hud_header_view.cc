@@ -73,9 +73,10 @@ class SettingsButton : public views::ImageButton {
 
   explicit SettingsButton(views::Button::PressedCallback callback)
       : views::ImageButton(callback) {
-    SetImage(views::Button::ButtonState::STATE_NORMAL,
-             gfx::CreateVectorIcon(vector_icons::kSettingsIcon,
-                                   kHUDSettingsIconSize, kHUDDefaultColor));
+    SetImageModel(
+        views::Button::ButtonState::STATE_NORMAL,
+        ui::ImageModel::FromVectorIcon(vector_icons::kSettingsIcon,
+                                       kHUDDefaultColor, kHUDSettingsIconSize));
     SetBorder(views::CreateEmptyBorder(kHUDSettingsIconBorder));
     SetProperty(kHUDClickHandler, HTCLIENT);
 

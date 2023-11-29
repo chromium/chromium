@@ -145,9 +145,10 @@ void WindowPreview::OnThemeChanged() {
   // The background is not opaque, so we can't do subpixel rendering.
   title_->SetSubpixelRenderingEnabled(false);
 
-  close_button_->SetImage(
+  close_button_->SetImageModel(
       views::Button::STATE_NORMAL,
-      gfx::CreateVectorIcon(kOverviewWindowCloseIcon, kCloseButtonColor));
+      ui::ImageModel::FromVectorIcon(kOverviewWindowCloseIcon,
+                                     kCloseButtonColor));
   close_button_->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   close_button_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
   close_button_->SetMinimumImageSize(

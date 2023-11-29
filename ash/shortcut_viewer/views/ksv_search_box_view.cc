@@ -97,9 +97,10 @@ void KSVSearchBoxView::OnKeyEvent(ui::KeyEvent* event) {
 void KSVSearchBoxView::OnThemeChanged() {
   ash::SearchBoxViewBase::OnThemeChanged();
 
-  close_button()->SetImage(
+  close_button()->SetImageModel(
       views::ImageButton::STATE_NORMAL,
-      gfx::CreateVectorIcon(ash::kKsvSearchCloseIcon, GetCloseButtonColor()));
+      ui::ImageModel::FromVectorIcon(ash::kKsvSearchCloseIcon,
+                                     GetCloseButtonColor()));
   search_box()->SetBackgroundColor(SK_ColorTRANSPARENT);
   search_box()->SetColor(GetPrimaryTextColor());
   search_box()->set_placeholder_text_color(GetPlaceholderTextColor());

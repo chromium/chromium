@@ -252,8 +252,8 @@ class ClassRegistration<ImageButton> : public BaseClassRegistration {
   ~ClassRegistration() override = default;
   std::unique_ptr<View> CreateView() override {
     return Builder<ImageButton>()
-        .SetImage(Button::ButtonState::STATE_NORMAL,
-                  gfx::CreateVectorIcon(kPinIcon, ui::kColorIcon))
+        .SetImageModel(Button::ButtonState::STATE_NORMAL,
+                       ui::ImageModel::FromVectorIcon(kPinIcon, ui::kColorIcon))
         .SetAccessibleName(
             l10n_util::GetStringUTF16(IDS_DESIGNER_IMAGEBUTTON_NAME))
         .Build();

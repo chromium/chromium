@@ -191,7 +191,8 @@ void SearchResultImageView::OnMetadataChanged() {
         image, skia::ImageOperations::RESIZE_BEST, GetContentsBounds().size());
   }
 
-  result_image_->SetImage(views::Button::STATE_NORMAL, image);
+  result_image_->SetImageModel(views::Button::STATE_NORMAL,
+                               ui::ImageModel::FromImageSkia(image));
   SetTooltipText(result()->title());
 }
 

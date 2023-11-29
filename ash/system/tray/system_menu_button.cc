@@ -31,8 +31,8 @@ SystemMenuButton::SystemMenuButton(PressedCallback callback,
   DCHECK_EQ(normal_icon.width(), disabled_icon.width());
   DCHECK_EQ(normal_icon.height(), disabled_icon.height());
 
-  SetImage(STATE_NORMAL, normal_icon);
-  SetImage(STATE_DISABLED, disabled_icon);
+  SetImageModel(STATE_NORMAL, ui::ImageModel::FromImageSkia(normal_icon));
+  SetImageModel(STATE_DISABLED, ui::ImageModel::FromImageSkia(disabled_icon));
 
   SetImageHorizontalAlignment(ALIGN_CENTER);
   SetImageVerticalAlignment(ALIGN_MIDDLE);
@@ -60,11 +60,11 @@ SystemMenuButton::SystemMenuButton(PressedCallback callback,
 void SystemMenuButton::SetVectorIcon(const gfx::VectorIcon& icon) {
   const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kButtonIconColor);
-  SetImage(views::Button::STATE_NORMAL,
-           gfx::CreateVectorIcon(icon, icon_color));
-  SetImage(
-      views::Button::STATE_DISABLED,
-      gfx::CreateVectorIcon(icon, ColorUtil::GetDisabledColor(icon_color)));
+  SetImageModel(views::Button::STATE_NORMAL,
+                ui::ImageModel::FromVectorIcon(icon, icon_color));
+  SetImageModel(views::Button::STATE_DISABLED,
+                ui::ImageModel::FromVectorIcon(
+                    icon, ColorUtil::GetDisabledColor(icon_color)));
 }
 
 SystemMenuButton::~SystemMenuButton() = default;

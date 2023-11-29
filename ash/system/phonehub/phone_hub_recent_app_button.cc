@@ -27,10 +27,12 @@ PhoneHubRecentAppButton::PhoneHubRecentAppButton(
     const std::u16string& visible_app_name,
     PressedCallback callback)
     : views::ImageButton(callback) {
-  SetImage(views::Button::STATE_NORMAL,
-           gfx::ImageSkiaOperations::CreateResizedImage(
-               icon.AsImageSkia(), skia::ImageOperations::RESIZE_BEST,
-               gfx::Size(kRecentAppButtonSize, kRecentAppButtonSize)));
+  SetImageModel(
+      views::Button::STATE_NORMAL,
+      ui::ImageModel::FromImageSkia(
+          gfx::ImageSkiaOperations::CreateResizedImage(
+              icon.AsImageSkia(), skia::ImageOperations::RESIZE_BEST,
+              gfx::Size(kRecentAppButtonSize, kRecentAppButtonSize))));
   SetImageHorizontalAlignment(ALIGN_CENTER);
   SetImageVerticalAlignment(ALIGN_MIDDLE);
   StyleUtil::SetUpInkDropForButton(this);

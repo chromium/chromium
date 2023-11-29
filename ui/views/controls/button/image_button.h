@@ -37,15 +37,6 @@ class VIEWS_EXPORT ImageButton : public Button {
   // Returns the image for a given |state|.
   virtual gfx::ImageSkia GetImage(ButtonState state) const;
 
-  // Set the image the button should use for the provided state.
-  void SetImage(ButtonState state, const gfx::ImageSkia* image);
-
-  // As above, but takes a const ref. TODO(estade): all callers should be
-  // updated to use this version, and then the implementations can be
-  // consolidated.
-  // TODO(http://crbug.com/1100034) prefer SetImageModel over SetImage().
-  void SetImage(ButtonState state, const gfx::ImageSkia& image);
-
   virtual void SetImageModel(ButtonState state,
                              const ui::ImageModel& image_model);
 
@@ -132,12 +123,6 @@ VIEW_BUILDER_PROPERTY(ImageButton::HorizontalAlignment,
                       ImageHorizontalAlignment)
 VIEW_BUILDER_PROPERTY(ImageButton::VerticalAlignment, ImageVerticalAlignment)
 VIEW_BUILDER_PROPERTY(gfx::Size, MinimumImageSize)
-VIEW_BUILDER_OVERLOAD_METHOD(SetImage,
-                             Button::ButtonState,
-                             const gfx::ImageSkia*)
-VIEW_BUILDER_OVERLOAD_METHOD(SetImage,
-                             Button::ButtonState,
-                             const gfx::ImageSkia&)
 VIEW_BUILDER_METHOD(SetImageModel, Button::ButtonState, const ui::ImageModel&)
 
 END_VIEW_BUILDER

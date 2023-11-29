@@ -409,19 +409,21 @@ void QuickAnswersView::OnThemeChanged() {
   SetBackground(views::CreateSolidBackground(
       GetColorProvider()->GetColor(ui::kColorPrimaryBackground)));
   if (settings_button_) {
-    settings_button_->SetImage(
+    settings_button_->SetImageModel(
         views::Button::ButtonState::STATE_NORMAL,
-        gfx::CreateVectorIcon(
-            vector_icons::kSettingsOutlineIcon, kSettingsButtonSizeDip,
-            GetColorProvider()->GetColor(ui::kColorIconSecondary)));
+        ui::ImageModel::FromVectorIcon(
+            vector_icons::kSettingsOutlineIcon,
+            GetColorProvider()->GetColor(ui::kColorIconSecondary),
+            kSettingsButtonSizeDip));
   }
 
   if (dogfood_feedback_button_) {
-    dogfood_feedback_button_->SetImage(
+    dogfood_feedback_button_->SetImageModel(
         views::Button::ButtonState::STATE_NORMAL,
-        gfx::CreateVectorIcon(
-            vector_icons::kDogfoodIcon, kDogfoodButtonSizeDip,
-            GetColorProvider()->GetColor(ui::kColorIconSecondary)));
+        ui::ImageModel::FromVectorIcon(
+            vector_icons::kDogfoodIcon,
+            GetColorProvider()->GetColor(ui::kColorIconSecondary),
+            kDogfoodButtonSizeDip));
   }
 }
 
@@ -611,11 +613,12 @@ void QuickAnswersView::AddPhoneticsAudioButton(
       phonetics_audio_view->AddChildView(std::make_unique<views::ImageButton>(
           base::BindRepeating(&QuickAnswersView::OnPhoneticsAudioButtonPressed,
                               base::Unretained(this), phonetics_info)));
-  phonetics_audio_button_->SetImage(
+  phonetics_audio_button_->SetImageModel(
       views::Button::ButtonState::STATE_NORMAL,
-      gfx::CreateVectorIcon(
-          vector_icons::kVolumeUpIcon, kPhoneticsAudioButtonSizeDip,
-          GetColorProvider()->GetColor(ui::kColorButtonBackgroundProminent)));
+      ui::ImageModel::FromVectorIcon(
+          vector_icons::kVolumeUpIcon,
+          GetColorProvider()->GetColor(ui::kColorButtonBackgroundProminent),
+          kPhoneticsAudioButtonSizeDip));
   phonetics_audio_button_->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_QUICK_ANSWERS_PHONETICS_BUTTON_TOOLTIP_TEXT));
   phonetics_audio_button_->SetBorder(

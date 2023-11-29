@@ -153,7 +153,8 @@ void MediaControlsHeaderView::UpdateCloseButtonVisibility() {
         close_button_, vector_icons::kCloseRoundedIcon, kCloseButtonIconSize,
         color, disabled_color);
   } else {
-    close_button_->SetImage(views::Button::ButtonState::STATE_NORMAL, nullptr);
+    close_button_->SetImageModel(views::Button::ButtonState::STATE_NORMAL,
+                                 ui::ImageModel());
   }
 }
 

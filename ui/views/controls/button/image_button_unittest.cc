@@ -62,7 +62,8 @@ TEST_F(ImageButtonTest, Basics) {
 
   // Set a normal image.
   gfx::ImageSkia normal_image = CreateTestImage(10, 20);
-  button.SetImage(Button::STATE_NORMAL, &normal_image);
+  button.SetImageModel(Button::STATE_NORMAL,
+                       ui::ImageModel::FromImageSkia(normal_image));
 
   // Image uses normal image for painting.
   EXPECT_FALSE(button.GetImageToPaint().isNull());
@@ -74,7 +75,8 @@ TEST_F(ImageButtonTest, Basics) {
 
   // Set a pushed image.
   gfx::ImageSkia pushed_image = CreateTestImage(11, 21);
-  button.SetImage(Button::STATE_PRESSED, &pushed_image);
+  button.SetImageModel(Button::STATE_PRESSED,
+                       ui::ImageModel::FromImageSkia(pushed_image));
 
   // By convention, preferred size doesn't change, even though pushed image
   // is bigger.
@@ -106,8 +108,10 @@ TEST_F(ImageButtonTest, SetAndGetImage) {
   // Setting images works as expected.
   gfx::ImageSkia image1 = CreateTestImage(10, 11);
   gfx::ImageSkia image2 = CreateTestImage(20, 21);
-  button.SetImage(Button::STATE_NORMAL, &image1);
-  button.SetImage(Button::STATE_HOVERED, &image2);
+  button.SetImageModel(Button::STATE_NORMAL,
+                       ui::ImageModel::FromImageSkia(image1));
+  button.SetImageModel(Button::STATE_HOVERED,
+                       ui::ImageModel::FromImageSkia(image2));
   EXPECT_TRUE(
       button.GetImage(Button::STATE_NORMAL).BackedBySameObjectAs(image1));
   EXPECT_TRUE(
@@ -116,14 +120,15 @@ TEST_F(ImageButtonTest, SetAndGetImage) {
   EXPECT_TRUE(button.GetImage(Button::STATE_DISABLED).isNull());
 
   // ImageButton supports NULL image pointers.
-  button.SetImage(Button::STATE_NORMAL, nullptr);
+  button.SetImageModel(Button::STATE_NORMAL, ui::ImageModel());
   EXPECT_TRUE(button.GetImage(Button::STATE_NORMAL).isNull());
 }
 
 TEST_F(ImageButtonTest, ImagePositionWithBorder) {
   ImageButton button;
   gfx::ImageSkia image = CreateTestImage(20, 30);
-  button.SetImage(Button::STATE_NORMAL, &image);
+  button.SetImageModel(Button::STATE_NORMAL,
+                       ui::ImageModel::FromImageSkia(image));
 
   // The image should be painted at the top-left corner.
   EXPECT_EQ(gfx::Point(), button.ComputeImagePaintPosition(image));
@@ -152,7 +157,8 @@ TEST_F(ImageButtonTest, ImagePositionWithBorder) {
 TEST_F(ImageButtonTest, LeftAlignedMirrored) {
   ImageButton button;
   gfx::ImageSkia image = CreateTestImage(20, 30);
-  button.SetImage(Button::STATE_NORMAL, &image);
+  button.SetImageModel(Button::STATE_NORMAL,
+                       ui::ImageModel::FromImageSkia(image));
   button.SetBounds(0, 0, 50, 30);
   button.SetImageVerticalAlignment(ImageButton::ALIGN_BOTTOM);
   button.SetDrawImageMirrored(true);
@@ -165,7 +171,8 @@ TEST_F(ImageButtonTest, LeftAlignedMirrored) {
 TEST_F(ImageButtonTest, RightAlignedMirrored) {
   ImageButton button;
   gfx::ImageSkia image = CreateTestImage(20, 30);
-  button.SetImage(Button::STATE_NORMAL, &image);
+  button.SetImageModel(Button::STATE_NORMAL,
+                       ui::ImageModel::FromImageSkia(image));
   button.SetBounds(0, 0, 50, 30);
   button.SetImageHorizontalAlignment(ImageButton::ALIGN_RIGHT);
   button.SetImageVerticalAlignment(ImageButton::ALIGN_BOTTOM);
@@ -181,18 +188,22 @@ TEST_F(ImageButtonTest, PreferredSizeInvalidation) {
   ImageButton button;
   gfx::ImageSkia first_image = CreateTestImage(20, 30);
   gfx::ImageSkia second_image = CreateTestImage(50, 50);
-  button.SetImage(Button::STATE_NORMAL, &first_image);
+  button.SetImageModel(Button::STATE_NORMAL,
+                       ui::ImageModel::FromImageSkia(first_image));
   parent.AddChildView(&button);
   ASSERT_EQ(0, parent.pref_size_changed_calls());
 
-  button.SetImage(Button::STATE_NORMAL, &first_image);
+  button.SetImageModel(Button::STATE_NORMAL,
+                       ui::ImageModel::FromImageSkia(first_image));
   EXPECT_EQ(0, parent.pref_size_changed_calls());
 
-  button.SetImage(Button::STATE_HOVERED, &second_image);
+  button.SetImageModel(Button::STATE_HOVERED,
+                       ui::ImageModel::FromImageSkia(second_image));
   EXPECT_EQ(0, parent.pref_size_changed_calls());
 
   // Changing normal state image size leads to a change in preferred size.
-  button.SetImage(Button::STATE_NORMAL, &second_image);
+  button.SetImageModel(Button::STATE_NORMAL,
+                       ui::ImageModel::FromImageSkia(second_image));
   EXPECT_EQ(1, parent.pref_size_changed_calls());
 }
 
