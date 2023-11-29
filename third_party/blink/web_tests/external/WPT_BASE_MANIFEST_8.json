@@ -393547,11 +393547,11 @@
      []
     ],
     "elementwise_unary.https.any-expected.txt": [
-     "cbd3da2cbb9c589698dc83724fb6d6c577c2f17e",
+     "91bcbcf3d4dd23303f03c67167cb1a720da7484a",
      []
     ],
     "elementwise_unary.https.any.worker-expected.txt": [
-     "fb1253b8a3a80bc9c5bfe8b0faef102c67968f37",
+     "2fe086e8741e049e7e92a9ff32f5d30e4b3633a4",
      []
     ],
     "elu.https.any-expected.txt": [
@@ -393876,6 +393876,10 @@
        "e4216003c02f7fa8174d2d2734217477ca975407",
        []
       ],
+      "sqrt.json": [
+       "be9666590bdbe817988f3f80360cc90e8b805ea4",
+       []
+      ],
       "squeeze.json": [
        "88890fe87029ad9b8a120d40af6f40ed818d725a",
        []
@@ -393898,7 +393902,7 @@
       ]
      },
      "utils.js": [
-      "e7fb99469a113530c5fb3be400da185eda505564",
+      "1e31886c9c53fc81b567504fbd719c563ba656e6",
       []
      ]
     },
@@ -655192,7 +655196,7 @@
      ]
     ],
     "elementwise_unary.https.any.js": [
-     "1c8ae5fa8fc048638423d7b105011058028386bf",
+     "27902a406fb1bc32798f2504b7e9d7b6c28bc391",
      [
       "webnn/elementwise_unary.https.any.html",
       {
@@ -655703,7 +655707,7 @@
       ]
      ],
      "elementwise_unary.https.any.js": [
-      "98f18540f0e5d7114cca25bca2a04f68b122c409",
+      "eff4631552909676ea69ee2dbbd8048c66c98c9b",
       [
        "webnn/gpu/elementwise_unary.https.any.html",
        {
