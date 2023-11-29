@@ -303,6 +303,24 @@ void OobeMetricsHelper::RecordGaiaSignInCompleted(
                                 variant);
 }
 
+void OobeMetricsHelper::RecordPreLoginOobeResume(OobeScreenId screen) {
+  for (auto& observer : observers_) {
+    observer.OnPreLoginOobeResumed(screen);
+  }
+}
+
+void OobeMetricsHelper::RecordOnboardingResume(OobeScreenId screen) {
+  for (auto& observer : observers_) {
+    observer.OnOnboardingResumed(screen);
+  }
+}
+
+void OobeMetricsHelper::RecordChoobeResume() {
+  for (auto& observer : observers_) {
+    observer.OnChoobeResumed();
+  }
+}
+
 void OobeMetricsHelper::RecordEnrollingUserType() {
   bool is_consumer = g_browser_process->local_state()->GetBoolean(
       prefs::kOobeIsConsumerSegment);

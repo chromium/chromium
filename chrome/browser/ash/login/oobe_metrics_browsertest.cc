@@ -16,9 +16,11 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/structured/test/structured_metrics_mixin.h"
 #include "chrome/browser/metrics/structured/test/test_structured_metrics_recorder.h"
+#include "chrome/browser/ui/webui/ash/login/choobe_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/consolidated_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/marketing_opt_in_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/theme_selection_screen_handler.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "components/metrics/structured/structured_events.h"
 #include "components/version_info/version_info.h"
@@ -32,6 +34,7 @@ namespace cros_events = metrics::structured::events::v2::cr_os_events;
 constexpr const char kConsolidatedConsnetAcceptedRegular[] = "AcceptedRegular";
 }  // namespace
 
+// TODO(b/305929689): Add tests for Pre-login OOBE resume metrics.
 // TODO(b/305929689): Introduce tests for the different values of
 // `metric_values`.
 class OobeMetricsTest : public OobeBaseTest {
@@ -46,6 +49,9 @@ class OobeMetricsTest : public OobeBaseTest {
     structured_metrics_recorder_->Initialize();
     LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
         true;
+
+    // Set a fake touchpad device to ensure that CHOOBE screen is shown.
+    test::SetFakeTouchpadDevice();
     OobeBaseTest::SetUpOnMainThread();
   }
 
@@ -72,6 +78,8 @@ class OobeMetricsTest : public OobeBaseTest {
   LoginManagerMixin login_manager_mixin_{&mixin_host_, {}, &fake_gaia_};
   std::unique_ptr<metrics::structured::TestStructuredMetricsRecorder>
       structured_metrics_recorder_;
+  AccountId user_{
+      AccountId::FromUserEmailGaiaId(test::kTestEmail, test::kTestGaiaId)};
 
  private:
   FakeGaiaMixin fake_gaia_{&mixin_host_};
@@ -193,6 +201,44 @@ IN_PROC_BROWSER_TEST_F(OobeMetricsTest, SignInEvents) {
       .SetIsOwnerUser(false)
       .SetChromeMilestone(version_info::GetMajorVersionNumberAsInt());
   ValidateEventRecorded(signin_completed_event);
+}
+
+IN_PROC_BROWSER_TEST_F(OobeMetricsTest, PRE_ResumeOnboarding) {
+  OobeScreenWaiter(UserCreationView::kScreenId).Wait();
+  LoginManagerMixin::TestUserInfo test_user(user_);
+  login_manager_mixin_.LoginWithDefaultContext(test_user);
+  OobeScreenExitWaiter(GetFirstSigninScreen()).Wait();
+
+  WizardController::default_controller()->AdvanceToScreen(
+      ChoobeScreenView::kScreenId);
+  test::OobeJS().TapOnPath(
+      {"choobe", "screensList", "cr-button-theme-selection"});
+  test::OobeJS().TapOnPath({"choobe", "nextButton"});
+}
+
+IN_PROC_BROWSER_TEST_F(OobeMetricsTest, ResumeOnboarding) {
+  login_manager_mixin_.LoginAsNewRegularUser();
+  OobeScreenWaiter(ThemeSelectionScreenView::kScreenId).Wait();
+
+  cros_events::OOBE_OnboardingResumed onboarding_resumed_event;
+  onboarding_resumed_event
+      .SetPendingPageId(ThemeSelectionScreenView::kScreenId.name)
+      .SetIsFlexFlow(false)
+      .SetIsDemoModeFlow(false)
+      .SetIsEphemeralOrMGS(false)
+      .SetIsFirstOnboarding(false)
+      .SetIsOwnerUser(true)
+      .SetChromeMilestone(version_info::GetMajorVersionNumberAsInt());
+  ValidateEventRecorded(onboarding_resumed_event);
+
+  cros_events::OOBE_ChoobeResumed choobe_resumed_event;
+  choobe_resumed_event.SetIsFlexFlow(false)
+      .SetIsDemoModeFlow(false)
+      .SetIsEphemeralOrMGS(false)
+      .SetIsFirstOnboarding(false)
+      .SetIsOwnerUser(true)
+      .SetChromeMilestone(version_info::GetMajorVersionNumberAsInt());
+  ValidateEventRecorded(choobe_resumed_event);
 }
 
 class FirstUserOobeMetricsTest : public OobeMetricsTest {

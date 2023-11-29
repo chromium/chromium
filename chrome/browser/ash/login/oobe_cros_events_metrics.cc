@@ -191,4 +191,39 @@ void OobeCrosEventsMetrics::OnGaiaSignInCompleted(
       .Record();
 }
 
+void OobeCrosEventsMetrics::OnPreLoginOobeResumed(OobeScreenId screen) {
+  cros_events::OOBE_PreLoginOobeResumed()
+      .SetPendingPageId(screen.name)
+      .SetIsFlexFlow(IsFlexFlow())
+      .SetIsDemoModeFlow(IsDemoModeFlow())
+      .SetIsOwnerUser(IsOwnerUser())
+      .SetIsEphemeralOrMGS(IsEphemeralOrMGS())
+      .SetIsFirstOnboarding(IsFirstOnboarding())
+      .SetChromeMilestone(version_info::GetMajorVersionNumberAsInt())
+      .Record();
+}
+
+void OobeCrosEventsMetrics::OnOnboardingResumed(OobeScreenId screen) {
+  cros_events::OOBE_OnboardingResumed()
+      .SetPendingPageId(screen.name)
+      .SetIsFlexFlow(IsFlexFlow())
+      .SetIsDemoModeFlow(IsDemoModeFlow())
+      .SetIsOwnerUser(IsOwnerUser())
+      .SetIsEphemeralOrMGS(IsEphemeralOrMGS())
+      .SetIsFirstOnboarding(IsFirstOnboarding())
+      .SetChromeMilestone(version_info::GetMajorVersionNumberAsInt())
+      .Record();
+}
+
+void OobeCrosEventsMetrics::OnChoobeResumed() {
+  cros_events::OOBE_ChoobeResumed()
+      .SetIsFlexFlow(IsFlexFlow())
+      .SetIsDemoModeFlow(IsDemoModeFlow())
+      .SetIsOwnerUser(IsOwnerUser())
+      .SetIsEphemeralOrMGS(IsEphemeralOrMGS())
+      .SetIsFirstOnboarding(IsFirstOnboarding())
+      .SetChromeMilestone(version_info::GetMajorVersionNumberAsInt())
+      .Record();
+}
+
 }  // namespace ash

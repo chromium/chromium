@@ -32,6 +32,9 @@ class OobeCrosEventsMetrics : public OobeMetricsHelper::Observer {
                       const std::string& exit_reason) override;
   void OnGaiaSignInRequested(GaiaView::GaiaLoginVariant variant) override;
   void OnGaiaSignInCompleted(GaiaView::GaiaLoginVariant variant) override;
+  void OnPreLoginOobeResumed(OobeScreenId screen) override;
+  void OnOnboardingResumed(OobeScreenId screen) override;
+  void OnChoobeResumed() override;
 };
 
 }  // namespace ash

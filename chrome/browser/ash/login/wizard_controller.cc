@@ -505,8 +505,12 @@ void WizardController::ContinueOobeFlow() {
   // Use the saved screen preference from Local State if exist.
   const std::string screen_pref =
       GetLocalState()->GetString(prefs::kOobeScreenPending);
-  if (!screen_pref.empty() && HasScreen(PrefToScreenId(screen_pref))) {
-    AdvanceToScreen(PrefToScreenId(screen_pref));
+  const OobeScreenId screen_id = PrefToScreenId(screen_pref);
+  GetLoginDisplayHost()->GetOobeMetricsHelper()->RecordPreLoginOobeResume(
+      screen_id);
+
+  if (!screen_pref.empty() && HasScreen(screen_id)) {
+    AdvanceToScreen(screen_id);
   } else {
     ShowPackagedLicenseScreen();
   }

@@ -552,10 +552,12 @@ void LoginDisplayHostCommon::StartUserOnboarding() {
 
 void LoginDisplayHostCommon::ResumeUserOnboarding(const PrefService& prefs,
                                                   OobeScreenId screen_id) {
+  oobe_metrics_helper_->RecordOnboardingResume(screen_id);
   SetScreenAfterManagedTos(screen_id);
 
   if (features::IsOobeChoobeEnabled()) {
     if (ChoobeFlowController::ShouldResumeChoobe(prefs)) {
+      oobe_metrics_helper_->RecordChoobeResume();
       GetWizardController()->CreateChoobeFlowController();
       GetWizardController()->choobe_flow_controller()->ResumeChoobe(prefs);
     }
