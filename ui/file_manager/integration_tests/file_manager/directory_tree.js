@@ -583,3 +583,23 @@ testcase.directoryTreeExpandAndSelectedOnDragMove = async () => {
       appId, '/My files/Downloads/aaa');
   await directoryTree.waitForSelectedItemByLabel('aaa');
 };
+
+
+/**
+ * When My Drive is active, clicking Google Drive shouldn't change the current
+ * directory.
+ */
+testcase.directoryTreeClickDriveRootWhenMyDriveIsActive = async () => {
+  // Open Files app.
+  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, []);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.waitForSelectedItemByLabel('My Drive');
+
+  // Select Google Drive.
+  await directoryTree.selectItemByLabel('Google Drive');
+
+  // My Drive should still be selected.
+  await directoryTree.waitForSelectedItemByLabel('My Drive');
+  // Current directory is still My Drive, not Google Drive.
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/My Drive');
+};

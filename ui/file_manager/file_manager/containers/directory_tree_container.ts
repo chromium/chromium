@@ -957,8 +957,18 @@ export class DirectoryTreeContainer {
             // If Drive fake root is selected and it has Drive volume inside, we
             // expand it and go to the My Drive (1st child) directly.
             element.expanded = true;
-            this.store_.dispatch(
-                changeDirectory({toKey: fileData.children[0]!}));
+            const myDriveKey = fileData.children[0]!;
+            const isMyDriveActive = this.isCurrentDirectoryActive_(myDriveKey);
+            // If My Drive is already active, dispatching the changeDirectory
+            // below with STARTED status won't trigger a SUCCESS status in
+            // DirectoryModel because toKey is the same with the current
+            // directory key in the store. As we rely on the SUCCESS status to
+            // decide which tree item to select, we need to dispatch a SUCCESS
+            // status changeDirectory action in this case.
+            this.store_.dispatch(changeDirectory({
+              toKey: myDriveKey,
+              status: isMyDriveActive ? PropStatus.SUCCESS : PropStatus.STARTED,
+            }));
           }
           return;
         }
