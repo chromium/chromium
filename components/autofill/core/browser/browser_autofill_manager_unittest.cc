@@ -32,12 +32,12 @@
 #include "build/chromeos_buildflags.h"
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/autofill_compose_delegate.h"
-#include "components/autofill/core/browser/autofill_download_manager.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
+#include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
@@ -294,16 +294,17 @@ class MockAutofillClient : public TestAutofillClient {
   MOCK_METHOD(AutofillComposeDelegate*, GetComposeDelegate, (), (override));
 };
 
-class MockAutofillDownloadManager : public AutofillDownloadManager {
+class MockAutofillCrowdsourcingManager : public AutofillCrowdsourcingManager {
  public:
-  explicit MockAutofillDownloadManager(AutofillClient* client)
-      : AutofillDownloadManager(client,
-                                /*api_key=*/"",
-                                /*log_manager=*/nullptr) {}
+  explicit MockAutofillCrowdsourcingManager(AutofillClient* client)
+      : AutofillCrowdsourcingManager(client,
+                                     /*api_key=*/"",
+                                     /*log_manager=*/nullptr) {}
 
-  MockAutofillDownloadManager(const MockAutofillDownloadManager&) = delete;
-  MockAutofillDownloadManager& operator=(const MockAutofillDownloadManager&) =
+  MockAutofillCrowdsourcingManager(const MockAutofillCrowdsourcingManager&) =
       delete;
+  MockAutofillCrowdsourcingManager& operator=(
+      const MockAutofillCrowdsourcingManager&) = delete;
 
   MOCK_METHOD(bool,
               StartUploadRequest,
@@ -632,8 +633,8 @@ class BrowserAutofillManagerTest : public testing::Test {
     ON_CALL(*single_field_form_fill_router(), OnGetSingleFieldSuggestions)
         .WillByDefault(Return(true));
 
-    autofill_client_.set_download_manager(
-        std::make_unique<MockAutofillDownloadManager>(&autofill_client_));
+    autofill_client_.set_crowdsourcing_manager(
+        std::make_unique<MockAutofillCrowdsourcingManager>(&autofill_client_));
 
     browser_autofill_manager_->set_touch_to_fill_delegate(
         std::make_unique<NiceMock<MockTouchToFillDelegate>>());
@@ -1193,9 +1194,9 @@ class BrowserAutofillManagerTest : public testing::Test {
   }
 
  protected:
-  MockAutofillDownloadManager* download_manager() {
-    return static_cast<MockAutofillDownloadManager*>(
-        autofill_client_.GetDownloadManager());
+  MockAutofillCrowdsourcingManager* crowdsourcing_manager() {
+    return static_cast<MockAutofillCrowdsourcingManager*>(
+        autofill_client_.GetCrowdsourcingManager());
   }
   TestAutofillExternalDelegate* external_delegate() {
     return static_cast<TestAutofillExternalDelegate*>(
@@ -1406,7 +1407,7 @@ TEST_F(BrowserAutofillManagerTest, OnFormsSeen_DifferentFormStructures) {
   FormsSeen({form});
   histogram_tester.ExpectUniqueSample("Autofill.UserHappiness",
                                       0 /* FORMS_LOADED */, 1);
-  download_manager()->VerifyLastQueriedForms({form});
+  crowdsourcing_manager()->VerifyLastQueriedForms({form});
 
   // Different form structure.
   FormData form2;
@@ -1425,7 +1426,7 @@ TEST_F(BrowserAutofillManagerTest, OnFormsSeen_DifferentFormStructures) {
   FormsSeen({form2});
   histogram_tester.ExpectUniqueSample("Autofill.UserHappiness",
                                       0 /* FORMS_LOADED */, 2);
-  download_manager()->VerifyLastQueriedForms({form2});
+  crowdsourcing_manager()->VerifyLastQueriedForms({form2});
 }
 
 // Tests that only fields from `field_types_to_fill` are filled.
@@ -3569,7 +3570,7 @@ TEST_F(BrowserAutofillManagerTest,
     FormsSeen({form});
     histogram_tester.ExpectUniqueSample("Autofill.UserHappiness",
                                         0 /* FORMS_LOADED */, 1);
-    download_manager()->VerifyLastQueriedForms({form});
+    crowdsourcing_manager()->VerifyLastQueriedForms({form});
   }
 }
 
@@ -10738,7 +10739,7 @@ class BrowserAutofillManagerVotingTest : public BrowserAutofillManagerTest {
     BrowserAutofillManagerTest::SetUp();
 
     // All uploads should be expected explicitly.
-    EXPECT_CALL(*download_manager(), StartUploadRequest).Times(0);
+    EXPECT_CALL(*crowdsourcing_manager(), StartUploadRequest).Times(0);
 
     form_.name = u"MyForm";
     form_.url = GURL("https://myform.com/form.html");
@@ -10775,7 +10776,7 @@ TEST_F(BrowserAutofillManagerVotingTest, Submission) {
 
   // Ensure that vote is submitted after form submission.
   EXPECT_CALL(
-      *download_manager(),
+      *crowdsourcing_manager(),
       StartUploadRequest(AllOf(SignatureIs(CalculateFormSignature(form_)),
                                UploadedAutofillTypesAre(expected_vote_types)),
                          _, _, _, /*observed_submission=*/true, _, _))
@@ -10808,7 +10809,7 @@ TEST_F(BrowserAutofillManagerVotingTest, DynamicFormSubmission) {
         ServerFieldType::NAME_LAST_SECOND}},
   };
   EXPECT_CALL(
-      *download_manager(),
+      *crowdsourcing_manager(),
       StartUploadRequest(AllOf(SignatureIs(first_form_signature),
                                UploadedAutofillTypesAre(expected_vote_types)),
                          _, _, _, /*observed_submission=*/false, _, _))
@@ -10833,7 +10834,7 @@ TEST_F(BrowserAutofillManagerVotingTest, DynamicFormSubmission) {
       {u"zip", {ServerFieldType::EMPTY_TYPE}},
   };
   EXPECT_CALL(
-      *download_manager(),
+      *crowdsourcing_manager(),
       StartUploadRequest(AllOf(SignatureIs(second_form_signature),
                                UploadedAutofillTypesAre(expected_vote_types)),
                          _, _, _,
@@ -10853,7 +10854,7 @@ TEST_F(BrowserAutofillManagerVotingTest, BlurVoteOnNavigation) {
       {u"lastname", {ServerFieldType::EMPTY_TYPE}},
   };
   EXPECT_CALL(
-      *download_manager(),
+      *crowdsourcing_manager(),
       StartUploadRequest(AllOf(SignatureIs(CalculateFormSignature(form_)),
                                UploadedAutofillTypesAre(expected_vote_types)),
                          _, _, _, /*observed_submission=*/false, _, _))
@@ -10880,7 +10881,7 @@ TEST_F(BrowserAutofillManagerVotingTest, NoBlurVoteOnSubmission) {
   browser_autofill_manager_->OnFocusNoLongerOnForm(true);
 
   EXPECT_CALL(
-      *download_manager(),
+      *crowdsourcing_manager(),
       StartUploadRequest(AllOf(SignatureIs(CalculateFormSignature(form_)),
                                UploadedAutofillTypesAre(expected_vote_types)),
                          _, _, _, /*observed_submission=*/true, _, _))

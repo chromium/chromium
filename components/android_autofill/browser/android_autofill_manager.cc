@@ -165,7 +165,7 @@ void AndroidAutofillManager::OnFormProcessed(
 
 void AndroidAutofillManager::OnServerRequestError(
     FormSignature form_signature,
-    AutofillDownloadManager::RequestType request_type,
+    AutofillCrowdsourcingManager::RequestType request_type,
     int http_error) {
   if (auto* provider = GetAutofillProvider())
     provider->OnServerQueryRequestError(this, form_signature);

@@ -19,8 +19,8 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_download_manager.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/randomized_encoder.h"
@@ -151,15 +151,17 @@ class MockPasswordManagerDriver : public StubPasswordManagerDriver {
   MOCK_METHOD(bool, IsInPrimaryMainFrame, (), (const, override));
 };
 
-class MockAutofillDownloadManager : public autofill::AutofillDownloadManager {
+class MockAutofillCrowdsourcingManager
+    : public autofill::AutofillCrowdsourcingManager {
  public:
-  MockAutofillDownloadManager()
-      : AutofillDownloadManager(nullptr,
-                                version_info::Channel::UNKNOWN,
-                                nullptr) {}
-  MockAutofillDownloadManager(const MockAutofillDownloadManager&) = delete;
-  MockAutofillDownloadManager& operator=(const MockAutofillDownloadManager&) =
+  MockAutofillCrowdsourcingManager()
+      : AutofillCrowdsourcingManager(nullptr,
+                                     version_info::Channel::UNKNOWN,
+                                     nullptr) {}
+  MockAutofillCrowdsourcingManager(const MockAutofillCrowdsourcingManager&) =
       delete;
+  MockAutofillCrowdsourcingManager& operator=(
+      const MockAutofillCrowdsourcingManager&) = delete;
 
   MOCK_METHOD(bool,
               StartUploadRequest,
@@ -176,8 +178,8 @@ class MockAutofillDownloadManager : public autofill::AutofillDownloadManager {
 class MockPasswordManagerClient : public StubPasswordManagerClient {
  public:
   MOCK_METHOD(bool, IsOffTheRecord, (), (const, override));
-  MOCK_METHOD(autofill::AutofillDownloadManager*,
-              GetAutofillDownloadManager,
+  MOCK_METHOD(autofill::AutofillCrowdsourcingManager*,
+              GetAutofillCrowdsourcingManager,
               (),
               (override));
   MOCK_METHOD(void, UpdateFormManagers, (), (override));
@@ -448,14 +450,14 @@ class PasswordFormManagerTest : public testing::Test,
     parsed_submitted_form_.password_value =
         submitted_form_.fields[kPasswordFieldIndex].value;
 
-    EXPECT_CALL(client_, GetAutofillDownloadManager())
-        .WillRepeatedly(Return(&mock_autofill_download_manager_));
+    EXPECT_CALL(client_, GetAutofillCrowdsourcingManager())
+        .WillRepeatedly(Return(&mock_autofill_crowdsourcing_manager_));
     ON_CALL(client_, GetPrefs()).WillByDefault(Return(&pref_service_));
     ON_CALL(client_, IsCommittedMainFrameSecure()).WillByDefault(Return(true));
     ON_CALL(*client_.GetPasswordFeatureManager(),
             ShouldShowAccountStorageBubbleUi)
         .WillByDefault(Return(true));
-    ON_CALL(mock_autofill_download_manager_, StartUploadRequest)
+    ON_CALL(mock_autofill_crowdsourcing_manager_, StartUploadRequest)
         .WillByDefault(Return(true));
     ON_CALL(*client_.GetPasswordFeatureManager(), GetDefaultPasswordStore)
         .WillByDefault(Return(PasswordForm::Store::kProfileStore));
@@ -488,7 +490,7 @@ class PasswordFormManagerTest : public testing::Test,
 
  protected:
   autofill::test::AutofillUnitTestEnvironment autofill_test_environment_;
-  MockAutofillDownloadManager mock_autofill_download_manager_;
+  MockAutofillCrowdsourcingManager mock_autofill_crowdsourcing_manager_;
   FormData observed_form_;
   FormData submitted_form_;
   FormData observed_form_only_password_fields_;
@@ -577,7 +579,7 @@ class PasswordFormManagerTest : public testing::Test,
           is_most_recent_single_username_candidate =
               autofill::IsMostRecentSingleUsernameCandidate::
                   kNotPartOfUsernameFirstFlow) {
-    EXPECT_CALL(mock_autofill_download_manager_,
+    EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
                 StartUploadRequest(
                     AllOf(SignatureIs(form_signature),
                           UploadedSingleUsernameVoteTypeIs(vote_type),
@@ -1224,12 +1226,12 @@ TEST_P(PasswordFormManagerTest, VotesUploadingOnPasswordUpdate) {
 
     testing::InSequence in_sequence;
     EXPECT_CALL(
-        mock_autofill_download_manager_,
+        mock_autofill_crowdsourcing_manager_,
         StartUploadRequest(UploadedAutofillTypesAre(expected_types), false, _,
                            _, true, nullptr, /*observer=*/IsNull()));
     if (expected_vote == autofill::NEW_PASSWORD) {
       // An unrelated |FIRST_USE| vote.
-      EXPECT_CALL(mock_autofill_download_manager_,
+      EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
                   StartUploadRequest(_, _, _, _, _, _, /*observer=*/IsNull()));
     }
 
@@ -1239,7 +1241,7 @@ TEST_P(PasswordFormManagerTest, VotesUploadingOnPasswordUpdate) {
       form_manager_->OnNoInteraction(true /* is_update */);
     else
       form_manager_->OnNopeUpdateClicked();
-    Mock::VerifyAndClearExpectations(&mock_autofill_download_manager_);
+    Mock::VerifyAndClearExpectations(&mock_autofill_crowdsourcing_manager_);
   }
 }
 
@@ -1297,7 +1299,7 @@ TEST_P(PasswordFormManagerTest, UsernameCorrectionVote) {
 
   testing::InSequence in_sequence;
   // Unrelated regular PASSWORD vote.
-  EXPECT_CALL(mock_autofill_download_manager_,
+  EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
               StartUploadRequest(_, _, _, _, _, _, _));
   std::map<std::u16string, autofill::ServerFieldType> expected_types;
   expected_types[saved_match_.all_alternative_usernames[0].name] =
@@ -1315,7 +1317,7 @@ TEST_P(PasswordFormManagerTest, UsernameCorrectionVote) {
        AutofillUploadContents::Field::USERNAME_OVERWRITTEN}};
 
   EXPECT_CALL(
-      mock_autofill_download_manager_,
+      mock_autofill_crowdsourcing_manager_,
       StartUploadRequest(
           AllOf(SignatureIs(CalculateFormSignature(saved_match_.form_data)),
                 UploadedAutofillTypesAre(expected_types),
@@ -1365,7 +1367,7 @@ TEST_P(PasswordFormManagerTest, CredentialsReusedVote) {
   // Credentials saved on the signup form were reused on a login form. The vote
   // applies to the first (signup) form.
   EXPECT_CALL(
-      mock_autofill_download_manager_,
+      mock_autofill_crowdsourcing_manager_,
       StartUploadRequest(
           AllOf(SignatureIs(CalculateFormSignature(saved_match_.form_data)),
                 VoteTypesAre(
@@ -1380,7 +1382,7 @@ TEST_P(PasswordFormManagerTest, CredentialsReusedVote) {
   // Saved credentials from the signup form were used for the first time on a
   // submitted form. The vote applies to the new form being submitted.
   EXPECT_CALL(
-      mock_autofill_download_manager_,
+      mock_autofill_crowdsourcing_manager_,
       StartUploadRequest(
           AllOf(SignatureIs(CalculateFormSignature(submitted_form_)),
                 VoteTypesAre({{submitted_form_.fields[kPasswordFieldIndex]
@@ -1433,7 +1435,7 @@ TEST_P(PasswordFormManagerTest, UpdateUsernameToAnotherFieldValue) {
   VoteTypeMap expected_vote_types = {
       {submitted_form_.fields[0].unique_renderer_id,
        AutofillUploadContents::Field::USERNAME_EDITED}};
-  EXPECT_CALL(mock_autofill_download_manager_,
+  EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
               StartUploadRequest(AllOf(UploadedAutofillTypesAre(expected_types),
                                        HasGenerationVote(false),
                                        VoteTypesAre(expected_vote_types)),
@@ -1476,7 +1478,7 @@ TEST_P(PasswordFormManagerTest, UpdatePasswordValueEmptyStore) {
 
   // TODO(https://crbug.com/928690): implement not sending incorrect votes and
   // check that StartUploadRequest is not called.
-  EXPECT_CALL(mock_autofill_download_manager_,
+  EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
               StartUploadRequest(_, _, _, _, _, _, /*observer=*/IsNull()))
       .Times(1);
   form_manager_->Save();
@@ -1519,7 +1521,7 @@ TEST_P(PasswordFormManagerTest, UpdatePasswordValueToUnknownValueFromPrompt) {
   // likely picked wrong. Make sure votes for password field and password
   // generation attributes are not uploaded.
   ServerFieldTypeSet expected_types = {autofill::USERNAME};
-  EXPECT_CALL(mock_autofill_download_manager_,
+  EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
               StartUploadRequest(HasPasswordAttributesVote(false), _,
                                  expected_types, _, _, _, _));
   form_manager_->Save();
@@ -1556,7 +1558,7 @@ TEST_P(PasswordFormManagerTest, UpdatePasswordValueMultiplePasswordFields) {
   expected_types[expected.password_element] = autofill::PASSWORD;
 
   EXPECT_CALL(
-      mock_autofill_download_manager_,
+      mock_autofill_crowdsourcing_manager_,
       StartUploadRequest(UploadedAutofillTypesAre(expected_types), false, _, _,
                          true, nullptr, /*observer=*/IsNull()));
 
@@ -2231,11 +2233,11 @@ TEST_P(PasswordFormManagerTest, PasswordRevealedVote) {
       form_manager_->OnPasswordsRevealed();
 
     EXPECT_CALL(
-        mock_autofill_download_manager_,
+        mock_autofill_crowdsourcing_manager_,
         StartUploadRequest(PasswordsWereRevealed(password_revealed), false, _,
                            _, true, nullptr, /*observer=*/IsNull()));
     form_manager_->Save();
-    Mock::VerifyAndClearExpectations(&mock_autofill_download_manager_);
+    Mock::VerifyAndClearExpectations(&mock_autofill_crowdsourcing_manager_);
   }
 }
 
@@ -2254,12 +2256,12 @@ TEST_P(PasswordFormManagerTest, GenerationUploadOnNoInteraction) {
     EXPECT_TRUE(
         form_manager_->ProvisionallySave(submitted_form_, &driver_, nullptr));
 
-    EXPECT_CALL(mock_autofill_download_manager_,
+    EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
                 StartUploadRequest(HasGenerationVote(true), false, _, _, true,
                                    nullptr, /*observer=*/IsNull()))
         .Times(generation_popup_shown ? 1 : 0);
     form_manager_->OnNoInteraction(false /*is_update */);
-    Mock::VerifyAndClearExpectations(&mock_autofill_download_manager_);
+    Mock::VerifyAndClearExpectations(&mock_autofill_crowdsourcing_manager_);
   }
 }
 
@@ -2278,12 +2280,12 @@ TEST_P(PasswordFormManagerTest, GenerationUploadOnNeverClicked) {
     EXPECT_TRUE(
         form_manager_->ProvisionallySave(submitted_form_, &driver_, nullptr));
 
-    EXPECT_CALL(mock_autofill_download_manager_,
+    EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
                 StartUploadRequest(HasGenerationVote(true), false, _, _, true,
                                    nullptr, /*observer=*/IsNull()))
         .Times(generation_popup_shown ? 1 : 0);
     form_manager_->OnNeverClicked();
-    Mock::VerifyAndClearExpectations(&mock_autofill_download_manager_);
+    Mock::VerifyAndClearExpectations(&mock_autofill_crowdsourcing_manager_);
   }
 }
 
@@ -2661,7 +2663,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowUsernameInThePasswordForm) {
   // Check that no SINGLE_USERNAME vote is sent (PASSWORD != SINGLE_USERNAME).
   auto expected_votes = ServerFieldTypeSet{autofill::PASSWORD};
   EXPECT_CALL(
-      mock_autofill_download_manager_,
+      mock_autofill_crowdsourcing_manager_,
       StartUploadRequest(SignatureIs(CalculateFormSignature(submitted_form)), _,
                          expected_votes, _, _, _, _));
   form_manager_->Save();
@@ -2716,7 +2718,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlow) {
 
     // Upload username first flow votes on the username form.
 #if !BUILDFLAG(IS_ANDROID)
-    EXPECT_CALL(mock_autofill_download_manager_,
+    EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
                 StartUploadRequest(SignatureIs(kSingleUsernameFormSignature),
                                    false, ServerFieldTypeSet{SINGLE_USERNAME},
                                    _, true, nullptr, /*observer=*/IsNull()));
@@ -2735,7 +2737,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlow) {
             : autofill::AutofillUploadContents::USERNAME_LIKE);
     expected_single_username_data.set_prompt_edit(
         autofill::AutofillUploadContents::EDITED_POSITIVE);
-    EXPECT_CALL(mock_autofill_download_manager_,
+    EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
                 StartUploadRequest(
                     AllOf(SignatureIs(CalculateFormSignature(submitted_form)),
                           UploadedSingleUsernameDataIs(
@@ -2745,7 +2747,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlow) {
     if (is_password_update) {
       // Expect another upload for first login votes. This upload is not related
       // to UFF, so it should not contain single username data.
-      EXPECT_CALL(mock_autofill_download_manager_,
+      EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
                   StartUploadRequest(SingleUsernameDataNotUploaded(), _, _, _,
                                      _, _, /*observer=*/IsNull()));
     }
@@ -2764,7 +2766,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlow) {
     histogram_tester.ExpectTotalCount(
         "PasswordManager.SingleUsername.PasswordFormHadUsernameField", 0);
 #endif
-    Mock::VerifyAndClearExpectations(&mock_autofill_download_manager_);
+    Mock::VerifyAndClearExpectations(&mock_autofill_crowdsourcing_manager_);
   }
 }
 
@@ -2799,7 +2801,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowWithPrefilledUsername) {
 
   // Upload username first flow vote on the single username form.
 #if !BUILDFLAG(IS_ANDROID)
-  EXPECT_CALL(mock_autofill_download_manager_,
+  EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
               StartUploadRequest(SignatureIs(kSingleUsernameFormSignature),
                                  false, ServerFieldTypeSet{SINGLE_USERNAME}, _,
                                  true, nullptr, /*observer=*/IsNull()));
@@ -2817,7 +2819,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowWithPrefilledUsername) {
   expected_single_username_data.set_prompt_edit(
       autofill::AutofillUploadContents::NOT_EDITED_POSITIVE);
   EXPECT_CALL(
-      mock_autofill_download_manager_,
+      mock_autofill_crowdsourcing_manager_,
       StartUploadRequest(
           AllOf(SignatureIs(CalculateFormSignature(submitted_form_)),
                 UploadedSingleUsernameDataIs({expected_single_username_data})),
@@ -2837,7 +2839,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowWithPrefilledUsername) {
   histogram_tester.ExpectTotalCount(
       "PasswordManager.SingleUsername.PasswordFormHadUsernameField", 0);
 #endif
-  Mock::VerifyAndClearExpectations(&mock_autofill_download_manager_);
+  Mock::VerifyAndClearExpectations(&mock_autofill_crowdsourcing_manager_);
 }
 
 // Tests that when the save/update prompt suggests single username value and the
@@ -2889,7 +2891,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowInFormOverruleVotes) {
   // Expect upload for the password form. This upload is unrelated to UFF: it
   // is a result of saving a new password on the password form.
   EXPECT_CALL(
-      mock_autofill_download_manager_,
+      mock_autofill_crowdsourcing_manager_,
       StartUploadRequest(SignatureIs(CalculateFormSignature(submitted_form_)),
                          _, _, _, _, _, _));
 
@@ -2949,7 +2951,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowPositiveInFormOverruleVote) {
   // Expect upload for the password form. This upload is unrelated to UFF: it
   // is a result of saving a new password on the password form.
   EXPECT_CALL(
-      mock_autofill_download_manager_,
+      mock_autofill_crowdsourcing_manager_,
       StartUploadRequest(SignatureIs(CalculateFormSignature(submitted_form_)),
                          _, _, _, _, _, _));
 
@@ -2995,7 +2997,7 @@ TEST_P(PasswordFormManagerTest,
   form_manager_->SaveSuggestedUsernameValueToVotesUploader();
 
   // Expect no upload on single text field.
-  EXPECT_CALL(mock_autofill_download_manager_,
+  EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
               StartUploadRequest(SignatureIs(kSingleUsernameFormSignature), _,
                                  _, _, _, _, _))
       .Times(0);
@@ -3003,7 +3005,7 @@ TEST_P(PasswordFormManagerTest,
   // Expect upload for the password form. This upload is unrelated to UFF: it
   // is a result of saving a new password on the password form.
   EXPECT_CALL(
-      mock_autofill_download_manager_,
+      mock_autofill_crowdsourcing_manager_,
       StartUploadRequest(SignatureIs(CalculateFormSignature(submitted_form_)),
                          _, _, _, _, _, _));
 
@@ -3061,7 +3063,7 @@ TEST_P(PasswordFormManagerTest,
 
   // Upload username first flow vote on the single username form.
 #if !BUILDFLAG(IS_ANDROID)
-  EXPECT_CALL(mock_autofill_download_manager_,
+  EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
               StartUploadRequest(SignatureIs(kSingleUsernameFormSignature),
                                  false, ServerFieldTypeSet{SINGLE_USERNAME}, _,
                                  true, nullptr, /*observer=*/IsNull()));
@@ -3079,7 +3081,7 @@ TEST_P(PasswordFormManagerTest,
   expected_single_username_data.set_prompt_edit(
       autofill::AutofillUploadContents::NOT_EDITED_POSITIVE);
   EXPECT_CALL(
-      mock_autofill_download_manager_,
+      mock_autofill_crowdsourcing_manager_,
       StartUploadRequest(
           AllOf(SignatureIs(CalculateFormSignature(submitted_form_)),
                 UploadedSingleUsernameDataIs({expected_single_username_data})),
@@ -3099,7 +3101,7 @@ TEST_P(PasswordFormManagerTest,
   histogram_tester.ExpectTotalCount(
       "PasswordManager.SingleUsername.PasswordFormHadUsernameField", 0);
 #endif
-  Mock::VerifyAndClearExpectations(&mock_autofill_download_manager_);
+  Mock::VerifyAndClearExpectations(&mock_autofill_crowdsourcing_manager_);
 }
 
 // Tests that when the user edits the username value in the save prompt
@@ -3185,7 +3187,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowSendVotesOnRecentFields) {
   // Expect upload for the password form. This upload is unrelated to UFF: it
   // is a result of saving a new password on the password form.
   EXPECT_CALL(
-      mock_autofill_download_manager_,
+      mock_autofill_crowdsourcing_manager_,
       StartUploadRequest(SignatureIs(CalculateFormSignature(submitted_form)), _,
                          _, _, _, _, _));
 
@@ -3305,12 +3307,13 @@ TEST_P(PasswordFormManagerTest, NegativeUsernameFirstFlowVotes) {
   // Upload for the username form. Ensure that we send `NOT_USERNAME` for the
   // username field.
 #if !BUILDFLAG(IS_ANDROID)
-  EXPECT_CALL(mock_autofill_download_manager_,
+  EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
               StartUploadRequest(SignatureIs(kUsernameFormSignature), false,
                                  ServerFieldTypeSet{NOT_USERNAME}, _, true,
                                  nullptr, /*observer=*/IsNull()));
 #else
-  EXPECT_CALL(mock_autofill_download_manager_, StartUploadRequest).Times(0);
+  EXPECT_CALL(mock_autofill_crowdsourcing_manager_, StartUploadRequest)
+      .Times(0);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // Upload for the password form.
@@ -3325,7 +3328,7 @@ TEST_P(PasswordFormManagerTest, NegativeUsernameFirstFlowVotes) {
   expected_single_username_data.set_prompt_edit(
       autofill::AutofillUploadContents::EDITED_NEGATIVE);
   EXPECT_CALL(
-      mock_autofill_download_manager_,
+      mock_autofill_crowdsourcing_manager_,
       StartUploadRequest(
           AllOf(SignatureIs(CalculateFormSignature(submitted_form)),
                 UploadedSingleUsernameDataIs({expected_single_username_data})),
@@ -3376,7 +3379,7 @@ TEST_P(PasswordFormManagerTest, PossibleUsernameLikelyOTP) {
   // Check vote uploads.
   testing::InSequence in_sequence;
   // No single username upload for the OTP field.
-  EXPECT_CALL(mock_autofill_download_manager_,
+  EXPECT_CALL(mock_autofill_crowdsourcing_manager_,
               StartUploadRequest(SignatureIs(kSingleUsernameFormSignature), _,
                                  _, _, _, _, /*observer=*/IsNull()))
       .Times(0);
@@ -3387,7 +3390,7 @@ TEST_P(PasswordFormManagerTest, PossibleUsernameLikelyOTP) {
   expected_single_username_data.set_value_type(
       autofill::AutofillUploadContents::NO_VALUE_TYPE);
   EXPECT_CALL(
-      mock_autofill_download_manager_,
+      mock_autofill_crowdsourcing_manager_,
       StartUploadRequest(
           AllOf(SignatureIs(CalculateFormSignature(submitted_form)),
                 UploadedSingleUsernameDataIs({expected_single_username_data})),
@@ -3811,7 +3814,7 @@ TEST_P(PasswordFormManagerTest, StrongForgotPasswordFormVotes) {
   // Expect upload for the password form. This upload is unrelated to FPF: it
   // is a result of saving a new password on the password form.
   EXPECT_CALL(
-      mock_autofill_download_manager_,
+      mock_autofill_crowdsourcing_manager_,
       StartUploadRequest(SignatureIs(CalculateFormSignature(submitted_form)), _,
                          _, _, _, _, _));
 
@@ -3866,7 +3869,7 @@ TEST_P(PasswordFormManagerTest, WeakForgotPasswordFormVotes) {
   // Expect upload for the password form. This upload is unrelated to FPF: it
   // is a result of saving a new password on the password form.
   EXPECT_CALL(
-      mock_autofill_download_manager_,
+      mock_autofill_crowdsourcing_manager_,
       StartUploadRequest(SignatureIs(CalculateFormSignature(submitted_form)), _,
                          _, _, _, _, _));
 
@@ -3913,14 +3916,14 @@ TEST_P(PasswordFormManagerTest,
 
   // Expect no vote on another single text field form, unrelated to FPF.
   EXPECT_CALL(
-      mock_autofill_download_manager_,
+      mock_autofill_crowdsourcing_manager_,
       StartUploadRequest(SignatureIs(kOtherFormSignature), _, _, _, _, _, _))
       .Times(0);
 
   // Expect upload for the password form. This upload is unrelated to FPF: it
   // is a result of saving a new password on the password form.
   EXPECT_CALL(
-      mock_autofill_download_manager_,
+      mock_autofill_crowdsourcing_manager_,
       StartUploadRequest(SignatureIs(CalculateFormSignature(submitted_form)), _,
                          _, _, _, _, _));
 
@@ -3977,14 +3980,14 @@ TEST_P(PasswordFormManagerTest, ForgotPasswordFormVotesOnLiklelyOTPField) {
 
   // Expect no vote on another single text field form, unrelated to FPF.
   EXPECT_CALL(
-      mock_autofill_download_manager_,
+      mock_autofill_crowdsourcing_manager_,
       StartUploadRequest(SignatureIs(kOtherFormSignature), _, _, _, _, _, _))
       .Times(0);
 
   // Expect upload for the password form. This upload is unrelated to FPF: it
   // is a result of saving a new password on the password form.
   EXPECT_CALL(
-      mock_autofill_download_manager_,
+      mock_autofill_crowdsourcing_manager_,
       StartUploadRequest(SignatureIs(CalculateFormSignature(submitted_form)), _,
                          _, _, _, _, _));
 

@@ -68,7 +68,7 @@ class AwAutofillClient : public autofill::ContentAutofillClient {
   // AutofillClient:
   bool IsOffTheRecord() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
-  autofill::AutofillDownloadManager* GetDownloadManager() override;
+  autofill::AutofillCrowdsourcingManager* GetCrowdsourcingManager() override;
   autofill::PersonalDataManager* GetPersonalDataManager() override;
   autofill::AutocompleteHistoryManager* GetAutocompleteHistoryManager()
       override;
@@ -162,7 +162,8 @@ class AwAutofillClient : public autofill::ContentAutofillClient {
   // The current Autofill query values.
   std::vector<autofill::Suggestion> suggestions_;
   base::WeakPtr<autofill::AutofillPopupDelegate> delegate_;
-  std::unique_ptr<autofill::AutofillDownloadManager> download_manager_;
+  std::unique_ptr<autofill::AutofillCrowdsourcingManager>
+      crowdsourcing_manager_;
 
 #if DCHECK_IS_ON()
   bool use_android_autofill_manager_;

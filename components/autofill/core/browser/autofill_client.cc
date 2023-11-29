@@ -47,7 +47,7 @@ bool AutofillClient::IsOffTheRecord() {
   return false;
 }
 
-AutofillDownloadManager* AutofillClient::GetDownloadManager() {
+AutofillCrowdsourcingManager* AutofillClient::GetCrowdsourcingManager() {
   return nullptr;
 }
 

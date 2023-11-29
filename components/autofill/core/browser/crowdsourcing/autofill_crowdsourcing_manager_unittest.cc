@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/autofill_download_manager.h"
+#include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 
 #include <stddef.h>
 
@@ -153,17 +153,17 @@ bool DeserializeAutofillPageQueryRequest(base::StringPiece serialized_content,
   return true;
 }
 
-class AutofillDownloadManagerWithCustomPayloadSize
-    : public AutofillDownloadManager {
+class AutofillCrowdsourcingManagerWithCustomPayloadSize
+    : public AutofillCrowdsourcingManager {
  public:
-  AutofillDownloadManagerWithCustomPayloadSize(AutofillClient* client,
+  AutofillCrowdsourcingManagerWithCustomPayloadSize(AutofillClient* client,
                                                const std::string& api_key,
                                                size_t length)
-      : AutofillDownloadManager(client,
+      : AutofillCrowdsourcingManager(client,
                                 api_key,
                                 /*log_manager=*/nullptr),
         length_(length) {}
-  ~AutofillDownloadManagerWithCustomPayloadSize() override = default;
+  ~AutofillCrowdsourcingManagerWithCustomPayloadSize() override = default;
 
  protected:
   size_t GetPayloadLength(base::StringPiece payload) const override {
@@ -176,15 +176,15 @@ class AutofillDownloadManagerWithCustomPayloadSize
 
 }  // namespace
 
-// This tests AutofillDownloadManager. AutofillDownloadManagerTest implements
-// AutofillDownloadManager::Observer and creates an instance of
-// AutofillDownloadManager. Then it records responses to different initiated
+// This tests AutofillCrowdsourcingManager. AutofillCrowdsourcingManagerTest implements
+// AutofillCrowdsourcingManager::Observer and creates an instance of
+// AutofillCrowdsourcingManager. Then it records responses to different initiated
 // requests, which are verified later. To mock network requests
 // TestURLLoaderFactory is used, which creates SimpleURLLoaders that do not
 // go over the wire, but allow calling back HTTP responses directly.
 // The responses in test are out of order and verify: successful query request,
 // successful upload request, failed upload request.
-class AutofillDownloadManagerTest : public AutofillDownloadManager::Observer,
+class AutofillCrowdsourcingManagerTest : public AutofillCrowdsourcingManager::Observer,
                                     public ::testing::Test {
  public:
   enum ResponseType {
@@ -201,42 +201,42 @@ class AutofillDownloadManagerTest : public AutofillDownloadManager::Observer,
     std::string response;
   };
 
-  class TestAutofillDownloadManager : public AutofillDownloadManager {
+  class TestAutofillCrowdsourcingManager : public AutofillCrowdsourcingManager {
    public:
-    explicit TestAutofillDownloadManager(AutofillClient* client,
+    explicit TestAutofillCrowdsourcingManager(AutofillClient* client,
                                          std::string api_key = "")
-        : AutofillDownloadManager(client,
+        : AutofillCrowdsourcingManager(client,
                                   /*api_key=*/std::move(api_key),
                                   /*log_manager=*/nullptr) {}
   };
 
-  AutofillDownloadManagerTest()
+  AutofillCrowdsourcingManagerTest()
       : test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)),
-        download_manager_(&client_,
+        crowdsourcing_manager_(&client_,
                           /*api_key=*/"",
                           /*log_manager=*/nullptr),
         pref_service_(test::PrefServiceForTesting()) {
     client_.set_shared_url_loader_factory(test_shared_loader_factory_);
   }
 
-  base::WeakPtr<AutofillDownloadManagerTest> GetWeakPtr() {
+  base::WeakPtr<AutofillCrowdsourcingManagerTest> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
   void LimitCache(size_t cache_size) {
-    download_manager_.set_max_form_cache_size(cache_size);
+    crowdsourcing_manager_.set_max_form_cache_size(cache_size);
   }
 
   bool StartQueryRequest(
       const std::vector<std::unique_ptr<FormStructure>>& form_structures) {
-    return download_manager_.StartQueryRequest(
+    return crowdsourcing_manager_.StartQueryRequest(
         ToRawPointerVector(form_structures), driver_.IsolationInfo(),
         weak_ptr_factory_.GetWeakPtr());
   }
 
-  // AutofillDownloadManager::Observer implementation.
+  // AutofillCrowdsourcingManager::Observer implementation.
   void OnLoadedServerPredictions(
       std::string response_xml,
       const std::vector<FormSignature>& form_signatures) override {
@@ -253,13 +253,13 @@ class AutofillDownloadManagerTest : public AutofillDownloadManager::Observer,
   }
 
   void OnServerRequestError(FormSignature form_signature,
-                            AutofillDownloadManager::RequestType request_type,
+                            AutofillCrowdsourcingManager::RequestType request_type,
                             int http_error) override {
     ResponseData response;
     response.signature = base::NumberToString(form_signature.value());
     response.error = http_error;
     response.type_of_response =
-        request_type == AutofillDownloadManager::REQUEST_QUERY
+        request_type == AutofillCrowdsourcingManager::REQUEST_QUERY
             ? REQUEST_QUERY_FAILED
             : REQUEST_UPLOAD_FAILED;
     responses_.push_back(response);
@@ -274,14 +274,14 @@ class AutofillDownloadManagerTest : public AutofillDownloadManager::Observer,
   network::TestURLLoaderFactory test_url_loader_factory_;
   TestAutofillClient client_;
   TestAutofillDriver driver_;
-  AutofillDownloadManager download_manager_;
+  AutofillCrowdsourcingManager crowdsourcing_manager_;
   std::unique_ptr<PrefService> pref_service_;
 
  private:
-  base::WeakPtrFactory<AutofillDownloadManagerTest> weak_ptr_factory_{this};
+  base::WeakPtrFactory<AutofillCrowdsourcingManagerTest> weak_ptr_factory_{this};
 };
 
-TEST_F(AutofillDownloadManagerTest, QueryAndUploadTest) {
+TEST_F(AutofillCrowdsourcingManagerTest, QueryAndUploadTest) {
   FormData form;
 
   FormFieldData field;
@@ -371,13 +371,13 @@ TEST_F(AutofillDownloadManagerTest, QueryAndUploadTest) {
   }
 
   // Make download manager.
-  AutofillDownloadManager download_manager(
+  AutofillCrowdsourcingManager crowdsourcing_manager(
       &client_, "dummykey",
       /*log_manager=*/nullptr);
 
   // Request with id 0.
   base::HistogramTester histogram;
-  EXPECT_TRUE(download_manager.StartQueryRequest(
+  EXPECT_TRUE(crowdsourcing_manager.StartQueryRequest(
       ToRawPointerVector(form_structures), driver_.IsolationInfo(),
       GetWeakPtr()));
   histogram.ExpectUniqueSample("Autofill.ServerQueryResponse",
@@ -393,16 +393,16 @@ TEST_F(AutofillDownloadManagerTest, QueryAndUploadTest) {
   EXPECT_EQ(api_key_header_value, "dummykey");
 
   // Request with id 1.
-  EXPECT_TRUE(download_manager.StartUploadRequest(
+  EXPECT_TRUE(crowdsourcing_manager.StartUploadRequest(
       *(form_structures[0]), true, ServerFieldTypeSet(), std::string(), true,
       pref_service_.get(), GetWeakPtr()));
   // Request with id 2.
-  EXPECT_TRUE(download_manager.StartUploadRequest(
+  EXPECT_TRUE(crowdsourcing_manager.StartUploadRequest(
       *(form_structures[1]), false, ServerFieldTypeSet(), std::string(), true,
       pref_service_.get(), GetWeakPtr()));
   // Request with id 3. Upload request with a non-empty additional password form
   // signature.
-  EXPECT_TRUE(download_manager.StartUploadRequest(
+  EXPECT_TRUE(crowdsourcing_manager.StartUploadRequest(
       *(form_structures[2]), false, ServerFieldTypeSet(), "42", true,
       pref_service_.get(), GetWeakPtr()));
 
@@ -448,7 +448,7 @@ TEST_F(AutofillDownloadManagerTest, QueryAndUploadTest) {
                               net::HTTP_OK, 1);
 
   // Check Request 1.
-  EXPECT_EQ(AutofillDownloadManagerTest::UPLOAD_SUCCESSFULL,
+  EXPECT_EQ(AutofillCrowdsourcingManagerTest::UPLOAD_SUCCESSFULL,
             responses_.front().type_of_response);
   EXPECT_EQ(0, responses_.front().error);
   EXPECT_EQ(std::string(), responses_.front().signature);
@@ -457,7 +457,7 @@ TEST_F(AutofillDownloadManagerTest, QueryAndUploadTest) {
   responses_.pop_front();
 
   // Check Request 2.
-  EXPECT_EQ(AutofillDownloadManagerTest::REQUEST_UPLOAD_FAILED,
+  EXPECT_EQ(AutofillCrowdsourcingManagerTest::REQUEST_UPLOAD_FAILED,
             responses_.front().type_of_response);
   EXPECT_EQ(net::HTTP_NOT_FOUND, responses_.front().error);
   EXPECT_EQ(form_structures[1]->FormSignatureAsStr(),
@@ -468,7 +468,7 @@ TEST_F(AutofillDownloadManagerTest, QueryAndUploadTest) {
 
   // Check Request 0.
   EXPECT_EQ(responses_.front().type_of_response,
-            AutofillDownloadManagerTest::QUERY_SUCCESSFULL);
+            AutofillCrowdsourcingManagerTest::QUERY_SUCCESSFULL);
   EXPECT_EQ(0, responses_.front().error);
   EXPECT_EQ(std::string(), responses_.front().signature);
   EXPECT_EQ(responses[0], responses_.front().response);
@@ -482,7 +482,7 @@ TEST_F(AutofillDownloadManagerTest, QueryAndUploadTest) {
   form_structures.push_back(std::make_unique<FormStructure>(form));
 
   // Request with id 4, not successful.
-  EXPECT_TRUE(download_manager.StartQueryRequest(
+  EXPECT_TRUE(crowdsourcing_manager.StartQueryRequest(
       ToRawPointerVector(form_structures), driver_.IsolationInfo(),
       GetWeakPtr()));
   request = test_url_loader_factory_.GetPendingRequest(4);
@@ -496,7 +496,7 @@ TEST_F(AutofillDownloadManagerTest, QueryAndUploadTest) {
                               net::HTTP_INTERNAL_SERVER_ERROR, 1);
 
   // Check Request 4.
-  EXPECT_EQ(AutofillDownloadManagerTest::REQUEST_QUERY_FAILED,
+  EXPECT_EQ(AutofillCrowdsourcingManagerTest::REQUEST_QUERY_FAILED,
             responses_.front().type_of_response);
   EXPECT_EQ(net::HTTP_INTERNAL_SERVER_ERROR, responses_.front().error);
   // Expected response on non-query request is an empty string.
@@ -504,7 +504,7 @@ TEST_F(AutofillDownloadManagerTest, QueryAndUploadTest) {
   responses_.pop_front();
 
   // Request with id 5. Let's pretend we hit the cache.
-  EXPECT_TRUE(download_manager.StartQueryRequest(
+  EXPECT_TRUE(crowdsourcing_manager.StartQueryRequest(
       ToRawPointerVector(form_structures), driver_.IsolationInfo(),
       GetWeakPtr()));
   histogram.ExpectBucketCount("Autofill.ServerQueryResponse",
@@ -520,12 +520,12 @@ TEST_F(AutofillDownloadManagerTest, QueryAndUploadTest) {
 
   // Check Request 5.
   EXPECT_EQ(responses_.front().type_of_response,
-            AutofillDownloadManagerTest::QUERY_SUCCESSFULL);
+            AutofillCrowdsourcingManagerTest::QUERY_SUCCESSFULL);
   responses_.pop_front();
   histogram.ExpectBucketCount("Autofill.Query.WasInCache", CACHE_HIT, 1);
 }
 
-TEST_F(AutofillDownloadManagerTest, QueryAPITest) {
+TEST_F(AutofillCrowdsourcingManagerTest, QueryAPITest) {
   // Build the form structures that we want to query.
   FormData form;
   FormFieldData field;
@@ -543,12 +543,12 @@ TEST_F(AutofillDownloadManagerTest, QueryAPITest) {
   std::vector<std::unique_ptr<FormStructure>> form_structures;
   form_structures.push_back(std::make_unique<FormStructure>(form));
 
-  TestAutofillDownloadManager download_manager(&client_, "dummykey");
+  TestAutofillCrowdsourcingManager crowdsourcing_manager(&client_, "dummykey");
 
   // Start the query request and look if it is successful. No response was
   // received yet.
   base::HistogramTester histogram;
-  EXPECT_TRUE(download_manager.StartQueryRequest(
+  EXPECT_TRUE(crowdsourcing_manager.StartQueryRequest(
       ToRawPointerVector(form_structures), driver_.IsolationInfo(),
       GetWeakPtr()));
 
@@ -617,13 +617,13 @@ TEST_F(AutofillDownloadManagerTest, QueryAPITest) {
   // to be called back from the observer and some histograms be incremented.
   EXPECT_EQ(1U, responses_.size());
   EXPECT_EQ(responses_.front().type_of_response,
-            AutofillDownloadManagerTest::QUERY_SUCCESSFULL);
+            AutofillCrowdsourcingManagerTest::QUERY_SUCCESSFULL);
   histogram.ExpectBucketCount("Autofill.Query.WasInCache", CACHE_MISS, 1);
   histogram.ExpectBucketCount("Autofill.Query.HttpResponseOrErrorCode",
                               net::HTTP_OK, 1);
 }
 
-TEST_F(AutofillDownloadManagerTest, QueryAPITestWhenTooLongUrl) {
+TEST_F(AutofillCrowdsourcingManagerTest, QueryAPITestWhenTooLongUrl) {
   // Build the form structures that we want to query.
   FormData form;
   FormFieldData field;
@@ -638,13 +638,13 @@ TEST_F(AutofillDownloadManagerTest, QueryAPITestWhenTooLongUrl) {
     form_structures.push_back(std::move(form_structure));
   }
 
-  AutofillDownloadManagerWithCustomPayloadSize download_manager(
+  AutofillCrowdsourcingManagerWithCustomPayloadSize crowdsourcing_manager(
       &client_, "dummykey", kMaxQueryGetSize + 1);
 
   // Start the query request and look if it is successful. No response was
   // received yet.
   base::HistogramTester histogram;
-  EXPECT_TRUE(download_manager.StartQueryRequest(
+  EXPECT_TRUE(crowdsourcing_manager.StartQueryRequest(
       ToRawPointerVector(form_structures), driver_.IsolationInfo(),
       GetWeakPtr()));
 
@@ -710,7 +710,7 @@ TEST_F(AutofillDownloadManagerTest, QueryAPITestWhenTooLongUrl) {
   // to be called back from the observer and some histograms be incremented.
   EXPECT_EQ(1U, responses_.size());
   EXPECT_EQ(responses_.front().type_of_response,
-            AutofillDownloadManagerTest::QUERY_SUCCESSFULL);
+            AutofillCrowdsourcingManagerTest::QUERY_SUCCESSFULL);
   histogram.ExpectBucketCount("Autofill.Query.WasInCache", CACHE_MISS, 1);
   histogram.ExpectBucketCount("Autofill.Query.HttpResponseOrErrorCode",
                               net::HTTP_OK, 1);
@@ -723,7 +723,7 @@ TEST_F(AutofillDownloadManagerTest, QueryAPITestWhenTooLongUrl) {
 // We expect the download manager to do the following things:
 //   * Use the right API canonical URL when uploading.
 //   * Serialize the upload proto content using the API upload request proto.
-TEST_F(AutofillDownloadManagerTest, UploadToAPITest) {
+TEST_F(AutofillCrowdsourcingManagerTest, UploadToAPITest) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       // Enabled
@@ -752,8 +752,8 @@ TEST_F(AutofillDownloadManagerTest, UploadToAPITest) {
     fs_field->host_form_signature = form_structure.form_signature();
 
   std::unique_ptr<PrefService> pref_service = test::PrefServiceForTesting();
-  TestAutofillDownloadManager download_manager(&client_, "dummykey");
-  EXPECT_TRUE(download_manager.StartUploadRequest(
+  TestAutofillCrowdsourcingManager crowdsourcing_manager(&client_, "dummykey");
+  EXPECT_TRUE(crowdsourcing_manager.StartUploadRequest(
       form_structure, true, ServerFieldTypeSet(), "", true, pref_service.get(),
       GetWeakPtr()));
 
@@ -790,7 +790,7 @@ TEST_F(AutofillDownloadManagerTest, UploadToAPITest) {
   // histograms be incremented.
   EXPECT_EQ(1U, responses_.size());
   // Request should be upload and successful.
-  EXPECT_EQ(AutofillDownloadManagerTest::UPLOAD_SUCCESSFULL,
+  EXPECT_EQ(AutofillCrowdsourcingManagerTest::UPLOAD_SUCCESSFULL,
             responses_.front().type_of_response);
   // We expect the request to be OK and corresponding response code to be
   // counted.
@@ -798,7 +798,7 @@ TEST_F(AutofillDownloadManagerTest, UploadToAPITest) {
                               net::HTTP_OK, 1);
 }
 
-TEST_F(AutofillDownloadManagerTest, BackoffLogic_Query) {
+TEST_F(AutofillCrowdsourcingManagerTest, BackoffLogic_Query) {
   FormData form;
   FormFieldData field;
   field.label = u"address";
@@ -842,7 +842,7 @@ TEST_F(AutofillDownloadManagerTest, BackoffLogic_Query) {
       "", network::URLLoaderCompletionStatus(net::OK));
 
   EXPECT_EQ(1U, responses_.size());
-  EXPECT_LT(download_manager_.loader_backoff_.GetTimeUntilRelease(),
+  EXPECT_LT(crowdsourcing_manager_.loader_backoff_.GetTimeUntilRelease(),
             base::Milliseconds(1100));
   base::RunLoop run_loop;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -859,7 +859,7 @@ TEST_F(AutofillDownloadManagerTest, BackoffLogic_Query) {
       "<html></html>", network::URLLoaderCompletionStatus(net::OK));
 
   EXPECT_EQ(2U, responses_.size());
-  EXPECT_LT(download_manager_.loader_backoff_.GetTimeUntilRelease(),
+  EXPECT_LT(crowdsourcing_manager_.loader_backoff_.GetTimeUntilRelease(),
             base::Milliseconds(2100));
 
   // There should not be an additional retry.
@@ -871,7 +871,7 @@ TEST_F(AutofillDownloadManagerTest, BackoffLogic_Query) {
   EXPECT_EQ(2, buckets[0].count);
 }
 
-TEST_F(AutofillDownloadManagerTest, BackoffLogic_Upload) {
+TEST_F(AutofillCrowdsourcingManagerTest, BackoffLogic_Upload) {
   FormData form;
   FormFieldData field;
   field.label = u"address";
@@ -900,7 +900,7 @@ TEST_F(AutofillDownloadManagerTest, BackoffLogic_Upload) {
     fs_field->host_form_signature = form_structure->form_signature();
 
   // Request with id 0.
-  EXPECT_TRUE(download_manager_.StartUploadRequest(
+  EXPECT_TRUE(crowdsourcing_manager_.StartUploadRequest(
       *form_structure, true, ServerFieldTypeSet(), std::string(), true,
       pref_service_.get(), GetWeakPtr()));
 
@@ -911,7 +911,7 @@ TEST_F(AutofillDownloadManagerTest, BackoffLogic_Upload) {
       request, network::CreateURLResponseHead(net::HTTP_INTERNAL_SERVER_ERROR),
       "", network::URLLoaderCompletionStatus(net::OK));
   EXPECT_EQ(1U, responses_.size());
-  EXPECT_LT(download_manager_.loader_backoff_.GetTimeUntilRelease(),
+  EXPECT_LT(crowdsourcing_manager_.loader_backoff_.GetTimeUntilRelease(),
             base::Milliseconds(1100));
   base::RunLoop run_loop;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -919,7 +919,7 @@ TEST_F(AutofillDownloadManagerTest, BackoffLogic_Upload) {
   run_loop.Run();
 
   // Check that it was a failure.
-  EXPECT_EQ(AutofillDownloadManagerTest::REQUEST_UPLOAD_FAILED,
+  EXPECT_EQ(AutofillCrowdsourcingManagerTest::REQUEST_UPLOAD_FAILED,
             responses_.front().type_of_response);
   EXPECT_EQ(net::HTTP_INTERNAL_SERVER_ERROR, responses_.front().error);
   EXPECT_EQ(form_structure->FormSignatureAsStr(), responses_.front().signature);
@@ -933,7 +933,7 @@ TEST_F(AutofillDownloadManagerTest, BackoffLogic_Upload) {
       request, "");
 
   // Check success of response.
-  EXPECT_EQ(AutofillDownloadManagerTest::UPLOAD_SUCCESSFULL,
+  EXPECT_EQ(AutofillCrowdsourcingManagerTest::UPLOAD_SUCCESSFULL,
             responses_.front().type_of_response);
   EXPECT_EQ(0, responses_.front().error);
   EXPECT_EQ(std::string(), responses_.front().signature);
@@ -944,7 +944,7 @@ TEST_F(AutofillDownloadManagerTest, BackoffLogic_Upload) {
   // Validate no retry on sending a bad request.
   form_structure->set_submission_source(SubmissionSource::XHR_SUCCEEDED);
   base::HistogramTester histogram;
-  EXPECT_TRUE(download_manager_.StartUploadRequest(
+  EXPECT_TRUE(crowdsourcing_manager_.StartUploadRequest(
       *form_structure, true, ServerFieldTypeSet(), std::string(), true,
       pref_service_.get(), GetWeakPtr()));
   request = test_url_loader_factory_.GetPendingRequest(2);
@@ -960,7 +960,7 @@ TEST_F(AutofillDownloadManagerTest, BackoffLogic_Upload) {
   EXPECT_EQ(1, buckets[0].count);
 }
 
-TEST_F(AutofillDownloadManagerTest, RetryLimit_Query) {
+TEST_F(AutofillCrowdsourcingManagerTest, RetryLimit_Query) {
   FormData form;
   FormFieldData field;
   field.label = u"address";
@@ -993,7 +993,7 @@ TEST_F(AutofillDownloadManagerTest, RetryLimit_Query) {
                                AutofillMetrics::QUERY_SENT, 1);
 
   const auto kTimeDeltaMargin = base::Milliseconds(100);
-  const int max_attempts = download_manager_.GetMaxServerAttempts();
+  const int max_attempts = crowdsourcing_manager_.GetMaxServerAttempts();
   int attempt = 0;
   while (true) {
     auto* request = test_url_loader_factory_.GetPendingRequest(attempt);
@@ -1007,7 +1007,7 @@ TEST_F(AutofillDownloadManagerTest, RetryLimit_Query) {
 
     EXPECT_EQ(1U, responses_.size());
     const auto& response = responses_.front();
-    EXPECT_EQ(AutofillDownloadManagerTest::REQUEST_QUERY_FAILED,
+    EXPECT_EQ(AutofillCrowdsourcingManagerTest::REQUEST_QUERY_FAILED,
               response.type_of_response);
     EXPECT_EQ(net::HTTP_INTERNAL_SERVER_ERROR, response.error);
     responses_.pop_front();
@@ -1018,7 +1018,7 @@ TEST_F(AutofillDownloadManagerTest, RetryLimit_Query) {
     base::RunLoop run_loop;
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(),
-        download_manager_.loader_backoff_.GetTimeUntilRelease() +
+        crowdsourcing_manager_.loader_backoff_.GetTimeUntilRelease() +
             kTimeDeltaMargin);
     run_loop.Run();
   }
@@ -1036,7 +1036,7 @@ TEST_F(AutofillDownloadManagerTest, RetryLimit_Query) {
   EXPECT_EQ(max_attempts, buckets[0].count);
 }
 
-TEST_F(AutofillDownloadManagerTest, RetryLimit_Upload) {
+TEST_F(AutofillCrowdsourcingManagerTest, RetryLimit_Upload) {
   FormData form;
   FormFieldData field;
   field.label = u"address";
@@ -1068,11 +1068,11 @@ TEST_F(AutofillDownloadManagerTest, RetryLimit_Upload) {
     fs_field->host_form_signature = form_structure->form_signature();
 
   // Request with id 0.
-  EXPECT_TRUE(download_manager_.StartUploadRequest(
+  EXPECT_TRUE(crowdsourcing_manager_.StartUploadRequest(
       *form_structure, true, ServerFieldTypeSet(), std::string(), true,
       pref_service_.get(), GetWeakPtr()));
 
-  const int max_attempts = download_manager_.GetMaxServerAttempts();
+  const int max_attempts = crowdsourcing_manager_.GetMaxServerAttempts();
   int attempt = 0;
   while (true) {
     auto* request = test_url_loader_factory_.GetPendingRequest(attempt);
@@ -1087,7 +1087,7 @@ TEST_F(AutofillDownloadManagerTest, RetryLimit_Upload) {
     // Check that it was a failure.
     ASSERT_EQ(1U, responses_.size());
     const auto& response = responses_.front();
-    EXPECT_EQ(AutofillDownloadManagerTest::REQUEST_UPLOAD_FAILED,
+    EXPECT_EQ(AutofillCrowdsourcingManagerTest::REQUEST_UPLOAD_FAILED,
               response.type_of_response);
     EXPECT_EQ(net::HTTP_INTERNAL_SERVER_ERROR, response.error);
     responses_.pop_front();
@@ -1100,7 +1100,7 @@ TEST_F(AutofillDownloadManagerTest, RetryLimit_Upload) {
     base::RunLoop run_loop;
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(),
-        download_manager_.loader_backoff_.GetTimeUntilRelease() +
+        crowdsourcing_manager_.loader_backoff_.GetTimeUntilRelease() +
             kTimeDeltaMargin);
     run_loop.Run();
   }
@@ -1118,7 +1118,7 @@ TEST_F(AutofillDownloadManagerTest, RetryLimit_Upload) {
   EXPECT_EQ(max_attempts, buckets[0].count);
 }
 
-TEST_F(AutofillDownloadManagerTest, QueryTooManyFieldsTest) {
+TEST_F(AutofillCrowdsourcingManagerTest, QueryTooManyFieldsTest) {
   // Create a query that contains too many fields for the server.
   std::vector<FormData> forms(21);
   std::vector<std::unique_ptr<FormStructure>> form_structures;
@@ -1137,7 +1137,7 @@ TEST_F(AutofillDownloadManagerTest, QueryTooManyFieldsTest) {
   EXPECT_FALSE(StartQueryRequest(form_structures));
 }
 
-TEST_F(AutofillDownloadManagerTest, QueryNotTooManyFieldsTest) {
+TEST_F(AutofillCrowdsourcingManagerTest, QueryNotTooManyFieldsTest) {
   // Create a query that contains a lot of fields, but not too many for the
   // server.
   std::vector<FormData> forms(25);
@@ -1157,7 +1157,7 @@ TEST_F(AutofillDownloadManagerTest, QueryNotTooManyFieldsTest) {
   EXPECT_TRUE(StartQueryRequest(form_structures));
 }
 
-TEST_F(AutofillDownloadManagerTest, CacheQueryTest) {
+TEST_F(AutofillCrowdsourcingManagerTest, CacheQueryTest) {
   FormData form;
 
   FormFieldData field;
@@ -1310,7 +1310,7 @@ enum ServerCommuncationMode {
 };
 
 class AutofillServerCommunicationTest
-    : public AutofillDownloadManager::Observer,
+    : public AutofillCrowdsourcingManager::Observer,
       public testing::TestWithParam<ServerCommuncationMode> {
  protected:
   void SetUp() override {
@@ -1378,7 +1378,7 @@ class AutofillServerCommunicationTest
       variations_ids_provider->ResetForTesting();
   }
 
-  // AutofillDownloadManager::Observer implementation.
+  // AutofillCrowdsourcingManager::Observer implementation.
   void OnLoadedServerPredictions(
       std::string /* response_xml */,
       const std::vector<FormSignature>& /*form_signatures */) override {
@@ -1449,9 +1449,9 @@ class AutofillServerCommunicationTest
     run_loop_ = std::make_unique<base::RunLoop>();
 
     ScopedActiveAutofillExperiments scoped_active_autofill_experiments;
-    AutofillDownloadManager download_manager(
+    AutofillCrowdsourcingManager crowdsourcing_manager(
         client_.get(), version_info::Channel::UNKNOWN, nullptr);
-    bool succeeded = download_manager.StartQueryRequest(
+    bool succeeded = crowdsourcing_manager.StartQueryRequest(
         ToRawPointerVector(form_structures), driver_->IsolationInfo(),
         weak_ptr_factory_.GetWeakPtr());
     if (succeeded)
@@ -1469,9 +1469,9 @@ class AutofillServerCommunicationTest
     run_loop_ = std::make_unique<base::RunLoop>();
 
     ScopedActiveAutofillExperiments scoped_active_autofill_experiments;
-    AutofillDownloadManager download_manager(
+    AutofillCrowdsourcingManager crowdsourcing_manager(
         client_.get(), version_info::Channel::UNKNOWN, nullptr);
-    bool succeeded = download_manager.StartUploadRequest(
+    bool succeeded = crowdsourcing_manager.StartUploadRequest(
         form, form_was_autofilled, available_field_types, login_form_signature,
         observed_submission, pref_service_.get(),
         weak_ptr_factory_.GetWeakPtr());
@@ -1503,9 +1503,9 @@ class AutofillServerCommunicationTest
 }  // namespace
 
 TEST_P(AutofillServerCommunicationTest, IsEnabled) {
-  AutofillDownloadManager download_manager(
+  AutofillCrowdsourcingManager crowdsourcing_manager(
       client_.get(), version_info::Channel::UNKNOWN, nullptr);
-  EXPECT_EQ(download_manager.IsEnabled(), GetParam() != DISABLED);
+  EXPECT_EQ(crowdsourcing_manager.IsEnabled(), GetParam() != DISABLED);
 }
 
 TEST_P(AutofillServerCommunicationTest, Query) {
@@ -1542,7 +1542,7 @@ TEST_P(AutofillServerCommunicationTest, Upload) {
   field.form_control_type = FormControlType::kInputText;
   form.fields.push_back(field);
 
-  AutofillDownloadManager download_manager(
+  AutofillCrowdsourcingManager crowdsourcing_manager(
       client_.get(), version_info::Channel::UNKNOWN, nullptr);
   EXPECT_EQ(GetParam() != DISABLED,
             SendUploadRequest(FormStructure(form), true, {}, "", true));
@@ -1810,7 +1810,7 @@ TEST_P(AutofillQueryTest, Metadata) {
   form.fields.push_back(field);
 
   // Setup the form structures to query.
-  AutofillDownloadManager download_manager(
+  AutofillCrowdsourcingManager crowdsourcing_manager(
       client_.get(), version_info::Channel::UNKNOWN, nullptr);
   std::vector<std::unique_ptr<FormStructure>> form_structures;
   form_structures.push_back(std::make_unique<FormStructure>(form));
@@ -1894,7 +1894,7 @@ TEST_P(AutofillUploadTest, RichMetadata) {
   field.placeholder = u"field-placeholder";
   form.fields.push_back(field);
 
-  AutofillDownloadManager download_manager(
+  AutofillCrowdsourcingManager crowdsourcing_manager(
       client_.get(), version_info::Channel::UNKNOWN, nullptr);
   FormStructure form_structure(form);
   form_structure.set_current_page_language(LanguageCode("fr"));
@@ -1976,7 +1976,7 @@ TEST_P(AutofillUploadTest, Throttling) {
   field.form_control_type = FormControlType::kInputText;
   form.fields.push_back(field);
 
-  AutofillDownloadManager download_manager(
+  AutofillCrowdsourcingManager crowdsourcing_manager(
       client_.get(), version_info::Channel::UNKNOWN, nullptr);
   FormStructure form_structure(form);
   for (int i = 0; i <= static_cast<int>(SubmissionSource::kMaxValue); ++i) {
@@ -2036,7 +2036,7 @@ TEST_P(AutofillUploadTest, ThrottlingDisabled) {
   field.form_control_type = FormControlType::kInputText;
   form.fields.push_back(field);
 
-  AutofillDownloadManager download_manager(
+  AutofillCrowdsourcingManager crowdsourcing_manager(
       client_.get(), version_info::Channel::UNKNOWN, nullptr);
   FormStructure form_structure(form);
   FormStructure small_form_structure(small_form);
@@ -2123,7 +2123,7 @@ TEST_P(AutofillUploadTest, PeriodicReset) {
   field.form_control_type = FormControlType::kInputText;
   form.fields.push_back(field);
 
-  AutofillDownloadManager download_manager(
+  AutofillCrowdsourcingManager crowdsourcing_manager(
       client_.get(), version_info::Channel::UNKNOWN, nullptr);
   SubmissionSource submission_source = SubmissionSource::FORM_SUBMISSION;
 
@@ -2182,7 +2182,7 @@ TEST_P(AutofillUploadTest, ResetOnClearUploadHisotry) {
   field.form_control_type = FormControlType::kInputText;
   form.fields.push_back(field);
 
-  AutofillDownloadManager download_manager(
+  AutofillCrowdsourcingManager crowdsourcing_manager(
       client_.get(), version_info::Channel::UNKNOWN, nullptr);
   SubmissionSource submission_source = SubmissionSource::FORM_SUBMISSION;
 
@@ -2198,7 +2198,7 @@ TEST_P(AutofillUploadTest, ResetOnClearUploadHisotry) {
   EXPECT_TRUE(SendUploadRequest(form_structure, true, {}, "", true));
 
   // Clear the upload throttling history.
-  AutofillDownloadManager::ClearUploadHistory(pref_service_.get());
+  AutofillCrowdsourcingManager::ClearUploadHistory(pref_service_.get());
   EXPECT_TRUE(SendUploadRequest(form_structure, true, {}, "", true));
 
   // Two uploads were sent.

@@ -142,13 +142,14 @@ ChromeAutofillClientIOS::GetURLLoaderFactory() {
       web_state_->GetBrowserState()->GetURLLoaderFactory());
 }
 
-AutofillDownloadManager* ChromeAutofillClientIOS::GetDownloadManager() {
-  if (!download_manager_) {
+AutofillCrowdsourcingManager*
+ChromeAutofillClientIOS::GetCrowdsourcingManager() {
+  if (!crowdsourcing_manager_) {
     // Lazy initialization to avoid virtual function calls in the constructor.
-    download_manager_ = std::make_unique<AutofillDownloadManager>(
+    crowdsourcing_manager_ = std::make_unique<AutofillCrowdsourcingManager>(
         this, GetChannel(), GetLogManager());
   }
-  return download_manager_.get();
+  return crowdsourcing_manager_.get();
 }
 
 PersonalDataManager* ChromeAutofillClientIOS::GetPersonalDataManager() {

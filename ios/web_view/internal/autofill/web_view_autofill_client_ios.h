@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/autofill_download_manager.h"
+#include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
@@ -58,7 +58,7 @@ class WebViewAutofillClientIOS : public AutofillClient {
   // AutofillClient:
   bool IsOffTheRecord() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
-  AutofillDownloadManager* GetDownloadManager() override;
+  AutofillCrowdsourcingManager* GetCrowdsourcingManager() override;
   PersonalDataManager* GetPersonalDataManager() override;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
   CreditCardCvcAuthenticator* GetCvcAuthenticator() override;
@@ -145,7 +145,7 @@ class WebViewAutofillClientIOS : public AutofillClient {
 
  private:
   PrefService* pref_service_;
-  std::unique_ptr<AutofillDownloadManager> download_manager_;
+  std::unique_ptr<AutofillCrowdsourcingManager> crowdsourcing_manager_;
   PersonalDataManager* personal_data_manager_;
   AutocompleteHistoryManager* autocomplete_history_manager_;
   web::WebState* web_state_;

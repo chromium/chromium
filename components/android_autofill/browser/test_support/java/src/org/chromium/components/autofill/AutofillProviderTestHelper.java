@@ -13,11 +13,11 @@ import org.chromium.content_public.browser.WebContents;
 @JNINamespace("autofill")
 public class AutofillProviderTestHelper {
     /**
-     * Disable the download server for testing to avoid the server response affect the integration
+     * Disable crowdsourcing for testing to avoid that the server response affects the integration
      * tests. Must be called before WebContents is created.
      */
-    public static void disableDownloadServerForTesting() {
-        AutofillProviderTestHelperJni.get().disableDownloadServerForTesting();
+    public static void disableCrowdsourcingForTesting() {
+        AutofillProviderTestHelperJni.get().disableCrowdsourcingForTesting();
     }
 
     /** Simulate the primary server type only. */
@@ -43,7 +43,7 @@ public class AutofillProviderTestHelper {
 
     @NativeMethods
     interface Natives {
-        void disableDownloadServerForTesting();
+        void disableCrowdsourcingForTesting();
 
         boolean simulateMainFrameAutofillServerResponseForTesting(
                 WebContents webContents, String[] fieldIds, int[] fieldTypes);

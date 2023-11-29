@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/autofill_download_manager.h"
+#include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 
 #include <algorithm>
 #include <utility>
@@ -66,7 +66,7 @@ constexpr std::pair<int, int> kAutofillExperimentRanges[] = {
     {3314445, 3314448}, {3314854, 3314883},
 };
 
-const size_t kAutofillDownloadManagerMaxFormCacheSize = 16;
+const size_t kAutofillCrowdsourcingManagerMaxFormCacheSize = 16;
 const size_t kMaxFieldsPerQueryRequest = 100;
 
 const net::BackoffEntry::Policy kAutofillBackoffPolicy = {
@@ -168,25 +168,27 @@ bool IsAutofillExperimentId(int id) {
   });
 }
 
-const char* RequestTypeToString(AutofillDownloadManager::RequestType type) {
+const char* RequestTypeToString(AutofillCrowdsourcingManager::RequestType type)
+{
   switch (type) {
-    case AutofillDownloadManager::REQUEST_QUERY:
+    case AutofillCrowdsourcingManager::REQUEST_QUERY:
       return "Query";
-    case AutofillDownloadManager::REQUEST_UPLOAD:
+    case AutofillCrowdsourcingManager::REQUEST_UPLOAD:
       return "Upload";
   }
   NOTREACHED_NORETURN();
 }
 
-std::string GetMetricName(AutofillDownloadManager::RequestType request_type,
+std::string GetMetricName(
+  AutofillCrowdsourcingManager::RequestType request_type,
                           std::string_view suffix) {
   return base::StrCat(
       {"Autofill.", RequestTypeToString(request_type), ".", suffix});
 }
 
 net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
-    const AutofillDownloadManager::RequestType& request_type) {
-  if (request_type == AutofillDownloadManager::REQUEST_QUERY) {
+    const AutofillCrowdsourcingManager::RequestType& request_type) {
+  if (request_type == AutofillCrowdsourcingManager::REQUEST_QUERY) {
     return net::DefineNetworkTrafficAnnotation("autofill_query", R"(
         semantics {
           sender: "Autofill"
@@ -239,7 +241,7 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
         })");
   }
 
-  DCHECK_EQ(request_type, AutofillDownloadManager::REQUEST_UPLOAD);
+  DCHECK_EQ(request_type, AutofillCrowdsourcingManager::REQUEST_UPLOAD);
   return net::DefineNetworkTrafficAnnotation("autofill_upload", R"(
       semantics {
         sender: "Autofill"
@@ -417,7 +419,7 @@ bool CanThrottleUpload(const FormStructure& form,
   base::Time last_reset =
       pref_service->GetTime(prefs::kAutofillUploadEventsLastResetTimestamp);
   if ((now - last_reset) > throttle_reset_period) {
-    AutofillDownloadManager::ClearUploadHistory(pref_service);
+    AutofillCrowdsourcingManager::ClearUploadHistory(pref_service);
   }
 
   // Get the key for the upload bucket and extract the current bitfield value.
@@ -468,14 +470,14 @@ absl::optional<std::string> GetUploadPayloadForApi(
 // * GetAPIMethodUrl(REQUEST_QUERY, "1234", "GET") will return "/v1/pages/1234".
 // * GetAPIMethodUrl(REQUEST_QUERY, "1234", "POST") will return "/v1/pages:get".
 // * GetAPIMethodUrl(REQUEST_UPLOAD, "", "POST") will return "/v1/forms:vote".
-std::string GetAPIMethodUrl(AutofillDownloadManager::RequestType type,
+std::string GetAPIMethodUrl(AutofillCrowdsourcingManager::RequestType type,
                             base::StringPiece resource_id,
                             base::StringPiece method) {
   const char* api_method_url = [&] {
     switch (type) {
-      case AutofillDownloadManager::REQUEST_QUERY:
+      case AutofillCrowdsourcingManager::REQUEST_QUERY:
         return method == "POST" ? "/v1/pages:get" : "/v1/pages";
-      case AutofillDownloadManager::REQUEST_UPLOAD:
+      case AutofillCrowdsourcingManager::REQUEST_UPLOAD:
         return "/v1/forms:vote";
     }
     NOTREACHED_NORETURN();
@@ -489,9 +491,9 @@ std::string GetAPIMethodUrl(AutofillDownloadManager::RequestType type,
 // Gets HTTP body payload for API POST request.
 absl::optional<std::string> GetAPIBodyPayload(
     std::string payload,
-    AutofillDownloadManager::RequestType type) {
+    AutofillCrowdsourcingManager::RequestType type) {
   // Don't do anything for payloads not related to Query.
-  if (type != AutofillDownloadManager::REQUEST_QUERY) {
+  if (type != AutofillCrowdsourcingManager::REQUEST_QUERY) {
     return std::move(payload);
   }
   // Wrap query payload in a request proto to interface with API Query method.
@@ -534,7 +536,7 @@ std::string GetAPIKeyForUrl(version_info::Channel channel) {
 
 }  // namespace
 
-struct AutofillDownloadManager::FormRequestData {
+struct AutofillCrowdsourcingManager::FormRequestData {
   base::WeakPtr<Observer> observer;
   std::vector<FormSignature> form_signatures;
   RequestType request_type;
@@ -544,24 +546,24 @@ struct AutofillDownloadManager::FormRequestData {
 };
 
 ScopedActiveAutofillExperiments::ScopedActiveAutofillExperiments() {
-  AutofillDownloadManager::ResetActiveExperiments();
+  AutofillCrowdsourcingManager::ResetActiveExperiments();
 }
 
 ScopedActiveAutofillExperiments::~ScopedActiveAutofillExperiments() {
-  AutofillDownloadManager::ResetActiveExperiments();
+  AutofillCrowdsourcingManager::ResetActiveExperiments();
 }
 
 std::vector<variations::VariationID>*
-    AutofillDownloadManager::active_experiments_ = nullptr;
+    AutofillCrowdsourcingManager::active_experiments_ = nullptr;
 
-AutofillDownloadManager::AutofillDownloadManager(AutofillClient* client,
+AutofillCrowdsourcingManager::AutofillCrowdsourcingManager(AutofillClient* client,
                                                  version_info::Channel channel,
                                                  LogManager* log_manager)
-    : AutofillDownloadManager(client,
+    : AutofillCrowdsourcingManager(client,
                               GetAPIKeyForUrl(channel),
                               log_manager) {}
 
-AutofillDownloadManager::AutofillDownloadManager(AutofillClient* client,
+AutofillCrowdsourcingManager::AutofillCrowdsourcingManager(AutofillClient* client,
                                                  const std::string& api_key,
                                                  LogManager* log_manager)
     : client_(client),
@@ -569,18 +571,18 @@ AutofillDownloadManager::AutofillDownloadManager(AutofillClient* client,
       log_manager_(log_manager),
       autofill_server_url_(GetAutofillServerURL()),
       throttle_reset_period_(GetThrottleResetPeriod()),
-      max_form_cache_size_(kAutofillDownloadManagerMaxFormCacheSize),
+      max_form_cache_size_(kAutofillCrowdsourcingManagerMaxFormCacheSize),
       loader_backoff_(&kAutofillBackoffPolicy) {}
 
-AutofillDownloadManager::~AutofillDownloadManager() = default;
+AutofillCrowdsourcingManager::~AutofillCrowdsourcingManager() = default;
 
-bool AutofillDownloadManager::IsEnabled() const {
+bool AutofillCrowdsourcingManager::IsEnabled() const {
   return autofill_server_url_.is_valid() &&
          base::FeatureList::IsEnabled(
              features::test::kAutofillServerCommunication);
 }
 
-bool AutofillDownloadManager::StartQueryRequest(
+bool AutofillCrowdsourcingManager::StartQueryRequest(
     const std::vector<FormStructure*>& forms,
     net::IsolationInfo isolation_info,
     base::WeakPtr<Observer> observer) {
@@ -619,7 +621,7 @@ bool AutofillDownloadManager::StartQueryRequest(
   FormRequestData request_data = {
       .observer = observer,
       .form_signatures = std::move(queried_form_signatures),
-      .request_type = AutofillDownloadManager::REQUEST_QUERY,
+      .request_type = AutofillCrowdsourcingManager::REQUEST_QUERY,
       .isolation_info = std::move(isolation_info),
       .payload = std::move(payload).value(),
   };
@@ -642,7 +644,7 @@ bool AutofillDownloadManager::StartQueryRequest(
   return StartRequest(std::move(request_data));
 }
 
-bool AutofillDownloadManager::StartUploadRequest(
+bool AutofillCrowdsourcingManager::StartUploadRequest(
     const FormStructure& form,
     bool form_was_autofilled,
     const ServerFieldTypeSet& available_field_types,
@@ -689,7 +691,7 @@ bool AutofillDownloadManager::StartUploadRequest(
     FormRequestData request_data = {
         .observer = observer,
         .form_signatures = {form.form_signature()},
-        .request_type = AutofillDownloadManager::REQUEST_UPLOAD,
+        .request_type = AutofillCrowdsourcingManager::REQUEST_UPLOAD,
         .isolation_info = absl::nullopt,
         .payload = std::move(payload).value(),
     };
@@ -714,7 +716,7 @@ bool AutofillDownloadManager::StartUploadRequest(
   return all_succeeded;
 }
 
-void AutofillDownloadManager::ClearUploadHistory(PrefService* pref_service) {
+void AutofillCrowdsourcingManager::ClearUploadHistory(PrefService* pref_service) {
   if (pref_service) {
     pref_service->ClearPref(prefs::kAutofillUploadEvents);
     pref_service->SetTime(prefs::kAutofillUploadEventsLastResetTimestamp,
@@ -722,19 +724,19 @@ void AutofillDownloadManager::ClearUploadHistory(PrefService* pref_service) {
   }
 }
 
-size_t AutofillDownloadManager::GetPayloadLength(
+size_t AutofillCrowdsourcingManager::GetPayloadLength(
     base::StringPiece payload) const {
   return payload.length();
 }
 
-std::tuple<GURL, std::string> AutofillDownloadManager::GetRequestURLAndMethod(
+std::tuple<GURL, std::string> AutofillCrowdsourcingManager::GetRequestURLAndMethod(
     const FormRequestData& request_data) const {
   // ID of the resource to add to the API request URL. Nothing will be added if
   // |resource_id| is empty.
   std::string resource_id;
   std::string method = "POST";
 
-  if (request_data.request_type == AutofillDownloadManager::REQUEST_QUERY) {
+  if (request_data.request_type == AutofillCrowdsourcingManager::REQUEST_QUERY) {
     if (GetPayloadLength(request_data.payload) <= kMaxQueryGetSize) {
       resource_id = request_data.payload;
       method = "GET";
@@ -756,7 +758,7 @@ std::tuple<GURL, std::string> AutofillDownloadManager::GetRequestURLAndMethod(
   return std::make_tuple(std::move(url), std::move(method));
 }
 
-bool AutofillDownloadManager::StartRequest(FormRequestData request_data) {
+bool AutofillCrowdsourcingManager::StartRequest(FormRequestData request_data) {
   // REQUEST_UPLOADs take no IsolationInfo because Password Manager uploads when
   // RenderFrameHostImpl::DidCommitNavigation() is called, in which case
   // AutofillDriver::IsolationInfo() may crash because there is no committing
@@ -764,7 +766,7 @@ bool AutofillDownloadManager::StartRequest(FormRequestData request_data) {
   // information about the response is passed to the renderer, or is otherwise
   // visible to a page. See crbug/1176635#c22.
   DCHECK(
-      (request_data.request_type == AutofillDownloadManager::REQUEST_UPLOAD) ==
+      (request_data.request_type == AutofillCrowdsourcingManager::REQUEST_UPLOAD) ==
       !request_data.isolation_info);
 
   // Get the URL and method to use for this request.
@@ -772,7 +774,7 @@ bool AutofillDownloadManager::StartRequest(FormRequestData request_data) {
 
   // Track the URL length for GET queries because the URL length can be in the
   // thousands when rich metadata is enabled.
-  if (request_data.request_type == AutofillDownloadManager::REQUEST_QUERY &&
+  if (request_data.request_type == AutofillCrowdsourcingManager::REQUEST_QUERY &&
       method == "GET") {
     base::UmaHistogramCounts100000("Autofill.Query.GetUrlLength",
                                    request_url.spec().length());
@@ -843,13 +845,13 @@ bool AutofillDownloadManager::StartRequest(FormRequestData request_data) {
   url_loaders_.push_back(std::move(simple_loader));
   raw_simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       client_->GetURLLoaderFactory().get(),
-      base::BindOnce(&AutofillDownloadManager::OnSimpleLoaderComplete,
+      base::BindOnce(&AutofillCrowdsourcingManager::OnSimpleLoaderComplete,
                      base::Unretained(this), std::move(--url_loaders_.end()),
                      std::move(request_data), AutofillTickClock::NowTicks()));
   return true;
 }
 
-void AutofillDownloadManager::CacheQueryRequest(
+void AutofillCrowdsourcingManager::CacheQueryRequest(
     const std::vector<FormSignature>& forms_in_query,
     const std::string& query_data) {
   for (auto it = cached_forms_.begin(); it != cached_forms_.end(); ++it) {
@@ -866,7 +868,7 @@ void AutofillDownloadManager::CacheQueryRequest(
     cached_forms_.pop_back();
 }
 
-bool AutofillDownloadManager::CheckCacheForQueryRequest(
+bool AutofillCrowdsourcingManager::CheckCacheForQueryRequest(
     const std::vector<FormSignature>& forms_in_query,
     std::string* query_data) const {
   for (const auto& [signatures, cached_data] : cached_forms_) {
@@ -880,7 +882,7 @@ bool AutofillDownloadManager::CheckCacheForQueryRequest(
 }
 
 // static
-int AutofillDownloadManager::GetMaxServerAttempts() {
+int AutofillCrowdsourcingManager::GetMaxServerAttempts() {
   // This value is constant for the life of the browser, so we cache it
   // statically on first use to avoid re-parsing the param on each retry
   // opportunity.
@@ -889,7 +891,7 @@ int AutofillDownloadManager::GetMaxServerAttempts() {
   return max_attempts;
 }
 
-void AutofillDownloadManager::OnSimpleLoaderComplete(
+void AutofillCrowdsourcingManager::OnSimpleLoaderComplete(
     std::list<std::unique_ptr<network::SimpleURLLoader>>::iterator it,
     FormRequestData request_data,
     base::TimeTicks request_start,
@@ -926,7 +928,7 @@ void AutofillDownloadManager::OnSimpleLoaderComplete(
   if (!success) {
     std::string error_message =
         (response_body != nullptr) ? *response_body : "";
-    DVLOG(1) << "AutofillDownloadManager: "
+    DVLOG(1) << "AutofillCrowdsourcingManager: "
              << RequestTypeToString(request_data.request_type)
              << " request has failed with net error "
              << simple_loader->NetError() << " and HTTP response code "
@@ -960,7 +962,7 @@ void AutofillDownloadManager::OnSimpleLoaderComplete(
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(
-            base::IgnoreResult(&AutofillDownloadManager::StartRequest),
+            base::IgnoreResult(&AutofillCrowdsourcingManager::StartRequest),
             weak_factory_.GetWeakPtr(), std::move(request_data)),
         backoff);
     return;
@@ -978,7 +980,7 @@ void AutofillDownloadManager::OnSimpleLoaderComplete(
       return;
     }
     case REQUEST_UPLOAD:
-      DVLOG(1) << "AutofillDownloadManager: upload request has succeeded.";
+      DVLOG(1) << "AutofillCrowdsourcingManager: upload request has succeeded.";
       if (request_data.observer) {
         request_data.observer->OnUploadedPossibleFieldTypes();
       }
@@ -987,7 +989,7 @@ void AutofillDownloadManager::OnSimpleLoaderComplete(
   NOTREACHED_NORETURN();
 }
 
-void AutofillDownloadManager::InitActiveExperiments() {
+void AutofillCrowdsourcingManager::InitActiveExperiments() {
   auto* variations_ids_provider =
       variations::VariationsIdsProvider::GetInstance();
   DCHECK(variations_ids_provider != nullptr);
@@ -1012,7 +1014,7 @@ void AutofillDownloadManager::InitActiveExperiments() {
 }
 
 // static
-void AutofillDownloadManager::ResetActiveExperiments() {
+void AutofillCrowdsourcingManager::ResetActiveExperiments() {
   delete active_experiments_;
   active_experiments_ = nullptr;
 }

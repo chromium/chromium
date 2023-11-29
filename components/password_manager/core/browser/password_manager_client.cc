@@ -126,8 +126,8 @@ HttpAuthManager* PasswordManagerClient::GetHttpAuthManager() {
   return nullptr;
 }
 
-autofill::AutofillDownloadManager*
-PasswordManagerClient::GetAutofillDownloadManager() {
+autofill::AutofillCrowdsourcingManager*
+PasswordManagerClient::GetAutofillCrowdsourcingManager() {
   return nullptr;
 }
 

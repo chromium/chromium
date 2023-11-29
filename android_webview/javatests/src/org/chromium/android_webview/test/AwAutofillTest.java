@@ -405,7 +405,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                         });
         mContentsClient = new AwAutofillTestClient();
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> AutofillProviderTestHelper.disableDownloadServerForTesting());
+                () -> AutofillProviderTestHelper.disableCrowdsourcingForTesting());
         mTestContainerView =
                 mRule.createAwTestContainerViewOnMainSync(
                         mContentsClient, false, new TestDependencyFactory());

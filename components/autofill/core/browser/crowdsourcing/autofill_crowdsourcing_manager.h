@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_DOWNLOAD_MANAGER_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_DOWNLOAD_MANAGER_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_CROWDSOURCING_AUTOFILL_CROWDSOURCING_MANAGER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_CROWDSOURCING_AUTOFILL_CROWDSOURCING_MANAGER_H_
 
 #include <stddef.h>
 #include <list>
-#include <map>
 #include <memory>
 #include <string>
 #include <tuple>
-#include <utility>
 #include <vector>
 
 #include "base/compiler_specific.h"
@@ -38,7 +36,7 @@ namespace autofill {
 class AutofillClient;
 class LogManager;
 
-constexpr size_t kMaxQueryGetSize = 10240;  // 10 KiB
+inline constexpr size_t kMaxQueryGetSize = 10240;  // 10 KiB
 
 // A helper to make sure that tests which modify the set of active autofill
 // experiments do not interfere with one another.
@@ -47,15 +45,15 @@ struct ScopedActiveAutofillExperiments {
   ~ScopedActiveAutofillExperiments();
 };
 
-// Handles getting and updating Autofill heuristics.
-class AutofillDownloadManager {
+// Obtains Autofill server predictions and upload votes for generating them.
+class AutofillCrowdsourcingManager {
  public:
   enum RequestType {
     REQUEST_QUERY,
     REQUEST_UPLOAD,
   };
 
-  // An interface used to notify clients of AutofillDownloadManager.
+  // An interface used to notify clients of AutofillCrowdsourcingManager.
   class Observer {
    public:
     // Called when field type predictions are successfully received from the
@@ -82,14 +80,14 @@ class AutofillDownloadManager {
     virtual ~Observer() = default;
   };
 
-  // `client` owns (and hence survives) this AutofillDownloadManager.
+  // `client` owns (and hence survives) this AutofillCrowdsourcingManager.
   // `channel` determines the value for the the Google-API-key HTTP header and
   // whether raw metadata uploading is enabled.
-  AutofillDownloadManager(AutofillClient* client,
+  AutofillCrowdsourcingManager(AutofillClient* client,
                           version_info::Channel channel,
                           LogManager* log_manager);
 
-  virtual ~AutofillDownloadManager();
+  virtual ~AutofillCrowdsourcingManager();
 
   // Starts a query request to Autofill servers. The observer is called with the
   // list of the fields of all requested forms.
@@ -127,7 +125,7 @@ class AutofillDownloadManager {
   static void ClearUploadHistory(PrefService* pref_service);
 
  protected:
-  AutofillDownloadManager(AutofillClient* client,
+  AutofillCrowdsourcingManager(AutofillClient* client,
                           const std::string& api_key,
                           LogManager* log_manager);
 
@@ -137,13 +135,13 @@ class AutofillDownloadManager {
   virtual size_t GetPayloadLength(base::StringPiece payload) const;
 
  private:
-  friend class AutofillDownloadManagerTest;
+  friend class AutofillCrowdsourcingManagerTest;
   friend struct ScopedActiveAutofillExperiments;
-  FRIEND_TEST_ALL_PREFIXES(AutofillDownloadManagerTest, QueryAndUploadTest);
-  FRIEND_TEST_ALL_PREFIXES(AutofillDownloadManagerTest, BackoffLogic_Upload);
-  FRIEND_TEST_ALL_PREFIXES(AutofillDownloadManagerTest, BackoffLogic_Query);
-  FRIEND_TEST_ALL_PREFIXES(AutofillDownloadManagerTest, RetryLimit_Upload);
-  FRIEND_TEST_ALL_PREFIXES(AutofillDownloadManagerTest, RetryLimit_Query);
+  FRIEND_TEST_ALL_PREFIXES(AutofillCrowdsourcingManagerTest, QueryAndUploadTest);
+  FRIEND_TEST_ALL_PREFIXES(AutofillCrowdsourcingManagerTest, BackoffLogic_Upload);
+  FRIEND_TEST_ALL_PREFIXES(AutofillCrowdsourcingManagerTest, BackoffLogic_Query);
+  FRIEND_TEST_ALL_PREFIXES(AutofillCrowdsourcingManagerTest, RetryLimit_Upload);
+  FRIEND_TEST_ALL_PREFIXES(AutofillCrowdsourcingManagerTest, RetryLimit_Query);
 
   struct FormRequestData;
   typedef std::list<std::pair<std::vector<FormSignature>, std::string>>
@@ -202,7 +200,7 @@ class AutofillDownloadManager {
   const std::string api_key_;
 
   // Access to leave log messages for chrome://autofill-internals, may be null.
-  const raw_ptr<LogManager> log_manager_;  // WEAK
+  const raw_ptr<LogManager> log_manager_;
 
   // The autofill server URL root: scheme://host[:port]/path excluding the
   // final path component for the request and the query params.
@@ -224,9 +222,9 @@ class AutofillDownloadManager {
   // Used for exponential backoff of requests.
   net::BackoffEntry loader_backoff_;
 
-  base::WeakPtrFactory<AutofillDownloadManager> weak_factory_{this};
+  base::WeakPtrFactory<AutofillCrowdsourcingManager> weak_factory_{this};
 };
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_DOWNLOAD_MANAGER_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_CROWDSOURCING_AUTOFILL_CROWDSOURCING_MANAGER_H_

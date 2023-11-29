@@ -130,7 +130,9 @@ class FormStructureBrowserTest
   class TestAutofillClient : public ChromeAutofillClientIOS {
    public:
     using ChromeAutofillClientIOS::ChromeAutofillClientIOS;
-    AutofillDownloadManager* GetDownloadManager() override { return nullptr; }
+    AutofillCrowdsourcingManager* GetCrowdsourcingManager() override {
+      return nullptr;
+    }
   };
 
   class TestAutofillManager : public BrowserAutofillManager {

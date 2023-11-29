@@ -82,7 +82,7 @@ class WindowedNetworkObserver {
 
   bool OnIntercept(content::URLLoaderInterceptor::RequestParams* params) {
     // NOTE: This constant matches the one defined in
-    // components/autofill/core/browser/autofill_download_manager.cc
+    // components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.cc
     static const char kDefaultAutofillServerURL[] =
         "https://content-autofill.googleapis.com/";
     DCHECK(params);

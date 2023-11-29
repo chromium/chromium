@@ -77,7 +77,7 @@ class AddressNormalizer;
 class AutocompleteHistoryManager;
 class AutofillAblationStudy;
 class AutofillComposeDelegate;
-class AutofillDownloadManager;
+class AutofillCrowdsourcingManager;
 class AutofillDriver;
 struct AutofillErrorDialogContext;
 class AutofillMlPredictionModelHandler;
@@ -412,9 +412,9 @@ class AutofillClient : public RiskDataLoader {
   virtual scoped_refptr<network::SharedURLLoaderFactory>
   GetURLLoaderFactory() = 0;
 
-  // Returns the AutofillDownloadManager for communication with the Autofill
-  // crowdsourcing server.
-  virtual AutofillDownloadManager* GetDownloadManager();
+  // Returns the AutofillCrowdsourcingManager for communication with the
+  // Autofill server.
+  virtual AutofillCrowdsourcingManager* GetCrowdsourcingManager();
 
   // Gets the PersonalDataManager instance associated with the original Chrome
   // profile.

@@ -794,11 +794,11 @@ ChromePasswordManagerClient::GetHttpAuthManager() {
   return &httpauth_manager_;
 }
 
-autofill::AutofillDownloadManager*
-ChromePasswordManagerClient::GetAutofillDownloadManager() {
+autofill::AutofillCrowdsourcingManager*
+ChromePasswordManagerClient::GetAutofillCrowdsourcingManager() {
   if (auto* client =
           autofill::ContentAutofillClient::FromWebContents(web_contents())) {
-    return client->GetDownloadManager();
+    return client->GetCrowdsourcingManager();
   }
   return nullptr;
 }

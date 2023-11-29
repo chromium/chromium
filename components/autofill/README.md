@@ -34,14 +34,14 @@ with `AutofillAgent` extracting a form from the DOM.
 └─▲───────────────┘                     │
   │                                     │
   │ ┌────────────────────────┐        ┌─┴────────────────────┐
-  │ │AutofillExternalDelegate◄────────┤BrowserAutofillManager├───────┐     ┌───────────────┐
-  │ │1 per RenderFrameHost   │  owns 1│1 per RenderFrameHost │  votes│     │Autofill server│
-  │ └──────────────────────┬─┘        └─▲──────────────────┬─┘       │     └─────────────▲─┘
-  │                  events│            │            events│         │               HTTP│
-  │                        │            │                  │       ┌─▼───────────────────▼─┐
-  ├────────────────────────┼────────────┼──────────────────┼───────►AutofillDownloadManager│
-  │                        │            │                  │       │1 per WebContents      │
-  │                        │            │                  │       └─────────────────────▲─┘
+  │ │AutofillExternalDelegate◄────────┤BrowserAutofillManager├─┐           ┌───────────────┐
+  │ │1 per RenderFrameHost   │  owns 1│1 per RenderFrameHost │ │ votes     │Autofill server│
+  │ └──────────────────────┬─┘        └─▲──────────────────┬─┘ │           └─────────────▲─┘
+  │                  events│            │            events│   │                     HTTP│
+  │                        │            │                  │ ┌─▼─────────────────────────▼─┐
+  ├────────────────────────┼────────────┼──────────────────┼─►AutofillCrowsourcingdManager │
+  │                        │            │                  │ │1 per WebContents            │
+  │                        │            │                  │ └───────────────────────────▲─┘
   │                        │            │                  │                             │
   │                        │            │                  │    ┌──────────────┐         │
   │                        │            │                  │    │FormStructure │         │
@@ -104,7 +104,6 @@ corresponds to a [`Profile`](https://www.chromium.org/developers/design-document
     - [`autofill_client.h`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/autofill_client.h)
       - [`//android_webview/browser/aw_autofill_client.h`](https://source.chromium.org/chromium/chromium/src/+/main:android_webview/browser/aw_autofill_client.h) (WebView implementation)
       - [`//chrome/browser/ui/autofill/chrome_autofill_client.h`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/autofill/chrome_autofill_client.h) (Chrome implementation)
-    - [`autofill_download_manager.h`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/autofill_download_manager.h)
     - [`autofill_driver.h`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/autofill_driver.h)
       - [`../../content/browser/content_autofill_driver.h`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/autofill_driver.h) (non-iOS implementation)
       - [`../../ios/browser/autofill_driver_ios.h`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/ios/browser/autofill_driver_ios.h) (iOS implementation)
@@ -113,6 +112,7 @@ corresponds to a [`Profile`](https://www.chromium.org/developers/design-document
     - [`autofill_manager.h`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/autofill_manager.h)
       - [`browser_autofill_manager.h`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/browser_autofill_manager.h) (Chrome specialization)
       - [`//components/android_autofill/browser/android_autofill_manager.h`](https://source.chromium.org/chromium/chromium/src/+/main:components/android_autofill/browser/android_autofill_manager.h) (WebView specialization)
+    - [`crowdsourcing/autofill_crowdsourcing_manager.h`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h)
     - [`data_model/`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/data_model)
       - [`autofill_profile.h`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/data_model/autofill_profile.h)
       - [`credit_card.h`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/data_model/credit_card.h)
@@ -269,8 +269,8 @@ may sacrifice a little bit of correctness in favor of simplicity.
     `components/autofill/core/browser/form_parsing/regex_patterns.h` if
     `features::kAutofillParsingPatternProvider` is enabled.
 * Crowd sourcing
-  * `AutofillDownloadManager` is responsible for downloading field
-    classifications.
+  * `AutofillCrowdsourcingManager` is responsible for downloading field
+    classifications and uploading type votes.
   * Crowd sourcing is applied (for lookups and voting) for forms of any size but
     the server can handle small forms differently, see
     [`http://cs/IsSmallForm%20file:autofill`](http://cs/IsSmallForm%20file:autofill).
@@ -427,10 +427,10 @@ In practice we allow only one upload per (form x submission source) every
 `kAutofillUploadThrottlingPeriodInDays` days.
 
 In case `observed_submission == true`, the votes are generated on a background
-thread and then passed to the `AutofillDownloadManager`.
+thread and then passed to the `AutofillCrowdsourcingManager`.
 
 In case `observed_submission == false`, the votes are not directly passed to
-the `AutofillDownloadManager`. Instead they are cached until the cache is
+the `AutofillCrowdsourcingManager`. Instead they are cached until the cache is
 flushed. This enables us to override previous votes in case the user focuses
 and removes focus from a form multiple times while editing the fields' values.
 The cache is flushed on form submission.

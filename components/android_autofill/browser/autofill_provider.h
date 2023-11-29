@@ -33,8 +33,8 @@ class AutofillProvider : public content::WebContentsUserData<AutofillProvider> {
  public:
   ~AutofillProvider() override;
 
-  static bool is_download_manager_disabled_for_testing();
-  static void set_is_download_manager_disabled_for_testing();
+  static bool is_crowdsourcing_manager_disabled_for_testing();
+  static void set_is_crowdsourcing_manager_disabled_for_testing();
 
   virtual void OnAskForValuesToFill(
       AndroidAutofillManager* manager,

@@ -51,16 +51,17 @@ using FieldTypeSource = AutofillManager::Observer::FieldTypeSource;
 
 namespace {
 
-class MockAutofillDownloadManager : public AutofillDownloadManager {
+class MockAutofillCrowdsourcingManager : public AutofillCrowdsourcingManager {
  public:
-  explicit MockAutofillDownloadManager(AutofillClient* client)
-      : AutofillDownloadManager(client,
-                                /*api_key=*/"",
-                                /*log_manager=*/nullptr) {}
+  explicit MockAutofillCrowdsourcingManager(AutofillClient* client)
+      : AutofillCrowdsourcingManager(client,
+                                     /*api_key=*/"",
+                                     /*log_manager=*/nullptr) {}
 
-  MockAutofillDownloadManager(const MockAutofillDownloadManager&) = delete;
-  MockAutofillDownloadManager& operator=(const MockAutofillDownloadManager&) =
+  MockAutofillCrowdsourcingManager(const MockAutofillCrowdsourcingManager&) =
       delete;
+  MockAutofillCrowdsourcingManager& operator=(
+      const MockAutofillCrowdsourcingManager&) = delete;
 
   MOCK_METHOD(bool,
               StartQueryRequest,
@@ -286,12 +287,12 @@ class AutofillManagerTest : public testing::Test {
     driver_.reset();
   }
 
-  void SetUpObserverAndDownloadManager(bool successful_request) {
-    auto download_manager =
-        std::make_unique<MockAutofillDownloadManager>(&client_);
-    ON_CALL(*download_manager, StartQueryRequest)
+  void SetUpObserverAndCrowdsourcingManager(bool successful_request) {
+    auto crowdsourcing_manager =
+        std::make_unique<MockAutofillCrowdsourcingManager>(&client_);
+    ON_CALL(*crowdsourcing_manager, StartQueryRequest)
         .WillByDefault(Return(successful_request));
-    client_.set_download_manager(std::move(download_manager));
+    client_.set_crowdsourcing_manager(std::move(crowdsourcing_manager));
     manager_->AddObserver(&observer_);
   }
 
@@ -320,12 +321,12 @@ INSTANTIATE_TEST_SUITE_P(AutofillManagerTest,
 class AutofillManagerTest_OnLoadedServerPredictionsObserver
     : public AutofillManagerTest {
  public:
-  void SetUpObserverAndDownloadManager(bool successful_request) {
-    auto download_manager =
-        std::make_unique<MockAutofillDownloadManager>(&client_);
-    ON_CALL(*download_manager, StartQueryRequest)
+  void SetUpObserverAndCrowdsourcingManager(bool successful_request) {
+    auto crowdsourcing_manager =
+        std::make_unique<MockAutofillCrowdsourcingManager>(&client_);
+    ON_CALL(*crowdsourcing_manager, StartQueryRequest)
         .WillByDefault(Return(successful_request));
-    client_.set_download_manager(std::move(download_manager));
+    client_.set_crowdsourcing_manager(std::move(crowdsourcing_manager));
     manager_->AddObserver(&observer_);
   }
 };
@@ -552,7 +553,7 @@ TEST_F(AutofillManagerTest, GetMlModelPredictionsForForm) {
 TEST_F(
     AutofillManagerTest_OnLoadedServerPredictionsObserver,
     OnFormsSeen_SuccessfulQueryRequest_NotifiesBeforeLoadedServerPredictionsObserver) {
-  SetUpObserverAndDownloadManager(/*successful_request=*/true);
+  SetUpObserverAndCrowdsourcingManager(/*successful_request=*/true);
 
   std::vector<FormData> forms = CreateTestForms(1);
   EXPECT_CALL(observer_, OnBeforeLoadedServerPredictions(Ref(*manager_)));
@@ -570,7 +571,7 @@ TEST_F(
 TEST_F(
     AutofillManagerTest_OnLoadedServerPredictionsObserver,
     OnFormsSeen_FailedQueryRequest_NotifiesBothLoadedServerPredictionsObservers) {
-  SetUpObserverAndDownloadManager(/*successful_request=*/false);
+  SetUpObserverAndCrowdsourcingManager(/*successful_request=*/false);
 
   std::vector<FormData> forms = CreateTestForms(1);
   EXPECT_CALL(observer_, OnBeforeLoadedServerPredictions(Ref(*manager_)));
@@ -588,7 +589,7 @@ TEST_F(
 TEST_F(
     AutofillManagerTest_OnLoadedServerPredictionsObserver,
     OnLoadedServerPredictions_EmptyQueriedFormSignatures_NotifiesAfterLoadedServerPredictionsObserver) {
-  SetUpObserverAndDownloadManager(/*successful_request=*/true);
+  SetUpObserverAndCrowdsourcingManager(/*successful_request=*/true);
 
   std::vector<FormData> forms = CreateTestForms(1);
   EXPECT_CALL(observer_, OnBeforeLoadedServerPredictions(Ref(*manager_)));
@@ -608,7 +609,7 @@ TEST_F(
 TEST_F(
     AutofillManagerTest_OnLoadedServerPredictionsObserver,
     OnLoadedServerPredictions_NonEmptyQueriedFormSignatures_NotifiesAfterLoadedServerPredictionsObserver) {
-  SetUpObserverAndDownloadManager(/*successful_request=*/true);
+  SetUpObserverAndCrowdsourcingManager(/*successful_request=*/true);
 
   std::vector<FormData> forms = CreateTestForms(1);
   EXPECT_CALL(observer_, OnBeforeLoadedServerPredictions(Ref(*manager_)));

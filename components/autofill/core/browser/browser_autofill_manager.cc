@@ -621,12 +621,13 @@ BrowserAutofillManager::~BrowserAutofillManager() {
   credit_card_form_event_logger_->OnDestroyed();
 
   // We don't flush the `queued_vote_uploads_` here because that would trigger
-  // network requests in the AutofillDownloadManager, which are managed with
-  // by SimpleURLLoaders owned by the AutofillDownloadManager. Destroying the
-  // BrowserAutofillManager destroys the AutofillDownloadManager and its
-  // SimpleURLLoaders, which would immediately cancel the uploads.
-  // As a consequence of this, votes are lost if the user generates blur votes
-  // and closes the tab before the votes are sent (due to a navigation).
+  // network requests in the AutofillCrowdsourcingManager, which are managed
+  // with by SimpleURLLoaders owned by the AutofillCrowdsourcingManager.
+  // Destroying the BrowserAutofillManager destroys the
+  // AutofillCrowdsourcingManager and its SimpleURLLoaders, which would
+  // immediately cancel the uploads. As a consequence of this, votes are lost if
+  // the user generates blur votes and closes the tab before the votes are sent
+  // (due to a navigation).
 }
 
 base::WeakPtr<AutofillManager> BrowserAutofillManager::GetWeakPtr() {
@@ -2058,7 +2059,7 @@ void BrowserAutofillManager::UploadVotesAndLogQuality(
         client().GetUkmRecorder(), source_id, *submitted_form, submission_time);
   }
 
-  if (!client().GetDownloadManager()) {
+  if (!client().GetCrowdsourcingManager()) {
     return;
   }
 
@@ -2074,7 +2075,7 @@ void BrowserAutofillManager::UploadVotesAndLogQuality(
     non_empty_types.insert(CREDIT_CARD_VERIFICATION_CODE);
   }
 
-  client().GetDownloadManager()->StartUploadRequest(
+  client().GetCrowdsourcingManager()->StartUploadRequest(
       *submitted_form, was_autofilled, non_empty_types,
       /*login_form_signature=*/std::string(), observed_submission,
       client().GetPrefs(), GetWeakPtr());

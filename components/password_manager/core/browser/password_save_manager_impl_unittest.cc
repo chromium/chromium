@@ -9,7 +9,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_download_manager.h"
+#include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/test_utils/vote_uploads_test_matchers.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -159,8 +159,8 @@ class MockFormSaver : public StubFormSaver {
 class MockPasswordManagerClient : public StubPasswordManagerClient {
  public:
   MOCK_METHOD(bool, IsOffTheRecord, (), (const, override));
-  MOCK_METHOD(autofill::AutofillDownloadManager*,
-              GetAutofillDownloadManager,
+  MOCK_METHOD(autofill::AutofillCrowdsourcingManager*,
+              GetAutofillCrowdsourcingManager,
               (),
               (override));
   MOCK_METHOD(void, UpdateFormManagers, (), (override));
@@ -171,15 +171,17 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
   MOCK_METHOD(bool, IsCommittedMainFrameSecure, (), (const, override));
 };
 
-class MockAutofillDownloadManager : public autofill::AutofillDownloadManager {
+class MockAutofillCrowdsourcingManager
+    : public autofill::AutofillCrowdsourcingManager {
  public:
-  MockAutofillDownloadManager()
-      : AutofillDownloadManager(nullptr,
-                                version_info::Channel::UNKNOWN,
-                                nullptr) {}
-  MockAutofillDownloadManager(const MockAutofillDownloadManager&) = delete;
-  MockAutofillDownloadManager& operator=(const MockAutofillDownloadManager&) =
+  MockAutofillCrowdsourcingManager()
+      : AutofillCrowdsourcingManager(nullptr,
+                                     version_info::Channel::UNKNOWN,
+                                     nullptr) {}
+  MockAutofillCrowdsourcingManager(const MockAutofillCrowdsourcingManager&) =
       delete;
+  MockAutofillCrowdsourcingManager& operator=(
+      const MockAutofillCrowdsourcingManager&) = delete;
 
   MOCK_METHOD(bool,
               StartUploadRequest,
@@ -301,9 +303,9 @@ class PasswordSaveManagerImplTestBase : public testing::Test {
     password_save_manager_impl_->Init(&client_, fetcher_.get(),
                                       metrics_recorder_, &votes_uploader_);
 
-    ON_CALL(client_, GetAutofillDownloadManager())
-        .WillByDefault(Return(&mock_autofill_download_manager_));
-    ON_CALL(mock_autofill_download_manager_, StartUploadRequest)
+    ON_CALL(client_, GetAutofillCrowdsourcingManager())
+        .WillByDefault(Return(&mock_autofill_crowdsourcing_manager_));
+    ON_CALL(mock_autofill_crowdsourcing_manager_, StartUploadRequest)
         .WillByDefault(Return(true));
     ON_CALL(*client_.GetPasswordFeatureManager(), GetDefaultPasswordStore)
         .WillByDefault(Return(PasswordForm::Store::kProfileStore));
@@ -340,8 +342,8 @@ class PasswordSaveManagerImplTestBase : public testing::Test {
     return metrics_recorder_.get();
   }
 
-  MockAutofillDownloadManager* mock_autofill_download_manager() {
-    return &mock_autofill_download_manager_;
+  MockAutofillCrowdsourcingManager* mock_autofill_crowdsourcing_manager() {
+    return &mock_autofill_crowdsourcing_manager_;
   }
 
   TestMockTimeTaskRunner* task_runner() { return task_runner_.get(); }
@@ -409,7 +411,8 @@ class PasswordSaveManagerImplTestBase : public testing::Test {
   std::unique_ptr<PasswordSaveManagerImpl> password_save_manager_impl_;
   raw_ptr<NiceMock<MockFormSaver>> mock_account_form_saver_ = nullptr;
   raw_ptr<NiceMock<MockFormSaver>> mock_profile_form_saver_ = nullptr;
-  NiceMock<MockAutofillDownloadManager> mock_autofill_download_manager_;
+  NiceMock<MockAutofillCrowdsourcingManager>
+      mock_autofill_crowdsourcing_manager_;
 };
 
 // The boolean test parameter maps to the `enable_account_store` constructor
@@ -911,7 +914,8 @@ TEST_P(PasswordSaveManagerImplTest, UpdatePasswordValueEmptyStore) {
 
   // TODO(https://crbug.com/928690): implement not sending incorrect votes and
   // check that StartUploadRequest is not called.
-  EXPECT_CALL(*mock_autofill_download_manager(), StartUploadRequest).Times(1);
+  EXPECT_CALL(*mock_autofill_crowdsourcing_manager(), StartUploadRequest)
+      .Times(1);
   password_save_manager_impl()->Save(&observed_form_, parsed_submitted_form);
 }
 
@@ -994,7 +998,7 @@ TEST_P(PasswordSaveManagerImplTest, UpdatePasswordValueMultiplePasswordFields) {
   std::map<std::u16string, autofill::ServerFieldType> expected_types;
   expected_types[expected.password_element] = autofill::PASSWORD;
 
-  EXPECT_CALL(*mock_autofill_download_manager(),
+  EXPECT_CALL(*mock_autofill_crowdsourcing_manager(),
               StartUploadRequest(UploadedAutofillTypesAre(expected_types),
                                  false, _, _, true, nullptr, _));
 
@@ -1341,7 +1345,7 @@ TEST_P(PasswordSaveManagerImplTest, UsernameCorrectionVote) {
   expected_types[submitted_form_.fields[kPasswordFieldIndex].name] =
       autofill::PASSWORD;
 
-  EXPECT_CALL(*mock_autofill_download_manager(),
+  EXPECT_CALL(*mock_autofill_crowdsourcing_manager(),
               StartUploadRequest(UploadedAutofillTypesAre(expected_types),
                                  false, _, _, true, nullptr, _));
 
@@ -1352,7 +1356,7 @@ TEST_P(PasswordSaveManagerImplTest, UsernameCorrectionVote) {
       autofill::USERNAME;
   correction_upload_expected_types[u"password"] =
       autofill::ACCOUNT_CREATION_PASSWORD;
-  EXPECT_CALL(*mock_autofill_download_manager(),
+  EXPECT_CALL(*mock_autofill_crowdsourcing_manager(),
               StartUploadRequest(
                   UploadedAutofillTypesAre(correction_upload_expected_types),
                   false, _, _, true, nullptr, _));

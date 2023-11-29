@@ -24,9 +24,9 @@
 #include "base/types/pass_key.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_download_manager.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
+#include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_data.h"
@@ -61,7 +61,7 @@ class TouchToFillDelegateAndroidImpl;
 //
 // It is owned by the AutofillDriver.
 class AutofillManager
-    : public AutofillDownloadManager::Observer,
+    : public AutofillCrowdsourcingManager::Observer,
       public translate::TranslateDriver::LanguageDetectionObserver {
  public:
   // Observer of AutofillManager events.
@@ -72,7 +72,8 @@ class AutofillManager
   // OnBeforeFoo() may be called without a corresponding OnAfterFoo() call are:
   // - if the number of cached forms exceeds `kAutofillManagerMaxFormCacheSize`;
   // - if this AutofillManager has been destroyed or reset in the meantime.
-  // - if the request in AutofillDownloadManager was not successful (i.e. no 2XX
+  // - if the request in AutofillCrowdsourcingManager was not successful (i.e.
+  // no 2XX
   //   response code or a null response body).
   //
   // TODO(crbug.com/1476488): Consider moving events that are specific to BAM to
@@ -479,7 +480,8 @@ class AutofillManager
   //   ParseFormsAsync(), and then unwrap the vector again.
   // - Let OnFormsSeen() take a single FormData. That simplifies also
   //   ContentAutofillDriver and AutofillDriverRouter a bit, but then the
-  //   AutofillDownloadManager needs to collect forms to send a batch query.
+  //   AutofillCrowdsourcingManager needs to collect forms to send a batch
+  //   query.
   // - Let all other events take a FormGlobalId instead of a FormData and fire
   //   OnFormsSeen() before these events if necessary.
   void ParseFormsAsync(
@@ -506,7 +508,7 @@ class AutofillManager
  private:
   friend class AutofillManagerTestApi;
 
-  // AutofillDownloadManager::Observer:
+  // AutofillCrowdsourcingManager::Observer:
   void OnLoadedServerPredictions(
       std::string response,
       const std::vector<FormSignature>& queried_form_signatures) override;

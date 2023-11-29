@@ -19,9 +19,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/autofill_download_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/browser/logging/text_log_receiver.h"
@@ -106,8 +106,8 @@ class TestAutofillClientTemplate : public T {
 
   bool IsOffTheRecord() override { return is_off_the_record_; }
 
-  AutofillDownloadManager* GetDownloadManager() override {
-    return download_manager_.get();
+  AutofillCrowdsourcingManager* GetCrowdsourcingManager() override {
+    return crowdsourcing_manager_.get();
   }
 
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
@@ -713,9 +713,9 @@ class TestAutofillClientTemplate : public T {
     is_off_the_record_ = is_off_the_record;
   }
 
-  void set_download_manager(
-      std::unique_ptr<AutofillDownloadManager> download_manager) {
-    download_manager_ = std::move(download_manager);
+  void set_crowdsourcing_manager(
+      std::unique_ptr<AutofillCrowdsourcingManager> crowdsourcing_manager) {
+    crowdsourcing_manager_ = std::move(crowdsourcing_manager);
   }
 
   void set_shared_url_loader_factory(
@@ -829,7 +829,7 @@ class TestAutofillClientTemplate : public T {
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory_);
 
-  std::unique_ptr<AutofillDownloadManager> download_manager_;
+  std::unique_ptr<AutofillCrowdsourcingManager> crowdsourcing_manager_;
 
   // Populated if credit card local save or upload was offered.
   absl::optional<AutofillClient::SaveCreditCardOptions>

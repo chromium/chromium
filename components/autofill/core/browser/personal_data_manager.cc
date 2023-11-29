@@ -31,9 +31,9 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
-#include "components/autofill/core/browser/autofill_download_manager.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/credit_card_art_image.h"
@@ -482,7 +482,7 @@ void PersonalDataManager::OnURLsDeleted(
   }
 
   if (!deletion_info.is_from_expiration() && deletion_info.IsAllHistory()) {
-    AutofillDownloadManager::ClearUploadHistory(pref_service_);
+    AutofillCrowdsourcingManager::ClearUploadHistory(pref_service_);
   }
 
   if (profile_save_strike_database_) {
