@@ -265,7 +265,7 @@ final class JavaUrlRequest extends UrlRequestBase {
     public void addHeader(String header, String value) {
         checkNotStarted();
         if (!isValidHeaderName(header) || value.contains("\r\n")) {
-            throw new IllegalArgumentException("Invalid header " + header + "=" + value);
+            throw new IllegalArgumentException("Invalid header with headername: " + header);
         }
         if (mRequestHeaders.containsKey(header)) {
             mRequestHeaders.remove(header);

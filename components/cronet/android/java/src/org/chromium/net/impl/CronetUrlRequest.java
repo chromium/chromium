@@ -264,7 +264,7 @@ public final class CronetUrlRequest extends UrlRequestBase {
                                     header.getKey(),
                                     header.getValue())) {
                         throw new IllegalArgumentException(
-                                "Invalid header " + header.getKey() + "=" + header.getValue());
+                                "Invalid header with headername: " + header.getKey());
                     }
                 }
                 if (mUploadDataStream != null) {
@@ -1127,7 +1127,8 @@ public final class CronetUrlRequest extends UrlRequestBase {
                                             } catch (Exception e) {
                                                 Log.e(
                                                         CronetUrlRequestContext.LOG_TAG,
-                                                        "Exception thrown from request finished listener",
+                                                        "Exception thrown from request"
+                                                                + " finishedlistener",
                                                         e);
                                             } finally {
                                                 inflightCallbackCount.decrement();

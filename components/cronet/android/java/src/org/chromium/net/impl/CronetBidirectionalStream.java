@@ -323,10 +323,7 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
                 if (startResult > 0) {
                     int headerPos = startResult - 1;
                     throw new IllegalArgumentException(
-                            "Invalid header "
-                                    + mRequestHeaders[headerPos]
-                                    + "="
-                                    + mRequestHeaders[headerPos + 1]);
+                            "Invalid header with headername: " + mRequestHeaders[headerPos]);
                 }
                 mReadState = mWriteState = State.STARTED;
             } catch (RuntimeException e) {

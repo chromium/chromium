@@ -135,7 +135,7 @@ void HttpRequestHeaders::SetHeader(base::StringPiece key, std::string&& value) {
   // Invalid header names or values could mean clients can attach
   // browser-internal headers.
   CHECK(HttpUtil::IsValidHeaderName(key)) << key;
-  CHECK(HttpUtil::IsValidHeaderValue(value)) << key << ":" << value;
+  CHECK(HttpUtil::IsValidHeaderValue(value)) << key << " has invalid value.";
 
   SetHeaderInternal(key, std::move(value));
 }
