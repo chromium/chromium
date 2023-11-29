@@ -126,6 +126,10 @@ int GetDeduplicationProviderPreferenceScore(
       // 2) They may display enhanced information such as the bookmark
       //    folders path.
       {AutocompleteProvider::TYPE_BOOKMARK, 1},
+      // Don't let bookmarks override builtins, as that interferes with
+      // starter pack matches when user has bookmarked their destination.
+      {AutocompleteProvider::TYPE_BUILTIN,
+       OmniboxFieldTrial::IsKeywordModeRefreshEnabled() ? 1 : 0},
       // Prefer non-shorcut matches over shortcuts, the latter of which may
       // have stale or missing URL titles (the latter from what-you-typed
       // matches).
@@ -642,6 +646,18 @@ bool AutocompleteMatch::MoreRelevant(const AutocompleteMatch& match1,
 // static
 bool AutocompleteMatch::BetterDuplicate(const AutocompleteMatch& match1,
                                         const AutocompleteMatch& match2) {
+  if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled()) {
+    // Prefer starter pack matches.
+    if (match1.type == AutocompleteMatchType::STARTER_PACK &&
+        match2.type != AutocompleteMatchType::STARTER_PACK) {
+      return true;
+    }
+    if (match1.type != AutocompleteMatchType::STARTER_PACK &&
+        match2.type == AutocompleteMatchType::STARTER_PACK) {
+      return false;
+    }
+  }
+
   // Prefer the Entity Match over the non-entity match, if they have the same
   // |fill_into_edit| value.
   if (match1.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY &&
