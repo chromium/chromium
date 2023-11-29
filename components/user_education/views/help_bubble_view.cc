@@ -122,7 +122,7 @@ class MdIPHBubbleButton : public views::MdTextButton {
                     PressedCallback callback,
                     const std::u16string& text,
                     bool is_default_button)
-      : MdTextButton(callback, text),
+      : MdTextButton(std::move(callback), text),
         delegate_(delegate),
         is_default_button_(is_default_button) {
     // Prominent style gives a button hover highlight.
@@ -210,7 +210,7 @@ class ClosePromoButton : public views::ImageButton {
                    const std::u16string accessible_name,
                    PressedCallback callback)
       : delegate_(delegate) {
-    SetCallback(callback);
+    SetCallback(std::move(callback));
     views::ConfigureVectorImageButton(this);
     views::HighlightPathGenerator::Install(
         this,
