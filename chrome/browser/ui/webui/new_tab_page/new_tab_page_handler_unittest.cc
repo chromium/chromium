@@ -14,6 +14,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/token.h"
 #include "chrome/browser/new_tab_page/feature_promo_helper/new_tab_page_feature_promo_helper.h"
 #include "chrome/browser/new_tab_page/promos/promo_data.h"
 #include "chrome/browser/new_tab_page/promos/promo_service.h"
@@ -619,6 +620,31 @@ TEST_P(NewTabPageHandlerThemeTest, SetUploadedImage) {
   ASSERT_TRUE(theme->background_image);
   EXPECT_EQ("https://foo.com/img.png", theme->background_image->url);
   EXPECT_EQ(new_tab_page::mojom::NtpBackgroundImageSource::kUploadedImage,
+            theme->background_image->image_source);
+}
+
+TEST_P(NewTabPageHandlerThemeTest, SetWallpaperSearchImage) {
+  new_tab_page::mojom::ThemePtr theme;
+  EXPECT_CALL(mock_page_, SetTheme)
+      .Times(1)
+      .WillOnce(testing::Invoke([&theme](new_tab_page::mojom::ThemePtr arg) {
+        theme = std::move(arg);
+      }));
+  CustomBackground custom_background;
+  custom_background.is_uploaded_image = true;
+  custom_background.local_background_id = base::Token::CreateRandom();
+  custom_background.daily_refresh_enabled = false;
+  ON_CALL(mock_ntp_custom_background_service_, GetCustomBackground())
+      .WillByDefault(testing::Return(absl::make_optional(custom_background)));
+  ON_CALL(mock_theme_service_, UsingDefaultTheme())
+      .WillByDefault(testing::Return(false));
+
+  ntp_custom_background_service_observer_->OnCustomBackgroundImageUpdated();
+  mock_page_.FlushForTesting();
+
+  ASSERT_TRUE(theme);
+  ASSERT_TRUE(theme->background_image);
+  EXPECT_EQ(new_tab_page::mojom::NtpBackgroundImageSource::kWallpaperSearch,
             theme->background_image->image_source);
 }
 

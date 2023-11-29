@@ -244,6 +244,9 @@ new_tab_page::mojom::ThemePtr MakeTheme(
     if (custom_background->daily_refresh_enabled) {
       image_source = new_tab_page::mojom::NtpBackgroundImageSource::
           kFirstPartyThemeWithDailyRefresh;
+    } else if (custom_background->local_background_id.has_value()) {
+      image_source =
+          new_tab_page::mojom::NtpBackgroundImageSource::kWallpaperSearch;
     } else if (custom_background->is_uploaded_image) {
       image_source =
           new_tab_page::mojom::NtpBackgroundImageSource::kUploadedImage;
