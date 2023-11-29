@@ -4,7 +4,7 @@
 """Definitions of builders in the tryserver.chromium.swangle builder group."""
 
 load("//lib/branches.star", "branches")
-load("//lib/builders.star", "os", "reclient")
+load("//lib/builders.star", "cpu", "os", "reclient")
 load("//lib/consoles.star", "consoles")
 load("//lib/try.star", "try_")
 
@@ -125,6 +125,7 @@ try_.builder(
         "ci/Dawn Mac x64 DEPS Release (Intel)",
     ],
     os = os.MAC_ANY,
+    cpu = cpu.ARM64,
     gn_args = "ci/Dawn Mac x64 DEPS Builder",
     main_list_view = "try",
     test_presentation = resultdb.test_presentation(
