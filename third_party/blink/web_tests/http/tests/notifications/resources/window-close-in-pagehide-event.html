@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>Notifications: Document for closing a notification in the "unload" event.</title>
+    <title>Notifications: Document for closing a notification in the "pagehide" event.</title>
   </head>
   <body>
     <script>
@@ -12,7 +12,7 @@
 
       opener.postMessage('opened', '*');
 
-      window.addEventListener('unload', function() {
+      window.addEventListener('pagehide', function() {
           notification.close();
 
           opener.postMessage('closed', '*');
