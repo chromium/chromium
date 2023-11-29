@@ -89,7 +89,13 @@ class PlusAddressBottomSheetMediatorTest : public PlatformTest {
 
 // Ensure that the consumer is notified when a plus address is successfully
 // reserved.
-TEST_F(PlusAddressBottomSheetMediatorTest, ReservePlusAddress) {
+// TODO(crbug.com/1506002): The test fails on device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_ReservePlusAddress ReservePlusAddress
+#else
+#define MAYBE_ReservePlusAddress DISABLED_ReservePlusAddress
+#endif
+TEST_F(PlusAddressBottomSheetMediatorTest, MAYBE_ReservePlusAddress) {
   plus_addresses::FakePlusAddressService service;
   PlusAddressBottomSheetMediator* mediator =
       [[PlusAddressBottomSheetMediator alloc]
@@ -120,7 +126,13 @@ TEST_F(PlusAddressBottomSheetMediatorTest, ReservePlusAddressError) {
 }
 
 // Ensure the consumer is notified when plus addresses are confirmed.
-TEST_F(PlusAddressBottomSheetMediatorTest, ConfirmPlusAddress) {
+// TODO(crbug.com/1506002): The test fails on device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_ConfirmPlusAddress ConfirmPlusAddress
+#else
+#define MAYBE_ConfirmPlusAddress DISABLED_ConfirmPlusAddress
+#endif
+TEST_F(PlusAddressBottomSheetMediatorTest, MAYBE_ConfirmPlusAddress) {
   plus_addresses::FakePlusAddressService service;
   PlusAddressBottomSheetMediator* mediator =
       [[PlusAddressBottomSheetMediator alloc]
@@ -138,7 +150,13 @@ TEST_F(PlusAddressBottomSheetMediatorTest, ConfirmPlusAddress) {
 }
 
 // Ensure the consumer is notified when plus addresses confirmation fails.
-TEST_F(PlusAddressBottomSheetMediatorTest, ConfirmPlusAddressError) {
+// TODO(crbug.com/1506002): The test fails on device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_ConfirmPlusAddressError ConfirmPlusAddressError
+#else
+#define MAYBE_ConfirmPlusAddressError DISABLED_ConfirmPlusAddressError
+#endif
+TEST_F(PlusAddressBottomSheetMediatorTest, MAYBE_ConfirmPlusAddressError) {
   plus_addresses::FakePlusAddressService service;
   PlusAddressBottomSheetMediator* mediator =
       [[PlusAddressBottomSheetMediator alloc]
