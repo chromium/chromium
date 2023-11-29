@@ -5,4 +5,15 @@
 #ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_TAB_GROUPS_TAB_GROUPS_MEDIATOR_H_
 #define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_TAB_GROUPS_TAB_GROUPS_MEDIATOR_H_
 
+#import <Foundation/Foundation.h>
+
+class WebStateList;
+
+@interface TabGroupsMediator : NSObject
+
+// TODO(crbug.com/1501837): Add a tab group ID when the ID will be available.
+- (instancetype)initWithWebStateList:(WebStateList*)webStateList;
+
+@end
+
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_TAB_GROUPS_TAB_GROUPS_MEDIATOR_H_

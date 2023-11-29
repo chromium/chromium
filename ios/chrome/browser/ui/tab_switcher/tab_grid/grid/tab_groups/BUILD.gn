@@ -9,7 +9,13 @@ source_set("tab_groups") {
     "tab_groups_mediator.h",
     "tab_groups_mediator.mm",
   ]
-  deps = []
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/features",
+  ]
 }
 
 source_set("tab_groups_ui") {
@@ -18,4 +24,18 @@ source_set("tab_groups_ui") {
     "tab_groups_view_controller.mm",
   ]
   deps = []
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "tab_groups_coordinator_unittest.mm" ]
+  deps = [
+    ":tab_groups",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+  ]
 }
