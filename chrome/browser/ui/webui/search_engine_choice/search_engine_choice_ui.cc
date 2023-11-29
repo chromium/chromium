@@ -40,10 +40,12 @@ std::string GetChoiceListJSON(Profile& profile) {
 
     const std::u16string icon_path = GetGeneratedIconPath(
         choice->keyword(), /*parent_directory_path=*/u"images/");
-    choice_value.Set("prepopulate_id", choice->prepopulate_id());
+    choice_value.Set("prepopulateId", choice->prepopulate_id());
     choice_value.Set("name", choice->short_name());
-    choice_value.Set("icon_path", icon_path);
+    choice_value.Set("iconPath", icon_path);
     choice_value.Set("url", choice->url());
+    choice_value.Set("marketingSnippet",
+                     search_engines::GetMarketingSnippetString(choice->data()));
     choice_value_list.Append(std::move(choice_value));
   }
   std::string json_choice_list;
@@ -88,8 +90,6 @@ SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
                              IDS_SHORT_PRODUCT_LOGO_ALT_TEXT);
   source->AddLocalizedString("fakeOmniboxText",
                              IDS_SEARCH_ENGINE_CHOICE_FAKE_OMNIBOX_TEXT);
-  source->AddLocalizedString("fallbackMarketingSnippet",
-                             IDS_SEARCH_ENGINE_FALLBACK_MARKETING_SNIPPET);
 
   AddGeneratedIconResources(source, /*directory=*/"images/");
   source->AddResourcePath("images/left_illustration.svg",

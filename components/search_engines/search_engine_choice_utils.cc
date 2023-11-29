@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/search_engines/search_engine_choice_utils.h"
+#include <string>
 
 #include "base/check_deref.h"
 #include "base/command_line.h"
@@ -17,7 +18,9 @@
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/version_info/version_info.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace search_engines {
 namespace {
@@ -348,5 +351,16 @@ void WipeSearchEngineChoicePrefs(PrefService& profile_prefs) {
         prefs::kDefaultSearchProviderChoiceScreenCompletionVersion);
   }
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+std::u16string GetMarketingSnippetString(
+    const TemplateURLData& template_url_data) {
+  int snippet_resource_id =
+      GetMarketingSnippetResourceId(template_url_data.keyword());
+  return l10n_util::GetStringUTF16(
+      snippet_resource_id == -1 ? IDS_SEARCH_ENGINE_FALLBACK_MARKETING_SNIPPET
+                                : snippet_resource_id);
+}
+#endif
 
 }  // namespace search_engines

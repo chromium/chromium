@@ -127,13 +127,13 @@ export class SearchEngineChoiceAppElement extends
     // `background-image` property because `getFaviconForPageURL` returns an
     // `image-set` and not a url.
     this.choiceList_.forEach((searchEngine: SearchEngineChoice) => {
-      if (searchEngine.prepopulate_id === 0) {
+      if (searchEngine.prepopulateId === 0) {
         // We get the favicon from the Favicon Service for custom search
         // engines.
-        searchEngine.icon_path =
+        searchEngine.iconPath =
             getFaviconForPageURL(searchEngine?.url!, false, '', 24);
       } else {
-        searchEngine.icon_path = 'url(' + searchEngine.icon_path + ')';
+        searchEngine.iconPath = 'url(' + searchEngine.iconPath + ')';
       }
     });
 
@@ -182,11 +182,11 @@ export class SearchEngineChoiceAppElement extends
 
     // Get the selected engine.
     const choice = this.choiceList_.find(
-        elem => elem.prepopulate_id === parseInt(selectedChoice));
+        elem => elem.prepopulateId === parseInt(selectedChoice));
     const searchEngineOmnibox = this.$.searchEngineOmnibox;
     const dummyOmnibox = this.$.dummyOmnibox;
     const fakeOmniboxText = this.i18n('fakeOmniboxText', choice?.name!);
-    const fakeOmniboxIconPath = choice?.icon_path!;
+    const fakeOmniboxIconPath = choice?.iconPath!;
 
     // We need to change the previous engine name to the new one and then start
     // the fade-in-animation when the fade-out-animation finishes running.

@@ -965,6 +965,10 @@
   "components/autofill/core/browser/autofill_address_rewriter_resources.grd":{
     "includes": [7220]
   },
+
+  "components/search_engine_descriptions_strings.grd": {
+    "messages": [7260],
+  },
   # END components/ section.
 
   # START ios/ section.

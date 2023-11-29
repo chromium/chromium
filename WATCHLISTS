@@ -1892,8 +1892,10 @@
                   '|chrome/test/data/webui/search_engine_choice/'\
                   '|components/resources/default_100_percent/search_engine_choice/'\
                   '|components/resources/default_200_percent/search_engine_choice/'\
-                  '|components/search_engines/search_engine_choice_utils.cc'\
+                  '|components/search_engines/generated_marketing_snippets.cc'\
+                  '|components/search_engines/search_engine_choice_.cc'\
                   '|components/search_engine_choice_strings.grdp'\
+                  '|components/search_engine_descriptions_strings.grd'\
                   '|ios/chrome/browser/providers/signin/chromium_choice.mm'\
                   '|ios/chrome/test/providers/signin/test_choice.mm'\
                   '|ios/public/provider/chrome/browser/signin/choice_api.h'\

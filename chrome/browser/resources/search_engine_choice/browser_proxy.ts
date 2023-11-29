@@ -10,11 +10,12 @@
 import {PageHandlerFactory, PageHandlerRemote} from './search_engine_choice.mojom-webui.js';
 
 export interface SearchEngineChoice {
-  prepopulate_id: number;
+  prepopulateId: number;
   name: string;
-  icon_path: string;
+  iconPath: string;
   url: string;
-  show_marketing_snippet: boolean;
+  marketingSnippet: string;
+  showMarketingSnippet: boolean;
 }
 
 export class SearchEngineChoiceBrowserProxy {

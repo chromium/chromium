@@ -418,21 +418,21 @@
   <cr-radio-group id="choiceList" class="custom-scrollbar"
       selected="{{selectedChoice_}}">
     <template is="dom-repeat" items="[[choiceList_]]">
-        <cr-radio-button class="label-first" name="[[item.prepopulate_id]]">
+        <cr-radio-button class="label-first" name="[[item.prepopulateId]]">
           <div class="choice">
             <div class="choice-icon"
-                style$="background-image: [[item.icon_path]];"></div>
+                style$="background-image: [[item.iconPath]];"></div>
             <template is="dom-if" if="[[!withMarketingSnippets_]]">
               <div class="choice-title">[[item.name]]</div>
             </template>
             <template is="dom-if" if="[[withMarketingSnippets_]]">
               <div class="choice-text">
-                <cr-expand-button expanded="{{item.show_marketing_snippet}}"
+                <cr-expand-button expanded="{{item.showMarketingSnippet}}"
                     no-hover>
                   <div class="choice-title">[[item.name]]</div>
                 </cr-expand-button>
-                <iron-collapse opened="[[item.show_marketing_snippet]]">
-                  $i18n{fallbackMarketingSnippet}
+                <iron-collapse opened="[[item.showMarketingSnippet]]">
+                  [[item.marketingSnippet]]
                 </iron-collapse>
               </div>
             </template>
