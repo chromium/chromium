@@ -17465,6 +17465,36 @@
             ]
         }
     ],
+    "SidePanelCompanionDesktopM116Plus": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledContextualLensPanel_20231129",
+                    "params": {
+                        "open-companion-for-image-search": "false",
+                        "open-companion-for-web-search": "false",
+                        "open-contextual-lens-panel": "true",
+                        "open-links-in-current-tab": "false"
+                    },
+                    "enable_features": [
+                        "SidePanelCompanion",
+                        "VisualSearchSuggestions"
+                    ],
+                    "disable_features": [
+                        "CompanionEnableNewBadgesInContextMenu",
+                        "SideSearch"
+                    ]
+                }
+            ]
+        }
+    ],
     "SidePanelJourneys": [
         {
             "platforms": [
