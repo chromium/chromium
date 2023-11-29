@@ -1066,7 +1066,7 @@ export class DirectoryModel extends EventTarget {
 
       this.runningScan_ = null;
       this.scanFailures_++;
-      failureCallback(event.error);
+      failureCallback(event.detail.error);
 
       if (maybeRunPendingRescan()) {
         return;
@@ -1075,7 +1075,7 @@ export class DirectoryModel extends EventTarget {
       // Do not rescan for Guest OS (including Crostini) errors.
       // TODO(crbug/1293229): Guest OS currently reuses the Crostini error
       // string, but once it gets its own strings this needs to include both.
-      if (event.error.name === constants.CROSTINI_CONNECT_ERR) {
+      if (event.detail.error.name === constants.CROSTINI_CONNECT_ERR) {
         return;
       }
 

@@ -1526,10 +1526,7 @@ export class DirectoryContents extends EventTarget {
       // Call callback first, so isScanning() returns false in the event
       // handlers.
       callback();
-      const event = new Event('scan-failed');
-      // @ts-ignore: error TS2339: Property 'error' does not exist on type
-      // 'Event'.
-      event.error = error;
+      const event = new CustomEvent('scan-failed', {detail: {error}});
       this.dispatchEvent(event);
     });
   }
