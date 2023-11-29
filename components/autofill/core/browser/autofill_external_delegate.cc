@@ -946,7 +946,12 @@ void AutofillExternalDelegate::PreviewCreditCardFieldByFieldFillingSuggestion(
 
 void AutofillExternalDelegate::FillCreditCardFieldByFieldFillingSuggestion(
     const Suggestion& suggestion) {
-  // TODO(crbug.com/1493361): Fill credit card field-by-field suggestion.
+  // TODO(crbug.com/1493361): Trigger card unmask dialog to fetch cc number
+  // depending on the `suggestion.field_by_field_filling_type_used`.
+  manager_->FillOrPreviewField(mojom::ActionPersistence::kFill,
+                               mojom::TextReplacement::kReplaceAll, query_form_,
+                               query_field_, suggestion.main_text.value,
+                               suggestion.popup_item_id);
 }
 
 void AutofillExternalDelegate::FillAutofillFormData(

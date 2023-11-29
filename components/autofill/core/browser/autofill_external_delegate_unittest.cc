@@ -1437,6 +1437,26 @@ TEST_F(AutofillExternalDelegateUnitTest,
       suggestion, AutofillSuggestionTriggerSource::kManualFallbackPayments);
 }
 
+TEST_F(AutofillExternalDelegateUnitTest, FieldByFieldFilling_FillCreditCard) {
+  const CreditCard local_card = test::GetCreditCard();
+  pdm().AddCreditCard(local_card);
+  Suggestion suggestion = test::CreateAutofillSuggestion(
+      PopupItemId::kFieldByFieldFilling, u"Name on card",
+      Suggestion::Guid(local_card.guid()));
+  suggestion.field_by_field_filling_type_used = CREDIT_CARD_NAME_FULL;
+  IssueOnQuery();
+  manager().OnFormsSeen({queried_form_}, {});
+
+  EXPECT_CALL(driver(), ApplyFieldAction(mojom::ActionPersistence::kFill,
+                                         mojom::TextReplacement::kReplaceAll,
+                                         queried_form_triggering_field_id_,
+                                         suggestion.main_text.value));
+
+  external_delegate().DidAcceptSuggestion(
+      suggestion, SuggestionPosition{.row = 1},
+      AutofillSuggestionTriggerSource::kManualFallbackPayments);
+}
+
 // Test parameter data for asserting that the expected set of field types
 // is stored in the delegate.
 struct GetLastServerTypesToFillForSectionTestParams {

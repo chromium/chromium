@@ -458,7 +458,6 @@ bool AddCreditCardNameChildSuggestion(const CreditCard& credit_card,
 bool AddCreditCardNumberChildSuggestion(const CreditCard& credit_card,
                                         const std::string& app_locale,
                                         Suggestion& suggestion) {
-  // TODO(crbug.com/1493361): Trigger card unmask dialog to fetch cc number.
   if (!credit_card.HasInfo(CREDIT_CARD_NUMBER)) {
     return false;
   }
@@ -1504,7 +1503,6 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
   suggestion.popup_item_id = is_manual_fallback
                                  ? PopupItemId::kEntryNotSelectable
                                  : PopupItemId::kCreditCardEntry;
-  // TODO(crbug.com/1493361): Trigger card unmask dialog to fetch cc number.
   suggestion.payload = Suggestion::Guid(credit_card.guid());
 #if BUILDFLAG(IS_ANDROID)
   // The card art icon should always be shown at the start of the suggestion.
