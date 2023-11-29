@@ -715,7 +715,8 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       case SearchResultIcon.kDockedMagnifier:
         return 'os-settings:docked-magnifier';
       case SearchResultIcon.kDrive:
-        return 'os-settings:google-drive';
+        return isRevampEnabled ? 'os-settings:google-drive-revamp' :
+                                 'os-settings:google-drive';
       case SearchResultIcon.kEthernet:
         return 'os-settings:settings-ethernet';
       case SearchResultIcon.kFingerprint:
