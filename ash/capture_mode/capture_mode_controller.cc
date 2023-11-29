@@ -1112,6 +1112,10 @@ void CaptureModeController::StartInternal(
       },
       weak_ptr_factory_.GetWeakPtr(), std::move(callback), IsActive()));
 
+  if (education_controller_) {
+    education_controller_->CloseAllEducationNudgesAndTutorials();
+  }
+
   if (capture_mode_session_ || pending_dlp_check_) {
     return;
   }

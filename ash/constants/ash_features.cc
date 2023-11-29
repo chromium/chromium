@@ -387,7 +387,7 @@ constexpr base::FeatureParam<CaptureModeEducationParam>::Option
     capture_mode_education_type_options[] = {
         {CaptureModeEducationParam::kShortcutNudge, "ShortcutNudge"},
         {CaptureModeEducationParam::kShortcutTutorial, "ShortcutTutorial"},
-        {CaptureModeEducationParam::kSettingsNudge, "SettingsNudge"}};
+        {CaptureModeEducationParam::kQuickSettingsNudge, "QuickSettingsNudge"}};
 const base::FeatureParam<CaptureModeEducationParam> kCaptureModeEducationParam{
     &kCaptureModeEducation, "CaptureModeEducationParam",
     CaptureModeEducationParam::kShortcutNudge,

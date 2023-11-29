@@ -10,6 +10,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/ash_view_ids.h"
+#include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/style/keyboard_shortcut_view.h"
 #include "ash/system/toast/anchored_nudge.h"
@@ -37,6 +38,7 @@ constexpr char kNudgeTimeToActionWithinSession[] =
     "Ash.NotifierFramework.Nudge.TimeToAction.WithinSession";
 
 constexpr float kKeyboardImageWidth = 448;
+constexpr int kNudgeWorkAreaSpacing = 8;
 
 PrefService* GetPrefService() {
   return Shell::Get()->session_controller()->GetActivePrefService();
@@ -71,9 +73,13 @@ class CaptureModeEducationControllerTest : public AshTestBase {
     CaptureModeEducationController::SetOverrideClockForTesting(test_clock);
   }
 
-  void ActivateNudgeAndCheckVisibility() {
+  // By default, attempts to use the Windows Snipping Tool (capture bar)
+  // shortcut to activate the nudge.
+  void ActivateNudgeAndCheckVisibility(ui::KeyboardCode key_code = ui::VKEY_S,
+                                       int flags = ui::EF_COMMAND_DOWN |
+                                                   ui::EF_SHIFT_DOWN) {
     // Attempt to use the Windows Snipping Tool (capture bar) shortcut.
-    PressAndReleaseKey(ui::VKEY_S, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN);
+    PressAndReleaseKey(key_code, flags);
 
     // Get the list of visible nudges from the nudge manager and make sure our
     // education nudge is in the list and visible.
@@ -82,6 +88,32 @@ class CaptureModeEducationControllerTest : public AshTestBase {
             kCaptureModeNudgeId);
     ASSERT_TRUE(nudge);
     EXPECT_TRUE(nudge->GetVisible());
+  }
+
+  // Starts a capture session using the screenshort shortcut, and verifies that
+  // the nudge and tutorial are both closed. Stops the session afterwards.
+  void StartSessionAndCheckEducationClosed() {
+    // Use the screenshot shortcut to start a capture session.
+    PressAndReleaseKey(ui::VKEY_MEDIA_LAUNCH_APP1,
+                       ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
+
+    auto* capture_mode_controller = CaptureModeController::Get();
+    ASSERT_TRUE(capture_mode_controller->IsActive());
+
+    // Get the list of visible nudges from the nudge manager and make sure our
+    // education nudge is no longer in the list.
+    const AnchoredNudge* nudge =
+        Shell::Get()->anchored_nudge_manager()->GetNudgeIfShown(
+            kCaptureModeNudgeId);
+    EXPECT_FALSE(nudge);
+
+    // The tutorial should also be closed.
+    EXPECT_FALSE(capture_mode_controller->education_controller()
+                     ->tutorial_widget_for_test());
+
+    // Stop the session in case we start a new one later.
+    capture_mode_controller->Stop();
+    ASSERT_FALSE(capture_mode_controller->IsActive());
   }
 
   // Skip the 3 times/24 hours show limit for testing.
@@ -115,7 +147,7 @@ TEST_F(CaptureModeEducationControllerTest, NudgeAppearsOnAcceleratorPressed) {
       continue;
     }
 
-    ActivateNudgeAndCheckVisibility();
+    ActivateNudgeAndCheckVisibility(tracker_data.key_code, tracker_data.flags);
 
     // Close nudge to get ready for the next input.
     CancelNudge(kCaptureModeNudgeId);
@@ -135,7 +167,7 @@ class CaptureModeEducationShortcutNudgeTest
   ~CaptureModeEducationShortcutNudgeTest() override = default;
 };
 
-TEST_F(CaptureModeEducationShortcutNudgeTest, CorrectStyling) {
+TEST_F(CaptureModeEducationShortcutNudgeTest, KeyboardShortcutVisible) {
   base::SimpleTestClock test_clock;
   CaptureModeEducationControllerTest::SetOverrideClock(&test_clock);
 
@@ -159,6 +191,8 @@ TEST_F(CaptureModeEducationShortcutNudgeTest, CorrectStyling) {
           VIEW_ID_SYSTEM_NUDGE_SHORTCUT_VIEW));
   ASSERT_TRUE(shortcut_view);
   EXPECT_TRUE(shortcut_view->GetVisible());
+
+  StartSessionAndCheckEducationClosed();
 
   CaptureModeEducationControllerTest::SetOverrideClock(nullptr);
 }
@@ -331,7 +365,7 @@ class CaptureModeEducationShortcutTutorialTest
   ~CaptureModeEducationShortcutTutorialTest() override = default;
 };
 
-TEST_F(CaptureModeEducationShortcutTutorialTest, DialogShowsOnButtonPressed) {
+TEST_F(CaptureModeEducationShortcutTutorialTest, DialogOpensAndCloses) {
   base::SimpleTestClock test_clock;
   CaptureModeEducationControllerTest::SetOverrideClock(&test_clock);
 
@@ -360,6 +394,60 @@ TEST_F(CaptureModeEducationShortcutTutorialTest, DialogShowsOnButtonPressed) {
       VIEW_ID_SCREEN_CAPTURE_EDUCATION_KEYBOARD_IMAGE);
   ASSERT_TRUE(image_view);
   EXPECT_EQ(kKeyboardImageWidth, image_view->width());
+
+  StartSessionAndCheckEducationClosed();
+}
+
+// Test fixture to verify the behaviour of Arm 3, the settings nudge.
+class CaptureModeEducationQuickSettingsNudgeTest
+    : public CaptureModeEducationControllerTest {
+ public:
+  CaptureModeEducationQuickSettingsNudgeTest()
+      : CaptureModeEducationControllerTest("QuickSettingsNudge") {}
+  CaptureModeEducationQuickSettingsNudgeTest(
+      const CaptureModeEducationQuickSettingsNudgeTest&) = delete;
+  CaptureModeEducationQuickSettingsNudgeTest& operator=(
+      const CaptureModeEducationQuickSettingsNudgeTest&) = delete;
+  ~CaptureModeEducationQuickSettingsNudgeTest() override = default;
+};
+
+TEST_F(CaptureModeEducationQuickSettingsNudgeTest, NudgeLocation) {
+  UpdateDisplay("800x600");
+  base::SimpleTestClock test_clock;
+  CaptureModeEducationControllerTest::SetOverrideClock(&test_clock);
+
+  // Advance clock so we aren't at zero time.
+  test_clock.Advance(base::Hours(25));
+
+  // Attempt to use the Windows Snipping Tool (capture bar) shortcut.
+  PressAndReleaseKey(ui::VKEY_S, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN);
+
+  // Get the list of visible nudges from the nudge manager and make sure our
+  // education nudge is in the list and visible.
+  AnchoredNudge* nudge =
+      Shell::Get()->anchored_nudge_manager()->GetNudgeIfShown(
+          kCaptureModeNudgeId);
+  ASSERT_TRUE(nudge);
+  EXPECT_TRUE(nudge->GetVisible());
+
+  // Test the shelf in horizontal (bottom) alignment.
+  ASSERT_TRUE(Shell::GetPrimaryRootWindowController()
+                  ->shelf()
+                  ->IsHorizontalAlignment());
+
+  // The nudge should appear on the bottom right side of the screen. Compare the
+  // positions of the bottom right corners of the nudge and the work area.
+  const auto nudge_corner = nudge->GetBoundsInScreen().bottom_right();
+  auto work_area_corner =
+      nudge->GetWidget()->GetWorkAreaBoundsInScreen().bottom_right();
+  EXPECT_EQ(work_area_corner.x() - kNudgeWorkAreaSpacing, nudge_corner.x());
+  EXPECT_EQ(work_area_corner.y() - kNudgeWorkAreaSpacing, nudge_corner.y());
+
+  StartSessionAndCheckEducationClosed();
+
+  // TODO(hewer): Test shelf in vertical positions.
+
+  CaptureModeEducationControllerTest::SetOverrideClock(nullptr);
 }
 
 }  // namespace ash

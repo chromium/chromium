@@ -108,7 +108,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kCaptureModeEducation);
 enum class CaptureModeEducationParam {
   kShortcutNudge,
   kShortcutTutorial,
-  kSettingsNudge
+  kQuickSettingsNudge
 };
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<CaptureModeEducationParam>

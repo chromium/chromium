@@ -14,11 +14,15 @@
 #include "ash/public/cpp/system/anchored_nudge_data.h"
 #include "ash/public/cpp/system/anchored_nudge_manager.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/root_window_controller.h"
+#include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/keyboard_shortcut_view.h"
 #include "ash/style/system_dialog_delegate_view.h"
+#include "ash/system/status_area_widget.h"
+#include "ash/system/unified/unified_system_tray.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -59,6 +63,7 @@ base::Time GetTime() {
   return g_clock_override ? g_clock_override->Now() : base::Time::Now();
 }
 
+// Creates nudge data common to Arms 1 and 2.
 AnchoredNudgeData CreateBaseNudgeData(NudgeCatalogName catalog_name) {
   AnchoredNudgeData nudge_data(
       kCaptureModeNudgeId, catalog_name,
@@ -171,10 +176,10 @@ bool CaptureModeEducationController::IsArm2ShortcutTutorialEnabled() {
 }
 
 // static
-bool CaptureModeEducationController::IsArm3SettingsNudgeEnabled() {
+bool CaptureModeEducationController::IsArm3QuickSettingsNudgeEnabled() {
   return features::IsCaptureModeEducationEnabled() &&
          features::kCaptureModeEducationParam.Get() ==
-             features::CaptureModeEducationParam::kSettingsNudge;
+             features::CaptureModeEducationParam::kQuickSettingsNudge;
 }
 
 void CaptureModeEducationController::MaybeShowEducation() {
@@ -208,9 +213,7 @@ void CaptureModeEducationController::MaybeShowEducation() {
     pref_service->SetTime(prefs::kCaptureModeEducationLastShown, now);
   }
 
-  // Close any existing forms of education.
-  AnchoredNudgeManager::Get()->Cancel(kCaptureModeNudgeId);
-  tutorial_widget_.reset();
+  CloseAllEducationNudgesAndTutorials();
 
   if (IsArm1ShortcutNudgeEnabled()) {
     ShowShortcutNudge();
@@ -219,6 +222,15 @@ void CaptureModeEducationController::MaybeShowEducation() {
   if (IsArm2ShortcutTutorialEnabled()) {
     ShowTutorialNudge();
   }
+
+  if (IsArm3QuickSettingsNudgeEnabled()) {
+    ShowQuickSettingsNudge();
+  }
+}
+
+void CaptureModeEducationController::CloseAllEducationNudgesAndTutorials() {
+  AnchoredNudgeManager::Get()->Cancel(kCaptureModeNudgeId);
+  tutorial_widget_.reset();
 }
 
 // static
@@ -228,10 +240,6 @@ void CaptureModeEducationController::SetOverrideClockForTesting(
 }
 
 void CaptureModeEducationController::ShowShortcutNudge() {
-  // Close the nudge if it already exists.
-  auto* nudge_manager = AnchoredNudgeManager::Get();
-  nudge_manager->Cancel(kCaptureModeNudgeId);
-
   AnchoredNudgeData nudge_data =
       CreateBaseNudgeData(NudgeCatalogName::kCaptureModeEducationShortcutNudge);
 
@@ -247,6 +255,24 @@ void CaptureModeEducationController::ShowTutorialNudge() {
   nudge_data.primary_button_callback = base::BindRepeating(
       &CaptureModeEducationController::OnShowMeHowButtonPressed,
       weak_ptr_factory_.GetWeakPtr());
+
+  AnchoredNudgeManager::Get()->Show(nudge_data);
+}
+
+void CaptureModeEducationController::ShowQuickSettingsNudge() {
+  AnchoredNudgeData nudge_data(
+      kCaptureModeNudgeId,
+      NudgeCatalogName::kCaptureModeEducationQuickSettingsNudge,
+      l10n_util::GetStringUTF16(
+          IDS_ASH_SCREEN_CAPTURE_EDUCATION_SETTINGS_NUDGE_LABEL));
+
+  nudge_data.image_model = ui::ImageModel::FromVectorIcon(
+      kCaptureModeIcon, kColorAshIconColorPrimary, kShortcutIconSize);
+  nudge_data.SetAnchorView(
+      RootWindowController::ForWindow(Shell::GetRootWindowForNewWindows())
+          ->shelf()
+          ->status_area_widget()
+          ->unified_system_tray());
 
   AnchoredNudgeManager::Get()->Show(nudge_data);
 }

@@ -6,7 +6,6 @@
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_EDUCATION_CONTROLLER_H_
 
 #include "ash/ash_export.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -24,7 +23,7 @@ namespace ash {
 //  - Arm 2: Shortcut Tutorial. Similar to Arm 1, but the nudge also appears
 //    with a button that opens a new popup, showing the keyboard layout of where
 //    the shortcut keys are found.
-//  - Arm 3: Settings Nudge. A system nudge anchored to the quick settings
+//  - Arm 3: Quick Settings Nudge. A system nudge anchored to the quick settings
 //    button in the shelf, with text alerting users to the Screen Capture tile
 //    in the quick settings menu.
 class ASH_EXPORT CaptureModeEducationController {
@@ -48,13 +47,16 @@ class ASH_EXPORT CaptureModeEducationController {
   static bool IsArm2ShortcutTutorialEnabled();
 
   // Returns true if the feature flag 'kCaptureModeEducation' is enabled and
-  // the associated param is 'kSettingsNudge';
-  static bool IsArm3SettingsNudgeEnabled();
+  // the associated param is 'kQuickSettingsNudge';
+  static bool IsArm3QuickSettingsNudgeEnabled();
 
   // If a form of user education has already been shown 3 times or once in the
   // past 24 hours, returns. Otherwise, shows the appropriate form of user
   // education based on the enabled arm/feature param.
   void MaybeShowEducation();
+
+  // Closes any Screen Capture nudges or tutorials that may be open.
+  void CloseAllEducationNudgesAndTutorials();
 
   views::Widget* tutorial_widget_for_test() { return tutorial_widget_.get(); }
 
@@ -71,6 +73,11 @@ class ASH_EXPORT CaptureModeEducationController {
   // Shows Arm 2, an unanchored system nudge indicating the keyboard shortcut to
   // take a screenshot, with a button to open a new tutorial widget.
   void ShowTutorialNudge();
+
+  // Shows Arm 3, a system nudge anchored to the unified system tray button,
+  // indicating the location of the screen capture tool in the quick settings
+  // menu.
+  void ShowQuickSettingsNudge();
 
   // Creates and shows the system dialog displaying the keyboard shortcut and
   // illustration for taking a screenshot.

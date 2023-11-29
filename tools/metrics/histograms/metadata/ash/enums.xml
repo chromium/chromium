@@ -1255,6 +1255,7 @@ chromium-metrics-reviews@google.com.
   <int value="21" label="Multitask Menu Tablet"/>
   <int value="22" label="Capture Mode Education Shortcut Nudge"/>
   <int value="23" label="Capture Mode Education Shortcut Tutorial"/>
+  <int value="24" label="Capture Mode Education Quick Settings Nudge"/>
 </enum>
 
 <enum name="OnDeviceToServerSpeechRecognitionFallbackReason">
