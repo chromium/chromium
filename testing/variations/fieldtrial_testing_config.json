@@ -12672,6 +12672,30 @@
             ]
         }
     ],
+    "PartitionAllocSchedulerLoopQuarantine": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "PartitionAllocSchedulerLoopQuarantineCapacity": "1048576"
+                    },
+                    "enable_features": [
+                        "PartitionAllocSchedulerLoopQuarantine"
+                    ]
+                }
+            ]
+        }
+    ],
     "PartitionAllocUnretainedDanglingPtr": [
         {
             "platforms": [
