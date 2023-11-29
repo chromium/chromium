@@ -1952,7 +1952,7 @@ TEST_F(SyncServiceImplTest, EarlyCallToGetTypesWithUnsyncedDataShouldNotCrash) {
   InitializeService();
   base::MockCallback<base::OnceCallback<void(ModelTypeSet)>> cb;
   EXPECT_CALL(cb, Run(ModelTypeSet()));
-  service()->GetTypesWithUnsyncedData(cb.Get());
+  service()->GetTypesWithUnsyncedData(syncer::UserTypes(), cb.Get());
 }
 
 TEST_F(SyncServiceImplTest,

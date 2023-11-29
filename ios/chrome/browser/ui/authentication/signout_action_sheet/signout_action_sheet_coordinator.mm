@@ -267,21 +267,26 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
 // data dialog if needed, and then sign-out).
 - (void)checkForUnsyncedDataAndSignOut {
   [self preventUserInteraction];
+
+  constexpr syncer::ModelTypeSet kDataTypesToQuery = {
+      syncer::BOOKMARKS, syncer::READING_LIST, syncer::PASSWORDS,
+      syncer::CONTACT_INFO};
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState());
   __weak __typeof(self) weakSelf = self;
   auto callback = base::BindOnce(^(syncer::ModelTypeSet set) {
+    CHECK(kDataTypesToQuery.HasAll(set))
+        << "Result: {" << set << "} not a subset of the queried types: {"
+        << kDataTypesToQuery << "}.";
     [weakSelf continueSignOutWithUnsyncedDataModelTypeSet:set];
   });
-  syncService->GetTypesWithUnsyncedData(std::move(callback));
+  syncService->GetTypesWithUnsyncedData(kDataTypesToQuery, std::move(callback));
 }
 
 // Displays the sign-out confirmation dialog if `set` contains an "interesting"
 // data type, otherwise the sign-out is triggered without dialog.
 - (void)continueSignOutWithUnsyncedDataModelTypeSet:(syncer::ModelTypeSet)set {
   [self allowUserInteraction];
-  set.RetainAll({syncer::BOOKMARKS, syncer::READING_LIST, syncer::PASSWORDS,
-                 syncer::CONTACT_INFO});
   if (!set.Empty()) {
     for (syncer::ModelType type : set) {
       base::UmaHistogramEnumeration("Sync.UnsyncedDataOnSignout2",

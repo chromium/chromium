@@ -157,6 +157,7 @@ class SyncServiceImpl : public SyncService,
       ModelType type,
       const std::string& histogram_name) const override;
   void GetTypesWithUnsyncedData(
+      ModelTypeSet requested_types,
       base::OnceCallback<void(ModelTypeSet)> callback) const override;
   void GetLocalDataDescriptions(
       ModelTypeSet types,

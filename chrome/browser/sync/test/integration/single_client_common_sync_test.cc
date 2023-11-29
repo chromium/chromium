@@ -151,6 +151,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
 IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
                        MAYBE_ShouldGetTypesWithUnsyncedDataFromSyncService) {
   const std::string kBookmarkFolderTitle = "title1";
+  const syncer::ModelTypeSet kInterestingDataTypes{syncer::BOOKMARKS,
+                                                   syncer::PREFERENCES};
 
   ASSERT_TRUE(SetupClients());
 
@@ -169,7 +171,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
     base::RunLoop loop;
     base::MockOnceCallback<void(syncer::ModelTypeSet)> callback;
     EXPECT_CALL(callback, Run(ModelTypeSet())).WillOnce([&]() { loop.Quit(); });
-    GetSyncService(0)->GetTypesWithUnsyncedData(callback.Get());
+    GetSyncService(0)->GetTypesWithUnsyncedData(kInterestingDataTypes,
+                                                callback.Get());
     loop.Run();
   }
 
@@ -203,7 +206,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
     base::MockOnceCallback<void(syncer::ModelTypeSet)> callback;
     EXPECT_CALL(callback, Run(ModelTypeSet({syncer::PREFERENCES})))
         .WillOnce([&]() { loop.Quit(); });
-    GetSyncService(0)->GetTypesWithUnsyncedData(callback.Get());
+    GetSyncService(0)->GetTypesWithUnsyncedData(kInterestingDataTypes,
+                                                callback.Get());
     loop.Run();
   }
 
@@ -223,7 +227,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
     base::RunLoop loop;
     base::MockOnceCallback<void(syncer::ModelTypeSet)> callback;
     EXPECT_CALL(callback, Run(ModelTypeSet())).WillOnce([&]() { loop.Quit(); });
-    GetSyncService(0)->GetTypesWithUnsyncedData(callback.Get());
+    GetSyncService(0)->GetTypesWithUnsyncedData(kInterestingDataTypes,
+                                                callback.Get());
     loop.Run();
   }
 }

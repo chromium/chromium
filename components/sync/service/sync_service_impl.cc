@@ -2416,13 +2416,19 @@ void SyncServiceImpl::DownloadStatusRecorder::OnTimeout() {
 }
 
 void SyncServiceImpl::GetTypesWithUnsyncedData(
+    ModelTypeSet requested_types,
     base::OnceCallback<void(ModelTypeSet)> callback) const {
   if (!engine_ || !engine_->IsInitialized()) {
     // TODO(crbug.com/1477527): Wait for the sync engine to be initialized.
     std::move(callback).Run(ModelTypeSet());
     return;
   }
-  engine_->GetTypesWithUnsyncedData(std::move(callback));
+  engine_->GetTypesWithUnsyncedData(base::BindOnce(
+      [](ModelTypeSet requested_types,
+         base::OnceCallback<void(ModelTypeSet)> callback, ModelTypeSet types) {
+        std::move(callback).Run(base::Intersection(types, requested_types));
+      },
+      requested_types, std::move(callback)));
 }
 
 void SyncServiceImpl::GetLocalDataDescriptions(

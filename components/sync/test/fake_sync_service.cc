@@ -176,6 +176,7 @@ void FakeSyncService::SetInvalidationsForSessionsEnabled(bool enabled) {}
 void FakeSyncService::Shutdown() {}
 
 void FakeSyncService::GetTypesWithUnsyncedData(
+    ModelTypeSet requested_types,
     base::OnceCallback<void(ModelTypeSet)> cb) const {
   std::move(cb).Run(ModelTypeSet());
 }

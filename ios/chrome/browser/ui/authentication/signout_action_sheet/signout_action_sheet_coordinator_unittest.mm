@@ -260,7 +260,8 @@ TEST_F(SignoutActionSheetCoordinatorTestWithReplaceSyncWithSigninEnabled,
   // Mock returning no unsynced datatype.
   ON_CALL(*sync_service_mock_, GetTypesWithUnsyncedData)
       .WillByDefault(
-          [](base::OnceCallback<void(syncer::ModelTypeSet)> callback) {
+          [](syncer::ModelTypeSet requested_types,
+             base::OnceCallback<void(syncer::ModelTypeSet)> callback) {
             std::move(callback).Run(syncer::ModelTypeSet());
           });
   EXPECT_CALL(completion_callback_, Run);
@@ -279,12 +280,15 @@ TEST_F(SignoutActionSheetCoordinatorTestWithReplaceSyncWithSigninEnabled,
       identity_, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
 
   CreateCoordinator();
-  // Mock returning no unsynced datatype.
+  // Mock returning unsynced datatypes.
   ON_CALL(*sync_service_mock_, GetTypesWithUnsyncedData)
       .WillByDefault(
-          [](base::OnceCallback<void(syncer::ModelTypeSet)> callback) {
+          [](syncer::ModelTypeSet requested_types,
+             base::OnceCallback<void(syncer::ModelTypeSet)> callback) {
+            constexpr syncer::ModelTypeSet kUnsyncedTypes = {
+                syncer::BOOKMARKS, syncer::PREFERENCES};
             std::move(callback).Run(
-                syncer::ModelTypeSet({syncer::BOOKMARKS, syncer::PREFERENCES}));
+                base::Intersection(kUnsyncedTypes, requested_types));
           });
   EXPECT_CALL(completion_callback_, Run);
 

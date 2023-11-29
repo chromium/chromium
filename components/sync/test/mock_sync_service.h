@@ -146,7 +146,7 @@ class MockSyncService : public SyncService {
               (const override));
   MOCK_METHOD(void,
               GetTypesWithUnsyncedData,
-              (base::OnceCallback<void(ModelTypeSet)>),
+              (ModelTypeSet, base::OnceCallback<void(ModelTypeSet)>),
               (const override));
   MOCK_METHOD(
       void,

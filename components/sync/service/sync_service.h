@@ -414,8 +414,10 @@ class SyncService : public KeyedService {
 
   // Returns the datatypes which have local changes that have not yet been
   // synced with the server.
+  // Note: This only queries the datatypes in `requested_types`.
   // Note: This includes deletions as well.
   virtual void GetTypesWithUnsyncedData(
+      ModelTypeSet requested_types,
       base::OnceCallback<void(ModelTypeSet)> callback) const = 0;
 
   // Queries the count and description/preview of existing local data for
