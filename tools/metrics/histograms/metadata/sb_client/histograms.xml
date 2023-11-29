@@ -308,17 +308,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SBClientDownload.SevenZipEntryResult" enum="SevenZipResult"
-    expires_after="2023-12-04">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the result of unpacking a single entry from a 7z archive. The result
-    includes either success or a coarse-grained error. This is logged for each
-    entry of each download of a 7z archive.
-  </summary>
-</histogram>
-
 <histogram name="SBClientDownload.TailoredWarning.HasVaidEmailForAccountInfo"
     enum="BooleanValid" expires_after="2024-03-02">
   <owner>xinghuilu@chromium.org</owner>
