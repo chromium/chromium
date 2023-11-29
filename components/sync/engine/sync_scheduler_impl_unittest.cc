@@ -17,12 +17,10 @@
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "components/sync/base/extensions_activity.h"
-#include "components/sync/base/features.h"
 #include "components/sync/engine/backoff_delay_provider.h"
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/data_type_activation_response.h"
@@ -42,13 +40,9 @@ using testing::_;
 using testing::AtLeast;
 using testing::DoAll;
 using testing::Eq;
-using testing::Ge;
-using testing::Gt;
 using testing::Invoke;
-using testing::Lt;
 using testing::Mock;
 using testing::Return;
-using testing::SaveArg;
 using testing::WithArg;
 using testing::WithArgs;
 using testing::WithoutArgs;
@@ -796,10 +790,6 @@ TEST_F(SyncSchedulerImplTest, Polling) {
 }
 
 TEST_F(SyncSchedulerImplTest, ShouldPollOnBrowserStartup) {
-  base::test::ScopedFeatureList override_features;
-  override_features.InitAndEnableFeature(
-      syncer::kSyncPollWithoutDelayOnStartup);
-
   EXPECT_CALL(*syncer(), PollSyncShare)
       .WillOnce(DoAll(Invoke(SimulatePollSuccess), Return(true)));
 
@@ -1996,61 +1986,12 @@ TEST_F(SyncSchedulerImplTest, InterleavedNudgesStillRestart) {
   EXPECT_TRUE(scheduler()->IsGlobalBackoff());
 }
 
-TEST_F(SyncSchedulerImplTest, PollOnStartUpAfterLongPause) {
-  // TODO(crbug.com/1440624): last poll request could happen more time ago than
-  // periodic interval. This test will not be necessary once delay before a poll
-  // request is removed.
-  base::test::ScopedFeatureList override_features;
-  override_features.InitAndDisableFeature(
-      syncer::kSyncPollWithoutDelayOnStartup);
-
-  base::Time now = base::Time::Now();
-  base::TimeDelta poll_interval = base::Hours(4);
-  base::Time last_reset = ComputeLastPollOnStart(
-      /*last_poll=*/now - base::Days(1), poll_interval, now);
-  EXPECT_THAT(last_reset, Gt(now - poll_interval));
-  // The max poll delay is 1% of the poll_interval.
-  EXPECT_THAT(last_reset, Lt(now - 0.99 * poll_interval));
-}
-
 TEST_F(SyncSchedulerImplTest, PollOnStartUpAfterShortPause) {
   base::Time now = base::Time::Now();
   base::TimeDelta poll_interval = base::Hours(4);
   base::Time last_poll = now - base::Hours(2);
   EXPECT_THAT(ComputeLastPollOnStart(last_poll, poll_interval, now),
               Eq(last_poll));
-}
-
-// Verifies that the delay is in [0, 0.01*poll_interval) and spot checks the
-// random number generation.
-TEST_F(SyncSchedulerImplTest, PollOnStartUpWithinBoundsAfterLongPause) {
-  // TODO(crbug.com/1440624): last poll request could happen more time ago than
-  // periodic interval. This test will not be necessary once delay before a poll
-  // request is removed.
-  base::test::ScopedFeatureList override_features;
-  override_features.InitAndDisableFeature(
-      syncer::kSyncPollWithoutDelayOnStartup);
-
-  base::Time now = base::Time::Now();
-  base::TimeDelta poll_interval = base::Hours(4);
-  base::Time last_poll = now - base::Days(2);
-  bool found_delay_greater_than_5_permille = false;
-  bool found_delay_less_or_equal_5_permille = false;
-  for (int i = 0; i < 10000; ++i) {
-    const base::Time result =
-        ComputeLastPollOnStart(last_poll, poll_interval, now);
-    const base::TimeDelta delay = result + poll_interval - now;
-    const double fraction = delay / poll_interval;
-    if (fraction > 0.005) {
-      found_delay_greater_than_5_permille = true;
-    } else {
-      found_delay_less_or_equal_5_permille = true;
-    }
-    EXPECT_THAT(fraction, Ge(0));
-    EXPECT_THAT(fraction, Lt(0.01));
-  }
-  EXPECT_TRUE(found_delay_greater_than_5_permille);
-  EXPECT_TRUE(found_delay_less_or_equal_5_permille);
 }
 
 }  // namespace syncer

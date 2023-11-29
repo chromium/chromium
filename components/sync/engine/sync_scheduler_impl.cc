@@ -211,20 +211,6 @@ base::Time SyncSchedulerImpl::ComputeLastPollOnStart(
     // poll.
     return now - (poll_interval + base::Seconds(1));
   }
-  // Handle immediate polls on start-up separately.
-  if (last_poll + poll_interval <= now &&
-      !base::FeatureList::IsEnabled(kSyncPollWithoutDelayOnStartup)) {
-    // Doing polls on start-up is generally a risk as other bugs in Chrome
-    // might cause start-ups -- potentially synchronized to a specific time.
-    // (think about a system timer waking up Chrome).
-    // To minimize that risk, we randomly delay polls on start-up to a max
-    // of 1% of the poll interval. Assuming a poll rate of 4h, that's at
-    // most 2.4 mins.
-    return poll_interval.is_zero()
-               ? now
-               : (now - poll_interval +
-                  base::RandTimeDeltaUpTo(0.01 * poll_interval));
-  }
   return last_poll;
 }
 

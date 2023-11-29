@@ -108,10 +108,6 @@ BASE_FEATURE(kSyncPollImmediatelyOnEveryStartup,
 #endif
 );
 
-BASE_FEATURE(kSyncPollWithoutDelayOnStartup,
-             "SyncPollWithoutDelayOnStartup",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 BASE_FEATURE(kSyncWebauthnCredentials,
              "SyncWebauthnCredentials",
