@@ -701,6 +701,7 @@
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} і яшчэ 1}one{{website_1}, {website_2} і яшчэ {more_count}}few{{website_1}, {website_2} і яшчэ {more_count}}many{{website_1}, {website_2} і яшчэ {more_count}}other{{website_1}, {website_2} і яшчэ {more_count}}}</translation>
 <translation id="4737560986434232178">Пошук у нядаўніх укладках</translation>
 <translation id="473775607612524610">Абнавіць</translation>
+<translation id="4744428388659507035">Каб закладкі былі даступнымі на ўсіх вашых прыладах, уключыце ў наладах параметр "Закладкі".</translation>
 <translation id="4746926359847517643">Вы заўсёды можаце паглядзець іх зноў у гісторыі.</translation>
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, толькі на гэтай прыладзе, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Новая ўкладка інкогніта</translation>
@@ -819,6 +820,7 @@
 <translation id="5300589172476337783">Паказаць</translation>
 <translation id="5317780077021120954">Захаваць</translation>
 <translation id="5318298563956633672">Вы ўжо сочыце за гэтым прадуктам.</translation>
+<translation id="5329451663851195956">Каб абнавіць старонку, пацягніце ўніз.</translation>
 <translation id="5339316356165661760">Уключыць сінхранізацыю</translation>
 <translation id="5345598430982201510">Не выяўляць пасылкі аўтаматычна</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Адсочваць гэту пасылку?}one{Адсочваць {COUNT} пасылку?}few{Адсочваць {COUNT} пасылкі?}many{Адсочваць {COUNT} пасылак?}other{Адсочваць {COUNT} пасылкі?}}</translation>
@@ -944,6 +946,7 @@
 <translation id="598634819525651074">Плошча</translation>
 <translation id="5988097621740394599">Паказваць інфармацыю пра зніжэнне цэн на ўкладках.</translation>
 <translation id="5988851877894965432">Адкрыць URL-адрасы ў Chrome</translation>
+<translation id="6001839398155993679">Пачаць</translation>
 <translation id="6006672969046233841">Новая ўкладка</translation>
 <translation id="6011308810877101166">Паляпшаць прапановы пошуку</translation>
 <translation id="6012140227487808125">Ідзе шыфраванне…</translation>
@@ -1241,6 +1244,7 @@
 <translation id="7491131399623468277">Перайсці ў Settings…</translation>
 <translation id="7492574581995589075">Ваша арганізацыя адключыла магчымасць выкарыстання і захавання даных Chrome ва Уліковым запісе Google. Новыя закладкі, паролі і іншыя даныя будуць захоўвацца толькі на гэтай прыладзе.</translation>
 <translation id="749854780843431406">Адкрыць новую ўкладку можна з дапамогай кнопкі "<ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" />".</translation>
+<translation id="7500419352370346534">Цяпер вы можаце кіраваць усімі наладамі ўліковага запісу на адной старонцы</translation>
 <translation id="750149195207506638">Закладкі схаваны</translation>
 <translation id="750228856503700085">Абнаўленні недаступныя</translation>
 <translation id="750493650310597496">Выбрана: 0</translation>
@@ -1318,6 +1322,7 @@
 <translation id="7879275349003161544">Паказаць спампоўкі</translation>
 <translation id="7883882164760409935">У вас ёсць ужытыя раней паролі.</translation>
 <translation id="7884694604461143138">Гісторыя пошуку (знойдзена супадзенняў: <ph name="COUNT" />)</translation>
+<translation id="7887174313503389866">Даведайцеся пра ключавыя налады бяспекі і прыватнасці. Больш інфармацыі вы можаце атрымаць, знаёмячыся з кожнай наладай асобна.</translation>
 <translation id="7887198238286927132">У мэтах аховы вашай прыватнасці Chrome не будзе выкарыстоўваць аўтазапаўненне ў гэтым полі.</translation>
 <translation id="7889910613639381518">Просты і бяспечны доступ праз віджэт "Менеджар пароляў Google".</translation>
 <translation id="7911190106180361398">Ваша арганізацыя не дазваляе сінхранізаваць усё.</translation>

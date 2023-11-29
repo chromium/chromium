@@ -23,7 +23,6 @@
 <translation id="1110914759170138831">突出显示的内容被缩短了</translation>
 <translation id="1111673857033749125">您在其他设备上保存的书签将列在此处。</translation>
 <translation id="1113597929977215864">显示简化版视图</translation>
-<translation id="1123070903960493543">您与 Chrome 的互动情况、您选择的设置、Chrome 崩溃详情</translation>
 <translation id="1126013303640354461">Google Pay 中的付款方式和地址不会加密。Chrome 中的浏览记录不会同步。
 只有知道您口令的人才能读取您的已加密数据。系统不会将口令发送给 Google，Google 也不会存储口令。如果您忘记了口令或想更改此设置，则需重置同步设置。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="1126809382673880764">不会保护您免受危险网站、下载内容和扩展程序的侵害。在 Gmail 和 Google 搜索等其他 Google 服务中，若安全浏览保护可用，您仍将获得该保护。</translation>
@@ -204,7 +203,6 @@
 <translation id="213279576345780926">已关闭“<ph name="TAB_TITLE" />”</translation>
 <translation id="2139186145475833000">添加到主屏幕</translation>
 <translation id="2141396931810938595">根据您的使用情况</translation>
-<translation id="214888715418183969">选择您要与 Chrome 共享哪些数据。您共享的指标将有助于我们改进 Chrome 的功能、性能和稳定性。</translation>
 <translation id="2149973817440762519">修改书签</translation>
 <translation id="2155214902713132423">此设备无法使用这种验证方法。请在您的另一部设备上选择一个不同的选项。</translation>
 <translation id="2158408438301413340">Chrome 无法检查所有密码</translation>
@@ -214,7 +212,6 @@
 <translation id="2175927920773552910">二维码</translation>
 <translation id="218608176142494674">共享</translation>
 <translation id="2194856509914051091">注意事项</translation>
-<translation id="2200113223741723867">对使用情况数据的共享进行管理</translation>
 <translation id="22091350895006575">添加用户名</translation>
 <translation id="221494669172414749">如果在不设置个人资料锁定的情况下打开 Chrome，您已保存的密码和付款方式将会从这部车载设备中移除。使用个人资料锁定功能可确保此类数据安全。</translation>
 <translation id="2227444325776770048">以“<ph name="USER_FULL_NAME" />”的身份继续</translation>
@@ -375,7 +372,6 @@
 <translation id="2996932914629936323">会从所有已同步的设备中清除历史记录</translation>
 <translation id="2997081575621687554">当某个 Google 网站请求以私密方式预加载其网页上的链接时，Chrome 会通过 Google 服务器（而不使用 Cookie）加密和预加载网页。这样一来，预加载的网站便无法得知您的身份。</translation>
 <translation id="3003253259757197230">系统会将您访问过的网址发送给 Google，以预测您接下来可能会访问的网站，并向您显示有关当前所访问网页的更多信息</translation>
-<translation id="3006881078666935414">无使用情况数据</translation>
 <translation id="3016635187733453316">请确保此设备已连接到互联网。</translation>
 <translation id="3026955690410463085">包括链接</translation>
 <translation id="3027644380269727216">根据您在网站上的活动推测得出。此设置已开启。</translation>
@@ -512,7 +508,6 @@
 <translation id="3771033907050503522">无痕模式标签页</translation>
 <translation id="3771290962915251154">此设置已被停用，因为开启了“家长控制”功能</translation>
 <translation id="3771694256347217732">Google 服务条款</translation>
-<translation id="3773856050682458546">基本数据加上您所访问网站、所用应用的有关信息</translation>
 <translation id="3775705724665058594">发送到您的设备</translation>
 <translation id="3777796259512476958">会致使您从大多数网站退出账号</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 个标签页}other{# 个标签页}}</translation>
@@ -560,7 +555,6 @@
 <translation id="4035877632587724847">不允许</translation>
 <translation id="4042941173059740150">继续通过 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 使用 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">底部动作条</translation>
-<translation id="4045764304651014138">使用情况数据</translation>
 <translation id="405399507749852140">当任一网站上的商品降价时，您会收到提醒</translation>
 <translation id="4056223980640387499">棕褐色调</translation>
 <translation id="4062305924942672200">法律信息</translation>
@@ -774,7 +768,6 @@
 <translation id="5062960805900435602">已关闭关于密码合并的更新</translation>
 <translation id="5081960376148623587">选择是否要预加载网页</translation>
 <translation id="5091199029769593641">不久之后，当打开新标签页时，您将看到来自<ph name="SITE_NAME" />的故事。您关注的网站会保存在您的 Google 账号中。您可在“探索”设置中管理它们。</translation>
-<translation id="5091249083535528968">扩展的使用情况数据</translation>
 <translation id="509429900233858213">出现错误。</translation>
 <translation id="5097349930204431044">您访问的网站能判断您的喜好，然后在您继续浏览时向您展示建议的广告</translation>
 <translation id="5099845111805573968">只要选择了一次桌面版网站，每当您访问相应网站时，系统都会应用此设置</translation>
@@ -914,7 +907,6 @@
 <translation id="5833984609253377421">分享链接</translation>
 <translation id="5839058148541733625">Chrome 恐龙</translation>
 <translation id="5853623416121554550">已暂停</translation>
-<translation id="5854512288214985237">系统不会向 Google 发送任何统计信息或崩溃报告</translation>
 <translation id="5855546874025048181">修正为：<ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">出了点问题。无法更新“跟踪价格”设置。</translation>
 <translation id="5859968346865909126">您可在“设置”中开启或关闭此模式</translation>
@@ -1019,7 +1011,6 @@
 <translation id="6404511346730675251">修改书签</translation>
 <translation id="6406506848690869874">同步</translation>
 <translation id="6407224748847589805">无法连接到您的计算机。请尝试另一种验证方式。</translation>
-<translation id="6410404864818553978">基本的使用情况数据</translation>
 <translation id="6410883413783534063">打开多个标签页即可同时访问不同网页</translation>
 <translation id="6411219469806822692">无法继续向上滚动屏幕了。请尝试从页面中更靠上的位置开始截屏。</translation>
 <translation id="6412673304250309937">将网址与存储在 Chrome 中的不安全网站列表进行比对。如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chrome 可能还会将相应网址连同少量网页内容发送给“安全浏览”功能。</translation>

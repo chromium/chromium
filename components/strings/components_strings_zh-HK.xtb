@@ -50,6 +50,7 @@
 <translation id="1074497978438210769">不安全</translation>
 <translation id="1075079914415273530">農林業</translation>
 <translation id="1075364221219156102">使用密鑰</translation>
+<translation id="1078033282564106222">已選取門牌號碼選項</translation>
 <translation id="1080116354587839789">縮放至符合畫面寬度</translation>
 <translation id="1081061862829655580">紙匣 19</translation>
 <translation id="1089439967362294234">變更密碼</translation>
@@ -784,6 +785,7 @@
 <translation id="2544546346215446551">管理員已重新啟動您的裝置</translation>
 <translation id="2544644783021658368">單一文件</translation>
 <translation id="254524874071906077">將 Chrome 設為預設瀏覽器</translation>
+<translation id="2545721997179863249">揀咗填寫所有資料選項</translation>
 <translation id="2546283357679194313">Cookie 和網站數據</translation>
 <translation id="2547466893236767989">網頁設計和開發</translation>
 <translation id="254947805923345898">政策值無效。</translation>
@@ -877,6 +879,7 @@
 <translation id="2722622039067384533">客廳家具</translation>
 <translation id="2723669454293168317">在 Chrome 設定中執行安全檢查</translation>
 <translation id="2725492561136085792">㩒 Enter 掣就可以啟用呢項操作。</translation>
+<translation id="2725927759457695883">填寫完整姓名</translation>
 <translation id="2726001110728089263">側匣</translation>
 <translation id="2728127805433021124">伺服器憑證以防護力較弱的簽章演算法簽署。</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />執行連線診斷<ph name="END_LINK" /></translation>
@@ -1240,6 +1243,7 @@
 <translation id="3484560055331845446">您可能會失去 Google 帳戶存取權。Chrome 建議您立即變更密碼。系統會要求您登入。</translation>
 <translation id="3484861421501147767">提醒：可使用已儲存的宣傳代碼</translation>
 <translation id="3487845404393360112">紙匣 4</translation>
+<translation id="3492199565975299728">街道</translation>
 <translation id="3493660662684070951">貨車、客貨車和休閒車</translation>
 <translation id="3495081129428749620">喺「<ph name="PAGE_TITLE" />」網頁度搵</translation>
 <translation id="3497627066518778351">在新視窗中審核裝置上網站資料清單</translation>
@@ -1282,6 +1286,7 @@
 <translation id="3574305903863751447"><ph name="CITY" />，<ph name="STATE" />，<ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">允許此網站的通知</translation>
 <translation id="3575168918110434329">A4x7</translation>
+<translation id="3575589330755445706">已選取街名選項</translation>
 <translation id="3576616784287504635"><ph name="SITE" /> 上的嵌入式頁面顯示</translation>
 <translation id="3577473026931028326">發生錯誤，請再試一次。</translation>
 <translation id="3577902790357386792">體操</translation>
@@ -1345,6 +1350,7 @@
 <translation id="3678914302246317895">請輸入 <ph name="OTP_LENGTH" /> 位數驗證碼</translation>
 <translation id="3681007416295224113">憑證資料</translation>
 <translation id="3681421644246505351">Chrome 會根據您最近的瀏覽記錄，記住您感興趣的主題。</translation>
+<translation id="3689867156802445220">門牌號碼</translation>
 <translation id="3693327506115126094">選擇身分驗證方式</translation>
 <translation id="3698629142018988477">建立網站按鈕，啟動之後就可以喺「Google 協作平台」度快速建立新網站</translation>
 <translation id="3701325639446035885">活動售票</translation>
@@ -1944,6 +1950,7 @@
 <translation id="4888600795924685526">外語學習</translation>
 <translation id="4890070067176768718">管理員已允許 <ph name="ORIGIN" /> 的<ph name="PERMISSION" />權限</translation>
 <translation id="4892518386797173871">後方</translation>
+<translation id="4895019427244614047">刪除地址</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />、<ph name="TYPE_2" />，<ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">奧運會</translation>
 <translation id="4900217275619098670">第九卷</translation>
@@ -1979,6 +1986,7 @@
 <translation id="4960068118612257147">你可前往 Chrome 廣告私隱設定作出變更</translation>
 <translation id="4960203958361543136">選擇搜尋引擎</translation>
 <translation id="4964505745997821360">醫療保險</translation>
+<translation id="4967366744630699583">編輯地址</translation>
 <translation id="4968522289500246572">此應用程式專為流動裝置而設，可能無法正常調整大小。應用程式可能會發生問題或重新啟動。</translation>
 <translation id="4968665849807487749">可以要求在您所有的顯示屏上管理視窗</translation>
 <translation id="4969341057194253438">刪除錄影</translation>
@@ -2236,6 +2244,7 @@
     <ph name="LINE_BREAK" />
     請嘗試聯絡您的系統管理員。</translation>
 <translation id="549333378215107354">粗幼：3</translation>
+<translation id="550365051221576010">填寫所有資料</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">受管理書籤</translation>
 <translation id="5510481203689988000">您可在 Cookie 設定中控制此設定。</translation>
@@ -2612,6 +2621,7 @@
 <translation id="6272088941196661550">恢復瀏覽過程以查看 Chrome 記錄中的相關活動</translation>
 <translation id="6272383483618007430">Google 更新</translation>
 <translation id="6279183038361895380">按下 |<ph name="ACCELERATOR" />| 即可顯示游標</translation>
+<translation id="628016388715774955">揀咗填寫完整地址選項</translation>
 <translation id="6280223929691119688">無法送貨至此地址，請選取其他地址。</translation>
 <translation id="6284292079994426700">26 x 38 吋</translation>
 <translation id="6284517535531159884">種子類型變化版本</translation>
@@ -2880,6 +2890,7 @@
 <translation id="6807791860691150411">教育</translation>
 <translation id="681021252041861472">必填欄位</translation>
 <translation id="6810899417690483278">自訂 ID</translation>
+<translation id="681459028290894216">填寫完整地址</translation>
 <translation id="6816109178681043245">體育器材</translation>
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">序列連接埠</translation>
@@ -3069,6 +3080,7 @@
 <translation id="7163295244162773898">{0,plural, =1{要複製機密檔案嗎？}other{要複製機密檔案嗎？}}</translation>
 <translation id="717330890047184534">GAIA ID：</translation>
 <translation id="7174545416324379297">已合併</translation>
+<translation id="7175097078723125014">揀咗編輯地址選項</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> 和另外 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 種選項}other{<ph name="SHIPPING_OPTION_PREVIEW" /> 和另外 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 種選項}}</translation>
 <translation id="7179323680825933600">儲存和填入付款方法</translation>
 <translation id="7180611975245234373">重新整理</translation>
@@ -3201,6 +3213,7 @@
 <translation id="7421067045979951561">通訊協定處理常式</translation>
 <translation id="7422347648202898039">標籤 (防偽)</translation>
 <translation id="7423283032694727565">管理 Cookie 按鈕，啟動之後就可以喺 Chrome 設定度管理 Cookie 偏好設定</translation>
+<translation id="7424421098814895617">揀咗刪除地址選項</translation>
 <translation id="7427366580982928791">兒童互聯網安全</translation>
 <translation id="7429429656042611765">Executive</translation>
 <translation id="7432774160230062882">先驗證你的身分，Chromium 才能填入付款資料。</translation>
@@ -3378,6 +3391,7 @@
 <translation id="7706689436519265630">您複製或移動的檔案會傳送至 Google Cloud 或第三方進行分析。例如，Google Cloud 或第三方可能會掃瞄檔案，檢查是否含有敏感資料或惡意軟件，並可能會根據公司政策儲存這些檔案。</translation>
 <translation id="7709911732293795808">保險</translation>
 <translation id="7714404809393719981">相紙 (半光面)</translation>
+<translation id="7714424966701020172">揀咗填寫完整姓名選項</translation>
 <translation id="7714464543167945231">憑證</translation>
 <translation id="7716147886133743102">根據管理員的設定封鎖</translation>
 <translation id="7716375162095500223">尚未上載或已忽略</translation>

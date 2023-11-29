@@ -3897,6 +3897,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4005817994523282006">Méthode de détection du fuseau horaire</translation>
 <translation id="4007856537951125667">Masquer les raccourcis</translation>
 <translation id="4008291085758151621">Les informations sur le site ne sont pas disponibles en mode réalité virtuelle</translation>
+<translation id="4010746393007464819">Une mise à niveau vers Debian 12 (Bookworm) est disponible</translation>
 <translation id="4010917659463429001">Pour synchroniser vos favoris avec votre appareil mobile, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Réparer "<ph name="EXTENSION_NAME" />" ?</translation>
 <translation id="4015163439792426608">Vous avez des extensions ? <ph name="BEGIN_LINK" />Gérez-les<ph name="END_LINK" /> facilement depuis une seule et même interface.</translation>
@@ -6060,6 +6061,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5782040878821624922">Disponible sur tous les appareils</translation>
 <translation id="5782227691023083829">Traduction en cours...</translation>
 <translation id="57838592816432529">Couper le son</translation>
+<translation id="5784291589716625675">Modifier la langue de l'appli</translation>
 <translation id="5785583009707899920">Utilitaires de fichiers Chrome</translation>
 <translation id="5787146423283493983">Accord de la clé</translation>
 <translation id="5787420647064736989">Nom de l'appareil</translation>
@@ -6534,6 +6536,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6151323131516309312">Appuyez sur <ph name="SEARCH_KEY" /> pour rechercher sur <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">Ce fichier existe déjà dans votre dossier de téléchargements.</translation>
 <translation id="6152918902620844577">En attente de la prochaine opération</translation>
+<translation id="6153439704237222699">En savoir plus sur Do Not Track</translation>
 <translation id="6154240335466762404">Supprimer tous les ports</translation>
 <translation id="615436196126345398">Protocole</translation>
 <translation id="6155141482566063812">Votre écran est partagé par un onglet d'arrière-plan</translation>
@@ -8855,6 +8858,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7988805580376093356">Exécutez <ph name="DEVICE_OS" /> depuis une clé USB pour conserver votre OS.</translation>
 <translation id="7988876720343145286">Autres paramètres et autorisations Android</translation>
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> - Voix <ph name="COUNT" /></translation>
+<translation id="7990958035181555539">Transférer automatiquement le Wi-Fi depuis votre téléphone Android</translation>
 <translation id="7991296728590311172">Paramètres Switch Access</translation>
 <translation id="7992203134935383159">Synthèse vocale</translation>
 <translation id="7994515119120860317">Traduisez le texte d'une image avec <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -9802,6 +9806,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8736288397686080465">Ce site a été mis à jour en arrière-plan.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Sélectionner la langue dans laquelle la page doit être traduite</translation>
+<translation id="8738418093147087440">Recherchez par pays, langue ou nom de saisie</translation>
 <translation id="8740086188450289493">Utiliser le mot de passe du compte Google</translation>
 <translation id="8740247629089392745">Vous pouvez remettre ce Chromebook à <ph name="SUPERVISED_USER_NAME" />. La configuration est presque terminée. Ensuite, place à l'exploration !</translation>
 <translation id="8740672167979365981">Mise à jour de ChromeOS Flex requise</translation>

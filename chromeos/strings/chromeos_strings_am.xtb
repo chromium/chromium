@@ -31,7 +31,6 @@
 <translation id="1181037720776840403">አስወግድ</translation>
 <translation id="1191518099344003522">ኤፒኤን ነቅቷል።</translation>
 <translation id="1195447618553298278">ያልታወቀ ስህተት።</translation>
-<translation id="1195784767091936222">ራስሰር የጨለማ ሁነታን አብራ</translation>
 <translation id="1196959502276349371">ስሪት <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">አጫውት/ለአፍታ አቁም</translation>
 <translation id="1201402288615127009">ቀጣይ</translation>
@@ -281,7 +280,6 @@
 <translation id="3122464029669770682">ሲፒዩ</translation>
 <translation id="3124039320086536031">መሣሪያ ተገናኝቷል።</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{ገፅ ይወገድ?}=1{ገፅ {PAGE_NUMBER} ይወገድ?}one{ገፅ {PAGE_NUMBER} ይወገድ?}other{ገፅ {PAGE_NUMBER} ይወገድ?}}</translation>
-<translation id="3136905423678675159">ራስሰር የጨለማ ሁነታ ይብራ?</translation>
 <translation id="3146655726035122603">ለ<ph name="PRODUCT_NAME" /> የተወሰነ</translation>
 <translation id="315116470104423982">የተንቀሳቃሽ ስልክ ውሂብ</translation>
 <translation id="3156846309055100599">ገፅ <ph name="PAGE_NUMBER" />ን በመቃኘት ላይ...</translation>
@@ -362,7 +360,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ግምገማዎች)</translation>
 <translation id="3748026146096797577">አልተገናኘም</translation>
 <translation id="3749289110408117711">የፋይል ስም</translation>
-<translation id="3754384069690464321">በዚህ ልጣፍ ላይ ጥሩ ውጤት ለማግኘት፣ እባክዎ ራስ ሰር-የጨለማ ሁነታን ያብሩ። በማንኛውም ጊዜ በመተግበሪያው ውስጥ መልሰው መለወጥ ይችላሉ።</translation>
 <translation id="3771294271822695279">የቪዲዮ ፋይሎች</translation>
 <translation id="3784455785234192852">ቆልፍ</translation>
 <translation id="380097101658023925">የአርጂቢ መቆጣጠሪያዎች</translation>

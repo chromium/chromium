@@ -36,7 +36,9 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="1715127912119967311">Chromium sender dine interaktioner med disse funktioner til Google for at hjælpe med at forbedre dem. Disse data læses, behandles og annoteres muligvis af menneskelige kontrollanter.</translation>
 <translation id="17264556997921157">Du kan se og fjerne interesseområder, som websites bruger til at vise annoncer. Chromium estimerer dine interesser på baggrund af din seneste browserhistorik.</translation>
 <translation id="1733725117201708356">Chromium sletter snart browserdataene</translation>
+<translation id="1736443181683099871">Chromium vil forsøge at opgradere navigationen til HTTPS</translation>
 <translation id="1745121272106313518">Chromium genstarter om <ph name="REMAINING_TIME" /></translation>
+<translation id="1749104137266986751">Når HTTPS er utilgængelig, anvender Chromium en usikker forbindelse uden at advare dig</translation>
 <translation id="1774152462503052664">Lad Chromium køre i baggrunden</translation>
 <translation id="1779356040007214683">For at gøre Chromium sikrere har vi slået nogle udvidelser fra, som ikke er anført i <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> og muligvis er blevet tilføjet, uden at du vidste det.</translation>
 <translation id="1808667845054772817">Geninstaller Chromium</translation>
@@ -124,6 +126,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="3286538390144397061">Genstart nu</translation>
 <translation id="328888136576916638">Der mangler Google API-nøgler. Nogle funktioner i Chromium deaktiveres.</translation>
 <translation id="3296368748942286671">Fortsæt med at køre baggrundsapps, når Chromium er lukket</translation>
+<translation id="3313189106987092621">Chromium advarer dig, inden et website indlæses via en usikker forbindelse</translation>
 <translation id="3350761136195634146">Der findes allerede en Chromium-profil med denne konto</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Vil du skifte til den eksisterende Chromium-profil?</translation>
@@ -221,6 +224,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5224391634244552924">Der er ingen gemte adgangskoder. Chromium kan tjekke dine adgangskoder, når du gemmer dem.</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> er allerede logget ind på denne Chromium-profil. Denne handling vil oprette en ny Chromium-profil til <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="5277894862589591112">Åbn Chromium igen for at anvende ændringerne</translation>
+<translation id="5294316920224716406">Når du browser i inkognitotilstand, advarer Chromium dig, inden et website indlæses via en usikker forbindelse</translation>
 <translation id="5296845517486664001">Når prøven er aktiveret, og hvis Chromium har placeret dig tilfældigt i en aktiv prøve, vil din browserhistorik påvirke de annoncer, du ser, og de interesser, som er estimeret nedenfor. Af hensyn til privatlivsbeskyttelsen sletter Chromium dine interesser en gang om måneden.</translation>
 <translation id="5352264705793813212">Chromium har fundet nogle sikkerhedsanbefalinger, du kan gennemgå</translation>
 <translation id="5358375970380395591">Du er ved at logge ind med en managerstyret konto og giver dens administrator kontrol over din profil i Chromium. Dine Chromium-data, f.eks. dine apps, bogmærker, historikdata, adgangskoder og andre indstillinger, knyttes permanent til <ph name="USER_NAME" />. Du kan slette disse data via kontrolpanelet for Google Konti, men du kan ikke knytte disse data til en anden konto. <ph name="LEARN_MORE" /></translation>

@@ -50,6 +50,7 @@
 <translation id="1074497978438210769">Няма защита</translation>
 <translation id="1075079914415273530">Земеделие и гори</translation>
 <translation id="1075364221219156102">Използване на ключ за достъп</translation>
+<translation id="1078033282564106222">Избрана бе опцията за номер на сградата</translation>
 <translation id="1080116354587839789">Побиране на ширина</translation>
 <translation id="1081061862829655580">Тава 19</translation>
 <translation id="1089439967362294234">Промяна на паролата</translation>
@@ -784,6 +785,7 @@
 <translation id="2544546346215446551">Администраторът рестартира устройството ви</translation>
 <translation id="2544644783021658368">Един документ</translation>
 <translation id="254524874071906077">Задаване на Chrome като браузър по подразбиране</translation>
+<translation id="2545721997179863249">Избрана бе опцията за попълване на всичко</translation>
 <translation id="2546283357679194313">„Бисквитки“ и данни за сайтове</translation>
 <translation id="2547466893236767989">Уеб дизайн и разработка</translation>
 <translation id="254947805923345898">Стойността на правилото не е валидна.</translation>
@@ -877,6 +879,7 @@
 <translation id="2722622039067384533">Мебели за всекидневна</translation>
 <translation id="2723669454293168317">Стартиране на проверка на безопасността от настройките на Chrome</translation>
 <translation id="2725492561136085792">Натиснете Enter, за да активирате това действие.</translation>
+<translation id="2725927759457695883">Попълване на пълното име</translation>
 <translation id="2726001110728089263">Странична тава</translation>
 <translation id="2728127805433021124">Сертификатът на сървъра е подписан със слаб алгоритъм.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Стартирайте диагностика на свързаността<ph name="END_LINK" /></translation>
@@ -1240,6 +1243,7 @@
 <translation id="3484560055331845446">Възможно е да загубите достъп до профила си в Google. Chrome препоръчва да промените паролата си сега. Ще получите подкана за влизане в профила си.</translation>
 <translation id="3484861421501147767">Напомняне: Имате запазен промоционален код</translation>
 <translation id="3487845404393360112">Тава 4</translation>
+<translation id="3492199565975299728">Улица</translation>
 <translation id="3493660662684070951">Камиони, ванове и автомобили с висока проходимост</translation>
 <translation id="3495081129428749620">Търсене в страницата
 <ph name="PAGE_TITLE" /></translation>
@@ -1283,6 +1287,7 @@
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Разрешаване за този сайт</translation>
 <translation id="3575168918110434329">A4 x 7</translation>
+<translation id="3575589330755445706">Избрана бе опцията за име на улицата</translation>
 <translation id="3576616784287504635">Вградена страница на адрес <ph name="SITE" /> изпраща съобщение</translation>
 <translation id="3577473026931028326">Нещо се обърка. Опитайте отново.</translation>
 <translation id="3577902790357386792">Гимнастика</translation>
@@ -1346,6 +1351,7 @@
 <translation id="3678914302246317895">Въведете <ph name="OTP_LENGTH" />-цифрения код за потвърждение</translation>
 <translation id="3681007416295224113">Информация за сертификата</translation>
 <translation id="3681421644246505351">Chrome отбелязва темите, които ви интересуват, въз основа на скорошната ви история на сърфиране.</translation>
+<translation id="3689867156802445220">Номер на сградата</translation>
 <translation id="3693327506115126094">Изберете как да потвърдите, че сте вие</translation>
 <translation id="3698629142018988477">Бутон за създаване на сайт. Активирайте, за да създадете бързо сайт в Google Сайтове</translation>
 <translation id="3701325639446035885">Продажба на билети за събития</translation>
@@ -1945,6 +1951,7 @@
 <translation id="4888600795924685526">Чуждоезиково обучение</translation>
 <translation id="4890070067176768718">Администраторът ви е предоставил разрешението „<ph name="PERMISSION" />“ на <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Заден</translation>
+<translation id="4895019427244614047">Изтриване на адреса</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" /> и <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Олимпийски игри</translation>
 <translation id="4900217275619098670">Девета ролка</translation>
@@ -1980,6 +1987,7 @@
 <translation id="4960068118612257147">Можете да извършвате промени в настройките за поверителност при рекламите в Chrome</translation>
 <translation id="4960203958361543136">Изберете търсеща машина</translation>
 <translation id="4964505745997821360">Здравно застраховане</translation>
+<translation id="4967366744630699583">Редактиране на адреса</translation>
 <translation id="4968522289500246572">Това приложение е предназначено за мобилни устройства и може да не функционира правилно след преоразмеряване. То може да има проблеми или да се рестартира.</translation>
 <translation id="4968665849807487749">Може да поиска разрешение да управлява прозорците на всичките ви дисплеи</translation>
 <translation id="4969341057194253438">Изтриване на записа</translation>
@@ -2237,6 +2245,7 @@
 <ph name="LINE_BREAK" />
 Опитайте да се свържете със системния си администратор.</translation>
 <translation id="549333378215107354">Размер 3</translation>
+<translation id="550365051221576010">Попълване на всичко</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Управлявани отметки</translation>
 <translation id="5510481203689988000">Тази настройка се контролира от настройките за „бисквитките“.</translation>
@@ -2613,6 +2622,7 @@
 <translation id="6272088941196661550">Възобновете пътешествието си, за да прегледате съответната активност в историята си в Chrome</translation>
 <translation id="6272383483618007430">Google Актуализиране</translation>
 <translation id="6279183038361895380">Натиснете |<ph name="ACCELERATOR" />|, за да се покаже курсорът</translation>
+<translation id="628016388715774955">Избрана бе опцията за попълване на пълния адрес</translation>
 <translation id="6280223929691119688">Този адрес за бърза доставка не се поддържа. Изберете друг.</translation>
 <translation id="6284292079994426700">26 x 38 инча</translation>
 <translation id="6284517535531159884">Тип на началното число за вариантите</translation>
@@ -2881,6 +2891,7 @@
 <translation id="6807791860691150411">Образование</translation>
 <translation id="681021252041861472">Задължително поле</translation>
 <translation id="6810899417690483278">Идент. № на персонализирането</translation>
+<translation id="681459028290894216">Попълване на пълния адрес</translation>
 <translation id="6816109178681043245">Спортни стоки</translation>
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">серийни портове</translation>
@@ -3070,6 +3081,7 @@
 <translation id="7163295244162773898">{0,plural, =1{Да се копира ли поверителният файл?}other{Да се копират ли поверителните файлове?}}</translation>
 <translation id="717330890047184534">Идентификатор в GAIA:</translation>
 <translation id="7174545416324379297">Обединени стойности</translation>
+<translation id="7175097078723125014">Избрана бе опцията за редактиране на адреса</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> и още <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> и още <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="7179323680825933600">Запазване и попълване на начини на плащане</translation>
 <translation id="7180611975245234373">Опресняване</translation>
@@ -3202,6 +3214,7 @@
 <translation id="7421067045979951561">манипулатори на протоколи</translation>
 <translation id="7422347648202898039">Етикети (със защита)</translation>
 <translation id="7423283032694727565">Бутон „Управление на „бисквитките“. Активирайте, за да управлявате предпочитанията си за „бисквитките“ в настройките на Chrome</translation>
+<translation id="7424421098814895617">Избрана бе опцията за изтриване на адреса</translation>
 <translation id="7427366580982928791">Безопасност на децата в интернет</translation>
 <translation id="7429429656042611765">Executive</translation>
 <translation id="7432774160230062882">Потвърдете, че това сте вие, за да може Chromium да попълни данните ви за плащане.</translation>
@@ -3379,6 +3392,7 @@
 <translation id="7706689436519265630">Файловете, които копирате или местите, се изпращат до Google Cloud или до трети страни за анализ. Възможно е например файловете да бъдат сканирани за чувствителни данни или злонамерен софтуер и да се съхраняват въз основа на правилата на компанията.</translation>
 <translation id="7709911732293795808">Застраховане</translation>
 <translation id="7714404809393719981">Снимка (полугланцирана)</translation>
+<translation id="7714424966701020172">Избрана бе опцията за попълване на пълното име</translation>
 <translation id="7714464543167945231">Сертификат</translation>
 <translation id="7716147886133743102">Блокирано от администратора ви</translation>
 <translation id="7716375162095500223">Още не е качено или пренебрегнато</translation>

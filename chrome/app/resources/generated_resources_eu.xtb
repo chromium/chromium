@@ -3896,6 +3896,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4005817994523282006">Ordu-zona hautemateko metodoa</translation>
 <translation id="4007856537951125667">Ezkutatu lasterbideak</translation>
 <translation id="4008291085758151621">Webgunearen informazioa ez dago erabilgarri errealitate birtualean</translation>
+<translation id="4010746393007464819">Debian 12 bertsiora berri daiteke (Bookworm)</translation>
 <translation id="4010917659463429001">Laster-markak gailu mugikorrean izateko, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" konpondu nahi duzu?</translation>
 <translation id="4015163439792426608">Luzapenak dituzu? <ph name="BEGIN_LINK" />Kudeatu luzapen guztiak<ph name="END_LINK" /> toki berean.</translation>
@@ -6056,6 +6057,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="5782040878821624922">Gailu guztietan erabilgarri</translation>
 <translation id="5782227691023083829">Itzultzen…</translation>
 <translation id="57838592816432529">Desaktibatu audioa</translation>
+<translation id="5784291589716625675">Aldatu aplikazioaren hizkuntza</translation>
 <translation id="5785583009707899920">Chrome-ren fitxategietarako zerbitzu-aplikazioak</translation>
 <translation id="5787146423283493983">Gakoei buruzko akordioa</translation>
 <translation id="5787420647064736989">Gailuaren izena</translation>
@@ -6529,6 +6531,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="6151323131516309312"><ph name="SITE_NAME" /> webgunean bilatzeko, sakatu <ph name="SEARCH_KEY" /></translation>
 <translation id="6151771661215463137">Fitxategia lehendik dago deskargen karpetan.</translation>
 <translation id="6152918902620844577">Hurrengo ekintzaren zain</translation>
+<translation id="6153439704237222699">Lortu Do Not Track eremuari buruzko informazio gehiago</translation>
 <translation id="6154240335466762404">Kendu ataka guztiak</translation>
 <translation id="615436196126345398">Protokoloa</translation>
 <translation id="6155141482566063812">Atzeko planoko fitxa bat zure pantaila partekatzen ari da</translation>
@@ -8846,6 +8849,7 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7988805580376093356">Mantendu sistema eragilea eta exekutatu <ph name="DEVICE_OS" /> USB bidezko flash unitate baten bidez.</translation>
 <translation id="7988876720343145286">Android-en ezarpen eta baimen gehiago</translation>
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> <ph name="COUNT" />. ahotsa</translation>
+<translation id="7990958035181555539">Transferitu wifia Android-eko telefonotik automatikoki</translation>
 <translation id="7991296728590311172">Erabilerraztasun-osagarriaren ezarpenak</translation>
 <translation id="7992203134935383159">Hizketaren sintesia</translation>
 <translation id="7994515119120860317">Itzuli irudiko testua <ph name="VISUAL_SEARCH_PROVIDER" /> erabilita</translation>
@@ -9792,6 +9796,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8736288397686080465">Webgunea atzeko planoan eguneratu da.</translation>
 <translation id="8737709691285775803">Bateragarritasun-zuzenketa</translation>
 <translation id="8737914367566358838">Aukeratu zer hizkuntzatara itzuli nahi duzun orria</translation>
+<translation id="8738418093147087440">Bilatu hizkuntzen, herrialdeen edo idazketa-metodoen arabera</translation>
 <translation id="8740086188450289493">Erabili Google-ko kontuko pasahitza</translation>
 <translation id="8740247629089392745">Eman Chromebook-a <ph name="SUPERVISED_USER_NAME" /> erabiltzaileari. Ia amaitu duzue konfiguratzen. Arakatzen hasteko moduan izango zara laster.</translation>
 <translation id="8740672167979365981">ChromeOS Flex eguneratu egin behar da</translation>

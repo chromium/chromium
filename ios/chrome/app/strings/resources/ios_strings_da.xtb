@@ -819,6 +819,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="5300589172476337783">Vis</translation>
 <translation id="5317780077021120954">Gem</translation>
 <translation id="5318298563956633672">Du holder allerede øje med dette produkt.</translation>
+<translation id="5329451663851195956">Træk nedad for at opdatere.</translation>
 <translation id="5339316356165661760">Aktivér synkronisering</translation>
 <translation id="5345598430982201510">Registrer aldrig pakker automatisk</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Vil du spore denne pakke?}one{Vil du spore {COUNT} pakke?}other{Vil du spore {COUNT} pakker?}}</translation>
@@ -944,6 +945,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="598634819525651074">Areal</translation>
 <translation id="5988097621740394599">Se prisfald på dine faner</translation>
 <translation id="5988851877894965432">Åbn webadresser i Chrome</translation>
+<translation id="6001839398155993679">Lad os komme i gang</translation>
 <translation id="6006672969046233841">Ny fane</translation>
 <translation id="6011308810877101166">Gør søgeforslag bedre</translation>
 <translation id="6012140227487808125">Krypterer...</translation>
@@ -1318,6 +1320,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7879275349003161544">Vis downloads</translation>
 <translation id="7883882164760409935">Du har genbrugt adgangskoder.</translation>
 <translation id="7884694604461143138">Søgehistorik (<ph name="COUNT" /> blev fundet)</translation>
+<translation id="7887174313503389866">Få en rundvisning i vigtige privatlivs- og sikkerhedsindstillinger. Gå til de individuelle indstillinger for at se flere valgmuligheder.</translation>
 <translation id="7887198238286927132">Af hensyn til beskyttelsen af dine personlige oplysninger autofylder Chrome ikke dette felt.</translation>
 <translation id="7889910613639381518">Nem og sikker adgang med widgetten Google Adgangskodeadministrator.</translation>
 <translation id="7911190106180361398">Din organisation tillader ikke, at du synkroniserer alt.</translation>

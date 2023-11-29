@@ -31,7 +31,6 @@
 <translation id="1181037720776840403">Entfernen</translation>
 <translation id="1191518099344003522">APN ist aktiviert.</translation>
 <translation id="1195447618553298278">Unbekannter Fehler.</translation>
-<translation id="1195784767091936222">Automatischen dunklen Modus aktivieren</translation>
 <translation id="1196959502276349371">Version <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Wiedergabe/Pause</translation>
 <translation id="1201402288615127009">Weiter</translation>
@@ -281,7 +280,6 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Das Gerät ist verbunden.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Seite entfernen?}=1{Seite {PAGE_NUMBER} entfernen?}other{Seite {PAGE_NUMBER} entfernen?}}</translation>
-<translation id="3136905423678675159">Automatischen dunklen Modus aktivieren?</translation>
 <translation id="3146655726035122603">Exklusiv für <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobile Daten</translation>
 <translation id="3156846309055100599">Seite <ph name="PAGE_NUMBER" /> wird gescannt…</translation>
@@ -362,7 +360,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> Rezensionen)</translation>
 <translation id="3748026146096797577">Nicht verbunden</translation>
 <translation id="3749289110408117711">Dateiname</translation>
-<translation id="3754384069690464321">Aktiviere den automatischen dunklen Modus, damit dieser Hintergrund optimal dargestellt werden kann. Du kannst die Einstellung jederzeit in der App wieder ändern.</translation>
 <translation id="3771294271822695279">Videodateien</translation>
 <translation id="3784455785234192852">Sperre</translation>
 <translation id="380097101658023925">RGB-Einstellungen</translation>

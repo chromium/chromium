@@ -3403,15 +3403,6 @@ Questo criterio è una soluzione alternativa temporanea e verrà rimosso dopo il
 <translation id="3838094946886335701">Se il criterio viene impostato (solo come consigliato), puoi registrare un elenco di gestori di protocolli che vengono uniti a quelli registrati dall'utente, con conseguente utilizzo di entrambi i gruppi. Imposta la proprietà "protocollo" sullo schema (ad esempio "mailto") e la proprietà "URL" sul pattern URL dell'applicazione che gestisce lo schema specificato nel campo "protocollo". Il pattern può includere un segnaposto "%s", che viene sostituito dall'URL gestito.
 
       Gli utenti non possono rimuovere un gestore di protocollo registrato tramite il criterio. Se però installano un nuovo gestore predefinito, possono cambiare i gestori di protocolli installati in base al criterio.</translation>
-<translation id="3847858041725748756">Questo criterio è deprecato. Utilizza il criterio <ph name="RELATED_WEBSITE_SETS_ENABLED_POLICY_NAME" />.
-
-Questo criterio consente di disattivare la funzionalità degli insiemi proprietari.
-
-Se questo criterio non viene configurato o se viene attivato, la funzionalità degli insiemi proprietari viene attivata.
-
-Se questo criterio viene disattivato, la funzionalità degli insiemi proprietari viene disattivata.
-
-Consente inoltre di stabilire se Chrome supporta o meno le integrazioni correlate agli insiemi proprietari.</translation>
 <translation id="3851443303439635700">Controlla la soglia di nidificazione prima della quale la funzione JavaScript setTimeout() inizia a essere bloccata</translation>
 <translation id="3858658082795336534">Modalità di stampa fronte/retro predefinita</translation>
 <translation id="3859780406608282662">Consente di aggiungere un parametro al recupero del numero di inizializzazione delle varianti in <ph name="PRODUCT_OS_NAME" />.
@@ -9709,33 +9700,6 @@ L'impostazione predefinita è RollbackDisabled.</translation>
 <translation id="9206472508136116830">Non consentire il rilevamento condivisioni NetBIOS</translation>
 <translation id="9207596996305971030">Gli eventi di accesso/uscita non vengono segnalati</translation>
 <translation id="9210647066889383361">Consenti agli utenti di accedere al proprio dispositivo con Smart Lock</translation>
-<translation id="9212819508924803630">Questo criterio è deprecato. Utilizza il criterio <ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME" />.
-
-Questo criterio fornisce un modo per eseguire l'override dell'elenco di insiemi che il browser utilizza per le funzionalità degli insiemi proprietari.
-
-Ogni insieme nell'elenco di insiemi proprietari del browser deve soddisfare i requisiti di un insieme proprietario.
-Un insieme proprietario deve contenere un sito principale e uno o più siti membri.
-Un insieme può anche contenere un elenco di siti di servizi di sua proprietà, nonché una mappa di un sito a tutte le sue varianti ccTLD.
-Visita la pagina https://github.com/WICG/first-party-sets per avere maggiori informazioni sugli insiemi proprietari che vengono utilizzati da <ph name="PRODUCT_NAME" />.
-
-Tutti i siti di un insieme proprietario devono avere un dominio registrabile pubblicato su HTTPS. Ciascun sito di un insieme proprietario deve anche essere univoco, ovvero non può essere elencato più di una volta in un insieme proprietario.
-
-Quando a questo criterio viene dato un dizionario vuoto, il browser utilizza l'elenco pubblico di insiemi proprietari.
-
-Per tutti i siti in un insieme proprietario dell'elenco <ph name="REPLACEMENTS" />, se un sito è presente anche in un insieme proprietario nell'elenco del browser, quel sito verrà rimosso dall'insieme proprietario del browser.
-Dopodiché, l'insieme proprietario del criterio verrà aggiunto all'elenco di insiemi proprietari del browser.
-
-Per tutti i siti in un insieme proprietario dell'elenco <ph name="ADDITIONS" />, se un sito è presente anche in un insieme proprietario nell'elenco del browser, l'insieme proprietario del browser verrà aggiornato in modo che il nuovo insieme proprietario possa essere aggiunto all'elenco del browser. Una volta aggiornato l'elenco del browser, l'insieme proprietario del criterio verrà aggiunto all'elenco di insiemi proprietari del browser.
-
-L'elenco di insiemi proprietari del browser richiede che nessuno dei siti al suo interno sia presente in più di un insieme. Questo requisito è valido anche per gli elenchi <ph name="REPLACEMENTS" /> e <ph name="ADDITIONS" />. In modo simile, un sito non può essere presente in entrambi gli elenchi <ph name="REPLACEMENTS" /> e <ph name="ADDITIONS" />.
-
-I caratteri jolly (*) non sono supportati come valore del criterio, neppure all'interno di un insieme proprietario in questi elenchi.
-
-Tutti gli insiemi forniti da questo criterio devono essere insiemi proprietari validi. Qualora non lo fossero, verrà segnalato un errore adeguato.
-
-Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="9213751049772256263">Disattiva tutte le varianti</translation>
 <translation id="9217154963008402249">Frequenza dei pacchetti di rete di monitoraggio</translation>
 <translation id="9220314833408124365">Viene usato un criterio relativo al referrer predefinito no-referrer-when-downgrade</translation>

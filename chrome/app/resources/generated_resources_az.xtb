@@ -3895,6 +3895,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4005817994523282006">Saat qurşağının aşkarlanması üsulu</translation>
 <translation id="4007856537951125667">Qısayolları gizlədin</translation>
 <translation id="4008291085758151621">Sayt məlumatı VR-də əlçatan deyil</translation>
+<translation id="4010746393007464819">Debian 12-yə (Bookworm) təkmilləşdirmə əlçatandır</translation>
 <translation id="4010917659463429001">Mobil cihazda əlfəcinlər əldə etmək üçün <ph name="GET_IOS_APP_LINK" /> linkinə daxil olun.</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" təmir olunsun?</translation>
 <translation id="4015163439792426608">Artırmalar əldə etmisiniz? <ph name="BEGIN_LINK" />Artırmaları<ph name="END_LINK" /> bir asan yerdə idarə edin.</translation>
@@ -6055,6 +6056,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5782040878821624922">Hər cihazda əlçatandır</translation>
 <translation id="5782227691023083829">Tərcümə edilir...</translation>
 <translation id="57838592816432529">Səssiz</translation>
+<translation id="5784291589716625675">Tətbiq dilini dəyişin</translation>
 <translation id="5785583009707899920">Chrome Fayl Vasitələri</translation>
 <translation id="5787146423283493983">Açar Anlaşması</translation>
 <translation id="5787420647064736989">Cihaz adı</translation>
@@ -6527,6 +6529,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6151323131516309312"><ph name="SITE_NAME" /> axtarmaq üçün <ph name="SEARCH_KEY" /> basın</translation>
 <translation id="6151771661215463137">Bu fayl artıq endirilənlər qovluğunda mövcuddur.</translation>
 <translation id="6152918902620844577">Növbəti əməliyyat gözlənilir</translation>
+<translation id="6153439704237222699">"İzlənilməsin" haqqında ətraflı</translation>
 <translation id="6154240335466762404">Bütün portları çıxarın</translation>
 <translation id="615436196126345398">Protokol</translation>
 <translation id="6155141482566063812">Arxa fondakı tab ekranınızı paylaşır</translation>
@@ -8845,6 +8848,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7988805580376093356">ƏS-ni saxlayın və USB'dən <ph name="DEVICE_OS" /> sistemini işə salın.</translation>
 <translation id="7988876720343145286">Digər Android ayar və icazələri</translation>
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> Səsi <ph name="COUNT" /></translation>
+<translation id="7990958035181555539">Android telefonundan WiFi-ı avtomatik ötürün</translation>
 <translation id="7991296728590311172">Keçid Düyməsi ayarları</translation>
 <translation id="7992203134935383159">Nitq sintezi</translation>
 <translation id="7994515119120860317">Şəkildəki Mətni <ph name="VISUAL_SEARCH_PROVIDER" /> ilə tərcümə edin</translation>
@@ -9791,6 +9795,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8736288397686080465">Bu sayt arxa fonda güncəlləşdi.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Səhifənin tərcümə ediləcəyi dili seçin</translation>
+<translation id="8738418093147087440">Ölkə, dil və ya daxiletmə adı ilə axtarın</translation>
 <translation id="8740086188450289493">Google Hesabı parolundan istifadə edin</translation>
 <translation id="8740247629089392745">Bu Chromebook'u <ph name="SUPERVISED_USER_NAME" /> adlı istifadəçiyə verə bilərsiniz. Ayarlama tamamlanmaq üzrədir, bundan sonra araşdırmağa başlaya bilərsiniz.</translation>
 <translation id="8740672167979365981">ChromeOS Flex güncəllənməsi tələb olunur</translation>

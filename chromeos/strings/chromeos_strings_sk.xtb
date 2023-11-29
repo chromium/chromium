@@ -31,7 +31,6 @@
 <translation id="1181037720776840403">Odstrániť</translation>
 <translation id="1191518099344003522">Názov prístupového bodu (APN) je povolený.</translation>
 <translation id="1195447618553298278">Neznáma chyba.</translation>
-<translation id="1195784767091936222">Zapnúť automatický tmavý režim</translation>
 <translation id="1196959502276349371">Verzia <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Prehratie alebo pozastavenie</translation>
 <translation id="1201402288615127009">Ďalej</translation>
@@ -281,7 +280,6 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Zariadenie je pripojené.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Chcete stranu odstrániť?}=1{Chcete odstrániť {PAGE_NUMBER} stranu?}few{Chcete odstrániť {PAGE_NUMBER} strany?}many{Chcete odstrániť {PAGE_NUMBER} strany?}other{Chcete odstrániť {PAGE_NUMBER} strán?}}</translation>
-<translation id="3136905423678675159">Chcete zapnúť automatický tmavý režim?</translation>
 <translation id="3146655726035122603">Exkluzívne pre <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobilné dátové prenosy</translation>
 <translation id="3156846309055100599">Skenuje sa <ph name="PAGE_NUMBER" />. strana…</translation>
@@ -362,7 +360,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (počet recenzií: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Nepripojené</translation>
 <translation id="3749289110408117711">Názov súboru</translation>
-<translation id="3754384069690464321">Ak chcete s touto tapetou dosiahnuť najlepšie výsledky, zapnite automatický tmavý režim. V aplikácii to môžete kedykoľvek zmeniť späť.</translation>
 <translation id="3771294271822695279">Súbory videa</translation>
 <translation id="3784455785234192852">Uzamknúť</translation>
 <translation id="380097101658023925">ovládanie RGB</translation>

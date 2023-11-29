@@ -21,5 +21,7 @@
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Энэ сайтын шинэ нууц үг}other{Энэ сайтын шинэ нууц үгнүүд}}</translation>
 <translation id="7286867818472074330">Нэвтрэх түлхүүр сонгох</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEMS_TOTAL" />-с <ph name="ITEM_POSITION" />.</translation>
+<translation id="7738288782501322815">Та <ph name="SITE_NAME" />-н нууц үгнүүдийг хүлээн авсан</translation>
+<translation id="8614995815226664591"><ph name="SENDER_NAME" /> тантай <ph name="SITE_NAME" />-н нууц үгийг хуваалцсан</translation>
 <translation id="8891372124884726271">Мандат үнэмлэхийн жагсаалтыг хаасан.</translation>
 </translationbundle>

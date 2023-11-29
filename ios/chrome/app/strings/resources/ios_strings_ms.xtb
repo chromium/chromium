@@ -209,6 +209,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />kosongkan data Chrome dalam a
 <translation id="2050196510205866090">{count,plural, =1{{count} kaedah pembayaran yang disimpan tersedia di sebelah atas papan kekunci anda.}other{{count} kaedah pembayaran yang disimpan tersedia di sebelah atas papan kekunci anda.}}</translation>
 <translation id="2055515971416882518">Buka "Tetapan".</translation>
 <translation id="2059166748188874810">Perbandaran</translation>
+<translation id="2062410130322589403">Panduan Pilihan Privasi Anda</translation>
 <translation id="2073572773299281212">Aktif <ph name="DAYS" /> Hari Yang Lalu</translation>
 <translation id="2074131957428911366">Anda boleh memilih item yang hendak disegerakkan dalam <ph name="BEGIN_LINK" />tetapan<ph name="END_LINK" /> pada bila-bila masa.</translation>
 <translation id="2079545284768500474">Buat asal</translation>
@@ -946,6 +947,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="598634819525651074">Kawasan</translation>
 <translation id="5988097621740394599">Lihat penurunan harga pada tab anda.</translation>
 <translation id="5988851877894965432">Buka URL dalam Chrome</translation>
+<translation id="6001839398155993679">Jom</translation>
 <translation id="6006672969046233841">Tab Baharu</translation>
 <translation id="6011308810877101166">Tingkatkan cadangan carian</translation>
 <translation id="6012140227487808125">Menyulitkan...</translation>
@@ -1321,6 +1323,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7879275349003161544">Tunjukkan Muat Turun</translation>
 <translation id="7883882164760409935">Anda mempunyai kata laluan yang digunakan semula.</translation>
 <translation id="7884694604461143138">Sejarah Carian (<ph name="COUNT" /> Ditemukan)</translation>
+<translation id="7887174313503389866">Ikuti lawatan berpandu privasi dan kawalan keselamatan utama. Untuk mendapatkan lagi pilihan, pergi ke tetapan individu.</translation>
 <translation id="7887198238286927132">Untuk melindungi privasi anda, Chrome tidak akan mengisi medan ini secara automatik.</translation>
 <translation id="7889910613639381518">Akses mudah dan selamat dengan widget Google Password Manager.</translation>
 <translation id="7911190106180361398">Organisasi anda tidak membenarkan anda menyegerakkan semua.</translation>

@@ -31,7 +31,6 @@
 <translation id="1181037720776840403">ដកចេញ</translation>
 <translation id="1191518099344003522">APN ត្រូវបាន​បើក។</translation>
 <translation id="1195447618553298278">កំហុសឆ្គងមិនស្គាល់។</translation>
-<translation id="1195784767091936222">បើក​មុខងារ​ងងឹត​ស្វ័យប្រវត្តិ</translation>
 <translation id="1196959502276349371">កំណែ <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">ចាក់/ផ្អាក</translation>
 <translation id="1201402288615127009">បន្ទាប់</translation>
@@ -281,7 +280,6 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">ឧបករណ៍ត្រូវបានភ្ជាប់។</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{លុប​ទំព័រឬ?}=1{លុប​ទំព័រទី {PAGE_NUMBER} ឬ?}other{លុប​ទំព័រទី {PAGE_NUMBER} ឬ?}}</translation>
-<translation id="3136905423678675159">បើក​មុខងារ​ងងឹត​ស្វ័យប្រវត្តិឬ?</translation>
 <translation id="3146655726035122603">មានសម្រាប់តែ <ph name="PRODUCT_NAME" /> ប៉ុណ្ណោះ</translation>
 <translation id="315116470104423982">ទិន្នន័យទូរស័ព្ទ</translation>
 <translation id="3156846309055100599">កំពុងស្កេនទំព័រទី <ph name="PAGE_NUMBER" />...</translation>
@@ -362,7 +360,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (ការវាយតម្លៃចំនួន <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">មិនបានភ្ជាប់ទេ</translation>
 <translation id="3749289110408117711">ឈ្មោះឯកសារ</translation>
-<translation id="3754384069690464321">ដើម្បី​ទទួលបាន​លទ្ធផល​ល្អបំផុត​ដោយប្រើ​ផ្ទាំងរូបភាពនេះ សូមបើក​មុខងារ​ងងឹត​ស្វ័យប្រវត្តិ។ អ្នកអាច​ប្ដូរវាវិញ​នៅក្នុង​កម្មវិធីនេះ​បានគ្រប់ពេល។</translation>
 <translation id="3771294271822695279">ឯកសារវីដេអូ</translation>
 <translation id="3784455785234192852">ចាក់សោរ</translation>
 <translation id="380097101658023925">ការគ្រប់គ្រង rgb</translation>

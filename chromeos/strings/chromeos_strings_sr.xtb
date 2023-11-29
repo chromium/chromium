@@ -31,7 +31,6 @@
 <translation id="1181037720776840403">Уклони</translation>
 <translation id="1191518099344003522">Назив приступне тачке је омогућен.</translation>
 <translation id="1195447618553298278">Непозната грешка.</translation>
-<translation id="1195784767091936222">Укључи аутоматски тамни режим</translation>
 <translation id="1196959502276349371">Верзија <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Пустите/паузирајте</translation>
 <translation id="1201402288615127009">Даље</translation>
@@ -281,7 +280,6 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Уређај је повезан.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Желите да уклоните страницу?}=1{Желите да уклоните {PAGE_NUMBER}. страницу?}one{Желите да уклоните {PAGE_NUMBER}. страницу?}few{Желите да уклоните {PAGE_NUMBER}. страницу?}other{Желите да уклоните {PAGE_NUMBER}. страницу?}}</translation>
-<translation id="3136905423678675159">Желите да укључите аутоматски тамни режим?</translation>
 <translation id="3146655726035122603">Ексклузивно за <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Мобилни подаци</translation>
 <translation id="3156846309055100599">Скенира се <ph name="PAGE_NUMBER" />. страница...</translation>
@@ -362,7 +360,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (рецензије: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Није повезано</translation>
 <translation id="3749289110408117711">Назив датотеке</translation>
-<translation id="3754384069690464321">Ако желите оптималне резултате са овом позадином, укључите аутоматски тамни режим. Ово увек можете поново да промените у апликацији.</translation>
 <translation id="3771294271822695279">Видео датотеке</translation>
 <translation id="3784455785234192852">Закључај</translation>
 <translation id="380097101658023925">RGB контроле</translation>

@@ -98,6 +98,7 @@
 <translation id="2556847002339236023">Teie organisatsioon suleb Chrome'i, kui seda ei kasutata <ph name="TIMEOUT_DURATION" /> jooksul. Sirvimisandmed kustutati. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi.</translation>
 <translation id="2559253115192232574">Hiljem saab teie külastatav sait küsida Chrome'ilt teie huvisid, et isikupärastada teile kuvatavaid reklaame. Chrome võib jagada kuni kolme huvi.</translation>
 <translation id="2563121210305478421">Kas käivitada Chrome uuesti?</translation>
+<translation id="2569974318947988067">Chrome üritab navigeerimise HTTPS-ile üle viia</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> on juba sellele Chrome'i profiilile sisse logitud. Teie sirvimise eraldi hoidmiseks saab Chrome teile luua oma profiili.</translation>
 <translation id="2580411288591421699">Töötava Google Chrome'i versiooniga sama versiooni ei saa installida. Sulgege Google Chrome ja proovige uuesti.</translation>
 <translation id="2586406160782125153">See kustutab sellest seadmest teie sirvimisandmed. Hiljem oma andmete toomiseks logige Chrome'i sisse kasutajana <ph name="USER_EMAIL" />.</translation>
@@ -214,6 +215,7 @@
 <translation id="4335235004908507846">Chrome aitab teid kaitsta andmetega seotud rikkumiste, ohtlike laienduste ja muu eest</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> on Chrome'i lisatud</translation>
 <translation id="4384570495110188418">Chrome ei saa teie paroole kontrollida, kuna te pole sisse logitud</translation>
+<translation id="4389991535395284064">Kui sirvite inkognito režiimis, hoiatab Chrome teid enne saidi laadimist ebaturvalise ühenduse kaudu</translation>
 <translation id="4393248995085527349">Google Chrome'i tulevaste värskenduste saamiseks on teil vaja operatsioonisüsteemi macOS 10.15 või uuemat versiooni. See arvuti kasutab operatsioonisüsteemi macOS 10.13.</translation>
 <translation id="4427306783828095590">Täiustatud kaitse aitab andmepüüki ja pahavara paremini blokeerida</translation>
 <translation id="4450664632294415862">Chrome – võrku sisselogimine – <ph name="PAGE_TITLE" /></translation>
@@ -384,6 +386,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="7426611252293106642">Google Chrome ei pruugi õigesti töötada, kuna seda ei toetata enam selles Linuxi versioonis</translation>
 <translation id="7449333426561673451">{COUNT,plural, =1{Teie organisatsioon sulgeb Chrome’i automaatselt, kui seda ei kasutata 1 minuti jooksul.}other{Teie organisatsioon sulgeb Chrome’i automaatselt, kui seda ei kasutata # minuti jooksul.}}</translation>
 <translation id="7452987490177144319">{COUNT,plural, =1{Teie organisatsioon kustutab sirvimisandmed automaatselt, kui Chrome'i ei kasutata 1 minuti jooksul. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi. Teie vahelehed jäävad avatuks.}other{Teie organisatsioon kustutab sirvimisandmed automaatselt, kui Chrome'i ei kasutata # minuti jooksul. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi. Teie vahelehed jäävad avatuks.}}</translation>
+<translation id="7477130805345743099">Chrome hoiatab teid enne mis tahes saidi laadimist ebaturvalise ühenduse kaudu</translation>
 <translation id="7481213027396403996">Hankige Chrome'i parimad turbefunktsioonid</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7583399374488819119">Brauseri <ph name="COMPANY_NAME" /> installiprogramm</translation>
@@ -475,6 +478,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="8922193594870374009">Numbri saatmiseks asukohast <ph name="ORIGIN" /> Android-telefoni logige mõlemas seadmes Chrome'i sisse.</translation>
 <translation id="8986207147630327271">Lisate sellesse brauserisse tööprofiili ja annate administraatorile kontrolli vaid oma tööprofiili üle.</translation>
 <translation id="8989968390305463310">Teie sirvimisajalugu mõjutab kuvatavaid reklaame ja huvisid vastavalt allolevatele prognoosidele. Teie privaatsuse kaitsmiseks kustutab Chrome automaatselt teie huvisid jooksvalt iga kuu. Huvisid võidakse värskendada, kui te neid ei eemalda.</translation>
+<translation id="8999117580775242387">Kui HTTPS pole saadaval, kasutab Chrome ebaturvalist ühendust ilma teid hoiatamata</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome'i värskendus on saadaval}=1{Chrome'i värskendus on saadaval}other{Chrome'i värskendus on # päeva saadaval olnud}}</translation>
 <translation id="9053892488859122171">Chrome OS Flexi süsteem</translation>
 <translation id="9054037008353851982">Värskendamiseks käivitage uuesti – teie vahelehed avanevad uuesti</translation>

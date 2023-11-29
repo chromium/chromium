@@ -762,7 +762,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="5017828934289857214">Später erinnern</translation>
 <translation id="5037676449506322593">Alles auswählen</translation>
 <translation id="5039804452771397117">Zulassen</translation>
-<translation id="5050294464480863218">Wichtige Punkte</translation>
+<translation id="5050294464480863218">Wichtige Hinweise</translation>
 <translation id="5050810143224996149">Passwort teilen</translation>
 <translation id="5056446788882570708">Probleme <ph name="TIME" /> gefunden.</translation>
 <translation id="5059136629401106827">Ok</translation>
@@ -820,6 +820,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="5300589172476337783">Anzeigen</translation>
 <translation id="5317780077021120954">Speichern</translation>
 <translation id="5318298563956633672">Du beobachtest dieses Produkt bereits.</translation>
+<translation id="5329451663851195956">Zum Aktualisieren nach unten ziehen.</translation>
 <translation id="5339316356165661760">Synchronisierung aktivieren</translation>
 <translation id="5345598430982201510">Pakete nie automatisch erkennen</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Dieses Paket verfolgen?}other{{COUNT} Pakete verfolgen?}}</translation>
@@ -945,6 +946,7 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="598634819525651074">Bereich</translation>
 <translation id="5988097621740394599">Du siehst Preisnachlässe auf deinen Tabs.</translation>
 <translation id="5988851877894965432">URLs in Chrome öffnen</translation>
+<translation id="6001839398155993679">Los gehts</translation>
 <translation id="6006672969046233841">Neuer Tab</translation>
 <translation id="6011308810877101166">Suchvorschläge verbessern</translation>
 <translation id="6012140227487808125">Wird verschlüsselt…</translation>
@@ -1320,6 +1322,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7879275349003161544">Downloads anzeigen</translation>
 <translation id="7883882164760409935">Du hast wiederverwendete Passwörter.</translation>
 <translation id="7884694604461143138">Suchverlauf (<ph name="COUNT" /> gefunden)</translation>
+<translation id="7887174313503389866">Sieh dir eine Demo der wichtigsten Datenschutz- und Sicherheitseinstellungen an. Weitere Optionen findest du in den jeweiligen Einstellungen.</translation>
 <translation id="7887198238286927132">Um deine Daten zu schützen, füllt Chrome dieses Feld nicht automatisch aus.</translation>
 <translation id="7889910613639381518">Einfacher und sicherer Zugriff mit dem Google Passwortmanager-Widget.</translation>
 <translation id="7911190106180361398">Deine Organisation lässt nicht zu, dass du alles synchronisierst.</translation>

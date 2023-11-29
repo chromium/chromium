@@ -50,6 +50,7 @@
 <translation id="1074497978438210769">Non sécurisé</translation>
 <translation id="1075079914415273530">Agriculture et sylviculture</translation>
 <translation id="1075364221219156102">Utiliser une clé d'accès</translation>
+<translation id="1078033282564106222">Option "Numéro du bâtiment" sélectionnée</translation>
 <translation id="1080116354587839789">Ajuster à la largeur</translation>
 <translation id="1081061862829655580">Bac 19</translation>
 <translation id="1089439967362294234">Modifier le mot de passe</translation>
@@ -784,6 +785,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2544546346215446551">Votre administrateur a redémarré votre appareil</translation>
 <translation id="2544644783021658368">Document unique</translation>
 <translation id="254524874071906077">Définir Chrome comme navigateur par défaut</translation>
+<translation id="2545721997179863249">L'option "Tout indiquer" a été sélectionnée</translation>
 <translation id="2546283357679194313">Cookies et données des sites</translation>
 <translation id="2547466893236767989">Conception et développement Web</translation>
 <translation id="254947805923345898">La valeur de la règle n'est pas valide.</translation>
@@ -877,6 +879,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2722622039067384533">Meubles de salon</translation>
 <translation id="2723669454293168317">Effectuez un contrôle de sécurité dans les paramètres de Chrome</translation>
 <translation id="2725492561136085792">Appuyez sur Entrée pour activer cette action.</translation>
+<translation id="2725927759457695883">Indiquer le nom complet</translation>
 <translation id="2726001110728089263">Bac latéral</translation>
 <translation id="2728127805433021124">Le certificat du serveur a été signé avec un algorithme de signature faible.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Exécuter les diagnostics de connectivité<ph name="END_LINK" /></translation>
@@ -1240,6 +1243,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3484560055331845446">Vous pourriez perdre l'accès à votre compte Google. L'équipe Chrome vous recommande de modifier votre mot de passe maintenant. Vous devrez vous connecter.</translation>
 <translation id="3484861421501147767">Rappel : vous avez un code promotionnel enregistré</translation>
 <translation id="3487845404393360112">Bac 4</translation>
+<translation id="3492199565975299728">Rue</translation>
 <translation id="3493660662684070951">Fourgons, monospaces et SUV</translation>
 <translation id="3495081129428749620">Rechercher sur la page
     <ph name="PAGE_TITLE" /></translation>
@@ -1283,6 +1287,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Autoriser pour ce site</translation>
 <translation id="3575168918110434329">A4x7</translation>
+<translation id="3575589330755445706">Option "Rue" sélectionnée</translation>
 <translation id="3576616784287504635">Une page intégrée à l'adresse <ph name="SITE" /> indique</translation>
 <translation id="3577473026931028326">Un problème est survenu. Réessayez.</translation>
 <translation id="3577902790357386792">Gymnastique</translation>
@@ -1346,6 +1351,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3678914302246317895">Saisir le code de validation à <ph name="OTP_LENGTH" /> chiffres</translation>
 <translation id="3681007416295224113">Informations relatives au certificat</translation>
 <translation id="3681421644246505351">Chrome se base sur votre historique de navigation récent pour déterminer les thèmes qui vous intéressent.</translation>
+<translation id="3689867156802445220">Numéro du bâtiment</translation>
 <translation id="3693327506115126094">Choisir comment confirmer votre identité</translation>
 <translation id="3698629142018988477">Bouton "Créer un site" à activer pour créer rapidement un site dans Google Sites</translation>
 <translation id="3701325639446035885">Billetterie</translation>
@@ -1945,6 +1951,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4888600795924685526">Étude des langues étrangères</translation>
 <translation id="4890070067176768718">Votre administrateur a autorisé <ph name="PERMISSION" /> sur <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Arrière</translation>
+<translation id="4895019427244614047">Supprimer l'adresse</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Jeux olympiques</translation>
 <translation id="4900217275619098670">9e rouleau</translation>
@@ -1980,6 +1987,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4960068118612257147">Vous pouvez modifier les paramètres de confidentialité des annonces de Chrome.</translation>
 <translation id="4960203958361543136">Sélectionnez votre moteur de recherche</translation>
 <translation id="4964505745997821360">Assurance santé</translation>
+<translation id="4967366744630699583">Modifier l'adresse</translation>
 <translation id="4968522289500246572">Cette appli est conçue pour les mobiles et ne sera peut-être pas bien redimensionnée. Elle pourrait rencontrer des problèmes ou redémarrer.</translation>
 <translation id="4968665849807487749">Peut demander à gérer les fenêtres sur tous vos écrans</translation>
 <translation id="4969341057194253438">Supprimer l'enregistrement</translation>
@@ -2237,6 +2245,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
     <ph name="LINE_BREAK" />
     Essayez de contacter votre administrateur système.</translation>
 <translation id="549333378215107354">Taille 3</translation>
+<translation id="550365051221576010">Tout indiquer</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Favoris gérés</translation>
 <translation id="5510481203689988000">Cette option est gérée dans les paramètres des cookies.</translation>
@@ -2613,6 +2622,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6272088941196661550">Reprenez votre parcours pour voir les activités pertinentes dans votre historique Chrome</translation>
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6279183038361895380">Appuyez sur |<ph name="ACCELERATOR" />| pour afficher le curseur.</translation>
+<translation id="628016388715774955">L'option "Indiquer l'adresse complète" a été sélectionnée</translation>
 <translation id="6280223929691119688">Impossible de livrer à cette adresse. Sélectionnez-en une autre.</translation>
 <translation id="6284292079994426700">26 x 38 pouces</translation>
 <translation id="6284517535531159884">Type de valeur source des variantes</translation>
@@ -2881,6 +2891,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6807791860691150411">Enseignement</translation>
 <translation id="681021252041861472">Champ obligatoire</translation>
 <translation id="6810899417690483278">ID de la personnalisation</translation>
+<translation id="681459028290894216">Indiquer l'adresse complète</translation>
 <translation id="6816109178681043245">Articles de sport</translation>
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">ports série</translation>
@@ -3070,6 +3081,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="7163295244162773898">{0,plural, =1{Copier le fichier confidentiel ?}one{Copier le fichier confidentiel ?}other{Copier les fichiers confidentiels ?}}</translation>
 <translation id="717330890047184534">Identifiant GAIA : </translation>
 <translation id="7174545416324379297">Valeurs fusionnées</translation>
+<translation id="7175097078723125014">L'option "Modifier l'adresse" a été sélectionnée</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> autre}one{<ph name="SHIPPING_OPTION_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> autre}other{<ph name="SHIPPING_OPTION_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> autres}}</translation>
 <translation id="7179323680825933600">Enregistrer et saisir les modes de paiement</translation>
 <translation id="7180611975245234373">Actualiser</translation>
@@ -3203,6 +3215,7 @@ Informations supplémentaires :
 <translation id="7421067045979951561">les gestionnaires de protocoles</translation>
 <translation id="7422347648202898039">Étiquettes (sécurité)</translation>
 <translation id="7423283032694727565">Bouton "Gérer les cookies" à activer pour gérer vos préférences de cookies dans les paramètres Chrome</translation>
+<translation id="7424421098814895617">L'option "Supprimer l'adresse" a été sélectionnée</translation>
 <translation id="7427366580982928791">Sécurité des enfants sur Internet</translation>
 <translation id="7429429656042611765">Executive</translation>
 <translation id="7432774160230062882">Validez votre identité afin que Chromium puisse insérer vos infos de paiement.</translation>
@@ -3380,6 +3393,7 @@ Informations supplémentaires :
 <translation id="7706689436519265630">Les fichiers que vous copiez ou déplacez sont envoyés dans Google Cloud ou à des tiers pour analyse (par exemple, pour vérifier qu'ils ne contiennent pas de données sensibles ni de logiciels malveillants et pour être stockés conformément aux règles de l'entreprise).</translation>
 <translation id="7709911732293795808">Assurances</translation>
 <translation id="7714404809393719981">Photo (semi-brillance)</translation>
+<translation id="7714424966701020172">L'option "Indiquer le nom complet" a été sélectionnée</translation>
 <translation id="7714464543167945231">Certificat</translation>
 <translation id="7716147886133743102">Bloqué par votre administrateur</translation>
 <translation id="7716375162095500223">Importation en attente (ou bien le rapport a été ignoré)</translation>

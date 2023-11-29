@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Yikes! ਬੇਤਰਤੀਬ RSA ਨਿੱਜੀ ਕੁੰਜੀ ਬਣਾਉਣ ਵਿੱਚ ਅਸਫਲ।</translation>
 <translation id="1445572445564823378">ਇਹ ਐਕਸਟੈਂਸ਼ਨ <ph name="PRODUCT_NAME" /> ਨੂੰ ਹੌਲਾ ਕਰ ਰਿਹਾ ਹੈ। <ph name="PRODUCT_NAME" /> ਦੀ ਕਾਰਗੁਜ਼ਾਰੀ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰਨ ਲਈ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਬੰਦ ਕਰੋ।</translation>
 <translation id="1468038450257740950">WebGL ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ।</translation>
+<translation id="1610570795592207282">ਸਕ੍ਰਿਪਟ ਦੇ ਲਈ css '<ph name="RELATIVE_PATH" />' ਨੂੰ ਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।</translation>
 <translation id="1803557475693955505">ਬੈਕਗ੍ਰਾਊਂਡ ਪੰਨਾ '<ph name="BACKGROUND_PAGE" />' ਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।</translation>
 <translation id="2159915644201199628">ਚਿੱਤਰ ਡੀਕੋਡ ਨਹੀਂ ਕਰ ਸਕਿਆ: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">ਸਥਾਨੀਕਰਨ ਵਰਤਿਆ, ਪਰ default_locale ਮੈਨੀਫ਼ੈਸਟ ਵਿੱਚ ਨਹੀਂ ਦਿੱਤਾ ਹੋਇਆ ਸੀ।</translation>
@@ -31,6 +32,7 @@
 <translation id="4988792151665380515">ਜਨਤਕ ਕੁੰਜੀ ਨਿਰਯਾਤ ਕਰਨ ਵਿੱਚ ਅਸਫਲ।</translation>
 <translation id="5026754133087629784">Webview: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">ਪੈਕ ਲਈ ਡਾਇਰੈਕਟਰੀ ਵੱਲ ਪੂਰਾ ਪਾਥ ਨਹੀਂ ਲੱਭ ਸਕਦਾ।</translation>
+<translation id="5160071981665899014">ਸਕ੍ਰਿਪਟ ਦੇ ਲਈ JavaScript '<ph name="RELATIVE_PATH" />' ਨੂੰ ਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">ਸ਼ੇਪਡ windows ਸਮਰਥਿਤ ਨਹੀਂ ਹਨ।</translation>
 <translation id="5456409301717116725">ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਵਿੱਚ ਮੁੱਖ ਫਾਈਲ '<ph name="KEY_PATH" />' ਸ਼ਾਮਲ ਹੈ। ਸੰਭਵ ਤੌਰ 'ਤੇ ਤੁਸੀਂ ਇਹ ਨਹੀਂ ਚਾਹੁੰਦੇ।</translation>

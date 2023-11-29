@@ -31,7 +31,6 @@
 <translation id="1181037720776840403">Pašalinti</translation>
 <translation id="1191518099344003522">APN įgalintas.</translation>
 <translation id="1195447618553298278">Nežinoma klaida.</translation>
-<translation id="1195784767091936222">Įjungti automatinį tamsų režimą</translation>
 <translation id="1196959502276349371"><ph name="VERSION" /> versija</translation>
 <translation id="1199355487114804640">Leisti / pristabdyti</translation>
 <translation id="1201402288615127009">Kitas</translation>
@@ -281,7 +280,6 @@
 <translation id="3122464029669770682">Centrinis procesorius</translation>
 <translation id="3124039320086536031">Įrenginys prijungtas.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Pašalinti puslapį?}=1{Pašalinti {PAGE_NUMBER} puslapį?}one{Pašalinti {PAGE_NUMBER} puslapį?}few{Pašalinti {PAGE_NUMBER} puslapį?}many{Pašalinti {PAGE_NUMBER} puslapį?}other{Pašalinti {PAGE_NUMBER} puslapį?}}</translation>
-<translation id="3136905423678675159">Įjungti automatinį tamsų režimą?</translation>
 <translation id="3146655726035122603">Taikoma tik „<ph name="PRODUCT_NAME" />“</translation>
 <translation id="315116470104423982">Duomenys mobiliesiems</translation>
 <translation id="3156846309055100599">Nuskaitomas <ph name="PAGE_NUMBER" /> puslapis...</translation>
@@ -362,7 +360,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (apžvalgų: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Neprisijungta</translation>
 <translation id="3749289110408117711">Failo pavadinimas</translation>
-<translation id="3754384069690464321">Kad pasiektumėte geriausių rezultatų naudodami šį ekrano foną, įjunkite automatinį tamsų režimą. Galite bet kada jį vėl pakeisti programoje.</translation>
 <translation id="3771294271822695279">Vaizdo įrašų failai</translation>
 <translation id="3784455785234192852">Užrakinti</translation>
 <translation id="380097101658023925">RGB valdikliai</translation>

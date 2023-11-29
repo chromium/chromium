@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ar">
 <translation id="1000498691615767391">تحديد مجلد لفتحه</translation>
+<translation id="1014208178561091457">تعذّر نسخ "<ph name="FILE_NAME" />" لأنّه مشفَّر.</translation>
 <translation id="1047956942837015229">جارٍ حذف <ph name="COUNT" /> من العناصر...</translation>
 <translation id="1049926623896334335">‏مستند Word</translation>
 <translation id="1056775291175587022">ما من شبكات</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">‏مشاركة المجلد مع نظام Parallels Desktop</translation>
 <translation id="1439919885608649279">شخص يحمل أزهارًا</translation>
 <translation id="1458457385801829801">إلغاء تثبيت <ph name="TARGET_NAME" /></translation>
+<translation id="146691674290220697">تعذّر نسخ <ph name="NUMBER_OF_FILES" /> ملف لأنّها مشفَّرة.</translation>
 <translation id="1471718551822868769">السلوفاكية</translation>
 <translation id="1482884275703521657">الفنلندية</translation>
 <translation id="148466539719134488">السويسرية</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">غير متاح</translation>
 <translation id="3254434849914415189">اختر التطبيق التلقائي لملفات <ph name="FILE_TYPE" />:</translation>
 <translation id="3255159654094949700">العربية</translation>
+<translation id="326396468955264502">تعذّر نقل <ph name="NUMBER_OF_FILES" /> ملف لأنّها مشفَّرة.</translation>
 <translation id="3264582393905923483">السياق</translation>
 <translation id="3272909651715601089">تعذّر فتح "<ph name="PATH" />".</translation>
 <translation id="3280431534455935878">جارٍ التحضير</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490">تمت مشاركة مجلد واحد مع "<ph name="VM_NAME" />".</translation>
 <translation id="3524311639100184459">تنبيه: هذه الملفات مؤقتة وقد يتم حذفها تلقائيًا لتوفير مساحة على القرص.  <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">المجلد</translation>
+<translation id="3529424493985988200">يُرجى التواصل مع المشرف للحصول على التفاصيل.</translation>
 <translation id="3548125359243647069">لقد أدخلت رقم تعريف شخصي غير صحيح عدّة مرات.</translation>
 <translation id="3549797760399244642">‏جارٍالانتقال إلى drive.google.com...</translation>
 <translation id="3553048479571901246">‏لفتح الملفات باستخدام <ph name="APP_NAME" />، يُرجى نسخها أولاً إلى مجلد ملفات نظام التشغيل Windows.</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">تم فتح هذا الملف على جهاز سطح مكتب آخر. يمكنك الانتقال إلى <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) للاطلاع عليه.</translation>
 <translation id="6394388407447716302">للقراءة فقط</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> من العناصر</translation>
+<translation id="6407769893376380348">تعذّر نقل "<ph name="FILE_NAME" />" لأنّه مشفَّر.</translation>
 <translation id="642282551015776456">لا يمكن استخدام هذا الاسم كملف باسم مجلد</translation>
 <translation id="6423031066725912715">‏الفيتنامية باستخدام لوحة مفاتيح TCVN</translation>
 <translation id="6430271654280079150">يتبقى لديك محاولة واحدة.</translation>

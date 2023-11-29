@@ -701,6 +701,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} un vēl 1}zero{{website_1}, {website_2} un vēl {more_count}}one{{website_1}, {website_2} un vēl {more_count}}other{{website_1}, {website_2} un vēl {more_count}}}</translation>
 <translation id="4737560986434232178">Meklēt nesen atvērtajās cilnēs</translation>
 <translation id="473775607612524610">Atjaunināt</translation>
+<translation id="4744428388659507035">Lai grāmatzīmes būtu pieejamas visās jūsu ierīcēs, iestatījumos ieslēdziet slēdzi “Grāmatzīmes”.</translation>
 <translation id="4746926359847517643">Jebkurā laikā vēstures sadaļā varat tās atjaunot</translation>
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />. Tikai šajā ierīcē. <ph name="URL" /></translation>
 <translation id="4751645464639803239">Jauna inkognito cilne</translation>
@@ -819,6 +820,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="5300589172476337783">Rādīt</translation>
 <translation id="5317780077021120954">Saglabāt</translation>
 <translation id="5318298563956633672">Jūs jau sekojat līdzi šī produkta informācijai.</translation>
+<translation id="5329451663851195956">Varat vilkt uz leju, lai atsvaidzinātu.</translation>
 <translation id="5339316356165661760">Ieslēgt sinhronizāciju</translation>
 <translation id="5345598430982201510">Nekad nenoteikt sūtījumus automātiski</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Vai izsekot šo sūtījumu?}zero{Vai izsekot {COUNT} sūtījumus?}one{Vai izsekot {COUNT} sūtījumu?}other{Vai izsekot {COUNT} sūtījumus?}}</translation>
@@ -944,6 +946,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="598634819525651074">Laukums</translation>
 <translation id="5988097621740394599">Skatiet cenu kritumu savās cilnēs.</translation>
 <translation id="5988851877894965432">Atvērt vietrāžus URL pārlūkā Chrome</translation>
+<translation id="6001839398155993679">Aiziet!</translation>
 <translation id="6006672969046233841">Jauna cilne</translation>
 <translation id="6011308810877101166">Uzlabot meklēšanas ieteikumus</translation>
 <translation id="6012140227487808125">Notiek šifrēšana…</translation>
@@ -1241,6 +1244,7 @@ Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu p�
 <translation id="7491131399623468277">Pāriet uz iestatījumiem…</translation>
 <translation id="7492574581995589075">Jūsu organizācija ir izslēgusi iespēju izmantot un saglabāt Chrome datus jūsu Google kontā. Jaunas grāmatzīmes, paroles un citi dati tiks saglabāti tikai šajā ierīcē.</translation>
 <translation id="749854780843431406">Varat atvērt jaunu cilni, izmantojot pogu <ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
+<translation id="7500419352370346534">Tagad varat kontrolēt visus konta iestatījumus vienuviet</translation>
 <translation id="750149195207506638">Grāmatzīmes ir paslēptas</translation>
 <translation id="750228856503700085">Atjauninājumi nav pieejami</translation>
 <translation id="750493650310597496">Atlasītas: 0</translation>
@@ -1318,6 +1322,7 @@ Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu p�
 <translation id="7879275349003161544">Rādīt lejupielādes</translation>
 <translation id="7883882164760409935">Jums ir atkārtoti izmantotas paroles.</translation>
 <translation id="7884694604461143138">Meklēt vēsturē (atrasti rezultāti: <ph name="COUNT" />)</translation>
+<translation id="7887174313503389866">Izmantojiet svarīgāko konfidencialitātes un drošības vadīklu ceļvedi. Papildu opcijas skatiet atsevišķos iestatījumos.</translation>
 <translation id="7887198238286927132">Lai aizsargātu jūsu konfidencialitāti, Chrome neveiks šī lauka automātisko aizpildi.</translation>
 <translation id="7889910613639381518">Ērta un droša piekļuve ar Google paroļu pārvaldnieka logrīku.</translation>
 <translation id="7911190106180361398">Jūsu organizācija neatļauj jums sinhronizēt visu.</translation>

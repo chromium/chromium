@@ -23,7 +23,6 @@
 <translation id="1110914759170138831">Áherslumerktur texti var styttur</translation>
 <translation id="1111673857033749125">Bókamerki vistuð í öðrum tækjum munu birtast hér.</translation>
 <translation id="1113597929977215864">Sýna einfaldað yfirlit</translation>
-<translation id="1123070903960493543">Samskipti þín við Chrome, stillingar sem þú velur, upplýsingar um hrun Chrome</translation>
 <translation id="1126013303640354461">Upplýsingar um greiðslumáta og heimilisföng frá Google Pay verða ekki dulkóðaðar. Vafraferill Chrome samstillist ekki.
 Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuðu gögnin þín. Aðgangsorðið er hvorki sent til né vistað hjá Google. Ef þú gleymir aðgangsorðinu eða vilt breyta þessari stillingu þarftu að endurstilla samstillingu. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="1126809382673880764">Ver þig ekki gegn hættulegum vefsvæðum, niðurhali eða viðbótum. Þú munt áfram geta notað örugga vefskoðun, þar sem hún er í boði, í annarri þjónustu Google á borð við Gmail og leit.</translation>
@@ -204,7 +203,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> lokað</translation>
 <translation id="2139186145475833000">Setja á heimaskjá</translation>
 <translation id="2141396931810938595">Miðað við notkun þína</translation>
-<translation id="214888715418183969">Veldu hverju þú vilt deila með Chrome. Mæligildin sem þú deilir verða notuð til að bæta eiginleika, afköst og stöðugleika Chrome.</translation>
 <translation id="2149973817440762519">Breyta bókamerki</translation>
 <translation id="2155214902713132423">Þessi staðfestingaraðferð er ekki í boði fyrir þetta tæki. Veldu annan valkost í hinu tækinu þínu.</translation>
 <translation id="2158408438301413340">Chrome gat ekki athugað öll aðgangsorð</translation>
@@ -214,7 +212,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="2175927920773552910">QR-kóði</translation>
 <translation id="218608176142494674">Deiling</translation>
 <translation id="2194856509914051091">Atriði til að hafa í huga</translation>
-<translation id="2200113223741723867">Stjórna deilingu notkunargagna</translation>
 <translation id="22091350895006575">Bæta notandanafni við</translation>
 <translation id="221494669172414749">Ef þú opnar Chrome án þess að nota prófíllás verða vistuð aðgangsorð og greiðslumátar fjarlægð úr bílnum. Notkun prófílláss gætir að öryggi þessara gagna.</translation>
 <translation id="2227444325776770048">Halda áfram sem <ph name="USER_FULL_NAME" /></translation>
@@ -375,7 +372,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="2996932914629936323">Hreinsar feril úr öllum samstilltum tækjum</translation>
 <translation id="2997081575621687554">Þegar Google vefsvæði biður um að forhlaða tenglum á lokaðan hátt á síðu hjá sér dulkóðar Chrome og forhleður síðum í gegnum þjóna Google án fótspora. Þetta kemur í veg fyrir að forhlaðna vefsvæðið geti auðkennt þig.</translation>
 <translation id="3003253259757197230">Vefslóðir sem þú opnar eru sendar til Google til að spá fyrir um hvaða vefsvæði þú kannt að opna næst og sýna þér viðbótarupplýsingar um síðuna sem þú ert að skoða</translation>
-<translation id="3006881078666935414">Engin notkunargögn</translation>
 <translation id="3016635187733453316">Gakktu úr skugga um að tækið sé tengt við internetið</translation>
 <translation id="3026955690410463085">Deila tengli</translation>
 <translation id="3027644380269727216">Byggt á virkni þinni á vefsvæði. Kveikt er á þessari stillingu.</translation>
@@ -512,7 +508,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="3771033907050503522">Huliðsflipar</translation>
 <translation id="3771290962915251154">Þar sem kveikt er á barnalæsingu er slökkt á þessari stillingu</translation>
 <translation id="3771694256347217732">Þjónustuskilmálar Google</translation>
-<translation id="3773856050682458546">Grunngögn auk upplýsinga um vefsvæði sem þú opnar og forrit sem þú notar</translation>
 <translation id="3775705724665058594">Senda í tækin þín</translation>
 <translation id="3777796259512476958">Skráir þig út af flestum vefsvæðum</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 flipi}one{# flipi}other{# flipar}}</translation>
@@ -560,7 +555,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="4035877632587724847">Ekki leyfa</translation>
 <translation id="4042941173059740150">Haltu áfram á <ph name="SITE_ETLD_PLUS_ONE" /> með <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">Blað neðst</translation>
-<translation id="4045764304651014138">Notkunargögn</translation>
 <translation id="405399507749852140">Fáðu tilkynningu ef verðlækkun verður á einhverju vefsvæði</translation>
 <translation id="4056223980640387499">Brúnn blær</translation>
 <translation id="4062305924942672200">Lagalegar upplýsingar</translation>
@@ -774,7 +768,6 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5062960805900435602">Tilkynningu um sameiningu aðgangsorða lokað</translation>
 <translation id="5081960376148623587">Veldu hvort að síðum sé forhlaðið</translation>
 <translation id="5091199029769593641">Fljótlega sérðu sögur frá <ph name="SITE_NAME" /> þegar þú opnar nýjan flipa. Vefsvæði sem þú fylgir eru vistuð á Google reikningnum þínum. Þú getur stjórnað þeim í stillingum Tillagna.</translation>
-<translation id="5091249083535528968">Ítarleg notkunargögn</translation>
 <translation id="509429900233858213">Villa kom upp.</translation>
 <translation id="5097349930204431044">Vefsvæði sem þú heimsækir geta lagt mat á hvað höfðar til þín og í kjölfarið birt tillögur að auglýsingum á meðan þú heldur áfram að skoða</translation>
 <translation id="5099845111805573968">Þegar þú velur tölvuvef einu sinni er stillingin notuð fyrir vefsvæðið í hvert skipti sem þú opnar það.</translation>
@@ -914,7 +907,6 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5833984609253377421">Deila tengli</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5853623416121554550">hlé</translation>
-<translation id="5854512288214985237">Engin mæligildi eða hrunskýrslur eru sendar til Google</translation>
 <translation id="5855546874025048181">Þrengja: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">Eitthvað fór úrskeiðis. Ekki tókst að uppfæra „Vakta verð“.</translation>
 <translation id="5859968346865909126">Þú getur kveikt eða slökkt á þessu í stillingum</translation>
@@ -1019,7 +1011,6 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6404511346730675251">Breyta bókamerki</translation>
 <translation id="6406506848690869874">Samstilling</translation>
 <translation id="6407224748847589805">Ekki næst tenging við tölvuna þína. Prófaðu aðra staðfestingaraðferð.</translation>
-<translation id="6410404864818553978">Grunnnotkunargögn</translation>
 <translation id="6410883413783534063">Opnaðu flipa til að skoða mismunandi síður samtímis</translation>
 <translation id="6411219469806822692">Kemst ekki ofar. Prófaðu að byrja ofar á síðunni.</translation>
 <translation id="6412673304250309937">Ber vefslóðir saman við lista yfir óörugg vefsvæði sem er vistaður í Chrome. Ef vefsvæði reynir að stela aðgangsorðinu þínu, eða ef þú sækir skaðlega skrá, gæti Chrome einnig sent vefslóðir í Örugga vefskoðun, þar á meðal hluta af innihaldi síðna.</translation>

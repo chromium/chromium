@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hy">
 <translation id="1000498691615767391">Ընտրեք պանակ բացելու համար</translation>
+<translation id="1014208178561091457"><ph name="FILE_NAME" /> ֆայլը չհաջողվեց պատճենել, քանի որ այն գաղտնագրված է։</translation>
 <translation id="1047956942837015229">Ջնջվում է <ph name="COUNT" /> տարր…</translation>
 <translation id="1049926623896334335">Word փաստաթուղթ</translation>
 <translation id="1056775291175587022">Ցանց չկա</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Կիսվեք պանակով Parallels Desktop-ի հետ</translation>
 <translation id="1439919885608649279">Ծաղիկներով մարդ</translation>
 <translation id="1458457385801829801">Անջատել <ph name="TARGET_NAME" /> ֆայլային համակարգը</translation>
+<translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> ֆայլ չհաջողվեց պատճենել, քանի որ դրանք գաղտնագրված են։</translation>
 <translation id="1471718551822868769">սլովակերեն</translation>
 <translation id="1482884275703521657">ֆիններեն</translation>
 <translation id="148466539719134488">Շվեյցարական</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">Հասանելի չէ</translation>
 <translation id="3254434849914415189">Ընտրեք կանխադրված հավելված <ph name="FILE_TYPE" /> ֆայլերի համար:</translation>
 <translation id="3255159654094949700">արաբերեն</translation>
+<translation id="326396468955264502"><ph name="NUMBER_OF_FILES" /> ֆայլ չհաջողվեց տեղափոխել, քանի որ դրանք գաղտնագրված են։</translation>
 <translation id="3264582393905923483">Համատեքստ</translation>
 <translation id="3272909651715601089">Չհաջողվեց բացել «<ph name="PATH" />» արխիվը</translation>
 <translation id="3280431534455935878">Ֆայլի պատրաստում</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490">1 պանակ հասանելի դարձվեց <ph name="VM_NAME" />-ին</translation>
 <translation id="3524311639100184459">Ուշադրություն. այս ֆայլերը ժամանակավոր են և կարող են ավտոմատ ջնջվել՝ սկավառակի վրա տարածք ազատելու համար։  <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Պանակ</translation>
+<translation id="3529424493985988200">Մանրամասների համար դիմեք ձեր ադմինիստրատորին։</translation>
 <translation id="3548125359243647069">PIN կոդը սխալ է մուտքագրվել չափազանց շատ անգամներ։</translation>
 <translation id="3549797760399244642">Անցնել drive.google.com…</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> հավելվածի միջոցով ֆայլերը բացելու համար նախ պատճենեք դրանք Windows-ի ֆայլերի պանակ։</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">Այս ֆայլը բացված է այլ աշխատասեղանի վրա: Այն դիտելու համար տեղափոխվեք <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />):</translation>
 <translation id="6394388407447716302">Միայն կարդալու</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> տարր</translation>
+<translation id="6407769893376380348"><ph name="FILE_NAME" /> ֆայլը չհաջողվեց տեղափոխել, քանի որ այն գաղտնագրված է։</translation>
 <translation id="642282551015776456">Այս անունը չի կարող լինել ֆայլի կամ պանակի անուն</translation>
 <translation id="6423031066725912715">վիետնամերեն (TCVN ստեղնաշար)</translation>
 <translation id="6430271654280079150">Մնաց 1 փորձ։</translation>

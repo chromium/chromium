@@ -3909,6 +3909,7 @@
 <translation id="4005817994523282006">సమయ మండలి గుర్తింపు పద్ధతి</translation>
 <translation id="4007856537951125667">షార్ట్‌కట్‌లను దాచు</translation>
 <translation id="4008291085758151621">VRలో సైట్ సమాచారం అందుబాటులో లేదు</translation>
+<translation id="4010746393007464819">Debian 12 (Bookworm)కు అప్‌గ్రేడ్ అందుబాటులో ఉంది</translation>
 <translation id="4010917659463429001">మీ బుక్‌మార్క్‌లను మీ మొబైల్ పరికరంలో పొందడానికి, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />"ని సరి చేయాలా?</translation>
 <translation id="4015163439792426608">ఎక్స్‌టెన్షన్‌లను ఇన్‌స్టాల్ చేశారా? ఒక సులభమైన స్థలంలో <ph name="BEGIN_LINK" />మీ ఎక్స్‌టెన్షన్‌లను నిర్వహించండి<ph name="END_LINK" />.</translation>
@@ -6072,6 +6073,7 @@
 <translation id="5782040878821624922">ఇది ఏ పరికరంలో అయినా అందుబాటులో ఉంటుంది</translation>
 <translation id="5782227691023083829">అనువదిస్తోంది...</translation>
 <translation id="57838592816432529">మ్యూట్ చేయి</translation>
+<translation id="5784291589716625675">యాప్ భాషను మార్చండి</translation>
 <translation id="5785583009707899920">Chrome ఫైల్ వినియోగాలు</translation>
 <translation id="5787146423283493983">కీ ఒప్పందాలు</translation>
 <translation id="5787420647064736989">పరికరం పేరు</translation>
@@ -6546,6 +6548,7 @@
 <translation id="6151323131516309312"><ph name="SITE_NAME" />ను వెతకడానికి <ph name="SEARCH_KEY" />ని నొక్కండి</translation>
 <translation id="6151771661215463137">ఫైల్ ఇప్పటికే మీ డౌన్‌లోడ్ ఫోల్డర్‌లో ఉంది.</translation>
 <translation id="6152918902620844577">తర్వాతి ఆపరేషన్ కోసం వేచి ఉంది</translation>
+<translation id="6153439704237222699">Do Not Track గురించి మరింత తెలుసుకోండి</translation>
 <translation id="6154240335466762404">అన్ని పోర్ట్‌లను తీసివేయండి</translation>
 <translation id="615436196126345398">ప్రోటోకాల్</translation>
 <translation id="6155141482566063812">బ్యాక్‌గ్రౌండ్ ట్యాబ్ మీ స్క్రీన్‌ను షేర్ చేస్తోంది</translation>
@@ -8864,6 +8867,7 @@
 <translation id="7988805580376093356">మీ OSను అలానే ఉంచి, USB నుండి <ph name="DEVICE_OS" />‌ను రన్ చేయండి.</translation>
 <translation id="7988876720343145286">మరిన్ని Android సెట్టింగ్‌లు, అనుమతులు</translation>
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> వాయిస్ <ph name="COUNT" /></translation>
+<translation id="7990958035181555539">మీ Android ఫోన్ నుండి WiFiని ఆటోమేటిక్‌గా బదిలీ చేయండి</translation>
 <translation id="7991296728590311172">Switch Access సెట్టింగ్‌లు</translation>
 <translation id="7992203134935383159">స్పీచ్ సింథసిస్</translation>
 <translation id="7994515119120860317"><ph name="VISUAL_SEARCH_PROVIDER" />తో ఇమేజ్‌లోని టెక్స్ట్‌ను అనువదించండి</translation>
@@ -9808,6 +9812,7 @@
 <translation id="8736288397686080465">ఈ సైట్ బ్యాక్‌గ్రౌండ్‌లో అప్‌డేట్ చేయబడింది.</translation>
 <translation id="8737709691285775803">షిల్</translation>
 <translation id="8737914367566358838">పేజీని అనువదించడానికి భాషను ఎంచుకోండి</translation>
+<translation id="8738418093147087440">దేశాలు, భాష లేదా ఇన్‌పుట్ పేర్ల ఆధారంగా సెర్చ్ చేయండి</translation>
 <translation id="8740086188450289493">Google ఖాతా పాస్‌వర్డ్‌ను ఉపయోగించండి</translation>
 <translation id="8740247629089392745">మీరు ఈ Chromebookను <ph name="SUPERVISED_USER_NAME" />కు ఇవ్వవచ్చు. సెటప్ దాదాపు పూర్తయింది, మరిన్ని విషయాలను తెలుసుకునే సమయం ఆసన్నమైంది.</translation>
 <translation id="8740672167979365981">ChromeOS Flex అప్‌డేట్ అవసరం</translation>

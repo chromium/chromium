@@ -31,7 +31,6 @@
 <translation id="1181037720776840403">Remove</translation>
 <translation id="1191518099344003522">APN is enabled.</translation>
 <translation id="1195447618553298278">Unknown error.</translation>
-<translation id="1195784767091936222">Turn on auto dark mode</translation>
 <translation id="1196959502276349371">Version <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Play/Pause</translation>
 <translation id="1201402288615127009">Next</translation>
@@ -281,7 +280,6 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Device is connected.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Remove page?}=1{Remove page {PAGE_NUMBER}?}other{Remove page {PAGE_NUMBER}?}}</translation>
-<translation id="3136905423678675159">Turn on auto dark mode?</translation>
 <translation id="3146655726035122603">Exclusive to <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobile data</translation>
 <translation id="3156846309055100599">Scanning page <ph name="PAGE_NUMBER" />...</translation>
@@ -362,7 +360,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> reviews)</translation>
 <translation id="3748026146096797577">Not Connected</translation>
 <translation id="3749289110408117711">File name</translation>
-<translation id="3754384069690464321">For best results with this wallpaper, please turn on auto dark mode. You can change it back in the app at any time.</translation>
 <translation id="3771294271822695279">Video Files</translation>
 <translation id="3784455785234192852">Lock</translation>
 <translation id="380097101658023925">rgb controls</translation>

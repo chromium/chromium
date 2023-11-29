@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="uk">
 <translation id="1000498691615767391">Виберіть папку, яку потрібно відкрити</translation>
+<translation id="1014208178561091457">Не вдалося скопіювати файл <ph name="FILE_NAME" />, оскільки він зашифрований.</translation>
 <translation id="1047956942837015229">Видалення елементів (<ph name="COUNT" />)…</translation>
 <translation id="1049926623896334335">Документ Word</translation>
 <translation id="1056775291175587022">Немає мереж</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Надати додатку Parallels Desktop доступ до папки</translation>
 <translation id="1439919885608649279">Людина з квітами</translation>
 <translation id="1458457385801829801">Вилучити <ph name="TARGET_NAME" /></translation>
+<translation id="146691674290220697">Не вдалося скопіювати файли (<ph name="NUMBER_OF_FILES" />), оскільки вони зашифровані.</translation>
 <translation id="1471718551822868769">Словацька</translation>
 <translation id="1482884275703521657">Фінська</translation>
 <translation id="148466539719134488">Швейцарська</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">Недоступно</translation>
 <translation id="3254434849914415189">Вибрати програму за умовчанням для файлів <ph name="FILE_TYPE" />:</translation>
 <translation id="3255159654094949700">Арабська</translation>
+<translation id="326396468955264502">Не вдалося перемістити файли (<ph name="NUMBER_OF_FILES" />), оскільки вони зашифровані.</translation>
 <translation id="3264582393905923483">Контекст</translation>
 <translation id="3272909651715601089">Не вдалося відкрити файл "<ph name="PATH" />"</translation>
 <translation id="3280431534455935878">Підготовка</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490"><ph name="VM_NAME" /> надано доступ до 1 папки</translation>
 <translation id="3524311639100184459">Увага: ці файли тимчасові й можуть автоматично видалятися, щоб звільнити місце на диску.  <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Папка</translation>
+<translation id="3529424493985988200">Щоб дізнатися більше, зв’яжіться з адміністратором.</translation>
 <translation id="3548125359243647069">Ви ввели неправильний PIN-код забагато разів.</translation>
 <translation id="3549797760399244642">Перейти на drive.google.com...</translation>
 <translation id="3553048479571901246">Щоб відкривати файли через додаток <ph name="APP_NAME" />, спершу скопіюйте їх у папку з файлами в ОС Windows.</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">Цей файл відкрито на іншому робочому столі. Перейдіть до <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), щоб переглянути його.</translation>
 <translation id="6394388407447716302">Лише перегляд</translation>
 <translation id="6395575651121294044">Елементів: <ph name="NUMBER_OF_FILES" /></translation>
+<translation id="6407769893376380348">Не вдалося перемістити файл <ph name="FILE_NAME" />, оскільки він зашифрований.</translation>
 <translation id="642282551015776456">Не може використовуватися як ім’я файлу чи назва папки</translation>
 <translation id="6423031066725912715">В'єтнамська, розкладка TCVN</translation>
 <translation id="6430271654280079150">Залишилась 1 спроба.</translation>

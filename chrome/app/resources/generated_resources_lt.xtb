@@ -3914,6 +3914,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4005817994523282006">Laiko juostos aptikimo metodas</translation>
 <translation id="4007856537951125667">Slėpti sparčiuosius klavišus</translation>
 <translation id="4008291085758151621">Svetainės informacija nepasiekiama VR formatu</translation>
+<translation id="4010746393007464819">Pasiekiamas naujovinimas į 12 versijos „Debian“ („Bookworm“)</translation>
 <translation id="4010917659463429001">Kad pasiektumėte žymes mobiliajame įrenginyje, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Pataisyti „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="4015163439792426608">Turite plėtinių? <ph name="BEGIN_LINK" />Tvarkykite juos<ph name="END_LINK" /> vienoje paprastoje vietoje.</translation>
@@ -6078,6 +6079,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="5782040878821624922">Pasiekiama bet kuriame įrenginyje</translation>
 <translation id="5782227691023083829">Verčiama...</translation>
 <translation id="57838592816432529">Nutildyti</translation>
+<translation id="5784291589716625675">Programos kalbos keitimas</translation>
 <translation id="5785583009707899920">„Chrome“ failų paslaugų programos</translation>
 <translation id="5787146423283493983">Sutartis dėl rakto</translation>
 <translation id="5787420647064736989">Įrenginio pavadinimas</translation>
@@ -6552,6 +6554,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="6151323131516309312">Spustelėkite <ph name="SEARCH_KEY" />, kad būtų vykdoma paieška <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">Failas jau yra „Atsisiuntimų“ aplanke.</translation>
 <translation id="6152918902620844577">Laukiama kitos operacijos</translation>
+<translation id="6153439704237222699">Sužinokite daugiau apie „Nestebėti“</translation>
 <translation id="6154240335466762404">Pašalinti visus prievadus</translation>
 <translation id="615436196126345398">Protokolas</translation>
 <translation id="6155141482566063812">Fone veikiančiame skirtuke bendrinamas jūsų ekranas</translation>
@@ -8877,6 +8880,7 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="7988805580376093356">Išlaikykite esamą OS ir paleiskite „<ph name="DEVICE_OS" />“ iš USB.</translation>
 <translation id="7988876720343145286">Daugiau „Android“ nustatymų ir leidimų</translation>
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> – <ph name="COUNT" /> balsas</translation>
+<translation id="7990958035181555539">Automatinis „Wi-Fi“ perkėlimas iš „Android“ telefono</translation>
 <translation id="7991296728590311172">Prieigos jungikliu nustatymai</translation>
 <translation id="7992203134935383159">Kalbos sintezė</translation>
 <translation id="7994515119120860317">Versti tekstą vaizde naudojant „<ph name="VISUAL_SEARCH_PROVIDER" />“</translation>
@@ -9824,6 +9828,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8736288397686080465">Ši svetainė atnaujinta fone.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Pasirinkite kalbą, į kurią norite versti puslapį</translation>
+<translation id="8738418093147087440">Paieška pagal šalis, kalbas ar įvesčių pavadinimus</translation>
 <translation id="8740086188450289493">Naudoti „Google“ paskyros slaptažodį</translation>
 <translation id="8740247629089392745">Galite grąžinti šį „Chromebook“ <ph name="SUPERVISED_USER_NAME" />. Nustatymo procesas beveik baigtas, tada galėsite naršyti.</translation>
 <translation id="8740672167979365981">Reikia atnaujinti „ChromeOS Flex“</translation>

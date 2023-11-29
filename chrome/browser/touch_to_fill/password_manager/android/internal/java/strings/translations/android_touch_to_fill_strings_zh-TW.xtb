@@ -21,5 +21,7 @@
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{這個網站的新密碼}other{這個網站的新密碼}}</translation>
 <translation id="7286867818472074330">選取密碼金鑰</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />，第 <ph name="ITEM_POSITION" /> 個，共 <ph name="ITEMS_TOTAL" /> 個。</translation>
+<translation id="7738288782501322815">你已收到 <ph name="SITE_NAME" /> 的密碼</translation>
+<translation id="8614995815226664591"><ph name="SENDER_NAME" />已將 <ph name="SITE_NAME" /> 的密碼分享給你</translation>
 <translation id="8891372124884726271">憑證清單已關閉。</translation>
 </translationbundle>

@@ -36,7 +36,9 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="1715127912119967311">Funksiyalarni yaxshilash maqsadida Chromium ulardan foydalanish axborotingizni Googlega yuboradi. Bu axborot xodimlar tomonidan oʻqilishi, qayta ishlanishi va izohlanishi mumkin.</translation>
 <translation id="17264556997921157">Saytlar reklamani chiqarish uchun ishlatadigan sizga qiziq mavzularni koʻrishingiz va olib tashlashingiz mumkin. Chromium siz ochgan saytlar asosida sizga qiziq boʻlishi mumkin mavzularni taxmin qiladi.</translation>
 <translation id="1733725117201708356">Chromium tez orada brauzer maʼlumotlarini oʻchirib tashlaydi</translation>
+<translation id="1736443181683099871">Chromium navigatsiyalarni HTTPS protokoliga oʻzgartirishga urinadi.</translation>
 <translation id="1745121272106313518">Chromium <ph name="REMAINING_TIME" />dan keyin qayta ishga tushadi</translation>
+<translation id="1749104137266986751">HTTPS mavjud boʻlmasa, Chromium sizni ogohlantirmasdan himoyalanmagan ulanishdan foydalanadi.</translation>
 <translation id="1774152462503052664">Chromium fonda ishlashiga ruxsat</translation>
 <translation id="1779356040007214683">Ma’lumotlaringiz xavfsizligini ta’minlash maqsadida ayrim kengaytmalarni o‘chirib qo‘ydik, chunki <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />‘da ular haqida hech qanday ma’lumot yo‘q (ya’ni, ular sizning ruxsatingizsiz o‘rnatilgan bo‘lishi mumkin).</translation>
 <translation id="1808667845054772817">Chromium brauzerini qayta o‘rnatish</translation>
@@ -122,6 +124,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="3286538390144397061">Hozir qaytadan ishga tushirish</translation>
 <translation id="328888136576916638">Google API kalitlari yetishmayapti. Chromium’ning ba’zi funksiyalari ishlamasligi mumkin.</translation>
 <translation id="3296368748942286671">Chromium yopilishida orqa fon rejimida ishlayotgan ilovalar to‘xtatilmasin</translation>
+<translation id="3313189106987092621">Xavfsiz ulanishli har qanday saytga kirganingizda Chromium sizni ogohlantiradi</translation>
 <translation id="3350761136195634146">Bu hisob bilan Chromium profili yaratilgan</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Mavjud Chromium profiliga almashilsinmi?</translation>
@@ -219,6 +222,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="5224391634244552924">Hech qanday parol saqlanmagan. Chromium faqat saqlangan parollaringizni tekshira oladi.</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> allaqachon ushbu Chromium profiliga kirgan. Bunda <ph name="USER_EMAIL_ADDRESS" /> uchun yangi Chromium profili yaratiladi</translation>
 <translation id="5277894862589591112">O‘zgarishlarni tatbi qilish uchun Chromium qayta ishga tushirilishi zarur</translation>
+<translation id="5294316920224716406">Inkognito rejimida ishlayotganingizda, xavfsiz ulanishli saytga kirganingizda Chromium sizni ogohlantiradi.</translation>
 <translation id="5296845517486664001">Sinov muddatlari yoqilganida Chromium sizni tasodifiy faol sinovga joylaganda siz ochgan sahifalar tarixi chiqadigan reklama va quyidagi qiziqishlaringizga taʼsir qiladi. Maxfiylikni himoya qilish maqsadida Chromium har oyda qiziqishlaringizni avtomatik oʻchiradi.</translation>
 <translation id="5352264705793813212">Sizda Chromium bilan ishlashda xavfsizlikka oid bir nechta tavsiya bor</translation>
 <translation id="5358375970380395591">Siz boshqaruvdagi hisobga kiryapsiz va uning administratoriga Chromium profilingizni boshqarishga ruxsat beryapsiz. Ilovalar, xatcho‘plar, brauzer tarixi, parollar va boshqa sozlamalar kabi barcha Chromium ma’lumotlaringiz <ph name="USER_NAME" /> hisobiga biriktiriladi. Siz bu ma’lumotlarni Google hisoblar shaxsiy kabinetidan o‘chirishingiz mumkin, lekin bu ma’lumotlarni boshqa hisob bilan bog‘lay olmaysiz. <ph name="LEARN_MORE" /></translation>

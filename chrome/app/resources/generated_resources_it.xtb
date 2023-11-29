@@ -3896,6 +3896,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4005817994523282006">Metodo di rilevamento del fuso orario</translation>
 <translation id="4007856537951125667">Nascondi scorciatoie</translation>
 <translation id="4008291085758151621">Informazioni sul sito non disponibili in realtà virtuale</translation>
+<translation id="4010746393007464819">È disponibile un upgrade a Debian 12 (Bookworm)</translation>
 <translation id="4010917659463429001">Per trovare i tuoi preferiti sul tuo dispositivo mobile, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Riparare "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">Usi delle estensioni? <ph name="BEGIN_LINK" />Gestiscile<ph name="END_LINK" /> da un unico punto di facile accesso.</translation>
@@ -6056,6 +6057,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5782040878821624922">È disponibile su qualsiasi dispositivo</translation>
 <translation id="5782227691023083829">Traduzione in corso...</translation>
 <translation id="57838592816432529">Disattiva audio</translation>
+<translation id="5784291589716625675">Cambia lingua app</translation>
 <translation id="5785583009707899920">Utilità dei file Chrome</translation>
 <translation id="5787146423283493983">Chiave concordata</translation>
 <translation id="5787420647064736989">Nome dispositivo</translation>
@@ -6529,6 +6531,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6151323131516309312">Premi <ph name="SEARCH_KEY" /> per cercare su <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">File già esistente nella cartella dei download.</translation>
 <translation id="6152918902620844577">In attesa della prossima operazione</translation>
+<translation id="6153439704237222699">Scopri di più su Do Not Track</translation>
 <translation id="6154240335466762404">Rimuovi tutte le porte</translation>
 <translation id="615436196126345398">Protocollo</translation>
 <translation id="6155141482566063812">Una scheda in secondo piano sta condividendo il tuo schermo</translation>
@@ -8848,6 +8851,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7988805580376093356">Mantieni il tuo sistema operativo ed esegui <ph name="DEVICE_OS" /> da USB.</translation>
 <translation id="7988876720343145286">Altre impostazioni e autorizzazioni Android</translation>
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> Voce <ph name="COUNT" /></translation>
+<translation id="7990958035181555539">Trasferisci automaticamente il Wi-Fi dal tuo smartphone Android</translation>
 <translation id="7991296728590311172">Impostazioni Switch Access</translation>
 <translation id="7992203134935383159">Sintesi vocale</translation>
 <translation id="7994515119120860317">Traduci il testo nell'immagine con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -9795,6 +9799,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8736288397686080465">Il sito è stato aggiornato in background.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Scegli la lingua in cui tradurre la pagina</translation>
+<translation id="8738418093147087440">Cerca per paesi, lingua o nomi di input</translation>
 <translation id="8740086188450289493">Usa la password del tuo Account Google</translation>
 <translation id="8740247629089392745">Puoi consegnare il Chromebook a <ph name="SUPERVISED_USER_NAME" />. La configurazione è quasi completa, a breve sarà possibile utilizzare il dispositivo.</translation>
 <translation id="8740672167979365981">Aggiornamento di ChromeOS Flex richiesto</translation>

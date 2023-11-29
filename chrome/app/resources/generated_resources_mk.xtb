@@ -3912,6 +3912,7 @@
 <translation id="4005817994523282006">Метод за откривање на временската зона</translation>
 <translation id="4007856537951125667">Скриј ги кратенките</translation>
 <translation id="4008291085758151621">Информациите за сајтот не се достапни во VR</translation>
+<translation id="4010746393007464819">Достапна е надградба на Debian 12 (Bookworm)</translation>
 <translation id="4010917659463429001">За да ги добиете обележувачите на мобилниот уред, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Поправи „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="4015163439792426608">Имате ли екстензии? <ph name="BEGIN_LINK" />Управувајте со екстензиите<ph name="END_LINK" /> на едно место.</translation>
@@ -6075,6 +6076,7 @@
 <translation id="5782040878821624922">Достапно на секој уред</translation>
 <translation id="5782227691023083829">Се преведува…</translation>
 <translation id="57838592816432529">Исклучи звук</translation>
+<translation id="5784291589716625675">Променување на јазикот на апликацијата</translation>
 <translation id="5785583009707899920">Услуги за датотеки на Chrome</translation>
 <translation id="5787146423283493983">Клучен договор</translation>
 <translation id="5787420647064736989">Име на уредот</translation>
@@ -6549,6 +6551,7 @@
 <translation id="6151323131516309312">Притисни <ph name="SEARCH_KEY" /> за да ја побараш <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">Датотеката веќе постои во папката со преземања.</translation>
 <translation id="6152918902620844577">Се чека следната операција</translation>
+<translation id="6153439704237222699">Дознајте повеќе за Do Not Track</translation>
 <translation id="6154240335466762404">Отстрани ги сите порти</translation>
 <translation id="615436196126345398">Протокол</translation>
 <translation id="6155141482566063812">Картичка во заднина го споделува вашиот екран</translation>
@@ -8869,6 +8872,7 @@
 <translation id="7988805580376093356">Задржете го вашиот OS и извршете го <ph name="DEVICE_OS" /> од USB.</translation>
 <translation id="7988876720343145286">Повеќе поставки и дозволи за Android</translation>
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> Глас <ph name="COUNT" /></translation>
+<translation id="7990958035181555539">Автоматско префрлање Wi-Fi од телефонот со Android</translation>
 <translation id="7991296728590311172">Поставки за „Пристап со прекинувачи“</translation>
 <translation id="7992203134935383159">Синтеза на говор</translation>
 <translation id="7994515119120860317">Преведете текст во слика со <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -9818,6 +9822,7 @@
 <translation id="8736288397686080465">Локацијава се ажурираше во заднина.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Изберете го јазикот за превод на страницата</translation>
+<translation id="8738418093147087440">Пребарувајте според земји, јазик или имиња на внесени елементи</translation>
 <translation id="8740086188450289493">Употребете ја лозинката за сметката на Google</translation>
 <translation id="8740247629089392745">Може да му го предадете овој Chromebook на<ph name="SUPERVISED_USER_NAME" />. Поставувањето речиси е готово, а потоа е време за истражување.</translation>
 <translation id="8740672167979365981">Потребно е ажурирање на ChromeOS Flex</translation>

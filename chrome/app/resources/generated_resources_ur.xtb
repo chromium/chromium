@@ -3898,6 +3898,7 @@
 <translation id="4005817994523282006">ٹائم زون کا پتہ لگانے کا طریقہ</translation>
 <translation id="4007856537951125667">شارٹ کٹس چھپائیں</translation>
 <translation id="4008291085758151621">‏سائٹ کی معلومات VR میں دستیاب نہیں ہے</translation>
+<translation id="4010746393007464819">‏Debian 12 (کتابی کیڑا) میں اپ گریڈ دستیاب ہے</translation>
 <translation id="4010917659463429001">اپنے موبائل آلہ پر اپنے بُک مارکس حاصل کرنے کے لیے، <ph name="GET_IOS_APP_LINK" />۔</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" /> کی اصلاح کریں؟</translation>
 <translation id="4015163439792426608">ایکسٹینشنز مل گئیں؟ ایک آسان مقام پر <ph name="BEGIN_LINK" />اپنے ایکسٹینشنز کا نظم کریں<ph name="END_LINK" />۔</translation>
@@ -6059,6 +6060,7 @@
 <translation id="5782040878821624922">یہ کسی بھی آلہ پر دستیاب ہے</translation>
 <translation id="5782227691023083829">ترجمہ کیا جا رہا ہے...</translation>
 <translation id="57838592816432529">آواز بند کریں</translation>
+<translation id="5784291589716625675">ایپ کی زبان تبدیل کریں</translation>
 <translation id="5785583009707899920">‏Chrome فائل کی افادیتیں</translation>
 <translation id="5787146423283493983">کلیدی اقرارنامہ</translation>
 <translation id="5787420647064736989">آلہ کا نام</translation>
@@ -6533,6 +6535,7 @@
 <translation id="6151323131516309312"><ph name="SITE_NAME" /> کو تلاش کرنے کیلئے <ph name="SEARCH_KEY" /> دبائیں</translation>
 <translation id="6151771661215463137">فائل آپ کے ڈاؤن لوڈ فولڈر میں پہلے سے موجود ہے۔</translation>
 <translation id="6152918902620844577">اگلے آپریشن کا اتنظار ہے</translation>
+<translation id="6153439704237222699">‏Do Not Track کے بارے میں مزید جانیں</translation>
 <translation id="6154240335466762404">سبھی پورٹس ہٹائیں</translation>
 <translation id="615436196126345398">پروٹوکول</translation>
 <translation id="6155141482566063812">پس منظر ٹیب آپ کی اسکرین کا اشتراک کر رہا ہے</translation>
@@ -8851,6 +8854,7 @@
 <translation id="7988805580376093356">‏اپنا OS برقرار رکھیں اور USB سے <ph name="DEVICE_OS" /> چلائیں۔</translation>
 <translation id="7988876720343145286">‏مزید Android ترتیبات اور اجازتیں</translation>
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> آواز <ph name="COUNT" /></translation>
+<translation id="7990958035181555539">‏اپنے Android فون سے WiFi کو خودکار طور پر منتقل کریں</translation>
 <translation id="7991296728590311172">سوئچ رسائی کی ترتیبات</translation>
 <translation id="7992203134935383159">اسپیچ سنتھیسس</translation>
 <translation id="7994515119120860317"><ph name="VISUAL_SEARCH_PROVIDER" /> کی مدد سے تصویر میں موجود ٹیکسٹ کا ترجمہ کریں</translation>
@@ -9797,6 +9801,7 @@
 <translation id="8736288397686080465">اس سائٹ کو بیک گراؤنڈ میں اپ ڈیٹ کر دیا گیا ہے۔</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">صفحے کا ترجمہ کرنے کے لیے زبان منتخب کریں</translation>
+<translation id="8738418093147087440">ممالک، زبان یا ان پٹ ناموں کے لحاظ سے تلاش کریں</translation>
 <translation id="8740086188450289493">‏Google اکاؤنٹ کا پاس ورڈ استعمال کریں</translation>
 <translation id="8740247629089392745">‏آپ اس Chromebook کو <ph name="SUPERVISED_USER_NAME" /> کو دے سکتے ہیں۔ سیٹ اپ تقریباً مکمل ہو گیا ہے، اب اسے دریافت کرنے کا وقت ہے۔</translation>
 <translation id="8740672167979365981">‏ChromeOS Flex اپ ڈیٹ درکار ہے</translation>

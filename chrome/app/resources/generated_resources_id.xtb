@@ -3911,6 +3911,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4005817994523282006">Metode deteksi zona waktu</translation>
 <translation id="4007856537951125667">Sembunyikan pintasan</translation>
 <translation id="4008291085758151621">Informasi situs tidak tersedia di VR</translation>
+<translation id="4010746393007464819">Upgrade ke versi Debian 12 (Bookworm) telah tersedia</translation>
 <translation id="4010917659463429001">Untuk mendapatkan bookmark di perangkat seluler, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Perbaiki "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">Punya ekstensi? <ph name="BEGIN_LINK" />Kelola ekstensi Anda<ph name="END_LINK" /> dalam satu tempat praktis.</translation>
@@ -6074,6 +6075,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5782040878821624922">Tersedia di perangkat apa pun</translation>
 <translation id="5782227691023083829">Menerjemahkan...</translation>
 <translation id="57838592816432529">Bisukan</translation>
+<translation id="5784291589716625675">Ubah bahasa aplikasi</translation>
 <translation id="5785583009707899920">Utilitas File Chrome</translation>
 <translation id="5787146423283493983">Perjanjian Kunci</translation>
 <translation id="5787420647064736989">Nama perangkat</translation>
@@ -6548,6 +6550,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6151323131516309312">Tekan <ph name="SEARCH_KEY" /> untuk mencari <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">File sudah ada di folder download.</translation>
 <translation id="6152918902620844577">Menunggu operasi berikutnya</translation>
+<translation id="6153439704237222699">Pelajari lebih lanjut Do Not Track</translation>
 <translation id="6154240335466762404">Hapus semua port</translation>
 <translation id="615436196126345398">Protokol</translation>
 <translation id="6155141482566063812">Tab background membagikan layar Anda</translation>
@@ -8866,6 +8869,7 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7988805580376093356">Jangan gunakan OS Anda dan jalankan <ph name="DEVICE_OS" /> dari USB.</translation>
 <translation id="7988876720343145286">Setelan dan izin Android lainnya</translation>
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> Suara <ph name="COUNT" /></translation>
+<translation id="7990958035181555539">Transfer Wi-Fi secara otomatis dari ponsel Android Anda</translation>
 <translation id="7991296728590311172">Setelan Tombol Akses</translation>
 <translation id="7992203134935383159">Sintesis ucapan</translation>
 <translation id="7994515119120860317">Terjemahkan Teks dalam Gambar dengan <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -9813,6 +9817,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8736288397686080465">Situs ini diperbarui di latar belakang.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Pilih bahasa target terjemahan halaman</translation>
+<translation id="8738418093147087440">Telusuri berdasarkan negara, bahasa, atau nama input</translation>
 <translation id="8740086188450289493">Gunakan sandi Akun Google</translation>
 <translation id="8740247629089392745">Anda dapat menyerahkan Chromebook ini ke <ph name="SUPERVISED_USER_NAME" />. Sebentar lagi penyiapan selesai, dan konten bisa segera dijelajahi.</translation>
 <translation id="8740672167979365981">Perlu update ChromeOS Flex</translation>

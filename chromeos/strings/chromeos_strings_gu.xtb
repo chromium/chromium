@@ -31,7 +31,6 @@
 <translation id="1181037720776840403">કાઢી નાખો</translation>
 <translation id="1191518099344003522">APN ચાલુ કર્યું છે.</translation>
 <translation id="1195447618553298278">અજ્ઞાત ભૂલ.</translation>
-<translation id="1195784767091936222">ઑટોમૅટિક ડાર્ક મોડ ચાલુ કરો</translation>
 <translation id="1196959502276349371">વર્ઝન <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">ચલાવો/થોભાવો</translation>
 <translation id="1201402288615127009">આગલું</translation>
@@ -281,7 +280,6 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">ડિવાઇસ કનેક્ટ થયેલું છે.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{પેજ કાઢી નાખીએ?}=1{પેજ {PAGE_NUMBER} કાઢી નાખીએ?}one{પેજ {PAGE_NUMBER} કાઢી નાખીએ?}other{પેજ {PAGE_NUMBER} કાઢી નાખીએ?}}</translation>
-<translation id="3136905423678675159">શું ઑટોમૅટિક ડાર્ક મોડ ચાલુ કરીએ?</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> માટે વિશેષ</translation>
 <translation id="315116470104423982">મોબાઇલ ડેટા</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" /> નંબરનું પેજ સ્કૅન કરી રહ્યાં છીએ...</translation>
@@ -362,7 +360,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> રિવ્યૂ)</translation>
 <translation id="3748026146096797577">કનેક્ટેડ નથી</translation>
 <translation id="3749289110408117711">ફાઇલનું નામ</translation>
-<translation id="3754384069690464321">આ વૉલપેપર સાથે શ્રેષ્ઠ પરિણામો મેળવવા માટે, કૃપા કરીને ઑટોમૅટિક ડાર્ક મોડ ચાલુ કરો. તમે ઍપમાંથી તેને કોઈપણ સમયે ફરીથી બદલી શકો છો.</translation>
 <translation id="3771294271822695279">વીડિયો ફાઇલો</translation>
 <translation id="3784455785234192852">લૉક છે</translation>
 <translation id="380097101658023925">RGBના નિયંત્રણો</translation>

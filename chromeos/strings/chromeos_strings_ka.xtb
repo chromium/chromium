@@ -31,7 +31,6 @@
 <translation id="1181037720776840403">ამოშლა</translation>
 <translation id="1191518099344003522">APN ჩართულია.</translation>
 <translation id="1195447618553298278">უცნობი შეცდომა.</translation>
-<translation id="1195784767091936222">ავტომატური მუქი რეჟიმის ჩართვა</translation>
 <translation id="1196959502276349371">ვერსია <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">დაკვრა/პაუზა</translation>
 <translation id="1201402288615127009">შემდეგი</translation>
@@ -281,7 +280,6 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">მოწყობილობა დაკავშირებულია.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{გსურთ გვერდის ამოშლა?}=1{გსურთ გვერდი {PAGE_NUMBER}-ის ამოშლა?}other{გსურთ გვერდი {PAGE_NUMBER}-ის ამოშლა?}}</translation>
-<translation id="3136905423678675159">გსურთ, ჩართოთ ავტომატური მუქი რეჟიმი?</translation>
 <translation id="3146655726035122603">ექსკლუზიურად <ph name="PRODUCT_NAME" />-ისთვის</translation>
 <translation id="315116470104423982">მობილური მონაცემები</translation>
 <translation id="3156846309055100599">სკანირდება გვერდი <ph name="PAGE_NUMBER" />...</translation>
@@ -362,7 +360,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> მიმოხილვა)</translation>
 <translation id="3748026146096797577">არ არის დაკავშირებული</translation>
 <translation id="3749289110408117711">ფაილის სახელი</translation>
-<translation id="3754384069690464321">ამ ფონთან დაკავშირებით საუკეთესო შედეგების მისაღებად ჩართეთ ავტომატური მუქი რეჟიმი. შეცვლას ნებისმიერ დროს შეძლებთ აპიდან.</translation>
 <translation id="3771294271822695279">ვიდეო ფაილები</translation>
 <translation id="3784455785234192852">დაბლოკვა</translation>
 <translation id="380097101658023925">RGB მართვის საშუალებები</translation>

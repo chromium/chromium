@@ -23,7 +23,6 @@
 <translation id="1110914759170138831">已縮減醒目顯示文字長度</translation>
 <translation id="1111673857033749125">儲存在您其他裝置上的書籤會顯示在這裡。</translation>
 <translation id="1113597929977215864">顯示「簡易檢視」模式</translation>
-<translation id="1123070903960493543">你與 Chrome 互動的方式、選取的設定、Chrome 發生當機狀況的詳細資料</translation>
 <translation id="1126013303640354461">系統將不會加密你在 Google Pay 中的付款方式和地址，也不會同步 Chrome 中的瀏覽記錄。
 只有知道通關密語的人才能讀取你加密的資料。系統不會將通關密語傳送給 Google，Google 也不會儲存通關密語。如果你忘記通關密語或想要變更這項設定，就必須重設同步功能。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="1126809382673880764">無法封鎖不安全的網站、下載內容和擴充功能。在 Gmail 和 Google 搜尋等其他 Google 服務中，安全瀏覽功能的防護機制仍然會發揮作用 (在適用情況下)。</translation>
@@ -204,7 +203,6 @@
 <translation id="213279576345780926">已關閉「<ph name="TAB_TITLE" />」</translation>
 <translation id="2139186145475833000">加到主畫面</translation>
 <translation id="2141396931810938595">根據你的使用情形</translation>
-<translation id="214888715418183969">選擇你要與 Chrome 分享的使用資料。你分享的指標將用於協助改善 Chrome 的功能、效能和穩定性。</translation>
 <translation id="2149973817440762519">編輯書籤</translation>
 <translation id="2155214902713132423">這部裝置不支援這項驗證方法，請在另一部裝置上採用其他選項。</translation>
 <translation id="2158408438301413340">Chrome 無法檢查所有密碼</translation>
@@ -214,7 +212,6 @@
 <translation id="2175927920773552910">QR 圖碼</translation>
 <translation id="218608176142494674">共用</translation>
 <translation id="2194856509914051091">注意事項</translation>
-<translation id="2200113223741723867">管理使用資料分享項目</translation>
 <translation id="22091350895006575">新增使用者名稱</translation>
 <translation id="221494669172414749">如果不鎖定設定檔就開啟 Chrome，系統將移除車上儲存的密碼和付款方式。請使用設定檔鎖定功能，確保這類資料的安全。</translation>
 <translation id="2227444325776770048">以「<ph name="USER_FULL_NAME" />」的身分繼續</translation>
@@ -375,7 +372,6 @@
 <translation id="2996932914629936323">清除所有同步裝置上的記錄</translation>
 <translation id="2997081575621687554">當 Google 網站要求以私密方式預先載入網頁上的連結時，Chrome 會透過 Google 伺服器對該連結加密並預先載入網頁，且不會使用 Cookie。這麼做可在預先載入網站中隱藏你的身分。</translation>
 <translation id="3003253259757197230">系統會將你造訪的網址傳送給 Google，預測你接下來可能會前往的網站，並顯示所在網頁的其他相關資訊</translation>
-<translation id="3006881078666935414">沒有使用情況資料</translation>
 <translation id="3016635187733453316">請確認此裝置已連上網際網路</translation>
 <translation id="3026955690410463085">加入連結</translation>
 <translation id="3027644380269727216">以你的網站活動做為依據。這項設定已開啟。</translation>
@@ -512,7 +508,6 @@
 <translation id="3771033907050503522">無痕式分頁</translation>
 <translation id="3771290962915251154">已啟用家長監護功能，因此這項設定已停用</translation>
 <translation id="3771694256347217732">Google 服務條款</translation>
-<translation id="3773856050682458546">基本資料再加上你所造訪的網站和所用應用程式的相關資訊</translation>
 <translation id="3775705724665058594">傳送至你的裝置</translation>
 <translation id="3777796259512476958">你會從大多數網站登出</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 個分頁}other{# 個分頁}}</translation>
@@ -560,7 +555,6 @@
 <translation id="4035877632587724847">不允許</translation>
 <translation id="4042941173059740150">繼續使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 支付 <ph name="SITE_ETLD_PLUS_ONE" /> 費用</translation>
 <translation id="4044708993631234325">底部功能表</translation>
-<translation id="4045764304651014138">使用資料</translation>
 <translation id="405399507749852140">如果產品在任何網站上降價，你會收到通知</translation>
 <translation id="4056223980640387499">深褐色調</translation>
 <translation id="4062305924942672200">法律資訊</translation>
@@ -774,7 +768,6 @@
 <translation id="5062960805900435602">已關閉密碼合併相關更新</translation>
 <translation id="5081960376148623587">選擇是否要預先載入網頁</translation>
 <translation id="5091199029769593641">不久後，你就會在開啟新分頁時看到「<ph name="SITE_NAME" />」的網路故事。你追蹤的網站會儲存在 Google 帳戶中，你可以在「探索」設定中管理這些網站。</translation>
-<translation id="5091249083535528968">延伸使用資料</translation>
 <translation id="509429900233858213">發生錯誤。</translation>
 <translation id="5097349930204431044">你造訪的網站可以判斷你喜愛的內容，並在接下來的瀏覽過程中顯示建議廣告</translation>
 <translation id="5099845111805573968">只要選取一次電腦版網站，當你每次造訪時，網站都會套用這項設定</translation>
@@ -914,7 +907,6 @@
 <translation id="5833984609253377421">分享連結</translation>
 <translation id="5839058148541733625">Chrome 恐龍</translation>
 <translation id="5853623416121554550">已暫停</translation>
-<translation id="5854512288214985237">不向 Google 傳送任何統計資料或當機報告</translation>
 <translation id="5855546874025048181">修正為：<ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">發生錯誤，無法更新追蹤價格。</translation>
 <translation id="5859968346865909126">你可以在「設定」中開啟或關閉這個功能</translation>
@@ -1019,7 +1011,6 @@
 <translation id="6404511346730675251">編輯書籤</translation>
 <translation id="6406506848690869874">同步</translation>
 <translation id="6407224748847589805">無法連線至你的電腦。請改用其他驗證選項。</translation>
-<translation id="6410404864818553978">基本使用資料</translation>
 <translation id="6410883413783534063">開啟分頁即可同時造訪不同的網頁</translation>
 <translation id="6411219469806822692">無法再向上捲動。請嘗試從上一頁開始。</translation>
 <translation id="6412673304250309937">可使用儲存在 Chrome 中的不安全網站清單檢查網址。如果有網站試圖竊取你的密碼，或當你下載有害檔案時，Chrome 可能也會將網址 (包括部分網頁內容) 傳送至安全瀏覽功能。</translation>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ta">
 <translation id="1000498691615767391">திறப்பதற்கு ஒரு ஃபோல்டரைத் தேர்ந்தெடுக்கவும்</translation>
+<translation id="1014208178561091457"><ph name="FILE_NAME" /> என்க்ரிப்ஷன் செய்யப்பட்டுள்ளதால் அதை நகலெடுக்க முடியவில்லை.</translation>
 <translation id="1047956942837015229"><ph name="COUNT" /> உருப்படிகளை நீக்குகிறது...</translation>
 <translation id="1049926623896334335">Word document</translation>
 <translation id="1056775291175587022">நெட்வொர்க்குகள் இல்லை</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Parallels Desktop மூலம் ஃபோல்டரைப் பகிருங்கள்</translation>
 <translation id="1439919885608649279">பூக்களுடன் இருக்கும் நபர்</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> ஐ வெளியேற்று</translation>
+<translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> ஃபைல்கள் என்க்ரிப்ஷன் செய்யப்பட்டுள்ளதால் அவற்றை நகலெடுக்க முடியவில்லை.</translation>
 <translation id="1471718551822868769">ஸ்லோவாக்</translation>
 <translation id="1482884275703521657">ஃபின்னிஷ்</translation>
 <translation id="148466539719134488">சுவிஸ்</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">இணைப்பு கிடைக்கவில்லை</translation>
 <translation id="3254434849914415189"><ph name="FILE_TYPE" /> ஃபைல்களுக்கான இயல்புநிலை பயன்பாட்டைத் தேர்வுசெய்:</translation>
 <translation id="3255159654094949700">அரபிக்</translation>
+<translation id="326396468955264502"><ph name="NUMBER_OF_FILES" /> ஃபைல்கள் என்க்ரிப்ஷன் செய்யப்பட்டுள்ளதால் அவற்றை நகர்த்த முடியவில்லை.</translation>
 <translation id="3264582393905923483">சூழல்</translation>
 <translation id="3272909651715601089">"<ph name="PATH" />" காப்பகத்தைத் திறக்க முடியவில்லை</translation>
 <translation id="3280431534455935878">தயாராகிறது</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490"><ph name="VM_NAME" /> உடன் 1 ஃபோல்டர் பகிரப்பட்டது</translation>
 <translation id="3524311639100184459">எச்சரிக்கை: இந்த ஃபைல்கள் தற்காலிகமானவை, டிஸ்க்கில் இடத்தைக் காலியாக்கும் வகையில் இவை தானாகவே நீக்கப்படலாம்.  <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">ஃபோல்டர்</translation>
+<translation id="3529424493985988200">விவரங்களுக்கு உங்கள் நிர்வாகியைத் தொடர்புகொள்ளவும்.</translation>
 <translation id="3548125359243647069">தவறான பின் (PIN) பலமுறை உள்ளிடப்பட்டுள்ளது.</translation>
 <translation id="3549797760399244642">drive.google.com க்குச் செல்...</translation>
 <translation id="3553048479571901246">கோப்புகளை <ph name="APP_NAME" /> ஆப்ஸில் திறக்க, முதலில் அவற்றை Windows ஃபைல்கள்  ஃபோல்டருக்கு நகலெடுக்கவும்.</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">இந்த ஃபைல் மற்றொரு டெஸ்க்டாப்பில் திறக்கப்பட்டது. இதைப் பார்க்க, <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) க்கு நகர்த்தவும்.</translation>
 <translation id="6394388407447716302">படிக்க மட்டும்</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> ஃபைல்கள் </translation>
+<translation id="6407769893376380348"><ph name="FILE_NAME" /> என்க்ரிப்ஷன் செய்யப்பட்டுள்ளதால் அதை நகர்த்த முடியவில்லை.</translation>
 <translation id="642282551015776456">ஃபோல்டர் பெயரின் ஃபைலாக இந்தப் பெயரைப் பயன்பட முடியாமல் போகக்கூடும்</translation>
 <translation id="6423031066725912715">வியட்நாமிஸ் - TCVN கீபோர்டு</translation>
 <translation id="6430271654280079150">1 வாய்ப்பு மீதமுள்ளது.</translation>

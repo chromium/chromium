@@ -701,6 +701,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} i 1 més}other{{website_1}, {website_2} i {more_count} més}}</translation>
 <translation id="4737560986434232178">Cerca pestanyes recents</translation>
 <translation id="473775607612524610">Actualitza</translation>
+<translation id="4744428388659507035">Per accedir a les adreces d'interès des de tots els dispositius, a la configuració, activa Adreces d'interès.</translation>
 <translation id="4746926359847517643">Sempre pots recuperar-les a l'historial.</translation>
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, Només en aquest dispositiu, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Pestanya d'incògnit nova</translation>
@@ -819,6 +820,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="5300589172476337783">Mostra</translation>
 <translation id="5317780077021120954">Desa</translation>
 <translation id="5318298563956633672">Ja estàs fent el seguiment d'aquest producte.</translation>
+<translation id="5329451663851195956">Pots arrossegar cap avall per actualitzar.</translation>
 <translation id="5339316356165661760">Activa la sincronització</translation>
 <translation id="5345598430982201510">No detectis mai paquets automàticament</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Vols fer el seguiment d'aquest paquet?}other{Vols fer el seguiment de {COUNT} paquets?}}</translation>
@@ -944,6 +946,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="598634819525651074">Àrea</translation>
 <translation id="5988097621740394599">Consulta les baixades de preu a les pestanyes.</translation>
 <translation id="5988851877894965432">Obre els URL a Chrome</translation>
+<translation id="6001839398155993679">Som-hi</translation>
 <translation id="6006672969046233841">Pestanya nova</translation>
 <translation id="6011308810877101166">Millora els suggeriments de cerca</translation>
 <translation id="6012140227487808125">S'està encriptant…</translation>
@@ -1241,6 +1244,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7491131399623468277">Ves a Configuració…</translation>
 <translation id="7492574581995589075">La teva organització ha desactivat l'opció de fer servir i desar dades de Chrome al teu Compte de Google. Les adreces d'interès noves, les contrasenyes i altres dades només es desaran en aquest dispositiu.</translation>
 <translation id="749854780843431406">Pots obrir una pestanya nova des del botó <ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
+<translation id="7500419352370346534">Ara pots controlar totes les opcions de configuració del compte en un sol lloc</translation>
 <translation id="750149195207506638">Les adreces d'interès estan amagades</translation>
 <translation id="750228856503700085">No hi ha actualitzacions disponibles</translation>
 <translation id="750493650310597496">No se n'ha seleccionat cap</translation>
@@ -1318,6 +1322,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7879275349003161544">Mostra les baixades</translation>
 <translation id="7883882164760409935">Tens contrasenyes reutilitzades.</translation>
 <translation id="7884694604461143138">Historial de cerques (n'hem trobat <ph name="COUNT" />)</translation>
+<translation id="7887174313503389866">Fes una visita guiada pels controls principals de privadesa i seguretat. Per veure més possibilitats, ves a cada opció de configuració.</translation>
 <translation id="7887198238286927132">Amb la finalitat de protegir la teva privadesa, Chrome no emplenarà aquest camp automàticament.</translation>
 <translation id="7889910613639381518">Accés fàcil i segur amb el widget del gestor de contrasenyes de Google.</translation>
 <translation id="7911190106180361398">La teva organització no et permet sincronitzar-ho tot.</translation>

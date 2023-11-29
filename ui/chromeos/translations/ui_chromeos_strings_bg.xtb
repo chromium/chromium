@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
 <translation id="1000498691615767391">Изберете папка за отваряне</translation>
+<translation id="1014208178561091457">Файлът <ph name="FILE_NAME" /> не бе копиран, защото е шифрован.</translation>
 <translation id="1047956942837015229"><ph name="COUNT" /> елемента се изтриват...</translation>
 <translation id="1049926623896334335">Документ в Word</translation>
 <translation id="1056775291175587022">Няма мрежи</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Споделяне на папката с Parallels Desktop</translation>
 <translation id="1439919885608649279">Човек с цветя</translation>
 <translation id="1458457385801829801">Деактивиране на <ph name="TARGET_NAME" /></translation>
+<translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> файла не бяха копирани, защото са шифровани.</translation>
 <translation id="1471718551822868769">Словашки</translation>
 <translation id="1482884275703521657">Финландски</translation>
 <translation id="148466539719134488">Швейцарска клавиатура</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">Няма достъп</translation>
 <translation id="3254434849914415189">Избиране на приложението по подразбиране за файлове от тип <ph name="FILE_TYPE" />:</translation>
 <translation id="3255159654094949700">Арабски</translation>
+<translation id="326396468955264502"><ph name="NUMBER_OF_FILES" /> файла не бяха преместени, защото са шифровани.</translation>
 <translation id="3264582393905923483">Контекст</translation>
 <translation id="3272909651715601089">„<ph name="PATH" />“ не можа да се отвори</translation>
 <translation id="3280431534455935878">Подготвя се</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490">1 папка е споделена с(ъс) <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Внимание: Тези файлове са временни и може да бъдат изтрити автоматично, за да се освободи място на диска.  <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Папка</translation>
+<translation id="3529424493985988200">За подробности се свържете с администратора си.</translation>
 <translation id="3548125359243647069">Въведохте грешен ПИН код твърде много пъти.</translation>
 <translation id="3549797760399244642">Към drive.google.com...</translation>
 <translation id="3553048479571901246">За да отваряте файлове с(ъс) <ph name="APP_NAME" />, първо ги копирайте в папката с файлове на Windows.</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">Този файл се отвори на друг работен плот. Преминете към <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), за да го прегледате.</translation>
 <translation id="6394388407447716302">Само за четене</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> елемента</translation>
+<translation id="6407769893376380348">Файлът <ph name="FILE_NAME" /> не бе преместен, защото е шифрован.</translation>
 <translation id="642282551015776456">Това име не може да се използва като име на файл или на папка</translation>
 <translation id="6423031066725912715">Виетнамски с клавиатура TCVN</translation>
 <translation id="6430271654280079150">Остава ви 1 опит.</translation>

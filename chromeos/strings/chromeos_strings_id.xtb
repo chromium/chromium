@@ -31,7 +31,6 @@
 <translation id="1181037720776840403">Hapus</translation>
 <translation id="1191518099344003522">APN diaktifkan.</translation>
 <translation id="1195447618553298278">Kesalahan tak dikenal.</translation>
-<translation id="1195784767091936222">Aktifkan mode gelap otomatis</translation>
 <translation id="1196959502276349371">Versi <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Putar/Jeda</translation>
 <translation id="1201402288615127009">Berikutnya</translation>
@@ -281,7 +280,6 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Perangkat terhubung.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Hapus halaman?}=1{Hapus halaman {PAGE_NUMBER}?}other{Hapus halaman {PAGE_NUMBER}?}}</translation>
-<translation id="3136905423678675159">Aktifkan mode gelap otomatis?</translation>
 <translation id="3146655726035122603">Eksklusif untuk <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Data seluler</translation>
 <translation id="3156846309055100599">Memindai halaman <ph name="PAGE_NUMBER" /> ...</translation>
@@ -362,7 +360,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ulasan)</translation>
 <translation id="3748026146096797577">Tidak Terhubung</translation>
 <translation id="3749289110408117711">Nama file</translation>
-<translation id="3754384069690464321">Untuk mendapatkan hasil terbaik dengan wallpaper ini, aktifkan mode gelap otomatis. Anda dapat mengubahnya kembali di aplikasi kapan saja.</translation>
 <translation id="3771294271822695279">File Video</translation>
 <translation id="3784455785234192852">Kunci</translation>
 <translation id="380097101658023925">kontrol RGB</translation>

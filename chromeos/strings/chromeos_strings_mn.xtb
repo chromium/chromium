@@ -31,7 +31,6 @@
 <translation id="1181037720776840403">Хасах</translation>
 <translation id="1191518099344003522">APN-г идэвхжүүлсэн.</translation>
 <translation id="1195447618553298278">Үл танигдах алдаа гаргасан байна</translation>
-<translation id="1195784767091936222">Автомат бараан горимыг асаах</translation>
 <translation id="1196959502276349371">Хувилбар <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Тоглуулах/Түр зогсоох</translation>
 <translation id="1201402288615127009">Дараагийнх</translation>
@@ -281,7 +280,6 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Төхөөрөмж холбогдсон байна.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Хуудсыг хасах уу?}=1{{PAGE_NUMBER}-р хуудсыг хасах уу?}other{{PAGE_NUMBER}-р хуудсыг хасах уу?}}</translation>
-<translation id="3136905423678675159">Автомат бараан горимыг асаах уу?</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" />-д онцгой</translation>
 <translation id="315116470104423982">Гар утасны дата</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />-р хуудсыг скан хийж байна...</translation>
@@ -362,7 +360,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> шүүмж)</translation>
 <translation id="3748026146096797577">Холбогдоогүй</translation>
 <translation id="3749289110408117711">Файлын нэр</translation>
-<translation id="3754384069690464321">Энэ дэлгэцийн зургаар хамгийн шилдэг үр дүнг авахын тулд автомат бараан горимыг асаана уу. Та үүнийг аппад хүссэн үедээ буцааж өөрчлөх боломжтой.</translation>
 <translation id="3771294271822695279">Видео файлууд</translation>
 <translation id="3784455785234192852">Түгжих</translation>
 <translation id="380097101658023925">rgb тохиргоо</translation>

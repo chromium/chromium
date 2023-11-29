@@ -36,7 +36,9 @@
 <translation id="1715127912119967311">为帮助改进这些功能，Chromium 会将您与它们的互动数据发送给 Google。此类数据可能会由人工审核员读取、处理和注释。</translation>
 <translation id="17264556997921157">您可看到并移除被网站用来向您展示广告的兴趣主题。Chromium 会根据您近期的浏览记录推测出您的兴趣。</translation>
 <translation id="1733725117201708356">Chromium 即将删除浏览数据</translation>
+<translation id="1736443181683099871">Chromium 会尝试将导航路径升级到 HTTPS</translation>
 <translation id="1745121272106313518">Chromium 将在 <ph name="REMAINING_TIME" />后重启</translation>
+<translation id="1749104137266986751">如果 HTTPS 不可用，Chromium 会在不向您发出警告的情况下使用不安全的连接</translation>
 <translation id="1774152462503052664">让 Chromium 在后台运行</translation>
 <translation id="1779356040007214683">为了提高 Chromium 的安全性，系统停用了一些未列在 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />中、可能是在您不知情的情况下添加的扩展程序。</translation>
 <translation id="1808667845054772817">重新安装Chromium</translation>
@@ -124,6 +126,7 @@
 <translation id="3286538390144397061">立即重新启动</translation>
 <translation id="328888136576916638">缺少 Google API 密钥，因此 Chromium 的部分功能将无法使用。</translation>
 <translation id="3296368748942286671">关闭 Chromium 后继续运行后台应用</translation>
+<translation id="3313189106987092621">Chromium 会在使用不安全的连接加载网站前向您发出警告</translation>
 <translation id="3350761136195634146">已有一份使用此账号创建的 Chromium 个人资料</translation>
 <translation id="3387527074123400161">Chromium 操作系统</translation>
 <translation id="3406848076815591792">切换到现有的 Chromium 个人资料？</translation>
@@ -221,6 +224,7 @@
 <translation id="5224391634244552924">尚未保存任何密码。您需要先保存密码才能使用 Chromium 的密码检查功能。</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" />已登录此 Chromium 个人资料。这样做会为 <ph name="USER_EMAIL_ADDRESS" /> 创建一份新的 Chromium 个人资料</translation>
 <translation id="5277894862589591112">要想应用您的更改，请重新启动 Chromium</translation>
+<translation id="5294316920224716406">当您在无痕模式下浏览内容时，Chromium 会在使用不安全的连接加载网站前向您发出警告</translation>
 <translation id="5296845517486664001">在试用期间，如果 Chromium 随机将您加入到了其中某项正在进行的试用活动，您的浏览记录会影响您看到的广告以及系统推测出的兴趣（如下所示）。为了保护您的隐私，Chromium 每个月都会按保留时间先后顺序删除您的部分兴趣。</translation>
 <translation id="5352264705793813212">Chromium 找到了一些供您审查的安全建议</translation>
 <translation id="5358375970380395591">您目前登录的账号是一个受管理账号，该账号的管理员将能够控制您的 Chromium 个人资料。您的 Chromium 数据（例如您的应用、书签、历史记录、密码和其他设置）将永远与 <ph name="USER_NAME" /> 相关联。您可以通过 Google 账号信息中心删除这些数据，但无法将这些数据与其他账号相关联。<ph name="LEARN_MORE" /></translation>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="be">
 <translation id="1000498691615767391">Выберыце папку для адкрыцця</translation>
+<translation id="1014208178561091457">Не ўдалося скапіраваць файл "<ph name="FILE_NAME" />", бо ён зашыфраваны.</translation>
 <translation id="1047956942837015229">Ідзе выдаленне элементаў (<ph name="COUNT" />)...</translation>
 <translation id="1049926623896334335">Дакумент Word</translation>
 <translation id="1056775291175587022">Няма сетак</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Абагульванне папкі з Parallels Desktop</translation>
 <translation id="1439919885608649279">Чалавек з кветкамі</translation>
 <translation id="1458457385801829801">Выняць <ph name="TARGET_NAME" /></translation>
+<translation id="146691674290220697">Не ўдалося скапіраваць файлы (<ph name="NUMBER_OF_FILES" />), бо яны зашыфраваны.</translation>
 <translation id="1471718551822868769">Славацкая</translation>
 <translation id="1482884275703521657">Фінская</translation>
 <translation id="148466539719134488">Швейцарская</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">Недаступна</translation>
 <translation id="3254434849914415189">Выберыце стандартную праграму для файлаў <ph name="FILE_TYPE" />:</translation>
 <translation id="3255159654094949700">Арабская</translation>
+<translation id="326396468955264502">Не ўдалося перамясціць файлы (<ph name="NUMBER_OF_FILES" />), бо яны зашыфраваны.</translation>
 <translation id="3264582393905923483">Кантэкст</translation>
 <translation id="3272909651715601089">Не ўдалося адкрыць архіў "<ph name="PATH" />"</translation>
 <translation id="3280431534455935878">Ідзе падрыхтоўка</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490">1 папка абагулена з <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Увага! Гэта часовыя файлы, і яны могуць быць аўтаматычна выдалены для вызвалення месца на дыску.  <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Папка</translation>
+<translation id="3529424493985988200">За падрабязнай інфармацыяй звяртайцеся да адміністратара.</translation>
 <translation id="3548125359243647069">Занадта шмат разоў быў уведзены няправільны PIN-код.</translation>
 <translation id="3549797760399244642">Перайсці на drive.google.com...</translation>
 <translation id="3553048479571901246">Каб адкрываць файлы ў праграме "<ph name="APP_NAME" />", спачатку скапіруйце іх у папку файлаў Windows.</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">Гэты файл адкрыты на іншым працоўным стале. Каб праглядзець яго, перайдзіце на профіль <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="6394388407447716302">Толькі чытанне</translation>
 <translation id="6395575651121294044">Элементаў: <ph name="NUMBER_OF_FILES" /></translation>
+<translation id="6407769893376380348">Не ўдалося перамясціць файл "<ph name="FILE_NAME" />", бо ён зашыфраваны.</translation>
 <translation id="642282551015776456">Гэту назву нельга выкарыстоўваць як назву файла або папкі</translation>
 <translation id="6423031066725912715">В'етнамская (раскладка TCVN)</translation>
 <translation id="6430271654280079150">У вас засталася 1 спроба.</translation>

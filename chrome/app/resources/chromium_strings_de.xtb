@@ -36,7 +36,9 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="1715127912119967311">Damit wir diese Funktionen verbessern können, sendet Chromium deine Interaktionen mit ihnen an Google. Diese Daten können von Prüfern gelesen, verarbeitet und mit Anmerkungen versehen werden.</translation>
 <translation id="17264556997921157">Du kannst Angaben zu Interessengebieten sehen und entfernen, die Websites verwenden, um dir relevante Werbung anzuzeigen. Chromium nutzt zur Ermittlung deiner Interessengebiete deinen aktuellen Browserverlauf.</translation>
 <translation id="1733725117201708356">Browserdaten in Chromium werden bald gelöscht</translation>
+<translation id="1736443181683099871">Chromium versucht, Websites über HTTPS aufzurufen</translation>
 <translation id="1745121272106313518">Chromium wird in <ph name="REMAINING_TIME" /> neu gestartet</translation>
+<translation id="1749104137266986751">Wenn HTTPS nicht verfügbar ist, verwendet Chromium eine unsichere Verbindung ohne Warnung</translation>
 <translation id="1774152462503052664">Chromium im Hintergrund ausführen</translation>
 <translation id="1779356040007214683">Um Chromium sicherer zu machen, haben wir einige Erweiterungen deaktiviert, die nicht im <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> aufgeführt sind und möglicherweise ohne dein Wissen hinzugefügt wurden.</translation>
 <translation id="1808667845054772817">Chromium neu installieren</translation>
@@ -124,6 +126,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="3286538390144397061">Jetzt neu starten</translation>
 <translation id="328888136576916638">Google API-Schlüssel fehlen. Einige Funktionen von Chromium sind deaktiviert.</translation>
 <translation id="3296368748942286671">Apps weiter im Hintergrund ausführen, wenn Chromium geschlossen wird</translation>
+<translation id="3313189106987092621">Chromium warnt dich, bevor eine Website über eine unsichere Verbindung geladen wird</translation>
 <translation id="3350761136195634146">Ein Chromium-Profil mit diesem Konto ist bereits vorhanden</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Zu bestehendem Chromium-Profil wechseln?</translation>
@@ -221,6 +224,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5224391634244552924">Keine gespeicherten Passwörter. Chromium kann deine Passwörter prüfen, wenn du sie speicherst.</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> ist bereits in diesem Chromium-Profil angemeldet. Dadurch wird ein neues Chromium-Profil für <ph name="USER_EMAIL_ADDRESS" /> erstellt.</translation>
 <translation id="5277894862589591112">Starte Chromium neu, um die Änderungen zu übernehmen</translation>
+<translation id="5294316920224716406">Wenn du im Inkognitomodus surfst, warnt Chromium dich, bevor eine Website über eine unsichere Verbindung geladen wird</translation>
 <translation id="5296845517486664001">Wenn Tests aktiviert sind und Chromium dich zufällig für einen aktiven Test angemeldet hat, hat dein Browserverlauf Einfluss auf die unten stehenden, geschätzten Interessen und darauf, welche Werbung dir gezeigt wird. Zum Schutz deiner Daten löscht Chromium jeden Monat fortlaufend deine Interessen.</translation>
 <translation id="5352264705793813212">Chromium hat einige Sicherheitsempfehlungen gefunden, die du überprüfen solltest</translation>
 <translation id="5358375970380395591">Du meldest dich mit einem verwalteten Konto an und ermöglichst dessen Administrator Zugriff auf dein Chromium-Profil. Deine Chromium-Daten, wie Apps, Lesezeichen, Verlauf, Passwörter und andere Einstellungen, werden dauerhaft mit <ph name="USER_NAME" /> verknüpft. Du kannst diese Daten über das Google Konten-Dashboard löschen, aber nicht mit einem anderen Konto verknüpfen. <ph name="LEARN_MORE" /></translation>

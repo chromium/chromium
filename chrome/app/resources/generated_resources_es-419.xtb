@@ -579,6 +579,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1461041542809785877">Rendimiento</translation>
 <translation id="1461177659295855031">Mover a la carpeta Barra de favoritos</translation>
 <translation id="1461288887896722288">Acabas de acceder a una cuenta administrada. Si creas un nuevo perfil administrado, podrás acceder a algunos recursos vinculados a esa cuenta.</translation>
+<translation id="1461868306585780092">Mostrar una advertencia antes de usar conexiones no seguras</translation>
 <translation id="146219525117638703">Estado de ONC</translation>
 <translation id="146220085323579959">Internet está desconectada. Verifica tu conexión a Internet y vuelve a intentarlo.</translation>
 <translation id="1462480037563370607">Agregar sitios manualmente</translation>
@@ -1555,6 +1556,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2180620921879609685">Bloquear contenido en cualquier página</translation>
 <translation id="2181821976797666341">Políticas</translation>
 <translation id="2182058453334755893">Se copió en tu portapapeles</translation>
+<translation id="2182419606502127232">Incluir mis registros de servidor</translation>
 <translation id="2183570493397356669">Se inhabilitó el botón Continuar</translation>
 <translation id="2184515124301515068">Permitir que Chrome elija cuándo los sitios pueden reproducir sonido (recomendado)</translation>
 <translation id="2186206192313702726">Google Lens</translation>
@@ -1748,6 +1750,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2323018538045954000">Redes Wi-Fi guardadas</translation>
 <translation id="2325444234681128157">Recordar contraseña</translation>
 <translation id="2326188115274135041">Confirma el PIN para activar el desbloqueo automático</translation>
+<translation id="2326906096734221931">Abrir la configuración de la app</translation>
 <translation id="2326931316514688470">&amp;Volver a cargar la aplicación</translation>
 <translation id="2327492829706409234">Habilitar aplicación</translation>
 <translation id="2327920026543055248">Ingresar carácter <ph name="CHARACTER" /> de <ph name="TOTAL" /></translation>
@@ -3885,6 +3888,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="399788104667917863">Fijar en la barra de herramientas</translation>
 <translation id="3998976413398910035">Administrar impresoras</translation>
 <translation id="4001540981461989979">Destacar el cursor del mouse cuando se mueve</translation>
+<translation id="4002347779798688515">Es posible que el perfil descargado no se pueda utilizar si el operador de red móvil está bloqueado. Comunícate con tu operador para obtener asistencia.</translation>
 <translation id="4002440992267487163">Configuración del PIN</translation>
 <translation id="4005817994523282006">Método de detección de la zona horaria</translation>
 <translation id="4007856537951125667">Ocultar accesos directos</translation>
@@ -5421,6 +5425,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5261683757250193089">Abrir en Web Store</translation>
 <translation id="5261799091118902550">Este archivo puede ser un virus o software malicioso. Puedes enviarlo a Google para comprobar que sea seguro.</translation>
 <translation id="5262784498883614021">Conectarse a una red de forma automática</translation>
+<translation id="5263656105659419083">Para volver fácilmente al panel lateral, haz clic en Fijar en la parte superior derecha</translation>
 <translation id="5264148714798105376">Esta acción puede tardar unos minutos.</translation>
 <translation id="5264252276333215551">Conéctate a Internet para iniciar tu aplicación en modo kiosco.</translation>
 <translation id="5265797726250773323">Se produjo un error durante la instalación</translation>
@@ -5568,6 +5573,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{Se encontró 1 sitio con muchas notificaciones}other{Se encontraron {NUM_SITES} sitios con muchas notificaciones}}</translation>
 <translation id="5388885445722491159">Vinculado</translation>
 <translation id="5389626883706033615">Los sitios no podrán solicitarte usar la información que guardaron sobre ti</translation>
+<translation id="5389794555912875905">Mostrar advertencias antes de acceder a sitios no seguros (recomendado)</translation>
 <translation id="5390112241331447203">Incluye el archivo system_logs.txt que se envía en los informes de comentarios.</translation>
 <translation id="5390677308841849479">Rojo oscuro y naranja</translation>
 <translation id="5390743329570580756">Enviar para</translation>
@@ -5851,6 +5857,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5608580678041221894">Presionar las siguientes teclas para ajustar o mover el área recortada</translation>
 <translation id="5609231933459083978">Parece que la aplicación no es válida.</translation>
 <translation id="561030196642865721">Se permiten cookies de terceros en este sitio</translation>
+<translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5612734644261457353">Aún no se pudo verificar tu contraseña. Ten en cuenta que si cambiaste tu contraseña recientemente, podrás usar tu nueva contraseña cuando salgas. Usa la contraseña antigua aquí.</translation>
 <translation id="5614190747811328134">Aviso de usuario</translation>
 <translation id="5614553682702429503">¿Quieres guardar la contraseña?</translation>
@@ -6205,6 +6212,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5901089233978050985">Cambiar a la pestaña que se capturará</translation>
 <translation id="5901494423252125310">La tapa de la impresora está abierta</translation>
 <translation id="5901630391730855834">Amarillo</translation>
+<translation id="5902892210366342391">Mostrar advertencias antes de acceder a sitios no seguros en el modo Incógnito</translation>
 <translation id="5904614460720589786">No se pudo instalar <ph name="APP_NAME" /> debido a un problema de configuración. Comunícate con el administrador. Código de error: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">El dispositivo está casi actualizado. Reinícialo para completar la actualización.</translation>
 <translation id="5906732635754427568">Los datos asociados a esta app se quitarán de este dispositivo.</translation>
@@ -6742,6 +6750,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6333170995003625229">No se pudo verificar tu dirección de correo electrónico o contraseña. Inténtalo de nuevo.</translation>
 <translation id="6334267141726449402">Copia y envía este vínculo al usuario para recopilar los registros.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> inhabilitó la depuración de ADB, por lo que se restablecerá el dispositivo <ph name="DEVICE_TYPE" /> dentro de 24 horas. Crea una copia de seguridad de los archivos que deseas conservar.</translation>
+<translation id="6336194758029258346">Idioma de la app</translation>
 <translation id="6337543438445391085">Es posible que aún se incluya información personal en los datos. Asegúrate de revisar los archivos exportados.</translation>
 <translation id="6338968693068997776">Agregar un dispositivo USB</translation>
 <translation id="6339668969738228384">Crear un perfil nuevo para <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -7247,6 +7256,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">No se permiten los datos de sitios en el dispositivo</translation>
 <translation id="6762833852331690540">Sí</translation>
+<translation id="6762861159308991328">Puedes cambiar la forma en que se abren los vínculos en la configuración de la app</translation>
 <translation id="676560328519657314">Tus formas de pago de Google Pay</translation>
 <translation id="6766488013065406604">Ir al Administrador de contraseñas de Google</translation>
 <translation id="6767566652486411142">Elegir otro idioma…</translation>
@@ -7462,6 +7472,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6912007319859991306">PIN de la SIM de red móvil</translation>
 <translation id="6912380255120084882">Prueba con otro dispositivo</translation>
 <translation id="691289340230098384">Preferencias de subtítulos</translation>
+<translation id="6914812290245989348">No mostrar advertencias antes de acceder a sitios no seguros</translation>
 <translation id="6916590542764765824">Administrar extensiones</translation>
 <translation id="6918677045355889289">Debes actualizar ChromeOS</translation>
 <translation id="6919354101107095996">Intenta acceder al sitio. Luego, vuelve a iniciar la descarga.</translation>
@@ -8945,6 +8956,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8076835018653442223">El administrador inhabilitó el acceso a los archivos locales de tu dispositivo</translation>
 <translation id="8077120325605624147">Cualquier sitio que visites puede mostrarte cualquier anuncio</translation>
 <translation id="8077579734294125741">Otros perfiles de Chrome</translation>
+<translation id="80790299200510644">Búsqueda con imágenes</translation>
 <translation id="80798452873915119">Los sitios pueden solicitar permiso para administrar las ventanas de todas tus pantallas</translation>
 <translation id="8080028325999236607">Cerrar todas las pestañas</translation>
 <translation id="808089508890593134">Google</translation>

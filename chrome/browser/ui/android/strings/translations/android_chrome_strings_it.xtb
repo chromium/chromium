@@ -23,7 +23,6 @@
 <translation id="1110914759170138831">Testo del contenuto in evidenza abbreviato</translation>
 <translation id="1111673857033749125">I preferiti salvati sugli altri dispositivi verranno visualizzati qui.</translation>
 <translation id="1113597929977215864">Mostra in visualizzazione semplificata</translation>
-<translation id="1123070903960493543">La tua interazione con Chrome, le impostazioni che hai selezionato e i dettagli sugli arresti anomali di Chrome</translation>
 <translation id="1126013303640354461">I metodi di pagamento e gli indirizzi memorizzati su Google Pay non verranno criptati. La cronologia di navigazione di Chrome non verrà sincronizzata.
 Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphrase non viene inviata a Google o memorizzata da Google. Se dimentichi la passphrase o vuoi modificare questa impostazione, dovrai reimpostare la sincronizzazione. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="1126809382673880764">Non ti protegge da estensioni, download e siti web pericolosi. La protezione di Navigazione sicura, se disponibile, sarà ancora attiva in altri servizi Google, come Gmail e Ricerca.</translation>
@@ -204,7 +203,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="213279576345780926">La scheda <ph name="TAB_TITLE" /> è stata chiusa</translation>
 <translation id="2139186145475833000">Aggiungi a schermata Home</translation>
 <translation id="2141396931810938595">In base al tuo utilizzo</translation>
-<translation id="214888715418183969">Scegli quali dati condividere con Chrome. Le metriche che condividi verranno utilizzate per contribuire a migliorare le funzionalità, le prestazioni e la stabilità di Chrome.</translation>
 <translation id="2149973817440762519">Modifica Preferito</translation>
 <translation id="2155214902713132423">Questo metodo di verifica non è disponibile per il dispositivo in uso. Scegli un'opzione diversa sull'altro dispositivo.</translation>
 <translation id="2158408438301413340">Chrome non ha potuto controllare tutte le password</translation>
@@ -214,7 +212,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2175927920773552910">Codice QR</translation>
 <translation id="218608176142494674">Condivisione</translation>
 <translation id="2194856509914051091">Aspetti da considerare</translation>
-<translation id="2200113223741723867">Gestisci la condivisione dei dati sull'utilizzo</translation>
 <translation id="22091350895006575">Aggiungi nome utente</translation>
 <translation id="221494669172414749">Se apri Chrome senza un blocco del profilo, le password e i metodi di pagamento salvati verranno rimossi dall'auto. L'utilizzo di un blocco del profilo protegge questi dati.</translation>
 <translation id="2227444325776770048">Continua come <ph name="USER_FULL_NAME" /></translation>
@@ -375,7 +372,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2996932914629936323">Consente di cancellare la cronologia da tutti i dispositivi sincronizzati</translation>
 <translation id="2997081575621687554">Quando un sito Google richiede di precaricare privatamente i link sulle sue pagine, Chrome cripta e precarica le pagine tramite i server di Google senza usare cookie. In questo modo la tua identità rimane nascosta ai siti precaricati.</translation>
 <translation id="3003253259757197230">Gli URL che visiti vengono inviati a Google per prevedere quali siti potresti visitare in futuro e per mostrarti informazioni aggiuntive sulla pagina che stai visitando</translation>
-<translation id="3006881078666935414">Nessun dato sull'utilizzo</translation>
 <translation id="3016635187733453316">Assicurati che questo dispositivo sia connesso a Internet</translation>
 <translation id="3026955690410463085">Includi link</translation>
 <translation id="3027644380269727216">In base alla tua attività svolta su un sito. Questa impostazione è attiva.</translation>
@@ -512,7 +508,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3771033907050503522">Schede di navigazione in incognito</translation>
 <translation id="3771290962915251154">Questa impostazione è disattivata perché il Controllo genitori è attivo</translation>
 <translation id="3771694256347217732">Termini di servizio di Google</translation>
-<translation id="3773856050682458546">Dati di base e informazioni sui siti web che visiti e sulle app che utilizzi</translation>
 <translation id="3775705724665058594">Invia ai tuoi dispositivi</translation>
 <translation id="3777796259512476958">Uscirai dalla maggior parte dei siti.</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 scheda}other{# schede}}</translation>
@@ -560,7 +555,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="4035877632587724847">Non consentire</translation>
 <translation id="4042941173059740150">Continua su <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">Riquadro inferiore</translation>
-<translation id="4045764304651014138">Dati sull'utilizzo</translation>
 <translation id="405399507749852140">Ricevi avvisi se il prezzo cala su qualsiasi sito</translation>
 <translation id="4056223980640387499">Seppia</translation>
 <translation id="4062305924942672200">Informazioni legali</translation>
@@ -774,7 +768,6 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5062960805900435602">Aggiornamento sull'unione delle password chiuso</translation>
 <translation id="5081960376148623587">Scegli se precaricare o meno le pagine</translation>
 <translation id="5091199029769593641">A breve vedrai storie di <ph name="SITE_NAME" /> quando aprirai una nuova scheda. I siti che segui vengono salvati nel tuo Account Google. Puoi gestirli nelle impostazioni di Discover.</translation>
-<translation id="5091249083535528968">Dati completi sull'utilizzo</translation>
 <translation id="509429900233858213">Si è verificato un errore.</translation>
 <translation id="5097349930204431044">I siti che visiti possono stabilire i tuoi interessi e poi suggerire annunci mentre continui a navigare</translation>
 <translation id="5099845111805573968">Una volta selezionato il sito desktop, l'impostazione viene applicata al sito ogni volta che lo visiti</translation>
@@ -914,7 +907,6 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5833984609253377421">Condividi link</translation>
 <translation id="5839058148541733625">Dino di Chrome</translation>
 <translation id="5853623416121554550">in pausa</translation>
-<translation id="5854512288214985237">Non vengono inviati report sugli arresti anomali né statistiche a Google</translation>
 <translation id="5855546874025048181">Perfeziona: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">Si è verificato un errore. Impossibile aggiornare Monitora prezzo.</translation>
 <translation id="5859968346865909126">Puoi attivare o disattivare questa funzionalità nelle impostazioni</translation>
@@ -1019,7 +1011,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6404511346730675251">Modifica preferito</translation>
 <translation id="6406506848690869874">Sincronizzazione</translation>
 <translation id="6407224748847589805">Impossibile connettersi al computer. Prova con un'altra opzione di verifica.</translation>
-<translation id="6410404864818553978">Dati di base sull'utilizzo</translation>
 <translation id="6410883413783534063">Apri più schede per visitare pagine diverse contemporaneamente</translation>
 <translation id="6411219469806822692">Non puoi scorrere più in alto di così. Prova a partire da un punto più in alto nella pagina.</translation>
 <translation id="6412673304250309937">Verifica gli URL con un elenco di siti non sicuri archiviati in Chrome. Se un sito cerca di rubare la tua password o se scarichi un file dannoso, Chrome potrebbe inviare anche gli URL, inclusi bit e contenuti di pagina, a Navigazione sicura.</translation>

@@ -3894,6 +3894,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="4005817994523282006">Metod otkrivanja vremenske zone</translation>
 <translation id="4007856537951125667">Sakrij prečice</translation>
 <translation id="4008291085758151621">Informacije o sajtovima nisu dostupne u VR-u</translation>
+<translation id="4010746393007464819">Dostupna je nadogradnja na DNS 12 (Bookworm)</translation>
 <translation id="4010917659463429001">Da bi vam obeleživači bili dostupni na mobilnom uređaju, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Želite li da popravite „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="4015163439792426608">Imate dodatke? <ph name="BEGIN_LINK" />Upravljajte dodacima<ph name="END_LINK" /> na jednom praktičnom mestu.</translation>
@@ -6056,6 +6057,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5782040878821624922">Dostupna je na bilo kom uređaju</translation>
 <translation id="5782227691023083829">Prevođenje je u toku...</translation>
 <translation id="57838592816432529">Isključi zvuk</translation>
+<translation id="5784291589716625675">Promenite jezik aplikacije</translation>
 <translation id="5785583009707899920">Chrome uslužni programi za datoteke</translation>
 <translation id="5787146423283493983">Slaganje ključa</translation>
 <translation id="5787420647064736989">Naziv uređaja</translation>
@@ -6530,6 +6532,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6151323131516309312">Pritisnite <ph name="SEARCH_KEY" /> da biste pretražili <ph name="SITE_NAME" /> sajt</translation>
 <translation id="6151771661215463137">Datoteka već postoji u direktorijumu sa preuzimanjima.</translation>
 <translation id="6152918902620844577">Čeka se sledeća radnja</translation>
+<translation id="6153439704237222699">Saznajte više o zahtevu „Ne prati“</translation>
 <translation id="6154240335466762404">Ukloni sve portove</translation>
 <translation id="615436196126345398">Protokol</translation>
 <translation id="6155141482566063812">Kartica u pozadini deli ekran</translation>
@@ -8853,6 +8856,7 @@ Pritisnite dodeljeni prekidač ili taster da biste uklonili dodelu.</translation
 <translation id="7988805580376093356">Zadržite svoj OS i pokrenite <ph name="DEVICE_OS" /> sa USB-a.</translation>
 <translation id="7988876720343145286">Još podešavanja i dozvola za Android</translation>
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> glas <ph name="COUNT" /></translation>
+<translation id="7990958035181555539">Automatski prenesite WiFi sa Android telefona</translation>
 <translation id="7991296728590311172">Podešavanja pristupa pomoću prekidača</translation>
 <translation id="7992203134935383159">Sinteza govora</translation>
 <translation id="7994515119120860317">Prevedi tekst na slici pomoću pretraživača <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -9800,6 +9804,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8736288397686080465">Ovaj sajt je ažuriran u pozadini.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Odaberite jezik na koji želite da prevedete stranicu</translation>
+<translation id="8738418093147087440">Pretražite prema zemljama, jeziku ili nazivima unosa</translation>
 <translation id="8740086188450289493">Koristite lozinku za Google nalog</translation>
 <translation id="8740247629089392745">Možete da predate ovaj Chromebook korisniku <ph name="SUPERVISED_USER_NAME" />. Podešavanje je skoro gotove, pa dolazi vreme za istraživanje.</translation>
 <translation id="8740672167979365981">Treba da ažurirate Chrome OS Flex</translation>

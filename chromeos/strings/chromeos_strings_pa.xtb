@@ -31,7 +31,6 @@
 <translation id="1181037720776840403">ਹਟਾਓ</translation>
 <translation id="1191518099344003522">APN ਚਾਲੂ ਹੈ।</translation>
 <translation id="1195447618553298278">ਅਗਿਆਤ ਗੜਬੜ।</translation>
-<translation id="1195784767091936222">ਸਵੈਚਲਿਤ ਗੂੜ੍ਹਾ ਮੋਡ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="1196959502276349371">ਵਰਜਨ <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">ਚਲਾਓ/ਰੋਕੋ</translation>
 <translation id="1201402288615127009">ਅੱਗੇ</translation>
@@ -281,7 +280,6 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">ਡੀਵਾਈਸ ਕਨੈਕਟ ਹੈ।</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{ਕੀ ਪੰਨਾ ਹਟਾਉਣਾ ਹੈ?}=1{ਕੀ ਪੰਨਾ {PAGE_NUMBER} ਹਟਾਉਣਾ ਹੈ?}other{ਕੀ ਪੰਨਾ {PAGE_NUMBER} ਹਟਾਉਣਾ ਹੈ?}}</translation>
-<translation id="3136905423678675159">ਕੀ ਸਵੈਚਲਿਤ ਗੂੜ੍ਹਾ ਮੋਡ ਚਾਲੂ ਕਰਨਾ ਹੈ?</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> ਲਈ ਵਿਸ਼ੇਸ਼</translation>
 <translation id="315116470104423982">ਮੋਬਾਈਲ ਡਾਟਾ</translation>
 <translation id="3156846309055100599">ਪੰਨਾ <ph name="PAGE_NUMBER" /> ਸਕੈਨ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
@@ -362,7 +360,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ਸਮੀਖਿਆਵਾਂ)</translation>
 <translation id="3748026146096797577">ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ</translation>
 <translation id="3749289110408117711">ਫਾਈਲ ਨਾਮ</translation>
-<translation id="3754384069690464321">ਇਸ ਵਾਲਪੇਪਰ ਦੇ ਬਿਹਤਰੀਨ ਨਤੀਜਿਆਂ ਲਈ, ਕਿਰਪਾ ਕਰਕੇ ਸਵੈਚਲਿਤ-ਗੂੜ੍ਹਾ ਮੋਡ ਚਾਲੂ ਕਰੋ। ਤੁਸੀਂ ਇਸਨੂੰ ਕਿਸੇ ਵੀ ਸਮੇਂ ਐਪ ਵਿੱਚ ਵਾਪਸ ਬਦਲ ਸਕਦੇ ਹੋ।</translation>
 <translation id="3771294271822695279">ਵੀਡੀਓ ਫ਼ਾਈਲਾਂ</translation>
 <translation id="3784455785234192852">ਲਾਕ ਕਰੋ</translation>
 <translation id="380097101658023925">RGB ਕੰਟਰੋਲ</translation>

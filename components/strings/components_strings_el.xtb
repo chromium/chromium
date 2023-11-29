@@ -50,6 +50,7 @@
 <translation id="1074497978438210769">Μη ασφαλής</translation>
 <translation id="1075079914415273530">Γεωργία και δασοπονία</translation>
 <translation id="1075364221219156102">Χρήση κλειδιού πρόσβασης</translation>
+<translation id="1078033282564106222">Ορίστηκε η επιλογή για τον αριθμό κτιρίου</translation>
 <translation id="1080116354587839789">Προσαρμογή στο πλάτος</translation>
 <translation id="1081061862829655580">Τροφοδότης χαρτιού 19</translation>
 <translation id="1089439967362294234">Αλλαγή κωδικού πρόσβασης</translation>
@@ -784,6 +785,7 @@
 <translation id="2544546346215446551">Ο διαχειριστής έκανε επανεκκίνηση της συσκευής σας</translation>
 <translation id="2544644783021658368">Ένα έγγραφο</translation>
 <translation id="254524874071906077">Ορισμός του Chrome ως προεπιλεγμένο πρόγραμμα περιήγησης</translation>
+<translation id="2545721997179863249">Ορίστηκε η επιλογή για τη συμπλήρωση όλων</translation>
 <translation id="2546283357679194313">Cookie και δεδομένα ιστότοπου</translation>
 <translation id="2547466893236767989">Σχέδιο και ανάπτυξη ιστού</translation>
 <translation id="254947805923345898">Η τιμή πολιτικής δεν είναι έγκυρη.</translation>
@@ -877,6 +879,7 @@
 <translation id="2722622039067384533">Έπιπλα σαλονιού</translation>
 <translation id="2723669454293168317">Εκτέλεση ελέγχου ασφαλείας στις ρυθμίσεις του Chrome</translation>
 <translation id="2725492561136085792">Πατήστε Enter για να ενεργοποιήσετε αυτή την ενέργεια.</translation>
+<translation id="2725927759457695883">Συμπλήρωση πλήρους ονόματος</translation>
 <translation id="2726001110728089263">Πλευρικός τροφοδότης χαρτιού</translation>
 <translation id="2728127805433021124">Το πιστοποιητικό του διακομιστή είναι υπογεγραμμένο με έναν αδύναμο αλγόριθμο υπογραφής.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Να εκτελέσετε τα Διαγνωστικά στοιχεία συνδεσιμότητας<ph name="END_LINK" /></translation>
@@ -1240,6 +1243,7 @@
 <translation id="3484560055331845446">Μπορεί να χάσετε την πρόσβαση στον Λογαριασμό σας Google. Το Chrome συνιστά να αλλάξετε τον κωδικό πρόσβασής σας τώρα. Θα σας ζητηθεί να συνδεθείτε.</translation>
 <translation id="3484861421501147767">Υπενθύμιση: Διατίθεται αποθηκευμένος κωδικός προσφοράς</translation>
 <translation id="3487845404393360112">Δίσκος 4</translation>
+<translation id="3492199565975299728">Οδός</translation>
 <translation id="3493660662684070951">Φορτηγά, βαν και SUV</translation>
 <translation id="3495081129428749620">Εύρεση στη σελίδα
     <ph name="PAGE_TITLE" /></translation>
@@ -1283,6 +1287,7 @@
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Να επιτρέπεται για αυτόν τον ιστότοπο</translation>
 <translation id="3575168918110434329">A4x7</translation>
+<translation id="3575589330755445706">Ορίστηκε η επιλογή για το όνομα οδού</translation>
 <translation id="3576616784287504635">Μια ενσωματωμένη σελίδα στον ιστότοπο <ph name="SITE" /> λέει</translation>
 <translation id="3577473026931028326">Παρουσιάστηκε κάποιο πρόβλημα. Επανάληψη.</translation>
 <translation id="3577902790357386792">Ενόργανη γυμναστική</translation>
@@ -1346,6 +1351,7 @@
 <translation id="3678914302246317895">Εισαγάγετε τον <ph name="OTP_LENGTH" />-ψήφιο κωδικό επαλήθευσης</translation>
 <translation id="3681007416295224113">Πληροφορίες πιστοποιητικού</translation>
 <translation id="3681421644246505351">Το Chrome σημειώνει θέματα που σας ενδιαφέρουν με βάση το πρόσφατο ιστορικό περιήγησης.</translation>
+<translation id="3689867156802445220">Αριθμός κτιρίου</translation>
 <translation id="3693327506115126094">Επιλέξτε τον τρόπο επαλήθευσης της ταυτότητάς σας</translation>
 <translation id="3698629142018988477">Κουμπί Δημιουργία ιστοτόπου, ενεργοποιήστε το για να δημιουργήσετε γρήγορα έναν νέο ιστότοπο στους Ιστοτόπους Google</translation>
 <translation id="3701325639446035885">Πωλήσεις εισιτηρίων εκδηλώσεων</translation>
@@ -1946,6 +1952,7 @@
 <translation id="4888600795924685526">Σπουδές ξένων γλωσσών</translation>
 <translation id="4890070067176768718">Ο διαχειριστής παραχώρησε την άδεια <ph name="PERMISSION" /> στον ιστότοπο <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Πίσω</translation>
+<translation id="4895019427244614047">Διαγραφή διεύθυνσης</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Ολυμπιακοί Αγώνες</translation>
 <translation id="4900217275619098670">Ένατο ρολό</translation>
@@ -1981,6 +1988,7 @@
 <translation id="4960068118612257147">Μπορείτε να κάνετε αλλαγές στις ρυθμίσεις απορρήτου διαφημίσεων του Chrome</translation>
 <translation id="4960203958361543136">Επιλογή μηχανής αναζήτησης</translation>
 <translation id="4964505745997821360">Ασφάλεια υγείας</translation>
+<translation id="4967366744630699583">Επεξεργασία διεύθυνσης</translation>
 <translation id="4968522289500246572">Αυτή η εφαρμογή σχεδιάστηκε για κινητά. Συνεπώς, η αλλαγή μεγέθους μπορεί να μην λειτουργεί σωστά. Η εφαρμογή ενδέχεται να παρουσιάσει προβλήματα ή να επανεκκινηθεί.</translation>
 <translation id="4968665849807487749">Μπορεί να ζητά να διαχειρίζεται παράθυρα σε όλες τις οθόνες σας</translation>
 <translation id="4969341057194253438">Διαγραφή εγγραφής</translation>
@@ -2238,6 +2246,7 @@
     <ph name="LINE_BREAK" />
     Δοκιμάστε να επικοινωνήσετε με το διαχειριστή δικτύου σας.</translation>
 <translation id="549333378215107354">Μέγεθος 3</translation>
+<translation id="550365051221576010">Συμπλήρωση όλων</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Διαχειριζόμενοι σελιδοδείκτες</translation>
 <translation id="5510481203689988000">Αυτή η ρύθμιση ελέγχεται από τις ρυθμίσεις cookie.</translation>
@@ -2614,6 +2623,7 @@
 <translation id="6272088941196661550">Συνεχίστε τη διαδρομή σας για προβολή σχετικής δραστηριότητας στο Ιστορικό Chrome</translation>
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6279183038361895380">Πιέστε |<ph name="ACCELERATOR" />| για να εμφανιστεί ο δρομέας</translation>
+<translation id="628016388715774955">Ορίστηκε η επιλογή για τη συμπλήρωση της πλήρους διεύθυνσης</translation>
 <translation id="6280223929691119688">Δεν είναι δυνατή η παράδοση σε αυτήν τη διεύθυνση. Επιλέξτε μια άλλη διεύθυνση.</translation>
 <translation id="6284292079994426700">26 x 38 ίντσες</translation>
 <translation id="6284517535531159884">Τύπος αρχικών θέσεων παραλλαγών</translation>
@@ -2882,6 +2892,7 @@
 <translation id="6807791860691150411">Εκπαίδευση</translation>
 <translation id="681021252041861472">Υποχρεωτικό πεδίο</translation>
 <translation id="6810899417690483278">Αναγνωριστικό προσαρμογής</translation>
+<translation id="681459028290894216">Συμπλήρωση πλήρους διεύθυνσης</translation>
 <translation id="6816109178681043245">Αθλητικά είδη</translation>
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">σειριακές θύρες</translation>
@@ -3071,6 +3082,7 @@
 <translation id="7163295244162773898">{0,plural, =1{Αντιγραφή εμπιστευτικού αρχείου;}other{Αντιγραφή εμπιστευτικών αρχείων;}}</translation>
 <translation id="717330890047184534">Αναγνωριστικό Gaia:</translation>
 <translation id="7174545416324379297">Έγινε συγχώνευση</translation>
+<translation id="7175097078723125014">Ορίστηκε η επιλογή για την επεξεργασία της διεύθυνσης</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> και <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ακόμη}other{<ph name="SHIPPING_OPTION_PREVIEW" /> και <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ακόμη}}</translation>
 <translation id="7179323680825933600">Αποθήκευση και συμπλήρωση τρόπων πληρωμής</translation>
 <translation id="7180611975245234373">Ανανέωση</translation>
@@ -3203,6 +3215,7 @@
 <translation id="7421067045979951561">δείκτες χειρισμού πρωτοκόλλου</translation>
 <translation id="7422347648202898039">Ετικέτες (Ασφάλειας)</translation>
 <translation id="7423283032694727565">Κουμπί Διαχείριση cookie, ενεργοποιήστε το για να διαχειριστείτε τις προτιμήσεις για τα cookie από τις ρυθμίσεις του Chrome</translation>
+<translation id="7424421098814895617">Ορίστηκε η επιλογή για τη διαγραφή της διεύθυνσης</translation>
 <translation id="7427366580982928791">Ασφάλεια παιδιών στο διαδίκτυο</translation>
 <translation id="7429429656042611765">Executive</translation>
 <translation id="7432774160230062882">Επαληθεύστε την ταυτότητά σας για να μπορέσει το Chromium να συμπληρώσει τα στοιχεία πληρωμής.</translation>
@@ -3380,6 +3393,7 @@
 <translation id="7706689436519265630">Τα αρχεία που αντιγράφετε ή μετακινείτε αποστέλλονται στο Google Cloud ή σε τρίτα μέρη για ανάλυση. Για παράδειγμα, ενδέχεται να σαρώνονται για ευαίσθητα δεδομένα ή κακόβουλα προγράμματα και μπορεί να αποθηκεύονται με βάση τις πολιτικές της εταιρείας.</translation>
 <translation id="7709911732293795808">Ασφάλεια</translation>
 <translation id="7714404809393719981">Φωτογραφία (Ημι-γυαλιστερό)</translation>
+<translation id="7714424966701020172">Ορίστηκε η επιλογή για τη συμπλήρωση του πλήρους ονόματος</translation>
 <translation id="7714464543167945231">Πιστοποιητικό</translation>
 <translation id="7716147886133743102">Αποκλείστηκε από τον διαχειριστή σας</translation>
 <translation id="7716375162095500223">Δεν έγινε ακόμη μεταφόρτωση ή παράβλεψη</translation>

@@ -581,6 +581,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1461041542809785877">Výkon</translation>
 <translation id="1461177659295855031">Přesunout do složky Lišta záložek</translation>
 <translation id="1461288887896722288">Právě jste se přihlásili ke spravovanému účtu. Vytvoření nového spravovaného profilu vám umožní přístup k některým zdrojům propojeným s tímto účtem.</translation>
+<translation id="1461868306585780092">Před použitím nezabezpečených připojení zobrazit upozornění</translation>
 <translation id="146219525117638703">Stav ONC</translation>
 <translation id="146220085323579959">Došlo k odpojení internetu. Zkontrolujte prosím připojení k internetu a zkuste to znovu.</translation>
 <translation id="1462480037563370607">Přidat weby ručně</translation>
@@ -1560,6 +1561,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2180620921879609685">Blokovat obsah na všech stránkách</translation>
 <translation id="2181821976797666341">Zásady</translation>
 <translation id="2182058453334755893">Zkopírováno do schránky</translation>
+<translation id="2182419606502127232">Zahrnout moje serverové protokoly.</translation>
 <translation id="2183570493397356669">Tlačítko Pokračovat je deaktivováno</translation>
 <translation id="2184515124301515068">Nechat Chrome zvolit, kdy weby mohou přehrávat zvuk (doporučeno)</translation>
 <translation id="2186206192313702726">Google Lens</translation>
@@ -1753,6 +1755,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2323018538045954000">Uložené sítě Wi-Fi</translation>
 <translation id="2325444234681128157">Zapamatovat heslo</translation>
 <translation id="2326188115274135041">Pokud chcete zapnout automatické odemykání, potvrďte PIN</translation>
+<translation id="2326906096734221931">Otevřít nastavení aplikace</translation>
 <translation id="2326931316514688470">Znovu načíst &amp;aplikaci</translation>
 <translation id="2327492829706409234">Aktivovat aplikaci</translation>
 <translation id="2327920026543055248">Zadejte <ph name="CHARACTER" />. znak z <ph name="TOTAL" /></translation>
@@ -3889,6 +3892,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="399788104667917863">Připnout na lištu</translation>
 <translation id="3998976413398910035">Spravovat tiskárny</translation>
 <translation id="4001540981461989979">Při pohybu zvýraznit kurzor myši</translation>
+<translation id="4002347779798688515">Pokud je mobilní operátor uzamčen, stažený profil nemusí být možné použít. Se žádostí o pomoc se obraťte na svého operátora.</translation>
 <translation id="4002440992267487163">Nastavení kódu PIN</translation>
 <translation id="4005817994523282006">Metoda zjišťování časového pásma</translation>
 <translation id="4007856537951125667">Skrýt zkratky</translation>
@@ -5425,6 +5429,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5261683757250193089">Otevřít v Internetovém obchodu</translation>
 <translation id="5261799091118902550">Tento soubor může být vir nebo malware. Můžete ho odeslat do Googlu ke kontrole, zda je bezpečný.</translation>
 <translation id="5262784498883614021">Automatické připojení k síti</translation>
+<translation id="5263656105659419083">Pokud se chcete snadno vrátit na boční panel, klikněte vpravo nahoře na Připnout</translation>
 <translation id="5264148714798105376">Tato akce může chvíli trvat.</translation>
 <translation id="5264252276333215551">Chcete-li aplikaci spustit v režimu veřejného terminálu, připojte se k internetu.</translation>
 <translation id="5265797726250773323">Při instalaci došlo k chybě</translation>
@@ -5572,6 +5577,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{Byl nalezen 1 web se spoustou oznámení}few{Byly nalezeny {NUM_SITES} weby se spoustou oznámení}many{Bylo nalezeno {NUM_SITES} webu se spoustou oznámení}other{Bylo nalezeno {NUM_SITES} webů se spoustou oznámení}}</translation>
 <translation id="5388885445722491159">Párováno</translation>
 <translation id="5389626883706033615">Weby nemohou žádat o použití informací, které o vás uložily</translation>
+<translation id="5389794555912875905">Před přechodem na nezabezpečené weby zobrazovat upozornění (doporučeno)</translation>
 <translation id="5390112241331447203">Zahrnout soubor system_logs.txt odesílaný ve zprávách zpětné vazby.</translation>
 <translation id="5390677308841849479">Tmavě červená a oranžová</translation>
 <translation id="5390743329570580756">Komu odesílat</translation>
@@ -5855,6 +5861,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5608580678041221894">Oblast oříznutí můžete upravit nebo přesunout klepnutím na následující klávesy</translation>
 <translation id="5609231933459083978">Aplikace je pravděpodobně neplatná.</translation>
 <translation id="561030196642865721">Soubory cookie třetích stran jsou na tomto webu povoleny</translation>
+<translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5612734644261457353">Je nám líto, vaše heslo se stále nedaří ověřit. Poznámka: Pokud jste heslo nedávno změnili, vaše nové heslo bude použitelné až po odhlášení. Použijte své staré heslo.</translation>
 <translation id="5614190747811328134">Sdělení pro uživatele</translation>
 <translation id="5614553682702429503">Uložit heslo?</translation>
@@ -6207,6 +6214,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5901089233978050985">Přepnout na zachycující kartu</translation>
 <translation id="5901494423252125310">Dvířka tiskárny jsou otevřená</translation>
 <translation id="5901630391730855834">Žlutá</translation>
+<translation id="5902892210366342391">Před přechodem na nezabezpečené weby v anonymním režimu zobrazovat upozornění</translation>
 <translation id="5904614460720589786">Nastavení aplikace <ph name="APP_NAME" /> se kvůli problému s konfigurací nezdařilo. Obraťte se na administrátora. Kód chyby: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Aktualizace je téměř hotova! Dokončíte ji restartováním zařízení.</translation>
 <translation id="5906732635754427568">Data přidružená k této aplikaci z tohoto zařízení budou odstraněna.</translation>
@@ -6743,6 +6751,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6333170995003625229">Vaši e‑mailovou adresu nebo heslo se nepodařilo ověřit. Zkuste se přihlásit znovu.</translation>
 <translation id="6334267141726449402">Zkopírujte tento odkaz a odešlete ho uživateli, aby mohl shromáždit protokoly.</translation>
 <translation id="6336038146639916978">Web <ph name="MANAGER" /> deaktivoval ladění ADB. Zařízení <ph name="DEVICE_TYPE" /> bude do 24 hodin resetováno. Zálohujte soubory, které si chcete ponechat.</translation>
+<translation id="6336194758029258346">Jazyk aplikace</translation>
 <translation id="6337543438445391085">Některé osobní údaje mohou být v datech přesto zahrnuty. Exportované soubory si zkontrolujte.</translation>
 <translation id="6338968693068997776">Přidat zařízení USB</translation>
 <translation id="6339668969738228384">Vytvořit nový profil pro uživatele <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -7252,6 +7261,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="676158322851696513"><ph name="EXTENSION_NAME" /></translation>
 <translation id="6761623907967804682">Data webu v zařízení nejsou povolena</translation>
 <translation id="6762833852331690540">Zapnuto</translation>
+<translation id="6762861159308991328">Způsob otevírání odkazů můžete změnit v nastavení aplikace</translation>
 <translation id="676560328519657314">Vaše platební metody ve službě Google Pay</translation>
 <translation id="6766488013065406604">Přejít do Správce hesel Google</translation>
 <translation id="6767566652486411142">Vybrat jiný jazyk...</translation>
@@ -7467,6 +7477,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6912007319859991306">PIN mobilní SIM karty</translation>
 <translation id="6912380255120084882">Vyzkoušejte jiné zařízení</translation>
 <translation id="691289340230098384">Předvolby titulků</translation>
+<translation id="6914812290245989348">Před přechodem na nezabezpečené weby nezobrazovat upozornění</translation>
 <translation id="6916590542764765824">Spravovat rozšíření</translation>
 <translation id="6918677045355889289">Je vyžadována aktualizace systému ChromeOS</translation>
 <translation id="6919354101107095996">Zkuste se na web přihlásit. Poté soubor stáhněte znovu</translation>
@@ -8949,6 +8960,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8076835018653442223">Správce přístup k místním souborům v tomto zařízení zakázal</translation>
 <translation id="8077120325605624147">Kterýkoliv web, který navštívíte, vám může zobrazit jakoukoliv reklamu</translation>
 <translation id="8077579734294125741">Další profily Chrome</translation>
+<translation id="80790299200510644">Vyhledávání obrázků</translation>
 <translation id="80798452873915119">Weby mohou žádat o správu oken na všech obrazovkách</translation>
 <translation id="8080028325999236607">Zavřít všechny karty</translation>
 <translation id="808089508890593134">Google</translation>

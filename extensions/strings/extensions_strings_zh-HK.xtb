@@ -32,7 +32,7 @@
 <translation id="4988792151665380515">匯出公開金鑰失敗。</translation>
 <translation id="5026754133087629784">Webview：<ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">無法找到封裝目錄的絕對路徑。</translation>
-<translation id="5160071981665899014">無法載入指令碼的 JavaScript「<ph name="RELATIVE_PATH" />」。</translation>
+<translation id="5160071981665899014">無法載入指令碼的 javascript「<ph name="RELATIVE_PATH" />」。</translation>
 <translation id="5356315618422219272">Appview：<ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">系統不支援造型視窗。</translation>
 <translation id="5456409301717116725">這個擴充功能含有金鑰檔「<ph name="KEY_PATH" />」。請考慮是否仍要執行。</translation>

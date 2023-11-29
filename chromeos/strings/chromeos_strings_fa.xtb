@@ -31,7 +31,6 @@
 <translation id="1181037720776840403">حذف</translation>
 <translation id="1191518099344003522">‏APN فعال است.</translation>
 <translation id="1195447618553298278">خطای ناشناس.</translation>
-<translation id="1195784767091936222">روشن کردن «حالت تاریک خودکار»</translation>
 <translation id="1196959502276349371">نسخه <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">پخش/ مکث</translation>
 <translation id="1201402288615127009">بعدی</translation>
@@ -281,7 +280,6 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">دستگاه متصل شده است.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{صفحه حذف شود؟}=1{{PAGE_NUMBER} صفحه حذف شود؟}one{{PAGE_NUMBER} صفحه حذف شود؟}other{{PAGE_NUMBER} صفحه حذف شود؟}}</translation>
-<translation id="3136905423678675159">«حالت تاریک خودکار» روشن شود؟</translation>
 <translation id="3146655726035122603">اختصاصی برای <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">داده‌های تلفن همراه</translation>
 <translation id="3156846309055100599">درحال اسکن کردن صفحه <ph name="PAGE_NUMBER" />…</translation>
@@ -362,7 +360,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> مرور)</translation>
 <translation id="3748026146096797577">متصل نیست</translation>
 <translation id="3749289110408117711">نام فایل</translation>
-<translation id="3754384069690464321">برای داشتن بهترین نتایج با این کاغذدیواری، لطفاً «حالت تاریک خودکار» را روشن کنید. هرزمان بخواهید می‌توانید آن را دوباره در برنامه به حالت قبل برگردانید.</translation>
 <translation id="3771294271822695279">فایل‌های ویدئویی</translation>
 <translation id="3784455785234192852">قفل</translation>
 <translation id="380097101658023925">‏کنترل‌های RGB</translation>

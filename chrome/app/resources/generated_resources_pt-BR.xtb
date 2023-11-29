@@ -3912,6 +3912,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4005817994523282006">Método de detecção de fuso horário</translation>
 <translation id="4007856537951125667">Ocultar atalhos</translation>
 <translation id="4008291085758151621">As informações do site não estão disponíveis em RV</translation>
+<translation id="4010746393007464819">Um upgrade para o Debian 12 (Bookworm) está disponível</translation>
 <translation id="4010917659463429001">Para acessar seus favoritos no dispositivo móvel, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Reparar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">Instalou extensões? <ph name="BEGIN_LINK" />Gerencie suas extensões<ph name="END_LINK" /> em um só lugar.</translation>
@@ -6076,6 +6077,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5782040878821624922">Disponível em qualquer dispositivo</translation>
 <translation id="5782227691023083829">Traduzindo...</translation>
 <translation id="57838592816432529">Desativar som</translation>
+<translation id="5784291589716625675">Mudar idioma do app</translation>
 <translation id="5785583009707899920">Utilitários de arquivos do Chrome</translation>
 <translation id="5787146423283493983">Acordo de chave</translation>
 <translation id="5787420647064736989">Nome do dispositivo</translation>
@@ -6550,6 +6552,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6151323131516309312">Pressione <ph name="SEARCH_KEY" /> para pesquisar <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">O arquivo já existe na sua pasta de download.</translation>
 <translation id="6152918902620844577">Aguardando a próxima operação</translation>
+<translation id="6153439704237222699">Saiba mais sobre o campo "Do Not Track"</translation>
 <translation id="6154240335466762404">Remover todas as portas</translation>
 <translation id="615436196126345398">Protocolo</translation>
 <translation id="6155141482566063812">A guia em segundo plano está compartilhando sua tela</translation>
@@ -8871,6 +8874,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7988805580376093356">Continuar com seu SO e executar o <ph name="DEVICE_OS" /> usando um dispositivo USB.</translation>
 <translation id="7988876720343145286">Mais configurações e permissões do Android</translation>
 <translation id="7990863024647916394">Voz em <ph name="DISPLAY_NAME" /> <ph name="COUNT" /></translation>
+<translation id="7990958035181555539">Transferir a rede Wi-Fi automaticamente do seu smartphone Android</translation>
 <translation id="7991296728590311172">Configurações do acesso com interruptor</translation>
 <translation id="7992203134935383159">Sintetização de voz</translation>
 <translation id="7994515119120860317">Traduzir texto na imagem com o <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -9818,6 +9822,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8736288397686080465">Este site foi atualizado em segundo plano.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Escolha o idioma da tradução da página</translation>
+<translation id="8738418093147087440">Pesquisar por países, idiomas ou nomes de entrada</translation>
 <translation id="8740086188450289493">Usar a senha da Conta do Google</translation>
 <translation id="8740247629089392745">Você pode entregar este Chromebook para <ph name="SUPERVISED_USER_NAME" />. A configuração está quase concluída, então a criança poderá conhecer o dispositivo.</translation>
 <translation id="8740672167979365981">Atualização do ChromeOS Flex necessária</translation>

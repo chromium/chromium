@@ -2428,6 +2428,7 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="2816319641769218778">I gadw cyfrineiriau i'ch Cyfrif Google, trowch gysoni ymlaen.</translation>
 <translation id="2816628817680324566">Ydych chi am ganiatáu i'r wefan hon adnabod eich allwedd ddiogelwch?</translation>
 <translation id="2817435998497102771">Gosod eich papur wal ac arddull</translation>
+<translation id="2817861546829549432">Mae galluogi 'Peidio ag Olrhain' yn golygu y bydd cais yn cael ei gynnwys gyda'ch traffig pori. Mae unrhyw effaith yn dibynnu a yw gwefan yn ymateb i'r cais, a sut mae'r cais yn cael ei ddehongli. Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion i chi nad ydynt seiliedig ar wefannau eraill rydych wedi ymweld â nhw. Bydd llawer o wefannau yn dal i gasglu a defnyddio'ch data pori - er enghraifft i wella diogelwch, i ddarparu cynnwys, gwasanaethau, hysbysebion ac argymhellion ar eu gwefannau, ac i gynhyrchu ystadegau adrodd.</translation>
 <translation id="2818476747334107629">Manylion yr argraffydd</translation>
 <translation id="2819167288942847344">Defnyddiwch ragosodiadau ar gyfer ffôn, llechen, neu ffenestri ailfeintiol i atal yr ap rhag camymddwyn</translation>
 <translation id="2819519502129272135">Mae cysoni ffeiliau wedi'i ddiffodd</translation>
@@ -3913,6 +3914,7 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="4005817994523282006">Dull canfod cylchfa amser</translation>
 <translation id="4007856537951125667">Cuddio llwybrau byr bysellfwrdd</translation>
 <translation id="4008291085758151621">Nid yw gwybodaeth am y wefan ar gael yn VR</translation>
+<translation id="4010746393007464819">Mae uwchraddiad i Debian 12 (Bookworm) ar gael</translation>
 <translation id="4010917659463429001">I gael eich nodau tudalen ar eich dyfais symudol, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Trwsio "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">Oes gennych estyniadau? <ph name="BEGIN_LINK" />Rheoli eich estyniadau<ph name="END_LINK" /> mewn un lle hawdd.</translation>
@@ -6076,6 +6078,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="5782040878821624922">Mae ar gael ar unrhyw ddyfais</translation>
 <translation id="5782227691023083829">Wrthi'n cyfieithu...</translation>
 <translation id="57838592816432529">Distewi</translation>
+<translation id="5784291589716625675">Newid iaith ap</translation>
 <translation id="5785583009707899920">Cyfleustodau Ffeil Chrome</translation>
 <translation id="5787146423283493983">Cytundeb Allweddol</translation>
 <translation id="5787420647064736989">Enw'r ddyfais</translation>
@@ -6550,6 +6553,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="6151323131516309312">Pwyswch <ph name="SEARCH_KEY" /> i chwilio <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">Mae'r ffeil eisoes yn bodoli yn eich ffolder lawrlwythiadau.</translation>
 <translation id="6152918902620844577">Yn aros am y gweithredydd nesaf</translation>
+<translation id="6153439704237222699">Dysgu rhagor am Beidio ag Olrhain</translation>
 <translation id="6154240335466762404">Tynnwch yr holl byrth</translation>
 <translation id="615436196126345398">Protocol</translation>
 <translation id="6155141482566063812">Mae tab yn y cefndir yn rhannu eich sgrîn</translation>
@@ -8876,6 +8880,7 @@ Pwyswch switsh neu fysell a aseiniwyd i dynnu aseiniad.</translation>
 <translation id="7988805580376093356">Cadw eich OS a rhedeg <ph name="DEVICE_OS" /> o USB.</translation>
 <translation id="7988876720343145286">Rhagor o osodiadau a chaniatadau Android</translation>
 <translation id="7990863024647916394">Llais <ph name="DISPLAY_NAME" /> <ph name="COUNT" /></translation>
+<translation id="7990958035181555539">Trosglwyddo WiFi yn awtomatig o'ch ffôn Android</translation>
 <translation id="7991296728590311172">Newid gosodiadau Mynediad</translation>
 <translation id="7992203134935383159">Synthesis lleferydd</translation>
 <translation id="7994515119120860317">Cyfieithu Testun mewn Llun gyda <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -9822,6 +9827,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8736288397686080465">Mae'r wefan hon wedi'i diweddaru yn y cefndir.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Dewiswch yr iaith i gyfieithu'r dudalen iddi</translation>
+<translation id="8738418093147087440">Chwilio yn ôl gwledydd, iaith, neu enwau mewnbwn</translation>
 <translation id="8740086188450289493">Defnyddio cyfrinair Cyfrif Google</translation>
 <translation id="8740247629089392745">Gallwch roi'r Chromebook hwn i <ph name="SUPERVISED_USER_NAME" />. Mae'r gosod bron wedi gorffen, bydd yn amser archwilio wedyn.</translation>
 <translation id="8740672167979365981">Mae angen diweddariad ChromeOS Flex</translation>

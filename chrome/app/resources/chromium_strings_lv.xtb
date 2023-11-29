@@ -36,7 +36,9 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="1715127912119967311">Lai palīdzētu uzlabot šīs funkcijas, pārlūks Chromium nosūta Google serveriem datus par jūsu mijiedarbību ar tām. Šos datus var lasīt, apstrādāt un anotēt pārskatītāji.</translation>
 <translation id="17264556997921157">Varat skatīt un noņemt interešu tēmas, kas vietnēs tiek izmantotas reklāmu rādīšanai. Pārlūkā Chromium tiek aptuveni noteiktas jūsu intereses, ņemot vērā neseno pārlūkošanas vēsturi.</translation>
 <translation id="1733725117201708356">Pārlūkā Chromium drīz tiks dzēsti pārlūkošanas dati</translation>
+<translation id="1736443181683099871">Pārlūkā Chromium tiks mēģināts navigācijai izmantot HTTPS.</translation>
 <translation id="1745121272106313518">Pārlūks Chromium tiks restartēts pēc: <ph name="REMAINING_TIME" /></translation>
+<translation id="1749104137266986751">Ja HTTPS nav pieejams, pārlūkā Chromium bez brīdinājuma tiks izmantots nedrošs savienojums.</translation>
 <translation id="1774152462503052664">Ļaut Chromium darboties fonā</translation>
 <translation id="1779356040007214683">Lai uzlabotu Chromium drošību, mēs atspējojām dažus paplašinājumus, kas nav norādīti vietnē <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> un, iespējams, tika pievienoti, jums nezinot.</translation>
 <translation id="1808667845054772817">Pārinstalēt Chromium</translation>
@@ -124,6 +126,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="3286538390144397061">Restartēt tūlīt</translation>
 <translation id="328888136576916638">Trūkst Google API atslēgu. Tiks atspējotas dažas Chromium funkcijas.</translation>
 <translation id="3296368748942286671">Turpināt lietotņu izpildi fonā, kad Chromium ir aizvērts</translation>
+<translation id="3313189106987092621">Pārlūkā Chromium tiks parādīts brīdinājums pirms jebkuras vietnes ielādes, izmantojot nedrošu savienojumu.</translation>
 <translation id="3350761136195634146">Chromium profils ar šādu kontu jau pastāv</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Vai pāriet uz esošo Chromium profilu?</translation>
@@ -221,6 +224,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="5224391634244552924">Nav saglabātu paroļu. Pārlūkprogrammā Chromium var pārbaudīt jūsu paroles, ja jūs tās saglabājat.</translation>
 <translation id="5252179775517634216">Lietotājs <ph name="EXISTING_USER" /> jau ir pierakstījies šajā Chromium profilā. Tādējādi tiks izveidots jauns Chromium profils lietotājam <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="5277894862589591112">Lai ieviestu veiktās izmaiņas, atkārtoti palaidiet pārlūku Chromium.</translation>
+<translation id="5294316920224716406">Ja veicat pārlūkošanu inkognito režīmā, pārlūkā Chromium tiks parādīts brīdinājums pirms vietnes ielādes, izmantojot nedrošu savienojumu.</translation>
 <translation id="5296845517486664001">Ja izmēģināšana ir ieslēgta un jūs esat iesaistīts aktīvā izmēģinājumā pārlūkā Chromium, jūsu pārlūkošanas vēsture ietekmē to, kādas reklāmas jums tiek rādītas, un tālāk redzamās aptuveni noteiktās intereses. Lai aizsargātu jūsu konfidencialitāti, Chromium katru mēnesi pakāpeniski dzēš jūsu intereses.</translation>
 <translation id="5352264705793813212">Pārlūkā Chromium tika atrasti daži drošības ieteikumi par jūsu atsauksmi</translation>
 <translation id="5358375970380395591">Jūs pierakstāties ar pārvaldītu kontu, kura administrators var kontrolēt jūsu profilu. Jūsu Chromium dati, piemēram, lietotnes, grāmatzīmes, vēsture, paroles un citi iestatījumi, tiks neatgriezeniski saistīti ar lietotāju <ph name="USER_NAME" />. Varēsiet dzēst šos datus, izmantojot Google kontu informācijas paneli, taču nevarēsiet šos datus saistīt ar citu kontu. <ph name="LEARN_MORE" /></translation>

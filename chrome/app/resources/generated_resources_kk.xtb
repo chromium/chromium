@@ -3893,6 +3893,7 @@
 <translation id="4005817994523282006">Уақыт белдеуін анықтау әдісі</translation>
 <translation id="4007856537951125667">Таңбашаларды жасыру</translation>
 <translation id="4008291085758151621">Сайт ақпараты VR режимінде қолжетімді емес</translation>
+<translation id="4010746393007464819">Debian 12 (Bookworm) жаңа нұсқасы қолжетімді.</translation>
 <translation id="4010917659463429001">Мобильдік құрылғыда бетбелгілерді алу үшін <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" жөндейсіз бе?</translation>
 <translation id="4015163439792426608">Кеңейтімдер пайдаланасыз ба? <ph name="BEGIN_LINK" />Кеңейтімдерді бір орыннан<ph name="END_LINK" /> басқарыңыз.</translation>
@@ -6053,6 +6054,7 @@
 <translation id="5782040878821624922">Ол кез келген құрылғыда қолжетімді</translation>
 <translation id="5782227691023083829">Аударылуда...</translation>
 <translation id="57838592816432529">Дыбысын өшіру</translation>
+<translation id="5784291589716625675">Қолданба тілін өзгерту</translation>
 <translation id="5785583009707899920">Chrome файл утилиталары</translation>
 <translation id="5787146423283493983">Негізгі келісім</translation>
 <translation id="5787420647064736989">Құрылғы атауы</translation>
@@ -6526,6 +6528,7 @@
 <translation id="6151323131516309312"><ph name="SITE_NAME" /> іздеу үшін <ph name="SEARCH_KEY" /> басыңыз</translation>
 <translation id="6151771661215463137">Файл жүктеп алу қалтаңызда бұрыннан бар.</translation>
 <translation id="6152918902620844577">Келесі операция күтілуде</translation>
+<translation id="6153439704237222699">Do Not Track туралы толық ақпарат</translation>
 <translation id="6154240335466762404">Барлық портты өшіру</translation>
 <translation id="615436196126345398">Протокол</translation>
 <translation id="6155141482566063812">Фондық қойынды экраныңызды бөлісуде</translation>
@@ -8843,6 +8846,7 @@
 <translation id="7988805580376093356">Ағымдағы операциялық жүйені қалдырып, USB арқылы <ph name="DEVICE_OS" /> қосу.</translation>
 <translation id="7988876720343145286">Android-дың басқа параметрлері мен рұқсаттары</translation>
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" />, дауыс <ph name="COUNT" /></translation>
+<translation id="7990958035181555539">Android телефоныңыздан Wi-Fi-ды автоматты түрде тасымалдаңыз</translation>
 <translation id="7991296728590311172">Switch Access параметрлері</translation>
 <translation id="7992203134935383159">Сөз синтезі</translation>
 <translation id="7994515119120860317"><ph name="VISUAL_SEARCH_PROVIDER" /> көмегімен суреттегі мәтінді аудару</translation>
@@ -9789,6 +9793,7 @@
 <translation id="8736288397686080465">Бұл сайт фонда жаңартылды.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Бетті аударғыңыз келетін тілді таңдаңыз</translation>
+<translation id="8738418093147087440">Ел, тіл немесе енгізілетін атау бойынша іздеу</translation>
 <translation id="8740086188450289493">Google аккаунтының құпия сөзін пайдалану</translation>
 <translation id="8740247629089392745">Бұл Chromebook-ты енді <ph name="SUPERVISED_USER_NAME" /> пайдалана алады. Реттеулер аяқталайын деп қалды, сосын контентті зерттей беруге болады.</translation>
 <translation id="8740672167979365981">ChromeOS Flex операциялық жүйесін жаңарту қажет</translation>

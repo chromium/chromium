@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Не вдалося згенерувати випадковий секретний ключ RSA.</translation>
 <translation id="1445572445564823378">Це розширення сповільнює <ph name="PRODUCT_NAME" />. Щоб відновити ефективність <ph name="PRODUCT_NAME" />, потрібно його вимкнути.</translation>
 <translation id="1468038450257740950">WebGL не підтримується.</translation>
+<translation id="1610570795592207282">Не вдалося завантажити файл <ph name="RELATIVE_PATH" /> для скрипту.</translation>
 <translation id="1803557475693955505">Не вдалося завантажити фонову сторінку "<ph name="BACKGROUND_PAGE" />".</translation>
 <translation id="2159915644201199628">Не вдалося декодувати зображення: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2350172092385603347">Використано локалізацію, але параметр мови за умовчанням (default_locale) не визначено в маніфесті.</translation>
@@ -31,6 +32,7 @@
 <translation id="4988792151665380515">Не вдалося експортувати відкритий ключ.</translation>
 <translation id="5026754133087629784">Веб-перегляд: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Неможливо знайти абсолютний шлях до каталогу для пакування.</translation>
+<translation id="5160071981665899014">Не вдалося завантажити файл <ph name="RELATIVE_PATH" /> для скрипту.</translation>
 <translation id="5356315618422219272">Тег Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Нестандартні вікна не підтримуються.</translation>
 <translation id="5456409301717116725">Це розширення включає файл ключа "<ph name="KEY_PATH" />". Можливо, ви не хочете цього робити.</translation>

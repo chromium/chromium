@@ -3897,6 +3897,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4005817994523282006">Metoda de detectare a fusului orar</translation>
 <translation id="4007856537951125667">Ascunde comenzile rapide</translation>
 <translation id="4008291085758151621">Informațiile despre site nu sunt disponibile în RV</translation>
+<translation id="4010746393007464819">Este disponibil un upgrade la Debian 12 (Bookworm)</translation>
 <translation id="4010917659463429001">Pentru a accesa marcajele pe dispozitivul mobil, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Repari „<ph name="EXTENSION_NAME" />”?</translation>
 <translation id="4015163439792426608">Ai extensii? <ph name="BEGIN_LINK" />Gestionează extensiile<ph name="END_LINK" /> ușor, dintr-un singur loc.</translation>
@@ -6059,6 +6060,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5782040878821624922">Este disponibilă pe orice dispozitiv</translation>
 <translation id="5782227691023083829">Se traduce...</translation>
 <translation id="57838592816432529">Dezactivează sunetul</translation>
+<translation id="5784291589716625675">Schimbă limba aplicației</translation>
 <translation id="5785583009707899920">Utilitare de fișiere Chrome</translation>
 <translation id="5787146423283493983">Acord privind cheia</translation>
 <translation id="5787420647064736989">Numele dispozitivului</translation>
@@ -6533,6 +6535,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6151323131516309312">Apasă pe <ph name="SEARCH_KEY" /> pentru a căuta în <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">Fișierul există deja în dosarul de descărcare.</translation>
 <translation id="6152918902620844577">Se așteaptă următoarea operațiune</translation>
+<translation id="6153439704237222699">Află mai multe despre Do Not Track</translation>
 <translation id="6154240335466762404">Elimină toate porturile</translation>
 <translation id="615436196126345398">Protocol</translation>
 <translation id="6155141482566063812">O filă din fundal permite accesul la ecran</translation>
@@ -8854,6 +8857,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7988805580376093356">Păstrează sistemul de operare și rulează <ph name="DEVICE_OS" /> de pe USB.</translation>
 <translation id="7988876720343145286">Mai multe setări și permisiuni pentru Android</translation>
 <translation id="7990863024647916394">Vocea <ph name="COUNT" /> în <ph name="DISPLAY_NAME" /></translation>
+<translation id="7990958035181555539">Transferă automat conexiunea Wi-Fi de pe telefonul Android</translation>
 <translation id="7991296728590311172">Setările pentru Accesul prin comutare</translation>
 <translation id="7992203134935383159">Sintetizare vocală</translation>
 <translation id="7994515119120860317">Tradu textul din imagine cu <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -9801,6 +9805,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8736288397686080465">Acest site a fost actualizat în fundal.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Alege limba în care vrei să traduci pagina</translation>
+<translation id="8738418093147087440">Caută după țară, limbă sau numele metodei de introducere a textului</translation>
 <translation id="8740086188450289493">Folosește parola Contului Google</translation>
 <translation id="8740247629089392745">Poți să îi dai Chromebookul utilizatorului <ph name="SUPERVISED_USER_NAME" />. Configurarea este aproape gata, apoi conținutul va putea fi explorat.</translation>
 <translation id="8740672167979365981">Este necesară actualizarea sistemului de operare Chrome Flex</translation>

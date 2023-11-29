@@ -31,7 +31,6 @@
 <translation id="1181037720776840403">Remover</translation>
 <translation id="1191518099344003522">O APN está ativado.</translation>
 <translation id="1195447618553298278">Erro desconhecido.</translation>
-<translation id="1195784767091936222">Ativar modo escuro automático</translation>
 <translation id="1196959502276349371">Versão <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Reproduzir/pausar</translation>
 <translation id="1201402288615127009">Seguinte</translation>
@@ -281,7 +280,6 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">O dispositivo está ligado.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Quer remover a página?}=1{Quer remover a página {PAGE_NUMBER}?}other{Quer remover a página {PAGE_NUMBER}?}}</translation>
-<translation id="3136905423678675159">Ativar o modo escuro automático?</translation>
 <translation id="3146655726035122603">Exclusivo do <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Dados móveis</translation>
 <translation id="3156846309055100599">A digitalizar a página <ph name="PAGE_NUMBER" />…</translation>
@@ -362,7 +360,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> opiniões)</translation>
 <translation id="3748026146096797577">Desligado</translation>
 <translation id="3749289110408117711">Nome do ficheiro</translation>
-<translation id="3754384069690464321">Para os melhores resultados com esta imagem de fundo, ative o modo escuro automático. Pode alterá-la novamente na app em qualquer altura.</translation>
 <translation id="3771294271822695279">Ficheiros de vídeo</translation>
 <translation id="3784455785234192852">Bloquear</translation>
 <translation id="380097101658023925">controlos de RGB</translation>

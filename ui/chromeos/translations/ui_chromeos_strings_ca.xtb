@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
 <translation id="1000498691615767391">Seleccioneu una carpeta per obrir</translation>
+<translation id="1014208178561091457">No s'ha pogut copiar <ph name="FILE_NAME" /> perquè està encriptat.</translation>
 <translation id="1047956942837015229">S'estan suprimint <ph name="COUNT" /> elements...</translation>
 <translation id="1049926623896334335">Document de Word</translation>
 <translation id="1056775291175587022">Cap xarxa</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Comparteix la carpeta amb Parallels Desktop</translation>
 <translation id="1439919885608649279">Persona amb flors</translation>
 <translation id="1458457385801829801">Expulsa <ph name="TARGET_NAME" /></translation>
+<translation id="146691674290220697">No s'han pogut copiar <ph name="NUMBER_OF_FILES" /> fitxers perquè estan encriptats.</translation>
 <translation id="1471718551822868769">Eslovac</translation>
 <translation id="1482884275703521657">Finès</translation>
 <translation id="148466539719134488">Suís</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">No disponible</translation>
 <translation id="3254434849914415189">Tria l'aplicació predeterminada per als fitxers <ph name="FILE_TYPE" />:</translation>
 <translation id="3255159654094949700">Àrab</translation>
+<translation id="326396468955264502">No s'han pogut moure <ph name="NUMBER_OF_FILES" /> fitxers perquè estan encriptats.</translation>
 <translation id="3264582393905923483">Context</translation>
 <translation id="3272909651715601089"><ph name="PATH" /> no s'ha pogut obrir</translation>
 <translation id="3280431534455935878">S'està preparant</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490">S'ha compartit 1 carpeta amb <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Compte: aquests fitxers són temporals i és possible que se suprimeixin automàticament per alliberar espai de disc.  <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Carpeta</translation>
+<translation id="3529424493985988200">Contacta amb l'administrador per obtenir detalls.</translation>
 <translation id="3548125359243647069">S'ha introduït un PIN incorrecte massa vegades.</translation>
 <translation id="3549797760399244642">Ves a drive.google.com...</translation>
 <translation id="3553048479571901246">Per obrir fitxers amb <ph name="APP_NAME" />, primer copia'ls a la carpeta de fitxers de Windows.</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">Aquest fitxer s'ha obert en un altre escriptori. Aneu a <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) per veure'l.</translation>
 <translation id="6394388407447716302">Només de lectura</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> elements</translation>
+<translation id="6407769893376380348">No s'ha pogut moure <ph name="FILE_NAME" /> perquè està encriptat.</translation>
 <translation id="642282551015776456">Aquest nom no es pot utilitzar com a nom de fitxer o de carpeta</translation>
 <translation id="6423031066725912715">Vietnamita amb teclat TCVN</translation>
 <translation id="6430271654280079150">Et queda 1 intent.</translation>

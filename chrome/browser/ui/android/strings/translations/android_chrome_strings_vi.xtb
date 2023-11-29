@@ -23,7 +23,6 @@
 <translation id="1110914759170138831">Nội dung nổi bật đã được rút gọn</translation>
 <translation id="1111673857033749125">Dấu trang được lưu trên thiết bị khác của bạn sẽ xuất hiện tại đây.</translation>
 <translation id="1113597929977215864">Hiển thị chế độ xem đơn giản</translation>
-<translation id="1123070903960493543">Cách bạn tương tác với Chrome, các tùy chọn cài đặt bạn đã chọn, thông tin chi tiết về sự cố của Chrome</translation>
 <translation id="1126013303640354461">Các địa chỉ và phương thức thanh toán từ Google Pay sẽ không được mã hoá. Nhật ký duyệt web trên Chrome sẽ không đồng bộ hoá.
 Chỉ những người có cụm mật khẩu của bạn mới đọc được dữ liệu được mã hoá của bạn. Cụm mật khẩu không được gửi tới hoặc được lưu trữ bởi Google. Nếu bạn quên cụm mật khẩu hoặc muốn thay đổi cài đặt này, bạn sẽ cần đặt lại đồng bộ hoá. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="1126809382673880764">Không bảo vệ bạn trước các trang web, tệp đã tải xuống và tiện ích nguy hiểm. Bạn sẽ vẫn được bảo vệ bằng tính năng Duyệt web an toàn (nếu có) ở các dịch vụ khác của Google, chẳng hạn như Gmail và Tìm kiếm.</translation>
@@ -204,7 +203,6 @@ Chỉ những người có cụm mật khẩu của bạn mới đọc được 
 <translation id="213279576345780926">Đã đóng <ph name="TAB_TITLE" /></translation>
 <translation id="2139186145475833000">Thêm vào Màn hình chính</translation>
 <translation id="2141396931810938595">Dựa trên tùy chọn sử dụng của bạn</translation>
-<translation id="214888715418183969">Chọn những thông tin mà bạn muốn chia sẻ với Chrome. Những thông tin bạn chia sẻ sẽ góp phần cải thiện các tính năng, hiệu suất và độ ổn định của Chrome.</translation>
 <translation id="2149973817440762519">Chỉnh sửa dấu trang</translation>
 <translation id="2155214902713132423">Hiện không dùng được phương thức xác minh này trên thiết bị này. Hãy chọn một cách khác trên thiết bị còn lại.</translation>
 <translation id="2158408438301413340">Chrome không thể kiểm tra một số mật khẩu</translation>
@@ -214,7 +212,6 @@ Chỉ những người có cụm mật khẩu của bạn mới đọc được 
 <translation id="2175927920773552910">Mã QR</translation>
 <translation id="218608176142494674">Chia sẻ</translation>
 <translation id="2194856509914051091">Những yếu tố cần xem xét</translation>
-<translation id="2200113223741723867">Quản lý cách chia sẻ dữ liệu sử dụng</translation>
 <translation id="22091350895006575">Thêm tên người dùng</translation>
 <translation id="221494669172414749">Nếu bạn mở Chrome mà không cần khoá hồ sơ, mật khẩu và phương thức thanh toán đã lưu sẽ bị xoá khỏi ô tô. Sử dụng khoá hồ sơ giúp giữ an toàn cho dữ liệu này.</translation>
 <translation id="2227444325776770048">Tiếp tục bằng tài khoản của <ph name="USER_FULL_NAME" /></translation>
@@ -375,7 +372,6 @@ Chỉ những người có cụm mật khẩu của bạn mới đọc được 
 <translation id="2996932914629936323">Xóa nhật ký khỏi mọi thiết bị đã đồng bộ hóa</translation>
 <translation id="2997081575621687554">Khi một trang web được tạo bằng Google Sites yêu cầu tải trước các đường liên kết trên trang ở chế độ riêng tư, thì Chrome sẽ mã hóa và tải trước những trang này thông qua các máy chủ của Google mà không có cookie. Điều này giúp ẩn danh tính của bạn khỏi trang web được tải trước.</translation>
 <translation id="3003253259757197230">Các URL bạn truy cập sẽ được gửi cho Google nhằm dự đoán những trang web có thể sắp tới bạn sẽ truy cập và nhằm hiển thị cho bạn thông tin bổ sung về trang bạn đang truy cập</translation>
-<translation id="3006881078666935414">Không có dữ liệu sử dụng</translation>
 <translation id="3016635187733453316">Hãy đảm bảo thiết bị này có kết nối Internet</translation>
 <translation id="3026955690410463085">Thêm đường liên kết</translation>
 <translation id="3027644380269727216">Dựa vào hoạt động của bạn trên một trang web. Chế độ cài đặt này đang bật.</translation>
@@ -512,7 +508,6 @@ Chỉ những người có cụm mật khẩu của bạn mới đọc được 
 <translation id="3771033907050503522">Thẻ ẩn danh</translation>
 <translation id="3771290962915251154">Tùy chọn cài đặt này bị tắt do các quyền kiểm soát của cha mẹ đang bật</translation>
 <translation id="3771694256347217732">Điều khoản dịch vụ của Google</translation>
-<translation id="3773856050682458546">Dữ liệu cơ bản cùng với thông tin về những trang web bạn truy cập và các ứng dụng bạn dùng</translation>
 <translation id="3775705724665058594">Gửi đến thiết bị của bạn</translation>
 <translation id="3777796259512476958">Bạn sẽ bị đăng xuất khỏi hầu hết các trang web</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 thẻ}other{# thẻ}}</translation>
@@ -560,7 +555,6 @@ Chỉ những người có cụm mật khẩu của bạn mới đọc được 
 <translation id="4035877632587724847">Không cho phép</translation>
 <translation id="4042941173059740150">Tiếp tục truy cập <ph name="SITE_ETLD_PLUS_ONE" /> bằng tài khoản <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">Bảng dưới cùng</translation>
-<translation id="4045764304651014138">Dữ liệu sử dụng</translation>
 <translation id="405399507749852140">Nhận thông báo nếu có chương trình giảm giá trên một trang web bất kỳ</translation>
 <translation id="4056223980640387499">Màu nâu đỏ</translation>
 <translation id="4062305924942672200">Thông tin pháp lý</translation>
@@ -774,7 +768,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5062960805900435602">Thông tin cập nhật về việc hợp nhất mật khẩu đã đóng</translation>
 <translation id="5081960376148623587">Chọn có tải trước trang hay không</translation>
 <translation id="5091199029769593641">Bạn sẽ sớm thấy các tin bài của <ph name="SITE_NAME" /> khi mở một thẻ mới. Các trang web bạn theo dõi sẽ được lưu trong tài khoản Google của bạn. Bạn có thể quản lý các trang web đó trong phần cài đặt Khám phá.</translation>
-<translation id="5091249083535528968">Dữ liệu sử dụng mở rộng</translation>
 <translation id="509429900233858213">Đã xảy ra lỗi.</translation>
 <translation id="5097349930204431044">Các trang web bạn truy cập có thể xác định sở thích của bạn để đề xuất quảng cáo khi bạn tiếp tục duyệt web</translation>
 <translation id="5099845111805573968">Khi bạn chọn trang web dành cho máy tính, chế độ cài đặt này sẽ được áp dụng cho trang web này mỗi lần bạn truy cập</translation>
@@ -914,7 +907,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5833984609253377421">Chia sẻ liên kết</translation>
 <translation id="5839058148541733625">Trò chơi khủng long trên Chrome</translation>
 <translation id="5853623416121554550">đã tạm dừng</translation>
-<translation id="5854512288214985237">Không có số liệu thống kê hoặc báo cáo sự cố nào được gửi cho Google</translation>
 <translation id="5855546874025048181">Tinh chỉnh: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">Đã xảy ra lỗi. Không thể cập nhật tính năng Theo dõi giá.</translation>
 <translation id="5859968346865909126">Bạn có thể bật hoặc tắt chế độ này trong phần cài đặt.</translation>
@@ -1019,7 +1011,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6404511346730675251">Chỉnh sửa dấu trang</translation>
 <translation id="6406506848690869874">Đồng bộ hóa</translation>
 <translation id="6407224748847589805">Không thể kết nối với máy tính của bạn. Hãy thử một cách xác minh khác.</translation>
-<translation id="6410404864818553978">Dữ liệu sử dụng cơ bản</translation>
 <translation id="6410883413783534063">Mở các thẻ để truy cập vào nhiều trang cùng một lúc</translation>
 <translation id="6411219469806822692">Không thể di chuyển lên cao hơn. Hãy thử bắt đầu ở phía trên nữa của trang.</translation>
 <translation id="6412673304250309937">Kiểm tra đối chiếu các URL với danh sách trang web không an toàn được lưu trữ trong Chrome. Nếu một trang web cố ăn cắp mật khẩu của bạn hoặc nếu bạn tải một tệp gây hại xuống, Chrome cũng có thể gửi các URL, bao gồm cả các đoạn nội dung trên trang, đến tính năng Duyệt web an toàn.</translation>

@@ -100,7 +100,7 @@
 <translation id="2556847002339236023">您的機構會在 Chrome 閒置 <ph name="TIMEOUT_DURATION" />後將其關閉。瀏覽資料已刪除，當中可能包括記錄、自動填入資料和下載檔案。</translation>
 <translation id="2559253115192232574">您日後瀏覽的網站可向 Chrome 要求查看您的興趣，以便向您顯示個人化廣告。Chrome 最多可分享 3 個感興趣的主題。</translation>
 <translation id="2563121210305478421">要重新啟動 Chrome 嗎？</translation>
-<translation id="2569974318947988067">Chrome 會嘗試將瀏覽方式升級為 HTTPS</translation>
+<translation id="2569974318947988067">Chrome 會在導覽網站時，嘗試升級至 HTTPS</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> 已登入此 Chrome 設定檔。Chrome 可為您建立您的設定檔，以分開您的瀏覽區。</translation>
 <translation id="2580411288591421699">您無法安裝這個版本的 Google Chrome，因為相同的版本目前正在執行中。請關閉 Google Chrome，然後再試一次。</translation>
 <translation id="2586406160782125153">這會刪除此裝置上的瀏覽資料。如果日後想擷取資料，請以 <ph name="USER_EMAIL" /> 的身分登入 Chrome。</translation>
@@ -217,7 +217,7 @@
 <translation id="4335235004908507846">Chrome 能確保系統安全，避免發生資料外洩或擴充程式損毀等問題</translation>
 <translation id="4343195214584226067">已將 <ph name="EXTENSION_NAME" /> 加到 Chrome</translation>
 <translation id="4384570495110188418">由於您尚未登入帳戶，因此 Chrome 無法檢查密碼</translation>
-<translation id="4389991535395284064">以無痕模式瀏覽網頁時，Chrome 會在使用不安全的連線載入網站前發出警告</translation>
+<translation id="4389991535395284064">使用無痕模式瀏覽時，Chrome 會在使用不安全的連線載入網站前顯示警告</translation>
 <translation id="4393248995085527349">如要取得日後的 Google Chrome 更新，您將需要 macOS 10.15 或以上版本。此電腦正在使用 macOS 10.13。</translation>
 <translation id="4427306783828095590">強化保護功能可進一步封鎖仿冒詐騙和惡意軟件</translation>
 <translation id="4450664632294415862">Chrome - 網絡登入 - <ph name="PAGE_TITLE" /></translation>
@@ -390,7 +390,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="7426611252293106642">Google Chrome 不再支援此 Linux 發行版本，因此可能無法正常運作</translation>
 <translation id="7449333426561673451">{COUNT,plural, =1{根據機構規定，Chrome 會在閒置 1 分鐘後自動關閉。}other{根據機構規定，Chrome 會在閒置 # 分鐘後自動關閉。}}</translation>
 <translation id="7452987490177144319">{COUNT,plural, =1{根據機構規定，Chrome 會在閒置 1 分鐘後自動刪除瀏覽資料。當中可能包括記錄、自動填入資料和下載檔案。這些分頁仍會保持開啟。}other{根據機構規定，Chrome 會在閒置 # 分鐘後自動刪除瀏覽資料。當中可能包括記錄、自動填入資料和下載檔案。這些分頁仍會保持開啟。}}</translation>
-<translation id="7477130805345743099">在使用不安全的連線載入任何網站前，Chrome 會發出警告</translation>
+<translation id="7477130805345743099">Chrome 將會在使用不安全的連線載入任何網站前顯示警告</translation>
 <translation id="7481213027396403996">取得 Chrome 最強大的安全防護</translation>
 <translation id="7535429826459677826">Google Chrome 開發人員版</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> 安裝程式</translation>
@@ -482,7 +482,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8922193594870374009">如要將號碼從 <ph name="ORIGIN" /> 傳送至 Android 手機，請在這兩部裝置上登入 Chrome。</translation>
 <translation id="8986207147630327271">您即將在此瀏覽器中新增工作設定檔，並只將工作設定檔的控制權授予管理員。</translation>
 <translation id="8989968390305463310">您的瀏覽記錄會影響系統顯示的廣告，以及下列由系統推測的興趣。為保障您的私隱，Chrome 每個月都會自動刪除您的興趣。除非您移除興趣，否則系統會重新整理興趣。</translation>
-<translation id="8999117580775242387">如果無法使用 HTTPS，Chrome 將使用不安全的連線，且不會發出警告</translation>
+<translation id="8999117580775242387">無法使用 HTTPS 時，Chrome 會在不顯示警告的情況下使用不安全的連線</translation>
 <translation id="8999208279178790196">{0,plural, =0{有可用的 Chrome 更新}=1{有可用的 Chrome 更新}other{Chrome 更新已發佈 # 天}}</translation>
 <translation id="9053892488859122171">ChromeOS Flex 系統</translation>
 <translation id="9054037008353851982">重新啟動即可更新 - 您的分頁將會重新開啟</translation>

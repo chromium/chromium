@@ -3486,15 +3486,6 @@ Kebijakan ini adalah solusi sementara dan akan dihapus dalam beberapa milestone 
 <translation id="3838094946886335701">Jika menyetel kebijakan (sebagai direkomendasikan saja), Anda akan dapat mendaftarkan daftar pengendali protokol, yang digabungkan dengan yang didaftarkan pengguna, sehingga keduanya dapat digunakan. Setel properti "protokol" ke skema, seperti "mailto", dan setel properti "URL" ke pola URL aplikasi yang menangani skema yang ditentukan dalam kolom "protokol". Pola dapat mencakup placeholder "%s", yang diganti dengan URL yang ditangani.
 
       Pengguna tidak dapat menghapus pengendali protokol yang didaftarkan oleh kebijakan. Namun, dengan menginstal pengendali default baru, pengguna dapat mengubah pengendali protokol yang diinstal oleh kebijakan.</translation>
-<translation id="3847858041725748756">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan kebijakan <ph name="RELATED_WEBSITE_SETS_ENABLED_POLICY_NAME" />.
-
-Kebijakan ini disediakan sebagai cara untuk memblokir fitur Set Pihak Pertama.
-
-Jika kebijakan ini tidak disetel atau disetel ke Aktif, fitur Set Pihak Pertama akan diaktifkan.
-
-Jika kebijakan ini disetel ke Nonaktif, fitur Set Pihak Pertama akan dinonaktifkan.
-
-Kebijakan ini mengontrol apakah Chrome akan mendukung integrasi terkait Set Pihak Pertama.</translation>
 <translation id="3851443303439635700">Mengontrol batas bertingkat sebelum fungsi setTimeout() JavaScript mulai dibatasi</translation>
 <translation id="3858658082795336534">Mode dupleks pencetakan default</translation>
 <translation id="3859780406608282662">Tambahkan parameter untuk mengambil sumber Variasi di <ph name="PRODUCT_OS_NAME" />.
@@ -10012,42 +10003,6 @@ Nilai defaultnya adalah RollbackDisabled.</translation>
 <translation id="9206472508136116830">Jangan izinkan deteksi berbagi file NetBIOS</translation>
 <translation id="9207596996305971030">Jangan laporkan peristiwa login/logout</translation>
 <translation id="9210647066889383361">Izinkan pengguna login ke perangkat dengan Smart Lock</translation>
-<translation id="9212819508924803630">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan kebijakan <ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME" />.
-
-Kebijakan ini memberikan cara untuk mengganti daftar set yang digunakan browser untuk fitur Set Pihak Pertama.
-
-Setiap set dalam daftar Set Pihak Pertama browser harus memenuhi persyaratan Set Pihak Pertama.
-Set Pihak Pertama harus berisi situs utama dan satu atau beberapa situs anggota.
-Set juga dapat berisi daftar situs layanan yang dimilikinya, serta peta dari situs ke semua varian ccTLD-nya.
-Lihat https://github.com/WICG/first-party-sets untuk mendapatkan informasi selengkapnya terkait Set Pihak Pertama yang digunakan oleh <ph name="PRODUCT_NAME" />.
-
-Semua situs dalam Set Pihak Pertama harus berupa domain yang dapat didaftarkan yang disajikan melalui HTTPS. Setiap situs dalam Set Pihak Pertama juga harus unik.
-Artinya, situs tidak boleh tercantum lebih dari sekali dalam Set Pihak Pertama.
-
-Jika kebijakan ini diberi kamus kosong, browser akan menggunakan daftar Set Pihak Pertama publik.
-
-Untuk semua situs dalam Set Pihak Pertama dari daftar <ph name="REPLACEMENTS" />, jika suatu situs juga ada
-di Set Pihak Pertama dalam daftar browser, situs tersebut akan dihapus dari Set Pihak Pertama browser.
-Setelahnya, Set Pihak Pertama kebijakan akan ditambahkan ke daftar Set Pihak Pertama browser.
-
-Untuk semua situs dalam Set Pihak Pertama dari daftar <ph name="ADDITIONS" />, jika suatu situs juga ada
-di Set Pihak Pertama dalam daftar browser, Set Pihak Pertama browser akan diperbarui agar
-Set Pihak Pertama baru dapat ditambahkan ke daftar browser. Setelah daftar browser diperbarui,
-Set Pihak Pertama kebijakan akan ditambahkan ke daftar Set Pihak Pertama browser.
-
-Daftar Set Pihak Pertama browser mengharuskan semua situs dalam daftarnya tidak ada yang tercantum di
-lebih dari satu set. Ketentuan ini juga berlaku untuk daftar <ph name="REPLACEMENTS" />
-dan daftar <ph name="ADDITIONS" />. Situs juga tidak boleh ada dalam daftar
-<ph name="REPLACEMENTS" /> dan daftar <ph name="ADDITIONS" />.
-
-Karakter pengganti (*) tidak didukung sebagai nilai kebijakan, ataupun di Set Pihak Pertama dalam daftar ini.
-
-Semua set yang disediakan oleh kebijakan harus berupa Set Pihak Pertama yang valid. Jika set tidak valid,
-error yang sesuai akan ditampilkan.
-
-Di <ph name="MS_WIN_NAME" />, kebijakan ini hanya tersedia pada instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dihubungkan ke <ph name="MS_AAD_NAME" />, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia pada instance yang dikelola melalui MDM, dihubungkan ke domain melalui MCX, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="9213751049772256263">Nonaktifkan semua variasi</translation>
 <translation id="9217154963008402249">Frekuensi paket jaringan pemantauan</translation>
 <translation id="9220314833408124365">Gunakan kebijakan perujuk default untuk no-referrer-when-downgrade</translation>

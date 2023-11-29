@@ -23,7 +23,6 @@
 <translation id="1110914759170138831">Kiemelés lerövidítve</translation>
 <translation id="1111673857033749125">A más eszközökön mentett könyvjelzők itt jelennek meg.</translation>
 <translation id="1113597929977215864">Egyszerűsített nézet megjelenítése</translation>
-<translation id="1123070903960493543">A Chrome használata, a kiválasztott beállítások, a Chrome-összeomlásokkal kapcsolatos adatok</translation>
 <translation id="1126013303640354461">A Google Payből származó fizetési módok és címek nem lesznek titkosítva. A Chrome böngészési előzményei nem lesznek szinkronizálva.
 Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titkosított adatait. Az összetett jelszót nem kapja meg, és nem is tárolja a Google. Ha elfelejti az összetett jelszavát, vagy módosítani szeretné ezt a beállítást, vissza kell állítania a szinkronizálást. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="1126809382673880764">Nem védi meg Önt a veszélyes webhelyek, letöltések vagy bővítmények ellen. Ahol lehetséges (más Google-szolgáltatásokban, például a Gmailben és a Keresőben) továbbra is megkapja a Biztonságos Böngészés által nyújtott védelmet.</translation>
@@ -204,7 +203,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="213279576345780926">Bezárva: <ph name="TAB_TITLE" /></translation>
 <translation id="2139186145475833000">Kezdőképernyőre</translation>
 <translation id="2141396931810938595">A használata alapján</translation>
-<translation id="214888715418183969">Válassza ki, hogy mit osztana meg szívesen a Chrome-mal. A megosztott mutatókat a Chrome funkcióinak, teljesítményének és stabilitásának fejlesztésére használjuk majd.</translation>
 <translation id="2149973817440762519">Könyvjelző szerkesztése</translation>
 <translation id="2155214902713132423">Ez az ellenőrzési módszer nem áll rendelkezésre ezen az eszközön. Válasszon másik lehetőséget a másik eszközén.</translation>
 <translation id="2158408438301413340">A Chrome nem tudta ellenőrizni az összes jelszót</translation>
@@ -214,7 +212,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="2175927920773552910">QR-kód</translation>
 <translation id="218608176142494674">Megosztás</translation>
 <translation id="2194856509914051091">Megfontolandó szempontok</translation>
-<translation id="2200113223741723867">Használati adatok megosztásának kezelése</translation>
 <translation id="22091350895006575">Felhasználónév megadása</translation>
 <translation id="221494669172414749">Ha profilzárolás nélkül nyitja meg a Chrome-ot, azzal eltávolítja a mentett jelszavakat és fizetési módokat az autóból. A profilzárolással biztonságban tudhatja adatait.</translation>
 <translation id="2227444325776770048">Folytatás mint <ph name="USER_FULL_NAME" /></translation>
@@ -375,7 +372,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="2996932914629936323">Az összes bejelentkezett eszközről törli az előzményeket</translation>
 <translation id="2997081575621687554">Ha valamely Google-webhely a linkek privát módon való előtöltését kéri az oldalán, a Chrome cookie-k nélkül titkosítja és tölti be előre az oldalakat a Google szerverein keresztül. Ez a művelet elrejti az Ön személyazonosságát az előre betöltött webhely előtt.</translation>
 <translation id="3003253259757197230">Az Ön által felkeresett URL-ek el lesznek küldve a Google-nak, hogy előrejelezzük, mely webhelyeket fogja esetleg legközelebb felkeresni, valamint hogy további információkat jelenítsünk meg az aktuálisan megnyitott oldalról.</translation>
-<translation id="3006881078666935414">Nincsenek használati adatok</translation>
 <translation id="3016635187733453316">Ellenőrizze, hogy az eszköz csatlakozik-e az internethez</translation>
 <translation id="3026955690410463085">Link hozzáadása</translation>
 <translation id="3027644380269727216">A webhelyen végzett tevékenységei alapján. Ez a beállítás be van kapcsolva.</translation>
@@ -512,7 +508,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="3771033907050503522">Inkognitó lapok</translation>
 <translation id="3771290962915251154">Ez a beállítás le van tiltva, mert be van kapcsolva a szülői felügyelet</translation>
 <translation id="3771694256347217732">Google Általános Szerződési Feltételek</translation>
-<translation id="3773856050682458546">Alapvető adatok az Ön által felkeresett webhelyekkel és az Ön által használt alkalmazásokkal kapcsolatos adatokkal kiegészülve</translation>
 <translation id="3775705724665058594">Küldés a saját eszközökre</translation>
 <translation id="3777796259512476958">A rendszer a legtöbb webhelyről kijelentkezteti Önt</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 lap}other{# lap}}</translation>
@@ -560,7 +555,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="4035877632587724847">Tiltás</translation>
 <translation id="4042941173059740150">Folytassa a(z) <ph name="SITE_ETLD_PLUS_ONE" /> használatát a következővel: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">Alsó lap</translation>
-<translation id="4045764304651014138">Használati adatok</translation>
 <translation id="405399507749852140">Értesítést kaphat, ha valamelyik webhelyen csökken az ár</translation>
 <translation id="4056223980640387499">Szépia</translation>
 <translation id="4062305924942672200">Jogi információk</translation>
@@ -774,7 +768,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5062960805900435602">A jelszóegyesítési frissítés le van zárva.</translation>
 <translation id="5081960376148623587">Válassza ki, hogy szeretne-e előtölteni oldalakat</translation>
 <translation id="5091199029769593641">Új lap megnyitásakor hamarosan látni fogja a(z) <ph name="SITE_NAME" /> webhely történeteit. A követett webhelyeket a Google-fiókjába menti a rendszer. A Discover beállításaiban kezelheti őket.</translation>
-<translation id="5091249083535528968">Bővített használati adatok</translation>
 <translation id="509429900233858213">Hiba történt.</translation>
 <translation id="5097349930204431044">A felkeresett webhelyek megállapíthatják, hogy mi tetszik Önnek, majd hirdetéseket javasolhatnak böngészés közben.</translation>
 <translation id="5099845111805573968">Ha egyszer kiválasztja az Asztali webhely lehetőséget, akkor a rendszer minden további látogatáskor azt a beállítást alkalmazza</translation>
@@ -914,7 +907,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5833984609253377421">Link megosztása</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5853623416121554550">szüneteltetve</translation>
-<translation id="5854512288214985237">A rendszer nem küld statisztikákat és hibajelentéseket a Google-nak</translation>
 <translation id="5855546874025048181">Pontosítás: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">Hiba történt. Nem sikerült frissíteni a nyomon követett árat.</translation>
 <translation id="5859968346865909126">A beállításokban kapcsolhatja be vagy ki</translation>
@@ -1019,7 +1011,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6404511346730675251">Könyvjelző szerkesztése</translation>
 <translation id="6406506848690869874">Szinkronizálás</translation>
 <translation id="6407224748847589805">Nem lehet csatlakozni a számítógépéhez. Próbálkozzon másik ellenőrzési módszerrel.</translation>
-<translation id="6410404864818553978">Alapvető használati adatok</translation>
 <translation id="6410883413783534063">Lapok megnyitásával egyszerre több oldalt is felkereshet.</translation>
 <translation id="6411219469806822692">Nem lehet feljebb menni. Próbálkozzon a lap fentebbi részével való kezdéssel.</translation>
 <translation id="6412673304250309937">Ellenőrzi az URL-eket a Chrome-ban a nem biztonságos webhelyekről tárolt lista alapján. Ha egy webhely megpróbálja ellopni az Ön jelszavát, illetve ha Ön ártalmas fájlt tölt le, akkor a Chrome elküldheti az URL-eket is (az oldaltartalmak részleteivel együtt) a Biztonságos Böngészésnek.</translation>

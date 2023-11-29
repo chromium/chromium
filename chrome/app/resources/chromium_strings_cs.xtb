@@ -38,7 +38,9 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="1715127912119967311">Za účelem zlepšení těchto funkcí odesílá Chromium vaše interakce do Googlu. Tato data mohou číst, zpracovávat a opatřovat poznámkami kontroloři.</translation>
 <translation id="17264556997921157">Můžete zobrazovat a odstraňovat zájmy, které weby používají k zobrazování reklam. Chromium zájmy odhaduje na základě vaší nedávné historie prohlížení.</translation>
 <translation id="1733725117201708356">Chromium brzy smaže údaje o prohlížení</translation>
+<translation id="1736443181683099871">Chromium se při navigaci bude pokoušet použít protokol HTTPS</translation>
 <translation id="1745121272106313518">Chromium se restartuje za <ph name="REMAINING_TIME" /></translation>
+<translation id="1749104137266986751">Když není k dispozici protokol HTTPS, použije prohlížeč Chromium nezabezpečené připojení, aniž by vás upozornil</translation>
 <translation id="1774152462503052664">Nechat prohlížeč Chromium spuštěný na pozadí</translation>
 <translation id="1779356040007214683">Aby bylo Chromium bezpečnější, deaktivovali jsme některá rozšíření, která nejsou uvedena na webu <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> a mohla být přidána bez vašeho vědomí.</translation>
 <translation id="1808667845054772817">Přeinstalovat Chromium</translation>
@@ -126,6 +128,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="3286538390144397061">Restartovat</translation>
 <translation id="328888136576916638">Chybí klíče rozhraní Google API. Některé funkce Chromium nebudou k dispozici.</translation>
 <translation id="3296368748942286671">Po ukončení prohlížeče Chromium nechat aplikace na pozadí spuštěné</translation>
+<translation id="3313189106987092621">Před načtením jakéhokoli webu pomocí nezabezpečeného připojení vás Chromium upozorní</translation>
 <translation id="3350761136195634146">Profil Chromium s tímto účtem už existuje</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Přepnout na stávající profil Chromium?</translation>
@@ -223,6 +226,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5224391634244552924">Nemáte žádná uložená hesla. Chromium může hesla zkontrolovat, pouze když si je uložíte.</translation>
 <translation id="5252179775517634216">Uživatel <ph name="EXISTING_USER" /> už je k tomuto profilu Chromium přihlášen. Tímto vytvoříte nový profil Chromium pro uživatele <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="5277894862589591112">Chcete-li změny použít, restartujte Chromium</translation>
+<translation id="5294316920224716406">Při procházení v anonymním režimu vás Chromium před načtením webu pomocí nezabezpečeného připojení upozorní</translation>
 <translation id="5296845517486664001">Když jsou zapnuté zkušební verze a Chromium vás do nějaké náhodně umístí, vaše historie prohlížení bude mít vliv na zobrazované reklamy a zájmy, jak je odhadnuto níže. Aby Chromium chránil vaše soukromí, vaše zájmy každý měsíc pravidelně maže.</translation>
 <translation id="5352264705793813212">Prohlížeč Chromium našel několik bezpečnostních doporučení, která byste si měli projít</translation>
 <translation id="5358375970380395591">Přihlašujete se pomocí spravovaného účtu a poskytujete jeho správci kontrolu nad vaším profilem prohlížeče Chromium. Vaše údaje prohlížeče Chromium, například aplikace, záložky, historie, hesla a jiná nastavení, budou trvale přidružena k účtu <ph name="USER_NAME" />. Tyto údaje budete moci smazat pomocí Hlavního panelu v Účtech Google, ale nebudete je moci přidružit k jinému účtu. <ph name="LEARN_MORE" /></translation>

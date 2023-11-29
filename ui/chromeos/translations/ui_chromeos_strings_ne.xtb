@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ne">
 <translation id="1000498691615767391">खोल्नको लागि एउटा फोल्डर चयन गर्नुहोस्</translation>
+<translation id="1014208178561091457"><ph name="FILE_NAME" /> इन्क्रिप्ट गरिएकाले यसलाई कपी गर्न सकिएन।</translation>
 <translation id="1047956942837015229"><ph name="COUNT" /> वस्तुहरू मेटाउँदै...</translation>
 <translation id="1049926623896334335">शब्द कागजात</translation>
 <translation id="1056775291175587022">कुनै पनि नेटवर्क छैन</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Parallels Desktop सँग फोल्डर सेयर गर्नुहोस्</translation>
 <translation id="1439919885608649279">फूल बोकिरहेका व्यक्ति</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> हटाउनुहोस्</translation>
+<translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> वटा फाइलहरू इन्क्रिप्ट गरिएकाले तिनलाई कपी गर्न सकिएन।</translation>
 <translation id="1471718551822868769">स्लोभाकियाली</translation>
 <translation id="1482884275703521657">फिनिस</translation>
 <translation id="148466539719134488">स्विस</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">उपलब्ध छैन</translation>
 <translation id="3254434849914415189"><ph name="FILE_TYPE" /> फाइलहरूको लागि डिफल्ट एप छान्नुहोस्:</translation>
 <translation id="3255159654094949700">अरबी</translation>
+<translation id="326396468955264502"><ph name="NUMBER_OF_FILES" /> वटा फाइलहरू इन्क्रिप्ट गरिएकाले तिनलाई सार्न सकिएन।</translation>
 <translation id="3264582393905923483">सन्दर्भ</translation>
 <translation id="3272909651715601089">"<ph name="PATH" />" खोल्न सकिएन</translation>
 <translation id="3280431534455935878">तैयार गर्दै</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490">एउटा फोल्डर <ph name="VM_NAME" /> सँग सेयर गरिएको छ</translation>
 <translation id="3524311639100184459">चेतावनी: यी फाइलहरू अस्थायी हुन् र भण्डारण स्थान खाली गर्नका निम्ति यी फाइल स्वतः मेटाइन सक्छन्।  <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">फोल्डर</translation>
+<translation id="3529424493985988200">विवरणहरू हेर्न आफ्ना एड्मिनलाई सम्पर्क गर्नुहोस्।</translation>
 <translation id="3548125359243647069">तपाईंले अत्यन्तै धेरै पटक गलत PIN हाल्नुभयो।</translation>
 <translation id="3549797760399244642">drive.google.com मा जानुहोस् ...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> मार्फत फाइलहरू खोल्न सर्वप्रथम ती फाइलहरू कपी गरेर 'Windows फाइलहरू' फोल्डरमा पेस्ट गर्नुहोस्।</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">यो फाइल अर्को डेस्कटपमा खोलियो। यसलाई हेर्नको लागि <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) सार्नुहोस्।</translation>
 <translation id="6394388407447716302">रिड गर्न मात्र मिल्छ</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> वस्तुहरू</translation>
+<translation id="6407769893376380348"><ph name="FILE_NAME" /> इन्क्रिप्ट गरिएकाले यसलाई सार्न सकिएन।</translation>
 <translation id="642282551015776456">नामलाई फाइल वा फोल्डर नामको रूपमा प्रयोग गर्न सकिँदैन</translation>
 <translation id="6423031066725912715">भियतनामी TCVN किबोर्ड</translation>
 <translation id="6430271654280079150">तपाईं अझै १ पटक प्रयास गर्न सक्नुहुन्छ।</translation>

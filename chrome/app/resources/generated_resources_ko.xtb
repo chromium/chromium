@@ -3913,6 +3913,7 @@
 <translation id="4005817994523282006">시간대 감지 방법</translation>
 <translation id="4007856537951125667">바로가기 숨기기</translation>
 <translation id="4008291085758151621">VR에서 사이트 정보를 사용할 수 없습니다</translation>
+<translation id="4010746393007464819">Debian 12(Bookworm)로 업그레이드할 수 있습니다.</translation>
 <translation id="4010917659463429001">휴대기기에서 내 북마크를 사용하려면 <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">'<ph name="EXTENSION_NAME" />'을(를) 복구하시겠습니까?</translation>
 <translation id="4015163439792426608">확장 프로그램이 있나요? 한곳에서 편리하게 <ph name="BEGIN_LINK" />확장 프로그램을 관리<ph name="END_LINK" />하세요.</translation>
@@ -6074,6 +6075,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5782040878821624922">모든 기기에서 사용할 수 있습니다.</translation>
 <translation id="5782227691023083829">번역 중...</translation>
 <translation id="57838592816432529">음소거</translation>
+<translation id="5784291589716625675">앱 언어 변경</translation>
 <translation id="5785583009707899920">Chrome 파일 유틸리티</translation>
 <translation id="5787146423283493983">키 계약</translation>
 <translation id="5787420647064736989">기기 이름</translation>
@@ -6548,6 +6550,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6151323131516309312"><ph name="SEARCH_KEY" />을(를) 눌러 <ph name="SITE_NAME" /> 검색</translation>
 <translation id="6151771661215463137">파일이 이미 다운로드 폴더에 있습니다.</translation>
 <translation id="6152918902620844577">다음 작업 대기 중</translation>
+<translation id="6153439704237222699">Do Not Track에 대해 자세히 알아보기</translation>
 <translation id="6154240335466762404">모든 포트 삭제</translation>
 <translation id="615436196126345398">프로토콜</translation>
 <translation id="6155141482566063812">배경 탭에서 화면을 공유하는 중입니다.</translation>
@@ -8867,6 +8870,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7988805580376093356">OS는 그대로 두고 USB에서 <ph name="DEVICE_OS" />을 실행하세요</translation>
 <translation id="7988876720343145286">Android 설정 및 권한 더보기</translation>
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> 음성 <ph name="COUNT" /></translation>
+<translation id="7990958035181555539">Android 휴대전화의 Wi-Fi 자동 전송</translation>
 <translation id="7991296728590311172">스위치 제어 설정</translation>
 <translation id="7992203134935383159">음성 합성</translation>
 <translation id="7994515119120860317"><ph name="VISUAL_SEARCH_PROVIDER" />을 사용하여 이미지의 텍스트 번역</translation>
@@ -9814,6 +9818,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8736288397686080465">이 사이트는 백그라운드에서 업데이트되었습니다.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">페이지를 번역할 언어 선택</translation>
+<translation id="8738418093147087440">국가, 언어 또는 입력 이름으로 검색</translation>
 <translation id="8740086188450289493">Google 계정 비밀번호 사용</translation>
 <translation id="8740247629089392745">이 Chromebook을 <ph name="SUPERVISED_USER_NAME" />님에게 전달할 수 있습니다. 설정이 거의 끝났습니다. 기기를 살펴보세요.</translation>
 <translation id="8740672167979365981">ChromeOS Flex 업데이트 필요</translation>

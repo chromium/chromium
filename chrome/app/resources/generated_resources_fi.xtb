@@ -3907,6 +3907,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="4005817994523282006">Aikavyöhykkeen tunnistusmenetelmä</translation>
 <translation id="4007856537951125667">Piilota pikakuvakkeet</translation>
 <translation id="4008291085758151621">Sivuston tiedot eivät ole saatavilla VR:ssä</translation>
+<translation id="4010746393007464819">Päivitys Debian 12:een (Bookworm) on saatavilla</translation>
 <translation id="4010917659463429001"><ph name="GET_IOS_APP_LINK" />, niin voit käyttää kirjanmerkkejäsi mobiililaitteella.</translation>
 <translation id="4014432863917027322">Korjataanko <ph name="EXTENSION_NAME" />?</translation>
 <translation id="4015163439792426608">Onko sinulla laajennuksia? <ph name="BEGIN_LINK" />Ylläpidä laajennuksiasi<ph name="END_LINK" /> helposti yhdestä paikasta.</translation>
@@ -6070,6 +6071,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="5782040878821624922">Se on saatavilla kaikilla laitteilla</translation>
 <translation id="5782227691023083829">Käännetään...</translation>
 <translation id="57838592816432529">Mykistä</translation>
+<translation id="5784291589716625675">Vaihda sovelluksen kieli</translation>
 <translation id="5785583009707899920">Chrome-tiedostoapuohjelma</translation>
 <translation id="5787146423283493983">Avainsopimus</translation>
 <translation id="5787420647064736989">Laitteen nimi</translation>
@@ -6544,6 +6546,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6151323131516309312">Paina <ph name="SEARCH_KEY" /> ja hae sivustosta <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">Tiedosto on jo latauskansiossasi.</translation>
 <translation id="6152918902620844577">Odotetaan seuraavaa toimintoa</translation>
+<translation id="6153439704237222699">Lue lisää Do Not Track ‑pyynnöstä.</translation>
 <translation id="6154240335466762404">Poista kaikki portit</translation>
 <translation id="615436196126345398">Protokolla</translation>
 <translation id="6155141482566063812">Taustavälilehti jakaa näyttösi.</translation>
@@ -8862,6 +8865,7 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7988805580376093356">Säilytä käyttöjärjestelmäsi ja käytä laitetta (<ph name="DEVICE_OS" />) USB:n kautta.</translation>
 <translation id="7988876720343145286">Lisää Androidin asetuksia ja lupia</translation>
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> Ääni <ph name="COUNT" /></translation>
+<translation id="7990958035181555539">Siirrä Wi-Fi-yhteys automaattisesti Android-puhelimesta</translation>
 <translation id="7991296728590311172">Kytkimen käytön asetukset</translation>
 <translation id="7992203134935383159">Puhesynteesi</translation>
 <translation id="7994515119120860317">Käännä kuvassa oleva teksti: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -9809,6 +9813,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8736288397686080465">Tämä sivusto on päivitetty taustalla.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Valitse kieli, jolle sivu käännetään</translation>
+<translation id="8738418093147087440">Hae maiden, kielten tai syöttötapojen nimien mukaan</translation>
 <translation id="8740086188450289493">Käytä Google-tilin salasanaa</translation>
 <translation id="8740247629089392745"><ph name="SUPERVISED_USER_NAME" /> voi nyt saada tämän Chromebookin. Käyttöönotto on melkein valmis, pian on aika tutkia.</translation>
 <translation id="8740672167979365981">ChromeOS Flex on päivitettävä</translation>

@@ -21,5 +21,7 @@
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{用于登录此网站的新密码}other{用于登录此网站的新密码}}</translation>
 <translation id="7286867818472074330">选择通行密钥</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />，第 <ph name="ITEM_POSITION" /> 项（共 <ph name="ITEMS_TOTAL" /> 项）。</translation>
+<translation id="7738288782501322815">您收到了多个用于登录 <ph name="SITE_NAME" /> 的密码</translation>
+<translation id="8614995815226664591"><ph name="SENDER_NAME" />与您分享了一个用于登录 <ph name="SITE_NAME" /> 的密码</translation>
 <translation id="8891372124884726271">凭据列表已关闭。</translation>
 </translationbundle>

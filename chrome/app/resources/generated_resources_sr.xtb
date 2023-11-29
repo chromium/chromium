@@ -3894,6 +3894,7 @@
 <translation id="4005817994523282006">Метод откривања временске зоне</translation>
 <translation id="4007856537951125667">Сакриј пречице</translation>
 <translation id="4008291085758151621">Информације о сајтовима нису доступне у ВР-у</translation>
+<translation id="4010746393007464819">Доступна је надоградња на DNS 12 (Bookworm)</translation>
 <translation id="4010917659463429001">Да би вам обележивачи били доступни на мобилном уређају, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Желите ли да поправите „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="4015163439792426608">Имате додатке? <ph name="BEGIN_LINK" />Управљајте додацима<ph name="END_LINK" /> на једном практичном месту.</translation>
@@ -6056,6 +6057,7 @@
 <translation id="5782040878821624922">Доступна је на било ком уређају</translation>
 <translation id="5782227691023083829">Превођење је у току...</translation>
 <translation id="57838592816432529">Искључи звук</translation>
+<translation id="5784291589716625675">Променитe језик апликације</translation>
 <translation id="5785583009707899920">Chrome услужни програми за датотеке</translation>
 <translation id="5787146423283493983">Слагање кључа</translation>
 <translation id="5787420647064736989">Назив уређаја</translation>
@@ -6530,6 +6532,7 @@
 <translation id="6151323131516309312">Притисните <ph name="SEARCH_KEY" /> да бисте претражили <ph name="SITE_NAME" /> сајт</translation>
 <translation id="6151771661215463137">Датотека већ постоји у директоријуму са преузимањима.</translation>
 <translation id="6152918902620844577">Чека се следећа радња</translation>
+<translation id="6153439704237222699">Сазнајте више о захтеву „Не прати“</translation>
 <translation id="6154240335466762404">Уклони све портове</translation>
 <translation id="615436196126345398">Протокол</translation>
 <translation id="6155141482566063812">Картица у позадини дели екран</translation>
@@ -8853,6 +8856,7 @@
 <translation id="7988805580376093356">Задржите свој ОС и покрените <ph name="DEVICE_OS" /> са USB-а.</translation>
 <translation id="7988876720343145286">Још подешавања и дозвола за Android</translation>
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> глас <ph name="COUNT" /></translation>
+<translation id="7990958035181555539">Аутоматски пренесите WiFi са Android телефона</translation>
 <translation id="7991296728590311172">Подешавања приступа помоћу прекидача</translation>
 <translation id="7992203134935383159">Синтеза говора</translation>
 <translation id="7994515119120860317">Преведи текст на слици помоћу претраживача <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -9800,6 +9804,7 @@
 <translation id="8736288397686080465">Овај сајт је ажуриран у позадини.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Одаберите језик на који желите да преведете страницу</translation>
+<translation id="8738418093147087440">Претражите према земљама, језику или називима уноса</translation>
 <translation id="8740086188450289493">Користите лозинку за Google налог</translation>
 <translation id="8740247629089392745">Можете да предате овај Chromebook кориснику <ph name="SUPERVISED_USER_NAME" />. Подешавање је скоро готове, па долази време за истраживање.</translation>
 <translation id="8740672167979365981">Треба да ажурирате Chrome OS Flex</translation>

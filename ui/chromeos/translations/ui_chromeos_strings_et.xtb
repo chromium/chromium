@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="et">
 <translation id="1000498691615767391">Avatava kausta valimine</translation>
+<translation id="1014208178561091457">Faili <ph name="FILE_NAME" /> ei saanud kopeerida, kuna see on krüpteeritud.</translation>
 <translation id="1047956942837015229"><ph name="COUNT" /> üksuse kustutamine ...</translation>
 <translation id="1049926623896334335">Wordi dokument</translation>
 <translation id="1056775291175587022">Võrke ei ole</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Kausta jagamine üksusega Parallels Desktop</translation>
 <translation id="1439919885608649279">Lilledega inimene</translation>
 <translation id="1458457385801829801">Väljuta <ph name="TARGET_NAME" /></translation>
+<translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> faili ei saanud kopeerida, kuna need on krüpteeritud.</translation>
 <translation id="1471718551822868769">slovaki</translation>
 <translation id="1482884275703521657">soome</translation>
 <translation id="148466539719134488">Šveitsi</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">Pole saadaval</translation>
 <translation id="3254434849914415189">Valige vaikerakendus <ph name="FILE_TYPE" />-failide jaoks:</translation>
 <translation id="3255159654094949700">araabia</translation>
+<translation id="326396468955264502"><ph name="NUMBER_OF_FILES" /> faili ei saanud teisaldada, kuna need on krüpteeritud.</translation>
 <translation id="3264582393905923483">Kontekst</translation>
 <translation id="3272909651715601089">Faili „<ph name="PATH" />” ei õnnestunud avada</translation>
 <translation id="3280431534455935878">Ettevalmistamine</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490">1 kaust on jagatud VM-iga <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Hoiatus. Need on ajutised failid ja võidakse kettaruumi vabastamiseks automaatselt kustutada.  <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Kaust</translation>
+<translation id="3529424493985988200">Üksikasjade nägemiseks võtke ühendust administraatoriga.</translation>
 <translation id="3548125359243647069">Vale PIN-kood sisestati liiga mitu korda.</translation>
 <translation id="3549797760399244642">Ava sait drive.google.com ...</translation>
 <translation id="3553048479571901246">Failide avamiseks rakendusega <ph name="APP_NAME" /> kopeerige need esmalt Windowsi failide kausta.</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">Fail on avatud muul töölaual. Selle vaatamiseks avage <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="6394388407447716302">Kirjutuskaitstud</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> üksust</translation>
+<translation id="6407769893376380348">Faili <ph name="FILE_NAME" /> ei saanud eemaldada, kuna see on krüpteeritud.</translation>
 <translation id="642282551015776456">Seda nime ei saa faili või kausta nimena kasutada</translation>
 <translation id="6423031066725912715">vietnami, klaviatuuriga TCVN</translation>
 <translation id="6430271654280079150">Teil on veel 1 katse.</translation>

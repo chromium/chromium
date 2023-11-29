@@ -23,7 +23,6 @@
 <translation id="1110914759170138831">Den markerade texten har förkortats</translation>
 <translation id="1111673857033749125">Här visas bokmärken som du har sparat på andra enheter.</translation>
 <translation id="1113597929977215864">Använd förenklad visning</translation>
-<translation id="1123070903960493543">Hur du använder Chrome, inställningar du har valt, information om krascher i Chrome</translation>
 <translation id="1126013303640354461">Betalningsmetoder och adresser från Google Pay krypteras inte. Webbhistorik från Chrome synkroniseras inte.
 Din krypterade data kan endast läsas av en person som har din lösenfras. Lösenfrasen varken skickas till eller lagras av Google. Om du glömmer lösenfrasen eller vill ändra den här inställningen måste du återställa synkroniseringen. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="1126809382673880764">Skyddar inte mot farliga webbplatser, nedladdningar och tillägg. Där funktionen är tillgänglig får du fortfarande skydd med Säker webbsökning i andra tjänster från Google, till exempel Gmail och Sök.</translation>
@@ -204,7 +203,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> har stängts</translation>
 <translation id="2139186145475833000">Lägg till på startskärmen</translation>
 <translation id="2141396931810938595">Utifrån din användning</translation>
-<translation id="214888715418183969">Välj vad du vill dela med Chrome. Den statistik du delar används för att förbättra Chromes funktioner, prestanda och stabilitet.</translation>
 <translation id="2149973817440762519">Redigera bokmärke</translation>
 <translation id="2155214902713132423">Den här verifieringsmetoden är inte tillgänglig för den här enheten. Välj ett annat alternativ på den andra enheten.</translation>
 <translation id="2158408438301413340">Chrome kunde inte kontrollera alla lösenord</translation>
@@ -214,7 +212,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2175927920773552910">QR-kod</translation>
 <translation id="218608176142494674">Delar</translation>
 <translation id="2194856509914051091">Tänk på detta</translation>
-<translation id="2200113223741723867">Hantera delning av data om användning</translation>
 <translation id="22091350895006575">Lägg till användarnamn</translation>
 <translation id="221494669172414749">Om du öppnar Chrome utan ett profillås tas dina sparade lösenord och betalningsmetoder bort från bilen. Denna data skyddas om du använder ett profillås.</translation>
 <translation id="2227444325776770048">Fortsätt som <ph name="USER_FULL_NAME" /></translation>
@@ -375,7 +372,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2996932914629936323">Historiken rensas från alla synkroniserade enheter</translation>
 <translation id="2997081575621687554">När en Google-webbplats frågar om dess länkar ska läsas in privat i förväg krypterar Chrome sidorna och läser in dem i förväg via Googles servrar utan cookies. Det innebär att din identitet döljs från den förinlästa webbplatsen.</translation>
 <translation id="3003253259757197230">Webbadresser som du besöker skickas till Google för att förutse vilka webbplatser du kanske vill besöka härnäst och för att visa mer information om den sida du besöker</translation>
-<translation id="3006881078666935414">Ingen användningsdata tillgänglig</translation>
 <translation id="3016635187733453316">Kontrollera att enheten är ansluten till internet</translation>
 <translation id="3026955690410463085">Inkludera länk</translation>
 <translation id="3027644380269727216">Baserat på din aktivitet på en webbplats. Inställningen är aktiverad.</translation>
@@ -512,7 +508,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3771033907050503522">Inkognitoflikar</translation>
 <translation id="3771290962915251154">Inställningen är inaktiverad eftersom föräldrakontroller används</translation>
 <translation id="3771694256347217732">Googles användarvillkor</translation>
-<translation id="3773856050682458546">Grundläggande data samt information om webbplatser du besöker och appar du använder</translation>
 <translation id="3775705724665058594">Skicka till dina enheter</translation>
 <translation id="3777796259512476958">Du loggas ut från de flesta webbplatser</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 flik}other{# flikar}}</translation>
@@ -561,7 +556,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="4035877632587724847">Tillåt inte</translation>
 <translation id="4042941173059740150">Fortsätt till <ph name="SITE_ETLD_PLUS_ONE" /> med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">Ark på nedre delen av skärmen</translation>
-<translation id="4045764304651014138">Data om användning</translation>
 <translation id="405399507749852140">Få aviseringar när priset sjunker på en webbplats</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4062305924942672200">Juridisk information</translation>
@@ -775,7 +769,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5062960805900435602">Uppdateringen om lösenordssammanslagning har stängts</translation>
 <translation id="5081960376148623587">Välj om sidor ska läsas in i förväg</translation>
 <translation id="5091199029769593641">Snart visas artiklar från <ph name="SITE_NAME" /> när du öppnar en ny flik. Webbplatser som du följer sparas i Google-kontot. Du kan hantera dem i inställningarna för Förslag.</translation>
-<translation id="5091249083535528968">Utökad data om användning</translation>
 <translation id="509429900233858213">Det har uppstått ett fel.</translation>
 <translation id="5097349930204431044">Webbplatser du besöker kan identifiera vad du gillar och sedan föreslå annonser medan du fortsätter att surfa</translation>
 <translation id="5099845111805573968">När du väljer webbplatsen för dator en gång tillämpas inställningen på webbplatsen varje gång du besöker den</translation>
@@ -915,7 +908,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5833984609253377421">Dela länk</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5853623416121554550">pausad</translation>
-<translation id="5854512288214985237">Varken statistik eller felrapporter skickas till Google</translation>
 <translation id="5855546874025048181">Finjustera: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">Något gick fel. Det gick inte att uppdatera Bevaka pris.</translation>
 <translation id="5859968346865909126">Du kan aktivera eller inaktivera det i inställningarna</translation>
@@ -1020,7 +1012,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6404511346730675251">Redigera bokmärke</translation>
 <translation id="6406506848690869874">Synkronisera</translation>
 <translation id="6407224748847589805">Det går inte att ansluta till datorn. Försök med ett annat verifieringsalternativ.</translation>
-<translation id="6410404864818553978">Grundläggande data om användning</translation>
 <translation id="6410883413783534063">Öppna flikar för att besöka olika sidor samtidigt</translation>
 <translation id="6411219469806822692">Markeringen kan inte utökas mer i riktning uppåt. Testa att börja någonstans högre upp på sidan.</translation>
 <translation id="6412673304250309937">Kontrollera webbadresser mot en lista över osäkra webbplatser i Chrome. Om du utsätts för försök att kapa ditt lösenord på en webbplats eller om du laddar ned en skadlig fil kan webbadresserna skickas från Chrome till Säker webbsökning tillsammans med delar av sidinnehållet.</translation>

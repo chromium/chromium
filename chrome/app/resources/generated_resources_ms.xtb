@@ -917,6 +917,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1697150536837697295">Seni</translation>
 <translation id="1697686431566694143">Edit fail</translation>
 <translation id="1698796500103229697">&amp;Kaedah Pembayaran</translation>
+<translation id="1699807488537653303">Betulkan ralat kata laluan</translation>
 <translation id="1700201317341192482">Alih keluar kad maya anda</translation>
 <translation id="1700517974991662022">Dilawati</translation>
 <translation id="1703331064825191675">Jangan bimbang tentang kata laluan anda</translation>
@@ -1793,6 +1794,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2344032937402519675">Tidak dapat menyambung kepada pelayan. Semak sambungan rangkaian anda, kemudian cuba lagi. Jika anda masih menghadapi masalah, cuba mulakan semula Chromebook anda.</translation>
 <translation id="234559068082989648">Versi lama Apl Chrome tidak akan dibuka selepas Disember 2022. Hubungi pentadbir anda untuk mengemas kini kepada versi baharu atau mengalih keluar apl ini.</translation>
 <translation id="2345723121311404059">1 halaman ke <ph name="PRINTER_NAME" /></translation>
+<translation id="2347930112185157300">Penyedia rangkaian mudah alih dikunci</translation>
 <translation id="2348176352564285430">Apl: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - Kebenaran diminta, tekan Ctrl + Maju untuk memberikan respons</translation>
 <translation id="234889437187286781">Ralat semasa memuatkan data</translation>
@@ -4933,6 +4935,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4839303808932127586">Si&amp;mpan video sebagai...</translation>
 <translation id="4839910546484524995">Semak peranti anda</translation>
 <translation id="4840096453115567876">Keluar daripada mod Inkognito juga?</translation>
+<translation id="4841475798258477260">Peranti ini hanya boleh membuat sambungan kepada rangkaian mudah alih tertentu. <ph name="BEGIN_LINK_LEARN_MORE" />Ketahui lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4841741146571978176">Mesin maya yang diperlukan tidak wujud. Sila cuba sediakan <ph name="VM_TYPE" /> untuk meneruskan</translation>
 <translation id="4842976633412754305">Halaman ini sedang cuba memuatkan skrip dari sumber yang tidak disahkan.</translation>
 <translation id="4844333629810439236">Papan kekunci lain</translation>
@@ -5593,7 +5596,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{Menemukan 1 laman dengan pemberitahuan yang banyak}other{Menemukan {NUM_SITES} laman dengan pemberitahuan yang banyak}}</translation>
 <translation id="5388885445722491159">Dipasangkan</translation>
 <translation id="5389626883706033615">Laman disekat daripada meminta anda menggunakan maklumat yang disimpan tentang anda</translation>
-<translation id="5389794555912875905">Lihat amaran sebelum mengakses laman yang tidak selamat (disyorkan)</translation>
+<translation id="5389794555912875905">Berikan amaran sebelum mengakses laman yang tidak selamat (disyorkan)</translation>
 <translation id="5390112241331447203">Sertakan fail system_logs.txt yang dihantar dalam laporan maklum balas.</translation>
 <translation id="5390677308841849479">Merah gelap dan jingga</translation>
 <translation id="5390743329570580756">Hantar untuk</translation>
@@ -6233,7 +6236,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5901089233978050985">Beralih kepada menangkap tab</translation>
 <translation id="5901494423252125310">Pintu pencetak terbuka</translation>
 <translation id="5901630391730855834">Kuning</translation>
-<translation id="5902892210366342391">Lihat amaran sebelum mengakses laman yang tidak selamat dalam Mod Inkognito</translation>
+<translation id="5902892210366342391">Berikan amaran sebelum mengakses laman yang tidak selamat dalam Mod Inkognito</translation>
 <translation id="5904614460720589786">Tidak dapat menyediakan <ph name="APP_NAME" /> kerana terdapat masalah konfigurasi. Sila hubungi pentadbir anda. Kod ralat: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Hampir terkini! Mulakan semula peranti anda untuk menyelesaikan kemas kini.</translation>
 <translation id="5906732635754427568">Data yang berkaitan dengan apl ini akan dialih keluar daripada peranti ini.</translation>
@@ -6485,6 +6488,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6104068876731806426">Akaun Google</translation>
 <translation id="6104311680260824317">Tidak dapat menghubungkan peranti ke domain. Pelayan tidak menyokong jenis penyulitan Kerberos yang dinyatakan. Semak "Lagi pilihan" untuk tetapan penyulitan.</translation>
 <translation id="6104796831253957966">Baris gilir pencetak sudah penuh</translation>
+<translation id="610487644502954950">Panel sisi dinyahsematkan</translation>
 <translation id="6104929924898022309">Gunakan kekunci carian untuk mengubah gelagat kekunci fungsi</translation>
 <translation id="6106167152849320869">Jika anda memilih untuk menghantar data diagnostik dan penggunaan pada langkah terdahulu, data ini akan dikumpulkan untuk apl yang dipasang.</translation>
 <translation id="6111718295497931251">Alih keluar akses Google Drive</translation>
@@ -7494,7 +7498,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6912007319859991306">PIN SIM Selular</translation>
 <translation id="6912380255120084882">Cuba peranti yang berbeza</translation>
 <translation id="691289340230098384">Pilihan kapsyen</translation>
-<translation id="6914812290245989348">Jangan melihat sebarang amaran sebelum mengakses laman yang tidak selamat</translation>
+<translation id="6914812290245989348">Tidak memberikan sebarang amaran sebelum mengakses laman yang tidak selamat</translation>
 <translation id="6916590542764765824">Urus Sambungan</translation>
 <translation id="6918677045355889289">Kemaskinian Chrome OS diperlukan</translation>
 <translation id="6919354101107095996">Cuba log masuk ke laman. Kemudian, muat turun sekali lagi</translation>
@@ -9180,6 +9184,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8241040075392580210">Redup</translation>
 <translation id="8241806945692107836">Menentukan konfigurasi peranti...</translation>
 <translation id="8241868517363889229">Baca dan ubah penanda halaman anda</translation>
+<translation id="8242273718576931540">Peranti anda tidak dapat membuat sambungan kepada rangkaian ini. <ph name="BEGIN_LINK_LEARN_MORE" />Ketahui lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8242370300221559051">Dayakan Gedung Play</translation>
 <translation id="8242426110754782860">Teruskan</translation>
 <translation id="8243948765190375130">Kualiti media mungkin berkurangan</translation>
@@ -9669,6 +9674,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8636284842992792762">Memulakan sambungan...</translation>
 <translation id="8636323803535540285">Untuk sampai dengan lebih pantas, tambah pintasan kepada <ph name="BRAND" /></translation>
 <translation id="8636500887554457830">Jangan benarkan laman menghantar kandungan timbul atau menggunakan ubah hala</translation>
+<translation id="8636514272606969031">Panel sisi disematkan</translation>
 <translation id="8637688295594795546">Kemas kini sistem tersedia. Bersedia untuk  muat turun…</translation>
 <translation id="8638719155236856752">Kesihatan Rangkaian ChromeOS</translation>
 <translation id="8639635302972078117">Hantar data penggunaan dan diagnostik. Pada masa ini, peranti ini menghantar data diagnostik dan penggunaan peranti serta apl kepada Google secara automatik. Data ini tidak akan digunakan untuk mengenal pasti anak anda dan akan membantu peningkatan kestabilan sistem dan apl serta pelbagai lagi. Sesetengah data agregat juga akan membantu apl dan rakan kongsi Google, seperti pembangun Android. Jika tetapan Aktiviti Web &amp; Apl tambahan dihidupkan untuk anak anda, data ini mungkin disimpan pada Akaun Googlenya.</translation>

@@ -31,7 +31,6 @@
 <translation id="1181037720776840403">ဖယ်ရှားရန်</translation>
 <translation id="1191518099344003522">APN ဖွင့်ထားသည်။</translation>
 <translation id="1195447618553298278">မှားရသည့်အကြောင်း မသိပါ။</translation>
-<translation id="1195784767091936222">အော်တိုအမှောင်မုဒ် ဖွင့်ရန်</translation>
 <translation id="1196959502276349371">ဗားရှင်း <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">ဖွင့်ရန်/ခဏရပ်ရန်</translation>
 <translation id="1201402288615127009">ရှေ့သို့</translation>
@@ -281,7 +280,6 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">ကိရိယာနှင့် ချိတ်ဆက်ထားသည်။</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{စာမျက်နှာ ဖယ်ရှားမလား။}=1{စာမျက်နှာ {PAGE_NUMBER} ဖယ်ရှားမလား။}other{စာမျက်နှာ {PAGE_NUMBER} ဖယ်ရှားမလား။}}</translation>
-<translation id="3136905423678675159">အော်တိုအမှောင်မုဒ်ကို ဖွင့်မလား။</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> အတွက် အထူးသီးသန့်</translation>
 <translation id="315116470104423982">မိုဘိုင်း ဒေတာ</translation>
 <translation id="3156846309055100599">စာမျက်နှာ <ph name="PAGE_NUMBER" /> ကို စကင်ဖတ်နေသည်…</translation>
@@ -362,7 +360,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (သုံးသပ်ချက် <ph name="AGGREGATED_COUNT" /> ခု)</translation>
 <translation id="3748026146096797577">ချိတ်ဆက် မထား</translation>
 <translation id="3749289110408117711">ဖိုင် အမည်</translation>
-<translation id="3754384069690464321">ဤနောက်ခံနှင့် အကောင်းဆုံးရလဒ်အတွက် အော်တိုအမှောင်မုဒ်ကို ဖွင့်ပါ။ ၎င်းကို အက်ပ်တွင် အချိန်မရွေးပြောင်းနိုင်သည်။</translation>
 <translation id="3771294271822695279">ဗီဒီယို ဖိုင်များ</translation>
 <translation id="3784455785234192852">သော့ခတ်</translation>
 <translation id="380097101658023925">rgb သတ်မှတ်ချက်များ</translation>

@@ -23,7 +23,6 @@
 <translation id="1110914759170138831">Podświetlenie zostało skrócone</translation>
 <translation id="1111673857033749125">Tutaj wyświetlą się zakładki z innych urządzeń.</translation>
 <translation id="1113597929977215864">Pokaż widok uproszczony</translation>
-<translation id="1123070903960493543">Sposób interakcji z Chrome, wybrane ustawienia, szczegóły awarii przeglądarki Chrome</translation>
 <translation id="1126013303640354461">Formy płatności ani adresy z Google Pay nie będą szyfrowane. Historia przeglądania z Chrome nie będzie synchronizowana.
 Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie jest wysyłane do Google ani tam przechowywane. Jeśli nie pamiętasz hasła lub chcesz zmienić to ustawienie, musisz zresetować synchronizację. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="1126809382673880764">Nie chroni przed niebezpiecznymi stronami, pobieranymi plikami ani rozszerzeniami. Funkcja Bezpieczne przeglądanie nadal będzie chronić Cię w innych usługach Google, w których jest dostępna (takich jak Gmail i wyszukiwarka).</translation>
@@ -204,7 +203,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie 
 <translation id="213279576345780926">Zamknięto: <ph name="TAB_TITLE" /></translation>
 <translation id="2139186145475833000">Dodaj do ekranu głównego</translation>
 <translation id="2141396931810938595">Na podstawie wykorzystania</translation>
-<translation id="214888715418183969">Wybierz, co chcesz udostępniać w Chrome. Udostępniane dane będą używane do ulepszania funkcji przeglądarki Chrome, jej działania i stabilności.</translation>
 <translation id="2149973817440762519">Edytuj zakładkę</translation>
 <translation id="2155214902713132423">Na tym urządzeniu ta metoda weryfikacji jest niedostępna. Wybierz inną opcję na drugim urządzeniu.</translation>
 <translation id="2158408438301413340">Przeglądarce Chrome nie udało się sprawdzić wszystkich haseł</translation>
@@ -214,7 +212,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie 
 <translation id="2175927920773552910">Kod QR</translation>
 <translation id="218608176142494674">Udostępnianie</translation>
 <translation id="2194856509914051091">Istotne kwestie</translation>
-<translation id="2200113223741723867">Zarządzanie udostępnianiem danych o korzystaniu</translation>
 <translation id="22091350895006575">Dodaj nazwę użytkownika</translation>
 <translation id="221494669172414749">Otwarcie Chrome bez blokady profilu spowoduje usunięcie z samochodu zapisanych haseł i form płatności. Blokada profilu zapewnia bezpieczeństwo tych danych.</translation>
 <translation id="2227444325776770048">Kontynuuj jako <ph name="USER_FULL_NAME" /></translation>
@@ -375,7 +372,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie 
 <translation id="2996932914629936323">Usuwa historię ze wszystkich zsynchronizowanych urządzeń</translation>
 <translation id="2997081575621687554">Gdy witryna Google prosi o prywatne wstępne wczytanie linków z jej stron, Chrome szyfruje i wstępnie wczytuje te strony przy użyciu serwerów Google, ale bez plików cookie. Pozwala to na ukrycie Twojej tożsamości przed wstępnie wczytywaną witryną.</translation>
 <translation id="3003253259757197230">Odwiedzane adresy URL są wysyłane do Google w celu prognozowania, jakie kolejne witryny możesz odwiedzić, i wyświetlania dodatkowych informacji o odwiedzonej stronie</translation>
-<translation id="3006881078666935414">Brak danych o użytkowaniu</translation>
 <translation id="3016635187733453316">Sprawdź, czy to urządzenie jest połączone z internetem</translation>
 <translation id="3026955690410463085">Dołącz link</translation>
 <translation id="3027644380269727216">Na podstawie Twojej aktywności w witrynie. To ustawienie jest włączone.</translation>
@@ -512,7 +508,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie 
 <translation id="3771033907050503522">Karty incognito</translation>
 <translation id="3771290962915251154">To ustawienie jest wyłączone, ponieważ włączona jest kontrola rodzicielska</translation>
 <translation id="3771694256347217732">Warunki korzystania z usług Google</translation>
-<translation id="3773856050682458546">Podstawowe dane oraz informacje na temat odwiedzanych stron i używanych aplikacji</translation>
 <translation id="3775705724665058594">Wyślij na swoje urządzenia</translation>
 <translation id="3777796259512476958">Wylogowuje z większości stron internetowych</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 karta}few{# karty}many{# kart}other{# karty}}</translation>
@@ -560,7 +555,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie 
 <translation id="4035877632587724847">Nie zezwalaj</translation>
 <translation id="4042941173059740150">Przejdź do witryny <ph name="SITE_ETLD_PLUS_ONE" />, używając: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">Plansza dolna</translation>
-<translation id="4045764304651014138">Dane o korzystaniu</translation>
 <translation id="405399507749852140">Jeśli na którejkolwiek stronie produkt stanieje, otrzymasz alert</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4062305924942672200">Informacje prawne</translation>
@@ -774,7 +768,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5062960805900435602">Powiadomienie o scalaniu haseł zostało zamknięte</translation>
 <translation id="5081960376148623587">Wybierz, czy chcesz wstępnie wczytywać strony</translation>
 <translation id="5091199029769593641">Już niedługo po otwarciu nowej karty będziesz widzieć relacje ze strony <ph name="SITE_NAME" />. Strony, które obserwujesz, są zapisywane na Twoim koncie Google. Możesz nimi zarządzać w ustawieniach kart Discover.</translation>
-<translation id="5091249083535528968">Rozszerzone dane o korzystaniu</translation>
 <translation id="509429900233858213">Wystąpił błąd.</translation>
 <translation id="5097349930204431044">Odwiedzane witryny mogą określać, czym się interesujesz, a potem sugerować reklamy w trakcie przeglądania</translation>
 <translation id="5099845111805573968">Jeśli raz wybierzesz stronę na komputery, to ustawienie będzie stosowane w jej przypadku przy każdej wizycie</translation>
@@ -914,7 +907,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5833984609253377421">Udostępnij link</translation>
 <translation id="5839058148541733625">Dinozaur w Chrome</translation>
 <translation id="5853623416121554550">Wstrzymano</translation>
-<translation id="5854512288214985237">Statystyki ani raporty o awariach nie są przesyłane do Google</translation>
 <translation id="5855546874025048181">Sprecyzuj: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">Coś poszło nie tak. Nie udało się zaktualizować monitorowanej ceny.</translation>
 <translation id="5859968346865909126">Możesz go włączyć lub wyłączyć w ustawieniach</translation>
@@ -1019,7 +1011,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6404511346730675251">Edytuj zakładkę</translation>
 <translation id="6406506848690869874">Synchronizacja</translation>
 <translation id="6407224748847589805">Nie udało się połączyć z komputerem. Spróbuj innego sposobu potwierdzania tożsamości.</translation>
-<translation id="6410404864818553978">Podstawowe dane o korzystaniu</translation>
 <translation id="6410883413783534063">Otwórz karty, by odwiedzić jednocześnie wiele stron</translation>
 <translation id="6411219469806822692">Nie można przejść wyżej. Zacznij w górnej części strony.</translation>
 <translation id="6412673304250309937">Sprawdza, czy URL jest na liście potencjalnie niebezpiecznych stron zapisanej w Chrome. Jeśli strona próbuje wykraść Twoje hasło lub pobierasz szkodliwy plik, Chrome może też wysłać URL wraz z fragmentami zawartości strony do usługi Bezpieczne przeglądanie.</translation>

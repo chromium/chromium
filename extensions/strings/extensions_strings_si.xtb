@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">චික්! අහඹු RSA පුද්ගලික යතුර සෑදීම අසාර්ථකයි.</translation>
 <translation id="1445572445564823378">මෙම දිගුව <ph name="PRODUCT_NAME" /> හි වේගය අඩාල කරයි. <ph name="PRODUCT_NAME" /> හි කාර්යක්ෂමතාව සඳහා එය අක්‍රීය කිරීමට සිදුවේ.</translation>
 <translation id="1468038450257740950">WebGLට සහාය නොවේ.</translation>
+<translation id="1610570795592207282">ස්ක්‍රිප්ටය සඳහා css '<ph name="RELATIVE_PATH" />' පූරණය කළ නොහැකි විය.</translation>
 <translation id="1803557475693955505">'<ph name="BACKGROUND_PAGE" />' පසුබිම් පිටුව ලබාගත නොහැකි විය.</translation>
 <translation id="2159915644201199628">අනුරුව විසංකේතනය කළ නොහැකි විය: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">දේශීයකරණය භාවිතා කෙරිණ, නමුත් manifest හි default_locale නීර්ණය කර නොමැත.</translation>
@@ -31,6 +32,7 @@
 <translation id="4988792151665380515">පොදු යතුර නිර්යාත කිරීම අසාර්ථකයි.</translation>
 <translation id="5026754133087629784">වෙබ දක්වනය: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">ඇසිරීමට වන නාමාවලිය වෙත නිරපේක්ෂ පෙත සොයා ගත නොහැක.</translation>
+<translation id="5160071981665899014">ස්ක්‍රිප්ටය සඳහා ජාවාස්ක්‍රිප්ට් '<ph name="RELATIVE_PATH" />' පූරණය කළ නොහැකි විය.</translation>
 <translation id="5356315618422219272">යෙදුම්දසුන: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">හැඩගැසූ කවුළු සඳහා සහය නොලැබේ.</translation>
 <translation id="5456409301717116725">මෙම දිගුවේ මූලික ගොනුව '<ph name="KEY_PATH" />' අඩංගුවේ. ඔබට සමහරවිට එය කිරීමට අවශ්‍ය නැත.</translation>

@@ -3908,6 +3908,7 @@
 <translation id="4005817994523282006">روش تشخیص منطقه زمانی</translation>
 <translation id="4007856537951125667">پنهان کردن میان‌برها</translation>
 <translation id="4008291085758151621">‏اطلاعات سایت در VR در دسترس نیست</translation>
+<translation id="4010746393007464819">‏ارتقایی برای Debian نسخه ۱۲ ‏(Bookworm) دردسترس است</translation>
 <translation id="4010917659463429001">برای اینکه نشانک‌هایتان را در دستگاه همراهتان داشته باشید، <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">«<ph name="EXTENSION_NAME" />» را اصلاح می‌کنید؟</translation>
 <translation id="4015163439792426608">افزونه‌ها را دریافت کردید؟ به‌راحتی در یک جا <ph name="BEGIN_LINK" />افزونه‌هایتان را مدیریت کنید<ph name="END_LINK" />.</translation>
@@ -6071,6 +6072,7 @@
 <translation id="5782040878821624922">در هر دستگاهی دردسترس است</translation>
 <translation id="5782227691023083829">در حال ترجمه...</translation>
 <translation id="57838592816432529">بی‌صدا کردن</translation>
+<translation id="5784291589716625675">عوض کردن زبان برنامه</translation>
 <translation id="5785583009707899920">‏امکانات فایل‌ها در Chrome</translation>
 <translation id="5787146423283493983">قرارداد کلید</translation>
 <translation id="5787420647064736989">نام دستگاه</translation>
@@ -6545,6 +6547,7 @@
 <translation id="6151323131516309312"><ph name="SEARCH_KEY" /> را فشار دهید تا <ph name="SITE_NAME" /> جستجو شود</translation>
 <translation id="6151771661215463137">فایل از قبل در پوشه بارگیری‌تان وجود دارد.</translation>
 <translation id="6152918902620844577">درانتظار عملیات بعدی</translation>
+<translation id="6153439704237222699">‏درباره Do Not Track بیشتر بدانید</translation>
 <translation id="6154240335466762404">برداشتن همه درگاه‌ها</translation>
 <translation id="615436196126345398">پروتکل</translation>
 <translation id="6155141482566063812">برگه پس‌زمینه درحال هم‌رسانی صفحه‌نمایش است</translation>
@@ -8865,6 +8868,7 @@
 <translation id="7988805580376093356">‏سیستم‌عامل کنونی‌تان حفظ می‌شود و <ph name="DEVICE_OS" /> از USB اجرا می‌شود.</translation>
 <translation id="7988876720343145286">‏دیگر تنظیمات و اجازه‌های Android</translation>
 <translation id="7990863024647916394">صدای <ph name="DISPLAY_NAME" />‏ <ph name="COUNT" /></translation>
+<translation id="7990958035181555539">‏انتقال خودکار Wi-Fi از تلفن Android</translation>
 <translation id="7991296728590311172">تنظیمات دسترسی کلیدی</translation>
 <translation id="7992203134935383159">ترکیب گفتار</translation>
 <translation id="7994515119120860317">ترجمه نوشتار درون تصویر با <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -9812,6 +9816,7 @@
 <translation id="8736288397686080465">این سایت در پس‌زمینه به‌روزرسانی شده است.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">انتخاب کنید صفحه به چه زبانی ترجمه شود</translation>
+<translation id="8738418093147087440">جستجو براساس کشور، زبان، یا نام‌های ورودی</translation>
 <translation id="8740086188450289493">‏استفاده از گذرواژه «حساب Google»</translation>
 <translation id="8740247629089392745">‏می‌توانید این Chromebook را به <ph name="SUPERVISED_USER_NAME" /> بدهید. راه‌اندازی به‌زودی تمام می‌شود و زمان کاوش دستگاه می‌رسد.</translation>
 <translation id="8740672167979365981">‏به‌روزرسانی ChromeOS Flex لازم است</translation>

@@ -23,7 +23,6 @@
 <translation id="1110914759170138831">Theksimi është shkurtuar</translation>
 <translation id="1111673857033749125">Faqeshënuesit e ruajtur në pajisjet e tua të tjera do të shfaqen këtu.</translation>
 <translation id="1113597929977215864">Shfaq pamjen e thjeshtuar</translation>
-<translation id="1123070903960493543">Mënyra se si bashkëvepron me Chrome, cilësimet që ke zgjedhur, të dhënat e ndërprerjeve aksidentale të Chrome</translation>
 <translation id="1126013303640354461">Mënyrat e pagesës dhe adresat nga Google Pay nuk do të enkriptohen. Historiku i shfletimit nga Chrome nuk do të sinkronizohet.
 Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua të enkriptuara. Fraza e kalimit nuk dërgohet apo ruhet nga Google. Nëse e harron frazën tënde të kalimit apo dëshiron të ndryshosh këtë cilësim, duhet që të rivendosësh sinkronizimin. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="1126809382673880764">Nuk të mbron kundër faqeve të internetit, shkarkimeve dhe shtesave të rrezikshme. Do të vazhdosh të marrësh mbrojtje për "Shfletimin e sigurt", aty ku ofrohet, në shërbimet e tjera të Google, si Gmail dhe "Kërko".</translation>
@@ -204,7 +203,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> është mbyllur</translation>
 <translation id="2139186145475833000">Shtoje te ekrani "Faqja kryesore"</translation>
 <translation id="2141396931810938595">Bazuar në përdorimin tënd</translation>
-<translation id="214888715418183969">Zgjidh se çfarë informacionesh ndihesh mirë të ndash me Chrome. Metrikat që ndan do të përdoren për të përmirësuar veçoritë, cilësinë e funksionimit dhe qëndrueshmërinë e Chrome.</translation>
 <translation id="2149973817440762519">Redakto faqeshënuesin</translation>
 <translation id="2155214902713132423">Kjo mënyrë verifikimi nuk ofrohet për këtë pajisje. Zgjidh një opsion tjetër në pajisjen tjetër.</translation>
 <translation id="2158408438301413340">Chrome nuk mund t'i kontrollonte të gjitha fjalëkalimet</translation>
@@ -214,7 +212,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2175927920773552910">Kodi QR</translation>
 <translation id="218608176142494674">Ndarja</translation>
 <translation id="2194856509914051091">Gjëra për t'u pasur parasysh</translation>
-<translation id="2200113223741723867">Menaxho ndarjen e të dhënave të përdorimit</translation>
 <translation id="22091350895006575">Shto emrin e përdoruesit</translation>
 <translation id="221494669172414749">Hapja e Chrome pa një kyçje të profilit do të heqë të gjitha fjalëkalimet e ruajtura dhe mënyrat e pagesës nga makina. Përdorimi i një kyçjeje profili i mban këto të dhëna të sigurta.</translation>
 <translation id="2227444325776770048">Vazhdo si <ph name="USER_FULL_NAME" /></translation>
@@ -375,7 +372,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2996932914629936323">Pastron historikun nga të gjitha pajisjet e sinkronizuara</translation>
 <translation id="2997081575621687554">Kur një sajt i Google kërkon të ngarkojë paraprakisht lidhje në mënyrë private në faqen e tij, Chrome i enkripton dhe i ngarkon paraprakisht faqet nëpërmjet serverëve të Google pa kuki. Kjo e fsheh identitetin tënd nga sajti i ngarkuar paraprakisht.</translation>
 <translation id="3003253259757197230">URL-të që viziton dërgohen te Google për të parashikuar sajtet që mund të vizitosh në vijim dhe për të shfaqur informacione shtesë për faqen që po viziton ti</translation>
-<translation id="3006881078666935414">Nuk ka asnjë të dhënë përdorimi</translation>
 <translation id="3016635187733453316">Sigurohu që kjo pajisje të jetë e lidhur me internetin</translation>
 <translation id="3026955690410463085">Përfshi lidhjen</translation>
 <translation id="3027644380269727216">Bazuar në aktivitetin tënd në një sajt. Ky cilësim është aktiv.</translation>
@@ -512,7 +508,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3771033907050503522">Skedat "e fshehura"</translation>
 <translation id="3771290962915251154">Ky cilësim është i çaktivizuar sepse kontrollet prindërore janë të aktivizuara</translation>
 <translation id="3771694256347217732">Kushtet e shërbimit të Google</translation>
-<translation id="3773856050682458546">Të dhëna bazë plus informacione rreth faqeve të internetit që viziton dhe aplikacioneve që përdor</translation>
 <translation id="3775705724665058594">Dërgo te pajisjet e tua</translation>
 <translation id="3777796259512476958">Të nxjerr nga shumica e sajteve</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 skedë}other{# skeda}}</translation>
@@ -560,7 +555,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="4035877632587724847">Mos lejo</translation>
 <translation id="4042941173059740150">Vazhdo te <ph name="SITE_ETLD_PLUS_ONE" /> me <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">Fleta e poshtme</translation>
-<translation id="4045764304651014138">Të dhënat e përdorimit</translation>
 <translation id="405399507749852140">Merr sinjalizime nëse ulet çmimi në ndonjë sajt</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4062305924942672200">Informacioni ligjor</translation>
@@ -774,7 +768,6 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5062960805900435602">Përditësimi për shkrirjen e fjalëkalimeve është mbyllur</translation>
 <translation id="5081960376148623587">Zgjidh nëse faqet do të ngarkohen paraprakisht</translation>
 <translation id="5091199029769593641">Së shpejti do të shikosh histori nga <ph name="SITE_NAME" /> kur të hapësh një skedë të re. Sajtet që ndjek ruhen në llogarinë tënde të Google. Mund t'i menaxhosh te cilësimet e "Zbulo".</translation>
-<translation id="5091249083535528968">Të dhënat e zgjeruara të përdorimit</translation>
 <translation id="509429900233858213">Ndodhi një gabim.</translation>
 <translation id="5097349930204431044">Sajtet që viziton mund të përcaktojnë se çfarë të pëlqen dhe më pas të sugjerojnë reklama ndërkohë që ti vazhdon të shfletosh</translation>
 <translation id="5099845111805573968">Kur zgjedh një herë sajtin për desktop, cilësimi zbatohet te sajti sa herë që e viziton atë</translation>
@@ -914,7 +907,6 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5833984609253377421">Ndaj lidhjen</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5853623416121554550">në pauzë</translation>
-<translation id="5854512288214985237">Asnjë statistikë apo raport ndërprerjeje aksidentale nuk i dërgohet Google</translation>
 <translation id="5855546874025048181">Detajo: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">Ndodhi një gabim. Veçoria "Monitoro çmimin" nuk mund të përditësohej.</translation>
 <translation id="5859968346865909126">Mund ta aktivizosh ose ta çaktivizosh te cilësimet</translation>
@@ -1019,7 +1011,6 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="6404511346730675251">Redakto faqeshënuesin</translation>
 <translation id="6406506848690869874">Sinkronizo</translation>
 <translation id="6407224748847589805">Nuk mund të lidhet me kompjuterin tënd. Provo një opsion tjetër verifikimi.</translation>
-<translation id="6410404864818553978">Të dhënat bazë të përdorimit</translation>
 <translation id="6410883413783534063">Hap skedat për të vizituar faqe të ndryshme njëkohësisht</translation>
 <translation id="6411219469806822692">Nuk mund të shkosh më lart. Provo të fillosh më lart në faqe.</translation>
 <translation id="6412673304250309937">Kontrollon URL-të kundrejt një liste sajtesh të pasigurta të ruajtur në Chrome. Nëse një sajt përpiqet të vjedhë fjalëkalimin tënd, ose kur shkarkon një skedar të dëmshëm, Chrome mund t'i dërgojë po ashtu "Shfletimit të sigurt" URL-të, duke përfshirë pjesë të përmbajtjes së faqes.</translation>

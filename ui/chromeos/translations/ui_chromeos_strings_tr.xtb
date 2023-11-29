@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="tr">
 <translation id="1000498691615767391">Açılacak klasörü seç</translation>
+<translation id="1014208178561091457"><ph name="FILE_NAME" />, şifrelenmiş olduğu için kopyalanamadı.</translation>
 <translation id="1047956942837015229"><ph name="COUNT" /> öğe siliniyor...</translation>
 <translation id="1049926623896334335">Word belgesi</translation>
 <translation id="1056775291175587022">Ağ yok</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Parallels Desktop ile klasör paylaşın</translation>
 <translation id="1439919885608649279">Çiçek tutan bir kişi</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> dosya sistemini çıkarma</translation>
+<translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> dosya, şifrelenmiş olduğu için kopyalanamadı.</translation>
 <translation id="1471718551822868769">Slovakça</translation>
 <translation id="1482884275703521657">Fince</translation>
 <translation id="148466539719134488">İsviçre dili</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">Kullanılamaz</translation>
 <translation id="3254434849914415189"><ph name="FILE_TYPE" /> dosyaları için varsayılan uygulamayı seç:</translation>
 <translation id="3255159654094949700">Arapça</translation>
+<translation id="326396468955264502"><ph name="NUMBER_OF_FILES" /> dosya, şifrelenmiş olduğu için taşınamadı.</translation>
 <translation id="3264582393905923483">Bağlam</translation>
 <translation id="3272909651715601089">"<ph name="PATH" />" dosyası açılamadı</translation>
 <translation id="3280431534455935878">Hazırlanıyor</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490">1 klasör <ph name="VM_NAME" /> ile paylaşıldı</translation>
 <translation id="3524311639100184459">Dikkat: Bu dosyalar geçicidir ve disk alanından kazanmak için otomatik olarak silinebilir.  <ph name="BEGIN_LINK" />Daha Fazla Bilgi<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Klasör</translation>
+<translation id="3529424493985988200">Ayrıntılar için yöneticinizle görüşün.</translation>
 <translation id="3548125359243647069">Çok sayıda yanlış PIN girildi.</translation>
 <translation id="3549797760399244642">drive.google.com'a git...</translation>
 <translation id="3553048479571901246">Dosyaları <ph name="APP_NAME" /> ile açmak için önce dosyaları Windows dosyaları klasörüne kopyalayın.</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">Bu dosya farklı bir masaüstünde açıldı. Görüntülemek için <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) adlı kullanıcıya gidin.</translation>
 <translation id="6394388407447716302">Salt okunur</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> öğe</translation>
+<translation id="6407769893376380348"><ph name="FILE_NAME" />, şifrelenmiş olduğu için taşınamadı.</translation>
 <translation id="642282551015776456">Bu ad, dosya veya klasör adı olarak kullanılamaz</translation>
 <translation id="6423031066725912715">TCVN klavye ile Vietnamca</translation>
 <translation id="6430271654280079150">1 deneme hakkınız kaldı.</translation>

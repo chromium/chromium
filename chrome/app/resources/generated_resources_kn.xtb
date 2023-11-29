@@ -3905,6 +3905,7 @@
 <translation id="4005817994523282006">ಸಮಯವಲಯ ಪತ್ತೆಹಚ್ಚುವಿಕೆ ವಿಧಾನ</translation>
 <translation id="4007856537951125667">ಶಾರ್ಟ್‌ಕಟ್‌ಗಳನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="4008291085758151621">VR ನಲ್ಲಿ ಸೈಟ್ ಮಾಹಿತಿಯು ಲಭ್ಯವಿಲ್ಲ</translation>
+<translation id="4010746393007464819">Debian 12 (Bookworm) ನ ಅಪ್‌ಗ್ರೇಡ್ ಲಭ್ಯವಿದೆ</translation>
 <translation id="4010917659463429001">ನಿಮ್ಮ ಮೊಬೈಲ್ ಸಾಧನದಲ್ಲಿ ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಪಡೆದುಕೊಳ್ಳಲು, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" ಸರಿಪಡಿಸಬೇಕೆ?</translation>
 <translation id="4015163439792426608">ನೀವು ವಿಸ್ತರಣೆಗಳನ್ನು ಬಳಸುತ್ತಿರುವಿರಾ? ಒಂದೇ ಸ್ಥಳದಲ್ಲಿ ಸುಲಭವಾಗಿ <ph name="BEGIN_LINK" />ನಿಮ್ಮ ವಿಸ್ತರಣೆಗಳನ್ನು ನಿರ್ವಹಿಸಿ<ph name="END_LINK" />.</translation>
@@ -6069,6 +6070,7 @@
 <translation id="5782040878821624922">ಇದು ಯಾವುದೇ ಸಾಧನದಲ್ಲಿ ಲಭ್ಯವಿದೆ</translation>
 <translation id="5782227691023083829">ಅನುವಾದ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="57838592816432529">ಮ್ಯೂಟ್</translation>
+<translation id="5784291589716625675">ಆ್ಯಪ್ ಭಾಷೆಯನ್ನು ಬದಲಾಯಿಸಿ</translation>
 <translation id="5785583009707899920">Chrome ಫೈಲ್‌ ಸೌಲಭ್ಯಗಳು</translation>
 <translation id="5787146423283493983">ಪ್ರಮುಖ ಒಪ್ಪಂದ</translation>
 <translation id="5787420647064736989">ಸಾಧನದ ಹೆಸರು</translation>
@@ -6543,6 +6545,7 @@
 <translation id="6151323131516309312"><ph name="SITE_NAME" /> ಹುಡುಕಲು <ph name="SEARCH_KEY" /> ಒತ್ತಿ</translation>
 <translation id="6151771661215463137">ನಿಮ್ಮ ಡೌನ್‌ಲೋಡ್ ಫೋಲ್ಡರ್‌ನಲ್ಲಿ ಈಗಾಗಲೇ ಫೈಲ್ ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ.</translation>
 <translation id="6152918902620844577">ಮುಂದಿನ ಕಾರ್ಯಾಚರಣೆಗಾಗಿ ಕಾಯಲಾಗುತ್ತಿದೆ</translation>
+<translation id="6153439704237222699">ಟ್ರ್ಯಾಕ್ ಮಾಡಬೇಡಿ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="6154240335466762404">ಎಲ್ಲಾ ಪೋರ್ಟ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="615436196126345398">ಪ್ರೊಟೊಕಾಲ್</translation>
 <translation id="6155141482566063812">ಹಿನ್ನೆಲೆ ಟ್ಯಾಬ್ ನಿಮ್ಮ ಪರದೆಯನ್ನು ಹಂಚಿಕೊಳ್ಳುತ್ತಿದೆ</translation>
@@ -8863,6 +8866,7 @@
 <translation id="7988805580376093356">ನಿಮ್ಮ OS ಅನ್ನು ಉಳಿಸಿಕೊಳ್ಳಿ ಹಾಗೂ USB ಯಿಂದ <ph name="DEVICE_OS" /> ಅನ್ನು ರನ್ ಮಾಡಿ.</translation>
 <translation id="7988876720343145286">ಇನ್ನಷ್ಟು Android ಸೆಟ್ಟಿಂಗ್‌ಗಳು ಮತ್ತು ಅನುಮತಿಗಳು</translation>
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> ಧ್ವನಿ <ph name="COUNT" /></translation>
+<translation id="7990958035181555539">ನಿಮ್ಮ Android ಫೋನ್‌ನಿಂದ Wi-Fi ಅನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ವರ್ಗಾಯಿಸಿ</translation>
 <translation id="7991296728590311172">ಪ್ರವೇಶದ ವಿಧಾನವನ್ನು ಬದಲಿಸುವ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="7992203134935383159">ಧ್ವನಿ ಸಂಶ್ಲೇಷಣೆ</translation>
 <translation id="7994515119120860317"><ph name="VISUAL_SEARCH_PROVIDER" /> ಮೂಲಕ ಚಿತ್ರದಲ್ಲಿರುವ ಪಠ್ಯವನ್ನು ಅನುವಾದಿಸಿ</translation>
@@ -9807,6 +9811,7 @@
 <translation id="8736288397686080465">ಈ ಸೈಟ್ ಅನ್ನು ಹಿನ್ನೆಲೆಯಲ್ಲಿ ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="8737709691285775803">ಶಿಲ್</translation>
 <translation id="8737914367566358838">ಪುಟವನ್ನು ಯಾವ ಭಾಷೆಗೆ ಅನುವಾದಿಸಬೇಕೆಂಬುದನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
+<translation id="8738418093147087440">ದೇಶಗಳು, ಭಾಷೆ ಅಥವಾ ಇನ್‌ಪುಟ್ ಹೆಸರುಗಳ ಪ್ರಕಾರವಾಗಿ ಹುಡುಕಿ</translation>
 <translation id="8740086188450289493">Google ಖಾತೆಯ ಪಾಸ್‌ವರ್ಡ್ ಬಳಸಿ</translation>
 <translation id="8740247629089392745">ಈ Chromebook ಅನ್ನು <ph name="SUPERVISED_USER_NAME" /> ಅವರಿಗೆ ಹಸ್ತಾಂತರಿಸಬಹುದು. ಸೆಟಪ್ ಬಹುತೇಕ ಪೂರ್ಣಗೊಂಡಿದೆ, ಇದು ಎಕ್ಸ್‌ಪ್ಲೋರ್ ಮಾಡುವ ಸಮಯ.</translation>
 <translation id="8740672167979365981">ChromeOS Flex ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡುವ ಅಗತ್ಯವಿದೆ</translation>

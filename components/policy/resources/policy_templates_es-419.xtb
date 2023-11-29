@@ -3481,15 +3481,6 @@ Esta política es una solución temporal y se quitará en algunos momentos impor
 <translation id="3838094946886335701">Si estableces la política (solo como recomendada), podrás registrar una lista de controladores de protocolo, que se combinarán con los que registre el usuario; así, ambos conjuntos de controladores estarán en uso. Asigna a la propiedad "protocolo" el esquema (p. ej. mailto) y a la propiedad "URL" el patrón de URL de la aplicación que controla el esquema especificado en el campo "protocolo". El patrón puede incluir el marcador de posición "%s", que se reemplazará por la URL controlada.
 
       Los usuarios no podrán quitar un controlador de protocolo que haya registrado la política. Sin embargo, al instalar un nuevo controlador predeterminado, los usuarios podrán cambiar los controladores de protocolo que haya instalado la política.</translation>
-<translation id="3847858041725748756">Esta política dejó de estar disponible. En su lugar, utiliza la política <ph name="RELATED_WEBSITE_SETS_ENABLED_POLICY_NAME" />.
-
-Esta política se utiliza como método para inhabilitar la función de conjuntos propios.
-
-Si habilitas esta política o no la estableces, se habilitará la función de conjuntos propios.
-
-Si la inhabilitas, se inhabilitará la función de conjuntos propios.
-
-Controla si Chrome admite integraciones relacionadas con conjuntos propios.</translation>
 <translation id="3851443303439635700">Controlar el umbral de anidación antes de que la función de JavaScript setTimeout() comience a restringirse</translation>
 <translation id="3858658082795336534">Modo predeterminado de impresión doble</translation>
 <translation id="3859780406608282662">Permite agregar un parámetro para la obtención del valor de inicialización de variaciones en <ph name="PRODUCT_OS_NAME" />.
@@ -10026,42 +10017,6 @@ El valor predeterminado es RollbackDisabled.</translation>
 <translation id="9206472508136116830">No permitir la Detección de archivos compartidos de NetBIOS</translation>
 <translation id="9207596996305971030">No informar eventos de acceso y salida</translation>
 <translation id="9210647066889383361">Permitir que los usuarios accedan a sus dispositivos con Smart Lock</translation>
-<translation id="9212819508924803630">Esta política dejó de estar disponible. En su lugar, utiliza la política <ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME" />.
-
-Esta política proporciona una forma de anular la lista de conjuntos que el navegador utiliza para las funciones de los conjuntos propios.
-
-Cada conjunto de la lista de conjuntos propios del navegador debe cumplir los requisitos de un conjunto propio.
-Un conjunto propio debe contener un sitio principal y uno o más sitios miembros.
-Un conjunto también puede contener una lista de sitios de servicio de su propiedad, así como un mapa de un sitio a todas sus variantes de ccTLD.
-Consulta https://github.com/WICG/first-party-sets para obtener más información sobre los conjuntos propios que usa <ph name="PRODUCT_NAME" />.
-
-Todos los sitios de un conjunto propio deben ser un dominio registrable de HTTPS. Además, cada sitio en un conjunto propio debe ser único.
-Esto quiere decir que un sitio no puede estar enumerado más de una vez en un conjunto propio.
-
-Cuando se proporciona un diccionario vacío a la política, el navegador utiliza la lista pública de conjuntos propios.
-
-Para todos los sitios de un conjunto propio de la lista <ph name="REPLACEMENTS" />, si el sitio también está
-en un conjunto propio de la lista del navegador, ese sitio se quitará del conjunto propio del navegador.
-Luego de esto, el conjunto propio de la política se agregará a la lista de conjuntos propios del navegador.
-
-Para todos los sitios de un conjunto propio de la lista <ph name="ADDITIONS" />, si el sitio también está
-en un conjunto propio de la lista del navegador, ese conjunto se actualizará para que
-el nuevo conjunto propio pueda agregarse a la lista del navegador. Una vez que se actualice la lista del navegador,
-el conjunto propio de la política se agregará a la lista de conjuntos propios del navegador.
-
-La lista de conjuntos propios del navegador requiere que ningún sitio de la lista esté en
-más de un conjunto. Este también es un requisito para las listas <ph name="REPLACEMENTS" />
-y <ph name="ADDITIONS" />. De la misma manera, un sitio no puede estar al mismo tiempo en
-las listas <ph name="REPLACEMENTS" /> y <ph name="ADDITIONS" />.
-
-Los comodines (*) no se admiten como valor de la política, ni en ningún conjunto propio en estas listas.
-
-Todos los conjuntos que brinda esta política deben ser conjuntos propios válidos. De lo contrario, se
-producirá un error.
-
-En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, vinculadas a <ph name="MS_AAD_NAME" /> o inscritas en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias administradas con MDM, vinculadas a un dominio a través de MCX o inscritas en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="9213751049772256263">Inhabilitar todas las variaciones</translation>
 <translation id="9217154963008402249">Frecuencia de envío de paquetes de red de control</translation>
 <translation id="9220314833408124365">Usar una política de referente predeterminado con el valor no-referrer-when-downgrade</translation>

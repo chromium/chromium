@@ -581,6 +581,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1461041542809785877">Veiktspēja</translation>
 <translation id="1461177659295855031">Pārvietot uz mapi Grāmatzīmju josla</translation>
 <translation id="1461288887896722288">Jūs tikko pierakstījāties pārvaldītā kontā. Izveidojot jaunu pārvaldīto profilu, varēsiet piekļūt noteiktiem ar minēto kontu saistītiem resursiem.</translation>
+<translation id="1461868306585780092">Brīdināt pirms nedrošu savienojumu izmantošanas</translation>
 <translation id="146219525117638703">ONC statuss</translation>
 <translation id="146220085323579959">Internets atvienots. Pārbaudiet interneta savienojumu un mēģiniet vēlreiz.</translation>
 <translation id="1462480037563370607">Pievienot vietnes manuāli</translation>
@@ -1560,6 +1561,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2180620921879609685">Bloķēt saturu jebkurā lapā</translation>
 <translation id="2181821976797666341">Politikas</translation>
 <translation id="2182058453334755893">Kopēts jūsu starpliktuvē</translation>
+<translation id="2182419606502127232">Iekļaut manus servera žurnālus.</translation>
 <translation id="2183570493397356669">Poga “Turpināt” ir atspējota</translation>
 <translation id="2184515124301515068">Atļaut pārlūkam Chrome izvēlēties, kad vietnēs var atskaņot skaņu (ieteicams)</translation>
 <translation id="2186206192313702726">Google Lens</translation>
@@ -1753,6 +1755,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2323018538045954000">Saglabātie Wi-Fi tīkli</translation>
 <translation id="2325444234681128157">Atcerēties paroli</translation>
 <translation id="2326188115274135041">Lai ieslēgtu automātisko atbloķēšanu, ievadiet PIN</translation>
+<translation id="2326906096734221931">Atvērt lietotnes iestatījumus</translation>
 <translation id="2326931316514688470">&amp;Atkārtoti ielādēt lietotni</translation>
 <translation id="2327492829706409234">Iespējot lietotni</translation>
 <translation id="2327920026543055248">Ievadīt <ph name="CHARACTER" />. rakstzīmi no <ph name="TOTAL" /></translation>
@@ -3890,6 +3893,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="399788104667917863">Piespraust rīkjoslai</translation>
 <translation id="3998976413398910035">Pārvaldīt printerus</translation>
 <translation id="4001540981461989979">Izcelt peles kursoru, kad tas tiek pārvietots</translation>
+<translation id="4002347779798688515">Iespējams, lejupielādēto profilu nevarēs izmantot, ja mobilā tīkla nodrošinātājs ir bloķēts. Lai saņemtu atbalstu, sazinieties ar savu nodrošinātāju.</translation>
 <translation id="4002440992267487163">PIN koda iestatīšana</translation>
 <translation id="4005817994523282006">Laika joslas noteikšanas metode</translation>
 <translation id="4007856537951125667">Paslēpt saīsnes</translation>
@@ -5426,6 +5430,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5261683757250193089">Atvērt interneta veikalā</translation>
 <translation id="5261799091118902550">Iespējams, šis fails ir vīruss vai ļaunprātīga programmatūra. Varat nosūtīt to uzņēmumam Google, lai pārbaudītu, vai tas ir nedrošs.</translation>
 <translation id="5262784498883614021">Automātiska savienojuma izveide ar tīklu</translation>
+<translation id="5263656105659419083">Lai ērti atgrieztos sānu panelī, augšējā labajā stūrī noklikšķiniet uz Piespraust.</translation>
 <translation id="5264148714798105376">Tas var ilgt aptuveni minūti.</translation>
 <translation id="5264252276333215551">Lūdzu, izveidojiet savienojumu ar internetu, lai lietotni palaistu kioska režīmā.</translation>
 <translation id="5265797726250773323">Instalēšanas laikā radās kļūda</translation>
@@ -5573,6 +5578,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{Tika atrasta viena vietne ar daudziem paziņojumiem}zero{Tika atrastas {NUM_SITES} vietnes ar daudziem paziņojumiem}one{Tika atrasta {NUM_SITES} vietne ar daudziem paziņojumiem}other{Tika atrastas {NUM_SITES} vietnes ar daudziem paziņojumiem}}</translation>
 <translation id="5388885445722491159">Sapārots</translation>
 <translation id="5389626883706033615">Vietnēm ir liegts lūgt atļauju izmantot informāciju, kas tajās ir saglabāta par jums</translation>
+<translation id="5389794555912875905">Skatīt brīdinājumus pirms nedrošu vietņu apmeklēšanas (ieteicams)</translation>
 <translation id="5390112241331447203">Iekļaut atsauksmju ziņojumos nosūtīto failu system_logs.txt.</translation>
 <translation id="5390677308841849479">Tumši sarkana un oranža</translation>
 <translation id="5390743329570580756">Sūtīt šim:</translation>
@@ -5856,6 +5862,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="5608580678041221894">Pieskarieties tālāk norādītajiem taustiņiem, lai pielāgotu vai pārvietotu apgriešanas apgabalu.</translation>
 <translation id="5609231933459083978">Šķiet, ka lietojumprogramma nav derīga.</translation>
 <translation id="561030196642865721">Šajā vietnē ir atļauti trešās puses sīkfaili</translation>
+<translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5612734644261457353">Diemžēl jūsu paroli joprojām nevarēja verificēt. Piezīme. Ja nesen mainījāt paroli, jaunā parole tiks lietota pēc izrakstīšanās. Lūdzu, šeit izmantojiet iepriekšējo paroli.</translation>
 <translation id="5614190747811328134">Paziņojums lietotājam</translation>
 <translation id="5614553682702429503">Vai saglabāt paroli?</translation>
@@ -6208,6 +6215,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="5901089233978050985">Pāriet uz ierakstošo cilni</translation>
 <translation id="5901494423252125310">Printera durvis ir atvērtas</translation>
 <translation id="5901630391730855834">Dzeltena</translation>
+<translation id="5902892210366342391">Skatīt brīdinājumus pirms nedrošu vietņu apmeklēšanas inkognito režīmā</translation>
 <translation id="5904614460720589786">Konfigurācijas problēmas dēļ nevarēja iestatīt lietotni <ph name="APP_NAME" />. Lūdzu, sazinieties ar administratoru. Kļūdas kods: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Atjaunināšana ir gandrīz pabeigta. Restartējiet ierīci, lai pabeigtu atjaunināšanu.</translation>
 <translation id="5906732635754427568">Ar šo lietotni saistītie dati tiks noņemti no šīs ierīces.</translation>
@@ -6744,6 +6752,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6333170995003625229">Nevarēja verificēt jūsu e-pasta adresi vai paroli. Mēģiniet pierakstīties vēlreiz.</translation>
 <translation id="6334267141726449402">Kopējiet un nosūtiet šo saiti lietotājam, lai vāktu žurnālus.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> atspējoja ADB atkļūdošanu. Tādēļ 24 stundu laikā tiks atiestatīta jūsu <ph name="DEVICE_TYPE" /> ierīce. Dublējiet visus failus, ko vēlaties paturēt.</translation>
+<translation id="6336194758029258346">Lietotnes valoda</translation>
 <translation id="6337543438445391085">Datos tik un tā var būt iekļauta personas informācija. Noteikti pārskatiet eksportētos failus.</translation>
 <translation id="6338968693068997776">USB ierīces pievienošana</translation>
 <translation id="6339668969738228384">Izveidot profilu kontam <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -7253,6 +7262,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="676158322851696513">“<ph name="EXTENSION_NAME" />”</translation>
 <translation id="6761623907967804682">Nav atļauts ierīcē saglabāt vietnes datus</translation>
 <translation id="6762833852331690540">Ieslēgts</translation>
+<translation id="6762861159308991328">Lietotnes iestatījumos varat mainīt saišu atvēršanas veidu.</translation>
 <translation id="676560328519657314">Jūsu maksājumu veidi pakalpojumā Google Pay</translation>
 <translation id="6766488013065406604">Pāriet uz Google paroļu pārvaldnieku</translation>
 <translation id="6767566652486411142">Izvēlēties citu valodu…</translation>
@@ -7468,6 +7478,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6912007319859991306">Mobilā tīkla SIM kartes PIN</translation>
 <translation id="6912380255120084882">Mēģiniet citā ierīcē</translation>
 <translation id="691289340230098384">Subtitru preferences</translation>
+<translation id="6914812290245989348">Netiek rādīti brīdinājumi pirms nedrošu vietņu apmeklēšanas</translation>
 <translation id="6916590542764765824">Paplašinājumu pārvaldība</translation>
 <translation id="6918677045355889289">Nepieciešama Chrome OS atjaunināšana</translation>
 <translation id="6919354101107095996">Mēģiniet pierakstīties vietnē. Pēc tam atkārtojiet lejupielādi.</translation>
@@ -8950,6 +8961,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8076835018653442223">Administrators ir atspējojis piekļuvi lokālajiem failiem jūsu ierīcē.</translation>
 <translation id="8077120325605624147">Jebkurā jūsu apmeklētā vietnē var tikt rādītas jebkādas reklāmas</translation>
 <translation id="8077579734294125741">Citi Chrome profili</translation>
+<translation id="80790299200510644">Attēlu meklēšana</translation>
 <translation id="80798452873915119">Vietnes var pieprasīt atļauju pārvaldīt logus visos jūsu displejos</translation>
 <translation id="8080028325999236607">Aizvērt visas cilnes</translation>
 <translation id="808089508890593134">Google</translation>

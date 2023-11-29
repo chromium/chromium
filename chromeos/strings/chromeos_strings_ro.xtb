@@ -31,7 +31,6 @@
 <translation id="1181037720776840403">Elimină</translation>
 <translation id="1191518099344003522">APN este activat.</translation>
 <translation id="1195447618553298278">Eroare necunoscută.</translation>
-<translation id="1195784767091936222">Activează modul întunecat automat</translation>
 <translation id="1196959502276349371">Versiunea <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Redă / Întrerupe</translation>
 <translation id="1201402288615127009">Înainte</translation>
@@ -281,7 +280,6 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Dispozitivul este conectat.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Elimini pagina?}=1{Elimini pagina {PAGE_NUMBER}?}few{Elimini pagina {PAGE_NUMBER}?}other{Elimini pagina {PAGE_NUMBER}?}}</translation>
-<translation id="3136905423678675159">Activezi modul întunecat automat?</translation>
 <translation id="3146655726035122603">Exclusiv pentru <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Date mobile</translation>
 <translation id="3156846309055100599">Se scanează pagina <ph name="PAGE_NUMBER" />...</translation>
@@ -362,7 +360,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> recenzii)</translation>
 <translation id="3748026146096797577">Neconectat</translation>
 <translation id="3749289110408117711">Nume de fișier</translation>
-<translation id="3754384069690464321">Pentru rezultate optime legate de această imagine de fundal, activează modul întunecat automat. Îl poți schimba din nou oricând în aplicație.</translation>
 <translation id="3771294271822695279">Fișiere video</translation>
 <translation id="3784455785234192852">Blochează</translation>
 <translation id="380097101658023925">comenzi pentru rgb</translation>

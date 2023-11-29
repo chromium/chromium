@@ -31,7 +31,6 @@
 <translation id="1181037720776840403">ລຶບອອກ</translation>
 <translation id="1191518099344003522">APN ເປີດການນຳໃຊ້ຢູ່.</translation>
 <translation id="1195447618553298278">ຄວາມຜິດພາດທີ່ບໍ່ຮູ້ຈັກ.</translation>
-<translation id="1195784767091936222">ເປີດໂໝດມືດອັດຕະໂນມັດ</translation>
 <translation id="1196959502276349371">ເວີຊັນ <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">ຫຼິ້ນ/ຢຸດຊົ່ວຄາວ</translation>
 <translation id="1201402288615127009">ຕໍ່ໄປ</translation>
@@ -281,7 +280,6 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">ເຊື່ອມຕໍ່ອຸປະກອນແລ້ວ.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{ລຶບໜ້າອອກບໍ?}=1{ລຶບໜ້າ {PAGE_NUMBER} ອອກບໍ?}other{ລຶບໜ້າ {PAGE_NUMBER} ອອກບໍ?}}</translation>
-<translation id="3136905423678675159">ເປີດໂໝດມືດອັດຕະໂນມັດບໍ?</translation>
 <translation id="3146655726035122603">ພິເສດສຳລັບ <ph name="PRODUCT_NAME" /> ໂດຍສະເພາະ</translation>
 <translation id="315116470104423982">ຂໍ້​ມູນ​ມື​ຖື</translation>
 <translation id="3156846309055100599">ກຳລັງສະແກນໜ້າ <ph name="PAGE_NUMBER" />...</translation>
@@ -362,7 +360,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ຄຳຕິຊົມ)</translation>
 <translation id="3748026146096797577">ບໍ່​ໄດ້​ເຊື່ອມ​ຕໍ່</translation>
 <translation id="3749289110408117711">ຊື່​ໄຟລ​໌</translation>
-<translation id="3754384069690464321">ເພື່ອໃຫ້ໄດ້ຜົນທີ່ດີທີ່ສຸດເມື່ອໃຊ້ຮູບພື້ນຫຼັງນີ້, ກະລຸນາເປີດໂໝດມືດອັດຕະໂນມັດ. ທ່ານສາມາດປ່ຽນກັບຄືນໄດ້ທຸກເວລາໃນແອັບ.</translation>
 <translation id="3771294271822695279">ໄຟລ​໌​ວິ​ດີ​ໂອ</translation>
 <translation id="3784455785234192852">ລັອກ</translation>
 <translation id="380097101658023925">ການຄວບຄຸມ RGB</translation>

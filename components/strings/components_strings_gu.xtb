@@ -50,6 +50,7 @@
 <translation id="1074497978438210769">સુરક્ષિત નથી</translation>
 <translation id="1075079914415273530">કૃષિ અને વન વિજ્ઞાન</translation>
 <translation id="1075364221219156102">પાસકીનો ઉપયોગ કરો</translation>
+<translation id="1078033282564106222">'બિલ્ડિંગ નંબર' વિકલ્પ પસંદ કરવામાં આવ્યો</translation>
 <translation id="1080116354587839789">પહોળાઈ પ્રમાણે ફિટ કરો</translation>
 <translation id="1081061862829655580">ટ્રે 19</translation>
 <translation id="1089439967362294234">પાસવર્ડ બદલો</translation>
@@ -784,6 +785,7 @@
 <translation id="2544546346215446551">તમારા ઍડમિનિસ્ટ્રેટર દ્વારા તમારા ડિવાઇસને ફરી શરૂ કરવામાં આવ્યું છે</translation>
 <translation id="2544644783021658368">માત્ર એક દસ્તાવેજ</translation>
 <translation id="254524874071906077">Chrome ને ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરો</translation>
+<translation id="2545721997179863249">'બધું ભરો' વિકલ્પ પસંદ કરવામાં આવ્યો હતો</translation>
 <translation id="2546283357679194313">કૂકીઝ અને સાઇટ ડેટા</translation>
 <translation id="2547466893236767989">વેબ ડિઝાઇન અને ડેવલપમેન્ટ</translation>
 <translation id="254947805923345898">પૉલિસી મૂલ્ય માન્ય નથી.</translation>
@@ -877,6 +879,7 @@
 <translation id="2722622039067384533">લિવિંગ રૂમનું ફર્નિચર</translation>
 <translation id="2723669454293168317">Chrome સેટિંગમાં સલામતી માટે તપાસ ચલાવો</translation>
 <translation id="2725492561136085792">આ ક્રિયાને સક્રિય કરવા માટે Enter દબાવો.</translation>
+<translation id="2725927759457695883">પૂરું નામ ભરો</translation>
 <translation id="2726001110728089263">બાજુની ટ્રે</translation>
 <translation id="2728127805433021124">સર્વરનું પ્રમાણપત્ર એક નબળા સહી ઍલ્ગોરિધમનો ઉપયોગ કરીને સહીિત કરેલું છે.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />કનેક્ટિવિટી ડાયગ્નોસ્ટિક્સ ચલાવી રહ્યાં છે<ph name="END_LINK" /></translation>
@@ -1240,6 +1243,7 @@
 <translation id="3484560055331845446">તમે તમારા Google એકાઉન્ટનો ઍક્સેસ ગુમાવી શકો છો. Chrome તમને હમણાં જ તમારો પાસવર્ડ બદલવાનો સુઝાવ આપે છે. તમને સાઇન ઇન કરવા માટે કહેવામાં આવશે.</translation>
 <translation id="3484861421501147767">રિમાઇન્ડર: સાચવેલો પ્રોમો કોડ ઉપલબ્ધ છે</translation>
 <translation id="3487845404393360112">ટ્રે 4</translation>
+<translation id="3492199565975299728">શેરી</translation>
 <translation id="3493660662684070951">ટ્રક, વેન અને SUVs</translation>
 <translation id="3495081129428749620">પેજ
     <ph name="PAGE_TITLE" />માં શોધો</translation>
@@ -1283,6 +1287,7 @@
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">આ સાઇટ માટે મંજૂરી આપો</translation>
 <translation id="3575168918110434329">A4x7</translation>
+<translation id="3575589330755445706">'શેરીનું નામ' વિકલ્પ પસંદ કરવામાં આવ્યો</translation>
 <translation id="3576616784287504635"><ph name="SITE" /> પરનું શામેલ કરેલ પેજ કહે છે કે</translation>
 <translation id="3577473026931028326">કંઈક ખોટું થયું. ફરી પ્રયાસ કરો.</translation>
 <translation id="3577902790357386792">જિમ્નેસ્ટિક્સ</translation>
@@ -1346,6 +1351,7 @@
 <translation id="3678914302246317895"><ph name="OTP_LENGTH" />-અંકનો ચકાસણી કોડ દાખલ કરો</translation>
 <translation id="3681007416295224113">પ્રમાણપત્ર માહિતી</translation>
 <translation id="3681421644246505351">Chrome તમારા તાજેતરના બ્રાઉઝિંગ ઇતિહાસના આધારે રુચિઓ સંબંધી વિષયો નોંધે છે.</translation>
+<translation id="3689867156802445220">બિલ્ડિંગ નંબર</translation>
 <translation id="3693327506115126094">આ તમે જ છો, તે તમે કેવી રીતે ચકાસશો, તે પસંદ કરો</translation>
 <translation id="3698629142018988477">'સાઇટ બનાવો' બટન, Google Sitesમાં ઝડપથી કોઈ નવી સાઇટ બનાવવા માટે સક્રિય કરો</translation>
 <translation id="3701325639446035885">ઇવેન્ટની ટિકિટનું વેચાણ</translation>
@@ -1945,6 +1951,7 @@
 <translation id="4888600795924685526">વિદેશી ભાષાનો અભ્યાસ</translation>
 <translation id="4890070067176768718">તમારા ઍડમિન દ્વારા <ph name="ORIGIN" /> પર <ph name="PERMISSION" />ની સુવિધાને મંજૂરી આપવામાં આવી છે</translation>
 <translation id="4892518386797173871">પાછળ</translation>
+<translation id="4895019427244614047">સરનામું ડિલીટ કરો</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">ઑલિમ્પિક</translation>
 <translation id="4900217275619098670">નવમો રોલ</translation>
@@ -1980,6 +1987,7 @@
 <translation id="4960068118612257147">તમે Chromeમાં જાહેરાત સંબંધિત પ્રાઇવસી સેટિંગમાં જઈને તેમાં ફેરફાર કરી શકો છો</translation>
 <translation id="4960203958361543136">તમારું શોધ એન્જિન પસંદ કરો</translation>
 <translation id="4964505745997821360">આરોગ્ય વીમો</translation>
+<translation id="4967366744630699583">સરનામામાં ફેરફાર કરો</translation>
 <translation id="4968522289500246572">આ ઍપ મોબાઇલ માટે બનાવવામાં આવી છે અને કદાચ તે યોગ્ય રીતે કદ બદલી શકશે નહીં. ઍપમાં સમસ્યાઓ આવી શકે છે અથવા તે ફરી શરૂ થઈ શકે છે.</translation>
 <translation id="4968665849807487749">તમે તમારા બધા ડિસ્પ્લે પર વિન્ડો મેનેજ કરવા માટે કહી શકો છો</translation>
 <translation id="4969341057194253438">રેકોર્ડિંગ ડિલીટ કરો</translation>
@@ -2237,6 +2245,7 @@
     <ph name="LINE_BREAK" />
     તમારા સિસ્ટમ વ્યવસ્થાપકનો સંપર્ક કરવાનો પ્રયાસ કરો.</translation>
 <translation id="549333378215107354">કદ 3</translation>
+<translation id="550365051221576010">બધું ભરો</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">મેનેજ થયેલા બુકમાર્ક</translation>
 <translation id="5510481203689988000">આ સેટિંગને કુકી સેટિંગમાં નિયંત્રિત કરવામાં આવે છે.</translation>
@@ -2613,6 +2622,7 @@
 <translation id="6272088941196661550">તમારા Chrome ઇતિહાસમાં સંબંધિત પ્રવૃત્તિ જોવા માટે, તમારો પ્રવાસ ફરી શરૂ કરો</translation>
 <translation id="6272383483618007430">Google અપડેટ</translation>
 <translation id="6279183038361895380">તમારા કર્સરને બતાવવા માટે |<ph name="ACCELERATOR" />| દબાવો</translation>
+<translation id="628016388715774955">'પૂરું સરનામું ભરો' વિકલ્પ પસંદ કરવામાં આવ્યો હતો</translation>
 <translation id="6280223929691119688">આ સરનામે વિતરણ કરી શકતા નથી. કોઈ ભિન્ન સરનામું પસંદ કરો.</translation>
 <translation id="6284292079994426700">26 x 38 ઇંચ</translation>
 <translation id="6284517535531159884">વૅરિએશન સીડનો પ્રકાર</translation>
@@ -2881,6 +2891,7 @@
 <translation id="6807791860691150411">શિક્ષણ</translation>
 <translation id="681021252041861472">ફરજિયાત</translation>
 <translation id="6810899417690483278">કસ્ટમાઇઝેશન ID</translation>
+<translation id="681459028290894216">પૂરું સરનામું ભરો</translation>
 <translation id="6816109178681043245">રમતગમતના સાધનો</translation>
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">સીરિયલ પોર્ટ</translation>
@@ -3070,6 +3081,7 @@
 <translation id="7163295244162773898">{0,plural, =1{શું ગોપનીય ફાઇલ કૉપિ કરીએ?}one{શું ગોપનીય ફાઇલ કૉપિ કરીએ?}other{શું ગોપનીય ફાઇલો કૉપિ કરીએ?}}</translation>
 <translation id="717330890047184534">Gaia ID:</translation>
 <translation id="7174545416324379297">મર્જ કર્યાં</translation>
+<translation id="7175097078723125014">'સરનામામાં ફેરફાર કરો' વિકલ્પ પસંદ કરવામાં આવ્યો હતો</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> અને <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> વધુ}one{<ph name="SHIPPING_OPTION_PREVIEW" /> અને <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> વધુ}other{<ph name="SHIPPING_OPTION_PREVIEW" /> અને <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> વધુ}}</translation>
 <translation id="7179323680825933600">ચુકવણી પદ્ધતિઓ સાચવો અને ભરો</translation>
 <translation id="7180611975245234373">રિફ્રેશ કરો</translation>
@@ -3202,6 +3214,7 @@
 <translation id="7421067045979951561">પ્રોટોકૉલ હૅન્ડલર</translation>
 <translation id="7422347648202898039">લેબલ (સિક્યુરિટી)</translation>
 <translation id="7423283032694727565">'કુકી મેનેજ કરો' બટન, Chrome સેટિંગમાં કુકીની તમારી પસંદગીઓ મેનેજ કરવા માટે સક્રિય કરો</translation>
+<translation id="7424421098814895617">'સરનામું ડિલીટ કરો' વિકલ્પ પસંદ કરવામાં આવ્યો હતો</translation>
 <translation id="7427366580982928791">ઇન્ટરનેટ પર બાળકોની સુરક્ષા સંબંધિત કન્ટેન્ટ</translation>
 <translation id="7429429656042611765">એક્ઝિક્યૂટિવ</translation>
 <translation id="7432774160230062882">આ તમે જ છો તેની ચકાસણી કરો, જેથી Chromium તમારી ચુકવણીની માહિતી ભરી શકે.</translation>
@@ -3379,6 +3392,7 @@
 <translation id="7706689436519265630">તમે જે ફાઇલો કૉપિ કરશો કે ખસેડશો તેને વિશ્લેષણ માટે Google Cloud અથવા ત્રીજા પક્ષોને મોકલવામાં આવે છે. ઉદાહરણ તરીકે, સંવેદનશીલ વ્યક્તિગત ડેટા કે માલવેરની ભાળ મેળવવા માટે તેને સ્કૅન કરવામાં આવી શકે છે અને કંપનીની પૉલિસીઓના આધારે સ્ટોર કરવામાં આવી શકે છે.</translation>
 <translation id="7709911732293795808">વીમો</translation>
 <translation id="7714404809393719981">ફોટો (સેમી-ગ્લોસ)</translation>
+<translation id="7714424966701020172">'પૂરું નામ ભરો' વિકલ્પ પસંદ કરવામાં આવ્યો હતો</translation>
 <translation id="7714464543167945231">પ્રમાણપત્ર</translation>
 <translation id="7716147886133743102">વ્યવસ્થાપક દ્વારા અવરોધિત કરેલ છે</translation>
 <translation id="7716375162095500223">હજુ સુધી અપલોડ કર્યો નથી અથવા અવગણ્યો</translation>

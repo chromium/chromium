@@ -31,7 +31,6 @@
 <translation id="1181037720776840403">นำออก</translation>
 <translation id="1191518099344003522">เปิดใช้ APN แล้ว</translation>
 <translation id="1195447618553298278">ข้อผิดพลาดที่ไม่รู้จัก</translation>
-<translation id="1195784767091936222">เปิดโหมดมืดอัตโนมัติ</translation>
 <translation id="1196959502276349371">เวอร์ชัน <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">เล่น/หยุดชั่วคราว</translation>
 <translation id="1201402288615127009">ถัดไป</translation>
@@ -281,7 +280,6 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">อุปกรณ์เชื่อมต่ออยู่</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{นำหน้าออกไหม}=1{นำหน้าที่ {PAGE_NUMBER} ออกไหม}other{นำหน้าที่ {PAGE_NUMBER} ออกไหม}}</translation>
-<translation id="3136905423678675159">เปิดโหมดมืดอัตโนมัติใช่ไหม</translation>
 <translation id="3146655726035122603">พิเศษสำหรับ <ph name="PRODUCT_NAME" /> โดยเฉพาะ</translation>
 <translation id="315116470104423982">เน็ตมือถือ</translation>
 <translation id="3156846309055100599">กำลังสแกนหน้า <ph name="PAGE_NUMBER" />...</translation>
@@ -362,7 +360,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> รีวิว)</translation>
 <translation id="3748026146096797577">ไม่ได้เชื่อมต่อ</translation>
 <translation id="3749289110408117711">ชื่อไฟล์</translation>
-<translation id="3754384069690464321">โปรดเปิดโหมดมืดอัตโนมัติเพื่อให้ได้ผลลัพธ์ที่ดีที่สุดเมื่อใช้วอลเปเปอร์นี้ คุณสามารถเปลี่ยนกลับได้ทุกเมื่อในแอป</translation>
 <translation id="3771294271822695279">ไฟล์วิดีโอ</translation>
 <translation id="3784455785234192852">ล็อก</translation>
 <translation id="380097101658023925">การควบคุม RGB</translation>

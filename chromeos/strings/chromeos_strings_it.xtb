@@ -31,7 +31,6 @@
 <translation id="1181037720776840403">Rimuovi</translation>
 <translation id="1191518099344003522">APN attivo.</translation>
 <translation id="1195447618553298278">Errore sconosciuto.</translation>
-<translation id="1195784767091936222">Attiva la modalità Buio automatica</translation>
 <translation id="1196959502276349371">Versione <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Riproduci/Pausa</translation>
 <translation id="1201402288615127009">Avanti</translation>
@@ -281,7 +280,6 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Il dispositivo è collegato.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Rimuovere la pagina?}=1{Rimuovere pagina {PAGE_NUMBER}?}other{Rimuovere pagina {PAGE_NUMBER}?}}</translation>
-<translation id="3136905423678675159">Vuoi attivare la modalità Buio automatica?</translation>
 <translation id="3146655726035122603">In esclusiva per <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Dati mobili</translation>
 <translation id="3156846309055100599">Scansione pagina <ph name="PAGE_NUMBER" /> in corso…</translation>
@@ -362,7 +360,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> recensioni)</translation>
 <translation id="3748026146096797577">Non connesso</translation>
 <translation id="3749289110408117711">Nome file</translation>
-<translation id="3754384069690464321">Per ottenere risultati ottimali con questo sfondo, attiva la modalità Buio automatico. Puoi modificarla nuovamente nell'app in qualsiasi momento.</translation>
 <translation id="3771294271822695279">File video</translation>
 <translation id="3784455785234192852">Blocca</translation>
 <translation id="380097101658023925">Controlli RGB</translation>

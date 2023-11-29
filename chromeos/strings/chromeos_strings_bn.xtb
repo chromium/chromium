@@ -31,7 +31,6 @@
 <translation id="1181037720776840403">সরান</translation>
 <translation id="1191518099344003522">APN চালু করা আছে।</translation>
 <translation id="1195447618553298278">অজানা ত্রুটি৷</translation>
-<translation id="1195784767091936222">অটোমেটিক ডার্ক মোড চালু করুন</translation>
 <translation id="1196959502276349371">ভার্সন <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">প্লে/পজ করুন</translation>
 <translation id="1201402288615127009">পরের</translation>
@@ -281,7 +280,6 @@
 <translation id="3122464029669770682">সিপিইউ</translation>
 <translation id="3124039320086536031">ডিভাইস কানেক্ট করা আছে।</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{পৃষ্ঠাটি সরাতে চান?}=1{{PAGE_NUMBER} নম্বর পৃষ্ঠাটি সরাতে চান?}one{{PAGE_NUMBER} নম্বর পৃষ্ঠাটি সরাতে চান?}other{{PAGE_NUMBER} নম্বর পৃষ্ঠাটি সরাতে চান?}}</translation>
-<translation id="3136905423678675159">অটোমেটিক ডার্ক মোড চালু করবেন?</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" />-এর জন্য এক্সক্লুসিভ</translation>
 <translation id="315116470104423982">মোবাইল ডেটা</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" /> নম্বর পৃষ্ঠা স্ক্যান করা হচ্ছে...</translation>
@@ -362,7 +360,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" />টি রিভিউ)</translation>
 <translation id="3748026146096797577">সংযুক্ত নয়</translation>
 <translation id="3749289110408117711">ফাইলের নাম</translation>
-<translation id="3754384069690464321">এই ওয়ালপেপার ব্যবহার করে সেরা ফলাফলের জন্য, অটোমেটিক-ডার্ক মোড চালু করুন। আপনি এটি অ্যাপ থেকে আবার যেকোনও সময় পরিবর্তন করতে পারবেন।</translation>
 <translation id="3771294271822695279">ভিডিও ফাইল</translation>
 <translation id="3784455785234192852">লক করুন</translation>
 <translation id="380097101658023925">RGB কন্ট্রোল</translation>

@@ -38,9 +38,9 @@
 <translation id="1715127912119967311">為協助改善這些功能，Chromium 會向 Google 傳送你與功能的互動資料。人手審查員可能會讀取、處理這些資料，並加上註解。</translation>
 <translation id="17264556997921157">您可以查看及移除網站用來向您顯示廣告的感興趣主題。Chromium 會根據您最近的瀏覽記錄，推測您感興趣的主題。</translation>
 <translation id="1733725117201708356">Chromium 即將刪除瀏覽資料</translation>
-<translation id="1736443181683099871">Chromium 會嘗試將瀏覽方式升級為 HTTPS</translation>
+<translation id="1736443181683099871">Chromium 會在導覽網站時，嘗試升級至 HTTPS</translation>
 <translation id="1745121272106313518">Chromium 將會在 <ph name="REMAINING_TIME" />後重新啟動</translation>
-<translation id="1749104137266986751">如果無法使用 HTTPS，Chromium 將使用不安全的連線，且不會發出警告</translation>
+<translation id="1749104137266986751">無法使用 HTTPS 時，Chromium 會在不顯示警告的情況下使用不安全的連線</translation>
 <translation id="1774152462503052664">讓 Chromium 在背景執行</translation>
 <translation id="1779356040007214683">為了讓 Chromium 的安全性更有保障，我們已將部分未列在 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> 中的擴充功能停用，它們可能在您不知情的情況下加入瀏覽器。</translation>
 <translation id="1808667845054772817">重新安裝 Chromium</translation>
@@ -128,7 +128,7 @@
 <translation id="3286538390144397061">立即重新啟動</translation>
 <translation id="328888136576916638">缺少 Google API 金鑰，系統將停用 Chromium 的部分功能。</translation>
 <translation id="3296368748942286671">在 Chromium 關閉時繼續執行背景應用程式</translation>
-<translation id="3313189106987092621">在使用不安全的連線載入任何網站前，Chromium 會發出警告</translation>
+<translation id="3313189106987092621">Chromium 會在使用不安全的連線載入任何網站前顯示警告</translation>
 <translation id="3350761136195634146">此帳戶已有 Chromium 設定檔</translation>
 <translation id="3387527074123400161">Chromium 作業系統</translation>
 <translation id="3406848076815591792">要切換至現有 Chromium 設定檔嗎？</translation>
@@ -226,7 +226,7 @@
 <translation id="5224391634244552924">沒有已儲存的密碼。儲存密碼時，Chromium 可檢查您的密碼。</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" />已登入此 Chromium 設定檔。此操作將為 <ph name="USER_EMAIL_ADDRESS" /> 建立新的 Chromium 設定檔</translation>
 <translation id="5277894862589591112">如要套用變更，請重新啟動 Chromium</translation>
-<translation id="5294316920224716406">以無痕模式瀏覽網頁時，Chromium 會在使用不安全的連線載入網站前發出警告</translation>
+<translation id="5294316920224716406">使用無痕模式瀏覽時，Chromium 會在使用不安全的連線載入網站前顯示警告</translation>
 <translation id="5296845517486664001">在試用期間，如果 Chromium 隨機將您加入試用行列，您的瀏覽記錄會影響所看到的廣告，以及系統推測的以下興趣。為保障您的私隱，Chromium 每個月都會自動刪除您的興趣。</translation>
 <translation id="5352264705793813212">Chromium 發現一些安全性建議需要你審核</translation>
 <translation id="5358375970380395591">您已登入受管理的帳戶，並將管理控制權授予您的 Chromium 設定檔。您的 Chromium 數據 (例如應用程式、書籤、記錄、密碼和其他設定) 均將永久與 <ph name="USER_NAME" /> 建立關聯。您可以透過 Google 帳戶資訊主頁刪除這些數據，但您無法將這些數據與其他帳戶建立關聯。<ph name="LEARN_MORE" /></translation>

@@ -21,5 +21,7 @@
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Бұл сайтқа арналған жаңа құпия сөз}other{Бұл сайтқа арналған жаңа құпия сөздер}}</translation>
 <translation id="7286867818472074330">Кіру кілтін таңдау</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" />/<ph name="ITEMS_TOTAL" />.</translation>
+<translation id="7738288782501322815">Сізге <ph name="SITE_NAME" /> веб-сайтына арналған құпия сөздер келді.</translation>
+<translation id="8614995815226664591"><ph name="SENDER_NAME" /> сізбен <ph name="SITE_NAME" /> веб-сайтына арналған құпия сөзді бөлісті.</translation>
 <translation id="8891372124884726271">Тіркелу деректерінің тізімі жабық.</translation>
 </translationbundle>

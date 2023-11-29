@@ -577,6 +577,7 @@
 <translation id="1461041542809785877">性能</translation>
 <translation id="1461177659295855031">移至“书签栏”文件夹</translation>
 <translation id="1461288887896722288">您刚刚登录了一个受管理的账号，不过您可通过创建一份新的受管理个人资料来访问与该账号关联的部分资源。</translation>
+<translation id="1461868306585780092">在使用不安全的连接前发出警告</translation>
 <translation id="146219525117638703">ONC 状态</translation>
 <translation id="146220085323579959">互联网连接已断开。请检查您的互联网连接并重试。</translation>
 <translation id="1462480037563370607">手动添加网站</translation>
@@ -1551,6 +1552,7 @@
 <translation id="2180620921879609685">屏蔽所有页面上的内容</translation>
 <translation id="2181821976797666341">政策</translation>
 <translation id="2182058453334755893">已复制到您的剪贴板</translation>
+<translation id="2182419606502127232">包含我的服务器日志。</translation>
 <translation id="2183570493397356669">已停用“继续”按钮</translation>
 <translation id="2184515124301515068">让 Chrome 选择何时允许网站播放声音（推荐）</translation>
 <translation id="2186206192313702726">Google 智能镜头</translation>
@@ -1744,6 +1746,7 @@
 <translation id="2323018538045954000">保存的 WLAN 网络</translation>
 <translation id="2325444234681128157">记住密码</translation>
 <translation id="2326188115274135041">请确认 PIN 码以开启自动解锁功能</translation>
+<translation id="2326906096734221931">打开应用设置</translation>
 <translation id="2326931316514688470">重新加载应用(&amp;R)</translation>
 <translation id="2327492829706409234">启用应用</translation>
 <translation id="2327920026543055248">输入第 <ph name="CHARACTER" /> 个字符（共 <ph name="TOTAL" /> 个）</translation>
@@ -3879,6 +3882,7 @@
 <translation id="399788104667917863">固定到工具栏</translation>
 <translation id="3998976413398910035">管理打印机</translation>
 <translation id="4001540981461989979">在鼠标光标移动时突出显示它</translation>
+<translation id="4002347779798688515">如果移动网络提供商已锁定，您可能无法使用下载的个人资料。请向您的提供商寻求支持。</translation>
 <translation id="4002440992267487163">PIN 码设置</translation>
 <translation id="4005817994523282006">时区检测方法</translation>
 <translation id="4007856537951125667">隐藏快捷方式</translation>
@@ -5416,6 +5420,7 @@
 <translation id="5261683757250193089">在 Chrome 应用商店中打开</translation>
 <translation id="5261799091118902550">此文件可能是病毒或恶意软件。您可将它发送给 Google 以检查它是否安全。</translation>
 <translation id="5262784498883614021">自动连接到网络</translation>
+<translation id="5263656105659419083">如需轻松返回侧边栏，请点击右上角的“固定”</translation>
 <translation id="5264148714798105376">这可能需要 1 分钟左右。</translation>
 <translation id="5264252276333215551">请先连接到互联网，然后在自助服务终端模式下启动您的应用。</translation>
 <translation id="5265797726250773323">安装时出错</translation>
@@ -5563,6 +5568,7 @@
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{发现了 1 个向用户发送大量通知的网站}other{发现了 {NUM_SITES} 个向用户发送大量通知的网站}}</translation>
 <translation id="5388885445722491159">已配对</translation>
 <translation id="5389626883706033615">禁止网站向您请求使用它们保存的与您相关的信息</translation>
+<translation id="5389794555912875905">在您访问不安全的网站前发出警告（推荐）</translation>
 <translation id="5390112241331447203">将所发送的 system_logs.txt 文件添加到反馈报告中。</translation>
 <translation id="5390677308841849479">深红色和橙色</translation>
 <translation id="5390743329570580756">为何发送</translation>
@@ -5846,6 +5852,7 @@
 <translation id="5608580678041221894">按以下键可调整或移动剪裁区域</translation>
 <translation id="5609231933459083978">该应用似乎无效。</translation>
 <translation id="561030196642865721">已允许在此网站上使用第三方 Cookie</translation>
+<translation id="561236229031062396"><ph name="SHORTCUT_NAME" />、<ph name="APP_FULL_NAME" /></translation>
 <translation id="5612734644261457353">抱歉，我们仍然无法验证您的密码。提示：如果您刚刚改了密码，新密码将在您退出后应用。请在此使用您的旧密码。</translation>
 <translation id="5614190747811328134">用户须知</translation>
 <translation id="5614553682702429503">要保存密码吗？</translation>
@@ -6199,6 +6206,7 @@
 <translation id="5901089233978050985">切换到执行录屏操作的标签页</translation>
 <translation id="5901494423252125310">打印机机盖未关</translation>
 <translation id="5901630391730855834">黄色</translation>
+<translation id="5902892210366342391">在您以无痕模式访问不安全的网站前发出警告</translation>
 <translation id="5904614460720589786">无法设置 <ph name="APP_NAME" />，因为出现了配置问题。请与您的管理员联系。错误代码：<ph name="ERROR_CODE" />。</translation>
 <translation id="5906655207909574370">即将更新到最新版本！重新启动您的设备即可完成更新。</translation>
 <translation id="5906732635754427568">系统将会从此设备上移除与该应用相关的数据。</translation>
@@ -6736,6 +6744,7 @@
 <translation id="6333170995003625229">无法验证您的电子邮件地址或密码。请尝试重新登录。</translation>
 <translation id="6334267141726449402">复制此链接并将其发送给用户以收集日志。</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> 已停用 ADB 调试。这会导致您的 <ph name="DEVICE_TYPE" /> 在 24 小时后重置。请备份您想保留的所有文件。</translation>
+<translation id="6336194758029258346">应用语言</translation>
 <translation id="6337543438445391085">某些个人信息可能仍会包含在数据中。请务必查看导出的文件。</translation>
 <translation id="6338968693068997776">添加 USB 设备</translation>
 <translation id="6339668969738228384">为 <ph name="USER_EMAIL_ADDRESS" /> 创建新的个人资料</translation>
@@ -7241,6 +7250,7 @@
 <translation id="676158322851696513">“<ph name="EXTENSION_NAME" />”</translation>
 <translation id="6761623907967804682">不允许使用设备端网站数据</translation>
 <translation id="6762833852331690540">已开启</translation>
+<translation id="6762861159308991328">您可以在“应用”设置中更改链接打开方式</translation>
 <translation id="676560328519657314">您在 Google Pay 中的付款方式</translation>
 <translation id="6766488013065406604">前往 Google 密码管理工具</translation>
 <translation id="6767566652486411142">选择另一种语言…</translation>
@@ -7456,6 +7466,7 @@
 <translation id="6912007319859991306">移动网络 SIM 卡 PIN 码</translation>
 <translation id="6912380255120084882">尝试改用其他设备</translation>
 <translation id="691289340230098384">字幕偏好设置</translation>
+<translation id="6914812290245989348">在您访问不安全的网站前不发出任何警告</translation>
 <translation id="6916590542764765824">管理扩展程序</translation>
 <translation id="6918677045355889289">需要更新 Chrome 操作系统</translation>
 <translation id="6919354101107095996">请先尝试登录相应网站，再重新下载</translation>
@@ -8940,6 +8951,7 @@
 <translation id="8076835018653442223">您的管理员已禁止访问您设备上的本地文件</translation>
 <translation id="8077120325605624147">您访问的任何网站都可向您展示任何广告</translation>
 <translation id="8077579734294125741">其他 Chrome 个人资料</translation>
+<translation id="80790299200510644">图片搜索</translation>
 <translation id="80798452873915119">网站可以询问能否管理您的所有显示屏上的窗口</translation>
 <translation id="8080028325999236607">关闭所有标签页</translation>
 <translation id="808089508890593134">Google</translation>

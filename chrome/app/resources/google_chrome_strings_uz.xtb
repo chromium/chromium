@@ -98,6 +98,7 @@
 <translation id="2556847002339236023">Tashkilotingiz Chrome <ph name="TIMEOUT_DURATION" /> ishlatilmasa avtomatik yopilishini sozlagan. Brauzer maʼlumotlari oʻchirib tashlandi. Jumladan, tarix, avtomatik kiritish va yuklanmalar.</translation>
 <translation id="2559253115192232574">Keyinchalik sayt sizga chiqadigan reklamani moslashtirish maqsadida Chromedan qiziqishlaringiz haqida soʻrashi mumkin. Chrome 3 tagacha qiziqishingizni ulasha oladi.</translation>
 <translation id="2563121210305478421">Chrome qayta ishga tushirilsinmi?</translation>
+<translation id="2569974318947988067">Chrome navigatsiyalarni HTTPS protokoliga oʻzgartirishga urinadi.</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> allaqachon ushbu Chrome profiliga kirgan. Internetni alohida kezish uchun Chrome siz uchun alohida profil yaratadi.</translation>
 <translation id="2580411288591421699">Hozir ishlab turgan versiyadagi Google Chrome brauzerini o‘rnatib bo‘lmaydi. Google Chrome brauzeringizni yoping va qaytadan urinib ko‘ring.</translation>
 <translation id="2586406160782125153">Bu qurilmadagi brauzer tarixini tozalaydi. Ma’lumotlaringizni keyinroq olish uchun Chrome brauzeriga <ph name="USER_EMAIL" /> sifatida kiring.</translation>
@@ -214,6 +215,7 @@
 <translation id="4335235004908507846">Chrome maʼlumotlaringizni axborotlar sizib chiqishi va xavfsizlikka oid boshqa muammolardan himoyalaydi</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> kengaytmasi Chromega o‘rnatildi</translation>
 <translation id="4384570495110188418">Chrome parollaringizni faqat hisobingizga kirganingizdan keyin tekshira oladi</translation>
+<translation id="4389991535395284064">Inkognito rejimida ishlayotganingizda, xavfsiz ulanishli saytga kirganingizda Chrome sizni ogohlantiradi.</translation>
 <translation id="4393248995085527349">Google Chrome yangilanishlari macOS 10.15 yoki undan yuqori versiyalarda ishlaydi. Bu kompyuterdagi versiya: macOS 10.13.</translation>
 <translation id="4427306783828095590">Kengaytirilgan himoya fishing va zararli dasturlarni bloklaydi</translation>
 <translation id="4450664632294415862">Chrome - Tarmoqqa kirish - <ph name="PAGE_TITLE" /></translation>
@@ -386,6 +388,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="7426611252293106642">Google Chrome endi Linux tizimida ishlamay qolishi mumkin, chunki uning yangi versiyalarida bu versiyalar taʼminoti toʻxtatilgan.</translation>
 <translation id="7449333426561673451">{COUNT,plural, =1{Chrome 1 daqiqa ishlatilmasa, tashkilot avtomatik ravishda yopadi.}other{Chrome # daqiqa ishlatilmasa, tashkilot avtomatik ravishda yopadi.}}</translation>
 <translation id="7452987490177144319">{COUNT,plural, =1{Chrome 1 daqiqa ishlatilmasa, tashkilot avtomatik ravishda brauzerning ishlashi haqida axborotni tozalaydi. Bunga tarix, avtomatik kiritish va yuklanmalar kirishi mumkin. Varaqlar ochiq qoladi.}other{Chrome # daqiqa ishlatilmasa, tashkilot avtomatik ravishda brauzerning ishlashi haqida axborotni tozalaydi. Bunga tarix, avtomatik kiritish va yuklanmalar kirishi mumkin. Varaqlar ochiq qoladi.}}</translation>
+<translation id="7477130805345743099">Xavfsiz ulanishli har qanday saytga kirganingizda Chrome sizni ogohlantiradi</translation>
 <translation id="7481213027396403996">Chrome brauzerining kuchli xavfsizligidan foydalaning</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> oʻrnatish vositasi</translation>
@@ -477,6 +480,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="8922193594870374009"><ph name="ORIGIN" /> orqali Android telefoningizga raqam yuborish uchun ikkala qurilmada Chrome hisobingizga kiring.</translation>
 <translation id="8986207147630327271">Bu brauzerga ish profilini kiritish bilan siz administratorga ish profili orqali barcha boshqaruv ruxsatlarini berasiz.</translation>
 <translation id="8989968390305463310">Ochgan saytlaringiz tarixi chiqadigan reklama va quyidagi qiziqishlaringizga taʼsir qiladi. Maxfiylikni himoya qilish maqsadida Chrome har oyda qiziqishlaringizni avtomatik oʻchiradi. Qiziqishlar ularni olib tashlamaguningizga qadar yangilanishi mumkin.</translation>
+<translation id="8999117580775242387">HTTPS mavjud boʻlmasa, Chrome sizni ogohlantirmasdan himoyalanmagan ulanishdan foydalanadi.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome uchun yangilanish mavjud}=1{Chrome uchun yangilanish mavjud}other{Chrome uchun yangilanish mavjud (# kun)}}</translation>
 <translation id="9053892488859122171">ChromeOS Flex tizimi</translation>
 <translation id="9054037008353851982">Yangilash uchun qayta oching - joriy varaqlar tiklanadi</translation>

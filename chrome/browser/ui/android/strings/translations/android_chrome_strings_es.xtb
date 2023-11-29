@@ -23,7 +23,6 @@
 <translation id="1110914759170138831">Se ha recortado el texto destacado</translation>
 <translation id="1111673857033749125">Aquí aparecen los marcadores que hayas guardado en otros dispositivos.</translation>
 <translation id="1113597929977215864">Mostrar vista simplificada</translation>
-<translation id="1123070903960493543">Cómo interactúas con Chrome, los ajustes que has seleccionado y detalles de los fallos de Chrome.</translation>
 <translation id="1126013303640354461">Los métodos de pago y las direcciones de Google Pay no se cifrarán. El historial de navegación de Chrome no se sincronizará.
 Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifrados. La frase de contraseña no se enviará a Google y Google tampoco la almacenará. Si la olvidas o quieres cambiar este ajuste, tendrás que restablecer la sincronización. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="1126809382673880764">No te protege frente a descargas, extensiones ni sitios web peligrosos. Seguirás disfrutando de protección con la función Navegación segura, si está disponible, en otros servicios de Google, como Gmail y la Búsqueda.</translation>
@@ -204,7 +203,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="213279576345780926">Se ha cerrado <ph name="TAB_TITLE" /></translation>
 <translation id="2139186145475833000">Añadir a pantalla de inicio</translation>
 <translation id="2141396931810938595">Según tu uso</translation>
-<translation id="214888715418183969">Elige qué quieres compartir con Chrome. Las métricas que compartas nos ayudarán a mejorar las funciones, el rendimiento y la estabilidad de Chrome.</translation>
 <translation id="2149973817440762519">Editar marcador</translation>
 <translation id="2155214902713132423">El método de verificación no está disponible en este dispositivo. Elige una opción diferente en tu otro dispositivo.</translation>
 <translation id="2158408438301413340">Chrome no ha podido comprobar todas las contraseñas</translation>
@@ -214,7 +212,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="2175927920773552910">Código QR</translation>
 <translation id="218608176142494674">Compartir</translation>
 <translation id="2194856509914051091">Notas importantes</translation>
-<translation id="2200113223741723867">Gestionar preferencias para compartir datos de uso</translation>
 <translation id="22091350895006575">Añadir nombre de usuario</translation>
 <translation id="221494669172414749">Si abres Chrome sin un bloqueo de perfil, se eliminarán del coche tus contraseñas y métodos de pago guardados. Si usas un bloqueo de perfil, estos datos estarán protegidos.</translation>
 <translation id="2227444325776770048">Continuar como <ph name="USER_FULL_NAME" /></translation>
@@ -375,7 +372,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="2996932914629936323">Borra el historial de todos los dispositivos sincronizados</translation>
 <translation id="2997081575621687554">Cuando un sitio de Google te pide precargar de forma privada los enlaces de su página, Chrome cifra y precarga las páginas a través de los servidores de Google sin cookies. De esta manera, se oculta tu identidad en el sitio precargado.</translation>
 <translation id="3003253259757197230">Las URLs que visitas se envían a Google para predecir qué sitios podrías visitar después y mostrarte información adicional sobre la página en la que estás</translation>
-<translation id="3006881078666935414">No hay datos de uso</translation>
 <translation id="3016635187733453316">Comprueba que este dispositivo esté conectado a Internet.</translation>
 <translation id="3026955690410463085">Incluir enlace</translation>
 <translation id="3027644380269727216">Se basa en tu actividad en un sitio. Esta opción está activada.</translation>
@@ -512,7 +508,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="3771033907050503522">Pestañas incógnito</translation>
 <translation id="3771290962915251154">Este ajuste está inhabilitado porque el control parental está activado</translation>
 <translation id="3771694256347217732">Términos del Servicio de Google</translation>
-<translation id="3773856050682458546">Datos básicos e información sobre los sitios web que visitas y las aplicaciones que usas.</translation>
 <translation id="3775705724665058594">Enviar a tus dispositivos</translation>
 <translation id="3777796259512476958">Cierra tu sesión en la mayoría de los sitios</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 pestaña}other{# pestañas}}</translation>
@@ -560,7 +555,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="4035877632587724847">No permitir</translation>
 <translation id="4042941173059740150">Sigue usando <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">Hoja inferior</translation>
-<translation id="4045764304651014138">Datos de uso</translation>
 <translation id="405399507749852140">Recibe alertas si el precio baja en algún sitio</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4062305924942672200">Información legal</translation>
@@ -774,7 +768,6 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5062960805900435602">La actualización sobre la fusión de contraseñas está cerrada</translation>
 <translation id="5081960376148623587">Elige si quieres que las páginas se precarguen</translation>
 <translation id="5091199029769593641">Pronto verás historias de <ph name="SITE_NAME" /> cuando abras una pestaña nueva. Los sitios que sigues se guardan en tu cuenta de Google. Puedes gestionarlos en los ajustes de Discover.</translation>
-<translation id="5091249083535528968">Datos de uso ampliados</translation>
 <translation id="509429900233858213">Se ha producido un error.</translation>
 <translation id="5097349930204431044">Los sitios que visitas pueden determinar qué te gusta y luego sugerirte anuncios a medida que navegas</translation>
 <translation id="5099845111805573968">Cuando seleccionas un sitio para ordenadores una vez, la configuración se aplica al sitio cada vez que lo visitas</translation>
@@ -914,7 +907,6 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5833984609253377421">Compartir enlace</translation>
 <translation id="5839058148541733625">El dinosaurio de Chrome</translation>
 <translation id="5853623416121554550">en pausa</translation>
-<translation id="5854512288214985237">No se envían estadísticas ni informes sobre fallos a Google.</translation>
 <translation id="5855546874025048181">Acotar: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">Se ha producido un error. No se ha podido actualizar Seguir precio.</translation>
 <translation id="5859968346865909126">Puedes activarlo o desactivarlo en los ajustes</translation>
@@ -1019,7 +1011,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6404511346730675251">Editar marcador</translation>
 <translation id="6406506848690869874">Sincronización</translation>
 <translation id="6407224748847589805">No se ha podido establecer conexión con tu ordenador. Prueba con otra opción de verificación.</translation>
-<translation id="6410404864818553978">Datos de uso básicos</translation>
 <translation id="6410883413783534063">Abre pestañas para visitar varias páginas al mismo tiempo</translation>
 <translation id="6411219469806822692">No se puede ir más arriba. Intenta empezar desde más arriba de la página.</translation>
 <translation id="6412673304250309937">Comprueba las URL guardadas en Chrome con una lista de sitios que no son seguros. Si un sitio web intenta robarte la contraseña o te descargas un archivo dañino, puede que Chrome también envíe URL, así como fragmentos de contenido de la página, a Navegación segura.</translation>

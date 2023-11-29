@@ -31,7 +31,6 @@
 <translation id="1181037720776840403">తీసివేయండి</translation>
 <translation id="1191518099344003522">APN ఎనేబుల్ చేయబడింది.</translation>
 <translation id="1195447618553298278">తెలియని ఎర్రర్.</translation>
-<translation id="1195784767091936222">ఆటోమేటిక్ డార్క్ మోడ్‌ను ఆన్ చేయండి</translation>
 <translation id="1196959502276349371">వెర్షన్ <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">ప్లే చేయండి/పాజ్ చేయండి</translation>
 <translation id="1201402288615127009">తర్వాత</translation>
@@ -281,7 +280,6 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">పరికరం కనెక్ట్ చేయబడింది.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{పేజీని తీసివేయాలా?}=1{{PAGE_NUMBER}వ పేజీని తీసివేయాలా?}other{{PAGE_NUMBER}వ పేజీని తీసివేయాలా?}}</translation>
-<translation id="3136905423678675159">ఆటోమేటిక్ డార్క్ మోడ్‌ను ఆన్ చేయాలా?</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> కోసం ప్రత్యేకమైనది</translation>
 <translation id="315116470104423982">మొబైల్ డేటా</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />వ పేజీని స్కాన్ చేస్తోంది...</translation>
@@ -362,7 +360,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> రివ్యూలు)</translation>
 <translation id="3748026146096797577">కనెక్ట్ కాలేదు</translation>
 <translation id="3749289110408117711">ఫైల్ పేరు</translation>
-<translation id="3754384069690464321">ఈ వాల్‌పేపర్ ఉత్తమ ఫలితాల కోసం, దయచేసి ఆటో-డార్క్ మోడ్‌ను ఆన్ చేయండి. మీరు దీన్ని ఎప్పుడైనా యాప్‌లో తిరిగి మార్చుకోవచ్చు.</translation>
 <translation id="3771294271822695279">వీడియో ఫైళ్లు</translation>
 <translation id="3784455785234192852">లాక్ చేయి</translation>
 <translation id="380097101658023925">rgb కంట్రోల్స్</translation>

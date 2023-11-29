@@ -8,6 +8,7 @@
 <translation id="1420684932347524586">Obbo! Tasodifiy RSA xususiy kalitini tuzib bo‘lmadi.</translation>
 <translation id="1445572445564823378">Bu kengaytma <ph name="PRODUCT_NAME" />’ni sekinlashtirmoqda. <ph name="PRODUCT_NAME" /> samarali ishlashi uchun kengaytmani o‘chirib qo‘yishingiz lozim.</translation>
 <translation id="1468038450257740950">WebGL qo‘llab-quvvatlanmaydi.</translation>
+<translation id="1610570795592207282">Skript uchun “<ph name="RELATIVE_PATH" />” css yuklanmadi.</translation>
 <translation id="1803557475693955505">“<ph name="BACKGROUND_PAGE" />” orqa fon sahifasini yuklab bo‘lmadi.</translation>
 <translation id="2159915644201199628">Tasvirni dekodlab bo‘lmadi: “<ph name="IMAGE_NAME" />”</translation>
 <translation id="2350172092385603347">Mahalliylashtirish qo‘llanilmoqda, lekin manifest faylida “default_locale” qiymati belgilanmagan.</translation>
@@ -31,6 +32,7 @@
 <translation id="4988792151665380515">Ochiq kalitni eksport qilib bo‘lmadi.</translation>
 <translation id="5026754133087629784">Webview: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Siqish katalogiga absolyut yo‘lak topilmayapti.</translation>
+<translation id="5160071981665899014">Skript uchun “<ph name="RELATIVE_PATH" />” javascripti yuklanmadi.</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Shakl berilgan oynalar qo‘llab-quvvatlanmaydi.</translation>
 <translation id="5456409301717116725">Bu kengaytma <ph name="KEY_PATH" /> kalit fayliga ega. Bu nomaqbul bo‘lishi mumkin.</translation>

@@ -23,7 +23,6 @@
 <translation id="1110914759170138831">Byrhawyd yr amlygu</translation>
 <translation id="1111673857033749125">Bydd nodau tudalen sydd wedi'u cadw ar eich dyfeisiau eraill yn ymddangos yma.</translation>
 <translation id="1113597929977215864">Dangos y wedd syml</translation>
-<translation id="1123070903960493543">Sut rydych yn rhyngweithio â Chrome, y gosodiadau rydych wedi'u dewis, manylion toriadau Chrome</translation>
 <translation id="1126013303640354461">Ni fydd dulliau talu a chyfeiriadau o Google Pay yn cael eu hamgryptio. Ni fydd hanes pori o Chrome yn cysoni.
 Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamgryptio. Nid yw'r cyfrinymadrodd yn cael ei anfon at Google na'i storio. Os byddwch yn anghofio'ch cyfrinymadrodd neu eisiau newid y gosodiad hwn, bydd angen i chi ailosod cysoni. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="1126809382673880764">Nid yw'n eich amddiffyn rhag gwefannau peryglus, lawrlwythiadau nac estyniadau. Byddwch yn dal i gael amddiffyniad Pori'n Ddiogel, lle mae ar gael, mewn gwasanaethau Google eraill, megis Gmail a Search.</translation>
@@ -204,7 +203,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="213279576345780926">Wedi cau <ph name="TAB_TITLE" /></translation>
 <translation id="2139186145475833000">Ychwanegu at y sgrîn Hafan</translation>
 <translation id="2141396931810938595">Yn seiliedig ar eich defnydd</translation>
-<translation id="214888715418183969">Dewiswch yr hyn rydych yn gyfforddus i'w rannu gyda Chrome. Defnyddir y metrigau rydych yn eu rhannu i helpu i wella nodweddion, perfformiad a sefydlogrwydd Chrome.</translation>
 <translation id="2149973817440762519">Golygu Nod Tudalen</translation>
 <translation id="2155214902713132423">Nid yw'r dull dilysu hwn ar gael ar gyfer y ddyfais hon. Dewiswch opsiwn gwahanol ar eich dyfais arall.</translation>
 <translation id="2158408438301413340">Ni allai Chrome wirio'r holl gyfrineiriau</translation>
@@ -214,7 +212,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="2175927920773552910">Cod QR</translation>
 <translation id="218608176142494674">Rhannu</translation>
 <translation id="2194856509914051091">Pethau i'w hystyried</translation>
-<translation id="2200113223741723867">Rheoli rhannu data defnydd</translation>
 <translation id="22091350895006575">Ychwanegu enw defnyddiwr</translation>
 <translation id="221494669172414749">Bydd agor Chrome heb glo proffil yn tynnu'ch cyfrineiriau a'ch dulliau talu sydd wedi'u cadw o'r car. Mae defnyddio clo proffil yn cadw'r data hyn yn ddiogel.</translation>
 <translation id="2227444325776770048">Parhau fel <ph name="USER_FULL_NAME" /></translation>
@@ -375,7 +372,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="2996932914629936323">Yn clirio hanes o'r holl ddyfeisiau sydd wedi'u cysoni</translation>
 <translation id="2997081575621687554">Pan fydd gwefan Google yn gofyn i raglwytho dolenni ar eu tudalen yn breifat, mae Chrome yn amgryptio ac yn rhaglwytho tudalennau drwy weinyddion Google heb gwcis. Mae hyn yn cuddio'ch hunaniaeth o'r wefan sydd wedi'i rhaglwytho.</translation>
 <translation id="3003253259757197230">Anfonir cyfeiriadau URL rydych yn ymweld â nhw at Google i ragweld pa wefannau y gallech ymweld â hwy nesaf ac i ddangos gwybodaeth ychwanegol i chi am y dudalen rydych yn ymweld â hi</translation>
-<translation id="3006881078666935414">Dim data defnydd</translation>
 <translation id="3016635187733453316">Gwnewch yn siŵr bod y ddyfais hon wedi'i chysylltu â'r rhyngrwyd</translation>
 <translation id="3026955690410463085">Cynnwys y ddolen</translation>
 <translation id="3027644380269727216">Yn seiliedig ar eich gweithgarwch ar wefan. Mae'r gosodiad hwn wedi'i droi ymlaen.</translation>
@@ -512,7 +508,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="3771033907050503522">Tabiau Anhysbys</translation>
 <translation id="3771290962915251154">Mae'r gosodiad hwn wedi'i ddiffodd gan fod rheolaethau rhieni wedi'u troi ymlaen</translation>
 <translation id="3771694256347217732">Telerau Gwasanaeth Google</translation>
-<translation id="3773856050682458546">Data sylfaenol ynghyd â gwybodaeth am y gwefannau rydych yn ymweld â nhw a'r apiau rydych yn eu defnyddio</translation>
 <translation id="3775705724665058594">Anfon at eich dyfeisiau</translation>
 <translation id="3777796259512476958">Yn eich allgofnodi o'r mwyafrif o wefannau</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 tab}zero{# tab}two{# dab}few{# thab}many{# thab}other{# tab}}</translation>
@@ -560,7 +555,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="4035877632587724847">Peidio â chaniatáu</translation>
 <translation id="4042941173059740150">Parhau at <ph name="SITE_ETLD_PLUS_ONE" /> gyda <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">Dalen waelod</translation>
-<translation id="4045764304651014138">Data defnydd</translation>
 <translation id="405399507749852140">Cael hysbysiadau os bydd y pris yn gostwng ar unrhyw wefan</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4062305924942672200">Gwybodaeth gyfreithiol</translation>
@@ -774,7 +768,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="5062960805900435602">Mae'r diweddariad am gyfuno cyfrinair ar gau</translation>
 <translation id="5081960376148623587">Dewis a ddylid rhaglwytho tudalennau</translation>
 <translation id="5091199029769593641">Yn fuan, byddwch yn gweld straeon o <ph name="SITE_NAME" /> pan fyddwch yn agor tab newydd. Mae gwefannau rydych yn eu dilyn yn cael eu cadw yn eich cyfrif Google. Gallwch eu rheoli yn y gosodiadau Discover.</translation>
-<translation id="5091249083535528968">Data defnydd estynedig</translation>
 <translation id="509429900233858213">Bu gwall.</translation>
 <translation id="5097349930204431044">Gall gwefannau rydych yn ymweld â nhw benderfynu beth rydych yn ei hoffi ac yna awgrymu hysbysebion wrth i chi barhau i bori</translation>
 <translation id="5099845111805573968">Pan fyddwch yn dewis gwefan bwrdd gwaith unwaith, mae'r gosodiad yn cael ei gymhwyso i'r wefan bob tro y byddwch yn ymweld</translation>
@@ -914,7 +907,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="5833984609253377421">Rhannu'r ddolen</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5853623416121554550">seibiwyd</translation>
-<translation id="5854512288214985237">Ni anfonir unrhyw ystadegau nac adroddiadau damweiniau at Google</translation>
 <translation id="5855546874025048181">Mireinio: <ph name="REFINE_TEXT" />:</translation>
 <translation id="5857447844686706637">Aeth rhywbeth o'i le. Ni fu modd diweddaru'r Pris sy'n cael ei ddilyn.</translation>
 <translation id="5859968346865909126">Gallwch ei throi ymlaen neu ei diffodd yn y gosodiadau</translation>
@@ -1019,7 +1011,6 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="6404511346730675251">Golygu nod tudalen</translation>
 <translation id="6406506848690869874">Cysoni</translation>
 <translation id="6407224748847589805">Methu â chysylltu â'ch cyfrifiadur. Rhowch gynnig ar opsiwn dilysu arall.</translation>
-<translation id="6410404864818553978">Data defnydd sylfaenol</translation>
 <translation id="6410883413783534063">Agor tabiau i fynd i wahanol dudalennau ar yr un pryd</translation>
 <translation id="6411219469806822692">Methu â mynd yn uwch. Rhowch gynnig ar ddechrau o uwch i fyny'r dudalen.</translation>
 <translation id="6412673304250309937">Yn gwirio URL gyda rhestr o wefannau anniogel sydd wedi'u storio yn Chrome. Os yw gwefan yn ceisio dwyn eich cyfrinair, neu pan fyddwch yn lawrlwytho ffeil niweidiol, gall Chrome hefyd anfon URL, gan gynnwys darnau o gynnwys tudalen, i Pori'n Ddiogel.</translation>

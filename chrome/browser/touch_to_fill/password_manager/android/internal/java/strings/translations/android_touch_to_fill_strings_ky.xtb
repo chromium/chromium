@@ -21,5 +21,7 @@
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Бул сайт үчүн жаңы сырсөз}other{Бул сайт үчүн жаңы сырсөздөр}}</translation>
 <translation id="7286867818472074330">Киргизүүчү ачкычты тандоо</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEMS_TOTAL" /> ичинен <ph name="ITEM_POSITION" />.</translation>
+<translation id="7738288782501322815"><ph name="SITE_NAME" /> үчүн сырсөздөрдү алдыңыз</translation>
+<translation id="8614995815226664591"><ph name="SENDER_NAME" /> сиз менен <ph name="SITE_NAME" /> үчүн сырсөздү бөлүштү</translation>
 <translation id="8891372124884726271">Эсептик дайындардын тизмеси жабылды.</translation>
 </translationbundle>

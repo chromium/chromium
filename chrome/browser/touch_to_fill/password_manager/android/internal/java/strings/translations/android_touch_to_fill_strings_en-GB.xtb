@@ -21,5 +21,7 @@
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{New password for this site}other{New passwords for this site}}</translation>
 <translation id="7286867818472074330">Select passkey</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> of <ph name="ITEMS_TOTAL" />.</translation>
+<translation id="7738288782501322815">You have received passwords for <ph name="SITE_NAME" /></translation>
+<translation id="8614995815226664591"><ph name="SENDER_NAME" /> has shared a password with you for <ph name="SITE_NAME" /></translation>
 <translation id="8891372124884726271">List of credentials is closed.</translation>
 </translationbundle>

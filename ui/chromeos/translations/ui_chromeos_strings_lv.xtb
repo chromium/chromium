@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lv">
 <translation id="1000498691615767391">Atlasīt atveramo mapi</translation>
+<translation id="1014208178561091457">Failu “<ph name="FILE_NAME" />” nevarēja nokopēt, jo tas ir šifrēts.</translation>
 <translation id="1047956942837015229">Notiek <ph name="COUNT" /> vienumu dzēšana...</translation>
 <translation id="1049926623896334335">Word dokuments</translation>
 <translation id="1056775291175587022">Nav tīklu</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Mapes kopīgošana ar Parallels Desktop</translation>
 <translation id="1439919885608649279">Persona ar puķēm</translation>
 <translation id="1458457385801829801">Atvienot <ph name="TARGET_NAME" /></translation>
+<translation id="146691674290220697">Failus (<ph name="NUMBER_OF_FILES" />) nevarēja nokopēt, jo tie ir šifrēti.</translation>
 <translation id="1471718551822868769">Slovāku</translation>
 <translation id="1482884275703521657">Somu</translation>
 <translation id="148466539719134488">Šveices</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">Nav pieejams</translation>
 <translation id="3254434849914415189">Izvēlieties noklusējuma lietotni <ph name="FILE_TYPE" /> failu atvēršanai:</translation>
 <translation id="3255159654094949700">Arābu</translation>
+<translation id="326396468955264502">Failus (<ph name="NUMBER_OF_FILES" />) nevarēja pārvietot, jo tie ir šifrēti.</translation>
 <translation id="3264582393905923483">Konteksts</translation>
 <translation id="3272909651715601089">Nevarēja atvērt failu “<ph name="PATH" />”</translation>
 <translation id="3280431534455935878">Notiek sagatavošana</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490">Ar virtuālo mašīnu <ph name="VM_NAME" /> tiek kopīgota viena mape</translation>
 <translation id="3524311639100184459">Uzmanību! Šie ir pagaidu faili un var tikt automātiski izdzēsti, lai atbrīvotu vietu diskā.  <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="3527085408025491307">Mape</translation>
+<translation id="3529424493985988200">Lai iegūtu detalizētu informāciju, sazinieties ar administratoru.</translation>
 <translation id="3548125359243647069">Pārāk daudz reižu tika ievadīts nepareizs PIN.</translation>
 <translation id="3549797760399244642">Doties uz drive.google.com...</translation>
 <translation id="3553048479571901246">Lai atvērtu failus, izmantojot lietotni <ph name="APP_NAME" />, vispirms kopējiet tos uz Windows failu mapi.</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">Šis fails tika atvērts citā darbvirsmā. Lai skatītu šo darbvirsmu, izmantojiet profilu <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="6394388407447716302">Tikai lasāma</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> vienumi</translation>
+<translation id="6407769893376380348">Failu “<ph name="FILE_NAME" />” nevarēja pārvietot, jo tas ir šifrēts.</translation>
 <translation id="642282551015776456">Šo nosaukumu nedrīkst izmantot kā mapes nosaukuma failu</translation>
 <translation id="6423031066725912715">Vjetnamiešu, ar TCVN tastatūru</translation>
 <translation id="6430271654280079150">Atlicis viens mēģinājums.</translation>

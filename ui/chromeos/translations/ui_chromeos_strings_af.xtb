@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="af">
 <translation id="1000498691615767391">Kies 'n vouer om oop te maak</translation>
+<translation id="1014208178561091457"><ph name="FILE_NAME" /> kon nie gekopieer word nie omdat dit geënkripteer is.</translation>
 <translation id="1047956942837015229">Tans besig om <ph name="COUNT" /> items uit te vee …</translation>
 <translation id="1049926623896334335">Word-dokument</translation>
 <translation id="1056775291175587022">Geen netwerke nie</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Deel vouer met Parallels Desktop</translation>
 <translation id="1439919885608649279">Persoon met blomme</translation>
 <translation id="1458457385801829801">Maak <ph name="TARGET_NAME" /> los</translation>
+<translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> lêers kon nie gekopieer word nie omdat hulle geënkripteer is.</translation>
 <translation id="1471718551822868769">Slowaaks</translation>
 <translation id="1482884275703521657">Fins</translation>
 <translation id="148466539719134488">Switsers</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">Nie beskikbaar nie</translation>
 <translation id="3254434849914415189">Kies die verstekprogram vir <ph name="FILE_TYPE" />-lêers:</translation>
 <translation id="3255159654094949700">Arabies</translation>
+<translation id="326396468955264502"><ph name="NUMBER_OF_FILES" /> lêers kon nie geskuif word nie omdat hulle geënkripteer is.</translation>
 <translation id="3264582393905923483">Konteks</translation>
 <translation id="3272909651715601089">Kon nie "<ph name="PATH" />" oopmaak nie</translation>
 <translation id="3280431534455935878">Berei tans voor</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490">1 vouer gedeel met <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Wees versigtig: Hierdie lêers is tydelik en kan outomaties uitgevee word om skyfspasie beskikbaar te maak.  <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Vouer</translation>
+<translation id="3529424493985988200">Kontak jou admin vir besonderhede.</translation>
 <translation id="3548125359243647069">’n Verkeerde PIN is te veel kere ingevoer.</translation>
 <translation id="3549797760399244642">Gaan na drive.google.com …</translation>
 <translation id="3553048479571901246">Om lêers met <ph name="APP_NAME" /> oop te maak, moet jy hulle eers na die Windows-lêersvouer toe kopieer.</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">Hierdie lêer het op 'n ander werkskerm oopgemaak. Beweeg na <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) om dit te bekyk.</translation>
 <translation id="6394388407447716302">Leesalleen</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> items</translation>
+<translation id="6407769893376380348"><ph name="FILE_NAME" /> kon nie geskuif word nie omdat dit geënkripteer is.</translation>
 <translation id="642282551015776456">Hierdie naam mag nie as 'n lêer- of vouernaam gebruik word nie</translation>
 <translation id="6423031066725912715">Viëtnamees met TCVN-sleutelbord</translation>
 <translation id="6430271654280079150">Jy het 1 poging oor.</translation>

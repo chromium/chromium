@@ -582,7 +582,7 @@
 <translation id="1461041542809785877">效能</translation>
 <translation id="1461177659295855031">移至「書籤列」資料夾</translation>
 <translation id="1461288887896722288">您剛才已登入受管帳戶，建立新的受管個人檔案即可存取一些已連結至該帳戶的資源。</translation>
-<translation id="1461868306585780092">使用不安全的連線前發出警告</translation>
+<translation id="1461868306585780092">在使用不安全的連線前先顯示警告</translation>
 <translation id="146219525117638703">ONC 狀態</translation>
 <translation id="146220085323579959">互聯網已中斷連線。請檢查互聯網連線，然後再試一次。</translation>
 <translation id="1462480037563370607">手動新增網站</translation>
@@ -1571,7 +1571,7 @@
 <translation id="2180620921879609685">封鎖任何頁面上的內容</translation>
 <translation id="2181821976797666341">政策</translation>
 <translation id="2182058453334755893">已複製至剪貼簿</translation>
-<translation id="2182419606502127232">包含我的伺服器記錄。</translation>
+<translation id="2182419606502127232">包括我的伺服器記錄。</translation>
 <translation id="2183570493397356669">停用咗繼續按鈕</translation>
 <translation id="2184515124301515068">允許 Chrome 選擇何時讓網站播放音效 (建議)</translation>
 <translation id="2186206192313702726">Google 智能鏡頭</translation>
@@ -3904,12 +3904,12 @@
 <translation id="399788104667917863">固定至工具列</translation>
 <translation id="3998976413398910035">管理打印機</translation>
 <translation id="4001540981461989979">移動時突顯滑鼠游標</translation>
-<translation id="4002347779798688515">如果行動網路供應商處於鎖定狀態，你可能無法使用已下載的設定檔。請向供應商尋求支援。</translation>
+<translation id="4002347779798688515">如果已鎖定流動網絡供應商，已下載的設定檔便可能無法使用。請向供應商尋求支援。</translation>
 <translation id="4002440992267487163">PIN 設定</translation>
 <translation id="4005817994523282006">時區偵測方法</translation>
 <translation id="4007856537951125667">隱藏捷徑</translation>
 <translation id="4008291085758151621">無法在 VR 狀態下存取網站資訊</translation>
-<translation id="4010746393007464819">現在可以升級至 Debian 12 (Bookworm)</translation>
+<translation id="4010746393007464819">可以升級至 Debian 12 (Bookworm)</translation>
 <translation id="4010917659463429001">如要在所有裝置上查看書籤，請<ph name="GET_IOS_APP_LINK" />。</translation>
 <translation id="4014432863917027322">修復「<ph name="EXTENSION_NAME" />」？</translation>
 <translation id="4015163439792426608">您有使用擴充程式嗎？集中<ph name="BEGIN_LINK" />管理擴充程式<ph name="END_LINK" />，輕鬆又方便。</translation>
@@ -5441,7 +5441,7 @@
 <translation id="5261683757250193089">在「Chrome 網上應用程式商店」中開啟</translation>
 <translation id="5261799091118902550">此檔案可能是病毒或惡意軟件。你可將此檔案傳送至 Google，檢查是否不安全。</translation>
 <translation id="5262784498883614021">自動連線至網絡</translation>
-<translation id="5263656105659419083">如要輕鬆返回側邊面板，請按一下右上方的「固定」</translation>
+<translation id="5263656105659419083">㩒一下右上角嘅 [固定]，就可以輕易返去側面板</translation>
 <translation id="5264148714798105376">這可能需要幾分鐘時間。</translation>
 <translation id="5264252276333215551">如要以 Kiosk 模式啟動您的應用程式，請連線至互聯網。</translation>
 <translation id="5265797726250773323">安裝時發生錯誤</translation>
@@ -5589,7 +5589,7 @@
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{找到 1 個傳送大量通知的網站}other{找到 {NUM_SITES} 個傳送大量通知的網站}}</translation>
 <translation id="5388885445722491159">已配對</translation>
 <translation id="5389626883706033615">已禁止網站要求使用與你相關的既有資料</translation>
-<translation id="5389794555912875905">前往不安全的網站前發出警告 (建議)</translation>
+<translation id="5389794555912875905">前往不安全的網站前先顯示警告 (建議)</translation>
 <translation id="5390112241331447203">在意見報告中包含 system_logs.txt 檔案進行傳送。</translation>
 <translation id="5390677308841849479">深紅色和橙色</translation>
 <translation id="5390743329570580756">傳送類型</translation>
@@ -6069,7 +6069,7 @@
 <translation id="5782040878821624922">可用於所有裝置</translation>
 <translation id="5782227691023083829">正在翻譯…</translation>
 <translation id="57838592816432529">静音</translation>
-<translation id="5784291589716625675">變更應用程式語言</translation>
+<translation id="5784291589716625675">更改應用程式語言</translation>
 <translation id="5785583009707899920">Chrome 檔案公用處理程序</translation>
 <translation id="5787146423283493983">金鑰協議</translation>
 <translation id="5787420647064736989">裝置名稱</translation>
@@ -6227,7 +6227,7 @@
 <translation id="5901089233978050985">切換至正在擷取的分頁</translation>
 <translation id="5901494423252125310">打印機的外蓋應關上</translation>
 <translation id="5901630391730855834">黃色</translation>
-<translation id="5902892210366342391">在無痕模式下前往不安全的網站前發出警告</translation>
+<translation id="5902892210366342391">在透過無痕模式前往不安全的網站前先顯示警告</translation>
 <translation id="5904614460720589786">設定發生問題，因此無法設定 <ph name="APP_NAME" />。請聯絡您的管理員。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="5906655207909574370">即將更新至最新版本！重新啟動您的裝置即可完成更新程序。</translation>
 <translation id="5906732635754427568">系統會從裝置中移除與此應用程式相關的資料。</translation>
@@ -6544,7 +6544,7 @@
 <translation id="6151323131516309312">按一下 <ph name="SEARCH_KEY" /> 以搜尋 <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">下載資料夾中已有此檔案。</translation>
 <translation id="6152918902620844577">正在等待下一次操作</translation>
-<translation id="6153439704237222699">進一步瞭解「Do Not Track」</translation>
+<translation id="6153439704237222699">進一步了解 Do Not Track</translation>
 <translation id="6154240335466762404">移除所有連接埠</translation>
 <translation id="615436196126345398">通訊協定</translation>
 <translation id="6155141482566063812">背景分頁正在分享您的螢幕畫面</translation>
@@ -7272,7 +7272,7 @@
 <translation id="676158322851696513">「<ph name="EXTENSION_NAME" />」</translation>
 <translation id="6761623907967804682">不允許在裝置上儲存網站資料</translation>
 <translation id="6762833852331690540">開啟</translation>
-<translation id="6762861159308991328">你可以在「應用程式」設定中變更連結開啟方式</translation>
+<translation id="6762861159308991328">你可在應用程式設定中變更開啟連結的方式</translation>
 <translation id="676560328519657314">您喺 Google Pay 入面嘅付款方法</translation>
 <translation id="6766488013065406604">去「Google 密碼管理工具」</translation>
 <translation id="6767566652486411142">選擇其他語言…</translation>
@@ -7488,7 +7488,7 @@
 <translation id="6912007319859991306">流動網絡 SIM 卡 PIN</translation>
 <translation id="6912380255120084882">嘗試使用其他裝置</translation>
 <translation id="691289340230098384">字幕偏好設定</translation>
-<translation id="6914812290245989348">前往不安全的網站前不顯示任何警告</translation>
+<translation id="6914812290245989348">在前往不安全的網站前不要顯示任何警告</translation>
 <translation id="6916590542764765824">管理擴充功能</translation>
 <translation id="6918677045355889289">必須更新 Chrome OS</translation>
 <translation id="6919354101107095996">請嘗試登入網站，然後再次下載</translation>
@@ -8863,7 +8863,7 @@
 <translation id="7988805580376093356">保留現有作業系統，並透過 USB 執行 <ph name="DEVICE_OS" />。</translation>
 <translation id="7988876720343145286">更多 Android 設定和權限</translation>
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> 語音 <ph name="COUNT" /></translation>
-<translation id="7990958035181555539">自動傳送 Android 手機上的 Wi-Fi 資訊</translation>
+<translation id="7990958035181555539">自動從 Android 手機轉移 Wi-Fi 設定</translation>
 <translation id="7991296728590311172">「按鈕控制」設定</translation>
 <translation id="7992203134935383159">語音合成</translation>
 <translation id="7994515119120860317">透過 <ph name="VISUAL_SEARCH_PROVIDER" /> 翻譯圖片中的文字</translation>
@@ -9811,7 +9811,7 @@
 <translation id="8736288397686080465">這個網站已在背景更新。</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">揀要將網頁翻譯成邊種語言</translation>
-<translation id="8738418093147087440">依國家/地區、語言或輸入名稱搜尋</translation>
+<translation id="8738418093147087440">按國家/地區、語言或輸入名稱搜尋</translation>
 <translation id="8740086188450289493">使用 Google 帳戶密碼</translation>
 <translation id="8740247629089392745">您可將此 Chromebook 交還給<ph name="SUPERVISED_USER_NAME" />。設定即將完成，現在可開始探索。</translation>
 <translation id="8740672167979365981">需要更新 ChromeOS Flex</translation>

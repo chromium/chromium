@@ -3894,6 +3894,7 @@
 <translation id="4005817994523282006">સમય ઝોન ઓળખ પદ્ધતિ</translation>
 <translation id="4007856537951125667">શૉર્ટકટ છુપાવો</translation>
 <translation id="4008291085758151621">VRમાં સાઇટ વિશેની માહિતી ઉપલબ્ધ નથી</translation>
+<translation id="4010746393007464819">Debian 12 (Bookworm) માટેનું અપગ્રેડ ઉપલબ્ધ છે</translation>
 <translation id="4010917659463429001">તમારા મોબાઇલ ડિવાઇસ પર તમારા બુકમાર્ક મેળવવા માટે, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" ને સુધારીએ?</translation>
 <translation id="4015163439792426608">શું તમારી પાસે એક્સ્ટેંશન છે? એક અનુકૂળ જગ્યાએથી <ph name="BEGIN_LINK" />તમારા એક્સ્ટેંશનને મેનેજ કરો<ph name="END_LINK" />.</translation>
@@ -6057,6 +6058,7 @@
 <translation id="5782040878821624922">તે કોઈપણ ડિવાઇસ પર ઉપલબ્ધ છે</translation>
 <translation id="5782227691023083829">ભાષાંતર કરી રહ્યું છે...</translation>
 <translation id="57838592816432529">અવાજ બંધ કરો</translation>
+<translation id="5784291589716625675">ઍપની ભાષા બદલો</translation>
 <translation id="5785583009707899920">Chrome ફાઇલ માટેની ઉપયોગીતાઓ</translation>
 <translation id="5787146423283493983">કી એગ્રીમેન્ટ</translation>
 <translation id="5787420647064736989">ડિવાઇસનું નામ</translation>
@@ -6532,6 +6534,7 @@ USB ડિવાઇસ</translation>
 <translation id="6151323131516309312"><ph name="SITE_NAME" /> ને શોધવા માટે <ph name="SEARCH_KEY" /> દબાવો</translation>
 <translation id="6151771661215463137">આ ફાઇલ પહેલેથી જ તમારા ડાઉનલોડ ફોલ્ડરમાં છે.</translation>
 <translation id="6152918902620844577">આગળની કામગીરીની રાહ જોઈ રહ્યાં છીએ</translation>
+<translation id="6153439704237222699">Do Not Track વિશે વધુ જાણો</translation>
 <translation id="6154240335466762404">બધા પોર્ટ કાઢી નાખો</translation>
 <translation id="615436196126345398">પ્રોટોકોલ</translation>
 <translation id="6155141482566063812">બૅકગ્રાઉન્ડ ટૅબ તમારી સ્ક્રીન શેર કરી રહ્યું છે</translation>
@@ -8852,6 +8855,7 @@ USB ડિવાઇસ</translation>
 <translation id="7988805580376093356">તમારી OSને અકબંધ રહેવા દો અને <ph name="DEVICE_OS" />ને USBમાંથી ચલાવો.</translation>
 <translation id="7988876720343145286">Androidના વધુ સેટિંગ અને પરવાનગીઓ</translation>
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> અવાજ <ph name="COUNT" /></translation>
+<translation id="7990958035181555539">તમારા Android ફોનમાંથી ઑટોમૅટિક રીતે વાઇ-ફાઇ ટ્રાન્સફર કરો</translation>
 <translation id="7991296728590311172">સ્વિચ ઍક્સેસ સેટિંગ</translation>
 <translation id="7992203134935383159">સ્પીચ સિન્થેસીસ</translation>
 <translation id="7994515119120860317"><ph name="VISUAL_SEARCH_PROVIDER" /> વડે છબીમાંની ટેક્સ્ટનો અનુવાદ કરો</translation>
@@ -9794,6 +9798,7 @@ USB ડિવાઇસ</translation>
 <translation id="8736288397686080465">બૅકગ્રાઉન્ડમાં આ સાઇટ અપડેટ કરવામાં આવી છે.</translation>
 <translation id="8737709691285775803">શિલ</translation>
 <translation id="8737914367566358838">આ પેજનો અનુવાદ જે ભાષામાં કરવા ઇચ્છતા હો, તે પસંદ કરો</translation>
+<translation id="8738418093147087440">દેશ, ભાષા કે ઇનપુટના નામ મુજબ શોધો</translation>
 <translation id="8740086188450289493">Google એકાઉન્ટના પાસવર્ડનો ઉપયોગ કરો</translation>
 <translation id="8740247629089392745">તમે આ Chromebook <ph name="SUPERVISED_USER_NAME" />ને સોંપી શકો છો. સેટઅપ કરવાનું લગભગ પૂર્ણ થઈ ગયું છે અને હવે આ શોધખોળ કરવાનો સમય છે.</translation>
 <translation id="8740672167979365981">ChromeOS Flex અપડેટ કરવાની જરૂર છે</translation>

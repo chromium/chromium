@@ -819,6 +819,7 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="5300589172476337783">Göster</translation>
 <translation id="5317780077021120954">Kaydet</translation>
 <translation id="5318298563956633672">Bu ürünü zaten takip ediyorsunuz.</translation>
+<translation id="5329451663851195956">Aşağıya çekerek yenileyebilirsiniz.</translation>
 <translation id="5339316356165661760">Senkronizasyonu Aç</translation>
 <translation id="5345598430982201510">Kargoları Hiçbir Zaman Otomatik Olarak Algılama</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Bu Kargo Takip Edilsin Mi?}other{{COUNT} Kargo Takip Edilsin Mi?}}</translation>
@@ -944,6 +945,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="598634819525651074">Alan</translation>
 <translation id="5988097621740394599">Sekmelerinizde fiyat düşüşlerini görün.</translation>
 <translation id="5988851877894965432">URL'leri Chrome'da açar</translation>
+<translation id="6001839398155993679">Başlayalım</translation>
 <translation id="6006672969046233841">Yeni Sekme</translation>
 <translation id="6011308810877101166">Arama önerilerini iyileştir</translation>
 <translation id="6012140227487808125">Şifreleniyor…</translation>
@@ -1318,6 +1320,7 @@ Gizli moddayken siteler, örneğin reklamları kişiselleştirmek amacıyla fark
 <translation id="7879275349003161544">İndirilenleri Göster</translation>
 <translation id="7883882164760409935">Yeniden kullanılan şifreleriniz var.</translation>
 <translation id="7884694604461143138">Geçmişte arayın (<ph name="COUNT" /> sonuç)</translation>
+<translation id="7887174313503389866">Önemli gizlilik ve güvenlik kontrolleriyle ilgili rehberli tura katılın. Daha fazla seçenek için bağımsız ayarlara gidin.</translation>
 <translation id="7887198238286927132">Gizliliğinizi korumak için Chrome bu alanı otomatik olarak doldurmayacaktır.</translation>
 <translation id="7889910613639381518">Google Şifre Yöneticisi widget'ıyla kolay ve güvenli erişim.</translation>
 <translation id="7911190106180361398">Kuruluşunuz bazı şeyleri senkronize etmenize izin vermiyor.</translation>

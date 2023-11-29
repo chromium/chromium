@@ -582,6 +582,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1461041542809785877">Werkverrigting</translation>
 <translation id="1461177659295855031">Skuif na boekmerkbalkvouer</translation>
 <translation id="1461288887896722288">Jy het sopas by ’n bestuurde rekening aangemeld. As jy ’n nuwe bestuurde profiel skep, sal jy toegang kry tot sekere hulpbronne wat aan daardie rekening gekoppel is.</translation>
+<translation id="1461868306585780092">Waarsku voordat onveilige verbindings gebruik word</translation>
 <translation id="146219525117638703">ONC-status</translation>
 <translation id="146220085323579959">Internet ontkoppel. Gaan jou internetverbinding na en probeer weer.</translation>
 <translation id="1462480037563370607">Voeg werwe handmatig by</translation>
@@ -1570,6 +1571,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2180620921879609685">Blokkeer inhoud op enige bladsy</translation>
 <translation id="2181821976797666341">Beleide</translation>
 <translation id="2182058453334755893">Gekopieer na jou knipbord</translation>
+<translation id="2182419606502127232">Sluit my bedienerloglêers in.</translation>
 <translation id="2183570493397356669">Gaan Voort-knoppie is gedeaktiveer</translation>
 <translation id="2184515124301515068">Laat Chrome kies wanneer webwerwe klank kan speel (aanbeveel)</translation>
 <translation id="2186206192313702726">Google Lens</translation>
@@ -1766,6 +1768,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2323018538045954000">Gestoorde Wi-Fi-netwerke</translation>
 <translation id="2325444234681128157">Onthou wagwoord</translation>
 <translation id="2326188115274135041">Bevestig PIN om outomatiese ontsluiting aan te skakel</translation>
+<translation id="2326906096734221931">Maak appinstellings oop</translation>
 <translation id="2326931316514688470">Herlaai program</translation>
 <translation id="2327492829706409234">Aktiveer program</translation>
 <translation id="2327920026543055248">Voer karakter <ph name="CHARACTER" /> van <ph name="TOTAL" /> in</translation>
@@ -3903,6 +3906,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="399788104667917863">Spel aan nutsbalk vas</translation>
 <translation id="3998976413398910035">Bestuur drukkers</translation>
 <translation id="4001540981461989979">Merk muisskermpyltjie wanneer dit beweeg</translation>
+<translation id="4002347779798688515">Afgelaaide profiel sal dalk nie bruikbaar wees as selnetwerkverskaffer gesluit is nie. Kontak jou verskaffer vir ondersteuning.</translation>
 <translation id="4002440992267487163">PIN-opstelling</translation>
 <translation id="4005817994523282006">Tydsone-bespeuringsmetode</translation>
 <translation id="4007856537951125667">Versteek kortpaaie</translation>
@@ -5441,6 +5445,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5261683757250193089">Maak in Webwinkel oop</translation>
 <translation id="5261799091118902550">Hierdie lêer kan ’n virus of wanware wees. Jy kan dit na Google stuur om te kontroleer of dit onveilig is.</translation>
 <translation id="5262784498883614021">Koppel outomaties aan netwerk</translation>
+<translation id="5263656105659419083">Klik Speld vas bo regs om maklik na die kantpaneel toe terug te gaan</translation>
 <translation id="5264148714798105376">Dit kan 'n minuut of wat neem.</translation>
 <translation id="5264252276333215551">Koppel asseblief aan die internet om jou program in kioskmodus te begin.</translation>
 <translation id="5265797726250773323">Kon nie installeer nie</translation>
@@ -5588,6 +5593,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{1 werf met baie kennisgewings is gevind}other{{NUM_SITES} werwe met baie kennisgewings is gevind}}</translation>
 <translation id="5388885445722491159">Saamgebind</translation>
 <translation id="5389626883706033615">Werwe word geblokkeer om jou te vra om inligting te gebruik wat hulle oor jou gestoor het</translation>
+<translation id="5389794555912875905">Sien waarskuwings voordat daar na onveilige werwe toe gegaan word (aanbeveel)</translation>
 <translation id="5390112241331447203">Sluit die system_logs.txt-lêer in wat in terugvoerverslae gestuur is.</translation>
 <translation id="5390677308841849479">Donkerrooi en oranje</translation>
 <translation id="5390743329570580756">Stuur vir</translation>
@@ -5871,6 +5877,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="5608580678041221894">Tik op die volgende sleutels om die snoei-area te verstel of te skuif</translation>
 <translation id="5609231933459083978">Dit lyk of die program ongeldig is.</translation>
 <translation id="561030196642865721">Derdeparty-webkoekies word op hierdie werf toegelaat</translation>
+<translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5612734644261457353">Jammer, jou wagwoord kon steeds nie geverifieer word nie. Let wel: as jy jou wagwoord onlangs verander het, sal jou nuwe wagwoord van toepassing wees sodra jy afmeld. Gebruik die ou wagwoord hier.</translation>
 <translation id="5614190747811328134">Gebruikerkennisgewing</translation>
 <translation id="5614553682702429503">Stoor wagwoord?</translation>
@@ -6227,6 +6234,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5901089233978050985">Skakel oor na oortjie wat tans vasvang</translation>
 <translation id="5901494423252125310">Drukkerdeur is oop</translation>
 <translation id="5901630391730855834">Geel</translation>
+<translation id="5902892210366342391">Sien in Incognitomodus waarskuwings voordat daar na onveilige werwe toe gegaan word</translation>
 <translation id="5904614460720589786">Kon nie <ph name="APP_NAME" /> opstel nie weens 'n opstellingprobleem. Kontak jou administrateur. Foutkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Amper op datum! Herbegin jou toestel om opdatering te voltooi.</translation>
 <translation id="5906732635754427568">Data wat met hierdie program geassosieer word, sal van hierdie toestel af verwyder word.</translation>
@@ -6765,6 +6773,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6333170995003625229">Jou e-posadres of wagwoord kon nie geverifieer word nie. Probeer weer aanmeld.</translation>
 <translation id="6334267141726449402">Kopieer en stuur hierdie skakel na die gebruiker om die logs te versamel.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> het ADB-ontfouting gedeaktiveer. Dit sal jou <ph name="DEVICE_TYPE" /> oor 24 uur terugstel. Rugsteun enige lêers wat jy wil hou.</translation>
+<translation id="6336194758029258346">Apptaal</translation>
 <translation id="6337543438445391085">Sommige persoonlike inligting kan steeds in die data ingesluit word. Maak seker dat u die uitgevoerde lêers hersien.</translation>
 <translation id="6338968693068997776">Voeg USB-toestel by</translation>
 <translation id="6339668969738228384">Skep 'n nuwe profiel vir <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -7270,6 +7279,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">Optoestelwerfdata word nie toegelaat nie</translation>
 <translation id="6762833852331690540">Aan</translation>
+<translation id="6762861159308991328">Jy kan in appinstellings verander hoe skakels oopmaak</translation>
 <translation id="676560328519657314">Jou betaalmetodes in Google Pay</translation>
 <translation id="6766488013065406604">Gaan na Google Wagwoordbestuurder</translation>
 <translation id="6767566652486411142">Kies 'n ander taal …</translation>
@@ -7485,6 +7495,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6912007319859991306">Sellulêre SIM-PIN</translation>
 <translation id="6912380255120084882">Probeer ’n ander toestel</translation>
 <translation id="691289340230098384">Onderskrifvoorkeure</translation>
+<translation id="6914812290245989348">Moenie enige waarskuwings wys voordat daar na onveilige werwe gegaan word nie</translation>
 <translation id="6916590542764765824">Bestuur uitbreidings</translation>
 <translation id="6918677045355889289">Opdatering van Chrome-bedryfstelsel word vereis</translation>
 <translation id="6919354101107095996">Probeer by die werf aanmeld. Laai dan weer af</translation>
@@ -8967,6 +8978,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8076835018653442223">Toegang tot plaaslike lêers op jou toestel is deur jou administrateur gedeaktiveer</translation>
 <translation id="8077120325605624147">Enige werf wat jy besoek, kan vir jou enige advertensie wys</translation>
 <translation id="8077579734294125741">Ander Chrome-profiele</translation>
+<translation id="80790299200510644">Prentsoektog</translation>
 <translation id="80798452873915119">Werwe kan vra om vensters op al jou skerms te bestuur</translation>
 <translation id="8080028325999236607">Maak alle oortjies toe</translation>
 <translation id="808089508890593134">Google</translation>

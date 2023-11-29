@@ -819,6 +819,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="5300589172476337783">Shfaq</translation>
 <translation id="5317780077021120954">Ruaj</translation>
 <translation id="5318298563956633672">Po e monitoron tashmë këtë produkt.</translation>
+<translation id="5329451663851195956">Mund ta tërheqësh poshtë për ta rifreskuar.</translation>
 <translation id="5339316356165661760">Aktivizo sinkronizimin</translation>
 <translation id="5345598430982201510">Mos zbulo asnjëherë automatikisht pakot</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Të gjurmohet kjo paketë?}other{Të gjurmohen {COUNT} paketa?}}</translation>
@@ -944,6 +945,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="598634819525651074">Zona</translation>
 <translation id="5988097621740394599">Shiko uljet e çmimeve në skeda.</translation>
 <translation id="5988851877894965432">Hap URL-të në Chrome</translation>
+<translation id="6001839398155993679">Fillojmë</translation>
 <translation id="6006672969046233841">Skedë e re</translation>
 <translation id="6011308810877101166">Përmirëso sugjerimet për kërkimin</translation>
 <translation id="6012140227487808125">Po shifron…</translation>
@@ -1318,6 +1320,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="7879275349003161544">Shfaq shkarkimet</translation>
 <translation id="7883882164760409935">Ke fjalëkalime të ripërdorura.</translation>
 <translation id="7884694604461143138">Historiku i kërkimeve (u gjetën <ph name="COUNT" />)</translation>
+<translation id="7887174313503389866">Bëj një turne udhëzues për kontrollet kryesore të privatësisë dhe sigurisë. Për më shumë opsione, shko te cilësimet individuale.</translation>
 <translation id="7887198238286927132">Për të mbrojtur privatësinë tënde, Chrome nuk do ta plotësojë automatikisht këtë fushë.</translation>
 <translation id="7889910613639381518">Qasje e lehtë dhe e sigurt me miniaplikacionin e "Menaxherit të fjalëkalimeve të Google"</translation>
 <translation id="7911190106180361398">Organizata jote nuk të lejon të sinkronizosh gjithçka.</translation>

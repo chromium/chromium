@@ -21,5 +21,7 @@
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{આ સાઇટ માટે નવો પાસવર્ડ}one{આ સાઇટ માટે નવો પાસવર્ડ}other{આ સાઇટ માટે નવા પાસવર્ડ}}</translation>
 <translation id="7286867818472074330">પાસકી પસંદ કરો</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEMS_TOTAL" />માંથી <ph name="ITEM_POSITION" />.</translation>
+<translation id="7738288782501322815">તમે <ph name="SITE_NAME" /> માટે પાસવર્ડ પ્રાપ્ત કર્યો છે</translation>
+<translation id="8614995815226664591"><ph name="SENDER_NAME" /> દ્વારા તમારી સાથે <ph name="SITE_NAME" /> માટેનો પાસવર્ડ શેર કરવામાં આવ્યો છે</translation>
 <translation id="8891372124884726271">લૉગ ઇન વિગતોની સૂચિ બંધ છે.</translation>
 </translationbundle>

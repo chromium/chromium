@@ -31,7 +31,6 @@
 <translation id="1181037720776840403">Видалити</translation>
 <translation id="1191518099344003522">APN увімкнено.</translation>
 <translation id="1195447618553298278">Невідома помилка.</translation>
-<translation id="1195784767091936222">Увімкнути автоматичний темний режим</translation>
 <translation id="1196959502276349371">Версія <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Відтворити/призупинити</translation>
 <translation id="1201402288615127009">Далі</translation>
@@ -281,7 +280,6 @@
 <translation id="3122464029669770682">ЦП</translation>
 <translation id="3124039320086536031">Пристрій підключено.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Видалити сторінку?}=1{Видалити сторінку {PAGE_NUMBER}?}one{Видалити сторінку {PAGE_NUMBER}?}few{Видалити сторінку {PAGE_NUMBER}?}many{Видалити сторінку {PAGE_NUMBER}?}other{Видалити сторінку {PAGE_NUMBER}?}}</translation>
-<translation id="3136905423678675159">Увімкнути автоматичний темний режим?</translation>
 <translation id="3146655726035122603">Ексклюзивно для <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Мобільне передавання даних</translation>
 <translation id="3156846309055100599">Сканування сторінки <ph name="PAGE_NUMBER" />…</translation>
@@ -362,7 +360,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (відгуків: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Не з’єднано</translation>
 <translation id="3749289110408117711">Ім’я файлу</translation>
-<translation id="3754384069690464321">Щоб цей фоновий малюнок виглядав якнайкраще, увімкніть автоматичний темний режим. Ви можете будь-коли вимкнути його в додатку.</translation>
 <translation id="3771294271822695279">Відеофайли</translation>
 <translation id="3784455785234192852">Заблокувати</translation>
 <translation id="380097101658023925">елементи керування RGB</translation>

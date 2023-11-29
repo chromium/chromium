@@ -701,6 +701,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} et 1 autre}one{{website_1}, {website_2} et {more_count} autre}other{{website_1}, {website_2} et {more_count} autres}}</translation>
 <translation id="4737560986434232178">Rechercher dans les onglets récents</translation>
 <translation id="473775607612524610">Mise à jour</translation>
+<translation id="4744428388659507035">Pour accéder à vos favoris sur tous vos appareils, activez « Favoris » dans les paramètres.</translation>
 <translation id="4746926359847517643">Vous pouvez toujours les retrouver dans l'historique.</translation>
 <translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, uniquement sur cet appareil, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Nouvel onglet de navigation privée</translation>
@@ -945,6 +946,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="598634819525651074">Zone</translation>
 <translation id="5988097621740394599">Faites le suivi des réductions dans vos onglets.</translation>
 <translation id="5988851877894965432">Ouvrir les URL dans Chrome</translation>
+<translation id="6001839398155993679">Accéder</translation>
 <translation id="6006672969046233841">Nouvel onglet</translation>
 <translation id="6011308810877101166">Améliorer les suggestions de recherche</translation>
 <translation id="6012140227487808125">Cryptage en cours…</translation>
@@ -1242,6 +1244,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7491131399623468277">Accédez au menu Paramètres…</translation>
 <translation id="7492574581995589075">Votre organisation a désactivé la possibilité d'utiliser et d'enregistrer des données Chrome dans votre compte Google. Les nouveaux favoris, mots de passe et plus ne seront enregistrés que sur cet appareil.</translation>
 <translation id="749854780843431406">Vous pouvez ouvrir un nouvel onglet à partir du bouton <ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
+<translation id="7500419352370346534">Contrôlez maintenant tous les paramètres de votre compte en un seul endroit</translation>
 <translation id="750149195207506638">Les favoris sont masqués</translation>
 <translation id="750228856503700085">Les mises à jour ne sont pas accessibles</translation>
 <translation id="750493650310597496">0 sélectionné</translation>
@@ -1319,6 +1322,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7879275349003161544">Afficher les téléchargements</translation>
 <translation id="7883882164760409935">Vous avez des mots de passe réutilisés.</translation>
 <translation id="7884694604461143138">Historique de recherche (<ph name="COUNT" /> éléments trouvés)</translation>
+<translation id="7887174313503389866">Suivez une visite guidée des principaux paramètres de confidentialité et de sécurité. Pour plus d'options, accédez aux paramètres individuels.</translation>
 <translation id="7887198238286927132">Afin de protéger votre confidentialité, Chrome ne remplira pas automatiquement ce champ.</translation>
 <translation id="7889910613639381518">Accès facile et sécurisé avec le widget Gestionnaire de mots de passe Google.</translation>
 <translation id="7911190106180361398">Votre organisation ne vous autorise pas à tout synchroniser.</translation>

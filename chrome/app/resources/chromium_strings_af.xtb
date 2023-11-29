@@ -38,7 +38,9 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="1715127912119967311">Om hierdie kenmerke te help verbeter, stuur Chromium jou interaksies daarmee na Google. Hierdie data kan deur menslike kontroleerders gelees, verwerk en geannoteer word.</translation>
 <translation id="17264556997921157">Jy kan onderwerpe van belangstelling wat werwe gebruik om vir jou advertensies te wys, sien en verwyder. Chromium skat jou belangstellings op grond van jou onlangse blaaigeskiedenis.</translation>
 <translation id="1733725117201708356">Chromium gaan blaaierdata binnekort uitvee</translation>
+<translation id="1736443181683099871">Chromium sal probeer om navigasies na HTTPS op te gradeer</translation>
 <translation id="1745121272106313518">Chromium sal oor <ph name="REMAINING_TIME" /> herbegin</translation>
+<translation id="1749104137266986751">Chromium sal ’n onveilige verbinding gebruik sonder om jou te waarsku wanneer HTTPS nie beskikbaar is nie</translation>
 <translation id="1774152462503052664">Laat Chromium in die agtergrond loop</translation>
 <translation id="1779356040007214683">Om Chromium veiliger te maak, het ons sekere uitbreidings wat nie in die <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> gelys is nie, gedeaktiveer en kon dit sonder jou medewete bygevoeg gewees het.</translation>
 <translation id="1808667845054772817">Herinstalleer Chromium</translation>
@@ -126,6 +128,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="3286538390144397061">Herbegin nou</translation>
 <translation id="328888136576916638">Google API-sleutels ontbreek. Sommige funksies van Chromium sal gedeaktiveer word.</translation>
 <translation id="3296368748942286671">Hou aan om agtergrondprogramme te laat loop wanneer Chromium toe is</translation>
+<translation id="3313189106987092621">Chromium sal jou waarsku voordat enige werf met ’n onveilige verbinding gelaai word</translation>
 <translation id="3350761136195634146">'n Chromium-profiel met hierdie rekening bestaan reeds</translation>
 <translation id="3387527074123400161">Chromium-bedryfstelsel</translation>
 <translation id="3406848076815591792">Skakel oor na bestaande Chromium-profiel?</translation>
@@ -223,6 +226,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="5224391634244552924">Geen gestoorde wagwoorde nie. Chromium kan jou wagwoorde nagaan wanneer jy hulle stoor.</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> is reeds by hierdie Chromium-profiel aangemeld. Dit sal 'n nuwe Chromium-profiel vir <ph name="USER_EMAIL_ADDRESS" /> skep</translation>
 <translation id="5277894862589591112">Herbegin Chromium om jou veranderinge toe te pas</translation>
+<translation id="5294316920224716406">Chromium sal jou waarsku voordat ’n werf met ’n onveilige verbinding gelaai word wanneer jy in Incognitomodus blaai</translation>
 <translation id="5296845517486664001">Wanneer proeflopies aan is en Chromium jou lukraak vir ’n aktiewe proeflopie gekies het, sal jou blaaigeskiedenis die advertensies wat jy sien, beïnvloed asook die belangstellings soos hieronder geskat. Chromium vee elke maand jou belangstellings op ’n rollende basis uit om jou privaatheid te beskerm.</translation>
 <translation id="5352264705793813212">Chromium het ’n paar veiligheidsaanbevelings vir jou hersiening gekry</translation>
 <translation id="5358375970380395591">Jy meld tans met 'n bestuurde rekening aan en gee sy administrateur beheer oor jou Chromium-profiel. Jou Chromium-data, soos jou programme, boekmerke, geskiedenis, wagwoorde en ander instellings, sal permanent aan <ph name="USER_NAME" /> gekoppel word. Jy sal hierdie data via die Google-rekening se kontroleskerm kan uitvee, maar jy sal nie hierdie data met 'n ander rekening kan assosieer nie. <ph name="LEARN_MORE" /></translation>

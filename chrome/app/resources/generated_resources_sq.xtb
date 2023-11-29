@@ -149,7 +149,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1114202307280046356">Diamant</translation>
 <translation id="1114525161406758033">Vendose në gjumë kur kapaku mbyllet</translation>
 <translation id="1116639326869298217">Identiteti yt nuk mund të verifikohej</translation>
-<translation id="1116694919640316211">Rreth</translation>
+<translation id="1116694919640316211">Informacione</translation>
 <translation id="1116779635164066733">Ky cilësim zbatohet nga shtesa "<ph name="NAME" />".</translation>
 <translation id="1118428905044642028">Fjalëkalimet dhe plotësimi automatik</translation>
 <translation id="1118738876271697201">Sistemi nuk arriti të përcaktonte modelin e pajisjes ose numrin e serisë.</translation>
@@ -579,6 +579,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1461041542809785877">Cilësia e funksionimit</translation>
 <translation id="1461177659295855031">Zhvendose te dosja e "Shiritit të faqeshënuesve"</translation>
 <translation id="1461288887896722288">Sapo u identifikove në një llogari të menaxhuar. Krijimi i një profili të ri të menaxhuar do të të lejojë të kesh qasje te disa burime të lidhura me atë llogari.</translation>
+<translation id="1461868306585780092">Paralajmëro para se të përdorësh lidhje të pasigurta</translation>
 <translation id="146219525117638703">Gjendja ONC</translation>
 <translation id="146220085323579959">Interneti u shkëput. Kontrollo lidhjen e internetit dhe provo sërish.</translation>
 <translation id="1462480037563370607">Shto sajtet në mënyrë manuale</translation>
@@ -1555,6 +1556,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2180620921879609685">Blloko përmbajtjen në çdo faqe</translation>
 <translation id="2181821976797666341">Politikat</translation>
 <translation id="2182058453334755893">Kopjuar te kujtesa e fragmenteve</translation>
+<translation id="2182419606502127232">Përfshi evidencat e mia të serverit.</translation>
 <translation id="2183570493397356669">Butoni "Vazhdo" është çaktivizuar</translation>
 <translation id="2184515124301515068">Lejo që Chrome të zgjedhë se cilat sajte mund të luajnë tinguj (rekomandohet)</translation>
 <translation id="2186206192313702726">Lentja e Google</translation>
@@ -1749,6 +1751,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2323018538045954000">Rrjetet Wi-Fi të ruajtura</translation>
 <translation id="2325444234681128157">Kujto fjalëkalimin</translation>
 <translation id="2326188115274135041">Konfirmo kodin PIN për të aktivizuar shkyçjen automatike</translation>
+<translation id="2326906096734221931">Hap "Cilësimet e aplikacionit"</translation>
 <translation id="2326931316514688470">&amp;Ringarko aplikacionin</translation>
 <translation id="2327492829706409234">Aktivizo aplikacionin</translation>
 <translation id="2327920026543055248">Fut karakterin <ph name="CHARACTER" /> nga <ph name="TOTAL" /></translation>
@@ -3886,6 +3889,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="399788104667917863">Gozhdo te shiriti i veglave</translation>
 <translation id="3998976413398910035">Menaxho printerët</translation>
 <translation id="4001540981461989979">Thekso kursorin e miut gjatë lëvizjes</translation>
+<translation id="4002347779798688515">Profili i shkarkuar mund të mos jetë i përdorshëm nëse ofruesi i rrjetit celular është i kyçur. Kontakto me ofruesin për mbështetje.</translation>
 <translation id="4002440992267487163">Konfigurimi i kodit PIN</translation>
 <translation id="4005817994523282006">Metoda e zbulimit të brezit orar</translation>
 <translation id="4007856537951125667">Fshih shkurtoret</translation>
@@ -5422,6 +5426,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5261683757250193089">Hap te "Dyqani i uebit"</translation>
 <translation id="5261799091118902550">Ky skedar mund të jetë një virus ose softuer keqdashës. Mund ta dërgosh atë te Google për të kontrolluar nëse nuk është i sigurt.</translation>
 <translation id="5262784498883614021">Lidhu automatikisht me rrjetin</translation>
+<translation id="5263656105659419083">Për t'u kthyer me lehtësi te paneli anësor, kliko te "Gozhdo" në këndin e sipërm djathtas</translation>
 <translation id="5264148714798105376">Kjo mund të zgjasë një minutë ose pak më shumë.</translation>
 <translation id="5264252276333215551">Lidhu me internetin për të nisur aplikacionin tënd në modalitetin kioskë.</translation>
 <translation id="5265797726250773323">Gabim gjatë instalimit</translation>
@@ -5569,6 +5574,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{U gjet 1 sajt me shumë njoftime}other{U gjetën {NUM_SITES} sajte me shumë njoftime}}</translation>
 <translation id="5388885445722491159">I çiftuar</translation>
 <translation id="5389626883706033615">Sajtet janë bllokuar që të mos të kërkojnë të përdorin informacionet që kanë ruajtur në lidhje me ty</translation>
+<translation id="5389794555912875905">Shiko paralajmërime para se të shkosh në sajte të pasigurta (rekomandohet)</translation>
 <translation id="5390112241331447203">Përfshi skedarin system_logs.txt të dërguar në raportet e reagimeve.</translation>
 <translation id="5390677308841849479">E kuqe e errët dhe portokalli</translation>
 <translation id="5390743329570580756">Dërgo për</translation>
@@ -5852,6 +5858,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5608580678041221894">Trokit te tastet e mëposhtme për të rregulluar ose zhvendosur zonën e prerjes</translation>
 <translation id="5609231933459083978">Aplikacioni duket se është i pavlefshëm.</translation>
 <translation id="561030196642865721">Kukit e palëve të treta lejohen në këtë sajt</translation>
+<translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5612734644261457353">Na vjen keq, por fjalëkalimi sërish nuk mund të verifikohet. Shënim. Nëse ke ndryshuar fjalëkalimin së fundi, fjalëkalimi i ri do të zbatohet pasi të dalësh nga llogaria, prandaj përdor këtu fjalëkalimin e vjetër.</translation>
 <translation id="5614190747811328134">Njoftimi i përdoruesit</translation>
 <translation id="5614553682702429503">Të ruhet fjalëkalimi?</translation>
@@ -6206,6 +6213,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5901089233978050985">Kalo në shkrepjen e skedës</translation>
 <translation id="5901494423252125310">Dera e printerit është e hapur</translation>
 <translation id="5901630391730855834">E verdhë</translation>
+<translation id="5902892210366342391">Shiko paralajmërime para se të shkosh në sajte të pasigurta në "Modalitetin 'e fshehtë'"</translation>
 <translation id="5904614460720589786"><ph name="APP_NAME" /> nuk mund të konfigurohej për shkak të një problemi në konfigurim. Kontakto me administratorin tënd. Kodi i gabimit: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Pothuajse i përditësuar! Rinise pajisjen për të përfunduar përditësimin.</translation>
 <translation id="5906732635754427568">Të dhënat e lidhura me këtë aplikacion do të hiqen nga kjo pajisje.</translation>
@@ -6743,6 +6751,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6333170995003625229">Adresa e email-it ose fjalëkalimi yt nuk mund të verifikohej. Provo të identifikohesh përsëri.</translation>
 <translation id="6334267141726449402">Kopjoje dhe dërgoja këtë lidhje përdoruesit për të mbledhur evidencat.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> ka çaktivizuar korrigjimin e ADB-së. Kjo do ta rivendosë pajisjen tënde <ph name="DEVICE_TYPE" /> brenda 24 orësh. Rezervo çdo skedar që dëshiron ta mbash.</translation>
+<translation id="6336194758029258346">Gjuha e aplikacionit</translation>
 <translation id="6337543438445391085">Disa informacione personale mund të përfshihen përsëri te të dhënat. Sigurohu që të rishikosh skedarët e eksportuar.</translation>
 <translation id="6338968693068997776">Shto një pajisje USB</translation>
 <translation id="6339668969738228384">Krijo një profil të ri për <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -7248,6 +7257,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">Të dhënat e sajtit në pajisje nuk lejohen</translation>
 <translation id="6762833852331690540">Aktiv</translation>
+<translation id="6762861159308991328">Mund të ndryshosh se si hapen lidhjet te "Cilësimet e aplikacionit"</translation>
 <translation id="676560328519657314">Metodat e tua të pagesës në Google Pay</translation>
 <translation id="6766488013065406604">Shko te "Menaxheri i fjalëkalimeve i Google"</translation>
 <translation id="6767566652486411142">Zgjidh një gjuhë tjetër...</translation>
@@ -7463,6 +7473,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6912007319859991306">Kodi PIN i kartës celulare SIM</translation>
 <translation id="6912380255120084882">Provo një pajisje tjetër</translation>
 <translation id="691289340230098384">Preferencat e titrave</translation>
+<translation id="6914812290245989348">Mos shfaq paralajmërime para se të shkosh në sajte të pasigurta</translation>
 <translation id="6916590542764765824">Menaxho shtesat</translation>
 <translation id="6918677045355889289">Kërkohet përditësimi i ChromeOS</translation>
 <translation id="6919354101107095996">Provo të identifikohesh në sajt. Më pas, shkarkoje përsëri</translation>
@@ -8943,6 +8954,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8076835018653442223">Qasja në skedarët lokalë në pajisjen tënde është e çaktivizuar nga administratori yt</translation>
 <translation id="8077120325605624147">Çdo sajt që viziton ti mund të të shfaqë çdo reklamë</translation>
 <translation id="8077579734294125741">Profilet e tjera të Chrome</translation>
+<translation id="80790299200510644">Kërkimi nëpërmjet imazheve</translation>
 <translation id="80798452873915119">Sajtet mund të kërkojnë të menaxhojnë dritaret në të gjitha ekranet e tua</translation>
 <translation id="8080028325999236607">Mbyll të gjitha skedat</translation>
 <translation id="808089508890593134">Google</translation>

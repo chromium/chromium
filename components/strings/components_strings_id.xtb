@@ -50,6 +50,7 @@
 <translation id="1074497978438210769">Tidak aman</translation>
 <translation id="1075079914415273530">Agrikultur &amp; kehutanan</translation>
 <translation id="1075364221219156102">Gunakan Kunci Sandi</translation>
+<translation id="1078033282564106222">Opsi nomor gedung dipilih</translation>
 <translation id="1080116354587839789">Paskan dengan lebar</translation>
 <translation id="1081061862829655580">Baki 19</translation>
 <translation id="1089439967362294234">Ubah Sandi</translation>
@@ -785,6 +786,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2544546346215446551">Administrator memulai ulang perangkat Anda</translation>
 <translation id="2544644783021658368">Dokumen tunggal</translation>
 <translation id="254524874071906077">Setel Chrome sebagai Browser Default</translation>
+<translation id="2545721997179863249">Opsi isi semua dipilih</translation>
 <translation id="2546283357679194313">Cookie dan data situs</translation>
 <translation id="2547466893236767989">Desain &amp; pengembangan web</translation>
 <translation id="254947805923345898">Nilai kebijakan tidak valid.</translation>
@@ -878,6 +880,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2722622039067384533">Furnitur Ruang Keluarga</translation>
 <translation id="2723669454293168317">Jalankan pemeriksaan keamanan di setelan Chrome</translation>
 <translation id="2725492561136085792">Tekan Enter untuk mengaktifkan tindakan ini.</translation>
+<translation id="2725927759457695883">Isi nama lengkap</translation>
 <translation id="2726001110728089263">Baki Samping</translation>
 <translation id="2728127805433021124">Sertifikat server ditandai menggunakan algoritme yang lemah.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Jalankan Diagnostik Konektivitas<ph name="END_LINK" /></translation>
@@ -1241,6 +1244,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3484560055331845446">Anda dapat kehilangan akses ke Akun Google Anda. Chrome merekomendasikan untuk mengubah sandi Anda sekarang. Anda akan diminta untuk login.</translation>
 <translation id="3484861421501147767">Pengingat: Kode promo yang disimpan tersedia</translation>
 <translation id="3487845404393360112">Baki 4</translation>
+<translation id="3492199565975299728">Jalan</translation>
 <translation id="3493660662684070951">Truk, Van, &amp; SUV</translation>
 <translation id="3495081129428749620">Cari pada halaman <ph name="PAGE_TITLE" /></translation>
 <translation id="3497627066518778351">Tinjau daftar data situs di perangkat di jendela baru</translation>
@@ -1283,6 +1287,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Izinkan untuk situs ini</translation>
 <translation id="3575168918110434329">A4x7</translation>
+<translation id="3575589330755445706">Opsi nama jalan dipilih</translation>
 <translation id="3576616784287504635">Halaman tersemat di <ph name="SITE" /> menyatakan</translation>
 <translation id="3577473026931028326">Terjadi error. Coba lagi.</translation>
 <translation id="3577902790357386792">Senam</translation>
@@ -1346,6 +1351,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3678914302246317895">Masukkan kode verifikasi <ph name="OTP_LENGTH" /> digit</translation>
 <translation id="3681007416295224113">Informasi sertifikat</translation>
 <translation id="3681421644246505351">Chrome mencatat topik minat berdasarkan histori penjelajahan terbaru Anda.</translation>
+<translation id="3689867156802445220">Nomor gedung</translation>
 <translation id="3693327506115126094">Pilih cara memverifikasi diri Anda</translation>
 <translation id="3698629142018988477">Tombol Buat situs, aktifkan untuk membuat situs baru di Google Sites dengan cepat</translation>
 <translation id="3701325639446035885">Penjualan Tiket Acara</translation>
@@ -1945,6 +1951,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="4888600795924685526">Studi bahasa asing</translation>
 <translation id="4890070067176768718">Administrator Anda telah mengizinkan <ph name="PERMISSION" /> di <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Belakang</translation>
+<translation id="4895019427244614047">Hapus alamat</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olimpiade</translation>
 <translation id="4900217275619098670">Rol Kesembilan</translation>
@@ -1980,6 +1987,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="4960068118612257147">Anda dapat membuat perubahan pada setelan privasi iklan Chrome</translation>
 <translation id="4960203958361543136">Pilih Mesin Telusur Anda</translation>
 <translation id="4964505745997821360">Asuransi kesehatan</translation>
+<translation id="4967366744630699583">Edit alamat</translation>
 <translation id="4968522289500246572">Aplikasi ini didesain untuk perangkat seluler dan perubahan ukurannya mungkin tidak sesuai. Perangkat dapat mengalami masalah atau dimulai ulang.</translation>
 <translation id="4968665849807487749">Dapat meminta untuk mengelola jendela di semua layar</translation>
 <translation id="4969341057194253438">Hapus rekaman</translation>
@@ -2237,6 +2245,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
     <ph name="LINE_BREAK" />
     Coba hubungi administrator sistem Anda.</translation>
 <translation id="549333378215107354">Ukuran 3</translation>
+<translation id="550365051221576010">Isi semua</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Bookmark Terkelola</translation>
 <translation id="5510481203689988000">Setelan ini dikontrol di setelan Cookie.</translation>
@@ -2613,6 +2622,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6272088941196661550">Lanjutkan perjalanan Anda untuk melihat aktivitas yang relevan di histori Chrome Anda</translation>
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6279183038361895380">Tekan |<ph name="ACCELERATOR" />| untuk menampilkan kursor</translation>
+<translation id="628016388715774955">Opsi isi alamat lengkap dipilih</translation>
 <translation id="6280223929691119688">Tidak dapat mengirim ke alamat ini. Pilih alamat lain.</translation>
 <translation id="6284292079994426700">26 x 38 inci (66 x 96 cm)</translation>
 <translation id="6284517535531159884">Jenis Seed Variasi</translation>
@@ -2881,6 +2891,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6807791860691150411">Pendidikan</translation>
 <translation id="681021252041861472">Kolom Wajib Diisi</translation>
 <translation id="6810899417690483278">ID Penyesuaian</translation>
+<translation id="681459028290894216">Isi alamat lengkap</translation>
 <translation id="6816109178681043245">Perlengkapan Olahraga</translation>
 <translation id="6817217109584391709">javascript</translation>
 <translation id="6820143000046097424">port serial</translation>
@@ -3070,6 +3081,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="7163295244162773898">{0,plural, =1{Salin file rahasia?}other{Salin file rahasia?}}</translation>
 <translation id="717330890047184534">ID GAIA:</translation>
 <translation id="7174545416324379297">Digabung</translation>
+<translation id="7175097078723125014">Opsi edit alamat dipilih</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> dan <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> lainnya}other{<ph name="SHIPPING_OPTION_PREVIEW" /> dan <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> lainnya}}</translation>
 <translation id="7179323680825933600">Simpan dan Isi Metode Pembayaran</translation>
 <translation id="7180611975245234373">Perbarui</translation>
@@ -3200,6 +3212,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="7421067045979951561">pengendali protokol</translation>
 <translation id="7422347648202898039">Label (Keamanan)</translation>
 <translation id="7423283032694727565">Tombol Kelola cookie, aktifkan untuk mengelola preferensi cookie Anda di setelan Chrome</translation>
+<translation id="7424421098814895617">Opsi hapus alamat dipilih</translation>
 <translation id="7427366580982928791">Perlindungan internet anak</translation>
 <translation id="7429429656042611765">Eksekutif</translation>
 <translation id="7432774160230062882">Verifikasi diri Anda agar Chromium dapat mengisi info pembayaran.</translation>
@@ -3377,6 +3390,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="7706689436519265630">File yang Anda salin atau pindahkan akan dikirim ke Google Cloud atau pihak ketiga untuk dianalisis. Misalnya, file mungkin dipindai untuk mendeteksi data sensitif atau malware dan mungkin disimpan berdasarkan kebijakan perusahaan.</translation>
 <translation id="7709911732293795808">Asuransi</translation>
 <translation id="7714404809393719981">Foto (Semi-Kilap)</translation>
+<translation id="7714424966701020172">Opsi isi nama lengkap dipilih</translation>
 <translation id="7714464543167945231">Sertifikat</translation>
 <translation id="7716147886133743102">Diblokir oleh administrator</translation>
 <translation id="7716375162095500223">Belum diupload, atau diabaikan</translation>

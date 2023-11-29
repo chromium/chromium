@@ -31,7 +31,6 @@
 <translation id="1181037720776840403">移除</translation>
 <translation id="1191518099344003522">已启用 APN。</translation>
 <translation id="1195447618553298278">未知错误。</translation>
-<translation id="1195784767091936222">开启自动深色模式</translation>
 <translation id="1196959502276349371"><ph name="VERSION" /> 版</translation>
 <translation id="1199355487114804640">播放/暂停</translation>
 <translation id="1201402288615127009">下一步</translation>
@@ -281,7 +280,6 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">设备已连接。</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{移除页面？}=1{移除第 {PAGE_NUMBER} 页？}other{移除第 {PAGE_NUMBER} 页？}}</translation>
-<translation id="3136905423678675159">要开启自动深色模式吗？</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> 专有</translation>
 <translation id="315116470104423982">移动数据</translation>
 <translation id="3156846309055100599">正在扫描第 <ph name="PAGE_NUMBER" /> 页…</translation>
@@ -362,7 +360,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★（<ph name="AGGREGATED_COUNT" /> 条评价）</translation>
 <translation id="3748026146096797577">未建立连接</translation>
 <translation id="3749289110408117711">文件名</translation>
-<translation id="3754384069690464321">为了让此壁纸呈现最佳效果，请开启自动深色模式。您可以随时在应用中改回原来的设置。</translation>
 <translation id="3771294271822695279">视频文件</translation>
 <translation id="3784455785234192852">锁定</translation>
 <translation id="380097101658023925">RGB 控件</translation>

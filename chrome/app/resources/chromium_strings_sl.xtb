@@ -38,7 +38,9 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="1715127912119967311">Zaradi izboljšanja teh funkcij Chromium vaše interakcije z njimi pošilja Googlu. Pregledovalci lahko te podatke pregledajo, obdelajo in označijo.</translation>
 <translation id="17264556997921157">Vidite ali odstranite lahko teme zanimanja, ki jih spletna mesta uporabljajo, da vam prikazujejo oglase. Chromium oceni vaša zanimanja glede na nedavno zgodovino brskanja.</translation>
 <translation id="1733725117201708356">Chromium bo kmalu izbrisal podatke brskanja</translation>
+<translation id="1736443181683099871">Chromium bo poskusil nadgraditi pomikanje na HTTPS</translation>
 <translation id="1745121272106313518">Chromium se bo znova zagnal čez toliko časa: <ph name="REMAINING_TIME" /></translation>
+<translation id="1749104137266986751">Če HTTPS ni na voljo, Chromium uporabi povezavo, ki ni varna, ne da bi vas opozoril</translation>
 <translation id="1774152462503052664">Naj se Chromium izvaja v ozadju</translation>
 <translation id="1779356040007214683">Zaradi večje varnosti smo v Chromiumu onemogočili nekatere razširitve, ki niso navedene v storitvi <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> in so bile morda dodane brez vaše vednosti.</translation>
 <translation id="1808667845054772817">Vnovična namestitev Chromiuma</translation>
@@ -126,6 +128,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="3286538390144397061">Znova zaženi</translation>
 <translation id="328888136576916638">Manjkajo ključi za Google API. Nekatere funkcije Chromiuma bodo onemogočene.</translation>
 <translation id="3296368748942286671">Nadaljuj izvajanje aplikacij v ozadju, ko je Chromium zaprt</translation>
+<translation id="3313189106987092621">Chromium vas bo opozoril pred nalaganjem katerega koli spletnega mesta prek povezave, ki ni varna</translation>
 <translation id="3350761136195634146">Profil v Chromiumu s tem računom že obstaja.</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Želite preklopiti na obstoječi profil v Chromiumu?</translation>
@@ -223,6 +226,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="5224391634244552924">Ni shranjenih gesel. Chromium lahko preveri gesla, če jih shranite.</translation>
 <translation id="5252179775517634216">Uporabnik <ph name="EXISTING_USER" /> je že prijavljen v ta profil v Chromiumu. S tem bo ustvarjen novi profil v Chromiumu za uporabnika <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="5277894862589591112">Če želite uporabiti spremembe, znova zaženite Chromium</translation>
+<translation id="5294316920224716406">Pri brskanju v anonimnem načinu vas bo Chromium opozoril pred nalaganjem spletnega mesta prek povezave, ki ni varna</translation>
 <translation id="5296845517486664001">Če so preizkusi vklopljeni in vas je Chromium naključno prijavil za aktivni preizkus, zgodovina brskanja vpliva na oglase, ki so prikazani, in zanimanja, kot je ocenjeno spodaj. Chromium zaradi varovanja vaše zasebnosti vsak mesec sproti izbriše vaša zanimanja.</translation>
 <translation id="5352264705793813212">Chromium je za vaš pregled našel nekaj varnostnih priporočil</translation>
 <translation id="5358375970380395591">Prijavljate se z upravljanim računom in s tem njegovemu skrbniku omogočate nadzor vašega profila v Chromiumu. Vaši podatki v Chromiumu, kot so aplikacije, zaznamki, zgodovina, gesla in druge nastavitve, bodo postali trajno povezani z uporabnikom <ph name="USER_NAME" />. Te podatke boste lahko izbrisali na nadzorni plošči za Google Račune, vendar jih ne boste mogli povezati z drugim računom. <ph name="LEARN_MORE" /></translation>

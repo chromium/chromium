@@ -3889,6 +3889,7 @@
 <translation id="4005817994523282006">タイムゾーンの検出方法</translation>
 <translation id="4007856537951125667">ショートカットを非表示にする</translation>
 <translation id="4008291085758151621">サイト情報は VR ではご利用いただけません</translation>
+<translation id="4010746393007464819">Debian 12（Bookworm）へのアップグレードが利用可能です</translation>
 <translation id="4010917659463429001">ブックマークをモバイル デバイスで使用できるようにするには、<ph name="GET_IOS_APP_LINK" />してください。</translation>
 <translation id="4014432863917027322">「<ph name="EXTENSION_NAME" />」を修復しますか？</translation>
 <translation id="4015163439792426608">拡張機能はご利用ですか？<ph name="BEGIN_LINK" />拡張機能の管理<ph name="END_LINK" />は 1 か所で簡単に行うことができます。</translation>
@@ -6048,6 +6049,7 @@
 <translation id="5782040878821624922">あらゆるデバイスで利用可能</translation>
 <translation id="5782227691023083829">翻訳しています...</translation>
 <translation id="57838592816432529">ミュート</translation>
+<translation id="5784291589716625675">アプリの言語を変更</translation>
 <translation id="5785583009707899920">Chrome ファイル ユーティリティ</translation>
 <translation id="5787146423283493983">キー合意</translation>
 <translation id="5787420647064736989">デバイス名</translation>
@@ -6522,6 +6524,7 @@
 <translation id="6151323131516309312"><ph name="SEARCH_KEY" /> を押して <ph name="SITE_NAME" /> を検索</translation>
 <translation id="6151771661215463137">このファイルはダウンロード フォルダにすでにあります。</translation>
 <translation id="6152918902620844577">次の処理を待機しています</translation>
+<translation id="6153439704237222699">トラッキング拒否の詳細</translation>
 <translation id="6154240335466762404">すべてのポートを削除</translation>
 <translation id="615436196126345398">プロトコル</translation>
 <translation id="6155141482566063812">バックグラウンドのタブで画面が共有されています</translation>
@@ -8837,6 +8840,7 @@
 <translation id="7988805580376093356">OS を変更せず、<ph name="DEVICE_OS" /> を USB から実行します。</translation>
 <translation id="7988876720343145286">Android のその他の設定と権限</translation>
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> 音声 <ph name="COUNT" /></translation>
+<translation id="7990958035181555539">Android スマートフォンから Wi-Fi を自動的に移行</translation>
 <translation id="7991296728590311172">スイッチ アクセスの設定</translation>
 <translation id="7992203134935383159">音声合成</translation>
 <translation id="7994515119120860317"><ph name="VISUAL_SEARCH_PROVIDER" /> で画像内のテキストを翻訳する</translation>
@@ -9784,6 +9788,7 @@
 <translation id="8736288397686080465">このサイトはバックグラウンドで更新されました。</translation>
 <translation id="8737709691285775803">サクラ</translation>
 <translation id="8737914367566358838">ページを翻訳する言語を選択してください</translation>
+<translation id="8738418093147087440">国、言語、入力名で検索</translation>
 <translation id="8740086188450289493">Google アカウントのパスワードを使用</translation>
 <translation id="8740247629089392745">この Chromebook を <ph name="SUPERVISED_USER_NAME" /> に渡す準備ができました。設定はあと少しで完了です。</translation>
 <translation id="8740672167979365981">ChromeOS Flex の更新が必要です</translation>

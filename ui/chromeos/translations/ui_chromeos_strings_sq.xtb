@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sq">
 <translation id="1000498691615767391">Zgjidh një dosje për ta hapur</translation>
+<translation id="1014208178561091457">Skedari <ph name="FILE_NAME" /> nuk mund të kopjohej sepse është i enkriptuar.</translation>
 <translation id="1047956942837015229">Po fshin <ph name="COUNT" /> artikuj...</translation>
 <translation id="1049926623896334335">Dokument Word</translation>
 <translation id="1056775291175587022">Nuk ka rrjete</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Ndaje dosjen me Parallels Desktop</translation>
 <translation id="1439919885608649279">Person me lule</translation>
 <translation id="1458457385801829801">Nxirr <ph name="TARGET_NAME" /></translation>
+<translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> skedarë nuk mund të kopjoheshin sepse janë të enkriptuar.</translation>
 <translation id="1471718551822868769">Sllovakisht</translation>
 <translation id="1482884275703521657">Finlandisht</translation>
 <translation id="148466539719134488">Zvicerane</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">Nuk ofrohet</translation>
 <translation id="3254434849914415189">Zgjidh aplikacionin e parazgjedhur për skedarët <ph name="FILE_TYPE" />:</translation>
 <translation id="3255159654094949700">Arabisht</translation>
+<translation id="326396468955264502"><ph name="NUMBER_OF_FILES" /> skedarë nuk mund të zhvendoseshin sepse janë të enkriptuar.</translation>
 <translation id="3264582393905923483">Konteksti</translation>
 <translation id="3272909651715601089">Nuk mund të hapej "<ph name="PATH" />"</translation>
 <translation id="3280431534455935878">Po përgatitet</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490">1 dosje u nda me <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Kujdes! Këta skedarë janë të përkohshëm dhe mund të fshihen automatikisht për të liruar hapësirën në disk.  <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Dosje</translation>
+<translation id="3529424493985988200">Kontakto me administratorin tënd për detaje.</translation>
 <translation id="3548125359243647069">Është futur shumë herë një kod PIN i gabuar.</translation>
 <translation id="3549797760399244642">Shko te drive.google.com...</translation>
 <translation id="3553048479571901246">Për të hapur skedarët me <ph name="APP_NAME" />, në fillim kopjoji në dosjen e skedarëve të Windows.</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">Ky skedar u hap në një desktop tjetër. Lëviz te <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) për ta parë.</translation>
 <translation id="6394388407447716302">Vetëm për lexim</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> artikuj</translation>
+<translation id="6407769893376380348">Skedari <ph name="FILE_NAME" /> nuk mund të zhvendosej sepse është i enkriptuar.</translation>
 <translation id="642282551015776456">Ky emër nuk mund të përdoret si emër skedari ose dosjeje</translation>
 <translation id="6423031066725912715">Vietnamisht me tastierë TCVN</translation>
 <translation id="6430271654280079150">Ke 1 përpjekje të mbetur.</translation>

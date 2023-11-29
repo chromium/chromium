@@ -3475,15 +3475,6 @@ Esta política é uma solução temporária e vai ser removida em marcos futuros
 <translation id="3838094946886335701">Se a política for definida (apenas como recomendado), será possível registrar uma lista de gerenciadores de protocolo, que será mesclada às registradas pelo usuário de forma que as duas configurações sejam aplicadas. Defina a propriedade "protocolo" conforme o esquema, por exemplo, "mailto", e defina a propriedade "URL" conforme o padrão de URL do aplicativo que gerencia o esquema especificado no campo "protocolo". O padrão pode incluir um marcador "%s", que é substituído pelo URL gerenciado.
 
       Os usuários não podem remover um gerenciador de protocolo registrado pela política. No entanto, ao instalar um novo gerenciador padrão, eles podem mudar os gerenciadores de protocolo instalados pela política.</translation>
-<translation id="3847858041725748756">Esta política foi descontinuada. Use a <ph name="RELATED_WEBSITE_SETS_ENABLED_POLICY_NAME" />.
-
-Esta política é fornecida como uma forma de desativar o recurso de conjuntos primários.
-
-Quando ela é deixada sem definição ou é ativada, os conjuntos primários ficam ativados.
-
-Quando ela é desativada, eles também ficam desativados.
-
-Essa política controla se o Chrome oferece suporte a integrações relacionadas a conjuntos primários.</translation>
 <translation id="3851443303439635700">Controla o limite de aninhamento antes que a função setTimeout() do JavaScript comece a ser ajustada.</translation>
 <translation id="3858658082795336534">Modo duplex de impressão padrão</translation>
 <translation id="3859780406608282662">Adicionar um parâmetro para a busca do termo-semente "Variações" no <ph name="PRODUCT_OS_NAME" />.
@@ -9993,42 +9984,6 @@ O padrão é RollbackDisabled.</translation>
 <translation id="9206472508136116830">Não permitir a detecção de compartilhamento do NetBIOS</translation>
 <translation id="9207596996305971030">Não informar eventos de login/logout</translation>
 <translation id="9210647066889383361">Permitir que os usuários façam login no próprio dispositivo com o Smart Lock</translation>
-<translation id="9212819508924803630">Esta política foi descontinuada. Use a <ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME" />.
-
-Esta política oferece uma maneira de substituir a lista de conjuntos que o navegador usa para recursos de conjunto primário.
-
-Cada item na lista do navegador precisa atender aos requisitos de um conjunto primário.
-O conjunto precisa conter um site primário e um ou mais sites membros.
-Um conjunto também pode conter uma lista de sites de serviços próprios, assim como um mapa de um site para todas as respectivas variantes do ccTLD.
-Consulte https://github.com/WICG/first-party-sets (link em inglês) para mais informações sobre como conjuntos primários são usados pelo <ph name="PRODUCT_NAME" />.
-
-Todos os sites em um conjunto primário precisam ser um domínio registrável disponibilizado por HTTPS. Cada site em um conjunto primário também precisa ser único,
-o que significa que um site não pode ser listado mais de uma vez em um mesmo conjunto primário.
-
-Quando esta política recebe um dicionário vazio, o navegador usa a lista pública de conjuntos primários.
-
-No caso de todos os sites em um conjunto primário da lista de <ph name="REPLACEMENTS" />, se o site também estiver presente
-em um conjunto primário na lista do navegador, ele será removido desse último conjunto.
-Em seguida, o conjunto primário da política será adicionado à lista de conjuntos primários do navegador.
-
-No caso de todos os sites em um conjunto primário da lista de <ph name="ADDITIONS" />, se um site também estiver presente
-em um conjunto primário na lista do navegador, esse último será atualizado para que o
-novo conjunto primário possa ser adicionado à lista do navegador. Depois que a lista do navegador for atualizada,
-o conjunto primário da política será adicionado à lista de conjuntos primários do navegador.
-
-A lista de conjuntos primários do navegador exige que nenhum dos sites na lista esteja em
-mais de um conjunto. Isso também é necessário para as listas de <ph name="REPLACEMENTS" />
-e <ph name="ADDITIONS" />. Da mesma forma, um site não pode estar na lista de
-<ph name="REPLACEMENTS" /> e na de <ph name="ADDITIONS" /> ao mesmo tempo.
-
-Caracteres curinga (*) não podem ser usados como valor da política nem dentro de conjuntos primários nessas listas.
-
-Todos os conjuntos fornecidos pela política precisam ser um conjunto primário válido. Se não forem, ocorrerá
-um erro na saída.
-
-No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas em <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-No <ph name="MAC_OS_NAME" />, essa política só está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas em <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="9213751049772256263">Desativar todas as variações</translation>
 <translation id="9217154963008402249">Frequência de pacotes de monitoramento de rede</translation>
 <translation id="9220314833408124365">Usar uma política de referenciador padrão de no-referrer-when-downgrade</translation>

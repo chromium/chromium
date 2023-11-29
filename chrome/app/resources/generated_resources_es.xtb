@@ -579,6 +579,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1461041542809785877">Rendimiento</translation>
 <translation id="1461177659295855031">Mover a la carpeta Barra de marcadores</translation>
 <translation id="1461288887896722288">Acabas de iniciar sesión en una cuenta gestionada. Si creas un perfil gestionado nuevo, podrás acceder a algunos recursos vinculados a ella.</translation>
+<translation id="1461868306585780092">Avisar antes de usar conexiones no seguras</translation>
 <translation id="146219525117638703">Estado ONC</translation>
 <translation id="146220085323579959">Internet está desconectado. Comprueba la conexión a Internet y vuelve a intentarlo.</translation>
 <translation id="1462480037563370607">Añadir sitios manualmente</translation>
@@ -1558,6 +1559,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2180620921879609685">Bloquear contenido en cualquier página</translation>
 <translation id="2181821976797666341">Políticas</translation>
 <translation id="2182058453334755893">Se ha copiado en tu portapapeles</translation>
+<translation id="2182419606502127232">Incluir mis registros del servidor</translation>
 <translation id="2183570493397356669">Botón Continuar inhabilitado</translation>
 <translation id="2184515124301515068">Permitir que Chrome elija cuándo los sitios pueden reproducir sonidos (recomendado)</translation>
 <translation id="2186206192313702726">Google Lens</translation>
@@ -1752,6 +1754,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2323018538045954000">Redes Wi‑Fi guardadas</translation>
 <translation id="2325444234681128157">Recordar contraseña</translation>
 <translation id="2326188115274135041">Confirma el PIN para activar el desbloqueo automático</translation>
+<translation id="2326906096734221931">Abrir configuración de la aplicación</translation>
 <translation id="2326931316514688470">&amp;Volver a cargar aplicación</translation>
 <translation id="2327492829706409234">Habilitar aplicación</translation>
 <translation id="2327920026543055248">Introduce el caracter <ph name="CHARACTER" /> de <ph name="TOTAL" /></translation>
@@ -3888,6 +3891,7 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="399788104667917863">Fijar en la barra de herramientas</translation>
 <translation id="3998976413398910035">Administrar impresoras</translation>
 <translation id="4001540981461989979">Resaltar el cursor del ratón al moverlo</translation>
+<translation id="4002347779798688515">Puede que el perfil descargado no se pueda usar si el proveedor de servicios de Internet está bloqueado. Ponte en contacto con tu proveedor para obtener ayuda.</translation>
 <translation id="4002440992267487163">Configuración del PIN</translation>
 <translation id="4005817994523282006">Método de detección de zona horaria</translation>
 <translation id="4007856537951125667">Ocultar accesos directos</translation>
@@ -5424,6 +5428,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5261683757250193089">Abrir en Web Store</translation>
 <translation id="5261799091118902550">Este archivo podría ser un virus o malware. Puedes enviarlo a Google para comprobar si es seguro.</translation>
 <translation id="5262784498883614021">Conectarse automáticamente a la red</translation>
+<translation id="5263656105659419083">Para volver fácilmente al panel lateral, haz clic en Fijar arriba a la derecha</translation>
 <translation id="5264148714798105376">Este proceso puede durar aproximadamente un minuto.</translation>
 <translation id="5264252276333215551">Conéctate a Internet para iniciar tu aplicación en modo de kiosco.</translation>
 <translation id="5265797726250773323">No se ha podido instalar</translation>
@@ -5571,6 +5576,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5388567882092991136">{NUM_SITES,plural, =1{Se ha encontrado 1 sitio con muchas notificaciones}other{Se han encontrado {NUM_SITES} sitios con muchas notificaciones}}</translation>
 <translation id="5388885445722491159">Sincronizado</translation>
 <translation id="5389626883706033615">Los sitios no pueden solicitarte permiso para usar la información que hayan guardado sobre ti</translation>
+<translation id="5389794555912875905">Mostrar advertencias antes de acceder a sitios no seguros (recomendado)</translation>
 <translation id="5390112241331447203">Incluye el archivo system_logs.txt enviado en los informes de comentarios.</translation>
 <translation id="5390677308841849479">Rojo oscuro y naranja</translation>
 <translation id="5390743329570580756">Enviar para</translation>
@@ -5854,6 +5860,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5608580678041221894">Toca las siguientes teclas para ajustar o mover la zona para recortar</translation>
 <translation id="5609231933459083978">Parece que la aplicación no es válida.</translation>
 <translation id="561030196642865721">Las cookies de terceros están permitidas en este sitio web</translation>
+<translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5612734644261457353">No ha sido posible verificar tu contraseña. Nota: si has cambiado la contraseña recientemente, la nueva contraseña se aplicará una vez que hayas cerrado sesión. Utiliza la antigua contraseña aquí.</translation>
 <translation id="5614190747811328134">Aviso al usuario</translation>
 <translation id="5614553682702429503">¿Guardar la contraseña?</translation>
@@ -6208,6 +6215,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5901089233978050985">Cambiar a pestaña de captura</translation>
 <translation id="5901494423252125310">La cubierta de la impresora está abierta</translation>
 <translation id="5901630391730855834">Amarillo</translation>
+<translation id="5902892210366342391">Mostrar advertencias antes de acceder a sitios no seguros en el modo Incógnito</translation>
 <translation id="5904614460720589786">No se ha podido configurar <ph name="APP_NAME" /> debido a un problema de configuración. Ponte en contacto con tu administrador. Código de error: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">El dispositivo está casi actualizado. Reinícialo para completar la actualización.</translation>
 <translation id="5906732635754427568">Los datos asociados a esta aplicación se eliminarán de este dispositivo.</translation>
@@ -6745,6 +6753,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6333170995003625229">No se ha podido verificar tu dirección de correo o tu contraseña. Prueba a iniciar sesión de nuevo.</translation>
 <translation id="6334267141726449402">Copia y envía este enlace al usuario para recoger los registros.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> ha inhabilitado la depuración ADB. Se restablecerá tu <ph name="DEVICE_TYPE" /> dentro de 24 horas. Haz copias de seguridad de los archivos que quieras conservar.</translation>
+<translation id="6336194758029258346">Idioma de la aplicación</translation>
 <translation id="6337543438445391085">Es posible que alguna información personal siga estando incluida en los datos. Revisa los archivos exportados.</translation>
 <translation id="6338968693068997776">Añadir dispositivo USB</translation>
 <translation id="6339668969738228384">Crear un perfil para <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -7250,6 +7259,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">Datos de sitios en el dispositivo no permitidos</translation>
 <translation id="6762833852331690540">Activado</translation>
+<translation id="6762861159308991328">Puedes cambiar la forma en la que se abren los enlaces en la configuración de la aplicación</translation>
 <translation id="676560328519657314">Tus métodos de pago en Google Pay</translation>
 <translation id="6766488013065406604">Ir al Gestor de contraseñas de Google</translation>
 <translation id="6767566652486411142">Elegir otro idioma...</translation>
@@ -7465,6 +7475,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6912007319859991306">PIN de la SIM del móvil</translation>
 <translation id="6912380255120084882">Prueba con otro dispositivo</translation>
 <translation id="691289340230098384">Preferencias de subtítulos</translation>
+<translation id="6914812290245989348">No mostrar ninguna advertencia antes de acceder a sitios no seguros</translation>
 <translation id="6916590542764765824">Gestionar extensiones</translation>
 <translation id="6918677045355889289">Es necesario actualizar ChromeOS</translation>
 <translation id="6919354101107095996">Intenta iniciar sesión en el sitio. Después, vuelve a realizar la descarga.</translation>
@@ -8948,6 +8959,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8076835018653442223">Tu administrador ha inhabilitado el acceso a los archivos locales de tu dispositivo</translation>
 <translation id="8077120325605624147">Cualquier sitio que visites puede mostrarte cualquier anuncio</translation>
 <translation id="8077579734294125741">Otros perfiles de Chrome</translation>
+<translation id="80790299200510644">Búsqueda por imágenes</translation>
 <translation id="80798452873915119">Los sitios pueden solicitar permiso para gestionar las ventanas en todas tus pantallas</translation>
 <translation id="8080028325999236607">Cerrar todas las pestañas</translation>
 <translation id="808089508890593134">Google</translation>

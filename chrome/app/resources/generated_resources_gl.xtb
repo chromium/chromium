@@ -3898,6 +3898,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o explor
 <translation id="4005817994523282006">Método de detección de fuso horario</translation>
 <translation id="4007856537951125667">Ocultar atallos</translation>
 <translation id="4008291085758151621">A información do sitio non está dispoñible en RV</translation>
+<translation id="4010746393007464819">Está dispoñible unha actualización a Debian 12 (Bookworm)</translation>
 <translation id="4010917659463429001">Para ter os teus marcadores no teu dispositivo móbil, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Queres reparar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">Tes extensións? <ph name="BEGIN_LINK" />Xestiónaas<ph name="END_LINK" /> facilmente desde un único lugar.</translation>
@@ -6058,6 +6059,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5782040878821624922">Estará dispoñible en calquera dispositivo</translation>
 <translation id="5782227691023083829">Traducindo…</translation>
 <translation id="57838592816432529">Silenciar</translation>
+<translation id="5784291589716625675">Cambiar o idioma da aplicación</translation>
 <translation id="5785583009707899920">Utilidades dos ficheiros de Chrome</translation>
 <translation id="5787146423283493983">Acordo de claves</translation>
 <translation id="5787420647064736989">Nome do dispositivo</translation>
@@ -6531,6 +6533,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6151323131516309312">Preme <ph name="SEARCH_KEY" /> para buscar <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">O ficheiro xa existe no cartafol de descargas.</translation>
 <translation id="6152918902620844577">Agardando pola seguinte operación</translation>
+<translation id="6153439704237222699">Máis información sobre Do Not Track</translation>
 <translation id="6154240335466762404">Quitar todos os portos</translation>
 <translation id="615436196126345398">Protocolo</translation>
 <translation id="6155141482566063812">Hai unha pestana en segundo plano que está compartindo a pantalla</translation>
@@ -8849,6 +8852,7 @@ Podes xestionar a configuración desta tarxeta desde o menú correspondente ou v
 <translation id="7988805580376093356">Conserva o teu sistema operativo e executa <ph name="DEVICE_OS" /> desde unha memoria USB.</translation>
 <translation id="7988876720343145286">Máis opcións de configuración e permisos de Android</translation>
 <translation id="7990863024647916394"><ph name="DISPLAY_NAME" />, voz <ph name="COUNT" /></translation>
+<translation id="7990958035181555539">Transferir automaticamente a wifi desde o teléfono Android</translation>
 <translation id="7991296728590311172">Acceso con interruptores</translation>
 <translation id="7992203134935383159">Síntese de voz</translation>
 <translation id="7994515119120860317">Traduce o texto da imaxe con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -9795,6 +9799,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8736288397686080465">Este sitio actualizouse en segundo plano.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Elixir idioma ao que se traducirá a páxina</translation>
+<translation id="8738418093147087440">Busca por país, idioma ou nome de entrada</translation>
 <translation id="8740086188450289493">Usar contrasinal da Conta de Google</translation>
 <translation id="8740247629089392745">Podes entregar este Chromebook a <ph name="SUPERVISED_USER_NAME" />. A configuración case rematou, polo que é momento de explorar contido.</translation>
 <translation id="8740672167979365981">É necesario actualizar Chrome OS Flex</translation>

@@ -701,6 +701,7 @@
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}، {website_2}}=3{{website_1}، {website_2}، و ۱ اجازه دیگر}one{{website_1}، {website_2}، و {more_count} اجازه دیگر}other{{website_1}، {website_2}، و {more_count} اجازه دیگر}}</translation>
 <translation id="4737560986434232178">جستجوی برگه‌های اخیر</translation>
 <translation id="473775607612524610">به‌روزرسانی</translation>
+<translation id="4744428388659507035">برای اینکه نشانک‌ها را در همه دستگاه‌هایتان دریافت کنید، «نشانک‌ها» را در تنظیمات روشن کنید.</translation>
 <translation id="4746926359847517643">همیشه می‌توانید ازطریق سابقه دوباره به آن‌ها دست پیدا کنید.</translation>
 <translation id="4751162929052964260"><ph name="TITLE" />، <ph name="STATE" />، فقط در این دستگاه، <ph name="URL" /></translation>
 <translation id="4751645464639803239">برگه ناشناس جدید</translation>
@@ -945,6 +946,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="598634819525651074">مساحت</translation>
 <translation id="5988097621740394599">کاهش قیمت را در برگه‌ها مشاهده کنید.</translation>
 <translation id="5988851877894965432">‏باز کردن نشانی‌های وب در Chrome</translation>
+<translation id="6001839398155993679">بیایید شروع کنیم</translation>
 <translation id="6006672969046233841">برگه جدید</translation>
 <translation id="6011308810877101166">بهبود پیشنهادهای جستجو</translation>
 <translation id="6012140227487808125">در حال رمزگذاری…</translation>
@@ -1242,6 +1244,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7491131399623468277">رفتن به «تنظیمات»…</translation>
 <translation id="7492574581995589075">‏سازمانتان امکان استفاده از داده‌های Chrome و ذخیره کردن آن‌ها در «حساب Google» را خاموش کرده است. نشانک‌ها، گذرواژه‌ها، و سایر اطلاعات جدید فقط در این دستگاه ذخیره خواهد شد.</translation>
 <translation id="749854780843431406">بااستفاده از دکمه <ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" /> می‌توانید برگه جدیدی باز کنید.</translation>
+<translation id="7500419352370346534">اکنون می‌توانید همه تنظیمات حسابتان را در یک مکان کنترل کنید</translation>
 <translation id="750149195207506638">«نشانک‌ها» پنهان شده است</translation>
 <translation id="750228856503700085">به‌روزرسانی دردسترس نیست</translation>
 <translation id="750493650310597496">۰ نشانک انتخاب شده است</translation>
@@ -1319,6 +1322,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7879275349003161544">نمایش بارگیری‌ها</translation>
 <translation id="7883882164760409935">چند گذرواژه دوباره‌استفاده‌شده دارید.</translation>
 <translation id="7884694604461143138">سابقه جستجو (<ph name="COUNT" /> مورد پیدا شد)</translation>
+<translation id="7887174313503389866">در گشت با راهنمای مربوط به کنترل‌های اصلی امنیت و حریم خصوصی شرکت کنید. برای گزینه‌های بیشتر، به‌طور جداگانه به هر تنظیم بروید.</translation>
 <translation id="7887198238286927132">‏برای محافظت از حریم‌خصوصی‌تان، Chrome از ویژگی تکمیل خودکار برای این فیلد استفاده نخواهد کرد.</translation>
 <translation id="7889910613639381518">‏دسترسی آسان و ایمن با ابزارک «مدیر گذرواژه Google».</translation>
 <translation id="7911190106180361398">سازمانتان به شما اجازه نمی‌دهد همه چیز را همگام‌سازی کنید.</translation>

@@ -97,6 +97,7 @@
 <translation id="2556847002339236023">Din organisation lukker Chrome, når browseren ikke har været i brug i <ph name="TIMEOUT_DURATION" />. Browserdataene blev slettet. Disse data kan omfatte historik, Autofyld og downloads.</translation>
 <translation id="2559253115192232574">Et website, du besøger, kan på et senere tidspunkt anmode Chrome om at se dine interesser med henblik på at personligt tilpasse de annoncer, du får vist. Chrome kan dele op til 3 interesser.</translation>
 <translation id="2563121210305478421">Vil du genstarte Chrome?</translation>
+<translation id="2569974318947988067">Chrome vil forsøge at opgradere navigationen til HTTPS</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> er allerede logget ind på denne Chrome-profil. Hvis du vil holde din browsing adskilt, kan Chrome oprette en ny profil til dig selv.</translation>
 <translation id="2580411288591421699">Det er ikke muligt at installere den samme version af Google Chrome, som allerede kører. Luk Google Chrome, og prøv igen.</translation>
 <translation id="2586406160782125153">Denne handling sletter dine browserdata på denne enhed. Hvis du senere vil hente dine data igen, skal du logge ind på Chrome som <ph name="USER_EMAIL" />.</translation>
@@ -213,6 +214,7 @@
 <translation id="4335235004908507846">Chrome kan hjælpe med at beskytte dig mod brud på datasikkerheden, farlige udvidelser og meget mere</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> er føjet til Chrome</translation>
 <translation id="4384570495110188418">Chrome kan ikke tjekke dine adgangskoder, da du ikke er logget ind</translation>
+<translation id="4389991535395284064">Når du browser i inkognitotilstand, advarer Chrome dig, inden et website indlæses via en usikker forbindelse</translation>
 <translation id="4393248995085527349">Hvis du vil have fremtidige Google Chrome-opdateringer, skal du have macOS 10.15 eller nyere. Denne computer anvender macOS 10.13.</translation>
 <translation id="4427306783828095590">Forbedret beskyttelse gør mere end at blokere phishing og malware</translation>
 <translation id="4450664632294415862">Chrome – Login på netværk – <ph name="PAGE_TITLE" /></translation>
@@ -381,6 +383,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="7426611252293106642">Google Chrome fungerer muligvis ikke korrekt, da det ikke længere understøttes af denne Linux-distribution</translation>
 <translation id="7449333426561673451">{COUNT,plural, =1{Din organisation lukker automatisk Chrome, når den ikke bruges i 1 minut.}one{Din organisation lukker automatisk Chrome, når den ikke bruges i # minut.}other{Din organisation lukker automatisk Chrome, når den ikke bruges i # minutter.}}</translation>
 <translation id="7452987490177144319">{COUNT,plural, =1{Din organisation sletter automatisk browserdata, når Chrome ikke bruges i 1 minut. Disse kan omfatte historik, autofyld og downloads. Dine faner forbliver åbne.}one{Din organisation sletter automatisk browserdata, når Chrome ikke bruges i # minut. Disse kan omfatte historik, autofyld og downloads. Dine faner forbliver åbne.}other{Din organisation sletter automatisk browserdata, når Chrome ikke bruges i # minutter. Disse kan omfatte historik, autofyld og downloads. Dine faner forbliver åbne.}}</translation>
+<translation id="7477130805345743099">Chrome advarer dig, inden et website indlæses via en usikker forbindelse</translation>
 <translation id="7481213027396403996">Få Chromes stærkeste beskyttelse</translation>
 <translation id="7535429826459677826">Udviklerversionen af Chrome</translation>
 <translation id="7583399374488819119">Installationsprogram til <ph name="COMPANY_NAME" /></translation>
@@ -472,6 +475,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="8922193594870374009">Hvis du vil sende et nummer fra <ph name="ORIGIN" /> til din Android-telefon, skal du logge ind på Chrome på begge enheder.</translation>
 <translation id="8986207147630327271">Du er ved at føje en arbejdsprofil til denne browser, og du giver kun din administrator kontrol over arbejdsprofilen.</translation>
 <translation id="8989968390305463310">Din browserhistorik påvirker de annoncer, som du ser, og de interesser, som er estimeret nedenfor. Af hensyn til privatlivsbeskyttelsen sletter Chrome automatisk dine interesser en gang om måneden. Interesserne kan blive opdateret, medmindre du fjerner dem.</translation>
+<translation id="8999117580775242387">Når HTTPS er utilgængelig, anvender Chrome en usikker forbindelse uden at advare dig</translation>
 <translation id="8999208279178790196">{0,plural, =0{Der er en tilgængelig Chrome-opdatering}=1{Der er en tilgængelig Chrome-opdatering}one{En Chrome-opdatering har været tilgængelig i # dag}other{En Chrome-opdatering har været tilgængelig i # dage}}</translation>
 <translation id="9053892488859122171">ChromeOS Flex-system</translation>
 <translation id="9054037008353851982">Genstart for at opdatere – dine faner åbnes igen</translation>

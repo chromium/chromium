@@ -31,7 +31,6 @@
 <translation id="1181037720776840403">Ondoa</translation>
 <translation id="1191518099344003522">APN imewashwa.</translation>
 <translation id="1195447618553298278">Hitilafu isiyojulikana.</translation>
-<translation id="1195784767091936222">Washa hali nyeusi kiotomatiki</translation>
 <translation id="1196959502276349371">Toleo la <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Cheza/Simamisha</translation>
 <translation id="1201402288615127009">Endelea</translation>
@@ -281,7 +280,6 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Kifaa kimeunganishwa.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Ungependa kuondoa ukurasa huu?}=1{Ungependa kuondoa ukurasa wa {PAGE_NUMBER}?}other{Ungependa kuondoa ukurasa wa {PAGE_NUMBER}?}}</translation>
-<translation id="3136905423678675159">Je, ungependa kuwasha hali nyeusi kiotomatiki?</translation>
 <translation id="3146655726035122603">Inapatikana kwenye <ph name="PRODUCT_NAME" /> pekee</translation>
 <translation id="315116470104423982">Data ya mtandao wa simu</translation>
 <translation id="3156846309055100599">Inachanganua ukurasa wa <ph name="PAGE_NUMBER" />...</translation>
@@ -362,7 +360,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (Maoni <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Haujaunganishwa</translation>
 <translation id="3749289110408117711">Jina la faili</translation>
-<translation id="3754384069690464321">Ili upate matokeo bora unapotumia mandhari haya, tafadhali washa hali nyeusi kiotomatiki. Unaweza kuyabadilisha tena katika programu wakati wowote.</translation>
 <translation id="3771294271822695279">Faili za Video</translation>
 <translation id="3784455785234192852">Imefungwa</translation>
 <translation id="380097101658023925">vidhibiti vya rgb</translation>

@@ -3435,15 +3435,6 @@ Chính sách này là giải pháp tạm thời và sẽ bị xoá ở một và
 <translation id="3838094946886335701">Nếu đặt chính sách này (chỉ khi khuyên dùng), thì bạn có thể đăng ký danh sách các trình xử lý giao thức (sẽ hợp nhất với các trình xử lý giao thức mà người dùng đăng ký) để đưa vào sử dụng. Hãy đặt thuộc tính "giao thức" thành lược đồ, chẳng hạn như "mailto", và đặt thuộc tính "URL" thành mẫu URL của ứng dụng xử lý lược đồ được chỉ định trong trường "giao thức". Mẫu này có thể bao gồm trình giữ chỗ "%s" (thay bằng URL đã xử lý).
 
       Người dùng không thể xóa trình xử lý giao thức do chính sách đăng ký. Tuy nhiên, họ có thể thay đổi các trình xử lý giao thức do chính sách cài đặt bằng cách cài đặt một trình xử lý mặc định mới.</translation>
-<translation id="3847858041725748756">Chính sách này không còn được dùng nữa, vui lòng sử dụng chính sách <ph name="RELATED_WEBSITE_SETS_ENABLED_POLICY_NAME" />.
-
-Chính sách này cho phép bạn chọn không sử dụng tính năng Nhóm bên thứ nhất.
-
-Khi bạn không đặt chính sách này hoặc đặt thành Bật, tính năng Nhóm bên thứ nhất sẽ được bật.
-
-Khi bạn đặt chính sách này thành Tắt, tính năng Nhóm bên thứ nhất sẽ bị tắt.
-
-Chính sách này kiểm soát việc Chrome có hỗ trợ các công cụ tích hợp liên quan đến tính năng Nhóm bên thứ nhất hay không.</translation>
 <translation id="3851443303439635700">Kiểm soát ngưỡng lồng, là ngưỡng mà trước đó hàm JavaScript setTimeout() bắt đầu bị kẹp</translation>
 <translation id="3858658082795336534">Chế độ in hai mặt mặc định</translation>
 <translation id="3859780406608282662">Thêm thông số cho quá trình tìm nạp khởi đầu Biến thể trong <ph name="PRODUCT_OS_NAME" />.
@@ -9885,33 +9876,6 @@ Giá trị mặc định là RollbackDisabled.</translation>
 <translation id="9206472508136116830">Không cho phép khám phá lượt chia sẻ tệp bằng NetBIOS</translation>
 <translation id="9207596996305971030">Không báo cáo các lần đăng nhập/đăng xuất</translation>
 <translation id="9210647066889383361">Cho phép người dùng đăng nhập vào thiết bị của họ bằng Smart Lock</translation>
-<translation id="9212819508924803630">Chính sách này không còn được dùng nữa, vui lòng sử dụng chính sách <ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME" />.
-
-Chính sách này cung cấp cách ghi đè danh sách nhóm mà trình duyệt dùng cho các tính năng của Nhóm bên thứ nhất.
-
-Mọi nhóm trong danh sách Nhóm bên thứ nhất của trình duyệt đều phải đáp ứng yêu cầu về Nhóm bên thứ nhất.
-Nhóm bên thứ nhất phải chứa một trang web chính và tối thiểu một trang web thành viên.
-Một nhóm cũng có thể chứa danh sách trang web dịch vụ thuộc sở hữu của nhóm đó và bản đồ từ một trang web đến tất cả biến thể ccTLD (miền cấp cao nhất theo mã quốc gia) của trang web đó.
-Hãy truy cập https://github.com/WICG/first-party-sets để biết thêm thông tin về Nhóm bên thứ nhất mà <ph name="PRODUCT_NAME" /> sử dụng.
-
-Mọi trang web trong một Nhóm bên thứ nhất đều phải là miền có thể đăng ký và được phân phát qua HTTPS. Mỗi trang web trong Nhóm bên thứ nhất cũng phải là duy nhất, nghĩa là mỗi trang web chỉ được liệt kê một lần trong một Nhóm bên thứ nhất.
-
-Khi bạn cung cấp một từ điển trống cho chính sách này, trình duyệt sẽ sử dụng danh sách Nhóm bên thứ nhất công khai.
-
-Đối với mọi trang web trong Nhóm bên thứ nhất thuộc danh sách <ph name="REPLACEMENTS" />, nếu có một trang web cũng xuất hiện trong Nhóm bên thứ nhất thuộc danh sách của trình duyệt thì trang web đó sẽ bị loại bỏ khỏi Nhóm bên thứ nhất của trình duyệt.
-Sau đó, Nhóm bên thứ nhất của chính sách sẽ được thêm vào danh sách Nhóm bên thứ nhất của trình duyệt.
-
-Đối với mọi trang web trong Nhóm bên thứ nhất thuộc danh sách <ph name="ADDITIONS" />, nếu có một trang web cũng xuất hiện trong Nhóm bên thứ nhất thuộc danh sách của trình duyệt thì Nhóm bên thứ nhất của trình duyệt sẽ được cập nhật sao cho có thể thêm Nhóm bên thứ nhất mới vào danh sách của trình duyệt. Sau khi danh sách của trình duyệt được cập nhật, Nhóm bên thứ nhất của chính sách sẽ được thêm vào danh sách Nhóm bên thứ nhất của trình duyệt.
-
-Danh sách Nhóm bên thứ nhất của trình duyệt yêu cầu mỗi trang web thuộc danh sách này chỉ xuất hiện trong một nhóm. Đây cũng là yêu cầu đối với cả danh sách <ph name="REPLACEMENTS" /> và danh sách <ph name="ADDITIONS" />. Tương tự như vậy, một trang web không được xuất hiện trong cả danh sách <ph name="REPLACEMENTS" /> và danh sách <ph name="ADDITIONS" />.
-
-Hệ thống không hỗ trợ việc dùng ký tự đại diện (*) làm giá trị chính sách, cũng như trong mọi Nhóm bên thứ nhất thuộc những danh sách này.
-
-Mọi nhóm mà chính sách cung cấp đều phải là Nhóm bên thứ nhất hợp lệ. Nếu không, lỗi tương ứng sẽ xảy ra.
-
-Với <ph name="MS_WIN_NAME" />, chính sách này chỉ có trên các phiên bản đã kết nối với một miền <ph name="MS_AD_NAME" />, kết nối với <ph name="MS_AAD_NAME" /> hoặc đã đăng ký giải pháp <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-Với <ph name="MAC_OS_NAME" />, chính sách này chỉ có trên các phiên bản được quản lý qua MDM, đã liên kết với một miền qua MCX hoặc đã đăng ký giải pháp <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="9213751049772256263">Không cho phép tất cả các biến</translation>
 <translation id="9217154963008402249">Tần suất theo dõi gói mạng</translation>
 <translation id="9220314833408124365">Sử dụng chính sách liên kết giới thiệu mặc định no-referrer-when-downgrade</translation>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="si">
 <translation id="1000498691615767391">විවෘත කිරීමට ෆෝල්ඩරයක් තෝරන්න</translation>
+<translation id="1014208178561091457"><ph name="FILE_NAME" /> සංකේතනය කර ඇති නිසා එය පිටපත් කළ නොහැකි විය.</translation>
 <translation id="1047956942837015229"><ph name="COUNT" /> අයිතම මකාදමමින්...</translation>
 <translation id="1049926623896334335">Word ලේඛනය</translation>
 <translation id="1056775291175587022">ජාල නැත</translation>
@@ -55,6 +56,7 @@
 <translation id="1435838927755162558">Parallels Desktop සමඟ ෆෝල්ඩරය බෙදා ගන්න</translation>
 <translation id="1439919885608649279">මල් රැගත් පුද්ගලයා</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> ඉවත් කරන්න</translation>
+<translation id="146691674290220697">ගොනු <ph name="NUMBER_OF_FILES" />ක් සංකේතනය කර ඇති නිසා ඒවා පිටපත් කළ නොහැකි විය.</translation>
 <translation id="1471718551822868769">ස්ලෝවැක්</translation>
 <translation id="1482884275703521657">ෆින්ලන්ත</translation>
 <translation id="148466539719134488">ස්විස්</translation>
@@ -276,6 +278,7 @@
 <translation id="3253225298092156258">නොතිබේ</translation>
 <translation id="3254434849914415189"><ph name="FILE_TYPE" /> ගොනු සඳහා පෙරනිමි යෙදුම තෝරන්න:</translation>
 <translation id="3255159654094949700">අරාබි</translation>
+<translation id="326396468955264502">ගොනු <ph name="NUMBER_OF_FILES" />ක් සංකේතනය කර ඇති නිසා ඒවා ගෙන යාමට නොහැකි විය.</translation>
 <translation id="3264582393905923483">සන්දර්භය</translation>
 <translation id="3272909651715601089">"<ph name="PATH" />" විවෘත කිරීමට නොහැකි විය</translation>
 <translation id="3280431534455935878">සූදානම් කරමින්</translation>
@@ -313,6 +316,7 @@
 <translation id="3523225005467146490"><ph name="VM_NAME" /> සමග 1 ෆෝල්ඩරයක් බෙදා ගැනේ</translation>
 <translation id="3524311639100184459">අවවාදය: මෙම ගොනු තාවකාලික වන අතර, තැටි ඉඩ නිදහස් කිරීමට ස්වයංක්‍රීයව මකනු ලැබිය හැක.  <ph name="BEGIN_LINK" />තවත් දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">ෆෝල්ඩරය</translation>
+<translation id="3529424493985988200">විස්තර සඳහා ඔබේ පරිපාලක සම්බන්ධ කර ගන්න.</translation>
 <translation id="3548125359243647069">වැරදි PIN අංකයක් ඉතා වැඩි වාර ගණනක් ඇතුළු කරන ලදි.</translation>
 <translation id="3549797760399244642">drive.google.com වෙත යන්න...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> සමඟ ගොනු විවෘත කිරීමට, පළමුව ඒවා Windows ගොනු ෆෝල්ඩරයට පිටපත් කරන්න.</translation>
@@ -701,6 +705,7 @@
 <translation id="637062427944097960">මෙම ගොනුව වෙනත් වැඩබිමක විවෘත විය. එය දර්ශනයට <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) වෙත ගෙනයන්න.</translation>
 <translation id="6394388407447716302">කියවීමට-පමණි</translation>
 <translation id="6395575651121294044">අයිතම <ph name="NUMBER_OF_FILES" /></translation>
+<translation id="6407769893376380348"><ph name="FILE_NAME" /> සංකේතනය කර ඇති නිසා එය ගෙන යාමට නොහැකි විය.</translation>
 <translation id="642282551015776456">මෙම නම ගොනුවක් හෝ ෆෝල්ඩර නමක් ලෙස භාවිතා නොවනු ඇත</translation>
 <translation id="6423031066725912715">TCVN යතුරු පුවරුව සමඟ වියට්නාම</translation>
 <translation id="6430271654280079150">ඔබට 1 උත්සාහයක් ඉතුරුයි.</translation>

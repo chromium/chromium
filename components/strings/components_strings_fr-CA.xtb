@@ -50,6 +50,7 @@
 <translation id="1074497978438210769">Pas sécuritaire</translation>
 <translation id="1075079914415273530">Agriculture et sylviculture</translation>
 <translation id="1075364221219156102">Utiliser une clé d'accès</translation>
+<translation id="1078033282564106222">Option Numéro de bâtiment sélectionnée</translation>
 <translation id="1080116354587839789">Adapter à la largeur</translation>
 <translation id="1081061862829655580">Bac 19</translation>
 <translation id="1089439967362294234">Modifier le mot de passe</translation>
@@ -784,6 +785,7 @@
 <translation id="2544546346215446551">Votre administrateur a redémarré votre appareil</translation>
 <translation id="2544644783021658368">Document simple</translation>
 <translation id="254524874071906077">Définir Chrome comme navigateur par défaut</translation>
+<translation id="2545721997179863249">L'option Tout remplir a été sélectionnée</translation>
 <translation id="2546283357679194313">Témoins et données de site</translation>
 <translation id="2547466893236767989">Conception et développement Web</translation>
 <translation id="254947805923345898">La valeur attribuée à la politique n'est pas valide.</translation>
@@ -877,6 +879,7 @@
 <translation id="2722622039067384533">Meubles de salon</translation>
 <translation id="2723669454293168317">Effectuer une vérification de sécurité dans les paramètres de Chrome</translation>
 <translation id="2725492561136085792">Appuyez sur Entrée pour activer cette action.</translation>
+<translation id="2725927759457695883">Remplir le nom complet</translation>
 <translation id="2726001110728089263">Plateau latéral</translation>
 <translation id="2728127805433021124">Le certificat du serveur a été signé avec un algorithme de signature faible.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />d'exécuter Connectivity Diagnostics<ph name="END_LINK" /></translation>
@@ -1240,6 +1243,7 @@
 <translation id="3484560055331845446">Vous risquez de perdre l'accès à votre compte Google. Chrome recommande de modifier votre mot de passe immédiatement. Vous serez invité à vous connecter.</translation>
 <translation id="3484861421501147767">Rappel : code promotionnel enregistré disponible</translation>
 <translation id="3487845404393360112">Bac 4</translation>
+<translation id="3492199565975299728">Rue</translation>
 <translation id="3493660662684070951">Camions, fourgonnettes et VUS</translation>
 <translation id="3495081129428749620">Rechercher dans la page
     <ph name="PAGE_TITLE" /></translation>
@@ -1283,6 +1287,7 @@
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Autoriser pour ce site</translation>
 <translation id="3575168918110434329">A4 x 7</translation>
+<translation id="3575589330755445706">Option Nom de la rue sélectionnée</translation>
 <translation id="3576616784287504635">Une page intégrée à <ph name="SITE" /> indique</translation>
 <translation id="3577473026931028326">Un problème est survenu. Réessayez.</translation>
 <translation id="3577902790357386792">Gymnastique</translation>
@@ -1346,6 +1351,7 @@
 <translation id="3678914302246317895">Entrez le code de vérification à <ph name="OTP_LENGTH" /> chiffres</translation>
 <translation id="3681007416295224113">Information relative au certificat</translation>
 <translation id="3681421644246505351">Chrome enregistre les sujets d'intérêt en fonction de votre historique de navigation récent.</translation>
+<translation id="3689867156802445220">Numéro de bâtiment</translation>
 <translation id="3693327506115126094">Choisissez comment vous souhaitez confirmer qu'il s'agit bien de vous</translation>
 <translation id="3698629142018988477">Bouton Créer un site, activez-le pour créer rapidement un nouveau site dans Google Sites</translation>
 <translation id="3701325639446035885">Vente de billets d'événements</translation>
@@ -1945,6 +1951,7 @@
 <translation id="4888600795924685526">Étude des langues étrangères</translation>
 <translation id="4890070067176768718">Votre administrateur a autorisé <ph name="PERMISSION" /> sur <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Arrière</translation>
+<translation id="4895019427244614047">Supprimer l'adresse</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Jeux olympiques</translation>
 <translation id="4900217275619098670">Neuvième rouleau</translation>
@@ -1980,6 +1987,7 @@
 <translation id="4960068118612257147">Vous pouvez apporter des modifications aux paramètres de confidentialité des annonces Chrome</translation>
 <translation id="4960203958361543136">Choisissez votre moteur de recherche</translation>
 <translation id="4964505745997821360">Assurance maladie</translation>
+<translation id="4967366744630699583">Modifier l'adresse</translation>
 <translation id="4968522289500246572">Cette application est développée pour les appareils mobiles et elle ne sera peut-être pas bien redimensionnée. L'application peut rencontrer des problèmes ou redémarrer.</translation>
 <translation id="4968665849807487749">Peut demander à gérer les fenêtres sur tous vos écrans</translation>
 <translation id="4969341057194253438">Supprimer l'enregistrement</translation>
@@ -2237,6 +2245,7 @@
     <ph name="LINE_BREAK" />
     Essayez de communiquer avec votre administrateur système.</translation>
 <translation id="549333378215107354">Taille 3</translation>
+<translation id="550365051221576010">Tout remplir</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Favoris gérés</translation>
 <translation id="5510481203689988000">Ce paramètre est géré dans les paramètres des témoins.</translation>
@@ -2613,6 +2622,7 @@
 <translation id="6272088941196661550">Reprenez votre exploration pour consulter l'activité pertinente dans votre historique de Chrome</translation>
 <translation id="6272383483618007430">Mise à jour Google</translation>
 <translation id="6279183038361895380">Appuyez sur |<ph name="ACCELERATOR" />| pour afficher votre curseur</translation>
+<translation id="628016388715774955">L'option Remplir l'adresse complète a été sélectionnée</translation>
 <translation id="6280223929691119688">Impossible d'effectuer une livraison à cette adresse. Sélectionnez une autre adresse.</translation>
 <translation id="6284292079994426700">26 po x 38 po</translation>
 <translation id="6284517535531159884">Type d'élément de référence des variantes</translation>
@@ -2881,6 +2891,7 @@
 <translation id="6807791860691150411">Éducation</translation>
 <translation id="681021252041861472">Champ obligatoire</translation>
 <translation id="6810899417690483278">Identifiant de personnalisation</translation>
+<translation id="681459028290894216">Remplir l'adresse complète</translation>
 <translation id="6816109178681043245">Articles de sport</translation>
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">Ports série</translation>
@@ -3070,6 +3081,7 @@
 <translation id="7163295244162773898">{0,plural, =1{Copier un fichier confidentiel?}one{Copier un fichier confidentiel?}other{Copier des fichiers confidentiels?}}</translation>
 <translation id="717330890047184534">Identifiant Gaia :</translation>
 <translation id="7174545416324379297">Fusionnées</translation>
+<translation id="7175097078723125014">L'option Modifier l'adresse a été sélectionnée</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> autre option de livraison}one{<ph name="SHIPPING_OPTION_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> autre option de livraison}other{<ph name="SHIPPING_OPTION_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> autres options de livraison}}</translation>
 <translation id="7179323680825933600">Enregistrer et remplir les modes de paiement</translation>
 <translation id="7180611975245234373">Actualiser</translation>
@@ -3202,6 +3214,7 @@ Détails supplémentaires :
 <translation id="7421067045979951561">gestionnaires de protocoles</translation>
 <translation id="7422347648202898039">Étiquettes (sécurité)</translation>
 <translation id="7423283032694727565">Bouton Gérer les témoins, activez-le pour gérer vos préférences relatives aux témoins dans les paramètres de Chrome</translation>
+<translation id="7424421098814895617">L'option Supprimer l'adresse a été sélectionnée</translation>
 <translation id="7427366580982928791">Sécurité des enfants sur Internet</translation>
 <translation id="7429429656042611765">Dirigeant</translation>
 <translation id="7432774160230062882">Vérifiez qu'il s'agit bien de vous afin que Chromium puisse remplir vos infos de paiement.</translation>
@@ -3379,6 +3392,7 @@ Détails supplémentaires :
 <translation id="7706689436519265630">Les fichiers que vous copiez ou déplacez sont envoyés à Google Cloud ou à des tiers pour analyse. Par exemple, ils peuvent être analysés à la recherche de données confidentielles ou de logiciels malveillants et peuvent être stockés en fonction des politiques de l'entreprise.</translation>
 <translation id="7709911732293795808">Assurances</translation>
 <translation id="7714404809393719981">Photo (semi-brillant)</translation>
+<translation id="7714424966701020172">L'option Remplir le nom complet a été sélectionnée</translation>
 <translation id="7714464543167945231">Certificat</translation>
 <translation id="7716147886133743102">Bloqué par votre administrateur</translation>
 <translation id="7716375162095500223">Pas encore téléversé, ou ignoré</translation>

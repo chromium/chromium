@@ -31,7 +31,6 @@
 <translation id="1181037720776840403">କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="1191518099344003522">APNକୁ ସକ୍ଷମ କରାଯାଇଛି।</translation>
 <translation id="1195447618553298278">ଅଜ୍ଞାତ ତୃଟି ।</translation>
-<translation id="1195784767091936222">ଅଟୋ ଡାର୍କ ମୋଡକୁ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="1196959502276349371">ସଂସ୍କରଣ <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">ଚଲାନ୍ତୁ/ବିରତ କରନ୍ତୁ</translation>
 <translation id="1201402288615127009">ପରବର୍ତ୍ତୀ</translation>
@@ -281,7 +280,6 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">ଡିଭାଇସଟି ସଂଯୁକ୍ତ ହୋଇଛି।</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{ପୃଷ୍ଠାକୁ କାଢ଼ିବେ?}=1{{PAGE_NUMBER} ନମ୍ବର ପୃଷ୍ଠାକୁ କାଢ଼ିବେ?}other{{PAGE_NUMBER} ନମ୍ବର ପୃଷ୍ଠାକୁ କାଢ଼ିବେ?}}</translation>
-<translation id="3136905423678675159">ଅଟୋ ଡାର୍କ ମୋଡକୁ ଚାଲୁ କରିବେ?</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> ପାଇଁ ଏକ୍ସକ୍ଲୁସିଭ</translation>
 <translation id="315116470104423982">ମୋବାଇଲ୍ ଡାଟା</translation>
 <translation id="3156846309055100599">ପୃଷ୍ଠା <ph name="PAGE_NUMBER" />କୁ ସ୍କାନ୍ କରାଯାଉଛି...</translation>
@@ -362,7 +360,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" />ଟି ସମୀକ୍ଷା)</translation>
 <translation id="3748026146096797577">ସଂଯୁକ୍ତ ହୋଇନାହିଁ</translation>
 <translation id="3749289110408117711">ଫାଇଲ୍ ନାମ</translation>
-<translation id="3754384069690464321">ଏହି ୱାଲପେପର ମାଧ୍ୟମରେ ସର୍ବୋତ୍ତମ ଫଳାଫଳ ପାଇବା ପାଇଁ ଦୟାକରି ଅଟୋ-ଡାର୍କ ମୋଡକୁ ଚାଲୁ କରନ୍ତୁ। ଆପଣ ଯେ କୌଣସି ସମୟରେ ଆପରେ ଏହାକୁ ପୁଣି ପରିବର୍ତ୍ତନ କରିପାରିବେ।</translation>
 <translation id="3771294271822695279">ଭିଡିଓ ଫାଇଲ୍‌ଗୁଡ଼ିକ</translation>
 <translation id="3784455785234192852">ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="380097101658023925">RGB ନିୟନ୍ତ୍ରଣଗୁଡ଼ିକ</translation>

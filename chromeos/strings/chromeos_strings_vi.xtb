@@ -31,7 +31,6 @@
 <translation id="1181037720776840403">Xóa</translation>
 <translation id="1191518099344003522">APN đã bật.</translation>
 <translation id="1195447618553298278">Lỗi chưa biết.</translation>
-<translation id="1195784767091936222">Bật chế độ tối tự động</translation>
 <translation id="1196959502276349371">Phiên bản <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Phát/tạm dừng</translation>
 <translation id="1201402288615127009">Tiếp theo</translation>
@@ -281,7 +280,6 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3124039320086536031">Thiết bị đã được kết nối.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Xóa trang?}=1{Xóa trang {PAGE_NUMBER}?}other{Xóa trang {PAGE_NUMBER}?}}</translation>
-<translation id="3136905423678675159">Bật chế độ tối tự động?</translation>
 <translation id="3146655726035122603">Dành riêng cho <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Dữ liệu di động</translation>
 <translation id="3156846309055100599">Đang quét trang <ph name="PAGE_NUMBER" />...</translation>
@@ -362,7 +360,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> bài đánh giá)</translation>
 <translation id="3748026146096797577">Chưa được kết nối</translation>
 <translation id="3749289110408117711">Tên tệp</translation>
-<translation id="3754384069690464321">Để hình nền này hiển thị đẹp nhất, vui lòng bật chế độ tối tự động. Bạn có thể khôi phục chế độ ban đầu bất cứ lúc nào trong ứng dụng.</translation>
 <translation id="3771294271822695279">Tệp video</translation>
 <translation id="3784455785234192852">Khóa</translation>
 <translation id="380097101658023925">chế độ điều khiển rgb</translation>
