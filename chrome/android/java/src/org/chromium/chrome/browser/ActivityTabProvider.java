@@ -82,23 +82,27 @@ public class ActivityTabProvider extends ObservableSupplierImpl<Tab> implements 
         mLayoutStateObserver =
                 new LayoutStateObserver() {
                     @Override
-                    public void onTabSelectionHinted(int tabId) {
-                        if (mTabModelSelector == null) return;
-                        set(mTabModelSelector.getTabById(tabId));
-                    }
-
-                    @Override
                     public void onStartedShowing(@LayoutType int layout) {
                         // The {@link SimpleAnimationLayout} is a special case, the intent is not to
                         // switch tabs, but to merely run an animation. In this case, do nothing.
                         // If the animation layout does result in a new tab {@link
                         // TabModelObserver#didSelectTab} will trigger the event instead. If the
-                        // tab does not change, the event will no
+                        // tab does not change, the event will noop.
                         if (LayoutType.SIMPLE_ANIMATION == layout) return;
 
                         Tab tab = mTabModelSelector.getCurrentTab();
                         if (layout != LayoutType.BROWSING) tab = null;
                         triggerActivityTabChangeEvent(tab);
+                    }
+
+                    @Override
+                    public void onStartedHiding(@LayoutType int layout) {
+                        if (mTabModelSelector == null) return;
+
+                        if (LayoutType.START_SURFACE == layout
+                                || LayoutType.TAB_SWITCHER == layout) {
+                            set(mTabModelSelector.getCurrentTab());
+                        }
                     }
                 };
     }

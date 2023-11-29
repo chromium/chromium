@@ -1223,6 +1223,7 @@ class TabSwitcherMediator
         }
         mIsSelectingInTabSwitcher = true;
         if (mOnTabSelectingListener != null) {
+            mShouldIgnoreNextSelect = true;
             mOnTabSelectingListener.onTabSelecting(tabId);
         }
     }

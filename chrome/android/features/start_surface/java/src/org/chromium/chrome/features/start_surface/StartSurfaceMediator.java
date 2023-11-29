@@ -158,6 +158,8 @@ class StartSurfaceMediator
     private final boolean mUseMagicSpace;
     private final boolean mIsSurfacePolishEnabled;
 
+    private boolean mShouldIgnoreTabSelecting;
+
     // Boolean histogram used to record whether cached
     // ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE is consistent with
     // Pref.ARTICLES_LIST_VISIBLE.
@@ -1308,8 +1310,16 @@ class StartSurfaceMediator
             mHideOverviewOnTabSelecting = true;
             return;
         }
+        // Because there are multiple upstream tab selection listeners that attempt to re-trigger
+        // the onTabSelecting in response to TabModelObserver#didSelectTab it is necessary to treat
+        // this as a non-rentrant method until the original operation finishes.
+        // TODO(crbug/1495121): This can be removed once StartSurfaceRefactor is cleaned up.
+        if (mShouldIgnoreTabSelecting) return;
+        mShouldIgnoreTabSelecting = true;
+
         assert mOnTabSelectingListener != null;
         mOnTabSelectingListener.onTabSelecting(tabId);
+        mShouldIgnoreTabSelecting = false;
     }
 
     // LogoCoordinator.VisibilityObserver

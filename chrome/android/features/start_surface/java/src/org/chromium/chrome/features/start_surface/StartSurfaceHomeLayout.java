@@ -14,6 +14,8 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
+import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.features.tasks.TasksView;
 
 /** A {@link Layout} that shows Start Surface home view. */
@@ -84,10 +86,10 @@ public class StartSurfaceHomeLayout extends Layout {
     }
 
     @Override
-    public void startHiding(int nextTabId, boolean hintAtTabSelection) {
+    public void startHiding(int nextTabId) {
         try (TraceEvent e = TraceEvent.scoped(TRACE_HIDE_START_SURFACE)) {
             StartSurfaceUserData.getInstance().setUnusedTabRestoredAtStartup(false);
-            super.startHiding(nextTabId, hintAtTabSelection);
+            super.startHiding(nextTabId);
             mIsShown = false;
             mStartSurface.hide(false);
             doneHiding();
@@ -169,6 +171,7 @@ public class StartSurfaceHomeLayout extends Layout {
     }
 
     private void onTabSelecting(int tabId) {
-        startHiding(tabId, true);
+        TabModelUtils.selectTabById(mTabModelSelector, tabId, TabSelectionType.FROM_USER, false);
+        startHiding(tabId);
     }
 }

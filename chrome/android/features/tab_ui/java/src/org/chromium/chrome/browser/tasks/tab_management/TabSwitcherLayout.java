@@ -49,8 +49,10 @@ import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.TabListDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.TabSwitcherViewObserver;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -531,14 +533,14 @@ public class TabSwitcherLayout extends Layout {
     }
 
     @Override
-    public void startHiding(int nextId, boolean hintAtTabSelection) {
+    public void startHiding(int nextId) {
         try (TraceEvent e = TraceEvent.scoped(TRACE_HIDE_TAB_SWITCHER)) {
             // This is already in the process of hiding. No-op.
             if (isStartingToHide()) return;
 
             mTransitionStartTime = SystemClock.elapsedRealtime();
 
-            super.startHiding(nextId, hintAtTabSelection);
+            super.startHiding(nextId);
 
             // The new tab animation will handle the rest of the hide.
             if (mRunningNewTabAnimation) return;
@@ -1500,6 +1502,7 @@ public class TabSwitcherLayout extends Layout {
     }
 
     private void onTabSelecting(int tabId) {
-        startHiding(tabId, true);
+        TabModelUtils.selectTabById(mTabModelSelector, tabId, TabSelectionType.FROM_USER, false);
+        startHiding(tabId);
     }
 }

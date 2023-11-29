@@ -39,8 +39,10 @@ import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.TabListDelegate;
@@ -441,32 +443,32 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
     }
 
     @Override
-    public void startHiding(int nextId, boolean hintAtTabSelection) {
+    public void startHiding(int nextId) {
         int startSurfaceState = mStartSurface.getStartSurfaceState();
         StartSurfaceUserData.getInstance().setUnusedTabRestoredAtStartup(false);
         if (startSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
-            startHidingStartSurface(nextId, hintAtTabSelection);
+            startHidingStartSurface(nextId);
         } else {
-            startHidingTabSwitcher(nextId, hintAtTabSelection);
+            startHidingTabSwitcher(nextId);
         }
     }
 
-    private void startHidingStartSurface(int nextId, boolean hintAtTabSelection) {
+    private void startHidingStartSurface(int nextId) {
         try (TraceEvent e = TraceEvent.scoped(TRACE_HIDE_START_SURFACE)) {
-            startHidingImpl(nextId, hintAtTabSelection);
+            startHidingImpl(nextId);
         }
     }
 
-    private void startHidingTabSwitcher(int nextId, boolean hintAtTabSelection) {
+    private void startHidingTabSwitcher(int nextId) {
         try (TraceEvent e = TraceEvent.scoped(TRACE_HIDE_TAB_SWITCHER)) {
             mTransitionStartTime = SystemClock.elapsedRealtime();
 
-            startHidingImpl(nextId, hintAtTabSelection);
+            startHidingImpl(nextId);
         }
     }
 
-    private void startHidingImpl(int nextId, boolean hintAtTabSelection) {
-        super.startHiding(nextId, hintAtTabSelection);
+    private void startHidingImpl(int nextId) {
+        super.startHiding(nextId);
 
         int sourceTabId = nextId;
         if (sourceTabId == Tab.INVALID_TAB_ID) {
@@ -1057,6 +1059,7 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
     }
 
     private void onTabSelecting(int tabId) {
-        startHiding(tabId, true);
+        TabModelUtils.selectTabById(mTabModelSelector, tabId, TabSelectionType.FROM_USER, false);
+        startHiding(tabId);
     }
 }

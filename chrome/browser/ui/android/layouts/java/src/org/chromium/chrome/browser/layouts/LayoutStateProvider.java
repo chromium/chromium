@@ -37,13 +37,6 @@ public interface LayoutStateProvider {
          * @param layoutType LayoutType of the finished hiding Layout.
          */
         default void onFinishedHiding(@LayoutType int layoutType) {}
-
-        /**
-         * Called when a layout wants to hint that a new tab might be selected soon. This is not
-         * called every time a tab is selected.
-         * @param tabId The id of the tab that might be selected soon.
-         */
-        default void onTabSelectionHinted(int tabId) {}
     }
 
     /**

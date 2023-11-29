@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -408,11 +409,9 @@ public abstract class Layout {
      * To be called when the layout is starting a transition out of the view mode.
      *
      * @param nextTabId The id of the next tab.
-     * @param hintAtTabSelection Whether or not the new tab selection should be broadcast as a hint
-     *     potentially before this {@link Layout} is done hiding and the selection occurs.
      */
-    public void startHiding(int nextTabId, boolean hintAtTabSelection) {
-        mUpdateHost.startHiding(nextTabId, hintAtTabSelection);
+    public void startHiding(int nextTabId) {
+        mUpdateHost.startHiding();
         mLayoutState = LayoutState.STARTING_TO_HIDE;
         mNextTabId = nextTabId;
     }
@@ -454,14 +453,9 @@ public abstract class Layout {
         if (mLayoutState != LayoutState.STARTING_TO_HIDE) return;
 
         mLayoutState = LayoutState.HIDDEN;
-        if (mNextTabId != Tab.INVALID_TAB_ID) {
-            TabModel model = mTabModelSelector.getModelForTabId(mNextTabId);
-            if (model != null) {
-                TabModelUtils.setIndex(
-                        model, TabModelUtils.getTabIndexById(model, mNextTabId), false);
-            }
-            mNextTabId = Tab.INVALID_TAB_ID;
-        }
+        TabModelUtils.selectTabById(
+                mTabModelSelector, mNextTabId, TabSelectionType.FROM_USER, false);
+        mNextTabId = Tab.INVALID_TAB_ID;
         mUpdateHost.doneHiding();
         if (mRenderHost != null && mRenderHost.getResourceManager() != null) {
             mRenderHost.getResourceManager().clearTintedResourceCache();

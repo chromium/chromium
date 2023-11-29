@@ -226,7 +226,7 @@ public class SimpleAnimationLayout extends Layout {
         mTabCreatedForegroundAnimation.start();
 
         mTabModelSelector.selectModel(newIsIncognito);
-        startHiding(id, false);
+        startHiding(id);
     }
 
     /**
@@ -438,7 +438,7 @@ public class SimpleAnimationLayout extends Layout {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         // Once the animation has finished, we can switch layouts.
-                        startHiding(sourceId, false);
+                        startHiding(sourceId);
                     }
                 });
         step3.playTogether(animationList);

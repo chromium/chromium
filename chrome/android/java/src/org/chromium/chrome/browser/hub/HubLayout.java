@@ -47,7 +47,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
-import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -136,17 +136,12 @@ public class HubLayout extends Layout implements HubLayoutController {
 
     @Override
     public void selectTabAndHideHubLayout(int tabId) {
-        if (tabId != Tab.INVALID_TAB_ID) {
-            TabModel model = mTabModelSelector.getModelForTabId(tabId);
-            if (model != null) {
-                TabModelUtils.setIndex(model, TabModelUtils.getTabIndexById(model, tabId), false);
-            }
-        }
+        TabModelUtils.selectTabById(mTabModelSelector, tabId, TabSelectionType.FROM_USER, false);
 
         // Don't forward a tabId as it is only used to select the tab again in doneHiding() which is
         // redundant work.
         // TODO(crbug/1495121): Find a way to remove the tabId parameter from start hiding.
-        startHiding(Tab.INVALID_TAB_ID, true);
+        startHiding(Tab.INVALID_TAB_ID);
     }
 
     @Override
@@ -267,10 +262,10 @@ public class HubLayout extends Layout implements HubLayoutController {
     }
 
     @Override
-    public void startHiding(int nextTabId, boolean hintAtTabSelection) {
+    public void startHiding(int nextTabId) {
         if (isStartingToHide()) return;
 
-        super.startHiding(nextTabId, hintAtTabSelection);
+        super.startHiding(nextTabId);
 
         // Use the EXPAND_NEW_TAB animation if it is already prepared.
         if (getCurrentAnimationType() == HubLayoutAnimationType.EXPAND_NEW_TAB) {
