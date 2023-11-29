@@ -98,6 +98,10 @@ size_t GetSizeEstimateFn(const AllocatorDispatch* self,
   return self->next->get_size_estimate_function(self->next, address, context);
 }
 
+size_t GoodSizeFn(const AllocatorDispatch* self, size_t size, void* context) {
+  return self->next->good_size_function(self->next, size, context);
+}
+
 bool ClaimedAddressFn(const AllocatorDispatch* self,
                       void* address,
                       void* context) {
@@ -180,6 +184,7 @@ AllocatorDispatch g_allocator_dispatch = {
     &ReallocFn,
     &FreeFn,
     &GetSizeEstimateFn,
+    &GoodSizeFn,
     &ClaimedAddressFn,
     &BatchMallocFn,
     &BatchFreeFn,

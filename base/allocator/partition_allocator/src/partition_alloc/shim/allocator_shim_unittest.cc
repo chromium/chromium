@@ -162,6 +162,12 @@ class AllocatorShimTest : public testing::Test {
     return self->next->claimed_address_function(self->next, address, context);
   }
 
+  static size_t MockGoodSize(const AllocatorDispatch* self,
+                             size_t size,
+                             void* context) {
+    return size;
+  }
+
   static unsigned MockBatchMalloc(const AllocatorDispatch* self,
                                   size_t size,
                                   void** results,
@@ -352,6 +358,7 @@ AllocatorDispatch g_mock_dispatch = {
     &AllocatorShimTest::MockRealloc,       /* realloc_function */
     &AllocatorShimTest::MockFree,          /* free_function */
     &AllocatorShimTest::MockGetSizeEstimate,  /* get_size_estimate_function */
+    &AllocatorShimTest::MockGoodSize,         /* good_size */
     &AllocatorShimTest::MockClaimedAddress,   /* claimed_address_function */
     &AllocatorShimTest::MockBatchMalloc,      /* batch_malloc_function */
     &AllocatorShimTest::MockBatchFree,        /* batch_free_function */
@@ -783,6 +790,12 @@ TEST_F(AllocatorShimTest, BatchMalloc) {
                                                      pointers, kNumToAllocate));
   malloc_zone_batch_free(malloc_default_zone(), pointers, kNumToAllocate);
   // Should not crash.
+}
+
+TEST_F(AllocatorShimTest, MallocGoodSize) {
+  constexpr size_t kTestSize = 100;
+  size_t good_size = malloc_good_size(kTestSize);
+  EXPECT_GE(good_size, kTestSize);
 }
 
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(IS_APPLE)

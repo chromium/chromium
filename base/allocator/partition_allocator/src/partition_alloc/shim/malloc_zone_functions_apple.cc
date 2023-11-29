@@ -26,8 +26,10 @@ void StoreZoneFunctions(const ChromeMallocZone* zone,
   functions->free = zone->free;
   functions->realloc = zone->realloc;
   functions->size = zone->size;
+  functions->good_size = zone->introspect->good_size;
   PA_BASE_CHECK(functions->malloc && functions->calloc && functions->valloc &&
-                functions->free && functions->realloc && functions->size);
+                functions->free && functions->realloc && functions->size &&
+                functions->good_size);
 
   // These functions might be nullptr.
   functions->batch_malloc = zone->batch_malloc;

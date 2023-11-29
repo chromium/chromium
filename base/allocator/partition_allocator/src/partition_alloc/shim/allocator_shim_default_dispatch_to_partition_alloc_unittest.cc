@@ -18,6 +18,10 @@
 #include <malloc.h>
 #endif
 
+#if BUILDFLAG(IS_APPLE)
+#include <malloc/malloc.h>
+#endif
+
 #if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) && BUILDFLAG(USE_PARTITION_ALLOC)
 namespace allocator_shim::internal {
 
@@ -184,6 +188,21 @@ TEST(PartitionAllocAsMalloc, Alignment) {
                     PartitionAllocMalloc::AlignedAllocator()) %
                     alignof(partition_alloc::PartitionRoot));
 }
+
+#if BUILDFLAG(IS_APPLE) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+// Make sure that a sequence a "good sizes" grows fast enough. This is
+// implicitly required by CoreFoundation, and to match Apple's implementation.
+// Non-regression test for crbug.com/1501312
+TEST(PartitionAllocAsMalloc, GoodSize) {
+  size_t size = 1;
+  int iterations = 0;
+  while (size < 256 * 1024) {
+    iterations++;
+    size = malloc_good_size(size + 1);
+  }
+  EXPECT_LT(iterations, 100);
+}
+#endif  // BUILDFLAG(IS_APPLE) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 }  // namespace allocator_shim::internal
 #endif  // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) &&

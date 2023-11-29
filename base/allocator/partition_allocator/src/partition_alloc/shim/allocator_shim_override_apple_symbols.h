@@ -23,6 +23,9 @@ MallocZoneFunctions MallocZoneFunctionsToReplaceDefault() {
   new_functions.size = [](malloc_zone_t* zone, const void* ptr) -> size_t {
     return ShimGetSizeEstimate(ptr, zone);
   };
+  new_functions.good_size = [](malloc_zone_t* zone, size_t size) -> size_t {
+    return ShimGoodSize(size, zone);
+  };
   new_functions.claimed_address = [](malloc_zone_t* zone,
                                      void* ptr) -> boolean_t {
     return ShimClaimedAddress(ptr, zone);

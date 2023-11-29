@@ -97,6 +97,7 @@ constexpr AllocatorDispatch AllocatorDispatch::default_dispatch = {
     &DefaultWinHeapReallocImpl,
     &DefaultWinHeapFreeImpl,
     &DefaultWinHeapGetSizeEstimateImpl,
+    nullptr, /* good_size */
     nullptr, /* claimed_address */
     nullptr, /* batch_malloc_function */
     nullptr, /* batch_free_function */

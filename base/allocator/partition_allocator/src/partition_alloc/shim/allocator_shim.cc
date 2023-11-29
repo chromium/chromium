@@ -311,6 +311,11 @@ PA_ALWAYS_INLINE size_t ShimGetSizeEstimate(const void* address,
       chain_head, const_cast<void*>(address), context);
 }
 
+PA_ALWAYS_INLINE size_t ShimGoodSize(size_t size, void* context) {
+  const allocator_shim::AllocatorDispatch* const chain_head = GetChainHead();
+  return chain_head->good_size_function(chain_head, size, context);
+}
+
 PA_ALWAYS_INLINE bool ShimClaimedAddress(void* address, void* context) {
   const allocator_shim::AllocatorDispatch* const chain_head = GetChainHead();
   return chain_head->claimed_address_function(chain_head, address, context);

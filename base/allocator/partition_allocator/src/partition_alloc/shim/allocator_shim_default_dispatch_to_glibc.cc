@@ -117,6 +117,7 @@ const AllocatorDispatch AllocatorDispatch::default_dispatch = {
     &GlibcRealloc,         /* realloc_function */
     &GlibcFree,            /* free_function */
     &GlibcGetSizeEstimate, /* get_size_estimate_function */
+    nullptr,               /* good_size_function */
     nullptr,               /* claimed_address */
     nullptr,               /* batch_malloc_function */
     nullptr,               /* batch_free_function */
