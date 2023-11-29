@@ -6583,7 +6583,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.CastStreaming.Start.Failure.AccessCodeManualEntry"
-    enum="MirroringServiceErrorType" expires_after="2023-12-01">
+    enum="MirroringServiceErrorType" expires_after="2024-05-01">
   <owner>bzielinski@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -6594,7 +6594,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MediaRouter.CastStreaming.Start.Failure.AccessCodeRememberedDevice"
-    enum="MirroringServiceErrorType" expires_after="2023-12-01">
+    enum="MirroringServiceErrorType" expires_after="2024-05-01">
   <owner>bzielinski@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
