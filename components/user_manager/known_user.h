@@ -141,7 +141,7 @@ class USER_MANAGER_EXPORT KnownUser final {
   // Setter and getter for DeviceId known user string preference.
   void SetDeviceId(const AccountId& account_id, const std::string& device_id);
 
-  std::string GetDeviceId(const AccountId& account_id);
+  std::string GetDeviceId(const AccountId& account_id) const;
 
   // Setter and getter for GAPSCookie known user string preference.
   void SetGAPSCookie(const AccountId& account_id,

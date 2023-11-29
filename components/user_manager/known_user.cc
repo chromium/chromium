@@ -572,7 +572,7 @@ void KnownUser::SetDeviceId(const AccountId& account_id,
   SetStringPref(account_id, kDeviceId, device_id);
 }
 
-std::string KnownUser::GetDeviceId(const AccountId& account_id) {
+std::string KnownUser::GetDeviceId(const AccountId& account_id) const {
   const std::string* device_id = FindStringPath(account_id, kDeviceId);
   if (device_id)
     return *device_id;
