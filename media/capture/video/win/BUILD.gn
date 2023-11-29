@@ -1,0 +1,116 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//build/config/ui.gni")
+import("//media/media_options.gni")
+import("//testing/test.gni")
+
+source_set("win") {
+  defines = [ "CAPTURE_IMPLEMENTATION" ]
+  sources = [
+    "capability_list_win.cc",
+    "capability_list_win.h",
+    "filter_base_win.cc",
+    "filter_base_win.h",
+    "gpu_memory_buffer_tracker_win.cc",
+    "gpu_memory_buffer_tracker_win.h",
+    "metrics.cc",
+    "metrics.h",
+    "pin_base_win.cc",
+    "pin_base_win.h",
+    "sink_filter_observer_win.h",
+    "sink_filter_win.cc",
+    "sink_filter_win.h",
+    "sink_input_pin_win.cc",
+    "sink_input_pin_win.h",
+    "video_capture_device_factory_win.cc",
+    "video_capture_device_factory_win.h",
+    "video_capture_device_mf_win.cc",
+    "video_capture_device_mf_win.h",
+    "video_capture_device_utils_win.cc",
+    "video_capture_device_utils_win.h",
+    "video_capture_device_win.cc",
+    "video_capture_device_win.h",
+  ]
+
+  public_deps = [
+    "//media/capture:capture_base",
+    "//media/capture:capture_device_specific",
+    "//media/capture:capture_switches",
+  ]
+
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//build:chromeos_buildflags",
+    "//media",
+    "//media/base/win:color_space_util_win",
+    "//media/capture/mojom:image_capture",
+    "//media/capture/mojom:image_capture_types",
+    "//media/capture/mojom:video_capture",
+    "//media/mojo/mojom",
+    "//services/service_manager/public/cpp",
+    "//services/video_capture/public/mojom",
+    "//third_party/libyuv",
+    "//ui/display",
+    "//ui/gfx",
+  ]
+
+  libs = [
+    "mf.lib",
+    "mfplat.lib",
+    "mfreadwrite.lib",
+    "mfuuid.lib",
+  ]
+
+  ldflags = [
+    "/DELAYLOAD:mf.dll",
+    "/DELAYLOAD:mfplat.dll",
+    "/DELAYLOAD:mfreadwrite.dll",
+  ]
+}
+
+source_set("win_unittests") {
+  defines = [ "CAPTURE_IMPLEMENTATION" ]
+  sources = [
+    "d3d_capture_test_utils.cc",
+    "d3d_capture_test_utils.h",
+    "gpu_memory_buffer_tracker_win_unittest.cc",
+    "video_capture_device_factory_win_unittest.cc",
+    "video_capture_device_mf_win_unittest.cc",
+  ]
+
+  deps = [
+    "//base/test:test_support",
+    "//build:chromeos_buildflags",
+    "//gpu/command_buffer/client",
+    "//media:test_support",
+    "//media/capture:capture",
+    "//media/capture:test_support",
+    "//media/capture/mojom:image_capture",
+    "//media/capture/mojom:image_capture_types",
+    "//mojo/core/embedder",
+    "//services/video_capture/public/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/libyuv:libyuv",
+    "//ui/gfx:test_support",
+  ]
+
+  libs = [
+    "mf.lib",
+    "mfplat.lib",
+    "mfreadwrite.lib",
+    "mfuuid.lib",
+    "dxguid.lib",
+  ]
+  ldflags = [
+    "/DELAYLOAD:mf.dll",
+    "/DELAYLOAD:mfplat.dll",
+    "/DELAYLOAD:mfreadwrite.dll",
+  ]
+
+  testonly = true
+}
