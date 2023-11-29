@@ -1167,9 +1167,9 @@ const LayoutResult* BlockLayoutAlgorithm::FinishLayout(
   // At this point, perform any final table-cell adjustments needed.
   if (constraint_space.IsTableCell()) {
     FinalizeTableCellLayout(intrinsic_block_size_, &container_builder_);
+  } else {
+    AlignContent(unconstrained_intrinsic_block_size);
   }
-
-  AlignContent(unconstrained_intrinsic_block_size);
 
   OutOfFlowLayoutPart(Node(), constraint_space, &container_builder_).Run();
 

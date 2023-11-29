@@ -365,19 +365,11 @@ LayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
   if (new_space.IsTableCell()) {
     DCHECK(old_space.IsTableCell());
 
-    switch (style.VerticalAlign()) {
-      case EVerticalAlign::kTop:
+    switch (ComputeContentAlignmentForTableCell(style)) {
+      case BlockContentAlignment::kStart:
         // Do nothing special for 'top' vertical alignment.
         break;
-      case EVerticalAlign::kBaselineMiddle:
-      case EVerticalAlign::kSub:
-      case EVerticalAlign::kSuper:
-      case EVerticalAlign::kTextTop:
-      case EVerticalAlign::kTextBottom:
-      case EVerticalAlign::kLength:
-        // All of the above are treated as 'baseline' for the purposes of
-        // table-cell vertical alignment.
-      case EVerticalAlign::kBaseline: {
+      case BlockContentAlignment::kBaseline: {
         auto new_alignment_baseline = new_space.TableCellAlignmentBaseline();
         auto old_alignment_baseline = old_space.TableCellAlignmentBaseline();
 
@@ -403,8 +395,10 @@ LayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
           return LayoutCacheStatus::kNeedsLayout;
         break;
       }
-      case EVerticalAlign::kMiddle:
-      case EVerticalAlign::kBottom:
+      case BlockContentAlignment::kUnsafeCenter:
+      case BlockContentAlignment::kSafeCenter:
+      case BlockContentAlignment::kUnsafeEnd:
+      case BlockContentAlignment::kSafeEnd:
         // 'middle', and 'bottom' vertical alignment depend on the block-size.
         if (!is_block_size_equal)
           return LayoutCacheStatus::kNeedsLayout;

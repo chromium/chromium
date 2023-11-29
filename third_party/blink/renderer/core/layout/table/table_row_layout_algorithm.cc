@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_child_iterator.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_block_layout_algorithm_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
@@ -185,7 +186,8 @@ const LayoutResult* TableRowLayoutAlgorithm::Layout() {
       const LogicalBoxFragment fragment(table_data.table_writing_direction,
                                         physical_fragment);
       row_baseline_tabulator.ProcessCell(
-          fragment, cell_style.VerticalAlign(), has_rowspan,
+          fragment, ComputeContentAlignmentForTableCell(cell_style),
+          has_rowspan,
           cell_data.has_descendant_that_depends_on_percentage_block_size);
       if (min_block_size_should_encompass_intrinsic_size) {
         max_cell_block_size =

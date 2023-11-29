@@ -18,6 +18,7 @@ class ConstraintSpaceBuilder;
 class LogicalBoxFragment;
 class TableBorders;
 class TableNode;
+enum class BlockContentAlignment;
 enum class LayoutResultCacheSlot;
 struct TableColumnLocation;
 
@@ -126,7 +127,7 @@ class ColspanCellTabulator {
 class RowBaselineTabulator {
  public:
   void ProcessCell(const LogicalBoxFragment& fragment,
-                   EVerticalAlign align,
+                   BlockContentAlignment align,
                    bool is_rowspanned,
                    bool descendant_depends_on_percentage_block_size);
 

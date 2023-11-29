@@ -37,6 +37,10 @@ BlockContentAlignment ComputeContentAlignment(const ComputedStyle& style,
     position = ContentPosition::kEnd;
   }
 
+  if (!RuntimeEnabledFeatures::AlignContentForBlocksEnabled()) {
+    position = ContentPosition::kNormal;
+  }
+
   // https://drafts.csswg.org/css-align/#typedef-overflow-position
   // The "smart" default value (OverflowAlignment::kDefault) is not implemented.
   // We handle it as kUnsafe.
@@ -139,6 +143,11 @@ LayoutUnit CalculateOutOfFlowStaticInlineLevelOffset(
 BlockContentAlignment ComputeContentAlignmentForBlock(
     const ComputedStyle& style) {
   return ComputeContentAlignment(style, /* is_table_cell */ false);
+}
+
+BlockContentAlignment ComputeContentAlignmentForTableCell(
+    const ComputedStyle& style) {
+  return ComputeContentAlignment(style, /* is_table_cell */ true);
 }
 
 }  // namespace blink

@@ -39,6 +39,8 @@ enum class BlockContentAlignment {
 };
 BlockContentAlignment ComputeContentAlignmentForBlock(
     const ComputedStyle& style);
+BlockContentAlignment ComputeContentAlignmentForTableCell(
+    const ComputedStyle& style);
 
 }  // namespace blink
 
