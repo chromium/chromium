@@ -153,7 +153,6 @@ message_center::NotificationViewController*
 GetActiveNotificationViewControllerForDisplay(int64_t display_id) {
   RootWindowController* root_window_controller =
       Shell::GetRootWindowControllerWithDisplayId(display_id);
-  // Can be null in tests.
   if (!root_window_controller ||
       !root_window_controller->GetStatusAreaWidget()) {
     return nullptr;
@@ -173,25 +172,6 @@ GetActiveNotificationViewControllerForNotificationView(
       display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
 
   return GetActiveNotificationViewControllerForDisplay(display_id);
-}
-
-NotificationGroupingController* GetGroupingControllerForNotificationView(
-    views::View* notification_view) {
-  aura::Window* window = notification_view->GetWidget()->GetNativeWindow();
-  auto display_id =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
-
-  RootWindowController* root_window_controller =
-      Shell::GetRootWindowControllerWithDisplayId(display_id);
-  // Can be null in tests.
-  if (!root_window_controller ||
-      !root_window_controller->GetStatusAreaWidget()) {
-    return nullptr;
-  }
-
-  return root_window_controller->GetStatusAreaWidget()
-      ->notification_center_tray()
-      ->notification_grouping_controller();
 }
 
 void InitLayerForAnimations(views::View* view) {

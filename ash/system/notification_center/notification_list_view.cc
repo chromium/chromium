@@ -697,17 +697,18 @@ void NotificationListView::OnChildNotificationViewUpdated(
   }
 
   // Update the child notification view with the updated notification.
+  // TODO(b/308814203): clean the static_cast checks by replacing
+  // `AshNotificationView*` with a base class.
   auto* child_view =
       parent_view->FindGroupNotificationView(child_notification_id);
-
-  if (!child_view) {
-    return;
-  }
-
   auto* notification =
       MessageCenter::Get()->FindNotificationById(child_notification_id);
-  static_cast<MessageView*>(child_view)->UpdateWithNotification(*notification);
-  ResetBounds();
+
+  if (child_view && message_center_utils::IsAshNotification(notification)) {
+    auto* ash_child_view = static_cast<AshNotificationView*>(child_view);
+    ash_child_view->UpdateWithNotification(*notification);
+    ResetBounds();
+  }
 }
 
 void NotificationListView::OnNotificationAdded(const std::string& id) {
