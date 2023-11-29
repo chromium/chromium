@@ -167,7 +167,7 @@ ImageBitmap* WebGL2RenderingContext::TransferToImageBitmap(
 void WebGL2RenderingContext::RegisterContextExtensions() {
   // Register extensions.
   RegisterExtension(ext_blend_func_extended_, kDraftExtension);
-  RegisterExtension(ext_clip_control_);
+  RegisterExtension(ext_clip_control_, kDraftExtension);
   RegisterExtension(ext_color_buffer_float_);
   RegisterExtension(ext_color_buffer_half_float_);
   RegisterExtension(ext_conservative_depth_, kDraftExtension);
@@ -176,7 +176,7 @@ void WebGL2RenderingContext::RegisterContextExtensions() {
       ext_disjoint_timer_query_web_gl2_,
       TimerQueryExtensionsEnabled() ? kApprovedExtension : kDeveloperExtension);
   RegisterExtension(ext_float_blend_);
-  RegisterExtension(ext_polygon_offset_clamp_);
+  RegisterExtension(ext_polygon_offset_clamp_, kDraftExtension);
   RegisterExtension(ext_render_snorm_, kDraftExtension);
   RegisterExtension(ext_texture_compression_bptc_);
   RegisterExtension(ext_texture_compression_rgtc_);
