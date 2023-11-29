@@ -3537,9 +3537,12 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
                        PasswordSaveDisabled) {
   base::HistogramTester histograms;
 
+  // This is needed for tests using BubbleObserver
+  content::WebContents* contents = nullptr;
+  PasswordManagerBrowserTestBase::GetNewTab(browser(), &contents);
+
   // Navigate to the page.
-  content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  contents = browser()->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver observer1(contents);
   const GURL url =
       embedded_test_server()->GetURL("/password/password_form.html");
