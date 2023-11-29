@@ -81,8 +81,11 @@ GLTextureOzoneImageRepresentation::~GLTextureOzoneImageRepresentation() {
     if (should_mark_context_lost_textures_holder_) {
       textures_holder_->MarkContextLost();
     } else {
-      // The textures must have already been marked as context lost.
-      DCHECK(textures_holder_->WasContextLost());
+      // The textures must have already been marked as context lost given it's
+      // only one entry there.
+      if (textures_holder_->GetCacheCount() <= 1) {
+        DCHECK(textures_holder_->WasContextLost());
+      }
     }
   }
 }
@@ -126,8 +129,11 @@ GLTexturePassthroughOzoneImageRepresentation::
     if (should_mark_context_lost_textures_holder_) {
       textures_holder_->MarkContextLost();
     } else {
-      // The textures must have already been marked as context lost.
-      DCHECK(textures_holder_->WasContextLost());
+      // The textures must have already been marked as context lost given it's
+      // only one entry there
+      if (textures_holder_->GetCacheCount() <= 1) {
+        DCHECK(textures_holder_->WasContextLost());
+      }
     }
   }
 }

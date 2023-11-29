@@ -25,6 +25,7 @@
 #include "ui/gl/gpu_preference.h"
 
 namespace gl {
+class GLContextEGL;
 class GLDisplayEGL;
 }  // namespace gl
 
@@ -266,6 +267,8 @@ class GL_EXPORT GLContext : public base::RefCounted<GLContext>,
   // Returns GLDisplayEGL this context belongs to if this context is a
   // GLContextEGL; returns nullptr otherwise.
   virtual GLDisplayEGL* GetGLDisplayEGL();
+
+  virtual GLContextEGL* AsGLContextEGL();
 #endif  // USE_EGL
 
 #if BUILDFLAG(IS_APPLE)
@@ -290,6 +293,11 @@ class GL_EXPORT GLContext : public base::RefCounted<GLContext>,
 
   void AddObserver(GLContextObserver* observer);
   void RemoveObserver(GLContextObserver* observer);
+
+  // Returns true if |other_context| is compatible with |this| context, and a
+  // client can reuse already allocated textures in |this| context when
+  // |other_context| is made current.
+  virtual bool CanShareTexturesWithContext(GLContext* other_context);
 
  protected:
   virtual ~GLContext();

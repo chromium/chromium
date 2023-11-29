@@ -121,6 +121,8 @@ component("gl") {
     "scoped_binders.h",
     "scoped_make_current.cc",
     "scoped_make_current.h",
+    "scoped_make_current_unsafe.cc",
+    "scoped_make_current_unsafe.h",
     "scoped_restore_texture.cc",
     "scoped_restore_texture.h",
     "shader_tracking.cc",

@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/numerics/checked_math.h"
 #include "gpu/gpu_gles2_export.h"
 #include "ui/gfx/buffer_types.h"
 
@@ -17,10 +18,6 @@ namespace gfx {
 class NativePixmap;
 class Size;
 }  // namespace gfx
-
-namespace gl {
-class GLContext;
-}  // namespace gl
 
 namespace ui {
 class NativePixmapGLBinding;
@@ -34,25 +31,31 @@ class Texture;
 class TexturePassthrough;
 }  // namespace gles2
 
-// Stores gles2::Texture(Passthrough)s for OzoneImageBacking. If the
-// gl::GLContext passed to the holder has an offscreen surface, the holder will
-// use that context to destroy textures it holds. Otherwise, they are destroyed
-// on whatever context is current.
+// Stores gles2::Texture(Passthrough)s for OzoneImageBacking.
 class GPU_GLES2_EXPORT OzoneImageGLTexturesHolder
     : public base::RefCounted<OzoneImageGLTexturesHolder> {
  public:
   // Creates an OzoneImageGLTexturesHolder with gles2::Textures or a
   // gles2::TexturePassthroughs.
   static scoped_refptr<OzoneImageGLTexturesHolder> CreateAndInitTexturesHolder(
-      gl::GLContext* current_context,
       SharedImageBacking* backing,
       scoped_refptr<gfx::NativePixmap> pixmap,
       gfx::BufferPlane plane,
       bool is_passthrough);
 
-  void OnContextWillDestroy(gl::GLContext* context);
   void MarkContextLost();
   bool WasContextLost();
+
+  // See |cache_counter_|.
+  void OnAddedToCache();
+  void OnRemovedFromCache();
+  size_t GetCacheCount() const;
+
+  // Destroys textures that this holder holds. The caller must ensure it make a
+  // correct context as current. Eg - the context which was used when this
+  // holder was created or the compatible context that was used to reuse this
+  // holder.
+  void DestroyTextures();
 
   gles2::Texture* texture(int plane_index) { return textures_[plane_index]; }
   const scoped_refptr<gles2::TexturePassthrough>& texture_passthrough(
@@ -64,13 +67,10 @@ class GPU_GLES2_EXPORT OzoneImageGLTexturesHolder
 
   size_t GetNumberOfTextures() const;
 
-  bool has_context() const { return !!context_; }
-
  private:
   friend class base::RefCounted<OzoneImageGLTexturesHolder>;
 
-  OzoneImageGLTexturesHolder(bool is_passthrough,
-                             gl::GLContext* current_context);
+  explicit OzoneImageGLTexturesHolder(bool is_passthrough);
   ~OzoneImageGLTexturesHolder();
 
   // Initializes this holder with gles2::Textures or a
@@ -88,19 +88,14 @@ class GPU_GLES2_EXPORT OzoneImageGLTexturesHolder
                              gfx::BufferPlane buffer_plane,
                              const gfx::Size& size);
 
-  void MaybeDestroyTexturesOnContext();
-
-  // The context the textures were created on. Can be null if the texture holder
-  // doesn't need to make it current when being destroyed. This has to be a raw
-  // ptr as we want the GLContext to be destroyed. If that happens, the texture
-  // holder is notified by the OzoneImageBacking about that.
-  raw_ptr<gl::GLContext> context_;
-
   // Helps to identify this holder.
   const bool is_passthrough_;
 
+  // A counter that is used by OzoneImageBacking to identify how many times this
+  // holder has been cached.
+  base::CheckedNumeric<size_t> cache_count_ = 0;
+
   bool context_lost_ = false;
-  bool context_destroyed_ = false;
   std::vector<std::unique_ptr<ui::NativePixmapGLBinding>> bindings_;
   std::vector<raw_ptr<gles2::Texture>> textures_;
   std::vector<scoped_refptr<gles2::TexturePassthrough>> textures_passthrough_;

@@ -39,6 +39,7 @@
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gl/buildflags.h"
+#include "ui/gl/scoped_make_current_unsafe.h"
 
 #if BUILDFLAG(ENABLE_VULKAN)
 #include "gpu/command_buffer/service/shared_image/skia_vk_ozone_image_representation.h"
@@ -176,53 +177,25 @@ std::unique_ptr<DawnImageRepresentation> OzoneImageBacking::ProduceDawn(
 scoped_refptr<OzoneImageGLTexturesHolder> OzoneImageBacking::RetainGLTexture(
     bool is_passthrough) {
   if (use_per_context_cache_) {
-    DCHECK(!cached_texture_holder_);
-    gl::GLContext* current_context = gl::GLContext::GetCurrent();
-    if (!current_context) {
-      LOG(ERROR) << "No GLContext current.";
-      return nullptr;
-    }
-
-    const bool has_offscreen_surface = !!current_context->default_surface();
-
-    if (has_offscreen_surface) {
-      auto found = per_context_cached_textures_holders_.find(current_context);
-      if (found != per_context_cached_textures_holders_.end()) {
-        auto& holder = found->second;
-        DCHECK_EQ(holder->is_passthrough(), is_passthrough);
-        CHECK(!holder->WasContextLost());
-        if (!format().PrefersExternalSampler()) {
-          DCHECK_EQ(static_cast<int>(holder->GetNumberOfTextures()),
-                    format().NumberOfPlanes());
-        }
-        return holder;
-      }
-
-      current_context->AddObserver(this);
-    }
-
-    scoped_refptr<OzoneImageGLTexturesHolder> new_holder =
-        OzoneImageGLTexturesHolder::CreateAndInitTexturesHolder(
-            has_offscreen_surface ? current_context : nullptr, this, pixmap_,
-            plane_, is_passthrough);
-    // Cannot cache if the context doesn't have the offscreen surface.
-    if (!has_offscreen_surface) {
-      return new_holder;
-    }
-
-    auto result = per_context_cached_textures_holders_.insert(
-        std::make_pair(current_context, std::move(new_holder)));
-    DCHECK(result.second);
-    return result.first->second;
+    return RetainGLTexturePerContextCache(is_passthrough);
+  } else if (workarounds_.cache_texture_in_ozone_backing) {
+    return RetainGLTextureForCacheWorkaround(is_passthrough);
+  } else {
+    // No caching mechanism is required. Simply create a new texture holder.
+    return OzoneImageGLTexturesHolder::CreateAndInitTexturesHolder(
+        this, pixmap_, plane_, is_passthrough);
   }
+}
 
-  DCHECK(per_context_cached_textures_holders_.empty());
+scoped_refptr<OzoneImageGLTexturesHolder>
+OzoneImageBacking::RetainGLTextureForCacheWorkaround(bool is_passthrough) {
+  DCHECK(workarounds_.cache_texture_in_ozone_backing &&
+         per_context_cached_textures_holders_.empty());
   if (cached_texture_holder_ && cached_texture_holder_->WasContextLost()) {
     cached_texture_holder_.reset();
   }
 
-  const bool need_cache = workarounds_.cache_texture_in_ozone_backing;
-  if (need_cache && cached_texture_holder_) {
+  if (cached_texture_holder_) {
     DCHECK_EQ(cached_texture_holder_->is_passthrough(), is_passthrough);
     CHECK(!cached_texture_holder_->WasContextLost());
     if (!format().PrefersExternalSampler()) {
@@ -232,15 +205,91 @@ scoped_refptr<OzoneImageGLTexturesHolder> OzoneImageBacking::RetainGLTexture(
     return cached_texture_holder_;
   }
 
-  scoped_refptr<OzoneImageGLTexturesHolder> new_holder =
+  cached_texture_holder_ =
       OzoneImageGLTexturesHolder::CreateAndInitTexturesHolder(
-          nullptr, this, pixmap_, plane_, is_passthrough);
-  if (!need_cache) {
-    return new_holder;
+          this, pixmap_, plane_, is_passthrough);
+  return cached_texture_holder_;
+}
+
+scoped_refptr<OzoneImageGLTexturesHolder>
+OzoneImageBacking::RetainGLTexturePerContextCache(bool is_passthrough) {
+  DCHECK(use_per_context_cache_ && !cached_texture_holder_);
+  gl::GLContext* current_context = gl::GLContext::GetCurrent();
+  if (!current_context) {
+    LOG(ERROR) << "No GLContext current.";
+    return nullptr;
   }
 
-  cached_texture_holder_ = new_holder;
-  return cached_texture_holder_;
+  // We have four paths now:
+  // 0) The context doesn't have a stored offscreen surface meaning caching is
+  // not possible.
+  // 1) There is already a texture holder for the given context that can be
+  // reused.
+  // 2) There is no texture holder for the given context, but there a
+  // texture holder can be reused if it was created by a compatible context.
+  // 3) Non of the above applies, it's a new entry.
+
+  // Case 0: caching is not possible.
+  if (!current_context->default_surface()) {
+    return OzoneImageGLTexturesHolder::CreateAndInitTexturesHolder(
+        this, pixmap_, plane_, is_passthrough);
+  }
+
+  // Case 1: if entry is found, reuse it.
+  auto found = per_context_cached_textures_holders_.find(current_context);
+  if (found != per_context_cached_textures_holders_.end()) {
+    auto& holder = found->second;
+    DCHECK_EQ(holder->is_passthrough(), is_passthrough);
+    CHECK(!holder->WasContextLost());
+    if (!format().PrefersExternalSampler()) {
+      DCHECK_EQ(static_cast<int>(holder->GetNumberOfTextures()),
+                format().NumberOfPlanes());
+    }
+    return holder;
+  }
+
+  // It'll be a new entry. |this| must observe current context and react on
+  // context losses or destructions accordingly. Otherwise, it'll keep the
+  // texture holders until it dies, which is not what we want from the resource
+  // management point of view. Also, textures must be destroyed/marked with
+  // context lost to avoid wrong behaviour (eg textures are reused despite a
+  // context lost).
+  current_context->AddObserver(this);
+
+  // Case 2. Try to find a compatible context. There are some drivers that
+  // fail when doing multiple reimport of dmas (and creating multiple textures
+  // from a single image). See https://crbug.com/1498703.
+  scoped_refptr<OzoneImageGLTexturesHolder> new_holder;
+  const auto context_cache_pair = base::ranges::find_if(
+      per_context_cached_textures_holders_.begin(),
+      per_context_cached_textures_holders_.end(),
+      [current_context](const auto& holder_per_context) {
+        return holder_per_context.first->CanShareTexturesWithContext(
+            current_context);
+      });
+
+  if (context_cache_pair != per_context_cached_textures_holders_.end()) {
+    new_holder = context_cache_pair->second;
+    CHECK(!new_holder->WasContextLost());
+  } else {
+    // Case 3. No entries found. Create a new holder.
+    new_holder = OzoneImageGLTexturesHolder::CreateAndInitTexturesHolder(
+        this, pixmap_, plane_, is_passthrough);
+  }
+
+  auto result = per_context_cached_textures_holders_.insert(
+      std::make_pair(current_context, std::move(new_holder)));
+  DCHECK(result.second);
+
+  // Notify this holder that it has been added to cache. This counter is used
+  // to know if there is only one cache instance left. When the cache counter
+  // is <= 1, this backing can either command to destroy the textures or mark
+  // them as context lost. See ::OnGLContextLostOrDestroy. PS: while the
+  // TextureHolder is refcounted, it's hard to correctly determine if there are
+  // no users left. Eg. 1 cache entry and 1 image representation give 2 refs.
+  result.first->second->OnAddedToCache();
+
+  return result.first->second;
 }
 
 std::unique_ptr<GLTextureImageRepresentation>
@@ -435,6 +484,13 @@ OzoneImageBacking::~OzoneImageBacking() {
     DCHECK(!cached_texture_holder_);
     for (auto& item : per_context_cached_textures_holders_) {
       item.first->RemoveObserver(this);
+      // We only need to remove textures here. If the context was lost or
+      // destroyed, there would be no entries in the cache as this is managed
+      // via ::OnGLContextLostOrDestroy.
+      if (item.second->GetCacheCount() <= 1) {
+        DestroyTexturesOnContext(item.second.get(), item.first);
+      }
+      item.second->OnRemovedFromCache();
     }
   } else {
     DCHECK(per_context_cached_textures_holders_.empty());
@@ -687,8 +743,10 @@ std::unique_ptr<T> OzoneImageBacking::ProduceGLTextureInternal(
   if (!texture_holder) {
     return nullptr;
   }
+  // If this holder has not been added in the cache, the image rep must manage
+  // context lost by itself.
   const bool should_mark_context_lost_textures_holder_ =
-      !texture_holder->has_context();
+      (texture_holder->GetCacheCount() == 0);
   return std::make_unique<T>(manager, this, tracker, std::move(texture_holder),
                              should_mark_context_lost_textures_holder_);
 }
@@ -707,11 +765,35 @@ void OzoneImageBacking::OnGLContextLostOrDestroy(gl::GLContext* context,
   auto it = per_context_cached_textures_holders_.find(context);
   DCHECK(it != per_context_cached_textures_holders_.end());
 
-  if (mark_context_lost) {
-    it->second->MarkContextLost();
+  // Given the TextureHolder can be used by N contexts (the contexts are
+  // compatible with the original one that was used to create the holder), the
+  // backing must ensure that the cache counter is <= 1 before it can command to
+  // destroy textures or mark them as context lost.
+  if (it->second->GetCacheCount() <= 1) {
+    if (mark_context_lost) {
+      it->second->MarkContextLost();
+    } else {
+      DestroyTexturesOnContext(it->second.get(), context);
+    }
   }
+  it->second->OnRemovedFromCache();
   per_context_cached_textures_holders_.erase(it);
   context->RemoveObserver(this);
+}
+
+void OzoneImageBacking::DestroyTexturesOnContext(
+    OzoneImageGLTexturesHolder* holder,
+    gl::GLContext* context) {
+  std::optional<ui::ScopedMakeCurrentUnsafe> scoped_current;
+  // If the context is already current, do not create a scoped one as it'll
+  // release the context upon destruction.
+  if (!context->IsCurrent(nullptr)) {
+    scoped_current.emplace(context, context->default_surface());
+    if (!scoped_current->IsContextCurrent()) {
+      holder->MarkContextLost();
+    }
+  }
+  holder->DestroyTextures();
 }
 
 }  // namespace gpu

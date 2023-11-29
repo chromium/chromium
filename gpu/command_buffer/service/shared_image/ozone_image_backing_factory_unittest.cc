@@ -455,4 +455,181 @@ TEST_F(OzoneImageBackingFactoryTest, RestoresContextOnAnotherContextDestroy) {
   EXPECT_TRUE(context_state_->context()->IsCurrent(gl_surface_.get()));
 }
 
+// Verifies that if there is a compatible context, the texture is reused. Eg,
+// there was a request to create a texture for one context, then the context was
+// changed and another request came. If the contexts are compatible, the texture
+// holder is reused. Otherwise, a new texture is created.
+TEST_F(OzoneImageBackingFactoryTest, FindsCompatibleContextAndReusesTexture) {
+  if (!IsEglImageSupported()) {
+    GTEST_SKIP();
+  }
+
+  EXPECT_TRUE(context_state_->MakeCurrent(context_state_->surface(),
+                                          true /* needs_gl*/));
+
+  const Mailbox mailbox = Mailbox::GenerateForSharedImage();
+  auto backing = backing_factory_->CreateSharedImage(
+      mailbox, viz::SinglePlaneFormat::kRGBA_8888, gpu::kNullSurfaceHandle,
+      {100, 100}, gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
+      kPremul_SkAlphaType, SHARED_IMAGE_USAGE_GLES2, "TestLabel", false);
+  EXPECT_TRUE(backing);
+
+  auto* backing_ptr = static_cast<OzoneImageBacking*>(backing.get());
+
+  auto shared_image =
+      shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
+  EXPECT_TRUE(shared_image);
+
+  // Create and validate GLTexture representation.
+  auto gl_representation =
+      shared_image_representation_factory_->ProduceGLTexturePassthrough(
+          mailbox);
+  EXPECT_TRUE(gl_representation);
+  EXPECT_TRUE(gl_representation->GetTexturePassthrough()->service_id());
+
+  // Verify there is only one per-context textures holder now.
+  EXPECT_EQ(1u, backing_ptr->per_context_cached_textures_holders_.size());
+
+  gl::GLContextAttribs attribs;
+  attribs.global_texture_share_group = true;
+  attribs.angle_context_virtualization_group_number =
+      gl::AngleContextVirtualizationGroup::kGLImageProcessor;
+  auto gl_context =
+      gl::init::CreateGLContext(nullptr, gl_surface_.get(), attribs);
+  ASSERT_TRUE(gl_context);
+  bool make_current_result = gl_context->MakeCurrent(gl_surface_.get());
+  ASSERT_TRUE(make_current_result);
+
+  auto gl_representation2 =
+      shared_image_representation_factory_->ProduceGLTexturePassthrough(
+          mailbox);
+  EXPECT_TRUE(gl_representation2);
+
+  // Verify there is now two per-context textures holders.
+  EXPECT_EQ(2u, backing_ptr->per_context_cached_textures_holders_.size());
+  // And they are different of course.
+  EXPECT_NE(gl_representation->GetTexturePassthrough(),
+            gl_representation2->GetTexturePassthrough());
+
+  const std::vector<std::pair<bool, gl::AngleContextVirtualizationGroup>>
+      kTestVariations = {
+          {true, gl::AngleContextVirtualizationGroup::kDefault},
+          {false, gl::AngleContextVirtualizationGroup::kDefault},
+          {true, gl::AngleContextVirtualizationGroup::kDrDc},
+          {false, gl::AngleContextVirtualizationGroup::kDrDc},
+          {true, gl::AngleContextVirtualizationGroup::kGLImageProcessor},
+          {false, gl::AngleContextVirtualizationGroup::kGLImageProcessor},
+          {true, gl::AngleContextVirtualizationGroup::kWebViewRenderThread},
+          {false, gl::AngleContextVirtualizationGroup::kWebViewRenderThread},
+      };
+  for (const auto& variation : kTestVariations) {
+    gl::GLContextAttribs attributes;
+    // Create one more context. It'll have similar attributes to the previous
+    // context. And, thus, the texture must be reused.
+    attributes.global_texture_share_group = variation.first;
+    attributes.angle_context_virtualization_group_number = variation.second;
+    auto new_context =
+        gl::init::CreateGLContext(nullptr, gl_surface_.get(), attributes);
+    ASSERT_TRUE(new_context);
+    make_current_result = new_context->MakeCurrent(gl_surface_.get());
+    ASSERT_TRUE(make_current_result);
+
+    auto representation =
+        shared_image_representation_factory_->ProduceGLTexturePassthrough(
+            mailbox);
+    EXPECT_TRUE(representation);
+
+    // Verify there is three per-context textures holders stored..
+    EXPECT_EQ(3u, backing_ptr->per_context_cached_textures_holders_.size());
+    // .. but those two last are the same holders as OzoneImageBacking will
+    // reuse the textures if contexts are compatible.
+    if (gl_context->CanShareTexturesWithContext(new_context.get())) {
+      EXPECT_EQ(representation->GetTexturePassthrough(),
+                gl_representation2->GetTexturePassthrough());
+    } else {
+      EXPECT_NE(representation->GetTexturePassthrough(),
+                gl_representation2->GetTexturePassthrough());
+    }
+    // And they are always different from the first context, of course.
+    EXPECT_NE(gl_representation->GetTexturePassthrough(),
+              representation->GetTexturePassthrough());
+  }
+}
+
+// If the cached textures holder is shared between two contexts, which are
+// compatible for such usage, destruction of one context or making it loose
+// context shouldn't make a texture holder destroy textures or mark texture as
+// context lost. Once all contexts have context lost or are destroy, only then
+// the holder must destroy textures and/or mark them as context lost.
+TEST_F(OzoneImageBackingFactoryTest, CorrectlyDestroysAndMarksContextLost) {
+  if (!IsEglImageSupported()) {
+    GTEST_SKIP();
+  }
+
+  EXPECT_TRUE(context_state_->MakeCurrent(context_state_->surface(),
+                                          true /* needs_gl*/));
+
+  const Mailbox mailbox = Mailbox::GenerateForSharedImage();
+  auto backing = backing_factory_->CreateSharedImage(
+      mailbox, viz::SinglePlaneFormat::kRGBA_8888, gpu::kNullSurfaceHandle,
+      {100, 100}, gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
+      kPremul_SkAlphaType, SHARED_IMAGE_USAGE_GLES2, "TestLabel", false);
+  EXPECT_TRUE(backing);
+
+  auto* backing_ptr = static_cast<OzoneImageBacking*>(backing.get());
+
+  auto shared_image =
+      shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
+  EXPECT_TRUE(shared_image);
+
+  gl::GLContextAttribs attribs;
+  attribs.global_texture_share_group = true;
+  attribs.angle_context_virtualization_group_number =
+      gl::AngleContextVirtualizationGroup::kGLImageProcessor;
+  auto gl_context =
+      gl::init::CreateGLContext(nullptr, gl_surface_.get(), attribs);
+  ASSERT_TRUE(gl_context);
+  bool make_current_result = gl_context->MakeCurrent(gl_surface_.get());
+  ASSERT_TRUE(make_current_result);
+
+  auto gl_representation =
+      shared_image_representation_factory_->ProduceGLTexturePassthrough(
+          mailbox);
+  EXPECT_TRUE(gl_representation);
+  EXPECT_EQ(1u, backing_ptr->per_context_cached_textures_holders_.size());
+
+  auto new_context =
+      gl::init::CreateGLContext(nullptr, gl_surface_.get(), attribs);
+  ASSERT_TRUE(new_context);
+  make_current_result = new_context->MakeCurrent(gl_surface_.get());
+  ASSERT_TRUE(make_current_result);
+
+  auto gl_representation2 =
+      shared_image_representation_factory_->ProduceGLTexturePassthrough(
+          mailbox);
+  EXPECT_TRUE(gl_representation2);
+  EXPECT_EQ(gl_representation->GetTexturePassthrough(),
+            gl_representation2->GetTexturePassthrough());
+
+  EXPECT_EQ(2u, backing_ptr->per_context_cached_textures_holders_.size());
+
+  auto holder_ref1 =
+      backing_ptr->per_context_cached_textures_holders_.begin()->second;
+  auto holder_ref2 =
+      backing_ptr->per_context_cached_textures_holders_.rbegin()->second;
+  EXPECT_EQ(holder_ref1, holder_ref2);
+  backing_ptr->OnGLContextLost(new_context.get());
+  EXPECT_FALSE(holder_ref1->WasContextLost());
+  EXPECT_EQ(1u, backing_ptr->per_context_cached_textures_holders_.size());
+  EXPECT_EQ(1u, holder_ref1->GetNumberOfTextures());
+
+  new_context.reset();
+  EXPECT_EQ(1u, backing_ptr->per_context_cached_textures_holders_.size());
+  EXPECT_EQ(1u, holder_ref1->GetNumberOfTextures());
+
+  gl_context.reset();
+  EXPECT_EQ(0u, backing_ptr->per_context_cached_textures_holders_.size());
+  EXPECT_EQ(0u, holder_ref1->GetNumberOfTextures());
+}
+
 }  // namespace gpu
