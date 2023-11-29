@@ -74,25 +74,20 @@ IN_PROC_BROWSER_TEST_F(WallpaperSearchServiceBrowserTest,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 class WallpaperSearchServiceBrowserChromeAshTest
     : public WallpaperSearchServiceBrowserTest,
-      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+      public ::testing::WithParamInterface<bool> {
  public:
-  bool IsDeviceOwner() const { return std::get<0>(GetParam()); }
-  // Chrome OS builds sometimes run on non-Chrome OS environments.
-  bool IsRunningOnChromeOS() const { return std::get<1>(GetParam()); }
+  bool IsDeviceOwner() const { return GetParam(); }
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
                          WallpaperSearchServiceBrowserChromeAshTest,
-                         ::testing::Combine(::testing::Bool(),
-                                            ::testing::Bool()));
+                         ::testing::Bool());
 
 IN_PROC_BROWSER_TEST_P(WallpaperSearchServiceBrowserChromeAshTest,
                        PRE_EnablingWallpaperSearchEnablesGM3) {
   signin::MakePrimaryAccountAvailable(
       IdentityManagerFactory::GetForProfile(browser()->profile()),
       "test@example.com", signin::ConsentLevel::kSync);
-  WallpaperSearchServiceFactory::GetForProfile(browser()->profile())
-      ->SkipChromeOSDeviceCheckForTesting(IsRunningOnChromeOS());
 
   // Enable Wallpaper Search via Optimization Guide Prefs.
   // GM3 should enable itself when the browser restarts.
@@ -110,8 +105,12 @@ IN_PROC_BROWSER_TEST_P(WallpaperSearchServiceBrowserChromeAshTest,
 
 IN_PROC_BROWSER_TEST_P(WallpaperSearchServiceBrowserChromeAshTest,
                        EnablingWallpaperSearchEnablesGM3) {
+  EXPECT_TRUE(base::FeatureList::IsEnabled(features::kChromeRefresh2023));
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
   // TODO(b/311263522): Figure out why features::kChromeWebuiRefresh2023 doesn't
   // enable on linux-chromeos-rel bot.
-  EXPECT_TRUE(base::FeatureList::IsEnabled(features::kChromeRefresh2023));
+  EXPECT_TRUE(base::FeatureList::IsEnabled(features::kChromeWebuiRefresh2023));
+  EXPECT_TRUE(features::IsChromeWebuiRefresh2023());
+#endif  // BUILDFLAG(IS_CHROMEOS_DEVICE)
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

@@ -27,12 +27,6 @@ class WallpaperSearchService
 
   ~WallpaperSearchService() override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  void SkipChromeOSDeviceCheckForTesting(bool should_skip_check) {
-    skip_chrome_os_device_check_for_testing_ = should_skip_check;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
  private:
   // KeyedService implementation:
   void Shutdown() override;

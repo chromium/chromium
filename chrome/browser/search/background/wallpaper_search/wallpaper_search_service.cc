@@ -80,8 +80,7 @@ void WallpaperSearchService::PrepareToEnableOnRestart() {
   // Bypass possible incognito profile same as chrome://flags does.
   Profile* original_profile = profile_->GetOriginalProfile();
   // Chrome OS builds sometimes run on non-Chrome OS environments.
-  if ((base::SysInfo::IsRunningOnChromeOS() ||
-       skip_chrome_os_device_check_for_testing_) &&
+  if (base::SysInfo::IsRunningOnChromeOS() &&
       ash::OwnerSettingsServiceAshFactory::GetForBrowserContext(
           original_profile)) {
     // Ash-chrome uses a different FlagsStorage if the user is the owner.
