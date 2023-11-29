@@ -82,7 +82,7 @@ IN_PROC_BROWSER_TEST_P(SmartPrivacyProtectionScreenTest, TurnOnFeature) {
     SmartPrivacyProtectionScreen::Result screen_result =
         WaitForScreenExitResult();
     EXPECT_EQ(screen_result,
-              SmartPrivacyProtectionScreen::Result::NOT_APPLICABLE);
+              SmartPrivacyProtectionScreen::Result::kNotApplicable);
     return;
   }
   OobeScreenWaiter(SmartPrivacyProtectionView::kScreenId).Wait();
@@ -91,7 +91,7 @@ IN_PROC_BROWSER_TEST_P(SmartPrivacyProtectionScreenTest, TurnOnFeature) {
   SmartPrivacyProtectionScreen::Result screen_result =
       WaitForScreenExitResult();
   EXPECT_EQ(screen_result,
-            SmartPrivacyProtectionScreen::Result::PROCEED_WITH_FEATURE_ON);
+            SmartPrivacyProtectionScreen::Result::kProceedWithFeatureOn);
   EXPECT_TRUE(ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
       prefs::kPowerQuickDimEnabled));
 }
@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_P(SmartPrivacyProtectionScreenTest, TurnOffFeature) {
     SmartPrivacyProtectionScreen::Result screen_result =
         WaitForScreenExitResult();
     EXPECT_EQ(screen_result,
-              SmartPrivacyProtectionScreen::Result::NOT_APPLICABLE);
+              SmartPrivacyProtectionScreen::Result::kNotApplicable);
     return;
   }
   OobeScreenWaiter(SmartPrivacyProtectionView::kScreenId).Wait();
@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_P(SmartPrivacyProtectionScreenTest, TurnOffFeature) {
   SmartPrivacyProtectionScreen::Result screen_result =
       WaitForScreenExitResult();
   EXPECT_EQ(screen_result,
-            SmartPrivacyProtectionScreen::Result::PROCEED_WITH_FEATURE_OFF);
+            SmartPrivacyProtectionScreen::Result::kProceedWithFeatureOff);
   EXPECT_FALSE(ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
       prefs::kPowerQuickDimEnabled));
 }

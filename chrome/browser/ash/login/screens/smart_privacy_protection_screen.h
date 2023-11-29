@@ -22,9 +22,9 @@ class SmartPrivacyProtectionScreen : public BaseScreen {
   using TView = SmartPrivacyProtectionView;
 
   enum class Result {
-    PROCEED_WITH_FEATURE_ON,
-    PROCEED_WITH_FEATURE_OFF,
-    NOT_APPLICABLE,
+    kProceedWithFeatureOn,
+    kProceedWithFeatureOff,
+    kNotApplicable,
   };
 
   static std::string GetResultString(Result result);
