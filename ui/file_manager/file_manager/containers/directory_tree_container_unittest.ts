@@ -6,17 +6,15 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {MockVolumeManager} from '../background/js/mock_volume_manager.js';
-import {EntryList, FakeEntryImpl, VolumeEntry} from '../common/js/files_app_entry_types.js';
 import {installMockChrome} from '../common/js/mock_chrome.js';
 import {MockFileSystem} from '../common/js/mock_entry.js';
 import {waitUntil} from '../common/js/test_error_reporting.js';
 import {waitForElementUpdate} from '../common/js/unittest_util.js';
-import {RootType, VolumeType} from '../common/js/volume_manager_types.js';
-import {State} from '../externs/ts/state.js';
-import {convertEntryToFileData} from '../state/ducks/all_entries.js';
-import {addVolume, convertVolumeInfoAndMetadataToVolume, driveRootEntryListKey, removeVolume} from '../state/ducks/volumes.js';
+import {VolumeType} from '../common/js/volume_manager_types.js';
+import {addAndroidApps} from '../state/ducks/android_apps.js';
+import {addVolume, removeVolume} from '../state/ducks/volumes.js';
 import {createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore} from '../state/for_tests.js';
-import {getEmptyState, getEntry, getFileData, getStore} from '../state/store.js';
+import {getStore} from '../state/store.js';
 import {XfTree} from '../widgets/xf_tree.js';
 
 import {DirectoryTreeContainer} from './directory_tree_container.js';
@@ -45,6 +43,7 @@ export function setUp() {
   // Initialize directory tree container.
   const {directoryModel, volumeManager} = window.fileManager;
   window.store = null;
+  setupStore();
   directoryTreeContainer =
       new DirectoryTreeContainer(document.body, directoryModel, volumeManager);
 }
@@ -69,50 +68,27 @@ function getDirectoryTreeItemLabels(directoryTree: XfTree): string[] {
 }
 
 /**
- * Add MyFiles and Drive data to the store.
- * Note: it will modify the state passed in place.
+ * Dispatch MyFiles and Drive volumes data to the store.
  */
-async function addMyFilesAndDriveToStore(state: State):
+async function addMyFilesAndDriveVolumes():
     Promise<{myFilesFs: MockFileSystem, driveFs: MockFileSystem}> {
   const {volumeManager} = window.fileManager;
+  const store = getStore();
   // Prepare data for MyFiles.
   const downloadsVolumeInfo =
       volumeManager.getCurrentProfileVolumeInfo(VolumeType.DOWNLOADS)!;
-  const downloadsEntry = new VolumeEntry(downloadsVolumeInfo);
-  state.allEntries[downloadsEntry.toURL()] =
-      convertEntryToFileData(downloadsEntry);
-  state.volumes[downloadsVolumeInfo.volumeId] =
-      convertVolumeInfoAndMetadataToVolume(
-          downloadsVolumeInfo, createFakeVolumeMetadata(downloadsVolumeInfo));
+  store.dispatch(addVolume({
+    volumeInfo: downloadsVolumeInfo,
+    volumeMetadata: createFakeVolumeMetadata(downloadsVolumeInfo),
+  }));
   // Prepare data for Drive.
-  // - Fake drive root.
-  const driveRootEntryList =
-      new EntryList('Google Drive', RootType.DRIVE_FAKE_ROOT);
-  state.allEntries[driveRootEntryListKey] =
-      convertEntryToFileData(driveRootEntryList);
-  state.uiEntries.push(driveRootEntryListKey);
-  // - My Drive
   const driveVolumeInfo =
       volumeManager.getCurrentProfileVolumeInfo(VolumeType.DRIVE)!;
   await driveVolumeInfo.resolveDisplayRoot();
-  const driveEntry = new VolumeEntry(driveVolumeInfo);
-  state.allEntries[driveEntry.toURL()] = convertEntryToFileData(driveEntry);
-  state.volumes[driveVolumeInfo.volumeId] =
-      convertVolumeInfoAndMetadataToVolume(
-          driveVolumeInfo, createFakeVolumeMetadata(driveVolumeInfo));
-  driveRootEntryList.addEntry(driveEntry);
-  // - Shared with me
-  const sharedWithMeEntry =
-      driveVolumeInfo.fakeEntries[RootType.DRIVE_SHARED_WITH_ME]!;
-  state.allEntries[sharedWithMeEntry.toURL()] =
-      convertEntryToFileData(sharedWithMeEntry);
-  state.uiEntries.push(sharedWithMeEntry.toURL());
-  driveRootEntryList.addEntry(sharedWithMeEntry);
-  // - Offline
-  const offlineEntry = driveVolumeInfo.fakeEntries[RootType.DRIVE_OFFLINE]!;
-  state.allEntries[offlineEntry.toURL()] = convertEntryToFileData(offlineEntry);
-  state.uiEntries.push(offlineEntry.toURL());
-  driveRootEntryList.addEntry(offlineEntry);
+  store.dispatch(addVolume({
+    volumeInfo: driveVolumeInfo,
+    volumeMetadata: createFakeVolumeMetadata(driveVolumeInfo),
+  }));
 
   return {
     myFilesFs: downloadsVolumeInfo.fileSystem as MockFileSystem,
@@ -121,65 +97,61 @@ async function addMyFilesAndDriveToStore(state: State):
 }
 
 /**
- * Add Team drives data with optional children to the store.
- * Note: it will modify the state passed in place.
+ * Add MyFiles children and trigger file watcher change event.
  */
-function addTeamDrivesToStore(state: State, childEntries: string[] = []) {
+function addMyFilesChildren(parentEntry: Entry, childEntries: string[]) {
   const {volumeManager} = window.fileManager;
-  const driveVolumeInfo =
-      volumeManager.getCurrentProfileVolumeInfo(VolumeType.DRIVE)!;
-  const teamDrivesEntry = driveVolumeInfo.sharedDriveDisplayRoot;
-  state.allEntries[teamDrivesEntry.toURL()] =
-      convertEntryToFileData(teamDrivesEntry);
-  state.uiEntries.push(teamDrivesEntry.toURL());
-  const driveRootEntryList =
-      getEntry(state, driveRootEntryListKey) as EntryList;
-  const existingChildren = driveRootEntryList.getUIChildren();
-  existingChildren.splice(1, 0, teamDrivesEntry);
+  const downloadsVolumeInfo =
+      volumeManager.getCurrentProfileVolumeInfo(VolumeType.DOWNLOADS)!;
+  const myFilesFs = downloadsVolumeInfo.fileSystem as MockFileSystem;
+  myFilesFs.populate(childEntries);
 
-  if (childEntries.length > 0) {
-    const driveFs = driveVolumeInfo.fileSystem as MockFileSystem;
-    driveFs.populate(childEntries);
+  // Trigger file watcher event.
+  const event = {
+    entry: parentEntry,
+    eventType: 'changed',
+  };
+  for (const listener of directoryChangedListeners) {
+    listener(event);
   }
 }
 
+
 /**
- * Add Computers data with optional children to the store.
- * Note: it will modify the state passed in place.
+ * Add Drive children and trigger file watcher change event.
  */
-function addComputerDrivesToStore(state: State, childEntries: string[] = []) {
+function addDriveChildren(parentEntry: Entry, childEntries: string[]) {
   const {volumeManager} = window.fileManager;
   const driveVolumeInfo =
       volumeManager.getCurrentProfileVolumeInfo(VolumeType.DRIVE)!;
-  const computersEntry = driveVolumeInfo.computersDisplayRoot;
-  state.allEntries[computersEntry.toURL()] =
-      convertEntryToFileData(computersEntry);
-  state.uiEntries.push(computersEntry.toURL());
-  const driveRootEntryList =
-      getEntry(state, driveRootEntryListKey) as EntryList;
-  const existingChildren = driveRootEntryList.getUIChildren();
-  // Computers entry should be inserted after Team drives entry if it exists.
-  const insertIndex = existingChildren[1] instanceof FakeEntryImpl ? 1 : 2;
-  existingChildren.splice(insertIndex, 0, computersEntry);
+  const driveFs = driveVolumeInfo.fileSystem as MockFileSystem;
+  driveFs.populate(childEntries);
 
-  if (childEntries.length > 0) {
-    const driveFs = driveVolumeInfo.fileSystem as MockFileSystem;
-    driveFs.populate(childEntries);
+  // Trigger file watcher event.
+  const event = {
+    entry: parentEntry,
+    eventType: 'changed',
+  };
+  for (const listener of directoryChangedListeners) {
+    listener(event);
   }
 }
 
 /**
  * Add Android app navigation data to the store.
- * Note: it will modify the state passed in place.
  */
-function addAndroidAppToStore(state: State) {
-  state.androidApps['com.test.app1'] = {
-    name: 'App 1',
-    packageName: 'com.test.app1',
-    activityName: 'Activity1',
-    iconSet: {icon16x16Url: 'url1', icon32x32Url: 'url2'},
-    icon: '',
-  };
+function addAndroidAppToStore() {
+  const store = getStore();
+  store.dispatch(addAndroidApps({
+    apps: [
+      {
+        name: 'App 1',
+        packageName: 'com.test.app1',
+        activityName: 'Activity1',
+        iconSet: {icon16x16Url: 'url1', icon32x32Url: 'url2'},
+      },
+    ],
+  }));
 }
 
 /**
@@ -193,13 +165,10 @@ function addAndroidAppToStore(state: State) {
  * - Offline
  */
 export async function testCreateDirectoryTree() {
-  const initialState = getEmptyState();
   const directoryTree = directoryTreeContainer.tree;
 
   // Add MyFiles and Drive to the store.
-  await addMyFilesAndDriveToStore(initialState);
-  // Store initialization will notify DirectoryTree.
-  setupStore(initialState);
+  await addMyFilesAndDriveVolumes();
 
   // At top level, MyFiles and Drive should be listed.
   await waitUntil(() => directoryTree.items.length === 2);
@@ -231,15 +200,12 @@ export async function testCreateDirectoryTree() {
  * - Offline
  */
 export async function testCreateDirectoryTreeWithTeamDrive() {
-  const initialState = getEmptyState();
   const directoryTree = directoryTreeContainer.tree;
 
   // Add MyFiles and Drive to the store.
-  await addMyFilesAndDriveToStore(initialState);
+  const {driveFs} = await addMyFilesAndDriveVolumes();
   // Add Team Drives.
-  addTeamDrivesToStore(initialState, ['/team_drives/a/']);
-  // Store initialization will notify DirectoryTree.
-  setupStore(initialState);
+  addDriveChildren(driveFs.entries['/team_drives']!, ['/team_drives/a/']);
 
   // At top level, MyFiles and Drive should be listed.
   await waitUntil(() => directoryTree.items.length === 2);
@@ -267,15 +233,10 @@ export async function testCreateDirectoryTreeWithTeamDrive() {
  * The Team Drives subtree should be removed if the user has no team drives.
  */
 export async function testCreateDirectoryTreeWithEmptyTeamDrive() {
-  const initialState = getEmptyState();
   const directoryTree = directoryTreeContainer.tree;
 
   // Add MyFiles and Drive to the store.
-  await addMyFilesAndDriveToStore(initialState);
-  // No directories exist under Team Drives.
-  addTeamDrivesToStore(initialState);
-  // Store initialization will notify DirectoryTree.
-  setupStore(initialState);
+  await addMyFilesAndDriveVolumes();
 
   // At top level, MyFiles and Drive should be listed.
   await waitUntil(() => directoryTree.items.length === 2);
@@ -315,15 +276,12 @@ export async function testCreateDirectoryTreeWithEmptyTeamDrive() {
  * - Offline
  */
 export async function testCreateDirectoryTreeWithComputers() {
-  const initialState = getEmptyState();
   const directoryTree = directoryTreeContainer.tree;
 
   // Add MyFiles and Drive to the store.
-  await addMyFilesAndDriveToStore(initialState);
+  const {driveFs} = await addMyFilesAndDriveVolumes();
   // Add Computers.
-  addComputerDrivesToStore(initialState, ['/Computers/My Laptop/']);
-  // Store initialization will notify DirectoryTree.
-  setupStore(initialState);
+  addDriveChildren(driveFs.entries['/Computers']!, ['/Computers/My Laptop/']);
 
   // At top level, MyFiles and Drive should be listed.
   await waitUntil(() => directoryTree.items.length === 2);
@@ -351,15 +309,10 @@ export async function testCreateDirectoryTreeWithComputers() {
  * The Computers subtree should be removed if the user has no computers.
  */
 export async function testCreateDirectoryTreeWithEmptyComputers() {
-  const initialState = getEmptyState();
   const directoryTree = directoryTreeContainer.tree;
 
   // Add MyFiles and Drive to the store.
-  await addMyFilesAndDriveToStore(initialState);
-  // No directories exist under Computers.
-  addComputerDrivesToStore(initialState);
-  // Store initialization will notify DirectoryTree.
-  setupStore(initialState);
+  await addMyFilesAndDriveVolumes();
 
   // At top level, MyFiles and Drive should be listed.
   await waitUntil(() => directoryTree.items.length === 2);
@@ -400,18 +353,14 @@ export async function testCreateDirectoryTreeWithEmptyComputers() {
  * - Offline
  */
 export async function testCreateDirectoryTreeWithTeamDrivesAndComputers() {
-  const initialState = getEmptyState();
   const directoryTree = directoryTreeContainer.tree;
 
   // Add MyFiles and Drive to the store.
-  await addMyFilesAndDriveToStore(initialState);
+  const {driveFs} = await addMyFilesAndDriveVolumes();
   // Add Team drives.
-  addTeamDrivesToStore(initialState, ['/team_drives/a/']);
+  addDriveChildren(driveFs.entries['/team_drives']!, ['/team_drives/a/']);
   // Add Computers.
-  addComputerDrivesToStore(initialState, ['/Computers/My Laptop/']);
-  // Store initialization will notify DirectoryTree.
-  setupStore(initialState);
-
+  addDriveChildren(driveFs.entries['/Computers']!, ['/Computers/My Laptop/']);
   // At top level, MyFiles and Drive should be listed.
   await waitUntil(() => directoryTree.items.length === 2);
   const myFilesItem = directoryTree.items[0]!;
@@ -447,15 +396,12 @@ export async function testCreateDirectoryTreeWithTeamDrivesAndComputers() {
  * Android app 1
  */
 export async function testSeparatorInNavigationSections() {
-  const initialState = getEmptyState();
   const directoryTree = directoryTreeContainer.tree;
 
   // Add MyFiles and Drive to the store.
-  await addMyFilesAndDriveToStore(initialState);
+  await addMyFilesAndDriveVolumes();
   // Add Android apps.
-  addAndroidAppToStore(initialState);
-  // Store initialization will notify DirectoryTree.
-  setupStore(initialState);
+  addAndroidAppToStore();
 
   // At top level, MyFiles, Drive and Android app should be listed.
   await waitUntil(() => directoryTree.items.length === 3);
@@ -484,13 +430,11 @@ export async function testSeparatorInNavigationSections() {
  * up to/disappear from the list correctly.
  */
 export async function testDirectoryTreeUpdateWithVolumeChanges() {
-  const initialState = getEmptyState();
   const directoryTree = directoryTreeContainer.tree;
+  const store = getStore();
 
   // Add MyFiles and Drive to the store.
-  await addMyFilesAndDriveToStore(initialState);
-  // Store initialization will notify DirectoryTree.
-  const store = setupStore(initialState);
+  await addMyFilesAndDriveVolumes();
 
   // There are 2 volumes, MyFiles and Drive, at first.
   await waitUntil(() => directoryTree.items.length === 2);
@@ -563,13 +507,12 @@ export async function testDirectoryTreeUpdateWithVolumeChanges() {
  * clicking on the item or the expand icon shouldn't do anything.
  */
 export async function testDirectoryTreeWithAndroidDisabled() {
-  const initialState = getEmptyState();
+  const store = getStore();
   const directoryTree = directoryTreeContainer.tree;
 
   // Add MyFiles and Drive to the store.
-  await addMyFilesAndDriveToStore(initialState);
-  // Store initialization will notify DirectoryTree.
-  const store = setupStore(initialState);
+  await addMyFilesAndDriveVolumes();
+
   await waitUntil(() => directoryTree.items.length === 2);
 
   // Create Android 'Play files' volume and set as disabled.
@@ -614,13 +557,12 @@ export async function testDirectoryTreeWithAndroidDisabled() {
  * but cannot be selected or expanded.
  */
 export async function testDirectoryTreeWithRemovableDisabled() {
-  const initialState = getEmptyState();
+  const store = getStore();
   const directoryTree = directoryTreeContainer.tree;
 
   // Add MyFiles and Drive to the store.
-  await addMyFilesAndDriveToStore(initialState);
-  // Store initialization will notify DirectoryTree.
-  const store = setupStore(initialState);
+  await addMyFilesAndDriveVolumes();
+
   await waitUntil(() => directoryTree.items.length === 2);
 
   // Create removable volume and set as disabled.
@@ -669,21 +611,19 @@ export async function testDirectoryTreeWithRemovableDisabled() {
  * expand icon shouldn't do anything.
  */
 export async function testDirectoryTreeWithDriveDisabled() {
-  const initialState = getEmptyState();
   const directoryTree = directoryTreeContainer.tree;
 
+  // Disable Drive volume before adding it.
+  const {volumeManager} = window.fileManager;
+  volumeManager.isDisabled = (volumeType) => {
+    return volumeType === VolumeType.DRIVE;
+  };
+
   // Add MyFiles and Drive to the store.
-  const {myFilesFs, driveFs} = await addMyFilesAndDriveToStore(initialState);
+  const {myFilesFs, driveFs} = await addMyFilesAndDriveVolumes();
   // Add sub folders for them.
-  myFilesFs.populate(['/folder1/']);
-  driveFs.populate(['/root/folder1/']);
-  const driveRootEntryFileData =
-      getFileData(initialState, driveRootEntryListKey)!;
-  // Disable the drive root entry.
-  driveRootEntryFileData.disabled = true;
-  (driveRootEntryFileData.entry as EntryList).disabled = true;
-  // Store initialization will notify DirectoryTree.
-  setupStore(initialState);
+  addMyFilesChildren(myFilesFs.entries['/']!, ['/folder1/']);
+  addDriveChildren(driveFs.entries['/root']!, ['/root/folder1/']);
 
   // At top level, MyFiles and Drive should be listed.
   await waitUntil(() => directoryTree.items.length === 2);
@@ -723,15 +663,10 @@ export async function testDirectoryTreeWithDriveDisabled() {
  * delivered.
  */
 export async function testAddFirstTeamDrive() {
-  const initialState = getEmptyState();
   const directoryTree = directoryTreeContainer.tree;
 
   // Add MyFiles and Drive to the store.
-  const {driveFs} = await addMyFilesAndDriveToStore(initialState);
-  // No directories exist under Team Drives.
-  addTeamDrivesToStore(initialState);
-  // Store initialization will notify DirectoryTree.
-  setupStore(initialState);
+  const {driveFs} = await addMyFilesAndDriveVolumes();
 
   // At top level, MyFiles and Drive should be listed.
   await waitUntil(() => directoryTree.items.length === 2);
@@ -743,14 +678,7 @@ export async function testAddFirstTeamDrive() {
   });
 
   // Add one folder to the Team drives.
-  driveFs.populate(['/team_drives/a/']);
-  const event = {
-    entry: driveFs.entries['/team_drives'],
-    eventType: 'changed',
-  };
-  for (const listener of directoryChangedListeners) {
-    listener(event);
-  }
+  addDriveChildren(driveFs.entries['/team_drives']!, ['/team_drives/a/']);
   // Expand Drive before checking Team drives.
   driveItem.expanded = true;
   await waitUntil(() => {
@@ -765,15 +693,12 @@ export async function testAddFirstTeamDrive() {
  * delivered.
  */
 export async function testRemoveLastTeamDrive() {
-  const initialState = getEmptyState();
   const directoryTree = directoryTreeContainer.tree;
 
   // Add MyFiles and Drive to the store.
-  const {driveFs} = await addMyFilesAndDriveToStore(initialState);
+  const {driveFs} = await addMyFilesAndDriveVolumes();
   // Add one entry under Team Drives.
-  addTeamDrivesToStore(initialState, ['/team_drives/a/']);
-  // Store initialization will notify DirectoryTree.
-  setupStore(initialState);
+  addDriveChildren(driveFs.entries['/team_drives']!, ['/team_drives/a/']);
 
   // At top level, MyFiles and Drive should be listed.
   await waitUntil(() => directoryTree.items.length === 2);
@@ -815,15 +740,10 @@ export async function testRemoveLastTeamDrive() {
  * delivered.
  */
 export async function testAddFirstComputer() {
-  const initialState = getEmptyState();
   const directoryTree = directoryTreeContainer.tree;
 
   // Add MyFiles and Drive to the store.
-  const {driveFs} = await addMyFilesAndDriveToStore(initialState);
-  // No directories exist under Computers.
-  addComputerDrivesToStore(initialState);
-  // Store initialization will notify DirectoryTree.
-  setupStore(initialState);
+  const {driveFs} = await addMyFilesAndDriveVolumes();
 
   // At top level, MyFiles and Drive should be listed.
   await waitUntil(() => directoryTree.items.length === 2);
@@ -837,14 +757,7 @@ export async function testAddFirstComputer() {
   // Test that we initially do not have a Computers item under Drive, and that
   // adding a filesystem "/Computers/My Laptop" results in the Computers item
   // being displayed under Drive.
-  driveFs.populate(['/Computers/My laptop/']);
-  const event = {
-    entry: driveFs.entries['/Computers'],
-    eventType: 'changed',
-  };
-  for (const listener of directoryChangedListeners) {
-    listener(event);
-  }
+  addDriveChildren(driveFs.entries['/Computers']!, ['/Computers/My Laptop/']);
   // Expand Drive before checking Computers.
   driveItem.expanded = true;
   await waitUntil(() => {
@@ -859,15 +772,12 @@ export async function testAddFirstComputer() {
  * delivered.
  */
 export async function testRemoveLastComputer() {
-  const initialState = getEmptyState();
   const directoryTree = directoryTreeContainer.tree;
 
   // Add MyFiles and Drive to the store.
-  const {driveFs} = await addMyFilesAndDriveToStore(initialState);
+  const {driveFs} = await addMyFilesAndDriveVolumes();
   // Add one entry under Computers.
-  addComputerDrivesToStore(initialState, ['/Computers/My Laptop/']);
-  // Store initialization will notify DirectoryTree.
-  setupStore(initialState);
+  addDriveChildren(driveFs.entries['/Computers']!, ['/Computers/My Laptop/']);
 
   // At top level, MyFiles and Drive should be listed.
   await waitUntil(() => directoryTree.items.length === 2);
@@ -909,13 +819,11 @@ export async function testRemoveLastComputer() {
  * Sub directories should be fetched for FSPs, but not for the Smb FSP.
  */
 export async function testAddProviders() {
-  const initialState = getEmptyState();
+  const store = getStore();
   const directoryTree = directoryTreeContainer.tree;
 
   // Add MyFiles and Drive to the store.
-  await addMyFilesAndDriveToStore(initialState);
-  // Store initialization will notify DirectoryTree.
-  const store = setupStore(initialState);
+  await addMyFilesAndDriveVolumes();
 
   const volumeManager = window.fileManager.volumeManager as MockVolumeManager;
   // Add a volume representing a non-Smb provider to the mock filesystem.
@@ -985,13 +893,11 @@ export async function testAddProviders() {
  * clicked.
  */
 export async function testSmbNotFetchedUntilClick() {
-  const initialState = getEmptyState();
+  const store = getStore();
   const directoryTree = directoryTreeContainer.tree;
 
   // Add MyFiles and Drive to the store.
-  await addMyFilesAndDriveToStore(initialState);
-  // Store initialization will notify DirectoryTree.
-  const store = setupStore(initialState);
+  await addMyFilesAndDriveVolumes();
 
   const volumeManager = window.fileManager.volumeManager as MockVolumeManager;
   // Add a volume representing a smb provider to the mock filesystem.
@@ -1030,16 +936,13 @@ export async function testSmbNotFetchedUntilClick() {
 
 /** Test aria-expanded attribute for directory tree item. */
 export async function testAriaExpanded() {
-  const initialState = getEmptyState();
   const directoryTree = directoryTreeContainer.tree;
 
   // Add MyFiles and Drive to the store.
-  const {myFilesFs, driveFs} = await addMyFilesAndDriveToStore(initialState);
+  const {myFilesFs, driveFs} = await addMyFilesAndDriveVolumes();
   // Add sub folders for them.
-  myFilesFs.populate(['/folder1/']);
-  driveFs.populate(['/root/folder1']);
-  // Store initialization will notify DirectoryTree.
-  setupStore(initialState);
+  addMyFilesChildren(myFilesFs.entries['/']!, ['/folder1/']);
+  addDriveChildren(driveFs.entries['/root']!, ['/root/folder1']);
 
   // At top level, MyFiles and Drive should be listed.
   await waitUntil(() => directoryTree.items.length === 2);
@@ -1076,13 +979,10 @@ export async function testAriaExpanded() {
 
 /** Test aria-description attribute for selected directory tree item. */
 export async function testAriaDescription() {
-  const initialState = getEmptyState();
   const directoryTree = directoryTreeContainer.tree;
 
   // Add MyFiles and Drive to the store.
-  await addMyFilesAndDriveToStore(initialState);
-  // Store initialization will notify DirectoryTree.
-  setupStore(initialState);
+  await addMyFilesAndDriveVolumes();
 
   // At top level, MyFiles and Drive should be listed.
   await waitUntil(() => directoryTree.items.length === 2);
