@@ -12,8 +12,13 @@ Are you a Google employee? See
 
 ## System requirements
 
-* A 64-bit Mac running 11.3 or later.
-* [Xcode](https://developer.apple.com/xcode) 13.1 or higher.
+* A 64-bit Mac capable of running the required version of Xcode.
+* [Xcode](https://developer.apple.com/xcode) 15.0 or higher.
+
+Note: after installing Xcode, you need to launch it and to let it install
+the iOS simulator. This is required as part of the build, see [this discussion](
+https://groups.google.com/a/chromium.org/g/chromium-dev/c/98d6MyLoYHM/m/A_HyOGxPAgAJ)
+on chromium-dev.
 
 ## Install `depot_tools`
 
