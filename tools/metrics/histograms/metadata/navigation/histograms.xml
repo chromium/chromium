@@ -2036,16 +2036,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Prerender.PrerendersPerSessionCount" units="units"
-    expires_after="2021-04-22">
-  <owner>ryansturm@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
-  <summary>
-    The number of sessions that have at least X successful prerenders. Recorded
-    only on iOS since 2017-09.
-  </summary>
-</histogram>
-
 <histogram name="Prerender.PrerenderTimeSaved" units="ms"
     expires_after="2024-04-28">
   <owner>gambard@chromium.org</owner>

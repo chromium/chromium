@@ -71,9 +71,6 @@ const char kPrerenderTabEvictionTrialGroup[] = "NoPrerendering";
 // The name of the histogram for recording final status (e.g. used/cancelled)
 // of prerender requests.
 const char kPrerenderFinalStatusHistogramName[] = "Prerender.FinalStatus";
-// The name of the histogram for recording the number of successful prerenders.
-const char kPrerendersPerSessionCountHistogramName[] =
-    "Prerender.PrerendersPerSessionCount";
 // The name of the histogram for recording time until a successful prerender.
 const char kPrerenderPrerenderTimeSaved[] = "Prerender.PrerenderTimeSaved";
 // Histogram to record that the load was complete when the prerender was used.
@@ -297,10 +294,6 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
 // Whether or not the current connection is using WWAN.
 @property(nonatomic, assign) BOOL isOnCellularNetwork;
 
-// Number of successful prerenders (i.e. the user viewed the prerendered page)
-// during the lifetime of this controller.
-@property(nonatomic) NSUInteger successfulPrerendersPerSessionCount;
-
 // Tracks the time of the last attempt to load a prerender URL. Used for UMA
 // reporting of load durations.
 @property(nonatomic) base::TimeTicks startTime;
@@ -363,8 +356,6 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
 }
 
 - (void)dealloc {
-  UMA_HISTOGRAM_COUNTS_1M(kPrerendersPerSessionCountHistogramName,
-                          self.successfulPrerendersPerSessionCount);
   [self cancelPrerender];
 }
 
@@ -470,7 +461,6 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
     return nullptr;
   }
 
-  self.successfulPrerendersPerSessionCount++;
   [self recordReleaseMetrics];
   [self removeScheduledPrerenderRequests];
 

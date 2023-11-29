@@ -3291,7 +3291,6 @@ chromium-metrics-reviews@google.com.
       label="Link triggered prerender, rel=prerender, same domain."/>
   <affected-histogram name="Prerender.FinalStatus"/>
   <affected-histogram name="Prerender.NetworkBytesWasted"/>
-  <affected-histogram name="Prerender.PrerendersPerSessionCount"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="ProcessMemoryAllocator2" separator=".">
