@@ -13,7 +13,6 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
-#include "google_apis/gaia/gaia_urls.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -40,6 +39,10 @@ class MockGaiaAuthConsumer : public GaiaAuthConsumer {
               (const GoogleServiceAuthError& error),
               (override));
   MOCK_METHOD(void, OnLogOutSuccess, (), (override));
+  MOCK_METHOD(void,
+              OnOAuthMultiloginFinished,
+              (const OAuthMultiloginResult&),
+              (override));
 };
 
 class MockBoundSessionRequestThrottledHandler
@@ -61,16 +64,6 @@ chrome::mojom::BoundSessionThrottlerParamsPtr CreateNonBlockingParams() {
       "example.org", "/", base::Time::Now() - base::Seconds(10));
 }
 
-GURL ListAccountsUrl() {
-  return GaiaUrls::GetInstance()->ListAccountsURLWithSource(
-      gaia::GaiaSource(kGaiaSourceType).ToString());
-}
-
-GURL LogOutUrl() {
-  return GaiaUrls::GetInstance()->LogOutURLWithSource(
-      gaia::GaiaSource(kGaiaSourceType).ToString());
-}
-
 }  // namespace
 
 class ThrottledGaiaAuthFetcherTest : public testing::Test {
@@ -85,14 +78,19 @@ class ThrottledGaiaAuthFetcherTest : public testing::Test {
         std::move(request_throttled_handler));
   }
 
-  bool HasRequest(const GURL& url) {
-    return test_url_loader_factory_.IsPending(url.spec());
-  }
-
-  void CompleteRequest(const GURL& url) {
-    EXPECT_TRUE(HasRequest(url));
-    test_url_loader_factory_.SimulateResponseForPendingRequest(url.spec(),
-                                                               /*content=*/"");
+  void CompleteRequest() {
+    if (size_t request_count =
+            test_url_loader_factory_.pending_requests()->size();
+        request_count != 1) {
+      ADD_FAILURE() << "Expected exactly one pending requests but found "
+                    << request_count;
+      return;
+    }
+    GURL request_url =
+        test_url_loader_factory_.GetPendingRequest(0)->request.url;
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        request_url.spec(),
+        /*content=*/"");
   }
 
   StrictMock<MockGaiaAuthConsumer>& consumer() { return mock_consumer_; }
@@ -125,7 +123,7 @@ TEST_F(ThrottledGaiaAuthFetcherTest, ThrottleListAccounts) {
   ASSERT_TRUE(unblock_callback);
   std::move(unblock_callback).Run(UnblockAction::kResume);
   EXPECT_CALL(consumer(), OnListAccountsSuccess(_));
-  CompleteRequest(ListAccountsUrl());
+  CompleteRequest();
 }
 
 TEST_F(ThrottledGaiaAuthFetcherTest, ThrottleListAccountsCancel) {
@@ -147,7 +145,7 @@ TEST_F(ThrottledGaiaAuthFetcherTest, ListAccountsNotThrottledNoBoundSessions) {
 
   fetcher()->StartListAccounts();
   EXPECT_CALL(consumer(), OnListAccountsSuccess(_));
-  CompleteRequest(ListAccountsUrl());
+  CompleteRequest();
 }
 
 TEST_F(ThrottledGaiaAuthFetcherTest,
@@ -158,7 +156,22 @@ TEST_F(ThrottledGaiaAuthFetcherTest,
 
   fetcher()->StartListAccounts();
   EXPECT_CALL(consumer(), OnListAccountsSuccess(_));
-  CompleteRequest(ListAccountsUrl());
+  CompleteRequest();
+}
+
+TEST_F(ThrottledGaiaAuthFetcherTest, ThrottleMultilogin) {
+  CreateFetcher(CreateBlockingParams());
+  UnblockRequestCallback unblock_callback;
+  EXPECT_CALL(*request_throttled_handler(), HandleRequestBlockedOnCookie(_))
+      .WillOnce(MoveArg<0>(&unblock_callback));
+
+  fetcher()->StartOAuthMultilogin(
+      gaia::MultiloginMode::MULTILOGIN_PRESERVE_COOKIE_ACCOUNTS_ORDER,
+      {{"token1", "id1"}, {"token2", "id2"}}, "cc_result");
+  ASSERT_TRUE(unblock_callback);
+  std::move(unblock_callback).Run(UnblockAction::kResume);
+  EXPECT_CALL(consumer(), OnOAuthMultiloginFinished(_));
+  CompleteRequest();
 }
 
 TEST_F(ThrottledGaiaAuthFetcherTest, OtherRequestNotThrottled) {
@@ -168,5 +181,5 @@ TEST_F(ThrottledGaiaAuthFetcherTest, OtherRequestNotThrottled) {
 
   fetcher()->StartLogOut();
   EXPECT_CALL(consumer(), OnLogOutSuccess());
-  CompleteRequest(LogOutUrl());
+  CompleteRequest();
 }
