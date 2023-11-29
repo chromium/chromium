@@ -238,7 +238,7 @@ class PaymentRequestBackArrowButton : public views::ImageButton {
   METADATA_HEADER(PaymentRequestBackArrowButton);
   explicit PaymentRequestBackArrowButton(
       views::Button::PressedCallback back_arrow_callback)
-      : views::ImageButton(back_arrow_callback) {
+      : views::ImageButton(std::move(back_arrow_callback)) {
     ConfigureVectorImageButton(this);
     constexpr int kBackArrowSize = 16;
     SetSize(gfx::Size(kBackArrowSize, kBackArrowSize));

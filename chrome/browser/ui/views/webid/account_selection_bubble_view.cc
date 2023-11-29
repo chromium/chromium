@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/webid/account_selection_bubble_view.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
@@ -201,7 +202,7 @@ class ContinueButton : public views::MdTextButton {
                  const std::u16string& text,
                  AccountSelectionBubbleView* bubble_view,
                  const content::IdentityProviderMetadata& idp_metadata)
-      : views::MdTextButton(callback, text),
+      : views::MdTextButton(std::move(callback), text),
         bubble_view_(bubble_view),
         brand_background_color_(idp_metadata.brand_background_color),
         brand_text_color_(idp_metadata.brand_text_color) {

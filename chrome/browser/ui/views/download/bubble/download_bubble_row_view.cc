@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_view.h"
 
+#include <utility>
+
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
@@ -103,7 +105,7 @@ class DownloadBubbleTransparentButton : public views::Button {
 
   explicit DownloadBubbleTransparentButton(PressedCallback callback,
                                            DownloadBubbleRowView* row_view)
-      : Button(callback), row_view_(row_view) {
+      : Button(std::move(callback)), row_view_(row_view) {
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
     SetInstallFocusRingOnFocus(false);
     SetFocusBehavior(views::View::FocusBehavior::ALWAYS);

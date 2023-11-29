@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_device_selector_view.h"
 
+#include <utility>
+
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -111,7 +113,7 @@ void ExpandDeviceSelectorLabel::OnColorsChanged(SkColor foreground_color,
 
 ExpandDeviceSelectorButton::ExpandDeviceSelectorButton(PressedCallback callback,
                                                        SkColor foreground_color)
-    : ToggleImageButton(callback) {
+    : ToggleImageButton(std::move(callback)) {
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   SetBorder(views::CreateEmptyBorder(kDropdownButtonBorderInsets));
 

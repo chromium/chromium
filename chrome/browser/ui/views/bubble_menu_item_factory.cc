@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/bubble_menu_item_factory.h"
 
 #include <memory>
+#include <utility>
 
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "ui/base/models/image_model.h"
@@ -39,7 +40,7 @@ std::unique_ptr<HoverButton> CreateBubbleMenuItem(
     const std::u16string& name,
     views::Button::PressedCallback callback,
     const ui::ImageModel& icon) {
-  auto button = std::make_unique<HoverButton>(callback, icon, name);
+  auto button = std::make_unique<HoverButton>(std::move(callback), icon, name);
   ConfigureBubbleMenuItem(button.get(), button_id);
   button->SetBorder(views::CreateEmptyBorder(kDefaultBorderInsets));
   return button;

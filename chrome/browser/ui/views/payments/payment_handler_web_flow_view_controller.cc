@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/payments/payment_handler_web_flow_view_controller.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/check_op.h"
 #include "base/strings/strcat.h"
@@ -204,7 +205,7 @@ class PaymentHandlerCloseButton : public views::ImageButton {
       views::Button::PressedCallback pressed_callback,
       const SkColor enabled_color,
       const SkColor disabled_color)
-      : views::ImageButton(pressed_callback) {
+      : views::ImageButton(std::move(pressed_callback)) {
     ConfigureVectorImageButton(this);
     views::InstallCircleHighlightPathGenerator(this);
     constexpr int kCloseButtonSize = 16;

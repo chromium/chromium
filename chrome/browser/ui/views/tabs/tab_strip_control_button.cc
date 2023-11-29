@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/tabs/tab_strip_control_button.h"
 
+#include <utility>
+
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
@@ -62,7 +64,7 @@ TabStripControlButton::TabStripControlButton(
     const gfx::VectorIcon& icon,
     Edge flat_edge)
     : TabStripControlButton(tab_strip_controller,
-                            callback,
+                            std::move(callback),
                             icon,
                             std::u16string(),
                             flat_edge) {}
@@ -73,7 +75,7 @@ TabStripControlButton::TabStripControlButton(
     const std::u16string& text,
     Edge flat_edge)
     : TabStripControlButton(tab_strip_controller,
-                            callback,
+                            std::move(callback),
                             kEmptyIcon,
                             text,
                             flat_edge) {}

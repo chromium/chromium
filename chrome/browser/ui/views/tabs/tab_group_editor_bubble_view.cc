@@ -98,7 +98,8 @@ std::unique_ptr<views::LabelButton> CreateMenuItem(
           ? gfx::Insets::VH(5 * vertical_spacing / 4, horizontal_spacing)
           : gfx::Insets::VH(vertical_spacing, horizontal_spacing);
 
-  auto button = CreateBubbleMenuItem(button_id, name, callback, icon);
+  auto button =
+      CreateBubbleMenuItem(button_id, name, std::move(callback), icon);
   button->SetBorder(views::CreateEmptyBorder(control_insets));
   if (features::IsChromeRefresh2023()) {
     button->SetLabelStyle(views::style::STYLE_BODY_3_EMPHASIS);
