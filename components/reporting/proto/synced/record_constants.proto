@@ -9,6 +9,8 @@ option optimize_for = LITE_RUNTIME;
 package reporting;
 
 // |Destination| indicates which handler a |Record| should be delivered to.
+// This must be kept in sync with //tools/metrics/histograms/enums.xml's
+// EnterpriseCloudReportingDestination in the Chromium repo.
 enum Destination {
   UNDEFINED_DESTINATION = 0;
 

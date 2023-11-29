@@ -115,6 +115,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Browser.ERP.EnqueueFailureDestination"
+    enum="EnterpriseCloudReportingDestination" expires_after="2024-11-20">
+  <owner>vshenvi@google.com</owner>
+  <owner>cros-reporting-team@google.com</owner>
+  <summary>
+    Recorded when ReportQueue::Enqueue is called to post an event or metric to
+    ERP. It counts occurences of the reporting destination for the record
+    enqueue that failed.
+  </summary>
+</histogram>
+
+<histogram name="Browser.ERP.EnqueueSuccessDestination"
+    enum="EnterpriseCloudReportingDestination" expires_after="2024-11-20">
+  <owner>vshenvi@google.com</owner>
+  <owner>cros-reporting-team@google.com</owner>
+  <summary>
+    Recorded when ReportQueue::Enqueue is called to post an event or metric to
+    ERP. It counts occurences of the reporting destination for the record
+    enqueue that succeeded.
+  </summary>
+</histogram>
+
 <histogram name="Browser.ERP.EventEnqueueResult"
     enum="EnterpriseCloudReportingStatusCode" expires_after="2024-05-26">
   <owner>lbaraz@chromium.org</owner>

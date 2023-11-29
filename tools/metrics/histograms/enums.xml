@@ -15605,6 +15605,42 @@ Called by update_document_policy_enum.py.-->
   <int value="3" label="Error"/>
 </enum>
 
+<enum name="EnterpriseCloudReportingDestination">
+<!-- This must be kept in sync with
+     //components/reporting/proto/synced/record_constants.proto's
+     Destination. -->
+
+  <int value="0" label="UNDEFINED_DESTINATION"/>
+  <int value="1" label="UPLOAD_EVENTS"/>
+  <int value="2" label="MEET_DEVICE_TELEMETRY"/>
+  <int value="3" label="WEB_PROTECT"/>
+  <int value="4" label="ARC_INSTALL"/>
+  <int value="5" label="POLICY_VALIDATION"/>
+  <int value="6" label="EXTENSION_INSTALL"/>
+  <int value="7" label="REPORTING_RECORD"/>
+  <int value="9" label="PRINT_JOBS"/>
+  <int value="10" label="EXTENSIONS_WORKFLOW"/>
+  <int value="11" label="DLP_EVENTS"/>
+  <int value="12" label="LOGIN_LOGOUT_EVENTS"/>
+  <int value="13" label="HEARTBEAT_EVENTS"/>
+  <int value="14" label="INFO_METRIC"/>
+  <int value="15" label="TELEMETRY_METRIC"/>
+  <int value="16" label="EVENT_METRIC"/>
+  <int value="17" label="ADDED_REMOVED_EVENTS"/>
+  <int value="18" label="CRD_EVENTS"/>
+  <int value="19" label="PERIPHERAL_EVENTS"/>
+  <int value="20" label="SUSPICIOUS_EVENTS"/>
+  <int value="21" label="LOCK_UNLOCK_EVENTS"/>
+  <int value="22" label="CROS_SECURITY_AGENT"/>
+  <int value="23" label="CROS_SECURITY_PROCESS"/>
+  <int value="24" label="OS_EVENTS"/>
+  <int value="25" label="LEGACY_TECH"/>
+  <int value="26" label="CROS_SECURITY_NETWORK"/>
+  <int value="27" label="LOG_UPLOAD"/>
+  <int value="28" label="CROS_SECURITY_USER"/>
+  <int value="29" label="KIOSK_HEARTBEAT_EVENTS"/>
+</enum>
+
 <enum name="EnterpriseCloudReportingStatusCode">
   <summary>Defined as Code in components/reporting/util/status.h</summary>
   <int value="0" label="OK"/>

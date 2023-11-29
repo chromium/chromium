@@ -120,9 +120,17 @@ class ReportQueue {
     Destination destination = Destination::UNDEFINED_DESTINATION;
   };
 
-  // Enqueue metrics name
+  // Enqueue metrics name.
   static constexpr char kEnqueueMetricsName[] =
       "Browser.ERP.EventEnqueueResult";
+
+  // Enqueue failed reporting destination metrics name.
+  static constexpr char kEnqueueFailedDestinationMetricsName[] =
+      "Browser.ERP.EnqueueFailureDestination";
+
+  // Enqueue success reporting destination metrics name.
+  static constexpr char kEnqueueSuccessDestinationMetricsName[] =
+      "Browser.ERP.EnqueueSuccessDestination";
 
   virtual ~ReportQueue();
 
