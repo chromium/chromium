@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(ParentalHandoffScreenBrowserTest, RegularUserLogin) {
   WaitForScreenExit();
 
   // Regular user login shouldn't show the EduCoexistenceLoginScreen.
-  EXPECT_EQ(result().value(), ParentalHandoffScreen::Result::SKIPPED);
+  EXPECT_EQ(result().value(), ParentalHandoffScreen::Result::kSkipped);
 
   histogram_tester().ExpectTotalCount(
       "OOBE.StepCompletionTimeByExitReason.Parental-handoff.Done", 0);
