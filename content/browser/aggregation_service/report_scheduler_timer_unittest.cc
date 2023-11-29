@@ -13,7 +13,6 @@
 #include "base/test/gmock_move_support.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "content/public/browser/network_service_instance.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"

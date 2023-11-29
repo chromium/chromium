@@ -5,8 +5,6 @@
 #ifndef CONTENT_BROWSER_AGGREGATION_SERVICE_AGGREGATION_SERVICE_STORAGE_H_
 #define CONTENT_BROWSER_AGGREGATION_SERVICE_AGGREGATION_SERVICE_STORAGE_H_
 
-#include <stdint.h>
-
 #include <optional>
 #include <set>
 #include <vector>

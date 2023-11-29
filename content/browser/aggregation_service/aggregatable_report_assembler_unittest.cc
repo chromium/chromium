@@ -12,12 +12,10 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "base/time/time.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service_key_fetcher.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"

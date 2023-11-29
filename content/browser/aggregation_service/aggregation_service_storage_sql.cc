@@ -37,7 +37,6 @@
 #include "sql/statement.h"
 #include "sql/statement_id.h"
 #include "sql/transaction.h"
-#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"

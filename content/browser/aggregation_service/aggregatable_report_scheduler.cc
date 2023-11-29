@@ -4,7 +4,6 @@
 
 #include "content/browser/aggregation_service/aggregatable_report_scheduler.h"
 
-#include <algorithm>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -16,7 +15,6 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequence_bound.h"

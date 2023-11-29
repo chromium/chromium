@@ -5,14 +5,11 @@
 #ifndef CONTENT_BROWSER_AGGREGATION_SERVICE_AGGREGATION_SERVICE_IMPL_H_
 #define CONTENT_BROWSER_AGGREGATION_SERVICE_AGGREGATION_SERVICE_IMPL_H_
 
-#include <stdint.h>
-
 #include <memory>
 #include <optional>
 #include <set>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
