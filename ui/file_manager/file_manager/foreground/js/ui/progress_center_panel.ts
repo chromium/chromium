@@ -2,79 +2,71 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertNotReached} from 'chrome://resources/ash/common/assert.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 
-import {PolicyErrorType, ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../../common/js/progress_center_common.js';
+import {PolicyErrorType, ProgressCenterItem, ProgressItemExtraButton, ProgressItemState, ProgressItemType} from '../../../common/js/progress_center_common.js';
 import {secondsToRemainingTimeString, str, strf} from '../../../common/js/translations.js';
 import {ProgressCenterPanelInterface} from '../../../externs/progress_center_panel.js';
 import {DisplayPanel} from '../../elements/xf_display_panel.js';
-import {PanelType} from '../../elements/xf_panel_item.js';
+import {PanelType, UserData} from '../../elements/xf_panel_item.js';
 
 /**
  * Progress center panel.
- * @implements {ProgressCenterPanelInterface}
  */
-export class ProgressCenterPanel {
+export class ProgressCenterPanel implements ProgressCenterPanelInterface {
+  /**
+   * Reference to the feedback panel host.
+   */
+  private feedbackHost_ =
+      document.querySelector<DisplayPanel>('#progress-panel')!;
+
+  /**
+   * Items that are progressing, or completed.
+   * Key is item ID.
+   */
+  private items_: Record<string, ProgressCenterItem> = {};
+
+  /**
+   * Callback to be called with the ID of the progress item when the cancel
+   * button is clicked.
+   */
+  cancelCallback: null|((taskId: string) => void) = null;
+
+  /**
+   * Callback to be called with the ID of the error item when user pressed
+   * dismiss button of it.
+   */
+  dismissErrorItemCallback: null|((taskId: string) => void) = null;
+
+  /**
+   * Defer showing in progress operation to avoid displaying quick
+   * operations, e.g. the notification panel only shows if the task is
+   * processing longer than this time.
+   */
+  private pendingTimeMs_: number = 2000;
+  /**
+   * Timeout for removing the notification panel, e.g. the notification
+   * panel will be removed after this time.
+   */
+  private timeoutToRemoveMs_: number = 4000;
+
   constructor() {
-    /**
-     * Reference to the feedback panel host.
-     * @private @type {!DisplayPanel}
-     */
-    this.feedbackHost_ = /** @type {!DisplayPanel} */ (
-        document.querySelector('#progress-panel'));
-
-    /**
-     * Items that are progressing, or completed.
-     * Key is item ID.
-     * @private @type {!Record<string, ProgressCenterItem>}
-     */
-    this.items_ = {};
-
-    /**
-     * Callback to be called with the ID of the progress item when the cancel
-     * button is clicked.
-     * @type {?function(string):void}
-     */
-    this.cancelCallback = null;
-
-    /**
-     * Callback to be called with the ID of the error item when user pressed
-     * dismiss button of it.
-     * @type {?function(string):void}
-     */
-    this.dismissErrorItemCallback = null;
-
-    /**
-     * Defer showing in progress operation to avoid displaying quick
-     * operations, e.g. the notification panel only shows if the task is
-     * processing longer than this time.
-     * @private @type {number}
-     */
-    this.PENDING_TIME_MS_ = 2000;
-
-    /**
-     * Timeout for removing the notification panel, e.g. the notification
-     * panel will be removed after this time.
-     * @private @type {number}
-     */
-    this.TIMEOUT_TO_REMOVE_MS_ = 4000;
-
+    assert(this.feedbackHost_);
     if (window.IN_TEST) {
-      this.PENDING_TIME_MS_ = 0;
+      this.pendingTimeMs_ = 0;
     }
   }
 
   /**
    * Generate source string for display on the feedback panel.
-   * @param {!ProgressCenterItem} item Item we're generating a message for.
-   * @param {?Object} info Cached information to use for formatting.
-   * @return {string} String formatted based on the item state.
+   * @param item Item we're generating a message for.
+   * @param info Cached information to use for formatting.
+   * @return String formatted based on the item state.
    */
-  generateSourceString_(item, info) {
+  private generateSourceString_(item: ProgressCenterItem, info: null|UserData):
+      string {
     info = info || {};
-    // @ts-ignore: error TS2339: Property 'count' does not exist on type
-    // 'Object'.
-    const {source, destination, count} = info;
+    const {source, count} = info;
     switch (item.state) {
       case ProgressItemState.SCANNING:
       case ProgressItemState.PROGRESSING:
@@ -124,7 +116,7 @@ export class ProgressCenterPanel {
         }
         return item.message;
       case ProgressItemState.COMPLETED:
-        if (count > 1) {
+        if (count && count > 1) {
           return strf('FILE_ITEMS', count);
         }
         return source || item.message;
@@ -134,17 +126,15 @@ export class ProgressCenterPanel {
         return '';
       default:
         assertNotReached();
-        break;
     }
-    return '';
   }
 
   /**
    * Test if we have an empty or all whitespace string.
-   * @param {string} candidate String we're checking.
-   * @return {boolean} true if there's content in the candidate.
+   * @param candidate String we're checking.
+   * @return true if there's content in the candidate.
    */
-  isNonEmptyString_(candidate) {
+  private isNonEmptyString_(candidate: string|undefined|null): boolean {
     if (!candidate || candidate.trim().length === 0) {
       return false;
     }
@@ -154,19 +144,17 @@ export class ProgressCenterPanel {
   /**
    * Generate primary text string for display on the feedback panel.
    * It is used for TransferDetails mode.
-   * @param {!ProgressCenterItem} item Item we're generating a message for.
-   * @param {Object} info Cached information to use for formatting.
-   * @return {string} String formatted based on the item state.
+   * @param item Item we're generating a message for.
+   * @param info Cached information to use for formatting.
+   * @return String formatted based on the item state.
    */
-  generatePrimaryString_(item, info) {
+  private generatePrimaryString_(item: ProgressCenterItem, info: null|UserData):
+      string {
     info = info || {};
-    // @ts-ignore: error TS2339: Property 'count' does not exist on type
-    // 'Object'.
     const {source, destination, count} = info;
     const hasDestination = this.isNonEmptyString_(destination);
     switch (item.state) {
       case ProgressItemState.SCANNING:
-        // @ts-ignore: error TS7029: Fallthrough case in switch.
       case ProgressItemState.PROGRESSING:
         // Source and primary string are the same for missing destination.
         if (!hasDestination) {
@@ -178,7 +166,7 @@ export class ProgressCenterPanel {
         if (item.itemCount === 1) {
           if (item.type === ProgressItemType.COPY) {
             return hasDestination ?
-                getStrForCopyWithDestination(item, source, destination) :
+                getStrForCopyWithDestination(item, source ?? '', destination!) :
                 strf('FILE_COPIED', source);
           }
           if (item.type === ProgressItemType.EXTRACT) {
@@ -188,7 +176,7 @@ export class ProgressCenterPanel {
           }
           if (item.type === ProgressItemType.MOVE) {
             return hasDestination ?
-                getStrForMoveWithDestination(item, source, destination) :
+                getStrForMoveWithDestination(item, source ?? '', destination!) :
                 strf('FILE_MOVED', source);
           }
           if (item.type === ProgressItemType.ZIP) {
@@ -291,28 +279,23 @@ export class ProgressCenterPanel {
         return '';
       default:
         assertNotReached();
-        break;
     }
-    return '';
 
-    // @ts-ignore: error TS7006: Parameter 'destination' implicitly has an 'any'
-    // type.
-    function getStrForMoveWithDestination(item, source, destination) {
+    function getStrForMoveWithDestination(
+        item: ProgressCenterItem, source: string, destination: string) {
       return item.isDestinationDrive ?
           strf('PREPARING_FILE_NAME_MY_DRIVE', source, destination) :
           strf('MOVE_FILE_NAME_LONG', source, destination);
     }
 
-    // @ts-ignore: error TS7006: Parameter 'destination' implicitly has an 'any'
-    // type.
-    function getStrForCopyWithDestination(item, source, destination) {
+    function getStrForCopyWithDestination(
+        item: ProgressCenterItem, source: string, destination: string) {
       return item.isDestinationDrive ?
           strf('PREPARING_FILE_NAME_MY_DRIVE', source, destination) :
           strf('COPY_FILE_NAME_LONG', source, destination);
     }
 
-    // @ts-ignore: error TS7006: Parameter 'item' implicitly has an 'any' type.
-    function getStrForPolicyError(item) {
+    function getStrForPolicyError(item: ProgressCenterItem) {
       if (!item.policyError) {
         console.warn('Policy error must be supplied');
         return '';
@@ -372,11 +355,10 @@ export class ProgressCenterPanel {
    * As ICU syntax is not implemented in web ui yet (crbug/481718), the i18n
    * of time part is handled using Intl methods.
    *
-   * @param {!ProgressCenterItem} item Item we're generating a message for.
-   * @return {!string} Secondary string message.
-   * @private
+   * @param item Item we're generating a message for.
+   * @return Secondary string message.
    */
-  generateSecondaryString_(item) {
+  private generateSecondaryString_(item: ProgressCenterItem): string {
     if (item.state === ProgressItemState.PAUSED) {
       if (!item.policyFileCount) {
         console.warn('Policy file count missing');
@@ -472,20 +454,19 @@ export class ProgressCenterPanel {
 
   /**
    * Process item updates for feedback panels.
-   * @param {!ProgressCenterItem} item Item being updated.
-   * @param {?ProgressCenterItem} newItem Item updating with new content.
+   * @param item Item being updated.
+   * @param newItem Item updating with new content.
    */
-  updateFeedbackPanelItem(item, newItem) {
+  updateFeedbackPanelItem(
+      item: ProgressCenterItem, newItem: null|ProgressCenterItem) {
     let panelItem = this.feedbackHost_.findPanelItemById(item.id);
     if (newItem) {
       if (!panelItem) {
         panelItem = this.feedbackHost_.createPanelItem(item.id);
         // Show the panel only for long running operations.
         setTimeout(() => {
-          // @ts-ignore: error TS2345: Argument of type 'PanelItem | null' is
-          // not assignable to parameter of type 'PanelItem'.
-          this.feedbackHost_.attachPanelItem(panelItem);
-        }, this.PENDING_TIME_MS_);
+          this.feedbackHost_.attachPanelItem(panelItem!);
+        }, this.pendingTimeMs_);
         if (item.type === ProgressItemType.FORMAT) {
           panelItem.panelType = PanelType.FORMAT_PROGRESS;
         } else if (item.type === ProgressItemType.SYNC) {
@@ -502,8 +483,6 @@ export class ProgressCenterPanel {
         };
       }
 
-      // @ts-ignore: error TS2345: Argument of type 'Object | null' is not
-      // assignable to parameter of type 'Object'.
       const primaryText = this.generatePrimaryString_(item, panelItem.userData);
       panelItem.secondaryText = this.generateSecondaryString_(item);
       panelItem.primaryText = primaryText;
@@ -511,9 +490,7 @@ export class ProgressCenterPanel {
 
       // Certain visual signals have the functionality to display an extra
       // button with an arbitrary callback.
-      // @ts-ignore: error TS7034: Variable 'extraButton' implicitly has type
-      // 'any' in some locations where its type cannot be determined.
-      let extraButton = null;
+      let extraButton: ProgressItemExtraButton|null = null;
 
       // On progress panels, make the cancel button aria-label more useful.
       const cancelLabel = strf('CANCEL_ACTIVITY_LABEL', primaryText);
@@ -525,33 +502,23 @@ export class ProgressCenterPanel {
           if (item.dismissCallback) {
             item.dismissCallback();
           }
-          // @ts-ignore: error TS2345: Argument of type 'PanelItem | null' is
-          // not assignable to parameter of type 'PanelItem'.
-          this.feedbackHost_.removePanelItem(panelItem);
-          // @ts-ignore: error TS2721: Cannot invoke an object which is possibly
-          // 'null'.
-          this.dismissErrorItemCallback(item.id);
+          this.feedbackHost_.removePanelItem(panelItem!);
+          this.dismissErrorItemCallback?.(item.id);
         } else if (
-            // @ts-ignore: error TS7005: Variable 'extraButton' implicitly has
-            // an 'any' type.
-            signal === 'extra-button' && extraButton && extraButton.callback) {
+            signal === 'extra-button' && extraButton &&
+            'callback' in extraButton) {
           extraButton.callback();
-          // @ts-ignore: error TS2345: Argument of type 'PanelItem | null' is
-          // not assignable to parameter of type 'PanelItem'.
-          this.feedbackHost_.removePanelItem(panelItem);
+          this.feedbackHost_.removePanelItem(panelItem!);
           // The extra-button currently acts as a dismissal to invoke the
           // dismiss and error item callbacks as well.
           if (item.dismissCallback) {
             item.dismissCallback();
           }
-          // @ts-ignore: error TS2721: Cannot invoke an object which is possibly
-          // 'null'.
-          this.dismissErrorItemCallback(item.id);
+          this.dismissErrorItemCallback?.(item.id);
         }
       };
       panelItem.progress = item.progressRateInPercent.toString();
       switch (item.state) {
-          // @ts-ignore: error TS7029: Fallthrough case in switch.
         case ProgressItemState.COMPLETED:
           // Create a completed panel for copies, moves, deletes and formats.
           if (item.type === ProgressItemType.COPY ||
@@ -565,10 +532,8 @@ export class ProgressCenterPanel {
               item.type === ProgressItemType.RESTORE) {
             const donePanelItem = this.feedbackHost_.addPanelItem(item.id);
             if (item.extraButton.has(ProgressItemState.COMPLETED)) {
-              extraButton = item.extraButton.get(ProgressItemState.COMPLETED);
-              // @ts-ignore: error TS18048: 'extraButton' is possibly
-              // 'undefined'.
-              donePanelItem.dataset.extraButtonText = extraButton.text;
+              extraButton = item.extraButton.get(ProgressItemState.COMPLETED)!;
+              donePanelItem.dataset['extraButtonText'] = extraButton.text;
             }
             donePanelItem.id = item.id;
             donePanelItem.panelType = PanelType.DONE;
@@ -580,20 +545,12 @@ export class ProgressCenterPanel {
             donePanelItem.signalCallback = (signal) => {
               if (signal === 'dismiss') {
                 this.feedbackHost_.removePanelItem(donePanelItem);
-                // @ts-ignore: error TS7053: Element implicitly has an 'any'
-                // type because expression of type 'string' can't be used to
-                // index type '{}'.
                 delete this.items_[donePanelItem.id];
               } else if (
-                  // @ts-ignore: error TS7005: Variable 'extraButton' implicitly
-                  // has an 'any' type.
                   signal === 'extra-button' && extraButton &&
                   extraButton.callback) {
                 extraButton.callback();
                 this.feedbackHost_.removePanelItem(donePanelItem);
-                // @ts-ignore: error TS7053: Element implicitly has an 'any'
-                // type because expression of type 'string' can't be used to
-                // index type '{}'.
                 delete this.items_[donePanelItem.id];
               }
             };
@@ -601,31 +558,27 @@ export class ProgressCenterPanel {
             // before the timer fires, as removePanelItem handles that case.
             setTimeout(() => {
               this.feedbackHost_.removePanelItem(donePanelItem);
-              // @ts-ignore: error TS7053: Element implicitly has an 'any' type
-              // because expression of type 'string' can't be used to index type
-              // '{}'.
               delete this.items_[donePanelItem.id];
-            }, this.TIMEOUT_TO_REMOVE_MS_);
+            }, this.timeoutToRemoveMs_);
           }
           // Drop through to remove the progress panel.
+          /* falls through */
         case ProgressItemState.CANCELED:
           // Remove the feedback panel when complete.
           this.feedbackHost_.removePanelItem(panelItem);
           break;
         case ProgressItemState.PAUSED:
           if (item.extraButton.has(ProgressItemState.PAUSED)) {
-            extraButton = item.extraButton.get(ProgressItemState.PAUSED);
-            // @ts-ignore: error TS18048: 'extraButton' is possibly 'undefined'.
-            panelItem.dataset.extraButtonText = extraButton.text;
+            extraButton = item.extraButton.get(ProgressItemState.PAUSED)!;
+            panelItem.dataset['extraButtonText'] = extraButton.text;
           }
           panelItem.panelType = PanelType.INFO;
           this.feedbackHost_.attachPanelItem(panelItem);
           break;
         case ProgressItemState.ERROR:
           if (item.extraButton.has(ProgressItemState.ERROR)) {
-            extraButton = item.extraButton.get(ProgressItemState.ERROR);
-            // @ts-ignore: error TS18048: 'extraButton' is possibly 'undefined'.
-            panelItem.dataset.extraButtonText = extraButton.text;
+            extraButton = item.extraButton.get(ProgressItemState.ERROR)!;
+            panelItem.dataset['extraButtonText'] = extraButton.text;
           }
           panelItem.panelType = PanelType.ERROR;
           // Make sure the panel is attached so it shows immediately.
@@ -639,13 +592,11 @@ export class ProgressCenterPanel {
 
   /**
    * Starts the item update and checks state changes.
-   * @param {!ProgressCenterItem} item Item containing updated information.
+   * @param item Item containing updated information.
    */
-  updateItemState_(item) {
+  private updateItemState_(item: ProgressCenterItem) {
     // Compares the current state and the new state to check if the update is
     // valid or not.
-    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-    // expression of type 'string' can't be used to index type '{}'.
     const previousItem = this.items_[item.id];
     switch (item.state) {
       case ProgressItemState.ERROR:
@@ -655,8 +606,6 @@ export class ProgressCenterPanel {
              previousItem.state !== ProgressItemState.SCANNING)) {
           return;
         }
-        // @ts-ignore: error TS7053: Element implicitly has an 'any' type
-        // because expression of type 'string' can't be used to index type '{}'.
         this.items_[item.id] = item.clone();
         break;
 
@@ -667,8 +616,6 @@ export class ProgressCenterPanel {
              previousItem.state !== ProgressItemState.PROGRESSING)) {
           return;
         }
-        // @ts-ignore: error TS7053: Element implicitly has an 'any' type
-        // because expression of type 'string' can't be used to index type '{}'.
         this.items_[item.id] = item.clone();
         break;
 
@@ -679,8 +626,6 @@ export class ProgressCenterPanel {
              previousItem.state !== ProgressItemState.SCANNING)) {
           return;
         }
-        // @ts-ignore: error TS7053: Element implicitly has an 'any' type
-        // because expression of type 'string' can't be used to index type '{}'.
         delete this.items_[item.id];
         break;
 
@@ -689,14 +634,10 @@ export class ProgressCenterPanel {
         // except when DLP files restrictions are enabled as well. In this case,
         // DLP may pause the IOTask to show a warning and the panel item is
         // dismissed when the user proceeds or cancels.
-        // @ts-ignore: error TS7053: Element implicitly has an 'any' type
-        // because expression of type 'string' can't be used to index type '{}'.
         this.items_[item.id] = item.clone();
         break;
 
       default:
-        // @ts-ignore: error TS7053: Element implicitly has an 'any' type
-        // because expression of type 'string' can't be used to index type '{}'.
         if (this.items_[item.id] == null) {
           console.warn(
               'ProgressCenterItem not updated: ${item.id} state: ${item.state}');
@@ -707,25 +648,21 @@ export class ProgressCenterPanel {
 
   /**
    * Updates an item to the progress center panel.
-   * @param {!ProgressCenterItem} item Item including new contents.
+   * @param item Item including new contents.
    */
-  updateItem(item) {
+  updateItem(item: ProgressCenterItem) {
     this.updateItemState_(item);
 
     // Update an open view item.
-    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-    // expression of type 'string' can't be used to index type '{}'.
     const newItem = this.items_[item.id] || null;
     this.updateFeedbackPanelItem(item, newItem);
   }
 
   /**
    * Called by background page when an error dialog is dismissed.
-   * @param {string} id Item id.
+   * @param id Item id.
    */
-  dismissErrorItem(id) {
-    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
-    // expression of type 'string' can't be used to index type '{}'.
+  dismissErrorItem(id: string) {
     delete this.items_[id];
   }
 }

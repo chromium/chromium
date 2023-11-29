@@ -24,10 +24,10 @@ export enum PanelType {
   SYNC_PROGRESS,
 }
 
-interface UserData {
-  source: string;
-  destination: string;
-  count: number;
+export interface UserData {
+  source?: string;
+  destination?: string;
+  count?: number;
 }
 
 type IronIconWithProgress = IronIconElement&{progress: string};

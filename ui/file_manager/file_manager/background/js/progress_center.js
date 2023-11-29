@@ -213,11 +213,11 @@ export class ProgressCenterImpl {
     // Make notification panel item show immediately.
     // @ts-ignore: error TS2339: Property 'PENDING_TIME_MS_' does not exist on
     // type 'ProgressCenterPanelInterface'.
-    this.panels_[0].PENDING_TIME_MS_ = 0;
+    this.panels_[0].pendingTimeMs_ = 0;
     // Make notification panel item keep showing for 5 minutes.
     // @ts-ignore: error TS2339: Property 'TIMEOUT_TO_REMOVE_MS_' does not exist
     // on type 'ProgressCenterPanelInterface'.
-    this.panels_[0].TIMEOUT_TO_REMOVE_MS_ = 5 * 60 * 1000;
+    this.panels_[0].timeoutToRemoveMs_ = 5 * 60 * 1000;
     // Add the item to the panel.
     this.items_.push(item);
     this.updateItem(item);
