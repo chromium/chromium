@@ -100,7 +100,7 @@ class ModelExecutionManagerTest : public testing::Test {
 
 TEST_F(ModelExecutionManagerTest, ExecuteModelEmptyAccessToken) {
   proto::ComposeRequest request;
-  request.set_user_input("a user typed this");
+  request.mutable_generate_params()->set_user_input("a user typed this");
   base::RunLoop run_loop;
   model_execution_manager()->ExecuteModel(
       proto::MODEL_EXECUTION_FEATURE_COMPOSE, request,
@@ -118,7 +118,7 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelEmptyAccessToken) {
 
 TEST_F(ModelExecutionManagerTest, ExecuteModelWithUserSignIn) {
   proto::ComposeRequest request;
-  request.set_user_input("a user typed this");
+  request.mutable_generate_params()->set_user_input("a user typed this");
   base::RunLoop run_loop;
   identity_test_env()->MakePrimaryAccountAvailable(
       "test_email", signin::ConsentLevel::kSignin);
@@ -159,7 +159,7 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelWithPassthroughSession) {
   base::HistogramTester histogram_tester;
 
   proto::ComposeRequest request;
-  request.set_user_input("a user typed this");
+  request.mutable_generate_params()->set_user_input("a user typed this");
   base::RunLoop run_loop;
   identity_test_env()->MakePrimaryAccountAvailable(
       "test_email", signin::ConsentLevel::kSignin);
@@ -207,7 +207,7 @@ TEST_F(ModelExecutionManagerTest,
       proto::MODEL_EXECUTION_FEATURE_COMPOSE);
   // Message is added through AddContext().
   proto::ComposeRequest request;
-  request.set_user_input("some test");
+  request.mutable_generate_params()->set_user_input("some test");
   session->AddContext(request);
   // ExecuteModel() uses empty message.
   session->ExecuteModel(
@@ -234,9 +234,9 @@ TEST_F(ModelExecutionManagerTest,
   auto session = model_execution_manager()->StartSession(
       proto::MODEL_EXECUTION_FEATURE_COMPOSE);
   proto::ComposeRequest request;
-  request.set_user_input("first test");
+  request.mutable_generate_params()->set_user_input("first test");
   session->AddContext(request);
-  request.set_user_input("second test");
+  request.mutable_generate_params()->set_user_input("second test");
   session->AddContext(request);
   // ExecuteModel() uses empty message.
   session->ExecuteModel(
@@ -264,10 +264,10 @@ TEST_F(ModelExecutionManagerTest,
       proto::MODEL_EXECUTION_FEATURE_COMPOSE);
   // First message is added through AddContext().
   proto::ComposeRequest request;
-  request.set_user_input("test_message");
+  request.mutable_generate_params()->set_user_input("test_message");
   session->AddContext(request);
   // ExecuteModel() adds a different message.
-  request.set_user_input("other test");
+  request.mutable_generate_params()->set_user_input("other test");
   session->ExecuteModel(
       request, base::BindRepeating(
                    [](base::RunLoop* run_loop,

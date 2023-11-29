@@ -251,26 +251,26 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
     // Execute call prefixes with execute:.
     auto& substitution = *input_config.add_execute_substitutions();
     substitution.set_string_template("execute:%s%s");
-    substitution.add_substitutions()
-        ->add_candidates()
-        ->mutable_proto_field()
-        ->add_proto_descriptors()
-        ->set_tag_number(2);
-    auto* proto_field = substitution.add_substitutions()
-                            ->add_candidates()
-                            ->mutable_proto_field();
-    proto_field->add_proto_descriptors()->set_tag_number(3);
-    proto_field->add_proto_descriptors()->set_tag_number(1);
+    auto* proto_field1 = substitution.add_substitutions()
+                             ->add_candidates()
+                             ->mutable_proto_field();
+    proto_field1->add_proto_descriptors()->set_tag_number(7);
+    proto_field1->add_proto_descriptors()->set_tag_number(1);
+    auto* proto_field2 = substitution.add_substitutions()
+                             ->add_candidates()
+                             ->mutable_proto_field();
+    proto_field2->add_proto_descriptors()->set_tag_number(3);
+    proto_field2->add_proto_descriptors()->set_tag_number(1);
 
     // Context call prefixes with context:.
     auto& context_substitution =
         *input_config.add_input_context_substitutions();
     context_substitution.set_string_template("ctx:%s");
-    context_substitution.add_substitutions()
-        ->add_candidates()
-        ->mutable_proto_field()
-        ->add_proto_descriptors()
-        ->set_tag_number(2);
+    auto* context_proto_field = context_substitution.add_substitutions()
+                                    ->add_candidates()
+                                    ->mutable_proto_field();
+    context_proto_field->add_proto_descriptors()->set_tag_number(7);
+    context_proto_field->add_proto_descriptors()->set_tag_number(1);
 
     auto& output_config = *config.mutable_output_config();
     output_config.set_proto_type(proto::ComposeResponse().GetTypeName());
@@ -289,7 +289,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
   void AddContext(OptimizationGuideModelExecutor::Session& session,
                   std::string_view input) {
     proto::ComposeRequest request;
-    request.set_user_input(std::string(input));
+    request.mutable_generate_params()->set_user_input(std::string(input));
     session.AddContext(request);
   }
 

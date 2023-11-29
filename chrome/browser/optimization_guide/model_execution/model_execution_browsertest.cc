@@ -279,7 +279,7 @@ class ModelExecutionDisabledBrowserTest : public ModelExecutionBrowserTestBase {
 IN_PROC_BROWSER_TEST_F(ModelExecutionDisabledBrowserTest,
                        ModelExecutionDisabled) {
   proto::ComposeRequest request;
-  request.set_user_input("a user typed this");
+  request.mutable_generate_params()->set_user_input("a user typed this");
   ExecuteModel(proto::MODEL_EXECUTION_FEATURE_COMPOSE, request);
   EXPECT_TRUE(model_execution_result_.has_value());
   EXPECT_FALSE(model_execution_result_->has_value());
@@ -300,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
                        ModelExecutionDisabledInIncognito) {
   Browser* otr_browser = CreateIncognitoBrowser(browser()->profile());
   proto::ComposeRequest request;
-  request.set_user_input("a user typed this");
+  request.mutable_generate_params()->set_user_input("a user typed this");
   ExecuteModel(proto::MODEL_EXECUTION_FEATURE_COMPOSE, request,
                otr_browser->profile());
   EXPECT_TRUE(model_execution_result_.has_value());
@@ -314,7 +314,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
                        ModelExecutionFailsNoUserSignIn) {
   proto::ComposeRequest request;
-  request.set_user_input("a user typed this");
+  request.mutable_generate_params()->set_user_input("a user typed this");
   ExecuteModel(proto::MODEL_EXECUTION_FEATURE_COMPOSE, request);
   EXPECT_TRUE(model_execution_result_.has_value());
   EXPECT_FALSE(model_execution_result_->has_value());
@@ -330,7 +330,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
   SetExpectedBearerAccessToken("Bearer access_token");
 
   proto::ComposeRequest request;
-  request.set_user_input("a user typed this");
+  request.mutable_generate_params()->set_user_input("a user typed this");
   ExecuteModel(proto::MODEL_EXECUTION_FEATURE_COMPOSE, request);
   EXPECT_TRUE(model_execution_result_.has_value());
   EXPECT_TRUE(model_execution_result_->has_value());
@@ -346,7 +346,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
   SetResponseType(ModelExecutionRemoteResponseType::kUnsuccessful);
 
   proto::ComposeRequest request;
-  request.set_user_input("a user typed this");
+  request.mutable_generate_params()->set_user_input("a user typed this");
   ExecuteModel(proto::MODEL_EXECUTION_FEATURE_COMPOSE, request);
   EXPECT_TRUE(model_execution_result_.has_value());
   EXPECT_FALSE(model_execution_result_->has_value());
@@ -363,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
   SetResponseType(ModelExecutionRemoteResponseType::kMalformed);
 
   proto::ComposeRequest request;
-  request.set_user_input("a user typed this");
+  request.mutable_generate_params()->set_user_input("a user typed this");
   ExecuteModel(proto::MODEL_EXECUTION_FEATURE_COMPOSE, request);
   EXPECT_TRUE(model_execution_result_.has_value());
   EXPECT_FALSE(model_execution_result_->has_value());
@@ -380,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
   SetResponseType(ModelExecutionRemoteResponseType::kErrorFiltered);
 
   proto::ComposeRequest request;
-  request.set_user_input("a user typed this");
+  request.mutable_generate_params()->set_user_input("a user typed this");
   ExecuteModel(proto::MODEL_EXECUTION_FEATURE_COMPOSE, request);
   EXPECT_TRUE(model_execution_result_.has_value());
   EXPECT_FALSE(model_execution_result_->has_value());
@@ -396,7 +396,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
   SetResponseType(ModelExecutionRemoteResponseType::kUnsupportedLanguage);
 
   proto::ComposeRequest request;
-  request.set_user_input("a user typed this");
+  request.mutable_generate_params()->set_user_input("a user typed this");
   ExecuteModel(proto::MODEL_EXECUTION_FEATURE_COMPOSE, request);
   EXPECT_TRUE(model_execution_result_.has_value());
   EXPECT_FALSE(model_execution_result_->has_value());
@@ -428,7 +428,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionInternalsPageBrowserTest,
   SetExpectedBearerAccessToken("Bearer access_token");
 
   proto::ComposeRequest request;
-  request.set_user_input("foo");
+  request.mutable_generate_params()->set_user_input("foo");
   ExecuteModel(proto::MODEL_EXECUTION_FEATURE_COMPOSE, request);
   EXPECT_TRUE(model_execution_result_.has_value());
   EXPECT_TRUE(model_execution_result_->has_value());

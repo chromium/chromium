@@ -41,7 +41,7 @@ std::unique_ptr<proto::LogAiDataRequest> BuildComposeLogAiDataReuqest() {
   proto::ComposeLoggingData compose_logging_data;
 
   proto::ComposeRequest request;
-  request.set_user_input("a user typed this");
+  request.mutable_generate_params()->set_user_input("a user typed this");
 
   proto::ComposeResponse response;
   response.set_output("compose response");
