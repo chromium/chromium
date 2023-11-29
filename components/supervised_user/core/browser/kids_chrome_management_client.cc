@@ -20,11 +20,13 @@
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "components/supervised_user/core/browser/proto_fetcher.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/load_flags.h"
+#include "net/base/request_priority.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -158,6 +160,10 @@ CreateResourceRequestForUrlClassifier() {
       supervised_user::KidsManagementClassifyURLRequestURL();
   resource_request->method = "POST";
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  if (base::FeatureList::IsEnabled(
+          supervised_user::kHighestRequestPriorityForClassifyUrl)) {
+    resource_request->priority = net::HIGHEST;
+  }
   return resource_request;
 }
 
