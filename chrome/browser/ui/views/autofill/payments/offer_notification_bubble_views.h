@@ -90,6 +90,8 @@ class OfferNotificationBubbleViews : public AutofillBubbleBase,
 
   void UpdateButtonTooltipsAndAccessibleNames();
 
+  void OpenTermsAndConditionsPage();
+
   raw_ptr<OfferNotificationBubbleController> controller_;
 
   raw_ptr<PromoCodeLabelButton> promo_code_label_button_ = nullptr;
@@ -100,6 +102,8 @@ class OfferNotificationBubbleViews : public AutofillBubbleBase,
   raw_ptr<views::StyledLabel> promo_code_label_ = nullptr;
 
   raw_ptr<views::Label> instructions_label_ = nullptr;
+
+  base::WeakPtrFactory<OfferNotificationBubbleViews> weak_factory_{this};
 };
 
 }  // namespace autofill

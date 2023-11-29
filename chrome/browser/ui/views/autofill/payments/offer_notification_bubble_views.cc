@@ -238,15 +238,40 @@ void OfferNotificationBubbleViews::InitWithFreeListingCouponOfferContent() {
   }
 
   if (!promo_code_value_prop_string.empty()) {
-    auto* promo_code_value_prop = AddChildView(std::make_unique<views::Label>(
-        promo_code_value_prop_string, views::style::CONTEXT_DIALOG_BODY_TEXT,
-        views::style::STYLE_SECONDARY));
+    auto* promo_code_value_prop =
+        AddChildView(views::Builder<views::StyledLabel>()
+                         .SetDefaultTextStyle(views::style::STYLE_SECONDARY)
+                         .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
+                         .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                         .Build());
+
+    if (offer->GetTermsAndConditions().has_value() &&
+        !offer->GetTermsAndConditions().value().empty()) {
+      std::vector<size_t> offsets;
+      promo_code_value_prop_string = l10n_util::GetStringFUTF16(
+          IDS_TWO_STRINGS_CONNECTOR_WITH_SPACE, promo_code_value_prop_string,
+          l10n_util::GetStringUTF16(IDS_SEE_SELLER_TERMS_AND_CONDITIONS),
+          &offsets);
+      promo_code_value_prop->SetText(promo_code_value_prop_string);
+      size_t terms_and_conditions_offset = offsets[1];
+      base::RepeatingCallback<void()> callback = base::BindRepeating(
+          &OfferNotificationBubbleViews::OpenTermsAndConditionsPage,
+          weak_factory_.GetWeakPtr());
+      views::StyledLabel::RangeStyleInfo terms_and_conditions_style_info =
+          views::StyledLabel::RangeStyleInfo::CreateForLink(
+              std::move(callback));
+      promo_code_value_prop->AddStyleRange(
+          gfx::Range(terms_and_conditions_offset,
+                     promo_code_value_prop_string.length()),
+          terms_and_conditions_style_info);
+    } else {
+      promo_code_value_prop->SetText(promo_code_value_prop_string);
+    }
+
     if (!::features::IsChromeRefresh2023()) {
       promo_code_value_prop->SetProperty(views::kCrossAxisAlignmentKey,
                                          views::LayoutAlignment::kStart);
     }
-    promo_code_value_prop->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    promo_code_value_prop->SetMultiLine(true);
   }
 
   UpdateButtonTooltipsAndAccessibleNames();
@@ -331,6 +356,11 @@ void OfferNotificationBubbleViews::UpdateButtonTooltipsAndAccessibleNames() {
   } else if (promo_code_label_view_) {
     promo_code_label_view_->UpdateCopyButtonTooltipsAndAccessibleNames(tooltip);
   }
+}
+
+void OfferNotificationBubbleViews::OpenTermsAndConditionsPage() {
+  // TODO(b:289240484) : Open the terms and condition subpage with
+  // PageSwitcherView.
 }
 
 }  // namespace autofill
