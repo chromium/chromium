@@ -97,7 +97,7 @@ export class MenuItem extends HTMLElement {
         this.setAttribute('command', '#' + command.id);
       }
 
-      if (typeof command.label === 'string') {
+      if (command.label) {
         this.label = command.label;
       }
       this.disabled = command.disabled;

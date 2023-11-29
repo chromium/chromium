@@ -4,7 +4,7 @@
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {decorate} from '../../../common/js/ui.js';
+import {decorate} from '../../../common/js/cr_ui.js';
 
 import {Command} from './command.js';
 import {Menu} from './menu.js';
@@ -84,7 +84,8 @@ export function testShowViaKeyboardIgnoresMouseUps() {
  */
 export function testCommandMenuItem() {
   // Test 1: The case that the command label is set and other attributes copied.
-  const command = new Command();
+  const command = document.createElement('command') as Command;
+  decorate(command, Command);
   command.id = 'the-command';
   command.label = 'CommandLabel';
   command.disabled = true;
@@ -104,7 +105,8 @@ export function testCommandMenuItem() {
 
   // Test 2: The case that the command label is not set, and other attributes
   // have default values.
-  const command2 = new Command();
+  const command2 = document.createElement('command') as Command;
+  decorate(command2, Command);
   command2.id = 'the-command2';
   document.body.appendChild(command2);
 

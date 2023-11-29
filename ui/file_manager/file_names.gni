@@ -101,7 +101,6 @@ static_js_files = [
   "file_manager/foreground/js/ui/action_model_ui.js",
   "file_manager/foreground/js/ui/actions_submenu.js",
   "file_manager/foreground/js/ui/combobutton.js",
-  "file_manager/foreground/js/ui/command.js",
   "file_manager/foreground/js/ui/commandbutton.js",
   "file_manager/foreground/js/ui/context_menu_handler.js",
   "file_manager/foreground/js/ui/default_task_dialog.js",
@@ -229,6 +228,7 @@ ts_files = [
   # Don't remove this.
   # These lines will be removed at the end of the TS migration.
   # Foreground UI.
+  "file_manager/foreground/js/ui/command.ts",
   "file_manager/foreground/js/ui/file_grid.ts",
   "file_manager/foreground/js/ui/file_list_selection_model.ts",
   "file_manager/foreground/js/ui/file_table.ts",
@@ -520,6 +520,7 @@ ts_test_files = [
   # Don't remove this.
   # These lines will be removed at the end of the TS migration.
   # UI:
+  "file_manager/foreground/js/ui/command_unittest.ts",
   "file_manager/foreground/js/ui/file_grid_unittest.ts",
   "file_manager/foreground/js/ui/file_list_selection_model_unittest.ts",
   "file_manager/foreground/js/ui/file_table_list_unittest.ts",
@@ -583,7 +584,6 @@ checked_in_dts_files = [
   "file_manager/externs/volume_info.d.ts",
   "file_manager/externs/volume_manager.d.ts",
   "file_manager/definitions/navigator_connection.d.ts",
-  "file_manager/foreground/js/ui/command.d.ts",
   "file_manager/foreground/js/ui/tree.d.ts",
 ]
 
@@ -627,7 +627,6 @@ unittest_files = [
   "file_manager/foreground/js/path_component_unittest.js",
   "file_manager/foreground/js/ui/file_manager_dialog_base_unittest.js",
   "file_manager/foreground/js/ui/actions_submenu_unittest.js",
-  "file_manager/foreground/js/ui/command_unittest.js",
   "file_manager/foreground/js/ui/context_menu_handler_unittest.js",
   "file_manager/foreground/js/ui/file_tap_handler_unittest.js",
   "file_manager/foreground/js/ui/install_linux_package_dialog_unittest.js",
