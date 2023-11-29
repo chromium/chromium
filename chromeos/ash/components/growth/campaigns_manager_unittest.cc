@@ -856,9 +856,51 @@ TEST_F(CampaignsManagerTest, GetSchedulingCampaignEndOnlyMismatch) {
 }
 
 TEST_F(CampaignsManagerTest, GetSchedulingCampaignInvalidTargeting) {
-  LoadComponentWithScheduling("test");
+  base::HistogramTester histogram_tester;
+
+  LoadComponentWithScheduling("1");
 
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+
+  histogram_tester.ExpectBucketCount(
+      kCampaignsManagerErrorHistogramName,
+      CampaignsManagerError::kInvalidSchedulingTargeting,
+      /*count=*/1);
+
+  histogram_tester.ExpectBucketCount(kCampaignsManagerErrorHistogramName,
+                                     CampaignsManagerError::kInvalidCampaign,
+                                     /*count=*/1);
+
+  histogram_tester.ExpectBucketCount(kCampaignsManagerErrorHistogramName,
+                                     CampaignsManagerError::kInvalidTargeting,
+                                     /*count=*/1);
+}
+
+TEST_F(CampaignsManagerTest, GetSchedulingCampaignInvalidScheduling) {
+  base::HistogramTester histogram_tester;
+
+  LoadComponentWithScheduling(R"([
+    "test1",
+    "test2",
+    {"end": 1}
+  ])");
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+
+  // Verify that two of the scheduling is invalids.
+  histogram_tester.ExpectBucketCount(kCampaignsManagerErrorHistogramName,
+                                     CampaignsManagerError::kInvalidScheduling,
+                                     /*count=*/2);
+
+  // There is a invalid campaign in the list of campaigns.
+  histogram_tester.ExpectBucketCount(kCampaignsManagerErrorHistogramName,
+                                     CampaignsManagerError::kInvalidCampaign,
+                                     /*count=*/1);
+
+  // There is a campaign with invalid targeting in the list of campaigns.
+  histogram_tester.ExpectBucketCount(kCampaignsManagerErrorHistogramName,
+                                     CampaignsManagerError::kInvalidTargeting,
+                                     /*count=*/1);
 }
 
 }  // namespace growth

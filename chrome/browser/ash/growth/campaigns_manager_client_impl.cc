@@ -20,6 +20,7 @@
 #include "chrome/browser/component_updater/cros_component_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
+#include "chromeos/ash/components/growth/growth_metrics.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
@@ -79,9 +80,8 @@ const base::Version& CampaignsManagerClientImpl::GetDemoModeAppVersion() const {
 
   const auto& version = demo_session->components()->app_component_version();
   if (!version.has_value()) {
-    // TODO(b/299305911): Add metrics to track the case that version is not
-    // available and convert to CHECK if we are confident that it will always
-    // available at this point.
+    growth::RecordCampaignsManagerError(
+        growth::CampaignsManagerError::kDemoModeAppVersionUnavailable);
     static const base::NoDestructor<base::Version> empty_version;
     return *empty_version;
   }

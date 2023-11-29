@@ -54,6 +54,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
+#include "chromeos/ash/components/growth/growth_metrics.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -230,7 +231,8 @@ GURL GetDemoDemoAppUrl(const growth::Payload* model) {
   std::string payload_string;
   if (!JSONStringValueSerializer(&payload_string).Serialize(*model) ||
       payload_string.empty()) {
-    // TODO(b/298467444): Log an error metrics.
+    growth::RecordCampaignsManagerError(
+        growth::CampaignsManagerError::kSerializingDemoModePayloadFail);
     LOG(ERROR) << "Failed to serialize demo mode payload.";
     return url;
   }

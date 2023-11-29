@@ -371,6 +371,10 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="User pref is not available at campaigns matching"/>
   <int value="4" label="Invalid campaign"/>
   <int value="5" label="Invalid targeting"/>
+  <int value="6" label="Invalid scheduling targeting"/>
+  <int value="7" label="Invalid scheduling"/>
+  <int value="8" label="Demo Mode app version is not available at matching"/>
+  <int value="9" label="Serializing Demo Mode payload failed"/>
 </enum>
 
 <enum name="CaptureModeBarButtonType">

@@ -10,6 +10,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/growth/growth_metrics.h"
 
 namespace growth {
 namespace {
@@ -210,12 +211,14 @@ SessionTargeting::GetSchedulings() const {
   auto* scheduling_dicts = GetListCriteria(kSchedulingTargetings);
   if (!scheduling_dicts) {
     LOG(ERROR) << "Invalid scheduling targetings";
-    // TODO(b/309005344): Records invalid scheduling error.
+    RecordCampaignsManagerError(
+        CampaignsManagerError::kInvalidSchedulingTargeting);
     return schedulings;
   }
 
   for (auto& scheduling_dict : *scheduling_dicts) {
     if (!scheduling_dict.is_dict()) {
+      RecordCampaignsManagerError(CampaignsManagerError::kInvalidScheduling);
       continue;
     }
     schedulings.push_back(

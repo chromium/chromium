@@ -35,7 +35,7 @@ absl::optional<base::Value::Dict> ReadCampaignsFile(
 
   absl::optional<base::Value> value(base::JSONReader::Read(campaigns_data));
   if (!value || !value->is_dict()) {
-    LOG(ERROR) << "Failed to parse campaigns file: " << campaigns_data;
+    LOG(ERROR) << "Failed to parse campaigns file.";
     RecordCampaignsManagerError(CampaignsManagerError::kCampaignsParsingFail);
     return absl::nullopt;
   }
