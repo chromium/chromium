@@ -787,6 +787,8 @@ public final class ProductionSupportedFlagList {
                 BaseFeatures.USE_NEW_JOB_IMPLEMENTATION,
                 "Uses a thread pool job implementation which leverages atomics to minimize lock"
                         + " contention."),
+        Flag.baseFeature(
+                ContentFeatures.BACK_FORWARD_CACHE, "Controls if back/forward cache is enabled."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
