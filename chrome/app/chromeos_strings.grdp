@@ -1640,6 +1640,9 @@
   <message name="IDS_LOGIN_PASSWORD_CHANGED_CONTINUE_AND_DELETE_BUTTON" desc="Button to continue and delete data without providing old password on the data loss warning dialog.">
     Continue anyway
   </message>
+  <message name="IDS_LOCAL_DATA_LOSS_WARNING_POWERWASH_BUTTON" desc="Button to continue and powerwash without providing old password on the data loss warning dialog for owner user.">
+    Reset
+  </message>
   <message name="IDS_LOGIN_PASSWORD_CHANGED_FORGOT_OLD_PASSWORD_BUTTON" desc="Forgot old password button on the recover local data dialog.">
     Forgot old password
   </message>

@@ -97,6 +97,7 @@
 #include "chrome/browser/ash/login/screens/osauth/factor_setup_success_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/gaia_password_changed_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/gaia_password_changed_screen_legacy.h"
+#include "chrome/browser/ash/login/screens/osauth/local_data_loss_warning_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/local_password_setup_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/osauth_error_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/password_selection_screen.h"
@@ -190,6 +191,7 @@
 #include "chrome/browser/ui/webui/ash/login/os_trial_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/osauth/apply_online_password_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/osauth/factor_setup_success_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/osauth/local_data_loss_warning_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/osauth/osauth_error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/packaged_license_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/parental_handoff_screen_handler.h"
@@ -921,6 +923,10 @@ WizardController::CreateScreens() {
         base::BindRepeating(&WizardController::OnLocalPasswordSetupScreenExit,
                             weak_factory_.GetWeakPtr())));
   }
+
+  append(std::make_unique<LocalDataLossWarningScreen>(
+      oobe_ui->GetView<LocalDataLossWarningScreenHandler>()->AsWeakPtr(),
+      base::DoNothing()));
 
   append(std::make_unique<OSAuthErrorScreen>(
       oobe_ui->GetView<OSAuthErrorScreenHandler>()->AsWeakPtr(),

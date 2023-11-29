@@ -52,6 +52,7 @@ import './screens/osauth/cryptohome_recovery_setup.js';
 import './screens/osauth/factor_setup_success.js';
 import './screens/osauth/fingerprint_setup.js';
 import './screens/osauth/local_password_setup.js';
+import './screens/osauth/local_data_loss_warning.js';
 import './screens/osauth/osauth_error.js';
 import './screens/osauth/password_selection.js';
 import './screens/osauth/pin_setup.js';
@@ -134,6 +135,10 @@ export const commonScreensList = [
     tag: 'local-password-setup-element',
     id: 'local-password-setup',
     condition: 'isOobeConsumersLocalPasswordsEnabled',
+  },
+  {
+    tag: 'local-data-loss-warning-element',
+    id: 'local-data-loss-warning',
   },
   {tag: 'local-state-error-element', id: 'local-state-error'},
   {tag: 'managed-terms-of-service-element', id: 'terms-of-service'},

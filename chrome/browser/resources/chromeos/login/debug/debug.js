@@ -860,6 +860,30 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
       kind: ScreenKind.NORMAL,
     },
     {
+      id: 'local-data-loss-warning',
+      kind: ScreenKind.NORMAL,
+      states: [
+        {
+          id: 'non-owner',
+          trigger: (screen) => {
+            screen.onBeforeShow({
+              isOwner: false,
+              email: 'someone@example.com',
+            });
+          },
+        },
+        {
+          id: 'owner',
+          trigger: (screen) => {
+            screen.onBeforeShow({
+              isOwner: true,
+              email: 'someone@example.com',
+            });
+          },
+        },
+      ],
+    },
+    {
       id: 'local-password-setup',
       kind: ScreenKind.NORMAL,
       states: [

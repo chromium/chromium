@@ -16,6 +16,7 @@ js_type_check("closure_compile") {
     ":factor_setup_success",
     ":fingerprint_setup",
     ":gaia_password_changed",
+    ":local_data_loss_warning",
     ":local_password_setup",
     ":osauth_error",
     ":password_selection",
@@ -135,6 +136,19 @@ js_library("osauth_error") {
   extra_deps = [ ":web_components" ]
 }
 
+js_library("local_data_loss_warning") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/osauth/local_data_loss_warning.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior",
+    "../../components/behaviors:oobe_dialog_host_behavior",
+    "../../components/behaviors:oobe_i18n_behavior",
+    "../../components/buttons:oobe_back_button",
+    "../../components/buttons:oobe_next_button",
+    "../../components/dialogs:oobe_adaptive_dialog",
+  ]
+  extra_deps = [ ":web_components" ]
+}
+
 js_library("password_selection") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/osauth/password_selection.js" ]
   deps = [
@@ -183,6 +197,7 @@ html_to_js("web_components") {
     "factor_setup_success.js",
     "fingerprint_setup.js",
     "gaia_password_changed.js",
+    "local_data_loss_warning.js",
     "local_password_setup.js",
     "osauth_error.js",
     "password_selection.js",

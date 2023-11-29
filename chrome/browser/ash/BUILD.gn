@@ -1928,6 +1928,8 @@ source_set("ash") {
     "login/screens/osauth/gaia_password_changed_screen.h",
     "login/screens/osauth/gaia_password_changed_screen_legacy.cc",
     "login/screens/osauth/gaia_password_changed_screen_legacy.h",
+    "login/screens/osauth/local_data_loss_warning_screen.cc",
+    "login/screens/osauth/local_data_loss_warning_screen.h",
     "login/screens/osauth/local_password_setup_screen.cc",
     "login/screens/osauth/local_password_setup_screen.h",
     "login/screens/osauth/osauth_error_screen.cc",
