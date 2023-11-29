@@ -11,6 +11,7 @@
 #include "ash/constants/app_types.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/frame_throttler/frame_throttling_controller.h"
+#include "ash/frame_throttler/mock_frame_throttling_observer.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
@@ -3407,22 +3408,52 @@ TEST_F(ShellSurfaceTest, ThrottleFrameRate) {
 }
 
 TEST_F(ShellSurfaceTest, ThrottleFrameRateViaController) {
-  // Set app type to lacros so we can check ash::kFrameRateThrottleKey property
-  // as well.
-  auto shell_surface = test::ShellSurfaceBuilder({20, 20})
-                           .SetAppType(ash::AppType::LACROS)
-                           .BuildShellSurface();
-  aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
-
   ash::FrameThrottlingController* frame_throttling_controller =
       ash::Shell::Get()->frame_throttling_controller();
+  for (auto app_type : {ash::AppType::LACROS, ash::AppType::BROWSER,
+                        ash::AppType::CROSTINI_APP}) {
+    auto shell_surface = test::ShellSurfaceBuilder({20, 20})
+                             .SetAppType(app_type)
+                             .BuildShellSurface();
+
+    aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
+    frame_throttling_controller->StartThrottling({window});
+
+    // Crostini should not be throttled currently.
+    const auto should_throttle_set =
+        app_type != ash::AppType::CROSTINI_APP
+            ? testing::UnorderedElementsAreArray(
+                  {shell_surface->GetSurfaceId().frame_sink_id()})
+            : testing::UnorderedElementsAreArray<viz::FrameSinkId>({});
+    EXPECT_THAT(frame_throttling_controller->GetFrameSinkIdsToThrottle(),
+                should_throttle_set);
+
+    // ash::kFrameRateThrottleKey is only set for lacros.
+    const bool should_set_property = app_type == ash::AppType::LACROS;
+    EXPECT_EQ(should_set_property,
+              window->GetProperty(ash::kFrameRateThrottleKey));
+  }
+}
+
+TEST_F(ShellSurfaceTest, ThrottleFrameRateViaControllerArc) {
+  ash::MockFrameThrottlingObserver observer;
+  ash::FrameThrottlingController* frame_throttling_controller =
+      ash::Shell::Get()->frame_throttling_controller();
+  frame_throttling_controller->AddArcObserver(&observer);
+
+  auto shell_surface = test::ShellSurfaceBuilder({20, 20})
+                           .SetAppType(ash::AppType::ARC_APP)
+                           .BuildShellSurface();
+
+  aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
+
+  EXPECT_CALL(observer,
+              OnThrottlingStarted(
+                  testing::UnorderedElementsAreArray({window}),
+                  frame_throttling_controller->GetCurrentThrottledFrameRate()));
   frame_throttling_controller->StartThrottling({window});
 
-  EXPECT_THAT(frame_throttling_controller->GetFrameSinkIdsToThrottle(),
-              testing::UnorderedElementsAreArray(
-                  {shell_surface->GetSurfaceId().frame_sink_id()}));
-
-  EXPECT_TRUE(window->GetProperty(ash::kFrameRateThrottleKey));
+  frame_throttling_controller->RemoveArcObserver(&observer);
 }
 
 namespace {
