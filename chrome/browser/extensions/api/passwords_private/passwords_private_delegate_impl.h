@@ -232,6 +232,7 @@ class PasswordsPrivateDelegateImpl
 
   // SyncServiceObserver overrides.
   void OnStateChanged(syncer::SyncService* sync_service) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
 
   void OnFetchingFamilyMembersCompleted(
       FetchFamilyResultsCallback callback,

@@ -1059,6 +1059,10 @@ void PasswordsPrivateDelegateImpl::OnStateChanged(
   }
 }
 
+void PasswordsPrivateDelegateImpl::OnSyncShutdown(syncer::SyncService* sync) {
+  sync_service_observation_.Reset();
+}
+
 bool PasswordsPrivateDelegateImpl::OnReauthCompleted(bool authenticated) {
   device_authenticator_.reset();
 
