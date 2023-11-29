@@ -10099,6 +10099,29 @@ Called by update_net_error_codes.py.-->
   <int value="12" label="CRAS_CLIENT_TYPE_SOUND_CARD_INIT"/>
 </enum>
 
+<enum name="CrasDeviceDspOffloadStatus">
+  <summary>
+    List of the device DSP offload status of CRAS. The list can be found in
+    https://chromium.googlesource.com/chromiumos/third_party/adhd/+/main/cras/src/server/cras_server_metrics.h
+    (enum CRAS_DEVICE_DSP_OFFLOAD_STATUS).
+  </summary>
+  <int value="0" label="CRAS_DEVICE_DSP_OFFLOAD_SUCCESS">
+    DSP modules are requested to offload to DSP FW and done successfully.
+  </int>
+  <int value="1" label="CRAS_DEVICE_DSP_OFFLOAD_FALLBACK_SUCCESS">
+    DSP modules are requested to offload to DSP FW but failed; fallback to
+    disable the offload is triggered and done successfully. DSP modules will run
+    on CRAS then.
+  </int>
+  <int value="2" label="CRAS_DEVICE_DSP_OFFLOAD_FALLBACK_ERROR">
+    DSP modules are requested to offload to DSP FW but failed; fallback to
+    disable the offload is triggered but still failed.
+  </int>
+  <int value="3" label="CRAS_DEVICE_DSP_OFFLOAD_ERROR">
+    The offload is disabled intentionally by CRAS but failed.
+  </int>
+</enum>
+
 <enum name="CrasDeviceOpenStatus">
   <summary>
     List of the device open status of CRAS. The list can be found in

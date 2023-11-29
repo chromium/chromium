@@ -22,6 +22,34 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="CrasDeviceBreakdown">
+  <variant name="" summary="aggregated across all breakdowns"/>
+  <variant name=".A2DP"/>
+  <variant name=".AbnormalFallback"/>
+  <variant name=".AlsaLoopback"/>
+  <variant name=".Bluetooth"/>
+  <variant name=".FrontMic"/>
+  <variant name=".Haptic"/>
+  <variant name=".HDMI"/>
+  <variant name=".Headphone"/>
+  <variant name=".HFP"/>
+  <variant name=".Hotword"/>
+  <variant name=".InternalMic"/>
+  <variant name=".InternalSpeaker"/>
+  <variant name=".InvalidType"/>
+  <variant name=".KeyboardMic"/>
+  <variant name=".Lineout"/>
+  <variant name=".Mic"/>
+  <variant name=".NoDevice"/>
+  <variant name=".NormalFallback"/>
+  <variant name=".PostDspLoopback"/>
+  <variant name=".PostMixLoopback"/>
+  <variant name=".RearMic"/>
+  <variant name=".SilentHotword"/>
+  <variant name=".Unknown"/>
+  <variant name=".USB"/>
+</variants>
+
 <variants name="CrasDlcType">
   <variant name="NcAp" summary="the AP Noise Cancellation DLC"/>
   <variant name="SrBt" summary="the Bluetooth Super Resolution DLC"/>
@@ -119,33 +147,7 @@ chromium-metrics-reviews@google.com.
     <variant name=".Input"/>
     <variant name=".Output"/>
   </token>
-  <token key="Device">
-    <variant name="" summary="aggregated across all breakdowns"/>
-    <variant name=".A2DP"/>
-    <variant name=".AbnormalFallback"/>
-    <variant name=".AlsaLoopback"/>
-    <variant name=".Bluetooth"/>
-    <variant name=".FrontMic"/>
-    <variant name=".Haptic"/>
-    <variant name=".HDMI"/>
-    <variant name=".Headphone"/>
-    <variant name=".HFP"/>
-    <variant name=".Hotword"/>
-    <variant name=".InternalMic"/>
-    <variant name=".InternalSpeaker"/>
-    <variant name=".InvalidType"/>
-    <variant name=".KeyboardMic"/>
-    <variant name=".Lineout"/>
-    <variant name=".Mic"/>
-    <variant name=".NoDevice"/>
-    <variant name=".NormalFallback"/>
-    <variant name=".PostDspLoopback"/>
-    <variant name=".PostMixLoopback"/>
-    <variant name=".RearMic"/>
-    <variant name=".SilentHotword"/>
-    <variant name=".Unknown"/>
-    <variant name=".USB"/>
-  </token>
+  <token key="Device" variants="CrasDeviceBreakdown"/>
   <token key="HostCapability">
     <variant name="" summary="aggregated across all breakdowns"/>
     <variant name=".NonOffloading"/>
@@ -157,6 +159,18 @@ chromium-metrics-reviews@google.com.
     <variant name=".SuperWideBandMic"/>
     <variant name=".WideBandMic"/>
   </token>
+</histogram>
+
+<histogram name="Cras.DeviceDspOffloadStatus{Device}"
+    enum="CrasDeviceDspOffloadStatus" expires_after="2024-11-25">
+  <owner>johnylin@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    Record the staus of DSP offload for the supported device. It is recorded
+    when the configuration of associated DSP modules is changed. That is, it can
+    be regarded as the DSP configuration error rate with attempt to DSP offload.
+  </summary>
+  <token key="Device" variants="CrasDeviceBreakdown"/>
 </histogram>
 
 <histogram name="Cras.DeviceGain" units="level" expires_after="2024-04-28">
