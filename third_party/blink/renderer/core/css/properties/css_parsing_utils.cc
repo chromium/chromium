@@ -5143,8 +5143,7 @@ CSSValue* ConsumeFontStyle(CSSParserTokenRange& range,
     return ConsumeIdent(range);
   }
 
-  if (RuntimeEnabledFeatures::CSSFontFaceAutoVariableRangeEnabled() &&
-      range.Peek().Id() == CSSValueID::kAuto &&
+  if (range.Peek().Id() == CSSValueID::kAuto &&
       context.Mode() == kCSSFontFaceRuleMode) {
     return ConsumeIdent(range);
   }
@@ -5195,8 +5194,7 @@ CSSIdentifierValue* ConsumeFontStretchKeywordOnly(
        token.Id() <= CSSValueID::kUltraExpanded)) {
     return ConsumeIdent(range);
   }
-  if (RuntimeEnabledFeatures::CSSFontFaceAutoVariableRangeEnabled() &&
-      token.Id() == CSSValueID::kAuto &&
+  if (token.Id() == CSSValueID::kAuto &&
       context.Mode() == kCSSFontFaceRuleMode) {
     return ConsumeIdent(range);
   }
@@ -5240,10 +5238,8 @@ CSSValue* ConsumeFontWeight(CSSParserTokenRange& range,
       return ConsumeIdent(range);
     }
   } else {
-    if ((token.Id() == CSSValueID::kNormal ||
-         token.Id() == CSSValueID::kBold) ||
-        (RuntimeEnabledFeatures::CSSFontFaceAutoVariableRangeEnabled() &&
-         token.Id() == CSSValueID::kAuto)) {
+    if (token.Id() == CSSValueID::kNormal || token.Id() == CSSValueID::kBold ||
+        token.Id() == CSSValueID::kAuto) {
       return ConsumeIdent(range);
     }
   }

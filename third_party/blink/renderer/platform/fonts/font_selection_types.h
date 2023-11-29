@@ -29,7 +29,6 @@
 #include <algorithm>
 
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_table_deleted_value_type.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
@@ -280,9 +279,7 @@ struct FontSelectionRange {
   FontSelectionValue minimum{FontSelectionValue(1)};
   FontSelectionValue maximum{FontSelectionValue(0)};
 
-  RangeType type = RuntimeEnabledFeatures::CSSFontFaceAutoVariableRangeEnabled()
-                       ? kSetFromAuto
-                       : kSetExplicitly;
+  RangeType type = kSetFromAuto;
 };
 
 struct PLATFORM_EXPORT FontSelectionRequest {
