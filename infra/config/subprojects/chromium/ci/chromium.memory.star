@@ -637,5 +637,5 @@ ci.builder(
         category = "iOS",
         short_name = "asn",
     ),
-    xcode = xcode.x14main,
+    xcode = xcode.x15main,
 )
