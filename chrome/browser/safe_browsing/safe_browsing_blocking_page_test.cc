@@ -3542,7 +3542,6 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
   PasswordManagerBrowserTestBase::GetNewTab(browser(), &contents);
 
   // Navigate to the page.
-  contents = browser()->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver observer1(contents);
   const GURL url =
       embedded_test_server()->GetURL("/password/password_form.html");
