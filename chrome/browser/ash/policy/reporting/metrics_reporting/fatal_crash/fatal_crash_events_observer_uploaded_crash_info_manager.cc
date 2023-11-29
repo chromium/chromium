@@ -222,7 +222,7 @@ Status FatalCrashEventsObserver::UploadedCrashInfoManager::WriteSaveFile()
             // Successfully written the save file.
           },
           save_file_, save_file_tmp_, std::move(content).value(),
-          latest_save_file_writing_task_id_->load() + 1,
+          latest_save_file_writing_task_id_->load() + 1u,
           latest_save_file_writing_task_id_.get()));
 
   // Increase the latest task ID only after the latest task has been posted, not

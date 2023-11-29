@@ -48,7 +48,9 @@ using ::ash::cros_healthd::mojom::CrashEventInfoPtr;
 using ::ash::cros_healthd::mojom::CrashUploadInfo;
 using ::ash::cros_healthd::mojom::EventCategoryEnum;
 using ::ash::cros_healthd::mojom::EventInfo;
+using ::testing::AllOf;
 using ::testing::Eq;
+using ::testing::Field;
 using ::testing::FieldsAre;
 using ::testing::SizeIs;
 using ::testing::StrEq;
@@ -1070,6 +1072,56 @@ TEST_F(FatalCrashEventsObserverReportedLocalIdsTest,
             2u);
 }
 
+TEST_F(FatalCrashEventsObserverReportedLocalIdsTest,
+       SlowFileWritingSaveFileWritten) {
+  static constexpr uint64_t kNumOfEvents = 3u;
+  const auto kMaxLocalId = base::NumberToString(kNumOfEvents - 1);
+
+  const auto io_task_runner = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::TaskShutdownBehavior::BLOCK_SHUTDOWN, base::MayBlock()});
+
+  // Create and set up the observer object.
+  auto observer = fatal_crash_test_environment_.CreateFatalCrashEventsObserver(
+      /*reported_local_id_io_task_runner=*/io_task_runner,
+      /*uploaded_crash_info_io_task_runner=*/nullptr);
+  observer->SetReportingEnabled(true);
+
+  // Make sure file loading IO has finished.
+  FatalCrashEventsObserver::TestEnvironment::FlushIoTasks(*observer);
+
+  // Block the IO thread to simulate slow file writing.
+  FatalCrashEventsObserver::TestEnvironment::SequenceBlocker sequence_blocker(
+      io_task_runner);
+
+  // Create a few events.
+  for (uint64_t i = 0u; i < kNumOfEvents; ++i) {
+    auto crash_event_info = NewCrashEventInfo(/*is_uploaded=*/false);
+    crash_event_info->local_id = base::NumberToString(i);
+
+    FakeCrosHealthd::Get()->EmitEventForCategory(
+        EventCategoryEnum::kCrash,
+        EventInfo::NewCrashEventInfo(std::move(crash_event_info)));
+  }
+
+  // Flush current thread so that all file writing IO tasks are posted.
+  base::RunLoop().RunUntilIdle();
+
+  // Release the IO thread and flush IO (done when recreating the fatal crash
+  // events observer).
+  sequence_blocker.Unblock();
+  RecreateAndEnableFatalCrashEventsObserver(observer);
+
+  // Events with duplicate local IDs are skipped, because the save file is
+  // correctly written.
+  EXPECT_THAT(
+      WaitForSkippedFatalCrashEvent(kMaxLocalId, kCaptureTime, *observer),
+      AllOf(Field(&FatalCrashEventsObserver::LocalIdEntry::local_id,
+                  StrEq(kMaxLocalId)),
+            Field(&FatalCrashEventsObserver::LocalIdEntry::capture_timestamp_us,
+                  Eq(FatalCrashEventsObserver::ConvertTimeToMicroseconds(
+                      kCaptureTime)))));
+}
+
 INSTANTIATE_TEST_SUITE_P(
     FatalCrashEventsObserverReportedLocalIdsTests,
     FatalCrashEventsObserverReportedLocalIdsTest,
@@ -1480,9 +1532,8 @@ TEST_F(FatalCrashEventsObserverUploadedCrashTest,
 
   // Create a few events.
   for (uint64_t i = 0u; i < kNumOfEvents; ++i) {
-    const auto local_id = base::NumberToString(i);
     auto crash_event_info = NewCrashEventInfo(/*is_uploaded=*/true);
-    crash_event_info->local_id = local_id;
+    crash_event_info->local_id = base::NumberToString(i);
     // Incremental offset, otherwise the later uploaded crashes would not be
     // reported.
     crash_event_info->upload_info->offset = i;

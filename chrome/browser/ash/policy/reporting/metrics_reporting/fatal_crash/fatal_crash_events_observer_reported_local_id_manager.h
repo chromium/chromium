@@ -184,6 +184,17 @@ class FatalCrashEventsObserver::ReportedLocalIdManager {
   // The task runner that performs IO.
   const scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
 
+  // The counter that keeps track of the number of IO tasks posted. This is
+  // mostly used to avoid duplicate IO tasks, i.e., a later save file writing
+  // task is posted and there's no need to executing an earlier file writing
+  // task that has not started. It is always deleted on the IO thread so that
+  // when an instance of this class is destroyed, this counter remains
+  // accessible for all tasks posted to the IO thread.
+  const std::unique_ptr<std::atomic<uint64_t>, base::OnTaskRunnerDeleter>
+      latest_save_file_writing_task_id_{
+          new std::atomic<uint64_t>(0u),
+          base::OnTaskRunnerDeleter(io_task_runner_)};
+
   base::WeakPtrFactory<ReportedLocalIdManager> weak_factory_{this};
 };
 
