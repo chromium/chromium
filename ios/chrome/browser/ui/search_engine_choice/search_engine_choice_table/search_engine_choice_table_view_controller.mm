@@ -89,7 +89,7 @@ UIImageView* CreateCheckedCircle() {
 
   self.tableView.separatorInset =
       UIEdgeInsetsMake(0, kTableViewSeparatorLeadingInset, 0, 0);
-  self.tableView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+  self.tableView.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
   self.styler.cellBackgroundColor =
       [UIColor colorNamed:kTertiaryBackgroundColor];
   self.tableView.separatorColor = [UIColor colorNamed:kGrey300Color];

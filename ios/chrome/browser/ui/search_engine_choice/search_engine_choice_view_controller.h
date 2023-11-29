@@ -28,6 +28,11 @@
 // Delegate for all the user actions.
 @property(nonatomic, weak) id<SearchEngineChoiceActionDelegate> actionDelegate;
 
+// Whether the user has scrolled to the bottom of the table view.
+@property(nonatomic, assign, readwrite) BOOL didReachBottom;
+// Whether the user has selected a row.
+@property(nonatomic, assign, readwrite) BOOL didUserSelectARow;
+
 - (instancetype)initWithSearchEngineTableViewController:
     (SearchEngineChoiceTableViewController*)tableViewController
     NS_DESIGNATED_INITIALIZER;
