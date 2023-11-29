@@ -407,10 +407,8 @@ TEST_P(ChildProcessSecurityPolicyTest, StandardSchemesTest) {
       // A non-locked process cannot access URL (because with
       // site-per-process all the URLs need to be isolated).
       EXPECT_FALSE(p->CanCommitURL(kRendererID, commit_url)) << commit_url;
-      EXPECT_FALSE(handle.CanCommitURL(commit_url)) << commit_url;
     } else {
       EXPECT_TRUE(p->CanCommitURL(kRendererID, commit_url)) << commit_url;
-      EXPECT_TRUE(handle.CanCommitURL(commit_url)) << commit_url;
     }
   }
 
@@ -431,7 +429,6 @@ TEST_P(ChildProcessSecurityPolicyTest, StandardSchemesTest) {
   for (const auto& url_string : kFailedCommitURLs) {
     const GURL commit_url(url_string);
     EXPECT_FALSE(p->CanCommitURL(kRendererID, commit_url)) << commit_url;
-    EXPECT_FALSE(handle.CanCommitURL(commit_url)) << commit_url;
   }
 
   p->Remove(kRendererID);

@@ -286,14 +286,6 @@ bool ChildProcessSecurityPolicyImpl::Handle::is_valid() const {
   return child_id_ != ChildProcessHost::kInvalidUniqueID;
 }
 
-bool ChildProcessSecurityPolicyImpl::Handle::CanCommitURL(const GURL& url) {
-  if (child_id_ == ChildProcessHost::kInvalidUniqueID)
-    return false;
-
-  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  return policy->CanCommitURL(child_id_, url);
-}
-
 bool ChildProcessSecurityPolicyImpl::Handle::CanReadFile(
     const base::FilePath& file) {
   if (child_id_ == ChildProcessHost::kInvalidUniqueID)

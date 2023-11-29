@@ -90,9 +90,6 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
     // created this object after the process has already been destructed.
     bool is_valid() const;
 
-    // Whether the process is allowed to commit a document from the given URL.
-    bool CanCommitURL(const GURL& url);
-
     // Before servicing a child process's request to upload a file to the web,
     // the browser should call this method to determine whether the process has
     // the capability to upload the requested file.
