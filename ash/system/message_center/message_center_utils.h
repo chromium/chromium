@@ -21,7 +21,11 @@ namespace views {
 class View;
 }
 
-namespace ash::message_center_utils {
+namespace ash {
+
+class NotificationGroupingController;
+
+namespace message_center_utils {
 
 // Return a hash string derived from `notifier_id` data. This is appended to a
 // notification's `id` to create a unique identifier for a grouped notification.
@@ -60,6 +64,12 @@ GetActiveNotificationViewControllerForDisplay(int64_t display_id);
 // `UnifiedMessageListView`.
 message_center::NotificationViewController*
 GetActiveNotificationViewControllerForNotificationView(
+    views::View* notification_view);
+
+// Gets the grouping controller for the provided notification view. Each display
+// has it's own `NotificationGroupingController` so we need to look up the
+// display for the provide view first.
+NotificationGroupingController* GetGroupingControllerForNotificationView(
     views::View* notification_view);
 
 // Utils for animation within a notification view.
@@ -107,6 +117,7 @@ bool IsAshNotificationView(views::View* sender);
 // checks for casting `AshNotificationView*`.
 bool IsAshNotification(const message_center::Notification* notification);
 
-}  // namespace ash::message_center_utils
+}  // namespace message_center_utils
+}  // namespace ash
 
 #endif  // ASH_SYSTEM_MESSAGE_CENTER_MESSAGE_CENTER_UTILS_H_
