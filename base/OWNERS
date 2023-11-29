@@ -1,7 +1,7 @@
 # See //base/README.md to find qualification for being an owner.
 
 set noparent
-# NOTE: keep this in sync with lsc-owners-override@chromium.org owners
+# NOTE: keep this in sync with global-owners-override@chromium.org owners
 # by emailing lsc-policy@chromium.org when this list changes.
 altimin@chromium.org
 danakj@chromium.org
@@ -13,7 +13,7 @@ mark@chromium.org
 thakis@chromium.org
 thestig@chromium.org
 wez@chromium.org
-# NOTE: keep this in sync with lsc-owners-override@chromium.org owners
+# NOTE: keep this in sync with global-owners-override@chromium.org owners
 # by emailing lsc-policy@chromium.org when this list changes.
 
 # per-file rules:
