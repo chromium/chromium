@@ -540,8 +540,8 @@ export async function*
     childEntriesToReadDeeper.push(...subDirectories);
     // Fetch metadata if the entry supports Drive specific share icon.
     const state = getStore().getState();
-    const parentFileData = getFileData(state, validEntry.toURL())!;
-    if (isEntryInsideDrive(parentFileData)) {
+    const parentFileData = getFileData(state, validEntry.toURL());
+    if (parentFileData && isEntryInsideDrive(parentFileData)) {
       const entriesNeedMetadata = subDirectories.filter(subDirectory => {
         const fileData = getFileData(state, subDirectory.toURL());
         return fileData && shouldSupportDriveSpecificIcons(fileData);

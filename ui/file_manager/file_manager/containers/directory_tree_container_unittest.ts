@@ -44,6 +44,7 @@ export function setUp() {
   installMockChrome(mockChrome);
   // Initialize directory tree container.
   const {directoryModel, volumeManager} = window.fileManager;
+  window.store = null;
   directoryTreeContainer =
       new DirectoryTreeContainer(document.body, directoryModel, volumeManager);
 }
@@ -130,6 +131,7 @@ function addTeamDrivesToStore(state: State, childEntries: string[] = []) {
   const teamDrivesEntry = driveVolumeInfo.sharedDriveDisplayRoot;
   state.allEntries[teamDrivesEntry.toURL()] =
       convertEntryToFileData(teamDrivesEntry);
+  state.uiEntries.push(teamDrivesEntry.toURL());
   const driveRootEntryList =
       getEntry(state, driveRootEntryListKey) as EntryList;
   const existingChildren = driveRootEntryList.getUIChildren();
@@ -152,6 +154,7 @@ function addComputerDrivesToStore(state: State, childEntries: string[] = []) {
   const computersEntry = driveVolumeInfo.computersDisplayRoot;
   state.allEntries[computersEntry.toURL()] =
       convertEntryToFileData(computersEntry);
+  state.uiEntries.push(computersEntry.toURL());
   const driveRootEntryList =
       getEntry(state, driveRootEntryListKey) as EntryList;
   const existingChildren = driveRootEntryList.getUIChildren();
@@ -189,7 +192,7 @@ function addAndroidAppToStore(state: State) {
  * - Shared with me
  * - Offline
  */
-export async function testCreateDirectoryTree(done: () => void) {
+export async function testCreateDirectoryTree() {
   const initialState = getEmptyState();
   const directoryTree = directoryTreeContainer.tree;
 
@@ -208,14 +211,12 @@ export async function testCreateDirectoryTree(done: () => void) {
 
   await waitUntil(() => {
     // Under the drive item, there exist 3 entries.
-    return driveItem.items.length == 3;
+    return driveItem.items.length === 3;
   });
   // There exist 1 my drive entry and 2 fake entries under the drive item.
   assertEquals('My Drive', driveItem.items[0]!.label);
   assertEquals('Shared with me', driveItem.items[1]!.label);
   assertEquals('Offline', driveItem.items[2]!.label);
-
-  done();
 }
 
 /**
@@ -229,7 +230,7 @@ export async function testCreateDirectoryTree(done: () => void) {
  * - Shared with me
  * - Offline
  */
-export async function testCreateDirectoryTreeWithTeamDrive(done: () => void) {
+export async function testCreateDirectoryTreeWithTeamDrive() {
   const initialState = getEmptyState();
   const directoryTree = directoryTreeContainer.tree;
 
@@ -248,25 +249,24 @@ export async function testCreateDirectoryTreeWithTeamDrive(done: () => void) {
   assertEquals('Downloads', myFilesItem.label);
   assertEquals('Google Drive', driveItem.label);
 
+  // Expand Drive before checking Team drives.
+  driveItem.expanded = true;
   await waitUntil(() => {
     // Under the drive item, there exist 4 entries.
-    return driveItem.items.length == 4;
+    return driveItem.items.length === 4;
   });
   // There exist 1 my drive entry and 3 fake entries under the drive item.
   assertEquals('My Drive', driveItem.items[0]!.label);
   assertEquals('Shared drives', driveItem.items[1]!.label);
   assertEquals('Shared with me', driveItem.items[2]!.label);
   assertEquals('Offline', driveItem.items[3]!.label);
-
-  done();
 }
 
 /**
  * Test case for creating tree with empty Team Drives.
  * The Team Drives subtree should be removed if the user has no team drives.
  */
-export async function testCreateDirectoryTreeWithEmptyTeamDrive(
-    done: () => void) {
+export async function testCreateDirectoryTreeWithEmptyTeamDrive() {
   const initialState = getEmptyState();
   const directoryTree = directoryTreeContainer.tree;
 
@@ -285,22 +285,22 @@ export async function testCreateDirectoryTreeWithEmptyTeamDrive(
   assertEquals('Downloads', myFilesItem.label);
   assertEquals('Google Drive', driveItem.label);
 
+  // Expand Drive before checking Team drives.
+  driveItem.expanded = true;
   await waitUntil(() => {
     // Root entries under Drive volume is generated, Team Drives isn't
     // included because it has no child.
     // See testCreateDirectoryTreeWithTeamDrive for detail.
-    return driveItem.items.length == 3;
+    return driveItem.items.length === 3;
   });
   let teamDrivesItemFound = false;
   for (let i = 0; i < driveItem.items.length; i++) {
-    if (driveItem.items[i]!.label == 'Shared drives') {
+    if (driveItem.items[i]!.label === 'Shared drives') {
       teamDrivesItemFound = true;
       break;
     }
   }
   assertFalse(teamDrivesItemFound, 'Team Drives should NOT be generated');
-
-  done();
 }
 
 /**
@@ -314,7 +314,7 @@ export async function testCreateDirectoryTreeWithEmptyTeamDrive(
  * - Shared with me
  * - Offline
  */
-export async function testCreateDirectoryTreeWithComputers(done: () => void) {
+export async function testCreateDirectoryTreeWithComputers() {
   const initialState = getEmptyState();
   const directoryTree = directoryTreeContainer.tree;
 
@@ -333,25 +333,24 @@ export async function testCreateDirectoryTreeWithComputers(done: () => void) {
   assertEquals('Downloads', myFilesItem.label);
   assertEquals('Google Drive', driveItem.label);
 
+  // Expand Drive before checking Computers.
+  driveItem.expanded = true;
   await waitUntil(() => {
     // Under the drive item, there exist 4 entries.
-    return driveItem.items.length == 4;
+    return driveItem.items.length === 4;
   });
   // There exist 1 my drive entry and 3 fake entries under the drive item.
   assertEquals('My Drive', driveItem.items[0]!.label);
   assertEquals('Computers', driveItem.items[1]!.label);
   assertEquals('Shared with me', driveItem.items[2]!.label);
   assertEquals('Offline', driveItem.items[3]!.label);
-
-  done();
 }
 
 /**
  * Test case for creating tree with empty Computers.
  * The Computers subtree should be removed if the user has no computers.
  */
-export async function testCreateDirectoryTreeWithEmptyComputers(
-    done: () => void) {
+export async function testCreateDirectoryTreeWithEmptyComputers() {
   const initialState = getEmptyState();
   const directoryTree = directoryTreeContainer.tree;
 
@@ -370,22 +369,22 @@ export async function testCreateDirectoryTreeWithEmptyComputers(
   assertEquals('Downloads', myFilesItem.label);
   assertEquals('Google Drive', driveItem.label);
 
+  // Expand Drive before checking Computers.
+  driveItem.expanded = true;
   await waitUntil(() => {
     // Root entries under Drive volume is generated, Computers isn't
     // included because it has no child.
     // See testCreateDirectoryTreeWithComputers for detail.
-    return driveItem.items.length == 3;
+    return driveItem.items.length === 3;
   });
   let computersItemFound = false;
   for (let i = 0; i < driveItem.items.length; i++) {
-    if (driveItem.items[i]!.label == 'Computers') {
+    if (driveItem.items[i]!.label === 'Computers') {
       computersItemFound = true;
       break;
     }
   }
   assertFalse(computersItemFound, 'Computers should NOT be generated');
-
-  done();
 }
 
 /**
@@ -400,8 +399,7 @@ export async function testCreateDirectoryTreeWithEmptyComputers(
  * - Shared with me
  * - Offline
  */
-export async function testCreateDirectoryTreeWithTeamDrivesAndComputers(
-    done: () => void) {
+export async function testCreateDirectoryTreeWithTeamDrivesAndComputers() {
   const initialState = getEmptyState();
   const directoryTree = directoryTreeContainer.tree;
 
@@ -422,9 +420,11 @@ export async function testCreateDirectoryTreeWithTeamDrivesAndComputers(
   assertEquals('Downloads', myFilesItem.label);
   assertEquals('Google Drive', driveItem.label);
 
+  // Expand Drive before checking Team drives and Computers.
+  driveItem.expanded = true;
   await waitUntil(() => {
     // Under the drive item, there exist 5 entries.
-    return driveItem.items.length == 5;
+    return driveItem.items.length === 5;
   });
   // There exist 1 my drive entry and 4 fake entries under the drive item.
   assertEquals('My Drive', driveItem.items[0]!.label);
@@ -432,8 +432,6 @@ export async function testCreateDirectoryTreeWithTeamDrivesAndComputers(
   assertEquals('Computers', driveItem.items[2]!.label);
   assertEquals('Shared with me', driveItem.items[3]!.label);
   assertEquals('Offline', driveItem.items[4]!.label);
-
-  done();
 }
 
 /**
@@ -448,7 +446,7 @@ export async function testCreateDirectoryTreeWithTeamDrivesAndComputers(
  * Google Drive
  * Android app 1
  */
-export async function testSeparatorInNavigationSections(done: () => void) {
+export async function testSeparatorInNavigationSections() {
   const initialState = getEmptyState();
   const directoryTree = directoryTreeContainer.tree;
 
@@ -477,8 +475,6 @@ export async function testSeparatorInNavigationSections(done: () => void) {
   // Android app should have separator, because it's a new section but not the
   // first section.
   assertTrue(androidAppItem.separator);
-
-  done();
 }
 
 /**
@@ -487,8 +483,7 @@ export async function testSeparatorInNavigationSections(done: () => void) {
  * Mounts/unmounts removable and archive volumes, and checks these volumes come
  * up to/disappear from the list correctly.
  */
-export async function testDirectoryTreeUpdateWithVolumeChanges(
-    done: () => void) {
+export async function testDirectoryTreeUpdateWithVolumeChanges() {
   const initialState = getEmptyState();
   const directoryTree = directoryTreeContainer.tree;
 
@@ -558,8 +553,6 @@ export async function testDirectoryTreeUpdateWithVolumeChanges(
         'Removable 1',
       ],
       getDirectoryTreeItemLabels(directoryTree));
-
-  done();
 }
 
 /**
@@ -569,7 +562,7 @@ export async function testDirectoryTreeUpdateWithVolumeChanges(
  * in the directory model as well: the children shouldn't be loaded, and
  * clicking on the item or the expand icon shouldn't do anything.
  */
-export async function testDirectoryTreeWithAndroidDisabled(done: () => void) {
+export async function testDirectoryTreeWithAndroidDisabled() {
   const initialState = getEmptyState();
   const directoryTree = directoryTreeContainer.tree;
 
@@ -612,8 +605,6 @@ export async function testDirectoryTreeWithAndroidDisabled(done: () => void) {
   expandIcon.click();
   await waitForElementUpdate(androidItem);
   assertFalse(androidItem.expanded);
-
-  done();
 }
 
 /**
@@ -622,7 +613,7 @@ export async function testDirectoryTreeWithAndroidDisabled(done: () => void) {
  * If removable volumes are disabled, they should be allowed to mount/unmount,
  * but cannot be selected or expanded.
  */
-export async function testDirectoryTreeWithRemovableDisabled(done: () => void) {
+export async function testDirectoryTreeWithRemovableDisabled() {
   const initialState = getEmptyState();
   const directoryTree = directoryTreeContainer.tree;
 
@@ -668,8 +659,6 @@ export async function testDirectoryTreeWithRemovableDisabled(done: () => void) {
   // Unmount the removable and assert that it's removed from the directory.
   store.dispatch(removeVolume({volumeId: removableVolumeInfo.volumeId}));
   await waitUntil(() => directoryTree.items.length === 2);
-
-  done();
 }
 
 /**
@@ -679,7 +668,7 @@ export async function testDirectoryTreeWithRemovableDisabled(done: () => void) {
  * well: the children shouldn't be loaded, and clicking on the item or the
  * expand icon shouldn't do anything.
  */
-export async function testDirectoryTreeWithDriveDisabled(done: () => void) {
+export async function testDirectoryTreeWithDriveDisabled() {
   const initialState = getEmptyState();
   const directoryTree = directoryTreeContainer.tree;
 
@@ -726,8 +715,6 @@ export async function testDirectoryTreeWithDriveDisabled(done: () => void) {
   await waitForElementUpdate(driveItem);
   isExpanded = treeItemElement.getAttribute('aria-expanded') || 'false';
   assertEquals('false', isExpanded);
-
-  done();
 }
 
 /**
@@ -735,7 +722,7 @@ export async function testDirectoryTreeWithDriveDisabled(done: () => void) {
  * Team Drives subtree should be shown after the change notification is
  * delivered.
  */
-export async function testAddFirstTeamDrive(done: () => void) {
+export async function testAddFirstTeamDrive() {
   const initialState = getEmptyState();
   const directoryTree = directoryTreeContainer.tree;
 
@@ -764,12 +751,12 @@ export async function testAddFirstTeamDrive(done: () => void) {
   for (const listener of directoryChangedListeners) {
     listener(event);
   }
+  // Expand Drive before checking Team drives.
+  driveItem.expanded = true;
   await waitUntil(() => {
     return driveItem.items.length === 4 &&
         driveItem.items[1]!.label === 'Shared drives';
   });
-
-  done();
 }
 
 /**
@@ -777,7 +764,7 @@ export async function testAddFirstTeamDrive(done: () => void) {
  * Team Drives subtree should be removed after the change notification is
  * delivered.
  */
-export async function testRemoveLastTeamDrive(done: () => void) {
+export async function testRemoveLastTeamDrive() {
   const initialState = getEmptyState();
   const directoryTree = directoryTreeContainer.tree;
 
@@ -792,9 +779,11 @@ export async function testRemoveLastTeamDrive(done: () => void) {
   await waitUntil(() => directoryTree.items.length === 2);
   const driveItem = directoryTree.items[1]!;
 
+  // Expand Drive before checking Team drives .
+  driveItem.expanded = true;
   // Drive should include My Drive, Team drives, Shared with me, Offline.
   await waitUntil(() => {
-    return driveItem.items.length == 4;
+    return driveItem.items.length === 4;
   });
 
   // Remove the only child from Team drives.
@@ -818,8 +807,6 @@ export async function testRemoveLastTeamDrive(done: () => void) {
     }
     return true;
   });
-
-  done();
 }
 
 /**
@@ -827,7 +814,7 @@ export async function testRemoveLastTeamDrive(done: () => void) {
  * Computers subtree should be shown after the change notification is
  * delivered.
  */
-export async function testAddFirstComputer(done: () => void) {
+export async function testAddFirstComputer() {
   const initialState = getEmptyState();
   const directoryTree = directoryTreeContainer.tree;
 
@@ -858,12 +845,12 @@ export async function testAddFirstComputer(done: () => void) {
   for (const listener of directoryChangedListeners) {
     listener(event);
   }
+  // Expand Drive before checking Computers.
+  driveItem.expanded = true;
   await waitUntil(() => {
     return driveItem.items.length === 4 &&
         driveItem.items[1]!.label === 'Computers';
   });
-
-  done();
 }
 
 /**
@@ -871,7 +858,7 @@ export async function testAddFirstComputer(done: () => void) {
  * Computers subtree should be removed after the change notification is
  * delivered.
  */
-export async function testRemoveLastComputer(done: () => void) {
+export async function testRemoveLastComputer() {
   const initialState = getEmptyState();
   const directoryTree = directoryTreeContainer.tree;
 
@@ -886,9 +873,11 @@ export async function testRemoveLastComputer(done: () => void) {
   await waitUntil(() => directoryTree.items.length === 2);
   const driveItem = directoryTree.items[1]!;
 
+  // Expand Drive before checking Computers.
+  driveItem.expanded = true;
   // Drive should include My Drive, Computers, Shared with me, Offline.
   await waitUntil(() => {
-    return driveItem.items.length == 4;
+    return driveItem.items.length === 4;
   });
 
   // Check that removing the local computer "My Laptop" results in the entire
@@ -913,15 +902,13 @@ export async function testRemoveLastComputer(done: () => void) {
     }
     return true;
   });
-
-  done();
 }
 
 /**
  * Test adding FSPs.
  * Sub directories should be fetched for FSPs, but not for the Smb FSP.
  */
-export async function testAddProviders(done: () => void) {
+export async function testAddProviders() {
   const initialState = getEmptyState();
   const directoryTree = directoryTreeContainer.tree;
 
@@ -991,15 +978,13 @@ export async function testAddProviders(done: () => void) {
   // Ensure there are no entries under smbItem.
   assertEquals(0, smbItem.items.length);
   assertEquals(0, smbFsItem.items.length);
-
-  done();
 }
 
 /**
  * Test sub directories are not fetched for SMB, until the directory is
  * clicked.
  */
-export async function testSmbNotFetchedUntilClick(done: () => void) {
+export async function testSmbNotFetchedUntilClick() {
   const initialState = getEmptyState();
   const directoryTree = directoryTreeContainer.tree;
 
@@ -1038,15 +1023,13 @@ export async function testSmbNotFetchedUntilClick(done: () => void) {
   await waitUntil(() => {
     // Wait until the SMB share item has been updated with its sub
     // directories.
-    return smbItem.items.length == 1;
+    return smbItem.items.length === 1;
   });
   assertEquals('smb_child', smbItem.items[0]!.label);
-
-  done();
 }
 
 /** Test aria-expanded attribute for directory tree item. */
-export async function testAriaExpanded(done: () => void) {
+export async function testAriaExpanded() {
   const initialState = getEmptyState();
   const directoryTree = directoryTreeContainer.tree;
 
@@ -1089,12 +1072,10 @@ export async function testAriaExpanded(done: () => void) {
 
   // After clicking on expand-icon, aria-expanded should be set to false.
   assertEquals('false', treeItemElement.getAttribute('aria-expanded'));
-
-  done();
 }
 
 /** Test aria-description attribute for selected directory tree item. */
-export async function testAriaDescription(done: () => void) {
+export async function testAriaDescription() {
   const initialState = getEmptyState();
   const directoryTree = directoryTreeContainer.tree;
 
@@ -1121,6 +1102,4 @@ export async function testAriaDescription(done: () => void) {
   // Now the aria-description on Drive should have value.
   assertEquals(ariaDescription, driveItem.getAttribute('aria-description'));
   assertFalse(myFilesItem.hasAttribute('aria-description'));
-
-  done();
 }

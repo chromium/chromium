@@ -427,14 +427,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, CloudPanelContainer) {
   RunTestURL("containers/cloud_panel_container_unittest.js");
 }
 
-// TODO(b/312121966): Flaky on linux-chromeos-dbg, Linux ChromiumOS MSan
-// Tests and Linux Chromium OS ASan LSan Tests.
-#if !defined(NDEBUG) || defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER)
-#define MAYBE_DirectoryTreeContainer DISABLED_DirectoryTreeContainer
-#else
-#define MAYBE_DirectoryTreeContainer DirectoryTreeContainer
-#endif
-IN_PROC_BROWSER_TEST_F(FileManagerJsTest, MAYBE_DirectoryTreeContainer) {
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DirectoryTreeContainer) {
   RunTestURL("containers/directory_tree_container_unittest.js");
 }
 
