@@ -10,7 +10,7 @@ source_set("privacy_ui") {
     "privacy_safe_browsing_consumer.h",
     "privacy_safe_browsing_coordinator.h",
     "privacy_safe_browsing_coordinator.mm",
-    "privacy_safe_browsing_mediator+internal.h",
+    "privacy_safe_browsing_mediator+Testing.h",
     "privacy_safe_browsing_mediator.h",
     "privacy_safe_browsing_mediator.mm",
     "privacy_safe_browsing_navigation_commands.h",

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_coordinator.h"
+#import "ios/chrome/browser/ui/promos_manager/promos_manager_coordinator+Testing.h"
 
 #import <Foundation/Foundation.h>
 
@@ -187,24 +188,6 @@
   if (nextPromoForDisplay.has_value()) {
     [self displayPromo:nextPromoForDisplay.value()];
   }
-}
-
-- (void)dismissViewControllers {
-  if (self.viewController) {
-    [self.viewController.presentingViewController
-        dismissViewControllerAnimated:YES
-                           completion:nil];
-    self.viewController = nil;
-  }
-
-  if (self.banneredViewController) {
-    [self.banneredViewController.presentingViewController
-        dismissViewControllerAnimated:YES
-                           completion:nil];
-    self.banneredViewController = nil;
-  }
-
-  [self promoWasDismissed];
 }
 
 - (void)promoWasDismissed {
@@ -541,6 +524,24 @@
 }
 
 #pragma mark - Private
+
+- (void)dismissViewControllers {
+  if (self.viewController) {
+    [self.viewController.presentingViewController
+        dismissViewControllerAnimated:YES
+                           completion:nil];
+    self.viewController = nil;
+  }
+
+  if (self.banneredViewController) {
+    [self.banneredViewController.presentingViewController
+        dismissViewControllerAnimated:YES
+                           completion:nil];
+    self.banneredViewController = nil;
+  }
+
+  [self promoWasDismissed];
+}
 
 - (void)registerPromos {
   // Add StandardPromoDisplayHandler promos here. For example:

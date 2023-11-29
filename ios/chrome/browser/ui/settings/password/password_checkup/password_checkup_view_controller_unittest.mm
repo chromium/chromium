@@ -25,7 +25,7 @@
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_commands.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_constants.h"
-#import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_mediator+private.h"
+#import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_mediator+Testing.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_mediator.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"

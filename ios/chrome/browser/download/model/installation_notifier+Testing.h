@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_DOWNLOAD_MODEL_INSTALLATION_NOTIFIER_PRIVATE_H_
-#define IOS_CHROME_BROWSER_DOWNLOAD_MODEL_INSTALLATION_NOTIFIER_PRIVATE_H_
+#ifndef IOS_CHROME_BROWSER_DOWNLOAD_MODEL_INSTALLATION_NOTIFIER_TESTING_H_
+#define IOS_CHROME_BROWSER_DOWNLOAD_MODEL_INSTALLATION_NOTIFIER_TESTING_H_
 
 #import "net/base/backoff_entry.h"
 
-// Class extension exposing private methods of InstallationNotifier
-// for testing.
-@interface InstallationNotifier ()
+// Testing category exposing private methods of InstallationNotifier for
+// testing.
+@interface InstallationNotifier (Testing)
 
 // Sets the dispatcher.
 - (void)setDispatcher:(id<DispatcherProtocol>)dispatcher;
@@ -31,4 +31,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_DOWNLOAD_MODEL_INSTALLATION_NOTIFIER_PRIVATE_H_
+#endif  // IOS_CHROME_BROWSER_DOWNLOAD_MODEL_INSTALLATION_NOTIFIER_TESTING_H_

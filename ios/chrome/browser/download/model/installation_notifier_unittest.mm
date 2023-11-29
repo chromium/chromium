@@ -3,14 +3,13 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/download/model/installation_notifier.h"
-
-#import "base/task/current_thread.h"
+#import "ios/chrome/browser/download/model/installation_notifier+Testing.h"
 
 #import <UIKit/UIKit.h>
 #import <stdint.h>
 
 #import "base/ios/block_types.h"
-#import "ios/chrome/browser/download/model/installation_notifier+private.h"
+#import "base/task/current_thread.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "net/base/backoff_entry.h"
 #import "testing/platform_test.h"
@@ -32,8 +31,7 @@
   return self;
 }
 
-#pragma mark -
-#pragma mark Testing methods
+#pragma mark - Testing methods
 
 - (void)executeAfter:(int)dispatchCount block:(ProceduralBlock)block {
   [_blocks setObject:[block copy]
@@ -44,8 +42,7 @@
   return _lastDelayInNSec;
 }
 
-#pragma mark -
-#pragma mark DispatcherProtocol
+#pragma mark - DispatcherProtocol
 
 - (void)dispatchAfter:(int64_t)delayInNSec withBlock:(dispatch_block_t)block {
   _lastDelayInNSec = delayInNSec;
