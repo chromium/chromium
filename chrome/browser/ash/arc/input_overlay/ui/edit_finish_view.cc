@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_finish_view.h"
 
+#include <utility>
+
 #include "ash/app_list/app_list_util.h"
 #include "ash/style/style_util.h"
 #include "base/functional/bind.h"
@@ -104,7 +106,8 @@ class EditFinishView::ChildButton : public views::LabelButton {
               OnMousePressedCallback on_mouse_pressed_callback,
               OnMouseDraggedCallback on_mouse_dragged_callback,
               OnMouseReleasedCallback on_mouse_released_callback)
-      : LabelButton(callback, l10n_util::GetStringUTF16(text_source_id)),
+      : LabelButton(std::move(callback),
+                    l10n_util::GetStringUTF16(text_source_id)),
         on_mouse_pressed_callback_(on_mouse_pressed_callback),
         on_mouse_dragged_callback_(on_mouse_dragged_callback),
         on_mouse_released_callback_(on_mouse_released_callback) {

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/menu_entry_view.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "ash/app_list/app_list_util.h"
 #include "ash/style/style_util.h"
@@ -60,9 +61,10 @@ MenuEntryView* MenuEntryView::Show(
     DisplayOverlayController* display_overlay_controller) {
   auto* menu_entry =
       display_overlay_controller->GetOverlayWidgetContentsView()->AddChildView(
-          std::make_unique<MenuEntryView>(pressed_callback,
-                                          on_position_changed_callback,
-                                          display_overlay_controller));
+          std::make_unique<MenuEntryView>(
+              std::move(pressed_callback),
+              std::move(on_position_changed_callback),
+              display_overlay_controller));
   menu_entry->Init();
   return menu_entry;
 }

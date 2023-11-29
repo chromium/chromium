@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/arc/input_overlay/ui/input_menu_view.h"
 
+#include <utility>
+
 #include "ash/components/arc/compat_mode/style/arc_color_provider.h"
 #include "ash/login/ui/views_utils.h"
 #include "ash/public/cpp/new_window_delegate.h"
@@ -124,7 +126,7 @@ class InputMenuView::FeedbackButton : public views::LabelButton {
  public:
   explicit FeedbackButton(PressedCallback callback = PressedCallback(),
                           const std::u16string& text = std::u16string())
-      : LabelButton(callback, text) {
+      : LabelButton(std::move(callback), text) {
     SetAccessibleName(
         l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_MENU_SEND_FEEDBACK));
     SetBorder(views::CreateEmptyBorder(
