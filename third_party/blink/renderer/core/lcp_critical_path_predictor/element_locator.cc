@@ -6,6 +6,7 @@
 
 #include "base/containers/span.h"
 #include "base/logging.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/html/parser/html_token.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -187,9 +188,9 @@ void TokenStreamMatcher::InitSets() {
 }
 
 TokenStreamMatcher::TokenStreamMatcher(Vector<ElementLocator> locators,
-                                       bool match_against_restricted_set)
+                                       bool enable_perf_optimizations)
     : locators_(locators),
-      match_against_restricted_set_(match_against_restricted_set) {}
+      enable_perf_optimizations_(enable_perf_optimizations) {}
 
 TokenStreamMatcher::~TokenStreamMatcher() = default;
 namespace {
@@ -260,6 +261,11 @@ bool MatchLocator(const ElementLocator& locator,
 void TokenStreamMatcher::ObserveEndTag(const StringImpl* tag_name) {
   CHECK(!html_stack_.empty());
 
+  // Don't build stack if locators are empty.
+  if (enable_perf_optimizations_ && locators_.empty()) {
+    return;
+  }
+
   wtf_size_t i;
   for (i = html_stack_.size() - 1; i > 0; --i) {
     if (html_stack_[i].tag_name == tag_name) {
@@ -311,6 +317,11 @@ bool TokenStreamMatcher::ObserveStartTagAndReportMatch(
     return false;
   }
 
+  // Don't build stack if locators are empty.
+  if (enable_perf_optimizations_ && locators_.empty()) {
+    return false;
+  }
+
   // We implement a subset of
   // https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inbody
 
@@ -330,8 +341,8 @@ bool TokenStreamMatcher::ObserveStartTagAndReportMatch(
 
   bool matched = false;
   // Invoke matching only if set to match all tags, or this is an IMG tag.
-  bool should_match_at_this_tag = !match_against_restricted_set_ ||
-                                  (RestrictedTagSubset().Contains(tag_name));
+  bool should_match_at_this_tag =
+      !enable_perf_optimizations_ || (RestrictedTagSubset().Contains(tag_name));
   if (should_match_at_this_tag) {
     auto stack_span = base::make_span(html_stack_.begin(), html_stack_.end());
     for (const ElementLocator& locator : locators_) {

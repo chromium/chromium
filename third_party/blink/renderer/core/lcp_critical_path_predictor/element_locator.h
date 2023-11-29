@@ -49,7 +49,7 @@ struct HTMLStackItem {
 class CORE_EXPORT TokenStreamMatcher {
  public:
   explicit TokenStreamMatcher(Vector<ElementLocator>,
-                              bool match_against_restricted_set = false);
+                              bool enable_perf_optimizations = false);
   ~TokenStreamMatcher();
 
   static void InitSets();
@@ -69,7 +69,7 @@ class CORE_EXPORT TokenStreamMatcher {
 #endif
 
   const Vector<ElementLocator> locators_;
-  bool match_against_restricted_set_;
+  bool enable_perf_optimizations_ = false;
 
   // https://html.spec.whatwg.org/multipage/parsing.html#stack-of-open-elements
   Vector<HTMLStackItem> html_stack_{
