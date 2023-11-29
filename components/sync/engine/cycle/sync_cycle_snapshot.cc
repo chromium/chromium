@@ -66,8 +66,7 @@ SyncCycleSnapshot::SyncCycleSnapshot(const SyncCycleSnapshot& other) = default;
 SyncCycleSnapshot::~SyncCycleSnapshot() = default;
 
 base::Value::Dict SyncCycleSnapshot::ToValue() const {
-  std::string encoded_bag_of_chips;
-  base::Base64Encode(bag_of_chips_, &encoded_bag_of_chips);
+  std::string encoded_bag_of_chips = base::Base64Encode(bag_of_chips_);
 
   return base::Value::Dict()
       .Set("birthday", birthday_)
