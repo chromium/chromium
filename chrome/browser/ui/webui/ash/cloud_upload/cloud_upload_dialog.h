@@ -175,6 +175,7 @@ class CloudOpenTask : public BrowserListObserver,
   // fails.
   void FinishedDriveUpload(absl::optional<GURL> url, int64_t size);
   void FinishedOneDriveUpload(base::WeakPtr<Profile> profile_weak_ptr,
+                              OfficeTaskResult task_result,
                               absl::optional<storage::FileSystemURL> url,
                               int64_t size);
 

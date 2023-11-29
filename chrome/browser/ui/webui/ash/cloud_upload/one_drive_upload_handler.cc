@@ -39,9 +39,11 @@ namespace {
 // Runs the callback provided to `OneDriveUploadHandler::Upload`.
 void OnUploadDone(scoped_refptr<OneDriveUploadHandler> one_drive_upload_handler,
                   OneDriveUploadHandler::UploadCallback callback,
+                  OfficeTaskResult task_result,
                   absl::optional<FileSystemURL> uploaded_file_url,
                   int64_t upload_size) {
-  std::move(callback).Run(std::move(uploaded_file_url), upload_size);
+  std::move(callback).Run(task_result, std::move(uploaded_file_url),
+                          upload_size);
 }
 
 }  // namespace
@@ -169,14 +171,13 @@ void OneDriveUploadHandler::CheckReauthenticationAndStartIOTask(
     return;
   }
 
-  const file_manager::io_task::OperationType operation_type =
-      GetUploadType(profile_, source_url_) == UploadType::kCopy
-          ? file_manager::io_task::OperationType::kCopy
-          : file_manager::io_task::OperationType::kMove;
+  operation_type_ = GetUploadType(profile_, source_url_) == UploadType::kCopy
+                        ? file_manager::io_task::OperationType::kCopy
+                        : file_manager::io_task::OperationType::kMove;
   std::vector<FileSystemURL> source_urls{source_url_};
   std::unique_ptr<file_manager::io_task::IOTask> task =
       std::make_unique<file_manager::io_task::CopyOrMoveIOTask>(
-          operation_type, std::move(source_urls),
+          operation_type_, std::move(source_urls),
           std::move(destination_folder_url), profile_, file_system_context_,
           /*show_notification=*/false);
 
@@ -216,8 +217,12 @@ void OneDriveUploadHandler::OnSuccessfulUpload(
   if (notification_manager_) {
     notification_manager_->MarkUploadComplete();
   }
+  const OfficeTaskResult task_result =
+      operation_type_ == file_manager::io_task::OperationType::kCopy
+          ? OfficeTaskResult::kCopied
+          : OfficeTaskResult::kMoved;
   if (callback_) {
-    std::move(callback_).Run(url, upload_size_);
+    std::move(callback_).Run(task_result, url, upload_size_);
   }
 }
 
@@ -231,7 +236,8 @@ void OneDriveUploadHandler::OnFailedUpload(
     notification_manager_->ShowUploadError(error_message);
   }
   if (callback_) {
-    std::move(callback_).Run(absl::nullopt, 0);
+    std::move(callback_).Run(OfficeTaskResult::kFailedToUpload, absl::nullopt,
+                             0);
   }
 }
 

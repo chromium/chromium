@@ -830,6 +830,7 @@ void CloudOpenTask::FinishedDriveUpload(absl::optional<GURL> url,
 
 void CloudOpenTask::FinishedOneDriveUpload(
     base::WeakPtr<Profile> profile_weak_ptr,
+    OfficeTaskResult task_result,
     absl::optional<storage::FileSystemURL> url,
     int64_t size) {
   DCHECK_GT(pending_uploads_, 0UL);
@@ -841,16 +842,13 @@ void CloudOpenTask::FinishedOneDriveUpload(
       return;
     }
     fm_tasks::SetOfficeFileMovedToOneDrive(profile, base::Time::Now());
-    const OfficeTaskResult task_result_uma =
-        transfer_required_ == OfficeFilesTransferRequired::kCopy
-            ? OfficeTaskResult::kCopied
-            : OfficeTaskResult::kMoved;
+    // Log TaskResult after open is tried.
     OpenODFSUrl(profile, url.value(),
                 base::BindOnce(&CloudOpenTask::LogOneDriveOpenResultUMA, this,
-                               task_result_uma));
+                               task_result));
   } else {
-    has_upload_errors_ = true;
-    cloud_open_metrics_->LogTaskResult(OfficeTaskResult::kFailedToUpload);
+    cloud_open_metrics_->LogTaskResult(task_result);
+    has_upload_errors_ = task_result == OfficeTaskResult::kFailedToUpload;
   }
   if (--pending_uploads_) {
     return;
