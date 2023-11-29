@@ -59,6 +59,7 @@ class VirtualCardEnrollmentManager;
 struct VirtualCardManualFallbackBubbleOptions;
 
 namespace payments {
+class ChromePaymentsAutofillClient;
 class MandatoryReauthManager;
 }  // namespace payments
 
@@ -125,6 +126,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   syncer::SyncService* GetSyncService() override;
   signin::IdentityManager* GetIdentityManager() override;
   FormDataImporter* GetFormDataImporter() override;
+  payments::PaymentsAutofillClient* GetPaymentsAutofillClient() override;
   payments::PaymentsNetworkInterface* GetPaymentsNetworkInterface() override;
   StrikeDatabase* GetStrikeDatabase() override;
   ukm::UkmRecorder* GetUkmRecorder() override;
@@ -340,6 +342,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
   // These members are initialized lazily in their respective getters.
   // Therefore, do not access the members directly.
   std::unique_ptr<AutofillDownloadManager> download_manager_;
+  std::unique_ptr<payments::ChromePaymentsAutofillClient>
+      payments_autofill_client_;
   std::unique_ptr<payments::PaymentsNetworkInterface>
       payments_network_interface_;
   std::unique_ptr<CreditCardCvcAuthenticator> cvc_authenticator_;

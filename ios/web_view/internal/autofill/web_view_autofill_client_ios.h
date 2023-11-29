@@ -23,9 +23,14 @@
 #include "components/sync/service/sync_service.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_client_ios_bridge.h"
+#include "ios/web_view/internal/autofill/ios_web_view_payments_autofill_client.h"
 #include "ios/web_view/internal/web_view_browser_state.h"
 
 namespace autofill {
+
+namespace payments {
+class IOSWebViewPaymentsAutofillClient;
+}  // namespace payments
 
 // WebView implementation of AutofillClient.
 class WebViewAutofillClientIOS : public AutofillClient {
@@ -62,6 +67,7 @@ class WebViewAutofillClientIOS : public AutofillClient {
   syncer::SyncService* GetSyncService() override;
   signin::IdentityManager* GetIdentityManager() override;
   FormDataImporter* GetFormDataImporter() override;
+  payments::PaymentsAutofillClient* GetPaymentsAutofillClient() override;
   payments::PaymentsNetworkInterface* GetPaymentsNetworkInterface() override;
   StrikeDatabase* GetStrikeDatabase() override;
   ukm::UkmRecorder* GetUkmRecorder() override;
@@ -145,6 +151,8 @@ class WebViewAutofillClientIOS : public AutofillClient {
   web::WebState* web_state_;
   __weak id<CWVAutofillClientIOSBridge> bridge_;
   signin::IdentityManager* identity_manager_;
+  std::unique_ptr<payments::IOSWebViewPaymentsAutofillClient>
+      payments_autofill_client_;
   std::unique_ptr<payments::PaymentsNetworkInterface>
       payments_network_interface_;
   std::unique_ptr<CreditCardCvcAuthenticator> cvc_authenticator_;

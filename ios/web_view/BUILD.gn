@@ -120,6 +120,8 @@ ios_web_view_sources = [
   "internal/autofill/cwv_credit_card_saver_internal.h",
   "internal/autofill/cwv_credit_card_verifier.mm",
   "internal/autofill/cwv_credit_card_verifier_internal.h",
+  "internal/autofill/ios_web_view_payments_autofill_client.h",
+  "internal/autofill/ios_web_view_payments_autofill_client.mm",
   "internal/autofill/web_view_autocomplete_history_manager_factory.h",
   "internal/autofill/web_view_autocomplete_history_manager_factory.mm",
   "internal/autofill/web_view_autofill_client_ios.h",

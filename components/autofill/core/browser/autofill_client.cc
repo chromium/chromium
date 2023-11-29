@@ -108,6 +108,10 @@ CreditCardRiskBasedAuthenticator* AutofillClient::GetRiskBasedAuthenticator() {
   return nullptr;
 }
 
+payments::PaymentsAutofillClient* AutofillClient::GetPaymentsAutofillClient() {
+  return nullptr;
+}
+
 AutofillOfferManager* AutofillClient::GetAutofillOfferManager() {
   return nullptr;
 }

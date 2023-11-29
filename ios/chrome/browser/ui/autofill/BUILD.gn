@@ -6,6 +6,8 @@ source_set("autofill") {
   sources = [
     "chrome_autofill_client_ios.h",
     "chrome_autofill_client_ios.mm",
+    "ios_chrome_payments_autofill_client.h",
+    "ios_chrome_payments_autofill_client.mm",
   ]
   deps = [
     ":autofill_ui",

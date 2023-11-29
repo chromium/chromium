@@ -45,6 +45,10 @@ class PlusAddressService;
 
 namespace autofill {
 
+namespace payments {
+class IOSChromePaymentsAutofillClient;
+}
+
 // Chrome iOS implementation of AutofillClient.
 class ChromeAutofillClientIOS : public AutofillClient {
  public:
@@ -75,6 +79,7 @@ class ChromeAutofillClientIOS : public AutofillClient {
   syncer::SyncService* GetSyncService() override;
   signin::IdentityManager* GetIdentityManager() override;
   FormDataImporter* GetFormDataImporter() override;
+  payments::PaymentsAutofillClient* GetPaymentsAutofillClient() override;
   payments::PaymentsNetworkInterface* GetPaymentsNetworkInterface() override;
   StrikeDatabase* GetStrikeDatabase() override;
   ukm::UkmRecorder* GetUkmRecorder() override;
@@ -180,6 +185,8 @@ class ChromeAutofillClientIOS : public AutofillClient {
   web::WebState* web_state_;
   __weak id<AutofillClientIOSBridge> bridge_;
   signin::IdentityManager* identity_manager_;
+  std::unique_ptr<payments::IOSChromePaymentsAutofillClient>
+      payments_autofill_client_;
   std::unique_ptr<payments::PaymentsNetworkInterface>
       payments_network_interface_;
   std::unique_ptr<CreditCardCvcAuthenticator> cvc_authenticator_;

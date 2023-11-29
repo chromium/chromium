@@ -24,6 +24,7 @@
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web_view/internal/app/application_context.h"
+#import "ios/web_view/internal/autofill/ios_web_view_payments_autofill_client.h"
 #import "ios/web_view/internal/autofill/web_view_autocomplete_history_manager_factory.h"
 #import "ios/web_view/internal/autofill/web_view_autofill_log_router_factory.h"
 #import "ios/web_view/internal/autofill/web_view_personal_data_manager_factory.h"
@@ -150,6 +151,16 @@ signin::IdentityManager* WebViewAutofillClientIOS::GetIdentityManager() {
 
 FormDataImporter* WebViewAutofillClientIOS::GetFormDataImporter() {
   return form_data_importer_.get();
+}
+
+payments::PaymentsAutofillClient*
+WebViewAutofillClientIOS::GetPaymentsAutofillClient() {
+  if (!payments_autofill_client_) {
+    payments_autofill_client_ =
+        std::make_unique<payments::IOSWebViewPaymentsAutofillClient>();
+  }
+
+  return payments_autofill_client_.get();
 }
 
 payments::PaymentsNetworkInterface*

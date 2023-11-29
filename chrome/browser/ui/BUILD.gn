@@ -68,6 +68,8 @@ static_library("ui") {
     "autofill/payments/card_unmask_otp_input_dialog_controller_impl.cc",
     "autofill/payments/card_unmask_otp_input_dialog_controller_impl.h",
     "autofill/payments/card_unmask_otp_input_dialog_view.h",
+    "autofill/payments/chrome_payments_autofill_client.cc",
+    "autofill/payments/chrome_payments_autofill_client.h",
     "autofill/payments/create_card_unmask_prompt_view.h",
     "autofill/payments/credit_card_scanner_controller.cc",
     "autofill/payments/credit_card_scanner_controller.h",

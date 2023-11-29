@@ -61,6 +61,7 @@
 #import "ios/chrome/browser/ui/autofill/card_expiration_date_fix_flow_view_bridge.h"
 #import "ios/chrome/browser/ui/autofill/card_name_fix_flow_view_bridge.h"
 #import "ios/chrome/browser/ui/autofill/create_card_unmask_prompt_view_bridge.h"
+#import "ios/chrome/browser/ui/autofill/ios_chrome_payments_autofill_client.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/public/provider/chrome/browser/risk_data/risk_data_api.h"
@@ -189,6 +190,16 @@ signin::IdentityManager* ChromeAutofillClientIOS::GetIdentityManager() {
 
 FormDataImporter* ChromeAutofillClientIOS::GetFormDataImporter() {
   return form_data_importer_.get();
+}
+
+payments::PaymentsAutofillClient*
+ChromeAutofillClientIOS::GetPaymentsAutofillClient() {
+  if (!payments_autofill_client_) {
+    payments_autofill_client_ =
+        std::make_unique<payments::IOSChromePaymentsAutofillClient>();
+  }
+
+  return payments_autofill_client_.get();
 }
 
 payments::PaymentsNetworkInterface*
