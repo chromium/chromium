@@ -5831,21 +5831,6 @@
             ]
         }
     ],
-    "DisablePolicyEthernetRecommendedWorkaround": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DisablePolicyEthernetRecommendedWorkaround"
-                    ]
-                }
-            ]
-        }
-    ],
     "DisableUrgentPageDiscarding": [
         {
             "platforms": [
