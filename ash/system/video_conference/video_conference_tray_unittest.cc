@@ -112,7 +112,7 @@ class VideoConferenceTrayTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {features::kVideoConference,
+        {features::kVideoConference, features::kVcStopAllScreenShare,
          features::kCameraEffectsSupportedByHardware},
         {});
 

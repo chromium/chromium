@@ -2772,7 +2772,7 @@ BASE_FEATURE(kVcPortraitRelight,
 // This is only used as a way to disable stopAllScreenShare.
 BASE_FEATURE(kVcStopAllScreenShare,
              "VcStopAllScreenShare",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable or disable the fake effects for ChromeOS video conferencing controls
 // UI. Only meaningful in the emulator.
