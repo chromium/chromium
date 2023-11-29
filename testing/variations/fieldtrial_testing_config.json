@@ -8696,30 +8696,6 @@
             ]
         }
     ],
-    "IOSHideFeedWithSearchChoice": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IOSHideFeedWithSearchChoice"
-                    ]
-                },
-                {
-                    "name": "Enabled with targeting",
-                    "params": {
-                        "IOSHideFeedWithSearchChoiceTargeted": "true"
-                    },
-                    "enable_features": [
-                        "IOSHideFeedWithSearchChoice"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSIPHForSafariSwitcher": [
         {
             "platforms": [
@@ -20895,7 +20871,11 @@
             "experiments": [
                 {
                     "name": "Enabled1",
+                    "params": {
+                        "IOSHideFeedWithSearchChoiceTargeted": "true"
+                    },
                     "enable_features": [
+                        "IOSHideFeedWithSearchChoice",
                         "SearchEngineChoice",
                         "SearchEngineChoiceFre"
                     ]
