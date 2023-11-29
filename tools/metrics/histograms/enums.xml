@@ -9762,6 +9762,14 @@ Called by update_net_error_codes.py.-->
   <int value="47" label="duplicate trigger data"/>
   <int value="48" label="invalid trigger data for matching mode"/>
   <int value="49" label="filter_data key reserved (starts with &quot;_&quot;)"/>
+  <int value="50" label="summary_window_operator has wrong type"/>
+  <int value="51" label="summary_window_operator value is invalid"/>
+  <int value="52" label="summary_buckets has wrong type"/>
+  <int value="53" label="summary_buckets empty"/>
+  <int value="54" label="summary_buckets too long"/>
+  <int value="55" label="summary_buckets value wrong type"/>
+  <int value="56" label="summary_buckets value out of range"/>
+  <int value="57" label="summary_buckets non-increasing"/>
 </enum>
 
 <enum name="ConversionStorageCreateReportStatus">

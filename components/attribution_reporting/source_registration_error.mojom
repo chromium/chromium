@@ -65,4 +65,14 @@ enum SourceRegistrationError {
   kExcessiveTriggerData = 46,
   kDuplicateTriggerData = 47,
   kInvalidTriggerDataForMatchingMode = 48,
+
+  kSummaryWindowOperatorWrongType = 50,
+  kSummaryWindowOperatorUnknownValue = 51,
+
+  kSummaryBucketsWrongType = 52,
+  kSummaryBucketsEmpty = 53,
+  kSummaryBucketsTooLong = 54,
+  kSummaryBucketsValueWrongType = 55,
+  kSummaryBucketsValueOutOfRange = 56,
+  kSummaryBucketsNonIncreasing = 57,
 };

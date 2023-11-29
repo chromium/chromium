@@ -6,9 +6,11 @@
 
 #include <stdint.h>
 
+#include <cmath>
 #include <sstream>
 #include <string>
 
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/abseil_string_number_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -187,6 +189,40 @@ void SerializeTimeDeltaInSeconds(base::Value::Dict& dict,
   } else {
     SerializeInt64(dict, key, seconds);
   }
+}
+
+base::expected<uint32_t, mojom::SourceRegistrationError> ParseUint32(
+    const base::Value& value,
+    const mojom::SourceRegistrationError wrong_type_error,
+    const mojom::SourceRegistrationError out_of_range_error) {
+  // We use `base::Value::GetIfDouble()`, which coerces if the value is an
+  // integer, because not all `uint32_t` can be represented by 32-bit `int`.
+  // We use `std::modf` to check that the fractional part of the `double` is 0.
+  //
+  // Assumes that all `uint32_t` can be represented either by `int` or `double`,
+  // and that when represented internally by `base::Value` as an `int`, can be
+  // precisely represented by `double`.
+  //
+  // TODO(apaseltiner): Consider test coverage for all `uint32_t` values, or
+  // some kind of fuzzer.
+  absl::optional<double> double_value = value.GetIfDouble();
+  if (double int_part;
+      !double_value.has_value() || std::modf(*double_value, &int_part) != 0) {
+    return base::unexpected(wrong_type_error);
+  }
+
+  if (!base::IsValueInRangeForNumericType<uint32_t>(*double_value)) {
+    return base::unexpected(out_of_range_error);
+  }
+
+  return static_cast<uint32_t>(*double_value);
+}
+
+base::Value Uint32ToJson(uint32_t value) {
+  // All `uint32_t` can be represented exactly by `double`.
+  return base::IsValueInRangeForNumericType<int>(value)
+             ? base::Value(static_cast<int>(value))
+             : base::Value(static_cast<double>(value));
 }
 
 }  // namespace attribution_reporting

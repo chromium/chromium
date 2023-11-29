@@ -86,6 +86,13 @@ void SerializeTimeDeltaInSeconds(base::Value::Dict& dict,
                                  base::StringPiece key,
                                  base::TimeDelta value);
 
+base::expected<uint32_t, mojom::SourceRegistrationError> ParseUint32(
+    const base::Value&,
+    mojom::SourceRegistrationError wrong_type_error,
+    mojom::SourceRegistrationError out_of_range_error);
+
+base::Value Uint32ToJson(uint32_t);
+
 }  // namespace attribution_reporting
 
 #endif  // COMPONENTS_ATTRIBUTION_REPORTING_PARSING_UTILS_H_

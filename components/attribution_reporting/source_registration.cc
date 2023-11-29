@@ -60,9 +60,9 @@ base::TimeDelta AdjustExpiry(base::TimeDelta expiry, SourceType source_type) {
 void RecordSourceRegistrationError(SourceRegistrationError error) {
   static_assert(
       SourceRegistrationError::kMaxValue ==
-          SourceRegistrationError::kFilterDataKeyReserved,
-      "Bump version of Conversions.SourceRegistrationError8 histogram.");
-  base::UmaHistogramEnumeration("Conversions.SourceRegistrationError8", error);
+          SourceRegistrationError::kSummaryBucketsNonIncreasing,
+      "Bump version of Conversions.SourceRegistrationError9 histogram.");
+  base::UmaHistogramEnumeration("Conversions.SourceRegistrationError9", error);
 }
 
 SourceRegistration::SourceRegistration(mojo::DefaultConstruct::Tag tag)

@@ -24,6 +24,7 @@ class AggregationKeys;
 class DestinationSet;
 class EventReportWindows;
 class SuitableOrigin;
+class SummaryBuckets;
 
 struct AggregatableDedupKey;
 struct EventTriggerData;
@@ -60,6 +61,8 @@ std::ostream& operator<<(std::ostream&, const SuitableOrigin&);
 std::ostream& operator<<(std::ostream&, const AggregatableDedupKey&);
 
 std::ostream& operator<<(std::ostream&, const OsRegistrationItem&);
+
+std::ostream& operator<<(std::ostream&, const SummaryBuckets&);
 
 std::ostream& operator<<(std::ostream&, const TriggerSpec&);
 

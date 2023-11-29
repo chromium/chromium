@@ -105,6 +105,12 @@ std::ostream& operator<<(std::ostream& out, const OsRegistrationItem& item) {
              << ", debug_reporting=" << item.debug_reporting << "}";
 }
 
+std::ostream& operator<<(std::ostream& out, const SummaryBuckets& buckets) {
+  base::Value::Dict dict;
+  buckets.Serialize(dict);
+  return out << dict;
+}
+
 std::ostream& operator<<(std::ostream& out, const TriggerSpec& spec) {
   return out << spec.ToJson();
 }
