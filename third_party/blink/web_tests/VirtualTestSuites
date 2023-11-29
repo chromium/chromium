@@ -2675,7 +2675,6 @@
       "http/tests/security/window-events-clear-port.html",
       "http/tests/security/window-events-pass.html",
       "http/tests/sendbeacon/beacon-detached-no-crash.html",
-      "http/tests/xmlhttprequest/frame-load-cancelled-abort.html",
       "external/wpt/battery-status/no-leak-on-detached-use.https.html",
       "external/wpt/document-picture-in-picture/clears-session-on-close.https.html",
       "external/wpt/fetch/api/basic/keepalive.any.js",
