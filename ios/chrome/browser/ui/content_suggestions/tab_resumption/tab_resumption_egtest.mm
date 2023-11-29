@@ -45,9 +45,10 @@ void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
       conditionWithName:@"Tile shown"
                   block:^BOOL {
                     NSError* error;
-                    [[EarlGrey selectElementWithMatcher:
-                                   grey_accessibilityID(l10n_util::GetNSString(
-                                       IDS_IOS_TAB_RESUMPTION_TITLE))]
+                    [[EarlGrey
+                        selectElementWithMatcher:
+                            grey_accessibilityID(
+                                kMagicStackContentSuggestionsModuleTabResumptionAccessibilityIdentifier)]
                         assertWithMatcher:grey_notNil()
                                     error:&error];
                     return error == nil;

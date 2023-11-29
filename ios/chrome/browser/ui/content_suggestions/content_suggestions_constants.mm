@@ -31,6 +31,11 @@ NSString* const kMagicStackEditHalfSheetDoneButtonAccessibilityIdentifier =
 
 NSString* const kMagicStackViewAccessibilityIdentifier = @"kMagicStack";
 
+NSString* const
+    kMagicStackContentSuggestionsModuleTabResumptionAccessibilityIdentifier =
+        @"MagicStackContentSuggestionsModuleTabResumption"
+        @"AccessibilityIdentifier";
+
 const CGFloat kMagicStackWideWidth = 430;
 
 const CGFloat kMostVisitedBottomMargin = 13;

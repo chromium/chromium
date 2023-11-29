@@ -89,10 +89,11 @@ constexpr base::TimeDelta kWaitElementTimeout = base::Seconds(2);
 
   // Swipe over to the tab resumption module if needed.
   [[[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityID(l10n_util::GetNSString(
-                                       IDS_IOS_TAB_RESUMPTION_TITLE)),
-                                   grey_sufficientlyVisible(), nil)]
+      selectElementWithMatcher:
+          grey_allOf(
+              grey_accessibilityID(
+                  kMagicStackContentSuggestionsModuleTabResumptionAccessibilityIdentifier),
+              grey_sufficientlyVisible(), nil)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionRight, 343)
       onElementWithMatcher:grey_accessibilityID(
                                kMagicStackScrollViewAccessibilityIdentifier)]
@@ -144,10 +145,11 @@ constexpr base::TimeDelta kWaitElementTimeout = base::Seconds(2);
 
   // Swipe over to the tab resumption module if needed.
   [[[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityID(l10n_util::GetNSString(
-                                       IDS_IOS_TAB_RESUMPTION_TITLE)),
-                                   grey_sufficientlyVisible(), nil)]
+      selectElementWithMatcher:
+          grey_allOf(
+              grey_accessibilityID(
+                  kMagicStackContentSuggestionsModuleTabResumptionAccessibilityIdentifier),
+              grey_sufficientlyVisible(), nil)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionRight, 343)
       onElementWithMatcher:grey_accessibilityID(
                                kMagicStackScrollViewAccessibilityIdentifier)]
@@ -163,8 +165,9 @@ constexpr base::TimeDelta kWaitElementTimeout = base::Seconds(2);
                  kWaitElementTimeout, waitForTabToCloseCondition),
              @"Waiting for tab to close");
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_TAB_RESUMPTION_TITLE))]
+      selectElementWithMatcher:
+          grey_accessibilityLabel(
+              kMagicStackContentSuggestionsModuleTabResumptionAccessibilityIdentifier)]
       assertWithMatcher:grey_notVisible()];
 }
 

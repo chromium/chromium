@@ -62,6 +62,10 @@ extern NSString* const kMagicStackEditButtonAccessibilityIdentifier;
 extern NSString* const
     kMagicStackEditHalfSheetDoneButtonAccessibilityIdentifier;
 
+// Represents the "Continue Browsing" module in the magic stack.
+extern NSString* const
+    kMagicStackContentSuggestionsModuleTabResumptionAccessibilityIdentifier;
+
 // Represents the width of the Magic Stack ScrollView for the unique wide
 // layout.
 extern const CGFloat kMagicStackWideWidth;
