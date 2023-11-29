@@ -635,9 +635,8 @@ void CaptionBubble::Init() {
               base::Unretained(this)));
 #endif
 
-  views::Button::PressedCallback expand_or_collapse_callback =
-      base::BindRepeating(&CaptionBubble::ExpandOrCollapseButtonPressed,
-                          base::Unretained(this));
+  base::RepeatingClosure expand_or_collapse_callback = base::BindRepeating(
+      &CaptionBubble::ExpandOrCollapseButtonPressed, base::Unretained(this));
   auto expand_button = BuildImageButton(expand_or_collapse_callback,
                                         IDS_LIVE_CAPTION_BUBBLE_EXPAND);
   expand_button->SetVisible(!is_expanded_);
@@ -657,7 +656,7 @@ void CaptionBubble::Init() {
                                            base::Unretained(this)),
                        IDS_LIVE_CAPTION_BUBBLE_CLOSE);
 
-  views::Button::PressedCallback pin_or_unpin_callback = base::BindRepeating(
+  base::RepeatingClosure pin_or_unpin_callback = base::BindRepeating(
       &CaptionBubble::PinOrUnpinButtonPressed, base::Unretained(this));
   auto pin_button =
       BuildImageButton(pin_or_unpin_callback, IDS_LIVE_CAPTION_BUBBLE_PIN);
