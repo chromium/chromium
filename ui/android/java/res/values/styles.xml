@@ -85,36 +85,45 @@ found in the LICENSE file.
     <style name="TextAppearance.Headline">
         <item name="android:fontFamily">@font/accent_font</item>
         <item name="android:textSize">@dimen/headline_size</item>
+        <item name="leading">@dimen/headline_size_leading</item>
     </style>
     <style name="TextAppearance.Headline2">
         <item name="android:fontFamily">@font/accent_font</item>
         <item name="android:textSize">@dimen/headline2_size</item>
+        <item name="leading">@dimen/headline2_size_leading</item>
     </style>
     <style name="TextAppearance.HeadlineThick" parent="TextAppearance.AccentMediumStyle">
         <item name="android:textSize">@dimen/headline_size</item>
+        <item name="leading">@dimen/headline_size_leading</item>
     </style>
     <style name="TextAppearance.Headline2Thick" parent="TextAppearance.AccentMediumStyle">
         <item name="android:textSize">@dimen/headline2_size</item>
+        <item name="leading">@dimen/headline2_size_leading</item>
     </style>
     <style name="TextAppearance.TextLarge">
         <item name="android:textSize">@dimen/text_size_large</item>
+        <item name="leading">@dimen/text_size_large_leading</item>
     </style>
     <style name="TextAppearance.TextAccentLarge" parent="TextAppearance.TextLarge">
         <item name="android:fontFamily">@font/accent_font</item>
     </style>
     <style name="TextAppearance.TextMediumThick" parent="TextAppearance.RobotoMediumStyle">
         <item name="android:textSize">@dimen/text_size_medium</item>
+        <item name="leading">@dimen/text_size_medium_leading</item>
     </style>
     <style name="TextAppearance.TextAccentMediumThick" parent="TextAppearance.AccentMediumStyle">
         <item name="android:textSize">@dimen/text_size_medium</item>
+        <item name="leading">@dimen/text_size_medium_leading</item>
     </style>
 
     <style name="TextAppearance.TextMedium">
         <item name="android:textSize">@dimen/text_size_medium</item>
+        <item name="leading">@dimen/text_size_medium_leading</item>
     </style>
 
     <style name="TextAppearance.TextSmall">
         <item name="android:textSize">@dimen/text_size_small</item>
+        <item name="leading">@dimen/text_size_small_leading</item>
     </style>
 
     <!-- Non Adaptive Text Styles -->
@@ -170,6 +179,7 @@ found in the LICENSE file.
     <style name="TextAppearance.WhiteLink" tools:ignore="UnusedResources">
         <item name="android:textColor">@android:color/white</item>
         <item name="android:textSize">@dimen/text_size_medium</item>
+        <item name="leading">@dimen/text_size_medium_leading</item>
         <item name="android:textStyle">bold</item>
     </style>
 
@@ -250,6 +260,7 @@ found in the LICENSE file.
     </style>
     <style name="TextAppearance.MenuChip.Text.Blue" parent="TextAppearance.Button.Text.Blue">
         <item name="android:textSize">@dimen/text_size_small</item>
+        <item name="leading">@dimen/text_size_small_leading</item>
     </style>
 
     <!-- Blue Non Adaptive button text styles -->
@@ -328,10 +339,12 @@ found in the LICENSE file.
     <style name="TextAppearance.ErrorCaption" tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_text_color_error</item>
         <item name="android:textSize">@dimen/text_size_small</item>
+        <item name="leading">@dimen/text_size_small_leading</item>
     </style>
     <style name="TextAppearance.TextMedium.Error">
         <item name="android:textColor">@color/default_text_color_error</item>
         <item name="android:textSize">@dimen/text_size_medium</item>
+        <item name="leading">@dimen/text_size_medium_leading</item>
     </style>
 
     <!-- Toast UI -->

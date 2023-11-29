@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<resources>
+  <style name="TextAppearance.WithoutLeading">
+    <item name="android:textSize">@dimen/text_size_medium</item>
+  </style>
+
+  <style name="TextAppearance.WithLeading" parent="TextAppearance.WithoutLeading">
+    <item name="leading">@dimen/text_size_medium_leading</item>
+  </style>
+
+  <style name="StyleWithLeading" parent="TextAppearance.WithLeading"/>
+
+  <style name="StyleIntoTextAppearance">
+    <item name="android:textAppearance">@style/StyleWithLeading</item>
+  </style>
+</resources>
