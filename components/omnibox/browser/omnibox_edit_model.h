@@ -311,6 +311,11 @@ class OmniboxEditModel {
   // the selections instead of down.
   void OnTabPressed(bool shift);
 
+  // Called when the user presses the space key without modifiers.
+  // Returns true if the space is handled in a special way, for example
+  // entering keyword mode on a match somewhere down the list.
+  bool OnSpacePressed();
+
   // Called when any relevant data changes.  This rolls together several
   // separate pieces of data into one call so we can update all the UI
   // efficiently. Specifically, it's invoked for temporary text, autocompletion,

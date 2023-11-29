@@ -241,6 +241,7 @@ void BuiltinProvider::AddStarterPackMatch(const TemplateURL& template_url,
         l10n_util::GetStringUTF16(IDS_OMNIBOX_INSTANT_KEYWORD_HELP);
     match.contents_class.emplace_back(0, ACMatchClassification::DIM);
     match.allowed_to_be_default_match = false;
+    match.keyword = template_url.keyword();
   } else {
     match.description = template_url.short_name();
     match.description_class.emplace_back(0, ACMatchClassification::NONE);

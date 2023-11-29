@@ -1288,6 +1288,29 @@ void OmniboxEditModel::OnTabPressed(bool shift) {
                      OmniboxPopupSelection::kStateOrLine);
 }
 
+bool OmniboxEditModel::OnSpacePressed() {
+  if (!OmniboxFieldTrial::IsKeywordModeRefreshEnabled()) {
+    return false;
+  }
+  if (!is_keyword_hint_ && keyword_.empty() &&
+      input_.cursor_position() == input_.text().length()) {
+    // Keywords can now be accessed anywhere in the match list. If one is
+    // found on an instant keyword match, select and accept it.
+    const AutocompleteResult& result = controller_->result();
+    for (size_t i = 0; i < result.size(); i++) {
+      const AutocompleteMatch& match = result.match_at(i);
+      if (input_.text() == match.keyword &&
+          match.HasInstantKeyword(
+              controller_->client()->GetTemplateURLService())) {
+        SetPopupSelection(OmniboxPopupSelection(i));
+        AcceptKeyword(metrics::OmniboxEventProto::SPACE_AT_END);
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 void OmniboxEditModel::OnNavigationLikely(
     size_t line,
     NavigationPredictor navigation_predictor) {
