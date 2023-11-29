@@ -19,7 +19,6 @@ extern const char kDefaultSearchProviderEnabled[];
 extern const char kSearchProviderOverrides[];
 extern const char kSearchProviderOverridesVersion[];
 extern const char kSearchEnginesChoiceProfile[];
-extern const char kSearchEnginesStudyGroup[];
 
 }  // namespace prefs
 

@@ -2644,8 +2644,6 @@ static_library("browser") {
 
   if (enable_search_engine_choice) {
     sources += [
-      "search_engine_choice/search_engine_choice_client_side_trial.cc",
-      "search_engine_choice/search_engine_choice_client_side_trial.h",
       "search_engine_choice/search_engine_choice_profile_tagger.cc",
       "search_engine_choice/search_engine_choice_profile_tagger.h",
       "search_engine_choice/search_engine_choice_service.cc",
