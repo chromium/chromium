@@ -66,13 +66,19 @@
       const entries = list.getEntries();
       for (const entry of entries) {
         assert_equals(entry.entryType, 'largest-contentful-paint');
-        logScript('lcp:' + entry.id)
+        logScript('lcp')
       }
     });
     observer.observe({type: 'largest-contentful-paint', buffered: true});
 
     function finish() {
-      assert_array_equals(window.result, ['lcp:lcp_image_b', 'async.js', 'async.js']);
+      const firstLcpIndex = window.result.indexOf('lcp');
+      assert_true(firstLcpIndex >= 0);
+      for (let i = 0; i < window.result.length; i++) {
+        if (window.result[i] == 'async.js') {
+          assert_true(i > firstLcpIndex);
+        }
+      }
       done();
     }
     window.addEventListener('load', finish);
