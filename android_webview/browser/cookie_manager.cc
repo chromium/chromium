@@ -205,8 +205,10 @@ CookieManager::CookieManager(AwBrowserContext* const parent_context)
           base::android::BuildInfo::GetInstance()->target_sdk_version() <
           base::android::SDK_VERSION_R),
       cookie_store_client_thread_("CookieMonsterClient"),
+      cookie_store_backend_thread_("CookieMonsterBackend"),
       setting_new_mojo_cookie_manager_(false) {
   cookie_store_client_thread_.Start();
+  cookie_store_backend_thread_.Start();
   cookie_store_task_runner_ = cookie_store_client_thread_.task_runner();
   cookie_store_path_ = GetContextPath().Append(FILE_PATH_LITERAL("Cookies"));
   if (!parent_context_) {
@@ -320,15 +322,12 @@ net::CookieStore* CookieManager::GetCookieStore() {
   DCHECK(cookie_store_task_runner_->RunsTasksInCurrentSequence());
 
   if (!cookie_store_) {
-    DCHECK(!cookie_store_created_);
-    cookie_store_backend_thread_.emplace("CookieMonsterBackend");
-    cookie_store_backend_thread_->Start();
     content::CookieStoreConfig cookie_config(
         cookie_store_path_, /* restore_old_session_cookies= */ true,
         /* persist_session_cookies= */ true);
     cookie_config.client_task_runner = cookie_store_task_runner_;
     cookie_config.background_task_runner =
-        cookie_store_backend_thread_->task_runner();
+        cookie_store_backend_thread_.task_runner();
 
     {
       base::AutoLock lock(allow_file_scheme_cookies_lock_);
@@ -392,9 +391,6 @@ void CookieManager::SetMojoCookieManagerAsync(
     return;
   }
 
-  // Queue a flush for the temporary cookie store. This will be the last method
-  // call on the cookie store: any subsequent CookieManager calls will defer
-  // their tasks because setting_new_mojo_cookie_manager_ == true.
   GetCookieStore()->FlushStore(base::BindOnce(
       &CookieManager::SwapMojoCookieManagerAsync, base::Unretained(this),
       std::move(cookie_manager_remote), std::move(complete)));
@@ -410,21 +406,6 @@ void CookieManager::SwapMojoCookieManagerAsync(
       FROM_HERE,
       base::BindOnce(&CookieManager::ClearClientHintsCachedPerOriginMapIfNeeded,
                      base::Unretained(this)));
-  if (cookie_store_created_) {
-    // This method is called after the flush-to-disk of the temporary cookie
-    // store has completed, but we still have the SQLite database open; we need
-    // to close this before anyone tries to use the new Mojo CookieManager,
-    // because the first time it's used it will open the SQLite database itself.
-
-    // First, delete the cookie store. This will queue a task on the backend
-    // task runner to actually close the database.
-    cookie_store_.reset();
-
-    // Then, delete the backend task runner thread. This will block until the
-    // thread has drained its task queue and exited, which should be fast as we
-    // already flushed any pending writes.
-    cookie_store_backend_thread_ = std::nullopt;
-  }
   std::move(complete).Run();  // unblock content initialization
   RunPendingCookieTasks();
 }
