@@ -86,7 +86,9 @@ async function runFullCycleTest(t, options) {
 
       assert_equals(frame.visibleRect.width, w, "visibleRect.width");
       assert_equals(frame.visibleRect.height, h, "visibleRect.height");
-      assert_equals(frame.timestamp, next_ts++, "decode timestamp");
+      if (!options.realTimeLatencyMode) {
+        assert_equals(frame.timestamp, next_ts++, "decode timestamp");
+      }
 
       // The encoder is allowed to change the color space to satisfy the
       // encoder when readback is needed to send the frame for encoding, but
@@ -130,7 +132,9 @@ async function runFullCycleTest(t, options) {
       }
       decoder.decode(chunk);
       frames_encoded++;
-      assert_equals(chunk.timestamp, next_encode_ts++, "encode timestamp");
+      if (!options.realTimeLatencyMode) {
+        assert_equals(chunk.timestamp, next_encode_ts++, "encode timestamp");
+      }
     },
     error(e) {
       assert_unreached(e.message);
