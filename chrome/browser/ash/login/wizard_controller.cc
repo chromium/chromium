@@ -1590,16 +1590,16 @@ void WizardController::OnOsTrialScreenExit(OsTrialScreen::Result result) {
   OnScreenExit(OsTrialScreenView::kScreenId,
                OsTrialScreen::GetResultString(result));
   switch (result) {
-    case OsTrialScreen::Result::BACK:
+    case OsTrialScreen::Result::kBack:
       // The OS Trial screen is only shown when OS Installation is started from
       // the welcome screen, so if the back button was clicked we go back to
       // the welcome screen.
       ShowWelcomeScreen();
       break;
-    case OsTrialScreen::Result::NEXT_TRY:
+    case OsTrialScreen::Result::kNextTry:
       ShowNetworkScreen();
       break;
-    case OsTrialScreen::Result::NEXT_INSTALL:
+    case OsTrialScreen::Result::kNextInstall:
       ShowOsInstallScreen();
       break;
   }
