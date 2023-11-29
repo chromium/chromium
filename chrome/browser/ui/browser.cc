@@ -1775,7 +1775,7 @@ void Browser::CloseContents(WebContents* source) {
 }
 
 void Browser::SetContentsBounds(WebContents* source, const gfx::Rect& bounds) {
-  if (is_type_normal() || is_type_picture_in_picture()) {
+  if (is_type_normal()) {
     return;
   }
 

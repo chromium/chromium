@@ -687,10 +687,13 @@ TEST_F(PictureInPictureControllerTestWithWidget,
 class PictureInPictureControllerChromeClient
     : public RenderingTestChromeClient {
  public:
-  explicit PictureInPictureControllerChromeClient(
-      DummyPageHolder* dummy_page_holder)
-      : dummy_page_holder_(dummy_page_holder) {}
+  PictureInPictureControllerChromeClient() = default;
 
+  void set_dummy_page_holder(DummyPageHolder* dummy_page_holder) {
+    dummy_page_holder_ = dummy_page_holder;
+  }
+
+  // RenderingTestChromeClient:
   Page* CreateWindowDelegate(LocalFrame*,
                              const FrameLoadRequest&,
                              const AtomicString&,
@@ -698,12 +701,13 @@ class PictureInPictureControllerChromeClient
                              network::mojom::blink::WebSandboxFlags,
                              const SessionStorageNamespaceId&,
                              bool& consumed_user_gesture) override {
+    CHECK(dummy_page_holder_);
     return &dummy_page_holder_->GetPage();
   }
   MOCK_METHOD(void, SetWindowRect, (const gfx::Rect&, LocalFrame&));
 
  private:
-  raw_ptr<DummyPageHolder, ExperimentalRenderer> dummy_page_holder_;
+  raw_ptr<DummyPageHolder, ExperimentalRenderer> dummy_page_holder_ = nullptr;
 };
 
 // Tests for Picture in Picture with a mockable chrome client.  This makes it
@@ -714,8 +718,10 @@ class PictureInPictureControllerTestWithChromeClient : public RenderingTest {
  public:
   void SetUp() override {
     chrome_client_ =
-        MakeGarbageCollected<PictureInPictureControllerChromeClient>(
-            &dummy_page_holder_);
+        MakeGarbageCollected<PictureInPictureControllerChromeClient>();
+    dummy_page_holder_ =
+        std::make_unique<DummyPageHolder>(gfx::Size(), chrome_client_);
+    chrome_client_->set_dummy_page_holder(dummy_page_holder_.get());
     RenderingTest::SetUp();
   }
 
@@ -737,7 +743,7 @@ class PictureInPictureControllerTestWithChromeClient : public RenderingTest {
   // ownership of it here so that it outlives the GC'd objects.  The client
   // cannot own it because it also has a GC root to the client; everything would
   // leak if we did so.
-  DummyPageHolder dummy_page_holder_;
+  std::unique_ptr<DummyPageHolder> dummy_page_holder_;
 };
 
 TEST_F(PictureInPictureControllerTestWithChromeClient,
@@ -756,12 +762,39 @@ TEST_F(PictureInPictureControllerTestWithChromeClient,
   // The Picture in Picture window's base URL should match the opener.
   EXPECT_EQ(GetOpenerURL().GetString(), document->BaseURL().GetString());
 
-  // Verify that move* and resize* don't call through to the chrome client.
+  // Verify that move* doesn't call through to the chrome client.
   EXPECT_CALL(GetPipChromeClient(), SetWindowRect(_, _)).Times(0);
   document->domWindow()->moveTo(10, 10);
   document->domWindow()->moveBy(10, 10);
-  document->domWindow()->resizeTo(10, 10);
-  document->domWindow()->resizeBy(10, 10);
+  testing::Mock::VerifyAndClearExpectations(&GetPipChromeClient());
+
+  {
+    // Verify that resizeTo consumes a user gesture, and so only one of the
+    // following calls will succeed.
+    EXPECT_CALL(GetPipChromeClient(), SetWindowRect(_, _));
+    LocalFrame::NotifyUserActivation(
+        document->GetFrame(), mojom::UserActivationNotificationType::kTest);
+    ExceptionState exception_state(
+        ToScriptStateForMainWorld(document->GetFrame())->GetIsolate(),
+        ExceptionContextType::kOperationInvoke, "Window", "resizeTo");
+    document->domWindow()->resizeTo(10, 10, exception_state);
+    document->domWindow()->resizeTo(20, 20, exception_state);
+    testing::Mock::VerifyAndClearExpectations(&GetPipChromeClient());
+  }
+
+  {
+    // Verify that resizeBy consumes a user gesture, and so only one of the
+    // following calls will succeed.
+    EXPECT_CALL(GetPipChromeClient(), SetWindowRect(_, _));
+    LocalFrame::NotifyUserActivation(
+        document->GetFrame(), mojom::UserActivationNotificationType::kTest);
+    ExceptionState exception_state(
+        ToScriptStateForMainWorld(document->GetFrame())->GetIsolate(),
+        ExceptionContextType::kOperationInvoke, "Window", "resizeBy");
+    document->domWindow()->resizeBy(10, 10, exception_state);
+    document->domWindow()->resizeBy(20, 20, exception_state);
+    testing::Mock::VerifyAndClearExpectations(&GetPipChromeClient());
+  }
 
   // Make sure that the `document` is not the same as the opener.
   EXPECT_NE(document, &GetDocument());

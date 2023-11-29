@@ -1869,14 +1869,22 @@ void LocalDOMWindow::moveTo(int x, int y) const {
   page->GetChromeClient().SetWindowRect(window_rect, *frame);
 }
 
-void LocalDOMWindow::resizeBy(int x, int y) const {
+void LocalDOMWindow::resizeBy(int x,
+                              int y,
+                              ExceptionState& exception_state) const {
   if (!GetFrame() || !GetFrame()->IsOutermostMainFrame() ||
       document()->IsPrerendering()) {
     return;
   }
 
-  if (IsPictureInPictureWindow())
-    return;
+  if (IsPictureInPictureWindow()) {
+    if (!LocalFrame::ConsumeTransientUserActivation(GetFrame())) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kNotAllowedError,
+          "resizeBy() requires user activation in document picture-in-picture");
+      return;
+    }
+  }
 
   LocalFrame* frame = GetFrame();
   Page* page = frame->GetPage();
@@ -1889,14 +1897,22 @@ void LocalDOMWindow::resizeBy(int x, int y) const {
   page->GetChromeClient().SetWindowRect(update, *frame);
 }
 
-void LocalDOMWindow::resizeTo(int width, int height) const {
+void LocalDOMWindow::resizeTo(int width,
+                              int height,
+                              ExceptionState& exception_state) const {
   if (!GetFrame() || !GetFrame()->IsOutermostMainFrame() ||
       document()->IsPrerendering()) {
     return;
   }
 
-  if (IsPictureInPictureWindow())
-    return;
+  if (IsPictureInPictureWindow()) {
+    if (!LocalFrame::ConsumeTransientUserActivation(GetFrame())) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kNotAllowedError,
+          "resizeTo() requires user activation in document picture-in-picture");
+      return;
+    }
+  }
 
   LocalFrame* frame = GetFrame();
   Page* page = frame->GetPage();

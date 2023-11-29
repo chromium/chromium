@@ -486,24 +486,6 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
                           "'documentPictureInPicture' in window"));
 }
 
-// Make sure that we cannot set window bounds on the PiP window.
-IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
-                       CannotSetWindowRect) {
-  LoadTabAndEnterPictureInPicture(browser());
-  auto* pip_web_contents = window_controller()->GetChildWebContents();
-  ASSERT_NE(nullptr, pip_web_contents);
-
-  auto* browser_view = static_cast<BrowserView*>(
-      BrowserWindow::FindBrowserWindowWithWebContents(pip_web_contents));
-  const gfx::Rect bounds = browser_view->GetBounds();
-  gfx::Rect different_bounds(bounds.x() + 10, bounds.y() + 10,
-                             bounds.width() / 2, bounds.height() / 2);
-  ASSERT_NE(bounds, different_bounds);
-  static_cast<content::WebContentsDelegate*>(browser_view->browser())
-      ->SetContentsBounds(pip_web_contents, different_bounds);
-  EXPECT_EQ(bounds, browser_view->GetBounds());
-}
-
 // Make sure that inner bounds of document PiP windows are not smaller than the
 // allowed minimum size.
 IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,

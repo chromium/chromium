@@ -332,8 +332,8 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   void moveBy(int x, int y) const;
   void moveTo(int x, int y) const;
 
-  void resizeBy(int x, int y) const;
-  void resizeTo(int width, int height) const;
+  void resizeBy(int x, int y, ExceptionState&) const;
+  void resizeTo(int width, int height, ExceptionState&) const;
 
   MediaQueryList* matchMedia(const String&);
 
