@@ -455,12 +455,33 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
       PageAccessibilityDisposition accessibility_disposition,
       bool request_tagging)
       PA_EXCLUSIVE_LOCKS_REQUIRED(internal::PartitionRootLock(this));
-  PA_ALWAYS_INLINE bool TryRecommitSystemPagesForData(
+
+  template <bool already_locked>
+  PA_ALWAYS_INLINE bool TryRecommitSystemPagesForDataInternal(
+      uintptr_t address,
+      size_t length,
+      PageAccessibilityDisposition accessibility_disposition,
+      bool request_tagging);
+
+  // TryRecommitSystemPagesForDataWithAcquiringLock() locks this root internally
+  // before invoking DecommitEmptySlotSpans(), which needs the lock. So the root
+  // must not be locked when invoking this method.
+  PA_ALWAYS_INLINE bool TryRecommitSystemPagesForDataWithAcquiringLock(
       uintptr_t address,
       size_t length,
       PageAccessibilityDisposition accessibility_disposition,
       bool request_tagging)
       PA_LOCKS_EXCLUDED(internal::PartitionRootLock(this));
+
+  // TryRecommitSystemPagesForDataLocked() doesn't lock this root internally
+  // before invoking DecommitEmptySlotSpans(), which needs the lock. So the root
+  // must have been already locked when invoking this method.
+  PA_ALWAYS_INLINE bool TryRecommitSystemPagesForDataLocked(
+      uintptr_t address,
+      size_t length,
+      PageAccessibilityDisposition accessibility_disposition,
+      bool request_tagging)
+      PA_EXCLUSIVE_LOCKS_REQUIRED(internal::PartitionRootLock(this));
 
   [[noreturn]] PA_NOINLINE void OutOfMemory(size_t size);
 
@@ -1835,7 +1856,8 @@ PA_ALWAYS_INLINE void PartitionRoot::RecommitSystemPagesForData(
   IncreaseCommittedPages(length);
 }
 
-PA_ALWAYS_INLINE bool PartitionRoot::TryRecommitSystemPagesForData(
+template <bool already_locked>
+PA_ALWAYS_INLINE bool PartitionRoot::TryRecommitSystemPagesForDataInternal(
     uintptr_t address,
     size_t length,
     PageAccessibilityDisposition accessibility_disposition,
@@ -1846,11 +1868,16 @@ PA_ALWAYS_INLINE bool PartitionRoot::TryRecommitSystemPagesForData(
   bool ok = TryRecommitSystemPages(address, length, page_accessibility,
                                    accessibility_disposition);
   if (PA_UNLIKELY(!ok)) {
-    // Decommit some memory and retry. The alternative is crashing.
     {
-      ::partition_alloc::internal::ScopedGuard guard(
-          internal::PartitionRootLock(this));
-      DecommitEmptySlotSpans();
+      // Decommit some memory and retry. The alternative is crashing.
+      if constexpr (!already_locked) {
+        ::partition_alloc::internal::ScopedGuard guard(
+            internal::PartitionRootLock(this));
+        DecommitEmptySlotSpans();
+      } else {
+        internal::PartitionRootLock(this).AssertAcquired();
+        DecommitEmptySlotSpans();
+      }
     }
     ok = TryRecommitSystemPages(address, length, page_accessibility,
                                 accessibility_disposition);
@@ -1861,6 +1888,26 @@ PA_ALWAYS_INLINE bool PartitionRoot::TryRecommitSystemPagesForData(
   }
 
   return ok;
+}
+
+PA_ALWAYS_INLINE bool
+PartitionRoot::TryRecommitSystemPagesForDataWithAcquiringLock(
+    uintptr_t address,
+    size_t length,
+    PageAccessibilityDisposition accessibility_disposition,
+    bool request_tagging) {
+  return TryRecommitSystemPagesForDataInternal<false>(
+      address, length, accessibility_disposition, request_tagging);
+}
+
+PA_ALWAYS_INLINE
+bool PartitionRoot::TryRecommitSystemPagesForDataLocked(
+    uintptr_t address,
+    size_t length,
+    PageAccessibilityDisposition accessibility_disposition,
+    bool request_tagging) {
+  return TryRecommitSystemPagesForDataInternal<true>(
+      address, length, accessibility_disposition, request_tagging);
 }
 
 // static

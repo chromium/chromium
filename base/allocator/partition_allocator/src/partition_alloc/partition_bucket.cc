@@ -415,7 +415,7 @@ SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
     //
     // Direct map never uses tagging, as size is always >kMaxMemoryTaggingSize.
     PA_DCHECK(raw_size > kMaxMemoryTaggingSize);
-    const bool ok = root->TryRecommitSystemPagesForData(
+    const bool ok = root->TryRecommitSystemPagesForDataWithAcquiringLock(
         slot_start, slot_size, PageAccessibilityDisposition::kRequireUpdate,
         false);
     if (!ok) {
@@ -911,6 +911,7 @@ PA_ALWAYS_INLINE void PartitionBucket::InitializeSlotSpan(
 
 PA_ALWAYS_INLINE uintptr_t
 PartitionBucket::ProvisionMoreSlotsAndAllocOne(PartitionRoot* root,
+                                               AllocFlags flags,
                                                SlotSpanMetadata* slot_span) {
   PA_DCHECK(slot_span != SlotSpanMetadata::get_sentinel_slot_span());
   size_t num_slots = slot_span->num_unprovisioned_slots;
@@ -939,6 +940,25 @@ PartitionBucket::ProvisionMoreSlotsAndAllocOne(PartitionRoot* root,
   // rounded up.
   PA_DCHECK(commit_end > commit_start);
 
+  // If lazy commit is enabled, meaning system pages in the slot span come
+  // in an initially decommitted state, commit them here.
+  // Note, we can't use PageAccessibilityDisposition::kAllowKeepForPerf, because
+  // we have no knowledge which pages have been committed before (it doesn't
+  // matter on Windows anyway).
+  if (kUseLazyCommit) {
+    const bool ok = root->TryRecommitSystemPagesForDataLocked(
+        commit_start, commit_end - commit_start,
+        PageAccessibilityDisposition::kRequireUpdate,
+        slot_size <= kMaxMemoryTaggingSize);
+    if (!ok) {
+      if (!ContainsFlags(flags, AllocFlags::kReturnNull)) {
+        ScopedUnlockGuard unlock{PartitionRootLock(root)};
+        PartitionOutOfMemoryCommitFailure(root, slot_size);
+      }
+      return 0;
+    }
+  }
+
   // The slot being returned is considered allocated.
   slot_span->num_allocated_slots++;
   // Round down, because a slot that doesn't fully fit in the new page(s) isn't
@@ -948,19 +968,6 @@ PartitionBucket::ProvisionMoreSlotsAndAllocOne(PartitionRoot* root,
   PA_DCHECK(slot_span->num_allocated_slots +
                 slot_span->num_unprovisioned_slots <=
             get_slots_per_span());
-
-  // If lazy commit is enabled, meaning system pages in the slot span come
-  // in an initially decommitted state, commit them here.
-  // Note, we can't use PageAccessibilityDisposition::kAllowKeepForPerf, because
-  // we have no knowledge which pages have been committed before (it doesn't
-  // matter on Windows anyway).
-  if (kUseLazyCommit) {
-    // TODO(lizeb): Handle commit failure.
-    root->RecommitSystemPagesForData(
-        commit_start, commit_end - commit_start,
-        PageAccessibilityDisposition::kRequireUpdate,
-        slot_size <= kMaxMemoryTaggingSize);
-  }
 
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
   const bool use_tagging =
@@ -1386,7 +1393,6 @@ uintptr_t PartitionBucket::SlowPathAlloc(PartitionRoot* root,
       new_slot_span = decommitted_slot_spans_head;
       PA_DCHECK(new_slot_span->bucket == this);
       PA_DCHECK(new_slot_span->is_decommitted());
-      decommitted_slot_spans_head = new_slot_span->next_slot_span;
 
       // If lazy commit is enabled, pages will be recommitted when provisioning
       // slots, in ProvisionMoreSlotsAndAllocOne(), not here.
@@ -1397,13 +1403,21 @@ uintptr_t PartitionBucket::SlowPathAlloc(PartitionRoot* root,
         // pages have been previously committed, and then decommitted using
         // PageAccessibilityDisposition::kAllowKeepForPerf, so use the
         // same option as an optimization.
-        // TODO(lizeb): Handle commit failure.
-        root->RecommitSystemPagesForData(
+        const bool ok = root->TryRecommitSystemPagesForDataLocked(
             slot_span_start, new_slot_span->bucket->get_bytes_per_span(),
             PageAccessibilityDisposition::kAllowKeepForPerf,
             slot_size <= kMaxMemoryTaggingSize);
+        if (!ok) {
+          if (!ContainsFlags(flags, AllocFlags::kReturnNull)) {
+            ScopedUnlockGuard unlock{PartitionRootLock(root)};
+            PartitionOutOfMemoryCommitFailure(
+                root, new_slot_span->bucket->get_bytes_per_span());
+          }
+          return 0;
+        }
       }
 
+      decommitted_slot_spans_head = new_slot_span->next_slot_span;
       new_slot_span->Reset();
       *is_already_zeroed = DecommittedMemoryIsAlwaysZeroed();
     }
@@ -1457,7 +1471,7 @@ uintptr_t PartitionBucket::SlowPathAlloc(PartitionRoot* root,
   // Otherwise, we need to provision more slots by committing more pages. Build
   // the free list for the newly provisioned slots.
   PA_DCHECK(new_slot_span->num_unprovisioned_slots);
-  return ProvisionMoreSlotsAndAllocOne(root, new_slot_span);
+  return ProvisionMoreSlotsAndAllocOne(root, flags, new_slot_span);
 }
 
 uintptr_t PartitionBucket::AllocNewSuperPageSpanForGwpAsan(

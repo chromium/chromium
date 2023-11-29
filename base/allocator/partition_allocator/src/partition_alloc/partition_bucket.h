@@ -217,6 +217,7 @@ struct PartitionBucket {
   // InitializeSlotSpan() first.
   PA_ALWAYS_INLINE uintptr_t
   ProvisionMoreSlotsAndAllocOne(PartitionRoot* root,
+                                AllocFlags flags,
                                 SlotSpanMetadata* slot_span)
       PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root));
 };
