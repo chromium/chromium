@@ -10,7 +10,7 @@
 
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {createEmptyState} from 'chrome://resources/cr_components/app_management/util.js';
-import {Store} from 'chrome://resources/js/store_ts.js';
+import {Store} from 'chrome://resources/js/store.js';
 
 import {AppManagementActions} from './actions.js';
 import {reduceAction} from './reducers.js';

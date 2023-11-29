@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {BookmarksPageState, createEmptyState, reduceAction, Store} from 'chrome://bookmarks/bookmarks.js';
-import {TestStore as CrUiTestStore} from 'chrome://webui-test/test_store_ts.js';
+import {TestStore as CrUiTestStore} from 'chrome://webui-test/test_store.js';
 
 export class TestStore extends CrUiTestStore<BookmarksPageState> {
   constructor(data: any) {

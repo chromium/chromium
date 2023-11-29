@@ -10,7 +10,7 @@
  */
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {Action} from 'chrome://resources/js/store_ts.js';
+import {Action} from 'chrome://resources/js/store.js';
 
 import {ChangeFolderOpenAction, CreateBookmarkAction, EditBookmarkAction, FinishSearchAction, MoveBookmarkAction, RefreshNodesAction, RemoveBookmarkAction, ReorderChildrenAction, SelectFolderAction, SelectItemsAction, SetPrefAction, StartSearchAction, UpdateAnchorAction} from './actions.js';
 import {BookmarkNode, BookmarksPageState, FolderOpenState, NodeMap, PreferencesState, SearchState, SelectionState} from './types.js';

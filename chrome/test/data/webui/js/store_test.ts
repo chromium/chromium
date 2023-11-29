@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Action, Store, StoreObserver} from 'chrome://resources/js/store_ts.js';
+import {Action, Store, StoreObserver} from 'chrome://resources/js/store.js';
 import {assertDeepEquals, assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
 
 interface TestState {
