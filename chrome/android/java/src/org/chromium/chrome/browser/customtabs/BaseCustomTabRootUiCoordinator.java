@@ -279,24 +279,18 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                                 ::onShowSoftInput;
             }
 
-            mTabController
-                    .get()
-                    .registerTabObserver(new PartialCustomTabTabObserver(softInputCallback));
-            mTabController
-                    .get()
-                    .registerTabObserver(
-                            new EmptyTabObserver() {
-                                @Override
-                                public void didFirstVisuallyNonEmptyPaint(Tab tab) {
-                                    BaseCustomTabActivity baseActivity =
-                                            (BaseCustomTabActivity) mActivity;
-                                    assert baseActivity != null;
-                                    baseActivity
-                                            .getContextualSearchManagerSupplier()
-                                            .get()
-                                            .setCanHideAndroidBrowserControls(false);
-                                }
-                            });
+            var tabController = mTabController.get();
+            tabController.registerTabObserver(new PartialCustomTabTabObserver(softInputCallback));
+            var csManager = mContextualSearchManagerSupplier.get();
+            if (csManager != null) {
+                tabController.registerTabObserver(
+                        new EmptyTabObserver() {
+                            @Override
+                            public void didFirstVisuallyNonEmptyPaint(Tab tab) {
+                                csManager.setCanHideAndroidBrowserControls(false);
+                            }
+                        });
+            }
         }
     }
 
