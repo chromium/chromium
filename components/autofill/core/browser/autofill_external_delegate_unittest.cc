@@ -1398,7 +1398,11 @@ TEST_F(AutofillExternalDelegateUnitTest,
 
 TEST_F(AutofillExternalDelegateUnitTest,
        FieldByFieldFilling_RootPopup_DoNotEmitTypeMetric) {
-  Suggestion suggestion = Suggestion(u"Jon", PopupItemId::kFieldByFieldFilling);
+  const AutofillProfile profile = test::GetFullProfile();
+  pdm().AddProfile(profile);
+  Suggestion suggestion =
+      test::CreateAutofillSuggestion(PopupItemId::kFieldByFieldFilling, u"Jon",
+                                     Suggestion::Guid(profile.guid()));
   suggestion.field_by_field_filling_type_used = std::optional(NAME_FIRST);
   IssueOnQuery();
   manager().OnFormsSeen({queried_form_}, {});
@@ -1411,6 +1415,26 @@ TEST_F(AutofillExternalDelegateUnitTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.FieldByFieldFilling.FieldTypeUsed",
       autofill_metrics::AutofillFieldByFieldFillingTypes::kNameFirst, 0);
+}
+
+TEST_F(AutofillExternalDelegateUnitTest,
+       FieldByFieldFilling_PreviewCreditCard) {
+  const CreditCard local_card = test::GetCreditCard();
+  pdm().AddCreditCard(local_card);
+  Suggestion suggestion = test::CreateAutofillSuggestion(
+      PopupItemId::kFieldByFieldFilling, u"Name on card",
+      Suggestion::Guid(local_card.guid()));
+  suggestion.field_by_field_filling_type_used = CREDIT_CARD_NAME_FULL;
+  IssueOnQuery();
+  manager().OnFormsSeen({queried_form_}, {});
+
+  EXPECT_CALL(driver(), ApplyFieldAction(mojom::ActionPersistence::kPreview,
+                                         mojom::TextReplacement::kReplaceAll,
+                                         queried_form_triggering_field_id_,
+                                         suggestion.main_text.value));
+
+  external_delegate().DidSelectSuggestion(
+      suggestion, AutofillSuggestionTriggerSource::kManualFallbackPayments);
 }
 
 // Test parameter data for asserting that the expected set of field types

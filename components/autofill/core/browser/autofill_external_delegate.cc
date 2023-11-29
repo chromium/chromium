@@ -938,7 +938,10 @@ void AutofillExternalDelegate::FillAddressFieldByFieldFillingSuggestion(
 
 void AutofillExternalDelegate::PreviewCreditCardFieldByFieldFillingSuggestion(
     const Suggestion& suggestion) {
-  // TODO(crbug.com/1493361): Preview credit card field-by-field suggestion.
+  manager_->FillOrPreviewField(mojom::ActionPersistence::kPreview,
+                               mojom::TextReplacement::kReplaceAll, query_form_,
+                               query_field_, suggestion.main_text.value,
+                               suggestion.popup_item_id);
 }
 
 void AutofillExternalDelegate::FillCreditCardFieldByFieldFillingSuggestion(
