@@ -2701,6 +2701,8 @@ static_library("ui") {
       "ash/network/network_state_notifier.h",
       "ash/network/tether_notification_presenter.cc",
       "ash/network/tether_notification_presenter.h",
+      "ash/picker/picker_client_impl.cc",
+      "ash/picker/picker_client_impl.h",
       "ash/projector/pending_screencast_manager.cc",
       "ash/projector/pending_screencast_manager.h",
       "ash/projector/projector_app_client_impl.cc",

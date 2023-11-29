@@ -10,20 +10,34 @@
 
 namespace ash {
 
+class PickerClient;
+
 // Controls a Picker widget.
 class ASH_EXPORT PickerController {
  public:
+  PickerController();
+  PickerController(const PickerController&) = delete;
+  PickerController& operator=(const PickerController&) = delete;
+  ~PickerController();
+
   // Whether the provided feature key for Picker can enable the feature.
   static bool IsFeatureKeyMatched();
 
+  // Sets the `client` used by this class and the widget to communicate with the
+  // browser. `client` may be set to null, which will close the Widget if it's
+  // open. If `client` is not null, then it must remain valid for the lifetime
+  // of this class, or until `SetClient` is called with a different client.
+  void SetClient(PickerClient* client);
+
   // Toggles the visibility of the Picker widget.
-  // `AshWebViewFactory::Get()` must be valid when this is called.
+  // This must only be called after `SetClient` is called with a valid client.
   void ToggleWidget();
 
   // Returns the Picker widget for tests.
   views::Widget* widget_for_testing() { return widget_.get(); }
 
  private:
+  raw_ptr<PickerClient> client_ = nullptr;
   views::UniqueWidgetPtr widget_;
 };
 

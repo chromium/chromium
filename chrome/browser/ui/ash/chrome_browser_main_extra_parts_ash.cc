@@ -63,6 +63,7 @@
 #include "chrome/browser/ui/ash/network/mobile_data_notifications.h"
 #include "chrome/browser/ui/ash/network/network_connect_delegate.h"
 #include "chrome/browser/ui/ash/network/network_portal_notification_controller.h"
+#include "chrome/browser/ui/ash/picker/picker_client_impl.h"
 #include "chrome/browser/ui/ash/projector/projector_app_client_impl.h"
 #include "chrome/browser/ui/ash/projector/projector_client_impl.h"
 #include "chrome/browser/ui/ash/screen_orientation_delegate_chromeos.h"
@@ -352,6 +353,10 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
   bool force_throttle = base::CommandLine::ForCurrentProcess()->HasSwitch(
       ash::switches::kForceRefreshRateThrottle);
 
+  if (auto* picker_controller = ash::Shell::Get()->picker_controller()) {
+    picker_client_ = std::make_unique<PickerClientImpl>(picker_controller);
+  }
+
   oobe_dialog_util_ = std::make_unique<ash::OobeDialogUtilImpl>();
 
   game_mode_controller_ = std::make_unique<game_mode::GameModeController>();
@@ -409,6 +414,7 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   refresh_rate_controller_.reset();
   game_mode_controller_.reset();
   oobe_dialog_util_.reset();
+  picker_client_.reset();
   ash_web_view_factory_.reset();
   network_portal_notification_controller_.reset();
   display_settings_handler_.reset();
