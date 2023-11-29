@@ -194,7 +194,7 @@ void ChromeContentVerifierDelegate::VerifyFailed(
     ContentVerifyJob::FailureReason reason) {
   ExtensionRegistry* registry = ExtensionRegistry::Get(context_);
   const Extension* extension =
-      registry->GetExtensionById(extension_id, ExtensionRegistry::ENABLED);
+      registry->enabled_extensions().GetByID(extension_id);
   if (!extension)
     return;
 

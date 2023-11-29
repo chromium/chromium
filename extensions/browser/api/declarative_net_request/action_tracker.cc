@@ -47,9 +47,9 @@ bool IsMainFrameNavigationRequest(const WebRequestInfo& request_info) {
 bool ShouldRecordMatchedRule(content::BrowserContext* browser_context,
                              const ExtensionId& extension_id,
                              int tab_id) {
-  const Extension* extension =
-      ExtensionRegistry::Get(browser_context)
-          ->GetExtensionById(extension_id, ExtensionRegistry::ENABLED);
+  const Extension* extension = ExtensionRegistry::Get(browser_context)
+                                   ->enabled_extensions()
+                                   .GetByID(extension_id);
   DCHECK(extension);
 
   const PermissionsData* permissions_data = extension->permissions_data();
