@@ -127,6 +127,30 @@ enum class DiscardTabTreatmentOptions {
 // configuring performance settings.
 BASE_DECLARE_FEATURE(kPerformanceControlsSidePanel);
 
+// This enables the CPU performance interventions within the side panel.
+BASE_DECLARE_FEATURE(kPerformanceCPUIntervention);
+
+// This represents the duration that CPU must be over the threshold before
+// an intervention is triggered.
+extern const base::FeatureParam<base::TimeDelta> kCPUTimeOverThreshold;
+
+// If Chrome CPU utilization and System CPU utilization are both over the
+// specified percent thresholds then we will trigger an intervention.
+extern const base::FeatureParam<int> kCPUSystemPercentThreshold;
+extern const base::FeatureParam<int> kCPUChromePercentThreshold;
+
+// This enables the Memory performance interventions within the side panel.
+BASE_DECLARE_FEATURE(kPerformanceMemoryIntervention);
+
+// This represents the duration that Memory must be over the threshold before
+// an intervention is triggered.
+extern const base::FeatureParam<base::TimeDelta> kMemoryTimeOverThreshold;
+
+// If available Memory percent and bytes are both under the specified thresholds
+// then we will trigger an intervention.
+extern const base::FeatureParam<int> kMemoryFreePercentThreshold;
+extern const base::FeatureParam<int> kMemoryFreeBytesThreshold;
+
 #endif
 
 BASE_DECLARE_FEATURE(kPMProcessPriorityPolicy);
