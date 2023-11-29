@@ -551,12 +551,11 @@ class VideoResourceUpdater::HardwarePlaneResource
           gfx::BufferUsage::SCANOUT,
           SinglePlaneSharedImageFormatToBufferFormat(format), caps);
     }
-    auto client_shared_image = sii->CreateSharedImage(
+    shared_image_ = sii->CreateSharedImage(
         format, size, color_space, kTopLeft_GrSurfaceOrigin,
         kPremul_SkAlphaType, shared_image_usage, "VideoResourceUpdater",
         gpu::kNullSurfaceHandle);
-    CHECK(client_shared_image);
-    mailbox_ = client_shared_image->mailbox();
+    CHECK(shared_image_);
     InterfaceBase()->WaitSyncTokenCHROMIUM(
         sii->GenUnverifiedSyncToken().GetConstData());
   }
@@ -567,10 +566,11 @@ class VideoResourceUpdater::HardwarePlaneResource
   ~HardwarePlaneResource() override {
     gpu::SyncToken sync_token;
     InterfaceBase()->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
-    SharedImageInterface()->DestroySharedImage(sync_token, mailbox_);
+    SharedImageInterface()->DestroySharedImage(sync_token,
+                                               std::move(shared_image_));
   }
 
-  const gpu::Mailbox& mailbox() const { return mailbox_; }
+  const gpu::Mailbox& mailbox() const { return shared_image_->mailbox(); }
 
   GLenum texture_target() const { return texture_target_; }
   bool overlay_candidate() const { return overlay_candidate_; }
@@ -601,7 +601,7 @@ class VideoResourceUpdater::HardwarePlaneResource
   }
 
   const raw_ptr<viz::RasterContextProvider> context_provider_;
-  gpu::Mailbox mailbox_;
+  scoped_refptr<gpu::ClientSharedImage> shared_image_;
   GLenum texture_target_ = GL_TEXTURE_2D;
   bool overlay_candidate_ = false;
 };
