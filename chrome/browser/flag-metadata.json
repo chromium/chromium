@@ -5430,7 +5430,7 @@
   {
     "name": "modern-tab-strip",
     "owners": [ "bling-flags@google.com" ],
-    "expiry_milestone": 92
+    "expiry_milestone": 125
   },
   {
     "name": "mojo-linux-sharedmem",
