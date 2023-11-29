@@ -13,17 +13,17 @@ class BrowserContext;
 
 namespace favicon {
 
-class LargeFaviconProvider;
+class LargeIconService;
 
 using LargeFaviconProviderGetter =
-    base::RepeatingCallback<LargeFaviconProvider*(content::BrowserContext*)>;
+    base::RepeatingCallback<LargeIconService*(content::BrowserContext*)>;
 
 // Sets a callback that returns the LargeIconProvider for a given
 // BrowserContext. This allows code in //components, such as LargeIconBridge, to
 // obtain an implementation of LargeIconProvider even though the
 // implementation's factory is unique to each embedder.
 void SetLargeFaviconProviderGetter(const LargeFaviconProviderGetter& getter);
-LargeFaviconProvider* GetLargeFaviconProvider(content::BrowserContext* context);
+LargeIconService* GetLargeFaviconProvider(content::BrowserContext* context);
 
 }  // namespace favicon
 

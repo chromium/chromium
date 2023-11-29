@@ -22,8 +22,7 @@ void SetLargeFaviconProviderGetter(const LargeFaviconProviderGetter& getter) {
 }
 
 // static
-LargeFaviconProvider* GetLargeFaviconProvider(
-    content::BrowserContext* context) {
+LargeIconService* GetLargeFaviconProvider(content::BrowserContext* context) {
   return GetGetter()->Run(context);
 }
 

@@ -11,8 +11,7 @@
 #include "base/functional/bind.h"
 #include "components/favicon/android/jni_headers/LargeIconBridge_jni.h"
 #include "components/favicon/content/large_favicon_provider_getter.h"
-#include "components/favicon/core/core_favicon_service.h"
-#include "components/favicon/core/large_favicon_provider.h"
+#include "components/favicon/core/large_icon_service.h"
 #include "components/favicon_base/fallback_icon_style.h"
 #include "components/favicon_base/favicon_types.h"
 #include "content/public/browser/android/browser_context_handle.h"
@@ -80,10 +79,11 @@ jboolean LargeIconBridge::GetLargeIconForURL(
   if (!browser_context)
     return false;
 
-  LargeFaviconProvider* favicon_provider =
+  LargeIconService* large_icon_service =
       GetLargeFaviconProvider(browser_context);
-  if (!favicon_provider)
+  if (!large_icon_service) {
     return false;
+  }
 
   favicon_base::LargeIconCallback callback_runner = base::BindOnce(
       &OnLargeIconAvailable, ScopedJavaGlobalRef<jobject>(env, j_callback));
@@ -92,7 +92,7 @@ jboolean LargeIconBridge::GetLargeIconForURL(
 
   // Use desired_size = 0 for getting the icon from the cache (so that
   // the icon is not poorly rescaled by LargeIconService).
-  favicon_provider->GetLargeIconRawBitmapOrFallbackStyleForPageUrl(
+  large_icon_service->GetLargeIconRawBitmapOrFallbackStyleForPageUrl(
       *url, min_source_size_px, desired_source_size_px,
       std::move(callback_runner), &cancelable_task_tracker_);
 

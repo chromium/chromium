@@ -21,7 +21,7 @@
 
 namespace {
 
-favicon::LargeFaviconProvider* GetLargeFaviconProvider(
+favicon::LargeIconService* GetLargeIconService(
     content::BrowserContext* context) {
   return LargeIconServiceFactory::GetInstance()->GetForBrowserContext(context);
 }
@@ -66,7 +66,7 @@ LargeIconServiceFactory::LargeIconServiceFactory()
               .Build()) {
   DependsOn(FaviconServiceFactory::GetInstance());
   favicon::SetLargeFaviconProviderGetter(
-      base::BindRepeating(&GetLargeFaviconProvider));
+      base::BindRepeating(&GetLargeIconService));
 }
 
 LargeIconServiceFactory::~LargeIconServiceFactory() = default;

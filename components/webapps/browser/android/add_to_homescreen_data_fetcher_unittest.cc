@@ -20,7 +20,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/favicon/content/large_favicon_provider_getter.h"
-#include "components/favicon/core/large_favicon_provider.h"
+#include "components/favicon/core/large_icon_service.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_data.h"
@@ -244,9 +244,9 @@ class AddToHomescreenDataFetcherTest
         web_contents()->GetUserData(TestInstallableManager::UserDataKey()));
 
     favicon::SetLargeFaviconProviderGetter(base::BindRepeating(
-        [](favicon::LargeFaviconProvider* provider,
-           content::BrowserContext* context) { return provider; },
-        &null_large_favicon_provider_));
+        [](favicon::LargeIconService* service,
+           content::BrowserContext* context) { return service; },
+        &null_large_icon_service_));
 
     NavigateAndCommit(GURL(kDefaultStartUrl));
   }
@@ -319,10 +319,10 @@ class AddToHomescreenDataFetcherTest
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
-  class NullLargeFaviconProvider : public favicon::LargeFaviconProvider {
+  class NullLargeIconService : public favicon::LargeIconService {
    public:
-    NullLargeFaviconProvider() = default;
-    virtual ~NullLargeFaviconProvider() = default;
+    NullLargeIconService() = default;
+    ~NullLargeIconService() override = default;
 
     MOCK_METHOD5(GetLargeIconRawBitmapOrFallbackStyleForPageUrl,
                  base::CancelableTaskTracker::TaskId(
@@ -338,6 +338,27 @@ class AddToHomescreenDataFetcherTest
                      int desired_size_in_pixel,
                      favicon_base::LargeIconImageCallback callback,
                      base::CancelableTaskTracker* tracker));
+    MOCK_METHOD5(GetLargeIconRawBitmapOrFallbackStyleForIconUrl,
+                 base::CancelableTaskTracker::TaskId(
+                     const GURL& icon_url,
+                     int min_source_size_in_pixel,
+                     int desired_size_in_pixel,
+                     favicon_base::LargeIconCallback callback,
+                     base::CancelableTaskTracker* tracker));
+    MOCK_METHOD4(GetIconRawBitmapOrFallbackStyleForPageUrl,
+                 base::CancelableTaskTracker::TaskId(
+                     const GURL& page_url,
+                     int desired_size_in_pixel,
+                     favicon_base::LargeIconCallback callback,
+                     base::CancelableTaskTracker* tracker));
+    MOCK_METHOD5(
+        GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache,
+        void(const GURL& page_url,
+             bool may_page_url_be_private,
+             bool should_trim_page_url_path,
+             const net::NetworkTrafficAnnotationTag& traffic_annotation,
+             favicon_base::GoogleFaviconServerCallback callback));
+    MOCK_METHOD1(TouchIconFromGoogleServer, void(const GURL& icon_url));
     base::CancelableTaskTracker::TaskId GetLargeIconRawBitmapForPageUrl(
         const GURL& page_url,
         int min_source_size_in_pixel,
@@ -351,7 +372,7 @@ class AddToHomescreenDataFetcherTest
   };
 
   raw_ptr<TestInstallableManager> installable_manager_;
-  NullLargeFaviconProvider null_large_favicon_provider_;
+  NullLargeIconService null_large_icon_service_;
 };
 
 TEST_F(AddToHomescreenDataFetcherTest, EmptyManifest) {
