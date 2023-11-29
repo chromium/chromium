@@ -16,9 +16,9 @@ class ClipboardHistoryItemView;
 // The button to delete the menu item and its corresponding clipboard data.
 class ClipboardHistoryDeleteButton : public views::ImageButton,
                                      public views::ViewTargeterDelegate {
- public:
-  METADATA_HEADER(ClipboardHistoryDeleteButton);
+  METADATA_HEADER(ClipboardHistoryDeleteButton, views::ImageButton)
 
+ public:
   ClipboardHistoryDeleteButton(ClipboardHistoryItemView* listener,
                                const std::u16string& item_text);
   ClipboardHistoryDeleteButton(const ClipboardHistoryDeleteButton& rhs) =

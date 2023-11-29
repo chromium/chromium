@@ -56,9 +56,9 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
                                     public SessionObserver,
                                     public ui::SimpleMenuModel::Delegate,
                                     public views::WidgetObserver {
- public:
-  METADATA_HEADER(HoldingSpaceTray);
+  METADATA_HEADER(HoldingSpaceTray, TrayBackgroundView)
 
+ public:
   explicit HoldingSpaceTray(Shelf* shelf);
   HoldingSpaceTray(const HoldingSpaceTray& other) = delete;
   HoldingSpaceTray& operator=(const HoldingSpaceTray& other) = delete;

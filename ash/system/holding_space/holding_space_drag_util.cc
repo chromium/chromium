@@ -188,7 +188,7 @@ class DragImageItemView : public views::View {
   const raw_ptr<const ui::ColorProvider, ExperimentalAsh> color_provider_;
 };
 
-BEGIN_METADATA(DragImageItemView)
+BEGIN_METADATA(DragImageItemView, views::View)
 END_METADATA
 
 // DragImageItemChipView -------------------------------------------------------
@@ -254,7 +254,7 @@ class DragImageItemChipView : public DragImageItemView {
   }
 };
 
-BEGIN_METADATA(DragImageItemChipView)
+BEGIN_METADATA(DragImageItemChipView, DragImageItemView)
 END_METADATA
 
 // DragImageItemScreenCaptureView ----------------------------------------------
@@ -296,7 +296,7 @@ class DragImageItemScreenCaptureView : public DragImageItemView {
   }
 };
 
-BEGIN_METADATA(DragImageItemScreenCaptureView)
+BEGIN_METADATA(DragImageItemScreenCaptureView, DragImageItemView)
 END_METADATA
 
 // DragImageOverflowBadge ------------------------------------------------------
@@ -356,7 +356,7 @@ class DragImageOverflowBadge : public views::View {
   const raw_ptr<const ui::ColorProvider, ExperimentalAsh> color_provider_;
 };
 
-BEGIN_METADATA(DragImageOverflowBadge)
+BEGIN_METADATA(DragImageOverflowBadge, views::View)
 END_METADATA
 
 // DragImageView ---------------------------------------------------------------
@@ -507,7 +507,7 @@ class DragImageView : public views::View {
   raw_ptr<views::View, ExperimentalAsh> drag_image_overflow_badge_ = nullptr;
 };
 
-BEGIN_METADATA(DragImageView)
+BEGIN_METADATA(DragImageView, views::View)
 END_METADATA
 
 }  // namespace

@@ -140,8 +140,9 @@ views::BubbleBorder::Arrow TranslateArrow(
 // The alt-text and button callback can be set based on the needs of the
 // specific bubble.
 class ClosePromoButton : public views::ImageButton {
+  METADATA_HEADER(ClosePromoButton, views::ImageButton)
+
  public:
-  METADATA_HEADER(ClosePromoButton);
   ClosePromoButton(const std::u16string accessible_name,
                    PressedCallback callback) {
     SetCallback(callback);
@@ -174,8 +175,9 @@ BEGIN_METADATA(ClosePromoButton, views::ImageButton)
 END_METADATA
 
 class DotView : public views::View {
+  METADATA_HEADER(DotView, views::View)
+
  public:
-  METADATA_HEADER(DotView);
   DotView(gfx::Size size, bool should_fill)
       : size_(size), should_fill_(should_fill) {
     // In order to anti-alias properly, we'll grow by the stroke width and then

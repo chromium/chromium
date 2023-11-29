@@ -50,8 +50,9 @@ size_t GetDisplayTextMaxLines(const ClipboardHistoryItem* item) {
 
 class ClipboardHistoryTextItemView::TextContentsView
     : public ClipboardHistoryTextItemView::ContentsView {
+  METADATA_HEADER(TextContentsView, ContentsView)
+
  public:
-  METADATA_HEADER(TextContentsView);
   explicit TextContentsView(const ClipboardHistoryTextItemView* container) {
     const auto* item = container->GetClipboardHistoryItem();
     const auto display_text_elide_behavior = GetDisplayTextElideBehavior(item);

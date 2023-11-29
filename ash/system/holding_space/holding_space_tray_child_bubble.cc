@@ -321,10 +321,6 @@ std::unique_ptr<views::View> HoldingSpaceTrayChildBubble::CreatePlaceholder() {
   return nullptr;
 }
 
-const char* HoldingSpaceTrayChildBubble::GetClassName() const {
-  return "HoldingSpaceTrayChildBubble";
-}
-
 void HoldingSpaceTrayChildBubble::ChildPreferredSizeChanged(
     views::View* child) {
   PreferredSizeChanged();
@@ -505,7 +501,7 @@ void HoldingSpaceTrayChildBubble::OnAnimateOutCompleted(bool aborted) {
   }
 }
 
-BEGIN_METADATA(HoldingSpaceTrayChildBubble)
+BEGIN_METADATA(HoldingSpaceTrayChildBubble, views::View)
 END_METADATA
 
 }  // namespace ash

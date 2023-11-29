@@ -36,10 +36,6 @@ RecentFilesBubble::RecentFilesBubble(HoldingSpaceViewDelegate* delegate)
 
 RecentFilesBubble::~RecentFilesBubble() = default;
 
-const char* RecentFilesBubble::GetClassName() const {
-  return "RecentFilesBubble";
-}
-
 std::unique_ptr<views::View> RecentFilesBubble::CreatePlaceholder() {
   if (!features::IsHoldingSpacePredictabilityEnabled())
     return nullptr;
@@ -68,7 +64,7 @@ RecentFilesBubble::CreateSections() {
   return sections;
 }
 
-BEGIN_METADATA(RecentFilesBubble)
+BEGIN_METADATA(RecentFilesBubble, HoldingSpaceTrayChildBubble)
 END_METADATA
 
 }  // namespace ash

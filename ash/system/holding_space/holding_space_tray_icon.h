@@ -29,9 +29,9 @@ class Shell;
 class ASH_EXPORT HoldingSpaceTrayIcon : public views::View,
                                         public ShellObserver,
                                         public ShelfConfig::Observer {
- public:
-  METADATA_HEADER(HoldingSpaceTrayIcon);
+  METADATA_HEADER(HoldingSpaceTrayIcon, views::View)
 
+ public:
   explicit HoldingSpaceTrayIcon(Shelf* shelf);
   HoldingSpaceTrayIcon(const HoldingSpaceTrayIcon&) = delete;
   HoldingSpaceTrayIcon& operator=(const HoldingSpaceTrayIcon&) = delete;

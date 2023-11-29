@@ -24,7 +24,6 @@ class ScreenCapturesSection : public HoldingSpaceItemViewsSection {
   ~ScreenCapturesSection() override;
 
   // HoldingSpaceItemViewsSection:
-  const char* GetClassName() const override;
   std::unique_ptr<views::View> CreateHeader() override;
   std::unique_ptr<views::View> CreateContainer() override;
   std::unique_ptr<HoldingSpaceItemView> CreateView(

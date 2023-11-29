@@ -109,6 +109,8 @@ std::u16string GetPlaceholderText(bool drive_disabled) {
 // FilesAppChip ----------------------------------------------------------------
 
 class FilesAppChip : public views::Button {
+  METADATA_HEADER(FilesAppChip, views::Button)
+
  public:
   explicit FilesAppChip(views::Button::PressedCallback pressed_callback)
       : views::Button(std::move(pressed_callback)) {
@@ -176,6 +178,9 @@ class FilesAppChip : public views::Button {
         kColorAshControlBackgroundColorInactive, kFilesAppChipHeight / 2.f));
   }
 };
+
+BEGIN_METADATA(FilesAppChip, views::Button)
+END_METADATA
 
 }  // namespace
 
@@ -296,7 +301,7 @@ void PinnedFilesSection::OnFilesAppChipPressed(const ui::Event& event) {
   }
 }
 
-BEGIN_METADATA(PinnedFilesSection)
+BEGIN_METADATA(PinnedFilesSection, HoldingSpaceItemViewsSection)
 END_METADATA
 
 }  // namespace ash

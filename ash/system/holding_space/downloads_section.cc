@@ -115,7 +115,7 @@ class Header : public views::Button {
   raw_ptr<views::ImageView, ExperimentalAsh> chevron_ = nullptr;
 };
 
-BEGIN_METADATA(Header)
+BEGIN_METADATA(Header, views::Button)
 END_METADATA
 
 }  // namespace
@@ -127,10 +127,6 @@ DownloadsSection::DownloadsSection(HoldingSpaceViewDelegate* delegate)
                                    HoldingSpaceSectionId::kDownloads) {}
 
 DownloadsSection::~DownloadsSection() = default;
-
-const char* DownloadsSection::GetClassName() const {
-  return "DownloadsSection";
-}
 
 std::unique_ptr<views::View> DownloadsSection::CreateHeader() {
   auto header = std::make_unique<Header>();
@@ -153,7 +149,7 @@ std::unique_ptr<HoldingSpaceItemView> DownloadsSection::CreateView(
   return std::make_unique<HoldingSpaceItemChipView>(delegate(), item);
 }
 
-BEGIN_METADATA(DownloadsSection)
+BEGIN_METADATA(DownloadsSection, HoldingSpaceItemViewsSection)
 END_METADATA
 
 }  // namespace ash

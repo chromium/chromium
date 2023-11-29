@@ -82,7 +82,6 @@ class ASH_EXPORT HoldingSpaceTrayChildBubble
 
  private:
   // views::View:
-  const char* GetClassName() const override;
   void ChildPreferredSizeChanged(views::View* child) override;
   void ChildVisibilityChanged(views::View* child) override;
   void OnGestureEvent(ui::GestureEvent* event) override;

@@ -34,9 +34,9 @@ class HoldingSpaceViewDelegate;
 // animated out.
 class ASH_EXPORT HoldingSpaceItemView : public views::View,
                                         public HoldingSpaceModelObserver {
- public:
-  METADATA_HEADER(HoldingSpaceItemView);
+  METADATA_HEADER(HoldingSpaceItemView, views::View)
 
+ public:
   HoldingSpaceItemView(HoldingSpaceViewDelegate*, const HoldingSpaceItem*);
   HoldingSpaceItemView(const HoldingSpaceItemView&) = delete;
   HoldingSpaceItemView& operator=(const HoldingSpaceItemView&) = delete;

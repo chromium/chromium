@@ -26,7 +26,7 @@ PinnedFilesBubble::CreateSections() {
   return sections;
 }
 
-BEGIN_METADATA(PinnedFilesBubble)
+BEGIN_METADATA(PinnedFilesBubble, HoldingSpaceTrayChildBubble)
 END_METADATA
 
 }  // namespace ash

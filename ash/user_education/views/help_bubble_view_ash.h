@@ -49,8 +49,9 @@ struct HelpBubbleAnchorParams {
 // in-product help which educates users about certain Chrome features in
 // a deferred context.
 class ASH_EXPORT HelpBubbleViewAsh : public views::BubbleDialogDelegateView {
+  METADATA_HEADER(HelpBubbleViewAsh, views::BubbleDialogDelegateView)
+
  public:
-  METADATA_HEADER(HelpBubbleViewAsh);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kHelpBubbleElementIdForTesting);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDefaultButtonIdForTesting);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kFirstNonDefaultButtonIdForTesting);

@@ -19,9 +19,9 @@ class RoundedImageView;
 
 class ASH_EXPORT HoldingSpaceItemScreenCaptureView
     : public HoldingSpaceItemView {
- public:
-  METADATA_HEADER(HoldingSpaceItemScreenCaptureView);
+  METADATA_HEADER(HoldingSpaceItemScreenCaptureView, HoldingSpaceItemView)
 
+ public:
   HoldingSpaceItemScreenCaptureView(HoldingSpaceViewDelegate* delegate,
                                     const HoldingSpaceItem* item);
   HoldingSpaceItemScreenCaptureView(const HoldingSpaceItemScreenCaptureView&) =

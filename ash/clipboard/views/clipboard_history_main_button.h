@@ -14,8 +14,9 @@ class ClipboardHistoryItemView;
 
 // The view responding to mouse click or gesture tap events.
 class ClipboardHistoryMainButton : public views::Button {
+  METADATA_HEADER(ClipboardHistoryMainButton, views::Button)
+
  public:
-  METADATA_HEADER(ClipboardHistoryMainButton);
   explicit ClipboardHistoryMainButton(ClipboardHistoryItemView* container);
   ClipboardHistoryMainButton(const ClipboardHistoryMainButton& rhs) = delete;
   ClipboardHistoryMainButton& operator=(const ClipboardHistoryMainButton& rhs) =

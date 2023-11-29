@@ -28,10 +28,6 @@ ScreenCapturesSection::ScreenCapturesSection(HoldingSpaceViewDelegate* delegate)
 
 ScreenCapturesSection::~ScreenCapturesSection() = default;
 
-const char* ScreenCapturesSection::GetClassName() const {
-  return "ScreenCapturesSection";
-}
-
 std::unique_ptr<views::View> ScreenCapturesSection::CreateHeader() {
   auto header =
       holding_space_ui::CreateSectionHeaderLabel(
@@ -58,7 +54,7 @@ std::unique_ptr<HoldingSpaceItemView> ScreenCapturesSection::CreateView(
   return std::make_unique<HoldingSpaceItemScreenCaptureView>(delegate(), item);
 }
 
-BEGIN_METADATA(ScreenCapturesSection)
+BEGIN_METADATA(ScreenCapturesSection, HoldingSpaceItemViewsSection)
 END_METADATA
 
 }  // namespace ash
