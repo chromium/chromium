@@ -251,16 +251,20 @@ void TouchToFillDelegateAndroidImpl::SuggestionSelected(std::string unique_id,
   PersonalDataManager* pdm = manager_->client().GetPersonalDataManager();
   CHECK(pdm);
   CreditCard* card = pdm->GetCreditCardByGUID(unique_id);
+  // TODO(crbug.com/1480992): Figure out why `card` is sometimes nullptr.
+  if (!card) {
+    return;
+  }
   if (is_virtual) {
     // Virtual credit cards are not persisted in Chrome, modify record type
     // locally.
-    CreditCard copy = CreditCard::CreateVirtualCard(*card);
     manager_->FillOrPreviewCreditCardForm(
-        mojom::ActionPersistence::kFill, query_form_, query_field_, &copy,
+        mojom::ActionPersistence::kFill, query_form_, query_field_,
+        CreditCard::CreateVirtualCard(*card),
         {.trigger_source = AutofillTriggerSource::kTouchToFillCreditCard});
   } else {
     manager_->FillOrPreviewCreditCardForm(
-        mojom::ActionPersistence::kFill, query_form_, query_field_, card,
+        mojom::ActionPersistence::kFill, query_form_, query_field_, *card,
         {.trigger_source = AutofillTriggerSource::kTouchToFillCreditCard});
   }
 }

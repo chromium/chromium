@@ -107,7 +107,7 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogSelectedMetrics) {
   autofill_manager().OnAskForValuesToFillTest(form(), form().fields.front());
   autofill_manager().FillOrPreviewCreditCardForm(
       mojom::ActionPersistence::kFill, form(), form().fields.front(),
-      personal_data().GetCreditCardByGUID(kCardGuid),
+      *personal_data().GetCreditCardByGUID(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
 
   EXPECT_THAT(
@@ -126,7 +126,7 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogSelectedMetrics) {
   // Simulate selecting the suggestion again.
   autofill_manager().FillOrPreviewCreditCardForm(
       mojom::ActionPersistence::kFill, form(), form().fields.front(),
-      personal_data().GetCreditCardByGUID(kCardGuid),
+      *personal_data().GetCreditCardByGUID(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
 
   EXPECT_THAT(
@@ -151,7 +151,7 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogFilledMetrics) {
   autofill_manager().OnAskForValuesToFillTest(form(), form().fields.front());
   autofill_manager().FillOrPreviewCreditCardForm(
       mojom::ActionPersistence::kFill, form(), form().fields.front(),
-      personal_data().GetCreditCardByGUID(kCardGuid),
+      *personal_data().GetCreditCardByGUID(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
   test_api(autofill_manager())
       .OnCreditCardFetched(CreditCardFetchResult::kSuccess, &card());
@@ -172,7 +172,7 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogFilledMetrics) {
   // Fill the suggestion again.
   autofill_manager().FillOrPreviewCreditCardForm(
       mojom::ActionPersistence::kFill, form(), form().fields.front(),
-      personal_data().GetCreditCardByGUID(kCardGuid),
+      *personal_data().GetCreditCardByGUID(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
   test_api(autofill_manager())
       .OnCreditCardFetched(CreditCardFetchResult::kSuccess, &card());
@@ -198,7 +198,7 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogSubmitMetrics) {
   autofill_manager().OnAskForValuesToFillTest(form(), form().fields.front());
   autofill_manager().FillOrPreviewCreditCardForm(
       mojom::ActionPersistence::kFill, form(), form().fields.front(),
-      personal_data().GetCreditCardByGUID(kCardGuid),
+      *personal_data().GetCreditCardByGUID(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
   test_api(autofill_manager())
       .OnCreditCardFetched(CreditCardFetchResult::kSuccess, &card());

@@ -256,7 +256,7 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
               (mojom::ActionPersistence action_persistence,
                const FormData& form,
                const FormFieldData& field,
-               const CreditCard* credit_card,
+               const CreditCard& credit_card,
                const AutofillTriggerDetails& trigger_details),
               (override));
 

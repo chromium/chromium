@@ -1344,18 +1344,17 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
     mojom::ActionPersistence action_persistence,
     const FormData& form,
     const FormFieldData& field,
-    const CreditCard* credit_card,
+    const CreditCard& credit_card,
     const AutofillTriggerDetails& trigger_details) {
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
   if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field))
     return;
 
-  // TODO(crbug.com/1330108): Accept credit card by reference.
-  credit_card_ = credit_card ? *credit_card : CreditCard();
+  credit_card_ = credit_card;
   bool is_preview = action_persistence != mojom::ActionPersistence::kFill;
   bool should_fetch_card =
-      !is_preview && ShouldFetchCreditCard(form, field, *credit_card);
+      !is_preview && ShouldFetchCreditCard(form, field, credit_card_);
 
   if (should_fetch_card) {
     credit_card_form_event_logger_->OnDidSelectCardSuggestion(
@@ -1368,7 +1367,7 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
     // OnCreditCardFetched() in this class after successfully fetching the card.
     fetched_credit_card_trigger_source_ = trigger_details.trigger_source;
     credit_card_access_manager_->FetchCreditCard(
-        credit_card,
+        &credit_card_,
         base::BindOnce(&BrowserAutofillManager::OnCreditCardFetched,
                        weak_ptr_factory_.GetWeakPtr()));
     return;

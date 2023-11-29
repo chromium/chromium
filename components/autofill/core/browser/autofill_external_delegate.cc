@@ -940,13 +940,12 @@ void AutofillExternalDelegate::FillAutofillFormData(
     if (popup_item_id == PopupItemId::kVirtualCreditCardEntry) {
       // Virtual credit cards are not persisted in Chrome, modify record type
       // locally.
-      CreditCard copy = CreditCard::CreateVirtualCard(*credit_card);
-      manager_->FillOrPreviewCreditCardForm(action_persistence, query_form_,
-                                            query_field_, &copy,
-                                            trigger_details);
+      manager_->FillOrPreviewCreditCardForm(
+          action_persistence, query_form_, query_field_,
+          CreditCard::CreateVirtualCard(*credit_card), trigger_details);
     } else {
       manager_->FillOrPreviewCreditCardForm(action_persistence, query_form_,
-                                            query_field_, credit_card,
+                                            query_field_, *credit_card,
                                             trigger_details);
     }
   } else if (const AutofillProfile* profile = pdm->GetProfileByGUID(

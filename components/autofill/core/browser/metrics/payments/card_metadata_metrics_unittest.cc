@@ -192,7 +192,7 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSelectedMetrics) {
                              PopupItemId::kCreditCardEntry);
   autofill_manager().FillOrPreviewCreditCardForm(
       mojom::ActionPersistence::kFill, form(), form().fields.back(),
-      personal_data().GetCreditCardByGUID(kCardGuid),
+      *personal_data().GetCreditCardByGUID(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
 
   // Verify that:
@@ -235,7 +235,7 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSelectedMetrics) {
   // Select the suggestion again.
   autofill_manager().FillOrPreviewCreditCardForm(
       mojom::ActionPersistence::kFill, form(), form().fields.back(),
-      personal_data().GetCreditCardByGUID(kCardGuid),
+      *personal_data().GetCreditCardByGUID(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
 
   EXPECT_THAT(
@@ -265,7 +265,7 @@ TEST_P(CardMetadataFormEventMetricsTest, LogFilledMetrics) {
   // Simulate filling the card.
   autofill_manager().FillOrPreviewCreditCardForm(
       mojom::ActionPersistence::kFill, form(), form().fields.back(),
-      personal_data().GetCreditCardByGUID(kCardGuid),
+      *personal_data().GetCreditCardByGUID(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
   test_api(autofill_manager())
       .OnCreditCardFetched(CreditCardFetchResult::kSuccess, &card());
@@ -338,7 +338,7 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSubmitMetrics) {
   autofill_manager().OnAskForValuesToFillTest(form(), form().fields.back());
   autofill_manager().FillOrPreviewCreditCardForm(
       mojom::ActionPersistence::kFill, form(), form().fields.back(),
-      personal_data().GetCreditCardByGUID(kCardGuid),
+      *personal_data().GetCreditCardByGUID(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
   test_api(autofill_manager())
       .OnCreditCardFetched(CreditCardFetchResult::kSuccess, &card());
@@ -465,7 +465,7 @@ TEST_P(CardMetadataLatencyMetricsTest, LogMetrics) {
   test_clock.SetNowTicks(now + base::Seconds(2));
   autofill_manager().FillOrPreviewCreditCardForm(
       mojom::ActionPersistence::kFill, form(), form().fields.front(),
-      personal_data().GetCreditCardByGUID(kTestMaskedCardId),
+      *personal_data().GetCreditCardByGUID(kTestMaskedCardId),
       {.trigger_source = AutofillTriggerSource::kPopup});
 
   std::string latency_histogram_prefix =

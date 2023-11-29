@@ -186,7 +186,7 @@ class BrowserAutofillManager : public AutofillManager {
       mojom::ActionPersistence action_persistence,
       const FormData& form,
       const FormFieldData& field,
-      const CreditCard* credit_card,
+      const CreditCard& credit_card,
       const AutofillTriggerDetails& trigger_details);
 
   // Remove the credit card or Autofill profile that matches |backend_id|

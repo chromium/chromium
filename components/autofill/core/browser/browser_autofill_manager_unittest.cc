@@ -816,7 +816,7 @@ class BrowserAutofillManagerTest : public testing::Test {
     } else if (const CreditCard* card =
                    personal_data().GetCreditCardByGUID(guid)) {
       browser_autofill_manager_->FillOrPreviewCreditCardForm(
-          mojom::ActionPersistence::kFill, form, field, card, trigger_details);
+          mojom::ActionPersistence::kFill, form, field, *card, trigger_details);
     }
   }
 
@@ -848,7 +848,7 @@ class BrowserAutofillManagerTest : public testing::Test {
         .WillOnce((DoAll(SaveArg<2>(&response_data),
                          Return(std::vector<FieldGlobalId>{}))));
     browser_autofill_manager_->FillOrPreviewCreditCardForm(
-        action_persistence, input_form, input_field, &virtual_card,
+        action_persistence, input_form, input_field, virtual_card,
         {.trigger_source = AutofillTriggerSource::kPopup});
     return response_data;
   }
@@ -917,7 +917,7 @@ class BrowserAutofillManagerTest : public testing::Test {
 
     EXPECT_CALL(*autofill_driver_, ApplyFormAction).Times(AtLeast(1));
     browser_autofill_manager_->FillOrPreviewCreditCardForm(
-        mojom::ActionPersistence::kFill, *form, form->fields[0], card,
+        mojom::ActionPersistence::kFill, *form, form->fields[0], *card,
         {.trigger_source = AutofillTriggerSource::kPopup});
   }
 
@@ -2857,7 +2857,7 @@ TEST_F(BrowserAutofillManagerTest, OnCreditCardFetched_StoreInstrumentId) {
   FormsSeen({form});
   CreditCard credit_card = test::WithCvc(test::GetMaskedServerCard());
   browser_autofill_manager_->FillOrPreviewCreditCardForm(
-      mojom::ActionPersistence::kFill, form, form.fields[0], &credit_card,
+      mojom::ActionPersistence::kFill, form, form.fields[0], credit_card,
       {.trigger_source = AutofillTriggerSource::kPopup});
 
   test_api(*browser_autofill_manager_)
