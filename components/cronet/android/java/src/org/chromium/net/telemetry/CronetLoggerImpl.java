@@ -168,7 +168,7 @@ public class CronetLoggerImpl extends CronetLogger {
                     /* read_count= */ -1,
                     /* on_upload_read_count= */ -1,
                     /* is_bidi_stream= */ CronetStatsLog
-                            .CRONET_TRAFFIC_REPORTED__IS_BIDI_STREAM__UNSET); // 0 maps to UNKNOWN
+                            .CRONET_TRAFFIC_REPORTED__IS_BIDI_STREAM__OPTIONAL_BOOLEAN_UNSET);
         } catch (Exception e) {
             // using addAndGet because another thread might have modified samplesRateLimited's value
             mSamplesRateLimited.addAndGet(samplesRateLimitedCount);

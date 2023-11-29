@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This file is a (manually adjusted) copy of:
-//
-// https://cs.android.com/android/_/android/platform/external/cronet/+/0c586e37e975565a8315a666351ea46a02f5dba7:Android.extras.bp;l=400
-// TODO(b/307897935): currently we have to keep this generated file in sync by hand. We should
-// either run that generator in Chromium, or we should come up with our own generator.
+// This file was generated using a Google-internal version of
+// https://cs.android.com/android/platform/superproject/main/+/main:frameworks/proto_logging/stats/stats_log_api_gen/
+// fed with Google-internal Cronet atom proto definitions. Google employees should refer to
+// go/extend-cronet-telemetry.
 
 package org.chromium.net.telemetry;
 
@@ -103,119 +102,141 @@ public final class CronetStatsLog {
 
     // Values for CronetEngineCreated.experimental_options_quic_store_server_configs_in_properties
     public static final int
-            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_QUIC_STORE_SERVER_CONFIGS_IN_PROPERTIES__UNSET =
+            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_QUIC_STORE_SERVER_CONFIGS_IN_PROPERTIES__OPTIONAL_BOOLEAN_UNSET =
                     0;
     public static final int
-            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_QUIC_STORE_SERVER_CONFIGS_IN_PROPERTIES__TRUE =
+            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_QUIC_STORE_SERVER_CONFIGS_IN_PROPERTIES__OPTIONAL_BOOLEAN_TRUE =
                     1;
     public static final int
-            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_QUIC_STORE_SERVER_CONFIGS_IN_PROPERTIES__FALSE =
+            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_QUIC_STORE_SERVER_CONFIGS_IN_PROPERTIES__OPTIONAL_BOOLEAN_FALSE =
                     2;
 
     // Values for CronetEngineCreated.experimental_options_quic_goaway_sessions_on_ip_change
     public static final int
-            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_QUIC_GOAWAY_SESSIONS_ON_IP_CHANGE__UNSET =
+            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_QUIC_GOAWAY_SESSIONS_ON_IP_CHANGE__OPTIONAL_BOOLEAN_UNSET =
                     0;
     public static final int
-            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_QUIC_GOAWAY_SESSIONS_ON_IP_CHANGE__TRUE = 1;
+            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_QUIC_GOAWAY_SESSIONS_ON_IP_CHANGE__OPTIONAL_BOOLEAN_TRUE =
+                    1;
     public static final int
-            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_QUIC_GOAWAY_SESSIONS_ON_IP_CHANGE__FALSE =
+            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_QUIC_GOAWAY_SESSIONS_ON_IP_CHANGE__OPTIONAL_BOOLEAN_FALSE =
                     2;
 
     // Values for CronetEngineCreated.experimental_options_quic_close_sessions_on_ip_change
     public static final int
-            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_QUIC_CLOSE_SESSIONS_ON_IP_CHANGE__UNSET = 0;
+            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_QUIC_CLOSE_SESSIONS_ON_IP_CHANGE__OPTIONAL_BOOLEAN_UNSET =
+                    0;
     public static final int
-            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_QUIC_CLOSE_SESSIONS_ON_IP_CHANGE__TRUE = 1;
+            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_QUIC_CLOSE_SESSIONS_ON_IP_CHANGE__OPTIONAL_BOOLEAN_TRUE =
+                    1;
     public static final int
-            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_QUIC_CLOSE_SESSIONS_ON_IP_CHANGE__FALSE = 2;
+            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_QUIC_CLOSE_SESSIONS_ON_IP_CHANGE__OPTIONAL_BOOLEAN_FALSE =
+                    2;
 
     // Values for
     // CronetEngineCreated.experimental_options_quic_migrate_sessions_on_network_change_v2
     public static final int
-            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_QUIC_MIGRATE_SESSIONS_ON_NETWORK_CHANGE_V2__UNSET =
+            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_QUIC_MIGRATE_SESSIONS_ON_NETWORK_CHANGE_V2__OPTIONAL_BOOLEAN_UNSET =
                     0;
     public static final int
-            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_QUIC_MIGRATE_SESSIONS_ON_NETWORK_CHANGE_V2__TRUE =
+            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_QUIC_MIGRATE_SESSIONS_ON_NETWORK_CHANGE_V2__OPTIONAL_BOOLEAN_TRUE =
                     1;
     public static final int
-            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_QUIC_MIGRATE_SESSIONS_ON_NETWORK_CHANGE_V2__FALSE =
+            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_QUIC_MIGRATE_SESSIONS_ON_NETWORK_CHANGE_V2__OPTIONAL_BOOLEAN_FALSE =
                     2;
 
     // Values for CronetEngineCreated.experimental_options_quic_migrate_sessions_early_v2
     public static final int
-            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_QUIC_MIGRATE_SESSIONS_EARLY_V2__UNSET = 0;
+            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_QUIC_MIGRATE_SESSIONS_EARLY_V2__OPTIONAL_BOOLEAN_UNSET =
+                    0;
     public static final int
-            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_QUIC_MIGRATE_SESSIONS_EARLY_V2__TRUE = 1;
+            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_QUIC_MIGRATE_SESSIONS_EARLY_V2__OPTIONAL_BOOLEAN_TRUE =
+                    1;
     public static final int
-            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_QUIC_MIGRATE_SESSIONS_EARLY_V2__FALSE = 2;
+            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_QUIC_MIGRATE_SESSIONS_EARLY_V2__OPTIONAL_BOOLEAN_FALSE =
+                    2;
 
     // Values for CronetEngineCreated.experimental_options_quic_quic_disable_bidirectional_streams
     public static final int
-            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_QUIC_QUIC_DISABLE_BIDIRECTIONAL_STREAMS__UNSET =
+            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_QUIC_QUIC_DISABLE_BIDIRECTIONAL_STREAMS__OPTIONAL_BOOLEAN_UNSET =
                     0;
     public static final int
-            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_QUIC_QUIC_DISABLE_BIDIRECTIONAL_STREAMS__TRUE =
+            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_QUIC_QUIC_DISABLE_BIDIRECTIONAL_STREAMS__OPTIONAL_BOOLEAN_TRUE =
                     1;
     public static final int
-            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_QUIC_QUIC_DISABLE_BIDIRECTIONAL_STREAMS__FALSE =
+            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_QUIC_QUIC_DISABLE_BIDIRECTIONAL_STREAMS__OPTIONAL_BOOLEAN_FALSE =
                     2;
 
     // Values for CronetEngineCreated.experimental_options_quic_enable_socket_recv_optimization
     public static final int
-            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_QUIC_ENABLE_SOCKET_RECV_OPTIMIZATION__UNSET =
+            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_QUIC_ENABLE_SOCKET_RECV_OPTIMIZATION__OPTIONAL_BOOLEAN_UNSET =
                     0;
     public static final int
-            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_QUIC_ENABLE_SOCKET_RECV_OPTIMIZATION__TRUE =
+            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_QUIC_ENABLE_SOCKET_RECV_OPTIMIZATION__OPTIONAL_BOOLEAN_TRUE =
                     1;
     public static final int
-            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_QUIC_ENABLE_SOCKET_RECV_OPTIMIZATION__FALSE =
+            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_QUIC_ENABLE_SOCKET_RECV_OPTIMIZATION__OPTIONAL_BOOLEAN_FALSE =
                     2;
 
     // Values for CronetEngineCreated.experimental_options_asyncdns_enable
-    public static final int CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_ASYNCDNS_ENABLE__UNSET = 0;
-    public static final int CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_ASYNCDNS_ENABLE__TRUE = 1;
-    public static final int CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_ASYNCDNS_ENABLE__FALSE = 2;
+    public static final int
+            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_ASYNCDNS_ENABLE__OPTIONAL_BOOLEAN_UNSET = 0;
+    public static final int
+            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_ASYNCDNS_ENABLE__OPTIONAL_BOOLEAN_TRUE = 1;
+    public static final int
+            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_ASYNCDNS_ENABLE__OPTIONAL_BOOLEAN_FALSE = 2;
 
     // Values for CronetEngineCreated.experimental_options_staledns_enable
-    public static final int CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_STALEDNS_ENABLE__UNSET = 0;
-    public static final int CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_STALEDNS_ENABLE__TRUE = 1;
-    public static final int CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_STALEDNS_ENABLE__FALSE = 2;
+    public static final int
+            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_STALEDNS_ENABLE__OPTIONAL_BOOLEAN_UNSET = 0;
+    public static final int
+            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_STALEDNS_ENABLE__OPTIONAL_BOOLEAN_TRUE = 1;
+    public static final int
+            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_STALEDNS_ENABLE__OPTIONAL_BOOLEAN_FALSE = 2;
 
     // Values for CronetEngineCreated.experimental_options_staledns_allow_other_network
     public static final int
-            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_STALEDNS_ALLOW_OTHER_NETWORK__UNSET = 0;
+            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_STALEDNS_ALLOW_OTHER_NETWORK__OPTIONAL_BOOLEAN_UNSET =
+                    0;
     public static final int
-            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_STALEDNS_ALLOW_OTHER_NETWORK__TRUE = 1;
+            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_STALEDNS_ALLOW_OTHER_NETWORK__OPTIONAL_BOOLEAN_TRUE =
+                    1;
     public static final int
-            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_STALEDNS_ALLOW_OTHER_NETWORK__FALSE = 2;
+            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_STALEDNS_ALLOW_OTHER_NETWORK__OPTIONAL_BOOLEAN_FALSE =
+                    2;
 
     // Values for CronetEngineCreated.experimental_options_staledns_persist_to_disk
     public static final int
-            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_STALEDNS_PERSIST_TO_DISK__UNSET = 0;
+            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_STALEDNS_PERSIST_TO_DISK__OPTIONAL_BOOLEAN_UNSET =
+                    0;
     public static final int
-            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_STALEDNS_PERSIST_TO_DISK__TRUE = 1;
+            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_STALEDNS_PERSIST_TO_DISK__OPTIONAL_BOOLEAN_TRUE =
+                    1;
     public static final int
-            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_STALEDNS_PERSIST_TO_DISK__FALSE = 2;
+            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_STALEDNS_PERSIST_TO_DISK__OPTIONAL_BOOLEAN_FALSE =
+                    2;
 
     // Values for CronetEngineCreated.experimental_options_staledns_use_stale_on_name_not_resolved
     public static final int
-            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_STALEDNS_USE_STALE_ON_NAME_NOT_RESOLVED__UNSET =
+            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_STALEDNS_USE_STALE_ON_NAME_NOT_RESOLVED__OPTIONAL_BOOLEAN_UNSET =
                     0;
     public static final int
-            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_STALEDNS_USE_STALE_ON_NAME_NOT_RESOLVED__TRUE =
+            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_STALEDNS_USE_STALE_ON_NAME_NOT_RESOLVED__OPTIONAL_BOOLEAN_TRUE =
                     1;
     public static final int
-            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_STALEDNS_USE_STALE_ON_NAME_NOT_RESOLVED__FALSE =
+            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_STALEDNS_USE_STALE_ON_NAME_NOT_RESOLVED__OPTIONAL_BOOLEAN_FALSE =
                     2;
 
     // Values for CronetEngineCreated.experimental_options_disable_ipv6_on_wifi
     public static final int
-            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_DISABLE_IPV6_ON_WIFI__UNSET = 0;
-    public static final int CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_DISABLE_IPV6_ON_WIFI__TRUE =
-            1;
+            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_DISABLE_IPV6_ON_WIFI__OPTIONAL_BOOLEAN_UNSET =
+                    0;
     public static final int
-            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_DISABLE_IPV6_ON_WIFI__FALSE = 2;
+            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_DISABLE_IPV6_ON_WIFI__OPTIONAL_BOOLEAN_TRUE =
+                    1;
+    public static final int
+            CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_DISABLE_IPV6_ON_WIFI__OPTIONAL_BOOLEAN_FALSE =
+                    2;
 
     // Values for CronetTrafficReported.request_headers_size
     public static final int
@@ -322,9 +343,9 @@ public final class CronetStatsLog {
     public static final int CRONET_TRAFFIC_REPORTED__TERMINAL_STATE__STATE_CANCELLED = 3;
 
     // Values for CronetTrafficReported.is_bidi_stream
-    public static final int CRONET_TRAFFIC_REPORTED__IS_BIDI_STREAM__UNSET = 0;
-    public static final int CRONET_TRAFFIC_REPORTED__IS_BIDI_STREAM__TRUE = 1;
-    public static final int CRONET_TRAFFIC_REPORTED__IS_BIDI_STREAM__FALSE = 2;
+    public static final int CRONET_TRAFFIC_REPORTED__IS_BIDI_STREAM__OPTIONAL_BOOLEAN_UNSET = 0;
+    public static final int CRONET_TRAFFIC_REPORTED__IS_BIDI_STREAM__OPTIONAL_BOOLEAN_TRUE = 1;
+    public static final int CRONET_TRAFFIC_REPORTED__IS_BIDI_STREAM__OPTIONAL_BOOLEAN_FALSE = 2;
 
     // Values for CronetEngineBuilderInitialized.source
     public static final int CRONET_ENGINE_BUILDER_INITIALIZED__SOURCE__CRONET_SOURCE_UNSPECIFIED =
@@ -339,14 +360,20 @@ public final class CronetStatsLog {
             CRONET_ENGINE_BUILDER_INITIALIZED__SOURCE__CRONET_SOURCE_HTTPENGINE_NATIVE = 4;
 
     // Values for CronetEngineBuilderInitialized.creation_successful
-    public static final int CRONET_ENGINE_BUILDER_INITIALIZED__CREATION_SUCCESSFUL__UNSET = 0;
-    public static final int CRONET_ENGINE_BUILDER_INITIALIZED__CREATION_SUCCESSFUL__TRUE = 1;
-    public static final int CRONET_ENGINE_BUILDER_INITIALIZED__CREATION_SUCCESSFUL__FALSE = 2;
+    public static final int
+            CRONET_ENGINE_BUILDER_INITIALIZED__CREATION_SUCCESSFUL__OPTIONAL_BOOLEAN_UNSET = 0;
+    public static final int
+            CRONET_ENGINE_BUILDER_INITIALIZED__CREATION_SUCCESSFUL__OPTIONAL_BOOLEAN_TRUE = 1;
+    public static final int
+            CRONET_ENGINE_BUILDER_INITIALIZED__CREATION_SUCCESSFUL__OPTIONAL_BOOLEAN_FALSE = 2;
 
     // Values for CronetHttpFlagsInitialized.flags_successful
-    public static final int CRONET_HTTP_FLAGS_INITIALIZED__FLAGS_SUCCESSFUL__UNSET = 0;
-    public static final int CRONET_HTTP_FLAGS_INITIALIZED__FLAGS_SUCCESSFUL__TRUE = 1;
-    public static final int CRONET_HTTP_FLAGS_INITIALIZED__FLAGS_SUCCESSFUL__FALSE = 2;
+    public static final int
+            CRONET_HTTP_FLAGS_INITIALIZED__FLAGS_SUCCESSFUL__OPTIONAL_BOOLEAN_UNSET = 0;
+    public static final int CRONET_HTTP_FLAGS_INITIALIZED__FLAGS_SUCCESSFUL__OPTIONAL_BOOLEAN_TRUE =
+            1;
+    public static final int
+            CRONET_HTTP_FLAGS_INITIALIZED__FLAGS_SUCCESSFUL__OPTIONAL_BOOLEAN_FALSE = 2;
 
     // Annotation constants.
     public static final byte ANNOTATION_ID_IS_UID = StatsLog.ANNOTATION_ID_IS_UID;
@@ -549,4 +576,5 @@ public final class CronetStatsLog {
         builder.usePooledBuffer();
         StatsLog.write(builder.build());
     }
+
 }
