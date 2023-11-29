@@ -232,6 +232,9 @@
     "Win ASan Release": "ci/Win ASan Release/gn-args.json",
     "Win ASan Release Media": "ci/Win ASan Release Media/gn-args.json"
   },
+  "chromium.fyi": {
+    "chromeos-octopus-rel-skylab-fyi": "ci/chromeos-octopus-rel-skylab-fyi/gn-args.json"
+  },
   "chromium.linux": {
     "Cast Audio Linux": "ci/Cast Audio Linux/gn-args.json",
     "Cast Linux": "ci/Cast Linux/gn-args.json",
@@ -425,6 +428,7 @@
     "chromeos-arm64-generic-rel": "try/chromeos-arm64-generic-rel/gn-args.json",
     "chromeos-jacuzzi-rel": "try/chromeos-jacuzzi-rel/gn-args.json",
     "chromeos-octopus-rel": "try/chromeos-octopus-rel/gn-args.json",
+    "chromeos-octopus-rel-skylab": "try/chromeos-octopus-rel-skylab/gn-args.json",
     "lacros-amd64-generic-rel": "try/lacros-amd64-generic-rel/gn-args.json",
     "lacros-amd64-generic-rel-non-skylab": "try/lacros-amd64-generic-rel-non-skylab/gn-args.json",
     "lacros-arm-generic-rel": "try/lacros-arm-generic-rel/gn-args.json",

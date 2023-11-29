@@ -592,6 +592,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    "include_unwind_tables",
+    args = {
+        "exclude_unwind_tables": False,
+    },
+)
+
+gn_args.config(
     "ios",
     args = {
         "target_os": "ios",

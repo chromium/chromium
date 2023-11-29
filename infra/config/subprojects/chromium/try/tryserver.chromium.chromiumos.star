@@ -496,6 +496,19 @@ try_.builder(
 )
 
 try_.builder(
+    name = "chromeos-octopus-rel-skylab",
+    branch_selector = branches.selector.MAIN,
+    description_html = "This builder builds public image and runs tests on octopus DUTs in the lab.<br/>" +
+                       "This is experimental.",
+    mirrors = [
+        "ci/chromeos-octopus-rel-skylab-fyi",
+    ],
+    contact_team_email = "chromeos-velocity@google.com",
+    gn_args = "ci/chromeos-octopus-rel-skylab-fyi",
+    main_list_view = "try",
+)
+
+try_.builder(
     name = "chromeos-octopus-rel",
     branch_selector = branches.selector.CROS_LTS_BRANCHES,
     mirrors = [

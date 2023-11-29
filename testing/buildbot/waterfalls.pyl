@@ -3458,6 +3458,15 @@
         },
         'os_type': 'chromeos',
       },
+      'chromeos-octopus-rel-skylab-fyi': {
+        'additional_compile_targets': [
+          'chrome',
+        ],
+        'test_suites': {
+          'skylab_tests': 'chromeos_octopus_rel_skylab_tests',
+        },
+        'os_type': 'chromeos',
+      },
 
       'ios-blink-dbg-fyi': {
         'additional_compile_targets': [

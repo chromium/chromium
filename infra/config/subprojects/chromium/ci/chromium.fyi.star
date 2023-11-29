@@ -8,6 +8,7 @@ load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "builders", "cpu", "os", "reclient", "xcode")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
 load("//lib/structs.star", "structs")
 
 ci.defaults.set(
@@ -171,6 +172,58 @@ This is experimental.
         short_name = "jcz",
     ),
     contact_team_email = "chromeos-velocity@google.com",
+)
+
+ci.builder(
+    name = "chromeos-octopus-rel-skylab-fyi",
+    description_html = """\
+This builder builds public image and runs tests on octopus DUTs in the lab.<br/>\
+This is experimental.
+""",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "chromeos",
+                "checkout_lacros_sdk",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
+            target_bits = 32,
+            target_platform = builder_config.target_platform.CHROMEOS,
+            target_cros_boards = [
+                "octopus",
+                "amd64-generic",
+            ],
+        ),
+        skylab_upload_location = builder_config.skylab_upload_location(
+            gs_bucket = "chrome-test-builds",
+            gs_extra = "ash",
+        ),
+    ),
+    os = os.LINUX_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "ash",
+        short_name = "oct",
+    ),
+    contact_team_email = "chromeos-velocity@google.com",
+    gn_args = gn_args.config(
+        configs = [
+            "also_build_lacros_chrome_for_architecture_amd64",
+            "chromeos_device",
+            "include_unwind_tables",
+            "is_skylab",
+            "octopus",
+            "ozone_headless",
+            "reclient",
+        ],
+    ),
 )
 
 ci.builder(
