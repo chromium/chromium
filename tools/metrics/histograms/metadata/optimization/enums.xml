@@ -216,6 +216,40 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<enum name="OptimizationGuideOnDeviceAddContextResult">
+  <int value="0" label="Used Server"/>
+  <int value="1" label="Used on-device">
+    Context was sent to on-device model.
+  </int>
+  <int value="2" label="Failed creating message">
+    Failed to create the message, and as a result will use server.
+  </int>
+</enum>
+
+<enum name="OptimizationGuideOnDeviceExecuteModelResult">
+  <int value="0" label="Used Server"/>
+  <int value="1" label="Used on-device">
+    On-device model was used and it completed successfully.
+  </int>
+  <int value="2" label="Failed creating message">
+    Failed to create the message, and as a result used server.
+  </int>
+  <int value="3" label="Failed creating response">
+    Failed to create the response message.
+  </int>
+  <int value="4" label="Timed out">Timed out, and a result used server.</int>
+  <int value="5" label="Disconnect and fallback">
+    Received a disconnect and as a result used server.
+  </int>
+  <int value="6" label="Disconnect and cancel">
+    Received a disconnect and cancelled.
+  </int>
+  <int value="7" label="Cancelled">
+    Execution was cancelled because either AddContext or ExecuteModel was called
+    again.
+  </int>
+</enum>
+
 <enum name="OptimizationGuideOnDeviceModelEligibilityReason">
   <int value="0" label="Unknown"/>
   <int value="1" label="Success"/>

@@ -32,6 +32,42 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
   using StartSessionFn = base::RepeatingCallback<void(
       mojo::PendingReceiver<on_device_model::mojom::Session>)>;
 
+  // Possible outcomes of AddContext(). Maps to histogram enum
+  // "OptimizationGuideOnDeviceAddContextResult".
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class AddContextResult {
+    kUsingServer = 0,
+    kUsingOnDevice = 1,
+    kFailedConstructingInput = 2,
+    kMaxValue = kFailedConstructingInput,
+  };
+
+  // Possible outcomes of ExecuteModel(). Maps to histogram enum
+  // "OptimizationGuideOnDeviceExecuteModelResult".
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class ExecuteModelResult {
+    // The server was used.
+    kUsedServer = 0,
+    // On-device was used, and it completed successfully.
+    kUsedOnDevice = 1,
+    // Failed constructing message, and used server.
+    kFailedConstructingMessage = 2,
+    // Got a response from on-device, but failed constructing the message.
+    kFailedConstructingResponseMessage = 3,
+    // Timed out and used server.
+    kTimedOut = 4,
+    // Received a disconnect while waiting for response and used server.
+    kDisconnectAndFallbackToServer = 5,
+    // Received a disconnect whiel waiting for response and cancelled.
+    kDisconnectAndCancel = 6,
+    // Response was cancelled because ExecuteModel() was called while waiting
+    // for response.
+    kCancelled = 7,
+    kMaxValue = kCancelled,
+  };
+
   SessionImpl(
       StartSessionFn start_session_fn,
       proto::ModelExecutionFeature feature,
@@ -57,11 +93,34 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
  private:
   class ContextProcessor;
 
+  // Used to log the result of ExecuteModel.
+  class ExecuteModelHistogramLogger {
+   public:
+    explicit ExecuteModelHistogramLogger(proto::ModelExecutionFeature feature)
+        : feature_(feature) {}
+    ~ExecuteModelHistogramLogger();
+
+    void set_result(ExecuteModelResult result) { result_ = result; }
+
+   private:
+    const proto::ModelExecutionFeature feature_;
+    ExecuteModelResult result_ = ExecuteModelResult::kUsedServer;
+  };
+
   // Captures all state used for the on device model.
   struct OnDeviceState {
     OnDeviceState(StartSessionFn start_session_fn,
                   on_device_model::mojom::StreamingResponder* session);
     ~OnDeviceState();
+
+    // Returns true if ExecuteModel() was called and the complete response
+    // has not been received.
+    bool did_execute_and_waiting_for_on_complete() const {
+      return start != base::TimeTicks();
+    }
+
+    // Resets all state related to a request.
+    void ResetRequestState();
 
     mojo::Remote<on_device_model::mojom::Session> session;
     raw_ptr<const OnDeviceModelExecutionConfigInterpreter> config_interpreter;
@@ -78,16 +137,19 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
     // Timer used to detect when no response has been received and fallback
     // to remote execution.
     base::OneShotTimer timer_for_first_response;
+    // Used to log the result of ExecuteModel().
+    std::unique_ptr<ExecuteModelHistogramLogger> histogram_logger;
   };
+
+  AddContextResult AddContextImpl(
+      const google::protobuf::MessageLite& request_metadata);
 
   // Gets the active session or restarts a session if the session is reset.
   on_device_model::mojom::Session& GetOrCreateSession();
 
-  // Resets response state.
-  void ResetResponse();
-
   // Cancels any pending response and resets response state.
   void CancelPendingResponse(
+      ExecuteModelResult result,
       OptimizationGuideModelExecutionError::ModelExecutionError error =
           OptimizationGuideModelExecutionError::ModelExecutionError::
               kCancelled);
@@ -98,7 +160,7 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
   // Sends `current_response_` to the client.
   void SendResponse(bool is_complete);
 
-  void FallbackToRemote();
+  void DestroyOnDeviceStateAndFallbackToRemote(ExecuteModelResult result);
 
   void DestroyOnDeviceState();
 

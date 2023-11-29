@@ -102,26 +102,35 @@ SessionImpl::~SessionImpl() = default;
 
 void SessionImpl::AddContext(
     const google::protobuf::MessageLite& request_metadata) {
+  const auto result = AddContextImpl(request_metadata);
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"OptimizationGuide.ModelExecution.OnDeviceAddContextResult.",
+           GetStringNameForModelExecutionFeature(feature_)}),
+      result);
+}
+
+SessionImpl::AddContextResult SessionImpl::AddContextImpl(
+    const google::protobuf::MessageLite& request_metadata) {
   context_.reset(request_metadata.New());
   context_->CheckTypeAndMergeFrom(request_metadata);
 
   if (!ShouldUseOnDeviceModel()) {
     DestroyOnDeviceState();
-    return;
+    return AddContextResult::kUsingServer;
   }
 
   on_device_state_->add_context_before_execute = false;
   auto input = on_device_state_->config_interpreter->ConstructInputString(
       feature_, *context_, /*want_input_context=*/true);
   if (!input) {
-    // TODO(b/313666843): add metrics.
     // Use server if can't construct input.
     DestroyOnDeviceState();
-    return;
+    return AddContextResult::kFailedConstructingInput;
   }
 
   // Cancel any pending response.
-  CancelPendingResponse();
+  CancelPendingResponse(ExecuteModelResult::kCancelled);
 
   // Only the latest context is used, so restart the mojo session here.
   on_device_state_->session.reset();
@@ -133,12 +142,15 @@ void SessionImpl::AddContext(
 
   on_device_state_->context_processor =
       std::make_unique<ContextProcessor>(*this, input->input_string);
+  return AddContextResult::kUsingOnDevice;
 }
 
 void SessionImpl::ExecuteModel(
     const google::protobuf::MessageLite& request_metadata,
     optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
         callback) {
+  std::unique_ptr<ExecuteModelHistogramLogger> logger =
+      std::make_unique<ExecuteModelHistogramLogger>(feature_);
   last_message_ = MergeContext(request_metadata);
 
   if (!ShouldUseOnDeviceModel()) {
@@ -158,15 +170,16 @@ void SessionImpl::ExecuteModel(
   auto input = on_device_state_->config_interpreter->ConstructInputString(
       feature_, *last_message_, /*want_input_context=*/false);
   if (!input) {
-    // TODO(b/313666843): add metrics.
     // Use server if can't construct input.
+    on_device_state_->histogram_logger = std::move(logger);
     on_device_state_->callback = std::move(callback);
-    FallbackToRemote();
+    DestroyOnDeviceStateAndFallbackToRemote(
+        ExecuteModelResult::kFailedConstructingMessage);
     return;
   }
 
   // Make sure to cancel any pending response.
-  CancelPendingResponse();
+  CancelPendingResponse(ExecuteModelResult::kCancelled);
 
   // Cancel any optional context still processing.
   if (on_device_state_->context_processor) {
@@ -178,11 +191,15 @@ void SessionImpl::ExecuteModel(
         on_device_state_->context_processor->tokens_processed());
   }
 
+  // Note: if on-device fails for some reason, the result will be changed.
+  logger->set_result(ExecuteModelResult::kUsedOnDevice);
+  on_device_state_->histogram_logger = std::move(logger);
   on_device_state_->callback = std::move(callback);
   on_device_state_->start = base::TimeTicks::Now();
   on_device_state_->timer_for_first_response.Start(
-      FROM_HERE, features::GetOnDeviceModelTimeForInitialResponse(), this,
-      &SessionImpl::FallbackToRemote);
+      FROM_HERE, features::GetOnDeviceModelTimeForInitialResponse(),
+      base::BindOnce(&SessionImpl::DestroyOnDeviceStateAndFallbackToRemote,
+                     base::Unretained(this), ExecuteModelResult::kTimedOut));
   GetOrCreateSession().Execute(
       on_device_model::mojom::InputOptions::New(
           input->input_string, features::GetOnDeviceModelMaxTokensForExecute(),
@@ -207,6 +224,7 @@ void SessionImpl::OnResponse(const std::string& response) {
 }
 
 void SessionImpl::OnComplete(on_device_model::mojom::ResponseStatus status) {
+  on_device_state_->histogram_logger.reset();
   // TODO(b/302395507): Handle a retracted response.
   base::UmaHistogramMediumTimes(
       base::StrCat(
@@ -217,7 +235,7 @@ void SessionImpl::OnComplete(on_device_model::mojom::ResponseStatus status) {
     controller_->OnResponseCompleted({}, *this);
   }
   SendResponse(/*is_complete=*/true);
-  ResetResponse();
+  on_device_state_->ResetRequestState();
 }
 
 on_device_model::mojom::Session& SessionImpl::GetOrCreateSession() {
@@ -232,26 +250,29 @@ on_device_model::mojom::Session& SessionImpl::GetOrCreateSession() {
 }
 
 void SessionImpl::OnDisconnect() {
+  if (on_device_state_->did_execute_and_waiting_for_on_complete() &&
+      features::GetOnDeviceFallbackToServerOnDisconnect()) {
+    DestroyOnDeviceStateAndFallbackToRemote(
+        ExecuteModelResult::kDisconnectAndFallbackToServer);
+    return;
+  }
+
   if (context_) {
     // Persist the current context, so that ExecuteModel() can be called
     // without adding the same context.
     on_device_state_->add_context_before_execute = true;
   }
   on_device_state_->session.reset();
-  CancelPendingResponse();
+  CancelPendingResponse(ExecuteModelResult::kDisconnectAndCancel);
 }
 
-void SessionImpl::ResetResponse() {
-  on_device_state_->receiver.reset();
-  on_device_state_->callback.Reset();
-  on_device_state_->current_response.clear();
-  on_device_state_->start = base::TimeTicks();
-  on_device_state_->timer_for_first_response.Stop();
-}
-
-void SessionImpl::CancelPendingResponse(ModelExecutionError error) {
+void SessionImpl::CancelPendingResponse(ExecuteModelResult result,
+                                        ModelExecutionError error) {
+  if (on_device_state_->histogram_logger) {
+    on_device_state_->histogram_logger->set_result(result);
+  }
   auto callback = std::move(on_device_state_->callback);
-  ResetResponse();
+  on_device_state_->ResetRequestState();
   if (callback) {
     callback.Run(
         base::unexpected(
@@ -270,12 +291,17 @@ void SessionImpl::SendResponse(bool is_complete) {
   auto output = on_device_state_->config_interpreter->ConstructOutputMetadata(
       feature_, on_device_state_->current_response);
   if (!output) {
-    // TODO(b/313666843): add metrics.
-    CancelPendingResponse(ModelExecutionError::kGenericFailure);
+    if (on_device_state_->histogram_logger) {
+      on_device_state_->histogram_logger->set_result(
+          ExecuteModelResult::kFailedConstructingResponseMessage);
+      on_device_state_->histogram_logger.reset();
+    }
+    CancelPendingResponse(
+        ExecuteModelResult::kFailedConstructingResponseMessage,
+        ModelExecutionError::kGenericFailure);
     return;
   }
 
-  // TODO(b/302327957): Add logging.
   on_device_state_->callback.Run(
       StreamingResponse{
           .response = *output,
@@ -289,8 +315,11 @@ bool SessionImpl::ShouldUseOnDeviceModel() const {
          on_device_state_;
 }
 
-void SessionImpl::FallbackToRemote() {
-  // TODO(b/313666843): add metrics.
+void SessionImpl::DestroyOnDeviceStateAndFallbackToRemote(
+    ExecuteModelResult result) {
+  if (on_device_state_->histogram_logger) {
+    on_device_state_->histogram_logger->set_result(result);
+  }
   auto callback = std::move(on_device_state_->callback);
   DestroyOnDeviceState();
   execute_remote_fn_.Run(feature_, *last_message_, std::move(callback));
@@ -319,5 +348,22 @@ SessionImpl::OnDeviceState::OnDeviceState(
     : start_session_fn(std::move(start_session_fn)), receiver(session) {}
 
 SessionImpl::OnDeviceState::~OnDeviceState() = default;
+
+void SessionImpl::OnDeviceState::ResetRequestState() {
+  receiver.reset();
+  callback.Reset();
+  current_response.clear();
+  start = base::TimeTicks();
+  timer_for_first_response.Stop();
+  histogram_logger.reset();
+}
+
+SessionImpl::ExecuteModelHistogramLogger::~ExecuteModelHistogramLogger() {
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.",
+           GetStringNameForModelExecutionFeature(feature_)}),
+      result_);
+}
 
 }  // namespace optimization_guide

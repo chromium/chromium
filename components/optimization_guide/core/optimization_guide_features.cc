@@ -982,5 +982,13 @@ base::TimeDelta GetOnDeviceModelTimeForInitialResponse() {
   return kOnDeviceModelTimeForInitialResponse.Get();
 }
 
+bool GetOnDeviceFallbackToServerOnDisconnect() {
+  static const base::FeatureParam<bool>
+      kOnDeviceModelFallbackToServerOnDisconnect{
+          &features::kOptimizationGuideOnDeviceModel,
+          "on_device_fallback_to_server_on_disconnect", true};
+  return kOnDeviceModelFallbackToServerOnDisconnect.Get();
+}
+
 }  // namespace features
 }  // namespace optimization_guide

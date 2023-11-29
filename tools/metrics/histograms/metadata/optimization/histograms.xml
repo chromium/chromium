@@ -469,6 +469,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="OptimizationGuide.ModelExecution.OnDeviceAddContextResult.{ModelExecutionFeature}"
+    enum="OptimizationGuideOnDeviceAddContextResult" expires_after="2024-05-29">
+  <owner>sky@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Captures the possible outcomes of Session::AddContext(). Recorded everytime
+    Session::AddContext() is called. context.
+  </summary>
+  <token key="ModelExecutionFeature" variants="ModelExecutionFeature"/>
+</histogram>
+
+<histogram
     name="OptimizationGuide.ModelExecution.OnDeviceContextTokensProcessed.{ModelExecutionFeature}"
     units="tokens" expires_after="2024-05-29">
   <owner>cduvall@chromium.org</owner>
@@ -476,6 +488,19 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the number of context tokens available when the on device model is
     executed. Recorded for each execution of the on device model.
+  </summary>
+  <token key="ModelExecutionFeature" variants="ModelExecutionFeature"/>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.{ModelExecutionFeature}"
+    enum="OptimizationGuideOnDeviceExecuteModelResult"
+    expires_after="2024-05-29">
+  <owner>sky@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Captures the possible outcomes of Session::ExecuteModel(). Recorded
+    everytime Session::ExecuteModel() is called. context.
   </summary>
   <token key="ModelExecutionFeature" variants="ModelExecutionFeature"/>
 </histogram>

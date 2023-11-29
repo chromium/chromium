@@ -396,6 +396,10 @@ base::TimeDelta GetOnDeviceStartupMetricDelay();
 // from the on-device model before falling back to the server.
 base::TimeDelta GetOnDeviceModelTimeForInitialResponse();
 
+// Returns true if during execution a disconnect is received (which generally
+// means a crash) the message should be sent to the server for processing.
+bool GetOnDeviceFallbackToServerOnDisconnect();
+
 }  // namespace features
 }  // namespace optimization_guide
 

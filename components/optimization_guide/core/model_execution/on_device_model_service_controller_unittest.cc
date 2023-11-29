@@ -29,6 +29,7 @@ using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 
 using on_device_model::mojom::LoadModelResult;
+using ExecuteModelResult = SessionImpl::ExecuteModelResult;
 
 namespace {
 // If non-zero this amount of delay is added before the response is sent.
@@ -354,7 +355,13 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionSuccess) {
 TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionWithContext) {
   auto session = test_controller_->CreateSession(kFeature, base::DoNothing());
   EXPECT_TRUE(session);
-  AddContext(*session, "foo");
+  {
+    base::HistogramTester histogram_tester;
+    AddContext(*session, "foo");
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution.OnDeviceAddContextResult.Compose",
+        SessionImpl::AddContextResult::kUsingOnDevice, 1);
+  }
   task_environment_.RunUntilIdle();
 
   AddContext(*session, "bar");
@@ -470,13 +477,21 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionNoMinContext) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ReturnsErrorOnServiceDisconnect) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kOptimizationGuideOnDeviceModel,
+      {{"on_device_fallback_to_server_on_disconnect", "false"}});
   auto session = test_controller_->CreateSession(kFeature, base::DoNothing());
   EXPECT_TRUE(session);
   task_environment_.RunUntilIdle();
 
   test_controller_->LaunchService();
   ExecuteModel(*session, "foo");
+  base::HistogramTester histogram_tester;
   task_environment_.RunUntilIdle();
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
+      ExecuteModelResult::kDisconnectAndCancel, 1);
 
   ASSERT_TRUE(response_error_);
   EXPECT_EQ(
@@ -490,7 +505,11 @@ TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnAddContext) {
   task_environment_.RunUntilIdle();
 
   ExecuteModel(*session, "foo");
+  base::HistogramTester histogram_tester;
   AddContext(*session, "bar");
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
+      ExecuteModelResult::kCancelled, 1);
   task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(response_error_);
@@ -620,7 +639,11 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextDisconnectExecute) {
 
   // Send some text, ensuring the context is received.
   ExecuteModel(*session, "baz");
+  base::HistogramTester histogram_tester;
   task_environment_.RunUntilIdle();
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
+      ExecuteModelResult::kUsedOnDevice, 1);
   ASSERT_TRUE(response_received_);
   const std::vector<std::string> expected_responses = ConcatResponses({
       "Context: ctx:foo off:0 max:10\n",
@@ -689,7 +712,13 @@ TEST_F(OnDeviceModelServiceControllerTest, CallsRemoteExecute) {
   test_controller_->clear_did_launch_service();
 
   // Adding context should not trigger launching the service again.
-  AddContext(*session, "baz");
+  {
+    base::HistogramTester histogram_tester;
+    AddContext(*session, "baz");
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution.OnDeviceAddContextResult.Compose",
+        SessionImpl::AddContextResult::kUsingServer, 1);
+  }
   ExecuteModel(*session, "2");
   EXPECT_TRUE(remote_execute_called_);
   EXPECT_FALSE(test_controller_->did_launch_service());
@@ -717,9 +746,21 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextInvalidConfig) {
   auto session =
       test_controller_->CreateSession(kFeature, CreateExecuteRemoteFn());
   ASSERT_TRUE(session);
-  AddContext(*session, "foo");
+  {
+    base::HistogramTester histogram_tester;
+    AddContext(*session, "foo");
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution.OnDeviceAddContextResult.Compose",
+        SessionImpl::AddContextResult::kFailedConstructingInput, 1);
+  }
   task_environment_.RunUntilIdle();
-  ExecuteModel(*session, "2");
+  {
+    base::HistogramTester histogram_tester;
+    ExecuteModel(*session, "2");
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
+        ExecuteModelResult::kUsedServer, 1);
+  }
   EXPECT_TRUE(remote_execute_called_);
 }
 
@@ -745,7 +786,11 @@ TEST_F(OnDeviceModelServiceControllerTest, ExecuteInvalidConfig) {
   auto session =
       test_controller_->CreateSession(kFeature, CreateExecuteRemoteFn());
   ASSERT_TRUE(session);
+  base::HistogramTester histogram_tester;
   ExecuteModel(*session, "2");
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
+      ExecuteModelResult::kFailedConstructingMessage, 1);
   EXPECT_TRUE(remote_execute_called_);
 }
 
@@ -756,9 +801,13 @@ TEST_F(OnDeviceModelServiceControllerTest, FallbackToServerAfterDelay) {
       test_controller_->CreateSession(kFeature, CreateExecuteRemoteFn());
   ASSERT_TRUE(session);
   ExecuteModel(*session, "2z");
+  base::HistogramTester histogram_tester;
   task_environment_.FastForwardBy(
       features::GetOnDeviceModelTimeForInitialResponse() +
       base::Milliseconds(1));
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
+      ExecuteModelResult::kTimedOut, 1);
   EXPECT_TRUE(streamed_responses_.empty());
   EXPECT_FALSE(response_received_);
   EXPECT_TRUE(remote_execute_called_);
@@ -767,6 +816,22 @@ TEST_F(OnDeviceModelServiceControllerTest, FallbackToServerAfterDelay) {
       static_cast<const proto::ComposeRequest&>(*last_remote_message_);
   ASSERT_TRUE(compose_request.has_page_metadata());
   EXPECT_EQ("2z", compose_request.page_metadata().page_url());
+}
+
+TEST_F(OnDeviceModelServiceControllerTest,
+       FallbackToServerOnDisconnectWhileWaitingForExecute) {
+  auto session =
+      test_controller_->CreateSession(kFeature, CreateExecuteRemoteFn());
+  EXPECT_TRUE(session);
+  task_environment_.RunUntilIdle();
+  test_controller_->LaunchService();
+  ExecuteModel(*session, "foo");
+  base::HistogramTester histogram_tester;
+  task_environment_.RunUntilIdle();
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
+      ExecuteModelResult::kDisconnectAndFallbackToServer, 1);
+  EXPECT_TRUE(remote_execute_called_);
 }
 
 }  // namespace optimization_guide
