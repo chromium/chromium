@@ -8,8 +8,9 @@
 #include "base/component_export.h"
 #include "base/files/file.h"
 #include "mojo/public/cpp/base/file_mojom_traits.h"
+#include "mojo/public/cpp/base/read_only_file_mojom_traits.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
-#include "services/on_device_model/public/mojom/on_device_model.mojom-shared.h"
+#include "services/on_device_model/public/mojom/on_device_model_service.mojom-shared.h"
 
 namespace mojo {
 
@@ -27,6 +28,14 @@ struct COMPONENT_EXPORT(ON_DEVICE_MODEL_ASSETS_CPP)
 
   static base::File weights(on_device_model::ModelAssets& assets) {
     return std::move(assets.weights);
+  }
+
+  static base::File ts_data(on_device_model::ModelAssets& assets) {
+    return std::move(assets.ts_data);
+  }
+
+  static base::File ts_sp_model(on_device_model::ModelAssets& assets) {
+    return std::move(assets.ts_sp_model);
   }
 
   static bool Read(on_device_model::mojom::ModelAssetsDataView data,

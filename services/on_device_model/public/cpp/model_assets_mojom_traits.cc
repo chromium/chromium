@@ -4,7 +4,7 @@
 
 #include "services/on_device_model/public/cpp/model_assets_mojom_traits.h"
 
-#include "services/on_device_model/public/mojom/on_device_model.mojom-shared.h"
+#include "services/on_device_model/public/mojom/on_device_model_service.mojom-shared.h"
 
 namespace mojo {
 
@@ -14,7 +14,9 @@ bool StructTraits<on_device_model::mojom::ModelAssetsDataView,
     Read(on_device_model::mojom::ModelAssetsDataView data,
          on_device_model::ModelAssets* assets) {
   return data.ReadSpModel(&assets->sp_model) &&
-         data.ReadModel(&assets->model) && data.ReadWeights(&assets->weights);
+         data.ReadModel(&assets->model) && data.ReadWeights(&assets->weights) &&
+         data.ReadTsData(&assets->ts_data) &&
+         data.ReadTsSpModel(&assets->ts_sp_model);
 }
 
 }  // namespace mojo

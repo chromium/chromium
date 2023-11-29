@@ -60,21 +60,40 @@ struct ChromeMLModelDescriptor {
 
   // The maximum input+output tokens the model can handle.
   uint32_t max_tokens;
+
+  // Packed TS data.
+  const void* ts_data;
+  size_t ts_size;
+  const void* ts_spm_data;
+  size_t ts_spm_size;
 };
 
 // Function provided from the library that will cancel the corresponding input
 // and output when called. This is safe to call on any thread.
 using ChromeMLCancelFn = std::function<void()>;
 
-// Receives tokens from a call to RunModel(). If the output is complete or
-// there is an error the token will be std::nullopt. This will be called on the
-// internal thread executing the model.
+// Receives tokens from a call to RunModel(). This will be called on the
+// internal thread executing the model. If no completion callback is provided to
+// ExecuteModel(), this function will be invoked with std::nullopt to signify
+// that model execution is complete.
 using ChromeMLOutputFn = std::function<void(const std::optional<std::string>&)>;
 
 // Called with the number of tokens processed after a call to RunModel()
 // which has the kSave ContextMode set. This will be called on the internal
 // thread executing the model.
 using ChromeMLContextSavedFn = std::function<void(int)>;
+
+// Conveys details regarding a completed model execution.
+struct ChromeMLExecutionResult {
+  // If true, all prior output received for this model execution is effectively
+  // retracted by the library and should be discarded by the client.
+  bool retracted;
+};
+
+// Called when a model has finished executing. No other functions given to
+// ExecuteModel() will be invoked after this.
+using ChromeMLCompletionFn =
+    std::function<void(const ChromeMLExecutionResult&)>;
 
 struct ChromeMLExecuteOptions {
   const char* prompt = nullptr;
@@ -83,6 +102,7 @@ struct ChromeMLExecuteOptions {
   uint32_t token_offset = 0;
   const ChromeMLOutputFn* output_fn = nullptr;
   const ChromeMLContextSavedFn* context_saved_fn = nullptr;
+  const ChromeMLCompletionFn* completion_fn = nullptr;
 };
 
 // Performance data filled out by GetEstimatedPerformance().

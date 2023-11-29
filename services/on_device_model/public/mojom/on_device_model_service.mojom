@@ -1,0 +1,47 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module on_device_model.mojom;
+
+import "mojo/public/mojom/base/file.mojom";
+import "mojo/public/mojom/base/read_only_file.mojom";
+import "sandbox/policy/mojom/context.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
+import "services/on_device_model/public/mojom/on_device_model.mojom";
+
+// Opened file resources needed to define the model.
+struct ModelAssets {
+  mojo_base.mojom.ReadOnlyFile? sp_model;
+  mojo_base.mojom.ReadOnlyFile? model;
+
+  // TODO(b/313919363): This should also be a ReadOnlyFile.
+  mojo_base.mojom.File? weights;
+
+  mojo_base.mojom.ReadOnlyFile? ts_data;
+  mojo_base.mojom.ReadOnlyFile? ts_sp_model;
+};
+
+// Params to describe the model to load.
+struct LoadModelParams {
+  // Assets for the model.
+  ModelAssets assets;
+
+  // The maximum number of input+output tokens the model can handle. This is
+  // needed when initializing the model.
+  uint32 max_tokens;
+};
+
+// A service which allows loading trusted models which are stored on-device and
+// which may process untrustworthy data.
+[ServiceSandbox=sandbox.mojom.Sandbox.kOnDeviceModelExecution,
+ RequireContext=sandbox.mojom.Context.kBrowser]
+interface OnDeviceModelService {
+  // Initializes a new model instance given `assets`. If the model can not be
+  // created the model pipe will be reset.
+  LoadModel(LoadModelParams params, pending_receiver<OnDeviceModel> model) =>
+      (LoadModelResult result);
+
+  // Returns the performance class based on benchmarks run on the device.
+  GetEstimatedPerformanceClass() => (PerformanceClass performance_class);
+};

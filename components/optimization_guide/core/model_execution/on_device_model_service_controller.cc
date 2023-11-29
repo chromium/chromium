@@ -18,6 +18,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
+#include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
 
 namespace optimization_guide {
 
@@ -139,7 +140,8 @@ void OnDeviceModelServiceController::StartMojoSession(
     LaunchService();
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock()},
-        base::BindOnce(&on_device_model::LoadModelAssets, model_path_),
+        base::BindOnce(&on_device_model::LoadModelAssets, model_path_,
+                       model_path_),
         base::BindOnce(&OnDeviceModelServiceController::OnModelAssetsLoaded,
                        weak_ptr_factory_.GetWeakPtr(),
                        model_remote_.BindNewPipeAndPassReceiver()));

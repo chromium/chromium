@@ -43,7 +43,7 @@ class SessionImpl : public OnDeviceModel::Session {
       }
     }
     remote->OnResponse("Input: " + input->text + "\n");
-    remote->OnComplete();
+    remote->OnComplete(mojom::ResponseStatus::kOk);
   }
 
  private:

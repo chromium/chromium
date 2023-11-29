@@ -4,9 +4,17 @@
 
 module on_device_model.mojom;
 
-import "mojo/public/mojom/base/file.mojom";
-import "sandbox/policy/mojom/context.mojom";
-import "sandbox/policy/mojom/sandbox.mojom";
+// Specifies how a client should regard a completed response from a
+// StreamingResponder.
+enum ResponseStatus {
+  // The full response has been streamed successfully and should be taken as-is
+  // by the client.
+  kOk,
+
+  // The response is done streaming, but it has been retracted by the service.
+  // The client should discard this response.
+  kRetracted,
+};
 
 // Streams a response from a call to execute a model. Close this pipe to cancel
 // the call to |Execute()|.
@@ -16,7 +24,8 @@ interface StreamingResponder {
 
   // This is called once when all text for the query has been returned.
   // OnResponse() will not be called after OnComplete() has been called.
-  OnComplete();
+  // `status` specifies how the client should regard this completion.
+  OnComplete(ResponseStatus status);
 };
 
 // Notifies the caller when the model is done processing context. Close this
@@ -67,13 +76,6 @@ interface OnDeviceModel {
   StartSession(pending_receiver<Session> session);
 };
 
-// Opened file resources needed to define the model.
-struct ModelAssets {
-  mojo_base.mojom.File? sp_model;
-  mojo_base.mojom.File? model;
-  mojo_base.mojom.File? weights;
-};
-
 // Classifies the device based on how fast it is estimated to be able to run a
 // model.
 enum PerformanceClass {
@@ -89,32 +91,8 @@ enum PerformanceClass {
   kVeryHigh,
 };
 
-// Params to describe the model to load.
-struct LoadModelParams {
-  // Assets for the model.
-  ModelAssets assets;
-
-  // The maximum number of input+output tokens the model can handle. This is
-  // needed when initializing the model.
-  uint32 max_tokens;
-};
-
 enum LoadModelResult {
   kSuccess,
   kGpuBlocked,
   kFailedToLoadLibrary,
-};
-
-// A service which allows loading trusted models which are stored on-device and
-// which may process untrustworthy data.
-[ServiceSandbox=sandbox.mojom.Sandbox.kOnDeviceModelExecution,
- RequireContext=sandbox.mojom.Context.kBrowser]
-interface OnDeviceModelService {
-  // Initializes a new model instance given `assets`. If the model can not be
-  // created the model pipe will be reset.
-  LoadModel(LoadModelParams params, pending_receiver<OnDeviceModel> model) =>
-      (LoadModelResult result);
-
-  // Returns the performance class based on benchmarks run on the device.
-  GetEstimatedPerformanceClass() => (PerformanceClass performance_class);
 };

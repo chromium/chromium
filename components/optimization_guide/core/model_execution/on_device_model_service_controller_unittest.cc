@@ -87,7 +87,7 @@ class FakeOnDeviceSession : public base::SupportsWeakPtr<FakeOnDeviceSession>,
       remote->OnResponse("Context: " + context + "\n");
     }
     remote->OnResponse("Input: " + input->text + "\n");
-    remote->OnComplete();
+    remote->OnComplete(on_device_model::mojom::ResponseStatus::kOk);
   }
 
   void AddContextInternal(

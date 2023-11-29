@@ -206,7 +206,8 @@ void SessionImpl::OnResponse(const std::string& response) {
   SendResponse(/*is_complete=*/false);
 }
 
-void SessionImpl::OnComplete() {
+void SessionImpl::OnComplete(on_device_model::mojom::ResponseStatus status) {
+  // TODO(b/302395507): Handle a retracted response.
   base::UmaHistogramMediumTimes(
       base::StrCat(
           {"OptimizationGuide.ModelExecution.OnDeviceResponseCompleteTime.",

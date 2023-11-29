@@ -17,15 +17,31 @@ namespace {
 constexpr std::string_view kSpModelFile = "spm.model";
 constexpr std::string_view kModelFile = "model.pb";
 constexpr std::string_view kWeightsFile = "weights.bin";
+constexpr std::string_view kTsDataFile = "ts.bin";
+constexpr std::string_view kTsSpModelFile = "ts_spm.model";
 
 }  // namespace
 
-ModelAssets LoadModelAssets(const base::FilePath& model_path) {
+ModelAssets::ModelAssets() = default;
+
+ModelAssets::ModelAssets(ModelAssets&&) = default;
+
+ModelAssets& ModelAssets::operator=(ModelAssets&&) = default;
+
+ModelAssets::~ModelAssets() = default;
+
+ModelAssets LoadModelAssets(const base::FilePath& model_path,
+                            const base::FilePath& ts_path) {
   ModelAssets assets;
   assets.sp_model = base::File(model_path.AppendASCII(kSpModelFile),
                                base::File::FLAG_OPEN | base::File::FLAG_READ);
   assets.model = base::File(model_path.AppendASCII(kModelFile),
                             base::File::FLAG_OPEN | base::File::FLAG_READ);
+  assets.ts_data = base::File(ts_path.AppendASCII(kTsDataFile),
+                              base::File::FLAG_OPEN | base::File::FLAG_READ);
+  assets.ts_sp_model =
+      base::File(ts_path.AppendASCII(kTsSpModelFile),
+                 base::File::FLAG_OPEN | base::File::FLAG_READ);
 
   // NOTE: Weights ultimately need to be mapped copy-on-write, but Fuchsia
   // (due to an apparent bug?) doesn't seem to support copy-on-write mapping of

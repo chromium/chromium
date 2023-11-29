@@ -59,6 +59,10 @@
     margin-inline-start: 50px;
   }
 
+  .retracted {
+    background-color: var(--google-red-100);
+  }
+
   .text {
     margin-inline-end: 50px;
   }
@@ -141,6 +145,6 @@
 <template is="dom-repeat" items="[[responses_]]">
   <div class="session">
     <div class="text">[[item.text]]</div>
-    <div class="response">[[item.response]]</div>
+    <div class$="[[responseClass_(item)]]">[[item.response]]</div>
   </div>
 </template>

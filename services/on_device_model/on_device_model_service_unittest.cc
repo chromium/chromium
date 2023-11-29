@@ -25,7 +25,7 @@ class ResponseHolder : public mojom::StreamingResponder {
     responses_.push_back(text);
   }
 
-  void OnComplete() override { run_loop_.Quit(); }
+  void OnComplete(mojom::ResponseStatus status) override { run_loop_.Quit(); }
 
   void WaitForCompletion() { run_loop_.Run(); }
 

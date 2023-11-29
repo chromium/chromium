@@ -16,6 +16,7 @@
 #include "services/on_device_model/public/cpp/model_assets.h"
 #include "services/on_device_model/public/cpp/on_device_model.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
+#include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ml {
@@ -49,6 +50,8 @@ class OnDeviceModelExecutor : public on_device_model::OnDeviceModel {
   base::MemoryMappedFile sentencepiece_model_proto_;
   base::MemoryMappedFile model_proto_;
   base::MemoryMappedFile weights_;
+  base::MemoryMappedFile ts_data_;
+  base::MemoryMappedFile ts_sp_model_;
 
   ChromeMLModel model_ = 0;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

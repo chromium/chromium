@@ -44,7 +44,7 @@ void OnDeviceInternalsUI::LoadModel(
   std::ignore = GetService();
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&on_device_model::LoadModelAssets, model_path),
+      base::BindOnce(&on_device_model::LoadModelAssets, model_path, model_path),
       base::BindOnce(&OnDeviceInternalsUI::OnModelAssetsLoaded,
                      weak_ptr_factory_.GetWeakPtr(), std::move(model),
                      std::move(callback)));

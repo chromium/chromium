@@ -5,7 +5,10 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
-  sources = [ "on_device_model.mojom" ]
+  sources = [
+    "on_device_model.mojom",
+    "on_device_model_service.mojom",
+  ]
   public_deps = [
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",

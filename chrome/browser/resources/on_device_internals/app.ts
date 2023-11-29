@@ -15,11 +15,12 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 
 import {getTemplate} from './app.html.js';
 import {BrowserProxy} from './browser_proxy.js';
-import {LoadModelResult, OnDeviceModelRemote, PerformanceClass, SessionRemote, StreamingResponderCallbackRouter} from './on_device_model.mojom-webui.js';
+import {LoadModelResult, OnDeviceModelRemote, PerformanceClass, ResponseStatus, SessionRemote, StreamingResponderCallbackRouter} from './on_device_model.mojom-webui.js';
 
 interface Response {
   text: string;
   response: string;
+  retracted: boolean;
 }
 
 interface OnDeviceInternalsAppElement {
@@ -208,13 +209,24 @@ class OnDeviceInternalsAppElement extends PolymerElement {
               'currentResponse_.response',
               (this.currentResponse_?.response + text).trimStart());
         });
-    const onCompleteId = this.responseRouter_.onComplete.addListener(() => {
-      this.addResponse_();
-      this.responseRouter_.removeListener(onResponseId);
-      this.responseRouter_.removeListener(onCompleteId);
-    });
-    this.currentResponse_ = {text: this.text_, response: ''};
+    const onCompleteId = this.responseRouter_.onComplete.addListener(
+        (status: ResponseStatus) => {
+          if (status === ResponseStatus.kRetracted && this.currentResponse_) {
+            this.currentResponse_.retracted = true;
+          }
+          this.addResponse_();
+          this.responseRouter_.removeListener(onResponseId);
+          this.responseRouter_.removeListener(onCompleteId);
+        });
+    this.currentResponse_ = {text: this.text_, response: '', retracted: false};
     this.text_ = '';
+  }
+
+  private responseClass_(response: Response): string {
+    if (response.retracted) {
+      return 'response retracted';
+    }
+    return 'response';
   }
 
   private canExecute_(): boolean {
