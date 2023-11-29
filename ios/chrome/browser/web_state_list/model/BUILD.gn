@@ -42,11 +42,10 @@ source_set("unit_tests") {
     "web_state_list_favicon_driver_observer_unittest.mm",
   ]
   deps = [
-    ":session_metrics",
     ":model",
+    ":session_metrics",
     "//base/test:test_support",
     "//components/favicon/ios",
-    "//ios/chrome/browser/sessions:serialisation",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",

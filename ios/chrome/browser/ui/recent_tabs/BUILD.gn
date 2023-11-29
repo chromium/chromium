@@ -91,7 +91,6 @@ source_set("recent_tabs_ui") {
     "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/sessions",
-    "//ios/chrome/browser/sessions:serialisation",
     "//ios/chrome/browser/sessions:session_util",
     "//ios/chrome/browser/settings/model/sync/utils",
     "//ios/chrome/browser/shared/model/browser",

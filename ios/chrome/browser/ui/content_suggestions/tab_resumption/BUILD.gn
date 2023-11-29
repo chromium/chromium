@@ -37,7 +37,6 @@ source_set("helper") {
     "//components/sync_sessions",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/metrics/model:metrics_internal",
-    "//ios/chrome/browser/sessions:serialisation",
     "//ios/chrome/browser/sessions:session_util",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",

@@ -51,6 +51,7 @@ source_set("tabs_internal") {
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/ios/browser:allow_list",
     "//components/security_state/ios",
+    "//components/sessions",
     "//components/strings",
     "//components/supervised_user/core/common",
     "//ios/chrome/browser/app_launcher/model",

@@ -49,6 +49,7 @@ source_set("unit_tests") {
   deps = [
     ":model",
     ":model_factory",
+    "//components/sessions",
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/shared/model/browser",

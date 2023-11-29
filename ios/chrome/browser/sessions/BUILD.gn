@@ -36,6 +36,7 @@ source_set("restoration_observer") {
 }
 
 source_set("restoration_agent") {
+  visibility = [ ":*" ]
   sources = [
     "session_restoration_browser_agent.h",
     "session_restoration_browser_agent.mm",
@@ -60,6 +61,7 @@ source_set("restoration_agent") {
 }
 
 source_set("session_service") {
+  visibility = [ ":*" ]
   sources = [
     "session_service_ios.h",
     "session_service_ios.mm",
@@ -77,6 +79,7 @@ source_set("session_service") {
 }
 
 source_set("serialisation") {
+  visibility = [ ":*" ]
   sources = [
     "NSCoder+Compatibility.h",
     "NSCoder+Compatibility.mm",
@@ -201,6 +204,7 @@ source_set("session_restoration_service_impl") {
 }
 
 source_set("legacy_session_restoration_service") {
+  visibility = [ ":*" ]
   sources = [
     "legacy_session_restoration_service.h",
     "legacy_session_restoration_service.mm",
@@ -239,6 +243,10 @@ source_set("session_restoration_service_factory") {
 }
 
 source_set("session_constants") {
+  visibility = [
+    ":*",
+    "//ios/chrome/browser/web/session_state:*",
+  ]
   sources = [
     "session_constants.h",
     "session_constants.mm",
@@ -247,6 +255,7 @@ source_set("session_constants") {
 }
 
 source_set("session_migration") {
+  visibility = [ ":*" ]
   sources = [
     "session_migration.h",
     "session_migration.mm",
