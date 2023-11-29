@@ -284,8 +284,8 @@ ModelExecutionManager::StartSession(proto::ModelExecutionFeature feature) {
       base::BindRepeating(&ModelExecutionManager::ExecuteModelWithStreaming,
                           base::Unretained(this));
   if (on_device_model_service_controller_) {
-    auto session =
-        on_device_model_service_controller_->CreateSession(feature, execute_fn);
+    auto session = on_device_model_service_controller_->CreateSession(
+        feature, execute_fn, optimization_guide_logger_.get());
     if (session) {
       RecordSessionUsedRemoteExecutionHistogram(feature, /*is_remote=*/false);
       return session;
@@ -294,7 +294,8 @@ ModelExecutionManager::StartSession(proto::ModelExecutionFeature feature) {
 
   RecordSessionUsedRemoteExecutionHistogram(feature, /*is_remote=*/true);
   return std::make_unique<SessionImpl>(base::DoNothing(), feature, nullptr,
-                                       nullptr, std::move(execute_fn));
+                                       nullptr, std::move(execute_fn),
+                                       optimization_guide_logger_.get());
 }
 
 void ModelExecutionManager::OnModelExecuteResponse(

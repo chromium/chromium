@@ -91,7 +91,8 @@ void OnDeviceModelServiceController::Init() {
 std::unique_ptr<OptimizationGuideModelExecutor::Session>
 OnDeviceModelServiceController::CreateSession(
     proto::ModelExecutionFeature feature,
-    ExecuteRemoteFn execute_remote_fn) {
+    ExecuteRemoteFn execute_remote_fn,
+    OptimizationGuideLogger* optimization_guide_logger) {
   ScopedEligibilityReasonLogger logger(feature);
   if (!base::FeatureList::IsEnabled(
           features::kOptimizationGuideOnDeviceModel)) {
@@ -119,7 +120,7 @@ OnDeviceModelServiceController::CreateSession(
       base::BindRepeating(&OnDeviceModelServiceController::StartMojoSession,
                           weak_ptr_factory_.GetWeakPtr()),
       feature, config_interpreter_.get(), weak_ptr_factory_.GetWeakPtr(),
-      std::move(execute_remote_fn));
+      std::move(execute_remote_fn), optimization_guide_logger);
 }
 
 void OnDeviceModelServiceController::GetEstimatedPerformanceClass(

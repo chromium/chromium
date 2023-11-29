@@ -21,6 +21,8 @@
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+class OptimizationGuideLogger;
+
 namespace base {
 class FilePath;
 }  // namespace base
@@ -59,7 +61,8 @@ class OnDeviceModelServiceController
   // context, executing input, and sending the response.
   std::unique_ptr<OptimizationGuideModelExecutor::Session> CreateSession(
       proto::ModelExecutionFeature feature,
-      ExecuteRemoteFn execute_remote_fn);
+      ExecuteRemoteFn execute_remote_fn,
+      OptimizationGuideLogger* logger);
 
   // Launches the on-device model-service.
   virtual void LaunchService() = 0;

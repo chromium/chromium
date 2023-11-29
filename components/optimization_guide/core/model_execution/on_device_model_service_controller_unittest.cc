@@ -15,6 +15,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_config_interpreter.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
@@ -333,12 +334,14 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   bool remote_execute_called_ = false;
   std::unique_ptr<google::protobuf::MessageLite> last_remote_message_;
+  OptimizationGuideLogger logger_;
 };
 
 TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionSuccess) {
   base::HistogramTester histogram_tester;
 
-  auto session = test_controller_->CreateSession(kFeature, base::DoNothing());
+  auto session =
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
   EXPECT_TRUE(session);
   ExecuteModel(*session, "foo");
   task_environment_.RunUntilIdle();
@@ -353,7 +356,8 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionSuccess) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionWithContext) {
-  auto session = test_controller_->CreateSession(kFeature, base::DoNothing());
+  auto session =
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
   EXPECT_TRUE(session);
   {
     base::HistogramTester histogram_tester;
@@ -378,7 +382,8 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionWithContext) {
 
 TEST_F(OnDeviceModelServiceControllerTest,
        ModelExecutionLoadsSingleContextChunk) {
-  auto session = test_controller_->CreateSession(kFeature, base::DoNothing());
+  auto session =
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
   EXPECT_TRUE(session);
 
   AddContext(*session, "context");
@@ -398,7 +403,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
 TEST_F(OnDeviceModelServiceControllerTest,
        ModelExecutionLoadsLongContextInChunks) {
-  auto session = test_controller_->CreateSession(kFeature, base::DoNothing());
+  auto session =
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
   EXPECT_TRUE(session);
 
   AddContext(*session, "this is long context");
@@ -420,7 +426,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
 TEST_F(OnDeviceModelServiceControllerTest,
        ModelExecutionCancelsOptionalContext) {
-  auto session = test_controller_->CreateSession(kFeature, base::DoNothing());
+  auto session =
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
   EXPECT_TRUE(session);
 
   AddContext(*session, "this is long context");
@@ -441,7 +448,7 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionFailsForInvalidFeature) {
 
   EXPECT_FALSE(test_controller_->CreateSession(
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION,
-      base::DoNothing()));
+      base::DoNothing(), &logger_));
 
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason."
@@ -457,7 +464,8 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionNoMinContext) {
        {"on_device_model_max_tokens_for_context", "22"},
        {"on_device_model_context_token_chunk_size", "4"}});
 
-  auto session = test_controller_->CreateSession(kFeature, base::DoNothing());
+  auto session =
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
   EXPECT_TRUE(session);
 
   AddContext(*session, "context");
@@ -481,7 +489,8 @@ TEST_F(OnDeviceModelServiceControllerTest, ReturnsErrorOnServiceDisconnect) {
   feature_list.InitAndEnableFeatureWithParameters(
       features::kOptimizationGuideOnDeviceModel,
       {{"on_device_fallback_to_server_on_disconnect", "false"}});
-  auto session = test_controller_->CreateSession(kFeature, base::DoNothing());
+  auto session =
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
   EXPECT_TRUE(session);
   task_environment_.RunUntilIdle();
 
@@ -500,7 +509,8 @@ TEST_F(OnDeviceModelServiceControllerTest, ReturnsErrorOnServiceDisconnect) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnAddContext) {
-  auto session = test_controller_->CreateSession(kFeature, base::DoNothing());
+  auto session =
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
   EXPECT_TRUE(session);
   task_environment_.RunUntilIdle();
 
@@ -519,7 +529,8 @@ TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnAddContext) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnExecute) {
-  auto session = test_controller_->CreateSession(kFeature, base::DoNothing());
+  auto session =
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
   EXPECT_TRUE(session);
   task_environment_.RunUntilIdle();
 
@@ -538,7 +549,8 @@ TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnExecute) {
 TEST_F(OnDeviceModelServiceControllerTest, WontStartSessionAfterGpuBlocked) {
   // Start a session.
   test_controller_->set_load_model_result(LoadModelResult::kGpuBlocked);
-  auto session = test_controller_->CreateSession(kFeature, base::DoNothing());
+  auto session =
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
   EXPECT_TRUE(session);
 
   // Wait for the service to launch, and be shut down.
@@ -548,7 +560,8 @@ TEST_F(OnDeviceModelServiceControllerTest, WontStartSessionAfterGpuBlocked) {
     base::HistogramTester histogram_tester;
 
     // Because the model returned kGpuBlocked, no more sessions should start.
-    EXPECT_FALSE(test_controller_->CreateSession(kFeature, base::DoNothing()));
+    EXPECT_FALSE(
+        test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_));
 
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason."
@@ -559,7 +572,8 @@ TEST_F(OnDeviceModelServiceControllerTest, WontStartSessionAfterGpuBlocked) {
 
 TEST_F(OnDeviceModelServiceControllerTest, DontRecreateSessionIfGpuBlocked) {
   test_controller_->set_load_model_result(LoadModelResult::kGpuBlocked);
-  auto session = test_controller_->CreateSession(kFeature, base::DoNothing());
+  auto session =
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
   ASSERT_TRUE(session);
 
   // Wait for the service to launch, and be shut down.
@@ -576,14 +590,16 @@ TEST_F(OnDeviceModelServiceControllerTest, StopsConnectingAfterMultipleDrops) {
   test_controller_->set_drop_connection_request(true);
   for (int i = 0; i < features::GetOnDeviceModelCrashCountBeforeDisable();
        ++i) {
-    auto session = test_controller_->CreateSession(kFeature, base::DoNothing());
+    auto session =
+        test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
     EXPECT_TRUE(session) << i;
     task_environment_.RunUntilIdle();
   }
 
   {
     base::HistogramTester histogram_tester;
-    auto session = test_controller_->CreateSession(kFeature, base::DoNothing());
+    auto session =
+        test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
     EXPECT_FALSE(session);
 
     histogram_tester.ExpectUniqueSample(
@@ -597,7 +613,8 @@ TEST_F(OnDeviceModelServiceControllerTest, AlternatingDisconnectSucceeds) {
   // Start a session.
   for (int i = 0; i < 10; ++i) {
     test_controller_->set_drop_connection_request(i % 2 == 1);
-    auto session = test_controller_->CreateSession(kFeature, base::DoNothing());
+    auto session =
+        test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
     EXPECT_TRUE(session) << i;
     task_environment_.RunUntilIdle();
   }
@@ -609,11 +626,13 @@ TEST_F(OnDeviceModelServiceControllerTest,
   test_controller_->set_drop_connection_request(true);
   for (int i = 0; i < features::GetOnDeviceModelCrashCountBeforeDisable();
        ++i) {
-    auto session = test_controller_->CreateSession(kFeature, base::DoNothing());
+    auto session =
+        test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
     EXPECT_TRUE(session) << i;
     task_environment_.RunUntilIdle();
   }
-  EXPECT_FALSE(test_controller_->CreateSession(kFeature, base::DoNothing()));
+  EXPECT_FALSE(
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_));
 
   // Change the pref to a different value and recreate the service.
   access_controller_ = nullptr;
@@ -623,12 +642,14 @@ TEST_F(OnDeviceModelServiceControllerTest,
   RecreateServiceController();
 
   // A new session should be started because the version changed.
-  auto session = test_controller_->CreateSession(kFeature, base::DoNothing());
+  auto session =
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
   EXPECT_TRUE(session);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, AddContextDisconnectExecute) {
-  auto session = test_controller_->CreateSession(kFeature, base::DoNothing());
+  auto session =
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
   EXPECT_TRUE(session);
   AddContext(*session, "foo");
   task_environment_.RunUntilIdle();
@@ -654,7 +675,8 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextDisconnectExecute) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, AddContextExecuteDisconnect) {
-  auto session = test_controller_->CreateSession(kFeature, base::DoNothing());
+  auto session =
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
   EXPECT_TRUE(session);
   AddContext(*session, "foo");
   task_environment_.RunUntilIdle();
@@ -667,13 +689,15 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextExecuteDisconnect) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ExecuteDisconnectedSession) {
-  auto session1 = test_controller_->CreateSession(kFeature, base::DoNothing());
+  auto session1 =
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
   EXPECT_TRUE(session1);
   AddContext(*session1, "foo");
   task_environment_.RunUntilIdle();
 
   // Start another session.
-  auto session2 = test_controller_->CreateSession(kFeature, base::DoNothing());
+  auto session2 =
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
   EXPECT_TRUE(session2);
   AddContext(*session2, "bar");
   task_environment_.RunUntilIdle();
@@ -703,8 +727,8 @@ TEST_F(OnDeviceModelServiceControllerTest, ExecuteDisconnectedSession) {
 
 TEST_F(OnDeviceModelServiceControllerTest, CallsRemoteExecute) {
   test_controller_->set_load_model_result(LoadModelResult::kGpuBlocked);
-  auto session =
-      test_controller_->CreateSession(kFeature, CreateExecuteRemoteFn());
+  auto session = test_controller_->CreateSession(
+      kFeature, CreateExecuteRemoteFn(), &logger_);
   ASSERT_TRUE(session);
 
   // Wait for the service to launch, and be shut down.
@@ -743,8 +767,8 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextInvalidConfig) {
                          std::move(config_interpreter));
   config_interpreter_raw->OverrideFeatureConfigForTesting(config);
 
-  auto session =
-      test_controller_->CreateSession(kFeature, CreateExecuteRemoteFn());
+  auto session = test_controller_->CreateSession(
+      kFeature, CreateExecuteRemoteFn(), &logger_);
   ASSERT_TRUE(session);
   {
     base::HistogramTester histogram_tester;
@@ -783,8 +807,8 @@ TEST_F(OnDeviceModelServiceControllerTest, ExecuteInvalidConfig) {
                          std::move(config_interpreter));
   config_interpreter_raw->OverrideFeatureConfigForTesting(config);
 
-  auto session =
-      test_controller_->CreateSession(kFeature, CreateExecuteRemoteFn());
+  auto session = test_controller_->CreateSession(
+      kFeature, CreateExecuteRemoteFn(), &logger_);
   ASSERT_TRUE(session);
   base::HistogramTester histogram_tester;
   ExecuteModel(*session, "2");
@@ -797,8 +821,8 @@ TEST_F(OnDeviceModelServiceControllerTest, ExecuteInvalidConfig) {
 TEST_F(OnDeviceModelServiceControllerTest, FallbackToServerAfterDelay) {
   g_execute_delay = features::GetOnDeviceModelTimeForInitialResponse() * 2;
 
-  auto session =
-      test_controller_->CreateSession(kFeature, CreateExecuteRemoteFn());
+  auto session = test_controller_->CreateSession(
+      kFeature, CreateExecuteRemoteFn(), &logger_);
   ASSERT_TRUE(session);
   ExecuteModel(*session, "2z");
   base::HistogramTester histogram_tester;
@@ -820,8 +844,8 @@ TEST_F(OnDeviceModelServiceControllerTest, FallbackToServerAfterDelay) {
 
 TEST_F(OnDeviceModelServiceControllerTest,
        FallbackToServerOnDisconnectWhileWaitingForExecute) {
-  auto session =
-      test_controller_->CreateSession(kFeature, CreateExecuteRemoteFn());
+  auto session = test_controller_->CreateSession(
+      kFeature, CreateExecuteRemoteFn(), &logger_);
   EXPECT_TRUE(session);
   task_environment_.RunUntilIdle();
   test_controller_->LaunchService();

@@ -15,6 +15,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 
+class OptimizationGuideLogger;
+
 namespace optimization_guide {
 class OnDeviceModelExecutionConfigInterpreter;
 class OnDeviceModelServiceController;
@@ -68,12 +70,12 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
     kMaxValue = kCancelled,
   };
 
-  SessionImpl(
-      StartSessionFn start_session_fn,
-      proto::ModelExecutionFeature feature,
-      const OnDeviceModelExecutionConfigInterpreter* config_interpreter,
-      base::WeakPtr<OnDeviceModelServiceController> controller,
-      ExecuteRemoteFn execute_remote_fn);
+  SessionImpl(StartSessionFn start_session_fn,
+              proto::ModelExecutionFeature feature,
+              const OnDeviceModelExecutionConfigInterpreter* config_interpreter,
+              base::WeakPtr<OnDeviceModelServiceController> controller,
+              ExecuteRemoteFn execute_remote_fn,
+              OptimizationGuideLogger* optimization_guide_logger);
   ~SessionImpl() override;
 
   // optimization_guide::OptimizationGuideModelExecutor::Session:
@@ -181,6 +183,10 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
 
   // Has a value when using the on device model.
   std::optional<OnDeviceState> on_device_state_;
+
+  // Logger is owned by the Optimization Guide Keyed Service, which should
+  // outlive this session.
+  raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
 };
 
 }  // namespace optimization_guide

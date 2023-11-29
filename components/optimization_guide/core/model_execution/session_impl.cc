@@ -5,9 +5,11 @@
 #include "components/optimization_guide/core/model_execution/session_impl.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/stringprintf.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_config_interpreter.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 
 namespace optimization_guide {
@@ -58,6 +60,8 @@ class SessionImpl::ContextProcessor
     }
   }
 
+  std::string& input() { return input_; }
+
   uint32_t tokens_processed() const { return tokens_processed_; }
 
  private:
@@ -86,16 +90,23 @@ SessionImpl::SessionImpl(
     proto::ModelExecutionFeature feature,
     const OnDeviceModelExecutionConfigInterpreter* config_interpreter,
     base::WeakPtr<OnDeviceModelServiceController> controller,
-    ExecuteRemoteFn execute_remote_fn)
+    ExecuteRemoteFn execute_remote_fn,
+    OptimizationGuideLogger* optimization_guide_logger)
     : controller_(controller),
       feature_(feature),
-      execute_remote_fn_(std::move(execute_remote_fn)) {
+      execute_remote_fn_(std::move(execute_remote_fn)),
+      optimization_guide_logger_(optimization_guide_logger) {
   if (controller_ && controller_->ShouldStartNewSession()) {
     on_device_state_.emplace(std::move(start_session_fn), this);
     on_device_state_->config_interpreter = config_interpreter;
     // Prewarm the initial session to make sure the service is started.
     GetOrCreateSession();
   }
+  OPTIMIZATION_GUIDE_LOGGER(
+      optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
+      optimization_guide_logger_)
+      << "Starting on-device session for "
+      << std::string(GetStringNameForModelExecutionFeature(feature_));
 }
 
 SessionImpl::~SessionImpl() = default;
@@ -194,6 +205,27 @@ void SessionImpl::ExecuteModel(
   // Note: if on-device fails for some reason, the result will be changed.
   logger->set_result(ExecuteModelResult::kUsedOnDevice);
   on_device_state_->histogram_logger = std::move(logger);
+
+  if (optimization_guide_logger_->ShouldEnableDebugLogs()) {
+    OPTIMIZATION_GUIDE_LOGGER(
+        optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
+        optimization_guide_logger_)
+        << "Executing model "
+        << (input->should_ignore_input_context
+                ? ""
+                : base::StringPrintf("with input context of %d tokens:\n",
+                                     on_device_state_->context_processor
+                                         ? on_device_state_->context_processor
+                                               ->tokens_processed()
+                                         : 0))
+        << (!input->should_ignore_input_context &&
+                    on_device_state_->context_processor
+                ? (on_device_state_->context_processor->input() + "\n")
+                : "")
+        << "with string:\n"
+        << input->input_string;
+  }
+
   on_device_state_->callback = std::move(callback);
   on_device_state_->start = base::TimeTicks::Now();
   on_device_state_->timer_for_first_response.Start(
