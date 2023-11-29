@@ -409,6 +409,12 @@ chromium-metrics-reviews@google.com.
              database"/>
 </enum>
 
+<enum name="OutdatedGMSDialogDismissalReason">
+  <int value="0" label="Other"/>
+  <int value="1" label="Accepted"/>
+  <int value="2" label="Rejected"/>
+</enum>
+
 <enum name="PasswordAddLoginSyncError">
   <int value="0" label="None"/>
   <int value="1" label="DB Not Available"/>

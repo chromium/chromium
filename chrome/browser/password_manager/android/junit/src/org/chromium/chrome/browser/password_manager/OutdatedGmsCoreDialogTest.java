@@ -22,6 +22,8 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.password_manager.OutdatedGmsCoreDialog.GmsUpdateDialogDismissalReason;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -54,6 +56,12 @@ public class OutdatedGmsCoreDialogTest {
 
     @Test
     public void testHandlesUpdateButtonClick() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                OutdatedGmsCoreDialog.DISMISSAL_REASON_HISTOGRAM,
+                                GmsUpdateDialogDismissalReason.ACCEPTED)
+                        .build();
         mOutdatedGmsCoreDialog.show();
         PropertyModel dialogModel = mModalDialogManager.getCurrentDialogForTest();
         assertNotNull(dialogModel);
@@ -61,12 +69,19 @@ public class OutdatedGmsCoreDialogTest {
                 .get(ModalDialogProperties.CONTROLLER)
                 .onClick(dialogModel, ModalDialogProperties.ButtonType.POSITIVE);
 
+        histogramWatcher.assertExpected();
         verify(mResultHandler).onResult(true);
         assertNull(mModalDialogManager.getCurrentDialogForTest());
     }
 
     @Test
     public void testHandlesNegativeButtonClick() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                OutdatedGmsCoreDialog.DISMISSAL_REASON_HISTOGRAM,
+                                GmsUpdateDialogDismissalReason.REJECTED)
+                        .build();
         mOutdatedGmsCoreDialog.show();
         PropertyModel dialogModel = mModalDialogManager.getCurrentDialogForTest();
         assertNotNull(dialogModel);
@@ -74,15 +89,23 @@ public class OutdatedGmsCoreDialogTest {
                 .get(ModalDialogProperties.CONTROLLER)
                 .onClick(dialogModel, ModalDialogProperties.ButtonType.NEGATIVE);
 
+        histogramWatcher.assertExpected();
         verify(mResultHandler).onResult(false);
         assertNull(mModalDialogManager.getCurrentDialogForTest());
     }
 
     @Test
     public void testHandlesDialogDismiss() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                OutdatedGmsCoreDialog.DISMISSAL_REASON_HISTOGRAM,
+                                GmsUpdateDialogDismissalReason.OTHER)
+                        .build();
         mOutdatedGmsCoreDialog.show();
         mModalDialogManager.dismissAllDialogs(DialogDismissalCause.UNKNOWN);
 
+        histogramWatcher.assertExpected();
         verify(mResultHandler).onResult(false);
         assertNull(mModalDialogManager.getCurrentDialogForTest());
     }
