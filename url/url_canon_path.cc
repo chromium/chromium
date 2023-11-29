@@ -109,7 +109,7 @@ DotDisposition ClassifyAfterDot(const CHAR* spec,
     *consumed_len = 0;
     return DIRECTORY_CUR;
   }
-  if (IsURLSlash(spec[after_dot])) {
+  if (IsSlashOrBackslash(spec[after_dot])) {
     // Single dot followed by a slash.
     *consumed_len = 1;  // Consume the slash
     return DIRECTORY_CUR;
@@ -123,7 +123,7 @@ DotDisposition ClassifyAfterDot(const CHAR* spec,
       *consumed_len = second_dot_len;
       return DIRECTORY_UP;
     }
-    if (IsURLSlash(spec[after_second_dot])) {
+    if (IsSlashOrBackslash(spec[after_second_dot])) {
       // Double dot followed by a slash.
       *consumed_len = second_dot_len + 1;
       return DIRECTORY_UP;
@@ -297,8 +297,9 @@ bool DoPath(const CHAR* spec,
     // and then canonicalize it, it will of course have a slash already. This
     // check is for the replacement and relative URL resolving cases of file
     // URLs.
-    if (!IsURLSlash(spec[path.begin]))
+    if (!IsSlashOrBackslash(spec[path.begin])) {
       output->push_back('/');
+    }
 
     success =
         DoPartialPathInternal<CHAR, UCHAR>(spec, path, out_path->begin, output);

@@ -463,12 +463,14 @@ void DoParseFileSystemURL(const CHAR* spec, int spec_len, Parsed* parsed) {
   // second should be what it keeps; the rest goes to parsed.  If the path ends
   // before the second slash, it's still pretty clear what the user meant, so
   // we'll let that through.
-  if (!IsURLSlash(spec[inner_parsed.path.begin])) {
+  if (!IsSlashOrBackslash(spec[inner_parsed.path.begin])) {
     return;
   }
   int inner_path_end = inner_parsed.path.begin + 1;  // skip the leading slash
-  while (inner_path_end < spec_len && !IsURLSlash(spec[inner_path_end]))
+  while (inner_path_end < spec_len &&
+         !IsSlashOrBackslash(spec[inner_path_end])) {
     ++inner_path_end;
+  }
   parsed->path.begin = inner_path_end;
   int new_inner_path_length = inner_path_end - inner_parsed.path.begin;
   parsed->path.len = inner_parsed.path.len - new_inner_path_length;
@@ -650,7 +652,7 @@ void DoExtractFileName(const CHAR* spec,
   for (int i = path.end() - 1; i >= path.begin; i--) {
     if (spec[i] == ';') {
       file_end = i;
-    } else if (IsURLSlash(spec[i])) {
+    } else if (IsSlashOrBackslash(spec[i])) {
       // File name is everything following this character to the end
       *file_name = MakeRange(i + 1, file_end);
       return;
@@ -837,7 +839,7 @@ bool ExtractScheme(const char16_t* url, int url_len, Component* scheme) {
 // This handles everything that may be an authority terminator, including
 // backslash. For special backslash handling see DoParseAfterScheme.
 bool IsAuthorityTerminator(char16_t ch) {
-  return IsURLSlash(ch) || ch == '?' || ch == '#';
+  return IsSlashOrBackslash(ch) || ch == '?' || ch == '#';
 }
 
 void ExtractFileName(const char* url,
