@@ -11,6 +11,7 @@
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wallpaper/wallpaper_file_manager.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
@@ -97,6 +98,41 @@ TEST_F(SeaPenWallpaperManagerTest, DecodesImageAndReturnsId) {
       *decode_sea_pen_image_future.Get<gfx::ImageSkia>().bitmap(),
       /*max_deviation=*/1));
   EXPECT_TRUE(base::PathExists(file_path));
+}
+
+TEST_F(SeaPenWallpaperManagerTest, StoresOnlyTenLatestImages) {
+  base::test::TestFuture<const gfx::ImageSkia&> decode_sea_pen_image_future;
+
+  base::FilePath file_path;
+  // Create 10 images in the temp directory.
+  for (int i = 1; i <= 10; i++) {
+    const base::Time time = base::Time::Now();
+    file_path = CreateFilePath(base::NumberToString(i) + ".jpg");
+    ASSERT_TRUE(base::WriteFile(file_path, CreateJpgBytes()));
+    // Change file modification time.
+    ASSERT_TRUE(base::TouchFile(file_path, time - base::Minutes(10 - i),
+                                time - base::Minutes(10 - i)));
+  }
+
+  ASSERT_TRUE(base::PathExists(CreateFilePath("1.jpg")));
+  ASSERT_FALSE(base::PathExists(CreateFilePath("11.jpg")));
+
+  // Decode and save the 11th sea pen image in the temp directory.
+  sea_pen_wallpaper_manager().DecodeAndSaveSeaPenImage(
+      {CreateJpgBytes(), /*id=*/11, /*query=*/std::string(),
+       manta::proto::ImageResolution::RESOLUTION_64},
+      GetTempFileDirectory(), decode_sea_pen_image_future.GetCallback());
+
+  // Use `AreBitmapsClose` because JPG encoding/decoding can alter the color
+  // slightly.
+  EXPECT_TRUE(gfx::test::AreBitmapsClose(
+      CreateBitmap(),
+      *decode_sea_pen_image_future.Get<gfx::ImageSkia>().bitmap(),
+      /*max_deviation=*/1));
+
+  // The last modified image should be deleted when the 11th image is added.
+  EXPECT_FALSE(base::PathExists(CreateFilePath("1.jpg")));
+  EXPECT_TRUE(base::PathExists(CreateFilePath("11.jpg")));
 }
 
 }  // namespace ash

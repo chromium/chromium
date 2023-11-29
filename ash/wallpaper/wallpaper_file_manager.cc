@@ -7,6 +7,7 @@
 #include "ash/public/cpp/image_util.h"
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_file_utils.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -17,6 +18,10 @@
 namespace ash {
 
 namespace {
+// The max number of Sea Pen image files to keep in Sea Pen directory before
+// adding a new file.
+constexpr int kMaxSeaPenFiles = 9;
+
 // Returns the file name of the online wallpaper based on the `resolution`.
 std::string GetOnlineWallpaperFileName(const std::string& file_name,
                                        WallpaperResolution resolution) {
@@ -68,13 +73,56 @@ void EnsureWallpaperDirectoryExists(const base::FilePath& wallpaper_dir) {
   }
 }
 
+// Scans through all the images in Sea Pen wallpaper directory. Keeps only 9
+// latest sea pen images based on the last modified time, the older files are
+// removed. Returns true if the process is successful.
+bool MaybeDeleteOldSeaPenImages(base::FilePath wallpaper_dir) {
+  std::vector<std::pair<base::FilePath, base::Time>> sea_pen_files;
+
+  // Enumerate normal files only; directories and symlinks are skipped.
+  base::FileEnumerator enumerator(wallpaper_dir, true,
+                                  base::FileEnumerator::FILES);
+  for (base::FilePath file_path = enumerator.Next(); !file_path.empty();
+       file_path = enumerator.Next()) {
+    DCHECK_EQ(".jpg", file_path.Extension());
+    const base::FileEnumerator::FileInfo& info = enumerator.GetInfo();
+    sea_pen_files.emplace_back(file_path, info.GetLastModifiedTime());
+  }
+
+  if (sea_pen_files.size() <= kMaxSeaPenFiles) {
+    return true;
+  }
+
+  // Finds the n oldest files (n = total files - kMaxSeaPenFiles) then resizes
+  // sea_pen_files to store only the old files.
+  std::nth_element(sea_pen_files.begin(), sea_pen_files.end() - kMaxSeaPenFiles,
+                   sea_pen_files.end(),
+                   [](const auto& left, const auto& right) {
+                     return left.second < right.second;
+                   });
+  sea_pen_files.resize(sea_pen_files.size() - kMaxSeaPenFiles);
+
+  // Removes all the old images.
+  for (const auto& [file_path, _] : sea_pen_files) {
+    if (!base::DeleteFile(file_path)) {
+      LOG(ERROR) << __func__ << " failed to remove old Sea Pen file";
+      return false;
+    }
+  }
+
+  return true;
+}
+
 // Deletes the wallpaper directory and its subdirectories to store only the
 // latest selected wallpapers. Except online wallpapers for which we want to
 // retrieve the wallpapers quickly from cache instead of downloading them again.
 bool DeleteWallpaperPath(WallpaperType type,
                          const base::FilePath& wallpaper_dir) {
-  if (IsOnlineWallpaper(type) || type == WallpaperType::kSeaPen) {
+  if (IsOnlineWallpaper(type)) {
     return true;
+  }
+  if (type == WallpaperType::kSeaPen) {
+    return MaybeDeleteOldSeaPenImages(wallpaper_dir);
   }
   return base::DeletePathRecursively(wallpaper_dir);
 }
