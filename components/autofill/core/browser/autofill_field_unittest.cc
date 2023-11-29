@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -387,6 +388,16 @@ INSTANTIATE_TEST_SUITE_P(
         AutofillLocalHeuristicsOverridesParams{
             .html_field_type = HtmlFieldType::kUnspecified,
             .server_type = ADDRESS_HOME_STREET_ADDRESS,
+            .heuristic_type = ADDRESS_HOME_BETWEEN_STREETS,
+            .expected_result = ADDRESS_HOME_BETWEEN_STREETS},
+        AutofillLocalHeuristicsOverridesParams{
+            .html_field_type = HtmlFieldType::kUnspecified,
+            .server_type = ADDRESS_HOME_LINE1,
+            .heuristic_type = ADDRESS_HOME_BETWEEN_STREETS,
+            .expected_result = ADDRESS_HOME_BETWEEN_STREETS},
+        AutofillLocalHeuristicsOverridesParams{
+            .html_field_type = HtmlFieldType::kUnspecified,
+            .server_type = ADDRESS_HOME_LINE2,
             .heuristic_type = ADDRESS_HOME_BETWEEN_STREETS,
             .expected_result = ADDRESS_HOME_BETWEEN_STREETS},
         AutofillLocalHeuristicsOverridesParams{
