@@ -1488,10 +1488,13 @@ export class DirectoryModel extends EventTarget {
    * @private
    */
   onVolumeInfoListUpdated_(event) {
+    const
+        spliceEventDetail = /**
+                                @type {import('../../definitions/array_data_model_splice_event.js').ArrayDataModelSpliceEvent}
+                                  */
+        (event).detail;
     // Fallback to the default volume's root if the current volume is unmounted.
-    // @ts-ignore: error TS2339: Property 'removed' does not exist on type
-    // 'Event'.
-    if (this.hasCurrentDirEntryBeenUnmounted_(event.removed)) {
+    if (this.hasCurrentDirEntryBeenUnmounted_(spliceEventDetail.removed)) {
       this.volumeManager_.getDefaultDisplayRoot((displayRoot) => {
         if (displayRoot) {
           this.changeDirectoryEntry(displayRoot);
@@ -1502,9 +1505,8 @@ export class DirectoryModel extends EventTarget {
     // If a volume within My files or removable root is mounted/unmounted rescan
     // its contents.
     const currentDir = this.getCurrentDirEntry();
-    // @ts-ignore: error TS2339: Property 'removed' does not exist on type
-    // 'Event'.
-    const affectedVolumes = event.added.concat(event.removed);
+    const affectedVolumes =
+        spliceEventDetail.added.concat(spliceEventDetail.removed);
     for (const volume of affectedVolumes) {
       if (isSameEntry(currentDir, volume.prefixEntry)) {
         this.rescan(false);
@@ -1515,9 +1517,7 @@ export class DirectoryModel extends EventTarget {
     // If the current directory is the Drive placeholder and the real Drive is
     // mounted, switch to it.
     if (this.getCurrentRootType() === RootType.DRIVE_FAKE_ROOT) {
-      // @ts-ignore: error TS2339: Property 'added' does not exist on type
-      // 'Event'.
-      for (const newVolume of event.added) {
+      for (const newVolume of spliceEventDetail.added) {
         if (newVolume.volumeType === VolumeType.DRIVE) {
           // @ts-ignore: error TS7006: Parameter 'displayRoot' implicitly has an
           // 'any' type.
@@ -1527,9 +1527,7 @@ export class DirectoryModel extends EventTarget {
         }
       }
     }
-    // @ts-ignore: error TS2339: Property 'added' does not exist on type
-    // 'Event'.
-    if (event.added.length !== 1) {
+    if (spliceEventDetail.added.length !== 1) {
       return;
     }
     // Redirect to newly mounted volume when:
@@ -1543,36 +1541,26 @@ export class DirectoryModel extends EventTarget {
         // @ts-ignore: error TS2339: Property 'isFocused' does not exist on type
         // 'Window & typeof globalThis'.
         (window.isFocused() &&
-         // @ts-ignore: error TS2339: Property 'added' does not exist on type
-         // 'Event'.
-         event.added[0].volumeType === VolumeType.PROVIDED &&
-         // @ts-ignore: error TS2339: Property 'added' does not exist on type
-         // 'Event'.
-         event.added[0].source === Source.FILE) ||
-        // @ts-ignore: error TS2339: Property 'added' does not exist on type
-        // 'Event'.
-        (event.added[0].volumeType === VolumeType.CROSTINI &&
+         spliceEventDetail.added[0].volumeType === VolumeType.PROVIDED &&
+         spliceEventDetail.added[0].source === Source.FILE) ||
+        (spliceEventDetail.added[0].volumeType === VolumeType.CROSTINI &&
          this.getCurrentRootType() === RootType.CROSTINI) ||
         // TODO(crbug/1293229): Don't redirect if the user is looking at a
         // different Guest OS folder.
-        // @ts-ignore: error TS2339: Property 'added' does not exist on type
-        // 'Event'.
-        (isGuestOs(event.added[0].volumeType) &&
+        (isGuestOs(spliceEventDetail.added[0].volumeType) &&
          this.getCurrentRootType() === RootType.GUEST_OS)) {
       // Resolving a display root on FSP volumes is instant, despite the
       // asynchronous call.
       // @ts-ignore: error TS7006: Parameter 'displayRoot' implicitly has an
       // 'any' type.
-      event.added[0].resolveDisplayRoot().then((displayRoot) => {
+      spliceEventDetail.added[0].resolveDisplayRoot().then((displayRoot) => {
         // Only change directory if "currentDir" hasn't changed during the
         // display root resolution and if there isn't a directory change in
         // progress, because other part of the system will eventually change the
         // directory.
         if (currentDir === this.getCurrentDirEntry() &&
             this.numChangeTrackerRunning_ === 0) {
-          // @ts-ignore: error TS2339: Property 'added' does not exist on type
-          // 'Event'.
-          this.changeDirectoryEntry(event.added[0].displayRoot);
+          this.changeDirectoryEntry(spliceEventDetail.added[0].displayRoot);
         }
       });
     }

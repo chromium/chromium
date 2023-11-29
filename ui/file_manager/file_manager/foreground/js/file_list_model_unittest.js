@@ -157,16 +157,15 @@ export function testSplice() {
   fileListModel.sort('name', 'asc');
 
   fileListModel.addEventListener('splice', event => {
-    // @ts-ignore: error TS2339: Property 'added' does not exist on type
-    // 'Event'.
-    assertEntryArrayEquals(event.added, ['p', 'b']);
-    // @ts-ignore: error TS2339: Property 'removed' does not exist on type
-    // 'Event'.
-    assertEntryArrayEquals(event.removed, ['n']);
+    const
+        spliceEventDetail = /**
+                         @type {import('../../definitions/array_data_model_splice_event.js').ArrayDataModelSpliceEvent}
+                           */
+        (event).detail;
+    assertEntryArrayEquals(spliceEventDetail.added, ['p', 'b']);
+    assertEntryArrayEquals(spliceEventDetail.removed, ['n']);
     // The first inserted item, 'p', should be at index:3 after splice.
-    // @ts-ignore: error TS2339: Property 'index' does not exist on type
-    // 'Event'.
-    assertEquals(event.index, 3);
+    assertEquals(spliceEventDetail.index, 3);
   });
 
   fileListModel.addEventListener('permuted', event => {
@@ -187,16 +186,15 @@ export function testSpliceWithoutSortStatus() {
   const fileListModel = makeSimpleFileListModel(['d', 'a', 'x', 'n']);
 
   fileListModel.addEventListener('splice', event => {
-    // @ts-ignore: error TS2339: Property 'added' does not exist on type
-    // 'Event'.
-    assertEntryArrayEquals(event.added, ['p', 'b']);
-    // @ts-ignore: error TS2339: Property 'removed' does not exist on type
-    // 'Event'.
-    assertEntryArrayEquals(event.removed, ['x']);
+    const
+        spliceEventDetail = /**
+                         @type {import('../../definitions/array_data_model_splice_event.js').ArrayDataModelSpliceEvent}
+                           */
+        (event).detail;
+    assertEntryArrayEquals(spliceEventDetail.added, ['p', 'b']);
+    assertEntryArrayEquals(spliceEventDetail.removed, ['x']);
     // The first inserted item, 'p', should be at index:2 after splice.
-    // @ts-ignore: error TS2339: Property 'index' does not exist on type
-    // 'Event'.
-    assertEquals(event.index, 2);
+    assertEquals(spliceEventDetail.index, 2);
   });
 
   fileListModel.addEventListener('permuted', event => {
@@ -221,17 +219,16 @@ export function testSpliceWithoutAddingNewItems() {
   fileListModel.sort('name', 'asc');
 
   fileListModel.addEventListener('splice', event => {
-    // @ts-ignore: error TS2339: Property 'added' does not exist on type
-    // 'Event'.
-    assertEntryArrayEquals(event.added, []);
-    // @ts-ignore: error TS2339: Property 'removed' does not exist on type
-    // 'Event'.
-    assertEntryArrayEquals(event.removed, ['n']);
+    const
+        spliceEventDetail = /**
+                         @type {import('../../definitions/array_data_model_splice_event.js').ArrayDataModelSpliceEvent}
+                           */
+        (event).detail;
+    assertEntryArrayEquals(spliceEventDetail.added, []);
+    assertEntryArrayEquals(spliceEventDetail.removed, ['n']);
     // The first item after insertion/deletion point is 'x', which should be at
     // 2nd position after the sort.
-    // @ts-ignore: error TS2339: Property 'index' does not exist on type
-    // 'Event'.
-    assertEquals(event.index, 2);
+    assertEquals(spliceEventDetail.index, 2);
   });
 
   fileListModel.addEventListener('permuted', event => {
@@ -252,15 +249,14 @@ export function testSpliceWithoutDeletingItems() {
   fileListModel.sort('name', 'asc');
 
   fileListModel.addEventListener('splice', event => {
-    // @ts-ignore: error TS2339: Property 'added' does not exist on type
-    // 'Event'.
-    assertEntryArrayEquals(event.added, ['p', 'b']);
-    // @ts-ignore: error TS2339: Property 'removed' does not exist on type
-    // 'Event'.
-    assertEntryArrayEquals(event.removed, []);
-    // @ts-ignore: error TS2339: Property 'index' does not exist on type
-    // 'Event'.
-    assertEquals(event.index, 4);
+    const
+        spliceEventDetail = /**
+                         @type {import('../../definitions/array_data_model_splice_event.js').ArrayDataModelSpliceEvent}
+                           */
+        (event).detail;
+    assertEntryArrayEquals(spliceEventDetail.added, ['p', 'b']);
+    assertEntryArrayEquals(spliceEventDetail.removed, []);
+    assertEquals(spliceEventDetail.index, 4);
   });
 
   fileListModel.addEventListener('permuted', event => {

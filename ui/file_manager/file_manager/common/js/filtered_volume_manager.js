@@ -384,39 +384,34 @@ export class FilteredVolumeManager extends EventTarget {
    * @private
    */
   onVolumeInfoListUpdated_(event) {
+    const
+        spliceEventDetail = /**
+                         @type {import('../../definitions/array_data_model_splice_event.js').ArrayDataModelSpliceEvent}
+                           */
+        (event).detail;
     // Filters some volumes.
-    // @ts-ignore: error TS2339: Property 'index' does not exist on type
-    // 'Event'.
-    let index = event.index;
-    // @ts-ignore: error TS2339: Property 'index' does not exist on type
-    // 'Event'.
-    for (let i = 0; i < event.index; i++) {
-      // @ts-ignore: error TS2531: Object is possibly 'null'.
-      const volumeInfo = this.volumeManager_.volumeInfoList.item(i);
-      if (!this.isAllowedVolume(volumeInfo)) {
-        index--;
+    let index = spliceEventDetail.index;
+    if (spliceEventDetail.index && index) {
+      for (let i = 0; i < spliceEventDetail.index; i++) {
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
+        const volumeInfo = this.volumeManager_.volumeInfoList.item(i);
+        if (!this.isAllowedVolume(volumeInfo)) {
+          index--;
+        }
       }
     }
 
     let numRemovedVolumes = 0;
-    // @ts-ignore: error TS2339: Property 'removed' does not exist on type
-    // 'Event'.
-    for (let i = 0; i < event.removed.length; i++) {
-      // @ts-ignore: error TS2339: Property 'removed' does not exist on type
-      // 'Event'.
-      const volumeInfo = event.removed[i];
+    for (let i = 0; i < spliceEventDetail.removed.length; i++) {
+      const volumeInfo = spliceEventDetail.removed[i];
       if (this.isAllowedVolume(volumeInfo)) {
         numRemovedVolumes++;
       }
     }
 
     const addedVolumes = [];
-    // @ts-ignore: error TS2339: Property 'added' does not exist on type
-    // 'Event'.
-    for (let i = 0; i < event.added.length; i++) {
-      // @ts-ignore: error TS2339: Property 'added' does not exist on type
-      // 'Event'.
-      const volumeInfo = event.added[i];
+    for (let i = 0; i < spliceEventDetail.added.length; i++) {
+      const volumeInfo = spliceEventDetail.added[i];
       if (this.isAllowedVolume(volumeInfo)) {
         addedVolumes.push(volumeInfo);
       }

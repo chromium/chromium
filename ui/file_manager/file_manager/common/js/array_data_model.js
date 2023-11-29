@@ -187,13 +187,14 @@ export class ArrayDataModel extends EventTarget {
     this.array_ = newArray;
 
     // TODO(arv): Maybe unify splice and change events?
-    const spliceEvent = new Event('splice');
-    // @ts-ignore: error TS2339: Property 'removed' does not exist on type
-    // 'Event'.
-    spliceEvent.removed = deletedItems;
-    // @ts-ignore: error TS2339: Property 'added' does not exist on type
-    // 'Event'.
-    spliceEvent.added = Array.prototype.slice.call(arguments, 2);
+    const
+        spliceEventDetail = /**
+                                @type {import('../../definitions/array_data_model_splice_event').ArrayDataModelSpliceEvent['detail']}
+                                  */
+        ({
+          removed: deletedItems,
+          added: Array.prototype.slice.call(arguments, 2),
+        });
 
     const status = this.sortStatus;
     // if sortStatus.field is null, this restores original order.
@@ -206,17 +207,13 @@ export class ArrayDataModel extends EventTarget {
         return element !== -1 ? sortPermutation[element] : -1;
       });
       this.dispatchPermutedEvent_(splicePermutation);
-      // @ts-ignore: error TS2339: Property 'index' does not exist on type
-      // 'Event'.
-      spliceEvent.index = sortPermutation[index];
+      spliceEventDetail.index = sortPermutation[index];
     } else {
       this.dispatchPermutedEvent_(deletePermutation);
-      // @ts-ignore: error TS2339: Property 'index' does not exist on type
-      // 'Event'.
-      spliceEvent.index = index;
+      spliceEventDetail.index = index;
     }
 
-    this.dispatchEvent(spliceEvent);
+    this.dispatchEvent(new CustomEvent('splice', {detail: spliceEventDetail}));
 
     // If real sorting is needed, we should first call prepareSort (data may
     // change), and then sort again.
@@ -300,10 +297,7 @@ export class ArrayDataModel extends EventTarget {
     }, this);
 
     for (let i = 0; i < indexes.length; i++) {
-      const e = new Event('change');
-      // @ts-ignore: error TS2339: Property 'index' does not exist on type
-      // 'Event'.
-      e.index = indexes[i];
+      const e = new CustomEvent('change', {detail: {index: indexes[i]}});
       this.dispatchEvent(e);
     }
 

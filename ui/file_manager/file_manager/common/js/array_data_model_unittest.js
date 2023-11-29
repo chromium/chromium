@@ -20,16 +20,15 @@ export function testPush() {
 
   let count = 0;
   m.addEventListener('splice', function(e) {
+    const spliceEventDetail =
+        /**
+     @type {import('../../definitions/array_data_model_splice_event.js').ArrayDataModelSpliceEvent}
+       */
+        (e).detail;
     count++;
-    // @ts-ignore: error TS2339: Property 'index' does not exist on type
-    // 'Event'.
-    assertEquals(3, e.index);
-    // @ts-ignore: error TS2339: Property 'removed' does not exist on type
-    // 'Event'.
-    assertArrayEquals([], e.removed);
-    // @ts-ignore: error TS2339: Property 'added' does not exist on type
-    // 'Event'.
-    assertArrayEquals([3, 4], e.added);
+    assertEquals(3, spliceEventDetail.index);
+    assertArrayEquals([], spliceEventDetail.removed);
+    assertArrayEquals([3, 4], spliceEventDetail.added);
   });
 
   assertEquals(5, m.push(3, 4));
@@ -98,9 +97,12 @@ export function testUpdateIndexes() {
   // 'any[]' in some locations where its type cannot be determined.
   const changedIndexes = [];
   m.addEventListener('change', function(event) {
-    // @ts-ignore: error TS2339: Property 'index' does not exist on type
-    // 'Event'.
-    changedIndexes.push(event.index);
+    const
+        spliceEvent = /**
+                         @type {import('../../definitions/array_data_model_splice_event.js').ArrayDataModelSpliceEvent}
+                           */
+        (event);
+    changedIndexes.push(spliceEvent.detail.index);
   });
   m.updateIndexes([0, 1, 2]);
   // @ts-ignore: error TS7005: Variable 'changedIndexes' implicitly has an
@@ -118,9 +120,12 @@ export function testReplaceItem() {
     permutation = event.permutation;
   });
   m.addEventListener('change', function(event) {
-    // @ts-ignore: error TS2339: Property 'index' does not exist on type
-    // 'Event'.
-    changeIndex = event.index;
+    const
+        spliceEvent = /**
+                         @type {import('../../definitions/array_data_model_splice_event.js').ArrayDataModelSpliceEvent}
+                           */
+        (event);
+    changeIndex = spliceEvent.detail.index;
   });
   m.replaceItem(2, 4);
   assertEquals(null, permutation);

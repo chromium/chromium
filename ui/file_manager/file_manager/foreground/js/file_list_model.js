@@ -347,16 +347,13 @@ export class FileListModel extends ArrayDataModel {
     // Dispatch permute/splice event.
     this.dispatchPermutedEvent_(permutation);
     // TODO(arv): Maybe unify splice and change events?
-    const spliceEvent = new Event('splice');
-    // @ts-ignore: error TS2339: Property 'removed' does not exist on type
-    // 'Event'.
-    spliceEvent.removed = deletedItems;
-    // @ts-ignore: error TS2339: Property 'added' does not exist on type
-    // 'Event'.
-    spliceEvent.added = args;
-    // @ts-ignore: error TS2339: Property 'index' does not exist on type
-    // 'Event'.
-    spliceEvent.index = spliceIndex;
+    const spliceEvent = new CustomEvent('splice', {
+      detail: {
+        removed: deletedItems,
+        added: args,
+        index: spliceIndex,
+      },
+    });
     this.dispatchEvent(spliceEvent);
 
     this.updateGroupBySnapshot_();
