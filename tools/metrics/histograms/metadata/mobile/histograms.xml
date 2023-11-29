@@ -770,14 +770,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="MobileDownload.StoragePermission"
-    enum="MobileDownloadStoragePermission" expires_after="M82">
-  <owner>qinmin@chromium.org</owner>
-  <summary>
-    Android: Records various counts when requesting the storage permission.
-  </summary>
-</histogram>
-
 <histogram
     name="MobileFre.CctTos.EnterprisePolicyCheckSpeed2{MobileFreInflationSpeedComparison}"
     units="ms" expires_after="2022-05-01">

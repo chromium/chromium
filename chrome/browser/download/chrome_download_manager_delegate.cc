@@ -1833,7 +1833,6 @@ void ChromeDownloadManagerDelegate::OnCheckDownloadAllowedComplete(
     bool storage_permission_granted,
     bool allow) {
   if (!storage_permission_granted) {
-    // UMA for this will be recorded in MobileDownload.StoragePermission.
   } else if (allow) {
     // Presumes all downloads initiated by navigation use this throttle and
     // nothing else does.

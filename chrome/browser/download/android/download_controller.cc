@@ -16,7 +16,6 @@
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/synchronization/lock.h"
 #include "chrome/android/chrome_jni_headers/DownloadController_jni.h"
@@ -81,9 +80,6 @@ void CreateContextMenuDownloadInternal(
     return;
 
   if (!web_contents) {
-    DownloadController::RecordStoragePermission(
-        DownloadController::StoragePermissionType::
-            STORAGE_PERMISSION_NO_WEB_CONTENTS);
     return;
   }
 
@@ -163,14 +159,6 @@ void OnStoragePermissionDecided(
     bool granted) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (granted) {
-    DownloadController::RecordStoragePermission(
-        DownloadController::StoragePermissionType::STORAGE_PERMISSION_GRANTED);
-  } else {
-    DownloadController::RecordStoragePermission(
-        DownloadController::StoragePermissionType::STORAGE_PERMISSION_DENIED);
-  }
-
   std::move(cb).Run(granted);
 }
 
@@ -215,12 +203,6 @@ void DownloadControllerBase::SetDownloadControllerBase(
     DownloadControllerBase* download_controller) {
   base::AutoLock lock(g_download_controller_lock_.Get());
   DownloadControllerBase::download_controller_ = download_controller;
-}
-
-// static
-void DownloadController::RecordStoragePermission(StoragePermissionType type) {
-  UMA_HISTOGRAM_ENUMERATION("MobileDownload.StoragePermission", type,
-                            STORAGE_PERMISSION_MAX);
 }
 
 // static
@@ -299,16 +281,11 @@ void DownloadController::AcquireFileAccessPermission(
   bool has_file_access_permission =
       Java_DownloadController_hasFileAccess(env, jwindow_android);
   if (has_file_access_permission) {
-    RecordStoragePermission(
-        StoragePermissionType::STORAGE_PERMISSION_REQUESTED);
-    RecordStoragePermission(
-        StoragePermissionType::STORAGE_PERMISSION_NO_ACTION_NEEDED);
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(std::move(cb), true));
     return;
   }
 
-  RecordStoragePermission(StoragePermissionType::STORAGE_PERMISSION_REQUESTED);
   AcquirePermissionCallback callback(base::BindOnce(
       &OnRequestFileAccessResult, web_contents_getter,
       base::BindOnce(&OnStoragePermissionDecided, std::move(cb))));
