@@ -9,12 +9,34 @@
     "policy_pref_mapping_tests": [
       {
         "policies": {
+          "BatterySaverModeAvailability": 0
+        },
+        "prefs": {
+          "performance_tuning.battery_saver_mode.state": {
+            "location": "local_state",
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "BatterySaverModeAvailability": 1
+        },
+        "prefs": {
+          "performance_tuning.battery_saver_mode.state": {
+            "location": "local_state",
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
           "BatterySaverModeAvailability": 2
         },
         "prefs": {
           "performance_tuning.battery_saver_mode.state": {
             "location": "local_state",
-            "value": 2
+            "value": 1
           }
         }
       }
