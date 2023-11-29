@@ -35,6 +35,7 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -1768,6 +1769,16 @@ bool WebAppRegistrar::IsShortcutAppChromeOs(
   // See go/shortstand-prd#bookmark=id.mbe9ojau9umf for detail.
   if (!chromeos::features::IsCrosShortstandEnabled()) {
     return !GetAppScopeInternal(app_id).has_value();
+  }
+
+  // Avoid opening Workspace apps in standalone windows if they are set to open
+  // in browser.
+  // TODO(b/312854225): Remove this special case once Workspace makes use of
+  // tabbed web app display mode.
+  if (web_app->app_id() == kGoogleDocsAppId ||
+      web_app->app_id() == kGoogleSheetsAppId ||
+      web_app->app_id() == kGoogleSlidesAppId) {
+    return web_app->user_display_mode() == mojom::UserDisplayMode::kBrowser;
   }
 
   // For policy installed apps/shortcuts, it is a shortcut if admin set to open

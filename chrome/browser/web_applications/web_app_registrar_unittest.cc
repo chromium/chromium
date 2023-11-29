@@ -38,6 +38,7 @@
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -1693,10 +1694,48 @@ class WebAppRegistrarTest_Shortstand : public WebAppRegistrarTest {
 
 TEST_F(WebAppRegistrarTest_Shortstand, IsShortcut) {
   InitSyncBridge();
+
+  {
+    // Verify that Docs, Sheets and Slides apps respects existing user display
+    // mode setting.
+    auto docs_web_app = test::CreateWebApp(
+        GURL("https://docs.google.com/document/?usp=installed_webapp"),
+        WebAppManagement::Type::kDefault);
+    docs_web_app->SetScope(GURL("https://docs.google.com/document/"));
+    docs_web_app->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
+    ASSERT_EQ(docs_web_app->app_id(), kGoogleDocsAppId);
+
+    RegisterApp(std::move(docs_web_app));
+    EXPECT_TRUE(registrar().IsShortcutApp(kGoogleDocsAppId));
+
+    auto sheets_web_app = test::CreateWebApp(
+        GURL("https://docs.google.com/spreadsheets/?usp=installed_webapp"),
+        WebAppManagement::Type::kDefault);
+    sheets_web_app->SetScope(GURL("https://docs.google.com/spreadsheets/"));
+    sheets_web_app->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
+    ASSERT_EQ(sheets_web_app->app_id(), kGoogleSheetsAppId);
+
+    RegisterApp(std::move(sheets_web_app));
+    EXPECT_TRUE(registrar().IsShortcutApp(kGoogleSheetsAppId));
+
+    auto slides_web_app = test::CreateWebApp(
+        GURL("https://docs.google.com/presentation/?usp=installed_webapp"),
+        WebAppManagement::Type::kDefault);
+    slides_web_app->SetScope(GURL("https://docs.google.com/presentation/"));
+    slides_web_app->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
+    ASSERT_EQ(slides_web_app->app_id(), kGoogleSlidesAppId);
+
+    RegisterApp(std::move(slides_web_app));
+    EXPECT_TRUE(registrar().IsShortcutApp(kGoogleSlidesAppId));
+
+    UnregisterApp(kGoogleDocsAppId);
+    UnregisterApp(kGoogleSheetsAppId);
+    UnregisterApp(kGoogleSlidesAppId);
+  }
+
   // TODO(b/304660867): Test policy installed apps.
   const GURL start_url = GURL("https://example.com/path");
   const GURL scope = GURL("https://example.com/scope");
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   {
     // Verify that system web app is not shortcut.
@@ -1721,7 +1760,7 @@ TEST_F(WebAppRegistrarTest_Shortstand, IsShortcut) {
     UnregisterApp(web_app_id);
   }
 
-  // Verify that play stored installed app with a scope is always not a shortcut
+  // Verify that playstore installed app with a scope is always not a shortcut
   {
     auto web_app =
         test::CreateWebApp(start_url, WebAppManagement::Type::kWebAppStore);
