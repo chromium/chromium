@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_marquee_element.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
-#include "third_party/blink/renderer/core/layout/box_layout_extra_input.h"
 #include "third_party/blink/renderer/core/layout/custom/custom_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/custom/layout_custom.h"
 #include "third_party/blink/renderer/core/layout/flex/flex_layout_algorithm.h"
@@ -794,20 +793,18 @@ void BlockNode::FinishLayout(
       To<PhysicalBoxFragment>(layout_result->GetPhysicalFragment());
 
   if (auto* replaced = DynamicTo<LayoutReplaced>(*box_)) {
-    // NG replaced elements are painted with legacy painters. We need to force
-    // a legacy "layout" so that paint invalidation flags are updated. But we
-    // don't want to use the size that legacy calculates, so we force legacy to
-    // use NG's size via BoxLayoutExtraInput's override fields.
-    BoxLayoutExtraInput input = {
-        physical_fragment.Size(),
-        physical_fragment.Borders() + physical_fragment.Padding()};
+    // Calculate the new content rect for SVG roots.
+    PhysicalRect content_rect = physical_fragment.LocalRect();
+    content_rect.Contract(physical_fragment.Borders() +
+                          physical_fragment.Padding());
+
     if (!box_->NeedsLayout()) {
       box_->SetNeedsLayout(layout_invalidation_reason::kSizeChanged,
                            kMarkOnlyThis);
     }
-    replaced->SetBoxLayoutExtraInput(&input);
+    replaced->SetNewContentRect(&content_rect);
     box_->LayoutIfNeeded();
-    replaced->SetBoxLayoutExtraInput(nullptr);
+    replaced->SetNewContentRect(nullptr);
   }
 
   // If we miss the cache for one result (fragment), we need to clear the

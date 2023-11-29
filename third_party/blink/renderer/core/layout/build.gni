@@ -30,7 +30,6 @@ blink_core_sources_layout = [
   "anchor_position_scroll_data.cc",
   "anchor_position_scroll_data.h",
   "background_bleed_avoidance.h",
-  "box_layout_extra_input.h",
   "content_change_type.h",
   "counter_node.cc",
   "counter_node.h",

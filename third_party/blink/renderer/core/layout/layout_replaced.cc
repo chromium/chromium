@@ -27,7 +27,6 @@
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/html/html_dimension.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
-#include "third_party/blink/renderer/core/layout/box_layout_extra_input.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
@@ -379,30 +378,9 @@ PhysicalRect LayoutReplaced::ReplacedContentRectFrom(
   return ComputeReplacedContentRect(base_content_rect);
 }
 
-PhysicalSize LayoutReplaced::SizeFromNG() const {
-  if (!GetBoxLayoutExtraInput()) {
-    return Size();
-  }
-  return GetBoxLayoutExtraInput()->size;
-}
-
-PhysicalBoxStrut LayoutReplaced::BorderPaddingFromNG() const {
-  if (GetBoxLayoutExtraInput()) {
-    return GetBoxLayoutExtraInput()->border_padding;
-  }
-  return PhysicalBoxStrut(
-      BorderTop() + PaddingTop(), BorderRight() + PaddingRight(),
-      BorderBottom() + PaddingBottom(), BorderLeft() + PaddingLeft());
-}
-
 PhysicalRect LayoutReplaced::PhysicalContentBoxRectFromNG() const {
   NOT_DESTROYED();
-  const PhysicalSize size = SizeFromNG();
-  const PhysicalBoxStrut border_padding = BorderPaddingFromNG();
-  return PhysicalRect(
-      border_padding.left, border_padding.top,
-      (size.width - border_padding.HorizontalSum()).ClampNegativeToZero(),
-      (size.height - border_padding.VerticalSum()).ClampNegativeToZero());
+  return new_content_rect_ ? *new_content_rect_ : PhysicalContentBoxRect();
 }
 
 PhysicalRect LayoutReplaced::PreSnappedRectForPersistentSizing(

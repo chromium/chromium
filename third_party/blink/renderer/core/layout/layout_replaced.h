@@ -122,13 +122,9 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   // content box.
   bool ClipsToContentBox() const;
 
-  void SetBoxLayoutExtraInput(const BoxLayoutExtraInput* input) {
+  void SetNewContentRect(const PhysicalRect* new_content_rect) {
     NOT_DESTROYED();
-    extra_input_ = input;
-  }
-  const BoxLayoutExtraInput* GetBoxLayoutExtraInput() const {
-    NOT_DESTROYED();
-    return extra_input_;
+    new_content_rect_ = new_content_rect;
   }
 
   // This returns a local rectangle excluding borders and padding from
@@ -196,14 +192,6 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   // specified. Returns null for these cases.
   absl::optional<gfx::SizeF> ComputeObjectViewBoxSizeForIntrinsicSizing() const;
 
-  // This returns border-box size computed in NG if a
-  // BoxLayoutExtraInput is associated to this box.
-  PhysicalSize SizeFromNG() const;
-
-  // This returns border and padding values computed in NG if a
-  // BoxLayoutExtraInput is associated to this box.
-  PhysicalBoxStrut BorderPaddingFromNG() const;
-
   // ReplacedPainter doesn't support CompositeBackgroundAttachmentFixed yet.
   bool ComputeCanCompositeBackgroundAttachmentFixed() const override {
     NOT_DESTROYED();
@@ -242,10 +230,10 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   // size for the element's contents.
   mutable PhysicalSize intrinsic_size_;
 
-  // Extra layout input data. This one may be set during layout, and cleared
+  // The new content rect for SVG roots. This is set during layout, and cleared
   // afterwards. Always nullptr when this object isn't in the process of being
   // laid out.
-  const BoxLayoutExtraInput* extra_input_ = nullptr;
+  const PhysicalRect* new_content_rect_ = nullptr;
 };
 
 template <>
