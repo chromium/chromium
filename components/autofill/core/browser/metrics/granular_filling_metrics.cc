@@ -34,6 +34,16 @@ AutofillFieldByFieldFillingTypes GetFieldByFieldFillingType(
       return AutofillFieldByFieldFillingTypes::kAddressHomeHouseNumber;
     case ADDRESS_HOME_STREET_NAME:
       return AutofillFieldByFieldFillingTypes::kAddressHomeStreetName;
+    case CREDIT_CARD_NAME_FULL:
+      return AutofillFieldByFieldFillingTypes::kCreditCardNameFull;
+    case CREDIT_CARD_NUMBER:
+      return AutofillFieldByFieldFillingTypes::kCreditCardNumber;
+    case CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR:
+      return AutofillFieldByFieldFillingTypes::kCreditCardExpiryDate;
+    case CREDIT_CARD_EXP_2_DIGIT_YEAR:
+      return AutofillFieldByFieldFillingTypes::kCreditCardExpiryYear;
+    case CREDIT_CARD_EXP_MONTH:
+      return AutofillFieldByFieldFillingTypes::kCreditCardExpiryMonth;
     default:
       NOTREACHED_NORETURN();
   }

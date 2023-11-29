@@ -44,7 +44,12 @@ enum class AutofillFieldByFieldFillingTypes {
   kEmailAddress = 7,
   kAddressHomeHouseNumber = 8,
   kAddressHomeStreetName = 9,
-  kMaxValue = kAddressHomeStreetName
+  kCreditCardNameFull = 10,
+  kCreditCardNumber = 11,
+  kCreditCardExpiryDate = 12,
+  kCreditCardExpiryYear = 13,
+  kCreditCardExpiryMonth = 14,
+  kMaxValue = kCreditCardExpiryMonth
 };
 
 // This metric is only relevant for granular filling, i.e. when the edit dialog

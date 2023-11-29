@@ -436,6 +436,85 @@ void AddFooterChildSuggestions(
       GetDeleteAddressProfileSuggestion(Suggestion::Guid(profile.guid())));
 }
 
+// Adds nested entry to the `suggestion` for filling credit card cardholder name
+// if the `credit_card` has the corresponding info is set.
+bool AddCreditCardNameChildSuggestion(const CreditCard& credit_card,
+                                      const std::string& app_locale,
+                                      Suggestion& suggestion) {
+  if (!credit_card.HasInfo(CREDIT_CARD_NAME_FULL)) {
+    return false;
+  }
+  Suggestion cc_name(credit_card.GetInfo(CREDIT_CARD_NAME_FULL, app_locale),
+                     PopupItemId::kFieldByFieldFilling);
+  // TODO(crbug.com/1121806): Use instrument ID for server credit cards.
+  cc_name.payload = Suggestion::Guid(credit_card.guid());
+  cc_name.field_by_field_filling_type_used = CREDIT_CARD_NAME_FULL;
+  suggestion.children.push_back(std::move(cc_name));
+  return true;
+}
+
+// Adds nested entry to the `suggestion` for filling credit card number if the
+// `credit_card` has the corresponding info is set.
+bool AddCreditCardNumberChildSuggestion(const CreditCard& credit_card,
+                                        const std::string& app_locale,
+                                        Suggestion& suggestion) {
+  // TODO(crbug.com/1493361): Trigger card unmask dialog to fetch cc number.
+  if (!credit_card.HasInfo(CREDIT_CARD_NUMBER)) {
+    return false;
+  }
+  static constexpr int kFieldByFieldObfuscationLength = 12;
+  Suggestion cc_number(credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
+                           kFieldByFieldObfuscationLength),
+                       PopupItemId::kFieldByFieldFilling);
+  // TODO(crbug.com/1121806): Use instrument ID for server credit cards.
+  cc_number.payload = Suggestion::Guid(credit_card.guid());
+  cc_number.field_by_field_filling_type_used = CREDIT_CARD_NUMBER;
+  cc_number.labels.push_back({Suggestion::Text(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_PAYMENTS_MANUAL_FALLBACK_AUTOFILL_POPUP_CC_NUMBER_SUGGESTION_LABEL))});
+  suggestion.children.push_back(std::move(cc_number));
+  return true;
+}
+
+// Adds nested entry to the `suggestion` for filling credit card number expiry
+// date. The added entry has 2 nested entries for filling credit card expiry
+// year and month.
+void AddCreditCardExpiryDateChildSuggestion(const CreditCard& credit_card,
+                                            const std::string& app_locale,
+                                            Suggestion& suggestion) {
+  Suggestion cc_expiration(
+      credit_card.GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale),
+      PopupItemId::kFieldByFieldFilling);
+  // TODO(crbug.com/1121806): Use instrument ID for server credit cards.
+  cc_expiration.payload = Suggestion::Guid(credit_card.guid());
+  cc_expiration.field_by_field_filling_type_used =
+      CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR;
+  cc_expiration.labels.push_back({Suggestion::Text(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_PAYMENTS_MANUAL_FALLBACK_AUTOFILL_POPUP_CC_EXPIRY_DATE_SUGGESTION_LABEL))});
+
+  Suggestion cc_expiration_year(
+      credit_card.GetInfo(CREDIT_CARD_EXP_2_DIGIT_YEAR, app_locale),
+      PopupItemId::kFieldByFieldFilling);
+  // TODO(crbug.com/1121806): Use instrument ID for server credit cards.
+  cc_expiration_year.payload = Suggestion::Guid(credit_card.guid());
+  cc_expiration_year.field_by_field_filling_type_used =
+      CREDIT_CARD_EXP_2_DIGIT_YEAR;
+  cc_expiration_year.labels.push_back({Suggestion::Text(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_PAYMENTS_MANUAL_FALLBACK_AUTOFILL_POPUP_CC_EXPIRY_YEAR_SUGGESTION_LABEL))});
+
+  Suggestion cc_expiration_month(
+      credit_card.GetInfo(CREDIT_CARD_EXP_MONTH, app_locale),
+      PopupItemId::kFieldByFieldFilling);
+  // TODO(crbug.com/1121806): Use instrument ID for server credit cards.
+  cc_expiration_month.payload = Suggestion::Guid(credit_card.guid());
+  cc_expiration_month.field_by_field_filling_type_used = CREDIT_CARD_EXP_MONTH;
+  cc_expiration_month.labels.push_back({Suggestion::Text(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_PAYMENTS_MANUAL_FALLBACK_AUTOFILL_POPUP_CC_EXPIRY_MONTH_SUGGESTION_LABEL))});
+
+  cc_expiration.children.push_back(std::move(cc_expiration_year));
+  cc_expiration.children.push_back(std::move(cc_expiration_month));
+  suggestion.children.push_back(std::move(cc_expiration));
+}
+
 // Sets the `popup_item_id` for `suggestion` depending on
 // `last_filling_granularity`.
 // `last_targeted_fields` specified the last set of fields target by the user.
@@ -885,9 +964,9 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
             features::kAutofillGranularFillingAvailable)) {
       // TODO(crbug.com/1502162): Make the granular filling options vary
       // depending on the locale.
-      AddGranularFillingChildSuggestions(last_targeted_fields,
-                                         trigger_field_type, *profile,
-                                         suggestions.back());
+      AddAddressGranularFillingChildSuggestions(last_targeted_fields,
+                                                trigger_field_type, *profile,
+                                                suggestions.back());
     }
   }
 
@@ -1038,11 +1117,11 @@ void AutofillSuggestionGenerator::RemoveProfilesNotUsedSinceTimestamp(
       num_profiles_suppressed);
 }
 
-void AutofillSuggestionGenerator::AddGranularFillingChildSuggestions(
+void AutofillSuggestionGenerator::AddAddressGranularFillingChildSuggestions(
     absl::optional<ServerFieldTypeSet> last_targeted_fields,
     ServerFieldType trigger_field_type,
     const AutofillProfile& profile,
-    Suggestion& suggestion) {
+    Suggestion& suggestion) const {
   const FieldTypeGroup trigger_field_type_group =
       GroupTypeOfServerFieldType(trigger_field_type);
   const std::string app_locale = personal_data_->app_locale();
@@ -1425,6 +1504,7 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
   suggestion.popup_item_id = is_manual_fallback
                                  ? PopupItemId::kEntryNotSelectable
                                  : PopupItemId::kCreditCardEntry;
+  // TODO(crbug.com/1493361): Trigger card unmask dialog to fetch cc number.
   suggestion.payload = Suggestion::Guid(credit_card.guid());
 #if BUILDFLAG(IS_ANDROID)
   // The card art icon should always be shown at the start of the suggestion.
@@ -1471,7 +1551,10 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
     }
   }
 
-  // TODO(crbug.com/1493360): Add child suggestions for manual fallback.
+  if (is_manual_fallback) {
+    AddPaymentsGranularFillingChildSuggestions(credit_card, suggestion);
+  }
+
   suggestion.acceptance_a11y_announcement =
       suggestion.popup_item_id == PopupItemId::kEntryNotSelectable
           ? l10n_util::GetStringUTF16(
@@ -1479,6 +1562,25 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
           : l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM);
 
   return suggestion;
+}
+
+void AutofillSuggestionGenerator::AddPaymentsGranularFillingChildSuggestions(
+    const CreditCard& credit_card,
+    Suggestion& suggestion) const {
+  const std::string& app_locale = personal_data_->app_locale();
+
+  bool has_content_above =
+      AddCreditCardNameChildSuggestion(credit_card, app_locale, suggestion);
+  has_content_above |=
+      AddCreditCardNumberChildSuggestion(credit_card, app_locale, suggestion);
+
+  if (credit_card.HasInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR)) {
+    if (has_content_above) {
+      suggestion.children.push_back(
+          AutofillSuggestionGenerator::CreateSeparator());
+    }
+    AddCreditCardExpiryDateChildSuggestion(credit_card, app_locale, suggestion);
+  }
 }
 
 std::pair<Suggestion::Text, Suggestion::Text>

@@ -83,7 +83,8 @@ Matcher<Suggestion> EqualsFieldByFieldFillingSuggestion(
     PopupItemId id,
     const std::u16string& main_text,
     ServerFieldType field_by_field_filling_type_used,
-    const Suggestion::Payload& payload) {
+    const Suggestion::Payload& payload,
+    const std::vector<std::vector<Suggestion::Text>>& labels = {}) {
   return AllOf(
       Field(&Suggestion::popup_item_id, id),
       Field(&Suggestion::main_text,
@@ -91,7 +92,8 @@ Matcher<Suggestion> EqualsFieldByFieldFillingSuggestion(
       Field(&Suggestion::payload, payload),
       Field(&Suggestion::icon, Suggestion::Icon::kNoIcon),
       Field(&Suggestion::field_by_field_filling_type_used,
-            std::optional(field_by_field_filling_type_used)));
+            std::optional(field_by_field_filling_type_used)),
+      Field(&Suggestion::labels, labels));
 }
 
 Matcher<Suggestion> EqualsIbanSuggestion(
@@ -221,6 +223,8 @@ class AutofillSuggestionGeneratorTest : public testing::Test {
   TestPersonalDataManager* personal_data() {
     return autofill_client_.GetPersonalDataManager();
   }
+
+  const std::string& app_locale() { return personal_data()->app_locale(); }
 
   TestAutofillClient* autofill_client() { return &autofill_client_; }
 
@@ -1118,7 +1122,6 @@ class AutofillChildrenSuggestionsGenenarationTest
   }
 
   const AutofillProfile& profile() const { return profile_; }
-  const std::string& app_locale() { return personal_data()->app_locale(); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
@@ -1267,18 +1270,13 @@ TEST_F(AutofillChildrenSuggestionsGenenarationTest,
           EqualsFieldByFieldFillingSuggestion(
               PopupItemId::kFieldByFieldFilling,
               profile().GetInfo(ADDRESS_HOME_HOUSE_NUMBER, app_locale()),
-              ADDRESS_HOME_HOUSE_NUMBER, Suggestion::Guid(profile().guid())),
+              ADDRESS_HOME_HOUSE_NUMBER, Suggestion::Guid(profile().guid()),
+              {{Suggestion::Text(u"Building number")}}),
           EqualsFieldByFieldFillingSuggestion(
               PopupItemId::kFieldByFieldFilling,
               profile().GetInfo(ADDRESS_HOME_STREET_NAME, app_locale()),
-              ADDRESS_HOME_STREET_NAME, Suggestion::Guid(profile().guid()))));
-  // House number and street name suggestions should have labels.
-  EXPECT_EQ(suggestions[0].children[5].children[0].labels,
-            std::vector<std::vector<Suggestion::Text>>(
-                {{Suggestion::Text(u"Building number")}}));
-  EXPECT_EQ(suggestions[0].children[5].children[1].labels,
-            std::vector<std::vector<Suggestion::Text>>(
-                {{Suggestion::Text(u"Street")}}));
+              ADDRESS_HOME_STREET_NAME, Suggestion::Guid(profile().guid()),
+              {{Suggestion::Text(u"Street")}})));
 }
 
 TEST_F(
@@ -1292,7 +1290,7 @@ TEST_F(
               EqualsFieldByFieldFillingSuggestion(
                   PopupItemId::kFieldByFieldFilling,
                   profile().GetInfo(NAME_FIRST, app_locale()), NAME_FIRST,
-                  Suggestion::Guid(profile().guid())));
+                  Suggestion::Guid(profile().guid()), {{}}));
 }
 
 TEST_F(AutofillChildrenSuggestionsGenenarationTest,
@@ -1509,14 +1507,15 @@ TEST_F(
               ElementsAre(EqualsFieldByFieldFillingSuggestion(
                   PopupItemId::kFieldByFieldFilling,
                   profile.GetInfo(ADDRESS_HOME_STREET_NAME, app_locale()),
-                  ADDRESS_HOME_STREET_NAME, Suggestion::Guid(profile.guid()))));
+                  ADDRESS_HOME_STREET_NAME, Suggestion::Guid(profile.guid()),
+                  {{Suggestion::Text(u"Street")}})));
   // The address line 2 (seventh child) should have the house number as child.
-  EXPECT_THAT(
-      suggestions[0].children[2].children,
-      ElementsAre(EqualsFieldByFieldFillingSuggestion(
-          PopupItemId::kFieldByFieldFilling,
-          profile.GetInfo(ADDRESS_HOME_HOUSE_NUMBER, app_locale()),
-          ADDRESS_HOME_HOUSE_NUMBER, Suggestion::Guid(profile.guid()))));
+  EXPECT_THAT(suggestions[0].children[2].children,
+              ElementsAre(EqualsFieldByFieldFillingSuggestion(
+                  PopupItemId::kFieldByFieldFilling,
+                  profile.GetInfo(ADDRESS_HOME_HOUSE_NUMBER, app_locale()),
+                  ADDRESS_HOME_HOUSE_NUMBER, Suggestion::Guid(profile.guid()),
+                  {{Suggestion::Text(u"Building number")}})));
 }
 
 TEST_F(
@@ -2675,18 +2674,157 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   // the last 4 digits separately.
   EXPECT_EQ(server_card_suggestion.main_text.value, u"Visa");
   EXPECT_EQ(server_card_suggestion.minor_text.value,
-            CreditCard::GetObfuscatedStringForCardDigits(4, u"1111"));
+            server_card.ObfuscatedNumberWithVisibleLastFourDigits(4));
 
   // The label is the expiration date formatted as mm/yy.
   EXPECT_EQ(server_card_suggestion.labels.size(), 1U);
   EXPECT_EQ(server_card_suggestion.labels[0].size(), 1U);
-  EXPECT_EQ(server_card_suggestion.labels[0][0].value,
-            base::StrCat({base::UTF8ToUTF16(test::NextMonth()), u"/",
-                          base::UTF8ToUTF16(test::NextYear().substr(2))}));
+  EXPECT_EQ(
+      server_card_suggestion.labels[0][0].value,
+      server_card.GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale()));
 
   EXPECT_EQ(server_card_suggestion.acceptance_a11y_announcement,
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_A11Y_ANNOUNCE_EXPANDABLE_ONLY_ENTRY));
+}
+
+// Verify that the nested suggestion's texts are populated correctly for a
+// masked server card suggestion when payments manual fallback is triggered.
+TEST_F(AutofillCreditCardSuggestionContentTest,
+       CreateCreditCardSuggestion_ManualFallback_NestedSuggestions) {
+  CreditCard server_card = test::GetMaskedServerCard();
+
+  Suggestion server_card_suggestion =
+      suggestion_generator()->CreateCreditCardSuggestion(
+          server_card, UNKNOWN_TYPE, /*virtual_card_option=*/false,
+          /*card_linked_offer_available=*/false);
+
+  // The child suggestions should be:
+  //
+  // 1. Credit card full name
+  // 2. Credit card number
+  // 3. Separator
+  // 4. Credit card expiry date
+  EXPECT_THAT(
+      server_card_suggestion.children,
+      ElementsAre(
+          EqualsFieldByFieldFillingSuggestion(
+              PopupItemId::kFieldByFieldFilling,
+              server_card.GetInfo(CREDIT_CARD_NAME_FULL, app_locale()),
+              CREDIT_CARD_NAME_FULL, Suggestion::Guid(server_card.guid())),
+          EqualsFieldByFieldFillingSuggestion(
+              PopupItemId::kFieldByFieldFilling,
+              server_card.ObfuscatedNumberWithVisibleLastFourDigits(12),
+              CREDIT_CARD_NUMBER, Suggestion::Guid(server_card.guid()),
+              {{Suggestion::Text(l10n_util::GetStringUTF16(
+                  IDS_AUTOFILL_PAYMENTS_MANUAL_FALLBACK_AUTOFILL_POPUP_CC_NUMBER_SUGGESTION_LABEL))}}),
+          AllOf(Field(&Suggestion::popup_item_id, PopupItemId::kSeparator)),
+          EqualsFieldByFieldFillingSuggestion(
+              PopupItemId::kFieldByFieldFilling,
+              server_card.GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
+                                  app_locale()),
+              CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
+              Suggestion::Guid(server_card.guid()),
+              {{Suggestion::Text(l10n_util::GetStringUTF16(
+                  IDS_AUTOFILL_PAYMENTS_MANUAL_FALLBACK_AUTOFILL_POPUP_CC_EXPIRY_DATE_SUGGESTION_LABEL))}})));
+}
+
+// Verify that the nested suggestion's texts are populated correctly for a
+// credit card with no expiry date set.
+TEST_F(
+    AutofillCreditCardSuggestionContentTest,
+    CreateCreditCardSuggestion_ManualFallback_NoExpiryDate_NestedSuggestions) {
+  CreditCard credit_card;
+  test::SetCreditCardInfo(&credit_card, /*name_on_card=*/"Cardholder name",
+                          /*card_number=*/"1111222233334444",
+                          /*expiration_month=*/nullptr,
+                          /*expiration_year*/ nullptr,
+                          /*billing_address_id=*/"", /*cvc=*/u"123");
+
+  Suggestion server_card_suggestion =
+      suggestion_generator()->CreateCreditCardSuggestion(
+          credit_card, UNKNOWN_TYPE, /*virtual_card_option=*/false,
+          /*card_linked_offer_available=*/false);
+
+  // The child suggestions should be:
+  //
+  // 1. Credit card full name
+  // 2. Credit card number
+  EXPECT_THAT(
+      server_card_suggestion.children,
+      ElementsAre(
+          EqualsFieldByFieldFillingSuggestion(
+              PopupItemId::kFieldByFieldFilling,
+              credit_card.GetInfo(CREDIT_CARD_NAME_FULL, app_locale()),
+              CREDIT_CARD_NAME_FULL, Suggestion::Guid(credit_card.guid())),
+          EqualsFieldByFieldFillingSuggestion(
+              PopupItemId::kFieldByFieldFilling,
+              credit_card.ObfuscatedNumberWithVisibleLastFourDigits(12),
+              CREDIT_CARD_NUMBER, Suggestion::Guid(credit_card.guid()),
+              {{Suggestion::Text(l10n_util::GetStringUTF16(
+                  IDS_AUTOFILL_PAYMENTS_MANUAL_FALLBACK_AUTOFILL_POPUP_CC_NUMBER_SUGGESTION_LABEL))}})));
+}
+
+// Verify that the nested suggestion's texts are populated correctly for a
+// credit card with no cardholder name and credit card number.
+TEST_F(
+    AutofillCreditCardSuggestionContentTest,
+    CreateCreditCardSuggestion_ManualFallback_NoNameAndNumber_NestedSuggestions) {
+  CreditCard credit_card;
+  test::SetCreditCardInfo(&credit_card, /*name_on_card=*/nullptr,
+                          /*card_number=*/nullptr, test::NextMonth().c_str(),
+                          test::NextYear().c_str(),
+                          /*billing_address_id=*/"", /*cvc=*/u"123");
+
+  Suggestion server_card_suggestion =
+      suggestion_generator()->CreateCreditCardSuggestion(
+          credit_card, UNKNOWN_TYPE, /*virtual_card_option=*/false,
+          /*card_linked_offer_available=*/false);
+
+  // The child suggestions should be:
+  //
+  // 1. Credit card expiry date
+  EXPECT_THAT(
+      server_card_suggestion.children,
+      ElementsAre(EqualsFieldByFieldFillingSuggestion(
+          PopupItemId::kFieldByFieldFilling,
+          credit_card.GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale()),
+          CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
+          Suggestion::Guid(credit_card.guid()),
+          {{Suggestion::Text(l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_PAYMENTS_MANUAL_FALLBACK_AUTOFILL_POPUP_CC_EXPIRY_DATE_SUGGESTION_LABEL))}})));
+}
+
+// Verify nested suggestions of the expiry date suggestion.
+TEST_F(AutofillCreditCardSuggestionContentTest,
+       CreateCreditCardSuggestion_ManualFallback_NestedExpiryDateSuggestions) {
+  CreditCard server_card = CreateServerCard();
+
+  Suggestion server_card_suggestion =
+      suggestion_generator()->CreateCreditCardSuggestion(
+          server_card, UNKNOWN_TYPE, /*virtual_card_option=*/false,
+          /*card_linked_offer_available=*/false);
+
+  // The expiry date child suggestions should be:
+  //
+  // 1. Expiry year.
+  // 2. Expiry month.
+  EXPECT_THAT(
+      server_card_suggestion.children[3].children,
+      ElementsAre(
+          EqualsFieldByFieldFillingSuggestion(
+              PopupItemId::kFieldByFieldFilling,
+              server_card.GetInfo(CREDIT_CARD_EXP_2_DIGIT_YEAR, app_locale()),
+              CREDIT_CARD_EXP_2_DIGIT_YEAR,
+              Suggestion::Guid(server_card.guid()),
+              {{Suggestion::Text(l10n_util::GetStringUTF16(
+                  IDS_AUTOFILL_PAYMENTS_MANUAL_FALLBACK_AUTOFILL_POPUP_CC_EXPIRY_YEAR_SUGGESTION_LABEL))}}),
+          EqualsFieldByFieldFillingSuggestion(
+              PopupItemId::kFieldByFieldFilling,
+              server_card.GetInfo(CREDIT_CARD_EXP_MONTH, app_locale()),
+              CREDIT_CARD_EXP_MONTH, Suggestion::Guid(server_card.guid()),
+              {{Suggestion::Text(l10n_util::GetStringUTF16(
+                  IDS_AUTOFILL_PAYMENTS_MANUAL_FALLBACK_AUTOFILL_POPUP_CC_EXPIRY_MONTH_SUGGESTION_LABEL))}})));
 }
 
 // Verify that manual fallback credit card suggestions are not filtered.

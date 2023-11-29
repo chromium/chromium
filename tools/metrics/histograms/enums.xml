@@ -2631,6 +2631,11 @@ Called by update_autofill_enums.py.-->
   <int value="7" label="Email address"/>
   <int value="8" label="Address home house number"/>
   <int value="9" label="Address home street name"/>
+  <int value="10" label="Credit card full name"/>
+  <int value="11" label="Credit card number"/>
+  <int value="12" label="Credit card expiration date"/>
+  <int value="13" label="Credir card expiration year"/>
+  <int value="14" label="Credit card expiration month"/>
 </enum>
 
 <enum name="AutofillFieldPredictionQuality">

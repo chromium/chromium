@@ -207,11 +207,17 @@ class AutofillSuggestionGenerator {
   // suggestions defines whether the autofill popup will have submenus.
   // `last_targeted_fields` specified the last set of fields target by the user.
   // When not present, we default to full form.
-  void AddGranularFillingChildSuggestions(
+  void AddAddressGranularFillingChildSuggestions(
       absl::optional<ServerFieldTypeSet> last_targeted_fields,
       ServerFieldType trigger_field_type,
       const AutofillProfile& profile,
-      Suggestion& suggestion);
+      Suggestion& suggestion) const;
+
+  // Creates nested/child suggestions for `suggestion` with the `credit_card`
+  // information. The number of nested suggestions added depends on the
+  // information present in the `credit_card`.
+  void AddPaymentsGranularFillingChildSuggestions(const CreditCard& credit_card,
+                                                  Suggestion& suggestion) const;
 
   // Return the texts shown as the first line of the suggestion, based on the
   // `credit_card` and the `trigger_field_type`. The first index in the pair
