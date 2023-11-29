@@ -685,20 +685,6 @@ void ChromeRenderFrameObserver::CapturePageText(
   // loads, so attempt detection here first.
   if (translate_agent_ &&
       (layout_type == blink::WebMeaningfulLayout::kFinishedParsing)) {
-    // Under kRetryLanguageDetection, do not attempt language detection if no
-    // page content was captured.
-    if (!base::FeatureList::IsEnabled(translate::kRetryLanguageDetection) ||
-        contents.size()) {
-      translate_agent_->PageCaptured(contents);
-    }
-  }
-  // Under kRetryLanguageDetection, language detection may be attempted
-  // later when the page finishes loading if no content was captured at
-  // kFinishedParsing.
-  if (base::FeatureList::IsEnabled(translate::kRetryLanguageDetection) &&
-      translate_agent_ &&
-      (layout_type == blink::WebMeaningfulLayout::kFinishedLoading) &&
-      !translate_agent_->WasPageContentCapturedForUrl()) {
     translate_agent_->PageCaptured(contents);
   }
 

@@ -47,9 +47,8 @@ struct LanguageDetectionDetails {
   // All the elements below are used only for debugging and metrics purposes,
   // e.g., translate-internals.
   //
-  // Whether language detection has been run on the page. Under
-  // kSkipLanguageDetectionOnEmptyContent, this is only done if page content was
-  // captured.
+  // Whether language detection has been run on the page; only true if page
+  // content was captured.
   bool has_run_lang_detection;
   // The time at which language the language detection was performed. Used only
   // for debugging.
