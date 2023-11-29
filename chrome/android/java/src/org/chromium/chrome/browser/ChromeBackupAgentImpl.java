@@ -101,9 +101,13 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER,
     };
 
-    // Key used to store the email of the signed in account. This email is obtained from
+    // Key used to store the email of the syncing account. This email is obtained from
     // IdentityManager during the backup.
-    static final String SIGNED_IN_ACCOUNT_KEY = "google.services.username";
+    static final String SYNCING_ACCOUNT_KEY = "google.services.username";
+
+    // Key used to store the email of the signed-in account. This email is obtained from
+    // IdentityManager during the backup.
+    static final String SIGNED_IN_ACCOUNT_ID_KEY = "Chrome.SignIn.SignedInAccountGaiaIdBackup";
 
     // Timeout for running the background tasks, needs to be quite long since they may be doing
     // network access, but must be less than the 1 minute restore timeout to be useful.
@@ -181,7 +185,11 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
             throws IOException {
         final ArrayList<String> backupNames = new ArrayList<>();
         final ArrayList<byte[]> backupValues = new ArrayList<>();
+
+        // TODO(crbug.com/1462552): Remove syncAccount once UNO is launched, given the sync feature
+        // and consent will disappear.
         final AtomicReference<CoreAccountInfo> syncAccount = new AtomicReference<>();
+        final AtomicReference<CoreAccountInfo> signedInAccount = new AtomicReference<>();
 
         // The native preferences can only be read on the UI thread.
         Boolean nativePrefsRead =
@@ -197,6 +205,11 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
                                     IdentityServicesProvider.get()
                                             .getIdentityManager(Profile.getLastUsedRegularProfile())
                                             .getPrimaryAccountInfo(ConsentLevel.SYNC));
+
+                            signedInAccount.set(
+                                    IdentityServicesProvider.get()
+                                            .getIdentityManager(Profile.getLastUsedRegularProfile())
+                                            .getPrimaryAccountInfo(ConsentLevel.SIGNIN));
 
                             String[] nativeBackupNames =
                                     ChromeBackupAgentImplJni.get().getBoolBackupNames(this);
@@ -251,11 +264,15 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
             }
         }
 
-        // Finally add the user id.
-        backupNames.add(ANDROID_DEFAULT_PREFIX + SIGNED_IN_ACCOUNT_KEY);
+        // Finally add the signed-in/syncing user ids.
+        backupNames.add(ANDROID_DEFAULT_PREFIX + SYNCING_ACCOUNT_KEY);
         backupValues.add(
                 ApiCompatibilityUtils.getBytesUtf8(
                         syncAccount.get() == null ? "" : syncAccount.get().getEmail()));
+        backupNames.add(ANDROID_DEFAULT_PREFIX + SIGNED_IN_ACCOUNT_ID_KEY);
+        backupValues.add(
+                ApiCompatibilityUtils.getBytesUtf8(
+                        signedInAccount.get() == null ? "" : signedInAccount.get().getGaiaId()));
 
         BackupState newBackupState = new BackupState(backupNames, backupValues);
 
@@ -310,8 +327,11 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
             int dataSize = data.getDataSize();
             byte[] buffer = new byte[dataSize];
             data.readEntityData(buffer, 0, dataSize);
-            if (key.equals(ANDROID_DEFAULT_PREFIX + SIGNED_IN_ACCOUNT_KEY)) {
+            if (key.equals(ANDROID_DEFAULT_PREFIX + SYNCING_ACCOUNT_KEY)) {
                 restoredUserName = new String(buffer);
+            } else if (key.equals(ANDROID_DEFAULT_PREFIX + SIGNED_IN_ACCOUNT_ID_KEY)) {
+                // TODO(crbug.com/1493706): Implement the restoration of the signed in account.
+                continue;
             } else {
                 backupNames.add(key);
                 backupValues.add(buffer);
