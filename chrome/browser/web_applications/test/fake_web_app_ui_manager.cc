@@ -181,8 +181,9 @@ void FakeWebAppUiManager::DisplayRunOnOsLoginNotification(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 void FakeWebAppUiManager::NotifyAppRelaunchState(
-    std::string placeholder_app_id,
-    std::string final_app_id,
+    const webapps::AppId& placeholder_app_id,
+    const webapps::AppId& final_app_id,
+    const std::u16string& final_app_name,
     base::WeakPtr<Profile> profile,
     AppRelaunchState relaunch_state) {}
 

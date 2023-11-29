@@ -118,8 +118,9 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
       base::WeakPtr<Profile> profile) override;
 #endif
 
-  void NotifyAppRelaunchState(std::string placeholder_app_id,
-                              std::string final_app_id,
+  void NotifyAppRelaunchState(const webapps::AppId& placeholder_app_id,
+                              const webapps::AppId& final_app_id,
+                              const std::u16string& final_app_name,
                               base::WeakPtr<Profile> profile,
                               AppRelaunchState relaunch_state) override;
 

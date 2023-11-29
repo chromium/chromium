@@ -6532,6 +6532,8 @@ static_library("ui") {
       deps += [ "//chromeos/components/kiosk" ]
 
       sources += [
+        "web_applications/web_app_relaunch_notification.cc",
+        "web_applications/web_app_relaunch_notification.h",
         "web_applications/web_app_run_on_os_login_notification.cc",
         "web_applications/web_app_run_on_os_login_notification.h",
       ]

@@ -48,6 +48,7 @@
 #include "chrome/browser/web_applications/web_app_uninstall_dialog_user_options.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/clear_site_data_utils.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -66,6 +67,8 @@
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
+#else
+#include "chrome/browser/ui/web_applications/web_app_relaunch_notification.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_MAC)
@@ -418,11 +421,16 @@ void WebAppUiManagerImpl::DisplayRunOnOsLoginNotification(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 void WebAppUiManagerImpl::NotifyAppRelaunchState(
-    std::string placeholder_app_id,
-    std::string final_app_id,
+    const webapps::AppId& placeholder_app_id,
+    const webapps::AppId& final_app_id,
+    const std::u16string& final_app_name,
     base::WeakPtr<Profile> profile,
     AppRelaunchState relaunch_state) {
-  // TODO(b/311711416): Implement notification.
+#if BUILDFLAG(IS_CHROMEOS)
+  web_app::NotifyAppRelaunchState(placeholder_app_id, final_app_id,
+                                  final_app_name, std::move(profile),
+                                  relaunch_state);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 content::WebContents* WebAppUiManagerImpl::CreateNewTab() {

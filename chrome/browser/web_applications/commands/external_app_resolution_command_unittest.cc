@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/commands/external_app_resolution_command.h"
 
 #include <memory>
+#include <string>
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
@@ -60,8 +61,9 @@ class MockWebAppUiManager : public web_app::FakeWebAppUiManager {
  public:
   MOCK_METHOD(void,
               NotifyAppRelaunchState,
-              (std::string placeholder_app_id,
-               std::string final_app_id,
+              (const webapps::AppId& placeholder_app_id,
+               const webapps::AppId& final_app_id,
+               const std::u16string& final_app_name,
                base::WeakPtr<Profile> profile,
                AppRelaunchState relaunch_state),
               (override));
@@ -434,7 +436,7 @@ TEST_F(ExternalAppResolutionCommandTest, ReinstallPlaceholderSucceeds) {
 
   MockWebAppUiManager& ui_manager =
       static_cast<MockWebAppUiManager&>(fake_ui_manager());
-  EXPECT_CALL(ui_manager, NotifyAppRelaunchState(_, _, _, _)).Times(0);
+  EXPECT_CALL(ui_manager, NotifyAppRelaunchState(_, _, _, _, _)).Times(0);
 
   auto result = InstallAndWait(options, std::move(data_retriever));
 
@@ -490,15 +492,15 @@ TEST_F(ExternalAppResolutionCommandTest,
                               /*manifest_id_path=*/absl::nullopt, kWebAppUrl)))
       .WillOnce(Return(1u));
   EXPECT_CALL(ui_manager,
-              NotifyAppRelaunchState(placeholder_app_id, final_app_id, _,
+              NotifyAppRelaunchState(placeholder_app_id, final_app_id, _, _,
                                      AppRelaunchState::kAppAboutToRelaunch))
       .Times(1);
   EXPECT_CALL(ui_manager,
-              NotifyAppRelaunchState(placeholder_app_id, final_app_id, _,
+              NotifyAppRelaunchState(placeholder_app_id, final_app_id, _, _,
                                      AppRelaunchState::kAppClosingForRelaunch))
       .Times(1);
   EXPECT_CALL(ui_manager,
-              NotifyAppRelaunchState(placeholder_app_id, final_app_id, _,
+              NotifyAppRelaunchState(placeholder_app_id, final_app_id, _, _,
                                      AppRelaunchState::kAppRelaunched))
       .Times(1);
 
@@ -559,7 +561,7 @@ TEST_F(ExternalAppResolutionCommandTest,
   EXPECT_CALL(ui_manager, GetNumWindowsForApp(GenerateAppId(
                               /*manifest_id_path=*/absl::nullopt, kWebAppUrl)))
       .WillOnce(Return(0u));
-  EXPECT_CALL(ui_manager, NotifyAppRelaunchState(_, _, _, _)).Times(0);
+  EXPECT_CALL(ui_manager, NotifyAppRelaunchState(_, _, _, _, _)).Times(0);
 
   auto result = InstallAndWait(options);
 

@@ -4694,6 +4694,12 @@
         Your administrator doesn't allow closing this app
       </message>
       <!-- End of Strings for WebAppSettings -->
+      <message name="IDS_WEB_APP_RELAUNCH_NOTIFICATION_TITLE" desc="Title of the app relaunch notification.">
+          Restarting and updating <ph name="APP_NAME">$1</ph>
+      </message>
+      <message name="IDS_WEB_APP_RELAUNCH_NOTIFICATION_MESSAGE" desc="Message of the app relaunch notification.">
+          Please wait while this application is being updated
+      </message>
 
     </messages>
   </release>

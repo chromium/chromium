@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_FAKE_WEB_APP_UI_MANAGER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_TEST_FAKE_WEB_APP_UI_MANAGER_H_
 
+#include <string>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -13,6 +14,7 @@
 #include "base/values.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -97,8 +99,9 @@ class FakeWebAppUiManager : public WebAppUiManager {
       const std::vector<std::string>& app_names,
       base::WeakPtr<Profile> profile) override;
 #endif
-  void NotifyAppRelaunchState(std::string placeholder_app_id,
-                              std::string final_app_id,
+  void NotifyAppRelaunchState(const webapps::AppId& placeholder_app_id,
+                              const webapps::AppId& final_app_id,
+                              const std::u16string& final_app_name,
                               base::WeakPtr<Profile> profile,
                               AppRelaunchState relaunch_state) override;
   content::WebContents* CreateNewTab() override;

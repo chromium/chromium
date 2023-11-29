@@ -220,8 +220,9 @@ class WebAppUiManager {
   // Displays the user about the status of a force app relaunch. This happens
   // when a placeholder with `placeholder_app_id` is installed and running, and
   // then is updated with an app with `final_app_id`.
-  virtual void NotifyAppRelaunchState(std::string placeholder_app_id,
-                                      std::string final_app_id,
+  virtual void NotifyAppRelaunchState(const webapps::AppId& placeholder_app_id,
+                                      const webapps::AppId& final_app_id,
+                                      const std::u16string& final_app_name,
                                       base::WeakPtr<Profile> profile,
                                       AppRelaunchState relaunch_state) = 0;
 
