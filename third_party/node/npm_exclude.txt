@@ -26,3 +26,10 @@ typescript/loc/*
 # This is pulled in from html-minifier, but there is no plan to use the
 # --minify-js which is the only entry to that codepath.
 uglify-js/*
+
+# Exclude all Lit related files, except the ones in lit_include.txt
+@lit/*
+lit/*
+lit-element/*
+lit-html/*
+@lit-labs/*

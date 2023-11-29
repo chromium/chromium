@@ -24,6 +24,7 @@
     "eslint": "8.50.0",
     "eslint-plugin-jsdoc": "46.8.2",
     "html-minifier": "4.0.0",
+    "lit": "3.0.2",
     "rollup": "3.29.4",
     "svgo": "3.0.2",
     "terser": "5.20.0",
