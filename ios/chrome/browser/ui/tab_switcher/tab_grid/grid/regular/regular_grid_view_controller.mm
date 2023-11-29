@@ -270,6 +270,7 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
         [self.collectionView.collectionViewLayout invalidateLayout];
       }
       completion:^(BOOL finished) {
+        header.hidden = YES;
         self->_inactiveTabsHeaderHideAnimationInProgress = NO;
         // Update the header to make it entirely disappear once the animation is
         // done. This is done after a delay because the completion can be called
