@@ -14,7 +14,6 @@ import org.chromium.components.gcm_driver.LazySubscriptionsManager;
 import org.chromium.components.gcm_driver.SubscriptionFlagManager;
 
 import java.io.IOException;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Wraps InstanceIDWithSubtype so it can be used over JNI.
@@ -210,12 +209,17 @@ public class InstanceIDBridge {
     /**
      * Custom {@link AsyncTask} wrapper. As usual, this performs work on a background thread, then
      * sends the result back on the UI thread. Key differences:
-     * 1. Lazily initializes mInstanceID before running doBackgroundWork.
-     * 2. sendResultToNative will be skipped if the C++ counterpart has been destroyed.
-     * 3. Tasks run in parallel (using THREAD_POOL_EXECUTOR) to avoid blocking other Chrome tasks.
-     * 4. If setBlockOnAsyncTasksForTesting has been enabled, executing the task will block the UI
-     *    thread, then directly call sendResultToNative. This is a workaround for use in tests
-     *    that lack a nested Java message loop (which prevents onPostExecute from running).
+     *
+     * <p>1. Lazily initializes mInstanceID before running doBackgroundWork.
+     *
+     * <p>2. sendResultToNative will be skipped if the C++ counterpart has been destroyed.
+     *
+     * <p>3. Tasks run in parallel (using THREAD_POOL_EXECUTOR) to avoid blocking other Chrome
+     * tasks.
+     *
+     * <p>4. If setBlockOnAsyncTasksForTesting has been enabled, the work will skip the thread pool
+     * executor and run directly on the main thread. This is necessary because there are some
+     * complex behaviors around executor lifecycle in unit tests.
      */
     private abstract class BridgeAsyncTask<Result> {
         protected abstract Result doBackgroundWork();
@@ -223,6 +227,13 @@ public class InstanceIDBridge {
         protected abstract void sendResultToNative(Result result);
 
         public void execute() {
+            if (sBlockOnAsyncTasksForTesting) {
+                if (mInstanceID == null) {
+                    mInstanceID = InstanceIDWithSubtype.getInstance(mSubtype);
+                }
+                sendResultToNative(doBackgroundWork());
+                return;
+            }
             AsyncTask<Result> task =
                     new AsyncTask<Result>() {
                         @Override
@@ -239,22 +250,12 @@ public class InstanceIDBridge {
 
                         @Override
                         protected void onPostExecute(Result result) {
-                            if (!sBlockOnAsyncTasksForTesting && mNativeInstanceIDAndroid != 0) {
+                            if (mNativeInstanceIDAndroid != 0) {
                                 sendResultToNative(result);
                             }
                         }
                     };
             task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            if (sBlockOnAsyncTasksForTesting) {
-                Result result;
-                try {
-                    // Synchronously block the UI thread until doInBackground returns result.
-                    result = task.get();
-                } catch (InterruptedException | ExecutionException e) {
-                    throw new IllegalStateException(e); // Shouldn't happen in tests.
-                }
-                sendResultToNative(result);
-            }
         }
     }
 
