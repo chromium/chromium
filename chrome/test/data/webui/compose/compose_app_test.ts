@@ -18,7 +18,6 @@ class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
   private initialInput_: string = '';
   private initialState_: ComposeState = {
     webuiState: '',
-    style: {tone: Tone.kUnset, length: Length.kUnset},
     hasPendingRequest: false,
   };
   private router_: ComposeDialogCallbackRouter =
@@ -53,8 +52,8 @@ class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
     this.methodCalled('compose', {input});
   }
 
-  rewrite(style: StyleModifiers, input: string): void {
-    this.methodCalled('rewrite', {style, input});
+  rewrite(style: StyleModifiers): void {
+    this.methodCalled('rewrite', {style});
   }
 
   undo(): Promise<(ComposeState | null)> {
@@ -537,11 +536,11 @@ suite('ComposeApp', () => {
         undoAvailable: false,
         result: 'some undone result',
       },
-      style: {
-        length: Length.kLonger,
-        tone: Tone.kCasual,
-      },
-      webuiState: JSON.stringify({input: 'my old input'}),
+      webuiState: JSON.stringify({
+        input: 'my old input',
+        selectedLength: Number(Length.kLonger),
+        selectedTone: Number(Tone.kCasual),
+      }),
     });
     const appWithUndo = document.createElement('compose-app');
     document.body.appendChild(appWithUndo);

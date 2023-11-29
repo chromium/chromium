@@ -49,11 +49,10 @@ enum ComposeStatus {
 };
 
 // Configuration parameters used in rewrite requests, specifying how the
-// response should be changed. An empty StyleModifiers object without a tone or
-// length requests a rewrite without changes to the tone or length.
-struct StyleModifiers {
-  Tone? tone;
-  Length? length;
+// response should be changed.
+union StyleModifiers {
+  Tone tone;
+  Length length;
 };
 
 // The response to compose requests. `response_text` is only valid if `status`
@@ -73,8 +72,6 @@ struct ComposeState {
   // State for the WebUI session. This should be considered opaque and is
   // unsafe to parse in the browser process.
   string webui_state;
-  // Modifiers used in the response captured in this state.
-  StyleModifiers style;
   // Response from compose service. This is not present if the request
   // has not been completed. The response is present if the request has
   // completed, even if the response status is an error.
@@ -127,10 +124,9 @@ interface ComposeSessionPageHandler {
   Compose(string input);
 
   // Asks the Browser to rewrite the last response. `style` specifies how the
-  // response should be changed. An empty `style` without a tone or length
-  // requests a rewrite without changes to the tone or length.
-  // TODO(b/310022952) Remove `input` once backend handles rewrite params.
-  Rewrite(StyleModifiers style, string input);
+  // response should be changed. A null `style` requests a rewrite without
+  // changes to the tone or length.
+  Rewrite(StyleModifiers? style);
 
   // Asks the native handler to store `webui_state` for the last field the user
   // selected compose on.

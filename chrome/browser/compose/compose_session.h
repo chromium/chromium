@@ -69,9 +69,7 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   // Requests a rewrite the last response. `style` specifies how the response
   // should be changed. An empty `style` without a tone or length requests a
   // rewrite without changes to the tone or length.
-  // TODO(b/310022952) Remove `input` once backend handles rewrite params.
-  void Rewrite(compose::mojom::StyleModifiersPtr style,
-               const std::string& input) override;
+  void Rewrite(compose::mojom::StyleModifiersPtr style) override;
 
   // Retrieves and returns (through `callback`) state information for the last
   // field the user selected compose on.

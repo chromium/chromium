@@ -72,17 +72,6 @@ void LogComposeResponseStatus(compose::mojom::ComposeStatus status) {
   UMA_HISTOGRAM_ENUMERATION(compose::kComposeResponseStatus, status);
 }
 
-// TODO(b/310022952) Remove once backend handles new generate and rewrite
-// params.
-void SetDeprecatedFields(optimization_guide::proto::ComposeRequest& request,
-                         const std::string& input,
-                         const compose::mojom::StyleModifiersPtr& style) {
-  request.set_user_input(input);
-  request.set_tone(optimization_guide::proto::ComposeTone(style->tone.value()));
-  request.set_length(
-      optimization_guide::proto::ComposeLength(style->length.value()));
-}
-
 }  // namespace
 
 ComposeSession::ComposeSession(
@@ -101,9 +90,6 @@ ComposeSession::ComposeSession(
       weak_ptr_factory_(this) {
   callback_ = std::move(callback);
   current_state_ = compose::mojom::ComposeState::New();
-  current_state_->style = compose::mojom::StyleModifiers::New();
-  current_state_->style->tone = compose::mojom::Tone::kUnset;
-  current_state_->style->length = compose::mojom::Length::kUnset;
   if (executor_) {
     session_ = executor_->StartSession(
         optimization_guide::proto::ModelExecutionFeature::
@@ -142,31 +128,22 @@ void ComposeSession::Bind(
 
 // ComposeSessionPageHandler
 void ComposeSession::Compose(const std::string& input) {
-  current_state_->style = compose::mojom::StyleModifiers::New();
-  current_state_->style->tone = compose::mojom::Tone::kUnset;
-  current_state_->style->length = compose::mojom::Length::kUnset;
   optimization_guide::proto::ComposeRequest request;
   request.mutable_generate_params()->set_user_input(input);
-  SetDeprecatedFields(request, input, current_state_->style);
   MakeRequest(std::move(request));
 }
 
-void ComposeSession::Rewrite(compose::mojom::StyleModifiersPtr style,
-                             const std::string& input) {
+void ComposeSession::Rewrite(compose::mojom::StyleModifiersPtr style) {
   optimization_guide::proto::ComposeRequest request;
-  if (style->tone.has_value()) {
-    current_state_->style->tone = style->tone.value();
+  if (style->is_tone()) {
     request.mutable_rewrite_params()->set_tone(
-        optimization_guide::proto::ComposeTone(style->tone.value()));
-  }
-  if (style->length.has_value()) {
-    current_state_->style->length = style->length.value();
+        optimization_guide::proto::ComposeTone(style->get_tone()));
+  } else if (style->is_length()) {
     request.mutable_rewrite_params()->set_length(
-        optimization_guide::proto::ComposeLength(style->length.value()));
+        optimization_guide::proto::ComposeLength(style->get_length()));
   }
   request.mutable_rewrite_params()->set_previous_response(
       last_ok_state_->response->result);
-  SetDeprecatedFields(request, input, current_state_->style);
   MakeRequest(std::move(request));
 }
 

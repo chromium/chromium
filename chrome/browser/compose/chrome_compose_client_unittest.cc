@@ -245,11 +245,6 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
   optimization_guide::proto::ComposeRequest ComposeRequest(
       std::string user_input) {
     optimization_guide::proto::ComposeRequest request;
-    request.set_user_input(user_input);
-    request.set_tone(
-        optimization_guide::proto::ComposeTone::COMPOSE_UNSPECIFIED_TONE);
-    request.set_length(
-        optimization_guide::proto::ComposeLength::COMPOSE_UNSPECIFIED_LENGTH);
     request.mutable_generate_params()->set_user_input(user_input);
     return request;
   }

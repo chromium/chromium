@@ -9,7 +9,7 @@ export interface ComposeApiProxy {
   acceptComposeResult(): Promise<boolean>;
   closeUi(reason: CloseReason): void;
   compose(input: string): void;
-  rewrite(style: StyleModifiers, input: string): void;
+  rewrite(style: StyleModifiers): void;
   getRouter(): ComposeDialogCallbackRouter;
   openBugReportingLink(): void;
   openComposeSettings(): void;
@@ -57,8 +57,8 @@ export class ComposeApiProxyImpl implements ComposeApiProxy {
     this.composeSessionPageHandler.compose(input);
   }
 
-  rewrite(style: StyleModifiers, input: string): void {
-    this.composeSessionPageHandler.rewrite(style, input);
+  rewrite(style: StyleModifiers): void {
+    this.composeSessionPageHandler.rewrite(style);
   }
 
   getRouter() {

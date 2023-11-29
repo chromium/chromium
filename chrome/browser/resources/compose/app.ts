@@ -34,6 +34,8 @@ export interface ComposeAppState {
   editedInput?: string;
   input: string;
   isEditingSubmittedInput?: boolean;
+  selectedLength?: Length;
+  selectedTone?: Tone;
 }
 
 export interface ComposeAppElement {
@@ -222,8 +224,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
       }
       const composeState = initialState.composeState;
       this.loading_ = composeState.hasPendingRequest;
-      this.selectedLength_ = composeState.style.length ?? Length.kUnset;
-      this.selectedTone_ = composeState.style.tone ?? Tone.kUnset;
       this.submitted_ =
           composeState.hasPendingRequest || Boolean(composeState.response);
       if (!composeState.hasPendingRequest) {
@@ -235,6 +235,8 @@ export class ComposeAppElement extends ComposeAppElementBase {
       if (composeState.webuiState) {
         const appState: ComposeAppState = JSON.parse(composeState.webuiState);
         this.input_ = appState.input;
+        this.selectedLength_ = appState.selectedLength ?? Length.kUnset;
+        this.selectedTone_ = appState.selectedTone ?? Tone.kUnset;
         if (appState.isEditingSubmittedInput) {
           this.isEditingSubmittedInput_ = appState.isEditingSubmittedInput;
           this.editedInput_ = appState.editedInput!;
@@ -354,7 +356,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.loading_ = true;
     this.response_ = undefined;
     this.saveComposeAppState_();  // Ensure state is saved before compose call.
-    this.apiProxy_.rewrite(style, this.input_);
+    this.apiProxy_.rewrite(style);
   }
 
   private composeResponseReceived_(response: ComposeResponse) {
@@ -404,6 +406,12 @@ export class ComposeAppElement extends ComposeAppElementBase {
     }
 
     const state: ComposeAppState = {input: this.input_};
+    if (this.selectedLength_ !== Length.kUnset) {
+      state.selectedLength = this.selectedLength_;
+    }
+    if (this.selectedTone_ !== Tone.kUnset) {
+      state.selectedTone = this.selectedTone_;
+    }
     if (this.isEditingSubmittedInput_) {
       state.isEditingSubmittedInput = this.isEditingSubmittedInput_;
       state.editedInput = this.editedInput_;
@@ -423,12 +431,12 @@ export class ComposeAppElement extends ComposeAppElementBase {
       // Restore state to the state returned by Undo.
       this.response_ = state.response;
       this.undoEnabled_ = Boolean(state.response?.undoAvailable);
-      this.selectedLength_ = state.style.length ?? Length.kUnset;
-      this.selectedTone_ = state.style.tone ?? Tone.kUnset;
 
       if (state.webuiState) {
         const appState: ComposeAppState = JSON.parse(state.webuiState);
         this.input_ = appState.input;
+        this.selectedLength_ = appState.selectedLength ?? Length.kUnset;
+        this.selectedTone_ = appState.selectedTone ?? Tone.kUnset;
       }
     } catch (error) {
       // Error (e.g., disconnected mojo pipe) from a rejected Promise.
