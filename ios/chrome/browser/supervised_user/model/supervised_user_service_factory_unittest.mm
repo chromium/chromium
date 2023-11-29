@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
 
+#import "base/memory/scoped_refptr.h"
 #import "base/threading/thread_restrictions.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_notifier_impl.h"
@@ -103,19 +104,20 @@ TEST_F(SupervisedUserServiceFactoryTest,
   writeFirstRunSentinel();
 
   // Mark the user pref store as new.
-  auto* user_prefs = new TestingPrefStore();
+  auto user_prefs = base::MakeRefCounted<TestingPrefStore>();
   user_prefs->set_read_error(
       PersistentPrefStore::PrefReadError::PREF_READ_ERROR_NO_FILE);
 
   auto testing_prefs =
       std::make_unique<sync_preferences::TestingPrefServiceSyncable>(
-          /*managed_prefs=*/new TestingPrefStore(),
-          /*supervised_user_prefs=*/new TestingPrefStore(),
-          /*extension_prefs=*/new TestingPrefStore(),
-          /*standalone_browser_prefs=*/new TestingPrefStore(),
+          /*managed_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
+          /*supervised_user_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
+          /*extension_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
+          /*standalone_browser_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
           /*user_prefs=*/user_prefs,
-          /*recommended_prefs=*/new TestingPrefStore(),
-          new user_prefs::PrefRegistrySyncable(), new PrefNotifierImpl());
+          /*recommended_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
+          base::MakeRefCounted<user_prefs::PrefRegistrySyncable>(),
+          std::make_unique<PrefNotifierImpl>());
   RegisterBrowserStatePrefs(testing_prefs->registry());
 
   TestChromeBrowserState::Builder builder;

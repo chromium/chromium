@@ -15,23 +15,24 @@
 template <>
 TestingPrefServiceBase<sync_preferences::PrefServiceSyncable,
                        user_prefs::PrefRegistrySyncable>::
-    TestingPrefServiceBase(TestingPrefStore* managed_prefs,
-                           TestingPrefStore* supervised_user_prefs,
-                           TestingPrefStore* extension_prefs,
-                           TestingPrefStore* standalone_browser_prefs,
-                           TestingPrefStore* user_prefs,
-                           TestingPrefStore* recommended_prefs,
-                           user_prefs::PrefRegistrySyncable* pref_registry,
-                           PrefNotifierImpl* pref_notifier)
+    TestingPrefServiceBase(
+        scoped_refptr<TestingPrefStore> managed_prefs,
+        scoped_refptr<TestingPrefStore> supervised_user_prefs,
+        scoped_refptr<TestingPrefStore> extension_prefs,
+        scoped_refptr<TestingPrefStore> standalone_browser_prefs,
+        scoped_refptr<TestingPrefStore> user_prefs,
+        scoped_refptr<TestingPrefStore> recommended_prefs,
+        scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry,
+        PrefNotifierImpl* pref_notifier)
     : sync_preferences::PrefServiceSyncable(
           std::unique_ptr<PrefNotifierImpl>(pref_notifier),
-          std::make_unique<PrefValueStore>(managed_prefs,
-                                           supervised_user_prefs,
-                                           extension_prefs,
-                                           standalone_browser_prefs,
+          std::make_unique<PrefValueStore>(managed_prefs.get(),
+                                           supervised_user_prefs.get(),
+                                           extension_prefs.get(),
+                                           standalone_browser_prefs.get(),
                                            /*command_line_prefs=*/nullptr,
-                                           user_prefs,
-                                           recommended_prefs,
+                                           user_prefs.get(),
+                                           recommended_prefs.get(),
                                            pref_registry->defaults().get(),
                                            pref_notifier),
           user_prefs,
@@ -53,26 +54,25 @@ TestingPrefServiceBase<sync_preferences::PrefServiceSyncable,
 namespace sync_preferences {
 
 TestingPrefServiceSyncable::TestingPrefServiceSyncable()
-    : TestingPrefServiceBase<PrefServiceSyncable,
-                             user_prefs::PrefRegistrySyncable>(
-          /*managed_prefs=*/new TestingPrefStore(),
-          /*supervised_user_prefs=*/new TestingPrefStore(),
-          /*extension_prefs=*/new TestingPrefStore(),
-          /*standalone_browser_prefs=*/new TestingPrefStore(),
-          /*user_prefs=*/new TestingPrefStore(),
-          /*recommended_prefs=*/new TestingPrefStore(),
-          new user_prefs::PrefRegistrySyncable(),
-          new PrefNotifierImpl()) {}
+    : TestingPrefServiceSyncable(
+          /*managed_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
+          /*supervised_user_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
+          /*extension_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
+          /*standalone_browser_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
+          /*user_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
+          /*recommended_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
+          base::MakeRefCounted<user_prefs::PrefRegistrySyncable>(),
+          std::make_unique<PrefNotifierImpl>()) {}
 
 TestingPrefServiceSyncable::TestingPrefServiceSyncable(
-    TestingPrefStore* managed_prefs,
-    TestingPrefStore* supervised_user_prefs,
-    TestingPrefStore* extension_prefs,
-    TestingPrefStore* standalone_browser_prefs,
-    TestingPrefStore* user_prefs,
-    TestingPrefStore* recommended_prefs,
-    user_prefs::PrefRegistrySyncable* pref_registry,
-    PrefNotifierImpl* pref_notifier)
+    scoped_refptr<TestingPrefStore> managed_prefs,
+    scoped_refptr<TestingPrefStore> supervised_user_prefs,
+    scoped_refptr<TestingPrefStore> extension_prefs,
+    scoped_refptr<TestingPrefStore> standalone_browser_prefs,
+    scoped_refptr<TestingPrefStore> user_prefs,
+    scoped_refptr<TestingPrefStore> recommended_prefs,
+    scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry,
+    std::unique_ptr<PrefNotifierImpl> pref_notifier)
     : TestingPrefServiceBase<PrefServiceSyncable,
                              user_prefs::PrefRegistrySyncable>(
           managed_prefs,
@@ -82,7 +82,7 @@ TestingPrefServiceSyncable::TestingPrefServiceSyncable(
           user_prefs,
           recommended_prefs,
           pref_registry,
-          pref_notifier) {}
+          pref_notifier.release()) {}
 
 TestingPrefServiceSyncable::~TestingPrefServiceSyncable() = default;
 

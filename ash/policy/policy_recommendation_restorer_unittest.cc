@@ -12,6 +12,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/prefs/pref_notifier_impl.h"
 #include "components/prefs/testing_pref_store.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -28,16 +29,17 @@ class PolicyRecommendationRestorerTest : public NoSessionAshTestBase {
 
  protected:
   PolicyRecommendationRestorerTest()
-      : recommended_prefs_(new TestingPrefStore),
+      : recommended_prefs_(base::MakeRefCounted<TestingPrefStore>()),
         prefs_(new sync_preferences::TestingPrefServiceSyncable(
-            /*managed_prefs=*/new TestingPrefStore,
-            /*supervised_user_prefs=*/new TestingPrefStore,
-            /*extension_prefs=*/new TestingPrefStore,
-            /*standalone_browser_prefs=*/new TestingPrefStore,
-            /*user_prefs=*/new TestingPrefStore,
+            /*managed_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
+            /*supervised_user_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
+            /*extension_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
+            /*standalone_browser_prefs=*/
+            base::MakeRefCounted<TestingPrefStore>(),
+            /*user_prefs=*/base::MakeRefCounted<TestingPrefStore>(),
             recommended_prefs_,
-            new user_prefs::PrefRegistrySyncable,
-            new PrefNotifierImpl)) {}
+            base::MakeRefCounted<user_prefs::PrefRegistrySyncable>(),
+            std::make_unique<PrefNotifierImpl>())) {}
   ~PolicyRecommendationRestorerTest() override = default;
 
   // NoSessionAshTestBase override:
@@ -153,8 +155,7 @@ class PolicyRecommendationRestorerTest : public NoSessionAshTestBase {
       restorer_ = nullptr;
 
   // Ownerships are passed to SessionController.
-  raw_ptr<TestingPrefStore, DanglingUntriaged | ExperimentalAsh>
-      recommended_prefs_;
+  scoped_refptr<TestingPrefStore> recommended_prefs_;
   raw_ptr<sync_preferences::TestingPrefServiceSyncable,
           DanglingUntriaged | ExperimentalAsh>
       prefs_;
