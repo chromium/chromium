@@ -1008,6 +1008,11 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
   // Validate that the allowed browsing data model is empty.
   ValidateBrowsingDataEntries(allowed_browsing_data_model, {});
   ASSERT_EQ(allowed_browsing_data_model->size(), 0u);
+  // Reloading the page to ensure the renderer reflects deletion before checking
+  // if the storage type still exists on disk.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      https_test_server()->GetURL(kTestHost, "/browsing_data/site_data.html")));
   ASSERT_FALSE(HasDataForType("SessionStorage", web_contents()));
 }
 
