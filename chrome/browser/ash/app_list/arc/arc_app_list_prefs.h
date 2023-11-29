@@ -490,6 +490,10 @@ class ArcAppListPrefs : public KeyedService,
 
   arc::ArcPackageInstallPriorityHandler* GetInstallPriorityHandler();
 
+  // Update package prefs with |selected_locale| and notify app states changed.
+  void SetAppLocale(const std::string& package_name,
+                    const std::string& selected_locale);
+
  private:
   friend class ChromeShelfControllerTestBase;
   friend class ArcAppModelBuilderTest;

@@ -1363,6 +1363,17 @@ ArcAppListPrefs::GetInstallPriorityHandler() {
   return install_priority_handler_.get();
 }
 
+void ArcAppListPrefs::SetAppLocale(const std::string& package_name,
+                                   const std::string& selected_locale) {
+  arc::ArcAppScopedPrefUpdate update(prefs_, package_name,
+                                     arc::prefs::kArcPackages);
+  base::Value::Dict& package_dict = update.Get();
+  package_dict.EnsureDict(kLocaleInfo)->Set(kSelectedLocale, selected_locale);
+
+  const std::string& app_id = GetAppIdByPackageName(package_name);
+  NotifyAppStatesChanged(app_id);
+}
+
 void ArcAppListPrefs::SetResizeLockState(const std::string& app_id,
                                          arc::mojom::ArcResizeLockState state) {
   if (!IsRegistered(app_id)) {
