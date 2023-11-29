@@ -391,6 +391,8 @@ blink_core_sources_layout = [
   "mathml/math_under_over_layout_algorithm.cc",
   "mathml/math_under_over_layout_algorithm.h",
   "mathml/mathml_paint_info.h",
+  "measure_cache.cc",
+  "measure_cache.h",
   "min_max_sizes.cc",
   "min_max_sizes.h",
   "min_max_sizes_cache.h",

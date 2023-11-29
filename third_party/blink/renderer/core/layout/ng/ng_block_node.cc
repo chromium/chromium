@@ -780,6 +780,9 @@ void BlockNode::FinishLayout(
   // Computing MinMax after layout. Do not modify the |LayoutObject| tree, paint
   // properties, and other global states.
   if (DisableLayoutSideEffectsScope::IsDisabled()) {
+    if (RuntimeEnabledFeatures::LayoutNewMeasureCacheEnabled()) {
+      box_->AddMeasureLayoutResult(layout_result);
+    }
     return;
   }
 

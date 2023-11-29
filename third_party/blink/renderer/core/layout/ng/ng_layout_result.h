@@ -557,6 +557,7 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
 
    protected:
     friend class LayoutBox;
+    friend class MeasureCache;
 
     void SetFragmentChildrenInvalid() {
       layout_result_->physical_fragment_->SetChildrenInvalid();

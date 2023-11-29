@@ -2177,7 +2177,7 @@
     {
       name: "LayoutNewMeasureCache",
       depends_on: ["LayoutNewMinMaxCache"],
-      status: "test",
+      status: "stable",
     },
     {
       name: "LayoutNewMinMaxCache",

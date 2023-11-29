@@ -52,6 +52,7 @@ class CustomLayoutChild;
 class EarlyBreak;
 class LayoutMultiColumnSpannerPlaceholder;
 class LayoutResult;
+class MeasureCache;
 class ShapeOutsideInfo;
 class WritingModeConverter;
 enum class LayoutCacheStatus;
@@ -620,8 +621,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   void ClearFirstInlineFragmentItemIndex() final;
   void SetFirstInlineFragmentItemIndex(wtf_size_t) final;
 
-  void InvalidateItems(const LayoutResult&);
+  static void InvalidateItems(const LayoutResult&);
 
+  void AddMeasureLayoutResult(const LayoutResult*);
   void SetCachedLayoutResult(const LayoutResult*, wtf_size_t index);
 
   // Store one layout result (with its physical fragment) at the specified
@@ -672,11 +674,17 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   }
 
   const LayoutResult* GetCachedLayoutResult(const BlockBreakToken*) const;
-  const LayoutResult* GetCachedMeasureResult() const;
+  const LayoutResult* GetCachedMeasureResult(
+      const ConstraintSpace&,
+      absl::optional<FragmentGeometry>* fragment_geometry) const;
 
   // Call in situations where we know that there's at most one fragment. A
   // DCHECK will fail if there are multiple fragments.
   const LayoutResult* GetSingleCachedLayoutResult() const;
+
+  // Retrieves the last (retrieved or set) measure LayoutResult, for
+  // unit-testing purposes only.
+  const LayoutResult* GetSingleCachedMeasureResultForTesting() const;
 
   // Returns the last layout result for this block flow with the given
   // constraint space and break token, or null if it is not up-to-date or
@@ -1502,6 +1510,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   Member<MinMaxSizesCache> min_max_sizes_cache_;
 
   Member<const LayoutResult> measure_result_;
+  Member<MeasureCache> measure_cache_;
   LayoutResultList layout_results_;
 
   // LayoutBoxUtils is used for the LayoutNG code querying protected methods on

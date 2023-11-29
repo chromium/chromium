@@ -24,7 +24,11 @@ namespace blink {
 // This cache is designed to handle these cases.
 class MinMaxSizesCache final : public GarbageCollected<MinMaxSizesCache> {
  public:
-  static constexpr unsigned kMaxCacheEntries = 4;
+  // A single layout pass of[1] can add up to 10 entries into this cache due to
+  // grid's multi-pass algorithm.
+  //
+  // [1] perf_tests/layout/grid-with-block-constraints-dependence.html
+  static constexpr unsigned kMaxCacheEntries = 8;
 
   void Trace(Visitor*) const {}
 
@@ -79,7 +83,7 @@ class MinMaxSizesCache final : public GarbageCollected<MinMaxSizesCache> {
   void Clear() { cache_.resize(0); }
 
  private:
-  Vector<Entry, kMaxCacheEntries> cache_;
+  Vector<Entry, 2> cache_;
 };
 
 }  // namespace blink

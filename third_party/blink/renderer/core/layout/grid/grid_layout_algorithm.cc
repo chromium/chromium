@@ -417,8 +417,10 @@ MinMaxSizesResult GridLayoutAlgorithm::ComputeMinMaxSizes(
 
   // TODO(crbug.com/1272533): This should be |depends_on_block_constraints|
   // (rather than false). However we need more cache slots to handle the
-  // performance degredation we currently experience. See bug for more details.
-  return MinMaxSizesResult(sizes, /* depends_on_block_constraints */ false);
+  // performance degradation we currently experience. See bug for more details.
+  return MinMaxSizesResult(
+      sizes, RuntimeEnabledFeatures::LayoutNewMeasureCacheEnabled() &&
+                 depends_on_block_constraints);
 }
 
 MinMaxSizesResult GridLayoutAlgorithm::ComputeMinMaxSizes(

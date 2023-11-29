@@ -77,6 +77,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/measure_cache.h"
 #include "third_party/blink/renderer/core/layout/ng/legacy_layout_tree_walking.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
@@ -137,6 +138,7 @@ struct SameSizeAsLayoutBox : public LayoutBoxModelObject {
   LayoutUnit intrinsic_logical_widths_initial_block_size;
   Member<void*> min_max_sizes_cache;
   Member<void*> result;
+  Member<void*> cache;
   HeapVector<Member<const LayoutResult>, 1> layout_results;
   wtf_size_t first_fragment_item_index_;
   Member<void*> members[2];
@@ -472,6 +474,7 @@ LayoutBox::LayoutBox(ContainerNode* node)
 void LayoutBox::Trace(Visitor* visitor) const {
   visitor->Trace(min_max_sizes_cache_);
   visitor->Trace(measure_result_);
+  visitor->Trace(measure_cache_);
   visitor->Trace(layout_results_);
   visitor->Trace(overflow_);
   visitor->Trace(rare_data_);
@@ -513,6 +516,9 @@ void LayoutBox::DisassociatePhysicalFragments() {
   }
   if (measure_result_)
     measure_result_->GetPhysicalFragment().LayoutObjectWillBeDestroyed();
+  if (measure_cache_) {
+    measure_cache_->LayoutObjectWillBeDestroyed();
+  }
   for (auto result : layout_results_)
     result->GetPhysicalFragment().LayoutObjectWillBeDestroyed();
 }
@@ -2573,6 +2579,30 @@ bool LayoutBox::PhysicalFragmentList::Contains(
   return IndexOf(fragment) != kNotFound;
 }
 
+void LayoutBox::AddMeasureLayoutResult(const LayoutResult* result) {
+  DCHECK(RuntimeEnabledFeatures::LayoutNewMeasureCacheEnabled());
+
+  // Ensure the given result is valid for the measure cache.
+  if (result->Status() != LayoutResult::kSuccess) {
+    return;
+  }
+  if (result->GetConstraintSpaceForCaching().CacheSlot() !=
+      LayoutResultCacheSlot::kMeasure) {
+    return;
+  }
+  DCHECK(
+      To<PhysicalBoxFragment>(result->GetPhysicalFragment()).IsOnlyForNode());
+
+  if (!measure_cache_) {
+    measure_cache_ = MakeGarbageCollected<MeasureCache>();
+  }
+  // Clear out old measure results if we need non-simplifed layout.
+  if (NeedsLayout() && !NeedsSimplifiedLayoutOnly()) {
+    measure_cache_->Clear();
+  }
+  measure_cache_->Add(result);
+}
+
 void LayoutBox::SetCachedLayoutResult(const LayoutResult* result,
                                       wtf_size_t index) {
   NOT_DESTROYED();
@@ -2584,18 +2614,31 @@ void LayoutBox::SetCachedLayoutResult(const LayoutResult* result,
     DCHECK_EQ(index, 0u);
     // We don't early return here, when setting the "measure" result we also
     // set the "layout" result.
-    if (measure_result_)
+    if (measure_result_) {
       InvalidateItems(*measure_result_);
+    }
+    if (measure_cache_) {
+      measure_cache_->InvalidateItems();
+    }
+    if (RuntimeEnabledFeatures::LayoutNewMeasureCacheEnabled()) {
+      AddMeasureLayoutResult(result);
+    } else {
+      measure_result_ = result;
+    }
     if (IsTableCell()) {
       To<LayoutTableCell>(this)->InvalidateLayoutResultCacheAfterMeasure();
     }
-    measure_result_ = result;
   } else {
     // We have a "layout" result, and we may need to clear the old "measure"
     // result if we needed non-simplified layout.
-    if (measure_result_ && NeedsLayout() && !NeedsSimplifiedLayoutOnly()) {
-      InvalidateItems(*measure_result_);
-      measure_result_ = nullptr;
+    if (NeedsLayout() && !NeedsSimplifiedLayoutOnly()) {
+      if (measure_result_) {
+        InvalidateItems(*measure_result_);
+        measure_result_ = nullptr;
+      }
+      if (measure_cache_) {
+        measure_cache_->Clear();
+      }
     }
   }
 
@@ -2607,6 +2650,9 @@ void LayoutBox::SetCachedLayoutResult(const LayoutResult* result,
   if (measure_result_ && measure_result_ != result) {
     measure_result_->GetMutableForLayoutBoxCachedResults()
         .SetFragmentChildrenInvalid();
+  }
+  if (measure_cache_) {
+    measure_cache_->SetFragmentChildrenInvalid(result);
   }
 
   SetLayoutResult(result, index);
@@ -2782,22 +2828,15 @@ void LayoutBox::InvalidateCachedGeometry() {
   }
 }
 
+// static
 void LayoutBox::InvalidateItems(const LayoutResult& result) {
-  NOT_DESTROYED();
   // Invalidate if inline |DisplayItemClient|s will be destroyed.
   const auto& box_fragment =
       To<PhysicalBoxFragment>(result.GetPhysicalFragment());
   if (!box_fragment.HasItems())
     return;
-#if DCHECK_IS_ON()
-  // Column fragments are not really associated with a layout object.
-  if (IsLayoutFlowThread()) {
-    DCHECK(box_fragment.IsColumnBox());
-  } else {
-    DCHECK_EQ(this, box_fragment.GetLayoutObject());
-  }
-#endif
-  ObjectPaintInvalidator(*this).SlowSetPaintingLayerNeedsRepaint();
+  ObjectPaintInvalidator(*box_fragment.GetLayoutObject())
+      .SlowSetPaintingLayerNeedsRepaint();
 }
 
 const LayoutResult* LayoutBox::GetCachedLayoutResult(
@@ -2812,10 +2851,13 @@ const LayoutResult* LayoutBox::GetCachedLayoutResult(
   return result;
 }
 
-const LayoutResult* LayoutBox::GetCachedMeasureResult() const {
+const LayoutResult* LayoutBox::GetCachedMeasureResult(
+    const ConstraintSpace& space,
+    absl::optional<FragmentGeometry>* fragment_geometry) const {
   NOT_DESTROYED();
-  if (!measure_result_)
+  if (!measure_result_ && !measure_cache_) {
     return nullptr;
+  }
 
   // If we've already had an actual layout pass, and the node fragmented, we
   // cannot reliably re-use the measure result. What we want to avoid here is
@@ -2831,11 +2873,10 @@ const LayoutResult* LayoutBox::GetCachedMeasureResult() const {
     }
   }
 
-  // TODO(mstensho): Measure-results can never fragment, can they? This check
-  // could probably be removed.
-  if (!To<PhysicalBoxFragment>(measure_result_->GetPhysicalFragment())
-           .IsOnlyForNode()) {
-    return nullptr;
+  if (measure_cache_) {
+    DCHECK(!measure_result_);
+    return measure_cache_->Find(BlockNode(const_cast<LayoutBox*>(this)), space,
+                                fragment_geometry);
   }
 
   return measure_result_.Get();
@@ -2844,6 +2885,13 @@ const LayoutResult* LayoutBox::GetCachedMeasureResult() const {
 const LayoutResult* LayoutBox::GetSingleCachedLayoutResult() const {
   DCHECK_LE(layout_results_.size(), 1u);
   return GetCachedLayoutResult(nullptr);
+}
+
+const LayoutResult* LayoutBox::GetSingleCachedMeasureResultForTesting() const {
+  if (measure_cache_) {
+    return measure_cache_->GetLastForTesting();
+  }
+  return measure_result_.Get();
 }
 
 const LayoutResult* LayoutBox::GetLayoutResult(wtf_size_t i) const {

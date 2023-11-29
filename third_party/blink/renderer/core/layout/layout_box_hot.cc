@@ -81,22 +81,24 @@ const LayoutResult* LayoutBox::CachedLayoutResult(
     return nullptr;
   }
 
+  if (ShouldSkipLayoutCache()) {
+    return nullptr;
+  }
+
+  if (early_break) {
+    return nullptr;
+  }
+
   const bool use_layout_cache_slot =
       new_space.CacheSlot() == LayoutResultCacheSlot::kLayout &&
       !layout_results_.empty();
   const LayoutResult* cached_layout_result =
-      use_layout_cache_slot ? GetCachedLayoutResult(break_token)
-                            : GetCachedMeasureResult();
+      use_layout_cache_slot
+          ? GetCachedLayoutResult(break_token)
+          : GetCachedMeasureResult(new_space, initial_fragment_geometry);
 
   if (!cached_layout_result)
     return nullptr;
-
-  if (early_break)
-    return nullptr;
-
-  if (ShouldSkipLayoutCache()) {
-    return nullptr;
-  }
 
   DCHECK_EQ(cached_layout_result->Status(), LayoutResult::kSuccess);
 
@@ -154,9 +156,13 @@ const LayoutResult* LayoutBox::CachedLayoutResult(
   }
 
   BlockNode node(this);
-  LayoutCacheStatus size_cache_status = CalculateSizeBasedLayoutCacheStatus(
-      node, break_token, *cached_layout_result, new_space,
-      initial_fragment_geometry);
+  LayoutCacheStatus size_cache_status = LayoutCacheStatus::kHit;
+  if (use_layout_cache_slot ||
+      !RuntimeEnabledFeatures::LayoutNewMeasureCacheEnabled()) {
+    size_cache_status = CalculateSizeBasedLayoutCacheStatus(
+        node, break_token, *cached_layout_result, new_space,
+        initial_fragment_geometry);
+  }
 
   // If our size may change (or we know a descendants size may change), we miss
   // the cache.

@@ -1652,7 +1652,8 @@ TEST_F(LayoutResultCachingTest, HitFlexDefiniteChange) {
   auto* target1 = To<LayoutBlock>(GetLayoutObjectByElementId("target1"));
 
   const LayoutResult* result1 = target1->GetSingleCachedLayoutResult();
-  const LayoutResult* measure1 = target1->GetCachedMeasureResult();
+  const LayoutResult* measure1 =
+      target1->GetSingleCachedMeasureResultForTesting();
   EXPECT_EQ(measure1->IntrinsicBlockSize(), 100);
   EXPECT_EQ(result1->GetPhysicalFragment().Size().height, 200);
 
@@ -1700,14 +1701,16 @@ TEST_F(LayoutResultCachingTest, SimpleTable) {
   // Both "target1", and "target1" should have  only had one "measure" pass
   // performed.
   const LayoutResult* result1 = target1->GetSingleCachedLayoutResult();
-  const LayoutResult* measure1 = target1->GetCachedMeasureResult();
+  const LayoutResult* measure1 =
+      target1->GetSingleCachedMeasureResultForTesting();
   EXPECT_EQ(result1->GetConstraintSpaceForCaching().CacheSlot(),
             LayoutResultCacheSlot::kMeasure);
   EXPECT_NE(result1, nullptr);
   EXPECT_EQ(result1, measure1);
 
   const LayoutResult* result2 = target2->GetSingleCachedLayoutResult();
-  const LayoutResult* measure2 = target2->GetCachedMeasureResult();
+  const LayoutResult* measure2 =
+      target2->GetSingleCachedMeasureResultForTesting();
   EXPECT_EQ(result2->GetConstraintSpaceForCaching().CacheSlot(),
             LayoutResultCacheSlot::kMeasure);
   EXPECT_NE(result2, nullptr);
@@ -1726,7 +1729,8 @@ TEST_F(LayoutResultCachingTest, MissTableCellMiddleAlignment) {
 
   // "target" should be stretched, and miss the measure cache.
   const LayoutResult* result = target->GetSingleCachedLayoutResult();
-  const LayoutResult* measure = target->GetCachedMeasureResult();
+  const LayoutResult* measure =
+      target->GetSingleCachedMeasureResultForTesting();
   EXPECT_NE(measure, nullptr);
   EXPECT_NE(result, nullptr);
   EXPECT_EQ(measure->GetConstraintSpaceForCaching().CacheSlot(),
@@ -1748,7 +1752,8 @@ TEST_F(LayoutResultCachingTest, MissTableCellBottomAlignment) {
 
   // "target" should be stretched, and miss the measure cache.
   const LayoutResult* result = target->GetSingleCachedLayoutResult();
-  const LayoutResult* measure = target->GetCachedMeasureResult();
+  const LayoutResult* measure =
+      target->GetSingleCachedMeasureResultForTesting();
   EXPECT_NE(measure, nullptr);
   EXPECT_NE(result, nullptr);
   EXPECT_EQ(measure->GetConstraintSpaceForCaching().CacheSlot(),
@@ -1773,7 +1778,8 @@ TEST_F(LayoutResultCachingTest, HitTableCellBaselineAlignment) {
 
   // "target" should align to the baseline, but hit the cache.
   const LayoutResult* result = target->GetSingleCachedLayoutResult();
-  const LayoutResult* measure = target->GetCachedMeasureResult();
+  const LayoutResult* measure =
+      target->GetSingleCachedMeasureResultForTesting();
   EXPECT_EQ(result->GetConstraintSpaceForCaching().CacheSlot(),
             LayoutResultCacheSlot::kMeasure);
   EXPECT_NE(result, nullptr);
@@ -1795,7 +1801,8 @@ TEST_F(LayoutResultCachingTest, MissTableCellBaselineAlignment) {
 
   // "target" should align to the baseline, but miss the cache.
   const LayoutResult* result = target->GetSingleCachedLayoutResult();
-  const LayoutResult* measure = target->GetCachedMeasureResult();
+  const LayoutResult* measure =
+      target->GetSingleCachedMeasureResultForTesting();
   EXPECT_NE(measure, nullptr);
   EXPECT_NE(result, nullptr);
   EXPECT_EQ(measure->GetConstraintSpaceForCaching().CacheSlot(),
