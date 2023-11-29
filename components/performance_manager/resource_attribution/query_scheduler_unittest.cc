@@ -33,7 +33,7 @@
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
-#include "components/performance_manager/test_support/resource_attribution/gmock_matchers.h"
+#include "components/performance_manager/test_support/resource_attribution/gtest_util.h"
 #include "components/performance_manager/test_support/resource_attribution/simulated_cpu_measurement_delegate.h"
 #include "components/performance_manager/test_support/run_in_graph.h"
 #include "testing/gmock/include/gmock/gmock.h"

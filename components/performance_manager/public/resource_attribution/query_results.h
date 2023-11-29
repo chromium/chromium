@@ -45,7 +45,16 @@ struct CPUTimeResult {
   base::TimeDelta cumulative_cpu;
 };
 
-using QueryResult = absl::variant<CPUTimeResult>;
+// Results of a kMemorySummary query.
+// TODO(crbug.com/1471683): Add kMemorySummary to the ResourceType enum,
+// implement queries for it.
+struct MemorySummaryResult {
+  ResultMetadata metadata;
+  uint64_t resident_set_size_kb = 0;
+  uint64_t private_footprint_kb = 0;
+};
+
+using QueryResult = absl::variant<CPUTimeResult, MemorySummaryResult>;
 using QueryResults = std::vector<QueryResult>;
 using QueryResultMap = std::map<ResourceContext, QueryResults>;
 
@@ -105,6 +114,24 @@ inline bool operator==(const CPUTimeResult& a, const CPUTimeResult& b) {
 }
 
 inline bool operator!=(const CPUTimeResult& a, const CPUTimeResult& b) {
+  return !(a == b);
+}
+
+inline bool operator==(const MemorySummaryResult& a,
+                       const MemorySummaryResult& b) {
+  static_assert(
+      sizeof(MemorySummaryResult) ==
+          sizeof(decltype(MemorySummaryResult::metadata)) +
+              sizeof(decltype(MemorySummaryResult::resident_set_size_kb)) +
+              sizeof(decltype(MemorySummaryResult::private_footprint_kb)),
+      "update operator== when changing MemorySummaryResult");
+  return a.metadata == b.metadata &&
+         a.resident_set_size_kb == b.resident_set_size_kb &&
+         a.private_footprint_kb == b.private_footprint_kb;
+}
+
+inline bool operator!=(const MemorySummaryResult& a,
+                       const MemorySummaryResult& b) {
   return !(a == b);
 }
 

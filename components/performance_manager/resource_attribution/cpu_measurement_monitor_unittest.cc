@@ -6,7 +6,6 @@
 
 #include <map>
 #include <memory>
-#include <ostream>
 #include <utility>
 #include <vector>
 
@@ -36,6 +35,7 @@
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
+#include "components/performance_manager/test_support/resource_attribution/gtest_util.h"
 #include "components/performance_manager/test_support/resource_attribution/simulated_cpu_measurement_delegate.h"
 #include "components/performance_manager/test_support/run_in_graph.h"
 #include "content/public/browser/web_contents.h"
@@ -44,30 +44,9 @@
 #include "content/public/test/navigation_simulator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
 namespace performance_manager::resource_attribution {
-
-// Test result printers. These need to go in the same namespace as the type
-// being printed.
-
-std::ostream& operator<<(std::ostream& os, const ResultMetadata& metadata) {
-  return os << "measurement_time:" << metadata.measurement_time;
-}
-
-std::ostream& operator<<(std::ostream& os, const CPUTimeResult& result) {
-  return os << "cpu:" << result.cumulative_cpu
-            << ",start_time:" << result.start_time
-            << ",metadata:" << result.metadata << " ("
-            << (result.metadata.measurement_time - result.start_time) << ")";
-}
-
-std::ostream& operator<<(std::ostream& os, const ResourceContext& context) {
-  absl::visit([&os](const auto& token) { os << token.ToString(); }, context);
-  return os;
-}
 
 namespace {
 
@@ -76,7 +55,6 @@ using ::testing::Conditional;
 using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::Not;
-using ::testing::Optional;
 
 constexpr base::TimeDelta kTimeBetweenMeasurements = base::Minutes(5);
 
