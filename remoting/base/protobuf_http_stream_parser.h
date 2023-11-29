@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "third_party/protobuf/src/google/protobuf/wire_format_lite.h"
 
 namespace google {
 namespace protobuf {
@@ -53,6 +54,11 @@ class ProtobufHttpStreamParser final {
  private:
   void ParseStreamIfAvailable();
   bool ParseOneField(google::protobuf::io::CodedInputStream* input_stream);
+
+  // This also closes the stream if the wire type is invalid.
+  bool ValidateWireType(
+      int field_number,
+      google::protobuf::internal::WireFormatLite::WireType wire_type);
 
   MessageCallback message_callback_;
   StreamClosedCallback stream_closed_callback_;
