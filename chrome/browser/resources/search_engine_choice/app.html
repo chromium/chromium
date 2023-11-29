@@ -108,7 +108,7 @@
     margin-left: 16px;
   }
 
-  cr-radio-group {
+  #choiceList {
     display: flex;
     flex-direction: column;
     gap: 1px;
@@ -344,7 +344,7 @@
       display: none;
     }
 
-    cr-radio-group {
+    #choiceList {
       --button-container-height: calc(var(--cr-button-height) + 2 *
           var(--submit-button-margins));
       padding-bottom: var(--button-container-height);
@@ -375,7 +375,7 @@
       font-size: 1.0625rem;
     }
 
-    cr-radio-group {
+    #choiceList {
       overflow: unset;
     }
   }
@@ -415,7 +415,8 @@
       $i18n{subtitleInfoLink}
     </a>
   </p>
-  <cr-radio-group class="custom-scrollbar" selected="{{selectedChoice_}}">
+  <cr-radio-group id="choiceList" class="custom-scrollbar"
+      selected="{{selectedChoice_}}">
     <template is="dom-repeat" items="[[choiceList_]]">
         <cr-radio-button class="label-first" name="[[item.prepopulate_id]]">
           <div class="choice">
