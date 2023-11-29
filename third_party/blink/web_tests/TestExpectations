@@ -709,11 +709,6 @@ crbug.com/1223377 external/wpt/css/css-images/object-fit-none-svg-004p.html [ Fa
 crbug.com/1042783 external/wpt/css/css-backgrounds/background-size/background-size-near-zero-png.html [ Failure ]
 crbug.com/1042783 external/wpt/css/css-backgrounds/background-size/background-size-near-zero-svg.html [ Failure ]
 
-# Temporarily disabled to unblock https://crrev.com/c/5012783
-crbug.com/1486431 http/tests/devtools/resource-tree/resource-tree-frame-navigate.js [ Failure Pass ]
-crbug.com/1486431 http/tests/devtools/resource-tree/resource-tree-non-unique-url.js [ Failure Pass ]
-crbug.com/1486431 http/tests/devtools/resource-tree/resource-tree-reload.js [ Failure Pass ]
-
 # Failures due to pointerMove building synthetic events without button information (main thread only).
 crbug.com/1056778 fast/scrolling/scrollbars/scrollbar-thumb-snapping.html [ Failure ]
 
@@ -6498,6 +6493,7 @@ crbug.com/1446039 [ Debug Mac13 ] external/wpt/webtransport/streams-close.https.
 [ Debug Mac13 ] virtual/disable-intersection-optimization/external/wpt/html/semantics/embedded-content/the-img-element/invisible-image.html [ Failure Skip Timeout ]
 [ Debug Mac13 ] fast/forms/focus-rect/radio-focus-ring.html [ Failure ]
 [ Debug Mac13 ] virtual/threaded-no-composited-antialiasing/animations/interpolation/webkit-background-size-interpolation.html [ Skip Timeout ]
+[ Debug Mac13 ] http/tests/devtools/resource-tree/resource-tree-non-unique-url.js [ Skip Timeout ]
 [ Debug Mac13 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/element-meta-refresh.optional.sub.html [ Skip Timeout ]
 [ Debug Mac13 ] external/wpt/html/webappapis/dynamic-markup-insertion/html-unsafe-methods/Document-parseHTMLUnsafe-url.html [ Failure ]
 [ Debug Mac13 ] http/tests/devtools/network/network-not-modified-images-mime-type.js [ Skip Timeout ]
