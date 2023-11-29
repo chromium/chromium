@@ -22,6 +22,7 @@
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "components/signin/public/identity_manager/test_identity_manager_observer.h"
+#import "components/sync/base/features.h"
 #import "components/sync/test/mock_sync_service.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
@@ -331,8 +332,13 @@ TEST_F(AuthenticationServiceTest, TestHandleForgottenIdentityPromptSignIn) {
 
 // Tests that reauth prompt is not set if the primary identity is remove from
 // an other app when the user was only signed in (and not syncing).
-TEST_F(AuthenticationServiceTest,
-       TestHandleForgottenIdentityNoPromptSignInAndSync) {
+TEST_F(
+    AuthenticationServiceTest,
+    TestHandleForgottenIdentityNoPromptSignIn_ReplaceSyncPromosWithSignInPromosDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      syncer::kReplaceSyncPromosWithSignInPromos);
+
   // Sign in.
   SetExpectationsForSignIn();
   authentication_service()->SignIn(
@@ -349,6 +355,33 @@ TEST_F(AuthenticationServiceTest,
   EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
   EXPECT_FALSE(authentication_service()->ShouldReauthPromptForSignInAndSync());
+}
+
+// If ReplaceSyncPromosWithSignInPromos is enabled - the reauth prompt should be
+// shown if the primary identity is remove from an other app when the user was
+// signed in.
+TEST_F(
+    AuthenticationServiceTest,
+    TestHandleForgottenIdentityNoPromptSignIn_ReplaceSyncPromosWithSignInPromosEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      syncer::kReplaceSyncPromosWithSignInPromos);
+
+  // Sign in.
+  SetExpectationsForSignIn();
+  authentication_service()->SignIn(
+      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+
+  // Set the authentication service as "In Background", remove identity and run
+  // the loop.
+  fake_system_identity_manager()->ForgetIdentityFromOtherApplication(
+      identity(0));
+  base::RunLoop().RunUntilIdle();
+
+  // User is signed out (no corresponding identity), and reauth prompt is set.
+  EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin));
+  EXPECT_TRUE(authentication_service()->ShouldReauthPromptForSignInAndSync());
 }
 
 TEST_F(AuthenticationServiceTest,
