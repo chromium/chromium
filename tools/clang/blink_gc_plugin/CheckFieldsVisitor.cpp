@@ -116,8 +116,9 @@ void CheckFieldsVisitor::AtValue(Value* edge) {
   if (!Parent() || !edge->value()->IsGCAllocated())
     return;
 
-  // Disallow unique_ptr<T>, scoped_refptr<T>, WeakPtr<T>.
-  if (Parent()->IsUniquePtr() || Parent()->IsRefPtr()) {
+  // Disallow unique_ptr<T>, scoped_refptr<T>
+  if (Parent()->IsUniquePtr() ||
+      (Parent()->IsRefPtr() && (Parent()->Kind() == Edge::kStrong))) {
     invalid_fields_.push_back(std::make_pair(
         current_, InvalidSmartPtr(Parent())));
     return;
@@ -143,8 +144,7 @@ void CheckFieldsVisitor::AtCollection(Collection* edge) {
 
 CheckFieldsVisitor::Error CheckFieldsVisitor::InvalidSmartPtr(Edge* ptr) {
   if (ptr->IsRefPtr())
-    return ptr->Kind() == Edge::kStrong ? kRefPtrToGCManaged
-                                        : kWeakPtrToGCManaged;
+    return kRefPtrToGCManaged;
   if (ptr->IsUniquePtr())
     return kUniquePtrToGCManaged;
   llvm_unreachable("Unknown smart pointer kind");

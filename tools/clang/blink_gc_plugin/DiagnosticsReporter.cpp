@@ -53,8 +53,9 @@ const char kRawPtrToGCManagedClassNote[] =
 const char kRefPtrToGCManagedClassNote[] =
     "[blink-gc] scoped_refptr field %0 to a GC managed class declared here:";
 
-const char kWeakPtrToGCManagedClassNote[] =
-    "[blink-gc] WeakPtr field %0 to a GC managed class declared here:";
+const char kWeakPtrToGCManagedClass[] =
+    "[blink-gc] WeakPtr or WeakPtrFactory field %0 to a GC managed class %1 "
+    "declared here (use WeakCell or WeakCellFactory instead):";
 
 const char kReferencePtrToGCManagedClassNote[] =
     "[blink-gc] Reference pointer field %0 to a GC managed class"
@@ -285,6 +286,8 @@ DiagnosticsReporter::DiagnosticsReporter(
       diagnostic_.getCustomDiagID(getErrorLevel(), kAdditionalPadding);
   diag_part_object_in_unmanaged_ = diagnostic_.getCustomDiagID(
       getErrorLevel(), kTraceablePartObjectInUnmanaged);
+  diag_weak_ptr_to_gc_managed_class_ =
+      diagnostic_.getCustomDiagID(getErrorLevel(), kWeakPtrToGCManagedClass);
   // Register note messages.
   diag_base_requires_tracing_note_ = diagnostic_.getCustomDiagID(
       DiagnosticsEngine::Note, kBaseRequiresTracingNote);
@@ -296,8 +299,6 @@ DiagnosticsReporter::DiagnosticsReporter(
       DiagnosticsEngine::Note, kRawPtrToGCManagedClassNote);
   diag_ref_ptr_to_gc_managed_class_note_ = diagnostic_.getCustomDiagID(
       DiagnosticsEngine::Note, kRefPtrToGCManagedClassNote);
-  diag_weak_ptr_to_gc_managed_class_note_ = diagnostic_.getCustomDiagID(
-      DiagnosticsEngine::Note, kWeakPtrToGCManagedClassNote);
   diag_reference_ptr_to_gc_managed_class_note_ = diagnostic_.getCustomDiagID(
       DiagnosticsEngine::Note, kReferencePtrToGCManagedClassNote);
   diag_task_runner_timer_in_gc_class_note = diagnostic_.getCustomDiagID(
@@ -425,8 +426,6 @@ void DiagnosticsReporter::ClassContainsInvalidFields(
       note = diag_raw_ptr_to_gc_managed_class_note_;
     } else if (error.second == CheckFieldsVisitor::kRefPtrToGCManaged) {
       note = diag_ref_ptr_to_gc_managed_class_note_;
-    } else if (error.second == CheckFieldsVisitor::kWeakPtrToGCManaged) {
-      note = diag_weak_ptr_to_gc_managed_class_note_;
     } else if (error.second == CheckFieldsVisitor::kReferencePtrToGCManaged) {
       note = diag_reference_ptr_to_gc_managed_class_note_;
     } else if (error.second == CheckFieldsVisitor::kUniquePtrToGCManaged) {
@@ -776,4 +775,11 @@ void DiagnosticsReporter::AdditionalPadding(const clang::RecordDecl* record,
                                             size_t padding_size) {
   ReportDiagnostic(record->getBeginLoc(), diag_additional_padding_)
       << record->getName() << padding_size << record->getSourceRange();
+}
+
+void DiagnosticsReporter::WeakPtrToGCed(const clang::Decl* decl,
+                                        const clang::CXXRecordDecl* weak_ptr,
+                                        const clang::CXXRecordDecl* gc_type) {
+  ReportDiagnostic(decl->getBeginLoc(), diag_weak_ptr_to_gc_managed_class_)
+      << weak_ptr << gc_type << decl->getSourceRange();
 }

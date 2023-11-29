@@ -302,6 +302,43 @@ class MemberOnStackMatcher : public MatchFinder::MatchCallback {
   DiagnosticsReporter& diagnostics_;
 };
 
+class WeakPtrToGCedMatcher : public MatchFinder::MatchCallback {
+ public:
+  explicit WeakPtrToGCedMatcher(DiagnosticsReporter& diagnostics)
+      : diagnostics_(diagnostics) {}
+
+  void Register(MatchFinder& match_finder) {
+    // Matches declarations of type base::WeakPtr and base::WeakPtrFactory
+    // where the template argument is known to refer to a garbage-collected
+    // type.
+    auto weak_ptr_type = hasType(
+        classTemplateSpecializationDecl(
+            hasAnyName("::base::WeakPtr", "::base::WeakPtrFactory"),
+            hasTemplateArgument(0, refersToType(GarbageCollectedType())))
+            .bind("weak_ptr"));
+    auto weak_ptr_field = fieldDecl(weak_ptr_type).bind("bad_decl");
+    auto weak_ptr_var = varDecl(weak_ptr_type).bind("bad_decl");
+    auto weak_ptr_new_expression =
+        cxxNewExpr(has(cxxConstructExpr(weak_ptr_type))).bind("bad_decl");
+    match_finder.addDynamicMatcher(weak_ptr_field, this);
+    match_finder.addDynamicMatcher(weak_ptr_var, this);
+    match_finder.addDynamicMatcher(weak_ptr_new_expression, this);
+  }
+
+  void run(const MatchFinder::MatchResult& result) override {
+    auto* decl = result.Nodes.getNodeAs<clang::Decl>("bad_decl");
+    if (Config::IsIgnoreAnnotated(decl)) {
+      return;
+    }
+    auto* weak_ptr = result.Nodes.getNodeAs<clang::CXXRecordDecl>("weak_ptr");
+    auto* gc_type = result.Nodes.getNodeAs<clang::CXXRecordDecl>("gctype");
+    diagnostics_.WeakPtrToGCed(decl, weak_ptr, gc_type);
+  }
+
+ private:
+  DiagnosticsReporter& diagnostics_;
+};
+
 AST_MATCHER(clang::CXXRecordDecl, isDisallowedNewClass) {
   auto& context = Finder->getASTContext();
 
@@ -476,6 +513,11 @@ void FindBadPatterns(clang::ASTContext& ast_context,
   PaddingInGCedMatcher padding_in_gced(ast_context, diagnostics);
   if (options.enable_extra_padding_check) {
     padding_in_gced.Register(match_finder);
+  }
+
+  WeakPtrToGCedMatcher weak_ptr_to_gced(diagnostics);
+  if (options.enable_weak_ptrs_check) {
+    weak_ptr_to_gced.Register(match_finder);
   }
 
   match_finder.matchAST(ast_context);

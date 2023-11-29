@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 
 namespace blink {
 
@@ -84,6 +85,9 @@ class CORE_EXPORT ScrollingCoordinator final
   Member<Page> page_;
 
  private:
+  // TODO(crbug.com/1504473): Temporary exemption to allow for landing a new
+  // plugin check that will flag WeakPtrFactory of GCed types.
+  GC_PLUGIN_IGNORE("crbug.com/1504473")
   base::WeakPtrFactory<ScrollingCoordinator> weak_ptr_factory_{this};
 };
 

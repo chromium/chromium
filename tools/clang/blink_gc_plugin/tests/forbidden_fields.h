@@ -45,7 +45,7 @@ class AnotherHeapObject : public GarbageCollected<AnotherHeapObject> {
   std::unique_ptr<TaskRunnerTimer<AnotherHeapObject>> unique_ptr_timer_;
   TaskRunnerTimer<AnotherHeapObject>* raw_ptr_timer_;
   scoped_refptr<TaskRunnerTimer<AnotherHeapObject>> scoped_refptr_timer_;
-  WeakPtr<TaskRunnerTimer<AnotherHeapObject>> weak_ptr_timer_;
+  base::WeakPtr<TaskRunnerTimer<AnotherHeapObject>> weak_ptr_timer_;
 };
 
 }  // namespace blink

@@ -23,7 +23,6 @@ class CheckFieldsVisitor : public RecursiveEdgeVisitor {
   enum Error {
     kRawPtrToGCManaged,
     kRefPtrToGCManaged,
-    kWeakPtrToGCManaged,
     kReferencePtrToGCManaged,
     kUniquePtrToGCManaged,
     kMemberToGCUnmanaged,

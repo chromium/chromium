@@ -5,13 +5,10 @@ class PartObject {
 ./ref_ptr_to_gc_managed_class.h:17:5: note: [blink-gc] scoped_refptr field 'm_obj' to a GC managed class declared here:
     scoped_refptr<HeapObject> m_obj;
     ^
-./ref_ptr_to_gc_managed_class.h:18:5: note: [blink-gc] WeakPtr field 'm_obj2' to a GC managed class declared here:
-    WeakPtr<HeapObject> m_obj2;
-    ^
-./ref_ptr_to_gc_managed_class.h:21:1: warning: [blink-gc] Class 'HeapObject' contains invalid fields.
+./ref_ptr_to_gc_managed_class.h:20:1: warning: [blink-gc] Class 'HeapObject' contains invalid fields.
 class HeapObject : public GarbageCollected<HeapObject> {
 ^
-./ref_ptr_to_gc_managed_class.h:27:3: note: [blink-gc] scoped_refptr field 'm_objs' to a GC managed class declared here:
+./ref_ptr_to_gc_managed_class.h:26:3: note: [blink-gc] scoped_refptr field 'm_objs' to a GC managed class declared here:
   Vector<scoped_refptr<HeapObject>> m_objs;
   ^
 2 warnings generated.
