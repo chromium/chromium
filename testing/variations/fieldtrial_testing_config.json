@@ -15230,9 +15230,6 @@
             "experiments": [
                 {
                     "name": "Enabled",
-                    "params": {
-                        "background-password-check-interval": "1d"
-                    },
                     "enable_features": [
                         "SafetyHub"
                     ]
