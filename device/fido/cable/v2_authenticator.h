@@ -72,7 +72,6 @@ class Platform {
   using MakeCredentialCallback = base::OnceCallback<void(
       uint32_t status,
       base::span<const uint8_t> attestation_obj,
-      absl::optional<base::span<const uint8_t>> device_public_key_signature,
       bool prf_enabled)>;
 
   virtual void MakeCredential(

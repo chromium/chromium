@@ -156,12 +156,7 @@ ReadCTAPMakeCredentialResponse(FidoTransportProtocol transport_used,
         return absl::nullopt;
       }
       const std::string& extension_name = map_it.first.GetString();
-      if (extension_name == kExtensionDevicePublicKey) {
-        if (!map_it.second.is_bytestring()) {
-          return absl::nullopt;
-        }
-        response.device_public_key_signature = map_it.second.GetBytestring();
-      } else if (extension_name == kExtensionPRF) {
+      if (extension_name == kExtensionPRF) {
         if (!map_it.second.is_map()) {
           return absl::nullopt;
         }
@@ -287,12 +282,7 @@ absl::optional<AuthenticatorGetAssertionResponse> ReadCTAPGetAssertionResponse(
         return absl::nullopt;
       }
       const std::string& extension_name = map_it.first.GetString();
-      if (extension_name == kExtensionDevicePublicKey) {
-        if (!map_it.second.is_bytestring()) {
-          return absl::nullopt;
-        }
-        response.device_public_key_signature = map_it.second.GetBytestring();
-      } else if (extension_name == kExtensionPRF) {
+      if (extension_name == kExtensionPRF) {
         if (!map_it.second.is_map()) {
           return absl::nullopt;
         }
@@ -449,8 +439,6 @@ absl::optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
         options.supports_min_pin_length_extension = true;
       } else if (extension_str == kExtensionHmacSecret) {
         options.supports_hmac_secret = true;
-      } else if (extension_str == kExtensionDevicePublicKey) {
-        options.supports_device_public_key = true;
       } else if (extension_str == kExtensionPRF) {
         options.supports_prf = true;
       } else if (extension_str == kExtensionLargeBlob) {

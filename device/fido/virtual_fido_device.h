@@ -127,10 +127,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
     absl::optional<LargeBlob> large_blob;
     absl::optional<std::array<uint8_t, 32>> large_blob_key;
     absl::optional<std::vector<uint8_t>> cred_blob;
-
-    // device_bound_key contains the optional device-bound key for this
-    // credential, thus simulating a multi-device credential.
-    absl::optional<std::unique_ptr<PrivateKey>> device_key;
   };
 
   using Credential = std::pair<base::span<const uint8_t>, RegistrationData*>;

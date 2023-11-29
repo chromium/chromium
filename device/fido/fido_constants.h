@@ -464,7 +464,6 @@ COMPONENT_EXPORT(DEVICE_FIDO) extern const char kExtensionLargeBlob[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kExtensionLargeBlobKey[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kExtensionCredBlob[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kExtensionMinPINLength[];
-COMPONENT_EXPORT(DEVICE_FIDO) extern const char kExtensionDevicePublicKey[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kExtensionPRF[];
 
 // Constants for the prf extension
@@ -489,17 +488,6 @@ extern const char kExtensionLargeBlobSupportRequired[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kExtensionLargeBlobSupported[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kExtensionLargeBlobWrite[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kExtensionLargeBlobWritten[];
-
-// Map keys for the device public key extension.
-COMPONENT_EXPORT(DEVICE_FIDO)
-extern const char kDevicePublicKeyAttestationKey[];
-COMPONENT_EXPORT(DEVICE_FIDO)
-extern const char kDevicePublicKeyAttestationFormatsKey[];
-COMPONENT_EXPORT(DEVICE_FIDO) extern const char kDevicePublicKeyAAGUIDKey[];
-COMPONENT_EXPORT(DEVICE_FIDO) extern const char kDevicePublicKeyDPKKey[];
-COMPONENT_EXPORT(DEVICE_FIDO) extern const char kDevicePublicKeyScopeKey[];
-COMPONENT_EXPORT(DEVICE_FIDO) extern const char kDevicePublicKeyNonceKey[];
-COMPONENT_EXPORT(DEVICE_FIDO) extern const char kDevicePublicKeyEPKey[];
 
 // Maximum number of seconds the browser waits for Bluetooth authenticator to
 // send packets that advertises that the device is in pairing mode before

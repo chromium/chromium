@@ -50,7 +50,6 @@
 #include "crypto/sha2.h"
 #include "crypto/signature_verifier.h"
 #include "device/base/features.h"
-#include "device/fido/device_public_key_extension.h"
 #include "device/fido/fake_fido_discovery.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_discovery_factory.h"
@@ -1595,114 +1594,6 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
   ASSERT_EQ(kNotAllowedErrorMessage,
             EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                    BuildGetCallWithParameters(parameters)));
-}
-
-// VerifyDevicePublicKeyOutput checks the result of a DPK-enabled operation.
-// The given Javascript result string contains the comma-separated, base64-
-// encoded values of:
-//    1. The authenticator data.
-//    2. The clientDataJSON
-//    3. The DPK authenticator output.
-//    4. The DPK signature.
-void VerifyDevicePublicKeyOutput(const std::string& output) {
-  const std::vector<std::string> base64_parts = base::SplitString(
-      output, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  ASSERT_EQ(base64_parts.size(), 4u);
-  std::vector<uint8_t> authenticator_data =
-      *base::Base64Decode(base64_parts[0]);
-  std::vector<uint8_t> client_data_json = *base::Base64Decode(base64_parts[1]);
-  std::vector<uint8_t> dpk_output_bytes = *base::Base64Decode(base64_parts[2]);
-  std::vector<uint8_t> dpk_sig = *base::Base64Decode(base64_parts[3]);
-
-  const device::DevicePublicKeyOutput dpk_output =
-      *device::DevicePublicKeyOutput::FromExtension(
-          cbor::Value(dpk_output_bytes));
-  const std::unique_ptr<device::PublicKey> dpk_key =
-      device::P256PublicKey::ExtractFromCOSEKey(
-          static_cast<int32_t>(device::CoseAlgorithmIdentifier::kEs256),
-          base::span<const uint8_t>(), dpk_output.dpk.GetMap());
-
-  crypto::SignatureVerifier verifier;
-  verifier.VerifyInit(
-      crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256, dpk_sig,
-      dpk_key->der_bytes.value());
-  verifier.VerifyUpdate(authenticator_data);
-  verifier.VerifyUpdate(crypto::SHA256Hash(client_data_json));
-  EXPECT_TRUE(verifier.VerifyFinal());
-}
-
-IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
-                       DevicePublicKeyMakeCredential) {
-  device::VirtualCtap2Device::Config config;
-  config.device_public_key_support = true;
-  config.backup_eligible = true;
-  auto* virtual_device_factory = InjectVirtualFidoDeviceFactory();
-  virtual_device_factory->SetCtap2Config(config);
-
-  // self-attestation is needed because, otherwise, zeroing the AAGUID
-  // invalidates the DPK signature.
-  virtual_device_factory->mutable_state()->self_attestation = true;
-
-  EXPECT_TRUE(
-      NavigateToURL(shell(), GetHttpsURL("www.acme.com", "/title1.html")));
-
-  constexpr char kJavascript[] =
-      "navigator.credentials.create({ publicKey: {"
-      "  challenge: new TextEncoder().encode('abcd'),"
-      "  rp: { id: 'www.acme.com', name: 'name' },"
-      "  user: { id: new Uint8Array([0]), name: 'name', displayName: 'dn' },"
-      "  pubKeyCredParams: [{ type: 'public-key', alg: '-7' }],"
-      "  extensions: { devicePubKey: {} },"
-      "}}).then(c => {"
-      "  const e = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf)));"
-      "  return e(c.response.getAuthenticatorData())"
-      "                  + ',' + e(c.response.clientDataJSON)"
-      "                  + ',' + e(c.getClientExtensionResults()"
-      "                               .devicePubKey"
-      "                               .authenticatorOutput)"
-      "                  + ',' + e(c.getClientExtensionResults()"
-      "                               .devicePubKey"
-      "                               .signature);"
-      "}, e => e.toString());";
-  std::string result =
-      EvalJs(shell()->web_contents(), kJavascript).ExtractString();
-  VerifyDevicePublicKeyOutput(result);
-}
-
-IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
-                       DevicePublicKeyGetAssertion) {
-  device::VirtualCtap2Device::Config config;
-  config.device_public_key_support = true;
-  config.backup_eligible = true;
-  auto* virtual_device_factory = InjectVirtualFidoDeviceFactory();
-  virtual_device_factory->SetCtap2Config(config);
-  constexpr uint8_t kCredentialId[] = {1};
-  ASSERT_TRUE(virtual_device_factory->mutable_state()->InjectRegistration(
-      kCredentialId, "www.acme.com"));
-
-  EXPECT_TRUE(
-      NavigateToURL(shell(), GetHttpsURL("www.acme.com", "/title1.html")));
-
-  constexpr char kJavascript[] =
-      "navigator.credentials.get({ publicKey: {"
-      "  challenge: new TextEncoder().encode('abcd'),"
-      "  userVerification: 'discouraged',"
-      "  allowCredentials: [{type: 'public-key', id: new Uint8Array([1])}],"
-      "  extensions: { devicePubKey: {} },"
-      "}}).then(c => {"
-      "  const e = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf)));"
-      "  return e(c.response.authenticatorData)"
-      "                  + ',' + e(c.response.clientDataJSON)"
-      "                  + ',' + e(c.getClientExtensionResults()"
-      "                               .devicePubKey"
-      "                               .authenticatorOutput)"
-      "                  + ',' + e(c.getClientExtensionResults()"
-      "                               .devicePubKey"
-      "                               .signature);"
-      "}, e => e.toString());";
-  std::string result =
-      EvalJs(shell()->web_contents(), kJavascript).ExtractString();
-  VerifyDevicePublicKeyOutput(result);
 }
 
 #if BUILDFLAG(IS_WIN)

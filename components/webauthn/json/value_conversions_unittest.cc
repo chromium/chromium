@@ -128,7 +128,6 @@ TEST(WebAuthenticationJSONConversionTest,
       blink::mojom::RemoteDesktopClientOverride::New(
           url::Origin::Create(GURL(kOrigin)),
           /*same_origin_with_ancestors=*/true),
-      // TODO(crbug.com/1356340): support devicePubKey in JSON when it's stable.
       /*device_public_key=*/nullptr);
 
   base::Value value = ToValue(options);
@@ -169,7 +168,6 @@ TEST(WebAuthenticationJSONConversionTest,
           blink::mojom::RemoteDesktopClientOverride::New(
               url::Origin::Create(GURL(kOrigin)),
               /*same_origin_with_ancestors=*/true),
-          // TODO: support devicePubKey in JSON when it's stable.
           /*device_public_key=*/nullptr));
 
   base::Value value = ToValue(options);
@@ -302,7 +300,6 @@ TEST(WebAuthenticationJSONConversionTest,
       /*echo_cred_props=*/true, /*has_cred_props_rk=*/true,
       /*cred_props_rk=*/true, /*echo_large_blob=*/true,
       /*supports_large_blob=*/true,
-      // TODO: support devicePubKey in JSON when it's stable.
       /*device_public_key=*/nullptr);
 
   EXPECT_EQ(response->info, expected->info);
@@ -576,7 +573,6 @@ TEST(WebAuthenticationJSONConversionTest,
           /*large_blob=*/kLargeBlob, /*echo_large_blob_written=*/true,
           /*large_blob_written=*/true,
           /*get_cred_blob=*/kCredBlob,
-          // TODO: support devicePubKey in JSON when it's stable.
           /*device_public_key=*/nullptr));
   static const uint8_t expected_prf_first[32] = {
       0x99, 0x9d, 0x30, 0x29, 0x7b, 0xc5, 0x03, 0x7b, 0xa5, 0x7b, 0x81,

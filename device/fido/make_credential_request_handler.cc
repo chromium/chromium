@@ -20,7 +20,6 @@
 #include "build/chromeos_buildflags.h"
 #include "components/cbor/diagnostic_writer.h"
 #include "components/device_event_log/device_event_log.h"
-#include "device/fido/device_public_key_extension.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_discovery_factory.h"
@@ -314,21 +313,6 @@ bool ValidateResponseExtensions(
       if (!request.min_pin_length_requested || !it.second.is_unsigned()) {
         return false;
       }
-    } else if (ext_name == kExtensionDevicePublicKey) {
-      if (!request.device_public_key) {
-        FIDO_LOG(ERROR) << "unsolicited devicePubKey extension output";
-        return false;
-      }
-      const bool backup_eligible_flag =
-          response.attestation_object.authenticator_data().backup_eligible();
-      const absl::optional<const char*> error =
-          CheckDevicePublicKeyExtensionForErrors(
-              it.second, request.device_public_key->attestation,
-              backup_eligible_flag);
-      if (error.has_value()) {
-        FIDO_LOG(ERROR) << error.value();
-        return false;
-      }
     } else {
       // Authenticators may not return unknown extensions.
       return false;
@@ -356,15 +340,6 @@ bool ResponseValid(const FidoAuthenticator& authenticator,
                                                 response, *extensions)) {
     FIDO_LOG(ERROR) << "Invalid extensions block: "
                     << cbor::DiagnosticWriter::Write(*extensions);
-    return false;
-  }
-
-  const bool has_dpk_extension =
-      extensions &&
-      extensions->GetMap().count(cbor::Value(kExtensionDevicePublicKey));
-  if (has_dpk_extension != response.device_public_key_signature.has_value()) {
-    FIDO_LOG(ERROR)
-        << "DPK extension isn't coherent with presence of DPK signature";
     return false;
   }
 
@@ -1112,11 +1087,6 @@ void MakeCredentialRequestHandler::SpecializeRequestForAuthenticator(
        authenticator->Options().max_cred_blob_length.value() <
            request->cred_blob->size())) {
     request->cred_blob.reset();
-  }
-
-  if (request->device_public_key &&
-      !authenticator->Options().supports_device_public_key) {
-    request->device_public_key.reset();
   }
 }
 
