@@ -5,7 +5,7 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {DateTimeSettingsCardElement, SettingsDateTimePageElement, TimeZoneAutoDetectMethod, TimeZoneBrowserProxyImpl, TimezoneSubpageElement} from 'chrome://os-settings/lazy_load.js';
-import {ControlledRadioButtonElement, CrSettingsPrefs, PrefsState, Router, routes, SettingsDropdownMenuElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {ControlledRadioButtonElement, CrSettingsPrefs, GeolocationAccessLevel, PrefsState, Router, routes, SettingsDropdownMenuElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -62,6 +62,15 @@ function getFakePrefs() {
         key: 'generated.resolve_timezone_by_geolocation_on_off',
         type: chrome.settingsPrivate.PrefType.BOOLEAN,
         value: true,
+      },
+    },
+    ash: {
+      user: {
+        geolocation_access_level: {
+          key: 'ash.user.geolocation_access_level',
+          type: GeolocationAccessLevel,
+          value: GeolocationAccessLevel.ALLOWED,
+        },
       },
     },
   };

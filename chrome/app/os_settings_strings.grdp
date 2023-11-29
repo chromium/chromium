@@ -5685,6 +5685,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_TIME_ZONE_DETECTION_MODE_IP_ONLY_DEFAULT" desc="Display name for the automatic time zone detection mode which enables time zone detection sending unprecise location to Google servers. Default means that this is the default time zone detection mode.">
     Use your IP address to determine location (default)
   </message>
+  <message name="IDS_SETTINGS_TIME_ZONE_DETECTION_GEOLOCATION_WARNING_TEXT" translateable="false" desc="Displays the text notifying users that the system geolocation permission is required for the Automatic Time Zone Detection. Displaying the current status of Automatic Time Zone Detection with inline link to resolve the breakage.">
+    Time Zone is currently set to (UTC+/-X:XX). Location access is needed to automatically update the time zone. <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>Turn on Location access<ph name="END_LINK">&lt;/a&gt;</ph>
+  </message>
   <message name="IDS_OS_SETTINGS_REVAMP_TIME_ZONE_DETECTION_MODE_IP_ONLY_DEFAULT" desc="Display name for the automatic time zone detection mode which enables time zone detection sending unprecise location to Google servers.">
     Use your IP address to determine location
   </message>
@@ -5709,16 +5712,18 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_SET_DATE_TIME" desc="Label for the button that shows the dialog for setting the system date and time.">
     Set date and time
   </message>
-  <message name="IDS_SETTINGS_TIME_ZONE_GEOLOCATION_DIALOG_TITLE" desc="Title for the dialog, that pops up when user wants to access precise location for better time zone resolution, but the system geoocation access is disabled. This dialog asks if the user wants to enable the system geolocation access.">
-    Turn on precise location access?
+  <message name="IDS_SETTINGS_PRIVACY_HUB_GEOLOCATION_DIALOG_TITLE" translateable="false" desc="Title for the dialog, that enables users to grant the system geolocation permission for system services. This pop-up is used in few places (e.g. Automatic Time Zone) to let users conveniently enable geolocation and make the underlying feature fucntional, without navigating to the settings page.">
+    Allow system services to use your location?
   </message>
-  <message name="IDS_SETTINGS_TIME_ZONE_GEOLOCATION_DIALOG_BODY" desc="Description text of the dialog that prompts the user to enable system geolocation access. This gives detailed explanation of the outcomes, if the user accepts the dialog.">
-    This allows apps and websites with the location permission and ChromeOS to use the location determined by your Wi-Fi or mobile networks. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  <message name="IDS_SETTINGS_PRIVACY_HUB_GEOLOCATION_DIALOG_BODY" translateable="false" desc="Description of the dialog that prompts the user to enable system geolocation access. This gives detailed explanation of the outcomes of enabling system geolocation access for system services.">
+    This allows system services with the permission to use your location. Location may use sources like Wi-Fi, mobile networks, and sensors to help estimate your device's location. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
-  <message name="IDS_SETTINGS_TIME_ZONE_GEOLOCATION_DIALOG_CANCEL_BUTTON" desc="Label of the cancel button, that dismisses the geolocation dialog.">
+  <message name="IDS_SETTINGS_PRIVACY_HUB_GEOLOCATION_DIALOG_CONFIRM_BUTTON" translateable="false" desc="Label of the confirm button for the geolocation dialog, that enables geolocation for ChromeOS system services.">
+    Allow
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_HUB_GEOLOCATION_DIALOG_CANCEL_BUTTON" translateable="false"  desc="Label of the cancel button, that dismisses the geolocation dialog.">
     Cancel
   </message>
-
   <!-- Per Device Keyboard page (OS settings) -->
   <message name="IDS_SETTINGS_BUILT_IN_KEYBOARD_NAME" desc="In Device Settings, the name of the built-in/internal keyboard device within the settings app.">
     Built-in Keyboard

@@ -20,6 +20,7 @@ import './os_languages_page/os_languages_section.js';
 import './os_printing_page/os_printing_page.js';
 import './os_reset_page/os_reset_page.js';
 /** Subpages */
+import './date_time_page/timezone_subpage.js';
 import './device_page/customize_mouse_buttons_subpage.js';
 import './device_page/customize_pen_buttons_subpage.js';
 import './device_page/customize_tablet_buttons_subpage.js';
@@ -73,7 +74,6 @@ import './crostini_page/crostini_port_forwarding.js';
 import './crostini_page/crostini_port_forwarding_add_port_dialog.js';
 import './crostini_page/crostini_shared_usb_devices.js';
 import './crostini_page/crostini_subpage.js';
-import './date_time_page/system_geolocation_dialog.js';
 import './date_time_page/timezone_selector.js';
 import './guest_os/guest_os_container_select.js';
 import './guest_os/guest_os_shared_paths.js';

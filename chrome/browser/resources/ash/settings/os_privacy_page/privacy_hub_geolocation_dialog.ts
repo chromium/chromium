@@ -17,16 +17,16 @@ import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialo
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
+import {GeolocationAccessLevel} from './privacy_hub_geolocation_subpage.js';
 
-import {TimeZoneAutoDetectMethod} from './date_time_types.js';
-import {getTemplate} from './system_geolocation_dialog.html.js';
+import {getTemplate} from './privacy_hub_geolocation_dialog.html.js';
 
-const SystemGeolocationDialogElementBase = PrefsMixin(PolymerElement);
+const PrivacyHubGeolocationDialogBase = PrefsMixin(PolymerElement);
 
-class SystemGeolocationDialogElement extends
-    SystemGeolocationDialogElementBase {
+class PrivacyHubGeolocationDialog extends
+    PrivacyHubGeolocationDialogBase {
   static get is() {
-    return 'settings-system-geolocation-dialog' as const;
+    return 'settings-privacy-hub-geolocation-dialog' as const;
   }
 
   static get template() {
@@ -38,29 +38,28 @@ class SystemGeolocationDialogElement extends
    */
   private onEnableClicked_(): void {
     // Send the new state immediately, this will also toggle the underlying
-    // setting-toggle-button associated with this pref.
-    this.setPrefValue('ash.user.geolocation_allowed', true);
-    this.getWarningDialog_().close();
+    // `setting-dropdown-menu` setting associated with this pref.
+    this.setPrefValue(
+        'ash.user.geolocation_access_level',
+        GeolocationAccessLevel.ONLY_ALLOWED_FOR_SYSTEM);
+    this.getDialog_().close();
   }
 
   private onCancelClicked_(): void {
-    this.setPrefValue(
-        'generated.resolve_timezone_by_geolocation_method_short',
-        TimeZoneAutoDetectMethod.IP_ONLY);
-    this.getWarningDialog_().close();
+    this.getDialog_().close();
   }
 
-  private getWarningDialog_(): CrDialogElement {
+  private getDialog_(): CrDialogElement {
     return castExists(this.shadowRoot!.querySelector<CrDialogElement>(
-        '#enableSystemGeolocationDialog'));
+        '#systemGeolocationDialog'));
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    [SystemGeolocationDialogElement.is]: SystemGeolocationDialogElement;
+    [PrivacyHubGeolocationDialog.is]: PrivacyHubGeolocationDialog;
   }
 }
 
 customElements.define(
-    SystemGeolocationDialogElement.is, SystemGeolocationDialogElement);
+    PrivacyHubGeolocationDialog.is, PrivacyHubGeolocationDialog);

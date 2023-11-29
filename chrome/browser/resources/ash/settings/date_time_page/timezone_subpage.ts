@@ -12,6 +12,8 @@ import '/shared/settings/controls/settings_dropdown_menu.js';
 import '/shared/settings/controls/settings_radio_group.js';
 import '../settings_shared.css.js';
 import './timezone_selector.js';
+import '../os_privacy_page/privacy_hub_geolocation_dialog.js';
+import '../os_privacy_page/privacy_hub_geolocation_warning_text.js';
 
 import {SettingsDropdownMenuElement} from '/shared/settings/controls/settings_dropdown_menu.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
@@ -23,6 +25,7 @@ import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {isChild} from '../common/load_time_booleans.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
+import {GeolocationAccessLevel} from '../os_privacy_page/privacy_hub_geolocation_subpage.js';
 import {Route, routes} from '../router.js';
 
 import {TimeZoneAutoDetectMethod} from './date_time_types.js';
@@ -67,6 +70,13 @@ export class TimezoneSubpageElement extends TimezoneSubpageElementBase {
         value: () => new Set<Setting>([Setting.kChangeTimeZone]),
       },
 
+      shouldShowGeolocationWarningText_: {
+        type: Boolean,
+        computed: 'computeShouldShowGeolocationWarningText_(' +
+            'prefs.generated.resolve_timezone_by_geolocation_on_off.value,' +
+            'prefs.ash.user.geolocation_access_level.value)',
+      },
+
       showEnableSystemGeolocationDialog_: {
         type: Boolean,
         value: false,
@@ -77,6 +87,7 @@ export class TimezoneSubpageElement extends TimezoneSubpageElementBase {
   activeTimeZoneDisplayName: string;
   private browserProxy_: TimeZoneBrowserProxy;
   private showEnableSystemGeolocationDialog_: boolean;
+  private shouldShowGeolocationWarningText_: boolean;
 
   constructor() {
     super();
@@ -107,6 +118,14 @@ export class TimezoneSubpageElement extends TimezoneSubpageElementBase {
     }
 
     this.attemptDeepLink();
+  }
+
+  private computeShouldShowGeolocationWarningText_(): boolean {
+    return (
+        this.prefs.generated.resolve_timezone_by_geolocation_on_off.value ===
+            true &&
+        this.prefs.ash.user.geolocation_access_level.value ===
+            GeolocationAccessLevel.DISALLOWED);
   }
 
   /**
@@ -176,30 +195,11 @@ export class TimezoneSubpageElement extends TimezoneSubpageElementBase {
     }
   }
 
-  private onTimeZoneSelectionChanged_(): void {
-    const geolocationAllowed =
-        this.getPref('ash.user.geolocation_allowed').value;
-    if (geolocationAllowed) {
-      return;
-    }
-
-    let selectedTimezoneOption = null;
-    const dropDown = this.$.timeZoneResolveMethodDropdown;
-    if (dropDown.pref) {
-      selectedTimezoneOption = dropDown.pref.value;
-    }
-
-    // Pop up geolocation dialog, when user wants to enable precise timezone,
-    // but the system geolocation access is disabled.
-    if (selectedTimezoneOption ===
-            TimeZoneAutoDetectMethod.SEND_ALL_LOCATION_INFO ||
-        selectedTimezoneOption ===
-            TimeZoneAutoDetectMethod.SEND_WIFI_ACCESS_POINTS) {
-      this.showEnableSystemGeolocationDialog_ = true;
-    }
+  private openGeolocationDialog_(): void {
+    this.showEnableSystemGeolocationDialog_ = true;
   }
 
-  private onEnableSystemGeolocationDialogClosed_(): void {
+  private onGeolocationDialogClose_(): void {
     this.showEnableSystemGeolocationDialog_ = false;
   }
 }

@@ -14,8 +14,12 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './privacy_hub_geolocation_subpage.html.js';
 
-
-enum GeolocationAccessLevel {
+/**
+ * Geolocation access levels for the ChromeOS system.
+ * This must be kept in sync with `GeolocationAccessLevel` in
+ * ash/constants/geolocation_access_level.h
+ */
+export enum GeolocationAccessLevel {
   DISALLOWED = 0,
   ALLOWED = 1,
   ONLY_ALLOWED_FOR_SYSTEM = 2,
