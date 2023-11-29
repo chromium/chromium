@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/style/inset_area.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/text/writing_direction_mode.h"
 
 namespace blink {
@@ -88,6 +89,69 @@ TEST_P(InsetAreaToPhysicalTest, All) {
   EXPECT_EQ(test_case.logical.ToPhysical(test_case.container_writing_direction,
                                          test_case.self_writing_direction),
             test_case.expected_physical);
+}
+
+struct UsedInsetsTestCase {
+  InsetArea physical;
+  const Length& expected_top;
+  const Length& expected_bottom;
+  const Length& expected_left;
+  const Length& expected_right;
+};
+
+UsedInsetsTestCase used_insets_test_cases[] = {
+    {{InsetAreaRegion::kTop, InsetAreaRegion::kTop, InsetAreaRegion::kLeft,
+      InsetAreaRegion::kLeft},
+     Length::FixedZero(),
+     InsetArea::AnchorTop(),
+     Length::FixedZero(),
+     InsetArea::AnchorLeft()},
+    {{InsetAreaRegion::kCenter, InsetAreaRegion::kCenter,
+      InsetAreaRegion::kCenter, InsetAreaRegion::kCenter},
+     InsetArea::AnchorTop(),
+     InsetArea::AnchorBottom(),
+     InsetArea::AnchorLeft(),
+     InsetArea::AnchorRight()},
+    {{InsetAreaRegion::kBottom, InsetAreaRegion::kBottom,
+      InsetAreaRegion::kRight, InsetAreaRegion::kRight},
+     InsetArea::AnchorBottom(),
+     Length::FixedZero(),
+     InsetArea::AnchorRight(),
+     Length::FixedZero()},
+    {{InsetAreaRegion::kTop, InsetAreaRegion::kCenter, InsetAreaRegion::kLeft,
+      InsetAreaRegion::kCenter},
+     Length::FixedZero(),
+     InsetArea::AnchorBottom(),
+     Length::FixedZero(),
+     InsetArea::AnchorRight()},
+    {{InsetAreaRegion::kCenter, InsetAreaRegion::kBottom,
+      InsetAreaRegion::kCenter, InsetAreaRegion::kRight},
+     InsetArea::AnchorTop(),
+     Length::FixedZero(),
+     InsetArea::AnchorLeft(),
+     Length::FixedZero()},
+    {{InsetAreaRegion::kTop, InsetAreaRegion::kBottom, InsetAreaRegion::kLeft,
+      InsetAreaRegion::kRight},
+     Length::FixedZero(),
+     Length::FixedZero(),
+     Length::FixedZero(),
+     Length::FixedZero()},
+};
+
+class InsetAreaUsedInsetsTest
+    : public testing::Test,
+      public testing::WithParamInterface<UsedInsetsTestCase> {};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         InsetAreaUsedInsetsTest,
+                         testing::ValuesIn(used_insets_test_cases));
+
+TEST_P(InsetAreaUsedInsetsTest, All) {
+  const UsedInsetsTestCase& test_case = GetParam();
+  EXPECT_EQ(test_case.physical.UsedTop(), test_case.expected_top);
+  EXPECT_EQ(test_case.physical.UsedBottom(), test_case.expected_bottom);
+  EXPECT_EQ(test_case.physical.UsedLeft(), test_case.expected_left);
+  EXPECT_EQ(test_case.physical.UsedRight(), test_case.expected_right);
 }
 
 }  // namespace blink

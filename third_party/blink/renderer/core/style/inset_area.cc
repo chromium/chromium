@@ -11,8 +11,14 @@
 #include "third_party/blink/renderer/platform/geometry/calculation_value.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/text/writing_direction_mode.h"
+#include "third_party/blink/renderer/platform/wtf/static_constructors.h"
 
 namespace blink {
+
+CORE_EXPORT DEFINE_GLOBAL(Length, g_anchor_top_length);
+CORE_EXPORT DEFINE_GLOBAL(Length, g_anchor_bottom_length);
+CORE_EXPORT DEFINE_GLOBAL(Length, g_anchor_left_length);
+CORE_EXPORT DEFINE_GLOBAL(Length, g_anchor_right_length);
 
 namespace {
 
@@ -183,6 +189,100 @@ InsetArea InsetArea::ToPhysical(
     std::swap(regions[2], regions[3]);
   }
   return InsetArea(regions[0], regions[1], regions[2], regions[3]);
+}
+
+const Length& InsetArea::UsedTop() const {
+  switch (FirstStart()) {
+    case InsetAreaRegion::kTop:
+      return Length::FixedZero();
+    case InsetAreaRegion::kCenter:
+      return g_anchor_top_length;
+    case InsetAreaRegion::kBottom:
+      return g_anchor_bottom_length;
+    default:
+      NOTREACHED();
+      [[fallthrough]];
+    case InsetAreaRegion::kNone:
+      return Length::Auto();
+  }
+}
+
+const Length& InsetArea::UsedBottom() const {
+  switch (FirstEnd()) {
+    case InsetAreaRegion::kTop:
+      return g_anchor_top_length;
+    case InsetAreaRegion::kCenter:
+      return g_anchor_bottom_length;
+    case InsetAreaRegion::kBottom:
+      return Length::FixedZero();
+    default:
+      NOTREACHED();
+      [[fallthrough]];
+    case InsetAreaRegion::kNone:
+      return Length::Auto();
+  }
+}
+
+const Length& InsetArea::UsedLeft() const {
+  switch (SecondStart()) {
+    case InsetAreaRegion::kLeft:
+      return Length::FixedZero();
+    case InsetAreaRegion::kCenter:
+      return g_anchor_left_length;
+    case InsetAreaRegion::kRight:
+      return g_anchor_right_length;
+    default:
+      NOTREACHED();
+      [[fallthrough]];
+    case InsetAreaRegion::kNone:
+      return Length::Auto();
+  }
+}
+
+const Length& InsetArea::UsedRight() const {
+  switch (SecondEnd()) {
+    case InsetAreaRegion::kLeft:
+      return g_anchor_left_length;
+    case InsetAreaRegion::kCenter:
+      return g_anchor_right_length;
+    case InsetAreaRegion::kRight:
+      return Length::FixedZero();
+    default:
+      NOTREACHED();
+      [[fallthrough]];
+    case InsetAreaRegion::kNone:
+      return Length::Auto();
+  }
+}
+
+void InsetArea::InitializeAnchorLengths() {
+  // These globals are initialized here instead of Length::Initialize() because
+  // they depend on anchor expressions defined in core/ which cannot be included
+  // from platform.
+  new (WTF::NotNullTag::kNotNull, (void*)&g_anchor_top_length)
+      Length(CalculationValue::CreateSimplified(
+          CalculationExpressionAnchorQueryNode::CreateAnchor(
+              *AnchorSpecifierValue::Default(), CSSAnchorValue::kTop,
+              Length::FixedZero()),
+          Length::ValueRange::kAll));
+  new (WTF::NotNullTag::kNotNull, (void*)&g_anchor_bottom_length)
+      Length(CalculationValue::CreateSimplified(
+          CalculationExpressionAnchorQueryNode::CreateAnchor(
+              *AnchorSpecifierValue::Default(), CSSAnchorValue::kBottom,
+              Length::FixedZero()),
+          Length::ValueRange::kAll));
+  new (WTF::NotNullTag::kNotNull, (void*)&g_anchor_left_length)
+      Length(CalculationValue::CreateSimplified(
+          CalculationExpressionAnchorQueryNode::CreateAnchor(
+              *AnchorSpecifierValue::Default(), CSSAnchorValue::kLeft,
+              Length::FixedZero()),
+          Length::ValueRange::kAll));
+  new (WTF::NotNullTag::kNotNull, (void*)&g_anchor_right_length)
+      Length(CalculationValue::CreateSimplified(
+          CalculationExpressionAnchorQueryNode::CreateAnchor(
+              *AnchorSpecifierValue::Default(), CSSAnchorValue::kRight,
+              Length::FixedZero()),
+          Length::ValueRange::kAll));
 }
 
 }  // namespace blink

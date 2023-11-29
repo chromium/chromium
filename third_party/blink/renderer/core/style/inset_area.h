@@ -10,6 +10,7 @@
 
 namespace blink {
 
+class Length;
 class WritingDirectionMode;
 
 // Possible region end points for a computed <inset-area-span>
@@ -35,6 +36,11 @@ enum class InsetAreaRegion {
   kYSelfEnd,
 };
 
+CORE_EXPORT extern const Length& g_anchor_top_length;
+CORE_EXPORT extern const Length& g_anchor_bottom_length;
+CORE_EXPORT extern const Length& g_anchor_left_length;
+CORE_EXPORT extern const Length& g_anchor_right_length;
+
 // Represents the computed value for the inset-area property. Each span is
 // represented by two end points in the spec order for that axis. That is:
 //
@@ -46,7 +52,7 @@ enum class InsetAreaRegion {
 // The axes are not ordered in a particular block/inline or vertical/
 // horizontal order because the axes will be resolved at layout time (see
 // ToPhysical() below).
-class InsetArea {
+class CORE_EXPORT InsetArea {
   DISALLOW_NEW();
 
  public:
@@ -77,9 +83,27 @@ class InsetArea {
   // first span is always a top/center/bottom span, and the second is a
   // left/center/right span. If the inset-area is not valid, all regions will be
   // InsetAreaRegion::kNone.
-  CORE_EXPORT InsetArea
-  ToPhysical(const WritingDirectionMode& container_writing_direction,
-             const WritingDirectionMode& self_writing_direction) const;
+  InsetArea ToPhysical(
+      const WritingDirectionMode& container_writing_direction,
+      const WritingDirectionMode& self_writing_direction) const;
+
+  // Return Lengths to override auto inset values according to the resolved
+  // inset-area. May only be called on InsetAreas returned from ToPhysical()
+  // which ensures physical vertical / horizontal areas.
+  const Length& UsedTop() const;
+  const Length& UsedBottom() const;
+  const Length& UsedLeft() const;
+  const Length& UsedRight() const;
+
+  // To be called from CoreInitializer only. Initializes global Length constants
+  // at startup used by the methods above.
+  static void InitializeAnchorLengths();
+
+  // Made public because they are used in unit test expectations.
+  static const Length& AnchorTop() { return g_anchor_top_length; }
+  static const Length& AnchorBottom() { return g_anchor_bottom_length; }
+  static const Length& AnchorLeft() { return g_anchor_left_length; }
+  static const Length& AnchorRight() { return g_anchor_right_length; }
 
  private:
   InsetAreaRegion span1_start_ = InsetAreaRegion::kNone;

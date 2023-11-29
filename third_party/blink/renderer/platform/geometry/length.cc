@@ -37,11 +37,13 @@ namespace blink {
 
 PLATFORM_EXPORT DEFINE_GLOBAL(Length, g_auto_length);
 PLATFORM_EXPORT DEFINE_GLOBAL(Length, g_none_length);
+PLATFORM_EXPORT DEFINE_GLOBAL(Length, g_fixed_zero_length);
 
 // static
 void Length::Initialize() {
   new (WTF::NotNullTag::kNotNull, (void*)&g_auto_length) Length(kAuto);
   new (WTF::NotNullTag::kNotNull, (void*)&g_none_length) Length(kNone);
+  new (WTF::NotNullTag::kNotNull, (void*)&g_fixed_zero_length) Length(kFixed);
 }
 
 class CalculationValueHandleMap {

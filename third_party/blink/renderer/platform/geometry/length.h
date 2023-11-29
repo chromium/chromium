@@ -89,6 +89,7 @@ class Length;
 
 PLATFORM_EXPORT extern const Length& g_auto_length;
 PLATFORM_EXPORT extern const Length& g_none_length;
+PLATFORM_EXPORT extern const Length& g_fixed_zero_length;
 
 class PLATFORM_EXPORT Length {
   DISALLOW_NEW();
@@ -185,6 +186,7 @@ class PLATFORM_EXPORT Length {
     return Length(number, kFixed);
   }
   static Length Fixed() { return Length(kFixed); }
+  static const Length& FixedZero() { return g_fixed_zero_length; }
   static const Length& Auto() { return g_auto_length; }
   static Length FillAvailable() { return Length(kFillAvailable); }
   static Length MinContent() { return Length(kMinContent); }
