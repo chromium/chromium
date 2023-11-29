@@ -208,6 +208,9 @@ class BacklightApp extends HTMLElement {
   }
 
   /** @override */
+  setViewport(viewportBox) {}
+
+  /** @override */
   setDelegate(delegate) {
     this.delegate = delegate;
   }

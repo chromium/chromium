@@ -4,6 +4,8 @@
 
 module ash.media_app_ui.mojom;
 
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
 // Factory interface to create an untrusted page handler (for the
 // chrome-untrusted:// frame) communicating directly with the browser.
 interface UntrustedPageHandlerFactory {
@@ -24,4 +26,10 @@ interface OcrUntrustedPageHandler {
 // App and called by browser process code.
 interface OcrUntrustedPage {
   // TODO(b/301007305): Implement methods for the OCR service.
+
+  // If a document is currently loaded, scrolls and zooms to the given viewport.
+  // This allows certain AXActions to be implemented such as
+  // `kScrollToMakeVisible` or `kSetScrollOffset`.
+  //   viewportBox: The bounding box representing the new camera position.
+  SetViewport(gfx.mojom.RectF viewportBox);
 };

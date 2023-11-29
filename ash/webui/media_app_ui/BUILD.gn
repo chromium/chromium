@@ -46,6 +46,7 @@ static_library("media_app_ui") {
     "//mojo/public/cpp/platform",
     "//third_party/blink/public/common",
     "//ui/file_manager:resources",
+    "//ui/gfx/geometry/mojom",
     "//ui/webui",
   ]
 }
@@ -107,6 +108,7 @@ mojom("mojo_bindings") {
 
 mojom("mojo_bindings_untrusted") {
   sources = [ "media_app_ui_untrusted.mojom" ]
+  deps = [ "//ui/gfx/geometry/mojom:mojom" ]
 }
 
 media_test_lib_closure_flags = system_app_closure_flags_strict + [
