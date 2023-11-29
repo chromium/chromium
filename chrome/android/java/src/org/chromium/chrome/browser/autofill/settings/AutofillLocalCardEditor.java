@@ -16,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
@@ -49,6 +50,8 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor {
     private static Callback<Fragment> sObserverForTest;
     private static final String EXPIRATION_DATE_SEPARATOR = "/";
     private static final String EXPIRATION_DATE_REGEX = "^(0[1-9]|1[0-2])\\/(\\d{2})$";
+    // TODO(crbug.com/1504662): Leverage the value from C++ code to have a single source of truth.
+    private static final String AMEX_NETWORK_NAME = "amex";
 
     protected Button mDoneButton;
     private TextInputLayout mNameLabel;
@@ -56,7 +59,7 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor {
     protected TextInputLayout mNicknameLabel;
     protected EditText mNicknameText;
     private TextInputLayout mNumberLabel;
-    private EditText mNumberText;
+    protected EditText mNumberText;
     protected Spinner mExpirationMonth;
     protected Spinner mExpirationYear;
     // Since the nickname field is optional, an empty nickname is a valid nickname.
@@ -65,6 +68,7 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor {
     private int mInitialExpirationMonthPos;
     protected EditText mExpirationDate;
     protected EditText mCvc;
+    protected ImageView mCvcHintImage;
     private boolean mIsValidExpirationDate;
     private int mInitialExpirationYearPos;
 
@@ -112,6 +116,8 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor {
             mExpirationDate.addTextChangedListener(expirationDateTextWatcher());
 
             mCvc = (EditText) v.findViewById(R.id.cvc);
+            mCvcHintImage = (ImageView) v.findViewById(R.id.cvc_hint_image);
+            mNumberText.addTextChangedListener(creditCardNumberTextWatcherForCvc());
         } else {
             RelativeLayout creditCardExpirationAndCvcLayout =
                     (RelativeLayout) v.findViewById(R.id.credit_card_expiration_and_cvc_layout);
@@ -402,6 +408,28 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor {
         };
     }
 
+    private TextWatcher creditCardNumberTextWatcherForCvc() {
+        return new EmptyTextWatcher() {
+            private boolean mUsingAmExCvcHintImage;
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String cardNumber = s.toString().replaceAll("\\s+", "");
+                if (isAmExCard(cardNumber)) {
+                    if (!mUsingAmExCvcHintImage) {
+                        mUsingAmExCvcHintImage = true;
+                        mCvcHintImage.setImageResource(R.drawable.cvc_icon_amex);
+                    }
+                } else {
+                    if (mUsingAmExCvcHintImage) {
+                        mUsingAmExCvcHintImage = false;
+                        mCvcHintImage.setImageResource(R.drawable.cvc_icon);
+                    }
+                }
+            }
+        };
+    }
+
     @VisibleForTesting
     public static String getExpirationMonth(String expirationDate) {
         String month = expirationDate.split(EXPIRATION_DATE_SEPARATOR)[0];
@@ -435,5 +463,11 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor {
             return !expirationDate.before(today);
         }
         return false;
+    }
+
+    public static boolean isAmExCard(String cardNumber) {
+        return PersonalDataManager.getInstance()
+                .getBasicCardIssuerNetwork(cardNumber, /* emptyIfInvalid= */ false)
+                .equals(AMEX_NETWORK_NAME);
     }
 }

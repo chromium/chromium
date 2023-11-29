@@ -157,7 +157,6 @@ found in the LICENSE file.
                 android:hint="@string/autofill_optional_tag"
                 android:imeOptions="actionNext"
                 android:inputType="number"
-                android:maxLength="4"
                 android:minHeight="@dimen/min_touch_target_size"
                 tools:ignore="Autofill,LabelFor" />
         </LinearLayout>
