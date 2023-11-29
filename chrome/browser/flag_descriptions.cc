@@ -2866,12 +2866,6 @@ const char kShowRelatedWebsiteSetsPermissionGrantsDescription[] =
     "Settings UI and Page Info Bubble, "
     "default is hidden";
 
-const char kRecordPermissionExpirationTimestampsName[] =
-    "Record permission expiration timestamps";
-const char kRecordPermissionExpirationTimestampsDescription[] =
-    "When enabled, permissions grants with a durable session model will have "
-    "an expiration date set.";
-
 const char kPowerBookmarkBackendName[] = "Power bookmark backend";
 const char kPowerBookmarkBackendDescription[] =
     "Enables storing additional metadata to support power bookmark features.";

@@ -1646,9 +1646,6 @@ extern const char kPermissionStorageAccessAPIDescription[];
 extern const char kShowRelatedWebsiteSetsPermissionGrantsName[];
 extern const char kShowRelatedWebsiteSetsPermissionGrantsDescription[];
 
-extern const char kRecordPermissionExpirationTimestampsName[];
-extern const char kRecordPermissionExpirationTimestampsDescription[];
-
 extern const char kPowerBookmarkBackendName[];
 extern const char kPowerBookmarkBackendDescription[];
 

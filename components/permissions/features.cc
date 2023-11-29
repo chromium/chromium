@@ -102,13 +102,6 @@ BASE_FEATURE(kBlockNotificationPromptsIfDisabledOnAppLevel,
 
 #else
 
-// When enabled, permissions grants with a durable session model will have
-// an expiration date set. The interpretation of the expiration date
-// is not handled by this component, but left to the embedding browser.
-BASE_FEATURE(kRecordPermissionExpirationTimestamps,
-             "RecordPermissionExpirationTimestamps",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Kill switch for the mitigation for https://crbug.com/1462709
 BASE_FEATURE(kMitigateUnpartitionedWebviewPermissions,
              "MitigateUnpartitionedWebviewPermissions",

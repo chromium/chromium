@@ -599,14 +599,11 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   if (commerce::isContextualConsentEnabled()) {
     commerce_hint::CommerceHintTabHelper::CreateForWebContents(web_contents);
   }
-  if (base::FeatureList::IsEnabled(
-          permissions::features::kRecordPermissionExpirationTimestamps)) {
     auto* service = UnusedSitePermissionsServiceFactory::GetForProfile(profile);
     if (service) {
       UnusedSitePermissionsService::TabHelper::CreateForWebContents(
           web_contents, service);
     }
-  }
   if (base::FeatureList::IsEnabled(ntp_features::kNtpHistoryClustersModule)) {
     side_panel::HistoryClustersTabHelper::CreateForWebContents(web_contents);
   }

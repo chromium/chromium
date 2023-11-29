@@ -63,9 +63,6 @@ BASE_DECLARE_FEATURE(kBlockNotificationPromptsIfDisabledOnAppLevel);
 #else
 
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
-BASE_DECLARE_FEATURE(kRecordPermissionExpirationTimestamps);
-
-COMPONENT_EXPORT(PERMISSIONS_COMMON)
 BASE_DECLARE_FEATURE(kMitigateUnpartitionedWebviewPermissions);
 
 #endif  // BUILDFLAG(IS_ANDROID)

@@ -9961,13 +9961,6 @@ const FeatureEntry kFeatureEntries[] = {
          kSafetyCheckUnusedSitePermissionsVariations,
          "SafetyCheckUnusedSitePermissions")},
 
-    {"record-permission-expiration-timestamps",
-     flag_descriptions::kRecordPermissionExpirationTimestampsName,
-     flag_descriptions::kRecordPermissionExpirationTimestampsDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         permissions::features::kRecordPermissionExpirationTimestamps)},
-
     {"safety-hub", flag_descriptions::kSafetyHubName,
      flag_descriptions::kSafetyHubDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSafetyHub)},
