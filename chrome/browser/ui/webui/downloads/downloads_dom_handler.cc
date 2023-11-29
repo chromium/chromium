@@ -34,6 +34,7 @@
 #include "chrome/browser/download/offline_item_utils.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -475,6 +476,8 @@ void DownloadsDOMHandler::DeepScan(const std::string& id) {
     return;
   }
 
+  LogDeepScanEvent(download,
+                   safe_browsing::DeepScanEvent::kPromptAcceptedFromWebUI);
   DownloadItemModel model(download);
   DownloadCommands commands(model.GetWeakPtr());
   commands.ExecuteCommand(DownloadCommands::DEEP_SCAN);

@@ -158,6 +158,8 @@ void DownloadBubbleContentsView::ProcessDeepScanPress(
     const ContentId& id,
     base::optional_ref<const std::string> password) {
   if (DownloadUIModel* model = GetDownloadModel(id); model) {
+    LogDeepScanEvent(model->GetDownloadItem(),
+                     safe_browsing::DeepScanEvent::kPromptAccepted);
     safe_browsing::DownloadProtectionService::UploadForConsumerDeepScanning(
         model->GetDownloadItem(), password);
   }

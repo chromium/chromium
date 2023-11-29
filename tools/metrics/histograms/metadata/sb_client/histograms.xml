@@ -417,7 +417,10 @@ chromium-metrics-reviews@google.com.
     cancelation or completion. This is logged for consumer scans of
     {Encryption}.
 
-    Note: Logging of PromptAccepted was lost in M118.
+    Note: Logging of PromptAccepted was lost in M118. &quot;Scan canceled&quot;
+    and &quot;Scan deleted&quot; were added in M121. &quot;Prompt accepted&quot;
+    was split into &quot;Prompt accepted&quot; and &quot;Prompt accepted from
+    chrome://downloads&quot; in M121.
   </summary>
   <token key="Encryption">
     <variant name="" summary="a file"/>

@@ -852,7 +852,6 @@ void DownloadProtectionService::UploadForConsumerDeepScanning(
           TRIGGER_CONSUMER_PROMPT,
       safe_browsing::DownloadCheckResult::UNKNOWN, std::move(settings),
       password);
-  LogDeepScanEvent(item, safe_browsing::DeepScanEvent::kPromptAccepted);
 }
 
 // static

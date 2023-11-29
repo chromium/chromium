@@ -825,13 +825,8 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
 #if BUILDFLAG(FULL_SAFE_BROWSING)
       CompleteSafeBrowsingScan();
 #endif
-      if (GetDangerType() == download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING) {
-        LogDeepScanEvent(download_,
-                         safe_browsing::DeepScanEvent::kScanCanceled);
-      } else {
-        LogDeepScanEvent(download_,
-                         safe_browsing::DeepScanEvent::kPromptBypassed);
-      }
+      LogDeepScanEvent(download_,
+                       safe_browsing::DeepScanEvent::kPromptBypassed);
       [[fallthrough]];
     case DownloadCommands::KEEP:
 #if BUILDFLAG(FULL_SAFE_BROWSING)
@@ -857,6 +852,9 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
 #if BUILDFLAG(FULL_SAFE_BROWSING)
       MaybeSendDownloadReport(GetURL(), GetDangerType(), /*did_proceed=*/false,
                               profile(), download_);
+      if (GetDangerType() == download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING) {
+        LogDeepScanEvent(download_, safe_browsing::DeepScanEvent::kScanDeleted);
+      }
       if (MaybeSubmitDownloadToFeedbackService(command, profile(), download_)) {
         // Skip Remove because it is handled by download feedback service.
         break;
@@ -907,6 +905,7 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
       ChromeDownloadManagerDelegate* delegate =
           download_core_service->GetDownloadManagerDelegate();
       DCHECK(delegate);
+      LogDeepScanEvent(download_, safe_browsing::DeepScanEvent::kScanCanceled);
       delegate->CheckClientDownloadDone(
           download_->GetId(),
           safe_browsing::DownloadCheckResult::PROMPT_FOR_SCANNING);
