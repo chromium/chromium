@@ -340,13 +340,6 @@ void GPUCommandEncoder::copyTextureToTexture(GPUImageCopyTexture* source,
 void GPUCommandEncoder::writeTimestamp(DawnObject<WGPUQuerySet>* querySet,
                                        uint32_t queryIndex,
                                        ExceptionState& exception_state) {
-  if (!RuntimeEnabledFeatures::WebGPUDeveloperFeaturesEnabled()) {
-    exception_state.ThrowTypeError(
-        String::Format("Use of the writeTimestamp() method requires the "
-                       "'WebGPU Developer Features' flag to be enabled on %s.",
-                       device_->formattedLabel().c_str()));
-    return;
-  }
   V8GPUFeatureName::Enum requiredFeatureEnum =
       V8GPUFeatureName::Enum::kTimestampQuery;
   if (!device_->features()->has(requiredFeatureEnum)) {

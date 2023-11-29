@@ -2497,7 +2497,6 @@ interface GPUCommandEncoder
     method popDebugGroup
     method pushDebugGroup
     method resolveQuerySet
-    method writeTimestamp
     setter label
 interface GPUCompilationInfo
     attribute @@toStringTag
