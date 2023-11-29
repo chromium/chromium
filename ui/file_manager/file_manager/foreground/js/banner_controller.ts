@@ -157,7 +157,8 @@ export class BannerController extends EventTarget {
    * Maintains the currently navigated directory entry. This is updated when
    * a reconcile event is called.
    */
-  private currentEntry_: DirectoryEntry|FakeEntry|FilesAppDirEntry|null = null;
+  private currentEntry_: DirectoryEntry|FakeEntry|FilesAppDirEntry|undefined =
+      undefined;
 
   /**
    * Maintains a cache of the current size for all observed volumes. If a
@@ -1031,7 +1032,8 @@ export function isBelowThreshold(
  * curried function that takes the vm type.
  */
 function isPathSharedWithVm(
-    crostini: Crostini, entry: DirectoryEntry|FakeEntry|FilesAppDirEntry|null,
+    crostini: Crostini,
+    entry: DirectoryEntry|FakeEntry|FilesAppDirEntry|undefined,
     vmType: string) {
   if (!crostini.isEnabled(vmType)) {
     return false;

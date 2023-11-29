@@ -174,7 +174,7 @@ export class DialogActionController {
         this.directoryModel_.getFileListSelection().selectedIndexes;
 
     if (isFolderDialogType(this.dialogType_) && selectedIndexes.length === 0) {
-      const url = this.directoryModel_.getCurrentDirEntry().toURL();
+      const url = this.directoryModel_.getCurrentDirEntry()?.toURL();
       const singleSelection = {
         urls: [url],
         multiple: false,

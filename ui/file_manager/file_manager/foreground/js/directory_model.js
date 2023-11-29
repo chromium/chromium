@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/ash/common/assert.js';
 import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 import {Aggregator, AsyncQueue} from '../../common/js/async_util.js';
 import {isModal} from '../../common/js/dialog_type.js';
@@ -132,14 +132,9 @@ export class DirectoryModel extends EventTarget {
 
     this.currentFileListContext_ =
         new FileListContext(fileFilter, metadataModel, volumeManager);
-    this.currentDirContents_ =
-        // @ts-ignore: error TS2345: Argument of type 'null' is not assignable
-        // to parameter of type 'FileSystemDirectoryEntry | FilesAppDirEntry |
-        // FakeEntry'.
-        new DirectoryContents(this.currentFileListContext_, false, null, () => {
-          // @ts-ignore: error TS2345: Argument of type 'null' is not assignable
-          // to parameter of type 'FileSystemDirectoryEntry | FilesAppDirEntry'.
-          return new DirectoryContentScanner(null);
+    this.currentDirContents_ = new DirectoryContents(
+        this.currentFileListContext_, false, undefined, () => {
+          return new DirectoryContentScanner(undefined);
         });
 
     /**
@@ -505,13 +500,13 @@ export class DirectoryModel extends EventTarget {
         (event);
     const directoryEntry = this.getCurrentDirEntry();
 
-    if (!this.ignoreCurrentDirectoryDeletion_) {
+    if (!this.ignoreCurrentDirectoryDeletion_ && directoryEntry) {
       // If the change is deletion of currentDir, move up to its parent
       // directory.
       directoryEntry.getDirectory(
           directoryEntry.fullPath, {create: false}, () => {}, async () => {
             const volumeInfo =
-                this.volumeManager_.getVolumeInfo(assert(directoryEntry));
+                this.volumeManager_.getVolumeInfo(directoryEntry);
             if (volumeInfo) {
               const displayRoot = await volumeInfo.resolveDisplayRoot();
               this.changeDirectoryEntry(displayRoot);
@@ -625,7 +620,8 @@ export class DirectoryModel extends EventTarget {
   }
 
   /**
-   * @return {DirectoryEntry|FakeEntry|FilesAppDirEntry} Current directory.
+   * @return {DirectoryEntry|FakeEntry|FilesAppDirEntry|undefined} Current
+   *     directory.
    */
   getCurrentDirEntry() {
     return this.currentDirContents_.getDirectoryEntry();
@@ -938,9 +934,10 @@ export class DirectoryModel extends EventTarget {
         callback();
         return;
       }
+      const currentDirEntry = this.getCurrentDirEntry();
+      assert(currentDirEntry);
       const newDirContents = this.createDirectoryContents_(
-          this.currentFileListContext_, assert(this.getCurrentDirEntry()),
-          this.lastSearchQuery_);
+          this.currentFileListContext_, currentDirEntry, this.lastSearchQuery_);
       this.clearAndScan_(newDirContents, callback);
     });
   }
@@ -1047,8 +1044,9 @@ export class DirectoryModel extends EventTarget {
 
       // Record metric for Downloads directory.
       if (!dirContents.isSearch()) {
-        const locationInfo = this.volumeManager_.getLocationInfo(
-            assert(dirContents.getDirectoryEntry()));
+        const dirEntry = dirContents.getDirectoryEntry();
+        assert(dirEntry);
+        const locationInfo = this.volumeManager_.getLocationInfo(dirEntry);
         const volumeInfo = locationInfo && locationInfo.volumeInfo;
         if (volumeInfo && volumeInfo.volumeType === VolumeType.DOWNLOADS &&
             locationInfo.isRootEntry) {
@@ -1802,10 +1800,11 @@ export class DirectoryModel extends EventTarget {
         return;
       }
 
+      assert(currentDirEntry);
       if (!(query || '').trimStart()) {
         if (this.isSearching()) {
           const newDirContents = this.createDirectoryContents_(
-              this.currentFileListContext_, assert(currentDirEntry));
+              this.currentFileListContext_, currentDirEntry);
           this.clearAndScan_(newDirContents, callback);
         } else {
           callback();
@@ -1814,8 +1813,7 @@ export class DirectoryModel extends EventTarget {
       }
 
       const newDirContents = this.createDirectoryContents_(
-          this.currentFileListContext_, assert(currentDirEntry), query,
-          options);
+          this.currentFileListContext_, currentDirEntry, query, options);
       if (!newDirContents) {
         callback();
         return;

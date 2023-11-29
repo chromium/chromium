@@ -586,7 +586,7 @@ CommandUtil.isOnTrashRoot = fileManager => {
  *
  * @param {!Event} event Command event to mark.
  * @param {!CommandHandlerDeps} fileManager CommandHandlerDeps to use.
- * @return {Entry|FilesAppDirEntry} Entry of the event node.
+ * @return {Entry|FilesAppDirEntry|undefined} Entry of the event node.
  */
 CommandUtil.getEventEntry = (event, fileManager) => {
   let entry;

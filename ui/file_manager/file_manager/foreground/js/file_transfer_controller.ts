@@ -628,6 +628,7 @@ export class FileTransferController {
       writeFileFunc = writeFile) {
     destinationEntry =
         destinationEntry || this.directoryModel_.getCurrentDirEntry();
+    assert(destinationEntry);
 
     // When FilesApp does drag and drop to itself, it uses fs/sources to
     // populate sourceURLs, and it will resolve sourceEntries later using
@@ -865,7 +866,8 @@ export class FileTransferController {
       onlyIntoDirectories: boolean, _: List|DirectoryTree|XfTree,
       event: DragEvent) {
     event.preventDefault();
-    let entry = this.destinationEntry_;
+    let entry: DirectoryEntry|FilesAppDirEntry|null|undefined =
+        this.destinationEntry_;
     if (!entry && !onlyIntoDirectories) {
       entry = this.directoryModel_.getCurrentDirEntry();
     }
@@ -946,6 +948,7 @@ export class FileTransferController {
     }
     const destinationEntry =
         this.destinationEntry_ || this.directoryModel_.getCurrentDirEntry();
+    assert(destinationEntry);
     if (getRootType(destinationEntry) === RootType.TRASH &&
         this.canTrashSelection_(
             getRootType(destinationEntry), event.dataTransfer)) {
@@ -1282,9 +1285,9 @@ export class FileTransferController {
       return;
     }
     // queryCommandEnabled returns true if event.defaultPrevented is true.
-    if (this.canPasteOrDrop_(
-            getClipboardData(event),
-            this.directoryModel_.getCurrentDirEntry())) {
+    const currentDirEntry = this.directoryModel_.getCurrentDirEntry();
+    if (currentDirEntry &&
+        this.canPasteOrDrop_(getClipboardData(event), currentDirEntry)) {
       event.preventDefault();
     }
   }

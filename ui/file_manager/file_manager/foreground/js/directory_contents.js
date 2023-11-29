@@ -70,7 +70,8 @@ export class ContentScanner {
  */
 export class DirectoryContentScanner extends ContentScanner {
   /**
-   * @param {DirectoryEntry|FilesAppDirEntry} entry The directory to be read.
+   * @param {DirectoryEntry|FilesAppDirEntry|undefined} entry The directory to
+   *     be read.
    */
   constructor(entry) {
     super();
@@ -1184,8 +1185,8 @@ export class DirectoryContents extends EventTarget {
    * @param {FileListContext} context The file list context.
    * @param {boolean} isSearch True for search directory contents, otherwise
    *     false.
-   * @param {DirectoryEntry|FakeEntry|FilesAppDirEntry} directoryEntry The entry
-   *     of the current directory.
+   * @param {DirectoryEntry|FakeEntry|FilesAppDirEntry|undefined} directoryEntry
+   *     The entry of the current directory.
    * @param {function():ContentScanner} scannerFactory The factory to create
    *     ContentScanner instance.
    */
@@ -1344,9 +1345,9 @@ export class DirectoryContents extends EventTarget {
   }
 
   /**
-   * @return {DirectoryEntry|FakeEntry|FilesAppDirEntry} A DirectoryEntry for
-   *     current directory. In case of search -- the top directory from which
-   *     search is run.
+   * @return {DirectoryEntry|FakeEntry|FilesAppDirEntry|undefined} A
+   *     DirectoryEntry for current directory. In case of search -- the top
+   *     directory from which search is run.
    */
   getDirectoryEntry() {
     return this.directoryEntry_;
