@@ -13185,6 +13185,15 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
       label="Override Content Context Menu Redirect To Deployed File"/>
   <int value="111" label="Add a new style rule in the styles pane"/>
   <int value="112" label="Expand a console stack trace"/>
+  <int value="113" label="Console message with a possible insight shown"/>
+  <int value="114" label="Console insight requested using the context menu"/>
+  <int value="115" label="Console insight requested using the hover button"/>
+  <int value="116" label="Original insight has been refined"/>
+  <int value="117" label="Console insight rated positive"/>
+  <int value="118" label="Console insight rated negative"/>
+  <int value="119" label="Console insight closed"/>
+  <int value="120" label="Console insight generation errored"/>
+  <int value="121" label="Console insight hover button was shown"/>
 </enum>
 
 <enum name="DevToolsAnimationPlaybackRateChanged">
