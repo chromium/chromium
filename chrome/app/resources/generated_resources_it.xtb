@@ -1435,7 +1435,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2114820389966440614">Vedi "Foto recenti in evidenza" e altri ricordi presenti qui</translation>
 <translation id="2114896190328250491">Foto di <ph name="NAME" /></translation>
 <translation id="2114995631896158695">Nessuna scheda SIM inserita</translation>
-<translation id="2116619964159595185">Solitamente i siti si connettono ai dispositivi Bluetooth per funzionalità quali la configurazione o la sincronizzazione di beacon a bassa energia, di tracker per il monitoraggio dell'attività fisica o dello stato di salute oppure di lampadine smart</translation>
+<translation id="2116619964159595185">Solitamente i siti si connettono ai dispositivi Bluetooth per funzionalità come la configurazione o la sincronizzazione di beacon a bassa energia, tracker per fitness e benessere o lampadine smart</translation>
 <translation id="2117655453726830283">Diapositiva successiva</translation>
 <translation id="2119461801241504254">La funzionalità Navigazione sicura è attiva e ti protegge da siti e download pericolosi</translation>
 <translation id="2120297377148151361">Attività e interazioni</translation>
@@ -3598,7 +3598,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="3841319830220785495">Voce naturale predefinita</translation>
 <translation id="3841964634449506551">Password non valida</translation>
 <translation id="3842552989725514455">Carattere serif</translation>
-<translation id="3843464315703645664">Consentita internamente</translation>
+<translation id="3843464315703645664">Nella lista consentita interna</translation>
 <translation id="3844888638014364087">Emoji inserita</translation>
 <translation id="3846116211488856547">Scarica strumenti per sviluppare siti web, app Android e non solo. Se installi Linux verranno scaricati <ph name="DOWNLOAD_SIZE" /> di dati.</translation>
 <translation id="3847319713229060696">Contribuisci ad aumentare la sicurezza sul Web per tutti gli utenti</translation>
@@ -7349,7 +7349,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6960507406838246615">Aggiornamento di Linux necessario</translation>
 <translation id="6960648667961844909">Impossibile scaricare i file di contenuti vocali per la lingua <ph name="LANGUAGE" />. Verrà effettuato un tentativo di download in un secondo tempo. Ciò che dici viene inviato a Google per l'elaborazione fino al completamento del download.</translation>
 <translation id="696103774840402661">Tutti i file e i dati locali di tutti gli utenti su questo <ph name="DEVICE_TYPE" /> sono stati eliminati in modo permanente.</translation>
-<translation id="6961327401577924850">Solitamente i siti cercano dispositivi Bluetooth per funzionalità quali la configurazione o la sincronizzazione di beacon a bassa energia, di tracker per il monitoraggio dell'attività fisica o dello stato di salute oppure di lampadine smart</translation>
+<translation id="6961327401577924850">Solitamente i siti cercano dispositivi Bluetooth per funzionalità come la configurazione o la sincronizzazione di beacon a bassa energia, tracker per fitness e benessere o lampadine smart</translation>
 <translation id="6963872466817251924">Evidenziazione del cursore di testo</translation>
 <translation id="6964390816189577014">Eroe</translation>
 <translation id="6964760285928603117">Rimuovi dal gruppo</translation>
@@ -9138,7 +9138,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8386091599636877289">Norme non trovate.</translation>
 <translation id="8387361103813440603">Non possono accedere alla tua posizione</translation>
 <translation id="8388770971141403598">I profili secondari non sono supportati</translation>
-<translation id="8389492867173948260">Permetti a questa estensione di leggere e modificare tutti i dati relativi ai siti web che hai visitato:</translation>
+<translation id="8389492867173948260">Permetti a questa estensione di leggere e modificare tutti i dati relativi ai siti web che visiti:</translation>
 <translation id="8390449457866780408">Server non disponibile.</translation>
 <translation id="8391218455464584335">Vinile</translation>
 <translation id="8392726714909453725">Impostazioni Seleziona per ascoltare</translation>

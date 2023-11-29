@@ -1509,7 +1509,7 @@
 <translation id="4150099059797363385">中国 #4 封筒</translation>
 <translation id="4151403195736952345">全体の既定値を使用（検出）</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{1 ページ}other{{COUNT} ページ}}</translation>
-<translation id="4154277373259957087">Chrome では、お支払い方法を入力する前に本人確認が行われるようになります。この機能は <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> でいつでも変更できます。</translation>
+<translation id="4154277373259957087">Chrome では、お支払い方法を入力する前に本人確認が行われるようになります。この機能は、<ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />でいつでも変更できます。</translation>
 <translation id="4159149286839604525">サイトのほとんどの機能は動作しますが、保護の強度が低下します</translation>
 <translation id="4159784952369912983">パープル</translation>
 <translation id="4165986682804962316">サイトの設定</translation>
@@ -3669,7 +3669,7 @@
 <translation id="8553387990086529628">観光地</translation>
 <translation id="8554010658308662631">もっと読み込む</translation>
 <translation id="8554181323880688938">ブランド品、高級品</translation>
-<translation id="8554802735558319842">共有デバイスでセキュリティを強化するには、自動入力を使用した支払いのたびに確認する設定をオンにします。</translation>
+<translation id="8554802735558319842">共有デバイスでセキュリティを強化するために、自動入力を使用した支払いのたびに確認する設定をオンにします。</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{権限をリセット}other{権限をリセット}}</translation>
 <translation id="8555010941760982128">ご購入手続き時にこのコードを使用</translation>
 <translation id="8556297087315686325">ネットワーク監視、管理</translation>

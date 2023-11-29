@@ -1880,7 +1880,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="244641233057214044">Povezano s vašim pretraživanjem</translation>
 <translation id="2447587550790814052">Sada možete koristiti Steam za Chromebook (beta verzija)</translation>
 <translation id="2448312741937722512">Vrsta</translation>
-<translation id="2448810255793562605">Automatsko skeniranje prekidača za pristup</translation>
+<translation id="2448810255793562605">Automatsko skeniranje Pristupa pomoću prekidača</translation>
 <translation id="2450021089947420533">Iskustva pregledanja</translation>
 <translation id="2450223707519584812">Nećete moći dodati korisnike jer nedostaju ključevi Google API-ja. Za više detalja pogledajte <ph name="DETAILS_URL" />.</translation>
 <translation id="2450849356604136918">Nema aktivnih pregleda</translation>
@@ -1988,7 +1988,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2526590354069164005">Radna površina</translation>
 <translation id="2526619973349913024">Provjeri je li dostupno ažuriranje</translation>
 <translation id="2527167509808613699">Bilo koja vrsta veze</translation>
-<translation id="2529887123641260401">Uvijek možete promijeniti postavke ili ponovo otvoriti vodič za postavljanje iz postavki prekidača za pristup.</translation>
+<translation id="2529887123641260401">Uvijek možete promijeniti postavke ili ponovo otvoriti vodič za postavljanje iz postavki Pristupa pomoću prekidača.</translation>
 <translation id="2530166226437958497">Rješavanje problema</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Nešto nije uredu i instaliranje sistema <ph name="DEVICE_OS" /> nije uspjelo.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Da dobijete dodatnu pomoć, posjetite: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
@@ -4782,7 +4782,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="4809447465126035330">Izbriši</translation>
 <translation id="480990236307250886">Otvorite početnu stranicu</translation>
 <translation id="4809927044794281115">Svijetla tema</translation>
-<translation id="4811212958317149293">Automatsko skeniranje prekidača za pristup na tastaturi</translation>
+<translation id="4811212958317149293">Automatsko skeniranje Pristupa pomoću prekidača na tastaturi</translation>
 <translation id="4811503964269049987">Dodaj odabranu karticu u grupu</translation>
 <translation id="4813512666221746211">Greška na mreži</translation>
 <translation id="4814114628197290459">Izbrišite IBAN</translation>
@@ -9061,7 +9061,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8314089908545021657">Upari s novim telefonom</translation>
 <translation id="8314381333424235892">Ekstenzija nedostaje ili je deinstalirana</translation>
 <translation id="831440797644402910">Nije moguće otvoriti ovaj folder</translation>
-<translation id="8314835274931377415">Pokrenuti postavljanje prekidača za pristup?</translation>
+<translation id="8314835274931377415">Pokrenuti postavljanje Pristupa pomoću prekidača?</translation>
 <translation id="8315018673856831477">Opcije uštede memorije</translation>
 <translation id="8315044115695361734">S iCloud Keychaina</translation>
 <translation id="8317671367883557781">Dodaj mrežnu vezu</translation>
@@ -9589,9 +9589,9 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8740086188450289493">Koristite lozinku za Google račun</translation>
 <translation id="8740247629089392745">Ovaj Chromebook možete predati korisniku <ph name="SUPERVISED_USER_NAME" />. Postavljanje je skoro gotovo, nakon čega možete početi istraživati.</translation>
 <translation id="8740672167979365981">Potrebno je ažuriranje ChromeOS Flexa</translation>
-<translation id="8741944563400125534">Vodič za postavljanje prekidača za pristup</translation>
+<translation id="8741944563400125534">Vodič za postavljanje Pristupa pomoću prekidača</translation>
 <translation id="8742395827132970586">Instaliranje nije uspjelo. Brisanje je u toku.</translation>
-<translation id="8742998548129056176">Ovo su opće informacije o vašem uređaju i načinu korištenja (kao što su nivo napunjenosti baterije, aktivnosti sistema i aplikacija te greške). Ti podaci će se koristiti za poboljšanje Androida, a neke zbirne informacije će također pomoći Googleovim aplikacijama i partnerima, kao što su Androidovi programeri, da poboljšaju svoje aplikacije i proizvode.</translation>
+<translation id="8742998548129056176">Ovo su opće informacije o vašem uređaju i načinu korištenja (kao što su nivo napunjenosti baterije, aktivnosti sistema i aplikacija te greške). Ti podaci će se koristiti za poboljšanje Androida, a neki zbirni podaci će također pomoći Googleovim aplikacijama i partnerima, kao što su Androidovi programeri, da poboljšaju svoje aplikacije i proizvode.</translation>
 <translation id="8743357966416354615">Upravljano programersko okruženje (<ph name="GENERAL_NAME" />)</translation>
 <translation id="8744641000906923997">Romaji</translation>
 <translation id="8745034592125932220">Pohranjivanje podataka na uređaj nije dozvoljeno</translation>

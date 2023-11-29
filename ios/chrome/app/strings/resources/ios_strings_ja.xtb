@@ -1164,7 +1164,7 @@
 <translation id="7524055474074101597">アプリからパスワードなどにアクセスできます。</translation>
 <translation id="7531345132340165516">現在のサイト</translation>
 <translation id="7537586195939242955">現在、Passbookにパスをインストールできません。</translation>
-<translation id="754655535278952384"><ph name="TIME" /> にチェック</translation>
+<translation id="754655535278952384">確認しました（<ph name="TIME" />）</translation>
 <translation id="7552154146060018538"><ph name="SOURCE_DEVICE" /> で最後に使用したタブ</translation>
 <translation id="7553234618121028547">オフにするには、[<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] を開いて [パスワードのオプション] に移動します。</translation>
 <translation id="7554645225856321710">すべて閉じる</translation>
