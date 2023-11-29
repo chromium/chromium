@@ -4585,13 +4585,12 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled12Hrs_20230828",
+                    "name": "Enabled12Hrs_20231128",
                     "params": {
                         "HibernateAfterTimeHours": "12"
                     },
                     "enable_features": [
-                        "CrOSSuspendToDisk",
-                        "CrOSSuspendToDiskAllowS4"
+                        "CrOSSuspendToDisk"
                     ]
                 }
             ]
