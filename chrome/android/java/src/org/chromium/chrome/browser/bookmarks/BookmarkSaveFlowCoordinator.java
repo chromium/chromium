@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayP
 import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -112,8 +111,7 @@ public class BookmarkSaveFlowCoordinator {
                         BookmarkUtils.getRoundedIconGenerator(
                                 mContext, BookmarkRowDisplayPref.VISUAL),
                         res.getDimensionPixelSize(R.dimen.improved_bookmark_save_flow_image_size),
-                        BookmarkUtils.getFaviconDisplaySize(res),
-                        SyncServiceFactory.getForProfile(profile));
+                        BookmarkUtils.getFaviconDisplaySize(res));
 
         mMediator =
                 new BookmarkSaveFlowMediator(
