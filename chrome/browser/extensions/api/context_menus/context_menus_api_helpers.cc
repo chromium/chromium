@@ -30,7 +30,8 @@ const char kParentsMustBeNormalError[] =
     "Parent items must have type \"normal\"";
 const char kTitleNeededError[] =
     "All menu items except for separators must have a title";
-
+const char kTooManyMenuItems[] =
+    "An extension can create a maximum of * menu items.";
 
 std::string GetIDString(const MenuItem::Id& id) {
   if (id.uid == 0)

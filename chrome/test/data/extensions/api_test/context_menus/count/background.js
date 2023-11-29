@@ -2,41 +2,36 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-function createMenuItems() {
-  // Create two parent items with two children each.
-  let parents = [];
-  parents.push(chrome.contextMenus.create({
-    title: 'Test parent item 1',
-    id: 'parent1'
-  }));
-  parents.push(chrome.contextMenus.create({
-    title: 'Test parent item 2',
-    id: 'parent2'
-  }));
+// See MenuManager::kMaxItemsPerExtension.
+const maxMenuItems = 1000;
 
-  let currentId = 1;
-  parents.forEach((parent) => {
-    let idString = 'child' + currentId;
-    ++currentId;
-    chrome.contextMenus.create({
-      title: 'Child 1',
-      parentId: parent,
-      id: idString
-    });
+chrome.test.runTests([
+  async function createTooManyMenuItems() {
+    // No menus should be initially created, since this extension only
+    // runs once, but remove all just in case.
+    await chrome.contextMenus.removeAll();
 
-    idString = 'child' + currentId;
-    ++currentId;
-    chrome.contextMenus.create({
-      title: 'Child 2',
-      parentId: parent,
-      id: idString
-    });
-  });
-}
+    // Create the maximum allowed number of menus.
+    for (let i = 0; i < maxMenuItems; ++i) {
+      await new Promise((resolve) => {
+        chrome.contextMenus.create(
+            {title: `Test item ${i}`,
+             id: `item ${i}`},
+            () => {
+              chrome.test.assertNoLastError();
+              resolve();
+            })});
+    }
 
-chrome.runtime.onInstalled.addListener(() => {
-  // Create the menu items and signal success.
-  createMenuItems();
-  chrome.test.assertNoLastError();
-  chrome.test.notifyPass();
-});
+    // Try to create one more over the limit.
+    chrome.contextMenus.create(
+        {title: `Test item ${maxMenuItems}`,
+         id: `item ${maxMenuItems}`},
+        () => {
+          chrome.test.assertLastError(
+              `An extension can create a maximum of ${maxMenuItems} menu ` +
+              'items.');
+          chrome.test.succeed();
+        });
+  },
+]);

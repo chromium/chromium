@@ -294,6 +294,7 @@ class MenuManager : public ProfileObserver,
  public:
   static const char kOnContextMenus[];
   static const char kOnWebviewContextMenus[];
+  static constexpr MenuItem::OwnedList::size_type kMaxItemsPerExtension = 1000;
 
   class TestObserver : public base::CheckedObserver {
    public:
@@ -321,7 +322,15 @@ class MenuManager : public ProfileObserver,
   // top-level items' children. A view can then decide how to display these,
   // including whether to put them into a submenu if there are more than 1.
   const MenuItem::OwnedList* MenuItems(
-      const MenuItem::ExtensionKey& extension_key);
+      const MenuItem::ExtensionKey& extension_key) const;
+
+  // Returns the number of menu items for extension specified by
+  // `extension_key`.
+  MenuItem::OwnedList::size_type MenuItemsSize(
+      const MenuItem::ExtensionKey& extension_key) const {
+    const MenuItem::OwnedList* list = MenuItems(extension_key);
+    return list ? list->size() : 0;
+  }
 
   // Adds a top-level menu item for an extension, requiring the |extension|
   // pointer so it can load the icon for the extension. Returns a boolean
