@@ -86,7 +86,7 @@ namespace {
 void OnResponse(
     const GURL& url,
     safe_search_api::URLCheckerClient::ClientCheckCallback client_callback,
-    supervised_user::ProtoFetcherStatus status,
+    const supervised_user::ProtoFetcherStatus& status,
     std::unique_ptr<kids_chrome_management::ClassifyUrlResponse>
         classify_url_response) {
   DVLOG(1) << "URL classification = "

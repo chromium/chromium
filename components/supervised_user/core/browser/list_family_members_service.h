@@ -51,12 +51,12 @@ class ListFamilyMembersService : public KeyedService {
 
  private:
   void OnResponse(
-      ProtoFetcherStatus status,
+      const ProtoFetcherStatus& status,
       std::unique_ptr<kids_chrome_management::ListFamilyMembersResponse>
           response);
   void OnSuccess(
       const kids_chrome_management::ListFamilyMembersResponse& response);
-  void OnFailure(ProtoFetcherStatus status);
+  void OnFailure(const ProtoFetcherStatus& status);
   void ScheduleNextUpdate(base::TimeDelta delay);
 
   // Dependencies.

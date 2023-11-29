@@ -23,7 +23,7 @@ namespace {
 constexpr base::TimeDelta kDefaultUpdateInterval = base::Days(1);
 constexpr base::TimeDelta kOnErrorUpdateInterval = base::Hours(4);
 
-base::TimeDelta NextUpdate(ProtoFetcherStatus status) {
+base::TimeDelta NextUpdate(const ProtoFetcherStatus& status) {
   if (status.IsOk()) {
     return kDefaultUpdateInterval;
   }
@@ -59,7 +59,7 @@ void ListFamilyMembersService::Cancel() {
 }
 
 void ListFamilyMembersService::OnResponse(
-    ProtoFetcherStatus status,
+    const ProtoFetcherStatus& status,
     std::unique_ptr<kids_chrome_management::ListFamilyMembersResponse>
         response) {
   // Built-in mechanism for retrying will take care of internal retrying, but
