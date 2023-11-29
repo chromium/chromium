@@ -23,6 +23,7 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.page_insights.PageInsightsMediator.DEFAULT_TRIGGER_DELAY_MS;
 import static org.chromium.chrome.browser.page_insights.PageInsightsMediator.PAGE_INSIGHTS_CAN_AUTOTRIGGER_AFTER_END;
+import static org.chromium.chrome.browser.page_insights.PageInsightsMediator.PAGE_INSIGHTS_CAN_RETURN_TO_PEEK_AFTER_EXPANSION;
 
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
@@ -205,15 +206,23 @@ public class PageInsightsMediatorTest {
     }
 
     private void createMediator(int triggerDelayMs) {
-        createMediator(triggerDelayMs, 0);
-    }
-
-    private void createMediator(int triggerDelayMs, long firstLoadTimeMs) {
         TestValues testValues = new TestValues();
         testValues.addFieldTrialParamOverride(
                 ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
                 PAGE_INSIGHTS_CAN_AUTOTRIGGER_AFTER_END,
                 String.valueOf(triggerDelayMs));
+        createMediator(testValues);
+    }
+
+    private void createMediator(int triggerDelayMs, TestValues furtherTestValues) {
+        furtherTestValues.addFieldTrialParamOverride(
+                ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
+                PAGE_INSIGHTS_CAN_AUTOTRIGGER_AFTER_END,
+                String.valueOf(triggerDelayMs));
+        createMediator(furtherTestValues);
+    }
+
+    private void createMediator(TestValues testValues) {
         FeatureList.setTestValues(testValues);
         Context context = ContextUtils.getApplicationContext();
         context.setTheme(org.chromium.chrome.R.style.Theme_BrowserUI);
@@ -493,6 +502,53 @@ public class PageInsightsMediatorTest {
                 .onEvent(
                         org.chromium.chrome.browser.xsurface.pageinsights.PageInsightsEvent
                                 .BOTTOM_SHEET_PEEKING);
+    }
+
+    @Test
+    @MediumTest
+    public void
+            testExpandAfterAutoTrigger_cannotReturnToPeekAfterExpansion_peekDisabledSwipeEnabled() {
+        createMediator(SHORT_TRIGGER_DELAY_MS);
+        View feedView = new View(ContextUtils.getApplicationContext());
+        when(mSurfaceRenderer.render(eq(TEST_FEED_ELEMENTS_OUTPUT), any())).thenReturn(feedView);
+        when(mControlsStateProvider.getBrowserControlHiddenRatio()).thenReturn(1.0f);
+
+        mMediator.onPageLoadStarted(mTab, null);
+        mMediator.onDidFinishNavigationInPrimaryMainFrame(mTab, mNavigationHandle);
+        mShadowLooper.idleFor(2500, TimeUnit.MILLISECONDS);
+        mMediator.onSheetStateChanged(SheetState.PEEK, StateChangeReason.SWIPE);
+        mMediator.onSheetStateChanged(SheetState.FULL, StateChangeReason.SWIPE);
+
+        assertEquals(
+                PageInsightsSheetContent.HeightMode.DISABLED,
+                mMediator.getSheetContent().getPeekHeight());
+        assertTrue(mMediator.getSheetContent().swipeToDismissEnabled());
+    }
+
+    @Test
+    @MediumTest
+    public void
+            testExpandAfterAutoTrigger_canReturnToPeekAfterExpansion_peekEnabledSwipeDisabled() {
+        TestValues testValues = new TestValues();
+        testValues.addFieldTrialParamOverride(
+                ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
+                PAGE_INSIGHTS_CAN_RETURN_TO_PEEK_AFTER_EXPANSION,
+                "true");
+        createMediator(SHORT_TRIGGER_DELAY_MS, testValues);
+        View feedView = new View(ContextUtils.getApplicationContext());
+        when(mSurfaceRenderer.render(eq(TEST_FEED_ELEMENTS_OUTPUT), any())).thenReturn(feedView);
+        when(mControlsStateProvider.getBrowserControlHiddenRatio()).thenReturn(1.0f);
+
+        mMediator.onPageLoadStarted(mTab, null);
+        mMediator.onDidFinishNavigationInPrimaryMainFrame(mTab, mNavigationHandle);
+        mShadowLooper.idleFor(2500, TimeUnit.MILLISECONDS);
+        mMediator.onSheetStateChanged(SheetState.PEEK, StateChangeReason.SWIPE);
+        mMediator.onSheetStateChanged(SheetState.FULL, StateChangeReason.SWIPE);
+
+        assertNotEquals(
+                PageInsightsSheetContent.HeightMode.DISABLED,
+                mMediator.getSheetContent().getPeekHeight());
+        assertFalse(mMediator.getSheetContent().swipeToDismissEnabled());
     }
 
     @Test

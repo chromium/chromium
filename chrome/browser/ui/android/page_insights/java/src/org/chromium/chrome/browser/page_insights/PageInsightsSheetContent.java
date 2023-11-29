@@ -82,6 +82,7 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
     private int mFullScreenHeight;
     private Callback<View> mOnPrivacyNoticeLinkClickCallback;
     private boolean mShouldHavePeekState;
+    private boolean mSwipeToDismissEnabled;
     @Nullable private RecyclerView mCurrentRecyclerView;
 
     /**
@@ -218,8 +219,7 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
 
     @Override
     public boolean swipeToDismissEnabled() {
-        // Swiping down hard/tapping on scrim closes the sheet.
-        return true;
+        return mSwipeToDismissEnabled;
     }
 
     @Override
@@ -362,6 +362,14 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
         if (privacyCard != null) {
             privacyCard.setBackgroundTintList(ColorStateList.valueOf(color));
         }
+    }
+
+    void setShouldHavePeekState(boolean shouldHavePeekState) {
+        mShouldHavePeekState = shouldHavePeekState;
+    }
+
+    void setSwipeToDismissEnabled(boolean swipeToDismissEnabled) {
+        mSwipeToDismissEnabled = swipeToDismissEnabled;
     }
 
     private void updateContentDimensions() {

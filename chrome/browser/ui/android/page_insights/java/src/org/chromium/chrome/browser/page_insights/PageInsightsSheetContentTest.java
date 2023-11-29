@@ -805,6 +805,43 @@ public class PageInsightsSheetContentTest {
                 });
     }
 
+    @Test
+    @MediumTest
+    public void getPeekHeight_shouldHavePeekStateThenShouldNot() {
+        createSheetContent();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mSheetContent.initContent(
+                            new FrameLayout(sTestRule.getActivity()),
+                            /* isPrivacyNoticeRequired= */ false,
+                            /* shouldHavePeekState= */ true);
+
+                    mSheetContent.setShouldHavePeekState(false);
+
+                    assertEquals(
+                            PageInsightsSheetContent.HeightMode.DISABLED,
+                            mSheetContent.getPeekHeight());
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void swipeToDismissEnabled_true() {
+        createSheetContent();
+        mSheetContent.setSwipeToDismissEnabled(true);
+
+        assertTrue(mSheetContent.swipeToDismissEnabled());
+    }
+
+    @Test
+    @MediumTest
+    public void swipeToDismissEnabled_false() {
+        createSheetContent();
+        mSheetContent.setSwipeToDismissEnabled(false);
+
+        assertFalse(mSheetContent.swipeToDismissEnabled());
+    }
+
     private View getToolbarViewById(int viewId) {
         return mSheetContent.getToolbarView().findViewById(viewId);
     }
