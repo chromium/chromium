@@ -69,6 +69,9 @@ typedef NS_ENUM(NSInteger, BookmarksHomeBackgroundStyle) {
 // Called when the set of edit nodes is cleared.
 - (void)mediatorDidClearEditNodes:(BookmarksHomeMediator*)mediator;
 
+// Displays the account settings.
+- (void)showAccountSettings;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_BOOKMARKS_HOME_BOOKMARKS_HOME_CONSUMER_H_

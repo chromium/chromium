@@ -656,7 +656,7 @@ bool IsABookmarkNodeSectionForIdentifier(
 #pragma mark - AccountSettingsPresenter
 
 - (void)showAccountSettings {
-  NOTIMPLEMENTED();
+  [self.consumer showAccountSettings];
 }
 
 #pragma mark - SyncObserverModelBridge

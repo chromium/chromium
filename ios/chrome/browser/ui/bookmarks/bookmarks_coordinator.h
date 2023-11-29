@@ -60,6 +60,9 @@ class GURL;
 // whether the current bookmark view can be dismissed.
 - (BOOL)canDismiss;
 
+// Presents the signed-in account settings page.
+- (void)showAccountSettings;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARKS_COORDINATOR_H_

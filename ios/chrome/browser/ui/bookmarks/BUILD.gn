@@ -43,6 +43,7 @@ source_set("bookmarks") {
     "//ios/chrome/browser/ui/bookmarks/folder_chooser",
     "//ios/chrome/browser/ui/bookmarks/folder_editor",
     "//ios/chrome/browser/ui/bookmarks/home",
+    "//ios/chrome/browser/ui/settings/google_services",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",

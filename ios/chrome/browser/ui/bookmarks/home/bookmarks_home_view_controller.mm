@@ -668,6 +668,11 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   [self handleSelectEditNodes:mediator.selectedNodesForEditMode];
 }
 
+- (void)showAccountSettings {
+  [self ensureBookmarksCoordinator];
+  [self.bookmarksCoordinator showAccountSettings];
+}
+
 #pragma mark - Action sheet callbacks
 
 // Returns contextual menu for a bookmark node with `nodeID` at `indexPath`.
