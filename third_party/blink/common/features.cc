@@ -2010,6 +2010,14 @@ BASE_FEATURE(kUACHOverrideBlank,
              "UACHOverrideBlank",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, the body of `EmulateLoadStartedForInspector` is executed only
+// once per Resource per ResourceFetcher, and thus duplicated network load
+// entries in DevTools caused by `EmulateLoadStartedForInspector` are removed.
+// https://crbug.com/1502591
+BASE_FEATURE(kEmulateLoadStartedForInspectorOncePerResource,
+             "kEmulateLoadStartedForInspectorOncePerResource",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kUseBlinkSchedulerTaskRunnerWithCustomDeleter,
              "UseBlinkSchedulerTaskRunnerWithCustomDeleter",
              base::FEATURE_ENABLED_BY_DEFAULT);

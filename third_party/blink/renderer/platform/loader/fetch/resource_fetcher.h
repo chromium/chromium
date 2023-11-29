@@ -178,6 +178,7 @@ class PLATFORM_EXPORT ResourceFetcher
   CodeCacheHost* GetCodeCacheHost();
 
   Resource* CachedResource(const KURL&) const;
+  bool ResourceHasBeenEmulatedLoadStartedForInspector(const KURL&) const;
 
   // Registers an callback to be called with the resource priority of the fetch
   // made to the specified URL. When `new_load_only` is set to false,
@@ -563,6 +564,15 @@ class PLATFORM_EXPORT ResourceFetcher
 
   // Weak reference to all the fetched resources.
   DocumentResourceMap cached_resources_map_;
+
+  // When a resource is in the global memory cache but not in the
+  // cached_resources_map_ and it is referenced (e.g. when the StyleEngine
+  // processes a @font-face rule), the resource will be emulated via
+  // `EmulateLoadStartedForInspector` so that it shows up in DevTools.
+  // In order to ensure that this only occurs once per resource, we keep
+  // a weak reference to all emulated resources and only emulate resources
+  // that have not been previously emulated.
+  DocumentResourceMap emulated_load_started_for_inspector_resources_map_;
 
   // document_resource_strong_refs_ keeps strong references for fonts, images,
   // scripts and stylesheets within their freshness lifetime.

@@ -681,6 +681,19 @@ Resource* ResourceFetcher::CachedResource(const KURL& resource_url) const {
   return it->value.Get();
 }
 
+bool ResourceFetcher::ResourceHasBeenEmulatedLoadStartedForInspector(
+    const KURL& resource_url) const {
+  if (resource_url.IsEmpty()) {
+    return false;
+  }
+  KURL url = MemoryCache::RemoveFragmentIdentifierIfNeeded(resource_url);
+  const auto it = emulated_load_started_for_inspector_resources_map_.find(url);
+  if (it == emulated_load_started_for_inspector_resources_map_.end()) {
+    return false;
+  }
+  return true;
+}
+
 const HeapHashSet<Member<Resource>>
 ResourceFetcher::MoveResourceStrongReferences() {
   document_resource_strong_refs_total_size_ = 0;
@@ -2463,9 +2476,23 @@ void ResourceFetcher::EmulateLoadStartedForInspector(
   if (CachedResource(url)) {
     return;
   }
+
+  if (ResourceHasBeenEmulatedLoadStartedForInspector(url)) {
+    return;
+  }
+
   if (resource->ErrorOccurred()) {
     // We should ideally replay the error steps, but we cannot.
     return;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kEmulateLoadStartedForInspectorOncePerResource)) {
+    // Update the emulated load started for inspector resources map with the
+    // resource so that future emulations of the same resource won't happen.
+    String resource_url = MemoryCache::RemoveFragmentIdentifierIfNeeded(url);
+    emulated_load_started_for_inspector_resources_map_.Set(resource_url,
+                                                           resource);
   }
 
   ResourceRequest resource_request(url);
@@ -2767,6 +2794,7 @@ void ResourceFetcher::Trace(Visitor* visitor) const {
   visitor->Trace(loaders_);
   visitor->Trace(non_blocking_loaders_);
   visitor->Trace(cached_resources_map_);
+  visitor->Trace(emulated_load_started_for_inspector_resources_map_);
   visitor->Trace(image_resources_);
   visitor->Trace(not_loaded_image_resources_);
   visitor->Trace(preloads_);
