@@ -79,6 +79,8 @@ struct ComposeState {
   // Whether a request is pending. False can also mean that the
   // request was not made.
   bool has_pending_request;
+  // Whether the user has pressed the thumbs up/down feedback buttons.
+  UserFeedback feedback;
 };
 
 // Parameters used to configure the WebUI. These params are passed from the
@@ -111,11 +113,11 @@ enum CloseReason {
 //TODO(b/311697865) move this to a common location.
 enum UserFeedback {
   // Unspecified.
-  kUserFeedBackUnspecified,
+  kUserFeedbackUnspecified,
   // A thumbs up.
-  kUserFeedBackPositive,
+  kUserFeedbackPositive,
   // A thumbs down.
-  kUserFeedBackNegative,
+  kUserFeedbackNegative,
 };
 
 // Interface for calls from Compose dialog JS into the Browser process.
@@ -157,7 +159,6 @@ interface ComposeSessionPageHandler {
   // Asks the Browser to open a new tab navigated to the Compose bug report
   // Buganizer.
   OpenBugReportingLink();
-
 
   // Asks the Browser to open a new tab navigated to the Compose-related Chrome
   // settings page.

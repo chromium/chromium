@@ -18,6 +18,7 @@ class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
   private initialInput_: string = '';
   private initialState_: ComposeState = {
     webuiState: '',
+    feedback: UserFeedback.kUserFeedbackUnspecified,
     hasPendingRequest: false,
   };
   private router_: ComposeDialogCallbackRouter =
@@ -97,6 +98,7 @@ class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
         {
           webuiState: '',
           style: {tone: Tone.kUnset, length: Length.kUnset},
+          feedback: UserFeedback.kUserFeedbackUnspecified,
           hasPendingRequest: false,
         },
         state);
@@ -329,6 +331,14 @@ suite('ComposeApp', () => {
     assertEquals(
         'hidden',
         window.getComputedStyle(appEditingPrompt.$.resultContainer).visibility);
+
+    // Input with feedback already filled out.
+    const appWithFeedback = await initializeNewAppWithState({
+      feedback: UserFeedback.kUserFeedbackPositive,
+    });
+    const feedbackButtons =
+        appWithFeedback.shadowRoot!.querySelector('cr-feedback-buttons')!;
+    assertEquals('true', feedbackButtons.$.thumbsUp.ariaPressed);
   });
 
   test('SavesState', async () => {
@@ -541,6 +551,7 @@ suite('ComposeApp', () => {
         selectedLength: Number(Length.kLonger),
         selectedTone: Number(Tone.kCasual),
       }),
+      feedback: UserFeedback.kUserFeedbackUnspecified,
     });
     const appWithUndo = document.createElement('compose-app');
     document.body.appendChild(appWithUndo);

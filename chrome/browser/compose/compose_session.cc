@@ -150,6 +150,8 @@ void ComposeSession::Rewrite(compose::mojom::StyleModifiersPtr style) {
 void ComposeSession::MakeRequest(
     optimization_guide::proto::ComposeRequest request) {
   current_state_->has_pending_request = true;
+  current_state_->feedback =
+      compose::mojom::UserFeedback::kUserFeedbackUnspecified;
   // TODO(b/300974056): Move this to the overall feature-enabled check.
   if (!session_ ||
       !base::FeatureList::IsEnabled(
@@ -339,6 +341,15 @@ void ComposeSession::OpenBugReportingLink() {
 }
 
 void ComposeSession::SetUserFeedback(compose::mojom::UserFeedback feedback) {
+  if (last_ok_state_) {
+    // Add to last_ok_state_ in case of undos.
+    last_ok_state_->feedback = feedback;
+  }
+  // Add to current_state_ in case of coming back to a saved state, as
+  // RequestInitialState() returns current_state_.
+  if (current_state_->response) {
+    current_state_->feedback = feedback;
+  }
   optimization_guide::proto::UserFeedback user_feedback =
       OptimizationFeedbackFromComposeFeedback(feedback);
 

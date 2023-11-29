@@ -76,6 +76,10 @@ export class ComposeAppElement extends ComposeAppElementBase {
         type: String,
         observer: 'onEditedInputChanged_',
       },
+      feedbackState_: {
+        type: String,
+        value: CrFeedbackOption.UNSPECIFIED,
+      },
       input_: {
         type: String,
         observer: 'onInputChanged_',
@@ -172,6 +176,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private eventTracker_: EventTracker = new EventTracker();
   private router_: ComposeDialogCallbackRouter = this.apiProxy_.getRouter();
   private editedInput_: string;
+  private feedbackState_: CrFeedbackOption;
   private input_: string;
   private inputParams_: ConfigurableParams;
   private isEditingSubmittedInput_: boolean;
@@ -223,6 +228,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
         this.input_ = initialState.initialInput;
       }
       const composeState = initialState.composeState;
+      this.feedbackState_ = userFeedbackToFeedbackOption(composeState.feedback);
       this.loading_ = composeState.hasPendingRequest;
       this.submitted_ =
           composeState.hasPendingRequest || Boolean(composeState.response);
@@ -363,6 +369,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.response_ = response;
     this.loading_ = false;
     this.undoEnabled_ = response.undoAvailable;
+    this.feedbackState_ = CrFeedbackOption.UNSPECIFIED;
     this.requestUpdateScroll();
   }
 
@@ -431,6 +438,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
       // Restore state to the state returned by Undo.
       this.response_ = state.response;
       this.undoEnabled_ = Boolean(state.response?.undoAvailable);
+      this.feedbackState_ = userFeedbackToFeedbackOption(state.feedback);
 
       if (state.webuiState) {
         const appState: ComposeAppState = JSON.parse(state.webuiState);
@@ -450,18 +458,31 @@ export class ComposeAppElement extends ComposeAppElementBase {
 
   private onFeedbackSelectedOptionChanged_(
       e: CustomEvent<{value: CrFeedbackOption}>) {
+    this.feedbackState_ = e.detail.value;
     switch (e.detail.value) {
       case CrFeedbackOption.UNSPECIFIED:
-        this.apiProxy_.setUserFeedback(UserFeedback.kUserFeedBackUnspecified);
+        this.apiProxy_.setUserFeedback(UserFeedback.kUserFeedbackUnspecified);
         return;
       case CrFeedbackOption.THUMBS_UP:
-        this.apiProxy_.setUserFeedback(UserFeedback.kUserFeedBackPositive);
+        this.apiProxy_.setUserFeedback(UserFeedback.kUserFeedbackPositive);
         return;
       case CrFeedbackOption.THUMBS_DOWN:
-        this.apiProxy_.setUserFeedback(UserFeedback.kUserFeedBackNegative);
+        this.apiProxy_.setUserFeedback(UserFeedback.kUserFeedbackNegative);
         this.apiProxy_.openBugReportingLink();
         return;
     }
+  }
+}
+
+function userFeedbackToFeedbackOption(userFeedback: UserFeedback):
+    CrFeedbackOption {
+  switch (userFeedback) {
+    case UserFeedback.kUserFeedbackUnspecified:
+      return CrFeedbackOption.UNSPECIFIED;
+    case UserFeedback.kUserFeedbackPositive:
+      return CrFeedbackOption.THUMBS_UP;
+    case UserFeedback.kUserFeedbackNegative:
+      return CrFeedbackOption.THUMBS_DOWN;
   }
 }
 

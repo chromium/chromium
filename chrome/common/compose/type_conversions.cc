@@ -62,9 +62,9 @@ compose::mojom::ComposeStatus ComposeStatusFromOptimizationGuideResult(
 optimization_guide::proto::UserFeedback OptimizationFeedbackFromComposeFeedback(
     compose::mojom::UserFeedback feedback) {
   switch (feedback) {
-    case compose::mojom::UserFeedback::kUserFeedBackPositive:
+    case compose::mojom::UserFeedback::kUserFeedbackPositive:
       return optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_UP;
-    case compose::mojom::UserFeedback::kUserFeedBackNegative:
+    case compose::mojom::UserFeedback::kUserFeedbackNegative:
       return optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_DOWN;
     default:
       return optimization_guide::proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
