@@ -646,6 +646,33 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
 }
 #endif
 
+// This test verifies that navigating with WindowOpenDisposition = NEW_POPUP
+// and is_tab_modal_popup = true results in a new WebContents that is a popup
+// and behaves like a tab modal.
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_NewPopupTabModal) {
+  NavigateParams params(MakeNavigateParams());
+  params.disposition = WindowOpenDisposition::NEW_POPUP;
+  params.is_tab_modal_popup = true;
+  params.window_features.bounds = gfx::Rect(0, 0, 200, 200);
+  // Wait for new popup to to load and gain focus.
+  ui_test_utils::NavigateToURL(&params);
+
+  // Add a new tab.
+  chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
+
+  // Switch to the new tab.
+  browser()->tab_strip_model()->ActivateTabAt(1);
+
+  // Verify the popup window is hidden.
+  EXPECT_FALSE(params.browser->window()->IsVisible());
+
+  // Switch back to the original tab.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+
+  // Verify the popup window is visible again.
+  EXPECT_TRUE(params.browser->window()->IsVisible());
+}
+
 // This test verifies that navigating with WindowOpenDisposition = NEW_WINDOW
 // always opens a new window.
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_NewWindow) {

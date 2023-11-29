@@ -238,6 +238,10 @@ struct NavigateParams {
   // true, |disposition| should be NEW_POPUP.
   bool is_captive_portal_popup = false;
 
+  // Whether the browser popup is being created as a tab modal. If true,
+  // `disposition` should be NEW_POPUP.
+  bool is_tab_modal_popup = false;
+
   // If false then the navigation was not initiated by a user gesture.
   bool user_gesture = true;
 

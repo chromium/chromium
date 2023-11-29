@@ -315,6 +315,10 @@ void BrowserRootView::OnMouseExited(const ui::MouseEvent& event) {
   RootView::OnMouseExited(event);
 }
 
+gfx::Size BrowserRootView::CalculatePreferredSize() const {
+  return browser_view_->GetRestoredBounds().size();
+}
+
 void BrowserRootView::PaintChildren(const views::PaintInfo& paint_info) {
   views::internal::RootView::PaintChildren(paint_info);
 

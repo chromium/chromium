@@ -41,6 +41,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/url_constants.h"
 #include "components/captive_portal/core/buildflags.h"
+#include "components/constrained_window/constrained_window_views.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -503,9 +504,19 @@ class ScopedBrowserShower {
   ~ScopedBrowserShower() {
     BrowserWindow* window = params_->browser->window();
     if (params_->window_action == NavigateParams::SHOW_WINDOW_INACTIVE) {
+      // TODO(crbug.com/1490267): investigate if SHOW_WINDOW_INACTIVE needs to
+      // be supported for tab modal popups.
+      CHECK_EQ(params_->is_tab_modal_popup, false);
       window->ShowInactive();
     } else if (params_->window_action == NavigateParams::SHOW_WINDOW) {
-      window->Show();
+      if (params_->is_tab_modal_popup) {
+        CHECK_EQ(params_->disposition, WindowOpenDisposition::NEW_POPUP);
+        CHECK_NE(source_contents_, nullptr);
+        constrained_window::ShowModalDialog(window->GetNativeWindow(),
+                                            source_contents_);
+      } else {
+        window->Show();
+      }
       // If a user gesture opened a popup window, focus the contents.
       if (params_->user_gesture &&
           (params_->disposition == WindowOpenDisposition::NEW_POPUP ||
@@ -518,9 +529,14 @@ class ScopedBrowserShower {
     }
   }
 
+  void set_source_contents(content::WebContents* source_contents) {
+    source_contents_ = source_contents;
+  }
+
  private:
   raw_ptr<NavigateParams> params_;
   raw_ptr<content::WebContents*> contents_;
+  raw_ptr<content::WebContents> source_contents_;
 };
 
 std::unique_ptr<content::WebContents> CreateTargetContents(
@@ -795,6 +811,9 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
 
   // Make sure the Browser is shown if params call for it.
   ScopedBrowserShower shower(params, &contents_to_navigate_or_insert);
+  if (params->is_tab_modal_popup) {
+    shower.set_source_contents(params->source_contents);
+  }
 
   // Makes sure any WebContents created by this function is destroyed if
   // not properly added to a tab strip.

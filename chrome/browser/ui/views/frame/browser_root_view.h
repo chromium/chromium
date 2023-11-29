@@ -82,6 +82,7 @@ class BrowserRootView : public views::internal::RootView {
   DropCallback GetDropCallback(const ui::DropTargetEvent& event) override;
   bool OnMouseWheel(const ui::MouseWheelEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
+  gfx::Size CalculatePreferredSize() const override;
 
  protected:
   // views::View:
