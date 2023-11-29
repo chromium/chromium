@@ -1701,8 +1701,7 @@ enum class ToolbarKind {
 }
 
 - (void)showSendTabToSelfUI:(const GURL&)url title:(NSString*)title {
-  // TODO(crbug.com/1488763): Convert to CHECK.
-  DUMP_WILL_BE_CHECK(!_sendTabToSelfCoordinator);
+  CHECK(!_sendTabToSelfCoordinator);
 
   _sendTabToSelfCoordinator = [[SendTabToSelfCoordinator alloc]
       initWithBaseViewController:self.viewController
