@@ -28,6 +28,11 @@ _DISALLOW_NON_BLINK_MOJOM = (
     'of "::mojom::Foo" unless you have clear reasons not to do so.',
     'Warning')
 
+_DISALLOW_CONTINUATION_DATA_ = (
+    '.*(Get|Set)ContinuationPreservedEmbedderData.*',
+    '[Get|Set]ContinuationPreservedEmbedderData does not support multiple '
+    'clients.')
+
 _CONFIG = [
     {
         'paths': ['third_party/blink/renderer/'],
@@ -748,6 +753,7 @@ _CONFIG = [
              'Use WTF::Bind or WTF::BindRepeating.'),
             'base::BindPostTaskToCurrentDefault',
             _DISALLOW_NON_BLINK_MOJOM,
+            _DISALLOW_CONTINUATION_DATA_,
         ],
         # These task runners are generally banned in blink to ensure
         # that blink tasks remain properly labeled. See
@@ -1992,6 +1998,15 @@ _CONFIG = [
             'aggregation_service::.+',
         ]
     },
+     {
+        'paths': [
+            'third_party/blink/renderer/modules/scheduler/',
+            'third_party/blink/renderer/modules/shared_storage/',
+        ],
+        'allowed': [
+            _DISALLOW_CONTINUATION_DATA_[0],
+        ]
+    },
 ]
 
 
@@ -2066,11 +2081,14 @@ _COMPILED_CONFIG = _precompile_config()
 #
 # As a bit of a minor hack, this regex also hardcodes a check for GURL, since
 # GURL isn't namespace qualified and wouldn't match otherwise.
+# ContinuationPreservedEmbedder data is similarly hardcoded to restrict access
+# to the v8 APIs which would not otherwise match.
 #
 # An example of an identifier that will be matched with this RE is
 # "base::BindOnce" or "performance_manager::policies::WorkingSetTrimData".
 _IDENTIFIER_WITH_NAMESPACE_RE = re.compile(
-    r'\b(?:(?:[a-z_][a-z0-9_]*::)+[A-Za-z_][A-Za-z0-9_]*|GURL)\b')
+    r'\b(?:(?:[a-z_][a-z0-9_]*::)+[A-Za-z_][A-Za-z0-9_]*|GURL|.*ContinuationPreservedEmbedderData.*)\b'
+)
 
 # Different check which matches a non-empty sequence of lower-case
 # alphanumeric namespaces, followed by at least one
