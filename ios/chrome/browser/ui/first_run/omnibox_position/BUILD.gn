@@ -34,7 +34,9 @@ source_set("omnibox_position_ui") {
     "omnibox_position_choice_view_controller.mm",
   ]
   deps = [
+    "//components/prefs",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/ui/first_run:constants",

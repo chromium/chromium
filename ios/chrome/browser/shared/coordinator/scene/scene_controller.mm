@@ -122,6 +122,7 @@
 #import "ios/chrome/browser/ui/authentication/signin_notification_infobar_delegate.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_scene_agent.h"
+#import "ios/chrome/browser/ui/first_run/omnibox_position/promo/omnibox_position_choice_scene_agent.h"
 #import "ios/chrome/browser/ui/first_run/orientation_limiting_navigation_controller.h"
 #import "ios/chrome/browser/ui/history/history_coordinator.h"
 #import "ios/chrome/browser/ui/history/history_coordinator_delegate.h"
@@ -986,6 +987,12 @@ void InjectNTP(Browser* browser) {
   [sceneState addAgent:[[CredentialProviderPromoSceneAgent alloc]
                            initWithPromosManager:promosManager
                                      prefService:browserState->GetPrefs()]];
+
+  if (IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType::kAppLaunch)) {
+    [sceneState addAgent:[[OmniboxPositionChoiceSceneAgent alloc]
+                             initWithPromosManager:promosManager
+                                   forBrowserState:browserState]];
+  }
 }
 
 // Determines the mode (normal or incognito) the initial UI should be in.
