@@ -92,12 +92,19 @@ struct UsernamePasswordsState {
   bool password_automatically_filled = false;
   bool username_automatically_filled = false;
   bool unknown_password_typed = false;
+  bool unknown_username_typed = false;
 
   bool password_exists_in_profile_store = false;
   bool password_exists_in_account_store = false;
+  bool username_exists_in_profile_store = false;
+  bool username_exists_in_account_store = false;
 
   bool IsPasswordFilled() {
     return password_automatically_filled || password_manually_filled;
+  }
+
+  bool IsUsernameFilled() {
+    return username_automatically_filled || username_manually_filled;
   }
 };
 
@@ -153,6 +160,10 @@ UsernamePasswordsState CalculateUsernamePasswordsState(
       result.saved_username_typed |= user_typed;
       result.username_manually_filled |= manually_filled;
       result.username_automatically_filled |= automatically_filled;
+      result.username_exists_in_profile_store |=
+          is_possibly_saved_username_in_profile_store;
+      result.username_exists_in_account_store |=
+          is_possibly_saved_username_in_account_store;
     } else if (is_possibly_saved_password &&
                (!is_possibly_saved_username || field_has_password_type)) {
       result.saved_password_typed |= user_typed;
@@ -162,8 +173,12 @@ UsernamePasswordsState CalculateUsernamePasswordsState(
           is_possibly_saved_password_in_profile_store;
       result.password_exists_in_account_store |=
           is_possibly_saved_password_in_account_store;
-    } else if (user_typed && field_has_password_type) {
-      result.unknown_password_typed = true;
+    } else if (user_typed) {
+      if (field_has_password_type) {
+        result.unknown_password_typed = true;
+      } else {
+        result.unknown_username_typed = true;
+      }
     }
   }
 
@@ -301,8 +316,20 @@ PasswordFormMetricsRecorder::~PasswordFormMetricsRecorder() {
     ukm_entry_builder_.SetDynamicFormChanges(*form_changes_bitmask_);
   }
 
-  if (submit_result_ == SubmitResult::kPassed && filling_assistance_) {
-    FillingAssistance filling_assistance = *filling_assistance_;
+  if (absl::holds_alternative<SingleUsernameFillingAssistance>(
+          filling_assistance_)) {
+    // Record the filling assistance for the single username case without
+    // considering the `submit_result_` because submission success is only
+    // calculated for forms that have password fields.
+    UMA_HISTOGRAM_ENUMERATION(
+        "PasswordManager.FillingAssistanceForSingleUsername",
+        absl::get<SingleUsernameFillingAssistance>(filling_assistance_));
+  }
+
+  if (submit_result_ == SubmitResult::kPassed &&
+      absl::holds_alternative<FillingAssistance>(filling_assistance_)) {
+    FillingAssistance filling_assistance =
+        absl::get<FillingAssistance>(filling_assistance_);
     UMA_HISTOGRAM_ENUMERATION("PasswordManager.FillingAssistance",
                               filling_assistance);
     ukm_entry_builder_.SetManagerFill_Assistance(
@@ -535,6 +562,27 @@ void PasswordFormMetricsRecorder::RecordMatchedFormType(
 }
 
 void PasswordFormMetricsRecorder::CalculateFillingAssistanceMetric(
+    const PasswordForm& submitted_form,
+    const std::set<std::pair<std::u16string, PasswordForm::Store>>&
+        saved_usernames,
+    const std::set<std::pair<std::u16string, PasswordForm::Store>>&
+        saved_passwords,
+    bool is_blocklisted,
+    const std::vector<InteractionsStats>& interactions_stats,
+    features_util::PasswordAccountStorageUsageLevel
+        account_storage_usage_level) {
+  if (submitted_form.HasNonEmptyPasswordValue()) {
+    CalculatePasswordFillingAssistanceMetric(
+        submitted_form.form_data, saved_usernames, saved_passwords,
+        is_blocklisted, interactions_stats, account_storage_usage_level);
+  } else if (!submitted_form.username_value.empty()) {
+    CalculateSingleUsernameFillingAssistanceMetric(
+        submitted_form.form_data, saved_usernames, is_blocklisted,
+        interactions_stats);
+  }
+}
+
+void PasswordFormMetricsRecorder::CalculatePasswordFillingAssistanceMetric(
     const FormData& submitted_form,
     const std::set<std::pair<std::u16string, PasswordForm::Store>>&
         saved_usernames,
@@ -615,6 +663,77 @@ void PasswordFormMetricsRecorder::CalculateFillingAssistanceMetric(
 
   // If execution gets here, we have a bug in our state machine.
   NOTREACHED();
+}
+
+void PasswordFormMetricsRecorder::
+    CalculateSingleUsernameFillingAssistanceMetric(
+        const FormData& submitted_form,
+        const std::set<std::pair<std::u16string, PasswordForm::Store>>&
+            saved_usernames,
+        bool is_blocklisted,
+        const std::vector<InteractionsStats>& interactions_stats) {
+  // Cases related to not stored crendentials. Do not proceed with the filling
+  // experience cases if there are no stored usernames.
+  if (saved_usernames.empty()) {
+    if (is_blocklisted) {
+      filling_assistance_ =
+          SingleUsernameFillingAssistance::kNoSavedCredentialsAndBlocklisted;
+    } else {
+      filling_assistance_ =
+          BlocklistedBySmartBubble(submitted_form, interactions_stats)
+              ? SingleUsernameFillingAssistance::
+                    kNoSavedCredentialsAndBlocklistedBySmartBubble
+              : SingleUsernameFillingAssistance::kNoSavedCredentials;
+    }
+    return;
+  }
+
+  // Cases related to the username filling experience while there are stored
+  // credentials. At this point, it is known that there are stored credentials.
+
+  UsernamePasswordsState username_password_state =
+      CalculateUsernamePasswordsState(submitted_form, saved_usernames,
+                                      /*saved_passwords=*/{});
+
+  // Case where the username was typed regardless of whether or not it was
+  // filled.
+  if (username_password_state.saved_username_typed) {
+    // Case where the user typed a known username.
+    filling_assistance_ = SingleUsernameFillingAssistance::kKnownUsernameTyped;
+    return;
+  }
+
+  // Cases where the username wasn't filled but might have been typed.
+  if (!username_password_state.IsUsernameFilled()) {
+    if (username_password_state.unknown_username_typed) {
+      // Case where the user typed an unknown username.
+      filling_assistance_ = SingleUsernameFillingAssistance::
+          kNewUsernameTypedWhileCredentialsExisted;
+    } else {
+      // Case there was no filling and no typing detected .
+      filling_assistance_ =
+          SingleUsernameFillingAssistance::kNoUserInputNoFillingOfUsername;
+    }
+    return;
+  }
+
+  // Cases related to user typing are already considered and excluded. Only
+  // filling related cases are left.
+  if (username_password_state.username_manually_filled) {
+    filling_assistance_ = SingleUsernameFillingAssistance::kManual;
+    return;
+  }
+  if (username_password_state.username_automatically_filled) {
+    filling_assistance_ = SingleUsernameFillingAssistance::kAutomatic;
+    return;
+  }
+
+  // It MUST BE impossible to reach this code path because all the filling
+  // cases are handled at this point: (1) when there is no manual nor automatic
+  // fill, (2) when there is manual fill, and (3) when there is automatic fill.
+  // The check here is to make sure that all states are handled to calculate the
+  // filling assistance metric.
+  NOTREACHED_NORETURN();
 }
 
 void PasswordFormMetricsRecorder::CalculateJsOnlyInput(

@@ -22,6 +22,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
 class PrefService;
@@ -278,6 +279,34 @@ class PasswordFormMetricsRecorder
     kMaxValue = kNoSavedCredentialsAndBlocklistedBySmartBubble,
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // Metric that records the user experience with filling the username in a
+  // single username form.
+  enum class SingleUsernameFillingAssistance {
+    // Username was filled automatically.
+    kAutomatic = 0,
+    // Username was filled manually by using the fill UI without typing.
+    kManual = 1,
+    // Known username was typed - didn't fill while the username was available.
+    // This may reflect an issue with filling saved credentials in the web
+    // content.
+    kKnownUsernameTyped = 2,
+    // Unknown username was typed while some credentials were stored.
+    kNewUsernameTypedWhileCredentialsExisted = 3,
+    // No saved credentials.
+    kNoSavedCredentials = 4,
+    // Domain is blocklisted and no other credentials exist.
+    kNoSavedCredentialsAndBlocklisted = 5,
+    // No credentials exist and the user has ignored the save bubble too often,
+    // meaning that they won't be asked to save credentials anymore.
+    kNoSavedCredentialsAndBlocklistedBySmartBubble = 6,
+    // Neither user input nor filling.
+    kNoUserInputNoFillingOfUsername = 7,
+    kMaxValue = kNoUserInputNoFillingOfUsername,
+  };
+
   // Records which store(s) a filled password came from.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -403,11 +432,9 @@ class PasswordFormMetricsRecorder
   void RecordFirstWaitForUsernameReason(WaitForUsernameReason reason);
   void RecordMatchedFormType(const PasswordForm& form);
 
-  // Calculates FillingAssistance metric for |submitted_form|. The result is
-  // stored in |filling_assistance_| and recorded in the destructor in case when
-  // the successful submission is detected.
+  // Calculates FillingAssistance metrics for |submitted_form|.
   void CalculateFillingAssistanceMetric(
-      const autofill::FormData& submitted_form,
+      const PasswordForm& submitted_form,
       const std::set<std::pair<std::u16string, PasswordForm::Store>>&
           saved_usernames,
       const std::set<std::pair<std::u16string, PasswordForm::Store>>&
@@ -446,6 +473,29 @@ class PasswordFormMetricsRecorder
 
  private:
   friend class base::RefCounted<PasswordFormMetricsRecorder>;
+
+  // Calculates FillingAssistance metric for |submitted_form|. The result is
+  // stored in |filling_assistance_| and recorded in the destructor in case when
+  // the successful submission is detected.
+  void CalculatePasswordFillingAssistanceMetric(
+      const autofill::FormData& submitted_form,
+      const std::set<std::pair<std::u16string, PasswordForm::Store>>&
+          saved_usernames,
+      const std::set<std::pair<std::u16string, PasswordForm::Store>>&
+          saved_passwords,
+      bool is_blocklisted,
+      const std::vector<InteractionsStats>& interactions_stats,
+      features_util::PasswordAccountStorageUsageLevel
+          account_storage_usage_level);
+
+  // Calculates the SingleUsernameFillingAssistance assistance metrics for the
+  // |submitted_form| when it is a single username form.
+  void CalculateSingleUsernameFillingAssistanceMetric(
+      const autofill::FormData& submitted_form,
+      const std::set<std::pair<std::u16string, PasswordForm::Store>>&
+          saved_usernames,
+      bool is_blocklisted,
+      const std::vector<InteractionsStats>& interactions_stats);
 
   // Enum to track which password bubble is currently being displayed.
   enum class CurrentBubbleOfInterest {
@@ -528,7 +578,10 @@ class PasswordFormMetricsRecorder
 
   bool recorded_preferred_matched_password_type = false;
 
-  std::optional<FillingAssistance> filling_assistance_;
+  absl::variant<absl::monostate,
+                FillingAssistance,
+                SingleUsernameFillingAssistance>
+      filling_assistance_;
   std::optional<FillingSource> filling_source_;
   std::optional<features_util::PasswordAccountStorageUsageLevel>
       account_storage_usage_level_;

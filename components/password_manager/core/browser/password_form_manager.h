@@ -308,10 +308,9 @@ class PasswordFormManager : public PasswordFormManagerForUI,
     return absl::get_if<PasswordFormDigest>(&observed_form_or_digest_);
   }
 
-  // Calculates FillingAssistance metric for |submitted_form|. The metric is
-  // recorded in case when the successful submission is detected.
+  // Calculates FillingAssistance metric for |parsed_submitted_form|.
   void CalculateFillingAssistanceMetric(
-      const autofill::FormData& submitted_form);
+      const PasswordForm& parsed_submitted_form);
 
   // Calculates SubmittedPasswordFormFrame metric value (main frame, iframe,
   // etc) for |submitted_form|. The metric is recorded when the form manager is

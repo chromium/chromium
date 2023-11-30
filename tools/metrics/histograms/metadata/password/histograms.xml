@@ -1375,6 +1375,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.FillingAssistanceForSingleUsername"
+    enum="SingleUsernameFillingAssistance" expires_after="2024-07-01">
+  <owner>vincb@google.com</owner>
+  <owner>eic@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Records the user experience with regards to username filling in the single
+    username form in username first flows (UFF).
+
+    Recorded for every single username field the user has filled (automatically
+    or manually), when the form is submitted and the corresponding form manager
+    is destroyed.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.FillingSource"
     enum="PasswordManagerFillingSource" expires_after="2024-04-28">
   <owner>mamir@chromium.org</owner>

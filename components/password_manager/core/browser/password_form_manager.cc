@@ -841,6 +841,7 @@ bool PasswordFormManager::ProvisionallySave(
   if (parsed_submitted_form) {
     metrics_recorder_->CalculateParsingDifferenceOnSavingAndFilling(
         *parsed_submitted_form.get());
+    CalculateFillingAssistanceMetric(*parsed_submitted_form);
   }
 
   bool have_password_to_save =
@@ -858,7 +859,6 @@ bool PasswordFormManager::ProvisionallySave(
   parsed_submitted_form_ = std::move(parsed_submitted_form);
   submitted_form_ = submitted_form;
   is_submitted_ = true;
-  CalculateFillingAssistanceMetric(submitted_form);
   CalculateSubmittedFormFrameMetric();
   CalculateSubmittedFormTypeMetric();
   metrics_recorder_->set_possible_username_used(false);
@@ -1132,7 +1132,7 @@ void PasswordFormManager::PresaveGeneratedPasswordInternal(
 }
 
 void PasswordFormManager::CalculateFillingAssistanceMetric(
-    const FormData& submitted_form) {
+    const PasswordForm& parsed_submitted_form) {
   std::set<std::pair<std::u16string, PasswordForm::Store>> saved_usernames;
   std::set<std::pair<std::u16string, PasswordForm::Store>> saved_passwords;
 
@@ -1145,7 +1145,7 @@ void PasswordFormManager::CalculateFillingAssistanceMetric(
   }
 
   metrics_recorder_->CalculateFillingAssistanceMetric(
-      submitted_form, saved_usernames, saved_passwords, IsBlocklisted(),
+      parsed_submitted_form, saved_usernames, saved_passwords, IsBlocklisted(),
       form_fetcher_->GetInteractionsStats(),
       client_->GetPasswordFeatureManager()
           ->ComputePasswordAccountStorageUsageLevel());
