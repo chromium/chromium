@@ -198,6 +198,7 @@ void OpenerHeuristicTabHelper::PopupObserver::EmitPastInteractionIfReady() {
   }
 
   MaybeCreateOpenerHeuristicGrant(
+      initial_url_,
       tpcd::experiment::kTpcdWritePopupPastInteractionHeuristicsGrants.Get());
 
   auto has_iframe = GetOpenerHasSameSiteIframe(initial_url_);
@@ -265,13 +266,14 @@ void OpenerHeuristicTabHelper::PopupObserver::FrameReceivedUserActivation(
     return;
   }
 
+  const GURL& interaction_url = render_frame_host->GetLastCommittedURL();
   MaybeCreateOpenerHeuristicGrant(
+      interaction_url,
       tpcd::experiment::kTpcdWritePopupCurrentInteractionHeuristicsGrants
           .Get());
 
   auto time_since_committed = GetClock()->Now() - *commit_time_;
-  auto has_iframe =
-      GetOpenerHasSameSiteIframe(render_frame_host->GetLastCommittedURL());
+  auto has_iframe = GetOpenerHasSameSiteIframe(interaction_url);
   ukm::builders::OpenerHeuristic_PopupInteraction(
       render_frame_host->GetPageUkmSourceId())
       .SetSecondsSinceCommitted(Bucketize3PCDHeuristicTimeDelta(
@@ -284,7 +286,7 @@ void OpenerHeuristicTabHelper::PopupObserver::FrameReceivedUserActivation(
 
   interaction_reported_ = true;
 
-  EmitTopLevel(render_frame_host->GetLastCommittedURL(), has_iframe,
+  EmitTopLevel(interaction_url, has_iframe,
                /*is_current_interaction=*/true);
 }
 
@@ -382,6 +384,7 @@ void OpenerHeuristicTabHelper::PopupObserver::EmitTopLevel(
 }
 
 void OpenerHeuristicTabHelper::PopupObserver::MaybeCreateOpenerHeuristicGrant(
+    const GURL& url,
     base::TimeDelta grant_duration) {
   if (!grant_duration.is_positive()) {
     return;
@@ -392,8 +395,8 @@ void OpenerHeuristicTabHelper::PopupObserver::MaybeCreateOpenerHeuristicGrant(
     return;
   }
 
-  cookie_settings_->SetTemporaryCookieGrantForHeuristic(
-      initial_url_, opener_url_, grant_duration);
+  cookie_settings_->SetTemporaryCookieGrantForHeuristic(url, opener_url_,
+                                                        grant_duration);
 }
 
 OptionalBool
