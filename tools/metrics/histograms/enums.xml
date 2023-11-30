@@ -51327,6 +51327,11 @@ Called by update_net_error_codes.py.-->
   <int value="6" label="Failed to create directory"/>
 </enum>
 
+<enum name="RaceTaskPriority">
+  <int value="0" label="LowerPriority"/>
+  <int value="1" label="NormalPriority"/>
+</enum>
+
 <enum name="RankerModelStatus">
   <int value="0" label="OK"/>
   <int value="1" label="Download Throttled"/>

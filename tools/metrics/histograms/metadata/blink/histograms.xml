@@ -3427,6 +3427,50 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Blink.Script.PostTaskWithLowPriorityUntilTimeout.RaceTaskPriority"
+    enum="RaceTaskPriority" expires_after="2024-02-01">
+  <owner>chikamune@chromium.org</owner>
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>kouhei@chromium.org</owner>
+  <summary>
+    Record which task priority's task was run in
+    `PostTaskWithLowPriorityUntilTimeout()` that uses LowerPriority task queue
+    and NormalPriority task queue. This is recorded when the
+    LowPriorityAsyncScriptExecution behavior is applied to async scripts.
+  </summary>
+</histogram>
+
+<histogram name="Blink.Script.PostTaskWithLowPriorityUntilTimeout.Time"
+    units="ms" expires_after="2024-02-01">
+  <owner>chikamune@chromium.org</owner>
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>kouhei@chromium.org</owner>
+  <summary>
+    Record when the LowPriorityAsyncScriptExecution behavior is applied to async
+    scripts. Measures the duration between when a script is ready to run, to
+    when the script is about to run.
+  </summary>
+</histogram>
+
+<histogram
+    name="Blink.Script.PostTaskWithLowPriorityUntilTimeout.Time.{RaceTaskPriority}"
+    units="ms" expires_after="2024-02-01">
+  <owner>chikamune@chromium.org</owner>
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>kouhei@chromium.org</owner>
+  <summary>
+    Record when the LowPriorityAsyncScriptExecution behavior is applied to async
+    scripts, and {RaceTaskPriority} task was eventually run. Measures the
+    duration between when a script is ready to run, to when the script is about
+    to run.
+  </summary>
+  <token key="RaceTaskPriority">
+    <variant name="LowerPriority"/>
+    <variant name="NormalPriority"/>
+  </token>
+</histogram>
+
 <histogram name="Blink.Script.SchedulingType" enum="ScriptSchedulingType"
     expires_after="2024-03-17">
   <owner>kouhei@chromium.org</owner>
