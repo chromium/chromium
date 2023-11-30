@@ -789,21 +789,18 @@ void CloudOpenTask::StartUpload() {
   }
 }
 
-void CloudOpenTask::FinishedDriveUpload(absl::optional<GURL> url,
+void CloudOpenTask::FinishedDriveUpload(OfficeTaskResult task_result,
+                                        absl::optional<GURL> url,
                                         int64_t size) {
   DCHECK_GT(pending_uploads_, 0UL);
   if (url.has_value()) {
     upload_total_size_ += size;
     fm_tasks::SetOfficeFileMovedToGoogleDrive(profile_, base::Time::Now());
-    // Open the URL.
-    const OfficeTaskResult task_result_uma =
-        transfer_required_ == OfficeFilesTransferRequired::kCopy
-            ? OfficeTaskResult::kCopied
-            : OfficeTaskResult::kMoved;
-    OpenUploadedDriveUrl(url.value(), task_result_uma);
+    // Log TaskResult after open is tried.
+    OpenUploadedDriveUrl(url.value(), task_result);
   } else {
-    has_upload_errors_ = true;
-    cloud_open_metrics_->LogTaskResult(OfficeTaskResult::kFailedToUpload);
+    cloud_open_metrics_->LogTaskResult(task_result);
+    has_upload_errors_ = task_result == OfficeTaskResult::kFailedToUpload;
   }
   if (--pending_uploads_) {
     return;

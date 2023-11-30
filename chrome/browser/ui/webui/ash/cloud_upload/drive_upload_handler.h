@@ -42,7 +42,7 @@ class DriveUploadHandler : public base::RefCounted<DriveUploadHandler>,
                            drive::DriveIntegrationService::Observer {
  public:
   using UploadCallback =
-      base::OnceCallback<void(absl::optional<GURL>, int64_t)>;
+      base::OnceCallback<void(OfficeTaskResult, absl::optional<GURL>, int64_t)>;
 
   // Starts the upload workflow for the file specified at construct time.
   static void Upload(Profile* profile,

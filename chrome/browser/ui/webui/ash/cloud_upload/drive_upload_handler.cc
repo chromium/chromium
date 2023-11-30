@@ -44,9 +44,10 @@ const int kAlternateUrlPollInterval = 200;
 // Runs the callback provided to `DriveUploadHandler::Upload`.
 void OnUploadDone(scoped_refptr<DriveUploadHandler> drive_upload_handler,
                   DriveUploadHandler::UploadCallback callback,
+                  OfficeTaskResult task_result,
                   absl::optional<GURL> hosted_url,
                   int64_t upload_size) {
-  std::move(callback).Run(std::move(hosted_url), upload_size);
+  std::move(callback).Run(task_result, std::move(hosted_url), upload_size);
 }
 
 std::string GetTargetAppName(base::FilePath file_path) {
@@ -260,8 +261,11 @@ void DriveUploadHandler::OnSuccessfulUpload(
   if (notification_manager_) {
     notification_manager_->MarkUploadComplete();
   }
+  const OfficeTaskResult task_result = upload_type_ == UploadType::kCopy
+                                           ? OfficeTaskResult::kCopied
+                                           : OfficeTaskResult::kMoved;
   if (callback_) {
-    std::move(callback_).Run(hosted_url, upload_size_);
+    std::move(callback_).Run(task_result, hosted_url, upload_size_);
   }
 }
 
@@ -278,7 +282,8 @@ void DriveUploadHandler::OnFailedUpload(OfficeFilesUploadResult result_metric,
     notification_manager_->ShowUploadError(error_message);
   }
   if (callback_) {
-    std::move(callback_).Run(absl::nullopt, 0);
+    std::move(callback_).Run(OfficeTaskResult::kFailedToUpload, absl::nullopt,
+                             0);
   }
 }
 

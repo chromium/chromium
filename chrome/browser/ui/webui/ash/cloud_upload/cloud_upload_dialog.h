@@ -173,7 +173,9 @@ class CloudOpenTask : public BrowserListObserver,
   // Callbacks from `DriveUploadHandler` and `OneDriveUploadHandler`. URL passed
   // to these callbacks will be `absl::nullopt` and size will be 0 if upload
   // fails.
-  void FinishedDriveUpload(absl::optional<GURL> url, int64_t size);
+  void FinishedDriveUpload(OfficeTaskResult task_result,
+                           absl::optional<GURL> url,
+                           int64_t size);
   void FinishedOneDriveUpload(base::WeakPtr<Profile> profile_weak_ptr,
                               OfficeTaskResult task_result,
                               absl::optional<storage::FileSystemURL> url,

@@ -249,12 +249,15 @@ class DriveUploadHandlerTest
   }
 
   // `Wait` will not complete until this is called.
-  void OnUploadDone(absl::optional<GURL> url, int64_t size) {
+  void OnUploadDone(OfficeTaskResult task_result,
+                    absl::optional<GURL> url,
+                    int64_t size) {
     if (fail_sync_) {
       ASSERT_FALSE(url);
     } else {
       ASSERT_TRUE(url);
     }
+    observed_task_result_ = task_result;
     EndWait();
   }
 
@@ -298,6 +301,7 @@ class DriveUploadHandlerTest
   base::SafeRef<CloudOpenMetrics> cloud_open_metrics_ref_ =
       cloud_open_metrics_->GetSafeRef();
 
+  OfficeTaskResult observed_task_result_;
   base::HistogramTester histogram_;
 
  private:
@@ -420,6 +424,7 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest, UploadFromMyFiles) {
 
   histogram_.ExpectUniqueSample(kGoogleDriveUploadResultMetricName,
                                 OfficeFilesUploadResult::kSuccess, 1);
+  ASSERT_EQ(observed_task_result_, OfficeTaskResult::kMoved);
 }
 
 IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest, UploadFromReadOnlyFileSystem) {
@@ -450,6 +455,7 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest, UploadFromReadOnlyFileSystem) {
 
   histogram_.ExpectUniqueSample(kGoogleDriveUploadResultMetricName,
                                 OfficeFilesUploadResult::kSuccess, 1);
+  ASSERT_EQ(observed_task_result_, OfficeTaskResult::kCopied);
 }
 
 // Test that when the sync to Drive fails, the file is not moved to Drive.
@@ -482,6 +488,7 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest, UploadFails) {
 
   histogram_.ExpectUniqueSample(kGoogleDriveUploadResultMetricName,
                                 OfficeFilesUploadResult::kSyncError, 1);
+  ASSERT_EQ(observed_task_result_, OfficeTaskResult::kFailedToUpload);
 }
 
 IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest, UploadFromMyFilesNoConnection) {
@@ -499,7 +506,8 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest, UploadFromMyFilesNoConnection) {
 
   base::RunLoop run_loop;
   base::MockCallback<DriveUploadHandler::UploadCallback> upload_callback;
-  EXPECT_CALL(upload_callback, Run(absl::optional<GURL>(absl::nullopt), _))
+  EXPECT_CALL(upload_callback, Run(OfficeTaskResult::kFailedToUpload,
+                                   absl::optional<GURL>(absl::nullopt), _))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
   DriveUploadHandler::Upload(profile(), source_file_url, upload_callback.Get(),
                              cloud_open_metrics_ref_);
@@ -534,7 +542,8 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest,
 
   base::RunLoop run_loop;
   base::MockCallback<DriveUploadHandler::UploadCallback> upload_callback;
-  EXPECT_CALL(upload_callback, Run(absl::optional<GURL>(absl::nullopt), _))
+  EXPECT_CALL(upload_callback, Run(OfficeTaskResult::kFailedToUpload,
+                                   absl::optional<GURL>(absl::nullopt), _))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
   DriveUploadHandler::Upload(profile(), source_file_url, upload_callback.Get(),
                              cloud_open_metrics_ref_);
