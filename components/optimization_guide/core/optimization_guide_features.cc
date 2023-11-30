@@ -962,8 +962,8 @@ int GetOnDeviceModelMaxTokensForOutput() {
 
 int GetOnDeviceModelCrashCountBeforeDisable() {
   static const base::FeatureParam<int> kOnDeviceModelDisableCrashCount{
-      &features::kOptimizationGuideOnDeviceModel,
-      "on_device_model_disable_crash_count", 3};
+      &kOptimizationGuideOnDeviceModel, "on_device_model_disable_crash_count",
+      3};
   return kOnDeviceModelDisableCrashCount.Get();
 }
 
@@ -977,15 +977,15 @@ base::TimeDelta GetOnDeviceStartupMetricDelay() {
 base::TimeDelta GetOnDeviceModelTimeForInitialResponse() {
   static const base::FeatureParam<base::TimeDelta>
       kOnDeviceModelTimeForInitialResponse{
-          &kLogOnDeviceMetricsOnStartup, "on_device_time_for_initial_response",
-          base::Seconds(30)};
+          &kOptimizationGuideOnDeviceModel,
+          "on_device_time_for_initial_response", base::Seconds(30)};
   return kOnDeviceModelTimeForInitialResponse.Get();
 }
 
 bool GetOnDeviceFallbackToServerOnDisconnect() {
   static const base::FeatureParam<bool>
       kOnDeviceModelFallbackToServerOnDisconnect{
-          &features::kOptimizationGuideOnDeviceModel,
+          &kOptimizationGuideOnDeviceModel,
           "on_device_fallback_to_server_on_disconnect", true};
   return kOnDeviceModelFallbackToServerOnDisconnect.Get();
 }
