@@ -20,6 +20,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
+#include "base/types/expected.h"
 #include "base/version.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -29,6 +30,8 @@ class PrivacySandboxAttestationsObserver;
 }  // namespace content
 
 namespace privacy_sandbox {
+
+enum class ParsingStatus;
 
 const base::FilePath::CharType kSentinelFileName[] =
     FILE_PATH_LITERAL("attestations_sentinel");
@@ -185,9 +188,9 @@ class PrivacySandboxAttestations {
   // Called when attestations parsing finishes. Stores the parsed attestations
   // map and its version. Also notifies the observers the attestations map has
   // been loaded / updated.
-  void OnAttestationsParsed(
-      base::Version version,
-      absl::optional<PrivacySandboxAttestationsMap> attestations_map);
+  void OnAttestationsParsed(base::Version version,
+                            base::expected<PrivacySandboxAttestationsMap,
+                                           ParsingStatus> attestations_map);
 
   // Notify observers that attestations have been loaded.
   void NotifyObserversOnAttestationsLoaded();

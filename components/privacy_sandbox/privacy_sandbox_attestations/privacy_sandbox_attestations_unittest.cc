@@ -257,6 +257,9 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
   EXPECT_FALSE(PrivacySandboxAttestations::GetInstance()
                    ->GetVersionForTesting()
                    .IsValid());
+  histogram_tester().ExpectTotalCount(kAttestationsFileParsingStatusUMA, 1);
+  histogram_tester().ExpectBucketCount(kAttestationsFileParsingStatusUMA,
+                                       ParsingStatus::kFileNotExist, 1);
 }
 
 // The parsing progress may end up being
@@ -277,6 +280,9 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
   EXPECT_FALSE(PrivacySandboxAttestations::GetInstance()
                    ->GetVersionForTesting()
                    .IsValid());
+  histogram_tester().ExpectTotalCount(kAttestationsFileParsingStatusUMA, 1);
+  histogram_tester().ExpectBucketCount(kAttestationsFileParsingStatusUMA,
+                                       ParsingStatus::kFileNotExist, 1);
 
   base::RunLoop second_attempt;
   privacy_sandbox::PrivacySandboxAttestations::GetInstance()
@@ -289,6 +295,9 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
   EXPECT_FALSE(PrivacySandboxAttestations::GetInstance()
                    ->GetVersionForTesting()
                    .IsValid());
+  histogram_tester().ExpectTotalCount(kAttestationsFileParsingStatusUMA, 2);
+  histogram_tester().ExpectBucketCount(kAttestationsFileParsingStatusUMA,
+                                       ParsingStatus::kFileNotExist, 2);
 }
 
 TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
@@ -301,6 +310,9 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
   EXPECT_FALSE(PrivacySandboxAttestations::GetInstance()
                    ->GetVersionForTesting()
                    .IsValid());
+  histogram_tester().ExpectTotalCount(kAttestationsFileParsingStatusUMA, 1);
+  histogram_tester().ExpectBucketCount(kAttestationsFileParsingStatusUMA,
+                                       ParsingStatus::kCannotParseFile, 1);
 
   // Attempts to check attestation status should return that the file is
   // corrupt.
@@ -346,7 +358,10 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
   EXPECT_FALSE(PrivacySandboxAttestations::GetInstance()
                    ->GetVersionForTesting()
                    .IsValid());
-  histogram_tester().ExpectTotalCount(kAttestationsFileParsingUMA, 0);
+  histogram_tester().ExpectTotalCount(kAttestationsFileParsingTimeUMA, 0);
+  histogram_tester().ExpectTotalCount(kAttestationsFileParsingStatusUMA, 1);
+  histogram_tester().ExpectBucketCount(kAttestationsFileParsingStatusUMA,
+                                       ParsingStatus::kCannotParseFile, 1);
 
   // Attempts to check attestation status should return that the file is
   // corrupt.
@@ -402,13 +417,17 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
 
   // Sentinel file should prevent parsing. The query result should stay the same
   // as before.
+  histogram_tester().ExpectTotalCount(kAttestationsFileParsingStatusUMA, 2);
+  histogram_tester().ExpectBucketCount(kAttestationsFileParsingStatusUMA,
+                                       ParsingStatus::kSentinelFilePresent, 1);
+
   attestation_status =
       PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
           net::SchemefulSite(GURL(site)),
           PrivacySandboxAttestationsGatedAPI::kTopics);
   EXPECT_EQ(attestation_status,
             GetExpectedStatus(Status::kAttestationsFileCorrupt));
-  histogram_tester().ExpectTotalCount(kAttestationsFileParsingUMA, 0);
+  histogram_tester().ExpectTotalCount(kAttestationsFileParsingTimeUMA, 0);
   histogram_tester().ExpectTotalCount(kAttestationStatusUMA, 2);
   histogram_tester().ExpectBucketCount(kAttestationStatusUMA,
                                        Status::kAttestationsFileCorrupt, 2);
@@ -433,9 +452,13 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
       base::Version("0.0.2"), new_version_file_path);
   parsing_new_version.Run();
 
-  histogram_tester().ExpectTotalCount(kAttestationsFileParsingUMA, 1);
+  histogram_tester().ExpectTotalCount(kAttestationsFileParsingTimeUMA, 1);
 
   // The new version should be loaded successfully.
+  histogram_tester().ExpectTotalCount(kAttestationsFileParsingStatusUMA, 3);
+  histogram_tester().ExpectBucketCount(kAttestationsFileParsingStatusUMA,
+                                       ParsingStatus::kSuccess, 1);
+
   EXPECT_EQ(PrivacySandboxAttestations::GetInstance()->GetVersionForTesting(),
             base::Version("0.0.2"));
   attestation_status =
@@ -480,7 +503,11 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest, LoadAttestationsFile) {
 
   WriteAttestationsFileAndWaitForLoading(base::Version("0.0.1"),
                                          serialized_proto);
-  histogram_tester().ExpectTotalCount(kAttestationsFileParsingUMA, 1);
+  histogram_tester().ExpectTotalCount(kAttestationsFileParsingStatusUMA, 1);
+  histogram_tester().ExpectBucketCount(kAttestationsFileParsingStatusUMA,
+                                       ParsingStatus::kSuccess, 1);
+
+  histogram_tester().ExpectTotalCount(kAttestationsFileParsingTimeUMA, 1);
   histogram_tester().ExpectTotalCount(kAttestationsMapMemoryUsageUMA, 1);
 
   // The site should be attested for the API.
@@ -514,7 +541,11 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest, LoadAttestationsFile) {
   proto.SerializeToString(&serialized_proto);
   WriteAttestationsFileAndWaitForLoading(base::Version("0.0.2"),
                                          serialized_proto);
-  histogram_tester().ExpectTotalCount(kAttestationsFileParsingUMA, 2);
+  histogram_tester().ExpectTotalCount(kAttestationsFileParsingStatusUMA, 2);
+  histogram_tester().ExpectBucketCount(kAttestationsFileParsingStatusUMA,
+                                       ParsingStatus::kSuccess, 2);
+
+  histogram_tester().ExpectTotalCount(kAttestationsFileParsingTimeUMA, 2);
   histogram_tester().ExpectTotalCount(kAttestationsMapMemoryUsageUMA, 2);
 
   // Now the site should be attested for both APIs.
@@ -601,7 +632,11 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
 
   WriteAttestationsFileAndWaitForLoading(base::Version("1.2.3"),
                                          serialized_proto);
-  histogram_tester().ExpectTotalCount(kAttestationsFileParsingUMA, 1);
+  histogram_tester().ExpectTotalCount(kAttestationsFileParsingStatusUMA, 1);
+  histogram_tester().ExpectBucketCount(kAttestationsFileParsingStatusUMA,
+                                       ParsingStatus::kSuccess, 1);
+
+  histogram_tester().ExpectTotalCount(kAttestationsFileParsingTimeUMA, 1);
   histogram_tester().ExpectTotalCount(kAttestationsMapMemoryUsageUMA, 1);
 
   // The site should be attested for the API.
@@ -625,7 +660,11 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
   proto.SerializeToString(&serialized_proto);
   WriteAttestationsFileAndWaitForLoading(base::Version("0.0.1"),
                                          serialized_proto);
-  histogram_tester().ExpectTotalCount(kAttestationsFileParsingUMA, 1);
+  histogram_tester().ExpectTotalCount(kAttestationsFileParsingStatusUMA, 2);
+  histogram_tester().ExpectBucketCount(kAttestationsFileParsingStatusUMA,
+                                       ParsingStatus::kNotNewerVersion, 1);
+
+  histogram_tester().ExpectTotalCount(kAttestationsFileParsingTimeUMA, 1);
   histogram_tester().ExpectTotalCount(kAttestationsMapMemoryUsageUMA, 1);
 
   // The attestations map should still be the old one.
@@ -667,7 +706,11 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
   proto.SerializeToString(&serialized_proto);
   WriteAttestationsFileAndWaitForLoading(base::Version("0.0.1"),
                                          serialized_proto);
-  histogram_tester().ExpectTotalCount(kAttestationsFileParsingUMA, 1);
+  histogram_tester().ExpectTotalCount(kAttestationsFileParsingStatusUMA, 1);
+  histogram_tester().ExpectBucketCount(kAttestationsFileParsingStatusUMA,
+                                       ParsingStatus::kSuccess, 1);
+
+  histogram_tester().ExpectTotalCount(kAttestationsFileParsingTimeUMA, 1);
   histogram_tester().ExpectTotalCount(kAttestationsMapMemoryUsageUMA, 1);
 
   // The site should be attested for the API.
@@ -691,7 +734,11 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
   proto.SerializeToString(&serialized_proto);
   WriteAttestationsFileAndWaitForLoading(base::Version("0.0.2"),
                                          serialized_proto);
-  histogram_tester().ExpectTotalCount(kAttestationsFileParsingUMA, 2);
+  histogram_tester().ExpectTotalCount(kAttestationsFileParsingStatusUMA, 2);
+  histogram_tester().ExpectBucketCount(kAttestationsFileParsingStatusUMA,
+                                       ParsingStatus::kSuccess, 2);
+
+  histogram_tester().ExpectTotalCount(kAttestationsFileParsingTimeUMA, 2);
   histogram_tester().ExpectTotalCount(kAttestationsMapMemoryUsageUMA, 2);
 
   // The newer version should override the existing attestations map.

@@ -672,6 +672,17 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram name="PrivacySandbox.Attestations.Parsing.Status"
+    enum="PrivacySandboxAttestationParsingStatus" expires_after="2024-04-28">
+  <owner>shivanisha@chromium.org</owner>
+  <owner>xiaochenzh@chromium.org</owner>
+  <summary>
+    Records the parsing status of Privacy Sandbox APIs attestation file. Each
+    time a Privacy Sandbox Attestation file is parsed, the status is recorded.
+    The status can be success, or failure with reasons.
+  </summary>
+</histogram>
+
 <histogram
     name="PrivacySandbox.CookieDeprecationFacilitatedTesting.ReasonForComputedEligibilityForProfile"
     enum="CookieDeprecationFacilitatedTestingProfileEligibility"

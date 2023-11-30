@@ -50293,6 +50293,16 @@ Called by update_net_error_codes.py.-->
       label="Disabled by third-party cookie deprecation experiment"/>
 </enum>
 
+<enum name="PrivacySandboxAttestationParsingStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="NotNewerVersion"/>
+  <int value="2" label="FileNotExist"/>
+  <int value="3" label="SentinelFilePresent"/>
+  <int value="4" label="CannotCreateSentinel"/>
+  <int value="5" label="CannotRemoveSentinel"/>
+  <int value="6" label="CannotParseFile"/>
+</enum>
+
 <enum name="PrivacySandboxPrivateAggregationBudgeterBudgetValidityStatus2">
   <int value="0" label="Valid"/>
   <int value="1" label="Valid but empty; no budget data stored"/>

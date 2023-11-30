@@ -28,6 +28,7 @@
 #include "base/task/thread_pool.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/memory_usage_estimator.h"
+#include "base/types/expected.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_histograms.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_parser.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -103,12 +104,16 @@ class SentinelFile {
   base::FilePath path_;
 };
 
+void RecordParsingStatusHistogram(ParsingStatus status) {
+  base::UmaHistogramEnumeration(kAttestationsFileParsingStatusUMA, status);
+}
+
 // Trigger the opening and parsing of the attestations file. Returns the
-// parsed `attestations_map_` or `absl::nullopt` when parsing fails. This
-// function should only be invoked with `kEnforcePrivacySandboxAttestations`
-// enabled. `installed_file_path` is the path to the attestations list file.
-absl::optional<PrivacySandboxAttestationsMap> LoadAttestationsInternal(
-    base::FilePath installed_file_path) {
+// parsed `attestations_map_` or the failure status. This function should only
+// be invoked with `kEnforcePrivacySandboxAttestations` enabled.
+// `installed_file_path` is the path to the attestations list file.
+base::expected<PrivacySandboxAttestationsMap, ParsingStatus>
+LoadAttestationsInternal(base::FilePath installed_file_path) {
   // This function should only be called when the feature is enabled.
   CHECK(base::FeatureList::IsEnabled(
       privacy_sandbox::kEnforcePrivacySandboxAttestations));
@@ -117,18 +122,18 @@ absl::optional<PrivacySandboxAttestationsMap> LoadAttestationsInternal(
                        std::ios::binary | std::ios::in);
   if (!stream.is_open()) {
     // File does not exist.
-    return absl::nullopt;
+    return base::unexpected(ParsingStatus::kFileNotExist);
   }
 
   SentinelFile sentinel_file(installed_file_path.DirName());
   if (sentinel_file.IsPresent()) {
     // An existing sentinel file implies previous parsing has crashed.
-    return absl::nullopt;
+    return base::unexpected(ParsingStatus::kSentinelFilePresent);
   }
 
   if (!sentinel_file.Create()) {
     // Failed to create the sentinel file.
-    return absl::nullopt;
+    return base::unexpected(ParsingStatus::kCannotCreateSentinel);
   }
 
   // If there is any error or crash during parsing, the sentinel file will
@@ -139,14 +144,15 @@ absl::optional<PrivacySandboxAttestationsMap> LoadAttestationsInternal(
       ParseAttestationsFromStream(stream);
   if (!attestations_map.has_value()) {
     // The parsing failed.
-    return absl::nullopt;
+    return base::unexpected(ParsingStatus::kCannotParseFile);
   }
 
   // For an attestations file with 10,000 entries, the average parsing time is
   // around 240 milliseconds as per local testing on a n2-standard-128 with 128
   // vCPUs and 512 GB memory. The estimated dynamic memory usage is around 880
   // KB.
-  base::UmaHistogramTimes(kAttestationsFileParsingUMA, parsing_timer.Elapsed());
+  base::UmaHistogramTimes(kAttestationsFileParsingTimeUMA,
+                          parsing_timer.Elapsed());
   // Count up to 10000 KB with a minimum of 1 KB.
   base::UmaHistogramCounts10000(
       kAttestationsMapMemoryUsageUMA,
@@ -154,10 +160,10 @@ absl::optional<PrivacySandboxAttestationsMap> LoadAttestationsInternal(
 
   if (!sentinel_file.Remove()) {
     // Failed to remove the sentinel file.
-    return absl::nullopt;
+    return base::unexpected(ParsingStatus::kCannotRemoveSentinel);
   }
 
-  return attestations_map;
+  return base::ok(std::move(attestations_map.value()));
 }
 
 }  // namespace
@@ -292,6 +298,7 @@ void PrivacySandboxAttestations::LoadAttestations(
   if (file_version_.IsValid() && file_version_.CompareTo(version) >= 0) {
     // No need to parse if the incoming version is not newer than the existing
     // one.
+    RecordParsingStatusHistogram(ParsingStatus::kNotNewerVersion);
     RunLoadAttestationsDoneCallbackForTesting();  // IN-TEST
     return;
   }
@@ -377,18 +384,23 @@ bool PrivacySandboxAttestations::
 
 void PrivacySandboxAttestations::OnAttestationsParsed(
     base::Version version,
-    absl::optional<PrivacySandboxAttestationsMap> attestations_map) {
+    base::expected<PrivacySandboxAttestationsMap, ParsingStatus>
+        attestations_map) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Queries on Privacy Sandbox APIs attestation status will happen on the UI
   // thread. The final assignment of the attestations map and its version is
   // done on the UI thread to avoid race condition.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  RecordParsingStatusHistogram(attestations_map.has_value()
+                                   ? ParsingStatus::kSuccess
+                                   : attestations_map.error());
+
   if (attestations_map.has_value() &&
       (!file_version_.IsValid() || file_version_.CompareTo(version) < 0)) {
     // Parsing succeeded and the attestations file has newer version.
     file_version_ = std::move(version);
-    attestations_map_ = std::move(attestations_map);
+    attestations_map_ = std::move(attestations_map.value());
   }
 
   attestations_parse_progress_ = Progress::kFinished;
