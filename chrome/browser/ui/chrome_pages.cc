@@ -23,6 +23,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/download/download_shelf.h"
+#include "chrome/browser/file_system_access/file_system_access_features.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
@@ -221,17 +222,24 @@ std::string GenerateContentSettingsExceptionsSubPage(ContentSettingsType type) {
                            : it->second});
 }
 
+bool SiteGURLIsValid(const GURL& url) {
+  url::Origin site_origin = url::Origin::Create(url);
+  // TODO(https://crbug.com/444047): Site Details should work with file:// urls
+  // when this bug is fixed, so add it to the allowlist when that happens.
+  return !site_origin.opaque() && (url.SchemeIsHTTPOrHTTPS() ||
+                                   url.SchemeIs(extensions::kExtensionScheme) ||
+                                   url.SchemeIs(chrome::kIsolatedAppScheme));
+}
+
 void ShowSiteSettingsImpl(Browser* browser, Profile* profile, const GURL& url) {
   // If a valid non-file origin, open a settings page specific to the current
   // origin of the page. Otherwise, open Content Settings.
-  url::Origin site_origin = url::Origin::Create(url);
   std::string link_destination(chrome::kChromeUIContentSettingsURL);
-  // TODO(https://crbug.com/444047): Site Details should work with file:// urls
-  // when this bug is fixed, so add it to the allowlist when that happens.
-  if (!site_origin.opaque() && (url.SchemeIsHTTPOrHTTPS() ||
-                                url.SchemeIs(extensions::kExtensionScheme) ||
-                                url.SchemeIs(chrome::kIsolatedAppScheme))) {
-    std::string origin_string = site_origin.Serialize();
+  if (SiteGURLIsValid(url)) {
+    std::string origin_string = url::Origin::Create(url).Serialize();
+    // TODO(crbug.com/1505848): Update encoding to use
+    // `net::AppendQueryParameter`, similarly to
+    // `ShowFileSystemSettingsSiteImpl`.
     url::RawCanonOutputT<char> percent_encoded_origin;
     url::EncodeURIComponent(origin_string, &percent_encoded_origin);
     link_destination = base::StrCat(
@@ -239,6 +247,37 @@ void ShowSiteSettingsImpl(Browser* browser, Profile* profile, const GURL& url) {
   }
   NavigateParams params(profile, GURL(link_destination),
                         ui::PAGE_TRANSITION_TYPED);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.browser = browser;
+  Navigate(&params);
+}
+
+// TODO(crbug.com/1011533): Remove `kFileSystemAccessPersistentPermissions`
+// flag after FSA Persistent Permissions feature launch.
+// TODO(crbug.com/1011533): Add a browsertest that parallels the existing site
+// settings browsertests that open the page info button, and click through to
+// the file system site settings page for a given origin.
+void ShowSiteSettingsFileSystemImpl(Browser* browser,
+                                    Profile* profile,
+                                    const GURL& url) {
+  constexpr char kParamRequest[] = "site";
+  GURL link_destination = GetSettingsUrl(chrome::kFileSystemSettingsSubpage);
+
+  // If origin is valid, open a file system site settings page specific to the
+  // current origin of the page. Otherwise, open the File System Site Settings
+  // page.
+  if (base::FeatureList::IsEnabled(
+          features::kFileSystemAccessPersistentPermissions) &&
+      SiteGURLIsValid(url)) {
+    // TODO(crbug.com/1505843): Update `origin_string` to remove the encoded
+    // trailing slash, once it's no longer required to correctly navigate to
+    // file system site settings page for the given origin.
+    const std::string origin_string =
+        base::StrCat({url::Origin::Create(url).Serialize(), "/"});
+    link_destination = net::AppendQueryParameter(link_destination,
+                                                 kParamRequest, origin_string);
+  }
+  NavigateParams params(profile, link_destination, ui::PAGE_TRANSITION_TYPED);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   params.browser = browser;
   Navigate(&params);
@@ -429,6 +468,15 @@ void ShowSiteSettings(Browser* browser, const GURL& url) {
 void ShowSiteSettings(Profile* profile, const GURL& url) {
   DCHECK(profile);
   ShowSiteSettingsImpl(nullptr, profile, url);
+}
+
+void ShowSiteSettingsFileSystem(Browser* browser, const GURL& url) {
+  ShowSiteSettingsFileSystemImpl(browser, browser->profile(), url);
+}
+
+void ShowSiteSettingsFileSystem(Profile* profile, const GURL& url) {
+  DCHECK(profile);
+  ShowSiteSettingsFileSystemImpl(nullptr, profile, url);
 }
 
 void ShowContentSettings(Browser* browser,

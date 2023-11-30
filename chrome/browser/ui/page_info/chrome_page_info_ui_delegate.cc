@@ -178,6 +178,10 @@ bool ChromePageInfoUiDelegate::IsMultipleTabsOpen() {
   return count > 1;
 }
 
+void ChromePageInfoUiDelegate::OpenSiteSettingsFileSystem() {
+  chrome::ShowSiteSettingsFileSystem(GetProfile(), site_url_);
+}
+
 void ChromePageInfoUiDelegate::ShowPrivacySandboxSettings() {
   Browser* browser = chrome::FindBrowserWithTab(web_contents_);
   chrome::ShowPrivacySandboxSettings(browser);

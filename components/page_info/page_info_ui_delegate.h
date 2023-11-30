@@ -20,6 +20,7 @@ class PageInfoUiDelegate {
 #if !BUILDFLAG(IS_ANDROID)
   virtual bool IsBlockAutoPlayEnabled() = 0;
   virtual bool IsMultipleTabsOpen() = 0;
+  virtual void OpenSiteSettingsFileSystem() = 0;
 #endif
   // This function is temporarily needed while rolling out 3PCD.
   virtual bool IsTrackingProtection3pcdEnabled() = 0;

@@ -64,6 +64,7 @@ class ChromePageInfoUiDelegate : public PageInfoUiDelegate {
   // PageInfoUiDelegate implementation
   bool IsBlockAutoPlayEnabled() override;
   bool IsMultipleTabsOpen() override;
+  void OpenSiteSettingsFileSystem() override;
 #endif  // !BUILDFLAG(IS_ANDROID)
   content::PermissionResult GetPermissionResult(
       blink::PermissionType permission) override;

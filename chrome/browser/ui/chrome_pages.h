@@ -199,6 +199,9 @@ void ShowContentSettingsExceptionsForProfile(
 void ShowSiteSettings(Profile* profile, const GURL& url);
 void ShowSiteSettings(Browser* browser, const GURL& url);
 
+void ShowSiteSettingsFileSystem(Profile* profile, const GURL& url);
+void ShowSiteSettingsFileSystem(Browser* browser, const GURL& url);
+
 void ShowContentSettings(Browser* browser,
                          ContentSettingsType content_settings_type);
 void ShowSettingsSubPageInTabbedBrowser(Browser* browser,
