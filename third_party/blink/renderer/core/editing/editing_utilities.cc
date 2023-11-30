@@ -513,8 +513,15 @@ PositionTemplate<Strategy> FirstEditablePositionAfterPositionInRootAlgorithm(
     // Make sure not to move out of |highest_root|
     const PositionTemplate<Strategy> boundary =
         PositionTemplate<Strategy>::LastPositionInNode(highest_root);
+    // `NextVisuallyDistinctCandidate` is similar to `NextCandidate`, but
+    // it skips the next visually equivalent of `editable_position`.
+    // `editable_position` is already "visually distinct" relative to
+    // `position`, so use `NextCandidate` here.
+    // See http://crbug.com/1406207 for more details.
     const PositionTemplate<Strategy> next_candidate =
-        NextVisuallyDistinctCandidate(editable_position);
+        RuntimeEnabledFeatures::NextSiblingPositionUseNextCandidateEnabled()
+            ? NextCandidate(editable_position)
+            : NextVisuallyDistinctCandidate(editable_position);
     editable_position = next_candidate.IsNotNull()
                             ? std::min(boundary, next_candidate)
                             : boundary;

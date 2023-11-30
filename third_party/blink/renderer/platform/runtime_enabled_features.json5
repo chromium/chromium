@@ -2472,6 +2472,10 @@
       base_feature: "none",
     },
     {
+      name: "NextSiblingPositionUseNextCandidate",
+      status: "stable",
+    },
+    {
       name: "NoIdleEncodingForWebTests",
       status: "test",
       base_feature: "none",
