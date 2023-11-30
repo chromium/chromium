@@ -25,7 +25,7 @@ BASE_FEATURE(kAppToAppLinkCapturing,
 
 BASE_FEATURE(kAppToAppLinkCapturingWorkspaceApps,
              "AppToAppLinkCapturingWorkspaceApps",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 bool ShouldShowLinkCapturingUX() {
