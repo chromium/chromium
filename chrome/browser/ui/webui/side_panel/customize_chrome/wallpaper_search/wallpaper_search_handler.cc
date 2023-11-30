@@ -23,10 +23,13 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/wallpaper_search/wallpaper_search_background_manager.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/cr_components/theme_color_picker/customize_chrome_colors.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/image_fetcher/core/image_decoder.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_quality/feature_type_map.h"
@@ -47,6 +50,7 @@
 #include "skia/ext/skia_utils_base.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
@@ -311,6 +315,10 @@ void WallpaperSearchHandler::UpdateHistory() {
 }
 
 void WallpaperSearchHandler::SetUserFeedback(UserFeedback selected_option) {
+  if (selected_option == UserFeedback::kThumbsDown) {
+    ShowFeedbackPage();
+  }
+
   optimization_guide::proto::UserFeedback user_feedback =
       OptimizationFeedbackFromWallpaperSearchFeedback(selected_option);
   if (!log_entries_.empty()) {
@@ -321,6 +329,31 @@ void WallpaperSearchHandler::SetUserFeedback(UserFeedback selected_option) {
       quality->set_user_feedback(user_feedback);
     }
   }
+}
+
+void WallpaperSearchHandler::ShowFeedbackPage() {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (skip_show_feedback_page_for_testing_) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  base::Value::Dict feedback_metadata;
+  if (!log_entries_.empty()) {
+    feedback_metadata.Set("log_id", log_entries_.back()
+                                        ->log_ai_data_request()
+                                        ->mutable_model_execution_info()
+                                        ->server_execution_id());
+  }
+  Browser* browser = chrome::FindLastActive();
+  chrome::ShowFeedbackPage(
+      browser, chrome::kFeedbackSourceAI,
+      /*description_template=*/std::string(),
+      /*description_placeholder_text=*/
+      l10n_util::GetStringUTF8(IDS_NTP_WALLPAPER_SEARCH_FEEDBACK_PLACEHOLDER),
+      /*category_tag=*/"wallpaper_search",
+      /*extra_diagnostics=*/std::string(),
+      /*autofill_metadata=*/base::Value::Dict(), std::move(feedback_metadata));
 }
 
 // This function is a wrapper around image_fetcher::ImageDecoder::DecodeImage()

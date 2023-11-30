@@ -1178,6 +1178,12 @@ TEST_F(WallpaperSearchHandlerTest, SetUserFeedback) {
   result1.set_type_url("type.googleapis.com/" + response1.GetTypeName());
   optimization_guide::proto::WallpaperSearchQuality quality1;
   std::move(done_callback1).Run(base::ok(result1), SaveQuality(&quality1));
+#if BUILDFLAG(IS_CHROMEOS)
+  // The feedback dialog on CrOS & LaCrOS happens at the system level.
+  // This can cause the unittest to crash. LaCrOS has a separate feedback
+  // browser test which gives us some coverage.
+  handler->SkipShowFeedbackPageForTesting(true);
+#endif  // BUILDFLAG(IS_CHROMEOS)
   handler->SetUserFeedback(
       side_panel::customize_chrome::mojom::UserFeedback::kThumbsDown);
 

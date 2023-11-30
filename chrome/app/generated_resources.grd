@@ -7867,6 +7867,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_WEBSTORE_TOAST_BUTTON_TEXT" desc="The text displayed in the New Tab Page webstore themes toast button">
         Find themes
       </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_FEEDBACK_PLACEHOLDER" translateable="false" desc="Placeholder text for Wallpaper Search feedback dialog." >
+        Send feedback for Wallpaper Search
+      </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_GENERIC_ERROR_DESCRIPTION" desc="The description of the generic error displayed when wallpaper search fails.">
         Please try again later.
       </message>
