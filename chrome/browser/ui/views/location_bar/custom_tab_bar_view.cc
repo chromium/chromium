@@ -420,6 +420,11 @@ SkColor CustomTabBarView::GetIconLabelBubbleBackgroundColor() const {
   return GetColorProvider()->GetColor(kColorPwaToolbarBackground);
 }
 
+std::optional<ui::ColorId>
+CustomTabBarView::GetLocationIconBackgroundColorOverride() const {
+  return kColorPwaToolbarBackground;
+}
+
 content::WebContents* CustomTabBarView::GetWebContents() {
   return delegate_->GetWebContents();
 }

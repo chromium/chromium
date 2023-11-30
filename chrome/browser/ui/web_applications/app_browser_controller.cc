@@ -565,18 +565,17 @@ void AppBrowserController::AddColorMixers(
   mixer[kColorInfoBarBackground] = {kColorPwaToolbarBackground};
   mixer[kColorInfoBarForeground] = {kColorPwaToolbarButtonIcon};
 
-  // Page info icon in PWAs is only displayed in the info bar, and while we give
-  // it a delegate to override the colors to use, in case of Chrome Refresh 2023
-  // the delegate is ignored for some of these, using hardcoded color IDs that
-  // default to using toolbar colors instead. So make sure to configure the
-  // color IDs it uses to match their surroundings.
-  mixer[kColorPageInfoBackground] = {kColorInfoBarBackground};
-  mixer[kColorPageInfoIconHover] = {ui::AlphaBlend(kColorInfoBarForeground,
-                                                   kColorPageInfoBackground,
-                                                   gfx::kGoogleGreyAlpha200)};
-  mixer[kColorPageInfoIconPressed] = {ui::AlphaBlend(kColorInfoBarForeground,
-                                                     kColorPageInfoBackground,
-                                                     gfx::kGoogleGreyAlpha300)};
+  // Page info icon colors in PWA windows are used both for the LocationIconView
+  // in the CustomTabBarView as well as page action and info icons in the title
+  // bar. In case of LocationIconView, CustomTabBarView overrides the color ID
+  // to use for its background, so here we define the colors to use for the
+  // icons that appear in the title bar. Note that all three of these colors are
+  // "background" colors, i.e. the color that is shown behind the icon/text.
+  // Making them equal to the toolbar ink drop colors will make these icons look
+  // similar to other icons in the PWA title bar.
+  mixer[kColorPageInfoBackground] = {kColorToolbarInkDropHover};
+  mixer[kColorPageInfoIconHover] = {kColorToolbarInkDropHover};
+  mixer[kColorPageInfoIconPressed] = {kColorToolbarInkDropRipple};
 
   // The Material Design color mixer hardcodes various toolbar colors to certain
   // colors, ignoring the toolbar colors set in the BrowserThemePack. Since in
