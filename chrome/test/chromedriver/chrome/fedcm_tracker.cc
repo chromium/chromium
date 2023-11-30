@@ -25,6 +25,11 @@ bool FedCmTracker::ListensToConnections() const {
 Status FedCmTracker::OnEvent(DevToolsClient* client,
                              const std::string& method,
                              const base::Value::Dict& params) {
+  if (method == "FedCm.dialogClosed") {
+    DialogClosed();
+    return Status(kOk);
+  }
+
   if (method != "FedCm.dialogShown") {
     return Status(kOk);
   }

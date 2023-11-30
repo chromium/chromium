@@ -67,7 +67,7 @@ DispatchResponse FedCmHandler::Enable(Maybe<bool> in_disableRejectionDelay) {
   // rejection delay.
   if (!was_enabled && auth_request &&
       auth_request->GetDialogType() != FederatedAuthRequestImpl::kNone) {
-    OnDialogShown();
+    DidShowDialog();
   }
 
   return DispatchResponse::Success();
@@ -78,7 +78,7 @@ DispatchResponse FedCmHandler::Disable() {
   return DispatchResponse::Success();
 }
 
-void FedCmHandler::OnDialogShown() {
+void FedCmHandler::DidShowDialog() {
   DCHECK(frontend_);
   if (!enabled_) {
     return;
@@ -155,6 +155,14 @@ void FedCmHandler::OnDialogShown() {
   }
   frontend_->DialogShown(dialog_id_, dialog_type, std::move(accounts),
                          dialog->GetTitle(), std::move(maybe_subtitle));
+}
+
+void FedCmHandler::DidCloseDialog() {
+  CHECK(frontend_);
+  if (!enabled_) {
+    return;
+  }
+  frontend_->DialogClosed(dialog_id_);
 }
 
 DispatchResponse FedCmHandler::SelectAccount(const String& in_dialogId,

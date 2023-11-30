@@ -11679,6 +11679,12 @@ experimental domain FedCm
       string title
       optional string subtitle
 
+  # Triggered when a dialog is closed, either by user action, JS abort,
+  # or a command below.
+  event dialogClosed
+    parameters
+      string dialogId
+
   command enable
     parameters
       # Allows callers to disable the promise rejection delay that would

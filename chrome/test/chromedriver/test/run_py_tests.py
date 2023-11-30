@@ -7561,6 +7561,7 @@ class FedCmSpecificTest(ChromeDriverBaseTestWithWebServer):
     script_content = bytes("""
       <script>
       let promise = null;
+      let abortController = new AbortController();
       function callFedCm() {
         promise = navigator.credentials.get({
           identity: {
@@ -7569,7 +7570,8 @@ class FedCmSpecificTest(ChromeDriverBaseTestWithWebServer):
               clientId: '123',
             }]
           },
-          mediation: 'required'
+          mediation: 'required',
+          signal: abortController.signal
         });
       }
       async function getResult() {
@@ -7604,10 +7606,13 @@ class FedCmSpecificTest(ChromeDriverBaseTestWithWebServer):
 
   def FedCmDialogCondition(self):
     try:
-        self._driver.GetFedCmTitle()
+        self._driver.GetDialogType()
         return True
     except:
         return False
+
+  def FedCmNoDialogCondition(self):
+    return not self.FedCmDialogCondition()
 
   def FedCmPopupWindowCondition(self):
     try:
@@ -7654,6 +7659,22 @@ class FedCmSpecificTest(ChromeDriverBaseTestWithWebServer):
     self.assertRaises(chromedriver.NoSuchAlert, self._driver.GetAccounts)
     token = self._driver.ExecuteScript('return getResult()')
     self.assertEqual('NetworkError: Error retrieving a token.', token)
+
+  def testAbortRequest(self):
+    self._driver.Load(self._https_server.GetUrl() + '/fedcm.html')
+
+    self._driver.ResetCooldown()
+    self._driver.SetDelayEnabled(False)
+
+    self.assertRaises(chromedriver.NoSuchAlert, self._driver.GetAccounts)
+    self._driver.ExecuteScript('callFedCm()')
+    self.assertTrue(self.WaitForCondition(self.FedCmDialogCondition))
+
+    self._driver.ExecuteScript('abortController.abort()')
+    self.assertTrue(self.WaitForCondition(self.FedCmNoDialogCondition))
+
+    token = self._driver.ExecuteScript('return getResult()')
+    self.assertEqual('AbortError: signal is aborted without reason', token)
 
   def testConfirmIdpLogin(self):
     self._accounts = ""

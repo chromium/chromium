@@ -450,11 +450,12 @@ void CleanUpDeviceRequestPrompt(RenderFrameHost* render_frame_host,
 // `intercept` should be set to true if the handler is active.
 // `disable_delay` should be set to true if the handler wants to disable
 // the normal FedCM delay in notifying the renderer of success/failure.
-void WillSendFedCmRequest(RenderFrameHost* render_frame_host,
+void WillSendFedCmRequest(RenderFrameHost& render_frame_host,
                           bool* intercept,
                           bool* disable_delay);
-void WillShowFedCmDialog(RenderFrameHost* render_frame_host, bool* intercept);
-void OnFedCmDialogShown(RenderFrameHost* render_frame_host);
+void WillShowFedCmDialog(RenderFrameHost& render_frame_host, bool* intercept);
+void DidShowFedCmDialog(RenderFrameHost& render_frame_host);
+void DidCloseFedCmDialog(RenderFrameHost& render_frame_host);
 
 // Handles dev tools integration for fenced frame reporting beacons. Used in
 // `FencedFrameReporter`.

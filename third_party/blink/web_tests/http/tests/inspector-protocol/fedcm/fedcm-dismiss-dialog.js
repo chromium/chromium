@@ -11,6 +11,11 @@
   const dialogPromise = session.evaluateAsync("triggerDialog()");
   const msg = await dp.FedCm.onceDialogShown();
   dp.FedCm.dismissDialog({dialogId: msg.params.dialogId});
+  const closeEvent = await dp.FedCm.onceDialogClosed();
+  if (msg.params.dialogId != closeEvent.params.dialogId) {
+    testRunner.fail("Dialog ID mismatch");
+    return;
+  }
   // This should be a NetworkError
   testRunner.log(await dialogPromise);
   testRunner.completeTest();

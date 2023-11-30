@@ -823,7 +823,7 @@ void FederatedAuthRequestImpl::RequestToken(
   bool intercept = false;
   bool should_complete_request_immediately = false;
   devtools_instrumentation::WillSendFedCmRequest(
-      &render_frame_host(), &intercept, &should_complete_request_immediately);
+      render_frame_host(), &intercept, &should_complete_request_immediately);
   should_complete_request_immediately_ =
       (intercept && should_complete_request_immediately) ||
       api_permission_delegate_->ShouldCompleteRequestImmediately();
@@ -1489,7 +1489,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   // So we use this call to see whether interception is enabled.
   // It is not needed in regular Chrome even when automation is used because
   // there, the dialog will wait for user input anyway.
-  devtools_instrumentation::WillShowFedCmDialog(&render_frame_host(),
+  devtools_instrumentation::WillShowFedCmDialog(render_frame_host(),
                                                 &intercept);
   // Since we don't reuse the controller for each request, and intercept
   // defaults to false, we only need to call this if intercept is true.
@@ -1519,7 +1519,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
                      /*can_append_hints=*/false),
       base::BindOnce(&FederatedAuthRequestImpl::OnDialogDismissed,
                      weak_ptr_factory_.GetWeakPtr()));
-  devtools_instrumentation::OnFedCmDialogShown(&render_frame_host());
+  devtools_instrumentation::DidShowFedCmDialog(render_frame_host());
 
   if (identity_selection_type_ == kExplicit) {
     // We omit recording the accounts dialog shown metric for auto re-authn
@@ -1619,7 +1619,7 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
                      /*can_append_hints=*/true));
   fedcm_metrics_->RecordMismatchDialogShown();
   mismatch_dialog_shown_time_ = base::TimeTicks::Now();
-  devtools_instrumentation::OnFedCmDialogShown(&render_frame_host());
+  devtools_instrumentation::DidShowFedCmDialog(render_frame_host());
 }
 
 void FederatedAuthRequestImpl::CloseModalDialogView() {
@@ -1854,8 +1854,6 @@ void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
 
 void FederatedAuthRequestImpl::OnDismissFailureDialog(
     IdentityRequestDialogController::DismissReason dismiss_reason) {
-  dialog_type_ = kNone;
-
   // Clicking the close button and swiping away the account chooser are more
   // intentional than other ways of dismissing the account chooser such as
   // the virtual keyboard showing on Android. Dismissal through closing the
@@ -1891,8 +1889,6 @@ void FederatedAuthRequestImpl::OnDismissErrorDialog(
     IdpNetworkRequestManager::FetchStatus status,
     absl::optional<TokenError> token_error,
     IdentityRequestDialogController::DismissReason dismiss_reason) {
-  dialog_type_ = kNone;
-
   bool has_url = token_error && !token_error->url.is_empty();
   ErrorDialogResult result;
   switch (dismiss_reason) {
@@ -1924,8 +1920,6 @@ void FederatedAuthRequestImpl::OnDismissErrorDialog(
 
 void FederatedAuthRequestImpl::OnDialogDismissed(
     IdentityRequestDialogController::DismissReason dismiss_reason) {
-  dialog_type_ = kNone;
-
   // Clicking the close button and swiping away the account chooser are more
   // intentional than other ways of dismissing the account chooser such as
   // the virtual keyboard showing on Android.
@@ -1965,6 +1959,11 @@ void FederatedAuthRequestImpl::OnDialogDismissed(
 void FederatedAuthRequestImpl::ShowModalDialog(const GURL& url) {
   // Reset dialog type since we are not showing a fedcm dialog while the
   // popup window is open.
+  if (dialog_type_ != kNone) {
+    // This call ensures that we send a dialogClosed event if an account
+    // chooser or mismatch dialog is open.
+    devtools_instrumentation::DidCloseFedCmDialog(render_frame_host());
+  }
   // TODO(cbiesinger): Should this return a special dialog type?
   dialog_type_ = kNone;
 
@@ -2045,7 +2044,7 @@ void FederatedAuthRequestImpl::ShowErrorDialog(
           ? base::BindOnce(&FederatedAuthRequestImpl::ShowModalDialog,
                            weak_ptr_factory_.GetWeakPtr(), token_error->url)
           : base::NullCallback());
-  devtools_instrumentation::OnFedCmDialogShown(&render_frame_host());
+  devtools_instrumentation::DidShowFedCmDialog(render_frame_host());
 }
 
 void FederatedAuthRequestImpl::OnTokenResponseReceived(
@@ -2266,6 +2265,10 @@ void FederatedAuthRequestImpl::CompleteRequest(
 
   bool is_auto_selected =
       IsFedCmAutoSelectedFlagEnabled() && identity_selection_type_ != kExplicit;
+
+  if (dialog_type_ != kNone) {
+    devtools_instrumentation::DidCloseFedCmDialog(render_frame_host());
+  }
 
   CleanUp();
 
@@ -2745,7 +2748,7 @@ void FederatedAuthRequestImpl::Disconnect(
   bool intercept = false;
   bool should_complete_request_immediately = false;
   devtools_instrumentation::WillSendFedCmRequest(
-      &render_frame_host(), &intercept, &should_complete_request_immediately);
+      render_frame_host(), &intercept, &should_complete_request_immediately);
 
   auto network_manager = CreateNetworkManager();
 

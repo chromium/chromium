@@ -2237,10 +2237,10 @@ void CleanUpDeviceRequestPrompt(RenderFrameHost* render_frame_host,
                    prompt_info);
 }
 
-void WillSendFedCmRequest(RenderFrameHost* render_frame_host,
+void WillSendFedCmRequest(RenderFrameHost& render_frame_host,
                           bool* intercept,
                           bool* disable_delay) {
-  FrameTreeNode* ftn = FrameTreeNode::From(render_frame_host);
+  FrameTreeNode* ftn = FrameTreeNode::From(&render_frame_host);
   if (!ftn) {
     return;
   }
@@ -2248,20 +2248,28 @@ void WillSendFedCmRequest(RenderFrameHost* render_frame_host,
                    disable_delay);
 }
 
-void WillShowFedCmDialog(RenderFrameHost* render_frame_host, bool* intercept) {
-  FrameTreeNode* ftn = FrameTreeNode::From(render_frame_host);
+void WillShowFedCmDialog(RenderFrameHost& render_frame_host, bool* intercept) {
+  FrameTreeNode* ftn = FrameTreeNode::From(&render_frame_host);
   if (!ftn) {
     return;
   }
   DispatchToAgents(ftn, &protocol::FedCmHandler::WillShowDialog, intercept);
 }
 
-void OnFedCmDialogShown(RenderFrameHost* render_frame_host) {
-  FrameTreeNode* ftn = FrameTreeNode::From(render_frame_host);
+void DidShowFedCmDialog(RenderFrameHost& render_frame_host) {
+  FrameTreeNode* ftn = FrameTreeNode::From(&render_frame_host);
   if (!ftn) {
     return;
   }
-  DispatchToAgents(ftn, &protocol::FedCmHandler::OnDialogShown);
+  DispatchToAgents(ftn, &protocol::FedCmHandler::DidShowDialog);
+}
+
+void DidCloseFedCmDialog(RenderFrameHost& render_frame_host) {
+  FrameTreeNode* ftn = FrameTreeNode::From(&render_frame_host);
+  if (!ftn) {
+    return;
+  }
+  DispatchToAgents(ftn, &protocol::FedCmHandler::DidCloseDialog);
 }
 
 void OnFencedFrameReportRequestSent(int initiator_frame_tree_node_id,

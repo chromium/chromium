@@ -42,7 +42,8 @@ class FedCmHandler : public DevToolsDomainHandler, public FedCm::Backend {
       *intercept = true;
     }
   }
-  void OnDialogShown();
+  void DidShowDialog();
+  void DidCloseDialog();
 
  private:
   // DevToolsDomainHandler:
