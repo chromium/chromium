@@ -27,7 +27,7 @@ import java.lang.annotation.RetentionPolicy;
 /** Handles various feature utility functions for query tiles. */
 @JNINamespace("query_tiles")
 public class QueryTileUtils {
-    private static Boolean sShowQueryTilesOnNTP;
+    private static Boolean sShowQueryTilesOnNtp;
     private static Boolean sShowQueryTilesOnStartSurface;
     private static final long INVALID_DECISION_TIMESTAMP = -1L;
     private static final String QUERY_TILES_SEGMENTATION_PLATFORM_KEY = "query_tiles";
@@ -76,16 +76,17 @@ public class QueryTileUtils {
 
     /**
      * Whether query tiles is enabled and should be shown on NTP.
+     *
      * @return Whether the query tile feature is enabled on NTP.
      */
-    public static boolean isQueryTilesEnabledOnNTP() {
+    public static boolean isQueryTilesEnabledOnNtp() {
         // Cache the result so it will not change during the same browser session.
-        if (sShowQueryTilesOnNTP != null) return sShowQueryTilesOnNTP;
+        if (sShowQueryTilesOnNtp != null) return sShowQueryTilesOnNtp;
         boolean queryTileEnabled =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.QUERY_TILES)
                         && ChromeFeatureList.isEnabled(ChromeFeatureList.QUERY_TILES_IN_NTP);
-        sShowQueryTilesOnNTP = queryTileEnabled && shouldShowQueryTiles();
-        return sShowQueryTilesOnNTP;
+        sShowQueryTilesOnNtp = queryTileEnabled && shouldShowQueryTiles();
+        return sShowQueryTilesOnNtp;
     }
 
     /**

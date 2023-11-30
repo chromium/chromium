@@ -312,7 +312,7 @@ public class NewTabPageLayout extends LinearLayout {
         initializeLensButton();
         initializeLayoutChangeListener();
 
-        if (searchProviderIsGoogle && QueryTileUtils.isQueryTilesEnabledOnNTP()) {
+        if (searchProviderIsGoogle && QueryTileUtils.isQueryTilesEnabledOnNtp()) {
             mQueryTileSection =
                     new QueryTileSection(
                             findViewById(R.id.query_tiles), profile, mManager::performSearchQuery);
@@ -483,7 +483,7 @@ public class NewTabPageLayout extends LinearLayout {
         assert mMvTilesContainerLayout != null;
 
         int maxRows = 2;
-        if (searchProviderIsGoogle && QueryTileUtils.isQueryTilesEnabledOnNTP()) {
+        if (searchProviderIsGoogle && QueryTileUtils.isQueryTilesEnabledOnNtp()) {
             maxRows = QueryTileSection.getMaxRowsForMostVisitedTiles(getContext());
         }
 

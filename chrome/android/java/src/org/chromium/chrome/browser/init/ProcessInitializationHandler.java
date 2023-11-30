@@ -477,7 +477,7 @@ public class ProcessInitializationHandler {
                 () -> TosDialogBehaviorSharedPrefInvalidator.refreshSharedPreferenceIfTosSkipped());
         deferredStartupHandler.addDeferredTask(
                 () -> OfflineMeasurementsBackgroundTask.clearPersistedDataFromPrefs());
-        deferredStartupHandler.addDeferredTask(() -> QueryTileUtils.isQueryTilesEnabledOnNTP());
+        deferredStartupHandler.addDeferredTask(() -> QueryTileUtils.isQueryTilesEnabledOnNtp());
         deferredStartupHandler.addDeferredTask(
                 () -> {
                     GlobalAppLocaleController.getInstance().maybeSetupLocaleManager();

@@ -47,8 +47,8 @@ public class QueryTileUtilsTest {
     @SmallTest
     @EnableFeatures({ChromeFeatureList.QUERY_TILES, ChromeFeatureList.QUERY_TILES_IN_NTP})
     @DisableFeatures(ChromeFeatureList.QUERY_TILES_SEGMENTATION)
-    public void testIsQueryTilesEnabledOnNTPWithoutSegmentation() {
-        Assert.assertTrue(QueryTileUtils.isQueryTilesEnabledOnNTP());
+    public void testIsQueryTilesEnabledOnNtpWithoutSegmentation() {
+        Assert.assertTrue(QueryTileUtils.isQueryTilesEnabledOnNtp());
     }
 
     @Test
