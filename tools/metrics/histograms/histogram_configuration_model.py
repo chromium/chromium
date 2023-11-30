@@ -113,11 +113,9 @@ _VARIANT_TYPE = models.ObjectNodeType(
     ],
     required_attributes=['name'],
     alphabetization=[
-        (_OBSOLETE_TYPE.tag, _KEEP_ORDER),
         (_OWNER_TYPE.tag, _KEEP_ORDER),
     ],
     children=[
-        models.ChildType(_OBSOLETE_TYPE.tag, _OBSOLETE_TYPE, multiple=False),
         models.ChildType(_OWNER_TYPE.tag, _OWNER_TYPE, multiple=True),
     ],
 )
@@ -205,12 +203,7 @@ _SUFFIX_TYPE = models.ObjectNodeType('suffix',
                                          ('name', str, None),
                                          ('label', str, None),
                                      ],
-                                     required_attributes=['name'],
-                                     children=[
-                                         models.ChildType(_OBSOLETE_TYPE.tag,
-                                                          _OBSOLETE_TYPE,
-                                                          multiple=False),
-                                     ])
+                                     required_attributes=['name'])
 
 _WITH_SUFFIX_TYPE = models.ObjectNodeType(
     'with-suffix',
@@ -226,7 +219,6 @@ _AFFECTED_HISTOGRAM_TYPE = models.ObjectNodeType(
     ],
     required_attributes=['name'],
     children=[
-        models.ChildType(_OBSOLETE_TYPE.tag, _OBSOLETE_TYPE, multiple=False),
         models.ChildType(_WITH_SUFFIX_TYPE.tag,
                          _WITH_SUFFIX_TYPE, multiple=True),
     ])
@@ -239,16 +231,15 @@ _HISTOGRAM_SUFFIXES_TYPE = models.ObjectNodeType(
         ('ordering', str, r'^$|suffix|^prefix(,[0-9]+)?$'),
     ],
     required_attributes=['name', 'separator'],
-    alphabetization=[(_OBSOLETE_TYPE.tag, _KEEP_ORDER),
-                     (_SUFFIX_TYPE.tag, _NaturalSortByName),
+    alphabetization=[(_SUFFIX_TYPE.tag, _NaturalSortByName),
                      (_AFFECTED_HISTOGRAM_TYPE.tag, _LOWERCASE_FN('name'))],
     extra_newlines=(1, 1, 1),
     children=[
-        models.ChildType(_OBSOLETE_TYPE.tag, _OBSOLETE_TYPE, multiple=False),
         models.ChildType(_OWNER_TYPE.tag, _OWNER_TYPE, multiple=True),
         models.ChildType(_SUFFIX_TYPE.tag, _SUFFIX_TYPE, multiple=True),
         models.ChildType(_AFFECTED_HISTOGRAM_TYPE.tag,
-                         _AFFECTED_HISTOGRAM_TYPE, multiple=True),
+                         _AFFECTED_HISTOGRAM_TYPE,
+                         multiple=True),
     ])
 
 _HISTOGRAM_SUFFIXES_LIST_TYPE = models.ObjectNodeType(

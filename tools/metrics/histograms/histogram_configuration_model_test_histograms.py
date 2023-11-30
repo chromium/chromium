@@ -349,11 +349,6 @@ PRETTY_XML_WITH_TOKEN = """
 
 <variants name="OmniboxProviderVersion">
   <variant name="" summary="all versions"/>
-  <variant name=".Provider" summary="the old version">
-    <obsolete>
-      Deprecated. Replaced by Provider2.
-    </obsolete>
-  </variant>
   <variant name=".Provider2" summary="the second version"/>
 </variants>
 
@@ -367,9 +362,6 @@ PRETTY_XML_WITH_TOKEN = """
   <token key="version" variants="OmniboxProviderVersion"/>
   <token key="content">
     <variant name=".ExtensionApp" summary="ExtensionApp">
-      <obsolete>
-        Obsolete variant
-      </obsolete>
       <owner>you@google.com</owner>
     </variant>
     <variant name=".HistoryContents" summary="HistoryContents"/>
@@ -391,11 +383,6 @@ XML_WRONG_VARIANT_CHILDREN_ORDER = """
 
 <variants name="OmniboxProviderVersion">
   <variant name="" summary="all versions"/>
-  <variant name=".Provider" summary="the old version">
-    <obsolete>
-      Deprecated. Replaced by Provider2.
-    </obsolete>
-  </variant>
   <variant name=".Provider2" summary="the second version"/>
 </variants>
 
@@ -410,9 +397,6 @@ XML_WRONG_VARIANT_CHILDREN_ORDER = """
   <token key="content">
     <variant name=".ExtensionApp" summary="ExtensionApp">
       <owner>you@google.com</owner>
-      <obsolete>
-        Obsolete variant
-      </obsolete>
     </variant>
     <variant name=".HistoryContents" summary="HistoryContents"/>
     <variant name=".HistoryQuick" summary="HistoryQuick"/>
@@ -434,11 +418,6 @@ XML_WRONG_VARIANT_ORDER = """
 <variants name="OmniboxProviderVersion">
   <variant name="" summary="all versions"/>
   <variant name=".Provider2" summary="the second version"/>
-  <variant name=".Provider" summary="the old version">
-    <obsolete>
-      Deprecated. Replaced by Provider2.
-    </obsolete>
-  </variant>
 </variants>
 
 <histogram name="Omnibox{version}{content}.Time" units="ms"
@@ -451,9 +430,6 @@ XML_WRONG_VARIANT_ORDER = """
   <token key="version" variants="OmniboxProviderVersion"/>
   <token key="content">
     <variant name=".ExtensionApp" summary="ExtensionApp">
-      <obsolete>
-        Obsolete variant
-      </obsolete>
       <owner>you@google.com</owner>
     </variant>
     <variant name=".HistoryQuick" summary="HistoryQuick"/>
@@ -483,9 +459,6 @@ XML_WRONG_HISTOGRAM_VARIANTS_ORDER = """
   <token key="version" variants="OmniboxProviderVersion"/>
   <token key="content">
     <variant name=".ExtensionApp" summary="ExtensionApp">
-      <obsolete>
-        Obsolete variant
-      </obsolete>
       <owner>you@google.com</owner>
     </variant>
     <variant name=".HistoryContents" summary="HistoryContents"/>
@@ -495,11 +468,6 @@ XML_WRONG_HISTOGRAM_VARIANTS_ORDER = """
 
 <variants name="OmniboxProviderVersion">
   <variant name="" summary="all versions"/>
-  <variant name=".Provider" summary="the old version">
-    <obsolete>
-      Deprecated. Replaced by Provider2.
-    </obsolete>
-  </variant>
   <variant name=".Provider2" summary="the second version"/>
 </variants>
 
