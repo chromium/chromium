@@ -6996,6 +6996,12 @@ static_library("browser") {
         deps += [ "//printing:printing_base" ]
       }
     }
+    if (enable_oop_printing || enable_print_preview) {
+      sources += [
+        "printing/prefs_util.cc",
+        "printing/prefs_util.h",
+      ]
+    }
     if (is_win || enable_print_preview) {
       deps += [ "//chrome/services/printing/public/mojom" ]
     }
@@ -7006,8 +7012,6 @@ static_library("browser") {
         "printing/background_printing_manager.h",
         "printing/pdf_nup_converter_client.cc",
         "printing/pdf_nup_converter_client.h",
-        "printing/prefs_util.cc",
-        "printing/prefs_util.h",
         "printing/print_preview_context_menu_observer.cc",
         "printing/print_preview_context_menu_observer.h",
         "printing/print_preview_data_service.cc",
