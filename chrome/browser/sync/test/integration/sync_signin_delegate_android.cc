@@ -33,3 +33,7 @@ bool SyncSigninDelegateAndroid::SigninUI(Profile* profile,
 bool SyncSigninDelegateAndroid::ConfirmSyncUI(Profile* profile) {
   return true;
 }
+
+void SyncSigninDelegateAndroid::SignOutPrimaryAccount(Profile* profile) {
+  sync_test_utils_android::SignOutForTesting();
+}

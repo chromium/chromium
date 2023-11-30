@@ -35,6 +35,17 @@ void SetUpAccountAndSignInAndEnableSyncForTesting() {
   run_loop.Run();
 }
 
+void SignOutForTesting() {
+  base::RunLoop run_loop;
+  base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
+                             base::BindLambdaForTesting([&]() {
+                               Java_SyncTestSigninUtils_signOutForTesting(
+                                   base::android::AttachCurrentThread());
+                               run_loop.Quit();
+                             }));
+  run_loop.Run();
+}
+
 void SetUpAuthForTesting() {
   Java_SyncTestSigninUtils_setUpAuthForTesting(
       base::android::AttachCurrentThread());

@@ -25,6 +25,7 @@ class SyncSigninDelegateDesktop : public SyncSigninDelegate {
                 const std::string& password,
                 signin::ConsentLevel consent_level) override;
   bool ConfirmSyncUI(Profile* profile) override;
+  void SignOutPrimaryAccount(Profile* profile) override;
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_SYNC_SIGNIN_DELEGATE_DESKTOP_H_

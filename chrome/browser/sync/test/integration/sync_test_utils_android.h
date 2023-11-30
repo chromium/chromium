@@ -16,6 +16,9 @@ void SetUpAccountAndSignInForTesting();
 // synchronously.
 void SetUpAccountAndSignInAndEnableSyncForTesting();
 
+// Signs out and clears the primary account.
+void SignOutForTesting();
+
 // Sets up the test authentication environment synchronously using a worker
 // thread.
 //

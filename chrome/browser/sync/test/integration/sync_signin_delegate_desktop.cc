@@ -63,3 +63,7 @@ bool SyncSigninDelegateDesktop::ConfirmSyncUI(Profile* profile) {
       LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
   return true;
 }
+
+void SyncSigninDelegateDesktop::SignOutPrimaryAccount(Profile* profile) {
+  signin::ClearPrimaryAccount(IdentityManagerFactory::GetForProfile(profile));
+}
