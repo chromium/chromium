@@ -33,7 +33,7 @@ void InvalidateContainerForCellGeometryChange(
 
 }  // namespace
 
-void NGTableCellPaintInvalidator::InvalidatePaint() {
+void TableCellPaintInvalidator::InvalidatePaint() {
   // The cell's containing row and section paint backgrounds behind the cell,
   // and the row or table paints collapsed borders. If the cell's geometry
   // changed and the containers which will paint backgrounds and/or collapsed

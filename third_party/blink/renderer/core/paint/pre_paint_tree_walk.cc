@@ -340,21 +340,21 @@ void PrePaintTreeWalk::CheckTreeBuilderContextState(
 }
 #endif
 
-NGPrePaintInfo PrePaintTreeWalk::CreatePrePaintInfo(
+PrePaintInfo PrePaintTreeWalk::CreatePrePaintInfo(
     const PhysicalFragmentLink& child,
     const PrePaintTreeWalkContext& context) {
   const auto* fragment = To<PhysicalBoxFragment>(child.fragment.Get());
-  return NGPrePaintInfo(fragment, child.offset,
-                        context.current_container.fragmentainer_idx,
-                        fragment->IsFirstForNode(), !fragment->GetBreakToken(),
-                        /* is_inside_fragment_child */ false,
-                        context.current_container.IsInFragmentationContext());
+  return PrePaintInfo(fragment, child.offset,
+                      context.current_container.fragmentainer_idx,
+                      fragment->IsFirstForNode(), !fragment->GetBreakToken(),
+                      /* is_inside_fragment_child */ false,
+                      context.current_container.IsInFragmentationContext());
 }
 
 FragmentData* PrePaintTreeWalk::GetOrCreateFragmentData(
     const LayoutObject& object,
     const PrePaintTreeWalkContext& context,
-    const NGPrePaintInfo& pre_paint_info) {
+    const PrePaintInfo& pre_paint_info) {
   // If |allow_update| is set, we're allowed to add, remove and modify
   // FragmentData objects. Otherwise they will be left alone.
   bool allow_update = context.NeedsTreeBuilderContext();
@@ -515,7 +515,7 @@ void PrePaintTreeWalk::UpdateContextForOOFContainer(
 
 void PrePaintTreeWalk::WalkInternal(const LayoutObject& object,
                                     PrePaintTreeWalkContext& context,
-                                    NGPrePaintInfo* pre_paint_info) {
+                                    PrePaintInfo* pre_paint_info) {
   PaintInvalidatorContext& paint_invalidator_context =
       context.paint_invalidator_context;
 
@@ -650,9 +650,9 @@ const PhysicalBoxFragment* PrePaintTreeWalk::RebuildContextForMissedDescendant(
     // TODO(mstensho): Some of the bool parameters here are meaningless when
     // only used with PaintPropertyTreeBuilder (only used by
     // PrePaintTreeWalker). Consider cleaning this up, by splitting up
-    // NGPrePaintInfo into one walker part and one builder part, so that we
+    // PrePaintInfo into one walker part and one builder part, so that we
     // don't have to specify them as false here.
-    NGPrePaintInfo pre_paint_info(
+    PrePaintInfo pre_paint_info(
         box_fragment, paint_offset, fragmentainer_idx,
         /* is_first_for_node */ false, /* is_last_for_node */ false,
         /* is_inside_fragment_child */ false,
@@ -757,7 +757,7 @@ void PrePaintTreeWalk::WalkMissedChildren(
     }
 
     if (is_in_fragment_traversal) {
-      NGPrePaintInfo pre_paint_info =
+      PrePaintInfo pre_paint_info =
           CreatePrePaintInfo(child, descendant_context);
       Walk(descendant_object, descendant_context, &pre_paint_info);
     } else {
@@ -810,7 +810,7 @@ void PrePaintTreeWalk::WalkFragmentationContextRootChildren(
       // special-code for such a special case. If anyone complains, we can
       // revisit this decision.
 
-      NGPrePaintInfo pre_paint_info = CreatePrePaintInfo(child, parent_context);
+      PrePaintInfo pre_paint_info = CreatePrePaintInfo(child, parent_context);
       Walk(*box_fragment->GetLayoutObject(), parent_context, &pre_paint_info);
       continue;
     }
@@ -1107,7 +1107,7 @@ void PrePaintTreeWalk::WalkLayoutObjectChildren(
         container_for_child = oof_containing_fragment_info;
         is_in_different_fragmentation_context = true;
       }
-      NGPrePaintInfo pre_paint_info(
+      PrePaintInfo pre_paint_info(
           box_fragment, paint_offset, fragmentainer_idx, is_first_for_node,
           is_last_for_node, is_inside_fragment_child,
           container_for_child->IsInFragmentationContext());
@@ -1217,7 +1217,7 @@ void PrePaintTreeWalk::WalkChildren(
 
 void PrePaintTreeWalk::Walk(const LayoutObject& object,
                             const PrePaintTreeWalkContext& parent_context,
-                            NGPrePaintInfo* pre_paint_info) {
+                            PrePaintInfo* pre_paint_info) {
   const PhysicalBoxFragment* physical_fragment = nullptr;
   bool is_inside_fragment_child = false;
   if (pre_paint_info) {

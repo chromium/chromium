@@ -14,12 +14,12 @@ struct PhysicalOffset;
 
 // Generic fragment painter for paint logic shared between all types of
 // fragments. LayoutNG version of ObjectPainter.
-class NGFragmentPainter {
+class FragmentPainter {
   STACK_ALLOCATED();
 
  public:
-  NGFragmentPainter(const PhysicalBoxFragment& box,
-                    const DisplayItemClient& display_item_client)
+  FragmentPainter(const PhysicalBoxFragment& box,
+                  const DisplayItemClient& display_item_client)
       : box_fragment_(box), display_item_client_(display_item_client) {}
 
   // |style_to_use| may be from other objects than |box_fragment_|. When

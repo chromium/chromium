@@ -26,8 +26,8 @@ bool ShouldPaintBorderAfter(const Vector<bool>& allow_border,
 
 }  // namespace
 
-void NGFrameSetPainter::PaintObject(const PaintInfo& paint_info,
-                                    const PhysicalOffset& paint_offset) {
+void FrameSetPainter::PaintObject(const PaintInfo& paint_info,
+                                  const PhysicalOffset& paint_offset) {
   if (paint_info.phase != PaintPhase::kForeground)
     return;
 
@@ -43,7 +43,7 @@ void NGFrameSetPainter::PaintObject(const PaintInfo& paint_info,
   PaintBorders(paint_info, paint_offset);
 }
 
-void NGFrameSetPainter::PaintChildren(const PaintInfo& paint_info) {
+void FrameSetPainter::PaintChildren(const PaintInfo& paint_info) {
   if (paint_info.DescendantPaintingBlocked())
     return;
 
@@ -52,7 +52,7 @@ void NGFrameSetPainter::PaintChildren(const PaintInfo& paint_info) {
     if (child_fragment.HasSelfPaintingLayer())
       continue;
     if (To<PhysicalBoxFragment>(child_fragment).CanTraverse()) {
-      NGBoxFragmentPainter(To<PhysicalBoxFragment>(child_fragment))
+      BoxFragmentPainter(To<PhysicalBoxFragment>(child_fragment))
           .Paint(paint_info);
     } else {
       child_fragment.GetLayoutObject()->Paint(paint_info);
@@ -60,8 +60,8 @@ void NGFrameSetPainter::PaintChildren(const PaintInfo& paint_info) {
   }
 }
 
-void NGFrameSetPainter::PaintBorders(const PaintInfo& paint_info,
-                                     const PhysicalOffset& paint_offset) {
+void FrameSetPainter::PaintBorders(const PaintInfo& paint_info,
+                                   const PhysicalOffset& paint_offset) {
   if (DrawingRecorder::UseCachedDrawingIfPossible(
           paint_info.context, display_item_client_, paint_info.phase))
     return;
@@ -112,10 +112,10 @@ void NGFrameSetPainter::PaintBorders(const PaintInfo& paint_info,
   }
 }
 
-void NGFrameSetPainter::PaintRowBorder(const PaintInfo& paint_info,
-                                       const gfx::Rect& border_rect,
-                                       const Color& fill_color,
-                                       const AutoDarkMode& auto_dark_mode) {
+void FrameSetPainter::PaintRowBorder(const PaintInfo& paint_info,
+                                     const gfx::Rect& border_rect,
+                                     const Color& fill_color,
+                                     const AutoDarkMode& auto_dark_mode) {
   // Fill first.
   GraphicsContext& context = paint_info.context;
   context.FillRect(border_rect, fill_color, auto_dark_mode);
@@ -132,10 +132,10 @@ void NGFrameSetPainter::PaintRowBorder(const PaintInfo& paint_info,
                    kBorderEndEdgeColor, auto_dark_mode);
 }
 
-void NGFrameSetPainter::PaintColumnBorder(const PaintInfo& paint_info,
-                                          const gfx::Rect& border_rect,
-                                          const Color& fill_color,
-                                          const AutoDarkMode& auto_dark_mode) {
+void FrameSetPainter::PaintColumnBorder(const PaintInfo& paint_info,
+                                        const gfx::Rect& border_rect,
+                                        const Color& fill_color,
+                                        const AutoDarkMode& auto_dark_mode) {
   if (!paint_info.GetCullRect().Intersects(border_rect))
     return;
 

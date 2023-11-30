@@ -202,7 +202,7 @@ void PaintInvalidator::UpdateLayoutShiftTracking(
 
 bool PaintInvalidator::InvalidatePaint(
     const LayoutObject& object,
-    const NGPrePaintInfo* pre_paint_info,
+    const PrePaintInfo* pre_paint_info,
     const PaintPropertyTreeBuilderContext* tree_builder_context,
     PaintInvalidatorContext& context) {
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("blink.invalidation"),

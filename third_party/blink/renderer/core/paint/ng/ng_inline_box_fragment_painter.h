@@ -151,7 +151,7 @@ class InlineBoxFragmentPainterBase {
   InlinePaintContext* inline_context_ = nullptr;
 };
 
-// Painter for LayoutNG inline box fragments. Delegates to NGBoxFragmentPainter
+// Painter for LayoutNG inline box fragments. Delegates to BoxFragmentPainter
 // for all box painting logic that isn't specific to inline boxes.
 class InlineBoxFragmentPainter : public InlineBoxFragmentPainterBase {
   STACK_ALLOCATED();

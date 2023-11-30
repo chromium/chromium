@@ -20,7 +20,7 @@ TextDecorationPainter::TextDecorationPainter(
     const ComputedStyle& style,
     const TextPaintStyle& text_style,
     const LineRelativeRect& decoration_rect,
-    NGHighlightPainter::SelectionPaintState* selection)
+    HighlightPainter::SelectionPaintState* selection)
     : text_painter_(text_painter),
       text_item_(text_item),
       paint_info_(paint_info),

@@ -17,12 +17,12 @@ namespace blink {
 
 namespace {
 
-using HighlightLayerType = NGHighlightOverlay::HighlightLayerType;
-using HighlightLayer = NGHighlightOverlay::HighlightLayer;
-using HighlightRange = NGHighlightOverlay::HighlightRange;
-using HighlightEdge = NGHighlightOverlay::HighlightEdge;
-using HighlightDecoration = NGHighlightOverlay::HighlightDecoration;
-using HighlightPart = NGHighlightOverlay::HighlightPart;
+using HighlightLayerType = HighlightOverlay::HighlightLayerType;
+using HighlightLayer = HighlightOverlay::HighlightLayer;
+using HighlightRange = HighlightOverlay::HighlightRange;
+using HighlightEdge = HighlightOverlay::HighlightEdge;
+using HighlightDecoration = HighlightOverlay::HighlightDecoration;
+using HighlightPart = HighlightOverlay::HighlightPart;
 
 unsigned ClampOffset(unsigned offset, const TextFragmentPaintInfo& fragment) {
   return std::min(std::max(offset, fragment.from), fragment.to);
@@ -227,7 +227,7 @@ bool HighlightPart::operator!=(const HighlightPart& other) const {
   return !operator==(other);
 }
 
-Vector<HighlightLayer> NGHighlightOverlay::ComputeLayers(
+Vector<HighlightLayer> HighlightOverlay::ComputeLayers(
     const HighlightRegistry* registry,
     const LayoutSelectionStatus* selection,
     const DocumentMarkerVector& custom,
@@ -261,7 +261,7 @@ Vector<HighlightLayer> NGHighlightOverlay::ComputeLayers(
   return result;
 }
 
-Vector<HighlightEdge> NGHighlightOverlay::ComputeEdges(
+Vector<HighlightEdge> HighlightOverlay::ComputeEdges(
     const Node* node,
     const HighlightRegistry* registry,
     bool is_generated_text_fragment,
@@ -391,7 +391,7 @@ Vector<HighlightEdge> NGHighlightOverlay::ComputeEdges(
   return result;
 }
 
-Vector<HighlightPart> NGHighlightOverlay::ComputeParts(
+Vector<HighlightPart> HighlightOverlay::ComputeParts(
     const TextFragmentPaintInfo& content_offsets,
     const Vector<HighlightLayer>& layers,
     const Vector<HighlightEdge>& edges) {
@@ -463,17 +463,17 @@ Vector<HighlightPart> NGHighlightOverlay::ComputeParts(
 }
 
 std::ostream& operator<<(std::ostream& result,
-                         const NGHighlightOverlay::HighlightLayer& layer) {
+                         const HighlightOverlay::HighlightLayer& layer) {
   return result << layer.ToString().Utf8();
 }
 
 std::ostream& operator<<(std::ostream& result,
-                         const NGHighlightOverlay::HighlightEdge& edge) {
+                         const HighlightOverlay::HighlightEdge& edge) {
   return result << edge.ToString().Utf8();
 }
 
 std::ostream& operator<<(std::ostream& result,
-                         const NGHighlightOverlay::HighlightPart& part) {
+                         const HighlightOverlay::HighlightPart& part) {
   return result << part.ToString().Utf8();
 }
 

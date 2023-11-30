@@ -42,7 +42,7 @@ class CORE_EXPORT TextDecorationPainter {
       const ComputedStyle& style,
       const TextPaintStyle& text_style,
       const LineRelativeRect& decoration_rect,
-      NGHighlightPainter::SelectionPaintState* selection);
+      HighlightPainter::SelectionPaintState* selection);
   ~TextDecorationPainter();
 
   // Sets the given optional to a new TextDecorationInfo with the decorations
@@ -67,7 +67,7 @@ class CORE_EXPORT TextDecorationPainter {
   const ComputedStyle& style_;
   const TextPaintStyle& text_style_;
   const LineRelativeRect& decoration_rect_;
-  NGHighlightPainter::SelectionPaintState* selection_;
+  HighlightPainter::SelectionPaintState* selection_;
 
   Step step_;
   Phase phase_;

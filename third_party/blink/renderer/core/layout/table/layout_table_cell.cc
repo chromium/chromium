@@ -162,7 +162,7 @@ LayoutBlock* LayoutTableCell::StickyContainer() const {
 void LayoutTableCell::InvalidatePaint(
     const PaintInvalidatorContext& context) const {
   NOT_DESTROYED();
-  NGTableCellPaintInvalidator(*this, context).InvalidatePaint();
+  TableCellPaintInvalidator(*this, context).InvalidatePaint();
 }
 
 bool LayoutTableCell::BackgroundIsKnownToBeOpaqueInRect(

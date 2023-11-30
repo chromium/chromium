@@ -138,18 +138,18 @@ class CORE_EXPORT PrePaintTreeWalk final {
                                     const PrePaintTreeWalkContext&);
 #endif
 
-  // Upon entering a child LayoutObject, create an NGPrePaintInfo, and populate
+  // Upon entering a child LayoutObject, create an PrePaintInfo, and populate
   // everything except its FragmentData. We need to get a bit further inside the
   // child (WalkInternal()) before we can set up FragmentData (if we get there
   // at all).
-  NGPrePaintInfo CreatePrePaintInfo(const PhysicalFragmentLink& child,
-                                    const PrePaintTreeWalkContext& context);
+  PrePaintInfo CreatePrePaintInfo(const PhysicalFragmentLink& child,
+                                  const PrePaintTreeWalkContext& context);
 
   // Locate and/or set up a FragmentData object for the current object /
   // physical fragment.
   FragmentData* GetOrCreateFragmentData(const LayoutObject&,
                                         const PrePaintTreeWalkContext&,
-                                        const NGPrePaintInfo&);
+                                        const PrePaintInfo&);
 
   void UpdateContextForOOFContainer(const LayoutObject&,
                                     PrePaintTreeWalkContext&,
@@ -164,7 +164,7 @@ class CORE_EXPORT PrePaintTreeWalk final {
   // See https://crbug.com/781301 .
   NOINLINE void WalkInternal(const LayoutObject&,
                              PrePaintTreeWalkContext&,
-                             NGPrePaintInfo*);
+                             PrePaintInfo*);
 
   // Add any "missable" children to a list. Missable children are children that
   // we might not find during LayoutObject traversal. This happens when an
@@ -217,7 +217,7 @@ class CORE_EXPORT PrePaintTreeWalk final {
                     bool is_inside_fragment_child = false);
   void Walk(const LayoutObject&,
             const PrePaintTreeWalkContext& parent_context,
-            NGPrePaintInfo*);
+            PrePaintInfo*);
 
   bool NeedsTreeBuilderContextUpdate(const LocalFrameView&,
                                      const PrePaintTreeWalkContext&);

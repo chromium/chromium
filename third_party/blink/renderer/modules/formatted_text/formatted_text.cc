@@ -201,7 +201,7 @@ PaintRecord FormattedText::PaintFormattedText(Document& document,
   auto* paint_record_builder = MakeGarbageCollected<PaintRecordBuilder>();
   PaintInfo paint_info(paint_record_builder->Context(), CullRect::Infinite(),
                        PaintPhase::kForeground);
-  NGBoxFragmentPainter(fragment).PaintObject(
+  BoxFragmentPainter(fragment).PaintObject(
       paint_info, PhysicalOffset(LayoutUnit(x), LayoutUnit(y)));
   return paint_record_builder->EndRecording();
 }

@@ -672,9 +672,9 @@ LogicalRect InkOverflow::ComputeMarkerOverflow(
       fragment_item->Type() == FragmentItem::kSvgText
           ? nullptr
           : HighlightStyleUtils::HighlightPseudoStyle(
-                text_node, style, NGHighlightPainter::PseudoFor(type));
+                text_node, style, HighlightPainter::PseudoFor(type));
   const TextOffsetRange fragment_dom_offsets =
-      NGHighlightPainter::GetFragmentDOMOffsets(
+      HighlightPainter::GetFragmentDOMOffsets(
           *text_node, fragment_item->StartOffset(), fragment_item->EndOffset());
   MarkerRangeMappingContext mapping_context(*text_node, fragment_dom_offsets);
   for (auto marker : markers) {
@@ -690,12 +690,11 @@ LogicalRect InkOverflow::ComputeMarkerOverflow(
           inline_context);
     } else if (type == DocumentMarker::kSpelling ||
                type == DocumentMarker::kGrammar) {
-      const AppliedTextDecoration synthesised{
-          NGHighlightPainter::LineFor(type),
-          {},
-          NGHighlightPainter::ColorFor(type),
-          {},
-          {}};
+      const AppliedTextDecoration synthesised{HighlightPainter::LineFor(type),
+                                              {},
+                                              HighlightPainter::ColorFor(type),
+                                              {},
+                                              {}};
       decoration_bound = ComputeAppliedDecorationOverflow(
           style, scaled_font, offset_in_container, ink_overflow, inline_context,
           &synthesised);
@@ -716,7 +715,7 @@ LogicalRect InkOverflow::ComputeCustomHighlightOverflow(
     const InlinePaintContext* inline_context) {
   LogicalRect accumulated_bound;
   const TextOffsetRange fragment_dom_offsets =
-      NGHighlightPainter::GetFragmentDOMOffsets(
+      HighlightPainter::GetFragmentDOMOffsets(
           *text_node, fragment_item->StartOffset(), fragment_item->EndOffset());
   MarkerRangeMappingContext mapping_context(*text_node, fragment_dom_offsets);
   for (auto marker : markers) {

@@ -111,7 +111,7 @@ bool LayoutNGBlockFlow::NodeAtPoint(HitTestResult& result,
         // |FragmentItems| of the descendants.
         (phase == HitTestPhase::kFloat &&
          fragment->HasFloatingDescendantsForPaint())) {
-      return NGBoxFragmentPainter(*fragment).NodeAtPoint(
+      return BoxFragmentPainter(*fragment).NodeAtPoint(
           result, hit_test_location, accumulated_offset, phase);
     }
   }

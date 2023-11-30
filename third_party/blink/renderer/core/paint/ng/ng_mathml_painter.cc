@@ -16,7 +16,7 @@
 
 namespace blink {
 
-void NGMathMLPainter::PaintBar(const PaintInfo& info, const gfx::Rect& bar) {
+void MathMLPainter::PaintBar(const PaintInfo& info, const gfx::Rect& bar) {
   if (bar.IsEmpty())
     return;
 
@@ -32,9 +32,8 @@ void NGMathMLPainter::PaintBar(const PaintInfo& info, const gfx::Rect& bar) {
                         auto_dark_mode);
 }
 
-void NGMathMLPainter::PaintStretchyOrLargeOperator(
-    const PaintInfo& info,
-    PhysicalOffset paint_offset) {
+void MathMLPainter::PaintStretchyOrLargeOperator(const PaintInfo& info,
+                                                 PhysicalOffset paint_offset) {
   const ComputedStyle& style = box_fragment_.Style();
   const MathMLPaintInfo& parameters = box_fragment_.GetMathMLPaintInfo();
   UChar operator_character = parameters.operator_character;
@@ -50,9 +49,8 @@ void NGMathMLPainter::PaintStretchyOrLargeOperator(
                         auto_dark_mode);
 }
 
-void NGMathMLPainter::PaintFractionBar(
-    const PaintInfo& info,
-    PhysicalOffset paint_offset) {
+void MathMLPainter::PaintFractionBar(const PaintInfo& info,
+                                     PhysicalOffset paint_offset) {
   DCHECK(box_fragment_.Style().IsHorizontalWritingMode());
   const ComputedStyle& style = box_fragment_.Style();
   LayoutUnit line_thickness = FractionLineThickness(style);
@@ -72,8 +70,8 @@ void NGMathMLPainter::PaintFractionBar(
   }
 }
 
-void NGMathMLPainter::PaintOperator(const PaintInfo& info,
-                                    PhysicalOffset paint_offset) {
+void MathMLPainter::PaintOperator(const PaintInfo& info,
+                                  PhysicalOffset paint_offset) {
   const ComputedStyle& style = box_fragment_.Style();
   const MathMLPaintInfo& parameters = box_fragment_.GetMathMLPaintInfo();
   LogicalOffset offset(LayoutUnit(), parameters.operator_ascent);
@@ -87,7 +85,7 @@ void NGMathMLPainter::PaintOperator(const PaintInfo& info,
   physical_offset.left += borders.left + padding.left;
   physical_offset.top += borders.top + padding.top;
 
-  // TODO(http://crbug.com/1124301): NGMathOperatorLayoutAlgorithm::Layout
+  // TODO(http://crbug.com/1124301): MathOperatorLayoutAlgorithm::Layout
   // passes the operator's inline size but this does not match the width of the
   // box fragment, which relies on the min-max sizes instead. Shift the paint
   // offset to work around that issue, splitting the size error symmetrically.
@@ -100,9 +98,8 @@ void NGMathMLPainter::PaintOperator(const PaintInfo& info,
   PaintStretchyOrLargeOperator(info, paint_offset + physical_offset);
 }
 
-void NGMathMLPainter::PaintRadicalSymbol(
-    const PaintInfo& info,
-    PhysicalOffset paint_offset) {
+void MathMLPainter::PaintRadicalSymbol(const PaintInfo& info,
+                                       PhysicalOffset paint_offset) {
   LayoutUnit base_child_width;
   LayoutUnit base_child_ascent;
   if (box_fragment_.Children().size() > 0) {
@@ -161,8 +158,7 @@ void NGMathMLPainter::PaintRadicalSymbol(
   PaintBar(info, ToPixelSnappedRect(bar_rect));
 }
 
-void NGMathMLPainter::Paint(const PaintInfo& info,
-                            PhysicalOffset paint_offset) {
+void MathMLPainter::Paint(const PaintInfo& info, PhysicalOffset paint_offset) {
   const DisplayItemClient& display_item_client =
       *box_fragment_.GetLayoutObject();
   if (DrawingRecorder::UseCachedDrawingIfPossible(
@@ -170,7 +166,7 @@ void NGMathMLPainter::Paint(const PaintInfo& info,
     return;
   DrawingRecorder recorder(
       info.context, display_item_client, info.phase,
-      NGBoxFragmentPainter(box_fragment_).VisualRect(paint_offset));
+      BoxFragmentPainter(box_fragment_).VisualRect(paint_offset));
 
   // Fraction
   if (box_fragment_.IsMathMLFraction()) {

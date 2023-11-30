@@ -31,17 +31,17 @@ namespace blink {
 
 namespace {
 
-// NGTableCollapsedEdge represents collapsed border edge for painting.
-class NGTableCollapsedEdge {
+// TableCollapsedEdge represents collapsed border edge for painting.
+class TableCollapsedEdge {
   STACK_ALLOCATED();
 
  public:
-  NGTableCollapsedEdge(const TableBorders& borders, wtf_size_t edge_index)
+  TableCollapsedEdge(const TableBorders& borders, wtf_size_t edge_index)
       : borders_(borders) {
     edge_index_ = edge_index < borders_.EdgeCount() ? edge_index : UINT_MAX;
     InitCachedProps();
   }
-  NGTableCollapsedEdge(const NGTableCollapsedEdge& source, int offset)
+  TableCollapsedEdge(const TableCollapsedEdge& source, int offset)
       : borders_(source.borders_) {
     // If edge index would have been negative.
     if (offset < 0 &&
@@ -55,10 +55,10 @@ class NGTableCollapsedEdge {
     InitCachedProps();
   }
 
-  NGTableCollapsedEdge(const NGTableCollapsedEdge& edge)
-      : NGTableCollapsedEdge(edge, 0) {}
+  TableCollapsedEdge(const TableCollapsedEdge& edge)
+      : TableCollapsedEdge(edge, 0) {}
 
-  NGTableCollapsedEdge& operator=(const NGTableCollapsedEdge& edge) {
+  TableCollapsedEdge& operator=(const TableCollapsedEdge& edge) {
     edge_index_ = edge.edge_index_;
     border_width_ = edge.border_width_;
     border_style_ = edge.border_style_;
@@ -112,8 +112,8 @@ class NGTableCollapsedEdge {
 
   // Which edge gets to paint the joint intersection?
   // Returns -1 if this edge wins, 1 if other edge wins, 0 if tie.
-  static int CompareForPaint(const NGTableCollapsedEdge& lhs,
-                             const NGTableCollapsedEdge& rhs) {
+  static int CompareForPaint(const TableCollapsedEdge& lhs,
+                             const TableCollapsedEdge& rhs) {
     if (lhs.edge_index_ == rhs.edge_index_)
       return 0;
     bool lhs_paints = lhs.CanPaint();
@@ -147,77 +147,77 @@ class NGTableCollapsedEdge {
   }
 
   // Returns logical neighbor edges around edge intersections.
-  NGTableCollapsedEdge EdgeBeforeStartIntersection() const {
+  TableCollapsedEdge EdgeBeforeStartIntersection() const {
     if (IsInlineAxis()) {
-      return NGTableCollapsedEdge(*this, -2);
+      return TableCollapsedEdge(*this, -2);
     } else {
-      return NGTableCollapsedEdge(*this, -1);
+      return TableCollapsedEdge(*this, -1);
     }
   }
-  NGTableCollapsedEdge EdgeAfterStartIntersection() const {
+  TableCollapsedEdge EdgeAfterStartIntersection() const {
     if (IsInlineAxis()) {
-      return NGTableCollapsedEdge(*this, 0);
+      return TableCollapsedEdge(*this, 0);
     } else {
-      return NGTableCollapsedEdge(*this, 1);
+      return TableCollapsedEdge(*this, 1);
     }
   }
-  NGTableCollapsedEdge EdgeOverStartIntersection() const {
+  TableCollapsedEdge EdgeOverStartIntersection() const {
     if (IsInlineAxis()) {
-      return NGTableCollapsedEdge(*this, -(borders_.EdgesPerRow() + 1));
+      return TableCollapsedEdge(*this, -(borders_.EdgesPerRow() + 1));
     } else {
-      return NGTableCollapsedEdge(*this, -borders_.EdgesPerRow());
+      return TableCollapsedEdge(*this, -borders_.EdgesPerRow());
     }
   }
-  NGTableCollapsedEdge EdgeUnderStartIntersection() const {
+  TableCollapsedEdge EdgeUnderStartIntersection() const {
     if (IsInlineAxis()) {
-      return NGTableCollapsedEdge(*this, -1);
+      return TableCollapsedEdge(*this, -1);
     } else {
-      return NGTableCollapsedEdge(*this, 0);
+      return TableCollapsedEdge(*this, 0);
     }
   }
-  NGTableCollapsedEdge EdgeBeforeEndIntersection() const {
+  TableCollapsedEdge EdgeBeforeEndIntersection() const {
     if (IsInlineAxis()) {
-      return NGTableCollapsedEdge(*this, 0);
+      return TableCollapsedEdge(*this, 0);
     } else {
-      return NGTableCollapsedEdge(*this, borders_.EdgesPerRow() - 1);
+      return TableCollapsedEdge(*this, borders_.EdgesPerRow() - 1);
     }
   }
-  NGTableCollapsedEdge EdgeAfterEndIntersection() const {
+  TableCollapsedEdge EdgeAfterEndIntersection() const {
     if (IsInlineAxis()) {
-      return NGTableCollapsedEdge(*this, 2);
+      return TableCollapsedEdge(*this, 2);
     } else {
-      return NGTableCollapsedEdge(*this, borders_.EdgesPerRow() + 1);
+      return TableCollapsedEdge(*this, borders_.EdgesPerRow() + 1);
     }
   }
-  NGTableCollapsedEdge EdgeOverEndIntersection() const {
+  TableCollapsedEdge EdgeOverEndIntersection() const {
     if (IsInlineAxis()) {
-      return NGTableCollapsedEdge(*this, -(borders_.EdgesPerRow() - 1));
+      return TableCollapsedEdge(*this, -(borders_.EdgesPerRow() - 1));
     } else {
-      return NGTableCollapsedEdge(*this, 0);
+      return TableCollapsedEdge(*this, 0);
     }
   }
-  NGTableCollapsedEdge EdgeUnderEndIntersection() const {
+  TableCollapsedEdge EdgeUnderEndIntersection() const {
     if (IsInlineAxis()) {
-      return NGTableCollapsedEdge(*this, 1);
+      return TableCollapsedEdge(*this, 1);
     } else {
-      return NGTableCollapsedEdge(*this, borders_.EdgesPerRow());
+      return TableCollapsedEdge(*this, borders_.EdgesPerRow());
     }
   }
-  NGTableCollapsedEdge EmptyEdge() const {
-    return NGTableCollapsedEdge(borders_, UINT_MAX);
+  TableCollapsedEdge EmptyEdge() const {
+    return TableCollapsedEdge(borders_, UINT_MAX);
   }
 
-  NGTableCollapsedEdge& operator++() {
+  TableCollapsedEdge& operator++() {
     DCHECK_NE(edge_index_, UINT_MAX);
     if (++edge_index_ >= borders_.EdgeCount())
       edge_index_ = UINT_MAX;
     InitCachedProps();
     return *this;
   }
-  bool operator==(const NGTableCollapsedEdge& rhs) const {
+  bool operator==(const TableCollapsedEdge& rhs) const {
     return edge_index_ == rhs.edge_index_;
   }
-  bool operator!=(const NGTableCollapsedEdge& rhs) const {
+  bool operator!=(const TableCollapsedEdge& rhs) const {
     return !(*this == rhs);
   }
 
@@ -243,7 +243,7 @@ class NGTableCollapsedEdge {
 // start/end_wins is set to true if examined edge won.
 // Examined edge should shrink/expand its size to fill the joints.
 void ComputeEdgeJoints(const TableBorders& collapsed_borders,
-                       const NGTableCollapsedEdge& edge,
+                       const TableCollapsedEdge& edge,
                        bool is_over_edge_fragmentation_boundary,
                        bool is_under_edge_fragmentation_boundary,
                        LogicalSize& start_joint,
@@ -264,18 +264,18 @@ void ComputeEdgeJoints(const TableBorders& collapsed_borders,
   start_wins = false;
   end_wins = false;
   // Find winner for the start of the inline edge.
-  NGTableCollapsedEdge before_edge = edge.EdgeBeforeStartIntersection();
-  NGTableCollapsedEdge after_edge = edge.EdgeAfterStartIntersection();
-  NGTableCollapsedEdge over_edge = is_over_edge_fragmentation_boundary
-                                       ? edge.EmptyEdge()
-                                       : edge.EdgeOverStartIntersection();
-  NGTableCollapsedEdge under_edge =
+  TableCollapsedEdge before_edge = edge.EdgeBeforeStartIntersection();
+  TableCollapsedEdge after_edge = edge.EdgeAfterStartIntersection();
+  TableCollapsedEdge over_edge = is_over_edge_fragmentation_boundary
+                                     ? edge.EmptyEdge()
+                                     : edge.EdgeOverStartIntersection();
+  TableCollapsedEdge under_edge =
       is_under_edge_fragmentation_boundary && edge.IsInlineAxis()
           ? edge.EmptyEdge()
           : edge.EdgeUnderStartIntersection();
 
   int inline_compare =
-      NGTableCollapsedEdge::CompareForPaint(before_edge, after_edge);
+      TableCollapsedEdge::CompareForPaint(before_edge, after_edge);
   start_joint.block_size = inline_compare == 1 ? before_edge.BorderWidth()
                                                : after_edge.BorderWidth();
   if (is_over_edge_fragmentation_boundary ||
@@ -285,10 +285,10 @@ void ComputeEdgeJoints(const TableBorders& collapsed_borders,
 
   // Compare over and under edges.
   int block_compare =
-      NGTableCollapsedEdge::CompareForPaint(over_edge, under_edge);
+      TableCollapsedEdge::CompareForPaint(over_edge, under_edge);
   start_joint.inline_size =
       block_compare == 1 ? over_edge.BorderWidth() : under_edge.BorderWidth();
-  int inline_vs_block = NGTableCollapsedEdge::CompareForPaint(
+  int inline_vs_block = TableCollapsedEdge::CompareForPaint(
       inline_compare == 1 ? before_edge : after_edge,
       block_compare == 1 ? over_edge : under_edge);
 
@@ -309,8 +309,7 @@ void ComputeEdgeJoints(const TableBorders& collapsed_borders,
                    ? edge.EmptyEdge()
                    : edge.EdgeUnderEndIntersection();
 
-  inline_compare =
-      NGTableCollapsedEdge::CompareForPaint(before_edge, after_edge);
+  inline_compare = TableCollapsedEdge::CompareForPaint(before_edge, after_edge);
   end_joint.block_size = inline_compare == 1 ? before_edge.BorderWidth()
                                              : after_edge.BorderWidth();
   if ((is_over_edge_fragmentation_boundary && edge.IsInlineAxis()) ||
@@ -318,10 +317,10 @@ void ComputeEdgeJoints(const TableBorders& collapsed_borders,
     end_joint.block_size = LayoutUnit();
   }
 
-  block_compare = NGTableCollapsedEdge::CompareForPaint(over_edge, under_edge);
+  block_compare = TableCollapsedEdge::CompareForPaint(over_edge, under_edge);
   end_joint.inline_size =
       block_compare == 1 ? over_edge.BorderWidth() : under_edge.BorderWidth();
-  inline_vs_block = NGTableCollapsedEdge::CompareForPaint(
+  inline_vs_block = TableCollapsedEdge::CompareForPaint(
       inline_compare == 1 ? before_edge : after_edge,
       block_compare == 1 ? over_edge : under_edge);
 
@@ -417,11 +416,11 @@ class TableCellBackgroundClipper {
 
 }  // namespace
 
-bool NGTablePainter::WillCheckColumnBackgrounds() {
+bool TablePainter::WillCheckColumnBackgrounds() {
   return fragment_.TableColumnGeometries();
 }
 
-void NGTablePainter::PaintBoxDecorationBackground(
+void TablePainter::PaintBoxDecorationBackground(
     const PaintInfo& paint_info,
     const PhysicalRect& paint_rect,
     const BoxDecorationData& box_decoration_data) {
@@ -433,7 +432,7 @@ void NGTablePainter::PaintBoxDecorationBackground(
 
   // Paint the table background on the grid-rect.
   if (box_decoration_data.ShouldPaint()) {
-    NGBoxFragmentPainter(fragment_).PaintBoxDecorationBackgroundWithRectImpl(
+    BoxFragmentPainter(fragment_).PaintBoxDecorationBackgroundWithRectImpl(
         paint_info, grid_paint_rect, box_decoration_data);
   }
 
@@ -459,7 +458,7 @@ void NGTablePainter::PaintBoxDecorationBackground(
     if (!child.fragment->IsTableSection()) {
       continue;
     }
-    NGTableSectionPainter(To<PhysicalBoxFragment>(*child.fragment))
+    TableSectionPainter(To<PhysicalBoxFragment>(*child.fragment))
         .PaintColumnsBackground(paint_info, paint_rect.offset + child.offset,
                                 columns_paint_rect,
                                 column_geometries_with_background);
@@ -518,9 +517,9 @@ bool IsEndRowFragmented(const PhysicalBoxFragment& section) {
 
 }  // namespace
 
-void NGTablePainter::PaintCollapsedBorders(const PaintInfo& paint_info,
-                                           const PhysicalOffset& paint_offset,
-                                           const gfx::Rect& visual_rect) {
+void TablePainter::PaintCollapsedBorders(const PaintInfo& paint_info,
+                                         const PhysicalOffset& paint_offset,
+                                         const gfx::Rect& visual_rect) {
   const TableBorders* collapsed_borders = fragment_.TableCollapsedBorders();
   if (!collapsed_borders)
     return;
@@ -580,8 +579,7 @@ void NGTablePainter::PaintCollapsedBorders(const PaintInfo& paint_info,
     WritingModeConverter converter(fragment_.Style().GetWritingDirection(),
                                    section.Size());
 
-    for (NGTableCollapsedEdge edge =
-             NGTableCollapsedEdge(*collapsed_borders, start_edge_index);
+    for (auto edge = TableCollapsedEdge(*collapsed_borders, start_edge_index);
          edge.Exists(); ++edge) {
       const wtf_size_t table_row = edge.TableRow();
       const wtf_size_t table_column = edge.TableColumn();
@@ -733,7 +731,7 @@ void NGTablePainter::PaintCollapsedBorders(const PaintInfo& paint_info,
   }
 }
 
-void NGTableSectionPainter::PaintBoxDecorationBackground(
+void TableSectionPainter::PaintBoxDecorationBackground(
     const PaintInfo& paint_info,
     const PhysicalRect& paint_rect,
     const BoxDecorationData& box_decoration_data) {
@@ -756,7 +754,7 @@ void NGTableSectionPainter::PaintBoxDecorationBackground(
     if (!child_fragment.IsTableRow()) {
       continue;
     }
-    NGTableRowPainter(To<PhysicalBoxFragment>(child_fragment))
+    TableRowPainter(To<PhysicalBoxFragment>(child_fragment))
         .PaintTablePartBackgroundIntoCells(
             paint_info, *To<LayoutBox>(fragment_.GetLayoutObject()), part_rect,
             paint_rect.offset + child.offset);
@@ -767,7 +765,7 @@ void NGTableSectionPainter::PaintBoxDecorationBackground(
   }
 }
 
-void NGTableSectionPainter::PaintColumnsBackground(
+void TableSectionPainter::PaintColumnsBackground(
     const PaintInfo& paint_info,
     const PhysicalOffset& section_paint_offset,
     const PhysicalRect& columns_paint_rect,
@@ -776,13 +774,13 @@ void NGTableSectionPainter::PaintColumnsBackground(
     if (!row.fragment->IsTableRow()) {
       continue;
     }
-    NGTableRowPainter(To<PhysicalBoxFragment>(*row.fragment))
+    TableRowPainter(To<PhysicalBoxFragment>(*row.fragment))
         .PaintColumnsBackground(paint_info, section_paint_offset + row.offset,
                                 columns_paint_rect, column_geometries);
   }
 }
 
-void NGTableRowPainter::PaintBoxDecorationBackground(
+void TableRowPainter::PaintBoxDecorationBackground(
     const PaintInfo& paint_info,
     const PhysicalRect& paint_rect,
     const BoxDecorationData& box_decoration_data) {
@@ -808,7 +806,7 @@ void NGTableRowPainter::PaintBoxDecorationBackground(
   }
 }
 
-void NGTableRowPainter::PaintTablePartBackgroundIntoCells(
+void TableRowPainter::PaintTablePartBackgroundIntoCells(
     const PaintInfo& paint_info,
     const LayoutBox& table_part,
     const PhysicalRect& table_part_paint_rect,
@@ -821,14 +819,14 @@ void NGTableRowPainter::PaintTablePartBackgroundIntoCells(
     if (!child_fragment.IsTableCell()) {
       continue;
     }
-    NGTableCellPainter(To<PhysicalBoxFragment>(child_fragment))
+    TableCellPainter(To<PhysicalBoxFragment>(child_fragment))
         .PaintBackgroundForTablePart(paint_info, table_part,
                                      table_part_paint_rect,
                                      row_paint_offset + child.offset);
   }
 }
 
-void NGTableRowPainter::PaintColumnsBackground(
+void TableRowPainter::PaintColumnsBackground(
     const PaintInfo& paint_info,
     const PhysicalOffset& row_paint_offset,
     const PhysicalRect& columns_paint_rect,
@@ -858,7 +856,7 @@ void NGTableRowPainter::PaintColumnsBackground(
           converter.ToPhysical({column_geometry.inline_offset, LayoutUnit()},
                                column_paint_rect.size);
 
-      NGTableCellPainter(To<PhysicalBoxFragment>(*child.fragment))
+      TableCellPainter(To<PhysicalBoxFragment>(*child.fragment))
           .PaintBackgroundForTablePart(
               paint_info, *column_geometry.node.GetLayoutBox(),
               column_paint_rect, row_paint_offset + child.offset);
@@ -866,7 +864,7 @@ void NGTableRowPainter::PaintColumnsBackground(
   }
 }
 
-void NGTableCellPainter::PaintBoxDecorationBackground(
+void TableCellPainter::PaintBoxDecorationBackground(
     const PaintInfo& paint_info,
     const PhysicalRect& paint_rect,
     const BoxDecorationData& box_decoration_data) {
@@ -874,12 +872,12 @@ void NGTableCellPainter::PaintBoxDecorationBackground(
   TableCellBackgroundClipper clipper(
       paint_info.context, *To<LayoutTableCell>(fragment_.GetLayoutObject()),
       paint_rect, box_decoration_data.IsPaintingBackgroundInContentsSpace());
-  NGBoxFragmentPainter(fragment_).PaintBoxDecorationBackgroundWithRectImpl(
+  BoxFragmentPainter(fragment_).PaintBoxDecorationBackgroundWithRectImpl(
       paint_info, paint_rect, box_decoration_data);
 }
 
 // Inspired by TableCellPainter::PaintBackground.
-void NGTableCellPainter::PaintBackgroundForTablePart(
+void TableCellPainter::PaintBackgroundForTablePart(
     const PaintInfo& paint_info,
     const LayoutBox& table_part,
     const PhysicalRect& table_part_paint_rect,
@@ -902,7 +900,7 @@ void NGTableCellPainter::PaintBackgroundForTablePart(
     PhysicalRect cell_paint_rect(table_cell_paint_offset, fragment_.Size());
     TableCellBackgroundClipper clipper(paint_info.context, layout_table_cell,
                                        cell_paint_rect);
-    NGBoxFragmentPainter(fragment_).PaintFillLayers(
+    BoxFragmentPainter(fragment_).PaintFillLayers(
         paint_info, color, background_layers, cell_paint_rect, geometry);
   }
 }

@@ -108,7 +108,7 @@ bool ShouldPaintEmphasisMark(const ComputedStyle& style,
   if (style.GetTextEmphasisMark() == TextEmphasisMark::kNone)
     return false;
   // Note: We set text-emphasis-style:none for combined text and we paint
-  // emphasis mark at left/right side of |LayoutNGTextCombine|.
+  // emphasis mark at left/right side of |LayoutTextCombine|.
   DCHECK(!IsA<LayoutTextCombine>(layout_object.Parent()));
   const LayoutObject* containing_block = layout_object.ContainingBlock();
   if (!containing_block || !containing_block->IsRubyBase())
@@ -294,8 +294,8 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
   }
 
   // Determine whether or not we're selected.
-  NGHighlightPainter::SelectionPaintState* selection = nullptr;
-  absl::optional<NGHighlightPainter::SelectionPaintState>
+  HighlightPainter::SelectionPaintState* selection = nullptr;
+  absl::optional<HighlightPainter::SelectionPaintState>
       selection_for_bounds_recording;
   if (UNLIKELY(!is_printing && !is_rendering_resource &&
                paint_info.phase != PaintPhase::kTextClip &&
@@ -418,7 +418,7 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
   TextDecorationPainter decoration_painter(text_painter, text_item, paint_info,
                                            style, text_style, rotated_box,
                                            selection);
-  NGHighlightPainter highlight_painter(
+  HighlightPainter highlight_painter(
       fragment_paint_info, text_painter, decoration_painter, paint_info,
       cursor_, *cursor_.CurrentItem(), rotation, physical_box.offset, style,
       text_style, selection, is_printing);
@@ -459,7 +459,7 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
   // 1. Paint backgrounds for document markers that don’t participate in the CSS
   // highlight overlay system, such as composition highlights. They use physical
   // coordinates, so are painted before GraphicsContext rotation.
-  highlight_painter.Paint(NGHighlightPainter::kBackground);
+  highlight_painter.Paint(HighlightPainter::kBackground);
 
   if (rotation) {
     state_saver.SaveIfNeeded();
@@ -503,9 +503,9 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
   AutoDarkMode auto_dark_mode(
       PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kForeground));
 
-  NGHighlightPainter::Case highlight_case = highlight_painter.PaintCase();
+  HighlightPainter::Case highlight_case = highlight_painter.PaintCase();
   switch (highlight_case) {
-    case NGHighlightPainter::kNoHighlights:
+    case HighlightPainter::kNoHighlights:
       // Fast path: just paint the text, including its decorations.
       decoration_painter.Begin(TextDecorationPainter::kOriginating);
       decoration_painter.PaintExceptLineThrough(fragment_paint_info);
@@ -513,7 +513,7 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
                          auto_dark_mode);
       decoration_painter.PaintOnlyLineThrough();
       break;
-    case NGHighlightPainter::kFastSpellingGrammar:
+    case HighlightPainter::kFastSpellingGrammar:
       decoration_painter.Begin(TextDecorationPainter::kOriginating);
       decoration_painter.PaintExceptLineThrough(fragment_paint_info);
       text_painter.Paint(fragment_paint_info, text_style, node_id,
@@ -521,26 +521,26 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
       decoration_painter.PaintOnlyLineThrough();
       highlight_painter.FastPaintSpellingGrammarDecorations();
       break;
-    case NGHighlightPainter::kFastSelection:
+    case HighlightPainter::kFastSelection:
       highlight_painter.Selection()->PaintSuppressingTextProperWhereSelected(
           text_painter, fragment_paint_info, text_style, node_id,
           auto_dark_mode);
       break;
-    case NGHighlightPainter::kOverlay:
+    case HighlightPainter::kOverlay:
       // Slow path: paint suppressing text proper where highlighted, then
       // paint each highlight overlay, suppressing unless topmost highlight.
       highlight_painter.PaintOriginatingText(text_style, node_id);
       highlight_painter.PaintHighlightOverlays(
           text_style, node_id, paint_marker_backgrounds, rotation);
       break;
-    case NGHighlightPainter::kSelectionOnly:
+    case HighlightPainter::kSelectionOnly:
       // Do nothing, and paint the selection later.
       break;
   }
 
   // Paint ::selection background.
   if (UNLIKELY(highlight_painter.Selection() && paint_marker_backgrounds)) {
-    if (highlight_case == NGHighlightPainter::kFastSelection) {
+    if (highlight_case == HighlightPainter::kFastSelection) {
       highlight_painter.Selection()->PaintSelectionBackground(
           context, node, document, style, rotation);
     }
@@ -549,18 +549,18 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
   // Paint foregrounds for document markers that don’t participate in the CSS
   // highlight overlay system, such as composition highlights.
   if (paint_info.phase == PaintPhase::kForeground) {
-    highlight_painter.Paint(NGHighlightPainter::kForeground);
+    highlight_painter.Paint(HighlightPainter::kForeground);
   }
 
   // Paint ::selection foreground only.
   if (UNLIKELY(highlight_painter.Selection())) {
     switch (highlight_case) {
-      case NGHighlightPainter::kFastSelection:
+      case HighlightPainter::kFastSelection:
         highlight_painter.Selection()->PaintSelectedText(
             text_painter, fragment_paint_info, text_style, node_id,
             auto_dark_mode);
         break;
-      case NGHighlightPainter::kSelectionOnly:
+      case HighlightPainter::kSelectionOnly:
         decoration_painter.Begin(TextDecorationPainter::kSelection);
         decoration_painter.PaintExceptLineThrough(fragment_paint_info);
         highlight_painter.Selection()->PaintSelectedText(
@@ -568,11 +568,11 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
             auto_dark_mode);
         decoration_painter.PaintOnlyLineThrough();
         break;
-      case NGHighlightPainter::kOverlay:
+      case HighlightPainter::kOverlay:
         // Do nothing, because PaintHighlightOverlays already painted it.
         break;
-      case NGHighlightPainter::kFastSpellingGrammar:
-      case NGHighlightPainter::kNoHighlights:
+      case HighlightPainter::kFastSpellingGrammar:
+      case HighlightPainter::kNoHighlights:
         NOTREACHED();
     }
   }

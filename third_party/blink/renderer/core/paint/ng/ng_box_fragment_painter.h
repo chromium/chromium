@@ -32,16 +32,16 @@ struct PaintInfo;
 
 // Painter for LayoutNG box fragments, paints borders and background. Delegates
 // to TextFragmentPainter to paint line box fragments.
-class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
+class CORE_EXPORT BoxFragmentPainter : public BoxPainterBase {
   STACK_ALLOCATED();
 
  public:
-  explicit NGBoxFragmentPainter(const PhysicalBoxFragment&);
+  explicit BoxFragmentPainter(const PhysicalBoxFragment&);
   // Construct for an inline box.
-  NGBoxFragmentPainter(const InlineCursor& inline_box_cursor,
-                       const FragmentItem& item,
-                       const PhysicalBoxFragment& fragment,
-                       InlinePaintContext* inline_context);
+  BoxFragmentPainter(const InlineCursor& inline_box_cursor,
+                     const FragmentItem& item,
+                     const PhysicalBoxFragment& fragment,
+                     InlinePaintContext* inline_context);
 
   void Paint(const PaintInfo&);
   // Routes single PaintPhase to actual painters, and traverses children.
@@ -94,11 +94,11 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
                                             const PhysicalRect&) const override;
 
  private:
-  NGBoxFragmentPainter(const PhysicalBoxFragment&,
-                       const DisplayItemClient& display_item_client,
-                       const InlineCursor* inline_box_cursor = nullptr,
-                       const FragmentItem* box_item = nullptr,
-                       InlinePaintContext* inline_context = nullptr);
+  BoxFragmentPainter(const PhysicalBoxFragment&,
+                     const DisplayItemClient& display_item_client,
+                     const InlineCursor* inline_box_cursor = nullptr,
+                     const FragmentItem* box_item = nullptr,
+                     InlinePaintContext* inline_context = nullptr);
 
   enum MoveTo { kDontSkipChildren, kSkipChildren };
   bool ShouldPaint(const ScopedPaintState&) const;
@@ -315,7 +315,7 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
   absl::optional<InlinePaintContext> inline_context_storage_;
 };
 
-inline NGBoxFragmentPainter::NGBoxFragmentPainter(
+inline BoxFragmentPainter::BoxFragmentPainter(
     const PhysicalBoxFragment& box,
     const DisplayItemClient& display_item_client,
     const InlineCursor* inline_box_cursor,
@@ -338,24 +338,24 @@ inline NGBoxFragmentPainter::NGBoxFragmentPainter(
 #endif
 }
 
-inline NGBoxFragmentPainter::NGBoxFragmentPainter(
+inline BoxFragmentPainter::BoxFragmentPainter(
     const PhysicalBoxFragment& fragment)
-    : NGBoxFragmentPainter(fragment,
-                           *fragment.GetLayoutObject(),
-                           /* inline_box_cursor */ nullptr,
-                           /* box_item */ nullptr,
-                           /* inline_context */ nullptr) {}
+    : BoxFragmentPainter(fragment,
+                         *fragment.GetLayoutObject(),
+                         /* inline_box_cursor */ nullptr,
+                         /* box_item */ nullptr,
+                         /* inline_context */ nullptr) {}
 
-inline NGBoxFragmentPainter::NGBoxFragmentPainter(
+inline BoxFragmentPainter::BoxFragmentPainter(
     const InlineCursor& inline_box_cursor,
     const FragmentItem& item,
     const PhysicalBoxFragment& fragment,
     InlinePaintContext* inline_context)
-    : NGBoxFragmentPainter(fragment,
-                           *item.GetDisplayItemClient(),
-                           &inline_box_cursor,
-                           &item,
-                           inline_context) {
+    : BoxFragmentPainter(fragment,
+                         *item.GetDisplayItemClient(),
+                         &inline_box_cursor,
+                         &item,
+                         inline_context) {
   DCHECK_EQ(item.BoxFragment(), &fragment);
 }
 

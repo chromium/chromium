@@ -78,8 +78,8 @@ void InlineBoxFragmentPainter::Paint(const PaintInfo& paint_info,
   InlinePaintContext::ScopedInlineItem scoped_item(inline_box_item_,
                                                    inline_context_);
   DCHECK(inline_box_cursor_);
-  NGBoxFragmentPainter box_painter(*inline_box_cursor_, inline_box_item_,
-                                   BoxFragment(), inline_context_);
+  BoxFragmentPainter box_painter(*inline_box_cursor_, inline_box_item_,
+                                 BoxFragment(), inline_context_);
   box_painter.PaintObject(paint_info, adjusted_paint_offset,
                           suppress_box_decoration_background);
 }
@@ -107,8 +107,8 @@ void InlineBoxFragmentPainter::PaintMask(const PaintInfo& paint_info,
       MayHaveMultipleFragmentItems(inline_box_item_, layout_object);
 
   DCHECK(inline_box_cursor_);
-  NGBoxFragmentPainter box_painter(*inline_box_cursor_, inline_box_item_,
-                                   BoxFragment(), inline_context_);
+  BoxFragmentPainter box_painter(*inline_box_cursor_, inline_box_item_,
+                                 BoxFragment(), inline_context_);
 
   BackgroundImageGeometry geometry(
       static_cast<const LayoutBoxModelObject&>(layout_object));
@@ -180,9 +180,9 @@ void InlineBoxFragmentPainterBase::PaintBackgroundBorderShadow(
       inline_box_fragment_.GetLayoutObject()));
   DCHECK(inline_box_cursor_);
   DCHECK(inline_context_);
-  NGBoxFragmentPainter box_painter(
-      *inline_box_cursor_, inline_box_item_,
-      To<PhysicalBoxFragment>(inline_box_fragment_), inline_context_);
+  BoxFragmentPainter box_painter(*inline_box_cursor_, inline_box_item_,
+                                 To<PhysicalBoxFragment>(inline_box_fragment_),
+                                 inline_context_);
   PaintBoxDecorationBackground(
       box_painter, paint_info, paint_offset, adjusted_frame_rect, geometry,
       object_may_have_multiple_boxes, SidesToInclude());
@@ -242,7 +242,7 @@ void LineBoxFragmentPainter::PaintBackgroundBorderShadow(
   const LayoutBlockFlow& layout_block_flow =
       *To<LayoutBlockFlow>(block_fragment_.GetLayoutObject());
   BackgroundImageGeometry geometry(layout_block_flow);
-  NGBoxFragmentPainter box_painter(block_fragment_);
+  BoxFragmentPainter box_painter(block_fragment_);
   PaintBoxDecorationBackground(
       box_painter, paint_info, paint_offset, rect, geometry,
       /*object_has_multiple_boxes*/ false, PhysicalBoxSides());
@@ -514,7 +514,7 @@ void InlineBoxFragmentPainter::PaintAllFragments(
 
   if (paint_info.phase == PaintPhase::kForeground &&
       paint_info.ShouldAddUrlMetadata()) {
-    // URLRects for descendants are normally added via NGBoxFragmentPainter::
+    // URLRects for descendants are normally added via BoxFragmentPainter::
     // PaintLineBoxes(), but relatively positioned (self-painting) inlines
     // are omitted. Do it now.
     AddURLRectsForInlineChildrenRecursively(layout_inline, paint_info,

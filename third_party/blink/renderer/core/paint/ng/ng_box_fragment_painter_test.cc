@@ -36,16 +36,16 @@ void ExtractLinks(const PaintRecord& record, std::vector<GURL>* links) {
 
 }  // namespace
 
-class NGBoxFragmentPainterTest : public PaintControllerPaintTest {
+class BoxFragmentPainterTest : public PaintControllerPaintTest {
  public:
-  explicit NGBoxFragmentPainterTest(
+  explicit BoxFragmentPainterTest(
       LocalFrameClient* local_frame_client = nullptr)
       : PaintControllerPaintTest(local_frame_client) {}
 };
 
-INSTANTIATE_PAINT_TEST_SUITE_P(NGBoxFragmentPainterTest);
+INSTANTIATE_PAINT_TEST_SUITE_P(BoxFragmentPainterTest);
 
-TEST_P(NGBoxFragmentPainterTest, ScrollHitTestOrder) {
+TEST_P(BoxFragmentPainterTest, ScrollHitTestOrder) {
   SetPreferCompositingToLCDText(false);
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
@@ -91,7 +91,7 @@ TEST_P(NGBoxFragmentPainterTest, ScrollHitTestOrder) {
           IsPaintChunk(1, 2)));
 }
 
-TEST_P(NGBoxFragmentPainterTest, AddUrlRects) {
+TEST_P(BoxFragmentPainterTest, AddUrlRects) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <div>
@@ -131,7 +131,7 @@ TEST_P(NGBoxFragmentPainterTest, AddUrlRects) {
   EXPECT_EQ(links[1].spec(), "https://www.wikipedia.org/");
 }
 
-TEST_P(NGBoxFragmentPainterTest, SelectionTablePainting) {
+TEST_P(BoxFragmentPainterTest, SelectionTablePainting) {
   // This test passes if it does not timeout
   // Repro case of crbug.com/1182106.
   SetBodyInnerHTML(R"HTML(
@@ -184,7 +184,7 @@ TEST_P(NGBoxFragmentPainterTest, SelectionTablePainting) {
   auto record = builder->EndRecording();
 }
 
-TEST_P(NGBoxFragmentPainterTest, ClippedText) {
+TEST_P(BoxFragmentPainterTest, ClippedText) {
   SetBodyInnerHTML(R"HTML(
     <div id="target" style="overflow: hidden; position: relative;
                             width: 100px; height: 100px">
@@ -206,7 +206,7 @@ TEST_P(NGBoxFragmentPainterTest, ClippedText) {
   EXPECT_EQ(num_all_display_items - 3, ContentDisplayItems().size());
 }
 
-TEST_P(NGBoxFragmentPainterTest, NodeAtPointWithSvgInline) {
+TEST_P(BoxFragmentPainterTest, NodeAtPointWithSvgInline) {
   SetBodyInnerHTML(R"HTML(
 <svg xmlns="http://www.w3.org/2000/svg" width="900" height="900"
      viewBox="0 0 100 100" id="svg">

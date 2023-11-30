@@ -20,16 +20,15 @@
 
 namespace blink {
 
-class NGHighlightPainterTest : public PaintControllerPaintTest {
+class HighlightPainterTest : public PaintControllerPaintTest {
  public:
-  explicit NGHighlightPainterTest(
-      LocalFrameClient* local_frame_client = nullptr)
+  explicit HighlightPainterTest(LocalFrameClient* local_frame_client = nullptr)
       : PaintControllerPaintTest(local_frame_client) {}
 };
 
-INSTANTIATE_PAINT_TEST_SUITE_P(NGHighlightPainterTest);
+INSTANTIATE_PAINT_TEST_SUITE_P(HighlightPainterTest);
 
-TEST_P(NGHighlightPainterTest, FastSpellingGrammarPaintCase) {
+TEST_P(HighlightPainterTest, FastSpellingGrammarPaintCase) {
   auto test = [&](String stylesheet) {
     SetBodyInnerHTML("x<style>" + stylesheet + "</style>");
     UpdateAllLifecyclePhasesForTest();
@@ -37,7 +36,7 @@ TEST_P(NGHighlightPainterTest, FastSpellingGrammarPaintCase) {
     return EphemeralRange{Position{text, 0}, Position{text, 1}};
   };
 
-  auto expect = [&](NGHighlightPainter::Case expected, unsigned line) {
+  auto expect = [&](HighlightPainter::Case expected, unsigned line) {
     LayoutObject& body = *GetDocument().body()->GetLayoutObject();
     const auto& block_flow = To<LayoutNGBlockFlow>(body);
     InlinePaintContext inline_context{};
@@ -52,8 +51,8 @@ TEST_P(NGHighlightPainterTest, FastSpellingGrammarPaintCase) {
     PhysicalRect physical_rect{};
     const FragmentItem& text_item = *cursor.CurrentItem();
     const ComputedStyle& style = text_item.Style();
-    absl::optional<NGHighlightPainter::SelectionPaintState> maybe_selection;
-    NGHighlightPainter::SelectionPaintState* selection = nullptr;
+    absl::optional<HighlightPainter::SelectionPaintState> maybe_selection;
+    HighlightPainter::SelectionPaintState* selection = nullptr;
     if (text_item.GetLayoutObject()->IsSelected()) {
       maybe_selection.emplace(cursor, physical_offset);
       if (maybe_selection->Status().HasValidRange())
@@ -78,7 +77,7 @@ TEST_P(NGHighlightPainterTest, FastSpellingGrammarPaintCase) {
     TextDecorationPainter decoration_painter(text_painter, text_item,
                                              paint_info, style, text_style,
                                              rotated_rect, selection);
-    NGHighlightPainter highlight_painter(
+    HighlightPainter highlight_painter(
         cursor.Current()->TextPaintInfo(cursor.Items()), text_painter,
         decoration_painter, paint_info, cursor, text_item, {}, physical_offset,
         style, text_style, selection, false);
@@ -89,166 +88,166 @@ TEST_P(NGHighlightPainterTest, FastSpellingGrammarPaintCase) {
 
   // kFastSpellingGrammar only if there are spelling and/or grammar highlights.
   test("");
-  expect(NGHighlightPainter::kNoHighlights, __LINE__);
+  expect(HighlightPainter::kNoHighlights, __LINE__);
   GetDocument().Markers().AddSpellingMarker(test(""));
-  expect(NGHighlightPainter::kFastSpellingGrammar, __LINE__);
+  expect(HighlightPainter::kFastSpellingGrammar, __LINE__);
   GetDocument().Markers().AddGrammarMarker(test(""));
-  expect(NGHighlightPainter::kFastSpellingGrammar, __LINE__);
+  expect(HighlightPainter::kFastSpellingGrammar, __LINE__);
 
   // Overlapping spelling and grammar highlights is ok.
   EphemeralRange range = test("");
   GetDocument().Markers().AddSpellingMarker(range);
   GetDocument().Markers().AddGrammarMarker(range);
-  expect(NGHighlightPainter::kFastSpellingGrammar, __LINE__);
+  expect(HighlightPainter::kFastSpellingGrammar, __LINE__);
 
   // Overlapping selection highlight is not ok.
   Selection().SelectAll();
   range = test("");
   GetDocument().Markers().AddSpellingMarker(range);
   GetDocument().Markers().AddGrammarMarker(range);
-  expect(NGHighlightPainter::kOverlay, __LINE__);
+  expect(HighlightPainter::kOverlay, __LINE__);
   Selection().Clear();
 
   // Non-trivial spelling style is still ok if there are no spelling highlights.
   range = test("::spelling-error { background-color: green; }");
   GetDocument().Markers().AddGrammarMarker(range);
-  expect(NGHighlightPainter::kFastSpellingGrammar, __LINE__);
+  expect(HighlightPainter::kFastSpellingGrammar, __LINE__);
 
   // Non-trivial grammar style is still ok if there are no grammar highlights.
   range = test("::grammar-error { background-color: green; }");
   GetDocument().Markers().AddSpellingMarker(range);
-  expect(NGHighlightPainter::kFastSpellingGrammar, __LINE__);
+  expect(HighlightPainter::kFastSpellingGrammar, __LINE__);
 
   // ‘color’
   GetDocument().Markers().AddSpellingMarker(test(R"HTML(
       body { color: green; }
       ::spelling-error { color: red; }
   )HTML"));
-  expect(NGHighlightPainter::kOverlay, __LINE__);
+  expect(HighlightPainter::kOverlay, __LINE__);
   GetDocument().Markers().AddSpellingMarker(test(R"HTML(
       body { color: green; }
       ::spelling-error { color: green; }
   )HTML"));
-  expect(NGHighlightPainter::kFastSpellingGrammar, __LINE__);
+  expect(HighlightPainter::kFastSpellingGrammar, __LINE__);
 
   // ‘-webkit-text-fill-color’
   GetDocument().Markers().AddSpellingMarker(test(R"HTML(
       body { color: blue; -webkit-text-fill-color: green; }
       ::spelling-error { /* -webkit-text-fill-color = blue */ }
   )HTML"));
-  expect(NGHighlightPainter::kOverlay, __LINE__);
+  expect(HighlightPainter::kOverlay, __LINE__);
   GetDocument().Markers().AddSpellingMarker(test(R"HTML(
       body { color: blue; -webkit-text-fill-color: green; }
       ::spelling-error { -webkit-text-fill-color: red; }
   )HTML"));
-  expect(NGHighlightPainter::kOverlay, __LINE__);
+  expect(HighlightPainter::kOverlay, __LINE__);
   GetDocument().Markers().AddSpellingMarker(test(R"HTML(
       body { color: blue; -webkit-text-fill-color: green; }
       ::spelling-error { -webkit-text-fill-color: green; }
   )HTML"));
-  expect(NGHighlightPainter::kFastSpellingGrammar, __LINE__);
+  expect(HighlightPainter::kFastSpellingGrammar, __LINE__);
 
   // ‘-webkit-text-stroke-color’
   GetDocument().Markers().AddSpellingMarker(test(R"HTML(
       body { color: blue; -webkit-text-stroke-color: green; }
       ::spelling-error { /* -webkit-text-stroke-color = blue */ }
   )HTML"));
-  expect(NGHighlightPainter::kOverlay, __LINE__);
+  expect(HighlightPainter::kOverlay, __LINE__);
   GetDocument().Markers().AddSpellingMarker(test(R"HTML(
       body { color: blue; -webkit-text-stroke-color: green; }
       ::spelling-error { -webkit-text-stroke-color: red; }
   )HTML"));
-  expect(NGHighlightPainter::kOverlay, __LINE__);
+  expect(HighlightPainter::kOverlay, __LINE__);
   GetDocument().Markers().AddSpellingMarker(test(R"HTML(
       body { color: blue; -webkit-text-stroke-color: green; }
       ::spelling-error { -webkit-text-stroke-color: green; }
   )HTML"));
-  expect(NGHighlightPainter::kFastSpellingGrammar, __LINE__);
+  expect(HighlightPainter::kFastSpellingGrammar, __LINE__);
 
   // ‘-webkit-text-stroke-width’
   GetDocument().Markers().AddSpellingMarker(test(R"HTML(
       body { -webkit-text-stroke-width: 1px; }
       ::spelling-error { /* -webkit-text-stroke-width = 0 */ }
   )HTML"));
-  expect(NGHighlightPainter::kOverlay, __LINE__);
+  expect(HighlightPainter::kOverlay, __LINE__);
   GetDocument().Markers().AddSpellingMarker(test(R"HTML(
       body { -webkit-text-stroke-width: 1px; }
       ::spelling-error { -webkit-text-stroke-width: 2px; }
   )HTML"));
-  expect(NGHighlightPainter::kOverlay, __LINE__);
+  expect(HighlightPainter::kOverlay, __LINE__);
   GetDocument().Markers().AddSpellingMarker(test(R"HTML(
       body { -webkit-text-stroke-width: 1px; }
       ::spelling-error { -webkit-text-stroke-width: 1px; }
   )HTML"));
-  expect(NGHighlightPainter::kFastSpellingGrammar, __LINE__);
+  expect(HighlightPainter::kFastSpellingGrammar, __LINE__);
 
   // ‘background-color’
   GetDocument().Markers().AddSpellingMarker(test(R"HTML(
       ::spelling-error { background-color: red; }
   )HTML"));
-  expect(NGHighlightPainter::kOverlay, __LINE__);
+  expect(HighlightPainter::kOverlay, __LINE__);
   GetDocument().Markers().AddSpellingMarker(test(R"HTML(
       body { color: red; }
       ::spelling-error { background-color: currentColor; }
   )HTML"));
-  expect(NGHighlightPainter::kOverlay, __LINE__);
+  expect(HighlightPainter::kOverlay, __LINE__);
   GetDocument().Markers().AddSpellingMarker(test(R"HTML(
       ::spelling-error { background-color: #66339900; }
   )HTML"));
-  expect(NGHighlightPainter::kFastSpellingGrammar, __LINE__);
+  expect(HighlightPainter::kFastSpellingGrammar, __LINE__);
   GetDocument().Markers().AddSpellingMarker(test(R"HTML(
       body { color: #66339900; }
       ::spelling-error { background-color: currentColor; }
   )HTML"));
-  expect(NGHighlightPainter::kFastSpellingGrammar, __LINE__);
+  expect(HighlightPainter::kFastSpellingGrammar, __LINE__);
 
   // ‘text-shadow’
   GetDocument().Markers().AddSpellingMarker(test(R"HTML(
       ::spelling-error { text-shadow: 0 0 currentColor; }
   )HTML"));
-  expect(NGHighlightPainter::kOverlay, __LINE__);
+  expect(HighlightPainter::kOverlay, __LINE__);
 
   // ‘text-decoration’
   GetDocument().Markers().AddSpellingMarker(test(R"HTML(
       ::spelling-error { text-decoration: none; }
   )HTML"));
-  expect(NGHighlightPainter::kOverlay, __LINE__);
+  expect(HighlightPainter::kOverlay, __LINE__);
   GetDocument().Markers().AddSpellingMarker(test(R"HTML(
       ::spelling-error { text-decoration: grammar-error; }
   )HTML"));
-  expect(NGHighlightPainter::kOverlay, __LINE__);
+  expect(HighlightPainter::kOverlay, __LINE__);
   GetDocument().Markers().AddGrammarMarker(test(R"HTML(
       ::grammar-error { text-decoration: spelling-error; }
   )HTML"));
-  expect(NGHighlightPainter::kOverlay, __LINE__);
+  expect(HighlightPainter::kOverlay, __LINE__);
   GetDocument().Markers().AddSpellingMarker(test(R"HTML(
       ::spelling-error { text-decoration: spelling-error; }
   )HTML"));
-  expect(NGHighlightPainter::kFastSpellingGrammar, __LINE__);
+  expect(HighlightPainter::kFastSpellingGrammar, __LINE__);
   GetDocument().Markers().AddGrammarMarker(test(R"HTML(
       ::grammar-error { text-decoration: grammar-error; }
   )HTML"));
-  expect(NGHighlightPainter::kFastSpellingGrammar, __LINE__);
+  expect(HighlightPainter::kFastSpellingGrammar, __LINE__);
 
   // originating ‘text-decoration’
   GetDocument().Markers().AddSpellingMarker(test(R"HTML(
       body { color: blue; text-decoration: underline; }
   )HTML"));
-  expect(NGHighlightPainter::kFastSpellingGrammar, __LINE__);
+  expect(HighlightPainter::kFastSpellingGrammar, __LINE__);
   GetDocument().Markers().AddSpellingMarker(test(R"HTML(
       html { color: blue; text-decoration: underline; }
   )HTML"));
-  expect(NGHighlightPainter::kFastSpellingGrammar, __LINE__);
+  expect(HighlightPainter::kFastSpellingGrammar, __LINE__);
   GetDocument().Markers().AddSpellingMarker(test(R"HTML(
       body { color: red; text-decoration: blue underline; }
       ::spelling-error { /* decoration recolored to red */ }
   )HTML"));
-  expect(NGHighlightPainter::kOverlay, __LINE__);
+  expect(HighlightPainter::kOverlay, __LINE__);
   GetDocument().Markers().AddSpellingMarker(test(R"HTML(
       html { color: red; text-decoration: blue underline; }
       ::spelling-error { /* decoration recolored to red */ }
   )HTML"));
-  expect(NGHighlightPainter::kOverlay, __LINE__);
+  expect(HighlightPainter::kOverlay, __LINE__);
 
   // ‘text-emphasis-color’
   // TODO(crbug.com/1147859) clean up when spec issue is resolved again
@@ -256,22 +255,22 @@ TEST_P(NGHighlightPainterTest, FastSpellingGrammarPaintCase) {
   GetDocument().Markers().AddSpellingMarker(test(R"HTML(
       body { color: blue; text-emphasis: circle; }
   )HTML"));
-  expect(NGHighlightPainter::kFastSpellingGrammar, __LINE__);
+  expect(HighlightPainter::kFastSpellingGrammar, __LINE__);
   GetDocument().Markers().AddSpellingMarker(test(R"HTML(
       body { color: blue; }
       ::spelling-error { /* no emphasis */ text-emphasis-color: green; }
   )HTML"));
-  expect(NGHighlightPainter::kFastSpellingGrammar, __LINE__);
+  expect(HighlightPainter::kFastSpellingGrammar, __LINE__);
   GetDocument().Markers().AddSpellingMarker(test(R"HTML(
       body { color: red; text-emphasis: blue circle; }
       ::spelling-error { /* emphasis recolored to red */ }
   )HTML"));
-  expect(NGHighlightPainter::kOverlay, __LINE__);
+  expect(HighlightPainter::kOverlay, __LINE__);
   GetDocument().Markers().AddSpellingMarker(test(R"HTML(
       body { color: red; text-emphasis: blue circle; }
       ::spelling-error { text-emphasis-color: blue; }
   )HTML"));
-  expect(NGHighlightPainter::kFastSpellingGrammar, __LINE__);
+  expect(HighlightPainter::kFastSpellingGrammar, __LINE__);
 }
 
 }  // namespace blink

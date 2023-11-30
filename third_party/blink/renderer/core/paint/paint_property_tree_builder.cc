@@ -186,7 +186,7 @@ class FragmentPaintPropertyTreeBuilder {
  public:
   FragmentPaintPropertyTreeBuilder(
       const LayoutObject& object,
-      NGPrePaintInfo* pre_paint_info,
+      PrePaintInfo* pre_paint_info,
       PaintPropertyTreeBuilderContext& full_context,
       FragmentData& fragment_data)
       : object_(object),
@@ -398,7 +398,7 @@ class FragmentPaintPropertyTreeBuilder {
   MainThreadScrollingReasons GetMainThreadScrollingReasons() const;
 
   const LayoutObject& object_;
-  NGPrePaintInfo* pre_paint_info_;
+  PrePaintInfo* pre_paint_info_;
   // The tree builder context for the whole object.
   PaintPropertyTreeBuilderContext& full_context_;
   // The tree builder context for the current fragment, which is one of the

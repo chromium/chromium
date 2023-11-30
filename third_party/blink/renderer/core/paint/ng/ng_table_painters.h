@@ -18,11 +18,11 @@ struct PaintInfo;
 struct PhysicalOffset;
 struct PhysicalRect;
 
-class NGTablePainter {
+class TablePainter {
   STACK_ALLOCATED();
 
  public:
-  explicit NGTablePainter(const PhysicalBoxFragment& table_wrapper_fragment)
+  explicit TablePainter(const PhysicalBoxFragment& table_wrapper_fragment)
       : fragment_(table_wrapper_fragment) {
     DCHECK(fragment_.IsTable());
   }
@@ -41,11 +41,11 @@ class NGTablePainter {
   const PhysicalBoxFragment& fragment_;
 };
 
-class NGTableSectionPainter {
+class TableSectionPainter {
   STACK_ALLOCATED();
 
  public:
-  explicit NGTableSectionPainter(
+  explicit TableSectionPainter(
       const PhysicalBoxFragment& table_section_fragment)
       : fragment_(table_section_fragment) {
     DCHECK(fragment_.IsTableSection());
@@ -64,11 +64,11 @@ class NGTableSectionPainter {
   const PhysicalBoxFragment& fragment_;
 };
 
-class NGTableRowPainter {
+class TableRowPainter {
   STACK_ALLOCATED();
 
  public:
-  explicit NGTableRowPainter(const PhysicalBoxFragment& table_row_fragment)
+  explicit TableRowPainter(const PhysicalBoxFragment& table_row_fragment)
       : fragment_(table_row_fragment) {
     DCHECK(fragment_.IsTableRow());
   }
@@ -92,11 +92,11 @@ class NGTableRowPainter {
   const PhysicalBoxFragment& fragment_;
 };
 
-class NGTableCellPainter {
+class TableCellPainter {
   STACK_ALLOCATED();
 
  public:
-  explicit NGTableCellPainter(const PhysicalBoxFragment& table_cell_fragment)
+  explicit TableCellPainter(const PhysicalBoxFragment& table_cell_fragment)
       : fragment_(table_cell_fragment) {}
 
   void PaintBoxDecorationBackground(const PaintInfo&,

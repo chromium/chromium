@@ -17,11 +17,11 @@ class PhysicalBoxFragment;
 struct PaintInfo;
 struct PhysicalOffset;
 
-class NGMathMLPainter {
+class MathMLPainter {
   STACK_ALLOCATED();
 
  public:
-  explicit NGMathMLPainter(const PhysicalBoxFragment& box_fragment)
+  explicit MathMLPainter(const PhysicalBoxFragment& box_fragment)
       : box_fragment_(box_fragment) {}
   void Paint(const PaintInfo&, PhysicalOffset);
 

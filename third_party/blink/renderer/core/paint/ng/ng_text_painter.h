@@ -22,7 +22,7 @@ struct TextFragmentPaintInfo;
 
 // Text painter for LayoutNG, logic shared between legacy layout and LayoutNG
 // is implemented in the TextPainterBase base class.
-// Operates on NGPhysicalTextFragments and only paints text and decorations.
+// Operates on PhysicalTextFragments and only paints text and decorations.
 // Border painting etc is handled by the TextFragmentPainter class.
 // TODO(layout-dev): Does this distinction make sense?
 class CORE_EXPORT TextPainter : public TextPainterBase {

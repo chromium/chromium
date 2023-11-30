@@ -397,7 +397,7 @@ void PaintLayerPainter::PaintFragmentWithPhase(
     paint_info.SetDescendantPaintingBlocked(true);
 
   if (physical_fragment) {
-    NGBoxFragmentPainter(*physical_fragment).Paint(paint_info);
+    BoxFragmentPainter(*physical_fragment).Paint(paint_info);
   } else if (const auto* layout_inline =
                  DynamicTo<LayoutInline>(&paint_layer_.GetLayoutObject())) {
     InlineBoxFragmentPainter::PaintAllFragments(*layout_inline, fragment_data,

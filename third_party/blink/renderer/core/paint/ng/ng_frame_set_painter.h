@@ -20,12 +20,12 @@ struct AutoDarkMode;
 struct PaintInfo;
 struct PhysicalOffset;
 
-class NGFrameSetPainter {
+class FrameSetPainter {
   STACK_ALLOCATED();
 
  public:
-  NGFrameSetPainter(const PhysicalBoxFragment& box_fragment,
-                    const DisplayItemClient& display_item_client)
+  FrameSetPainter(const PhysicalBoxFragment& box_fragment,
+                  const DisplayItemClient& display_item_client)
       : box_fragment_(box_fragment),
         display_item_client_(display_item_client) {}
   void PaintObject(const PaintInfo&, const PhysicalOffset&);

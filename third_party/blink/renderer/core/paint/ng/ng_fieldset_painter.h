@@ -16,11 +16,11 @@ struct PaintInfo;
 struct PhysicalOffset;
 struct PhysicalRect;
 
-class NGFieldsetPainter {
+class FieldsetPainter {
   STACK_ALLOCATED();
 
  public:
-  NGFieldsetPainter(const PhysicalBoxFragment& fieldset)
+  explicit FieldsetPainter(const PhysicalBoxFragment& fieldset)
       : fieldset_(fieldset) {}
 
   void PaintBoxDecorationBackground(const PaintInfo&,

@@ -88,7 +88,7 @@ class PaintInvalidator final {
  public:
   // Returns true if the object is invalidated.
   bool InvalidatePaint(const LayoutObject&,
-                       const NGPrePaintInfo*,
+                       const PrePaintInfo*,
                        const PaintPropertyTreeBuilderContext*,
                        PaintInvalidatorContext&);
 

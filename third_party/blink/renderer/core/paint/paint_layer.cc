@@ -1649,7 +1649,7 @@ bool PaintLayer::HitTestFragmentWithPhase(
       did_hit = false;
     } else {
       did_hit =
-          NGBoxFragmentPainter(*physical_fragment)
+          BoxFragmentPainter(*physical_fragment)
               .NodeAtPoint(result, hit_test_location, fragment_offset, phase);
     }
   } else {

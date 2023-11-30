@@ -19,7 +19,7 @@
 
 namespace blink {
 
-FieldsetPaintInfo NGFieldsetPainter::CreateFieldsetPaintInfo() const {
+FieldsetPaintInfo FieldsetPainter::CreateFieldsetPaintInfo() const {
   const PhysicalFragmentLink* legend = nullptr;
   if (!fieldset_.Children().empty()) {
     const auto& first_child = fieldset_.Children().front();
@@ -69,7 +69,7 @@ FieldsetPaintInfo NGFieldsetPainter::CreateFieldsetPaintInfo() const {
 
 // Paint the fieldset (background, other decorations, and) border, with the
 // cutout hole for the legend.
-void NGFieldsetPainter::PaintBoxDecorationBackground(
+void FieldsetPainter::PaintBoxDecorationBackground(
     const PaintInfo& paint_info,
     const PhysicalRect& paint_rect,
     const BoxDecorationData& box_decoration_data) {
@@ -80,7 +80,7 @@ void NGFieldsetPainter::PaintBoxDecorationBackground(
   PhysicalRect contracted_rect(paint_rect);
   contracted_rect.Contract(fieldset_paint_info.border_outsets);
 
-  NGBoxFragmentPainter fragment_painter(fieldset_);
+  BoxFragmentPainter fragment_painter(fieldset_);
   if (box_decoration_data.ShouldPaintShadow()) {
     fragment_painter.PaintNormalBoxShadow(paint_info, contracted_rect, style);
   }
@@ -134,14 +134,14 @@ void NGFieldsetPainter::PaintBoxDecorationBackground(
     graphics_context.EndLayer();
 }
 
-void NGFieldsetPainter::PaintMask(const PaintInfo& paint_info,
-                                  const PhysicalOffset& paint_offset) {
+void FieldsetPainter::PaintMask(const PaintInfo& paint_info,
+                                const PhysicalOffset& paint_offset) {
   // TODO(eae): Switch to LayoutNG version of BackgroundImageGeometry.
   const LayoutObject& layout_object = *fieldset_.GetLayoutObject();
   BackgroundImageGeometry geometry(
       static_cast<const LayoutBoxModelObject&>(layout_object));
 
-  NGBoxFragmentPainter ng_box_painter(fieldset_);
+  BoxFragmentPainter ng_box_painter(fieldset_);
   DrawingRecorder recorder(paint_info.context, layout_object, paint_info.phase,
                            ng_box_painter.VisualRect(paint_offset));
   PhysicalRect paint_rect(paint_offset, fieldset_.Size());

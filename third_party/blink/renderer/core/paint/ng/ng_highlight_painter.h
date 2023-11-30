@@ -40,7 +40,7 @@ struct TextFragmentPaintInfo;
 
 // Highlight overlay painter for LayoutNG. Operates on a FragmentItem that
 // IsText(). Delegates to TextPainter to paint the text itself.
-class CORE_EXPORT NGHighlightPainter {
+class CORE_EXPORT HighlightPainter {
   STACK_ALLOCATED();
 
  public:
@@ -125,19 +125,18 @@ class CORE_EXPORT NGHighlightPainter {
     bool paint_selected_text_only_;
   };
 
-  NGHighlightPainter(
-      const TextFragmentPaintInfo& fragment_paint_info,
-      TextPainter& text_painter,
-      TextDecorationPainter& decoration_painter,
-      const PaintInfo& paint_info,
-      const InlineCursor& cursor,
-      const FragmentItem& fragment_item,
-      const absl::optional<AffineTransform> writing_mode_rotation,
-      const PhysicalOffset& box_origin,
-      const ComputedStyle& style,
-      const TextPaintStyle& text_style,
-      SelectionPaintState*,
-      bool is_printing);
+  HighlightPainter(const TextFragmentPaintInfo& fragment_paint_info,
+                   TextPainter& text_painter,
+                   TextDecorationPainter& decoration_painter,
+                   const PaintInfo& paint_info,
+                   const InlineCursor& cursor,
+                   const FragmentItem& fragment_item,
+                   const absl::optional<AffineTransform> writing_mode_rotation,
+                   const PhysicalOffset& box_origin,
+                   const ComputedStyle& style,
+                   const TextPaintStyle& text_style,
+                   SelectionPaintState*,
+                   bool is_printing);
 
   enum Phase { kBackground, kForeground };
 
@@ -212,7 +211,7 @@ class CORE_EXPORT NGHighlightPainter {
     DISALLOW_NEW();
 
    public:
-    LayerPaintState(NGHighlightOverlay::HighlightLayer id,
+    LayerPaintState(HighlightOverlay::HighlightLayer id,
                     const ComputedStyle* style,
                     TextPaintStyle text_style);
 
@@ -221,10 +220,10 @@ class CORE_EXPORT NGHighlightPainter {
     // Equality on HighlightLayer id only, for Vector::Find.
     bool operator==(const LayerPaintState&) const = delete;
     bool operator!=(const LayerPaintState&) const = delete;
-    bool operator==(const NGHighlightOverlay::HighlightLayer&) const;
-    bool operator!=(const NGHighlightOverlay::HighlightLayer&) const;
+    bool operator==(const HighlightOverlay::HighlightLayer&) const;
+    bool operator!=(const HighlightOverlay::HighlightLayer&) const;
 
-    const NGHighlightOverlay::HighlightLayer id;
+    const HighlightOverlay::HighlightLayer id;
     const Member<const ComputedStyle> style;
     const TextPaintStyle text_style;
     const TextDecorationLine decorations_in_effect;
@@ -258,19 +257,16 @@ class CORE_EXPORT NGHighlightPainter {
       const TextPaintStyle& text_style,
       const AppliedTextDecoration* decoration_override);
   LineRelativeRect LineRelativeWorldRect(
-      const NGHighlightOverlay::HighlightRange&);
+      const HighlightOverlay::HighlightRange&);
   void ClipToPartDecorations(const LineRelativeRect&);
   LineRelativeRect LocalRectInWritingModeSpace(unsigned from,
                                                unsigned to) const;
   void PaintDecorationsExceptLineThrough(
-      const NGHighlightOverlay::HighlightPart&);
-  void PaintDecorationsExceptLineThrough(
-      const NGHighlightOverlay::HighlightPart&,
-      TextDecorationLine lines_to_paint);
-  void PaintDecorationsOnlyLineThrough(
-      const NGHighlightOverlay::HighlightPart&);
-  void PaintSpellingGrammarDecorations(
-      const NGHighlightOverlay::HighlightPart&);
+      const HighlightOverlay::HighlightPart&);
+  void PaintDecorationsExceptLineThrough(const HighlightOverlay::HighlightPart&,
+                                         TextDecorationLine lines_to_paint);
+  void PaintDecorationsOnlyLineThrough(const HighlightOverlay::HighlightPart&);
+  void PaintSpellingGrammarDecorations(const HighlightOverlay::HighlightPart&);
 
   // Paints text with a highlight color. For composition markers, omit the last
   // two arguments. For PseudoHighlightMarkers, include both the PseudoId and
@@ -309,7 +305,7 @@ class CORE_EXPORT NGHighlightPainter {
   DocumentMarkerVector grammar_;
   DocumentMarkerVector custom_;
   HeapVector<LayerPaintState> layers_;
-  Vector<NGHighlightOverlay::HighlightPart> parts_;
+  Vector<HighlightOverlay::HighlightPart> parts_;
   Vector<HighlightEdgeInfo> edges_info_;
   const bool skip_backgrounds_;
   Case paint_case_;
@@ -318,6 +314,6 @@ class CORE_EXPORT NGHighlightPainter {
 }  // namespace blink
 
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
-    blink::NGHighlightPainter::LayerPaintState)
+    blink::HighlightPainter::LayerPaintState)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_NG_NG_HIGHLIGHT_PAINTER_H_

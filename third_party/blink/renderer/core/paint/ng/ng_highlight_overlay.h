@@ -19,8 +19,8 @@ class HighlightRegistry;
 struct LayoutSelectionStatus;
 struct TextFragmentPaintInfo;
 
-class CORE_EXPORT NGHighlightOverlay {
-  STATIC_ONLY(NGHighlightOverlay);
+class CORE_EXPORT HighlightOverlay {
+  STATIC_ONLY(HighlightOverlay);
 
  public:
   enum class HighlightLayerType : unsigned {
@@ -183,11 +183,11 @@ class CORE_EXPORT NGHighlightOverlay {
 };
 
 CORE_EXPORT std::ostream& operator<<(std::ostream&,
-                                     const NGHighlightOverlay::HighlightLayer&);
+                                     const HighlightOverlay::HighlightLayer&);
 CORE_EXPORT std::ostream& operator<<(std::ostream&,
-                                     const NGHighlightOverlay::HighlightEdge&);
+                                     const HighlightOverlay::HighlightEdge&);
 CORE_EXPORT std::ostream& operator<<(std::ostream&,
-                                     const NGHighlightOverlay::HighlightPart&);
+                                     const HighlightOverlay::HighlightPart&);
 
 }  // namespace blink
 

@@ -49,7 +49,7 @@ void TextCombinePainter::Paint(const PaintInfo& paint_info,
   //    PaintPhase::kTextClip
   //    PaintPhase::kForeground
   //    PaintPhase::kOutline
-  // These values come from |NGBoxFragmentPainter::PaintAllPhasesAtomically()|.
+  // These values come from |BoxFragmentPainter::PaintAllPhasesAtomically()|.
 
   const ComputedStyle& style = text_combine.Parent()->StyleRef();
   const bool has_text_decoration = style.HasAppliedTextDecorations();

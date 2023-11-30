@@ -339,7 +339,7 @@ void LayoutBlock::Paint(const PaintInfo& paint_info) const {
   if (PhysicalFragmentCount()) {
     const PhysicalBoxFragment* fragment = GetPhysicalFragment(0);
     DCHECK(fragment);
-    NGBoxFragmentPainter(*fragment).Paint(paint_info);
+    BoxFragmentPainter(*fragment).Paint(paint_info);
     return;
   }
 
@@ -475,8 +475,8 @@ bool LayoutBlock::NodeAtPoint(HitTestResult& result,
   if (PhysicalFragmentCount()) {
     const PhysicalBoxFragment* fragment = GetPhysicalFragment(0);
     DCHECK(fragment);
-    return NGBoxFragmentPainter(*fragment).NodeAtPoint(
-        result, hit_test_location, accumulated_offset, phase);
+    return BoxFragmentPainter(*fragment).NodeAtPoint(result, hit_test_location,
+                                                     accumulated_offset, phase);
   }
 
   return false;
@@ -495,8 +495,8 @@ bool LayoutBlock::HitTestChildren(HitTestResult& result,
     const PhysicalBoxFragment* fragment = GetPhysicalFragment(0);
     DCHECK(fragment);
     DCHECK(!fragment->HasItems());
-    return NGBoxFragmentPainter(*fragment).NodeAtPoint(
-        result, hit_test_location, accumulated_offset, phase);
+    return BoxFragmentPainter(*fragment).NodeAtPoint(result, hit_test_location,
+                                                     accumulated_offset, phase);
   }
 
   PhysicalOffset scrolled_offset = accumulated_offset;
