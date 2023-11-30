@@ -3,16 +3,18 @@
 # found in the LICENSE file.
 
 import json
+import textwrap
 import unittest
 from unittest import mock
 
-from blinkpy.common.checkout.git_mock import MockGit
 from blinkpy.common.host_mock import MockHost
 from blinkpy.common.path_finder import (
     RELATIVE_WEB_TESTS,
+    RELATIVE_WPT_TESTS,
     PathFinder,
 )
-from blinkpy.common.system.executive_mock import mock_git_commands, MockExecutive
+from blinkpy.common.system.executive import ScriptError
+from blinkpy.common.system.executive_mock import MockExecutive
 from blinkpy.common.system.filesystem_mock import MockFileSystem
 from blinkpy.w3c.directory_owners_extractor import WPTDirMetadata
 from blinkpy.w3c.local_wpt_mock import MockLocalWPT
@@ -85,108 +87,126 @@ class ImportNotifierTest(unittest.TestCase):
             self.notifier.find_changed_baselines_of_tests(set()), {})
 
     def test_more_failures_in_baseline_more_fails(self):
-        # Replacing self.host.executive won't work here, because ImportNotifier
-        # has been instantiated with a MockGit backed by an empty MockExecutive.
-        executive = mock_git_commands({
-            'diff': ('diff --git a/foo-expected.txt b/foo-expected.txt\n'
-                     '--- a/foo-expected.txt\n'
-                     '+++ b/foo-expected.txt\n'
-                     '-FAIL an old failure\n'
-                     '+FAIL new failure 1\n'
-                     '+FAIL new failure 2\n')
-        })
-        self.notifier.git = MockGit(executive=executive)
-        self.assertTrue(
-            self.notifier.more_failures_in_baseline('foo-expected.txt'))
-        self.assertEqual(
-            executive.calls,
-            [['git', 'diff', '-U0', 'origin/main', '--', 'foo-expected.txt']
-             ])
+        old_contents = textwrap.dedent("""\
+            [FAIL] an old failure
+            """).encode()
+        new_contents = textwrap.dedent("""\
+            [FAIL] new failure 1
+            [FAIL] new failure 2
+            """)
+        self.host.filesystem.write_text_file(
+            self.finder.path_from_wpt_tests('foo-expected.txt'), new_contents)
+        with mock.patch.object(self.git,
+                               'show_blob',
+                               return_value=old_contents) as show_blob:
+            self.assertTrue(
+                self.notifier.more_failures_in_baseline(
+                    f'{RELATIVE_WPT_TESTS}foo-expected.txt'))
+        show_blob.assert_called_once_with(
+            f'{RELATIVE_WPT_TESTS}foo-expected.txt')
 
     def test_more_failures_in_baseline_fewer_fails(self):
-        executive = mock_git_commands({
-            'diff': ('diff --git a/foo-expected.txt b/foo-expected.txt\n'
-                     '--- a/foo-expected.txt\n'
-                     '+++ b/foo-expected.txt\n'
-                     '-FAIL an old failure\n'
-                     '-FAIL new failure 1\n'
-                     '+FAIL new failure 2\n')
-        })
-        self.notifier.git = MockGit(executive=executive)
-        self.assertFalse(
-            self.notifier.more_failures_in_baseline('foo-expected.txt'))
+        old_contents = textwrap.dedent("""\
+            [FAIL] an old failure
+            [FAIL] new failure 1
+            """).encode()
+        new_contents = textwrap.dedent("""\
+            [FAIL] new failure 2
+            """)
+        self.host.filesystem.write_text_file(
+            self.finder.path_from_wpt_tests('foo-expected.txt'), new_contents)
+        with mock.patch.object(self.git,
+                               'show_blob',
+                               return_value=old_contents):
+            self.assertFalse(
+                self.notifier.more_failures_in_baseline(
+                    f'{RELATIVE_WPT_TESTS}foo-expected.txt'))
 
     def test_more_failures_in_baseline_same_fails(self):
-        executive = mock_git_commands({
-            'diff': ('diff --git a/foo-expected.txt b/foo-expected.txt\n'
-                     '--- a/foo-expected.txt\n'
-                     '+++ b/foo-expected.txt\n'
-                     '-FAIL an old failure\n'
-                     '+FAIL a new failure\n')
-        })
-        self.notifier.git = MockGit(executive=executive)
-        self.assertFalse(
-            self.notifier.more_failures_in_baseline('foo-expected.txt'))
+        old_contents = textwrap.dedent("""\
+            [FAIL] an old failure
+            """).encode()
+        new_contents = textwrap.dedent("""\
+            [FAIL] a new failure
+            """)
+        self.host.filesystem.write_text_file(
+            self.finder.path_from_wpt_tests('foo-expected.txt'), new_contents)
+        with mock.patch.object(self.git,
+                               'show_blob',
+                               return_value=old_contents):
+            self.assertFalse(
+                self.notifier.more_failures_in_baseline(
+                    f'{RELATIVE_WPT_TESTS}foo-expected.txt'))
 
     def test_more_failures_in_baseline_new_error(self):
-        executive = mock_git_commands({
-            'diff': ('diff --git a/foo-expected.txt b/foo-expected.txt\n'
-                     '--- a/foo-expected.txt\n'
-                     '+++ b/foo-expected.txt\n'
-                     '-PASS an existing pass\n'
-                     '+Harness Error. harness_status.status = 1 , harness_status.message = bad\n')
-        })
-        self.notifier.git = MockGit(executive=executive)
-        self.assertTrue(
-            self.notifier.more_failures_in_baseline('foo-expected.txt'))
+        new_contents = textwrap.dedent("""\
+            Harness Error. harness_status.status = 1 , harness_status.message = bad
+            """)
+        self.host.filesystem.write_text_file(
+            self.finder.path_from_wpt_tests('foo-expected.txt'), new_contents)
+        with mock.patch.object(self.git, 'show_blob', side_effect=ScriptError):
+            self.assertTrue(
+                self.notifier.more_failures_in_baseline(
+                    f'{RELATIVE_WPT_TESTS}foo-expected.txt'))
 
     def test_more_failures_in_baseline_remove_error(self):
-        executive = mock_git_commands({
-            'diff': ('diff --git a/foo-expected.txt b/foo-expected.txt\n'
-                     '--- a/foo-expected.txt\n'
-                     '+++ b/foo-expected.txt\n'
-                     '-Harness Error. harness_status.status = 1 , harness_status.message = bad\n'
-                     '+PASS a new pass\n')
-        })
-        self.notifier.git = MockGit(executive=executive)
-        self.assertFalse(
-            self.notifier.more_failures_in_baseline('foo-expected.txt'))
+        old_contents = textwrap.dedent("""\
+            Harness Error. harness_status.status = 1 , harness_status.message = bad
+            """).encode()
+        with mock.patch.object(self.git,
+                               'show_blob',
+                               return_value=old_contents):
+            self.assertFalse(
+                self.notifier.more_failures_in_baseline(
+                    f'{RELATIVE_WPT_TESTS}foo-expected.txt'))
 
     def test_more_failures_in_baseline_changing_error(self):
-        executive = mock_git_commands({
-            'diff': ('diff --git a/foo-expected.txt b/foo-expected.txt\n'
-                     '--- a/foo-expected.txt\n'
-                     '+++ b/foo-expected.txt\n'
-                     '-Harness Error. harness_status.status = 1 , harness_status.message = bad\n'
-                     '+Harness Error. new text, still an error\n')
-        })
-        self.notifier.git = MockGit(executive=executive)
-        self.assertFalse(
-            self.notifier.more_failures_in_baseline('foo-expected.txt'))
+        old_contents = textwrap.dedent("""\
+            Harness Error. harness_status.status = 1 , harness_status.message = bad
+            """).encode()
+        new_contents = textwrap.dedent("""\
+            Harness Error. harness_status.status = 2, harness_status.message = still an error
+            """)
+        self.host.filesystem.write_text_file(
+            self.finder.path_from_wpt_tests('foo-expected.txt'), new_contents)
+        with mock.patch.object(self.git,
+                               'show_blob',
+                               return_value=old_contents):
+            self.assertFalse(
+                self.notifier.more_failures_in_baseline(
+                    f'{RELATIVE_WPT_TESTS}foo-expected.txt'))
 
     def test_more_failures_in_baseline_fail_to_error(self):
-        executive = mock_git_commands({
-            'diff': ('diff --git a/foo-expected.txt b/foo-expected.txt\n'
-                     '--- a/foo-expected.txt\n'
-                     '+++ b/foo-expected.txt\n'
-                     '-FAIL a previous failure\n'
-                     '+Harness Error. harness_status.status = 1 , harness_status.message = bad\n')
-        })
-        self.notifier.git = MockGit(executive=executive)
-        self.assertTrue(
-            self.notifier.more_failures_in_baseline('foo-expected.txt'))
+        old_contents = textwrap.dedent("""\
+            [FAIL] a previous failure
+            """).encode()
+        new_contents = textwrap.dedent("""\
+            Harness Error. harness_status.status = 1 , harness_status.message = bad
+            """)
+        self.host.filesystem.write_text_file(
+            self.finder.path_from_wpt_tests('foo-expected.txt'), new_contents)
+        with mock.patch.object(self.git,
+                               'show_blob',
+                               return_value=old_contents):
+            self.assertTrue(
+                self.notifier.more_failures_in_baseline(
+                    f'{RELATIVE_WPT_TESTS}foo-expected.txt'))
 
     def test_more_failures_in_baseline_error_to_fail(self):
-        executive = mock_git_commands({
-            'diff': ('diff --git a/foo-expected.txt b/foo-expected.txt\n'
-                     '--- a/foo-expected.txt\n'
-                     '+++ b/foo-expected.txt\n'
-                     '-Harness Error. harness_status.status = 1 , harness_status.message = bad\n'
-                     '+FAIL a new failure\n')
-        })
-        self.notifier.git = MockGit(executive=executive)
-        self.assertTrue(
-            self.notifier.more_failures_in_baseline('foo-expected.txt'))
+        old_contents = textwrap.dedent("""\
+            Harness Error. harness_status.status = 1 , harness_status.message = bad
+            """).encode()
+        new_contents = textwrap.dedent("""\
+            [PASS FAIL] a new (flaky) failure
+            """)
+        self.host.filesystem.write_text_file(
+            self.finder.path_from_wpt_tests('foo-expected.txt'), new_contents)
+        with mock.patch.object(self.git,
+                               'show_blob',
+                               return_value=old_contents):
+            self.assertTrue(
+                self.notifier.more_failures_in_baseline(
+                    f'{RELATIVE_WPT_TESTS}foo-expected.txt'))
 
     def test_examine_baseline_changes(self):
         self.host.filesystem.write_text_file(
