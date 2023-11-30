@@ -32,6 +32,8 @@ blink_modules_sources("peerconnection") {
     "media_stream_video_webrtc_sink.h",
     "peer_connection_dependency_factory.cc",
     "peer_connection_dependency_factory.h",
+    "peer_connection_features.cc",
+    "peer_connection_features.h",
     "peer_connection_tracker.cc",
     "peer_connection_tracker.h",
     "rtc_certificate.cc",

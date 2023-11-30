@@ -1515,3 +1515,6 @@ crbug.com/1465046 [ Mac ] virtual/threaded/external/wpt/css/css-scroll-snap/inpu
 
 # Gardener 2023-10-26
 crbug.com/1496281 external/wpt/html/semantics/embedded-content/bfcache/embedded-js.html [ Slow ]
+
+# Waits for media to be sent over loopback PeerConnections, which can take time to set up.
+crbug.com/1502781 fast/peerconnection/RTCPeerconnection-insertable-streams.html [ Slow ]
