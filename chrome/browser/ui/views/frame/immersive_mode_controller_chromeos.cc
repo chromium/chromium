@@ -78,8 +78,12 @@ void ImmersiveModeControllerChromeos::Init(BrowserView* browser_view) {
 }
 
 void ImmersiveModeControllerChromeos::SetEnabled(bool enabled) {
-  if (controller_.IsEnabled() == enabled)
-    return;
+  if (controller_.IsEnabled() == enabled) {
+    // TODO(crbug.com/1505996): Remove this comments when the performance check
+    // has completed.
+    LOG(WARNING) << "Sending immersive again while the state is the same: "
+                 << (enabled ? "enabled." : "disabled.");
+  }
 
   if (!fullscreen_observer_.IsObserving()) {
     fullscreen_observer_.Observe(browser_view_->browser()
