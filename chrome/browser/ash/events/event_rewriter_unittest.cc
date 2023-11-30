@@ -2202,75 +2202,10 @@ TEST_F(EventRewriterTest, TestRewriteExtendedKeysAltVariantsOld) {
   }
 }
 
-// TODO(crbug.com/1179893): Remove once the feature is enabled permanently.
-// For M92 kImprovedKeyboardShortcuts is enabled but kDeprecateAltBasedSixPack
-// is disabled.
-TEST_F(EventRewriterTest, TestRewriteExtendedKeysAltVariantsM92) {
+TEST_F(EventRewriterTest, TestRewriteExtendedKeysAltVariants) {
   Preferences::RegisterProfilePrefs(prefs()->registry());
   scoped_feature_list_.InitAndDisableFeature(
       features::kAltClickAndSixPackCustomization);
-
-  for (const auto keyboard : kNonAppleKeyboardVariants) {
-    SCOPED_TRACE(keyboard.name);
-    SetUpKeyboard(keyboard);
-
-    // Alt+Backspace -> Delete
-    EXPECT_EQ(DeletePressed(), RunRewriter(BackspacePressed(ui::EF_ALT_DOWN)));
-
-    // Control+Alt+Backspace -> Control+Delete
-    EXPECT_EQ(
-        DeletePressed(ui::EF_CONTROL_DOWN),
-        RunRewriter(BackspacePressed(ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN)));
-
-    // Search+Alt+Backspace -> Alt+Backspace
-    EXPECT_EQ(
-        BackspacePressed(ui::EF_ALT_DOWN),
-        RunRewriter(BackspacePressed(ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN)));
-
-    // Search+Control+Alt+Backspace -> Control+Alt+Backspace
-    EXPECT_EQ(
-        BackspacePressed(ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN),
-        RunRewriter(BackspacePressed(ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN |
-                                     ui::EF_CONTROL_DOWN)));
-
-    // Alt+Up -> Prior
-    EXPECT_EQ(PageUpPressed(), RunRewriter(ArrowUpPressed(ui::EF_ALT_DOWN)));
-
-    // Alt+Down -> Next
-    EXPECT_EQ(PageDownPressed(),
-              RunRewriter(ArrowDownPressed(ui::EF_ALT_DOWN)));
-
-    // Ctrl+Alt+Up -> Home
-    EXPECT_EQ(HomePressed(), RunRewriter(ArrowUpPressed(ui::EF_ALT_DOWN |
-                                                        ui::EF_CONTROL_DOWN)));
-
-    // Ctrl+Alt+Down -> End
-    EXPECT_EQ(EndPressed(), RunRewriter(ArrowDownPressed(ui::EF_ALT_DOWN |
-                                                         ui::EF_CONTROL_DOWN)));
-
-    // NOTE: The following are workarounds to avoid rewriting the
-    // Alt variants by additionally pressing Search.
-    // Search+Ctrl+Alt+Up -> Ctrl+Alt+Up
-    EXPECT_EQ(ArrowUpPressed(ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN),
-              RunRewriter(ArrowUpPressed(ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN |
-                                         ui::EF_CONTROL_DOWN)));
-
-    // Search+Ctrl+Alt+Down -> Ctrl+Alt+Down
-    EXPECT_EQ(
-        ArrowDownPressed(ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN),
-        RunRewriter(ArrowDownPressed(ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN |
-                                     ui::EF_CONTROL_DOWN)));
-  }
-}
-
-// TODO(crbug.com/1179893): Remove once the feature is enabled permanently.
-// This is the intended final state with both kImprovedKeyboardShortcuts and
-// kDeprecateAltBasedSixPack enabled.
-TEST_F(EventRewriterTest, TestRewriteExtendedKeysAltVariants) {
-  Preferences::RegisterProfilePrefs(prefs()->registry());
-  scoped_feature_list_.InitWithFeatures(
-      {::features::kDeprecateAltBasedSixPack},
-      {features::kAltClickAndSixPackCustomization});
   // All the previously supported Alt based rewrites no longer have any
   // effect. The Search workarounds no longer take effect and the Search+Key
   // portion is rewritten as expected.
@@ -4777,8 +4712,7 @@ class EventRewriterSixPackKeysTest : public EventRewriterTest {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {features::kInputDeviceSettingsSplit,
-         features::kAltClickAndSixPackCustomization,
-         ::features::kDeprecateAltBasedSixPack},
+         features::kAltClickAndSixPackCustomization},
         /*disabled_features=*/{});
     EventRewriterTest::SetUp();
   }

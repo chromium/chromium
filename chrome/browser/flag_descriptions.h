@@ -712,9 +712,6 @@ extern const char kPrivateNetworkAccessPermissionPromptDescription[];
 extern const char kDeprecateAltClickName[];
 extern const char kDeprecateAltClickDescription[];
 
-extern const char kDeprecateAltBasedSixPackName[];
-extern const char kDeprecateAltBasedSixPackDescription[];
-
 extern const char kDeprecateOldKeyboardShortcutsAcceleratorName[];
 extern const char kDeprecateOldKeyboardShortcutsAcceleratorDescription[];
 
