@@ -120,14 +120,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="BrowsingTopics.InterceptedTopicsFetchRequest.DocumentPresent"
-    enum="BooleanPresent" expires_after="2024-04-29">
+<histogram name="BrowsingTopics.Fetch.InitialUrlRequest.Result"
+    enum="BrowsingTopicsFetchRequestOrRedirectResult"
+    expires_after="2024-05-27">
   <owner>yaoxia@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
-    Records whether the initiator document is present for a topics fetch()
-    request. Recorded when a topics fetch() request (or the redirect requrest)
-    is intercepted in the browser process.
+    When retrieving topics at the BrowsingTopicsURLLoaderInterceptor layer for
+    the fetch() request for the initial URL, the success status or the failure
+    reason.
+  </summary>
+</histogram>
+
+<histogram name="BrowsingTopics.Fetch.RedirectedUrlRequest.Result"
+    enum="BrowsingTopicsFetchRequestOrRedirectResult"
+    expires_after="2024-05-27">
+  <owner>yaoxia@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    When retrieving topics at the BrowsingTopicsURLLoaderInterceptor layer for
+    the fetch() request for a redirected URL, the success status or the failure
+    reason.
   </summary>
 </histogram>
 
@@ -201,8 +214,8 @@ chromium-metrics-reviews@google.com.
   <owner>yaoxia@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
-    Records the result of attempts to retrieve the user's Topics (either via
-    javascript or headers). The result is either success or an error.
+    When retrieving topics at the BrowsingTopicsService layer (applicable to
+    both javascript and headers), the success status or the failure reason.
   </summary>
 </histogram>
 
