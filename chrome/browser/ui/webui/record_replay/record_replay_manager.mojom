@@ -5,6 +5,9 @@
 module mojom;
 
 interface RecordReplayManagerHandler {
+  // Registers the manager page.
+  SetManager(pending_remote<RecordReplayManager> manager);
+
   // Tells the browser that an API key has been received.
   ApiKeyReceived(string apiKey);
 };

@@ -24,5 +24,35 @@ import {
 } from './record_replay.mojom-webui.js';
 */
 
-import * as RR from './record_replay_manager.mojom-webui.js';
-console.error("Imported RR Api = " + [...Object.keys(RR)].join(", "));
+import {
+  RecordReplayManagerCallbackRouter,
+  RecordReplayManagerHandler,
+  RecordReplayManagerHandlerRemote,
+} from './record_replay_manager.mojom-webui.js';
+
+let browserProxy: BrowserProxy;
+
+class BrowserProxy {
+  private callbackRouter_: RecordReplayManagerCallbackRouter =
+      new RecordReplayManagerCallbackRouter();
+  private handler_: RecordReplayManagerHandlerRemote;
+
+  constructor() {
+    this.callbackRouter_.handleRecordingStateChanged.addListener(
+        this.handleRecordingStateChanged.bind(this));
+
+    this.handler_ = RecordReplayManagerHandler.getRemote();
+    this.handler_.setManager(
+        this.callbackRouter_.$.bindNewPipeAndPassRemote());
+    this.handler_.apiKeyReceived("test_api_key");
+  }
+
+  private handleRecordingStateChanged(new_state: string) {
+    console.error("[RUN-2886] Recording state changed to " + new_state);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  console.error("[RUN-2886] DOMContentLoaded");
+  browserProxy = new BrowserProxy();
+});
