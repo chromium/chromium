@@ -299,13 +299,7 @@ ts_library("build_ts") {
   ]
 
   if (is_chromeos_ash) {
-    in_files += [
-      "mocha_adapter.js",
-
-      # TODO(dpapad): Remove this when all clients have been updated to use
-      # chromeos/mojo_webui_test_support.js.
-      "mojo_webui_test_support.js",
-    ]
+    in_files += [ "mocha_adapter.js" ]
   }
 
   if (!is_chromeos_lacros) {
