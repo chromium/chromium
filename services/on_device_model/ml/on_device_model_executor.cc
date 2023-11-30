@@ -9,7 +9,9 @@
 #include "base/logging.h"
 #include "base/memory/raw_ref.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/thread_pool.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "gpu/config/webgpu_blocklist_impl.h"
 #include "services/on_device_model/ml/chrome_ml.h"
@@ -29,6 +31,10 @@ const base::FeatureParam<std::string> kGpuBlockList{
     &optimization_guide::features::kOptimizationGuideOnDeviceModel,
     "on_device_model_gpu_block_list", ""};
 
+const base::FeatureParam<double> kTemperature{
+    &optimization_guide::features::kOptimizationGuideOnDeviceModel,
+    "on_device_model_temperature", 1.0};
+
 // Helper to bind object methods as weak task-posting callback functions.
 template <typename R, typename C, typename... Args>
 std::function<R(Args...)> CreateWeakCallbackFn(R (C::*method)(Args...),
@@ -40,6 +46,14 @@ std::function<R(Args...)> CreateWeakCallbackFn(R (C::*method)(Args...),
         FROM_HERE,
         base::BindOnce(method, weak_ptr, std::forward<Args>(args)...));
   };
+}
+
+int CalculateTokensPerSecond(int num_tokens, base::TimeDelta duration) {
+  if (duration.InMicroseconds() <= 0) {
+    return 0;
+  }
+  return (num_tokens / static_cast<float>(duration.InMicroseconds())) *
+         base::Time::kMicrosecondsPerSecond;
 }
 
 // Handles sending and canceling responses.
@@ -66,6 +80,10 @@ class Responder : public base::SupportsWeakPtr<Responder> {
  private:
   void OnResponse(const std::optional<std::string>& token) {
     if (token.has_value()) {
+      num_tokens_++;
+      if (first_token_time_ == base::TimeTicks()) {
+        first_token_time_ = base::TimeTicks::Now();
+      }
       responder_->OnResponse(*token);
     } else {
       // If the model invokes OnResponse() with no token, this implies
@@ -83,6 +101,16 @@ class Responder : public base::SupportsWeakPtr<Responder> {
     if (result.retracted) {
       responder_->OnComplete(ResponseStatus::kRetracted);
     } else {
+      base::UmaHistogramCounts10000("OnDeviceModel.TokenCount.Output",
+                                    num_tokens_);
+      if (num_tokens_ > 1) {
+        // Time starts at the first token to avoid counting input processing
+        // time, so calculate using num_tokens_ - 1.
+        base::UmaHistogramCounts1000(
+            "OnDeviceModel.TokensPerSecond.Output",
+            CalculateTokensPerSecond(
+                num_tokens_ - 1, base::TimeTicks::Now() - first_token_time_));
+      }
       responder_->OnComplete(ResponseStatus::kOk);
     }
   }
@@ -93,6 +121,8 @@ class Responder : public base::SupportsWeakPtr<Responder> {
     }
   }
 
+  base::TimeTicks first_token_time_;
+  int num_tokens_ = 0;
   mojo::Remote<on_device_model::mojom::StreamingResponder> responder_;
   ChromeMLCancelFn cancel_;
 };
@@ -119,17 +149,18 @@ class ContextHolder : public base::SupportsWeakPtr<ContextHolder> {
   ChromeMLCancelFn* GetCancelFn() { return &cancel_; }
 
   ChromeMLContextSavedFn CreateContextSavedFn() {
-    return [weak_ptr = AsWeakPtr(),
-            task_runner = base::SequencedTaskRunner::GetCurrentDefault()](
-               int tokens_processed) {
-      task_runner->PostTask(FROM_HERE,
-                            base::BindOnce(&ContextHolder::OnComplete, weak_ptr,
-                                           tokens_processed));
-    };
+    return CreateWeakCallbackFn(&ContextHolder::OnComplete, this);
   }
 
  private:
   void OnComplete(int tokens_processed) {
+    if (tokens_processed > 0) {
+      base::UmaHistogramCounts10000("OnDeviceModel.TokenCount.Context",
+                                    tokens_processed);
+      base::UmaHistogramCounts10000(
+          "OnDeviceModel.TokensPerSecond.Context",
+          CalculateTokensPerSecond(tokens_processed, timer_.Elapsed()));
+    }
     if (client_) {
       client_->OnComplete(tokens_processed);
     }
@@ -143,6 +174,7 @@ class ContextHolder : public base::SupportsWeakPtr<ContextHolder> {
     // this may be deleted.
   }
 
+  base::ElapsedTimer timer_;
   mojo::Remote<on_device_model::mojom::ContextClient> client_;
   base::OnceCallback<void(ContextHolder*)> on_disconnect_;
   ChromeMLCancelFn cancel_;
@@ -174,6 +206,8 @@ class SessionImpl : public on_device_model::OnDeviceModel::Session {
     chrome_ml_->api().ExecuteModel(model_, &options,
                                    context_holder->GetCancelFn());
     context_holders_.insert(std::move(context_holder));
+    // Once we have added context, it should not be cleared.
+    clear_context_ = false;
   }
 
   void Execute(on_device_model::mojom::InputOptionsPtr input,
@@ -182,9 +216,8 @@ class SessionImpl : public on_device_model::OnDeviceModel::Session {
     responder_ = std::make_unique<Responder>(std::move(response));
     ChromeMLOutputFn output_fn = responder_->CreateOutputFn();
     ChromeMLCompletionFn completion_fn = responder_->CreateCompletionFn();
-    std::string adjusted_input = input->text + " <ctrl23>";
     ChromeMLExecuteOptions options{
-        .prompt = adjusted_input.c_str(),
+        .prompt = input->text.c_str(),
         .context_mode = GetContextMode(*input),
         .max_tokens = input->max_tokens.value_or(0),
         .token_offset = input->token_offset.value_or(0),
@@ -204,14 +237,13 @@ class SessionImpl : public on_device_model::OnDeviceModel::Session {
     if (input.ignore_context) {
       context_mode |= ContextMode::kIgnoreContext;
     }
-    if (first_prompt_) {
-      first_prompt_ = false;
-      return context_mode | ContextMode::kReset;
+    if (clear_context_) {
+      context_mode |= ContextMode::kReset;
     }
     return context_mode;
   }
 
-  bool first_prompt_ = true;
+  bool clear_context_ = true;
   const raw_ref<const ChromeML> chrome_ml_;
   ChromeMLModel model_;
   std::unique_ptr<Responder> responder_;
@@ -330,6 +362,7 @@ LoadModelResult OnDeviceModelExecutor::Init(
       .sentencepiece_model_proto_dispose = &sentencepiece_model_proto_dispose,
       .model_data = &data,
       .max_tokens = params->max_tokens,
+      .temperature = static_cast<float>(kTemperature.Get()),
   };
   if (ts_data_.IsValid()) {
     CHECK(ts_sp_model_.IsValid());

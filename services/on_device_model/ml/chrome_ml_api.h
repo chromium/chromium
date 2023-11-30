@@ -73,6 +73,9 @@ struct ChromeMLModelDescriptor {
   // The maximum input+output tokens the model can handle.
   uint32_t max_tokens;
 
+  // Model temperature for output.
+  float temperature;
+
   // Packed TS data.
   const void* ts_data;
   size_t ts_size;

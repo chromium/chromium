@@ -7061,6 +7061,34 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="OnDeviceModel.TokenCount.{Stage}" units="tokens"
+    expires_after="2024-05-30">
+  <owner>cduvall@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    The number of {Stage} tokens processed by the OnDeviceModel. Logged each
+    time the OnDeviceModel processes {Stage}.
+  </summary>
+  <token key="Stage">
+    <variant name="Context" summary="context"/>
+    <variant name="Output" summary="output"/>
+  </token>
+</histogram>
+
+<histogram name="OnDeviceModel.TokensPerSecond.{Stage}" units="tk/s"
+    expires_after="2024-05-30">
+  <owner>cduvall@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    The tokens per second seen when processing {Stage}. Logged each time the
+    OnDeviceModel processes {Stage}.
+  </summary>
+  <token key="Stage">
+    <variant name="Context" summary="context"/>
+    <variant name="Output" summary="output"/>
+  </token>
+</histogram>
+
 <histogram name="OriginTrials.PersistentOriginTrial.CriticalRestart"
     enum="Boolean" expires_after="2024-04-28">
   <owner>pbirk@chromium.org</owner>
