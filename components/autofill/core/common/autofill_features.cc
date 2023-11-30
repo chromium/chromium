@@ -541,12 +541,6 @@ BASE_FEATURE(kAutofillRemoveInaccessibleProfileValuesOnStartup,
              "AutofillRemoveInaccessibleProfileValuesOnStartup",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Requires a profile to have non-empty full name to import it from a form.
-// TODO(crbug.com/1413205): Cleanup when launched.
-BASE_FEATURE(kAutofillRequireNameForProfileImport,
-             "AutofillRequireNameForProfileImport",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls non-default Autofill API predictions. See crbug.com/1331322.
 BASE_FEATURE(kAutofillServerBehaviors,
              "AutofillServerBehaviors",

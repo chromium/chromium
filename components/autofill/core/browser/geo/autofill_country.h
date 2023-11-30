@@ -80,12 +80,6 @@ class AutofillCountry {
   // the constructor. If no `locale` was provided, an empty string is returned.
   const std::u16string& name() const { return name_; }
 
-  // Full name is expected in a complete address for this country.
-  bool requires_full_name() const {
-    return base::FeatureList::IsEnabled(
-        features::kAutofillRequireNameForProfileImport);
-  }
-
   // City is expected in a complete address for this country.
   bool requires_city() const {
     return (required_fields_for_address_import_ & ADDRESS_REQUIRES_CITY) != 0;

@@ -28,8 +28,7 @@ constexpr AddressImportRequirement kMinimumAddressRequirementViolations[] = {
     AddressImportRequirement::kStateRequirementViolated,
     AddressImportRequirement::kZipRequirementViolated,
     AddressImportRequirement::kZipOrStateRequirementViolated,
-    AddressImportRequirement::kLine1OrHouseNumberRequirementViolated,
-    AddressImportRequirement::kNameRequirementViolated};
+    AddressImportRequirement::kLine1OrHouseNumberRequirementViolated};
 
 }  // anonymous namespace
 
@@ -74,38 +73,28 @@ ValidateProfileImportRequirements(const AutofillProfile& profile,
   // Include the details of the country to the log.
   LOG_AF(import_log_buffer) << country;
 
-  bool is_valid = ValidateAndLog(
-      country.requires_line1(), {ADDRESS_HOME_LINE1, ADDRESS_HOME_STREET_NAME},
-      AddressImportRequirement::kLine1RequirementFulfilled,
-      AddressImportRequirement::kLine1RequirementViolated);
-  is_valid &=
-      ValidateAndLog(country.requires_city(), {ADDRESS_HOME_CITY},
-                     AddressImportRequirement::kCityRequirementFulfilled,
-                     AddressImportRequirement::kCityRequirementViolated);
-  is_valid &=
-      ValidateAndLog(country.requires_state(), {ADDRESS_HOME_STATE},
-                     AddressImportRequirement::kStateRequirementFulfilled,
-                     AddressImportRequirement::kStateRequirementViolated);
-  is_valid &= ValidateAndLog(country.requires_zip(), {ADDRESS_HOME_ZIP},
-                             AddressImportRequirement::kZipRequirementFulfilled,
-                             AddressImportRequirement::kZipRequirementViolated);
-  is_valid &= ValidateAndLog(
-      country.requires_zip_or_state(), {ADDRESS_HOME_ZIP, ADDRESS_HOME_STATE},
-      AddressImportRequirement::kZipOrStateRequirementFulfilled,
-      AddressImportRequirement::kZipOrStateRequirementViolated);
-  is_valid &= ValidateAndLog(
+  ValidateAndLog(country.requires_line1(),
+                 {ADDRESS_HOME_LINE1, ADDRESS_HOME_STREET_NAME},
+                 AddressImportRequirement::kLine1RequirementFulfilled,
+                 AddressImportRequirement::kLine1RequirementViolated);
+  ValidateAndLog(country.requires_city(), {ADDRESS_HOME_CITY},
+                 AddressImportRequirement::kCityRequirementFulfilled,
+                 AddressImportRequirement::kCityRequirementViolated);
+  ValidateAndLog(country.requires_state(), {ADDRESS_HOME_STATE},
+                 AddressImportRequirement::kStateRequirementFulfilled,
+                 AddressImportRequirement::kStateRequirementViolated);
+  ValidateAndLog(country.requires_zip(), {ADDRESS_HOME_ZIP},
+                 AddressImportRequirement::kZipRequirementFulfilled,
+                 AddressImportRequirement::kZipRequirementViolated);
+  ValidateAndLog(country.requires_zip_or_state(),
+                 {ADDRESS_HOME_ZIP, ADDRESS_HOME_STATE},
+                 AddressImportRequirement::kZipOrStateRequirementFulfilled,
+                 AddressImportRequirement::kZipOrStateRequirementViolated);
+  ValidateAndLog(
       country.requires_line1_or_house_number(),
       {ADDRESS_HOME_LINE1, ADDRESS_HOME_HOUSE_NUMBER},
       AddressImportRequirement::kLine1OrHouseNumberRequirementFulfilled,
       AddressImportRequirement::kLine1OrHouseNumberRequirementViolated);
-  // TODO(crbug.com/1413205): Only check for the full name if all other
-  // requirements are fulfilled. This is relevant for feature-enrolement.
-  // Remove `is_valid` and check in every case once the feature is launched.
-  if (is_valid && country.requires_full_name()) {
-    ValidateAndLog(/*required=*/true, {NAME_FULL},
-                   AddressImportRequirement::kNameRequirementFulfilled,
-                   AddressImportRequirement::kNameRequirementViolated);
-  }
 
   return address_import_requirements;
 }

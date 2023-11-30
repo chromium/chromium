@@ -202,9 +202,6 @@ bool AutofillCountry::IsAddressFieldSettingAccessible(
 }
 
 bool AutofillCountry::IsAddressFieldRequired(ServerFieldType field_type) const {
-  if (field_type == ServerFieldType::NAME_FULL && requires_full_name()) {
-    return true;
-  }
   auto* mapping_it = kRequiredFieldMapping.find(field_type);
   return mapping_it != kRequiredFieldMapping.end() &&
          (required_fields_for_address_import_ & mapping_it->second);

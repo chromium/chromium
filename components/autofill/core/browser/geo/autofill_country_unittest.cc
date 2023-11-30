@@ -156,26 +156,6 @@ TEST(AutofillCountryTest, TrAddressRequirements) {
       ServerFieldType::ADDRESS_HOME_STREET_ADDRESS));
 }
 
-// Test the full name requirement depending on the
-// kAutofillRequireNameForProfileImport feature flag.
-TEST(AutofillCountryTest, IsAddressFieldRequired_RequireName) {
-  AutofillCountry country("US", "en_US");
-
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndDisableFeature(
-        features::kAutofillRequireNameForProfileImport);
-    EXPECT_FALSE(country.IsAddressFieldRequired(ServerFieldType::NAME_FULL));
-  }
-
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeature(
-        features::kAutofillRequireNameForProfileImport);
-    EXPECT_TRUE(country.IsAddressFieldRequired(ServerFieldType::NAME_FULL));
-  }
-}
-
 // Test mapping all country codes to country names.
 TEST(AutofillCountryTest, AllCountryCodesHaveCountryName) {
   std::set<std::string> expected_failures;

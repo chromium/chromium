@@ -146,8 +146,6 @@ id<GREYMatcher> MigrateToAccountButton() {
   if ([self isRunningTest:@selector(testMigrateToAccount)] ||
       [self isRunningTest:@selector(testIncompleteProfileMigrateToAccount)]) {
     config.features_enabled.push_back(
-        autofill::features::kAutofillRequireNameForProfileImport);
-    config.features_enabled.push_back(
         syncer::kSyncEnableContactInfoDataTypeInTransportMode);
   }
 

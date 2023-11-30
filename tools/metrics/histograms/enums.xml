@@ -2162,8 +2162,8 @@ Unknown properties are collapsed to zero. -->
   <int value="25" label="ZIP or state requirement: Violated"/>
   <int value="26" label="Line1 or house number requirement: Fulfilled"/>
   <int value="27" label="Line1 or house number requirement: Violated"/>
-  <int value="28" label="Full name requirement: Fulfilled"/>
-  <int value="29" label="Full name requirement: Violated"/>
+  <int value="28" label="Deprecated full name requirement: Fulfilled"/>
+  <int value="29" label="Deprecated full name requirement: Violated"/>
 </enum>
 
 <enum name="AutofillAddressProfileImportStatus">

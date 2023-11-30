@@ -1702,18 +1702,6 @@ TEST_F(FormDataImporterTest, ImportAddressProfiles_InsufficientAddress) {
   ImportAddressProfileAndVerifyImportOfNoProfile(*form_structure);
 }
 
-// Tests that a profile with an empty name is not imported.
-TEST_F(FormDataImporterTest, ImportAddressProfiles_MissingName) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillRequireNameForProfileImport);
-  TypeValuePairs type_value_pairs = GetDefaultProfileTypeValuePairs();
-  SetValueForType(type_value_pairs, NAME_FIRST, "");
-  SetValueForType(type_value_pairs, NAME_LAST, "");
-  ImportAddressProfileAndVerifyImportOfNoProfile(
-      *ConstructFormStructureFromTypeValuePairs(type_value_pairs));
-}
-
 // Tests that a profile is created for countries with composed names.
 TEST_F(FormDataImporterTest,
        ImportAddressProfiles_CompleteComposedCountryName) {

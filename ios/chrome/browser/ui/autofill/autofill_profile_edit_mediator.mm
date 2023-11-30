@@ -243,7 +243,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   autofill::AutofillCountry country(
       base::SysNSStringToUTF8(self.selectedCountryCode),
       GetApplicationContext()->GetApplicationLocale());
-  [self.consumer setNameRequired:country.requires_full_name()];
+  // TODO(crbug.com/1413205): Remove `setNameRequired()`.
+  [self.consumer setNameRequired:NO];
   [self.consumer setLine1Required:country.requires_line1()];
   [self.consumer setCityRequired:country.requires_city()];
   [self.consumer setStateRequired:country.requires_state()];

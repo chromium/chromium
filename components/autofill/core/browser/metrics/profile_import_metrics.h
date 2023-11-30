@@ -59,12 +59,9 @@ enum class AddressProfileImportRequirementMetric {
   // line 1 or a house number.
   kLine1OrHouseNumberRequirementFulfilled = 26,
   kLine1OrHouseNumberRequirementViolated = 27,
-  // If required by `kAutofillRequireNameForProfileImportsFromForms` feature,
-  // the form must contain a non-empty name.
-  kNameRequirementFulfilled = 28,
-  kNameRequirementViolated = 29,
-  // Must be set to the last entry.
-  kMaxValue = kNameRequirementViolated,
+  kDeprecatedNameRequirementFulfilled = 28,
+  kDeprecatedNameRequirementViolated = 29,
+  kMaxValue = kDeprecatedNameRequirementViolated,
 };
 
 // Represents the status of the field type requirements that are specific to
