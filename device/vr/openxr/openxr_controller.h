@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "device/vr/openxr/openxr_hand_tracker.h"
 #include "device/vr/openxr/openxr_interaction_profiles.h"
 #include "device/vr/openxr/openxr_path_helper.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
@@ -156,12 +157,13 @@ class OpenXrController {
   OpenXrHandednessType type_;
   XrInstance instance_;
   XrSession session_;
-  XrHandTrackerEXT hand_tracker_{XR_NULL_HANDLE};
   XrActionSet action_set_;
   XrAction grip_pose_action_;
   XrSpace grip_pose_space_;
   XrAction pointer_pose_action_;
   XrSpace pointer_pose_space_;
+
+  std::unique_ptr<OpenXrHandTracker> hand_tracker_;
 
   OpenXrInteractionProfileType interaction_profile_;
 

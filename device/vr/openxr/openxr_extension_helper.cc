@@ -146,7 +146,14 @@ bool OpenXrExtensionHelper::IsFeatureSupported(
     case device::mojom::XRSessionFeature::ANCHORS:
       return IsExtensionSupported(XR_MSFT_SPATIAL_ANCHOR_EXTENSION_NAME);
     case device::mojom::XRSessionFeature::HAND_INPUT:
-      return IsExtensionSupported(XR_MSFT_HAND_INTERACTION_EXTENSION_NAME);
+      // We need the XR_EXT_HAND_TRACKING extension in order to supply the hand
+      // mesh required by the spec for the hand input feature. However, the hand
+      // mesh must be tied to an XrInputSource. In order to generate an
+      // XrInputSource we need to be able to send up a "primary action" event
+      // (i.e. a click), so we need to also check that we have an extension
+      // enabled that we can use to generate that.
+      return IsExtensionSupported(XR_EXT_HAND_TRACKING_EXTENSION_NAME) &&
+             IsExtensionSupported(XR_MSFT_HAND_INTERACTION_EXTENSION_NAME);
     case device::mojom::XRSessionFeature::HIT_TEST:
       return IsExtensionSupported(XR_MSFT_SCENE_UNDERSTANDING_EXTENSION_NAME);
     case device::mojom::XRSessionFeature::SECONDARY_VIEWS:
@@ -168,6 +175,16 @@ std::unique_ptr<OpenXrAnchorManager> OpenXrExtensionHelper::CreateAnchorManager(
     XrSession session,
     XrSpace base_space) const {
   return std::make_unique<OpenXrAnchorManager>(*this, session, base_space);
+}
+
+std::unique_ptr<OpenXrHandTracker> OpenXrExtensionHelper::CreateHandTracker(
+    XrSession session,
+    OpenXrHandednessType handedness) const {
+  if (IsExtensionSupported(XR_EXT_HAND_TRACKING_EXTENSION_NAME)) {
+    return std::make_unique<OpenXrHandTracker>(*this, session, handedness);
+  }
+
+  return nullptr;
 }
 
 std::unique_ptr<OpenXRSceneUnderstandingManager>

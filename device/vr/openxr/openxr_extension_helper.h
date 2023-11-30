@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "device/vr/openxr/openxr_anchor_manager.h"
+#include "device/vr/openxr/openxr_hand_tracker.h"
 #include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/openxr/openxr_scene_understanding_manager.h"
 #include "device/vr/openxr/openxr_stage_bounds_provider.h"
@@ -94,6 +95,10 @@ class OpenXrExtensionHelper {
   std::unique_ptr<OpenXrAnchorManager> CreateAnchorManager(
       XrSession session,
       XrSpace base_space) const;
+
+  std::unique_ptr<OpenXrHandTracker> CreateHandTracker(
+      XrSession session,
+      OpenXrHandednessType handedness) const;
 
   std::unique_ptr<OpenXRSceneUnderstandingManager>
   CreateSceneUnderstandingManager(XrSession session, XrSpace base_space) const;
