@@ -157,6 +157,18 @@ source_set("unit_tests") {
   ]
 }
 
+static_library("fuzzer_support") {
+  sources = [
+    "form_data_fuzzed_producer.cc",
+    "form_data_fuzzed_producer.h",
+  ]
+
+  deps = [
+    ":common",
+    "//url",
+  ]
+}
+
 fuzzer_test("autofill_autocomplete_parsing_util_fuzzer") {
   sources = [ "autocomplete_parsing_util_fuzzer.cc" ]
   deps = [ ":common" ]

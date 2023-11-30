@@ -11,8 +11,9 @@
 
 #include "base/at_exit.h"
 #include "base/i18n/icu_util.h"
+#include "components/autofill/core/common/form_data_fuzzed_producer.h"
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
-#include "components/password_manager/core/browser/form_parsing/fuzzer/form_data_producer.h"
+#include "components/password_manager/core/browser/form_parsing/fuzzer/form_predictions_producer.h"
 #include "components/password_manager/core/browser/password_form.h"
 
 namespace password_manager {
@@ -32,13 +33,11 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
                                                 : FormDataParser::Mode::kSaving;
 
   const bool use_predictions = data_provider.ConsumeBool();
-  FormPredictions predictions;
-  autofill::FormData form_data =
-      GenerateFormData(data_provider, use_predictions ? &predictions : nullptr);
+  autofill::FormData form_data = autofill::GenerateFormData(data_provider);
 
   FormDataParser parser;
   if (use_predictions)
-    parser.set_predictions(predictions);
+    parser.set_predictions(GenerateFormPredictions(form_data, data_provider));
 
   std::unique_ptr<PasswordForm> result =
       parser.Parse(form_data, mode, /*stored_usernames=*/{});

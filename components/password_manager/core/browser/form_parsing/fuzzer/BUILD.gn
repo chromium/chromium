@@ -11,8 +11,8 @@ group("fuzzer") {
 
 static_library("fuzzer_support") {
   sources = [
-    "form_data_producer.cc",
-    "form_data_producer.h",
+    "form_predictions_producer.cc",
+    "form_predictions_producer.h",
   ]
 
   deps = [
@@ -51,6 +51,7 @@ fuzzer_test("password_manager_form_data_parser_fuzzer") {
     "//base",
     "//base:i18n",
     "//components/autofill/core/common",
+    "//components/autofill/core/common:fuzzer_support",
     "//components/password_manager/core/browser/form_parsing",
   ]
 
