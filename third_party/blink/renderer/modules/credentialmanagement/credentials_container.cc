@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_creation_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_properties_output.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_request_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_digital_credential_provider.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_federated_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_config.h"
@@ -2016,6 +2017,28 @@ ScriptPromise CredentialsContainer::create(
   }
 
   return promise;
+}
+
+ScriptPromise CredentialsContainer::requestIdentity(
+    ScriptState* script_state,
+    const blink::IdentityRequestOptions* options,
+    ExceptionState& exception_state) {
+  auto* request = CredentialRequestOptions::Create();
+  if (options->hasSignal()) {
+    request->setSignal(options->signal());
+  }
+  auto* identity = IdentityCredentialRequestOptions::Create();
+  request->setIdentity(identity);
+  HeapVector<Member<IdentityProviderRequestOptions>> providers;
+
+  for (const auto& provider : options->providers()) {
+    auto* idp = IdentityProviderRequestOptions::Create();
+    idp->setHolder(provider);
+    providers.emplace_back(idp);
+  }
+
+  identity->setProviders(providers);
+  return get(script_state, request, exception_state);
 }
 
 ScriptPromise CredentialsContainer::preventSilentAccess(

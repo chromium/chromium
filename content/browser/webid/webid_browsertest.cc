@@ -855,6 +855,70 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
   EXPECT_EQ("test-mdoc", EvalJs(shell(), script));
 }
 
+// Test that a Verifiable Credential can be requested via the alternative JS
+// API.
+IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest, AlternativeJSAPI) {
+  idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
+  MockDigitalCredentialProvider* digital_credential_provider =
+      static_cast<MockDigitalCredentialProvider*>(
+          test_browser_client_->GetDigitalCredentialProviderForTests());
+
+  const char request[] = R"(
+  {
+   "providers": [ {
+      "params": {
+         "extraParamAsNeededByDigitalCredentials": "true",
+         "nonce": "1234",
+         "readerPublicKey": "test_reader_public_key"
+      },
+      "responseFormat": [ "mdoc" ],
+      "selector": {
+         "fields": [ {
+            "equals": "org.iso.18013.5.1.mDL",
+            "name": "doctype"
+         }, {
+            "name": "org.iso.18013.5.1.family_name"
+         }, {
+            "name": "org.iso.18013.5.1.portrait"
+         } ]
+      }
+   } ]
+  }
+  )";
+
+  EXPECT_CALL(*digital_credential_provider,
+              RequestDigitalCredential(_, _, IsJson(request), _))
+      .WillOnce(WithArg<3>(
+          [](DigitalCredentialProvider::DigitalCredentialCallback callback) {
+            std::move(callback).Run("test-mdoc");
+          }));
+
+  std::string script = R"(
+        (async () => {
+          const {token} = await navigator.credentials.requestIdentity({
+            providers: [{
+              selector: {
+                format: ['mdoc'],
+                doctype: 'org.iso.18013.5.1.mDL',
+                fields: [
+                  'org.iso.18013.5.1.family_name',
+                  'org.iso.18013.5.1.portrait',
+                ]
+              },
+              params: {
+                nonce: '1234',
+                readerPublicKey: 'test_reader_public_key',
+                extraParamAsNeededByDigitalCredentials: true,
+              },
+            }],
+          });
+          return token;
+        }) ()
+    )";
+
+  EXPECT_EQ("test-mdoc", EvalJs(shell(), script));
+}
+
 // Test that when there's a pending mdoc request, a second `get` call should be
 // rejected.
 IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,

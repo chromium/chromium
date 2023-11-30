@@ -1406,6 +1406,7 @@ interface CredentialsContainer
     method create
     method get
     method preventSilentAccess
+    method requestIdentity
     method store
 interface CropTarget
     static method fromElement
