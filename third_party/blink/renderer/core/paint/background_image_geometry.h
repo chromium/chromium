@@ -165,6 +165,12 @@ class BackgroundImageGeometry {
   void CalculateFillTileSize(const FillLayer&,
                              const PhysicalSize&,
                              const PhysicalSize&);
+  void CalculateRepeatAndPosition(
+      const FillLayer&,
+      const PhysicalSize& unsnapped_positioning_area_size,
+      const PhysicalSize& snapped_positioning_area_size,
+      const PhysicalOffset& unsnapped_box_offset,
+      const PhysicalOffset& snapped_box_offset);
 
   PhysicalBoxStrut VisualOverflowOutsets() const;
   PhysicalBoxStrut InnerBorderOutsets(
