@@ -1397,10 +1397,10 @@ See your search engine’s instructions for deleting your search history, if app
         Google Services
       </message>
       <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_AUTO_TRACK_PACKAGES_ALL" desc="Parcel tracking feature option to turn on auto-track for all detected packages. [iOS only]">
-        Auto-track all Detected Packages
+        Auto-Track All Detected Packages
       </message>
       <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_AUTO_TRACK_PACKAGES_NEVER" desc="Parcel tracking feature option to never auto-track for all detected packages. [iOS only]">
-        Never Auto-detect Packages
+        Never Auto-Detect Packages
       </message>
       <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_AUTO_TRACK_PACKAGES_FOOTER" desc="Parcel tracking feature setting page footer detailing how the data is shared. [iOS only]">
         Chrome will detect package tracking numbers on sites you visit and show you package updates on the New Tab page. Your data will be shared with Google to provide this feature and to improve Shopping for everyone.
@@ -2236,7 +2236,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         See all your tracked packages here in this carousel
       </message>
       <message name="IDS_IOS_PARCEL_TRACKING_OPT_IN_ENABLE_TRACKING" desc="Text for the button that allows the user to enable parcel tracking.">
-        Enable Tracking
+        Allow Package Tracking
       </message>
       <message name="IDS_IOS_PARCEL_TRACKING_INFOBAR_ASK_TO_TRACK_TITLE" desc="Text for the title string of the infobar that is displayed to prompt user to track a package.">
         {COUNT, plural,
@@ -2292,7 +2292,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Chrome will detect tracking numbers on sites you visit and show you package updates on the New Tab page. Your data will be shared with Google to provide this feature and to improve Shopping for everyone. You can change this in <ph name="BEGIN_LINK">BEGIN_LINK</ph>Package Tracking Settings<ph name="END_LINK">END_LINK</ph>.
       </message>
       <message name="IDS_IOS_PARCEL_TRACKING_OPT_IN_TERTIARY_ACTION" desc="Text for the tertiary action string of the parcel tracking opt-in half-sheet screen.">
-        Ask me Every Time
+        Ask Me Every Time
       </message>
       <message name="IDS_IOS_PARCEL_TRACKING_REPORT_AN_ISSUE" desc="Title for the option on the parcel tracking infobar to report an issue">
         Report an issue
