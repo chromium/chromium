@@ -1032,9 +1032,11 @@ TEST_F(AutofillTableTest, GetAutofillProfiles) {
 // source.
 TEST_P(AutofillTableProfileTest, RemoveAllAutofillProfiles) {
   ASSERT_TRUE(table_->AddAutofillProfile(
-      AutofillProfile(AutofillProfile::Source::kLocalOrSyncable)));
+      AutofillProfile(AutofillProfile::Source::kLocalOrSyncable,
+                      i18n_model_definition::kLegacyHierarchyCountryCode)));
   ASSERT_TRUE(table_->AddAutofillProfile(
-      AutofillProfile(AutofillProfile::Source::kAccount)));
+      AutofillProfile(AutofillProfile::Source::kAccount,
+                      i18n_model_definition::kLegacyHierarchyCountryCode)));
 
   EXPECT_TRUE(table_->RemoveAllAutofillProfiles(profile_source()));
 

@@ -125,7 +125,7 @@ class AutofillProfileComparatorTest : public testing::Test {
                                         const char* middle,
                                         const char* last,
                                         bool finalize = true) {
-    AutofillProfile profile;
+    AutofillProfile profile(kLegacyHierarchyCountryCode);
     autofill::test::SetProfileInfo(&profile, first, middle, last, "", "", "",
                                    "", "", "", "", "", "");
     if (finalize)
@@ -135,7 +135,7 @@ class AutofillProfileComparatorTest : public testing::Test {
 
   AutofillProfile CreateProfileWithName(const NameInfo& name,
                                         bool finalize = true) {
-    AutofillProfile profile;
+    AutofillProfile profile(kLegacyHierarchyCountryCode);
     profile.SetRawInfoWithVerificationStatus(
         NAME_FULL, name.GetRawInfo(NAME_FULL),
         name.GetVerificationStatus(NAME_FULL));
@@ -155,21 +155,21 @@ class AutofillProfileComparatorTest : public testing::Test {
   }
 
   AutofillProfile CreateProfileWithEmail(const char* email) {
-    AutofillProfile profile;
+    AutofillProfile profile(kLegacyHierarchyCountryCode);
     autofill::test::SetProfileInfo(&profile, "", "", "", email, "", "", "", "",
                                    "", "", "", "");
     return profile;
   }
 
   AutofillProfile CreateProfileWithCompanyName(const char* company_name) {
-    AutofillProfile profile;
+    AutofillProfile profile(kLegacyHierarchyCountryCode);
     autofill::test::SetProfileInfo(&profile, "", "", "", "", company_name, "",
                                    "", "", "", "", "", "");
     return profile;
   }
 
   AutofillProfile CreateProfileWithPhoneNumber(const char* phone_number) {
-    AutofillProfile profile;
+    AutofillProfile profile(kLegacyHierarchyCountryCode);
     autofill::test::SetProfileInfo(&profile, "", "", "", "", "", "", "", "", "",
                                    "", "", phone_number);
     return profile;
@@ -181,7 +181,7 @@ class AutofillProfileComparatorTest : public testing::Test {
                                            const char* state,
                                            const char* zip,
                                            const char* country) {
-    AutofillProfile profile;
+    AutofillProfile profile(kLegacyHierarchyCountryCode);
     autofill::test::SetProfileInfo(&profile, "", "", "", "", "", line1, line2,
                                    city, state, zip, country, "");
     return profile;
@@ -190,7 +190,7 @@ class AutofillProfileComparatorTest : public testing::Test {
   AutofillProfile CreateProfileWithBirthdate(const char* day,
                                              const char* month,
                                              const char* year) {
-    AutofillProfile profile;
+    AutofillProfile profile(kLegacyHierarchyCountryCode);
     profile.SetRawInfo(BIRTHDATE_DAY, base::UTF8ToUTF16(day));
     profile.SetRawInfo(BIRTHDATE_MONTH, base::UTF8ToUTF16(month));
     profile.SetRawInfo(BIRTHDATE_4_DIGIT_YEAR, base::UTF8ToUTF16(year));

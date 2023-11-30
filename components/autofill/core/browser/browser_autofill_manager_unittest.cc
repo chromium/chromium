@@ -463,7 +463,7 @@ class MockFastCheckoutDelegate : public FastCheckoutDelegate {
 };
 
 AutofillProfile FillDataToAutofillProfile(const TestAddressFillData& data) {
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile, data.first, data.middle, data.last, data.email,
                        data.company, data.address1, data.address2, data.city,
                        data.state, data.postal_code, data.country_short,
@@ -1304,14 +1304,16 @@ class BrowserAutofillManagerTest : public testing::Test {
     profile1.set_guid(kElvisProfileGuid);
     personal_data().AddProfile(profile1);
 
-    AutofillProfile profile2;
+    AutofillProfile profile2(
+        i18n_model_definition::kLegacyHierarchyCountryCode);
     test::SetProfileInfo(&profile2, "Charles", "Hardin", "Holley",
                          "buddy@gmail.com", "Decca", "123 Apple St.", "unit 6",
                          "Lubbock", "Texas", "79401", "US", "23456789012");
     profile2.set_guid(MakeGuid(2));
     personal_data().AddProfile(profile2);
 
-    AutofillProfile profile3;
+    AutofillProfile profile3(
+        i18n_model_definition::kLegacyHierarchyCountryCode);
     test::SetProfileInfo(&profile3, "", "", "", "", "", "", "", "", "", "", "",
                          "");
     profile3.set_guid(MakeGuid(3));
@@ -2030,21 +2032,21 @@ TEST_P(SuggestionMatchingTest,
 
   // Two profiles have the same last name, and the third shares the same first
   // letter for last name.
-  AutofillProfile profile1;
+  AutofillProfile profile1(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile1.set_guid(MakeGuid(103));
   profile1.SetInfo(NAME_FIRST, u"Robin", "en-US");
   profile1.SetInfo(NAME_LAST, u"Grimes", "en-US");
   profile1.SetInfo(ADDRESS_HOME_LINE1, u"1234 Smith Blvd.", "en-US");
   personal_data().AddProfile(profile1);
 
-  AutofillProfile profile2;
+  AutofillProfile profile2(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile2.set_guid(MakeGuid(124));
   profile2.SetInfo(NAME_FIRST, u"Carl", "en-US");
   profile2.SetInfo(NAME_LAST, u"Grimes", "en-US");
   profile2.SetInfo(ADDRESS_HOME_LINE1, u"1234 Smith Blvd.", "en-US");
   personal_data().AddProfile(profile2);
 
-  AutofillProfile profile3;
+  AutofillProfile profile3(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile3.set_guid(MakeGuid(126));
   profile3.SetInfo(NAME_FIRST, u"Aaron", "en-US");
   profile3.SetInfo(NAME_LAST, u"Googler", "en-US");
@@ -3353,7 +3355,7 @@ TEST_F(BrowserAutofillManagerTest, DetermineStateFieldTypeForUpload) {
   test::ClearAlternativeStateNameMapForTesting();
   test::PopulateAlternativeStateNameMapForTesting();
 
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile, "", "", "", "", "", "", "", "", "Bavaria", "",
                        "DE", "");
 
@@ -3513,7 +3515,7 @@ TEST_P(SuggestionMatchingTest, GetFieldSuggestionsWithDuplicateValues) {
   FormsSeen({form});
 
   // |profile| will be owned by the mock PersonalDataManager.
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile, "Elvis", "", "", "", "", "", "", "", "", "",
                        "", "");
   profile.set_guid(MakeGuid(101));
@@ -3570,7 +3572,7 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
 
   personal_data().ClearProfiles();
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile.set_guid(MakeGuid(104));
   profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"1800FLOWERS");
   personal_data().AddProfile(profile);
@@ -3600,7 +3602,7 @@ TEST_F(BrowserAutofillManagerTest, GetProfileSuggestions_ForPhoneField) {
   form.fields[9].max_length = 10;
   FormsSeen({form});
 
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile.set_guid(MakeGuid(103));
   profile.SetInfo(NAME_FULL, u"Natty Bumppo", "en-US");
   profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"+886123456789");
@@ -3646,7 +3648,7 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
 
   personal_data().ClearProfiles();
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile.set_guid(MakeGuid(103));
   profile.SetRawInfo(NAME_FULL, u"Natty Bumppo");
   profile.SetRawInfo(EMAIL_ADDRESS, u"test@example.com");
@@ -7211,8 +7213,9 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
   const ServerFieldTypeSet& expected_possible_types = test_case.field_types;
 
   // Set up the test profiles.
-  std::vector<AutofillProfile> profiles;
-  profiles.resize(3);
+  std::vector<AutofillProfile> profiles(
+      3, AutofillProfile(i18n_model_definition::kLegacyHierarchyCountryCode));
+
   TestAddressFillData profile_info_data = GetElvisAddressFillData();
   profile_info_data.phone = "+1 (234) 567-8901";
   profiles[0] = FillDataToAutofillProfile(profile_info_data);

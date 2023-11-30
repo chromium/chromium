@@ -249,7 +249,8 @@ class AutofillSuggestionGeneratorTest : public testing::Test {
 // field input with the available emails to suggest.
 TEST_F(AutofillSuggestionGeneratorTest,
        GetProfilesToSuggest_UseSpecialCharactersInEmail) {
-  AutofillProfile profile_1, profile_2;
+  AutofillProfile profile_1(i18n_model_definition::kLegacyHierarchyCountryCode);
+  AutofillProfile profile_2(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile_1.SetRawInfo(EMAIL_ADDRESS, u"test@email.xyz");
   profile_2.SetRawInfo(EMAIL_ADDRESS, u"test1@email.xyz");
   personal_data()->AddProfile(profile_1);
@@ -265,7 +266,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
 }
 
 TEST_F(AutofillSuggestionGeneratorTest, GetProfilesToSuggest_HideSubsets) {
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox",
                        "123 Zoo St.\nSecond Line\nThird line", "unit 5",
@@ -310,7 +311,7 @@ TEST_F(AutofillSuggestionGeneratorTest, GetProfilesToSuggest_SuggestionsLimit) {
   for (size_t i = 0;
        i < 2 * AutofillSuggestionGenerator::kMaxUniqueSuggestedProfilesCount;
        i++) {
-    AutofillProfile profile;
+    AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
     test::SetProfileInfo(&profile, base::StringPrintf("Marion%zu", i).c_str(),
                          "Mitchell", "Morrison", "johnwayne@me.xyz", "Fox",
                          "123 Zoo St.\nSecond Line\nThird line", "unit 5",
@@ -335,7 +336,7 @@ TEST_F(AutofillSuggestionGeneratorTest, GetProfilesToSuggest_ProfilesLimit) {
   std::vector<AutofillProfile> profiles;
   for (size_t i = 0;
        i < AutofillSuggestionGenerator::kMaxSuggestedProfilesCount; i++) {
-    AutofillProfile profile;
+    AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
 
     test::SetProfileInfo(
         &profile, "Marion", "Mitchell", "Morrison", "johnwayne@me.xyz", "Fox",
@@ -353,7 +354,7 @@ TEST_F(AutofillSuggestionGeneratorTest, GetProfilesToSuggest_ProfilesLimit) {
   }
 
   // Add another profile that matches, but that will get stripped out.
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile, "Marie", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox",
                        "000 Zoo St.\nSecond Line\nThird line", "unit 5",
@@ -378,7 +379,7 @@ TEST_F(AutofillSuggestionGeneratorTest, GetProfilesToSuggest_ProfilesLimit) {
 TEST_F(AutofillSuggestionGeneratorTest, GetProfilesToSuggest_Ranking) {
   // Set up the profiles. They are named with number suffixes X so the X is the
   // order in which they should be ordered by the ranking formula.
-  AutofillProfile profile3;
+  AutofillProfile profile3(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile3, "Marion3", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox",
                        "123 Zoo St.\nSecond Line\nThird line", "unit 5",
@@ -387,7 +388,7 @@ TEST_F(AutofillSuggestionGeneratorTest, GetProfilesToSuggest_Ranking) {
   profile3.set_use_count(5);
   personal_data()->AddProfile(profile3);
 
-  AutofillProfile profile1;
+  AutofillProfile profile1(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile1, "Marion1", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox",
                        "123 Zoo St.\nSecond Line\nThird line", "unit 5",
@@ -396,7 +397,7 @@ TEST_F(AutofillSuggestionGeneratorTest, GetProfilesToSuggest_Ranking) {
   profile1.set_use_count(10);
   personal_data()->AddProfile(profile1);
 
-  AutofillProfile profile2;
+  AutofillProfile profile2(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile2, "Marion2", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox",
                        "123 Zoo St.\nSecond Line\nThird line", "unit 5",
@@ -418,21 +419,21 @@ TEST_F(AutofillSuggestionGeneratorTest, GetProfilesToSuggest_Ranking) {
 TEST_F(AutofillSuggestionGeneratorTest,
        GetProfilesToSuggest_NumberOfSuggestions) {
   // Set up 3 different profiles.
-  AutofillProfile profile1;
+  AutofillProfile profile1(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile1, "Marion1", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox",
                        "123 Zoo St.\nSecond Line\nThird line", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
   personal_data()->AddProfile(profile1);
 
-  AutofillProfile profile2;
+  AutofillProfile profile2(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile2, "Marion2", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox",
                        "123 Zoo St.\nSecond Line\nThird line", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
   personal_data()->AddProfile(profile2);
 
-  AutofillProfile profile3;
+  AutofillProfile profile3(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile3, "Marion3", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox",
                        "123 Zoo St.\nSecond Line\nThird line", "unit 5",
@@ -450,12 +451,12 @@ TEST_F(AutofillSuggestionGeneratorTest,
 TEST_F(AutofillSuggestionGeneratorTest,
        GetProfilesToSuggest_PhoneNumberDeduplication) {
   // Set up 2 different profiles.
-  AutofillProfile profile1;
+  AutofillProfile profile1(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile1.SetRawInfo(NAME_FULL, u"First Middle Last");
   profile1.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"+491601234567");
   personal_data()->AddProfile(profile1);
 
-  AutofillProfile profile2;
+  AutofillProfile profile2(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile2.SetRawInfo(NAME_FULL, u"First Middle Last");
   profile2.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"+491607654321");
   personal_data()->AddProfile(profile2);
@@ -496,7 +497,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
 TEST_F(AutofillSuggestionGeneratorTest,
        GetProfilesToSuggest_SuppressDisusedProfilesOnEmptyField) {
   // Set up 2 different profiles.
-  AutofillProfile profile1;
+  AutofillProfile profile1(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile1, "Marion1", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox",
                        "123 Zoo St.\nSecond Line\nThird line", "unit 5",
@@ -504,7 +505,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
   profile1.set_use_date(AutofillClock::Now() - base::Days(200));
   personal_data()->AddProfile(profile1);
 
-  AutofillProfile profile2;
+  AutofillProfile profile2(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile2, "Marion2", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox",
                        "456 Zoo St.\nSecond Line\nThird line", "unit 5",
@@ -566,7 +567,8 @@ TEST_F(AutofillSuggestionGeneratorTest, GetProfilesToSuggest_SingleDedupe) {
 // Given two suggestions with the same name and one with a different, and also
 // last name field to compare, Expect all profiles listed as unique suggestions.
 TEST_F(AutofillSuggestionGeneratorTest, GetProfilesToSuggest_MultipleDedupe) {
-  std::vector<AutofillProfile> profiles(3);
+  std::vector<AutofillProfile> profiles(
+      3, AutofillProfile(i18n_model_definition::kLegacyHierarchyCountryCode));
   profiles[0].SetRawInfo(NAME_FIRST, u"Bob");
   profiles[0].SetRawInfo(NAME_LAST, u"Morrison");
   profiles[0].set_use_count(10);
@@ -595,7 +597,7 @@ TEST_F(AutofillSuggestionGeneratorTest, GetProfilesToSuggest_DedupeLimit) {
   for (size_t i = 0;
        i < AutofillSuggestionGenerator::kMaxUniqueSuggestedProfilesCount + 1;
        i++) {
-    AutofillProfile profile;
+    AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
     profile.SetRawInfo(NAME_FULL,
                        base::UTF8ToUTF16(base::StringPrintf("Bob %zu Doe", i)));
     profile.set_use_count(
@@ -630,12 +632,12 @@ TEST_F(AutofillSuggestionGeneratorTest,
 TEST_F(AutofillSuggestionGeneratorTest,
        GetProfilesToSuggest_kAccountPrecedence) {
   // Create two profiles that only differ by their source.
-  AutofillProfile profile_1;
+  AutofillProfile profile_1(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile_1.SetRawInfo(NAME_FULL, u"First Last");
   profile_1.set_source_for_testing(AutofillProfile::Source::kAccount);
   personal_data()->AddProfile(profile_1);
 
-  AutofillProfile profile_2;
+  AutofillProfile profile_2(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile_2.SetRawInfo(NAME_FULL, u"First Last");
   profile_2.set_source_for_testing(AutofillProfile::Source::kLocalOrSyncable);
   // Set high use count for profile 2 so that it has greater ranking than
@@ -655,11 +657,13 @@ TEST_F(AutofillSuggestionGeneratorTest,
 
 TEST_F(AutofillSuggestionGeneratorTest,
        GetProfilesToSuggest_GetMatchingProfile) {
-  AutofillProfile marion_profile;
+  AutofillProfile marion_profile(
+      i18n_model_definition::kLegacyHierarchyCountryCode);
   marion_profile.SetRawInfo(NAME_FIRST, u"Marion");
   personal_data()->AddProfile(marion_profile);
 
-  AutofillProfile bob_profile;
+  AutofillProfile bob_profile(
+      i18n_model_definition::kLegacyHierarchyCountryCode);
   bob_profile.SetRawInfo(NAME_FIRST, u"Bob");
   personal_data()->AddProfile(bob_profile);
 
@@ -673,7 +677,8 @@ TEST_F(AutofillSuggestionGeneratorTest,
 
 TEST_F(AutofillSuggestionGeneratorTest,
        GetProfilesToSuggest_NoMatchingProfile) {
-  AutofillProfile bob_profile;
+  AutofillProfile bob_profile(
+      i18n_model_definition::kLegacyHierarchyCountryCode);
   bob_profile.SetRawInfo(NAME_FIRST, u"Bob");
   personal_data()->AddProfile(bob_profile);
 
@@ -706,7 +711,9 @@ TEST_F(AutofillSuggestionGeneratorTest,
 
   // Set up the profile vectors with last use dates ranging from `kCurrentTime`
   // to 270 days ago, in 30 day increments.
-  std::vector<AutofillProfile> profiles(kNumProfiles);
+  std::vector<AutofillProfile> profiles(
+      kNumProfiles,
+      AutofillProfile(i18n_model_definition::kLegacyHierarchyCountryCode));
   for (size_t i = 0; i < kNumProfiles; ++i) {
     profiles[i].SetRawInfo(
         NAME_FULL, base::UTF8ToUTF16(base::StringPrintf("Bob %zu Doe", i)));
@@ -732,7 +739,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
 }
 
 TEST_F(AutofillSuggestionGeneratorTest, CreateSuggestionsFromProfiles) {
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox",
                        "123 Zoo St.\nSecond Line\nThird line", "unit 5",
@@ -754,7 +761,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
   scoped_features.InitAndDisableFeature(
       features::kAutofillUseImprovedLabelDisambiguation);
 
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox",
                        "123 Zoo St.\nSecond Line\nThird line", "unit 5",
@@ -935,12 +942,12 @@ TEST_F(AutofillSuggestionGeneratorTest,
                             features::kAutofillUseImprovedLabelDisambiguation},
       /*disabled_features=*/{});
 
-  AutofillProfile profile1;
+  AutofillProfile profile1(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile1, "Hoa", "", "Pham", "hoa.pham@comcast.net", "",
                        "401 Merrimack St", "", "Lowell", "MA", "01852", "US",
                        "19786744120");
 
-  AutofillProfile profile2;
+  AutofillProfile profile2(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile2, "Hoa", "", "Pham", "hp@aol.com", "",
                        "216 Broadway St", "", "Lowell", "MA", "01854", "US",
                        "19784523366");
@@ -976,11 +983,11 @@ TEST_F(AutofillSuggestionGeneratorTest,
   scoped_features.InitAndEnableFeatureWithParameters(
       features::kAutofillUseMobileLabelDisambiguation, parameters);
 
-  AutofillProfile profile1;
+  AutofillProfile profile1(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile1, "Hoa", "", "Pham", "hoa.pham@comcast.net", "",
                        "401 Merrimack St", "", "Lowell", "MA", "01852", "US",
                        "19786744120");
-  AutofillProfile profile2;
+  AutofillProfile profile2(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile2, "María", "", "Lòpez", "maria@aol.com", "",
                        "11 Elkins St", "", "Boston", "MA", "02127", "US",
                        "6172686862");
@@ -1032,11 +1039,11 @@ TEST_F(AutofillSuggestionGeneratorTest,
   scoped_features.InitAndEnableFeatureWithParameters(
       features::kAutofillUseMobileLabelDisambiguation, parameters);
 
-  AutofillProfile profile1;
+  AutofillProfile profile1(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile1, "Hoa", "", "Pham", "hoa.pham@comcast.net", "",
                        "401 Merrimack St", "", "Lowell", "MA", "01852", "US",
                        "19786744120");
-  AutofillProfile profile2;
+  AutofillProfile profile2(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile2, "María", "", "Lòpez", "maria@aol.com", "",
                        "11 Elkins St", "", "Boston", "MA", "02127", "US",
                        "6172686862");
@@ -1524,7 +1531,7 @@ TEST_F(AutofillChildrenSuggestionsGenenarationTest,
 TEST_F(
     AutofillChildrenSuggestionsGenenarationTest,
     CreateSuggestionsFromProfiles_ChildrenSuggestions_HouseNumberAndStreetNameCanBeNestedUnderDifferentAddressLines) {
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   // Update the profile to have house number and street name information in
   // different address lines.
   profile.SetRawInfo(ADDRESS_HOME_LINE1, u"Amphitheatre Parkway, Brookling");
@@ -1572,7 +1579,8 @@ TEST_F(
 // the test if it is not needed.
 TEST_F(AutofillSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_DiscardDuplicateSuggestions) {
-  std::vector<AutofillProfile> profiles(3);
+  std::vector<AutofillProfile> profiles(
+      3, AutofillProfile(i18n_model_definition::kLegacyHierarchyCountryCode));
   for (AutofillProfile& profile : profiles) {
     profile.SetRawInfo(NAME_FULL, u"Jon Snow");
     profile.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"2 Beyond-the-Wall Rd");
@@ -1608,14 +1616,14 @@ TEST_F(AutofillSuggestionGeneratorTest,
 // the test if it is not needed.
 TEST_F(AutofillSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_KeepNonDuplicateSuggestions) {
-  AutofillProfile profile_1;
+  AutofillProfile profile_1(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile_1.SetRawInfo(NAME_FIRST, u"Sansa");
   profile_1.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 Winterfell Ln");
 
-  AutofillProfile profile_2;
+  AutofillProfile profile_2(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile_2.SetRawInfo(NAME_FIRST, u"Sansa");
 
-  AutofillProfile profile_3;
+  AutofillProfile profile_3(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile_3.SetRawInfo(NAME_FIRST, u"Brienne");
   profile_3.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 Winterfell Ln");
 
@@ -1652,7 +1660,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
 // the test if it is not needed.
 TEST_F(AutofillSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_SameStringInValueAndLabel) {
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"Mañana Road");
   profile.SetRawInfo(ADDRESS_HOME_STREET_NAME, u"manana road");
 

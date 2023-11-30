@@ -84,7 +84,7 @@ class ProfileTokenQualityTest : public testing::Test {
 };
 
 TEST_F(ProfileTokenQualityTest, GetObservationTypesForFieldType) {
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   ProfileTokenQuality quality(&profile);
 
   EXPECT_TRUE(quality.GetObservationTypesForFieldType(NAME_FIRST).empty());

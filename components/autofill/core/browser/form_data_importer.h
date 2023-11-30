@@ -196,7 +196,7 @@ class FormDataImporter : public PersonalDataManagerObserver {
     ~AddressProfileImportCandidate();
 
     // The profile that was extracted from the form.
-    AutofillProfile profile;
+    AutofillProfile profile{i18n_model_definition::kLegacyHierarchyCountryCode};
     // The URL the profile was extracted from.
     GURL url;
     // Indicates if all import requirements have been fulfilled.

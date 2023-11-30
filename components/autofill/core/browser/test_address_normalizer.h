@@ -44,7 +44,7 @@ class TestAddressNormalizer : public AddressNormalizer {
   void CompleteAddressNormalization();
 
  private:
-  AutofillProfile profile_;
+  AutofillProfile profile_{i18n_model_definition::kLegacyHierarchyCountryCode};
   AddressNormalizer::NormalizationCallback callback_;
 
   bool instantaneous_normalization_ = true;

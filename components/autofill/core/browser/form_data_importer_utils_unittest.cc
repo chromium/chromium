@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/form_data_importer_utils.h"
+#include "components/autofill/core/browser/country_type.h"
 
 #include <vector>
 
@@ -82,9 +83,9 @@ TEST(FormDataImporterUtilsTest, TimestampedSameOriginQueue_TTL) {
 }
 
 TEST(FormDataImporterUtilsTest, GetPredictedCountryCode) {
-  AutofillProfile us_profile;
-  us_profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
-  AutofillProfile empty_profile;
+  AutofillProfile us_profile(AddressCountryCode("US"));
+  AutofillProfile empty_profile(
+      i18n_model_definition::kLegacyHierarchyCountryCode);
   // Test prioritization: profile > variation service state > app locale
   EXPECT_EQ(GetPredictedCountryCode(us_profile, GeoIpCountryCode("DE"), "de-AT",
                                     nullptr),

@@ -49,12 +49,10 @@ class AddressRewriterInProfileSubsetMetricsTest
 TEST_P(AddressRewriterInProfileSubsetMetricsTest,
        AddressRewriterInProfileSubsetMetricsTestCase) {
   AddressRewriterInProfileSubsetMetricsTestCase test_case = GetParam();
-  AutofillProfile profile_a;
-  profile_a.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
+  AutofillProfile profile_a(AddressCountryCode("US"));
   profile_a.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, test_case.address_line_a);
 
-  AutofillProfile profile_b;
-  profile_b.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
+  AutofillProfile profile_b(AddressCountryCode("US"));
   profile_b.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, test_case.address_line_b);
 
   base::HistogramTester histogram_tester;
@@ -82,15 +80,13 @@ INSTANTIATE_TEST_SUITE_P(AddressRewriterInProfileSubsetTest,
 
 TEST_F(AddressRewriterInProfileSubsetMetricsTest,
        UserAcceptsPreviouslyHiddenSuggestion) {
-  AutofillProfile profile_a;
-  profile_a.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
+  AutofillProfile profile_a(AddressCountryCode("US"));
   profile_a.SetRawInfo(NAME_FULL, u"first last");
   profile_a.SetRawInfo(ADDRESS_HOME_LINE1, u"123 Main Street");
   profile_a.SetRawInfo(EMAIL_ADDRESS, u"email@foo.com");
   personal_data().AddProfile(profile_a);
 
-  AutofillProfile profile_b;
-  profile_b.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
+  AutofillProfile profile_b(AddressCountryCode("US"));
   profile_b.SetRawInfo(NAME_FULL, u"first last");
   profile_b.SetRawInfo(ADDRESS_HOME_LINE1, u"124 Main Street");
   personal_data().AddProfile(profile_b);

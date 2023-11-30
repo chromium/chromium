@@ -284,7 +284,7 @@ TEST_F(WebDataServiceAutofillTest, FormFillRemoveMany) {
 }
 
 TEST_F(WebDataServiceAutofillTest, ProfileAdd) {
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
 
   // Check that GUID-based notification was sent.
   const AutofillProfileChange expected_change(AutofillProfileChange::ADD,
@@ -306,7 +306,7 @@ TEST_F(WebDataServiceAutofillTest, ProfileAdd) {
 }
 
 TEST_F(WebDataServiceAutofillTest, ProfileRemove) {
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
 
   // Add a profile.
   EXPECT_CALL(observer_, AutofillProfileChanged(_))
@@ -345,11 +345,15 @@ TEST_F(WebDataServiceAutofillTest, ProfileRemove) {
 
 TEST_F(WebDataServiceAutofillTest, ProfileUpdate) {
   // The GUIDs are alphabetical for easier testing.
-  AutofillProfile profile1("6141084B-72D7-4B73-90CF-3D6AC154673B");
+  AutofillProfile profile1("6141084B-72D7-4B73-90CF-3D6AC154673B",
+                           AutofillProfile::Source::kLocalOrSyncable,
+                           i18n_model_definition::kLegacyHierarchyCountryCode);
   profile1.SetRawInfo(NAME_FIRST, u"Abe");
   profile1.FinalizeAfterImport();
 
-  AutofillProfile profile2("087151C8-6AB1-487C-9095-28E80BE5DA15");
+  AutofillProfile profile2("087151C8-6AB1-487C-9095-28E80BE5DA15",
+                           AutofillProfile::Source::kLocalOrSyncable,
+                           i18n_model_definition::kLegacyHierarchyCountryCode);
   profile2.SetRawInfo(NAME_FIRST, u"Alice");
   profile2.FinalizeAfterImport();
 
@@ -471,7 +475,7 @@ TEST_F(WebDataServiceAutofillTest, AutofillRemoveModifiedBetween) {
   // Add a profile.
   EXPECT_CALL(observer_, AutofillProfileChanged(_))
       .WillOnce(SignalEvent(&done_event_));
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   wds_->AddAutofillProfile(profile);
   done_event_.TimedWait(test_timeout_);
 

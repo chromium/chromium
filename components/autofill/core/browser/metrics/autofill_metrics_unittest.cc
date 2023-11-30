@@ -5259,7 +5259,7 @@ TEST_F(AutofillMetricsTest, DaysSinceLastUse_CreditCard) {
 // Test that we log the days since last use of a profile when it is used.
 TEST_F(AutofillMetricsTest, DaysSinceLastUse_Profile) {
   base::HistogramTester histogram_tester;
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile.set_use_date(AutofillClock::Now() - base::Days(13));
   profile.RecordAndLogUse();
   histogram_tester.ExpectBucketCount("Autofill.DaysSinceLastUse.Profile", 13,
@@ -5269,7 +5269,7 @@ TEST_F(AutofillMetricsTest, DaysSinceLastUse_Profile) {
 // Test that we log the verification status of name tokens.
 TEST_F(AutofillMetricsTest, LogVerificationStatusesOfNameTokens) {
   base::HistogramTester histogram_tester;
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile.SetRawInfoWithVerificationStatus(NAME_FULL, u"First Last",
                                            VerificationStatus::kObserved);
   profile.SetRawInfoWithVerificationStatus(NAME_FIRST, u"First",
@@ -5306,7 +5306,7 @@ TEST_F(AutofillMetricsTest, LogVerificationStatusesOfNameTokens) {
 // Test that we log the verification status of address tokens..
 TEST_F(AutofillMetricsTest, LogVerificationStatusesOfAddressTokens) {
   base::HistogramTester histogram_tester;
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STREET_ADDRESS,
                                            u"123 StreetName",
                                            VerificationStatus::kFormatted);

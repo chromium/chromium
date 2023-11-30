@@ -601,7 +601,7 @@ class PaymentsNetworkInterfaceTest : public testing::Test {
                                base::StringPiece state,
                                base::StringPiece zip,
                                base::StringPiece phone_number) {
-    AutofillProfile profile;
+    AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
 
     profile.SetInfo(NAME_FIRST, base::ASCIIToUTF16(first_name), "en-US");
     profile.SetInfo(NAME_LAST, base::ASCIIToUTF16(last_name), "en-US");

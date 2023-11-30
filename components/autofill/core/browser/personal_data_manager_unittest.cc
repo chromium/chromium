@@ -157,7 +157,7 @@ class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
   }
 
   AutofillProfile GetDefaultProfile() {
-    AutofillProfile profile;
+    AutofillProfile profile(AddressCountryCode("US"));
     test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
                          "johnwayne@me.xyz", "Fox", "123 Zoo St", "unit 5",
                          "Hollywood", "CA", "91601", "US", "12345678910",
@@ -632,7 +632,7 @@ TEST_F(PersonalDataManagerTest, AddProfile_BasicInformation) {
 // Test filling profiles with unicode strings and crazy characters.
 TEST_F(PersonalDataManagerTest, AddProfile_CrazyCharacters) {
   std::vector<AutofillProfile> profiles;
-  AutofillProfile profile1;
+  AutofillProfile profile1(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile1.SetRawInfo(NAME_FIRST,
                       u"\u0623\u0648\u0628\u0627\u0645\u0627 "
                       u"\u064a\u0639\u062a\u0630\u0631 "
@@ -661,7 +661,7 @@ TEST_F(PersonalDataManagerTest, AddProfile_CrazyCharacters) {
   profile1.FinalizeAfterImport();
   profiles.push_back(profile1);
 
-  AutofillProfile profile2;
+  AutofillProfile profile2(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile2.SetRawInfo(NAME_FIRST,
                       u"\u4e0a\u6d77\u5e02\u91d1\u5c71\u533a "
                       u"\u677e\u9690\u9547\u4ead\u67ab\u516c"
@@ -671,13 +671,13 @@ TEST_F(PersonalDataManagerTest, AddProfile_CrazyCharacters) {
   profile2.FinalizeAfterImport();
   profiles.push_back(profile2);
 
-  AutofillProfile profile3;
+  AutofillProfile profile3(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile3.SetRawInfo(EMAIL_ADDRESS, u"sue@example.com");
   profile3.SetRawInfo(COMPANY_NAME, u"Company X");
   profile3.FinalizeAfterImport();
   profiles.push_back(profile3);
 
-  AutofillProfile profile4;
+  AutofillProfile profile4(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile4.SetRawInfo(NAME_FIRST, u"Joe 3254");
   profile4.SetRawInfo(NAME_LAST, u"\u8bb0\u8d262\u5e74\u591a");
   profile4.SetRawInfo(ADDRESS_HOME_ZIP,
@@ -692,7 +692,7 @@ TEST_F(PersonalDataManagerTest, AddProfile_CrazyCharacters) {
   profile4.FinalizeAfterImport();
   profiles.push_back(profile4);
 
-  AutofillProfile profile5;
+  AutofillProfile profile5(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile5.SetRawInfo(NAME_FIRST, u"Larry");
   profile5.SetRawInfo(NAME_LAST,
                       u"\u0938\u094d\u091f\u093e\u0902\u092a "
@@ -703,7 +703,7 @@ TEST_F(PersonalDataManagerTest, AddProfile_CrazyCharacters) {
   profile5.FinalizeAfterImport();
   profiles.push_back(profile5);
 
-  AutofillProfile profile6;
+  AutofillProfile profile6(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile6.SetRawInfo(NAME_FIRST,
                       u"\u4e0a\u6d77\u5e02\u91d1\u5c71\u533a "
                       u"\u677e\u9690\u9547\u4ead\u67ab\u516c"
@@ -719,7 +719,7 @@ TEST_F(PersonalDataManagerTest, AddProfile_CrazyCharacters) {
   profile6.FinalizeAfterImport();
   profiles.push_back(profile6);
 
-  AutofillProfile profile7;
+  AutofillProfile profile7(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile7.SetRawInfo(NAME_FIRST, u"&$%$$$ TESTO *&*&^&^& MOKO");
   profile7.SetRawInfo(NAME_MIDDLE, u"WOHOOOO$$$$$$$$****");
   profile7.SetRawInfo(EMAIL_ADDRESS, u"yuvu@example.com");
@@ -747,7 +747,8 @@ TEST_F(PersonalDataManagerTest, AddProfile_CrazyCharacters) {
 // for duplicates.
 TEST_F(PersonalDataManagerTest, AddProfile_Invalid) {
   // First try profiles with invalid ZIP input.
-  AutofillProfile without_invalid;
+  AutofillProfile without_invalid(
+      i18n_model_definition::kLegacyHierarchyCountryCode);
   without_invalid.SetRawInfo(NAME_FIRST, u"Will");
   without_invalid.SetRawInfo(ADDRESS_HOME_CITY, u"Sunnyvale");
   without_invalid.SetRawInfo(ADDRESS_HOME_STATE, u"CA");
@@ -766,17 +767,17 @@ TEST_F(PersonalDataManagerTest, AddProfile_Invalid) {
 }
 
 TEST_F(PersonalDataManagerTest, AddUpdateRemoveProfiles) {
-  AutofillProfile profile0;
+  AutofillProfile profile0(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile0, "Marion", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox", "123 Zoo St.", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
 
-  AutofillProfile profile1;
+  AutofillProfile profile1(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile1, "Josephine", "Alicia", "Saenz",
                        "joewayne@me.xyz", "Fox", "903 Apple Ct.", nullptr,
                        "Orlando", "FL", "32801", "US", "19482937549");
 
-  AutofillProfile profile2;
+  AutofillProfile profile2(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile2, "Josephine", "Alicia", "Saenz",
                        "joewayne@me.xyz", "Fox", "1212 Center.", "Bld. 5",
                        "Orlando", "FL", "32801", "US", "19482937549");

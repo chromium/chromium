@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_test_utils.h"
 #include "components/autofill/core/browser/geo/mock_alternative_state_name_map_updater.h"
@@ -268,9 +269,8 @@ TEST_F(AlternativeStateNameMapUpdaterTest,
   base::WriteFile(GetPath().AppendASCII("DE"),
                   test::CreateStatesProtoAsString());
 
-  AutofillProfile profile;
+  AutofillProfile profile(AddressCountryCode("DE"));
   profile.SetInfo(ADDRESS_HOME_STATE, u"Bavaria", "en-US");
-  profile.SetInfo(ADDRESS_HOME_COUNTRY, u"DE", "en-US");
 
   base::RunLoop run_loop;
   MockAlternativeStateNameMapUpdater mock_alternative_state_name_updater(

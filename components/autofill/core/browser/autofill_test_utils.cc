@@ -655,6 +655,9 @@ void SetProfileInfo(AutofillProfile* profile,
                     const char* phone,
                     bool finalize,
                     VerificationStatus status) {
+  // Set the country first to ensure that the proper address model is used.
+  check_and_set(profile, ADDRESS_HOME_COUNTRY, country, status);
+
   check_and_set(profile, NAME_FIRST, first_name, status);
   check_and_set(profile, NAME_MIDDLE, middle_name, status);
   check_and_set(profile, NAME_LAST, last_name, status);
@@ -665,7 +668,6 @@ void SetProfileInfo(AutofillProfile* profile,
   check_and_set(profile, ADDRESS_HOME_CITY, city, status);
   check_and_set(profile, ADDRESS_HOME_STATE, state, status);
   check_and_set(profile, ADDRESS_HOME_ZIP, zipcode, status);
-  check_and_set(profile, ADDRESS_HOME_COUNTRY, country, status);
   check_and_set(profile, PHONE_HOME_WHOLE_NUMBER, phone, status);
   if (finalize)
     profile->FinalizeAfterImport();

@@ -203,7 +203,7 @@ std::unique_ptr<FormStructure> ConstructFormStructureFromTypeValuePairs(
 // profile is finalizes in the end.
 AutofillProfile ConstructProfileFromTypeValuePairs(
     TypeValuePairs type_value_pairs) {
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   for (const auto& [type, value] : type_value_pairs) {
     profile.SetRawInfoWithVerificationStatus(type, base::UTF8ToUTF16(value),
                                              VerificationStatus::kObserved);
@@ -1738,7 +1738,7 @@ TEST_F(FormDataImporterTest,
                                          nullptr);
   ExtractAddressProfiles(/*extraction_successful=*/true, form_structure);
 
-  AutofillProfile expected;
+  AutofillProfile expected(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&expected, "George", nullptr, "Washington",
                        "theprez@gmail.com", nullptr,
                        "No. 43 Bo Aung Gyaw Street", nullptr, "Yangon", "",
@@ -3592,7 +3592,7 @@ TEST_F(FormDataImporterTest, SilentlyUpdateExistingProfileByIncompleteProfile) {
   scoped_feature_list.InitAndEnableFeature(
       features::kAutofillSilentProfileUpdateForInsufficientImport);
 
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox", "123 Zoo St.", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
@@ -3641,7 +3641,7 @@ TEST_F(
   scoped_feature_list.InitAndEnableFeature(
       features::kAutofillSilentProfileUpdateForInsufficientImport);
 
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox", "123 Zoo St.", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
@@ -3689,7 +3689,7 @@ TEST_F(FormDataImporterTest, UnusableIncompleteProfile) {
   scoped_feature_list.InitAndEnableFeature(
       features::kAutofillSilentProfileUpdateForInsufficientImport);
 
-  AutofillProfile profile;
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox", "123 Zoo St.", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");

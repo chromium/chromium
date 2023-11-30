@@ -1221,7 +1221,9 @@ TEST_F(AutofillProfileSyncBridgeTest,
             VerificationStatus::kParsed);
 
   // Remote data does not have a full name value.
-  AutofillProfile remote_profile(kGuidA);
+  AutofillProfile remote_profile(
+      kGuidA, AutofillProfile::Source::kLocalOrSyncable,
+      i18n_model_definition::kLegacyHierarchyCountryCode);
   remote_profile.SetRawInfoWithVerificationStatus(
       NAME_FIRST, u"John", VerificationStatus::kObserved);
   remote_profile.SetRawInfoWithVerificationStatus(
