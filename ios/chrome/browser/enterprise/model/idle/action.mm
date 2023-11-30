@@ -24,6 +24,12 @@
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_observer.h"
 #import "ios/chrome/browser/discover_feed/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 
 namespace enterprise_idle {
 
@@ -37,7 +43,17 @@ class CloseTabsAction : public Action {
   // Action:
   void Run(ChromeBrowserState* browser_state,
            Continuation continuation) override {
-    // TODO(b/301676922): Implement this action.
+    BrowserList* browser_list =
+        BrowserListFactory::GetForBrowserState(browser_state);
+    for (Browser* browser : browser_list->AllIncognitoBrowsers()) {
+      browser->GetWebStateList()->CloseAllWebStates(
+          WebStateList::CLOSE_NO_FLAGS);
+    }
+    for (Browser* browser : browser_list->AllRegularBrowsers()) {
+      browser->GetWebStateList()->CloseAllWebStates(
+          WebStateList::CLOSE_NO_FLAGS);
+    }
+    std::move(continuation).Run(true);
   }
 };
 
@@ -48,11 +64,19 @@ class SignOutAction : public Action {
   // Action:
   void Run(ChromeBrowserState* browser_state,
            Continuation continuation) override {
-    // TODO(b/301676922): Implement this action.
+    AuthenticationService* authentication_service =
+        AuthenticationServiceFactory::GetForBrowserState(browser_state);
+    if (authentication_service->HasPrimaryIdentity(
+            signin::ConsentLevel::kSignin)) {
+      authentication_service->SignOut(
+          signin_metrics::ProfileSignout::kIdleTimeoutPolicyTriggeredSignOut,
+          /*force_clear_browsing_data=*/false,
+          base::CallbackToBlock(base::BindOnce(std::move(continuation), true)));
+      return;
+    }
+    // Run continuation right away if user is not signed in.
+    std::move(continuation).Run(true);
   }
-
- private:
-  Continuation continuation_;
 };
 
 // Action that clears one or more types of data via BrowsingDataRemover.
