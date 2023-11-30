@@ -14,6 +14,7 @@
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -116,7 +117,8 @@ class GoogleURLLoaderThrottleTest
   }
 
   void UnblockRequestAndVerifyCallbackAction(
-      BoundSessionRequestThrottledHandler::UnblockAction unblock_action) {
+      BoundSessionRequestThrottledHandler::UnblockAction unblock_action,
+      bool is_expected_navigation = false) {
     switch (unblock_action) {
       case BoundSessionRequestThrottledHandler::UnblockAction::kResume:
         EXPECT_CALL(*delegate(), Resume());
@@ -134,6 +136,9 @@ class GoogleURLLoaderThrottleTest
     histogram_tester_->ExpectTotalCount(
         "Signin.BoundSessionCredentials.DeferredRequestDelay",
         /*expected_count=*/1);
+    histogram_tester_->ExpectTotalCount(
+        "Signin.BoundSessionCredentials.DeferredNavigationRequestDelay",
+        /*expected_count=*/is_expected_navigation ? 1 : 0);
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
@@ -315,6 +320,24 @@ TEST_P(GoogleURLLoaderThrottleTest, InterceptBoundSessionCookieExpired) {
       /*expect_defer=*/true, GURL("https://accounts.google.com/test/bar.html"));
   UnblockRequestAndVerifyCallbackAction(
       BoundSessionRequestThrottledHandler::UnblockAction::kResume);
+}
+
+TEST_P(GoogleURLLoaderThrottleTest,
+       InterceptNavigationBoundSessionCookieExpired) {
+  ConfigureBoundSessionThrottlerParams("google.com", "/",
+                                       base::Time::Now() - base::Minutes(10));
+  bool defer = false;
+  network::ResourceRequest request;
+  request.url = GURL("https://accounts.google.com/test/bar.html");
+  // Make `request` look like a main frame navigation request.
+  request.is_outermost_main_frame = true;
+  request.destination = network::mojom::RequestDestination::kDocument;
+  throttle()->WillStartRequest(&request, &defer);
+  EXPECT_TRUE(defer);
+  EXPECT_TRUE(bound_session_listener()->IsRequestBlocked());
+  UnblockRequestAndVerifyCallbackAction(
+      BoundSessionRequestThrottledHandler::UnblockAction::kResume,
+      /*is_expected_navigation=*/true);
 }
 
 TEST_P(GoogleURLLoaderThrottleTest, NoInterceptBoundSessionFeatureOff) {

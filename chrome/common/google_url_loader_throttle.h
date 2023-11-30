@@ -73,6 +73,7 @@ class GoogleURLLoaderThrottle
   std::unique_ptr<BoundSessionRequestThrottledHandler>
       bound_session_request_throttled_handler_;
   absl::optional<base::TimeTicks> bound_session_request_throttled_start_time_;
+  bool is_main_frame_navigation_ = false;
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

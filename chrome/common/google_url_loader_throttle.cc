@@ -16,6 +16,7 @@
 #include "components/safe_search_api/safe_search_util.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/public/mojom/x_frame_options.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -148,6 +149,11 @@ void GoogleURLLoaderThrottle::WillStartRequest(
   }
 #endif
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  // `network::mojom::RequestDestination::kDocument` means that this is a
+  // navigation request.
+  is_main_frame_navigation_ =
+      request->is_outermost_main_frame &&
+      request->destination == network::mojom::RequestDestination::kDocument;
   if (switches::IsBoundSessionCredentialsEnabled() && request->SendsCookies() &&
       ShouldDeferRequestForBoundSession(
           request->url,
@@ -263,6 +269,11 @@ void GoogleURLLoaderThrottle::ResumeOrCancelRequest(
       base::TimeTicks::Now() - *bound_session_request_throttled_start_time_;
   UMA_HISTOGRAM_MEDIUM_TIMES(
       "Signin.BoundSessionCredentials.DeferredRequestDelay", duration);
+  if (is_main_frame_navigation_) {
+    UMA_HISTOGRAM_MEDIUM_TIMES(
+        "Signin.BoundSessionCredentials.DeferredNavigationRequestDelay",
+        duration);
+  }
   bound_session_request_throttled_start_time_ = absl::nullopt;
 
   switch (unblock_action) {
