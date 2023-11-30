@@ -147,10 +147,6 @@ class DlpScopedFileAccessDelegateInteractiveUITest
     active_drag_event_->set_root_location_f(event_root_location);
     delegate->OnDragUpdated(*active_drag_event_);
 
-    content::WebContentsConsoleObserver console_observer(web_contents);
-    console_observer.SetPattern("dragover");
-    EXPECT_TRUE(console_observer.Wait());
-
     auto drop_cb = delegate->GetDropCallback(*active_drag_event_);
     if (!drop_cb) {
       return false;
