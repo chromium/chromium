@@ -17,3 +17,22 @@ source_set("prefs") {
     "//ios/chrome/browser/voice/model:prefs",
   ]
 }
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "sync_preferences_egtest.mm" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/sync/base",
+    "//components/sync/base:features",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/web/public/test/http_server",
+    "//net:test_support",
+  ]
+}
