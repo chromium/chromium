@@ -47,8 +47,13 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionMagnifierAura
   void OnNativeThemeUpdated(NativeTheme* observed_theme) override;
 
   // Returns the bounds of the zoomed contents in coordinates of the magnifier's
-  // parent layer.
+  // parent layer. This is the bounding box of the source pixels that will be
+  // scaled and offset to fill the magnifier layer.
   gfx::Rect GetZoomedContentsBoundsForTesting() const;
+
+  // Returns the bounds of the magnifier (i.e. where the zoomed content is drawn
+  // to), ignoring border and style padding.
+  gfx::Rect GetMagnifierBoundsForTesting() const;
 
   const Layer* GetMagnifierParentForTesting() const;
 

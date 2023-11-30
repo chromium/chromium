@@ -811,8 +811,7 @@ sk_sp<SkShader> SoftwareRenderer::GetBackdropFilterShader(
     return nullptr;
   absl::optional<gfx::RRectF> backdrop_filter_bounds_input =
       BackdropFilterBoundsForPass(quad->render_pass_id);
-  DCHECK(!FiltersForPass(quad->render_pass_id))
-      << "Filters should always be in a separate Effect node";
+
   if (backdrop_filter_bounds_input.has_value()) {
     backdrop_filter_bounds_input->Scale(quad->filters_scale.x(),
                                         quad->filters_scale.y());
@@ -871,6 +870,15 @@ sk_sp<SkShader> SoftwareRenderer::GetBackdropFilterShader(
   if (!paint_filter)
     return nullptr;
   sk_sp<SkImageFilter> filter = paint_filter->cached_sk_filter_;
+
+  // software_renderer doesn't support render passes with combined effects.
+  // While the effect node tree currently doesn't combine them, it may in the
+  // future (crbug.com1495777 and UI layers can combine them. Currently, only
+  // the magnifier widget does so, which mixes a ZOOM backdrop filter with an
+  // OFFSET filter. Due to crbug.com/1451898, that scenario never reaches this
+  // check.
+  DCHECK(!FiltersForPass(quad->render_pass_id))
+      << "Filters should always be in a separate Effect node";
 
   // TODO(989238): Software renderer does not support/implement kClamp_TileMode.
   SkIRect result_rect;

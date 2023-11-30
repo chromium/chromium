@@ -233,17 +233,27 @@ void TouchSelectionMagnifierAura::ShowFocusBound(Layer* parent,
       GetMagnifierLayerBounds(magnifier_parent_size, focus_rect.top_center());
   magnifier_layer_->SetBounds(magnifier_layer_bounds);
 
-  // Set the background offset to center the zoomed contents on the source
+  // Compute the background offset to center the zoomed contents on the source
   // center. Note that the zoom layer center here is not the same as the
   // magnifier layer center, since the magnifier layer includes non-uniform
   // shadows that surround the zoomed contents.
+  gfx::Rect zoom_layer_bounds = GetZoomLayerBounds();
   const gfx::Point magnifier_source_center =
       GetMagnifierSourceCenter(magnifier_parent_size, focus_rect.CenterPoint());
   const gfx::Point zoom_layer_center =
-      zoom_layer_->bounds().CenterPoint() +
+      zoom_layer_bounds.CenterPoint() +
       magnifier_layer_bounds.OffsetFromOrigin();
-  zoom_layer_->SetBackgroundOffset(gfx::PointAtOffsetFromOrigin(
-      zoom_layer_center - magnifier_source_center));
+  const gfx::Point zoom_offset =
+      gfx::PointAtOffsetFromOrigin(zoom_layer_center - magnifier_source_center);
+
+  // The zoom_layer_ is relative to the magnifier_layer_ widget, which has been
+  // shifted to avoid overlapping the content of the zoom. Un-shift the zoom
+  // bounds so that its layer corresponds directly with what will be magnified
+  // (backdrop filters can only access pixels under their own layer). Then use
+  // a regular filter to offset the zoom's output to align with the magnifier.
+  zoom_layer_bounds.Offset(-zoom_offset.x(), -zoom_offset.y());
+  zoom_layer_->SetBounds(zoom_layer_bounds);
+  zoom_layer_->SetLayerOffset(zoom_offset);
 
   if (!magnifier_layer_->IsVisible()) {
     magnifier_layer_->SetVisible(true);
@@ -258,9 +268,24 @@ void TouchSelectionMagnifierAura::OnNativeThemeUpdated(
 
 gfx::Rect TouchSelectionMagnifierAura::GetZoomedContentsBoundsForTesting()
     const {
+  // The zoom_layer_ bounds are the upscaled source bounds, so we have to undo
+  // that scaling to get the true contents bounds (undoes the logic inside
+  // GetMagnifierSourceCenter()).
+  const gfx::RectF bounds{zoom_layer_->bounds()};
+  const gfx::PointF center = bounds.CenterPoint();
+  const gfx::SizeF contents_size(bounds.width() / kMagnifierScale,
+                                 bounds.height() / kMagnifierScale);
+  const gfx::PointF contents_origin(center.x() - contents_size.width() / 2,
+                                    center.y() - contents_size.height() / 2);
+  gfx::Rect contents_bounds =
+      gfx::ToEnclosingRect(gfx::RectF(contents_origin, contents_size));
   // The zoomed contents is drawn by the zoom layer. We just need to convert its
   // bounds to coordinates of the magnifier layer's parent layer.
-  return zoom_layer_->bounds() + magnifier_layer_->bounds().OffsetFromOrigin();
+  return contents_bounds + magnifier_layer_->bounds().OffsetFromOrigin();
+}
+
+gfx::Rect TouchSelectionMagnifierAura::GetMagnifierBoundsForTesting() const {
+  return magnifier_layer_->bounds();
 }
 
 const Layer* TouchSelectionMagnifierAura::GetMagnifierParentForTesting() const {
@@ -275,10 +300,15 @@ void TouchSelectionMagnifierAura::CreateMagnifierLayer() {
 
   // Create the zoom layer, which will show the zoomed contents.
   zoom_layer_ = std::make_unique<Layer>(LAYER_SOLID_COLOR);
-  zoom_layer_->SetBounds(GetZoomLayerBounds());
   zoom_layer_->SetBackgroundZoom(kMagnifierScale, 0);
   zoom_layer_->SetFillsBoundsOpaquely(false);
-  zoom_layer_->SetRoundedCornerRadius(gfx::RoundedCornersF{kMagnifierRadius});
+  // BackdropFilterBounds applies after the backdrop filter (the zoom effect)
+  // but before anything else, meaning its clipping effect is transformed by
+  // the layer_offset() filter operation. SetRoundedCornerRadius() applies too
+  // late and is affected by the layer offset, so would incorrectly clip the
+  // zoomed contents.
+  zoom_layer_->SetBackdropFilterBounds(
+      gfx::RRectF{gfx::RectF(kMagnifierSize), kMagnifierRadius});
   magnifier_layer_->Add(zoom_layer_.get());
 
   // Create the border layer. This is stacked above the zoom layer so that the

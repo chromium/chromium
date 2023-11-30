@@ -260,7 +260,11 @@ std::unique_ptr<Layer> Layer::Clone() const {
   // Background filters.
   clone->SetBackgroundBlur(background_blur_sigma_);
   clone->SetBackgroundZoom(zoom_, zoom_inset_);
-  clone->SetBackgroundOffset(background_offset_);
+  clone->SetBackdropFilterQuality(backdrop_filter_quality_);
+  auto backdrop_filter_bounds = cc_layer_->backdrop_filter_bounds();
+  if (backdrop_filter_bounds) {
+    clone->SetBackdropFilterBounds(*backdrop_filter_bounds);
+  }
 
   // Filters.
   clone->SetLayerSaturation(layer_saturation_);
@@ -275,6 +279,7 @@ std::unique_ptr<Layer> Layer::Clone() const {
   clone->SetLayerBlur(layer_blur_sigma_);
   if (alpha_shape_)
     clone->SetAlphaShape(std::make_unique<ShapeRects>(*alpha_shape_));
+  clone->SetLayerOffset(layer_offset_);
 
   // cc::Layer state.
   // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
@@ -569,8 +574,23 @@ float Layer::GetCombinedOpacity() const {
   return opacity;
 }
 
+void Layer::SetBackdropFilterBounds(const gfx::RRectF& bounds) {
+  cc_layer_->SetBackdropFilterBounds(bounds);
+}
+
+void Layer::ClearBackdropFilterBounds() {
+  cc_layer_->ClearBackdropFilterBounds();
+}
+
 void Layer::SetBackgroundBlur(float blur_sigma) {
   background_blur_sigma_ = blur_sigma;
+
+  SetLayerBackgroundFilters();
+}
+
+void Layer::SetBackgroundZoom(float zoom, int inset) {
+  zoom_ = zoom;
+  zoom_inset_ = inset;
 
   SetLayerBackgroundFilters();
 }
@@ -640,6 +660,11 @@ void Layer::ClearLayerCustomColorMatrix() {
   SetLayerFilters();
 }
 
+void Layer::SetLayerOffset(const gfx::Point& offset) {
+  layer_offset_ = offset;
+  SetLayerFilters();
+}
+
 void Layer::SetLayerInverted(bool inverted) {
   layer_inverted_ = inverted;
   SetLayerFilters();
@@ -682,18 +707,6 @@ void Layer::SetMaskLayer(Layer* layer_mask) {
     layer_mask->layer_mask_back_link_ = this;
     layer_mask->OnDeviceScaleFactorChanged(device_scale_factor_);
   }
-}
-
-void Layer::SetBackgroundZoom(float zoom, int inset) {
-  zoom_ = zoom;
-  zoom_inset_ = inset;
-
-  SetLayerBackgroundFilters();
-}
-
-void Layer::SetBackgroundOffset(const gfx::Point& background_offset) {
-  background_offset_ = background_offset;
-  SetLayerBackgroundFilters();
 }
 
 void Layer::SetAlphaShape(std::unique_ptr<ShapeRects> shape) {
@@ -757,6 +770,11 @@ void Layer::SetLayerFilters() {
     filters.Append(
         cc::FilterOperation::CreateAlphaThresholdFilter(*alpha_shape_));
   }
+  // An Offset as the last filter operation can almost always be converted to
+  // a translation transform for free within Skia.
+  if (!layer_offset_.IsOrigin()) {
+    filters.Append(cc::FilterOperation::CreateOffsetFilter(layer_offset_));
+  }
 
   cc_layer_->SetFilters(filters);
 }
@@ -767,10 +785,6 @@ void Layer::SetLayerBackgroundFilters() {
   if (background_blur_sigma_) {
     filters.Append(cc::FilterOperation::CreateBlurFilter(background_blur_sigma_,
                                                          SkTileMode::kClamp));
-  }
-
-  if (!background_offset_.IsOrigin()) {
-    filters.Append(cc::FilterOperation::CreateOffsetFilter(background_offset_));
   }
 
   // The background zoom is applied after the background offset to support

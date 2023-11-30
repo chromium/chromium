@@ -224,10 +224,15 @@ sk_sp<PaintFilter> RenderSurfaceFilters::BuildImageFilter(
         break;
       case FilterOperation::ZOOM: {
         DCHECK_GE(op.amount(), 1.0);
-
-        image_filter = sk_make_sp<MagnifierPaintFilter>(
-            gfx::RectToSkRect(layer_bounds), op.amount(), op.zoom_inset(),
-            std::move(image_filter));
+        // ZOOM limits its output to the layer bounds automatically, so if it's
+        // empty, then it produces nothing (regardless of prior filter ops).
+        if (layer_bounds.IsEmpty()) {
+          image_filter = nullptr;
+        } else {
+          image_filter = sk_make_sp<MagnifierPaintFilter>(
+              gfx::RectToSkRect(layer_bounds), op.amount(), op.zoom_inset(),
+              std::move(image_filter));
+        }
         break;
       }
       case FilterOperation::SATURATING_BRIGHTNESS:

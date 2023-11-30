@@ -308,6 +308,11 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // If a custom layer color matrix was set, this clears it.
   void ClearLayerCustomColorMatrix();
 
+  // Applies an offset to the Layer, after all other backdrop and filter effects
+  // other than clipping. This offset is not reflected in the layer bounds.
+  void SetLayerOffset(const gfx::Point& offset);
+  const gfx::Point& layer_offset() const { return layer_offset_; }
+
   // Zoom the background by a factor of |zoom|. The effect is blended along the
   // edge across |inset| pixels.
   // NOTE: Background zoom does not currently work with software compositing,
@@ -317,8 +322,12 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // (e.g. as a fallback when the GPU process has crashed too many times).
   void SetBackgroundZoom(float zoom, int inset);
 
-  // Applies an offset when drawing pixels for the layer background filter.
-  void SetBackgroundOffset(const gfx::Point& background_offset);
+  // Set the rounded clip bounds of the backdrop filter effect, relative to
+  // this Layer's coordinate space. Backdrop effects are only visible and can
+  // only sample from the intersection of the Layer's bounds and any set
+  // backdrop filter bounds.
+  void SetBackdropFilterBounds(const gfx::RRectF& backdrop_filter_bounds);
+  void ClearBackdropFilterBounds();
 
   // Set the shape of this layer.
   const ShapeRects* alpha_shape() const { return alpha_shape_.get(); }
@@ -782,6 +791,8 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   float layer_sepia_;
   float layer_hue_rotation_;
   std::unique_ptr<cc::FilterOperation::Matrix> layer_custom_color_matrix_;
+  // Offset to apply when drawing pixels for the layer.
+  gfx::Point layer_offset_;
 
   // The associated mask layer with this layer.
   raw_ptr<Layer> layer_mask_;
@@ -796,9 +807,6 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
 
   // Width of the border in pixels, where the scaling is blended.
   int zoom_inset_;
-
-  // Offset to apply when drawing pixels for the layer background filter.
-  gfx::Point background_offset_;
 
   // Shape of the window.
   std::unique_ptr<ShapeRects> alpha_shape_;
