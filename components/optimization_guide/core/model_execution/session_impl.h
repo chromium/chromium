@@ -67,7 +67,9 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
     // Response was cancelled because ExecuteModel() was called while waiting
     // for response.
     kCancelled = 7,
-    kMaxValue = kCancelled,
+    // SessionImpl was destroyed while waiting for a response.
+    kDestroyedWhileWaitingForResponse = 8,
+    kMaxValue = kDestroyedWhileWaitingForResponse,
   };
 
   SessionImpl(StartSessionFn start_session_fn,

@@ -858,4 +858,23 @@ TEST_F(OnDeviceModelServiceControllerTest,
   EXPECT_TRUE(remote_execute_called_);
 }
 
+TEST_F(OnDeviceModelServiceControllerTest,
+       DestroySessionWhileWaitingForResponse) {
+  auto session =
+      test_controller_->CreateSession(kFeature, base::DoNothing(), &logger_);
+  ASSERT_TRUE(session);
+  ExecuteModel(*session, "foo");
+  base::HistogramTester histogram_tester;
+  const auto total_time = base::Seconds(11);
+  task_environment_.AdvanceClock(total_time);
+  session.reset();
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
+      ExecuteModelResult::kDestroyedWhileWaitingForResponse, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "OptimizationGuide.ModelExecution."
+      "OnDeviceDestroyedWhileWaitingForResponseTime.Compose",
+      total_time, 1);
+}
+
 }  // namespace optimization_guide

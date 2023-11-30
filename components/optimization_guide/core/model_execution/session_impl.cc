@@ -109,7 +109,20 @@ SessionImpl::SessionImpl(
       << std::string(GetStringNameForModelExecutionFeature(feature_));
 }
 
-SessionImpl::~SessionImpl() = default;
+SessionImpl::~SessionImpl() {
+  if (on_device_state_ &&
+      on_device_state_->did_execute_and_waiting_for_on_complete()) {
+    if (on_device_state_->histogram_logger) {
+      on_device_state_->histogram_logger->set_result(
+          ExecuteModelResult::kDestroyedWhileWaitingForResponse);
+    }
+    base::UmaHistogramMediumTimes(
+        base::StrCat({"OptimizationGuide.ModelExecution."
+                      "OnDeviceDestroyedWhileWaitingForResponseTime.",
+                      GetStringNameForModelExecutionFeature(feature_)}),
+        base::TimeTicks::Now() - on_device_state_->start);
+  }
+}
 
 void SessionImpl::AddContext(
     const google::protobuf::MessageLite& request_metadata) {

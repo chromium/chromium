@@ -248,6 +248,10 @@ chromium-metrics-reviews@google.com.
     Execution was cancelled because either AddContext or ExecuteModel was called
     again.
   </int>
+  <int value="8" label="Destroyed while waiting">
+    The Session was destroyed while waiting for a response. This likely means
+    the user closed the bubble before the response completed.
+  </int>
 </enum>
 
 <enum name="OptimizationGuideOnDeviceModelEligibilityReason">
