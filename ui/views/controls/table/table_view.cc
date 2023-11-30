@@ -1389,7 +1389,7 @@ void TableView::SetSelectionModel(ui::ListSelectionModel new_selection) {
 
   // Scroll the group for the active item to visible.
   if (selection_model_.active().has_value()) {
-    gfx::Rect vis_rect(GetVisibleBounds());
+    gfx::Rect vis_rect(GetMirroredRect(GetVisibleBounds()));
     const GroupRange range(GetGroupRange(selection_model_.active().value()));
     const int start_y = GetRowBounds(ModelToView(range.start)).y();
     const int end_y =

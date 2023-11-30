@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <string>
+#include <tuple>
 #include <utility>
 
 #include "base/i18n/rtl.h"
@@ -440,7 +441,9 @@ bool DragLeftMouseTo(views::View* target, const gfx::Point& point) {
 // The test parameter is used to control whether or not to test the TableView
 // using the default construction path.
 class TableViewTest : public ViewsTestBase,
-                      public ::testing::WithParamInterface<bool> {
+                      public ::testing::WithParamInterface<
+                          std::tuple</*use_default_construction=*/bool,
+                                     /*use_rtl=*/bool>> {
  public:
   TableViewTest() = default;
 
@@ -461,7 +464,7 @@ class TableViewTest : public ViewsTestBase,
     std::unique_ptr<TableView> table;
 
     // Run the tests using both default and non-default TableView construction.
-    if (GetParam()) {
+    if (use_default_construction()) {
       table = std::make_unique<TableView>();
       table->Init(model_.get(), columns, TEXT_ONLY, false);
     } else {
@@ -605,6 +608,27 @@ class TableViewTest : public ViewsTestBase,
     }
   }
 
+  void SetColumnWidthForHorizontalScrollBarVisibility() {
+    EXPECT_EQ(2u, helper_->visible_col_count());
+    EXPECT_EQ(4u, table_->GetRowCount());
+    // Initially no active visible column.
+    EXPECT_FALSE(helper_->GetActiveVisibleColumnIndex().has_value());
+    EXPECT_FALSE(scroll_view_->horizontal_scroll_bar()->GetVisible());
+    scroll_view_->SetBounds(0, 0, 800, 800);
+    // Set the column width to make the horizontal scroll bar visible.
+    constexpr int kColumn0Width = 500;
+    constexpr int kColumn1Width = 1000;
+    table_->SetVisibleColumnWidth(0, kColumn0Width);
+    table_->SetVisibleColumnWidth(1, kColumn1Width);
+    test::RunScheduledLayout(scroll_view_);
+    EXPECT_EQ(table_->GetVisibleColumn(0).width, kColumn0Width);
+    EXPECT_EQ(table_->GetVisibleColumn(1).width, kColumn1Width);
+    EXPECT_TRUE(scroll_view_->horizontal_scroll_bar()->GetVisible());
+  }
+
+  bool use_default_construction() const { return std::get<0>(GetParam()); }
+  bool use_rtl() const { return std::get<1>(GetParam()); }
+
  protected:
   virtual WidgetDelegate* GetWidgetDelegate(Widget* widget) { return nullptr; }
 
@@ -625,7 +649,11 @@ class TableViewTest : public ViewsTestBase,
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(All, TableViewTest, testing::Values(false, true));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    TableViewTest,
+    testing::Combine(/*use_default_construction=*/testing::Bool(),
+                     /*use_rtl=*/testing::Bool()));
 
 // Verifies GetPaintRegion.
 TEST_P(TableViewTest, GetPaintRegion) {
@@ -1787,20 +1815,7 @@ TEST_P(TableViewTest, KeyLeftRightScrollRectToVisibleInTableHeader) {
   }
 
   table_->RequestFocus();
-  EXPECT_EQ(2u, helper_->visible_col_count());
-  // Initially no active visible column.
-  EXPECT_FALSE(helper_->GetActiveVisibleColumnIndex().has_value());
-  EXPECT_FALSE(scroll_view_->horizontal_scroll_bar()->GetVisible());
-  scroll_view_->SetBounds(0, 0, 800, 800);
-  // Set the column width to make the horizontal scroll bar visible.
-  constexpr int kColumn0Width = 500;
-  constexpr int kColumn1Width = 1000;
-  table_->SetVisibleColumnWidth(0, kColumn0Width);
-  table_->SetVisibleColumnWidth(1, kColumn1Width);
-  test::RunScheduledLayout(scroll_view_);
-  EXPECT_EQ(table_->GetVisibleColumn(0).width, kColumn0Width);
-  EXPECT_EQ(table_->GetVisibleColumn(1).width, kColumn1Width);
-  EXPECT_TRUE(scroll_view_->horizontal_scroll_bar()->GetVisible());
+  SetColumnWidthForHorizontalScrollBarVisibility();
   gfx::Rect visible_bounds = table_->GetVisibleBounds();
 
   // Navigate to the table header
@@ -1817,13 +1832,74 @@ TEST_P(TableViewTest, KeyLeftRightScrollRectToVisibleInTableHeader) {
   test::RunScheduledLayout(scroll_view_);
   EXPECT_EQ(1u, helper_->GetActiveVisibleColumnIndex());
   EXPECT_EQ(table_->GetVisibleBounds(),
-            gfx::Rect(kColumn0Width, visible_bounds.y(), visible_bounds.width(),
-                      visible_bounds.height()));
+            gfx::Rect(table_->GetVisibleColumn(0).width, visible_bounds.y(),
+                      visible_bounds.width(), visible_bounds.height()));
 
   PressKey(ui::VKEY_LEFT);
   test::RunScheduledLayout(scroll_view_);
   EXPECT_EQ(0u, helper_->GetActiveVisibleColumnIndex());
   EXPECT_EQ(visible_bounds, table_->GetVisibleBounds());
+}
+
+// Verify that the table view visible bounds remains stable when up/down
+// switching between different rows when the layout is RTL or LTR. use_rtl()
+// returns true for testing the RTL layout and false for testing the LTR layout
+TEST_P(TableViewTest, KeyUpDownHorizontalScrollbarStability) {
+  if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
+    GTEST_SKIP() << "platform doesn't support table keyboard navigation";
+  }
+  EXPECT_FALSE(base::i18n::IsRTL());
+  if (use_rtl()) {
+    base::i18n::SetRTLForTesting(true);
+    EXPECT_TRUE(base::i18n::IsRTL());
+  }
+  table_->RequestFocus();
+  SetColumnWidthForHorizontalScrollBarVisibility();
+  gfx::Rect visible_bounds = table_->GetVisibleBounds();
+  PressKey(ui::VKEY_DOWN);
+  EXPECT_EQ(1u, table_->ViewToModel(1));
+  EXPECT_EQ(visible_bounds, table_->GetVisibleBounds());
+
+  PressKey(ui::VKEY_DOWN);
+  EXPECT_EQ(2u, table_->ViewToModel(2));
+  EXPECT_EQ(visible_bounds, table_->GetVisibleBounds());
+
+  PressKey(ui::VKEY_UP);
+  EXPECT_EQ(1u, table_->ViewToModel(1));
+  EXPECT_EQ(visible_bounds, table_->GetVisibleBounds());
+  if (use_rtl()) {
+    base::i18n::SetRTLForTesting(false);
+  }
+  EXPECT_FALSE(base::i18n::IsRTL());
+}
+
+// Verify that the table view visible boundsr remains stable when clicking on
+// different rows when the layout is RTL or LTR. use_rtl() returns true for
+// testing the RTL layout and false for testing the LTR layout
+TEST_P(TableViewTest, ClickRowHorizontalScrollbarStability) {
+  EXPECT_FALSE(base::i18n::IsRTL());
+  if (use_rtl()) {
+    base::i18n::SetRTLForTesting(true);
+    EXPECT_TRUE(base::i18n::IsRTL());
+  }
+  table_->RequestFocus();
+  SetColumnWidthForHorizontalScrollBarVisibility();
+  gfx::Rect visible_bounds = table_->GetVisibleBounds();
+  ClickOnRow(1, 0);
+  EXPECT_EQ(1u, table_->ViewToModel(1));
+  EXPECT_EQ(visible_bounds, table_->GetVisibleBounds());
+
+  ClickOnRow(2, 0);
+  EXPECT_EQ(2u, table_->ViewToModel(2));
+  EXPECT_EQ(visible_bounds, table_->GetVisibleBounds());
+
+  ClickOnRow(3, 0);
+  EXPECT_EQ(3u, table_->ViewToModel(3));
+  EXPECT_EQ(visible_bounds, table_->GetVisibleBounds());
+  if (use_rtl()) {
+    base::i18n::SetRTLForTesting(false);
+  }
+  EXPECT_FALSE(base::i18n::IsRTL());
 }
 
 // Verifies home/end do the right thing.
@@ -2238,7 +2314,11 @@ WidgetDelegate* TableViewFocusTest::GetWidgetDelegate(Widget* widget) {
   return delegate_.get();
 }
 
-INSTANTIATE_TEST_SUITE_P(All, TableViewFocusTest, testing::Values(false, true));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    TableViewFocusTest,
+    testing::Combine(/*use_default_construction=*/testing::Bool(),
+                     /*use_rtl=*/testing::Bool()));
 
 // Verifies that the active focus is cleared when the widget is destroyed.
 // In MD mode, if that doesn't happen a DCHECK in View::DoRemoveChildView(...)
