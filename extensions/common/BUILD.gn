@@ -718,4 +718,7 @@ fuzzer_test("extension_csp_validator_fuzzer") {
     "//base",
     "//third_party/icu/fuzzers:fuzzer_support",
   ]
+
+  # The fuzzed code needs more RAM that the default limit.
+  libfuzzer_options = [ "rss_limit_mb=4096" ]
 }
