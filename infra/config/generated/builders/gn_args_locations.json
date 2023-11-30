@@ -301,6 +301,16 @@
     "mac-arm64-rel reclient test": "reclient/mac-arm64-rel reclient test/gn-args.json",
     "mac-arm64-rel reclient test untrusted": "reclient/mac-arm64-rel reclient test untrusted/gn-args.json"
   },
+  "chromium.rust": {
+    "android-rust-arm32-rel": "ci/android-rust-arm32-rel/gn-args.json",
+    "android-rust-arm64-dbg": "ci/android-rust-arm64-dbg/gn-args.json",
+    "android-rust-arm64-rel": "ci/android-rust-arm64-rel/gn-args.json",
+    "linux-rust-x64-dbg": "ci/linux-rust-x64-dbg/gn-args.json",
+    "linux-rust-x64-rel": "ci/linux-rust-x64-rel/gn-args.json",
+    "mac-rust-x64-dbg": "ci/mac-rust-x64-dbg/gn-args.json",
+    "win-rust-x64-dbg": "ci/win-rust-x64-dbg/gn-args.json",
+    "win-rust-x64-rel": "ci/win-rust-x64-rel/gn-args.json"
+  },
   "chromium.swangle": {
     "linux-swangle-chromium-x64": "ci/linux-swangle-chromium-x64/gn-args.json",
     "linux-swangle-chromium-x64-exp": "ci/linux-swangle-chromium-x64-exp/gn-args.json",
@@ -547,6 +557,16 @@
     "mac_chromium_compile_dbg_ng": "try/mac_chromium_compile_dbg_ng/gn-args.json",
     "mac_chromium_compile_rel_ng": "try/mac_chromium_compile_rel_ng/gn-args.json",
     "mac_chromium_dbg_ng": "try/mac_chromium_dbg_ng/gn-args.json"
+  },
+  "tryserver.chromium.rust": {
+    "android-rust-arm32-rel": "try/android-rust-arm32-rel/gn-args.json",
+    "android-rust-arm64-dbg": "try/android-rust-arm64-dbg/gn-args.json",
+    "android-rust-arm64-rel": "try/android-rust-arm64-rel/gn-args.json",
+    "linux-rust-x64-dbg": "try/linux-rust-x64-dbg/gn-args.json",
+    "linux-rust-x64-rel": "try/linux-rust-x64-rel/gn-args.json",
+    "mac-rust-x64-dbg": "try/mac-rust-x64-dbg/gn-args.json",
+    "win-rust-x64-dbg": "try/win-rust-x64-dbg/gn-args.json",
+    "win-rust-x64-rel": "try/win-rust-x64-rel/gn-args.json"
   },
   "tryserver.chromium.swangle": {
     "linux-swangle-chromium-try-x64": "try/linux-swangle-chromium-try-x64/gn-args.json",

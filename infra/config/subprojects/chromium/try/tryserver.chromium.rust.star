@@ -27,38 +27,45 @@ consoles.list_view(
 try_.builder(
     name = "android-rust-arm32-rel",
     mirrors = ["ci/android-rust-arm32-rel"],
+    gn_args = "ci/android-rust-arm32-rel",
 )
 
 try_.builder(
     name = "android-rust-arm64-dbg",
     mirrors = ["ci/android-rust-arm64-dbg"],
+    gn_args = "ci/android-rust-arm64-dbg",
 )
 
 try_.builder(
     name = "android-rust-arm64-rel",
     mirrors = ["ci/android-rust-arm64-rel"],
+    gn_args = "ci/android-rust-arm64-rel",
 )
 
 try_.builder(
     name = "linux-rust-x64-rel",
     mirrors = ["ci/linux-rust-x64-rel"],
+    gn_args = "ci/linux-rust-x64-rel",
 )
 
 try_.builder(
     name = "linux-rust-x64-dbg",
     mirrors = ["ci/linux-rust-x64-dbg"],
+    gn_args = "ci/linux-rust-x64-dbg",
 )
 
 try_.builder(
     name = "win-rust-x64-rel",
     mirrors = ["ci/win-rust-x64-rel"],
     os = os.WINDOWS_DEFAULT,
+    gn_args = "ci/win-rust-x64-rel",
 )
 
 try_.builder(
     name = "win-rust-x64-dbg",
     mirrors = ["ci/win-rust-x64-dbg"],
     os = os.WINDOWS_DEFAULT,
+    gn_args = "ci/win-rust-x64-dbg",
 )
 
 try_.builder(
@@ -66,4 +73,5 @@ try_.builder(
     mirrors = ["ci/mac-rust-x64-dbg"],
     cores = None,
     os = os.MAC_ANY,
+    gn_args = "ci/mac-rust-x64-dbg",
 )

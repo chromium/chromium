@@ -415,17 +415,6 @@
       'win64-builder-perf-pgo': 'official_reclient_perf_pgo',
     },
 
-    'chromium.rust': {
-      'android-rust-arm32-rel': 'release_rust_android_arm32_reclient',
-      'android-rust-arm64-dbg': 'debug_bot_rust_android_arm64_reclient',
-      'android-rust-arm64-rel': 'release_rust_android_arm64_reclient',
-      'linux-rust-x64-dbg': 'debug_bot_rust_desktop_x64_reclient',
-      'linux-rust-x64-rel': 'release_rust_desktop_x64_reclient',
-      'mac-rust-x64-dbg': 'debug_bot_rust_desktop_x64_reclient',
-      'win-rust-x64-dbg': 'debug_bot_rust_desktop_x64_reclient',
-      'win-rust-x64-rel': 'release_rust_desktop_x64_reclient',
-    },
-
     # TODO(crbug.com/818301): This group is going away.
     'chromium.webkit': {
       'WebKit Linux Trusty ASAN': 'asan_lsan_release_bot',
@@ -818,17 +807,6 @@
       'Mac arm Builder Perf PGO': 'official_goma_mac_arm_perf_pgo',
       'Win x64 Builder Perf': 'official_goma_perf',
       'Win x64 Builder Perf PGO': 'official_goma_perf_pgo',
-    },
-
-    'tryserver.chromium.rust': {
-      'android-rust-arm32-rel': 'release_rust_android_arm32_reclient',
-      'android-rust-arm64-dbg': 'debug_bot_rust_android_arm64_reclient',
-      'android-rust-arm64-rel': 'release_rust_android_arm64_reclient',
-      'linux-rust-x64-dbg': 'debug_bot_rust_desktop_x64_reclient',
-      'linux-rust-x64-rel': 'release_rust_desktop_x64_reclient',
-      'mac-rust-x64-dbg': 'debug_bot_rust_desktop_x64_reclient',
-      'win-rust-x64-dbg': 'debug_bot_rust_desktop_x64_reclient',
-      'win-rust-x64-rel': 'release_rust_desktop_x64_reclient',
     },
 
     'tryserver.chromium.tricium': {
@@ -1434,14 +1412,6 @@
 
     'debug_bot_reclient': [
       'debug_bot_reclient',
-    ],
-
-    'debug_bot_rust_android_arm64_reclient': [
-      'debug_bot_reclient', 'enable_all_rust_features', 'android', 'arm64',
-    ],
-
-    'debug_bot_rust_desktop_x64_reclient': [
-      'debug_bot_reclient', 'enable_all_rust_features', 'x64',
     ],
 
     'fuchsia_clang_code_coverage_reclient': [
@@ -2091,18 +2061,6 @@
       'release_bot_reclient', 'x86', 'minimal_symbols',
     ],
 
-    'release_rust_android_arm32_reclient': [
-      'release_trybot_minimal_symbols_reclient', 'enable_all_rust_features', 'android', 'arm',
-    ],
-
-    'release_rust_android_arm64_reclient': [
-      'release_trybot_minimal_symbols_reclient', 'enable_all_rust_features', 'android', 'arm64',
-    ],
-
-    'release_rust_desktop_x64_reclient': [
-      'release_trybot_minimal_symbols_reclient', 'enable_all_rust_features', 'x64',
-    ],
-
     'release_trybot': [
       'release_trybot',
     ],
@@ -2536,10 +2494,6 @@
     'dx12vk': {
       # TODO(https://crbug.com/1010584): Explicitly enable DirectX 12.
       'mixins': ['enable_vulkan'],
-    },
-
-    'enable_all_rust_features': {
-      'gn_args': 'enable_all_rust_features=true',
     },
 
     # Enables backup ref ptr by changing the default value of the feature flag.

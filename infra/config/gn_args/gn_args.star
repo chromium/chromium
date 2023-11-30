@@ -466,6 +466,13 @@ gn_args.config(
     },
 )
 
+gn_args.config(
+    "enable_all_rust_features",
+    args = {
+        "enable_all_rust_features": True,
+    },
+)
+
 # Enables backup ref ptr by changing the default value of the feature flag.
 # This sets the default value of PartitionAllocBackupRefPtr to enabled, with
 # enabled-processes = non-renderer:
