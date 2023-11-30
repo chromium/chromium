@@ -102,6 +102,13 @@ TEST(MediaDevicesUtilTest, TranslateSpecialDeviceIDs) {
   EXPECT_TRUE(DoesRawMediaDeviceIDMatchHMAC(
       salt_and_origin, hashed_communications_id, raw_communications_id));
   EXPECT_EQ(raw_communications_id, hashed_communications_id);
+
+  const std::string raw_empty_id;
+  const std::string hashed_empty_id =
+      GetHMACForRawMediaDeviceID(salt_and_origin, raw_empty_id);
+  EXPECT_TRUE(DoesRawMediaDeviceIDMatchHMAC(salt_and_origin, hashed_empty_id,
+                                            raw_empty_id));
+  EXPECT_EQ(raw_empty_id, hashed_empty_id);
 }
 
 TEST(MediaDevicesUtilTest, TranslateNonSpecialDeviceID) {

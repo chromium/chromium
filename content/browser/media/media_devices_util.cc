@@ -242,14 +242,8 @@ std::string GetHMACForRawMediaDeviceID(
     const MediaDeviceSaltAndOrigin& salt_and_origin,
     const std::string& raw_device_id,
     bool use_group_salt) {
-  // TODO(crbug.com/1215532): DCHECKs are disabled during automated testing on
-  // CrOS and this check failed when tested on an experimental builder. Revert
-  // https://crrev.com/c/2932244 to enable it. See go/chrome-dcheck-on-cros
-  // or http://crbug.com/1113456 for more details.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  DCHECK(!raw_device_id.empty());
-#endif
-  if (raw_device_id == media::AudioDeviceDescription::kDefaultDeviceId ||
+  if (raw_device_id.empty() ||
+      raw_device_id == media::AudioDeviceDescription::kDefaultDeviceId ||
       raw_device_id == media::AudioDeviceDescription::kCommunicationsDeviceId) {
     return raw_device_id;
   }
@@ -271,7 +265,6 @@ bool DoesRawMediaDeviceIDMatchHMAC(
     const MediaDeviceSaltAndOrigin& salt_and_origin,
     const std::string& hmac_device_id,
     const std::string& raw_device_id) {
-  DCHECK(!raw_device_id.empty());
   return GetHMACForRawMediaDeviceID(salt_and_origin, raw_device_id) ==
          hmac_device_id;
 }
