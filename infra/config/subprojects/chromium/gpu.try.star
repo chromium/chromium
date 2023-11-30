@@ -316,9 +316,7 @@ gpu_mac_builder(
         "ci/GPU FYI Mac arm64 Builder",
         "ci/Mac FYI Retina Release (Apple M2)",
     ],
-    # TODO(crbug.com/1435476): Switch to a dedicated M2 pool once we have
-    # allocated machines.
-    pool = "luci.chromium.gpu.mac.arm64.apple.m1.try",
+    pool = "luci.chromium.gpu.mac.arm64.apple.m2.try",
 )
 
 gpu_mac_builder(
