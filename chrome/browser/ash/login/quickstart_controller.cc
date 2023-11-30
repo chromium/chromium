@@ -255,7 +255,8 @@ void QuickStartController::OnStatusChanged(
       }
       return;
     case Step::NONE:
-      // Indicates we've stopped advertising. No action required.
+      // Indicates we've stopped advertising and are not connected to the source
+      // device. No action required.
       return;
     case Step::ERROR:
       AbortFlow(AbortFlowReason::ERROR);
@@ -339,6 +340,8 @@ void QuickStartController::StartAccountTransfer() {
 }
 
 void QuickStartController::OnPhoneConnectionEstablished() {
+  bootstrap_controller_->StopAdvertising();
+
   // If cancelling the flow would end on the welcome or network screen,
   // we are still early in the OOBE flow. Transfer WiFi creds if not already
   // connected.

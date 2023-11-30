@@ -277,6 +277,23 @@ TEST_F(TargetDeviceBootstrapControllerTest, StopAdvertising) {
   ExpectQuickStartConnectivityServiceCleanupCalled();
 }
 
+TEST_F(TargetDeviceBootstrapControllerTest, StopAdvertisingAfterConnection) {
+  BootstrapConnection();
+
+  fake_target_device_connection_broker_->GetFakeConnection()->VerifyUser(
+      mojom::UserVerificationResponse(
+          mojom::UserVerificationResult::kUserVerified,
+          /*is_first_user_verification=*/true));
+  EXPECT_EQ(fake_observer_->last_status.step, Step::CONNECTED);
+
+  bootstrap_controller_->StopAdvertising();
+  fake_target_device_connection_broker_->on_stop_advertising_callback().Run();
+
+  // Status shouldn't change since we have a connection.
+  EXPECT_EQ(fake_observer_->last_status.step, Step::CONNECTED);
+  EXPECT_FALSE(fake_quick_start_connectivity_service_->get_is_cleanup_called());
+}
+
 TEST_F(TargetDeviceBootstrapControllerTest, InitiateConnection_QRCode) {
   bootstrap_controller_->StartAdvertisingAndMaybeGetQRCode();
   fake_target_device_connection_broker_->on_start_advertising_callback().Run(
@@ -368,7 +385,6 @@ TEST_F(TargetDeviceBootstrapControllerTest, CloseConnection) {
       absl::holds_alternative<ErrorCode>(fake_observer_->last_status.payload));
   EXPECT_EQ(absl::get<ErrorCode>(fake_observer_->last_status.payload),
             ErrorCode::CONNECTION_CLOSED);
-  ExpectQuickStartConnectivityServiceCleanupCalled();
 }
 
 TEST_F(TargetDeviceBootstrapControllerTest, GetPhoneInstanceId) {
@@ -710,6 +726,9 @@ TEST_F(TargetDeviceBootstrapControllerTest, ConnectionDropped) {
   EXPECT_EQ(fake_observer_->last_status.step, Step::ADVERTISING_WITH_QR_CODE);
   EXPECT_TRUE(absl::holds_alternative<QRCode::PixelData>(
       fake_observer_->last_status.payload));
+
+  bootstrap_controller_->StopAdvertising();
+  fake_target_device_connection_broker_->on_stop_advertising_callback().Run();
 
   fake_target_device_connection_broker_->CloseConnection(
       ConnectionClosedReason::kConnectionLost);
