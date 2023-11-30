@@ -32,7 +32,7 @@ import org.chromium.ui.text.SpanApplier;
 import java.util.List;
 
 /** Fragment for the Privacy Sandbox -> Fledge preferences. */
-public class FledgeFragmentV4 extends PrivacySandboxSettingsBaseFragment
+public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
         implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
     @VisibleForTesting static final int MAX_DISPLAYED_SITES = 15;
 
@@ -73,7 +73,7 @@ public class FledgeFragmentV4 extends PrivacySandboxSettingsBaseFragment
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
         super.onCreatePreferences(bundle, s);
         getActivity().setTitle(R.string.settings_fledge_page_title);
-        SettingsUtils.addPreferencesFromResource(this, R.xml.fledge_preference_v4);
+        SettingsUtils.addPreferencesFromResource(this, R.xml.fledge_preference);
 
         mFledgeTogglePreference = findPreference(FLEDGE_TOGGLE_PREFERENCE);
         mHeadingPreference = findPreference(HEADING_PREFERENCE);
@@ -119,7 +119,7 @@ public class FledgeFragmentV4 extends PrivacySandboxSettingsBaseFragment
     }
 
     private void onFledgeSettingsLinkClicked(View view) {
-        launchSettingsActivity(TopicsFragmentV4.class);
+        launchSettingsActivity(TopicsFragment.class);
     }
 
     private void onCookieSettingsLink(View view) {

@@ -19,7 +19,7 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 import java.util.List;
 
 /** Fragment for the blocked Topic preferences. */
-public class TopicsBlockedFragmentV4 extends PrivacySandboxSettingsBaseFragment
+public class TopicsBlockedFragment extends PrivacySandboxSettingsBaseFragment
         implements Preference.OnPreferenceClickListener {
     private static final String BLOCKED_TOPICS_PREFERENCE = "block_list";
 
@@ -29,7 +29,7 @@ public class TopicsBlockedFragmentV4 extends PrivacySandboxSettingsBaseFragment
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
         super.onCreatePreferences(bundle, s);
         getActivity().setTitle(R.string.settings_topics_page_blocked_topics_sub_page_title);
-        SettingsUtils.addPreferencesFromResource(this, R.xml.block_list_preference_v4);
+        SettingsUtils.addPreferencesFromResource(this, R.xml.block_list_preference);
 
         mBlockedTopicsCategory = findPreference(BLOCKED_TOPICS_PREFERENCE);
     }

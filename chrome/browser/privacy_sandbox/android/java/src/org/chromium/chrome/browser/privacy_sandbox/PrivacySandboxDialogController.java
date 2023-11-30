@@ -46,7 +46,7 @@ public class PrivacySandboxDialogController {
                 return false;
             case PromptType.M1_CONSENT:
                 dialog =
-                        new PrivacySandboxDialogConsentEEAV4(
+                        new PrivacySandboxDialogConsentEEA(
                                 context, settingsLauncher, sDisableAnimations);
                 dialog.show();
                 sDialog = new WeakReference<>(dialog);
@@ -55,12 +55,12 @@ public class PrivacySandboxDialogController {
                 showNoticeEEA(context, settingsLauncher);
                 return true;
             case PromptType.M1_NOTICE_ROW:
-                dialog = new PrivacySandboxDialogNoticeROWV4(context, settingsLauncher);
+                dialog = new PrivacySandboxDialogNoticeROW(context, settingsLauncher);
                 dialog.show();
                 sDialog = new WeakReference<>(dialog);
                 return true;
             case PromptType.M1_NOTICE_RESTRICTED:
-                dialog = new PrivacySandboxDialogNoticeRestrictedV4(context, settingsLauncher);
+                dialog = new PrivacySandboxDialogNoticeRestricted(context, settingsLauncher);
                 dialog.show();
                 sDialog = new WeakReference<>(dialog);
                 return true;
@@ -75,7 +75,7 @@ public class PrivacySandboxDialogController {
     public static void showNoticeEEA(Context context, SettingsLauncher settingsLauncher) {
         if (!sDisableEEANoticeForTesting) {
             Dialog dialog;
-            dialog = new PrivacySandboxDialogNoticeEEAV4(context, settingsLauncher);
+            dialog = new PrivacySandboxDialogNoticeEEA(context, settingsLauncher);
             dialog.show();
             sDialog = new WeakReference<>(dialog);
         }

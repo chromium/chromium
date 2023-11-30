@@ -13,9 +13,9 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.hasItems;
 
 import static org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxTestUtils.getRootViewSanitized;
-import static org.chromium.chrome.browser.privacy_sandbox.AdMeasurementFragmentV4.setAdMeasurementPrefEnabled;
-import static org.chromium.chrome.browser.privacy_sandbox.FledgeFragmentV4.setFledgePrefEnabled;
-import static org.chromium.chrome.browser.privacy_sandbox.TopicsFragmentV4.setTopicsPrefEnabled;
+import static org.chromium.chrome.browser.privacy_sandbox.AdMeasurementFragment.setAdMeasurementPrefEnabled;
+import static org.chromium.chrome.browser.privacy_sandbox.FledgeFragment.setFledgePrefEnabled;
+import static org.chromium.chrome.browser.privacy_sandbox.TopicsFragment.setTopicsPrefEnabled;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
@@ -46,11 +46,11 @@ import org.chromium.ui.test.util.RenderTestRule;
 
 import java.io.IOException;
 
-/** Tests {@link PrivacySandboxSettingsFragmentV4} */
+/** Tests {@link PrivacySandboxSettingsFragment} */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public final class PrivacySandboxSettingsFragmentV4Test {
+public final class PrivacySandboxSettingsFragmentTest {
     @Rule public ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
 
     @Rule
@@ -60,8 +60,8 @@ public final class PrivacySandboxSettingsFragmentV4Test {
                     .build();
 
     @Rule
-    public SettingsActivityTestRule<PrivacySandboxSettingsFragmentV4> mSettingsActivityTestRule =
-            new SettingsActivityTestRule<>(PrivacySandboxSettingsFragmentV4.class);
+    public SettingsActivityTestRule<PrivacySandboxSettingsFragment> mSettingsActivityTestRule =
+            new SettingsActivityTestRule<>(PrivacySandboxSettingsFragment.class);
 
     public UserActionTester mUserActionTester;
 
@@ -86,7 +86,7 @@ public final class PrivacySandboxSettingsFragmentV4Test {
     private void startPrivacySandboxSettingsV4() {
         Bundle fragmentArgs = new Bundle();
         fragmentArgs.putInt(
-                PrivacySandboxSettingsFragmentV4.PRIVACY_SANDBOX_REFERRER,
+                PrivacySandboxSettingsFragment.PRIVACY_SANDBOX_REFERRER,
                 PrivacySandboxReferrer.PRIVACY_SETTINGS);
         mSettingsActivityTestRule.startSettingsActivity(fragmentArgs);
         onViewWaiting(withText(R.string.ad_privacy_page_title));

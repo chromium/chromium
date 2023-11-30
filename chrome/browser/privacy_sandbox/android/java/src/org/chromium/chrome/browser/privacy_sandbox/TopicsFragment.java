@@ -29,7 +29,7 @@ import org.chromium.ui.text.SpanApplier;
 import java.util.List;
 
 /** Fragment for the Privacy Sandbox -> Topic preferences. */
-public class TopicsFragmentV4 extends PrivacySandboxSettingsBaseFragment
+public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
         implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
     private static final String TOPICS_TOGGLE_PREFERENCE = "topics_toggle";
     private static final String TOPICS_HEADING_PREFERENCE = "topics_heading";
@@ -64,7 +64,7 @@ public class TopicsFragmentV4 extends PrivacySandboxSettingsBaseFragment
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
         super.onCreatePreferences(bundle, s);
         getActivity().setTitle(R.string.settings_topics_page_title);
-        SettingsUtils.addPreferencesFromResource(this, R.xml.topics_preference_v4);
+        SettingsUtils.addPreferencesFromResource(this, R.xml.topics_preference);
 
         mTopicsTogglePreference = findPreference(TOPICS_TOGGLE_PREFERENCE);
         mTopicsHeadingPreference = findPreference(TOPICS_HEADING_PREFERENCE);
@@ -110,7 +110,7 @@ public class TopicsFragmentV4 extends PrivacySandboxSettingsBaseFragment
     }
 
     private void onFledgeSettingsLinkClicked(View view) {
-        launchSettingsActivity(FledgeFragmentV4.class);
+        launchSettingsActivity(FledgeFragment.class);
     }
 
     private void onCookieSettingsLink(View view) {

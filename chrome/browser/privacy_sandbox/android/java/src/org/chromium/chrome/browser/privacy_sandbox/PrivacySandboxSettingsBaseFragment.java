@@ -53,7 +53,7 @@ public abstract class PrivacySandboxSettingsBaseFragment extends ChromeBaseSetti
         Bundle fragmentArgs = new Bundle();
         fragmentArgs.putInt(PRIVACY_SANDBOX_REFERRER, referrer);
         settingsLauncher.launchSettingsActivity(
-                context, PrivacySandboxSettingsFragmentV4.class, fragmentArgs);
+                context, PrivacySandboxSettingsFragment.class, fragmentArgs);
     }
 
     public static CharSequence getStatusString(Context context) {
@@ -84,7 +84,7 @@ public abstract class PrivacySandboxSettingsBaseFragment extends ChromeBaseSetti
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_id_targeted_help) {
             // Action for the question mark button.
-            openUrlInCct(PrivacySandboxSettingsFragmentV4.HELP_CENTER_URL);
+            openUrlInCct(PrivacySandboxSettingsFragment.HELP_CENTER_URL);
             return true;
         }
         return false;

@@ -60,11 +60,11 @@ import org.chromium.ui.test.util.RenderTestRule;
 
 import java.io.IOException;
 
-/** Tests {@link TopicsFragmentV4} */
+/** Tests {@link TopicsFragment} */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public final class TopicsFragmentV4Test {
+public final class TopicsFragmentTest {
     private static final String TOPIC_NAME_1 = "Topic 1";
     private static final String TOPIC_NAME_2 = "Topic 2";
 
@@ -78,8 +78,8 @@ public final class TopicsFragmentV4Test {
                     .build();
 
     @Rule
-    public SettingsActivityTestRule<TopicsFragmentV4> mSettingsActivityTestRule =
-            new SettingsActivityTestRule<>(TopicsFragmentV4.class);
+    public SettingsActivityTestRule<TopicsFragment> mSettingsActivityTestRule =
+            new SettingsActivityTestRule<>(TopicsFragment.class);
 
     @Rule public JniMocker mocker = new JniMocker();
 
@@ -137,13 +137,13 @@ public final class TopicsFragmentV4Test {
     private void setTopicsPrefEnabled(boolean isEnabled) {
         TestThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        TopicsFragmentV4.setTopicsPrefEnabled(
+                        TopicsFragment.setTopicsPrefEnabled(
                                 Profile.getLastUsedRegularProfile(), isEnabled));
     }
 
     private boolean isTopicsPrefEnabled() {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> TopicsFragmentV4.isTopicsPrefEnabled(Profile.getLastUsedRegularProfile()));
+                () -> TopicsFragment.isTopicsPrefEnabled(Profile.getLastUsedRegularProfile()));
     }
 
     @Test

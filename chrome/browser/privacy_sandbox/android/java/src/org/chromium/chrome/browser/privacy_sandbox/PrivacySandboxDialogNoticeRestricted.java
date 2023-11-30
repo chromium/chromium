@@ -18,7 +18,7 @@ import org.chromium.components.browser_ui.widget.ChromeDialog;
 import org.chromium.ui.widget.ButtonCompat;
 
 /** Dialog in the form of a notice shown for the Privacy Sandbox. */
-public class PrivacySandboxDialogNoticeRestrictedV4 extends ChromeDialog
+public class PrivacySandboxDialogNoticeRestricted extends ChromeDialog
         implements View.OnClickListener, DialogInterface.OnShowListener {
     private SettingsLauncher mSettingsLauncher;
     private View mContentView;
@@ -27,13 +27,13 @@ public class PrivacySandboxDialogNoticeRestrictedV4 extends ChromeDialog
     private LinearLayout mActionButtons;
     private ScrollView mScrollView;
 
-    public PrivacySandboxDialogNoticeRestrictedV4(
+    public PrivacySandboxDialogNoticeRestricted(
             Context context, @NonNull SettingsLauncher settingsLauncher) {
         super(context, R.style.ThemeOverlay_BrowserUI_Fullscreen);
         mSettingsLauncher = settingsLauncher;
         mContentView =
                 LayoutInflater.from(context)
-                        .inflate(R.layout.privacy_sandbox_notice_restricted_v4, null);
+                        .inflate(R.layout.privacy_sandbox_notice_restricted, null);
         setContentView(mContentView);
 
         ButtonCompat ackButton = mContentView.findViewById(R.id.ack_button);
@@ -80,7 +80,7 @@ public class PrivacySandboxDialogNoticeRestrictedV4 extends ChromeDialog
         } else if (id == R.id.settings_button) {
             PrivacySandboxBridge.promptActionOccurred(PromptAction.RESTRICTED_NOTICE_OPEN_SETTINGS);
             dismiss();
-            mSettingsLauncher.launchSettingsActivity(getContext(), AdMeasurementFragmentV4.class);
+            mSettingsLauncher.launchSettingsActivity(getContext(), AdMeasurementFragment.class);
         } else if (id == R.id.more_button) {
             PrivacySandboxBridge.promptActionOccurred(
                     PromptAction.RESTRICTED_NOTICE_MORE_BUTTON_CLICKED);

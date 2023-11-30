@@ -52,11 +52,11 @@ import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
 
-/** Tests {@link AdMeasurementFragmentV4} */
+/** Tests {@link AdMeasurementFragment} */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public final class AdMeasurementFragmentV4Test {
+public final class AdMeasurementFragmentTest {
     @Rule public ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
 
     @Rule
@@ -66,8 +66,8 @@ public final class AdMeasurementFragmentV4Test {
                     .build();
 
     @Rule
-    public SettingsActivityTestRule<AdMeasurementFragmentV4> mSettingsActivityTestRule =
-            new SettingsActivityTestRule<>(AdMeasurementFragmentV4.class);
+    public SettingsActivityTestRule<AdMeasurementFragment> mSettingsActivityTestRule =
+            new SettingsActivityTestRule<>(AdMeasurementFragment.class);
 
     private UserActionTester mUserActionTester;
 
@@ -116,14 +116,14 @@ public final class AdMeasurementFragmentV4Test {
     private void setAdMeasurementPrefEnabled(boolean isEnabled) {
         TestThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        AdMeasurementFragmentV4.setAdMeasurementPrefEnabled(
+                        AdMeasurementFragment.setAdMeasurementPrefEnabled(
                                 Profile.getLastUsedRegularProfile(), isEnabled));
     }
 
     private boolean isAdMeasurementPrefEnabled() {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 () ->
-                        AdMeasurementFragmentV4.isAdMeasurementPrefEnabled(
+                        AdMeasurementFragment.isAdMeasurementPrefEnabled(
                                 Profile.getLastUsedRegularProfile()));
     }
 

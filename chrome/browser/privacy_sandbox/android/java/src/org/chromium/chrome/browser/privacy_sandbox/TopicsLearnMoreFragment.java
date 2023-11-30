@@ -42,7 +42,7 @@ public class TopicsLearnMoreFragment extends PrivacySandboxSettingsBaseFragment 
     }
 
     private void onLearnMoreClicked(View view) {
-        openUrlInCct(PrivacySandboxSettingsFragmentV4.HELP_CENTER_URL);
+        openUrlInCct(PrivacySandboxSettingsFragment.HELP_CENTER_URL);
     }
 
     @Override

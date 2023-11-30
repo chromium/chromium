@@ -19,7 +19,7 @@ import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.CheckableImageView;
 
 /** Dialog in the form of a notice shown for the Privacy Sandbox. */
-public class PrivacySandboxDialogNoticeROWV4 extends ChromeDialog
+public class PrivacySandboxDialogNoticeROW extends ChromeDialog
         implements View.OnClickListener, DialogInterface.OnShowListener {
     private SettingsLauncher mSettingsLauncher;
     private View mContentView;
@@ -31,12 +31,12 @@ public class PrivacySandboxDialogNoticeROWV4 extends ChromeDialog
     private LinearLayout mActionButtons;
     private ScrollView mScrollView;
 
-    public PrivacySandboxDialogNoticeROWV4(
+    public PrivacySandboxDialogNoticeROW(
             Context context, @NonNull SettingsLauncher settingsLauncher) {
         super(context, R.style.ThemeOverlay_BrowserUI_Fullscreen);
         mSettingsLauncher = settingsLauncher;
         mContentView =
-                LayoutInflater.from(context).inflate(R.layout.privacy_sandbox_notice_row_v4, null);
+                LayoutInflater.from(context).inflate(R.layout.privacy_sandbox_notice_row, null);
         setContentView(mContentView);
 
         ButtonCompat ackButton = mContentView.findViewById(R.id.ack_button);
@@ -118,7 +118,7 @@ public class PrivacySandboxDialogNoticeROWV4 extends ChromeDialog
                 PrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_MORE_INFO_OPENED);
                 LayoutInflater.from(getContext())
                         .inflate(
-                                R.layout.privacy_sandbox_notice_row_dropdown_v4,
+                                R.layout.privacy_sandbox_notice_row_dropdown,
                                 mDropdownContainer);
 
                 PrivacySandboxDialogUtils.setBulletText(

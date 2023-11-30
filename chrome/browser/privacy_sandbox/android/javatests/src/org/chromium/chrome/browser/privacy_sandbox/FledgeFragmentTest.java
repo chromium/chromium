@@ -62,11 +62,11 @@ import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
 
-/** Tests {@link FledgeFragmentV4} */
+/** Tests {@link FledgeFragment} */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public final class FledgeFragmentV4Test {
+public final class FledgeFragmentTest {
     private static final String SITE_NAME_1 = "first.com";
     private static final String SITE_NAME_2 = "second.com";
 
@@ -80,8 +80,8 @@ public final class FledgeFragmentV4Test {
                     .build();
 
     @Rule
-    public SettingsActivityTestRule<FledgeFragmentV4> mSettingsActivityTestRule =
-            new SettingsActivityTestRule<>(FledgeFragmentV4.class);
+    public SettingsActivityTestRule<FledgeFragment> mSettingsActivityTestRule =
+            new SettingsActivityTestRule<>(FledgeFragment.class);
 
     @Rule public JniMocker mocker = new JniMocker();
 
@@ -143,13 +143,13 @@ public final class FledgeFragmentV4Test {
     private void setFledgePrefEnabled(boolean isEnabled) {
         TestThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        FledgeFragmentV4.setFledgePrefEnabled(
+                        FledgeFragment.setFledgePrefEnabled(
                                 Profile.getLastUsedRegularProfile(), isEnabled));
     }
 
     private boolean isFledgePrefEnabled() {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> FledgeFragmentV4.isFledgePrefEnabled(Profile.getLastUsedRegularProfile()));
+                () -> FledgeFragment.isFledgePrefEnabled(Profile.getLastUsedRegularProfile()));
     }
 
     private void scrollToSetting(Matcher<View> matcher) {
@@ -194,7 +194,7 @@ public final class FledgeFragmentV4Test {
     @Feature({"RenderTest"})
     public void testRenderAllSitesPage() throws IOException {
         setFledgePrefEnabled(true);
-        for (int i = 0; i < FledgeFragmentV4.MAX_DISPLAYED_SITES + 1; i++) {
+        for (int i = 0; i < FledgeFragment.MAX_DISPLAYED_SITES + 1; i++) {
             mFakePrivacySandboxBridge.setFledgeJoiningAllowed(generateSiteFromNr(i), true);
         }
         startFledgeSettings();
@@ -328,7 +328,7 @@ public final class FledgeFragmentV4Test {
     @SmallTest
     public void testMaxDisplayedSites() {
         setFledgePrefEnabled(true);
-        for (int i = 0; i < FledgeFragmentV4.MAX_DISPLAYED_SITES + 1; i++) {
+        for (int i = 0; i < FledgeFragment.MAX_DISPLAYED_SITES + 1; i++) {
             mFakePrivacySandboxBridge.setFledgeJoiningAllowed(generateSiteFromNr(i), true);
         }
         startFledgeSettings();
@@ -336,8 +336,8 @@ public final class FledgeFragmentV4Test {
         // Scroll to pref below last displayed site.
         scrollToSetting(withText(R.string.settings_fledge_page_see_all_sites_label));
 
-        String lastDisplayedSite = generateSiteFromNr(FledgeFragmentV4.MAX_DISPLAYED_SITES - 1);
-        String firstNotDisplayedSite = generateSiteFromNr(FledgeFragmentV4.MAX_DISPLAYED_SITES);
+        String lastDisplayedSite = generateSiteFromNr(FledgeFragment.MAX_DISPLAYED_SITES - 1);
+        String firstNotDisplayedSite = generateSiteFromNr(FledgeFragment.MAX_DISPLAYED_SITES);
 
         // Verify that only MAX_DISPLAY_SITES are shown.
         onView(withText(lastDisplayedSite)).check(matches(isDisplayed()));

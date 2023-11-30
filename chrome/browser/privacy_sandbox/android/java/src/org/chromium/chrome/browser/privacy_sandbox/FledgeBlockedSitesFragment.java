@@ -4,47 +4,51 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
-import androidx.preference.PreferenceScreen;
+import androidx.preference.PreferenceCategory;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
+import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.favicon.LargeIconBridge;
 
 import java.util.List;
 
-/** Fragment to display all the allowed Fledge sites. */
-public class FledgeAllSitesFragmentV4 extends PrivacySandboxSettingsBaseFragment
+/** Fragment for the blocked Fledge sites. */
+public class FledgeBlockedSitesFragment extends PrivacySandboxSettingsBaseFragment
         implements Preference.OnPreferenceClickListener {
-    private PreferenceScreen mPreferenceScreen;
+    private static final String BLOCKED_SITES_PREFERENCE = "block_list";
+
+    private PreferenceCategory mBlockedSitesCategory;
     private LargeIconBridge mLargeIconBridge;
 
     @Override
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
         super.onCreatePreferences(bundle, s);
-        getActivity().setTitle(R.string.settings_fledge_all_sites_sub_page_title);
-        mPreferenceScreen = getPreferenceManager().createPreferenceScreen(getStyledContext());
-        setPreferenceScreen(mPreferenceScreen);
+        getActivity().setTitle(R.string.settings_fledge_page_blocked_sites_sub_page_title);
+        SettingsUtils.addPreferencesFromResource(this, R.xml.block_list_preference);
+
+        mBlockedSitesCategory = findPreference(BLOCKED_SITES_PREFERENCE);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Disable animations of preference changes.
+        // Disable animations of preference changes
         getListView().setItemAnimator(null);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        PrivacySandboxBridge.getFledgeJoiningEtldPlusOneForDisplay(this::populateSites);
+        populateSites();
+        updateBlockedSitesDescription();
     }
 
     @Override
@@ -60,41 +64,47 @@ public class FledgeAllSitesFragmentV4 extends PrivacySandboxSettingsBaseFragment
     public boolean onPreferenceClick(@NonNull Preference preference) {
         if (preference instanceof FledgePreference) {
             PrivacySandboxBridge.setFledgeJoiningAllowed(
-                    ((FledgePreference) preference).getSite(), false);
-            mPreferenceScreen.removePreference(preference);
+                    ((FledgePreference) preference).getSite(), true);
+            mBlockedSitesCategory.removePreference(preference);
+            updateBlockedSitesDescription();
 
             showSnackbar(
-                    R.string.settings_fledge_page_block_site_snackbar,
+                    R.string.settings_fledge_page_add_site_snackbar,
                     null,
                     Snackbar.TYPE_ACTION,
-                    Snackbar.UMA_PRIVACY_SANDBOX_REMOVE_SITE);
-            RecordUserAction.record("Settings.PrivacySandbox.Fledge.SiteRemoved");
+                    Snackbar.UMA_PRIVACY_SANDBOX_ADD_SITE);
+            RecordUserAction.record("Settings.PrivacySandbox.Fledge.SiteAdded");
             return true;
         }
 
         return false;
     }
 
-    private void populateSites(List<String> allSites) {
+    private void populateSites() {
         if (mLargeIconBridge == null) {
             mLargeIconBridge = new LargeIconBridge(getProfile());
         }
 
-        mPreferenceScreen.removeAll();
-        for (String site : allSites) {
+        mBlockedSitesCategory.removeAll();
+        List<String> blockedSites =
+                PrivacySandboxBridge.getBlockedFledgeJoiningTopFramesForDisplay();
+        for (String site : blockedSites) {
             FledgePreference preference =
-                    new FledgePreference(getStyledContext(), site, mLargeIconBridge);
+                    new FledgePreference(getContext(), site, mLargeIconBridge);
             preference.setImage(
-                    R.drawable.btn_close,
+                    R.drawable.ic_add,
                     getResources()
-                            .getString(R.string.settings_fledge_page_block_site_a11y_label, site));
+                            .getString(R.string.settings_fledge_page_allow_site_a11y_label, site));
             preference.setDividerAllowedBelow(false);
             preference.setOnPreferenceClickListener(this);
-            mPreferenceScreen.addPreference(preference);
+            mBlockedSitesCategory.addPreference(preference);
         }
     }
 
-    private Context getStyledContext() {
-        return getPreferenceManager().getContext();
+    private void updateBlockedSitesDescription() {
+        mBlockedSitesCategory.setSummary(
+                mBlockedSitesCategory.getPreferenceCount() == 0
+                        ? R.string.settings_fledge_page_blocked_sites_description_empty
+                        : R.string.settings_fledge_page_blocked_sites_description);
     }
 }

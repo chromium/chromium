@@ -20,7 +20,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 
 /** Fragment for the Privacy Sandbox -> Ad Measurement preferences. */
-public class AdMeasurementFragmentV4 extends PrivacySandboxSettingsBaseFragment
+public class AdMeasurementFragment extends PrivacySandboxSettingsBaseFragment
         implements Preference.OnPreferenceChangeListener {
     public static final String TOGGLE_PREFERENCE = "ad_measurement_toggle";
 
@@ -43,7 +43,7 @@ public class AdMeasurementFragmentV4 extends PrivacySandboxSettingsBaseFragment
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
         super.onCreatePreferences(bundle, s);
         getActivity().setTitle(R.string.settings_ad_measurement_page_title);
-        SettingsUtils.addPreferencesFromResource(this, R.xml.ad_measurement_preference_v4);
+        SettingsUtils.addPreferencesFromResource(this, R.xml.ad_measurement_preference);
 
         ChromeSwitchPreference adMeasurementToggle = findPreference(TOGGLE_PREFERENCE);
         adMeasurementToggle.setChecked(isAdMeasurementPrefEnabled(getProfile()));

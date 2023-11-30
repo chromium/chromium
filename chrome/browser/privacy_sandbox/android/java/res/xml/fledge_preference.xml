@@ -32,12 +32,12 @@ found in the LICENSE file.
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="fledge_all_sites"
         android:title="@string/settings_fledge_page_see_all_sites_label"
-        android:fragment="org.chromium.chrome.browser.privacy_sandbox.FledgeAllSitesFragmentV4"
+        android:fragment="org.chromium.chrome.browser.privacy_sandbox.FledgeAllSitesFragment"
         app:userAction="Settings.PrivacySandbox.Fledge.AllSitesOpened"/>
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="fledge_blocked_sites"
-        android:fragment="org.chromium.chrome.browser.privacy_sandbox.FledgeBlockedSitesFragmentV4"
+        android:fragment="org.chromium.chrome.browser.privacy_sandbox.FledgeBlockedSitesFragment"
         android:title="@string/settings_fledge_page_blocked_sites_heading"
         app:userAction="Settings.PrivacySandbox.Fledge.BlockedSitesOpened" />
 

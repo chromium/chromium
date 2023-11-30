@@ -13,7 +13,29 @@ found in the LICENSE file.
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <LinearLayout
+        android:id="@+id/progress_bar_container"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:layout_width="@dimen/privacy_sandbox_spinner_dimension"
+            android:layout_height="@dimen/privacy_sandbox_spinner_dimension" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/list_item_default_margin"
+            android:text="@string/privacy_sandbox_m1_consent_saving_label"
+            style="@style/TextAppearance.TextMedium.Secondary" />
+
+    </LinearLayout>
+
     <org.chromium.components.browser_ui.widget.BoundedLinearLayout
+        android:id="@+id/privacy_sandbox_consent_eea_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -25,11 +47,11 @@ found in the LICENSE file.
             android:id="@+id/privacy_sandbox_dialog_scroll_view"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:fillViewport="true"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:fillViewport="true">
 
             <LinearLayout
-                android:id="@+id/privacy_sandbox_notice_row_content"
+                android:id="@+id/privacy_sandbox_consent_eea_content"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
@@ -37,21 +59,20 @@ found in the LICENSE file.
                 android:orientation="vertical">
 
                 <ImageView
-                    android:layout_marginTop="@dimen/privacy_sandbox_dialog_illustration_margin_top"
-                    android:layout_marginBottom="@dimen/privacy_sandbox_dialog_title_margin"
                     android:layout_height="@dimen/privacy_sandbox_chrome_logo_height"
                     android:layout_width="@dimen/privacy_sandbox_chrome_logo_width"
                     android:layout_gravity="center"
                     app:srcCompat="@drawable/chrome_sync_logo"
+                    android:layout_marginVertical="@dimen/privacy_sandbox_dialog_logo_margin"
                     android:importantForAccessibility="no" />
 
                 <TextView
-                    android:id="@+id/privacy_sandbox_notice_title"
+                    android:id="@+id/privacy_sandbox_m1_consent_title"
                     android:layout_marginBottom="@dimen/privacy_sandbox_dialog_title_margin"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="@string/privacy_sandbox_m1_consent_title"
                     android:layout_gravity="center"
-                    android:text="@string/privacy_sandbox_m1_notice_row_title"
                     android:gravity="center"
                     style="@style/TextAppearance.Headline.Primary" />
 
@@ -59,14 +80,14 @@ found in the LICENSE file.
                     android:layout_marginBottom="@dimen/list_item_default_margin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/privacy_sandbox_m1_notice_row_description_1"
+                    android:text="@string/privacy_sandbox_m1_consent_description_1"
                     app:leading="@dimen/text_size_medium_leading"
                     style="@style/TextAppearance.TextMedium.Secondary" />
 
                 <org.chromium.ui.widget.TextViewWithLeading
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/privacy_sandbox_m1_notice_row_description_2"
+                    android:text="@string/privacy_sandbox_m1_consent_description_2"
                     app:leading="@dimen/text_size_medium_leading"
                     style="@style/TextAppearance.TextMedium.Secondary" />
 
@@ -74,7 +95,7 @@ found in the LICENSE file.
                     android:layout_marginVertical="@dimen/privacy_sandbox_dialog_illustration_margin_vertical"
                     android:layout_height="wrap_content"
                     android:layout_width="match_parent"
-                    app:srcCompat="@drawable/privacy_sandbox_interests_illustration_v4"
+                    app:srcCompat="@drawable/privacy_sandbox_interests_illustration"
                     android:adjustViewBounds="true"
                     android:importantForAccessibility="no" />
 
@@ -82,7 +103,7 @@ found in the LICENSE file.
                     android:layout_marginBottom="@dimen/list_item_default_margin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/privacy_sandbox_m1_notice_row_description_3"
+                    android:text="@string/privacy_sandbox_m1_consent_description_3"
                     app:leading="@dimen/text_size_medium_leading"
                     style="@style/TextAppearance.TextMedium.Secondary" />
 
@@ -98,9 +119,9 @@ found in the LICENSE file.
                         android:layout_weight="1"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
                         android:minHeight="@dimen/privacy_sandbox_notice_dialog_dropdown_button_height"
-                        android:text="@string/privacy_sandbox_m1_notice_row_learn_more_expand_label"
+                        android:gravity="center_vertical"
+                        android:text="@string/privacy_sandbox_m1_consent_learn_more_expand_label"
                         style="@style/TextAppearance.TextMedium.Secondary" />
 
                     <org.chromium.ui.widget.CheckableImageView
@@ -118,10 +139,9 @@ found in the LICENSE file.
                     android:visibility="gone" />
 
                 <org.chromium.ui.widget.TextViewWithLeading
-                    android:layout_marginBottom="@dimen/privacy_sandbox_notice_margin_bottom"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/privacy_sandbox_m1_notice_row_description_4"
+                    android:text="@string/privacy_sandbox_m1_consent_description_4"
                     app:leading="@dimen/text_size_medium_leading"
                     style="@style/TextAppearance.TextMedium.Secondary" />
 
@@ -135,9 +155,8 @@ found in the LICENSE file.
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/privacy_sandbox_m1_dialog_more_button"
-            android:visibility="gone"
-            android:layout_marginHorizontal="24dp"
-            android:layout_marginVertical="@dimen/promo_dialog_padding"
+            android:visibility="invisible"
+            android:layout_margin="@dimen/promo_dialog_padding"
             android:layout_gravity="end"
             android:gravity="center_vertical"
             android:drawableEnd="@drawable/ic_arrow_down"
@@ -151,19 +170,17 @@ found in the LICENSE file.
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:weightSum="2"
-            android:layout_marginVertical="@dimen/promo_dialog_padding"
-            android:layout_marginHorizontal="24dp"
-            android:visibility="invisible">
+            android:layout_margin="@dimen/promo_dialog_padding"
+            android:visibility="gone">
 
             <org.chromium.ui.widget.ButtonCompat
-                android:id="@+id/settings_button"
+                android:id="@+id/no_button"
                 android:focusable="true"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
                 android:layout_marginEnd="@dimen/privacy_sandbox_consent_button_margin_between"
-                android:text="@string/privacy_sandbox_m1_notice_row_settings_button"
+                android:text="@string/privacy_sandbox_m1_consent_decline_button"
                 style="@style/OutlinedButton" />
             <org.chromium.ui.widget.ButtonCompat
                 android:id="@+id/ack_button"
@@ -172,8 +189,8 @@ found in the LICENSE file.
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/privacy_sandbox_consent_button_margin_between"
-                android:text="@string/privacy_sandbox_m1_notice_row_ack_button"
-                style="@style/FilledButton.Flat" />
+                android:text="@string/privacy_sandbox_m1_consent_accept_button"
+                style="@style/OutlinedButton" />
 
         </LinearLayout>
     </org.chromium.components.browser_ui.widget.BoundedLinearLayout>
