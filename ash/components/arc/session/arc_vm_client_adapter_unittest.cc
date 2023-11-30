@@ -2851,5 +2851,36 @@ TEST_F(ArcVmClientAdapterTest, ForcePostBootDexOpEnabledArcR) {
                               "ro.boot.force_post_boot_dexopt"));
 }
 
+TEST_F(ArcVmClientAdapterTest, DefaultDexOptCacheSetup) {
+  StartMiniArc();
+  UpgradeParams upgrade_params = GetPopulatedUpgradeParams();
+  upgrade_params.skip_tts_cache = false;
+  UpgradeArcWithParams(true, std::move(upgrade_params));
+  EXPECT_FALSE(base::Contains(boot_notification_server()->received_data(),
+                              "ro.boot.skip_dexopt_cache"));
+}
+
+TEST_F(ArcVmClientAdapterTest, SkipDexOptCacheSetupArcT) {
+  base::test::ScopedChromeOSVersionInfo version(
+      "CHROMEOS_ARC_ANDROID_SDK_VERSION=33", base::Time::Now());
+  StartMiniArc();
+  UpgradeParams upgrade_params = GetPopulatedUpgradeParams();
+  upgrade_params.skip_dexopt_cache = true;
+  UpgradeArcWithParams(true, std::move(upgrade_params));
+  EXPECT_TRUE(base::Contains(boot_notification_server()->received_data(),
+                             "ro.boot.skip_dexopt_cache=1"));
+}
+
+TEST_F(ArcVmClientAdapterTest, SkipDexOptCacheSetupArcR) {
+  base::test::ScopedChromeOSVersionInfo version(
+      "CHROMEOS_ARC_ANDROID_SDK_VERSION=30", base::Time::Now());
+  StartMiniArc();
+  UpgradeParams upgrade_params = GetPopulatedUpgradeParams();
+  upgrade_params.skip_dexopt_cache = true;
+  UpgradeArcWithParams(true, std::move(upgrade_params));
+  EXPECT_FALSE(base::Contains(boot_notification_server()->received_data(),
+                              "ro.boot.skip_dexopt_cache"));
+}
+
 }  // namespace
 }  // namespace arc

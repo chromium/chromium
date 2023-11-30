@@ -182,6 +182,12 @@ std::vector<std::string> GenerateUpgradeProps(
         base::StringPrintf("%s.force_post_boot_dexopt=1", prefix.c_str()));
   }
 
+  if (GetArcAndroidSdkVersionAsInt() == kArcVersionT &&
+      upgrade_params.skip_dexopt_cache) {
+    result.push_back(
+        base::StringPrintf("%s.skip_dexopt_cache=1", prefix.c_str()));
+  }
+
   return result;
 }
 

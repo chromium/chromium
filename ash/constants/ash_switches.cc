@@ -79,6 +79,9 @@ const char kArcDataCleanupOnStart[] = "arc-data-cleanup-on-start";
 // in autotests to resolve racy conditions.
 const char kArcDisableAppSync[] = "arc-disable-app-sync";
 
+// Used in tests to disable DexOpt cache which is on by default.
+const char kArcDisableDexOptCache[] = "arc-disable-dexopt-cache";
+
 // Flag that disables ARC download provider that prevents extra content to be
 // downloaded and installed in context of Play Store and GMS Core.
 const char kArcDisableDownloadProvider[] = "arc-disable-download-provider";
