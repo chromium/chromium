@@ -184,8 +184,8 @@ message IsolationDataProto {
   // this Isolated Web App.
   repeated string controlled_frame_partitions = 4;
 
-  // The version of the IWA.
-  required string version = 5;
+  // The version of the IWA - required.
+  optional string version = 5;
 
   message PendingUpdateInfo {
     oneof location {
@@ -193,7 +193,8 @@ message IsolationDataProto {
       DevModeBundle dev_mode_bundle = 2;
       DevModeProxy dev_mode_proxy = 3;
     }
-    required string version = 4;
+    // The version of the pending update - required.
+    optional string version = 4;
   }
 
   optional PendingUpdateInfo pending_update_info = 6;
