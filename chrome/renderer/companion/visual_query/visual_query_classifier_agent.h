@@ -10,7 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/common/companion/visual_search.mojom.h"
+#include "chrome/common/companion/visual_query.mojom.h"
 #include "chrome/renderer/companion/visual_query/visual_query_eligibility.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
@@ -18,7 +18,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
-namespace companion::visual_search {
+namespace companion::visual_query {
 
 using ClassificationResultsAndStats =
     std::pair<std::vector<SingleImageFeaturesAndBytes>,
@@ -94,6 +94,6 @@ class VisualQueryClassifierAgent : public content::RenderFrameObserver,
   base::WeakPtrFactory<VisualQueryClassifierAgent> weak_ptr_factory_{this};
 };
 
-}  // namespace companion::visual_search
+}  // namespace companion::visual_query
 
 #endif  // CHROME_RENDERER_COMPANION_VISUAL_QUERY_VISUAL_QUERY_CLASSIFIER_AGENT_H_

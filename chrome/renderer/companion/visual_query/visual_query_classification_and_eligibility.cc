@@ -14,7 +14,7 @@
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/task_api_factory.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_classifier.h"
 
-namespace companion::visual_search {
+namespace companion::visual_query {
 
 namespace {
 using ::tflite::task::vision::ImageClassifier;
@@ -352,4 +352,4 @@ std::pair<double, double> VisualClassificationAndEligibility::ClassifyImage(
 
 VisualClassificationAndEligibility::VisualClassificationAndEligibility() =
     default;
-}  // namespace companion::visual_search
+}  // namespace companion::visual_query

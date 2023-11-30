@@ -11,7 +11,7 @@
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/models.pb.h"
 
-namespace companion::visual_search {
+namespace companion::visual_query {
 
 namespace {
 
@@ -164,4 +164,4 @@ void VisualQuerySuggestionsService::GetModelWithMetadata(
       "Companion.VisualQuery.Service.GetModelRequestSuccess", true);
 }
 
-}  // namespace companion::visual_search
+}  // namespace companion::visual_query

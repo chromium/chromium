@@ -28,7 +28,7 @@
 #include "chrome/browser/ui/webui/side_panel/companion/companion_side_panel_untrusted_ui.h"
 #include "chrome/browser/ui/webui/side_panel/companion/signin_delegate_impl.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
-#include "chrome/common/companion/visual_search/features.h"
+#include "chrome/common/companion/visual_query/features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -77,10 +77,10 @@ CompanionPageHandler::CompanionPageHandler(
         base::BindRepeating(&CompanionPageHandler::OnPageContentPrefChanged,
                             base::Unretained(this)));
   }
-  if (visual_search::features::IsVisualSearchSuggestionsEnabled()) {
+  if (visual_query::features::IsVisualQuerySuggestionsEnabled()) {
     visual_query_host_ =
-        std::make_unique<visual_search::VisualQueryClassifierHost>(
-            visual_search::VisualQuerySuggestionsServiceFactory::GetForProfile(
+        std::make_unique<visual_query::VisualQueryClassifierHost>(
+            visual_query::VisualQuerySuggestionsServiceFactory::GetForProfile(
                 GetProfile()));
   }
 }
@@ -166,7 +166,7 @@ void CompanionPageHandler::DidFinishLoad(
   // on/off, use histogram check to determine whether or not classification was
   // called.
   if (visual_query_host_) {
-    visual_search::VisualQueryClassifierHost::ResultCallback callback =
+    visual_query::VisualQueryClassifierHost::ResultCallback callback =
         base::BindOnce(&CompanionPageHandler::HandleVisualQueryResult,
                        weak_ptr_factory_.GetWeakPtr());
     visual_query_host_->StartClassification(render_frame_host, validated_url,
@@ -175,7 +175,7 @@ void CompanionPageHandler::DidFinishLoad(
 }
 
 void CompanionPageHandler::SendVisualQueryResult(
-    const visual_search::VisualSuggestionsResults& results) {
+    const visual_query::VisualSuggestionsResults& results) {
   std::vector<side_panel::mojom::VisualSearchResultPtr> final_results;
   for (const auto& result : results) {
     final_results.emplace_back(side_panel::mojom::VisualSearchResult::New(
@@ -191,7 +191,7 @@ void CompanionPageHandler::SendVisualQueryResult(
 }
 
 void CompanionPageHandler::HandleVisualQueryResult(
-    const visual_search::VisualSuggestionsResults results,
+    const visual_query::VisualSuggestionsResults results,
     const VisualSuggestionsMetrics metrics) {
   // This is the only place where we log UKM metrics for the visual
   // classification pipeline. We record the metrics even when the UI is not
@@ -227,7 +227,7 @@ void CompanionPageHandler::OnLoadingState(
     if (visual_result) {
       SendVisualQueryResult(visual_result.value());
     } else {
-      visual_search::VisualQueryClassifierHost::ResultCallback callback =
+      visual_query::VisualQueryClassifierHost::ResultCallback callback =
           base::BindOnce(&CompanionPageHandler::HandleVisualQueryResult,
                          weak_ptr_factory_.GetWeakPtr());
       visual_query_host_->StartClassification(

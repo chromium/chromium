@@ -13,7 +13,7 @@
 class KeyedService;
 class Profile;
 
-namespace companion::visual_search {
+namespace companion::visual_query {
 class VisualQuerySuggestionsService;
 
 // Singleton that owns VisualQuerySuggestionsService objects, one for each
@@ -46,6 +46,6 @@ class VisualQuerySuggestionsServiceFactory : public ProfileKeyedServiceFactory {
   bool ServiceIsNULLWhileTesting() const override;
 };
 
-}  // namespace companion::visual_search
+}  // namespace companion::visual_query
 
 #endif  // CHROME_BROWSER_COMPANION_VISUAL_QUERY_VISUAL_QUERY_SUGGESTIONS_SERVICE_FACTORY_H_

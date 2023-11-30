@@ -9,7 +9,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace companion::visual_search {
+namespace companion::visual_query {
 
 class VisualClassificationAndEligibilityTest : public testing::Test {
  public:
@@ -22,7 +22,7 @@ class VisualClassificationAndEligibilityTest : public testing::Test {
         source_root_dir.AppendASCII("chrome")
             .AppendASCII("test")
             .AppendASCII("data")
-            .AppendASCII("companion_visual_search")
+            .AppendASCII("companion_visual_query")
             .AppendASCII("test-model-quantized.tflite");
     ASSERT_TRUE(base::ReadFileToString(model_file_path, &model_bytes_));
   }
@@ -208,4 +208,4 @@ TEST_F(VisualClassificationAndEligibilityTest, TestInvalidCreation) {
     EXPECT_EQ(created, nullptr);
   }
 }
-}  // namespace companion::visual_search
+}  // namespace companion::visual_query

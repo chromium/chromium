@@ -11,7 +11,7 @@
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_classifier.h"
 #include "ui/gfx/geometry/size_f.h"
 
-namespace companion::visual_search {
+namespace companion::visual_query {
 
 using optimization_guide::proto::EligibilitySpec;
 using optimization_guide::proto::FeatureLibrary;
@@ -80,5 +80,5 @@ class VisualClassificationAndEligibility {
   std::unique_ptr<EligibilityModule> eligibility_module_;
   ClassificationMetrics metrics_;
 };
-}  // namespace companion::visual_search
+}  // namespace companion::visual_query
 #endif  // CHROME_RENDERER_COMPANION_VISUAL_QUERY_VISUAL_QUERY_CLASSIFICATION_AND_ELIGIBILITY_H_

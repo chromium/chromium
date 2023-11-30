@@ -13,8 +13,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chrome/common/companion/visual_search.mojom.h"
-#include "chrome/common/companion/visual_search/features.h"
+#include "chrome/common/companion/visual_query.mojom.h"
+#include "chrome/common/companion/visual_query/features.h"
 #include "chrome/renderer/companion/visual_query/visual_query_classification_and_eligibility.h"
 #include "components/optimization_guide/proto/visual_search_model_metadata.pb.h"
 #include "content/public/renderer/render_frame.h"
@@ -26,7 +26,7 @@
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
-namespace companion::visual_search {
+namespace companion::visual_query {
 
 namespace {
 
@@ -269,9 +269,9 @@ void VisualQueryClassifierAgent::OnClassificationDone(
     ClassificationResultsAndStats results) {
   is_classifying_ = false;
   is_retrying_ = false;
-  std::vector<mojom::VisualSearchSuggestionPtr> final_results;
+  std::vector<mojom::VisualQuerySuggestionPtr> final_results;
   for (auto& result : results.first) {
-    final_results.emplace_back(mojom::VisualSearchSuggestion::New(
+    final_results.emplace_back(mojom::VisualQuerySuggestion::New(
         result.image_contents, result.alt_text));
   }
 
@@ -298,7 +298,7 @@ void VisualQueryClassifierAgent::OnRendererAssociatedRequest(
 }
 
 void VisualQueryClassifierAgent::DidFinishLoad() {
-  if (!features::IsVisualSearchSuggestionsAgentEnabled()) {
+  if (!features::IsVisualQuerySuggestionsAgentEnabled()) {
     return;
   }
   if (!render_frame_ || !render_frame_->IsMainFrame() ||
@@ -336,4 +336,4 @@ void VisualQueryClassifierAgent::OnDestruct() {
   delete this;
 }
 
-}  // namespace companion::visual_search
+}  // namespace companion::visual_query

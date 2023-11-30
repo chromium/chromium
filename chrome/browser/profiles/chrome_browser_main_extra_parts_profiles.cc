@@ -706,7 +706,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if !BUILDFLAG(IS_ANDROID)
   ClosedTabCacheServiceFactory::GetInstance();
-  companion::visual_search::VisualQuerySuggestionsServiceFactory::GetInstance();
+  companion::visual_query::VisualQuerySuggestionsServiceFactory::GetInstance();
 #endif
   commerce::ShoppingServiceFactory::GetInstance();
   ConsentAuditorFactory::GetInstance();

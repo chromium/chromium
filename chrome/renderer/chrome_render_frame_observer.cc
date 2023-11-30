@@ -584,7 +584,7 @@ void ChromeRenderFrameObserver::SetClientSidePhishingDetection() {
 void ChromeRenderFrameObserver::SetVisualQueryClassifierAgent() {
 #if !BUILDFLAG(IS_ANDROID)
   visual_classifier_ =
-      companion::visual_search::VisualQueryClassifierAgent::Create(
+      companion::visual_query::VisualQueryClassifierAgent::Create(
           render_frame());
 #endif
 }

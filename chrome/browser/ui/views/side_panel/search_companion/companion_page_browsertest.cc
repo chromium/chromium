@@ -42,7 +42,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_toolbar_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/common/companion/visual_search/features.h"
+#include "chrome/common/companion/visual_query/features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -114,7 +114,7 @@ base::FilePath model_file_path() {
   return source_root_dir.AppendASCII("chrome")
       .AppendASCII("test")
       .AppendASCII("data")
-      .AppendASCII("companion_visual_search")
+      .AppendASCII("companion_visual_query")
       .AppendASCII("test-model-quantized.tflite");
 }
 
@@ -597,9 +597,9 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
           companion::features::internal::kSidePanelCompanion);
     }
 
-    if (enable_feature_visual_search_) {
+    if (enable_feature_visual_query_) {
       enabled_features.emplace_back(base::test::FeatureRefAndParams(
-          companion::visual_search::features::kVisualSearchSuggestions,
+          companion::visual_query::features::kVisualQuerySuggestions,
           /*params*/ {}));
     }
     enabled_features.emplace_back(
@@ -709,7 +709,7 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
   std::string last_viewport_height_param_;
   std::string enable_feature_companion_image_search_ = "true";
   bool enable_feature_side_panel_companion_ = true;
-  bool enable_feature_visual_search_ = true;
+  bool enable_feature_visual_query_ = true;
   bool enable_feature_lens_standalone_ = true;
 };
 
@@ -958,7 +958,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageSameTabBrowserTest,
             SidePanelEntry::Id::kSearchCompanion);
   EXPECT_EQ(2, web_contents()->GetController().GetEntryCount());
 
-  // Set Search Comapnion iframe to to an untrusted domain
+  // Set Search Companion iframe to to an untrusted domain
   content::WebContents* companion_web_contents =
       GetCompanionWebContents(browser());
   std::string script =

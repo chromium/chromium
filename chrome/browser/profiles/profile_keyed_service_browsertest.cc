@@ -30,7 +30,7 @@
 #include "third_party/blink/public/common/features.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/common/companion/visual_search/features.h"
+#include "chrome/common/companion/visual_query/features.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace {
@@ -169,7 +169,7 @@ class ProfileKeyedServiceBrowserTest : public InProcessBrowserTest {
         {
 #if !BUILDFLAG(IS_ANDROID)
           features::kTrustSafetySentimentSurvey,
-          companion::visual_search::features::kVisualSearchSuggestions,
+          companion::visual_query::features::kVisualQuerySuggestions,
 #endif  // !BUILDFLAG(IS_ANDROID)
           blink::features::kBrowsingTopics,
           net::features::kTpcdMetadataGrants,

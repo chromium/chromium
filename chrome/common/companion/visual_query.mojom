@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module companion.visual_search.mojom;
+module companion.visual_query.mojom;
 
 import "mojo/public/mojom/base/read_only_file.mojom";
 import "skia/public/mojom/bitmap.mojom";
@@ -25,8 +25,8 @@ struct ClassificationStats {
   uint32 results_count;
 };
 
-// Encapsulates a visual search suggestion result.
-struct VisualSearchSuggestion {
+// Encapsulates a visual query suggestion result.
+struct VisualQuerySuggestion {
   // raw skbitmap version of image.
   skia.mojom.BitmapN32 image;
 
@@ -34,18 +34,18 @@ struct VisualSearchSuggestion {
   string alt_text;
 };
 
-// Browser-side interface handling responses for visual search suggestions.
+// Browser-side interface handling responses for visual query suggestions.
 interface VisualSuggestionsResultHandler {
-  // Called when the renderer is ready to send visual search suggestions back
+  // Called when the renderer is ready to send visual query suggestions back
   // to the browser.
-  // `results` is a list of visual search suggestions.
+  // `results` is a list of visual query suggestions.
   // `stats` contains statistics about the classification (typically used for
   // logging).
-  HandleClassification(array<VisualSearchSuggestion> results,
+  HandleClassification(array<VisualQuerySuggestion> results,
     ClassificationStats stats);
 };
 
-// Renderer-side interface listening for visual search suggestions requests.
+// Renderer-side interface listening for visual query suggestions requests.
 // We make this IPC call once per page load to the main render frame.
 interface VisualSuggestionsRequestHandler {
   // Called to kick off the visual classification request and passes all of
@@ -62,7 +62,7 @@ interface VisualSuggestionsRequestHandler {
 };
 
 // Interface used by renderer to request model and metadata from the
-// VisualSearchSuggestionsService running in the browser process.
+// VisualQuerySuggestionsService running in the browser process.
 // This interface is used in cases where we want image classification to
 // be triggered on the renderer process rather than browser process.
 interface VisualSuggestionsModelProvider {

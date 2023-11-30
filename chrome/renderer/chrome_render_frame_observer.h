@@ -168,7 +168,7 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
   std::vector<std::u16string> webui_javascript_;
 
   // Add visual query agent to suggest visually relevant items on the page.
-  raw_ptr<companion::visual_search::VisualQueryClassifierAgent,
+  raw_ptr<companion::visual_query::VisualQueryClassifierAgent,
           ExperimentalRenderer>
       visual_classifier_ = nullptr;
 #endif

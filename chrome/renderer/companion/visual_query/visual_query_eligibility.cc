@@ -15,7 +15,7 @@
 #include "base/notreached.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 
-namespace companion::visual_search {
+namespace companion::visual_query {
 namespace {
 constexpr char kNormalizedPrefix[] = "normalized_";
 constexpr char kNormalizeByPrefix[] = "normalize_by_";
@@ -722,4 +722,4 @@ void EligibilityModule::RunAdditionalCheapPruning(
     }
   }
 }
-}  // namespace companion::visual_search
+}  // namespace companion::visual_query

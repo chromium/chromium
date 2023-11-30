@@ -10,13 +10,13 @@
 #include "base/time/time.h"
 #include "chrome/browser/companion/core/companion_metrics_logger.h"
 #include "chrome/browser/companion/visual_query/visual_query_suggestions_service.h"
-#include "chrome/common/companion/visual_search.mojom.h"
+#include "chrome/common/companion/visual_query.mojom.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "url/gurl.h"
 
-namespace companion::visual_search {
+namespace companion::visual_query {
 
 // Data container includes image (as base64 string) and alt-text.
 struct VisualSuggestionsResult {
@@ -102,7 +102,7 @@ class VisualQueryClassifierHost : mojom::VisualSuggestionsResultHandler {
   // The list of image data uris are sent to side panel companion for
   // rendering.
   void HandleClassification(
-      std::vector<mojom::VisualSearchSuggestionPtr> results,
+      std::vector<mojom::VisualQuerySuggestionPtr> results,
       mojom::ClassificationStatsPtr stats) override;
 
   // This is the main method used by the companion page handler to start the
@@ -151,6 +151,6 @@ class VisualQueryClassifierHost : mojom::VisualSuggestionsResultHandler {
   // Pointer factory necessary for scheduling tasks on different threads.
   base::WeakPtrFactory<VisualQueryClassifierHost> weak_ptr_factory_{this};
 };
-}  // namespace companion::visual_search
+}  // namespace companion::visual_query
 
 #endif  // CHROME_BROWSER_COMPANION_VISUAL_QUERY_VISUAL_QUERY_CLASSIFIER_HOST_H_

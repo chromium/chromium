@@ -132,12 +132,12 @@ class CompanionPageHandler
   // This method is used as the callback that handles visual query results.
   // Its role is to perform some checks and do a mojom IPC to side panel.
   void HandleVisualQueryResult(
-      const visual_search::VisualSuggestionsResults results,
+      const visual_query::VisualSuggestionsResults results,
       const VisualSuggestionsMetrics stats);
 
   // Method responsible for binding and sending VQS results to panel.
   void SendVisualQueryResult(
-      const visual_search::VisualSuggestionsResults& results);
+      const visual_query::VisualSuggestionsResults& results);
 
   mojo::Receiver<side_panel::mojom::CompanionPageHandler> receiver_;
   mojo::Remote<side_panel::mojom::CompanionPage> page_;
@@ -149,7 +149,7 @@ class CompanionPageHandler
       consent_helper_;
 
   // Owns the orchestrator for visual query suggestions.
-  std::unique_ptr<visual_search::VisualQueryClassifierHost> visual_query_host_;
+  std::unique_ptr<visual_query::VisualQueryClassifierHost> visual_query_host_;
 
   // Logs metrics for companion page. Reset when there is a new navigation.
   std::unique_ptr<CompanionMetricsLogger> metrics_logger_;

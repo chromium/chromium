@@ -1733,7 +1733,7 @@ if (!is_android) {
       "//chrome/browser/web_applications/extensions",
       "//chrome/browser/webaudio:browser_tests",
       "//chrome/common:version_header",
-      "//chrome/common/companion/visual_search:flags",
+      "//chrome/common/companion/visual_query:flags",
       "//chrome/common/privacy_budget:test_support",
       "//chrome/renderer",
       "//chrome/renderer/companion/visual_query:browser_tests",

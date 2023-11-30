@@ -14,12 +14,12 @@
 #include "base/path_service.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
-#include "base/test/test_timeouts.h"
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "chrome/browser/companion/core/companion_metrics_logger.h"
-#include "chrome/common/companion/visual_search.mojom.h"
+#include "chrome/common/companion/visual_query.mojom.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
@@ -34,7 +34,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace companion::visual_search {
+namespace companion::visual_query {
 
 namespace {
 
@@ -46,7 +46,7 @@ base::FilePath model_file_path() {
   return source_root_dir.AppendASCII("chrome")
       .AppendASCII("test")
       .AppendASCII("data")
-      .AppendASCII("companion_visual_search")
+      .AppendASCII("companion_visual_query")
       .AppendASCII("test-model-quantized.tflite");
 }
 
@@ -88,11 +88,11 @@ class VisualQueryClassifierHostTest : public ChromeRenderViewHostTestHarness {
     test_model_provider_ = std::make_unique<
         optimization_guide::TestOptimizationGuideModelProvider>();
     service_ = std::make_unique<
-        companion::visual_search::VisualQuerySuggestionsService>(
+        companion::visual_query::VisualQuerySuggestionsService>(
         test_model_provider_.get(), background_task_runner);
 
     visual_query_host_ =
-        std::make_unique<companion::visual_search::VisualQueryClassifierHost>(
+        std::make_unique<companion::visual_query::VisualQueryClassifierHost>(
             service_.get());
   }
 
@@ -129,9 +129,9 @@ class VisualQueryClassifierHostTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<optimization_guide::TestOptimizationGuideModelProvider>
       test_model_provider_;
   std::unique_ptr<optimization_guide::ModelInfo> model_info_;
-  std::unique_ptr<companion::visual_search::VisualQuerySuggestionsService>
+  std::unique_ptr<companion::visual_query::VisualQuerySuggestionsService>
       service_;
-  std::unique_ptr<companion::visual_search::VisualQueryClassifierHost>
+  std::unique_ptr<companion::visual_query::VisualQueryClassifierHost>
       visual_query_host_;
   const GURL url_;
   base::HistogramTester histogram_tester_;
@@ -149,7 +149,7 @@ TEST_F(VisualQueryClassifierHostTest, StartClassification) {
       "Companion.VisualQuery.ClassifierModelAvailable", true, 1);
   histogram_tester_.ExpectBucketCount(
       "Companion.VisualQuery.ClassificationInitStatus",
-      companion::visual_search::InitStatus::kSuccess, 1);
+      companion::visual_query::InitStatus::kSuccess, 1);
   histogram_tester_.ExpectTotalCount(
       "Companion.VisualQuery.ClassifierInitializationLatency", 1);
   // ClassificationLatency is not recorded until HandleClassification().
@@ -170,7 +170,7 @@ TEST_F(VisualQueryClassifierHostTest, StartClassification_NoModelSet) {
   // The following calls are not made for the same reason as above.
   histogram_tester_.ExpectBucketCount(
       "Companion.VisualQuery.ClassificationInitStatus",
-      companion::visual_search::InitStatus::kFetchModel, 1);
+      companion::visual_query::InitStatus::kFetchModel, 1);
   histogram_tester_.ExpectTotalCount(
       "Companion.VisualQuery.ClassifierInitializationLatency", 0);
   histogram_tester_.ExpectTotalCount(
@@ -193,7 +193,7 @@ TEST_F(VisualQueryClassifierHostTest, StartClassification_WithInvalidModel) {
   // called because file path is not valid.
   histogram_tester_.ExpectBucketCount(
       "Companion.VisualQuery.ClassificationInitStatus",
-      companion::visual_search::InitStatus::kFetchModel, 1);
+      companion::visual_query::InitStatus::kFetchModel, 1);
   histogram_tester_.ExpectTotalCount(
       "Companion.VisualQuery.ClassifierInitializationLatency", 0);
   histogram_tester_.ExpectTotalCount(
@@ -213,7 +213,7 @@ TEST_F(VisualQueryClassifierHostTest, StartClassification_WithCancellation) {
 
   histogram_tester_.ExpectBucketCount(
       "Companion.VisualQuery.ClassificationInitStatus",
-      companion::visual_search::InitStatus::kQueryCancelled, 1);
+      companion::visual_query::InitStatus::kQueryCancelled, 1);
   histogram_tester_.ExpectBucketCount(
       "Companion.VisualQuery.ClassifierModelAvailable", true, 1);
   histogram_tester_.ExpectTotalCount(
@@ -233,9 +233,9 @@ TEST_F(VisualQueryClassifierHostTest, HandleClassification) {
       web_contents()->GetPrimaryMainFrame(), url_, std::move(callback));
   WaitForHostClassification();
 
-  std::vector<mojom::VisualSearchSuggestionPtr> results;
+  std::vector<mojom::VisualQuerySuggestionPtr> results;
   SkBitmap result = create_bitmap(1000, 1000, 128, 128, 255);
-  results.emplace_back(mojom::VisualSearchSuggestion::New(result, "alt-text"));
+  results.emplace_back(mojom::VisualQuerySuggestion::New(result, "alt-text"));
 
   mojom::ClassificationStatsPtr stats =
       mojom::ClassificationStats::New(mojom::ClassificationStats());
@@ -250,11 +250,11 @@ TEST_F(VisualQueryClassifierHostTest, HandleClassification) {
       "Companion.VisualQuery.ClassifierModelAvailable", true, 1);
   histogram_tester_.ExpectBucketCount(
       "Companion.VisualQuery.ClassificationInitStatus",
-      companion::visual_search::InitStatus::kSuccess, 1);
+      companion::visual_query::InitStatus::kSuccess, 1);
   histogram_tester_.ExpectTotalCount(
       "Companion.VisualQuery.ClassifierInitializationLatency", 1);
   histogram_tester_.ExpectTotalCount(
       "Companion.VisualQuery.ClassificationLatency", 1);
 }
 
-}  // namespace companion::visual_search
+}  // namespace companion::visual_query

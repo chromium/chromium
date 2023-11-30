@@ -2237,8 +2237,8 @@ const char kCscForceCompanionPinnedStateDescription[] = "";
 const char kCscSidePanelCompanionName[] = "CSC";
 const char kCscSidePanelCompanionDescription[] = "Chrome search companion.";
 
-const char kCscVisualSearchSuggestionsName[] = "CSC-VSS";
-const char kCscVisualSearchSuggestionsDescription[] = "";
+const char kCscVisualQuerySuggestionsName[] = "CSC-VSS";
+const char kCscVisualQuerySuggestionsDescription[] = "";
 
 const char kLogJsConsoleMessagesName[] =
     "Log JS console messages in system logs";

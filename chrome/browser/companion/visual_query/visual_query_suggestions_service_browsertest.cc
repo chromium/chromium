@@ -10,7 +10,7 @@
 #include "chrome/browser/companion/visual_query/visual_query_suggestions_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/common/companion/visual_search/features.h"
+#include "chrome/common/companion/visual_query/features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
@@ -28,7 +28,7 @@ class VisualQuerySuggestionsServiceDisabledBrowserTest
  public:
   VisualQuerySuggestionsServiceDisabledBrowserTest() {
     scoped_feature_list_.InitAndDisableFeature(
-        companion::visual_search::features::kVisualSearchSuggestions);
+        companion::visual_query::features::kVisualQuerySuggestions);
   }
 
   void SetUpOnMainThread() override {
@@ -48,7 +48,7 @@ class VisualQuerySuggestionsServiceDisabledBrowserTest
 
 IN_PROC_BROWSER_TEST_F(VisualQuerySuggestionsServiceDisabledBrowserTest,
                        VisualQuerySuggestionsServiceDisabled) {
-  EXPECT_FALSE(companion::visual_search::VisualQuerySuggestionsServiceFactory::
+  EXPECT_FALSE(companion::visual_query::VisualQuerySuggestionsServiceFactory::
                    GetForProfile(browser()->profile()));
 }
 
@@ -57,12 +57,12 @@ class VisualQuerySuggestionsServiceBrowserTest
  public:
   VisualQuerySuggestionsServiceBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {companion::visual_search::features::kVisualSearchSuggestions}, {});
+        {companion::visual_query::features::kVisualQuerySuggestions}, {});
   }
 
-  companion::visual_search::VisualQuerySuggestionsService*
+  companion::visual_query::VisualQuerySuggestionsService*
   visual_query_suggestions_service() {
-    return companion::visual_search::VisualQuerySuggestionsServiceFactory::
+    return companion::visual_query::VisualQuerySuggestionsServiceFactory::
         GetForProfile(browser()->profile());
   }
 

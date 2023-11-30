@@ -11,9 +11,9 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/companion/visual_search/features.h"
+#include "chrome/common/companion/visual_query/features.h"
 
-namespace companion::visual_search {
+namespace companion::visual_query {
 
 // static
 VisualQuerySuggestionsService*
@@ -31,7 +31,7 @@ VisualQuerySuggestionsServiceFactory::VisualQuerySuggestionsServiceFactory()
               .WithGuest(ProfileSelection::kOriginalOnly)
               .Build()) {
   if (base::FeatureList::IsEnabled(
-          companion::visual_search::features::kVisualSearchSuggestions)) {
+          companion::visual_query::features::kVisualQuerySuggestions)) {
     DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
   }
 }
@@ -47,7 +47,7 @@ std::unique_ptr<KeyedService>
 VisualQuerySuggestionsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   if (!base::FeatureList::IsEnabled(
-          companion::visual_search::features::kVisualSearchSuggestions)) {
+          companion::visual_query::features::kVisualQuerySuggestions)) {
     return nullptr;
   }
 
@@ -68,11 +68,11 @@ VisualQuerySuggestionsServiceFactory::BuildServiceInstanceForBrowserContext(
 bool VisualQuerySuggestionsServiceFactory::ServiceIsCreatedWithBrowserContext()
     const {
   return base::FeatureList::IsEnabled(
-      visual_search::features::kVisualSearchSuggestions);
+      visual_query::features::kVisualQuerySuggestions);
 }
 
 bool VisualQuerySuggestionsServiceFactory::ServiceIsNULLWhileTesting() const {
   return true;
 }
 
-}  // namespace companion::visual_search
+}  // namespace companion::visual_query

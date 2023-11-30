@@ -1261,8 +1261,8 @@ extern const char kCscForceCompanionPinnedStateDescription[];
 extern const char kCscSidePanelCompanionName[];
 extern const char kCscSidePanelCompanionDescription[];
 
-extern const char kCscVisualSearchSuggestionsName[];
-extern const char kCscVisualSearchSuggestionsDescription[];
+extern const char kCscVisualQuerySuggestionsName[];
+extern const char kCscVisualQuerySuggestionsDescription[];
 
 extern const char kLensOnQuickActionSearchWidgetName[];
 extern const char kLensOnQuickActionSearchWidgetDescription[];

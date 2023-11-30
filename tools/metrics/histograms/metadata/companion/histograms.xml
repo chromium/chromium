@@ -166,7 +166,7 @@ chromium-metrics-reviews@google.com.
   <owner>src/chrome/browser/companion/OWNERS</owner>
   <summary>
     Records whether we successfully started classification in the
-    VisualSearchClassifierAgent or chose to delay processing to wait for DOM to
+    VisualQueryClassifierAgent or chose to delay processing to wait for DOM to
     get updates with images. This is recorded right after we traverse the DOM
     for images but before we do any classification.
   </summary>
@@ -202,7 +202,7 @@ chromium-metrics-reviews@google.com.
   <owner>src/chrome/browser/companion/OWNERS</owner>
   <summary>
     Records the number of images received by the companion UI from the
-    VisualSearchClassifierAgent running in the renderer process. Recorded once
+    VisualQueryClassifierAgent running in the renderer process. Recorded once
     the classification and result filtering is complete and the result is
     received by the browser process.
   </summary>

@@ -21,7 +21,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
 
-namespace companion::visual_search {
+namespace companion::visual_query {
 
 using ::gfx::Rect;
 using ::gfx::Size;
@@ -175,5 +175,5 @@ class EligibilityModule {
   float most_shoppy_shopping_score_;
   float most_shoppy_sens_score_;
 };
-}  // namespace companion::visual_search
+}  // namespace companion::visual_query
 #endif  // CHROME_RENDERER_COMPANION_VISUAL_QUERY_VISUAL_QUERY_ELIGIBILITY_H_

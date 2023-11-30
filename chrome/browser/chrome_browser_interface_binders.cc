@@ -224,8 +224,8 @@
 #include "chrome/browser/ui/webui/discards/discards.mojom.h"
 #include "chrome/browser/ui/webui/discards/discards_ui.h"
 #include "chrome/browser/ui/webui/discards/site_data.mojom.h"
-#include "chrome/common/companion/visual_search.mojom.h"
-#include "chrome/common/companion/visual_search/features.h"
+#include "chrome/common/companion/visual_query.mojom.h"
+#include "chrome/common/companion/visual_query/features.h"
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
@@ -868,9 +868,9 @@ void BindScreen2xMainContentExtractor(
 void BindVisualSuggestionsModelProvider(
     content::RenderFrameHost* frame_host,
     mojo::PendingReceiver<
-        companion::visual_search::mojom::VisualSuggestionsModelProvider>
+        companion::visual_query::mojom::VisualSuggestionsModelProvider>
         receiver) {
-  companion::visual_search::VisualQuerySuggestionsServiceFactory::GetForProfile(
+  companion::visual_query::VisualQuerySuggestionsServiceFactory::GetForProfile(
       Profile::FromBrowserContext(
           frame_host->GetProcess()->GetBrowserContext()))
       ->BindModelReceiver(std::move(receiver));
@@ -1024,9 +1024,9 @@ void PopulateChromeFrameBinders(
         base::BindRepeating(&web_app::SubAppsServiceImpl::CreateIfAllowed));
   }
 
-  if (companion::visual_search::features::
-          IsVisualSearchSuggestionsAgentEnabled()) {
-    map->Add<companion::visual_search::mojom::VisualSuggestionsModelProvider>(
+  if (companion::visual_query::features::
+          IsVisualQuerySuggestionsAgentEnabled()) {
+    map->Add<companion::visual_query::mojom::VisualSuggestionsModelProvider>(
         base::BindRepeating(&BindVisualSuggestionsModelProvider));
   }
 #endif

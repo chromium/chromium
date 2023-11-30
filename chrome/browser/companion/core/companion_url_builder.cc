@@ -21,7 +21,7 @@
 // Need to BUILDFLAG these lines because kSidePanelCompanionEntryPinnedToToolbar
 // does not exist on Android and will break try-bots
 #if (!BUILDFLAG(IS_ANDROID))
-#include "chrome/common/companion/visual_search/features.h"
+#include "chrome/common/companion/visual_query/features.h"
 #endif
 
 namespace companion {
@@ -130,7 +130,7 @@ std::string CompanionUrlBuilder::BuildCompanionUrlParamProto(
   }
 
 // Need to BUILDFLAG these lines because kSidePanelCompanionEntryPinnedToToolbar
-// and kVisualSearchSuggestions do not exist on Android and will break try-bots
+// and kVisualQuerySuggestions do not exist on Android and will break try-bots
 #if (!BUILDFLAG(IS_ANDROID))
   bool is_entry_point_default_pinned =
       pref_service_ &&
@@ -139,7 +139,7 @@ std::string CompanionUrlBuilder::BuildCompanionUrlParamProto(
           ->GetBool();
   url_params.set_is_entrypoint_pinned_by_default(is_entry_point_default_pinned);
   url_params.set_is_vqs_enabled_on_chrome(base::FeatureList::IsEnabled(
-      visual_search::features::kVisualSearchSuggestions));
+      visual_query::features::kVisualQuerySuggestions));
   url_params.set_is_upload_dialog_supported(true);
   url_params.set_is_hard_refresh_supported(true);
 #endif

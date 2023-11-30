@@ -7,7 +7,7 @@
 
 #include "base/files/file.h"
 #include "base/functional/callback_forward.h"
-#include "chrome/common/companion/visual_search.mojom.h"
+#include "chrome/common/companion/visual_query.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_target_model_observer.h"
 #include "components/optimization_guide/proto/visual_search_model_metadata.pb.h"
@@ -18,7 +18,7 @@ namespace optimization_guide {
 class OptimizationGuideModelProvider;
 }  // namespace optimization_guide
 
-namespace companion::visual_search {
+namespace companion::visual_query {
 
 using ModelMetadata =
     absl::optional<optimization_guide::proto::VisualSearchModelMetadata>;
@@ -90,6 +90,6 @@ class VisualQuerySuggestionsService
   base::WeakPtrFactory<VisualQuerySuggestionsService> weak_ptr_factory_{this};
 };
 
-}  // namespace companion::visual_search
+}  // namespace companion::visual_query
 
 #endif  // CHROME_BROWSER_COMPANION_VISUAL_QUERY_VISUAL_QUERY_SUGGESTIONS_SERVICE_H_

@@ -15,8 +15,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_discardable_memory_allocator.h"
 #include "base/test/test_timeouts.h"
-#include "chrome/common/companion/visual_search.mojom.h"
-#include "chrome/common/companion/visual_search/features.h"
+#include "chrome/common/companion/visual_query.mojom.h"
+#include "chrome/common/companion/visual_query/features.h"
 #include "chrome/renderer/companion/visual_query/visual_query_classifier_agent.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -29,7 +29,7 @@ using testing::_;
 using testing::AtLeast;
 using testing::Return;
 
-namespace companion::visual_search {
+namespace companion::visual_query {
 
 namespace {
 
@@ -48,7 +48,7 @@ base::FilePath model_file_path() {
   return source_root_dir.AppendASCII("chrome")
       .AppendASCII("test")
       .AppendASCII("data")
-      .AppendASCII("companion_visual_search")
+      .AppendASCII("companion_visual_query")
       .AppendASCII("test-model-quantized.tflite");
 }
 
@@ -58,7 +58,7 @@ base::FilePath img_file_path() {
   return source_root_dir.AppendASCII("chrome")
       .AppendASCII("test")
       .AppendASCII("data")
-      .AppendASCII("companion_visual_search")
+      .AppendASCII("companion_visual_query")
       .AppendASCII("base64_img.txt");
 }
 
@@ -74,7 +74,7 @@ class TestVisualResultHandler : mojom::VisualSuggestionsResultHandler {
   }
 
   MOCK_METHOD2(HandleClassification,
-               void(std::vector<mojom::VisualSearchSuggestionPtr>,
+               void(std::vector<mojom::VisualQuerySuggestionPtr>,
                     mojom::ClassificationStatsPtr));
 
  private:
@@ -146,9 +146,9 @@ class VisualQueryClassifierAgentTest : public ChromeRenderViewTest {
     base::FieldTrialParams params;
     params["max_visual_suggestions"] = "2";
     enabled_features.emplace_back(base::test::FeatureRefAndParams(
-        companion::visual_search::features::kVisualSearchSuggestions, params));
+        companion::visual_query::features::kVisualQuerySuggestions, params));
     enabled_features.emplace_back(base::test::FeatureRefAndParams(
-        companion::visual_search::features::kVisualSearchSuggestionsAgent,
+        companion::visual_query::features::kVisualQuerySuggestionsAgent,
         /* params */ {}));
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
@@ -234,4 +234,4 @@ TEST_F(VisualQueryClassifierAgentTest, StartClassification_InvalidModel) {
   histogram_tester_.ExpectBucketCount(
       "Companion.VisualQuery.Agent.InvalidModelFailure", true, 1);
 }
-}  // namespace companion::visual_search
+}  // namespace companion::visual_query

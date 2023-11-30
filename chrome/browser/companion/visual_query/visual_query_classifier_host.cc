@@ -20,7 +20,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
-namespace companion::visual_search {
+namespace companion::visual_query {
 
 namespace {
 
@@ -76,7 +76,7 @@ VisualQueryClassifierHost::VisualQueryClassifierHost(
 VisualQueryClassifierHost::~VisualQueryClassifierHost() = default;
 
 void VisualQueryClassifierHost::HandleClassification(
-    std::vector<mojom::VisualSearchSuggestionPtr> results,
+    std::vector<mojom::VisualQuerySuggestionPtr> results,
     mojom::ClassificationStatsPtr classification_stats) {
   base::UmaHistogramCounts100("Companion.VisualQuery.ClassificationResultsSize",
                               results.size());
@@ -209,4 +209,4 @@ VisualQueryClassifierHost::GetVisualResult(const GURL& url) {
   }
   return absl::nullopt;
 }
-}  // namespace companion::visual_search
+}  // namespace companion::visual_query

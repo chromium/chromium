@@ -20,7 +20,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using companion::visual_search::VisualQuerySuggestionsService;
+using companion::visual_query::VisualQuerySuggestionsService;
 
 namespace {
 
@@ -30,7 +30,7 @@ base::FilePath model_file_path() {
   return source_root_dir.AppendASCII("chrome")
       .AppendASCII("test")
       .AppendASCII("data")
-      .AppendASCII("companion_visual_search")
+      .AppendASCII("companion_visual_query")
       .AppendASCII("test-model-quantized.tflite");
 }
 
@@ -69,7 +69,7 @@ class VisualQuerySuggestionsServiceTest : public ::testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<companion::visual_search::VisualQuerySuggestionsService>
+  std::unique_ptr<companion::visual_query::VisualQuerySuggestionsService>
       service_;
   std::unique_ptr<optimization_guide::TestOptimizationGuideModelProvider>
       test_model_provider_;
@@ -105,7 +105,7 @@ TEST_F(VisualQuerySuggestionsServiceTest, OnModelUpdated_InvalidModelFile) {
           .SetModelFilePath(source_root_dir.AppendASCII("chrome")
                                 .AppendASCII("test")
                                 .AppendASCII("data")
-                                .AppendASCII("companion_visual_search")
+                                .AppendASCII("companion_visual_query")
                                 .AppendASCII("wack-a-doodle.tflite"))
           .SetVersion(123)
           .Build();

@@ -11,7 +11,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
 
-namespace companion::visual_search {
+namespace companion::visual_query {
 
 using ::gfx::Rect;
 using ::gfx::Size;
@@ -778,4 +778,4 @@ TEST(EligibilityModuleTest, TestZIndexOverlapFiltering) {
               UnorderedElementsAre("image1", "image2", "image5", "image6"));
 }
 
-}  // namespace companion::visual_search
+}  // namespace companion::visual_query
