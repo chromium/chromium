@@ -6,6 +6,7 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_RESOURCE_ATTRIBUTION_QUERY_PARAMS_H_
 
 #include <bitset>
+#include <compare>
 #include <set>
 
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
@@ -26,6 +27,9 @@ struct QueryParams {
   QueryParams(const QueryParams& other);
   QueryParams& operator=(const QueryParams& other);
 
+  friend constexpr bool operator==(const QueryParams&,
+                                   const QueryParams&) = default;
+
   // Individual resource contexts to measure.
   std::set<ResourceContext> resource_contexts;
 
@@ -35,21 +39,6 @@ struct QueryParams {
   // Resource types to measure.
   ResourceTypeSet resource_types;
 };
-
-inline bool operator==(const QueryParams& a, const QueryParams& b) {
-  static_assert(sizeof(QueryParams) ==
-                    sizeof(decltype(QueryParams::resource_contexts)) +
-                        sizeof(decltype(QueryParams::all_context_types)) +
-                        sizeof(decltype(QueryParams::resource_types)),
-                "update operator== when changing QueryParams");
-  return a.resource_contexts == b.resource_contexts &&
-         a.all_context_types == b.all_context_types &&
-         a.resource_types == b.resource_types;
-}
-
-inline bool operator!=(const QueryParams& a, const QueryParams& b) {
-  return !(a == b);
-}
 
 }  // namespace performance_manager::resource_attribution::internal
 
