@@ -200,12 +200,13 @@ PrintViewManagerBase::~PrintViewManagerBase() {
 // static
 void PrintViewManagerBase::DisableThirdPartyBlocking() {
 #if BUILDFLAG(ENABLE_OOP_PRINTING) && BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
-  if (!ShouldPrintJobOop()) {
+  const bool loads_print_drivers_in_browser_process = !ShouldPrintJobOop();
+#else
+  constexpr bool loads_print_drivers_in_browser_process = true;
+#endif
+  if (loads_print_drivers_in_browser_process) {
     ModuleDatabase::DisableThirdPartyBlocking();
   }
-#else
-  ModuleDatabase::DisableThirdPartyBlocking();
-#endif
 }
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
