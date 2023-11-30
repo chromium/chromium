@@ -3344,21 +3344,6 @@
             ]
         }
     ],
-    "ChromeOSARCVMArcOnDemand": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled_20231010",
-                    "disable_features": [
-                        "ArcOnDemand"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromeOSARCVMLmkPerceptibleMinState": [
         {
             "platforms": [
