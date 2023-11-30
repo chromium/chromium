@@ -1092,8 +1092,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
       }
     }
   }
-
-  [self.consumer reconfigureCellsForItems:@[ self.updateCheckItem ]];
+  [self reconfigureCellForItem:_updateCheckItem];
 }
 
 // Reconfigures the display of the `passwordCheckItem` based on current state of
@@ -1181,7 +1180,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
     }
   }
 
-  [self.consumer reconfigureCellsForItems:@[ self.passwordCheckItem ]];
+  [self reconfigureCellForItem:_passwordCheckItem];
 }
 
 // Reconfigures the display of the `safeBrowsingCheckItem` based on current
@@ -1230,7 +1229,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
     }
   }
 
-  [self.consumer reconfigureCellsForItems:@[ self.safeBrowsingCheckItem ]];
+  [self reconfigureCellForItem:_safeBrowsingCheckItem];
 }
 
 // Chooses the Safe Browsing detail text string that should be used based on the
@@ -1259,7 +1258,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
     self.checkStartItem.text =
         GetNSString(IDS_IOS_CANCEL_PASSWORD_CHECK_BUTTON);
   }
-  [self.consumer reconfigureCellsForItems:@[ self.checkStartItem ]];
+  [self reconfigureCellForItem:_checkStartItem];
 }
 
 // Updates the timestamp of when safety check last found an issue.
@@ -1312,6 +1311,20 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
 
   return l10n_util::GetNSStringF(
       IDS_IOS_SETTINGS_SAFETY_CHECK_ISSUES_FOUND_TIME, timestamp);
+}
+
+// Updates the consumer's cell corresponding to `item`.
+- (void)reconfigureCellForItem:(TableViewItem*)item {
+  CHECK(item);
+  // Reconfiguration can change the height the cell needs for displaying its
+  // content. Wrapping it around `performBatchTableViewUpdates` so the cell is
+  // properly resized.
+  __weak __typeof(self) weakSelf = self;
+  [self.consumer
+      performBatchTableViewUpdates:^{
+        [weakSelf.consumer reconfigureCellsForItems:@[ item ]];
+      }
+                        completion:nil];
 }
 
 @end
