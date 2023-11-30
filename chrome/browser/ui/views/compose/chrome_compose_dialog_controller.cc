@@ -69,7 +69,7 @@ void ChromeComposeDialogController::ShowComposeDialog(
 
   auto compose_dialog_view = std::make_unique<ComposeDialogView>(
       anchor_view, std::move(bubble_wrapper), clamped_element_bounds,
-      views::BubbleBorder::Arrow::NONE);
+      views::BubbleBorder::Arrow::TOP_CENTER);
   bubble_ = compose_dialog_view->GetWeakPtr();
   views::BubbleDialogDelegateView::CreateBubble(std::move(compose_dialog_view));
   if (bubble_) {
