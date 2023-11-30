@@ -196,7 +196,7 @@ public abstract class PlatformServiceBridge {
         ProfileIdentifier getProfileIdentifier();
 
         /** Get the availability status of the WebView Media Integrity API for given URI. */
-        int getMediaIntegrityApiStatusForUri(Uri uri);
+        @MediaIntegrityApiStatus int getMediaIntegrityApiStatusForUri(Uri uri);
     }
 
     /** @see {@link org.chromium.android_webview.WebMessageListener} */
