@@ -29,8 +29,7 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserInitParams {
   static void SetInitParamsForTests(
       crosapi::mojom::BrowserInitParamsPtr init_params);
 
-  // Create Mem FD from `init_params_`. This must be called after `init_params_`
-  // has initialized by calling GetInstance().
+  // Create Mem FD from `init_params_`.
   static base::ScopedFD CreateStartupData();
 
   static bool is_crosapi_disabled_for_testing() {
