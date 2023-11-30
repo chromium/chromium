@@ -43,4 +43,8 @@ gpu::SharedImageManager* TestOutputSurfaceProvider::GetSharedImageManager() {
   return nullptr;
 }
 
+gpu::SyncPointManager* TestOutputSurfaceProvider::GetSyncPointManager() {
+  return nullptr;
+}
+
 }  // namespace viz

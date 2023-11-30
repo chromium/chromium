@@ -513,7 +513,7 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
       FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)};
   DisplayResourceProviderSoftware resource_provider_{
       &shared_bitmap_manager_,
-      /*shared_image_manager=*/nullptr};
+      /*shared_image_manager=*/nullptr, /*sync_point_manager=*/nullptr};
   FakeSurfaceObserver observer_{false};
   FakeCompositorFrameSinkClient fake_client_;
   std::unique_ptr<CompositorFrameSinkSupport> root_sink_;

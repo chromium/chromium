@@ -247,7 +247,7 @@ class VideoDetectorTest : public testing::Test {
       FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)};
   DisplayResourceProviderSoftware resource_provider_{
       &shared_bitmap_manager_,
-      /*shared_image_manager=*/nullptr};
+      /*shared_image_manager=*/nullptr, /*sync_point_manager=*/nullptr};
   FakeCompositorFrameSinkClient frame_sink_client_;
   SurfaceIdAllocatorSet allocators_;
   SurfaceAggregator surface_aggregator_;

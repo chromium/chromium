@@ -221,10 +221,10 @@ RootCompositorFrameSinkImpl::Create(
   auto display = std::make_unique<Display>(
       frame_sink_manager->shared_bitmap_manager(),
       output_surface_provider->GetSharedImageManager(),
-      params->renderer_settings, debug_settings, params->frame_sink_id,
-      std::move(display_controller), std::move(output_surface),
-      std::move(overlay_processor), std::move(scheduler),
-      std::move(task_runner));
+      output_surface_provider->GetSyncPointManager(), params->renderer_settings,
+      debug_settings, params->frame_sink_id, std::move(display_controller),
+      std::move(output_surface), std::move(overlay_processor),
+      std::move(scheduler), std::move(task_runner));
 
   if (external_begin_frame_source_mojo)
     external_begin_frame_source_mojo->SetDisplay(display.get());

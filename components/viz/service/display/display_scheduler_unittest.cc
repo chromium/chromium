@@ -190,7 +190,8 @@ class DisplaySchedulerTest : public testing::Test {
                          /*activation_deadline_in_frames=*/4u,
                          /*max_uncommitted_frames=*/0),
         resource_provider_(&shared_bitmap_manager_,
-                           /*shared_image_manager=*/nullptr),
+                           /*shared_image_manager=*/nullptr,
+                           /*sync_point_manager=*/nullptr),
         aggregator_(&surface_manager_, &resource_provider_, false, false),
         damage_tracker_(
             std::make_unique<TestDisplayDamageTracker>(&surface_manager_,

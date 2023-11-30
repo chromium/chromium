@@ -53,7 +53,8 @@ class SoftwareRendererTest : public testing::Test {
 
     shared_bitmap_manager_ = std::make_unique<TestSharedBitmapManager>();
     resource_provider_ = std::make_unique<DisplayResourceProviderSoftware>(
-        shared_bitmap_manager_.get(), /*shared_image_manager=*/nullptr);
+        shared_bitmap_manager_.get(), /*shared_image_manager=*/nullptr,
+        /*sync_point_manager=*/nullptr);
     renderer_ = std::make_unique<SoftwareRenderer>(
         &settings_, &debug_settings_, output_surface_.get(),
         resource_provider(), nullptr);

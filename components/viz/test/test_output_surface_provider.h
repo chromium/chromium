@@ -34,6 +34,7 @@ class TestOutputSurfaceProvider : public OutputSurfaceProvider {
       const RendererSettings& renderer_settings,
       const DebugRendererSettings* debug_settings) override;
   gpu::SharedImageManager* GetSharedImageManager() override;
+  gpu::SyncPointManager* GetSyncPointManager() override;
 };
 
 }  // namespace viz

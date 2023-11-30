@@ -47,6 +47,7 @@ namespace gpu {
 class ScopedAllowScheduleGpuTask;
 struct SwapBuffersCompleteParams;
 class SharedImageManager;
+class SyncPointManager;
 }
 
 namespace viz {
@@ -87,6 +88,7 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   Display(
       SharedBitmapManager* bitmap_manager,
       gpu::SharedImageManager* shared_image_manager,
+      gpu::SyncPointManager* sync_point_manager,
       const RendererSettings& settings,
       const DebugRendererSettings* debug_settings,
       const FrameSinkId& frame_sink_id,
@@ -273,6 +275,7 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
 
   const raw_ptr<SharedBitmapManager> bitmap_manager_;
   const raw_ptr<gpu::SharedImageManager> shared_image_manager_;
+  const raw_ptr<gpu::SyncPointManager> sync_point_manager_;
   const RendererSettings settings_;
 
   // Points to the viz-global singleton.

@@ -14,10 +14,12 @@
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
+#include "gpu/command_buffer/service/sync_point_manager.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace gpu {
 class SharedImageManager;
+class SyncPointManager;
 }
 
 namespace viz {
@@ -30,7 +32,8 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderSoftware
  public:
   explicit DisplayResourceProviderSoftware(
       SharedBitmapManager* shared_bitmap_manager,
-      gpu::SharedImageManager* shared_image_manager);
+      gpu::SharedImageManager* shared_image_manager,
+      gpu::SyncPointManager* sync_point_manager);
   ~DisplayResourceProviderSoftware() override;
 
   class VIZ_SERVICE_EXPORT ScopedReadLockSkImage {
@@ -70,9 +73,12 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderSoftware
   void PopulateSkBitmapWithResource(SkBitmap* sk_bitmap,
                                     const ChildResource* resource,
                                     SkAlphaType alpha_type);
+  void WaitSyncToken(gpu::SyncToken sync_token);
 
   const raw_ptr<SharedBitmapManager> shared_bitmap_manager_;
   const raw_ptr<gpu::SharedImageManager> shared_image_manager_;
+  const raw_ptr<gpu::SyncPointManager> sync_point_manager_;
+  scoped_refptr<gpu::SyncPointOrderData> sync_point_order_data_;
 
   base::flat_map<ResourceId, sk_sp<SkImage>> resource_sk_images_;
 

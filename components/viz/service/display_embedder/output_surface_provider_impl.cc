@@ -177,4 +177,10 @@ gpu::SharedImageManager* OutputSurfaceProviderImpl::GetSharedImageManager() {
   return use_shared_image ? gpu_service_impl_->shared_image_manager() : nullptr;
 }
 
+gpu::SyncPointManager* OutputSurfaceProviderImpl::GetSyncPointManager() {
+  static const bool use_shared_image =
+      base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage);
+  return use_shared_image ? gpu_service_impl_->sync_point_manager() : nullptr;
+}
+
 }  // namespace viz

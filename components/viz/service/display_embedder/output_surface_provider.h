@@ -41,6 +41,7 @@ class OutputSurfaceProvider {
       const DebugRendererSettings* debug_settings) = 0;
 
   virtual gpu::SharedImageManager* GetSharedImageManager() = 0;
+  virtual gpu::SyncPointManager* GetSyncPointManager() = 0;
 };
 
 }  // namespace viz

@@ -305,7 +305,8 @@ void PixelTest::SetUpSoftwareRenderer() {
   shared_bitmap_manager_ = std::make_unique<viz::TestSharedBitmapManager>();
   auto resource_provider =
       std::make_unique<viz::DisplayResourceProviderSoftware>(
-          shared_bitmap_manager_.get(), /*shared_image_manager=*/nullptr);
+          shared_bitmap_manager_.get(), /*shared_image_manager=*/nullptr,
+          /*sync_point_manager=*/nullptr);
   child_resource_provider_ = std::make_unique<viz::ClientResourceProvider>();
 
   auto renderer = std::make_unique<viz::SoftwareRenderer>(

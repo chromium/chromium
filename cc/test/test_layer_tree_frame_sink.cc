@@ -132,10 +132,10 @@ bool TestLayerTreeFrameSink::BindToClient(LayerTreeFrameSinkClient* client) {
 
   display_ = std::make_unique<viz::Display>(
       shared_bitmap_manager_.get(), /*shared_image_manager=*/nullptr,
-      renderer_settings_, debug_settings_, frame_sink_id_,
-      std::move(display_controller), std::move(display_output_surface),
-      std::move(overlay_processor), std::move(scheduler),
-      compositor_task_runner_);
+      /*sync_point_manager=*/nullptr, renderer_settings_, debug_settings_,
+      frame_sink_id_, std::move(display_controller),
+      std::move(display_output_surface), std::move(overlay_processor),
+      std::move(scheduler), compositor_task_runner_);
 
   constexpr bool is_root = true;
   support_ = std::make_unique<viz::CompositorFrameSinkSupport>(

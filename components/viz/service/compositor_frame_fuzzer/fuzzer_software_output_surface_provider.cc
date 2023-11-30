@@ -111,4 +111,9 @@ FuzzerSoftwareOutputSurfaceProvider::GetSharedImageManager() {
   return nullptr;
 }
 
+gpu::SyncPointManager*
+FuzzerSoftwareOutputSurfaceProvider::GetSyncPointManager() {
+  return nullptr;
+}
+
 }  // namespace viz
