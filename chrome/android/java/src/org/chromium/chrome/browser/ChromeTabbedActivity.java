@@ -248,6 +248,7 @@ import org.chromium.url.GURL;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -2526,7 +2527,12 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             recordMaxWindowLimitExceededHistogram(/* limitExceeded= */ true);
             return false;
         } else {
-            Log.i(TAG_MULTI_INSTANCE, "Window ID allocated: " + mWindowId);
+            Map<String, Integer> taskMap =
+                    ChromeSharedPreferences.getInstance()
+                            .readIntsWithPrefix(ChromePreferenceKeys.MULTI_INSTANCE_TASK_MAP);
+            Log.i(
+                    TAG_MULTI_INSTANCE,
+                    "Window ID allocated: " + mWindowId + ", instance-task map: " + taskMap);
         }
 
         if (mMultiInstanceManager != null
@@ -2544,12 +2550,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         && getReferrer().toString().equals(SOURCE_ACTIVITY_REFERRER_OS);
         boolean isFromChrome = IntentHandler.wasIntentSenderChrome(intent);
         int windowId = instanceIdInfo.first;
-        @InstanceAllocationType int windowAllocationType = instanceIdInfo.second;
 
         var logMessage =
-                "Intent action: "
-                        + intent.getAction()
-                        + "\nIntent routed via ChromeLauncherActivity: "
+                "Intent routed via ChromeLauncherActivity: "
                         + IntentUtils.safeGetBooleanExtra(
                                 intent,
                                 IntentHandler.EXTRA_LAUNCHED_VIA_CHROME_LAUNCHER_ACTIVITY,
@@ -2568,31 +2571,42 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         + "\nIntent component: "
                         + (intent.getComponent() == null
                                 ? "N/A"
-                                : intent.getComponent().getClassName())
-                        + "\nWindow allocation type: "
-                        + windowAllocationType;
+                                : intent.getComponent().getClassName());
         Log.i(TAG_MULTI_INSTANCE, logMessage);
         // Only crash-report if a valid window ID is allocated to launch the intent.
         if (windowId == INVALID_WINDOW_ID) return;
 
         // Report an exception iff all the following conditions are satisfied:
-        // 1. The intent will be launched in a new instance of Chrome.
-        // 2. The device is a phone.
-        // 3. The intent is a VIEW intent with a non-Chrome source, OR, a MAIN intent with a
+        // 1. At least one instance of Chrome already exists (that is, the newly created activity is
+        // for an instance that is not the first).
+        // 2. The intent will be launched in a new instance of Chrome.
+        // 3. The device is a phone.
+        // 4. The intent is a VIEW intent with a non-Chrome source, OR, a MAIN intent with a
         // non-Chrome / non-OS source.
         boolean isViewIntent = Intent.ACTION_VIEW.equals(intent.getAction()) && !isFromChrome;
         boolean isMainIntent =
                 Intent.ACTION_MAIN.equals(intent.getAction()) && !isFromChrome && !isFromOs;
 
-        if (instanceIdInfo.second == InstanceAllocationType.NEW_INSTANCE_NEW_TASK
-                && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(this)
-                && (isViewIntent || isMainIntent)) {
-            logMessage =
-                    "This is not a crash. Logging info for intent received in ChromeTabbedActivity"
-                            + " dispatched via AsyncInitializationActivity#onCreate() that could"
-                            + " potentially create a new Chrome instance.\n"
-                            + logMessage;
-            ChromePureJavaExceptionReporter.reportJavaException(new Throwable(logMessage));
+        if (MultiWindowUtils.getInstanceCount() >= 1
+                && instanceIdInfo.second == InstanceAllocationType.NEW_INSTANCE_NEW_TASK
+                && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(this)) {
+            if (isViewIntent) {
+                logMessage =
+                        "This is not a crash. Logging info for VIEW intent received in"
+                                + " ChromeTabbedActivity dispatched via"
+                                + " AsyncInitializationActivity#onCreate() that could potentially"
+                                + " create a new Chrome instance.\n"
+                                + logMessage;
+                ChromePureJavaExceptionReporter.reportJavaException(new Throwable(logMessage));
+            } else if (isMainIntent) {
+                logMessage =
+                        "This is not a crash. Logging info for MAIN intent received in"
+                                + " ChromeTabbedActivity dispatched via"
+                                + " AsyncInitializationActivity#onCreate() that could potentially"
+                                + " create a new Chrome instance.\n"
+                                + logMessage;
+                ChromePureJavaExceptionReporter.reportJavaException(new Throwable(logMessage));
+            }
         }
     }
 
