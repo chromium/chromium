@@ -10,6 +10,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/types/pass_key.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/menu_button.h"
@@ -30,6 +31,7 @@ class StyledLabel;
 class View;
 }  // namespace views
 
+class HoverButtonController;
 class PageInfoBubbleViewBrowserTest;
 
 // A button taking the full width of its parent that shows a background color
@@ -95,6 +97,10 @@ class HoverButton : public views::LabelButton {
 
   views::StyledLabel* title() const { return title_; }
 
+  PressedCallback& callback(base::PassKey<HoverButtonController>) {
+    return callback_;
+  }
+
  protected:
   // views::MenuButton:
   KeyClickAction GetKeyClickActionForEvent(const ui::KeyEvent& event) override;
@@ -116,6 +122,10 @@ class HoverButton : public views::LabelButton {
                            UpdatesToDisplayCorrectActionTitle);
   friend class AccountSelectionBubbleViewTest;
   friend class PageInfoBubbleViewBrowserTest;
+
+  void OnPressed(const ui::Event& event);
+
+  PressedCallback callback_;
 
   raw_ptr<views::StyledLabel> title_ = nullptr;
   raw_ptr<views::View> label_wrapper_ = nullptr;
