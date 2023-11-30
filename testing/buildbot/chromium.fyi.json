@@ -48457,6 +48457,7 @@
           "crashtest",
           "print-reftest"
         ],
+        "ci_only": false,
         "merge": {
           "args": [
             "--verbose"

@@ -1694,8 +1694,8 @@
   # TODO(weizhong): Remove this once experiment completes
   'chrome_wpt_tests': {
     'modifications': {
-      'Linux Tests': {
-        'experiment_percentage': 10,
+      'linux-wpt-chromium-rel': {
+        'ci_only': False,
       },
     },
   },

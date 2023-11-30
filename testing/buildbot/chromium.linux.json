@@ -3180,7 +3180,7 @@
           "crashtest",
           "print-reftest"
         ],
-        "experiment_percentage": 10,
+        "ci_only": true,
         "isolate_profile_data": true,
         "merge": {
           "args": [

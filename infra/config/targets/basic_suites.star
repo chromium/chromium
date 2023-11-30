@@ -1811,6 +1811,7 @@ targets.legacy_basic_suite(
                 "crashtest",
                 "print-reftest",
             ],
+            ci_only = True,
             swarming = targets.swarming(
                 shards = 15,
             ),

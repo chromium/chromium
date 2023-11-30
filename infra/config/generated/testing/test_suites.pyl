@@ -1519,6 +1519,7 @@
           'crashtest',
           'print-reftest',
         ],
+        'ci_only': True,
         'swarming': {
           'shards': 15,
         },
