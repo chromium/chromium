@@ -7,7 +7,7 @@
     --iron-icon-height: 24px;
     --search-engine-omnibox-shadow-color: var(--google-grey-300);
     --scrollbar-height: 116px;
-    --submit-button-margins: 40px;
+    --action-button-margins: 40px;
     color: var(--cr-primary-text-color);
   }
 
@@ -28,9 +28,9 @@
     position: fixed;
   }
 
-  #submitButton {
+  #actionButton {
     height: unset;
-    margin: var(--submit-button-margins);
+    margin: var(--action-button-margins);
     /* The max-width is needed to stop the button from overlapping with
      the choice list in case of large text.  */
     max-width: 115px;
@@ -325,7 +325,7 @@
 
   @media screen and (max-width: 920px) {
     :host {
-      --submit-button-margins: 28px;
+      --action-button-margins: 28px;
     }
 
     .button-container {
@@ -334,7 +334,7 @@
       pointer-events: unset;
     }
 
-    #submitButton {
+    #actionButton {
       max-width: unset;
       pointer-events: unset;
     }
@@ -346,7 +346,7 @@
 
     #choiceList {
       --button-container-height: calc(var(--cr-button-height) + 2 *
-          var(--submit-button-margins));
+          var(--action-button-margins));
       padding-bottom: var(--button-container-height);
     }
   }
@@ -442,9 +442,9 @@
   </cr-radio-group>
 </div>
 <div class="button-container">
-  <cr-button class="action-button" id="submitButton" on-click="onSubmitClicked_"
-      disabled="[[isSubmitDisabled_]]">
-    $i18n{buttonText}
+  <cr-button class="action-button" id="actionButton"
+      on-click="onActionButtonClicked_" disabled="[[isActionButtonDisabled_]]">
+    [[actionButtonText_]]
   </cr-button>
 </div>
 

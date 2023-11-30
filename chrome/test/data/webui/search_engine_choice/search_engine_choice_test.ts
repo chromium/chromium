@@ -4,7 +4,6 @@
 
 import 'chrome://search-engine-choice/app.js';
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {SearchEngineChoiceAppElement} from 'chrome://search-engine-choice/app.js';
 import {SearchEngineChoiceBrowserProxy} from 'chrome://search-engine-choice/browser_proxy.js';
 import {PageHandlerRemote} from 'chrome://search-engine-choice/search_engine_choice.mojom-webui.js';
@@ -31,38 +30,27 @@ suite('SearchEngineChoiceTest', function() {
     testElement.remove();
   });
 
-  // Selects the first search engine from the list of search engine choices and
-  // scrolls to the bottom of the list when the forced scroll feature is
-  // enabled.
+  // Selects the first search engine from the list of search engine choices.
   async function selectChoice() {
     const radioButtons =
         testElement.shadowRoot!.querySelectorAll('cr-radio-button');
 
     assertTrue(radioButtons.length > 0);
     radioButtons[0]!.click();
-
-    if (loadTimeData.getBoolean('withForcedScroll')) {
-      assertTrue(testElement.$.submitButton.disabled);
-
-      const choiceList = testElement.$.choiceList;
-      choiceList.scrollTop = choiceList.scrollHeight - choiceList.clientHeight;
-      choiceList.dispatchEvent(new CustomEvent('scroll'));
-      await waitBeforeNextRender(testElement);
-    }
   }
 
   test('Submit button enabled on choice click', function() {
-    assertTrue(testElement.$.submitButton.disabled);
+    assertTrue(testElement.$.actionButton.disabled);
 
     selectChoice();
-    assertFalse(testElement.$.submitButton.disabled);
+    assertFalse(testElement.$.actionButton.disabled);
   });
 
   test('Clicking submit button calls correct function', function() {
     // Select a search engine to enable the submit button.
     selectChoice();
 
-    testElement.$.submitButton.click();
+    testElement.$.actionButton.click();
     assertEquals(handler.getCallCount('handleSearchEngineChoiceSelected'), 1);
   });
 

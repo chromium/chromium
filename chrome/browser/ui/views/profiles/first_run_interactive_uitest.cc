@@ -76,8 +76,8 @@ const DeepQuery kDontSyncButton{"sync-confirmation-app", "#notNowButton"};
 const DeepQuery kSettingsButton{"sync-confirmation-app", "#settingsButton"};
 const DeepQuery kConfirmDefaultBrowserButton{"default-browser-app",
                                              "#confirmButton"};
-const DeepQuery kSubmitSearchEngineChoiceButton{"search-engine-choice-app",
-                                                "#submitButton"};
+const DeepQuery kSearchEngineChoiceActionButton{"search-engine-choice-app",
+                                                "#actionButton"};
 
 struct TestParam {
   std::string test_suffix;
@@ -354,8 +354,7 @@ class FirstRunParameterizedInteractiveUiTest
             element.dispatchEvent(new CustomEvent('scroll'));
           }
         )js"),
-        WaitForButtonEnabled(kWebContentsId, kSubmitSearchEngineChoiceButton),
-        PressJsButton(kWebContentsId, kSubmitSearchEngineChoiceButton));
+        PressJsButton(kWebContentsId, kSearchEngineChoiceActionButton));
   }
 #endif
 

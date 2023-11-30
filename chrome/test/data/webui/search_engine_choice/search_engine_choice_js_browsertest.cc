@@ -33,19 +33,3 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceJsBrowserTest,
                        SearchEngineChoiceTest) {
   RunTest("search_engine_choice/search_engine_choice_test.js", "mocha.run()");
 }
-
-class SearchEngineChoiceJsBrowserTestWithForcedScroll
-    : public SearchEngineChoiceJsBrowserTest {
- protected:
-  SearchEngineChoiceJsBrowserTestWithForcedScroll() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        switches::kSearchEngineChoice,
-        {{switches::kWithForcedScrollEnabled.name, "true"}});
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(SearchEngineChoiceJsBrowserTestWithForcedScroll,
-                       SearchEngineChoiceTest) {
-  RunTest("search_engine_choice/search_engine_choice_test.js", "mocha.run()");
-}

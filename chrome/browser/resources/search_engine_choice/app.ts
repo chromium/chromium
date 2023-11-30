@@ -33,7 +33,7 @@ export interface SearchEngineChoiceAppElement {
     dummyOmnibox: HTMLElement,
     infoDialog: CrDialogElement,
     searchEngineOmnibox: HTMLElement,
-    submitButton: CrButtonElement,
+    actionButton: CrButtonElement,
     infoLink: HTMLElement,
     choiceList: CrRadioGroupElement,
   };
@@ -73,9 +73,9 @@ export class SearchEngineChoiceAppElement extends
         observer: 'onSelectedChoiceChanged_',
       },
 
-      isSubmitDisabled_: {
+      isActionButtonDisabled_: {
         type: Boolean,
-        computed: 'isSubmitButtonDisabled_(selectedChoice_, ' +
+        computed: 'computeActionButtonDisabled_(selectedChoice_, ' +
             'hasUserScrolledToTheBottom_)',
       },
 
@@ -102,6 +102,16 @@ export class SearchEngineChoiceAppElement extends
           return loadTimeData.getBoolean('withForcedScroll');
         },
       },
+
+      actionButtonText_: {
+        type: String,
+        computed: 'getActionButtonText_(hasUserScrolledToTheBottom_)',
+      },
+
+      hasUserScrolledToTheBottom_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -113,6 +123,7 @@ export class SearchEngineChoiceAppElement extends
   private withMarketingSnippets_: boolean;
   private hasUserScrolledToTheBottom_: boolean;
   private withForcedScroll_: boolean;
+  private actionButtonText_: string;
 
   constructor() {
     super();
@@ -156,16 +167,26 @@ export class SearchEngineChoiceAppElement extends
     this.pageHandler_.handleLearnMoreLinkClicked();
   }
 
-  // The user needs to make a choice and scroll to the bottom of the list to be
-  // able to submit the selection.
-  private isSubmitButtonDisabled_() {
-    if (this.withForcedScroll_ && !this.hasUserScrolledToTheBottom_) {
-      return true;
-    }
+  private needsScrollToTheBottom_() {
+    return this.withForcedScroll_ && !this.hasUserScrolledToTheBottom_;
+  }
+
+  private needsUserChoice_() {
     return parseInt(this.selectedChoice_) === -1;
   }
 
-  private onSubmitClicked_() {
+  // The action button will be disabled if the user scrolls to the bottom of
+  // the list without making a search engine choice.
+  private computeActionButtonDisabled_() {
+    return !this.needsScrollToTheBottom_() && this.needsUserChoice_();
+  }
+
+  private onActionButtonClicked_() {
+    if (this.needsScrollToTheBottom_()) {
+      const scrollPosition = this.$.choiceList.getBoundingClientRect().top;
+      this.$.choiceList.scrollTo({top: scrollPosition, behavior: 'smooth'});
+      return;
+    }
     this.pageHandler_.handleSearchEngineChoiceSelected(
         parseInt(this.selectedChoice_));
   }
@@ -246,6 +267,11 @@ export class SearchEngineChoiceAppElement extends
       this.$.choiceList.removeEventListener(
           'scroll', this.onChoiceListScroll_.bind(this));
     }
+  }
+
+  private getActionButtonText_() {
+    return this.i18n(
+        this.needsScrollToTheBottom_() ? 'moreButtonText' : 'submitButtonText');
   }
 }
 
