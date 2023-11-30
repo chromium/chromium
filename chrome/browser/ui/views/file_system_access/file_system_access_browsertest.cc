@@ -890,6 +890,8 @@ class PersistedPermissionsFileSystemAccessBrowserTest
  public:
   PersistedPermissionsFileSystemAccessBrowserTest() {
     // Enable Persisted Permissions.
+    // TODO(crbug.com/1467574): Remove `kFileSystemAccessPersistentPermissions`
+    // flag after FSA Persistent Permissions feature launch.
     feature_list_.InitAndEnableFeature(
         features::kFileSystemAccessPersistentPermissions);
   }

@@ -1580,8 +1580,8 @@ void SiteSettingsHandler::HandleGetFileSystemGrants(
 
 void SiteSettingsHandler::HandleRevokeFileSystemGrant(
     const base::Value::List& args) {
-  // TODO(crbug.com/1373962): Remove feature flag check after persisted
-  // permissions is fully launched.
+  // TODO(crbug.com/1467574): Remove `kFileSystemAccessPersistentPermissions`
+  // flag after FSA Persistent Permissions feature launch.
   DCHECK(base::FeatureList::IsEnabled(
       features::kFileSystemAccessPersistentPermissions));
   CHECK_EQ(2U, args.size());
@@ -1602,8 +1602,8 @@ void SiteSettingsHandler::HandleRevokeFileSystemGrant(
 
 void SiteSettingsHandler::HandleRevokeFileSystemGrants(
     const base::Value::List& args) {
-  // TODO(crbug.com/1373962): Remove feature flag check after persisted
-  // permissions is fully launched.
+  // TODO(crbug.com/1467574): Remove `kFileSystemAccessPersistentPermissions`
+  // flag after FSA Persistent Permissions feature launch.
   DCHECK(base::FeatureList::IsEnabled(
       features::kFileSystemAccessPersistentPermissions));
 
@@ -2184,6 +2184,8 @@ void SiteSettingsHandler::ObserveSourcesForProfile(Profile* profile) {
       chooser_observations_.AddObservation(bluetooth_context);
   }
 
+  // TODO(crbug.com/1467574): Remove `kFileSystemAccessPersistentPermissions`
+  // flag after FSA Persistent Permissions feature launch.
   if (base::FeatureList::IsEnabled(
           features::kFileSystemAccessPersistentPermissions)) {
     auto* file_system_access_permission_context =
@@ -2222,6 +2224,8 @@ void SiteSettingsHandler::StopObservingSourcesForProfile(Profile* profile) {
       chooser_observations_.RemoveObservation(bluetooth_context);
   }
 
+  // TODO(crbug.com/1467574): Remove `kFileSystemAccessPersistentPermissions`
+  // flag after FSA Persistent Permissions feature launch.
   if (base::FeatureList::IsEnabled(
           features::kFileSystemAccessPersistentPermissions)) {
     auto* file_system_access_permission_context =
@@ -2528,8 +2532,8 @@ BrowsingDataModel* SiteSettingsHandler::GetBrowsingDataModelForTesting() {
 base::Value::List SiteSettingsHandler::PopulateFileSystemGrantData() {
   base::Value::List grants;
 
-  // TODO(crbug.com/1373962): Remove feature flag check after persisted
-  // permissions is fully launched.
+  // TODO(crbug.com/1467574): Remove `kFileSystemAccessPersistentPermissions`
+  // flag after FSA Persistent Permissions feature launch.
   if (!base::FeatureList::IsEnabled(
           features::kFileSystemAccessPersistentPermissions)) {
     return grants;
