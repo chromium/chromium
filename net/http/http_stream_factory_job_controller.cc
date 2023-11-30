@@ -1056,8 +1056,7 @@ void HttpStreamFactory::JobController::MarkRequestComplete(Job* job) {
   if (request_) {
     AlternateProtocolUsage alternate_protocol_usage =
         CalculateAlternateProtocolUsage(job);
-    request_->Complete(job->was_alpn_negotiated(), job->negotiated_protocol(),
-                       alternate_protocol_usage, job->using_spdy());
+    request_->Complete(job->negotiated_protocol(), alternate_protocol_usage);
     ReportAlternateProtocolUsage(alternate_protocol_usage,
                                  HasGoogleHost(job->origin_url()));
   }

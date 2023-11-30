@@ -40,6 +40,7 @@
 #include "net/socket/client_socket_handle.h"
 #include "net/socket/client_socket_pool_manager.h"
 #include "net/socket/connect_job.h"
+#include "net/socket/next_proto.h"
 #include "net/socket/ssl_client_socket.h"
 #include "net/socket/stream_socket.h"
 #include "net/spdy/bidirectional_stream_spdy_impl.h"
@@ -360,16 +361,12 @@ bool HttpStreamFactory::Job::TargettedSocketGroupHasActiveSocket() const {
   return pool->HasActiveSocket(connection_group);
 }
 
-bool HttpStreamFactory::Job::was_alpn_negotiated() const {
-  return was_alpn_negotiated_;
-}
-
 NextProto HttpStreamFactory::Job::negotiated_protocol() const {
   return negotiated_protocol_;
 }
 
 bool HttpStreamFactory::Job::using_spdy() const {
-  return using_spdy_;
+  return negotiated_protocol_ == kProtoHTTP2;
 }
 
 const ProxyInfo& HttpStreamFactory::Job::proxy_info() const {
@@ -851,10 +848,6 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
       // actually need to preconnect any sockets, so we're done.
       if (job_type_ == PRECONNECT)
         return OK;
-      // TODO(crbug.com/1286835): Stop uing `was_alpn_negotiated_` and
-      // `using_spdy_`.
-      using_spdy_ = true;
-      was_alpn_negotiated_ = true;
       negotiated_protocol_ = kProtoHTTP2;
       next_state_ = STATE_CREATE_STREAM;
       return OK;
@@ -1028,20 +1021,17 @@ int HttpStreamFactory::Job::DoInitConnectionComplete(int result) {
       // below. In the QUIC case, we only record it for origin connections. In
       // the TCP case, we also record it for non-tunneled, proxied requests.
       if (using_ssl_) {
-        // TODO(crbug.com/1286835): Stop uing `was_alpn_negotiated_`.
-        was_alpn_negotiated_ = true;
         negotiated_protocol_ = kProtoQUIC;
       }
     } else if (connection_->socket()->WasAlpnNegotiated()) {
       // Only connections that use TLS can negotiate ALPN.
       DCHECK(using_ssl_ || proxy_info_.is_secure_http_like());
-      // TODO(crbug.com/1286835): Stop uing `was_alpn_negotiated_`.
-      was_alpn_negotiated_ = true;
       negotiated_protocol_ = connection_->socket()->GetNegotiatedProtocol();
+      CHECK_NE(kProtoUnknown, negotiated_protocol_);
       net_log_.AddEvent(NetLogEventType::HTTP_STREAM_REQUEST_PROTO, [&] {
         return NetLogHttpStreamProtoParams(negotiated_protocol_);
       });
-      if (negotiated_protocol_ == kProtoHTTP2) {
+      if (using_spdy()) {
         if (is_websocket_) {
           // WebSocket is not supported over a fresh HTTP/2 connection. This
           // should not be reachable. For the origin, we do not request HTTP/2
@@ -1055,8 +1045,6 @@ int HttpStreamFactory::Job::DoInitConnectionComplete(int result) {
           // and see if this is still needed.
           return ERR_NOT_IMPLEMENTED;
         }
-        // TODO(crbug.com/1286835): Stop uing `using_spdy_`.
-        using_spdy_ = true;
       }
     }
   }
@@ -1064,8 +1052,9 @@ int HttpStreamFactory::Job::DoInitConnectionComplete(int result) {
   if (proxy_info_.is_quic() && using_quic_ && result < 0)
     return ReconsiderProxyAfterError(result);
 
-  if (expect_spdy_ && !using_spdy_)
+  if (expect_spdy_ && !using_spdy()) {
     return ERR_ALPN_NEGOTIATION_FAILED;
+  }
 
   // |result| may be the result of any of the stacked protocols. The following
   // logic is used when determining how to interpret an error.
@@ -1148,7 +1137,7 @@ int HttpStreamFactory::Job::DoWaitingUserAction(int result) {
 
 int HttpStreamFactory::Job::SetSpdyHttpStreamOrBidirectionalStreamImpl(
     base::WeakPtr<SpdySession> session) {
-  DCHECK(using_spdy_);
+  DCHECK(using_spdy());
   auto dns_aliases = session_->spdy_session_pool()->GetDnsAliasesForSessionKey(
       spdy_session_key_);
 
@@ -1189,7 +1178,7 @@ int HttpStreamFactory::Job::DoCreateStream() {
 
   next_state_ = STATE_CREATE_STREAM_COMPLETE;
 
-  if (!using_spdy_) {
+  if (!using_spdy()) {
     DCHECK(!expect_spdy_);
     bool using_proxy = (proxy_info_.is_http_like()) &&
                        request_info_.url.SchemeIs(url::kHttpScheme);
@@ -1218,7 +1207,7 @@ int HttpStreamFactory::Job::DoCreateStream() {
   // last time Job checked above.
   if (!existing_spdy_session_) {
     // WebSocket over HTTP/2 is only allowed to use existing HTTP/2 connections.
-    // Therefore |using_spdy_| could not have been set unless a connection had
+    // Therefore `using_spdy()` could not have been set unless a connection had
     // already been found.
     DCHECK(!is_websocket_);
 
@@ -1305,10 +1294,6 @@ void HttpStreamFactory::Job::OnSpdySessionAvailable(
     return;
   }
 
-  // TODO(crbug.com/1286835): Stop uing `was_alpn_negotiated_` and
-  // `using_spdy_`.
-  using_spdy_ = true;
-  was_alpn_negotiated_ = true;
   negotiated_protocol_ = kProtoHTTP2;
   existing_spdy_session_ = spdy_session;
   next_state_ = STATE_CREATE_STREAM;

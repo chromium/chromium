@@ -617,12 +617,17 @@ void HttpNetworkTransaction::OnStreamReady(const SSLConfig& used_ssl_config,
   stream_->SetRequestHeadersCallback(request_headers_callback_);
   server_ssl_config_ = used_ssl_config;
   proxy_info_ = used_proxy_info;
-  response_.was_alpn_negotiated = stream_request_->was_alpn_negotiated();
+  // TODO(crbug.com/621512): Remove `was_alpn_negotiated` when we remove
+  // chrome.loadTimes API.
+  response_.was_alpn_negotiated =
+      stream_request_->negotiated_protocol() != kProtoUnknown;
   response_.alpn_negotiated_protocol =
       NextProtoToString(stream_request_->negotiated_protocol());
   response_.alternate_protocol_usage =
       stream_request_->alternate_protocol_usage();
-  response_.was_fetched_via_spdy = stream_request_->using_spdy();
+  // TODO(crbug.com/1286835): Stop using `was_fetched_via_spdy`.
+  response_.was_fetched_via_spdy =
+      stream_request_->negotiated_protocol() == kProtoHTTP2;
   response_.dns_aliases = stream_->GetDnsAliases();
   SetProxyInfoInResponse(used_proxy_info, &response_);
   OnIOComplete(OK);
