@@ -371,15 +371,10 @@ void NotificationGroupingController::OnNotificationAdded(
   }
   std::string parent_id = parent_notification->id();
 
-  // TODO(b/308814203): clean the static_cast checks by replacing
-  // AshNotificationView* with a base class.
-  auto* parent_view =
-      (GetActiveNotificationViewController() &&
-       message_center_utils::IsAshNotification(parent_notification))
-          ? static_cast<AshNotificationView*>(
-                GetActiveNotificationViewController()
-                    ->GetMessageViewForNotificationId(parent_id))
-          : nullptr;
+  auto* parent_view = (GetActiveNotificationViewController())
+                          ? GetActiveNotificationViewController()
+                                ->GetMessageViewForNotificationId(parent_id)
+                          : nullptr;
 
   // If we are creating a new notification group for this `notifier_id`,
   // we must create a copy of the designated parent notification and
@@ -393,7 +388,7 @@ void NotificationGroupingController::OnNotificationAdded(
       // will be handled in
       // `ConvertFromSingleToGroupNotificationAfterAnimation()`, which is called
       // after the animation from the parent view is completed.
-      parent_view->AnimateSingleToGroup(this, notification_id, parent_id);
+      parent_view->AnimateSingleToGroup(notification_id, parent_id);
       return;
     }
 
