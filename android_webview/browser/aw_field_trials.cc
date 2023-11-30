@@ -86,6 +86,9 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   aw_feature_overrides.DisableFeature(
       blink::features::kReduceUserAgentMinorVersion);
 
+  // Disable fenced frames on WebView.
+  aw_feature_overrides.DisableFeature(blink::features::kFencedFrames);
+
   // Disable skip Safe Browsing subresource checks on WebView since WebView's
   // rollout schedule is behind Clank's schedule.
   aw_feature_overrides.DisableFeature(
