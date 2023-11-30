@@ -10524,7 +10524,11 @@ TEST_F(AuctionRunnerTest, BidderCrashBeforeBidding) {
 
 // Should not have any debugging win/loss report URLs after auction when feature
 // kBiddingAndScoringDebugReportingAPI is not enabled.
-TEST_F(AuctionRunnerTest, ForDebuggingOnlyReporting) {
+TEST_F(AuctionRunnerTest, ForDebuggingOnlyReportingWithDebugFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      blink::features::kBiddingAndScoringDebugReportingAPI);
+
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
       MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/2,

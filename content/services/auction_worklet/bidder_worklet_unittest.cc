@@ -5157,7 +5157,11 @@ TEST_F(BidderWorkletTest, ReportWin) {
 // Debug win/loss reporting APIs should do nothing when feature
 // kBiddingAndScoringDebugReportingAPI is not enabled. It will not fail
 // generateBid().
-TEST_F(BidderWorkletTest, ForDebuggingOnlyReports) {
+TEST_F(BidderWorkletTest, ForDebuggingOnlyReportsWithDebugFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      blink::features::kBiddingAndScoringDebugReportingAPI);
+
   RunGenerateBidWithJavascriptExpectingResult(
       CreateBasicGenerateBidScriptWithDebuggingReport(
           R"(forDebuggingOnly.reportAdAuctionLoss("https://loss.url"))"),
