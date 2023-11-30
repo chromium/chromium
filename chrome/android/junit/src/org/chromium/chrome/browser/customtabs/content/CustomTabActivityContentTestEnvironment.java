@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabTabPersistencePolicy;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.DefaultBrowserProviderImpl;
 import org.chromium.chrome.browser.customtabs.ReparentingTaskProvider;
+import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizationManagerHolder;
 import org.chromium.chrome.browser.customtabs.shadows.ShadowExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -100,6 +101,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     @Mock public CustomTabIncognitoManager customTabIncognitoManager;
     @Mock public TabModelInitializer tabModelInitializer;
     @Mock public WebContents webContents;
+    @Mock public CustomTabMinimizationManagerHolder mMinimizationManagerHolder;
     public AsyncTabParamsManager realAsyncTabParamsManager =
             AsyncTabParamsManagerFactory.createAsyncTabParamsManager();
 
@@ -208,7 +210,12 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
                     }
                 };
         return new CustomTabIntentHandler(
-                tabProvider, intentDataProvider, strategy, (intent) -> false, activity);
+                tabProvider,
+                intentDataProvider,
+                strategy,
+                (intent) -> false,
+                activity,
+                mMinimizationManagerHolder);
     }
 
     public void warmUp() {

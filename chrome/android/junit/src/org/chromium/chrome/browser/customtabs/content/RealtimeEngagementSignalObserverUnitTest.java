@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs.content;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -792,6 +793,28 @@ public class RealtimeEngagementSignalObserverUnitTest {
         mEngagementSignalObserver.onAllTabsClosed();
 
         verify(mEngagementSignalsCallback, times(1)).onSessionEnded(eq(false), any(Bundle.class));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS_ALTERNATIVE_IMPL})
+    public void doNotSendOnSessionEndedWhenSuspended() {
+        initializeTabForTest();
+        mEngagementSignalObserver.suppressNextSessionEndedCall();
+        doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
+        Tab tab = mock(Tab.class);
+        doReturn(mock(WebContents.class)).when(tab).getWebContents();
+        doReturn(false).when(tab).isIncognito();
+        mEngagementSignalObserver.onObservingDifferentTab(tab);
+        mEngagementSignalObserver.webContentsWillSwap(tab);
+        // Close all tabs.
+        mEngagementSignalObserver.onClosingStateChanged(tab, true);
+        mEngagementSignalObserver.onClosingStateChanged(env.tabProvider.getTab(), true);
+        mEngagementSignalObserver.onAllTabsClosed();
+
+        verify(mEngagementSignalsCallback, never()).onSessionEnded(eq(false), any(Bundle.class));
+
+        // We should only suspend for one call.
+        assertFalse(mEngagementSignalObserver.getSuspendSessionEndedForTesting());
     }
 
     @Test

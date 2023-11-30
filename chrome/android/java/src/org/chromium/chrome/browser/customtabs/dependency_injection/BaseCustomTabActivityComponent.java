@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabFactor
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.content.CustomTabIntentHandler;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
+import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizationManagerHolder;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.dependency_injection.ChromeActivityCommonsModule;
@@ -83,6 +84,8 @@ public interface BaseCustomTabActivityComponent extends ChromeActivityComponent 
     TwaFinishHandler resolveTwaFinishHandler();
 
     Verifier resolveVerifier();
+
+    CustomTabMinimizationManagerHolder resolveCustomTabMinimizationManagerHolder();
 
     // Webapp & WebAPK only
     WebappActivityCoordinator resolveWebappActivityCoordinator();

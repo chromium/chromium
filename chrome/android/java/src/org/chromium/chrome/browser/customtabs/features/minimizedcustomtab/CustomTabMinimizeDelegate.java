@@ -8,4 +8,10 @@ package org.chromium.chrome.browser.customtabs.features.minimizedcustomtab;
 public interface CustomTabMinimizeDelegate {
     /** Minimize the Custom Tab into picture-in-picture. */
     void minimize();
+
+    /** Dismiss the currently minimized Custom Tab. */
+    void dismiss();
+
+    /** Returns whether the Custom Tab is currently minimized. */
+    boolean isMinimized();
 }

@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabIntentHandler.Int
 import org.chromium.chrome.browser.customtabs.content.TabCreationMode;
 import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityComponent;
 import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityModule;
+import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizationManagerHolder;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabDisplayManager;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
 import org.chromium.chrome.browser.dependency_injection.ChromeActivityCommonsModule;
@@ -99,6 +100,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     protected @Nullable WebappActivityCoordinator mWebappActivityCoordinator;
     protected @Nullable TrustedWebActivityCoordinator mTwaCoordinator;
     protected Verifier mVerifier;
+    protected CustomTabMinimizationManagerHolder mMinimizationManagerHolder;
 
     // This is to give the right package name while using the client's resources during an
     // overridePendingTransition call.
@@ -204,7 +206,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                         () -> mIntentDataProvider,
                         () -> mDelegateFactory.getEphemeralTabCoordinator(),
                         mBackPressManager,
-                        () -> mTabController);
+                        () -> mTabController,
+                        () -> mMinimizationManagerHolder.getMinimizationManager());
         return mBaseCustomTabRootUiCoordinator;
     }
 
@@ -309,6 +312,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
             mTwaCoordinator = component.resolveTrustedWebActivityCoordinator();
         }
 
+        mMinimizationManagerHolder = component.resolveCustomTabMinimizationManagerHolder();
+
         return component;
     }
 
@@ -362,6 +367,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
             // bringing it to the foreground via Android Recents.
             setTitle(webappExtras.shortName);
         }
+
+        mMinimizationManagerHolder.maybeCreateMinimizationManager(mTabModelProfileSupplier);
     }
 
     private int getColorScheme() {

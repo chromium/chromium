@@ -13,8 +13,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
+import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
+import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizationManagerHolder;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.tab.Tab;
@@ -35,6 +38,7 @@ public class CustomTabIntentHandler {
     private final IntentIgnoringCriterion mIntentIgnoringCriterion;
     private final Context mContext;
     @Nullable private Runnable mOnTabCreatedRunnable;
+    private final CustomTabMinimizationManagerHolder mMinimizationManagerHolder;
 
     @Inject
     public CustomTabIntentHandler(
@@ -42,12 +46,14 @@ public class CustomTabIntentHandler {
             BrowserServicesIntentDataProvider intentDataProvider,
             CustomTabIntentHandlingStrategy handlingStrategy,
             IntentIgnoringCriterion intentIgnoringCriterion,
-            @Named(ACTIVITY_CONTEXT) Context context) {
+            @Named(ACTIVITY_CONTEXT) Context context,
+            CustomTabMinimizationManagerHolder minimizationManagerHolder) {
         mTabProvider = tabProvider;
         mIntentDataProvider = intentDataProvider;
         mHandlingStrategy = handlingStrategy;
         mIntentIgnoringCriterion = intentIgnoringCriterion;
         mContext = context;
+        mMinimizationManagerHolder = minimizationManagerHolder;
 
         observeInitialTabCreationIfNecessary();
         handleInitialIntent();
@@ -108,6 +114,23 @@ public class CustomTabIntentHandler {
         }
 
         if (mIntentIgnoringCriterion.shouldIgnoreIntent(intent)) {
+            return false;
+        }
+
+        // If we receive an intent that's reusing a session id while the tab is minimized, we should
+        // close and reopen the Activity to practically 'unminimize' it. Otherwise, a navigation
+        // would happen within the minimized tab, making it hard for the user to notice.
+        var minimizeDelegate = mMinimizationManagerHolder.getMinimizationManager();
+        if (minimizeDelegate != null && minimizeDelegate.isMinimized()) {
+            var handler = CustomTabsConnection.getInstance().getEngagementSignalsHandler(session);
+            if (handler != null) {
+                // We're closing the Custom Tab to be reopened. Notify the Engagement Signals, so
+                // that we don't send an onSessionEnded signal while the session is still alive.
+                handler.notifyTabWillCloseAndReopenWithSessionReuse();
+            }
+            RecordHistogram.recordBooleanHistogram(
+                    "CustomTabs.Minimized.ReceivedIntentReusingSession", true);
+            minimizeDelegate.dismiss();
             return false;
         }
 

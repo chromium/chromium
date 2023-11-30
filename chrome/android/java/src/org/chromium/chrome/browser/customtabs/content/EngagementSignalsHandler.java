@@ -66,6 +66,12 @@ public class EngagementSignalsHandler {
         }
     }
 
+    public void notifyTabWillCloseAndReopenWithSessionReuse() {
+        if (mObserver != null) {
+            mObserver.suppressNextSessionEndedCall();
+        }
+    }
+
     private void createEngagementSignalsObserver() {
         if (!PrivacyPreferencesManagerImpl.getInstance().isUsageAndCrashReportingPermitted()) {
             return;

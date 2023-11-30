@@ -91,6 +91,7 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
     // Prevents sending Engagement Signals temporarily.
     private boolean mSignalsPaused;
     private boolean mPendingInitialUpdate;
+    private boolean mSuspendSessionEnded;
 
     /**
      * A tab observer that will send real time scrolling signals to CustomTabsConnection, if a
@@ -200,6 +201,11 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
         mConnection.setEngagementSignalsAvailableSupplier(mSession, null);
     }
 
+    /** Prevents sending the next #onSessionEnded call. */
+    void suppressNextSessionEndedCall() {
+        mSuspendSessionEnded = true;
+    }
+
     /**
      * Create |mScrollState| and |mGestureStateListener| and start sending real-time engagement
      * signals through {@link androidx.browser.customtabs.CustomTabsCallback}.
@@ -218,7 +224,8 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
         assert mGestureStateListener == null
                 : "mGestureStateListener should be null when start observing new tab.";
         assert mEngagementSignalWebContentsObserver == null
-                : "mEngagementSignalWebContentsObserver should be null when start observing new tab.";
+                : "mEngagementSignalWebContentsObserver should be null when start observing new"
+                        + " tab.";
 
         mWebContents = tab.getWebContents();
         mScrollState = ScrollState.from(tab);
@@ -394,6 +401,11 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
      * @param didGetUserInteraction Whether user had any interaction in the current CCT session.
      */
     private void notifySessionEnded(boolean didGetUserInteraction) {
+        if (mSuspendSessionEnded) {
+            mSuspendSessionEnded = false;
+            return;
+        }
+
         try {
             mCallback.onSessionEnded(didGetUserInteraction, Bundle.EMPTY);
         } catch (Exception e) {
@@ -401,6 +413,10 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
             // because Android exposes us to client bugs by throwing a variety
             // of exceptions. See crbug.com/517023.
         }
+    }
+
+    boolean getSuspendSessionEndedForTesting() {
+        return mSuspendSessionEnded;
     }
 
     /** Parameter tracking the entire scrolling journey for the associated tab. */
