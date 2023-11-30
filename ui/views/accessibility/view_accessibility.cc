@@ -229,9 +229,6 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
   static constexpr ax::mojom::IntListAttribute kOverridableIntListAttributes[]{
       ax::mojom::IntListAttribute::kLabelledbyIds,
       ax::mojom::IntListAttribute::kDescribedbyIds,
-      ax::mojom::IntListAttribute::kCharacterOffsets,
-      ax::mojom::IntListAttribute::kWordStarts,
-      ax::mojom::IntListAttribute::kWordEnds,
   };
   for (auto attribute : kOverridableIntListAttributes) {
     if (custom_data_.HasIntListAttribute(attribute))
@@ -559,30 +556,6 @@ void ViewAccessibility::OverrideChildTreeID(ui::AXTreeID tree_id) {
 
 ui::AXTreeID ViewAccessibility::GetChildTreeID() const {
   return child_tree_id_ ? *child_tree_id_ : ui::AXTreeIDUnknown();
-}
-
-void ViewAccessibility::OverrideCharacterOffsets(
-    const std::vector<int32_t>& offsets) {
-  custom_data_.AddIntListAttribute(
-      ax::mojom::IntListAttribute::kCharacterOffsets, offsets);
-}
-
-void ViewAccessibility::OverrideWordStarts(
-    const std::vector<int32_t>& offsets) {
-  custom_data_.AddIntListAttribute(ax::mojom::IntListAttribute::kWordStarts,
-                                   offsets);
-}
-
-void ViewAccessibility::OverrideWordEnds(const std::vector<int32_t>& offsets) {
-  custom_data_.AddIntListAttribute(ax::mojom::IntListAttribute::kWordEnds,
-                                   offsets);
-}
-
-void ViewAccessibility::ClearTextOffsets() {
-  custom_data_.RemoveIntListAttribute(
-      ax::mojom::IntListAttribute::kCharacterOffsets);
-  custom_data_.RemoveIntListAttribute(ax::mojom::IntListAttribute::kWordStarts);
-  custom_data_.RemoveIntListAttribute(ax::mojom::IntListAttribute::kWordEnds);
 }
 
 gfx::NativeViewAccessible ViewAccessibility::GetNativeObject() const {

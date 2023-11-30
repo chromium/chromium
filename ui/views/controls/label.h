@@ -17,7 +17,6 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/render_text.h"
 #include "ui/gfx/text_constants.h"
-#include "ui/views/buildflags.h"
 #include "ui/views/cascading_property.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/metadata/view_factory.h"
@@ -328,7 +327,6 @@ class VIEWS_EXPORT Label : public View,
   bool GetCanProcessEventsWithinSubtree() const override;
   WordLookupClient* GetWordLookupClient() override;
   std::u16string GetTooltipText(const gfx::Point& p) const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;
@@ -458,16 +456,6 @@ class VIEWS_EXPORT Label : public View,
 
   // Updates the elide behavior used by |full_text_|.
   void UpdateFullTextElideBehavior();
-
-#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
-  // Calculate widths for each grapheme and word starts and ends. Used for
-  // accessibility. Currently only on Windows when UIA is enabled.
-  bool RefreshAccessibleTextOffsets();
-
-  // The string used to compute the text offsets for accessibility. This is used
-  // to determine if the offsets need to be recomputed.
-  std::u16string ax_name_used_to_compute_offsets_;
-#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 
   int text_context_;
   int text_style_;

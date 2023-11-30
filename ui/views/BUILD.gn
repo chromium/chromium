@@ -67,10 +67,7 @@ generate_histograms_variants_allowlist("bubble_histograms_variant") {
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [
-    "ENABLE_DESKTOP_AURA=$enable_desktop_aura",
-    "SUPPORTS_AX_TEXT_OFFSETS=$supports_ax_text_offsets",
-  ]
+  flags = [ "ENABLE_DESKTOP_AURA=$enable_desktop_aura" ]
 }
 
 component("views") {

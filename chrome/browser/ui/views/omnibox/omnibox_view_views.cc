@@ -1260,7 +1260,6 @@ bool OmniboxViewViews::SkipDefaultKeyEventProcessing(
 }
 
 void OmniboxViewViews::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  Textfield::GetAccessibleNodeData(node_data);
   node_data->role = ax::mojom::Role::kTextField;
   node_data->SetNameChecked(l10n_util::GetStringUTF8(IDS_ACCNAME_LOCATION));
   node_data->AddStringAttribute(ax::mojom::StringAttribute::kAutoComplete,
