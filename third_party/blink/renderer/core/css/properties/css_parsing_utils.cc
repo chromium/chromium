@@ -5606,6 +5606,13 @@ bool ConsumeGridTrackRepeatFunction(CSSParserTokenRange& range,
                                     bool& is_auto_repeat,
                                     bool& all_tracks_are_fixed_sized) {
   CSSParserTokenRange args = ConsumeFunction(range);
+
+  // <name-repeat> syntax for subgrids only supports `auto-fill`.
+  if (is_subgrid_track_list &&
+      IdentMatches<CSSValueID::kAutoFit>(args.Peek().Id())) {
+    return false;
+  }
+
   is_auto_repeat = IdentMatches<CSSValueID::kAutoFill, CSSValueID::kAutoFit>(
       args.Peek().Id());
   CSSValueList* repeated_values;
