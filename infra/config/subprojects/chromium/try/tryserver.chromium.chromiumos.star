@@ -253,8 +253,6 @@ This builder should be removed after migrating chromeos-amd64-generic-rel from N
 try_.compilator_builder(
     name = "chromeos-amd64-generic-siso-rel-compilator",
     main_list_view = "try",
-    # TODO: b/308405411 - Enable remote-devtools-frontend-typescript by default.
-    siso_configs = ["builder", "remote-devtools-frontend-typescript"],
     siso_enabled = True,
 )
 
@@ -450,8 +448,6 @@ This builder should be removed after migrating linux-chromeos-compile-dbg from N
     contact_team_email = "chrome-build-team@google.com",
     main_list_view = "try",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
-    # TODO: b/308405411 - Enable remote-devtools-frontend-typescript by default.
-    siso_configs = ["builder", "remote-devtools-frontend-typescript"],
     siso_enabled = True,
     tryjob = try_.job(
         experiment_percentage = 10,

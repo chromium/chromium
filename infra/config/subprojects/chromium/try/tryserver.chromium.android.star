@@ -218,8 +218,6 @@ This builder should be removed after migrating android-arm64-rel from Ninja to S
 try_.compilator_builder(
     name = "android-arm64-siso-rel-compilator",
     main_list_view = "try",
-    # TODO: b/308405411 - Enable remote-devtools-frontend-typescript by default.
-    siso_configs = ["builder", "remote-devtools-frontend-typescript"],
     siso_enabled = True,
 )
 
@@ -1026,8 +1024,6 @@ This builder should be removed after migrating android_compile_dbg from Ninja to
     gn_args = "try/android_compile_dbg",
     main_list_view = "try",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
-    # TODO: b/308405411 - Enable remote-devtools-frontend-typescript by default.
-    siso_configs = ["builder", "remote-devtools-frontend-typescript"],
     siso_enabled = True,
     tryjob = try_.job(
         experiment_percentage = 10,

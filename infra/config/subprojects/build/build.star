@@ -77,8 +77,7 @@ def cq_build_perf_builder(description_html, **kwargs):
         reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
         siso_project = siso.project.DEFAULT_UNTRUSTED,
         use_clang_coverage = True,
-        # TODO: b/308405411 - Enable remote-devtools-frontend-typescript by default.
-        siso_configs = ["builder", "remote-devtools-frontend-typescript"],
+        siso_configs = ["builder"],
         **kwargs
     )
 
