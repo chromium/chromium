@@ -91,6 +91,7 @@ export class FilesSettingsCardElement extends FilesSettingsCardElementBase {
           if (isRevampWayfindingEnabled()) {
             return {
               googleDrive: 'os-settings:google-drive-revamp',
+              ms365: 'os-settings:ms365',
               oneDrive: 'settings20:onedrive',
               smbShares: 'os-settings:folder-shared',
             };
@@ -98,6 +99,7 @@ export class FilesSettingsCardElement extends FilesSettingsCardElementBase {
 
           return {
             googleDrive: 'os-settings:google-drive',
+            ms365: '',
             oneDrive: 'settings20:onedrive',
             smbShares: '',
           };
