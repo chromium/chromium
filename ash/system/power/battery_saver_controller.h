@@ -20,6 +20,14 @@
 
 namespace ash {
 
+// IsBatterySaverAllowed returns true if the Battery Saver feature is enabled
+// and it is not disabled via policy.
+ASH_EXPORT bool IsBatterySaverAllowed();
+
+// Test method to allow testing without the Battery Saver feature.
+ASH_EXPORT void OverrideIsBatterySaverAllowedForTesting(
+    absl::optional<bool> isAllowed);
+
 // BatterySaverController is a singleton that controls battery saver state via
 // PowerManagerClient by watching for updates to ash::prefs::kPowerBatterySaver
 // from settings and power status for charging state, and logs metrics.
@@ -52,6 +60,8 @@ class ASH_EXPORT BatterySaverController : public PowerStatus::Observer {
   void SetState(bool active, UpdateReason reason);
 
   bool IsBatterySaverSupported() const;
+
+  bool IsDisabledByPolicy() const;
 
   void ShowBatterySaverModeDisabledToast();
 

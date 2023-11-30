@@ -6377,9 +6377,11 @@ static_library("browser") {
       "enterprise/signals/user_permission_service_factory.cc",
       "enterprise/signals/user_permission_service_factory.h",
 
-      # This policy is only supported on non-lacros desktop
+      # These policies are only supported on non-lacros desktop
       "performance_manager/public/user_tuning/high_efficiency_policy_handler.h",
       "performance_manager/user_tuning/high_efficiency_policy_handler.cc",
+      "policy/battery_saver_policy_handler.cc",
+      "policy/battery_saver_policy_handler.h",
     ]
     deps += [
       "//chrome/browser/enterprise/connectors/device_trust:features",

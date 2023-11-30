@@ -63,6 +63,7 @@ class BatteryNotificationTest : public AshTestBase {
   }
 
   void TearDown() override {
+    OverrideIsBatterySaverAllowedForTesting(absl::nullopt);
     battery_notification_.reset();
     AshTestBase::TearDown();
     chromeos::PowerManagerClient::Shutdown();
@@ -159,16 +160,6 @@ class BatteryNotificationTest : public AshTestBase {
               buttons.size() != 0 ? buttons[0].title : u"");
   }
 
-  void SetBatterySaverFeature(bool enabled) {
-    scoped_feature_list_.reset();
-    if (enabled) {
-      scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>(
-          features::kBatterySaver);
-    } else {
-      scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    }
-  }
-
   void SetNotificationStateForTesting(
       PowerNotificationController::NotificationState new_state) {
     Shell::Get()
@@ -250,7 +241,7 @@ class BatteryNotificationTest : public AshTestBase {
 // Keep test for backwards compatibility for time-based notifications.
 TEST_F(BatteryNotificationTest, LowPowerNotification) {
   // Disable Battery Saver feature to test original notification.
-  SetBatterySaverFeature(false);
+  OverrideIsBatterySaverAllowedForTesting(false);
 
   // Set the rounded value matches the low power threshold, percentage here is
   // arbitrary.

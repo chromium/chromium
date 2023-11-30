@@ -337,15 +337,14 @@ bool PowerNotificationController::UpdateNotificationState() {
   // Battery Saver Notification doesn't have a time remaining text, so send
   // the notification + turn on battery saver right away.
   if (!status.IsBatteryPresent() ||
-      (!features::IsBatterySaverAvailable() &&
-       status.IsBatteryTimeBeingCalculated()) ||
+      (!IsBatterySaverAllowed() && status.IsBatteryTimeBeingCalculated()) ||
       on_AC_power) {
     notification_state_ = NOTIFICATION_NONE;
     return false;
   }
 
-  // Send different notifications if Battery Saver flag is enabled.
-  if (features::IsBatterySaverAvailable()) {
+  // Send different notifications if Battery Saver flag is allowed.
+  if (IsBatterySaverAllowed()) {
     const double rounded_battery_percent = status.GetRoundedBatteryPercent();
     const bool on_line_power = status.IsLinePowerConnected();
 

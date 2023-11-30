@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
+#include "ash/system/power/battery_saver_controller.h"
 #include "ash/system/power/power_status.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
@@ -47,7 +48,7 @@ Sound GetSoundKeyForBatteryLevel(int level) {
     return Sound::kChargeHighBattery;
 
   const int threshold =
-      features::IsBatterySaverAvailable()
+      IsBatterySaverAllowed()
           ? features::kBatterySaverActivationChargePercent.Get() + 1
           : kMidPercentageForCharging;
 
@@ -208,9 +209,9 @@ PowerSoundsController::CalculateBatteryState(
     bool is_calculating_battery_time,
     ExternalPower external_power,
     std::optional<base::TimeDelta> remaining_time) const {
-  const bool is_battery_saver_available = features::IsBatterySaverAvailable();
+  const bool is_battery_saver_allowed = IsBatterySaverAllowed();
 
-  if ((is_calculating_battery_time && !is_battery_saver_available) ||
+  if ((is_calculating_battery_time && !is_battery_saver_allowed) ||
       is_ac_charger_connected_) {
     return BatteryState::kNone;
   }
@@ -224,7 +225,7 @@ PowerSoundsController::CalculateBatteryState(
   // automatically reflects this differentiation in its logic. Otherwise, when
   // the device is disconnected, we calculate it based on the remaining time
   // until the battery is empty.
-  if (is_battery_saver_available || external_power == kUsbPower) {
+  if (is_battery_saver_allowed || external_power == kUsbPower) {
     return GetBatteryStateFromBatteryLevel();
   }
   return GetBatteryStateFromRemainingTime(remaining_time);
@@ -237,7 +238,7 @@ PowerSoundsController::GetBatteryStateFromBatteryLevel() const {
   }
 
   const int low_power_warning_percentage =
-      features::IsBatterySaverAvailable()
+      IsBatterySaverAllowed()
           ? features::kBatterySaverActivationChargePercent.Get()
           : kLowPowerWarningPercentage;
 

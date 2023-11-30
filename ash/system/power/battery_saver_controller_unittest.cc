@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/power/battery_notification.h"
@@ -403,6 +404,21 @@ TEST_F(BatterySaverControllerTest, ShowDisableToast) {
   // Check there is still no toast since we disabled via Settings.
   current_toast = GetCurrentToast();
   EXPECT_EQ(current_toast, nullptr);
+}
+
+TEST_F(BatterySaverControllerTest, Allowed) {
+  // Battery Saver is allowed by default.
+  EXPECT_TRUE(IsBatterySaverAllowed());
+
+  // If pref is managed and false, then Battery Saver is not allowed.
+  local_state()->SetManagedPref(prefs::kPowerBatterySaver, base::Value(false));
+  EXPECT_FALSE(IsBatterySaverAllowed());
+
+  local_state()->RemoveManagedPref(prefs::kPowerBatterySaver);
+
+  // If the experiment is off, Battery Saver is not allowed.
+  scoped_feature_list_.reset();
+  EXPECT_FALSE(IsBatterySaverAllowed());
 }
 
 TEST_F(BatterySaverControllerNotificationTest,

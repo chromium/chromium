@@ -244,6 +244,12 @@
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_prefs.h"
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/policy/battery_saver_policy_handler.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace policy {
 namespace {
 
@@ -2886,16 +2892,9 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS_ASH)
-  // Clamp the deprecated kEnabled policy value to kEnabledBelowThreshold.
-  handlers->AddHandler(std::make_unique<IntRangePolicyHandler>(
-      key::kBatterySaverModeAvailability,
-      performance_manager::user_tuning::prefs::kBatterySaverModeState,
-      base::strict_cast<int>(performance_manager::user_tuning::prefs::
-                                 BatterySaverModeState::kDisabled),
-      base::strict_cast<int>(performance_manager::user_tuning::prefs::
-                                 BatterySaverModeState::kEnabledBelowThreshold),
-      /*clamp=*/true));
-#endif
+  handlers->AddHandler(std::make_unique<BatterySaverPolicyHandler>());
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return handlers;
 }
