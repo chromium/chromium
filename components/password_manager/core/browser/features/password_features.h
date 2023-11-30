@@ -68,11 +68,14 @@ BASE_DECLARE_FEATURE(kUsernameFirstFlowFallbackCrowdsourcing);
 BASE_DECLARE_FEATURE(kUsernameFirstFlowHonorAutocomplete);
 
 BASE_DECLARE_FEATURE(kUsernameFirstFlowStoreSeveralValues);
-// If |kUsernameFirstFlowWithIntermediateValues| is enabled, the size of LRU
+// If `kUsernameFirstFlowStoreSeveralValues` is enabled, the size of LRU
 // cache that stores all username candidates outside the form.
 extern const base::FeatureParam<int> kMaxSingleUsernameFieldsToStore;
 
 BASE_DECLARE_FEATURE(kUsernameFirstFlowWithIntermediateValues);
+// If `kUsernameFirstFlowWithIntermediateValues` is enabled, after this amount
+// of minutes single username will not be used in the save prompt.
+extern const base::FeatureParam<int> kSingleUsernameTimeToLive;
 BASE_DECLARE_FEATURE(kUsernameFirstFlowWithIntermediateValuesPredictions);
 BASE_DECLARE_FEATURE(kUsernameFirstFlowWithIntermediateValuesVoting);
 

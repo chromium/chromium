@@ -52,7 +52,7 @@ bool PossibleUsernameData::IsStale() const {
          (base::FeatureList::IsEnabled(
               password_manager::features::
                   kUsernameFirstFlowWithIntermediateValues)
-              ? kPossibleUsernameExtendedExpirationTimeout
+              ? base::Minutes(features::kSingleUsernameTimeToLive.Get())
               : kPossibleUsernameExpirationTimeout);
 }
 

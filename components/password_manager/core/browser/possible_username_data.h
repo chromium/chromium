@@ -18,16 +18,9 @@ namespace password_manager {
 // The maximum time between the user typed in a text field and subsequent
 // submission of the password form, such that the typed value is considered to
 // be a possible username.
-// TODO: crbug.com/1470586 - Remove and keep only
-// `kPossibleUsernameExtendedExpirationTimeout` once
-// `kUsernameFirstFlowWithIntermediateValues` is launched.
+// Used unless `kUsernameFirstFlowWithIntermediateValues` feature is turned on.
 constexpr auto kPossibleUsernameExpirationTimeout = base::Minutes(1);
 
-// An extended version of `kPossibleUsernameExpirationTimeout` that allows
-// having intermediate fields (e.g. OTPs, captchas) between typing in a single
-// username field and subsequent submission of the password form. Used when
-// `kUsernameFirstFlowWithIntermediateValues` is enabled.
-constexpr auto kPossibleUsernameExtendedExpirationTimeout = base::Minutes(5);
 
 // Contains information to uniquely identify the field that is considered to be
 // username in Username First Flow.

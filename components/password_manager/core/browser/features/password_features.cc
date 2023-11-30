@@ -206,6 +206,9 @@ extern const base::FeatureParam<int> kMaxSingleUsernameFieldsToStore{
 BASE_FEATURE(kUsernameFirstFlowWithIntermediateValues,
              "UsernameFirstFlowWithIntermediateValues",
              base::FEATURE_DISABLED_BY_DEFAULT);
+extern const base::FeatureParam<int> kSingleUsernameTimeToLive{
+    &kUsernameFirstFlowWithIntermediateValues, /*name=*/"ttl",
+    /*default_value=*/5};
 
 // Enables new prediction that is based on votes from Username First Flow with
 // Intermediate Values.

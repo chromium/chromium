@@ -4287,8 +4287,9 @@ TEST_F(PasswordManagerTest,
       /*is_likely_otp=*/false);
 
   // Make single username form stale by fast forwarding time.
-  task_environment_.FastForwardBy(kPossibleUsernameExtendedExpirationTimeout +
-                                  base::Seconds(5));
+  task_environment_.FastForwardBy(
+      base::Minutes(features::kSingleUsernameTimeToLive.Get()) +
+      base::Seconds(5));
   EXPECT_TRUE(manager()->possible_usernames().begin()->second.IsStale());
 
   // Simulate that a password form which contains no username, but other text
