@@ -327,11 +327,11 @@ GridLineResolver::GridLineResolver(const ComputedStyle& grid_style,
         is_parallel_to_parent ? kForColumns : kForRows;
     MergeNamedGridLinesWithParent(
         *subgridded_columns_merged_explicit_grid_line_names_,
-        parent_line_resolver.ExplicitNamedLinesMap(kForColumns),
+        parent_line_resolver.ExplicitNamedLinesMap(track_direction_in_parent),
         subgrid_area.columns, is_opposite_direction_to_parent);
     MergeImplicitLinesWithParent(
         *subgridded_columns_merged_implicit_grid_line_names_,
-        parent_line_resolver.ImplicitNamedLinesMap(kForColumns),
+        parent_line_resolver.ImplicitNamedLinesMap(track_direction_in_parent),
         subgrid_area.columns);
     // Expand auto repeaters from the parent into the named line map.
     // TODO(kschmi): Also expand the subgrid's repeaters. Otherwise, we could
@@ -354,7 +354,7 @@ GridLineResolver::GridLineResolver(const ComputedStyle& grid_style,
         subgrid_area.rows, is_opposite_direction_to_parent);
     MergeImplicitLinesWithParent(
         *subgridded_rows_merged_implicit_grid_line_names_,
-        parent_line_resolver.ImplicitNamedLinesMap(kForRows),
+        parent_line_resolver.ImplicitNamedLinesMap(track_direction_in_parent),
         subgrid_area.rows);
     // Expand auto repeaters from the parent into the named line map.
     // TODO(kschmi): Also expand the subgrid's repeaters. Otherwise, we could
