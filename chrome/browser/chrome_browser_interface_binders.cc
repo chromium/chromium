@@ -171,7 +171,6 @@
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals.mojom.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals_ui.h"
 #include "components/omnibox/browser/omnibox.mojom.h"
-#include "services/on_device_model/public/cpp/features.h"
 #if !defined(OFFICIAL_BUILD)
 #include "chrome/browser/ui/webui/new_tab_page/foo/foo.mojom.h"  // nogncheck crbug.com/1125897
 #endif
@@ -1727,7 +1726,7 @@ void PopulateChromeWebUIFrameBinders(
 
 #if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
-          on_device_model::features::kOnDeviceModelService)) {
+          optimization_guide::features::kOptimizationGuideOnDeviceModel)) {
     RegisterWebUIControllerInterfaceBinder<::mojom::OnDeviceInternalsPage,
                                            OnDeviceInternalsUI>(map);
   }
