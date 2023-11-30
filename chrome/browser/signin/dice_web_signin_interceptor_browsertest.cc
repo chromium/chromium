@@ -527,9 +527,19 @@ class DiceWebSigninInterceptorWithUnoEnabledBrowserTest
             account_info.email));
   }
 
-  void ShowAndCompleteSigninBubbleWithResult(
+  absl::optional<int> GetChromeSigninInterceptShownCountPref(
+      const AccountInfo& account_info) {
+    return GetProfile()
+        ->GetPrefs()
+        // Content of `kChromeSigninInterceptionShownCountPref`.
+        ->GetDict("signin.ChromeSigninInterceptionShownCountPref")
+        .FindInt(DiceWebSigninInterceptor::GetPersistentEmailHash(
+            account_info.email));
+  }
+
+  FakeDiceWebSigninInterceptorDelegate* ShowSigninBubble(
       const AccountInfo& account_info,
-      SigninInterceptionResult expected_result) {
+      absl::optional<SigninInterceptionResult> expected_result) {
     GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
     content::WebContents* contents = AddTab(intercepted_url);
 
@@ -538,7 +548,10 @@ class DiceWebSigninInterceptorWithUnoEnabledBrowserTest
         GetInterceptorDelegate(GetProfile());
     interceptor_delegate->set_expected_interception_type(
         WebSigninInterceptor::SigninInterceptionType::kChromeSignin);
-    interceptor_delegate->set_expected_interception_result(expected_result);
+    if (expected_result.has_value()) {
+      interceptor_delegate->set_expected_interception_result(
+          expected_result.value());
+    }
 
     DiceWebSigninInterceptor* interceptor =
         DiceWebSigninInterceptorFactory::GetForProfile(
@@ -549,6 +562,15 @@ class DiceWebSigninInterceptorWithUnoEnabledBrowserTest
         /*is_new_account=*/true,
         /*is_sync_signin=*/false);
 
+    return interceptor_delegate;
+  }
+
+  void ShowAndCompleteSigninBubbleWithResult(
+      const AccountInfo& account_info,
+      SigninInterceptionResult expected_result) {
+    FakeDiceWebSigninInterceptorDelegate* interceptor_delegate =
+        ShowSigninBubble(account_info, expected_result);
+
     // Bubble should be shown following the intercept.
     EXPECT_TRUE(interceptor_delegate->intercept_bubble_shown());
 
@@ -556,7 +578,7 @@ class DiceWebSigninInterceptorWithUnoEnabledBrowserTest
     // `FakeDiceWebSigninInterceptorDelegate::ShowSigninInterceptionBubble()`.
     base::RunLoop().RunUntilIdle();
 
-    // Following the results the .
+    // Following the result the bubble should have been desrtoyed.
     EXPECT_TRUE(interceptor_delegate->intercept_bubble_destroyed());
   }
 
@@ -669,6 +691,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithUnoEnabledBrowserTest,
 
   // Setup the second account for interception.
   AccountInfo info2 = MakeAccountInfoAvailableAndUpdate("alice2@example.com");
+  ASSERT_FALSE(info2.IsEmpty());
   ASSERT_FALSE(GetChromeSigninInterceptDeclinedCountPref(info2).has_value());
   // Signout the account1 so that the account2 can get the interception.
   identity_test_env()->RemoveRefreshTokenForAccount(info1.account_id);
@@ -694,6 +717,98 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithUnoEnabledBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "Signin.Intercept.ChromeSignin.AttemptsBeforeAccept",
       /*sample=*/1, /*expected_bucket_count=*/1);
+}
+
+// In the following test, we show the bubble multiple times with different
+// results and two different accounts to test the max number of times the bubble
+// is allowed to be shown. We reach the maximum with account1 then continue
+// trying with account2. The maximum is `kMaxChromeSigninInterceptionShownCount`
+// (5) times. The 6th time the bubble is tried to be shown, it should fail.
+// Trying with another account should not be blocking though, which is what is
+// shown with account2 showing the bubble even though account1 reached the max.
+// Only 1 account is allowed to be signed in at a time in order to show the
+// bubble.
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithUnoEnabledBrowserTest,
+                       ChromeSigninInterceptShownCount) {
+  // Setup a first account for interception.
+  AccountInfo info1 = MakeAccountInfoAvailableAndUpdate("alice1@example.com");
+
+  // Makes sure Chrome is not signed in to trigger the Chrome Sigin intercept
+  // bubble.
+  ASSERT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
+
+  // This pref should contain no data before the bubble is shown.
+  ASSERT_FALSE(GetChromeSigninInterceptShownCountPref(info1).has_value());
+
+  // Intercept declined on account1 twice.
+  ShowAndCompleteSigninBubbleWithResult(info1,
+                                        SigninInterceptionResult::kDeclined);
+  ShowAndCompleteSigninBubbleWithResult(info1,
+                                        SigninInterceptionResult::kDeclined);
+  ShowAndCompleteSigninBubbleWithResult(info1,
+                                        SigninInterceptionResult::kAccepted);
+
+  // Expect the pref to record all the times the bubble was shown for `info1`,
+  // even when accepting.
+  int expected_bubble_shown_count_info1 = 3;
+  EXPECT_EQ(GetChromeSigninInterceptShownCountPref(info1),
+            expected_bubble_shown_count_info1);
+
+  // Signout the account1 so that the account2 can get the interception.
+  identity_test_env()->RemoveRefreshTokenForAccount(info1.account_id);
+
+  // Setup the second account for interception.
+  AccountInfo info2 = MakeAccountInfoAvailableAndUpdate("alice2@example.com");
+  ASSERT_FALSE(info2.IsEmpty());
+  ASSERT_FALSE(GetChromeSigninInterceptShownCountPref(info2).has_value());
+
+  // Intercept declined on account2.
+  ShowAndCompleteSigninBubbleWithResult(info2,
+                                        SigninInterceptionResult::kDeclined);
+
+  // Account2 pref should be affected and account1 should not.
+  EXPECT_EQ(GetChromeSigninInterceptShownCountPref(info1),
+            expected_bubble_shown_count_info1);
+  int expected_bubble_shown_count_info2 = 1;
+  EXPECT_EQ(GetChromeSigninInterceptShownCountPref(info2),
+            expected_bubble_shown_count_info2);
+
+  // Signout account 2 and make account 1 available again.
+  identity_test_env()->RemoveRefreshTokenForAccount(info2.account_id);
+  info1 = MakeAccountInfoAvailableAndUpdate(info1.email);
+
+  // Proceed with showing the bubble 2 more times (5 times overall).
+  ShowAndCompleteSigninBubbleWithResult(info1,
+                                        SigninInterceptionResult::kAccepted);
+  // Sign out account 1 after accepting the bubble and resign in.
+  identity_test_env()->RemoveRefreshTokenForAccount(info1.account_id);
+  info1 = MakeAccountInfoAvailableAndUpdate(info1.email);
+  ShowAndCompleteSigninBubbleWithResult(info1,
+                                        SigninInterceptionResult::kDeclined);
+  expected_bubble_shown_count_info1 += 2;
+  EXPECT_EQ(GetChromeSigninInterceptShownCountPref(info1),
+            expected_bubble_shown_count_info1);
+
+  // Attempts to show a 6th time. It should not show the bubble.
+  // No expected result since the bubble should be not be shown.
+  FakeDiceWebSigninInterceptorDelegate* delegate =
+      ShowSigninBubble(info1, /*expected_result=*/absl::nullopt);
+  EXPECT_FALSE(delegate->intercept_bubble_shown());
+  // Pref bubble shown count should remain the same.
+  EXPECT_EQ(GetChromeSigninInterceptShownCountPref(info1),
+            expected_bubble_shown_count_info1);
+
+  // Signout account 1 and make account 2 available again.
+  identity_test_env()->RemoveRefreshTokenForAccount(info1.account_id);
+  info2 = MakeAccountInfoAvailableAndUpdate(info2.email);
+
+  // Account 2 can still show the bubble since it didn't reach the max count
+  // yet.
+  ShowAndCompleteSigninBubbleWithResult(info2,
+                                        SigninInterceptionResult::kDeclined);
+  EXPECT_EQ(GetChromeSigninInterceptShownCountPref(info2),
+            expected_bubble_shown_count_info2 + 1);
 }
 
 // WebApps do not trigger interception. Regression test for

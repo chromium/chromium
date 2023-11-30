@@ -88,6 +88,10 @@ constexpr char kProfileCreationInterceptionDeclinedPref[] =
     "signin.ProfileCreationInterceptionDeclinedPref";
 constexpr char kChromeSigninInterceptionDeclinedPref[] =
     "signin.ChromeSigninInterceptionDeclinedPref";
+constexpr char kChromeSigninInterceptionShownCountPref[] =
+    "signin.ChromeSigninInterceptionShownCountPref";
+
+constexpr size_t kMaxChromeSigninInterceptionShownCount = 5;
 
 // Helper function to return the primary account info. The returned info is
 // empty if there is no primary account, and non-empty otherwise. Extended
@@ -133,9 +137,16 @@ bool IsFirstAccount(signin::IdentityManager* manager,
 signin::Tribool MaybeShouldShowChromeSigninBubble(
     signin::IdentityManager* manager,
     const std::string& email,
-    signin_metrics::AccessPoint access_point) {
+    signin_metrics::AccessPoint access_point,
+    size_t bubble_shown_count) {
   // The Chrome Signin Bubble is part of the Uno Desktop project.
   if (!base::FeatureList::IsEnabled(switches::kUnoDesktop)) {
+    return signin::Tribool::kFalse;
+  }
+
+  // Do not show the bubble more than `kMaxChromeSigninInterceptionShownCount`
+  // times.
+  if (bubble_shown_count >= kMaxChromeSigninInterceptionShownCount) {
     return signin::Tribool::kFalse;
   }
 
@@ -168,9 +179,10 @@ signin::Tribool MaybeShouldShowChromeSigninBubble(
 // display it.
 bool ShouldShowChromeSigninBubble(signin::IdentityManager* manager,
                                   const std::string& email,
-                                  signin_metrics::AccessPoint access_point) {
-  signin::Tribool should_show =
-      MaybeShouldShowChromeSigninBubble(manager, email, access_point);
+                                  signin_metrics::AccessPoint access_point,
+                                  size_t bubble_shown_count) {
+  signin::Tribool should_show = MaybeShouldShowChromeSigninBubble(
+      manager, email, access_point, bubble_shown_count);
   return should_show != signin::Tribool::kUnknown &&
          signin::TriboolToBoolOrDie(should_show);
 }
@@ -301,7 +313,11 @@ void DiceWebSigninInterceptor::RegisterProfilePrefs(
   registry->RegisterListPref(prefs::kProfileSeparationDomainExceptionList);
   registry->RegisterStringPref(
       prefs::kUserCloudSigninPolicyResponseFromPolicyTestPage, std::string());
+  // TODO(b/314079566): Consider merging the different similar pref counts into
+  // a single pref where the email hash maps to multiple values, includes the
+  // following two prefs and `kProfileCreationInterceptionDeclinedPref` above.
   registry->RegisterDictionaryPref(kChromeSigninInterceptionDeclinedPref);
+  registry->RegisterDictionaryPref(kChromeSigninInterceptionShownCountPref);
 }
 
 absl::optional<SigninInterceptionHeuristicOutcome>
@@ -370,7 +386,8 @@ DiceWebSigninInterceptor::GetHeuristicOutcome(
 
   signin::Tribool should_show_chrome_signin_bubble =
       MaybeShouldShowChromeSigninBubble(identity_manager_, email,
-                                        state_->access_point_);
+                                        state_->access_point_,
+                                        GetChromeSigninBubbleShownCount(email));
   // If the access point is not set, it is unclear if we have to show the bubble
   // or not, so we must return nullopt.
   if (should_show_chrome_signin_bubble == signin::Tribool::kUnknown) {
@@ -823,12 +840,17 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
         WebSigninInterceptor::SigninInterceptionType::kProfileSwitch;
     RecordSigninInterceptionHeuristicOutcome(
         SigninInterceptionHeuristicOutcome::kInterceptProfileSwitch);
-  } else if (ShouldShowChromeSigninBubble(identity_manager_, info.email,
-                                          state_->access_point_)) {
+  } else if (ShouldShowChromeSigninBubble(
+                 identity_manager_, info.email, state_->access_point_,
+                 GetChromeSigninBubbleShownCount(info.email))) {
     interception_type =
         WebSigninInterceptor::SigninInterceptionType::kChromeSignin;
     RecordSigninInterceptionHeuristicOutcome(
         SigninInterceptionHeuristicOutcome::kInterceptChromeSignin);
+
+    // It is guaranteed that the Chrome Signin bubble will be shown.
+    IncrementEmailToCountDictionaryPref(kChromeSigninInterceptionShownCountPref,
+                                        info.email);
   } else if (ShouldShowEnterpriseBubble(info)) {
     interception_type =
         WebSigninInterceptor::SigninInterceptionType::kEnterprise;
@@ -926,7 +948,8 @@ void DiceWebSigninInterceptor::OnProfileCreationChoice(
     SigninInterceptionResult create) {
   if (create != SigninInterceptionResult::kAccepted) {
     if (create == SigninInterceptionResult::kDeclined) {
-      UpdateDiceWebSigninInterceptDeclinedPref(account_info.email);
+      IncrementEmailToCountDictionaryPref(
+          kProfileCreationInterceptionDeclinedPref, account_info.email);
     }
     Reset();
     return;
@@ -969,7 +992,8 @@ void DiceWebSigninInterceptor::OnChromeSigninChoice(
       break;
     case SigninInterceptionResult::kDeclined:
       // The user declined the bubble.
-      UpdateDiceWebSigninInterceptDeclinedPref(account_info.email);
+      IncrementEmailToCountDictionaryPref(kChromeSigninInterceptionDeclinedPref,
+                                          account_info.email);
       break;
     case SigninInterceptionResult::kAcceptedWithExistingProfile:
       NOTREACHED_NORETURN()
@@ -1152,19 +1176,15 @@ std::string DiceWebSigninInterceptor::GetPersistentEmailHash(
   return base::StringPrintf("email_%i", hash);
 }
 
-void DiceWebSigninInterceptor::UpdateDiceWebSigninInterceptDeclinedPref(
+void DiceWebSigninInterceptor::IncrementEmailToCountDictionaryPref(
+    const char* pref_name,
     const std::string& email) {
-  CHECK(state_->interception_type_.has_value());
-
-  const char* pref_name =
-      state_->interception_type_.value() ==
-              WebSigninInterceptor::SigninInterceptionType::kChromeSignin
-          ? kChromeSigninInterceptionDeclinedPref
-          : kProfileCreationInterceptionDeclinedPref;
-
+  // TODO(b/314079566): Consider merging the different similar pref counts into
+  // a single pref where the email hash maps to multiple values.
   ScopedDictPrefUpdate update(profile_->GetPrefs(), pref_name);
   std::string key = GetPersistentEmailHash(email);
   absl::optional<int> declined_count = update->FindInt(key);
+
   update->Set(key, declined_count.value_or(0) + 1);
 }
 
@@ -1194,6 +1214,16 @@ bool DiceWebSigninInterceptor::HasUserDeclinedProfileCreation(
   constexpr int kMaxProfileCreationDeclinedCount = 2;
   return declined_count &&
          declined_count.value() >= kMaxProfileCreationDeclinedCount;
+}
+
+size_t DiceWebSigninInterceptor::GetChromeSigninBubbleShownCount(
+    const std::string& email) const {
+  const base::Value::Dict& pref_data =
+      profile_->GetPrefs()->GetDict(kChromeSigninInterceptionShownCountPref);
+  absl::optional<int> bubble_shown_count =
+      pref_data.FindInt(GetPersistentEmailHash(email));
+
+  return bubble_shown_count.value_or(0);
 }
 
 void DiceWebSigninInterceptor::
