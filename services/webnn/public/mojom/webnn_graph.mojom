@@ -30,6 +30,45 @@ struct Operand {
   string? name;
 };
 
+// Represents normalizing the tensor values of input features across
+// the batch dimension.
+//
+// This operator performs the following batch normalization, defined as:
+// Output = Scale * ((Input - Mean) / sqrt(Variance + Epsilon)) + Bias
+//
+// If Activation is provided, the output will be further processed:
+// Output = Activation(Output)
+struct BatchNormalization {
+  // The id of input operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 input_operand_id;
+  // The id of mean operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 mean_operand_id;
+  // The id of variance operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 variance_operand_id;
+  // The id of output operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 output_operand_id;
+
+  // The optional 1-D tensor of the bias values whose size is equal to the
+  // size of the input dimension denoted by axis.
+  uint64? scale_operand_id;
+  // The optional 1-D tensor of the scaling values whose is equal to the size
+  // of the input dimension denoted by axis.
+  uint64? bias_operand_id;
+  // A scalar which specifies the index to the feature count dimension of the
+  // input shape for which the mean and variance values are.
+  uint32 axis = 1;
+  // A float scalar which specifies a small value to prevent computational
+  // error due to divide-by-zero.
+  float epsilon = 1e-5;
+  // The optional activation function that immediately follows the
+  // batchNormalization.
+  Activation? activation;
+};
+
 // Clamp the input tensor element-wise within a range specified by the minimum
 // and maximum values.
 struct Clamp {
@@ -531,6 +570,7 @@ union Activation {
 // Holds one of operator.
 union Operation {
   // Keep the order as the same as build methods of `MLGraphBuilder`.
+  BatchNormalization batch_normalization;
   Clamp clamp;
   Concat concat;
   Conv2d conv2d;

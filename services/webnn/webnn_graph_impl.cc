@@ -162,6 +162,27 @@ const mojom::Operand* GetMojoOperand(const IdToOperandMap& id_to_operand_map,
   return operand_iterator->second.get();
 }
 
+webnn::BatchNormalizationAttributes ConvertToBatchNormalizationAttributes(
+    const IdToOperandMap& id_to_operand_map,
+    const mojom::BatchNormalizationPtr& batch_normalization) {
+  webnn::BatchNormalizationAttributes component_attributes;
+  const auto& scale_operand_id = batch_normalization->scale_operand_id;
+  if (scale_operand_id) {
+    const mojom::OperandPtr& scale_operand =
+        id_to_operand_map.at(scale_operand_id.value());
+    component_attributes.scale = ConvertToComponentOperand(scale_operand.get());
+  }
+  const auto& bias_operand_id = batch_normalization->bias_operand_id;
+  if (bias_operand_id) {
+    const mojom::OperandPtr& bias_operand =
+        id_to_operand_map.at(bias_operand_id.value());
+    component_attributes.bias = ConvertToComponentOperand(bias_operand.get());
+  }
+  component_attributes.axis = batch_normalization->axis;
+
+  return component_attributes;
+}
+
 template <typename Conv2dAttributesType>
 Conv2dAttributesType ConvertToConv2dAttributes(
     const IdToOperandMap& id_to_operand_map,
@@ -334,6 +355,57 @@ bool ValidateCastOperation(const IdToOperandMap& id_to_operand_map,
     // The output shape is not expected.
     return false;
   }
+
+  return true;
+}
+
+bool ValidateBatchNormalization(
+    const IdToOperandMap& id_to_operand_map,
+    const mojom::BatchNormalizationPtr& batch_normalization) {
+  const auto* input =
+      GetMojoOperand(id_to_operand_map, batch_normalization->input_operand_id);
+  const auto* mean =
+      GetMojoOperand(id_to_operand_map, batch_normalization->mean_operand_id);
+  const auto* variance = GetMojoOperand(
+      id_to_operand_map, batch_normalization->variance_operand_id);
+  const auto* output =
+      GetMojoOperand(id_to_operand_map, batch_normalization->output_operand_id);
+  if (!input || !mean || !variance || !output || output == input ||
+      output == mean || output == variance) {
+    // The batchNormalization operator is invalid.
+    return false;
+  }
+  const auto& scale_operand_id = batch_normalization->scale_operand_id;
+  if (scale_operand_id &&
+      !id_to_operand_map.contains(scale_operand_id.value())) {
+    // The scale operand is invalid.
+    return false;
+  }
+  const auto& bias_operand_id = batch_normalization->bias_operand_id;
+  if (bias_operand_id && !id_to_operand_map.contains(bias_operand_id.value())) {
+    // The bias operand is invalid.
+    return false;
+  }
+
+  // Validate the activation if the option is configured.
+  const auto& activation = batch_normalization->activation;
+  if (activation && !ValidateActivation(activation)) {
+    // The activation is invalid.
+    return false;
+  }
+
+  const auto validated_output = ValidateBatchNormalizationAndInferOutput(
+      ConvertToComponentOperand(input), ConvertToComponentOperand(mean),
+      ConvertToComponentOperand(variance),
+      ConvertToBatchNormalizationAttributes(id_to_operand_map,
+                                            batch_normalization));
+  if (!validated_output.has_value()) {
+    return false;
+  }
+  if (validated_output != ConvertToComponentOperand(output)) {
+    return false;
+  }
+
   return true;
 }
 
@@ -937,6 +1009,9 @@ base::flat_map<std::string, size_t> CreateByteLengthMap(
 bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
                        const mojom::OperationPtr& operation) {
   switch (operation->which()) {
+    case mojom::Operation::Tag::kBatchNormalization:
+      return ValidateBatchNormalization(id_to_operand_map,
+                                        operation->get_batch_normalization());
     case mojom::Operation::Tag::kClamp:
       return ValidateClamp(id_to_operand_map, operation->get_clamp());
     case mojom::Operation::Tag::kConcat:

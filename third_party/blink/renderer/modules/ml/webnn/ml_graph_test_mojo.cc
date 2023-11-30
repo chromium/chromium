@@ -517,6 +517,528 @@ struct Activation {
   absl::optional<float> leaky_relu_alpha;
 };
 
+MLActivation* CreateActivation(V8TestingScope& scope,
+                               MLGraphBuilder* builder,
+                               const Activation& activation) {
+  switch (activation.kind) {
+    case MLOperator::OperatorKind::kClamp: {
+      auto* clamp_options = MLClampOptions::Create();
+      CHECK(clamp_options);
+      clamp_options->setMinValue(activation.clamp_options->min_value.value());
+      clamp_options->setMaxValue(activation.clamp_options->max_value.value());
+      return builder->clamp(clamp_options, scope.GetExceptionState());
+    }
+    case MLOperator::OperatorKind::kElu: {
+      auto* elu_options = MLEluOptions::Create();
+      CHECK(elu_options);
+      if (activation.elu_alpha.has_value()) {
+        elu_options->setAlpha(activation.elu_alpha.value());
+      }
+      return builder->elu(elu_options, scope.GetExceptionState());
+    }
+    case MLOperator::OperatorKind::kLeakyRelu: {
+      auto* leaky_relu_options = MLLeakyReluOptions::Create();
+      CHECK(leaky_relu_options);
+      if (activation.leaky_relu_alpha.has_value()) {
+        leaky_relu_options->setAlpha(activation.leaky_relu_alpha.value());
+      }
+      return builder->leakyRelu(leaky_relu_options, scope.GetExceptionState());
+    }
+    case MLOperator::OperatorKind::kRelu:
+      return builder->relu(scope.GetExceptionState());
+    case MLOperator::OperatorKind::kSigmoid:
+      return builder->sigmoid(scope.GetExceptionState());
+    case MLOperator::OperatorKind::kSoftmax:
+      return builder->softmax(scope.GetExceptionState());
+    case MLOperator::OperatorKind::kTanh:
+      return builder->tanh(scope.GetExceptionState());
+    default:
+      NOTREACHED_NORETURN();
+  }
+}
+
+void CheckActivation(const webnn::mojom::blink::ActivationPtr& mojom_activation,
+                     const Activation& expected_activation) {
+  switch (expected_activation.kind) {
+    case MLOperator::OperatorKind::kClamp: {
+      ASSERT_TRUE(mojom_activation->is_clamp());
+      auto& clamp = mojom_activation->get_clamp();
+      CHECK(clamp);
+      auto& clamp_options = expected_activation.clamp_options;
+      CHECK(clamp_options);
+      EXPECT_EQ(clamp->min_value, clamp_options->min_value);
+      EXPECT_EQ(clamp->max_value, clamp_options->max_value);
+      break;
+    }
+    case MLOperator::OperatorKind::kElu: {
+      ASSERT_TRUE(mojom_activation->is_elu());
+      auto& elu = mojom_activation->get_elu();
+      CHECK(elu);
+      CHECK(expected_activation.elu_alpha.has_value());
+      EXPECT_EQ(elu->alpha, expected_activation.elu_alpha.value());
+      break;
+    }
+    case MLOperator::OperatorKind::kLeakyRelu: {
+      ASSERT_TRUE(mojom_activation->is_leaky_relu());
+      auto& leaky_relu = mojom_activation->get_leaky_relu();
+      CHECK(leaky_relu);
+      CHECK(expected_activation.leaky_relu_alpha.has_value());
+      EXPECT_EQ(leaky_relu->alpha,
+                expected_activation.leaky_relu_alpha.value());
+      break;
+    }
+    case MLOperator::OperatorKind::kRelu:
+      EXPECT_TRUE(mojom_activation->is_relu());
+      break;
+    case MLOperator::OperatorKind::kSigmoid:
+      EXPECT_TRUE(mojom_activation->is_sigmoid());
+      break;
+    case MLOperator::OperatorKind::kSoftmax:
+      EXPECT_TRUE(mojom_activation->is_softmax());
+      break;
+    case MLOperator::OperatorKind::kTanh:
+      EXPECT_TRUE(mojom_activation->is_tanh());
+      break;
+    default:
+      NOTREACHED_NORETURN();
+  }
+}
+
+struct BatchNormalizationTester {
+  OperandInfoBlink input;
+  OperandInfoBlink mean;
+  OperandInfoBlink variance;
+  struct BatchNormalizationOptions {
+    absl::optional<OperandInfoBlink> scale;
+    absl::optional<OperandInfoBlink> bias;
+    absl::optional<uint32_t> axis;
+    absl::optional<float> epsilon;
+    absl::optional<Activation> activation;
+  };
+  struct BatchNormalizationAttributes {
+    absl::optional<OperandInfoMojo> scale;
+    absl::optional<OperandInfoMojo> bias;
+    uint32_t axis = 1;
+    float epsilon = 1e-5;
+    absl::optional<Activation> activation;
+  };
+  BatchNormalizationOptions options;
+  OperandInfoMojo expected_operand;
+  BatchNormalizationAttributes expected_attributes;
+
+  void Test(MLGraphTestMojo& helper,
+            V8TestingScope& scope,
+            MLGraphBuilder* builder) {
+    // Build the graph.
+    auto* input_operand =
+        BuildInput(builder, "input", input.dimensions, input.data_type,
+                   scope.GetExceptionState());
+    auto* mean_operand = BuildInput(builder, "mean", mean.dimensions,
+                                    mean.data_type, scope.GetExceptionState());
+    auto* variance_operand =
+        BuildInput(builder, "variance", variance.dimensions, variance.data_type,
+                   scope.GetExceptionState());
+    MLBatchNormalizationOptions* batch_normalization_options =
+        MLBatchNormalizationOptions::Create();
+    if (options.scale) {
+      batch_normalization_options->setScale(
+          BuildInput(builder, "scale", options.scale->dimensions,
+                     options.scale->data_type, scope.GetExceptionState()));
+    }
+    if (options.bias) {
+      batch_normalization_options->setBias(
+          BuildInput(builder, "bias", options.bias->dimensions,
+                     options.bias->data_type, scope.GetExceptionState()));
+    }
+    if (options.axis) {
+      batch_normalization_options->setAxis(options.axis.value());
+    }
+    if (options.epsilon) {
+      batch_normalization_options->setEpsilon(options.epsilon.value());
+    }
+    if (options.activation) {
+      auto* activation =
+          CreateActivation(scope, builder, options.activation.value());
+      CHECK(activation);
+      batch_normalization_options->setActivation(activation);
+    }
+
+    auto* output_operand = builder->batchNormalization(
+        input_operand, mean_operand, variance_operand,
+        batch_normalization_options, scope.GetExceptionState());
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    ASSERT_NE(graph, nullptr);
+
+    auto graph_info = helper.GetGraphInfo();
+    // Verify the graph information of mojo are as expected.
+    ASSERT_EQ(graph_info->operations.size(), 1u);
+    auto& operation = graph_info->operations[0];
+    EXPECT_EQ(operation->is_batch_normalization(), true);
+    auto& batch_normalization = operation->get_batch_normalization();
+    EXPECT_EQ(batch_normalization->axis, expected_attributes.axis);
+    EXPECT_FLOAT_EQ(batch_normalization->epsilon, expected_attributes.epsilon);
+    if (options.scale) {
+      auto scale_operand_iter = graph_info->id_to_operand_map.find(
+          batch_normalization->scale_operand_id.value());
+      ASSERT_TRUE(scale_operand_iter != graph_info->id_to_operand_map.end());
+      EXPECT_EQ(scale_operand_iter->value->data_type,
+                expected_attributes.scale->data_type);
+      EXPECT_EQ(scale_operand_iter->value->dimensions,
+                expected_attributes.scale->dimensions);
+    }
+    if (options.bias) {
+      auto bias_operand_iter = graph_info->id_to_operand_map.find(
+          batch_normalization->bias_operand_id.value());
+      ASSERT_TRUE(bias_operand_iter != graph_info->id_to_operand_map.end());
+      EXPECT_EQ(bias_operand_iter->value->data_type,
+                expected_attributes.bias->data_type);
+      EXPECT_EQ(bias_operand_iter->value->dimensions,
+                expected_attributes.bias->dimensions);
+    }
+    if (options.activation) {
+      CHECK(expected_attributes.activation);
+      CheckActivation(batch_normalization->activation,
+                      expected_attributes.activation.value());
+    }
+    EXPECT_EQ(graph_info->output_operands.size(), 1u);
+    auto output_operand_id = graph_info->output_operands[0];
+    auto output_operand_iter =
+        graph_info->id_to_operand_map.find(output_operand_id);
+    ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(output_operand_iter->value->data_type,
+              expected_operand.data_type);
+    EXPECT_EQ(output_operand_iter->value->dimensions,
+              expected_operand.dimensions);
+  }
+};
+
+TEST_P(MLGraphTestMojo, BatchNormalizationTest) {
+  V8TestingScope scope;
+  // Bind fake WebNN Context in the service for testing.
+  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      webnn::features::kEnableMachineLearningNeuralNetworkService);
+  auto* options = MLContextOptions::Create();
+  // Create WebNN Context with GPU device type.
+  options->setDeviceType(V8MLDeviceType::Enum::kGpu);
+  auto* builder = CreateGraphBuilder(scope, options);
+  ASSERT_NE(builder, nullptr);
+  {
+    // Test batchNormalization with default options.
+    BatchNormalizationTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 3, 5, 5}},
+        .mean = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                 .dimensions = {3}},
+        .variance = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                     .dimensions = {3}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 3, 5, 5}},
+        .expected_attributes = {.scale = absl::nullopt,
+                                .bias = absl::nullopt,
+                                .axis = 1,
+                                .epsilon = 1e-5,
+                                .activation = absl::nullopt}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test batchnormalization with axis = 3.
+    BatchNormalizationTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 3, 4, 5}},
+        .mean = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                 .dimensions = {5}},
+        .variance = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                     .dimensions = {5}},
+        .options = {.axis = 3},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 3, 4, 5}},
+        .expected_attributes = {.scale = absl::nullopt,
+                                .bias = absl::nullopt,
+                                .axis = 3,
+                                .epsilon = 1e-5,
+                                .activation = absl::nullopt}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test batchnormalization with epsilon = 0.01.
+    BatchNormalizationTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 3, 4, 5}},
+        .mean = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                 .dimensions = {3}},
+        .variance = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                     .dimensions = {3}},
+        .options = {.epsilon = 0.01},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 3, 4, 5}},
+        .expected_attributes = {.scale = absl::nullopt,
+                                .bias = absl::nullopt,
+                                .axis = 1,
+                                .epsilon = 0.01,
+                                .activation = absl::nullopt}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test batchnormalization with scale and bias.
+    BatchNormalizationTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 3, 5, 5}},
+        .mean = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                 .dimensions = {3}},
+        .variance = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                     .dimensions = {3}},
+        .options = {.scale =
+                        OperandInfoBlink{
+                            .data_type = V8MLOperandDataType::Enum::kFloat32,
+                            .dimensions = {3}},
+                    .bias =
+                        OperandInfoBlink{
+                            .data_type = V8MLOperandDataType::Enum::kFloat32,
+                            .dimensions = {3}}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 3, 5, 5}},
+        .expected_attributes =
+            {.scale =
+                 OperandInfoMojo{
+                     .data_type = blink_mojom::Operand::DataType::kFloat32,
+                     .dimensions = {3}},
+             .bias =
+                 OperandInfoMojo{
+                     .data_type = blink_mojom::Operand::DataType::kFloat32,
+                     .dimensions = {3}},
+             .axis = 1,
+             .epsilon = 1e-5,
+             .activation = absl::nullopt}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test batchNormalization with clamp activation.
+    BatchNormalizationTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 3, 5, 5}},
+        .mean = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                 .dimensions = {3}},
+        .variance = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                     .dimensions = {3}},
+        .options = {.activation =
+                        Activation{
+                            .kind = MLOperator::OperatorKind::kClamp,
+                            .clamp_options =
+                                ClampTester::ClampOptions{.min_value = 1.0,
+                                                          .max_value = 6.0}}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 3, 5, 5}},
+        .expected_attributes =
+            {.scale = absl::nullopt,
+             .bias = absl::nullopt,
+             .axis = 1,
+             .epsilon = 1e-5,
+             .activation =
+                 Activation{.kind = MLOperator::OperatorKind::kClamp,
+                            .clamp_options =
+                                ClampTester::ClampOptions{.min_value = 1.0,
+                                                          .max_value = 6.0}}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test batchNormalization with elu activation with default options.
+    BatchNormalizationTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 3, 5, 5}},
+        .mean = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                 .dimensions = {3}},
+        .variance = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                     .dimensions = {3}},
+        .options = {.activation =
+                        Activation{.kind = MLOperator::OperatorKind::kElu}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 3, 5, 5}},
+        .expected_attributes = {.scale = absl::nullopt,
+                                .bias = absl::nullopt,
+                                .axis = 1,
+                                .epsilon = 1e-5,
+                                .activation =
+                                    Activation{
+                                        .kind = MLOperator::OperatorKind::kElu,
+                                        .elu_alpha = 1.0}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test batchNormalization with elu activation with given options.
+    BatchNormalizationTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 3, 5, 5}},
+        .mean = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                 .dimensions = {3}},
+        .variance = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                     .dimensions = {3}},
+        .options = {.activation =
+                        Activation{.kind = MLOperator::OperatorKind::kElu,
+                                   .elu_alpha = 0.5}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 3, 5, 5}},
+        .expected_attributes = {.scale = absl::nullopt,
+                                .bias = absl::nullopt,
+                                .axis = 1,
+                                .epsilon = 1e-5,
+                                .activation =
+                                    Activation{
+                                        .kind = MLOperator::OperatorKind::kElu,
+                                        .elu_alpha = 0.5}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test batchNormalization with leaky relu activation with default options.
+    BatchNormalizationTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 3, 5, 5}},
+        .mean = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                 .dimensions = {3}},
+        .variance = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                     .dimensions = {3}},
+        .options = {.activation =
+                        Activation{.kind =
+                                       MLOperator::OperatorKind::kLeakyRelu}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 3, 5, 5}},
+        .expected_attributes =
+            {.scale = absl::nullopt,
+             .bias = absl::nullopt,
+             .axis = 1,
+             .epsilon = 1e-5,
+             .activation =
+                 Activation{.kind = MLOperator::OperatorKind::kLeakyRelu,
+                            .leaky_relu_alpha = 0.01}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test batchNormalization with leaky relu activation with given options.
+    BatchNormalizationTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 3, 5, 5}},
+        .mean = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                 .dimensions = {3}},
+        .variance = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                     .dimensions = {3}},
+        .options = {.activation =
+                        Activation{.kind = MLOperator::OperatorKind::kLeakyRelu,
+                                   .leaky_relu_alpha = 0.02}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 3, 5, 5}},
+        .expected_attributes =
+            {.scale = absl::nullopt,
+             .bias = absl::nullopt,
+             .axis = 1,
+             .epsilon = 1e-5,
+             .activation =
+                 Activation{.kind = MLOperator::OperatorKind::kLeakyRelu,
+                            .leaky_relu_alpha = 0.02}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test batchNormalization with relu activation.
+    BatchNormalizationTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 3, 5, 5}},
+        .mean = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                 .dimensions = {3}},
+        .variance = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                     .dimensions = {3}},
+        .options = {.activation =
+                        Activation{.kind = MLOperator::OperatorKind::kRelu}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 3, 5, 5}},
+        .expected_attributes =
+            {.scale = absl::nullopt,
+             .bias = absl::nullopt,
+             .axis = 1,
+             .epsilon = 1e-5,
+             .activation = Activation{.kind = MLOperator::OperatorKind::kRelu}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test batchNormalization with sigmoid activation.
+    BatchNormalizationTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 3, 5, 5}},
+        .mean = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                 .dimensions = {3}},
+        .variance = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                     .dimensions = {3}},
+        .options = {.activation =
+                        Activation{.kind = MLOperator::OperatorKind::kSigmoid}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 3, 5, 5}},
+        .expected_attributes =
+            {.scale = absl::nullopt,
+             .bias = absl::nullopt,
+             .axis = 1,
+             .epsilon = 1e-5,
+             .activation =
+                 Activation{.kind = MLOperator::OperatorKind::kSigmoid}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test batchNormalization with softmax activation.
+    BatchNormalizationTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 3, 5, 5}},
+        .mean = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                 .dimensions = {3}},
+        .variance = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                     .dimensions = {3}},
+        .options = {.activation =
+                        Activation{.kind = MLOperator::OperatorKind::kSoftmax}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 3, 5, 5}},
+        .expected_attributes =
+            {.scale = absl::nullopt,
+             .bias = absl::nullopt,
+             .axis = 1,
+             .epsilon = 1e-5,
+             .activation =
+                 Activation{.kind = MLOperator::OperatorKind::kSoftmax}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test batchNormalization with tanh activation.
+    BatchNormalizationTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 3, 5, 5}},
+        .mean = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                 .dimensions = {3}},
+        .variance = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                     .dimensions = {3}},
+        .options = {.activation =
+                        Activation{.kind = MLOperator::OperatorKind::kTanh}},
+        .expected_operand = {.data_type =
+                                 blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 3, 5, 5}},
+        .expected_attributes =
+            {.scale = absl::nullopt,
+             .bias = absl::nullopt,
+             .axis = 1,
+             .epsilon = 1e-5,
+             .activation = Activation{.kind = MLOperator::OperatorKind::kTanh}}}
+        .Test(*this, scope, builder);
+  }
+}
+
 struct Conv2dTester {
   OperandInfoBlink input;
   OperandInfoBlink filter;
@@ -539,8 +1061,7 @@ struct Conv2dTester {
     blink_mojom::InputOperandLayout input_layout =
         blink_mojom::InputOperandLayout::kChannelsFirst;
     absl::optional<OperandInfoMojo> bias;
-    absl::optional<float> elu_alpha;
-    absl::optional<float> leaky_relu_alpha;
+    absl::optional<Activation> activation;
   };
   Conv2dOptions options;
   OperandInfoMojo expected_operand;
@@ -584,55 +1105,10 @@ struct Conv2dTester {
                      options.bias->data_type, scope.GetExceptionState()));
     }
     if (options.activation) {
-      switch (options.activation->kind) {
-        case MLOperator::OperatorKind::kClamp: {
-          auto* clamp_options = MLClampOptions::Create();
-          clamp_options->setMinValue(
-              options.activation->clamp_options->min_value.value());
-          clamp_options->setMaxValue(
-              options.activation->clamp_options->max_value.value());
-          ml_conv2d_options->setActivation(
-              builder->clamp(clamp_options, scope.GetExceptionState()));
-          break;
-        }
-        case MLOperator::OperatorKind::kElu: {
-          auto* elu_options = MLEluOptions::Create();
-          if (options.activation->elu_alpha.has_value()) {
-            elu_options->setAlpha(options.activation->elu_alpha.value());
-          }
-          ml_conv2d_options->setActivation(
-              builder->elu(elu_options, scope.GetExceptionState()));
-          break;
-        }
-        case MLOperator::OperatorKind::kLeakyRelu: {
-          auto* leaky_relu_options = MLLeakyReluOptions::Create();
-          if (options.activation->leaky_relu_alpha.has_value()) {
-            leaky_relu_options->setAlpha(
-                options.activation->leaky_relu_alpha.value());
-          }
-          ml_conv2d_options->setActivation(builder->leakyRelu(
-              leaky_relu_options, scope.GetExceptionState()));
-          break;
-        }
-        case MLOperator::OperatorKind::kRelu:
-          ml_conv2d_options->setActivation(
-              builder->relu(scope.GetExceptionState()));
-          break;
-        case MLOperator::OperatorKind::kSigmoid:
-          ml_conv2d_options->setActivation(
-              builder->sigmoid(scope.GetExceptionState()));
-          break;
-        case MLOperator::OperatorKind::kSoftmax:
-          ml_conv2d_options->setActivation(
-              builder->softmax(scope.GetExceptionState()));
-          break;
-        case MLOperator::OperatorKind::kTanh:
-          ml_conv2d_options->setActivation(
-              builder->tanh(scope.GetExceptionState()));
-          break;
-        default:
-          NOTREACHED_NORETURN();
-      }
+      auto* activation =
+          CreateActivation(scope, builder, options.activation.value());
+      CHECK(activation);
+      ml_conv2d_options->setActivation(activation);
     }
     auto* output_operand =
         builder->conv2d(input_operand, filter_operand, ml_conv2d_options,
@@ -671,49 +1147,9 @@ struct Conv2dTester {
                 expected_attributes.bias->dimensions);
     }
     if (options.activation) {
-      switch (options.activation->kind) {
-        case MLOperator::OperatorKind::kClamp: {
-          ASSERT_TRUE(conv2d->activation->is_clamp());
-          auto& clamp = conv2d->activation->get_clamp();
-          CHECK(clamp);
-          auto& clamp_options = options.activation->clamp_options;
-          CHECK(clamp_options);
-          EXPECT_EQ(clamp->min_value, clamp_options->min_value);
-          EXPECT_EQ(clamp->max_value, clamp_options->max_value);
-          break;
-        }
-        case MLOperator::OperatorKind::kElu: {
-          ASSERT_TRUE(conv2d->activation->is_elu());
-          auto& elu = conv2d->activation->get_elu();
-          CHECK(elu);
-          CHECK(expected_attributes.elu_alpha.has_value());
-          EXPECT_EQ(elu->alpha, expected_attributes.elu_alpha.value());
-          break;
-        }
-        case MLOperator::OperatorKind::kLeakyRelu: {
-          ASSERT_TRUE(conv2d->activation->is_leaky_relu());
-          auto& leaky_relu = conv2d->activation->get_leaky_relu();
-          CHECK(leaky_relu);
-          CHECK(expected_attributes.leaky_relu_alpha.has_value());
-          EXPECT_EQ(leaky_relu->alpha,
-                    expected_attributes.leaky_relu_alpha.value());
-          break;
-        }
-        case MLOperator::OperatorKind::kRelu:
-          EXPECT_TRUE(conv2d->activation->is_relu());
-          break;
-        case MLOperator::OperatorKind::kSigmoid:
-          EXPECT_TRUE(conv2d->activation->is_sigmoid());
-          break;
-        case MLOperator::OperatorKind::kSoftmax:
-          EXPECT_TRUE(conv2d->activation->is_softmax());
-          break;
-        case MLOperator::OperatorKind::kTanh:
-          EXPECT_TRUE(conv2d->activation->is_tanh());
-          break;
-        default:
-          NOTREACHED_NORETURN();
-      }
+      CHECK(expected_attributes.activation);
+      CheckActivation(conv2d->activation,
+                      expected_attributes.activation.value());
     }
     EXPECT_EQ(graph_info->output_operands.size(), 1u);
     auto output_operand_id = graph_info->output_operands[0];
@@ -840,10 +1276,16 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
         .expected_operand = {.data_type =
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 1, 3, 3}},
-        .expected_attributes = {.padding = Vector<uint32_t>({0, 0, 0, 0}),
-                                .strides = Vector<uint32_t>({1, 1}),
-                                .dilations = Vector<uint32_t>({1, 1}),
-                                .groups = 1}}
+        .expected_attributes =
+            {.padding = Vector<uint32_t>({0, 0, 0, 0}),
+             .strides = Vector<uint32_t>({1, 1}),
+             .dilations = Vector<uint32_t>({1, 1}),
+             .groups = 1,
+             .activation =
+                 Activation{.kind = MLOperator::OperatorKind::kClamp,
+                            .clamp_options =
+                                ClampTester::ClampOptions{.min_value = 1.0,
+                                                          .max_value = 6.0}}}}
         .Test(*this, scope, builder);
   }
   {
@@ -862,7 +1304,10 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
                                 .strides = Vector<uint32_t>({1, 1}),
                                 .dilations = Vector<uint32_t>({1, 1}),
                                 .groups = 1,
-                                .elu_alpha = 1.0}}
+                                .activation =
+                                    Activation{
+                                        .kind = MLOperator::OperatorKind::kElu,
+                                        .elu_alpha = 1.0}}}
         .Test(*this, scope, builder);
   }
   {
@@ -882,7 +1327,10 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
                                 .strides = Vector<uint32_t>({1, 1}),
                                 .dilations = Vector<uint32_t>({1, 1}),
                                 .groups = 1,
-                                .elu_alpha = 0.5}}
+                                .activation =
+                                    Activation{
+                                        .kind = MLOperator::OperatorKind::kElu,
+                                        .elu_alpha = 0.5}}}
         .Test(*this, scope, builder);
   }
   {
@@ -898,11 +1346,14 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
         .expected_operand = {.data_type =
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 1, 3, 3}},
-        .expected_attributes = {.padding = Vector<uint32_t>({0, 0, 0, 0}),
-                                .strides = Vector<uint32_t>({1, 1}),
-                                .dilations = Vector<uint32_t>({1, 1}),
-                                .groups = 1,
-                                .leaky_relu_alpha = 0.01}}
+        .expected_attributes =
+            {.padding = Vector<uint32_t>({0, 0, 0, 0}),
+             .strides = Vector<uint32_t>({1, 1}),
+             .dilations = Vector<uint32_t>({1, 1}),
+             .groups = 1,
+             .activation =
+                 Activation{.kind = MLOperator::OperatorKind::kLeakyRelu,
+                            .leaky_relu_alpha = 0.01}}}
         .Test(*this, scope, builder);
   }
   {
@@ -918,11 +1369,14 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
         .expected_operand = {.data_type =
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 1, 3, 3}},
-        .expected_attributes = {.padding = Vector<uint32_t>({0, 0, 0, 0}),
-                                .strides = Vector<uint32_t>({1, 1}),
-                                .dilations = Vector<uint32_t>({1, 1}),
-                                .groups = 1,
-                                .leaky_relu_alpha = 0.02}}
+        .expected_attributes =
+            {.padding = Vector<uint32_t>({0, 0, 0, 0}),
+             .strides = Vector<uint32_t>({1, 1}),
+             .dilations = Vector<uint32_t>({1, 1}),
+             .groups = 1,
+             .activation =
+                 Activation{.kind = MLOperator::OperatorKind::kLeakyRelu,
+                            .leaky_relu_alpha = 0.02}}}
         .Test(*this, scope, builder);
   }
   {
@@ -937,10 +1391,12 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
         .expected_operand = {.data_type =
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 1, 3, 3}},
-        .expected_attributes = {.padding = Vector<uint32_t>({0, 0, 0, 0}),
-                                .strides = Vector<uint32_t>({1, 1}),
-                                .dilations = Vector<uint32_t>({1, 1}),
-                                .groups = 1}}
+        .expected_attributes =
+            {.padding = Vector<uint32_t>({0, 0, 0, 0}),
+             .strides = Vector<uint32_t>({1, 1}),
+             .dilations = Vector<uint32_t>({1, 1}),
+             .groups = 1,
+             .activation = Activation{.kind = MLOperator::OperatorKind::kRelu}}}
         .Test(*this, scope, builder);
   }
   {
@@ -955,10 +1411,13 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
         .expected_operand = {.data_type =
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 1, 3, 3}},
-        .expected_attributes = {.padding = Vector<uint32_t>({0, 0, 0, 0}),
-                                .strides = Vector<uint32_t>({1, 1}),
-                                .dilations = Vector<uint32_t>({1, 1}),
-                                .groups = 1}}
+        .expected_attributes =
+            {.padding = Vector<uint32_t>({0, 0, 0, 0}),
+             .strides = Vector<uint32_t>({1, 1}),
+             .dilations = Vector<uint32_t>({1, 1}),
+             .groups = 1,
+             .activation =
+                 Activation{.kind = MLOperator::OperatorKind::kSigmoid}}}
         .Test(*this, scope, builder);
   }
   {
@@ -973,10 +1432,13 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
         .expected_operand = {.data_type =
                                  blink_mojom::Operand::DataType::kFloat16,
                              .dimensions = {1, 1, 3, 3}},
-        .expected_attributes = {.padding = Vector<uint32_t>({0, 0, 0, 0}),
-                                .strides = Vector<uint32_t>({1, 1}),
-                                .dilations = Vector<uint32_t>({1, 1}),
-                                .groups = 1}}
+        .expected_attributes =
+            {.padding = Vector<uint32_t>({0, 0, 0, 0}),
+             .strides = Vector<uint32_t>({1, 1}),
+             .dilations = Vector<uint32_t>({1, 1}),
+             .groups = 1,
+             .activation =
+                 Activation{.kind = MLOperator::OperatorKind::kSoftmax}}}
         .Test(*this, scope, builder);
   }
   {
@@ -991,10 +1453,12 @@ TEST_P(MLGraphTestMojo, Conv2dTest) {
         .expected_operand = {.data_type =
                                  blink_mojom::Operand::DataType::kFloat32,
                              .dimensions = {1, 1, 3, 3}},
-        .expected_attributes = {.padding = Vector<uint32_t>({0, 0, 0, 0}),
-                                .strides = Vector<uint32_t>({1, 1}),
-                                .dilations = Vector<uint32_t>({1, 1}),
-                                .groups = 1}}
+        .expected_attributes =
+            {.padding = Vector<uint32_t>({0, 0, 0, 0}),
+             .strides = Vector<uint32_t>({1, 1}),
+             .dilations = Vector<uint32_t>({1, 1}),
+             .groups = 1,
+             .activation = Activation{.kind = MLOperator::OperatorKind::kTanh}}}
         .Test(*this, scope, builder);
   }
 }

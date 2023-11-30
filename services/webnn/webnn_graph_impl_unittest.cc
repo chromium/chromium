@@ -292,6 +292,440 @@ TEST_F(WebNNGraphImplTest, ClampTest) {
   }
 }
 
+struct BatchNormalizationTester {
+  OperandInfo input;
+  OperandInfo mean;
+  OperandInfo variance;
+  absl::optional<OperandInfo> scale;
+  absl::optional<OperandInfo> bias;
+  struct BatchNormalizationAttributes {
+    absl::optional<uint64_t> scale_operand_id;
+    absl::optional<uint64_t> bias_operand_id;
+    uint32_t axis = 1;
+    float epsilon = 1e-5;
+    absl::optional<mojom::Activation::Tag> activation;
+    absl::optional<ClampTester::ClampAttributes> clamp_attributes;
+    absl::optional<float> elu_alpha;
+    absl::optional<float> leaky_relu_alpha;
+  };
+  BatchNormalizationAttributes attributes;
+  OperandInfo output;
+  bool expected;
+
+  void Test() {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t mean_operand_id =
+        builder.BuildInput("mean", mean.dimensions, mean.type);
+    uint64_t variance_operand_id =
+        builder.BuildInput("variance", variance.dimensions, variance.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+
+    if (scale) {
+      attributes.scale_operand_id =
+          builder.BuildInput("scale", scale->dimensions, scale->type);
+    }
+    if (bias) {
+      attributes.bias_operand_id =
+          builder.BuildInput("bias", bias->dimensions, bias->type);
+    }
+    builder.BuildBatchNormalization(input_operand_id, mean_operand_id,
+                                    variance_operand_id, output_operand_id,
+                                    std::move(attributes));
+    EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
+  }
+};
+
+TEST_F(WebNNGraphImplTest, BatchNormalizationTest) {
+  {
+    // Test building batchNormalization with default option.
+    BatchNormalizationTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3, 3}},
+        .mean = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 3}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test building batchNormalization with axis = 3.
+    BatchNormalizationTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3, 3}},
+        .mean = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {3}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {3}},
+        .attributes = {.axis = 3},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 3}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test building gemm with setting optional bias and scale.
+    BatchNormalizationTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3, 3}},
+        .mean = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2}},
+        .scale = OperandInfo{.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {2}},
+        .bias = OperandInfo{.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {2}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 3}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test batchNormalization with clamp activation.
+    BatchNormalizationTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3, 3}},
+        .mean = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2}},
+        .attributes = {.activation = mojom::Activation::Tag::kClamp,
+                       .clamp_attributes =
+                           ClampTester::ClampAttributes{.min_value = 1.0,
+                                                        .max_value = 6.0}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 3}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test batchNormalization with elu activation.
+    BatchNormalizationTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3, 3}},
+        .mean = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2}},
+        .attributes = {.activation = mojom::Activation::Tag::kElu,
+                       .elu_alpha = 1.0},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 3}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test batchNormalization with leaky relu activation.
+    BatchNormalizationTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3, 3}},
+        .mean = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2}},
+        .attributes = {.activation = mojom::Activation::Tag::kLeakyRelu,
+                       .leaky_relu_alpha = 0.01},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 3}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test batchNormalization with relu activation.
+    BatchNormalizationTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3, 3}},
+        .mean = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2}},
+        .attributes = {.activation = mojom::Activation::Tag::kRelu},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 3}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test BatchNormalization with sigmoid activation.
+    BatchNormalizationTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3, 3}},
+        .mean = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2}},
+        .attributes = {.activation = mojom::Activation::Tag::kSigmoid},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 3}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test BatchNormalization with softmax activation.
+    BatchNormalizationTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3, 3}},
+        .mean = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2}},
+        .attributes = {.activation = mojom::Activation::Tag::kSoftmax},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 3}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test batchNormalization with tanh activation.
+    BatchNormalizationTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3, 3}},
+        .mean = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2}},
+        .attributes = {.activation = mojom::Activation::Tag::kTanh},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 3}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test the invalid graph when elu activation has alpha < 0.
+    BatchNormalizationTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3, 3}},
+        .mean = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2}},
+        .attributes = {.activation = mojom::Activation::Tag::kElu,
+                       .elu_alpha = -1.0},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 3}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test building batchNormalization when input data type and mean data
+    // type mismatched.
+    BatchNormalizationTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3, 3}},
+        .mean = {.type = mojom::Operand::DataType::kInt32, .dimensions = {2}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 3}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test building batchNormalization when the size of mean is not equal to
+    // the size of the input dimension denoted by axis.
+    BatchNormalizationTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3, 3}},
+        .mean = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {3}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 3}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test building batchNormalization when input data type and variance data
+    // type mismatched.
+    BatchNormalizationTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3, 3}},
+        .mean = {.type = mojom::Operand::DataType::kInt32, .dimensions = {2}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 3}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test building batchNormalization when the size of variance is not equal
+    // to the size of the input dimension denoted by axis.
+    BatchNormalizationTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3, 3}},
+        .mean = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {1}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 3}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test building batchNormalization when input data is not floating point
+    // type.
+    BatchNormalizationTester{
+        .input = {.type = mojom::Operand::DataType::kInt32,
+                  .dimensions = {1, 2, 3, 3}},
+        .mean = {.type = mojom::Operand::DataType::kInt32, .dimensions = {2}},
+        .variance = {.type = mojom::Operand::DataType::kInt32,
+                     .dimensions = {2}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 3}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test building batchNormalization when axis is out of range [0, N-1].
+    BatchNormalizationTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3, 3}},
+        .mean = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {3}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {3}},
+        .attributes = {.axis = 4},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 3}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test batchNormalization when input data type and scale data type
+    // mismatched.
+    BatchNormalizationTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3, 3}},
+        .mean = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2}},
+        .scale = OperandInfo{.type = mojom::Operand::DataType::kInt32,
+                             .dimensions = {2}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 3}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test building batchNormalization when the size of scale is not equal
+    // to the size of the input dimension denoted by axis.
+    BatchNormalizationTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3, 3}},
+        .mean = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2}},
+        .scale = OperandInfo{.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {3}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 3}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test batchNormalization when input data type and bias data type
+    // mismatched.
+    BatchNormalizationTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3, 3}},
+        .mean = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2}},
+        .bias = OperandInfo{.type = mojom::Operand::DataType::kInt32,
+                            .dimensions = {2}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 3}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test building batchNormalization when the size of bias is not equal
+    // to the size of the input dimension denoted by axis.
+    BatchNormalizationTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3, 3}},
+        .mean = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2}},
+        .bias = OperandInfo{.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {3}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 3}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for output type is not the same as input type.
+    BatchNormalizationTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3, 3}},
+        .mean = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2}},
+        .bias = OperandInfo{.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {3}},
+        .output = {.type = mojom::Operand::DataType::kInt32,
+                   .dimensions = {1, 2, 3, 3}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for output shape is not the same as input shape.
+    BatchNormalizationTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3, 3}},
+        .mean = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2}},
+        .bias = OperandInfo{.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {3}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for input operand == output operand.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id = builder.BuildInput(
+        "input", {1, 2, 3, 4}, mojom::Operand::DataType::kFloat32);
+    uint64_t mean_operand_id =
+        builder.BuildInput("mean", {2}, mojom::Operand::DataType::kFloat32);
+    uint64_t variance_operand_id =
+        builder.BuildInput("variance", {2}, mojom::Operand::DataType::kFloat32);
+    builder.BuildBatchNormalization(
+        input_operand_id, mean_operand_id, variance_operand_id,
+        input_operand_id,
+        BatchNormalizationTester::BatchNormalizationAttributes{});
+    EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
+  }
+  {
+    // Test the invalid graph for mean operand == output operand.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id = builder.BuildInput(
+        "input", {1, 2, 3, 4}, mojom::Operand::DataType::kFloat32);
+    uint64_t mean_operand_id =
+        builder.BuildInput("mean", {2}, mojom::Operand::DataType::kFloat32);
+    uint64_t variance_operand_id =
+        builder.BuildInput("variance", {2}, mojom::Operand::DataType::kFloat32);
+    builder.BuildBatchNormalization(
+        input_operand_id, mean_operand_id, variance_operand_id, mean_operand_id,
+        BatchNormalizationTester::BatchNormalizationAttributes{});
+    EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
+  }
+  {
+    // Test the invalid graph for variance operand == output operand.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id = builder.BuildInput(
+        "input", {1, 2, 3, 4}, mojom::Operand::DataType::kFloat32);
+    uint64_t mean_operand_id =
+        builder.BuildInput("mean", {2}, mojom::Operand::DataType::kFloat32);
+    uint64_t variance_operand_id =
+        builder.BuildInput("variance", {2}, mojom::Operand::DataType::kFloat32);
+    builder.BuildBatchNormalization(
+        input_operand_id, mean_operand_id, variance_operand_id,
+        variance_operand_id,
+        BatchNormalizationTester::BatchNormalizationAttributes{});
+    EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
+  }
+}
+
 struct ConcatTester {
   std::vector<OperandInfo> inputs;
   uint32_t axis;
@@ -350,7 +784,8 @@ TEST_F(WebNNGraphImplTest, ConcatTest) {
         .Test();
   }
   {
-    // Test concat operator when the inputs' datatypes don't match each other.
+    // Test concat operator when the inputs' datatypes don't match each
+    // other.
     ConcatTester{.inputs = {{.type = mojom::Operand::DataType::kFloat32,
                              .dimensions = {3, 1, 5, 6}},
                             {.type = mojom::Operand::DataType::kInt32,
@@ -413,8 +848,8 @@ TEST_F(WebNNGraphImplTest, ConcatTest) {
         .Test();
   }
   {
-    // Test concat operator when the output datatype doesn't match the inputs'
-    // datatypes.
+    // Test concat operator when the output datatype doesn't match the
+    // inputs' datatypes.
     ConcatTester{.inputs = {{.type = mojom::Operand::DataType::kFloat32,
                              .dimensions = {3, 1, 5, 6}},
                             {.type = mojom::Operand::DataType::kFloat32,
@@ -729,8 +1164,8 @@ TEST_F(WebNNGraphImplTest, Conv2dTest) {
         .Test();
   }
   {
-    // Test the invalid graph when the number of filter input channels doesn't
-    // match the result of input channels divided by groups
+    // Test the invalid graph when the number of filter input channels
+    // doesn't match the result of input channels divided by groups
     Conv2dTester{.type = mojom::Conv2d_Type::kDirect,
                  .input = {.type = mojom::Operand::DataType::kFloat32,
                            .dimensions = {1, 1, 5, 5}},
@@ -866,7 +1301,8 @@ TEST_F(WebNNGraphImplTest, ConvTranspose2dTest) {
         .Test();
   }
   {
-    // Test convTranspose2d with strides = [2, 2] and padding = [1, 1, 1, 1].
+    // Test convTranspose2d with strides = [2, 2] and padding = [1, 1, 1,
+    // 1].
     Conv2dTester{.type = mojom::Conv2d_Type::kTransposed,
                  .input = {.type = mojom::Operand::DataType::kFloat32,
                            .dimensions = {1, 1, 3, 3}},
@@ -996,8 +1432,8 @@ TEST_F(WebNNGraphImplTest, ConvTranspose2dTest) {
         .Test();
   }
   {
-    // Test the invalid graph when the number of input channels is not equal to
-    // the number of filter input channels.
+    // Test the invalid graph when the number of input channels is not equal
+    // to the number of filter input channels.
     Conv2dTester{.type = mojom::Conv2d_Type::kTransposed,
                  .input = {.type = mojom::Operand::DataType::kFloat32,
                            .dimensions = {1, 1, 3, 3}},
@@ -1010,8 +1446,8 @@ TEST_F(WebNNGraphImplTest, ConvTranspose2dTest) {
         .Test();
   }
   {
-    // Test the invalid graph when the number of output channels doesn't match
-    // the result of filter output channels multiplied by groups
+    // Test the invalid graph when the number of output channels doesn't
+    // match the result of filter output channels multiplied by groups
     Conv2dTester{.type = mojom::Conv2d_Type::kTransposed,
                  .input = {.type = mojom::Operand::DataType::kFloat32,
                            .dimensions = {1, 1, 3, 3}},
@@ -1139,8 +1575,8 @@ struct ElementWiseBinaryTester {
 };
 
 TEST_F(WebNNGraphImplTest, ElementWiseBinaryTest) {
-  // Testing building with two input dimensions - {8, 1, 6, 1} and {7, 1, 5}.
-  // Both the a and b dimensions have axes with length one that are
+  // Testing building with two input dimensions - {8, 1, 6, 1} and {7, 1,
+  // 5}. Both the a and b dimensions have axes with length one that are
   // expanded to a larger size during the broadcast operation.
   // a_dimensions     (4d) 8 * 1 * 6 * 1
   // b_dimensions     (3d)     7 * 1 * 5
@@ -1530,8 +1966,8 @@ TEST_F(WebNNGraphImplTest, ElementWiseUnaryTest) {
         .Test();
   }
   {
-    // Test the invalid element-wise abs graph for the input with unsupported
-    // data type.
+    // Test the invalid element-wise abs graph for the input with
+    // unsupported data type.
     ElementWiseUnaryTester{.kind = mojom::ElementWiseUnary::Kind::kAbs,
                            .input = {.type = mojom::Operand::DataType::kUint32,
                                      .dimensions = {1, 2, 3, 4}},
@@ -1541,8 +1977,8 @@ TEST_F(WebNNGraphImplTest, ElementWiseUnaryTest) {
         .Test();
   }
   {
-    // Test the invalid element-wise neg graph for the input with unsupported
-    // data type.
+    // Test the invalid element-wise neg graph for the input with
+    // unsupported data type.
     ElementWiseUnaryTester{.kind = mojom::ElementWiseUnary::Kind::kNeg,
                            .input = {.type = mojom::Operand::DataType::kUint8,
                                      .dimensions = {1, 2, 3, 4}},
@@ -1552,8 +1988,8 @@ TEST_F(WebNNGraphImplTest, ElementWiseUnaryTest) {
         .Test();
   }
   {
-    // Test the invalid element-wise ceil graph for the input with unsupported
-    // data type.
+    // Test the invalid element-wise ceil graph for the input with
+    // unsupported data type.
     ElementWiseUnaryTester{.kind = mojom::ElementWiseUnary::Kind::kCeil,
                            .input = {.type = mojom::Operand::DataType::kUint32,
                                      .dimensions = {1, 2, 3, 4}},
@@ -1563,8 +1999,8 @@ TEST_F(WebNNGraphImplTest, ElementWiseUnaryTest) {
         .Test();
   }
   {
-    // Test the invalid element-wise cos graph for the input with unsupported
-    // data type.
+    // Test the invalid element-wise cos graph for the input with
+    // unsupported data type.
     ElementWiseUnaryTester{.kind = mojom::ElementWiseUnary::Kind::kCos,
                            .input = {.type = mojom::Operand::DataType::kUint32,
                                      .dimensions = {1, 2, 3, 4}},
@@ -1574,8 +2010,8 @@ TEST_F(WebNNGraphImplTest, ElementWiseUnaryTest) {
         .Test();
   }
   {
-    // Test the invalid element-wise exp graph for the input with unsupported
-    // data type.
+    // Test the invalid element-wise exp graph for the input with
+    // unsupported data type.
     ElementWiseUnaryTester{.kind = mojom::ElementWiseUnary::Kind::kExp,
                            .input = {.type = mojom::Operand::DataType::kUint8,
                                      .dimensions = {1, 2, 3, 4}},
@@ -1585,8 +2021,8 @@ TEST_F(WebNNGraphImplTest, ElementWiseUnaryTest) {
         .Test();
   }
   {
-    // Test the invalid element-wise floor graph for the input with unsupported
-    // data type.
+    // Test the invalid element-wise floor graph for the input with
+    // unsupported data type.
     ElementWiseUnaryTester{.kind = mojom::ElementWiseUnary::Kind::kFloor,
                            .input = {.type = mojom::Operand::DataType::kInt8,
                                      .dimensions = {1, 2, 3, 4}},
@@ -1596,8 +2032,8 @@ TEST_F(WebNNGraphImplTest, ElementWiseUnaryTest) {
         .Test();
   }
   {
-    // Test the invalid element-wise log graph for the input with unsupported
-    // data type.
+    // Test the invalid element-wise log graph for the input with
+    // unsupported data type.
     ElementWiseUnaryTester{.kind = mojom::ElementWiseUnary::Kind::kLog,
                            .input = {.type = mojom::Operand::DataType::kInt32,
                                      .dimensions = {1, 2, 3, 4}},
@@ -1607,8 +2043,8 @@ TEST_F(WebNNGraphImplTest, ElementWiseUnaryTest) {
         .Test();
   }
   {
-    // Test the invalid element-wise sin graph for the input with unsupported
-    // data type.
+    // Test the invalid element-wise sin graph for the input with
+    // unsupported data type.
     ElementWiseUnaryTester{.kind = mojom::ElementWiseUnary::Kind::kSin,
                            .input = {.type = mojom::Operand::DataType::kUint32,
                                      .dimensions = {1, 2, 3, 4}},
@@ -1618,8 +2054,8 @@ TEST_F(WebNNGraphImplTest, ElementWiseUnaryTest) {
         .Test();
   }
   {
-    // Test the invalid element-wise tan graph for the input with unsupported
-    // data type.
+    // Test the invalid element-wise tan graph for the input with
+    // unsupported data type.
     ElementWiseUnaryTester{.kind = mojom::ElementWiseUnary::Kind::kTan,
                            .input = {.type = mojom::Operand::DataType::kUint32,
                                      .dimensions = {1, 2, 3, 4}},
@@ -1757,7 +2193,8 @@ struct ExpandTester {
 
 TEST_F(WebNNGraphImplTest, ExpandTest) {
   {
-    // Test building expand with the output shapes that are the same as input.
+    // Test building expand with the output shapes that are the same as
+    // input.
     ExpandTester{.input = {.type = mojom::Operand::DataType::kFloat32,
                            .dimensions = {2, 6}},
                  .output = {.type = mojom::Operand::DataType::kFloat32,
@@ -1775,8 +2212,8 @@ TEST_F(WebNNGraphImplTest, ExpandTest) {
         .Test();
   }
   {
-    // Test building expand with the output shapes that are broadcastable and the
-    // number of output shapes larger than input.
+    // Test building expand with the output shapes that are broadcastable
+    // and the number of output shapes larger than input.
     ExpandTester{.input = {.type = mojom::Operand::DataType::kInt32,
                            .dimensions = {2, 5}},
                  .output = {.type = mojom::Operand::DataType::kInt32,
@@ -1785,8 +2222,8 @@ TEST_F(WebNNGraphImplTest, ExpandTest) {
         .Test();
   }
   {
-    // Test the invalid graph when the input shapes are not the same as output
-    // shape and not broadcastable.
+    // Test the invalid graph when the input shapes are not the same as
+    // output shape and not broadcastable.
     ExpandTester{.input = {.type = mojom::Operand::DataType::kFloat32,
                            .dimensions = {3, 6, 2}},
                  .output = {.type = mojom::Operand::DataType::kFloat32,
@@ -2609,8 +3046,8 @@ TEST_F(WebNNGraphImplTest, ReduceTest) {
         .Test();
   }
   {
-    // Test the invalid graph for the input type is not one of float types for
-    // reduceLogSum.
+    // Test the invalid graph for the input type is not one of float types
+    // for reduceLogSum.
     ReduceTester{
         .kind = mojom::Reduce::Kind::kLogSum,
         .input = {.type = mojom::Operand::DataType::kInt32,
@@ -2622,8 +3059,8 @@ TEST_F(WebNNGraphImplTest, ReduceTest) {
         .Test();
   }
   {
-    // Test the invalid graph for the input type is not one of float types for
-    // reduceLogSumExp.
+    // Test the invalid graph for the input type is not one of float types
+    // for reduceLogSumExp.
     ReduceTester{
         .kind = mojom::Reduce::Kind::kLogSumExp,
         .input = {.type = mojom::Operand::DataType::kInt32,
@@ -2635,8 +3072,8 @@ TEST_F(WebNNGraphImplTest, ReduceTest) {
         .Test();
   }
   {
-    // Test the invalid graph for the input type is not one of float types for
-    // reduceL2.
+    // Test the invalid graph for the input type is not one of float types
+    // for reduceL2.
     ReduceTester{
         .kind = mojom::Reduce::Kind::kL2,
         .input = {.type = mojom::Operand::DataType::kInt32,
@@ -2648,8 +3085,8 @@ TEST_F(WebNNGraphImplTest, ReduceTest) {
         .Test();
   }
   {
-    // Test the invalid graph for the input type is not one of float types for
-    // reduceMean.
+    // Test the invalid graph for the input type is not one of float types
+    // for reduceMean.
     ReduceTester{
         .kind = mojom::Reduce::Kind::kMean,
         .input = {.type = mojom::Operand::DataType::kInt32,
@@ -2775,8 +3212,8 @@ TEST_F(WebNNGraphImplTest, Resample2dTest) {
         .Test();
   }
   {
-    // Test resample2d with "Linear" mode, axes = [1, 2] and explicit scales =
-    // [2, 2].
+    // Test resample2d with "Linear" mode, axes = [1, 2] and explicit scales
+    // = [2, 2].
     Resample2dTester{
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 2, 4, 1}},
@@ -2789,8 +3226,8 @@ TEST_F(WebNNGraphImplTest, Resample2dTest) {
         .Test();
   }
   {
-    // Test resample2d with "Linear" mode, axes = [1, 2] and explicit scales =
-    // [2, 2.2] which is not exactly output dimensions / input dimensions.
+    // Test resample2d with "Linear" mode, axes = [1, 2] and explicit scales
+    // = [2, 2.2] which is not exactly output dimensions / input dimensions.
     Resample2dTester{
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 2, 4, 1}},
@@ -2923,8 +3360,8 @@ TEST_F(WebNNGraphImplTest, Resample2dTest) {
                      .expected = false}
         .Test();
   }
-  // Test the invalid graph when the dimension of output doesn't equal to the
-  // dimension of input except along the axes.
+  // Test the invalid graph when the dimension of output doesn't equal to
+  // the dimension of input except along the axes.
   {
     // With explicit scales.
     Resample2dTester{
@@ -3225,7 +3662,8 @@ TEST_F(WebNNGraphImplTest, FloatingPointUnaryTest) {
     GraphInfoBuilder builder;
     uint64_t input_operand_id =
         builder.BuildInput("input", {2}, mojom::Operand::DataType::kFloat32);
-    builder.BuildLeakyRelu(input_operand_id, input_operand_id, /*alpha*/ 1.0);
+    builder.BuildLeakyRelu(input_operand_id, input_operand_id,
+                           /*alpha*/ 1.0);
 
     EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
   }
@@ -3236,7 +3674,8 @@ TEST_F(WebNNGraphImplTest, FloatingPointUnaryTest) {
         builder.BuildInput("input", {2}, mojom::Operand::DataType::kFloat32);
     uint64_t output_operand_id =
         builder.BuildOutput("output", {2}, mojom::Operand::DataType::kFloat32);
-    builder.BuildLeakyRelu(input_operand_id, output_operand_id, /*alpha*/ NAN);
+    builder.BuildLeakyRelu(input_operand_id, output_operand_id,
+                           /*alpha*/ NAN);
 
     EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
   }

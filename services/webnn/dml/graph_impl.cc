@@ -145,6 +145,8 @@ DML_REDUCE_FUNCTION MapReduceKindToReduceFuntion(mojom::Reduce::Kind kind) {
 }
 std::string OpTagToString(Operation::Tag tag) {
   switch (tag) {
+    case Operation::Tag::kBatchNormalization:
+      return "batchNormalization";
     case Operation::Tag::kClamp:
       return "clamp";
     case Operation::Tag::kConcat:

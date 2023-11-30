@@ -39,6 +39,87 @@ class GraphInfoBuilder final {
                        const std::vector<uint32_t>& dimensions,
                        mojom::Operand::DataType type);
 
+  // A `ActivationAttributes` type should have the following members:
+  // struct ActivationAttributes {
+  //  absl::optional<mojom::Activation::Tag> activation;
+  //  absl::optional<ClampTester::ClampAttributes> clamp_attributes;
+  //  absl::optional<float> elu_alpha;
+  //  absl::optional<float> leaky_relu_alpha;
+  // };
+  template <typename ActivationAttributes>
+  mojom::ActivationPtr CreateActivation(
+      const ActivationAttributes& attributes) {
+    switch (attributes.activation.value()) {
+      case mojom::Activation::Tag::kClamp: {
+        const auto clamp_attributes = attributes.clamp_attributes;
+        CHECK(clamp_attributes.has_value());
+        auto clamp = mojom::Clamp::New();
+        clamp->min_value = clamp_attributes->min_value;
+        clamp->max_value = clamp_attributes->max_value;
+        return mojom::Activation::NewClamp(std::move(clamp));
+      }
+      case mojom::Activation::Tag::kElu: {
+        auto elu = mojom::Elu::New();
+        CHECK(attributes.elu_alpha.has_value());
+        elu->alpha = attributes.elu_alpha.value();
+        return mojom::Activation::NewElu(std::move(elu));
+      }
+      case mojom::Activation::Tag::kLeakyRelu: {
+        auto leaky_relu = mojom::LeakyRelu::New();
+        CHECK(attributes.leaky_relu_alpha.has_value());
+        leaky_relu->alpha = attributes.leaky_relu_alpha.value();
+        return mojom::Activation::NewLeakyRelu(std::move(leaky_relu));
+      }
+      case mojom::Activation::Tag::kRelu:
+        return mojom::Activation::NewRelu(mojom::Relu::New());
+      case mojom::Activation::Tag::kSigmoid:
+        return mojom::Activation::NewSigmoid(mojom::Sigmoid::New());
+      case mojom::Activation::Tag::kSoftmax:
+        return mojom::Activation::NewSoftmax(mojom::Softmax::New());
+      case mojom::Activation::Tag::kTanh:
+        return mojom::Activation::NewTanh(mojom::Tanh::New());
+      default:
+        NOTREACHED();
+    }
+  }
+
+  // A `BatchNormalizationAttributes` type should have the following members:
+  // struct BatchNormalizationAttributes {
+  //  absl::optional<uint64_t> scale_operand_id;
+  //  absl::optional<uint64_t> bias_operand_id;
+  //  uint32_t axis = 1;
+  //  float epsilon = 1e-5;
+  //  absl::optional<mojom::Activation::Tag> activation;
+  //  absl::optional<ClampTester::ClampAttributes> clamp_attributes;
+  //  absl::optional<float> elu_alpha;
+  //  absl::optional<float> leaky_relu_alpha;
+  // };
+  template <typename BatchNormalizationAttributes>
+  void BuildBatchNormalization(uint64_t input_operand_id,
+                               uint64_t mean_operand_id,
+                               uint64_t variance_operand_id,
+                               uint64_t output_operand_id,
+                               const BatchNormalizationAttributes& attributes) {
+    mojom::BatchNormalizationPtr batch_normalization =
+        mojom::BatchNormalization::New();
+    batch_normalization->input_operand_id = input_operand_id;
+    batch_normalization->mean_operand_id = mean_operand_id;
+    batch_normalization->variance_operand_id = variance_operand_id;
+    batch_normalization->output_operand_id = output_operand_id;
+
+    batch_normalization->scale_operand_id = attributes.scale_operand_id;
+    batch_normalization->bias_operand_id = attributes.bias_operand_id;
+    batch_normalization->axis = attributes.axis;
+    batch_normalization->epsilon = attributes.epsilon;
+
+    if (attributes.activation.has_value()) {
+      batch_normalization->activation = std::move(CreateActivation(attributes));
+    }
+
+    graph_info_->operations.push_back(mojom::Operation::NewBatchNormalization(
+        std::move(batch_normalization)));
+  }
+
   void BuildClamp(uint64_t input_operand_id,
                   uint64_t output_operand_id,
                   float min_value,
@@ -92,46 +173,7 @@ class GraphInfoBuilder final {
     conv2d->bias_operand_id = bias_operand_id;
 
     if (attributes.activation.has_value()) {
-      switch (attributes.activation.value()) {
-        case mojom::Activation::Tag::kClamp: {
-          auto clamp_attributes = attributes.clamp_attributes;
-          CHECK(clamp_attributes.has_value());
-          auto clamp = mojom::Clamp::New();
-          clamp->min_value = clamp_attributes->min_value;
-          clamp->max_value = clamp_attributes->max_value;
-          conv2d->activation = mojom::Activation::NewClamp(std::move(clamp));
-          break;
-        }
-        case mojom::Activation::Tag::kElu: {
-          auto elu = mojom::Elu::New();
-          CHECK(attributes.elu_alpha.has_value());
-          elu->alpha = attributes.elu_alpha.value();
-          conv2d->activation = mojom::Activation::NewElu(std::move(elu));
-          break;
-        }
-        case mojom::Activation::Tag::kLeakyRelu: {
-          auto leaky_relu = mojom::LeakyRelu::New();
-          CHECK(attributes.leaky_relu_alpha.has_value());
-          leaky_relu->alpha = attributes.leaky_relu_alpha.value();
-          conv2d->activation =
-              mojom::Activation::NewLeakyRelu(std::move(leaky_relu));
-          break;
-        }
-        case mojom::Activation::Tag::kRelu:
-          conv2d->activation = mojom::Activation::NewRelu(mojom::Relu::New());
-          break;
-        case mojom::Activation::Tag::kSigmoid:
-          conv2d->activation =
-              mojom::Activation::NewSigmoid(mojom::Sigmoid::New());
-          break;
-        case mojom::Activation::Tag::kSoftmax:
-          conv2d->activation =
-              mojom::Activation::NewSoftmax(mojom::Softmax::New());
-          break;
-        case mojom::Activation::Tag::kTanh:
-          conv2d->activation = mojom::Activation::NewTanh(mojom::Tanh::New());
-          break;
-      }
+      conv2d->activation = std::move(CreateActivation(attributes));
     }
 
     graph_info_->operations.push_back(
