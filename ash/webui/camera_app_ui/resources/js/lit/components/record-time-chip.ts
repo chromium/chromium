@@ -53,7 +53,7 @@ export class RecordTimeChip extends LitElement {
   private readonly recordingUiPausedState =
       new StateObserverController(this, State.RECORDING_UI_PAUSED);
 
-  override render(): unknown {
+  override render(): RenderResult {
     const recordingIcon = html`<div id="icon"></div>`;
     const pausedText = html`<div id="paused-msg">${
         getI18nMessage(I18nString.RECORD_VIDEO_PAUSED_MSG)}</div>`;

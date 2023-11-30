@@ -13,7 +13,7 @@ let tooltipElement: HTMLElement|null = null;
 /**
  * The element whose tooltip should be shown.
  */
-let activeElement: HTMLElement|null = null;
+let activeElement: Element|null = null;
 
 /**
  * Name of event triggered for positioning tooltip.
@@ -60,7 +60,7 @@ export function hide(): void {
  *
  * @param element Active element whose tooltip to be shown.
  */
-function show(element: HTMLElement) {
+function show(element: Element) {
   assert(tooltipElement !== null);
 
   hide();
@@ -75,7 +75,7 @@ function show(element: HTMLElement) {
  *
  * @param elements Elements whose tooltips to be shown.
  */
-export function setupElements(elements: HTMLElement[]): void {
+export function setupElements(elements: Element[]): void {
   for (const el of elements) {
     function hideHandler() {
       if (activeElement === el) {
@@ -106,7 +106,7 @@ export function init(): void {
   });
 }
 
-function triggerPosition(element: HTMLElement) {
+function triggerPosition(element: Element) {
   const event =
       new CustomEvent(TOOLTIP_POSITION_EVENT_NAME, {cancelable: true});
   const doDefault = element.dispatchEvent(event);

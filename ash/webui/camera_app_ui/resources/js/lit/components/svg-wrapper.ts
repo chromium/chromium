@@ -43,7 +43,7 @@ export class SvgWrapper extends LitElement {
     }
   }
 
-  override render(): unknown {
+  override render(): RenderResult {
     if (this.name === null) {
       return null;
     }

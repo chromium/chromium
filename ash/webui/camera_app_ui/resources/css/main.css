@@ -15,11 +15,13 @@
   --exit-easing: cubic-bezier(0.4, 0, 1, 1);
 
   /* App specific settings */
+  --big-icon: 48px;
   --bottom-line: 44px;
   --default-font-family: 'Google Sans', sans-serif;
   --fixed-width-font-family: 'Cousine', monospace;
   --left-line: 44px;
   --right-line: 50px;
+  --small-icon: 40px;
   --top-line: 48px;
 
   /* From https://www.w3.org/TR/css-backgrounds-3/#corner-overlap. */
@@ -504,7 +506,7 @@ body.video.taking #recordvideo {
 }
 
 body:is(:not(.video), .record-type-gif, .record-type-time-lapse) #toggle-mic,
-body:not(.multi-camera) #switch-device {
+body:not(.multi-camera) switch-device-button {
   visibility: hidden;
 }
 
@@ -541,25 +543,6 @@ body.mode-switching:not(.streaming) #camera-mode {
   transition: transform var(--moderate1-duration) ease-out,
               opacity var(--moderate1-duration) ease-out;
   visibility: visible;
-}
-
-#switch-device {
-  height: var(--big-icon);
-  outline-offset: 8px;
-  width: var(--big-icon);
-}
-
-#switch-device.animate {
-  animation: switch-device-rotate 350ms ease-out;
-}
-
-@keyframes switch-device-rotate {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(-180deg);
-  }
 }
 
 body.doc-mode-reviewing #gallery-enter {
@@ -778,8 +761,6 @@ html[dir=rtl] body.view-expert-settings .right-stripe {
 }
 
 #view-camera {
-  --big-icon: 48px;
-  --small-icon: 40px;
   --shutter-vertical-center: 180px;
 
   align-items: center;

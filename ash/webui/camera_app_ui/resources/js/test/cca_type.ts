@@ -91,7 +91,7 @@ export const SELECTOR_MAP = {
   settingsButtonContainer: 'div:has(> #open-settings)',
   settingsHeader: '#settings-header',
   shutter: '.shutter',
-  switchDeviceButton: '#switch-device',
+  switchDeviceButton: 'switch-device-button',
   tiltDownButton: '#tilt-down',
   tiltUpButton: '#tilt-up',
   timeLapseRecordingOption:
