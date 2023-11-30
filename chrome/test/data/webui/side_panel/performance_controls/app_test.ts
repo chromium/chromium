@@ -6,7 +6,7 @@ import 'chrome://performance-side-panel.top-chrome/app.js';
 
 import {PerformanceAppElement} from 'chrome://performance-side-panel.top-chrome/app.js';
 import {PerformancePageApiProxyImpl} from 'chrome://performance-side-panel.top-chrome/performance_page_api_proxy.js';
-import {assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {$$} from 'chrome://webui-test/test_util.js';
 
@@ -37,5 +37,9 @@ suite('PerformanceControlsAppTest', () => {
 
   test('app contains battery saver card', async () => {
     assertTrue(!!$$(performanceApp, '#batterySaverCard'));
+  });
+
+  test('app calls showUi', async () => {
+    assertEquals(testProxy.getCallCount('showUi'), 1);
   });
 });
