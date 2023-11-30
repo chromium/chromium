@@ -8,7 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/system/sys_info.h"
-#include "services/on_device_model/public/cpp/features.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 
 namespace ml {
 namespace {
@@ -17,30 +17,30 @@ constexpr uint64_t kBytesPerMb = 1024 * 1024;
 
 // The threshold for GPU RAM below which the device is considered VeryLow.
 const base::FeatureParam<int> kLowRAMThreshold{
-    &on_device_model::features::kOnDeviceModelService,
+    &optimization_guide::features::kOptimizationGuideOnDeviceModel,
     "on_device_low_ram_threshold_mb", 4000};
 // RAM threshold necessary to be considered High or better.
 const base::FeatureParam<int> kHighRAMThreshold{
-    &on_device_model::features::kOnDeviceModelService,
+    &optimization_guide::features::kOptimizationGuideOnDeviceModel,
     "on_device_high_ram_threshold_mb", 8000};
 
 // Output threshold to be considered Low or better.
 const base::FeatureParam<int> kLowOutputThreshold{
-    &on_device_model::features::kOnDeviceModelService,
+    &optimization_guide::features::kOptimizationGuideOnDeviceModel,
     "on_device_low_output_threshold", 6};
 
 // Input speed thresholds or each device class.
 const base::FeatureParam<int> kLowThreshold{
-    &on_device_model::features::kOnDeviceModelService,
+    &optimization_guide::features::kOptimizationGuideOnDeviceModel,
     "on_device_low_threshold", 50};
 const base::FeatureParam<int> kMediumThreshold{
-    &on_device_model::features::kOnDeviceModelService,
+    &optimization_guide::features::kOptimizationGuideOnDeviceModel,
     "on_device_medium_threshold", 100};
 const base::FeatureParam<int> kHighThreshold{
-    &on_device_model::features::kOnDeviceModelService,
+    &optimization_guide::features::kOptimizationGuideOnDeviceModel,
     "on_device_high_threshold", 250};
 const base::FeatureParam<int> kVeryHighThreshold{
-    &on_device_model::features::kOnDeviceModelService,
+    &optimization_guide::features::kOptimizationGuideOnDeviceModel,
     "on_device_very_high_threshold", 750};
 
 }  // namespace

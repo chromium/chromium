@@ -43,6 +43,7 @@ source_set("utility") {
     "//base",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
+    "//components/optimization_guide/core:features",
     "//components/services/screen_ai/buildflags",
     "//components/services/storage",
     "//components/services/storage/public/mojom",

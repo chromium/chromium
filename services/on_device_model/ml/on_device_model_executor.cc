@@ -10,9 +10,9 @@
 #include "base/memory/raw_ref.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/task/thread_pool.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "gpu/config/webgpu_blocklist_impl.h"
 #include "services/on_device_model/ml/chrome_ml.h"
-#include "services/on_device_model/public/cpp/features.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
 
@@ -26,7 +26,8 @@ namespace ml {
 namespace {
 
 const base::FeatureParam<std::string> kGpuBlockList{
-    &on_device_model::features::kOnDeviceModelService, "gpu_block_list", ""};
+    &optimization_guide::features::kOptimizationGuideOnDeviceModel,
+    "on_device_model_gpu_block_list", ""};
 
 // Helper to bind object methods as weak task-posting callback functions.
 template <typename R, typename C, typename... Args>

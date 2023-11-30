@@ -37,9 +37,7 @@ ChromeOnDeviceModelServiceController::~ChromeOnDeviceModelServiceController() {
 }
 
 void ChromeOnDeviceModelServiceController::LaunchService() {
-  CHECK(
-      base::FeatureList::IsEnabled(features::kOptimizationGuideOnDeviceModel) ||
-      base::FeatureList::IsEnabled(features::kLogOnDeviceMetricsOnStartup));
+  CHECK(features::CanLaunchOnDeviceModelService());
   if (service_remote_) {
     return;
   }

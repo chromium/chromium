@@ -990,5 +990,10 @@ bool GetOnDeviceFallbackToServerOnDisconnect() {
   return kOnDeviceModelFallbackToServerOnDisconnect.Get();
 }
 
+bool CanLaunchOnDeviceModelService() {
+  return base::FeatureList::IsEnabled(kOptimizationGuideOnDeviceModel) ||
+         base::FeatureList::IsEnabled(kLogOnDeviceMetricsOnStartup);
+}
+
 }  // namespace features
 }  // namespace optimization_guide

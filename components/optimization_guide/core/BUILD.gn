@@ -136,7 +136,7 @@ if (build_with_tflite_lib) {
   }
 }
 
-static_library("features") {
+component("features") {
   sources = [
     "insertion_ordered_set.h",
     "optimization_guide_constants.cc",
@@ -158,9 +158,11 @@ static_library("features") {
     "//components/variations",
     "//google_apis",
     "//net",
+    "//third_party/metrics_proto:metrics_proto",
     "//ui/base",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
+  defines = [ "IS_OPTIMIZATION_GUIDE_FEATURES_IMPL" ]
 }
 
 input_proto_descriptor_file =
