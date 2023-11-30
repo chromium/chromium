@@ -443,15 +443,6 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
   if (self.browserState &&
       !IsAddNewTabAllowedByPolicy(self.browserState->GetPrefs(),
                                   self.browserState->IsOffTheRecord())) {
-    // TODO(crbug.com/1471955): Try to show a notice to the user when this
-    // happens.
-    //
-    // Check that adding a new item is allowed by policy. It is an error to
-    // call -addNewItem when the corresponding browsing mode is disabled. The
-    // event is reported without crashing the browser and -addNewItem is
-    // softly cancelled without a notice (this approach is better than allowing
-    // a policy violation).
-    base::debug::DumpWithoutCrashing();
     return NO;
   }
 
