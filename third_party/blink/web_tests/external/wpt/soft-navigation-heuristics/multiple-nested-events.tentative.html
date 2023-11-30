@@ -24,7 +24,6 @@
     });
     testSoftNavigation({
       eventPrepWork: url => {
-        timestamps[counter]["eventStart"] = performance.now();
         addTextToDivOnMain();
         history.pushState({}, '', 'foobar1.html');
         // Here we're bypassing the regular test's event logic, as this test is
