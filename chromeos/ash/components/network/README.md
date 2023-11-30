@@ -636,4 +636,43 @@ after a powerwash, since all local data will be erased and we will no longer
 have information on which slots we have metadata for, we will refresh the
 metadata for all slots. This is done in [`AutoRefreshEuiccsIfNecessary()`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/cellular_esim_profile_handler_impl.h;l=69;drc=d8468bb60e224d8797b843ee9d0258862bcbe87f).
 
+
+## Hotspot(Tethering)
+
+The [`HotspotStateHandler`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/hotspot_state_handler.h;drc=7134a1c6cac8c7bd23d8214bd5479f6f2d837d76)
+class is responsible for caching the latest hotspot state and notifying its
+observers whenever there is a change in the hotspot state.
+
+The [`HotspotCapabilitiesProvider`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/hotspot_capabilities_provider.h;drc=a6cec85709049281bc688f04bff6deb3f1691571)
+class calculates and caches the latest hotspot capabilities. This calculation
+is triggered whenever the cellular network state changes or when Shill signals
+changes in the "TetheringCapabilities" property. The calculation involves the
+following operations:
+1. Checks if the policy allows hotspot; it exits early if the policy prohibits
+it.
+2. Checks if the hotspot is supported by the platform, considering factors such
+as cellular support for upstream technology and Wi-Fi for downstream technology.
+3. Checks if the active cellular network state is online; it exits early if it
+is not.
+4. Calls `CheckTetheringReadiness` from Shill to verify if it passes the
+readiness check.
+
+The [`HotspotController`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/hotspot_controller.h;l=6;drc=28050c2b4975c08c93c35630e64800db12b8676c)
+class manages set the admin policy of the hotspot, enable and disable hotspot.
+When enabling the hotspot, it performs the following operations:
+1. Checks the hotspot capabilities from `HotspotCapabilitiesProvider`. If not
+allowed, it exits early.
+2. Calls `CheckTetheringReadiness` from Shill and exits early if the check is not
+passed.
+3. Disables Wi-Fi if it is active.
+4. Enables or disables the hotspot using the Shill service.
+
+The `HotspotController` also observes changes in hotspot state and restores
+Wi-Fi to its previous status when the hotspot is turned off.
+
+The [`HotspotConfigurationHandler`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/hotspot_configuration_handler.h;drc=1e7275664ba566e4e3521e520f45f1c9aef6768a)
+class is responsible for caching the
+latest hotspot configuration and handling the update of the hotspot
+configuration.
+
 TODO: Finish README
