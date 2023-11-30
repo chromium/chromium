@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<!-- This file is generated using tools/search_engine_choice/generate_search_engine_snippets.py. Do not modify it manually. -->
+<translationbundle lang="ca">
+  <translation id="IDS_BING_SEARCH_DESCRIPTION">Cerca ràpida, precisa i privada de Microsoft</translation>
+  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Troba el que necessites amb el motor de cerca més utilitzat de tot el món.</translation>
+  <translation id="IDS_INFOCOM_SEARCH_DESCRIPTION">Motor de cerca fàcil i ràpid</translation>
+  <translation id="IDS_MOJEEK_SEARCH_DESCRIPTION">Motor de cerca independent, europeu i sense rastreig</translation>
+</translationbundle>

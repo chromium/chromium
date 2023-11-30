@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<!-- This file is generated using tools/search_engine_choice/generate_search_engine_snippets.py. Do not modify it manually. -->
+<translationbundle lang="is">
+  <translation id="IDS_BING_SEARCH_DESCRIPTION">Hraðvirk, nákvæm og ópersónugreinanleg leitarvél frá Microsoft</translation>
+  <translation id="IDS_DUCKDUCKGO_SEARCH_DESCRIPTION">Við fylgjumst ekki með þér. Persónuvernd, einfölduð.</translation>
+  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Finndu það sem þú þarft með mest notuðu leitarvél heims.</translation>
+  <translation id="IDS_INFOCOM_SEARCH_DESCRIPTION">Fljótleg og auðveld leit</translation>
+  <translation id="IDS_MOJEEK_SEARCH_DESCRIPTION">Independent, European, enginn mælingar leitarvél</translation>
+  <translation id="IDS_PRIVACYWALL_SEARCH_DESCRIPTION">Leitarvél sem verndar friðhelgi þína.</translation>
+  <translation id="IDS_YANDEX_SEARCH_DESCRIPTION">Hröð og örugg leit að vefsvæðum, myndum og myndböndum</translation>
+  <translation id="IDS_YEP_SEARCH_DESCRIPTION">Vefsleitarvélin sem miðar að því að deila auglýsingatekjum með höfundum.</translation>
+</translationbundle>

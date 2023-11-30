@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<!-- This file is generated using tools/search_engine_choice/generate_search_engine_snippets.py. Do not modify it manually. -->
+<translationbundle lang="de">
+  <translation id="IDS_BING_SEARCH_DESCRIPTION">Schnelle, genaue Suche von Microsoft mit integriertem Datenschutz</translation>
+  <translation id="IDS_BRAVE_SEARCH_DESCRIPTION">Überwacht keine Suchbegriffe oder Klicks. Unabhängig von Big Tech.</translation>
+  <translation id="IDS_DUCKDUCKGO_SEARCH_DESCRIPTION">Wir verfolgen dich nicht. Privatsphäre, einfach gemacht.</translation>
+  <translation id="IDS_ECOSIA_SEARCH_DESCRIPTION">Mit Ecosia pflanzt du Bäume und schützt deine Daten.</translation>
+  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Mit der meistgenutzten Suchmaschine der Welt findest du alles, was du brauchst.</translation>
+  <translation id="IDS_INFOCOM_SEARCH_DESCRIPTION">Schnelle und einfache Suche</translation>
+  <translation id="IDS_METAGER_SEARCH_DESCRIPTION">Sicher suchen und finden unter Wahrung der Privatsphäre.</translation>
+  <translation id="IDS_MOJEEK_SEARCH_DESCRIPTION">Unabhängig, europäisch, no-Tracking-Suchmaschine</translation>
+  <translation id="IDS_NONA_SEARCH_DESCRIPTION">Eine Suchmaschine aus Deutschland, bei der Du an erster Stelle stehst.</translation>
+  <translation id="IDS_OCEANHERO_SEARCH_DESCRIPTION">Hilf gemeinsam mit OceanHero Plastikmüll im Meer zu stoppen.</translation>
+  <translation id="IDS_PANDA_SEARCH_DESCRIPTION">Suche mit Panda und unterstütze Projekte und Kampagnen des WWF.</translation>
+  <translation id="IDS_PRIVACYWALL_SEARCH_DESCRIPTION">Eine Suchmaschine, die Ihre Privatsphäre schützt.</translation>
+  <translation id="IDS_QUENDU_SEARCH_DESCRIPTION">Eine Suchmaschine für pragmatische Menschen</translation>
+  <translation id="IDS_QWANT_SEARCH_DESCRIPTION">Eine europäische Suchmaschine, die Ihre Privatsphäre respektiert.</translation>
+  <translation id="IDS_YAHOO_SEARCH_DESCRIPTION">Mehr herausfinden. Schnellere Antworten. Neues entdecken – mit Yahoo.</translation>
+  <translation id="IDS_YANDEX_SEARCH_DESCRIPTION">Schnelle und sichere Suche nach Websites, Bildern und Videos</translation>
+  <translation id="IDS_YEP_SEARCH_DESCRIPTION">Websuchmaschine mit der Zielsetzung Anzeigeneinnahmen mit den Urhebern zu teilen.</translation>
+</translationbundle>

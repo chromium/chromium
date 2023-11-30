@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<!-- This file is generated using tools/search_engine_choice/generate_search_engine_snippets.py. Do not modify it manually. -->
+<translationbundle lang="lt">
+  <translation id="IDS_BING_SEARCH_DESCRIPTION">Sparti, tiksli ir privati „Microsoft“ ieška</translation>
+  <translation id="IDS_DUCKDUCKGO_SEARCH_DESCRIPTION">Nesekame jūsų. Privatumas paprasčiau.</translation>
+  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Raskite viską naudodami pasaulyje populiariausią paieškos variklį.</translation>
+  <translation id="IDS_INFOCOM_SEARCH_DESCRIPTION">Greita ir lengva paieška</translation>
+  <translation id="IDS_MOJEEK_SEARCH_DESCRIPTION">Nepriklausoma, Europos, ne sekimas paieškos sistema</translation>
+  <translation id="IDS_PRIVACYWALL_SEARCH_DESCRIPTION">Paieškos sistema, sauganti jūsų privatumą.</translation>
+  <translation id="IDS_YANDEX_SEARCH_DESCRIPTION">Greita ir saugi svetainių, vaizdų ir vaizdo įrašų ieška</translation>
+  <translation id="IDS_YEP_SEARCH_DESCRIPTION">Žiniatinklio paieškos variklis, kurio tikslas - dalytis skelbimų pajamomis su kūrėjais.</translation>
+</translationbundle>

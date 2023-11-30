@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<!-- This file is generated using tools/search_engine_choice/generate_search_engine_snippets.py. Do not modify it manually. -->
+<translationbundle lang="es">
+  <translation id="IDS_BING_SEARCH_DESCRIPTION">Búsqueda rápida, precisa y privada de Microsoft</translation>
+  <translation id="IDS_BRAVE_SEARCH_DESCRIPTION">No te rastrea, ni búsquedas, ni clics. Independiente de las Big Tech.</translation>
+  <translation id="IDS_DUCKDUCKGO_SEARCH_DESCRIPTION">No te rastreamos. La privacidad, simplificada.</translation>
+  <translation id="IDS_ECOSIA_SEARCH_DESCRIPTION">Planta árboles y protege tu privacidad al buscar.</translation>
+  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Encuentra lo que necesitas con el buscador más utilizado del mundo.</translation>
+  <translation id="IDS_INFOCOM_SEARCH_DESCRIPTION">Búsqueda rápida y fácil</translation>
+  <translation id="IDS_KARMA_SEARCH_DESCRIPTION">Proteger la biodiversidad y el bienestar animal gracias a tus búsquedas</translation>
+  <translation id="IDS_MOJEEK_SEARCH_DESCRIPTION">Motor de búsqueda independiente, europeo, sin seguimiento</translation>
+  <translation id="IDS_OCEANHERO_SEARCH_DESCRIPTION">Ayuda a parar la contaminación de plástico del océano con OceanHero.</translation>
+  <translation id="IDS_PANDA_SEARCH_DESCRIPTION">Consulta con Panda y apoya los proyectos y campañas de WWF.</translation>
+  <translation id="IDS_PRIVACYWALL_SEARCH_DESCRIPTION">Un motor de búsqueda que protege tu privacidad.</translation>
+  <translation id="IDS_YAHOO_SEARCH_DESCRIPTION">Descubre más. Obtén respuestas rápidamente. Y explora más con Yahoo.</translation>
+  <translation id="IDS_YANDEX_SEARCH_DESCRIPTION">Búsqueda rápida y segura de sitios web, imágenes y videos</translation>
+  <translation id="IDS_YEP_SEARCH_DESCRIPTION">Buscador web que tiene como objetivo compartir los ingresos publicitarias con los creadores.</translation>
+</translationbundle>

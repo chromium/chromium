@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<!-- This file is generated using tools/search_engine_choice/generate_search_engine_snippets.py. Do not modify it manually. -->
+<translationbundle lang="hy">
+  <translation id="IDS_BING_SEARCH_DESCRIPTION">Արագ, ստույգ և մասնավոր որոնում՝ տրամադրված Microsoft-ի կողմից</translation>
+  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Գտեք այն ամենն, ինչ ձեզ պետք է աշխարհի ամենաօգտագործվող որոնիչի օգնությամբ:</translation>
+  <translation id="IDS_MOJEEK_SEARCH_DESCRIPTION">Անկախ, Եվրոպական, ոչ հետեւող որոնման շարժիչ</translation>
+</translationbundle>

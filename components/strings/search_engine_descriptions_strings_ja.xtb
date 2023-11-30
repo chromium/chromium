@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<!-- This file is generated using tools/search_engine_choice/generate_search_engine_snippets.py. Do not modify it manually. -->
+<translationbundle lang="ja">
+  <translation id="IDS_BING_SEARCH_DESCRIPTION">Microsoft が提供する速くて正確なプライベート検索</translation>
+  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">世界中で最も多く使われている検索エンジンで知りたい情報を探そう。</translation>
+  <translation id="IDS_INFOCOM_SEARCH_DESCRIPTION">高速で簡単な検索エンジン</translation>
+  <translation id="IDS_MOJEEK_SEARCH_DESCRIPTION">独立したヨーロッパの非追跡検索エンジン</translation>
+</translationbundle>

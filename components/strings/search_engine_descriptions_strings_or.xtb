@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<!-- This file is generated using tools/search_engine_choice/generate_search_engine_snippets.py. Do not modify it manually. -->
+<translationbundle lang="or">
+  <translation id="IDS_BING_SEARCH_DESCRIPTION">Microsoftରୁ ଦ୍ରୁତ, ସଠିକ, ଏବଂ ବ୍ୟକ୍ତିଗତ ସନ୍ଧାନ</translation>
+  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">ବିଶ୍ୱର ସର୍ବାଧିକ ବ୍ୟବହୃତ ସନ୍ଧାନ ଇଞ୍ଜିନ୍‍ ମାଧ୍ୟମରେ ଆପଣଙ୍କୁ ଯାହା ଆବଶ୍ୟକ ତାହା ଖୋଜନ୍ତୁ।</translation>
+  <translation id="IDS_MOJEEK_SEARCH_DESCRIPTION">ସ୍ଵାଧୀନ, ୟୁରୋପୀୟ, ଅଣ-ଟ୍ରାକିଂ ସନ୍ଧାନ ଇଞ୍ଜିନ୍</translation>
+</translationbundle>
