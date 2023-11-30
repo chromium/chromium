@@ -210,14 +210,17 @@ class ChildProcessSecurityPolicy {
   virtual void GrantSendMidiSysExMessage(int child_id) = 0;
 
   // Returns true if the process is permitted to read and modify the data for
-  // the origin of |url|. This is currently used to protect data such as
-  // cookies, passwords, and local storage. Does not affect cookies attached to
-  // or set by network requests.
+  // the given `origin`. This is used to protect data such as cookies,
+  // passwords, and local storage. Does not affect cookies attached to or set by
+  // network requests.
   //
-  // This can only return false for processes locked to a particular origin,
-  // which can happen for any origin when the --site-per-process flag is used,
-  // or for isolated origins that require a dedicated process (see
-  // AddFutureIsolatedOrigins).
+  // This function performs two kinds of security checks:
+  // - "Jail" check: ensures that a process locked to a particular site can
+  //   only access data belonging to that site.
+  // - "Citadel" check: ensures that a process that is *not* locked to a
+  //   particular site does not access data belonging to a site that requires a
+  //   dedicated process. This check is mainly relevant on Android, where only
+  //   some sites require site isolation.
   virtual bool CanAccessDataForOrigin(int child_id,
                                       const url::Origin& origin) = 0;
 
