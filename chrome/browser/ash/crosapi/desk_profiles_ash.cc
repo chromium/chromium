@@ -11,6 +11,7 @@
 #include "ash/shell.h"
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/ranges/algorithm.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 
 namespace crosapi {
 namespace {
@@ -51,7 +52,9 @@ void DeskProfilesAsh::OnProfileUpsert(
 
   for (auto& prof : profiles) {
     ash::LacrosProfileSummary summary = ConvertProfileSummary(std::move(prof));
-    if (!primary_user_email.empty() && primary_user_email == summary.email) {
+
+    if (!primary_user_email.empty() &&
+        gaia::AreEmailsSame(primary_user_email, summary.email)) {
       primary_user_profile_id_ = summary.profile_id;
     }
 
