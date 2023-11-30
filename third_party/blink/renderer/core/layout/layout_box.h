@@ -980,13 +980,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // Inherit other flipping methods from LayoutObject.
   using LayoutObject::FlipForWritingMode;
 
-  void DeprecatedFlipForWritingMode(DeprecatedLayoutRect& rect) const {
-    NOT_DESTROYED();
-    if (LIKELY(!HasFlippedBlocksWritingMode()))
-      return;
-    rect = FlipForWritingMode(rect).ToLayoutRect();
-  }
-
   // Passing |flipped_blocks_container| causes flipped-block flipping w.r.t.
   // that container, or LocationContainer() otherwise.
   PhysicalOffset PhysicalLocation(

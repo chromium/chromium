@@ -1480,15 +1480,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return {FlipForWritingModeInternal(p.left, LayoutUnit(), box_for_flipping),
             p.top};
   }
-  [[nodiscard]] PhysicalOffset FlipForWritingMode(
-      const LayoutPoint& p,
-      const LayoutBox* box_for_flipping = nullptr) const {
-    NOT_DESTROYED();
-    if (LIKELY(!HasFlippedBlocksWritingMode()))
-      return PhysicalOffset(p);
-    return {FlipForWritingModeInternal(p.X(), LayoutUnit(), box_for_flipping),
-            p.Y()};
-  }
 
   bool HasLayer() const {
     NOT_DESTROYED();
