@@ -3339,8 +3339,8 @@
   },
   {
     "name": "enable-remove-stale-policy-pinned-apps-from-shelf",
-    "owners": [ "greengrape@chromium.org" ],
-    "expiry_milestone": 122
+    "owners": [ "greengrape@google.com" ],
+    "expiry_milestone": 125
   },
   {
     "name": "enable-resampling-scroll-events-experimental-prediction",
