@@ -61,6 +61,7 @@ FormRendererId FormRef::GetId() const {
 
 FieldRef::FieldRef(blink::WebFormControlElement form_control)
     : field_renderer_id_(form_util::GetFieldRendererId(form_control)) {
+  CHECK(!form_control.IsNull());
   if (!ShouldReplaceElementsByRendererIds()) {
     field_ = form_control;
   }
@@ -68,6 +69,7 @@ FieldRef::FieldRef(blink::WebFormControlElement form_control)
 
 FieldRef::FieldRef(blink::WebElement content_editable)
     : field_renderer_id_(content_editable.GetDomNodeId()) {
+  CHECK(!content_editable.IsNull());
   CHECK(content_editable.IsContentEditable());
   CHECK(base::FeatureList::IsEnabled(
       blink::features::kAutofillUseDomNodeIdForRendererId));

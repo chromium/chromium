@@ -20,6 +20,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/metrics/field_trial.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -682,9 +683,14 @@ void AutofillAgent::ApplyFormAction(mojom::ActionType action_type,
       return;
     }
     WebDocument document = unsafe_render_frame()->GetWebFrame()->GetDocument();
-    last_queried_element_ = FieldRef(form_util::FindFormControlByRendererId(
-        document, form.fields.front().unique_renderer_id));
-    last_queried_element = last_queried_element_.GetField();
+    for (const FormFieldData& field : form.fields) {
+      last_queried_element = form_util::FindFormControlByRendererId(
+          document, field.unique_renderer_id);
+      if (!last_queried_element.IsNull()) {
+        last_queried_element_ = FieldRef(last_queried_element);
+        break;
+      }
+    }
   }
 
   if (last_queried_element.IsNull()) {
@@ -781,18 +787,15 @@ void AutofillAgent::ClearPreviewedForm() {
 void AutofillAgent::TriggerSuggestions(
     FieldRendererId field_id,
     AutofillSuggestionTriggerSource trigger_source) {
-  content::RenderFrame* render_frame = unsafe_render_frame();
-  if (!render_frame) {
+  if (!unsafe_render_frame()) {
     return;
   }
-  WebDocument document = render_frame->GetWebFrame()->GetDocument();
-  last_queried_element_ =
-      FieldRef(form_util::FindFormControlByRendererId(document, field_id));
-
-  if (WebFormControlElement last_queried_element =
-          last_queried_element_.GetField();
-      !last_queried_element.IsNull()) {
-    ShowSuggestions(last_queried_element, trigger_source);
+  if (WebFormControlElement control_element =
+          form_util::FindFormControlByRendererId(
+              unsafe_render_frame()->GetWebFrame()->GetDocument(), field_id);
+      !control_element.IsNull()) {
+    last_queried_element_ = FieldRef(control_element);
+    ShowSuggestions(control_element, trigger_source);
   }
 }
 
