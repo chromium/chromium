@@ -8,6 +8,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/hash/sha1.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
@@ -219,20 +220,17 @@ class ConsolidatedConsentScreenTest : public OobeBaseTest {
 
     original_callback_ = screen->get_exit_callback_for_testing();
     screen->set_exit_callback_for_testing(
-        base::BindRepeating(&ConsolidatedConsentScreenTest::HandleScreenExit,
-                            base::Unretained(this)));
+        screen_result_waiter_.GetRepeatingCallback());
 
     OobeBaseTest::SetUpOnMainThread();
   }
 
   void LoginAsRegularUser() { login_manager_mixin_.LoginAsNewRegularUser(); }
 
-  void WaitForScreenExit() {
-    if (screen_exited_)
-      return;
-    base::RunLoop run_loop;
-    screen_exit_callback_ = run_loop.QuitClosure();
-    run_loop.Run();
+  ConsolidatedConsentScreen::Result WaitForScreenExitResult() {
+    auto result = screen_result_waiter_.Take();
+    original_callback_.Run(result);
+    return result;
   }
 
   absl::optional<ConsolidatedConsentScreen::Result> screen_result_;
@@ -244,17 +242,8 @@ class ConsolidatedConsentScreenTest : public OobeBaseTest {
   }
 
  protected:
-  void HandleScreenExit(ConsolidatedConsentScreen::Result result) {
-    ASSERT_FALSE(screen_exited_);
-    screen_exited_ = true;
-    screen_result_ = result;
-    original_callback_.Run(result);
-    if (screen_exit_callback_)
-      std::move(screen_exit_callback_).Run();
-  }
-
-  bool screen_exited_ = false;
-  base::RepeatingClosure screen_exit_callback_;
+  base::test::TestFuture<ConsolidatedConsentScreen::Result>
+      screen_result_waiter_;
   ConsolidatedConsentScreen::ScreenExitCallback original_callback_;
   base::test::ScopedFeatureList feature_list_;
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
@@ -333,8 +322,7 @@ IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenTest, Accept) {
 
   test::OobeJS().CreateVisibilityWaiter(true, kAcceptButton)->Wait();
   test::OobeJS().ClickOnPath(kAcceptButton);
-  WaitForScreenExit();
-  EXPECT_EQ(screen_result_.value(),
+  EXPECT_EQ(WaitForScreenExitResult(),
             ConsolidatedConsentScreen::Result::ACCEPTED);
 
   histogram_tester_.ExpectTotalCount(
@@ -583,8 +571,8 @@ IN_PROC_BROWSER_TEST_P(ConsolidatedConsentScreenParametrizedTest, ClickAccept) {
   AdvanceNextScreenWithExpectations(play_consent, backup_and_restore_consent,
                                     location_service_consent);
 
-  WaitForScreenExit();
-  EXPECT_EQ(screen_result_, ConsolidatedConsentScreen::Result::ACCEPTED);
+  EXPECT_EQ(WaitForScreenExitResult(),
+            ConsolidatedConsentScreen::Result::ACCEPTED);
 
   histogram_tester_.ExpectTotalCount(kGoogleEulaWebviewFirstLoadResult, 1);
   histogram_tester_.ExpectTotalCount(kCrosEulaWebviewFirstLoadResult, 1);
@@ -723,8 +711,7 @@ class ConsolidatedConsentScreenManagedDeviceTest
 IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenManagedDeviceTest,
                        DISABLED_Skip) {
   LoginAsRegularUser();
-  WaitForScreenExit();
-  EXPECT_EQ(screen_result_.value(),
+  EXPECT_EQ(WaitForScreenExitResult(),
             ConsolidatedConsentScreen::Result::NOT_APPLICABLE);
 }
 
