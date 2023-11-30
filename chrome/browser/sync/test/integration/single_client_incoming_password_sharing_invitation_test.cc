@@ -338,6 +338,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientIncomingPasswordSharingInvitationTest,
   EXPECT_TRUE(ServerPasswordInvitationChecker(/*expected_count=*/0).Wait());
 }
 
+// ChromeOS does not support signing out of a primary account, which these test
+// relies on to initialize Nigori.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(SingleClientIncomingPasswordSharingInvitationTest,
                        ShouldHandleIncomingInvitationsAtInitialSync) {
   // First, setup sync to initialize Nigori node with a public key to be able to
@@ -346,9 +349,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientIncomingPasswordSharingInvitationTest,
 
   // Then stop sync service, inject an invitation to the server, and re-enable
   // sync again.
-  GetClient(0)->StopSyncServiceAndClearData();
+  GetClient(0)->SignOutPrimaryAccount();
   InjectInvitationToServer();
-  ASSERT_TRUE(GetClient(0)->EnableSyncFeature());
+  ASSERT_TRUE(GetClient(0)->SetupSync());
 
   // Wait the invitation to be processed and the password stored.
   ASSERT_TRUE(PasswordStoredChecker(GetSyncService(0),
@@ -378,10 +381,10 @@ IN_PROC_BROWSER_TEST_F(
   // Then stop sync service, inject an invitation and a different password
   // (but having the same client tag to cause a collision) to the server, and
   // re-enable sync again.
-  GetClient(0)->StopSyncServiceAndClearData();
+  GetClient(0)->SignOutPrimaryAccount();
   InjectTestPasswordToFakeServer();
   InjectInvitationToServer();
-  ASSERT_TRUE(GetClient(0)->EnableSyncFeature());
+  ASSERT_TRUE(GetClient(0)->SetupSync());
 
   // Wait the password to be stored.
   ASSERT_TRUE(PasswordStoredChecker(GetSyncService(0),
@@ -411,6 +414,7 @@ IN_PROC_BROWSER_TEST_F(
           kCredentialsExistWithDifferentPassword,
       /*expected_bucket_count=*/1);
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // The unconsented primary account isn't supported on ChromeOS.
 // TODO(crbug.com/1348950): enable on Android once transport mode for Passwords

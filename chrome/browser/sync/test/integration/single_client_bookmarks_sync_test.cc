@@ -1550,16 +1550,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
 
 IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
                        ShouldUploadUnsyncedEntityAfterRestart) {
-  ASSERT_TRUE(SetupClients());
-
   const std::string title = "Title";
   const std::string new_title = "New Title";
-  const GURL url = GURL("http://www.foo.com");
+  const GURL url = GURL(kBookmarkPageUrl);
 
-  // Ensure that local bookmark has new title and the server has the old one.
-  ASSERT_EQ(1u,
-            CountBookmarksWithTitlesMatching(kSingleProfileIndex, new_title));
-
+  // Ensure that the server bookmark has the old title.
   const std::vector<sync_pb::SyncEntity> server_bookmarks_before =
       GetFakeServer()->GetSyncEntitiesByModelType(syncer::BOOKMARKS);
   ASSERT_EQ(1u, server_bookmarks_before.size());
@@ -1568,17 +1563,21 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
                        .bookmark()
                        .legacy_canonicalized_title());
 
+  // Ensure that local bookmark has the new title.
+  ASSERT_TRUE(SetupClients());
+  const BookmarkNode* node =
+      bookmarks_helper::GetUniqueNodeByURL(kSingleProfileIndex, url);
+  ASSERT_EQ(1u,
+            CountBookmarksWithTitlesMatching(kSingleProfileIndex, new_title));
+
   // Ensure that there is a favicon on the server and local node haven't started
   // loading of favicon.
   ASSERT_TRUE(
       server_bookmarks_before.front().specifics().bookmark().has_favicon());
-  const BookmarkNode* node =
-      bookmarks_helper::GetUniqueNodeByURL(kSingleProfileIndex, url);
   ASSERT_FALSE(node->is_favicon_loading());
   ASSERT_FALSE(node->is_favicon_loaded());
 
-  ASSERT_TRUE(GetClient(kSingleProfileIndex)->EnableSyncFeature());
-  ASSERT_TRUE(GetClient(kSingleProfileIndex)->AwaitEngineInitialization());
+  // Ensure that the new title eventually makes it to the server.
   ASSERT_TRUE(bookmarks_helper::ServerBookmarksEqualityChecker(
                   {{new_title, url}},
                   /*cryptographer=*/nullptr)

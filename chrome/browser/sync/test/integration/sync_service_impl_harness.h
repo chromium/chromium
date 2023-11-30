@@ -103,22 +103,6 @@ class SyncServiceImplHarness {
   // then setup may have been left incomplete.
   void FinishSyncSetup();
 
-  // Methods to stop and restart the sync service.
-  //
-  // For example, this can be used to simulate a sign-in/sign-out or can be
-  // useful to recover from a lost birthday.
-  // To start from a clear slate, clear server data first, then call
-  // StopSyncServiceAndClearData() followed by EnableSyncFeature().
-
-  // Stops the sync service and clears all local sync data.
-  void StopSyncServiceAndClearData();
-
-  // Turns on sync-the-feature and waits until sync-the-feature is active.
-  // Note that this only works if there already is an account with
-  // ConsentLevel::kSync.
-  // Returns true if and only if sync setup completed successfully.
-  [[nodiscard]] bool EnableSyncFeature();
-
   // Calling this acts as a barrier and blocks the caller until |this| and
   // |partner| have both completed a sync cycle.  When calling this method,
   // the |partner| should be the passive responder who responds to the actions

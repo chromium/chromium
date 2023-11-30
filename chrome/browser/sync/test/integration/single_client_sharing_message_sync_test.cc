@@ -255,8 +255,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharingMessageSyncTest,
   EXPECT_TRUE(callback_checker.Wait());
 }
 
+// ChromeOS does not support signing out of a primary account.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(SingleClientSharingMessageSyncTest,
-                       ShouldCleanPendingMessagesAfterSyncPaused) {
+                       ShouldCleanPendingMessagesUponSignout) {
   ASSERT_TRUE(SetupSync());
   SharingMessageCallbackChecker callback_checker(
       GetSyncService(0), sync_pb::SharingMessageCommitError::SYNC_TURNED_OFF);
@@ -269,14 +271,15 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharingMessageSyncTest,
       std::make_unique<SharingMessageSpecifics>(specifics),
       callback_checker.GetCommitFinishedCallback());
 
-  GetClient(0)->StopSyncServiceAndClearData();
-  ASSERT_TRUE(GetClient(0)->EnableSyncFeature());
+  GetClient(0)->SignOutPrimaryAccount();
+  ASSERT_TRUE(GetClient(0)->SetupSync());
 
   EXPECT_TRUE(callback_checker.Wait());
   EXPECT_TRUE(GetFakeServer()
                   ->GetSyncEntitiesByModelType(syncer::SHARING_MESSAGE)
                   .empty());
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 IN_PROC_BROWSER_TEST_F(
     SingleClientSharingMessageSyncTest,

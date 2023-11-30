@@ -199,18 +199,21 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, FinalizeAfterImport) {
           .Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, ClearOnDisableSync) {
+// ChromeOS does not support signing out of a primary account.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, ClearOnSignout) {
   const AutofillProfile kProfile = BuildTestAccountProfile();
   AddSpecificsToServer(AsContactInfoSpecifics(kProfile), GetFakeServer());
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(PersonalDataManagerProfileChecker(GetPersonalDataManager(),
                                                 UnorderedElementsAre(kProfile))
                   .Wait());
-  GetClient(0)->StopSyncServiceAndClearData();
+  GetClient(0)->SignOutPrimaryAccount();
   EXPECT_TRUE(
       PersonalDataManagerProfileChecker(GetPersonalDataManager(), IsEmpty())
           .Wait());
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Specialized fixture to test the behavior for custom passphrase users with and
 // without kSyncEnableContactInfoDataTypeForCustomPassphraseUsers enabled.

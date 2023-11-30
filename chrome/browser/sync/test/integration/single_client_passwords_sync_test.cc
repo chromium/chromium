@@ -761,14 +761,16 @@ IN_PROC_BROWSER_TEST_F(
   password_manager::PasswordStoreInterface* store =
       GetProfilePasswordStoreInterface(0);
 
-  // Now stop sync and delete the local copy to simulate downloading to a
+  // Stop password sync and delete the local copy to simulate downloading to a
   // legacy client that doesn't support notes.
-  GetClient(0)->StopSyncServiceAndClearData();
+  ASSERT_TRUE(
+      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kPasswords));
   passwords_helper::RemoveLogins(store);
 
-  // Now setup client which should force downloading the password with the note
+  // Re-enable sync which should force downloading the password with the note
   // to the legacy client.
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(
+      GetClient(0)->EnableSyncForType(syncer::UserSelectableType::kPasswords));
   PasswordSyncActiveChecker(GetSyncService(0)).Wait();
 
   // Make sure the password showed up in the profile store.
@@ -796,14 +798,16 @@ IN_PROC_BROWSER_TEST_F(
   password_manager::PasswordStoreInterface* store =
       GetProfilePasswordStoreInterface(0);
 
-  // Now reset sync and delete the local copy to simulate downloading to a
-  // modern client that supports notes.
-  GetClient(0)->StopSyncServiceAndClearData();
+  // Disable password sync and delete the local copy to simulate downloading to
+  // a modern client that supports notes.
+  ASSERT_TRUE(
+      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kPasswords));
   passwords_helper::RemoveLogins(store);
 
-  // Now setup client which should force downloading the password with the note
-  // to the legacy client.
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  // Now re-enable sync which should force downloading the password with the
+  // note to the legacy client.
+  ASSERT_TRUE(
+      GetClient(0)->EnableSyncForType(syncer::UserSelectableType::kPasswords));
   PasswordSyncActiveChecker(GetSyncService(0)).Wait();
 
   // Make sure the both password showed up in the profile store.

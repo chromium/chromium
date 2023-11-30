@@ -351,50 +351,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, EnabledByDefault) {
       syncer::AUTOFILL_WALLET_METADATA));
 }
 
-// Wallet data should get cleared from the database when sync is disabled.
-IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, ClearOnDisableSync) {
-  GetFakeServer()->SetWalletData({CreateDefaultSyncWalletCard(),
-                                  CreateDefaultSyncPaymentsCustomerData(),
-                                  CreateDefaultSyncCreditCardCloudTokenData()});
-  ASSERT_TRUE(SetupSync());
-
-  autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
-  ASSERT_NE(nullptr, pdm);
-
-  // Make sure the data & metadata is in the DB.
-  ASSERT_EQ(1uL, pdm->GetCreditCards().size());
-  ASSERT_EQ(1uL, pdm->GetCreditCardCloudTokenData().size());
-  ASSERT_EQ(kDefaultCustomerID, pdm->GetPaymentsCustomerData()->customer_id);
-  ASSERT_EQ(1U, GetServerCardsMetadata(0).size());
-
-  // Disable sync, the data & metadata should be gone.
-  GetSyncService(0)->StopAndClear();
-  WaitForNumberOfCards(0, pdm);
-
-  EXPECT_EQ(0uL, pdm->GetCreditCards().size());
-  EXPECT_EQ(nullptr, pdm->GetPaymentsCustomerData());
-  EXPECT_EQ(0uL, pdm->GetCreditCardCloudTokenData().size());
-  EXPECT_EQ(0U, GetServerCardsMetadata(0).size());
-
-  // Turn sync on again, the data should come back.
-  GetSyncService(0)->SetSyncFeatureRequested();
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  // StopAndClear() also clears the "first setup complete" flag, so set it
-  // again.
-  GetSyncService(0)->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
-      syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
-  // Wait until Sync restores the card and it arrives at PDM.
-  WaitForNumberOfCards(1, pdm);
-
-  EXPECT_EQ(1uL, pdm->GetCreditCards().size());
-  EXPECT_EQ(kDefaultCustomerID, pdm->GetPaymentsCustomerData()->customer_id);
-  EXPECT_EQ(1uL, pdm->GetCreditCardCloudTokenData().size());
-  EXPECT_EQ(1U, GetServerCardsMetadata(0).size());
-}
-
 // ChromeOS does not sign out, so the test below does not apply.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, ClearOnSignOut) {

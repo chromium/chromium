@@ -329,38 +329,6 @@ void SyncServiceImplHarness::FinishSyncSetup() {
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-void SyncServiceImplHarness::StopSyncServiceAndClearData() {
-  DVLOG(1) << "Requesting stop for service and clearing data.";
-  service()->StopAndClear();
-}
-
-bool SyncServiceImplHarness::EnableSyncFeature() {
-  std::unique_ptr<syncer::SyncSetupInProgressHandle> blocker =
-      service()->GetSetupInProgressHandle();
-  DVLOG(1) << "Requesting start for service";
-  service()->SetSyncFeatureRequested();
-
-  if (!AwaitEngineInitialization()) {
-    LOG(ERROR) << "AwaitEngineInitialization failed.";
-    return false;
-  }
-  DVLOG(1) << "Engine Initialized successfully.";
-
-  blocker.reset();
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  service()->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
-      syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
-  if (!AwaitSyncSetupCompletion()) {
-    LOG(FATAL) << "AwaitSyncSetupCompletion failed.";
-    return false;
-  }
-
-  return true;
-}
-
 bool SyncServiceImplHarness::AwaitMutualSyncCycleCompletion(
     SyncServiceImplHarness* partner) {
   std::vector<SyncServiceImplHarness*> harnesses;

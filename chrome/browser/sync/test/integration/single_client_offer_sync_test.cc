@@ -85,36 +85,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, EnabledByDefault) {
 }
 
 // Ensures that offer data should get cleared from the database when sync is
-// disabled.
-IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, ClearOnDisableSync) {
-  GetFakeServer()->SetOfferData({CreateDefaultSyncCardLinkedOffer()});
-  ASSERT_TRUE(SetupSync());
-  autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
-  ASSERT_NE(nullptr, pdm);
-  // Make sure the offer data is in the DB.
-  ASSERT_EQ(1uL, pdm->GetAutofillOffers().size());
-
-  // Disable sync, the offer data should be gone.
-  GetSyncService(0)->StopAndClear();
-  WaitForNumberOfOffers(0, pdm);
-  EXPECT_EQ(0uL, pdm->GetAutofillOffers().size());
-
-  // Turn sync on again, the data should come back.
-  GetSyncService(0)->SetSyncFeatureRequested();
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  // StopAndClear() also clears the "first setup complete" flag, so set it
-  // again.
-  GetSyncService(0)->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
-      syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
-  // Wait until Sync restores the card and it arrives at PDM.
-  WaitForNumberOfOffers(1, pdm);
-  EXPECT_EQ(1uL, pdm->GetAutofillOffers().size());
-}
-
-// Ensures that offer data should get cleared from the database when sync is
 // (temporarily) stopped, e.g. due to a persistent auth error.
 //
 // Excluded on Android because SyncServiceImplHarness doesn't have the ability

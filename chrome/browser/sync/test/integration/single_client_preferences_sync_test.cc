@@ -571,6 +571,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
 }
 
 // Regression test for crbug.com/1456872.
+// ChromeOS does not support signing out of a primary account.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
                        ShouldHandleWalletSideEffectsWhenSyncDisabled) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
@@ -594,7 +596,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
       syncer::AUTOFILL_WALLET_DATA));
 
   // Disable sync, the data and metadata should be gone, without crashes.
-  GetClient(0)->StopSyncServiceAndClearData();
+  GetClient(0)->SignOutPrimaryAccount();
 
   ASSERT_FALSE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
@@ -602,6 +604,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
   // Enabling sync again should work, without crashes.
   EXPECT_TRUE(SetupSync());
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
                        ShouldCleanupAccountPreferencesFileOnDisable) {
