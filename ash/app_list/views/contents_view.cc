@@ -267,8 +267,17 @@ void ContentsView::ShowSearchResults(bool show) {
 
   // SetVisible() only when showing search results, the search results page will
   // be hidden at the end of its own bounds animation.
-  if (show)
+  if (show) {
     search_result_page_view()->SetVisible(true);
+
+    // Always to hide `assistant_page_view_` in case it is visible.
+    assistant_page_view_->SetVisible(false);
+
+    // `page_before_search_` could be invisible when showing
+    // `assistant_page_view_`.
+    GetPageView(page_before_search_)->SetVisible(true);
+  }
+
   SetActiveStateInternal(show ? search_page : page_before_search_,
                          true /*animate*/);
   if (show)

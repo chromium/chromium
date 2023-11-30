@@ -16,6 +16,7 @@
 #include "ash/assistant/test/test_assistant_service.h"
 #include "ash/assistant/ui/assistant_view_ids.h"
 #include "ash/assistant/ui/main_stage/assistant_zero_state_view.h"
+#include "ash/assistant/ui/main_stage/chip_view.h"
 #include "ash/assistant/ui/main_stage/launcher_search_iph_view.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
@@ -40,6 +41,7 @@
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
 #include "content/public/test/browser_test.h"
 #include "ui/aura/window.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/styled_label.h"
@@ -385,22 +387,20 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfigClamshell,
   EXPECT_FALSE(search_box_view()->assistant_button()->GetBackground());
 }
 
-// TODO(crbug.com/1500165): Consistently failing - fix and re-enable.
-IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig,
-                       DISABLED_ClickChip) {
+IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestWithTestConfig, ClickChip) {
   OpenAppListAndWaitForIphView();
 
   // Chip click is specified as EventUsed in the test config.
   base::UserActionTester user_action_tester;
-  views::View* chip = search_box_view()->GetViewByID(
-      ash::LauncherSearchIphView::ViewId::kChipStart);
+  auto* chip = static_cast<ash::ChipView*>(search_box_view()->GetViewByID(
+      ash::LauncherSearchIphView::ViewId::kChipStart));
   ASSERT_TRUE(chip);
+  auto text = chip->GetText();
   Click(chip);
   EXPECT_EQ(1,
             user_action_tester.GetActionCount(kNotifyUsedEventUserActionName));
 
-  EXPECT_EQ(u"Weather",
-            app_list_client_impl()->search_controller()->get_query());
+  EXPECT_EQ(text, app_list_client_impl()->search_controller()->get_query());
   EXPECT_TRUE(IsSearchPageActive());
   EXPECT_FALSE(IsLauncherSearchIphViewVisible());
 }
@@ -510,6 +510,38 @@ IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestAssistantZeroState,
       GetAssistantLauncherSearchIph();
   EXPECT_TRUE(launcher_search_iph->GetVisible());
   EXPECT_TRUE(launcher_search_iph->IsDrawn());
+}
+
+IN_PROC_BROWSER_TEST_P(AppListIphBrowserTestAssistantZeroState,
+                       DismissAssistantPageAfterClickChip) {
+  auto duration_mode = std::make_unique<ui::ScopedAnimationDurationScaleMode>(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  OpenAppList();
+
+  views::ImageButton* assistant_button = search_box_view()->assistant_button();
+  ASSERT_TRUE(assistant_button);
+  Click(assistant_button);
+
+  // The LauncherSearchIphView is shown in the zero state view.
+  ASSERT_TRUE(IsAssistantPageActive());
+  ASSERT_TRUE(GetAssistantZeroStateView()->GetVisible());
+
+  ash::LauncherSearchIphView* launcher_search_iph =
+      GetAssistantLauncherSearchIph();
+  EXPECT_TRUE(launcher_search_iph->GetVisible());
+  EXPECT_TRUE(launcher_search_iph->IsDrawn());
+
+  // Chip click will redirect to the search page with query of the chip's text.
+  auto* chip = static_cast<ash::ChipView*>(launcher_search_iph->GetViewByID(
+      ash::LauncherSearchIphView::ViewId::kChipStart));
+  ASSERT_TRUE(chip);
+  auto text = chip->GetText();
+  Click(chip);
+
+  EXPECT_EQ(text, app_list_client_impl()->search_controller()->get_query());
+  EXPECT_TRUE(IsSearchPageActive());
+  EXPECT_FALSE(IsAssistantPageActive());
 }
 
 INSTANTIATE_TEST_SUITE_P(LauncherSearchIph,
