@@ -69,7 +69,7 @@ class IndexedDBDatabaseTest : public ::testing::Test {
         quota_manager_.get(),
         base::SingleThreadTaskRunner::GetCurrentDefault().get());
 
-    indexed_db_context_ = base::MakeRefCounted<IndexedDBContextImpl>(
+    indexed_db_context_ = std::make_unique<IndexedDBContextImpl>(
         temp_dir_.GetPath(), quota_manager_proxy_,
         /*blob_storage_context=*/mojo::NullRemote(),
         /*file_system_access_context=*/mojo::NullRemote(),
@@ -120,7 +120,7 @@ class IndexedDBDatabaseTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   base::ScopedTempDir temp_dir_;
-  scoped_refptr<IndexedDBContextImpl> indexed_db_context_;
+  std::unique_ptr<IndexedDBContextImpl> indexed_db_context_;
   std::unique_ptr<IndexedDBBucketContext> bucket_context_;
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
   scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;

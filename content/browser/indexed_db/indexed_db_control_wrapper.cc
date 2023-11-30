@@ -22,7 +22,7 @@ IndexedDBControlWrapper::IndexedDBControlWrapper(
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
     scoped_refptr<base::SequencedTaskRunner> custom_task_runner) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  context_ = base::MakeRefCounted<IndexedDBContextImpl>(
+  context_ = std::make_unique<IndexedDBContextImpl>(
       data_path, std::move(quota_manager_proxy),
       std::move(blob_storage_context), std::move(file_system_access_context),
       io_task_runner, std::move(custom_task_runner));
@@ -39,8 +39,7 @@ IndexedDBControlWrapper::IndexedDBControlWrapper(
 IndexedDBControlWrapper::~IndexedDBControlWrapper() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  context_->Shutdown();
-  IndexedDBContextImpl::ReleaseOnIDBSequence(std::move(context_));
+  IndexedDBContextImpl::Shutdown(std::move(context_));
 }
 
 storage::mojom::IndexedDBControl&
@@ -51,10 +50,7 @@ IndexedDBControlWrapper::GetIndexedDBControl() {
       << "Rebinding is not supported yet.";
 
   if (!indexed_db_control_.is_bound()) {
-    context_->IDBTaskRunner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&IndexedDBContextImpl::Bind, context_,
-                       indexed_db_control_.BindNewPipeAndPassReceiver()));
+    context_->BindControl(indexed_db_control_.BindNewPipeAndPassReceiver());
 
     if (storage_policy_observer_) {
       mojo::PendingRemote<storage::mojom::IndexedDBObserver> remote;

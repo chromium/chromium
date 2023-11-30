@@ -91,15 +91,6 @@ storage::BucketInfo ToBucketInfoForTesting(
 
 }  // namespace
 
-// static
-void IndexedDBContextImpl::ReleaseOnIDBSequence(
-    scoped_refptr<IndexedDBContextImpl>&& context) {
-  if (!context->IDBTaskRunner()->RunsTasksInCurrentSequence()) {
-    IndexedDBContextImpl* context_ptr = context.get();
-    context_ptr->IDBTaskRunner()->ReleaseSoon(FROM_HERE, std::move(context));
-  }
-}
-
 IndexedDBContextImpl::IndexedDBContextImpl(
     const base::FilePath& base_data_path,
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
@@ -166,12 +157,21 @@ void IndexedDBContextImpl::BindPipesOnIDBSequence(
   }
 }
 
-void IndexedDBContextImpl::Bind(
+void IndexedDBContextImpl::BindControlOnIDBSequence(
     mojo::PendingReceiver<storage::mojom::IndexedDBControl> control) {
+  DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
   // We cannot run this in the constructor it needs to be async, but the async
   // tasks might not finish before the destructor runs.
   InitializeFromFilesIfNeeded(base::DoNothing());
   receivers_.Add(this, std::move(control));
+}
+
+void IndexedDBContextImpl::BindControl(
+    mojo::PendingReceiver<storage::mojom::IndexedDBControl> control) {
+  IDBTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&IndexedDBContextImpl::BindControlOnIDBSequence,
+                     weak_factory_.GetWeakPtr(), std::move(control)));
 }
 
 void IndexedDBContextImpl::BindIndexedDB(
@@ -953,6 +953,7 @@ IndexedDBContextImpl::~IndexedDBContextImpl() {
 }
 
 void IndexedDBContextImpl::ShutdownOnIDBSequence() {
+  // `this` will be destroyed when this method returns.
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
 
   if (force_keep_session_state_)
@@ -986,19 +987,25 @@ void IndexedDBContextImpl::ShutdownOnIDBSequence() {
   }
 }
 
-void IndexedDBContextImpl::Shutdown() {
+// static
+void IndexedDBContextImpl::Shutdown(
+    std::unique_ptr<IndexedDBContextImpl> context) {
+  IndexedDBContextImpl* context_ptr = context.get();
+
   // Important: This function is NOT called on the IDB Task Runner. All variable
   // access must be thread-safe.
-  if (is_incognito())
+  if (context->is_incognito()) {
+    context_ptr->IDBTaskRunner()->DeleteSoon(FROM_HERE, std::move(context));
     return;
+  }
 
-  IDBTaskRunner()->PostTask(
+  context_ptr->IDBTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &IndexedDBContextImpl::InitializeFromFilesIfNeeded,
-          weak_factory_.GetWeakPtr(),
+          base::Unretained(context_ptr),
           base::BindOnce(&IndexedDBContextImpl::ShutdownOnIDBSequence,
-                         base::WrapRefCounted(this))));
+                         std::move(context))));
 }
 
 base::FilePath IndexedDBContextImpl::GetBlobStorePath(

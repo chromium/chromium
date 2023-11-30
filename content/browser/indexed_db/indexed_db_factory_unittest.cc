@@ -120,7 +120,7 @@ class IndexedDBFactoryTest : public testing::Test {
   }
 
   void SetUpContext() {
-    context_ = base::MakeRefCounted<IndexedDBContextImpl>(
+    context_ = std::make_unique<IndexedDBContextImpl>(
         temp_dir_.GetPath(), quota_manager_proxy_.get(),
         /*blob_storage_context=*/mojo::NullRemote(),
         /*file_system_access_context=*/mojo::NullRemote(),
@@ -129,7 +129,7 @@ class IndexedDBFactoryTest : public testing::Test {
   }
 
   void SetUpInMemoryContext() {
-    context_ = base::MakeRefCounted<IndexedDBContextImpl>(
+    context_ = std::make_unique<IndexedDBContextImpl>(
         base::FilePath(), quota_manager_proxy_.get(),
         /*blob_storage_context=*/mojo::NullRemote(),
         /*file_system_access_context=*/mojo::NullRemote(),
@@ -181,7 +181,7 @@ class IndexedDBFactoryTest : public testing::Test {
   scoped_refptr<storage::MockSpecialStoragePolicy> quota_policy_;
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
   scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
-  scoped_refptr<IndexedDBContextImpl> context_;
+  std::unique_ptr<IndexedDBContextImpl> context_;
   std::unique_ptr<MockIndexedDBFactoryClient> mock_factory_client_;
 };
 

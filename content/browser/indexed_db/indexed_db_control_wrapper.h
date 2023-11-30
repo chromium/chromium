@@ -55,7 +55,7 @@ class IndexedDBControlWrapper : public storage::mojom::IndexedDBObserver {
   absl::optional<storage::StoragePolicyObserver> storage_policy_observer_;
 
   mojo::Remote<storage::mojom::IndexedDBControl> indexed_db_control_;
-  scoped_refptr<IndexedDBContextImpl> context_;
+  std::unique_ptr<IndexedDBContextImpl> context_;
 
   // Used to observe `context_`. Note that `this` only observes `context_` if
   // `storage_policy_observer_` exists.

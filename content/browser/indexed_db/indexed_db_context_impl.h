@@ -53,14 +53,9 @@ class IndexedDBFactory;
 class IndexedDBQuotaClient;
 
 class CONTENT_EXPORT IndexedDBContextImpl
-    : public base::RefCountedThreadSafe<IndexedDBContextImpl>,
-      public storage::mojom::IndexedDBControl,
+    : public storage::mojom::IndexedDBControl,
       public storage::mojom::IndexedDBControlTest {
  public:
-  // Release `context` on the IDBTaskRunner.
-  static void ReleaseOnIDBSequence(
-      scoped_refptr<IndexedDBContextImpl>&& context);
-
   // If `base_data_path` is empty, nothing will be saved to disk.
   // This is *not* called on the IDBTaskRunner, unlike most other functions.
   IndexedDBContextImpl(
@@ -73,10 +68,16 @@ class CONTENT_EXPORT IndexedDBContextImpl
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       scoped_refptr<base::SequencedTaskRunner> custom_task_runner);
 
+  ~IndexedDBContextImpl() override;
+
+  // Called to initiate shutdown. This is *not* called on the IDBTaskRunner.
+  static void Shutdown(std::unique_ptr<IndexedDBContextImpl> context);
+
   IndexedDBContextImpl(const IndexedDBContextImpl&) = delete;
   IndexedDBContextImpl& operator=(const IndexedDBContextImpl&) = delete;
 
-  void Bind(mojo::PendingReceiver<storage::mojom::IndexedDBControl> control);
+  void BindControl(
+      mojo::PendingReceiver<storage::mojom::IndexedDBControl> control);
 
   // mojom::IndexedDBControl implementation:
   void BindIndexedDB(
@@ -147,10 +148,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
 
   IndexedDBFactory* GetIDBFactory();
 
-  // Called by StoragePartitionImpl to clear session-only data.
-  // *not* called on the IDBTaskRunner.
-  void Shutdown();
-
   int64_t GetBucketDiskUsage(const storage::BucketLocator& bucket_locator);
 
   const scoped_refptr<base::SequencedTaskRunner>& IDBTaskRunner() const {
@@ -219,13 +216,13 @@ class CONTENT_EXPORT IndexedDBContextImpl
       const storage::BucketLocator& bucket_locator) const;
 
  private:
-  friend class base::RefCountedThreadSafe<IndexedDBContextImpl>;
   friend class IndexedDBTest;
   friend class IndexedDBFactoryTest;
 
   class IndexedDBGetUsageAndQuotaCallback;
 
-  ~IndexedDBContextImpl() override;
+  void BindControlOnIDBSequence(
+      mojo::PendingReceiver<storage::mojom::IndexedDBControl> control);
 
   void BindPipesOnIDBSequence(
       mojo::PendingReceiver<storage::mojom::QuotaClient>
@@ -254,6 +251,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
   void DoDeleteBucketData(const storage::BucketLocator& bucket_locator,
                           base::OnceCallback<void(bool)> callback);
 
+  // Always run immediately before destruction.
   void ShutdownOnIDBSequence();
 
   const base::FilePath GetLegacyDataPath() const;

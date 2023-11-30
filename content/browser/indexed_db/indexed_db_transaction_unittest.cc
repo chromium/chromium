@@ -68,7 +68,7 @@ class IndexedDBTransactionTest : public testing::Test {
         /*is_incognito=*/false, temp_dir_.GetPath(),
         base::SingleThreadTaskRunner::GetCurrentDefault(),
         /*special_storage_policy=*/nullptr);
-    indexed_db_context_ = base::MakeRefCounted<IndexedDBContextImpl>(
+    indexed_db_context_ = std::make_unique<IndexedDBContextImpl>(
         temp_dir_.GetPath(), quota_manager_->proxy(),
         /*blob_storage_context=*/mojo::NullRemote(),
         /*file_system_access_context=*/mojo::NullRemote(),
@@ -136,7 +136,7 @@ class IndexedDBTransactionTest : public testing::Test {
   std::unique_ptr<base::test::TaskEnvironment> task_environment_;
   std::unique_ptr<IndexedDBBucketContext> bucket_context_;
   raw_ptr<IndexedDBDatabase> db_;
-  scoped_refptr<IndexedDBContextImpl> indexed_db_context_;
+  std::unique_ptr<IndexedDBContextImpl> indexed_db_context_;
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
 
   bool error_called_ = false;

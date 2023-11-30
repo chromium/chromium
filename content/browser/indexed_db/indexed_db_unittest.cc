@@ -131,7 +131,7 @@ class IndexedDBTest
             base::MakeRefCounted<storage::MockQuotaManagerProxy>(
                 quota_manager_.get(),
                 base::SequencedTaskRunner::GetCurrentDefault())),
-        context_(base::MakeRefCounted<IndexedDBContextImpl>(
+        context_(std::make_unique<IndexedDBContextImpl>(
             temp_dir_.GetPath(),
             quota_manager_proxy_.get(),
             /*blob_storage_context=*/mojo::NullRemote(),
@@ -353,7 +353,7 @@ class IndexedDBTest
   scoped_refptr<storage::MockSpecialStoragePolicy> special_storage_policy_;
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
   scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
-  scoped_refptr<IndexedDBContextImpl> context_;
+  std::unique_ptr<IndexedDBContextImpl> context_;
   mojo::Remote<blink::mojom::IDBFactory> factory_remote_;
 };
 
@@ -428,7 +428,7 @@ TEST_P(IndexedDBTest, ClearSessionOnlyDatabases) {
   context()->ForceInitializeFromFilesForTesting(run_loop.QuitClosure());
   run_loop.Run();
 
-  context()->Shutdown();
+  IndexedDBContextImpl::Shutdown(std::move(context_));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(base::DirectoryExists(normal_path_first_party));
@@ -485,7 +485,7 @@ TEST_P(IndexedDBTest, SetForceKeepSessionState) {
   context()->ForceInitializeFromFilesForTesting(base::DoNothing());
   base::RunLoop().RunUntilIdle();
 
-  context()->Shutdown();
+  IndexedDBContextImpl::Shutdown(std::move(context_));
   base::RunLoop().RunUntilIdle();
 
   // No data was cleared because of SetForceKeepSessionState.
