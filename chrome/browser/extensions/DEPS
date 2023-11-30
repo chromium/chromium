@@ -9,6 +9,9 @@ include_rules = [
   # For access to testing command line switches.
   "+ppapi/shared_impl",
 
+  # Fuzzer tests require ICU initialization.
+  "+third_party/icu/fuzzers/fuzzer_utils.h",
+
   # The extensions system should not depend on Chrome Platform Apps (or any
   # other component of the apps system).
   # https://crbug.com/873872.

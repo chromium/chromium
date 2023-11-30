@@ -1515,6 +1515,7 @@ fuzzer_test("extension_management_internal_fuzzer") {
   deps = [
     ":extensions",
     "//base",
+    "//third_party/icu/fuzzers:fuzzer_support",
 
     # While //c/b/extensions should've been sufficient, there are cyclic
     # dependencies that require us linking against the whole //c/b.

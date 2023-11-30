@@ -9,6 +9,7 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_management_internal.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/icu/fuzzers/fuzzer_utils.h"
 
 using extensions::internal::IndividualSettings;
 
@@ -20,9 +21,16 @@ constexpr IndividualSettings::ParsingScope kAllParsingScopes[] = {
     IndividualSettings::SCOPE_INDIVIDUAL,
 };
 
+// Performs common initialization that's shared between all runs.
+struct Environment {
+  IcuEnvironment icu_environment;
+};
+
 }  // namespace
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+  static Environment env;
+
   // Avoid out-of-memory failures on excessively large inputs (the exact
   // threshold is semi-arbitrary).
   if (size > 100 * 1024)
