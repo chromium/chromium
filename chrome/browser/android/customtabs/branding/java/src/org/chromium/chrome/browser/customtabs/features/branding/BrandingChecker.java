@@ -105,14 +105,11 @@ class BrandingChecker extends AsyncTask<Integer> {
             brandingDecision = makeBrandingDecisionFromLaunchTime(startTime, timeLastBranding);
         }
         @BrandingAppIdType int appIdType = getAppIdType(mAppId);
-        boolean isPackageValid = appIdType == BrandingAppIdType.PACKAGE_NAME;
         RecordHistogram.recordTimesHistogram(
                 "CustomTabs.Branding.BrandingCheckDuration",
                 SystemClock.elapsedRealtime() - startTime);
         RecordHistogram.recordEnumeratedHistogram(
                 "CustomTabs.Branding.AppIdType", appIdType, BrandingAppIdType.NUM_ENTRIES);
-        RecordHistogram.recordBooleanHistogram(
-                "CustomTabs.Branding.IsPackageNameValid", isPackageValid);
 
         return brandingDecision;
     }
@@ -163,9 +160,6 @@ class BrandingChecker extends AsyncTask<Integer> {
                 "CustomTabs.Branding.BrandingDecision",
                 brandingDecision,
                 BrandingDecision.NUM_ENTRIES);
-        RecordHistogram.recordBooleanHistogram(
-                "CustomTabs.Branding.BrandingCheckCanceled", isCancelled());
-
         // Remove the storage from reference.
         mStorage = null;
     }

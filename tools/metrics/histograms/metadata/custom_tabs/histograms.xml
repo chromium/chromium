@@ -69,18 +69,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CustomTabs.Branding.BrandingCheckCanceled"
-    enum="BooleanCanceled" expires_after="2023-12-31">
-  <owner>wenyufu@chromium.org</owner>
-  <owner>chrome-connective-tissue@google.com</owner>
-  <summary>
-    For every CCT launch, Chrome will start an async task in the background
-    checking the last time branding is shown for the client app. Record whether
-    such branding check is canceled due to timeout when it is finished. Record
-    for Android CCT only.
-  </summary>
-</histogram>
-
 <histogram name="CustomTabs.Branding.BrandingCheckDuration" units="ms"
     expires_after="2024-04-28">
   <owner>wenyufu@chromium.org</owner>
@@ -107,22 +95,6 @@ chromium-metrics-reviews@google.com.
 
     Record what branding decision will be used for the current CCT session when
     the branding check is finished or canceled. Record for Android CCT only.
-  </summary>
-</histogram>
-
-<histogram name="CustomTabs.Branding.IsPackageNameValid" enum="BooleanValid"
-    expires_after="2023-12-31">
-  <owner>wenyufu@chromium.org</owner>
-  <owner>chrome-connective-tissue@google.com</owner>
-  <summary>
-    For every CCT launch, Chrome will start an async task in the background
-    checking the last time branding is shown for the client app. Recorded
-    whether the package name of CCT client app can be found on device when the
-    async task is finished. Record for Android CCT only.
-
-    If the client app is using CCT service connection, the client app package
-    name will be read from CCT service; otherwise the package name will be
-    parsed from the Activity#getReferrer of CustomTabsActivity.
   </summary>
 </histogram>
 
