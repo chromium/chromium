@@ -1224,7 +1224,8 @@ const FormFieldData* FindUsernameInPredictions(
   for (autofill::FieldRendererId predicted_id : username_predictions) {
     auto iter = base::ranges::find_if(
         processed_fields, [&](const ProcessedField& processed_field) {
-          return processed_field.field->unique_renderer_id == predicted_id &&
+          return !IsNotUsernameField(processed_field) &&
+                 (processed_field.field->unique_renderer_id == predicted_id) &&
                  MatchesInteractability(processed_field, username_max);
         });
     if (iter != processed_fields.end()) {

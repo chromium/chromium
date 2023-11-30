@@ -2194,6 +2194,21 @@ TEST_F(FormParserTest, NotUsernameField) {
               },
           .fallback_only = false,
       },
+      {
+          .description_for_logging =
+              "Server hints: NOT_USERNAME, despite 'predicted_username'.",
+          .fields =
+              {
+                  {.role = ElementRole::NONE,
+                   .form_control_type = FormControlType::kInputText,
+                   .prediction = {.type = autofill::NOT_USERNAME},
+                   .predicted_username = 0},
+                  {.role = ElementRole::CURRENT_PASSWORD,
+                   .form_control_type = FormControlType::kInputPassword,
+                   .prediction = {.type = autofill::PASSWORD}},
+              },
+          .fallback_only = false,
+      },
   });
 }
 
