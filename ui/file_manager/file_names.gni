@@ -429,8 +429,9 @@ ts_test_files = [
   "file_manager/common/js/recent_date_bucket_unittest.ts",
   "file_manager/common/js/storage_unittest.ts",
   "file_manager/common/js/translations_unittest.ts",
-  "file_manager/common/js/volume_manager_types_unittest.ts",
+  "file_manager/common/js/unittest_util.ts",
   "file_manager/common/js/util_unittest.ts",
+  "file_manager/common/js/volume_manager_types_unittest.ts",
 
   # 3-line header to avoid conflict.
   # Don't remove this.
@@ -611,7 +612,6 @@ unittest_files = [
   "file_manager/common/js/array_data_model_unittest.js",
   "file_manager/common/js/files_app_entry_types_unittest.js",
   "file_manager/common/js/test_error_reporting.js",
-  "file_manager/common/js/unittest_util.js",
 
   # Background:
 
