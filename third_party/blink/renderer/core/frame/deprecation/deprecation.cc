@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
@@ -45,9 +46,10 @@ void SendToBrowser(ExecutionContext* context, const DeprecationInfo& info) {
       std::unique_ptr<SourceLocation> source_location =
           CaptureSourceLocation(context);
       frame->GetLocalFrameHostRemote().SendLegacyTechEvent(
-          info.type_, mojom::blink::LegacyTechEventCodeLocation::New(
-                          source_location->Url(), source_location->LineNumber(),
-                          source_location->ColumnNumber()));
+          info.type_,
+          mojom::blink::LegacyTechEventCodeLocation::New(
+              source_location->Url() ? source_location->Url() : String(""),
+              source_location->LineNumber(), source_location->ColumnNumber()));
     }
   }
 }
