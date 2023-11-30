@@ -10,6 +10,7 @@
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
+#include "base/functional/overloaded.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/uuid.h"
@@ -868,13 +869,24 @@ blink::mojom::ServiceWorkerClientType
 ServiceWorkerContainerHost::GetClientType() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(client_info_);
-  return client_info_->type();
+  return absl::visit(
+      base::Overloaded(
+          [](GlobalRenderFrameHostId render_frame_host_id) {
+            return blink::mojom::ServiceWorkerClientType::kWindow;
+          },
+          [](blink::DedicatedWorkerToken dedicated_worker_token) {
+            return blink::mojom::ServiceWorkerClientType::kDedicatedWorker;
+          },
+          [](blink::SharedWorkerToken shared_worker_token) {
+            return blink::mojom::ServiceWorkerClientType::kSharedWorker;
+          }),
+      *client_info_);
 }
 
 bool ServiceWorkerContainerHost::IsContainerForWindowClient() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return client_info_ &&
-         client_info_->type() == blink::mojom::ServiceWorkerClientType::kWindow;
+         absl::holds_alternative<GlobalRenderFrameHostId>(*client_info_);
 }
 
 bool ServiceWorkerContainerHost::IsContainerForWorkerClient() const {
@@ -883,8 +895,8 @@ bool ServiceWorkerContainerHost::IsContainerForWorkerClient() const {
   if (!client_info_)
     return false;
 
-  return client_info_->type() == ServiceWorkerClientType::kDedicatedWorker ||
-         client_info_->type() == ServiceWorkerClientType::kSharedWorker;
+  return absl::holds_alternative<blink::DedicatedWorkerToken>(*client_info_) ||
+         absl::holds_alternative<blink::SharedWorkerToken>(*client_info_);
 }
 
 ServiceWorkerClientInfo ServiceWorkerContainerHost::GetServiceWorkerClientInfo()
@@ -905,7 +917,7 @@ void ServiceWorkerContainerHost::OnBeginNavigationCommit(
   DCHECK(IsContainerForWindowClient());
 
   ongoing_navigation_frame_tree_node_id_ = RenderFrameHost::kNoFrameTreeNodeId;
-  client_info_->SetRenderFrameHostId(rfh_id);
+  client_info_ = rfh_id;
 
   if (controller_)
     controller_->UpdateForegroundPriority();
@@ -1198,7 +1210,7 @@ GlobalRenderFrameHostId ServiceWorkerContainerHost::GetRenderFrameHostId()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsContainerForWindowClient());
-  return client_info_->GetRenderFrameHostId();
+  return absl::get<GlobalRenderFrameHostId>(*client_info_);
 }
 
 int ServiceWorkerContainerHost::GetProcessId() const {

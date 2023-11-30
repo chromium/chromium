@@ -127,6 +127,16 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
   absl::optional<blink::StorageKey> GetStorageKeyFromWorkerHost(
       const url::Origin& origin);
 
+  absl::optional<blink::StorageKey> GetStorageKeyFromWorkerHost(
+      content::StoragePartition* storage_partition,
+      blink::DedicatedWorkerToken dedicated_worker_token,
+      const url::Origin& origin);
+
+  absl::optional<blink::StorageKey> GetStorageKeyFromWorkerHost(
+      content::StoragePartition* storage_partition,
+      blink::SharedWorkerToken shared_worker_token,
+      const url::Origin& origin);
+
   // For navigations, |handle_| outlives |this|. It's owned by
   // NavigationRequest which outlives NavigationURLLoaderImpl which owns |this|.
   // For workers, |handle_| may be destroyed during interception. It's owned by

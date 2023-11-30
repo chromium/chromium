@@ -156,9 +156,9 @@ base::Value::Dict UpdateVersionInfo(const ServiceWorkerVersionInfo& version) {
   for (auto& it : version.clients) {
     base::Value::Dict client;
     client.Set("client_id", it.first);
-    if (it.second.type() == blink::mojom::ServiceWorkerClientType::kWindow) {
-      RenderFrameHost* render_frame_host =
-          RenderFrameHost::FromID(it.second.GetRenderFrameHostId());
+    if (absl::holds_alternative<GlobalRenderFrameHostId>(it.second)) {
+      RenderFrameHost* render_frame_host = RenderFrameHost::FromID(
+          absl::get<GlobalRenderFrameHostId>(it.second));
       if (render_frame_host) {
         client.Set("url", render_frame_host->GetLastCommittedURL().spec());
       }

@@ -21,6 +21,7 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/child_process_host.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/service_worker_client_info.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"

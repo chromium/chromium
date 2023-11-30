@@ -209,8 +209,6 @@ static_library("performance_manager") {
     "resource_attribution/worker_client_pages.cc",
     "resource_attribution/worker_client_pages.h",
     "resource_attribution/worker_context.cc",
-    "service_worker_client.cc",
-    "service_worker_client.h",
     "service_worker_context_adapter.cc",
     "service_worker_context_adapter.h",
     "tab_helper_frame_node_source.cc",

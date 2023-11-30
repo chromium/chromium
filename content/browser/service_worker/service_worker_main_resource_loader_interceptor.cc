@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/functional/overloaded.h"
 #include "base/memory/ptr_util.h"
 #include "base/types/optional_util.h"
 #include "build/chromeos_buildflags.h"
@@ -175,7 +176,7 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
                  network::mojom::RequestDestination::kSharedWorker);
 
       ServiceWorkerClientInfo client_info =
-          ServiceWorkerClientInfo(*worker_token_);
+          absl::ConvertVariantTo<ServiceWorkerClientInfo>(*worker_token_);
 
       container_host = context_core->CreateContainerHostForWorker(
           std::move(host_receiver), process_id_, std::move(client_remote),
@@ -352,27 +353,46 @@ ServiceWorkerMainResourceLoaderInterceptor::GetStorageKeyFromWorkerHost(
     const url::Origin& origin) {
   if (!worker_token_.has_value())
     return absl::nullopt;
+
   auto* process = RenderProcessHost::FromID(process_id_);
-  if (!process)
+  if (!process) {
     return absl::nullopt;
+  }
   auto* storage_partition = process->GetStoragePartition();
 
-  if (worker_token_->Is<blink::DedicatedWorkerToken>()) {
-    auto* worker_service = static_cast<DedicatedWorkerServiceImpl*>(
-        storage_partition->GetDedicatedWorkerService());
-    auto* worker_host = worker_service->GetDedicatedWorkerHostFromToken(
-        worker_token_->GetAs<blink::DedicatedWorkerToken>());
-    if (worker_host)
-      return worker_host->GetStorageKey().WithOrigin(origin);
-  } else if (worker_token_->Is<blink::SharedWorkerToken>()) {
-    auto* worker_service = static_cast<SharedWorkerServiceImpl*>(
-        storage_partition->GetSharedWorkerService());
-    auto* worker_host = worker_service->GetSharedWorkerHostFromToken(
-        worker_token_->GetAs<blink::SharedWorkerToken>());
-    if (worker_host)
-      return worker_host->GetStorageKey().WithOrigin(origin);
-  } else {
-    NOTREACHED();
+  return absl::visit(base::Overloaded([&, this](auto token) {
+                       return GetStorageKeyFromWorkerHost(storage_partition,
+                                                          token, origin);
+                     }),
+                     *worker_token_);
+}
+
+absl::optional<blink::StorageKey>
+ServiceWorkerMainResourceLoaderInterceptor::GetStorageKeyFromWorkerHost(
+    content::StoragePartition* storage_partition,
+    blink::DedicatedWorkerToken dedicated_worker_token,
+    const url::Origin& origin) {
+  auto* worker_service = static_cast<DedicatedWorkerServiceImpl*>(
+      storage_partition->GetDedicatedWorkerService());
+  auto* worker_host =
+      worker_service->GetDedicatedWorkerHostFromToken(dedicated_worker_token);
+  if (worker_host) {
+    return worker_host->GetStorageKey().WithOrigin(origin);
+  }
+  return absl::nullopt;
+}
+
+absl::optional<blink::StorageKey>
+ServiceWorkerMainResourceLoaderInterceptor::GetStorageKeyFromWorkerHost(
+    content::StoragePartition* storage_partition,
+    blink::SharedWorkerToken shared_worker_token,
+    const url::Origin& origin) {
+  auto* worker_service = static_cast<SharedWorkerServiceImpl*>(
+      storage_partition->GetSharedWorkerService());
+  auto* worker_host =
+      worker_service->GetSharedWorkerHostFromToken(shared_worker_token);
+  if (worker_host) {
+    return worker_host->GetStorageKey().WithOrigin(origin);
   }
   return absl::nullopt;
 }

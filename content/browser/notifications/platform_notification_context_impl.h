@@ -45,6 +45,7 @@ struct NotificationDatabaseData;
 class PlatformNotificationServiceProxy;
 class RenderProcessHost;
 class ServiceWorkerContextWrapper;
+class WeakDocumentPtr;
 
 // Implementation of the Web Notification storage context. The public methods
 // defined in this interface must only be called on the UI thread.

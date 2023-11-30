@@ -373,7 +373,6 @@ source_set("browser_sources") {
     "service_process_host_passkeys.h",
     "service_process_info.cc",
     "service_process_info.h",
-    "service_worker_client_info.cc",
     "service_worker_client_info.h",
     "service_worker_context.h",
     "service_worker_context_observer.h",

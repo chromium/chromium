@@ -20,6 +20,10 @@ namespace blink {
 class StorageKey;
 }  // namespace blink
 
+namespace content {
+class RenderProcessHost;
+}
+
 namespace performance_manager {
 
 // This class adapts an existing ServiceWorkerContext to ensure that the
