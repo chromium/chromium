@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -33,6 +34,8 @@ class V8DictionaryTest : public testing::Test {
     Dictionary dictionary(script_state->GetIsolate(), value, exception_state);
     return dictionary;
   }
+
+  test::TaskEnvironment task_environment_;
 };
 
 TEST_F(V8DictionaryTest, Get_Empty) {

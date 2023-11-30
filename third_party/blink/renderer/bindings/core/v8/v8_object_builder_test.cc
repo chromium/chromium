@@ -7,12 +7,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
 namespace {
 
 TEST(V8ObjectBuilderTest, addNull) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
   V8ObjectBuilder builder(script_state);
@@ -32,6 +34,7 @@ TEST(V8ObjectBuilderTest, addNull) {
 }
 
 TEST(V8ObjectBuilderTest, addBoolean) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
   V8ObjectBuilder builder(script_state);
@@ -52,6 +55,7 @@ TEST(V8ObjectBuilderTest, addBoolean) {
 }
 
 TEST(V8ObjectBuilderTest, addNumber) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
   V8ObjectBuilder builder(script_state);
@@ -72,6 +76,7 @@ TEST(V8ObjectBuilderTest, addNumber) {
 }
 
 TEST(V8ObjectBuilderTest, addString) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
   V8ObjectBuilder builder(script_state);
@@ -102,6 +107,7 @@ TEST(V8ObjectBuilderTest, addString) {
 }
 
 TEST(V8ObjectBuilderTest, add) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
   V8ObjectBuilder builder(script_state);

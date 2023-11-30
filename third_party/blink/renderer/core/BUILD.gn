@@ -1471,6 +1471,62 @@ source_set("unit_tests") {
   }
 }
 
+source_set("unit_tests_v2") {
+  testonly = true
+
+  # If you create a new subdirectory 'foo' that contains unit tests, list them in
+  # 'foo/build.gni' to define blink_core_tests_foo, and add any dependencies in
+  # the deps section below.
+  sources = []
+
+  configs += [
+    ":blink_core_pch",
+    "//third_party/blink/renderer:config",
+    "//third_party/blink/renderer:inside_blink",
+  ]
+
+  deps = [
+    ":core",
+    ":element_locator_proto",
+    ":unit_test_support",
+    "//build:chromeos_buildflags",
+    "//cc",
+    "//components/autofill/core/common:features",
+    "//components/paint_preview/common:common",
+    "//components/shared_highlighting/core/common",
+    "//components/shared_highlighting/core/common:data_driven_testing",
+    "//components/ukm:test_support",
+    "//components/viz/test:test_support",
+    "//content/test:test_support",
+    "//gpu/command_buffer/client:raster",
+    "//gpu/config",
+    "//mojo/public/cpp/system",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//services/network:test_support",
+    "//skia",
+    "//skia:skcms",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party:freetype_harfbuzz",
+    "//third_party/blink/common/privacy_budget:test_support",
+    "//third_party/blink/public:buildflags",
+    "//third_party/blink/public:test_headers",
+    "//third_party/blink/public/common/privacy_budget:test_support",
+    "//third_party/blink/renderer/controller:blink_bindings_test_sources",
+    "//third_party/blink/renderer/core",
+    "//third_party/blink/renderer/core:testing",
+    "//third_party/blink/renderer/platform:test_support",
+    "//ui/accessibility:ax_base",
+    "//ui/base/cursor",
+    "//ui/base/cursor/mojom:cursor_type_blink",
+    "//ui/base/dragdrop/mojom:mojom_blink",
+    "//ui/gfx:test_support",
+  ]
+
+  data_deps = [ ":unit_tests_data" ]
+}
+
 group("unit_tests_data") {
   data = [
     "//third_party/blink/web_tests/svg/animations/path-animation.svg",

@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/testing/file_backed_blob_factory_test_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
@@ -23,6 +24,7 @@
 namespace blink {
 
 TEST(SerializedScriptValueTest, WireFormatRoundTrip) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   v8::Local<v8::Value> v8OriginalTrue = v8::True(scope.GetIsolate());
@@ -42,6 +44,7 @@ TEST(SerializedScriptValueTest, WireFormatRoundTrip) {
 }
 
 TEST(SerializedScriptValueTest, WireFormatVersion17NoByteSwapping) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   const uint8_t data[] = {0xFF, 0x11, 0xFF, 0x0D, 0x54, 0x00};
@@ -53,6 +56,7 @@ TEST(SerializedScriptValueTest, WireFormatVersion17NoByteSwapping) {
 }
 
 TEST(SerializedScriptValueTest, WireFormatVersion16ByteSwapping) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   // Using UChar instead of uint8_t to get ntohs() byte swapping.
@@ -65,6 +69,7 @@ TEST(SerializedScriptValueTest, WireFormatVersion16ByteSwapping) {
 }
 
 TEST(SerializedScriptValueTest, WireFormatVersion13ByteSwapping) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   // Using UChar instead of uint8_t to get ntohs() byte swapping.
@@ -77,6 +82,7 @@ TEST(SerializedScriptValueTest, WireFormatVersion13ByteSwapping) {
 }
 
 TEST(SerializedScriptValueTest, WireFormatVersion0ByteSwapping) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
   // Using UChar instead of uint8_t to get ntohs() byte swapping.
@@ -89,6 +95,7 @@ TEST(SerializedScriptValueTest, WireFormatVersion0ByteSwapping) {
 }
 
 TEST(SerializedScriptValueTest, WireFormatVersion0ImageData) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   v8::Isolate* isolate = scope.GetIsolate();
 
@@ -120,6 +127,7 @@ TEST(SerializedScriptValueTest, WireFormatVersion0ImageData) {
 }
 
 TEST(SerializedScriptValueTest, UserSelectedFile) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   FileBackedBlobFactoryTestHelper file_factory_helper(
       scope.GetExecutionContext());
@@ -151,6 +159,7 @@ TEST(SerializedScriptValueTest, UserSelectedFile) {
 }
 
 TEST(SerializedScriptValueTest, FileConstructorFile) {
+  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   scoped_refptr<BlobDataHandle> blob_data_handle = BlobDataHandle::Create();
   auto* original_file = MakeGarbageCollected<File>(

@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -177,6 +178,8 @@ class ScriptPromisePropertyTestBase {
   }
 
  private:
+  test::TaskEnvironment task_environment_{
+      test::TaskEnvironment::RealMainThreadScheduler()};
   std::unique_ptr<DummyPageHolder> page_;
   Persistent<ScriptState> other_script_state_;
 };
