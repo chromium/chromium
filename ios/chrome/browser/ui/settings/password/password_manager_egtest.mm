@@ -682,9 +682,6 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   // later ones from interacting with the UI.
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
 
-  config.features_enabled.push_back(
-      password_manager::features::kIOSPasswordUISplit);
-
   // TODO(crbug.com/1448574): Re-enable CPE promo and update
   // testCopyPasswordToast and testCopyPasswordMenuItem to check for the promo.
   config.features_disabled.push_back(kCredentialProviderExtensionPromo);

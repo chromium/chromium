@@ -133,9 +133,6 @@ void OpensPasswordsInOtherApps() {
   AppLaunchConfiguration config;
 
   config.features_enabled.push_back(
-      password_manager::features::kIOSPasswordUISplit);
-
-  config.features_enabled.push_back(
       password_manager::features::kIOSPasswordAuthOnEntryV2);
 
   return config;

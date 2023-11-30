@@ -7,7 +7,6 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -162,9 +161,6 @@ void CheckPasswordManagerUIDismissesAfterFailedAuthentication(
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-
-  config.features_enabled.push_back(
-      password_manager::features::kIOSPasswordUISplit);
 
   if ([self
           isRunningTest:@selector

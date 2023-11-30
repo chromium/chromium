@@ -239,7 +239,6 @@ source_set("eg2_tests") {
     "//base/test:test_support",
     "//components/autofill/core/browser:test_support",
     "//components/password_manager/core/browser",
-    "//components/password_manager/core/common:features",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/util:eg_test_support+eg2",

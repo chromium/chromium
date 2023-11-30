@@ -558,11 +558,6 @@ const char kIOSPasswordAuthOnEntryV2Description[] =
     "Password Manager subpages. Supersedes `Password Manager Auth on Entry` if "
     "enabled.";
 
-const char kIOSPasswordUISplitName[] = "Password Manager UI Split";
-const char kIOSPasswordUISplitDescription[] =
-    "Splits Password Settings and "
-    "Password Manager into two separate UIs.";
-
 const char kIOSSaveToDriveName[] = "IOS Save to Drive";
 const char kIOSSaveToDriveDescription[] =
     "Enables the Save to Drive feature on iOS.";

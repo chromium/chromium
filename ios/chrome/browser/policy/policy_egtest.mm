@@ -10,7 +10,6 @@
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/enterprise/browser/enterprise_switches.h"
 #import "components/history/core/common/pref_names.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/policy/core/common/cloud/cloud_policy_constants.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
@@ -159,8 +158,6 @@ NSString* const kDomain2 = @"domain2.com";
   // "com.apple.configuration.managed" key.
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.relaunch_policy = NoForceRelaunchAndResetState;
-  config.features_enabled.push_back(
-      password_manager::features::kIOSPasswordUISplit);
 
   if ([self isRunningTest:@selector(testPopupMenuItemWithUserPolicy)] ||
       [self isRunningTest:@selector(testManagementPageManagedWithUserPolicy)]) {

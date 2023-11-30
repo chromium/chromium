@@ -479,11 +479,6 @@ extern const char kIOSPasswordAuthOnEntryDescription[];
 extern const char kIOSPasswordAuthOnEntryV2Name[];
 extern const char kIOSPasswordAuthOnEntryV2Description[];
 
-// Title and description for the flag to split password settings and password
-// management into two separate UIs.
-extern const char kIOSPasswordUISplitName[];
-extern const char kIOSPasswordUISplitDescription[];
-
 // Title and description for the flag to enable password bottom sheet on IOS.
 extern const char kIOSPasswordBottomSheetName[];
 extern const char kIOSPasswordBottomSheetDescription[];

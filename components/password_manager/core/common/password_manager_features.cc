@@ -33,12 +33,6 @@ BASE_FEATURE(kForgotPasswordFormSupport,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_IOS)
-// Removes the list of passwords from the Settings UI and adds a separate
-// Password Manager view.
-BASE_FEATURE(kIOSPasswordUISplit,
-             "IOSPasswordUISplit",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables password bottom sheet to be displayed (on iOS) when a user is
 // signed-in and taps on a username or password field on a website that has at
 // least one credential saved in their password manager.

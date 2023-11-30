@@ -1887,10 +1887,10 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_MANUAL_FALLBACK_ADD_PAYMENT_METHOD" desc="The title for the button in the manual fallback UI that takes the user to the add new credit card screen through settings. In this screen, the user can input their card details and save them.">
         Add Payment Method...
       </message>
-      <message name="IDS_IOS_MANUAL_FALLBACK_MANAGE_PASSWORDS" desc="The title for the button in the manual fallback UI that takes the user to the passwords settings. In this screen they see all the passwords and can erase them. Note it is different from IDS_IOS_MANUAL_FALLBACK_USE_OTHER_PASSWORD_WITH_DOTS [30em]">
+      <message name="IDS_IOS_MANUAL_FALLBACK_MANAGE_PASSWORDS" desc="The title for the button in the manual fallback UI that takes the user to the passwords settings. In this screen they see all the passwords and can erase them.">
         Manage Passwords...
       </message>
-      <message name="IDS_IOS_MANUAL_FALLBACK_MANAGE_SETTINGS" desc="The title for the button in the manual fallback UI that takes the user to the passwords settings. In this screen they can manage the settings for their passwords. Note it is different from IDS_IOS_MANUAL_FALLBACK_USE_OTHER_PASSWORD_WITH_DOTS [30em]">
+      <message name="IDS_IOS_MANUAL_FALLBACK_MANAGE_SETTINGS" desc="The title for the button in the manual fallback UI that takes the user to the passwords settings. In this screen they can manage the settings for their passwords.">
         Manage Settings...
       </message>
       <message name="IDS_IOS_MANUAL_FALLBACK_NO_USERNAME" desc="The title for disabled buttons on the manual fallback passwords UI when a credential doesn't contains a username. [30em]">
@@ -1911,9 +1911,6 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_MANUAL_FALLBACK_NOT_SECURE_GENERIC_BODY" desc="The body of the alert informing a user the content they selected won't be filled on the form." meaning="The form is not secure [80em]">
         To protect your privacy, Chrome will not autofill this field.
       </message>
-      <message name="IDS_IOS_MANUAL_FALLBACK_USE_OTHER_PASSWORD" desc="The title for the manual fallback UI with all passwords without filter." meaning="The title for a list where the user is about to select a password or username to be filled in a form [Length: 10em]">
-        Passwords
-      </message>
       <message name="IDS_IOS_MANUAL_FALLBACK_SELECT_PASSWORD_WITH_DOTS" desc="The title for the button in the manual fallback passwords UI that allows the user to select a saved password from a list, and fill it into the active field. [30em]">
         Select Password...
       </message>
@@ -1923,14 +1920,8 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_MANUAL_FALLBACK_SELECT_PASSWORD_DIALOG_TITLE" desc="The title of a dialog asking the user to confirm they trust the current site before selecting a saved password to fill.">
         Select Password
       </message>
-      <message name="IDS_IOS_MANUAL_FALLBACK_SUGGEST_PASSWORD_WITH_DOTS" desc="The title for the button in the manual fallback passwords UI that is used to trigger password generation on the active field. [30em]">
-        Suggest Password...
-      </message>
       <message name="IDS_IOS_MANUAL_FALLBACK_SUGGEST_STRONG_PASSWORD_WITH_DOTS" desc="The title for the button in the manual fallback passwords UI that is used to trigger password generation on the active field. 'Strong' refers to the fact that the password is randomly-generated, and thus hard to guess and unlikely to be reused. [30em]">
         Suggest Strong Password...
-      </message>
-      <message name="IDS_IOS_MANUAL_FALLBACK_USE_OTHER_PASSWORD_WITH_DOTS" desc="The title for the button in the manual fallback passwords UI that is used to open a list of all the user credentials where they can select one to fill a form. This button is showed at the same time as a different button with  IDS_IOS_MANUAL_FALLBACK_MANAGE_PASSWORDS as title. [30em]">
-        Use Other Password...
       </message>
       <message name="IDS_IOS_MANUAL_FALLBACK_MANAGE_CREDIT_CARDS" desc="The title for the button in the manual fallback UI that takes the user to the payments settings. In this screen they see all the credit cards and can erase them. [30em]">
         Manage Payment Methods...
@@ -3701,14 +3692,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_CANCEL_PASSWORD_EDIT" desc="Cancel button inside confirmation alert when the user is trying to edit password [iOS only]" meaning="Cancels editing">
         Cancel
-      </message>
-      <message name="IDS_IOS_CONFIRM_USING_OTHER_PASSWORD_TITLE" desc="Title for the confirmation dialog which is shown when user wants to use other passwords. [iOS only]">
-        Use other password
-      </message>
-      <message name="IDS_IOS_CONFIRM_USING_OTHER_PASSWORD_DESCRIPTION" desc="Description for the confirmation dialog which is shown when user wants to use other passwords. [iOS only]">
-        If you trust <ph name="TIME">$1<ex>example.com</ex></ph>, you can use a saved password from another site.
-
-Try to use a unique password for every site.
       </message>
       <message name="IDS_IOS_CONFIRM_USING_OTHER_PASSWORD_CONTINUE" desc="Action button for confirmation dialog which is shown when user wants to use other passwords. [iOS only]" meaning="User acknowledge warning and wants to proceed.">
         Continue
