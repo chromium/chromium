@@ -406,6 +406,16 @@
     </cr-grid>
     <div id="footer">
       <div id="disclaimer">$i18n{experimentalFeatureDisclaimer}</div>
+      <div hidden$="[[!loading_]]">
+        <cr-loading-gradient>
+          <svg height="16" width="44" xmlns="http://www.w3.org/2000/svg">
+            <clipPath>
+              <circle cx="8" cy="8" r="8"></circle>
+              <circle cx="36" cy="8" r="8"></circle>
+            </clipPath>
+          </svg>
+        </cr-loading-gradient>
+      </div>
       <cr-feedback-buttons id="feedbackButtons"
           hidden$="[[!shouldShowFeedbackButtons_(loading_, results_)]]"
           selected-option="[[selectedFeedbackOption_]]"
