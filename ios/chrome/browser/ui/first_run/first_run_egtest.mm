@@ -97,16 +97,11 @@ id<GREYMatcher> GetSyncSettings() {
                     grey_ancestor(disclaimer), grey_sufficientlyVisible(), nil);
 }
 
-// Dismisses the choice screen if it appears
-void DismissChoiceScreenIfNecessary() {
-  if (![ChromeEarlGreyAppInterface IsSearchEngineChoiceScreenEnabledFre]) {
-    return;
-  }
-  // Selects a search engine. The list of search engines varies from country to
-  // country and is refreshed periodically. Google should always be proposed in
-  // the countries selected by test settings.
-  NSString* googleAccessibiltyIdentifier = [NSString
-      stringWithFormat:@"%@Google", kSnippetSearchEngineIdentifierPrefix];
+// Selects search engine cell with `search_engine_name`.
+void SelectSearchEngineCellWithName(NSString* search_engine_name) {
+  NSString* googleAccessibiltyIdentifier =
+      [NSString stringWithFormat:@"%@%@", kSnippetSearchEngineIdentifierPrefix,
+                                 search_engine_name];
   id<GREYMatcher> googleRowMatcher =
       grey_allOf(grey_userInteractionEnabled(),
                  grey_accessibilityID(googleAccessibiltyIdentifier), nil);
@@ -119,6 +114,17 @@ void DismissChoiceScreenIfNecessary() {
   // Tap on the Google search engine cell.
   [[[EarlGrey selectElementWithMatcher:googleRowMatcher]
       assertWithMatcher:grey_notNil()] performAction:grey_tap()];
+}
+
+// Dismisses the choice screen if it appears
+void DismissChoiceScreenIfNecessary() {
+  if (![ChromeEarlGreyAppInterface IsSearchEngineChoiceScreenEnabledFre]) {
+    return;
+  }
+  // Selects a search engine. The list of search engines varies from country to
+  // country and is refreshed periodically. Google should always be proposed in
+  // the countries selected by test settings.
+  SelectSearchEngineCellWithName(@"Google");
   // Taps the "Set as Default" button.
   id<GREYMatcher> primaryButtonMatcher =
       grey_accessibilityID(kSetAsDefaultSearchEngineIdentifier);
@@ -1276,20 +1282,16 @@ void DismissScreensAfterSigninAndSync() {
   // Checks that the choice screen is shown
   [self verifyChoiceScreenOrDefaultBrowserIsDisplayed];
   // Verifies that the primary button is initially disabled.
-  id<GREYMatcher> primaryButtonMatcher = grey_buttonTitle(
-      l10n_util::GetNSString(IDS_SEARCH_ENGINE_CHOICE_BUTTON_TITLE));
+  id<GREYMatcher> primaryButtonMatcher =
+      grey_accessibilityID(kSetAsDefaultSearchEngineIdentifier);
   [[EarlGrey selectElementWithMatcher:primaryButtonMatcher]
       assertWithMatcher:grey_allOf(grey_not(grey_enabled()), grey_notNil(),
                                    nil)];
   // Selects a search engine.
-  id<GREYMatcher> bingRowMatcher = grey_allOf(
-      grey_userInteractionEnabled(), grey_accessibilityLabel(@"Bing"), nil);
-  [[[EarlGrey selectElementWithMatcher:bingRowMatcher]
-      assertWithMatcher:grey_notNil()] performAction:grey_tap()];
+  NSString* searchEngineToSelect = @"Bing";
+  SelectSearchEngineCellWithName(searchEngineToSelect);
   // Taps the primary button again.
-  [[[EarlGrey
-      selectElementWithMatcher:grey_buttonTitle(l10n_util::GetNSString(
-                                   IDS_SEARCH_ENGINE_CHOICE_BUTTON_TITLE))]
+  [[[EarlGrey selectElementWithMatcher:primaryButtonMatcher]
       assertWithMatcher:grey_notNil()] performAction:grey_tap()];
 
   DismissScreensAfterChoiceScreen();
@@ -1300,8 +1302,9 @@ void DismissScreensAfterSigninAndSync() {
   // name appears in the name of the selected row.
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::SettingsSearchEngineButton()]
-      assertWithMatcher:grey_allOf(grey_accessibilityValue(@"Bing"),
-                                   grey_notNil(), nil)];
+      assertWithMatcher:grey_allOf(
+                            grey_accessibilityValue(searchEngineToSelect),
+                            grey_notNil(), nil)];
 }
 
 #pragma mark - Helper
