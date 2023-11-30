@@ -5,7 +5,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Drag-Reorderable List Item -->
     <!-- Used for 90% = 230/255 alpha -->
     <integer name="list_item_dragged_alpha">230</integer>
@@ -14,4 +14,7 @@ found in the LICENSE file.
     <integer name="list_item_level_default">0</integer>
     <integer name="list_item_level_selected">1</integer>
     <integer name="list_item_level_incognito">2</integer>
+
+    <!-- TODO: Remove this after the downstream cl to migrate ImageEditorDialogFragment lands -->
+    <item name="automotive_layout_with_back_button_toolbar" type="layout" tools:ignore="UnusedResources">@layout/automotive_layout_with_horizontal_back_button_toolbar</item>
 </resources>
