@@ -842,7 +842,11 @@ void BackgroundImageGeometry::CalculateRepeatAndPosition(
     tile_size_.width = rounded_width;
 
     // Force the first tile to line up with the edge of the positioning area.
-    SetPhaseX(ComputeTilePhase(computed_x_position + unsnapped_box_offset.left,
+    const LayoutUnit x_offset =
+        fill_layer.BackgroundXOrigin() == BackgroundEdgeOrigin::kRight
+            ? snapped_available_width - computed_x_position
+            : computed_x_position;
+    SetPhaseX(ComputeTilePhase(x_offset + unsnapped_box_offset.left,
                                tile_size_.width));
     SetSpaceSize(PhysicalSize());
   }
@@ -860,7 +864,11 @@ void BackgroundImageGeometry::CalculateRepeatAndPosition(
     tile_size_.height = rounded_height;
 
     // Force the first tile to line up with the edge of the positioning area.
-    SetPhaseY(ComputeTilePhase(computed_y_position + unsnapped_box_offset.top,
+    const LayoutUnit y_offset =
+        fill_layer.BackgroundYOrigin() == BackgroundEdgeOrigin::kBottom
+            ? snapped_available_height - computed_y_position
+            : computed_y_position;
+    SetPhaseY(ComputeTilePhase(y_offset + unsnapped_box_offset.top,
                                tile_size_.height));
     SetSpaceSize(PhysicalSize());
   }
