@@ -6995,12 +6995,6 @@
     "expiry_milestone": 126
   },
   {
-    "name": "restore-session-from-cache",
-    "owners": [ "justincohen@chromium.org", "gambard@chromium.org", "bling-flags@google.com" ],
-    // Needed for testing of native session restore flow on iOS.
-    "expiry_milestone": -1
-  },
-  {
     "name": "restore-synced-placeholder-tabs",
     "owners": [ "bjfong@google.com", "ckitagawa@chromium.org", "fredmello@chromium.org" ],
     "expiry_milestone": 123
@@ -7585,12 +7579,6 @@
     "name": "sync-webauthn-credentials",
     "owners": [ "chrome-webauthn@google.com" ],
     "expiry_milestone": 125
-  },
-  {
-    "name": "synthesized-restore-session",
-    "owners": [ "justincohen@chromium.org", "ajuma@chromium.org" ],
-    // Needed for testing of native session restore flow on iOS.
-    "expiry_milestone": -1
   },
   {
     "name": "system-color-chooser",
