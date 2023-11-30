@@ -610,7 +610,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sQueryTiles = new CachedFlag(QUERY_TILES, false);
     public static final CachedFlag sQueryTilesOnStart = new CachedFlag(QUERY_TILES_ON_START, false);
     public static final CachedFlag sRedirectExplicitCTAIntentsToExistingActivity =
-            new CachedFlag(REDIRECT_EXPLICIT_CTA_INTENTS_TO_EXISTING_ACTIVITY, false);
+            new CachedFlag(REDIRECT_EXPLICIT_CTA_INTENTS_TO_EXISTING_ACTIVITY, true);
     public static final CachedFlag sSearchEngineChoice =
             new CachedFlag(SEARCH_ENGINE_CHOICE, false);
     public static final CachedFlag sShowNtpAtStartupAndroid =

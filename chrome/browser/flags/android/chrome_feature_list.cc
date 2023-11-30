@@ -918,7 +918,7 @@ BASE_FEATURE(kRecordSuppressionMetrics,
 
 BASE_FEATURE(kRedirectExplicitCTAIntentsToExistingActivity,
              "RedirectExplicitCTAIntentsToExistingActivity",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kReengagementNotification,
              "ReengagementNotification",
