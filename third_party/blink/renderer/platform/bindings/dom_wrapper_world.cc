@@ -122,9 +122,8 @@ void DOMWrapperWorld::AllWorldsInIsolate(
 }
 
 DOMWrapperWorld::~DOMWrapperWorld() {
-  if (IsMainThread() && !IsMainWorld()) {
+  if (IsMainThread())
     number_of_non_main_worlds_in_main_thread_--;
-  }
 
   // WorkerWorld should be disposed of before the dtor.
   if (!IsWorkerWorld()) {

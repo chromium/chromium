@@ -8,7 +8,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialization_tag.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 using ::testing::ElementsAre;
 using ::testing::UnorderedElementsAre;
@@ -17,13 +16,11 @@ namespace blink {
 namespace {
 
 TEST(TrailerWriterTest, Empty) {
-  test::TaskEnvironment task_environment;
   TrailerWriter writer;
   EXPECT_THAT(writer.MakeTrailerData(), ElementsAre());
 }
 
 TEST(TrailerWriterTest, ExposedInterfaces) {
-  test::TaskEnvironment task_environment;
   TrailerWriter writer;
   writer.RequireExposedInterface(kImageBitmapTag);
   writer.RequireExposedInterface(kCryptoKeyTag);

@@ -18,7 +18,6 @@
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -51,7 +50,6 @@ class ScriptPromiseResolverTest : public testing::Test {
     PerformMicrotaskCheckpoint();
   }
 
-  test::TaskEnvironment task_environment_;
   std::unique_ptr<DummyPageHolder> page_holder_;
   ScriptState* GetScriptState() const {
     return ToScriptStateForMainWorld(&page_holder_->GetFrame());

@@ -40,7 +40,6 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -125,7 +124,6 @@ Vector<String> ToStringArray(v8::Isolate* isolate, const ScriptValue& value) {
 }
 
 TEST(ScriptPromiseTest, ConstructFromNonPromise) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   v8::TryCatch try_catch(scope.GetIsolate());
   ScriptPromise promise(scope.GetScriptState(),
@@ -135,7 +133,6 @@ TEST(ScriptPromiseTest, ConstructFromNonPromise) {
 }
 
 TEST(ScriptPromiseTest, ThenResolve) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   Resolver resolver(scope.GetScriptState());
   ScriptPromise promise = resolver.Promise();
@@ -162,7 +159,6 @@ TEST(ScriptPromiseTest, ThenResolve) {
 }
 
 TEST(ScriptPromiseTest, ThenResolveScriptFunction) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   Resolver resolver(scope.GetScriptState());
   ScriptPromise promise = resolver.Promise();
@@ -185,7 +181,6 @@ TEST(ScriptPromiseTest, ThenResolveScriptFunction) {
 }
 
 TEST(ScriptPromiseTest, ResolveThen) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   Resolver resolver(scope.GetScriptState());
   ScriptPromise promise = resolver.Promise();
@@ -207,7 +202,6 @@ TEST(ScriptPromiseTest, ResolveThen) {
 }
 
 TEST(ScriptPromiseTest, ResolveThenScriptFunction) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   Resolver resolver(scope.GetScriptState());
   ScriptPromise promise = resolver.Promise();
@@ -226,7 +220,6 @@ TEST(ScriptPromiseTest, ResolveThenScriptFunction) {
 }
 
 TEST(ScriptPromiseTest, ThenReject) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   Resolver resolver(scope.GetScriptState());
   ScriptPromise promise = resolver.Promise();
@@ -253,7 +246,6 @@ TEST(ScriptPromiseTest, ThenReject) {
 }
 
 TEST(ScriptPromiseTest, ThenRejectScriptFunction) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   Resolver resolver(scope.GetScriptState());
   ScriptPromise promise = resolver.Promise();
@@ -276,7 +268,6 @@ TEST(ScriptPromiseTest, ThenRejectScriptFunction) {
 }
 
 TEST(ScriptPromiseTest, ThrowingOnFulfilled) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   Resolver resolver(scope.GetScriptState());
   ScriptPromise promise = resolver.Promise();
@@ -311,7 +302,6 @@ TEST(ScriptPromiseTest, ThrowingOnFulfilled) {
 }
 
 TEST(ScriptPromiseTest, ThrowingOnFulfilledScriptFunction) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   Resolver resolver(scope.GetScriptState());
   ScriptPromise promise = resolver.Promise();
@@ -338,7 +328,6 @@ TEST(ScriptPromiseTest, ThrowingOnFulfilledScriptFunction) {
 }
 
 TEST(ScriptPromiseTest, ThrowingOnRejected) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   Resolver resolver(scope.GetScriptState());
   ScriptPromise promise = resolver.Promise();
@@ -373,7 +362,6 @@ TEST(ScriptPromiseTest, ThrowingOnRejected) {
 }
 
 TEST(ScriptPromiseTest, ThrowingOnRejectedScriptFunction) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   Resolver resolver(scope.GetScriptState());
   ScriptPromise promise = resolver.Promise();
@@ -400,7 +388,6 @@ TEST(ScriptPromiseTest, ThrowingOnRejectedScriptFunction) {
 }
 
 TEST(ScriptPromiseTest, RejectThen) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   Resolver resolver(scope.GetScriptState());
   ScriptPromise promise = resolver.Promise();
@@ -422,7 +409,6 @@ TEST(ScriptPromiseTest, RejectThen) {
 }
 
 TEST(ScriptPromiseTest, RejectThenScriptFunction) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   Resolver resolver(scope.GetScriptState());
   ScriptPromise promise = resolver.Promise();
@@ -441,7 +427,6 @@ TEST(ScriptPromiseTest, RejectThenScriptFunction) {
 }
 
 TEST(ScriptPromiseTest, CastPromise) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptPromise promise = Resolver(scope.GetScriptState()).Promise();
   ScriptPromise new_promise =
@@ -452,7 +437,6 @@ TEST(ScriptPromiseTest, CastPromise) {
 }
 
 TEST(ScriptPromiseTest, CastNonPromise) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptValue on_fulfilled1, on_fulfilled2, on_rejected1, on_rejected2;
 
@@ -492,7 +476,6 @@ TEST(ScriptPromiseTest, CastNonPromise) {
 }
 
 TEST(ScriptPromiseTest, Reject) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptValue on_fulfilled, on_rejected;
 
@@ -518,7 +501,6 @@ TEST(ScriptPromiseTest, Reject) {
 }
 
 TEST(ScriptPromiseTest, RejectWithExceptionState) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptValue on_fulfilled, on_rejected;
   ScriptPromise promise = ScriptPromise::RejectWithDOMException(
@@ -542,7 +524,6 @@ TEST(ScriptPromiseTest, RejectWithExceptionState) {
 }
 
 TEST(ScriptPromiseTest, AllWithEmptyPromises) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptValue on_fulfilled, on_rejected;
 
@@ -566,7 +547,6 @@ TEST(ScriptPromiseTest, AllWithEmptyPromises) {
 }
 
 TEST(ScriptPromiseTest, AllWithResolvedPromises) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptValue on_fulfilled, on_rejected;
 
@@ -597,7 +577,6 @@ TEST(ScriptPromiseTest, AllWithResolvedPromises) {
 }
 
 TEST(ScriptPromiseTest, AllWithRejectedPromise) {
-  test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptValue on_fulfilled, on_rejected;
 

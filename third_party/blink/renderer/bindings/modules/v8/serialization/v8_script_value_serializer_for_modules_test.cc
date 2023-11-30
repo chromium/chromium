@@ -62,7 +62,6 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 using testing::ElementsAre;
@@ -189,8 +188,6 @@ static const uint8_t kEcdsaCertificateEncoded[] = {
     0x2d, 0x0a};
 
 TEST(V8ScriptValueSerializerForModulesTest, RoundTripRTCCertificate) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
   // If WebRTC is not supported in this build, this test is meaningless.
   std::unique_ptr<RTCCertificateGenerator> certificate_generator =
       std::make_unique<RTCCertificateGenerator>();
@@ -221,8 +218,6 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripRTCCertificate) {
 }
 
 TEST(V8ScriptValueSerializerForModulesTest, DecodeRTCCertificate) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
   // If WebRTC is not supported in this build, this test is meaningless.
   std::unique_ptr<RTCCertificateGenerator> certificate_generator =
       std::make_unique<RTCCertificateGenerator>();
@@ -250,8 +245,6 @@ TEST(V8ScriptValueSerializerForModulesTest, DecodeRTCCertificate) {
 }
 
 TEST(V8ScriptValueSerializerForModulesTest, DecodeInvalidRTCCertificate) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
   V8TestingScope scope;
 
   // This is valid, except that "private" is not a valid private key PEM and
@@ -354,19 +347,16 @@ WebCryptoResult ToWebCryptoResult(ScriptState* script_state,
 template <typename T, typename PMF, typename... Args>
 T SubtleCryptoSync(ScriptState* script_state, PMF func, Args&&... args) {
   T result;
-  base::RunLoop run_loop;
   (Platform::Current()->Crypto()->*func)(
       std::forward<Args>(args)...,
-      ToWebCryptoResult(
-          script_state,
-          WTF::BindRepeating(
-              [](T* out, base::OnceClosure quit_closure, T result) {
-                *out = result;
-                std::move(quit_closure).Run();
-              },
-              WTF::Unretained(&result), run_loop.QuitClosure())),
+      ToWebCryptoResult(script_state, WTF::BindRepeating(
+                                          [](T* out, T result) {
+                                            *out = result;
+                                            test::ExitRunLoop();
+                                          },
+                                          WTF::Unretained(&result))),
       scheduler::GetSingleThreadTaskRunnerForTesting());
-  run_loop.Run();
+  test::EnterRunLoop();
   return result;
 }
 
@@ -447,8 +437,6 @@ WebVector<uint8_t> SyncDeriveBits(ScriptState* script_state,
 
 // AES-128-CBC uses AES key params.
 TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyAES) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
   V8TestingScope scope(KURL("https://secure.context/"));
   ScriptState* script_state = scope.GetScriptState();
 
@@ -490,8 +478,6 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyAES) {
 }
 
 TEST(V8ScriptValueSerializerForModulesTest, DecodeCryptoKeyAES) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
   V8TestingScope scope(KURL("https://secure.context/"));
   ScriptState* script_state = scope.GetScriptState();
 
@@ -521,8 +507,6 @@ TEST(V8ScriptValueSerializerForModulesTest, DecodeCryptoKeyAES) {
 
 // HMAC-SHA256 uses HMAC key params.
 TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyHMAC) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
   V8TestingScope scope(KURL("https://secure.context/"));
   ScriptState* script_state = scope.GetScriptState();
 
@@ -563,8 +547,6 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyHMAC) {
 }
 
 TEST(V8ScriptValueSerializerForModulesTest, DecodeCryptoKeyHMAC) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
   V8TestingScope scope(KURL("https://secure.context/"));
   ScriptState* script_state = scope.GetScriptState();
 
@@ -598,8 +580,6 @@ TEST(V8ScriptValueSerializerForModulesTest, DecodeCryptoKeyHMAC) {
 
 // RSA-PSS-SHA256 uses RSA hashed key params.
 TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyRSAHashed) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
   V8TestingScope scope(KURL("https://secure.context/"));
   ScriptState* script_state = scope.GetScriptState();
 
@@ -643,8 +623,6 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyRSAHashed) {
 }
 
 TEST(V8ScriptValueSerializerForModulesTest, DecodeCryptoKeyRSAHashed) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
   V8TestingScope scope(KURL("https://secure.context/"));
   ScriptState* script_state = scope.GetScriptState();
 
@@ -696,8 +674,6 @@ TEST(V8ScriptValueSerializerForModulesTest, DecodeCryptoKeyRSAHashed) {
 
 // ECDSA uses EC key params.
 TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyEC) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
   V8TestingScope scope(KURL("https://secure.context/"));
   ScriptState* script_state = scope.GetScriptState();
 
@@ -741,8 +717,6 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyEC) {
 }
 
 TEST(V8ScriptValueSerializerForModulesTest, DecodeCryptoKeyEC) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
   V8TestingScope scope(KURL("https://secure.context/"));
   ScriptState* script_state = scope.GetScriptState();
 
@@ -785,8 +759,6 @@ TEST(V8ScriptValueSerializerForModulesTest, DecodeCryptoKeyEC) {
 
 // Ed25519 uses no params.
 TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyEd25519) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
   V8TestingScope scope(KURL("https://secure.context/"));
   ScriptState* script_state = scope.GetScriptState();
 
@@ -828,8 +800,6 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyEd25519) {
 
 // Ed25519 uses no params.
 TEST(V8ScriptValueSerializerForModulesTest, DecodeCryptoKeyEd25519) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
   V8TestingScope scope(KURL("https://secure.context/"));
   ScriptState* script_state = scope.GetScriptState();
 
@@ -867,8 +837,6 @@ TEST(V8ScriptValueSerializerForModulesTest, DecodeCryptoKeyEd25519) {
 }
 
 TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyX25519) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
   V8TestingScope scope(KURL("https://secure.context/"));
   ScriptState* script_state = scope.GetScriptState();
 
@@ -910,8 +878,6 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyX25519) {
 }
 
 TEST(V8ScriptValueSerializerForModulesTest, DecodeCryptoKeyX25519) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
   V8TestingScope scope(KURL("https://secure.context/"));
   ScriptState* script_state = scope.GetScriptState();
 
@@ -962,8 +928,6 @@ TEST(V8ScriptValueSerializerForModulesTest, DecodeCryptoKeyX25519) {
 }
 
 TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyNoParams) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
   V8TestingScope scope(KURL("https://secure.context/"));
   ScriptState* script_state = scope.GetScriptState();
 
@@ -997,8 +961,6 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyNoParams) {
 }
 
 TEST(V8ScriptValueSerializerForModulesTest, DecodeCryptoKeyNoParams) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
   V8TestingScope scope(KURL("https://secure.context/"));
   ScriptState* script_state = scope.GetScriptState();
 
@@ -1027,8 +989,6 @@ TEST(V8ScriptValueSerializerForModulesTest, DecodeCryptoKeyNoParams) {
 }
 
 TEST(V8ScriptValueSerializerForModulesTest, DecodeCryptoKeyInvalid) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
   V8TestingScope scope(KURL("https://secure.context/"));
   ScriptState* script_state = scope.GetScriptState();
 
@@ -1150,8 +1110,6 @@ TEST(V8ScriptValueSerializerForModulesTest, DecodeCryptoKeyInvalid) {
 }
 
 TEST(V8ScriptValueSerializerForModulesTest, RoundTripDOMFileSystem) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
   V8TestingScope scope;
 
   auto* fs = MakeGarbageCollected<DOMFileSystem>(
@@ -1173,8 +1131,6 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripDOMFileSystem) {
 }
 
 TEST(V8ScriptValueSerializerForModulesTest, RoundTripDOMFileSystemNotClonable) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
   V8TestingScope scope;
   ExceptionState exception_state(scope.GetIsolate(),
                                  ExceptionContextType::kOperationInvoke,
@@ -1193,8 +1149,6 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripDOMFileSystemNotClonable) {
 }
 
 TEST(V8ScriptValueSerializerForModulesTest, DecodeDOMFileSystem) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
   V8TestingScope scope;
 
   // This is encoded data generated from Chromium (around M56).
@@ -1221,8 +1175,6 @@ TEST(V8ScriptValueSerializerForModulesTest, DecodeDOMFileSystem) {
 }
 
 TEST(V8ScriptValueSerializerForModulesTest, DecodeInvalidDOMFileSystem) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
 
@@ -1246,8 +1198,6 @@ TEST(V8ScriptValueSerializerForModulesTest, DecodeInvalidDOMFileSystem) {
 }
 
 TEST(V8ScriptValueSerializerForModulesTest, RoundTripVideoFrame) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
   V8TestingScope scope;
 
   const gfx::Size kFrameSize(600, 480);
@@ -1277,8 +1227,6 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripVideoFrame) {
 }
 
 TEST(V8ScriptValueSerializerForModulesTest, TransferVideoFrame) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
   V8TestingScope scope;
 
   const gfx::Size kFrameSize(600, 480);
@@ -1312,8 +1260,6 @@ TEST(V8ScriptValueSerializerForModulesTest, TransferVideoFrame) {
 }
 
 TEST(V8ScriptValueSerializerForModulesTest, ClosedVideoFrameThrows) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
   V8TestingScope scope;
   ExceptionState exception_state(scope.GetIsolate(),
                                  ExceptionContextType::kOperationInvoke,
@@ -1337,8 +1283,6 @@ TEST(V8ScriptValueSerializerForModulesTest, ClosedVideoFrameThrows) {
 }
 
 TEST(V8ScriptValueSerializerForModulesTest, RoundTripAudioData) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
   V8TestingScope scope;
 
   const unsigned kChannels = 2;
@@ -1404,8 +1348,6 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripAudioData) {
 }
 
 TEST(V8ScriptValueSerializerForModulesTest, TransferAudioData) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
   V8TestingScope scope;
 
   const unsigned kFrames = 500;
@@ -1440,8 +1382,6 @@ TEST(V8ScriptValueSerializerForModulesTest, TransferAudioData) {
 }
 
 TEST(V8ScriptValueSerializerForModulesTest, ClosedAudioDataThrows) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
   V8TestingScope scope;
   ExceptionState exception_state(scope.GetIsolate(),
                                  ExceptionContextType::kOperationInvoke,
@@ -1466,8 +1406,6 @@ TEST(V8ScriptValueSerializerForModulesTest, ClosedAudioDataThrows) {
 }
 
 TEST(V8ScriptValueSerializerForModulesTest, TransferMediaStreamTrack) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
   // This flag is default-off for Android, so we force it on to test this
   // functionality.
   ScopedRegionCaptureForTest region_capture(true);
@@ -1520,8 +1458,6 @@ TEST(V8ScriptValueSerializerForModulesTest, TransferMediaStreamTrack) {
 
 TEST(V8ScriptValueSerializerForModulesTest,
      TransferMediaStreamTrackRegionCaptureDisabled) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
   // Test with region capture disabled, since this is the default for Android.
   ScopedRegionCaptureForTest region_capture(false);
   V8TestingScope scope;
@@ -1553,8 +1489,6 @@ TEST(V8ScriptValueSerializerForModulesTest,
 }
 
 TEST(V8ScriptValueSerializerForModulesTest, TransferAudioMediaStreamTrack) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
   V8TestingScope scope;
 
   const auto session_id = base::UnguessableToken::Create();
@@ -1600,8 +1534,6 @@ TEST(V8ScriptValueSerializerForModulesTest, TransferAudioMediaStreamTrack) {
 
 TEST(V8ScriptValueSerializerForModulesTest,
      TransferClonedMediaStreamTrackFails) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
   V8TestingScope scope;
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
   ScriptState* script_state = scope.GetScriptState();
@@ -1637,8 +1569,6 @@ TEST(V8ScriptValueSerializerForModulesTest,
 
 TEST(V8ScriptValueSerializerForModulesTest,
      TransferDeviceCaptureMediaStreamTrackFails) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
   V8TestingScope scope;
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
 
@@ -1687,8 +1617,6 @@ TEST(V8ScriptValueSerializerForModulesTest,
 
 TEST(V8ScriptValueSerializerForModulesTest,
      TransferScreenCaptureMediaStreamTrackFails) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
   V8TestingScope scope;
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
 
@@ -1741,8 +1669,6 @@ TEST(V8ScriptValueSerializerForModulesTest,
 
 TEST(V8ScriptValueSerializerForModulesTest,
      TransferWindowCaptureMediaStreamTrackFails) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
   V8TestingScope scope;
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
 
@@ -1795,8 +1721,6 @@ TEST(V8ScriptValueSerializerForModulesTest,
 
 TEST(V8ScriptValueSerializerForModulesTest,
      TransferClosedMediaStreamTrackFails) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
   V8TestingScope scope;
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
   ScriptState* script_state = scope.GetScriptState();
@@ -1828,8 +1752,6 @@ TEST(V8ScriptValueSerializerForModulesTest,
 
 TEST(V8ScriptValueSerializerForModulesTest,
      TransferMediaStreamTrackInvalidContentHintFails) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
   V8TestingScope scope;
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
   ScriptState* script_state = scope.GetScriptState();
@@ -1862,8 +1784,6 @@ TEST(V8ScriptValueSerializerForModulesTest,
 
 TEST(V8ScriptValueSerializerForModulesTest,
      TransferMediaStreamTrackNoSessionIdThrows) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
   V8TestingScope scope;
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
   ScriptState* script_state = scope.GetScriptState();
@@ -1916,8 +1836,6 @@ TEST(V8ScriptValueSerializerForModulesTest,
 
 #if !BUILDFLAG(IS_ANDROID)  // SubCaptureTargets are not exposed on Android.
 TEST(V8ScriptValueSerializerForModulesTest, RoundTripCropTarget) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
   V8TestingScope scope;
 
   const String crop_id("8e7e0c22-67a0-4c39-b4dc-a20433262f8e");
@@ -1934,8 +1852,6 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripCropTarget) {
 }
 
 TEST(V8ScriptValueSerializerForModulesTest, RoundTripRestrictionTarget) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
   V8TestingScope scope;
   ScopedElementCaptureForTest element_capture(true);
 
@@ -1957,8 +1873,6 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripRestrictionTarget) {
 
 TEST(V8ScriptValueSerializerForModulesTest,
      ArrayBufferDetachKeyPreventsTransfer) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
   v8::Isolate* isolate = scope.GetIsolate();
@@ -1992,8 +1906,6 @@ TEST(V8ScriptValueSerializerForModulesTest,
 
 TEST(V8ScriptValueSerializerForModulesTest,
      ArrayBufferDetachKeyDoesNotPreventSerialize) {
-  test::TaskEnvironment task_environment{
-      test::TaskEnvironment::RealMainThreadScheduler{}};
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
   v8::Isolate* isolate = scope.GetIsolate();
