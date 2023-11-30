@@ -27,6 +27,7 @@ class COMPONENT_EXPORT(ASH_DBUS_FWUPD) FakeFwupdClient : public FwupdClient {
                      FirmwareInstallOptions options) override;
 
  private:
+  void SetFwupdFeatureFlags() override;
   bool install_success_ = false;
 };
 
