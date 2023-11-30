@@ -10,6 +10,7 @@ found in the LICENSE file.
   <dimen name="omnibox_carousel_suggestion_minimum_item_spacing">16dp</dimen>
   <!-- Additional space on the left and right side of the suggestions dropdown. -->
   <dimen name="omnibox_suggestion_dropdown_side_spacing">4dp</dimen>
+  <dimen name="omnibox_suggestion_dropdown_round_corner_radius">28dp</dimen>
   <dimen name="omnibox_suggestion_header_padding_start_modern_smallest">28dp</dimen>
 
   <dimen name="location_bar_icon_width">48dp</dimen>

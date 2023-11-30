@@ -259,7 +259,8 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
                     new RoundedCornerOutlineProvider(
                             context.getResources()
                                     .getDimensionPixelSize(
-                                            R.dimen.omnibox_suggestion_bg_round_corner_radius)));
+                                            R.dimen
+                                                    .omnibox_suggestion_dropdown_round_corner_radius)));
             setClipToOutline(true);
         }
     }

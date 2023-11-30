@@ -121,6 +121,7 @@ found in the LICENSE file.
     <dimen name="omnibox_suggestion_side_spacing_smaller">12dp</dimen>
     <dimen name="omnibox_suggestion_side_spacing_smallest">8dp</dimen>
     <dimen name="omnibox_suggestion_dropdown_side_spacing">0dp</dimen>
+    <dimen name="omnibox_suggestion_dropdown_round_corner_radius">0dp</dimen>
     <dimen name="omnibox_suggestion_group_vertical_margin">12dp</dimen>
     <dimen name="omnibox_suggestion_group_vertical_smaller_margin">8dp</dimen>
     <dimen name="omnibox_suggestion_group_vertical_smallest_margin">4dp</dimen>
