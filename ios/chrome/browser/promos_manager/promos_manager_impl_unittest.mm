@@ -25,6 +25,9 @@
 #import "ios/chrome/browser/promos_manager/promo_config.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "testing/gmock/include/gmock/gmock.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
 using PromoContext = PromosManagerImpl::PromoContext;
@@ -43,6 +46,12 @@ const base::TimeDelta kTimeDelta1Hour = base::Hours(1);
 const PromoContext kPromoContextForActive = PromoContext{
     .was_pending = false,
 };
+
+BASE_FEATURE(kTestFeatureOne, "test_one", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTestFeatureTwo, "test_two", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTestFeatureThree,
+             "test_three",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace
 
@@ -74,7 +83,7 @@ class PromosManagerImplTest : public PlatformTest {
 
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
   std::unique_ptr<PromosManagerImpl> promos_manager_;
-  std::unique_ptr<feature_engagement::test::MockTracker> mock_tracker_;
+  feature_engagement::test::MockTracker mock_tracker_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -110,9 +119,8 @@ Promo* PromosManagerImplTest::TestPromoWithImpressionLimits() {
 
 void PromosManagerImplTest::CreatePromosManager() {
   CreatePrefs();
-  mock_tracker_ = std::make_unique<feature_engagement::test::MockTracker>();
   promos_manager_ = std::make_unique<PromosManagerImpl>(
-      local_state_.get(), &test_clock_, mock_tracker_.get(), nullptr);
+      local_state_.get(), &test_clock_, &mock_tracker_, nullptr);
   promos_manager_->Init();
 }
 
@@ -492,24 +500,11 @@ TEST_F(PromosManagerImplTest, SortPromos) {
       {promos_manager::Promo::DefaultBrowser, kPromoContextForActive},
   };
 
-  int today = TodaysDay();
-
-  promos_manager_->impression_history_ = {
-      promos_manager::Impression(promos_manager::Promo::Test, today, false),
-      promos_manager::Impression(promos_manager::Promo::DefaultBrowser,
-                                 today - 7, false),
-      promos_manager::Impression(promos_manager::Promo::AppStoreRating,
-                                 today - 14, false),
-      promos_manager::Impression(
-          promos_manager::Promo::CredentialProviderExtension, today - 180,
-          false),
-  };
-
   std::vector<promos_manager::Promo> expected = {
-      promos_manager::Promo::CredentialProviderExtension,
-      promos_manager::Promo::AppStoreRating,
-      promos_manager::Promo::DefaultBrowser,
       promos_manager::Promo::Test,
+      promos_manager::Promo::DefaultBrowser,
+      promos_manager::Promo::AppStoreRating,
+      promos_manager::Promo::CredentialProviderExtension,
   };
 
   EXPECT_EQ(promos_manager_->SortPromos(active_promos), expected);
@@ -526,25 +521,11 @@ TEST_F(PromosManagerImplTest, SortPromosWithSomeInactivePromos) {
       {promos_manager::Promo::AppStoreRating, kPromoContextForActive},
   };
 
-  int today = TodaysDay();
-
-  const std::vector<promos_manager::Impression> impressions = {
-      promos_manager::Impression(promos_manager::Promo::Test, today, false),
-      promos_manager::Impression(promos_manager::Promo::DefaultBrowser,
-                                 today - 7, false),
-      promos_manager::Impression(promos_manager::Promo::AppStoreRating,
-                                 today - 14, false),
-      promos_manager::Impression(
-          promos_manager::Promo::CredentialProviderExtension, today - 180,
-          false),
-  };
-
   const std::vector<promos_manager::Promo> expected = {
-      promos_manager::Promo::AppStoreRating,
       promos_manager::Promo::Test,
+      promos_manager::Promo::AppStoreRating,
   };
 
-  promos_manager_->impression_history_ = impressions;
   EXPECT_EQ(promos_manager_->SortPromos(active_promos), expected);
 }
 
@@ -553,29 +534,29 @@ TEST_F(PromosManagerImplTest, SortPromosWithSomeInactivePromos) {
 TEST_F(PromosManagerImplTest, ReturnsSortPromosBreakingTies) {
   CreatePromosManager();
   const std::map<promos_manager::Promo, PromoContext> active_promos = {
-      {promos_manager::Promo::Test, kPromoContextForActive},
       {promos_manager::Promo::CredentialProviderExtension,
        kPromoContextForActive},
       {promos_manager::Promo::AppStoreRating, kPromoContextForActive},
       {promos_manager::Promo::DefaultBrowser, kPromoContextForActive},
   };
 
-  int today = TodaysDay();
+  PromoConfigsSet promoImpressionLimits;
+  promoImpressionLimits.emplace(
+      promos_manager::Promo::CredentialProviderExtension, &kTestFeatureOne);
+  promoImpressionLimits.emplace(promos_manager::Promo::AppStoreRating,
+                                &kTestFeatureTwo);
+  promoImpressionLimits.emplace(promos_manager::Promo::DefaultBrowser,
+                                &kTestFeatureThree);
+  promos_manager_->InitializePromoConfigs(std::move(promoImpressionLimits));
 
-  const std::vector<promos_manager::Impression> impressions = {
-      promos_manager::Impression(promos_manager::Promo::Test, today, false),
-      promos_manager::Impression(promos_manager::Promo::DefaultBrowser, today,
-                                 false),
-      promos_manager::Impression(promos_manager::Promo::AppStoreRating, today,
-                                 false),
-      promos_manager::Impression(
-          promos_manager::Promo::CredentialProviderExtension, today, false),
-  };
+  EXPECT_CALL(mock_tracker_, IsInitialized())
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(mock_tracker_, HasEverTriggered(testing::_, true))
+      .WillRepeatedly(testing::Return(false));
 
-  promos_manager_->impression_history_ = impressions;
-  EXPECT_EQ(promos_manager_->SortPromos(active_promos).size(), (size_t)4);
+  EXPECT_EQ(promos_manager_->SortPromos(active_promos).size(), (size_t)3);
   EXPECT_EQ(promos_manager_->SortPromos(active_promos)[0],
-            promos_manager::Promo::CredentialProviderExtension);
+            promos_manager::Promo::DefaultBrowser);
 }
 
 // Tests `SortPromos` returns a single promo in a list when the impression
@@ -658,21 +639,32 @@ TEST_F(PromosManagerImplTest,
       {promos_manager::Promo::DefaultBrowser, kPromoContextForActive},
   };
 
-  int today = TodaysDay();
+  PromoConfigsSet promoImpressionLimits;
+  promoImpressionLimits.emplace(promos_manager::Promo::Test, &kTestFeatureOne);
+  promoImpressionLimits.emplace(promos_manager::Promo::AppStoreRating,
+                                &kTestFeatureTwo);
+  promoImpressionLimits.emplace(promos_manager::Promo::DefaultBrowser,
+                                &kTestFeatureThree);
+  promos_manager_->InitializePromoConfigs(std::move(promoImpressionLimits));
 
-  const std::vector<promos_manager::Impression> impressions = {
-      promos_manager::Impression(promos_manager::Promo::Test, today, false),
-      promos_manager::Impression(promos_manager::Promo::DefaultBrowser,
-                                 today - 7, false),
-  };
+  EXPECT_CALL(mock_tracker_, IsInitialized())
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(mock_tracker_,
+              HasEverTriggered(testing::Ref(kTestFeatureTwo), true))
+      .WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(mock_tracker_,
+              HasEverTriggered(testing::Ref(kTestFeatureOne), true))
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(mock_tracker_,
+              HasEverTriggered(testing::Ref(kTestFeatureThree), true))
+      .WillRepeatedly(testing::Return(true));
 
   const std::vector<promos_manager::Promo> expected = {
       promos_manager::Promo::AppStoreRating,
-      promos_manager::Promo::DefaultBrowser,
       promos_manager::Promo::Test,
+      promos_manager::Promo::DefaultBrowser,
   };
 
-  promos_manager_->impression_history_ = impressions;
   EXPECT_EQ(promos_manager_->SortPromos(active_promos), expected);
 }
 

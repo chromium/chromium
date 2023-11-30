@@ -119,6 +119,9 @@ class PromosManagerImpl : public PromosManager {
   bool CanShowPromoUsingFeatureEngagementTracker(
       promos_manager::Promo promo) const;
 
+  // Returns the corresponding base::Feature for the given Promo.
+  const base::Feature* FeatureForPromo(promos_manager::Promo promo) const;
+
   // Returns a list of impression counts (std::vector<int>) from a promo
   // impression counts map.
   std::vector<int> ImpressionCounts(
