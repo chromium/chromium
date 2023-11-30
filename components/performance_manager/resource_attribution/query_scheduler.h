@@ -61,7 +61,7 @@ class QueryScheduler : public GraphRegisteredImpl<QueryScheduler>,
   void RequestResults(const internal::QueryParams& query_params,
                       base::OnceCallback<void(const QueryResultMap&)> callback);
 
-  // GraphOwned overrides:
+  // GraphOwned:
   void OnPassedToGraph(Graph* graph) final;
   void OnTakenFromGraph(Graph* graph) final;
 

@@ -73,14 +73,14 @@ class SimulatedCPUMeasurementDelegateFactory final
   // CreateDelegateForProcess().
   SimulatedCPUMeasurementDelegate& GetDelegate(const ProcessNode* process_node);
 
-  // CPUMeasurementDelegate::Factory implementation
+  // CPUMeasurementDelegate::Factory:
 
   bool ShouldMeasureProcess(const ProcessNode* process_node) final;
 
   std::unique_ptr<CPUMeasurementDelegate> CreateDelegateForProcess(
       const ProcessNode* process_node) final;
 
-  // Private implementation guarded by PassKey
+  // Private implementation guarded by PassKey:
 
   // Called by `delegate` when it's deleted.
   void OnDelegateDeleted(base::PassKey<SimulatedCPUMeasurementDelegate>,
@@ -138,7 +138,7 @@ class SimulatedCPUMeasurementDelegate final : public CPUMeasurementDelegate {
   // Clears any error that was set with SetCPUUsageError().
   void ClearError();
 
-  // CPUMeasurementDelegate interface:
+  // CPUMeasurementDelegate:
 
   // Returns the simulated CPU usage of the process by summing
   // `cpu_usage_periods`.
@@ -188,7 +188,7 @@ class FakeMemoryMeasurementDelegateFactory final
     return memory_summaries_;
   }
 
-  // MemoryMeasurementDelegate::Factory implementation
+  // MemoryMeasurementDelegate::Factory:
 
   std::unique_ptr<MemoryMeasurementDelegate> CreateDelegate(Graph*) final;
 
@@ -216,7 +216,7 @@ class FakeMemoryMeasurementDelegate final : public MemoryMeasurementDelegate {
   FakeMemoryMeasurementDelegate& operator=(
       const FakeMemoryMeasurementDelegate&) = delete;
 
-  // MemoryMeasurementDelegate interface:
+  // MemoryMeasurementDelegate:
 
   // Invokes `callback` with the fake measurements returned by
   // FakeMemoryMeasurementDelegateFactory::memory_summaries().
