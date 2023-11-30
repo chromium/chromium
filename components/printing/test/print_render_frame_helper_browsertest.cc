@@ -543,11 +543,15 @@ class PrintRenderFrameHelperTestBase : public content::RenderViewTest {
   }
 
   // Verifies whether the pages printed or not.
-  void VerifyPagesPrinted(bool expect_printed,
-                          content::RenderFrame* render_frame = nullptr) {
-    if (!render_frame)
-      render_frame = content::RenderFrame::FromWebFrame(GetMainFrame());
+  void VerifyPagesPrintedForFrame(bool expect_printed,
+                                  content::RenderFrame* render_frame) {
     ASSERT_EQ(expect_printed, print_manager(render_frame)->IsPrinted());
+  }
+
+  // Same as VerifyPagesPrintedForFrame(), but defaults to the main frame.
+  void VerifyPagesPrinted(bool expect_printed) {
+    auto* render_frame = content::RenderFrame::FromWebFrame(GetMainFrame());
+    VerifyPagesPrintedForFrame(expect_printed, render_frame);
   }
 
   void OnPrintPages() {
@@ -776,7 +780,7 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, BasicBeforePrintAfterPrintSubFrame) {
       GetMainFrame()->FindFrameByName("sub")->ToWebLocalFrame());
   OnPrintPagesInFrame("sub");
   EXPECT_EQ(nullptr, GetMainFrame()->FindFrameByName("sub"));
-  VerifyPagesPrinted(false, sub_render_frame);
+  VerifyPagesPrintedForFrame(false, sub_render_frame);
 
   ClearPrintManagerHost();
 
@@ -792,7 +796,7 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, BasicBeforePrintAfterPrintSubFrame) {
       GetMainFrame()->FindFrameByName("sub")->ToWebLocalFrame());
   OnPrintPagesInFrame("sub");
   EXPECT_EQ(nullptr, GetMainFrame()->FindFrameByName("sub"));
-  VerifyPagesPrinted(true, sub_render_frame);
+  VerifyPagesPrintedForFrame(true, sub_render_frame);
 }
 
 // https://crbug.com/1372396
