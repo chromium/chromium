@@ -53,12 +53,12 @@ class GlanceablesBarView::GlanceablesChipsContainer
     SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter);
     SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
     SetBetweenChildSpacing(kChipSpacing);
-    hide_glanceables_button_ = AddChildView(std::make_unique<IconButton>(
+    hide_chips_button_ = AddChildView(std::make_unique<IconButton>(
         base::BindRepeating(&GlanceablesBarView::OnShowHideChipsButtonPressed,
                             base::Unretained(glanceable_bar_), /*show=*/false),
         IconButton::Type::kMedium, &kChevronDownIcon, u"Hide", false, false));
-    hide_glanceables_button_->SetProperty(views::kMarginsKey,
-                                          kHideButtonMargin);
+    hide_chips_button_->SetProperty(views::kMarginsKey, kHideButtonMargin);
+    hide_chips_button_->SetEnableBlurredBackgroundShield(true);
   }
 
   GlanceablesChipsContainer(const GlanceablesChipsContainer&) = delete;
@@ -73,7 +73,7 @@ class GlanceablesBarView::GlanceablesChipsContainer
     }
     const size_t child_num = children().size();
     CHECK_GE(child_num, 1u);
-    // Insert the chip before `hide_glanceables_button_`.
+    // Insert the chip before `hide_chips_button_`.
     chips_.push_back(AddChildViewAt(std::move(chip), child_num - 1));
   }
 
@@ -89,7 +89,7 @@ class GlanceablesBarView::GlanceablesChipsContainer
  private:
   raw_ptr<GlanceablesBarView> glanceable_bar_;
   std::vector<raw_ptr<GlanceablesChipButton>> chips_;
-  raw_ptr<IconButton> hide_glanceables_button_;
+  raw_ptr<IconButton> hide_chips_button_;
 };
 
 BEGIN_METADATA(GlanceablesBarView,
@@ -102,12 +102,18 @@ END_METADATA
 GlanceablesBarView::GlanceablesBarView() {
   chips_container_ =
       AddChildView(std::make_unique<GlanceablesChipsContainer>(this));
-  show_glanceables_button_ = AddChildView(std::make_unique<IconButton>(
-      base::BindRepeating(&GlanceablesBarView::OnShowHideChipsButtonPressed,
-                          base::Unretained(this), /*show=*/true),
-      IconButton::Type::kMedium, &kChevronUpIcon, u"Show", false, false));
-  show_glanceables_button_->SetPaintToLayer();
-  show_glanceables_button_->layer()->SetFillsBoundsOpaquely(false);
+
+  show_chips_button_container_ = AddChildView(std::make_unique<views::View>());
+  show_chips_button_container_->SetPaintToLayer();
+  show_chips_button_container_->layer()->SetFillsBoundsOpaquely(false);
+  show_chips_button_container_->SetUseDefaultFillLayout(true);
+
+  auto* show_chips_button =
+      show_chips_button_container_->AddChildView(std::make_unique<IconButton>(
+          base::BindRepeating(&GlanceablesBarView::OnShowHideChipsButtonPressed,
+                              base::Unretained(this), /*show=*/true),
+          IconButton::Type::kMedium, &kChevronUpIcon, u"Show", false, false));
+  show_chips_button->SetEnableBlurredBackgroundShield(true);
 
   chips_container_->SetVisible(false);
 }
@@ -197,7 +203,7 @@ void GlanceablesBarView::OnAnimationsEnded(bool show) {
   // Update contents visibility and opacity on animation completed or aborted.
   animation_in_progress_ = false;
   if (show) {
-    show_glanceables_button_->SetVisible(false);
+    show_chips_button_container_->SetVisible(false);
   } else {
     chips_container_->SetVisible(false);
   }
@@ -211,12 +217,12 @@ void GlanceablesBarView::OnShowHideChipsButtonPressed(bool show) {
   animation_in_progress_ = true;
 
   // Fade in/out and expand/shrink the showing button.
-  show_glanceables_button_->SetVisible(true);
-  auto* show_glanceables_button_layer = show_glanceables_button_->layer();
-  show_glanceables_button_layer->SetOpacity(show ? 1.0f : 0.0f);
+  show_chips_button_container_->SetVisible(true);
+  auto* show_chips_button_layer = show_chips_button_container_->layer();
+  show_chips_button_layer->SetOpacity(show ? 1.0f : 0.0f);
   gfx::Transform shrink = gfx::GetScaleTransform(
-      show_glanceables_button_->GetContentsBounds().CenterPoint(), 0.3f);
-  show_glanceables_button_layer->SetTransform(show ? gfx::Transform() : shrink);
+      show_chips_button_container_->GetContentsBounds().CenterPoint(), 0.3f);
+  show_chips_button_layer->SetTransform(show ? gfx::Transform() : shrink);
 
   // Fade in/out and rise/fall the chips container.
   chips_container_->SetVisible(true);
@@ -234,9 +240,8 @@ void GlanceablesBarView::OnShowHideChipsButtonPressed(bool show) {
       .OnAborted(base::OnceClosure(animation_complete_callback))
       .Once()
       .SetDuration(kShowHideAnimationDuration)
-      .SetOpacity(show_glanceables_button_layer, show ? 0.0f : 1.0f)
-      .SetTransform(show_glanceables_button_layer,
-                    show ? shrink : gfx::Transform())
+      .SetOpacity(show_chips_button_layer, show ? 0.0f : 1.0f)
+      .SetTransform(show_chips_button_layer, show ? shrink : gfx::Transform())
       .SetOpacity(chips_container_layer, show ? 1.0f : 0.0f)
       .SetTransform(chips_container_layer,
                     show ? gfx::Transform() : vertical_shift);

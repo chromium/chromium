@@ -63,8 +63,12 @@ class GlanceablesBarView : public views::View,
 
   // The container of the glanceables chips with the hiding chips button.
   raw_ptr<GlanceablesChipsContainer> chips_container_ = nullptr;
-  // The showing chips button.
-  raw_ptr<IconButton> show_glanceables_button_ = nullptr;
+  // A view contains the show chips button. To sync the scaling and opacity
+  // animations of the show chips button and its blurred background shield
+  // (which is stacked below the button's layer during animation), we set the
+  // button in this container view and animate the container instead of the
+  // button.
+  raw_ptr<views::View> show_chips_button_container_ = nullptr;
   // Indicating whether there is a showing/hiding animation in progress.
   bool animation_in_progress_ = false;
 };
