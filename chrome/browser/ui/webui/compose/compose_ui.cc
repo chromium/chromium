@@ -17,6 +17,7 @@
 #include "chrome/grit/compose_resources.h"
 #include "chrome/grit/compose_resources_map.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/compose/core/browser/compose_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -69,6 +70,9 @@ ComposeUI::ComposeUI(content::WebUI* web_ui)
       {"thumbsUp", IDS_THUMBS_UP},
   };
   source->AddLocalizedStrings(kStrings);
+  source->AddBoolean("enableAnimations",
+                     base::FeatureList::IsEnabled(
+                         compose::features::kEnableComposeWebUIAnimations));
 }
 
 ComposeUI::~ComposeUI() = default;

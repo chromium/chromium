@@ -24,6 +24,9 @@ BASE_DECLARE_FEATURE(kEnableComposeNudge);
 
 // Controls whether the language check is bypassed for Compose.
 BASE_DECLARE_FEATURE(kEnableComposeLanguageBypass);
+
+// Controls whether or not the Compose WebUI dialog has animations.
+BASE_DECLARE_FEATURE(kEnableComposeWebUIAnimations);
 }  // namespace compose::features
 
 #endif  // COMPONENTS_COMPOSE_CORE_BROWSER_COMPOSE_FEATURES_H_

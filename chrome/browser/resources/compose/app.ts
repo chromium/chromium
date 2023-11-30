@@ -83,6 +83,11 @@ export class ComposeAppElement extends ComposeAppElementBase {
         type: String,
         observer: 'onEditedInputChanged_',
       },
+      enableAnimations_: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('enableAnimations'),
+        reflectToAttribute: true,
+      },
       feedbackState_: {
         type: String,
         value: CrFeedbackOption.UNSPECIFIED,
@@ -188,6 +193,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
   }
 
   private apiProxy_: ComposeApiProxy = ComposeApiProxyImpl.getInstance();
+  private enableAnimations_: boolean;
   private eventTracker_: EventTracker = new EventTracker();
   private router_: ComposeDialogCallbackRouter = this.apiProxy_.getRouter();
   private showMainAppDialog_: boolean;
