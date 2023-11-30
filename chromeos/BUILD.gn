@@ -220,11 +220,7 @@ if (is_chromeos_ash && is_chromeos_device) {
     # Most of these are copy targets, for which GN doesn't add their outputs
     # as runtime-deps. See the link below for more details:
     # https://chromium.googlesource.com/chromium/src/+/main/tools/gn/docs/reference.md#actions-and-copies
-    data_deps = [
-      "//chrome:xdg_mime",
-      "//mojo/core:shared_library_arc32",
-      "//mojo/core:shared_library_arc64",
-    ]
+    data_deps = [ "//chrome:xdg_mime" ]
 
     # TODO(bpastene): Figure out what's generating resources/chromeos/ and
     # declare it as a dep instead of adding the dir directly.
