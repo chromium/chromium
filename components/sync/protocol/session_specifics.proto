@@ -119,52 +119,16 @@ message TabNavigation {
   optional int64 global_id = 15;
   // The favicon url associated with this page.
   optional string favicon_url = 17;
-  enum BlockedState {
-    STATE_ALLOWED = 1;
-    STATE_BLOCKED = 2;
-  }
-  // Whether access to the URL was allowed or blocked.
-  optional BlockedState blocked_state = 18 [default = STATE_ALLOWED];
 
   // The status code from the last navigation.
   optional int32 http_status_code = 20;
 
-  // True if created from restored navigation entry that hasn't been loaded.
-  optional bool is_restored = 22;
-  // The chain of redirections for this navigation, from the original URL
-  // through the last URL that redirected.
-  repeated NavigationRedirect navigation_redirect = 23;
-  // Normally not present.
-  // The last URL traversed when different from the virtual_url.
-  optional string last_navigation_redirect_url = 24;
   // Correct referrer policy. Valid enums are defined in
   // third_party/WebKit/public/platform/WebReferrerPolicy.h.
   optional int32 correct_referrer_policy = 25 [default = 1];
 
   // Whether the Password Manager saw a password field on the page.
   optional SyncEnums.PasswordState password_state = 26;
-
-  // The id for the task associated with this navigation, which is globally
-  // unique with high probability.
-  // Similar with global_id, but used to identify a navigation in Chrome Tasks,
-  // so navigations of a page have the same task_id if one is the first visit of
-  // the page, and others are its back/forward visits.
-  optional int64 task_id = 27;
-  // Task ids of all ancestor navigations, which can be from other tabs, from
-  // root to parent. We define navigation A is parent of navigation B if page of
-  // B is got by clicking a link on page of A. This relationship is used to
-  // define a Chrome Task as a tree rooted by a navigation.
-  repeated int64 ancestor_task_id = 28;
-
-  // When a history entry is replaced (e.g. history.replaceState()), this
-  // contains some information about the entry prior to being replaced. Even if
-  // an entry is replaced multiple times, it represents data prior to the
-  // *first* replace.
-  optional ReplacedNavigation replaced_navigation = 29;
-
-  // The page language as determined by its textual content. An ISO 639 language
-  // code (two letters, except for Chinese where a localization is necessary).
-  optional string page_language = 30;
 
   // The start/end of a redirect chain. Deprecated in M108 because they were
   // always set to false in practice, and don't make sense in the first place -
@@ -173,8 +137,40 @@ message TabNavigation {
   optional bool navigation_chain_end = 14 [deprecated = true];
   // Search terms extracted from the URL. Deprecated in M64.
   optional string search_terms = 16 [deprecated = true];
+  enum BlockedState {
+    STATE_ALLOWED = 1;
+    STATE_BLOCKED = 2;
+  }
+  // Whether access to the URL was allowed or blocked. Deprecated in M121
+  // because it was unused.
+  optional BlockedState blocked_state = 18
+      [deprecated = true, default = STATE_ALLOWED];
   // Referrer policy. Old, broken value. Deprecated in M61.
   optional int32 obsolete_referrer_policy = 21 [deprecated = true];
+  // True if created from restored navigation entry that hasn't been loaded.
+  // Deprecated in M121 because it was unused.
+  optional bool is_restored = 22 [deprecated = true];
+  // The chain of redirections for this navigation, from the original URL
+  // through the last URL that redirected. Deprecated in M121 because it was
+  // unused.
+  repeated NavigationRedirect navigation_redirect = 23 [deprecated = true];
+  // The last URL traversed when different from the virtual_url. Deprecated in
+  // M121 because it was unused.
+  optional string last_navigation_redirect_url = 24 [deprecated = true];
+  // The id for the task associated with this navigation, which is globally
+  // unique with high probability. Deprecated in M121 because it was unused.
+  optional int64 task_id = 27 [deprecated = true];
+  // Task ids of all ancestor navigations, which can be from other tabs, from
+  // root to parent. Deprecated in M121 because it was unused.
+  repeated int64 ancestor_task_id = 28 [deprecated = true];
+  // When a history entry is replaced (e.g. history.replaceState()), this
+  // contained some information about the entry prior to being replaced.
+  // Deprecated in M121 because it was unused.
+  optional ReplacedNavigation replaced_navigation = 29 [deprecated = true];
+  // The page language as determined by its textual content. An ISO 639 language
+  // code (two letters, except for Chinese where a localization is necessary).
+  // Deprecated in M121 because it was unused.
+  optional string page_language = 30 [deprecated = true];
 
   reserved 1;
   reserved "index";

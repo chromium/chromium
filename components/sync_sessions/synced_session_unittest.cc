@@ -94,69 +94,6 @@ TEST(SyncedSessionTest, SessionNavigationToSyncData) {
             sync_data.timestamp_msec());
   EXPECT_EQ(navigation.favicon_url().spec(), sync_data.favicon_url());
   EXPECT_EQ(navigation.http_status_code(), sync_data.http_status_code());
-  // The proto navigation redirects don't include the final chain entry
-  // (because it didn't redirect) so the lengths should differ by 1.
-  ASSERT_EQ(navigation.redirect_chain().size(),
-            static_cast<size_t>(sync_data.navigation_redirect_size() + 1));
-  for (auto i = 0; i < sync_data.navigation_redirect_size(); ++i) {
-    EXPECT_EQ(navigation.redirect_chain()[i].spec(),
-              sync_data.navigation_redirect(i).url());
-  }
-  EXPECT_FALSE(sync_data.has_last_navigation_redirect_url());
-  EXPECT_FALSE(sync_data.has_replaced_navigation());
-}
-
-// Specifically test the |replaced_navigation| field, which should be populated
-// when the navigation entry has been replaced by another entry (e.g.
-// history.pushState()).
-TEST(SyncedSessionTest, SessionNavigationToSyncDataWithReplacedNavigation) {
-  const GURL kReplacedURL = GURL("http://replaced-url.com");
-  const int kReplacedTimestampMs = 79;
-  const ui::PageTransition kReplacedPageTransition =
-      ui::PAGE_TRANSITION_AUTO_BOOKMARK;
-
-  SerializedNavigationEntry navigation =
-      SerializedNavigationEntryTestHelper::CreateNavigationForTest();
-  SerializedNavigationEntryTestHelper::SetReplacedEntryData(
-      {kReplacedURL, syncer::ProtoTimeToTime(kReplacedTimestampMs),
-       kReplacedPageTransition},
-      &navigation);
-
-  const sync_pb::TabNavigation sync_data =
-      SessionNavigationToSyncData(navigation);
-  EXPECT_TRUE(sync_data.has_replaced_navigation());
-  EXPECT_EQ(kReplacedURL.spec(),
-            sync_data.replaced_navigation().first_committed_url());
-  EXPECT_EQ(kReplacedTimestampMs,
-            sync_data.replaced_navigation().first_timestamp_msec());
-  EXPECT_EQ(sync_pb::SyncEnums_PageTransition_AUTO_BOOKMARK,
-            sync_data.replaced_navigation().first_page_transition());
-}
-
-// Test that the last_navigation_redirect_url is set when needed.  This test is
-// just like the above, but with a different virtual_url.  Create a
-// SerializedNavigationEntry, then create a sync protocol buffer from it.  The
-// protocol buffer should have a last_navigation_redirect_url.
-TEST(SyncedSessionTest, SessionNavigationToSyncDataWithLastRedirectUrl) {
-  SerializedNavigationEntry navigation =
-      SerializedNavigationEntryTestHelper::CreateNavigationForTest();
-  SerializedNavigationEntryTestHelper::SetVirtualURL(GURL("http://other.com"),
-                                                     &navigation);
-
-  const sync_pb::TabNavigation sync_data =
-      SessionNavigationToSyncData(navigation);
-  EXPECT_TRUE(sync_data.has_last_navigation_redirect_url());
-  ASSERT_FALSE(navigation.redirect_chain().empty());
-  EXPECT_EQ(navigation.redirect_chain().back().spec(),
-            sync_data.last_navigation_redirect_url());
-
-  // The redirect chain should be the same as in SessionNavigationToSyncData.
-  ASSERT_EQ(navigation.redirect_chain().size(),
-            static_cast<size_t>(sync_data.navigation_redirect_size() + 1));
-  for (auto i = 0; i < sync_data.navigation_redirect_size(); ++i) {
-    EXPECT_EQ(navigation.redirect_chain()[i].spec(),
-              sync_data.navigation_redirect(i).url());
-  }
 }
 
 // Ensure all transition types and qualifiers are converted to/from the sync

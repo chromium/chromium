@@ -95,10 +95,6 @@ class LocalSessionEventHandlerImpl : public LocalSessionEventHandler {
   sync_pb::SessionTab GetTabSpecificsFromDelegate(
       const SyncedTabDelegate& tab_delegate) const;
 
-  // Update |tab_specifics| with the corresponding task ids.
-  static void WriteTasksIntoSpecifics(sync_pb::SessionTab* tab_specifics,
-                                      SyncedTabDelegate* tab_delegate);
-
   bool AssociatePlaceholderTab(std::unique_ptr<SyncedTabDelegate> snapshot,
                                WriteBatch* batch);
 

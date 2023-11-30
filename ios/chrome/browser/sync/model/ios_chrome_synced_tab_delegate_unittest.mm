@@ -32,7 +32,6 @@ TEST_F(IOSChromeSyncedTabDelegateTest, ShouldHandleNullItem) {
       IOSChromeSyncedTabDelegate::FromWebState(&web_state);
 
   EXPECT_EQ(GURL(), tab_delegate->GetVirtualURLAtIndex(0));
-  EXPECT_TRUE(tab_delegate->GetPageLanguageAtIndex(0).empty());
 }
 
 }  // namespace
