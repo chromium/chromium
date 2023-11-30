@@ -70,14 +70,6 @@ const char kBeforeAfterPrintHtml[] =
     "<button id=\"print\" onclick=\"window.print();\">Hello World!</button>"
     "</body>";
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-// A simple webpage with a button to print itself with.
-const char kPrintOnUserAction[] =
-    "<body>"
-    "  <button id=\"print\" onclick=\"window.print();\">Hello World!</button>"
-    "</body>";
-
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 // HTML with 3 pages.
 const char kMultipageHTML[] =
     "<html><head><style>"
@@ -89,6 +81,14 @@ const char kMultipageHTML[] =
     "<div>page3</div>"
     "</body></html>";
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// A simple webpage with a button to print itself with.
+const char kPrintOnUserAction[] =
+    "<body>"
+    "  <button id=\"print\" onclick=\"window.print();\">Hello World!</button>"
+    "</body>";
+
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 // A simple web page with print page size css.
 const char kHTMLWithPageSizeCss[] =
     "<html><head><style>"
@@ -1206,6 +1206,17 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, InputScaleAndAvoidOverflowScale2) {
   VerifyPagesPrinted(true);
 }
 
+TEST_F(MAYBE_PrintRenderFrameHelperTest,
+       PrintMultiplePagesWithHeadersAndFooters) {
+  LoadHTML(kMultipageHTML);
+
+  printer()->Params().display_header_footer = true;
+  print_manager()->SetExpectedPagesCount(3);
+  OnPrintPages();
+
+  VerifyPagesPrinted(true);
+}
+
 #if defined(MOCK_PRINTER_SUPPORTS_PAGE_IMAGES)
 
 TEST_F(MAYBE_PrintRenderFrameHelperTest, PrintWithIframe) {
@@ -2123,6 +2134,30 @@ TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewForMultiplePages) {
   VerifyDidPreviewPage(true, 1);
   VerifyDidPreviewPage(true, 2);
   VerifyPreviewPageCount(3);
+  VerifyDefaultPageLayout(548, 692, 72, 28, 36, 28, false, false);
+  VerifyPrintPreviewCancelled(false);
+  VerifyPrintPreviewFailed(false);
+  VerifyPrintPreviewGenerated(true);
+  VerifyPagesPrinted(false);
+
+  OnClosePrintPreviewDialog();
+}
+
+TEST_F(PrintRenderFrameHelperPreviewTest,
+       PrintPreviewForMultiplePagesWithHeadersAndFooters) {
+  LoadHTML(kMultipageHTML);
+
+  print_settings().Set(kSettingHeaderFooterEnabled, true);
+  print_settings().Set(kSettingHeaderFooterTitle, "The Chromiums");
+  print_settings().Set(kSettingHeaderFooterURL, "https://chromium.org");
+  OnPrintPreview();
+
+  EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
+  VerifyDidPreviewPage(true, 0);
+  VerifyDidPreviewPage(true, 1);
+  VerifyDidPreviewPage(true, 2);
+  VerifyPreviewPageCount(3);
+  VerifyDefaultPageLayout(548, 678, 86, 28, 36, 28, false, false);
   VerifyPrintPreviewCancelled(false);
   VerifyPrintPreviewFailed(false);
   VerifyPrintPreviewGenerated(true);
