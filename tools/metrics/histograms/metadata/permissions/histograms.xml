@@ -1172,6 +1172,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Permissions.Revocation.Notifications.SourceUI"
+    enum="PermissionSourceUI" expires_after="2024-06-24">
+  <owner>engedy@chromium.org</owner>
+  <owner>willxu@google.com</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    When revoking the notification from a website for push messaging, this
+    records the PermissionSourceUI where it occurred.
+  </summary>
+</histogram>
+
 <histogram name="Permissions.Serial.ChooserClosed" enum="SerialChooserOutcome"
     expires_after="never">
 <!-- expires-never: Used to monitor user interaction with the Web Serial API. -->

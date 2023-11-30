@@ -5,17 +5,20 @@
 #include <stdint.h>
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/push_messaging/push_messaging_app_identifier.h"
 #include "chrome/browser/push_messaging/push_messaging_features.h"
@@ -28,6 +31,9 @@
 #include "components/gcm_driver/fake_gcm_client_factory.h"
 #include "components/gcm_driver/fake_gcm_profile_service.h"
 #include "components/gcm_driver/gcm_profile_service.h"
+#include "components/history/core/browser/history_database_params.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/test/test_history_database.h"
 #include "components/permissions/permission_manager.h"
 #include "content/public/browser/push_messaging_service.h"
 #include "content/public/common/content_features.h"
@@ -106,6 +112,13 @@ std::unique_ptr<KeyedService> BuildFakeGCMProfileService(
   return gcm::FakeGCMProfileService::Build(static_cast<Profile*>(context));
 }
 
+std::unique_ptr<KeyedService> BuildTestHistoryService(
+    content::BrowserContext* context) {
+  auto service = std::make_unique<history::HistoryService>();
+  service->Init(history::TestHistoryDatabaseParamsForPath(context->GetPath()));
+  return service;
+}
+
 }  // namespace
 
 class PushMessagingServiceTest : public ::testing::Test {
@@ -114,6 +127,9 @@ class PushMessagingServiceTest : public ::testing::Test {
     // Override the GCM Profile service so that we can send fake messages.
     gcm::GCMProfileServiceFactory::GetInstance()->SetTestingFactory(
         &profile_, base::BindRepeating(&BuildFakeGCMProfileService));
+
+    HistoryServiceFactory::GetInstance()->SetTestingFactory(
+        &profile_, base::BindRepeating(&BuildTestHistoryService));
   }
 
   ~PushMessagingServiceTest() override = default;
@@ -247,6 +263,60 @@ class PushMessagingServiceTest : public ::testing::Test {
       block_async_;
 #endif  // BUILDFLAG(IS_ANDROID)
 };
+
+TEST_F(PushMessagingServiceTest, RecordsRevocationAndSourceUiNoReporterTest) {
+  base::HistogramTester histograms;
+
+  PushMessagingServiceImpl* push_service = profile()->GetPushMessagingService();
+  ASSERT_TRUE(push_service);
+
+  const GURL origin(kTestOrigin);
+  SetPermission(origin, CONTENT_SETTING_ALLOW);
+
+  ASSERT_EQ(blink::mojom::PermissionStatus::GRANTED,
+            push_service->GetPermissionStatus(origin, true /* user_visible */));
+
+  Subscribe(push_service, origin);
+
+  SetPermission(origin, CONTENT_SETTING_DEFAULT);
+
+  histograms.ExpectUniqueSample(
+      "Permissions.Action.Notifications",
+      static_cast<int>(permissions::PermissionAction::REVOKED), 1);
+  histograms.ExpectUniqueSample(
+      "Permissions.Revocation.Notifications.SourceUI",
+      static_cast<int>(permissions::PermissionSourceUI::UNIDENTIFIED), 1);
+}
+
+TEST_F(PushMessagingServiceTest, RecordsRevocationAndSourceUiWithReporterTest) {
+  base::HistogramTester histograms;
+
+  PushMessagingServiceImpl* push_service = profile()->GetPushMessagingService();
+  ASSERT_TRUE(push_service);
+
+  const GURL origin(kTestOrigin);
+  SetPermission(origin, CONTENT_SETTING_ALLOW);
+
+  ASSERT_EQ(blink::mojom::PermissionStatus::GRANTED,
+            push_service->GetPermissionStatus(origin, true /* user_visible */));
+
+  Subscribe(push_service, origin);
+
+  const auto source_ui = permissions::PermissionSourceUI::SITE_SETTINGS;
+  {
+    permissions::PermissionUmaUtil::ScopedRevocationReporter
+        scoped_revocation_reporter(profile(), origin, origin,
+                                   ContentSettingsType::NOTIFICATIONS,
+                                   source_ui);
+    SetPermission(origin, CONTENT_SETTING_DEFAULT);
+  }
+
+  histograms.ExpectUniqueSample(
+      "Permissions.Action.Notifications",
+      static_cast<int>(permissions::PermissionAction::REVOKED), 1);
+  histograms.ExpectUniqueSample("Permissions.Revocation.Notifications.SourceUI",
+                                static_cast<int>(source_ui), 1);
+}
 
 // Fails too often on Linux TSAN builder: http://crbug.com/1211350.
 #if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)

@@ -47811,6 +47811,17 @@ Called by update_net_error_codes.py.-->
   <int value="31" label="PERMISSION_MIDI"/>
 </enum>
 
+<enum name="PermissionSourceUI">
+  <int value="0" label="Prompt"/>
+  <int value="1" label="Origin info bubble"/>
+  <int value="2" label="Site settings"/>
+  <int value="3" label="Page action bubble"/>
+  <int value="4" label="Permission settings from Android OS"/>
+  <int value="5" label="Inline settings as part of the event's UI"/>
+  <int value="6" label="Automatic revocation"/>
+  <int value="7" label="Unidentified source"/>
+</enum>
+
 <enum name="PermissionsPolicyConfiguration">
   <int value="0" label="HEADER_NOT_PRESENT_OR_INVALID"/>
   <int value="1" label="FEATURE_NOT_PRESENT"/>
