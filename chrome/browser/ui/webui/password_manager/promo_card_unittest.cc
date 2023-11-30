@@ -9,7 +9,6 @@
 #include "base/json/values_util.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
@@ -38,11 +37,6 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
-
-#if BUILDFLAG(IS_MAC)
-#include "chrome/browser/ui/webui/password_manager/promo_cards/relaunch_chrome_promo.h"
-#include "components/os_crypt/sync/os_crypt_mocker.h"
-#endif
 
 using testing::ElementsAre;
 using testing::IsEmpty;
@@ -501,50 +495,4 @@ TEST_F(PromoCardAccessAnyDeviceTest, PromoNotShownAfterDismiss) {
   histogram_tester.ExpectUniqueSample("PasswordManager.PromoCard.Dismissed", 3,
                                       1);
 }
-
-#if BUILDFLAG(IS_MAC)
-
-class PromoCardRelaunchChromeTest : public PromoCardBaseTest {
- public:
-  void SetUp() override {
-    PromoCardBaseTest::SetUp();
-    OSCryptMocker::SetUp();
-    scoped_feature_list_.InitAndEnableFeature(
-        password_manager::features::kRestartToGainAccessToKeychain);
-  }
-
-  void TearDown() override {
-    PromoCardBaseTest::TearDown();
-    OSCryptMocker::TearDown();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(PromoCardRelaunchChromeTest, ShouldShow) {
-  std::unique_ptr<PasswordPromoCardBase> promo =
-      std::make_unique<RelaunchChromePromo>(pref_service());
-
-  OSCryptMocker::SetBackendLocked(true);
-  EXPECT_FALSE(promo->ShouldShowPromo());
-
-  OSCryptMocker::SetBackendLocked(false);
-  EXPECT_TRUE(promo->ShouldShowPromo());
-}
-
-TEST_F(PromoCardRelaunchChromeTest, ShouldShowAfterDismiss) {
-  OSCryptMocker::SetBackendLocked(false);
-  ASSERT_THAT(pref_service()->GetList(prefs::kPasswordManagerPromoCardsList),
-              IsEmpty());
-
-  std::unique_ptr<PasswordPromoCardBase> promo =
-      std::make_unique<RelaunchChromePromo>(pref_service());
-  EXPECT_TRUE(promo->ShouldShowPromo());
-
-  promo->OnPromoCardDismissed();
-  EXPECT_TRUE(promo->ShouldShowPromo());
-}
-
-#endif  // BUILDFLAG(IS_MAC)
 }  // namespace password_manager

@@ -1748,6 +1748,10 @@ static_library("ui") {
       "webui/page_not_available_for_guest/page_not_available_for_guest_ui.h",
       "webui/password_manager/password_manager_ui.cc",
       "webui/password_manager/password_manager_ui.h",
+      "webui/password_manager/promo_card.cc",
+      "webui/password_manager/promo_card.h",
+      "webui/password_manager/promo_cards_handler.cc",
+      "webui/password_manager/promo_cards_handler.h",
       "webui/password_manager/sync_handler.cc",
       "webui/password_manager/sync_handler.h",
       "webui/plural_string_handler.cc",
@@ -1944,8 +1948,6 @@ static_library("ui") {
       sources += [
         "webui/media_router/cast_feedback_ui.cc",
         "webui/media_router/cast_feedback_ui.h",
-        "webui/password_manager/promo_card.cc",
-        "webui/password_manager/promo_card.h",
         "webui/password_manager/promo_cards/access_on_any_device_promo.cc",
         "webui/password_manager/promo_cards/access_on_any_device_promo.h",
         "webui/password_manager/promo_cards/password_checkup_promo.cc",
@@ -1954,16 +1956,7 @@ static_library("ui") {
         "webui/password_manager/promo_cards/password_manager_shortcut_promo.h",
         "webui/password_manager/promo_cards/web_password_manager_promo.cc",
         "webui/password_manager/promo_cards/web_password_manager_promo.h",
-        "webui/password_manager/promo_cards_handler.cc",
-        "webui/password_manager/promo_cards_handler.h",
       ]
-      if (is_mac) {
-        sources += [
-          "webui/password_manager/promo_cards/relaunch_chrome_promo.cc",
-          "webui/password_manager/promo_cards/relaunch_chrome_promo.h",
-        ]
-        deps += [ "//components/os_crypt/sync:os_crypt" ]
-      }
     }
 
     if (is_chrome_for_testing) {
@@ -4426,6 +4419,8 @@ static_library("ui") {
       "views/tab_contents/chrome_web_contents_view_delegate_views_mac.mm",
       "webui/help/version_updater_mac.h",
       "webui/help/version_updater_mac.mm",
+      "webui/password_manager/promo_cards/relaunch_chrome_promo.cc",
+      "webui/password_manager/promo_cards/relaunch_chrome_promo.h",
       "webui/settings/mac_system_settings_handler.cc",
       "webui/settings/mac_system_settings_handler.h",
       "webui/settings/settings_utils_mac.mm",
@@ -4447,6 +4442,7 @@ static_library("ui") {
       "//chrome/browser/mac:keystone_glue",
       "//chrome/browser/updater:browser_updater_client",
       "//chrome/updater:browser_sources",
+      "//components/os_crypt/sync:os_crypt",
       "//components/remote_cocoa/app_shim",
       "//components/remote_cocoa/browser",
       "//extensions/components/native_app_window",

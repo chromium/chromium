@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate_factory.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
@@ -152,8 +153,11 @@ TEST_F(PromoCardsHandlerTest, GetAllPromoCards) {
       profile()->GetPrefs()->GetList(prefs::kPasswordManagerPromoCardsList);
 
   std::vector<std::string> promo_cards = {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       "password_checkup_promo", "passwords_on_web_promo",
-      "password_shortcut_promo", "access_on_any_device_promo"};
+      "password_shortcut_promo", "access_on_any_device_promo"
+#endif
+  };
 
 #if BUILDFLAG(IS_MAC)
   promo_cards.emplace_back("relaunch_chrome_promo");

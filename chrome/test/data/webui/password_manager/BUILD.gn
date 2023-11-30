@@ -27,6 +27,7 @@ build_webui_tests("build") {
     "passwords_exporter_test.ts",
     "passwords_importer_test.ts",
     "passwords_section_test.ts",
+    "promo_cards_test.ts",
     "settings_section_test.ts",
     "share_password_flow_test.ts",
     "share_password_family_picker_dialog_test.ts",
@@ -41,11 +42,9 @@ build_webui_tests("build") {
     "test_sync_browser_proxy.ts",
     "test_util.ts",
   ]
+
   if (is_win || is_mac) {
     files += [ "test_passkeys_browser_proxy.ts" ]
-  }
-  if (is_chrome_branded) {
-    files += [ "promo_cards_test.ts" ]
   }
 
   ts_definitions = [

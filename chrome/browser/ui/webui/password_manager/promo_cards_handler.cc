@@ -8,20 +8,24 @@
 
 #include "base/ranges/algorithm.h"
 #include "base/values.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate_factory.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/webui/password_manager/promo_card.h"
-#include "chrome/browser/ui/webui/password_manager/promo_cards/access_on_any_device_promo.h"
-#include "chrome/browser/ui/webui/password_manager/promo_cards/password_checkup_promo.h"
-#include "chrome/browser/ui/webui/password_manager/promo_cards/password_manager_shortcut_promo.h"
-#include "chrome/browser/ui/webui/password_manager/promo_cards/web_password_manager_promo.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/ui/webui/password_manager/promo_cards/access_on_any_device_promo.h"
+#include "chrome/browser/ui/webui/password_manager/promo_cards/password_checkup_promo.h"
+#include "chrome/browser/ui/webui/password_manager/promo_cards/password_manager_shortcut_promo.h"
+#include "chrome/browser/ui/webui/password_manager/promo_cards/web_password_manager_promo.h"
+#endif
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/webui/password_manager/promo_cards/relaunch_chrome_promo.h"
@@ -47,6 +51,7 @@ base::Value::Dict PromoCardToValueDict(
 std::vector<std::unique_ptr<PasswordPromoCardBase>> GetAllPromoCardsForProfile(
     Profile* profile) {
   std::vector<std::unique_ptr<PasswordPromoCardBase>> promo_cards;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   promo_cards.push_back(std::make_unique<PasswordCheckupPromo>(
       profile->GetPrefs(),
       extensions::PasswordsPrivateDelegateFactory::GetForBrowserContext(profile,
@@ -58,6 +63,7 @@ std::vector<std::unique_ptr<PasswordPromoCardBase>> GetAllPromoCardsForProfile(
       std::make_unique<PasswordManagerShortcutPromo>(profile));
   promo_cards.push_back(
       std::make_unique<AccessOnAnyDevicePromo>(profile->GetPrefs()));
+#endif
 #if BUILDFLAG(IS_MAC)
   promo_cards.push_back(
       std::make_unique<RelaunchChromePromo>(profile->GetPrefs()));
