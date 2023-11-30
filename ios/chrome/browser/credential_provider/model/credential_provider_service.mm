@@ -155,19 +155,6 @@ CredentialProviderService::CredentialProviderService(
   identity_manager_->AddObserver(this);
   sync_service_->AddObserver(this);
 
-  // This class should usually handle incremental PasswordStore updates in
-  // OnLoginsChanged(), but there could be bugs. E.g. maybe an update is fired
-  // before the observer is added. So re-write the data on startup as a
-  // safeguard. Post a task for performance.
-  // Note: in reality this re-write does the same IO work as saving a new
-  // password. The implementations of MutableCredentialStore write *every*
-  // password to disk, even in OnLoginsChanged().
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&CredentialProviderService::RequestSyncAllCredentials,
-                     weak_ptr_factory_.GetWeakPtr()),
-      base::Seconds(5));
-
   saving_passwords_enabled_.Init(
       password_manager::prefs::kCredentialsEnableService, prefs,
       base::BindRepeating(

@@ -154,27 +154,6 @@ class CredentialProviderServiceTest : public PlatformTest {
   std::unique_ptr<CredentialProviderService> credential_provider_service_;
 };
 
-// Test that CredentialProviderService writes all the credentials the first time
-// it runs.
-TEST_F(CredentialProviderServiceTest, FirstSync) {
-  password_manager::PasswordForm form;
-  form.url = GURL("http://g.com");
-  form.username_value = u"user";
-  form.password_value = u"qwerty123";
-  password_store_->AddLogin(form);
-  base::RunLoop().RunUntilIdle();
-
-  CreateCredentialProviderService();
-  // The first write is delayed.
-  task_environment_.FastForwardBy(base::Seconds(30));
-  base::RunLoop().RunUntilIdle();
-
-  ASSERT_EQ(credential_store_.credentials.count, 1u);
-  EXPECT_NSEQ(credential_store_.credentials[0].serviceName, @"g.com");
-  EXPECT_NSEQ(credential_store_.credentials[0].user, @"user");
-  EXPECT_NSEQ(credential_store_.credentials[0].password, @"qwerty123");
-}
-
 TEST_F(CredentialProviderServiceTest, TwoStores) {
   password_manager::PasswordForm local_form;
   local_form.url = GURL("http://local.com");
