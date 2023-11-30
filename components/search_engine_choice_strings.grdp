@@ -72,11 +72,12 @@
     Change
   </message>
 
-  <message name="IDS_SEARCH_ENGINE_FALLBACK_MARKETING_SNIPPET" translateable="false" desc="The fallback marketing snippet used when a search engine doesn't provide its own.">
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  <message name="IDS_SEARCH_ENGINE_FALLBACK_MARKETING_SNIPPET" desc="This string describes what a search engine can do. The string is only shown if a search engine does not provide their own marketing snippet. The string is ambiguous and has a neutral, unopinionated tone.">
+    You can use <ph name="SEARCH_ENGINE_NAME">$1<ex>Google</ex></ph> to search the web.
+  </message>
+
+  <message name="IDS_SEARCH_ENGINE_CHOICE_MORE_BUTTON" desc="Title of the button to scroll the choice screen when it is too small to show everything at once.">
+    More
   </message>
 </if>
-<message name="IDS_SEARCH_ENGINE_CHOICE_MORE_BUTTON" desc="Title of the button to scroll the choice screen when it is too small to show everything at once.">
-    More
-</message>
 </grit-part>

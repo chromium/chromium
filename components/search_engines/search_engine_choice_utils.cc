@@ -357,9 +357,12 @@ std::u16string GetMarketingSnippetString(
     const TemplateURLData& template_url_data) {
   int snippet_resource_id =
       GetMarketingSnippetResourceId(template_url_data.keyword());
-  return l10n_util::GetStringUTF16(
-      snippet_resource_id == -1 ? IDS_SEARCH_ENGINE_FALLBACK_MARKETING_SNIPPET
-                                : snippet_resource_id);
+
+  return snippet_resource_id == -1
+             ? l10n_util::GetStringFUTF16(
+                   IDS_SEARCH_ENGINE_FALLBACK_MARKETING_SNIPPET,
+                   template_url_data.short_name())
+             : l10n_util::GetStringUTF16(snippet_resource_id);
 }
 #endif
 
