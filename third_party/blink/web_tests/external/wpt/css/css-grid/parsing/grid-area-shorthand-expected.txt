@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] e.style['grid-column'] = "span 1 two / four 3 span" should set grid-column-start
-  assert_equals: grid-column-start should be canonical expected "span two" but got "span 1 two"
-Harness: the test ran to completion.
-

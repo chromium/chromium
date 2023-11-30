@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] e.style['grid-area'] = "span 1 i" should set the property value
-  assert_equals: serialization should be canonical expected "span i" but got "span 1 i"
-Harness: the test ran to completion.
-

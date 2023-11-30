@@ -5819,7 +5819,9 @@ CSSValue* ConsumeGridLine(CSSParserTokenRange& range,
   if (span_value) {
     values->Append(*span_value);
   }
-  if (numeric_value) {
+  // If span is present, omit `1` if there's a trailing identifier.
+  if (numeric_value &&
+      (!span_value || !grid_line_name || numeric_value->GetIntValue() != 1)) {
     values->Append(*numeric_value);
   }
   if (grid_line_name) {
