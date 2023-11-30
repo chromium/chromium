@@ -29,6 +29,7 @@ component("types") {
   deps = [
     "//base",
     "//skia",
+    "//skia:skcms",
     "//ui/gfx:color_space",
     "//ui/gfx:memory_buffer",
     "//ui/gfx/geometry",

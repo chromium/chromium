@@ -277,6 +277,65 @@ TEST(DisplayStructTraitsTest, BasicGammaRampRGBEntry) {
   EXPECT_EQ(input.b, output.b);
 }
 
+TEST(DisplayStructTraitsTest, ColorCalibrationRoundtrip) {
+  uint16_t in_r, in_g, in_b;
+  uint16_t out_r, out_g, out_b;
+
+  ColorCalibration input;
+  input.srgb_to_linear = GammaCurve({{0, 0, 0}, {10, 20, 30}});
+  input.linear_to_device = GammaCurve({{5, 5, 5}, {10, 20, 30}});
+  input.srgb_to_device_matrix = SkNamedGamut::kDisplayP3;
+
+  ColorCalibration output;
+  SerializeAndDeserialize<mojom::ColorCalibration>(input, &output);
+
+  // Validate `srgb_to_device_matrix`.
+  EXPECT_EQ(0, memcmp(&input.srgb_to_device_matrix,
+                      &output.srgb_to_device_matrix, sizeof(skcms_Matrix3x3)));
+
+  // Valdiate `srgb_to_linear`.
+  input.srgb_to_linear.Evaluate(0.5f, in_r, in_g, in_b);
+  output.srgb_to_linear.Evaluate(0.5f, out_r, out_g, out_b);
+  EXPECT_EQ(in_r, out_r);
+  EXPECT_EQ(in_g, out_g);
+  EXPECT_EQ(in_b, out_b);
+
+  // Valdiate `linear_to_device`.
+  input.linear_to_device.Evaluate(0.5f, in_r, in_g, in_b);
+  output.linear_to_device.Evaluate(0.5f, out_r, out_g, out_b);
+  EXPECT_EQ(in_r, out_r);
+  EXPECT_EQ(in_g, out_g);
+  EXPECT_EQ(in_b, out_b);
+}
+
+TEST(DisplayStructTraitsTest, ColorTemperatureAdjustmentRoundtrip) {
+  ColorTemperatureAdjustment input;
+  input.srgb_matrix = SkNamedGamut::kDisplayP3;
+
+  ColorTemperatureAdjustment output;
+  SerializeAndDeserialize<mojom::ColorTemperatureAdjustment>(input, &output);
+
+  EXPECT_EQ(0, memcmp(&input.srgb_matrix, &output.srgb_matrix,
+                      sizeof(skcms_Matrix3x3)));
+}
+
+TEST(DisplayStructTraitsTest, GammaAdjustmentRoundtrip) {
+  uint16_t in_r, in_g, in_b;
+  uint16_t out_r, out_g, out_b;
+
+  GammaAdjustment input;
+  input.curve = GammaCurve({{0, 10, 20}, {10, 20, 30}});
+  GammaAdjustment output;
+
+  SerializeAndDeserialize<mojom::GammaAdjustment>(input, &output);
+
+  input.curve.Evaluate(0.5f, in_r, in_g, in_b);
+  output.curve.Evaluate(0.5f, out_r, out_g, out_b);
+  EXPECT_EQ(in_r, out_r);
+  EXPECT_EQ(in_g, out_g);
+  EXPECT_EQ(in_b, out_b);
+}
+
 // One display mode, current and native mode nullptr.
 TEST(DisplayStructTraitsTest, DisplaySnapshotCurrentAndNativeModesNull) {
   // Prepare sample input with random values.

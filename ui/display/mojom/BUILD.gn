@@ -23,6 +23,7 @@ mojom("mojom") {
 
   public_deps = [
     "//mojo/public/mojom/base",
+    "//skia/public/mojom",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",
   ]
@@ -181,8 +182,20 @@ mojom("mojom") {
     {
       types = [
         {
+          mojom = "display.mojom.ColorCalibration"
+          cpp = "::display::ColorCalibration"
+        },
+        {
+          mojom = "display.mojom.ColorTemperatureAdjustment"
+          cpp = "::display::ColorTemperatureAdjustment"
+        },
+        {
           mojom = "display.mojom.DisplayConfigurationParams"
           cpp = "::display::DisplayConfigurationParams"
+        },
+        {
+          mojom = "display.mojom.GammaAdjustment"
+          cpp = "::display::GammaAdjustment"
         },
       ]
       traits_sources = [ "display_configuration_params_mojom_traits.cc" ]
