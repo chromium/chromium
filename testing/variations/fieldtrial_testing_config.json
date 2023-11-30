@@ -9940,7 +9940,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "available_languages": "en-US,fr-FR,it-IT,de-DE,es-ES,ja-JP,hi-IN,pt-BR"
+                        "available_languages": "en-US,fr-FR,it-IT,de-DE,es-ES,ja-JP,hi-IN,pt-BR,ko-KR,pl-PL,th-TH,tr-TR,id-ID"
                     },
                     "enable_features": [
                         "LiveCaptionExperimentalLanguages"
