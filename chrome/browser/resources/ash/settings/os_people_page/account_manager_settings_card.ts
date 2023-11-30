@@ -74,6 +74,16 @@ export class AccountManagerSettingsCardElement extends
         readOnly: true,
       },
 
+      /**
+       * The name of the icon to display in the management row.
+       * Should only be read if isDeviceAccountManaged_ is true.
+       */
+      managedByIcon_: {
+        type: String,
+        value() {
+          return loadTimeData.getString('managedByIcon');
+        },
+      },
     };
   }
 
