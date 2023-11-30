@@ -113,6 +113,7 @@ ScopedWindowTucker::ScopedWindowTucker(std::unique_ptr<Delegate> delegate,
       left_(left),
       event_blocker_(window) {
   InitializeTuckHandleWidget();
+  window_observation_.Observe(window);
 }
 
 ScopedWindowTucker::~ScopedWindowTucker() {
@@ -221,6 +222,15 @@ void ScopedWindowTucker::OnOverviewModeStarting() {
 
 void ScopedWindowTucker::OnOverviewModeEndingAnimationComplete(bool canceled) {
   OnOverviewModeChanged(/*in_overview=*/false);
+}
+
+void ScopedWindowTucker::OnWindowBoundsChanged(
+    aura::Window* window,
+    const gfx::Rect& old_bounds,
+    const gfx::Rect& new_bounds,
+    ui::PropertyChangeReason reason) {
+  aura::Window* tuck_handle = tuck_handle_widget_->GetNativeWindow();
+  tuck_handle->SetBounds(delegate_->GetTuckHandleBounds(left_, new_bounds));
 }
 
 void ScopedWindowTucker::InitializeTuckHandleWidget() {
