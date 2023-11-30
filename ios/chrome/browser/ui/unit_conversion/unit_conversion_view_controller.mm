@@ -137,12 +137,14 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
 @implementation UnitConversionViewController
 
 - (instancetype)initWithSourceUnit:(NSUnit*)sourceUnit
+                        targetUnit:(NSUnit*)targetUnit
                          unitValue:(double)unitValue {
   self = [super initWithStyle:UITableViewStyleInsetGrouped];
 
   if (self) {
     _unitValue = unitValue;
     _sourceUnit = sourceUnit;
+    _targetUnit = targetUnit;
     _previousHeight = 0;
   }
   return self;
@@ -177,7 +179,6 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  _targetUnit = ios::provider::GetDefaultTargetUnit(_sourceUnit);
   _unitType = TypeByUnit(_sourceUnit);
   _sourceUnitValueField =
       [NSString localizedStringWithFormat:@"%g", _unitValue];

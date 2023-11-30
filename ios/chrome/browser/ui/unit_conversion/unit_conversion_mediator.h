@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/unit_conversion/unit_conversion_mutator.h"
+#import "ios/chrome/browser/unit_conversion/unit_conversion_service.h"
 
 @protocol UnitConversionConsumer;
 
@@ -16,8 +17,17 @@
 
 @property(nonatomic, weak) id<UnitConversionConsumer> consumer;
 
+// UnitConversionMediator designated init function.
+- (instancetype)initWithService:(UnitConversionService*)service
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+
 // Logs all the unit conversion histograms at the coordinator stop.
 - (void)reportMetrics;
+
+// Clears the references to model objects.
+- (void)shutdown;
 
 @end
 

@@ -34,9 +34,14 @@
   // An item to track the target unit change, it is initialised with the value
   // `kUnchanged` and store the first change only.
   UnitConversionActionTypes _targetUnitChanged;
+
+  // The unit conversion keyed service to keep track of the changes of the
+  // target unit based on a source unit and store them as the new default
+  // conversion.
+  UnitConversionService* _service;
 }
 
-- (instancetype)init {
+- (instancetype)initWithService:(UnitConversionService*)service {
   self = [super init];
   if (self) {
     _unitTypeChanged = NO;
@@ -45,6 +50,7 @@
     _sourceUnitChangedBeforeUnitType = UnitConversionActionTypes::kUnchanged;
     _sourceUnitChangedAfterUnitType = UnitConversionActionTypes::kUnchanged;
     _targetUnitChanged = UnitConversionActionTypes::kUnchanged;
+    _service = service;
   }
   return self;
 }
@@ -55,6 +61,10 @@
   base::UmaHistogramEnumeration(kSourceUnitChangeBeforeUnitTypeChangeHistogram,
                                 _sourceUnitChangedBeforeUnitType);
   base::UmaHistogramEnumeration(kTargetUnitChangeHistogram, _targetUnitChanged);
+}
+
+- (void)shutdown {
+  _service = nullptr;
 }
 
 #pragma mark - UnitConversionMutator
@@ -131,6 +141,7 @@
   NSMeasurement* sourceUnitMeasurement =
       [[NSMeasurement alloc] initWithDoubleValue:unitValue unit:sourceUnit];
   if ([sourceUnitMeasurement canBeConvertedToUnit:targetUnit]) {
+    _service->UpdateDefaultConversionCache(sourceUnit, targetUnit);
     NSMeasurement* targetUnitMeasurement =
         [sourceUnitMeasurement measurementByConvertingToUnit:targetUnit];
 

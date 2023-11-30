@@ -96,6 +96,7 @@
 #import "ios/chrome/browser/trusted_vault/model/ios_trusted_vault_service_factory.h"
 #import "ios/chrome/browser/ui/voice/text_to_speech_playback_controller_factory.h"
 #import "ios/chrome/browser/unified_consent/model/unified_consent_service_factory.h"
+#import "ios/chrome/browser/unit_conversion/unit_conversion_service_factory.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
@@ -207,6 +208,7 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   BringAndroidTabsToIOSServiceFactory::GetInstance();
   PromosManagerEventExporterFactory::GetInstance();
   PlusAddressServiceFactory::GetInstance();
+  UnitConversionServiceFactory::GetInstance();
 
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
   CredentialProviderServiceFactory::GetInstance();

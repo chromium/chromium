@@ -70,12 +70,13 @@ class UnitConversionMediatorTest : public PlatformTest {
  public:
   void SetUp() override {
     PlatformTest::SetUp();
-    mediator_ = [[UnitConversionMediator alloc] init];
+    mediator_ = [[UnitConversionMediator alloc] initWithService:&service_];
     helper_ = [[TestUnitConversionProviderTestHelper alloc] init];
     ios::provider::test::SetUnitConversionProviderTestHelper(helper_);
   }
 
   void TearDown() override {
+    service_.Shutdown();
     ios::provider::test::SetUnitConversionProviderTestHelper(nil);
     PlatformTest::TearDown();
   }
@@ -83,6 +84,7 @@ class UnitConversionMediatorTest : public PlatformTest {
  protected:
   UnitConversionMediator* mediator_;
   TestUnitConversionProviderTestHelper* helper_;
+  UnitConversionService service_;
 };
 
 // Tests that the conversion and the updates are handled correctly when the

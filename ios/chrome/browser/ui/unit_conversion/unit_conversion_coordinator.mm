@@ -9,6 +9,8 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/unit_conversion/unit_conversion_mediator.h"
 #import "ios/chrome/browser/ui/unit_conversion/unit_conversion_view_controller.h"
+#import "ios/chrome/browser/unit_conversion/unit_conversion_service.h"
+#import "ios/chrome/browser/unit_conversion/unit_conversion_service_factory.h"
 
 namespace {
 
@@ -62,12 +64,16 @@ CGFloat const kHalfSheetCornerRadius = 13;
 }
 
 - (void)start {
+  // Init the keyed service to track the changes of the target unit and pass it
+  // to the mediator.
+  UnitConversionService* service =
+      UnitConversionServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  _mediator = [[UnitConversionMediator alloc] initWithService:service];
   _viewController = [[UnitConversionViewController alloc]
       initWithSourceUnit:_sourceUnit
+              targetUnit:service->GetDefaultTargetFromUnit(_sourceUnit)
                unitValue:_sourceUnitValue];
-
-  _mediator = [[UnitConversionMediator alloc] init];
-
   _mediator.consumer = _viewController;
   _viewController.mutator = _mediator;
   _viewController.delegate = self;
@@ -77,6 +83,8 @@ CGFloat const kHalfSheetCornerRadius = 13;
 
 - (void)stop {
   [_mediator reportMetrics];
+  [_mediator shutdown];
+  _mediator = nil;
   [self dismissViewController];
 }
 
