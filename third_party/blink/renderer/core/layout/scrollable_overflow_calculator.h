@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_LAYOUT_OVERFLOW_CALCULATOR_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_LAYOUT_OVERFLOW_CALCULATOR_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SCROLLABLE_OVERFLOW_CALCULATOR_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SCROLLABLE_OVERFLOW_CALCULATOR_H_
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_items_builder.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -97,4 +97,4 @@ class CORE_EXPORT ScrollableOverflowCalculator {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_LAYOUT_OVERFLOW_CALCULATOR_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SCROLLABLE_OVERFLOW_CALCULATOR_H_

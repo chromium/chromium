@@ -139,5 +139,5 @@ and still easy to implement across implementations.
 [LayoutListItem]: layout_list_item.h
 [LayoutInsideListMarker]: layout_inside_list_marker.h
 [LayoutOutsideListMarker]: layout_outside_list_marker.h
-[LayoutResult]: ../ng/ng_layout_result.h
+[LayoutResult]: ../layout_result.h
 [PaintLayer]: ../../paint/PaintLayer.h

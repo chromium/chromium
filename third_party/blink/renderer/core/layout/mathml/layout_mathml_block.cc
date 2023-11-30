@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/mathml/layout_mathml_block.h"
 
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
+#include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/mathml/mathml_element.h"
 #include "third_party/blink/renderer/core/mathml/mathml_under_over_element.h"
 

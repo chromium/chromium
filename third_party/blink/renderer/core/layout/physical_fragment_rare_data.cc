@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/ng/physical_fragment_rare_data.h"
+#include "third_party/blink/renderer/core/layout/physical_fragment_rare_data.h"
 
 #include "third_party/blink/renderer/core/layout/ng/frame_set_layout_data.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"

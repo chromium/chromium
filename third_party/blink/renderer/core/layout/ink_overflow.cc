@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/ng/ng_ink_overflow.h"
+#include "third_party/blink/renderer/core/layout/ink_overflow.h"
 
 #include "build/chromeos_buildflags.h"
 #include "third_party/blink/renderer/core/editing/markers/custom_highlight_marker.h"
@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_text_decoration_offset.h"
+#include "third_party/blink/renderer/core/layout/text_decoration_offset.h"
 #include "third_party/blink/renderer/core/paint/ng/marker_range_mapping_context.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_highlight_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_inline_paint_context.h"
@@ -26,14 +26,14 @@ namespace blink {
 
 namespace {
 
-struct SameSizeAsNGInkOverflow {
+struct SameSizeAsInkOverflow {
   void* pointer;
 #if DCHECK_IS_ON()
   InkOverflow::Type type;
 #endif
 };
 
-ASSERT_SIZE(InkOverflow, SameSizeAsNGInkOverflow);
+ASSERT_SIZE(InkOverflow, SameSizeAsInkOverflow);
 
 inline bool HasOverflow(const PhysicalRect& rect, const PhysicalSize& size) {
   if (rect.IsEmpty())

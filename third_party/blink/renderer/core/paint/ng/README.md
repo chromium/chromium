@@ -79,5 +79,5 @@ straight-forward job for pre-paint to calculate the offsets and bounding box.
 
 [LayoutNG]: ../../layout/ng/README.md
 [NGPaintFragment]: ng_paint_fragment.h
-[PhysicalFragment]: ../../layout/ng/ng_physical_fragment.h
+[PhysicalFragment]: ../../layout/physical_fragment.h
 [fragmentainer]: https://drafts.csswg.org/css-break/#fragmentation-container
