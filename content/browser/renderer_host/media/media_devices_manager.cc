@@ -1356,6 +1356,13 @@ void MediaDevicesManager::NotifyDeviceChange(
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 void MediaDevicesManager::RegisterVideoCaptureDevicesChangedObserver() {
   CHECK(!video_capture_service_device_changed_observer_);
+  if (base::FeatureList::IsEnabled(
+          features::kRunVideoCaptureServiceInBrowserProcess)) {
+    // Do not create a mojo connection when the video capture service is running
+    // in the browser process as the device monitor will send device change
+    // notifications directly to the system monitor in the browser process.
+    return;
+  }
   // base::Unretained(this) is safe here because |this| owns
   // |video_capture_service_device_changed_observer_|.
   video_capture_service_device_changed_observer_ =
