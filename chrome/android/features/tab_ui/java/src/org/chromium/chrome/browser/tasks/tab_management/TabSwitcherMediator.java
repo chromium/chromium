@@ -754,11 +754,6 @@ class TabSwitcherMediator
     }
 
     @Override
-    public boolean overviewVisible() {
-        return mContainerViewModel.get(IS_VISIBLE);
-    }
-
-    @Override
     public ViewGroup getTabSwitcherContainer() {
         return mContainerView;
     }

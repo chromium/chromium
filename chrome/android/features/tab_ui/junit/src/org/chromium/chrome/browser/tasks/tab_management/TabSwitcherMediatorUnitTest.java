@@ -257,7 +257,6 @@ public class TabSwitcherMediatorUnitTest {
         assertThat(
                 mModel.get(TabListContainerProperties.ANIMATE_VISIBILITY_CHANGES), equalTo(true));
         assertThat(mModel.get(TabListContainerProperties.IS_VISIBLE), equalTo(true));
-        assertThat(mMediator.overviewVisible(), equalTo(true));
     }
 
     @Test
@@ -277,7 +276,6 @@ public class TabSwitcherMediatorUnitTest {
         assertThat(
                 mModel.get(TabListContainerProperties.ANIMATE_VISIBILITY_CHANGES), equalTo(true));
         assertThat(mModel.get(TabListContainerProperties.IS_VISIBLE), equalTo(true));
-        assertThat(mMediator.overviewVisible(), equalTo(true));
     }
 
     @Test
@@ -299,7 +297,6 @@ public class TabSwitcherMediatorUnitTest {
         assertThat(
                 mModel.get(TabListContainerProperties.ANIMATE_VISIBILITY_CHANGES), equalTo(true));
         assertThat(mModel.get(TabListContainerProperties.IS_VISIBLE), equalTo(true));
-        assertThat(mMediator.overviewVisible(), equalTo(true));
     }
 
     @Test
@@ -316,7 +313,6 @@ public class TabSwitcherMediatorUnitTest {
         assertThat(
                 mModel.get(TabListContainerProperties.ANIMATE_VISIBILITY_CHANGES), equalTo(true));
         assertThat(mModel.get(TabListContainerProperties.IS_VISIBLE), equalTo(false));
-        assertThat(mMediator.overviewVisible(), equalTo(false));
         verify(mTabGridDialogController).hideDialog(eq(false));
     }
 
@@ -342,7 +338,6 @@ public class TabSwitcherMediatorUnitTest {
         assertThat(
                 mModel.get(TabListContainerProperties.ANIMATE_VISIBILITY_CHANGES), equalTo(true));
         assertThat(mModel.get(TabListContainerProperties.IS_VISIBLE), equalTo(false));
-        assertThat(mMediator.overviewVisible(), equalTo(false));
         verify(mTabGridDialogController).hideDialog(eq(false));
     }
 

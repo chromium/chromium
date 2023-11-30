@@ -16,7 +16,6 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -26,16 +25,17 @@ public interface TabSwitcher {
     /** Defines an interface to pass out tab selecting event. */
     interface OnTabSelectingListener {
         /**
-         * Called when a tab is getting selected. Typically when exiting the overview mode.
+         * Called when a tab is getting selected. This will select the tab and exit the layout.
          *
          * @param tabId The ID of selected {@link Tab}.
-         * @see Layout#onTabSelecting(long, int)
          */
         void onTabSelecting(int tabId);
     }
 
     /**
-     * Set the listener to get the {@link Layout#onTabSelecting} event from the Tab Switcher.
+     * Set the listener to receive tab selection events from the Tab Switcher. This should typically
+     * trigger a tab selection and hide via a Layout.
+     *
      * @param listener The {@link OnTabSelectingListener} to use.
      */
     void setOnTabSelectingListener(OnTabSelectingListener listener);
@@ -43,8 +43,8 @@ public interface TabSwitcher {
     /** Called when native initialization is completed. */
     void initWithNative();
 
-    // TODO(1322733): Remove the following interfaces when we find a better way to notify the layout
-    // that the GTS animation is finished.
+    // TODO(crbug/1322733): Remove the following interfaces when we find a better way to notify the
+    // layout that the GTS animation is finished.
     /** An observer that is notified when the TabSwitcher view state changes. */
     interface TabSwitcherViewObserver {
         /** Called when tab switcher starts showing. */
@@ -62,14 +62,6 @@ public interface TabSwitcher {
 
     /** Interface to control the TabSwitcher. */
     interface Controller extends BackPressHandler {
-        /**
-         * @return Whether or not the overview {@link Layout} is visible.
-         */
-        // TODO(crbug.com/1315676): Remove this method after removing the usage in
-        // StartSurfaceMediator.
-        @Deprecated // This method will be removed, please do not use.
-        boolean overviewVisible();
-
         /**
          * @param listener Registers {@code listener} for tab switcher status changes.
          */
@@ -104,21 +96,11 @@ public interface TabSwitcher {
          */
         boolean onBackPressed();
 
-        /**
-         * Called after the Chrome activity is launched.
-         * @param activityCreationTimeMs {@link SystemClock#elapsedRealtime} at activity creation.
-         */
-        // TODO(crbug.com/1315676): Remove this API when tab switcher and start surface are
-        // decoupled.
-        void onOverviewShownAtLaunch(long activityCreationTimeMs);
-
-        /**
-         * @return Whether any dialog is opened.
-         */
+        /** Returns whether any dialog is opened. */
         boolean isDialogVisible();
 
         /**
-         * @return An {@link ObservableSupplier<Boolean>} which yields true if any dialog is opened.
+         * Returns an {@link ObservableSupplier<Boolean>} which yields true if any dialog is opened.
          */
         ObservableSupplier<Boolean> isDialogVisibleSupplier();
 
@@ -132,6 +114,15 @@ public interface TabSwitcher {
         void onHomepageChanged();
 
         /**
+         * Called after the Chrome activity is launched.
+         *
+         * @param activityCreationTimeMs {@link SystemClock#elapsedRealtime} at activity creation.
+         */
+        // TODO(crbug.com/1315676): Remove this API when tab switcher and start surface are
+        // decoupled.
+        void onOverviewShownAtLaunch(long activityCreationTimeMs);
+
+        /**
          * Sets the parent view for snackbars. If <code>null</code> is given, the original parent
          * view is restored.
          *
@@ -139,25 +130,21 @@ public interface TabSwitcher {
          */
         default void setSnackbarParentView(ViewGroup parentView) {}
 
-        /**
-         * @return The Tab switcher container view.
-         */
+        /** Returns the Tab switcher container view. */
         default ViewGroup getTabSwitcherContainer() {
             return null;
         }
     }
 
     /**
-     * @return Controller implementation that can be used for controlling
-     *         visibility changes.
+     * Returns a {@link Controller} implementation that can be used for controlling visibility
+     * changes.
      */
     Controller getController();
 
     /** Interface to access the Tab List. */
     interface TabListDelegate {
-        /**
-         * @return The dynamic resource ID of the TabSwitcher RecyclerView.
-         */
+        /** Returns the dynamic resource ID of the TabSwitcher RecyclerView. */
         int getResourceId();
 
         /**
@@ -182,8 +169,8 @@ public interface TabSwitcher {
         void postHiding();
 
         /**
-         * @return The {@link Rect} of the thumbnail of the current tab, relative to the
-         *         TabSwitcher {@link TabListRecyclerView} coordinates.
+         * Returns the {@link Rect} of the thumbnail of the current tab, relative to the TabSwitcher
+         * {@link TabListRecyclerView} coordinates.
          */
         @NonNull
         Rect getThumbnailLocationOfCurrentTab();
@@ -198,40 +185,10 @@ public interface TabSwitcher {
         Rect getRecyclerViewLocation();
 
         /**
-         * Set a hook to receive all the {@link Bitmap}s returned by
-         * {@link TabListMediator.ThumbnailFetcher} for testing.
-         * @param callback The callback to send bitmaps through.
-         */
-        void setBitmapCallbackForTesting(Callback<Bitmap> callback);
-
-        /**
-         * @return The number of thumbnail fetching for testing.
-         */
-        int getBitmapFetchCountForTesting();
-
-        /** Reset the current count of thumbnail fetches for testing. */
-        default void resetBitmapFetchCountForTesting() {}
-
-        /**
-         * @return The soft cleanup delay for testing.
-         */
-        int getSoftCleanupDelayForTesting();
-
-        /**
-         * @return The cleanup delay for testing.
-         */
-        int getCleanupDelayForTesting();
-
-        /**
-         * @return The top offset from top toolbar to tab list. Used to adjust the animations for
-         *         tab switcher.
+         * Returns the top offset from top toolbar to tab list. Used to adjust the animations for
+         * tab switcher.
          */
         int getTabListTopOffset();
-
-        /**
-         * @return The mode of the list of Tabs.
-         */
-        int getListModeForTesting();
 
         /** Request accessibility focus for the currently selected tab. */
         default void requestFocusOnCurrentTab() {}
@@ -240,30 +197,47 @@ public interface TabSwitcher {
          * @param r Runnable executed on next layout pass to run a show animation.
          */
         void runAnimationOnNextLayout(Runnable r);
+
+        /**
+         * Set a hook to receive all the {@link Bitmap}s returned by
+         * {@link TabListMediator.ThumbnailFetcher} for testing.
+         * @param callback The callback to send bitmaps through.
+         */
+        void setBitmapCallbackForTesting(Callback<Bitmap> callback);
+
+        /** Returns the number of thumbnail fetching for testing. */
+        int getBitmapFetchCountForTesting();
+
+        /** Reset the current count of thumbnail fetches for testing. */
+        default void resetBitmapFetchCountForTesting() {}
+
+        /** Returns the soft cleanup delay for testing. */
+        int getSoftCleanupDelayForTesting();
+
+        /** Returns the cleanup delay for testing. */
+        int getCleanupDelayForTesting();
+
+        /** Returns the mode of the list of Tabs. */
+        int getListModeForTesting();
     }
 
-    /**
-     * @return The {@link TabListDelegate}.
-     */
+    /** Returns the {@link TabListDelegate}. */
     TabListDelegate getTabListDelegate();
 
-    /**
-     * @return {@link Supplier} that provides dialog visibility.
-     */
+    /** Returns a {@link Supplier} that provides dialog visibility. */
     Supplier<Boolean> getTabGridDialogVisibilitySupplier();
 
     /**
-     *  @return {@link TabSwitcherCustomViewManager} that allows to pass custom views to {@link
-     *         TabSwitcherCoordinator}.
+     * Returns a {@link TabSwitcherCustomViewManager} that allows to pass custom views to {@link
+     * TabSwitcherCoordinator}.
      */
     @Nullable
     TabSwitcherCustomViewManager getTabSwitcherCustomViewManager();
 
+    /** Trigger a back press. */
     boolean onBackPressed();
 
-    /**
-     * @return The number of elements in the tab switcher's tab list model.
-     */
+    /** Returns the number of elements in the tab switcher's tab list model. */
     int getTabSwitcherTabListModelSize();
 
     /** Set the tab switcher's current RecyclerViewPosition. */

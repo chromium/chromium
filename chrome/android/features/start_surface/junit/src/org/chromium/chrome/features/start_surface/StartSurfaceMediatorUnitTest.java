@@ -1319,7 +1319,6 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE), equalTo(false));
         verify(mCarouselOrSingleTabSwitcherModuleController).showTabSwitcherView(eq(false));
 
-        when(mCarouselOrSingleTabSwitcherModuleController.overviewVisible()).thenReturn(true);
         mediator.initWithNative(
                 mOmniboxStub, mExploreSurfaceCoordinatorFactory, mPrefService, null);
         assertThat(mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE), equalTo(true));

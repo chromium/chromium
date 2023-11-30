@@ -116,7 +116,7 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
                             return;
                         }
 
-                        assert overviewVisible();
+                        assert mPropertyModel.get(IS_VISIBLE);
 
                         mSelectedTabDidNotChangedAfterShown = false;
                         updateSelectedTab(tab);
@@ -214,11 +214,6 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
     }
 
     // Controller implementation
-    @Override
-    public boolean overviewVisible() {
-        return mPropertyModel.get(IS_VISIBLE);
-    }
-
     @Override
     public void addTabSwitcherViewObserver(TabSwitcherViewObserver observer) {
         mObservers.addObserver(observer);
