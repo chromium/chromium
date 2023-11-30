@@ -17,6 +17,12 @@ export interface PerformanceAppElement {
   $: {};
 }
 
+export enum CardType {
+  BROWSER_HEALTH = 0,
+  MEMORY_SAVER = 1,
+  BATTERY_SAVER = 2,
+}
+
 export class PerformanceAppElement extends PolymerElement {
   static get is() {
     return 'performance-app';
@@ -27,11 +33,29 @@ export class PerformanceAppElement extends PolymerElement {
   }
 
   static get properties() {
-    return {};
+    return {
+      cards_: {
+        readOnly: true,
+        type: Array,
+        value: [
+          CardType.BROWSER_HEALTH,
+          CardType.MEMORY_SAVER,
+          CardType.BATTERY_SAVER,
+        ],
+      },
+
+      /** Mirroring the enum so that it can be used from HTML bindings. */
+      cardTypeEnum_: {
+        type: Object,
+        value: CardType,
+      },
+    };
   }
 
   private performanceApi_: PerformancePageApiProxy =
       PerformancePageApiProxyImpl.getInstance();
+
+  private cards_: CardType[];
 
   constructor() {
     super();
@@ -43,6 +67,10 @@ export class PerformanceAppElement extends PolymerElement {
 
     // Inform the handler that listeners are registered.
     setTimeout(() => this.performanceApi_.showUi(), 0);
+  }
+
+  isEqualTo(a: CardType, b: CardType) {
+    return a === b;
   }
 }
 declare global {
