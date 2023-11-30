@@ -11,7 +11,6 @@
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_controller.h"
-#include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "base/check_op.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
