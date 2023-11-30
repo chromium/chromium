@@ -502,13 +502,6 @@ void NetworkConnectImpl::ShowCarrierUnlockNotification() {
 
 void NetworkConnectImpl::ShowPortalSignin(const std::string& network_id,
                                           Source source) {
-  const NetworkState* network = GetNetworkStateFromId(network_id);
-  if (!network || !network->IsConnectedState() ||
-      !NetworkState::StateIsPortalled(network->connection_state())) {
-    NET_LOG(ERROR) << "ShowPortalSignin without a portalled state: "
-                   << NetworkGuidId(network_id);
-    return;
-  }
   delegate_->ShowPortalSignin(network_id, source);
 }
 
