@@ -12,12 +12,9 @@
 #include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "base/test/test_switches.h"
-#include "base/test/test_timeouts.h"
-#include "base/timer/timer.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_manager_observer.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -197,29 +194,11 @@ bool AshBrowserTestStarter::PrepareEnvironmentForLacros() {
   return true;
 }
 
-void WaitForExoStarted(const base::FilePath& xdg_path) {
-  base::RepeatingTimer timer;
-  base::RunLoop run_loop;
-  timer.Start(FROM_HERE, base::Seconds(1), base::BindLambdaForTesting([&]() {
-                if (base::PathExists(xdg_path.Append("wayland-0")) &&
-                    base::PathExists(xdg_path.Append("wayland-0.lock"))) {
-                  run_loop.Quit();
-                }
-              }));
-  base::ThreadPool::PostDelayedTask(FROM_HERE, run_loop.QuitClosure(),
-                                    TestTimeouts::action_max_timeout());
-  run_loop.Run();
-  CHECK(base::PathExists(xdg_path.Append("wayland-0")) &&
-        base::PathExists(xdg_path.Append("wayland-0.lock")));
-}
-
 void AshBrowserTestStarter::StartLacros(InProcessBrowserTest* test_class_obj) {
   DCHECK(HasLacrosArgument());
 
   crosapi::BrowserManager::Get()->set_device_ownership_waiter_for_testing(
       std::make_unique<crosapi::FakeDeviceOwnershipWaiter>());
-
-  WaitForExoStarted(scoped_temp_dir_xdg_.GetPath());
 
   {
     NewLacrosWindowWatcher watcher;
