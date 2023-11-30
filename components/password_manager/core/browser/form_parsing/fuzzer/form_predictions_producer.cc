@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/form_parsing/fuzzer/form_predictions_producer.h"
 
+#include <bitset>
 #include <string>
 #include <utility>
 
@@ -56,10 +57,10 @@ FormPredictions GenerateFormPredictions(const FormData& form_data,
     // Batch getting bits from the FuzzedDataProvider, because calling
     // `ConsumeBool` throws out 7 bits and we need multiple Booleans for each
     // iteration.
-    const auto packed_bools = provider.ConsumeIntegral<uint8_t>();
-    const bool generate_prediction = packed_bools & 1;
-    const bool pick_meaningful_type = packed_bools & (1 << 1);
-    const bool use_placeholder = packed_bools & (1 << 2);
+    const std::bitset<8> bools(provider.ConsumeIntegral<uint8_t>());
+    const bool generate_prediction = bools[0];
+    const bool pick_meaningful_type = bools[1];
+    const bool use_placeholder = bools[2];
 
     if (generate_prediction) {
       PasswordFieldPrediction field_prediction;
@@ -73,9 +74,9 @@ FormPredictions GenerateFormPredictions(const FormData& form_data,
   // Generate predictions for non-existing fields.
   const size_t num_predictions = provider.ConsumeIntegralInRange(0, 15);
   for (size_t i = 0; i < num_predictions; ++i) {
-    const auto packed_bools = provider.ConsumeIntegral<uint8_t>();
-    const bool pick_meaningful_type = packed_bools & 1;
-    const bool use_placeholder = packed_bools & (1 << 2);
+    const std::bitset<8> bools(provider.ConsumeIntegral<uint8_t>());
+    const bool pick_meaningful_type = bools[0];
+    const bool use_placeholder = bools[1];
 
     PasswordFieldPrediction field_prediction;
     SetPredictionType(pick_meaningful_type, provider, field_prediction);

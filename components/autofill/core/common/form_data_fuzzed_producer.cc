@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/common/form_data_fuzzed_producer.h"
 
+#include <bitset>
 #include <string>
 
 #include <fuzzer/FuzzedDataProvider.h>
@@ -54,13 +55,13 @@ FormData GenerateFormData(FuzzedDataProvider& provider) {
     // Batch getting bits from the FuzzedDataProvider, because calling
     // `ConsumeBool` throws out 7 bits and we need multiple Booleans for each
     // iteration.
-    const auto packed_bools = provider.ConsumeIntegral<uint8_t>();
+    const std::bitset<8> bools(provider.ConsumeIntegral<uint8_t>());
     // All instances with |same_value_field| true share the same value.
-    const bool same_value_field = packed_bools & 1;
+    const bool same_value_field = bools[0];
     // Empty values are interesting from the parsing perspective. Ensure that
     // at least half of the cases ends up with an empty value.
-    const bool force_empty_value = packed_bools & (1 << 1);
-    result.fields[i].is_focusable = packed_bools & (1 << 2);
+    const bool force_empty_value = bools[1];
+    result.fields[i].is_focusable = bools[2];
 
     result.fields[i].form_control_type =
         provider.ConsumeEnum<FormControlType>();
