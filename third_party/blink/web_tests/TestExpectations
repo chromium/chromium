@@ -2021,8 +2021,6 @@ crbug.com/613659 external/wpt/quirks/percentage-height-calculation.html [ Failur
 crbug.com/619978 fast/css/giant-stylesheet-crash.html [ Crash Failure Pass Timeout ]
 
 
-crbug.com/399507 virtual/threaded/http/tests/devtools/tracing/timeline-paint/layer-tree.js [ Failure Pass Timeout ]
-
 # Working on getting the CSP tests going:
 
 # These tests will be added back soon:
@@ -3856,9 +3854,6 @@ crbug.com/757165 [ Win ] paint/invalidation/filters/filter-repaint-on-accelerate
 # Antialiasing error
 crbug.com/845973 virtual/display-compositor-pixel-dump/fast/canvas/display-compositor-pixel-dump/OffscreenCanvas-opaque-background-compositing.html [ Failure Pass ]
 
-# Tests occasionaly timing out (flaky) on WebKit Win7 dbg builder
-crbug.com/757955 http/tests/devtools/tracing/timeline-paint/layer-tree.js [ Failure Pass Timeout ]
-
 # This test has a fixed number of time which can depend on performance.
 
 crbug.com/669329 http/tests/devtools/tracing/timeline-js/timeline-runtime-stats.js [ Crash Failure Pass Timeout ]
@@ -4093,7 +4088,6 @@ crbug.com/922951 http/tests/cache/subresource-fragment-identifier.html [ Crash F
 crbug.com/922951 http/tests/history/back-to-post.html [ Crash Failure Pass Timeout ]
 crbug.com/922951 http/tests/webaudio/autoplay-crossorigin.html [ Crash Failure Pass Timeout ]
 crbug.com/922951 [ Release Win ] media/controls/overflow-menu-hide-on-click-outside-stoppropagation.html [ Crash Failure Pass Timeout ]
-crbug.com/922951 virtual/threaded/http/tests/devtools/tracing/frame-model-instrumentation.js [ Crash Failure Pass Timeout ]
 crbug.com/922951 virtual/threaded/http/tests/devtools/tracing/timeline-layout/timeline-layout-with-invalidations.js [ Crash Failure Pass Timeout ]
 
 crbug.com/910979 http/tests/html/validation-bubble-oopif-clip.html [ Crash Failure Pass Timeout ]
@@ -5131,9 +5125,6 @@ crbug.com/1341689 [ Linux ] media/controls/overflow-menu-focus.html [ Failure Pa
 
 crbug.com/1345752 [ Win ] media/controls/overflow-menu-focus.html [ Failure Pass ]
 
-# Following tests timeout on mac11-arm64
-crbug.com/1249176 [ Mac11-arm64 ] http/tests/devtools/tracing/timeline-paint/paint-profiler-update.js [ Failure Timeout ]
-
 # http/tests/intersection-observer/cross-origin-iframe-with-nesting.html tests
 crbug.com/1450030 [ Mac11-arm64 ] http/tests/intersection-observer/cross-origin-iframe-with-nesting.html [ Failure Pass Timeout ]
 crbug.com/1450030 [ Mac12-arm64 ] http/tests/intersection-observer/cross-origin-iframe-with-nesting.html [ Failure Pass Timeout ]
@@ -5150,8 +5141,6 @@ crbug.com/1249176 [ Mac11-arm64 ] paint/markers/document-markers-font-8px.html [
 crbug.com/1249176 [ Mac12-arm64 ] paint/markers/document-markers-font-8px.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] paint/markers/document-markers-zoom-2000.html [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] paint/markers/document-markers-zoom-2000.html [ Failure Pass ]
-crbug.com/1249176 [ Mac11-arm64 ] http/tests/devtools/tracing/frame-model-instrumentation.js [ Failure Pass ]
-crbug.com/1249176 [ Mac12-arm64 ] http/tests/devtools/tracing/frame-model-instrumentation.js [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] inspector-protocol/layout-fonts/lang-fallback.js [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/layout-instability/recent-input.html [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] external/wpt/layout-instability/recent-input.html [ Failure Pass ]
@@ -5165,9 +5154,6 @@ crbug.com/1249176 [ Mac12-arm64 ] virtual/scalefactor200/external/wpt/largest-co
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/largest-contentful-paint/multiple-redirects-TAO.html [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] external/wpt/largest-contentful-paint/multiple-redirects-TAO.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/devtools/elements/styles-2/nested-pseudo-elements.js [ Failure Pass ]
-crbug.com/1463944 [ Mac11-arm64 ] virtual/threaded/http/tests/devtools/tracing/timeline-paint/paint-profiler-update.js [ Failure ]
-crbug.com/1463944 [ Mac12-arm64 ] virtual/threaded/http/tests/devtools/tracing/timeline-paint/paint-profiler-update.js [ Failure Pass ]
-crbug.com/1463944 [ Mac13-arm64 ] virtual/threaded/http/tests/devtools/tracing/timeline-paint/paint-profiler-update.js [ Failure Pass ]
 
 # mac-arm CI 10-05-2021
 crbug.com/1249176 [ Mac11-arm64 ] virtual/gpu-rasterization/images/directly-composited-image-orientation.html [ Failure Pass ]
@@ -6914,7 +6900,6 @@ crbug.com/1475824 [ Mac10.15 ] virtual/keepalive-in-browser-migration/external/w
 # Gardener 2023-08-31
 crbug.com/1477701 [ Mac ] http/tests/devtools/tracing/timeline-layout/timeline-layout-with-invalidations.js [ Failure Pass ]
 crbug.com/1477701 [ Mac ] http/tests/inspector-protocol/timeline/auction-worklet-network.js [ Failure Pass ]
-crbug.com/1477701 [ Mac13-arm64 Release ] http/tests/devtools/tracing/frame-model-instrumentation.js [ Failure Pass ]
 
 # Gardener 2023-09-05
 # Flaky on Webkit Linux Leak
