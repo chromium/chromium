@@ -178,7 +178,7 @@ void FastInkHost::InitializeFastInkBuffer(aura::Window* host_window) {
 
   if (switches::ShouldClearFastInkBuffer()) {
     if (features::ShouldUseMappableSharedImage()) {
-      std::unique_ptr<gpu::SharedImageInterface::ScopedMapping> mapping;
+      std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> mapping;
       if (client_shared_image_) {
         mapping = client_shared_image_->Map();
       }
@@ -241,7 +241,7 @@ void FastInkHost::Draw(SkBitmap bitmap, const gfx::Rect& damage_rect) {
 }
 
 void FastInkHost::DrawBitmap(SkBitmap bitmap, const gfx::Rect& damage_rect) {
-  std::unique_ptr<gpu::SharedImageInterface::ScopedMapping> mapping;
+  std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> mapping;
 
   {
     // TODO(zoraiznaeem): Investigate the precision as we will get non trivial

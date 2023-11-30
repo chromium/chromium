@@ -158,7 +158,7 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
                 const GURL& url) override {
     TRACE_EVENT0("cc", "ZeroCopyRasterBuffer::Playback");
 
-    std::unique_ptr<gpu::SharedImageInterface::ScopedMapping> mapping;
+    std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> mapping;
     void* memory = nullptr;
     size_t stride = 0;
 

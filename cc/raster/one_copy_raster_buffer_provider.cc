@@ -338,7 +338,7 @@ bool OneCopyRasterBufferProvider::PlaybackToStagingBuffer(
     const RasterSource::PlaybackSettings& playback_settings,
     uint64_t previous_content_id,
     uint64_t new_content_id) {
-  std::unique_ptr<gpu::SharedImageInterface::ScopedMapping> mapping;
+  std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> mapping;
   gfx::GpuMemoryBuffer* buffer = nullptr;
   void* memory = nullptr;
   size_t stride = 0;

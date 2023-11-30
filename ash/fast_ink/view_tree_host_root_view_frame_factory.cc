@@ -259,7 +259,7 @@ void ViewTreeHostRootViewFrameFactory::Paint(
   DCHECK(gpu_buffer || base::FeatureList::IsEnabled(
                            kUseMappableSIInViewTreeHostRootViewFrameFactory));
 
-  std::unique_ptr<gpu::SharedImageInterface::ScopedMapping> mapping;
+  std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> mapping;
 
   auto display_item_list = base::MakeRefCounted<cc::DisplayItemList>();
   float dsf = widget_->GetCompositor()->device_scale_factor();

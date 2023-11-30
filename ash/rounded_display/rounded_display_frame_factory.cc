@@ -307,7 +307,7 @@ void RoundedDisplayFrameFactory::Paint(
     const RoundedDisplayGutter& gutter,
     RoundedDisplayUiResource* resource) const {
   gfx::GpuMemoryBuffer* buffer = resource->gpu_memory_buffer.get();
-  std::unique_ptr<gpu::SharedImageInterface::ScopedMapping> mapping;
+  std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> mapping;
 
   gfx::Canvas canvas(gutter.bounds().size(), 1.0, true);
   gutter.Paint(&canvas);

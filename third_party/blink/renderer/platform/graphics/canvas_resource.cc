@@ -702,7 +702,7 @@ scoped_refptr<StaticBitmapImage> CanvasResourceRasterSharedImage::Bitmap() {
 
   SkImageInfo image_info = CreateSkImageInfo();
   if (!is_accelerated_) {
-    std::unique_ptr<gpu::SharedImageInterface::ScopedMapping> mapping;
+    std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> mapping;
     void* memory = nullptr;
     size_t stride = 0;
     if (base::FeatureList::IsEnabled(kAlwaysUseMappableSIForSoftwareCanvas)) {
@@ -790,7 +790,7 @@ void CanvasResourceRasterSharedImage::CopyRenderingResultsToGpuMemoryBuffer(
   }
   auto* sii =
       ContextProviderWrapper()->ContextProvider()->SharedImageInterface();
-  std::unique_ptr<gpu::SharedImageInterface::ScopedMapping> mapping;
+  std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> mapping;
   void* memory = nullptr;
   size_t stride = 0;
   if (base::FeatureList::IsEnabled(kAlwaysUseMappableSIForSoftwareCanvas)) {
