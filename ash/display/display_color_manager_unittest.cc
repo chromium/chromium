@@ -97,7 +97,7 @@ class DisplayColorManagerForTest : public DisplayColorManager {
   void UpdateCalibrationData(
       int64_t display_id,
       int64_t product_id,
-      std::unique_ptr<ColorCalibrationData> data) override {
+      std::unique_ptr<display::ColorCalibration> data) override {
     DisplayColorManager::UpdateCalibrationData(display_id, product_id,
                                                std::move(data));
     if (on_finished_for_test_) {
@@ -290,10 +290,11 @@ TEST_F(DisplayColorManagerTest, SetDisplayColorMatrixNoCTMSupport) {
   EXPECT_FALSE(base::MatchPattern(actions, "*set_color_matrix*"));
 
   // Attempt to set a color matrix.
-  SkM44 matrix;
-  matrix.setRC(1, 1, 0.7);
-  matrix.setRC(2, 2, 0.3);
-  EXPECT_FALSE(color_manager_->SetDisplayColorMatrix(kDisplayId, matrix));
+  display::ColorTemperatureAdjustment cta;
+  cta.srgb_matrix.vals[1][1] = 0.7f;
+  cta.srgb_matrix.vals[2][2] = 0.3f;
+  EXPECT_FALSE(
+      color_manager_->SetDisplayColorTemperatureAdjustment(kDisplayId, cta));
   EXPECT_EQ(color_manager_->displays_ctm_support(),
             DisplayColorManager::DisplayCtmSupport::kNone);
   EXPECT_STREQ("", log_->GetActionsAndClear().c_str());
@@ -322,10 +323,11 @@ TEST_F(DisplayColorManagerTest,
   log_->GetActionsAndClear();
 
   // Attempt to set a color matrix.
-  SkM44 matrix;
-  matrix.setRC(1, 1, 0.7);
-  matrix.setRC(2, 2, 0.3);
-  EXPECT_TRUE(color_manager_->SetDisplayColorMatrix(kDisplayId, matrix));
+  display::ColorTemperatureAdjustment cta;
+  cta.srgb_matrix.vals[1][1] = 0.7f;
+  cta.srgb_matrix.vals[2][2] = 0.3f;
+  EXPECT_TRUE(
+      color_manager_->SetDisplayColorTemperatureAdjustment(kDisplayId, cta));
   EXPECT_EQ(color_manager_->displays_ctm_support(),
             DisplayColorManager::DisplayCtmSupport::kAll);
   // This display has no color calibration data. Gamma/degamma won't be
@@ -379,10 +381,11 @@ TEST_F(DisplayColorManagerTest, SetDisplayColorMatrixWithMixedCTMSupport) {
             DisplayColorManager::DisplayCtmSupport::kMixed);
 
   // Attempt to set a color matrix.
-  SkM44 matrix;
-  matrix.setRC(1, 1, 0.7);
-  matrix.setRC(2, 2, 0.3);
-  EXPECT_TRUE(color_manager_->SetDisplayColorMatrix(kDisplayWithCtmId, matrix));
+  display::ColorTemperatureAdjustment cta;
+  cta.srgb_matrix.vals[1][1] = 0.7f;
+  cta.srgb_matrix.vals[2][2] = 0.3f;
+  EXPECT_TRUE(color_manager_->SetDisplayColorTemperatureAdjustment(
+      kDisplayWithCtmId, cta));
   // This display has no color calibration data. Gamma/degamma won't be
   // affected. Color matrix is applied as is.
   EXPECT_TRUE(base::MatchPattern(
@@ -390,7 +393,8 @@ TEST_F(DisplayColorManagerTest, SetDisplayColorMatrixWithMixedCTMSupport) {
       "set_color_matrix(id=123,ctm[0]=1*ctm[4]=0.7*ctm[8]=0.3*)"));
 
   // No matrix will be applied to this display.
-  EXPECT_FALSE(color_manager_->SetDisplayColorMatrix(kDisplayNoCtmId, matrix));
+  EXPECT_FALSE(color_manager_->SetDisplayColorTemperatureAdjustment(
+      kDisplayNoCtmId, cta));
   EXPECT_STREQ("", log_->GetActionsAndClear().c_str());
 }
 
@@ -416,10 +420,11 @@ TEST_F(DisplayColorManagerTest,
   log_->GetActionsAndClear();
 
   // Attempt to set a color matrix.
-  SkM44 matrix;
-  matrix.setRC(1, 1, 0.7);
-  matrix.setRC(2, 2, 0.3);
-  EXPECT_TRUE(color_manager_->SetDisplayColorMatrix(kDisplayId, matrix));
+  display::ColorTemperatureAdjustment cta;
+  cta.srgb_matrix.vals[1][1] = 0.7f;
+  cta.srgb_matrix.vals[2][2] = 0.3f;
+  EXPECT_TRUE(
+      color_manager_->SetDisplayColorTemperatureAdjustment(kDisplayId, cta));
   EXPECT_EQ(color_manager_->displays_ctm_support(),
             DisplayColorManager::DisplayCtmSupport::kAll);
   // The applied matrix is the combination of this color matrix and the color

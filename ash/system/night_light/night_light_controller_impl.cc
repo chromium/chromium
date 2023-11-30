@@ -46,6 +46,7 @@
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/geometry/vector3d_f.h"
+#include "ui/gfx/skia_color_space_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 
@@ -168,16 +169,11 @@ void UpdateCompositorMatrix(aura::WindowTreeHost* host,
 // the matrix was successfully sent to the GPU.
 bool AttemptSettingHardwareCtm(int64_t display_id,
                                const SkM44& gamma_compressed_matrix) {
-  for (const auto* snapshot :
-       Shell::Get()->display_configurator()->cached_displays()) {
-    if (snapshot->display_id() == display_id &&
-        snapshot->has_color_correction_matrix()) {
-      return Shell::Get()->display_color_manager()->SetDisplayColorMatrix(
-          snapshot, gamma_compressed_matrix);
-    }
-  }
-
-  return false;
+  display::ColorTemperatureAdjustment ctm;
+  ctm.srgb_matrix = gfx::SkcmsMatrix3x3FromSkM44(gamma_compressed_matrix);
+  return Shell::Get()
+      ->display_color_manager()
+      ->SetDisplayColorTemperatureAdjustment(display_id, ctm);
 }
 
 // Applies the given |temperature| to the display associated with the given
