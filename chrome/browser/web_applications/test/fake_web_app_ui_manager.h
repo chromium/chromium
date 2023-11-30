@@ -135,6 +135,11 @@ class FakeWebAppUiManager : public WebAppUiManager {
       content::WebContents* web_contents,
       const std::string& launch_name) override;
 
+  void MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(
+      content::WebContents* web_contents,
+      Profile* profile,
+      const std::string& app_id) override;
+
  private:
   base::flat_map<webapps::AppId, size_t> app_id_to_num_windows_map_;
   // Closures waiting to be called when all windows for a given `webapps::AppId`

@@ -166,6 +166,10 @@ class UpdateAwaiter : public WebAppInstallManagerObserver {
 // Creates a temporary file with the |extension|.
 base::FilePath CreateTestFileWithExtension(base::StringPiece extension);
 
+// Wait for an IPH bubble to show up inside the browser, and return true or
+// false based on whether the bubble showed up.
+bool WaitForIPHToShowIfAny(Browser* browser);
+
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_UI_WEB_APPLICATIONS_TEST_WEB_APP_BROWSERTEST_UTIL_H_
