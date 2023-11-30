@@ -43,3 +43,8 @@ specific_include_rules = {
     "+third_party/abseil-cpp/absl/types/optional.h",
   ]
 }
+
+# In the context of a module-level DEPS, the `deps` variable must be defined.
+# Some tools relies on it. For instance dawn/tools/fetch_dawn_dependencies.py
+# This has no use in other contexts.
+deps = {}
