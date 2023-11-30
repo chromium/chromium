@@ -2730,6 +2730,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.BackgroundNavigation.Outcome"
+    enum="ConversionBackgroundNavigationOutcome" expires_after="M121">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    When background registrations tied to a navigation are received, they need
+    additional context from the navigation itself to be able to process
+    registrations data.
+
+    The histogram emits if we were able to tie/link the navigation context with
+    the background registrations request.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.ClearDataTime" units="ms"
     expires_after="2024-05-10">
   <owner>johnidel@chromium.org</owner>

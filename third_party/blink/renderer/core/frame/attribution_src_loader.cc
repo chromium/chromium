@@ -435,7 +435,8 @@ bool AttributionSrcLoader::DoRegistration(
 
   if (attribution_src_token.has_value()) {
     conversion_host->RegisterNavigationDataHost(
-        data_host.BindNewPipeAndPassReceiver(), *attribution_src_token);
+        data_host.BindNewPipeAndPassReceiver(), *attribution_src_token,
+        /*expected_registrations=*/urls.size());
     source_type = SourceType::kNavigation;
   } else {
     conversion_host->RegisterDataHost(data_host.BindNewPipeAndPassReceiver(),

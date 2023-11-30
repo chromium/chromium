@@ -91,7 +91,8 @@ class CONTENT_EXPORT AttributionHost
       attribution_reporting::mojom::RegistrationEligibility) override;
   void RegisterNavigationDataHost(
       mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
-      const blink::AttributionSrcToken& attribution_src_token) override;
+      const blink::AttributionSrcToken& attribution_src_token,
+      uint32_t expected_registrations) override;
 
   // WebContentsObserver:
   void DidStartNavigation(NavigationHandle* navigation_handle) override;

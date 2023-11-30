@@ -293,7 +293,7 @@ class AttributionEventHandler {
           const blink::AttributionSrcToken attribution_src_token;
           attribution_data_host_manager->RegisterNavigationDataHost(
               data_host_remote.BindNewPipeAndPassReceiver(),
-              attribution_src_token);
+              attribution_src_token, /*expected_registrations=*/1);
           attribution_data_host_manager->NotifyNavigationRegistrationStarted(
               attribution_src_token, AttributionInputEvent(),
               event.context_origin,

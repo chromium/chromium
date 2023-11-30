@@ -9621,6 +9621,13 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Failed"/>
 </enum>
 
+<enum name="ConversionBackgroundNavigationOutcome">
+  <int value="0" label="Tied immediately"/>
+  <int value="1" label="Tied with delay"/>
+  <int value="2" label="Never tied: Timeout"/>
+  <int value="3" label="Never tied: Ineligible navigation"/>
+</enum>
+
 <enum name="ConversionCorruptReportStatus">
   <int value="0" label="Any field corrupted"/>
   <int value="1" label="Invalid failed_send_attempts field"/>

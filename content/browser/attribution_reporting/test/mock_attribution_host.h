@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_TEST_MOCK_ATTRIBUTION_HOST_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_TEST_MOCK_ATTRIBUTION_HOST_H_
 
+#include <stdint.h>
+
 #include "components/attribution_reporting/registration_eligibility.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -31,7 +33,8 @@ class MockAttributionHost : public AttributionHost {
   MOCK_METHOD(void,
               RegisterNavigationDataHost,
               (mojo::PendingReceiver<blink::mojom::AttributionDataHost>,
-               const blink::AttributionSrcToken&),
+               const blink::AttributionSrcToken&,
+               uint32_t expected_registrations),
               (override));
 
  private:

@@ -355,7 +355,8 @@ void AttributionHost::RegisterDataHost(
 
 void AttributionHost::RegisterNavigationDataHost(
     mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
-    const blink::AttributionSrcToken& attribution_src_token) {
+    const blink::AttributionSrcToken& attribution_src_token,
+    uint32_t expected_registrations) {
   if (!TopFrameOriginForSecureContext()) {
     return;
   }
@@ -365,7 +366,8 @@ void AttributionHost::RegisterNavigationDataHost(
   DCHECK(attribution_manager);
 
   if (!attribution_manager->GetDataHostManager()->RegisterNavigationDataHost(
-          std::move(data_host), attribution_src_token)) {
+          std::move(data_host), attribution_src_token,
+          expected_registrations)) {
     mojo::ReportBadMessage(
         "Renderer attempted to register a data host with a duplicate "
         "AttribtionSrcToken.");

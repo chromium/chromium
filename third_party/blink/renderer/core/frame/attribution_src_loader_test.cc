@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <stdint.h>
 #include <memory>
 
 #include "base/test/metrics/histogram_tester.h"
@@ -211,7 +212,8 @@ class MockAttributionHost : public mojom::blink::AttributionHost {
 
   void RegisterNavigationDataHost(
       mojo::PendingReceiver<mojom::blink::AttributionDataHost> data_host,
-      const blink::AttributionSrcToken& attribution_src_token) override {}
+      const blink::AttributionSrcToken& attribution_src_token,
+      uint32_t expected_registrations) override {}
 
   mojo::AssociatedReceiver<mojom::blink::AttributionHost> receiver_{this};
   base::OnceClosure quit_;

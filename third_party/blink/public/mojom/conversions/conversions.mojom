@@ -35,7 +35,11 @@ interface AttributionHost {
   // Information will be passed at a later point when the renderer has finished
   // processing the attribution source config returned from the request.
   // `attribution_src_token` can be used to associate `data_host` with an
-  // `Impression` object in the browser process.
+  // `Impression` object in the browser process. `expected_registrations` is the
+  // number of background registrations requests sent which are associated to
+  // the navigation.
   RegisterNavigationDataHost(pending_receiver<AttributionDataHost> data_host,
-                             AttributionSrcToken attribution_src_token);
+                             AttributionSrcToken attribution_src_token,
+                             uint32 expected_registrations
+                             );
 };

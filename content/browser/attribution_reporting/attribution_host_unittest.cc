@@ -506,7 +506,7 @@ TEST_F(AttributionHostTest,
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
   attribution_host_mojom()->RegisterNavigationDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(),
-      blink::AttributionSrcToken());
+      blink::AttributionSrcToken(), /*expected_registrations=*/1);
 
   EXPECT_EQ(
       "blink.mojom.AttributionHost can only be used with a secure top-level "
@@ -528,7 +528,7 @@ TEST_F(AttributionHostTest, DuplicateAttributionSrcToken_BadMessage) {
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
   attribution_host_mojom()->RegisterNavigationDataHost(
       data_host_remote.BindNewPipeAndPassReceiver(),
-      blink::AttributionSrcToken());
+      blink::AttributionSrcToken(), /*expected_registrations=*/1);
 
   EXPECT_EQ(
       "Renderer attempted to register a data host with a duplicate "
